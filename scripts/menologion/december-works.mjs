@@ -68,6 +68,22 @@ const book = (work, roman, more) => ({
   },
 });
 
+// St John of Kronstadt: My Life in Christ, whole, on the owner's word of
+// 2026-11-10 ("whole Kronstadt ... full publish"), in E. E. Goulaeff's English
+// of 1897. No transcription of it exists, so it was typed from the page images
+// of three archive.org scans of the printing by
+// scripts/menologion/scan-draft/book.py (kronstadt.json): the three readings
+// voted word by word, and every place they left open (841 of them, and the
+// marks no vote could catch, found by sweeping the text) read on Toronto's
+// page image and recorded in kronstadt-fixes.tsv. The book has no chapters, so
+// it is cut into sections of about ten printed pages, at a paragraph's end,
+// titled and cited by the pages they run over. The translator's dedication and
+// preface are his, not the saint's, and are left out; so are the footnotes
+// (the texts of Scripture he quotes) and their marks.
+const KRONSTADT_TR = "tr. E. E. Goulaeff (London: Cassell, 1897)";
+const KRONSTADT_PART = { "part-1": "Part I", "part-2": "Part II" };
+const KRONSTADT_SCANS = ["mylifeinchristex00serguoft", "mylifeinchrist00sergiala", "MyLifeInChrist"];
+
 export const WORKS = [
   {
     saint: "ambrose-of-milan",
@@ -103,7 +119,7 @@ export const WORKS = [
         heading: 1,
         chapters: { expect: 30 },
         fix: [["did be answer", "did he answer"]],
-        ocr: ["theophrastus", "callipho", ["nothing", "there is nothing so useful"], ["of", "courtesy of speech"]],
+        ocr: ["theophrastus", "callipho", ["nothing", "there is nothing so useful"], ["of", "courtesy of speech"], ["increases", "humility increases the regard"]],
       }),
       book("On the Duties of the Clergy", "III", {
         within: "Three Books on the Duties of the Clergy.",
@@ -116,7 +132,7 @@ export const WORKS = [
           ["another or the king's", "another of the king's"],
           ["but shall not eat", "but shalt not eat"],
         ],
-        ocr: [["know", "first to know that"], ["27", "27 some ask"], "ahimelech", ["people", "information the people went"]],
+        ocr: [["know", "first to know that"], ["27", "27 some ask"], "ahimelech", ["people", "information the people went"], ["showeth", "righteous showeth mercy and"]],
       }),
     ],
   },
@@ -160,7 +176,7 @@ export const WORKS = [
           ["very beginning of the world", "very begining of the world"],
           ["be multiplied as the cedar", "be multipled as the cedar"],
         ],
-        ocr: [["again", "born again when"], ["of", "office of the holy"], ["the", "of the holy spirit but"]],
+        ocr: [["again", "born again when"], ["of", "office of the holy"], ["the", "of the holy spirit but"], ["incapable", "is incapable of separation"]],
       }),
       book("On the Holy Spirit", "III", {
         within: "Three Books of St. Ambrose, Bishop of Milan, on the Holy Spirit.",
@@ -170,7 +186,7 @@ export const WORKS = [
         chapters: { expect: 22 },
         // The page's own misprint, kept as printed.
         fix: [["was condemned held", "was condemed held"]],
-        ocr: [["christ", "equivalent in christ for"], "158"],
+        ocr: [["christ", "equivalent in christ for"], "158", ["manifest", "made manifest and so"]],
       }),
     ],
   },
@@ -267,6 +283,79 @@ export const WORKS = [
       damascene("\nSERMON I.\n", "\nSERMON II.\n", "Sermon I", `St. John of Damascus, Sermon I on the Dormition, ${ALLIES}`, ["marvellous", "dwellingplace"]),
       damascene("\nSERMON II.\n", "\nSERMON III.\n", "Sermon II", `St. John of Damascus, Sermon II on the Dormition, ${ALLIES}`, ["willest", "motherhood", "blessings"]),
       damascene("\nSERMON III.\n", "\nINDEX\n", "Sermon III", `St. John of Damascus, Sermon III on the Dormition, ${ALLIES}`, ["soulsustaining"]),
+    ],
+  },
+  {
+    saint: "john-of-kronstadt",
+    slug: "my-life-in-christ",
+    title: "My Life in Christ",
+    subtitle: "Extracts from his diary",
+    source: `St. John of Kronstadt, My Life in Christ, ${KRONSTADT_TR}, public domain. Typed whole from the page images of three archive.org scans of the printing (${KRONSTADT_SCANS.join(", ")}): the three readings compared word by word, and every word they left in doubt read on the printed page. The translator's dedication and preface, the footnotes and their marks are left out, and italics are set plain; his own note, the two parts and their paragraphs are as printed, and so are the printer's slips \u201charmoninous\u201d, \u201cmissortune\u201d, \u201cresurrrection\u201d, \u201cimcomplex\u201d, \u201ccoveteousness\u201d, \u201capparalled\u201d, \u201copression\u201d, \u201crepentence\u201d, \u201cRighteousnes\u201d and \u201cthan\u201d for \u201cthat\u201d in \u201cO wretched man than I am\u201d.`,
+    originalLanguage: "ru",
+    passages: [
+      {
+        kind: "book",
+        file: "scripts/menologion/text/my-life-in-christ.txt",
+        pages: 10,
+        expect: 57,
+        parts: [{ key: "note", whole: true }, { key: "part-1" }, { key: "part-2" }],
+        title: (part, from, to) => (part.key === "note" ? "His Note" : `${KRONSTADT_PART[part.key]}, pages ${from} to ${to}`),
+        cite: (part, from, to) =>
+          part.key === "note"
+            ? `St. John of Kronstadt, My Life in Christ, his note, ${KRONSTADT_TR}`
+            : `St. John of Kronstadt, My Life in Christ, ${KRONSTADT_PART[part.key]}, pp. ${from}-${to}, ${KRONSTADT_TR}`,
+        voice: "saint",
+        scans: KRONSTADT_SCANS,
+        // The page has our word, each read on Toronto's page image: the three scans
+        // misread it alike ("earnest" for "camest", "0" for "O", "1" for "I", a broken
+        // letter), parted it round a page's footnotes ("propor" ... "tion"), split a
+        // compound at a line's end, or garbled the drop cap that opens Part II.
+        ocr: [
+          ["reflection", "to say a reflection of god's countenance"],
+          ["proportion", "our heart in proportion to the sin"],
+          ["rarefied", "more liquid more rarefied and more rapid"],
+          ["allaccomplishing", "deed to the allaccomplishing holy ghost the"],
+          ["sinful", "we have a sinful habit of rejoicing"],
+          ["camest", "joy thou who camest to save the"],
+          ["o", "o ye of little"],
+          ["vainglorious", "of their hypocritical vainglorious behaviour to their"],
+          ["corresponding", "also seek images corresponding to them and"],
+          ["of", "to its chief of one looking for"],
+          ["plenteousness", "well promising us plenteousness and ease the"],
+          ["poured", "god i have poured out my soul"],
+          ["of", "a new man of me let me"],
+          ["satisfieth", "and lovingkindness who satisfieth thy mouth with"],
+          ["camest", "lord thou camest to save us"],
+          ["camest", "save me thou camest to renew my"],
+          ["camest", "thy name thou camest to deliver us"],
+          ["camest", "to sin thou camest to enlighten us"],
+          ["camest", "by passions thou camest to gather together"],
+          ["camest", "the enemy thou camest to strengthen us"],
+          ["camest", "thee that thou camest to renew my"],
+          ["living", "may the living water of the"],
+          ["water", "may the living water of the holy"],
+          ["holy", "water of the holy ghost fill my"],
+          ["ghost", "of the holy ghost fill my heart"],
+          ["fill", "the holy ghost fill my heart and"],
+          ["rivers", "heart and may rivers of living water"],
+          ["living", "may rivers of living water flow from"],
+          ["ourselves", "always represent to ourselves his infinite greatness"],
+          ["o", "o holy faith by"],
+          ["i", "i thank my all"],
+          ["i", "the father that i may contemplate thine"],
+          ["evervirgin", "christ of the evervirgin mary who gave"],
+          ["o", "thy lovingkindness therefore o most wonderful king"],
+          ["eternallyworshipped", "incomplex being the eternallyworshipped unity and our"],
+          ["mamre", "the plains of mamre to isaiah in"],
+          ["unwearyingly", "in god who unwearyingly cares for all"],
+          ["anything", "sometimes useless for anything either for family"],
+          ["selfloving", "riches we are selfloving covetous avaricious and"],
+          ["justlyworshipped", "upon which his justlyworshipped name is inscribed"],
+          ["i", "sorrowful inconsolable moments i am with him"],
+          ["carriest", "thee alone thou carriest us all like"],
+          ["righteousness", "himself for his righteousness is expressed in"],
+        ],
+      },
     ],
   },
 ];

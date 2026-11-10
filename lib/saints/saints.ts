@@ -7668,7 +7668,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "My Life in Christ, tr. E. E. Goulaeff (London: Cassell, 1897), the dedication and the translator's preface; the Church's calendar, December 20",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "my-life-in-christ",
+        title: "My Life in Christ",
+        subtitle: "Extracts from his diary",
+        year: "Dated entries 1862 to 1869",
+        blurb:
+          "The thoughts he noted down over many years in moments of prayer and of searching his own heart, gathered from his diary into one book: on faith and prayer, the Holy Mysteries, the saints, and the struggle with the passions. Whole, in the public-domain English of 1897.",
+        topics: ["Prayer", "Faith", "Eucharist", "Repentance"],
+      },
+    ],
   },
 
   {

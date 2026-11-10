@@ -181,6 +181,9 @@ describe("the covers' pictures", () => {
       "ten-martyrs-of-crete/the-ten-martyrs-of-crete",
       "theodore-the-branded/life-of-theodore-the-branded",
       "thyrsus-leucius-and-callinicus/martyrdom-of-thyrsus-leucius-and-callinicus",
+      // St. John of Kronstadt's My Life in Christ (2026-11-10): his icon is
+      // the month's second push too.
+      "john-of-kronstadt/my-life-in-christ",
     ];
     const plate = buildRoom(false)
       .cards.filter((c) => !c.cover)

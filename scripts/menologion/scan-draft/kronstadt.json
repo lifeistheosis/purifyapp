@@ -1,0 +1,16 @@
+{
+  "about": "St John of Kronstadt's My Life in Christ, tr. E. E. Goulaeff (London: Cassell, 1897), whole, on the owner's word of 2026-11-10. Three scans of the one printing: the University of Toronto's copy (T, whose page images are read), and two others (U and M). Each scan's leaf is the printed page's number plus the figure beside it; the author's note stands on the page before page 1 (page 0 here). Each part runs from the words in `from` on its first page to the words in `to` on its last.",
+  "scans": {
+    "T": ["mylifeinchristex00serguoft", 17],
+    "U": ["mylifeinchrist00sergiala", 15],
+    "M": ["MyLifeInChrist", 20]
+  },
+  "read": "T",
+  "parts": [
+    {"key": "note", "pages": [0, 0], "from": "I DO not precede", "to": "JOHN SERGIEFF."},
+    {"key": "part-1", "pages": [1, 270], "from": "This is life eternal", "to": "ye love one another."},
+    {"key": "part-2", "pages": [271, 558], "from": "This is life eternal", "to": "the sorrow of self-love."}
+  ],
+  "fixes": "kronstadt-fixes.tsv",
+  "text": "scripts/menologion/text/my-life-in-christ.txt"
+}

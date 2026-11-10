@@ -252,6 +252,8 @@ export const AUTHOR_META: Readonly<Record<string, MetaRow>> = {
   "philemon-apollonius-and-arrianus": { traditions: ["egypt"], era: "early" },
   "boniface-of-tarsus": { traditions: ["latin"], era: "early" },
   "chrysogonus": { traditions: ["latin"], era: "early" },
+  // St. John of Kronstadt's My Life in Christ, whole (2026-11-10, the owner's word).
+  "john-of-kronstadt": { traditions: ["russian"], era: "afterByzantium" },
 };
 
 /**
@@ -1314,6 +1316,9 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
   "ambrose-of-milan/on-the-mysteries": { by: "ambrose-of-milan", form: "treatise", scope: "complete", themes: [], review: R },
   "ambrose-of-milan/concerning-repentance": { by: "ambrose-of-milan", form: "treatise", scope: "complete", themes: [], review: R },
   "peter-of-moscow/life-of-peter-of-moscow": { by: null, about: "peter-of-moscow", form: "life", scope: "selections", themes: [], review: R },
+  // St. John of Kronstadt's My Life in Christ, whole, in E. E. Goulaeff's English (1897),
+  // typed from the page images (scripts/menologion/scan-draft/book.py).
+  "john-of-kronstadt/my-life-in-christ": { by: "john-of-kronstadt", form: "sayings", scope: "complete", themes: [], review: R },
 };
 
 /**

@@ -320,8 +320,14 @@ const wordsOf = (s) => s.replace(/[—–]/g, " ").replace(/-/g, "").split(/\s+/
 /** Rejoin the scan's end-of-line hyphenation ("pres- byters") before reading it. */
 function scanWords(text) {
   // A word broken at a line's end: some scans' text prints the hyphen as "¬"
-  // (stjohndamasceneo00john, 1898).
-  return wordsOf(text.replace(/(\w)[-\u00ac]\s*\n\s*(\w)/g, "$1$2").replace(/\s+/g, " "));
+  // (stjohndamasceneo00john, 1898). A note's mark the scan's text glued to
+  // the word before it ("mine1 all", "truth.”3") is no part of the word.
+  return wordsOf(
+    text
+      .replace(/(\w)[-\u00ac]\s*\n\s*(\w)/g, "$1$2")
+      .replace(/([A-Za-z][.,;:!?'"\u2019\u201d)\]]*)\d{1,2}(?=[\s.,;:!?)\]]|$)/g, "$1")
+      .replace(/\s+/g, " "),
+  );
 }
 
 /** How many of a paragraph's first words stand, in order, in the scan from `start`. */
@@ -518,6 +524,52 @@ async function checkAgainstScans(paras, p, label) {
   return { label, scansRead: read, fixes: p.fix ?? [], ...result, checked, open };
 }
 
+/* ---------- A whole book typed from the page ---------- */
+
+/**
+ * A book typed from the page images of its scans (`kind: "book"`; St John of
+ * Kronstadt's My Life in Christ): a text file under scripts/menologion/text/,
+ * written by scripts/menologion/scan-draft/book.py, its parts headed
+ * "=== <key> ===" and each printed page's first word marked {n}. The book has
+ * no chapters, so each part is cut into sections of about `pages` printed
+ * pages, at a paragraph's end, titled and cited by the pages they run over
+ * (`title(part, from, to)` and `cite(part, from, to)`); a part marked `whole`
+ * is one section.
+ */
+function bookSections(p, label) {
+  const raw = fs.readFileSync(path.join(ROOT, p.file), "utf8");
+  const pieces = raw.split(/^=== (\S+) ===$/m);
+  if (pieces[0].trim()) throw new Error(`${label}: words before the first part's heading`);
+  const out = [];
+  for (let i = 1; i < pieces.length; i += 2) {
+    const part = p.parts.find((x) => x.key === pieces[i]);
+    if (!part) throw new Error(`${label}: part "${pieces[i]}" is not in the spec`);
+    let page = null;
+    const paras = pieces[i + 1]
+      .split(/\n[ \t]*\n/)
+      .map((x) => x.trim())
+      .filter(Boolean)
+      .map((x) => {
+        const marks = [...x.matchAll(/\{(\d+)\}/g)].map((m) => Number(m[1]));
+        const start = x.startsWith("{") ? marks[0] : page;
+        if (start == null) throw new Error(`${label}: words of ${part.key} before its first page's mark`);
+        page = marks.length ? marks[marks.length - 1] : page;
+        return { text: x.replace(/\{\d+\}/g, ""), start, end: page };
+      });
+    let cur = null;
+    for (const para of paras) {
+      if (!cur || (!part.whole && para.start >= cur.from + p.pages)) {
+        cur = { from: para.start, to: para.end, paras: [] };
+        out.push(Object.assign(cur, { part }));
+      }
+      cur.paras.push(para.text);
+      cur.to = para.end;
+    }
+  }
+  if (out.length !== p.expect) throw new Error(`${label}: ${out.length} sections, the spec expects ${p.expect}`);
+  return out.map((c) => ({ title: p.title(c.part, c.from, c.to), citation: p.cite(c.part, c.from, c.to), paras: c.paras }));
+}
+
 /* ---------- One Life ---------- */
 
 async function buildLife(spec) {
@@ -551,6 +603,19 @@ async function buildLife(spec) {
           citation: p.chapters.cite(c.n),
           paragraphs: c.paras,
         });
+      }
+      continue;
+    }
+    if (p.kind === "book") {
+      const secs = bookSections(p, label);
+      const all = secs.flatMap((c) => c.paras);
+      for (const para of all) {
+        if (/\[\d+\]|\{|\}|<[a-z/]|file:\/\//i.test(para)) throw new Error(`${label}: markup left in "${para.slice(0, 60)}"`);
+        if (para.includes("\uFFFD")) throw new Error(`${label}: a replacement character in "${para.slice(0, 60)}"`);
+      }
+      if (p.scans?.length) checks.push(await checkAgainstScans(all, p, label));
+      for (const c of secs) {
+        sections.push({ n: sections.length + 1, title: c.title, voice: p.voice ?? "saint", citation: c.citation, paragraphs: c.paras });
       }
       continue;
     }
