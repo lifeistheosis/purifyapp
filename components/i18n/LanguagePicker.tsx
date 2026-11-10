@@ -58,7 +58,7 @@ export function LanguagePicker() {
         aria-expanded={open}
         disabled={pending}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex h-[36px] items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] px-4 font-sans text-detail font-medium text-paper/85 hover:border-paper/30 hover:bg-paper/10 transition-colors disabled:opacity-50"
+        className="inline-flex h-11 items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] px-4 font-sans text-detail font-medium text-paper/85 hover:border-paper/30 hover:bg-paper/10 transition-colors disabled:opacity-50"
       >
         {current?.nativeLabel}
         <Chevron
