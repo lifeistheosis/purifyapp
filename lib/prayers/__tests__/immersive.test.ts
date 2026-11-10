@@ -137,6 +137,7 @@ describe("the line being prayed lit, the rest dim", () => {
         MessagesProvider,
         { locale: "en", messages: getMessages("en") } as ProviderProps,
         createElement(PrayerStep, {
+          ruleId: "morning",
           prayer: trisagion,
           title: trisagion.title,
           contentLang: "en",

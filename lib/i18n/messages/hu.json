@@ -2699,6 +2699,8 @@
   "settings.fontHint": "A kenyérszöveg betűtípusa.",
   "settings.sizeHint": "Mekkora a kenyérszöveg alapértelmezett nagyításnál.",
   "settings.interlinearHint": "Mutassa az eredeti nyelvet az angol mellett, ha a fejezethez elérhető.",
+  "settings.easyScroll": "Könnyű görgetés",
+  "settings.easyScrollHint": "Imaoldalon egy rövid húzás a következő imára visz.",
   "settings.calendar": "A naptár",
   "settings.calendarHint": "Melyik naptár szerint követi a nap szentjét, a böjtöt és az olvasmányokat.",
   "settings.language": "Nyelv",

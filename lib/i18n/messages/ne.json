@@ -2699,6 +2699,8 @@
   "settings.fontHint": "मूल पाठको अक्षराकृति।",
   "settings.sizeHint": "पूर्वनिर्धारित जुममा मूल पाठ कति ठूलो देखिन्छ।",
   "settings.interlinearHint": "अध्यायमा उपलब्ध हुँदा अङ्ग्रेजीको छेउमा मूल भाषा देखाउनुहोस्।",
+  "settings.easyScroll": "सजिलो स्क्रोल",
+  "settings.easyScrollHint": "प्रार्थनाको पृष्ठमा एउटा छोटो स्वाइपले अर्को प्रार्थनामा पुर्‍याउँछ।",
   "settings.calendar": "पात्रो",
   "settings.calendarHint": "दिनका सन्त, उपवास र पाठहरूले कुन गणना पछ्याउँछन्।",
   "settings.language": "भाषा",

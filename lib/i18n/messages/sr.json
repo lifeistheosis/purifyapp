@@ -2721,6 +2721,8 @@
   "settings.fontHint": "Izgled osnovnog teksta.",
   "settings.sizeHint": "Колико је велики основни текст при подразумеваном увећању.",
   "settings.interlinearHint": "Прикажи изворни језик поред превода када га поглавље има.",
+  "settings.easyScroll": "Лако помицање",
+  "settings.easyScrollHint": "На страници молитве кратак потез прстом води до следеће молитве.",
   "settings.calendar": "Календар",
   "settings.calendarHint": "По ком рачунању се одређују светитељ дана, пост и читања.",
   "settings.language": "Језик",

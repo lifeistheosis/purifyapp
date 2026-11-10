@@ -49,17 +49,22 @@ export function lineFont(font: keyof typeof FONT_CLASSES): string {
 }
 
 export function PrayerStep({
+  ruleId,
   prayer,
   title,
   from,
   contentLang,
+  bookmarkable = true,
 }: {
+  ruleId: string;
   prayer: Prayer;
   /** The prayer's name as shown: the catalog's where the app names it. */
   title: string;
   /** The rule it was brought from, in a reader's own rule. */
   from?: string;
   contentLang: string;
+  /** False for a step that is no prayer of the prayer book (a reader's own names). */
+  bookmarkable?: boolean;
 }) {
   const { t } = useTranslate();
   const { size, font, leadingValue } = useReaderPrefs();
@@ -79,17 +84,29 @@ export function PrayerStep({
   const stanzas = text ? stanzasOf(text, active ? [] : (prayer.cross ?? [])) : [];
   const lineClass = cn(lineFont(font), LINE_SIZE[size], "text-paper");
   const leading = { lineHeight: leadingValue ?? 1.5 };
+  // Saving one prayer is a long hold on its words (1.9, build 89 note 7): the
+  // hold's pill (components/native/PressToCopy.tsx) reads these and offers
+  // Save. A step brought from another rule is kept under its own rule.
+  const where = prayer.origin ?? { ruleId, prayerId: prayer.id };
+  const save = bookmarkable ? { "data-save-rule": where.ruleId, "data-save-prayer": where.prayerId, "data-save-title": title } : {};
+  // Where Easy Scroll settles this prayer (app/globals.css): its first line;
+  // a step of words without lines (the examination) settles on its refrain,
+  // or else on its name, so no step is ever passed over.
+  const settlesOn: "line" | "refrain" | "title" = stanzas.length ? "line" : refrain ? "refrain" : "title";
+  const snap = { "data-snap-start": "" };
 
   return (
     <section
       id={prayer.id}
       data-step
+      {...save}
       aria-labelledby={`${prayer.id}-title`}
       className="scroll-mt-16 border-t border-paper/10 py-9 text-center md:scroll-mt-24"
     >
       {from ? <p className="mb-1 font-sans text-caption text-paper/50">{t("prayers.mine.fromRule", { rule: from })}</p> : null}
       <h2
         id={`${prayer.id}-title`}
+        {...(settlesOn === "title" ? snap : {})}
         tabIndex={-1}
         className="font-serif text-title-sm font-semibold leading-snug text-paper/90 text-balance focus:outline-none"
       >
@@ -133,7 +150,8 @@ export function PrayerStep({
           {stanzas.map((stanza, s) => (
             <div key={s} className={s > 0 ? "mt-[1.1em]" : undefined}>
               {stanza.map((line, l) => (
-                <span key={l} data-line className={cn("block", l > 0 && "mt-[0.35em]", lineClass)}>
+                // The first line is where Easy Scroll settles this prayer (app/globals.css).
+                <span key={l} data-line {...(s === 0 && l === 0 ? snap : {})} className={cn("block", l > 0 && "mt-[0.35em]", lineClass)}>
                   {line.cross ? (
                     <Cross
                       size={18}
@@ -152,7 +170,7 @@ export function PrayerStep({
       ) : null}
 
       {refrain ? (
-        <p data-line lang={contentLang} className={cn("mt-[1.1em] italic", lineClass, "text-paper/85")} style={leading}>
+        <p data-line {...(settlesOn === "refrain" ? snap : {})} lang={contentLang} className={cn("mt-[1.1em] italic", lineClass, "text-paper/85")} style={leading}>
           {refrain}
         </p>
       ) : null}
@@ -168,7 +186,8 @@ export function PrayerStep({
       ) : null}
 
       {prayer.audio ? <AudioRow src={prayer.audio} /> : null}
-
+      {/* Where a long prayer settles at its end, before the next (Easy Scroll). */}
+      <span aria-hidden data-snap-end="" />
     </section>
   );
 }

@@ -57,7 +57,8 @@ export function CommemorationStep({
 
       {hasLiving ? (
         <div className="mt-5" style={leading}>
-          <span data-line className={cn("block", lineClass)}>
+          {/* Where Easy Scroll settles this step (app/globals.css). */}
+          <span data-line data-snap-start="" className={cn("block", lineClass)}>
             {t("prayers.commemorate.living")}
           </span>
           <ul className="mt-[0.6em]">
@@ -86,7 +87,7 @@ export function CommemorationStep({
         <div className={hasLiving ? "mt-[1.6em]" : "mt-5"} style={leading}>
           <div lang="en">
             {departedPrayer(departed.map((n) => n.name)).map((line, i) => (
-              <span key={i} data-line className={cn("block break-words", i > 0 && "mt-[0.35em]", lineClass)}>
+              <span key={i} data-line {...(i === 0 && !hasLiving ? { "data-snap-start": "" } : {})} className={cn("block break-words", i > 0 && "mt-[0.35em]", lineClass)}>
                 {line}
               </span>
             ))}
@@ -96,6 +97,8 @@ export function CommemorationStep({
           </p>
         </div>
       ) : null}
+      {/* Where a long list of names settles at its end, before the next prayer. */}
+      <span aria-hidden data-snap-end="" />
     </section>
   );
 }

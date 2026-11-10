@@ -2701,6 +2701,8 @@
   "settings.fontHint": "Il carattere del testo principale.",
   "settings.sizeHint": "Quanto appare grande il testo con lo zoom predefinito.",
   "settings.interlinearHint": "Mostra la lingua originale accanto al testo italiano quando un capitolo la prevede.",
+  "settings.easyScroll": "Scorrimento facile",
+  "settings.easyScrollHint": "In una pagina di preghiera, un breve scorrimento porta alla preghiera successiva.",
   "settings.calendar": "Il calendario",
   "settings.calendarHint": "Quale computo seguono il santo del giorno, il digiuno e le letture.",
   "settings.language": "Lingua",

@@ -3,6 +3,7 @@
 import { useEffect, type RefObject } from "react";
 
 import { useReducedMotion } from "@/lib/ui/motion";
+import { ON_PLACE_PX } from "@/lib/prayers/easyScroll";
 import { READING_PLACE, goToReadingPlace, placeIn, visibleBand } from "@/lib/ui/readingPlace";
 
 /**
@@ -89,7 +90,9 @@ export function useLitLine(ref: RefObject<HTMLElement | null>) {
       const y = window.scrollY;
       const left = document.documentElement.scrollHeight - (y + window.innerHeight);
       const nearFoot = left < room ? 1 - Math.max(0, left) / room : 0;
-      const place = y + placeIn(band, READING_PLACE + (FOOT - READING_PLACE) * nearFoot);
+      // A line set exactly on the reading place (Easy Scroll, Begin) can sit a
+      // fraction of a pixel past it: it is the one being read.
+      const place = y + placeIn(band, READING_PLACE + (FOOT - READING_PLACE) * nearFoot) + ON_PLACE_PX;
       if (place < tops[0]) {
         light(null);
         return;

@@ -2699,6 +2699,8 @@
   "settings.fontHint": "Ang hugis ng letra ng pangunahing teksto.",
   "settings.sizeHint": "Gaano kalaki ang pangunahing teksto sa karaniwang zoom.",
   "settings.interlinearHint": "Ipakita ang orihinal na wika sa tabi ng Ingles kapag mayroon nito ang kabanata.",
+  "settings.easyScroll": "Madaling pag-scroll",
+  "settings.easyScrollHint": "Sa pahina ng panalangin, isang maikling swipe ang magdadala sa susunod na panalangin.",
   "settings.calendar": "Ang kalendaryo",
   "settings.calendarHint": "Kung aling pagbilang ang susundin ng santo ng araw, ng ayuno, at ng mga pagbasa.",
   "settings.language": "Wika",

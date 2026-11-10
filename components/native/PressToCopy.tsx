@@ -28,6 +28,11 @@
 // their way back (lib/journal/quoteInJournal.ts). The library's words are
 // Plus's to quote: without Plus it wears the Plus mark's padlock and opens
 // the upgrade sheet named for the journal.
+//
+// Held on a prayer of a prayer page, the pill also saves that one prayer
+// (1.9, build 89 note 7): the bookmark that stood under every prayer went, and
+// saving a single prayer moved here, to a long hold on its words. The prayer
+// says what it is (data-save-*, components/prayers/service/PrayerStep.tsx).
 
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -35,6 +40,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { PlusLock } from "@/components/billing/PlusMark";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Bookmark } from "@/components/ui/icons/Bookmark";
 import { Check } from "@/components/ui/icons/Check";
 import { Copy } from "@/components/ui/icons/Copy";
 import { Pen } from "@/components/ui/icons/Pen";
@@ -43,15 +49,26 @@ import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { heldCite, heldHref, isLibraryPlace } from "@/lib/journal/libraryPlaces";
 import { libraryBlock } from "@/lib/journal/page";
 import { quoteInJournal } from "@/lib/journal/quoteInJournal";
+import { isBookmarked, togglePrayerBookmark } from "@/lib/prayers/bookmarks";
 import { isNativeClient } from "@/lib/platform/native";
 import { copyText } from "@/lib/ui/copyText";
 import { createLiftGuard } from "@/lib/ui/liftGuard";
 import { haptic } from "@/lib/ui/motion";
 import { setOverlayOpen } from "@/lib/ui/overlay";
+import { softTick } from "@/lib/ui/softTick";
 import { PRESS_MS, blockText, hasDrifted, pressBlock } from "@/lib/ui/pressCopy";
 
 /** How long "Copied" stands before the pill goes. */
 const COPIED_MS = 900;
+
+/** The prayer a hold landed in, as the prayer page names it (PrayerStep's data-save-*). */
+type Savable = { ruleId: string; prayerId: string; title: string };
+
+function savableOf(block: Element): Savable | null {
+  const step = block.closest<HTMLElement>("[data-save-prayer]");
+  const { saveRule, savePrayer, saveTitle } = step?.dataset ?? {};
+  return saveRule && savePrayer ? { ruleId: saveRule, prayerId: savePrayer, title: saveTitle ?? "" } : null;
+}
 
 /**
  * A page can settle by a pixel as the pill appears. A scroll this soon after
@@ -67,6 +84,8 @@ export function PressToCopy() {
   const locked = usePlusFeatures() === false;
   const [text, setText] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [savable, setSavable] = useState<Savable | null>(null);
+  const [saved, setSaved] = useState(false);
   const held = useRef<HTMLElement | null>(null);
   const openedAt = useRef(0);
   // The finger that opened the pill is still on the glass when it appears,
@@ -82,6 +101,7 @@ export function PressToCopy() {
     held.current = null;
     setText(null);
     setCopied(false);
+    setSavable(null);
   }, []);
 
   // The gesture.
@@ -117,6 +137,9 @@ export function PressToCopy() {
         lift.reset();
         haptic("light");
         setCopied(false);
+        const prayer = savableOf(block);
+        setSavable(prayer);
+        setSaved(prayer ? isBookmarked(prayer.ruleId, prayer.prayerId) : false);
         setText(words);
       }, PRESS_MS);
     };
@@ -184,6 +207,17 @@ export function PressToCopy() {
     closing.current = setTimeout(close, COPIED_MS);
   };
 
+  // Save, or take back, the one prayer held: the bookmark fills, the hand feels
+  // the soft tick a saved verse gets, and the pill goes a moment later.
+  const onSave = () => {
+    if (lift.isLift() || !savable) return;
+    togglePrayerBookmark(savable.ruleId, savable.prayerId, savable.title);
+    const now = isBookmarked(savable.ruleId, savable.prayerId);
+    setSaved(now);
+    if (now) softTick();
+    closing.current = setTimeout(close, COPIED_MS);
+  };
+
   const library = isLibraryPlace(pathname);
   const onQuote = () => {
     if (lift.isLift()) return;
@@ -232,7 +266,8 @@ export function PressToCopy() {
             (copied ? "border-emerald-500/60 text-emerald-300" : "border-paper/20 text-paper")
           }
         >
-          <button type="button" onClick={onCopy} disabled={copied} className="tap-press inline-flex items-center gap-2.5 px-6 active:bg-night-soft">
+          {/* With Save beside them the three sit closer, so "Quote in journal" stays whole at 360px. */}
+          <button type="button" onClick={onCopy} disabled={copied} className={"tap-press inline-flex items-center gap-2.5 active:bg-night-soft " + (savable ? "px-4" : "px-6")}>
             {copied ? <Check size={18} /> : <Copy size={18} />}
             <span aria-live="polite">{copied ? t("common.copied") : t("common.copy")}</span>
           </button>
@@ -242,10 +277,23 @@ export function PressToCopy() {
               onClick={onQuote}
               data-press-quote={locked ? "locked" : ""}
               data-mock-allow="stripe" data-mock-why="the line between Copy and Quote in journal"
-              className="tap-press inline-flex min-w-0 items-center gap-2 border-s border-paper/15 pe-6 ps-5 active:bg-night-soft"
+              className={"tap-press inline-flex min-w-0 items-center gap-2 border-s border-paper/15 active:bg-night-soft " + (savable ? "pe-5 ps-4" : "pe-6 ps-5")}
             >
               {locked ? <PlusLock size={14} /> : <Pen size={18} className="shrink-0" />}
               <span className="min-w-0 truncate">{t("journal.quote.inJournal")}</span>
+            </button>
+          ) : null}
+          {savable && !copied ? (
+            <button
+              type="button"
+              onClick={onSave}
+              aria-pressed={saved}
+              aria-label={saved ? t("study.saved.removeBookmark") : t("prayers.reader.bookmarkPrayer")}
+              data-press-save=""
+              data-mock-allow="stripe" data-mock-why="the line before Save, a prayer's own action in the hold's pill"
+              className="tap-press inline-flex shrink-0 items-center border-s border-paper/15 px-4 active:bg-night-soft"
+            >
+              <Bookmark size={18} filled={saved} />
             </button>
           ) : null}
         </div>

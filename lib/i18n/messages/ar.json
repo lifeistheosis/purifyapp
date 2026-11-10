@@ -2773,6 +2773,8 @@
   "settings.fontHint": "شكل خط المتن.",
   "settings.sizeHint": "حجم ظهور النص الأساسي عند التكبير الافتراضي.",
   "settings.interlinearHint": "إظهار اللغة الأصلية بجانب الإنجليزية حين يتوفر ذلك في الأصحاح.",
+  "settings.easyScroll": "التمرير السهل",
+  "settings.easyScrollHint": "في صفحة الصلاة، تنقلك سحبة قصيرة إلى الصلاة التالية.",
   "settings.calendar": "التقويم",
   "settings.calendarHint": "التقويم الذي يتبعه قديس اليوم والصوم والقراءات.",
   "settings.language": "اللغة",

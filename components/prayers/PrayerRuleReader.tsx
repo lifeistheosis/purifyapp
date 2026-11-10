@@ -60,7 +60,10 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CommemorationStep } from "@/components/prayers/service/CommemorationStep";
 import { ServiceHeader } from "@/components/prayers/service/ServiceHeader";
 import { PrayerStep } from "@/components/prayers/service/PrayerStep";
+import { useEasyScroll } from "@/components/prayers/service/useEasyScroll";
 import { goToPrayer, useLitLine } from "@/components/prayers/service/useLitLine";
+import { usePassedSteps } from "@/components/prayers/service/usePassedSteps";
+import { useEasyScrollOn } from "@/lib/prayers/easyScrollSetting";
 import { isRuleBookmarked, toggleRuleBookmark } from "@/lib/prayers/bookmarks";
 import { commemorationPlacement, placeOf } from "@/lib/prayers/commemoration";
 import { serviceArt } from "@/lib/prayers/serviceArt";
@@ -143,6 +146,11 @@ export function PrayerRuleReader({
   const { t, locale } = useTranslate();
   const article = useRef<HTMLElement>(null);
   useLitLine(article);
+  // A short swipe settles on the next prayer, with a click as it arrives
+  // (build 89 note 7, his Easy Scroll), unless the reader turned it off in
+  // Settings.
+  const easyOn = useEasyScrollOn();
+  useEasyScroll(article, { enabled: easyOn });
 
   const snap = useSyncExternalStore(subscribe, () => readSnap(rule.id), () => SERVER_SNAP);
   const done = useMemo(() => new Set(snap.done), [snap.done]);
@@ -202,6 +210,25 @@ export function PrayerRuleReader({
     }
   }
 
+  // A prayer the reader has moved down through counts as prayed (build 89
+  // note 7): nothing is ticked under it now. The names step too, and with it
+  // the names from the prayer wall, as the Amen would. Read from the store at
+  // the moment, so two prayers passed in one fling are both kept.
+  function passed(id: string) {
+    const now = new Set(readSnap(rule.id).done);
+    if (id === commemorationId) {
+      if (now.has(commemorationId)) return;
+      now.add(commemorationId);
+      persist(now);
+      if (wallIds.length > 0) updateWallNames((list) => markWallPrayed(list, wallIds));
+      return;
+    }
+    if (now.has(id) || !rule.prayers.some((p) => p.id === id)) return;
+    now.add(id);
+    persist(now);
+  }
+  usePassedSteps(article, passed, { ready: hydrated });
+
   const commemorationStep = commemorated ? (
     <CommemorationStep
       stepId={commemorationId}
@@ -240,6 +267,8 @@ export function PrayerRuleReader({
       <div aria-hidden className="prayer-light" style={{ backgroundImage: `url(${light.src})` }} />
       <div aria-hidden className="prayer-light-breath" />
       <article ref={article} data-prayer-reader className="relative mx-auto w-full max-w-[640px]">
+        {/* The head of the page and its foot are places Easy Scroll can rest too. */}
+        <span aria-hidden data-snap-edge="top" />
         <ServiceHeader
           rule={rule}
           title={title}
@@ -259,7 +288,14 @@ export function PrayerRuleReader({
               {i === commemorationAt ? commemorationStep : null}
               {/* The reader's own "Those I pray for" is drawn as the step above. */}
               {ownStep && i === placement.index ? null : (
-                <PrayerStep prayer={p} title={stepTitle(p)} from={fromTitle(p)} contentLang={contentLocale} />
+                <PrayerStep
+                  ruleId={rule.id}
+                  prayer={p}
+                  title={stepTitle(p)}
+                  from={fromTitle(p)}
+                  contentLang={contentLocale}
+                  bookmarkable={rule.kind !== "custom" || Boolean(p.origin)}
+                />
               )}
             </Fragment>
           ))}
@@ -317,6 +353,7 @@ export function PrayerRuleReader({
             </p>
           </footer>
         ) : null}
+        <span aria-hidden data-snap-edge="bottom" />
       </article>
     </>
   );

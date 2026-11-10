@@ -2701,6 +2701,8 @@
   "settings.fontHint": "La tipografía del texto principal.",
   "settings.sizeHint": "El tamaño con que se ve el texto principal con el zoom predeterminado.",
   "settings.interlinearHint": "Muestra el idioma original junto al inglés cuando el capítulo lo tiene.",
+  "settings.easyScroll": "Desplazamiento fácil",
+  "settings.easyScrollHint": "En una página de oración, un deslizamiento breve lleva a la siguiente oración.",
   "settings.calendar": "El calendario",
   "settings.calendarHint": "Qué cómputo siguen el santo del día, el ayuno y las lecturas.",
   "settings.language": "Idioma",

@@ -191,7 +191,8 @@ const DIVIDERS: Divider[] = [
   // What readers see.
   { file: "components/calendar/CalendarGrid.tsx", has: "grid grid-cols-7 border-l", why: "the month grid's lines", screen: true },
   { file: "components/mobile/BibleStudyRow.tsx", has: "border-s border-paper/[0.06]", why: "the line between the row's two halves", screen: true },
-  { file: "components/native/PressToCopy.tsx", has: "border-s border-paper/15 pe-6 ps-5", why: "the line between Copy and Quote in journal", screen: true },
+  { file: "components/native/PressToCopy.tsx", has: "border-s border-paper/15 active:bg-night-soft", why: "the line between Copy and Quote in journal", screen: true },
+  { file: "components/native/PressToCopy.tsx", has: "border-s border-paper/15 px-4", why: "the line before Save, a prayer's own action in the hold's pill", screen: true },
   { file: "components/shop/ShopSubTabs.tsx", has: "border-s border-white/8", why: "the line between the shop's tabs and the cart", screen: true },
   { file: "components/shop/ShopHomeClient.tsx", has: "md:border-l md:border-t-0", why: "the line between the shop's two columns on a wide screen", screen: true },
   { file: "components/player/NowPlayingSheet.tsx", has: "md:w-[440px] md:border-l", why: "the player's edge, docked beside the page on a wide screen", screen: true },

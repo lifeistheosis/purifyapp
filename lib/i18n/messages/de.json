@@ -2699,6 +2699,8 @@
   "settings.fontHint": "Die Schriftart des Fließtextes.",
   "settings.sizeHint": "Wie groß der Fließtext bei normaler Vergrößerung erscheint.",
   "settings.interlinearHint": "Die Ursprache neben der Übersetzung anzeigen, wenn ein Kapitel sie hat.",
+  "settings.easyScroll": "Leichtes Scrollen",
+  "settings.easyScrollHint": "Auf einer Gebetsseite führt ein kurzes Wischen zum nächsten Gebet.",
   "settings.calendar": "Der Kalender",
   "settings.calendarHint": "Nach welcher Zeitrechnung sich der Heilige des Tages, das Fasten und die Lesungen richten.",
   "settings.language": "Sprache",
