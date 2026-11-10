@@ -41,8 +41,12 @@ export { itemSource };
  *
  * Local-first: the list comes straight from localStorage via useFlorilegia,
  * so it is instant and works offline. Sign-in (with Plus) syncs it.
+ *
+ * `readOnly`: a reader whose Plus has lapsed (components/florilegium/
+ * FlorilegiumGate.tsx, rec 10): their gatherings to open and read, and
+ * nothing that begins or keeps one.
  */
-export function FlorilegiaHub() {
+export function FlorilegiaHub({ readOnly = false }: { readOnly?: boolean } = {}) {
   const { t } = useTranslate();
   const router = useRouter();
   const { florilegia, create, addItem } = useFlorilegia();
@@ -80,6 +84,18 @@ export function FlorilegiaHub() {
   }
 
   const empty = mounted && florilegia.length === 0;
+
+  if (readOnly) {
+    return (
+      <ul className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-3" data-florilegium-yours="">
+        {florilegia.map((f) => (
+          <li key={f.id} className="min-w-0">
+            <GatheringCard f={f} />
+          </li>
+        ))}
+      </ul>
+    );
+  }
 
   return (
     <div className="mt-8">

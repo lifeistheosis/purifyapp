@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { CARD, CARD_BG, Eyebrow, ICON_TILE_SM, PILL } from "@/components/ui/Graphite";
 import { Book } from "@/components/ui/icons/Book";
 import { Quill } from "@/components/ui/icons/Quill";
@@ -40,7 +41,12 @@ const SMALL_PILL =
  * hands its words to the phone's share sheet, each line as it was kept with
  * its source (lib/florilegium/asText.ts).
  */
-export function FlorilegiumDetail({ id }: { id: string }) {
+/**
+ * `readOnly`: a reader whose Plus has lapsed (rec 10): the gathering's lines
+ * and notes to read, with no note added, no line removed, nothing handed on
+ * and no Delete; the Plus card stands under it (FlorilegiumGate).
+ */
+export function FlorilegiumDetail({ id, readOnly = false }: { id: string; readOnly?: boolean }) {
   const { t, tn } = useTranslate();
   const native = useIsNative();
   const { florilegia, remove, removeItem, setItemNote } = useFlorilegia();
@@ -71,9 +77,7 @@ export function FlorilegiumDetail({ id }: { id: string }) {
   return (
     <div>
       <Link href="/florilegium" className={cn(PILL, "px-4 py-1.5 text-detail")}>
-        <span aria-hidden className="mr-1.5">
-          ←
-        </span>
+        <ChevronLeft size={16} className="me-1.5 shrink-0 rtl:-scale-x-100" />
         {t("study.florilegium.backToYours")}
       </Link>
 
@@ -87,7 +91,7 @@ export function FlorilegiumDetail({ id }: { id: string }) {
           <p className="mt-4 font-serif text-lede italic leading-[1.55] text-paper/70">{f.description}</p>
         ) : null}
         <p className="mt-5">
-          <span className="inline-flex items-center rounded-pill border border-paper/15 bg-paper/[0.04] px-3 py-1 font-sans text-caption tabular-nums text-paper/65">
+          <span className="inline-flex items-center rounded-pill border border-paper/15 bg-paper/[0.04] px-3 py-1 font-sans text-caption tabular-nums text-paper/70">
             {tn("study.florilegium.lineCount", f.items.length)}
           </span>
         </p>
@@ -104,6 +108,7 @@ export function FlorilegiumDetail({ id }: { id: string }) {
               <li key={item.id}>
                 <ItemCard
                   item={item}
+                  readOnly={readOnly}
                   onRemove={() => removeItem(f.id, item.id)}
                   onNote={(note) => setItemNote(f.id, item.id, note)}
                 />
@@ -113,7 +118,7 @@ export function FlorilegiumDetail({ id }: { id: string }) {
         )}
       </div>
 
-      {f.items.length > 0 ? (
+      {readOnly ? null : f.items.length > 0 ? (
         <div className="mt-8">
           {native ? (
             <button
@@ -131,15 +136,17 @@ export function FlorilegiumDetail({ id }: { id: string }) {
         </div>
       ) : null}
 
-      <div className="mt-16 border-t border-paper/10 pt-6">
-        <button
-          type="button"
-          onClick={() => setConfirmingDelete(true)}
-          className="inline-flex min-h-11 items-center rounded-pill px-3.5 font-sans text-detail text-paper/50 transition-colors hover:bg-crimson/15 hover:text-crimson-soft"
-        >
-          {t("study.florilegium.deleteThis")}
-        </button>
-      </div>
+      {readOnly ? null : (
+        <div className="mt-16 border-t border-paper/10 pt-6">
+          <button
+            type="button"
+            onClick={() => setConfirmingDelete(true)}
+            className="inline-flex min-h-11 items-center rounded-pill px-3.5 font-sans text-detail text-paper/50 transition-colors hover:bg-crimson/15 hover:text-crimson-soft"
+          >
+            {t("study.florilegium.deleteThis")}
+          </button>
+        </div>
+      )}
 
       <ConfirmDialog
         open={confirmingDelete}
@@ -169,10 +176,13 @@ export function ItemCard({
   item,
   onRemove,
   onNote,
+  readOnly = false,
 }: {
   item: FlorilegiumItem;
   onRemove: () => void;
   onNote: (note: string) => void;
+  /** To read only: no note added or changed, nothing removed (rec 10). */
+  readOnly?: boolean;
 }) {
   const { t } = useTranslate();
   const [editing, setEditing] = useState(false);
@@ -252,7 +262,7 @@ export function ItemCard({
         </div>
       ) : null}
 
-      {!editing && (
+      {!editing && !readOnly && (
         <div className="mt-5 flex flex-wrap gap-1.5" data-print-hide="">
           <button type="button" onClick={() => setEditing(true)} className={SMALL_PILL}>
             {item.note ? t("bible.editNote") : t("bible.addNote")}

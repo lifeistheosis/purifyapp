@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import { FlorilegiaHub } from "@/components/florilegium/FlorilegiaHub";
 import { FlorilegiumDetail } from "@/components/florilegium/FlorilegiumDetail";
@@ -8,6 +8,8 @@ import { PlusGate } from "@/components/florilegium/PlusGate";
 import { getClientEntitlements } from "@/lib/entitlements/client";
 import { onEntitlementsChanged } from "@/lib/entitlements/refresh";
 import { useExpectedPlusFeatures } from "@/lib/entitlements/usePlusFeatures";
+import { useFlorilegia } from "@/lib/florilegium/florilegium";
+import { useMounted } from "@/lib/useMounted";
 
 /**
  * Resolves the Florilegium's entitlement AT RUNTIME, not at render time on the
@@ -36,6 +38,13 @@ import { useExpectedPlusFeatures } from "@/lib/entitlements/usePlusFeatures";
  * knew (useExpectedPlusFeatures): a reader the device last knew without Plus
  * meets the card at once, not the hub for a second first; a subscriber, or a
  * device that never asked, still opens on the hub. The live answer decides.
+ *
+ * A reader whose Plus has lapsed still reads what they gathered (1.9, rec 10,
+ * ideas.json c-flor-gate-flash, the other half): the card, and under it their
+ * own gatherings as this device keeps them, read-only: no new gathering, no
+ * starters, no notes, nothing removed, nothing handed on. One gathering opens
+ * the same way, its lines first and the card under them. A reader with
+ * nothing gathered meets the card alone, as before.
  */
 export function FlorilegiumGate({ detailId }: { detailId?: string }) {
   const expected = useExpectedPlusFeatures();
@@ -59,13 +68,29 @@ export function FlorilegiumGate({ detailId }: { detailId?: string }) {
   }, []);
 
   if (!entitled) {
-    return (
-      <PlusGate
-        titleKey="plus.florilegium.title"
-        blurbKey="plus.florilegium.body"
-        modalFeature="florilegium"
-      />
-    );
+    const gate = <PlusGate titleKey="plus.florilegium.title" blurbKey="plus.florilegium.body" modalFeature="florilegium" />;
+    return <KeptReadOnly gate={gate} detailId={detailId} />;
   }
   return detailId ? <FlorilegiumDetail id={detailId} /> : <FlorilegiaHub />;
+}
+
+/** Without Plus: the card, and the reader's own gatherings under it to read, if this device keeps any. */
+function KeptReadOnly({ gate, detailId }: { gate: ReactNode; detailId?: string }) {
+  const { florilegia } = useFlorilegia();
+  const mounted = useMounted();
+  if (!mounted || florilegia.length === 0) return <>{gate}</>;
+  if (detailId) {
+    return (
+      <div data-florilegium-read-only="">
+        <FlorilegiumDetail id={detailId} readOnly />
+        {gate}
+      </div>
+    );
+  }
+  return (
+    <div data-florilegium-read-only="">
+      {gate}
+      <FlorilegiaHub readOnly />
+    </div>
+  );
 }
