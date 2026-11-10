@@ -6,7 +6,7 @@ the arbiter, the main chat that sends requests out to the other chats. This
 file is what it needs to take over. Read it first, then `BRAINSTORM.md` and
 `PLAN.md` in this folder.
 
-**He does not read code or SQL** (his word, 2026-11-10: "I don't work with code so my take wouldn't be of value for code"). Ask his yes on plain words: what a change does, what a reader sees, what could go wrong, whether it can run twice. Never put code or SQL in front of him to judge. A migration's SQL is reviewed by a second chat before he is asked, and his yes on the plain summary is the sign-off AGENTS.md asks for. His signatures so far: shared pages and the Psalms move (2026-11-09), the campaigns' file one ("R0b yes 1") and the florilegium kinds ("yes florilegium"), both 2026-11-10.
+**He does not read code or SQL** (his word, 2026-11-10: "I don't work with code so my take wouldn't be of value for code"). Ask his yes on plain words: what a change does, what a reader sees, what could go wrong, whether it can run twice. Never put code or SQL in front of him to judge. A migration's SQL is reviewed by a second chat before he is asked, and his yes on the plain summary is the sign-off AGENTS.md asks for. His signatures so far: shared pages and the Psalms move (2026-11-09), the campaigns' file one ("R0b yes 1") and the florilegium kinds ("yes florilegium"), both 2026-11-10; the campaigns' files two and three ("All recommendations. Start.", 2026-11-10 about 13:50 UTC, answering the arbiter's list of 10:41 whose item 7 was file two, and file three put to him at 12:02 with Admin's check).
 
 **The arbiter routes; it does not dig** (his word, 2026-11-10: "remember you
 are the arbiter, you worked on the last issue and it's fine don't make that
@@ -133,16 +133,15 @@ All three work on the one branch, `ccr-07896cf2-bo0afd`. Each pulls
 
 ## Where things stand
 
-**Brainstorm mode is on again** (2026-11-10 about 09:12 UTC, his word: "Okay,
-brainstorm mode on. I'm gonna start giving you critiques."). He is walking
-Android test build 90; his critiques go to `notes/build-90.md` with his words
-and screenshots, a chat finds each cause and plan, and nothing new from them is
-built until he says "start". Work he approved earlier (the follow-ups of
-build 89's notes, the themes, campaigns phase 1) carries on. (It was off from
-the afternoon of 2026-11-09 to this morning: "let's continue working on version
-1.9 ... all you need to do is report back to me with creative decisions".) He
-also uses simplified mode: replies very short and plain, emojis welcome, never
-an em dash.
+**Brainstorm mode is off again** (2026-11-10 about 13:50 UTC, his word: "All
+recommendations. Start."): build 90's notes 1 to 10 are being built to their
+plans in `notes/build-90.md`, and November's saints by their own chat. It was
+on from about 09:12 UTC ("Okay, brainstorm mode on. I'm gonna start giving you
+critiques."), while he walked Android test build 90, and off before that from
+the afternoon of 2026-11-09 ("let's continue working on version 1.9 ... all you
+need to do is report back to me with creative decisions"). He also uses
+simplified mode: replies very short and plain, emojis welcome, never an em
+dash.
 
 **The branch** is clean and pushed. The last two days, on it:
 
