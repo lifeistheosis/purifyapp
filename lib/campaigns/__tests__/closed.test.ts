@@ -317,8 +317,10 @@ describe("closed: the doors", () => {
 
 describe("closed: the data", () => {
   // Columns only the rework has (July's file made the tables themselves).
-  const NEW = /consent_kind|keep_after_end|until_on|prayer_rule|creator_handle/;
+  const NEW = /consent_kind|keep_after_end|until_on|prayer_rule|creator_handle|campaign_update|community_posts_campaign_thread/;
   const FOR_HIS_SIGNATURE = "docs/1.9-build/sql/campaigns-1-rework.sql";
+  /** File two: a campaign's updates and comments, as its own thread in Community. */
+  const THREADS_FOR_HIS_SIGNATURE = "docs/1.9-build/sql/campaigns-2-threads.sql";
   /** A file's SQL from its first statement on, its header left out. */
   const statements = (sql: string) => sql.slice(sql.search(/^set lock_timeout/m));
 
@@ -331,8 +333,27 @@ describe("closed: the data", () => {
     // test changes, to hold the migration to the SQL he signed, word for word.
     const hits = readdirSync(join(ROOT, "supabase/migrations")).filter((f) => NEW.test(read(`supabase/migrations/${f}`)));
     expect(hits).toEqual([]);
-    expect(existsSync(join(ROOT, FOR_HIS_SIGNATURE))).toBe(true);
-    expect(read(FOR_HIS_SIGNATURE)).toMatch(/^-- NOT APPLIED YET, AND NOT SIGNED YET\./m);
+    for (const file of [FOR_HIS_SIGNATURE, THREADS_FOR_HIS_SIGNATURE]) {
+      expect(existsSync(join(ROOT, file)), file).toBe(true);
+      expect(read(file), file).toMatch(/^-- NOT APPLIED YET, AND NOT SIGNED YET\./m);
+    }
+  });
+
+  it("makes a campaign's thread a post with a state of its own, which is what keeps it out of Community", () => {
+    // File two. Every read of Community asks for a post that is 'visible',
+    // and so do the row policies of posts and replies, so a thread that says
+    // 'campaign' is in none of them (proved with the public key's role on a
+    // scratch PostgreSQL; the routes' side is thread.test.ts). The file has
+    // to go on saying so: a thread that were merely a post with a campaign's
+    // id would stand in the feed.
+    const threads = statements(read(THREADS_FOR_HIS_SIGNATURE));
+    expect(threads).toContain("check (status in ('visible', 'removed', 'held', 'campaign'));");
+    expect(threads).toContain("check ((status = 'campaign') = (campaign_id is not null));");
+    expect(threads).toMatch(/create unique index if not exists community_posts_campaign_thread_idx\s+on public\.community_posts \(campaign_id\)/);
+    expect(threads).toContain("references public.prayer_campaigns (id) on delete cascade");
+    expect(threads).not.toMatch(/create (?:unique )?index (?!if not exists)/i);
+    expect(threads).not.toMatch(/add column (?!if not exists)/i);
+    expect(threads).not.toMatch(/create policy|grant /i);
   });
 
   it("puts before him the SQL that was checked: the file is the notes' own, word for word", () => {

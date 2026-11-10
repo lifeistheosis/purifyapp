@@ -309,6 +309,61 @@ export function publicCampaign(row: Record<string, unknown>): PublicCampaign {
   };
 }
 
+// ── Updates and comments ────────────────────────────────────────────────────
+//
+// His words: "free users can add announcements, right, to their campaign ...
+// Each day they can post an update if they want", and "allow comments on the
+// prayer campaign". His yes to item 126: its creator can close comments and
+// take one off; no reactions and no counts under one. And to item 124: no
+// links, and no asking for money.
+//
+// Both are replies in the campaign's own thread in Community (docs/1.9-build/
+// sql/campaigns-2-threads.sql), so the word filter, the spam guard, holds,
+// reports, blocks, mutes, the moderators' queue and its log apply as they
+// stand, with nothing built twice (lib/campaigns/thread.ts).
+
+/** How long an update or a comment may be. */
+export const NOTE_MAX = 1000;
+/** How many updates a campaign's creator may write in a day. */
+export const UPDATES_A_DAY = 3;
+
+export type NoteKind = "update" | "comment";
+
+/**
+ * An update or a comment as a reader receives it: who wrote it as Community
+ * shows them, the words, and when. No account id, no count of anything, and
+ * nothing to react with.
+ */
+export type CampaignNote = {
+  id: string;
+  /** The creator's update. Otherwise a comment. */
+  update: boolean;
+  body: string;
+  author_name: string;
+  author_handle: string | null;
+  author_avatar: string | null;
+  /** The clergy seal, as Community shows it on a reply. */
+  author_clergy: string | null;
+  created_at: string;
+  /** The reader wrote it. */
+  mine: boolean;
+  /** Written by someone the reader has muted: folded until they open it. */
+  muted: boolean;
+};
+
+/** A campaign's updates, newest first, and its comments, oldest first, with what this reader may do. */
+export type CampaignThread = {
+  updates: CampaignNote[];
+  comments: CampaignNote[];
+  commentsOpen: boolean;
+  /** The reader has an account here, so a note that is not theirs can be reported. */
+  signedIn: boolean;
+  /** Its creator, while it runs. */
+  canUpdate: boolean;
+  /** A signed-in reader, while it runs and comments are open. */
+  canComment: boolean;
+};
+
 // ── Reports ─────────────────────────────────────────────────────────────────
 
 /**

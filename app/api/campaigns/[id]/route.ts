@@ -78,6 +78,8 @@ async function handlePATCH(req: Request, id: string) {
     patch.ended_at = now;
   }
   if (parsed.data.keepAfterEnd !== undefined) patch.keep_after_end = parsed.data.keepAfterEnd;
+  // Closing comments stops new ones; those already written stay (his yes to item 126).
+  if (parsed.data.commentsOpen !== undefined) patch.comments_open = parsed.data.commentsOpen;
   const { error } = await admin.from("prayer_campaigns").update(patch).eq("id", id);
   if (error) {
     console.warn("[campaigns] update failed", error.message);

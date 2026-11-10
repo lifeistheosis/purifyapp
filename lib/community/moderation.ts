@@ -434,8 +434,15 @@ async function restoreReply(admin: SupabaseClient, actor: ModActor, id: string):
   await admin.rpc("community_bump_reply_count", { p_post_id: reply.post_id, p_delta: 1 });
   await closeReports(admin, actor, { reply_id: id }, "dismissed");
   const reasons = await resolveHolds(admin, actor, { reply_id: id }, "approved", (r) => r !== "words");
-  if (reasons.some(HELD_AT_WRITE)) {
-    const { data: parent } = await admin.from("community_posts").select("group_id").eq("id", reply.post_id).maybeSingle();
+  // The parent is read here as it always was, and now for its state too. A
+  // comment under a prayer campaign tells nobody yet: its thread is no post a
+  // notice could open (lib/campaigns/thread.ts), and notices for campaigns
+  // come in a later phase, asked for by each reader.
+  const { data: parent } = reasons.some(HELD_AT_WRITE)
+    ? await admin.from("community_posts").select("group_id, status").eq("id", reply.post_id).maybeSingle()
+    : { data: null };
+  const underCampaign = (parent as { status?: string } | null)?.status === "campaign";
+  if (!underCampaign && reasons.some(HELD_AT_WRITE)) {
     await insertNotifications(admin, [
       { user_id: reply.user_id, kind: "approved", post_id: reply.post_id, reply_id: id, actor_name: "Purify", excerpt: reply.body },
     ]);

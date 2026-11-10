@@ -462,8 +462,22 @@ export const campaignStatusSchema = z
   .object({
     status: z.enum(["answered", "memory_eternal"]).optional(),
     keepAfterEnd: z.boolean().optional(),
+    /** Whether readers may comment (his yes to item 126: its creator can close comments). */
+    commentsOpen: z.boolean().optional(),
   })
-  .refine((c) => c.status !== undefined || c.keepAfterEnd !== undefined, { message: "Nothing to change." });
+  .refine((c) => c.status !== undefined || c.keepAfterEnd !== undefined || c.commentsOpen !== undefined, { message: "Nothing to change." });
+
+/**
+ * /api/campaigns/[id]/thread POST body: the creator's update, or a reader's
+ * comment. Words only, a thousand characters (lib/campaigns/model.ts,
+ * NOTE_MAX). Who wrote it and whether it is held are the server's.
+ */
+export const campaignNoteSchema = z.object({
+  kind: z.enum(["update", "comment"]),
+  body: z.string().trim().min(1).max(1000),
+  /** The writer saw the word-filter warning and chose to send it anyway. */
+  confirmFiltered: z.boolean().optional(),
+});
 
 const PRAY_PLACE = z.enum(["morning", "midday", "evening", "hours", "compline", "mine"]);
 

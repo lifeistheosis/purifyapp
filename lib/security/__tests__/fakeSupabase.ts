@@ -103,6 +103,8 @@ const COLUMNS: Record<string, string[]> = {
     "pinned_by", "author_plus_until", "author_pro_until", "author_handle", "author_decoration",
     "category", "chapter_ref", "feast_day", "feast_slug", "author_clergy", "author_name_color",
     "amen_count", "praying_count", "glory_count", "clergy_reply_count", "mod_cleared_at",
+    // The rework's file two: a post may be a campaign's thread.
+    "campaign_id",
   ],
   // 20260722000000_community.sql (the table), then 20260801000100, 20260826000000,
   // 20260905000100, 20261001000000, 20261005000000
@@ -111,6 +113,13 @@ const COLUMNS: Record<string, string[]> = {
     "removed_reason", "removed_by_email", "like_count", "dislike_count", "author_plus_until",
     "author_pro_until", "author_handle", "author_decoration", "author_clergy", "author_name_color",
     "amen_count", "praying_count", "glory_count", "mod_cleared_at",
+    // The rework's file two: a reply may be the creator's update.
+    "campaign_update",
+  ],
+  // 20261004000000_community_filter.sql, 20261005000000_community_three.sql
+  community_text_holds: [
+    "id", "post_id", "reply_id", "original_title", "original_body", "hits", "status",
+    "resolved_by_email", "resolved_at", "created_at", "reason", "detail", "profile_id",
   ],
   // 20261001000000_profiles_badges.sql
   user_badges: ["user_id", "badge", "granted_at", "granted_by", "note"],
@@ -131,6 +140,9 @@ export const REWORK_COLUMNS: Record<string, string[]> = {
   ],
   prayer_campaign_prayers: ["places", "until_on", "notify_updates"],
   prayer_campaign_reports: ["target_kind", "target_id", "reason_code", "status", "closed_at"],
+  // File two (docs/1.9-build/sql/campaigns-2-threads.sql): a campaign's thread and its updates.
+  community_posts: ["campaign_id"],
+  community_post_replies: ["campaign_update"],
 };
 
 const DEFAULTS: Record<string, Row> = {
@@ -138,14 +150,18 @@ const DEFAULTS: Record<string, Row> = {
   trapeza_recipe_reviews: { status: "published", photo_urls: [] },
   prayer_campaigns: { status: "active", image_url: null, audience: "public", ends_at: null, mod_cleared_at: null },
   prayer_campaign_reports: { status: "open", target_kind: "campaign" },
+  community_posts: { status: "visible", campaign_id: null, reply_count: 0 },
+  community_post_replies: { status: "visible", campaign_update: false },
 };
 
 /**
  * Unique indexes these suites lean on: a reader's one open report of a
- * campaign (prayer_campaign_reports_once_idx, the rework's SQL).
+ * campaign (prayer_campaign_reports_once_idx), and a campaign's one thread
+ * (community_posts_campaign_thread_idx), both the rework's SQL.
  */
 const UNIQUE: Record<string, { columns: string[]; where?: (row: Row) => boolean }[]> = {
   prayer_campaign_reports: [{ columns: ["campaign_id", "reporter_id"], where: (row) => row.status === "open" && row.reporter_id != null }],
+  community_posts: [{ columns: ["campaign_id"], where: (row) => row.campaign_id != null }],
 };
 
 export type World = {

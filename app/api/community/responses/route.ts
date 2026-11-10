@@ -7,6 +7,7 @@ import { RESPONSE_KINDS, countsOf } from "@/lib/community/responses";
 import { notYet, signedInUser } from "@/lib/community/social";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isCampaignReply } from "@/lib/campaigns/thread";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -56,6 +57,11 @@ async function handlePOST(req: Request) {
   // Only something a reader can see may be answered.
   const { data: row } = await admin.from(table).select("id, status").eq("id", target).maybeSingle();
   if (!row || (row as { status: string }).status !== "visible") {
+    return NextResponse.json({ error: "Not found." }, { status: 404 });
+  }
+  // And nothing under a prayer campaign: its comments take no response and
+  // carry no count (lib/campaigns/thread.ts; the owner's yes to item 126).
+  if (replyId && (await isCampaignReply(admin, replyId))) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
 

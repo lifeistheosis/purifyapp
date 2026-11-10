@@ -7,6 +7,7 @@ import { communityEnabled } from "@/lib/community/flags";
 import { isReaction, reactionWrite, type ReactionState, type ReactionWrite } from "@/lib/community/reactions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
+import { isCampaignReply, isCampaignThread } from "@/lib/campaigns/thread";
 
 export const dynamic = "force-dynamic";
 
@@ -102,6 +103,12 @@ async function handlePOST(req: Request) {
   const admin = createAdminClient();
   const column = postId ? "post_id" : "reply_id";
   const targetId = (postId ?? replyId) as string;
+
+  // Nothing is counted under a prayer campaign: a comment there takes no
+  // reaction (lib/campaigns/thread.ts; the owner's yes to item 126).
+  if (replyId ? await isCampaignReply(admin, replyId) : await isCampaignThread(admin, targetId)) {
+    return NextResponse.json({ error: "Not found." }, { status: 404 });
+  }
 
   // What this reader currently holds. Read with the service role rather than
   // the caller's client purely so one missing RLS policy cannot silently make

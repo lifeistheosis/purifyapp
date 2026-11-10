@@ -50,7 +50,7 @@ export type CampaignRow = Record<string, unknown> & {
   mod_cleared_at?: string | null;
 };
 
-const SERVER_COLS = `${CAMPAIGN_COLS}, creator_id, audience, held_reason, mod_cleared_at, keep_after_end`;
+const SERVER_COLS = `${CAMPAIGN_COLS}, creator_id, audience, held_reason, mod_cleared_at, keep_after_end, comments_open`;
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -95,19 +95,29 @@ export function mayRead(row: CampaignRow, userId: string | null): boolean {
  * the list unfiltered, which is the softer of the two failures.
  */
 export async function hiddenFor(admin: SupabaseClient, userId: string | null): Promise<string[]> {
-  if (!userId) return [];
+  const { blocked, muted } = await hiddenLists(admin, userId);
+  return [...blocked, ...muted];
+}
+
+/**
+ * The same two lists, kept apart, for a campaign's comments: the words of
+ * someone blocked are left out, and those of someone muted are folded, as in
+ * a thread of Community.
+ */
+export async function hiddenLists(admin: SupabaseClient, userId: string | null): Promise<{ blocked: string[]; muted: string[] }> {
+  if (!userId) return { blocked: [], muted: [] };
   try {
     const [blocks, mutes] = await Promise.all([
       admin.from("community_blocks").select("blocked_id").eq("blocker_id", userId).limit(500),
       admin.from("community_mutes").select("muted_id").eq("muter_id", userId).limit(500),
     ]);
     if (blocks.error) console.warn("[campaigns] block lookup failed", blocks.error.message);
-    return [
-      ...((blocks.error ? [] : (blocks.data ?? [])) as { blocked_id: string }[]).map((r) => r.blocked_id),
-      ...((mutes.error ? [] : (mutes.data ?? [])) as { muted_id: string }[]).map((r) => r.muted_id),
-    ];
+    return {
+      blocked: ((blocks.error ? [] : (blocks.data ?? [])) as { blocked_id: string }[]).map((r) => r.blocked_id),
+      muted: ((mutes.error ? [] : (mutes.data ?? [])) as { muted_id: string }[]).map((r) => r.muted_id),
+    };
   } catch {
-    return [];
+    return { blocked: [], muted: [] };
   }
 }
 
