@@ -15,6 +15,8 @@
 //                    tick with no word is "In your gatherings" with Open.
 //   a gathering      a page of its own in the apps too, its lines on their own
 //                    type, never boxed and never beside a rule.
+//   gathering a line one sheet, wherever a line is gathered from, listing the
+//                    reader's gatherings as the first page lists them.
 //   the words        the two new lines, in all twenty-one languages.
 //
 // What a reader would notice if this broke: the grey boxes and the capitals
@@ -27,17 +29,25 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { createElement, type ReactElement } from "react";
+import { createElement, type ReactElement, type ReactNode } from "react";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: () => {} }), useSearchParams: () => new URLSearchParams() }));
+// The house's sheet draws nothing on a server (it opens into the page's own layer, on the device).
+// A plain frame stands in for it here, so what the picker puts in the sheet can be read.
+vi.mock("@/components/ui/Sheet", () => ({
+  Sheet: ({ open, title, children }: { open: boolean; title: string; children: ReactNode }) =>
+    open ? createElement("section", { role: "dialog" }, createElement("h2", null, title), children) : null,
+}));
 
 import { FlorilegiaHub } from "@/components/florilegium/FlorilegiaHub";
 import { ItemCard } from "@/components/florilegium/FlorilegiumDetail";
+import { FlorilegiumPickerSheet } from "@/components/florilegium/FlorilegiumPickerSheet";
 import { PlusGate } from "@/components/florilegium/PlusGate";
 import { StarterPage } from "@/components/florilegium/StarterPage";
 import { MessagesProvider } from "@/components/i18n/MessagesProvider";
+import { itemSource } from "@/lib/florilegium/asText";
 import type { FlorilegiumItem } from "@/lib/florilegium/florilegium";
 import { starterHref } from "@/lib/florilegium/href";
 import { keptStarter, STARTERS, starterById } from "@/lib/florilegium/starters";
@@ -69,7 +79,17 @@ const STARTER = "components/florilegium/StarterPage.tsx";
 const DETAIL = "components/florilegium/FlorilegiumDetail.tsx";
 const GATE = "components/florilegium/PlusGate.tsx";
 const PAGE = "app/(app)/florilegium/page.tsx";
-const SCREENS = [HUB, STARTER, DETAIL, GATE, PAGE, "components/billing/plusTry/TryFlorilegium.tsx"];
+const SCREENS = [
+  HUB,
+  STARTER,
+  DETAIL,
+  GATE,
+  PAGE,
+  "components/billing/plusTry/TryFlorilegium.tsx",
+  "components/florilegium/GatheringRow.tsx",
+  "components/florilegium/FlorilegiumPickerSheet.tsx",
+  "components/florilegium/AddToFlorilegium.tsx",
+];
 const EN = catalog("en");
 const CODES = LOCALES.map((l) => l.code);
 
@@ -96,9 +116,11 @@ describe("the first page", () => {
     expect(hub).toContain('data-florilegium-begin="" className={FLOR_ROW}');
     // A row says what the gathering is by what is in it: its newest line, and how many it keeps.
     const row = hub.slice(hub.indexOf("function GatheringRow"));
-    expect(row).toContain("{newest.text}");
-    expect(row).toContain('tn("study.florilegium.lineCount", f.items.length)');
     expect(row).toContain("href={gatheringHref(f.id)}");
+    expect(row).toContain("<GatheringRowBody f={f} />");
+    const body = code("components/florilegium/GatheringRow.tsx");
+    expect(body).toContain("{newest.text}");
+    expect(body).toContain('tn("study.florilegium.lineCount", f.items.length)');
     // The boxes are gone, and nothing is a floating pill.
     for (const gone of ["GatheringCard", "border-dashed", "min-h-[156px]", "grid-cols-2 gap-3 lg:grid-cols-3"]) expect(hub, gone).not.toContain(gone);
   });
@@ -250,6 +272,73 @@ describe("a gathering's page", () => {
   it("is a page with its own bar at both of its addresses", () => {
     for (const file of ["app/(app)/florilegium/gathering/page.tsx", "app/(app)/florilegium/[id]/page.tsx"]) {
       expect(code(file), file).toContain('<MobileTopBar titleKey="study.florilegium.title" back backFallback="/florilegium" />');
+    }
+  });
+});
+
+describe("the sheet that picks a gathering", () => {
+  const PICKER = "components/florilegium/FlorilegiumPickerSheet.tsx";
+  const line = { kind: "scripture" as const, text: "And the light shineth in darkness; and the darkness comprehended it not.", reference: "John 1:5", book: "john", chapter: 1, verse: 5 };
+
+  it("is the one way to gather: a verse's tools and the Gather button both open it", () => {
+    expect(code("components/bible/VerseRow.tsx")).toContain("<FlorilegiumPickerSheet");
+    expect(code("components/florilegium/AddToFlorilegium.tsx")).toContain("<FlorilegiumPickerSheet");
+    // The button's own menu is gone, with its look of its own.
+    const button = code("components/florilegium/AddToFlorilegium.tsx");
+    for (const gone of ['role="menu"', "backdrop-blur", "bg-gold", "text-gold", "border-white", "bg-white", "useFlorilegia"]) expect(button, gone).not.toContain(gone);
+  });
+
+  it("lists the reader's gatherings as the first page lists them, the last row beginning a new one", () => {
+    const picker = code(PICKER);
+    expect(picker).toContain('<ul className={FLOR_TRAY} data-gather-into="">');
+    expect(picker).toContain("<GatheringRowBody f={f} gathered={into === f.id} />");
+    expect(code(HUB)).toContain("<GatheringRowBody f={f} />");
+    expect(picker).toContain('data-florilegium-begin="" className={FLOR_ROW}');
+    expect(picker).toContain('{t("study.florilegium.beginNew")}');
+    // It has a field, so it stands on the keyboard; and the field lights its own fill, nothing round it.
+    expect(picker).toContain('title={t("study.florilegium.gatherInto")} desktop keyboard');
+    expect(picker).toContain("className={cn(FLOR_FIELD,");
+    for (const gone of ["bg-gold", "text-gold", "border-white", "bg-white", "focus:outline-none", "focus:border-", "text-left", "text-paper/35", "text-paper/45", "beginNewEllipsis", "max-h-["]) {
+      expect(picker, gone).not.toContain(gone);
+    }
+  });
+
+  it("shows the line as it will stand in its gathering: its words, and where they are from", () => {
+    const out = render(createElement(FlorilegiumPickerSheet, { open: true, item: line, onClose: () => {} }));
+    expect(out).toContain("<h2>Gather into</h2>");
+    expect(out).toContain('<blockquote dir="auto" class="line-clamp-3 font-serif text-[15px] leading-[1.6] text-paper/90">');
+    expect(out).toContain(html(line.text));
+    expect(out).toContain(">John 1:5</span>");
+    // A reader with no gathering yet is told so, and can begin one.
+    expect(out).toContain(html(EN["study.florilegium.youHaveNone"]));
+    expect(out).toContain(">Begin a new gathering</span>");
+    expect(itemSource({ kind: "father", text: "x", author: "St. Basil the Great", work: "Letter 234" })).toBe("St. Basil the Great, Letter 234");
+  });
+
+  it("stays a moment to show where the line went, then closes itself, and takes one tap only", () => {
+    const picker = code(PICKER);
+    expect(picker).toContain("const SHOWN_MS = 750;");
+    const gathered = picker.slice(picker.indexOf("function gathered("), picker.indexOf("function gatherInto("));
+    expect(gathered).toContain("onGathered?.(name);");
+    expect(gathered).toContain("setInto(id);");
+    expect(gathered).toMatch(/window\.setTimeout\(\(\) => \{\s*closing\.current = null;\s*onClose\(\);\s*\}, SHOWN_MS\);/);
+    expect(picker.match(/if \(into !== null\) return;/g)).toHaveLength(2);
+    // Every opening starts clean, and a sheet taken away mid-wait leaves no timer behind.
+    expect(picker).toContain("setInto(null);");
+    expect(picker).toContain("if (closing.current !== null) window.clearTimeout(closing.current);");
+    // Said aloud, in the catalog's words.
+    expect(picker).toContain('aria-live="polite"');
+    expect(picker).toContain('t("study.florilegium.gatheredInto", { name:');
+  });
+
+  it("says its words in the reader's language", () => {
+    for (const c of ["el", "ru", "ar", "ka"]) {
+      const out = render(createElement(FlorilegiumPickerSheet, { open: true, item: line, onClose: () => {} }), c);
+      const said = catalog(c);
+      for (const key of ["study.florilegium.gatherInto", "study.florilegium.beginNew", "study.florilegium.youHaveNone"]) {
+        expect(out, `${c} ${key}`).toContain(html(said[key]));
+        expect(said[key], `${c} ${key}`).not.toBe(EN[key]);
+      }
     }
   });
 });

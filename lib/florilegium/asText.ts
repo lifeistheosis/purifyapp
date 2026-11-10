@@ -3,10 +3,14 @@
 // bring readers"). Pure: the gathering's page shares it through the phone's
 // share sheet in the apps, and prints it as a booklet on the website.
 
-import type { Florilegium, FlorilegiumItem } from "./florilegium";
+import type { Florilegium, FlorilegiumItem, FlorilegiumItemInput } from "./florilegium";
 
-/** Where a gathered line comes from, as its card names it: the reference, or the Father and the work. */
-export function itemSource(item: FlorilegiumItem): string {
+/**
+ * Where a gathered line comes from, as its card names it: the reference, or
+ * the Father and the work. Of a line already kept, or one about to be (the
+ * sheet that picks its gathering shows it as it will stand).
+ */
+export function itemSource(item: FlorilegiumItem | FlorilegiumItemInput): string {
   return item.kind === "scripture" ? item.reference : [item.author, item.work].filter(Boolean).join(", ");
 }
 

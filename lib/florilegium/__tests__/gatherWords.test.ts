@@ -42,7 +42,10 @@ type ProviderProps = Parameters<typeof MessagesProvider>[0];
 const EN = catalog("en");
 const CODES = LOCALES.map((l) => l.code);
 const BUTTON = "components/florilegium/AddToFlorilegium.tsx";
-const MAKERS = [BUTTON, "components/florilegium/FlorilegiumPickerSheet.tsx", "components/florilegium/FlorilegiaHub.tsx"];
+const PICKER = "components/florilegium/FlorilegiumPickerSheet.tsx";
+// The screens that make a gathering. The Gather button made one too until 1.9;
+// it opens the picker now (build 89 notes 6 and 12), which makes it.
+const MAKERS = [PICKER, "components/florilegium/FlorilegiaHub.tsx"];
 
 // Each new key, and the key of the same feature it sits right after.
 const NEW: [string, string][] = [
@@ -70,7 +73,10 @@ describe("the Gather button's words", () => {
 
   it("are asked of the catalog, never written out", () => {
     const button = code(BUTTON);
-    expect(button).toContain('{done ? t("study.florilegium.gatheredInto", { name: done }) : t("study.gather")}');
+    // Its word is the catalog's, and stays the catalog's; where the line went is said to a screen
+    // reader in the catalog's words too (1.9: shown on the button, they pushed its neighbour onto two lines).
+    expect(button).toContain('{t("study.gather")}');
+    expect(button).toContain('{done ? t("study.florilegium.gatheredInto", { name: done }) : ""}');
     expect(button).not.toMatch(/Gathered into|Untitled gathering|"Gather"|`Gather/);
   });
 
@@ -81,6 +87,16 @@ describe("the Gather button's words", () => {
       // Never the bare title, which the store would name in English.
       expect(source, file).not.toMatch(/\bcreate\(title\)/);
     }
+  });
+
+  it("the button makes no gathering of its own: it opens the one sheet that picks one, and says where the line went", () => {
+    const button = code(BUTTON);
+    expect(button).toContain("<FlorilegiumPickerSheet open={open} item={item} onClose={() => setOpen(false)} onGathered={gathered} />");
+    for (const gone of ["create(", "addItem(", "useFlorilegia", 'role="menu"', "backdrop-blur", "absolute left-0"]) expect(button, gone).not.toContain(gone);
+    // The sheet tells it the name, in both of its ways of gathering.
+    const picker = code(PICKER);
+    expect(picker.match(/gathered\((?:florilegiumId|id), name\);/g)).toHaveLength(2);
+    expect(picker).toContain("onGathered?.(name);");
   });
 
   it("draws the button in the reader's language", () => {

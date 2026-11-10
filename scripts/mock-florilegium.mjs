@@ -6,7 +6,9 @@
 //
 // The screens: the first page; the same with the naming field open; a
 // starter's page; a starter the reader already keeps; a gathering; a gathering
-// with a note being written; and the Plus page's preview of it.
+// with a note being written; the Plus page's preview of it; and gathering a
+// line: the Gather button under a Father's passage, the sheet it opens, the
+// sheet naming a new gathering, and the same sheet from a verse in the Bible.
 //
 // What it draws with: gatherings of real verses, word for word from data/bible,
 // and one line of a Father from the app's own library with its author and work
@@ -80,6 +82,8 @@ const shots = [];
 
 /** One screen: checked, then pictured whole. */
 async function screen(name, root, label, { whole = true } = {}) {
+  // A phone has no pointer resting on the screen: the one that made the last tap is put aside, so no row is lit under it.
+  await page.mouse.move(1, 1);
   await page.waitForTimeout(700);
   ok = printMockCheck(await checkMock(page, root), label) && ok;
   const file = path.join(folder, `${name}.png`);
@@ -143,6 +147,79 @@ try {
   await row.first().click();
   await page.waitForSelector('[data-plus-try="florilegium"]', { timeout: 15000 });
   await screen("7-plus-preview", '[data-plus-try="florilegium"]', "the Plus page's preview of the Florilegium", { whole: false });
+
+  // Gathering a line. Under a Father's passage in a study: the row of three
+  // actions, and the sheet its Gather opens. The deck stands at the end of
+  // the first part of the study that has one.
+  await page.goto("about:blank");
+  await go(page, "/theology/essence-energies/read/");
+  await page.waitForTimeout(2000);
+  const rowDrawn = () =>
+    page.evaluate(() => {
+      const row = [...document.querySelectorAll("[data-quote-tools]")].find((e) => e.getBoundingClientRect().width > 0);
+      if (!row) return false;
+      row.setAttribute("data-mock-root", "");
+      window.scrollTo(0, row.getBoundingClientRect().top + window.scrollY - 470);
+      return true;
+    });
+  let deck = await rowDrawn();
+  const parts = await page.locator("[data-part-segments] li button").count();
+  for (let n = 1; n < parts && !deck; n++) {
+    await page.locator("[data-part-segments] li button").nth(n).click();
+    await page.waitForTimeout(800);
+    deck = await rowDrawn();
+  }
+  if (!deck) {
+    console.log("\nNo passage deck was drawn on the study: the Gather button was not checked.");
+    ok = false;
+  } else {
+    await screen("8-gather-button", "[data-mock-root]", "a passage's three actions, Gather among them", { whole: false });
+    await page.locator("[data-mock-root] [data-gather]").click();
+    const picker = '[role=dialog]:has([data-gather-into])';
+    await page.waitForSelector(picker, { timeout: 15000 });
+    await screen("9-picker", picker, "the sheet that picks a gathering", { whole: false });
+    await page.locator(`${picker} [data-florilegium-begin]`).click();
+    await page.waitForSelector("#picker-new-name", { timeout: 8000 });
+    await page.evaluate(() => (document.activeElement instanceof HTMLElement ? document.activeElement.blur() : null));
+    await screen("10-picker-naming", picker, "the sheet, naming a new gathering", { whole: false });
+    // Back to the list, and the line into On the light: the sheet stays a moment to show it.
+    await page.locator(`${picker} form button[type=button]`).click();
+    await page.locator(`${picker} [data-gather-row="on-the-light"]`).click();
+    await page.mouse.move(1, 1);
+    await page.waitForSelector(`${picker} [data-gathered]`, { timeout: 4000 });
+    await page.waitForTimeout(250);
+    const shown = path.join(folder, "11-picker-gathered.png");
+    await page.screenshot({ path: shown });
+    shots.push(shown);
+    // And it closes itself.
+    await page.waitForSelector(picker, { state: "detached", timeout: 6000 });
+    console.log("\nThe sheet showed where the line went, and closed itself.");
+  }
+
+  // The same sheet from a verse in the Bible: a tap on the verse, Study, Gather to florilegium.
+  await page.goto("about:blank");
+  await go(page, "/bible/john/8/");
+  await page.waitForSelector("#v12", { timeout: 20000 });
+  await page.waitForTimeout(1500);
+  const at = await page.evaluate(() => {
+    const el = document.querySelector("#v12");
+    window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 300);
+    const r = el.getBoundingClientRect();
+    return { x: Math.round(r.left + 140), y: Math.round(r.top + 16) };
+  });
+  await page.waitForTimeout(500);
+  await page.touchscreen.tap(at.x, at.y);
+  const study = page.locator("[role=dialog] [role=menuitem]").filter({ hasText: /^Study/ }).first();
+  await study.waitFor({ timeout: 10000 });
+  // The verse's card takes no tap in the moment after the one that opened it, so a lifting finger chooses nothing.
+  await page.waitForTimeout(1000);
+  await study.click();
+  const toGather = page.locator("[role=dialog] button, [role=dialog] [role=menuitem]").filter({ hasText: /Gather to florilegium/ }).first();
+  await toGather.waitFor({ timeout: 10000 });
+  await toGather.click();
+  const fromVerse = '[role=dialog]:has([data-gather-into])';
+  await page.waitForSelector(fromVerse, { timeout: 15000 });
+  await screen("12-picker-from-a-verse", fromVerse, "the same sheet, from a verse in the Bible", { whole: false });
 
   console.log(`\nStills in ${folder}:`);
   for (const file of shots) console.log(`  ${path.basename(file)}`);

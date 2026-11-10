@@ -57,7 +57,7 @@ describe("a passage's three actions", () => {
     expect(tail).toMatch(/<ReadSource[\s\S]*?<AddToFlorilegium[\s\S]*?data-quote-share=""/);
   });
 
-  it("are the card's own, as wide as the card, under the deck that would clip Gather's menu", () => {
+  it("are the card's own, as wide as the card, under the deck and not inside it", () => {
     const row = classesOn(deck, 'data-quote-tools=""');
     const card = classesOn(deck, 'data-deck-card=""');
     const width = (classes: string[]) => classes.find((c) => /^w-\[/.test(c));
@@ -83,7 +83,28 @@ describe("a passage's three actions", () => {
     expect(button).toContain("items-baseline");
     expect(button).not.toContain("items-center");
     expect(button.find((c) => /^gap-/.test(c))).toBe("gap-3");
-    expect(gather).toMatch(/data-gather=""[\s\S]*?\{done \?[\s\S]*?<span data-plus-pill=""/);
+    expect(gather).toMatch(/data-gather=""[\s\S]*?\{t\("study\.gather"\)\}[\s\S]*?<span data-plus-pill=""/);
+  });
+
+  it("give Gather its neighbour's ink and a finger's reach, and not one pixel more of the row", () => {
+    // 1.9, with the Florilegium's redesign. It was half the page's ink between two that were not.
+    const button = classesOn(gather, 'data-gather=""');
+    const source = /<ReadSource[\s\S]*?className="([^"]+)"/.exec(deck)?.[1].split(/\s+/) ?? [];
+    for (const shared of ["tap-press", "hit-44", "font-sans", "text-paper/82", "hover:text-paper"]) {
+      expect(source, `Read where it's from: ${shared}`).toContain(shared);
+      expect(button, `Gather: ${shared}`).toContain(shared);
+    }
+    // The row is as wide as the card and full: measured in all twenty-one languages at 390 and
+    // 360px (docs/1.9-build/notes/florilegium-fable.md), French has 1px to spare. A flower before
+    // the word, or the word in bold, put "Read where it's from" on two lines in a dozen of them.
+    // So the word keeps the size and weight it had, and nothing stands beside it but the Plus mark.
+    expect(button).toContain("text-caption");
+    for (const wider of ["font-semibold", "font-bold", "font-medium", "text-[12.5px]", "text-detail", "text-ui"]) expect(button, wider).not.toContain(wider);
+    const face = gather.slice(gather.indexOf('data-gather=""'), gather.indexOf("</button>", gather.indexOf('data-gather=""')));
+    expect(face).not.toMatch(/<(?:Flower|Check|svg)\b/);
+    // And its word never changes, so the row never moves once a line has gone in.
+    expect(face).toContain('{t("study.gather")}');
+    expect(face).not.toContain("gatheredInto");
   });
 });
 

@@ -178,7 +178,9 @@ export function PassageDeck({ passages }: { passages: DeckPassage[] }) {
 
       {/* The card in view's three actions, on one line, evenly spaced, along
           its foot. Under the deck, not inside it: the deck scrolls sideways,
-          so it clips, and Gather's menu opens below its button. */}
+          and the actions are the card in view's, not each card's own. (Until
+          1.9 Gather opened a menu under its button, which the deck would
+          have clipped; it opens the one sheet that picks a gathering now.) */}
       <div
         data-quote-tools=""
         className="mt-1 flex w-[min(318px,calc(100vw_-_56px))] max-w-full items-center justify-between gap-2 border-t border-paper/8 pt-1.5"

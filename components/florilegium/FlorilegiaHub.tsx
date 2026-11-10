@@ -5,12 +5,9 @@ import { useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CoverArt } from "@/components/player/CoverArt";
-import { Book } from "@/components/ui/icons/Book";
 import { Check } from "@/components/ui/icons/Check";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
-import { Flower } from "@/components/ui/icons/Flower";
 import { Plus } from "@/components/ui/icons/Plus";
-import { Quill } from "@/components/ui/icons/Quill";
 import { cn } from "@/lib/cn";
 import { itemSource } from "@/lib/florilegium/asText";
 import { useFlorilegia, type Florilegium } from "@/lib/florilegium/florilegium";
@@ -21,7 +18,8 @@ import { dateLocale } from "@/lib/i18n/deviceDates";
 import { useCoversVersion } from "@/lib/readAloud/useCovers";
 import { useMounted } from "@/lib/useMounted";
 
-import { FLOR_FACT, FLOR_FIELD, FLOR_H2, FLOR_PLATE, FLOR_ROW, FLOR_TRAY } from "./florStyle";
+import { FLOR_FIELD, FLOR_H2, FLOR_PLATE, FLOR_ROW, FLOR_TRAY } from "./florStyle";
+import { GatheringRowBody } from "./GatheringRow";
 import { useBookName } from "./useBookName";
 
 /** Where a gathered line came from, as its card prints it (lib/florilegium/asText.ts); named here too, for the pages that ask this file. */
@@ -230,32 +228,11 @@ function SyncLine() {
   );
 }
 
-/**
- * One of the reader's gatherings as a row: the mark of where its newest
- * line is from (the Scriptures or a Father; the flower while it keeps
- * nothing), its name, that line, and how many it keeps.
- */
+/** One of the reader's gatherings as a row: a place to go (GatheringRow.tsx draws what it says). */
 function GatheringRow({ f }: { f: Florilegium }) {
-  const { tn } = useTranslate();
-  const newest = f.items[0];
-  const Mark = !newest ? Flower : newest.kind === "scripture" ? Book : Quill;
   return (
     <Link href={gatheringHref(f.id)} className={FLOR_ROW} data-gathering={f.id}>
-      <span aria-hidden className={FLOR_PLATE}>
-        <Mark size={18} />
-      </span>
-      <span className="min-w-0 flex-1">
-        {/* The reader's words and the line's, each read its own way, so a line of English in a page that reads from the right is cut at its end, not its beginning. */}
-        <span dir="auto" className="block truncate font-serif text-[15.5px] font-semibold leading-tight text-paper/92">
-          {f.title}
-        </span>
-        {newest ? (
-          <span dir="auto" className="mt-0.5 block truncate font-serif text-caption italic text-paper/60">
-            {newest.text}
-          </span>
-        ) : null}
-      </span>
-      <span className={FLOR_FACT}>{tn("study.florilegium.lineCount", f.items.length)}</span>
+      <GatheringRowBody f={f} />
       <ChevronRight size={14} aria-hidden className="shrink-0 text-paper/45 rtl:-scale-x-100" />
     </Link>
   );

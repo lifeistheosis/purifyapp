@@ -1,40 +1,73 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
+import { Book } from "@/components/ui/icons/Book";
+import { Plus } from "@/components/ui/icons/Plus";
+import { Quill } from "@/components/ui/icons/Quill";
+import { cn } from "@/lib/cn";
+import { itemSource } from "@/lib/florilegium/asText";
 import {
   useFlorilegia,
   type FlorilegiumItemInput,
 } from "@/lib/florilegium/florilegium";
-import { useTranslate } from "@/components/i18n/MessagesProvider";
+
+import { FLOR_FIELD, FLOR_PLATE, FLOR_QUIET, FLOR_ROW, FLOR_TRAY } from "./florStyle";
+import { GatheringRowBody } from "./GatheringRow";
+
+/** How long the sheet stays to show where the line went, before it closes itself. */
+const SHOWN_MS = 750;
 
 /**
- * Controlled sheet for gathering a line into a florilegium. Used where an
- * inline popover doesn't fit, e.g. driven from the Bible verse context menu
- * and mobile toolbar. It is the shared Sheet (components/ui/Sheet.tsx), so it
- * follows the finger and its backdrop dims and blurs in step, like every
- * pop-up card; above md it floats as a capped card.
+ * The sheet that picks the gathering a line goes into (1.9, drawn with the
+ * Florilegium's redesign, build 89 notes 6 and 12, so the whole of it reads
+ * as one). The one way to gather, wherever a line is gathered from: a verse's
+ * tools in the Bible (components/bible/VerseRow.tsx), and the Gather button
+ * under a Father's passage (AddToFlorilegium.tsx), which opened a small menu
+ * of its own until now, one that ran off the edge of a phone's screen.
  *
- * The inline popover variant (AddToFlorilegium) is the right tool inside
- * a quote card; this sheet is the right tool when the trigger lives in a
- * menu that has already closed.
+ * It is the shared Sheet (components/ui/Sheet.tsx), so it follows the finger
+ * and its backdrop dims in step, like every pop-up card; above md it floats
+ * as a capped card. It has a field, so it stands on the keyboard while one
+ * is up (`keyboard`).
+ *
+ *   the line      what is being gathered, as it will stand in its
+ *                 gathering: the words on their own type, and where they are
+ *                 from under them.
+ *   the choice    the reader's gatherings, the rows the Florilegium's first
+ *                 page lists them in (GatheringRow.tsx). A tap gathers the
+ *                 line into that one.
+ *   a new one     the tray's last row, which opens the naming field in
+ *                 place, as it does on the first page.
+ *
+ * Once a line is gathered the sheet stays a moment to show it: the row it
+ * went into wears the check, and counts one more line. Then it closes
+ * itself. Nothing else told a reader in the Bible that anything had
+ * happened.
  */
 export function FlorilegiumPickerSheet({
   open,
   item,
   onClose,
+  onGathered,
 }: {
   open: boolean;
   /** The line to gather. Null is allowed so callers can keep the sheet
    * mounted and set the item at open time. */
   item: FlorilegiumItemInput | null;
   onClose: () => void;
+  /** The line has gone into the gathering of this name. */
+  onGathered?: (name: string) => void;
 }) {
   const { t } = useTranslate();
   const { florilegia, create, addItem } = useFlorilegia();
   const [naming, setNaming] = useState(false);
   const [title, setTitle] = useState("");
+  // The gathering the line has just gone into, while the sheet shows it.
+  const [into, setInto] = useState<string | null>(null);
+  const closing = useRef<number | null>(null);
 
   // Every opening starts at the list, not at a name left half typed.
   const [wasOpen, setWasOpen] = useState(open);
@@ -43,108 +76,120 @@ export function FlorilegiumPickerSheet({
     if (open) {
       setNaming(false);
       setTitle("");
+      setInto(null);
     }
   }
 
-  function gatherInto(florilegiumId: string) {
+  useEffect(
+    () => () => {
+      if (closing.current !== null) window.clearTimeout(closing.current);
+    },
+    [],
+  );
+
+  /** Gathered: say so to the caller, show it, and close after a moment. */
+  function gathered(id: string, name: string) {
+    onGathered?.(name);
+    setNaming(false);
+    setInto(id);
+    if (closing.current !== null) window.clearTimeout(closing.current);
+    closing.current = window.setTimeout(() => {
+      closing.current = null;
+      onClose();
+    }, SHOWN_MS);
+  }
+
+  function gatherInto(florilegiumId: string, name: string) {
+    // One line goes into one gathering: a second tap while the sheet shows the first does nothing.
+    if (into !== null) return;
     if (item) addItem(florilegiumId, item);
-    onClose();
+    gathered(florilegiumId, name);
   }
 
   function createAndGather(e: React.FormEvent) {
     e.preventDefault();
-    // An unnamed gathering is named in the reader's language, as the inline
-    // popover names it (AddToFlorilegium).
-    const id = create(title.trim() || t("study.florilegium.untitled"));
+    if (into !== null) return;
+    // An unnamed gathering is named in the reader's language, as the first
+    // page names one: the store keeps the title it is given, and its own
+    // fallback is English.
+    const name = title.trim() || t("study.florilegium.untitled");
+    const id = create(name);
     if (item) addItem(id, item);
-    onClose();
+    setTitle("");
+    gathered(id, name);
   }
 
+  const Mark = item?.kind === "scripture" ? Book : Quill;
+
   return (
-    <Sheet open={open} onClose={onClose} title={t("study.florilegium.gatherInto")} desktop bodyClassName="px-5 pb-6 pt-1">
+    <Sheet open={open} onClose={onClose} title={t("study.florilegium.gatherInto")} desktop keyboard bodyClassName="px-5 pb-6 pt-1">
       {item ? (
-        <blockquote className="mb-5 font-serif italic text-detail text-paper/75 leading-[1.6] line-clamp-3">
-          {item.text}
-        </blockquote>
+        <figure className="mb-4" data-gather-line="">
+          <blockquote dir="auto" className="line-clamp-3 font-serif text-[15px] leading-[1.6] text-paper/90">
+            {item.text}
+          </blockquote>
+          <figcaption className="mt-1.5 flex items-center gap-2 font-sans text-caption font-semibold text-paper/65">
+            <Mark size={15} aria-hidden className="shrink-0 text-paper/55" />
+            <span dir="auto" className="min-w-0 truncate">
+              {itemSource(item)}
+            </span>
+          </figcaption>
+        </figure>
       ) : null}
 
-      {naming ? (
-        <form onSubmit={createAndGather}>
-          <label
-            htmlFor="picker-new-name"
-            className="block font-sans text-caption text-paper/60 mb-2"
-          >
-            {t("study.florilegium.nameNewGathering")}
-          </label>
-          <input
-            id="picker-new-name"
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder={t("study.florilegium.namePlaceholder")}
-            maxLength={80}
-            // eslint-disable-next-line jsx-a11y/no-autofocus
-            autoFocus
-            className="w-full bg-paper/[0.05] border border-paper/20 rounded-md px-3 py-2 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/50"
-          />
-          <div className="mt-4 flex gap-3">
-            <button
-              type="submit"
-              className="font-sans text-detail font-semibold rounded-pill px-5 py-2 bg-gold text-night hover:bg-gold-soft transition-colors"
-            >
-              {t("study.gather")}
+      {/* Said aloud when the line has gone in: the row's count is the only other sign. */}
+      <p className="sr-only" aria-live="polite">
+        {into !== null ? t("study.florilegium.gatheredInto", { name: florilegia.find((f) => f.id === into)?.title ?? "" }) : ""}
+      </p>
+
+      <ul className={FLOR_TRAY} data-gather-into="">
+        {florilegia.length === 0 ? <li className="px-2.5 pb-1.5 pt-3 font-sans text-detail leading-[1.5] text-paper/60">{t("study.florilegium.youHaveNone")}</li> : null}
+        {florilegia.map((f) => (
+          <li key={f.id} className="theology-rule">
+            <button type="button" onClick={() => gatherInto(f.id, f.title)} data-gather-row={f.id} data-gathered={into === f.id ? "" : undefined} className={FLOR_ROW}>
+              <GatheringRowBody f={f} gathered={into === f.id} />
             </button>
-            <button
-              type="button"
-              onClick={() => setNaming(false)}
-              className="font-sans text-detail text-paper/60 hover:text-paper transition-colors"
-            >
-              {t("nav.back")}
-            </button>
-          </div>
-        </form>
-      ) : (
-        <>
-          {florilegia.length > 0 ? (
-            <ul className="max-h-[280px] overflow-y-auto -mx-1">
-              {florilegia.map((f) => (
-                <li key={f.id}>
-                  <button
-                    type="button"
-                    onClick={() => gatherInto(f.id)}
-                    className="w-full text-left px-3 py-2.5 rounded font-sans text-ui text-paper/85 hover:bg-white/[0.05] hover:text-paper transition-colors flex items-center justify-between gap-3"
-                  >
-                    <span className="truncate">{f.title}</span>
-                    <span className="shrink-0 text-caption text-paper/35 tabular-nums">
-                      {f.items.length}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
+          </li>
+        ))}
+        <li className="theology-rule">
+          {naming ? (
+            <form onSubmit={createAndGather} className="px-2 pb-2.5 pt-3.5" data-florilegium-naming="">
+              <label htmlFor="picker-new-name" className="block font-sans text-caption font-semibold text-paper/60">
+                {t("study.florilegium.nameNewGathering")}
+              </label>
+              <input
+                id="picker-new-name"
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder={t("study.florilegium.namePlaceholder")}
+                maxLength={80}
+                // eslint-disable-next-line jsx-a11y/no-autofocus
+                autoFocus
+                className={cn(FLOR_FIELD, "mt-2 min-h-12 py-2.5 font-sans text-ui")}
+              />
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  type="submit"
+                  className="tap-press inline-flex h-11 items-center rounded-pill bg-paper px-5 font-sans text-ui font-semibold text-night transition-colors hover:bg-paper/90"
+                >
+                  {t("study.gather")}
+                </button>
+                <button type="button" onClick={() => setNaming(false)} className={cn(FLOR_QUIET, "px-3.5 text-ui font-medium text-paper/70")}>
+                  {t("nav.back")}
+                </button>
+              </div>
+            </form>
           ) : (
-            <p className="px-1 py-2 font-sans text-detail text-paper/45">
-              {t("study.florilegium.youHaveNone")}
-            </p>
+            <button type="button" onClick={() => setNaming(true)} data-florilegium-begin="" className={FLOR_ROW}>
+              <span aria-hidden className={FLOR_PLATE}>
+                <Plus size={18} />
+              </span>
+              <span className="min-w-0 flex-1 font-sans text-ui font-semibold leading-snug text-paper">{t("study.florilegium.beginNew")}</span>
+            </button>
           )}
-          <div className="mt-2 border-t border-white/10 pt-2 flex items-center justify-between gap-3">
-            <button
-              type="button"
-              onClick={() => setNaming(true)}
-              className="font-sans text-detail font-medium text-gold/90 hover:text-gold transition-colors"
-            >
-              {t("study.florilegium.beginNewEllipsis")}
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="font-sans text-detail text-paper/55 hover:text-paper transition-colors"
-            >
-              {t("common.close")}
-            </button>
-          </div>
-        </>
-      )}
+        </li>
+      </ul>
     </Sheet>
   );
 }

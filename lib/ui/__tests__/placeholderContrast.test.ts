@@ -141,7 +141,15 @@ describe("placeholders, on every palette", () => {
       for (const m of read(f).matchAll(/placeholder:text-([a-z-]+)(?:\/(\d+))?/g)) shares.set(`${m[1]}/${m[2] ?? ""}`, (shares.get(`${m[1]}/${m[2] ?? ""}`) ?? 0) + 1);
     }
     expect([...shares.keys()]).toEqual(["paper/55"]);
-    expect(shares.get("paper/55")).toBeGreaterThanOrEqual(60);
+    // A floor, so that a scan that stops finding fields does not pass by finding none. It counts
+    // the places the share is written, not the fields: the Florilegium's four fields (a
+    // gathering's name on its first page and in the sheet that picks one, a note, and the
+    // button's old menu, which is gone) write it once since 1.9, in
+    // components/florilegium/florStyle.ts (FLOR_FIELD), which took the count under the 60 this
+    // floor stood at (58 on 2026-11-10).
+    expect(shares.get("paper/55")).toBeGreaterThanOrEqual(56);
+    // And those four are still held to it: the one place they share says 55 percent.
+    expect(read("components/florilegium/florStyle.ts")).toContain("placeholder:text-paper/55");
   });
 
   it("each palette draws it at 4.5:1 or more on the page, a card, and every fill a field sits on", () => {

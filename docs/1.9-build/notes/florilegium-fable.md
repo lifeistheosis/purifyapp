@@ -129,6 +129,67 @@ names and DM Sans for facts; the catalogs' own words first.
   more: into a starter with its picture carried, back into its tile, into a
   gathering in the apps, and back.
 
+## Gathering a line, drawn to match (2026-11-10, after e849de47)
+
+The arbiter, 06:27 UTC, with the three pieces received: draw the Gather
+button in the reader and the sheet that picks a gathering to match, "so the
+whole Florilegium reads as one".
+
+What was there. A verse's tools in the Bible opened a sheet
+(`FlorilegiumPickerSheet`) in a look of its own: a quote in italics, bare
+lines of names with grey counts under the 4.5:1 floor, a bordered field
+whose ring was switched off for a keyboard too, a button in the `gold`
+token, and "Begin a new gathering…" in it as well. The Gather button under a
+Father's passage (`AddToFlorilegium`) did not use that sheet: it opened a
+small blurred menu under itself, 240px wide from the middle of a 318px row,
+so on a phone it ran off the screen's edge. Neither told a reader in the
+Bible that a line had gone anywhere: the sheet closed and that was all.
+
+What it is now.
+
+- **One sheet, wherever a line is gathered from.** The button's own menu is
+  gone; it opens the sheet a verse opens.
+- **The sheet** is the house's, standing on the keyboard while one is up. On
+  top, the line being gathered as it will stand in its gathering: its words
+  upright, and where they are from under them with the mark of the
+  Scriptures or of a Father. Then the reader's gatherings, the very rows the
+  first page lists them in (`GatheringRow.tsx`, one drawing for both), and
+  the tray's last row, which begins a new one and opens the naming field in
+  place.
+- **It shows where the line went.** A tap gathers the line; the row it went
+  into wears the check and counts one more, for three quarters of a second,
+  and the sheet closes itself. A second tap in that time does nothing. It is
+  said aloud to a screen reader in the catalog's words.
+- **The Gather button keeps the size of its word**, and takes its
+  neighbour's ink (it was half the page's) and a finger's reach (44px). The
+  row of three it stands in is as wide as a passage's card, and it is full.
+  Measured in all 21 languages at 390 and 360px: French has one pixel to
+  spare. A flower before the word, or the word in the weight of its
+  neighbours, was built and measured, and put "Read where it's from" onto
+  two lines in a dozen languages and ran the row past the card in Greek. So
+  neither is there, and the row measures to the pixel as it did, in every
+  language at both widths.
+- The button no longer changes its word to "Gathered into" and a name for a
+  moment: that was wider than the row has room for, and pushed its neighbour
+  onto two lines for as long as it showed. The sheet shows it instead.
+
+No new words. `study.florilegium.beginNewEllipsis` is no longer asked for
+by any screen.
+
+Found beside it, and left as it was: in Greek on a 360px phone that row of
+three runs 11px past its card, before this change and after it ("Διαβάστε
+από πού είναι", "Συγκέντρωση", "Κοινοποίηση"). It is the row's, not the
+button's, and wants its own decision.
+
+Checked for this part, on its own tree: typecheck 0, lint 0 errors, unit 849
+files and 10,264 tests, the Android export green at 70.8 MB packed,
+`scripts/mock-florilegium.mjs` now eleven screens through `checkMock` (the
+row of three, the sheet, the sheet naming, and the sheet from a verse among
+them; the moment after a tap is pictured, not checked), the sheet's tray
+words 4.99:1 at the lowest, and the twelve route walks. The iOS export and
+the website's build were not run again for it: no route and no server code
+changed.
+
 ## Checked (commands, on the tree that was pushed)
 
 - `npm run typecheck`: 0 errors. `npm run lint`: 0 errors.

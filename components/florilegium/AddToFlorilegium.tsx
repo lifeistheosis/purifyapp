@@ -2,91 +2,77 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import {
-  useFlorilegia,
-  type FlorilegiumItemInput,
-} from "@/lib/florilegium/florilegium";
-import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { plusFeaturesNow, usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
+import { type FlorilegiumItemInput } from "@/lib/florilegium/florilegium";
+
+import { FlorilegiumPickerSheet } from "./FlorilegiumPickerSheet";
+
+/** How long the gathering's name stays said, for a screen reader to reach it. */
+const SAID_MS = 2400;
 
 /**
- * The "gather" affordance: a small button that opens a popover to drop a
- * line (a verse or a Father's quote) into one of the reader's florilegia,
- * or into a freshly named one. Local-first, so it is instant and offline.
+ * The Gather button: drop a line (a Father's passage) into one of the
+ * reader's gatherings, or into a freshly named one. Local-first, so it is
+ * instant and offline.
  *
- * Drop it anywhere a quotable line is rendered, handing it the item to
- * gather. The label defaults to a quiet "Gather"; pass `compact` for an
- * icon-only trigger inside dense rows.
+ * Drop it anywhere a quotable line is drawn, handing it the item to gather.
+ *
+ * From 1.9 (with the Florilegium's redesign, build 89 notes 6 and 12) it
+ * opens the one sheet that picks a gathering (FlorilegiumPickerSheet.tsx),
+ * the same one a verse's tools open in the Bible. It had a small menu of its
+ * own under the button, which on a phone ran off the edge of the screen, in
+ * a look of its own: a blurred box, small rows, grey counts.
+ *
+ * The button itself keeps the size of its word. It stands in a row of three
+ * as wide as a passage's card (components/theology/PassageDeck.tsx: Read
+ * where it's from, Gather, Share), and that row is full: measured in all
+ * twenty-one languages at 390 and 360px, French has one pixel to spare, and
+ * a flower before the word, or the word in the weight of its neighbours,
+ * pushed "Read where it's from" onto two lines in a dozen of them. So what
+ * changed costs no width: its ink, which was half the page's and is now its
+ * neighbour's, and its reach, 44px to the finger.
+ *
+ * Once a line has gone in, the sheet shows where (the row it went into wears
+ * the check and counts one more) and closes; the button says the gathering's
+ * name to a screen reader. It no longer changes its own word to "Gathered
+ * into" and a name for a moment: that was wider than the row has room for.
+ *
+ * Plus: shown to every reader, marked Plus where it is locked, and for a
+ * reader without Plus the button opens the upgrade sheet named for the
+ * Florilegium (lib/entitlements/usePlusFeatures.ts).
  */
-export function AddToFlorilegium({
-  item,
-  className,
-}: {
-  item: FlorilegiumItemInput;
-  className?: string;
-}) {
+export function AddToFlorilegium({ item }: { item: FlorilegiumItemInput }) {
   const { t } = useTranslate();
-  const { florilegia, create, addItem } = useFlorilegia();
   const [open, setOpen] = useState(false);
-  const [naming, setNaming] = useState(false);
-  const [title, setTitle] = useState("");
   const [done, setDone] = useState<string | null>(null);
-  const rootRef = useRef<HTMLDivElement>(null);
-  // Plus: shown to everyone, marked Plus where locked, and for a reader
-  // without Plus the button opens the upgrade sheet named for the
-  // Florilegium (lib/entitlements/usePlusFeatures.ts).
+  const said = useRef<number | null>(null);
   const upgrade = useUpgradeModal();
   const plusAllowed = usePlusFeatures();
 
-  // Close on outside click / Escape.
-  useEffect(() => {
-    if (!open) return;
-    function onDown(e: MouseEvent) {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
-    }
-    window.addEventListener("mousedown", onDown);
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("mousedown", onDown);
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
+  useEffect(
+    () => () => {
+      if (said.current !== null) window.clearTimeout(said.current);
+    },
+    [],
+  );
 
-  function gatherInto(florilegiumId: string, name: string) {
-    addItem(florilegiumId, item);
+  function gathered(name: string) {
     setDone(name);
-    setOpen(false);
-    setNaming(false);
-    setTitle("");
-    window.setTimeout(() => setDone(null), 2400);
-  }
-
-  function createAndGather(e: React.FormEvent) {
-    e.preventDefault();
-    // A gathering left unnamed is named here, in the reader's language: the
-    // store keeps the title it is given, and its own fallback is English.
-    const name = title.trim() || t("study.florilegium.untitled");
-    const id = create(name);
-    gatherInto(id, name);
+    if (said.current !== null) window.clearTimeout(said.current);
+    said.current = window.setTimeout(() => {
+      said.current = null;
+      setDone(null);
+    }, SAID_MS);
   }
 
   return (
-    <div ref={rootRef} className={`relative inline-block ${className ?? ""}`}>
+    <>
       <button
         type="button"
-        aria-haspopup="menu"
-        aria-expanded={open}
+        aria-haspopup="dialog"
         onClick={() => {
-          if (open) {
-            setOpen(false);
-            return;
-          }
           void plusFeaturesNow().then((ok) => {
             if (ok === false) upgrade.open("florilegium");
             else setOpen(true);
@@ -96,9 +82,9 @@ export function AddToFlorilegium({
         // doctrine's quotation keeps Source from Gather (components/theology/
         // TopicReader.tsx; the owner's note 22 of build 80).
         data-gather=""
-        className="inline-flex items-baseline gap-3 font-sans text-caption text-paper/50 hover:text-paper/85 transition-colors"
+        className="tap-press hit-44 inline-flex items-baseline gap-3 font-sans text-caption text-paper/82 transition-colors hover:text-paper"
       >
-        {done ? t("study.florilegium.gatheredInto", { name: done }) : t("study.gather")}
+        {t("study.gather")}
         {plusAllowed === false ? (
           <span data-plus-pill="" className="rounded-pill border border-premium/40 bg-premium/[0.08] px-1.5 py-px font-sans text-caption font-semibold text-premium-ink">
             {t("settings.discordPlusPill")}
@@ -106,84 +92,12 @@ export function AddToFlorilegium({
         ) : null}
       </button>
 
-      {open && (
-        <div
-          role="menu"
-          className="absolute left-0 top-full mt-2 min-w-[240px] z-50 rounded-md border border-white/12 bg-night/95 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.55)] p-2"
-        >
-          {naming ? (
-            <form onSubmit={createAndGather} className="p-1">
-              <label
-                htmlFor="florilegium-new"
-                className="block font-sans text-caption text-paper/60 mb-2"
-              >
-                {t("study.florilegium.nameNewGathering")}
-              </label>
-              <input
-                id="florilegium-new"
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder={t("study.florilegium.namePlaceholder")}
-                maxLength={80}
-                // eslint-disable-next-line jsx-a11y/no-autofocus
-                autoFocus
-                className="w-full bg-paper/[0.05] border border-paper/20 rounded-md px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/50"
-              />
-              <div className="mt-2 flex gap-2">
-                <button
-                  type="submit"
-                  className="font-sans text-caption font-semibold rounded-pill px-3 py-1.5 bg-gold text-night hover:bg-gold-soft transition-colors"
-                >
-                  {t("study.gather")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setNaming(false)}
-                  className="font-sans text-caption text-paper/55 hover:text-paper transition-colors"
-                >
-                  {t("nav.back")}
-                </button>
-              </div>
-            </form>
-          ) : (
-            <>
-              {florilegia.length > 0 ? (
-                <ul className="max-h-[240px] overflow-y-auto">
-                  {florilegia.map((f) => (
-                    <li key={f.id}>
-                      <button
-                        type="button"
-                        role="menuitem"
-                        onClick={() => gatherInto(f.id, f.title)}
-                        className="w-full text-left px-3 py-2 rounded font-sans text-detail text-paper/85 hover:bg-white/[0.05] hover:text-paper transition-colors flex items-center justify-between gap-3"
-                      >
-                        <span className="truncate">{f.title}</span>
-                        <span className="shrink-0 text-caption text-paper/35 tabular-nums">
-                          {f.items.length}
-                        </span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="px-3 py-2 font-sans text-caption text-paper/45">
-                  {t("study.florilegium.noGatherings")}
-                </p>
-              )}
-              <div className="mt-1 border-t border-white/10 pt-1">
-                <button
-                  type="button"
-                  onClick={() => setNaming(true)}
-                  className="w-full text-left px-3 py-2 rounded font-sans text-detail font-medium text-gold/90 hover:bg-white/[0.05] hover:text-gold transition-colors"
-                >
-                  {t("study.florilegium.beginNewEllipsis")}
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      )}
-    </div>
+      {/* Where the line went, said aloud; the sheet has shown it to the eye. */}
+      <span className="sr-only" aria-live="polite">
+        {done ? t("study.florilegium.gatheredInto", { name: done }) : ""}
+      </span>
+
+      <FlorilegiumPickerSheet open={open} item={item} onClose={() => setOpen(false)} onGathered={gathered} />
+    </>
   );
 }
