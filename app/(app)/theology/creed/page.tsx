@@ -6,9 +6,8 @@ import {
   type CreedCouncil,
 } from "@/lib/councils/creed";
 import { loadCouncilDocument } from "@/lib/councils/load";
-import { getServerLocale } from "@/lib/i18n/server";
 import { TheologyShell } from "@/components/theology/TheologyShell";
-import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
+import { StillInEnglish } from "@/components/i18n/StillInEnglish";
 import { T } from "@/components/i18n/T";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 
@@ -37,7 +36,6 @@ export const metadata = {
  * The same for every reader, so it renders here and in the apps' export.
  */
 export default async function CreedPage() {
-  const locale = await getServerLocale();
   const sources = await Promise.all(
     (Object.keys(CREED_SOURCES) as CreedCouncil[])
       .map((c) => CREED_SOURCES[c])
@@ -54,7 +52,8 @@ export default async function CreedPage() {
     <TheologyShell>
       <div data-creed-page="">
         <header>
-          <h1 className="font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper">
+          {/* A long word breaks where its language allows (in German, "Glaubensbekenntnis" ran off a phone's edge). */}
+          <h1 className="font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper hyphens-auto break-words">
             <T k="creed.title" />
           </h1>
           {/* The key: the words of Nicaea plain, the words Constantinople added lit. */}
@@ -68,7 +67,8 @@ export default async function CreedPage() {
           </p>
         </header>
 
-        <ContentNotYetTranslated locale={locale} kind="work" />
+        {/* In another language, one quiet line that the words are English, said on the device. */}
+        <StillInEnglish kind="work" className="mt-6" />
 
         <ol className="mt-10 md:mt-12 space-y-7" data-creed="">
           {CREED_ARTICLES.map((a) => (

@@ -1,5 +1,4 @@
 import { loadWriting } from "@/lib/saints/load";
-import { getServerLocale } from "@/lib/i18n/server";
 import { T } from "@/components/i18n/T";
 
 /**
@@ -17,10 +16,13 @@ import { T } from "@/components/i18n/T";
  *
  * Returns `null` when no account exists, so the section degrades silently for
  * saints without a public-domain miracle text.
+ *
+ * In English (1.9): no account has another language yet, and in the apps the
+ * server is the build and knows no reader. The first one given one is read on
+ * the device (lib/i18n/__tests__/serverLocale.test.ts refuses it until then).
  */
 export async function MiraclesSection({ slug }: { slug: string }) {
- const locale = await getServerLocale();
- const content = await loadWriting(slug, "miracles", locale);
+ const content = await loadWriting(slug, "miracles");
  if (!content || content.sections.length === 0) return null;
 
  return (

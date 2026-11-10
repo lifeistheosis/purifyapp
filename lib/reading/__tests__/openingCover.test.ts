@@ -264,7 +264,7 @@ describe("a book's page", () => {
     expect(at).toBeLessThan(page.indexOf("<LazyWritingReader"));
     expect(at).toBeLessThan(page.indexOf("<WritingReader"));
     // First on the page, in the same place in every language: over the line that says a work is not yet translated.
-    expect(at).toBeLessThan(page.indexOf("<ContentNotYetTranslated"));
+    expect(at).toBeLessThan(page.indexOf("<StillInEnglish"));
     // Not inside the choice between them: one element, the same when the text lands.
     expect(page.slice(at, page.indexOf("{IS_STATIC_EXPORT ? ("))).toContain(") : null}");
     expect(page).toContain("owner={found.saint.slug}");
@@ -286,7 +286,11 @@ describe("a book's page", () => {
     expect(page).toContain("const positionKey = `councils/${c.slug}`;");
     expect(page).toMatch(/<OpeningCover\s+owner=\{positionKey\}\s+slug=\{docRef\.slug\}\s+first=\{about\.first\}/);
     expect(page.indexOf("<OpeningCover")).toBeLessThan(page.indexOf("<CouncilReader"));
-    expect(page.indexOf("<OpeningCover")).toBeLessThan(page.indexOf("<ContentNotYetTranslated"));
+    // Over the line that says the text is English, which the reader's own component draws above the reader (1.9).
+    expect(page.indexOf("<OpeningCover")).toBeLessThan(page.indexOf("<CouncilReaderHere"));
+    const here = code("components/councils/CouncilTextHere.tsx");
+    expect(here.indexOf("<StillInEnglish")).toBeGreaterThan(0);
+    expect(here.indexOf("{note}")).toBeLessThan(here.indexOf("<CouncilReader {...reader}"));
   });
 
   it("a council's document wears the card its shelf's cover wears", () => {

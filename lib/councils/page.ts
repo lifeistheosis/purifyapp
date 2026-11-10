@@ -72,16 +72,8 @@ export function authorLine(c: Pick<Council, "byname" | "year">): string {
   return `${shortName(c.byname)}, ${about ? about[1] : c.year}`;
 }
 
-/**
- * The edition a document's words are from, as its book's page names it under
- * the byline: its source without the publisher, the year and the notes on
- * where the text was read ("Schaff & Wace, Nicene and Post-Nicene Fathers,
- * Series II, Vol. 14"). The whole source stays at the foot of the text.
- */
-export function editionOf(source: string): string {
-  const cut = [source.indexOf(":"), source.indexOf(" (")].filter((i) => i > 0);
-  return (cut.length ? source.slice(0, Math.min(...cut)) : source).replace(/[,.\s]+$/, "").trim();
-}
+/** The edition a document's words are from: lib/councils/edition.ts, where the device can reach it alone. */
+export { editionOf } from "./edition";
 
 /** The reading room's era for a council's year (lib/reading/catalog.ts, ERAS). */
 export function eraOfYear(year: number): EraId {

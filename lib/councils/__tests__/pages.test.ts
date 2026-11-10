@@ -43,6 +43,8 @@ const FILES = [
   "components/councils/CouncilBookHeader.tsx",
   "components/councils/CouncilReader.tsx",
   "components/councils/CouncilWords.tsx",
+  "components/councils/CouncilSections.tsx",
+  "components/councils/CouncilTextHere.tsx",
 ];
 
 describe("the selection page (A)", () => {
@@ -155,10 +157,14 @@ describe("a council's books in the reading room", () => {
     expect(page).toContain("<ReaderPrefsProvider>");
     expect(page).toMatch(/<MobileTopBar plates back backFallback=\{`\/reading\/councils\/\$\{c\.slug\}`\} trailing=\{<MobileWorkActions \/>\} \/>/);
     expect(page).toContain("<MobileWorkProgressBar />");
-    expect(page).toContain("<CouncilReader positionKey={positionKey} docSlug={docRef.slug} title={content.title} sections={sections} about={about}>");
+    // The reader, in the reader's language (1.9): the page writes the English sections into it.
+    expect(page).toContain("<CouncilReaderHere docKey={`${c.slug}/${docRef.slug}`} positionKey={positionKey} docSlug={docRef.slug} title={content.title} sections={sections} about={about}>");
+    expect(page).toContain("<CouncilSections content={content} />");
+    expect(code("components/councils/CouncilTextHere.tsx")).toContain("<CouncilReader {...reader}>{children}</CouncilReader>");
     // Each section at its own address, which a quotation elsewhere opens, and its paragraphs places a return lands on.
-    expect(page).toContain("id={`s${s.n}`}");
-    expect(page).toContain("data-place={`${s.n}:${i}`}");
+    const sections = code("components/councils/CouncilSections.tsx");
+    expect(sections).toContain("id={`s${s.n}`}");
+    expect(sections).toContain("data-place={`${s.n}:${i}`}");
     const header = code("components/councils/CouncilBookHeader.tsx");
     expect(header).toContain('id={heading === "h1" ? "work-title" : undefined}');
     expect(header).toContain("<StartReading saintSlug={positionKey} workSlug={docSlug} first={first} total={total} />");

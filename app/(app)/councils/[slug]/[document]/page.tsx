@@ -2,19 +2,18 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { COUNCILS, getCouncil } from "@/lib/councils/councils";
 import { loadCouncilDocument } from "@/lib/councils/load";
-import { getServerLocale } from "@/lib/i18n/server";
-import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 import { T } from "@/components/i18n/T";
-import { SaintNames } from "@/components/saints/SaintNames";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { MobileWorkProgressBar } from "@/components/saints/MobileWorkProgressBar";
 import { MobileWorkActions } from "@/components/saints/MobileWorkActions";
 import { ReaderPrefsProvider, ReadingModeController } from "@/components/reader/ReaderPrefs";
-import { CouncilReader } from "@/components/councils/CouncilReader";
+import { CouncilSections } from "@/components/councils/CouncilSections";
+import { CouncilReaderHere, CouncilSourceHere } from "@/components/councils/CouncilTextHere";
 import { OpeningCover } from "@/components/reading/OpeningCover";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { documentMinutes } from "@/lib/councils/books";
-import { authorLine, councilPicture, cropOf, editionOf, eraOfYear } from "@/lib/councils/page";
+import { editionOf } from "@/lib/councils/edition";
+import { authorLine, councilPicture, cropOf, eraOfYear } from "@/lib/councils/page";
 import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 
 export function generateStaticParams() {
@@ -67,10 +66,14 @@ export default async function CouncilDocumentPage({
  if (!c) notFound();
  const docRef = c.documents.find((d) => d.slug === document && !d.href);
  if (!docRef) notFound();
- const locale = await getServerLocale();
- const loaded = await loadCouncilDocument(slug, document, locale);
+ // The page writes the English. A reader whose language has the document in
+ // its own file reads that, loaded on the device (1.9,
+ // components/councils/CouncilTextHere.tsx): in the apps the server is the
+ // build and knows no reader, so until 1.9 the German Symbol of the Faith,
+ // chosen here, reached no reader of the apps.
+ const loaded = await loadCouncilDocument(slug, document);
  if (!loaded) notFound();
- const { content, isLocalized } = loaded;
+ const { content } = loaded;
 
  const picture = councilPicture(c.slug, IS_STATIC_EXPORT);
  const sections = content.sections.map((s) => ({ n: s.n, title: s.title }));
@@ -91,7 +94,6 @@ export default async function CouncilDocumentPage({
   first: content.sections[0]?.n ?? 1,
   total: content.sections.length,
  };
- const last = content.sections[content.sections.length - 1];
 
  return (
  <ReaderPrefsProvider>
@@ -114,72 +116,17 @@ export default async function CouncilDocumentPage({
   first={about.first}
   card={{ key: `councils/${c.slug}/${docRef.slug}`, title: docRef.title, author: about.author, cover: about.cover }}
  />
- {!isLocalized && locale !== "en" && (
- <ContentNotYetTranslated locale={locale} kind="work" />
- )}
-
  {/* The document's own page (its cover, what it is, Start reading or
-     Continue) is About this book, a sheet over the section (r3-29 A). */}
- <CouncilReader positionKey={positionKey} docSlug={docRef.slug} title={content.title} sections={sections} about={about}>
- {content.sections.map((s) => (
- // A section can be opened by its number (#s3, 1.8): a quotation
- // elsewhere in the app links to the canon or decree it quotes. Its
- // title is the page's head (components/saints/WorkHead.tsx).
- <section
-  key={s.n}
-  id={`s${s.n}`}
-  data-council-part={s.n}
-  className="mx-auto max-w-[680px] scroll-mt-24"
- >
- {s.framing && (
- <div className="mb-8">
- <p className="font-sans text-caption font-semibold text-paper/45 mb-2">
- <T k="saints.editorsNote" />
- </p>
- <p className="font-sans text-ui md:text-body text-paper/70 leading-[1.65] italic">
- {s.framing}
- </p>
- {content.review && (
- <p className="mt-2 font-sans text-caption text-paper/45">
- <T k="study.councils.framingAwaitingReview" />
- </p>
- )}
- </div>
- )}
- {s.citation && (
- <p className="font-sans text-caption text-paper/70 font-semibold mb-4">
- {s.citation}
- </p>
- )}
- <div className="space-y-5 text-paper/90">
- {s.paragraphs.map((p, i) => (
- // Each paragraph a place the reader's place is kept by (lib/saints/paragraphInView.ts).
- <p key={i} id={`p-${s.n}-${i}`} data-place={`${s.n}:${i}`} data-work-end={s === last && i === s.paragraphs.length - 1 ? "" : undefined}>
- <SaintNames text={p} />
- </p>
- ))}
- </div>
- {s.notes && s.notes.length > 0 && (
- <aside className="mt-10 border-t border-paper/10 pt-6">
- <p className="font-sans text-caption font-semibold text-paper/45 mb-4">
- <T k="saints.notes" />
- </p>
- <ul className="space-y-4">
- {s.notes.map((n, i) => (
- <li key={i} className="font-sans text-ui text-paper/70 leading-[1.55]">
- {n}
- </li>
- ))}
- </ul>
- </aside>
- )}
- </section>
- ))}
- </CouncilReader>
+     Continue) is About this book, a sheet over the section (r3-29 A). Over
+     the reader, for a reader in another language, the line that says the
+     text is English (components/i18n/StillInEnglish.tsx). */}
+ <CouncilReaderHere docKey={`${c.slug}/${docRef.slug}`} positionKey={positionKey} docSlug={docRef.slug} title={content.title} sections={sections} about={about}>
+ <CouncilSections content={content} />
+ </CouncilReaderHere>
 
  <footer id="source" className="mx-auto max-w-[680px] scroll-mt-24 pt-8 border-t border-paper/8">
  <p className="font-sans text-caption text-paper/40">
- <T k="prayers.reader.sourceLabel" /> {content.source}
+ <T k="prayers.reader.sourceLabel" /> <CouncilSourceHere docKey={`${c.slug}/${docRef.slug}`} english={content.source} />
  </p>
  <p className="mt-6">
  <Link

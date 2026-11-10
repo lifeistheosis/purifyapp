@@ -9,8 +9,7 @@ import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { MobileWorkProgressBar } from "@/components/saints/MobileWorkProgressBar";
 import { MobileWorkActions } from "@/components/saints/MobileWorkActions";
 import { ReaderPrefsProvider, ReadingModeController } from "@/components/reader/ReaderPrefs";
-import { getServerLocale } from "@/lib/i18n/server";
-import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
+import { StillInEnglish } from "@/components/i18n/StillInEnglish";
 import { OpeningCover } from "@/components/reading/OpeningCover";
 import { RecordRead } from "@/components/reading/RecordRead";
 import { KeepDay } from "@/components/streak/KeepDay";
@@ -46,8 +45,9 @@ export default async function WritingPage({ params }: { params: Params }) {
   const { slug, work } = await params;
   const found = getWork(slug, work);
   if (!found) notFound();
-  const locale = await getServerLocale();
-  const content = await loadWriting(slug, work, locale);
+  // English: no work of the Fathers has another language yet (1.9; the
+  // first one is read on the device, lib/i18n/__tests__/serverLocale.test.ts).
+  const content = await loadWriting(slug, work);
   if (!content) notFound();
 
   // Structured data. The @type and the author follow the sections' `voice`:
@@ -114,9 +114,9 @@ export default async function WritingPage({ params }: { params: Params }) {
               card={{ key: book.header.card.key, title: book.header.card.title, author: book.header.card.author, cover: book.header.card.cover }}
             />
           ) : null}
-          {locale !== "en" && !content.isLocalized ? (
-            <ContentNotYetTranslated locale={locale} kind="work" />
-          ) : null}
+          {/* For a reader in another language, one quiet line that the work
+              is English, said on the device, in the apps too. */}
+          <StillInEnglish kind="work" className="my-6" />
           {/* The website writes the work into the page, where a search engine
               reads the Fathers' own words. The apps carry it as a file in
               the bundle and read it as the page opens: handed over as a

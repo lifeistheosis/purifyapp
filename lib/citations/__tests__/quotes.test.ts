@@ -495,7 +495,8 @@ describe("a quotation in an event of Orthodox History", () => {
     expect(blocks.filter(({ b }) => b.cite).length).toBeGreaterThanOrEqual(18);
     const article = fs.readFileSync(path.join(ROOT, "components/history/EventArticle.tsx"), "utf8");
     expect(article).toContain("<SourceLine cite={cite} />");
-    const council = fs.readFileSync(path.join(ROOT, "app/(app)/councils/[slug]/[document]/page.tsx"), "utf8");
+    // A council's document's sections, drawn by its page and, in another language, by the device (1.9).
+    const council = fs.readFileSync(path.join(ROOT, "components/councils/CouncilSections.tsx"), "utf8");
     expect(council).toContain("id={`s${s.n}`}");
   });
 });

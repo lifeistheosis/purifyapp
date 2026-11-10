@@ -2,7 +2,6 @@ import Link from "next/link";
 
 import { T } from "@/components/i18n/T";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
-import { getServerLocale } from "@/lib/i18n/server";
 import { akathistTitleKey, listAkathists } from "@/lib/prayers/akathists";
 import { hymnsOf } from "@/lib/saints/hymns";
 import { loadWriting } from "@/lib/saints/load";
@@ -18,13 +17,16 @@ import { loadWriting } from "@/lib/saints/load";
  * A server component, as MiraclesSection is: the hymns are read from the
  * works' files at build time, a few lines each. The door above names the
  * part, so it carries no heading of its own.
+ *
+ * In English (1.9): no work has another language yet, and in the apps the
+ * server is the build and knows no reader. The first work given one is read
+ * on the device (lib/i18n/__tests__/serverLocale.test.ts refuses it until then).
  */
 export async function HymnsSection({ slug }: { slug: string }) {
-  const locale = await getServerLocale();
   const hymns = (
     await Promise.all(
       hymnsOf(slug).map(async (ref) => {
-        const content = await loadWriting(slug, ref.work, locale);
+        const content = await loadWriting(slug, ref.work);
         const section = content?.sections.find((s) => s.n === ref.section);
         return content && section ? { ref, workTitle: content.title, section } : null;
       }),

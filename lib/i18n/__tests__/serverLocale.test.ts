@@ -11,7 +11,10 @@
 // its own file, loaded on the device when the reader's language is one of
 // them (components/i18n/useInReadersLanguage.ts; Admin's way for the legal
 // sheet): Learn to pray (components/prayers/LessonView.tsx) and the prayer
-// rules (components/prayers/RuleInReadersLanguage.tsx).
+// rules (components/prayers/RuleInReadersLanguage.tsx), and a council's
+// document (components/councils/CouncilTextHere.tsx). A reader shown a long
+// text in English though their language is another is told so in one quiet
+// line, said on the device too (components/i18n/StillInEnglish.tsx).
 //
 // The list below may only shrink. Each file still choosing on the server is
 // named with why the apps may keep it for now; a new one fails.
@@ -31,15 +34,11 @@ const STILL_CHOSEN_ON_THE_SERVER: Record<string, string> = {
   "components/marketing/MadeOfStrip.tsx": "a part of the website's front page alone",
   "app/(app)/discover/page.tsx": "the computer's twin of Discover, hidden in the apps (serverWords.test.ts)",
   "app/(app)/account/(you)/page.tsx": "the computer's twin of the account page, hidden in the apps (serverWords.test.ts)",
-  // The rest of the sweep, as listed to the arbiter on 2026-11-10: in the
-  // apps each is still English for every reader. The saints and the five
-  // German pages are the Updates chat's, listed in their own file
-  // (stillChosen.saintsAndPages.ts); these are the Updates 2 chat's.
-  "app/(app)/councils/[slug]/[document]/page.tsx": "the Symbol of the Faith in German, and the note that a text is in English",
-  "app/(app)/saints/[slug]/[work]/page.tsx": "a work's translation (none yet) and the note that it is in English",
-  "components/saints/HymnsSection.tsx": "a work's translation (none yet)",
-  "components/saints/MiraclesSection.tsx": "a work's translation (none yet)",
-  "app/(app)/theology/creed/page.tsx": "the note that the Creed's page is in English",
+  // The rest of the sweep, as listed to the arbiter on 2026-11-10, is the
+  // saints and the five German pages, the Updates chat's, listed in their own
+  // file (stillChosen.saintsAndPages.ts). The councils' documents, a work of
+  // the Fathers with its hymns and miracles, and the Creed's page left this
+  // list the same day (the Updates 2 chat).
 };
 
 /** What the apps leave out (scripts/native-build.mjs, STASH_PATHS), as paths. */
@@ -158,5 +157,69 @@ describe("words a page chooses on the server by the reader's language", () => {
     const en = JSON.parse(fs.readFileSync(path.join(ROOT, "data/prayers/learning/lessons.json"), "utf8")) as { id: string }[];
     expect(de.map((l) => l.id).sort()).toEqual(en.map((l) => l.id).sort());
     for (const rule of ["morning", "evening", "creed"]) expect(fs.existsSync(path.join(ROOT, `data/prayers/rules/${rule}.de.json`)), rule).toBe(true);
+  });
+
+  it("write a council's document in English, and load each other language's file on the device", () => {
+    const page = code("app/(app)/councils/[slug]/[document]/page.tsx");
+    expect(page).not.toMatch(/\bgetServerLocale\(/);
+    expect(page).toContain("const loaded = await loadCouncilDocument(slug, document);");
+    // The page writes the English alone: no other language's file rides in it.
+    expect(page).not.toMatch(/data\/councils\/[^"]*\/i18n\/|\.de\.json/);
+    const here = code("components/councils/CouncilTextHere.tsx");
+    expect(here).not.toMatch(/^import [^;]*\/i18n\/[a-z]{2,3}\//m);
+    // Every translation on disk has its loader, and every loader its file.
+    const dir = path.join(ROOT, "data/councils");
+    const files: string[] = [];
+    for (const council of fs.readdirSync(dir)) {
+      const i18n = path.join(dir, council, "i18n");
+      if (!fs.existsSync(i18n)) continue;
+      for (const lang of fs.readdirSync(i18n)) for (const f of fs.readdirSync(path.join(i18n, lang))) files.push(`${council}/i18n/${lang}/${f}`);
+    }
+    expect(files.length).toBeGreaterThanOrEqual(1);
+    for (const f of files) {
+      const [council, , lang, name] = f.split("/");
+      const doc = name.replace(/\.json$/, "");
+      expect(here, f).toContain(`"${council}/${doc}": {\n    ${lang}: () => import("@/data/councils/${f}")`);
+      // The same sections and paragraphs as the English, so the reader's place is the same place in either.
+      type Doc = { sections: { n: number; paragraphs: string[] }[] };
+      const en = JSON.parse(fs.readFileSync(path.join(dir, council, `${doc}.json`), "utf8")) as Doc;
+      const other = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")) as Doc;
+      expect(other.sections.map((x) => [x.n, x.paragraphs.length]), f).toEqual(en.sections.map((x) => [x.n, x.paragraphs.length]));
+    }
+    for (const m of here.matchAll(/import\("@\/data\/councils\/([^"]+)"\)/g)) expect(files, m[1]).toContain(m[1]);
+  });
+
+  it("find no work of the Fathers in another language yet: the first is read on the device", () => {
+    // A work's translation would be data/saints/<saint>/i18n/<lang>/<work>.json (lib/saints/load.ts).
+    // The work's page, its hymns and its miracles now read English alone, so the
+    // first translation needs a loader on the device, as the councils' have.
+    const dir = path.join(ROOT, "data/saints");
+    const found = fs
+      .readdirSync(dir)
+      .filter((saint) => fs.existsSync(path.join(dir, saint, "i18n")))
+      .flatMap((saint) => fs.readdirSync(path.join(dir, saint, "i18n"), { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => `${saint}/i18n/${e.name}`));
+    expect(found, "a work in another language: give app/(app)/saints/[slug]/[work]/page.tsx a loader on the device first").toEqual([]);
+    for (const file of ["app/(app)/saints/[slug]/[work]/page.tsx", "components/saints/HymnsSection.tsx", "components/saints/MiraclesSection.tsx"]) {
+      expect(code(file), file).not.toMatch(/\bgetServerLocale\(|loadWriting\([^)]*locale/);
+    }
+  });
+
+  it("say that a text is English on the device, so the apps say it too", () => {
+    const line = code("components/i18n/StillInEnglish.tsx");
+    expect(fs.readFileSync(path.join(ROOT, "components/i18n/StillInEnglish.tsx"), "utf8").startsWith('"use client";')).toBe(true);
+    expect(line).toContain('if (locale === "en" || coming || shown === locale) return null;');
+    expect(line).toContain("t(`content.notYetTranslated.${kind}.body`)");
+    // No box, no stripe, no colour: the words alone.
+    expect(line).not.toMatch(/\b(?:border|bg|ring)-|gold/);
+    for (const file of ["app/(app)/saints/[slug]/[work]/page.tsx", "app/(app)/theology/creed/page.tsx", "components/councils/CouncilTextHere.tsx"]) {
+      const src = code(file);
+      expect(src, file).toContain("<StillInEnglish");
+      expect(src, file).not.toContain("ContentNotYetTranslated");
+    }
+    // The words are the catalog's own, in every language.
+    for (const f of fs.readdirSync(path.join(ROOT, "lib/i18n/messages")).filter((n) => n.endsWith(".json"))) {
+      const m = JSON.parse(fs.readFileSync(path.join(ROOT, "lib/i18n/messages", f), "utf8")) as Record<string, string>;
+      expect(m["content.notYetTranslated.work.body"], f).toBeTruthy();
+    }
   });
 });
