@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
 import { readRenderDeploys, renderDashboardUrl, type DeployFacts } from "@/lib/admin/renderDeploy";
 import { licensedBibleEnabled } from "@/lib/bible/api-bible";
+import { HEARTBEAT_KEY_PREFIX, heartbeatVerdict } from "@/lib/ops/heartbeat";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -42,7 +43,7 @@ export async function GET(req: Request) {
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const scope = new URL(req.url).searchParams.get("scope");
-  const internal = [probeSupabase, probeRateLimiter];
+  const internal = [probeSupabase, probeRateLimiter, probeHeartbeat];
   const outbound = [probeApiBible, probeBmc, probeIpwhois, probeRender];
   const list =
     scope === "internal" ? internal : scope === "outbound" ? outbound : [...internal, ...outbound];
@@ -115,6 +116,33 @@ async function probeRateLimiter(): Promise<Probe> {
     detail: error
       ? `${error}. The limiter is FAIL-OPEN, so every rate-limited write route is currently unthrottled`
       : "rpc answered; write routes are being throttled",
+    latencyMs: ms,
+  };
+}
+
+/**
+ * The heartbeat (his item 84): whether Render's cron still calls
+ * /api/cron/hourly-goals. Read from the reminders' ten-minute claims, the
+ * newest of which is the last call (lib/ops/heartbeat.ts says why). In the
+ * internal scope, so the attention strip asks every five minutes and a
+ * stopped heartbeat is a red item there, not only a row here.
+ */
+async function probeHeartbeat(): Promise<Probe> {
+  const { result, ms, error } = await timed(async () => {
+    const supa = createAdminClient();
+    const r = await supa
+      .from("rate_limits")
+      .select("key")
+      .like("key", `${HEARTBEAT_KEY_PREFIX}%`)
+      .order("key", { ascending: false })
+      .limit(20);
+    if (r.error) throw new Error(r.error.message);
+    return heartbeatVerdict(((r.data ?? []) as { key: string }[]).map((row) => row.key), new Date());
+  });
+  return {
+    service: "Heartbeat (Render cron)",
+    status: error || !result || result.late ? "fail" : "ok",
+    detail: error ? `The claims could not be read: ${error}` : (result?.line ?? "No answer."),
     latencyMs: ms,
   };
 }

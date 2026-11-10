@@ -389,6 +389,23 @@ describe("severity", () => {
     expect(s.worst).toBe("critical");
   });
 
+  it("says a stopped heartbeat as what stopped, and sends the owner to Services (his item 84)", () => {
+    const i = calm();
+    i.internal = ok({
+      probes: [
+        { service: "Supabase Postgres", status: "ok", detail: "" },
+        { service: "Rate limiter (rate_limit_hit)", status: "ok", detail: "" },
+        { service: "Heartbeat (Render cron)", status: "fail", detail: "Last call at 01:20 UTC, 95 minutes ago." },
+      ],
+    });
+    const s = deriveAttention(i);
+    expect(s.faults).toHaveLength(1);
+    expect(s.faults[0].label).toBe("The heartbeat stopped");
+    expect(s.faults[0].level).toBe("serious");
+    expect(s.faults[0].body).toContain("95 minutes ago");
+    expect(s.faults[0].go).toEqual({ tab: "health", label: "Open Services" });
+  });
+
   it("grades outbound probes by what they protect", () => {
     expect(probeLevel("API.Bible (licensed Scripture)")).toBe("serious");
     expect(probeLevel("Buy Me a Coffee")).toBe("warn");

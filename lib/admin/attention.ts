@@ -240,6 +240,7 @@ export function probeLevel(service: string): AttentionLevel {
   if (s.includes("rate limiter")) return "critical";
   if (s.includes("supabase")) return "critical";
   if (s.includes("api.bible")) return "serious";
+  if (s.includes("heartbeat")) return "serious";
   if (s.includes("buy me a coffee") || s.includes("ipwho") || s.includes("render")) return "warn";
   return "serious";
 }
@@ -428,6 +429,11 @@ function probeFindings(source: "internal" | "outbound", slice: ProbeSlice): Atte
       out.push(
         fault(source, "supabase", "critical", "Supabase probe failed", "Supabase did not answer the probe",
           "The database probe failed. Everything on this panel that reads the database is suspect until it passes.", go),
+      );
+    } else if (s.includes("heartbeat")) {
+      out.push(
+        fault(source, "heartbeat", "serious", "The heartbeat stopped", "Reminders and emails have stopped",
+          `${p.detail} Render, the cron job, its latest run says why.`, go),
       );
     } else if (s.includes("api.bible")) {
       out.push(
