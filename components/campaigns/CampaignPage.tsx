@@ -362,7 +362,10 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
         <div className="set-panel mb-1 mt-1">
           {mine ? (
             <>
-              {campaign.for_whom === "departed" ? (
+              {/* Not for one of July's (no length): the housekeeping that
+                  deletes after thirty days leaves July's rows alone, so
+                  there is nothing to keep it from. */}
+              {campaign.for_whom === "departed" && campaign.days !== null ? (
                 <Row
                   icon={<Bookmark size={17} />}
                   label={t("campaigns.keepAfter")}
@@ -397,7 +400,9 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
           )}
         </div>
         {/* How long it is kept, said to its creator where they decide about it. */}
-        {mine && campaign.for_whom === "living" ? <p className="mt-3 font-sans text-caption leading-relaxed text-paper/70">{t("campaigns.keptThirty")}</p> : null}
+        {mine && campaign.for_whom === "living" && campaign.days !== null ? (
+          <p className="mt-3 font-sans text-caption leading-relaxed text-paper/70">{t("campaigns.keptThirty")}</p>
+        ) : null}
       </Sheet>
 
       {/* Closing it early, with one of the two closings. */}

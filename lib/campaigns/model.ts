@@ -163,6 +163,18 @@ export function isRunning(c: { status: string; ends_at?: string | null }, now: n
   return !Number.isFinite(end) || end > now;
 }
 
+/**
+ * A campaign of July's: it has no length. July's campaigns were public with
+ * no last day and were never read by a moderator, so the rework does not run
+ * them: nobody is shown one but the reader who started it, who finds it among
+ * their own as ended and can take it down (lib/campaigns/server.ts, mayRead).
+ * The row itself is left exactly as it is; a length is what tells the two
+ * apart, as the housekeeping already reads it (lib/campaigns/upkeep.ts).
+ */
+export function isJulyRow(row: Record<string, unknown>): boolean {
+  return !isLength(row.days);
+}
+
 /** Over for everyone: closed, ended or past its last day. Never true of a held one. */
 export function isOver(c: { status: string; ends_at?: string | null }, now: number = Date.now()): boolean {
   if (c.status === "answered" || c.status === "memory_eternal" || c.status === "ended") return true;
@@ -272,7 +284,9 @@ const text = (v: unknown): string | null => (typeof v === "string" && v.trim() ?
  * details, days or creator; its one line of `note` stands as its words.
  */
 export function publicCampaign(row: Record<string, unknown>): PublicCampaign {
-  const status = row.status === "held" || row.status === "answered" || row.status === "memory_eternal" || row.status === "ended" ? row.status : "active";
+  const said = row.status === "held" || row.status === "answered" || row.status === "memory_eternal" || row.status === "ended" ? row.status : "active";
+  // One of July's still says active, and runs for nobody: it reads as ended.
+  const status = said === "active" && isJulyRow(row) ? "ended" : said;
   const prayer = campaignPsalm({ rule: row.prayer_rule, id: row.prayer_id });
   return {
     id: String(row.id),

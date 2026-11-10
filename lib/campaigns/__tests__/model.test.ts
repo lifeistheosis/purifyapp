@@ -17,6 +17,7 @@ import {
   endsAtOf,
   isCampaignKind,
   isDay,
+  isJulyRow,
   isLength,
   isOver,
   isRunning,
@@ -128,7 +129,8 @@ describe("its state", () => {
     for (const status of ["held", "answered", "memory_eternal", "ended", "removed"]) {
       expect(isRunning({ status, ends_at: null })).toBe(false);
     }
-    // A July campaign with no end still runs.
+    // A July campaign with no end still runs, by its dates alone. The rework
+    // runs none of July's all the same: see "July's rows" below.
     expect(isRunning({ status: "active", ends_at: null })).toBe(true);
   });
 
@@ -248,6 +250,18 @@ describe("what a reader is handed", () => {
   it("reads a July row as it was: its one line as its words, no days, no creator", () => {
     const july = publicCampaign({ id: "x", title: "For Maria", intention: "healing", for_whom: "living", subject_name: "Maria", note: "She is ill.", status: "active", created_at: "2026-07-20T00:00:00Z" });
     expect(july).toMatchObject({ details: "She is ill.", days: null, starts_on: null, ends_on: null, creator_name: null, prayer_rule: null });
+  });
+
+  it("July's rows: one with no length runs for nobody, and reads as ended to the reader who started it", () => {
+    const july = { id: "x", title: "For Maria", intention: "healing", for_whom: "living", subject_name: "Maria", status: "active", created_at: "2026-07-20T00:00:00Z" };
+    expect(isJulyRow(july)).toBe(true);
+    expect(isJulyRow({ ...july, days: null })).toBe(true);
+    expect(isJulyRow({ ...july, days: 7 })).toBe(false);
+    expect(publicCampaign(july).status).toBe("ended");
+    // Its closings are kept as they were said, and a campaign with a length is untouched.
+    expect(publicCampaign({ ...july, status: "answered" }).status).toBe("answered");
+    expect(publicCampaign({ ...july, status: "memory_eternal" }).status).toBe("memory_eternal");
+    expect(publicCampaign({ ...row, status: "active" }).status).toBe("active");
   });
 
   it("hands on only a prayer the book is known to hold", () => {

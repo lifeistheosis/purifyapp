@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { corsPreflight, withCors } from "@/lib/api/cors";
-import { isDay, isOver } from "@/lib/campaigns/model";
+import { isDay, isJulyRow, isOver } from "@/lib/campaigns/model";
 import { campaignsCaller, reworkAbsent } from "@/lib/campaigns/opening";
 import { mayRead, readCampaignRow } from "@/lib/campaigns/server";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
@@ -47,7 +47,8 @@ async function handlePOST(req: Request, id: string) {
   if (!found.ok) return found.why === "absent" ? NOT_FOUND() : NextResponse.json({ error: "Couldn't add it." }, { status: 500 });
   const row = found.value;
   if (!row || !mayRead(row, who.user.id)) return NOT_FOUND();
-  if (row.status !== "active" || isOver(row)) {
+  // One of July's is its creator's to open and to take down, and runs for nobody.
+  if (row.status !== "active" || isOver(row) || isJulyRow(row)) {
     return NextResponse.json({ error: "That campaign is not running.", code: "not_running" }, { status: 409 });
   }
 

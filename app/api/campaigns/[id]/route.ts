@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { corsPreflight, withCors } from "@/lib/api/cors";
 import { CAMPAIGN_BUCKET, campaignImage } from "@/lib/campaigns/image";
+import { isJulyRow } from "@/lib/campaigns/model";
 import { campaignsCaller } from "@/lib/campaigns/opening";
 import { forReader, hiddenFor, mayRead, readCampaignRow } from "@/lib/campaigns/server";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
@@ -71,7 +72,8 @@ async function handlePATCH(req: Request, id: string) {
   const now = new Date().toISOString();
   const patch: Record<string, unknown> = { updated_at: now };
   if (parsed.data.status) {
-    if (row.status !== "active") return NextResponse.json({ error: "That campaign is not running.", code: "not_running" }, { status: 409 });
+    // One of July's is not running, whatever its row says (lib/campaigns/model.ts, isJulyRow).
+    if (row.status !== "active" || isJulyRow(row)) return NextResponse.json({ error: "That campaign is not running.", code: "not_running" }, { status: 409 });
     patch.status = parsed.data.status;
     patch.ended_at = now;
   }

@@ -522,6 +522,80 @@ describe("carrying one, signed in", () => {
   });
 });
 
+describe("July's campaigns", () => {
+  // July's rows are still in the table: public then, with no last day, and
+  // never read by a moderator. The rework runs none of them. What would go
+  // wrong if this broke: on the day campaigns open, a months-old campaign for
+  // someone's illness stands on the board with no end and no moderator's
+  // reading, and a reader who tapped "prayed" once in July finds a stranger's
+  // name among those they carry.
+  /** A campaign as July left it: running, by its row, with no length. */
+  const ofJuly = (creator: string, over: Row = {}) => running(creator, { title: "From July", days: null, starts_on: null, ends_on: null, ends_at: null, ...over });
+
+  it("is on no board, with a last day or without", async () => {
+    ofJuly(ANNA);
+    ofJuly(ANNA, { ends_at: plus(30) });
+    const ours = running(BEN);
+    for (const reader of [null, BEN, ANNA]) {
+      signIn(reader);
+      const { campaigns: list } = (await (await board(new Request(`${SITE}/api/campaigns`))).json()) as { campaigns: { id: string }[] };
+      expect(list.map((c) => c.id), String(reader)).toEqual([ours]);
+    }
+  });
+
+  it("opens for nobody but the reader who started it, who finds it ended and can take it down", async () => {
+    const id = ofJuly(ANNA);
+    for (const reader of [null, BEN]) {
+      signIn(reader);
+      expect((await getOne(new Request(`${SITE}/api/campaigns/${id}`), params(id))).status, String(reader)).toBe(404);
+    }
+    signIn(ANNA);
+    const res = await getOne(new Request(`${SITE}/api/campaigns/${id}`), params(id));
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as { campaign: { status: string; mine: boolean; days: number | null } }).campaign).toMatchObject({ status: "ended", mine: true, days: null });
+    const own = (await (await mine(new Request(`${SITE}/api/campaigns/mine`))).json()) as { started: { id: string; status: string }[]; carried: unknown[] };
+    expect(own.started).toMatchObject([{ id, status: "ended" }]);
+    // The row is left exactly as it was.
+    expect(byId(id)).toMatchObject({ status: "active", days: null });
+  });
+
+  it("is joined by nobody, closed by nobody and reported by nobody", async () => {
+    const id = ofJuly(ANNA);
+    signIn(BEN);
+    expect((await join(new Request(`${SITE}/api/campaigns/${id}/join`, json({ places: ["evening"] })), params(id))).status).toBe(404);
+    expect((await report(new Request(`${SITE}/api/campaigns/${id}/report`, json({ reason: "unkind" })), params(id))).status).toBe(404);
+    signIn(ANNA);
+    expect((await join(new Request(`${SITE}/api/campaigns/${id}/join`, json({ places: ["evening"] })), params(id))).status).toBe(409);
+    expect((await patchOne(new Request(`${SITE}/api/campaigns/${id}`, json({ status: "answered" }, "PATCH")), params(id))).status).toBe(409);
+    expect(w.tables.prayer_campaign_prayers).toEqual([]);
+    expect(byId(id).status).toBe("active");
+  });
+
+  it("is carried by nobody: a tap on \"prayed\" in July was no choice to carry a name", async () => {
+    const id = ofJuly(ANNA);
+    w.tables.prayer_campaign_prayers!.push(
+      { campaign_id: id, user_id: BEN, places: null, until_on: null, joined_at: "2026-07-20T00:00:00Z" },
+      { campaign_id: id, user_id: ANNA, places: null, until_on: null, joined_at: "2026-07-20T00:00:00Z" },
+    );
+    for (const reader of [BEN, ANNA]) {
+      signIn(reader);
+      const body = (await (await mine(new Request(`${SITE}/api/campaigns/mine`))).json()) as { carried: unknown[] };
+      expect(body.carried, reader).toEqual([]);
+    }
+    signIn(null);
+    const told = (await (await states(new Request(`${SITE}/api/campaigns/state`, json({ ids: [id] })))).json()) as { states: Record<string, string> };
+    expect(told.states[id]).toBe("over");
+  });
+
+  it("does not count against the campaigns its creator may have running", async () => {
+    // An account in its first day may have one. One of July's is not that one.
+    state.trust = { ...state.trust, level: "new", facts: { ...state.trust.facts, accountAgeMs: 3 * 3_600_000 } };
+    ofJuly(ANNA);
+    expect((await start()).status).toBe(200);
+    expect((await start({ title: "Another one", name: "Maria" })).status).toBe(409);
+  });
+});
+
 describe("what a device asks", () => {
   it("is told which of the campaigns it carries still run, and nothing more", async () => {
     const run = running(ANNA);

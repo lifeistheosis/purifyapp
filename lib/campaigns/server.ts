@@ -16,6 +16,7 @@ import {
   STARTED_A_DAY,
   campaignPsalm,
   endsAtOf,
+  isJulyRow,
   isOver,
   lastDayOf,
   publicCampaign,
@@ -71,6 +72,9 @@ export async function readCampaignRow(admin: SupabaseClient, id: string): Promis
  * Who may open a campaign's page.
  *
  *   removed            nobody: it is kept unseen for an appeal, then deleted.
+ *   one of July's      its creator, who can take it down. It has no length,
+ *                      was never read by a moderator and runs for nobody
+ *                      (lib/campaigns/model.ts, isJulyRow).
  *   held               its creator, who is told it waits for a moderator.
  *   kept to a circle   nobody yet: circles as an audience come in a later
  *                      phase, and a row that says so is not shown as public
@@ -80,7 +84,7 @@ export async function readCampaignRow(admin: SupabaseClient, id: string): Promis
 export function mayRead(row: CampaignRow, userId: string | null): boolean {
   if (row.status === "removed") return false;
   if (row.audience === "circle") return false;
-  if (row.status === "held") return userId !== null && row.creator_id === userId;
+  if (row.status === "held" || isJulyRow(row)) return userId !== null && row.creator_id === userId;
   return true;
 }
 
@@ -115,7 +119,8 @@ export function forReader(row: CampaignRow, userId: string | null): PublicCampai
 }
 
 /**
- * The board, "Newly asked": campaigns that are running, public, newest first.
+ * The board, "Newly asked": campaigns that are running, public, newest first,
+ * and only those with a length: one of July's is never on it (isJulyRow).
  * A reader's own blocked and muted authors are left out, by the account id
  * the query filters on and never selects. Ordered by when each was asked and
  * by nothing else: no list is ordered by how many carry it (his rule of
@@ -134,6 +139,8 @@ export async function listBoard(
     .eq("audience", "public")
     .order("created_at", { ascending: false })
     .limit(Math.min(opts.limit ?? 30, 60));
+  // One of July's is never on the board (isJulyRow).
+  query = query.not("days", "is", null);
   if (hidden.length > 0) query = query.not("creator_id", "in", `(${hidden.join(",")})`);
   const { data, error } = await query;
   if (error) {
@@ -199,8 +206,10 @@ export async function listCarried(admin: SupabaseClient, userId: string, now: nu
   for (const j of rows) {
     const c = byId.get(j.campaign_id);
     // What has ended or been taken down is no longer carried: the device
-    // hears that from the state route and lets go by itself.
-    if (!c || !mayRead(c, userId) || c.status === "held" || isOver(c, now)) continue;
+    // hears that from the state route and lets go by itself. A row of July's
+    // "prayed" taps is no choice to carry anything: one of July's is never
+    // carried.
+    if (!c || isJulyRow(c) || !mayRead(c, userId) || c.status === "held" || isOver(c, now)) continue;
     out.push({ campaign: forReader(c, userId), places: j.places ?? [], until_on: j.until_on });
   }
   return { ok: true, value: out };
@@ -294,6 +303,8 @@ export async function startCampaign(
       .select("id, status, ends_at")
       .eq("creator_id", user.id)
       .in("status", ["held", "active"])
+      // One of July's still says active and runs for nobody: it is not counted.
+      .not("days", "is", null)
       .limit(20);
     if (error) {
       if (reworkAbsent(error)) return { ok: false, status: 404, error: "Not found." };
@@ -384,15 +395,16 @@ export async function campaignStates(
   const wanted = [...new Set(ids.filter((id) => UUID.test(id)).map((id) => id.toLowerCase()))];
   const out: Record<string, "running" | "over" | "gone"> = {};
   if (wanted.length === 0) return { ok: true, value: out };
-  const { data, error } = await admin.from("prayer_campaigns").select("id, status, ends_at").in("id", wanted);
+  const { data, error } = await admin.from("prayer_campaigns").select("id, status, ends_at, days").in("id", wanted);
   if (error) {
     if (reworkAbsent(error)) return { ok: false, why: "absent" };
     return { ok: false, why: "failed" };
   }
-  const byId = new Map(((data ?? []) as { id: string; status: string; ends_at: string | null }[]).map((r) => [r.id.toLowerCase(), r]));
+  const byId = new Map(((data ?? []) as { id: string; status: string; ends_at: string | null; days: number | null }[]).map((r) => [r.id.toLowerCase(), r]));
   for (const id of wanted) {
     const r = byId.get(id);
-    out[id] = !r || r.status === "removed" ? "gone" : isOver(r, now) ? "over" : "running";
+    // One of July's runs for nobody (isJulyRow): over, as its creator sees it.
+    out[id] = !r || r.status === "removed" ? "gone" : isJulyRow(r) || isOver(r, now) ? "over" : "running";
   }
   return { ok: true, value: out };
 }
