@@ -6,7 +6,7 @@ import { BoardRow } from "@/components/campaigns/CampaignRow";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SegmentedSwitch } from "@/components/ui/SegmentedSwitch";
 import { fetchMany } from "@/lib/campaigns/client";
-import { MANY_SPANS, type ManySpan, type PublicCampaign } from "@/lib/campaigns/model";
+import { MANY_SPANS, ofKind, type CampaignKind, type ManySpan, type PublicCampaign } from "@/lib/campaigns/model";
 import { useCampaignPart } from "@/lib/campaigns/useCampaignsOpen";
 
 /**
@@ -37,7 +37,8 @@ const SPAN_LABEL: Record<ManySpan, string> = {
   year: "campaigns.many.year",
 };
 
-export function PrayedByMany() {
+/** `kind`: the kind chosen behind the board's sliders, if one is: this list keeps to it too, so the page says one thing. */
+export function PrayedByMany({ kind = null }: { kind?: CampaignKind | null }) {
   const { t } = useTranslate();
   const on = useCampaignPart("many");
   const [span, setSpan] = useState<ManySpan>("week");
@@ -70,7 +71,9 @@ export function PrayedByMany() {
   }, [on, any, span, lists]);
 
   if (!on || !any) return null;
-  const list = lists[span];
+  const whole = lists[span];
+  // Of the kind chosen, where this list holds any; otherwise as it is (lib/campaigns/model.ts, ofKind).
+  const list = whole ? ofKind(whole, kind) : whole;
 
   return (
     <section data-campaigns-many="" aria-labelledby="board-many" className="mt-9">

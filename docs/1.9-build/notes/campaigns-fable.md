@@ -4184,3 +4184,35 @@ server: a campaign run again is a new campaign through the same door.
 |---|---|
 | `campaigns.again` | Run it again |
 | `campaigns.again.note` | A new campaign, starting from what you wrote last time. Change anything you like. A moderator will read it first, and no one is added to it without choosing to be. |
+
+---
+
+## 32. A kind on the board: as built (2026-11-10)
+
+The notes, 2.10: "A choice of kind sits behind the sliders, as Talk
+together's filters do." No SQL, no server change, and no new words.
+
+- **Where.** On the board (`/campaigns`), at the end of the line that says
+  "Newly asked": the sliders Talk together already has
+  (`components/community/ActionMenu.tsx`), opening the same menu of choices.
+- **What it offers.** Only the kinds that are on the board now, in the start
+  screen's order, the reposed last, each by the name it already has ("An
+  illness", "A journey", "For the reposed"). With one kind on the board
+  there is nothing to choose, and no sliders are drawn.
+- **How it behaves.** One kind at a time. While one is on, the sliders are
+  lit and say its name; the same choice again goes back to every campaign.
+  "Prayed by many", when it is drawn, keeps to the same kind where it holds
+  any of it.
+- **Never an empty board by a choice.** A kind that has left the board since
+  it was chosen shows every campaign, not none.
+- **It asks nothing.** The board is asked for once, whole, and a choice
+  filters what is on the screen. Which kind of need a reader looks at is
+  told to no one, which the walk checks against every address the page asks
+  for.
+- **A filter, so a small control is right for it** (his rule on floating
+  pills, 2026-11-10): it switches what is on screen and leads nowhere.
+
+Held by `lib/campaigns/__tests__/boardKind.test.ts` (15 cases; twelve ways
+of breaking it tried, each caught). The walk: two flows. Still: the board
+with a kind chosen (38). Its accessible name is a line the catalog has,
+"What for".

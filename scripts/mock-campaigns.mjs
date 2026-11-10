@@ -983,6 +983,18 @@ await shot("35-campaign-place", "a campaign's page with its place beside who sta
   },
 });
 
+// 38 The board with a kind chosen behind the sliders: they are lit and say its name, and the list keeps to it.
+await shot("38-board-kind", "the board with a kind chosen behind the sliders", "/campaigns", "[data-campaign-board]", {
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaign-board] [data-campaign-row]", { timeout: 15000 });
+    await page.locator('[data-campaign-board] button[aria-haspopup=menu]').click();
+    await page.locator("[role=menuitemradio]", { hasText: "An illness" }).click();
+    await settle(page, 600);
+    await page.evaluate(() => document.activeElement?.blur());
+    await whole(page);
+  },
+});
+
 // Run it again (1.9; the notes, 2.2): a new campaign from the parts of one that is over.
 
 // 36 One of the reader's own that is over: Run it again stands where Add to my prayers stood.
@@ -1040,7 +1052,7 @@ async function pictureWalk(label, ...rest) {
   if (!FLOWS.length || FLOWS.some((f) => label.toLowerCase().includes(f))) console.log(`left  ${label}: needs an export cut with pictures (PICTURES_BUILD=1; see the header)`);
 }
 
-async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false, circles = false, holds } = {}) {
+async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false, circles = false, holds, board } = {}) {
   if (FLOWS.length && !FLOWS.some((f) => label.toLowerCase().includes(f))) return;
   const seed = {
     "purify.prayers.campaigns": JSON.stringify(CARRIED),
@@ -1058,7 +1070,7 @@ async function walk(label, where, run, { set = {}, signedIn = true, mine, closed
     // With `holdOpen`, the website's answer to "are campaigns open for this reader" waits for the flow's own word.
     let letGo = () => {};
     const heldOpen = holdOpen ? { until: new Promise((done) => (letGo = done)) } : null;
-    await answer(ctx, { mine, closed, parts, pictures, heldOpen, circles, holds });
+    await answer(ctx, { mine, closed, parts, pictures, heldOpen, circles, holds, board });
     await go(page, where);
     await settle(page, 1800);
     try {
@@ -1414,6 +1426,49 @@ if (WALK) {
     const place = page.locator("[data-mod-campaign] [data-mod-campaign-place]");
     expectThat((await place.count()) === 1 && plain(await place.innerText()) === "Place: Novi Sad, Serbia", `the moderators' list says "${(await place.count()) ? plain(await place.innerText()) : "nothing"}"`);
   });
+
+  // A kind on the board (1.9; the notes, 2.10).
+  await walk("the board: a kind behind the sliders keeps the list to it, the same choice again shows every campaign, and the server is asked nothing for it", "/campaigns", async (page) => {
+    const rows = page.locator("[data-campaign-board] [role=group][aria-labelledby=board-asked] [data-campaign-row]");
+    await rows.first().waitFor({ timeout: 15000 });
+    expectThat((await rows.count()) === 4, `the board begins with ${await rows.count()} campaigns`);
+    const sliders = page.locator("[data-campaign-board] button[aria-haspopup=menu]");
+    expectThat((await sliders.getAttribute("aria-label")) === "What for", `the sliders are named "${await sliders.getAttribute("aria-label")}"`);
+    const boardAsks = () => calls.filter((c) => c.path === "/api/campaigns" && c.method === "GET").length;
+    const before = boardAsks();
+    await sliders.click();
+    const items = page.locator("[role=menu] [role=menuitemradio]");
+    await items.first().waitFor({ timeout: 8000 });
+    // Only the kinds that are on the board, in the start screen's order, the reposed last; none ticked yet.
+    expectThat((await items.allInnerTexts()).map((x) => x.trim()).join("|") === "An illness|An exam or studies|Thanksgiving|For the reposed", `the sliders offer ${(await items.allInnerTexts()).join(" | ")}`);
+    expectThat((await page.locator("[role=menu] [role=menuitemradio][aria-checked=true]").count()) === 0, "a kind is ticked before one is chosen");
+    await items.filter({ hasText: "An illness" }).click();
+    await settle(page, 500);
+    expectThat((await rows.count()) === 1 && (await rows.first().innerText()).includes("For Maria before her operation"), `an illness shows ${(await rows.allInnerTexts()).map((x) => x.split("\n")[0]).join(" | ")}`);
+    expectThat((await sliders.innerText()).includes("An illness"), "the sliders do not say the kind that is on");
+    // Another kind takes its place: one at a time.
+    await sliders.click();
+    await page.locator("[role=menu] [role=menuitemradio]", { hasText: "For the reposed" }).click();
+    await settle(page, 500);
+    expectThat((await rows.count()) === 1 && (await rows.first().innerText()).includes("Forty days for Nicholas"), "the reposed are not shown alone");
+    // The lit choice again: every campaign, and the sliders say no kind.
+    await sliders.click();
+    expectThat((await page.locator("[role=menu] [role=menuitemradio][aria-checked=true]").innerText()).includes("For the reposed"), "the kind that is on is not ticked");
+    await page.locator("[role=menu] [role=menuitemradio]", { hasText: "For the reposed" }).click();
+    await settle(page, 500);
+    expectThat((await rows.count()) === 4, `the same choice again shows ${await rows.count()} campaigns`);
+    expectThat(!(await sliders.innerText()).includes("For the reposed"), "the sliders still say a kind");
+    expectThat(boardAsks() === before, `the board was asked for ${boardAsks() - before} more times for the choice`);
+    // Which kind a reader looks at is told to no one: no address asked for names one.
+    expectThat(!asked.some((a) => /kind|intention|healing|departed/.test(a)), `a kind was sent to the server: ${asked.filter((a) => /kind|intention|healing|departed/.test(a)).join(", ")}`);
+  });
+
+  await walk("the board: with one kind on it there is no choice to make, and no sliders", "/campaigns", async (page) => {
+    const rows = page.locator("[data-campaign-board] [role=group][aria-labelledby=board-asked] [data-campaign-row]");
+    await rows.first().waitFor({ timeout: 15000 });
+    expectThat((await rows.count()) === 2, `the board has ${await rows.count()} campaigns`);
+    expectThat((await page.locator("[data-campaign-board] button[aria-haspopup=menu]").count()) === 0, "sliders are drawn with one kind to choose from");
+  }, { board: [CAMPAIGNS[MARIA], { ...CAMPAIGNS[THOMAS], circle: undefined, id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaab0" }] });
 
   // Run it again (1.9; the notes, 2.2).
   await walk("run it again: offered to its creator once a campaign is over; the start page begins with its parts and nothing ticked, and a new campaign is sent", `/campaigns/detail?id=${ENDED}`, async (page) => {

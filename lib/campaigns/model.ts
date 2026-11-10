@@ -181,6 +181,30 @@ export function isOver(c: { status: string; ends_at?: string | null }, now: numb
   return c.status === "active" && !isRunning(c, now);
 }
 
+// ── A kind on the board ─────────────────────────────────────────────────────
+//
+// The notes, 2.10: "A choice of kind sits behind the sliders, as Talk
+// together's filters do." It filters what is on the screen and nothing more:
+// the board is asked for once, whole, and a choice asks the server nothing.
+
+/** A campaign's kind as the board sorts by it. The reposed are one kind, whatever else a row says. */
+export function boardKind(c: Pick<PublicCampaign, "for_whom" | "intention">): CampaignKind {
+  if (c.for_whom === "departed") return "departed";
+  return c.intention === "departed" ? "other" : c.intention;
+}
+
+/** The kinds on a board, each once, in the order the start screen lists them, the reposed last. A choice is offered only among what is there. */
+export function boardKinds(list: readonly Pick<PublicCampaign, "for_whom" | "intention">[]): CampaignKind[] {
+  const there = new Set(list.map(boardKind));
+  return ([...LIVING_KINDS, "departed"] as CampaignKind[]).filter((k) => there.has(k));
+}
+
+/** The campaigns of one kind, in the order they came; all of them when no kind is chosen, or when the kind chosen is no longer on the board. */
+export function ofKind<T extends Pick<PublicCampaign, "for_whom" | "intention">>(list: readonly T[], kind: CampaignKind | null): T[] {
+  if (kind === null || !list.some((c) => boardKind(c) === kind)) return [...list];
+  return list.filter((c) => boardKind(c) === kind);
+}
+
 // ── Run it again ────────────────────────────────────────────────────────────
 //
 // The notes, 2.2: forty days is the ceiling, and "a need that lasts longer is

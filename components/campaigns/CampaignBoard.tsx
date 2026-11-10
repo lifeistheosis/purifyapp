@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { BoardRow } from "@/components/campaigns/CampaignRow";
+import { ActionMenu } from "@/components/community/ActionMenu";
 import { PrayedByMany } from "@/components/campaigns/PrayedByMany";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { WayPlate } from "@/components/prayers/mine/WayRow";
@@ -11,8 +12,10 @@ import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Plus } from "@/components/ui/icons/Plus";
 import { Scroll } from "@/components/ui/icons/Scroll";
+import { Sliders } from "@/components/ui/icons/Sliders";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { fetchBoard, type BoardResult } from "@/lib/campaigns/client";
+import { KIND_LABEL, boardKinds, ofKind, type CampaignKind } from "@/lib/campaigns/model";
 import { useCampaignUpkeep } from "@/lib/campaigns/useCampaignUpkeep";
 
 /** The id of the page's own heading: its bar takes the name once this has gone up under it. */
@@ -24,9 +27,15 @@ const DOOR_ROW = "set-link rule-way flex w-full items-center gap-3 text-start";
  * Every campaign running now (1.9), where "See all" under Pray together
  * leads: the page's name and its one line, the way to start one, the
  * campaigns as rows of one lit panel, newest first, and under them the
- * reader's own and the rules. A choice of kind behind the sliders comes with
- * the campaigns to choose among (phase 4 of docs/1.9-build/notes/
- * campaigns-fable.md); until then the board is one list.
+ * reader's own and the rules.
+ *
+ * A choice of kind sits behind the sliders at the end of the list's heading,
+ * as Talk together's filters do (components/community/FeedTabs.tsx; the
+ * notes, 2.10): one kind at a time, the sliders lit and saying its name
+ * while one is on, and the lit choice again goes back to every campaign. It
+ * is offered only when the board holds two kinds or more, and only among the
+ * kinds that are there. It filters what is on the screen: the board is asked
+ * for once, whole, and a choice asks the server nothing.
  *
  * Nobody is counted, here or anywhere: a row says what a campaign is for and
  * until when. "Prayed by many" (components/campaigns/PrayedByMany.tsx) shows
@@ -36,6 +45,8 @@ export function CampaignBoard() {
   const { t } = useTranslate();
   const [board, setBoard] = useState<BoardResult | null>(null);
   const [version, setVersion] = useState(0);
+  // The kind chosen behind the sliders, or none: every campaign.
+  const [kind, setKind] = useState<CampaignKind | null>(null);
   useCampaignUpkeep(true);
 
   useEffect(() => {
@@ -47,6 +58,12 @@ export function CampaignBoard() {
       live = false;
     };
   }, [version]);
+
+  const all = board?.state === "ok" ? board.campaigns : [];
+  const kinds = boardKinds(all);
+  // A kind that has left the board since it was chosen is no choice: every campaign is shown.
+  const chosen = kind !== null && kinds.includes(kind) ? kind : null;
+  const shown = ofKind(all, chosen);
 
   return (
     <section data-campaign-board="" className="bg-night px-5 pb-12 pt-6 md:px-8 md:py-14">
@@ -65,9 +82,30 @@ export function CampaignBoard() {
           </Link>
         </header>
 
-        <h2 id="board-asked" className="mt-9 font-sans text-detail font-semibold text-paper/80">
-          {t("campaigns.newlyAsked")}
-        </h2>
+        <div className="mt-9 flex min-h-11 items-center gap-3">
+          <h2 id="board-asked" className="min-w-0 flex-1 font-sans text-detail font-semibold text-paper/80">
+            {t("campaigns.newlyAsked")}
+          </h2>
+          {kinds.length > 1 ? (
+            <ActionMenu
+              className="shrink-0"
+              label={t("campaigns.new.whatFor")}
+              lit={chosen !== null}
+              glyph={
+                <>
+                  <Sliders size={19} />
+                  {chosen ? <span className="max-w-[11rem] truncate">{t(KIND_LABEL[chosen])}</span> : null}
+                </>
+              }
+              items={kinds.map((k) => ({
+                label: t(KIND_LABEL[k]),
+                checked: k === chosen,
+                // The lit choice again goes back to every campaign.
+                onSelect: () => setKind(k === chosen ? null : k),
+              }))}
+            />
+          ) : null}
+        </div>
         <div className="mt-2">
           {board === null ? (
             <div aria-busy aria-label={t("shop.gatheringTheCampaigns")}>
@@ -90,8 +128,8 @@ export function CampaignBoard() {
           ) : board.campaigns.length === 0 ? (
             <p className="font-sans text-detail leading-relaxed text-paper/70">{t("campaigns.newlyAskedNone")}</p>
           ) : (
-            <div className="set-panel" role="group" aria-labelledby="board-asked">
-              {board.campaigns.map((c) => (
+            <div className="set-panel" role="group" aria-labelledby="board-asked" data-board-kind={chosen ?? "all"}>
+              {shown.map((c) => (
                 <BoardRow key={c.id} campaign={c} />
               ))}
             </div>
@@ -101,7 +139,7 @@ export function CampaignBoard() {
         {/* "Prayed by many", the second list and never the first: built, and
             switched off on the server (lib/campaigns/parts.ts). It draws
             nothing and asks nothing until the server says it is on. */}
-        <PrayedByMany />
+        <PrayedByMany kind={chosen} />
 
         {/* The reader's own, and the rules, as rows of a panel of their own. */}
         <div className="set-panel mt-9">
