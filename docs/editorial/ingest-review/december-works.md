@@ -272,6 +272,10 @@ Each passage was cut from CCEL's transcription of the printed volume and compare
 
 ## My Life in Christ (`data/saints/john-of-kronstadt/my-life-in-christ.json`)
 
+**How this book was made.** No transcription of it exists, so it was typed from the page images of three archive.org scans of the 1897 printing (mylifeinchristex00serguoft, whose page images were read, mylifeinchrist00sergiala and MyLifeInChrist) by `scripts/menologion/scan-draft/book.py`, with its settings in `kronstadt.json`. The three scans' words are lined up page by page and voted on word by word: where two read alike, their reading stands. Every place the vote left open (841 of them: three readings, one reading alone, a word in no dictionary, a mark that may be a question mark, two scans agreeing against a likelier word in the third) was read on Toronto's page image. A sweep of the finished text then looked for what a vote cannot see (stray figures and marks, a small letter after a full stop, quotation marks that do not balance in a paragraph, compounds split at a line's end, paragraph breaks against the page's layout), and every hit was read on the page too. Each reading is a line of `scripts/menologion/scan-draft/kronstadt-fixes.tsv`. Below, the finished text is compared once more with the three scans' own text.
+
+**What this cannot catch.** A word that all three scans misread alike into another real word that still makes sense: the vote sees three scans agree, and the sweep sees nothing out of place. Some were caught in the reading ("earnest" for "camest" eight times, and once for "carriest"), but a shared slip into an equally fitting word would pass unseen. So would a stop all three misread alike, a comma for a full stop. The owner was told he can ask for a full page-by-page reading (about two days more).
+
 - **my-life-in-christ §1**: 247867 words, 1823 paragraphs found in mylifeinchristex00serguoft and mylifeinchrist00sergiala and MyLifeInChrist.
   - misreading: "reflection" (the scans read "leflection of / leflection of / leflection of")
   - misreading: "proportion" (the scans read "propor st / propor st / propor st")

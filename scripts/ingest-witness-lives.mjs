@@ -689,7 +689,7 @@ async function main() {
   let open = 0;
   for (const spec of todo) {
     const { doc, checks } = await buildLife(spec);
-    built.push({ doc, checks });
+    built.push({ doc, checks, method: spec.method });
     for (const c of checks) {
       open += c.open.length;
       console.log(`${c.label}: ${c.words} words, ${c.located} paragraphs found in the scans`);
@@ -738,9 +738,12 @@ function writeReview(month, built, kind = "lives") {
       : "Each passage was cut from CCEL's transcription of the printed volume and compared word for word with archive.org's text of scans of that printing. A word the scans read differently was read on the page image and settled: a **fix** puts the page's word in place of CCEL's; a **misreading** is a word the page has as we have it, which the scans' OCR misread. A **doubt** is a word one scan alone could not confirm; most are the OCR's letters, listed here so a person can check any of them.",
     "",
   ];
-  for (const { doc, checks } of built) {
+  for (const { doc, checks, method } of built) {
     const at = kind === "held" ? `docs/editorial/held/${month}` : "data/saints";
     lines.push(`## ${doc.title} (\`${at}/${doc.saint}/${doc.slug}.json\`)`, "");
+    // A work made another way than the header says (My Life in Christ, typed
+    // from the page) states its own method here, and what it cannot catch.
+    if (method) lines.push(method, "");
     if (!checks.length) {
       lines.push("Scripture from the app's own Bible, word for word; no scan to compare.", "");
       continue;

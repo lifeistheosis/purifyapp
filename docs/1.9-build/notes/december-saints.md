@@ -201,10 +201,12 @@ there.
     `sectionNumbers` switch in the ingest).
   - Socrates IV.30 in CCEL lost the page's opening quotation marks and a
     comma; they are put back from the page (pp. 113 and 114).
-  - **For his word**: Mouravieff says the khan and the Mongols "had lately
-    embraced the lying imposture of the Koran". It stays, word for word, as
-    the "shame of the Jews" kontakion did; it can be cut and shown as […] if
-    he wants it out.
+  - **His word (call 20)**: Mouravieff says the khan and the Mongols "had
+    lately embraced the lying imposture of the Koran". On his "Yes to all
+    recommended suggestions" (2026-11-10, about 20:07 UTC) the clause is cut
+    and shown as […] ("the Khan Uzbek and the Mongols […]; and the
+    certificate"), and the source line says "Where […] stands, words of
+    Mouravieff's are left out." His Life is 1,206 words.
 - **Links**: 45 calendar lines open pages (the 40, St Ambrose, St Peter of
   Moscow, St Stephen's feast, and the Conception and "Unexpected Joy", which
   open the Theotokos's). History's Great Persecution names the Martyrs of
