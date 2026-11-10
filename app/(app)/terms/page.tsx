@@ -1,4 +1,5 @@
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { T } from "@/components/i18n/T";
 import { TermsText } from "@/components/legal/TermsText";
 
 export const metadata = {
@@ -21,8 +22,10 @@ export default function TermsPage() {
       <MobileTopBar titleKey="terms.eyebrow" back />
       <section className={`${SECTION} bg-night`}>
         <article className="mx-auto w-full max-w-[760px]">
+        {/* The catalog's words, as the bar's title and the Privacy page's are:
+            the reader's language over the English text (build 90 note 4). */}
         <p className="mb-4 font-sans text-detail font-semibold text-paper/55">
-          Terms of Service
+          <T k="terms.eyebrow" />
         </p>
         <TermsText />
         </article>

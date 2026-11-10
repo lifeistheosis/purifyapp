@@ -5,6 +5,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
 import { isNetworkFailure } from "@/lib/api/networkFailure";
 import { cn } from "@/lib/cn";
+import { textDir } from "@/lib/i18n/textDir";
 
 // Shared loading / error / sign-in states for the client shop pages. The shop
 // is online-only inside the native shell, so a dropped connection lands on
@@ -155,23 +156,31 @@ export function ShopError({
 }
 
 /** Signed-out state for the shop's account-scoped pages (orders, messages,
- *  requests). Bounces through /signin with a `next` back to the same page. */
+ *  requests). Bounces through /signin with a `next` back to the same page.
+ *  A title or body written in English, not yet in the catalogs, says so with
+ *  `titleLang` / `bodyLang` (build 90 note 4). */
 export function ShopSignInPrompt({
   title,
   body,
   next,
   extra,
+  titleLang,
+  bodyLang,
 }: {
   title: string;
   body: string;
   next: string;
   extra?: React.ReactNode;
+  titleLang?: string;
+  bodyLang?: string;
 }) {
   const { t } = useTranslate();
   return (
     <div className="mx-auto w-full max-w-[680px] px-5 pt-10 md:px-8 md:pt-14">
-      <h1 className="text-heading text-paper">{title}</h1>
-      <p className="mt-4 font-serif text-body text-paper/70 leading-[1.65]">
+      <h1 lang={titleLang} dir={textDir(titleLang)} className="text-heading text-paper">
+        {title}
+      </h1>
+      <p lang={bodyLang} dir={textDir(bodyLang)} className="mt-4 font-serif text-body text-paper/70 leading-[1.65]">
         {body}
       </p>
       <div className="mt-6 flex gap-3">

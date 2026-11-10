@@ -339,7 +339,11 @@ export function ParagraphRow({
  className="scroll-mt-24 group relative -mx-2 px-2 py-0.5 rounded transition-[background-color,box-shadow] duration-500 ease-out"
  >
  <div className="flex items-start gap-2">
+ {/* A work of the Fathers is English in every language the app speaks
+     (no work has another yet), and says so (build 90 note 4). */}
  <p
+ lang="en"
+ dir="ltr"
  className={cn(
  // Font family + size are inherited from the reader container
 				// (FONT_CLASSES/SIZE_CLASSES on the WritingReader <article>) so the

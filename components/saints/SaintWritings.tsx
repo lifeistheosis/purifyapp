@@ -89,9 +89,10 @@ export function SaintWritings({
             key={w.slug}
             href={workHref(saintSlug, w.slug)}
             cover={<WorkCover title={w.title} author={w.author === undefined ? saintName : (w.author ?? t("reading.work.anonymous"))} iconUrl={w.cover?.src} focusY={w.cover?.focusY} size="sm" />}
-            title={w.title}
-            meta={[w.subtitle, w.year].filter(Boolean).join(" · ") || undefined}
-            blurb={w.blurb}
+            // A work's title, its subtitle and its blurb are English (build 90 note 4).
+            title={<span lang="en" dir="ltr">{w.title}</span>}
+            meta={[w.subtitle, w.year].filter(Boolean).length ? <span lang="en" dir="ltr">{[w.subtitle, w.year].filter(Boolean).join(" · ")}</span> : undefined}
+            blurb={w.blurb ? <span lang="en" dir="ltr">{w.blurb}</span> : undefined}
           />
         ))}
       </ul>

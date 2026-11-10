@@ -8867,11 +8867,14 @@ await section(59, async () => {
         const leaf = (w) => w && [...document.querySelectorAll("main *")].find((el) => el.children.length === 0 && (el.textContent ?? "").includes(w));
         const langOf = (el) => (el ? (el.closest("[lang]")?.getAttribute("lang") ?? null) : null);
         // The reader's own words set left to right, or announced in another language.
-        const ARABIC = /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/;
+        const ARABIC = /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/g;
         const html = document.documentElement.lang;
         const turned = [...document.querySelectorAll("main *")].filter((el) => {
           const words = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim();
-          if (!words || !ARABIC.test(words) || !el.getClientRects().length) return false;
+          if (!words || !el.getClientRects().length) return false;
+          // The reader's own words are mostly Arabic letters; an English line that
+          // names a language in its own script (a patch note) keeps its English mark.
+          if ((words.match(ARABIC) ?? []).length <= (words.match(/[A-Za-z]/g) ?? []).length) return false;
           return getComputedStyle(el).direction !== "rtl" || langOf(el) !== html;
         }).map((el) => `<${el.tagName.toLowerCase()}> "${(el.textContent ?? "").trim().slice(0, 30)}"`);
         return {
@@ -8914,6 +8917,35 @@ await section(59, async () => {
     must(await page.evaluate(() => !document.querySelector('p[lang="grc"]')), "Greek reader, /saints/: no Greek line, the heading says it already");
     await ctx.close();
   }
+});
+
+// ---- 60. English reads left to right under Arabic on the Updates chat's
+// families (1.9, build 90 note 4): the saints' index, a saint's page, a work
+// of the Fathers, an event and its peek, the dictionary, What's New, the
+// parish finder, the calendar and the Terms. The full walk is
+// scripts/rtl-walk.mjs; these catch a slip between full walks.
+await section(60, async () => {
+  console.log("\n60. English reads left to right under Arabic: the saints, history, the dictionary, What's New, parishes, the calendar, the Terms (build 90 note 4)");
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "CapacitorStorage.purify_locale": "ar" } });
+  const said = (out) => out.slice(0, 3).map((o) => `<${o.tag}> ${o.why}: "${o.words.slice(0, 40)}"`).join(" | ");
+  for (const at of ["/saints/", "/saints/alexander-of-alexandria/", "/saints/augustine-of-hippo/confessions/", "/history/alaska-mission/", "/dictionary/", "/whats-new/", "/parishes/", "/calendar/", "/terms/"]) {
+    await go(page, at);
+    await page.waitForTimeout(1500);
+    const dir = await page.evaluate(() => document.documentElement.getAttribute("dir"));
+    const out = await page.evaluate(englishOutOfPlace);
+    must(dir === "rtl" && out.length === 0, `${at} in Arabic: the page right to left, and no English running right to left or announced as Arabic${out.length ? ` (${out.length}: ${said(out)})` : ""}`);
+  }
+  // An event's peek, opened from the timeline with a tap, as a phone opens it.
+  await go(page, "/history/");
+  await page.waitForTimeout(1200);
+  await page.locator("[data-event-slug] a").first().click();
+  await page.waitForSelector("[data-event-peek]", { timeout: 10000 }).catch(() => {});
+  await page.waitForTimeout(700);
+  const peek = await page.evaluate(() => document.querySelector("[data-event-peek]")?.getAttribute("data-event-peek") ?? null);
+  const inPeek = await page.evaluate(englishOutOfPlace);
+  must(peek !== null && inPeek.length === 0, `an event's peek in Arabic (${peek ?? "not opened"}): no English running right to left or announced as Arabic${inPeek.length ? ` (${inPeek.length}: ${said(inPeek)})` : ""}`);
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
 });
 
 await browser.close();

@@ -1348,7 +1348,7 @@ export function WebConstellation({
               <span ref={middleRingRef} className={MIDDLE_RING_CLASS}>
                 <WebAvatar node={{ kind: "saint", id: "center", person: center, ties: [] }} size={CENTER_SIZE} />
               </span>
-              <span ref={middleNameRef} className={cn(MIDDLE_NAME_CLASS, LABEL_SHADOW)}>
+              <span ref={middleNameRef} lang="en" dir="ltr" className={cn(MIDDLE_NAME_CLASS, LABEL_SHADOW)}>
                 {center.short}
               </span>
             </div>
@@ -1394,6 +1394,8 @@ export function WebConstellation({
                       nameEls.current[i] = el;
                     }}
                     aria-hidden
+                    lang="en"
+                    dir="ltr"
                     className={cn(NAME_CLASS, node.kind === "saint" && !node.person.icon ? "text-paper/75" : "text-paper/95", LABEL_SHADOW)}
                   >
                     {name}
@@ -1419,7 +1421,7 @@ export function WebConstellation({
       </div>
 
       {/* Who is chosen, said once, without reading the whole card again; and whose web it is, once another web has taken the room. */}
-      <p className="sr-only" aria-live="polite">
+      <p lang="en" dir="ltr" className="sr-only" aria-live="polite">
         {selected ? (selected.kind === "saint" ? selected.person.name : selected.name) : ""}
       </p>
       <p className="sr-only" aria-live="polite">
@@ -1496,7 +1498,7 @@ function GlideGhosts({
               <span className={MIDDLE_RING_CLASS}>
                 <WebAvatar node={{ kind: "saint", id: "gone", person: old.center, ties: [] }} size={CENTER_SIZE} />
               </span>
-              <span className={cn(MIDDLE_NAME_CLASS, LABEL_SHADOW)}>{old.center.short}</span>
+              <span lang="en" dir="ltr" className={cn(MIDDLE_NAME_CLASS, LABEL_SHADOW)}>{old.center.short}</span>
             </div>
           );
         }
@@ -1512,7 +1514,7 @@ function GlideGhosts({
             <span className={cn("saint-web-ring rounded-full", node.kind === "council" && "rounded-[13px]")}>
               <WebAvatar node={node} size={NODE_SIZE} />
             </span>
-            <span className={cn(NAME_CLASS, tone(node), LABEL_SHADOW)}>{nameOf(node)}</span>
+            <span lang="en" dir="ltr" className={cn(NAME_CLASS, tone(node), LABEL_SHADOW)}>{nameOf(node)}</span>
             {tag ? <span className={cn(TAG_CLASS, LABEL_SHADOW)}>{tag}</span> : null}
           </div>
         );
@@ -1530,7 +1532,7 @@ function GlideGhosts({
           className="absolute left-0 top-0 flex w-[25.6%] flex-col items-center text-center"
           style={{ opacity: 0 }}
         >
-          <span className={cn(NAME_CLASS, tone(chosen), LABEL_SHADOW)}>{nameOf(chosen)}</span>
+          <span lang="en" dir="ltr" className={cn(NAME_CLASS, tone(chosen), LABEL_SHADOW)}>{nameOf(chosen)}</span>
           {tagOf(chosen, t) ? <span className={cn(TAG_CLASS, LABEL_SHADOW)}>{tagOf(chosen, t)}</span> : null}
         </div>
       ) : null}
@@ -1542,7 +1544,7 @@ function GlideGhosts({
             style={{ width: CENTER_SIZE, height: CENTER_SIZE, opacity: 0 }}
           />
           <div ref={(el) => onOld("shrinkName", el)} className="absolute left-0 top-0 flex w-[180px] flex-col items-center" style={{ opacity: 0 }}>
-            <span className={cn(MIDDLE_NAME_CLASS, LABEL_SHADOW)}>{old.center.short}</span>
+            <span lang="en" dir="ltr" className={cn(MIDDLE_NAME_CLASS, LABEL_SHADOW)}>{old.center.short}</span>
           </div>
         </>
       ) : null}

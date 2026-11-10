@@ -34,8 +34,8 @@ export function EventPeople({ people }: { people: EventPerson[] }) {
               </span>
             ) : null}
             <span className="min-w-0 flex-1">
-              <span className="block font-sans text-ui font-semibold leading-snug text-paper">{person.name}</span>
-              <span className="mt-0.5 block font-sans text-detail leading-[1.5] text-paper/60">{person.role}</span>
+              <span lang="en" dir="ltr" className="block font-sans text-ui font-semibold leading-snug text-paper">{person.name}</span>
+              <span lang="en" dir="ltr" className="mt-0.5 block font-sans text-detail leading-[1.5] text-paper/60">{person.role}</span>
             </span>
             {saint ? <ChevronRight size={15} className="shrink-0 text-paper/40 rtl:-scale-x-100" /> : null}
           </>

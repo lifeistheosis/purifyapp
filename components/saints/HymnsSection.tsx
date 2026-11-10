@@ -59,16 +59,16 @@ export async function HymnsSection({ slug }: { slug: string }) {
           <p className="font-sans text-caption font-semibold text-paper/55">
             <T k="saints.voice.liturgicalLabel" />
           </p>
-          <h2 className="mt-1 text-title-sm leading-tight text-paper">{section.title}</h2>
+          <h2 lang="en" dir="ltr" className="mt-1 text-title-sm leading-tight text-paper">{section.title}</h2>
           {section.framing ? (
             <div className="mt-4">
               <p className="font-sans text-caption font-semibold text-paper/55">
                 <T k="saints.editorsNote" />
               </p>
-              <p className="mt-1 font-sans text-ui italic leading-[1.65] text-paper/70">{section.framing}</p>
+              <p lang="en" dir="ltr" className="mt-1 font-sans text-ui italic leading-[1.65] text-paper/70">{section.framing}</p>
             </div>
           ) : null}
-          <div className="mt-5 space-y-4">
+          <div lang="en" dir="ltr" className="mt-5 space-y-4">
             {section.paragraphs.map((p, i) => (
               <p key={i} className="font-serif text-lede leading-[1.7] text-paper/85">
                 {p}
@@ -76,7 +76,7 @@ export async function HymnsSection({ slug }: { slug: string }) {
             ))}
           </div>
           {section.citation ? (
-            <p className="mt-4 font-sans text-caption leading-snug text-paper/55">{section.citation}</p>
+            <p lang="en" dir="ltr" className="mt-4 font-sans text-caption leading-snug text-paper/55">{section.citation}</p>
           ) : null}
           <Link
             href={`/saints/${slug}/${ref.work}#s${ref.section}`}

@@ -288,7 +288,7 @@ async function WhatsNewContent() {
                   >
                     <summary className="cursor-pointer list-none px-4 py-3 flex items-center justify-between gap-3">
                       <span className="flex items-baseline gap-3 min-w-0">
-                        <span className="font-sans text-detail font-semibold text-paper/90 truncate">
+                        <span lang="en" dir="ltr" className="font-sans text-detail font-semibold text-paper/90 truncate">
                           {mo.label}
                         </span>
                         <span className="font-sans text-caption text-paper/55">
@@ -314,6 +314,8 @@ async function WhatsNewContent() {
                             <span className="flex items-baseline gap-3 min-w-0">
                               <span
                                 title={d.date}
+                                lang="en"
+                                dir="ltr"
                                 className="font-sans text-detail font-medium text-paper/85 truncate"
                               >
                                 {d.label}

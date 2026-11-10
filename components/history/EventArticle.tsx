@@ -84,8 +84,10 @@ function Block({ block }: { block: EssayBlock }) {
 
 function Blocks({ blocks }: { blocks?: EssayBlock[] }) {
   if (!blocks?.length) return null;
+  // The account is English for every reader, and says so (build 90 note 4);
+  // a quotation's source line says the reader's own language on its frame.
   return (
-    <div className="space-y-5">
+    <div lang="en" dir="ltr" className="space-y-5">
       {blocks.map((b, i) => (
         <Block key={i} block={b} />
       ))}
@@ -130,7 +132,7 @@ function SourceList({ labelKey, sources }: { labelKey: string; sources: SourceCi
       <ul className="mt-3 space-y-4">
         {sources.map((s, i) => (
           <li key={i}>
-            <p className="font-sans text-ui leading-[1.6] text-paper/85">
+            <p lang="en" dir="ltr" className="font-sans text-ui leading-[1.6] text-paper/85">
               {s.url ? (
                 <a
                   href={s.url}
@@ -144,7 +146,7 @@ function SourceList({ labelKey, sources }: { labelKey: string; sources: SourceCi
                 s.label
               )}
             </p>
-            {s.note ? <p className="mt-1 font-sans text-detail leading-[1.55] text-paper/60">{s.note}</p> : null}
+            {s.note ? <p lang="en" dir="ltr" className="mt-1 font-sans text-detail leading-[1.55] text-paper/60">{s.note}</p> : null}
           </li>
         ))}
       </ul>
@@ -165,11 +167,13 @@ function Scripture({ refs }: { refs: string[] }) {
           return (
             <li key={ref} className="font-sans text-ui">
               {href ? (
-                <Link href={href} className="text-link underline-offset-4 hover:underline">
+                <Link href={href} lang="en" dir="ltr" className="text-link underline-offset-4 hover:underline">
                   {ref}
                 </Link>
               ) : (
-                <span className="text-paper/75">{ref}</span>
+                <span lang="en" dir="ltr" className="text-paper/75">
+                  {ref}
+                </span>
               )}
             </li>
           );
@@ -187,16 +191,26 @@ export function EventHeader({ meta }: { meta: HistoryEventMeta }) {
   return (
     <header>
       <p className="font-sans text-caption font-semibold text-paper/60 tabular-nums">
-        <T k={eraKey(meta.era, "short")} /> · {meta.displayDate}
-        {meta.region ? <span className="font-normal text-paper/55"> · {meta.region}</span> : null}
+        {/* The era in the reader's words; the date and the place as the account writes them, in English. */}
+        <T k={eraKey(meta.era, "short")} /> · <span lang="en" dir="ltr">{meta.displayDate}</span>
+        {meta.region ? (
+          <span className="font-normal text-paper/55">
+            {" · "}
+            <span lang="en" dir="ltr">
+              {meta.region}
+            </span>
+          </span>
+        ) : null}
       </p>
       <h1
         id="event-title"
+        lang="en"
+        dir="ltr"
         className="mt-2 text-heading font-bold leading-[1.1] tracking-[-0.01em] text-paper text-balance md:text-display-sm"
       >
         {meta.title}
       </h1>
-      <p className="mt-4 font-sans text-lede leading-[1.55] text-paper/80">{meta.summary}</p>
+      <p lang="en" dir="ltr" className="mt-4 font-sans text-lede leading-[1.55] text-paper/80">{meta.summary}</p>
       <InEnglishNote />
     </header>
   );
@@ -299,7 +313,7 @@ export function EventArticle({
           <T k={certaintyKey(meta.certainty, "gloss")} />
         </p>
         {body.uncertainty ? (
-          <p className="mt-3 font-sans text-ui leading-[1.65] text-paper/75">{body.uncertainty}</p>
+          <p lang="en" dir="ltr" className="mt-3 font-sans text-ui leading-[1.65] text-paper/75">{body.uncertainty}</p>
         ) : null}
         <SourceList labelKey="study.history.primarySources" sources={primary} />
         <SourceList labelKey="study.history.furtherReading" sources={secondary} />

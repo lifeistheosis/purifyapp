@@ -14,8 +14,10 @@ export function BoardMessageView({ message }: { message: BoardMessage }) {
     timeZone: "UTC",
   });
 
+  // Written in English, its date too, and says so with its direction
+  // (build 90 note 4), so an Arabic reader reads it left to right.
   return (
-    <section className="mb-12 md:mb-16" aria-labelledby="board-headline">
+    <section lang="en" dir="ltr" className="mb-12 md:mb-16" aria-labelledby="board-headline">
       <div className="flex items-baseline justify-between flex-wrap gap-3">
         <p className="font-sans text-detail font-semibold text-gold/85">
           {message.eyebrow}

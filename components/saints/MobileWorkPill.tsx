@@ -15,6 +15,7 @@ import { KEPT_AT, blockAt, placeIn, visibleBand } from "@/lib/ui/readingPlace";
 
 import { usePartWords } from "./partWords";
 import { WORK_HEAD_ID } from "./WorkHead";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * A work's pill, floating at the foot of the page on a phone and a tablet:
@@ -57,6 +58,8 @@ export function MobileWorkPill({
   const { pill } = usePartWords();
   const covered = useOverlayOpen();
   const name = pill(head);
+  // A name of the work's own is English; one from the catalog is the reader's.
+  const nameLang = "text" in head.pill.name ? "en" : undefined;
   const arrow = "h-10 w-10 shrink-0 inline-flex items-center justify-center";
   return (
     <div
@@ -103,7 +106,7 @@ export function MobileWorkPill({
           className="flex h-11 min-w-0 items-center px-2 font-sans text-[15px] font-semibold leading-tight text-paper"
         >
           {/* A long name gives way, at its end. */}
-          <span lang={"text" in head.pill.name ? "en" : undefined} className="truncate">
+          <span lang={nameLang} dir={textDir(nameLang)} className="truncate">
             {name}
           </span>
         </button>

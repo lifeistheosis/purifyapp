@@ -98,22 +98,22 @@ export function NoteBody({
   return (
     <div data-walk-note-sheet className="pb-2">
       <p className="font-sans text-caption text-paper/55">{t("walk.verseRef", { book: bookLabel, chapter, verse: note.verse })}</p>
-      <p lang="en" className="mt-2 font-serif text-lede leading-[1.4] text-paper">
+      <p lang="en" dir="ltr" className="mt-2 font-serif text-lede leading-[1.4] text-paper">
         {note.hook}
       </p>
-      <p lang="en" className="mt-3 font-sans text-body leading-[1.6] text-paper/80">
+      <p lang="en" dir="ltr" className="mt-3 font-sans text-body leading-[1.6] text-paper/80">
         {note.body}
       </p>
       <NoteFigures cardId={note.id} />
 
       {note.father ? (
         <figure className="mt-6">
-          <blockquote lang="en" className="font-serif text-body italic leading-[1.65] text-paper/90">
+          <blockquote lang="en" dir="ltr" className="font-serif text-body italic leading-[1.65] text-paper/90">
             {QUOTE_OPEN}
             {note.father.excerpt}
             {QUOTE_CLOSE}
           </blockquote>
-          <figcaption lang="en" className="mt-2 font-sans text-caption leading-[1.5] text-paper/55">
+          <figcaption lang="en" dir="ltr" className="mt-2 font-sans text-caption leading-[1.5] text-paper/55">
             {/* The line's exact place, the book and its paragraph, which it
                 opens (1.8); the walk's own credit where it has none. */}
             {fatherCite ? <SourceLine cite={fatherCite} /> : fatherSource}
@@ -122,7 +122,7 @@ export function NoteBody({
       ) : null}
 
       <p className="mt-6 font-sans text-caption font-semibold text-paper/55">{t("walk.carry")}</p>
-      <p lang="en" className="mt-1 font-serif text-body leading-[1.5] text-paper">
+      <p lang="en" dir="ltr" className="mt-1 font-serif text-body leading-[1.5] text-paper">
         {note.question}
       </p>
 

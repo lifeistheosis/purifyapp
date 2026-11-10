@@ -44,7 +44,7 @@ export default function CreditsPage() {
             <ul className="mt-10 space-y-8">
               {credits.map((c) => (
                 <li key={c.file} data-credit={c.file}>
-                  <p lang="en" className="font-serif text-body leading-[1.6] text-paper">
+                  <p lang="en" dir="ltr" className="font-serif text-body leading-[1.6] text-paper">
                     {c.work}
                   </p>
                   <p className="mt-1.5 font-sans text-ui text-paper/80">

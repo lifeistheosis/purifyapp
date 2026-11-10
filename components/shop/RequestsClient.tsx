@@ -74,6 +74,7 @@ export function RequestsClient() {
       <ShopSignInPrompt
         title={t("shop.yourIconRequests")}
         body="Sign in to see requests tied to your account. Requests sent with an email address only are answered by email."
+        bodyLang="en"
         next="/shop/requests"
         extra={
           <Link

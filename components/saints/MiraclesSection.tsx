@@ -31,7 +31,7 @@ export async function MiraclesSection({ slug }: { slug: string }) {
     {content.sections.map((sec) => (
      <article key={sec.n}>
       {sec.title && (
-       <h2 className="mb-4 text-title-sm leading-[1.2] text-paper md:text-title">
+       <h2 lang="en" dir="ltr" className="mb-4 text-title-sm leading-[1.2] text-paper md:text-title">
         {sec.title}
        </h2>
       )}
@@ -41,19 +41,19 @@ export async function MiraclesSection({ slug }: { slug: string }) {
         <p className="font-sans text-caption font-semibold text-paper/55">
          <T k="saints.editorsNote" />
         </p>
-        <p className="mt-1 font-sans text-ui italic leading-[1.65] text-paper/70 md:text-body">
+        <p lang="en" dir="ltr" className="mt-1 font-sans text-ui italic leading-[1.65] text-paper/70 md:text-body">
          {sec.framing}
         </p>
        </div>
       )}
 
       {sec.citation && (
-       <p className="mb-4 font-sans text-caption font-semibold text-paper/55">
+       <p lang="en" dir="ltr" className="mb-4 font-sans text-caption font-semibold text-paper/55">
         {sec.citation}
        </p>
       )}
 
-      <div className="space-y-5">
+      <div lang="en" dir="ltr" className="space-y-5">
        {sec.paragraphs.map((p, i) => (
         <p key={i} className="font-serif text-lede leading-[1.7] text-paper/85">
          {p}
@@ -64,7 +64,7 @@ export async function MiraclesSection({ slug }: { slug: string }) {
       {sec.notes && sec.notes.length > 0 && (
        <ul className="mt-6 space-y-2 border-t border-paper/8 pt-5">
         {sec.notes.map((note, i) => (
-         <li key={i} className="font-sans text-ui leading-[1.6] text-paper/55">
+         <li key={i} lang="en" dir="ltr" className="font-sans text-ui leading-[1.6] text-paper/55">
           {note}
          </li>
         ))}
@@ -74,7 +74,7 @@ export async function MiraclesSection({ slug }: { slug: string }) {
     ))}
    </div>
 
-   <p className="mt-10 font-sans text-caption text-paper/55">{content.source}</p>
+   <p lang="en" dir="ltr" className="mt-10 font-sans text-caption text-paper/55">{content.source}</p>
   </div>
  );
 }

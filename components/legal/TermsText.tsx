@@ -19,8 +19,11 @@ const UL = "mt-3 space-y-2 font-serif text-body text-paper/85 leading-[1.7] list
 
 
 export function TermsText() {
+  // The Terms are English for every reader, heading and all, and say so with
+  // their direction (build 90 note 4), so an Arabic reader reads them left to
+  // right, as English is set.
   return (
-    <>
+    <div lang="en" dir="ltr">
         <h1 className="font-sans text-display-sm font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display">
           The terms, plainly.
         </h1>
@@ -511,6 +514,6 @@ export function TermsText() {
           </Link>
           .
         </p>
-    </>
+    </div>
   );
 }

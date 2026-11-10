@@ -65,11 +65,11 @@ export function ChapterList({
           <section key={m.id} aria-labelledby={headingId}>
             {inSheet ? (
               // A list's own label inside the sheet, not a heading of the page.
-              <p id={headingId} lang="en" className="font-sans text-caption font-semibold text-paper/55">
+              <p id={headingId} lang="en" dir="ltr" className="font-sans text-caption font-semibold text-paper/55">
                 {m.title}
               </p>
             ) : (
-              <h2 id={headingId} lang="en" className="text-title-sm font-bold leading-tight text-paper">
+              <h2 id={headingId} lang="en" dir="ltr" className="text-title-sm font-bold leading-tight text-paper">
                 {m.title}
               </h2>
             )}
@@ -90,7 +90,7 @@ export function ChapterList({
                         {n}
                       </span>
                       <span
-                        lang="en"
+                        lang="en" dir="ltr"
                         className={cn(
                           "min-w-0 flex-1 leading-snug",
                           inSheet ? "font-sans text-ui" : "font-serif text-body",

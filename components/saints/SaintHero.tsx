@@ -55,7 +55,7 @@ export function SaintHero({ saint, hero, bump }: Props) {
       {picture ? <SaintHeroPicture name={saint.name} iconUrl={saint.iconUrl} hero={hero} /> : null}
       <div className={cn(hero ? "relative -mt-28 text-start md:mt-0" : "mt-6 text-center md:mt-0 md:text-start")}>
         <div className="saint-head-in" style={{ "--i": 1 } as CSSProperties}>
-          <h1 id="saint-name" className="text-title leading-[1.1] text-balance text-paper md:text-display">
+          <h1 id="saint-name" lang="en" dir="ltr" className="text-title leading-[1.1] text-balance text-paper md:text-display">
             {saint.name}
           </h1>
           <p className="mt-2 font-sans text-ui leading-snug text-paper/70">

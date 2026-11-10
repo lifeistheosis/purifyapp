@@ -7,6 +7,7 @@ import type { SectionHead } from "@/lib/saints/parts";
 import { openWorkContents } from "@/lib/saints/workNow";
 
 import { usePartWords } from "./partWords";
+import { textDir } from "@/lib/i18n/textDir";
 
 /** The id of a chapter's head: the running line over the pill opens once it has gone up. */
 export const WORK_HEAD_ID = "work-chapter-title";
@@ -34,12 +35,17 @@ export function WorkHead({ head }: { head: SectionHead }) {
   // A long name of our own ("The witness of Polycrates of Ephesus") steps down
   // a size, so it does not fill the screen; a part's name never needs to.
   const long = "text" in head.name && name.length > 26;
+  // A name of the work's own is English and says so; a part's name from the
+  // catalog is the reader's (build 90 note 4).
+  const nameLang = "text" in head.name ? "en" : undefined;
+  const subLang = head.sub && "text" in head.sub ? "en" : undefined;
   return (
     <header id={WORK_HEAD_ID} data-work-head="" className="mb-5 text-center">
       <div className="relative">
         <h1 className="font-heading text-paper">
           <span
-            lang={"text" in head.name ? "en" : undefined}
+            lang={nameLang}
+            dir={textDir(nameLang)}
             className={cn(
               "page-open-title block text-balance break-words leading-[1.08] tracking-[-0.3px]",
               long ? "text-[30px] min-[380px]:text-[32px]" : "text-[40px] min-[380px]:text-[44px]",
@@ -48,7 +54,7 @@ export function WorkHead({ head }: { head: SectionHead }) {
             {name}
           </span>{" "}
           {sub ? (
-            <span lang={head.sub && "text" in head.sub ? "en" : undefined} className="page-open-sub mt-1.5 block font-sans text-ui font-normal tracking-normal text-paper/55">
+            <span lang={subLang} dir={textDir(subLang)} className="page-open-sub mt-1.5 block font-sans text-ui font-normal tracking-normal text-paper/55">
               {sub}
               <span aria-hidden data-reader-chrome className="ms-[5px] inline-flex align-[-3px] text-paper/50">
                 <ChevronDown size={17} />
@@ -69,7 +75,7 @@ export function WorkHead({ head }: { head: SectionHead }) {
         ) : null}
       </div>
       {head.caption ? (
-        <p lang="en" data-work-caption="" className="page-open-sub mx-auto mt-2.5 max-w-[30ch] text-balance font-serif text-[19px] italic leading-[1.42] text-paper/75 md:text-title-sm">
+        <p lang="en" dir="ltr" data-work-caption="" className="page-open-sub mx-auto mt-2.5 max-w-[30ch] text-balance font-serif text-[19px] italic leading-[1.42] text-paper/75 md:text-title-sm">
           {head.caption}
         </p>
       ) : null}

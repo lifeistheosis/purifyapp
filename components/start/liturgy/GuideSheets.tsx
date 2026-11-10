@@ -44,12 +44,12 @@ export function WhySheet({ open, shown, onClose }: { open: boolean; shown: OpenW
             const where = `${t(source.label.key)}, `;
             return (
               <figure key={`${q.source}-${i}`} className="mt-6">
-                <blockquote lang="en" className="font-serif text-body italic leading-[1.7] text-paper/90">
+                <blockquote lang="en" dir="ltr" className="font-serif text-body italic leading-[1.7] text-paper/90">
                   {quoted}
                 </blockquote>
                 <figcaption className="mt-2 font-sans text-caption leading-[1.5] text-paper/55">
                   {where}
-                  <span lang="en">{q.at}</span>
+                  <span lang="en" dir="ltr">{q.at}</span>
                 </figcaption>
                 {source.href && lastFromSource ? (
                   <Link
@@ -139,7 +139,7 @@ export function SourcesSheet({ open, onClose }: { open: boolean; onClose: () => 
         {SOURCE_LIST.map((source) => (
           <li key={source.id} className="py-3.5">
             <p className="font-sans text-ui font-semibold leading-snug text-paper">{t(source.label.key)}</p>
-            <p lang="en" className="mt-1 font-sans text-caption leading-[1.5] text-paper/55">
+            <p lang="en" dir="ltr" className="mt-1 font-sans text-caption leading-[1.5] text-paper/55">
               {source.edition}
             </p>
             {source.href ? (

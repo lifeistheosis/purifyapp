@@ -22,6 +22,11 @@ const ROLE_LABEL_KEY: Record<NonNullable<LicensedWork["authorRole"]>, string> = 
  * Amazon as the page opened (143, lib/affiliate/amazon.ts). Amazon is reached
  * only when a reader taps the link to buy.
  */
+/** The publisher and the year, as the record writes them, in English. */
+function publishedBy(w: { publisher: string; year?: number | string | null }): string {
+  return `${w.publisher}${w.year ? `, ${w.year}` : ""}`;
+}
+
 export function LicensedWorksSection({ works }: { works: LicensedWork[] }) {
   if (works.length === 0) return null;
 
@@ -58,14 +63,17 @@ export function LicensedWorksSection({ works }: { works: LicensedWork[] }) {
                 size="sm"
               />
             }
-            title={w.title}
+            // The book's title, its publisher and its blurb are English; the
+            // role before the author is the reader's (build 90 note 4).
+            title={<span lang="en" dir="ltr">{w.title}</span>}
             meta={
               <>
                 <T k={w.authorRole ? ROLE_LABEL_KEY[w.authorRole] : "saints.workRoleBy"} replacements={{ author: w.author }} />
-                {` · ${w.publisher}${w.year ? `, ${w.year}` : ""}`}
+                {" · "}
+                <span lang="en" dir="ltr">{publishedBy(w)}</span>
               </>
             }
-            blurb={w.blurb}
+            blurb={w.blurb ? <span lang="en" dir="ltr">{w.blurb}</span> : undefined}
             footer={
               <>
                 <a

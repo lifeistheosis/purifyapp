@@ -26,7 +26,7 @@ export function Colophon({ className = "" }: { className?: string }) {
         <T k="calendar.colophon.prayers" />
       </p>
       <p
-        lang="grc"
+        lang="grc" dir="ltr"
         className="mt-3 font-serif italic text-detail md:text-ui text-paper/45 leading-[1.55]"
         style={{ fontFamily: "var(--font-greek), serif" }}
       >

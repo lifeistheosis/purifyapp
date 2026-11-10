@@ -51,6 +51,7 @@ export function MessagesClient() {
       <ShopSignInPrompt
         title={t("shop.messages")}
         body="Sign in to message sellers and read their replies."
+        bodyLang="en"
         next="/shop/messages"
       />
     );

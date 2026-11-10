@@ -102,7 +102,7 @@ export function BookWalkClient({ meta }: { meta: BookMeta }) {
           <WorkCover title={meta.title} imageUrl={meta.cover} size="lg" className="shadow-[0_24px_60px_-24px_rgba(0,0,0,0.75)]" />
           <h1
             id="walk-book-title"
-            lang="en"
+            lang="en" dir="ltr"
             className="mt-6 text-title font-bold leading-[1.12] tracking-[-0.01em] text-paper text-balance"
           >
             {meta.title}
@@ -136,7 +136,7 @@ export function BookWalkClient({ meta }: { meta: BookMeta }) {
           </div>
         </header>
 
-        <p lang="en" className="mt-9 max-w-[60ch] font-sans text-body leading-[1.6] text-paper/75">
+        <p lang="en" dir="ltr" className="mt-9 max-w-[60ch] font-sans text-body leading-[1.6] text-paper/75">
           {meta.intro}
         </p>
         {locale !== "en" ? <p className="mt-2 font-sans text-caption text-paper/55">{t("walk.englishForNow")}</p> : null}

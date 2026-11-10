@@ -45,7 +45,8 @@ export default function SellPage() {
 
       <section className="mt-8 grid gap-4 sm:grid-cols-2">
         {WHO.map((w) => (
-          <div key={w.title} className="rounded-lg border border-paper/10 bg-night-soft/60 p-5">
+          // Written in English, not yet in the catalogs, and says so (build 90 note 4).
+          <div key={w.title} lang="en" dir="ltr" className="rounded-lg border border-paper/10 bg-night-soft/60 p-5">
             <h2 className="font-display-serif text-title-sm text-paper">{w.title}</h2>
             <p className="mt-2 font-serif text-detail text-paper/65 leading-[1.6]">
               {w.body}

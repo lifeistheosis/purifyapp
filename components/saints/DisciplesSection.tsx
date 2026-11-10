@@ -21,11 +21,15 @@ export function DisciplesSection({ saint, disciples }: { saint: Pick<Saint, "pro
           const target = getSaint(d.slug);
           const inner = (
             <>
-              <span className="block font-serif text-body font-semibold leading-snug text-paper">
+              <span lang="en" dir="ltr" className="block font-serif text-body font-semibold leading-snug text-paper">
                 {target?.name ?? d.slug}
               </span>
-              <span className="mt-0.5 block font-sans text-caption text-paper/60">{d.relation}</span>
-              <span className="mt-1.5 block font-sans text-detail leading-relaxed text-paper/70">{d.blurb}</span>
+              <span lang="en" dir="ltr" className="mt-0.5 block font-sans text-caption text-paper/60">
+                {d.relation}
+              </span>
+              <span lang="en" dir="ltr" className="mt-1.5 block font-sans text-detail leading-relaxed text-paper/70">
+                {d.blurb}
+              </span>
             </>
           );
           return (

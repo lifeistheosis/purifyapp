@@ -251,8 +251,8 @@ function CommemorationItem({ c, first }: { c: Commemoration; first: boolean }) {
             {t("calendar.legend.majorFeast")}
           </span>
         ) : null}
-        <span className="block font-heading text-ui font-semibold leading-snug text-paper">{c.name}</span>
-        {c.note ? <span className="mt-0.5 block font-sans text-caption leading-snug text-paper/70">{c.note}</span> : null}
+        <span lang="en" dir="ltr" className="block font-heading text-ui font-semibold leading-snug text-paper">{c.name}</span>
+        {c.note ? <span lang="en" dir="ltr" className="mt-0.5 block font-sans text-caption leading-snug text-paper/70">{c.note}</span> : null}
       </span>
       {saint ? <RowChevron /> : null}
     </>
@@ -567,7 +567,7 @@ export function PhoneCalendar(p: PhoneCalendarProps) {
             {t("calendar.colophon.prayers")}
           </p>
           <p
-            lang="grc"
+            lang="grc" dir="ltr"
             className="mx-auto mt-2 max-w-[36ch] text-detail italic leading-[1.55] text-paper/70"
             style={{ fontFamily: "var(--font-greek), serif" }}
           >

@@ -7,6 +7,7 @@ import { useReadingFlow } from "@/lib/reader/readingFlow";
 import type { SectionHead } from "@/lib/saints/parts";
 
 import { usePartWords } from "./partWords";
+import { textDir } from "@/lib/i18n/textDir";
 
 /** How long the reader rests at the end before the next chapter opens. */
 const HOLD_MS = 450;
@@ -87,16 +88,18 @@ export function KeepReading({ next, onGo }: { next: SectionHead | null; onGo: (n
   }, [on, to, onGo]);
 
   if (!on || !next) return null;
+  // A name of the work's own is English; one from the catalog is the reader's.
+  const nextLang = "text" in next.pill.name ? "en" : undefined;
   return (
     <div ref={zone} data-keep-reading="" className="mt-12 flex min-h-[62dvh] flex-col items-center pt-10 text-center" data-reader-chrome>
       <span aria-hidden className="relative block h-[2px] w-24 overflow-hidden rounded-full bg-paper/10">
         <span ref={fill} className="absolute inset-0 origin-left rounded-full bg-paper/70" style={{ transform: "scaleX(0)" }} />
       </span>
-      <p lang={"text" in next.pill.name ? "en" : undefined} className="mt-6 font-serif text-title text-paper/90">
+      <p lang={nextLang} dir={textDir(nextLang)} className="mt-6 font-serif text-title text-paper/90">
         {pill(next)}
       </p>
       {next.caption ? (
-        <p lang="en" className="mt-2.5 max-w-[31ch] text-balance font-serif text-[16px] italic leading-[1.45] text-paper/65">
+        <p lang="en" dir="ltr" className="mt-2.5 max-w-[31ch] text-balance font-serif text-[16px] italic leading-[1.45] text-paper/65">
           {next.caption}
         </p>
       ) : null}

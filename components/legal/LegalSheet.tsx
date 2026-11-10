@@ -120,10 +120,9 @@ export function LegalSheet({ doc, open, onClose }: { doc: LegalDoc; open: boolea
           ref={words}
           data-legal-sheet={shown}
           onClickCapture={onClickCapture}
-          // The English text keeps its own direction under Arabic and Urdu
-          // (build 90 note 4's rule); the shop's text is in the reader's own.
-          lang={lang ?? undefined}
-          dir={lang ? "ltr" : undefined}
+          // Each text says its own language where it is written, under the
+          // reader's own heading and note (build 90 note 4): the Terms and the
+          // Privacy Policy their English or German, the shop's the reader's.
         >
           {lang === "en" && locale !== "en" ? <TranslationDisclaimer /> : null}
           {Body ? <Body lang={lang ?? "en"} /> : <p className="pt-4 font-sans text-ui text-paper/55">{t("common.loading")}</p>}

@@ -67,7 +67,7 @@ function NoteDoor({ note, opened, onOpen }: { note: ContextCard; opened: boolean
       )}
     >
       <Info size={16} className="shrink-0" />
-      <span lang="en" className="min-w-0">
+      <span lang="en" dir="ltr" className="min-w-0">
         {note.title}
       </span>
     </button>
@@ -139,7 +139,7 @@ export function ChapterWalkClient({
         <header className="pt-6">
           <h1
             id="walk-chapter-title"
-            lang="en"
+            lang="en" dir="ltr"
             className="text-title font-bold leading-[1.15] tracking-[-0.01em] text-paper text-balance"
           >
             {walk.title}
@@ -156,7 +156,7 @@ export function ChapterWalkClient({
             const c = byVerse.get(v.n);
             return (
               <li key={v.n} id={`v${v.n}`} className="scroll-mt-32">
-                <p lang="en">
+                <p lang="en" dir="ltr">
                   <sup className="me-1.5 font-sans text-eyebrow font-medium text-paper/55">{v.n}</sup>
                   {v.text}
                 </p>

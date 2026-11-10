@@ -34,9 +34,9 @@ function WalkRow({ b }: { b: HubBook }) {
     <CoverListRow
       href={`/walkthroughs/${b.book}`}
       cover={<WorkCover title={b.title} imageUrl={b.cover} size="md" />}
-      title={<span lang="en">{b.title}</span>}
+      title={<span lang="en" dir="ltr">{b.title}</span>}
       meta={meta}
-      blurb={<span lang="en">{b.intro}</span>}
+      blurb={<span lang="en" dir="ltr">{b.intro}</span>}
     />
   );
 }

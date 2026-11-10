@@ -53,7 +53,7 @@ export function WalkProgress({
           {movement ? (
             <>
               {" · "}
-              <span lang="en">{movement}</span>
+              <span lang="en" dir="ltr">{movement}</span>
             </>
           ) : null}
         </p>

@@ -421,7 +421,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
                 return (
                   <div data-shop-saint-words="" className="mt-3 rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 md:p-6">
                     <p className="font-sans text-caption text-paper/55">{t("saints.inHisOwnWords")}</p>
-                    <blockquote lang="en" className="mt-2 font-serif text-detail leading-[1.6] text-paper/85">
+                    <blockquote lang="en" dir="ltr" className="mt-2 font-serif text-detail leading-[1.6] text-paper/85">
                       {words.text}
                     </blockquote>
                     <SourceLine cite={words.shown} className="mt-2" />

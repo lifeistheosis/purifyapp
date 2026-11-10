@@ -38,8 +38,15 @@ export function EventPeekSheet({ slug, onClose }: { slug: string | null; onClose
           <p className="min-w-0 flex-1 truncate font-sans text-caption font-semibold text-paper/60 tabular-nums">
             {event ? (
               <>
-                {eraShort(t, event.era)} · {event.displayDate}
-                {event.region ? <> · {event.region}</> : null}
+                {eraShort(t, event.era)} · <span lang="en" dir="ltr">{event.displayDate}</span>
+                {event.region ? (
+                  <>
+                    {" · "}
+                    <span lang="en" dir="ltr">
+                      {event.region}
+                    </span>
+                  </>
+                ) : null}
               </>
             ) : null}
           </p>
@@ -57,8 +64,8 @@ export function EventPeekSheet({ slug, onClose }: { slug: string | null; onClose
       {event ? (
         <div data-event-peek={event.slug}>
           {picture ? <EventPlate key={event.slug} picture={picture} priority className="mb-5" /> : null}
-          <h2 className="text-title-sm leading-snug text-paper text-balance">{event.title}</h2>
-          <p className="mt-3 font-sans text-ui leading-[1.65] text-paper/80">{event.summary}</p>
+          <h2 lang="en" dir="ltr" className="text-title-sm leading-snug text-paper text-balance">{event.title}</h2>
+          <p lang="en" dir="ltr" className="mt-3 font-sans text-ui leading-[1.65] text-paper/80">{event.summary}</p>
           <Link
             href={`/history/${event.slug}`}
             onClick={onClose}

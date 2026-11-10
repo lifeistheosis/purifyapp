@@ -28,7 +28,7 @@ export function QuotesSection({ quotes: all, pronoun }: { quotes: Quote[]; prono
           return (
             <li key={i} className="py-5">
               <figure>
-                <blockquote lang="en" className="font-serif text-lede leading-[1.55] text-paper/90">{q.text}</blockquote>
+                <blockquote lang="en" dir="ltr" className="font-serif text-lede leading-[1.55] text-paper/90">{q.text}</blockquote>
                 <figcaption className="mt-2">
                   {cite ? <SourceLine cite={cite} /> : null}
                 </figcaption>

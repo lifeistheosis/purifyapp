@@ -316,14 +316,14 @@ function SectionParagraphs({
  <p className="font-sans text-caption font-semibold text-paper/45 mb-2">
  {t("saints.editorsNote")}
  </p>
- <p className="font-sans text-ui md:text-body text-paper/70 leading-[1.65] italic">
+ <p lang="en" dir="ltr" className="font-sans text-ui md:text-body text-paper/70 leading-[1.65] italic">
  {sec.framing}
  </p>
  </div>
  )}
 
  {sec.citation && (
- <p className="font-sans text-caption font-semibold text-paper/70 mb-4">
+ <p lang="en" dir="ltr" className="font-sans text-caption font-semibold text-paper/70 mb-4">
  {sec.citation}
  </p>
  )}
@@ -356,7 +356,7 @@ function SectionParagraphs({
  {t("saints.division.chapter", { n: chapter })}
  </p>
  ) : null}
- <p className="font-sans text-ui text-paper/55 leading-[1.55]">{synopsisWords(p)}</p>
+ <p lang="en" dir="ltr" className="font-sans text-ui text-paper/55 leading-[1.55]">{synopsisWords(p)}</p>
  </div>
  );
  }

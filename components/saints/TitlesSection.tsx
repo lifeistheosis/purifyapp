@@ -1,7 +1,12 @@
 import { T } from "@/components/i18n/T";
+import { textDir } from "@/lib/i18n/textDir";
 
-/** The venerated titles (the Mother of God's: Theotokos, Ever-Virgin, Panagia...), as quiet pills. */
-export function TitlesSection({ titles, pronoun }: { titles: string[]; pronoun?: "his" | "her" }) {
+/**
+ * The venerated titles (the Mother of God's: Theotokos, Ever-Virgin, Panagia...), as quiet pills.
+ * Each says the language it is written in (`lang`: English, or her life's own language where it
+ * has them), under the reader's own heading (build 90 note 4).
+ */
+export function TitlesSection({ titles, pronoun, lang = "en" }: { titles: string[]; pronoun?: "his" | "her"; lang?: string }) {
   return (
     <section aria-labelledby="saint-titles">
       <h2 id="saint-titles" className="text-title-sm leading-tight text-paper">
@@ -9,7 +14,7 @@ export function TitlesSection({ titles, pronoun }: { titles: string[]; pronoun?:
       </h2>
       <ul className="mt-4 flex flex-wrap gap-2">
         {titles.map((title) => (
-          <li key={title} className="rounded-pill border border-paper/15 px-3.5 py-1.5 font-sans text-detail text-paper/85">
+          <li key={title} lang={lang} dir={textDir(lang)} className="rounded-pill border border-paper/15 px-3.5 py-1.5 font-sans text-detail text-paper/85">
             {title}
           </li>
         ))}

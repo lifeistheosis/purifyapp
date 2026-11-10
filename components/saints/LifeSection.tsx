@@ -1,5 +1,6 @@
 import { SourceList, marked, type ListedSource } from "@/components/citations/Marked";
 import { named } from "@/components/saints/SaintNames";
+import { textDir } from "@/lib/i18n/textDir";
 
 /** Where a mark in a saint's life leads: its source, under the life. */
 const LIFE_SOURCE = "life-source-";
@@ -13,11 +14,12 @@ const LIFE_SOURCE = "life-source-";
  * source is listed under the life (1.8, lib/saints/lifeQuotes.ts). Another
  * saint it names opens that saint's card (`named`); `saint` is never linked.
  */
-export function LifeSection({ paragraphs, sources = [], saint }: { paragraphs: string[]; sources?: ListedSource[]; saint?: string }) {
+export function LifeSection({ paragraphs, sources = [], saint, lang = "en" }: { paragraphs: string[]; sources?: ListedSource[]; saint?: string; lang?: string }) {
   if (paragraphs.length === 0) return null;
   return (
     <div className="max-w-[680px]">
-      <div className="space-y-5">
+      {/* The life says its language, English or the reader's own where it is written in it (build 90 note 4). */}
+      <div lang={lang} dir={textDir(lang)} className="space-y-5">
         {paragraphs.map((p, i) => (
           <p key={i} className="font-serif text-lede leading-[1.7] text-paper/85">
             {named(marked(p, sources, LIFE_SOURCE), saint)}

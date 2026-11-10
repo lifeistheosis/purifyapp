@@ -46,13 +46,24 @@ export function SaintInReadersLanguage({ slug, children }: { slug: string; child
 export function SaintHeroTitle({ english }: { english: string }) {
   const { words, lang } = useContext(Words);
   const title = words?.epithet ? (words.epithet.split("·")[0] ?? "").trim() : "";
-  return title ? <span lang={lang} dir={textDir(lang)}>{title}</span> : <>{english}</>;
+  return title ? (
+    <span lang={lang} dir={textDir(lang)}>{title}</span>
+  ) : (
+    <span lang="en" dir="ltr">
+      {english}
+    </span>
+  );
 }
 
-/** The short account at the top of his life. */
-export function SaintShortBio({ english }: { english: string }) {
+/** The short account at the top of his life, as its own paragraph, saying the language of its words. */
+export function SaintShortBio({ english, className }: { english: string; className?: string }) {
   const { words, lang } = useContext(Words);
-  return words?.shortBio ? <span lang={lang} dir={textDir(lang)}>{words.shortBio}</span> : <>{english}</>;
+  const own = words?.shortBio ? lang : "en";
+  return (
+    <p lang={own} dir={textDir(own)} className={className}>
+      {words?.shortBio ?? english}
+    </p>
+  );
 }
 
 /** The titles the Church gives the saint, where his life in the reader's language has them (the Theotokos's, in German). */
@@ -60,9 +71,7 @@ export function SaintTitlesIn({ pronoun, children }: { pronoun?: "his" | "her"; 
   const { words, lang } = useContext(Words);
   if (!words?.titles?.length) return <>{children}</>;
   return (
-    <div lang={lang} dir={textDir(lang)}>
-      <TitlesSection titles={words.titles} pronoun={pronoun} />
-    </div>
+    <TitlesSection titles={words.titles} pronoun={pronoun} lang={lang} />
   );
 }
 
@@ -85,9 +94,7 @@ export function SaintLifeIn({ slug, quotes, children }: { slug: string; quotes: 
   }, [life, quotes]);
   if (!life?.length) return <>{children}</>;
   return (
-    <div lang={lang} dir={textDir(lang)}>
-      <LifeSection paragraphs={life} sources={sources} saint={slug} />
-    </div>
+    <LifeSection paragraphs={life} sources={sources} saint={slug} lang={lang} />
   );
 }
 

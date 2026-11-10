@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import type { Saint } from "@/lib/saints/saints";
 import { FeastDays } from "./FeastDays";
 import { T } from "@/components/i18n/T";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * Desktop-only companion to a saint's Life: the at-a-glance facts and the
@@ -11,10 +12,12 @@ import { T } from "@/components/i18n/T";
  * Life part), which are `lg:hidden` to avoid repetition.
  */
 export function SaintStudyRail({ saint }: { saint: Saint }) {
-  const facts: { labelKey: string; value: ReactNode }[] = [];
-  if (saint.born) facts.push({ labelKey: "saints.born", value: saint.born });
-  if (saint.reposed) facts.push({ labelKey: "saints.reposed", value: saint.reposed });
-  if (saint.see) facts.push({ labelKey: "saints.see", value: saint.see });
+  // Born, reposed and his see are written in English and say so (build 90
+  // note 4); the feast days are the reader's own.
+  const facts: { labelKey: string; value: ReactNode; lang?: string }[] = [];
+  if (saint.born) facts.push({ labelKey: "saints.born", value: saint.born, lang: "en" });
+  if (saint.reposed) facts.push({ labelKey: "saints.reposed", value: saint.reposed, lang: "en" });
+  if (saint.see) facts.push({ labelKey: "saints.see", value: saint.see, lang: "en" });
   if (saint.feastDays?.length)
     facts.push({ labelKey: "saints.feastLabel", value: <FeastDays days={saint.feastDays} /> });
 
@@ -32,7 +35,7 @@ export function SaintStudyRail({ saint }: { saint: Saint }) {
               <dt className="font-sans text-caption font-semibold text-paper/45">
                 <T k={f.labelKey} />
               </dt>
-              <dd className="mt-1 font-sans text-ui text-paper/90 leading-snug">
+              <dd lang={f.lang} dir={textDir(f.lang)} className="mt-1 font-sans text-ui text-paper/90 leading-snug">
                 {f.value}
               </dd>
             </div>
@@ -49,10 +52,10 @@ export function SaintStudyRail({ saint }: { saint: Saint }) {
             {greatFeasts.map((feast) => {
               const inner = (
                 <>
-                  <span className="font-serif text-ui text-paper/90 leading-snug group-hover:text-gold transition-colors">
+                  <span lang="en" dir="ltr" className="font-serif text-ui text-paper/90 leading-snug group-hover:text-gold transition-colors">
                     {feast.name}
                   </span>
-                  <span className="block font-sans text-caption text-paper/50 mt-0.5">
+                  <span lang="en" dir="ltr" className="block font-sans text-caption text-paper/50 mt-0.5">
                     {feast.date}
                   </span>
                 </>

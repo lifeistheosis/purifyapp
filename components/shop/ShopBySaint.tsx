@@ -78,7 +78,7 @@ export function ShopBySaint({
                 imageClassName="transition-transform duration-500 ease-house group-hover:scale-[1.06] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
               />
               <span
-                lang="en"
+                lang="en" dir="ltr"
                 className="mt-1.5 line-clamp-2 hyphens-auto break-words font-sans text-caption font-semibold leading-[1.2] text-paper md:mt-2 md:text-detail"
               >
                 {saint.shortName}

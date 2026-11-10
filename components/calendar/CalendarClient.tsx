@@ -505,7 +505,7 @@ export function CalendarClient() {
                 <span className="text-paper/55 font-normal">{year}</span>
               </h2>
               <p
-                lang="grc"
+                lang="grc" dir="ltr"
                 className="mt-2 font-serif text-caption text-gold/80 leading-none"
                 style={{ fontFamily: "var(--font-greek), serif" }}
               >

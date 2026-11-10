@@ -61,7 +61,7 @@ function AboutEn() {
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  <T k="ui.purifyHidesNothingAboutWhat" />
  </p>
- <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc ps-6 marker:text-paper/35">
  <li>
  <strong className="text-paper"><T k="footer.oldTestament" /></strong><T k="ui.brentonS1851EnglishSeptuagint" />
  </li>
@@ -178,7 +178,7 @@ function AboutEn() {
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  <T k="ui.purifyIsEditoriallySmallBut" />
  </p>
- <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc ps-6 marker:text-paper/35">
  <li>
  <strong className="text-paper"><T k="ui.christosanesti" /></strong><T k="ui.theFlorilegiumOnTheEssence" />
  </li>
@@ -206,7 +206,7 @@ function AboutEn() {
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  <T k="ui.purifyHasNoAdvertisingBudget" />
  </p>
- <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc ps-6 marker:text-paper/35">
  <li>
  <strong className="text-paper"><T k="ui.harrisonHill" /></strong> (
  <a

@@ -31,6 +31,9 @@ export function ChangelogControls() {
       <button
         type="button"
         onClick={() => setAll(true)}
+        // Written in English, as the notes they open are (build 90 note 4).
+        lang="en"
+        dir="ltr"
         className="hover:text-paper transition-colors"
       >
         Expand all
@@ -39,6 +42,8 @@ export function ChangelogControls() {
       <button
         type="button"
         onClick={() => setAll(false)}
+        lang="en"
+        dir="ltr"
         className="hover:text-paper transition-colors"
       >
         Collapse all

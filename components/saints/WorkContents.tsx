@@ -161,7 +161,7 @@ export function WorkContents({
           })}
         </ul>
         {lit && caption ? (
-          <p lang="en" data-contents-caption="" className="px-1 pt-3 font-serif text-[15px] italic leading-[1.4] text-paper/72">
+          <p lang="en" dir="ltr" data-contents-caption="" className="px-1 pt-3 font-serif text-[15px] italic leading-[1.4] text-paper/72">
             <span className="me-1.5 font-sans text-caption font-semibold not-italic text-paper/50">{lit.label}</span>
             {caption}
           </p>
@@ -190,7 +190,7 @@ export function WorkContents({
                       reading && "bg-paper/[0.05]",
                     )}
                   >
-                    <span lang="en" className={cn("min-w-0 font-heading text-[16px] leading-tight", reading ? "font-semibold text-paper" : "text-paper/85")}>
+                    <span lang="en" dir="ltr" className={cn("min-w-0 font-heading text-[16px] leading-tight", reading ? "font-semibold text-paper" : "text-paper/85")}>
                       {e.title}
                     </span>
                   </button>

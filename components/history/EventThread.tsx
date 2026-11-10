@@ -113,8 +113,8 @@ export function Thread({ steps, home }: { steps: ThreadStep[]; home: ThreadPlace
                 />
               </span>
               <div className="min-w-0 pb-[21px] ps-2">
-                <p className="font-sans text-caption font-semibold text-paper/55">{line}</p>
-                <p className={cn("mt-0.5 font-sans text-ui leading-[1.6]", s.pivotal ? "font-medium text-paper/95" : "text-paper/75")}>{s.text}</p>
+                <p lang="en" dir="ltr" className="font-sans text-caption font-semibold text-paper/55">{line}</p>
+                <p lang="en" dir="ltr" className={cn("mt-0.5 font-sans text-ui leading-[1.6]", s.pivotal ? "font-medium text-paper/95" : "text-paper/75")}>{s.text}</p>
               </div>
             </li>
           );

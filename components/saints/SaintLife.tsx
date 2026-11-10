@@ -91,15 +91,13 @@ export function SaintLife({
   return (
     <div>
       {/* In the reader's words where his life is written in them, on the device (./SaintInReadersLanguage.tsx). */}
-      <p className="max-w-[640px] font-sans text-body leading-relaxed text-paper/80">
-        <SaintShortBio english={saint.shortBio} />
-      </p>
+      <SaintShortBio english={saint.shortBio} className="max-w-[640px] font-sans text-body leading-relaxed text-paper/80" />
       {/* Where those facts come from (1.9, November's saints): a page with no
           life of ours names its source under the entry, in the words of the
           study's own "Source". */}
       {saint.entrySource ? (
         <p className="mt-3 max-w-[640px] font-sans text-caption leading-[1.55] text-paper/55">
-          <T k="study.source" />: {saint.entrySource}
+          <T k="study.source" />: <span lang="en" dir="ltr">{saint.entrySource}</span>
         </p>
       ) : null}
       <div className="mt-6 border-t border-paper/8 pt-5 lg:hidden">

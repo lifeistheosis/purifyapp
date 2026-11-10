@@ -114,7 +114,7 @@ export function EventPlate({
   ) : null;
 
   const credit = (
-    <figcaption className="mt-2 font-sans text-[11px] leading-snug text-paper/50">{picture.credit}</figcaption>
+    <figcaption lang="en" dir="ltr" className="mt-2 font-sans text-[11px] leading-snug text-paper/50">{picture.credit}</figcaption>
   );
 
   if (picture.shape === "whole") {

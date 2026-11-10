@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import type { Saint } from "@/lib/saints/saints";
 import { FeastDays } from "./FeastDays";
 import { T } from "@/components/i18n/T";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * A saint at a glance, on a phone and a tablet: born, reposed, his see, and
@@ -12,10 +13,12 @@ import { T } from "@/components/i18n/T";
  * one steps aside there.
  */
 export function SaintFacts({ saint }: { saint: Pick<Saint, "born" | "reposed" | "see" | "feastDays"> }) {
-  const facts: { labelKey: string; value: ReactNode }[] = [];
-  if (saint.born) facts.push({ labelKey: "saints.born", value: saint.born });
-  if (saint.reposed) facts.push({ labelKey: "saints.reposed", value: saint.reposed });
-  if (saint.see) facts.push({ labelKey: "saints.see", value: saint.see });
+  // Born, reposed and his see are written in English (dates and places as his
+  // profile has them) and say so; the feast days are the reader's own.
+  const facts: { labelKey: string; value: ReactNode; lang?: string }[] = [];
+  if (saint.born) facts.push({ labelKey: "saints.born", value: saint.born, lang: "en" });
+  if (saint.reposed) facts.push({ labelKey: "saints.reposed", value: saint.reposed, lang: "en" });
+  if (saint.see) facts.push({ labelKey: "saints.see", value: saint.see, lang: "en" });
   if (saint.feastDays.length) facts.push({ labelKey: "saints.feastLabel", value: <FeastDays days={saint.feastDays} /> });
   if (facts.length === 0) return null;
 
@@ -26,7 +29,9 @@ export function SaintFacts({ saint }: { saint: Pick<Saint, "born" | "reposed" | 
           <dt className="font-sans text-caption text-paper/55">
             <T k={f.labelKey} />
           </dt>
-          <dd className="mt-0.5 font-sans text-ui leading-snug text-paper/90">{f.value}</dd>
+          <dd lang={f.lang} dir={textDir(f.lang)} className="mt-0.5 font-sans text-ui leading-snug text-paper/90">
+            {f.value}
+          </dd>
         </div>
       ))}
     </dl>

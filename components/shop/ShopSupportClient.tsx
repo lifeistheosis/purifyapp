@@ -48,6 +48,8 @@ export function ShopSupportClient() {
       <ShopSignInPrompt
         title="Contact EIKON support"
         body="Sign in to start a conversation with EIKON. Your messages and their replies live in your shop inbox."
+        titleLang="en"
+        bodyLang="en"
         next="/shop/support"
       />
     );

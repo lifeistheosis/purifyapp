@@ -85,10 +85,10 @@ export function ParishFinderList() {
                         className="group flex items-center gap-4 py-4 transition-colors active:bg-paper/[0.04]"
                       >
                         <span className="min-w-0 flex-1">
-                          <span className="block font-serif text-body font-semibold leading-snug text-paper/90 transition-colors group-hover:text-paper">
+                          <span lang="en" dir="ltr" className="block font-serif text-body font-semibold leading-snug text-paper/90 transition-colors group-hover:text-paper">
                             {f.name}
                           </span>
-                          <span className="mt-1 block font-sans text-caption leading-snug text-paper/65">
+                          <span lang="en" dir="ltr" className="mt-1 block font-sans text-caption leading-snug text-paper/65">
                             {f.serves}
                           </span>
                         </span>

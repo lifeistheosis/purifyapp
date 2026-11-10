@@ -83,6 +83,7 @@ export function ApplicationClient() {
       <ShopSignInPrompt
         title={t("shop.yourMerchantApplication")}
         body="Sign in to see your application status."
+        bodyLang="en"
         next="/shop/sell/application"
       />
     );

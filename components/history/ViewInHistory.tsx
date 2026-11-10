@@ -33,10 +33,10 @@ export function ViewInHistory({
               className="tap-press flex min-h-[48px] items-center justify-between gap-3 rounded-md border border-paper/12 px-4 py-2.5 hover:border-paper/25"
             >
               <span className="min-w-0">
-                <span className="block font-sans text-caption text-paper/55">
+                <span lang="en" dir="ltr" className="block font-sans text-caption text-paper/55">
                   {e.displayDate}
                 </span>
-                <span className="block truncate font-sans text-ui font-semibold text-paper/85">
+                <span lang="en" dir="ltr" className="block truncate font-sans text-ui font-semibold text-paper/85">
                   {e.title}
                 </span>
               </span>

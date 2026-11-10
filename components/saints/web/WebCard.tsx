@@ -33,6 +33,7 @@ import { prefersReducedMotion } from "@/lib/ui/motion";
 import { WebAvatar } from "./WebAvatar";
 import { WebLineMark } from "./WebLineMark";
 import { FILTER_LABEL, FILTER_LINE, kindsOf, tieHeading, tieHref } from "./webWords";
+import { textDir } from "@/lib/i18n/textDir";
 
 export type CardState = "short" | "tall" | "tucked";
 
@@ -383,7 +384,7 @@ export function WebCard({
         >
           <WebAvatar node={node} size={46} className="saint-web-card-face" />
           <span className="min-w-0 flex-1">
-            <span className="block truncate font-serif text-[16.5px] font-bold leading-[1.25] text-paper">{name}</span>
+            <span lang="en" dir="ltr" className="block truncate font-serif text-[16.5px] font-bold leading-[1.25] text-paper">{name}</span>
             <span className="mt-[5px] block truncate font-sans text-[12px] font-medium leading-4 text-paper/60">
               {years ? <span>{years}</span> : null}
               {years && kinds.length ? <span aria-hidden className="mx-[7px] text-paper/30">·</span> : null}
@@ -412,7 +413,7 @@ export function WebCard({
             >
               <WebAvatar node={node} size={54} className="saint-web-card-face" />
               <div className="min-w-0 flex-1">
-                <h2 className="font-serif text-[19px] font-bold leading-[1.22] text-paper">{name}</h2>
+                <h2 lang="en" dir="ltr" className="font-serif text-[19px] font-bold leading-[1.22] text-paper">{name}</h2>
                 {years ? <p className="mt-[5px] font-sans text-[12.5px] font-medium text-paper/60">{years}</p> : null}
               </div>
               <button
@@ -432,10 +433,15 @@ export function WebCard({
               {node.ties.map((tie, i) => {
                 const heading = tieHeading(tie, t);
                 const href = tieHref(tie);
+                // A council's or an event's name alone is English; a teacher's,
+                // a disciple's or a Life's heading opens with the reader's words.
+                const headLang = tie.kind === "life" || tie.kind === "teacher" || tie.kind === "disciple" ? undefined : "en";
                 const head = (
                   <>
                     <WebLineMark line={lineStyle(tie.kind)} className="mt-[5px] text-paper/70" />
-                    <span className="min-w-0">{heading}</span>
+                    <span lang={headLang} dir={textDir(headLang)} className="min-w-0">
+                      {heading}
+                    </span>
                   </>
                 );
                 return (
@@ -455,6 +461,8 @@ export function WebCard({
                       )
                     ) : null}
                     <p
+                      lang="en"
+                      dir="ltr"
                       className={cn(
                         "mt-[5px] text-paper/85",
                         tie.kind === "life" ? "font-serif text-[15px] italic leading-[1.46]" : "font-sans text-[14.5px] leading-[1.45]",
@@ -524,7 +532,7 @@ export function WebCard({
       >
         <span aria-hidden className="saint-web-grab saint-web-grab-small" />
         <WebAvatar node={node} size={18} className="saint-web-handle-face" />
-        <span className="min-w-0 truncate font-sans text-[12.5px] font-semibold text-paper">{short}</span>
+        <span lang="en" dir="ltr" className="min-w-0 truncate font-sans text-[12.5px] font-semibold text-paper">{short}</span>
         <ChevronDown size={14} className="shrink-0 rotate-180 text-paper/50" />
       </button>
     </>

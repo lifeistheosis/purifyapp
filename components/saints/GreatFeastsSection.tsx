@@ -27,8 +27,12 @@ export function GreatFeastsSection({
         {feasts.map((f) => {
           const inner = (
             <>
-              <span className="min-w-0 font-serif text-body leading-snug text-paper">{f.name}</span>
-              <span className="shrink-0 font-sans text-caption text-paper/55">{f.date}</span>
+              <span lang="en" dir="ltr" className="min-w-0 font-serif text-body leading-snug text-paper">
+                {f.name}
+              </span>
+              <span lang="en" dir="ltr" className="shrink-0 font-sans text-caption text-paper/55">
+                {f.date}
+              </span>
             </>
           );
           const row = "flex min-h-12 items-center justify-between gap-4 py-2.5";

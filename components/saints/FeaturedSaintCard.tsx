@@ -22,17 +22,17 @@ export function FeaturedSaintCard({ saint }: { saint: Saint }) {
             <T k="saints.motherOfGod" />
           </p>
           {saint.byname && (
-            <p className="font-serif text-ui italic text-gold/90 mb-1">
+            <p lang="en" dir="ltr" className="font-serif text-ui italic text-gold/90 mb-1">
               &ldquo;{saint.byname}&rdquo;
             </p>
           )}
-          <h3 className="font-sans text-title md:text-heading font-bold text-paper leading-[1.05] tracking-[-0.02em]">
+          <h3 lang="en" dir="ltr" className="font-sans text-title md:text-heading font-bold text-paper leading-[1.05] tracking-[-0.02em]">
             {saint.name}
           </h3>
-          <p className="font-sans text-ui text-paper/60 mt-1.5">
+          <p lang="en" dir="ltr" className="font-sans text-ui text-paper/60 mt-1.5">
             {saint.epithet}
           </p>
-          <p className="mt-4 max-w-[640px] font-sans text-ui text-paper/75 leading-relaxed">
+          <p lang="en" dir="ltr" className="mt-4 max-w-[640px] font-sans text-ui text-paper/75 leading-relaxed">
             {saint.shortBio}
           </p>
           {saint.titles?.length ? (
@@ -40,6 +40,8 @@ export function FeaturedSaintCard({ saint }: { saint: Saint }) {
               {saint.titles.slice(0, 4).map((t) => (
                 <li
                   key={t}
+                  lang="en"
+                  dir="ltr"
                   className="rounded-pill border border-gold/25 px-3 py-1 font-sans text-caption text-paper/70"
                 >
                   {t}

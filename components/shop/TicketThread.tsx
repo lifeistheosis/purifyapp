@@ -57,6 +57,7 @@ export function TicketThread({ id }: { id: string }) {
       <ShopSignInPrompt
         title={t("shop.conversation")}
         body="Sign in to read this conversation and reply."
+        bodyLang="en"
         next={`/shop/messages/detail?ticket=${id}`}
       />
     );

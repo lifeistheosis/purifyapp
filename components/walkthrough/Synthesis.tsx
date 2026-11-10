@@ -78,7 +78,7 @@ function VerseEcho({ verse, text, mark }: { verse: number; text: string; mark?: 
   return (
     <figure className="mt-3">
       <figcaption className="font-sans text-caption font-semibold text-paper/55">{t("walk.verseShort", { verse })}</figcaption>
-      <blockquote lang="en" className="mt-1 font-serif text-body leading-[1.6] text-paper/65">
+      <blockquote lang="en" dir="ltr" className="mt-1 font-serif text-body leading-[1.6] text-paper/65">
         {at >= 0 && mark ? (
           <>
             {text.slice(0, at)}
@@ -126,7 +126,7 @@ function Order({ beats, seed, verses, onDone }: { beats: Beat[]; seed: number; v
             return (
               <li key={id} data-walk-placed className="flex gap-3 py-3">
                 <span className="w-5 shrink-0 text-end font-sans text-caption font-semibold tabular-nums text-paper/55">{i + 1}</span>
-                <span lang="en" className="min-w-0 font-sans text-ui leading-snug text-paper/90">
+                <span lang="en" dir="ltr" className="min-w-0 font-sans text-ui leading-snug text-paper/90">
                   {b.text}
                 </span>
               </li>
@@ -141,7 +141,7 @@ function Order({ beats, seed, verses, onDone }: { beats: Beat[]; seed: number; v
             .filter((b) => !placed.includes(b.id))
             .map((b) => (
               <button key={b.id} type="button" data-walk-choice onClick={() => tap(b)} className={CHOICE}>
-                <span lang="en">{b.text}</span>
+                <span lang="en" dir="ltr">{b.text}</span>
               </button>
             ))}
         </div>
@@ -187,7 +187,7 @@ function Who({ items, verses, onDone }: { items: Attribution[]; verses: Map<numb
           const missed = tried[a.id] ?? [];
           return (
             <li key={a.id} className="py-4">
-              <p lang="en" className="font-serif text-body italic leading-[1.55] text-paper">
+              <p lang="en" dir="ltr" className="font-serif text-body italic leading-[1.55] text-paper">
                 {QUOTE_OPEN}
                 {a.quote}
                 {QUOTE_CLOSE}
@@ -355,7 +355,7 @@ export function Synthesis({
             <StepTitle id="walk-ledger" done={false}>
               {t("walk.ledgerTitle")}
             </StepTitle>
-            <p lang="en" className="mt-1 font-serif text-body italic leading-[1.5] text-paper/85">
+            <p lang="en" dir="ltr" className="mt-1 font-serif text-body italic leading-[1.5] text-paper/85">
               {walk.prompt}
             </p>
             <textarea
