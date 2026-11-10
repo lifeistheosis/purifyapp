@@ -11763,6 +11763,34 @@ html[data-look]:not([data-look="nightsky"], [data-look="linen"]) .pill-fade {
  background-image: none;
 }
 
+/* The page ends above its foot (1.9, found by the prayer page's walk of
+   2026-11-10). The foot is drawn over the last 240px of the screen
+   (--foot-clear), and the app's frame leaves room under a page for the bars
+   alone, 86px. So on a look a page's last words came to rest inside the
+   foot, half taken by the picture, with nowhere higher to go: walked on the
+   export, 88 of 123 screens (Settings' last row, "About"; the sign-in page's
+   "Continue with Google"). Now, on a look with a foot, the frame leaves the
+   foot's own height under the page, or the bars' where they stand taller (a
+   mini player over the tab bar), so a page's last words can always be
+   brought up clear of the picture. The sign-in pages stand outside the
+   frame: their shell is the whole height of the screen with a line at its
+   foot, and it ends above the foot the same way. On a wide screen the foot
+   stands down (below), and so does this.
+   scripts/last-words-walk.mjs walks every screen of the export to hold it;
+   lib/ui/__tests__/lookFootRoom.test.ts holds the rule to the foot's own
+   lengths. */
+@media (max-width: 767.98px) {
+ html.is-native[data-look]:not([data-look="nightsky"], [data-look="linen"]) .safe-pb {
+  padding-bottom: max(calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h)), calc(var(--inset-bottom) + var(--foot-clear)));
+ }
+ html.is-native[data-look]:not([data-look="nightsky"], [data-look="linen"]) .safe-pb-reader {
+  padding-bottom: max(calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + var(--reader-dock-room, 0px) + 68px), calc(var(--inset-bottom) + var(--foot-clear)));
+ }
+ html[data-look]:not([data-look="nightsky"], [data-look="linen"]) body > .min-h-screen:not(:has(.safe-pb)) {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--foot-clear));
+ }
+}
+
 /* On a wide screen (a tablet on its side, the website on a computer) a look
    keeps its colours and the sign at a chapter's head, and its picture at the
    foot stands down: the pictures are drawn for a phone's width, and stretched

@@ -33,6 +33,7 @@ import path from "node:path";
 
 import { chromium } from "playwright";
 
+import { screens } from "./lib/screens.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "./lib/shell-server.mjs";
 
 const argv = process.argv.slice(2);
@@ -44,47 +45,6 @@ const ONLY = take("--only")?.split(",") ?? null;
 const LOOKS = (take("--look") ?? "athos,rose").split(",");
 const OUT = path.resolve(argv[0] ?? "out");
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}: run npm run build:android first`);
-
-/** Every page in app/ as its route, groups and private folders left out (the list scripts/stripe-walk.mjs walks). */
-function patterns(dir = "app", parts = []) {
-  const out = [];
-  for (const name of fs.readdirSync(dir)) {
-    const full = path.join(dir, name);
-    if (fs.statSync(full).isDirectory()) {
-      if (name === "api" || name.startsWith("_") || name.startsWith("@") || name === "__tests__") continue;
-      out.push(...patterns(full, /^\(.*\)$/.test(name) ? parts : [...parts, name]));
-    } else if (/^page\.(tsx|ts|jsx|js|mdx)$/.test(name)) {
-      out.push(parts);
-    }
-  }
-  return out;
-}
-
-/** The export's pages, as the app's addresses. */
-function exported(dir = OUT, rel = "") {
-  const out = [];
-  for (const name of fs.readdirSync(dir)) {
-    const full = path.join(dir, name);
-    if (!fs.statSync(full).isDirectory() || name === "_next") continue;
-    const at = `${rel}/${name}`;
-    if (fs.existsSync(path.join(full, "index.txt"))) out.push(at);
-    out.push(...exported(full, at));
-  }
-  return out;
-}
-
-function screens() {
-  const pages = ["/", ...exported().sort()];
-  const chosen = [];
-  for (const parts of patterns()) {
-    const re = new RegExp(
-      `^${parts.map((p) => `/${/^\[\[?\.\.\./.test(p) ? ".+" : /^\[.*\]$/.test(p) ? "[^/]+" : p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`).join("")}$`,
-    );
-    const found = parts.length === 0 ? "/" : pages.find((p) => re.test(p));
-    if (found && !chosen.includes(found)) chosen.push(found);
-  }
-  return chosen.sort().map((p) => (p === "/" ? p : `${p}/`));
-}
 
 /** What covers the room by design: its selector, and why. */
 const BY_DESIGN = [
@@ -136,7 +96,7 @@ function measure(own) {
   return { look: root.getAttribute("data-look"), room: getComputedStyle(document.body, "::before").backgroundImage !== "none", covered, cut, allowed };
 }
 
-const list = ONLY ?? screens();
+const list = ONLY ?? screens(OUT);
 console.log(`${list.length} screens on a phone, in ${LOOKS.join(" and ")}`);
 // The cloud sessions carry their own Chromium (as openPhone in scripts/mock-check.mjs); elsewhere Playwright's.
 const OWN = "/opt/pw-browsers/chromium";
