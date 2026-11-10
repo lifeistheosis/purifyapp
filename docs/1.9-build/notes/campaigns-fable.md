@@ -2790,6 +2790,12 @@ route with July's others and missed its sender. That is this chat's miss.
   switches July's opt-ins off by hand; that statement is drafted and with
   Admin for the second read. How many readers it reaches is not known: only
   he can count the rows.
+- **His count (2026-11-10 about 20:46 UTC): none.** He ran the statement on
+  the live database: reminders_stopped 0, still_on 0. No reader had July's
+  reminder on, so the sender ran and found nobody; it reached no one. Above,
+  "it sent ... to every reader who had turned it on in July" is what the
+  code would have done, and there was no such reader. Nothing is left for
+  him here: the old sender leaves the main web with the merge of 1.9.
 - **In the record:** `docs/audit/findings.yaml`, F-50, and a line in
   `docs/SCHEDULED-JOBS.md`.
 - **When the reminder comes back** in the rework's own phase (1.9.1), it is

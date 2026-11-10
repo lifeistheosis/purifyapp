@@ -60,11 +60,12 @@ is no longer a way to send an hour twice by hand.
 same run also carried the daily reminder a reader could turn on for a prayer
 campaign in July. Campaigns were withdrawn on 2026-08-26, and the switch that
 turned it off went with their screens, but this sender was left running: it
-went on sending "Your prayer campaign" to July's opt-ins, to a page that is
-not found. It now follows July's routes and sends nothing
+would have gone on sending "Your prayer campaign" to July's opt-ins, to a
+page that is not found. It now follows July's routes and sends nothing
 (`lib/push/deliver.ts`, `deliverCampaigns`; `docs/audit/findings.yaml`, F-50).
-On the main web it stops with the deploy that carries this, or sooner if the
-owner switches July's opt-ins off by hand.
+On the main web the old sender leaves with the deploy that carries this. It
+reached nobody: the owner's count on the live database (2026-11-10 about
+20:46 UTC) found no reminder on, 0 switched off and 0 still on.
 
 **July's campaign rows are deleted thirty days after 1.9 ships (his word of
 2026-11-10; `lib/campaigns/julyRows.ts`).** The heartbeat's housekeeping

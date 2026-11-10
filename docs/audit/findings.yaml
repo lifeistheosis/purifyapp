@@ -2017,7 +2017,7 @@ findings:
     review: owner
 
   - id: F-50
-    title: July's daily campaign reminder went on being sent after campaigns were withdrawn, to a page that is not found, with no way to turn it off
+    title: July's daily campaign reminder sender went on running after campaigns were withdrawn, for a page that is not found, with no way to turn a reminder off (it reached nobody; none was on)
     area: push
     severity: P2
     confidence: high
@@ -2041,12 +2041,15 @@ findings:
       its route, app/api/campaigns/[id]/remind, answers 404 since the
       withdrawal. A reader who turned it on in July can only turn off every
       notification from Purify in the phone's own settings.
-      HOW MANY. Not known. Production has the columns (probed 2026-11-10
-      15:24 UTC with the site's public key, which cannot see the rows) and
-      one campaign of July's, still marked active though its last day was
-      2026-07-20. Only the owner can count the rows that have the reminder
-      on; the service log's "[cron/hourly-goals] reminders" line carries the
-      campaigns' sent and candidates for each run.
+      HOW MANY. NONE (the owner's count, 2026-11-10 about 20:46 UTC). He
+      ran the statement in the SQL editor on avbqyvjgcrucjwevwixt, after
+      Admin's read of it: reminders_stopped 0, still_on 0
+      (docs/1.9-build/BRAINSTORM.md). No row of prayer_campaign_prayers had
+      the reminder on, so the sender ran every ten minutes and found nobody:
+      no reader was sent July's reminder by it, on that day or, as far as
+      the rows say, since the heartbeat began to carry it. The fault was in
+      the code and reached no one. (Before his count this read "not known":
+      the site's public key cannot see the rows.)
       CORRECTED ON THE BRANCH, NOT ON THE MAIN WEB. The sender now follows
       July's routes (julyCampaignRoutes): while they are retired it reads no
       opt-in and sends nothing, and readers' own morning and evening
@@ -2055,13 +2058,17 @@ findings:
       was. The rework retired the reminder's switch with July's other routes
       on 2026-11-10 and missed its sender. The correction reaches the main
       web only with a deploy: the merge of 1.9, or sooner on his word.
-      STILL OPEN, HIS. To stop it on the main web before a deploy: July's
-      opt-ins switched off (remind_enabled false) by his hand in the SQL
-      editor, once a second chat has read the statement. Drafted, with Admin
-      for that read, not run. What becomes of July's rows at all is his
-      decision too (docs/1.9-build/OWNER-STEPS.md, R9).
+      NOTHING LEFT FOR HIM. The statement that switches July's opt-ins off
+      was run by his hand (above) and changed nothing, there being none on.
+      The switch that could turn one on answers 404 on the main web since
+      the withdrawal, so none can come on before the deploy. July's rows
+      themselves go thirty days after 1.9 ships, by his word
+      (lib/campaigns/julyRows.ts).
+      STILL TRUE OF THE MAIN WEB. Its sender is the old one until a deploy
+      carries the branch: the merge of 1.9. With no opt-in on, it sends
+      nothing.
     evidence: origin/main lib/push/deliver.ts (deliverReminders, deliverCampaigns); lib/push/schedule.ts (dueCampaigns); lib/push/copy.ts (campaign); app/api/campaigns/[id]/remind/route.ts; docs/SCHEDULED-JOBS.md; lib/push/__tests__/campaignRemindersRetired.test.ts
-    action: "Branch: done, the sender follows julyCampaignRoutes. Main web: the owner's word for a deploy that carries it, or for the one UPDATE that switches July's opt-ins off, read by a second chat first. When the reminder comes back in the rework's own phase it is written to the rework's rules: a campaign's last day, and a way to turn it off that works."
+    action: "Branch: done, the sender follows julyCampaignRoutes. Main web: nothing more by hand (his count of 2026-11-10 found no opt-in on); the old sender leaves with the merge of 1.9. When the reminder comes back in the rework's own phase it is written to the rework's rules: a campaign's last day, and a way to turn it off that works."
     safe_to_automate: false
     review: requires-owner
 
