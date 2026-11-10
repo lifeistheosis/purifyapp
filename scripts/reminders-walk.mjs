@@ -223,6 +223,8 @@ for (const testers of [false, true]) {
   say(now.includes("Try again") && now.includes("Reminders could not be turned on just now."), "the account card: it says it did not work, and offers the tap again");
   say(now.includes("Testers: Google or Apple gave this phone no address"), "the account card: a tester is told which wait it was");
   if (STILLS) {
+    // Clear of the Testers mark, which floats at the foot of the screen.
+    await card.evaluate((el) => el.scrollIntoView({ block: "center" }));
     await page.waitForTimeout(600);
     await card.screenshot({ path: path.join(STILLS, "5-card-failed-tester.png") });
     say(printMockCheck(await checkMock(page, '[data-road-card="keep-card"]'), "5-card-failed-tester.png"), "the house's rules on 5-card-failed-tester.png");
@@ -236,7 +238,9 @@ for (const testers of [false, true]) {
   const there = await turnOn.waitFor({ timeout: 30000 }).then(() => true, () => false);
   say(there, "Settings: the reminders control is there for a signed-in reader");
   if (there) {
-    const box = page.locator("section", { has: turnOn }).first();
+    // Marked before the tap: the button's own words change with it.
+    await turnOn.evaluate((el) => el.closest("section")?.setAttribute("data-walk", "reminders"));
+    const box = page.locator('[data-walk="reminders"]');
     await turnOn.click();
     await box.getByRole("button", { name: "Try again", exact: true }).waitFor({ timeout: 25000 }).catch(() => {});
     const now = (await box.innerText()).replace(/\s+/g, " ");
@@ -244,7 +248,6 @@ for (const testers of [false, true]) {
     if (STILLS) {
       await page.waitForTimeout(600);
       await box.screenshot({ path: path.join(STILLS, "6-settings-failed.png") });
-      await box.evaluate((el) => el.setAttribute("data-walk", "reminders"));
       say(printMockCheck(await checkMock(page, '[data-walk="reminders"]'), "6-settings-failed.png"), "the house's rules on 6-settings-failed.png");
     }
   }
