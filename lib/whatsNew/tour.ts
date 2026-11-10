@@ -45,6 +45,13 @@ export type TourStep = {
   title: string;
   body: string;
   /**
+   * The line where Purify Plus is not enforced for this reader: the iPhone
+   * app, where every feature is free and nothing is sold
+   * (docs/app-store-review-notes.md). Only on a stop whose `body` names Purify
+   * Plus, so a reader is never told something is Plus's that is free for them.
+   */
+  bodyFree?: string;
+  /**
    * The lit element takes taps while the step is shown, so the reader can try
    * it (Community's switch). Only for an element that stays on its page when
    * used: a tap that leaves the page ends the tour.
@@ -154,8 +161,10 @@ const TOUR_1_8: Tour = {
  *
  * Purify Plus is named where it is meant, and only there: the new plans are
  * Plus's, and their line says so in every language; the other stops are
- * every reader's (lib/whatsNew/__tests__/tour.test.ts holds both). The title
- * page names the first three, the release's line in three stops.
+ * every reader's. Where Plus is not enforced (the iPhone app, where every
+ * feature is free) the plans' line names no Plus (`bodyFree`, storyKey).
+ * lib/whatsNew/__tests__/tour.test.ts holds all three. The title page names
+ * the first three stops, the release's line in three stops.
  *
  * The verse stop lights John 1:1, the first verse of the Gospel the 1.9
  * plans begin with; the Bibles stop lights the way to the translations list
@@ -197,6 +206,7 @@ const TOUR_1_9: Tour = {
       target: "plans",
       title: "tour.step.plans.title",
       body: "tour.story.plans",
+      bodyFree: "tour.story.plansFree",
     },
     { id: "creed", route: "/theology", target: "creed", title: "creed.title", body: "tour.story.creed" },
     {
@@ -220,6 +230,15 @@ export const TOURS: readonly Tour[] = [TOUR_1_9, TOUR_1_8];
 export function tourFor(version: string): Tour | null {
   const release = featureRelease(version.trim());
   return TOURS.find((t) => t.version === release) ?? null;
+}
+
+/**
+ * The stop's line for this reader: `bodyFree` where Purify Plus is not
+ * enforced (`plusSold` false: the iPhone app, where every feature is free),
+ * its own line everywhere else.
+ */
+export function storyKey(step: TourStep, plusSold: boolean): string {
+  return !plusSold && step.bodyFree ? step.bodyFree : step.body;
 }
 
 /** How many of what the release brings the pop-up names. */

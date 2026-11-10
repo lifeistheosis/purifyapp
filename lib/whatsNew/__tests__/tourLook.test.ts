@@ -69,7 +69,7 @@ describe("the title page", () => {
 
   it("stands on the intro's own night: its stars, its horizon and its cross", () => {
     expect(html).toMatch(/^<div class="tour-night dark-island" data-night="title" data-entrance="intro">/);
-    expect((html.match(/<i style="left:/g) ?? []).length).toBe(HORIZON_STARS.length);
+    expect((html.match(/<i style="inset-inline-start:/g) ?? []).length).toBe(HORIZON_STARS.length);
     expect(html).toContain('<div class="tour-horizon"><div class="tour-horizon-level"><svg viewBox="0 0 1000 1000"');
     expect(html).toContain('<img src="/purify-cross-mark.png" alt="" decoding="sync" class="tour-cross"/>');
     // The intro's horizon is drawn under its own name; this one under the tour's.

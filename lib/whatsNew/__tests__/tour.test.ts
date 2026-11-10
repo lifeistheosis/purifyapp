@@ -21,6 +21,7 @@ import {
   reduceTour,
   stepAfter,
   stepCount,
+  storyKey,
   tourFor,
   type Tour,
   type TourAction,
@@ -162,10 +163,34 @@ describe("the 1.9 tour as data", () => {
     // The title page names only what every reader has.
     for (const id of TOUR.highlights) expect(plus, id).not.toContain(id);
   });
+
+  it("names no Plus where Plus is not enforced: the iPhone app, where every feature is free", () => {
+    // docs/app-store-review-notes.md: nothing is sold on iOS and every feature
+    // is free there, so a stop that names Plus has a line of its own for it,
+    // naming none, and only such a stop has one.
+    for (const s of TOUR.steps) {
+      const namesPlus = /\bPlus\b/.test(CATALOGS.en[s.body]);
+      expect(Boolean(s.bodyFree), `${s.id}: a line without Plus exactly where its own names Plus`).toBe(namesPlus);
+      if (!s.bodyFree) continue;
+      for (const lang of LANGS) expect(CATALOGS[lang][s.bodyFree], `${lang} ${s.bodyFree}`).not.toMatch(/\bPlus\b/);
+    }
+    // Chosen per reader: Plus's line where it is enforced, the free one where not.
+    const plans = TOUR.steps.find((s) => s.id === "plans")!;
+    expect(storyKey(plans, true)).toBe("tour.story.plans");
+    expect(storyKey(plans, false)).toBe("tour.story.plansFree");
+    const journal = TOUR.steps.find((s) => s.id === "journal")!;
+    expect(storyKey(journal, false)).toBe(journal.body);
+    // The layer asks the app's own switch, per reader's surface.
+    const layer = fs.readFileSync(path.join(ROOT, "components/whats-new/tour/TourLayer.tsx"), "utf8");
+    expect(layer).toContain("const plusSold = plusEnforcedFor(clientSurface());");
+    expect(layer).toContain("story={t(storyKey(shownStep, plusSold))}");
+  });
 });
 
 describe("the tour's words", () => {
-  const keys = [TOUR.name, TOUR.line, ...TOUR.steps.flatMap((s) => [s.title, s.body])];
+  const keys = [TOUR.name, TOUR.line, ...TOUR.steps.flatMap((s) => [s.title, s.body, ...(s.bodyFree ? [s.bodyFree] : [])])];
+  /** Each stop's lines: its own, and the one without Plus where it has one. */
+  const lines = TOUR.steps.flatMap((s) => [s.body, ...(s.bodyFree ? [s.bodyFree] : [])]);
   const own = ["tour.offer.see", "tour.close.title", "tour.close.body", "tour.replay"];
   const all = [...new Set([...keys, ...own])];
   const newKeys = all.filter((k) => k.startsWith("tour."));
@@ -194,18 +219,18 @@ describe("the tour's words", () => {
   });
 
   it("tell each stop's line of the story, every one its own", () => {
-    for (const s of TOUR.steps) expect(s.body.startsWith("tour.story."), s.id).toBe(true);
-    expect(new Set(TOUR.steps.map((s) => s.body)).size).toBe(TOUR.steps.length);
+    for (const k of lines) expect(k.startsWith("tour.story."), k).toBe(true);
+    expect(new Set(lines).size).toBe(lines.length);
   });
 
   it("are short: a title and one line for each step", () => {
     for (const s of TOUR.steps) {
       expect(CATALOGS.en[s.title].length, s.title).toBeLessThanOrEqual(34);
-      expect(CATALOGS.en[s.body].length, s.body).toBeLessThanOrEqual(80);
-      for (const lang of LANGS) {
-        expect(CATALOGS[lang][s.title].length, `${lang} ${s.title}`).toBeLessThanOrEqual(56);
-        expect(CATALOGS[lang][s.body].length, `${lang} ${s.body}`).toBeLessThanOrEqual(110);
-      }
+      for (const lang of LANGS) expect(CATALOGS[lang][s.title].length, `${lang} ${s.title}`).toBeLessThanOrEqual(56);
+    }
+    for (const k of lines) {
+      expect(CATALOGS.en[k].length, k).toBeLessThanOrEqual(80);
+      for (const lang of LANGS) expect(CATALOGS[lang][k].length, `${lang} ${k}`).toBeLessThanOrEqual(110);
     }
   });
 

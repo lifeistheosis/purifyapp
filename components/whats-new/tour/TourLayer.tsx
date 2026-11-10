@@ -49,12 +49,14 @@ import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { clientSurface } from "@/lib/entitlements/client";
+import { plusEnforcedFor } from "@/lib/entitlements/entitlements";
 import { isNativeClient } from "@/lib/platform/native";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 import { focusablesIn, nextIndex } from "@/lib/ui/focusTrap";
 import { haptic, prefersReducedMotion } from "@/lib/ui/motion";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
-import { canGoBack, highlightSteps, stepAfter, stepCount, tourFor } from "@/lib/whatsNew/tour";
+import { canGoBack, highlightSteps, stepAfter, stepCount, storyKey, tourFor } from "@/lib/whatsNew/tour";
 import {
   GLIDE_MS,
   REPLAN_PX,
@@ -122,6 +124,9 @@ export function TourLayer() {
   const router = useRouter();
   const { t } = useTranslate();
   const ids = useId();
+  // Purify Plus is named only where it is enforced for this reader: never in
+  // the iPhone app, where every feature is free (lib/whatsNew/tour.ts, storyKey).
+  const plusSold = plusEnforcedFor(clientSurface());
 
   const [place, setPlace] = useState<FootPlace>("bottom");
   const [titleLeaving, setTitleLeaving] = useState(false);
@@ -705,7 +710,7 @@ export function TourLayer() {
       {stepping && shownStep && count ? (
         <TourStoryFoot
           title={t(shownStep.title)}
-          story={t(shownStep.body)}
+          story={t(storyKey(shownStep, plusSold))}
           count={t("home.reviews.position", { index: count.at, total: count.of })}
           progress={count}
           place={place}

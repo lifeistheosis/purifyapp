@@ -65,7 +65,7 @@ function Night({
           {HORIZON_STARS.map((s) => (
             <i
               key={`${s.left}${s.top}`}
-              style={{ left: s.left, top: s.top, width: s.size, height: s.size, opacity: s.opacity, ["--star-at" as string]: `${s.delay}ms` }}
+              style={{ insetInlineStart: s.left, top: s.top, width: s.size, height: s.size, opacity: s.opacity, ["--star-at" as string]: `${s.delay}ms` }}
             />
           ))}
         </div>
