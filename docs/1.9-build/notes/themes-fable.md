@@ -3120,6 +3120,14 @@ change on it, opened the way a phone opens it, 390 wide:
   clean, 195.2 MB on disk and 68.0 MB packed. The export, the walks and
   lint were run on `8c90dad9` with this change on it; typecheck and the
   unit suite again after the rebase onto `b271f345`.
+- Those last two ran on packages a pull had since changed (`814f8ea0` took
+  the SQLCipher plugin and 14 packages out; the arbiter's word of 16:19
+  UTC, read after the push). Run again after `npm ci`, on `5e8057e7`:
+  typecheck 0, and the unit suite 901 files and 11,155 tests, all passing,
+  the Luke 13 test mended by its own chat (`5db4bf33`). The export that was
+  walked was built before that change and still held the plugin's files;
+  nothing on a prayer page reads them, and the next export will not have
+  them.
 
 **Not done.** No iOS export and no website build (no server code changed).
 No phone has seen it: True black on an OLED screen, a long Hour scrolled
