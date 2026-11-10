@@ -44,3 +44,9 @@ What he saw: tapping a card on Prayers' Practices (The Hours, Akathists, Learn t
 Where it is: the app already tunes the View Transitions crossfade (`app/globals.css`, 420ms on the house curve, none under reduced motion), but only the reader's focus mode calls it (`components/reader/ReaderPrefs.tsx`); route changes in Next 16 are instant. The Android WebView (Chromium) and WKWebView on iOS 18 support same-page view transitions; older iPhones fall back to the cut.
 
 Planned fix (on his start): read Next 16's own guide in `node_modules/next/dist/docs` first, then every route change runs as a view transition: forward settles in, back returns, tabs cross-fade, on the house curve, under about 350ms so it never slows a reader; a card whose picture leads to its own page carries the picture into the page's header (Practices, the reading room's covers, the saints, the four Theology buttons); reduced motion and the reader's own Motion setting keep the cut; checked in the export on Android and on an iPhone, and held by a test that the route wiring stays in place.
+
+### 5. The Florilegium's hub: the same side stripe, and a typed arrow (2026-11-10)
+
+What he saw: the line down the left of each gathering card's quoted line (`build-89/05-stripe-florilegium.png`). His words: "I just caught the vibe coded AI design also here with the line." It is `components/florilegium/FlorilegiaHub.tsx` (border-s-2), already on note 1's list, and Updates flagged it the same night. Seen beside it in the same picture: "Begin a new gathering" ends in a typed arrow (→), which the glyph rule forbids (icons come from `components/ui/icons`).
+
+Planned fix (on his start): with note 1's sweep; the arrow becomes the house's own icon.
