@@ -341,6 +341,42 @@ Send back: "C7 done".
 
 ## Anytime
 
+### Android. Do notifications reach your phone? (5 minutes, once the panel's test is live)
+
+Your word, 2026-11-10: "the notifications just still don't work on
+Android. Though web notification pops up for me, but not the Android app
+itself." The server's side reads right end to end (what it sends, the
+channel, the permission, the Firebase file in every build), so the next
+step is to see your own phone's row. The panel's test sends to your own
+account and nobody else's, and says what Google answered. It goes live on
+the website with your "push 77"; until then it is only on the branch.
+
+On your Android phone:
+1. Open Purify, signed in as the same account you use for the panel.
+2. **You**, **Settings**, **Notifications**, **Turn on reminders**. Allow
+   when Android asks. (If it says notifications are blocked: the phone's
+   **Settings**, **Apps**, **Purify**, **Notifications**, on; then try
+   again.)
+3. In the phone's **Settings**, **Apps**, **Purify**: **Notifications** on,
+   with every category under it on; **Battery**: **Unrestricted** (on a
+   Samsung, also make sure Purify is not under **Sleeping apps** or **Deep
+   sleeping apps**).
+4. Go to the home screen, so Purify is not on screen.
+
+On your computer:
+5. purifyapp.net/admin?tab=drop, **Records** (beside the path),
+   **Notifications sent**, the card **Your own devices**, **Send a test**.
+6. Look at the phone, then at the card's Android row.
+
+Send back what the Android row says, and whether the phone showed it:
+- **Accepted by Google**, and the phone showed it: fixed.
+- **Accepted by Google**, and nothing showed: the fault is on the phone.
+  Send its make and Android version.
+- **No longer there** or **Refused**: open Purify on the phone again (step
+  1), then **Send again**.
+- No Android row at all: step 2 did not reach your account. Send what the
+  Notifications screen says under the button.
+
 ### 23. Do iPhone purchases reach your account? Done
 
 Your word, 2026-11-10 about 18:05 UTC, after looking at Admin, **Money**,
@@ -1267,9 +1303,43 @@ Google Play:
 4. Still in **App content**: **Target audience and content**, **Manage**.
    Only ages 13 and over ticked (nothing under 13). **Save**. (Under 13
    would bring Google's rules for children's social features.)
-5. **Internal testing**, the 1.9 release, **Promote release**,
+5. Still in **App content**: the declaration for **foreground services**.
+   Google's own page (read 2026-11-10): apps for Android 14 and up "need to
+   declare any foreground service types that you use in a new declaration on
+   the App content page". Purify has one type, media playback: it keeps a
+   chant, a chapter read aloud or ambience playing with the phone locked
+   (`FOREGROUND_SERVICE_MEDIA_PLAYBACK` in the manifest,
+   `lib/player/lockScreen.ts`). 1.8 went to Play with it, so it may be done
+   already: if the card shows it complete, with **Media playback** in it,
+   leave it and go to step 6. If it asks, fill it in:
+   - **Type**: Media playback. **Use case**: Media Playback ("Continue audio
+     or video playback from the background, including streaming").
+   - **What it does** (paste): "Purify plays chants, Scripture read aloud
+     and ambience that the reader starts by tapping Play. A media playback
+     service keeps the audio going when the reader leaves the app or locks
+     the phone, and shows the player in the notification shade and on the
+     lock screen, with play and pause. It runs only while something is
+     playing or paused, and stops when the reader stops it."
+   - **If the system delays it** (paste): "The reader taps Play and hears
+     nothing, so the chant or reading they chose does not start."
+   - **If the system stops it** (paste): "The chant or reading stops part
+     way through when the reader leaves the app or locks the phone, and its
+     controls leave the lock screen."
+   - **Video link**: about thirty seconds, recorded on the phone with its
+     sound, from the 1.9 build: open a chant, tap Play, go to the home
+     screen, pull down the notification shade to show the player, lock the
+     phone and show the player on the lock screen, then pause and play from
+     there. Google asks that it show "the steps the user needs to take in
+     your app in order to trigger the feature", with playback started by
+     the user. Google's page does not say where the video lives: put it on
+     YouTube as **Unlisted**, so its reviewers can open the link without
+     signing in, and paste the link.
+   - Record it on a build with the Updates 2 chat's mend of the player
+     (2026-11-10: the player in the shade starts at once, the cover last),
+     so the shade shows it. **Save**.
+6. **Internal testing**, the 1.9 release, **Promote release**,
    **Production**.
-6. **Next**, **Save**, then **Send for review** (or **Start rollout**).
+7. **Next**, **Save**, then **Send for review** (or **Start rollout**).
 
 App Store:
 0. **App Information** (left, under **General**), **Edit** at the top of the

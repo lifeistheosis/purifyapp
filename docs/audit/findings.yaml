@@ -1585,6 +1585,34 @@ findings:
       reader's choice for the next account.
     evidence: app/api/push/device/route.ts; supabase/migrations/20260613000000_device_push_tokens.sql (device_push_tokens_self_all); lib/push/native.ts (relinkNative, unlinkNative); lib/push/__tests__/deviceRoute.test.ts (fails on the old route); lib/push/__tests__/nativeAccount.test.ts
     action: "Ships with 1.6: the route with the website deploy, the app half with the store builds. The route alone repairs every installed build from 1.5.1 on, which sends its token at each launch. Left to see: the owner's Android phone showing a push after the deploy."
+    addendum_2026_11_10: >-
+      Not yet seen. The owner, 2026-11-10 about 20:53 UTC, through the
+      arbiter: "the notifications just still don't work on Android. Though
+      web notification pops up for me, but not the Android app itself." Read
+      again end to end on the branch the same evening, code and builds only,
+      no production rows: the FCM message carries a notification payload,
+      high priority and the channel purify-notifications
+      (lib/push/providers/fcm.ts); MainActivity makes that channel at high
+      importance and the manifest names it and ic_stat_purify (which exists)
+      as Firebase's defaults; POST_NOTIFICATIONS is declared and asked for
+      when reminders are turned on, and a blocked app or channel takes the
+      phone off the list (lib/push/native.ts, WidgetBridgePlugin
+      notificationsEnabled); the Capacitor plugin (8.1.1) shows a push in
+      the foreground with presentationOptions alert; the plugin's
+      MessagingService is declared in its manifest, which R8 keeps, and
+      nothing in the app's manifest removes it; build 92 (2026-11-10) wrote
+      google-services.json from its secret, with no warning, for
+      net.purifyapp.purify. Nothing found in code. What is left is on the
+      owner's own account and phone: whether this phone's token is saved to
+      the account he signs in with, what Google answers for it, and the
+      phone's own settings. None of that can be read from a working session,
+      so the panel now sends a test to the signed-in admin's own devices
+      alone and shows, per device, what Google, Apple or the browser
+      answered (app/api/admin/push/test, components/admin/push/
+      MyDevicesTest.tsx, lib/push/__tests__/selfTest.test.ts). It reaches
+      production with his word for the website push; his steps are in
+      docs/1.9-build/OWNER-STEPS.md, Anytime, "Android. Do notifications
+      reach your phone?".
     safe_to_automate: false
     review: owner
 

@@ -23,6 +23,7 @@ import { MAX_BODY, MAX_TITLE, checkNotificationCopy } from "@/lib/push/doctrine"
 
 import { DataTable, Email, Pill, ToolbarButton } from "../primitives";
 import { DeliveryStatus } from "../push/DeliveryStatus";
+import { MyDevicesTest } from "../push/MyDevicesTest";
 
 type Audience = "all" | "plus" | "pro" | "web" | "native";
 const AUDIENCES: [Audience, string][] = [
@@ -263,6 +264,7 @@ export function PushRecord() {
   return (
     <div className="space-y-4">
       <DeliveryStatus />
+      <MyDevicesTest />
       <DataTable<Broadcast>
         rows={history ?? []}
         rowKey={(b) => b.id}
