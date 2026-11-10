@@ -19,6 +19,8 @@ import { PLUS_ROWS } from "@/lib/premium/plusRows";
 import { beginTry, endTrySound } from "@/lib/premium/plusTrySound";
 import { countBought, countLock } from "@/lib/analytics/lockCount";
 import { countPlusStep } from "@/lib/analytics/moreCount";
+import { armHere, exposed, reached } from "@/lib/ab/device";
+import { PLUS_SHEET_ORDER } from "@/lib/ab/tests";
 import { Sheet } from "@/components/ui/Sheet";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -167,6 +169,19 @@ export function useUpgradeModal(): Ctx {
   );
 }
 
+/**
+ * Whether this device's version of the sheet opens on the tapped feature
+ * working (lib/ab/tests.ts, PLUS_SHEET_ORDER). The device is said to be shown
+ * its version here, as the sheet opens from a lock: the last moment both
+ * versions are the same tap. False while the test is shut, which is how it
+ * ships; in Testers mode it is the version an admin picked.
+ */
+function sheetOpensWorking(): boolean {
+  const here = armHere("plus");
+  exposed("plus");
+  return here?.test.id === PLUS_SHEET_ORDER.id && here.arm === "working";
+}
+
 /** `notFound`: a restore that found no subscription. Both it and `failed` leave the buttons live. */
 type Phase = "pitch" | "buying" | "restoring" | "active" | "failed" | "notFound";
 
@@ -228,13 +243,21 @@ export function UpgradeModalProvider({
     setOverPlayer(Boolean(opts?.overPlayer));
     setPhase("pitch");
     endTrySound();
-    // Straight to the feature's own screen where the reader asked to try it;
-    // the list and the plans are one tap back, as from any Try it.
-    const tried = opts?.tryNow ? PLUS_ROWS.find((r) => r.feature === next) : undefined;
-    if (tried && TRY_PREVIEW_IDS.includes(tried.id)) {
+    // The lock's own feature, where it has one that can be shown working.
+    const row = PLUS_ROWS.find((r) => r.feature === next);
+    const own = row && TRY_PREVIEW_IDS.includes(row.id) ? row : null;
+    if (own && opts?.tryNow) {
+      // Straight to the feature's own screen where the reader asked to try
+      // it; the list and the plans are one tap back, as from any Try it.
       countPlusStep(next, "tried");
-      beginTry(tried.id);
-      setTrying(tried.id);
+      beginTry(own.id);
+      setTrying(own.id);
+    } else if (own && sheetOpensWorking()) {
+      // The sheet's order under test (lib/ab/tests.ts, PLUS_SHEET_ORDER): this
+      // device's version opens on the tapped feature working. Not counted as
+      // a Try it opened, which is a reader's own tap.
+      beginTry(own.id);
+      setTrying(own.id);
     } else setTrying(null);
     setOffers(null);
     setPlan("yearly");
@@ -306,6 +329,7 @@ export function UpgradeModalProvider({
   const buy = useCallback(async () => {
     // The button to subscribe, tapped: the step before a purchase (1.9).
     countPlusStep(feature ?? "general", "pay");
+    reached("plus_pay");
     setPhase("buying");
     try {
       const user = readLocalSessionUser();
@@ -563,7 +587,12 @@ function UpgradeSheet({
             onBuy={onBuy}
             href={canBuyHere ? undefined : "/pricing"}
             onRestore={canRestore ? onRestore : undefined}
-            onNavigate={onClose}
+            // The same button where a purchase cannot be made in the sheet:
+            // it leads to the plans' own page, and is the same step taken.
+            onNavigate={() => {
+              reached("plus_pay");
+              onClose();
+            }}
             more={
               // Pro and the full page, beside a buy button only: without one
               // the action itself already goes to /pricing.

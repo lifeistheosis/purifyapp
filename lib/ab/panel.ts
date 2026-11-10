@@ -20,6 +20,7 @@ export const MILESTONE_WORDS: Record<Milestone, string> = {
   first_step: "opened their first step",
   back_week2: "came back in their second week",
   plus_bought: "bought Plus",
+  plus_pay: "tapped the button to subscribe",
 };
 /** The same, as the thing a version can be behind on. */
 const BEHIND_ON: Record<Milestone, string> = {
@@ -28,6 +29,7 @@ const BEHIND_ON: Record<Milestone, string> = {
   first_step: "first steps opened",
   back_week2: "readers coming back",
   plus_bought: "Plus bought",
+  plus_pay: "the button to subscribe tapped",
 };
 
 export type PanelCell = { n: number; rate: number | null } | null;
@@ -68,9 +70,9 @@ function cell(hits: number, of: number): PanelCell {
 
 function line(test: AbTest, v: Verdict, running: boolean, began: boolean): string {
   if (!running && !began) {
-    return test.gate === "plusIntro"
-      ? "Not running. Built and shut: it starts once you have seen the card and said yes, on the days set then."
-      : "Not running. It starts when the revised onboarding is lit for readers, at release.";
+    if (test.gate === "plusIntro") return "Not running. Built and shut: it starts once you have seen the card and said yes, on the days set then.";
+    if (test.gate === "plusOrder") return "Not running. Built and shut: it starts once you have seen its second version and said yes, on the days set then, and never while the Plus card's test runs.";
+    return "Not running. It starts when the revised onboarding is lit for readers, at release.";
   }
   switch (v.state) {
     case "waiting":

@@ -9,7 +9,7 @@ const world = vi.hoisted(() => ({ roads: true, counting: true, now: "2026-12-10T
 vi.mock("@/lib/onboarding/flags", () => ({
   roadsBuilt: () => world.roads,
   // Plus, introduced once, stays shut in these tests: they are the first test's.
-  litNow: () => ({ roads: world.roads, plusIntro: false }),
+  litNow: () => ({ roads: world.roads, plusIntro: false, plusOrder: false }),
 }));
 vi.mock("@/lib/onboarding/count", () => ({ countPlatform: () => "android", countingAllowed: () => world.counting }));
 vi.mock("@/lib/platform/native", () => ({ isNativeClient: () => false }));

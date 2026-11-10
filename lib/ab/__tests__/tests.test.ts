@@ -1,6 +1,8 @@
+import { readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
-import { PLUS_INTRO_LIVE, ROADS_LIVE, litNow } from "@/lib/onboarding/flags";
+import { PLUS_INTRO_LIVE, PLUS_ORDER_LIVE, ROADS_LIVE, litNow } from "@/lib/onboarding/flags";
 import { trackEventSchema } from "@/lib/security/schemas";
 
 import { MILESTONES } from "../milestones";
@@ -9,6 +11,7 @@ import {
   AB_PLANNED,
   AB_SENDING,
   PLUS_INTRODUCED,
+  PLUS_SHEET_ORDER,
   AB_TESTS,
   abWord,
   abWords,
@@ -37,8 +40,8 @@ const test = (o: Partial<AbTest> = {}): AbTest => ({
   floor: 0.2,
   ...o,
 });
-const open = { roads: true, plusIntro: true };
-const shut = { roads: false, plusIntro: false };
+const open = { roads: true, plusIntro: true, plusOrder: true };
+const shut = { roads: false, plusIntro: false, plusOrder: false };
 
 describe("the tests Purify runs", () => {
   it("are a registry with nothing wrong in it", () => {
@@ -46,7 +49,7 @@ describe("the tests Purify runs", () => {
   });
 
   it("hold the account's place, as the owner agreed it", () => {
-    expect(AB_TESTS).toEqual([ACCOUNT_PLACE, PLUS_INTRODUCED]);
+    expect(AB_TESTS).toEqual([ACCOUNT_PLACE, PLUS_INTRODUCED, PLUS_SHEET_ORDER]);
     // The built version first: what the test falls back to.
     expect(ACCOUNT_PLACE.arms).toEqual(["card", "end"]);
     expect(ACCOUNT_PLACE.judge).toBe("back_week2");
@@ -67,7 +70,7 @@ describe("the tests Purify runs", () => {
     const days = (Date.parse(ACCOUNT_PLACE.ends) - Date.parse(ACCOUNT_PLACE.begins)) / 86_400_000;
     expect(days).toBe(84);
     // And lit, it runs: on its first day, on its last, and not the day after.
-    const open = { roads: true, plusIntro: false };
+    const open = { roads: true, plusIntro: false, plusOrder: false };
     expect(runningTest("onboarding", ACCOUNT_PLACE.begins, open)?.id).toBe("account-place");
     expect(runningTest("onboarding", ACCOUNT_PLACE.ends, open)?.id).toBe("account-place");
     const after = new Date(Date.parse(ACCOUNT_PLACE.ends) + 86_400_000).toISOString().slice(0, 10);
@@ -193,8 +196,8 @@ describe("the rules for more than one test", () => {
   });
 
   it("keep the next three on record, in order, and built into nothing", () => {
-    // Plus, introduced once, was the third: it is built and registered now, shut.
-    expect(AB_PLANNED.map((p) => p.id)).toEqual(["reminders-moment", "plus-sheet-order"]);
+    // The Plus sheet's order and Plus, introduced once, are built and registered now, shut.
+    expect(AB_PLANNED.map((p) => p.id)).toEqual(["reminders-moment"]);
     for (const p of AB_PLANNED) {
       expect(AB_TESTS.some((t) => t.id === p.id), p.id).toBe(false);
       expect(p.versions.length, p.id).toBe(2);
@@ -225,7 +228,14 @@ describe("which test is running", () => {
   it("names a test and its arm in one word, and lists every word it can say", () => {
     expect(abWord(test(), "b")).toBe("day1-guided:b");
     expect(abWords(tests)).toEqual(["day1-guided:a", "day1-guided:b", "plus-card:a", "plus-card:b"]);
-    expect(abWords()).toEqual(["account-place:card", "account-place:end", "plus-introduced:locks", "plus-introduced:card"]);
+    expect(abWords()).toEqual([
+      "account-place:card",
+      "account-place:end",
+      "plus-introduced:locks",
+      "plus-introduced:card",
+      "plus-sheet-order:list",
+      "plus-sheet-order:working",
+    ]);
   });
 });
 
@@ -234,7 +244,7 @@ describe("Plus, introduced once: built, and shut until he has seen it", () => {
     expect(PLUS_INTRO_LIVE).toBe(false);
     expect(litNow().plusIntro).toBe(false);
     for (const day of ["2026-11-10", "2026-12-25", "2027-06-01"]) {
-      expect(runningTest("today", day, { roads: true, plusIntro: false }), day).toBeNull();
+      expect(runningTest("today", day, { roads: true, plusIntro: false, plusOrder: true }), day).toBeNull();
       expect(runningTest("today", day, litNow()), day).toBeNull();
     }
   });
@@ -253,6 +263,49 @@ describe("Plus, introduced once: built, and shut until he has seen it", () => {
     expect(registryFaults([lit, sheet]).join()).toContain("are kept apart, and run at the same time");
     // One after the other, they may.
     expect(registryFaults([lit, { ...sheet, begins: "2027-02-24", ends: "2027-05-19" }])).toEqual([]);
+  });
+});
+
+describe("the Plus sheet's order: built, and shut until he has seen it", () => {
+  const sheet = readFileSync("components/billing/UpgradeModal.tsx", "utf8").replace(/\s+/g, " ");
+
+  it("runs on no day while its switch is off", () => {
+    expect(PLUS_ORDER_LIVE).toBe(false);
+    expect(litNow().plusOrder).toBe(false);
+    for (const day of ["2026-11-11", "2026-12-25", "2027-06-01"]) {
+      expect(runningTest("plus", day, litNow()), day).toBeNull();
+      expect(runningTest("plus", day, { roads: true, plusIntro: true, plusOrder: false }), day).toBeNull();
+    }
+  });
+
+  it("is judged by the button to subscribe, with purchases and readers coming back guarded, and is no test on an offer", () => {
+    expect(PLUS_SHEET_ORDER).toMatchObject({ surface: "plus", arms: ["list", "working"], judge: "plus_pay", guards: ["plus_bought", "back_week2"], gate: "plusOrder" });
+    // The sheet as it is built comes first: what the test falls back to.
+    expect(PLUS_SHEET_ORDER.arms[0]).toBe("list");
+    expect(PLUS_SHEET_ORDER.surface).not.toBe("offer");
+  });
+
+  it("never shares a day with the Plus card's test, whichever of the two is asked", () => {
+    const card = { ...PLUS_INTRODUCED, begins: "2026-12-01", ends: "2027-02-23" };
+    expect(registryFaults([card, { ...PLUS_SHEET_ORDER, begins: "2027-01-01", ends: "2027-03-26" }]).join()).toContain("are kept apart, and run at the same time");
+    expect(registryFaults([card, { ...PLUS_SHEET_ORDER, begins: "2027-02-24", ends: "2027-05-19" }])).toEqual([]);
+    expect(PLUS_SHEET_ORDER.apart).toContain(PLUS_INTRODUCED.id);
+    expect(PLUS_INTRODUCED.apart).toContain(PLUS_SHEET_ORDER.id);
+  });
+
+  it("changes only which of the sheet's own screens opens first, for a lock with a feature behind it", () => {
+    // The device is said to be shown its version as the sheet opens from a lock.
+    expect(sheet).toContain('function sheetOpensWorking(): boolean { const here = armHere("plus"); exposed("plus"); return here?.test.id === PLUS_SHEET_ORDER.id && here.arm === "working"; }');
+    // Never the Plus button (no feature of its own), and never the card's own open, which is already the feature working.
+    expect(sheet).toContain("const own = row && TRY_PREVIEW_IDS.includes(row.id) ? row : null; if (own && opts?.tryNow) {");
+    expect(sheet).toContain("} else if (own && sheetOpensWorking()) {");
+    // The plans stand at the foot in both: one dock, drawn outside the choice of screen.
+    expect(sheet.split("<PlansDock").length - 1).toBe(1);
+  });
+
+  it("says the button to subscribe was tapped, in the sheet and where the sheet leads to the plans' page", () => {
+    expect(sheet).toContain('countPlusStep(feature ?? "general", "pay"); reached("plus_pay");');
+    expect(sheet).toContain('onNavigate={() => { reached("plus_pay"); onClose(); }}');
   });
 });
 

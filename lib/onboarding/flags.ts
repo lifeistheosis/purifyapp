@@ -47,7 +47,16 @@ export function roadsEnabled(): boolean {
  */
 export const PLUS_INTRO_LIVE = false;
 
+/**
+ * The Plus sheet's order (1.9; lib/ab/tests.ts, PLUS_SHEET_ORDER): when a
+ * reader taps a lock, the sheet opens as it is built, on its list, or
+ * straight on that feature working. Built and SHUT, like the card above:
+ * its second version goes before him first. It is not part of the new
+ * onboarding, so it does not wait on that flag.
+ */
+export const PLUS_ORDER_LIVE = false;
+
 /** What is lit for readers in this build, by the name a test's gate asks for (lib/ab/tests.ts). */
-export function litNow(): { roads: boolean; plusIntro: boolean } {
-  return { roads: roadsBuilt(), plusIntro: roadsBuilt() && PLUS_INTRO_LIVE };
+export function litNow(): { roads: boolean; plusIntro: boolean; plusOrder: boolean } {
+  return { roads: roadsBuilt(), plusIntro: roadsBuilt() && PLUS_INTRO_LIVE, plusOrder: PLUS_ORDER_LIVE };
 }

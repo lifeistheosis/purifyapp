@@ -99,7 +99,8 @@ describe("the card as it is drawn", () => {
   it("opens the feature's Try it, which shows and never grants, and is gone once tapped or closed", () => {
     expect(card).toContain("markPlusIntroDone(); upgrade.open(feature, { tryNow: true });");
     expect(card).toContain("onClose={markPlusIntroDone}");
-    expect(sheet).toContain("const tried = opts?.tryNow ? PLUS_ROWS.find((r) => r.feature === next) : undefined;");
+    expect(sheet).toContain('if (own && opts?.tryNow) {');
+    expect(sheet).toContain('countPlusStep(next, "tried"); beginTry(own.id); setTrying(own.id);');
   });
 
   it("puts no timer, no price and no count of other readers on it", () => {

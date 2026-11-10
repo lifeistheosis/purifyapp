@@ -41,7 +41,7 @@ export type AbSurface = "onboarding" | "today" | "plus" | "plans" | "reminders" 
 export const AB_SURFACES: readonly AbSurface[] = ["onboarding", "today", "plus", "plans", "reminders", "themes", "offer"];
 
 /** What a test may wait on before it runs. */
-export type AbGate = "roads" | "plusIntro";
+export type AbGate = "roads" | "plusIntro" | "plusOrder";
 export type AbLit = Readonly<Record<AbGate, boolean>>;
 
 export type AbTest = {
@@ -60,7 +60,8 @@ export type AbTest = {
   /**
    * Runs only while this holds (lib/onboarding/flags.ts, litNow): "roads" is
    * the revised onboarding lit for readers; "plusIntro" is the Plus card
-   * after the first week, shut until the owner has seen its stills.
+   * after the first week and "plusOrder" the Plus sheet's order, each shut
+   * until the owner has seen its stills.
    */
   gate?: AbGate;
   /** Tests this one never runs together with, by id: they read the same readers at the same moment. */
@@ -154,7 +155,48 @@ export const PLUS_INTRODUCED: AbTest = {
   floor: 0.2,
 };
 
-export const AB_TESTS: readonly AbTest[] = [ACCOUNT_PLACE, PLUS_INTRODUCED];
+/**
+ * The Plus sheet's order (built on the owner's "everything in 1.9" of
+ * 2026-11-10; components/billing/UpgradeModal.tsx).
+ *
+ * A reader who taps a lock is shown the sheet either as it is built, on its
+ * list with the tapped feature first and lit ("list"), or straight on that
+ * feature working, its own Try it, with the list one tap back ("working").
+ * The plans stand at the foot of the sheet in both, as they always have. The
+ * same price, the same words, the same close: nothing a reader pays or reads
+ * differs, so this is not a test on an offer and needs no word of its own
+ * beyond his yes to the stills.
+ *
+ * Only a lock with a feature behind it: the Plus button opens the sheet as
+ * built for everyone, and so does the one card that introduces Plus, which
+ * already opens on the feature working.
+ *
+ * Judged by the button to subscribe tapped; Plus bought and readers coming
+ * back must not get clearly worse.
+ *
+ * SHUT: its gate is PLUS_ORDER_LIVE (lib/onboarding/flags.ts). ITS DAYS ARE
+ * SET WHEN IT IS LIT, and never across the Plus card's days (`apart`): both
+ * read the same buyers.
+ */
+export const PLUS_SHEET_ORDER: AbTest = {
+  id: "plus-sheet-order",
+  surface: "plus",
+  asks: "When a reader taps a lock, should the Plus sheet open on its list, with that feature first, or straight on that feature working?",
+  arms: ["list", "working"],
+  share: 1,
+  begins: "2026-11-11",
+  ends: "2026-11-11",
+  gate: "plusOrder",
+  apart: ["plus-introduced"],
+  judge: "plus_pay",
+  guards: ["plus_bought", "back_week2"],
+  // To tell 5 in 100 tapping the button from 8 in 100 (./size.ts, readersPerArm).
+  needs: 1060,
+  warmup: 200,
+  floor: 0.2,
+};
+
+export const AB_TESTS: readonly AbTest[] = [ACCOUNT_PLACE, PLUS_INTRODUCED, PLUS_SHEET_ORDER];
 
 /**
  * Whether a "shown" or a "reached" row may leave a device. On since the
@@ -267,8 +309,9 @@ export function shownDayOk(shown: string, today: string): boolean {
 
 /**
  * The tests that come after, in the order the owner agreed (2026-11-10), as
- * a record and for his panel. (Plus, introduced once, was the third of them
- * and is built and registered above, shut.) NOT BUILT AND NOT REGISTERED: a test's second
+ * a record and for his panel. (The Plus sheet's order and Plus, introduced
+ * once, were the second and third of them, and are built and registered
+ * above, shut.) NOT BUILT AND NOT REGISTERED: a test's second
  * version is built two weeks before its turn, so it is built against the
  * screens as they then are, and each waits for the one before it to settle
  * or end. `waits` says what each is waiting for besides its turn.
@@ -284,14 +327,6 @@ export const AB_PLANNED: readonly PlannedTest[] = [
     guards: "Accounts; Plus bought.",
     waits:
       "Reminders that need no account on the phones. Today a reminder is kept with an account, so for a reader with none the second version would be the account card under another name. It is worth testing once a phone can remind without one.",
-  },
-  {
-    id: "plus-sheet-order",
-    asks: "What should the Plus sheet show first: the feature the reader tapped, working, or the plans?",
-    versions: ["The tapped feature first, as built", "The plans first"],
-    judge: "The button to subscribe tapped.",
-    guards: "Plus bought; readers coming back in their second week.",
-    waits: "Its turn. Same price, same words, same close in both versions, so it needs no word of its own.",
   },
 ];
 

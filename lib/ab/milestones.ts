@@ -23,6 +23,8 @@ export const MILESTONES = [
   "back_week2",
   /** A Plus subscription was bought in the sheet. */
   "plus_bought",
+  /** The Plus sheet's button to subscribe was tapped: the step before a purchase. */
+  "plus_pay",
 ] as const;
 export type Milestone = (typeof MILESTONES)[number];
 
