@@ -73,6 +73,14 @@ written as 1.9 is planned to ship.
 11. **New in 1.9** in part B matches the 1.9 note as shipped (Guideline
    2.3.1(a): new features "described with specificity in the Notes for
    Review").
+12. **Profiles** (a name, a photo, a banner, a few lines) are seen by other
+   readers, so Guideline 1.2 covers them too. Every profile has Report and
+   Block today, but a moderator's "clear profile" takes the banner and the
+   words and not the photo (`lib/community/moderation.ts`, `clear_profile`;
+   with the Updates chat, 2026-11-10). Once it takes the photo too, part B's
+   list gains: "- Profiles: a name, a photo and a few lines. Every profile has
+   Report and Block, and a moderator can clear any of it, the photo
+   included." Until then part B leaves profiles out.
 
 ---
 
