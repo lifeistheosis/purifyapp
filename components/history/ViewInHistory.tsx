@@ -45,9 +45,11 @@ export function ViewInHistory({
           </li>
         ))}
       </ul>
+      {/* 44px to the touch, the floor checkMock holds every target to (it was
+          its line of words alone, 20px); the words stand where they stood. */}
       <Link
         href="/history"
-        className="mt-3 inline-block font-sans text-detail text-link hover:underline underline-offset-4"
+        className="inline-flex min-h-11 items-center font-sans text-detail text-link hover:underline underline-offset-4"
       >
         <T k="study.history.exploreTimeline" />
       </Link>

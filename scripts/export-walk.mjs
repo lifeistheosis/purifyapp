@@ -8677,6 +8677,60 @@ await section(55, async () => {
   }
 });
 
+await section(56, async () => {
+  console.log("\n56. Philemon and Philippians wear their English tags, and the timeline link is 44 tall (1.9 quick wins)");
+  // Philemon showed no Greek at all until 1.9, its tags having been
+  // Philippians'; Philippians had the Greek and no English tags. With the
+  // Greek on, each English word of both now carries the number of the Greek
+  // it renders, and Philemon's first is Paul, Παῦλος.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify:interlinear": "1" } });
+    await go(page, "/");
+    for (const [to, first] of [["/bible/philemon/1/", { w: "Paul,", s: "3972", greek: "Παῦλος" }], ["/bible/philippians/1/", { w: "Paul", s: "3972", greek: "Παῦλος" }], ["/bible/philippians/4/", null]]) {
+      await go(page, "/");
+      await page.waitForTimeout(300);
+      await go(page, to);
+      await page.waitForFunction(() => document.querySelectorAll("[data-word-idx][data-s]").length > 0, null, { timeout: 15000 }).catch(() => {});
+      const got = await page.evaluate(() => {
+        const tagged = [...document.querySelectorAll("#v1 [data-word-idx][data-s]")];
+        return {
+          tagged: document.querySelectorAll("[data-word-idx][data-s]").length,
+          verses: [...document.querySelectorAll("[id^=v]")].filter((x) => /^v\d+$/.test(x.id) && x.querySelector("[data-word-idx][data-s]")).length,
+          all: [...document.querySelectorAll("[id^=v]")].filter((x) => /^v\d+$/.test(x.id)).length,
+          first: tagged[0] ? { w: tagged[0].textContent?.trim(), s: tagged[0].getAttribute("data-s") } : null,
+          greek: document.querySelector("#v1")?.textContent ?? "",
+        };
+      });
+      must(got.tagged > 0 && got.verses === got.all, `${to}: every verse's English carries its Greek numbers (${got.verses} of ${got.all} verses, ${got.tagged} words)`);
+      if (first) must(got.first?.w === first.w && got.first?.s === first.s && got.greek.includes(first.greek), `${to}: its first word is "${first.w}", ${first.greek} (G${first.s}) (${JSON.stringify(got.first)})`);
+    }
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // "Explore the interactive timeline" under a saint's events in Orthodox
+  // History: 44 tall to the touch, flagged at 20 on every saint page with
+  // events (the November saints chat, 2026-11-10).
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/");
+    for (const to of ["/saints/john-of-damascus/", "/saints/athanasius-the-great/"]) {
+      await go(page, to);
+      await page.waitForFunction(() => document.querySelector('section a[href="/history"], section a[href="/history/"]'), null, { timeout: 15000 }).catch(() => {});
+      const box = await page.evaluate(() => {
+        const a = document.querySelector('section a[href="/history"], section a[href="/history/"]');
+        if (!a) return null;
+        a.scrollIntoView({ block: "center" });
+        const r = a.getBoundingClientRect();
+        return { h: Math.round(r.height), w: Math.round(r.width), words: a.textContent?.trim() };
+      });
+      must(!!box && box.h >= 44 && box.w >= 44, `${to}: "${box?.words}" is ${box?.w}x${box?.h}, 44 or more each way`);
+    }
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

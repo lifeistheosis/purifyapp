@@ -13,7 +13,7 @@ import { Sheet } from "@/components/ui/Sheet";
 import { isNativeClient } from "@/lib/platform/native";
 import type { SaintBrief } from "@/lib/saints/brief";
 import { feastDaysIn } from "@/lib/saints/feastDay";
-import { quoteFace, type SaintPicture } from "@/lib/today/saintFaces";
+import { COVER_FACES, quoteFace, type SaintPicture } from "@/lib/today/saintFaces";
 import { quoted, readWhereFrom, saintByline, saintPictureInput, saintQuote, type SaintWords } from "@/lib/today/saintWords";
 
 import { SaintFace } from "./SaintFace";
@@ -146,7 +146,7 @@ export function SaintWindowHead({
     <div className="flex items-center gap-2 px-4 pb-1 pt-1.5">
       <Link href={`/saints/${saint.slug}`} onClick={onClose} className="tap-press flex min-w-0 flex-1 items-center gap-3 ps-1.5">
         <span className="relative size-[52px] shrink-0 overflow-hidden rounded-full border border-paper/20 bg-night-soft">
-          {picture ? <SaintFace key={picture.src} picture={picture} zoom={1.4} /> : null}
+          {picture ? <SaintFace key={picture.src} picture={picture} zoom={1.4} across={COVER_FACES[saint.slug]?.[0]} /> : null}
         </span>
         <span className="min-w-0">
           <span className="block font-heading text-lede font-bold leading-tight text-paper">{saint.name}</span>

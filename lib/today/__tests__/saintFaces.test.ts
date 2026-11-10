@@ -366,10 +366,13 @@ describe("a face in a small round frame", () => {
     const face = read("components/today/SaintFace.tsx");
     expect(face).toContain("const fx = cover && across !== undefined ? across : null;");
     expect(face).toContain("transform: `translateX(${+(faceShift(fx, zoom) * 100).toFixed(2)}%) scale(${zoom})`,");
-    // Left out, the frame is cut about the middle, as it always was (Today's saint).
+    // Left out, the frame is cut about the middle, as it always was.
     expect(face).toContain("? { transform: `scale(${zoom})`, transformOrigin: `50% ${focusY}%` }");
     expect(read("components/theology/FatherFace.tsx")).toContain("across={father?.slug ? COVER_FACES[father.slug]?.[0] : undefined}");
     expect(read("components/theology/FathersShelf.tsx")).toContain("across={COVER_FACES[f.slug]?.[0]}");
+    // Today's saint in his window's round frame too (1.9, Theology's T5: it
+    // was cut about the portrait's middle, so St Basil stood at its edge).
+    expect(read("components/today/SaintWindow.tsx")).toContain("zoom={1.4} across={COVER_FACES[saint.slug]?.[0]}");
     // A picture is not mirrored: its frame keeps its direction in Arabic.
     expect(read("components/theology/FatherFace.tsx")).toMatch(/aria-hidden\s+dir="ltr"/);
   });
