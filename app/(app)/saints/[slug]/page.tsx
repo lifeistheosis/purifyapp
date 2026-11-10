@@ -36,6 +36,13 @@ export function generateStaticParams() {
   return SAINTS.map((s) => ({ slug: s.slug }));
 }
 
+// Only the library's saints are pages (1.9): on the website an address made
+// up or mistyped (/saints/zzz-not-a-saint) answers a true 404. Without this the
+// page began streaming its outline (loading.tsx) before it knew there was no
+// saint, so the not-found came inside a 200, a page to a search engine. The
+// apps ship the same pages either way: the export builds only these.
+export const dynamicParams = false;
+
 // Web: ISR (hourly) so the veneration count stays fresh without per-request
 // rendering; the per-user "bumped" state is loaded client-side regardless.
 // This replaces force-dynamic so the page is compatible with the Android static

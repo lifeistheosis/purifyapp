@@ -21,6 +21,9 @@ export function generateStaticParams() {
   return webSlugs().map((slug) => ({ slug }));
 }
 
+/** Only the webs there are (1.9): any other answers a true 404 on the website, as a saint's page does. */
+export const dynamicParams = false;
+
 export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params;
   const saint = getSaint(slug);

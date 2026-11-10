@@ -31,6 +31,12 @@ export function generateStaticParams() {
   );
 }
 
+// Only the library's works are pages (1.9), as on a saint's page: a work that
+// is not there answers a true 404 on the website, and so does an icon file
+// that is not there (/saints/icons/<file>), which falls through from public/
+// to this route and answered 200 with the not-found inside the page.
+export const dynamicParams = false;
+
 export async function generateMetadata({ params }: { params: Params }) {
   const { slug, work } = await params;
   const found = getWork(slug, work);
