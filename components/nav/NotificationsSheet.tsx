@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { NoticeAppeal, NoticeLine } from "@/components/community/NotificationsInbox";
+import { InboxHeading as Heading, NoticeAppeal, NoticeLine } from "@/components/community/NotificationsInbox";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { INDEX_LIST_LOOK } from "@/components/mobile/IndexRows";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { Sheet } from "@/components/ui/Sheet";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/cn";
-import { useInbox, type CommunityNotification } from "@/lib/community/inbox";
+import { fromPurify, useInbox, type CommunityNotification } from "@/lib/community/inbox";
 import { notificationTarget } from "@/lib/community/notificationTarget";
 import { relativeTime } from "@/lib/community/relativeTime";
 
@@ -27,27 +27,9 @@ function hrefOf(n: CommunityNotification): string | null {
   return null;
 }
 
-function Heading({ children, className }: { children: React.ReactNode; className?: string }) {
-  // A heading to a screen reader, a small grey line to the eye: the global
-  // h1 to h6 rule would set it in Lora bold.
-  return (
-    <p role="heading" aria-level={2} className={cn("mb-2 px-1 font-sans text-caption text-paper/45", className)}>
-      {children}
-    </p>
-  );
-}
-
 function Forward() {
   return <ChevronLeft size={16} className="shrink-0 rotate-180 text-paper/35 rtl:rotate-0" />;
 }
-
-/**
- * Notices Purify's moderators send, which stand under "From Purify" and not
- * with what other readers sent: a post or reply approved (written as from
- * "Purify", lib/community/moderation.ts), and something taken down, with its
- * reason (lib/community/removal.ts).
- */
-const FROM_PURIFY: ReadonlySet<CommunityNotification["kind"]> = new Set(["approved", "removed"]);
 
 /** One notice as a row: what happened, when, and where it opens. */
 function NoticeRow({
@@ -136,8 +118,9 @@ export function NotificationsSheet({
   const pathname = usePathname() ?? "/";
   const inbox = useInbox();
   const rows = inbox.notifications.slice(0, SHOWN);
-  const fromReaders = rows.filter((n) => !FROM_PURIFY.has(n.kind));
-  const fromPurify = signedIn && inbox.loaded ? rows.filter((n) => FROM_PURIFY.has(n.kind)) : [];
+  // What Purify's moderators sent stands under "From Purify" (lib/community/inbox.ts, fromPurify).
+  const fromReaders = rows.filter((n) => !fromPurify(n));
+  const purifySent = signedIn && inbox.loaded ? rows.filter(fromPurify) : [];
 
   return (
     <Sheet open={open} onClose={onClose} title={t("settings.notifications")} bodyClassName="pt-1">
@@ -178,10 +161,10 @@ export function NotificationsSheet({
         <Heading>{t("notifications.fromPurify")}</Heading>
         <ul className={INDEX_LIST_LOOK}>
           {/* What Purify's moderators sent this reader, newest first, above What's new. */}
-          {fromPurify.map((n, i) => (
+          {purifySent.map((n, i) => (
             <NoticeRow key={n.id} n={n} first={i === 0} fresh={fresh} locale={locale} onClose={onClose} />
           ))}
-          <li className={fromPurify.length > 0 ? "border-t border-paper/[0.06]" : undefined}>
+          <li className={purifySent.length > 0 ? "border-t border-paper/[0.06]" : undefined}>
             <Link href="/whats-new" onClick={onClose} className={cn(ROW, "transition-colors active:bg-paper/[0.04]")}>
               <span className="min-w-0 flex-1">
                 <span className={cn("block font-heading text-ui font-semibold leading-tight", whatsNewFresh ? "text-paper" : "text-paper/75")}>

@@ -12,8 +12,8 @@ import { haptic } from "@/lib/ui/motion";
 
 /**
  * Community's bell (1.8, the owner's pick of r3-02, B): what other readers
- * sent, behind a bell in the head, where the page used to open on the list
- * itself above the composer.
+ * sent, and what Purify's moderators sent, behind a bell in the head, where
+ * the page used to open on the list itself above the composer.
  *
  * Drawn as the tab bar's bell is (components/nav/NotificationsButton): filled
  * when something is new, and no dot and no count (CONTRIBUTING's bar on
@@ -63,7 +63,9 @@ export function CommunityBell({
       >
         <Bell size={22} filled={lit} />
       </button>
-      <Sheet open={open} onClose={() => setOpen(false)} title={t("community.notifications")} desktop bodyClassName="pt-1 pb-2">
+      {/* "Notifications", as the tab bar's sheet is titled: inside, what other
+          readers sent and what Purify sent stand under their own headings. */}
+      <Sheet open={open} onClose={() => setOpen(false)} title={t("settings.notifications")} desktop bodyClassName="pt-1 pb-2">
         <NotificationsInbox
           whole
           onOpen={(n) => {

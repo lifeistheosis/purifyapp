@@ -31,6 +31,7 @@ import { Sparkle } from "@/components/ui/icons/Sparkle";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/cn";
 import {
+  fromPurify,
   getInbox,
   markInboxRead,
   refreshInbox,
@@ -242,6 +243,20 @@ function KindGlyph({ kind }: { kind: string }) {
 
 const ROW = "flex w-full items-center gap-3 px-3.5 py-3 text-left";
 
+/**
+ * A group's heading inside a bell's sheet ("From other readers", "From
+ * Purify"): a heading to a screen reader, a small grey line to the eye, since
+ * the global h1 to h6 rule would set it in Lora bold. Shared with the tab
+ * bar's sheet (components/nav/NotificationsSheet.tsx).
+ */
+export function InboxHeading({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <p role="heading" aria-level={2} className={cn("mb-2 px-1 font-sans text-caption text-paper/45", className)}>
+      {children}
+    </p>
+  );
+}
+
 export function NotificationsInbox({
   onOpen,
   whole = false,
@@ -251,8 +266,9 @@ export function NotificationsInbox({
   /**
    * The whole inbox, as the body of Community's bell (1.8, the owner's pick
    * of r3-02 B: the inbox left the top of the feed for the bell). Every row,
-   * no heading of its own (the sheet's title is it), and a line saying so
-   * when there is nothing yet.
+   * in two groups under their headings: what other readers sent, then what
+   * Purify's moderators sent (fromPurify), and a line saying so when nothing
+   * came from readers.
    */
   whole?: boolean;
 }) {
@@ -300,12 +316,16 @@ export function NotificationsInbox({
     return null;
   }
 
-  const shown = all || whole ? inbox.notifications : inbox.notifications.slice(0, PREVIEW);
-  const hidden = whole ? 0 : inbox.notifications.length - PREVIEW;
+  // What other readers sent, and what Purify's moderators sent: never one list
+  // under "From other readers" (the arbiter, 2026-11-10, his call 18).
+  const readers = inbox.notifications.filter((n) => !fromPurify(n));
+  const purify = inbox.notifications.filter(fromPurify);
+  const shown = all || whole ? readers : readers.slice(0, PREVIEW);
+  const hidden = whole ? 0 : readers.length - PREVIEW;
 
-  const list = (
-    <ul className={cn("divide-y divide-paper/8 overflow-hidden rounded-2xl border border-paper/12 bg-paper/[0.02]", !whole && "mt-3")}>
-      {shown.map((n) => {
+  const listOf = (rows: CommunityNotification[], className?: string) => (
+    <ul className={cn("divide-y divide-paper/8 overflow-hidden rounded-2xl border border-paper/12 bg-paper/[0.02]", className)}>
+      {rows.map((n) => {
         const isNew = fresh.has(n.id);
         const opens = notificationTarget(n).kind !== "none";
         const inner = (
@@ -383,32 +403,60 @@ export function NotificationsInbox({
     </ul>
   );
 
-  if (whole) return list;
+  if (whole) {
+    return (
+      <>
+        <InboxHeading>{t("community.notifications")}</InboxHeading>
+        {readers.length > 0 ? (
+          listOf(readers)
+        ) : (
+          <p className="px-1 py-3 font-sans text-detail text-paper/55">{t("notifications.readersEmpty")}</p>
+        )}
+        {purify.length > 0 ? (
+          <>
+            <InboxHeading className="mt-6">{t("notifications.fromPurify")}</InboxHeading>
+            {listOf(purify)}
+          </>
+        ) : null}
+      </>
+    );
+  }
+
+  const freshReaders = readers.filter((n) => fresh.has(n.id)).length;
 
   return (
     <section className="mb-8">
-      <div className="flex items-baseline gap-2">
-        <h2 className="font-sans text-caption font-semibold text-gold/80">
-          {t("community.notifications")}
-        </h2>
-        {/* The count lives here, on a surface the reader opened, and never
-            on the tab glyph. */}
-        {fresh.size > 0 ? (
-          <span className="font-sans text-eyebrow font-semibold text-crimson">
-            {tn("community.unreadCount", fresh.size)}
-          </span>
-        ) : null}
-      </div>
-      {list}
-      {hidden > 0 ? (
-        <button
-          type="button"
-          onClick={() => setAll((v) => !v)}
-          aria-expanded={all}
-          className="hit-44 mt-2.5 px-1 font-sans text-detail font-semibold text-paper/65 transition-colors hover:text-paper"
-        >
-          {all ? t("community.showLess") : `${t("common.seeAll")} (${inbox.notifications.length})`}
-        </button>
+      {readers.length > 0 ? (
+        <>
+          <div className="flex items-baseline gap-2">
+            <InboxHeading className="mb-0">{t("community.notifications")}</InboxHeading>
+            {/* The count lives here, on a surface the reader opened, and never
+                on the tab glyph. */}
+            {freshReaders > 0 ? (
+              <span className="font-sans text-eyebrow font-semibold text-crimson">
+                {tn("community.unreadCount", freshReaders)}
+              </span>
+            ) : null}
+          </div>
+          {listOf(shown, "mt-3")}
+          {hidden > 0 ? (
+            <button
+              type="button"
+              onClick={() => setAll((v) => !v)}
+              aria-expanded={all}
+              className="hit-44 mt-2.5 px-1 font-sans text-detail font-semibold text-paper/65 transition-colors hover:text-paper"
+            >
+              {all ? t("community.showLess") : `${t("common.seeAll")} (${readers.length})`}
+            </button>
+          ) : null}
+        </>
+      ) : null}
+      {/* What Purify's moderators sent is never folded behind "See all". */}
+      {purify.length > 0 ? (
+        <>
+          <InboxHeading className={cn("mb-0", readers.length > 0 && "mt-6")}>{t("notifications.fromPurify")}</InboxHeading>
+          {listOf(purify, "mt-3")}
+        </>
       ) : null}
     </section>
   );

@@ -40,6 +40,18 @@ export type CommunityNotification = {
   reason?: string | null;
 };
 
+/**
+ * A notice Purify's moderators send: a post or reply approved (written as from
+ * "Purify", lib/community/moderation.ts), or something taken down, with its
+ * reason (lib/community/removal.ts). It stands under "From Purify", never
+ * with what other readers sent: the tab bar's bell (components/nav/
+ * NotificationsSheet.tsx) and Community's bell (components/community/
+ * NotificationsInbox.tsx) both ask this one rule.
+ */
+export function fromPurify(n: Pick<CommunityNotification, "kind">): boolean {
+  return n.kind === "approved" || n.kind === "removed";
+}
+
 export type Inbox = {
   notifications: CommunityNotification[];
   unread: number;
