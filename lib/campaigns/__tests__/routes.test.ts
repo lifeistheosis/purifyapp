@@ -693,18 +693,46 @@ describe("reports", () => {
 describe("a moderator's decisions", () => {
   const log = () => w.tables.community_mod_log!.map((l) => l.action);
 
-  it("approve puts a waiting campaign on the board, cleared", async () => {
+  it("approve puts a waiting campaign on the board: read, and not yet cleared against reports", async () => {
     signIn(ANNA);
     const { id } = (await (await start()).json()) as { id: string };
     expect(await approveCampaign(client(w) as never, MOD, id)).toEqual({ ok: true });
     expect(byId(id)).toMatchObject({ status: "active", held_reason: null });
-    expect(typeof byId(id).mod_cleared_at).toBe("string");
+    // Whoever reads a new campaign cannot know whether the person it names
+    // agreed. So the first reading leaves reports able to hide it.
+    expect(byId(id).mod_cleared_at).toBeNull();
     signIn(null);
     const { campaigns: list } = (await (await board(new Request(`${SITE}/api/campaigns`))).json()) as { campaigns: { id: string }[] };
     expect(list.map((c) => c.id)).toEqual([id]);
     expect(log()).toEqual(["approve_campaign"]);
     // Twice is refused: it is not waiting any more.
     expect(await approveCampaign(client(w) as never, MOD, id)).toMatchObject({ ok: false, status: 409 });
+  });
+
+  it("the whole way: read, reported by the person it names and hidden, kept by a moderator, and then not hidden again", async () => {
+    // Every campaign is read before it is public, so the campaign a reader
+    // can report has always been approved once. Until 2026-11-10 that first
+    // approval cleared it, and no report could hide any campaign.
+    signIn(ANNA);
+    const { id } = (await (await start()).json()) as { id: string };
+    expect(await approveCampaign(client(w) as never, MOD, id)).toEqual({ ok: true });
+    const tell = (reason: string) => report(new Request(`${SITE}/api/campaigns/${id}/report`, json({ reason })), params(id));
+
+    signIn(BEN);
+    expect((await tell("about_me")).status).toBe(200);
+    expect(byId(id)).toMatchObject({ status: "held", held_reason: "reports; about_me" });
+
+    // A moderator looks, and keeps it: now it is cleared.
+    expect(await approveCampaign(client(w) as never, MOD, id)).toEqual({ ok: true });
+    expect(byId(id).status).toBe("active");
+    expect(typeof byId(id).mod_cleared_at).toBe("string");
+    expect(w.tables.prayer_campaign_reports!.map((r) => r.status)).toEqual(["dismissed"]);
+
+    for (const who of [BEN, CARA, DAN]) {
+      signIn(who);
+      expect((await tell("about_me")).status).toBe(200);
+    }
+    expect(byId(id).status).toBe("active");
   });
 
   it("approve ends one whose days ran out while it waited, and does not put it up", async () => {
@@ -715,7 +743,7 @@ describe("a moderator's decisions", () => {
 
   it("remove takes it from everyone, keeps the row, and closes its reports as acted on", async () => {
     const id = running(ANNA);
-    w.tables.prayer_campaign_reports!.push({ id: "r1", campaign_id: id, reporter_id: BEN, status: "open", reason_code: "money" });
+    w.tables.prayer_campaign_reports!.push({ id: "r1", campaign_id: id, target_kind: "campaign", reporter_id: BEN, status: "open", reason_code: "money" });
     expect(await removeCampaign(client(w) as never, MOD, id, "Asked for money.")).toEqual({ ok: true });
     expect(byId(id)).toMatchObject({ status: "removed", removed_reason: "Asked for money.", removed_by_email: "edgar@example.com" });
     expect(w.tables.prayer_campaign_reports![0].status).toBe("actioned");
@@ -733,7 +761,7 @@ describe("a moderator's decisions", () => {
 
   it("a dismissed report is recorded, not deleted", async () => {
     const id = running(ANNA);
-    w.tables.prayer_campaign_reports!.push({ id: "r1", campaign_id: id, reporter_id: BEN, status: "open", reason_code: "unkind" });
+    w.tables.prayer_campaign_reports!.push({ id: "r1", campaign_id: id, target_kind: "campaign", reporter_id: BEN, status: "open", reason_code: "unkind" });
     expect(await dismissCampaignReport(client(w) as never, MOD, "r1")).toEqual({ ok: true });
     expect(w.tables.prayer_campaign_reports!).toMatchObject([{ id: "r1", status: "dismissed" }]);
     expect(byId(id).status).toBe("active");

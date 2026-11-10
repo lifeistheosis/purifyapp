@@ -151,7 +151,7 @@ describe("the moderators' queue", () => {
       campaign(C2, { title: "For Maria", for_whom: "living", intention: "healing", held_reason: "new; crisis", created_at: iso(NOW - 3_600_000) }),
       campaign(C3, { status: "active", held_reason: null }),
     ];
-    w.tables.prayer_campaign_reports = [{ id: R1, campaign_id: C3, reporter_id: MARK, reason_code: "money", reason: "It asks for a transfer.", status: "open", created_at: iso(NOW) }];
+    w.tables.prayer_campaign_reports = [{ id: R1, campaign_id: C3, target_kind: "campaign", reporter_id: MARK, reason_code: "money", reason: "It asks for a transfer.", status: "open", created_at: iso(NOW) }];
     const res = await queue(get());
     expect(res.status).toBe(200);
     const body = (await res.json()) as { campaigns: { waiting: WaitingCampaign[]; reports: { id: string; campaign: { id: string } | null }[]; live: boolean } };
@@ -166,19 +166,21 @@ describe("the moderators' queue", () => {
     expect(await (await queue(get("?summary=1"))).json()).toEqual({ waiting: 3 });
   });
 
-  it("approves a waiting campaign onto the board, cleared, and writes who did", async () => {
+  it("approves a waiting campaign onto the board, and writes who did", async () => {
     w.tables.prayer_campaigns = [campaign(C1)];
     expect((await act(post({ action: "approve_campaign", id: C1 }))).status).toBe(200);
     const row = w.tables.prayer_campaigns[0];
     expect(row.status).toBe("active");
     expect(row.held_reason).toBeNull();
-    expect(typeof row.mod_cleared_at).toBe("string");
+    // Read for the first time is not yet cleared against reports
+    // (lib/campaigns/moderation.ts, approveCampaign; routes.test.ts walks the whole way).
+    expect(row.mod_cleared_at ?? null).toBeNull();
     expect((w.tables.community_mod_log ?? []).map((l) => [l.action, l.target_kind, l.target_id, l.actor_id])).toEqual([["approve_campaign", "campaign", C1, MARK]]);
   });
 
   it("removes one, and sets a report aside as dismissed and not deleted", async () => {
     w.tables.prayer_campaigns = [campaign(C1, { status: "active" }), campaign(C2, { status: "active" })];
-    w.tables.prayer_campaign_reports = [{ id: R1, campaign_id: C2, reporter_id: ANNA, reason_code: "other", reason: null, status: "open", created_at: iso(NOW) }];
+    w.tables.prayer_campaign_reports = [{ id: R1, campaign_id: C2, target_kind: "campaign", reporter_id: ANNA, reason_code: "other", reason: null, status: "open", created_at: iso(NOW) }];
     expect((await act(post({ action: "remove_campaign", id: C1, reason: "Asks for money." }))).status).toBe(200);
     expect(statusOf(C1)).toBe("removed");
     expect(w.tables.prayer_campaigns.find((r) => r.id === C1)?.removed_reason).toBe("Asks for money.");

@@ -69,10 +69,24 @@ async function closeReports(admin: SupabaseClient, actor: ModActor, campaignId: 
   if (error && !reworkAbsent(error)) console.warn("[campaigns] reports not closed", actor.name, error.message);
 }
 
+/** Hidden by readers' reports, by the words maybeHideCampaign writes below. */
+const hiddenByReports = (reason: string | null) => /\breports\b/.test(reason ?? "");
+
 /**
  * A moderator has read it and it may be seen: on the board, open to join.
- * It stays up after this whatever more reports say, until someone removes it
- * by hand, as a post a moderator has cleared does.
+ *
+ * READ IS NOT YET CLEARED. Every campaign is read once before it is public,
+ * and whoever reads a new one cannot know whether the person it names agreed
+ * to be named. So that first reading leaves reports able to hide it: "it is
+ * about me" from the person it names still takes it down at once. It is
+ * CLEARED, and stays up whatever more reports say until someone removes it
+ * by hand, only when a moderator looks at it AFTER reports hid it and keeps
+ * it, as a post a moderator has kept is cleared.
+ *
+ * Until 2026-11-10 the first reading cleared it too, which, with every
+ * campaign read first, meant no report could ever hide one. Nothing was open
+ * yet. lib/campaigns/__tests__/routes.test.ts walks the whole way now: read,
+ * reported and hidden, kept, and then not hidden again.
  */
 export async function approveCampaign(admin: SupabaseClient, actor: ModActor, id: string, now: number = Date.now()): Promise<ModResult> {
   const c = await read(admin, id);
@@ -80,9 +94,10 @@ export async function approveCampaign(admin: SupabaseClient, actor: ModActor, id
   if (c.status !== "held") return { ok: false, status: 409, error: "That campaign is not waiting." };
   // One whose days ran out while it waited is ended, not put up for an hour.
   const status = isOver({ status: "active", ends_at: c.ends_at }, now) ? "ended" : "active";
+  const at = new Date(now).toISOString();
   const { error } = await admin
     .from("prayer_campaigns")
-    .update({ status, held_reason: null, mod_cleared_at: new Date(now).toISOString(), updated_at: new Date(now).toISOString() })
+    .update({ status, held_reason: null, ...(hiddenByReports(c.held_reason) ? { mod_cleared_at: at } : {}), updated_at: at })
     .eq("id", id)
     .eq("status", "held");
   if (error) return { ok: false, status: 500, error: error.message };
@@ -206,9 +221,9 @@ export type Reported = { ok: true; hidden: boolean } | { ok: false; status: numb
  *     should not wait for two more readers to agree;
  *   - when reports add up as they do for a post (lib/community/trust.ts:
  *     three readers, a new account counting half, a moderator's at once).
- * Never when a moderator has already cleared it, so that neither rule can be
- * used to silence a campaign that has been read and kept; and never the
- * team's own.
+ * Never when a moderator has already looked at reports of it and kept it
+ * (approveCampaign, above: read is not yet cleared), so that neither rule
+ * can be used to silence a campaign twice; and never the team's own.
  */
 export async function reportCampaign(
   admin: SupabaseClient,
