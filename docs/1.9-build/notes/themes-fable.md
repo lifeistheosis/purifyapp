@@ -13,7 +13,7 @@ are at https://claude.ai/artifact/ALDy4Fz1XPGyHfQ7vcVZwD.
 this and let's get going"). What is in the app, how it differs from what was
 drawn, what was measured and what still waits for him are at "Built", the
 last part of this file (sections 19 to 26). The same page now shows the real
-build.
+build. Candlelight through the Church's year, built after them, is section 27.
 
 His words, the same day: "I also want you to cook up better themes ... I don't
 like the themes we have now, except that light mode, parchment, and the dark
@@ -2513,3 +2513,139 @@ build.
   (`lib/settings/__tests__/readingModeGallery.test.ts`, `litPanels.test.ts`);
   the cross-fade's rules (`lib/reader/__tests__/themeDissolve.test.ts`); the
   words in 21 languages (`lib/i18n/__tests__/smallLabels.test.ts`).
+
+## 27. Candlelight keeps the season
+
+Built the same day, after the looks, on the arbiter's word ("Candlelight
+through the Church year ... fold it into your design ... and build it with
+the rest"; PLAN 15, "palettes of the season"; ideas.json s2-03, whose note
+recommended this shape: "Candlelight's soft light takes the season's colour,
+the page unchanged").
+
+**What a reader sees.** In Candlelight, in the Bible, the soft light that
+rests where the eye does takes the colour of the Church's three long fasts:
+
+| When (the app's own calendar, in the reader's reckoning) | The light |
+| --- | --- |
+| Clean Monday to Holy Saturday (Great Lent and Holy Week) | Violet, the calendar's Holy Week violet |
+| The Nativity Fast, 15 November to 24 December | A deep blue, the calendar's Nativity indigo |
+| The Dormition Fast, 1 to 14 August | The Mother of God's blue, the calendar's own |
+| Every other day: Pascha and its season, the Twelve Days, Palm Sunday, ordinary time | The candle's own white, as it is today |
+
+The page, its black and its ink do not change. One switch, "Candlelight
+keeps the season", under Candlelight at Vespers in Settings and in the
+Bible's own settings, on until a reader turns it off.
+
+**How.** `lib/reader/candleSeason.ts` asks the calendar which season a day
+is in (`currentSeason`) and holds the three lights, each the calendar's own
+tone (`lib/calendar/tone.ts`) and a share. `components/reader/CandleVeil.tsx`
+is the veil both readers draw; while it is up in a season it says which on
+the page's root (`data-candle-season`), only once the device's own day is
+known, and takes it away when the reader leaves. In the stylesheet the
+season's light is Candlelight's room, laid under the page by the same three
+rules that lay a look's picture, and the veil keeps only its dark edges.
+
+**Why behind the words.** The white light lies over the words and can: it
+adds to the ink as much as to the ground. A colour laid over light-grey
+words takes them down with it, and the stepped-back commentary numbers,
+which decided how far Candlelight may step a verse back, fall under 4.5:1 at
+once. So a season's light lies behind the words, and is only as full as
+leaves every word on the page at 4.5:1 or more where it is fullest.
+
+**What that costs, said plainly.** Two things differ from what was first
+put to him:
+
+- **No green at Pentecost.** A green that keeps the words at 4.5:1 on this
+  black adds too little to be seen as a colour (at its fullest the ground
+  goes from `rgb(5, 5, 5)` to about `rgb(10, 14, 10)`). The same is true of
+  the calendar's olive for the Apostles' Fast. Rather than ship a light
+  nobody can see, those days keep the white. Violet and the blues carry,
+  because the eye gives blue little brightness for its colour.
+- **Seasons, not single days.** The Mother of God's blue is for her fast,
+  not for each of her feasts: the light follows the seasons the calendar
+  already names, and a single day is not one of them.
+
+And one thing is more than was first said: the Nativity Fast has its blue,
+which the first proposal left white. It is the calendar's own tone for the
+fast, and it is the fast a reader will be in when 1.9 reaches them.
+
+**Measured**, on the export, with the phone's clock set to a day in each
+season (25 March 2027, 1 December 2026, 5 August 2027), to an ordinary day
+and to Pascha:
+
+- The page says the right season, or none, on each of the five days.
+- The ground at the light's centre is `rgb(17, 10, 22)` in Lent,
+  `rgb(10, 11, 20)` in the Nativity Fast and `rgb(9, 12, 17)` in the
+  Dormition Fast, against `rgb(16, 16, 16)` for the candle's own white and
+  `rgb(5, 5, 5)` for the page.
+- Every word on John 1, against the pixels behind it, is 4.68:1 or more in
+  a season. On the white it is 4.66:1, as it is today.
+- `checkMock` passes on the page in Candlelight.
+- The season goes when the reader leaves the page (Today in Lent has none),
+  the switch turns it off and on from Settings and from the Bible's own
+  settings, and a reader on another palette never has one.
+
+41 steps, all as they should be: 34 for the season and 7 for the mend
+below. The gates: on the season's commit, typecheck 0, the unit suite 861
+files and 10,546 tests, lint 0 errors, and both native exports clean. On
+the pushed head, which has the mend and another chat's commit under it,
+typecheck 0, the unit suite 861 files and 10,548 tests, lint 0 errors,
+and the Android export clean (229.1 MB of 240 on disk, 72.3 MB packed of
+85). The iOS export was last run on the season's commit and not again for
+the mend, by the arbiter's word on spend ("one build, the checks that
+matter, a few stills"). On that last export the looks' own checks were run
+again: the room walk (122 screens in two looks, 244 measured, no fault),
+the scene check (all 18) and the 36 steps of the looks' walk. No server
+code changed, so the website build was not run again.
+
+**Seen on the way, not the season's:**
+
+- **Candlelight at Vespers wore the palette but not the candle's room.**
+  Mended the same day, in its own commit: see "The Vespers mend" below.
+- **The Bible's progress line grows from the left in Arabic too**
+  (`checkMock`, mirror), on every palette, once a chapter is scrolled.
+
+**The Vespers mend.** Found while walking the season: with the Vespers
+switch on and Dark the stored palette, at night the page is in Candlelight,
+and the Bible's reader drew no lit verse, no soft light and no dark edges
+(measured on the export with the clock at 23:30: the root said
+`candlelight`, and there was no veil and no reading state). The two readers
+asked which palette is stored (`const candle = theme === "candlelight"`),
+not which is worn. So a reader who has Candlelight only by Vespers got none
+of the candle his picks A and B describe, and no season. The same question
+served a second reader wrong the other way: one the Plus gate has refused,
+with Candlelight still stored, wears Dark, and the reader still stepped the
+verses back as if by candle.
+
+The arbiter's word (2026-11-10, 07:59 UTC): "Yes, mend it, as its own small
+commit after the season's push, with a still or two: Candlelight at Vespers
+should wear the whole candle his picks A and B describe, and a refused
+reader should not get the dimming on Dark."
+
+Both readers now ask what the page is wearing.
+`components/theme/useWornPalette.ts` reads and watches the root's
+`data-reading-mode`, the attribute the controller and the pre-paint script
+set, so the candle comes at sunset, goes in the morning, and follows the
+gate's answer, with no reload. Nothing is said on the server, so the export
+bakes no candle in. `lib/reader/__tests__/candleSeason.test.ts` holds both
+readers to it.
+
+Measured on the export, the phone's clock at 25 March 2027:
+
+- 23:30, Vespers on, Dark stored: the veil, the stepped-back verses and one
+  lit verse are there, the light is Lent's violet, and every word is 4.69:1
+  or more. The still is byte for byte the still of Candlelight chosen
+  outright on the same page.
+- 13:00, the same reader: Dark, no candle, no season.
+- Candlelight stored and the palette taken off the root: no veil, no
+  stepped-back verses, no season. That is the refused reader's state reached
+  by hand. The gate itself needs a gate-on build, which was not made for
+  this; the controller's own line is what puts that reader on Dark
+  (`allows(wanted) ? wanted : allows(stored) ? stored : "default"`).
+
+**Limits.** The light is in the Bible's reader, where Candlelight's own
+light is; the rest of the app in Candlelight is unchanged. Candlelight at
+Vespers and this switch are independent: one says when Candlelight is worn,
+the other what its light is. The two lines of words are in 21 languages,
+with each language's own names for the three fasts taken from its catalog,
+written by the chat and not read by a reader of each.
