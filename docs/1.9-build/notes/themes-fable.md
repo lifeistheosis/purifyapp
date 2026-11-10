@@ -3662,3 +3662,60 @@ in the longer languages (section 35), with Admin.
 the rule is tested and the walk against the app's own screens is clean, but
 no phone has seen it.
 
+## 38. The Plus preview's title bar: the name over "Preview" (Admin's pick A)
+
+Section 35 left one thing open with Admin: with "nineteen" for "twenty", the
+preview's title bar cut the Reading modes row's name at 360 wide in Greek and
+in Georgian, and at 320 in seven languages. Admin chose A and asked me to
+make it, and the arbiter asked for it before the cut (`04aca14b`).
+
+**Admin's terms, and what is built.** In `PlusTryHead`
+(`components/billing/PlusTry.tsx`) the name stands over "Preview" in one
+block that has the bar's whole width between the way back and the close.
+The name keeps its two-line clamp. The way back and the close are 44px and
+keep to the bar's middle however tall the name makes it. "Preview" stood
+beside the name before and did not give way, which left the name 120 to
+130px on a 360-wide phone.
+
+**Walked on a gate-on export**, in all 21 languages at 390, 360 and 320
+wide, in the sheet and on the apps' screen (the bar with no close): 126
+title bars.
+
+- The Reading modes name is whole in every one: on one line everywhere at
+  390 and 360, on two lines in 14 of the 42 bars at 320.
+- Every other Plus row's name, put in the name's place: 2,394 names, each
+  whole on two lines at most.
+- "Preview" stands under the name, whole, on the name's own edge.
+- The way back and the close are 2.75rem square (44px at a 16px root; the
+  app's root is 17px, so 46.75px) and keep to the bar's middle. The bar is
+  55px tall with a one-line name, as it was before, and 61px at most.
+- The bar runs with the page: in Arabic and Urdu the way back is at the
+  right and the close at the left.
+- `checkMock` passes on the bar in all 126.
+
+**"Preview" on seven palettes** (`text-paper/50`), measured where its
+letters are: Dark 5.36, Light 5.23 in the sheet and 9.46 on the apps' screen
+(which is dark on every palette), True black 5.32, Candlelight 5.26,
+Monastery 5.36, Councils 5.22, Cappadocian 5.21. It holds, so its class
+stays.
+
+**Two things about the walk itself, said plainly.**
+
+- The checker's mirror measure takes the page as left to right and then
+  turns it. On a page that already runs right to left nothing moves, so in
+  Arabic and Urdu it flagged every part of the bar, and said nothing true.
+  Those lines are left out for those two languages only; the bar's direction
+  is held there by its own geometry, and by the checker's own turn in the
+  other nineteen. This is how the checker has always worked and it is worth
+  knowing for anyone who runs it on an Arabic page.
+- The apps' screen needs the phone's store before it shows its features,
+  and a browser has none: it says nothing is sold. The walk answers the one
+  question the app asks Capacitor, which phone it is, and the app then shows
+  what a signed-out reader's phone shows, the features to try among them.
+  Nothing else is told to it. The apps' ready screen, with the store's
+  plans at its foot, draws the same bar and was not reached.
+
+**Gates**: typecheck 0; the unit suite 929 files, 11,533 tests; lint 0
+errors. `lib/premium/__tests__/plusTryScreens.test.ts` holds the bar's
+shape.
+
