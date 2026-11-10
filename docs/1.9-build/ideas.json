@@ -2054,7 +2054,7 @@
    "needsDesign": false,
    "version": "1.9",
    "outcome": null,
-   "note": "Each page writes the English; German is its own file loaded on the device. About and the FAQ lose a note that was true of no reader. 76d58364. PLAN 13q; build-90.md, the reader's language in the apps."
+   "note": "Each page writes the English; German is its own file loaded on the device. About and the FAQ lose a note that was true of no reader. 283d62bf. PLAN 13q; build-90.md, the reader's language in the apps."
   }
  ]
 }
