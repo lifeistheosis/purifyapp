@@ -394,6 +394,12 @@ describe("closed: the data", () => {
     expect(sql).not.toMatch(/grant [^;]*\bto\s+(?:anon|authenticated|public)\b/i);
     // It waits unless a moderator says otherwise, and goes with its campaign.
     expect(sql).toContain("status text not null default 'held' check (status in ('held', 'shown', 'removed'))");
+    // The moment its creator affirmed the two lines is required and has no
+    // default (the second chat's read of the SQL, 2026-11-10): only the
+    // route that asked writes it, so a write that never asked cannot record
+    // a yes. pictures.test.ts holds that the route does write it.
+    expect(sql).toContain("consent_at timestamptz not null,");
+    expect(sql).not.toMatch(/consent_at[^,\n]*default/);
     expect(sql).toContain("references public.prayer_campaigns (id) on delete cascade");
     // Safe to run twice.
     expect(sql).toMatch(/create table if not exists public\.prayer_campaign_pictures/);

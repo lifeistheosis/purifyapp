@@ -1358,8 +1358,10 @@ create table if not exists public.prayer_campaign_pictures (
   removed_reason text check (removed_reason is null or char_length(removed_reason) <= 300),
   -- When the creator affirmed the two lines a picture needs: "I am 18 or
   -- older", and "This picture is mine to share, and anyone in it has given
-  -- me their blessing to post it".
-  consent_at timestamptz not null default now(),
+  -- me their blessing to post it". Required, and with no default: the
+  -- moment is written by the route that asked, so a write that never asked
+  -- cannot record that anyone affirmed anything.
+  consent_at timestamptz not null,
   created_at timestamptz not null default now(),
   unique (bucket, path)
 );

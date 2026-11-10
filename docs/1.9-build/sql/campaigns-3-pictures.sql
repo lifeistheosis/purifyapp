@@ -15,6 +15,12 @@
 -- error either time, and the schema after the second run is the schema after
 -- the first.
 --
+-- Read by a second chat on 2026-11-10 (Admin): safe at the merge, with one
+-- change, made here: the moment a creator affirmed a picture's two lines is
+-- required and has no default, so a write that never asked cannot record a
+-- yes. Run twice again after that change, on a table made fresh: the same
+-- result, and a picture written with no such moment is refused.
+--
 -- What it makes, in plain words:
 --   prayer_campaign_pictures   One new table: a row for each picture on a
 --                              campaign. Where its file is, its place in the
@@ -85,8 +91,10 @@ create table if not exists public.prayer_campaign_pictures (
   removed_reason text check (removed_reason is null or char_length(removed_reason) <= 300),
   -- When the creator affirmed the two lines a picture needs: "I am 18 or
   -- older", and "This picture is mine to share, and anyone in it has given
-  -- me their blessing to post it".
-  consent_at timestamptz not null default now(),
+  -- me their blessing to post it". Required, and with no default: the
+  -- moment is written by the route that asked, so a write that never asked
+  -- cannot record that anyone affirmed anything.
+  consent_at timestamptz not null,
   created_at timestamptz not null default now(),
   unique (bucket, path)
 );
