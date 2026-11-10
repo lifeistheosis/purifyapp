@@ -1,7 +1,7 @@
 // Every table the website reads is made by a file in supabase/migrations.
 //
 // Found 2026-11-10, planning the test web (docs/1.9-build/notes/test-web.md):
-// eight tables the code reads had been made on production by hand, in the SQL
+// tables the code reads had been made on production by hand, in the SQL
 // editor, from files under docs/*/sql or from nothing at all, and never
 // entered the folder. Production worked; a database built from the folder
 // alone, the test web's, would have had no journal, no circles' days, no
@@ -73,13 +73,13 @@ describe("the migrations folder makes every table the website reads", () => {
   it("the baseline counts exactly the tables it makes, so it does nothing where they all are", () => {
     const sql = fs.readFileSync(path.join(MIGRATIONS, BASELINE), "utf8").replace(/--.*$/gm, "");
     const listed = [...(sql.match(/unnest\(array\[([^\]]*)\]/)?.[1] ?? "").matchAll(/'public\.([a-z_]+)'/g)].map((m) => m[1]).sort();
-    const created = [...sql.matchAll(/create table public\.([a-z_]+)/g)].map((m) => m[1]).sort();
-    expect(listed).toHaveLength(8);
+    const created = [...sql.matchAll(/create table (?:if not exists )?public\.([a-z_]+)/g)].map((m) => m[1]).sort();
+    expect(listed).toHaveLength(10);
     expect(created).toEqual(listed);
     // Its one block returns before any statement when all of them are there.
-    const block = sql.slice(sql.indexOf("$baseline$"));
+    const block = sql.slice(sql.indexOf("do $$"));
     const firstStatement = block.search(/\b(alter|create|update|insert|delete|drop|comment|grant|revoke)\b/i);
-    expect(block.indexOf("if present = 8 then")).toBeGreaterThan(0);
-    expect(block.indexOf("if present = 8 then")).toBeLessThan(firstStatement);
+    expect(block.indexOf("if present = 10 then")).toBeGreaterThan(0);
+    expect(block.indexOf("if present = 10 then")).toBeLessThan(firstStatement);
   });
 });

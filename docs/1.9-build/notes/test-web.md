@@ -52,25 +52,31 @@ files name, `auth.uid()`, storage's two tables): all 102 files in
 `supabase/migrations` applied in order on an empty database. The six old files
 that cannot run twice failed a second run, as AGENTS.md already says.
 
-But eight tables the website reads are not made by any of them. Production has
-them (probed with the site's public key, read only: each answers 200), made by
-hand from `docs/1.7-build/sql` and `docs/1.8-build/sql`, or, for the
-catechism's two, from no SQL at all. The same hand files added columns to
-tables the folder makes; probed the same way, every one is on production
-(`community_posts.path_day` answers 42501, there and withheld from the public
-key; a column that is not there answers 42703). The seven hand files applied
-cleanly on top of the folder, twice each.
+But tables the website reads are not made by any of them. Production has
+them, made by hand: six from `docs/1.7-build/sql` and `docs/1.8-build/sql`,
+and four from two files of 1.4 that left the folder when 1.4's merge was
+reverted (`git show 27953482:supabase/migrations/20260905_collections.sql`,
+`git show 32544e44^:supabase/migrations/20260905_shop_simple.sql`; the
+Updates chat found them by probing every `create table` in the history). The
+same files added columns to tables the folder makes; probed with the site's
+public key, every one is on production (`community_posts.path_day` answers
+42501, there and withheld from the public key; a column that is not there
+answers 42703), and the Updates chat found every column matching type for
+type.
 
 `supabase/migrations/20261110155643_production_baseline.sql` makes all of it
-on a database that has none of the eight, and nothing at all on one that has
-all eight. Its dry runs:
+on a database that has none of the ten tables, and nothing at all on one that
+has all ten. It was amended in place once, the same day, before it had run
+anywhere, to take the Updates chat's three additions (1.4's statements word
+for word, two more tables and two columns, and a plain `$$`). Its dry runs,
+after the amendment:
 
 | Database | What ran | Result |
 |---|---|---|
-| new | every file in order, the baseline last | 103 applied; all eight tables made |
-| new | the baseline again | "all eight tables are here; nothing to do"; schema unchanged |
-| production-shaped (every file but the baseline, then the hand files and the two catechism tables) | the baseline | "all eight tables are here; nothing to do"; schema unchanged, 4,375 lines of `pg_dump --schema-only` compared |
-| new against production-shaped | | identical schemas |
+| new | every file in order, the baseline last | 103 applied; all ten tables made |
+| new | the baseline again | "all ten tables are here; nothing to do"; schema unchanged |
+| production-shaped (every file but the baseline, 1.4's two files in their place before 20260918, then 1.7 and 1.8's) | the baseline | "all ten tables are here; nothing to do"; schema unchanged, 4,405 lines of `pg_dump --schema-only` compared |
+| new against production-shaped | | identical but for where one column stands in `shop_products` (`deleted_at`, which 1.4 added before `shop_growth` restated it): order only |
 
 Storage buckets are left out: the upload routes make each on first use, and
 three of the five do not exist on production yet (the Updates chat's probe of
@@ -78,8 +84,7 @@ three of the five do not exist on production yet (the Updates chat's probe of
 
 `lib/supabase/__tests__/tablesInFolder.test.ts` keeps the folder whole from
 here: every table the code reads must be made by a migration, and the
-baseline's guard list must equal the tables it makes. Without the baseline it
-names exactly the eight.
+baseline's guard list must equal the tables it makes.
 
 Status: NOT SIGNED. Second reader: the Updates chat. Then his yes in plain
 words, with the other migrations, before the merge.
