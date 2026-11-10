@@ -198,3 +198,11 @@ What he saw: in You, Your saved (`build-90/09-your-saved.png`), he tapped a save
 Where it is and why: asked of Updates (the Bible reader), with the Greek on and off, and from every place that opens a verse.
 
 Planned (brainstorm, nothing built until his start): to come from Updates.
+
+### 10. Highlighting: a double tap highlights in the last colour, a hold opens the verse's window (2026-11-10)
+
+What he saw: in the Bible reader, Matthew 1 (`build-90/10-reader-matthew-1.png`), and a verse's window as it opens today, with Highlight verse (seven colours and Name colors), the verse itself, and Copy, Share, Image, Note and Study (`build-90/10-verse-window.png`). His words: "And also the highlighting system, make it so that when you double tap, it automatically highlights the last color you picked. And also make it so that when you hold it down, then that window pops up."
+
+Where it is and why: asked of Updates (the Bible reader, with note 9).
+
+Planned (brainstorm, nothing built until his start): to come from Updates, with the choices that are his.
