@@ -631,6 +631,32 @@ into `supabase/migrations/` and runs on the live database by itself when
 
 Send back: "R0b yes", or your question. Without it, the push waits.
 
+### R0c. The new onboarding: your word, after you try it again
+
+1.9 carries the new onboarding (the roads) switched off. It is switched on
+in the release commit, and only on your word, after you have walked it once
+more on your phone:
+
+1. In the app, **Settings**, **Testers**, then **First open**. It walks the
+   new questions as a new reader meets them. Nothing is counted or synced
+   while you test.
+2. Leave Testers mode when you are done.
+
+Send back: "roads on", or "roads off".
+
+On "roads on", the chat that pushes puts two changes in the release commit:
+
+- `ROADS_LIVE` turns to `true` in `lib/onboarding/flags.ts`. That one switch
+  lights the new questions, the first week, the two cards on Today and the
+  first test for every reader.
+- The first test (where a new reader is offered an account) gets its days in
+  `lib/ab/tests.ts`, `ACCOUNT_PLACE`: its first day is release day, its last
+  day twelve weeks later (84 days). A unit test refuses the switch without
+  them, so the commit cannot go out with one and not the other.
+
+On "roads off", neither changes, and 1.9 ships with the welcome questions
+readers have today.
+
 ### R1. Two SQL pastes, just before the push
 
 The arbiter tells you the moment, and confirms both paths that morning. To
@@ -707,7 +733,10 @@ Send back: "R2b sent", or what went wrong.
 
 The order on the day (your word, 2026-11-10): the website first (R2), then
 both store builds to internal testing (R4, R5), then your walk on a phone
-(R5b), and only then do the stores go public (R5c).
+(R5b), and only then do the stores go public (R5c). With the roads on (R0c)
+the website has to go first for one more reason: the first test's shares and
+its counts are kept by the website, so it must be serving 1.9 before any
+phone asks it which version to show.
 
 ### R4. Android: build, then Play Console's internal testing
 
