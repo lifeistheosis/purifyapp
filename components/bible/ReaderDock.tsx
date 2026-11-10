@@ -213,9 +213,9 @@ export function ReaderDock({
                   type="button"
                   onClick={toggle}
                   aria-label={toggleLabel}
-                  className="tap-press grid size-[42px] shrink-0 place-items-center rounded-full bg-paper text-night"
+                  className="tap-press grid size-[44px] shrink-0 place-items-center rounded-full bg-paper text-night"
                 >
-                  {audio.playing ? <Pause size={18} /> : <Play size={18} className="translate-x-[1px]" />}
+                  {audio.playing ? <Pause size={18} /> : <Play size={18} centered />}
                 </button>
               </div>
               <span aria-hidden className="-mx-3.5 mt-2.5 h-px shrink-0 bg-paper/[0.08]" />
@@ -302,7 +302,7 @@ export function ReaderDock({
                 aria-label={toggleLabel}
                 className="tap-press hit-44 grid size-10 shrink-0 place-items-center rounded-full bg-paper text-night"
               >
-                {audio.playing ? <Pause size={16} /> : <Play size={16} className="translate-x-[1px]" />}
+                {audio.playing ? <Pause size={16} /> : <Play size={16} centered />}
               </button>
               <span aria-hidden className="flex items-baseline gap-1 font-sans text-detail tabular-nums text-paper">
                 <span>{clock(audio.currentTime)}</span>
