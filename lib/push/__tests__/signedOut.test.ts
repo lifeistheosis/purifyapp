@@ -106,7 +106,7 @@ describe("turning reminders on, signed in", () => {
 
   it("says it did not work when the server refuses, and keeps nothing to send behind the reader's back", async () => {
     state.answer = { status: 500, ok: false };
-    expect(await enableNative()).toEqual({ ok: false, reason: "failed" });
+    expect(await enableNative()).toEqual({ ok: false, reason: "failed", why: "refused" });
     expect(state.store.has(ON)).toBe(false);
     expect(state.store.has("purify:push.pending-native")).toBe(false);
   });
@@ -125,7 +125,8 @@ describe("turning reminders on, signed in", () => {
     // token has gone to the server the clock it waits on exists.
     await vi.waitFor(() => expect(state.asked).toContain("POST /api/push/device"));
     await vi.advanceTimersByTimeAsync(SAVE_WAIT_MS);
-    expect(await going).toEqual({ ok: false, reason: "failed" });
+    // The phone's address had come; it was the website that never answered.
+    expect(await going).toEqual({ ok: false, reason: "failed", why: "offline" });
     expect(state.store.has(ON)).toBe(false);
   });
 });

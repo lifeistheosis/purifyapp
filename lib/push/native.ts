@@ -45,13 +45,52 @@ export const UNLINK_WAIT_MS = 2500;
 /** How long turning reminders on waits for the server to take this phone. */
 export const SAVE_WAIT_MS = 10_000;
 
+/**
+ * How long a call into the phone's own code may take before turning
+ * reminders on moves on without it. Only the wait for the server had a
+ * limit, so a phone that never answered left the button on "…" for good
+ * (build 90, note 2). The phone's own question has none: it waits on the
+ * reader.
+ */
+export const PHONE_WAIT_MS = 3_000;
+
+/**
+ * Why turning reminders on did not work, when it was not the reader's own
+ * "no": the phone's own code did not answer ("phone"); Google or Apple gave
+ * this phone no address to send to ("no-address"); the website could not be
+ * reached ("offline"); the website answered and did not keep the phone
+ * ("refused"). For the sentence a reader is shown, and for the plain line a
+ * tester is.
+ */
+export type EnableWhy = "phone" | "no-address" | "offline" | "refused";
+
 export type NativeEnableResult =
   | { ok: true }
-  | { ok: false; reason: "denied" | "unsupported" | "signed-out" | "failed" };
+  | { ok: false; reason: "denied" | "unsupported" | "signed-out" | "failed"; why?: EnableWhy };
 
-/** What the server said to this phone's token, for a reader turning reminders on. */
-type SaveOutcome = "saved" | "signed-out" | "failed";
+/** What became of this phone's token, for a reader turning reminders on. */
+type SaveOutcome = "saved" | "signed-out" | EnableWhy;
 let awaitingSave: ((outcome: SaveOutcome) => void) | null = null;
+/** Whether the phone's address has come since the wait began: what a wait that ran out was waiting for. */
+let addressCame = false;
+
+const LATE = Symbol("late");
+/** The promise's own answer, or LATE once the time is up. A late answer is dropped. */
+function within<T>(work: Promise<T>, ms: number): Promise<T | typeof LATE> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => resolve(LATE), ms);
+    work.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
+}
 
 /** Tell a reader waiting on enableNative what the server said. */
 function settleSave(outcome: SaveOutcome): void {
@@ -62,11 +101,13 @@ function settleSave(outcome: SaveOutcome): void {
 
 /** Wait for the next answer to a registration, or SAVE_WAIT_MS, whichever comes first. */
 function waitForSave(): Promise<SaveOutcome> {
-  settleSave("failed");
+  settleSave("phone");
+  addressCame = false;
   return new Promise((resolve) => {
     const timer = setTimeout(() => {
       if (awaitingSave === finish) awaitingSave = null;
-      resolve("failed");
+      // The address never came, or it came and the website has not answered.
+      resolve(addressCame ? "offline" : "no-address");
     }, SAVE_WAIT_MS);
     // Declared after the timer it clears, and called only after both exist.
     function finish(outcome: SaveOutcome) {
@@ -199,6 +240,7 @@ async function attachListeners(): Promise<void> {
   await PushNotifications.addListener("registration", async (token) => {
     const plat = platform();
     if (!plat) return;
+    addressCame = true;
     setItem(TOKEN_KEY, token.value);
     const times = nativeReminderTimes();
     const payload = {
@@ -223,17 +265,17 @@ async function attachListeners(): Promise<void> {
         setItem(ZONE_KEY, payload.timezone);
         settleSave("saved");
       } else {
-        settleSave("failed");
+        settleSave("refused");
       }
     } catch {
       setItem(PENDING_KEY, JSON.stringify(payload));
-      settleSave("failed");
+      settleSave("offline");
     }
   });
 
   await PushNotifications.addListener("registrationError", () => {
     removeItem(ON_KEY);
-    settleSave("failed");
+    settleSave("no-address");
   });
 }
 
@@ -253,7 +295,8 @@ async function blockedOnPhone(): Promise<boolean> {
   if (platform() !== "android") return false;
   try {
     const { phoneNotificationsEnabled } = await import("@/lib/widget/bridge");
-    return (await phoneNotificationsEnabled()) === false;
+    // A phone that does not answer in time cannot say, and reads as not blocked.
+    return (await within(phoneNotificationsEnabled(), PHONE_WAIT_MS)) === false;
   } catch {
     return false;
   }
@@ -300,24 +343,40 @@ export async function enableNative(
 ): Promise<NativeEnableResult> {
   if (!platform()) return { ok: false, reason: "unsupported" };
   if (!readLocalSessionUser()) return { ok: false, reason: "signed-out" };
+  let register: () => Promise<void>;
   try {
     const { PushNotifications } = await import("@capacitor/push-notifications");
+    // The phone's own question: it waits on the reader, so it has no limit.
     const perm = await PushNotifications.requestPermissions();
     if ((perm.receive as Receive) !== "granted" || (await blockedOnPhone())) {
       return { ok: false, reason: "denied" };
     }
+    register = () => PushNotifications.register();
+  } catch {
+    // A shell with no push plugin, or one that cannot ask.
+    return { ok: false, reason: "unsupported" };
+  }
+  try {
     // The token arrives asynchronously on the "registration" listener; stash
     // the desired times so that handler can persist them.
     setItem(TIMES_KEY, JSON.stringify({ morning, evening }));
-    await attachListeners();
+    if ((await within(attachListeners(), PHONE_WAIT_MS)) === LATE) {
+      // Asked again at the next tap, from the start.
+      listenersAttached = false;
+      return { ok: false, reason: "failed", why: "phone" };
+    }
     const saved = waitForSave();
-    await PushNotifications.register();
+    // Not waited on: the address comes by the listener, and the wait for it
+    // has its own limit. A call that fails ends that wait at once; one that
+    // never answers cannot hold the button.
+    void register().catch(() => settleSave("phone"));
     const outcome = await saved;
     if (outcome === "saved") return { ok: true };
     removeItem(PENDING_KEY);
-    return { ok: false, reason: outcome === "signed-out" ? "signed-out" : "failed" };
+    if (outcome === "signed-out") return { ok: false, reason: "signed-out" };
+    return { ok: false, reason: "failed", why: outcome };
   } catch {
-    return { ok: false, reason: "unsupported" };
+    return { ok: false, reason: "failed", why: "phone" };
   }
 }
 

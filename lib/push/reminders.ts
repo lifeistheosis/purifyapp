@@ -17,6 +17,7 @@ import {
   webReminderTimes,
 } from "./client";
 import {
+  type EnableWhy,
   disableNative,
   enableNative,
   nativeReminderTimes,
@@ -47,7 +48,9 @@ export type ReminderStatus =
  */
 export type EnableResult =
   | { ok: true }
-  | { ok: false; reason: "denied" | "unsupported" | "no-vapid" | "failed" | "signed-out" };
+  | { ok: false; reason: "denied" | "unsupported" | "no-vapid" | "failed" | "signed-out"; why?: EnableWhy };
+
+export type { EnableWhy };
 
 /**
  * Whether this device has reminders. "subscribed" only with an account
@@ -92,11 +95,12 @@ export async function enableReminders(
     // would promise reminders that have nowhere to come from. Kept with its
     // times, so a sign-in (flushPending) or the next visit sends it again.
     stashPending(result.subscription, { morning, evening });
-    return { ok: false, reason: res.status === 401 ? "signed-out" : "failed" };
+    if (res.status === 401) return { ok: false, reason: "signed-out" };
+    return { ok: false, reason: "failed", why: "refused" };
   } catch {
     // Offline at that moment: kept for the next visit, and not called "on".
     stashPending(result.subscription, { morning, evening });
-    return { ok: false, reason: "failed" };
+    return { ok: false, reason: "failed", why: "offline" };
   }
 }
 

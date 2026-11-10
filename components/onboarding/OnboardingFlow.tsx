@@ -33,7 +33,7 @@ import { armHere, exposed, reached as abReached, refreshWeights } from "@/lib/ab
 import { countReminders, markAccountFrom } from "@/lib/analytics/moreCount";
 import { ACCOUNT_PLACE } from "@/lib/ab/tests";
 import { roadsEnabled } from "@/lib/onboarding/flags";
-import { previewSignedOut } from "@/lib/onboarding/testing";
+import { isTesting, previewSignedOut } from "@/lib/onboarding/testing";
 import { leanOf, roadOf } from "@/lib/onboarding/road";
 import { weekFor } from "@/lib/onboarding/week";
 import {
@@ -68,7 +68,7 @@ import {
 import { saveSpaceToAccount } from "@/lib/onboarding/accountSync";
 import { beginCountRun, countFinished, countOnboarding, countPicks } from "@/lib/onboarding/count";
 import { routeFor, type CountQuestion } from "@/lib/onboarding/counting";
-import { EVENING_DEFAULT, MORNING_DEFAULT, enableReminders as enablePush, remindersStatus } from "@/lib/push/reminders";
+import { EVENING_DEFAULT, MORNING_DEFAULT, enableReminders as enablePush, remindersStatus, type EnableWhy } from "@/lib/push/reminders";
 import { clearReminderWish, keepReminderWish, readReminderWish } from "@/lib/push/wish";
 import { isNativeClient } from "@/lib/platform/native";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
@@ -219,6 +219,9 @@ export function OnboardingFlow({
   // Reminders asked for with nobody signed in: the step asks for a sign-in
   // in place of the button (signInForReminders).
   const [needsAccount, setNeedsAccount] = useState(false);
+  // What the last try came to when it failed: whether the same tap is worth
+  // offering again, and, for a tester alone, which wait it was (build 90, note 2).
+  const [reminderFail, setReminderFail] = useState<{ again: boolean; why: EnableWhy | null } | null>(null);
   // The reminders just switched on, at the times they were switched on at,
   // which the step then shows as Purify's own cards (./RemindersOn). Fresh
   // while the reader is still on the screen where they allowed them, so the
@@ -568,6 +571,7 @@ export function OnboardingFlow({
   const enableReminders = useCallback(async () => {
     setBusy(true);
     setReminderNote(null);
+    setReminderFail(null);
     setNeedsAccount(false);
     // Named here because the screen shows them: the times switched on are
     // the times the reader sees.
@@ -595,6 +599,10 @@ export function OnboardingFlow({
         // Anything else is ours to say, not to swallow: the reader allowed
         // notifications and still has none.
         else setReminderNote(t("prayers.push.failed"));
+        // The same tap again, wherever another try can end otherwise: after
+        // allowing them in the settings, with a connection back, a moment on.
+        // Never where the device cannot have reminders at all.
+        setReminderFail({ again: result.reason !== "unsupported", why: result.why ?? null });
         return;
       }
       countAnswer("reminders", "on");
@@ -610,6 +618,7 @@ export function OnboardingFlow({
       clearReminderWish();
       countAnswer("reminders", "failed");
       setReminderNote(t("prayers.push.failed"));
+      setReminderFail({ again: true, why: null });
     } finally {
       setBusy(false);
     }
@@ -979,8 +988,24 @@ export function OnboardingFlow({
             <div data-flip-key="reminders">
               <Step eyebrow={t("onboard.reminders.eyebrow")} title={t("onboard.reminders.title")} body={t("onboard.reminders.body")}>
                 {reminderNote ? (
-                  <p className="mb-4 font-serif text-detail leading-[1.55] text-paper/85">{reminderNote}</p>
-                ) : needsAccount ? (
+                  <>
+                    <p className="mb-4 font-serif text-detail leading-[1.55] text-paper/85">{reminderNote}</p>
+                    {/* For a tester alone: which wait it was, in plain words, so a note from a phone names the cause. */}
+                    {reminderFail?.why && isTesting() ? (
+                      <p data-testers-line className="mb-4 font-sans text-caption leading-[1.5] text-paper/65">
+                        {t(`testers.reminders.${reminderFail.why}`)}
+                      </p>
+                    ) : null}
+                    {reminderFail?.again ? (
+                      <PrimaryButton onClick={() => void enableReminders()} disabled={busy}>
+                        {t("error.tryAgain")}
+                      </PrimaryButton>
+                    ) : null}
+                  </>
+                ) : needsAccount || !readLocalSessionUser() ? (
+                  // Reminders are kept with an account, so a reader with none
+                  // is told so at once and offered the sign-in: never a button
+                  // that says it turns them on and cannot (build 90, note 2).
                   <>
                     <p className="mb-4 font-serif text-detail leading-[1.55] text-paper/85">
                       {t("onboard.reminders.needsAccount")}
