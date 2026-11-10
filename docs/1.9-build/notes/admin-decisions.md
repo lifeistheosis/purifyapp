@@ -161,7 +161,10 @@ live with its feature (lib/admin/__tests__/privacyLines.test.ts holds them):
 ## After 1.9: the panel
 
 1. **A row for a waiting picture** (the campaigns chat's 13.4, noted
-   2026-11-10; nothing before pictures open). Campaign pictures ship switched
+   2026-11-10). **Moved into 1.9 and built the same day** (`4e39019ca`), at
+   the arbiter's word once his "not off at release" put pictures in 1.9; it
+   shows only while the pictures part is on. What follows is the plan it was
+   built to. Campaign pictures ship switched
    off (`pictures` in `lib/campaigns/parts.ts`). When they open, the panel's
    one queue (`lib/admin/communityQueue.ts`) gains a row for each picture
    that waits: a new one, one hidden by readers' reports, or one still shown
