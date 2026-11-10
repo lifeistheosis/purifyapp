@@ -267,7 +267,7 @@ export function WordRow({
   const G = kind === "recent" ? Clock : Search;
   return (
     <div className="flex items-center">
-      <button type="button" onClick={onSearch} className="search-row flex min-h-[42px] min-w-0 flex-1 items-center gap-3 rounded-[12px] px-1.5 text-start">
+      <button type="button" onClick={onSearch} className="search-row flex min-h-[44px] min-w-0 flex-1 items-center gap-3 rounded-[12px] px-1.5 text-start">
         <G size={18} className="shrink-0 text-paper/42" />
         <span className="min-w-0 flex-1 truncate font-sans text-[15.5px] text-paper/88">
           {rest !== undefined ? (

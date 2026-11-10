@@ -30,6 +30,22 @@ const SCAN_DIRS = ["app", "components"];
 // h-10 = 40, h-9 = 36, h-8 = 32, h-7 = 28, h-6 = 24.
 const SMALL_H = /\bh-(?:[1-9]|10)\b(?!\S)/;
 
+// Heights written out (min-h-[42px], h-[2.5rem]), which the scale above
+// cannot see: four controls stood at 42px that way until 2026-11-10 (Fable
+// Theology's find, the Community composer's two and Search's rows). A rem is
+// the app's root, 17px. A max-h is a ceiling, not a height, and is not read.
+const WRITTEN_H = /(?<![\w-])(?:min-)?h-\[(\d+(?:\.\d+)?)(px|rem)\]/g;
+const ROOT_PX = 17;
+
+/** Whether a written-out height under 44px stands in these classes. */
+function writtenSmall(classes: string): boolean {
+  for (const m of classes.matchAll(WRITTEN_H)) {
+    const px = m[2] === "px" ? Number(m[1]) : Number(m[1]) * ROOT_PX;
+    if (px < 44) return true;
+  }
+  return false;
+}
+
 /** Lines that both open an interactive element and set a sub-44px height. */
 const INTERACTIVE = /<(?:button|a|Link)\b/;
 
@@ -50,14 +66,17 @@ function* walk(dir: string): Generator<string> {
  * and its className land within a short window of each other, which is how
  * these are written throughout the codebase.
  */
-function countSmallTargets(): { total: number; byFile: Record<string, number> } {
+function countSmallTargets(): { total: number; byFile: Record<string, number>; written: number; writtenByFile: Record<string, number> } {
   const byFile: Record<string, number> = {};
+  const writtenByFile: Record<string, number> = {};
   let total = 0;
+  let written = 0;
   for (const dir of SCAN_DIRS) {
     for (const file of walk(join(ROOT, dir))) {
       const src = readFileSync(file, "utf8");
       const lines = src.split("\n");
       let n = 0;
+      let w = 0;
       for (let i = 0; i < lines.length; i++) {
         if (!INTERACTIVE.test(lines[i])) continue;
         // The className may sit on the same line or a few lines below.
@@ -69,14 +88,20 @@ function countSmallTargets(): { total: number; byFile: Record<string, number> } 
         // height class is still there.
         if (/\bhit-44\b/.test(upToNextTag)) continue;
         if (SMALL_H.test(upToNextTag)) n++;
+        else if (writtenSmall(upToNextTag)) w++;
       }
+      const name = file.slice(ROOT.length + 1).replace(/\\/g, "/");
       if (n > 0) {
-        byFile[file.slice(ROOT.length + 1).replace(/\\/g, "/")] = n;
+        byFile[name] = n;
         total += n;
+      }
+      if (w > 0) {
+        writtenByFile[name] = w;
+        written += w;
       }
     }
   }
-  return { total, byFile };
+  return { total, byFile, written, writtenByFile };
 }
 
 // The count as measured when this guard was written. IT MAY ONLY FALL.
@@ -120,10 +145,47 @@ function countSmallTargets(): { total: number; byFile: Record<string, number> } 
 // dock's arrows already were. The 44 commentary markers on the same page,
 // about 14 by 5 drawn, had a 24px touch box in a class constant this count
 // cannot see, and are .hit-44 with them (held below).
-const MAX_SMALL_TARGETS = 28;
+// 28 -> 26 on 2026-11-10 (1.9): the tree stood at 26, two fixed since
+// without the ceiling following.
+const MAX_SMALL_TARGETS = 26;
+
+// Heights written out (WRITTEN_H above), counted on their own so the ceiling
+// above keeps its history and still only falls. The count learned to read
+// them on 2026-11-10 (1.9, Fable Theology's find), when it saw 32: the
+// Community composer's field and its Share a line, and Search's rows, at
+// 42px, went to 44 the same day; the 29 left are the admin panel's 17
+// (30 to 42px, a computer's mouse more than a finger), the shop's 7, and
+// one each in the reader's settings, the journal's Today, Now Playing,
+// Today's masthead and the profile's settings. IT MAY ONLY FALL, as above.
+const MAX_WRITTEN_SMALL_TARGETS = 29;
 
 describe("touch targets", () => {
-  const { total, byFile } = countSmallTargets();
+  const { total, byFile, written, writtenByFile } = countSmallTargets();
+
+  it(`has no more than ${MAX_WRITTEN_SMALL_TARGETS} interactive elements with a written-out height under 44px`, () => {
+    const worst = Object.entries(writtenByFile)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 12)
+      .map(([f, n]) => `  ${n}  ${f}`)
+      .join("\n");
+    expect(
+      written,
+      `Interactive elements with a written-out height under 44px (min-h-[42px] and the like) rose to ${written}, ceiling ${MAX_WRITTEN_SMALL_TARGETS}.\n` +
+        `Write 44 (min-h-[44px], or min-h-11) or give the control .hit-44, then lower the ceiling. Worst offenders:\n${worst}`,
+    ).toBeLessThanOrEqual(MAX_WRITTEN_SMALL_TARGETS);
+  });
+
+  it("reads a height written out as well as the scale's", () => {
+    expect(writtenSmall('className="min-h-[42px] px-3"')).toBe(true);
+    expect(writtenSmall('className="h-[2.5rem]"')).toBe(true);
+    expect(writtenSmall('className="min-h-[44px]"')).toBe(false);
+    expect(writtenSmall('className="max-h-[30px]"')).toBe(false);
+    // The three found on 2026-11-10 are 44 now.
+    const composer = readFileSync(join(ROOT, "components/community/CommunityClient.tsx"), "utf8");
+    expect((composer.match(/min-h-\[44px\]/g) ?? []).length).toBeGreaterThanOrEqual(2);
+    expect(composer).not.toContain("min-h-[42px]");
+    expect(readFileSync(join(ROOT, "components/search/SearchRows.tsx"), "utf8")).toContain('className="search-row flex min-h-[44px] ');
+  });
 
   it(`has no more than ${MAX_SMALL_TARGETS} interactive elements under 44px`, () => {
     const worst = Object.entries(byFile)

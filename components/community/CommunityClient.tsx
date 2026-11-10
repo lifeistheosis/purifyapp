@@ -1135,7 +1135,7 @@ function Composer({
           type="button"
           data-compose-open="field"
           onClick={() => flushSync(() => show({ from: "field" }))}
-          className="community-well min-h-[42px] min-w-0 flex-1 truncate rounded-[14px] border border-paper/[0.09] bg-black/30 px-3.5 text-left font-sans text-ui text-paper/45 transition-colors hover:border-paper/25 hover:text-paper/65"
+          className="community-well min-h-[44px] min-w-0 flex-1 truncate rounded-[14px] border border-paper/[0.09] bg-black/30 px-3.5 text-left font-sans text-ui text-paper/45 transition-colors hover:border-paper/25 hover:text-paper/65"
         >
           {fieldAsks ? t("community.askPrompt") : groupId ? t("community.composePromptGroup") : t("community.composePrompt")}
         </button>
@@ -1143,7 +1143,7 @@ function Composer({
           type="button"
           data-compose-open="share"
           onClick={() => flushSync(() => show({ from: "share" }))}
-          className="tap-press inline-flex min-h-[42px] shrink-0 items-center gap-1.5 rounded-[14px] border border-paper/10 bg-gradient-to-b from-paper/[0.08] to-paper/[0.03] px-3 font-sans text-detail font-semibold text-paper/80 transition-colors hover:border-paper/30 hover:text-paper"
+          className="tap-press inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-[14px] border border-paper/10 bg-gradient-to-b from-paper/[0.08] to-paper/[0.03] px-3 font-sans text-detail font-semibold text-paper/80 transition-colors hover:border-paper/30 hover:text-paper"
         >
           <Quill size={16} className="shrink-0" />
           {t("community.shareALine")}
