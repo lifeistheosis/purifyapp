@@ -2,12 +2,12 @@
 -- 2026-11-09 to the sheet's 17, "councils first", with this SQL sent to him
 -- before it goes in).
 --
--- NOT APPLIED. NOT A MIGRATION YET. This file waits for the owner's sign-off
--- (AGENTS.md: a production schema change is his to approve before it runs).
--- It lives in docs/, not supabase/migrations/, so that no merge to main can
--- run it by itself. On his word it is either run by hand in the SQL editor,
--- or copied into supabase/migrations/<YYYYMMDDHHMMSS>_florilegium_kinds.sql
--- (a version later than every file there) so the integration runs it.
+-- SIGNED 2026-11-10 ("yes florilegium"), AND NOW A MIGRATION:
+-- supabase/migrations/20261110090516_florilegium_kinds.sql, which the
+-- integration runs on the merge of 1.9 to main. Not applied by hand. This copy
+-- stays for reading; from its first statement down it is the migration word
+-- for word (lib/florilegium/__tests__/kindsMigration.test.ts holds the two).
+-- Do not run it by hand unless an OWNER-STEPS step says so.
 --
 -- What it changes, and only this: the kinds of line a florilegium may keep.
 -- Today the server takes two, a verse ('scripture') and a Father's words

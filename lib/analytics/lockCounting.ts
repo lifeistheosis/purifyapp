@@ -57,7 +57,9 @@ export type Lock = (typeof LOCKS)[number];
 /** Each lock by the name the paywall gives its feature (lib/premium/plusRows.ts). */
 export const LOCK_LABELS: Record<Lock, string> = {
   florilegium: "Your Florilegium",
-  palettes: "Candlelight and Monastery",
+  // As the plan's row names it (lib/premium/plans.ts, "Reading modes", 1.9):
+  // the lock now opens twenty modes, not the two it was first drawn for.
+  palettes: "Reading modes",
   history: "History in full dress",
   sync: "Sync",
   crossrefs: "Cross-references",

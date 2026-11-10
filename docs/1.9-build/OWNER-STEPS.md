@@ -583,6 +583,17 @@ Send back: "56 done, N changed". Never the ids.
 Do these in order, on the day the arbiter names, and only after the arbiter
 says go.
 
+**How you sign a change to the database** (your word, 2026-11-10: "I don't
+work with code so my take wouldn't be of value for code"). You are never
+asked to read SQL. Before a file reaches you, a second chat runs it twice on
+a copy of the database and reviews it. Then the arbiter sends you plain
+words: what it changes, what a reader sees, and what could go wrong. Your yes
+is on those words.
+
+**Do not run a SQL file by hand unless the step says so.** A file run by hand
+in another project still says "success" and changes nothing on the live
+database; on 2026-11-10 one did exactly that.
+
 ### R0. Put the 1.9 note in your queue, then accept it
 
 Filing the note needs the database's service key, which only your PC has
@@ -620,22 +631,26 @@ Then in Admin:
 
 Done: the 1.9 note shows as accepted. Until then the website does not show it.
 
-### R0b. Sign the prayer campaigns SQL, all three files, before the push
+### R0b. Sign the database changes, in plain words, before the push
 
-Prayer campaigns change the live database in three files. Once you sign
-one, it goes into `supabase/migrations/` and runs on the live database by
-itself when `main` is pushed, so each needs your signature before the push,
-not after.
+Once you sign a change, it goes into `supabase/migrations/` and runs on the
+live database by itself when `main` is pushed, so each needs your yes before
+the push, not after. For each, the arbiter sends you what it changes, what a
+reader sees and what could go wrong, after a second chat has reviewed the
+SQL (above).
 
-1. File one is ready: `docs/1.9-build/sql/campaigns-1-rework.sql`. Its
-   header says in plain words what it changes, and ends with a read-only
-   check to run after it.
-2. Files two and three: the arbiter sends you each one's name and what it
-   makes, in plain words, as it lands.
-3. Read each. Sign it, or ask.
+- Prayer campaigns, file one: signed 2026-11-10 ("R0b yes 1").
+- Prayer campaigns, file two (a campaign's updates and comments): reviewed by
+  a second chat, the Admin chat, on 2026-11-10. Waits for your yes.
+- Prayer campaigns, file three: as it lands.
+- The florilegium's two new kinds (a council's words, a prayer's line):
+  signed 2026-11-10 ("yes florilegium"), and in `supabase/migrations/` as
+  `20261110090516_florilegium_kinds.sql`.
 
-Send back, for each file: "R0b yes 1" (then 2, then 3), or your question.
-Until all three are signed, the push waits.
+Do not run any of these by hand: the push runs them.
+
+Send back, for each that waits: "R0b yes 2" (then 3), or your question.
+Until all are signed, the push waits.
 
 ### R0c. The new onboarding: your word, after you try it again
 
@@ -664,6 +679,10 @@ On "roads off", neither changes, and 1.9 ships with the welcome questions
 readers have today.
 
 ### R1. Two SQL pastes, just before the push
+
+These two are the only files you run by hand, and only at this moment. In
+Supabase, first check the project at the top is the live one: its address
+holds `avbqyvjgcrucjwevwixt`.
 
 The arbiter tells you the moment, and confirms both paths that morning. To
 copy a file: open it on GitHub on the branch `ccr-07896cf2-bo0afd`, click
@@ -726,8 +745,9 @@ Send back: "R2b sent", or what went wrong.
 3. Find **Supabase Preview**.
    - **Success**: every 1.9 database change ran. Done.
    - **Failure**: open it. The summary names the error. Send it to the
-     arbiter, then paste each 1.9 migration by hand, in the order of its
-     file name, in **SQL Editor**, one at a time. Each is written to run
+     arbiter, then paste each 1.9 migration by hand (this step says so, and
+     only on a Failure), in the order of its file name, in **SQL Editor**,
+     in the live project, one at a time. Each is written to run
      twice, so one that already ran does no harm. The arbiter sends the
      final list that morning. Today, in `supabase/migrations/`:
      - `20261109180246_shared_pages.sql`
@@ -737,8 +757,11 @@ Send back: "R2b sent", or what went wrong.
      - `20261110002922_app_errors.sql`
      - `20261110002923_search_misses.sql`
      - `20261110012059_user_kept.sql`
-     and the rest of the 1.9 SQL you approved (the florilegium kinds, and
-     the prayer campaigns from R0b) as each chat moves it in.
+     - `20261110084116_campaigns_rework.sql` (prayer campaigns, file one,
+       signed 2026-11-10)
+     - `20261110090516_florilegium_kinds.sql` (signed 2026-11-10)
+     and the prayer campaigns' files two and three as each is signed and
+     moved in.
 
 The order on the day (your word, 2026-11-10): the website first (R2), then
 both store builds to internal testing (R4, R5), then your walk on a phone
@@ -908,5 +931,5 @@ Choose one:
   125: nobody's illness stays up by neglect).
 
 Send back: "July rows: delete on <date>", or "July rows: keep". Deleting is
-a change to the live database, so it comes back to you as a file to sign,
-as in R0b.
+a change to the live database, so it comes back to you in plain words, after
+a second chat has reviewed the SQL, as in R0b.
