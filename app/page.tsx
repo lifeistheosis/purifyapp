@@ -5,6 +5,7 @@ import { Navbar } from "@/components/nav/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { HeroChristIcon } from "@/components/marketing/HeroChristIcon";
 import { WhatsNewChip } from "@/components/marketing/WhatsNewChip";
+import { latestPatch } from "@/lib/changelog";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
 import { AppsSection } from "@/components/marketing/AppsSection";
 import { PhoneHome } from "@/components/marketing/phoneHome/PhoneHome";
@@ -273,7 +274,7 @@ export default async function Home() {
  <div className="text-paper max-w-[620px]">
  {/* The release chip is for returning readers. */}
  <div className="hidden md:block">
- <WhatsNewChip isDe={isDe} />
+ <WhatsNewChip isDe={isDe} tagline={latestPatch()?.title ?? "What's new"} />
  </div>
  <h1
  style={{ animationDelay: "240ms" }}

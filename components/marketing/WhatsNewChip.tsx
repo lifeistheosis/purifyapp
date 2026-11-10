@@ -10,7 +10,6 @@
 import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { CURRENT_VERSION } from "@/lib/whatsNew/version";
-import { latestPatch } from "@/lib/changelog";
 import {
   subscribeSeen,
   getSeenSnapshot,
@@ -19,10 +18,14 @@ import {
 } from "@/lib/whatsNew/seenStore";
 
 // The chip's tagline tracks the newest patch so it never drifts from the
-// version string beside it.
-const CHIP_TAGLINE = latestPatch()?.title ?? "What's new";
-
-export function WhatsNewChip({ isDe }: { isDe: boolean }) {
+// version string beside it. The page hands it over as a prop (app/page.tsx
+// reads the newest patch on the server). Until 1.9 this file imported
+// lib/changelog itself, and because it is a client component every patch
+// note ever written (data/changelog/patches.json, 175 KB) rode in the
+// scripts the front door loads, on the website and at every start of the
+// apps, to show one title (docs/1.9-build/notes/optimization-fable.md,
+// item 8). lib/whatsNew/__tests__/notesStayOffTheClient.test.ts holds it.
+export function WhatsNewChip({ isDe, tagline }: { isDe: boolean; tagline: string }) {
   const seenVersion = useSyncExternalStore(
     subscribeSeen,
     getSeenSnapshot,
@@ -58,7 +61,7 @@ export function WhatsNewChip({ isDe }: { isDe: boolean }) {
         </span>
       )}
       <span className="font-sans text-caption sm:text-detail text-paper/85 group-hover:text-paper transition-colors">
-        {CURRENT_VERSION} · {CHIP_TAGLINE}
+        {CURRENT_VERSION} · {tagline}
       </span>
       <span className="text-paper/55 group-hover:text-paper transition-colors text-detail">
         →
