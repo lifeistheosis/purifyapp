@@ -70,15 +70,24 @@ describe("Purify's addresses", () => {
 
   it("send every legal matter in the terms to the legal inbox", () => {
     const terms = fs.readFileSync(path.join(process.cwd(), "components/legal/TermsText.tsx"), "utf8");
-    // Copyright notices, the informal dispute, the arbitration opt-out, and Contact.
-    expect(terms.match(/href=\{`mailto:\$\{LEGAL_EMAIL\}`\}/g)?.length).toBe(4);
-    expect(terms).not.toContain("SUPPORT_EMAIL");
+    // Copyright notices, the informal dispute, the arbitration opt-out and
+    // Contact; and, since his yes of 2026-11-10 to the Terms for what
+    // readers post (docs/1.9-build/drafts/terms-posts.md), the notice for a
+    // picture that is not the poster's own and the poster's answer to it.
+    expect(terms.match(/href=\{`mailto:\$\{LEGAL_EMAIL\}`\}/g)?.length).toBe(6);
+    // One help line, by the same yes: a report of something posted goes to
+    // support, as every report from a page does.
+    expect(terms.match(/href=\{`mailto:\$\{SUPPORT_EMAIL\}`\}/g)?.length).toBe(1);
   });
 
   it("give the legal inbox on the privacy page, in English and in German", () => {
     const privacy = fs.readFileSync(path.join(process.cwd(), "components/legal/PrivacyText.tsx"), "utf8");
-    // The company's own line and the closing line, once in each language.
-    expect(privacy.match(/href=\{`mailto:\$\{LEGAL_EMAIL\}`\}/g)?.length).toBe(4);
-    expect(privacy).not.toContain("SUPPORT_EMAIL");
+    // The company's own line, the closing line and (since his yes of
+    // 2026-11-10) a campaign's picture that is not its poster's own, once in
+    // each language.
+    expect(privacy.match(/href=\{`mailto:\$\{LEGAL_EMAIL\}`\}/g)?.length).toBe(6);
+    // A campaign that names someone without their agreement is reported to
+    // support, by the same yes, once in each language.
+    expect(privacy.match(/href=\{`mailto:\$\{SUPPORT_EMAIL\}`\}/g)?.length).toBe(2);
   });
 });

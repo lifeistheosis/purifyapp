@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { LEGAL_EMAIL, LEGAL_NAME } from "@/lib/legal/entity";
+import { LEGAL_EMAIL, LEGAL_NAME, SUPPORT_EMAIL } from "@/lib/legal/entity";
 
 // The Terms of Service, from their heading to their end: one text, drawn by
 // the page (app/(app)/terms/page.tsx) and by the sheet that opens wherever the
@@ -14,6 +14,8 @@ const H3 = "mt-7 font-sans text-ui font-semibold text-paper";
 const P = "mt-4 font-serif text-body text-paper/85 leading-[1.7]";
 const A =
   "text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper";
+// A list inside the Terms, in the privacy page's own list style.
+const UL = "mt-3 space-y-2 font-serif text-body text-paper/85 leading-[1.7] list-disc pl-6 marker:text-paper/35";
 
 
 export function TermsText() {
@@ -269,6 +271,108 @@ export function TermsText() {
             {LEGAL_EMAIL}
           </a>{" "}
           with the details and we will review it promptly.
+        </p>
+
+        {/* What readers post (his yes of 2026-11-10, "and yes those terms
+            are good", to docs/1.9-build/drafts/terms-posts.md). Inside
+            section 8, so no section is renumbered. */}
+        <h3 className={H3}>What you post</h3>
+        <p className={P}>
+          Parts of Purify let you post for other people to see: prayer
+          campaigns with their updates and pictures, Community posts and
+          replies, comments, shared journal pages, shop reviews, and the
+          name, picture and banner on your profile. What you post is made by
+          you, not by Purify. It is not our view, and we do not vouch for it,
+          even where a moderator has looked at it before it is shown.
+        </p>
+        <p className={P}>
+          Your words and pictures stay yours. When you post them, you give
+          us a worldwide, non-exclusive, royalty-free licence to store them,
+          to prepare them for display (for example, to resize a picture or
+          remove the hidden data a photo carries), and to show them in the
+          Purify apps and on our website to the people you share them with.
+          The licence ends when you or we delete them, apart from what the
+          law requires us to keep.
+        </p>
+        <p className={P}>When you post, you confirm that:</p>
+        <ul className={UL}>
+          <li>
+            the words and pictures are yours to share, or you have
+            permission from whoever owns them;
+          </li>
+          <li>
+            anyone you name or show has agreed to it, or their family has if
+            they have died, or you are the parent or guardian of the child;
+          </li>
+          <li>
+            you share nothing private about another person, such as their
+            health, without their permission; and
+          </li>
+          <li>what you post keeps to these terms and to the law.</li>
+        </ul>
+        <p className={P}>
+          You are responsible for what you post, and you, not Purify, answer
+          for it.
+        </p>
+
+        <h3 className={H3}>Prayer campaigns</h3>
+        <p className={P}>
+          A prayer campaign is a request for prayer that you start and keep.
+          When you start one, you accept these terms for it, and you confirm
+          the line you tick before it is created. You can edit it, end it,
+          close its comments, or take it down at any time.
+        </p>
+
+        <h3 className={H3}>What we may remove</h3>
+        <p className={P}>
+          We may refuse, hide, or remove any prayer campaign, post, reply,
+          comment, picture, or shared page, at any time and for any reason,
+          and we may limit or close an account that breaks these terms. We do
+          not have to watch what is posted, and leaving something up does not
+          mean we agree with it. When we remove something you posted, we tell
+          you why, unless the law or someone&rsquo;s safety stops us.
+        </p>
+
+        <h3 className={H3}>Reports, and pictures that are not the poster&rsquo;s own</h3>
+        <p className={P}>
+          If something posted in Purify breaks the law or these terms, or
+          names you or someone in your care without your agreement, report it
+          from its page or write to{" "}
+          <a href={`mailto:${SUPPORT_EMAIL}`} className={A}>
+            {SUPPORT_EMAIL}
+          </a>
+          .
+        </p>
+        <p className={P}>
+          If a picture or other work posted in Purify is yours and was used
+          without your permission, write to{" "}
+          <a href={`mailto:${LEGAL_EMAIL}`} className={A}>
+            {LEGAL_EMAIL}
+          </a>{" "}
+          with:
+        </p>
+        <ul className={UL}>
+          <li>your signature (your full name, typed, is enough);</li>
+          <li>the work that is yours;</li>
+          <li>where it is in Purify (its link);</li>
+          <li>your name, postal address, and email or phone;</li>
+          <li>
+            a statement that you believe in good faith that the use is not
+            allowed by you, your agent, or the law; and
+          </li>
+          <li>
+            a statement, under penalty of perjury, that your notice is
+            accurate and that you own the work or may act for its owner.
+          </li>
+        </ul>
+        <p className={P}>
+          We take the work down while we look into it and tell the person who
+          posted it, who may write back to{" "}
+          <a href={`mailto:${LEGAL_EMAIL}`} className={A}>
+            {LEGAL_EMAIL}
+          </a>{" "}
+          if they believe it was a mistake. We close the accounts of people
+          who repeatedly post others&rsquo; work without permission.
         </p>
 
         <h2 className={H2}>9. Third-party services</h2>

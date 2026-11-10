@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { T } from "@/components/i18n/T";
-import { LEGAL_EMAIL, LEGAL_NAME } from "@/lib/legal/entity";
+import { LEGAL_EMAIL, LEGAL_NAME, SUPPORT_EMAIL } from "@/lib/legal/entity";
 import { websiteHref } from "@/lib/nav/websiteHref";
 
 // The Privacy Policy, from its heading to its end, in English and in German:
@@ -154,6 +154,70 @@ function PrivacyEn() {
  500 characters, so we can review the page. Stop sharing deletes the
  copy at once, and any reports on it. Deleting your account deletes
  every page you shared, and its reports.
+ </p>
+ {/* Prayer campaigns and Community (1.9; his yes of 2026-11-10, "and yes
+     those terms are good", to docs/1.9-build/drafts/terms-posts.md, built
+     on the campaigns chat's draft in campaigns-fable.md 4.7). What each
+     sentence rests on is listed in the draft. */}
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <strong className="font-semibold text-paper">Prayer campaigns.</strong>{" "}
+ A prayer campaign is public unless you keep it to a circle: its
+ title, the first name of the person it is for, what you wrote, its
+ pictures, its place if you gave one, your updates, and the name and
+ picture on your profile. People&rsquo;s comments on it are public
+ too. Give only what prayer needs: a first name is enough, and say
+ nothing of another person&rsquo;s health or life that they have not
+ agreed to share. Before a campaign for someone else is made, you are
+ asked to affirm that they, or their family, have given their
+ blessing, and we keep the day you did.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ Pictures are made again on our server before they are stored, which
+ removes the place and the device a photo carries inside it, and a
+ moderator looks at each one before it is shown. A place is a country
+ and a town that you type; the app never asks where you are.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ Who has added a campaign to their prayers is never shown, to its
+ creator or to anyone, and no number of them is shown. If you are
+ signed in, the campaigns you carry are kept with your account so
+ they follow you to your other devices; if you are not, they are kept
+ on your device alone. The name and the campaign&rsquo;s title are
+ kept on your device while you carry it, and leave when it ends.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ You can end a campaign, remove a picture, close its comments, or take
+ the whole campaign down at any time. Taking it down deletes it from
+ our servers with its pictures, updates and comments, and it leaves
+ other people&rsquo;s prayers the next time their app is online. A
+ campaign for a living person is deleted thirty days after its last
+ day unless you renew it. Deleting your account deletes your
+ campaigns. We may also remove a campaign, a picture or a comment that
+ breaks our terms; one removed for that reason is kept, unseen, for
+ thirty days in case of an appeal or a lawful request, and then
+ deleted. If you report a campaign, we keep the report, its reason and
+ the account that made it, so a moderator can review it; it is deleted
+ with the campaign, and if you delete your account first, it stays
+ without your name.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ If a campaign names you, or someone in your care, and you did not
+ agree to it, report it from its page or write to{" "}
+ <a href={`mailto:${SUPPORT_EMAIL}`} className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">{SUPPORT_EMAIL}</a> and we will take it down. If a picture in it is yours and
+ was used without your permission, write to{" "}
+ <a href={`mailto:${LEGAL_EMAIL}`} className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">{LEGAL_EMAIL}</a>. Our terms say what you agree to when you post.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <strong className="font-semibold text-paper">Community.</strong>{" "}
+ Posts and replies in the Community are public: anyone can read them,
+ in the apps and on our website, with the name and picture your
+ profile had when you posted. Your profile is public too, its name,
+ picture and banner, at its own address on our website. They are kept
+ until you delete them, and deleting your account deletes them.
+ Moderators may hide or remove a post or a reply that breaks our
+ terms. If you report one, we keep the report and the account that
+ made it so a moderator can review it; it is deleted with the post,
+ and if you delete your account first, it stays without your name.
  </p>
 
  {/* What we record */}
@@ -911,6 +975,75 @@ function PrivacyDe() {
  beendest, wird die Kopie sofort gelöscht, mit allen Meldungen dazu.
  Wenn du dein Konto löschst, werden alle Seiten gelöscht, die du
  geteilt hast, mit ihren Meldungen.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <strong className="font-semibold text-paper">Gebetskampagnen.</strong>{" "}
+ Eine Gebetskampagne ist öffentlich, es sei denn, du beschränkst sie
+ auf einen Kreis: ihr Titel, der Vorname des Menschen, für den gebetet
+ wird, dein Text, ihre Bilder, ihr Ort, falls du einen angibst, deine
+ Neuigkeiten sowie der Name und das Bild deines Profils. Auch die
+ Kommentare anderer sind öffentlich. Gib nur an, was das Gebet
+ braucht: Ein Vorname genügt, und schreibe nichts über die Gesundheit
+ oder das Leben eines anderen Menschen, dem er nicht zugestimmt hat.
+ Bevor eine Kampagne für jemand anderen angelegt wird, bestätigst du,
+ dass dieser Mensch oder seine Familie den Segen dazu gegeben hat, und
+ wir speichern den Tag, an dem du das bestätigt hast.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ Bilder werden auf unserem Server neu erzeugt, bevor sie gespeichert
+ werden. Dabei gehen der Ort und das Gerät verloren, die ein Foto in
+ sich trägt, und ein Moderator sieht sich jedes Bild an, bevor es
+ gezeigt wird. Ein Ort besteht aus einem Land und einer Stadt, die du
+ selbst eintippst; die App fragt nie, wo du bist.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ Wer eine Kampagne in seine Gebete aufgenommen hat, wird niemandem
+ gezeigt, auch nicht dem, der sie angelegt hat, und keine Zahl davon
+ wird gezeigt. Bist du angemeldet, werden die Kampagnen, die du
+ mitträgst, bei deinem Konto gespeichert, damit sie dir auf deine
+ anderen Geräte folgen; bist du es nicht, bleiben sie allein auf
+ deinem Gerät. Der Name und der Titel der Kampagne liegen auf deinem
+ Gerät, solange du sie mitträgst, und verschwinden, wenn sie endet.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ Du kannst eine Kampagne jederzeit beenden, ein Bild entfernen, ihre
+ Kommentare schließen oder die ganze Kampagne löschen. Beim Löschen
+ wird sie mit ihren Bildern, Neuigkeiten und Kommentaren von unseren
+ Servern entfernt, und sie verschwindet aus den Gebeten anderer,
+ sobald deren App das nächste Mal online ist. Eine Kampagne für einen
+ lebenden Menschen wird dreißig Tage nach ihrem letzten Tag gelöscht,
+ wenn du sie nicht erneuerst. Wenn du dein Konto löschst, werden auch
+ deine Kampagnen gelöscht. Auch wir dürfen eine Kampagne, ein Bild
+ oder einen Kommentar entfernen, der gegen unsere Bedingungen
+ verstößt; was wir deshalb entfernen, bewahren wir dreißig Tage lang
+ unsichtbar auf, für einen Einspruch oder eine rechtmäßige Anfrage,
+ und löschen es dann. Wenn du eine Kampagne meldest, speichern wir die
+ Meldung, ihren Grund und das Konto, von dem sie kam, damit ein
+ Moderator sie prüfen kann; sie wird mit der Kampagne gelöscht, und
+ wenn du vorher dein Konto löschst, bleibt sie ohne deinen Namen.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ Nennt eine Kampagne dich oder einen Menschen in deiner Obhut, ohne
+ dass du zugestimmt hast, melde sie auf ihrer Seite oder schreib an{" "}
+ <a href={`mailto:${SUPPORT_EMAIL}`} className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">{SUPPORT_EMAIL}</a>, und wir nehmen sie herunter. Gehört dir ein Bild darin,
+ das ohne deine Erlaubnis verwendet wurde, schreib an{" "}
+ <a href={`mailto:${LEGAL_EMAIL}`} className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">{LEGAL_EMAIL}</a>. Was du zusagst, wenn du etwas veröffentlichst, steht in
+ unseren Nutzungsbedingungen.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <strong className="font-semibold text-paper">Gemeinschaft.</strong>{" "}
+ Beiträge und Antworten in der Gemeinschaft sind öffentlich: Jeder
+ kann sie lesen, in den Apps und auf unserer Website, mit dem Namen
+ und dem Bild, die dein Profil hatte, als du sie geschrieben hast.
+ Auch dein Profil ist öffentlich, sein Name, sein Bild und sein
+ Titelbild, unter einer eigenen Adresse auf unserer Website. Sie
+ bleiben, bis du sie löschst, und wenn du dein Konto löschst, werden
+ sie gelöscht. Moderatoren dürfen einen Beitrag oder eine Antwort
+ ausblenden oder entfernen, der gegen unsere Bedingungen verstößt.
+ Wenn du einen meldest, speichern wir die Meldung und das Konto, von
+ dem sie kam, damit ein Moderator sie prüfen kann; sie wird mit dem
+ Beitrag gelöscht, und wenn du vorher dein Konto löschst, bleibt sie
+ ohne deinen Namen.
  </p>
 
  {/* What we record */}
