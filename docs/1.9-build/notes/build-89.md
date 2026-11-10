@@ -86,3 +86,11 @@ What he saw: opening Your rule from Prayers' Practices shows Morning, then slide
 Where it is: `components/prayers/mine/MyRuleBuilder.tsx`. The part is decided after the page mounts (the clock, the address and the kept rule are the device's, so the export cannot bake them): `part` is null until then, and the control then slides to the part the hour gives (`ruleIdForHour`), or to the part that holds prayers.
 
 Planned fix (on his start): the page's first paint is already on the right part. Until the device has answered, neither half of the control is lit and neither part's list is drawn (the space is kept, so nothing moves); when the answer comes, the control is set with no slide and the list appears with the page's own fade. The slide stays for a reader's own tap. The rule for which part opens is unchanged. Checked in the export, opened at a morning hour and at an evening hour.
+
+### 10. All prayers: not a row of floating pills, and a tick as it scrolls (2026-11-10)
+
+What he saw: Prayers' All prayers row (Morning prayers, Evening prayers, The Hours, and on) drawn as outlined pills (`build-89/10-all-prayers-pills.png`). His words: "I want this revamped. I pretty much want haptic feedback when you scroll, and I also want it like the design a little better. I don't just want floating pills. Like, I'm kind of getting sick of the like floating pills, because a lot of vibe coded apps also use that. So it's kind of like a guardrail. Like, don't get me wrong, it's good in certain scenarios and certain cases, but yeah, just not here." The rule is in CLAUDE.md.
+
+Where it is: `components/mobile/PrayersMobile.tsx` (`prayers.allPrayers`). The click as a row scrolls already exists for the Bible's chapter strip and the saints' timeline (`lib/ui/scrollTicks.ts`), so no new native dependency.
+
+Planned fix (on his start), with the design pass of notes 2, 4, 6 and 7: each prayer in the row becomes a small piece in the house style (its own icon or art, its name, its length) in place of a pill, drawn from the app's components and checked with `checkMock`; the row clicks under the finger as each passes the middle, through `scrollTicks`; reduced motion and the browser stay silent, as the strip already does.
