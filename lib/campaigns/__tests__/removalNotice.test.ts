@@ -39,7 +39,9 @@ const DAY = 86_400_000;
 
 let w: World;
 const db = () => client(w) as never;
-const notices = () => (w.tables.community_notifications ?? []).map(({ id: _id, created_at: _at, ...rest }) => rest);
+/** The notices written, without the two fields the database gives each. */
+const notices = () =>
+  (w.tables.community_notifications ?? []).map((row) => Object.fromEntries(Object.entries(row).filter(([key]) => key !== "id" && key !== "created_at")));
 const logged = () => (w.tables.community_mod_log ?? []).map((row) => row.action);
 const campaign = () => w.tables.prayer_campaigns!.find((row) => row.id === CAMPAIGN)!;
 const picture = () => w.tables.prayer_campaign_pictures!.find((row) => row.id === PICTURE)!;

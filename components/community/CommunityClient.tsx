@@ -24,11 +24,13 @@ import {
   feedSliders,
   feedTabs,
   halfFromHash,
+  halfShown,
   hashForHalf,
+  prayDoor,
   type CommunityHalf,
   type FeedFilter,
 } from "@/lib/community/halves";
-import { useCampaignsOpen } from "@/lib/campaigns/useCampaignsOpen";
+import { useCampaignsAnswer } from "@/lib/campaigns/useCampaignsOpen";
 import { runningCampaign } from "@/lib/community/runningCampaign";
 import {
   addReply,
@@ -274,14 +276,17 @@ function CommunityScreen({
   const campaign = runningCampaign();
   // Pray together holds prayer campaigns and nothing else since the prayer
   // wall went (1.9). Where none is open for this reader, and the app runs
-  // none of its own, there is nothing behind its door: the door is not
+  // none of its own, there is nothing behind its door: the switch is not
   // drawn, an address that asks for it shows the conversations, and
-  // Community is as a group's thread is, with no switch. The door comes when
-  // the server says campaigns are open (lib/campaigns/useCampaignsOpen.ts),
-  // and is never drawn and then taken away.
-  const campaignsOpen = useCampaignsOpen();
-  const prayDoor = campaignsOpen || campaign !== null;
-  const half: CommunityHalf = prayDoor ? asked : "talk";
+  // Community is as a group's thread is. The door opens when the server says
+  // campaigns are open for this reader (lib/campaigns/useCampaignsOpen.ts);
+  // until it has said, the switch's place is kept empty, so nothing under it
+  // moves when the switch comes (lib/community/halves.ts, prayDoor).
+  const campaignsOpen = useCampaignsAnswer();
+  const [placeKept, setPlaceKept] = useState(false);
+  const door = prayDoor({ campaigns: campaignsOpen, ownCampaign: campaign !== null, placeKept });
+  if (door === "waiting" && !groupId && !placeKept) setPlaceKept(true);
+  const half = halfShown(asked, door);
   // Pray together, unless a group's thread is open: that is a conversation.
   const praying = half === "pray" && !groupId;
   const [me, setMe] = useState<Me>(null);
@@ -715,7 +720,8 @@ function CommunityScreen({
     <CommunityHead
       half={half}
       onChoose={onChoose}
-      showSwitch={!groupId && prayDoor}
+      door={groupId ? "none" : door}
+      arrives={placeKept}
       idBase={HALF_ID}
       bell={authSettled && me ? <CommunityBell onOpen={openNotification} onPicture={praying} /> : null}
     />
@@ -726,7 +732,7 @@ function CommunityScreen({
         className="min-w-0"
         // The half the switch has open. A group's thread has no switch, and
         // neither has Community where Pray together has nothing in it.
-        {...(groupId || !prayDoor ? {} : { role: "tabpanel", id: `${HALF_ID}-panel-${half}`, "aria-labelledby": `${HALF_ID}-tab-${half}` })}
+        {...(groupId || door !== "open" ? {} : { role: "tabpanel", id: `${HALF_ID}-panel-${half}`, "aria-labelledby": `${HALF_ID}-tab-${half}` })}
       >
         {praying ? (
           <PrayTogether signedIn={Boolean(me)} campaign={campaign} />

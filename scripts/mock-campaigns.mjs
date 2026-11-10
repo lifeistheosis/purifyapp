@@ -318,6 +318,41 @@ const MOD_PICTURES = [
   },
 ];
 
+// A reader's profile, as the profile's route hands one on. A SAMPLE reader, no
+// one real and nothing from production (the same one the export walk's
+// section 50 opens). Asking for prayers went from a profile in 1.9: the
+// server still sends `prayerRequest: null` for an app of 1.8, and this app
+// reads none of it.
+const SAMPLE_READER = {
+  handle: "john.sample",
+  name: "John",
+  avatar: null,
+  verified: false,
+  tier: null,
+  private: false,
+  postsHidden: false,
+  nameDay: null,
+  prayerRequest: null,
+  nowReading: null,
+  clergy: null,
+  joinedAt: "2026-09-12T00:00:00Z",
+  bio: "Catechumen. Learning the Hours one at a time.",
+  status: "Reading the Psalter this month",
+  patronSaint: { slug: "john-chrysostom", name: "St. John Chrysostom" },
+  favoriteVerse: { ref: "john/1/5", label: "John 1:5", href: "/bible/john/1#v5" },
+  cosmetics: { bannerColor: null, bannerUrl: null, themePrimary: null, themeAccent: null, decoration: null, effect: null, nameColor: null, bannerMotion: null },
+  badges: [
+    { id: "psalter", since: "2026-10-01T00:00:00Z" },
+    { id: "gospels", since: "2026-10-04T00:00:00Z" },
+    { id: "early_reader", since: "2026-09-12T00:00:00Z" },
+  ],
+  posts: [{ id: "sample-post", kind: "discussion", title: "Which psalms are read at the Ninth Hour?", excerpt: "", quoteSource: null, createdAt: "2026-10-30T00:00:00Z", likes: 0, replies: 0 }],
+  parish: "St. Nicholas, Dallas",
+  links: [],
+};
+/** How a signed-in reader stands with that profile: a stranger. `prayed` is the 1.8 field, always false. */
+const SAMPLE_RELATION = { mine: false, following: false, followsYou: false, mutuals: [], greeted: false, prayed: false, canGift: false, muted: false };
+
 const seen = new Set();
 /** Every request a screen made of the server, for the walk to hold. */
 let calls = [];
@@ -341,7 +376,11 @@ async function answer(ctx, opts = {}) {
     asked.push(`${p}${url.search}`);
     // The parts that ship switched off are off unless a picture asks for one, as the server says them.
     const parts = { many: false, pictures: false, ...(opts.parts ?? {}) };
-    if (p === "/api/campaigns/open") return opts.closed ? json({ error: "Not found." }, 404) : json({ open: true, parts });
+    if (p === "/api/campaigns/open") {
+      // A slow answer, for the walk to look at Community while it waits to hear.
+      if (opts.openAfter) await new Promise((done) => setTimeout(done, opts.openAfter));
+      return opts.closed ? json({ error: "Not found." }, 404) : json({ open: true, parts });
+    }
     if (p === "/api/campaigns/many") {
       if (opts.closed || !parts.many) return json({ error: "Not found." }, 404);
       return json({ campaigns: MANY[url.searchParams.get("span") ?? "week"] ?? [] });
@@ -377,6 +416,10 @@ async function answer(ctx, opts = {}) {
     }
     // The prayer wall went in 1.9: the server answers an app of 1.8 with nobody on it, and this app never asks.
     if (p === "/api/community/prayer-wall") return json({ requests: [], intentions: false });
+    // A profile, opened over Community (/community/#@handle).
+    if (p === "/api/community/profile") return url.searchParams.get("h") === SAMPLE_READER.handle ? json({ profile: SAMPLE_READER }) : json({ error: "Profile not found." }, 404);
+    if (p === "/api/community/relation") return json({ relation: SAMPLE_RELATION });
+    if (p === "/api/bible/verse") return json({ name: "", verses: [{ n: 5, text: "And the light shineth in darkness; and the darkness comprehended it not." }] });
     if (p === "/api/community/moderation") {
       if (url.searchParams.get("summary")) return json({ waiting: 2 });
       // The team's queue carries pictures only while the server has them on, and never for a build that says it has none.
@@ -706,6 +749,17 @@ await pictureShot("24-pictures-team", "the team's queue: pictures to look at", "
   },
 });
 
+// 25 A reader's profile, as another reader opens it over Community. Until 1.9 a profile could carry
+// "Asking for your prayers" with I prayed beside it; asking for prayers went with the wall (his "wall B",
+// 2026-11-10). A SAMPLE reader, no one real.
+await shot("25-profile", "a reader's profile: no request for prayers, and no I prayed", `/community/#@${SAMPLE_READER.handle}`, "[data-profile-card]", {
+  prepare: async (page) => {
+    await page.waitForFunction((h) => document.querySelector("[data-profile-card]")?.innerText.includes(`@${h}`) && !!document.querySelector("[data-profile-card] [data-profile-doors]"), SAMPLE_READER.handle, { timeout: 25000 });
+    // The top fades in, and the verse's words arrive after the card.
+    await settle(page, 1600);
+  },
+});
+
 // The two photos his decision on the prayer wall was made from
 // (docs/1.9-build/notes/decisions/wall-1-today.png and wall-2-after.png) were stills 30 and 31 of this
 // script as it stood at commit 35205d89c, drawn while the wall was still in the app. It is not any more,
@@ -717,7 +771,7 @@ async function pictureWalk(label, ...rest) {
   if (!FLOWS.length || FLOWS.some((f) => label.toLowerCase().includes(f))) console.log(`left  ${label}: needs an export cut with pictures (PICTURES_BUILD=1; see the header)`);
 }
 
-async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures } = {}) {
+async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, openAfter } = {}) {
   if (FLOWS.length && !FLOWS.some((f) => label.toLowerCase().includes(f))) return;
   const seed = {
     "purify.prayers.campaigns": JSON.stringify(CARRIED),
@@ -732,7 +786,7 @@ async function walk(label, where, run, { set = {}, signedIn = true, mine, closed
   let ok = true;
   let why = "";
   try {
-    await answer(ctx, { mine, closed, parts, pictures });
+    await answer(ctx, { mine, closed, parts, pictures, openAfter });
     await go(page, where);
     await settle(page, 1800);
     await run(page);
@@ -810,6 +864,58 @@ if (WALK) {
     const said = await page.locator("[role=tabpanel]").innerText();
     expectThat(!/prayer wall|Ask for prayers|I prayed/i.test(said), `the wall's words are on the page: ${said.slice(0, 120)}`);
     expectThat(!calls.some((c) => c.path === "/api/community/prayer-wall"), "the prayer wall was asked for");
+  });
+
+  // The door to Pray together is the switch, drawn only once the website has said campaigns are open
+  // for this reader. With the answer held back five seconds, the walk looks at Community while it
+  // waits: no switch, its place kept; and then that nothing under it moved when the switch came.
+  const doorPlace = (page) =>
+    page.evaluate(() => {
+      const place = document.querySelector("[data-door-place]");
+      const head = document.querySelector(".community-head");
+      return {
+        place: place ? { state: place.getAttribute("data-door-place"), height: Math.round(place.getBoundingClientRect().height) } : null,
+        tabs: document.querySelectorAll("[role=tablist] [role=tab]").length,
+        under: head?.nextElementSibling ? Math.round(head.nextElementSibling.getBoundingClientRect().top + window.scrollY) : null,
+      };
+    });
+
+  await walk("the door, waiting then open: the switch's place is kept, and the page under it does not move when the switch comes", "/community#pray", async (page) => {
+    const before = await doorPlace(page);
+    expectThat(before.tabs === 0, "the switch is drawn before the website has said campaigns are open");
+    expectThat(before.place?.state === "waiting" && before.place.height === 60, `its place is not kept: ${JSON.stringify(before.place)}`);
+    await page.waitForSelector("[role=tablist] [role=tab]", { timeout: 15000 });
+    await settle(page, 900);
+    const after = await doorPlace(page);
+    expectThat(after.tabs === 2 && after.place === null, `the switch did not take its place: ${JSON.stringify(after)}`);
+    expectThat(before.under !== null && after.under === before.under, `the page under the switch moved, from ${before.under} to ${after.under}`);
+    expectThat((await page.locator(".community-door-arrives [role=tablist]").count()) === 1, "the switch that came into its place does not fade in");
+    // And it was Pray together that was asked for.
+    await page.waitForSelector("[data-campaigns]", { timeout: 15000 });
+    expectThat((await page.locator("[role=tab][aria-selected=true]").innerText()).trim() === "Pray together", "Pray together is not the open half");
+  }, { openAfter: 5000 });
+
+  await walk("the door, waiting then no: the place closes, there is no switch, and the conversations are shown", "/community#pray", async (page) => {
+    const before = await doorPlace(page);
+    expectThat(before.tabs === 0 && before.place?.state === "waiting" && before.place.height === 60, `while waiting: ${JSON.stringify(before)}`);
+    await page.waitForSelector('[data-door-place="shut"]', { timeout: 15000 });
+    await settle(page, 900);
+    const after = await doorPlace(page);
+    expectThat(after.tabs === 0 && after.place?.state === "shut" && after.place.height === 0, `the place did not close: ${JSON.stringify(after)}`);
+    expectThat((await page.locator("[data-campaigns]").count()) === 0, "Pray together draws campaigns");
+    expectThat((await page.locator("[data-feed-tab]").count()) > 0, "the conversations are not shown");
+    expectThat((await page.locator(".community-on-picture").count()) === 0, "the head still wears Pray together's picture");
+  }, { closed: true, openAfter: 5000 });
+
+  await walk("a profile: no request for prayers on it, no I prayed, and the old answer is asked of no one", `/community/#@${SAMPLE_READER.handle}`, async (page) => {
+    await page.waitForFunction((h) => document.querySelector("[data-profile-card]")?.innerText.includes(`@${h}`) && !!document.querySelector("[data-profile-card] [data-profile-doors]"), SAMPLE_READER.handle, { timeout: 25000 });
+    await settle(page, 1600);
+    const said = await page.locator("[data-profile-card]").innerText();
+    expectThat(said.includes(SAMPLE_READER.status) && said.includes(SAMPLE_READER.bio), `the profile is not drawn whole: ${said.slice(0, 120)}`);
+    // The words a profile said until 1.9, which no catalog holds any more.
+    expectThat(!/asking for your prayers|you asked for prayers|I prayed|you prayed|\d+ prayed/i.test(said), `the request's words are on the profile: ${said.slice(0, 200)}`);
+    expectThat(calls.some((c) => c.path === "/api/community/profile"), "the profile was not asked for");
+    expectThat(!calls.some((c) => c.path === "/api/community/pray" || c.path === "/api/community/prayer-wall"), "I prayed or the wall was asked for");
   });
 
   await walk("joining: the name goes into the device's list and the choice to the account; taking it out lets go", `/campaigns/detail?id=${PETER}`, async (page) => {

@@ -3376,3 +3376,150 @@ more in `pictures.test.ts` (the route sends and counts none for a build that
 says it has none). Three ways of breaking it were tried, and each failed a
 case.
 
+
+## 26. The prayer wall is gone: what was built (2026-11-10)
+
+**His words** (`BRAINSTORM.md`): "I'd say remove the prayer wall and just keep
+the prayer campaigns" (about 17:25 UTC), then "wall B" (about 18:00 UTC):
+asking for prayers goes everywhere, the wall, the line on a profile and its
+switch, I prayed and its notice, and the profile's count of who prayed. The
+old requests are shown to no one from 1.9 and cleared fourteen days after it
+ships. Section 21 is the plan; where the two differ, this section holds.
+
+### 26.1 What a reader of 1.9 sees
+
+- **Pray together is prayer campaigns alone.** `PrayerWall` and
+  `AskPrayersSheet` are removed, and nothing is drawn in their place
+  (`components/community/PrayTogether.tsx`).
+- **Its door is drawn only where there is something behind it.** The door is
+  the switch between Community's two halves. With the wall gone, Pray
+  together would be an empty half for every reader campaigns are not open
+  for, which is everyone but the testers between the release's first step
+  and his opening them (R5c). So (`lib/community/halves.ts`, `prayDoor` and
+  `halfShown`):
+  - campaigns open for this reader: the switch, as before;
+  - not open: no switch, Community shows the conversations, and an address
+    that asks for Pray together shows them too;
+  - not said yet (the app asks the website once a page load): nothing is
+    drawn, and the switch's place is kept empty, its own 60px and the 16px
+    above it, so the page under it does not move when the switch comes. The
+    switch fades into the kept place; a place kept for nothing closes on the
+    house curve. With motion off neither moves.
+- **A profile** carries no "Asking for your prayers", no I prayed and no
+  count of who prayed, and its editor has no switch for one
+  (`ProfileViewer.tsx`, `ProfileEditor.tsx`).
+- **The weekly Community email** loses its line ("N readers asked for prayers
+  this week. The prayer wall is in Community."). Nothing is written in its
+  place (the arbiter, 18:37 UTC).
+
+### 26.2 The server, kind to an app of 1.8
+
+An app that has not updated still draws the wall and the profile's line, and
+cannot be changed. Each address it asks keeps answering, with nothing of
+anyone's in the answer:
+
+| What the 1.8 app asks | What it is told | What it shows |
+| --- | --- | --- |
+| The wall (`GET /api/community/prayer-wall`) | Nobody on it, and `intentions: false`. Nothing is read. | "No one is asking for prayers right now." |
+| Ask, from the wall (`PUT /api/profile/me`, the request by itself) | 410, `request_closed`. No words are read, filtered or held. | Its own line for a save that failed. |
+| The profile editor's save with the switch on | The other changes are saved; the request is passed over. | Saved; the switch reads off. |
+| Taking one's own request down | Done: the time, the words, and a hold still waiting on them. | As before. |
+| I prayed (`POST /api/community/pray`) | 409, `no_request`. Nothing is read or written: no row, no notice. | Its own line for a save that failed. |
+| A profile, its settings, the relation | `prayerRequest: null`, `prayerRequest: false`, `prayed: false` | No line, the switch off, no I prayed. |
+
+Honest limit: the 1.8 app has no words for "this has closed", so a reader who
+taps Ask there is told the save failed and to try again. Updating the app is
+the cure.
+
+### 26.3 The requests already made
+
+`lib/community/prayerRequestsEnd.ts`, once a day on the heartbeat
+(`lib/ops/maintenance.ts`, `prayerRequestsEnd` in its report), whatever
+campaigns' switch says.
+
+- **When:** on and after the day 1.9 shipped plus fourteen days. The day is
+  `SHIPPED_ON` in `lib/campaigns/julyRows.ts`, the one line the release
+  commit writes for July's rows too (`docs/plans/v1.9/RELEASE.md`, section 6).
+  While it is null, is not a real day, or is before 2026-11-10, nothing is
+  read and nothing is cleared, and the report says which.
+- **Why fourteen:** a request always ended by itself after fourteen days, so
+  by then every one of them has run the whole of what its writer was told.
+  Nothing is cut short and nothing is migrated.
+- **What it clears, and only this:** `profiles.prayer_request_at` and
+  `profiles.prayer_request_intention`, set to empty on every profile that
+  has one (the words of long-lapsed requests too, which used to stay unseen);
+  the holds still waiting on a request's words (`community_text_holds` with
+  `profile_id` set and `status` pending); and every row of `profile_prayers`.
+- **What it leaves:** the "prayed for you" notices already in a reader's
+  inbox, the names a reader carried from the wall into their own prayers
+  (on their device, gone after their week), and the two columns and the
+  table themselves.
+- **It can run twice.** A second run finds nothing set. When a run goes
+  through with nothing failed it leaves the public mark
+  `prayer-requests-cleared` in `data_moves`. A part of the database that is
+  not there is said as "absent"; any other failure leaves the rest to be
+  tried, is said, and holds the mark back.
+- **Until it runs** the old rows stay where they are, shown to no one. A hold
+  on a request's words stays in the moderators' queue until it is decided or
+  the job deletes it.
+- It changes production data, so a second chat (Admin) reads it before it
+  ships.
+
+### 26.4 The words
+
+Retired in all twenty-one languages, 22 keys: `community.filterPrayer`,
+`community.wallAsk`, `wallAsked`, `wallAskedAgo`, `wallBody`, `wallEmpty`,
+`wallIntentionHint`, `wallIntentionLabel`, `wallIntentionPlaceholder`,
+`wallNoLinks`, `wallTitle`, `wallWithdraw`, `wallWithdrawn`, `wallYou`,
+`profile.pray`, `prayFailed`, `prayed`, `prayedCount` (every plural form),
+`prayerRequest`, `prayerRequestMine`, `prayerToggle`, `prayerToggleHint`.
+
+Kept: the ones campaigns borrow (`community.wallAdd`, `wallAddWhen`,
+`wallAdded`, `wallTakeOut`, `wallTakenOut`, `wallInMyPrayers`,
+`prayers.diptychs.wallUntil`), and the prayers' own two lines for names
+already carried from the wall, which leave within a week
+(`prayers.diptychs.wallHeading`, `prayers.wall.left`).
+
+**One line is stale and waits for his word:** `prayers.commemorate.whereHint`,
+"These names are remembered before the dismissal of the prayers you choose,
+with those you add from the prayer wall." Recommended: end it at "the prayers
+you choose." That is true whether or not campaigns are open for the reader,
+and names nothing that could be dark.
+
+### 26.5 What holds it
+
+- `lib/community/__tests__/prayerRequestsEnd.test.ts` (13 cases: the day,
+  nothing before it, what is cleared and what is left, a second run, a
+  missing column or table, a failed step, the heartbeat). Four ways of
+  breaking the job were tried, and each failed a case.
+- `prayerWallRoute.test.ts` (6: the wall's and I prayed's answers, and that
+  neither reads or writes), `lib/profile/__tests__/prayerIntention.test.ts`
+  (12: the profile's route, an ask alone and among other changes, taking one
+  down).
+- `halves.test.ts` and `prayAndTalk.test.ts`: the door's rule, the kept
+  place and its height, no file naming the wall's parts, a profile with no
+  request. Six ways of breaking the door were tried, and each failed a case.
+- `wallNames.test.ts`: the wall's own words are in no language any more.
+- The walk (`scripts/mock-campaigns.mjs`): Pray together with campaigns alone
+  and the wall never asked for; the door waiting then open, with the page
+  under it not moving; waiting then no; a reader campaigns are not open for;
+  a profile with no request.
+
+### 26.6 What waits
+
+- Admin's second read of `lib/community/prayerRequestsEnd.ts`.
+- His word on `prayers.commemorate.whereHint`, then its twenty languages.
+- The note's line, held by Admin in the release checklist until the wall is
+  gone from the build and campaigns are open
+  (`docs/plans/v1.9/RELEASE.md`, "Held lines").
+- Later, not 1.9, with SQL he signs: the two profile columns and
+  `profile_prayers` dropped; and `AddToPrayersSheet` with the prayers' side
+  of the wall's names taken out, once nothing can be carried any more.
+- Search still knows Community by the hidden words "prayer wall"
+  (`lib/search/buildCorpus.ts`), so a reader who looks for the wall lands
+  where it stood. Left as it is.
+
+The wall's own code is in the repository's history. It is whole at
+`bac1be393`: `components/community/PrayerWall.tsx`, `AskPrayersSheet.tsx`,
+and the routes as they were. Its picture is
+`docs/1.9-build/notes/decisions/wall-1-today.png`.

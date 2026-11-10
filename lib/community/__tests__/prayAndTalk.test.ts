@@ -23,7 +23,7 @@ import { FeedTabs } from "@/components/community/FeedTabs";
 import { PrayTogether } from "@/components/community/PrayTogether";
 import { MessagesProvider } from "@/components/i18n/MessagesProvider";
 import { getMessages } from "@/lib/i18n";
-import { feedSliders, feedTabs, type CommunityHalf, type FeedFilter } from "@/lib/community/halves";
+import { feedSliders, feedTabs, type CommunityHalf, type FeedFilter, type PrayDoor } from "@/lib/community/halves";
 import { runningCampaign, type RunningCampaign } from "@/lib/community/runningCampaign";
 
 type ProviderProps = Parameters<typeof MessagesProvider>[0];
@@ -35,8 +35,8 @@ function draw(el: ReactElement, locale = "en"): string {
 const root = join(__dirname, "..", "..", "..");
 const read = (p: string) => readFileSync(join(root, p), "utf8").replace(/\r\n/g, "\n");
 
-function head(half: CommunityHalf, showSwitch = true): string {
-  return draw(createElement(CommunityHead, { half, onChoose: () => {}, showSwitch, bell: null, idBase: "community-half" }));
+function head(half: CommunityHalf, door: PrayDoor = "open", arrives = false): string {
+  return draw(createElement(CommunityHead, { half, onChoose: () => {}, door, arrives, bell: null, idBase: "community-half" }));
 }
 
 /** Each tab of a tablist as drawn: its id, whether it is selected, and its words. */
@@ -82,14 +82,15 @@ describe("the head: the name and one switch", () => {
   });
 
   it("has no switch in a group's thread, a conversation of its own", () => {
-    const html = head("talk", false);
+    const html = head("talk", "none");
     expect(html).not.toContain('role="tablist"');
+    expect(html).not.toContain("data-door-place");
     expect(html).toContain(">Community</h1>");
   });
 
   it("names the halves in every language, never as a key", () => {
     for (const locale of ["el", "ru", "ar", "ka"]) {
-      const words = tabs(draw(createElement(CommunityHead, { half: "talk", onChoose: () => {}, showSwitch: true, bell: null, idBase: "h" }), locale)).map((t) => t.text);
+      const words = tabs(draw(createElement(CommunityHead, { half: "talk", onChoose: () => {}, door: "open", bell: null, idBase: "h" }), locale)).map((t) => t.text);
       expect(words, locale).toHaveLength(2);
       for (const w of words) {
         expect(w, locale).not.toMatch(/community\./);
@@ -188,18 +189,63 @@ describe("the prayer wall is gone, with everything that drew it", () => {
     // It holds prayer campaigns and nothing else now. Where none is open for
     // this reader, and the app runs none of its own, Community shows no
     // switch, and an address that asks for Pray together shows the
-    // conversations: never an empty half behind a door.
+    // conversations: never an empty half behind a door. The rule itself is
+    // lib/community/halves.ts (prayDoor, halfShown; halves.test.ts).
     const screen = read("components/community/CommunityClient.tsx");
-    expect(screen).toContain("const prayDoor = campaignsOpen || campaign !== null;");
-    expect(screen).toContain('const half: CommunityHalf = prayDoor ? asked : "talk";');
-    expect(screen).toContain("showSwitch={!groupId && prayDoor}");
+    expect(screen).toContain("const campaignsOpen = useCampaignsAnswer();");
+    expect(screen).toContain("const door = prayDoor({ campaigns: campaignsOpen, ownCampaign: campaign !== null, placeKept });");
+    expect(screen).toContain("const half = halfShown(asked, door);");
+    expect(screen).toContain('door={groupId ? "none" : door}');
     // The panel names a tab only where the switch that holds it is drawn.
-    expect(screen).toContain("{...(groupId || !prayDoor ? {} : { role: \"tabpanel\"");
+    expect(screen).toContain('{...(groupId || door !== "open" ? {} : { role: "tabpanel"');
     // And the head without its switch is the head a group's thread has: the title and the bell.
-    const html = head("talk", false);
+    const html = head("talk", "none");
     expect(html).toContain(">Community</h1>");
     expect(html).not.toContain('role="tablist"');
     expect(html).not.toContain("Pray together");
+  });
+
+  it("while the app waits to hear, the switch's place is kept empty, so the page does not move when it comes", () => {
+    // Not known yet: no switch and no word of Pray together, and in its
+    // place a box of the switch's own height that says nothing to anyone.
+    for (const half of ["talk", "pray"] as const) {
+      const waiting = head(half, "waiting");
+      expect(waiting).not.toContain('role="tablist"');
+      expect(waiting).not.toContain("Pray together");
+      expect(waiting).toMatch(/<div aria-hidden="true" data-door-place="waiting" class="community-door-place"><\/div>/);
+    }
+    // The switch that comes into that place fades in; one that was there from the first is simply there.
+    expect(head("talk", "open", true)).toContain("community-door-arrives");
+    expect(head("talk", "open")).not.toContain("community-door-arrives");
+    // The answer was no: the same box, closing, and still no switch.
+    const shut = head("talk", "shut");
+    expect(shut).toContain('data-door-place="shut"');
+    expect(shut).not.toContain('role="tablist"');
+    // The screen marks the place as kept only where it was drawn (not in a group's thread).
+    const screen = read("components/community/CommunityClient.tsx");
+    expect(screen).toContain('if (door === "waiting" && !groupId && !placeKept) setPlaceKept(true);');
+    expect(screen).toContain("arrives={placeKept}");
+
+    // The place is the switch's own height and the space above it, and it
+    // closes to nothing. With motion off, neither moves.
+    const css = read("app/globals.css");
+    const rule = (selector: string) => {
+      const at = css.indexOf(`\n${selector} {`);
+      expect(at, selector).toBeGreaterThan(-1);
+      return css.slice(at, css.indexOf("}", at));
+    };
+    expect(read("components/community/PrayTalkSwitch.tsx")).toContain('className="community-halves relative grid h-[60px] ');
+    expect(read("components/community/CommunityHead.tsx")).toContain('<div className={cn("mt-4 lg:max-w-[720px]", arrives && "community-door-arrives")}>');
+    expect(rule(".community-door-place")).toMatch(/height: 60px;\s*margin-top: 16px;/);
+    expect(rule('.community-door-place[data-door-place="shut"]')).toMatch(/height: 0;\s*margin-top: 0;/);
+    expect(rule(':where([data-motion="reduce"]) .community-door-place')).toContain("transition: none;");
+    expect(rule(':where([data-motion="reduce"]) .community-door-arrives')).toContain("animation: none;");
+  });
+
+  it("waiting on an address for Pray together, the head is Pray together's, and it is the plain head once the answer is no", () => {
+    expect(head("pray", "waiting")).toContain("community-on-picture");
+    expect(head("pray", "open")).toContain("community-on-picture");
+    for (const door of ["shut", "none"] as const) expect(head("talk", door)).not.toContain("community-on-picture");
   });
 
   it("a profile draws no request, no I prayed and no count of who prayed, and its editor has no switch for one", () => {

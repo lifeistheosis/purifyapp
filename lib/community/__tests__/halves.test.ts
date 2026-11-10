@@ -2,11 +2,15 @@
 // r3-02, "B with A's top"; his build 80 note 18): one switch, Pray together
 // and Talk together, in place of a bar of seven pills; Talk together shows
 // three words and keeps the rest behind the sliders; the prayer wall moved to
-// Pray together.
+// Pray together, and in 1.9 went altogether (his word, 2026-11-10), so Pray
+// together is prayer campaigns alone, behind a door drawn only where they
+// are open for this reader.
 //
 // What a reader would notice if this broke: a notification's post opening on
-// the prayer wall, a #pray link landing in the conversation, the prayer wall
-// back among the feed's words, or a word on the line printed as its key.
+// Pray together, a #pray link landing in the conversation, the prayer wall
+// back among the feed's words, a word on the line printed as its key; or,
+// of the door: a switch that leads to an empty half, a switch drawn and then
+// taken away, or the page jumping down when the switch comes.
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -20,8 +24,11 @@ import {
   feedSliders,
   feedTabs,
   halfFromHash,
+  halfShown,
   hashForHalf,
+  prayDoor,
   type FeedFilter,
+  type PrayDoor,
 } from "../halves";
 
 const en = JSON.parse(readFileSync(join(__dirname, "..", "..", "i18n", "messages", "en.json"), "utf8")) as Record<string, string>;
@@ -47,6 +54,35 @@ describe("Community's two halves", () => {
     expect(hashForHalf("pray")).toBe("#pray");
     expect(hashForHalf("talk")).toBe("");
     for (const half of COMMUNITY_HALVES) expect(halfFromHash(hashForHalf(half))).toBe(half);
+  });
+});
+
+describe("the door to Pray together (1.9)", () => {
+  it("is open where campaigns are open for this reader, or the app runs a campaign of its own", () => {
+    expect(prayDoor({ campaigns: true, ownCampaign: false, placeKept: false })).toBe("open");
+    expect(prayDoor({ campaigns: true, ownCampaign: false, placeKept: true })).toBe("open");
+    // The app's own campaign needs no answer from the server.
+    for (const campaigns of [null, false, true]) expect(prayDoor({ campaigns, ownCampaign: true, placeKept: false })).toBe("open");
+  });
+
+  it("waits, with its place kept, until the server has said", () => {
+    expect(prayDoor({ campaigns: null, ownCampaign: false, placeKept: false })).toBe("waiting");
+    expect(prayDoor({ campaigns: null, ownCampaign: false, placeKept: true })).toBe("waiting");
+  });
+
+  it("is not there where the answer is no: the kept place closes, and one never kept is never drawn", () => {
+    expect(prayDoor({ campaigns: false, ownCampaign: false, placeKept: true })).toBe("shut");
+    expect(prayDoor({ campaigns: false, ownCampaign: false, placeKept: false })).toBe("none");
+  });
+
+  it("shows the half that was asked for only behind a door that is open or not yet known", () => {
+    const shown = (door: PrayDoor) => [halfShown("pray", door), halfShown("talk", door)];
+    expect(shown("open")).toEqual(["pray", "talk"]);
+    // A reader who came by an address for Pray together is not shown the conversations first.
+    expect(shown("waiting")).toEqual(["pray", "talk"]);
+    // No door: the conversations, whatever the address asks. Never an empty half.
+    expect(shown("shut")).toEqual(["talk", "talk"]);
+    expect(shown("none")).toEqual(["talk", "talk"]);
   });
 });
 

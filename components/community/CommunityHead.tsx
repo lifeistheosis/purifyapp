@@ -6,7 +6,7 @@ import { PrayTalkSwitch } from "@/components/community/PrayTalkSwitch";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { cn } from "@/lib/cn";
-import type { CommunityHalf } from "@/lib/community/halves";
+import type { CommunityHalf, PrayDoor } from "@/lib/community/halves";
 import { TILE_PREVIEWS } from "@/lib/discover/tilePreviews.generated";
 
 /** Community's own picture: Pentecost, the apostles together and given the words to speak (its tile on Discover). */
@@ -23,24 +23,33 @@ export const COMMUNITY_PICTURE = "/discover/tiles/chat.webp";
  * (PrayTogether), gone when none runs. Talk together is B's plain head.
  *
  * The switch is not drawn in a group's thread, which is a conversation of
- * its own with its own way back out.
+ * its own with its own way back out; and since 1.9 it is the door to Pray
+ * together, drawn only where there is something behind it for this reader
+ * (lib/community/halves.ts, prayDoor). While the app waits to hear, the
+ * switch's place is kept empty, so the page under it does not move when the
+ * switch comes; a switch that comes into a kept place fades in, and a place
+ * kept for nothing closes (app/globals.css, "The door to Pray together").
  */
 export function CommunityHead({
   half,
   onChoose,
-  showSwitch,
+  door,
+  arrives = false,
   bell,
   idBase,
 }: {
   half: CommunityHalf;
   onChoose: (next: CommunityHalf) => void;
-  showSwitch: boolean;
+  /** The door to Pray together; "none" in a group's thread. */
+  door: PrayDoor;
+  /** The switch comes into a place that was kept for it. */
+  arrives?: boolean;
   /** The bell, for a reader with an account (CommunityBell). */
   bell: ReactNode;
   idBase: string;
 }) {
   const { t } = useTranslate();
-  const onPicture = half === "pray" && showSwitch;
+  const onPicture = half === "pray" && (door === "open" || door === "waiting");
   const preview = TILE_PREVIEWS[COMMUNITY_PICTURE]?.src;
 
   return (
@@ -74,11 +83,14 @@ export function CommunityHead({
           <h1 className="community-head-title text-heading font-bold leading-[1.1] text-paper">{t("community.title")}</h1>
           {bell}
         </div>
-        {showSwitch ? (
-          <div className="mt-4 lg:max-w-[720px]">
+        {door === "open" ? (
+          <div className={cn("mt-4 lg:max-w-[720px]", arrives && "community-door-arrives")}>
             <PrayTalkSwitch half={half} onChoose={onChoose} idBase={idBase} />
           </div>
-        ) : null}
+        ) : door === "none" ? null : (
+          // The switch's place: its height and the space above it, and nothing in it.
+          <div aria-hidden data-door-place={door} className="community-door-place" />
+        )}
       </header>
     </div>
   );

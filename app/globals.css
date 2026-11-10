@@ -8417,6 +8417,42 @@ html[data-reading-mode="parchment"] .part-segment[data-state="current"] {
  mask-image: linear-gradient(to bottom, #000 50%, transparent);
 }
 
+/* The door to Pray together (1.9). The switch between the halves is drawn
+   only where prayer campaigns are open for this reader, and the app learns
+   that from the website a moment after the page is drawn
+   (lib/community/halves.ts, prayDoor). While it waits, the switch's place is
+   kept: the switch's own height (PrayTalkSwitch, 60px) and the space above
+   it (16px), with nothing in it, so the page under it does not move when the
+   switch comes. A switch that comes into a kept place fades in. A place kept
+   for nothing closes, on the house curve. With motion off, each is simply
+   so. lib/community/__tests__/prayAndTalk.test.ts holds the two heights
+   together. */
+.community-door-place {
+ height: 60px;
+ margin-top: 16px;
+ transition:
+  height var(--duration-base) var(--ease-house),
+  margin-top var(--duration-base) var(--ease-house);
+}
+.community-door-place[data-door-place="shut"] {
+ height: 0;
+ margin-top: 0;
+}
+@keyframes community-door-in {
+ from {
+  opacity: 0;
+ }
+}
+.community-door-arrives {
+ animation: community-door-in var(--duration-base) var(--ease-house) backwards;
+}
+:where([data-motion="reduce"]) .community-door-place {
+ transition: none;
+}
+:where([data-motion="reduce"]) .community-door-arrives {
+ animation: none;
+}
+
 /* Pray together's head: the Pentecost icon fades in behind the name, from a
    little larger, and melts into the page under the switch. 900ms is past the
    duration ladder's top on purpose, as the Prayers picture's is: a picture
