@@ -18,6 +18,7 @@
 // (C3), and a button opens only a public page.
 
 import { activityFor } from "@/lib/desktop/activity";
+import { byPronoun, type Pronoun } from "@/lib/saints/pronoun";
 
 export type PresenceMode = "off" | "patron" | "favorite" | "reading" | "plus";
 export type PlusBase = "patron" | "favorite" | "reading";
@@ -96,7 +97,7 @@ export function effectiveMode(prefs: PresencePrefs, plusAllowed: boolean): { bas
 
 // ── Facts the bridge looks up ────────────────────────────────────────────────
 
-export type SaintFacts = { slug: string; name: string; pronoun: "his" | "her" };
+export type SaintFacts = { slug: string; name: string; pronoun: Pronoun };
 export type NameDay = { today: boolean; date: string };
 export type Quote = { text: string; source: string; href?: string };
 
@@ -334,7 +335,11 @@ function patronRequest(t: T, patron: BuildInput["patron"]): PresenceRequest {
     largeText: t("desktop.presence.patronHover"),
     art: { saint: saint.slug },
     path: `/saints/${saint.slug}`,
-    buttonLabel: t(saint.pronoun === "her" ? "desktop.presence.readHerLife" : "desktop.presence.readHisLife"),
+    buttonLabel: byPronoun(saint.pronoun, {
+      his: t("desktop.presence.readHisLife"),
+      her: t("desktop.presence.readHerLife"),
+      their: t("desktop.presence.readTheirLife"),
+    }),
     homeLabel: t("desktop.presence.buttonHome"),
   };
 }
@@ -349,7 +354,11 @@ function favoriteRequest(t: T, favorite: BuildInput["favorite"]): PresenceReques
     largeText: quote ? quote.source : saint.name,
     art: { saint: saint.slug },
     path: own ? quote!.href : `/saints/${saint.slug}`,
-    buttonLabel: t(saint.pronoun === "her" ? "desktop.presence.readHerWords" : "desktop.presence.readHisWords"),
+    buttonLabel: byPronoun(saint.pronoun, {
+      his: t("desktop.presence.readHisWords"),
+      her: t("desktop.presence.readHerWords"),
+      their: t("desktop.presence.readTheirWords"),
+    }),
     homeLabel: t("desktop.presence.buttonHome"),
   };
 }

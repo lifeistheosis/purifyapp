@@ -43,7 +43,7 @@ export async function loadSaint(slug: string): Promise<SaintRecord | null> {
     ? {
         slug: s.slug,
         name: s.name,
-        pronoun: s.pronoun === "her" ? "her" : "his",
+        pronoun: s.pronoun ?? "his",
         feastDays: s.feastDays ?? [],
         // Only words traced to where they stand (1.8, lib/citations/cite.ts):
         // a line shown to others under a saint's name, with a source beside

@@ -7,10 +7,12 @@
  * a button, instead of merging the two screens").
  *
  * The web itself is built from the app's own data by lib/saints/web.ts, on
- * the server. This file imports nothing, so the screen, a client file, can
- * read it without carrying the saints' registry into the app's script
+ * the server. This file imports nothing but a type, so the screen, a client
+ * file, can read it without carrying the saints' registry into the app's script
  * (lib/saints/__tests__/brief.test.ts).
  */
+
+import type { Pronoun } from "./pronoun";
 
 /**
  * How two saints are joined, as the app's data says it:
@@ -43,7 +45,8 @@ export type WebPerson = {
   initial: string;
   /** "c. 329–390", when both ends of the life are known. */
   years?: string;
-  pronoun: "his" | "her";
+  /** "their" for a pair or a company (lib/saints/pronoun.ts). */
+  pronoun: Pronoun;
 };
 
 export type WebTie = {

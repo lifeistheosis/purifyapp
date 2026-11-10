@@ -1,6 +1,7 @@
 import { SourceLine } from "@/components/citations/SourceLine";
 import { T } from "@/components/i18n/T";
 import { shownCite } from "@/lib/citations/shown";
+import { byPronoun, type Pronoun } from "@/lib/saints/pronoun";
 import type { Quote } from "@/lib/saints/saints";
 
 /**
@@ -14,13 +15,17 @@ import type { Quote } from "@/lib/saints/saints";
  * holds every one). Plain Lora quotations parted by hairlines: no cards and
  * no decorative quote mark.
  */
-export function QuotesSection({ quotes: all, pronoun }: { quotes: Quote[]; pronoun?: "his" | "her" }) {
+export function QuotesSection({ quotes: all, pronoun }: { quotes: Quote[]; pronoun?: Pronoun }) {
   const quotes = all.filter((q) => q.cite.kind !== "untraced");
   if (quotes.length === 0) return null;
   return (
     <section aria-labelledby="saint-quotes">
       <h2 id="saint-quotes" className="text-title-sm leading-tight text-paper">
-        <T k={pronoun === "her" ? "saints.inHerOwnWords" : "saints.inHisOwnWords"} />
+        {byPronoun(pronoun, {
+          his: <T k="saints.inHisOwnWords" />,
+          her: <T k="saints.inHerOwnWords" />,
+          their: <T k="saints.inTheirOwnWords" />,
+        })}
       </h2>
       <ul className="mt-2 max-w-[680px] divide-y divide-paper/8">
         {quotes.map((q, i) => {

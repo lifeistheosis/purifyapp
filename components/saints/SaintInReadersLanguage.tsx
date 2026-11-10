@@ -8,6 +8,7 @@ import { useInReadersLanguage, type Loaders } from "@/components/i18n/useInReade
 import type { ShownCite } from "@/lib/citations/cite";
 import type { LocaleCode } from "@/lib/i18n/locales";
 import { textDir } from "@/lib/i18n/textDir";
+import type { Pronoun } from "@/lib/saints/pronoun";
 
 import { LIFE_LOADERS } from "./lifeLoaders";
 import { LifeSection } from "./LifeSection";
@@ -67,7 +68,7 @@ export function SaintShortBio({ english, className }: { english: string; classNa
 }
 
 /** The titles the Church gives the saint, where his life in the reader's language has them (the Theotokos's, in German). */
-export function SaintTitlesIn({ pronoun, children }: { pronoun?: "his" | "her"; children: ReactNode }) {
+export function SaintTitlesIn({ pronoun, children }: { pronoun?: Pronoun; children: ReactNode }) {
   const { words, lang } = useContext(Words);
   if (!words?.titles?.length) return <>{children}</>;
   return (

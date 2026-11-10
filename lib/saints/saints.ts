@@ -1,4 +1,5 @@
 import type { Cite } from "../citations/cite";
+import type { Pronoun } from "./pronoun";
 
 // Eastern Orthodox saints, metadata + works index.
 // Biographical facts are widely attested in standard hagiographic sources
@@ -84,9 +85,10 @@ export type Saint = {
  greatFeasts?: { name: string; date: string; href?: string }[];
  /**
  * Possessive pronoun for UI copy like "Read {his/her} works". Defaults to
- * "his"; set "her" for female saints (and the Theotokos).
+ * "his"; set "her" for female saints (and the Theotokos), and "their" for a
+ * page of two or more, a pair or a company (1.9, lib/saints/pronoun.ts).
  */
- pronoun?: "his" | "her";
+ pronoun?: Pronoun;
  /**
  * Named direct disciples or successors. Shown in a "Disciples and
  * successors" section on the profile, with a short explanation of the
@@ -3499,6 +3501,7 @@ export const SAINTS: Saint[] = [
  slug: "cyril-and-methodius",
  iconUrl: "/saints/icons/cyril-and-methodius.jpg",
  name: "Saints Cyril and Methodius",
+ pronoun: "their",
  byname: "Equals-to-the-Apostles",
  epithet: "Equals-to-the-Apostles · Enlighteners of the Slavs · Teachers of the Slavonic Letters",
  born: "c. 815 (Methodius) and c. 827 (Cyril), Thessaloniki",
@@ -5026,7 +5029,7 @@ export const SAINTS: Saint[] = [
     reposed: "c. 166 BC (Antioch, under Antiochus IV Epiphanes)",
     feastDays: ["August 1"],
     see: "(martyrs of Israel)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Seven brothers tortured to death in a single day in front of their mother, who watched all seven and encouraged each of them, and died last; with them the aged scribe Eleazar, who refused even to pretend to eat what the Law forbade, on the ground that the young would learn the pretense. They are the only saints in the calendar who died before the Nativity, and they died confessing the resurrection of the body.",
     life: [
@@ -5265,7 +5268,7 @@ export const SAINTS: Saint[] = [
     reposed: "sealed in the cave c. 250; the waking placed in the reign of Theodosius II, c. 446",
     feastDays: ["August 4", "October 22"],
     see: "Ephesus",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Seven young men of Ephesus who refused to sacrifice under Decius, hid in a cave above the city, and were sealed inside; and who, the tradition says, woke about two hundred years later in the reign of Theodosius the Second, at a moment when the Church was arguing over whether the body rises. The Church commemorates them as a sign rather than as a biography.",
     life: [
@@ -5329,7 +5332,7 @@ export const SAINTS: Saint[] = [
     reposed: "Isaac c. 383; Dalmatus c. 440; Faustus 5th century",
     feastDays: ["August 3"],
     see: "Constantinople",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Three generations of one monastery. Isaac came out of the desert to stand in front of the Arian emperor Valens as he rode out to the Gothic war and tell him he would not come back, which he did not. Dalmatus, an officer of the imperial guard, gave up his commission to become his disciple and gave the house its name. Faustus was Dalmatus's son, who came with him.",
     life: [
@@ -5477,7 +5480,7 @@ export const SAINTS: Saint[] = [
     reposed: "1098 (Kiev)",
     feastDays: ["August 11"],
     see: "(monks)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Two monks of the Kiev Caves, one a wealthy man who had given everything away and then found buried treasure in his own cell and was tormented by it, the other the friend who talked him into burying it again. A prince heard the story, wanted the money, and had them both tortured to death in a single night when they would not say where it was.",
     life: [
@@ -5498,7 +5501,7 @@ export const SAINTS: Saint[] = [
     reposed: "c. 305 (Nicomedia)",
     feastDays: ["August 12"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "An uncle and his nephew. Anicetus was a magistrate of Nicomedia who, when Diocletian set up the instruments of torture in the public square and offered rewards for informers, walked out in front of the assembly and said he was a Christian. Photius, his nephew, came out of the crowd and embraced him, and the two were killed together after three years in prison.",
     life: [
@@ -5560,7 +5563,7 @@ export const SAINTS: Saint[] = [
     reposed: "2nd century (Ulpiana, Illyricum)",
     feastDays: ["August 18"],
     see: "(laymen)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Twin brothers, stonemasons by trade, who were hired to build a pagan temple in Illyricum, spent their wages on the poor as they earned them, and when the building was finished set a cross in it, gathered the local Christians, and kept vigil in it all night. They were thrown alive into a dry well and covered over.",
     life: [
@@ -5697,7 +5700,7 @@ export const SAINTS: Saint[] = [
     reposed: "c. 305 (Nicomedia)",
     feastDays: ["August 26"],
     see: "(laity)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "The head of the imperial court's judicial office at Nicomedia, twenty eight years old and a pagan, who watched twenty three Christians being tortured, asked them what they expected to get for it, and put his own name on the register. His wife Natalia, a secret Christian, spent the weeks that followed getting into the prison in disguise to keep him from weakening.",
     life: [
@@ -5783,7 +5786,7 @@ export const SAINTS: Saint[] = [
     reposed: "Alexander 340; John 595; Paul 784",
     feastDays: ["August 30"],
     see: "Constantinople",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Three patriarchs of the capital, four centuries apart, kept on one day: Alexander, who was patriarch when Arius was to be received back into communion and prayed instead; John the Faster, who was the first to be called Ecumenical Patriarch and the most ascetic man ever to hold the office; and Paul the Fourth, who served under the iconoclasts, could not bear it, and resigned.",
     life: [
@@ -5985,7 +5988,7 @@ export const SAINTS: Saint[] = [
     epithet: "Unmercenary physicians · Sons of St. Theodota",
     feastDays: ["November 1"],
     see: "(physicians)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Brothers and physicians who took no fees for their healing, the sons of Theodota. The Greek Church keeps three pairs of brothers of these names, each on its own day; these are the pair of November 1, and, unlike the other two, they are not numbered among the martyrs.",
     entrySource:
@@ -6016,7 +6019,7 @@ export const SAINTS: Saint[] = [
     reposed: "4th century, under Sapor II (Persia)",
     feastDays: ["November 2"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Acindynus, Pegasius, Aphthonius, Elpidephorus and Anempodistus, Christians of Persia put to death under King Sapor II. Elpidephorus, a Persian of senatorial rank, was won to the faith by the constancy of Acindynus, Pegasius and Anempodistus, and was tortured and beheaded; the Greek account of their passion makes all or nearly all of them priests or clerics.",
     entrySource:
@@ -6059,7 +6062,7 @@ export const SAINTS: Saint[] = [
     reposed: "4th century, in the persecution of Sapor II (Persia)",
     feastDays: ["November 3"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Acepsimas, a bishop in Persia, who died under torture by the Magi rather than worship the sun, in the persecution of King Sapor; Sozomen tells of him and of the presbyter Aithalas, whose arms were torn from his shoulders. The Church keeps Joseph's memory with theirs.",
     entrySource:
@@ -6113,7 +6116,7 @@ export const SAINTS: Saint[] = [
     reposed: "Date uncertain (Myra in Lycia)",
     feastDays: ["November 4"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Nicander, a bishop, and Hermas, a priest, who were put to death for the faith at Myra in Lycia. Their date is uncertain.",
     entrySource:
@@ -6129,7 +6132,7 @@ export const SAINTS: Saint[] = [
     reposed: "1st century",
     feastDays: ["November 5"],
     see: "(apostles of the Seventy)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Patrobas, Hermas, Linus, Gaius and Philologus, five of the Seventy, whom St. Paul greets by name in his Epistle to the Romans and his Second Epistle to Timothy; of Linus, St. Irenaeus writes that the apostles committed to him the episcopate of the Church at Rome.",
     entrySource:
@@ -6155,7 +6158,7 @@ export const SAINTS: Saint[] = [
     reposed: "3rd century (Emesa in Phoenicia)",
     feastDays: ["November 5"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "A husband and wife of Emesa in Phoenicia. Galaction baptized his wife Episteme; both entered monasteries, and both confessed the faith at Emesa and were martyred there, in the third century.",
     entrySource:
@@ -6225,7 +6228,7 @@ export const SAINTS: Saint[] = [
     reposed: "Early 4th century, under Diocletian (Melitene in Armenia)",
     feastDays: ["November 7"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Thirty-three Christians of Armenia, Hiero, Hesychius and Nicander among them, who were martyred at Melitene in the persecution of Diocletian, in the first years of the fourth century.",
     entrySource:
@@ -6257,7 +6260,7 @@ export const SAINTS: Saint[] = [
     reposed: "1st century",
     feastDays: ["November 9"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Onesiphorus, of whom St. Paul wrote that he often refreshed him, was not ashamed of his chain, and sought him out diligently at Rome; and Porphyrius, whom the Church keeps with him.",
     entrySource:
@@ -6300,7 +6303,7 @@ export const SAINTS: Saint[] = [
     reposed: "1st century",
     feastDays: ["November 10"],
     see: "(apostles of the Seventy)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Six of the Seventy, helpers of St. Paul whom the Acts and his letters name: Erastus, whom he sent into Macedonia; Tertius, who wrote the Epistle to the Romans; and Olympas, Rodion, Sosipater and Quartus, whom he greets or sends greeting from.",
     entrySource:
@@ -6461,7 +6464,7 @@ export const SAINTS: Saint[] = [
     reposed: "4th century (Edessa)",
     feastDays: ["November 15"],
     see: "(martyrs of Edessa)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Shamuna and Guria of Edessa, and Habib, a deacon of that city, who would not sacrifice to the gods and were put to death at Edessa in the persecutions of the early fourth century; the Acts of their trials and deaths are kept in Syriac and in Greek.",
     entrySource:
@@ -6568,7 +6571,7 @@ export const SAINTS: Saint[] = [
     reposed: "Early 4th century, in the Great Persecution",
     feastDays: ["November 18"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Romanus, a deacon and exorcist of Caesarea in Palestine, who rebuked those sacrificing to the idols at Antioch, had his tongue cut out, and was strangled in the stocks in the first year of the Great Persecution, as Eusebius records; and Plato, a martyr whom the Church keeps on the same day.",
     entrySource:
@@ -6594,7 +6597,7 @@ export const SAINTS: Saint[] = [
     reposed: "303 (Caesarea in Palestine)",
     feastDays: ["November 18"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "The two whom Eusebius counts as crowned martyrs among all who suffered at Caesarea in the first months of the Great Persecution: after scourging, the rack and the stocks, they confessed one God and Christ Jesus as king, and were beheaded.",
     entrySource:
@@ -6647,7 +6650,7 @@ export const SAINTS: Saint[] = [
     epithet: "Barlaam the monk · Josaphat (Ioasaph), son of King Abenner",
     feastDays: ["November 19"],
     see: "(monks)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Barlaam, a monk and priest of the wilderness of Senaar, and Ioasaph, son of Abenner, a king of India who persecuted the Christians. In the Greek book Barlaam and Ioasaph, Barlaam comes to the prince disguised as a merchant and teaches him the faith; Abenner too becomes a Christian before his death, and Ioasaph gives the throne to Barachias and goes into the desert.",
     entrySource:
@@ -6717,7 +6720,7 @@ export const SAINTS: Saint[] = [
     reposed: "1st century",
     feastDays: ["November 22"],
     see: "(apostles of the Seventy)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Philemon, St. Paul's dearly beloved and fellowlabourer, to whom, with Apphia, Archippus and the church in his house, the Apostle wrote the letter asking him to receive Onesimus no longer as a servant, but as a brother beloved.",
     entrySource:
@@ -7021,7 +7024,7 @@ export const SAINTS: Saint[] = [
     reposed: "c. 303 (Sebaste in Armenia)",
     feastDays: ["November 28"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "At Sebaste in Armenia, in the persecution of Diocletian, seven Christian women died rather than offer incense. Irenarchus, whose office was to torture the martyrs, was won to Christ by their patience; he confessed Christ and was put to death with the priest Acacius.",
     entrySource:
@@ -7037,7 +7040,7 @@ export const SAINTS: Saint[] = [
     reposed: "250, under Decius",
     feastDays: ["November 29"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Paramonus and his companions, martyrs honored especially by the Greeks, who are said to have died on one day in the persecution of Decius, in 250. Baring-Gould counts them three hundred and seventy; the Book of Saints, three hundred and seventy-five.",
     entrySource:
@@ -7282,7 +7285,7 @@ export const SAINTS: Saint[] = [
     reposed: "1st century",
     feastDays: ["December 8"],
     see: "(apostles of the Seventy)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Four of the Seventy. Sosthenes, chief ruler of the synagogue at Corinth, was beaten before Gallio's judgment seat, and St. Paul names a brother Sosthenes with himself in First Corinthians. Apollos, a Jew of Alexandria mighty in the Scriptures, watered where Paul had planted. Tychicus of Asia, a beloved brother and faithful minister, Paul sent to Ephesus and Colossae. Cephas is one of the Seventy, not the apostle Peter.",
     entrySource:
@@ -7308,7 +7311,7 @@ export const SAINTS: Saint[] = [
     reposed: "Early 4th century (Alexandria)",
     feastDays: ["December 10"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Martyrs at Alexandria, where all three were beheaded. The Book of Saints makes Menas an Athenian sent by Galerius to quell a revolt in Egypt, who with Eugraphus, his subordinate, made many converts, Hermogenes the imperial prefect among them; Baring-Gould makes Menas a senator of Alexandria and Eugraphus his servant. The Dictionary of Christian Biography puts their death under Maximin.",
     entrySource:
@@ -7357,7 +7360,7 @@ export const SAINTS: Saint[] = [
     reposed: "About 302, under Diocletian (Sebaste)",
     feastDays: ["December 13"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Five martyrs of Sebaste in Armenia, in the persecution of Diocletian, about 302; Eustratius was judged by the prefect Agricolaus. Eustratius was burned to death in a furnace and Orestes on a gridiron; the others were put to death in various ways. Their relics are venerated at Rome, in the church of St. Apollinaris.",
     entrySource:
@@ -7390,7 +7393,7 @@ export const SAINTS: Saint[] = [
     reposed: "About 250, under Decius (Bithynia)",
     feastDays: ["December 14"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Martyrs of Bithynia in the reign of Decius, about 250, when Combritius, the governor, went round the province enforcing the edict against the Christians. Thyrsus, his arms and legs broken, died in prison; Leucius was hung up, torn with iron hooks and beheaded; Callinicus and others died by various deaths. The Greek Menaea keep them on December 14, the Roman calendar on January 28.",
     entrySource:
@@ -7406,7 +7409,7 @@ export const SAINTS: Saint[] = [
     reposed: "About 303, under Diocletian (Alexandria)",
     feastDays: ["December 14"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Christians of Egypt in the persecution of Diocletian. Apollonius, a deacon, converted Philemon, and the two were tortured together at Antinoe; their constancy converted Arrianus, the magistrate who tortured them, and the prefect at Alexandria had all three drowned, probably about 303. The Greeks keep them on December 14, the Latins on March 8.",
     entrySource:
@@ -7497,7 +7500,7 @@ export const SAINTS: Saint[] = [
     epithet: "Prophet at Babylon · The three in the furnace",
     feastDays: ["December 17"],
     see: "(prophet)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Daniel, Ananias, Azarias and Misael, of the children of Juda, whom Nabuchodonosor carried to Babylon and had taught the learning of the Chaldeans. The three would not worship the king's golden image and were cast into the burning fiery furnace, where the angel of the Lord came down to them; Daniel, a governor under Darius the Mede, was cast into the den of lions and delivered.",
     entrySource:
@@ -7524,7 +7527,7 @@ export const SAINTS: Saint[] = [
     reposed: "Late 3rd century, under Diocletian (Rome)",
     feastDays: ["December 18"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "A soldier of Milan, where he commanded the first cohort, martyred at Rome under Diocletian. Shot with arrows and left for dead, he was found alive and healed by a pious woman, Irene; arrested again, he was beaten to death with clubs in the Hippodrome, and the matron Lucina buried him in the catacombs. Among his companions was Nicostratus, whom he converted, and who was martyred too.",
     entrySource:
@@ -7654,7 +7657,7 @@ export const SAINTS: Saint[] = [
     reposed: "250, under Decius (Gortyna)",
     feastDays: ["December 23"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Theodulus, Saturninus, Euporus, Gelasius, Eunicianus, Zoticus, Cleomenes, Agathopodus, Basilides and Evaristus, called the Cretan Martyrs, who suffered in the persecution of Decius in 250 and were all beheaded at Gortyna. Basilides was a layman of Cydonia in Crete. Their relics were afterwards taken to Rome.",
     entrySource:
@@ -7719,7 +7722,7 @@ export const SAINTS: Saint[] = [
     reposed: "Early 4th century, under Diocletian (Nicomedia)",
     feastDays: ["December 28"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "Christians of Nicomedia, the imperial residence, put to death at the beginning of Diocletian's persecution: Anthimus their bishop and many of his flock, under suspicion of setting fire to the palace. The Greeks reckon some twenty thousand, and the Roman Martyrology tells of the faithful gathered in their church for the Nativity, shut in by the emperor's order and burned when they would not offer incense.",
     entrySource:
@@ -7746,7 +7749,7 @@ export const SAINTS: Saint[] = [
     reposed: "At the birth of Christ (Bethlehem)",
     feastDays: ["December 29"],
     see: "(martyrs)",
-    pronoun: "his",
+    pronoun: "their",
     shortBio:
       "The children of Bethlehem and all its coasts, from two years old and under, whom Herod slew when he saw that he was mocked of the wise men, after Joseph had been warned in a dream to take the young Child and His mother into Egypt.",
     entrySource:

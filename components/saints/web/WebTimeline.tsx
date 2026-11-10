@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
+import { byPronoun } from "@/lib/saints/pronoun";
 import type { SaintWebData, TimelineRow, WebNode } from "@/lib/saints/webLayout";
 
 import { WebAvatar } from "./WebAvatar";
@@ -23,7 +24,17 @@ export function WebTimeline({ data }: { data: SaintWebData }) {
   const { t } = useTranslate();
   const { center, timeline, reposedAt, undated } = data;
   const byId = new Map(data.nodes.map((n) => [n.id, n]));
-  const her = center.pronoun === "her";
+  // A pair's or a company's web is theirs (lib/saints/pronoun.ts).
+  const yearByYear = byPronoun(center.pronoun, {
+    his: t("saints.web.yearByYearHis"),
+    her: t("saints.web.yearByYearHer"),
+    their: t("saints.web.yearByYearTheir"),
+  });
+  const alsoInWeb = byPronoun(center.pronoun, {
+    his: t("saints.web.undatedHis"),
+    her: t("saints.web.undatedHer"),
+    their: t("saints.web.undatedTheir"),
+  });
   const last = timeline.length - 1;
 
   return (
@@ -41,7 +52,7 @@ export function WebTimeline({ data }: { data: SaintWebData }) {
                 </span>
               </>
             ) : null}
-            {t(her ? "saints.web.yearByYearHer" : "saints.web.yearByYearHis")}
+            {yearByYear}
           </p>
         </div>
       </div>
@@ -83,7 +94,7 @@ export function WebTimeline({ data }: { data: SaintWebData }) {
       {undated.length ? (
         <section aria-labelledby="saint-web-undated" className="mt-4 border-t border-paper/10 pt-6">
           <h2 id="saint-web-undated" className="text-title-sm leading-tight text-paper">
-            {t(her ? "saints.web.undatedHer" : "saints.web.undatedHis")}
+            {alsoInWeb}
           </h2>
           <div className="mt-4 flex flex-wrap gap-1.5">
             {undated.map((id) => {

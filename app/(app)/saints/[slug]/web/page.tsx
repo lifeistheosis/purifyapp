@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { SaintWebScreen } from "@/components/saints/web/SaintWebScreen";
 import { WebViewSwitch } from "@/components/saints/web/WebViewSwitch";
+import { byPronoun } from "@/lib/saints/pronoun";
 import { getSaint } from "@/lib/saints/saints";
 import { saintWeb, webSlugs } from "@/lib/saints/web";
 
@@ -28,10 +29,15 @@ export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params;
   const saint = getSaint(slug);
   if (!saint) return { title: "Saint web" };
-  const [him, his] = saint.pronoun === "her" ? ["her", "her"] : ["him", "his"];
+  // A pair or a company is "them", down their lives (lib/saints/pronoun.ts).
+  const [him, his, life] = byPronoun(saint.pronoun, {
+    his: ["him", "his", "life"],
+    her: ["her", "her", "life"],
+    their: ["them", "their", "lives"],
+  });
   return {
     title: `${saint.name}, the saint web`,
-    description: `${saint.name} and the saints the library joins to ${him}: teachers and disciples, councils, moments in the Church's history and the Lives that name ${him}, as a web and year by year down ${his} life.`,
+    description: `${saint.name} and the saints the library joins to ${him}: teachers and disciples, councils, moments in the Church's history and the Lives that name ${him}, as a web and year by year down ${his} ${life}.`,
   };
 }
 

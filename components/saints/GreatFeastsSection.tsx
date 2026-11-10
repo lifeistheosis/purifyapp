@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { byPronoun, type Pronoun } from "@/lib/saints/pronoun";
 import type { Saint } from "@/lib/saints/saints";
 import { T } from "@/components/i18n/T";
 
@@ -14,14 +15,18 @@ export function GreatFeastsSection({
   akathist = false,
 }: {
   feasts: NonNullable<Saint["greatFeasts"]>;
-  pronoun?: "his" | "her";
+  pronoun?: Pronoun;
   /** The Mother of God's page: the way to her Akathist under her feasts. */
   akathist?: boolean;
 }) {
   return (
     <section aria-labelledby="saint-great-feasts">
       <h2 id="saint-great-feasts" className="text-title-sm leading-tight text-paper">
-        <T k={pronoun === "her" ? "saints.herGreatFeasts" : "saints.hisGreatFeasts"} />
+        {byPronoun(pronoun, {
+          his: <T k="saints.hisGreatFeasts" />,
+          her: <T k="saints.herGreatFeasts" />,
+          their: <T k="saints.theirGreatFeasts" />,
+        })}
       </h2>
       <ul className="mt-2 divide-y divide-paper/8">
         {feasts.map((f) => {

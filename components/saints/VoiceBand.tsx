@@ -1,6 +1,7 @@
 "use client";
 
 import type { SectionVoice } from "@/lib/saints/load";
+import { byPronoun, type Pronoun } from "@/lib/saints/pronoun";
 import type { Saint } from "@/lib/saints/saints";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -37,9 +38,8 @@ export function VoiceBand({
   const { t } = useTranslate();
   if (!voice || voice === "saint") return null;
 
-  const possessive = saint.pronoun === "her" ? "her" : "his";
   const label = t(LABEL_KEYS[voice]);
-  const body = describe(t, voice, voiceAuthor, saint.name, possessive);
+  const body = describe(t, voice, voiceAuthor, saint.name, saint.pronoun);
   if (!body) return null;
 
   return (
@@ -79,7 +79,7 @@ function describe(
   voice: SectionVoice,
   voiceAuthor: string | undefined,
   saintName: string,
-  possessive: string,
+  pronoun: Pronoun | undefined,
 ): string | null {
   switch (voice) {
     case "editorial":
@@ -92,12 +92,12 @@ function describe(
           })
         : t("saints.voice.witnessBody", { name: saintName });
     case "liturgical":
-      return t(
-        possessive === "her"
-          ? "saints.voice.liturgicalBodyHer"
-          : "saints.voice.liturgicalBodyHis",
-        { name: saintName },
-      );
+      // A pair or a company is "them" (lib/saints/pronoun.ts).
+      return byPronoun(pronoun, {
+        his: t("saints.voice.liturgicalBodyHis", { name: saintName }),
+        her: t("saints.voice.liturgicalBodyHer", { name: saintName }),
+        their: t("saints.voice.liturgicalBodyTheir", { name: saintName }),
+      });
     case "scripture":
       return t("saints.voice.scriptureBody");
     default:

@@ -16,6 +16,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { cn } from "@/lib/cn";
+import { byPronoun } from "@/lib/saints/pronoun";
 import { lineStyle, type WebNode } from "@/lib/saints/webLayout";
 import {
   advanceGlide,
@@ -482,7 +483,11 @@ export function WebCard({
                     href={`/saints/${node.person.slug}`}
                     className="saint-web-way-lit tap-press grid min-h-11 flex-1 place-items-center rounded-pill bg-paper px-3 text-center font-sans text-ui font-semibold text-night"
                   >
-                    {t(node.person.pronoun === "her" ? "saints.web.openHerPage" : "saints.web.openHisPage")}
+                    {byPronoun(node.person.pronoun, {
+                      his: t("saints.web.openHisPage"),
+                      her: t("saints.web.openHerPage"),
+                      their: t("saints.web.openTheirPage"),
+                    })}
                   </Link>
                   <Link
                     href={`/saints/${node.person.slug}/web`}

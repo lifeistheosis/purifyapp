@@ -199,7 +199,7 @@ function personOf(s: Saint): WebPerson {
     ...(s.iconUrl ? { icon: s.iconUrl } : {}),
     initial: (short.replace(/^The\s+/, "")[0] ?? "?").toUpperCase(),
     ...(years ? { years } : {}),
-    pronoun: s.pronoun === "her" ? "her" : "his",
+    pronoun: s.pronoun ?? "his",
   };
 }
 

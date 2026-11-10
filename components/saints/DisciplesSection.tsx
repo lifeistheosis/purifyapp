@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { byPronoun } from "@/lib/saints/pronoun";
 import type { Disciple, Saint } from "@/lib/saints/saints";
 import { getSaint } from "@/lib/saints/saints";
 import { T } from "@/components/i18n/T";
@@ -14,7 +15,11 @@ export function DisciplesSection({ saint, disciples }: { saint: Pick<Saint, "pro
   return (
     <section aria-labelledby="saint-disciples">
       <h2 id="saint-disciples" className="text-title-sm leading-tight text-paper">
-        <T k={saint.pronoun === "her" ? "saints.herDisciples" : "saints.hisDisciples"} />
+        {byPronoun(saint.pronoun, {
+          his: <T k="saints.hisDisciples" />,
+          her: <T k="saints.herDisciples" />,
+          their: <T k="saints.theirDisciples" />,
+        })}
       </h2>
       <ul className="mt-2 divide-y divide-paper/8">
         {disciples.map((d) => {
