@@ -334,3 +334,74 @@ check of every word against three more scans is
   Lives it measured.
 - **Stills**: `december-saints/07-butler-st-sabbas-writings.png`,
   `08-butler-life-of-st-sabbas.png`.
+
+## Push 4, as built: My Life in Christ, whole (2026-11-10)
+
+On the owner's word ("whole Kronstadt. again no preist so just full publish",
+call 11), St John of Kronstadt's My Life in Christ in E. E. Goulaeff's English
+(London: Cassell, 1897), whole: his note and both parts, 246,528 words, one
+work on his page and one book in the reading room
+(`john-of-kronstadt/my-life-in-christ`).
+
+- **Typed from the page**: no transcription of the book exists, so it was
+  typed from the page images of three archive.org scans of the printing
+  (Toronto's, whose page images were read, and two more).
+  `scripts/menologion/scan-draft/book.py`, with its settings in
+  `kronstadt.json`, lines the three readings up page by page and votes word
+  by word. The 841 places the vote left open were read on the page image, 21
+  sheets of crops. A sweep of the whole text then found what no vote could
+  catch, each read on the page too: a note's mark left after a closing
+  quotation, an "I" or an "O" the scans read as a figure, the day and the hour
+  lost from "26 July, 1864. 11 o'clock", compounds split at a line's end, the
+  Greek θεός on page 464, paragraph breaks lost where the scans disagreed,
+  and about ninety closing quotation marks, set apart from their words by the
+  scans (and so opened by the drafter) or lost with the note's mark printed
+  after them; the third scan, which tells the two marks apart, named each
+  one. Every reading is a line of `kronstadt-fixes.tsv`: the page, the draft's
+  words, the page's words (707 of them).
+- **Checked**: the ingest's own check against the scans passes with nothing
+  open: all 1,823 paragraphs found in the scans; 43 words that all three
+  misread alike ("earnest" for "camest", "0" for "O") settled as `ocr`
+  entries, each read on the page; 22 single-scan doubts kept in
+  `docs/editorial/ingest-review/december-works.md`. Paragraphs follow the
+  page: a check of every page's layout in two scans finds no indented line
+  after a short one that the text runs on from. The quotation marks balance
+  in every paragraph but ten, and those are the book's own: on the page,
+  those quotations never close.
+- **As printed**, and named in the source line: "harmoninous", "missortune",
+  "resurrrection", "imcomplex", "coveteousness", "apparalled", "opression",
+  "repentence", "Righteousnes" and "O wretched man than I am". Also kept: the
+  book's spellings (counseller, Sabbaoth, everflowing, Shunamite, versâ), the
+  bracket that closes alone on page 496, the full stop before "for" on page
+  354, and "in Thee Lord!" on page 414.
+- **Left out**: the translator's dedication and preface (his words, not the
+  saint's), the footnotes (the places of Scripture he quotes) and their
+  marks; italics are set plain.
+- **Sections**: the book has no chapters, so it is cut into 57 sections of
+  about ten printed pages, each at a paragraph's end, titled and cited by the
+  pages they run over ("Part I, pages 1 to 10"); his note is one. About
+  4,400 words each, 1,370 minutes in all.
+- **The drafter learned**: a page's mark stays when a word breaks across two
+  pages (nine pages had lost theirs); the vocative O the scans read as a
+  nought stays; a quotation mark before a dash, a bracket or a stop closes;
+  a paragraph break inside a stretch the scans read differently is kept
+  where two of the three begin one; a closing quotation mark read into one
+  box with a note's mark is kept; `final` names every correction that no
+  longer applies, all at once.
+- **The ingest** reads a `book` kind, and its scan check takes a note's mark
+  the scans' text glued to a word ("mine1") as no part of it. That made two
+  scans agree at four of St Ambrose's words broken across a page with the
+  footnotes between their halves; they are settled the same way, and
+  December's other works are written byte for byte as before.
+- **The reading room**: one book, on the plate until his icon passes (push
+  2b).
+- **The apps**: about 1.4 MB of text more (0.5 MB packed); both exports are
+  67.1 MB packed of 85.
+- **Walked** on the Android and the iOS exports: his page (Writings), the
+  book opening on his note and stepping on to Part I, and the reading room.
+  No errors. checkMock holds the reader to every rule but one: the em dash,
+  which is the book's own ("Whom Thou hast sent."—St. John xvii. 3.), kept
+  as printed under docs/editorial-standards.md. That is the reader's question
+  already open with the owner (who owns the reader's checkMock faults).
+- **Stills**: `december-saints/09-kronstadt-writings.png`,
+  `10-my-life-in-christ-part-i.png`.
