@@ -134,8 +134,18 @@ describe("a prayer page", () => {
     }
   });
 
-  it("still marks each prayer, and keeps the day when every one is marked", () => {
-    expect(step).toContain('t("prayers.reader.markPrayed")');
+  it("one Amen at the end marks the whole rule prayed, and keeps the day", () => {
+    // Build 89 note 7 (his "ok to all" of 2026-11-10): nothing ticked under
+    // each prayer; at the end of the page one quiet Amen marks every prayer of
+    // the rule, the names with them, and the doxology then says it once, with
+    // Reset beside it.
+    expect(step).not.toContain('t("prayers.reader.markPrayed")');
+    const end = reader.slice(reader.indexOf("data-rule-end"));
+    expect(end).toContain("data-amen");
+    expect(end).toContain('t("community.respond.amen")');
+    expect(end).toMatch(/persist\(new Set\(\[\.\.\.rule\.prayers\.map\(\(p\) => p\.id\)/);
+    expect(end).toContain('t("prayers.reader.complete")');
+    expect(end).toContain('t("prayers.rope.reset")');
     expect(reader).toContain("writeTodayDone(rule.id");
     expect(reader).toContain("markRuleCompletedToday(rule.id)");
     expect(reader).toContain("softTick()");

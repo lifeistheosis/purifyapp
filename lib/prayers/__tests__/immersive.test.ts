@@ -92,17 +92,19 @@ describe("the line being prayed lit, the rest dim", () => {
     expect(lit).toMatch(/if \(!root \|\| reduced\) return;/);
   });
 
-  it("knows every prayer of the page as a step, with its actions apart", () => {
+  it("knows every prayer of the page as a step, and ticks nothing under a prayer", () => {
     for (const file of [STEP, NAMES]) {
-      const src = code(file);
-      expect(src, file).toMatch(/<section[^>]*\bdata-step\b/);
-      expect(src, file).toContain("data-step-actions");
+      expect(code(file), file).toMatch(/<section[^>]*\bdata-step\b/);
     }
-    // Mark prayed and the bookmark stand together under the prayer.
+    // No circle and no bookmark under each prayer since 1.9 (build 89 note 7,
+    // his "ok to all" of 2026-11-10): one Amen at the end of the page marks
+    // the whole rule (prayerPages.test.ts). The names keep their own mark,
+    // apart from the words, as they had it.
     const step = code(STEP);
-    const actions = step.slice(step.indexOf("data-step-actions"));
-    expect(actions).toContain('t("prayers.reader.markPrayed")');
-    expect(actions).toContain("togglePrayerBookmark(");
+    expect(step).not.toContain("data-step-actions");
+    expect(step).not.toContain('t("prayers.reader.markPrayed")');
+    expect(step).not.toContain("togglePrayerBookmark(");
+    expect(code(NAMES)).toContain("data-step-actions");
   });
 
   it("steps the other prayers back with motion on only, and never their actions", () => {
@@ -124,7 +126,7 @@ describe("the line being prayed lit, the rest dim", () => {
     expect(code(NAMES)).toMatch(/className="scroll-mt-16 border-t border-paper\/10 py-9 text-center md:scroll-mt-24"/);
   });
 
-  it("draws a prayer as a step, its words line by line, its actions together under it", () => {
+  it("draws a prayer as a step, its words line by line, nothing to tick under it", () => {
     type ProviderProps = Parameters<typeof MessagesProvider>[0];
     const trisagion = libraryRule("morning", "en")!.prayers.find((p) => p.id === "trisagion")!;
     const html = renderToString(
@@ -132,22 +134,18 @@ describe("the line being prayed lit, the rest dim", () => {
         MessagesProvider,
         { locale: "en", messages: getMessages("en") } as ProviderProps,
         createElement(PrayerStep, {
-          ruleId: "morning",
           prayer: trisagion,
           title: trisagion.title,
           contentLang: "en",
-          isDone: false,
-          hydrated: true,
-          onToggle: () => {},
         }),
       ),
     );
     // A bare data attribute is written "true"; the stylesheet asks only that it is there.
     expect(html).toMatch(/<section id="trisagion" data-step="true"[^>]*class="[^"]*text-center/);
     expect(html.match(/data-line="true"/g)?.length).toBeGreaterThanOrEqual(5);
-    const actions = html.slice(html.indexOf("data-step-actions"));
-    expect(actions).toContain("Mark prayed");
-    expect(actions).toContain('aria-label="Bookmark this prayer"');
+    expect(html).not.toContain("data-step-actions");
+    expect(html).not.toContain("Mark prayed");
+    expect(html).not.toContain('aria-label="Bookmark this prayer"');
   });
 });
 

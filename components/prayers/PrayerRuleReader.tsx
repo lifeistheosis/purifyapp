@@ -202,13 +202,6 @@ export function PrayerRuleReader({
     }
   }
 
-  function toggle(id: string) {
-    const next = new Set(done);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
-    persist(next);
-  }
-
   /** Mark "Those I pray for", or take the mark back, with the names from the wall in it. */
   function toggleCommemoration() {
     const marking = !commemorationDone;
@@ -273,67 +266,56 @@ export function PrayerRuleReader({
           notInYourLanguage={locale !== "en" && locale !== contentLocale}
         />
 
-        {/* Mark all and Reset, as before: they mark prayers, they count
-            nothing. In the middle, with the prayers under them (1.8). */}
-        <div className="mt-10 flex items-center justify-center gap-1 font-sans text-caption">
-          <button
-            type="button"
-            onClick={() => {
-              persist(new Set([...rule.prayers.map((p) => p.id), ...(commemorated ? [commemorationId] : [])]));
-              if (wallIds.length > 0) updateWallNames((list) => markWallPrayed(list, wallIds));
-            }}
-            disabled={!hydrated || (allDone && (!commemorated || commemorationDone))}
-            className="tap-press inline-flex min-h-11 items-center px-2 text-paper/55 hover:text-paper disabled:opacity-35 disabled:hover:text-paper/55"
-          >
-            {t("prayers.reader.markAll")}
-          </button>
-          <span aria-hidden className="text-paper/25">
-            {"·"}
-          </span>
-          <button
-            type="button"
-            onClick={() => {
-              persist(new Set());
-              if (wallIds.length > 0) updateWallNames((list) => unmarkWallPrayed(list, wallIds));
-            }}
-            disabled={!hydrated || (done.size === 0 && !wall.some((n) => n.doneAt))}
-            className="tap-press inline-flex min-h-11 items-center px-2 text-paper/55 hover:text-paper disabled:opacity-35 disabled:hover:text-paper/55"
-          >
-            {t("prayers.rope.reset")}
-          </button>
-        </div>
-
         <div className="mt-1">
           {rule.prayers.map((p, i) => (
             <Fragment key={p.id}>
               {i === commemorationAt ? commemorationStep : null}
               {/* The reader's own "Those I pray for" is drawn as the step above. */}
               {ownStep && i === placement.index ? null : (
-                <PrayerStep
-                  ruleId={rule.id}
-                  prayer={p}
-                  title={stepTitle(p)}
-                  from={fromTitle(p)}
-                  contentLang={contentLocale}
-                  isDone={done.has(p.id)}
-                  hydrated={hydrated}
-                  onToggle={() => toggle(p.id)}
-                  bookmarkable={rule.kind !== "custom" || Boolean(p.origin)}
-                />
+                <PrayerStep prayer={p} title={stepTitle(p)} from={fromTitle(p)} contentLang={contentLocale} />
               )}
             </Fragment>
           ))}
           {commemorationAt === rule.prayers.length ? commemorationStep : null}
         </div>
 
-        {/* The doxology stays. It is not a score: it says the rule is finished,
-            which is what the end of a rule is, and it says it once and quietly.
+        {/* The end of the rule (1.9, build 89 note 7): one quiet Amen marks
+            the whole rule prayed, where a mark stood under every prayer. Once
+            it is, the doxology says so, once and quietly, with Reset beside it.
             Nothing counts up to it and nothing is lost by not reaching it. */}
-        {allDone ? (
-          <p role="status" className="mt-4 border-t border-paper/10 pt-8 text-center font-serif text-body italic leading-[1.6] text-paper/80">
-            {t("prayers.reader.complete")}
-          </p>
-        ) : null}
+        <div data-rule-end="" className="mt-4 flex flex-col items-center gap-3 border-t border-paper/10 pt-8 text-center">
+          {allDone ? (
+            <>
+              <p role="status" className="font-serif text-body italic leading-[1.6] text-paper/80">
+                {t("prayers.reader.complete")}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  persist(new Set());
+                  if (wallIds.length > 0) updateWallNames((list) => unmarkWallPrayed(list, wallIds));
+                }}
+                disabled={!hydrated}
+                className="tap-press inline-flex min-h-11 items-center px-3 font-sans text-caption text-paper/55 hover:text-paper disabled:opacity-40"
+              >
+                {t("prayers.rope.reset")}
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              data-amen=""
+              onClick={() => {
+                persist(new Set([...rule.prayers.map((p) => p.id), ...(commemorated ? [commemorationId] : [])]));
+                if (wallIds.length > 0) updateWallNames((list) => markWallPrayed(list, wallIds));
+              }}
+              disabled={!hydrated}
+              className="tap-press inline-flex min-h-12 min-w-[160px] items-center justify-center rounded-[14px] border border-paper/15 bg-paper/[0.06] px-8 font-serif text-title-sm italic text-paper hover:border-paper/30 disabled:opacity-40"
+            >
+              {t("community.respond.amen")}
+            </button>
+          )}
+        </div>
 
         {/* A reader's own rule has no one source: each of its prayers names its own. */}
         {rule.source ? (

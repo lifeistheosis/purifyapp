@@ -1,15 +1,12 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { FONT_CLASSES, useReaderPrefs, type ReaderSize } from "@/components/reader/ReaderPrefs";
 import { SegmentedSwitch } from "@/components/ui/SegmentedSwitch";
-import { Bookmark } from "@/components/ui/icons/Bookmark";
-import { Check } from "@/components/ui/icons/Check";
 import { Cross } from "@/components/ui/icons/Cross";
 import { cn } from "@/lib/cn";
-import { isBookmarked, togglePrayerBookmark } from "@/lib/prayers/bookmarks";
 import { stanzasOf } from "@/lib/prayers/lines";
 import type { Prayer, PrayerVariant } from "@/lib/prayers/types";
 
@@ -21,17 +18,17 @@ import type { Prayer, PrayerVariant } from "@/lib/prayers/types";
  * app's drawn cross stands at the head of that line (the prayer's own rubric
  * says where: lib/prayers/__tests__/cross.test.ts).
  *
- * Its bookmark keeps it in Saved, and "Mark prayed" marks it for today, as
- * before 1.7: a mark on a prayer, never a count, a fraction or a bar
- * (PrayerRuleReader.tsx says why).
+ * Nothing is ticked under it since 1.9 (build 89 note 7, his "ok to all" of
+ * 2026-11-10): one Amen at the end of the page marks the whole rule prayed
+ * (PrayerRuleReader.tsx), and it is still a mark, never a count, a fraction
+ * or a bar.
  *
  * Set in the middle of the page since 1.8, as the owner's pick B, Immersive,
  * draws a prayer being prayed (Homebase/boards/purify-master/variants/
  * 05-praying.png): the name, the rubric and the lines centred, the way the
  * lyrics stand in the player. It is a step of the page (`data-step`), which
- * the scroll marks while it is being prayed, and its two actions sit together
- * under it (`data-step-actions`), at full strength while the rest of a prayer
- * not being prayed steps back.
+ * the scroll marks while it is being prayed; the prayers around it step back
+ * (app/globals.css, "The rest dim").
  */
 
 /** The lyrics' sizes: a step above the reader's verse sizes, since a prayer page is read standing. */
@@ -51,50 +48,21 @@ export function lineFont(font: keyof typeof FONT_CLASSES): string {
   return font === "sans" ? FONT_CLASSES.sans : FONT_CLASSES.serif;
 }
 
-function subscribeBookmarks(cb: () => void): () => void {
-  if (typeof window === "undefined") return () => {};
-  window.addEventListener("purify:bookmark", cb);
-  window.addEventListener("storage", cb);
-  return () => {
-    window.removeEventListener("purify:bookmark", cb);
-    window.removeEventListener("storage", cb);
-  };
-}
-
 export function PrayerStep({
-  ruleId,
   prayer,
   title,
   from,
   contentLang,
-  isDone,
-  hydrated,
-  onToggle,
-  bookmarkable = true,
 }: {
-  ruleId: string;
   prayer: Prayer;
   /** The prayer's name as shown: the catalog's where the app names it. */
   title: string;
   /** The rule it was brought from, in a reader's own rule. */
   from?: string;
   contentLang: string;
-  isDone: boolean;
-  hydrated: boolean;
-  onToggle: () => void;
-  /** False for a step that is no prayer of the prayer book (a reader's own names). */
-  bookmarkable?: boolean;
 }) {
   const { t } = useTranslate();
   const { size, font, leadingValue } = useReaderPrefs();
-  // A step brought from another rule is kept in Saved under its own rule.
-  const where = prayer.origin ?? { ruleId, prayerId: prayer.id };
-  const bookmarked = useSyncExternalStore(
-    subscribeBookmarks,
-    () => isBookmarked(where.ruleId, where.prayerId),
-    () => false,
-  );
-
   const variants = prayer.variants ?? [];
   const [variantIdx, setVariantIdx] = useState(0);
   const active: PrayerVariant | undefined = variants.length
@@ -201,44 +169,6 @@ export function PrayerStep({
 
       {prayer.audio ? <AudioRow src={prayer.audio} /> : null}
 
-      <div data-step-actions className="mt-6 flex items-center justify-center gap-1">
-        <button
-          type="button"
-          onClick={onToggle}
-          disabled={!hydrated}
-          aria-pressed={isDone}
-          className={cn(
-            "tap-press inline-flex min-h-11 items-center gap-2.5 rounded-pill px-3 font-sans text-detail motion-safe:transition-colors disabled:opacity-40",
-            isDone ? "text-paper" : "text-paper/65 hover:text-paper",
-          )}
-        >
-          <span
-            aria-hidden
-            className={cn(
-              "grid size-6 shrink-0 place-items-center rounded-full",
-              isDone ? "bg-paper text-night" : "ring-1 ring-inset ring-paper/35",
-            )}
-          >
-            {isDone ? <Check size={14} /> : null}
-          </span>
-          {isDone ? t("shop.prayedToday") : t("prayers.reader.markPrayed")}
-        </button>
-        {bookmarkable ? (
-          <button
-            type="button"
-            onClick={() => togglePrayerBookmark(where.ruleId, where.prayerId, prayer.title)}
-            aria-pressed={bookmarked}
-            aria-label={bookmarked ? t("study.saved.removeBookmark") : t("prayers.reader.bookmarkPrayer")}
-            title={bookmarked ? t("prayers.reader.bookmarked") : t("prayers.reader.bookmark")}
-            className={cn(
-              "tap-press inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full motion-safe:transition-colors",
-              bookmarked ? "text-paper" : "text-paper/50 hover:text-paper",
-            )}
-          >
-            <Bookmark size={18} filled={bookmarked} />
-          </button>
-        ) : null}
-      </div>
     </section>
   );
 }

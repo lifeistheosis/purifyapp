@@ -9,13 +9,12 @@ import { Sheet } from "@/components/ui/Sheet";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { Bookmark } from "@/components/ui/icons/Bookmark";
 import { Check } from "@/components/ui/icons/Check";
-import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Info } from "@/components/ui/icons/Info";
-import { cn } from "@/lib/cn";
 import type { Rule } from "@/lib/prayers/types";
 
+/** Save, drawn as Share's own round button beside it (components/ui/ShareButton.tsx, round): the two quiet marks match. */
 const ROUND =
-  "tap-press inline-flex min-h-12 min-w-12 shrink-0 items-center justify-center rounded-full ring-1 ring-inset ring-paper/15 text-paper/75 hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper motion-safe:transition-colors";
+  "tap-press inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-pill border border-paper/10 bg-paper/[0.08] text-paper motion-safe:transition-colors hover:border-paper/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper";
 
 /**
  * The head of a prayer page (1.7, the owner's note 16): the prayer's icon on
@@ -27,6 +26,12 @@ const ROUND =
  *    loops inside prayers).
  *  - Share, and the bookmark that keeps the whole rule in Saved, drawn as
  *    the app's icons, never as characters.
+ *
+ * Redrawn for 1.9 (build 89 note 7, his words: "I don't like the share
+ * button like that. I don't like the bookmark button like that. And I don't
+ * like the beginning button looking like that"): one way in, Begin, wide and
+ * plain, and on either side of it the two quiet marks as one pair, Save and
+ * Share, round, 44px, alike.
  *  - Pray with: chant for everyone, ambience with Plus (components/player/
  *    PrayWith.tsx).
  *  - What the prayer is and how it is prayed: on a phone in a sheet, so the
@@ -92,16 +97,7 @@ export function ServiceHeader({
         </p>
       ) : null}
 
-      <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
-        <button
-          type="button"
-          onClick={onBegin}
-          className="tap-press inline-flex min-h-12 items-center gap-1.5 rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
-        >
-          {t("today.prayNow.begin")}
-          <ChevronRight size={15} className="shrink-0 rtl:-scale-x-100" />
-        </button>
-        <ShareButton title={title} className="min-h-12 px-4" />
+      <div data-service-actions="" className="mt-6 flex w-full max-w-[340px] items-center justify-center gap-3">
         {onBookmark ? (
           <button
             type="button"
@@ -109,11 +105,19 @@ export function ServiceHeader({
             aria-pressed={bookmarked}
             aria-label={bookmarked ? t("prayers.reader.removeRuleBookmark") : t("prayers.reader.bookmarkRule")}
             title={bookmarked ? t("prayers.reader.bookmarked") : t("prayers.reader.bookmarkRule")}
-            className={cn(ROUND, bookmarked && "text-paper")}
+            className={ROUND}
           >
-            <Bookmark size={19} filled={bookmarked} />
+            <Bookmark size={18} filled={bookmarked} />
           </button>
         ) : null}
+        <button
+          type="button"
+          onClick={onBegin}
+          className="tap-press inline-flex min-h-12 min-w-0 flex-1 items-center justify-center rounded-[14px] bg-paper px-6 font-sans text-ui font-semibold text-night shadow-[0_10px_24px_-12px_rgba(0,0,0,0.6)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
+        >
+          {t("today.prayNow.begin")}
+        </button>
+        <ShareButton title={title} round />
       </div>
 
       <PrayWith className="mt-5 justify-center" />
