@@ -227,6 +227,24 @@
             </intent-filter>
         </activity>
 
+        <!-- The phone's media buttons go to Purify's player only while it
+             runs (1.9, F-51; media/PlayerButtonReceiver.java). androidx's
+             receiver, which the media-session plugin brings, would start the
+             plugin's service for a button pressed after the player has gone,
+             with nothing behind it, and Android would stop the app for it.
+             This one takes its place: the plugin's session and its
+             notification find the one receiver the app declares. -->
+        <receiver
+            android:name="androidx.media.session.MediaButtonReceiver"
+            tools:node="remove" />
+        <receiver
+            android:name=".media.PlayerButtonReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

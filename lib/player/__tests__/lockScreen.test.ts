@@ -299,6 +299,31 @@ describe("the apps' own settings for it", () => {
     expect(plist).toMatch(/<key>UIBackgroundModes<\/key>\s*<array>\s*<string>audio<\/string>/);
   });
 
+  it("hand the phone's media buttons to the player only while it runs (1.9, F-51)", () => {
+    // androidx's receiver, which the plugin brings, would start the plugin's
+    // service for a button pressed after the player has gone, and Android
+    // would stop the app for it. Ours takes its place and lets such a button go.
+    const plugin = fs.readFileSync(path.join(ROOT, "node_modules/@capgo/capacitor-media-session/android/src/main/AndroidManifest.xml"), "utf8");
+    expect(plugin).toContain('android:name="androidx.media.session.MediaButtonReceiver"');
+    const manifest = fs.readFileSync(path.join(ROOT, "android/app/src/main/AndroidManifest.xml"), "utf8");
+    expect(manifest).toMatch(/<receiver\s+android:name="androidx\.media\.session\.MediaButtonReceiver"\s+tools:node="remove"\s*\/>/);
+    const ours = manifest.match(/<receiver\s+android:name="\.media\.PlayerButtonReceiver"\s+android:exported="true">[\s\S]*?<\/receiver>/)?.[0];
+    expect(ours).toContain('<action android:name="android.intent.action.MEDIA_BUTTON" />');
+    // The one receiver for the buttons, so the plugin's session and notification find it.
+    expect(manifest.match(/android\.intent\.action\.MEDIA_BUTTON/g)).toHaveLength(1);
+
+    const java = fs.readFileSync(path.join(ROOT, "android/app/src/main/java/net/purifyapp/purify/media/PlayerButtonReceiver.java"), "utf8");
+    expect(java).toContain("package net.purifyapp.purify.media;");
+    expect(java).toContain("public class PlayerButtonReceiver extends BroadcastReceiver");
+    // The plugin's own service, by its namespace and its manifest's name.
+    const namespace = fs.readFileSync(path.join(ROOT, "node_modules/@capgo/capacitor-media-session/android/build.gradle"), "utf8").match(/namespace\s*=?\s*"([^"]+)"/)?.[1];
+    const service = plugin.match(/<service\s+android:name="\.([A-Za-z]+)"/)?.[1];
+    expect(java).toContain(`static final String PLAYER_SERVICE = "${namespace}.${service}";`);
+    // A button goes on only while that service runs in the foreground.
+    expect(java).toMatch(/if \(!playerRuns\(context\)\) return;/);
+    expect(java).toMatch(/PLAYER_SERVICE\.equals\(info\.service\.getClassName\(\)\) && info\.foreground/);
+  });
+
   it("pin the plugin to one version, so the native side never changes unseen", () => {
     const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, "package.json"), "utf8"));
     expect(pkg.dependencies["@capgo/capacitor-media-session"]).toMatch(/^\d+\.\d+\.\d+$/);

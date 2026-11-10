@@ -2209,6 +2209,20 @@
    "version": null,
    "outcome": null,
    "note": "After 1.9. His \"yes prayers\" (BRAINSTORM.md, 2026-11-10 about 18:15 UTC): in 1.9 each kind of campaign starts with a psalm or the Trisagion prayers (built, a8ffd0d77); the prayers made for each need come after, one at a time. Hapgood's Service Book (1906) has a thanksgiving for an answer to prayer (p. 512), a service for children beginning instruction (p. 519) and a blessing for a journey (p. 524), each a priest's service and read from the book's contents only so far; a prayer for the sick still needs its source found. Each is read off its page image, word for word, and held by a test, about three hours apiece. A preset is a pointer (lib/campaigns/model.ts, KIND_PRAYER), so a prayer takes a psalm's place and nothing else changes. Notes: campaigns-fable.md, 22.4 and 28.6."
+  },
+  {
+   "id": "n-shade-skip-buttons",
+   "section": "Listening",
+   "kind": "idea",
+   "title": "15 seconds back and forward in the player in Android's shade on Android 13 and newer, as on Android 12 and older and in the app",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "approved",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "1.9.1, after his walk shows the player in the shade at all (the arbiter's word, 2026-11-10 about 21:28 UTC). From Android 13 the shade's player is drawn from the media session: play or pause, previous and next, and an app's own custom buttons (Android's page on media controls). Rewind and fast forward, all the media-session plugin offers, get no button there, so 1.9 shows play or pause and a bar to drag. Two custom actions on the session (back 15, forward 15) would put them in slots 2 and 3; the plugin cannot add them, so it means its Java patched or a small plugin of our own. F-51 in docs/audit/findings.yaml; build-90.md, the player in Android's shade."
   }
  ]
 }
