@@ -5424,5 +5424,19 @@
   "mod.pictureRemoveBody": "A kép minden olvasó számára törlődik. A nyoma megmarad a naplóban.",
   "mod.action.approve_picture": "jóváhagyott egy imakampányhoz tartozó képet",
   "mod.action.remove_picture": "eltávolított egy képet egy imakampányból",
-  "mod.action.picture_flagged": "megjelölt egy képet a tárolása előtt"
+  "mod.action.picture_flagged": "megjelölt egy képet a tárolása előtt",
+  "community.removedYour.post": "Eltávolítottuk a bejegyzésedet: {reason}.",
+  "community.removedYour.reply": "Eltávolítottuk a válaszodat: {reason}.",
+  "community.removedYour.campaign": "Eltávolítottuk az imakampányodat: {reason}.",
+  "community.removedYour.picture": "Eltávolítottuk a képedet: {reason}.",
+  "community.removedYour.comment": "Eltávolítottuk a hozzászólásodat: {reason}.",
+  "community.removedYour.sharedPage": "Eltávolítottuk a megosztott naplóoldaladat: {reason}.",
+  "community.removedAppeal": "Ha úgy gondolod, hogy tévedtünk, írj nekünk erre a címre: {email}.",
+  "community.removedWhy.unkind": "szeretetlen vagy gyűlölködő egy személlyel vagy csoporttal szemben",
+  "community.removedWhy.consent": "megnevez vagy ábrázol valakit a beleegyezése nélkül",
+  "community.removedWhy.private": "más személy privát adatai",
+  "community.removedWhy.notTheirs": "kép vagy szavak, amelyeket nem volt jogod megosztani",
+  "community.removedWhy.spam": "reklám vagy spam",
+  "community.removedWhy.unlawful": "törvénybe ütköző",
+  "community.removedWhy.rules": "más módon a házirendbe ütköző"
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { KIND_KEYS } from "@/components/community/NotificationsInbox";
+import { NoticeAppeal, NoticeLine } from "@/components/community/NotificationsInbox";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { INDEX_LIST_LOOK } from "@/components/mobile/IndexRows";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
@@ -108,7 +108,7 @@ export function NotificationsSheet({
                 <>
                   <span className="min-w-0 flex-1">
                     <span className={cn("block font-sans text-detail leading-snug", isNew ? "text-paper" : "text-paper/70")}>
-                      <span className="font-semibold">{n.actor_name}</span> {t(KIND_KEYS[n.kind] ?? "community.repliedToYou")}
+                      <NoticeLine n={n} />
                     </span>
                     <span className="mt-0.5 block truncate font-sans text-caption text-paper/45">
                       {relativeTime(n.created_at, locale)}
@@ -119,6 +119,11 @@ export function NotificationsSheet({
                         </>
                       ) : null}
                     </span>
+                    {n.kind === "removed" ? (
+                      <span className="mt-0.5 block font-sans text-caption text-paper/60">
+                        <NoticeAppeal n={n} />
+                      </span>
+                    ) : null}
                   </span>
                   {href ? <Forward /> : null}
                 </>

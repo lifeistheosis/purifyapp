@@ -5441,5 +5441,19 @@
   "mod.pictureRemoveBody": "The picture is deleted for every reader. The record stays in the log.",
   "mod.action.approve_picture": "cleared a picture on a prayer campaign",
   "mod.action.remove_picture": "removed a picture from a prayer campaign",
-  "mod.action.picture_flagged": "flagged a picture before it was stored"
+  "mod.action.picture_flagged": "flagged a picture before it was stored",
+  "community.removedYour.post": "We removed your post: {reason}.",
+  "community.removedYour.reply": "We removed your reply: {reason}.",
+  "community.removedYour.campaign": "We removed your prayer campaign: {reason}.",
+  "community.removedYour.picture": "We removed your picture: {reason}.",
+  "community.removedYour.comment": "We removed your comment: {reason}.",
+  "community.removedYour.sharedPage": "We removed your shared journal page: {reason}.",
+  "community.removedAppeal": "If you think we got it wrong, write to {email}.",
+  "community.removedWhy.unkind": "unkind or hateful toward a person or a group",
+  "community.removedWhy.consent": "it names or shows someone without their agreement",
+  "community.removedWhy.private": "private details about another person",
+  "community.removedWhy.notTheirs": "a picture or words that were not yours to share",
+  "community.removedWhy.spam": "advertising or spam",
+  "community.removedWhy.unlawful": "unlawful",
+  "community.removedWhy.rules": "against the house rules in another way"
 }

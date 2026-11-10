@@ -5430,5 +5430,19 @@
   "mod.pictureRemoveBody": "L’immagine viene eliminata per tutti i lettori. Ne resta traccia nel registro.",
   "mod.action.approve_picture": "ha approvato un’immagine in una campagna di preghiera",
   "mod.action.remove_picture": "ha rimosso un’immagine da una campagna di preghiera",
-  "mod.action.picture_flagged": "ha segnalato un’immagine prima che venisse salvata"
+  "mod.action.picture_flagged": "ha segnalato un’immagine prima che venisse salvata",
+  "community.removedYour.post": "Abbiamo rimosso il tuo post: {reason}.",
+  "community.removedYour.reply": "Abbiamo rimosso la tua risposta: {reason}.",
+  "community.removedYour.campaign": "Abbiamo rimosso la tua campagna di preghiera: {reason}.",
+  "community.removedYour.picture": "Abbiamo rimosso la tua immagine: {reason}.",
+  "community.removedYour.comment": "Abbiamo rimosso il tuo commento: {reason}.",
+  "community.removedYour.sharedPage": "Abbiamo rimosso la tua pagina di diario condivisa: {reason}.",
+  "community.removedAppeal": "Se pensi che abbiamo sbagliato, scrivi a {email}.",
+  "community.removedWhy.unkind": "è scortese o esprime odio verso una persona o un gruppo",
+  "community.removedWhy.consent": "menziona o mostra qualcuno senza il suo consenso",
+  "community.removedWhy.private": "dettagli privati di un’altra persona",
+  "community.removedWhy.notTheirs": "un’immagine o parole che non spettava a te condividere",
+  "community.removedWhy.spam": "pubblicità o spam",
+  "community.removedWhy.unlawful": "viola la legge",
+  "community.removedWhy.rules": "viola in altro modo le regole della casa"
 }

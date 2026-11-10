@@ -5585,5 +5585,19 @@
   "mod.pictureRemoveBody": "Zdjęcie zostanie usunięte dla wszystkich czytelników. Ślad zostanie w dzienniku.",
   "mod.action.approve_picture": "zatwierdza zdjęcie w intencji modlitewnej",
   "mod.action.remove_picture": "usuwa zdjęcie z intencji modlitewnej",
-  "mod.action.picture_flagged": "wychwytuje zdjęcie przed zapisaniem"
+  "mod.action.picture_flagged": "wychwytuje zdjęcie przed zapisaniem",
+  "community.removedYour.post": "Usunęliśmy twój wpis: {reason}.",
+  "community.removedYour.reply": "Usunęliśmy twoją odpowiedź: {reason}.",
+  "community.removedYour.campaign": "Usunęliśmy twoją intencję modlitewną: {reason}.",
+  "community.removedYour.picture": "Usunęliśmy twoje zdjęcie: {reason}.",
+  "community.removedYour.comment": "Usunęliśmy twój komentarz: {reason}.",
+  "community.removedYour.sharedPage": "Usunęliśmy twoją udostępnioną stronę dziennika: {reason}.",
+  "community.removedAppeal": "Jeśli uważasz, że się pomyliliśmy, napisz na adres {email}.",
+  "community.removedWhy.unkind": "nieżyczliwość lub nienawiść wobec osoby lub grupy",
+  "community.removedWhy.consent": "wymienia lub pokazuje kogoś bez zgody tej osoby",
+  "community.removedWhy.private": "prywatne dane innej osoby",
+  "community.removedWhy.notTheirs": "zdjęcie lub słowa, których nie wolno ci było udostępniać",
+  "community.removedWhy.spam": "reklama lub spam",
+  "community.removedWhy.unlawful": "naruszenie prawa",
+  "community.removedWhy.rules": "inne naruszenie zasad społeczności"
 }

@@ -11,6 +11,7 @@ import {
   type SharedPageIn,
   type SharedState,
 } from "@/lib/admin/sharedPages";
+import { REMOVAL_REASONS, writeRemovalNotice } from "@/lib/community/removal";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -87,6 +88,8 @@ const Body = z.object({
   id: z.string().uuid(),
   action: z.enum(["hide", "unhide", "keep", "review", "unreview"]),
   reason: z.string().max(300).nullable().optional(),
+  // Why, when a page is hidden: its writer is told (lib/community/removal.ts).
+  reason_code: z.enum(REMOVAL_REASONS).nullable().optional(),
 });
 
 /** What each action writes. */
@@ -112,12 +115,12 @@ export async function POST(req: NextRequest) {
   }
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Invalid body" }, { status: 400 });
-  const { id, action, reason } = parsed.data;
+  const { id, action, reason, reason_code } = parsed.data;
 
   // What it was before, read first: the log keeps it, so any of these can be
   // undone by hand (lib/admin/activityLog.ts asks it of every overwrite).
   const db = createAdminClient();
-  const before = await db.from("shared_pages").select("hidden_at, reviewed_at").eq("id", id).maybeSingle();
+  const before = await db.from("shared_pages").select("hidden_at, reviewed_at, owner_id, title").eq("id", id).maybeSingle();
   if (isTableAbsent(before.error)) {
     return NextResponse.json(
       { error: "Shared pages are not there yet: their table comes with the 1.9 merge (supabase/migrations/20261109180246_shared_pages.sql)." },
@@ -131,6 +134,12 @@ export async function POST(req: NextRequest) {
 
   const { error } = await db.from("shared_pages").update(change(action, new Date().toISOString())).eq("id", id);
   if (error) return NextResponse.json({ error: "Not changed", detail: error.message }, { status: 500 });
+
+  // A page hidden by a moderator: its writer is told why (the Terms, "What we
+  // may remove"). Not when it was hidden already.
+  if (action === "hide" && !prior.hidden_at && before.data.owner_id) {
+    await writeRemovalNotice(db, { userId: before.data.owner_id, target: "shared_page", reason: reason_code, excerpt: before.data.title });
+  }
 
   void logActivity({
     actorEmail: admin.email ?? null,

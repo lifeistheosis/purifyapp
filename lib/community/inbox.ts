@@ -26,7 +26,7 @@ import { apiFetch } from "@/lib/api/client";
 export type CommunityNotification = {
   id: string;
   /** A reply was the only kind until 20261002000000_community_social.sql. */
-  kind: "reply" | "mention" | "follow" | "name_day" | "prayed" | "gift" | "question" | "answer" | "approved";
+  kind: "reply" | "mention" | "follow" | "name_day" | "prayed" | "gift" | "question" | "answer" | "approved" | "removed";
   post_id: string | null;
   reply_id: string | null;
   actor_name: string;
@@ -35,6 +35,9 @@ export type CommunityNotification = {
   excerpt: string | null;
   read_at: string | null;
   created_at: string;
+  /** A "removed" notice: what was removed, and why (lib/community/removal.ts; docs/1.9-build/sql/removal-notices.sql). */
+  target_kind?: string | null;
+  reason?: string | null;
 };
 
 export type Inbox = {

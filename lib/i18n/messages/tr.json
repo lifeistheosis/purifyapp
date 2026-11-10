@@ -5424,5 +5424,19 @@
   "mod.pictureRemoveBody": "Görsel tüm okurlar için silinir. Kaydı saklanır.",
   "mod.action.approve_picture": "bir dua kampanyasındaki bir görseli onayladı",
   "mod.action.remove_picture": "bir dua kampanyasından bir görseli kaldırdı",
-  "mod.action.picture_flagged": "bir görseli saklanmadan önce işaretledi"
+  "mod.action.picture_flagged": "bir görseli saklanmadan önce işaretledi",
+  "community.removedYour.post": "Gönderinizi kaldırdık: {reason}.",
+  "community.removedYour.reply": "Yanıtınızı kaldırdık: {reason}.",
+  "community.removedYour.campaign": "Dua kampanyanızı kaldırdık: {reason}.",
+  "community.removedYour.picture": "Görselinizi kaldırdık: {reason}.",
+  "community.removedYour.comment": "Yorumunuzu kaldırdık: {reason}.",
+  "community.removedYour.sharedPage": "Paylaştığınız günlük sayfasını kaldırdık: {reason}.",
+  "community.removedAppeal": "Yanıldığımızı düşünüyorsanız {email} adresine yazın.",
+  "community.removedWhy.unkind": "bir kişiye ya da bir gruba karşı kaba ya da nefret dolu",
+  "community.removedWhy.consent": "birini onayı olmadan anıyor ya da gösteriyor",
+  "community.removedWhy.private": "başka bir kişinin özel bilgileri",
+  "community.removedWhy.notTheirs": "paylaşma hakkınız olmayan bir görsel ya da sözler",
+  "community.removedWhy.spam": "reklam ya da spam",
+  "community.removedWhy.unlawful": "hukuka aykırı",
+  "community.removedWhy.rules": "başka bir şekilde topluluk kurallarına aykırı"
 }

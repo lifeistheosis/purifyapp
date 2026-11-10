@@ -38,6 +38,8 @@ import {
   type CommunityNotification,
 } from "@/lib/community/inbox";
 import { notificationTarget } from "@/lib/community/notificationTarget";
+import { REMOVED_APPEAL_KEY, REMOVED_WHY_KEY, REMOVED_YOUR_KEY, isRemovalReason, isRemovalTarget } from "@/lib/community/removal";
+import { SUPPORT_EMAIL } from "@/lib/legal/entity";
 import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
 export type { CommunityNotification };
@@ -143,11 +145,46 @@ export const KIND_KEYS: Record<string, string> = {
   approved: "community.approvedYours",
 };
 
+/**
+ * What a row says first, in the inbox and in the bell's sheet alike. A
+ * removal notice (lib/community/removal.ts) has no actor: it says what was
+ * removed and why, as the Terms promise ("When we remove something you
+ * posted, we tell you why").
+ */
+export function NoticeLine({ n }: { n: Pick<CommunityNotification, "kind" | "actor_name" | "target_kind" | "reason"> }) {
+  const { t } = useTranslate();
+  if (n.kind === "removed") {
+    const target = isRemovalTarget(n.target_kind) ? n.target_kind : "post";
+    const reason = isRemovalReason(n.reason) ? n.reason : "rules";
+    return <>{t(REMOVED_YOUR_KEY[target], { reason: t(REMOVED_WHY_KEY[reason]) })}</>;
+  }
+  return (
+    <>
+      <span className="font-semibold">{n.actor_name}</span> {t(KIND_KEYS[n.kind] ?? "community.repliedToYou")}
+    </>
+  );
+}
+
+/** Under a removal notice: where to write if they think we got it wrong. */
+export function NoticeAppeal({ n }: { n: Pick<CommunityNotification, "kind"> }) {
+  const { t } = useTranslate();
+  if (n.kind !== "removed") return null;
+  return <>{t(REMOVED_APPEAL_KEY, { email: SUPPORT_EMAIL })}</>;
+}
+
 /** One line glyph per kind, so the list can be read down its left edge. */
 function KindGlyph({ kind }: { kind: string }) {
   if (kind === "prayed") return <Hands size={18} />;
   if (kind === "name_day") return <Sparkle size={17} />;
   if (kind === "approved") return <Check size={17} />;
+  if (kind === "removed") {
+    return (
+      <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" aria-hidden focusable={false}>
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="M8.5 12h7" />
+      </svg>
+    );
+  }
   const stroke = {
     width: 18,
     height: 18,
@@ -291,12 +328,16 @@ export function NotificationsInbox({
             </span>
             <span className="min-w-0 flex-1">
               <span className={cn("block font-sans text-detail", isNew ? "text-paper" : "text-paper/85")}>
-                <span className="font-semibold">{n.actor_name}</span>{" "}
-                {t(KIND_KEYS[n.kind] ?? "community.repliedToYou")}
+                <NoticeLine n={n} />
               </span>
               {n.excerpt ? (
                 <span className="mt-0.5 block truncate font-serif text-caption italic text-paper/60">
                   {n.excerpt}
+                </span>
+              ) : null}
+              {n.kind === "removed" ? (
+                <span className="mt-0.5 block font-sans text-caption text-paper/60">
+                  <NoticeAppeal n={n} />
                 </span>
               ) : null}
             </span>

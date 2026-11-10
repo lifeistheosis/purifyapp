@@ -37,6 +37,8 @@ type Row = Pick<CommunityNotification, "kind" | "post_id" | "reply_id" | "actor_
 const PERSON_KINDS: ReadonlySet<string> = new Set(["follow", "name_day", "gift"]);
 
 export function notificationTarget(n: Row): NotificationTarget {
+  // A removal notice is about something that is gone: nothing to open.
+  if (n.kind === "removed") return { kind: "none" };
   const handle = typeof n.actor_handle === "string" && n.actor_handle ? n.actor_handle : null;
   const post = typeof n.post_id === "string" && n.post_id ? n.post_id : null;
   const reply = typeof n.reply_id === "string" && n.reply_id ? n.reply_id : null;

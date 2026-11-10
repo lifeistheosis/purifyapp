@@ -5723,5 +5723,19 @@
   "mod.pictureRemoveBody": "ستُحذف الصورة لدى كل القرّاء، ويبقى أثرها في السجل.",
   "mod.action.approve_picture": "وافق على صورة في حملة صلاة",
   "mod.action.remove_picture": "أزال صورة من حملة صلاة",
-  "mod.action.picture_flagged": "وضع علامة على صورة قبل حفظها"
+  "mod.action.picture_flagged": "وضع علامة على صورة قبل حفظها",
+  "community.removedYour.post": "أزلنا منشورك: {reason}.",
+  "community.removedYour.reply": "أزلنا ردّك: {reason}.",
+  "community.removedYour.campaign": "أزلنا حملة الصلاة الخاصة بك: {reason}.",
+  "community.removedYour.picture": "أزلنا صورتك: {reason}.",
+  "community.removedYour.comment": "أزلنا تعليقك: {reason}.",
+  "community.removedYour.sharedPage": "أزلنا صفحة دفتر تأملاتك التي شاركتها: {reason}.",
+  "community.removedAppeal": "إن كنت ترى أننا أخطأنا، فاكتب إلى {email}.",
+  "community.removedWhy.unkind": "قسوة أو كراهية تجاه شخص أو جماعة",
+  "community.removedWhy.consent": "ذكر شخص أو إظهاره دون موافقته",
+  "community.removedWhy.private": "تفاصيل خاصة عن شخص آخر",
+  "community.removedWhy.notTheirs": "صورة أو كلمات لم يكن لك حق مشاركتها",
+  "community.removedWhy.spam": "إعلانات أو محتوى مزعج",
+  "community.removedWhy.unlawful": "مخالفة القانون",
+  "community.removedWhy.rules": "مخالفة أخرى لقواعد المجتمع"
 }

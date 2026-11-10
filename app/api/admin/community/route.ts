@@ -24,6 +24,7 @@ import {
 import { SHARED_PAGE_COLUMNS, sharedKey, waitsForDecision, type SharedPageIn } from "@/lib/admin/sharedPages";
 import { MAX_PINNED } from "@/lib/community/pinning";
 import { logMod, moderatorFor, readOpenReports, runModAction, type ModAction } from "@/lib/community/moderation";
+import { REMOVAL_REASONS } from "@/lib/community/removal";
 import { forgetUploads, removeOwnedUpload } from "@/lib/security/uploadOwners";
 import { HOUSE_PHOTOS, housePhotoCredit } from "@/lib/trapeza/housePhotos";
 import { KITCHEN_BUCKET, kitchenObjectPath } from "@/lib/trapeza/photos";
@@ -432,6 +433,8 @@ const actionSchema = z.object({
   ]),
   id: z.string().uuid(),
   reason: z.string().max(300).optional().nullable(),
+  // Why, from the list the poster's notice says (lib/community/removal.ts).
+  reason_code: z.enum(REMOVAL_REASONS).optional().nullable(),
 });
 
 export async function POST(req: Request) {
@@ -448,7 +451,7 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid action." }, { status: 400 });
   }
-  const { action, id, reason } = parsed.data;
+  const { action, id, reason, reason_code } = parsed.data;
   const admin = createAdminClient();
   const now = new Date().toISOString();
 
@@ -468,7 +471,7 @@ export async function POST(req: Request) {
   if (sharedAction) {
     const actor = await moderatorFor(admin, { id: adminUser.id, email: adminUser.email, standing: "admin" });
     if (!actor) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    const res = await runModAction(admin, actor, sharedAction, id, reason);
+    const res = await runModAction(admin, actor, sharedAction, id, reason, reason_code);
     if (!res.ok) {
       console.warn("[admin/community] action failed", res.error);
       return NextResponse.json({ error: res.error }, { status: res.status });

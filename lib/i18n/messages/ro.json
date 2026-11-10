@@ -5514,5 +5514,19 @@
   "mod.pictureRemoveBody": "Imaginea este ștearsă pentru toți cititorii. Înregistrarea rămâne în jurnal.",
   "mod.action.approve_picture": "a aprobat o imagine la o campanie de rugăciune",
   "mod.action.remove_picture": "a eliminat o imagine dintr-o campanie de rugăciune",
-  "mod.action.picture_flagged": "a semnalat o imagine înainte să fie stocată"
+  "mod.action.picture_flagged": "a semnalat o imagine înainte să fie stocată",
+  "community.removedYour.post": "Am eliminat postarea ta: {reason}.",
+  "community.removedYour.reply": "Am eliminat răspunsul tău: {reason}.",
+  "community.removedYour.campaign": "Am eliminat campania ta de rugăciune: {reason}.",
+  "community.removedYour.picture": "Am eliminat imaginea ta: {reason}.",
+  "community.removedYour.comment": "Am eliminat comentariul tău: {reason}.",
+  "community.removedYour.sharedPage": "Am eliminat pagina distribuită din jurnalul tău: {reason}.",
+  "community.removedAppeal": "Dacă crezi că am greșit, scrie-ne la {email}.",
+  "community.removedWhy.unkind": "lipsă de bunătate sau ură față de o persoană sau un grup",
+  "community.removedWhy.consent": "menționează sau arată pe cineva fără acordul său",
+  "community.removedWhy.private": "detalii private despre altă persoană",
+  "community.removedWhy.notTheirs": "o imagine sau cuvinte pe care nu aveai dreptul să le împărtășești",
+  "community.removedWhy.spam": "reclamă sau spam",
+  "community.removedWhy.unlawful": "încalcă legea",
+  "community.removedWhy.rules": "încalcă în alt fel regulile casei"
 }

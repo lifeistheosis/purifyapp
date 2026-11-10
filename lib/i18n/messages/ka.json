@@ -5424,5 +5424,19 @@
   "mod.pictureRemoveBody": "სურათი ყველა მკითხველისთვის წაიშლება. ჩანაწერი ჟურნალში დარჩება.",
   "mod.action.approve_picture": "ლოცვის კამპანიის სურათი დაამტკიცა",
   "mod.action.remove_picture": "ლოცვის კამპანიიდან სურათი წაშალა",
-  "mod.action.picture_flagged": "სურათი შენახვამდე მონიშნა"
+  "mod.action.picture_flagged": "სურათი შენახვამდე მონიშნა",
+  "community.removedYour.post": "წავშალეთ თქვენი პოსტი: {reason}.",
+  "community.removedYour.reply": "წავშალეთ თქვენი პასუხი: {reason}.",
+  "community.removedYour.campaign": "წავშალეთ თქვენი ლოცვის კამპანია: {reason}.",
+  "community.removedYour.picture": "წავშალეთ თქვენი სურათი: {reason}.",
+  "community.removedYour.comment": "წავშალეთ თქვენი კომენტარი: {reason}.",
+  "community.removedYour.sharedPage": "წავშალეთ თქვენი დღიურის გაზიარებული გვერდი: {reason}.",
+  "community.removedAppeal": "თუ ფიქრობთ, რომ შევცდით, მოგვწერეთ: {email}.",
+  "community.removedWhy.unkind": "უხეშობა ან სიძულვილი ადამიანის ან ჯგუფის მიმართ",
+  "community.removedWhy.consent": "ასახელებს ან აჩვენებს ვინმეს მისი თანხმობის გარეშე",
+  "community.removedWhy.private": "სხვა ადამიანის პირადი მონაცემები",
+  "community.removedWhy.notTheirs": "სურათი ან სიტყვები, რომლებიც თქვენი არ იყო გასაზიარებლად",
+  "community.removedWhy.spam": "რეკლამა ან სპამი",
+  "community.removedWhy.unlawful": "კანონის დარღვევა",
+  "community.removedWhy.rules": "საზოგადოების წესების სხვაგვარი დარღვევა"
 }

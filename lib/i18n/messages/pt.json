@@ -5430,5 +5430,19 @@
   "mod.pictureRemoveBody": "A imagem é apagada para todos os leitores. Fica anotado no histórico.",
   "mod.action.approve_picture": "aprovou uma imagem em uma campanha de oração",
   "mod.action.remove_picture": "removeu uma imagem de uma campanha de oração",
-  "mod.action.picture_flagged": "sinalizou uma imagem antes que fosse guardada"
+  "mod.action.picture_flagged": "sinalizou uma imagem antes que fosse guardada",
+  "community.removedYour.post": "Removemos sua publicação: {reason}.",
+  "community.removedYour.reply": "Removemos sua resposta: {reason}.",
+  "community.removedYour.campaign": "Removemos sua campanha de oração: {reason}.",
+  "community.removedYour.picture": "Removemos sua imagem: {reason}.",
+  "community.removedYour.comment": "Removemos seu comentário: {reason}.",
+  "community.removedYour.sharedPage": "Removemos a página do seu diário que você compartilhou: {reason}.",
+  "community.removedAppeal": "Se você acha que erramos, escreva para {email}.",
+  "community.removedWhy.unkind": "indelicadeza ou ódio em relação a uma pessoa ou a um grupo",
+  "community.removedWhy.consent": "menciona ou mostra alguém sem o consentimento dessa pessoa",
+  "community.removedWhy.private": "dados privados de outra pessoa",
+  "community.removedWhy.notTheirs": "uma imagem ou palavras que não cabia a você compartilhar",
+  "community.removedWhy.spam": "publicidade ou spam",
+  "community.removedWhy.unlawful": "é contra a lei",
+  "community.removedWhy.rules": "vai contra as regras da casa de outra forma"
 }

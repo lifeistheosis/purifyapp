@@ -15,6 +15,7 @@ import {
   secondsLeft,
   tallyReasons,
   waitingKeys,
+  withReason,
   type HoldIn,
   type QueueSources,
   type ReportIn,
@@ -296,5 +297,19 @@ describe("the route reads pictures only while they are on", () => {
   it("counts them on the rail with the queue's own key, and takes their two decisions", () => {
     expect(route).toContain("...waitingPictures.rows.map((p) => pictureKey(p.id)),");
     expect(route).toMatch(/"approve_picture",\s*\n\s*"remove_picture",/);
+  });
+});
+
+describe("a removal that tells its poster asks why first (the Terms, \"What we may remove\")", () => {
+  it("puts the moderator's reason on every call of a removal that tells, and leaves the rest alone", () => {
+    const tells = { id: "remove", label: "Remove", tone: "danger" as const, removal: true, notifies: true, calls: [{ url: "/x", body: { action: "remove_community_post", id: "a" } }, { url: "/x", body: { action: "dismiss", id: "b" } }], done: "Removed." };
+    const quiet = { ...tells, notifies: undefined };
+    expect(withReason(tells, "spam").calls.map((c) => c.body.reason_code)).toEqual(["spam", "spam"]);
+    expect(withReason(quiet, "spam")).toBe(quiet);
+  });
+
+  it("marks the removals of a post, a reply, a held one, a campaign, a picture and a shared page", () => {
+    const src = readFileSync(join(process.cwd(), "lib/admin/communityQueue.ts"), "utf8");
+    expect(src.match(/notifies: true/g)?.length).toBe(6);
   });
 });

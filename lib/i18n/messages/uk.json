@@ -5582,5 +5582,19 @@
   "mod.pictureRemoveBody": "Зображення буде видалено для всіх читачів. У журналі залишиться відповідний запис.",
   "mod.action.approve_picture": "схвалює зображення до молитовної кампанії",
   "mod.action.remove_picture": "видаляє зображення з молитовної кампанії",
-  "mod.action.picture_flagged": "позначає зображення до його збереження"
+  "mod.action.picture_flagged": "позначає зображення до його збереження",
+  "community.removedYour.post": "Ми видалили ваш допис: {reason}.",
+  "community.removedYour.reply": "Ми видалили вашу відповідь: {reason}.",
+  "community.removedYour.campaign": "Ми видалили вашу молитовну кампанію: {reason}.",
+  "community.removedYour.picture": "Ми видалили ваше зображення: {reason}.",
+  "community.removedYour.comment": "Ми видалили ваш коментар: {reason}.",
+  "community.removedYour.sharedPage": "Ми видалили сторінку щоденника, якою ви поділилися: {reason}.",
+  "community.removedAppeal": "Якщо ви вважаєте, що ми помилилися, напишіть на {email}.",
+  "community.removedWhy.unkind": "недоброзичливість або ненависть до людини чи групи",
+  "community.removedWhy.consent": "когось згадано або показано без його згоди",
+  "community.removedWhy.private": "приватні дані іншої людини",
+  "community.removedWhy.notTheirs": "зображення або слова, якими ви не мали права ділитися",
+  "community.removedWhy.spam": "реклама або спам",
+  "community.removedWhy.unlawful": "порушення закону",
+  "community.removedWhy.rules": "інше порушення правил спільноти"
 }

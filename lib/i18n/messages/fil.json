@@ -5424,5 +5424,19 @@
   "mod.pictureRemoveBody": "Mabubura ang larawan para sa bawat mambabasa. Mananatili ang tala nito sa log.",
   "mod.action.approve_picture": "nag-apruba ng isang larawan sa isang kampanya ng panalangin",
   "mod.action.remove_picture": "nag-alis ng isang larawan sa isang kampanya ng panalangin",
-  "mod.action.picture_flagged": "nagmarka ng isang larawan bago ito naimbak"
+  "mod.action.picture_flagged": "nagmarka ng isang larawan bago ito naimbak",
+  "community.removedYour.post": "Inalis namin ang iyong post: {reason}.",
+  "community.removedYour.reply": "Inalis namin ang iyong sagot: {reason}.",
+  "community.removedYour.campaign": "Inalis namin ang iyong kampanya ng panalangin: {reason}.",
+  "community.removedYour.picture": "Inalis namin ang iyong larawan: {reason}.",
+  "community.removedYour.comment": "Inalis namin ang iyong komento: {reason}.",
+  "community.removedYour.sharedPage": "Inalis namin ang ibinahagi mong pahina ng journal: {reason}.",
+  "community.removedAppeal": "Kung sa tingin mo ay nagkamali kami, sumulat sa {email}.",
+  "community.removedWhy.unkind": "malupit o mapoot sa isang tao o sa isang grupo",
+  "community.removedWhy.consent": "binabanggit o ipinapakita nito ang isang tao nang hindi siya pumayag",
+  "community.removedWhy.private": "pribadong detalye ng ibang tao",
+  "community.removedWhy.notTheirs": "isang larawan o mga salitang hindi iyo upang ibahagi",
+  "community.removedWhy.spam": "patalastas o spam",
+  "community.removedWhy.unlawful": "labag sa batas",
+  "community.removedWhy.rules": "labag sa mga alituntunin ng komunidad sa ibang paraan"
 }

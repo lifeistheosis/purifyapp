@@ -5583,5 +5583,19 @@
   "mod.pictureRemoveBody": "Изображение будет удалено для всех читателей. В журнале останется отметка об этом.",
   "mod.action.approve_picture": "одобряет изображение к молитвенной просьбе",
   "mod.action.remove_picture": "удаляет изображение из молитвенной просьбы",
-  "mod.action.picture_flagged": "помечает изображение до его сохранения"
+  "mod.action.picture_flagged": "помечает изображение до его сохранения",
+  "community.removedYour.post": "Мы удалили вашу запись: {reason}.",
+  "community.removedYour.reply": "Мы удалили ваш ответ: {reason}.",
+  "community.removedYour.campaign": "Мы удалили вашу молитвенную просьбу: {reason}.",
+  "community.removedYour.picture": "Мы удалили ваше изображение: {reason}.",
+  "community.removedYour.comment": "Мы удалили ваш комментарий: {reason}.",
+  "community.removedYour.sharedPage": "Мы удалили страницу дневника, которой вы поделились: {reason}.",
+  "community.removedAppeal": "Если вы считаете, что мы ошиблись, напишите на {email}.",
+  "community.removedWhy.unkind": "недоброжелательность или ненависть к человеку или группе людей",
+  "community.removedWhy.consent": "кто-то упомянут или показан без своего согласия",
+  "community.removedWhy.private": "личные данные другого человека",
+  "community.removedWhy.notTheirs": "изображение или слова, которыми вы были не вправе делиться",
+  "community.removedWhy.spam": "реклама или спам",
+  "community.removedWhy.unlawful": "нарушение закона",
+  "community.removedWhy.rules": "другое нарушение правил сообщества"
 }

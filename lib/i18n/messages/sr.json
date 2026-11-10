@@ -5505,5 +5505,19 @@
   "mod.pictureRemoveBody": "Слика се брише за све читаоце. Запис остаје у дневнику.",
   "mod.action.approve_picture": "одобрава слику уз молитвену кампању",
   "mod.action.remove_picture": "уклања слику са молитвене кампање",
-  "mod.action.picture_flagged": "означава слику пре чувања"
+  "mod.action.picture_flagged": "означава слику пре чувања",
+  "community.removedYour.post": "Уклонили смо вашу објаву: {reason}.",
+  "community.removedYour.reply": "Уклонили смо ваш одговор: {reason}.",
+  "community.removedYour.campaign": "Уклонили смо вашу молитвену кампању: {reason}.",
+  "community.removedYour.picture": "Уклонили смо вашу слику: {reason}.",
+  "community.removedYour.comment": "Уклонили смо ваш коментар: {reason}.",
+  "community.removedYour.sharedPage": "Уклонили смо подељену страницу вашег дневника: {reason}.",
+  "community.removedAppeal": "Ако мислите да смо погрешили, пишите нам на {email}.",
+  "community.removedWhy.unkind": "нељубазност или мржња према особи или групи",
+  "community.removedWhy.consent": "неко је поменут или приказан без свог пристанка",
+  "community.removedWhy.private": "приватни подаци друге особе",
+  "community.removedWhy.notTheirs": "слика или речи које нисте имали право да поделите",
+  "community.removedWhy.spam": "реклама или спам",
+  "community.removedWhy.unlawful": "кршење закона",
+  "community.removedWhy.rules": "друго кршење правила заједнице"
 }

@@ -21,6 +21,8 @@ const COLS =
   "id, kind, post_id, reply_id, actor_name, excerpt, read_at, created_at";
 // actor_handle arrives with 20261002000000_community_social.sql.
 const COLS_WITH_HANDLE = `${COLS}, actor_handle`;
+// A removal notice's two fields arrive with docs/1.9-build/sql/removal-notices.sql.
+const COLS_WITH_REMOVAL = `${COLS_WITH_HANDLE}, target_kind, reason`;
 
 async function handleGET(req: Request) {
   if (!communityEnabled()) {
@@ -45,7 +47,8 @@ async function handleGET(req: Request) {
 
   const list = (cols: string) =>
     supabase.from("community_notifications").select(cols).order("created_at", { ascending: false }).limit(50);
-  let { data, error } = await list(COLS_WITH_HANDLE);
+  let { data, error } = await list(COLS_WITH_REMOVAL);
+  if (error && isColumnAbsent(error)) ({ data, error } = await list(COLS_WITH_HANDLE));
   if (error && isColumnAbsent(error)) ({ data, error } = await list(COLS));
 
   // Absent table (migration not yet applied) reads as an empty inbox rather

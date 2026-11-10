@@ -5424,5 +5424,19 @@
   "mod.pictureRemoveBody": "Η εικόνα διαγράφεται για όλους τους αναγνώστες. Η εγγραφή μένει στο αρχείο.",
   "mod.action.approve_picture": "ενέκρινε μια εικόνα σε αίτημα προσευχής",
   "mod.action.remove_picture": "αφαίρεσε μια εικόνα από αίτημα προσευχής",
-  "mod.action.picture_flagged": "επισήμανε μια εικόνα πριν αποθηκευτεί"
+  "mod.action.picture_flagged": "επισήμανε μια εικόνα πριν αποθηκευτεί",
+  "community.removedYour.post": "Αφαιρέσαμε την ανάρτησή σας: {reason}.",
+  "community.removedYour.reply": "Αφαιρέσαμε την απάντησή σας: {reason}.",
+  "community.removedYour.campaign": "Αφαιρέσαμε το αίτημα προσευχής σας: {reason}.",
+  "community.removedYour.picture": "Αφαιρέσαμε την εικόνα σας: {reason}.",
+  "community.removedYour.comment": "Αφαιρέσαμε το σχόλιό σας: {reason}.",
+  "community.removedYour.sharedPage": "Αφαιρέσαμε την κοινοποιημένη σελίδα του ημερολογίου σας: {reason}.",
+  "community.removedAppeal": "Αν πιστεύετε ότι κάναμε λάθος, γράψτε στο {email}.",
+  "community.removedWhy.unkind": "αγένεια ή μίσος προς ένα πρόσωπο ή μια ομάδα",
+  "community.removedWhy.consent": "κάποιος κατονομάζεται ή εμφανίζεται χωρίς τη συγκατάθεσή του",
+  "community.removedWhy.private": "ιδιωτικά στοιχεία άλλου προσώπου",
+  "community.removedWhy.notTheirs": "μια εικόνα ή λόγια που δεν ήταν δικά σας για να τα μοιραστείτε",
+  "community.removedWhy.spam": "διαφήμιση ή ανεπιθύμητο περιεχόμενο",
+  "community.removedWhy.unlawful": "παράβαση του νόμου",
+  "community.removedWhy.rules": "άλλη παράβαση των κανόνων της κοινότητας"
 }

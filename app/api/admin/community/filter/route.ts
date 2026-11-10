@@ -4,6 +4,7 @@ import { z } from "zod";
 import { getAdminUser } from "@/lib/admin/access";
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { logMod, moderatorFor, readModLog, readPendingHolds, runModAction } from "@/lib/community/moderation";
+import { REMOVAL_REASONS } from "@/lib/community/removal";
 import { forgetFilter, getFilter } from "@/lib/moderation/server";
 import { handleBlocked } from "@/lib/moderation/filter";
 import { resetToPlainHandle } from "@/lib/profile/server";
@@ -81,7 +82,12 @@ export async function GET() {
 }
 
 const actionSchema = z.discriminatedUnion("action", [
-  z.object({ action: z.enum(["approve_hold", "keep_hold", "remove_hold"]), id: z.string().uuid() }),
+  z.object({
+    action: z.enum(["approve_hold", "keep_hold", "remove_hold"]),
+    id: z.string().uuid(),
+    // Why, when the hold's post or reply is removed (lib/community/removal.ts).
+    reason_code: z.enum(REMOVAL_REASONS).optional().nullable(),
+  }),
   z.object({
     action: z.literal("add_term"),
     term: z.string().trim().min(2).max(60),
@@ -166,7 +172,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  const res = await runModAction(admin, actor, a.action, a.id);
+  const res = await runModAction(admin, actor, a.action, a.id, null, a.reason_code);
   if (!res.ok) {
     console.error("[admin/community/filter] hold", res.error);
     return NextResponse.json({ error: res.error }, { status: res.status });

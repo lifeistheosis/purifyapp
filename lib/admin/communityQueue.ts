@@ -24,6 +24,7 @@
  */
 
 import { heldWhy, type HeldWhy, type WaitingCampaign, type WaitingPicture } from "@/lib/campaigns/model";
+import type { RemovalReason } from "@/lib/community/removal";
 
 import { openReports, sharedKey, sharedWords, waitsForDecision, type SharedPageIn } from "./sharedPages";
 
@@ -155,7 +156,19 @@ export type QueueAction = {
   calls: QueueCall[];
   /** What the row says once it is written. */
   done: string;
+  /**
+   * The poster is told why (the Terms, "What we may remove";
+   * lib/community/removal.ts): the row asks the moderator for a reason from
+   * the list, and withReason() puts it on every call.
+   */
+  notifies?: boolean;
 };
+
+/** The action with the moderator's reason on each of its calls, for the poster's notice. */
+export function withReason(action: QueueAction, code: RemovalReason): QueueAction {
+  if (!action.notifies) return action;
+  return { ...action, calls: action.calls.map((c) => ({ ...c, body: { ...c.body, reason_code: code } })) };
+}
 
 export type QueueRow = {
   key: string;
@@ -327,7 +340,7 @@ function conversationRow(key: string, part: Parts): QueueRow {
     const words = reason === "words";
     const reportPart = n > 0 ? ` · ${plural(n, "report", "reports")}` : "";
     const actions: QueueAction[] = [
-      { id: "remove", label: "Remove", tone: "danger", removal: true, calls: [{ url: FILTER, body: { action: "remove_hold", id: hold.id } }], done: "Removed." },
+      { id: "remove", label: "Remove", tone: "danger", removal: true, notifies: true, calls: [{ url: FILTER, body: { action: "remove_hold", id: hold.id } }], done: "Removed." },
     ];
     if (words) actions.push({ id: "keep", label: "Keep hidden", tone: "default", removal: false, calls: [{ url: FILTER, body: { action: "keep_hold", id: hold.id } }], done: "Kept masked." });
     actions.push({
@@ -358,7 +371,7 @@ function conversationRow(key: string, part: Parts): QueueRow {
     ? [{ id: "dismiss", label: "Dismiss", tone: "default", removal: false, calls: dismissAll("dismiss_community_report", reportIds), done: "Dismissed. The reports are kept as dismissed." }]
     : [
         { id: "keep-up", label: "Keep it up", tone: "default", removal: false, calls: dismissAll("dismiss_community_report", reportIds), done: "Kept up. The reports are kept as dismissed." },
-        { id: "remove", label: isReply ? "Remove reply" : "Remove post", tone: "danger", removal: true, calls: [removeCall], done: "Removed." },
+        { id: "remove", label: isReply ? "Remove reply" : "Remove post", tone: "danger", removal: true, notifies: true, calls: [removeCall], done: "Removed." },
       ];
   return {
     key,
@@ -501,7 +514,7 @@ export function buildQueue(src: QueueSources): QueueRow[] {
           calls: [{ url: COMMUNITY, body: { action: "approve_campaign", id: c.id } }],
           done: hidden ? "Shown again. Reports no longer hide it." : "Approved. It is on the board.",
         },
-        { id: "remove", label: "Remove campaign", tone: "danger", removal: true, calls: [{ url: COMMUNITY, body: { action: "remove_campaign", id: c.id } }], done: "Removed." },
+        { id: "remove", label: "Remove campaign", tone: "danger", removal: true, notifies: true, calls: [{ url: COMMUNITY, body: { action: "remove_campaign", id: c.id } }], done: "Removed." },
       ],
     });
   }
@@ -523,7 +536,7 @@ export function buildQueue(src: QueueSources): QueueRow[] {
       more: null,
       picture: c?.image_url ?? null,
       actions: [
-        ...(!c || gone ? [] : [{ id: "remove", label: "Remove campaign", tone: "danger" as const, removal: true, calls: [{ url: COMMUNITY, body: { action: "remove_campaign", id: c.id } }], done: "Removed." }]),
+        ...(!c || gone ? [] : [{ id: "remove", label: "Remove campaign", tone: "danger" as const, removal: true, notifies: true, calls: [{ url: COMMUNITY, body: { action: "remove_campaign", id: c.id } }], done: "Removed." }]),
         { id: "dismiss", label: "Dismiss", tone: "default", removal: false, calls: dismissAll("dismiss_campaign_report", reps.map((r) => r.id)), done: "Dismissed. A record is kept in the moderation log." },
       ],
     });
@@ -568,6 +581,7 @@ export function buildQueue(src: QueueSources): QueueRow[] {
           label: "Take it down",
           tone: "danger",
           removal: true,
+          notifies: true,
           calls: [{ url: COMMUNITY, body: { action: "remove_picture", id: pic.id, reason: topReason(said) } }],
           done: "Taken down. Its file is deleted.",
         },
@@ -599,6 +613,7 @@ export function buildQueue(src: QueueSources): QueueRow[] {
           label: "Hide the page",
           tone: "danger",
           removal: true,
+          notifies: true,
           calls: [{ url: SHARED, body: { action: "hide", id: p.id, reason: topReason(reasons) } }],
           done: "Hidden. Its link shows nothing now.",
         },

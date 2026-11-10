@@ -7,9 +7,14 @@
 
 import { useState } from "react";
 
-import type { QueueAction, QueueRow } from "@/lib/admin/communityQueue";
+import { withReason, type QueueAction, type QueueRow } from "@/lib/admin/communityQueue";
+import { DEFAULT_REMOVAL_REASON, REMOVAL_REASONS, REMOVAL_REASON_WORDS, type RemovalReason } from "@/lib/community/removal";
 
 import { StatusDot, ToolbarButton } from "../primitives";
+import { Select } from "../Select";
+
+/** The moderator's list of reasons, as the poster's notice will say them (lib/community/removal.ts). */
+const REASON_OPTIONS = REMOVAL_REASONS.map((r) => ({ value: r, label: REMOVAL_REASON_WORDS[r] }));
 import { LIT, agoWords, ink, ink2, ink3 } from "../tools/look";
 
 export function QueueList({
@@ -70,6 +75,8 @@ function QueueItem({
   onUndo: (key: string) => void;
 }) {
   const [written, setWritten] = useState(false);
+  // Why, for the poster's notice, when a removal on this row tells them.
+  const [why, setWhy] = useState<RemovalReason>(DEFAULT_REMOVAL_REASON);
   const who = row.who ? [row.who.name ?? "A reader", row.who.handle ? `@${row.who.handle}` : null].filter(Boolean).join(" ") : null;
 
   // Held for Undo: quiet and dashed, the countdown and Undo on the row.
@@ -108,6 +115,8 @@ function QueueItem({
 
   const primary = row.actions.filter((a) => a.tone === "primary");
   const rest = row.actions.filter((a) => a.tone !== "primary");
+  const tells = row.actions.some((a) => a.notifies);
+  const act = (a: QueueAction) => onAction(row, withReason(a, why));
 
   return (
     <li
@@ -186,21 +195,35 @@ function QueueItem({
           </div>
         </div>
         {/* The buttons on the row: on a phone the move first and full width,
-            the others beside each other under it, as the sheet draws it. */}
+            the others beside each other under it, as the sheet draws it.
+            A removal that tells its poster asks why first: the poster's
+            notice says it (the Terms, "What we may remove"). */}
         <div className="grid shrink-0 grid-cols-2 gap-2 md:flex md:items-center">
+          {tells ? (
+            <span className="col-span-2 md:w-64">
+              <Select<RemovalReason>
+                value={why}
+                onChange={setWhy}
+                options={REASON_OPTIONS}
+                size="sm"
+                ariaLabel="Why, told to its poster if you remove it"
+                searchable={false}
+              />
+            </span>
+          ) : null}
           {rest.map((a) => (
             <ToolbarButton
               key={a.id}
               variant={a.tone === "danger" ? "danger" : "default"}
               loading={busy === row.key + a.id}
-              onClick={() => onAction(row, a)}
+              onClick={() => act(a)}
             >
               {a.label}
             </ToolbarButton>
           ))}
           {primary.map((a) => (
             <span key={a.id} className="order-first col-span-2 grid md:order-none md:inline-flex">
-              <ToolbarButton variant="primary" loading={busy === row.key + a.id} onClick={() => onAction(row, a)}>
+              <ToolbarButton variant="primary" loading={busy === row.key + a.id} onClick={() => act(a)}>
                 {a.label}
               </ToolbarButton>
             </span>

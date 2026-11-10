@@ -5435,5 +5435,19 @@
   "mod.pictureRemoveBody": "La imagen se elimina para todos los lectores. Queda constancia en el registro.",
   "mod.action.approve_picture": "aprobó una imagen en una campaña de oración",
   "mod.action.remove_picture": "eliminó una imagen de una campaña de oración",
-  "mod.action.picture_flagged": "marcó una imagen antes de que se guardara"
+  "mod.action.picture_flagged": "marcó una imagen antes de que se guardara",
+  "community.removedYour.post": "Eliminamos tu publicación: {reason}.",
+  "community.removedYour.reply": "Eliminamos tu respuesta: {reason}.",
+  "community.removedYour.campaign": "Eliminamos tu campaña de oración: {reason}.",
+  "community.removedYour.picture": "Eliminamos tu imagen: {reason}.",
+  "community.removedYour.comment": "Eliminamos tu comentario: {reason}.",
+  "community.removedYour.sharedPage": "Eliminamos la página de tu diario que compartiste: {reason}.",
+  "community.removedAppeal": "Si crees que nos equivocamos, escribe a {email}.",
+  "community.removedWhy.unkind": "es poco amable o expresa odio hacia una persona o un grupo",
+  "community.removedWhy.consent": "menciona o muestra a alguien sin su consentimiento",
+  "community.removedWhy.private": "datos privados de otra persona",
+  "community.removedWhy.notTheirs": "una imagen o unas palabras que no te correspondía compartir",
+  "community.removedWhy.spam": "publicidad o spam",
+  "community.removedWhy.unlawful": "infringe la ley",
+  "community.removedWhy.rules": "infringe de otro modo las normas de la casa"
 }

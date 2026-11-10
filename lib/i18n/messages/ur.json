@@ -5424,5 +5424,19 @@
   "mod.pictureRemoveBody": "یہ تصویر ہر قاری کے لیے حذف ہو جائے گی۔ اس کا اندراج ریکارڈ میں رہے گا۔",
   "mod.action.approve_picture": "نے ایک دعائیہ مہم کی تصویر منظور کی",
   "mod.action.remove_picture": "نے ایک دعائیہ مہم سے تصویر ہٹائی",
-  "mod.action.picture_flagged": "نے ایک تصویر محفوظ ہونے سے پہلے نشان زد کی"
+  "mod.action.picture_flagged": "نے ایک تصویر محفوظ ہونے سے پہلے نشان زد کی",
+  "community.removedYour.post": "ہم نے آپ کی پوسٹ ہٹا دی: {reason}۔",
+  "community.removedYour.reply": "ہم نے آپ کا جواب ہٹا دیا: {reason}۔",
+  "community.removedYour.campaign": "ہم نے آپ کی دعائیہ مہم ہٹا دی: {reason}۔",
+  "community.removedYour.picture": "ہم نے آپ کی تصویر ہٹا دی: {reason}۔",
+  "community.removedYour.comment": "ہم نے آپ کا تبصرہ ہٹا دیا: {reason}۔",
+  "community.removedYour.sharedPage": "ہم نے آپ کی ڈائری کا شیئر کیا گیا صفحہ ہٹا دیا: {reason}۔",
+  "community.removedAppeal": "اگر آپ کو لگتا ہے کہ ہم سے غلطی ہوئی ہے تو {email} پر لکھیں۔",
+  "community.removedWhy.unkind": "کسی شخص یا گروہ کے خلاف سختی یا نفرت",
+  "community.removedWhy.consent": "کسی کی اجازت کے بغیر اس کا نام لینا یا اسے دکھانا",
+  "community.removedWhy.private": "کسی اور شخص کی نجی تفصیلات",
+  "community.removedWhy.notTheirs": "ایسی تصویر یا الفاظ جنہیں بانٹنے کا حق آپ کو نہیں تھا",
+  "community.removedWhy.spam": "اشتہارات یا اسپام",
+  "community.removedWhy.unlawful": "قانون کی خلاف ورزی",
+  "community.removedWhy.rules": "کسی اور طرح سے کمیونٹی کے اصولوں کی خلاف ورزی"
 }

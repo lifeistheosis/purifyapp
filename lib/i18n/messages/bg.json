@@ -5424,5 +5424,19 @@
   "mod.pictureRemoveBody": "Снимката се изтрива за всички читатели. Записът остава в дневника.",
   "mod.action.approve_picture": "одобри снимка към молитвена кампания",
   "mod.action.remove_picture": "премахна снимка от молитвена кампания",
-  "mod.action.picture_flagged": "отбеляза снимка, преди да бъде съхранена"
+  "mod.action.picture_flagged": "отбеляза снимка, преди да бъде съхранена",
+  "community.removedYour.post": "Премахнахме публикацията ви: {reason}.",
+  "community.removedYour.reply": "Премахнахме отговора ви: {reason}.",
+  "community.removedYour.campaign": "Премахнахме молитвената ви кампания: {reason}.",
+  "community.removedYour.picture": "Премахнахме снимката ви: {reason}.",
+  "community.removedYour.comment": "Премахнахме коментара ви: {reason}.",
+  "community.removedYour.sharedPage": "Премахнахме споделената страница от дневника ви: {reason}.",
+  "community.removedAppeal": "Ако смятате, че сме сгрешили, пишете ни на {email}.",
+  "community.removedWhy.unkind": "недобронамереност или омраза към човек или група",
+  "community.removedWhy.consent": "някой е споменат или показан без своето съгласие",
+  "community.removedWhy.private": "лични подробности за друг човек",
+  "community.removedWhy.notTheirs": "снимка или думи, които не бяха ваши, за да ги споделяте",
+  "community.removedWhy.spam": "реклама или спам",
+  "community.removedWhy.unlawful": "нарушение на закона",
+  "community.removedWhy.rules": "друго нарушение на правилата на общността"
 }

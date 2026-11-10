@@ -9,6 +9,7 @@ import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 
 import { standingOf, type CommunityUser } from "./adminStanding";
 import { insertNotifications, notifyClergyOfQuestion, notifyMentions, notifyOfReply } from "./notify";
+import { writeRemovalNotice, type RemovalReason } from "./removal";
 import { STAFF_BADGES } from "./trustServer";
 
 // Moderation, once, for everyone who moderates: the team's console
@@ -317,8 +318,8 @@ async function closeReports(
 
 const HELD_AT_WRITE = (reason: string) => reason === "spam" || reason === "links" || reason === "new_account";
 
-async function removePost(admin: SupabaseClient, actor: ModActor, id: string, reason?: string | null): Promise<ModResult> {
-  const { data: post } = await admin.from("community_posts").select("id, title, body, author_name").eq("id", id).maybeSingle();
+async function removePost(admin: SupabaseClient, actor: ModActor, id: string, reason?: string | null, code?: RemovalReason | null): Promise<ModResult> {
+  const { data: post } = await admin.from("community_posts").select("id, user_id, title, body, author_name").eq("id", id).maybeSingle();
   if (!post) return { ok: false, status: 404, error: "That post is gone." };
   const { error } = await admin
     .from("community_posts")
@@ -327,15 +328,17 @@ async function removePost(admin: SupabaseClient, actor: ModActor, id: string, re
   if (error) return { ok: false, status: 500, error: error.message };
   await closeReports(admin, actor, { post_id: id }, "actioned");
   await resolveHolds(admin, actor, { post_id: id }, "removed");
-  const p = post as { title: string | null; body: string | null; author_name: string };
+  const p = post as { user_id: string | null; title: string | null; body: string | null; author_name: string };
   await logMod(admin, actor, { action: "remove_post", target: "post", targetId: id, summary: `${p.author_name}: ${excerpt(p.title || p.body)}` });
+  // Its writer is told why (the Terms, "What we may remove"; lib/community/removal.ts).
+  if (p.user_id) await writeRemovalNotice(admin, { userId: p.user_id, target: "post", reason: code, postId: id, excerpt: p.title || p.body });
   return { ok: true };
 }
 
-async function removeReply(admin: SupabaseClient, actor: ModActor, id: string, reason?: string | null): Promise<ModResult> {
-  const { data: reply } = await admin.from("community_post_replies").select("post_id, status, body, author_name").eq("id", id).maybeSingle();
+async function removeReply(admin: SupabaseClient, actor: ModActor, id: string, reason?: string | null, code?: RemovalReason | null): Promise<ModResult> {
+  const { data: reply } = await admin.from("community_post_replies").select("post_id, user_id, status, body, author_name").eq("id", id).maybeSingle();
   if (!reply) return { ok: false, status: 404, error: "That reply is gone." };
-  const r = reply as { post_id: string; status: string; body: string; author_name: string };
+  const r = reply as { post_id: string; user_id: string | null; status: string; body: string; author_name: string };
   const { error } = await admin
     .from("community_post_replies")
     .update({ status: "removed", removed_reason: reason?.trim() || null, removed_by_email: actor.email ?? actor.name })
@@ -346,6 +349,8 @@ async function removeReply(admin: SupabaseClient, actor: ModActor, id: string, r
   await closeReports(admin, actor, { reply_id: id }, "actioned");
   await resolveHolds(admin, actor, { reply_id: id }, "removed");
   await logMod(admin, actor, { action: "remove_reply", target: "reply", targetId: id, summary: `${r.author_name}: ${excerpt(r.body)}` });
+  // Its writer is told why (the Terms, "What we may remove"; lib/community/removal.ts).
+  if (r.user_id) await writeRemovalNotice(admin, { userId: r.user_id, target: "reply", reason: code, postId: r.post_id, replyId: id, excerpt: r.body });
   return { ok: true };
 }
 
@@ -520,7 +525,7 @@ async function closeRequestHolds(admin: SupabaseClient, actor: ModActor, profile
   if (error && !isColumnAbsent(error) && !isTableAbsent(error)) console.warn("[moderation] request holds not closed", error.message);
 }
 
-async function decideHold(admin: SupabaseClient, actor: ModActor, action: "approve_hold" | "keep_hold" | "remove_hold", id: string): Promise<ModResult> {
+async function decideHold(admin: SupabaseClient, actor: ModActor, action: "approve_hold" | "keep_hold" | "remove_hold", id: string, code?: RemovalReason | null): Promise<ModResult> {
   const readHold = (cols: string) => admin.from("community_text_holds").select(cols).eq("id", id).maybeSingle();
   // Newest columns first: a prayer request's (1.7.1), then a reason (20261005).
   let first = await readHold("id, post_id, reply_id, profile_id, reason, original_title, original_body, status");
@@ -536,7 +541,7 @@ async function decideHold(admin: SupabaseClient, actor: ModActor, action: "appro
   const reason = hold.reason ?? "words";
 
   if (action === "remove_hold") {
-    return hold.post_id ? removePost(admin, actor, hold.post_id, "Held for review") : removeReply(admin, actor, hold.reply_id as string, "Held for review");
+    return hold.post_id ? removePost(admin, actor, hold.post_id, "Held for review", code) : removeReply(admin, actor, hold.reply_id as string, "Held for review", code);
   }
 
   if (reason !== "words") {
@@ -626,12 +631,14 @@ export async function runModAction(
   action: ModAction,
   id: string,
   reason?: string | null,
+  /** Why, from the list the reader's notice says (lib/community/removal.ts); "rules" when none was chosen. */
+  code?: RemovalReason | null,
 ): Promise<ModResult> {
   switch (action) {
     case "remove_post":
-      return removePost(admin, actor, id, reason);
+      return removePost(admin, actor, id, reason, code);
     case "remove_reply":
-      return removeReply(admin, actor, id, reason);
+      return removeReply(admin, actor, id, reason, code);
     case "restore_post":
       return restorePost(admin, actor, id);
     case "restore_reply":
@@ -639,7 +646,7 @@ export async function runModAction(
     case "approve_hold":
     case "keep_hold":
     case "remove_hold":
-      return decideHold(admin, actor, action, id);
+      return decideHold(admin, actor, action, id, code);
     case "clear_profile":
     case "reset_handle":
       return profileAction(admin, actor, action, id);

@@ -5421,5 +5421,19 @@
   "mod.pictureRemoveBody": "Gambar ini dihapus bagi semua pembaca. Catatannya tetap ada di riwayat.",
   "mod.action.approve_picture": "menyetujui sebuah gambar pada kampanye doa",
   "mod.action.remove_picture": "menghapus sebuah gambar dari kampanye doa",
-  "mod.action.picture_flagged": "menandai sebuah gambar sebelum disimpan"
+  "mod.action.picture_flagged": "menandai sebuah gambar sebelum disimpan",
+  "community.removedYour.post": "Kami telah menghapus kiriman Anda: {reason}.",
+  "community.removedYour.reply": "Kami telah menghapus balasan Anda: {reason}.",
+  "community.removedYour.campaign": "Kami telah menghapus kampanye doa Anda: {reason}.",
+  "community.removedYour.picture": "Kami telah menghapus gambar Anda: {reason}.",
+  "community.removedYour.comment": "Kami telah menghapus komentar Anda: {reason}.",
+  "community.removedYour.sharedPage": "Kami telah menghapus halaman jurnal yang Anda bagikan: {reason}.",
+  "community.removedAppeal": "Jika menurut Anda kami keliru, silakan menulis ke {email}.",
+  "community.removedWhy.unkind": "tidak ramah atau penuh kebencian terhadap seseorang atau suatu kelompok",
+  "community.removedWhy.consent": "menyebut atau menampilkan seseorang tanpa persetujuannya",
+  "community.removedWhy.private": "rincian pribadi orang lain",
+  "community.removedWhy.notTheirs": "gambar atau kata-kata yang bukan milik Anda untuk dibagikan",
+  "community.removedWhy.spam": "iklan atau spam",
+  "community.removedWhy.unlawful": "melanggar hukum",
+  "community.removedWhy.rules": "melanggar aturan komunitas dengan cara lain"
 }

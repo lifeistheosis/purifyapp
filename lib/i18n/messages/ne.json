@@ -5424,5 +5424,19 @@
   "mod.pictureRemoveBody": "यो तस्बिर सबै पाठकका लागि मेटिन्छ। यसको अभिलेख लगमा रहिरहन्छ।",
   "mod.action.approve_picture": "एउटा प्रार्थना अभियानको तस्बिर स्वीकृत गर्नुभयो",
   "mod.action.remove_picture": "एउटा प्रार्थना अभियानबाट तस्बिर हटाउनुभयो",
-  "mod.action.picture_flagged": "सुरक्षित हुनुअघि एउटा तस्बिरमा चिन्ह लगाउनुभयो"
+  "mod.action.picture_flagged": "सुरक्षित हुनुअघि एउटा तस्बिरमा चिन्ह लगाउनुभयो",
+  "community.removedYour.post": "हामीले तपाईंको पोस्ट हटायौँ: {reason}।",
+  "community.removedYour.reply": "हामीले तपाईंको जवाफ हटायौँ: {reason}।",
+  "community.removedYour.campaign": "हामीले तपाईंको प्रार्थना अभियान हटायौँ: {reason}।",
+  "community.removedYour.picture": "हामीले तपाईंको तस्बिर हटायौँ: {reason}।",
+  "community.removedYour.comment": "हामीले तपाईंको टिप्पणी हटायौँ: {reason}।",
+  "community.removedYour.sharedPage": "हामीले तपाईंको दैनिकीको साझा गरिएको पाना हटायौँ: {reason}।",
+  "community.removedAppeal": "हाम्रो निर्णय गलत छ जस्तो लाग्छ भने, {email} मा लेख्नुहोस्।",
+  "community.removedWhy.unkind": "कुनै व्यक्ति वा समूहप्रति निर्दयी वा घृणापूर्ण",
+  "community.removedWhy.consent": "कसैको सहमति बिना उसको नाम लिनु वा उसलाई देखाउनु",
+  "community.removedWhy.private": "अर्को व्यक्तिको निजी विवरण",
+  "community.removedWhy.notTheirs": "बाँड्ने अधिकार तपाईंसँग नभएको तस्बिर वा शब्द",
+  "community.removedWhy.spam": "विज्ञापन वा स्प्याम",
+  "community.removedWhy.unlawful": "कानुन तोड्ने कुरा",
+  "community.removedWhy.rules": "अर्को तरिकाले समुदायका नियम तोड्ने कुरा"
 }

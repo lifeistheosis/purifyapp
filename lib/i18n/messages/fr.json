@@ -5453,5 +5453,19 @@
   "mod.pictureRemoveBody": "L’image est supprimée pour tous les lecteurs. Une trace reste dans le journal.",
   "mod.action.approve_picture": "a approuvé une image d’une campagne de prière",
   "mod.action.remove_picture": "a retiré une image d’une campagne de prière",
-  "mod.action.picture_flagged": "a signalé une image avant son enregistrement"
+  "mod.action.picture_flagged": "a signalé une image avant son enregistrement",
+  "community.removedYour.post": "Nous avons retiré votre publication : {reason}.",
+  "community.removedYour.reply": "Nous avons retiré votre réponse : {reason}.",
+  "community.removedYour.campaign": "Nous avons retiré votre campagne de prière : {reason}.",
+  "community.removedYour.picture": "Nous avons retiré votre image : {reason}.",
+  "community.removedYour.comment": "Nous avons retiré votre commentaire : {reason}.",
+  "community.removedYour.sharedPage": "Nous avons retiré la page de votre journal que vous aviez partagée : {reason}.",
+  "community.removedAppeal": "Si vous pensez que nous nous sommes trompés, écrivez à {email}.",
+  "community.removedWhy.unkind": "dureté ou haine envers une personne ou un groupe",
+  "community.removedWhy.consent": "quelqu’un y est nommé ou montré sans son accord",
+  "community.removedWhy.private": "des détails privés sur une autre personne",
+  "community.removedWhy.notTheirs": "une image ou des mots qu’il ne vous appartenait pas de partager",
+  "community.removedWhy.spam": "publicité ou spam",
+  "community.removedWhy.unlawful": "contraire à la loi",
+  "community.removedWhy.rules": "contraire aux règles de la maison sur un autre point"
 }
