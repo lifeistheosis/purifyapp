@@ -366,7 +366,7 @@ async function answer(ctx, opts = {}) {
       const c = CAMPAIGNS[one[1]];
       return c ? json({ campaign: { ...c, ...(opts.mine?.includes(c.id) ? { mine: true, keep_after_end: false, listed: true } : {}) } }) : json({ error: "Not found." }, 404);
     }
-    if (p === "/api/community/prayer-wall") return json(WALL);
+    if (p === "/api/community/prayer-wall") return json(opts.wall ?? WALL);
     if (p === "/api/community/moderation") {
       if (url.searchParams.get("summary")) return json({ waiting: 2 });
       // The team's queue carries pictures only while the server has them on.
@@ -385,7 +385,7 @@ async function whole(page, min = 844) {
   await page.setViewportSize({ width: WIDTH, height: Math.max(min, h) });
 }
 
-async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true } = {}) {
+async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, wall, check = true } = {}) {
   if (WALK) return;
   if (ONLY && !ONLY.has(name.slice(0, 2))) return;
   const seed = {
@@ -399,7 +399,7 @@ async function shot(name, label, where, selector, { set = {}, prepare, signedIn 
   page.on("pageerror", (e) => errors.push(e.message));
   try {
     if (WIDTH !== 390) await page.setViewportSize({ width: WIDTH, height: 844 });
-    await answer(ctx, { mine, board, signedIn, parts, pictures });
+    await answer(ctx, { mine, board, signedIn, parts, pictures, wall });
     await go(page, where);
     await settle(page);
     if (prepare) await prepare(page);
@@ -684,6 +684,40 @@ await shot("24-pictures-team", "the team's queue: pictures to look at", "/commun
   parts: { pictures: true },
   prepare: async (page) => {
     await page.waitForSelector("[data-mod-campaign-picture]", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
+// 30 and 31 The photos for a decision of his (2026-11-10, docs/1.9-build/BRAINSTORM.md: "I'd say remove the
+// prayer wall and just keep the prayer campaigns"): Pray together as it stands, with a few requests on the
+// wall, and the same page with the wall's section gone, which is the one thing proposed. Every name and
+// every word is made up. Copied by hand to docs/1.9-build/notes/decisions/wall-1-today.png and
+// wall-2-after.png.
+const WALL_FEW = {
+  intentions: true,
+  requests: [
+    { handle: "thomas", name: "Thomas", avatar: null, since: ago(35), count: 0, prayed: false, mine: false, intention: "For my mother, who is unwell." },
+    { handle: "nina", name: "Nina", avatar: null, since: ago(3 * 60), count: 0, prayed: true, mine: false, intention: null },
+    { handle: "george", name: "George", avatar: null, since: ago(26 * 60), count: 0, prayed: false, mine: false, intention: "For a safe journey home." },
+    { handle: "elena", name: "Elena", avatar: null, since: ago(3 * 1440), count: 0, prayed: false, mine: false, intention: "For my exams this week." },
+  ],
+};
+await shot("30-wall-today", "Pray together today: campaigns, then the prayer wall", "/community#pray", "[role=tabpanel]", {
+  wall: WALL_FEW,
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaigns]", { timeout: 15000 });
+    await page.waitForSelector("[data-wall-row]", { timeout: 15000 });
+    await whole(page);
+  },
+});
+await shot("31-wall-after", "Pray together with the wall gone: campaigns alone", "/community#pray", "[role=tabpanel]", {
+  wall: WALL_FEW,
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaigns]", { timeout: 15000 });
+    await page.waitForSelector("[data-wall-row]", { timeout: 15000 });
+    // The one thing proposed: the wall's own section is not drawn.
+    await page.evaluate(() => document.querySelector("[data-prayer-wall]")?.remove());
+    await page.setViewportSize({ width: WIDTH, height: 844 });
     await whole(page);
   },
 });
