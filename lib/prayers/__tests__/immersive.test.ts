@@ -107,9 +107,11 @@ describe("the line being prayed lit, the rest dim", () => {
     expect(code(NAMES)).toContain("data-step-actions");
   });
 
-  it("steps the other prayers back with motion on only, and never their actions", () => {
-    const dim = ':where([data-motion="full"]) [data-prayer-reader][data-following] [data-step]:not([data-praying]) > :not([data-step-actions])';
-    expect(rule(css, dim)).toContain("opacity: 0.5;");
+  it("steps the other prayers back with motion on only: their lines and names, never a caption or an action", () => {
+    // Each palette's own step, every word still 4.5:1 (1.9, his page's 131;
+    // the arithmetic is prayerLight.test.ts).
+    const around = ':where([data-motion="full"]) [data-prayer-reader][data-following] [data-step]:not([data-praying])';
+    expect(rule(css, `${around} [data-line],\n${around} > h2`)).toContain("opacity: var(--prayer-rest);");
     expect(css).not.toMatch(/:where\(\[data-motion="reduce"\]\)[^{]*\[data-step\][^{]*\{\s*opacity/);
   });
 

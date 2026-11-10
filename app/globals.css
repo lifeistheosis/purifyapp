@@ -10562,15 +10562,43 @@ html[data-reading-mode="parchment"] .prayer-light-breath {
 }
 
 /* The rest dim: once the reader is following, the prayers before and after
-   the one being prayed step back further than its own unlit lines (the lines
-   at 0.4 below, in a prayer at half strength). Its two actions, Mark prayed
-   and the bookmark, keep their strength, so a prayer just finished can still
-   be marked. Only with motion on, as the lit line is. */
+   the one being prayed step back further than its own unlit lines. Only with
+   motion on, as the lit line is.
+   Three steps, each word still 4.5:1 (1.9, his "ok to all" of 2026-11-10 on
+   his page's 131): the lines and the names of the prayers before and after
+   at --prayer-rest, the least that holds 4.5:1 on the palette's page for the
+   faintest of them (the closing line, the ink at 85%), with a margin; the
+   unlit lines of the prayer being prayed at --prayer-unlit, a step nearer
+   the lit line; the lit line whole. Until then the steps were 40% and 40% of
+   50%, which checkMock measured at 3.82:1 down to 1.47:1 (Dark to Light).
+   Captions and notes are left as they are: they are already the faint
+   shares, drawn at the least that reads (Faint text on every palette), so
+   any step back would take them under. lib/prayers/__tests__/prayerLight.test.ts
+   does the arithmetic for every palette. */
+[data-prayer-reader] {
+ --prayer-rest: 0.58;
+ --prayer-unlit: 0.7;
+}
+html[data-reading-mode="parchment"] [data-prayer-reader] {
+ --prayer-rest: 0.8;
+ --prayer-unlit: 0.86;
+}
+html[data-reading-mode="candlelight"] [data-prayer-reader] {
+ --prayer-rest: 0.68;
+ --prayer-unlit: 0.78;
+}
+html[data-reading-mode="monastery"] [data-prayer-reader],
+html[data-reading-mode="councils"] [data-prayer-reader],
+html[data-reading-mode="cappadocian"] [data-prayer-reader] {
+ --prayer-rest: 0.62;
+ --prayer-unlit: 0.74;
+}
 :where([data-motion="full"]) [data-prayer-reader] [data-step] > * {
  transition: opacity 420ms var(--ease-house);
 }
-:where([data-motion="full"]) [data-prayer-reader][data-following] [data-step]:not([data-praying]) > :not([data-step-actions]) {
- opacity: 0.5;
+:where([data-motion="full"]) [data-prayer-reader][data-following] [data-step]:not([data-praying]) [data-line],
+:where([data-motion="full"]) [data-prayer-reader][data-following] [data-step]:not([data-praying]) > h2 {
+ opacity: var(--prayer-rest);
 }
 
 /* The line being prayed is the page's accent: white with a soft white glow
@@ -11036,9 +11064,10 @@ html[data-reading-mode="parchment"] .chant-version-dot {
    carries data-following once its first line has reached the reading place,
    and the line there carries data-lit (components/prayers/service/
    useLitLine.ts). Only with motion on: with it off every line stays at full
-   strength and nothing moves. */
+   strength and nothing moves. The step back is the palette's own, each word
+   still 4.5:1 (see "The rest dim"). */
 :where([data-motion="full"]) [data-prayer-reader][data-following] [data-line] {
- opacity: 0.4;
+ opacity: var(--prayer-unlit);
  transition: opacity 420ms var(--ease-house), text-shadow 420ms var(--ease-house);
 }
 :where([data-motion="full"]) [data-prayer-reader][data-following] [data-line][data-lit] {
