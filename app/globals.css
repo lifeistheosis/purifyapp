@@ -11087,9 +11087,9 @@ html[data-reading-mode="cappadocian"] [data-prayer-reader] {
    steps or Light's and its picture was never asked. Each has been asked now
    (scripts/scene-check.mjs): how far back may the closing line (the ink at
    85%) step and still stand at 4.6:1 anywhere above the place the look's
-   foot begins? The nine dark looks answer between 57 and 61 percent, Incense
-   asking the most, so they step back as far as Monastery, a little less
-   than Dark. Light's own steps hold on the light looks; Blush asks a little
+   foot begins? The dark looks answered between 57 and 61 percent (nine of
+   them when this was asked: Fire was still one), Incense asking the most,
+   so they step back as far as Monastery, a little less than Dark. Light's own steps hold on the light looks; Blush asks a little
    more of its ink.
    A line inside the foot is held to nothing here. The foot is the look's
    picture drawn over the page's last lines, which go quiet into it by the
@@ -11694,15 +11694,15 @@ html[data-reading-mode="parchment"] .chant-version-dot {
 }
 
 /* ── The looks (1.9) ───────────────────────────────────────────────────
-   Eighteen Plus themes in four families (lib/reader/readingModes.ts,
+   Seventeen Plus themes in four families (lib/reader/readingModes.ts,
    THEME_FAMILIES; docs/1.9-build/notes/themes-fable.md, "The third set"),
    by the owner's words of 2026-11-10: "make a lot more designs", "clean and
-   unique".
+   unique". There were eighteen: Fire came out the same day, by his word
+   ("remove fire"), and what it was is kept in docs/1.9-build/kept/fire-look/.
 
    A look is one calm page and one sign. The sign is a still picture at the
    foot of the screen, or the rule at a page's head. No grain, no texture
-   laid over the page, nothing that moves, and no gold (the one flame is
-   Fire's own, in its picture).
+   laid over the page, nothing that moves, and no gold.
 
    A look is worn as data-look on <html>, over Dark or over Light
    (components/theme/AppThemeController.tsx, themeAttributes). A light look
@@ -11718,7 +11718,6 @@ html[data-reading-mode="parchment"] .chant-version-dot {
  --sky-stars: url("/themes/nightsky-stars.svg");
  --sky-horizon: url("/themes/nightsky-horizon.svg");
  --room-dawn: url("/themes/dawn-room.webp");
- --room-fire: url("/themes/fire-room.webp");
  --scene-incense: url("/themes/incense.svg");
  --scene-athos: url("/themes/athos.svg");
  --scene-forest: url("/themes/forest.svg");
@@ -12005,46 +12004,6 @@ html[data-look="dawn"] .lit-surface {
 @layer base {
  :where(html[data-look="dawn"]) ::placeholder {
   color: color-mix(in oklab, var(--color-paper) 62%, transparent);
- }
-}
-
-html[data-look="fire"] {
- --color-night: #040301;
- --color-night-soft: #1a110c;
- --color-night-deep: #000000;
- --color-paper: #fff1e4;
- --color-gold: #fff6ea;
- --color-gold-soft: #dcc3b2;
- --color-gold-pale: #fffaf3;
- --color-festal: #ffd9c2;
- --ink-rubric: 255 150 120;
- --look-quiet: 64%;
- --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 55%),
-  linear-gradient(155deg, #1f140e 0%, #140c08 100%);
- --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0) 55%),
-  linear-gradient(150deg, #281a12 0%, #1a110c 100%);
- --room: var(--room-fire) center bottom / cover no-repeat;
- --foot-solid: 104px;
- --foot-clear: 240px;
-}
-
-html[data-look="fire"] .lit-surface {
- --color-paper: #fff1e4;
- --lit-muted: rgb(255 241 228 / 0.6);
- --lit-line: rgb(255 241 228 / 0.4);
-}
-
-@layer utilities {
- :where(html[data-look="fire"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
-  color: color-mix(in oklab, var(--color-paper) 60%, transparent);
- }
- :where(html[data-look="fire"]) .placeholder\:text-paper\/55::placeholder {
-  color: color-mix(in oklab, var(--color-paper) 60%, transparent);
- }
-}
-@layer base {
- :where(html[data-look="fire"]) ::placeholder {
-  color: color-mix(in oklab, var(--color-paper) 60%, transparent);
  }
 }
 
@@ -12721,14 +12680,6 @@ html[data-look="nightsky"][dir="rtl"] .page-open-rule {
  transform: scaleX(-1);
 }
 
-/* The rule at a chapter's head is an ember: a hairline of the flame's own
-   light with a soft glow round it. A pool, not a ray. */
-html[data-look="fire"] .page-open-rule {
- width: 132px;
- background: linear-gradient(90deg, rgb(255 150 100 / 0), rgb(255 190 150 / 0.9) 50%, rgb(255 150 100 / 0));
- box-shadow: 0 0 16px 1px rgb(255 110 50 / 0.45);
-}
-
 /* The flower's plate at the head of a chapter, in the place of the short rule
    (docs/licensing/SHARE_FLOWERS.md), its white paper taken out. It leaves
    with the heading as the chapter scrolls, so no word lies over it. */
@@ -12952,12 +12903,6 @@ a.set-lab.set-link {
  --mp-accent: #f7f3fc;
  --mp-back: var(--room-dawn) center bottom / cover no-repeat;
 }
-.set-mode-page[data-palette="fire"] {
- --mp-ground: #040301;
- --mp-ink: #fff1e4;
- --mp-accent: #fff6ea;
- --mp-back: var(--room-fire) center bottom / cover no-repeat;
-}
 .set-mode-page[data-palette="incense"] {
  --mp-ground: #17141d;
  --mp-ink: #f1eef7;
@@ -13076,12 +13021,6 @@ a.set-lab.set-link {
  --mp-ink: #1f1b1a;
  --mp-accent: #a31c29;
  --mp-sheen: 0.5;
-}
-.set-mode-page[data-palette="fire"] .set-mode-rule {
- width: 58px;
- background: linear-gradient(90deg, rgb(255 150 100 / 0), rgb(255 190 150 / 0.9) 50%, rgb(255 150 100 / 0));
- box-shadow: 0 0 8px 1px rgb(255 110 50 / 0.45);
- opacity: 1;
 }
 .set-mode-page[data-palette="mosaic"] .set-mode-rule {
  width: 50px;

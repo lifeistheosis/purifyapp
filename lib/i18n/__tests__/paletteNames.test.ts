@@ -75,7 +75,9 @@ const SAME_AS_ENGLISH: Record<string, string> = {
 /** A line that carries a palette's English name for another reason. Keyed `<code>:<key>`, or `*:<key>` for every catalog. */
 const NOT_THE_PALETTE: Record<string, string> = {
   "*:ui.theMorningAndEveningRules": "St. Tikhon's Monastery Press, a publisher's name, kept as it is printed",
-  "hu:player.offline.waitingWifi": "Wi-Fire, Wi-Fi with the Hungarian ending -re",
+  // Not here since 2026-11-10: the Hungarian "Wi-Fire" (Wi-Fi with the ending
+  // -re). It needed a place while Fire was a look's English name, and Fire
+  // came out of the looks that day.
 };
 
 /** Where `name` stands as a word of its own in `line`. */
@@ -84,7 +86,8 @@ const namedIn = (line: string, name: string) => new RegExp(`(?<![\\p{L}\\p{M}])$
 describe("a palette's name", () => {
   it("is in each language's own words, in every catalog", () => {
     expect(OTHERS.length).toBe(20);
-    expect(NAMES.length).toBeGreaterThanOrEqual(29);
+    // Twenty-four palettes and looks, and four families (twenty-nine before Fire came out of the looks).
+    expect(NAMES.length).toBeGreaterThanOrEqual(28);
     const english: string[] = [];
     for (const code of OTHERS) {
       const words = catalog(code);

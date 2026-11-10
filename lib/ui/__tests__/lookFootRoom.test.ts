@@ -62,7 +62,8 @@ describe("the foot's own lengths", () => {
       // The room is the larger of the bars and the foot: with no mini player up it is the foot.
       expect(clear!, id).toBeGreaterThan(tabBar!);
     }
-    expect(looks.filter((id) => id !== "nightsky" && id !== "linen")).toHaveLength(16);
+    // Fifteen looks with a foot, of the seventeen.
+    expect(looks.filter((id) => id !== "nightsky" && id !== "linen")).toHaveLength(15);
   });
 });
 

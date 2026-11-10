@@ -64,7 +64,7 @@ export function ReadingModeChips({
             and Cappadocian stand here as goals, with how far the reader is,
             until they are earned by reading; then they are palettes like the
             rest. One already applied stays, so it can be put down again. */}
-        {/* The looks (1.9) are chosen on their own page, eighteen of them:
+        {/* The looks (1.9) are chosen on their own page, seventeen of them:
             here only the one applied stands with the palettes, so it can be
             put down, and the row under the grid opens the rest. Its swatch is
             the page and ink the app is wearing. */}

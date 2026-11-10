@@ -68,8 +68,8 @@ describe("the strip's colour", () => {
 describe("every palette a reader can wear", () => {
   const palettes = READING_THEMES.map((t) => ({ id: t.id, label: t.label, ...pageOf(t.id) }));
 
-  it("is all 25 of them, each with a page colour written as six plain digits", () => {
-    expect(palettes).toHaveLength(25);
+  it("is all 24 of them, each with a page colour written as six plain digits", () => {
+    expect(palettes).toHaveLength(24);
     for (const p of palettes) expect(p.declared, p.label).toMatch(/^#[0-9a-f]{6}$/i);
   });
 
@@ -89,7 +89,8 @@ describe("every palette a reader can wear", () => {
     expect(strip("candlelight")).toBe("#050505");
     expect(strip("mosaic")).toBe("#0d1c40");
     expect(strip("damask")).toBe("#240b14");
-    expect(new Set(palettes.filter((p) => p.mode !== "parchment").map((p) => statusBarColor(p.mode, p.declared))).size).toBe(15);
+    // Fourteen dark palettes, no two with the same page.
+    expect(new Set(palettes.filter((p) => p.mode !== "parchment").map((p) => statusBarColor(p.mode, p.declared))).size).toBe(14);
   });
 
   it("the bar's marks are drawn light on every palette, and every strip is dark enough for them", () => {

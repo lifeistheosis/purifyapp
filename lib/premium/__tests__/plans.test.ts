@@ -96,7 +96,10 @@ describe("the restructured ladder", () => {
     // changing them waits for his word.
     const plus = READING_THEMES.filter((t) => !isFreeTheme(t.id) && !isCollectionTheme(t.id));
     const looks = plus.filter((t) => isLook(t.id));
-    const WORDS: Record<number, [string, string]> = { 4: ["four", "vier"], 18: ["eighteen", "achtzehn"], 20: ["twenty", "zwanzig"] };
+    // Twenty and eighteen when he approved the lines; nineteen and seventeen
+    // since Fire came out of the looks the same day, by his word ("remove
+    // fire"): the numbers followed the registry, and nothing else in the lines moved.
+    const WORDS: Record<number, [string, string]> = { 4: ["four", "vier"], 17: ["seventeen", "siebzehn"], 19: ["nineteen", "neunzehn"] };
     const word = (n: number, de = false) => WORDS[n]?.[de ? 1 : 0] ?? `no word for ${n}`;
     const capital = (w: string) => w[0].toUpperCase() + w.slice(1);
     const names = plus.map((t) => t.label);

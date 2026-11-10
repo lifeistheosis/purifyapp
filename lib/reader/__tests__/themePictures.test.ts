@@ -97,9 +97,10 @@ describe("the looks' pictures", () => {
     }
   });
 
-  it("the nine painted ones are WebP, and the folder stays under a megabyte", () => {
+  it("the eight painted ones are WebP, and the folder stays under a megabyte", () => {
     const painted = FILES.filter((f) => f.endsWith(".webp"));
-    expect(painted).toHaveLength(9);
+    // Nine until Fire came out of the looks: its room is kept in docs/1.9-build/kept/fire-look/, not here.
+    expect(painted).toHaveLength(8);
     for (const file of painted) {
       const head = fs.readFileSync(path.join(DIR, file)).subarray(0, 12);
       expect(head.subarray(0, 4).toString("latin1"), file).toBe("RIFF");

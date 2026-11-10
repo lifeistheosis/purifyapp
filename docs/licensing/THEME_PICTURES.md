@@ -1,13 +1,13 @@
 # The looks' pictures
 
-The pictures of the eighteen looks (1.9): the scene at the foot of a page, the
+The pictures of the seventeen looks (1.9): the scene at the foot of a page, the
 room behind it, and what stands in the place of the short rule at a chapter's
 head. Policy, matching `SHARE_FLOWERS.md`, `SECTION_MEDIA.md` and
 `icon-provenance.md`: **an image ships only if its source and licence are
 recorded here.**
 
 They live in `public/themes/` and are carried in the apps' bundle, so a look
-is whole with no signal: 24 files, about 840 KB together. The stylesheet
+is whole with no signal: 23 files, about 690 KB together. The stylesheet
 names each one as a custom property (`app/globals.css`, "The looks (1.9)"),
 and a property costs nothing until a look that uses it is worn.
 `lib/reader/__tests__/themePictures.test.ts` holds every file to a row here,
@@ -18,7 +18,8 @@ Every picture is made by one script, so it can be made again:
 
 ```
 node scripts/theme-pictures.mjs            # the fifteen drawings
-node scripts/theme-pictures.mjs --painted  # those, and the nine painted ones (needs out/, from npm run build:android)
+node scripts/theme-pictures.mjs --painted  # those, and the eight painted ones (needs out/, from npm run build:android)
+node scripts/theme-pictures.mjs --kept     # Fire's room, kept and not shipped (see the end of this page)
 ```
 
 ## Shipped: the drawings
@@ -58,8 +59,8 @@ Painted by the app's own quote-picture code, `lib/share/drawVerseCard.ts`
 and `lib/share/verseCard.ts`, on a canvas the shape of a phone (1080 wide),
 then kept as WebP. The script turns those two modules to plain JavaScript and
 runs them in a page of the native export; what it adds is only where on a
-phone each picture stands. The grounds (Dawn's sky, Fire's flames and embers,
-the papers) are gradients and shapes that code draws, with the quote
+phone each picture stands. The grounds (Dawn's sky, the papers) are
+gradients and shapes that code draws, with the quote
 pictures' own fine grain, which keeps a dark gradient from banding. The
 three plants are the public-domain plates already recorded in
 `SHARE_FLOWERS.md`, used here exactly as the quote pictures use them.
@@ -67,7 +68,6 @@ three plants are the public-domain plates already recorded in
 | File | Look | What it is | Source | Licence |
 | --- | --- | --- | --- | --- |
 | `dawn-room.webp` | Dawn | The night above, the sky before sunrise coming up under it | Painted by the app's code, no outside image | Purify's own |
-| `fire-room.webp` | Fire | Flames at the foot of the page, embers rising and going quiet | Painted by the app's code, no outside image | Purify's own |
 | `blush-room.webp` | Blush | Pink paper with a bloom of rose low on the page | Painted by the app's code, no outside image | Purify's own |
 | `rose-room.webp` | Roses | Cream paper, with the two roses growing from the foot's corners | `rose-centifolia.webp` and `rose-regalis.webp` (Redouté, Les Roses, 1824), see `SHARE_FLOWERS.md` | Public domain |
 | `rose-head.webp` | Roses | The two roses, at a chapter's head | The same two plates, their white paper taken out | Public domain |
@@ -91,8 +91,9 @@ transparency), so the plate stands on any light page with no blend.
 Each was opened and looked at on a phone's screen in its look before it was
 kept: no label, number, caption or watermark is on any of them, and no ray
 of light or side stripe is in any of them (`scripts/mock-check.mjs` holds
-those on the screens that wear them). The one warm yellow is in Fire's
-flames, the single place the house allows it: a flame's own colour.
+those on the screens that wear them). No gold or yellow is in any of them:
+the one warm yellow there was stood in Fire's flames, and Fire is no longer
+among them (below).
 
 Two were brought down after they were first kept. `scripts/scene-check.mjs`
 measures each picture on its own against its look's faintest text, and found
@@ -105,3 +106,18 @@ Drawn and not used: Athos with a near headland (it read as a block),
 Mosaic as scattered tiles (they read as pixels), Stone as an arcade (it read
 as gravestones), Galilee's light as short strokes (they read as a menu
 icon). The note above has each.
+
+## Kept, not shipped: Fire
+
+Fire was the eighteenth look. The owner took it out of the app's looks on
+2026-11-10, the day it was made, before the looks were released ("also I
+don't really like the fire theme", then "remove fire"). Nothing made is
+deleted, so its picture is kept where the apps do not carry it:
+`docs/1.9-build/kept/fire-look/fire-room.webp`, with the look's rules and its
+words beside it and a note on what it was.
+
+The picture is flames at the foot of the page, embers rising and going
+quiet: painted by the app's own code as the others above were, from the
+quote pictures' Fire look, which stays in the app. No outside image is in
+it. Purify's own. `node scripts/theme-pictures.mjs --kept` paints it again
+into that folder, and never into `public/themes/`.

@@ -607,7 +607,7 @@ function Body() {
         title={t("settings.reading")}
         hint={t("settings.readingHint")}
       >
-        {/* Its head is the way to every palette, the eighteen looks among
+        {/* Its head is the way to every palette, the seventeen looks among
             them (1.9, ./ReadingModeGallery.tsx), and says which one is on. */}
         <Row icon={<Book size={18} />} label={t("ui.readingMode")} description={modeName} href="/settings/reading-mode/">
           <ReadingModePages />

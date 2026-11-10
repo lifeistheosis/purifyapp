@@ -213,7 +213,7 @@ describe("placeholders, on every look", () => {
   };
 
   it("each look draws a field's hint at one share, with or without a colour of its own, at 4.5:1 or more on every ground a field sits on", () => {
-    expect(LOOKS.length).toBe(18);
+    expect(LOOKS.length).toBe(17);
     const short: string[] = [];
     for (const look of LOOKS) {
       const classed = shareOf(look, "\\.placeholder\\\\:text-paper\\\\\\/55::placeholder");

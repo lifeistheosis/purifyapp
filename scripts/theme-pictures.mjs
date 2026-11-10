@@ -5,14 +5,17 @@
 // here, so it can be made again:
 //
 //   node scripts/theme-pictures.mjs            the drawings, as SVG
-//   node scripts/theme-pictures.mjs --painted  those, and the nine painted by
+//   node scripts/theme-pictures.mjs --painted  those, and the eight painted by
 //                                              the app's own quote-picture code
+//   node scripts/theme-pictures.mjs --kept     the room of a look the app no
+//                                              longer has (Fire), into the
+//                                              folder it is kept in
 //
 // The drawings need nothing but Node. Each is a few kilobytes: 390 wide, the
 // width of a phone, laid at the foot of the screen at the page's width. No
 // photograph, no grain, nothing that moves.
 //
-// The painted ones (Dawn, Fire, Blush and the three plants) need the native
+// The painted ones (Dawn, Blush and the three plants) need the native
 // export in out/ (npm run build:android), because they are painted by
 // lib/share/drawVerseCard.ts and lib/share/verseCard.ts themselves, turned
 // to plain JavaScript and run in a page of the export on a canvas the shape
@@ -20,12 +23,21 @@
 // (docs/licensing/SHARE_FLOWERS.md); what is made from them is recorded in
 // docs/licensing/THEME_PICTURES.md. What this file adds is only where on a
 // phone each picture stands.
+//
+// Fire was the ninth painted one. The owner took the look out of the app on
+// 2026-11-10 ("remove fire") and nothing made is deleted, so its painter is
+// still here and --kept runs it: the picture goes to
+// docs/1.9-build/kept/fire-look/, never to public/themes, which the apps
+// carry (lib/reader/__tests__/themePictures.test.ts holds that folder to the
+// looks the app has).
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "public", "themes");
+/** Where a look the app no longer has keeps its picture, by the look's id. */
+const KEPT = { fire: path.join(ROOT, "docs", "1.9-build", "kept", "fire-look") };
 
 // ── The drawings ────────────────────────────────────────────────────────
 
@@ -378,7 +390,8 @@ function writeDrawings() {
 
 // ── The painted ones ────────────────────────────────────────────────────
 
-async function writePainted() {
+/** The painted pictures of the looks the app has; with `kept`, only those of a look it no longer has. */
+async function writePainted({ kept = false } = {}) {
   const ts = (await import("typescript")).default;
   const { openPhone } = await import("./mock-check.mjs");
   const { go } = await import("./lib/shell-server.mjs");
@@ -398,7 +411,7 @@ async function writePainted() {
   await go(page, "/");
   await page.waitForTimeout(2500);
 
-  const made = await page.evaluate(async () => {
+  const made = await page.evaluate(async (keptOnly) => {
   const draw = await import("/__paint/drawVerseCard.js");
   const verse = await import("/__paint/verseCard.js");
   const W = 1080;
@@ -451,8 +464,8 @@ async function writePainted() {
   const out = {};
   const keep = (id, name, canvas, quality = 0.86) => ((out[id] ??= {})[name] = canvas.toDataURL("image/webp", quality));
 
-  // Fire: the look's own ground, standing in the lower seven tenths of the screen, the dark of its own top above it.
-  {
+  // Fire (kept, not shipped): the look's own ground, standing in the lower seven tenths of the screen, the dark of its own top above it.
+  if (keptOnly) {
     const look = verse.quoteLookOf("fire");
     const Hf = Math.round(H * 0.7);
     const f = mk(W, Hf);
@@ -475,6 +488,7 @@ async function writePainted() {
     room.ctx.drawImage(f.canvas, 0, H - Hf);
     grain(room.ctx, W, H, look.grain);
     keep("fire", "room", room.canvas);
+    return { W, H, lift, out };
   }
 
   // Dawn: the night above, and the look's own sky before sunrise coming up under it.
@@ -590,12 +604,14 @@ async function writePainted() {
   head("olive", [{ plate: "olive", x: 174, y: 66, height: 190, rotate: -1.12 }]);
 
   return { W, H, lift, out };
-});
+}, kept);
 
 
   for (const [id, set] of Object.entries(made.out)) {
+    // A kept look's picture goes to its own folder; nothing of it is written where the apps would carry it.
+    if (kept !== Boolean(KEPT[id])) throw new Error(`${id}: ${kept ? "not a kept look" : "a kept look, painted without --kept"}`);
     for (const [name, value] of Object.entries(set)) {
-      const file = path.join(OUT, `${id}-${name}.webp`);
+      const file = path.join(KEPT[id] ?? OUT, `${id}-${name}.webp`);
       fs.writeFileSync(file, Buffer.from(value.split(",")[1], "base64"));
       console.log(`  ${path.basename(file)} ${(fs.statSync(file).size / 1024).toFixed(0)} KB`);
     }
@@ -609,5 +625,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   if (process.argv.includes("--painted")) {
     console.log("the painted ones:");
     await writePainted();
+  }
+  if (process.argv.includes("--kept")) {
+    console.log("kept, not shipped:");
+    await writePainted({ kept: true });
   }
 }

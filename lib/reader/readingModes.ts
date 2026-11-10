@@ -23,12 +23,13 @@ export type ReadingTheme =
   // shown in the chips only once the collection is complete.
   | "councils"
   | "cappadocian"
-  // The looks (1.9): eighteen Plus themes in four families. A look is worn
+  // The looks (1.9): seventeen Plus themes in four families. A look is worn
   // over Dark or over Light as a second attribute, `data-look`, so every rule
   // the app has for those two palettes still answers (themeAttributes below).
+  // There were eighteen: Fire came out before the looks were released
+  // (RETIRED_THEMES below).
   | "nightsky"
   | "dawn"
-  | "fire"
   | "incense"
   | "athos"
   | "forest"
@@ -144,7 +145,7 @@ export const READING_THEMES: {
   },
   // The looks (1.9, docs/1.9-build/notes/themes-fable.md, "The third set"):
   // Plus, like the two above. Each is one calm page and one sign: a still
-  // picture at the foot of the screen, or the rule at a page's head. Six carry
+  // picture at the foot of the screen, or the rule at a page's head. Five carry
   // the names of the quote picture looks they are painted from
   // (lib/share/verseCard.ts, QUOTE_LOOKS), already in every catalog. Adding
   // one: its entry here, its id in the ReadingTheme union and in
@@ -166,15 +167,6 @@ export const READING_THEMES: {
     blurb: "The last of the night, and the light coming up",
     labelKey: "picture.look.dawn",
     blurbKey: "settings.paletteDawnHint",
-    family: "night",
-    look: "dark",
-  },
-  {
-    id: "fire",
-    label: "Fire",
-    blurb: "Flames at the foot of the page, embers rising in the dark",
-    labelKey: "picture.look.fire",
-    blurbKey: "settings.paletteFireHint",
     family: "night",
     look: "dark",
   },
@@ -367,6 +359,25 @@ export function isFreeTheme(theme: ReadingTheme): boolean {
 
 const THEME_IDS = new Set<string>(READING_THEMES.map((t) => t.id));
 
+/**
+ * A palette the app once offered and no longer does, and what a device that
+ * still stores it wears instead.
+ *
+ * Fire (the owner's word, 2026-11-10: "also I don't really like the fire
+ * theme", then "remove fire") was one of the looks of 1.9 and came out before
+ * they were released, so only a tester's device can hold it. It reads as
+ * Candlelight, the nearest plain dark palette: black, warm, and Plus as Fire
+ * was, so the same reader is entitled to it. Nothing made is deleted: what
+ * Fire was is kept, out of the app's reach, in docs/1.9-build/kept/fire-look/.
+ *
+ * coerceReadingTheme applies this, so every reader of a stored palette gets
+ * it (the controller, the reader's settings, the server's write, which then
+ * refuses the old id as it refuses any unknown one), and the pre-paint script
+ * says the same from its own literal (lib/reader/prepaint.ts).
+ * lib/reader/__tests__/retiredThemes.test.ts holds all of it.
+ */
+export const RETIRED_THEMES: Readonly<Record<string, ReadingTheme>> = { fire: "candlelight" };
+
 /** The palettes that belong to a study collection, by id. */
 export const COLLECTION_THEME_IDS: ReadonlySet<string> = new Set(
   READING_THEMES.filter((t) => t.collection).map((t) => t.id),
@@ -407,9 +418,14 @@ export function themeLabel(theme: string): string {
 }
 
 /** Coerce an untrusted raw value (localStorage, query, anything) to a
- * valid theme; anything unknown falls back to the default palette. */
+ * valid theme; a palette the app no longer offers reads as the one that
+ * stands in for it (RETIRED_THEMES), and anything unknown falls back to the
+ * default palette. */
 export function coerceReadingTheme(
   raw: string | null | undefined,
 ): ReadingTheme {
-  return raw && THEME_IDS.has(raw) ? (raw as ReadingTheme) : "default";
+  if (!raw) return "default";
+  if (THEME_IDS.has(raw)) return raw as ReadingTheme;
+  // An own key only: "constructor" is on every object, and is no palette.
+  return Object.prototype.hasOwnProperty.call(RETIRED_THEMES, raw) ? RETIRED_THEMES[raw] : "default";
 }

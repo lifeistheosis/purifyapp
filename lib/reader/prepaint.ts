@@ -29,8 +29,14 @@ export const PREPAINT_THEME_IDS: readonly string[] = [
 // The looks (1.9), by what each is worn over: `data-look` alone over Dark,
 // and over Light with Light's own mode beside it (themeAttributes in
 // lib/reader/readingModes.ts, which the test holds these two lists to).
-export const PREPAINT_LOOKS_DARK: readonly string[] = ["nightsky", "dawn", "fire", "incense", "athos", "forest", "galilee", "mosaic", "damask"];
+export const PREPAINT_LOOKS_DARK: readonly string[] = ["nightsky", "dawn", "incense", "athos", "forest", "galilee", "mosaic", "damask"];
 export const PREPAINT_LOOKS_LIGHT: readonly string[] = ["desert", "jordan", "patmos", "blush", "rose", "lavender", "olive", "stone", "linen"];
+
+// A palette the app no longer offers, and what stands in for it, mirrored
+// from RETIRED_THEMES in lib/reader/readingModes.ts as a literal: a device
+// that still stores Fire opens in Candlelight from the first paint, not in
+// Dark for a frame. Each stand-in is a palette of PREPAINT_THEME_IDS.
+export const PREPAINT_RETIRED: Readonly<Record<string, string>> = { fire: "candlelight" };
 
 /** The storage key, mirrored from lib/reader/readingModes.ts as a literal. */
 const KEY = "purify.reader.theme";
@@ -41,6 +47,8 @@ const VESPERS_WINDOW = "purify.reader.vespers.window";
 export const THEME_PREPAINT = [
   "(function(){try{",
   `var t=localStorage.getItem('${KEY}');`,
+  // A palette the app no longer offers reads as its stand-in.
+  `var r=${JSON.stringify(PREPAINT_RETIRED)};if(t&&Object.prototype.hasOwnProperty.call(r,t))t=r[t];`,
   // Through the night kept by AppThemeController, while the switch is on:
   // Candlelight, so the app opens after dark already in it.
   `if(localStorage.getItem('${VESPERS}')==='1'){`,

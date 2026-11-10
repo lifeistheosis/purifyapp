@@ -103,7 +103,7 @@ describe("the reading modes' own page", () => {
 
   it("puts a family's looks before the palette it shelters, Night sky first of all", () => {
     const got = sections(shelves({}));
-    expect(got[1].tiles.map((t) => t.palette)).toEqual(["nightsky", "dawn", "fire", "incense", "candlelight"]);
+    expect(got[1].tiles.map((t) => t.palette)).toEqual(["nightsky", "dawn", "incense", "candlelight"]);
     expect(got[4].tiles.map((t) => t.palette)).toEqual(["mosaic", "stone", "damask", "linen", "monastery"]);
   });
 

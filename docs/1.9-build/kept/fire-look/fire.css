@@ -1,0 +1,76 @@
+/* The Fire look, as it stood in app/globals.css on 2026-11-10 (commit 4e263ada),
+   before it was taken out of the app's looks by the owner's word of that day.
+   Kept, not shipped: nothing loads this file. README.md beside it says what
+   Fire was and how it would be brought back.
+
+   Each part below stood in the section "The looks (1.9)", in the place its
+   note names, between the same parts of Dawn and of Incense. */
+
+/* ── In the looks' :root block, the picture's address (the file is beside this one now) ── */
+ --room-fire: url("/themes/fire-room.webp");
+
+/* ── The look: its palette, its lit surface, its faint text and placeholders ── */
+html[data-look="fire"] {
+ --color-night: #040301;
+ --color-night-soft: #1a110c;
+ --color-night-deep: #000000;
+ --color-paper: #fff1e4;
+ --color-gold: #fff6ea;
+ --color-gold-soft: #dcc3b2;
+ --color-gold-pale: #fffaf3;
+ --color-festal: #ffd9c2;
+ --ink-rubric: 255 150 120;
+ --look-quiet: 64%;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #1f140e 0%, #140c08 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #281a12 0%, #1a110c 100%);
+ --room: var(--room-fire) center bottom / cover no-repeat;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="fire"] .lit-surface {
+ --color-paper: #fff1e4;
+ --lit-muted: rgb(255 241 228 / 0.6);
+ --lit-line: rgb(255 241 228 / 0.4);
+}
+
+@layer utilities {
+ :where(html[data-look="fire"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
+  color: color-mix(in oklab, var(--color-paper) 60%, transparent);
+ }
+ :where(html[data-look="fire"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 60%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="fire"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 60%, transparent);
+ }
+}
+
+/* ── The rule at a chapter's head ── */
+/* The rule at a chapter's head is an ember: a hairline of the flame's own
+   light with a soft glow round it. A pool, not a ray. */
+html[data-look="fire"] .page-open-rule {
+ width: 132px;
+ background: linear-gradient(90deg, rgb(255 150 100 / 0), rgb(255 190 150 / 0.9) 50%, rgb(255 150 100 / 0));
+ box-shadow: 0 0 16px 1px rgb(255 110 50 / 0.45);
+}
+
+/* ── The small page in the picker ── */
+.set-mode-page[data-palette="fire"] {
+ --mp-ground: #040301;
+ --mp-ink: #fff1e4;
+ --mp-accent: #fff6ea;
+ --mp-back: var(--room-fire) center bottom / cover no-repeat;
+}
+
+/* ── The small page's rule ── */
+.set-mode-page[data-palette="fire"] .set-mode-rule {
+ width: 58px;
+ background: linear-gradient(90deg, rgb(255 150 100 / 0), rgb(255 190 150 / 0.9) 50%, rgb(255 150 100 / 0));
+ box-shadow: 0 0 8px 1px rgb(255 110 50 / 0.45);
+ opacity: 1;
+}

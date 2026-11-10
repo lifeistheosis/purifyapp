@@ -52,7 +52,7 @@ describe("READING_THEMES", () => {
     // five and are shown only once their collection is complete, so they do
     // not change what a reader meets first.
     //
-    // The looks (1.9) are filtered out too: eighteen Plus themes chosen on a
+    // The looks (1.9) are filtered out too: seventeen Plus themes chosen on a
     // page of their own, held by "the looks" below.
     expect(READING_THEMES.filter((t) => !t.collection && !t.look).map((t) => t.id)).toEqual([
       "default",
@@ -177,18 +177,19 @@ describe("the free palettes", () => {
 });
 
 // The looks (1.9): the owner's words of 2026-11-10, "make a lot more designs"
-// and "I want clean and unique". Eighteen Plus themes in four families, each
+// and "I want clean and unique". Seventeen Plus themes in four families, each
 // worn over Dark or over Light as a second attribute, so the rules written
 // for those two palettes answer every one of them
-// (docs/1.9-build/notes/themes-fable.md, "The third set").
+// (docs/1.9-build/notes/themes-fable.md, "The third set"). Eighteen were
+// made: Fire came out the same day, by his word ("remove fire"), and
+// retiredThemes.test.ts beside this one holds what became of it.
 describe("the looks", () => {
   const looks = READING_THEMES.filter((t) => t.look);
 
-  it("are the eighteen, in the order the picker shelves them, with ids that must not move", () => {
+  it("are the seventeen, in the order the picker shelves them, with ids that must not move", () => {
     expect(looks.map((t) => t.id)).toEqual([
       "nightsky",
       "dawn",
-      "fire",
       "incense",
       "athos",
       "forest",
@@ -216,8 +217,8 @@ describe("the looks", () => {
     for (const id of ["default", "parchment", "black", "candlelight", "monastery", "councils", "cappadocian", "sepia"]) expect(isLook(id), id).toBe(false);
   });
 
-  it("are nine over Dark and nine over Light", () => {
-    expect(looks.filter((t) => t.look === "dark").map((t) => t.id)).toEqual(["nightsky", "dawn", "fire", "incense", "athos", "forest", "galilee", "mosaic", "damask"]);
+  it("are eight over Dark and nine over Light", () => {
+    expect(looks.filter((t) => t.look === "dark").map((t) => t.id)).toEqual(["nightsky", "dawn", "incense", "athos", "forest", "galilee", "mosaic", "damask"]);
     expect(looks.filter((t) => t.look === "light").map((t) => t.id)).toEqual(["desert", "jordan", "patmos", "blush", "rose", "lavender", "olive", "stone", "linen"]);
   });
 
@@ -237,7 +238,7 @@ describe("the looks", () => {
   it("stand in four families, each look in one, with Candlelight and Monastery shelved after the looks", () => {
     expect(THEME_FAMILIES.map((f) => f.id)).toEqual(["night", "land", "garden", "sanctuary"]);
     for (const t of looks) expect(THEME_FAMILIES.some((f) => f.id === t.family), `${t.id} has a family`).toBe(true);
-    expect(themesOfFamily("night").map((t) => t.id)).toEqual(["nightsky", "dawn", "fire", "incense", "candlelight"]);
+    expect(themesOfFamily("night").map((t) => t.id)).toEqual(["nightsky", "dawn", "incense", "candlelight"]);
     expect(themesOfFamily("land").map((t) => t.id)).toEqual(["athos", "forest", "desert", "jordan", "galilee", "patmos"]);
     expect(themesOfFamily("garden").map((t) => t.id)).toEqual(["blush", "rose", "lavender", "olive"]);
     expect(themesOfFamily("sanctuary").map((t) => t.id)).toEqual(["mosaic", "stone", "damask", "linen", "monastery"]);
@@ -245,11 +246,10 @@ describe("the looks", () => {
     for (const t of READING_THEMES) expect(Boolean(t.family), t.id).toBe(!isFreeTheme(t.id) && !t.collection);
   });
 
-  it("name six of them as the quote pictures name the looks they are painted from", () => {
+  it("name five of them as the quote pictures name the looks they are painted from", () => {
     const named = Object.fromEntries(looks.filter((t) => t.labelKey?.startsWith("picture.look.")).map((t) => [t.id, t.labelKey]));
     expect(named).toEqual({
       dawn: "picture.look.dawn",
-      fire: "picture.look.fire",
       blush: "picture.look.blush",
       rose: "picture.look.rose",
       lavender: "picture.look.lavender",

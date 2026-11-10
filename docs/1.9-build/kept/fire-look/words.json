@@ -1,0 +1,27 @@
+{
+  "what": "The Fire look's one line under its name in the picker (settings.paletteFireHint), as it stood in each of the 21 catalogs on 2026-11-10. Its name was the quote pictures' own, picture.look.fire, which stays in the catalogs.",
+  "key": "settings.paletteFireHint",
+  "words": {
+    "ar": "لهب عند أسفل الصفحة وجمر يصعد في الظلام",
+    "bg": "Пламъци в долния край на страницата, искри се издигат в тъмното",
+    "de": "Flammen am Fuß der Seite, Funken steigen im Dunkeln auf",
+    "el": "Φλόγες στο κάτω μέρος της σελίδας, σπίθες που ανεβαίνουν στο σκοτάδι",
+    "en": "Flames at the foot of the page, embers rising in the dark",
+    "es": "Llamas al pie de la página, brasas que suben en la oscuridad",
+    "fil": "Mga apoy sa paanan ng pahina, mga baga na umaangat sa dilim",
+    "fr": "Des flammes au pied de la page, des braises qui montent dans le noir",
+    "hu": "Lángok a lap alján, parázs száll fel a sötétben",
+    "id": "Nyala api di kaki halaman, bara naik dalam gelap",
+    "it": "Fiamme ai piedi della pagina, braci che salgono nel buio",
+    "ka": "ალი გვერდის ძირში, ნაპერწკლები სიბნელეში მაღლა ადის",
+    "ne": "पानाको फेदमा ज्वाला, अँध्यारोमा उठ्दै गरेका झिल्काहरू",
+    "pl": "Płomienie u dołu strony, iskry wznoszą się w ciemności",
+    "pt": "Chamas ao pé da página, brasas subindo no escuro",
+    "ro": "Flăcări la poalele paginii, scântei urcând în întuneric",
+    "ru": "Пламя у нижнего края страницы, искры поднимаются во тьме",
+    "sr": "Пламен у дну странице, жар се диже у тами",
+    "tr": "Sayfanın dibinde alevler, karanlıkta yükselen korlar",
+    "uk": "Полум'я внизу сторінки, іскри здіймаються в темряві",
+    "ur": "صفحے کے نچلے حصے میں شعلے، اندھیرے میں اٹھتی چنگاریاں"
+  }
+}

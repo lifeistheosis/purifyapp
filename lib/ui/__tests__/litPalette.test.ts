@@ -259,9 +259,10 @@ describe("liturgical surface palette on the looks", () => {
     };
   }
 
-  it("are the registry's eighteen, nine on Dark and nine on Light", () => {
-    expect(LOOKS.length).toBe(18);
-    expect(LOOKS.filter((theme) => theme.look === "dark").length).toBe(9);
+  it("are the registry's seventeen, eight on Dark and nine on Light", () => {
+    expect(LOOKS.length).toBe(17);
+    expect(LOOKS.filter((theme) => theme.look === "dark").length).toBe(8);
+    expect(LOOKS.filter((theme) => theme.look === "light").length).toBe(9);
   });
 
   it("a dark look's surfaces wear its own ink, and a light look leaves the ink to its token", () => {
