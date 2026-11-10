@@ -75,7 +75,7 @@ describe("Where are you coming from?", () => {
       catholic: "the Church Fathers and the early councils",
       protestant: "the Scriptures and the early Church",
       "other-faith": "an introduction to Orthodox Christianity",
-      none: "a short tour first",
+      none: "a few small steps into the faith",
     };
     for (const b of BACKGROUND_PILLS) {
       const html = draw(b);

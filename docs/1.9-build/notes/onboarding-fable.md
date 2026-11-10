@@ -1237,10 +1237,18 @@ question 137), since an admin is always signed in and could not otherwise walk
 the signed-out way through on their own phone. It survives "First open" and
 ends with "Back to my own".
 
-**Waiting on his word:** the line under "Just curious", which still says "a
-short tour first" where there is no tour. Proposed English: "We'll start you
-with a few small steps into the faith." Not changed in the build until he OKs
-the words; then the other 20 languages, with every other new string here.
+**The words, in 21 languages (his "sure" of 2026-11-10, about 04:32 UTC):**
+the line under "Just curious" said "a short tour first" where there is no
+tour. It reads "We'll start you with a few small steps into the faith." now,
+in every language from that language's own wording of Start here. The other
+new reader-facing strings (the new pill and its line, the two questions and
+their answers, the clergy line, the week's three, the second-chance card) are
+in all 21 too, each from the words that language already uses for the same
+things. Left in English on purpose: the nine page names on the week's cards,
+which stand as the pages themselves name them, and the three Testers strings,
+which only an admin sees. A reader of each language should still look them
+over before the flag flips; a translation pass is the edit that looks right
+and is not.
 
 **Not behind the flag:** the answer cards and the handoff's lines were set
 `text-left` and would not turn in Arabic; `checkMock` caught it and they are
