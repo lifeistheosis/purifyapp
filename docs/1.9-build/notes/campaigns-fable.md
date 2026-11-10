@@ -3028,3 +3028,102 @@ comes in its turn, after July's rows and the notice of a removal, and this
 section is finished then: the one constant, the Plus place and its row on the
 Plus page gone, the check's adapter and what it lacks (his key), and his
 steps.
+
+## 21. The prayer wall goes: the plan and its size (2026-11-10; a plan, nothing built)
+
+**His word** (`BRAINSTORM.md`, about 17:25 UTC): "I'd say remove the prayer
+wall and just keep the prayer campaigns." The two photos he decides from are
+`docs/1.9-build/notes/decisions/wall-1-today.png` and `wall-2-after.png`
+(stills 30 and 31 of `scripts/mock-campaigns.mjs`).
+
+### 21.1 What the wall is, from the code
+
+- **Not a table of posts.** A request is two fields on the reader's own
+  profile: when they asked (`profiles.prayer_request_at`) and, since 1.7.1,
+  up to 120 characters of their own words (`prayer_request_intention`), which
+  go through the word filter and wait for a moderator when it masks any.
+- **It ends by itself** fourteen days after it was made (`PRAYER_REQUEST_MS`),
+  and its author can take it down sooner. The words stay in the column after
+  it lapses, unseen, until the next request writes over them. That is a small
+  leftover and the job below mends it.
+- **It is shown in two places:** the wall in Community's Pray together
+  (`components/community/PrayerWall.tsx`, `app/api/community/prayer-wall`),
+  and the reader's own profile, as "Asking for your prayers" with I prayed
+  (`ProfileViewer.tsx`), switched from the profile's editor.
+- **"I prayed"** is a row in `profile_prayers` and a notice to the asker
+  (`app/api/community/pray`). The profile still draws how many prayed
+  ("3 prayed"), a public figure beside a prayer, which his rule in
+  `CONTRIBUTING.md` does not allow; the wall dropped its own in 1.8.
+- **"Add to my prayers"** carries the name and the words into the reader's
+  own prayers on their device for seven days (`lib/prayers/wallNames.ts`,
+  synced for a signed-in reader), under "From the prayer wall".
+- **The weekly Community email** says how many asked, and "The prayer wall is
+  in Community" (`lib/email/templates/communityBodies.ts`).
+- **On the main web today** (its own public route, 17:40 UTC, counted and not
+  kept): 12 requests standing, 2 with words, the oldest 13.2 days old.
+
+### 21.2 The one question that is his
+
+His word names the wall. Asking for prayers also stands on each reader's own
+profile. Which goes?
+
+- **A. The wall only.** The list leaves Pray together. A reader can still
+  switch asking on in their profile, and whoever opens that profile can say I
+  prayed. About 5 hours. The profile's "3 prayed" loses its number either
+  way.
+- **B. Asking for prayers altogether (recommended).** The list, the
+  profile's line and switch, I prayed and its notice. One way to ask for
+  prayer in Purify, a campaign: read by a moderator first, with a length and
+  the Terms. A request left on a profile that no list shows is half a
+  feature with a moderators' path of its own, for almost nobody. About 9
+  hours.
+
+### 21.3 The plan, for B (A is lines 1, 7, 8 and 9, and the first sentence of 3)
+
+1. **Pray together draws campaigns alone.** `PrayerWall` and
+   `AskPrayersSheet` leave `PrayTogether`. Nothing new is drawn in their
+   place: `wall-2-after.png` is the page.
+2. **The profile:** the request's line and I prayed leave the profile, and
+   the switch leaves its editor.
+3. **The server, kind to apps that have not updated:** the wall's route
+   keeps answering, with nobody on it, so a 1.8 app shows "No one is asking
+   for prayers right now" and not an error. Asking is refused with a code
+   the old app already has words for. I prayed answers that they are not
+   asking, which the old app already handles. No count was sent since the
+   branch's section 9, item 8; that goes with the route's rows.
+4. **The requests already made** (his to say). Recommended in place of
+   thirty days and a place to read one's own: nothing is migrated, because
+   nothing here was ever kept. From 1.9 no request is shown to anyone.
+   Fourteen days after 1.9 ships, when the last of them would have lapsed
+   anyway, a dated job in the heartbeat clears the two fields from every
+   profile, closes the holds on their words, and deletes the I-prayed rows.
+   The day is a constant written in the release commit, as July's rows' is.
+   It can run twice. A second chat reads it before it ships. If he would
+   rather they went the day 1.9 ships, that is the same job with no wait.
+5. **The moderators' queue (with Admin):** no new hold on a request's words
+   is made. Those waiting stay readable until the job closes them.
+6. **The names readers carry from the wall** stay in their prayers until
+   their own week ends and leave with the line the app already has. So 1.9
+   keeps the prayers' side as it is (the names' list, the rule reader's
+   lines, the sync). `AddToPrayersSheet` is not what readers' campaigns use
+   (they have `CampaignJoinSheet`); its other user is the card for a campaign
+   the app itself runs, which none fills. It and the names' store are taken
+   out in the release after, when nothing can be carried any more.
+7. **Words.** The wall's own lines are retired in all twenty-one languages;
+   the ones campaigns borrow stay ("Add to my prayers", "In my prayers", "In
+   which prayers", "Until {date}"). New lines for his OK: the weekly email's
+   (it names the wall today), and the note's line.
+8. **Tests and walks.** `prayerWallRoute.test.ts` and `prayAndTalk.test.ts`
+   are rewritten to hold what is now true (campaigns alone; an empty wall for
+   old apps; no new request; no request on a profile); new cases for the
+   dated job. Still 01 and the campaigns' page of stills are redrawn; the
+   walk and the three builds run.
+9. **The 1.9 note:** one line, in his voice, for his OK.
+10. **The privacy page and the Terms** name neither the wall nor a request
+    (both read): nothing to take out.
+11. **Later, with SQL he signs:** the two profile columns and `profile_prayers`
+    are dropped, and the prayers' side of the wall's names removed. Not 1.9.
+
+The wall's code stays in the repository's history; its Vault entry names the
+commit that takes it out.
+
