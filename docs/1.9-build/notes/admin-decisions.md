@@ -20,7 +20,7 @@ day. Home's "Came in today" can include Plus bought on Google Play, and a
 member in a free trial stops counting as paying.
 
 **Needs:** one new table. The SQL is drafted:
-`docs/1.9-build/sql/plus-events.sql` (it runs twice safely, keeps no card,
+`supabase/migrations/20261110002920_plus_events.sql` (it runs twice safely, keeps no card,
 email or country, and clears the member's id when an account is deleted). And
 one line on the privacy page: "When you buy or renew a membership, we keep a
 record of it: which store, the price, and the dates. It is not linked to you

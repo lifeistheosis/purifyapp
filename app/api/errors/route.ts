@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
  * Where the apps and the website's pages report something that failed on a
  * reader's screen, or a call that came back failed (admin item A10; the list
  * is in the admin's Services page, the table is
- * docs/1.9-build/sql/app-errors.sql).
+ * supabase/migrations/20261110002922_app_errors.sql).
  *
  * Anonymous by design, as the privacy line Edgar approved says: "the page, the
  * app version and the kind of device, never who you are". The body is checked

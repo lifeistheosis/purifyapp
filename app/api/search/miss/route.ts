@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * A search that found nothing (admin item A11; the table is
- * docs/1.9-build/sql/search-misses.sql, the list is on the admin's Content
+ * supabase/migrations/20261110002923_search_misses.sql, the list is on the admin's Content
  * page).
  *
  * Anonymous under the three limits Edgar approved on 2026-11-09: never who
@@ -63,7 +63,7 @@ async function handlePOST(req: Request) {
       const { error } = await createAdminClient()
         .from("search_misses")
         .insert({ words, locale: parsed.data.locale ?? null, platform: parsed.data.platform });
-      // Until the owner has run the table's SQL: remembered ten minutes.
+      // Until the 1.9 release has made the table: remembered ten minutes.
       if (error && isTableAbsent(error)) absentUntil = Date.now() + 10 * 60_000;
     } catch {
       // Never the reader's problem.

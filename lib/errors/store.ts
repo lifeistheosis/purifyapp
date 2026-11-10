@@ -9,13 +9,13 @@ import { cleanVersion, pathOnly, scrubMessage, type ErrorPlatform, type ErrorSou
 
 /**
  * Keeps one error report in app_errors (admin item A10,
- * docs/1.9-build/sql/app-errors.sql), cut down by lib/errors/scrub.ts first.
+ * supabase/migrations/20261110002922_app_errors.sql), cut down by lib/errors/scrub.ts first.
  *
  * BEST EFFORT, AND NEVER LOUD. Reporting a failure must not become a second
  * failure: nothing here throws, and a report that cannot be kept is dropped.
  * Two guards keep it cheap when it cannot help:
  *
- *   - Until the owner has run the table's SQL, the insert answers "no such
+ *   - Until the 1.9 release has made the table, the insert answers "no such
  *     table". That is remembered for ten minutes, so an outage does not also
  *     knock on a missing table for every failed request.
  *   - At most 120 reports a minute from one server. A fault that fails every

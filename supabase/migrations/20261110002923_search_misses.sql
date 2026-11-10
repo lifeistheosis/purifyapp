@@ -5,12 +5,12 @@
 -- are looking for. Anything that looks like an email address or a phone
 -- number is removed before it is kept.").
 --
--- NOT APPLIED. NOT A MIGRATION YET. This file waits for the owner's sign-off
--- (AGENTS.md: a production schema change is his to approve before it runs).
--- It lives in docs/, not supabase/migrations/, so that no merge to main can
--- run it by itself. On his word it is either run by hand in the SQL editor,
--- or copied into supabase/migrations/<YYYYMMDDHHMMSS>_search_misses.sql (a
--- version later than every file there) so the integration runs it.
+-- SIGNED OFF: his yes to items 57 and 65 of 2026-11-10 ("all recs": all of
+-- 1.9's database changes go live with the release, the arbiter's reading).
+-- A migration from that day, moved here from docs/1.9-build/sql/: the 1.9
+-- merge runs it (the Supabase Preview check), and if that check is red,
+-- his backup is to paste this file by hand (docs/1.9-build/OWNER-STEPS.md,
+-- R3). Never edit it once it has reached main: write a new file.
 --
 -- Written to run twice: every statement is "if not exists" or is preceded by
 -- its own "drop ... if exists".

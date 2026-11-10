@@ -1,7 +1,7 @@
 /**
  * The takedown list as the website serves it: the committed list, less every
  * recording switched off from the admin (admin item A7, Edgar's yes of
- * 2026-11-09; the table is docs/1.9-build/sql/chant-pulls.sql).
+ * 2026-11-09; the table is supabase/migrations/20261110002921_chant_pulls.sql).
  *
  * Every installed app asks /audio/chants/live.json which recordings may play
  * and fails closed (lib/chants/live.ts): a recording the list does not name

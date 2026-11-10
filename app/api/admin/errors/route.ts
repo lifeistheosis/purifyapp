@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
  * Services > Errors readers hit (admin item A10): the last day's or week's
  * error reports, one line per fault (lib/errors/group.ts). Read only.
  *
- * Until the owner has run docs/1.9-build/sql/app-errors.sql the table is not
+ * Until the 1.9 release has run supabase/migrations/20261110002922_app_errors.sql the table is not
  * there, and the answer says so ({ absent: true }) rather than reading as a
  * clean week. At most 5,000 reports are read, the newest first; past that
  * the answer says it stopped (truncated), never that it saw everything.

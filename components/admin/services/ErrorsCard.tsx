@@ -6,7 +6,7 @@
  * frequent first: what failed, where, how often, when last, on what and in
  * which versions. Never who: a report holds none (lib/errors/scrub.ts).
  *
- * Until the owner has run docs/1.9-build/sql/app-errors.sql it says the list
+ * Until the 1.9 release has run supabase/migrations/20261110002922_app_errors.sql it says the list
  * is not set up yet, never that nothing failed.
  */
 
@@ -28,7 +28,7 @@ function summary(p: ErrorsPayload | null, failed: boolean): string {
   if (failed) return "the list did not load.";
   if (!p) return "reading.";
   if ("unavailable" in p) return "the list could not be read just now.";
-  if (p.absent) return "not set up yet: it waits for its table (docs/1.9-build/sql/app-errors.sql), on your OK.";
+  if (p.absent) return "not set up yet: its table comes with the 1.9 release.";
   if (p.total === 0) return p.days === 1 ? "nothing failed in the last day." : "nothing failed in the last 7 days.";
   const faults = p.groups.length;
   return `${p.total.toLocaleString("en-US")} ${p.total === 1 ? "report" : "reports"} of ${faults} ${faults === 1 ? "fault" : "faults"} in the last ${p.days === 1 ? "day" : "7 days"}${p.truncated ? " (the newest 5,000 read)" : ""}.`;

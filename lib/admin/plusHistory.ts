@@ -1,7 +1,7 @@
 /**
  * Plus over time (1.9, admin item A2): what the kept RevenueCat events say,
  * week by week and day by day. The events are public.plus_events
- * (lib/billing/plusEvents.ts writes them; docs/1.9-build/sql/plus-events.sql).
+ * (lib/billing/plusEvents.ts writes them; supabase/migrations/20261110002920_plus_events.sql).
  *
  * The words, as the admin shows them:
  *

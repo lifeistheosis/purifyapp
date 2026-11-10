@@ -123,7 +123,7 @@ export function ChantPullsDetail() {
     <div className="space-y-3">
       <p className="max-w-[72ch] font-sans text-[12.5px] leading-[1.55]" style={ink2}>
         {data.absent
-          ? "The switch is not set up yet: it waits for its table (docs/1.9-build/sql/chant-pulls.sql), on your OK. Until then a recording is taken down by moving it from live to pulled in data/chants-live.json and pushing the website."
+          ? "The switch is not set up yet: its table comes with the 1.9 release. Until then a recording is taken down by moving it from live to pulled in data/chants-live.json and pushing the website."
           : data.unavailable
             ? "The switches could not be read just now. The list every app reads is unchanged."
             : "A recording taken down here stops in every app within minutes, and a copy saved on a phone is taken off it. Nothing to release."}

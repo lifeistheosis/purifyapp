@@ -1,5 +1,5 @@
 /**
- * What an error report may keep (admin item A10, docs/1.9-build/sql/app-errors.sql).
+ * What an error report may keep (admin item A10, supabase/migrations/20261110002922_app_errors.sql).
  *
  * The privacy line Edgar approved on 2026-11-09: "When something fails, the
  * app reports the page, the app version and the kind of device, never who you

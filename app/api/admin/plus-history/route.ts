@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
  *
  * Only what the events cover is shown: the weeks and days from the first
  * kept event on. Before it nothing was kept, which is not the same as no
- * Plus. Until the owner has run docs/1.9-build/sql/plus-events.sql the answer
+ * Plus. Until the 1.9 release has run supabase/migrations/20261110002920_plus_events.sql the answer
  * is { state: "absent" }, never empty weeks.
  *
  * Admin only: 403 to anyone else.

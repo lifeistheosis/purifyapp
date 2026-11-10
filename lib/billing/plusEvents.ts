@@ -8,7 +8,7 @@ import { isTableAbsent } from "@/lib/admin/tableAbsent";
  * refund. The webhook (app/api/billing/revenuecat/route.ts) used to keep one
  * fact per member, the date Plus runs to, and drop the rest, so the admin
  * could not say who joined or left, which trials paid, or what Plus brought
- * in on a day. The table is docs/1.9-build/sql/plus-events.sql, on his OK.
+ * in on a day. The table is supabase/migrations/20261110002920_plus_events.sql.
  *
  * Best effort, always. Keeping the event never changes what RevenueCat is
  * told: a missing table, a slow database or a malformed event is a warning in

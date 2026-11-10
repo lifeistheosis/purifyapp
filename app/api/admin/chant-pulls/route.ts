@@ -23,7 +23,7 @@ export const dynamic = "force-dynamic";
  * when; the website's list (app/audio/chants/live.json) drops it within
  * minutes. Every move is in the activity log.
  *
- * Until the owner has run docs/1.9-build/sql/chant-pulls.sql the table is not
+ * Until the 1.9 release has run supabase/migrations/20261110002921_chant_pulls.sql the table is not
  * there: GET says so ({ absent: true } beside the recordings) and POST answers
  * 409, so the switch is never shown as moved when it was not.
  *
@@ -135,7 +135,7 @@ export async function POST(req: NextRequest) {
   const { error } = await createAdminClient().from("chant_pulls").upsert(row, { onConflict: "ref" });
   if (isTableAbsent(error)) {
     return NextResponse.json(
-      { error: "chant_pulls is not there yet: it waits for docs/1.9-build/sql/chant-pulls.sql, on your OK." },
+      { error: "chant_pulls is not there yet: it comes with the 1.9 release." },
       { status: 409 },
     );
   }

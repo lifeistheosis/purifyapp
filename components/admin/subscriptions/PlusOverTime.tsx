@@ -106,7 +106,7 @@ export function PlusOverTime() {
     return (
       <Card title="Plus over time">
         <p className={note} style={ink2}>
-          This waits for its table (docs/1.9-build/sql/plus-events.sql), on your OK. From the day it is there, every
+          Its table comes with the 1.9 release. From the day it is there, every
           purchase, renewal, cancel and refund RevenueCat sends is kept, and this page shows who joined and who left each
           week, which free trials paid, who is in a free trial now, and what Plus brought in each day. A free trial then
           stops counting as a paying member everywhere in the admin.

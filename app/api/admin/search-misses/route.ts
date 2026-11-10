@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
  * for in the last 7, 30 or 90 days and found nothing, the most asked first
  * (lib/search/missGroups.ts). Read only; no reader is in any row.
  *
- * Until the owner has run docs/1.9-build/sql/search-misses.sql the answer is
+ * Until the 1.9 release has run supabase/migrations/20261110002923_search_misses.sql the answer is
  * { absent: true }, never an empty list. At most 20,000 rows are read.
  *
  * Admin only: 403 to anyone else.

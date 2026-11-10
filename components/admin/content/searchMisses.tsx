@@ -31,8 +31,7 @@ export function SearchMissesDetail() {
   if (data.absent) {
     return (
       <p className="max-w-[72ch] font-sans text-[12.5px] leading-[1.55]" style={ink2}>
-        Not set up yet: it waits for its table (docs/1.9-build/sql/search-misses.sql), on your OK, and for the apps to send
-        their searches.
+        Not set up yet: its table comes with the 1.9 release, and the apps send their searches from then on.
       </p>
     );
   }

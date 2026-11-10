@@ -1,6 +1,6 @@
 /**
  * The words of a search that found nothing, as they may be kept (admin item
- * A11, docs/1.9-build/sql/search-misses.sql).
+ * A11, supabase/migrations/20261110002923_search_misses.sql).
  *
  * The privacy line Edgar approved on 2026-11-09: "When a search finds
  * nothing, we keep the words you searched, never who you are, for 90 days, so

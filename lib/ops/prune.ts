@@ -9,8 +9,8 @@ import { isTableAbsent } from "@/lib/admin/tableAbsent";
  * (approved by Edgar on 2026-11-09), once a day from the maintenance
  * heartbeat (lib/ops/maintenance.ts):
  *
- *   app_errors      14 days  (admin A10, docs/1.9-build/sql/app-errors.sql)
- *   search_misses   90 days  (admin A11, docs/1.9-build/sql/search-misses.sql)
+ *   app_errors      14 days  (admin A10, supabase/migrations/20261110002922_app_errors.sql)
+ *   search_misses   90 days  (admin A11, supabase/migrations/20261110002923_search_misses.sql)
  *
  * A table not created yet is said ("absent"), never an error.
  */

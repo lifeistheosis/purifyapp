@@ -153,7 +153,7 @@ when it ships.
 ## Taking a recording down
 
 In the admin: Content, Chant recordings, then Take down, with a few words of
-why (1.9, once `docs/1.9-build/sql/chant-pulls.sql` has been run). Every
+why (1.9, once `supabase/migrations/20261110002921_chant_pulls.sql` has run (the 1.9 release)). Every
 installed app stops offering it within minutes, and takes a saved copy off
 the phone: the website serves `/audio/chants/live.json` as the committed
 list less every recording switched off there (`lib/chants/pulls.ts`), and
