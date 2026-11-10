@@ -130,7 +130,7 @@ describe("every removal by a moderator tells its poster", () => {
 
   it("the panel asks why before a removal that tells its poster", () => {
     const queue = read("components/admin/community/Queue.tsx");
-    expect(queue).toContain("const act = (a: QueueAction) => onAction(row, withReason(a, why));");
+    expect(queue).toContain("onAction(row, why ? withReason(a, why) : a);");
     expect(queue).toContain("tells ? (");
   });
 });

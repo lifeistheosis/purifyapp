@@ -24,6 +24,7 @@
  */
 
 import { heldWhy, type HeldWhy, type WaitingCampaign, type WaitingPicture } from "@/lib/campaigns/model";
+import { DANGER_MARK, saysDanger } from "@/lib/campaigns/safety";
 import type { RemovalReason } from "@/lib/community/removal";
 
 import { openReports, sharedKey, sharedWords, waitsForDecision, type SharedPageIn } from "./sharedPages";
@@ -162,7 +163,29 @@ export type QueueAction = {
    * the list, and withReason() puts it on every call.
    */
   notifies?: boolean;
+  /**
+   * A removal of words that may mean their writer is in danger (the safety
+   * line, lib/campaigns/safety.ts; the moderators' rule of 2026-11-10): no
+   * reason is chosen for the moderator, "against the house rules" is not
+   * offered, and it waits until a real one is chosen, so the notice its
+   * writer is sent is true. The server refuses it otherwise
+   * (lib/community/dangerHolds.ts).
+   */
+  needsReason?: boolean;
 };
+
+/**
+ * What else held words the safety line marked, without the mark: "crisis;
+ * first words from a new account" says "first words from a new account", and
+ * the mark alone says nothing, since the row already reads it first.
+ */
+export function besideDanger(detail: string | null | undefined): string | null {
+  const rest = (detail ?? "")
+    .split(";")
+    .map((part) => part.trim())
+    .filter((part) => part && !new RegExp(`^${DANGER_MARK}\\b`).test(part));
+  return rest.length ? rest.join("; ") : null;
+}
 
 /** The action with the moderator's reason on each of its calls, for the poster's notice. */
 export function withReason(action: QueueAction, code: RemovalReason): QueueAction {
@@ -338,9 +361,22 @@ function conversationRow(key: string, part: Parts): QueueRow {
   if (hold) {
     const reason = hold.reason ?? "words";
     const words = reason === "words";
+    // Words that may mean their writer is in danger: read first, never
+    // labelled by the reason the table files them under, and removed only for
+    // a reason the moderator chooses (the moderators' rule, 2026-11-10).
+    const danger = saysDanger(hold.detail);
     const reportPart = n > 0 ? ` · ${plural(n, "report", "reports")}` : "";
     const actions: QueueAction[] = [
-      { id: "remove", label: "Remove", tone: "danger", removal: true, notifies: true, calls: [{ url: FILTER, body: { action: "remove_hold", id: hold.id } }], done: "Removed." },
+      {
+        id: "remove",
+        label: "Remove",
+        tone: "danger",
+        removal: true,
+        notifies: true,
+        ...(danger ? { needsReason: true } : {}),
+        calls: [{ url: FILTER, body: { action: "remove_hold", id: hold.id } }],
+        done: "Removed.",
+      },
     ];
     if (words) actions.push({ id: "keep", label: "Keep hidden", tone: "default", removal: false, calls: [{ url: FILTER, body: { action: "keep_hold", id: hold.id } }], done: "Kept masked." });
     actions.push({
@@ -353,16 +389,26 @@ function conversationRow(key: string, part: Parts): QueueRow {
     });
     return {
       key,
-      what: `${words ? "Held for review" : "Held"} · ${HOLD_WORDS[reason] ?? reason}${reportPart} · ${thing}`,
+      what: danger
+        ? `Read first: the writer may be in danger · Held${reportPart} · ${thing}`
+        : `${words ? "Held for review" : "Held"} · ${HOLD_WORDS[reason] ?? reason}${reportPart} · ${thing}`,
       at,
       who: { name: authorName, handle: authorHandle },
       text: shown,
       written: words ? [hold.original_title, hold.original_body].filter(Boolean).join("\n") || null : null,
       reasons,
-      note: [hold.detail ?? null, status === "held" ? "Hidden from readers until you decide." : null].filter(Boolean).join(" ") || null,
+      note:
+        [
+          danger ? besideDanger(hold.detail) : (hold.detail ?? null),
+          status === "held" ? "Hidden from readers until you decide." : null,
+          danger ? "Approve it, leave it waiting, or remove it for a reason you name: never as against the house rules." : null,
+        ]
+          .filter(Boolean)
+          .join(" ") || null,
       more: null,
       picture: null,
       actions,
+      ...(danger ? { first: true } : {}),
     };
   }
 
@@ -514,7 +560,16 @@ export function buildQueue(src: QueueSources): QueueRow[] {
           calls: [{ url: COMMUNITY, body: { action: "approve_campaign", id: c.id } }],
           done: hidden ? "Shown again. Reports no longer hide it." : "Approved. It is on the board.",
         },
-        { id: "remove", label: "Remove campaign", tone: "danger", removal: true, notifies: true, calls: [{ url: COMMUNITY, body: { action: "remove_campaign", id: c.id } }], done: "Removed." },
+        {
+          id: "remove",
+          label: "Remove campaign",
+          tone: "danger",
+          removal: true,
+          notifies: true,
+          ...(urgent ? { needsReason: true } : {}),
+          calls: [{ url: COMMUNITY, body: { action: "remove_campaign", id: c.id } }],
+          done: "Removed.",
+        },
       ],
     });
   }

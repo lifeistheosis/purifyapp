@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   UNDO_MS,
+  besideDanger,
   buildQueue,
   campaignKey,
   countWaiting,
@@ -311,5 +312,73 @@ describe("a removal that tells its poster asks why first (the Terms, \"What we m
   it("marks the removals of a post, a reply, a held one, a campaign, a picture and a shared page", () => {
     const src = readFileSync(join(process.cwd(), "lib/admin/communityQueue.ts"), "utf8");
     expect(src.match(/notifies: true/g)?.length).toBe(6);
+  });
+});
+
+describe("words that may mean their writer is in danger (the safety line; the moderators' rule, 2026-11-10)", () => {
+  const marked = hold({ id: "h9", reason: "spam", detail: "crisis: the writer may be in danger", original_body: null, created_at: "2026-11-10T22:00:00Z" });
+  const older = hold({ id: "h2", reply_id: "33333333-3333-4333-8333-333333333333", reason: "spam", detail: "a short link", created_at: "2026-11-01T09:00:00Z", reply: { id: "33333333-3333-4333-8333-333333333333", post_id: POST, body: "Look here.", author_name: "Reader C", author_handle: "reader_c", status: "held" } });
+
+  it("is read first, says so, and never shows the reason the table files it under", () => {
+    const rows = buildQueue({ ...EMPTY, holds: [older, marked] });
+    expect(rows[0].key).toBe(holdKey(marked));
+    expect(rows[0].what.startsWith("Read first: the writer may be in danger")).toBe(true);
+    expect(rows[0].what).not.toMatch(/spam/i);
+    expect(rows[0].first).toBe(true);
+    expect(rows[0].note ?? "").not.toMatch(/crisis/);
+    expect(rows[0].note).toContain("never as against the house rules");
+  });
+
+  it("asks for a real reason before its removal, and only its removal", () => {
+    const row = buildQueue({ ...EMPTY, holds: [marked] })[0];
+    const remove = row.actions.find((a) => a.id === "remove");
+    expect(remove?.needsReason).toBe(true);
+    expect(row.actions.filter((a) => a.id !== "remove").every((a) => !a.needsReason)).toBe(true);
+  });
+
+  it("keeps what else held it, without the mark", () => {
+    const both = hold({ id: "h3", reason: "new_account", detail: "crisis; first words from a new account" });
+    const row = buildQueue({ ...EMPTY, holds: [both] })[0];
+    expect(row.note).toContain("first words from a new account");
+    expect(row.note ?? "").not.toMatch(/crisis/);
+    expect(besideDanger("crisis: the writer may be in danger")).toBeNull();
+    expect(besideDanger("crisis; first words from a new account")).toBe("first words from a new account");
+    expect(besideDanger(null)).toBeNull();
+  });
+
+  it("leaves an ordinary hold as it was", () => {
+    const row = buildQueue({ ...EMPTY, holds: [older] })[0];
+    expect(row.what).toBe("Held · spam · a reply");
+    expect(row.first).toBeFalsy();
+    expect(row.actions.some((a) => a.needsReason)).toBe(false);
+  });
+
+  it("holds a campaign whose writer may be in danger to the same rule on its removal", () => {
+    const campaign = (id: string, held_reason: string) => ({
+      id,
+      title: "For my brother",
+      intention: "healing",
+      for_whom: "living",
+      subject_name: null,
+      details: null,
+      days: 7,
+      ends_on: null,
+      creator_name: "Reader D",
+      creator_handle: "reader_d",
+      held_reason,
+      created_at: "2026-11-10T21:00:00Z",
+    });
+    const rows = buildQueue({ ...EMPTY, waitingCampaigns: [campaign("c1", "new"), campaign("c2", "new; crisis")] });
+    const urgent = rows.find((r) => r.key === campaignKey("c2", "c2"));
+    const plain = rows.find((r) => r.key === campaignKey("c1", "c1"));
+    expect(urgent?.actions.find((a) => a.id === "remove")?.needsReason).toBe(true);
+    expect(plain?.actions.find((a) => a.id === "remove")?.needsReason).toBeFalsy();
+  });
+
+  it("the panel offers no reason in advance and not the house rules, and waits for one", () => {
+    const queue = readFileSync(join(process.cwd(), "components/admin/community/Queue.tsx"), "utf8");
+    expect(queue).toContain("useState<RemovalReason | null>(strict ? null : DEFAULT_REMOVAL_REASON)");
+    expect(queue).toContain("REASON_OPTIONS.filter((o) => o.value !== DEFAULT_REMOVAL_REASON)");
+    expect(queue).toContain("disabled={Boolean(a.needsReason && !why)}");
   });
 });

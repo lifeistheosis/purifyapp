@@ -646,12 +646,15 @@ export function ToolbarButton({
   onClick,
   children,
   loading,
+  disabled,
   variant = "default",
   title,
 }: {
   onClick: () => void | Promise<void>;
   children: ReactNode;
   loading?: boolean;
+  /** Not yet: drawn dim and not pressable, with `title` to say why. */
+  disabled?: boolean;
   variant?: "default" | "danger" | "primary" | "chosen";
   title?: string;
 }) {
@@ -713,7 +716,7 @@ export function ToolbarButton({
     <button
       type="button"
       onClick={onClick}
-      disabled={loading}
+      disabled={loading || disabled}
       title={title}
       aria-busy={loading || undefined}
       // Said to a screen reader as well as drawn. Only when it is on: a

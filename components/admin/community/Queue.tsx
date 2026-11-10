@@ -15,6 +15,13 @@ import { Select } from "../Select";
 
 /** The moderator's list of reasons, as the poster's notice will say them (lib/community/removal.ts). */
 const REASON_OPTIONS = REMOVAL_REASONS.map((r) => ({ value: r, label: REMOVAL_REASON_WORDS[r] }));
+
+/**
+ * For words that may mean their writer is in danger (QueueAction.needsReason):
+ * the same list without "against the house rules", which stands for no reason
+ * and is never said to someone who may be in crisis.
+ */
+const REAL_REASON_OPTIONS = REASON_OPTIONS.filter((o) => o.value !== DEFAULT_REMOVAL_REASON);
 import { LIT, agoWords, ink, ink2, ink3 } from "../tools/look";
 
 export function QueueList({
@@ -75,8 +82,10 @@ function QueueItem({
   onUndo: (key: string) => void;
 }) {
   const [written, setWritten] = useState(false);
+  // A row the safety line marked: no reason chosen in advance, and none that stands for none.
+  const strict = row.actions.some((a) => a.needsReason);
   // Why, for the poster's notice, when a removal on this row tells them.
-  const [why, setWhy] = useState<RemovalReason>(DEFAULT_REMOVAL_REASON);
+  const [why, setWhy] = useState<RemovalReason | null>(strict ? null : DEFAULT_REMOVAL_REASON);
   const who = row.who ? [row.who.name ?? "A reader", row.who.handle ? `@${row.who.handle}` : null].filter(Boolean).join(" ") : null;
 
   // Held for Undo: quiet and dashed, the countdown and Undo on the row.
@@ -116,7 +125,10 @@ function QueueItem({
   const primary = row.actions.filter((a) => a.tone === "primary");
   const rest = row.actions.filter((a) => a.tone !== "primary");
   const tells = row.actions.some((a) => a.notifies);
-  const act = (a: QueueAction) => onAction(row, withReason(a, why));
+  const act = (a: QueueAction) => {
+    if (a.needsReason && !why) return;
+    onAction(row, why ? withReason(a, why) : a);
+  };
 
   return (
     <li
@@ -204,7 +216,8 @@ function QueueItem({
               <Select<RemovalReason>
                 value={why}
                 onChange={setWhy}
-                options={REASON_OPTIONS}
+                options={strict ? REAL_REASON_OPTIONS : REASON_OPTIONS}
+                placeholder={strict ? "Choose why, if you remove it" : undefined}
                 size="sm"
                 ariaLabel="Why, told to its poster if you remove it"
                 searchable={false}
@@ -216,6 +229,8 @@ function QueueItem({
               key={a.id}
               variant={a.tone === "danger" ? "danger" : "default"}
               loading={busy === row.key + a.id}
+              disabled={Boolean(a.needsReason && !why)}
+              title={a.needsReason && !why ? "Choose why first" : undefined}
               onClick={() => act(a)}
             >
               {a.label}
