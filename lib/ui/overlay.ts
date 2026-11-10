@@ -18,13 +18,28 @@ import { useSyncExternalStore } from "react";
 
 let depth = 0;
 
+/** Sheets that have risen and have not begun to leave (sheetRises). */
+let up = 0;
+/** Sheets on their way out (sheetLeaves), and of those, the ones `depth` counts. */
+let leaving = 0;
+let leavingCounted = 0;
+
+function mark(name: "overlayOpen" | "overlayCovers" | "sheetUp" | "sheetLeaving", on: boolean) {
+  if (on) document.body.dataset[name] = "1";
+  else delete document.body.dataset[name];
+}
+
 function sync() {
   if (typeof document === "undefined") return;
-  if (depth > 0) {
-    document.body.dataset.overlayOpen = "1";
-  } else {
-    delete document.body.dataset.overlayOpen;
-  }
+  mark("overlayOpen", depth > 0);
+  // What covers the screen: an overlay that is open and not a sheet on its
+  // way out. Floating UI comes back as a sheet leaves, not after it has gone
+  // (useOverlayOpen, build 89 note 16).
+  mark("overlayCovers", depth - leavingCounted > 0);
+  // A sheet's own moments, which app/globals.css times what stands behind
+  // it by ("What stands behind a sheet").
+  mark("sheetUp", up > 0);
+  mark("sheetLeaving", leaving > 0);
 }
 
 export function setOverlayOpen(open: boolean): void {
@@ -39,6 +54,50 @@ export function isOverlayOpen(): boolean {
 }
 
 /**
+ * A sheet has risen (lib/ui/useDraggableSheet.ts, which every sheet is built
+ * on): what stands behind it, the tab bar, the players, the reader's pill and
+ * dock and its plates, goes with it, on the sheet's own time and curve
+ * (app/globals.css, "What stands behind a sheet"; build 89 note 16, his
+ * words: "make the objects in the back fade out better when this new screen
+ * shows up (bottom UI + player)"). Returns its end: when it begins to leave,
+ * or goes without leaving.
+ */
+export function sheetRises(): () => void {
+  up += 1;
+  sync();
+  let done = false;
+  return () => {
+    if (done) return;
+    done = true;
+    up = Math.max(0, up - 1);
+    sync();
+  };
+}
+
+/**
+ * A sheet on its way out: what stood behind it comes back with it, on its
+ * time and curve. It is still open (isOverlayOpen) until it has gone, and it
+ * covers nothing (useOverlayOpen). A sheet that never raised the overlay
+ * flag (the admin's menu, the shop's offer as a reader leaves) has nothing to
+ * give back to it, so it is taken off only while something is counted there.
+ * Returns its end, when it has gone.
+ */
+export function sheetLeaves(): () => void {
+  const counted = depth - leavingCounted > 0;
+  leaving += 1;
+  if (counted) leavingCounted += 1;
+  sync();
+  let done = false;
+  return () => {
+    if (done) return;
+    done = true;
+    leaving = Math.max(0, leaving - 1);
+    if (counted) leavingCounted = Math.max(0, leavingCounted - 1);
+    sync();
+  };
+}
+
+/**
  * Reactive form of `isOverlayOpen`, for floating UI that must step aside the
  * moment a sheet opens rather than whenever it happens to re-render next.
  *
@@ -48,11 +107,22 @@ export function isOverlayOpen(): boolean {
  * would otherwise keep sitting on top of an open sheet for the rest of the
  * session.
  *
- * Subscribes to the `data-overlay-open` attribute the depth counter above
- * writes, exactly as this module's header describes.
+ * Subscribes to the `data-overlay-covers` attribute the counters above write:
+ * the depth counter, less the sheets already on their way out (build 89
+ * note 16), so what steps aside comes back as a sheet leaves.
  */
 export function useOverlayOpen(): boolean {
-  return useSyncExternalStore(subscribeOverlay, isOverlayOpen, () => false);
+  return useSyncExternalStore(subscribeOverlay, isCovered, () => false);
+}
+
+/**
+ * Whether something covers the screen: an overlay open that is not a sheet on
+ * its way out. A sheet that has begun to leave gives the floating UI back at
+ * once, so it returns with the sheet rather than after it (build 89 note 16).
+ */
+function isCovered(): boolean {
+  if (typeof document === "undefined") return false;
+  return document.body.dataset.overlayCovers === "1";
 }
 
 function subscribeOverlay(onChange: () => void): () => void {
@@ -60,7 +130,7 @@ function subscribeOverlay(onChange: () => void): () => void {
   const mo = new MutationObserver(onChange);
   mo.observe(document.body, {
     attributes: true,
-    attributeFilter: ["data-overlay-open"],
+    attributeFilter: ["data-overlay-covers"],
   });
   return () => mo.disconnect();
 }

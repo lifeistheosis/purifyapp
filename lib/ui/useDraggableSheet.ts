@@ -39,6 +39,8 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
+import { sheetLeaves, sheetRises } from "@/lib/ui/overlay";
+
 type Snap = "full" | "half";
 
 /** Timings, in ms. Opening is a large surface arriving (--duration-slow is
@@ -306,6 +308,18 @@ export function useDraggableSheet({
     }
     setSnap(rest === 0 ? "full" : "half");
   }, [open, mounted, goneAt, measure, paint, reduced, restAt, setSnap, transitions]);
+
+  // What stands behind the sheet (the tab bar, the players, the reader's pill,
+  // dock and plates) goes as it rises and comes back as it leaves, on its time
+  // and curve: lib/ui/overlay.ts writes the flags on <body>, app/globals.css
+  // times them ("What stands behind a sheet", build 89 note 16). Every sheet
+  // is built on this hook, so every sheet does it. One layout effect for both
+  // moments, so the rise ends and the leaving begins in one step, and the
+  // rise begins in the frame the sheet's own does (the effect above).
+  useLayoutEffect(() => {
+    if (!mounted) return;
+    return open ? sheetRises() : sheetLeaves();
+  }, [open, mounted]);
 
   // Content or screen size changed: keep the sheet where it was resting.
   useEffect(() => {

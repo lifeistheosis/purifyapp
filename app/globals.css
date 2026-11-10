@@ -875,6 +875,54 @@ body[data-reader-screen][data-reader-away] [data-tab-bar]:has(:focus-visible) {
  transition: none;
 }
 
+/* What stands behind a sheet goes with it (build 89 note 16, his words: "make
+   the objects in the back fade out better when this new screen shows up
+   (bottom UI + player)"). While a sheet is up, everything that stands at the
+   foot of the screen (the tab bar, the mini player and the reader's dock,
+   the reader's pills, today's readings' bar, a chant's dock, a verse's tools)
+   and the reader's plates at the top fade out on the sheet's own rise: its
+   time and the house curve. As it leaves they come back on its leaving: its
+   time and its curve, from the moment it begins to go, not after it has
+   gone. Hidden once faded, so a tap and a screen reader pass them by. Under
+   the motion switch the sheet dissolves, and they with it; nothing moves.
+
+   One rule for every sheet: lib/ui/useDraggableSheet.ts, which every sheet
+   is built on, sets body[data-sheet-up] as a sheet rises and
+   body[data-sheet-leaving] as it leaves (lib/ui/overlay.ts). The times are
+   the sheet's own (OPEN_MS, CLOSE_MS, EASE_OUT, DISSOLVE_MS there), and
+   lib/ui/__tests__/behindSheet.test.ts holds them equal. Important, because
+   a sheet over the page outranks whatever else each of these is doing (the
+   plates kept while the dock plays, the dock's own transition, which had
+   left it no fade: it went at once while the tab bar faded beside it). */
+:root {
+ --sheet-rise-duration: 440ms;
+ --sheet-leave-duration: 300ms;
+ --sheet-leave-ease: cubic-bezier(0.4, 0, 1, 1);
+ --sheet-dissolve-duration: 160ms;
+}
+body[data-sheet-up] :is([data-screen-edge="bottom"], [data-plates-row]) {
+ opacity: 0 !important;
+ visibility: hidden !important;
+ transition:
+  opacity var(--sheet-rise-duration) var(--ease-house),
+  visibility 0s linear var(--sheet-rise-duration) !important;
+}
+body[data-sheet-leaving]:not([data-sheet-up]) :is([data-screen-edge="bottom"], [data-plates-row]) {
+ transition:
+  opacity var(--sheet-leave-duration) var(--sheet-leave-ease),
+  visibility 0s !important;
+}
+:where([data-motion="reduce"]) body[data-sheet-up] :is([data-screen-edge="bottom"], [data-plates-row]) {
+ transition:
+  opacity var(--sheet-dissolve-duration) ease,
+  visibility 0s linear var(--sheet-dissolve-duration) !important;
+}
+:where([data-motion="reduce"]) body[data-sheet-leaving]:not([data-sheet-up]) :is([data-screen-edge="bottom"], [data-plates-row]) {
+ transition:
+  opacity var(--sheet-dissolve-duration) ease,
+  visibility 0s !important;
+}
+
 /* The reader's dock (1.9, the owner's pick for Listening, "one bar while
    playing": B at rest, "when you scroll, it turns into C";
    components/bible/ReaderDock.tsx). While anything is loaded in the player,
