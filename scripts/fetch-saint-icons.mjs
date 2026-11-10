@@ -154,12 +154,27 @@ function uploadUrl(name, width) {
 }
 
 /**
- * A Commons picture to compare with ours: the 330px thumbnail Wikipedia's
- * pages ask for (so usually made already), else 500px, else the original. A
- * busy answer (429) is waited out twice before the next is tried.
+ * Thumbnails at Commons' standard widths only, never an original.
+ * upload.wikimedia.org refuses any other width with 429
+ * (https://www.mediawiki.org/wiki/Common_thumbnail_sizes, the page
+ * https://w.wiki/GHai leads to: 20, 40, 60, 120, 250, 330, 500, 960, 1280,
+ * 1920 and 3840px). On 2026-11-10 it refused an original with 429 as well,
+ * asking for thumbnails "in sizes listed", and served the 960px at once. 960px
+ * is ample for every size the app draws an icon; the rights are read from the
+ * file's page, as before.
  */
-async function picture(name) {
-  for (const url of [uploadUrl(name, 330), uploadUrl(name, 500), uploadUrl(name)]) {
+const STANDARD_WIDTHS = { compare: [330, 500, 960], keep: [960, 500, 330] };
+
+/**
+ * A Commons picture at the first of `widths` it serves: for comparing with
+ * ours, the 330px thumbnail Wikipedia's pages ask for (so usually made
+ * already); for keeping, the 960px. A busy answer (429) is waited out twice
+ * before the next width is tried, and a width wider than the file (which
+ * Commons will not draw) gives way to the next.
+ */
+async function picture(name, widths = STANDARD_WIDTHS.compare) {
+  for (const width of widths) {
+    const url = uploadUrl(name, width);
     for (let attempt = 0; attempt < 3; attempt++) {
       const r = await get(url);
       if (r.status === 429) {
@@ -266,10 +281,10 @@ async function doFetch(slug, query) {
       console.log(`  skip, licence "${p.license || "unknown"}": ${title}`);
       continue;
     }
-    const r = await get(p.fileUrl);
-    if (r.status !== 200 || !r.type?.startsWith("image/")) continue;
+    const body = await picture(p.commonsTitle.replace(/^File:/, "").replace(/ /g, "_"), STANDARD_WIDTHS.keep);
+    if (!body) continue;
 
-    const jpg = await sharp(r.body)
+    const jpg = await sharp(body)
       .resize({ width: 800, height: 800, fit: "inside" })
       .jpeg({ quality: 85, mozjpeg: true })
       .toBuffer();
