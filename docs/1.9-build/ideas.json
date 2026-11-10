@@ -2069,6 +2069,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "0 on the 38 routes in Arabic and Urdu (268 before). 36e51c851. PLAN 13r; build-90.md note 4. Left: Support on the website; six screens' older guardrail faults listed for the arbiter."
+  },
+  {
+   "id": "e-qw-cyril-john-titles",
+   "section": "Saints",
+   "kind": "bug",
+   "title": "St Cyril on John: 505 of 1,066 section titles named a verse he quotes in passing, not the one he is on (F-49)",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "Each title is the lemma in force where its section begins (LFC 43 and 48), checked against the app's Bible; titles only, no mark moved. The rail's places, plan sayings, Theology references, the Eunomianism gloss and the Book 12 themes follow. 3c6ecbfec. PLAN 13s."
   }
  ]
 }
