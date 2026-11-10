@@ -59,7 +59,7 @@ export function ReadingModeChips({
       <p className="font-sans text-caption font-semibold text-paper/55 mb-2">
         {t("ui.readingMode")}
       </p>
-      <div className="grid grid-cols-2 gap-1.5">
+      <div className={cn("grid grid-cols-2 gap-x-1.5", touch ? "gap-y-1.5" : "gap-y-2")}>
         {/* The earned palettes (1.9, rec 79, lib/reader/earned.ts): Councils
             and Cappadocian stand here as goals, with how far the reader is,
             until they are earned by reading; then they are palettes like the
@@ -84,7 +84,7 @@ export function ReadingModeChips({
                 onClick={() => setGoal(goal === id ? null : id)}
                 className={cn(
                   "inline-flex items-center gap-2 rounded-md border border-dashed border-paper/20 px-2.5 py-2 text-start font-sans font-medium text-paper/70 transition-colors hover:text-paper",
-                  touch ? "min-h-11 text-detail" : "text-caption",
+                  touch ? "min-h-11 text-detail" : "hit-44 text-caption",
                 )}
               >
                 <span aria-hidden className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-paper/25" style={{ backgroundColor: sw?.page }}>
@@ -133,7 +133,7 @@ export function ReadingModeChips({
               aria-pressed={active}
               className={cn(
                 "inline-flex items-center gap-2 rounded-md border px-2.5 py-2 text-start font-sans font-medium transition-colors",
-                touch ? "min-h-11 text-detail" : "text-caption",
+                touch ? "min-h-11 text-detail" : "hit-44 text-caption",
                 active
                   ? "bg-paper/15 border-paper/45 text-paper"
                   : "border-paper/12 text-paper/70 hover:bg-paper/8 hover:text-paper",

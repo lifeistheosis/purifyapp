@@ -193,6 +193,21 @@ describe("touch targets", () => {
     ).toBeLessThanOrEqual(MAX_WRITTEN_SMALL_TARGETS);
   });
 
+  it("keeps the reader settings' chips 44 to the touch on a computer too", () => {
+    // The text size, font, spacing and palette chips draw at 36 to 38px where
+    // the pointer is fine (a touch laptop or a tablet's browser at desktop
+    // width meets them with a finger). The count above cannot see them: the
+    // size chips' min-h-9 sits past its eight-line window and the palettes
+    // take their height from padding. So they are named here (the arbiter's
+    // word, 2026-11-10): each carries .hit-44 there, and the palettes' rows
+    // stand 8.5px apart so two touch boxes never overlap.
+    const menu = readFileSync(join(ROOT, "components/bible/ReaderSettingsMenu.tsx"), "utf8");
+    const chips = readFileSync(join(ROOT, "components/reader/ReadingModeChips.tsx"), "utf8");
+    expect(menu).toContain('touch ? "min-h-11 text-detail" : "hit-44 min-h-9 text-caption"');
+    expect(chips.split('touch ? "min-h-11 text-detail" : "hit-44 text-caption"').length - 1).toBe(2);
+    expect(chips).toContain('touch ? "gap-y-1.5" : "gap-y-2"');
+  });
+
   it("reads a height written out as well as the scale's", () => {
     expect(writtenSmall('className="min-h-[42px] px-3"')).toBe(true);
     expect(writtenSmall('className="h-[2.5rem]"')).toBe(true);

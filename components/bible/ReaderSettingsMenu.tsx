@@ -77,7 +77,7 @@ function Choice({
       title={label}
       className={cn(
         "inline-flex min-w-0 items-center justify-center rounded-md border px-1 font-sans font-medium leading-none transition-colors",
-        touch ? "min-h-11 text-detail" : "min-h-9 text-caption",
+        touch ? "min-h-11 text-detail" : "hit-44 min-h-9 text-caption",
         on
           ? "bg-paper/15 border-paper/45 text-paper"
           : "border-paper/12 text-paper/65 hover:bg-paper/8 hover:text-paper",
