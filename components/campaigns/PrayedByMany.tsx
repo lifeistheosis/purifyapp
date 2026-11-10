@@ -80,7 +80,10 @@ export function PrayedByMany() {
         items={MANY_SPANS.map((id) => ({ id, label: t(SPAN_LABEL[id]) }))}
         selected={span}
         onSelect={setSpan}
-        className="mt-2"
+        // On the page itself, with no tint under the switch: the house's
+        // off label is the ink at 65 percent, which is 4.52:1 on Light's
+        // page and 4.41:1 on the switch's own tinted track.
+        className="mt-2 bg-transparent"
       />
       <div id={`many-panel-${span}`} role="tabpanel" aria-labelledby={`many-tab-${span}`} className="mt-3">
         {list === undefined ? (
