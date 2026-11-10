@@ -172,3 +172,12 @@ live with its feature (lib/admin/__tests__/privacyLines.test.ts holds them):
    the rail's badge stays the number of rows. Until then the moderators' page
    carries them, for the team alone. Not before: a row would show a part that
    is switched off.
+
+## After 1.9: words
+
+1. **Greek: one word for "calendar" and "journal"** (the arbiter's call of
+   2026-11-10, item 8 of the Plus page's translations). The Greek catalog
+   says ημερολόγιο for both, and on the Plus page's free list the two lines
+   stand side by side ("The whole Church calendar..." and "Your journal, by
+   the Church's day..."). Kept for 1.9: a new Greek word for the journal is
+   a change across the whole Greek catalog, and is a translator's to make.
