@@ -2938,3 +2938,196 @@ name and the chapter's line stay in the reader's language and direction
 own markup (`johnVerse()`: Your mark, cross-references, Remember a verse,
 the Florilegium). They were not looked at in Arabic here. Told to the
 arbiter.
+
+## 31. The prayer page wears the theme (build 90, note 8)
+
+His note on build 90, 2026-11-10: "I mean, overall, let's change the
+background design also. Like, make it more, like, fit the theme the user
+picked." The plan is note 8 of `notes/build-90.md`; his word on it, about
+13:50 UTC, "All recommendations. Start.", with yes to its three calls. The
+code is `1d2deb67`.
+
+**What it was.** Every prayer prayed line by line is one component
+(`components/prayers/PrayerRuleReader.tsx`). Behind its words it drew the
+page's own icon, large, blurred and grey, at 22 percent, with a white
+breath over it: one neutral light, the same on every palette and laid over
+it. True black was rgb(18, 18, 18) at the screen's edge, a look's colour
+went grey where the prayer is read, and paper took an even grey shade.
+
+**What it is.** The ground is the palette's own, whole, and the light
+behind the prayer is the palette's own, a soft pool or nothing
+(`components/prayers/service/PrayerLight.tsx`; `app/globals.css`, "While
+you pray"):
+
+| Palettes | The light | Its share of the ink |
+| --- | --- | --- |
+| Dark, True black, Candlelight | A pool where the prayer is read, two fifths down, and a slow breath over it while motion is on | 6 percent and 3 |
+| Monastery | The same | 5 and 2 |
+| Councils, Cappadocian | The same | 3.5 and 1.5 |
+| The nine dark looks | Nothing: the look's picture is its sign, and nothing moves on a look | |
+| Light and the nine light looks | Nothing: light cannot glow on paper | |
+| Candlelight in one of the three long fasts | The fast's light in the room, as in the Bible (section 27), and neither pool nor breath over it | |
+
+Each share is the most that leaves every word on the page 4.5:1 or more
+with the pool and the breath at their fullest behind it; the prayers' notes
+decide it on Monastery, Councils and Cappadocian. The lit line's glow is
+the palette's ink at 35 percent, where a white was typed in.
+
+**A look's steps back.** While a prayer is prayed the prayers before and
+after it step back (`--prayer-rest`), and its own other lines a little less
+(`--prayer-unlit`). A look took Dark's steps or Light's and its picture was
+never asked. Asked now, of the picture alone, anywhere above the place the
+look's foot begins: the closing line (the ink at 85 percent) may step back
+to between 57 and 61 percent on the nine dark looks and to between 73 and
+82 on the light ones. So the dark looks step back as far as Monastery (62
+and 74), Light's steps (80 and 86) hold on the light looks, and Blush steps
+back to 83 and 89.
+
+**The season.** `useCandleSeason(active)` is the veil's own effect as a
+hook (`components/reader/CandleVeil.tsx`): the veil always says the season,
+the prayer page while Candlelight is the palette worn
+(`useCandlelightWorn`, section 27's mend). Two pages say it now, so each
+takes away only its own word when it is left.
+
+**The measure, corrected.** The walk found three faults in how a word is
+held to its pixels. They are mended in `scripts/lib/pixel-audit.mjs`, which
+is the scratch audit of sections 22 to 30 brought into the repository:
+
+1. A line that has gone part way under the bar at the head of the screen,
+   or has the rim of something floating over the page across its last rows
+   (the prayer page's "Pray with chant"), was held to that rim. A prayer's
+   name read 4.48:1 where it stands at 5.25:1. The covered rows are left
+   out now.
+2. A word still fading in was measured part way ("Pray with chant" at
+   1.76:1 a fifth of the way in; the chant's question as it rose). A word
+   inside something whose strength is changing at that moment, once, is
+   measured where it rests.
+3. **A look's foot was counted from the wrong place.** The foot is the
+   look's picture drawn over the page's last lines by an eased share: none
+   at `--foot-clear` (240px on most looks) from the screen's foot, a
+   quarter by 72 percent of that. The audit left a line out only below the
+   quarter. But it holds a word's own colour to the pixels behind it and
+   cannot see a veil over the ink, so in that first quarter it overstated
+   every line; and even overstated, Dawn's faint instruction read 4.46:1
+   there. A line in the foot that the page can still bring up clear of it
+   is left out now, from where the foot begins; a line that rests in the
+   first quarter at a page's end is still held.
+
+What that means for what this file said before: section 22's "1,884 words,
+none under 4.5:1" on the Bible and Today, and the pictures' counts after
+it, were measured with the old line. They are sure above where the foot
+begins. For a line in the foot's first quarter they say more than the
+measure knows: such a line is up to a quarter veiled, by the foot he
+settled in section 16 ("a page's last lines go quiet into the picture from
+240px above the foot"). `scripts/scene-check.mjs` still holds each
+picture, alone, to carry the look's faint text down to the quarter, which
+asks more of the picture than the foot leaves a reader to see.
+
+**Note 8's own claim, corrected.** The plan said every word on the prayer
+page was 4.5:1 or more on all 25 palettes as it stood. That came from one
+resting place. With the old light put back on the build exactly as its
+stylesheet had it at `75051aec`, and each word held to its pixels at 21
+places down The First Hour: the prayers' notes and instructions were under
+4.5:1 on Monastery, Councils and Cappadocian (4.49, 4.38, 4.36), and a
+caption on Blush (4.49). The note is corrected where it said so.
+
+**Measured**, on the Android export built from `8c90dad9` with this
+change on it, opened the way a phone opens it, 390 wide:
+
+- `node scripts/prayer-ground-walk.mjs`: 256 checks, all passing.
+  - **Words.** The First Hour (21 places down the page), the morning rule
+    (16), the Akathist (3) and a reader's own rule (13), each from its head
+    to its end on all 25 palettes, and The First Hour again with the app in
+    Arabic: 43,421 words held to their pixels, none under its floor, with
+    the pool and the breath held at their fullest behind every word on the
+    six palettes that have them. The places measured cover each page from
+    its first line to its last, and no page's last line rests inside a
+    look's foot. The lowest small word on each palette, and the lowest of a
+    prayer's names, which are large type and step back:
+
+    | Palette | Lowest small word | Lowest name |
+    | --- | --- | --- |
+    | Dark | 4.95:1 | 5.25:1 |
+    | Light | 4.71:1 | 5.01:1 |
+    | True black | 5.31:1 | 5.66:1 |
+    | Candlelight | 5.07:1 | 5.29:1 |
+    | Monastery | 5.06:1 | 5.20:1 |
+    | Night sky | 5.59:1 | 5.74:1 |
+    | Dawn | 4.62:1 | 5.66:1 |
+    | Fire | 6.05:1 | 5.83:1 |
+    | Incense | 5.49:1 | 5.08:1 |
+    | Holy Mountain | 4.65:1 | 5.64:1 |
+    | Forest | 5.59:1 | 5.69:1 |
+    | Desert | 5.14:1 | 5.40:1 |
+    | Jordan | 5.03:1 | 5.34:1 |
+    | Galilee | 6.36:1 | 5.67:1 |
+    | Patmos | 5.94:1 | 6.30:1 |
+    | Blush | 4.89:1 | 5.50:1 |
+    | Roses | 5.10:1 | 5.30:1 |
+    | Lavender | 4.96:1 | 5.25:1 |
+    | Olive | 5.07:1 | 5.32:1 |
+    | Mosaic | 6.24:1 | 5.51:1 |
+    | Stone | 5.07:1 | 5.42:1 |
+    | Damask | 6.60:1 | 5.57:1 |
+    | Linen | 5.88:1 | 5.82:1 |
+    | Councils | 5.00:1 | 5.22:1 |
+    | Cappadocian | 5.04:1 | 5.19:1 |
+
+  - **The ground**, mid-prayer on The First Hour with the words taken out.
+    On the six plain dark palettes the screen's edges are the palette's own
+    colour (True black rgb(0, 0, 0), where it was rgb(18, 18, 18); Dark
+    rgb(16, 16, 19), where it was rgb(30, 30, 33)), the pool is there where
+    the prayer is read (rgb(22, 22, 22) and rgb(36, 36, 39), where the old
+    light stood at rgb(30, 30, 30) and rgb(43, 43, 45)), and it lies between
+    138px and 536px of the screen's 844. On the 18 looks and on Light the
+    page is pixel for pixel what it is with no light at all, and Light's
+    paper is rgb(241, 232, 212) at the edges and where the prayer is read.
+    The lit line glows in the palette's own ink on all 15 dark palettes.
+  - **Still.** On the 18 looks and on Light two pictures of the screen a
+    moment apart are one picture. The breath drifts on the six plain dark
+    palettes while motion is on. With the app's motion off it is still on
+    all six, the screen does not change, and every line and every prayer's
+    name of the Hour, 56 of them, stands at full strength.
+  - **The fasts**, the phone's clock set to a day of each, Candlelight
+    stored. An ordinary day: no season, the candle's own pool and breath.
+    Great Lent, the Nativity Fast and the Dormition Fast: the root says
+    the fast, its light is in the room, neither pool nor breath is drawn,
+    and every word of the Hour is 5.07:1 or more with the fast's light at
+    its fullest behind it. From the prayer to a chapter of the Bible the
+    season is still said, by the veil; back on the prayer it is still said;
+    on Today it is gone. With the switch off, or in Dark, none is said. In
+    Dark with Candlelight at Vespers on, after sunset, Candlelight is worn
+    and the season said.
+- `checkMock` on The First Hour and the morning rule, at the head and
+  mid-prayer, on all 25 palettes: every check passes. One allowance, said
+  on the thing itself: the breath drifts from side to side and back, the
+  same in every language, so it does not mirror in Arabic (the breath
+  before it drifted the same way).
+- `scripts/scene-check.mjs`: all 18 pictures carry their faint text down
+  to the foot's quarter as before, and a prayer's closing line stepped back
+  above where the foot begins; the tightest are Lavender 4.60:1, Roses and
+  Olive 4.63:1, Incense 4.67:1 and Jordan 4.69:1.
+- `scripts/room-walk.mjs`: 246 screens, nothing covers a look's room.
+- The stills, four themes on the morning rule mid-prayer (Dark, Candlelight
+  in the Nativity Fast, Night sky, Patmos), each worn as a reader chooses
+  it and each passing `checkMock`: the page's section "The prayer page
+  wears the theme".
+- Typecheck 0. The unit suite: 900 files and 11,154 tests pass and one
+  fails that is not this change's, `lib/bible/__tests__/commentaryPlaces.test.ts`
+  (seven places in Luke 13's commentary; it fails on the branch's head with
+  this change taken out, and has gone to the arbiter). Lint 0 errors; its
+  12 warnings are in files this does not touch. The Android export is
+  clean, 195.2 MB on disk and 68.0 MB packed. The export, the walks and
+  lint were run on `8c90dad9` with this change on it; typecheck and the
+  unit suite again after the rebase onto `b271f345`.
+
+**Not done.** No iOS export and no website build (no server code changed).
+No phone has seen it: True black on an OLED screen, a long Hour scrolled
+on an older Android, and Candlelight on the phone's own date in a fast are
+on the phone walk.
+
+**Left as they are, and told to the arbiter.** The looks' faint text is
+held to the foot's quarter, as it was built. No walk says where each
+page's last words rest on a look (the prayer pages' last lines rest clear
+of the foot); a page whose last words rest inside a foot would keep them
+part veiled.
