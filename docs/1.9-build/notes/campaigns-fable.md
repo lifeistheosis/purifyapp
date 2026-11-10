@@ -1923,7 +1923,7 @@ as their phases are built against them. File two is there now:
 `docs/1.9-build/sql/campaigns-2-threads.sql` (section 11).
 
 **Release day, in order** (his word through the arbiter, and
-`OWNER-STEPS.md` R2 to R5c). The constant stays `closed` on the branch until
+`OWNER-STEPS.md` R2 to R5d). The constant stays `closed` on the branch until
 then.
 
 1. The merge to main carries the constant at `testers`. The website has the
@@ -2007,20 +2007,27 @@ word either way, so the notes for review name them plainly (his item 130).
 
 In this order, each pushed behind the switch with its stills:
 
-1. **Phase 2, updates and comments** (about 10 hours): the creator's updates;
-   comments, which the creator can close or take one off; no reactions (126);
-   no links and no asking for money (124); file two of the SQL.
-2. **Phase 4, the rest in words** (about 16 hours): one circle as the
-   audience (122); a place; a campaign's door on its creator's profile;
-   changing a campaign's words after it is sent (read again by a moderator);
-   "Run it again"; telling a creator that a moderator has decided; a choice
-   of kind behind the sliders on the board.
-3. **"Prayed by many"** (118), built and switched off on the server: no
+1. **Phase 2, updates and comments:** built (section 11): the creator's
+   updates; comments, which the creator can close or take one off; no
+   reactions (126); no links and no asking for money (124); file two of the
+   SQL.
+2. **"Prayed by many"** (118), built and switched off on the server: no
    number, and a creator can stay out.
-4. **Pictures** (121; about 14 hours), built and switched off on the server:
-   3, or 20 with Plus, each checked before it is shown, with "I am 18 or
-   older"; file three of the SQL. Off until the image checking service is
-   chosen and the lawyer has answered.
+3. **Pictures** (121), built and switched off on the server: 3, or 20 with
+   Plus, each checked before it is shown, with "I am 18 or older"; file three
+   of the SQL. Off until the image checking service is chosen and the lawyer
+   has answered.
+4. **The new lines in twenty languages**, in one pass, and the screens held
+   to the eighteen looks.
+
+**Moved to 1.9.1 by his word** ("all recs", 2026-11-10, about 08:25 UTC;
+`BRAINSTORM.md`): phase 4, the rest in words. One circle as the audience
+(122); a place; a campaign's door on its creator's profile; changing a
+campaign's words after it is sent (read again by a moderator); "Run it
+again"; telling a creator that a moderator has decided, and notices of an
+update for a reader who asks; a choice of kind behind the sliders on the
+board. File one already carries the columns the circle and the place need,
+so 1.9.1 brings no change to the campaigns table for them.
 
 Not built, and not to be built without his word: the crisis words a reader is
 shown (129). Only the hold in the moderators' queue is built, and it reads

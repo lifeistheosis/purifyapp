@@ -17,7 +17,7 @@
 // release after 1.9. His later word the same day moved them into 1.9 itself
 // ("ok to all ensure its all in v1.9"), with his walk on release day: the
 // website first, the store builds on internal testing, his walk, and only
-// then the stores (docs/1.9-build/OWNER-STEPS.md, R2 to R5c). The switch is
+// then the stores (docs/1.9-build/OWNER-STEPS.md, R2 to R5d). The switch is
 // the same either way:
 //
 //   closed    As from 2026-08-26. Every campaign page is a 404 in the build,
