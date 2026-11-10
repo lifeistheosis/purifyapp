@@ -100,25 +100,38 @@ export function StudyCouncils({ councils }: { councils: NonNullable<TheologyBody
   );
 }
 
-/** Who curated the study, and when: at its very end, as it always was. */
+/**
+ * Who curated the study, and when, and where it began: at its very end, as
+ * it always was. The second line is a credit (1.9, the owner's yes to call
+ * 19): a study that grew from a thread on Purify's Discord server says so in
+ * plain words ("Began as a thread on Purify's Discord server, in
+ * dogma-exegesis: ..."), where it used to carry the editors' shorthand
+ * ("Discord, dogma-exegesis: ..."). Both lines are in the quiet ink every
+ * palette can read (lib/ui/__tests__/faintText.test.ts); they were at 35
+ * percent, under it. The credit is English, as the study and the thread's
+ * name are, and says so (build 90 note 4).
+ */
 export function StudyCurated({ body }: { body: TheologyBody }) {
   if (!body.curatedBy && !body.origin) return null;
   return (
-    <p className="mt-12 font-sans text-caption leading-[1.6] text-paper/35">
-      {body.curatedBy ? (
-        <>
-          <T k="study.curatedBy" /> {body.curatedBy}
-        </>
+    <div data-study-credit="" className="mt-12 space-y-1 font-sans text-caption leading-[1.6] text-paper/55">
+      {body.curatedBy || body.curatedOn ? (
+        <p>
+          {body.curatedBy ? (
+            <>
+              <T k="study.curatedBy" /> {body.curatedBy}
+            </>
+          ) : null}
+          {body.curatedBy && body.curatedOn ? <> · </> : null}
+          {body.curatedOn ?? null}
+        </p>
       ) : null}
-      {body.curatedBy && body.curatedOn ? <> · </> : null}
-      {body.curatedOn ?? null}
       {body.origin ? (
-        <>
-          <br />
+        <p lang="en" dir="ltr" className="rtl:text-right">
           {body.origin}
-        </>
+        </p>
       ) : null}
-    </p>
+    </div>
   );
 }
 

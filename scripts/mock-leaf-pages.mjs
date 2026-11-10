@@ -10,8 +10,9 @@
 // Fathers' words, the council's own, what it leads to). Two more are checked
 // and not pictured, since they draw what the first four do not: an error
 // whose council stands outside the seven and whose words are in a history
-// page (Barlaam's), and an answer whose Fathers are not yet gathered (On
-// deism).
+// page (Barlaam's), and an answer whose Fathers stand with no line of ours
+// under them (On deism, whose three passages came in 1.9 on the owner's yes
+// to call 19; until then it had none, and showed no part for them).
 //
 // What it draws with: the app's own pages and their own words. Nothing is
 // invented.
@@ -185,7 +186,7 @@ try {
 
   // Checked, not pictured: what the four above do not draw.
   await leaf("/heresies/barlaamism/", "heresy", "an error whose council is outside the seven", { picture: false, expects: ["[data-council-words]", '[data-heresy-part="condemned"] a'] });
-  await leaf("/apologetics/deism/", "answer", "an answer whose Fathers are not yet gathered", { picture: false, expects: ['[data-answer-part="scripture"] a'] });
+  await leaf("/apologetics/deism/", "answer", "an answer whose Fathers stand with no line of ours", { picture: false, expects: ['[data-answer-part="fathers"] [data-answer-quote]', '[data-answer-part="scripture"] a'] });
 } finally {
   await ctx.close();
   await browser.close();

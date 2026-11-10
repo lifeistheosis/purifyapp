@@ -31,7 +31,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { citeWords, staticShown, type Cite, type CouncilCite, type ScriptureCite, type WorkCite } from "@/lib/citations/cite";
+import { citeWords, staticShown, wordsUnderLine, type Cite, type CouncilCite, type ScriptureCite, type WorkCite } from "@/lib/citations/cite";
 import { resolveCitation } from "@/lib/citations/resolve";
 import { shownCite } from "@/lib/citations/shown";
 import { ACCOUNT_QUOTES, HIDDEN_ACCOUNT_QUOTES } from "@/lib/councils/accountQuotes";
@@ -569,7 +569,8 @@ describe("a Father, or a council, in a study of Theology or Apologetics", () => 
       return out;
     };
     expect(kinds("theology")).toEqual({ work: 63, council: 9, untraced: 42, page: 64 });
-    expect(kinds("apologetics")).toEqual({ work: 9, page: 5 });
+    // 9 to 15 in the library on 2026-11-10: the three passages each on deism and on sola scriptura (call 19).
+    expect(kinds("apologetics")).toEqual({ work: 15, page: 5 });
     for (const { where, q } of entries("theology")) if (q.cite?.kind === "untraced") expect(q.cite.searched.length, where).toBeGreaterThan(40);
   });
 
@@ -670,14 +671,16 @@ describe("a Father on a topic's or a heresy's page", () => {
    * heresies quoting the verse St John Chrysostom opens on (Homilies 2 and 3
    * on Hebrews), where our line above each describes a paragraph of his own
    * further down. Which words a Father is quoted as saying is the owner's
-   * choice, so the paragraphs are proposed to him
-   * (docs/1.9-build/notes/fathers-passages-proposed.md) and the cards wait
-   * here by name. No other may join them, and the list empties as he answers.
+   * choice: the paragraphs were proposed to him
+   * (docs/1.9-build/notes/fathers-passages-proposed.md) and he said yes on
+   * 2026-11-10 (call 19), so each of the four names the paragraph of St John
+   * Chrysostom's own that our line above it describes. None waits, and none
+   * may join.
    */
   const ONE_QUOTATION = /^["“][^"“”]*["”]\.?(?:\s*\[\d+\.\])?(?:\s*\([^)]*\)\.?)?$/;
-  const VERSE_CARDS_WAITING = ["john-chrysostom/homilies-on-hebrews s2", "john-chrysostom/homilies-on-hebrews s3"];
+  const VERSE_CARDS_WAITING: string[] = [];
 
-  it("quotes no paragraph that is another's words whole, but the homilies' verses that wait on the owner", async () => {
+  it("quotes no paragraph that is another's words whole", async () => {
     const found = new Set<string>();
     for (const c of all) {
       const r = await resolveCitation(c);
@@ -687,5 +690,83 @@ describe("a Father on a topic's or a heresy's page", () => {
     // The rule knows a verse with the edition's own mark after it, and leaves his own words alone.
     expect(ONE_QUOTATION.test("“And again when He bringeth in the First-Begotten into the world.” [1.]")).toBe(true);
     expect(ONE_QUOTATION.test("Behold how here also he goes on two paths, “by the one” leading us away from Sabellius.")).toBe(false);
+  });
+
+  it("leaves the edition's paragraph number to the line under it, and loses none the line does not say", async () => {
+    let left = 0;
+    for (const c of all) {
+      const r = await resolveCitation(c);
+      if (!r?.paragraph || r.cite?.kind !== "father") continue;
+      const where = `${c.saintSlug}/${c.workSlug} s${c.sectionN}`;
+      const at = /#p-(\d+)-(\d+)$/.exec(r.href)!;
+      const quoted: WorkCite = { kind: "work", saint: c.saintSlug, work: c.workSlug, section: Number(at[1]), paragraph: Number(at[2]) };
+      // The paragraph as the library holds it, its number and all.
+      expect(paragraph(quoted), where).not.toBeNull();
+      const whole = files.get(`${quoted.saint}/${quoted.work}`)!.sections.find((x) => x.n === quoted.section)!.paragraphs[quoted.paragraph];
+      const head = /^(\d{1,4})\. /.exec(whole);
+      const said = head ? `§${head[1]}` : null;
+      if (head && (r.cite.mark === said || r.cite.place === said)) {
+        // Said once, by the line: the card's words begin with his.
+        expect(r.paragraph, where).toBe(whole.slice(head[0].length));
+        expect(r.paragraph, where).not.toMatch(/^\d{1,4}\. /);
+        left += 1;
+      } else {
+        expect(r.paragraph, where).toBe(whole);
+      }
+    }
+    // Ten of the cards said their number twice before 1.9.
+    expect(left).toBeGreaterThanOrEqual(8);
+    // The rule itself: only a number the line says is left to it.
+    const line = { kind: "father" as const, href: "#", author: "St. Athanasius the Great", work: "Four Discourses Against the Arians", place: "Discourse I", mark: "§11", edition: "NPNF II 4" };
+    expect(wordsUnderLine("11. At his suggestion then ye have maintained", line)).toBe("At his suggestion then ye have maintained");
+    expect(wordsUnderLine("12. And again", line)).toBe("12. And again");
+    expect(wordsUnderLine("11. At his suggestion", { ...line, mark: undefined, place: "§11" })).toBe("At his suggestion");
+    expect(wordsUnderLine("11. At his suggestion", { ...line, mark: undefined })).toBe("11. At his suggestion");
+    expect(wordsUnderLine("1 Corinthians says", line)).toBe("1 Corinthians says");
+    expect(wordsUnderLine("11. At his suggestion", null)).toBe("11. At his suggestion");
+  });
+});
+
+describe("the Fathers on deism and on sola scriptura", () => {
+  // The owner's yes to call 19 (2026-11-10): three passages each, lifted by
+  // a script from the library's own files and proposed to him word for word
+  // (docs/1.9-build/notes/fathers-passages-proposed.md). The test above that
+  // holds every quotation to its paragraph holds these; this one holds which
+  // they are, and that none carries a line of ours: a line above a Father's
+  // words is doctrinal framing, which goes to the editorial queue first
+  // (docs/editorial-standards.md).
+  type Passage = { author: string; saintSlug?: string; text: string; gloss?: string; source?: string; cite?: WorkCite };
+  const passages = (slug: string) => readJson<{ florilegium: Passage[] }>("data", "apologetics", `${slug}.json`).florilegium;
+  const places = (list: Passage[]) => list.map((q) => `${q.cite?.saint}/${q.cite?.work} s${q.cite?.section} p${q.cite?.paragraph}`);
+
+  it("are the passages he approved, each in the library, in the answer's own order", () => {
+    expect(places(passages("deism"))).toEqual([
+      "athanasius-the-great/against-the-heathen s6 p13",
+      "john-of-damascus/exact-exposition-of-the-orthodox-faith s43 p0",
+      "athanasius-the-great/on-the-incarnation s1 p22",
+    ]);
+    // St Irenaeus and St Vincent of Lerins, read from their editions' pages, wait on his word (call 25) and are not here yet.
+    expect(places(passages("sola-scriptura"))).toEqual([
+      "basil-the-great/on-the-holy-spirit s27 p1",
+      "john-chrysostom/homilies-on-2-thessalonians s4 p16",
+      "john-of-damascus/exact-exposition-of-the-orthodox-faith s88 p4",
+    ]);
+  });
+
+  it("stand as the Father, his words and the line: no line of ours, and every word in the paragraph named", () => {
+    for (const slug of ["deism", "sola-scriptura"]) {
+      for (const q of passages(slug)) {
+        const where = `${slug}: ${q.author}`;
+        expect(q.gloss, where).toBeUndefined();
+        expect(q.source, where).toBeUndefined();
+        expect(q.cite?.kind, where).toBe("work");
+        expect(q.saintSlug, where).toBe(q.cite!.saint);
+        const whole = readJson<{ sections: { n: number; paragraphs: string[] }[] }>("data", "saints", q.cite!.saint, `${q.cite!.work}.json`).sections.find((x) => x.n === q.cite!.section)!.paragraphs[q.cite!.paragraph];
+        // Word for word, in one piece, and no dash of ours in it.
+        expect(whole.includes(q.text), where).toBe(true);
+        expect(q.text, where).not.toContain("\u2014");
+        expect(shownCite(q.cite!)?.kind, where).toBe("father");
+      }
+    }
   });
 });

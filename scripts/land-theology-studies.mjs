@@ -45,7 +45,8 @@ for (const file of fs.readdirSync(SRC).filter((f) => f.endsWith(".json"))) {
     summary: s.summary,
     curatedBy: "Purify Team",
     curatedOn: CURATED_ON,
-    origin: `Discord, ${origin[0]}: ${origin[1]}.`,
+    // A credit a reader sees at the study's foot (1.9, the owner's yes to call 19), in the words he chose.
+    origin: `Began as a thread on Purify's Discord server, in ${origin[0]}: ${origin[1]}${/[.?!]$/.test(origin[1]) ? "" : "."}`,
     essay: s.essay,
     florilegium: s.florilegium,
     scripture: s.scripture,

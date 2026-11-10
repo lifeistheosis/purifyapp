@@ -166,6 +166,21 @@ export function markOf(paragraph: string): string | undefined {
   return m ? `§${m[1]}` : undefined;
 }
 
+/**
+ * A quoted paragraph as a card shows it: without the number the edition
+ * prints at its head ("11. At his suggestion ..."), where the line under the
+ * card says that number ("§11"). The number is the edition's, and it was
+ * being said twice, in the words and under them (1.9, the owner's yes to
+ * call 19: "the paragraph number left to the line"). Where the line does not
+ * say it the paragraph is whole, so the number is never lost.
+ */
+export function wordsUnderLine(paragraph: string, line: ShownCite | null): string {
+  const head = /^(\d{1,4})\. /.exec(paragraph);
+  if (!head || line?.kind !== "father") return paragraph;
+  const said = `§${head[1]}`;
+  return line.mark === said || line.place === said ? paragraph.slice(head[0].length) : paragraph;
+}
+
 /** Where a passage of Scripture opens: its verses in the Bible. */
 export function scriptureHref(c: { book: string; chapter: number; from: number; to?: number }): string {
   return `/bible/${c.book}/${c.chapter}#v${c.from}${c.to !== undefined && c.to !== c.from ? `-${c.to}` : ""}`;

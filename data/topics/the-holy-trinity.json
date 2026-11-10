@@ -15,6 +15,7 @@
       "saintSlug": "athanasius-the-great",
       "workSlug": "on-the-nicene-definition",
       "sectionN": 1,
+      "paragraphIndex": 91,
       "stance": "affirms",
       "gloss": "The defence of the word 'of one essence' against those who called it unscriptural."
     },
@@ -43,6 +44,7 @@
       "saintSlug": "athanasius-the-great",
       "workSlug": "four-discourses-against-the-arians",
       "sectionN": 1,
+      "paragraphIndex": 41,
       "stance": "refutes",
       "gloss": "Against Arianism: there was no time when the Son was not."
     },
@@ -50,6 +52,7 @@
       "saintSlug": "athanasius-the-great",
       "workSlug": "on-the-councils",
       "sectionN": 2,
+      "paragraphIndex": 16,
       "stance": "refutes",
       "gloss": "A history of the Arian opinions, traced and refuted from their own words."
     }

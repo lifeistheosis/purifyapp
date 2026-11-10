@@ -15,6 +15,10 @@
 // those the card keeps its gloss and its line, and quotes nothing. The line
 // is the one every quotation in the app has (lib/citations/cite.ts), and the
 // card opens the paragraph itself, not the top of its section.
+//
+// 1.9: the number the edition prints at a paragraph's head ("11. ") is left
+// to the line, which says it ("§11"): it stood twice on ten of the cards,
+// in the words and under them (lib/citations/cite.ts, wordsUnderLine).
 
 import "server-only";
 import type { TopicCitation } from "@/lib/topics/topics";
@@ -23,7 +27,7 @@ import { getSaint } from "@/lib/saints/saints";
 import { bylineOf, entryFor } from "@/lib/reading/entries";
 import { divisionsOf } from "@/lib/saints/divisions";
 
-import type { ShownCite } from "./cite";
+import { wordsUnderLine, type ShownCite } from "./cite";
 import { shownWork } from "./shown";
 
 export type ResolvedCitation = {
@@ -40,7 +44,7 @@ export type ResolvedCitation = {
   workTitle: string;
   sectionTitle?: string;
   citation?: string;
-  /** The Father's own words the card quotes; null when the cited text is not his words. */
+  /** The Father's own words the card quotes, the edition's number at their head left to the line; null when the cited text is not his words. */
   paragraph: string | null;
   href: string;
   gloss?: string;
@@ -82,7 +86,7 @@ export async function resolveCitation(
     workTitle: writing.title,
     sectionTitle: section.title,
     citation: section.citation,
-    paragraph: index === null ? null : section.paragraphs[index] ?? null,
+    paragraph: index === null || section.paragraphs[index] === undefined ? null : wordsUnderLine(section.paragraphs[index], cite),
     href: index === null ? `/saints/${c.saintSlug}/${c.workSlug}#s${c.sectionN}` : `/saints/${c.saintSlug}/${c.workSlug}#p-${c.sectionN}-${index}`,
     gloss: c.gloss,
     cite: cite ? (index === null ? { ...cite, href: `/saints/${c.saintSlug}/${c.workSlug}#s${c.sectionN}` } : cite) : null,

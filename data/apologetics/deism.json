@@ -6,7 +6,7 @@
   "summary": "Deism grants a first cause but denies His providence and His coming among us. The Orthodox answer holds that the God who made all things upholds them still, is present to His creation by His energies, and has entered it in the Incarnation, so that He is not the absent watchmaker but the God who is with us.",
   "curatedBy": "Purify Team",
   "curatedOn": "2026-06-11",
-  "origin": "Opened in v9.9 as a foundation entry. The verbatim patristic florilegium is being assembled.",
+  "origin": "Opened in v9.9 as a foundation entry. The Fathers' passages were added on 2026-11-10 from the library's own files (St Athanasius, Against the Heathen 41 and On the Incarnation 8; St John of Damascus, Exact Exposition II.29), on the owner's yes to call 19; each is held to its paragraph by test.",
   "essay": [
     { "kind": "para", "text": "Deism concedes what atheism denies, that there is a God who made the world, but it strips that God of nearly everything the Christian confesses of Him. The deist's god is a first cause who, having set the world going by fixed laws, withdrew from it: he does not providentially uphold it, does not answer prayer, works no miracles, and certainly did not become man. The image often given is the watchmaker who builds the watch, winds it, and walks away. It is a god arrived at by reason and then dismissed by it." },
     { "kind": "heading", "text": "A cause that does not sustain is not enough" },
@@ -15,7 +15,32 @@
     { "kind": "para", "text": "The Church confesses that God is present to His whole creation, not as one part of it, nor as mingled with it, but by His uncreated energies, while His essence remains beyond it and beyond all knowing. This is the answer both to the deist, who pushes God away, and to the pantheist, who collapses God into the world. God is everywhere present and fills all things, as the prayer says, and yet is not contained by them. Providence is not interference in a closed system; it is the constant nearness of the One in whom the system subsists." },
     { "kind": "para", "text": "But the deepest answer to deism is not a refinement of the argument; it is the Incarnation. The charge of deism is that God keeps His distance. The Gospel is that He did not. The Word through whom all things were made entered His own creation, was born, hungered, wept, was crucified, and rose, so that the very distance the deist takes for granted has been crossed from God's side. The name given to the child is the refutation of the absent god: Emmanuel, God with us. A God who would do this is not a watchmaker who walked away." }
   ],
-  "florilegium": [],
+  "florilegium": [
+    {
+      "author": "St Athanasius the Great",
+      "saintSlug": "athanasius-the-great",
+      "work": "Against the Heathen",
+      "reference": "Chapter 41, NPNF2 vol. 4",
+      "text": "Seeing then all created nature, as far as its own laws were concerned, to be fleeting and subject to dissolution, lest it should come to this and lest the Universe should be broken up again into nothingness, for this cause He made all things by His own eternal Word, and gave substantive existence to Creation, and moreover did not leave it to be tossed in a tempest in the course of its own nature, lest it should run the risk of once more dropping out of existence; but, because He is good He guides and settles the whole Creation by His own Word, Who is Himself also God, that by the governance and providence and ordering action of the Word, Creation may have light, and be enabled to abide alway securely.",
+      "cite": { "kind": "work", "saint": "athanasius-the-great", "work": "against-the-heathen", "section": 6, "paragraph": 13 }
+    },
+    {
+      "author": "St John of Damascus",
+      "saintSlug": "john-of-damascus",
+      "work": "An Exact Exposition of the Orthodox Faith",
+      "reference": "Book II, Chapter 29, NPNF2 vol. 9",
+      "text": "For the same person must of necessity be creator of and provider for what exists: for it is not meet nor fitting that the creator of what exists and the provider should be separate persons. For in that case they would both assuredly be deficient, the one in creating, the other in providing. God therefore is both Creator and Provider, and His creative and preserving and providing power is simply His good-will.",
+      "cite": { "kind": "work", "saint": "john-of-damascus", "work": "exact-exposition-of-the-orthodox-faith", "section": 43, "paragraph": 0 }
+    },
+    {
+      "author": "St Athanasius the Great",
+      "saintSlug": "athanasius-the-great",
+      "work": "On the Incarnation",
+      "reference": "Chapter 8, NPNF2 vol. 4",
+      "text": "For this purpose, then, the incorporeal and incorruptible and immaterial Word of God comes to our realm, howbeit he was not far from us before. For no part of Creation is left void of Him: He has filled all things everywhere, remaining present with His own Father. But He comes in condescension to shew loving-kindness upon us, and to visit us.",
+      "cite": { "kind": "work", "saint": "athanasius-the-great", "work": "on-the-incarnation", "section": 1, "paragraph": 22 }
+    }
+  ],
   "scripture": [
     { "ref": "Hebrews 1:3", "bibleRef": "Hebrews 1:3", "note": "Upholding all things by the word of his power." },
     { "ref": "Colossians 1:17", "bibleRef": "Colossians 1:17", "note": "He is before all things, and by him all things consist." },

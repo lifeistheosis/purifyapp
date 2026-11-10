@@ -544,10 +544,10 @@ Counted by script, then read by eye where a script cannot judge.
   Arius." at the end of §15's paragraph and again as the next paragraph. A
   blemish in the text as held; it belongs to the chat that has the Fathers'
   works.
-- A quoted paragraph keeps the edition's number at its front ("11. At his
+- A quoted paragraph kept the edition's number at its front ("11. At his
   suggestion"), and the line under it says §11 as well. 10 of the 33 quoted
-  cards show it. The card could leave the number to the line. Asked, not
-  done.
+  cards showed it. Asked, and done on his yes: the card leaves the number to
+  the line ("His yes to call 19", below).
 - The Incarnation's card for St Cyril's Commentary on John shows nine words
   that start mid-sentence under a label for a later chapter. The labels and
   the dropped lines of that work are already in another chat's hands.
@@ -556,7 +556,8 @@ Counted by script, then read by eye where a script cannot judge.
 - A study of Theology still shows its `origin` line at its foot
   (`StudyCurated`, `components/theology/StudyPartText.tsx`). It names where
   the study began, which is closer to a credit than to an editor's note, so
-  it was asked about and not removed.
+  it was asked about and not removed. On his yes it is a credit in plain
+  words ("His yes to call 19", below).
 
 ### Checked (commands, on the merged tree)
 
@@ -584,3 +585,122 @@ Counted by script, then read by eye where a script cannot judge.
 
 Not run on this tree: `npm run build:ios` (no platform code changed; green
 on the tree before), and a hand on a phone.
+
+## His yes to call 19: the passages go in (2026-11-10)
+
+His word, about 20:07 UTC, to his decisions page: "Yes to all recommended
+suggestions. Do them all." Call 19 there was "yes Fathers", as recorded in
+`docs/1.9-build/BRAINSTORM.md`: the Arianism passages (also on The Holy
+Trinity and The Incarnation), St John Chrysostom's own words on four cards,
+three Fathers each on deism and on sola scriptura, St Irenaeus and St Vincent
+read from their editions and shown to him first, the paragraph number left to
+the line, and the studies' credit in the words "Began as a thread on Purify's
+Discord server, in dogma-exegesis: ...".
+
+### What went in
+
+- **Arianism's three cards** quote the paragraphs proposed as A1, A2 and A3:
+  Discourse I §11, On the Nicene Definition §23, On the Councils §20. Each is
+  one number added to its citation (`paragraphIndex`, `lib/heresies/
+  heresies.ts`). The same three places on The Holy Trinity, and the first on
+  The Incarnation, quote the same paragraphs (`data/topics/`).
+- **Four cards of St John Chrysostom** quote his own words, not the verse
+  the homily opens on: Sabellianism (B1), Marcellianism and Photinianism
+  (B2), Paulianism (B3), in `lib/heresies/conciliar.ts`. The list of verse
+  cards that waited by name in the quotation test is empty, and stays empty:
+  no card may quote a paragraph that is another's words whole.
+- **On deism** has three passages (C1, C2, C3: St Athanasius, Against the
+  Heathen 41; St John of Damascus, Exact Exposition II.29; St Athanasius, On
+  the Incarnation 8), and **On sola scriptura** three (D1, D2, D3: St Basil,
+  On the Holy Spirit 27; St John Chrysostom on 2 Thessalonians, Homily 4; St
+  John of Damascus, Exact Exposition IV.16). Each is the Father, his words
+  and the line, with no line of ours: a line above a Father's words is
+  doctrinal framing and goes to the editorial queue first. D4, the
+  alternate, is not in.
+- **The edition's paragraph number is left to the line.** A card whose
+  paragraph begins "11. " under a line that says §11 shows the words from
+  "At his suggestion". Only a number the line itself says is left to it, so
+  none is lost (`wordsUnderLine`, `lib/citations/cite.ts`, used by the
+  resolver). 10 of the 33 cards that quote a Father.
+- **The fourteen studies' credit** reads "Began as a thread on Purify's
+  Discord server, in dogma-exegesis: The Annihilation of the Filioque." (two
+  say "in liturgics-forum"). The thread's name is as it was; one stray
+  period after a question mark went. The foot draws it on its own line, as
+  the English it is, at the quiet ink every palette can read: it was at 35
+  percent, under the 45 to 60 the palettes lift to 4.5:1
+  (`StudyCurated`, `components/theology/StudyPartText.tsx`). The script that
+  lands a study writes the same words. The permission for the threads stays
+  where it is recorded (`docs/editorial/dogma-queue/`); nothing of that
+  record changed.
+
+### What waits
+
+- **St Irenaeus and St Vincent of Lerins**, for On sola scriptura. The
+  library does not carry Against Heresies III or the Commonitory, so one
+  passage of each was read from the public-domain edition's own page
+  (ccel.org, ANF 1 and NPNF II 11), the page saved and the words lifted from
+  it by a script, never typed. They are call 25 on his page and go in on
+  his word, as entries that name the edition's page.
+- **Three slips in the text as the library holds it** stand inside the
+  passages (a missing space in A1, "unchangableness" in A2, "un originated"
+  in B1). They are shown as held; the chat that has the Fathers' works knows
+  of them.
+
+### What holds it
+
+- `lib/citations/__tests__/quotes.test.ts`: every card of a topic or a
+  heresy quotes a Father's own paragraph, never a heading, never another's
+  words whole (the waiting list is empty); the number at a paragraph's head
+  is the line's wherever the line says it, and is kept wherever it does not;
+  the answers' six passages are the ones approved, each word for word inside
+  the paragraph named, with no line of ours.
+- `lib/theology/__tests__/studyCredit.test.ts` (new): the fourteen credits
+  say the owner's words, none keeps the shorthand, the landing script
+  writes the same, and the foot is legible.
+
+### Found on the way
+
+The mock check was run on a study's last part for the credit's ink, which it
+passes on all five palettes. It also read two things on that page that are
+not from this work:
+
+- **The Next pill was 42px tall**, two under the floor of 44 for anything
+  pressed: in the study's reader (the next part, and what comes after the
+  last) and at the end of a step of the path. The count of small targets
+  cannot see a height written out in pixels. Mended, the three of them
+  (`h-11`; `lib/theology/__tests__/nextPill.test.ts` holds it).
+- **The passages' cards in the study's reader** read under 4.5:1 in their
+  small print on every palette (measured on the export: the Father's name
+  3.65:1 on Dark, the work and its place 2.16:1; on Light the passage's own
+  words 2.88:1 on some cards). Some of that may be the cards waiting at the
+  side of the row, which the deck draws fainter on purpose; it has not been
+  looked into. The deck is another chat's and changed today, so it is told
+  to the arbiter and not touched here.
+
+### Checked (commands, on the tree as committed)
+
+- `npm run typecheck`: 0 errors.
+- `npm run test:unit`: 929 files and 11,528 tests passing (one file skipped
+  by its own condition).
+- `npm run lint`: 0 errors.
+- `npm run build:android`: green, 66.5 MB packed of the 85 allowed.
+- `npm run build` (the website): green.
+- On the Android export, each changed card read from the page itself and
+  held to what it must say (22 checks): Arianism's three with their lines
+  (§11, §23, §20), no card beginning with the edition's number, the same
+  paragraphs on The Holy Trinity and The Incarnation, St John Chrysostom's
+  own words on the four cards and no card that is only the verse, the three
+  passages on each answer in its own order with their lines and nothing of
+  ours, and the study's credit on its own line.
+- The mock check, five palettes, all ten checks: Sabellianism, On deism, On
+  sola scriptura, and the six pages of `node scripts/mock-leaf-pages.mjs`
+  (On deism there now as an answer whose Fathers stand with no line of
+  ours). On a study's last part the credit's ink and the Next pill pass;
+  what remains there is the passage deck's, told above.
+- `node scripts/route-motion.mjs`: 26 of 26.
+- By eye, on stills: Arianism's first and third cards, Sabellianism's, the
+  Fathers on both answers, and a study's end.
+
+Not run on this tree: `npm run build:ios` (no platform code changed), and a
+hand on a phone.
+
