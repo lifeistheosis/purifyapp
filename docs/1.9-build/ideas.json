@@ -452,12 +452,12 @@
    "title": "Show the earned palettes",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
-   "decided": "2026-11-06",
+   "status": "built",
+   "decided": "2026-11-09",
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Blocked, found 2026-11-07: both palettes are earned by finishing a study collection, and there is none to finish. data/catechism/collections.json and the question bank, data/catechism/questions.json, are both empty, so no reader can earn Councils or Cappadocian, and showing them as goals would show a goal with no way to it. The questions are doctrinal content, for him and the clergy queue, never drafted by Claude (docs/editorial-standards.md). Two ways on, for his word: fill the bank and name the two collections; or let each palette be earned by something the app already has, such as reading every council's page for Councils and the three Cappadocian Fathers' works for Cappadocian"
+   "note": "Blocked, found 2026-11-07: both palettes are earned by finishing a study collection, and there is none to finish. data/catechism/collections.json and the question bank, data/catechism/questions.json, are both empty, so no reader can earn Councils or Cappadocian, and showing them as goals would show a goal with no way to it. The questions are doctrinal content, for him and the clergy queue, never drafted by Claude (docs/editorial-standards.md). Two ways on, for his word: fill the bank and name the two collections; or let each palette be earned by something the app already has, such as reading every council's page for Councils and the three Cappadocian Fathers' works for Cappadocian His yes 2026-11-09 to earning them by reading; the rules (rec 79) by his \"if these are good\" of 2026-11-10: Councils for all 19 council pages read to the end, Cappadocian for one work by each of St Basil, St Gregory the Theologian and St Gregory of Nyssa read to the end, progress shown until earned. Built 2026-11-10 (5ee653d): a mark at the foot of a council's page and of a work's last chapter keeps it read to its end on the device (lib/reading/readToEnd.ts; a work finished before 1.9 counts when the reading room saw its last chapter reached and it has more than one); the reader's palette chips and Settings show both as goals with how far (\"12 of 19\", \"1 of 3\") and say how once tapped, adding that it is a Purify Plus palette to a reader without Plus; earned, each is a palette like Candlelight. Settings keeps its five pages as they were and gives the two a row of their own under them. Held by lib/reader/__tests__/earned.test.ts and lib/settings/__tests__/litPanels.test.ts."
   },
   {
    "id": "s2-05",
@@ -1761,6 +1761,20 @@
    "version": null,
    "outcome": null,
    "note": "Found measuring \"Ambience\" breaking as \"Ambienc / e\" at 390px; bdf3342 (2026-11-09) gave each word its whole share of the row and stopped balancing, which took the mid-word breaks from 45 to 20 at 360px and from 30 to 13 at 390, and left single words wider than the share (\"Wiederholen\", \"Temporizador\", \"Επανάληψη\"), which only shorter words fix. Built 2026-11-10 (efa0dc7) on the arbiter's recs, his \"if these are good\" (rec 80): the row's own words (player.option.*), a shorter one in the fourteen languages (Schleife, Klang, Timer; Ξανά, Ήχοι, Ύπνος; Dormir; Laju; Повтор, Таймер; ციკლი; लूप; Dźwięki; Ritmo; Somn; Понови; Uyku; Темп), the full word in the other seven, and each button's full name kept for a screen reader. Measured in the dev site's Now Playing: 21 languages at 360 and 390px, five words each, no word broken mid-word (lib/player/__tests__/optionWords.test.ts)."
+  },
+  {
+   "id": "c-covers-pack",
+   "section": "Listening",
+   "kind": "idea",
+   "title": "The covers pack: a book's read-aloud cover reaches the apps from the website, no store build",
+   "from": "claude",
+   "asked": "2026-11-09",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "Proposed with the 18 books' icons (his 86), so they can go live without a store build; the arbiter's go on its size, 2026-11-10. Built the same day (8f481f4): the website sends the covers' own map (lib/readAloud/covers.ts, coversPackOf: every book, each figure's file under /covers/ and its name in all 21 languages) as a content pack (docs/PACKS.md); the apps read it strictly (readCoversPack: versioned .jpg files of the website's own /covers/ only, plain names, one bad entry throws the pack away), use it only when it is the newer and only after their first screen is drawn (PackBridge, useCoversVersion), and keep the build's cover for a book it does not name. Walked in the export (section 30): with a covers pack John's books ask the website for the pack's figure. The 18 icons themselves: 4 candidates with catches and 14 with none (scratchpad research of 2026-11-10, sent to the arbiter), for his word."
   }
  ]
 }
