@@ -28,6 +28,20 @@ How each step works is in `docs/RELEASE.md`.
 - [ ] The highlights at the top of What's New: `lib/whatsNew/highlights.ts`,
       real screenshots in `public/whats-new/1.9/`, strings in all 21
       languages.
+- [ ] The held lines below. Each goes into `patch-note-1.9.json` only once
+      what it says is lit for release, and reaches the owner with the note,
+      through the queue, never alone. One whose condition is not met at the
+      push stays out of the note.
+
+      Held lines (drafts; his voice settles the words):
+
+      1. A plain line, from the prayer campaigns chat by way of the arbiter
+         (2026-11-10): "Asking for prayers is now a prayer campaign. The
+         prayer wall has closed: start a campaign for someone, for a day or
+         up to forty, and others can add it to their own prayers." Lit
+         when: the prayer wall is gone from the build (his word, 2026-11-10:
+         "remove the prayer wall and just keep the prayer campaigns"), and
+         campaigns are open for release (OWNER-STEPS R5c).
 - [ ] Sent to the owner's queue:
       `node scripts/patch-notes.mjs propose --file docs/plans/v1.9/patch-note-1.9.json --apply`
 - [ ] The owner accepted it in `/admin?tab=patch-notes`. Until then the
@@ -106,7 +120,9 @@ Drafted now, sent later. The owner sends every one. How a drop works is in
       release day, in UTC, `"YYYY-MM-DD"`. While it is `null` the job reads
       and deletes nothing; thirty days after the day it names, the
       heartbeat deletes July's rows, and it leaves the public mark
-      `campaigns-july-rows-deleted` in `data_moves` when none is left.
+      `campaigns-july-rows-deleted` in `data_moves` when none is left. The
+      prayer wall's clearing job (the campaigns chat, being built) will count
+      its fourteen days from the same constant.
 - [ ] Campaign pictures in the store builds (OWNER-STEPS R5d; the review
       notes, part A, items 4 and 9): `PICTURES_IN_STORE_BUILDS` in
       `lib/campaigns/flags.ts` stays `false` unless pictures are on when the
