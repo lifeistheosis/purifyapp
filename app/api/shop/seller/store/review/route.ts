@@ -17,7 +17,8 @@ export const dynamic = "force-dynamic";
  * "My store is ready. Please open it."
  *
  * This replaces the line in the seller overview that told a seller to write to
- * lifeistheosis@gmail.com to schedule the review that flips their store live.
+ * the owner's personal address to schedule the review that flips their store
+ * live.
  * That instruction asked the seller to compose the message this route composes
  * for them, gave them no idea what to put in it, and left no record anywhere
  * that they had asked.

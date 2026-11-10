@@ -94,6 +94,13 @@ Drafted now, sent later. The owner sends every one. How a drop works is in
 ## 6. The push
 
 - [ ] The owner said go.
+- [ ] The terms' new date (his item 96, 2026-11-10: "change it all when
+      version 1.9 gets dropped"): one commit sets the terms' "Effective"
+      date (`app/(app)/terms/page.tsx`) and `TERMS_VERSION`
+      (`lib/legal/version.ts`) to the release day, together;
+      `lib/legal/__tests__/termsDate.test.ts` refuses one without the other.
+      The bump asks every reader to accept again at their next sign-in,
+      checkout or EIKON claim, and arms Admin's terms notice.
 - [ ] `git fetch origin`, rebase on `origin/main`, `node scripts/release.mjs back`
       again, and section 4's check again.
 - [ ] Push `main`. That is the deploy.
@@ -108,6 +115,9 @@ Drafted now, sent later. The owner sends every one. How a drop works is in
       (`scripts/chants/store-builds.json` says what each build asks for).
 - [ ] `/whats-new` shows the note and the highlights; the footer shows
       1.9. The note shows only once the owner has accepted it.
+- [ ] The owner sent the terms notice (Admin, Releases, Email; OWNER-STEPS
+      R2b), and his test messages to legal@ and support@ are in Messages,
+      the first marked Legal.
 - [ ] The Supabase check on the commit is green, if the push carried a
       migration.
 - [ ] The deletes the privacy page promises run (error reports after 14

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { SellerNav } from "@/components/shop/seller/SellerNav";
+import { SUPPORT_EMAIL } from "@/lib/legal/entity";
 import { getSellerContext } from "@/lib/shop/seller";
 
 export const dynamic = "force-dynamic";
@@ -75,7 +76,7 @@ export default async function SellerLayout({
           Your seller account is currently{" "}
           {ctx.seller.status === "suspended" ? "suspended" : "closed"}. Existing
           orders remain visible to buyers; nothing new can be listed or sold.
-          Write to lifeistheosis@gmail.com if you believe this is a mistake.
+          Write to {SUPPORT_EMAIL} if you believe this is a mistake.
         </p>
       </GatePanel>
     );

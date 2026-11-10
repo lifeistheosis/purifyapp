@@ -3,6 +3,7 @@ import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
 import { T } from "@/components/i18n/T";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+import { SUPPORT_EMAIL } from "@/lib/legal/entity";
 
 export const metadata = {
  title: "FAQ",
@@ -210,10 +211,10 @@ const QUESTIONS: QA[] = [
  <p>
  <T k="ui.forFeedbackEmail" />{" "}
  <a
- href="mailto:team@purify.app"
+ href={`mailto:${SUPPORT_EMAIL}`}
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- <T k="ui.teamPurifyApp" />
+ {SUPPORT_EMAIL}
  </a>
  <T k="ui.weReadEverythingWeAnswer" />
  </p>
@@ -346,10 +347,10 @@ const QUESTIONS_DE: QA[] = [
  <p>
  <T k="ui.fRRCkmeldungSchreib" />{" "}
  <a
- href="mailto:team@purify.app"
+ href={`mailto:${SUPPORT_EMAIL}`}
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- <T k="ui.teamPurifyApp" />
+ {SUPPORT_EMAIL}
  </a>
  <T k="ui.wirLesenAllesWirBeantworten" />
  </p>

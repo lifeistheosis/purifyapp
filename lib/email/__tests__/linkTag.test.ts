@@ -26,7 +26,7 @@ describe("one address", () => {
       "https://apps.apple.com/app/id6798897857",
       "https://tools.usps.com/go/TrackConfirmAction?tLabels=9400",
       "https://purifyapp.net.example.org/whats-new",
-      "mailto:lifeistheosis@gmail.com",
+      "mailto:support@purifyapp.net",
       "%%PURIFY_UNSUBSCRIBE%%",
       "",
     ]) {

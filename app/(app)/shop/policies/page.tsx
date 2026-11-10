@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { T } from "@/components/i18n/T";
+import { SUPPORT_EMAIL } from "@/lib/legal/entity";
 
 export const metadata = {
   title: "Shipping & Returns | EIKON",
@@ -78,8 +79,8 @@ export default function ShopPoliciesPage() {
             <T k="shop.support" />
           </Link>{" "}
           <T k="shop.orAt" />{" "}
-          <a href="mailto:lifeistheosis@gmail.com" className={A}>
-            <T k="shop.supportEmail" />
+          <a href={`mailto:${SUPPORT_EMAIL}`} className={A}>
+            {SUPPORT_EMAIL}
           </a>
           .
         </p>

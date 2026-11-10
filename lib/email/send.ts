@@ -2,6 +2,8 @@ import "server-only";
 
 import { randomUUID } from "node:crypto";
 
+import { SUPPORT_EMAIL } from "@/lib/legal/entity";
+
 import { bareAddress, suppressedAmong } from "./suppression";
 import { UNSUBSCRIBE_PAGE, fillUnsubscribe } from "./unsubscribe";
 
@@ -18,12 +20,13 @@ import { UNSUBSCRIBE_PAGE, fillUnsubscribe } from "./unsubscribe";
  *                     address included. Unset stops every send (1.8): it used
  *                     to fall back to Resend's shared test sender, so a lost
  *                     setting would have mailed readers from onboarding@resend.dev.
- *   EMAIL_REPLY_TO  - optional Reply-To. Defaults to support@purifyapp.net, a
- *                     Resend inbox whose mail becomes a support ticket
- *                     (app/api/email/resend-webhook), not anyone's own Gmail.
+ *   EMAIL_REPLY_TO  - optional Reply-To. Defaults to SUPPORT_EMAIL
+ *                     (lib/legal/entity.ts), a Resend inbox whose mail becomes
+ *                     a support request (app/api/email/resend-webhook), not
+ *                     anyone's own Gmail. Best left unset.
  */
 
-export const DEFAULT_REPLY_TO = "support@purifyapp.net";
+export const DEFAULT_REPLY_TO = SUPPORT_EMAIL;
 
 export function emailEnabled(): boolean {
   return Boolean(process.env.RESEND_API_KEY);

@@ -22,12 +22,12 @@ import { cappedApi } from "@/lib/supabase/__tests__/cappedApi";
 
 vi.mock("@/lib/admin/accountEmails", () => ({
   userIdByEmail: vi.fn(async (email: string) =>
-    email === "lifeistheosis@gmail.com" ? "owner-uid" : null,
+    email === "owner@example.com" ? "owner-uid" : null,
   ),
 }));
 
 vi.mock("@/lib/dev/developer", () => ({
-  DEVELOPER_EMAILS: ["lifeistheosis@gmail.com"] as const,
+  DEVELOPER_EMAILS: ["owner@example.com"] as const,
 }));
 
 const { subscriptionStats } = await import("@/lib/entitlements/adminStats");

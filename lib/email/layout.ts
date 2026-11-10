@@ -1,3 +1,4 @@
+import { SUPPORT_EMAIL } from "@/lib/legal/entity";
 import { SITE_URL } from "@/lib/site";
 
 import { escapeHtml } from "./send";
@@ -41,7 +42,7 @@ export function emailLayout(opts: {
 }): string {
   const footer =
     opts.footer ??
-    "EIKON selects, inspects, and ships every icon it sells. Questions? Reply to this email or contact lifeistheosis@gmail.com.";
+    `EIKON selects, inspects, and ships every icon it sells. Questions? Reply to this email or contact ${SUPPORT_EMAIL}.`;
   const eyebrow = opts.eyebrow ?? "Purify Shop &middot; EIKON";
   const site = SITE_URL.replace(/\/$/, "");
   const cross = T.crossPath

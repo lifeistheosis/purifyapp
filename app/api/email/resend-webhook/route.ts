@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { DEFAULT_REPLY_TO } from "@/lib/email/send";
 import { bareAddress, recordDeliveryEvent, type DeliveryEvent } from "@/lib/email/suppression";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { inboxOf, legalSubject } from "@/lib/support/inbox";
 import { notifyAdminNewTicket } from "@/lib/support/ticketEmails";
 import { addCustomerReplyByNumber, createTicket } from "@/lib/support/tickets";
 
@@ -15,10 +15,13 @@ export const dynamic = "force-dynamic";
  *
  * Bounces, complaints and Resend's own suppressions go to the "do not send"
  * list (lib/email/suppression.ts), which every send checks first. Mail that
- * arrives at the support inbox (support@purifyapp.net, the Reply-To on every
- * email) becomes a support ticket in the admin's Messages, or joins its ticket
- * when the subject names one, so a reader's answer never sits in a dashboard
- * nobody opens.
+ * arrives at the support inbox (SUPPORT_EMAIL, the Reply-To on every email) or
+ * the legal inbox (LEGAL_EMAIL, the address the terms and the privacy page
+ * give; both in lib/legal/entity.ts) becomes a request in the admin's
+ * Messages, or joins its request when the subject names one, so a reader's
+ * answer never sits in a dashboard nobody opens. A new one sent to the legal
+ * inbox is marked Legal (lib/support/inbox.ts). Mail to any other address at
+ * the domain is left in Resend.
  *
  * Signed: Resend signs each delivery (Standard Webhooks); anything without a
  * valid signature under RESEND_WEBHOOK_SECRET is refused. Each delivery id is
@@ -42,8 +45,6 @@ type Event = {
     suppressed?: { type?: string; message?: string };
   };
 };
-
-const SUPPORT = DEFAULT_REPLY_TO;
 
 export async function POST(req: Request) {
   const secret = process.env.RESEND_WEBHOOK_SECRET;
@@ -118,10 +119,10 @@ async function handle(admin: ReturnType<typeof createAdminClient>, event: Event,
   }
 }
 
-/** Mail to the support inbox, into Messages. */
+/** Mail to the support or the legal inbox, into Messages. */
 async function received(event: Event, key: string) {
-  const forSupport = (event.data.received_for ?? event.data.to ?? []).some((a) => bareAddress(a) === SUPPORT);
-  if (!forSupport) return;
+  const inbox = inboxOf(event.data.received_for ?? event.data.to ?? []);
+  if (!inbox) return;
   const from = event.data.from ? bareAddress(event.data.from) : "";
   // Never a loop with ourselves, and no flood from one sender.
   if (!from || from.endsWith("@purifyapp.net")) return;
@@ -141,7 +142,7 @@ async function received(event: Event, key: string) {
   const num = /\bTKT-[0-9A-F]{8}\b/i.exec(subject)?.[0];
   if (num && (await addCustomerReplyByNumber(num.toUpperCase(), body))) return;
 
-  const ticket = await createTicket({ email: from, name, subject, body });
+  const ticket = await createTicket({ email: from, name, subject: inbox === "legal" ? legalSubject(subject) : subject, body });
   if (!ticket) throw new Error("ticket insert failed");
   await notifyAdminNewTicket(ticket, body);
 }

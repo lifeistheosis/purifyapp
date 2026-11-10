@@ -4,6 +4,8 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
+import { SUPPORT_EMAIL } from "@/lib/legal/entity";
+
 import { applyEvent, bareAddress, blocks, SOFT_BOUNCE_LIMIT, type SuppressionRow } from "../suppression";
 
 const row = (over: Partial<SuppressionRow> = {}): SuppressionRow => ({
@@ -69,7 +71,8 @@ describe("the sender", () => {
 
   it("sends replies to the support inbox, not a personal address", () => {
     expect(send).not.toContain("lifeistheosis@gmail.com");
-    expect(send).toContain('DEFAULT_REPLY_TO = "support@purifyapp.net"');
+    expect(send).toContain("DEFAULT_REPLY_TO = SUPPORT_EMAIL;");
+    expect(SUPPORT_EMAIL).toBe("support@purifyapp.net");
   });
 });
 

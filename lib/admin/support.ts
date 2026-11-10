@@ -24,6 +24,7 @@ import { trackingLink } from "@/lib/shop/trackingLink";
 import type { BuyerOrderStatus } from "@/lib/shop/status";
 import type { ShopFulfillmentStatus } from "@/lib/shop/types";
 import type { TicketStatus } from "@/lib/support/ticketNumber";
+import { isLegalSubject } from "@/lib/support/inbox";
 
 /** What /api/admin/support/reader answers: the reader beside a request. */
 export type ReaderFile = {
@@ -115,8 +116,13 @@ export function orderNumberIn(text: string): string | null {
 const ORDER_WORDS = /\b(order|orders|parcel|package|tracking|track|shipped|shipping|delivery|delivered|arrived|arrive|bent|broken|damaged|lost|address|reship|icon|cross|rope)\b/i;
 const PLUS_WORDS = /\b(plus|pro|subscription|subscribed|charged|charge|billing|billed|renew|renewal|renewed|trial|app store|google play)\b/i;
 
-/** A word for the row: what the request is about, or null when it is neither. */
-export function requestKind(input: { orderId: string | null; subject: string; body: string }): "Order" | "Plus" | null {
+/**
+ * A word for the row: what the request is about, or null when it is none of
+ * these. Legal first: a request sent to the legal inbox (lib/support/inbox.ts)
+ * is a legal matter even when it names an order or a charge.
+ */
+export function requestKind(input: { orderId: string | null; subject: string; body: string }): "Legal" | "Order" | "Plus" | null {
+  if (isLegalSubject(input.subject)) return "Legal";
   const text = `${input.subject}\n${input.body}`;
   if (input.orderId || orderNumberIn(text)) return "Order";
   if (PLUS_WORDS.test(text)) return "Plus";

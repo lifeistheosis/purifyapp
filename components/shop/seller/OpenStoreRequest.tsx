@@ -11,7 +11,7 @@ const field =
 /**
  * "My store is ready. Please open it."
  *
- * Replaces the line that told a seller to write to lifeistheosis@gmail.com to
+ * Replaces the line that told a seller to write to the owner's personal address to
  * schedule the review that flips their store live. That asked them to compose
  * a message with no idea what to put in it, and left no record that they had
  * asked. The route composes it, includes the listing count an admin would

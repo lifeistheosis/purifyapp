@@ -4,6 +4,7 @@ import { T } from "@/components/i18n/T";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { ArtPlate } from "@/components/prayers/ArtPlate";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+import { SUPPORT_EMAIL } from "@/lib/legal/entity";
 import { akathistTitleKey, listAkathists } from "@/lib/prayers/akathists";
 
 export const metadata = {
@@ -51,7 +52,7 @@ export default function AkathistsPage() {
           </ul>
 
           <p className="mt-10 font-sans text-caption leading-[1.7] text-paper/50">
-            <T k="prayers.akathists.note" />
+            <T k="prayers.akathists.note" replacements={{ email: SUPPORT_EMAIL }} />
           </p>
         </div>
       </section>

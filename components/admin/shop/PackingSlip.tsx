@@ -11,6 +11,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
+import { SUPPORT_EMAIL } from "@/lib/legal/entity";
 import { formatPrice } from "@/lib/shop/format";
 import { orderConfirmationNumber } from "@/lib/shop/orderNumber";
 import type { ShippingAddress } from "@/lib/eikonBox/types";
@@ -115,7 +116,7 @@ export function PackingSlip({
       <footer>
         <p>
           Thank you. Every piece is chosen, checked and packed by hand. Questions about this order:
-          support@purifyapp.net, quoting {number}.
+          {SUPPORT_EMAIL}, quoting {number}.
         </p>
       </footer>
     </div>,

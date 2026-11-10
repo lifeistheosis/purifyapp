@@ -216,6 +216,44 @@ and list emails name the company with the postal address. Your part: send
 the arbiter the exact name from the EIN letter, and say yes or no to the
 words.
 
+### C7. The two addresses, where readers and stores see them (10 minutes)
+
+Your word: support@purifyapp.net for technical help, legal@purifyapp.net for
+legal matters. You have already written to both and seen them arrive: that
+test is done.
+
+In the code, already on the branch: the terms (notices, the informal
+dispute, the arbitration opt-out, copyright notices and Contact) and the
+privacy page (English and German) give legal@; the FAQ, the shop's
+questions, the seller notice, the akathists note, receipts and packing slips
+give support@; your Gmail and team@purify.app are gone from every page.
+From the 1.9 push, mail to legal@ shows in Admin, **Messages**, marked
+**Legal**. Until then the website files only mail to support@, and mail to
+legal@ stops in Resend.
+
+The places outside the code:
+
+1. Render: dashboard.render.com, the **purifyapp** web service,
+   **Environment**. If `EMAIL_REPLY_TO` is there, delete it (**Save
+   Changes**, **Save and deploy**). Left out, every email's Reply-To is
+   support@. If it is not there, nothing to do.
+2. Google Play: play.google.com/console, **Purify**, then type **Store
+   settings** in the search box at the top. Under **Store listing contact
+   details**: **Email address** support@purifyapp.net, **Website**
+   https://purifyapp.net. **Save**.
+3. Stripe: the public support email is support@purifyapp.net (C3, step 5).
+4. Google's payments profile (C2) and Apple's banking contacts (C3): where
+   a form asks for a customer or public support email, support@. A contact
+   that only Google or Apple writes to can stay an inbox you read daily.
+5. Apple: the 1.9 version page carries its Support URL and Copyright line
+   (R5, step 7).
+6. Anywhere a form asks for a legal, privacy or copyright contact:
+   legal@purifyapp.net. The EU trader details (C5) ask for the support one.
+
+Done: none of these shows your Gmail.
+
+Send back: "C7 done".
+
 ---
 
 ## Anytime
@@ -579,9 +617,31 @@ Send back: "R1 both green".
 
 1. Tell the arbiter **go**.
 2. The chat checks everything once more and pushes `main`. That push is the
-   deploy.
+   deploy. It carries the terms' new date (your item 96): the terms say
+   "Effective" today, and every reader is asked to accept them again at
+   their next sign-in, checkout or EIKON claim. You do nothing for that.
 3. Render, the **purifyapp** service, **Events**: wait for **Deploy live**.
 4. purifyapp.net/whats-new shows 1.9.
+
+### R2b. Tell every account the terms changed (your item 96; 2 minutes)
+
+Right after R2, the same day.
+
+1. purifyapp.net/admin, **Releases**, **Email**.
+2. The **Terms change notice** card shows **Terms** with today's date. If it
+   still shows 2026-08-14, stop: the push did not carry the new terms. Tell
+   the arbiter.
+3. Click **Send to N accounts**. Read the box that opens, then confirm.
+4. The first share goes at once; the rest go by themselves on the hour.
+   Pressing Send again never sends anyone a second copy.
+5. Write one short email from your own address to legal@purifyapp.net, and
+   one to support@purifyapp.net. Within a minute both are in Admin,
+   **Messages**, and the first is marked **Legal**.
+
+Done: the card says "Terms <today>: N sent", and both test messages are in
+Messages.
+
+Send back: "R2b sent", or what went wrong.
 
 ### R3. Read the database check
 
@@ -629,7 +689,11 @@ Send back: "R4 sent, version code N".
 5. **App Store** tab, the **1.9** version (click **+** next to iOS App to make
    it, if needed).
 6. **Build**: **Add Build**, pick the new one.
-7. **What's New in This Version**: the arbiter sends the text.
+7. **What's New in This Version**: the arbiter sends the text. On the same
+   page: **Support URL** https://purifyapp.net/support, and **Copyright**
+   2026 Purify Orthodox LLC. Under **App Review Information**, the contact
+   email is one you read on review days (support@ lands in Admin,
+   **Messages**).
 8. If 87 is done: **In-App Purchases and Subscriptions**, **+**, both
    products (87, steps 28 and 29).
 9. **Add for Review**, then **Submit for Review**.

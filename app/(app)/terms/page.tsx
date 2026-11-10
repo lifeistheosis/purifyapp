@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
-import { LEGAL_NAME } from "@/lib/legal/entity";
+import { LEGAL_EMAIL, LEGAL_NAME } from "@/lib/legal/entity";
 
 export const metadata = {
   title: "Terms of Service",
@@ -268,8 +268,8 @@ export default function TermsPage() {
           request, you grant us a non-exclusive, royalty-free license to use
           it to operate and improve the service. If you believe something we
           publish infringes a right you hold, write to{" "}
-          <a href="mailto:lifeistheosis@gmail.com" className={A}>
-            lifeistheosis@gmail.com
+          <a href={`mailto:${LEGAL_EMAIL}`} className={A}>
+            {LEGAL_EMAIL}
           </a>{" "}
           with the details and we will review it promptly.
         </p>
@@ -331,8 +331,8 @@ export default function TermsPage() {
           <strong className="text-paper">Please read this carefully.</strong>{" "}
           First, we both agree to try to resolve any dispute informally:
           contact us at{" "}
-          <a href="mailto:lifeistheosis@gmail.com" className={A}>
-            lifeistheosis@gmail.com
+          <a href={`mailto:${LEGAL_EMAIL}`} className={A}>
+            {LEGAL_EMAIL}
           </a>{" "}
           and give us 30 days to work it out before starting a formal
           proceeding.
@@ -356,8 +356,8 @@ export default function TermsPage() {
           <strong className="text-paper">Your right to opt out:</strong> you
           may reject this arbitration agreement within 30 days of first
           accepting these terms by emailing{" "}
-          <a href="mailto:lifeistheosis@gmail.com" className={A}>
-            lifeistheosis@gmail.com
+          <a href={`mailto:${LEGAL_EMAIL}`} className={A}>
+            {LEGAL_EMAIL}
           </a>{" "}
           with your name and a clear statement that you opt out; doing so does
           not affect any other part of these terms.
@@ -401,8 +401,8 @@ export default function TermsPage() {
         <h2 className={H2}>17. Contact</h2>
         <p className={P}>
           Questions about these terms, or notices of any kind, reach us at{" "}
-          <a href="mailto:lifeistheosis@gmail.com" className={A}>
-            lifeistheosis@gmail.com
+          <a href={`mailto:${LEGAL_EMAIL}`} className={A}>
+            {LEGAL_EMAIL}
           </a>
           , or through the paths on the{" "}
           <Link href="/faq" className={A}>

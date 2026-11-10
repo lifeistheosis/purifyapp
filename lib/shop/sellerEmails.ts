@@ -169,8 +169,8 @@ export async function sendRefundReleasedEmail(opts: {
 
 /**
  * A seller says their store is ready to open. Addressed to Purify, not to the
- * seller: this replaces the console's previous instruction to "write to
- * lifeistheosis@gmail.com", which asked the seller to compose the email that
+ * seller: this replaces the console's previous instruction to write to the
+ * owner's personal address, which asked the seller to compose the email that
  * this now composes for them, and which nothing recorded.
  *
  * ADMIN_EMAILS is the recipient list because it is already the definition of

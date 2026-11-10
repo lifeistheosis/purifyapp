@@ -3,7 +3,7 @@ import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { getServerLocale } from "@/lib/i18n/server";
 import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
 import { T } from "@/components/i18n/T";
-import { LEGAL_CONTACT_EMAIL, LEGAL_NAME } from "@/lib/legal/entity";
+import { LEGAL_EMAIL, LEGAL_NAME } from "@/lib/legal/entity";
 
 export const metadata = {
  title: "Privacy",
@@ -50,10 +50,10 @@ export default async function PrivacyPage() {
  <p className="mt-3 font-serif text-body text-paper/65 leading-[1.7]">
  Purify is run by {LEGAL_NAME}. To write to the company, use{" "}
  <a
- href={`mailto:${LEGAL_CONTACT_EMAIL}`}
+ href={`mailto:${LEGAL_EMAIL}`}
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- {LEGAL_CONTACT_EMAIL}
+ {LEGAL_EMAIL}
  </a>
  .
  </p>
@@ -704,10 +704,10 @@ export default async function PrivacyPage() {
  <p className="font-serif text-body text-paper/65 leading-[1.7]">
  Questions, corrections, or a privacy concern? Write to{" "}
  <a
- href="mailto:team@purify.app"
+ href={`mailto:${LEGAL_EMAIL}`}
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- team@purify.app
+ {LEGAL_EMAIL}
  </a>{" "}
  and we&rsquo;ll get back to you.
  </p>
@@ -760,10 +760,10 @@ function PrivacyDe() {
  Purify wird von der {LEGAL_NAME} betrieben. Du erreichst das
  Unternehmen unter{" "}
  <a
- href={`mailto:${LEGAL_CONTACT_EMAIL}`}
+ href={`mailto:${LEGAL_EMAIL}`}
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- {LEGAL_CONTACT_EMAIL}
+ {LEGAL_EMAIL}
  </a>
  .
  </p>
@@ -1467,10 +1467,10 @@ function PrivacyDe() {
  <p className="font-serif text-body text-paper/65 leading-[1.7]">
  Fragen, Korrekturen oder ein Datenschutz-Anliegen? Schreib an{" "}
  <a
- href="mailto:team@purify.app"
+ href={`mailto:${LEGAL_EMAIL}`}
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- team@purify.app
+ {LEGAL_EMAIL}
  </a>
  , und wir melden uns bei dir.
  </p>
