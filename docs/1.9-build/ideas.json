@@ -2223,6 +2223,34 @@
    "version": null,
    "outcome": null,
    "note": "1.9.1, after his walk shows the player in the shade at all (the arbiter's word, 2026-11-10 about 21:28 UTC). From Android 13 the shade's player is drawn from the media session: play or pause, previous and next, and an app's own custom buttons (Android's page on media controls). Rewind and fast forward, all the media-session plugin offers, get no button there, so 1.9 shows play or pause and a bar to drag. Two custom actions on the session (back 15, forward 15) would put them in slots 2 and 3; the plugin cannot add them, so it means its Java patched or a small plugin of our own. F-51 in docs/audit/findings.yaml; build-90.md, the player in Android's shade."
+  },
+  {
+   "id": "e-cyril-john-rail-places",
+   "section": "Saints",
+   "kind": "bug",
+   "title": "St Cyril on John: 502 of the rail's 1,067 notes stood on a verse he quotes in passing, not the passage they expound, and 49 linked the wrong section",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "456 move into their passage and the Preface's four open John 1:1; place-commentary.mjs searches the section that holds a note whole first. f5b0e12f2. PLAN 13ab."
+  },
+  {
+   "id": "e-cyril-john-openings",
+   "section": "Saints",
+   "kind": "bug",
+   "title": "St Cyril on John: the openings of seven books were not in the library (1,555 words with their lemmas)",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "Restored from the transcription, no mark moved; four sections numbered past any the file has had; the rail's five copies begin with them. ff51834c0. PLAN 13ac."
   }
  ]
 }

@@ -1991,7 +1991,30 @@ findings:
       moves, the section opens with the book's first lemma (John 7:25), and
       the rail's copy begins with his words (4,745 of 4,745 notes still
       placed); cyrilJohnPlaces.test.ts holds that no paragraph of the work is
-      an entry of the table.
+      an entry of the table. Later that day, on the arbiter's order ((a) and
+      (b), 1.9, f5b0e12f2 and ff51834c0): the rail's notes from Cyril on John stand on
+      the passage they expound. Their links first: place-commentary.mjs
+      linked a note to the first section holding its opening words, so 49
+      that open on a verse he quotes more than once linked the section
+      before theirs, or one on another verse; it now searches the section
+      that holds a note whole first, and its run changed those 49 links and
+      nothing else (4,745 linked notes, 365 plan sayings). Of the 1,067, 561
+      stood on their passage's verse; 456 moved into their passage (one to
+      3:34, the verse inside it whose words it opens on); 46 stay inside it,
+      on the verse they open on, read by eye; and the Preface's four, which
+      stood on 12:17, 12:35, 13:10 and 14:26, open John 1:1. So 502 stood off
+      their passage, not 518 as this list said through the wrong links. And
+      the openings of seven books are his own first words again: 1,555 words
+      from the transcription (about 1,330 of his prose, the rest lemmas and
+      two chapter headings), five first paragraphs given back their first
+      words and four sections of their own holding whole paragraphs,
+      numbered 2002, 2003, 2004 and 2012 (2000 and the book, past any number
+      the file has had: the edition's end-notes stood in those gaps until
+      1.7.2, and no mark kept on one may open on his words). No paragraph was
+      renumbered, so no reader's mark moved; the rail's five copies begin
+      where the paragraphs now do; Book 11's Chapter I heading stays out.
+      cyrilJohnPlaces.test.ts holds the links, the places, the Preface, the
+      openings and their numbers.
       STILL OPEN: the quotation marks still to settle (18 paragraphs where CCEL
       itself differs, the 28 paragraph-opening marks of Antony's speeches and
       4 in 2 Corinthians that CCEL never closes, 6 lost double marks at
@@ -2001,18 +2024,12 @@ findings:
       Harmony); Cyril on John and the Morals read against the printed page, as
       Cyril on Luke was (their words are their transcriptions', so what is
       left is fidelity to the page, not words given to the wrong hand); from
-      Cyril on John's ingest, three more: its sections begin where it found a
+      Cyril on John's ingest, one more: its sections begin where it found a
       quotation, often mid-sentence (moving their bounds would move readers'
-      marks); the openings of seven books are not in the library, about 1,370
-      words (Book 12's first three paragraphs, 806, and the opening of Cyril's
-      preface to Book 1, 183, the largest); on the rail, 518 of its 1,067 notes from
-      Cyril on John stand on the verse the ingest took them for, not the one
-      their passage expounds (440 of them in another chapter or more than
-      three verses away); and a test
-      that holds each library section to its volume, which needs the volumes
-      kept offline.
+      marks); and a test that holds each library section to its volume,
+      which needs the volumes kept offline.
     evidence: data/saints/*/*.json (sections and their voice); data/bible/commentary; lib/reading/entries.ts; lib/saints/saints.ts; data/reading/quoted-sources.json; lib/reading/__tests__/quotedWords.test.ts; CCEL transcriptions of ANF 1, 5, 6 and NPNF I 6 to 14, II 1 to 14; Schaff, Creeds of Christendom II; Hapgood, Service Book (1906)
-    action: "Done with the owner's yes of 2026-10-23 for what is listed above. Left (the apolytikia and the Palamas texts settled 2026-10-26, queue item 23; Ignatius's recensions settled 2026-11-09; the large non-CCEL works measured, and our prose's quotations corrected and held by a test, 2026-11-10, queue item 28): the STILL OPEN list above, none of it words given to the wrong hand."
+    action: "Done with the owner's yes of 2026-10-23 for what is listed above. Left (the apolytikia and the Palamas texts settled 2026-10-26, queue item 23; Ignatius's recensions settled 2026-11-09; the large non-CCEL works measured, and our prose's quotations corrected and held by a test, 2026-11-10, queue item 28; Cyril on John's rail and the seven books' openings, 2026-11-10, the arbiter's order): the STILL OPEN list above, none of it words given to the wrong hand."
     safe_to_automate: false
     review: owner
 
