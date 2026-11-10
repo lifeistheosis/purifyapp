@@ -79,7 +79,8 @@ describe("the texts a reader agrees to open in a sheet over the screen", () => {
       // The text's own headings live in components/legal, not in the page.
       expect(src, page).not.toMatch(/<h2\b/);
     }
-    expect(read("app/(app)/privacy/page.tsx")).toContain('<PrivacyText lang="de" />');
+    // The German page is drawn on the device from its own file (1.9, the reader's language in the apps).
+    expect(read("components/privacy/PrivacyDe.tsx")).toContain('<PrivacyText lang="de" />');
     const sheet = read("components/legal/LegalSheet.tsx");
     for (const text of ["TermsText", "PrivacyText", "ShopPoliciesText"]) {
       // Fetched when the sheet shows it, never handed to it as a prop.

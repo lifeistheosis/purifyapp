@@ -77,8 +77,14 @@ describe("the photo credits", () => {
       expect(page, key).toContain(`"${key}"`);
     }
     expect(page).toContain("CC_LICENCES[c.licence]");
+    // The English page leads there, and hands the German page, drawn on the
+    // device from its own file (1.9, the reader's language in the apps),
+    // whether to lead there too.
     const about = read("app/(app)/about/page.tsx");
-    expect(about.match(/photoCredits\(\)\.length > 0 \? \(/g)).toHaveLength(2);
+    expect(about.match(/photoCredits\(\)\.length > 0 \? \(/g)).toHaveLength(1);
     expect(about).toContain('href="/credits"');
+    expect(about).toContain("<AboutInReadersLanguage credits={photoCredits().length > 0}>");
+    const aboutDe = read("components/about/AboutDe.tsx");
+    expect(aboutDe).toMatch(/\{credits \? \(\s*<p[^>]*>\s*<Link href="\/credits"/);
   });
 });

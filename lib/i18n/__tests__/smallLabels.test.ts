@@ -82,9 +82,14 @@ const feasts: Pair[] = Array.from(MOVABLE_FEAST_KEYS.entries()).map(([feast, key
 }));
 
 // The FAQ is a page, not a module a test can import, so it is read as source.
+// The FAQ's English list is the page's; its German list, and the list the
+// two draw through, have their own files since 1.9 (the reader's language in
+// the apps: components/faq/FaqDe.tsx, loaded on the device).
 const faqPage = read("app/(app)/faq/page.tsx");
-const englishList = faqPage.slice(faqPage.indexOf("const QUESTIONS: QA[]"), faqPage.indexOf("const QUESTIONS_DE"));
-const germanList = faqPage.slice(faqPage.indexOf("const QUESTIONS_DE"), faqPage.indexOf("export default"));
+const faqDe = read("components/faq/FaqDe.tsx");
+const faqList = read("components/faq/FaqList.tsx");
+const englishList = faqPage.slice(faqPage.indexOf("const QUESTIONS: QA[]"), faqPage.indexOf("function FaqContent"));
+const germanList = faqDe.slice(faqDe.indexOf("const QUESTIONS_DE"), faqDe.indexOf("export function FaqDe"));
 const questions: Pair[] = Array.from(englishList.matchAll(/\bq: "([^"]+)",\s*k: "([^"]+)",/g)).map((found) => ({
   key: found[2],
   english: found[1],
@@ -150,7 +155,8 @@ describe("the small labels", () => {
     expect(written.length).toBe(12);
     for (const question of written) expect(inCatalog.has(question), question).toBe(true);
 
-    const support = read("app/(app)/support/page.tsx");
+    // Drawn in English by the page and in German on the device, from one file (1.9).
+    const support = read("components/support/SupportBody.tsx");
     expect(support).toContain(`? "${de["support.workBehindTheApp"]}"`);
     expect(support).toContain(`? "${de["support.gladYouAreHere"]}"`);
   });
@@ -219,8 +225,8 @@ describe("the screens that draw the small labels", () => {
   it("ask through the island where the server writes the page", () => {
     // A server component that looked these up itself would write English
     // into the apps for good (lib/i18n/__tests__/serverWords.test.ts).
-    expect(faqPage).toContain("{qa.k ? <T k={qa.k} /> : qa.q}");
-    const support = read("app/(app)/support/page.tsx");
+    expect(faqList).toContain("{qa.k ? <T k={qa.k} /> : qa.q}");
+    const support = read("components/support/SupportBody.tsx");
     expect(support).toContain('<T k="support.workBehindTheApp" />');
     expect(support).toContain('<T k="support.gladYouAreHere" />');
   });

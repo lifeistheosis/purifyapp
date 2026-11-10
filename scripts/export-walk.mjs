@@ -8829,6 +8829,93 @@ await section(58, async () => {
   await ctx.close();
 });
 
+// The saints and five pages in the reader's language in the apps (1.9, the
+// reader's language sweep, parts 3 and 4: Updates 2's split of 2026-11-10,
+// the Updates chat's share). Each page writes the English; a German reader's
+// German comes on the device from a file of its own, marked lang="de". Every
+// other reader is shown the English page, whose words are mostly the
+// catalog's and so their own: About and the FAQ are in all 21 languages that
+// way and say nothing about English, and only the lines that are English
+// (the FAQ's lead, the Privacy Policy, the patch notes, a saint's life) say
+// lang="en" dir="ltr". An English reader sees what was always there.
+await section(59, async () => {
+  console.log("\n59. About, Privacy, the FAQ, Support, What's New and the saints in the reader's language (the reader's language in the apps)");
+  // `fr` and `ar`: a heading the reader is shown in their own language; `note`: whether the page says its body is English; `english`: whether some of it is.
+  const PAGES = [
+    { to: "/about/", de: "Eine Wohnung für das orthodoxe Leben.", fr: "Un sanctuaire pour la vie orthodoxe", ar: "ملاذ للحياة الأرثوذكسية", note: false, english: false },
+    { to: "/faq/", de: "Ehrliche Antworten auf häufige Fragen.", fr: "Questions fréquentes.", ar: "الأسئلة المتكررة.", note: false, english: true },
+    { to: "/privacy/", de: "Was wir aufzeichnen und was", fr: "Ce que Purify garde", ar: "ما يحفظه Purify", note: true, english: true },
+    { to: "/support/", de: "Das Werk hinter der App.", fr: "L’œuvre derrière l’application.", ar: "العمل القائم خلف التطبيق.", note: false, english: false },
+    { to: "/whats-new/", de: "Versionshinweise", fr: null, ar: null, note: true, english: true },
+    // A saint's life: its English lines say so with note 4's marks, which its own walk holds.
+    { to: "/saints/alexander-of-alexandria/", de: "Patriarch von Alexandrien, der den Presbyter Arius", fr: null, ar: null, note: true, english: null },
+  ];
+  const NOTE = /Traduction en cours|Translation in progress|Übersetzung in Arbeit|Übersetzung im Werden|الترجمة قيد العمل|الترجمة قيد الإعداد/;
+  const GERMAN = /Eine Wohnung für das orthodoxe Leben|Ehrliche Antworten auf häufige Fragen|Was wir aufzeichnen und was|Das Werk hinter der App|Versionshinweise|Patriarch von Alexandrien, der den Presbyter Arius/;
+  for (const locale of ["de", "fr", "ar", "en"]) {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "CapacitorStorage.purify_locale": locale } });
+    await go(page, "/");
+    for (const p of PAGES) {
+      await go(page, "/");
+      await page.waitForTimeout(300);
+      await go(page, p.to);
+      // A German reader's words come a moment after the page.
+      if (locale === "de") await page.waitForFunction((w) => document.body.innerText.includes(w), p.de, { timeout: 15000 }).catch(() => {});
+      else await page.waitForTimeout(1500);
+      const got = await page.evaluate(({ own, de, NOTE, GERMAN }) => {
+        const text = document.body.innerText;
+        const leaf = (w) => w && [...document.querySelectorAll("main *")].find((el) => el.children.length === 0 && (el.textContent ?? "").includes(w));
+        const langOf = (el) => (el ? (el.closest("[lang]")?.getAttribute("lang") ?? null) : null);
+        // The reader's own words set left to right, or announced in another language.
+        const ARABIC = /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/;
+        const html = document.documentElement.lang;
+        const turned = [...document.querySelectorAll("main *")].filter((el) => {
+          const words = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim();
+          if (!words || !ARABIC.test(words) || !el.getClientRects().length) return false;
+          return getComputedStyle(el).direction !== "rtl" || langOf(el) !== html;
+        }).map((el) => `<${el.tagName.toLowerCase()}> "${(el.textContent ?? "").trim().slice(0, 30)}"`);
+        return {
+          german: text.includes(de),
+          germanLang: langOf(leaf(de)),
+          ownLang: langOf(leaf(own)),
+          englishMarked: !!document.querySelector('main [lang="en"][dir="ltr"]'),
+          note: (text.match(new RegExp(NOTE)) ?? [""])[0],
+          anyGerman: new RegExp(GERMAN).test(text),
+          turned,
+        };
+      }, { own: p[locale] ?? null, de: p.de, NOTE: NOTE.source, GERMAN: GERMAN.source });
+      if (locale === "de") must(got.german && got.germanLang === "de" && !got.note, `German reader, ${p.to}: the German, marked lang="de", and no note about the language (${got.german}, ${got.germanLang}, ${got.note || "no note"})`);
+      if (locale === "fr" || locale === "ar") {
+        const who = locale === "fr" ? "French" : "Arabic";
+        must(!got.anyGerman && (!p[locale] || got.ownLang === locale) && (p.english === null || got.englishMarked === p.english) && !!got.note === p.note, `${who} reader, ${p.to}: ${p[locale] ? `its own words, as the page's own (lang ${got.ownLang}), ` : ""}${p.english ? 'the English lines marked lang="en" dir="ltr"' : p.english === null ? "the English" : "no English"}, ${p.note ? `with the page's note that its body is English (${got.note || "none"})` : `and no note that it is English (${got.note || "none"})`}`);
+      }
+      if (locale === "ar") {
+        must(got.turned.length === 0, `Arabic reader, ${p.to}: no Arabic set left to right or announced in another language${got.turned.length ? `: ${got.turned.slice(0, 3).join(" | ")}` : ""}`);
+        // The pages the split mends whole; What's New's notes and a saint's life are note 4's, in its own walk.
+        if (!["/whats-new/", "/saints/alexander-of-alexandria/"].includes(p.to)) {
+          const out = await page.evaluate(englishOutOfPlace);
+          must(out.length === 0, `Arabic reader, ${p.to}: every line of English runs left to right and says it is English (${out.length}${out.length ? `: ${out.slice(0, 2).map((o) => `<${o.tag}> ${o.why} "${o.words.slice(0, 30)}"`).join(" | ")}` : ""})`);
+        }
+      }
+      if (locale === "en") must(!got.anyGerman && !got.note, `English reader, ${p.to}: as before, English, no note`);
+    }
+    // The Greek line under the saints' heading, for every reader but a Greek one.
+    await go(page, "/saints/");
+    await page.waitForTimeout(800);
+    must(await page.evaluate(() => [...document.querySelectorAll('p[lang="grc"][dir="ltr"]')].some((el) => el.textContent === "Οι Άγιοι")), `${locale} reader, /saints/: the Greek line under the heading, marked lang="grc" dir="ltr"`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+  // A Greek reader is not shown it twice.
+  {
+    const { ctx, page } = await open({ width: 390, height: 844, phone: true, set: { "CapacitorStorage.purify_locale": "el" } });
+    await go(page, "/saints/");
+    await page.waitForTimeout(800);
+    must(await page.evaluate(() => !document.querySelector('p[lang="grc"]')), "Greek reader, /saints/: no Greek line, the heading says it already");
+    await ctx.close();
+  }
+});
+
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

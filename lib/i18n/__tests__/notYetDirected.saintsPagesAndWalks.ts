@@ -8,7 +8,6 @@
 // marks them; a count may only fall.
 export const SAINTS_PAGES_AND_WALKS: Record<string, number> = {
   "app/(app)/credits/page.tsx": 1,
-  "app/(app)/saints/page.tsx": 1,
   "components/calendar/CalendarClient.tsx": 1,
   "components/calendar/Colophon.tsx": 1,
   "components/calendar/PhoneCalendar.tsx": 1,

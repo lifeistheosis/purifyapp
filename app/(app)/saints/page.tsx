@@ -1,11 +1,8 @@
 import { SaintsBrowser } from "@/components/saints/SaintsBrowser";
 import { SaintSearch } from "@/components/saints/SaintSearch";
 import { Cross } from "@/components/ui/icons/Cross";
-import { getServerLocale } from "@/lib/i18n/server";
+import { SaintsGreekLine } from "@/components/saints/SaintsGreekLine";
 import { T } from "@/components/i18n/T";
-
-// Deliberate Greek verbatim in every locale (hidden when locale is el).
-const GREEK_HOI_HAGIOI = "Οι Άγιοι";
 
 export const metadata = {
   title: "Saints",
@@ -13,8 +10,7 @@ export const metadata = {
     "Lives and writings of the Eastern Orthodox saints.",
 };
 
-export default async function SaintsPage() {
-  const locale = await getServerLocale();
+export default function SaintsPage() {
   return (
     // Mobile spent 64px of a 812px screen on empty padding above the
     // eyebrow, so the masthead alone filled the fold and the first saint sat
@@ -33,15 +29,8 @@ export default async function SaintsPage() {
           <h1 className="font-display-serif text-heading sm:text-display md:text-display-lg text-paper leading-[0.98] tracking-[-0.01em]">
             <T k="saints.h1" />
           </h1>
-          {locale !== "el" && (
-            <p
-              lang="grc"
-              className="mt-3 font-serif text-caption text-gold/65 leading-none"
-              style={{ fontFamily: "var(--font-greek), serif" }}
-            >
-              {GREEK_HOI_HAGIOI}
-            </p>
-          )}
+          {/* The Greek line, for every reader but a Greek one: chosen on the device. */}
+          <SaintsGreekLine />
           <p className="mt-5 md:mt-6 max-w-[620px] font-sans text-ui md:text-body text-paper/75 leading-relaxed">
             <T k="saints.indexLead" />
           </p>

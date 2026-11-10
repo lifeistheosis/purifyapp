@@ -1,8 +1,7 @@
 import { BoardMessage } from "@/components/whats-new/BoardMessage";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { ChangelogControls } from "@/components/whats-new/ChangelogControls";
-import { getServerLocale } from "@/lib/i18n/server";
-import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
+import { WhatsNewCount, WhatsNewDisclaimer, WhatsNewWelcome, WhatsNewWord } from "@/components/whats-new/WhatsNewInReadersLanguage";
 import { T } from "@/components/i18n/T";
 import { ReleaseDetails } from "@/components/whats-new/ReleaseDetails";
 import { ReleaseHighlights } from "@/components/whats-new/ReleaseHighlights";
@@ -12,6 +11,12 @@ import { RELEASE_HIGHLIGHTS } from "@/lib/whatsNew/highlights";
 import { getPatchNotes } from "@/lib/whatsNew/notes";
 import { releaseName } from "@/lib/whatsNew/releaseName";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+
+// The page's own English words, and their German in data/pages/whats-new.de.json (1.9).
+const CLOSING = "Thank you for walking this with us. Glory to God for all things.";
+const SIGNATURE = "From Edgar, the Purify Team.";
+const RELEASE_NOTES = "Release notes";
+const GROUPED = "Grouped by year, then month, then day. The most recent day is open by default; tap any year, month or day to expand it. Inside a day, tap a release to read its full item list.";
 
 export const metadata = {
  title: "What's new",
@@ -120,27 +125,22 @@ function groupByYearMonthDay(entries: Entry[]): YearGroup[] {
   return years;
 }
 
-function updateCount(n: number, isDe: boolean): string {
-  if (isDe) return `${n} ${n === 1 ? "Aktualisierung" : "Aktualisierungen"}`;
-  return `${n} ${n === 1 ? "update" : "updates"}`;
-}
-
 async function WhatsNewContent() {
  // Live rows when the table answers, the committed file otherwise. See
  // lib/whatsNew/notes.ts for why the page never has to know which.
  const { entries } = await getPatchNotes();
  const years = groupByYearMonthDay(entries);
- const locale = await getServerLocale();
- const isDe = locale === "de";
+ // The page writes the English; the words it has in German are drawn on the
+ // device (components/whats-new/WhatsNewInReadersLanguage.tsx).
 
  return (
  <section className={`${SECTION} bg-night`}>
  <article className="mx-auto max-w-[760px] w-full">
- {!isDe && <TranslationDisclaimer />}
+ <WhatsNewDisclaimer />
  {/* Eyebrow + version */}
  <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
  <p className="font-sans text-detail font-semibold text-paper/55">
- {isDe ? "Was ist neu" : <T k="whatsnew.eyebrow" />}
+ <WhatsNewWord k="eyebrow"><T k="whatsnew.eyebrow" /></WhatsNewWord>
  </p>
  <p className="font-sans text-caption text-paper/55">
  <T k="whatsnew.chip" />
@@ -172,7 +172,8 @@ async function WhatsNewContent() {
  <BoardMessage />
  </div>
 
- {isDe ? (
+ <WhatsNewWelcome
+ german={
  <>
  <p className="mt-8 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  <T k="ui.wennDuNeuHierBist" />
@@ -199,7 +200,8 @@ async function WhatsNewContent() {
  <T k="ui.dasVollstNdigeVersionsprotokollLebt" />
  </p>
  </>
- ) : (
+ }
+ >
  <>
  <p className="mt-8 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  <T k="ui.ifYouAreNewHere" />
@@ -226,20 +228,18 @@ async function WhatsNewContent() {
  <T k="ui.theFullReleaseByRelease" />
  </p>
  </>
- )}
+ </WhatsNewWelcome>
 
  {/* Closing + signature */}
  <div className="mt-16 pt-10 border-t border-paper/10">
  <p className="font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
- {isDe
- ? "Danke, daß du mit uns gehst. Ehre sei Gott für alles."
-                : "Thank you for walking this with us. Glory to God for all things."}
+ <WhatsNewWord k="closing"><span lang="en" dir="ltr">{CLOSING}</span></WhatsNewWord>
  </p>
 
  <p
  className="mt-10 font-serif italic text-lede md:text-title-sm tracking-wide text-gold"
  >
- {isDe ? "Von Edgar, dem Purify-Team." : "From Edgar, the Purify Team."}
+ <WhatsNewWord k="signature"><span lang="en" dir="ltr">{SIGNATURE}</span></WhatsNewWord>
  </p>
  </div>
 
@@ -247,14 +247,12 @@ async function WhatsNewContent() {
  <section className="mt-20 pt-10 border-t border-paper/10" data-changelog>
  <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
  <p className="font-sans text-detail font-semibold text-paper/55">
- {isDe ? "Versionshinweise" : "Release notes"}
+ <WhatsNewWord k="releaseNotes"><span lang="en" dir="ltr">{RELEASE_NOTES}</span></WhatsNewWord>
  </p>
  <ChangelogControls />
  </div>
  <p className="font-sans text-detail text-paper/55 mb-8 leading-[1.65]">
- {isDe
- ? "Nach Jahr, dann Monat, dann Tag gruppiert. Der jüngste Tag ist voreingestellt offen; tippe ein Jahr, einen Monat oder einen Tag an, um es aufzuklappen. Innerhalb eines Tages tippe auf eine Version, um ihre vollständige Liste zu lesen."
- : "Grouped by year, then month, then day. The most recent day is open by default; tap any year, month or day to expand it. Inside a day, tap a release to read its full item list."}
+ <WhatsNewWord k="grouped"><span lang="en" dir="ltr">{GROUPED}</span></WhatsNewWord>
  </p>
 
  <div className="space-y-3">
@@ -270,7 +268,7 @@ async function WhatsNewContent() {
                     {y.label}
                   </span>
                   <span className="font-sans text-caption text-paper/55">
-                    {updateCount(y.count, isDe)}
+                    <WhatsNewCount n={y.count} />
                   </span>
                 </span>
                 <span
@@ -294,7 +292,7 @@ async function WhatsNewContent() {
                           {mo.label}
                         </span>
                         <span className="font-sans text-caption text-paper/55">
-                          {updateCount(mo.count, isDe)}
+                          <WhatsNewCount n={mo.count} />
                         </span>
                       </span>
                       <span
@@ -321,7 +319,7 @@ async function WhatsNewContent() {
                                 {d.label}
                               </span>
                               <span className="font-sans text-caption text-paper/55">
-                                {updateCount(d.entries.length, isDe)}
+                                <WhatsNewCount n={d.entries.length} />
                               </span>
                             </span>
                             <span

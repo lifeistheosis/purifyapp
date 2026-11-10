@@ -10,6 +10,7 @@ import { T } from "@/components/i18n/T";
 import { cn } from "@/lib/cn";
 import { DisciplesSection } from "./DisciplesSection";
 import { GreatFeastsSection } from "./GreatFeastsSection";
+import { SaintLifeIn, SaintShortBio, SaintTitlesIn } from "./SaintInReadersLanguage";
 import { LifeSection } from "./LifeSection";
 import { QuotesSection } from "./QuotesSection";
 import { SaintFacts } from "./SaintFacts";
@@ -89,7 +90,10 @@ export function SaintLife({
 
   return (
     <div>
-      <p className="max-w-[640px] font-sans text-body leading-relaxed text-paper/80">{saint.shortBio}</p>
+      {/* In the reader's words where his life is written in them, on the device (./SaintInReadersLanguage.tsx). */}
+      <p className="max-w-[640px] font-sans text-body leading-relaxed text-paper/80">
+        <SaintShortBio english={saint.shortBio} />
+      </p>
       {/* Where those facts come from (1.9, November's saints): a page with no
           life of ours names its source under the entry, in the words of the
           study's own "Source". */}
@@ -103,11 +107,15 @@ export function SaintLife({
       </div>
       {saint.titles?.length ? (
         <div className="mt-10">
-          <TitlesSection titles={saint.titles} pronoun={saint.pronoun} />
+          <SaintTitlesIn pronoun={saint.pronoun}>
+            <TitlesSection titles={saint.titles} pronoun={saint.pronoun} />
+          </SaintTitlesIn>
         </div>
       ) : null}
       <div className="mt-10">
-        <LifeSection paragraphs={saint.life} sources={lifeSources} saint={saint.slug} />
+        <SaintLifeIn slug={saint.slug} quotes={(LIFE_QUOTES[saint.slug] ?? []).map((q) => ({ words: q.words, shown: shownCite(q.cite) }))}>
+          <LifeSection paragraphs={saint.life} sources={lifeSources} saint={saint.slug} />
+        </SaintLifeIn>
       </div>
       {after.map((section) => (
         <div key={section.key} className={cn("mt-12 border-t border-paper/8 pt-10", section.className)}>

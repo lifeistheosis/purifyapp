@@ -19,7 +19,9 @@ import { describe, expect, it } from "vitest";
 const text = fs.readFileSync("components/legal/PrivacyText.tsx", "utf8");
 const english = text.slice(text.indexOf("function PrivacyEn()"), text.indexOf("function PrivacyDe()"));
 const german = text.slice(text.indexOf("function PrivacyDe()"));
-const source = fs.readFileSync("app/(app)/privacy/page.tsx", "utf8");
+// The page writes the English; its other languages are drawn on the device
+// (1.9, the reader's language in the apps), each named here.
+const source = fs.readFileSync("components/privacy/PrivacyInReadersLanguage.tsx", "utf8");
 
 /** Each block, in order: its tag and its look. */
 const blocks = (page: string) =>
@@ -47,6 +49,6 @@ describe("the German privacy page is level with the English", () => {
   });
 
   it("is the only other language with a page of its own", () => {
-    expect([...source.matchAll(/if \(locale === "([a-z]{2,3})"\) return/g)].map((m) => m[1])).toEqual(["de"]);
+    expect([...source.matchAll(/^\s+([a-z]{2,3}): \(\) => import\("\.\/Privacy[A-Z][a-z]+"\)/gm)].map((m) => m[1])).toEqual(["de"]);
   });
 });

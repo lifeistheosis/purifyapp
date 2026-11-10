@@ -9,6 +9,7 @@ import { BookmarkSaintButton } from "./BookmarkSaintButton";
 import { BumpButton } from "./BumpButton";
 import { FeastDays } from "./FeastDays";
 import { SaintHeroPicture } from "./SaintHeroPicture";
+import { SaintHeroTitle } from "./SaintInReadersLanguage";
 
 type Props = {
   saint: Pick<Saint, "slug" | "name" | "epithet" | "feastDays" | "iconUrl" | "complete">;
@@ -60,7 +61,7 @@ export function SaintHero({ saint, hero, bump }: Props) {
           <p className="mt-2 font-sans text-ui leading-snug text-paper/70">
             {title ? (
               <>
-                {title}
+                <SaintHeroTitle english={title} />
                 <span aria-hidden className="mx-1.5">
                   ·
                 </span>

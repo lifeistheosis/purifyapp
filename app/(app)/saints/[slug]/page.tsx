@@ -21,12 +21,10 @@ import { hasWeb } from "@/lib/saints/web";
 import { listAkathists } from "@/lib/prayers/akathists";
 import { cardFor } from "@/lib/reading/cards";
 import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
-import { getServerLocale } from "@/lib/i18n/server";
 import { eventsForSaint } from "@/lib/history/events";
-import { getSaintBioOverrides } from "@/lib/i18n/localizedContent";
 import { saintJsonLd } from "@/lib/seo/jsonld";
 import { sameAsFor } from "@/lib/saints/authority";
-import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
+import { SaintInReadersLanguage, SaintNotInLanguage } from "@/components/saints/SaintInReadersLanguage";
 import { RecordRead } from "@/components/reading/RecordRead";
 import { KeepDay } from "@/components/streak/KeepDay";
 import { SaintIntercession } from "@/components/saints/SaintIntercession";
@@ -110,29 +108,20 @@ export default async function SaintPage({ params }: { params: Params }) {
   // Apply admin-set `complete` override on top of the registry value. Falls
   // back to the registry on any error; the public site never breaks if the
   // override table is unreachable.
-  const locale = await getServerLocale();
-  const [bump, effectiveComplete, licensedWorks, bioOverrides] = await Promise.all([
+  const [bump, effectiveComplete, licensedWorks] = await Promise.all([
     loadBumpState(slug),
     getEffectiveComplete(slug, Boolean(saint.complete)),
     getLicensedWorks(slug),
-    getSaintBioOverrides(slug, locale),
   ]);
 
-  // Merge locale overrides over English defaults. Quotes, disciples, and the
-  // works[] registry stay in English: those are either citations (kept in
-  // their authoritative form) or hand off to per-work locale variants.
-  const localized = bioOverrides ?? {};
-  const effectiveSaint = {
-    ...saint,
-    shortBio: localized.shortBio ?? saint.shortBio,
-    epithet: localized.epithet ?? saint.epithet,
-    byname: localized.byname ?? saint.byname,
-    life: localized.life ?? saint.life,
-    titles: localized.titles ?? saint.titles,
-    greatFeasts: localized.greatFeasts ?? saint.greatFeasts,
-    complete: effectiveComplete,
-  };
-  const bioIsLocalized = Boolean(bioOverrides);
+  // The page writes his life in English. A life written in the reader's
+  // language (55 in German) is drawn on the device from its own file
+  // (components/saints/SaintInReadersLanguage.tsx, components/saints/
+  // lifeLoaders.ts); the page carries none of it. Until 1.9 it chose on the
+  // server, which in the apps knows no reader. Quotes, disciples and the works
+  // stay in English: citations kept in their own form, or works with their
+  // own languages.
+  const effectiveSaint = { ...saint, complete: effectiveComplete };
 
   // sameAs only when an identity was resolved through the live authority
   // APIs; sameAsFor returns undefined otherwise, so an unverified saint
@@ -211,11 +200,10 @@ export default async function SaintPage({ params }: { params: Params }) {
         trailing={save}
       />
       <section className="bg-night px-5 md:px-8">
+        <SaintInReadersLanguage slug={saint.slug}>
         <div className="mx-auto w-full max-w-[1100px]">
           <SaintHero saint={effectiveSaint} hero={heroPicture} bump={bump} />
-          {locale !== "en" && !bioIsLocalized ? (
-            <ContentNotYetTranslated locale={locale} kind="bio" />
-          ) : null}
+          <SaintNotInLanguage />
           <ContentShell rail={<SaintStudyRail saint={effectiveSaint} />}>
             <SaintDoors
               doors={doors}
@@ -227,6 +215,7 @@ export default async function SaintPage({ params }: { params: Params }) {
           </ContentShell>
           <SaintIntercession saint={saint} />
         </div>
+        </SaintInReadersLanguage>
       </section>
     </>
   );

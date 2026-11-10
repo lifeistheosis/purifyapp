@@ -27,6 +27,10 @@ function PrivacyEn() {
  <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  <T k="privacy.h1" />
  </h1>
+ {/* The heading is the catalog's, in the reader's language; from here on the
+     text is English, and says so with its direction (build 90 note 4), so
+     an Arabic reader reads it left to right, as English is set. */}
+ <div lang="en" dir="ltr">
  <p className="mt-6 font-serif text-body text-paper/65 leading-[1.7]">
  The short version is on the{" "}
  <Link
@@ -830,6 +834,7 @@ function PrivacyEn() {
  and we&rsquo;ll get back to you.
  </p>
  </div>
+ </div>
     </>
   );
 }
@@ -844,6 +849,8 @@ function PrivacyDe() {
  <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
  Was wir aufzeichnen und was nicht.
  </h1>
+ {/* Its own language, as the English says its own: the two keep one shape. */}
+ <div lang="de" dir="ltr">
  <p className="mt-6 font-serif text-body text-paper/65 leading-[1.7]">
  Die Kurzfassung steht auf der{" "}
  <Link
@@ -1699,6 +1706,7 @@ function PrivacyDe() {
  </a>
  , und wir melden uns bei dir.
  </p>
+ </div>
  </div>
     </>
   );

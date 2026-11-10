@@ -121,6 +121,8 @@ describe("every screen that writes a date the device's own way", () => {
     /^app\/admin\//,
     /^app\/owner\//,
     /^app\/\(app\)\/support\/page\.tsx$/,
+    // The support page's body, drawn in English or German (1.9), with its own "ago".
+    /^components\/support\/SupportBody\.tsx$/,
     /^app\/\(app\)\/shop\/seller\//,
   ];
   const OWN_WAY = new RegExp(
