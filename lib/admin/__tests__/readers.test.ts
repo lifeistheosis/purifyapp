@@ -201,7 +201,7 @@ describe("/api/admin/readers", () => {
 });
 
 describe("the shell's Users", () => {
-  it("draws the directory, with Live carts and Abandoned checkouts left where they were", () => {
+  it("draws the directory, and Live carts and Abandoned checkouts still have their views (Orders' since 2026-11-10)", () => {
     const shell = readFileSync(join(process.cwd(), "components/admin/AdminShell.tsx"), "utf8");
     expect(shell).toContain("users: ReadersTab,");
     expect(shell).toContain("carts: LiveCartsTab,");

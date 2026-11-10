@@ -125,7 +125,12 @@ describe("admin pages", () => {
   });
 
   it("makes Users one directory, Verification and Badges filters of it (pick C)", () => {
-    expect(pageOf("users")?.views.map((v) => v.label)).toEqual(["Readers", "Live carts", "Abandoned checkouts"]);
+    expect(pageOf("users")?.views.map((v) => v.label)).toEqual(["Readers"]);
+    // Live carts and Abandoned checkouts are Orders' since 2026-11-10 (A12.5):
+    // their #tab= links land there, on the page where buying is handled.
+    expect(pageOf("orders")?.views.map((v) => v.label)).toEqual(["Orders", "Live carts", "Abandoned checkouts"]);
+    expect(pageOf("carts")?.id).toBe("orders");
+    expect(pageOf("abandoned")?.id).toBe("orders");
     expect(pageOf("verification")).toBeNull();
     expect(landingOf("verification")).toEqual({ tab: "users", intent: "waiting" });
     expect(landingOf("badges")).toEqual({ tab: "users", intent: "badges" });
@@ -139,7 +144,9 @@ describe("admin pages", () => {
     expect(pageOf("sourcing")).toBeNull();
     expect(landingOf("fulfillment")).toEqual({ tab: "orders" });
     expect(landingOf("sourcing")).toEqual({ tab: "shop" });
-    expect(pageOf("orders")?.views).toHaveLength(1);
+    // One list of orders (r3-16 pick B); since 2026-11-10 the carts' two
+    // views sit beside it (A12.5), and Fulfillment still lands on the list.
+    expect(pageOf("orders")?.views.map((v) => v.tab)).toEqual(["orders", "carts", "abandoned"]);
     expect(pageOf("shop")?.views).toHaveLength(1);
   });
 
@@ -176,7 +183,9 @@ describe("admin pages", () => {
     expect(viewLabel("overview")).toBe("Money: Overview");
     // A retired id reads as the view it lands on, so the usage readout of
     // his old weeks still says where he was.
-    expect(viewLabel("verification")).toBe("Users: Readers");
+    // Users holds one view since the carts moved to Orders (2026-11-10).
+    expect(viewLabel("verification")).toBe("Users");
+    expect(viewLabel("carts")).toBe("Orders: Live carts");
     expect(viewLabel("nope")).toBe("nope");
   });
 });

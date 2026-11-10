@@ -27,8 +27,8 @@
  * became its views (Time-series into Overview, Audience into Map, Engagement
  * into Screens). Users became one directory of readers with the reader's card
  * (his pick C), so Verification and Badges are retired ids that land on it
- * with a filter on; Live carts and Abandoned checkouts stay in Users as views
- * while his answer on them is open.
+ * with a filter on. Live carts and Abandoned checkouts were views of Users
+ * until 2026-11-10, and are Orders' now (A12.5): buying is handled there.
  *
  * Pure and in lib/ so the mapping can be tested without rendering the shell.
  */
@@ -153,8 +153,6 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
             title: "Readers",
             sentence: "Every account. Find one, then do everything from their card.",
           },
-          { tab: "carts", label: "Live carts", sentence: "Carts with something in them, guests included." },
-          { tab: "abandoned", label: "Abandoned checkouts", sentence: "Checkouts that were started and not paid." },
         ],
       },
     ],
@@ -168,10 +166,18 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
         // each order opens as its whole story. Fulfillment's tiles and board
         // retired into it, and #tab=fulfillment lands here (RETIRED_VIEWS
         // below).
+        // Live carts and Abandoned checkouts moved here from Users on
+        // 2026-11-10 (A12.5, recommended on sheet r3-16 and started at the
+        // arbiter's word): buying is handled here, so a cart that was never
+        // paid sits beside the orders that were.
         id: "orders",
         label: "Orders",
         sentence: "Every order, and what still has to be posted.",
-        views: [{ tab: "orders", label: "Orders" }],
+        views: [
+          { tab: "orders", label: "Orders" },
+          { tab: "carts", label: "Live carts", sentence: "Carts with something in them, guests included." },
+          { tab: "abandoned", label: "Abandoned checkouts", sentence: "Checkouts that were started and not paid." },
+        ],
       },
       {
         id: "messages",
