@@ -1,0 +1,3077 @@
+diff --git a/components/onboarding/FirstRunGate.tsx b/components/onboarding/FirstRunGate.tsx
+index d34e50fb..5c7df533 100644
+--- a/components/onboarding/FirstRunGate.tsx
++++ b/components/onboarding/FirstRunGate.tsx
+@@ -8,9 +8,14 @@ import {
+   isOnboarded,
+   markOnboardedSilently,
+   readResumeStage,
++  readWeek,
+   setResumeStage,
+   shouldShowOnboarding,
++  writeWeek,
+ } from "@/lib/onboarding/state";
++import { roadsEnabled } from "@/lib/onboarding/flags";
++import { readRoad } from "@/lib/onboarding/useWeek";
++import { localDay, stepTaken } from "@/lib/onboarding/week";
+ import { countReturns } from "@/lib/onboarding/count";
+ import { isTesting } from "@/lib/onboarding/testing";
+ import { isDesktopApp } from "@/lib/desktop/bridge";
+@@ -160,7 +165,12 @@ export function FirstRunGate({
+         // The apps land on Today, where the first-step card waits. The
+         // website's home is the front page, so it goes straight to that
+         // step. A skip stays where it is.
+-        if (dayOne && !native) router.push(dayOne.href);
++        if (dayOne && !native) {
++          // With the roads on, that step is the first day of their week, and
++          // going to it is taking it: the second day waits for tomorrow.
++          if (roadsEnabled() && readRoad()) writeWeek(stepTaken(readWeek(), localDay(new Date())));
++          router.push(dayOne.href);
++        }
+       }}
+     />
+   );
+diff --git a/components/onboarding/FirstStepsNudge.tsx b/components/onboarding/FirstStepsNudge.tsx
+index ca8b26ac..f2f97428 100644
+--- a/components/onboarding/FirstStepsNudge.tsx
++++ b/components/onboarding/FirstStepsNudge.tsx
+@@ -4,11 +4,13 @@ import Link from "next/link";
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+ import { Close } from "@/components/ui/icons/Close";
+ import { CARD_BG } from "@/components/ui/Graphite";
+-import { dismissNudge, wasOnboardedAgain } from "@/lib/onboarding/state";
++import { dismissNudge, readWeek, wasOnboardedAgain, writeWeek } from "@/lib/onboarding/state";
+ import { countDayOne } from "@/lib/onboarding/count";
+-import { dayOneFor } from "@/lib/onboarding/space";
++import { DAY_ONE_KEYS, dayOneFor, type DayOneKey } from "@/lib/onboarding/space";
+ import { useDayOneShown } from "@/lib/onboarding/useDayOne";
+ import { useSpace } from "@/lib/onboarding/useSpace";
++import { useWeekToday } from "@/lib/onboarding/useWeek";
++import { localDay, stepPassed, stepTaken } from "@/lib/onboarding/week";
+ 
+ /**
+  * "Your Day 1": the first step the onboarding handoff chose for this reader
+@@ -23,57 +25,123 @@ import { useSpace } from "@/lib/onboarding/useSpace";
+  * they change in the same render. Its top margin is its siblings' (mt-4): it
+  * carried mb-4 and none on top, and touched the card above it (his
+  * screenshot of 2026-10-28, "the cards are touching").
++ *
++ * With the roads on (1.9, lib/onboarding/flags.ts) the same card carries the
++ * reader's first week: seven steps chosen by their road, one a day
++ * (lib/onboarding/week.ts). The next appears the next day they open Purify.
++ * Nothing counts up and nothing is lost on a day away; closing a step passes
++ * it over, and two passed over in a row end the week quietly. Each step
++ * shows its page's own name, and a line only where the app already says one
++ * about that page.
+  */
+ export function FirstStepsNudge() {
+   const { t } = useTranslate();
+   const { level, intent, background } = useSpace();
+   const ready = useDayOneShown();
++  // With the roads on (1.9), today's step of the reader's first week.
++  const week = useWeekToday();
+ 
+   if (!ready) return null;
+   // A reader who was back when they answered is not on their first day: the
+   // same card, called their next step.
+   const again = wasOnboardedAgain();
++
++  if (week) {
++    const today = () => localDay(new Date());
++    return (
++      <StepCard
++        eyebrow={t("onboard.week.eyebrow", { n: week.index + 1 })}
++        title={t(week.step.titleKey)}
++        body={week.step.bodyKey ? t(week.step.bodyKey) : null}
++        href={week.step.href}
++        // Closed unopened: this step is passed over, and the next comes tomorrow.
++        onDismiss={() => writeWeek(stepPassed(readWeek(), today()))}
++        // The first step is the Day 1 the counts have always taken, where it
++        // is one of theirs. The days after it are not counted: their sentence
++        // on the privacy page is not agreed (notes/onboarding-fable.md, 5.2).
++        onOpen={() => {
++          if (week.index === 0 && isDayOneKey(week.step.key)) {
++            countDayOne(week.step.key, {
++              ...(background ? { background } : {}),
++              ...(level ? { level } : {}),
++              ...(intent ? { intent } : {}),
++            });
++          }
++          writeWeek(stepTaken(readWeek(), today()));
++        }}
++      />
++    );
++  }
++
+   const step = dayOneFor(level, intent);
++  return (
++    <StepCard
++      eyebrow={again ? t("onboard.returning.nextEyebrow") : t("onboard.day1.eyebrow")}
++      title={t(`onboard.day1.${step.key}.title`)}
++      body={t(`onboard.day1.${step.key}.body`)}
++      href={step.href}
++      onDismiss={() => dismissNudge()}
++      onOpen={() => {
++        // Counted only here, where the reader chose it: the website sends a
++        // reader straight to their first step as the questions end, which
++        // is not a choice and is not counted.
++        countDayOne(step.key, {
++          ...(background ? { background } : {}),
++          ...(level ? { level } : {}),
++          ...(intent ? { intent } : {}),
++        });
++        dismissNudge();
++      }}
++    />
++  );
++}
++
++function isDayOneKey(key: string): key is DayOneKey {
++  return (DAY_ONE_KEYS as readonly string[]).includes(key);
++}
+ 
++/** The card itself: one design for Day 1 and for each day of a first week. */
++function StepCard({
++  eyebrow,
++  title,
++  body,
++  href,
++  onDismiss,
++  onOpen,
++}: {
++  eyebrow: string;
++  title: string;
++  /** The line under the title. A week's step whose page has no line of its own stands on its title. */
++  body: string | null;
++  href: string;
++  onDismiss: () => void;
++  onOpen: () => void;
++}) {
++  const { t } = useTranslate();
+   return (
+     <div
++      data-first-step=""
+       className="ob-day1-in ob-sheen lm-card relative mt-4 overflow-hidden rounded-[22px] p-5 ring-1 ring-inset ring-premium/30 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.6)]"
+       style={CARD_BG}
+     >
+       <div className="flex items-start gap-3">
+         <div className="min-w-0 flex-1">
+-          <p className="font-sans text-caption font-semibold text-premium-ink">
+-            {again ? t("onboard.returning.nextEyebrow") : t("onboard.day1.eyebrow")}
+-          </p>
+-          <p className="mt-2 font-heading text-title-sm font-bold leading-tight text-paper">
+-            {t(`onboard.day1.${step.key}.title`)}
+-          </p>
+-          <p className="mt-1.5 font-sans text-detail leading-[1.55] text-paper/65">
+-            {t(`onboard.day1.${step.key}.body`)}
+-          </p>
++          <p className="font-sans text-caption font-semibold text-premium-ink">{eyebrow}</p>
++          <p className="mt-2 font-heading text-title-sm font-bold leading-tight text-paper">{title}</p>
++          {body ? <p className="mt-1.5 font-sans text-detail leading-[1.55] text-paper/65">{body}</p> : null}
+         </div>
+         <button
+           type="button"
+-          onClick={() => dismissNudge()}
++          onClick={onDismiss}
+           aria-label={t("onboard.nudge.dismiss")}
+-          className="-mr-2 -mt-2 inline-flex size-11 shrink-0 items-center justify-center rounded-full text-paper/50 transition-colors hover:text-paper"
++          className="-me-2 -mt-2 inline-flex size-11 shrink-0 items-center justify-center rounded-full text-paper/50 transition-colors hover:text-paper"
+         >
+           <Close size={14} />
+         </button>
+       </div>
+       <Link
+-        href={step.href}
+-        onClick={() => {
+-          // Counted only here, where the reader chose it: the website sends a
+-          // reader straight to their first step as the questions end, which
+-          // is not a choice and is not counted.
+-          countDayOne(step.key, {
+-            ...(background ? { background } : {}),
+-            ...(level ? { level } : {}),
+-            ...(intent ? { intent } : {}),
+-          });
+-          dismissNudge();
+-        }}
++        href={href}
++        onClick={onOpen}
+         className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-pill bg-paper px-5 font-sans text-ui font-semibold text-night transition-[transform,translate,scale,background-color] hover:bg-paper/90 active:scale-[0.98]"
+       >
+         {t("onboard.day1.open")}
+diff --git a/components/onboarding/HandoffSlate.tsx b/components/onboarding/HandoffSlate.tsx
+index 8a7cfc45..3a23ca0b 100644
+--- a/components/onboarding/HandoffSlate.tsx
++++ b/components/onboarding/HandoffSlate.tsx
+@@ -80,7 +80,7 @@ export function HandoffSlate({
+         </span>
+       </h2>
+ 
+-      <ul className="mt-7 w-full max-w-[320px] space-y-2.5 text-left">
++      <ul className="mt-7 w-full max-w-[320px] space-y-2.5 text-start">
+         {lines.map((line, i) => (
+           <li
+             key={line.label}
+diff --git a/components/onboarding/OnboardingFlow.tsx b/components/onboarding/OnboardingFlow.tsx
+index b129adf4..c8ff8585 100644
+--- a/components/onboarding/OnboardingFlow.tsx
++++ b/components/onboarding/OnboardingFlow.tsx
+@@ -15,6 +15,7 @@ import {
+   readFastingRule,
+   readIntents,
+   readLevel,
++  readReturning,
+   readRole,
+   setResumeStage,
+   writeBackground,
+@@ -24,8 +25,12 @@ import {
+   writeFocus,
+   writeIntents,
+   writeLevel,
++  writeReturning,
+   writeRole,
+ } from "@/lib/onboarding/state";
++import { roadsEnabled } from "@/lib/onboarding/flags";
++import { leanOf, roadOf } from "@/lib/onboarding/road";
++import { weekFor } from "@/lib/onboarding/week";
+ import {
+   NO_ANSWERS,
+   OTHER,
+@@ -41,6 +46,8 @@ import {
+ import { fileClergyRequest } from "@/lib/onboarding/clergyRequest";
+ import { flowSteps, progressPath, type StepId } from "@/lib/onboarding/flowSteps";
+ import {
++  BACKGROUND_PILLS,
++  ROAD_PILLS,
+   dayOneFor,
+   defaultsFor,
+   depthFor,
+@@ -141,8 +148,9 @@ export function OnboardingFlow({
+   catechismAvailable = false,
+ }: {
+   /** Fires once the overlay has faded: the Day 1 step when the reader
+-   *  reached the handoff, null when they skipped or left for another page. */
+-  onDone: (dayOne: { key: DayOneKey; href: string } | null) => void;
++   *  reached the handoff (with the roads on, the first step of their week),
++   *  null when they skipped or left for another page. */
++  onDone: (dayOne: { key: DayOneKey | string; href: string } | null) => void;
+   /** "level" when the reader is already signed in (a resumed sign-in or a brand-new account). */
+   startAt?: OnboardingStart;
+   /** One optional line on the account step, shown only while the bank has questions. */
+@@ -151,6 +159,12 @@ export function OnboardingFlow({
+   const { t } = useTranslate();
+   const router = useRouter();
+   const returning = startAt === "returning";
++  // The roads (1.9, lib/onboarding/flags.ts): read once, as the overlay
++  // opens, so the questions keep one shape from first screen to last.
++  const [roads] = useState(roadsEnabled);
++  // Roads only: whether someone is signed in, which decides whether the
++  // reminders are asked here or on Today (lib/onboarding/flowSteps.ts).
++  const [hasAccount] = useState(() => roads && !!readLocalSessionUser());
+   // Back from the sign-in the reminders step sent them to: every answer
+   // before it is given already, and the end shows them as they were.
+   const resumed = startAt === "reminders";
+@@ -173,6 +187,11 @@ export function OnboardingFlow({
+   // A priest, a deacon or a layman, and a priest's or deacon's answers after
+   // it (1.8.x). Marked for a reader who is back, as every answer is.
+   const [role, setRole] = useState<Role | null>(() => (answered ? readRole() : null));
++  // Roads only. Coming back after time away: practicing, on the road back.
++  const [away, setAway] = useState(() => (answered ? readReturning() : false));
++  // Roads only. The clergy's question is behind a quiet line on the rule's
++  // screen; open already for a reader who answered it before.
++  const [clergyOpen, setClergyOpen] = useState(() => (answered ? isClergyRole(readRole()) : false));
+   const [clergy, setClergy] = useState<ClergyAnswers>(() => (answered ? readClergy() : NO_ANSWERS));
+   // Whether a request for the seal goes at the end or waits for a sign-in,
+   // for the handoff's line. Asked of the device as the clergy's questions open.
+@@ -203,11 +222,20 @@ export function OnboardingFlow({
+   const advancing = useRef(false);
+ 
+   const steps = useMemo<StepId[]>(
+-    () => flowSteps({ startAt, level, role, country: clergy.country, remindersOn }),
+-    [startAt, level, role, clergy.country, remindersOn],
++    () => flowSteps({ startAt, level, role, country: clergy.country, remindersOn, roads, signedIn: hasAccount, clergyOpen }),
++    [startAt, level, role, clergy.country, remindersOn, roads, hasAccount, clergyOpen],
+   );
+   const step = steps[Math.min(index, steps.length - 1)];
+-  const dayOne = useMemo(() => dayOneFor(level, intent), [level, intent]);
++  // The first step the handoff names and the website opens. With the roads
++  // on it is the first day of the reader's week (lib/onboarding/week.ts), or
++  // the Day 1 step when they have said nothing to choose a road by.
++  const dayOne = useMemo<{ key: DayOneKey | string; href: string; titleKey: string }>(() => {
++    const road = roads ? roadOf({ background, level, intent, returning: away }) : null;
++    if (road) return weekFor({ road, lean: leanOf(intent), level, picks })[0];
++    const one = dayOneFor(level, intent);
++    return { ...one, titleKey: `onboard.day1.${one.key}.title` };
++  }, [roads, background, level, intent, away, picks]);
++  const onRoad = roads && roadOf({ background, level, intent, returning: away }) != null;
+   const route = routeFor(startAt);
+ 
+   // Lock background scroll while the overlay is up.
+@@ -353,14 +381,17 @@ export function OnboardingFlow({
+     advanceSoon();
+   }
+ 
+-  function chooseLevel(l: Level) {
++  // `comingBack` is the roads' third answer for the Orthodox (1.9): the
++  // level is still "practicing", with the mark that puts them on the road
++  // back, and the fast starts shown plainly, not as the full rule.
++  function chooseLevel(l: Level, comingBack = false) {
+     if (advancing.current) return;
+     // The same answer again (after going back) keeps whatever the rule step
+     // already set; only a new answer brings its own defaults. And never for a
+     // reader who is back: they keep the calendar and the fast they have. The
+     // practicing are shown both on the next step and can change them there.
+-    if (l !== level && !returning) {
+-      const d = defaultsFor(l);
++    if ((l !== level || comingBack !== away) && !returning) {
++      const d = comingBack ? { calendar: "new" as const, fasting: "modified" as const } : defaultsFor(l);
+       setCalendar(d.calendar);
+       setFasting(d.fasting);
+       writeCalendarStyleDefault(d.calendar);
+@@ -369,10 +400,25 @@ export function OnboardingFlow({
+     setLevel(l);
+     writeLevel(l);
+     writeDepth(depthFor(l));
++    if (roads) {
++      setAway(comingBack);
++      writeReturning(comingBack);
++    }
++    // Counted by the level it is underneath: coming back is practicing.
+     countAnswer("level", l);
+     advanceSoon();
+   }
+ 
++  // Roads only: the quiet line on the rule's screen. The clergy's question
++  // becomes the next screen, and the rule's answers are counted as it is left.
++  function openClergy() {
++    if (advancing.current) return;
++    countAnswer("calendar", calendar);
++    countAnswer("fasting", fasting);
++    setClergyOpen(true);
++    advanceSoon();
++  }
++
+   // "Are you a priest, a deacon, or a layman?" (1.8.x): kept on the device
+   // and moved on from at once, as the level is. Never counted by its answer.
+   function chooseRole(r: Role) {
+@@ -574,14 +620,17 @@ export function OnboardingFlow({
+       : []),
+     // A reader who is back is not on their first day.
+     {
+-      label: returning ? t("onboard.returning.next") : t("onboard.handoff.first"),
+-      value: t(`onboard.day1.${dayOne.key}.title`),
++      // On a road, the week itself, and that it comes one step a day: the
++      // step that leads it is the reader's own first pick, which the Focus
++      // line above has just said.
++      label: returning ? t("onboard.returning.next") : onRoad ? t("onboard.week.title") : t("onboard.handoff.first"),
++      value: onRoad && !returning ? t("onboard.week.sub") : t(dayOne.titleKey),
+     },
+   ];
+ 
+   // Measured against the longest way through, so the line only ever grows
+   // (lib/onboarding/flowSteps.ts, progressPath).
+-  const path = progressPath(startAt);
++  const path = progressPath(startAt, roads);
+   const progress = Math.max(0, path.indexOf(step)) / (path.length - 1);
+   const stepClass = dir === "fwd" ? "ob-step-fwd" : "ob-step-back";
+ 
+@@ -699,10 +748,73 @@ export function OnboardingFlow({
+         )}
+ 
+         {step === "background" && (
+-          <WhereFrom answer={background} onChoose={chooseBackground} onContinue={leaveBackground} onPreferNot={preferNotToSay} />
++          <WhereFrom
++            answer={background}
++            pills={roads ? ROAD_PILLS : BACKGROUND_PILLS}
++            onChoose={chooseBackground}
++            onContinue={leaveBackground}
++            onPreferNot={preferNotToSay}
++          />
+         )}
+ 
+-        {step === "level" && (
++        {/* Roads only (1.9): how far along, asked in the reader's own terms.
++            The Orthodox are asked where they are now; everyone else whether
++            they have been to an Orthodox church. Underneath it is the same
++            answer as ever (lib/onboarding/space.ts, Level), so nothing that
++            reads it changes. "Prefer not to say" keeps the question as it was. */}
++        {step === "level" && roads && background === "orthodox" && (
++          <Step eyebrow={t("onboard.level.eyebrow")} title={t("onboard.where.title")}>
++            <div className="flex flex-col gap-2.5">
++              <ChoiceCard
++                selected={level === "practicing" && !away}
++                onClick={() => chooseLevel("practicing")}
++                icon={<Cross size={20} />}
++                title={t("onboard.level.practicing")}
++                sub={t("onboard.level.practicingSub")}
++                delay={0}
++              />
++              <ChoiceCard
++                selected={level === "practicing" && away}
++                onClick={() => chooseLevel("practicing", true)}
++                icon={<Compass size={20} />}
++                title={t("onboard.where.returning")}
++                sub={t("onboard.where.returningSub")}
++                delay={1}
++              />
++              <ChoiceCard
++                selected={level === "learning"}
++                onClick={() => chooseLevel("learning")}
++                icon={<Book size={20} />}
++                title={t("onboard.where.preparing")}
++                sub={t("onboard.level.learningSub")}
++                delay={2}
++              />
++            </div>
++          </Step>
++        )}
++        {step === "level" && roads && background !== "orthodox" && background !== "prefer-not" && background !== null && (
++          <Step eyebrow={t("onboard.level.eyebrow")} title={t("onboard.been.title")}>
++            <div className="flex flex-col gap-2.5">
++              <ChoiceCard
++                selected={level === "inquirer"}
++                onClick={() => chooseLevel("inquirer")}
++                icon={<Compass size={20} />}
++                title={t("onboard.been.notYet")}
++                sub={t("onboard.level.inquirerSub")}
++                delay={0}
++              />
++              <ChoiceCard
++                selected={level === "learning"}
++                onClick={() => chooseLevel("learning")}
++                icon={<Book size={20} />}
++                title={t("onboard.been.going")}
++                sub={t("onboard.level.learningSub")}
++                delay={1}
++              />
++            </div>
++          </Step>
++        )}
++        {step === "level" && (!roads || background === "prefer-not" || background === null) && (
+           <Step eyebrow={t("onboard.level.eyebrow")} title={t("onboard.level.title")}>
+             <div className="flex flex-col gap-2.5">
+               <ChoiceCard
+@@ -732,7 +844,6 @@ export function OnboardingFlow({
+             </div>
+           </Step>
+         )}
+-
+         {/* The baptized Orthodox only (1.8.x, the owner's note 54). A priest
+             or deacon goes on to where they serve; a layman to the rule. */}
+         {step === "role" && (
+@@ -804,6 +915,17 @@ export function OnboardingFlow({
+             <div className="mt-8">
+               <PrimaryButton onClick={leaveRule}>{t("onboard.continue")}</PrimaryButton>
+             </div>
++            {/* Roads only: the clergy's question, a quiet line for the few it
++                is for, where it was a screen every practicing reader passed. */}
++            {roads && !clergyOpen ? (
++              <button
++                type="button"
++                onClick={openClergy}
++                className="mt-2 inline-flex min-h-11 items-center self-center rounded-pill px-4 font-sans text-caption text-paper/55 transition-colors hover:text-paper"
++              >
++                {t("onboard.rule.clergy")}
++              </button>
++            ) : null}
+           </Step>
+         )}
+ 
+@@ -979,7 +1101,7 @@ function AccountStep({ onSkip, skipLabel }: { onSkip: () => void; skipLabel: str
+               onChange={(e) => setAgreed(e.target.checked)}
+               className="mt-0.5 h-4 w-4 shrink-0 accent-gold"
+             />
+-            <span className="text-left font-sans text-caption leading-[1.5] text-paper/70">
++            <span className="text-start font-sans text-caption leading-[1.5] text-paper/70">
+               {t("ui.iAgreeToThe")}{" "}
+               <Link href="/terms" className="text-paper underline underline-offset-2">
+                 {t("ui.termsOfServiceX")}
+@@ -1093,7 +1215,7 @@ function ChoiceCard({
+       type="button"
+       onClick={onClick}
+       aria-pressed={selected}
+-      className={`ob-choice ob-rise flex min-h-11 w-full items-center gap-3.5 rounded-2xl border text-left ${
++      className={`ob-choice ob-rise flex min-h-11 w-full items-center gap-3.5 rounded-2xl border text-start ${
+         compact ? "px-3.5 py-3" : "p-4"
+       } ${
+         selected
+diff --git a/components/onboarding/RoadCards.tsx b/components/onboarding/RoadCards.tsx
+new file mode 100644
+index 00000000..c78a5231
+--- /dev/null
++++ b/components/onboarding/RoadCards.tsx
+@@ -0,0 +1,312 @@
++"use client";
++
++// The two small cards the roads put on Today (1.9, lib/onboarding/flags.ts;
++// the why is docs/1.9-build/notes/onboarding-fable.md, 3.2). Each is the
++// house's tip card (components/widget/WidgetTip.tsx), shown once, gone at a
++// tap, and neither is counted.
++//
++//   KeepCard          the account and the reminders, offered after a first
++//                     step and not as the second screen a new reader meets.
++//                     Reminders are kept with an account, so the two are one
++//                     offer: sign in, and on the way back, turn them on.
++//   SecondChanceCard  one question for a reader who skipped the welcome
++//                     questions, a day or more later: "Where are you coming
++//                     from?", and nothing else. Closed once, it never
++//                     returns.
++
++import Link from "next/link";
++import { useEffect, useState, useSyncExternalStore } from "react";
++
++import { useTranslate } from "@/components/i18n/MessagesProvider";
++import { CARD_BG } from "@/components/ui/Graphite";
++import { Close } from "@/components/ui/icons/Close";
++import { cn } from "@/lib/cn";
++import {
++  ONBOARDING_EVENT,
++  isOnboarded,
++  isSecondChanceDone,
++  markSecondChanceDone,
++  readBackground,
++  readKeep,
++  readLevel,
++  readOnboardedDay,
++  readWeek,
++  writeBackground,
++  writeKeep,
++  type KeepState,
++} from "@/lib/onboarding/state";
++import { ROAD_PILLS, type Background } from "@/lib/onboarding/space";
++import { useRoads } from "@/lib/onboarding/useRoads";
++import { localDay } from "@/lib/onboarding/week";
++import { isNativeClient } from "@/lib/platform/native";
++import { EVENING_DEFAULT, MORNING_DEFAULT, enableReminders, remindersStatus } from "@/lib/push/reminders";
++import { readLocalSessionUser } from "@/lib/supabase/localSession";
++import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
++
++import { WhereFrom, WhereFromSky } from "./WhereFrom";
++
++function subscribe(onChange: () => void): () => void {
++  window.addEventListener(ONBOARDING_EVENT, onChange);
++  window.addEventListener("storage", onChange);
++  return () => {
++    window.removeEventListener(ONBOARDING_EVENT, onChange);
++    window.removeEventListener("storage", onChange);
++  };
++}
++
++/** The house's tip card: an eyebrow, a title, a line or two, a way on, and a close. */
++function TipCard({
++  id,
++  eyebrow,
++  title,
++  body,
++  note,
++  onClose,
++  className,
++  children,
++}: {
++  id: string;
++  eyebrow?: string;
++  title: string;
++  body?: string;
++  /** A second, quieter line. */
++  note?: string | null;
++  onClose: () => void;
++  className?: string;
++  children: React.ReactNode;
++}) {
++  const { t } = useTranslate();
++  return (
++    <aside
++      aria-labelledby={id}
++      data-road-card={id}
++      className={cn("lm-card relative overflow-hidden rounded-[22px] p-5 ring-1 ring-inset ring-paper/10", className)}
++      style={CARD_BG}
++    >
++      <div className="flex items-start gap-3">
++        <div className="min-w-0 flex-1">
++          {eyebrow ? <p className="font-sans text-caption font-semibold text-paper/55">{eyebrow}</p> : null}
++          <p id={id} className={cn("font-heading text-title-sm font-bold leading-tight text-paper", eyebrow && "mt-2")}>
++            {title}
++          </p>
++          {body ? <p className="mt-1.5 font-sans text-detail leading-[1.55] text-paper/65">{body}</p> : null}
++          {note ? <p className="mt-1.5 font-sans text-detail leading-[1.55] text-paper/65">{note}</p> : null}
++        </div>
++        <button
++          type="button"
++          onClick={onClose}
++          aria-label={t("onboard.nudge.dismiss")}
++          className="-me-2 -mt-2 inline-flex size-11 shrink-0 items-center justify-center rounded-full text-paper/50 transition-colors hover:text-paper"
++        >
++          <Close size={14} />
++        </button>
++      </div>
++      <div className="mt-4 flex">{children}</div>
++    </aside>
++  );
++}
++
++const WAY_ON =
++  "inline-flex min-h-11 items-center rounded-pill border border-paper/20 px-5 font-sans text-ui font-semibold text-paper transition-colors hover:border-paper/40 disabled:opacity-60";
++
++/**
++ * The account and the reminders, after a first step.
++ *
++ * Signed out, once a step of the week is behind the reader: what an account
++ * keeps, and that reminders come with one, in the words the questions used
++ * for both. Back from signing in: the reminders, one tap. Never while
++ * nothing has been opened yet, and never again once answered or closed.
++ */
++export function KeepCard({ className }: { className?: string }) {
++  const { t } = useTranslate();
++  const roads = useRoads();
++  // `${keep}|${steps behind}`, empty on the server and the hydration render.
++  const snap = useSyncExternalStore(subscribe, () => `${readKeep()}|${readWeek().at}`, () => "");
++  const [signedIn, setSignedIn] = useState<boolean | null>(null);
++  const [busy, setBusy] = useState(false);
++  const [note, setNote] = useState<string | null>(null);
++  const [on, setOn] = useState(false);
++
++  const [keep, behind] = snap.split("|") as [KeepState | "", string];
++
++  // Who is signed in, read from the device after the page wakes. A reader
++  // back from the card's sign-in who already has reminders is finished here.
++  useEffect(() => {
++    if (!roads || !keep || keep === "done") return;
++    let alive = true;
++    const id = window.setTimeout(() => {
++      const user = !!readLocalSessionUser();
++      if (alive) setSignedIn(user);
++      if (user && keep === "asked") {
++        void remindersStatus().then(
++          (status) => {
++            if (alive && status === "subscribed") writeKeep("done");
++          },
++          () => {},
++        );
++      }
++    }, 0);
++    return () => {
++      alive = false;
++      window.clearTimeout(id);
++    };
++  }, [roads, keep]);
++
++  if (!roads || !keep || keep === "done" || signedIn === null) return null;
++
++  if (!signedIn) {
++    if (Number(behind) < 1) return null;
++    return (
++      <TipCard
++        id="keep-card"
++        title={t("onboard.account.title")}
++        body={t("onboard.account.body")}
++        note={t("onboard.reminders.needsAccount")}
++        onClose={() => writeKeep("done")}
++        className={className}
++      >
++        <Link href="/signin?next=/" onClick={() => writeKeep("asked")} className={WAY_ON}>
++          {t("common.signIn")}
++        </Link>
++      </TipCard>
++    );
++  }
++
++  // Signed in. The reminders are offered here only to a reader who came by
++  // this card: one who met them in the questions has answered already.
++  if (keep !== "asked") return null;
++
++  const turnOn = async () => {
++    setBusy(true);
++    setNote(null);
++    try {
++      const result = await enableReminders(MORNING_DEFAULT, EVENING_DEFAULT);
++      if (result.ok) setOn(true);
++      else if (result.reason === "denied")
++        setNote(isNativeClient() ? t("onboard.reminders.blockedPhone") : t("onboard.reminders.blocked"));
++      else if (result.reason === "unsupported") setNote(t("onboard.reminders.unsupported"));
++      else setNote(t("prayers.push.failed"));
++    } catch {
++      setNote(t("prayers.push.failed"));
++    } finally {
++      setBusy(false);
++    }
++  };
++
++  return (
++    <TipCard
++      id="keep-card"
++      eyebrow={t("onboard.reminders.eyebrow")}
++      title={on ? t("onboard.reminders.done") : t("onboard.reminders.title")}
++      body={on ? undefined : t("onboard.reminders.body")}
++      note={note}
++      onClose={() => writeKeep("done")}
++      className={className}
++    >
++      {on || note ? (
++        <button type="button" onClick={() => writeKeep("done")} className={WAY_ON}>
++          {t("onboard.continue")}
++        </button>
++      ) : (
++        <button type="button" onClick={() => void turnOn()} disabled={busy} className={WAY_ON}>
++          {t("onboard.reminders.enable")}
++        </button>
++      )}
++    </TipCard>
++  );
++}
++
++/** A reader who left the questions with Skip, asked nothing since, a day or more on. */
++function secondChanceDue(): boolean {
++  if (!isOnboarded() || isSecondChanceDone()) return false;
++  if (readLevel() != null || readBackground() != null) return false;
++  // A device from before the day was kept skipped long ago.
++  return readOnboardedDay() !== localDay(new Date());
++}
++
++/**
++ * One question for a reader who skipped: where they are coming from, on the
++ * question's own screen. Their answer gives them a road, and with it a first
++ * week, where a skip left them with neither. Purify stays as it always was
++ * for a reader who closes it.
++ */
++export function SecondChanceCard({ className }: { className?: string }) {
++  const { t } = useTranslate();
++  const roads = useRoads();
++  const due = useSyncExternalStore(subscribe, secondChanceDue, () => false);
++  const [open, setOpen] = useState(false);
++
++  if (!roads || (!due && !open)) return null;
++  return (
++    <>
++      {due ? (
++        <TipCard id="second-chance" title={t("onboard.second.title")} onClose={markSecondChanceDone} className={className}>
++          <button type="button" onClick={() => setOpen(true)} className={WAY_ON}>
++            {t("onboard.day1.open")}
++          </button>
++        </TipCard>
++      ) : null}
++      {open ? <SecondChance onDone={() => setOpen(false)} /> : null}
++    </>
++  );
++}
++
++const LEAVE_MS = 420;
++
++/** "Where are you coming from?" alone, on its own night and horizon, as the welcome questions draw it. */
++function SecondChance({ onDone }: { onDone: () => void }) {
++  const { t } = useTranslate();
++  const [answer, setAnswer] = useState<Background | null>(null);
++  const [exiting, setExiting] = useState(false);
++
++  useEffect(() => {
++    lockBodyScroll();
++    return unlockBodyScroll;
++  }, []);
++
++  // Answered: kept on this device, the card retired, and the screen let go.
++  const leave = (kept: Background | null) => {
++    if (exiting) return;
++    if (kept) {
++      writeBackground(kept);
++      markSecondChanceDone();
++    }
++    setExiting(true);
++    window.setTimeout(onDone, LEAVE_MS);
++  };
++
++  return (
++    <div
++      role="dialog"
++      aria-modal="true"
++      aria-label={t("onboard.background.title")}
++      data-second-chance=""
++      className={`lm-hero fixed inset-0 z-[100] flex flex-col overflow-y-auto text-paper safe-pb-edge ${exiting ? "ob-exit" : ""}`}
++      style={{ background: "radial-gradient(120% 55% at 50% 0%, rgba(255,255,255,0.05) 0%, transparent 55%), #101013" }}
++    >
++      <WhereFromSky />
++      <div className="flex items-center justify-end px-3" style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}>
++        <button
++          type="button"
++          onClick={() => leave(null)}
++          aria-label={t("onboard.nudge.dismiss")}
++          className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-paper/60 transition-colors hover:text-paper"
++        >
++          <Close size={16} />
++        </button>
++      </div>
++      <div className="ob-step-fwd mx-auto flex w-full max-w-md flex-1 flex-col px-6 pb-6 pt-16 md:justify-center md:py-10">
++        <WhereFrom
++          answer={answer}
++          pills={ROAD_PILLS}
++          onChoose={setAnswer}
++          onContinue={() => leave(answer)}
++          onPreferNot={() => {
++            setAnswer("prefer-not");
++            leave("prefer-not");
++          }}
++        />
++      </div>
++    </div>
++  );
++}
+diff --git a/components/onboarding/WhereFrom.tsx b/components/onboarding/WhereFrom.tsx
+index ddcd3e86..dce072c2 100644
+--- a/components/onboarding/WhereFrom.tsx
++++ b/components/onboarding/WhereFrom.tsx
+@@ -35,12 +35,15 @@ import { PrimaryButton } from "./PrimaryButton";
+  */
+ export function WhereFrom({
+   answer,
++  pills = BACKGROUND_PILLS,
+   onChoose,
+   onContinue,
+   onPreferNot,
+ }: {
+   /** The answer given, if any: a pill, or "prefer-not". */
+   answer: Background | null;
++  /** The pills offered, in order. With the roads on (1.9), ROAD_PILLS: one more, "Another Christian tradition". */
++  pills?: readonly Background[];
+   onChoose: (background: Background) => void;
+   onContinue: () => void;
+   onPreferNot: () => void;
+@@ -71,7 +74,7 @@ export function WhereFrom({
+       </p>
+ 
+       <div role="group" aria-labelledby={`${id}q`} className="mt-[26px] flex flex-wrap justify-center gap-[9px]">
+-        {BACKGROUND_PILLS.map((b, i) => (
++        {pills.map((b, i) => (
+           <button
+             key={b}
+             type="button"
+diff --git a/components/settings/SettingsClient.tsx b/components/settings/SettingsClient.tsx
+index c9e77fa7..1c9c1551 100644
+--- a/components/settings/SettingsClient.tsx
++++ b/components/settings/SettingsClient.tsx
+@@ -110,7 +110,7 @@ import {
+   writeIntent,
+   writeLevel,
+ } from "@/lib/onboarding/state";
+-import { BACKGROUNDS, FASTING_RULES, LEVELS, depthFor, focusFor } from "@/lib/onboarding/space";
++import { ALL_BACKGROUNDS, FASTING_RULES, LEVELS, depthFor, focusFor } from "@/lib/onboarding/space";
+ import { isDeveloperEmail } from "@/lib/dev/developer";
+ import { useShowSupporterMark } from "@/lib/profile/useShowSupporterMark";
+ import { readLocalSessionUser } from "@/lib/supabase/localSession";
+@@ -391,7 +391,7 @@ function TestersSection({ signedIn }: { signedIn: boolean }) {
+       <Row icon={<Church size={18} />} label={t("testers.from")}>
+         <Track
+           value={background}
+-          options={BACKGROUNDS.map((b) => ({ value: b, label: t(`onboard.background.${b}`) }))}
++          options={ALL_BACKGROUNDS.map((b) => ({ value: b, label: t(`onboard.background.${b}`) }))}
+           onChange={(b) => testAs({ background: b })}
+           label={t("testers.from")}
+           cols={3}
+diff --git a/components/today/TodayMobileV3.tsx b/components/today/TodayMobileV3.tsx
+index 6f174904..290243f1 100644
+--- a/components/today/TodayMobileV3.tsx
++++ b/components/today/TodayMobileV3.tsx
+@@ -9,6 +9,7 @@ import { TodayGreeting } from "./TodayGreeting";
+ import { StreakRow } from "./StreakRow";
+ import { NativityFastCard } from "./NativityFastCard";
+ import { FirstStepsNudge } from "@/components/onboarding/FirstStepsNudge";
++import { KeepCard, SecondChanceCard } from "@/components/onboarding/RoadCards";
+ import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
+ import { CatechismCard } from "@/components/catechism/CatechismCard";
+ import { WidgetTipCard } from "@/components/widget/WidgetTip";
+@@ -76,6 +77,12 @@ export function TodayMobileV3() {
+ 
+           <FirstStepsNudge />
+ 
++          {/* The roads (1.9, off for readers: lib/onboarding/flags.ts). After
++              a first step, the account and the reminders in one offer; and
++              for a reader who skipped the questions, one of them, a day on. */}
++          <KeepCard className="mt-4" />
++          <SecondChanceCard className="mt-4" />
++
+           {/* The Nativity Fast's day (1.8, his pick C of round 9): during the
+               fast only, under the streak, its star a little higher each day. */}
+           <NativityFastCard className="mt-4" />
+diff --git a/lib/ab/__tests__/assign.test.ts b/lib/ab/__tests__/assign.test.ts
+new file mode 100644
+index 00000000..d7734f30
+--- /dev/null
++++ b/lib/ab/__tests__/assign.test.ts
+@@ -0,0 +1,57 @@
++import { describe, expect, it } from "vitest";
++
++import { armOf, fraction } from "../assign";
++
++// Which version a device shows (1.9): from a seed that never leaves it
++// (docs/1.9-build/notes/onboarding-fable.md, 4.1).
++
++const seeds = Array.from({ length: 4000 }, (_, i) => `seed-${i}-${(i * 2654435761) >>> 0}`);
++const test = { id: "day1-guided", arms: ["a", "b"], share: 1 };
++
++describe("a device's arm", () => {
++  it("is the same every time it is worked out", () => {
++    for (const seed of seeds.slice(0, 200)) expect(armOf(test, seed)).toBe(armOf(test, seed));
++  });
++
++  it("splits devices evenly between the arms", () => {
++    const b = seeds.filter((s) => armOf(test, s) === "b").length;
++    expect(b / seeds.length).toBeGreaterThan(0.46);
++    expect(b / seeds.length).toBeLessThan(0.54);
++    const three = { ...test, arms: ["a", "b", "c"] };
++    for (const arm of three.arms) {
++      const n = seeds.filter((s) => armOf(three, s) === arm).length / seeds.length;
++      expect(n, arm).toBeGreaterThan(0.29);
++      expect(n, arm).toBeLessThan(0.38);
++    }
++  });
++
++  it("in one test says nothing of its arm in another", () => {
++    const other = { id: "door-led", arms: ["a", "b"], share: 1 };
++    const inB = seeds.filter((s) => armOf(test, s) === "b");
++    const alsoB = inB.filter((s) => armOf(other, s) === "b").length;
++    expect(alsoB / inB.length).toBeGreaterThan(0.44);
++    expect(alsoB / inB.length).toBeLessThan(0.56);
++  });
++
++  it("is none for a device outside the test's share, and widening the share moves nobody already in", () => {
++    const tenth = { ...test, share: 0.1 };
++    const half = { ...test, share: 0.5 };
++    const inTenth = seeds.filter((s) => armOf(tenth, s) !== null);
++    expect(inTenth.length / seeds.length).toBeGreaterThan(0.07);
++    expect(inTenth.length / seeds.length).toBeLessThan(0.13);
++    for (const s of inTenth) expect(armOf(half, s)).toBe(armOf(tenth, s));
++    for (const s of inTenth) expect(armOf(test, s)).toBe(armOf(tenth, s));
++  });
++
++  it("is none for a device that could keep no seed", () => {
++    expect(armOf(test, "")).toBeNull();
++  });
++
++  it("comes from a number from 0 up to 1", () => {
++    for (const s of seeds.slice(0, 500)) {
++      const f = fraction(s, "x");
++      expect(f).toBeGreaterThanOrEqual(0);
++      expect(f).toBeLessThan(1);
++    }
++  });
++});
+diff --git a/lib/ab/__tests__/summary.test.ts b/lib/ab/__tests__/summary.test.ts
+new file mode 100644
+index 00000000..fcbf413a
+--- /dev/null
++++ b/lib/ab/__tests__/summary.test.ts
+@@ -0,0 +1,80 @@
++import { describe, expect, it } from "vitest";
++
++import { readersPerArm } from "../size";
++import { SMALLEST_CELL, readable, summarizeTest, type AbRow } from "../summary";
++import type { AbTest } from "../tests";
++
++// A test's counts, and how many readers one needs (1.9;
++// docs/1.9-build/notes/onboarding-fable.md, 4.2 and 4.3).
++
++const test: AbTest = {
++  id: "day1-guided",
++  surface: "onboarding",
++  arms: ["a", "b"],
++  share: 1,
++  begins: "2026-12-07",
++  ends: "2026-12-27",
++  outcome: "back on day 7",
++  guard: "back on day 30",
++  needs: 100,
++};
++
++const rows = (arm: string, exposed: number, returned: number): AbRow[] => [
++  ...Array.from({ length: exposed }, () => ({ name: "ab_exposed", props: { test: test.id, arm, platform: "ios" } })),
++  ...Array.from({ length: returned }, () => ({ name: "onboarding_returned", props: { day: 7, ab: `${test.id}:${arm}` } })),
++];
++const back7 = (r: AbRow) => r.name === "onboarding_returned" && r.props.day === 7;
++
++describe("a test's counts", () => {
++  it("are each arm's exposures, and of them how many reached the outcome", () => {
++    const sum = summarizeTest(test, [...rows("a", 200, 40), ...rows("b", 210, 63)], back7);
++    expect(sum).toEqual([
++      { arm: "a", exposed: 200, reached: 40, rate: 0.2, enough: true },
++      { arm: "b", exposed: 210, reached: 63, rate: 0.3, enough: true },
++    ]);
++  });
++
++  it("count only this test's rows and only the outcome named", () => {
++    const noise: AbRow[] = [
++      { name: "ab_exposed", props: { test: "door-led", arm: "a", platform: "ios" } },
++      { name: "onboarding_returned", props: { day: 30, ab: `${test.id}:a` } },
++      { name: "onboarding_returned", props: { day: 7 } },
++      { name: "onboarding_returned", props: { day: 7, ab: "door-led:a" } },
++    ];
++    const sum = summarizeTest(test, [...rows("a", 100, 25), ...noise], back7);
++    expect(sum[0]).toMatchObject({ exposed: 100, reached: 25 });
++  });
++
++  it("never show a small cell", () => {
++    const few = summarizeTest(test, [...rows("a", SMALLEST_CELL - 1, 3), ...rows("b", 150, SMALLEST_CELL - 1)], back7);
++    expect(few[0]).toEqual({ arm: "a", exposed: null, reached: null, rate: null, enough: false });
++    // Enough were shown it, too few came back to say how many did.
++    expect(few[1]).toEqual({ arm: "b", exposed: 150, reached: null, rate: null, enough: true });
++  });
++
++  it("may be read only after its last day, with the readers it said it needs in every arm", () => {
++    const full = summarizeTest(test, [...rows("a", 120, 30), ...rows("b", 130, 40)], back7);
++    expect(readable(test, full, "2026-12-27")).toBe(false);
++    expect(readable(test, full, "2026-12-28")).toBe(true);
++    const short = summarizeTest(test, [...rows("a", 120, 30), ...rows("b", 60, 25)], back7);
++    expect(readable(test, short, "2027-01-15")).toBe(false);
++  });
++});
++
++describe("how many readers a test needs", () => {
++  it("is about a thousand an arm to see day 7 return move from 20% to 25%", () => {
++    expect(readersPerArm(0.2, 0.25)).toBeGreaterThan(1050);
++    expect(readersPerArm(0.2, 0.25)).toBeLessThan(1150);
++  });
++
++  it("is far more for a small difference, and for a rare outcome", () => {
++    expect(readersPerArm(0.2, 0.23)).toBeGreaterThan(2800);
++    expect(readersPerArm(0.02, 0.03)).toBeGreaterThan(3700);
++    expect(readersPerArm(0.6, 0.7)).toBeLessThan(400);
++  });
++
++  it("has no answer for no difference", () => {
++    expect(readersPerArm(0.2, 0.2)).toBe(Infinity);
++    expect(readersPerArm(0, 0.2)).toBe(Infinity);
++  });
++});
+diff --git a/lib/ab/__tests__/tests.test.ts b/lib/ab/__tests__/tests.test.ts
+new file mode 100644
+index 00000000..211a2f2d
+--- /dev/null
++++ b/lib/ab/__tests__/tests.test.ts
+@@ -0,0 +1,97 @@
++import { describe, expect, it } from "vitest";
++
++import { trackEventSchema } from "@/lib/security/schemas";
++
++import { AB_SENDING, AB_TESTS, abWord, abWords, registryFaults, runningTest, type AbTest } from "../tests";
++
++// The registry of tests (1.9; docs/1.9-build/notes/onboarding-fable.md, 4).
++
++const test = (o: Partial<AbTest> = {}): AbTest => ({
++  id: "day1-guided",
++  surface: "onboarding",
++  arms: ["a", "b"],
++  share: 1,
++  begins: "2026-12-07",
++  ends: "2026-12-27",
++  outcome: "back on day 7",
++  guard: "back on day 30",
++  needs: 1100,
++  ...o,
++});
++
++describe("the tests Purify runs", () => {
++  it("are none, and nothing leaves a device, until the owner agrees the privacy page's sentence", () => {
++    expect(AB_TESTS).toEqual([]);
++    expect(AB_SENDING).toBe(false);
++  });
++
++  it("are a registry with nothing wrong in it", () => {
++    expect(registryFaults(AB_TESTS)).toEqual([]);
++  });
++
++  it("may only send what the server's closed list takes", () => {
++    // A running test whose words the server refuses would count nothing and
++    // say so nowhere. Adding a test means adding its member to
++    // trackEventSchema in the same change (the head of ../tests.ts).
++    for (const t of AB_TESTS) {
++      for (const arm of t.arms) {
++        const row = { name: "ab_exposed", props: { test: t.id, arm, platform: "ios" } };
++        expect(trackEventSchema.safeParse(row).success, abWord(t, arm)).toBe(true);
++      }
++    }
++    // And while none runs, the server takes no such row at all.
++    if (AB_TESTS.length === 0) {
++      expect(trackEventSchema.safeParse({ name: "ab_exposed", props: { test: "x", arm: "a", platform: "ios" } }).success).toBe(false);
++    }
++  });
++});
++
++describe("what a registry entry must say", () => {
++  it("passes one that names its outcome, its guard, its readers and its last day", () => {
++    expect(registryFaults([test()])).toEqual([]);
++  });
++
++  it("refuses one with no outcome, no guard, no end, too few readers or a share of nobody", () => {
++    expect(registryFaults([test({ outcome: " " })]).join()).toContain("the one outcome");
++    expect(registryFaults([test({ guard: "" })]).join()).toContain("must not fall");
++    expect(registryFaults([test({ ends: "" })]).join()).toContain("a first and a last day");
++    expect(registryFaults([test({ ends: "2026-12-01" })]).join()).toContain("in order");
++    expect(registryFaults([test({ needs: 12 })]).join()).toContain("how many readers");
++    expect(registryFaults([test({ share: 0 })]).join()).toContain("share");
++    expect(registryFaults([test({ share: 1.5 })]).join()).toContain("share");
++  });
++
++  it("refuses an id or an arm that could hold more than a short word", () => {
++    expect(registryFaults([test({ id: "Day One!" })]).join()).toContain("an id is");
++    expect(registryFaults([test({ arms: ["a"] })]).join()).toContain("two to four arms");
++    expect(registryFaults([test({ arms: ["a", "a"] })]).join()).toContain("each arm named once");
++    expect(registryFaults([test({ arms: ["a", "reader-0000-4000-8000"] })]).join()).toContain("is a short word");
++    expect(registryFaults([test(), test()]).join()).toContain("used once");
++  });
++
++  it("refuses two tests on one surface at the same time, and allows them one after the other or on two surfaces", () => {
++    const second = test({ id: "door-led", begins: "2026-12-20", ends: "2027-01-10" });
++    expect(registryFaults([test(), second]).join()).toContain("at the same time");
++    expect(registryFaults([test(), test({ id: "door-led", begins: "2026-12-28", ends: "2027-01-17" })])).toEqual([]);
++    expect(registryFaults([test(), test({ id: "plus-card", surface: "plus" })])).toEqual([]);
++  });
++});
++
++describe("which test is running", () => {
++  const tests = [test(), test({ id: "plus-card", surface: "plus", begins: "2026-12-14", ends: "2027-01-03" })];
++
++  it("is the one whose days hold today, on its own surface", () => {
++    expect(runningTest("onboarding", "2026-12-06", tests)).toBeNull();
++    expect(runningTest("onboarding", "2026-12-07", tests)?.id).toBe("day1-guided");
++    expect(runningTest("onboarding", "2026-12-27", tests)?.id).toBe("day1-guided");
++    expect(runningTest("onboarding", "2026-12-28", tests)).toBeNull();
++    expect(runningTest("plus", "2026-12-20", tests)?.id).toBe("plus-card");
++    expect(runningTest("plus", "2026-12-07", tests)).toBeNull();
++  });
++
++  it("names a test and its arm in one word, and lists every word it can say", () => {
++    expect(abWord(test(), "b")).toBe("day1-guided:b");
++    expect(abWords(tests)).toEqual(["day1-guided:a", "day1-guided:b", "plus-card:a", "plus-card:b"]);
++    expect(abWords()).toEqual([]);
++  });
++});
+diff --git a/lib/ab/assign.ts b/lib/ab/assign.ts
+new file mode 100644
+index 00000000..727af305
+--- /dev/null
++++ b/lib/ab/assign.ts
+@@ -0,0 +1,66 @@
++// Which version of a test a device shows (1.9): decided on the device, from
++// a number that never leaves it (docs/1.9-build/notes/onboarding-fable.md,
++// 4.1).
++//
++// The device draws a random seed once and keeps it. Its arm in a test is
++// worked out from the seed and the test's id, so the same device always
++// shows the same version of a test, and its arm in one test says nothing of
++// its arm in another. The seed is not sent, not copied to an account, and is
++// no field of any event: the server's closed list has nowhere to put it.
++//
++// Pure but for readSeed, so the rule is tested directly
++// (lib/ab/__tests__/assign.test.ts).
++
++import type { AbTest } from "./tests";
++
++const SEED_KEY = "purify:ab.seed";
++
++/** FNV-1a over the seed and a word, as a number from 0 up to 1. */
++export function fraction(seed: string, word: string): number {
++  let h = 0x811c9dc5;
++  const s = `${seed}/${word}`;
++  for (let i = 0; i < s.length; i++) {
++    h ^= s.charCodeAt(i);
++    h = Math.imul(h, 0x01000193);
++  }
++  // A last stir, so words that differ by one letter land far apart.
++  h ^= h >>> 16;
++  h = Math.imul(h, 0x85ebca6b);
++  h ^= h >>> 13;
++  return (h >>> 0) / 0x1_0000_0000;
++}
++
++/**
++ * The device's arm in a test, or null when it is not in the test at all
++ * (outside the test's share). Two draws from the one seed: whether it is in,
++ * and which arm, so widening a test's share never moves a device that was
++ * already in from one arm to another.
++ */
++export function armOf(test: Pick<AbTest, "id" | "arms" | "share">, seed: string): string | null {
++  if (!seed || fraction(seed, `${test.id}#in`) >= test.share) return null;
++  return test.arms[Math.floor(fraction(seed, `${test.id}#arm`) * test.arms.length)] ?? test.arms[0];
++}
++
++function newSeed(): string {
++  try {
++    const n = new Uint32Array(2);
++    globalThis.crypto.getRandomValues(n);
++    return `${n[0].toString(36)}${n[1].toString(36)}`;
++  } catch {
++    return `${Math.random().toString(36).slice(2)}${Math.random().toString(36).slice(2)}`;
++  }
++}
++
++/** The device's seed, drawn the first time it is asked for. Empty where nothing can be kept: such a device is in no test. */
++export function readSeed(): string {
++  if (typeof window === "undefined") return "";
++  try {
++    const kept = window.localStorage.getItem(SEED_KEY);
++    if (kept) return kept;
++    const seed = newSeed();
++    window.localStorage.setItem(SEED_KEY, seed);
++    return seed;
++  } catch {
++    return "";
++  }
++}
+diff --git a/lib/ab/device.ts b/lib/ab/device.ts
+new file mode 100644
+index 00000000..4dd5ba61
+--- /dev/null
++++ b/lib/ab/device.ts
+@@ -0,0 +1,92 @@
++// A test on this device (1.9): its arm, and saying once that it was shown
++// (docs/1.9-build/notes/onboarding-fable.md, 4.1 and 4.2).
++//
++// Who is never in a test: automation, a device the admin has been opened
++// on, a device in Testers mode (lib/onboarding/count.ts, countingAllowed):
++// the same devices whose visits are never counted. In Testers mode an admin
++// picks the arm to look at instead (pickArm), and it is said to nobody.
++//
++// NOTHING IS SENT while AB_SENDING is off (./tests.ts), and no test is
++// running: this file is the whole of the device's part, ready and silent.
++
++import { apiFetch } from "@/lib/api/client";
++import { countPlatform, countingAllowed } from "@/lib/onboarding/count";
++import { utcDay } from "@/lib/onboarding/counting";
++import { isTesting } from "@/lib/onboarding/testing";
++
++import { armOf, readSeed } from "./assign";
++import { AB_SENDING, AB_TESTS, abWord, runningTest, type AbSurface, type AbTest } from "./tests";
++
++const EXPOSED_KEY = "purify:ab.exposed"; // JSON array of test ids already said
++const PICK_KEY = "purify:ab.pick"; // Testers mode: JSON { [test id]: arm }
++
++function readJson<T>(key: string, fallback: T): T {
++  try {
++    return (JSON.parse(window.localStorage.getItem(key) ?? "null") as T | null) ?? fallback;
++  } catch {
++    return fallback;
++  }
++}
++
++/** Testers mode: the arm an admin chose to look at. Kept on the device, said to nobody. */
++export function pickArm(testId: string, arm: string | null): void {
++  try {
++    const picks = readJson<Record<string, string>>(PICK_KEY, {});
++    if (arm) picks[testId] = arm;
++    else delete picks[testId];
++    window.localStorage.setItem(PICK_KEY, JSON.stringify(picks));
++  } catch {
++    /* nothing kept: the device shows its own arm */
++  }
++}
++
++/**
++ * The version this device shows on a surface today: the running test and
++ * its arm, or null when no test is running there, the device is outside the
++ * test's share, or it is a device that is never in a test.
++ */
++export function armHere(surface: AbSurface, tests: readonly AbTest[] = AB_TESTS): { test: AbTest; arm: string } | null {
++  if (typeof window === "undefined") return null;
++  const test = runningTest(surface, utcDay(new Date()), tests);
++  if (!test) return null;
++  if (isTesting()) {
++    const picked = readJson<Record<string, string>>(PICK_KEY, {})[test.id];
++    return picked && test.arms.includes(picked) ? { test, arm: picked } : null;
++  }
++  if (!countingAllowed()) return null;
++  const arm = armOf(test, readSeed());
++  return arm ? { test, arm } : null;
++}
++
++/** The word an outcome row carries for this device on a surface ("day1-guided:b"), or undefined. */
++export function abWordHere(surface: AbSurface, tests: readonly AbTest[] = AB_TESTS): string | undefined {
++  if (!AB_SENDING || isTesting()) return undefined;
++  const here = armHere(surface, tests);
++  return here ? abWord(here.test, here.arm) : undefined;
++}
++
++/**
++ * Say, once for this device, that the screen that differs was shown: the
++ * test, the arm, the kind of device and nothing else. Call it where the
++ * screen is drawn, never where the arm is worked out, so a device that was
++ * assigned and never reached the screen is not counted as having seen it.
++ */
++export function exposed(surface: AbSurface, tests: readonly AbTest[] = AB_TESTS): void {
++  if (!AB_SENDING || typeof window === "undefined" || isTesting()) return;
++  const here = armHere(surface, tests);
++  if (!here) return;
++  const said = readJson<string[]>(EXPOSED_KEY, []);
++  if (said.includes(here.test.id)) return;
++  // Marked before it is sent: a device that cannot keep the mark says nothing, rather than saying it on every visit.
++  try {
++    window.localStorage.setItem(EXPOSED_KEY, JSON.stringify([...said, here.test.id]));
++  } catch {
++    return;
++  }
++  void apiFetch("/api/track/event", {
++    method: "POST",
++    headers: { "Content-Type": "application/json" },
++    body: JSON.stringify({ name: "ab_exposed", props: { test: here.test.id, arm: here.arm, platform: countPlatform() } }),
++    keepalive: true,
++  }).catch(() => {});
++}
+diff --git a/lib/ab/size.ts b/lib/ab/size.ts
+new file mode 100644
+index 00000000..4d86310e
+--- /dev/null
++++ b/lib/ab/size.ts
+@@ -0,0 +1,15 @@
++// How many readers a test needs (1.9; docs/1.9-build/notes/onboarding-fable.md,
++// 4.3). A test names this number before it starts (./tests.ts, `needs`), so
++// nobody stops one early because it looks good on a Wednesday.
++
++/**
++ * Readers per arm to tell a rate of `from` from a rate of `to`, at the usual
++ * 5% threshold (two-sided) with 80% power: the normal approximation for two
++ * proportions. With Purify's numbers only a large difference is findable,
++ * which is the point of asking before a test is written.
++ */
++export function readersPerArm(from: number, to: number): number {
++  if (!(from > 0 && from < 1 && to > 0 && to < 1) || from === to) return Infinity;
++  const z = 1.959964 + 0.841621;
++  return Math.ceil((z * z * (from * (1 - from) + to * (1 - to))) / (from - to) ** 2);
++}
+diff --git a/lib/ab/summary.ts b/lib/ab/summary.ts
+new file mode 100644
+index 00000000..2459f087
+--- /dev/null
++++ b/lib/ab/summary.ts
+@@ -0,0 +1,61 @@
++// A test's counts, summed for the admin (1.9;
++// docs/1.9-build/notes/onboarding-fable.md, 4.2). Pure, so the sums and the
++// small-cell rule are tested directly (lib/ab/__tests__/summary.test.ts).
++//
++// Every number is a total of rows that hold no reader: an exposure
++// (`ab_exposed`, once a device, when the screen that differs was really
++// shown) and the outcome rows that carry the test's word.
++
++import { abWord, type AbTest } from "./tests";
++
++/**
++ * A cell smaller than this is not shown. "Three readers in arm B came back"
++ * is close to a description of three people, and is no finding either.
++ */
++export const SMALLEST_CELL = 20;
++
++export type AbRow = { name: string; props: Record<string, unknown> };
++
++export type ArmSummary = {
++  arm: string;
++  /** Devices shown this version, or null while the cell is too small to show. */
++  exposed: number | null;
++  /** Of them, how many reached the outcome; null while either cell is too small. */
++  reached: number | null;
++  /** reached / exposed, or null. */
++  rate: number | null;
++  /** Whether the arm has the readers the test said it needs. */
++  enough: boolean;
++};
++
++/**
++ * One test, arm by arm. `isOutcome` says which rows are the outcome the
++ * test is judged by (a finish, a return on day 7), since the registry names
++ * it in words for the owner and the caller knows the event.
++ */
++export function summarizeTest(test: AbTest, rows: readonly AbRow[], isOutcome: (row: AbRow) => boolean): ArmSummary[] {
++  return test.arms.map((arm) => {
++    const word = abWord(test, arm);
++    let exposed = 0;
++    let reached = 0;
++    for (const row of rows) {
++      if (row.name === "ab_exposed") {
++        if (row.props.test === test.id && row.props.arm === arm) exposed++;
++      } else if (row.props.ab === word && isOutcome(row)) reached++;
++    }
++    const shown = exposed >= SMALLEST_CELL;
++    const both = shown && reached >= SMALLEST_CELL;
++    return {
++      arm,
++      exposed: shown ? exposed : null,
++      reached: both ? reached : null,
++      rate: both ? reached / exposed : null,
++      enough: exposed >= test.needs,
++    };
++  });
++}
++
++/** Whether a test may be read yet: its last day is past, and every arm has the readers it said it needs. */
++export function readable(test: AbTest, arms: readonly ArmSummary[], today: string): boolean {
++  return today > test.ends && arms.every((a) => a.enough);
++}
+diff --git a/lib/ab/tests.ts b/lib/ab/tests.ts
+new file mode 100644
+index 00000000..f47901bc
+--- /dev/null
++++ b/lib/ab/tests.ts
+@@ -0,0 +1,104 @@
++// The tests Purify runs: one file, in the repository (1.9). The why and the
++// rules are docs/1.9-build/notes/onboarding-fable.md, section 4.
++//
++// A test is added, changed and ended by a commit here, so each is reviewed
++// like code and there is a record of what ran and when. No dashboard decides
++// what a reader sees.
++//
++// NONE IS RUNNING. The list is empty and the sender is off (AB_SENDING), on
++// the owner's frame of 2026-11-10: the system is built, and no test runs
++// until he has agreed its sentence on the privacy page (his question 112).
++//
++// To run one, in a single change:
++//   1. its entry in AB_TESTS below, with the one outcome it is judged by, the
++//      number that must not fall, how many readers it needs and its last day;
++//   2. its words on the server's closed list (lib/security/schemas.ts): the
++//      `ab_exposed` event and the optional `ab` word on the rows that carry
++//      an outcome. lib/ab/__tests__/tests.test.ts refuses a running test the
++//      server would not take;
++//   3. the sentence on /privacy, and AB_SENDING turned on.
++//
++// What may be tested: two honest versions of the same screen. Never the
++// paywall of a reader who named a need, never a countdown, scarcity or a
++// subscriber count (components/billing/UpgradeModal.tsx), never a
++// notification that puts a clock on the reader (lib/push/doctrine.ts).
++
++/** Where a test lives. A device is in at most one test on each surface at a time. */
++export type AbSurface = "onboarding" | "plus";
++export const AB_SURFACES: readonly AbSurface[] = ["onboarding", "plus"];
++
++export type AbTest = {
++  /** A short name: lower-case letters, digits and dashes. Never reused for another test. */
++  id: string;
++  surface: AbSurface;
++  /** The versions, the first of them Purify as it is. Two to four short words. */
++  arms: readonly string[];
++  /** The share of devices in the test, above 0 and up to 1. The rest see Purify as it is and are not counted in it. */
++  share: number;
++  /** First and last day, YYYY-MM-DD (UTC). Whole weeks: a Sunday's readers are not a Tuesday's. */
++  begins: string;
++  ends: string;
++  /** The one count the test is judged by, decided before it starts. */
++  outcome: string;
++  /** The count that must not fall: a change that sells more and keeps fewer loses. */
++  guard: string;
++  /** Readers each arm needs before the result means anything (./size.ts, readersPerArm). */
++  needs: number;
++};
++
++/** Nothing is running. See the head of this file before adding one. */
++export const AB_TESTS: readonly AbTest[] = [];
++
++/**
++ * Whether an exposure or an arm may leave a device. Off until the owner has
++ * agreed the privacy page's sentence for tests. While it is off a device
++ * still works out its arm (so a build can be walked), and says nothing.
++ */
++export const AB_SENDING = false;
++
++const ID = /^[a-z0-9](?:[a-z0-9-]{0,22}[a-z0-9])?$/;
++const DAY = /^\d{4}-\d{2}-\d{2}$/;
++
++/** What is wrong with a registry, in plain words; empty when nothing is. */
++export function registryFaults(tests: readonly AbTest[]): string[] {
++  const faults: string[] = [];
++  const seen = new Set<string>();
++  for (const t of tests) {
++    const at = `"${t.id}"`;
++    if (!ID.test(t.id)) faults.push(`${at}: an id is lower-case letters, digits and dashes, 24 at most`);
++    if (seen.has(t.id)) faults.push(`${at}: an id is used once`);
++    seen.add(t.id);
++    if (t.arms.length < 2 || t.arms.length > 4) faults.push(`${at}: two to four arms`);
++    if (new Set(t.arms).size !== t.arms.length) faults.push(`${at}: each arm named once`);
++    for (const arm of t.arms) if (!ID.test(arm) || arm.length > 12) faults.push(`${at}: arm "${arm}" is a short word`);
++    if (!(t.share > 0 && t.share <= 1)) faults.push(`${at}: share is above 0 and up to 1`);
++    if (!DAY.test(t.begins) || !DAY.test(t.ends) || t.ends < t.begins) faults.push(`${at}: a first and a last day, in order`);
++    if (!t.outcome.trim()) faults.push(`${at}: the one outcome it is judged by`);
++    if (!t.guard.trim()) faults.push(`${at}: the count that must not fall`);
++    if (!(Number.isInteger(t.needs) && t.needs >= 100)) faults.push(`${at}: how many readers each arm needs, a hundred at least`);
++  }
++  // One test on a surface at a time: a row carries one test's word, never two.
++  for (const a of tests) {
++    for (const b of tests) {
++      if (a.id < b.id && a.surface === b.surface && a.begins <= b.ends && b.begins <= a.ends) {
++        faults.push(`"${a.id}" and "${b.id}" run on ${a.surface} at the same time`);
++      }
++    }
++  }
++  return faults;
++}
++
++/** The test running on a surface on a day (YYYY-MM-DD, UTC), if any. */
++export function runningTest(surface: AbSurface, day: string, tests: readonly AbTest[] = AB_TESTS): AbTest | null {
++  return tests.find((t) => t.surface === surface && t.begins <= day && day <= t.ends) ?? null;
++}
++
++/** A test and an arm as one word, the only form in which either leaves a device: "day1-guided:b". */
++export function abWord(test: Pick<AbTest, "id">, arm: string): string {
++  return `${test.id}:${arm}`;
++}
++
++/** Every word the registry can say: the closed list the server takes. */
++export function abWords(tests: readonly AbTest[] = AB_TESTS): string[] {
++  return tests.flatMap((t) => t.arms.map((arm) => abWord(t, arm)));
++}
+diff --git a/lib/i18n/messages/en.json b/lib/i18n/messages/en.json
+index 9ba72af6..4f5c956e 100644
+--- a/lib/i18n/messages/en.json
++++ b/lib/i18n/messages/en.json
+@@ -4423,6 +4423,29 @@
+   "onboard.returning.body": "A few quick questions, so Purify fits how you pray and read now. It takes under a minute, and nothing you have saved changes.",
+   "onboard.returning.next": "Next step",
+   "onboard.returning.nextEyebrow": "Your next step",
++  "onboard.background.christian": "Another Christian tradition",
++  "onboard.background.start.christian": "the Creed and the first councils",
++  "onboard.where.title": "Where are you now?",
++  "onboard.where.returning": "Coming back",
++  "onboard.where.returningSub": "Baptized Orthodox, after time away",
++  "onboard.where.preparing": "Preparing to be received",
++  "onboard.been.title": "Have you been to an Orthodox church?",
++  "onboard.been.notYet": "Not yet",
++  "onboard.been.going": "I have started going",
++  "onboard.rule.clergy": "I am a priest or deacon",
++  "onboard.week.title": "Your first week",
++  "onboard.week.sub": "Seven steps, one a day",
++  "onboard.week.eyebrow": "Your first week · {n} of 7",
++  "onboard.week.nicaea": "First Council of Nicaea",
++  "onboard.week.ephesus": "The Council of Ephesus",
++  "onboard.week.chalcedon": "The Council of Chalcedon",
++  "onboard.week.carthage": "Council of Carthage (419)",
++  "onboard.week.leo": "St. Leo the Great",
++  "onboard.week.ignatius": "St. Ignatius of Antioch",
++  "onboard.week.maryOfEgypt": "St. Mary of Egypt",
++  "onboard.week.schism": "The Excommunications of 1054",
++  "onboard.week.afterChalcedon": "The Estrangement of the Non-Chalcedonian Churches",
++  "onboard.second.title": "One question, so Purify can fit you.",
+   "community.postGone": "That post is no longer here.",
+   "common.copy": "Copy",
+   "press.textActions": "Actions for this text",
+diff --git a/lib/onboarding/__tests__/flowSteps.test.ts b/lib/onboarding/__tests__/flowSteps.test.ts
+index 750f34c8..4781493a 100644
+--- a/lib/onboarding/__tests__/flowSteps.test.ts
++++ b/lib/onboarding/__tests__/flowSteps.test.ts
+@@ -111,3 +111,80 @@ describe("a reader back from the sign-in their reminders asked for", () => {
+     expect(path.indexOf("reminders")).toBe(path.length - 2);
+   });
+ });
++
++/**
++ * The questions' shape with the roads on (1.9, lib/onboarding/flags.ts;
++ * docs/1.9-build/notes/onboarding-fable.md, 3.2): fewer screens, each asked
++ * where it is of use. Off, every list above stands as it is.
++ */
++describe("with the roads on", () => {
++  const roads = (o: Partial<Parameters<typeof flowSteps>[0]> = {}) => steps({ roads: true, ...o });
++
++  it("shows a new reader Purify before it asks for an account or for reminders", () => {
++    expect(roads({ level: "inquirer" })).toEqual(["welcome", "background", "level", "intent", "handoff"]);
++    expect(roads({ level: "learning" })).toEqual(["welcome", "background", "level", "intent", "handoff"]);
++  });
++
++  it("asks the practicing their calendar and fast, and the clergy's question of nobody who did not open it", () => {
++    expect(roads({ level: "practicing" })).toEqual(["welcome", "background", "level", "rule", "intent", "handoff"]);
++    for (const role of ["priest", "deacon", "layman", null] as (Role | null)[]) {
++      const s = roads({ level: "practicing", role, country: "US" });
++      expect(s, String(role)).not.toContain("role");
++      expect(s.some((x) => x.startsWith("clergy")), String(role)).toBe(false);
++    }
++  });
++
++  it("opens the clergy's screens after the rule, from its quiet line", () => {
++    expect(roads({ level: "practicing", clergyOpen: true })).toEqual(["welcome", "background", "level", "rule", "role", "intent", "handoff"]);
++    const priest = roads({ level: "practicing", clergyOpen: true, role: "priest", country: "US" });
++    expect(priest.slice(priest.indexOf("rule"), priest.indexOf("intent"))).toEqual([
++      "rule",
++      "role",
++      "clergyWhere",
++      "clergyJurisdiction",
++      "clergyParish",
++    ]);
++    // Never for a reader who is not baptized Orthodox, whatever was opened before they changed their answer.
++    for (const level of ["learning", "inquirer", null] as (Level | null)[]) {
++      expect(roads({ level, clergyOpen: true, role: "priest", country: "US" }), String(level)).not.toContain("role");
++    }
++  });
++
++  it("asks for reminders in the questions only of a reader who is signed in, since they are kept with an account", () => {
++    expect(roads({ level: "inquirer" })).not.toContain("reminders");
++    expect(roads({ level: "inquirer", signedIn: true })).toEqual(["welcome", "background", "level", "intent", "reminders", "handoff"]);
++    expect(roads({ startAt: "level", level: "inquirer", signedIn: true })).toEqual(["background", "level", "intent", "reminders", "handoff"]);
++    // A reader who is back with reminders on is still not asked to turn on what is on.
++    expect(roads({ startAt: "returning", level: "inquirer", signedIn: true, remindersOn: true })).not.toContain("reminders");
++    expect(roads({ startAt: "returning", level: "inquirer", signedIn: true })).toContain("reminders");
++  });
++
++  it("still begins at the account on the mobile website, where the reader came to make one", () => {
++    expect(roads({ startAt: "account", level: "inquirer" })).toEqual(["account", "background", "level", "intent", "handoff"]);
++  });
++
++  it("leaves a reader back from signing in for their reminders exactly where they were", () => {
++    expect(roads({ startAt: "reminders" })).toEqual(["reminders", "handoff"]);
++  });
++
++  it("measures the progress line against a path that holds every screen it can show, in its order", () => {
++    for (const startAt of ["welcome", "account", "level", "returning", "reminders"] as FlowStart[]) {
++      const path = progressPath(startAt, true);
++      expect(new Set(path).size, startAt).toBe(path.length);
++      for (const level of [...LEVELS, null] as (Level | null)[]) {
++        for (const role of ["priest", "deacon", "layman", null] as (Role | null)[]) {
++          for (const clergyOpen of [false, true]) {
++            for (const signedIn of [false, true]) {
++              const shown = roads({ startAt, level, role, country: "US", clergyOpen, signedIn });
++              const at = shown.map((x: StepId) => path.indexOf(x));
++              const label = `${startAt} ${level} ${role} ${clergyOpen} ${signedIn}`;
++              expect(at.every((i) => i >= 0), label).toBe(true);
++              // Only ever forward.
++              expect([...at].sort((a, b) => a - b), label).toEqual(at);
++            }
++          }
++        }
++      }
++    }
++  });
++});
+diff --git a/lib/onboarding/__tests__/road.test.ts b/lib/onboarding/__tests__/road.test.ts
+new file mode 100644
+index 00000000..81d76f14
+--- /dev/null
++++ b/lib/onboarding/__tests__/road.test.ts
+@@ -0,0 +1,91 @@
++import { describe, expect, it } from "vitest";
++
++import { ROADS, leanOf, roadOf, type RoadAnswers } from "../road";
++import { ALL_BACKGROUNDS, INTENTS, LEVELS, type Background, type Intent, type Level } from "../space";
++
++// The road (1.9): where a reader comes in from, beside how far along they
++// are. Read from what they said, never guessed
++// (docs/1.9-build/notes/onboarding-fable.md, 3.4).
++
++const road = (o: Partial<RoadAnswers> = {}) => roadOf({ background: null, level: null, intent: null, returning: false, ...o });
++
++describe("the reader's road", () => {
++  it("is none when the reader has said nothing, or would rather not say and gave no level", () => {
++    expect(road()).toBeNull();
++    expect(road({ background: "prefer-not" })).toBeNull();
++    // Picks alone choose no road: what a reader is looking for is not where they come from.
++    expect(road({ intent: "fathers" })).toBeNull();
++    // Orthodox, and skipped before the next question: Purify as it always was.
++    expect(road({ background: "orthodox" })).toBeNull();
++  });
++
++  it("puts what the reader said of their practice before where they come from", () => {
++    for (const background of [...ALL_BACKGROUNDS, null] as (Background | null)[]) {
++      expect(road({ background, level: "practicing" }), String(background)).toBe("practicing");
++      expect(road({ background, level: "practicing", returning: true }), String(background)).toBe("returning");
++      expect(road({ background, level: "learning" }), String(background)).toBe("catechumen");
++    }
++  });
++
++  it("gives a reader not yet going the road of where they come from", () => {
++    expect(road({ background: "catholic", level: "inquirer" })).toBe("catholic");
++    expect(road({ background: "protestant", level: "inquirer" })).toBe("protestant");
++    expect(road({ background: "christian", level: "inquirer" })).toBe("christian");
++    expect(road({ background: "other-faith", level: "inquirer" })).toBe("newcomer");
++    expect(road({ background: "none", level: "inquirer" })).toBe("newcomer");
++  });
++
++  it("reads where they come from alone when they skipped before the level", () => {
++    expect(road({ background: "catholic" })).toBe("catholic");
++    expect(road({ background: "protestant" })).toBe("protestant");
++    expect(road({ background: "christian" })).toBe("christian");
++    expect(road({ background: "other-faith" })).toBe("newcomer");
++    expect(road({ background: "none" })).toBe("newcomer");
++  });
++
++  it("takes Orthodox by family and new to the faith down the road back", () => {
++    expect(road({ background: "orthodox", level: "inquirer" })).toBe("returning");
++  });
++
++  it("is the early-church seeker's for the curious who asked first for the Fathers, the councils or history", () => {
++    for (const intent of ["fathers", "councils", "history"] as Intent[]) {
++      expect(road({ background: "none", level: "inquirer", intent }), intent).toBe("seeker");
++      expect(road({ background: "none", intent }), intent).toBe("seeker");
++      expect(road({ background: "prefer-not", level: "inquirer", intent }), intent).toBe("seeker");
++      expect(road({ level: "inquirer", intent }), intent).toBe("seeker");
++      // Never for a reader who named a tradition: theirs is their own road.
++      expect(road({ background: "catholic", level: "inquirer", intent }), intent).toBe("catholic");
++      expect(road({ background: "other-faith", level: "inquirer", intent }), intent).toBe("newcomer");
++    }
++    for (const intent of INTENTS.filter((i) => !["fathers", "councils", "history"].includes(i))) {
++      expect(road({ background: "none", level: "inquirer", intent }), intent).toBe("newcomer");
++    }
++  });
++
++  it("answers every combination with a road it knows, or none", () => {
++    const seen = new Set<string>();
++    for (const background of [...ALL_BACKGROUNDS, null] as (Background | null)[]) {
++      for (const level of [...LEVELS, null] as (Level | null)[]) {
++        for (const intent of [...INTENTS, null] as (Intent | null)[]) {
++          for (const returning of [false, true]) {
++            const r = roadOf({ background, level, intent, returning });
++            if (r) {
++              expect(ROADS).toContain(r);
++              seen.add(r);
++            }
++          }
++        }
++      }
++    }
++    // Eight roads, each reachable.
++    expect([...seen].sort()).toEqual([...ROADS].sort());
++  });
++});
++
++describe("a Protestant reader's lean", () => {
++  it("is Scripture's unless what they asked for says they know a church with a liturgy", () => {
++    expect(leanOf(null)).toBe("bible");
++    for (const i of ["gospels", "study", "beliefs", "prayer", "quiet"] as Intent[]) expect(leanOf(i), i).toBe("bible");
++    for (const i of ["liturgy", "fathers", "councils", "history", "feasts", "saints"] as Intent[]) expect(leanOf(i), i).toBe("liturgical");
++  });
++});
+diff --git a/lib/onboarding/__tests__/state.test.ts b/lib/onboarding/__tests__/state.test.ts
+index c2a404d1..eacf74e6 100644
+--- a/lib/onboarding/__tests__/state.test.ts
++++ b/lib/onboarding/__tests__/state.test.ts
+@@ -9,16 +9,22 @@ import {
+   fillSpaceFromAccount,
+   isNudgeDismissed,
+   isOnboarded,
++  isSecondChanceDone,
+   markOnboarded,
+   markOnboardedSilently,
++  markSecondChanceDone,
+   parseSpaceSnapshot,
+   priorUseDetected,
+   readBackground,
+   readFastingRule,
+   readIntent,
+   readIntents,
++  readKeep,
+   readLevel,
++  readOnboardedDay,
+   readResumeStage,
++  readReturning,
++  readWeek,
+   refreshDayOne,
+   setResumeStage,
+   shouldShowOnboarding,
+@@ -28,7 +34,10 @@ import {
+   writeFastingRule,
+   writeIntent,
+   writeIntents,
++  writeKeep,
+   writeLevel,
++  writeReturning,
++  writeWeek,
+ } from "../state";
+ 
+ function storage() {
+@@ -73,7 +82,8 @@ describe("onboarding state", () => {
+   });
+ 
+   it("round-trips the answers through one snapshot string", () => {
+-    expect(parseSpaceSnapshot(spaceSnapshot())).toEqual({ level: null, intent: null, fasting: "strict", background: null });
++    const nothing = { level: null, intent: null, fasting: "strict", background: null, returning: false, intents: [] };
++    expect(parseSpaceSnapshot(spaceSnapshot())).toEqual(nothing);
+     writeLevel("learning");
+     writeIntent("liturgy");
+     writeFastingRule("modified");
+@@ -83,21 +93,69 @@ describe("onboarding state", () => {
+       intent: "liturgy",
+       fasting: "modified",
+       background: "protestant",
++      returning: false,
++      intents: ["liturgy"],
+     });
+     expect(events).toContain(ONBOARDING_EVENT);
+   });
+ 
++  it("carries the road back and every pick in the snapshot too (1.9)", () => {
++    writeLevel("practicing");
++    writeReturning(true);
++    writeIntents(["prayer", "saints", "feasts"]);
++    writeBackground("christian");
++    expect(parseSpaceSnapshot(spaceSnapshot())).toEqual({
++      level: "practicing",
++      intent: "prayer",
++      fasting: "strict",
++      background: "christian",
++      returning: true,
++      intents: ["prayer", "saints", "feasts"],
++    });
++    writeReturning(false);
++    expect(readReturning()).toBe(false);
++    expect(parseSpaceSnapshot(spaceSnapshot()).returning).toBe(false);
++  });
++
+   it("ignores junk in a snapshot rather than trusting it", () => {
+-    expect(parseSpaceSnapshot("bishop|nap|feast|martian")).toEqual({ level: null, intent: null, fasting: "strict", background: null });
++    expect(parseSpaceSnapshot("bishop|nap|feast|martian|yes|nap,quiet,nap")).toEqual({
++      level: null,
++      intent: null,
++      fasting: "strict",
++      background: null,
++      returning: false,
++      intents: ["quiet"],
++    });
+     // A snapshot written before where-you-come-from was asked.
+     expect(parseSpaceSnapshot("learning|liturgy|modified")).toEqual({
+       level: "learning",
+       intent: "liturgy",
+       fasting: "modified",
+       background: null,
++      returning: false,
++      intents: [],
+     });
+   });
+ 
++  it("keeps a first week, the day the questions ended and the two cards' marks (1.9)", () => {
++    expect(readWeek()).toEqual({ at: 0, day: null, passed: 0 });
++    writeWeek({ at: 3, day: "2026-11-10", passed: 1 });
++    expect(readWeek()).toEqual({ at: 3, day: "2026-11-10", passed: 1 });
++    expect(readOnboardedDay()).toBeNull();
++    // Finishing the questions begins the week again from its first day and keeps the day.
++    markOnboarded();
++    expect(readWeek()).toEqual({ at: 0, day: null, passed: 0 });
++    expect(readOnboardedDay()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
++    expect(readKeep()).toBe("open");
++    writeKeep("asked");
++    expect(readKeep()).toBe("asked");
++    writeKeep("done");
++    expect(readKeep()).toBe("done");
++    expect(isSecondChanceDone()).toBe(false);
++    markSecondChanceDone();
++    expect(isSecondChanceDone()).toBe(true);
++  });
++
+   describe("the picks of What are you looking for?", () => {
+     it("keeps every pick in the order tapped, the first as the intent", () => {
+       writeIntents(["study", "quiet", "prayer"]);
+diff --git a/lib/onboarding/__tests__/week.test.ts b/lib/onboarding/__tests__/week.test.ts
+new file mode 100644
+index 00000000..dc8b3bad
+--- /dev/null
++++ b/lib/onboarding/__tests__/week.test.ts
+@@ -0,0 +1,250 @@
++import fs from "node:fs";
++import path from "node:path";
++
++import { describe, expect, it } from "vitest";
++
++import en from "@/lib/i18n/messages/en.json";
++import lessons from "@/data/prayers/learning/lessons.json";
++import { getCouncil } from "@/lib/councils/councils";
++import { HISTORY_EVENTS } from "@/lib/history/events";
++import { getRuleMeta } from "@/lib/prayers/rules";
++import { PATHS } from "@/lib/reading/paths";
++import { getSaint } from "@/lib/saints/saints";
++
++import { ROADS, type Lean, type Road } from "../road";
++import { INTENTS, LEVELS, dayOneFor, type Intent, type Level } from "../space";
++import {
++  NEW_WEEK,
++  PASSES_THAT_END,
++  PROTESTANT_WEEKS,
++  ROAD_WEEKS,
++  WEEK_LENGTH,
++  WEEK_STEPS,
++  localDay,
++  parseWeek,
++  pickStep,
++  stepPassed,
++  stepTaken,
++  stepToday,
++  weekFor,
++  weekOver,
++  type WeekStepKey,
++} from "../week";
++
++// The first week (1.9): seven steps for each road, in place of the one Day 1
++// card (docs/1.9-build/notes/onboarding-fable.md, 3.4).
++
++const messages = en as Record<string, string>;
++const lessonIds = new Set((lessons as { id: string }[]).map((l) => l.id));
++const keys = Object.keys(WEEK_STEPS) as WeekStepKey[];
++const LEANS: readonly Lean[] = ["bible", "liturgical"];
++const everyWeek = (): { name: string; week: readonly WeekStepKey[] }[] => [
++  ...(Object.entries(ROAD_WEEKS) as [string, readonly WeekStepKey[]][]).map(([name, week]) => ({ name, week })),
++  ...LEANS.map((lean) => ({ name: `protestant, ${lean}`, week: PROTESTANT_WEEKS[lean] })),
++];
++
++describe("the steps a week can hold", () => {
++  it("each open a page that exists", () => {
++    const appPage = (href: string) => fs.existsSync(path.join(process.cwd(), "app/(app)", href, "page.tsx"));
++    for (const key of keys) {
++      const { href } = WEEK_STEPS[key];
++      const lesson = href.match(/^\/prayers\/learning\/(.+)$/);
++      const council = href.match(/^\/councils\/(.+)$/);
++      const saint = href.match(/^\/saints\/(.+)$/);
++      const event = href.match(/^\/history\/(.+)$/);
++      const readingPath = href.match(/^\/reading\/paths\/(.+)$/);
++      const rule = href.match(/^\/prayers\/(creed|before-sleep|morning)$/);
++      if (lesson) expect(lessonIds.has(lesson[1]), `${key}: ${href}`).toBe(true);
++      else if (council) expect(getCouncil(council[1]), `${key}: ${href}`).toBeTruthy();
++      else if (saint) expect(getSaint(saint[1]), `${key}: ${href}`).toBeTruthy();
++      else if (event) expect(HISTORY_EVENTS.some((e) => e.slug === event[1]), `${key}: ${href}`).toBe(true);
++      else if (readingPath) expect(PATHS.some((p) => p.id === readingPath[1]), `${key}: ${href}`).toBe(true);
++      else if (rule) expect(getRuleMeta(rule[1])?.href, `${key}: ${href}`).toBe(href);
++      else if (/^\/bible\/(john|job|psalms)\/1$/.test(href)) {
++        // Pages of a book, each written at build from its own data.
++      } else expect(appPage(href), `${key}: ${href}`).toBe(true);
++    }
++  });
++
++  it("are never a reading plan: every plan's Begin is locked, and a first week is free end to end", () => {
++    for (const key of keys) expect(WEEK_STEPS[key].href, key).not.toMatch(/^\/plans(\/|$)/);
++    expect(keys).not.toContain("gospelsPlan");
++  });
++
++  it("never lead a reader to the studies that do not survive the provenance audit", () => {
++    // docs/editorial-standards.md, clergy queue item 5.
++    for (const key of keys) expect(WEEK_STEPS[key].href, key).not.toMatch(/^\/theology\/.+/);
++    // The study library's own door is the practicing reader's alone, by their own pick.
++    for (const { name, week } of everyWeek()) expect(week, name).not.toContain("theology");
++  });
++
++  it("say only words the app already has: the page's name, and a line where the app says one of that page", () => {
++    for (const key of keys) {
++      const step = WEEK_STEPS[key];
++      expect(messages[step.titleKey], `${key} ${step.titleKey}`).toBeTruthy();
++      if (step.bodyKey) expect(messages[step.bodyKey], `${key} ${step.bodyKey}`).toBeTruthy();
++    }
++  });
++
++  it("name a council, a saint and an event by the page's own name", () => {
++    expect(messages["onboard.week.nicaea"]).toBe(getCouncil("first-nicaea")!.byname);
++    expect(messages["onboard.week.ephesus"]).toBe(getCouncil("ephesus")!.byname);
++    expect(messages["onboard.week.chalcedon"]).toBe(getCouncil("chalcedon")!.byname);
++    expect(messages["onboard.week.carthage"]).toBe(getCouncil("carthage-419")!.byname);
++    expect(messages["onboard.week.leo"]).toBe(getSaint("leo-the-great")!.name);
++    expect(messages["onboard.week.ignatius"]).toBe(getSaint("ignatius-of-antioch")!.name);
++    expect(messages["onboard.week.maryOfEgypt"]).toBe(getSaint("mary-of-egypt")!.name);
++    const title = (slug: string) => HISTORY_EVENTS.find((e) => e.slug === slug)!.title;
++    expect(messages["onboard.week.schism"]).toBe(title("great-schism-1054"));
++    expect(messages["onboard.week.afterChalcedon"]).toBe(title("non-chalcedonian-estrangement"));
++  });
++});
++
++describe("each road's week", () => {
++  it("is seven steps, no page twice", () => {
++    for (const { name, week } of everyWeek()) {
++      expect(week, name).toHaveLength(WEEK_LENGTH);
++      const hrefs = week.map((k) => WEEK_STEPS[k].href);
++      expect(new Set(hrefs).size, name).toBe(WEEK_LENGTH);
++    }
++    // Every road has one.
++    expect([...Object.keys(ROAD_WEEKS), "protestant"].sort()).toEqual([...ROADS].sort());
++  });
++
++  it("ends, outside the practicing, at the same door: a parish, or a first Liturgy", () => {
++    for (const { name, week } of everyWeek()) {
++      if (name === "practicing") continue;
++      expect(["parish", "firstLiturgy"], name).toContain(week[WEEK_LENGTH - 1]);
++      // And a first Liturgy is somewhere in every week that ends at a parish, unless the reader already goes.
++      if (!["returning", "catechumen"].includes(name)) expect(week, name).toContain("firstLiturgy");
++    }
++  });
++
++  it("starts each reader where the line under their pill says", () => {
++    // "the Church Fathers and the early councils"
++    expect(ROAD_WEEKS.catholic.slice(0, 2)).toEqual(["fathersPath", "nicaea"]);
++    // "the Scriptures and the early Church"
++    expect(PROTESTANT_WEEKS.bible.slice(0, 2)).toEqual(["gospelJohn", "ignatius"]);
++    expect(PROTESTANT_WEEKS.liturgical[0]).toBe("gospelJohn");
++    // "the Creed and the first councils"
++    expect(ROAD_WEEKS.christian.slice(0, 2)).toEqual(["creed", "nicaea"]);
++    // "an introduction to Orthodox Christianity"
++    expect(ROAD_WEEKS.newcomer[0]).toBe("startHere");
++  });
++});
++
++describe("one reader's week", () => {
++  const week = (road: Road, picks: Intent[] = [], level: Level | null = "inquirer", lean: Lean = "bible") =>
++    weekFor({ road, lean, level, picks }).map((s) => s.key);
++
++  it("is the road's own when they picked nothing", () => {
++    for (const road of ROADS.filter((r) => r !== "protestant")) expect(week(road), road).toEqual([...ROAD_WEEKS[road as keyof typeof ROAD_WEEKS]]);
++    for (const lean of LEANS) expect(week("protestant", [], "inquirer", lean), lean).toEqual([...PROTESTANT_WEEKS[lean]]);
++  });
++
++  it("is led by their first pick, as Day 1 always was, and the road follows in its order", () => {
++    expect(week("catholic", ["prayer"])).toEqual(["morningRule", "fathersPath", "nicaea", "leo", "jesusPrayer", "schism", "parish"]);
++    // A pick the road already holds moves to the front, and nothing comes twice.
++    expect(week("catholic", ["quiet"])).toEqual(["jesusPrayer", "fathersPath", "nicaea", "leo", "schism", "firstLiturgy", "parish"]);
++  });
++
++  it("gives the second and third picks the fourth and fifth days", () => {
++    expect(week("catholic", ["fathers", "prayer", "saints"])).toEqual([
++      "fathersPath",
++      "nicaea",
++      "leo",
++      "morningRule",
++      "saintsLives",
++      "jesusPrayer",
++      "parish",
++    ]);
++  });
++
++  it("is always seven steps, no page twice, the last day the road's own, whatever was picked", () => {
++    for (const road of ROADS) {
++      for (const level of [...LEVELS, null] as (Level | null)[]) {
++        for (const lean of LEANS) {
++          for (const a of INTENTS) {
++            for (const b of INTENTS) {
++              const picks = a === b ? [a] : [a, b, INTENTS[(INTENTS.indexOf(b) + 3) % INTENTS.length]];
++              const w = weekFor({ road, lean, level, picks: [...new Set(picks)] });
++              const label = `${road} ${level} ${lean} ${picks.join(",")}`;
++              expect(w, label).toHaveLength(WEEK_LENGTH);
++              expect(new Set(w.map((s) => s.href)).size, label).toBe(WEEK_LENGTH);
++              const base = road === "protestant" ? PROTESTANT_WEEKS[lean] : ROAD_WEEKS[road];
++              expect(w[WEEK_LENGTH - 1].key, label).toBe(base[WEEK_LENGTH - 1]);
++              for (const s of w) expect(s.href, label).not.toMatch(/^\/plans/);
++            }
++          }
++        }
++      }
++    }
++  });
++});
++
++describe("the step a pick opens inside a week", () => {
++  it("is the Day 1 step it always opened, but for the locked plan and the study library", () => {
++    for (const level of [...LEVELS, null] as (Level | null)[]) {
++      for (const intent of INTENTS) {
++        const key = pickStep(intent, level);
++        const was = dayOneFor(level, intent);
++        if (intent === "gospels") expect(key).toBe("gospelJohn");
++        else if (intent === "beliefs" && level !== "practicing") expect(["creed", "startHere"]).toContain(key);
++        else if (intent === "fathers") expect(key).toBe("fathersPath");
++        else if (was.href === "/walkthroughs/job") expect(key).toBe("job");
++        // On a road with no level kept (they skipped before it), a reader is
++        // not yet going: the Liturgy is the guide to a first one.
++        else if (intent === "liturgy" && level === null) expect(key).toBe("firstLiturgy");
++        else expect(WEEK_STEPS[key].href, `${level} ${intent}`).toBe(was.href);
++      }
++    }
++  });
++});
++
++describe("where a reader stands in their week", () => {
++  const mon = "2026-11-09";
++  const tue = "2026-11-10";
++
++  it("shows one step a day: the next the next day they open Purify, however long that is", () => {
++    expect(stepToday(NEW_WEEK, mon)).toBe(0);
++    const one = stepTaken(NEW_WEEK, mon);
++    expect(one).toEqual({ at: 1, day: mon, passed: 0 });
++    // Taken today: nothing more today.
++    expect(stepToday(one, mon)).toBeNull();
++    expect(stepToday(one, tue)).toBe(1);
++    // A fortnight away costs nothing: the second step is still the next one.
++    expect(stepToday(one, "2026-11-24")).toBe(1);
++  });
++
++  it("ends after the seventh", () => {
++    let w = NEW_WEEK;
++    for (let d = 1; d <= WEEK_LENGTH; d++) w = stepTaken(w, `2026-11-${String(d).padStart(2, "0")}`);
++    expect(w.at).toBe(WEEK_LENGTH);
++    expect(weekOver(w)).toBe(true);
++    expect(stepToday(w, "2026-12-01")).toBeNull();
++  });
++
++  it("passes a closed step over, and ends quietly when two in a row are closed", () => {
++    const passed = stepPassed(NEW_WEEK, mon);
++    expect(passed).toEqual({ at: 1, day: mon, passed: 1 });
++    expect(stepToday(passed, tue)).toBe(1);
++    // Opening the next one says the week is wanted after all.
++    expect(stepTaken(passed, tue).passed).toBe(0);
++    const twice = stepPassed(passed, tue);
++    expect(twice.passed).toBe(PASSES_THAT_END);
++    expect(weekOver(twice)).toBe(true);
++    expect(stepToday(twice, "2026-11-11")).toBeNull();
++  });
++
++  it("reads back only a week it wrote", () => {
++    expect(parseWeek(null)).toEqual(NEW_WEEK);
++    expect(parseWeek("junk")).toEqual(NEW_WEEK);
++    expect(parseWeek(JSON.stringify({ at: 99, day: "yesterday", passed: -1 }))).toEqual({ at: WEEK_LENGTH, day: null, passed: 0 });
++    expect(parseWeek(JSON.stringify({ at: 2, day: mon, passed: 1 }))).toEqual({ at: 2, day: mon, passed: 1 });
++  });
++
++  it("turns over at the reader's own midnight", () => {
++    expect(localDay(new Date(2026, 10, 9, 23, 59))).toBe("2026-11-09");
++    expect(localDay(new Date(2026, 0, 5, 0, 1))).toBe("2026-01-05");
++  });
++});
+diff --git a/lib/onboarding/accountSync.ts b/lib/onboarding/accountSync.ts
+index 7b5375a5..4aa635b6 100644
+--- a/lib/onboarding/accountSync.ts
++++ b/lib/onboarding/accountSync.ts
+@@ -11,7 +11,8 @@
+ 
+ import { pushProfilePrefs } from "@/lib/profile/preferences";
+ import { createClient } from "@/lib/supabase/client";
+-import { ONBOARDING_VERSION, readBackground, readFastingRule, readIntent, readIntents, readLevel } from "./state";
++import { roadsEnabled } from "./flags";
++import { ONBOARDING_VERSION, readBackground, readFastingRule, readIntent, readIntents, readLevel, readReturning } from "./state";
+ import { isTesting } from "./testing";
+ 
+ /**
+@@ -50,8 +51,16 @@ export async function saveSpaceToAccount(opts: { finished?: boolean } = {}): Pro
+           intents: readIntents(),
+           fasting: readFastingRule(),
+           // Where they come from (1.8), in their own account only, so a new
+-          // device of theirs starts from it too.
+-          background: readBackground(),
++          // device of theirs starts from it too. With the roads on (1.9) it
++          // stays on the device and is not written here: a reader's faith
++          // background is special-category data (GDPR Art. 9), the device is
++          // where Purify is drawn, and nobody was asked whether it may be
++          // kept beside their email (notes/onboarding-fable.md, 6.3). The
++          // copies already in accounts are left as they are: taking them out
++          // is a change to production data, and the owner's word.
++          ...(roadsEnabled() ? {} : { background: readBackground() }),
++          // Coming back after time away (1.9): practicing, on the road back.
++          ...(readReturning() ? { returning: true } : {}),
+           savedAt: new Date().toISOString(),
+           ...(v === undefined ? {} : { v }),
+         },
+diff --git a/lib/onboarding/count.ts b/lib/onboarding/count.ts
+index 587848aa..9e82c22c 100644
+--- a/lib/onboarding/count.ts
++++ b/lib/onboarding/count.ts
+@@ -39,7 +39,7 @@ import {
+   type CountStep,
+   type FinishedRecord,
+ } from "./counting";
+-import type { Background, DayOneKey, Intent, Level } from "./space";
++import { isCountedBackground, type Background, type DayOneKey, type Intent, type Level } from "./space";
+ 
+ const OFF_KEY = "purify:count.off";
+ const FINISHED_KEY = "purify:onboarding.counted";
+@@ -48,6 +48,19 @@ const VIA_KEY = "purify:via";
+ 
+ type Answers = { background?: Background; level?: Level; intent?: Intent };
+ 
++/**
++ * The answers as the counts may carry them. "Another Christian tradition"
++ * (1.9, ./space.ts) is not on the server's closed list, and is not counted
++ * until its sentence on the privacy page is agreed: a row from a reader who
++ * tapped it says everything else and leaves that one answer off.
++ */
++function counted<A extends Answers>(answers: A): A {
++  if (!answers.background || isCountedBackground(answers.background)) return answers;
++  const rest = { ...answers };
++  delete rest.background;
++  return rest;
++}
++
+ type OnboardingEvent =
+   | { name: "onboarding_step"; props: { route: CountRoute; step: CountStep } }
+   | { name: "onboarding_answer"; props: { route: CountRoute; question: CountQuestion; answer: string; place?: number } }
+@@ -57,11 +70,11 @@ type OnboardingEvent =
+   | { name: "onboarding_returned"; props: { route: CountRoute; day: 2 | 7 | 30 } & Answers };
+ 
+ /** The words already counted in this run of the questions. */
+-let counted = new Set<string>();
++let seen = new Set<string>();
+ 
+ /** A new run of the questions: every screen and question may count once again. */
+ export function beginCountRun(): void {
+-  counted = new Set();
++  seen = new Set();
+ }
+ 
+ /** This device counts nothing from now on (the admin, opened here). */
+@@ -145,8 +158,10 @@ export function countOnboarding(event: Extract<OnboardingEvent, { name: "onboard
+           ? `answer:intent:${event.props.answer}`
+           : `answer:${event.props.question}`
+         : "skipped";
+-  if (counted.has(key)) return;
+-  counted.add(key);
++  if (seen.has(key)) return;
++  seen.add(key);
++  // An answer the counts do not take is not sent (see `counted`).
++  if (event.name === "onboarding_answer" && event.props.question === "background" && !isCountedBackground(event.props.answer)) return;
+   send(event);
+ }
+ 
+@@ -161,10 +176,11 @@ export function countPicks(route: CountRoute, picks: readonly Intent[]): void {
+  * The questions were finished: counted, and kept on the device so that its
+  * coming back can be counted with these answers later.
+  */
+-export function countFinished(route: CountRoute, answers: Answers, account: boolean): void {
+-  if (counted.has("finished")) return;
+-  counted.add("finished");
++export function countFinished(route: CountRoute, given: Answers, account: boolean): void {
++  if (seen.has("finished")) return;
++  seen.add("finished");
+   if (!countingAllowed()) return;
++  const answers = counted(given);
+   const d = door();
+   send({ name: "onboarding_finished", props: { route, account, ...answers } });
+   const record: FinishedRecord = { at: utcDay(new Date()), v: COUNT_VERSION, route, ...(d ? { door: d } : {}), ...answers, sent: [] };
+@@ -176,8 +192,9 @@ export function countFinished(route: CountRoute, answers: Answers, account: bool
+ }
+ 
+ /** The Day 1 card's step was opened from Today. */
+-export function countDayOne(key: DayOneKey, answers: Answers): void {
++export function countDayOne(key: DayOneKey, given: Answers): void {
+   if (typeof window === "undefined") return;
++  const answers = counted(given);
+   const record = readRecord();
+   send(
+     { name: "onboarding_dayone", props: { key, ...(record ? { route: record.route } : {}), ...answers } },
+diff --git a/lib/onboarding/flags.ts b/lib/onboarding/flags.ts
+new file mode 100644
+index 00000000..8629bf1d
+--- /dev/null
++++ b/lib/onboarding/flags.ts
+@@ -0,0 +1,32 @@
++// The roads (1.9): one switch for the whole of the revised onboarding, the
++// owner's word of 2026-11-10 ("start working on and implement the revised on
++// boarding system with new sections or new screens"). What it is and why is
++// docs/1.9-build/notes/onboarding-fable.md.
++//
++// Off for readers. On in two places, so he tries it on his own phone before
++// anyone meets it, and 1.9 ships the same with or without it:
++//
++//   - while Testers mode is on (./testing.ts): Settings, Testers, "First
++//     open" walks the new questions, and nothing is counted or synced;
++//   - in a build made with NEXT_PUBLIC_ONBOARDING_ROADS=1.
++//
++// Lit for readers only on his word, by turning ROADS_LIVE to true. Everything
++// the roads change reads this one answer: the questions' new shape
++// (./flowSteps.ts), the first week in place of Day 1 (./week.ts), the two
++// cards on Today, and where "Where are you coming from?" is kept
++// (./accountSync.ts).
++
++import { isTesting } from "./testing";
++
++/** Turned to true on the owner's word, after he has tried it. Nothing else lights the roads for readers. */
++export const ROADS_LIVE = false;
++
++/** The roads as the build has them, whoever is reading. */
++export function roadsBuilt(): boolean {
++  return ROADS_LIVE || process.env.NEXT_PUBLIC_ONBOARDING_ROADS === "1";
++}
++
++/** The roads on this device, now: built in, or a test under way. False on the server unless built in. */
++export function roadsEnabled(): boolean {
++  return roadsBuilt() || isTesting();
++}
+diff --git a/lib/onboarding/flowSteps.ts b/lib/onboarding/flowSteps.ts
+index 2cc2a9e5..d1ea528c 100644
+--- a/lib/onboarding/flowSteps.ts
++++ b/lib/onboarding/flowSteps.ts
+@@ -47,6 +47,21 @@ function head(startAt: Exclude<FlowStart, "reminders">): StepId[] {
+  * States their parish. A reader who is back is not asked to turn on
+  * reminders that are on. A reader back from signing in for their reminders
+  * is shown the reminders and the end, and nothing they have answered again.
++ *
++ * With the roads on (1.9, ./flags.ts) the questions are fewer, and each is
++ * asked where it is of use (docs/1.9-build/notes/onboarding-fable.md, 3.2):
++ *
++ *   - no account step for a new reader: Purify is shown before it asks for
++ *     anything, and the account is offered on Today after a first step
++ *     (components/onboarding/KeepCard.tsx). The mobile website still begins
++ *     at it, since there the reader came to make an account;
++ *   - reminders are asked in the questions only of a reader who is signed
++ *     in, since they are kept with an account: asked of anyone else, the
++ *     answer "yes" would send them out of the questions to sign in. The same
++ *     card offers them with the account;
++ *   - the clergy's question is not a screen every practicing reader passes:
++ *     a quiet line on the rule's screen opens it (`clergyOpen`), and its
++ *     screens then follow the rule.
+  */
+ export function flowSteps(o: {
+   startAt: FlowStart;
+@@ -54,8 +69,26 @@ export function flowSteps(o: {
+   role: Role | null;
+   country: string | null;
+   remindersOn: boolean;
++  /** The roads are on (./flags.ts). Off, the questions are as they have been since 1.8.x. */
++  roads?: boolean;
++  /** Roads only: someone is signed in on this device. */
++  signedIn?: boolean;
++  /** Roads only: the reader tapped "I am a priest or deacon" on the rule's screen. */
++  clergyOpen?: boolean;
+ }): StepId[] {
+   if (o.startAt === "reminders") return ["reminders", "handoff"];
++  if (o.roads) {
++    return [
++      ...roadsHead(o.startAt),
++      "background",
++      "level",
++      ...(asksRule(o.level) ? (["rule"] as StepId[]) : []),
++      ...(asksClergy(o.level) && o.clergyOpen ? (["role", ...clergySteps(o.role, o.country)] as StepId[]) : []),
++      "intent",
++      ...(o.signedIn && !(o.startAt === "returning" && o.remindersOn) ? (["reminders"] as StepId[]) : []),
++      "handoff",
++    ];
++  }
+   return [
+     ...head(o.startAt),
+     "background",
+@@ -68,6 +101,11 @@ export function flowSteps(o: {
+   ];
+ }
+ 
++/** The way in with the roads on: a new reader's welcome is not followed by the account step. */
++function roadsHead(startAt: Exclude<FlowStart, "reminders">): StepId[] {
++  return startAt === "welcome" ? ["welcome"] : head(startAt);
++}
++
+ /**
+  * What the progress line is measured against: the longest way through, a
+  * US priest's, with every screen anyone can be shown, so the line only ever
+@@ -77,9 +115,26 @@ export function flowSteps(o: {
+  * in for their reminders is measured as one who was signed in already, so
+  * the line stands where they left it, near its end.
+  */
+-export function progressPath(startAt: FlowStart): StepId[] {
++export function progressPath(startAt: FlowStart, roads = false): StepId[] {
++  const from = startAt === "reminders" ? "level" : startAt;
++  if (roads) {
++    // The rule comes before the clergy's screens here, as flowSteps has them.
++    return [
++      ...roadsHead(from),
++      "background",
++      "level",
++      "rule",
++      "role",
++      "clergyWhere",
++      "clergyJurisdiction",
++      "clergyParish",
++      "intent",
++      "reminders",
++      "handoff",
++    ];
++  }
+   return [
+-    ...head(startAt === "reminders" ? "level" : startAt),
++    ...head(from),
+     "background",
+     "level",
+     "role",
+diff --git a/lib/onboarding/road.ts b/lib/onboarding/road.ts
+new file mode 100644
+index 00000000..a1f78625
+--- /dev/null
++++ b/lib/onboarding/road.ts
+@@ -0,0 +1,102 @@
++// The road (1.9): where a reader comes in from, beside how far along they are.
++//
++// The reader's type (./readerType.ts) says how far along a reader is, and
++// decides how Today looks. The road says where they come from, and decides
++// what they meet first: their first week (./week.ts). Two facts, kept apart:
++// a Catholic catechumen is "learning" on the catechumen's road, a baptized
++// Orthodox who stopped going is "orthodox" on the road back.
++//
++// The rule that keeps a road from becoming a different faith for each reader
++// (docs/1.9-build/notes/onboarding-fable.md, 3.0): no page of content knows
++// who is reading it. A road changes the order things are met in and the first
++// step, never what a council, a saint or a prayer says. Every road outside
++// the practicing ends at the same door: a parish, and a first Liturgy.
++//
++// Read from what the reader said, never guessed: no answers, no road, and
++// Purify as it always was. Pure, so the rule is tested directly
++// (lib/onboarding/__tests__/road.test.ts).
++
++import type { Background, Intent, Level } from "./space";
++
++export type Road =
++  | "practicing"
++  | "returning"
++  | "catechumen"
++  | "catholic"
++  | "protestant"
++  | "christian"
++  | "seeker"
++  | "newcomer";
++
++export const ROADS: readonly Road[] = [
++  "practicing",
++  "returning",
++  "catechumen",
++  "catholic",
++  "protestant",
++  "christian",
++  "seeker",
++  "newcomer",
++];
++
++/**
++ * The one split inside a road. A reader from a liturgical church (Anglican,
++ * Lutheran, Methodist) knows a creed, a calendar and a sacrament; a reader
++ * from a Bible church comes in by Scripture alone. Not asked: read from what
++ * they said they were looking for.
++ */
++export type Lean = "liturgical" | "bible";
++
++/** The answers that say a reader came for the early Church itself. */
++const EARLY_CHURCH: readonly Intent[] = ["fathers", "councils", "history"];
++/** The answers that say a Protestant reader knows a church with a liturgy and a calendar. */
++const LITURGICAL: readonly Intent[] = ["liturgy", "fathers", "councils", "history", "feasts", "saints"];
++
++export type RoadAnswers = {
++  background: Background | null;
++  level: Level | null;
++  /** The first answer to "What are you looking for?", if any. */
++  intent: Intent | null;
++  /** Baptized Orthodox and coming back after time away (./state.ts, readReturning). */
++  returning: boolean;
++};
++
++/**
++ * The reader's road, or null when they have said nothing to choose one by.
++ *
++ * What they said of their own practice comes first, as it does for the
++ * reader's type: the practicing are on their own road or the road back, and
++ * anyone going to the services is a catechumen's, wherever they came from.
++ * Then where they come from. "Just curious" and "Prefer not to say" are the
++ * early-church seeker's road when the Fathers, the councils or history were
++ * the first thing they asked for, and the newcomer's otherwise.
++ */
++export function roadOf(a: RoadAnswers): Road | null {
++  if (a.level === "practicing") return a.returning ? "returning" : "practicing";
++  if (a.level === "learning") return "catechumen";
++  switch (a.background) {
++    case "catholic":
++      return "catholic";
++    case "protestant":
++      return "protestant";
++    case "christian":
++      return "christian";
++    case "other-faith":
++      return "newcomer";
++    case "orthodox":
++      // Orthodox by family and new to the faith: the road back. With no
++      // level at all (a skip), Purify as it always was.
++      return a.level === "inquirer" ? "returning" : null;
++    case "none":
++      return a.intent && EARLY_CHURCH.includes(a.intent) ? "seeker" : "newcomer";
++    default:
++      // Prefer not to say, or never asked: a road only if they said they are new.
++      if (a.level !== "inquirer") return null;
++      return a.intent && EARLY_CHURCH.includes(a.intent) ? "seeker" : "newcomer";
++  }
++}
++
++/** A Protestant reader's lean, from their first answer. Scripture when they gave none. */
++export function leanOf(intent: Intent | null): Lean {
++  return intent && LITURGICAL.includes(intent) ? "liturgical" : "bible";
++}
+diff --git a/lib/onboarding/space.ts b/lib/onboarding/space.ts
+index a34a3295..822b66be 100644
+--- a/lib/onboarding/space.ts
++++ b/lib/onboarding/space.ts
+@@ -131,13 +131,35 @@ export function depthFor(level: Level): "inquirer" | "faithful" {
+  * "none" is drawn as "Just curious" (components/onboarding/WhereFrom.tsx, the
+  * owner's pick "E + I" of 2026-10-28).
+  */
+-export type Background = "orthodox" | "catholic" | "protestant" | "other-faith" | "none" | "prefer-not";
+-export const BACKGROUNDS: readonly Background[] = ["orthodox", "catholic", "protestant", "other-faith", "none", "prefer-not"];
++export type Background = "orthodox" | "catholic" | "protestant" | "christian" | "other-faith" | "none" | "prefer-not";
++
++/**
++ * The answers the question has offered since 1.8, and the only ones counted
++ * (lib/onboarding/counting.ts, lib/security/schemas.ts): the privacy page's
++ * sentence was read and agreed for these.
++ */
++export const BACKGROUNDS = ["orthodox", "catholic", "protestant", "other-faith", "none", "prefer-not"] as const satisfies readonly Background[];
+ 
+ /** The answers drawn as pills of light, in their order. "Prefer not to say" sits under them, quieter. */
+ export const BACKGROUND_PILLS = ["orthodox", "catholic", "protestant", "other-faith", "none"] as const satisfies readonly Background[];
+ 
++/**
++ * The pills with the roads on (1.9, ./flags.ts): one more, "Another Christian
++ * tradition", for a reader whose church is neither Catholic nor Protestant
++ * (the Oriental Orthodox among them), who had no honest answer before. It
++ * stands after the three it sits beside.
++ */
++export const ROAD_PILLS = ["orthodox", "catholic", "protestant", "christian", "other-faith", "none"] as const satisfies readonly Background[];
++
++/** Every answer a device may hold, the new pill's among them. */
++export const ALL_BACKGROUNDS: readonly Background[] = [...ROAD_PILLS, "prefer-not"];
++
+ export function isBackground(v: unknown): v is Background {
++  return typeof v === "string" && (ALL_BACKGROUNDS as readonly string[]).includes(v);
++}
++
++/** Whether an answer is one the counts take. The new pill's is not, until its privacy sentence is agreed. */
++export function isCountedBackground(v: unknown): v is (typeof BACKGROUNDS)[number] {
+   return typeof v === "string" && (BACKGROUNDS as readonly string[]).includes(v);
+ }
+ 
+diff --git a/lib/onboarding/state.ts b/lib/onboarding/state.ts
+index 58bfdcd4..8530131f 100644
+--- a/lib/onboarding/state.ts
++++ b/lib/onboarding/state.ts
+@@ -18,7 +18,9 @@ import {
+   type Intent,
+   type Level,
+ } from "./space";
++import { roadsEnabled } from "./flags";
+ import { isTesting } from "./testing";
++import { NEW_WEEK, localDay, parseWeek, type WeekState } from "./week";
+ 
+ /**
+  * The flow a reader finished, stored when they finish it.
+@@ -65,6 +67,20 @@ const STAGE_KEY = "purify:onboarding.stage";
+ // "1" when the flow this reader finished was the one for a reader who is
+ // back. Their first step is then called a next step, not a Day 1.
+ const AGAIN_KEY = "purify:onboarding.again";
++// The roads (1.9, ./flags.ts). "1" for a baptized Orthodox reader coming back
++// after time away: practicing underneath, on the road back (./road.ts).
++const RETURNING_KEY = "purify:returning";
++// Where the reader stands in their first week (./week.ts, WeekState).
++const WEEK_KEY = "purify:week";
++// The day the questions were finished or skipped, the device's own
++// (YYYY-MM-DD), so the one question a skip is offered later waits a day.
++const ONBOARDED_DAY_KEY = "purify:onboarded.day";
++// "1" once the one question offered after a skip is answered or closed.
++const SECOND_CHANCE_KEY = "purify:secondchance.done";
++// The card that offers an account and reminders after a first step:
++// "asked" once the reader has gone to sign in from it, "done" once it is
++// answered or closed.
++const KEEP_KEY = "purify:keep";
+ 
+ /**
+  * Every key above: the answers and the flow's own marks. Testers mode
+@@ -86,6 +102,11 @@ export const SPACE_KEYS: readonly string[] = [
+   CLERGY_REQUEST_KEY,
+   STAGE_KEY,
+   AGAIN_KEY,
++  RETURNING_KEY,
++  WEEK_KEY,
++  ONBOARDED_DAY_KEY,
++  SECOND_CHANCE_KEY,
++  KEEP_KEY,
+ ];
+ 
+ /** Fired in-tab whenever onboarding state changes. */
+@@ -208,8 +229,10 @@ export function markOnboarded(opts: { again?: boolean } = {}): void {
+     window.localStorage.setItem(ONBOARDED_KEY, String(ONBOARDING_VERSION));
+     window.localStorage.setItem(NUDGE_ELIGIBLE_KEY, "1");
+     window.localStorage.removeItem(STAGE_KEY);
+-    // A fresh Day 1 card for a fresh answer.
++    // A fresh Day 1 card for a fresh answer, and a first week from its first day.
+     window.localStorage.removeItem(NUDGE_DISMISSED_KEY);
++    window.localStorage.removeItem(WEEK_KEY);
++    window.localStorage.setItem(ONBOARDED_DAY_KEY, localDay(new Date()));
+     if (opts.again) window.localStorage.setItem(AGAIN_KEY, "1");
+     else window.localStorage.removeItem(AGAIN_KEY);
+   } catch {
+@@ -417,7 +440,10 @@ export function fillSpaceFromAccount(remote: unknown): boolean {
+   // holds the intent alone.
+   if (readIntent() == null && isIntent(r.intent)) writeIntents([r.intent, ...cleanIntents(r.intents)]);
+   if (readString(FASTING_KEY) == null && isFastingRule(r.fasting)) writeFastingRule(r.fasting);
+-  if (readBackground() == null && isBackground(r.background)) writeBackground(r.background);
++  // With the roads on, where the reader comes from is kept on the device
++  // alone (./accountSync.ts), so an older copy in the account is not taken.
++  if (!roadsEnabled() && readBackground() == null && isBackground(r.background)) writeBackground(r.background);
++  if (readString(RETURNING_KEY) == null && r.returning === true) writeReturning(true);
+   return true;
+ }
+ 
+@@ -438,7 +464,7 @@ export function accountAnsweredThisVersion(remote: unknown): boolean {
+ 
+ /** The answers as one primitive, for useSyncExternalStore snapshots. */
+ export function spaceSnapshot(): string {
+-  return `${readLevel() ?? ""}|${readIntent() ?? ""}|${readFastingRule()}|${readBackground() ?? ""}`;
++  return `${readLevel() ?? ""}|${readIntent() ?? ""}|${readFastingRule()}|${readBackground() ?? ""}|${readReturning() ? "1" : ""}|${readIntents().join(",")}`;
+ }
+ 
+ export function parseSpaceSnapshot(snapshot: string): {
+@@ -446,16 +472,68 @@ export function parseSpaceSnapshot(snapshot: string): {
+   intent: Intent | null;
+   fasting: FastingRule;
+   background: Background | null;
++  /** Baptized Orthodox, coming back after time away (1.9). */
++  returning: boolean;
++  /** Every answer to "What are you looking for?", in the order tapped, the intent first. */
++  intents: Intent[];
+ } {
+-  const [l, i, f, b] = snapshot.split("|");
++  const [l, i, f, b, r, picks] = snapshot.split("|");
+   return {
+     level: isLevel(l) ? l : null,
+     intent: isIntent(i) ? i : null,
+     fasting: isFastingRule(f) ? f : "strict",
+     background: isBackground(b) ? b : null,
++    returning: r === "1",
++    intents: cleanIntents((picks ?? "").split(",")),
+   };
+ }
+ 
++// --- The roads (1.9): the road back, the first week, the two cards -------
++
++/** Baptized Orthodox and coming back after time away, as answered on this device. */
++export function readReturning(): boolean {
++  return readString(RETURNING_KEY) === "1";
++}
++export function writeReturning(returning: boolean): void {
++  writeString(RETURNING_KEY, returning ? "1" : null);
++}
++
++/** Where the reader stands in their first week. */
++export function readWeek(): WeekState {
++  return typeof window === "undefined" ? NEW_WEEK : parseWeek(readString(WEEK_KEY));
++}
++export function writeWeek(week: WeekState): void {
++  writeString(WEEK_KEY, JSON.stringify(week));
++}
++/** The week as one primitive, for useSyncExternalStore snapshots. */
++export function weekSnapshot(): string {
++  return readString(WEEK_KEY) ?? "";
++}
++
++/** The day the questions were finished or skipped (the device's own), or null for a device from before it was kept. */
++export function readOnboardedDay(): string | null {
++  const v = readString(ONBOARDED_DAY_KEY);
++  return v && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null;
++}
++
++/** The one question offered after a skip has been answered or closed. */
++export function isSecondChanceDone(): boolean {
++  return readString(SECOND_CHANCE_KEY) === "1";
++}
++export function markSecondChanceDone(): void {
++  writeString(SECOND_CHANCE_KEY, "1");
++}
++
++/** The card that offers an account and reminders after a first step: untouched, gone to sign in, or finished with. */
++export type KeepState = "open" | "asked" | "done";
++export function readKeep(): KeepState {
++  const v = readString(KEEP_KEY);
++  return v === "asked" || v === "done" ? v : "open";
++}
++export function writeKeep(state: KeepState): void {
++  writeString(KEEP_KEY, state === "open" ? null : state);
++}
++
+ /**
+  * Marked done without seeing the flow or the nudge: a reader who answered
+  * this version on another device.
+diff --git a/lib/onboarding/useDayOne.ts b/lib/onboarding/useDayOne.ts
+index 0b640b13..81647391 100644
+--- a/lib/onboarding/useDayOne.ts
++++ b/lib/onboarding/useDayOne.ts
+@@ -7,19 +7,29 @@
+ 
+ import { useSyncExternalStore } from "react";
+ 
++import { roadsEnabled } from "./flags";
+ import { ONBOARDING_EVENT, isNudgeDismissed, isNudgeEligible } from "./state";
++import { TESTERS_EVENT } from "./testing";
++import { isWeekStepShown, readRoad } from "./useWeek";
+ 
+-/** The card is chosen for this reader and not yet taken or dismissed. */
++/**
++ * The card is chosen for this reader and not yet taken or dismissed. With
++ * the roads on (1.9) and a road to walk, the card is today's step of the
++ * reader's week (./useWeek.ts) and is up whenever one is waiting.
++ */
+ export function isDayOneShown(): boolean {
++  if (roadsEnabled() && readRoad()) return isWeekStepShown();
+   return isNudgeEligible() && !isNudgeDismissed();
+ }
+ 
+ function subscribe(onChange: () => void): () => void {
+   if (typeof window === "undefined") return () => {};
+   window.addEventListener(ONBOARDING_EVENT, onChange);
++  window.addEventListener(TESTERS_EVENT, onChange);
+   window.addEventListener("storage", onChange);
+   return () => {
+     window.removeEventListener(ONBOARDING_EVENT, onChange);
++    window.removeEventListener(TESTERS_EVENT, onChange);
+     window.removeEventListener("storage", onChange);
+   };
+ }
+diff --git a/lib/onboarding/useRoads.ts b/lib/onboarding/useRoads.ts
+new file mode 100644
+index 00000000..bcd8e8ea
+--- /dev/null
++++ b/lib/onboarding/useRoads.ts
+@@ -0,0 +1,24 @@
++"use client";
++
++// Whether the roads are on (./flags.ts), as a live React value: in step with
++// Testers mode starting or ending in this tab (its event) or another (storage).
++
++import { useSyncExternalStore } from "react";
++
++import { roadsBuilt, roadsEnabled } from "./flags";
++import { TESTERS_EVENT } from "./testing";
++
++function subscribe(onChange: () => void): () => void {
++  if (typeof window === "undefined") return () => {};
++  window.addEventListener(TESTERS_EVENT, onChange);
++  window.addEventListener("storage", onChange);
++  return () => {
++    window.removeEventListener(TESTERS_EVENT, onChange);
++    window.removeEventListener("storage", onChange);
++  };
++}
++
++/** On the server and the first client render: only what the build says, so the markup there is the same. */
++export function useRoads(): boolean {
++  return useSyncExternalStore(subscribe, roadsEnabled, roadsBuilt);
++}
+diff --git a/lib/onboarding/useSpace.ts b/lib/onboarding/useSpace.ts
+index 99c9edc5..e3dc6f47 100644
+--- a/lib/onboarding/useSpace.ts
++++ b/lib/onboarding/useSpace.ts
+@@ -20,7 +20,7 @@ function subscribe(onChange: () => void): () => void {
+ }
+ 
+ /** Server and first client render: no answers, fasting as it always showed. */
+-const SERVER_SNAPSHOT = "||strict|";
++const SERVER_SNAPSHOT = "||strict|||";
+ 
+ export function useSpace() {
+   const snapshot = useSyncExternalStore(subscribe, spaceSnapshot, () => SERVER_SNAPSHOT);
+diff --git a/lib/onboarding/useWeek.ts b/lib/onboarding/useWeek.ts
+new file mode 100644
+index 00000000..86d46e7e
+--- /dev/null
++++ b/lib/onboarding/useWeek.ts
+@@ -0,0 +1,81 @@
++"use client";
++
++// The reader's first week (./week.ts) as one live answer: the step waiting
++// today, if any. Read by the card on Today (components/onboarding/
++// FirstStepsNudge.tsx) and, through ./useDayOne.ts, by the streak's rope,
++// which waits while a step is up. Both read it in the same render.
++
++import { useMemo, useSyncExternalStore } from "react";
++
++import { roadsEnabled } from "./flags";
++import { leanOf, roadOf, type Road } from "./road";
++import {
++  ONBOARDING_EVENT,
++  isNudgeEligible,
++  readBackground,
++  readIntent,
++  readIntents,
++  readLevel,
++  readReturning,
++  readWeek,
++  weekSnapshot,
++} from "./state";
++import { TESTERS_EVENT } from "./testing";
++import { useSpace } from "./useSpace";
++import { localDay, parseWeek, stepToday, weekFor, type WeekStep } from "./week";
++
++/** The reader's road from what the device holds, or null. */
++export function readRoad(): Road | null {
++  return roadOf({ background: readBackground(), level: readLevel(), intent: readIntent(), returning: readReturning() });
++}
++
++/**
++ * Whether a step of the week is up now: the roads on, a reader who came
++ * through the questions (never one marked done silently), a road to walk,
++ * and a step not yet met today.
++ */
++export function isWeekStepShown(): boolean {
++  if (typeof window === "undefined") return false;
++  if (!roadsEnabled() || !isNudgeEligible() || !readRoad()) return false;
++  return stepToday(readWeek(), localDay(new Date())) != null;
++}
++
++function subscribe(onChange: () => void): () => void {
++  if (typeof window === "undefined") return () => {};
++  window.addEventListener(ONBOARDING_EVENT, onChange);
++  window.addEventListener(TESTERS_EVENT, onChange);
++  window.addEventListener("storage", onChange);
++  return () => {
++    window.removeEventListener(ONBOARDING_EVENT, onChange);
++    window.removeEventListener(TESTERS_EVENT, onChange);
++    window.removeEventListener("storage", onChange);
++  };
++}
++
++/** `${on}|${week}`: the roads and the week as one primitive. Empty on the server and the hydration render. */
++function snapshot(): string {
++  return `${roadsEnabled() && isNudgeEligible() ? "1" : ""}|${weekSnapshot()}`;
++}
++
++export type WeekToday = {
++  road: Road;
++  /** Today's step, from 0. */
++  index: number;
++  step: WeekStep;
++};
++
++/** Today's step of the reader's week, or null when none is up. */
++export function useWeekToday(): WeekToday | null {
++  const snap = useSyncExternalStore(subscribe, snapshot, () => "|");
++  const { background, level, intent, returning, intents } = useSpace();
++  return useMemo(() => {
++    const cut = snap.indexOf("|");
++    if (snap.slice(0, cut) !== "1") return null;
++    const road = roadOf({ background, level, intent, returning });
++    if (!road) return null;
++    const index = stepToday(parseWeek(snap.slice(cut + 1) || null), localDay(new Date()));
++    if (index == null) return null;
++    const week = weekFor({ road, lean: leanOf(intent), level, picks: intents.length ? intents : readIntents() });
++    return { road, index, step: week[index] };
++  }, [snap, background, level, intent, returning, intents]);
++}
+diff --git a/lib/onboarding/week.ts b/lib/onboarding/week.ts
+new file mode 100644
+index 00000000..754146b6
+--- /dev/null
++++ b/lib/onboarding/week.ts
+@@ -0,0 +1,254 @@
++// The first week (1.9): seven steps for each road, in place of the one Day 1
++// card. What it is for is docs/1.9-build/notes/onboarding-fable.md, 3.4.
++//
++// Every step is a page Purify already has, and says only that page's own
++// name: a card's title is the page's title, and its line, where it has one,
++// is a line the app already says about that page (the Day 1 lines, Start
++// here's, the reading paths'). Nothing here frames or explains: a line that
++// did would be editorial, and would wait in the queue
++// (docs/editorial-standards.md).
++//
++// The order of a week is one shape for every road, the destination in small:
++// something to read, something to understand, something to pray, somewhere
++// to go. The roads differ. Outside the practicing they all end at the same
++// door: a parish, or a first Liturgy.
++//
++// No step is a locked page. The first week of every road is free end to end,
++// so the Gospels are John's first chapter here and not the reading plan,
++// whose Begin opens the upgrade sheet (components/plans/PlanClient.tsx).
++// lib/onboarding/__tests__/week.test.ts holds that, and holds every step to a
++// page that exists.
++//
++// Pure. What the device keeps of a week is ./state.ts (readWeek, writeWeek).
++
++import type { Lean, Road } from "./road";
++import type { DayOneKey, Intent, Level } from "./space";
++
++/** A step of a week: a Day 1 step the app already offered, or one of these. */
++export type WeekStepKey =
++  | Exclude<DayOneKey, "gospelsPlan">
++  | "fathersPath"
++  | "prayFathers"
++  | "nicaea"
++  | "ephesus"
++  | "chalcedon"
++  | "carthage"
++  | "leo"
++  | "ignatius"
++  | "maryOfEgypt"
++  | "schism"
++  | "afterChalcedon"
++  | "creed"
++  | "parish"
++  | "yourRule"
++  | "readings"
++  | "psalter"
++  | "beforeSleep";
++
++export type WeekStep = {
++  key: WeekStepKey;
++  href: string;
++  /** The page's own name, as a catalogue key. */
++  titleKey: string;
++  /** A line the app already says about the page, where it has one. */
++  bodyKey?: string;
++};
++
++const dayOne = (key: Exclude<DayOneKey, "gospelsPlan">, href: string): WeekStep => ({
++  key,
++  href,
++  titleKey: `onboard.day1.${key}.title`,
++  bodyKey: `onboard.day1.${key}.body`,
++});
++
++/** A page whose name the catalogue did not hold: its own title, written out once (onboard.week.<key>). */
++const named = (key: WeekStepKey, href: string): WeekStep => ({ key, href, titleKey: `onboard.week.${key}` });
++
++export const WEEK_STEPS: Readonly<Record<WeekStepKey, WeekStep>> = {
++  // The Day 1 steps, each with the words it has always had.
++  whatIsPrayer: dayOne("whatIsPrayer", "/prayers/learning/what-is-prayer"),
++  jesusPrayer: dayOne("jesusPrayer", "/prayers/learning/jesus-prayer"),
++  trisagion: dayOne("trisagion", "/prayers/learning/trisagion-prayers"),
++  signOfCross: dayOne("signOfCross", "/prayers/learning/sign-of-the-cross"),
++  firstLiturgy: dayOne("firstLiturgy", "/start/first-liturgy"),
++  churchYear: dayOne("churchYear", "/calendar"),
++  gospelJohn: dayOne("gospelJohn", "/bible/john/1"),
++  job: dayOne("job", "/bible/job/1"),
++  morningRule: dayOne("morningRule", "/prayers/learning/morning-rule"),
++  morningPrayers: dayOne("morningPrayers", "/prayers/morning"),
++  saintsLives: dayOne("saintsLives", "/saints"),
++  readingPaths: dayOne("readingPaths", "/reading/paths"),
++  councils: dayOne("councils", "/councils"),
++  history: dayOne("history", "/history"),
++  startHere: dayOne("startHere", "/start"),
++  theology: dayOne("theology", "/theology"),
++  feasts: dayOne("feasts", "/calendar"),
++  // Pages whose own words the catalogue already holds.
++  fathersPath: { key: "fathersPath", href: "/reading/paths/start", titleKey: "paths.start.name", bodyKey: "paths.start.body" },
++  prayFathers: { key: "prayFathers", href: "/reading/paths/prayer", titleKey: "paths.prayer.name", bodyKey: "paths.prayer.body" },
++  creed: { key: "creed", href: "/prayers/creed", titleKey: "prayers.rule.creed.title", bodyKey: "prayers.rule.creed.description" },
++  parish: { key: "parish", href: "/parishes", titleKey: "start.step.parish.title", bodyKey: "start.step.parish.body" },
++  yourRule: { key: "yourRule", href: "/prayers/personal", titleKey: "prayers.mine.title" },
++  readings: { key: "readings", href: "/prayers/today", titleKey: "calendar.todaysReadings", bodyKey: "start.step.day.body" },
++  psalter: { key: "psalter", href: "/bible/psalms/1", titleKey: "discover.tile.psalter", bodyKey: "discover.tile.psalterBlurb" },
++  beforeSleep: {
++    key: "beforeSleep",
++    href: "/prayers/before-sleep",
++    titleKey: "prayers.rule.before-sleep.title",
++    bodyKey: "prayers.rule.before-sleep.description",
++  },
++  // A council, a saint, an event: the page's own name and nothing more.
++  nicaea: named("nicaea", "/councils/first-nicaea"),
++  ephesus: named("ephesus", "/councils/ephesus"),
++  chalcedon: named("chalcedon", "/councils/chalcedon"),
++  carthage: named("carthage", "/councils/carthage-419"),
++  leo: named("leo", "/saints/leo-the-great"),
++  ignatius: named("ignatius", "/saints/ignatius-of-antioch"),
++  maryOfEgypt: named("maryOfEgypt", "/saints/mary-of-egypt"),
++  schism: named("schism", "/history/great-schism-1054"),
++  afterChalcedon: named("afterChalcedon", "/history/non-chalcedonian-estrangement"),
++};
++
++export const WEEK_LENGTH = 7;
++type Seven = readonly [WeekStepKey, WeekStepKey, WeekStepKey, WeekStepKey, WeekStepKey, WeekStepKey, WeekStepKey];
++
++/**
++ * Each road's week, the proposal of the notes (3.4) for the owner to arrange.
++ * A Protestant reader's week has two orders, by their lean (./road.ts).
++ *
++ * Left out on purpose: the studies on the filioque, the papacy, original sin,
++ * theosis and the Theotokos. A Catholic's or a Protestant's road would lead to
++ * them, and they are five of the seven that do not survive the provenance
++ * audit (docs/editorial-standards.md, clergy queue item 5). The councils'
++ * own pages and the history rewritten in 1.7 carry those days until they are
++ * repaired.
++ */
++export const ROAD_WEEKS: Readonly<Record<Exclude<Road, "protestant">, Seven>> = {
++  practicing: ["yourRule", "readings", "psalter", "churchYear", "prayFathers", "beforeSleep", "fathersPath"],
++  returning: ["morningRule", "readings", "jesusPrayer", "churchYear", "beforeSleep", "creed", "parish"],
++  catechumen: ["trisagion", "signOfCross", "firstLiturgy", "creed", "readings", "morningRule", "parish"],
++  catholic: ["fathersPath", "nicaea", "leo", "jesusPrayer", "schism", "firstLiturgy", "parish"],
++  christian: ["creed", "nicaea", "gospelJohn", "chalcedon", "afterChalcedon", "trisagion", "firstLiturgy"],
++  seeker: ["ignatius", "history", "nicaea", "councils", "fathersPath", "trisagion", "firstLiturgy"],
++  newcomer: ["startHere", "maryOfEgypt", "gospelJohn", "creed", "signOfCross", "churchYear", "firstLiturgy"],
++};
++
++export const PROTESTANT_WEEKS: Readonly<Record<Lean, Seven>> = {
++  bible: ["gospelJohn", "ignatius", "nicaea", "whatIsPrayer", "carthage", "ephesus", "firstLiturgy"],
++  liturgical: ["gospelJohn", "nicaea", "leo", "jesusPrayer", "carthage", "firstLiturgy", "parish"],
++};
++
++/**
++ * The step an answer to "What are you looking for?" opens, inside a week.
++ * The Day 1 step it always opened (./space.ts, dayOneFor), but for two: the
++ * Gospels are John's first chapter, since the plan is locked, and for a
++ * reader not yet practicing "What the Orthodox believe" is the Creed or
++ * Start here, never the study library (see ROAD_WEEKS on why).
++ */
++export function pickStep(intent: Intent, level: Level | null): WeekStepKey {
++  const beginner = level !== "practicing";
++  switch (intent) {
++    case "saints":
++      return "saintsLives";
++    case "fathers":
++      return "fathersPath";
++    case "gospels":
++      return "gospelJohn";
++    case "councils":
++      return "councils";
++    case "history":
++      return "history";
++    case "beliefs":
++      return level === "practicing" ? "theology" : level === "learning" ? "creed" : "startHere";
++    case "feasts":
++      return "feasts";
++    case "quiet":
++      return "jesusPrayer";
++    case "liturgy":
++      return level === "practicing" ? "churchYear" : level === "learning" ? "trisagion" : "firstLiturgy";
++    case "study":
++      return beginner ? "gospelJohn" : "job";
++    case "prayer":
++      return beginner ? "morningRule" : "morningPrayers";
++  }
++}
++
++/**
++ * One reader's week: the road's seven, arranged by what they asked for.
++ *
++ * "The order you tap is the order Purify puts them in" (the line under "What
++ * are you looking for?"): the first pick leads the week, as it has always
++ * chosen Day 1; the second and third take the fourth and fifth days. A pick
++ * the road already holds moves nothing but itself, and no page comes twice.
++ * The last day stays the road's own, the door they all end at.
++ */
++export function weekFor(o: { road: Road; lean: Lean; level: Level | null; picks: readonly Intent[] }): WeekStep[] {
++  const base = o.road === "protestant" ? PROTESTANT_WEEKS[o.lean] : ROAD_WEEKS[o.road];
++  const last = WEEK_STEPS[base[WEEK_LENGTH - 1]];
++  const same = (a: WeekStep, b: WeekStep) => a.href === b.href;
++  let body = base.slice(0, WEEK_LENGTH - 1).map((k) => WEEK_STEPS[k]);
++
++  const [first, second, third] = o.picks.map((p) => WEEK_STEPS[pickStep(p, o.level)]);
++  if (first && !same(first, last)) body = [first, ...body.filter((s) => !same(s, first))];
++  const held = (s: WeekStep) => same(s, last) || body.some((b) => same(b, s));
++  if (second && !held(second)) body.splice(3, 0, second);
++  if (third && !held(third)) body.splice(4, 0, third);
++
++  return [...body.slice(0, WEEK_LENGTH - 1), last];
++}
++
++// --- What the device keeps of a week -----------------------------------
++
++/**
++ * `at` is how many steps are behind the reader, taken or passed over; `day`
++ * the day (the device's own, YYYY-MM-DD) the last of them was; `passed` how
++ * many in a row were passed over without being opened.
++ */
++export type WeekState = { at: number; day: string | null; passed: number };
++export const NEW_WEEK: WeekState = { at: 0, day: null, passed: 0 };
++
++/** Two steps passed over in a row end the week quietly: the reader has said no twice. */
++export const PASSES_THAT_END = 2;
++
++export function parseWeek(raw: string | null): WeekState {
++  if (!raw) return NEW_WEEK;
++  try {
++    const w = JSON.parse(raw) as Partial<WeekState>;
++    const at = typeof w.at === "number" && Number.isInteger(w.at) && w.at >= 0 ? Math.min(w.at, WEEK_LENGTH) : 0;
++    const day = typeof w.day === "string" && /^\d{4}-\d{2}-\d{2}$/.test(w.day) ? w.day : null;
++    const passed = typeof w.passed === "number" && Number.isInteger(w.passed) && w.passed >= 0 ? w.passed : 0;
++    return { at, day, passed };
++  } catch {
++    return NEW_WEEK;
++  }
++}
++
++export function weekOver(w: WeekState): boolean {
++  return w.at >= WEEK_LENGTH || w.passed >= PASSES_THAT_END;
++}
++
++/**
++ * The step waiting today, from 0, or null. One a day: the next appears the
++ * next day the reader opens Purify. It is not tied to the calendar, so a day
++ * away costs nothing; nothing counts up and nothing is lost.
++ */
++export function stepToday(w: WeekState, today: string): number | null {
++  if (weekOver(w) || w.day === today) return null;
++  return w.at;
++}
++
++/** The reader opened today's step. */
++export function stepTaken(w: WeekState, today: string): WeekState {
++  return { at: Math.min(w.at + 1, WEEK_LENGTH), day: today, passed: 0 };
++}
++
++/** The reader closed today's step unopened. */
++export function stepPassed(w: WeekState, today: string): WeekState {
++  return { at: Math.min(w.at + 1, WEEK_LENGTH), day: today, passed: w.passed + 1 };
++}
++
++/** The device's own day, YYYY-MM-DD: a week turns over at the reader's midnight, not Greenwich's. */
++export function localDay(date: Date): string {
++  const p = (n: number) => String(n).padStart(2, "0");
++  return `${date.getFullYear()}-${p(date.getMonth() + 1)}-${p(date.getDate())}`;
++}

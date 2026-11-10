@@ -1187,5 +1187,57 @@ the tailoring grows is cheap beside the alternative.
 
 ---
 
-*A brainstorm on Edgar's word of 2026-11-10. Notes only: no code and no other
-file was changed.*
+*A brainstorm on Edgar's word of 2026-11-10. Sections 1 to 8 are notes only.*
+
+---
+
+## 9. As built (2026-11-10, his word the same day)
+
+His word, about 03:25 UTC: "start working on and implement the revised on
+boarding system with new sections or new screens". The arbiter's frame: one
+flag, off for readers; phases 1, 3 (the account only), 4, then 2; build to the
+recommendations where his word is pending (his questions 105 to 112); stills to
+him before any push.
+
+**Where it is.** Built and held as a patch, `notes/onboarding-roads.patch`
+(33 files, against `77b5d4ce` and later), until he has seen the stills:
+https://claude.ai/artifact/79rbBLRqbTpjsxydwRQLYc. Apply with
+`git apply docs/1.9-build/notes/onboarding-roads.patch`.
+
+**The flag.** `lib/onboarding/flags.ts`: `ROADS_LIVE = false`. On while Testers
+mode is on (Settings, Testers, "First open"), and in a build made with
+`NEXT_PUBLIC_ONBOARDING_ROADS=1`. There is no "test build" in the code to key
+on: the test APK and the store AAB are one workflow, which this work does not
+touch.
+
+**What was built, and where it differs from the notes above.**
+
+| Notes | Built |
+|---|---|
+| The road (3.4) | `lib/onboarding/road.ts`, `roadOf`, the eight roads. The Protestant lean is read from the first pick and never asked |
+| The first week (3.4) | `lib/onboarding/week.ts`, in the Day 1 card (`FirstStepsNudge.tsx`). All eight roads, not four. The first pick leads the week, picks two and three take days four and five |
+| A step shows a title and one line | A title, and a line only where the app already says one about that page. A council, a saint or an event stands on its own name. No framing line was written |
+| "A reader may dismiss the week whole" | Closing a step passes it over; two closed in a row end the week |
+| Practicing, days 6 and 7: the Psalter plan, the season's plan | Both are Plus, so neither is in a week: the Psalter itself, and the reading paths |
+| The seeker's and Protestant's "Apostolic Fathers" | St. Ignatius of Antioch's page. The saints' list cannot be opened on a group from a link |
+| The newcomer's "a saint's Life, as a story" | St. Mary of Egypt, for his word |
+| The account moved (test 1) | No account step and no reminders step for a signed-out new reader. One card on Today after a first step offers both (`RoadCards.tsx`, `KeepCard`). Not as a test: the frame built it outright behind the flag |
+| Reminders with no account on the phones | Not this round: it needs a native dependency |
+| Question 3 by road (3.2) | Built. "Prefer not to say" keeps the old question |
+| The clergy question a quiet line | Built, on the rule's screen |
+| The second chance (3.2) | Built (`SecondChanceCard`): the question's own screen, with a close |
+| Background on the device only (6.3) | With the flag on it is not written to the account and not filled from it. Copies already in accounts are not removed |
+| The A/B system (4) | `lib/ab`: assignment, the registry with its checks, exposure, the summary with the small-cell rule, readers per arm. The registry is empty and `AB_SENDING` is false. `trackEventSchema` is unchanged; a test refuses a running test the server would not take. No admin panel and no arm picker yet: with no test there is nothing for either to show |
+| Counts (5.2) | Nothing new is counted. The week's first step counts as the Day 1 open where it is one of Day 1's own steps. The new pill's answer is left off every row |
+| The questions' version | Not raised |
+
+**Not behind the flag:** the answer cards and the handoff's lines were set
+`text-left` and would not turn in Arabic; `checkMock` caught it and they are
+`text-start` now. And `markOnboarded` keeps the day the questions ended, which
+only the flag reads.
+
+**Checked:** typecheck 0; unit 9,952 passed (new: `road.test.ts`,
+`week.test.ts`, the roads in `flowSteps.test.ts`, `lib/ab/__tests__`); lint 0
+errors; `build:android` green with the flag on; `checkMock` passes on all
+eleven screens and cards. Still to run before a push: `build:android` with the
+flag off, and `build:ios`.
