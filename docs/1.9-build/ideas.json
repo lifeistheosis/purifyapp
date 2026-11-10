@@ -2155,6 +2155,48 @@
    "note": "Each line says its language and direction; 28 out of place in Arabic and Urdu before, 0 after. 9398bcfdf. PLAN 13x."
   },
   {
+   "id": "e-saints-soft-404",
+   "section": "Saints",
+   "kind": "bug",
+   "title": "A made-up saints address answered 200 on the website, a soft 404, and so did a missing icon file",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The proxy answers an unknown saint or work 404, a missing icon has a 404 route; measured on a production build. e9836a738 (d9d37f0ce first). PLAN 13y."
+  },
+  {
+   "id": "e-saints-their",
+   "section": "Saints",
+   "kind": "bug",
+   "title": "Pairs and groups of saints read as one man: \"Open his page\"",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "A third pronoun, their, on 35 pages, ten keys in 21 languages. 2f0846ba4. PLAN 13z."
+  },
+  {
+   "id": "e-tablet-dock-fade",
+   "section": "Bible",
+   "kind": "bug",
+   "title": "On a tablet the Bible's last lines showed under the reader's dock and beside the tab bar",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The pill's fade reaches the foot of the screen, behind the bar. f53bec580. PLAN 13aa."
+  },
+  {
    "id": "c-campaign-kind-prayers",
    "section": "Practice",
    "kind": "content",
