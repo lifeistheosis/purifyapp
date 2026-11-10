@@ -328,17 +328,30 @@ const MOD_PICTURES = [
     url: "/icons/prayer/theotokos-of-vladimir.jpg",
     shown: false,
     alt: "The icon in her room",
-    check_result: "nothing found",
+    // The check's own words, as the server keeps them (lib/campaigns/pictureCheckRekognition.ts).
+    check_result: "Rekognition 7.0: nothing found",
     created_at: new Date(Date.now() - 25 * 60_000).toISOString(),
     reports: [],
     campaign: { id: MARIA, title: "For Maria before her operation", creator_name: "John" },
+  },
+  // One the check passed to a person, with a note of what it noticed: a soldier someone is praying for. The
+  // picture behind the cover is one of the app's own icons, as every sample is; the note is what this shows.
+  {
+    id: "dddddddd-dddd-4ddd-8ddd-ddddddddddd9",
+    url: "/icons/prayer/three-hierarchs.v2.jpg",
+    shown: false,
+    alt: "In uniform, the day he left",
+    check_result: "Rekognition 7.0 noticed: Weapons 91",
+    created_at: new Date(Date.now() - 12 * 60_000).toISOString(),
+    reports: [],
+    campaign: { id: HELD, title: "For Elias on his journey", creator_name: "Anna" },
   },
   {
     id: "dddddddd-dddd-4ddd-8ddd-ddddddddddd8",
     url: "/icons/prayer/anastasis.jpg",
     shown: true,
     alt: null,
-    check_result: "nothing found",
+    check_result: "Rekognition 7.0: nothing found",
     created_at: new Date(Date.now() - 3 * 3_600_000).toISOString(),
     reports: [{ reason_code: "picture", reason: "Is this theirs to share?" }],
     campaign: { id: PETER, title: "For Peter's exams", creator_name: "Helen" },
@@ -1590,9 +1603,14 @@ if (WALK) {
     await settle(page, 900);
     const sent = sentTo("POST", /^\/api\/community\/moderation$/)[0];
     expectThat(sent && sent.body.action === "approve_picture" && sent.body.id === MOD_PICTURES[0].id, `sent ${JSON.stringify(sent?.body)}`);
+    // What the automatic check noticed and left to a person stands on the card before the picture is uncovered.
+    const noted = page.locator("[data-mod-campaign-picture]", { hasText: "Weapons 91" });
+    expectThat((await noted.count()) === 1, "the check's note is not on the card");
+    expectThat((await noted.innerText()).includes("Automatic check: Rekognition 7.0 noticed: Weapons 91"), `the note reads "${(await noted.innerText()).replace(/\n/g, " / ").slice(0, 200)}"`);
+    expectThat((await noted.locator("img").count()) === 0, "the picture with a note is drawn before it is asked for");
     // The reported one that is still shown: kept, or removed.
-    const reported = page.locator("[data-mod-campaign-picture]").nth(1);
-    expectThat((await reported.innerText()).includes("Is this theirs to share?"), "the reader's reason is not shown");
+    const reported = page.locator("[data-mod-campaign-picture]", { hasText: "Is this theirs to share?" });
+    expectThat((await reported.count()) === 1, "the reader's reason is not shown");
     expectThat((await reported.locator("button", { hasText: "Keep it" }).count()) === 1, "a reported picture cannot be kept");
   }, { parts: { pictures: true } });
 
