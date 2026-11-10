@@ -39,10 +39,11 @@ import { ROAD_PILLS, type Background } from "@/lib/onboarding/space";
 import { reached } from "@/lib/ab/device";
 import { countReminders, countTodayCard, markAccountFrom } from "@/lib/analytics/moreCount";
 import { countAccountFromCard } from "@/lib/onboarding/count";
+import { mayPromiseReminders } from "@/lib/onboarding/reminderPromise";
 import { previewSignedOut } from "@/lib/onboarding/testing";
 import { useRoads } from "@/lib/onboarding/useRoads";
 import { localDay } from "@/lib/onboarding/week";
-import { isNativeClient } from "@/lib/platform/native";
+import { isNativeClient, nativePlatform } from "@/lib/platform/native";
 import { EVENING_DEFAULT, MORNING_DEFAULT, enableReminders, remindersStatus } from "@/lib/push/reminders";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
@@ -117,8 +118,8 @@ const WAY_ON =
  * The account and the reminders, after a first step.
  *
  * Signed out, once a step of the week is behind the reader: what an account
- * keeps, and that reminders come with one, in the words the questions used
- * for both. Back from signing in: the reminders, one tap. Never while
+ * keeps, and, only where a reminder has been seen to arrive, that reminders
+ * come with one, in the words the questions used for both. Back from signing in: the reminders, one tap. Never while
  * nothing has been opened yet, and never again once answered or closed.
  */
 export function KeepCard({ className }: { className?: string }) {
@@ -179,7 +180,8 @@ export function KeepCard({ className }: { className?: string }) {
         id="keep-card"
         title={t("onboard.account.title")}
         body={t("onboard.account.body")}
-        note={t("onboard.reminders.needsAccount")}
+        // Reminders are promised only where one has been seen to arrive (lib/onboarding/reminderPromise.ts).
+        note={mayPromiseReminders(nativePlatform()) ? t("onboard.reminders.needsAccount") : null}
         onClose={() => {
           countTodayCard("keep", "closed");
           writeKeep("done");

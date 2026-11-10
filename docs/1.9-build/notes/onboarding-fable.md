@@ -1470,3 +1470,21 @@ as the privacy page promises.
   said to the arbiter at the push.
 - The guardrails of the three later tests are written against what the system
   measures (a device's first two weeks), not "back on day 30".
+
+### The account card's word on reminders (the arbiter's check, 2026-11-10)
+
+The signed-out account card on Today carried the questions' line "Reminders
+reach this device through your account. Sign in, and they turn on." Checked
+against the record, a reminder has been seen to arrive only on iPhone (the
+owner's word of 2026-10-14). On Android, Google accepts the server's sends,
+yet he had none on his own phone that day, and no Android phone has been seen
+receiving since the repair of F-43 went live with 1.6. On the website no
+browser has been seen to subscribe (F-40). So the card now says the line only
+on iPhone (`lib/onboarding/reminderPromise.ts`, one line per platform, held by
+its test); elsewhere it speaks of the account alone. Turn a platform on there
+when a reminder is seen arriving on it.
+
+Not decided here, because it is older than the roads and wider than the card:
+the offer to turn reminders on, which the questions, the account page and
+this card after a sign-in make on every platform, and which the live 1.8
+makes today. That is F-21 and his item 89.
