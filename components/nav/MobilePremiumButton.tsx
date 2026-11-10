@@ -51,8 +51,9 @@ export function MobilePremiumButton() {
   const box = "group inline-flex h-11 shrink-0 items-center";
   // A size larger since 1.7.2 (the owner, 2026-10-19), and its word a size
   // larger only from 380px: on a 360px phone the larger word left the tab's
-  // name too little room (the Filipino "Mga Panalangin", which the export
-  // walk holds whole).
+  // name too little room (the Filipino "Mga Panalangin" then; since
+  // 2026-11-10 the longest is Arabic's Bible, "الكتاب المقدس", which the
+  // export walk holds whole).
   const pill = (
     <span
       // Held, over a page's picture the graphite stands on a plate as search

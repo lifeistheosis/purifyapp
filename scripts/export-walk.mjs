@@ -3246,11 +3246,15 @@ await section(31, async () => {
 // count rode between them from 1.7.1 and left in 1.8 (his pick A of round 15,
 // "Lighter, no streak"; the streak is Today's prayer rope now), so the bar
 // holds those three and nothing else. This opens each tab on the
-// narrow Android width and on an iPhone's, in English, Greek and Filipino
-// (Filipino has the longest tab name, "Mga Panalangin"), and measures the
-// bar: the name whole, the pill and the two buttons where they are on every
-// other tab and one even step apart, no Support and no star, and all of it
-// inside the screen. Then
+// narrow Android width and on an iPhone's, in English, Greek and Arabic
+// (Arabic has the longest tab name in the bar's type, its Bible, "الكتاب
+// المقدس", 121px at 19px; Filipino's "Mga Panalangin" was the longest until
+// it became "Panalangin" on 2026-11-10, when the tab bar's words were fitted
+// to a 320px phone), and measures the bar: the name whole, the pill and the
+// two buttons where they are on every other tab and one even step apart, no
+// Support and no star, and all of it inside the screen. A right-to-left bar
+// is measured from its own side: its boxes are mirrored before they are
+// compared, so the same rules hold. Then
 // Today's pill, which left the screen for /pricing until 1.7, opens the
 // upgrade sheet as the other four do. lib/nav/__tests__/oneTopBar.test.ts
 // holds the source.
@@ -3264,9 +3268,13 @@ await section(32, async () => {
       const h1 = bar?.querySelector("h1");
       const cluster = h1?.nextElementSibling;
       if (!bar || !h1 || !cluster) return null;
+      // Arabic's bar runs from the right: each box is read from that side.
+      const rtl = getComputedStyle(bar).direction === "rtl";
       const box = (n) => {
         const r = n?.getBoundingClientRect();
-        return r ? { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width, height: r.height } : null;
+        if (!r) return null;
+        const [left, right] = rtl ? [innerWidth - r.right, innerWidth - r.left] : [r.left, r.right];
+        return { left, right, top: r.top, bottom: r.bottom, width: r.width, height: r.height };
       };
       // The pill's 44px box first, then search and the bell, and nothing
       // else: the streak left the bar in 1.8 (round 15 A).
@@ -3297,7 +3305,7 @@ await section(32, async () => {
     });
   const near = (a, b, by = 1) => typeof a === "number" && typeof b === "number" && Math.abs(a - b) <= by;
   for (const size of [{ width: 360, height: 780 }, { width: 390, height: 844 }]) {
-    for (const [locale, code] of [["en-US", "en"], ["el-GR", "el"], ["fil-PH", "fil"]]) {
+    for (const [locale, code] of [["en-US", "en"], ["el-GR", "el"], ["ar", "ar"]]) {
       const w = words(code);
       const { ctx, page, errors } = await open({ ...size, phone: true, locale });
       const seen = [];
@@ -3336,10 +3344,10 @@ await section(32, async () => {
         `${where}: the pill, search and the bell, and no streak in the bar (round 15 A; ${seen.map((s) => `${s.to} ${s.got?.kids ?? "?"}${s.got?.streak ? " with a streak" : ""}`).join(", ")})`,
       );
       must(seen.every((s) => s.got && s.got.outside === 0), `${where}: and all of it inside the screen${seen.some((s) => s.got?.outside) ? ` (${seen.filter((s) => s.got?.outside).map((s) => s.to).join(", ")} reach past it)` : ""}`);
-      if (size.width === 360 && code === "fil") {
-        await go(page, "/prayers/");
+      if (size.width === 360 && code === "ar") {
+        await go(page, "/bible/");
         await page.waitForTimeout(600);
-        await page.screenshot({ path: path.join(SHOTS, "top-bar-fil-360.png"), clip: { x: 0, y: 0, width: 360, height: 120 } });
+        await page.screenshot({ path: path.join(SHOTS, "top-bar-ar-360.png"), clip: { x: 0, y: 0, width: 360, height: 120 } });
       }
       must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
       await ctx.close();

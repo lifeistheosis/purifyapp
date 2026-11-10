@@ -5,7 +5,8 @@
 // the bar on the owner's word of 2026-10-17 ("put the streak at the top, like
 // right next to plus"), and that took about 40px from the name on every
 // phone: on a 320px one "Entdecken" and "Молитвы" did not fit, nor did the
-// Filipino "Mga Panalangin" at 360px, which the export walk holds whole. It
+// Filipino "Mga Panalangin" at 360px (it is "Panalangin" since 2026-11-10;
+// the export walk now holds the longest, Arabic's Bible, whole). It
 // left the bar in 1.8 (his pick A of round 15, "Lighter, no streak"), and the
 // fitting stays for the pill's longer words and the smallest phones.
 //
