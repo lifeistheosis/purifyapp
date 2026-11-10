@@ -340,6 +340,28 @@ Planned (built at his start, "All recommendations. Start.", 2026-11-10):
 
 What he saw: in the Bible reader, Matthew 1 (`build-90/10-reader-matthew-1.png`), and a verse's window as it opens today, with Highlight verse (seven colours and Name colors), the verse itself, and Copy, Share, Image, Note and Study (`build-90/10-verse-window.png`). His words: "And also the highlighting system, make it so that when you double tap, it automatically highlights the last color you picked. And also make it so that when you hold it down, then that window pops up."
 
-Where it is and why: asked of Updates (the Bible reader, with note 9).
+Where it is and why (Updates, 2026-11-10, on the code and with real touch on the export, Matthew 1):
 
-Planned (brainstorm, nothing built until his start): to come from Updates, with the choices that are his.
+- **A tap opens the window.** Since 1.9 (his pick B, then C of 2026-11-08) a single tap on a verse's words opens its window at once (`components/bible/VerseRow.tsx`, `onWordsTouchEnd`; the window is `components/bible/VerseFocus.tsx`, a card over the whole page). On the export a tap on Matthew 1:3 opened "Verse actions, Matthew 1:3".
+- **So a double tap cannot highlight.** The double tap was 1.8's highlight in the last colour (`quickHighlight`, with a soft tap in the hand and Undo), and the code still waits for a second tap; but the first tap has already put the window over the page, so the second lands on the window, not the verse. On the export a double tap on Matthew 1:4 opened its window and highlighted nothing.
+- **A hold opens the same window** (0.4 seconds), so today a tap and a hold do the same thing.
+- **The Fathers' works** (`components/saints/ParagraphRow.tsx`): a hold opens their tools, a tap does nothing, and there is no double tap.
+- **What his word changes in BRAINSTORM's "The verse system, one rule per gesture"** (2026-11-06): a tap no longer selects the verse or opens anything; the window, with all the tools that rule put in the bar, comes on a hold; a double tap is the highlight, and needs no first tap to select. Its cross-references line still holds: hold a verse, then Study, then Cross-references.
+- **Words that say "tap a verse"** must change with it: the 1.9 tour's verse stop ("Tap a verse to open it", 21 languages), the 1.9 note line and its long note, the board, the release email, the drop's texts that come from that line, and the Plus screen's Cross-references line.
+
+Planned (built at his start, "All recommendations. Start."; where a choice is his, the rec is what is built, and he can flip it on the next build):
+
+1. **A double tap highlights the verse in the last colour picked** (his word). The second tap reaches the verse now that the first opens nothing. The colour is the last one chosen in the window, or the one the verse's marked words already wear.
+   - *His choice:* a double tap before any colour was ever picked. Rec, built: the first of the seven, yellow; once he picks another in the window, the double tap uses that one.
+   - *His choice:* a double tap on a verse already highlighted. Rec, built: it takes the highlight off, as in 1.8, and Undo puts it back. The other way: it recolours the verse in the last colour.
+2. **What lands:** the soft tap in the hand (the one a saved verse gets) and the Undo bar at the foot for a few seconds, "Highlighted" or "Highlight removed", as 1.8 had.
+3. **A single tap does nothing**, at once, with no wait added, so reading is undisturbed. The red verse numbers still open the Fathers, and with the Greek on a Greek word still opens its study: those are their own buttons.
+   - *His choice:* a lone tap could still open the window a third of a second later, once no second tap has come. Rec, built: not, since that puts a wait on every tap.
+4. **A hold opens the window** (his word): after 0.4 seconds, with a small buzz, the verse lifts into its card with the colours, Copy, Share, Image, Note and Study. In the apps the phone's own text selection never shows (the apps' pages are not selectable). On the website on a phone the hold comes before the browser's own selection, as it does today. A computer keeps its double click, which highlights, its hover tools and its right-click menu.
+5. **Several verses:** a double tap on each in turn; the window still holds one verse.
+6. **The Greek beside the English:** the English words take the double tap and the hold; the Greek words keep their tap for the word study.
+7. **A screen reader and a keyboard** reach the window in one action: each verse gets a button for them, "Verse actions, Matthew 1:3" (the label is already in all 21 languages), hidden from sight and shown as a small pill when a keyboard lands on it. On a computer the hover tools already take the keyboard, so there it is not added.
+8. **The Fathers' works match:** a double tap on a paragraph highlights it in the same last colour (the colour is one for both readers), a second takes it off, with the same soft tap and Undo; a hold opens its tools; a tap does nothing.
+9. **The words that say "tap a verse"** say "hold" and "double tap": the tour's verse stop in all 21 languages, the 1.9 note line and its long note, the board, the release email, the drop's texts from that line, and the Plus screen's Cross-references line.
+10. **Held by:** tests that a lone tap opens nothing and the second is the highlight, that the hold opens the window, that the verse's button is there with its label, that the Fathers' paragraphs double tap, and that the tour's line is short and translated in 21 languages; and a section of the export walk with real touch on Matthew 1: a tap opens nothing, a double tap highlights in the last colour with Undo and a second takes it off, a hold opens the window, the same with the Greek on, a keyboard's Enter on the verse's button opens the window, and a Father's paragraph highlights on a double tap.
+11. **Size:** about 4 hours.

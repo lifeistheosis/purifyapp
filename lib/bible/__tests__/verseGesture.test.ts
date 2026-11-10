@@ -101,3 +101,60 @@ describe("the verse row", () => {
     expect(open.indexOf("isTouchContextMenu(")).toBeLessThan(open.indexOf("window.getSelection()"));
   });
 });
+
+// Build 90 note 10, his word: "when you double tap, it automatically
+// highlights the last color you picked ... when you hold it down, then that
+// window pops up." From 1.9's pick B a lone tap opened the window, which lay
+// over the verse, so the second tap of a double tap landed on the window and
+// never highlighted (on build 90's export a double tap on Matthew 1:4 opened
+// its window and marked nothing).
+describe("the verse's gestures (build 90 note 10)", () => {
+  const src = fs.readFileSync(path.resolve(__dirname, "../../../components/bible/VerseRow.tsx"), "utf8");
+  const between = (from: string, to: string) => src.slice(src.indexOf(from), src.indexOf(to, src.indexOf(from)));
+  const touchEnd = between("function onWordsTouchEnd(", "function onWordsDoubleClick(");
+  const touchStart = between("function onWordsTouchStart(", "function onWordsTouchMove(");
+
+  it("opens nothing on a lone tap, and waits for nothing", () => {
+    const lone = touchEnd.slice(touchEnd.indexOf("lastTapRef.current = here;"));
+    expect(lone).toMatch(/lastTapRef\.current = here;\s*\/\/ A lone tap: nothing, at once\.\s*if \(!showTools\) return;/);
+    expect(touchEnd).not.toContain("setShowTools(true)");
+    expect(touchEnd).not.toMatch(/setTimeout/);
+  });
+
+  it("highlights in the colour picked last on the second tap", () => {
+    expect(touchEnd).toMatch(/if \(isSecondTap\(lastTapRef\.current, here\)\) \{\s*lastTapRef\.current = null;[\s\S]*?quickHighlight\(\);\s*return;/);
+    const quick = between("function quickHighlight(", "const bookmarks = useBookmarks();");
+    expect(quick).toContain("const id = marked ? hl.id : lastHighlightColor();");
+    expect(quick).toContain("softTick();");
+    expect(quick).toContain("onQuickHighlight?.(");
+  });
+
+  it("opens the window on a hold", () => {
+    expect(touchStart).toMatch(/pressTimerRef\.current = window\.setTimeout\(\(\) => \{\s*pressTimerRef\.current = null;\s*setShowTools\(true\);/);
+    expect(touchStart).toContain("}, LONG_PRESS_MS);");
+  });
+
+  it("gives a screen reader and a keyboard one action to the window, out of sight until a keyboard lands on it", () => {
+    expect(src).toMatch(/<button\s+type="button"\s+data-verse-door=""\s+className="verse-door md:hidden native-md-inline-flex"\s+onClick=\{\(\) => setShowTools\(true\)\}\s+data-mock-allow="target"\s+data-mock-why="[^"]+"\s*>\s*\{t\("bible\.verseActionsFor", \{ reference: reference\(\) \}\)\}/);
+    const css = fs.readFileSync(path.resolve(__dirname, "../../../app/globals.css"), "utf8");
+    const door = css.slice(css.indexOf(".verse-door {"), css.indexOf("}", css.indexOf(".verse-door:focus-visible {")) + 1);
+    // Always out of the page's flow, so landing on it moves nothing.
+    expect(door).toMatch(/\.verse-door \{\s*position: absolute;/);
+    expect(door).toMatch(/\.verse-door:focus-visible \{[\s\S]*min-height: 44px;[\s\S]*clip-path: none;/);
+    expect(door).not.toMatch(/position: (static|relative)/);
+    for (const lang of fs.readdirSync(path.resolve(__dirname, "../../i18n/messages")).filter((f) => f.endsWith(".json"))) {
+      const m = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../i18n/messages", lang), "utf8"));
+      expect(m["bible.verseActionsFor"], lang).toContain("{reference}");
+    }
+  });
+
+  it("is told the same way wherever a reader is told how a verse opens", () => {
+    const en = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../i18n/messages/en.json"), "utf8"));
+    expect(en["tour.story.verse"]).toMatch(/^Double tap a verse to highlight it; hold it/);
+    const entries = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../data/changelog/entries.json"), "utf8"));
+    const nine = entries.find((e: { version: string }) => e.version === "1.9");
+    const said = JSON.stringify(nine);
+    expect(said).toContain("Hold a verse to open it");
+    expect(said).not.toMatch(/\b[Tt]ap (a|any) verse\b|tap it to see its Greek/);
+  });
+});

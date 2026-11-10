@@ -41,7 +41,10 @@ export type StudyRow = { key: string; label: string; onSelect: () => void; locke
 
 /**
  * The verse's focus (1.9, the owner's pick C of 2026-11-08, on build 88): a
- * tap on a verse steps the page back and lifts the verse into a card, the
+ * hold on a verse (a tap until build 90 note 10, his word: "when you hold it
+ * down, then that window pops up"; a double tap highlights, and a screen
+ * reader or a keyboard opens it with the verse's own button) steps the page
+ * back and lifts the verse into a card, the
  * highlight colours above it and the tools below it: Copy, Share, Image,
  * Note, Study. It replaced the strip under the verse (his pick B of
  * 2026-11-06), which he found plain once it was on his phone: "I don't like

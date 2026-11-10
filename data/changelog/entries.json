@@ -3,7 +3,7 @@
     "version": "1.9",
     "kind": "Keep a journal by the Church's day, and go deeper into every verse",
     "date": "November 10, 2026",
-    "blurb": "Purify 1.9 keeps a journal with you by the Church's day, free for everyone, and opens every verse: tap it to see its Greek, or, with Purify Plus, to study it with its cross-references, compare it across Bibles and remember it. Five more Bibles to download, in Russian, Greek, Serbian, Arabic and Spanish, and in Purify Plus new reading plans for the Nativity Fast, Holy Week, John, Acts and the whole New Testament.",
+    "blurb": "Purify 1.9 keeps a journal with you by the Church's day, free for everyone, and opens every verse: hold it to see its Greek, or, with Purify Plus, to study it with its cross-references, compare it across Bibles and remember it. Five more Bibles to download, in Russian, Greek, Serbian, Arabic and Spanish, and in Purify Plus new reading plans for the Nativity Fast, Holy Week, John, Acts and the whole New Testament.",
     "items": [
       {
         "category": "library",
@@ -15,7 +15,7 @@
       },
       {
         "category": "library",
-        "text": "Tap a verse to open it: highlight it, copy it, share it as a picture, write a note, and see its Greek."
+        "text": "Hold a verse to open it: highlight it, copy it, share it as a picture, write a note, and see its Greek."
       },
       {
         "category": "library",

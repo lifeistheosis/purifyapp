@@ -8378,6 +8378,129 @@ await section(53, async () => {
     await ctx.close();
   }
 });
+
+// Build 90 note 10, his word: "when you double tap, it automatically
+// highlights the last color you picked ... when you hold it down, then that
+// window pops up." On build 90 a lone tap opened the verse's window, which lay
+// over the verse, so a double tap opened the window and highlighted nothing.
+// Real touch on the export (CDP touch events, as section 12 holds a verse).
+await section(54, async () => {
+  console.log("\n54. A verse: a tap opens nothing, a double tap highlights, a hold opens the window (build 90 note 10)");
+  const LAST = "purify:bible:highlight-last";
+  for (const greek of [false, true]) {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { [LAST]: "blue", ...(greek ? { "purify:interlinear": "1" } : {}) } });
+    const cdp = await ctx.newCDPSession(page);
+    const finger = async (x, y, ms) => {
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
+      await page.waitForTimeout(ms);
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    };
+    // A point on the verse's English words, brought to the middle of the screen first.
+    const wordsOf = async (n) => {
+      await page.evaluate((n) => document.getElementById(`v${n}`).scrollIntoView({ block: "center" }), n);
+      await page.waitForTimeout(400);
+      return page.evaluate((n) => {
+        const r = document.querySelector(`#v${n} p[data-own-press]`).getBoundingClientRect();
+        return { x: Math.round(r.left + Math.min(60, r.width / 3)), y: Math.round(r.top + Math.min(14, r.height / 2)) };
+      }, n);
+    };
+    const seen = (n) =>
+      page.evaluate((n) => {
+        const row = document.getElementById(`v${n}`);
+        return {
+          window: [...document.querySelectorAll("[role=dialog]")].some((d) => /\b1:\d+$/.test(d.getAttribute("aria-label") ?? "") && (d.getAttribute("aria-label") ?? "").endsWith(`1:${n}`)),
+          anyWindow: document.querySelectorAll("[role=dialog]").length,
+          highlighted: row?.getAttribute("data-hl") === "true",
+          color: row?.getAttribute("data-hl-color") ?? null,
+          undo: !!document.querySelector("[data-undo-bar]"),
+        };
+      }, n);
+    await go(page, "/");
+    await go(page, "/bible/matthew/1/");
+    await page.waitForSelector("#v8 p[data-own-press]", { timeout: 20000 });
+    await page.waitForTimeout(greek ? 1500 : 800);
+    const tag = greek ? " (Greek on)" : "";
+
+    let at = await wordsOf(3);
+    await finger(at.x, at.y, 40);
+    await page.waitForTimeout(700);
+    const tap = await seen(3);
+    must(tap.anyWindow === 0 && !tap.highlighted, `a lone tap opens nothing and marks nothing${tag}`);
+
+    at = await wordsOf(4);
+    await finger(at.x, at.y, 40);
+    await page.waitForTimeout(110);
+    await finger(at.x, at.y, 40);
+    await page.waitForTimeout(500);
+    const dbl = await seen(4);
+    must(dbl.highlighted && dbl.color === "blue" && dbl.anyWindow === 0, `a double tap highlights the verse in the colour picked last, with no window${tag} (${dbl.color ?? "no colour"})`);
+    must(dbl.undo, `and offers it back with Undo${tag}`);
+    await page.waitForTimeout(400);
+    await finger(at.x, at.y, 40);
+    await page.waitForTimeout(110);
+    await finger(at.x, at.y, 40);
+    await page.waitForTimeout(500);
+    must(!(await seen(4)).highlighted, `a second double tap takes it off${tag}`);
+
+    at = await wordsOf(5);
+    await finger(at.x, at.y, 650);
+    await page.waitForTimeout(700);
+    must((await seen(5)).window, `a hold opens the verse's window${tag}`);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(800);
+
+    if (!greek) {
+      // A keyboard (or a screen reader) opens it in one action, by the verse's own door.
+      await page.focus("#v8 [data-verse-door]");
+      const door = await page.evaluate(() => {
+        const b = document.querySelector("#v8 [data-verse-door]");
+        const r = b.getBoundingClientRect();
+        return { label: b.textContent, h: Math.round(r.height) };
+      });
+      await page.keyboard.press("Enter");
+      await page.waitForTimeout(800);
+      must((await seen(8)).window && door.label === "Verse actions, Matthew 1:8", `the verse's door, "${door.label}", opens its window from a keyboard`);
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(800);
+    }
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A paragraph of the Fathers takes the same double tap, in the same colour.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { [LAST]: "teal" } });
+    const cdp = await ctx.newCDPSession(page);
+    await go(page, "/");
+    await go(page, "/saints/athanasius-the-great/on-the-incarnation/");
+    await page.waitForSelector("[data-paragraph-idx]", { timeout: 20000 });
+    await page.waitForTimeout(800);
+    const para = await page.evaluate(() => {
+      const el = [...document.querySelectorAll("[data-paragraph-idx]")][1] ?? document.querySelector("[data-paragraph-idx]");
+      el.scrollIntoView({ block: "center" });
+      return el.id;
+    });
+    await page.waitForTimeout(400);
+    const pt = await page.evaluate((id) => {
+      const r = document.getElementById(id).getBoundingClientRect();
+      return { x: Math.round(r.left + Math.min(60, r.width / 3)), y: Math.round(r.top + Math.min(14, r.height / 2)) };
+    }, para);
+    for (let i = 0; i < 2; i++) {
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [pt] });
+      await page.waitForTimeout(40);
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+      if (i === 0) await page.waitForTimeout(110);
+    }
+    await page.waitForTimeout(500);
+    const got = await page.evaluate((id) => {
+      const el = document.getElementById(id);
+      return { hl: el.getAttribute("data-hl") === "true", color: el.getAttribute("data-hl-color"), undo: !!document.querySelector("[data-undo-bar]") };
+    }, para);
+    must(got.hl && got.color === "teal" && got.undo, `a double tap on a paragraph of the Fathers highlights it in the colour picked last, with Undo (${got.color})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

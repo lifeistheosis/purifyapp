@@ -1,7 +1,11 @@
 // What a finger on a verse means (1.9, build 88 notes 1 and 2).
 //
 // A verse decides for itself what a touch is (components/bible/VerseRow.tsx):
-// a hold opens its tools, a tap selects it, two taps highlight it. Two things
+// a hold opens its window, two taps highlight it in the colour picked last,
+// and a lone tap does nothing (build 90 note 10, his word: "when you double
+// tap, it automatically highlights the last color you picked ... when you
+// hold it down, then that window pops up"; until then a lone tap opened the
+// window, which lay over the verse before a second tap could land). Two things
 // a phone never calls a tap passed the old rule, which only asked whether the
 // finger came up soon and had not moved:
 //

@@ -3250,6 +3250,42 @@ html[data-reading-mode="parchment"] .verse-ghost-words [data-word-idx]:not(.dark
  text-decoration-color: rgb(43 35 23 / 0.3);
 }
 
+/* A verse's door for a screen reader and a keyboard (build 90 note 10,
+   components/bible/VerseRow.tsx): a lone tap opens nothing now and the hold
+   that opens the verse's window is a finger's, so each verse has a button
+   that opens it in one action. Out of sight, and held out of the page's flow
+   always, so landing on it moves nothing: when a keyboard reaches it, a
+   small pill in the palette's own ground and ink stands just under the
+   verse's start. */
+.verse-door {
+ position: absolute;
+ inset-inline-start: 0;
+ top: 0;
+ width: 1px;
+ height: 1px;
+ overflow: hidden;
+ clip-path: inset(50%);
+ white-space: nowrap;
+}
+.verse-door:focus-visible {
+ top: 100%;
+ z-index: 5;
+ width: auto;
+ height: auto;
+ min-height: 44px;
+ padding-inline: 16px;
+ overflow: visible;
+ clip-path: none;
+ display: inline-flex;
+ align-items: center;
+ border-radius: var(--radius-pill);
+ background: var(--color-night);
+ color: var(--color-paper);
+ border: 1px solid color-mix(in srgb, var(--color-paper) 30%, transparent);
+ font-family: var(--font-sans);
+ font-size: var(--text-ui);
+}
+
 /* The Creed by council (1.9, s6-07, app/(app)/theology/creed): the words the
    Council of Constantinople added in 381, lit with the selected verse's own
    faint wash (.verse-ghost above), line by line, in the paper's full ink; the

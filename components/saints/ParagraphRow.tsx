@@ -1,14 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useParagraphAnnotation } from "@/lib/saints/annotations";
+import { readParagraphAnnotation, useParagraphAnnotation, writeParagraphAnnotation } from "@/lib/saints/annotations";
 import {
  HIGHLIGHT_COLORS,
  colorById,
  highlightLabelNow,
  highlightVars,
+ lastHighlightColor,
  rememberHighlightColor,
 } from "@/lib/bible/highlightColors";
+import { isSecondTap, isTap, type TapAt } from "@/lib/bible/verseGesture";
+import { lastPageScrollAt, watchPageScroll } from "@/lib/ui/pageScroll";
+import { softTick } from "@/lib/ui/softTick";
+import type { UndoEntry } from "@/lib/ui/useUndo";
 import { useBookmarks } from "@/lib/bookmarks";
 import {
  VerseContextMenu,
@@ -58,6 +63,7 @@ export function ParagraphRow({
  at,
  mark,
  workEnd,
+ onQuickHighlight,
 }: {
  saintSlug: string;
  saintName: string;
@@ -80,6 +86,8 @@ export function ParagraphRow({
  mark?: string;
  /** The work's last paragraph: read past its foot, and the reader's place is let go (lib/saints/paragraphInView.ts). */
  workEnd?: boolean;
+ /** The section's Undo, offered when a double tap marks or unmarks the paragraph (build 90 note 10). */
+ onQuickHighlight?: (entry: UndoEntry) => void;
 }) {
   const { t } = useTranslate();
  const ann = useParagraphAnnotation(
@@ -151,9 +159,67 @@ export function ParagraphRow({
  clearPressTimer();
  pressOriginRef.current = null;
  }
+ // A double tap highlights the paragraph in the colour picked last, the
+ // Bible's and the Fathers' one colour, and a second takes it off, felt in
+ // the hand and offered back with Undo: the Bible's verse does the same
+ // (build 90 note 10, his word: "when you double tap, it automatically
+ // highlights the last color you picked"). A lone tap does nothing; the hold
+ // below opens the tools. The same rules decide what a tap is
+ // (lib/bible/verseGesture.ts): not the touch that stops a glide, not a
+ // finger the page moved under, not a tap on the paragraph's own buttons.
+ const lastTapRef = useRef<TapAt | null>(null);
+ const touchStartRef = useRef<{ at: number; scrollY: number; lastScrollAt: number } | null>(null);
+ useEffect(() => watchPageScroll(), []);
+ function quickHighlight() {
+ const before = readParagraphAnnotation(saintSlug, workSlug, sectionN, paragraphIdx);
+ const removing = !!ann.highlighted;
+ if (removing) ann.toggleHighlight();
+ else {
+ const id = lastHighlightColor();
+ ann.setHighlight(id);
+ rememberHighlightColor(id);
+ }
+ softTick();
+ onQuickHighlight?.({
+ label: t(removing ? "bible.highlightRemoved" : "bible.highlightAdded"),
+ restore: () => writeParagraphAnnotation(saintSlug, workSlug, sectionN, paragraphIdx, before),
+ });
+ }
+ function onTouchEnd(e: React.TouchEvent) {
+ const quick = pressOriginRef.current !== null && pressTimerRef.current !== null;
+ const start = touchStartRef.current;
+ touchStartRef.current = null;
+ cancelPress();
+ const p = e.changedTouches[0];
+ const tapped =
+ !!p &&
+ !!start &&
+ isTap({
+ quick,
+ startedAt: start.at,
+ lastScrollAt: start.lastScrollAt,
+ startScrollY: start.scrollY,
+ endScrollY: window.scrollY,
+ onControl: !!(e.target as Element | null)?.closest("button, a, textarea"),
+ });
+ if (!tapped || !p) {
+ lastTapRef.current = null;
+ return;
+ }
+ const here: TapAt = { t: performance.now(), x: p.clientX, y: p.clientY };
+ if (isSecondTap(lastTapRef.current, here)) {
+ lastTapRef.current = null;
+ // No click and no mouse events after the second tap: it was the highlight.
+ e.preventDefault();
+ quickHighlight();
+ return;
+ }
+ lastTapRef.current = here;
+ }
  function onTouchStart(e: React.TouchEvent) {
  const t = e.touches[0];
  if (!t) return;
+ touchStartRef.current = { at: performance.now(), scrollY: window.scrollY, lastScrollAt: lastPageScrollAt() };
  pressOriginRef.current = { x: t.clientX, y: t.clientY };
  clearPressTimer();
  pressTimerRef.current = window.setTimeout(() => {
@@ -289,7 +355,7 @@ export function ParagraphRow({
  onContextMenu={openContextMenu}
  onTouchStart={onTouchStart}
  onTouchMove={onTouchMove}
- onTouchEnd={cancelPress}
+ onTouchEnd={onTouchEnd}
  onTouchCancel={cancelPress}
  >
  {/* Highlighted paragraphs get a per-line wash over the text in their

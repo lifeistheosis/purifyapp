@@ -74,7 +74,7 @@ export const RELEASE_EMAIL: ReleaseEmail = {
     {
       emoji: "📖",
       name: "Every verse, opened",
-      text: "Tap a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.",
+      text: "Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.",
     },
     {
       emoji: "🌍",

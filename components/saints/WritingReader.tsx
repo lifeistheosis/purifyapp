@@ -39,6 +39,8 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { unitFor } from "@/lib/desktop/presenceModes";
 import type { TileCard } from "@/lib/reading/select";
 import { ReadToEndMark } from "@/components/reading/ReadToEndMark";
+import { UndoBar } from "@/components/ui/UndoBar";
+import { useUndo } from "@/lib/ui/useUndo";
 
 /** What About this book shows: the book's page, as the page draws it on a computer. */
 export type AboutBook = { header: React.ComponentProps<typeof BookHeader>; key: string; like: TileCard[] };
@@ -282,6 +284,9 @@ function SectionParagraphs({
  cites: Cites;
 }) {
   const { t } = useTranslate();
+ // A paragraph marked or unmarked by a double tap is offered back for a
+ // moment, as a verse is (build 90 note 10).
+ const quick = useUndo();
  const { divisions } = cites;
  const index = content.sections.indexOf(sec);
  const places = divisions && index >= 0 ? divisions.places[index] ?? [] : [];
@@ -373,6 +378,7 @@ function SectionParagraphs({
  at={place && place.begins > 0 ? atOf(place.path) : undefined}
  mark={inner ? String(inner.n) : undefined}
  workEnd={i === lastWords}
+ onQuickHighlight={quick.offer}
  />
  );
  if (!heads.length) return row;
@@ -388,6 +394,7 @@ function SectionParagraphs({
  );
  })}
  </div>
+ <UndoBar entry={quick.entry} onUndo={quick.undo} />
  </>
  );
 }

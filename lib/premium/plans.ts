@@ -127,7 +127,7 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
     {
       id: "cross-refs",
       title: "Cross-references",
-      sub: "Tap a verse in either Testament and see the passages it echoes, with their words beside it",
+      sub: "Hold a verse in either Testament and see the passages it echoes, with their words beside it",
     },
     {
       id: "word-study",
@@ -248,7 +248,7 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
     {
       id: "cross-refs",
       title: "Querverweise",
-      sub: "Tippe auf einen Vers in einem der beiden Testamente und sieh die Stellen, die er anklingen lässt, mit ihrem Wortlaut daneben",
+      sub: "Halte einen Vers in einem der beiden Testamente gedrückt und sieh die Stellen, die er anklingen lässt, mit ihrem Wortlaut daneben",
     },
     {
       id: "word-study",

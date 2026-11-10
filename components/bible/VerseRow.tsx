@@ -544,10 +544,13 @@ export function VerseRow({
  const quick = pressOriginRef.current !== null && pressTimerRef.current !== null;
  const start = touchStartRef.current;
  touchStartRef.current = null;
- // 1.9, the owner's pick B: a single tap selects the verse and opens its
- // focus at once (components/bible/VerseFocus.tsx; it was a strip under the
- // verse until his pick C of 2026-11-08), so nothing waits to see
- // whether a second comes; a second tap in time is still the highlight.
+ // Build 90 note 10, his word: "when you double tap, it automatically
+ // highlights the last color you picked ... when you hold it down, then
+ // that window pops up." A lone tap opens nothing and waits for nothing; a
+ // second tap in time is the highlight; the hold (onWordsTouchStart) is the
+ // window. From 1.9's pick B until then a lone tap opened the window
+ // (components/bible/VerseFocus.tsx), which then lay over the verse, so the
+ // second tap of a double tap landed on the window and never highlighted.
  cancelPress();
  const p = e?.changedTouches[0];
  const tapped =
@@ -578,11 +581,9 @@ export function VerseRow({
  return;
  }
  lastTapRef.current = here;
- if (!showTools) {
- setShowTools(true);
- return;
- }
- // The verse is selected already: a tap on one of its words is that word.
+ // A lone tap: nothing, at once.
+ if (!showTools) return;
+ // The window is open already: a tap on one of the verse's words is that word.
  const target = e?.target as HTMLElement | null;
  const idx = target ? wordIndexFromElement(target) : null;
  if (idx !== null && target) void openEnglishWord(idx, target);
@@ -747,7 +748,8 @@ export function VerseRow({
  data-hl-color={dragColor ?? hl.id}
  data-para-start={paraStart ? "" : undefined}
  data-verse=""
- // The 1.9 tour lights a chapter's first verse: tap a verse to open it.
+ // The 1.9 tour lights a chapter's first verse: double tap it to highlight
+ // it, hold it to open it (build 90 note 10).
  data-tour={verse.n === 1 ? "verse" : undefined}
  style={highlightVars(dragColor ?? hl.id) as React.CSSProperties}
  >
@@ -1432,6 +1434,23 @@ export function VerseRow({
  onSave={(body) => ann.setNote(body)}
  onClose={() => setNoteOpen(false)}
  />
+
+ {/* The verse's door for a screen reader and a keyboard (build 90 note
+   10): a lone tap opens nothing now, and the hold that opens the window
+   is a finger's. One action for them, out of sight, a small pill under
+   the verse when a keyboard lands on it (app/globals.css, .verse-door).
+   Phones and the apps' tablets: a computer's hover tools take the
+   keyboard there. */}
+ <button
+ type="button"
+ data-verse-door=""
+ className="verse-door md:hidden native-md-inline-flex"
+ onClick={() => setShowTools(true)}
+ data-mock-allow="target"
+ data-mock-why="out of sight until a keyboard lands on it, then a pill 44px tall"
+ >
+ {t("bible.verseActionsFor", { reference: reference() })}
+ </button>
 
  {showTools && (
  <VerseFocus
