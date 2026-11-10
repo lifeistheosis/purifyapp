@@ -1222,6 +1222,13 @@ stores ask for honest answers, and Google may remove an app whose answers are
 wrong. Answer only the questions below differently; everything else stays as
 it is.
 
+Your word, 2026-11-10 ("all recs for 6"): violence is answered "infrequent
+or mild", for the martyrdoms the saints' lives tell; Play's audience stays 13
+and over; campaign pictures are on at submission only if your three steps
+are done, and otherwise left out of the store builds (one line in the
+release commit; the arbiter says which that morning); Australia's law gets a
+lawyer's look after 1.9, and nothing waits on it.
+
 Google Play:
 1. Play Console, **Purify**, **Policy and programs** (under **Monitor and
    improve**), **App content**, **Content rating**, **Start new
@@ -1230,13 +1237,18 @@ Google Play:
 2. Where it asks whether users can interact or share content with one
    another: **Yes** (public posts, replies, prayer campaigns and their
    comments, profile photos). Where it asks about buying digital goods:
-   **Yes** (Plus and Pro). Every other answer as before.
-3. **Save**, **Next**: Google shows the ratings it worked out. Expect the
-   same ages as today in most countries, with a notice that users interact;
-   Germany may show 12. Then **Submit**.
-4. **Internal testing**, the 1.9 release, **Promote release**,
+   **Yes** (Plus and Pro). Where it asks about violence: the answer for
+   violence that is mild or infrequent (the martyrdoms in the saints'
+   lives, told in words). Every other answer as before.
+3. **Save**, **Next**: Google shows the ratings it worked out, with a notice
+   that users interact. The violence answer may raise the age a step in
+   some countries; Germany may show 12. Then **Submit**.
+4. Still in **App content**: **Target audience and content**, **Manage**.
+   Only ages 13 and over ticked (nothing under 13). **Save**. (Under 13
+   would bring Google's rules for children's social features.)
+5. **Internal testing**, the 1.9 release, **Promote release**,
    **Production**.
-5. **Next**, **Save**, then **Send for review** (or **Start rollout**).
+6. **Next**, **Save**, then **Send for review** (or **Start rollout**).
 
 App Store:
 0. **App Information** (left, under **General**), **Edit** at the top of the
@@ -1252,9 +1264,11 @@ App Store:
      **Unrestricted Web Access**: **No**.
    - **Shared Location** and **Dating and Relationships** (new from 16
      November): **No**.
-   - Every content question as before. **Save**. App Store Connect shows
-     the rating it worked out: expect **13+** (16+ in Australia, and higher
-     in a few other countries). It goes out with 1.9.
+   - **Realistic Violence**: **Infrequent/Mild** (the martyrdoms in the
+     saints' lives, told in words; your word).
+   - Every other content question as before. **Save**. App Store Connect
+     shows the rating it worked out: expect **13+** (16+ in Australia, and
+     higher in a few other countries). It goes out with 1.9.
 1. **App Store** tab, the **1.9** version (click **+** next to iOS App to make
    it, if needed).
 2. **Build**: **Add Build**, pick the one you walked in R5b.
