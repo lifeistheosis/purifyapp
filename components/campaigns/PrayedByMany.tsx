@@ -83,18 +83,17 @@ export function PrayedByMany() {
         items={MANY_SPANS.map((id) => ({ id, label: t(SPAN_LABEL[id]) }))}
         selected={span}
         onSelect={setSpan}
-        // On the page itself, with no tint under the switch: the house's
-        // off label is the ink at 65 percent, which is 4.52:1 on Light's
-        // page and 4.41:1 on the switch's own tinted track.
-        //
-        // Each part as wide as its own word needs, and the room left over
-        // shared out: the house's switch gives its parts equal widths and
-        // cuts a word that does not fit, and "week" is a long word in some
-        // languages beside very short ones for day and year (Romanian: Zi,
-        // Săptămână, Lună, An). Measured with the export's own fonts in all
-        // twenty-one languages at 390, 360 and 320 pixels: in equal parts
-        // nineteen were cut; this way none is.
-        className="mt-2 auto-cols-auto bg-transparent"
+        // The house's switch as it is, with nothing of this page's own: its
+        // widths (equal parts while every word fits, and a longer word takes
+        // its room) and its tinted track. For a few hours on 2026-11-10 this
+        // one sized its own parts and stood on no tint, for two faults seen
+        // on its first stills: the house's switch cut the word for "week" in
+        // several languages, and on Light its off labels measured 4.41:1 on
+        // that track. Both are mended where they belong, the widths in
+        // components/ui/SegmentedSwitch.tsx and Light's faint ink in
+        // app/globals.css ("Faint text on every palette": 5.1:1 on the track
+        // now), so one rule draws every switch.
+        className="mt-2"
       />
       <div id={`many-panel-${span}`} role="tabpanel" aria-labelledby={`many-tab-${span}`} className="mt-3">
         {list === undefined ? (

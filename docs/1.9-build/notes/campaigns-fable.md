@@ -2325,12 +2325,26 @@ no read; the order, the spans, the floor, who is left out; every reader
 counted past the thousand rows one request returns; no figure in what is
 handed on; the minute; and the creator's switch.
 
-**Found on its first still, on Light:** the house's switch draws its off
-labels at 65 percent of the ink, which is 4.52:1 on Light's page and 4.41:1
-on the switch's own 3 percent track, so `checkMock` refused it. Here the
-switch stands on the page with no tint under it. The same number holds for
-every switch drawn on that track on Light (`SegmentedSwitch`, `BarSwitch`,
-the doors' slim row): the palette's to mend, reported and not changed here.
+**Found on its first still, on Light, and mended in the palette:** the
+house's switch draws its off labels at 65 percent of the ink, which measured
+4.52:1 on Light's page and 4.41:1 on the switch's own 3 percent track, so
+`checkMock` refused it. For a few hours this switch therefore stood on the
+page with no tint under it, and the fault was reported as the palette's to
+mend.
+
+It already had been. The Themes chat's sweep of faint text (`14aa6ce89`,
+"Light its cards' 62 to 66") makes Light draw that share of the ink at 70
+percent. The tree the first still was measured on did not have it yet; the
+next pull, twenty minutes later, did. So this page's override outlived its
+reason from then on, and the report of a fault in every switch on Light was
+out of date when it was sent. Both are put right here (14.2): the switch
+stands on the house's own track again. Measured on the track as it is
+painted, on a scratch export of the final code, the off labels are 8.04:1 on
+Dark, 5.10:1 on Light, 8.48:1 on Black, 5.99:1 on Candlelight and 6.88:1 on
+Monastery. What the other rows that copy the switch's look draw on Light
+(`BarSwitch`, the doors' slim row) was not measured again here: the
+palette's own test, `lib/ui/__tests__/faintText.test.ts`, holds every share
+the app writes.
 
 **Found while building it:** the first draft tallied one request's rows, and
 the house's own test refused it (`lib/supabase/__tests__/rowCap.test.ts`):
@@ -2630,13 +2644,30 @@ settle it.
 
 ### 14.2 What the languages found in the screens
 
-**"Prayed by many" cut the word for "week".** The house's switch gives its
-parts equal widths and cuts a word that does not fit, and "week" is long in
+**"Prayed by many" cut the word for "week".** The house's switch gave its
+parts equal widths and cut a word that did not fit, and "week" is long in
 some languages beside very short words for day and year (Romanian: Zi,
 Săptămână, Lună, An). Measured in all twenty-one languages at 390, 360 and
-320 pixels: nineteen cuts. Each part of that switch is now as wide as its own
-word needs, with the room left over shared out, and none is cut. English
-looks as it did.
+320 pixels: nineteen cuts. As a first mend, each part of this one switch was
+made as wide as its own word needs, with the room left over shared out.
+
+**The house's switch was mended the same day, and this one is the house's
+own again.** On the arbiter's word every other use of the switch was
+measured, and the shared part now sizes to its words (`321788c10`,
+`components/ui/SegmentedSwitch.tsx`: equal parts while every word fits, a
+longer word takes its room, and no part is under 44 pixels). So this page's
+own sizing came out, on the arbiter's yes, "so one rule draws every switch",
+and with it this page's other override, the missing tint, whose reason had
+gone as well (12.2). The switch here now carries nothing of its own.
+
+Measured again on a scratch export of the final code, on the real switch, in
+all twenty-one languages at 390, 360 and 320 pixels: no word cut, no part
+under 44 by 44 (the narrowest is 58 wide, Romanian at 320), and no row
+scrolls. The parts are equal wherever the words fit, and they fit in
+German, Russian, Georgian and Hungarian at all three widths. A longer word
+for "week" takes its room in Romanian at 360, and in Bulgarian, Greek,
+Italian, Romanian and Ukrainian at 320. Still 19 passes the mockup check on
+the five palettes and the eighteen looks.
 
 ### 14.3 The eighteen looks
 
