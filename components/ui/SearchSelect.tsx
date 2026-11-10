@@ -50,6 +50,8 @@ export type SearchSelectOption<V extends string = string> = {
   value: V;
   label: string;
   hint?: string;
+  /** Words the filter also finds this row by, never shown (lib/ui/listbox.ts). */
+  terms?: string;
   disabled?: boolean;
 };
 

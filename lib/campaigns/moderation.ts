@@ -346,7 +346,8 @@ export async function maybeHideCampaign(admin: SupabaseClient, campaignId: strin
 
 // ── The queue ───────────────────────────────────────────────────────────────
 
-const WAITING_COLS = "id, title, intention, for_whom, subject_name, details, days, ends_on, creator_name, creator_handle, held_reason, created_at, audience, circle_id";
+const WAITING_COLS =
+  "id, title, intention, for_whom, subject_name, details, days, ends_on, creator_name, creator_handle, held_reason, created_at, audience, circle_id, place_country, place_name";
 
 /**
  * Every campaign waiting to be read, oldest first, one that may mean its
@@ -387,6 +388,8 @@ export async function readWaitingCampaigns(admin: SupabaseClient): Promise<{ row
       held_reason: str(r.held_reason),
       created_at: String(r.created_at ?? ""),
       circle: r.audience === "circle" && typeof r.circle_id === "string" ? (circles.get(r.circle_id) ?? "") : null,
+      place_country: str(r.place_country),
+      place_name: str(r.place_country) ? str(r.place_name) : null,
     }),
   );
   const urgent = (r: WaitingCampaign) => (r.held_reason ?? "").includes("crisis");

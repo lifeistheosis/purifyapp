@@ -21,7 +21,7 @@ import {
   type WaitingCampaign,
   type WaitingPicture,
 } from "@/lib/campaigns/model";
-import { dayText, lengthText } from "@/lib/campaigns/words";
+import { dayText, lengthText, placeText } from "@/lib/campaigns/words";
 import { cn } from "@/lib/cn";
 import { timeAgo } from "@/lib/community/types";
 
@@ -190,6 +190,7 @@ function WaitingCard({
   const kind = c.for_whom === "departed" ? KIND_LABEL.departed : (KIND_LABEL as Record<string, string | undefined>)[c.intention] ?? KIND_LABEL.other;
   const last = dayText(c.ends_on, locale);
   const length = c.days ? (last ? t("campaigns.lengthTo", { length: lengthText(c.days, t, tn), date: last }) : lengthText(c.days, t, tn)) : "";
+  const place = placeText(c, locale);
   return (
     <article data-mod-campaign="" className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -225,6 +226,13 @@ function WaitingCard({
           </p>
         ) : null}
         {c.details ? <p dir="auto" className="whitespace-pre-wrap break-words">{c.details}</p> : null}
+        {/* Its place, if it has one: every reader will see it, so the moderator reads it with the rest. */}
+        {place ? (
+          <p data-mod-campaign-place="" className="break-words">
+            <span className="text-paper/75">{t("campaigns.new.place")}: </span>
+            {place}
+          </p>
+        ) : null}
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         <ActionButton primary label={t(why.includes("reports") ? "mod.restore" : "mod.approve")} busy={approving} onClick={onApprove} />

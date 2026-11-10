@@ -4047,3 +4047,88 @@ report's.
 - **Whether a moderator writes to such a writer,** in what words and with
   which help lines, is his to decide and is with the arbiter as a call. Not
   built.
+
+---
+
+## 30. A place: as built (2026-11-10)
+
+His words: "Allow them to add a location." Planned in 2.9, 3.6 and 4.6; the
+two columns were in file one from the start (`place_country`, `place_name`,
+with the table's own check on their shape), so this needed no SQL.
+
+### 30.1 What a reader sees
+
+- **On the start screen** a row, Place, under the others, reading "Optional"
+  until one is given. It opens a sheet: the country, in the house's own
+  searchable list (`components/ui/SearchSelect.tsx`, the one the profile's
+  patron saint uses), with None first; then, once a country is chosen, a
+  field for a town or region.
+- **The list** is the app's own list of countries
+  (`lib/onboarding/clergy.ts`), named in the reader's language by the device,
+  with the country the device's language points to first. A country is also
+  found by its name in English, by its code, and by "usa" and "uk". That
+  order is the only thing the device's language is used for: nothing is
+  asked of the device, nothing is located, and only what the creator chooses
+  is sent.
+- **The town** is letters of any script, with spaces, hyphens, apostrophes
+  and full stops, sixty characters at most. No digit at all, so no street
+  number, no postcode and no telephone. A town that is not one is said so
+  under the field ("A town or region is letters only, with no numbers.") and
+  is left out: the row always says exactly what will be sent.
+- **For a child** (a campaign its creator says is for a child in their
+  care) no town is asked for, the sheet says "A campaign for a child shows
+  the country alone.", and a town typed before that was said is not sent.
+- **On the campaign's page** it is said under who started it and when:
+  "Thessaloniki, Greece", or the country alone. A campaign with no place
+  says nothing.
+- **The moderators** read it with the rest, in the in-app list ("Place: Novi
+  Sad, Serbia"), since every reader will see it once it is approved. The
+  admin panel's queue is Admin's to give the same line (the fields are on
+  what the server hands it).
+
+### 30.2 What the server holds, whatever a screen sends
+
+`lib/campaigns/server.ts`, `startCampaign`:
+
+- the country is one of the app's list, and a town is a town by the same
+  pattern the screen uses (`lib/campaigns/model.ts`, `cleanTown`). Anything
+  else is refused whole (`bad_place`), never trimmed into something else;
+- a campaign made by a parent or guardian keeps the country alone;
+- the town is read as the rest is: a link in it refuses the campaign, what
+  the filters see in it counts, and a town the word filter would mask is
+  left out (a masked town is no town), with the creator asked first as for
+  any masked word;
+- on the way out (`publicCampaign`) a town is never handed over without its
+  country, and never one that is not a town, whatever a row holds.
+
+### 30.3 What it does not do
+
+- No map, no coordinates, nothing read from the device or from the network
+  address. `lib/campaigns/__tests__/place.test.ts` reads every file of the
+  campaigns for the words that would do it.
+- A place cannot be changed after the campaign is sent, until changing a
+  campaign's words is built (phase 4's rest).
+- The board does not sort or filter by place.
+
+### 30.4 What holds it
+
+`lib/campaigns/__tests__/place.test.ts` (the town's pattern in six
+scripts, what is never a town, the way out, how it is said, the list and
+its search words, the screens, and "never from the device"),
+`lib/campaigns/__tests__/routes.test.ts` (four cases under "starting a
+campaign"), and `lib/ui/__tests__/listbox.test.ts` (the list's hidden
+search words). The walk: six flows. Stills: the Place sheet (34) and a
+campaign's page with its place (35).
+
+### 30.5 Words for his OK (English; the twenty languages after)
+
+| Key | English |
+|---|---|
+| `campaigns.new.place` | Place |
+| `campaigns.new.placeTown` | Town or region |
+| `campaigns.new.placeNote` | A place is shown with the campaign to everyone who can see it. Give a town or a region, never an address. |
+| `campaigns.new.placeChild` | A campaign for a child shows the country alone. |
+| `campaigns.err.place` | A town or region is letters only, with no numbers. |
+
+Already in the catalog and used as they are: Country (`shop.country`), None
+(`profile.none`), Search for a country, No matches., Optional, Done.

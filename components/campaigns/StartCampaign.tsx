@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { TickBox, TickLines } from "@/components/campaigns/TickLines";
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
@@ -16,6 +16,7 @@ import { DOOR, DOOR_COLS, DOOR_OFF, DOOR_ON } from "@/components/ui/doors";
 import { Book } from "@/components/ui/icons/Book";
 import { Clock } from "@/components/ui/icons/Clock";
 import { Close } from "@/components/ui/icons/Close";
+import { Compass } from "@/components/ui/icons/Compass";
 import { Globe } from "@/components/ui/icons/Globe";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Lock } from "@/components/ui/icons/Lock";
@@ -24,6 +25,7 @@ import { Orans } from "@/components/ui/icons/Orans";
 import { Plus } from "@/components/ui/icons/Plus";
 import { Scroll } from "@/components/ui/icons/Scroll";
 import { SafetyLine } from "@/components/campaigns/SafetyLine";
+import { SearchSelect } from "@/components/ui/SearchSelect";
 import { Sheet } from "@/components/ui/Sheet";
 import { fetchCircles, startCampaign, type CircleChoice, type StartResult } from "@/lib/campaigns/client";
 import {
@@ -36,19 +38,23 @@ import {
   LIVING_KINDS,
   MAX_DAYS,
   NAME_MAX,
+  PLACE_TOWN_MAX,
   TITLE_MAX,
   TITLE_MIN,
   WORDS_MAX,
+  cleanTown,
   lastDayOf,
   prayerAfterKind,
+  townFits,
   type ConsentKind,
   type ForWhom,
   type LivingKind,
   type PrayerRef,
 } from "@/lib/campaigns/model";
-import { campaignIcon, dayText, lengthText, prayerName } from "@/lib/campaigns/words";
+import { campaignIcon, dayText, lengthText, placeCountries, placeText, prayerName } from "@/lib/campaigns/words";
 import { cn } from "@/lib/cn";
 import { goBack } from "@/lib/nav/goBack";
+import { deviceRegion } from "@/lib/onboarding/clergy";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 import { getPrayerIcon } from "@/lib/prayers/icons";
 import { todayKey } from "@/lib/rhythm/dayKey";
@@ -62,7 +68,9 @@ const HOME = "/community#pray";
 const INSET_TOP = "var(--inset-top, env(safe-area-inset-top, 0px))";
 
 type Writer = { name: string; avatar: string | null };
-type Opened = "kind" | "length" | "psalm" | "audience" | null;
+type Opened = "kind" | "length" | "psalm" | "audience" | "place" | null;
+/** No place, in the list of countries. */
+const NO_PLACE = "__none__";
 /** A circle's kind, in the words Read together already has. */
 const CIRCLE_KIND: Record<string, string> = { parish: "together.kind.parish", household: "together.kind.household", friends: "together.kind.friends" };
 /** A length ticked, or a last day of the creator's own choosing. */
@@ -81,7 +89,9 @@ type LengthChoice = (typeof LENGTHS)[number] | "own";
  * the prayer said with the name (the living): the one its kind starts
  * with, another of the list, or the name alone; and, for a
  * reader who is in a circle of Read together, who can see it: everyone in
- * Community, or that circle alone (1.9; the notes, section 27). Then the
+ * Community, or that circle alone (1.9; the notes, section 27); and, if the
+ * creator wishes, a place: a country from the app's own list and a town or
+ * region as typed, never read from the device (the notes, 2.9). Then the
  * blessing, worded for who it is for and kept with its day, and the rules.
  *
  * What it promises is what happens: a campaign is read by a moderator before
@@ -109,6 +119,9 @@ export function StartCampaign() {
   // The reader's own circles, and the one this campaign is kept to (none: everyone in Community).
   const [circles, setCircles] = useState<CircleChoice[]>([]);
   const [circleId, setCircleId] = useState<string | null>(null);
+  // Where it is, if its creator says: a country of the app's list, and a town or region as typed.
+  const [country, setCountry] = useState<string | null>(null);
+  const [town, setTown] = useState("");
   const [consent, setConsent] = useState<Exclude<ConsentKind, "family"> | null>(null);
   const [family, setFamily] = useState(false);
   const [rules, setRules] = useState(false);
@@ -172,6 +185,18 @@ export function StartCampaign() {
   const icon = getPrayerIcon(campaignIcon(whom));
   const blessed = whom === "departed" ? family : consent !== null;
   const kept = circles.find((c) => c.id === circleId) ?? null;
+  // A place. The countries stand with the one the device's language points to
+  // first; that is the list's order and nothing more: nothing is asked of the
+  // device, nothing is located, and only what the creator chooses is sent.
+  const countries = useMemo(
+    () => placeCountries(locale, deviceRegion(typeof navigator === "undefined" ? [] : navigator.languages?.length ? navigator.languages : navigator.language ? [navigator.language] : [])),
+    [locale],
+  );
+  // A campaign a parent or guardian makes for a child keeps the country alone (the notes, 3.6).
+  const forChild = whom === "living" && consent === "guardian";
+  // What is sent is what the row says: a town that is not letters is said so in the sheet and left out.
+  const place = country ? { country, town: forChild ? null : cleanTown(town) } : null;
+  const placeLine = place ? placeText({ place_country: place.country, place_name: place.town }, locale) : t("common.optional");
   const ready =
     writer !== null &&
     writer !== "out" &&
@@ -196,6 +221,8 @@ export function StartCampaign() {
         return t("campaigns.err.running");
       case "campaigns_today":
         return t("campaigns.err.today");
+      case "bad_place":
+        return t("campaigns.err.place");
       case "bad_circle":
         // The circle is no longer theirs to keep it to: back to everyone, and said.
         setCircleId(null);
@@ -225,6 +252,7 @@ export function StartCampaign() {
       termsAccepted: true,
       confirmFiltered,
       circleId: kept ? kept.id : null,
+      place,
     });
     setBusy(false);
     setAskFiltered(false);
@@ -427,6 +455,19 @@ export function StartCampaign() {
                       oneLine
                     />
                   ) : null}
+                  {/* A place, if its creator wishes: off to begin with. */}
+                  <WayRow
+                    lead={
+                      <WayPlate>
+                        <Compass size={18} />
+                      </WayPlate>
+                    }
+                    label={t("campaigns.new.place")}
+                    desc={placeLine}
+                    onClick={() => setOpened("place")}
+                    opensSheet
+                    oneLine
+                  />
                 </div>
 
                 {/* The blessing: one line to tick, worded for who it is for. */}
@@ -638,6 +679,61 @@ export function StartCampaign() {
             labelledBy="campaign-audience-label"
           />
           <p className="mt-4 font-sans text-caption leading-relaxed text-paper/70">{t("campaigns.audience.note")}</p>
+        </div>
+      </Sheet>
+
+      {/* A place: a country from the app's own list, and a town or region as
+          typed. Never read from the device, never an address (the notes, 2.9). */}
+      <Sheet open={opened === "place"} onClose={() => setOpened(null)} title={t("campaigns.new.place")} desktop openFull keyboard layer="over-player">
+        <div className="pb-1 pt-1" data-campaign-place="">
+          <p className="font-sans text-detail font-semibold text-paper/80">{t("shop.country")}</p>
+          <div className="mt-2">
+            <SearchSelect
+              value={country ?? NO_PLACE}
+              onChange={(v) => setCountry(v === NO_PLACE ? null : v)}
+              options={[{ value: NO_PLACE, label: t("profile.none") }, ...countries.map((c) => ({ value: c.code, label: c.name, terms: c.terms }))]}
+              placeholder={t("profile.none")}
+              ariaLabel={t("shop.country")}
+              searchPlaceholder={t("onboard.clergy.countrySearch")}
+              emptyLabel={t("bible.noMatches")}
+            />
+          </div>
+          {country && !forChild ? (
+            <>
+              <label htmlFor="campaign-town" className="mt-5 block font-sans text-detail font-semibold text-paper/80">
+                {t("campaigns.new.placeTown")} <span className="font-normal text-paper/70">({t("common.optional")})</span>
+              </label>
+              <input
+                dir="auto"
+                id="campaign-town"
+                type="text"
+                value={town}
+                onChange={(e) => setTown(e.target.value)}
+                maxLength={PLACE_TOWN_MAX}
+                autoComplete="off"
+                autoCapitalize="words"
+                enterKeyHint="done"
+                aria-invalid={townFits(town) ? undefined : true}
+                aria-describedby="campaign-place-note"
+                className="mt-2 block min-h-11 w-full rounded-[12px] bg-paper/[0.06] px-3 py-2.5 font-sans text-[16px] leading-[24px] text-paper focus:outline-none"
+              />
+              {townFits(town) ? null : (
+                <p role="alert" data-campaign-place-error="" className="mt-3 font-sans text-detail text-crimson-soft">
+                  {t("campaigns.err.place")}
+                </p>
+              )}
+            </>
+          ) : null}
+          <p id="campaign-place-note" className="mt-4 font-sans text-caption leading-relaxed text-paper/70">
+            {country && forChild ? t("campaigns.new.placeChild") : t("campaigns.new.placeNote")}
+          </p>
+          <button
+            type="button"
+            onClick={() => setOpened(null)}
+            className="mt-5 inline-flex min-h-11 items-center rounded-pill bg-paper px-5 font-sans text-detail font-semibold text-night transition-colors hover:bg-paper/90"
+          >
+            {t("common.done")}
+          </button>
         </div>
       </Sheet>
 

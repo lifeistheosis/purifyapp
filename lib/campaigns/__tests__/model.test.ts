@@ -355,7 +355,7 @@ describe("what a reader is handed", () => {
     expect(Object.keys(shown).sort()).toEqual(
       [
         "created_at", "creator_handle", "creator_name", "days", "details", "ends_at", "ends_on", "for_whom", "id",
-        "intention", "prayer_id", "prayer_rule", "starts_on", "status", "subject_name", "title",
+        "intention", "place_country", "place_name", "prayer_id", "prayer_rule", "starts_on", "status", "subject_name", "title",
       ].sort(),
     );
     const text = JSON.stringify(shown);

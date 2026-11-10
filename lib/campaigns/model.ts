@@ -181,6 +181,51 @@ export function isOver(c: { status: string; ends_at?: string | null }, now: numb
   return c.status === "active" && !isRunning(c, now);
 }
 
+// ── A place ─────────────────────────────────────────────────────────────────
+//
+// His words: "Allow them to add a location." The notes, 2.9: a country from
+// the list the app already has, and a town or region the creator types.
+// Optional, and off to begin with. Typed, never read from the device or the
+// network: the app asks for no location anywhere, and this does not change
+// that. No coordinates and no map. A campaign a parent or guardian makes for
+// a child keeps the country alone (the notes, 3.6).
+
+/** How long a town or region may be. The table holds it to sixty. */
+export const PLACE_TOWN_MAX = 60;
+
+/**
+ * A town or region as typed: letters of any script, with spaces, hyphens,
+ * apostrophes and full stops between them. No digit at all, so no street
+ * number, no postcode and no telephone; two letters at least.
+ */
+const TOWN = /^[\p{L}\p{M}][\p{L}\p{M}' .\u2019-]*[\p{L}\p{M}.]$/u;
+
+/** The town as it is kept: spaces gathered, ends trimmed. Null for none, and for anything that is not a town by the pattern. */
+export function cleanTown(v: unknown): string | null {
+  if (typeof v !== "string") return null;
+  const town = v.replace(/\s+/g, " ").trim();
+  // The pattern itself asks for two letters at least: one to begin and one to end.
+  if (town.length > PLACE_TOWN_MAX || !TOWN.test(town)) return null;
+  return town;
+}
+
+/** Whether what was typed is a town, or nothing at all. What the start screen asks before Create. */
+export function townFits(v: string): boolean {
+  return v.trim() === "" || cleanTown(v) !== null;
+}
+
+/** A campaign's place: a country of the app's list, and a town when one was given. */
+export type CampaignPlace = { country: string; town: string | null };
+
+/** A country's code as the table holds one. Which codes are countries is asked when a campaign is started (lib/onboarding/clergy.ts, isCountry). */
+const COUNTRY_CODE = /^[A-Z]{2}$/;
+
+/** The two fields of a row as a reader receives them: both empty unless the country is a code, and the town only with a country. */
+function placeOf(row: Record<string, unknown>): { place_country: string | null; place_name: string | null } {
+  const country = typeof row.place_country === "string" && COUNTRY_CODE.test(row.place_country) ? row.place_country : null;
+  return { place_country: country, place_name: country ? cleanTown(row.place_name) : null };
+}
+
 // ── The prayer it places ────────────────────────────────────────────────────
 
 /** A prayer of the prayer book, by its rule's id and its own (lib/prayers/rules.ts). */
@@ -329,6 +374,9 @@ export type PublicCampaign = {
   ends_at: string | null;
   prayer_rule: string | null;
   prayer_id: string | null;
+  /** Where it is, if its creator said: a country's code, and a town or region as typed. */
+  place_country: string | null;
+  place_name: string | null;
   status: Exclude<CampaignStatus, "removed">;
   /** The creator as Community shows them, kept on the row so no read carries their id. */
   creator_name: string | null;
@@ -357,7 +405,7 @@ export type PublicCampaign = {
 
 /** Every column a read may name. No creator_id, no praying_count, no prayer_count. */
 export const CAMPAIGN_COLS =
-  "id, title, intention, for_whom, subject_name, details, note, days, starts_on, ends_on, ends_at, prayer_rule, prayer_id, status, creator_name, creator_handle, created_at";
+  "id, title, intention, for_whom, subject_name, details, note, days, starts_on, ends_on, ends_at, prayer_rule, prayer_id, place_country, place_name, status, creator_name, creator_handle, created_at";
 
 const text = (v: unknown): string | null => (typeof v === "string" && v.trim() ? v : null);
 
@@ -385,6 +433,9 @@ export function publicCampaign(row: Record<string, unknown>): PublicCampaign {
     // Only a prayer the book is known to hold: a reference nothing can read is no prayer.
     prayer_rule: prayer?.rule ?? null,
     prayer_id: prayer?.id ?? null,
+    // A place only as the list and the pattern know one: a country of the
+    // app's own list, and a town that is letters.
+    ...placeOf(row),
     status,
     creator_name: text(row.creator_name),
     creator_handle: text(row.creator_handle),
@@ -603,6 +654,9 @@ export type WaitingCampaign = {
   created_at: string;
   /** Kept to one circle: its name, so the moderator knows who will see it. Null for one everyone in Community will see. */
   circle?: string | null;
+  /** Its place, if its creator gave one: the moderator reads it with the rest, since every reader will. */
+  place_country?: string | null;
+  place_name?: string | null;
 };
 
 /** A campaign's open report as the queue shows it: the reason ticked, the words, and the campaign. Never who reported. */

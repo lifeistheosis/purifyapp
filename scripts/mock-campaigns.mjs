@@ -106,6 +106,8 @@ function campaign(id, over) {
     creator_name: "Anna",
     creator_handle: "anna",
     created_at: new Date().toISOString(),
+    place_country: null,
+    place_name: null,
     mine: false,
     ...over,
   };
@@ -132,7 +134,8 @@ const CAMPAIGNS = {
     creator_name: "John",
     creator_handle: "john",
   }),
-  [PETER]: campaign(PETER, { title: "For Peter's exams", intention: "study", subject_name: "Peter", details: "His finals begin on Monday.", days: 12, creator_name: "Helen", creator_handle: "helen" }),
+  // Peter's carries a place: a town its creator typed and a country from the app's list.
+  [PETER]: campaign(PETER, { title: "For Peter's exams", intention: "study", subject_name: "Peter", details: "His finals begin on Monday.", days: 12, creator_name: "Helen", creator_handle: "helen", place_country: "GR", place_name: "Thessaloniki" }),
   // Thanksgiving starts with Psalm 102, read from the Bible's own file.
   [SOPHIA]: campaign(SOPHIA, { title: "Thanksgiving for Sophia", intention: "thanksgiving", subject_name: "Sophia", details: "She came home safely.", days: 1, prayer_rule: "psalter", prayer_id: "psalm-102", creator_name: "Mark", creator_handle: "mark" }),
   [HELD]: campaign(HELD, {
@@ -236,6 +239,9 @@ const MOD_QUEUE = {
         creator_handle: "anna",
         held_reason: "new",
         created_at: new Date(Date.now() - 40 * 60_000).toISOString(),
+        // Its place, which the moderator reads with the rest.
+        place_country: "RS",
+        place_name: "Novi Sad",
       },
     ],
     reports: [
@@ -495,6 +501,21 @@ async function answer(ctx, opts = {}) {
 
 const results = [];
 const settle = (page, ms = 2200) => page.waitForTimeout(ms);
+
+/** A line as a reader sees it: without the two marks that set a typed town apart from the line's direction. */
+const plain = (text) => text.replace(/[\u2068\u2069]/g, "");
+
+/** In the Place sheet: open the list of countries, search it, and choose one by its name. */
+async function choosePlace(page, typed, name) {
+  await page.locator("[data-campaign-place] [role=combobox]").click();
+  const list = page.locator("[role=listbox]");
+  await list.waitFor({ timeout: 8000 });
+  await page.locator('input[aria-controls]').last().fill(typed);
+  await settle(page, 300);
+  await list.locator("[role=option]", { hasText: name }).first().click();
+  await list.waitFor({ state: "detached", timeout: 8000 });
+  await settle(page, 300);
+}
 
 /** The whole page in one picture: the viewport grown to the page's own height. */
 async function whole(page, min = 844) {
@@ -921,6 +942,31 @@ await shot("33-comment-safety", "a comment whose words may mean danger: what its
   },
 });
 
+// A place (1.9; the notes, 2.9): a country from the app's list and a town or
+// region typed, optional and off to begin with.
+
+// 34 Starting one: the Place sheet, with a country chosen and a town typed.
+await shot("34-place", "starting one: a place, a country chosen and a town typed", "/campaigns/new", "[role=dialog]:has([data-campaign-place])", {
+  prepare: async (page) => {
+    await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+    await page.locator("[data-campaign-new] .set-panel button", { hasText: "Place" }).click();
+    await page.waitForSelector("[data-campaign-place] [role=combobox]", { timeout: 8000 });
+    await settle(page, 500);
+    await choosePlace(page, "gree", "Greece");
+    await page.fill("#campaign-town", "Thessaloniki");
+    await page.evaluate(() => document.activeElement?.blur());
+    await settle(page, 500);
+  },
+});
+
+// 35 A campaign's page with its place, beside who started it.
+await shot("35-campaign-place", "a campaign's page with its place beside who started it", `/campaigns/detail?id=${PETER}`, "[data-campaign-page]", {
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaign-page] [data-campaign-place]", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
 // 28 Pray together for a reader with a campaign in one of their circles: "In your circles", above the newly asked.
 await shot("28-in-your-circles", "Pray together: a campaign in one of the reader's circles", "/community#pray", "[role=tabpanel]", {
   circles: true,
@@ -1188,6 +1234,142 @@ if (WALK) {
     const [sent] = sentTo("POST", /^\/api\/community\/moderation$/);
     expectThat(sent && sent.body.action === "remove_hold" && sent.body.id === MOD_HOLDS[1].id && sent.body.reason_code === "private", `sent ${JSON.stringify(sent?.body)}`);
   }, { holds: MOD_HOLDS });
+
+  // A place (1.9; the notes, 2.9, 3.6, 4.6).
+  /** The start screen, filled far enough to send: a title, a name, a kind, who it is for by the line given, and the two ticks. */
+  const fillStart = async (page, who = "Someone else") => {
+    await page.fill("#campaign-title-field", "For Peter's exams");
+    await page.fill("#campaign-name-field", "Peter");
+    await page.locator("[data-campaign-new] .set-panel button").nth(0).click();
+    await page.locator("[role=radio]", { hasText: "Studies" }).click();
+    await settle(page, 700);
+    await page.locator("[role=radio]", { hasText: who }).click();
+    const boxes = page.locator("[data-campaign-new] [role=checkbox]");
+    await boxes.nth(0).click();
+    await boxes.nth(1).click();
+  };
+  const placeRow = (page) => page.locator("[data-campaign-new] .set-panel button", { hasText: "Place" });
+  const openPlace = async (page) => {
+    await placeRow(page).click();
+    await page.waitForSelector("[data-campaign-place] [role=combobox]", { timeout: 8000 });
+    await settle(page, 500);
+  };
+  const donePlace = async (page) => {
+    await page.locator("[data-campaign-place] button", { hasText: "Done" }).click();
+    await page.waitForSelector("[data-campaign-place]", { state: "detached", timeout: 8000 });
+  };
+
+  await walk("a place: off to begin with; a country from the list and a town typed are sent as the row says them", "/campaigns/new", async (page) => {
+    await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+    await fillStart(page);
+    expectThat(plain(await placeRow(page).innerText()).includes("Optional"), `the row reads "${(await placeRow(page).innerText()).replace(/\n/g, " / ")}" before a place is given`);
+    await openPlace(page);
+    const sheet = page.locator("[data-campaign-place]");
+    // No country yet: no town is asked for, and the sheet says what a place is and is never.
+    expectThat((await sheet.locator("[role=combobox]").innerText()).includes("None"), "a country is chosen before the creator chose one");
+    expectThat((await page.locator("#campaign-town").count()) === 0, "a town is asked for before a country");
+    expectThat((await sheet.innerText()).includes("never an address"), "the sheet does not say a place is never an address");
+    // The list is searched by a name in English or by the short name readers type.
+    await sheet.locator("[role=combobox]").click();
+    const list = page.locator("[role=listbox]");
+    await list.waitFor({ timeout: 8000 });
+    const search = page.locator("input[aria-controls]").last();
+    await search.fill("usa");
+    await settle(page, 300);
+    expectThat((await list.locator("[role=option]").allInnerTexts()).map((x) => x.trim()).join("|") === "United States", `"usa" finds ${(await list.locator("[role=option]").allInnerTexts()).join(" | ")}`);
+    await search.fill("gree");
+    await settle(page, 300);
+    await list.locator("[role=option]", { hasText: "Greece" }).first().click();
+    await list.waitFor({ state: "detached", timeout: 8000 });
+    // The sheet is still there under the list, with the country chosen and the town now asked for.
+    expectThat((await sheet.locator("[role=combobox]").innerText()).includes("Greece"), "the country chosen is not shown");
+    await page.fill("#campaign-town", "Thessaloniki");
+    expectThat((await page.locator("[data-campaign-place-error]").count()) === 0, "a town of letters is called something else");
+    await donePlace(page);
+    expectThat(plain(await placeRow(page).innerText()).includes("Thessaloniki, Greece"), `the row reads "${plain(await placeRow(page).innerText()).replace(/\n/g, " / ")}"`);
+    await page.locator("[data-campaign-new] .compose-foot button").click();
+    await settle(page, 1500);
+    const [sent] = sentTo("POST", /^\/api\/campaigns$/);
+    expectThat(sent && sent.body.place?.country === "GR" && sent.body.place?.town === "Thessaloniki", `the start sent ${JSON.stringify(sent?.body?.place)} for its place`);
+  });
+
+  await walk("a place: none is sent when none is given, and None takes a country away again", "/campaigns/new", async (page) => {
+    await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+    await fillStart(page);
+    await openPlace(page);
+    await choosePlace(page, "serb", "Serbia");
+    await choosePlace(page, "none", "None");
+    expectThat((await page.locator("#campaign-town").count()) === 0, "a town is asked for with no country");
+    await donePlace(page);
+    expectThat(plain(await placeRow(page).innerText()).includes("Optional"), "the row still names a place");
+    await page.locator("[data-campaign-new] .compose-foot button").click();
+    await settle(page, 1500);
+    const [sent] = sentTo("POST", /^\/api\/campaigns$/);
+    expectThat(sent && sent.body.place === null, `the start sent ${JSON.stringify(sent?.body?.place)} with no place given`);
+  });
+
+  await walk("a place: a town that is not letters is said so in the sheet, and is left out of what is sent", "/campaigns/new", async (page) => {
+    await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+    await fillStart(page);
+    await openPlace(page);
+    await choosePlace(page, "gree", "Greece");
+    await page.fill("#campaign-town", "12 Olive Tree Street");
+    const said = page.locator("[data-campaign-place-error]");
+    await said.waitFor({ timeout: 8000 });
+    expectThat((await said.innerText()).includes("letters only"), `the sheet says "${await said.innerText()}"`);
+    expectThat((await page.locator("#campaign-town").getAttribute("aria-invalid")) === "true", "the field is not marked as wrong");
+    await donePlace(page);
+    // The row says what will be sent: the country alone.
+    const row = plain(await placeRow(page).innerText());
+    expectThat(row.includes("Greece") && !row.includes("Olive"), `the row reads "${row.replace(/\n/g, " / ")}"`);
+    await page.locator("[data-campaign-new] .compose-foot button").click();
+    await settle(page, 1500);
+    const [sent] = sentTo("POST", /^\/api\/campaigns$/);
+    expectThat(sent && sent.body.place?.country === "GR" && sent.body.place?.town === null, `the start sent ${JSON.stringify(sent?.body?.place)}`);
+    expectThat(!JSON.stringify(sent?.body ?? {}).includes("Olive"), "an address left the device");
+  });
+
+  await walk("a place: for a child the country alone; no town is asked for, and one typed before is not sent", "/campaigns/new", async (page) => {
+    await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+    // A town typed while it was for someone else.
+    await fillStart(page);
+    await openPlace(page);
+    await choosePlace(page, "gree", "Greece");
+    await page.fill("#campaign-town", "Thessaloniki");
+    await donePlace(page);
+    expectThat(plain(await placeRow(page).innerText()).includes("Thessaloniki, Greece"), "the town was not on the row before");
+    // Then it is said to be for a child in the creator's care.
+    await page.locator("[role=radio]", { hasText: "A child in my care" }).click();
+    await settle(page, 400);
+    const row = plain(await placeRow(page).innerText());
+    expectThat(row.includes("Greece") && !row.includes("Thessaloniki"), `for a child the row reads "${row.replace(/\n/g, " / ")}"`);
+    await openPlace(page);
+    expectThat((await page.locator("#campaign-town").count()) === 0, "a town is asked for a child's campaign");
+    expectThat((await page.locator("[data-campaign-place]").innerText()).includes("A campaign for a child shows the country alone."), "the sheet does not say why no town is asked");
+    await donePlace(page);
+    await page.locator("[data-campaign-new] .compose-foot button").click();
+    await settle(page, 1500);
+    const [sent] = sentTo("POST", /^\/api\/campaigns$/);
+    expectThat(sent && sent.body.consent === "guardian" && sent.body.place?.country === "GR" && sent.body.place?.town === null, `the start sent ${JSON.stringify(sent?.body?.place)} for a child`);
+    expectThat(!JSON.stringify(sent?.body ?? {}).includes("Thessaloniki"), "a child's town left the device");
+  });
+
+  await walk("a place: said beside who started it on the campaign's page, and a campaign with none says nothing", `/campaigns/detail?id=${PETER}`, async (page) => {
+    const place = page.locator("[data-campaign-page] [data-campaign-place]");
+    await place.waitFor({ timeout: 15000 });
+    expectThat(plain(await place.innerText()) === "Thessaloniki, Greece", `the page says "${plain(await place.innerText())}"`);
+    expectThat((await place.count()) === 1, `the place is said ${await place.count()} times`);
+    await go(page, `/campaigns/detail?id=${MARIA}`);
+    await page.waitForSelector("[data-campaign-page] h1", { timeout: 15000 });
+    await settle(page, 900);
+    expectThat((await page.locator("[data-campaign-page] [data-campaign-place]").count()) === 0, "a campaign with no place names one");
+  });
+
+  await walk("a place: the moderators read it with the rest, before anyone else does", "/community/moderate", async (page) => {
+    await page.waitForSelector("[data-mod-campaign]", { timeout: 15000 });
+    const place = page.locator("[data-mod-campaign] [data-mod-campaign-place]");
+    expectThat((await place.count()) === 1 && plain(await place.innerText()) === "Place: Novi Sad, Serbia", `the moderators' list says "${(await place.count()) ? plain(await place.innerText()) : "nothing"}"`);
+  });
 
   await walk("Pray together: campaigns alone, behind its own door, and nothing is asked of the prayer wall", "/community#pray", async (page) => {
     await page.waitForSelector("[data-campaigns]", { timeout: 15000 });

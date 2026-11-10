@@ -81,6 +81,7 @@ async function handlePOST(req: Request) {
       consent: p.consent,
       confirmFiltered: p.confirmFiltered,
       circleId: p.circleId ?? null,
+      place: p.place ? { country: p.place.country, town: p.place.town ?? null } : null,
     },
   );
   if (!started.ok) {

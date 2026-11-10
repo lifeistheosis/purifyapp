@@ -370,7 +370,8 @@ describe("Prayed by many, switched on", () => {
     // Each is the board's own row and nothing more.
     const one = (await (await getOne(new Request(`${SITE}/api/campaigns/${most}`), params(most))).json()) as { campaign: Record<string, unknown> };
     expect(Object.keys(body.campaigns[0]).sort()).toEqual(Object.keys(one.campaign).sort());
-    expect(text).not.toMatch(/count|rank|tally|readers|joined|"n"/i);
+    // "country" is the one word here that holds "count" and is none: a campaign's place (place_country).
+    expect(text).not.toMatch(/count(?!ry)|rank|tally|readers|joined|"n"/i);
     expect(text).not.toContain(ANNA);
     // The only number anywhere in it is a campaign's own length in days.
     const numbers: number[] = [];

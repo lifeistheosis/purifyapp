@@ -63,6 +63,17 @@ describe("filterItems", () => {
     expect(filterItems(items, "beanie").map((i) => i.label)).toEqual(["🧢 Apparel"]);
     expect(filterItems(items, "  ")).toHaveLength(items.length);
   });
+
+  it("finds a row by the words it is also found by, which it never shows", () => {
+    const countries = [
+      { label: "Ηνωμένες Πολιτείες", terms: "United States US USA" },
+      { label: "Ελλάδα", terms: "Greece GR" },
+    ];
+    expect(filterItems(countries, "usa").map((i) => i.label)).toEqual(["Ηνωμένες Πολιτείες"]);
+    expect(filterItems(countries, "greece").map((i) => i.label)).toEqual(["Ελλάδα"]);
+    expect(filterItems(countries, "ελλ").map((i) => i.label)).toEqual(["Ελλάδα"]);
+    expect(filterItems(countries, "france")).toEqual([]);
+  });
 });
 
 describe("placeMenu", () => {

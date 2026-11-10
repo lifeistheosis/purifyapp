@@ -7,6 +7,7 @@
 // argument, which holds).
 
 import { dateLocale } from "@/lib/i18n/deviceDates";
+import { COUNTRIES, countryNamer } from "@/lib/onboarding/clergy";
 
 import { KIND_LABEL, LENGTHS, LENGTH_LABEL, campaignPrayer, dayNoon, isDay, type CampaignPrayer, type ForWhom, type PublicCampaign } from "./model";
 
@@ -96,4 +97,42 @@ export function prayerLabel(c: { prayer_rule?: string | null; prayer_id?: string
  */
 export function campaignIcon(forWhom: ForWhom): string {
   return forWhom === "departed" ? "anastasis" : "christ-pantocrator";
+}
+
+// ── A place ─────────────────────────────────────────────────────────────────
+
+/** The comma between a town and its country, where a language writes its own. */
+const PLACE_COMMA: Readonly<Record<string, string>> = { ar: "\u060C ", ur: "\u060C " };
+
+/**
+ * A campaign's place as a reader's language says it: "Thessaloniki, Greece",
+ * or the country alone. Nothing for a campaign with no place. The town is its
+ * creator's own typing, so it is set apart from the line's direction (the
+ * two isolates), and the country is named by the device.
+ */
+export function placeText(c: { place_country?: string | null; place_name?: string | null }, locale: string): string {
+  if (!c.place_country) return "";
+  const country = countryNamer(locale)(c.place_country);
+  if (!c.place_name) return country;
+  return `\u2068${c.place_name}\u2069${PLACE_COMMA[locale.split("-")[0]] ?? ", "}${country}`;
+}
+
+/** Short names readers type for a country that no language's name holds. */
+const PLACE_ALIASES: Readonly<Record<string, string>> = { US: "USA", GB: "UK" };
+
+/**
+ * The countries a creator chooses a place from: the device's own first, then
+ * every country by its name in the reader's language. Each is also found by
+ * its name in English and by its code, so "Greece", "usa" and "uk" find
+ * theirs in any language.
+ */
+export function placeCountries(locale: string, region: string | null): { code: string; name: string; terms: string }[] {
+  const local = countryNamer(locale);
+  const english = countryNamer("en");
+  const collator = new Intl.Collator(locale);
+  const all = COUNTRIES.map((code) => ({ code, name: local(code), terms: [english(code), code, PLACE_ALIASES[code] ?? ""].join(" ").trim() })).sort((a, b) =>
+    collator.compare(a.name, b.name),
+  );
+  const own = region ? all.find((c) => c.code === region) : undefined;
+  return own ? [own, ...all.filter((c) => c !== own)] : all;
 }

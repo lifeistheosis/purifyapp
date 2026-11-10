@@ -9,7 +9,8 @@
  * the bottom of a phone.
  */
 
-export type ListboxItem = { label: string; hint?: string; disabled?: boolean };
+/** `terms` are words a row is also found by and never shows: a country's code, its name in English. */
+export type ListboxItem = { label: string; hint?: string; terms?: string; disabled?: boolean };
 
 /**
  * The next enabled index from `from`, walking `step` rows at a time.
@@ -76,11 +77,11 @@ export function typeahead(items: readonly ListboxItem[], buffer: string, from: n
   return -1;
 }
 
-/** The rows a filter query keeps, matched on the label and the hint. */
+/** The rows a filter query keeps, matched on the label, the hint and the words a row is also found by. */
 export function filterItems<T extends ListboxItem>(items: readonly T[], query: string): T[] {
   const q = fold(query.trim());
   if (!q) return [...items];
-  return items.filter((it) => fold(`${it.label} ${it.hint ?? ""}`).includes(q));
+  return items.filter((it) => fold(`${it.label} ${it.hint ?? ""} ${it.terms ?? ""}`).includes(q));
 }
 
 export type Placement = {

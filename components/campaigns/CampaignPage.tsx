@@ -37,7 +37,7 @@ import { campaignUpkeep } from "@/lib/campaigns/useCampaignUpkeep";
 import { useCampaignPrayer } from "@/lib/campaigns/useCampaignPrayer";
 import { useCampaignPart } from "@/lib/campaigns/useCampaignsOpen";
 import { useCarried } from "@/lib/campaigns/useCarried";
-import { campaignIcon, dayText, forWhomLabel, lengthTo, prayerName, setIn, standingLabel } from "@/lib/campaigns/words";
+import { campaignIcon, dayText, forWhomLabel, lengthTo, placeText, prayerName, setIn, standingLabel } from "@/lib/campaigns/words";
 import { cn } from "@/lib/cn";
 import { blockCommunityAuthor } from "@/lib/community/client";
 import { DEPARTED_PRAYER, departedPrayer } from "@/lib/prayers/commemoration";
@@ -175,6 +175,7 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
   const length = lengthTo(campaign, locale, t, tn);
   const started = dayText(campaign.starts_on ?? campaign.created_at.slice(0, 10), locale);
   const creator = campaign.creator_name;
+  const place = placeText(campaign, locale);
 
   // The ••• at the top is the bar's, and asks (lib/campaigns/pageMenu.ts).
   useEffect(() => {
@@ -406,8 +407,18 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
                   <p className="min-w-0 font-sans text-detail leading-snug text-paper/70">
                     <span className="block truncate text-[15px] font-semibold text-paper">{creator}</span>
                     {started ? <span className="block truncate">{t("campaigns.startedOn", { date: started })}</span> : null}
+                    {/* Where it is, if its creator said: a town and a country as typed and chosen, never read from a device. */}
+                    {place ? (
+                      <span data-campaign-place="" className="block truncate">
+                        {place}
+                      </span>
+                    ) : null}
                   </p>
                 </div>
+              ) : place ? (
+                <p data-campaign-place="" className="saint-head-in mt-4 truncate font-sans text-detail leading-snug text-paper/70" style={{ "--i": 2 } as CSSProperties}>
+                  {place}
+                </p>
               ) : null}
               {/* Kept to one circle: said under its creator, to everyone who can open it. */}
               {campaign.circle ? (

@@ -402,6 +402,75 @@ describe("starting a campaign", () => {
     expect(campaigns()).toEqual([]);
   });
 
+  it("keeps a place its creator gives: a country of the app's list, and a town or region as typed", async () => {
+    const res = await start({ place: { country: "GR", town: "  Thessaloniki " } });
+    expect(res.status).toBe(200);
+    const id = ((await res.json()) as { id: string }).id;
+    expect(byId(id)).toMatchObject({ place_country: "GR", place_name: "Thessaloniki" });
+    // Its creator reads it back as it will be shown.
+    const shown = (await ((await getOne(new Request(`${SITE}/api/campaigns/${id}`), params(id))) as Response).json()) as { campaign: { place_country: string; place_name: string } };
+    expect(shown.campaign).toMatchObject({ place_country: "GR", place_name: "Thessaloniki" });
+    // A country alone is a place too; and none is asked for, so none is kept.
+    campaigns().length = 0;
+    const alone = byId(((await (await start({ place: { country: "RS" } })).json()) as { id: string }).id);
+    expect([alone.place_country, alone.place_name]).toEqual(["RS", null]);
+    campaigns().length = 0;
+    const none = byId(((await (await start()).json()) as { id: string }).id);
+    expect("place_country" in none ? none.place_country : null).toBeNull();
+  });
+
+  it("takes no place that is not a country of the list, and no town that is not letters: never an address, never trimmed into one", async () => {
+    for (const place of [
+      { country: "ZZ", town: "Athens" },
+      { country: "GR", town: "12 Olive Tree Street" },
+      { country: "GR", town: "Athens 10558" },
+      { country: "GR", town: "+30 210 555 0100" },
+      { country: "GR", town: "a@b" },
+      { country: "GR", town: "x" },
+    ]) {
+      const res = await start({ place });
+      expect(res.status, JSON.stringify(place)).toBe(400);
+      expect(((await res.json()) as { code: string }).code, JSON.stringify(place)).toBe("bad_place");
+    }
+    // What is not a code at all, or is too long, never reaches the question.
+    for (const place of [{ country: "Greece" }, { country: "gr" }, { country: "GR", town: "a".repeat(61) }, { town: "Athens" }]) {
+      const res = await start({ place });
+      expect(res.status, JSON.stringify(place)).toBe(400);
+      // Refused as no request at all, before the place is asked about.
+      expect(((await res.json()) as { code?: string }).code, JSON.stringify(place)).toBeUndefined();
+    }
+    expect(campaigns()).toEqual([]);
+  });
+
+  it("reads a town as it reads the rest: no link in it, and a word the filter masks leaves the town out", async () => {
+    const link = await start({ place: { country: "GR", town: "example.com" } });
+    expect(link.status).toBe(400);
+    expect(((await link.json()) as { code: string }).code).toBe("campaign_link");
+    expect(campaigns()).toEqual([]);
+
+    state.masked = new Map([["Damnton", "*******"]]);
+    const asked = await start({ place: { country: "GR", town: "Damnton" } });
+    expect(asked.status).toBe(409);
+    expect(((await asked.json()) as { code: string }).code).toBe("filtered");
+    expect(campaigns()).toEqual([]);
+    const sent = await start({ place: { country: "GR", town: "Damnton" }, confirmFiltered: true });
+    expect(sent.status).toBe(200);
+    const row = byId(((await sent.json()) as { id: string }).id);
+    expect([row.place_country, row.place_name]).toEqual(["GR", null]);
+    expect(row.held_reason).toBe("new; words (1 masked)");
+  });
+
+  it("keeps the country alone for a child: a campaign a parent or guardian makes carries no town", async () => {
+    const res = await start({ forWhom: "living", kind: "healing", consent: "guardian", title: "For little Maria", name: "Maria", place: { country: "GR", town: "Thessaloniki" } });
+    expect(res.status).toBe(200);
+    const row = byId(((await res.json()) as { id: string }).id);
+    expect([row.place_country, row.place_name]).toEqual(["GR", null]);
+    // The same place from anyone else keeps its town.
+    campaigns().length = 0;
+    const own = await start({ forWhom: "living", kind: "healing", consent: "self", title: "For my healing", name: "Anna", place: { country: "GR", town: "Thessaloniki" } });
+    expect(byId(((await own.json()) as { id: string }).id).place_name).toBe("Thessaloniki");
+  });
+
   it("refuses a first day that is not today anywhere", async () => {
     const res = await start({ startsOn: new Date(Date.now() + 5 * DAY).toISOString().slice(0, 10) });
     expect(res.status).toBe(400);

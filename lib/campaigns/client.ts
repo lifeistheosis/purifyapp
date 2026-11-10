@@ -121,6 +121,8 @@ export type StartInput = {
   confirmFiltered?: boolean;
   /** Kept to this circle of the reader's own, or null for everyone in Community. */
   circleId?: string | null;
+  /** Where it is, if its creator says: a country of the app's list, and a town or region as typed. */
+  place?: { country: string; town: string | null } | null;
 };
 
 export type StartResult =

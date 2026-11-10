@@ -434,6 +434,13 @@ export const campaignCreateSchema = z
       .object({ rule: z.string().regex(/^[a-z0-9-]{1,80}$/), id: z.string().regex(/^[a-z0-9-]{1,80}$/) })
       .optional()
       .nullable(),
+    // Where it is, if the creator says: a country's code and a town or
+    // region as typed. The route holds the country to the app's own list and
+    // the town to letters (lib/campaigns/model.ts, cleanTown).
+    place: z
+      .object({ country: z.string().regex(/^[A-Z]{2}$/), town: z.string().trim().max(60).optional().nullable() })
+      .optional()
+      .nullable(),
     consent: z.enum(["self", "blessing", "guardian", "family"]),
     blessing: z.literal(true),
     rules: z.literal(true),

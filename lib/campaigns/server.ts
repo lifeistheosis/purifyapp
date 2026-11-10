@@ -7,6 +7,7 @@ import { findLinks, spamSignals } from "@/lib/community/spam";
 import { NEW_ACCOUNT_MS } from "@/lib/community/trust";
 import { readTrust } from "@/lib/community/trustServer";
 import { censorName, censorPost } from "@/lib/moderation/server";
+import { isCountry } from "@/lib/onboarding/clergy";
 import { ensureCleanHandle } from "@/lib/profile/server";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { pageAllSettled } from "@/lib/supabase/pageAll";
@@ -19,6 +20,7 @@ import {
   RUNNING_CAP,
   STARTED_A_DAY,
   campaignPrayer,
+  cleanTown,
   endsAtOf,
   isJulyRow,
   isOver,
@@ -431,6 +433,8 @@ export type CampaignInput = {
   confirmFiltered?: boolean;
   /** Kept to this circle, one of the reader's own on a reading path; none for everyone in Community. */
   circleId?: string | null;
+  /** Where it is, if its creator says: a country of the app's list, and a town or region as typed. */
+  place?: { country: string; town?: string | null } | null;
 };
 
 export type Started =
@@ -478,7 +482,22 @@ export async function startCampaign(
   const prayer = input.forWhom === "living" && input.prayer ? campaignPrayer(input.prayer) : null;
   if (input.prayer && !prayer) return { ok: false, status: 400, error: "That prayer is not one a campaign can carry.", code: "bad_prayer" };
 
-  const texts = [input.title, input.name, input.words ?? null];
+  // A place, if one was given: a country of the app's own list, and a town
+  // that is letters. A town that is not (a number, a street, an address) is
+  // refused and never trimmed into something else. A campaign a parent or
+  // guardian makes for a child keeps the country alone (the notes, 3.6).
+  let place: { country: string; town: string | null } | null = null;
+  if (input.place) {
+    const typed = (input.place.town ?? "").trim();
+    const town = typed ? cleanTown(typed) : null;
+    if (!isCountry(input.place.country) || (typed && !town)) {
+      return { ok: false, status: 400, error: "That place could not be read. A town or region is letters only.", code: "bad_place" };
+    }
+    place = { country: input.place.country, town: input.consent === "guardian" ? null : town };
+  }
+
+  // The place is read with the rest: no link in it, and what the filters see in it counts.
+  const texts = [input.title, input.name, input.words ?? null, place?.town ?? null];
   if (findLinks(texts).length > 0) {
     return { ok: false, status: 400, error: "A prayer campaign can't carry a link.", code: "campaign_link" };
   }
@@ -519,11 +538,14 @@ export async function startCampaign(
 
   // The word filter (lib/moderation): a listed word is masked, and the
   // writer is asked first, as a post's writer is.
-  const [censored, censoredName] = await Promise.all([
+  const [censored, censoredName, censoredTown] = await Promise.all([
     censorPost(admin, { title: input.title, body: input.words ?? null }),
     censorPost(admin, { title: input.name }),
+    place?.town ? censorPost(admin, { title: place.town }) : Promise.resolve({ title: null, body: null, hits: 0 }),
   ]);
-  const hits = censored.hits + censoredName.hits;
+  // A town the word filter would mask is no town: it is left out, and the campaign is counted as filtered.
+  if (place && censoredTown.hits > 0) place = { country: place.country, town: null };
+  const hits = censored.hits + censoredName.hits + censoredTown.hits;
   if (hits > 0 && !input.confirmFiltered) {
     return {
       ok: false,
@@ -560,6 +582,7 @@ export async function startCampaign(
       ends_at: endsAtOf(endsOn),
       prayer_rule: prayer?.rule ?? null,
       prayer_id: prayer?.id ?? null,
+      ...(place ? { place_country: place.country, place_name: place.town } : {}),
       // Everyone in Community, or one circle of the writer's own. The
       // table holds the two columns to each other.
       audience: circleId ? "circle" : "public",
