@@ -155,6 +155,10 @@
       },
       {
         "category": "fixes",
+        "text": "The privacy page now names eight more things Purify counts, each as a total and never a person: a first prayer or chapter, the steps of a first week, where an account is made, reminders turned on or off, the steps of the Plus sheet, a device's first day, the two small cards on Today, and the first step opened. The Terms now say that two readers may at times be shown different versions of a screen."
+      },
+      {
+        "category": "fixes",
         "text": "What we keep, and for how long: a record of each Purify Plus purchase (the store, the plan, whether it is a free trial, the price, the dates, and why a membership ended), no longer linked to you once you delete your account; a short report when something fails, with nothing in it that names you, deleted after 14 days; a search that found nothing, without who you are, for 90 days; a report someone makes on a shared journal page, with their account, until the page stops being shared; and the anonymous visit data, kept with no date to delete it."
       },
       {

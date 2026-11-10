@@ -149,9 +149,11 @@ live with its feature (lib/admin/__tests__/privacyLines.test.ts holds them):
 5. How long we keep it (82b, his yes of 2026-11-10), the paragraph's opening:
    "We keep the anonymous visit data: the session and pageview rows, and the
    counts described above (the catechism, the welcome questions, the screens,
-   what Purify Plus is wanted for, and the Bibles downloaded, reading plans,
-   journal pages and app versions). Nothing deletes them on a schedule; we
-   keep them to see how Purify is used over time. Error reports are deleted
-   after 14 days, and searches that found nothing after 90." (It named only
-   the catechism, welcome-question and screen counts, and said nothing of
-   error reports or searches.)
+   what Purify Plus is wanted for, the Bibles downloaded, reading plans,
+   journal pages and app versions, and the others described above). Nothing
+   deletes them on a schedule; we keep them to see how Purify is used over
+   time. Error reports are deleted after 14 days, and searches that found
+   nothing after 90." (It named only the catechism, welcome-question and
+   screen counts, and said nothing of error reports or searches. "And the
+   others described above" was added the same day, at the arbiter's word, so
+   that the eight testing counts of 140, kept the same way, are covered.)

@@ -437,8 +437,9 @@ export default async function PrivacyPage() {
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  We keep the anonymous visit data: the session and pageview rows,
  and the counts described above (the catechism, the welcome
- questions, the screens, what Purify Plus is wanted for, and the
- Bibles downloaded, reading plans, journal pages and app versions).
+ questions, the screens, what Purify Plus is wanted for, the Bibles
+ downloaded, reading plans, journal pages and app versions, and the
+ others described above).
  Nothing deletes them on a schedule; we keep them to see how Purify
  is used over time. Error reports are deleted after 14 days, and
  searches that found nothing after 90. Sync data tied to your account
@@ -1231,8 +1232,9 @@ function PrivacyDe() {
  Die anonymen Besuchsdaten behalten wir: die Sitzungs- und
  Seitenaufruf-Zeilen und die oben beschriebenen Zählungen (zur
  Katechese, zu den Willkommensfragen, zu den Bildschirmen, dazu,
- wofür Purify Plus gewünscht wird, und zu den heruntergeladenen
- Bibeln, den Leseplänen, den Tagebuchseiten und den App-Versionen).
+ wofür Purify Plus gewünscht wird, zu den heruntergeladenen Bibeln,
+ den Leseplänen, den Tagebuchseiten, den App-Versionen und zu den
+ übrigen oben beschriebenen).
  Nichts löscht sie nach Plan; wir behalten sie, um zu sehen, wie
  Purify über die Zeit genutzt wird. Fehlerberichte werden nach 14
  Tagen gelöscht, erfolglose Suchen nach 90 Tagen. Abgleichsdaten, die an dein Konto

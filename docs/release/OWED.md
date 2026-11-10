@@ -15,9 +15,10 @@ is listed in the next /whats-new letter."
 ### By the 1.9 note, which says them all
 
 The owner's "all recs" (2026-11-10): the 1.9 letter names every privacy change
-of 1.9. The draft (`docs/plans/v1.9/patch-note-1.9.json`) carries them in five
+of 1.9. The draft (`docs/plans/v1.9/patch-note-1.9.json`) carries them in six
 lines under Bugs and Maintenance, beginning "What we count", "New in 1.9",
-"What we keep", "With Purify Plus" and "A saint's books in print". Each is on
+"The privacy page now names eight more", "What we keep", "With Purify Plus"
+and "A saint's books in print". Each is on
 the privacy page on the branch, in English and German, and goes live with the
 1.9 push. When the note is published, move these and the three below to
 "Said" with its words.
@@ -28,6 +29,11 @@ the privacy page on the branch, in English and German, and goes live with the
   pages written and shared, the app version in use (`5b0e5217`, admin A5).
 - **Tests of two versions of a screen:** which version a count came from,
   decided on the device (`3d4be178`, `lib/ab/`).
+- **Eight more counts, and the Terms on tests:** a first prayer or chapter,
+  a first week's steps, where an account is made, reminders on or off, the
+  Plus sheet's steps, a device's first day, the two cards on Today, the first
+  step opened; and the Terms say two readers may be shown different versions
+  of a screen (`88e8fc50`, item 140, the onboarding chat's line).
 - **The membership record:** the store, the plan, a trial or not, the price,
   the dates and why it ended, unlinked when the account is deleted
   (`419d3482`, admin A2; the line as of his yes to 68).

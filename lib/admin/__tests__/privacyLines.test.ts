@@ -21,8 +21,10 @@ const LINES = {
     "When you buy or renew a membership, we keep a record of it: which store, the plan, whether it is a free trial, the price and the dates, and, when a membership ends, why. Once you delete your account, it is no longer linked to you.",
   "Errors (A10, lib/errors/; 82a)":
     "When something fails, Purify keeps a short report: what failed and the error it gave, the page, the app version and the kind of device, never who you are. Anything in it that looks like an email address or a phone number is removed first, and each report is deleted after 14 days.",
+  // The bracket ends "and the others described above" since the testing
+  // counts (140, 88e8fc50) joined the page, kept the same way and not named.
   "How long we keep it (82b)":
-    "We keep the anonymous visit data: the session and pageview rows, and the counts described above (the catechism, the welcome questions, the screens, what Purify Plus is wanted for, and the Bibles downloaded, reading plans, journal pages and app versions). Nothing deletes them on a schedule; we keep them to see how Purify is used over time. Error reports are deleted after 14 days, and searches that found nothing after 90.",
+    "We keep the anonymous visit data: the session and pageview rows, and the counts described above (the catechism, the welcome questions, the screens, what Purify Plus is wanted for, the Bibles downloaded, reading plans, journal pages and app versions, and the others described above). Nothing deletes them on a schedule; we keep them to see how Purify is used over time. Error reports are deleted after 14 days, and searches that found nothing after 90.",
   "The 1.9 counts (A5, lib/analytics/featureCounting.ts)":
     "We count, without your name, which Bible translations are downloaded, which reading plans are begun and finished, how many journal pages are written and shared, and which version of the app is in use.",
   "Searches that found nothing (A11, lib/search/)":
@@ -41,7 +43,7 @@ const LINES_DE = {
   "Errors, in German":
     "Wenn etwas fehlschlägt, behält Purify einen kurzen Bericht: was fehlgeschlagen ist und welchen Fehler es gab, die Seite, die App-Version und die Art des Geräts, niemals, wer du bist. Alles darin, was wie eine E-Mail-Adresse oder eine Telefonnummer aussieht, wird vorher entfernt, und jeder Bericht wird nach 14 Tagen gelöscht.",
   "How long we keep it, in German":
-    "Die anonymen Besuchsdaten behalten wir: die Sitzungs- und Seitenaufruf-Zeilen und die oben beschriebenen Zählungen (zur Katechese, zu den Willkommensfragen, zu den Bildschirmen, dazu, wofür Purify Plus gewünscht wird, und zu den heruntergeladenen Bibeln, den Leseplänen, den Tagebuchseiten und den App-Versionen). Nichts löscht sie nach Plan; wir behalten sie, um zu sehen, wie Purify über die Zeit genutzt wird. Fehlerberichte werden nach 14 Tagen gelöscht, erfolglose Suchen nach 90 Tagen.",
+    "Die anonymen Besuchsdaten behalten wir: die Sitzungs- und Seitenaufruf-Zeilen und die oben beschriebenen Zählungen (zur Katechese, zu den Willkommensfragen, zu den Bildschirmen, dazu, wofür Purify Plus gewünscht wird, zu den heruntergeladenen Bibeln, den Leseplänen, den Tagebuchseiten, den App-Versionen und zu den übrigen oben beschriebenen). Nichts löscht sie nach Plan; wir behalten sie, um zu sehen, wie Purify über die Zeit genutzt wird. Fehlerberichte werden nach 14 Tagen gelöscht, erfolglose Suchen nach 90 Tagen.",
   "Searches that found nothing, in German":
     "Wenn eine Suche nichts findet, behalten wir 90 Tage lang die Wörter, nach denen du gesucht hast, niemals aber, wer du bist, damit wir ergänzen können, wonach Leser suchen. Alles, was wie eine E-Mail-Adresse oder eine Telefonnummer aussieht, wird entfernt, bevor es behalten wird.",
   "What is kept while reading travels with Plus, in German":
