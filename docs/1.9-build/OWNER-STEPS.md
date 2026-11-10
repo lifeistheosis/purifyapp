@@ -699,8 +699,8 @@ Send back: "R2b sent", or what went wrong.
 6. play.google.com/console, **Purify**, **Test and release**, **Production**.
 7. **Create new release**.
 8. Upload `app-release.aab`. Note the **version code** it shows.
-9. Release notes: purifyapp.net/admin, **Releases**, the **Google Play**
-   piece, **Copy**, and paste. The arbiter confirms that morning that it is
+9. Release notes: purifyapp.net/admin, **Releases**, the piece **What's new,
+   for Google Play**, **Copy**, and paste. The arbiter confirms that morning that it is
    final.
 10. **Next**, **Save**, then **Send for review** (or **Start rollout**).
 
@@ -717,7 +717,8 @@ Send back: "R4 sent, version code N".
    it, if needed).
 6. **Build**: **Add Build**, pick the new one.
 7. **What's New in This Version**: purifyapp.net/admin, **Releases**, the
-   **App Store** piece, **Copy**, and paste (it names no Purify Plus, since
+   piece **What's New in This Version, for the App Store**, **Copy**, and
+   paste (it names no Purify Plus, since
    every feature is free on iPhone; if 87 is done, the arbiter sends the
    version with Plus). On the same
    page: **Support URL** https://purifyapp.net/support, and **Copyright**
