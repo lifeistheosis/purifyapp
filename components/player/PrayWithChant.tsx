@@ -39,6 +39,7 @@ import { chantTitleKey } from "@/lib/chants/names";
 import { playChant } from "@/lib/chants/play";
 import type { ChantIndexRow } from "@/lib/chants/types";
 import { useWordsPrefs } from "@/lib/chants/wordsPrefs";
+import { useOverlayOpen } from "@/lib/ui/overlay";
 import { chantAskLater, setAskBeforePrayers, useAskBeforePrayers } from "@/lib/player/chantAsk";
 import { choiceId, loadChantIndex, underPrayerChoices } from "@/lib/player/chants";
 import { usePreview } from "@/lib/player/preview";
@@ -224,6 +225,10 @@ export function ChantPicker({ open, onClose }: { open: boolean; onClose: () => v
 /** The question at the foot of the screen. It follows the finger down. */
 export function AskCard({ onChoose, onDismiss }: { onChoose: () => void; onDismiss: () => void }) {
   const { t } = useTranslate();
+  // A sheet or a hold's pill over the page: the question steps aside, as the
+  // tab bar and the reader's pills do (lib/ui/overlay.ts). The hold's pill
+  // rose over it at the foot of a prayer page (build 89 note 7's walk).
+  const covered = useOverlayOpen();
   const [shown, setShown] = useState(false);
   const card = useRef<HTMLDivElement>(null);
   const drag = useRef<{ y: number; dy: number } | null>(null);
@@ -242,7 +247,13 @@ export function AskCard({ onChoose, onDismiss }: { onChoose: () => void; onDismi
   };
 
   return (
-    <div className="now-playing-lift pointer-events-none fixed inset-x-0 bottom-0 z-[55] px-3 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] md:pb-4">
+    <div
+      aria-hidden={covered || undefined}
+      className={cn(
+        "now-playing-lift pointer-events-none fixed inset-x-0 bottom-0 z-[55] px-3 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] motion-safe:transition-opacity motion-safe:duration-200 md:pb-4",
+        covered && "opacity-0",
+      )}
+    >
       <div
         ref={card}
         role="dialog"
@@ -269,7 +280,9 @@ export function AskCard({ onChoose, onDismiss }: { onChoose: () => void; onDismi
           move(0);
         }}
         className={cn(
-          "pointer-events-auto mx-auto flex max-w-md touch-none items-center gap-3 rounded-[18px] bg-night-soft p-3 shadow-[0_14px_34px_rgba(0,0,0,0.5)] ring-1 ring-inset ring-paper/10",
+          "mx-auto flex max-w-md touch-none items-center gap-3 rounded-[18px] bg-night-soft p-3 shadow-[0_14px_34px_rgba(0,0,0,0.5)] ring-1 ring-inset ring-paper/10",
+          // Faded, not unmounted, as the tab bar is; and no taps while it is.
+          covered ? "pointer-events-none" : "pointer-events-auto",
           "transition-[transform,translate,scale,opacity] duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] [:where([data-motion=reduce])_&]:transition-none",
           shown ? "opacity-100" : "translate-y-6 opacity-0",
         )}
