@@ -3300,3 +3300,113 @@ and was not walked: a Plus reader wearing a look there has the site's last
 lines in the foot as before. At a tablet's width the Bible's last lines show
 again under the reader's dock and beside the tab bar, on any palette (seen
 in `notes/decisions/themes-3-wide.png`); told to the arbiter for Updates.
+
+## 33. Fire comes out of the looks (his word, 2026-11-10)
+
+**His word**, about 17:20 UTC (BRAINSTORM): "also I don't really like the
+fire theme", then, of the two ways put to him (remove it, or redesign it):
+"remove fire". The arbiter's order: out of the picker and out of the Plus
+lists and counts in every language; a device that has it set falls back to
+the nearest plain dark palette, held by a test; the code and the drawing
+kept, out of reach; the share picture's own Fire style left as it is. The
+looks had not been released, so no reader ever had Fire.
+
+This reached me late. The arbiter sent it at 17:14 UTC and it sat unread in
+my queue while the walks of section 32 ran, so Fire came out after items 8,
+2 and 5 and not before them, as ordered. Nothing was built on the wrong
+order. The queue is read at every break in long work now.
+
+**What changed.** There are seventeen looks, eight over Dark and nine over
+Light, and 24 palettes in all.
+
+- `lib/reader/readingModes.ts`: Fire is out of the registry, so the picker,
+  the Bible's chips, the gate and the server's write no longer know it.
+  `RETIRED_THEMES` says what a stored `fire` reads as, and
+  `coerceReadingTheme` applies it for every reader of a stored palette.
+- `lib/reader/prepaint.ts`: out of the pre-paint list, and the same stand-in
+  written into the script, so a device that stored Fire opens in its
+  stand-in from the first paint and not in Dark for a frame.
+- `app/globals.css`: its rules are gone (the look, its lit surface, its faint
+  text, the ember at a chapter's head, its small page in the picker), and
+  `public/themes/fire-room.webp` no longer ships (104 KB).
+- The 21 catalogs: `settings.paletteFireHint` is gone from each.
+- The counts, in words, in 21 languages: twenty reading modes became
+  nineteen and eighteen looks became seventeen, in `plus.palettes.title`,
+  `plus.palettes.body`, `plus.active.modes` and
+  `premium.plus.readingModes.sub`, and in the plan's row in
+  `lib/premium/plans.ts` (English and German). These are his approved lines
+  of section 28 with the number changed and nothing else: the arbiter's
+  word, "the plain consequence of his remove fire, not new copy".
+  `lib/premium/__tests__/plans.test.ts` reads the English and German against
+  the registry, and `planWords.test.ts` holds each language's row to its own
+  count word.
+
+**The stand-in is Candlelight.** "The nearest plain dark palette" was mine
+to name, and the arbiter agreed it. Fire's page was near black (#040301)
+with warm ink; Candlelight's is #050505 with a warm grey ink, it is a
+palette of its own with no picture, it sits in the same family (Night), and
+it is Plus as Fire was, so the same reader is entitled to it and nobody
+gains or loses a palette by the change. Dark would have been the other
+choice; it is plainer still, but it is a different page (#101013, a blue
+grey) and free, which reads as "your choice was thrown away".
+
+**Nothing made is deleted.** What Fire was is in
+`docs/1.9-build/kept/fire-look/`, where the apps and the website do not
+reach: its rules as they stood (`fire.css`), its picture (`fire-room.webp`),
+its line in 21 languages (`words.json`), one still of John 1 in it
+(`fire-look-2026-11-10.png`, taken from the export before the change, the
+checker run on it), and a note that says what it is, its date, why it is
+there and the five steps that would bring it back. The code that paints its
+picture is still in `scripts/theme-pictures.mjs` and runs only with
+`--kept`, into that folder. `docs/licensing/THEME_PICTURES.md` records the
+picture as kept, not shipped. The still and its date have gone to the SSM
+chat for the Vault.
+
+The share picture's Fire style (`picture.look.fire`, his pick of
+2026-10-30) is a different thing: untouched, and a test says so.
+
+**What holds it.** `lib/reader/__tests__/retiredThemes.test.ts`, 12 tests: a
+stored `fire` reads as Candlelight and nothing else changes for any other
+stored value (names that only look like one, `constructor` among them, are
+Dark as before); the pre-paint script leaves exactly what the controller
+would; the server refuses `fire`; no shelf, no rule, no picture and no
+catalog line of it is left in the app; the kept folder holds what it says
+and nothing the apps are made of loads from it; the share picture's Fire
+stays. Fourteen other tests counted the looks and follow: 18 to 17 looks,
+25 to 24 palettes, 16 to 15 looks with a foot, nine to eight painted
+pictures, 44 to 42 words. The Hungarian "Wi-Fire" lets go of its exception
+in `paletteNames.test.ts`, since Fire is no longer a palette's English name.
+
+**Proven on the export** (open build, of this change on `4e263ada`; the
+commit is `aa0eac68` since a rebase put the day's other work under it):
+
+- A device that stores `fire`, opened on Today and on John 1: the root's two
+  attributes were recorded from before the page's own code ran. They read
+  nothing, then Candlelight, and nothing else: Fire is never on the page,
+  and there is no frame of Dark. The device still stores `fire`; it is read
+  as Candlelight each time.
+- The picker: 24 palettes, each once, on six shelves. The Night shelf is
+  Night sky, Dawn, Incense, Candlelight. No tile is named Fire and the page
+  says Fire nowhere. `checkMock` passes on the page on the five palettes.
+  The still is `notes/decisions/themes-4-picker-without-fire.png` (the open
+  build, so as a reader with Plus sees it).
+- Settings' own row has no Fire.
+- The Plus page's reading modes row says its catalog's own line, whole, in
+  all 21 languages at 360 and 320 wide: found by its words, not cut, not
+  clamped, inside the screen.
+- The export itself: no file, rule or line of the look is in `out/`.
+- `scripts/scene-check.mjs`: 17 of 17 looks.
+- Typecheck 0; the unit suite 918 files, 11,394 tests; lint 0 errors.
+
+**Not checked here.** The sheet a reader without Plus meets, and the
+preview's head, draw the count too (`plus.palettes.title`,
+`plus.active.modes`). They are only on a build with the gate on, which this
+one was not. The words are a few letters longer in most languages
+("Tizenkilenc" for "Húsz" is the most); they go on the gate-on build that
+follows with the next change.
+
+**One comment left stale on purpose.** `scripts/mock-campaigns.mjs` says
+"the eighteen looks" twice in comments. It is the campaigns chat's file, and
+its count comes from the registry, so it walks seventeen; the words are
+theirs to change.
+
