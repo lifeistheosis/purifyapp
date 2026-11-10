@@ -1,0 +1,1822 @@
+# Prayer campaigns, reworked: notes and stills
+
+Notes and stills only, 2026-11-10. Nothing here is built, and nothing is built
+until Edgar says start. Written by the prayer campaigns chat the arbiter started
+on his word of the same day (session `session_01VuYTwbyUm9fyYex3QnL4Tu`). Every
+claim about the app as it is was read from the code on `ccr-07896cf2-bo0afd` on
+this date and carries its file: read at `6a302fb4`, and checked again at
+`f6987145`, thirty-three commits on, before this file was pushed. Every claim
+about production is marked as probed by someone else or as not probed.
+
+His words, the brief this answers (at more length in `BRAINSTORM.md`): "I wanted
+version 1.9 to have the prayer campaign system, right? I never saw that
+implemented ... creating a prayer campaign for whatever, you know, the reposed,
+your sickness, your school exam. And users can participate in these prayer
+campaigns, and these prayer campaigns will be inserted into their prayers for
+either the day or the week or the month. And the person who created the campaign
+can create how long the campaign will be for ... they can put it in whichever
+section ... a 3-image photo limit for normal users. And for premium users, they
+can add as up to 20 photos ... free users can add announcements ... allow
+comments ... top prayer campaigns ... Allow them to add a location ... In
+theory, it's actualized through Halo. They have done it, but we need to make our
+own version."
+
+**The stills:** https://claude.ai/artifact/7EuY9gDq4iu5iRQNGEhfP9 (private; four
+screens, one version each; section 7).
+
+**The whole design in five sentences.** A campaign is a name carried together:
+one reader asks, and whoever joins carries that name in their own prayers, in
+the place the prayer books already keep for names, with the Church's own prayer
+from the prayer book, for a set number of days. Then it leaves by itself.
+Nothing about anyone's praying is counted or shown. Everything a campaign lets
+people write or upload passes through the safety tools Community already has,
+and each campaign is read by a moderator before it is public. It is built on
+what exists: the tables of July and August, the campaign card and the Campaigns
+door drawn for 1.8, "Add to my prayers", and "Those you pray for".
+
+Contents:
+
+1. What exists, and why it was withdrawn
+2. The rework, point by point
+3. Safety and moderation
+4. Privacy
+5. The data changes
+6. A phased plan, with sizes
+7. The stills
+8. What waits on Edgar, on a priest and on a lawyer
+9. Found on the way
+
+---
+
+## 1. What exists, and why it was withdrawn
+
+### 1.1 The history, from the commits
+
+| Date | Commit | What |
+|---|---|---|
+| 2026-07-13 | `b803b32e`, `bcf3212e` | Prayer Campaigns v1 (Beta 2.0): a public board at `/campaigns`, six intentions, a prayer chosen from nine presets, a length of a week, nine days, forty days or no end, join, "prayed today", report |
+| 2026-07-25 | `500209e4` | One picture a campaign (Beta 2.6), with a consent line |
+| 2026-08-11 | `b962c1d3`, `4d653d18` | A day log, a streak, parish groups with invite codes and private threads, a daily reminder |
+| 2026-08-12 | `15ab9f74` | Six defects closed before the switch could be thrown, among them invite codes readable by anyone, a policy that recursed, private replies that were public, reminders that never fired, and a verb the apps could not call |
+| 2026-08-22 | `593d32b2` | "Prayer stops being counted": the streak, the totals, the personal best and the public "n praying, n prayers offered" came off live pages; the rule went into `CONTRIBUTING.md`, "On prayer, no figures at all" |
+| 2026-08-26 | `3dc708ff` | "Prayer Campaigns is withdrawn from the web, pending its rework" (1.3) |
+| 2026-10-26 | `docs/1.8-build/sql/read-together.sql` | The campaign groups became the circles of Read together; "one group system, not two", his word |
+| 2026-10-30 to 11-01 | `2daabadf`, `8ab5d927`, `68d21e27` | 1.8 kept places for it: the campaign card under Pray together, the Campaigns door on a profile, a line in Your rule |
+
+### 1.2 Why it was withdrawn
+
+**The record does not quote his reason.** The withdrawal commit says "pending
+its rework" and explains only how it was closed. The plan it points to,
+`Homebase/boards/purify-master/r19/PRAYER-CAMPAIGNS.md` (named in
+`lib/community/runningCampaign.ts:39` and `components/community/CampaignCard.tsx:25`),
+is on his PC and not in this repository, so its list, "What the rework has to
+fix", could not be read from here. Two things from it are in the code's
+comments: its first item, which `runningCampaign.ts` gives as "six of the nine
+prayers a campaign row can name today are lines Purify wrote, and none carries
+a source", and its line "Nobody is counted". If that file says more, it
+outranks this section.
+
+What the repository itself shows, each read on this branch:
+
+1. **Its prayers were ours.** `lib/campaigns/campaigns.ts:128` (`PRESET_PRAYERS`):
+   six of the nine are sentences written for the feature ("Lord Jesus Christ,
+   Son of God, have mercy on your servant and grant them healing of soul and
+   body."), with no source. The other three are the Jesus Prayer, the Trisagion
+   and "Most Holy Theotokos, save us". The editorial standard is the opposite:
+   a prayer is verbatim from a public-domain book, with its source.
+2. **It was built on counting, and counting went.** Four days before the
+   withdrawal the streak, the totals and the public counts were removed as a
+   matter of principle (`CONTRIBUTING.md`, "On prayer, no figures at all": "no
+   public count of who prayed or how often", because a count beside a need
+   "ranks a board of needs, and it ranks it backwards"). What was left on the
+   page was a title, a note, a line of ours to pray and a button.
+3. **It stood outside Community's safety.** Creating one runs no word filter
+   and no spam check (`app/api/campaigns/route.ts`: no `censorPost`, no
+   `guardWrite`). A report has no state and no limit of one a reader
+   (`supabase/migrations/20260713000200_prayer_campaigns.sql:97`), so reports
+   pile up, and nothing is hidden by them. There is no block.
+4. **Anyone with the public key can read every campaign whole.** The policy
+   `prayer_campaigns_public_select` serves each row that is not removed,
+   `creator_id` (the account's id) and both counters included.
+   `20260802000100_revoke_public_user_id.sql` names this as owed: "Those two
+   need a code change first". Probed by the audit on 2026-10-03: "one campaign
+   readable" (`docs/audit/findings.yaml`, F-29).
+5. **Its picture was stored as it was uploaded.** `app/api/campaigns/image/route.ts`
+   writes the reader's bytes to a public bucket: no new copy is made, so a
+   phone photo keeps the place and the device inside it, and nothing looks at
+   the picture. The shop has had the fix since `lib/shop/imageNormalize.ts`.
+6. **Part of it may never have run in production.** On 2026-08-22 the groups
+   and streaks migration was probed as not applied
+   (`docs/audit/continuation-ledger.md`, "Four migrations sit on main
+   unapplied"). He ran `read-together.sql` by hand on 2026-10-26 (his word, in
+   that file's header), and it alters the groups table, which it could not
+   have done had the table been missing. Whether `prayer_campaign_days` and
+   the reminder columns exist was not probed, then or from here. Probe before
+   building (5.5).
+
+### 1.3 What exists today, to build on
+
+| Piece | Where | State |
+|---|---|---|
+| The switch | `lib/campaigns/flags.ts` (`WITHDRAWN_FOR_REWORK = true`) | Every `/campaigns` page and route answers 404 |
+| The model | `lib/campaigns/campaigns.ts`, `streak.ts`, `groups.ts`, `image.ts`, `client.ts`, `catalog.ts` | Compiles, tested; the presets and the streak are what the rework replaces |
+| The pages | `app/(app)/campaigns/` (board, `detail?id=`, `new`, `mine`), `components/campaigns/` | The July look: gold, pills, a hand-drawn tick, English typed into the code. None of it passes today's guardrails; the rework draws them again from the house's parts |
+| The routes | `app/api/campaigns/` (list, create, one, pray, report, remind, image, groups) | Behind the flag |
+| The tables | `prayer_campaigns`, `prayer_campaign_prayers` (the join row), `prayer_campaign_days`, `prayer_campaign_reports`, `prayer_campaign_groups` and its members | The groups are live as Read together's circles; the rest is dormant |
+| The card | `components/community/CampaignCard.tsx`, `PrayTogether.tsx` | Drawn for 1.8 from his pick of r3-02; never shown, since `runningCampaign()` returns null |
+| Joining | `components/community/AddToPrayersSheet.tsx`, `components/prayers/PlaceChips.tsx`, `lib/prayers/wallNames.ts` | Live for the prayer wall: a name goes into the prayers the reader ticks, for a week |
+| In the prayers | `lib/prayers/commemoration.ts`, `components/prayers/service/CommemorationStep.tsx` | Live: "Those I pray for" before the dismissal, with Hapgood's prayer for the departed, word for word |
+| On Your rule | `components/prayers/mine/MyRuleBuilder.tsx:84`, `components/prayers/Diptychs.tsx:25` | A place kept in words only: "a prayer campaign a reader joins lands on this page ... its prayer a step on this thread and its name among the names, each until its last day" |
+| On a profile | `lib/profile/doors.ts` (`CAMPAIGNS_DOOR = false`) | The door is drawn and off |
+| Moderation | `lib/community/moderation.ts`, `lib/admin/communityQueue.ts`, `app/api/admin/community/route.ts` | One queue with ten seconds of Undo; reported campaigns already have a row in it |
+| Told to Apple | `docs/app-store-review-notes.md:25` | "two user-content surfaces: Community posts and prayer Campaigns" |
+
+---
+
+## 2. The rework, point by point
+
+### 2.0 Its own form, not Hallow's
+
+The July file says it was "heavily inspired by Hallow's prayer campaigns"
+(`20260713000200_prayer_campaigns.sql:5`). What made it like them was the
+counting, and the house rule now forbids that for good reasons. So Purify's own
+form starts from what the Church already does with a name:
+
+- **A campaign is a commemoration shared.** The forty days for the departed, a
+  name read for the sick: the prayer books keep a place for names, and the app
+  already has it ("Those I pray for"). A campaign puts one name there, in many
+  readers' prayers, for a set time.
+- **The prayer is the Church's.** It comes from the prayer book by reference
+  and is shown with its printing. The campaign never carries words written for
+  it.
+- **It lives in the reader's own rule,** not in a feed. Joining is "Add to my
+  prayers"; the campaign is then met while praying.
+- **Nobody is counted.** No "n praying", no streak, no total, for the reader or
+  for the campaign.
+- **It ends.** Every campaign has a last day, and leaves by itself.
+
+### 2.1 Creating a campaign, for any intention
+
+His words: "creating a prayer campaign for whatever, you know, the reposed, your
+sickness, your school exam."
+
+**Screens (still 2).** Community, Pray together, "Start a campaign" opens a page
+of its own, built as making a post is (`components/community/ComposePage.tsx`):
+
+1. **For whom:** two doors, For the living and For the reposed (existing words,
+   `prayers.diptychs.livingHeading`, `reposedHeading`). The head's picture
+   follows the door: the app's own Anastasis for the reposed, Christ
+   Pantocrator otherwise (`lib/prayers/icons.ts`).
+2. **What for** (the living only): one row that opens a sheet of lines to
+   tick. An illness. An exam or studies. A journey. Thanksgiving. A trial.
+   Guidance. The persecuted. Something else.
+3. **The name:** a first name, set like a post's title, with one line under
+   it: "A first name only, as the Church remembers them." For oneself, a line
+   to tick fills the reader's own name.
+4. **What you ask prayers for:** the reader's own words, with no box. The
+   existing hint stands: "One or two lines. No private medical or personal
+   details of others."
+5. **A row each** for How long (2.2), The prayer (2.4), Pictures (2.5) and
+   Place (2.9), each opening its sheet.
+6. **The blessing:** one line to tick, worded for who it is for (4.3).
+7. **At the thumb:** who can read it (everyone in Community, or one circle),
+   and Create.
+
+**Data.** `prayer_campaigns`: `intention` gains `study`, `travel` and `other`
+beside the six of July; new columns `details`, `days`, `starts_on`, `ends_on`,
+`prayer_rule`, `prayer_id`, `audience`, `circle_id`, `consent_kind`,
+`consent_at`, `creator_name`, `creator_handle` (5.2). The title is typed, or
+offered from the parts ("Forty days for Nicholas").
+
+**Rules.**
+
+- An account is needed to create, as now. Carrying one needs none (2.3).
+- The words pass Community's word filter and spam check, which the old route
+  never called. A link is refused, as a prayer request refuses one
+  (`app/api/profile/me/route.ts`, `intention_link`). Asking for money, a
+  phone number, an email address or a street address holds it for a moderator.
+- **Every campaign is read by a moderator before everyone can see it**
+  (`status: 'held'`, then `'active'`). The creator sees it at once, with the
+  line "It will show once a moderator has read it." Later, a trusted creator
+  (`lib/community/trust.ts`: thirty days, ten contributions, nothing removed)
+  can publish at once. Question 1 for him.
+- One campaign running at a time for an account under a day old, three for
+  everyone else; at most three started a day.
+- A campaign prays for someone, never against anyone, and is not for a party,
+  a candidate or a cause of state. A moderator's call, written in the rules
+  (3.2).
+
+### 2.2 Its length, set by the creator
+
+His words: "the person who created the campaign can create how long the campaign
+will be for. So for example, they can set it for 30 days, right, for a month."
+
+**Screen.** The row How long opens a sheet of lines: A day. A week. Thirty
+days. Forty days. Choose the last day (a calendar, at most forty days out). For
+the reposed, Forty days is ticked to begin with, as the Church keeps them.
+
+**Data.** `days` (1 to 40), `starts_on` and `ends_on` on the creator's own
+calendar, and `ends_at`, which exists: noon UTC of the day after `ends_on`,
+when that day has ended everywhere.
+
+**Rules.**
+
+- Forty is the ceiling. It is the Church's own number, it covers his month,
+  and it keeps a sick person's name from standing in public without end. A
+  need that lasts longer is renewed: "Run it again" makes a new campaign from
+  the same parts, and nobody is carried over without choosing to be. Question
+  3.
+- The page says the dates, never a score: "Forty days, to December 19", then
+  "Last day" (`campaigns.lastDay`, existing). The old code's own argument
+  holds: when it ends "is a fact about the campaign rather than a measure of
+  anyone's praying" (`components/campaigns/CampaignDetailClient.tsx`).
+- The creator can end it early, with the two closings that exist: "Answered,
+  glory to God" and "Memory eternal" (`statusLabel`).
+- When the last day has passed it reads "ended", takes no new joins or
+  comments, and leaves the board (4.5 for how long it is kept).
+
+### 2.3 Joining, and where it goes in one's own prayers
+
+His words: "users who participate in that will have that into their daily
+prayers, and they can put it in whichever section, honestly. So they can put it
+in the morning, you know, the dinner, or whatever they have the set up ...
+whether it's their custom prayers or ... the preset prayers that we put."
+
+**Screen (still 3).** "Add to my prayers" on the campaign's page or its card
+opens the prayer wall's own sheet (`AddToPrayersSheet`), with two changes:
+
+- **In which prayers:** the six the app already offers, to tick
+  (`PRAY_PLACES` in `lib/prayers/commemoration.ts`): Morning prayers, Midday
+  prayers, Evening prayers, The Hours, Small Compline, Your rule. The reader's
+  usual choice is ticked to begin with. This is his "whichever section": the
+  prayer book's own rules, and the reader's own.
+- **For how long** (new): Until its last day (ticked), A week, Today only.
+  This is his "for either the day or the week or the month". Question 4.
+- The line under them (new words): "It leaves your prayers by itself after the
+  last day. Only you can see this."
+
+"The dinner": the six places hold no prayer at table, because the prayer books
+keep names in the morning and evening prayers, not at the blessing of food.
+Evening prayers is the nearest. Adding the table prayers as a seventh place is
+a small change if he wants it.
+
+**In the prayers (still 4).** Nothing new is drawn in the praying itself.
+
+- **For the reposed:** the name joins the reader's departed, inside the
+  Church's prayer where the book prints NN. (`departedPrayer`), which is how a
+  name of the reader's own already stands. One quiet line is added under the
+  prayer's source: "With the prayer campaign “Forty days for Nicholas”, until
+  December 19."
+- **For the living:** the name stands among the living, with the campaign's
+  title under it, as a name from the prayer wall stands with its words
+  (`prayers.wall.alsoFor`).
+- **A prayer of the book, when the creator chose one** (2.4): it follows
+  "Those I pray for" as a step of its own, with its title, its words read from
+  the prayer book's file, and its source. In Your rule it is a step on the
+  thread, and the reader can drag it to another place in their own rule.
+
+**On Your rule.** The name shows among "Those you pray for" as a medallion with
+one line: "Campaign, until December 19" (the wall's names already say "Until
+{date}", `prayers.diptychs.wallUntil`). A tap opens the sheet again, to move it
+to other prayers or take it out.
+
+**Data.**
+
+- **On the device, always:** `purify.prayers.campaigns`, modelled on
+  `lib/prayers/wallNames.ts`: the campaign's id, the name, the title, living
+  or reposed, the prayer's reference, the places, the day it leaves, and when
+  it was added or taken out. The prayer reader reads only this, so a campaign
+  is prayed with no signal.
+- **With an account, also:** the join row that exists
+  (`prayer_campaign_prayers`), with two new columns, `places` and `until_on`,
+  so it follows the reader to another device. Without an account nothing is
+  sent: the reader carries it on the device alone.
+- **Nothing is sent when it is prayed.** "Mark prayed" keeps the day in the
+  device's own ledger, as every prayer's does. The old pray route and the day
+  log (`prayer_campaign_days`) get no new writes: which days a person prayed
+  for whom is not something the feature needs to know.
+
+**How it leaves.**
+
+- On the day after its last day, or the reader's own shorter day, by the
+  device's clock.
+- At once when the reader takes it out.
+- When the creator ends it or a moderator removes it: the next time the app is
+  online it asks the server about the campaigns it carries (one small route,
+  ids in, states out) and lets go of any that are over.
+- Then, once, on the page of Your rule and nowhere else: "The campaign for
+  Nicholas has ended. Keep this name among those you pray for?" with Keep and
+  Let go. Keep puts the name in the reader's own list of the reposed, where it
+  stays theirs.
+
+### 2.4 The prayer a campaign places
+
+The standard binds here: verbatim from the prayer book, never written by AI.
+
+**What the prayer book holds today that a campaign can carry:**
+
+| For | The prayer | Printing | In the app |
+|---|---|---|---|
+| The reposed | "O God of spirits, and of all flesh" | Hapgood, Service Book (1906), p. 91 | Yes, as the commemoration's own (`DEPARTED_PRAYER`) |
+| Protection, danger, a trial | Psalm 90, Psalm 26 | Brenton's Septuagint (1851) | Yes (`data/prayers/rules/protection.json`) |
+| Repentance | Psalm 50 | As the Horologion carries it | Yes (`repentance.json`) |
+| Any | The Trisagion, the Lord's Prayer, the Jesus Prayer | The common prayer book | Yes (`morning.json`) |
+
+**What it does not hold yet,** read from the scan of Hapgood the app already
+ingests from (Cornell, `cu31924029363128`, its contents and its headings read
+on 2026-11-10):
+
+| For | In Hapgood, as its contents name it | Page | Note |
+|---|---|---|---|
+| An exam, studies | Prayer Service "for Children beginning Instruction" | 519 | A priest's service |
+| A journey | Blessing "for a Journey (by land)" and "(by water)"; on its page, "The Rite of Blessing for a Journey" | 524, 529 | A priest's service; it opens with the psalm the app numbers 142 (Hapgood prints it as cxliii) |
+| Thanksgiving | Thanksgiving "for an Answer to Prayer" | 512 | A priest's service |
+| Any need | Prayer Service, "General (Molieben)" | 559 | A priest's service |
+| The sick | Nothing but Holy Unction (p. 333), a sacrament | | No office for the sick stands alone in its contents |
+
+Only the contents and the headings were read. Not one of these prayers has
+been read on its page yet, and none is quoted here. The titles in quotation
+marks are the book's own words, found in the scan's text and not typed from
+memory, as the rule of 2026-11-10 asks of every quotation
+(`docs/editorial-standards.md`, item 28).
+
+So, honestly:
+
+- **The reposed are ready today.** That is why the stills show them.
+- **For the living, the campaign carries the name,** under the line the app
+  already says over the living ("Remember, O Lord, Thy servants for whom I
+  pray, and have mercy on them.": ours since 1.7.1, his own choice, marked for
+  review in `COMMEMORATION_REVIEW`), **and may carry a psalm** the book has.
+  No new words are written.
+- **Three offices can be ingested** (study, journey, thanksgiving), each read
+  off its page image and held by a test, as the prayers before Communion
+  were. Each is a priest's service, so which of its prayers a reader may say
+  in their own rule is a priest's question (8.2), the same question already
+  open for the prayer over the departed.
+- **A prayer for the sick needs a source.** A book to open next, named from
+  memory and not checked here: G. V. Shann's Book of Needs (London, 1894).
+  Whether a scan of it can be read, whether it is free to use, and whether it
+  holds a prayer a layman says for the sick are all still to be found out.
+  Until a source is found, a campaign for the sick carries the name and, if
+  the creator wishes, Psalm 90.
+- The planned rows of the prayer book that have waited for exactly these
+  texts (`before-work`, `before-travel`, `thanksgiving`, `psalms-needs` in
+  `lib/prayers/rules.ts`) get their words from the same ingest.
+
+**Data.** `prayer_rule` and `prayer_id` name a prayer of the registry. The
+words are never copied into the campaign: they are read from the book's file
+when it is prayed, so a correction to a prayer reaches every campaign.
+A campaign for the reposed names none: the commemoration's own prayer is said
+over its name, as it is over every name of the reader's departed.
+`prayer_key`, which named the six lines of ours, stays for the old rows and is
+not written again.
+
+### 2.5 Pictures: up to 3 for everyone, up to 20 with Plus
+
+His words: "a 3-image photo limit for normal users. And for premium users, they
+can add as up to 20 photos."
+
+**Screens.** The first picture is the page's head. The rest stand in a row
+under About; a tap opens them one at a time. In creating, the row Pictures
+opens a sheet: the pictures chosen, "Add a picture", the consent line that
+exists (`campaigns.pictureConsent`), and, at three, the next place shown with
+the Plus mark (`components/billing/PlusMark.tsx`); a tap on it opens the
+upgrade sheet. Plus is shown where it is met and never promised to every
+reader.
+
+**A campaign with no picture** wears the app's own icon of its kind, so no one
+feels they must post a photo of a sick person.
+
+**Data.** A new table, `prayer_campaign_pictures` (5.4). The old single
+`image_url` stays for the old rows.
+
+**Rules.**
+
+- **The server holds the limit,** from the creator's entitlement at the moment
+  of the upload, as the profile banner's route does
+  (`app/api/profile/banner/route.ts:63`, `subscriptionTier`). The client's own
+  belief is not trusted.
+- **If Plus lapses,** pictures already up stay up; no more can be added past
+  three. What was given is not taken back.
+- **On iPhone,** while Plus is not sold there, the app opens Plus to every
+  reader (`lib/entitlements/entitlements.ts`, whose first rule is never to
+  lock what cannot be bought), but the server decides by entitlement. So
+  until Plus is sold on iPhone the limit there is three and the Plus place is
+  not shown. Question 5.
+- Each picture is made again by the server, checked, and held until a
+  moderator has looked (3.5).
+- JPEG, PNG or WebP, 4 MB at most, as now. No moving pictures.
+
+### 2.6 The creator's updates and announcements
+
+His words: "free users can add announcements, right, to their campaign ... Each
+day they can post an update if they want."
+
+**Screen.** The door Updates on the campaign's page: the creator's updates,
+newest first, each with its day. The creator has a field at its head. Free for
+everyone.
+
+**Data.** An update is a reply of the creator's in the campaign's own thread in
+Community, marked `campaign_update` (5.3). So no new table, and no second set
+of safety tools.
+
+**Rules.**
+
+- Words only at first, a thousand characters, three a day at most.
+- The filter, the spam check and holds apply, as to any reply.
+- **Nobody is told by default.** A reader who carries the campaign can turn on
+  "Tell me when there is an update" on its page, off until asked, as the rule
+  for reminders requires (`CONTRIBUTING.md`, "Reminders and streaks"). The
+  notification names nobody and says nothing of the need: the copy lives in
+  `lib/push/copy.ts` and passes `lib/push/doctrine.ts`, as the campaign
+  reminder's does today. This part comes last (phase 4).
+- The card and the row show the day of the latest update as a date, not a
+  badge.
+
+### 2.7 Comments
+
+His words: "allow comments on the prayer campaign, right? So users can actively
+comment on the prayer campaign."
+
+**Screen.** The door Comments: the campaign's thread, with the field at the
+foot, drawn as a post's replies are.
+
+**Data.** A comment is a reply in the campaign's thread: one row of
+`community_posts` carries the campaign's id (5.3). Everything a reply has, a
+comment has, with nothing built twice: the word filter, the spam check, holds,
+reports, blocks, mutes, the moderators' queue, its log, its Undo.
+
+**Rules.**
+
+- An account is needed. A new account's comments are held (`new_account`, a
+  hold reason that exists).
+- The creator can close comments (`comments_open`), and can take a comment off
+  their own campaign; that is logged as theirs.
+- No reactions and no counts under a comment on a campaign. Community's Amen
+  and its counts stay in Talk together.
+- Two gaps in Community get closed with this, since a grief is where they
+  would hurt (9, items 5 and 6): a reply can be reported from its own menu,
+  and a blocked person can no longer write under the campaign of the one who
+  blocked them.
+
+### 2.8 Later: top campaigns by day, week, month and year
+
+His words: "obviously this is for the future when they actually use the prayer
+campaign system. They could be top prayer campaigns, right? Of the month, of
+the year, of the week, of the day."
+
+**This one meets a rule he made himself, so it waits for his word.**
+`CONTRIBUTING.md`, 2026-08-22, allows "no public count of who prayed or how
+often", and gives its reason:
+
+> "Forty praying" beside one intention and "two praying" beside another ranks
+> a board of needs, and it ranks it backwards: the one with two is the one
+> that needs somebody.
+
+A list of top campaigns is that ranking, even with the numbers hidden. He can
+amend his own rule. If he does, this is the form I recommend:
+
+- **Its name says what it is:** "Prayed by many", with one small switch: Today,
+  This week, This month, This year. A switch that filters what is on screen is
+  where a pill belongs.
+- **The order is shown; no figure ever is.** No number of people, no rank
+  numeral.
+- **It is ordered by how many readers added it to their prayers** in that time,
+  one for each account. Never by comments.
+- **It never stands alone.** The board opens on "Newly asked", newest first, so
+  a need nobody carries yet is seen first. "Prayed by many" is the second
+  list.
+- **A floor and a way out.** A campaign appears only once enough readers carry
+  it that the list says nothing about any one of them, and the creator can
+  keep a campaign out of it (`listed`). A campaign kept to a circle never
+  appears.
+- **Wording for the rule,** for his own hand: "One list is permitted, on the
+  owner's word: campaigns ordered by how many readers added them to their
+  prayers in a day, a week, a month or a year. The order is shown; no figure
+  ever is. It stands beside the newest campaigns, never in place of them, and
+  a creator can keep a campaign out of it."
+
+**Data.** Nothing new is needed to begin: `prayer_campaign_prayers.joined_at`
+is already there, and the list can be worked out by a route and kept for a
+minute. A small table of sums by day comes only if the board grows.
+
+### 2.9 A place, and details
+
+His words: "Allow them to add a location. If it's location specific, allow them
+to add details about the prayer campaign."
+
+**Details** are the words of 2.1: six hundred characters to begin with (the
+table allows two thousand).
+
+**Place.** The row Place opens a sheet: a country, from the list the app
+already has (`COUNTRIES` and `countryNamer` in `lib/onboarding/clergy.ts`,
+named in the reader's own language by the device), then a town or region,
+typed, sixty characters, letters only, so no street and no number. It shows as
+"Thessaloniki, Greece" beside who started it.
+
+**Rules.** Optional, and off to begin with. Typed by the creator, never read
+from the device and never from the network address: the app asks for no
+location anywhere today, and this does not change that. No coordinates, no
+map. It passes the filter like the rest. A campaign made by a parent or
+guardian for a child shows the country alone (3.6).
+
+### 2.10 Where campaigns are found
+
+- **Community, Pray together.** Under the head: the campaign the reader
+  carries, as the card already drawn; then "Newly asked", as rows with a small
+  picture each, never pills; then the prayer wall, as now. A choice of kind
+  sits behind the sliders, as Talk together's filters do.
+- **A campaign's page** (still 1): `/campaigns/detail?id=`, the address that
+  already works in the apps. Built as a saint's page is: the picture, the
+  name, three actions, three doors.
+- **You:** "Campaigns you are praying" and "Campaigns you started" (existing
+  words, `shop.campaignsYouArePraying`, `shop.campaignsYouStarted`).
+- **A profile:** the Campaigns door, for the campaigns a reader chose to keep
+  there (`keep_after_end`).
+- **Sharing:** a link to the page. Its preview names nobody: "A prayer campaign
+  on Purify".
+- **Not in search,** in the app or outside it (4.2).
+- **Every page switch moves.** The card's picture carries into the page's
+  head, as his rule of 2026-11-10 asks.
+
+---
+
+## 3. Safety and moderation
+
+### 3.1 The stores' rules, as their pages read on 2026-11-10
+
+**Apple, App Review Guideline 1.2, User-Generated Content.** Apps "must
+include":
+
+- "A method for filtering objectionable material from being posted to the app"
+- "A mechanism to report offensive content and timely responses to concerns"
+- "The ability to block abusive users from the service"
+- "Published contact information so users can easily reach you"
+
+**Google Play, User Generated Content.** An app must have users "accept the
+app's terms of use and/or user policy before users can create or upload UGC",
+define "objectionable content and behaviors" in those terms, moderate, give
+a way inside the app to report and to block where content is public, and
+keep "safeguards to prevent in-app monetization from encouraging objectionable
+user behavior". Its Child Safety Standards policy, for social apps, asks for
+published standards that forbid child sexual abuse and exploitation, a way to
+report inside the app, action on such material, compliance with child safety
+laws, and a named point of contact.
+
+(Apple's list is quoted from developer.apple.com/app-store/review/guidelines;
+Google's from support.google.com/googleplay/android-developer/answer/9876937
+and /answer/9878809. Read by a fetch tool, not by a lawyer. Whether Play counts
+Purify as a social app is a question for 8.3.)
+
+### 3.2 Each rule, what Community has, what campaigns add
+
+| Rule | Community today | For campaigns |
+|---|---|---|
+| Filter | The word list masks and holds (`lib/moderation/`), the spam check refuses or holds (`lib/community/guard.ts`, `spam.ts`), a link in a prayer request is refused | The create and edit routes call the same two, which they never did. Links refused in every field. Money, phone numbers, email and street addresses held. A campaign is held until read (2.1) |
+| Report | `app/api/community/report` for a post, a reply or a profile; free words only; no screen offers it on a reply | A report on the campaign (the menu at the top), on each picture (in its viewer), on each update and comment (the reply's own menu, which is new for all of Community). Reasons to tick, below. One open report a reader for each thing |
+| Timely response | Three reports hide a post until a moderator looks; one from staff does (`lib/community/autoHide.ts`, `AUTO_HIDE_WEIGHT = 3`) | The same for a campaign and a picture. One report with the reason "It is about me or someone in my care", from an account older than a day, hides it at once until a moderator looks. So that this cannot be used to silence a campaign, one a moderator has cleared is no longer hidden by reports, as a cleared post is not today (`mod_cleared_at`). The aim: looked at within a day |
+| Block | `app/api/community/block`; the blocker stops seeing the other's posts, replies and prayer request | The same for campaigns, updates and comments. New: a blocked person cannot comment on, or be shown as carrying, the campaign of the one who blocked them |
+| Contact | support@purifyapp.net, on the Terms and in Support | The same address at the foot of every campaign's page, in words that can be selected |
+| Terms before creating | Terms accepted at sign-up (`terms_acceptances`); they say nothing of Community or campaigns; no page of rules exists | A short page of rules, shown once before a reader's first campaign or comment, with "I agree", kept as an acceptance (5.6). The Terms gain a section that names what is not allowed (8.3) |
+| Children | Terms: 13 and older; no age is asked anywhere | 3.6 |
+
+**The reasons to tick on a report** (`reason_code`): It is about me or someone
+in my care, and I did not agree. It gives private details of another person.
+It asks for money, or links elsewhere. It is unkind or abusive. It is not a
+request for prayer. A picture that should not be here. Something else (with
+words).
+
+**The rules of praying together** (a draft for his hand; the page a reader
+agrees to):
+
+1. A campaign prays for someone or something, never against anyone.
+2. First names only. Nothing private about another person without their
+   blessing.
+3. No links, and no asking for money or goods.
+4. No picture of anyone who has not agreed, none of a child unless you are the
+   parent or guardian, nothing indecent or violent.
+5. Speak with charity. A grief is not a place to argue.
+6. We may hold or remove what breaks these, and close an account that keeps
+   doing so. Anything that sexualises or endangers a child is removed at once
+   and reported to the authorities.
+
+### 3.3 What can go wrong here that a discussion board does not see
+
+- **Asking for money.** An illness draws it. The rule is plain (no money, no
+  links) and the filter holds it. No fundraising in campaigns.
+- **A reader in crisis.** People who write "pray for me" are sometimes in
+  danger. On certain words the app should hold the campaign for a moderator
+  and show its writer, before anything else, where to reach help now: the
+  local emergency number, a helpline in their country, their priest. It must
+  not refuse the request for prayer. The wording is his and a priest's (8.2);
+  none is drafted as final here.
+- **A third party named.** First names, the blessing line (4.3), and the
+  report reason that hides at once.
+- **A campaign against a person,** or for a party: rule 1 and a moderator's
+  eye.
+- **A stranger's comment under a grief:** held when from a new account, and
+  the creator can take it off or close comments.
+- **Flooding:** one running campaign for a new account, three a day at most,
+  the rate limits the routes already have.
+- **Passing as clergy or a parish:** the clergy seal shows only for a verified
+  account (`clergy_verifications`); a campaign by one wears it, nobody else's
+  does.
+
+### 3.4 The admin's moderation, and the sign-in code over it (item 64)
+
+**One queue.** `lib/admin/communityQueue.ts` already folds what waits into one
+row for each thing, and reported campaigns have a row. It gains: a campaign
+waiting to be read (new), a picture waiting to be looked at (new, drawn small
+and veiled until tapped), and a campaign's reports with a state. Updates and
+comments arrive as replies do, with nothing new. Each row carries its buttons:
+Approve, Keep held, Remove, and for what was removed, Restore. A removal waits
+ten seconds with Undo, as now (`UNDO_MS`).
+
+**The log.** Each action writes a line to `community_mod_log` with who took
+it. Its list of what a line may be about gains `campaign` and `picture` (5.2).
+
+**Who moderates what.** Readers holding the Moderator badge work the same queue
+from the app (`app/(app)/community/moderate`), for campaigns, updates and
+comments. Pictures are the admin's alone at first: nobody else is shown one
+before it is cleared.
+
+**The sign-in code (item 64).** `lib/community/adminStanding.ts`:
+`COMMUNITY_ADMIN_NEEDS_CODE = true`, his yes of 2026-11-10. With it, an admin's
+account counts as one in Community only when the session has passed the
+panel's second step; until then it is "held" and its badges count for nothing.
+
+- The admin's own campaign actions (`/api/admin/community`: remove, dismiss,
+  and the new approve) are behind `getAdminUser()`, which already asks for the
+  code.
+- Every new campaign route that acts as a moderator must ask
+  `requestStanding` and `moderatorFor`, exactly as
+  `app/api/community/moderation/route.ts` does, so a session lifted from a
+  browser moderates nothing. A test in the shape of
+  `lib/community/__tests__/adminStanding.test.ts` holds each one.
+- It changes nothing until his code is added (the admin's Settings, "Add a
+  sign-in code"), and the phone apps have no place to type it, so he
+  moderates campaigns from the website, as `OWNER-STEPS.md` R7 says of
+  Community.
+
+### 3.5 Pictures: checked, and their location stripped
+
+1. **On the phone,** the picture is drawn again at 1600 pixels and sent as a
+   JPEG, as the Kitchen's photos were (`lib/trapeza/upload.ts`). This saves
+   the reader's data. It is not the guarantee.
+2. **On the server, the guarantee:** the picture is made again from its pixels
+   with `sharp`, which the app already carries, as every shop picture is
+   (`lib/shop/imageNormalize.ts`: turned upright, EXIF dropped, 1600 pixels at
+   most). Only that new copy is stored. So no place, no device, no hidden
+   text reaches anyone. A test uploads a photo carrying a place and reads the
+   stored file back.
+3. **Held, out of reach.** A picture waiting to be looked at is kept in a
+   private bucket, not in the public one `campaign-media` is today. It is
+   copied to the public bucket only when cleared, under a random name
+   (`c/<uuid>`, as `lib/campaigns/image.ts` already makes), and deleted if
+   refused.
+4. **An automatic check first,** for what must never be shown and for what the
+   law says must be reported: known illegal images of children by their
+   fingerprints, and nudity or violence by a classifier. This needs a service
+   he chooses and a lawyer's word on the duty to report (8.3). Its answer is
+   kept in `check_result`. No such check exists anywhere in the app today.
+5. **Then a person.** Every picture is looked at by the admin before it shows,
+   at least while campaigns are new.
+6. **No faces are read,** matched or named by the app.
+7. **Deleted** with the campaign, by its creator's hand, or with the account
+   (`lib/auth/accountFiles.ts` already takes every file `upload_owners` gives
+   a reader).
+
+### 3.6 What a minor can and cannot do
+
+**The app cannot tell.** No age is asked at sign-up or anywhere
+(`components/auth/SignUpForm.tsx` has the terms tick alone). The Terms say:
+"Purify is for people aged 13 and older. If you are under 18, you may use it
+only with a parent or guardian's involvement" (`app/(app)/terms/page.tsx:53`).
+His decision of 2026-09-25: no child profiles (`docs/DECISIONS.md:79`). The
+stores list the app as 4+ and Everyone (`docs/launch/STORE-LISTINGS.md:73`).
+
+So the rules cannot rest on knowing who is a child. They rest on what is done:
+
+| | Anyone, child or not | Needs an affirmation |
+|---|---|---|
+| Read a campaign, add it to one's prayers, pray it | Yes, with no account | |
+| Comment, start a campaign in words | With an account, as the Terms allow | The rules of praying together, once |
+| Put up a picture | | "I am 18 or older", with the consent line. Question 5 |
+| A campaign about a child | A first name; the country alone as its place | "I am this child's parent or guardian" (`consent_kind: 'guardian'`) |
+| A picture of a child | | The same, and the picture is held like every other |
+| Private messages | None exist in campaigns, and none are added | |
+
+A report that touches a child's safety goes to the head of the queue. Whether
+the app should ask an age before a campaign or a picture, and what the stores'
+forms must then say, is the lawyer's (8.3).
+
+---
+
+## 4. Privacy
+
+### 4.1 What is sensitive here
+
+- **A named person's illness** is data about health, which European law sets
+  apart and protects more strictly, and here it is often a third party's.
+- **Who prays for whom** shows a person's faith and practice.
+- **The departed** are outside most data law, but their families are not
+  outside decency, and some countries protect them.
+- **A place** narrows who a first name is.
+
+### 4.2 What is public, and what never is
+
+| Public (unless kept to a circle) | Never shown to anyone |
+|---|---|
+| The title, the first name, the words, the kind, the dates | Who added it to their prayers |
+| Its pictures, once cleared | How many did, as a number |
+| A country and a town, if given | Which days anyone prayed (not kept at all) |
+| The creator's name and picture as Community shows them | The creator's account id, email, or anything from their account |
+| Updates and comments | A reader's choice of prayers and of how long |
+
+- **A circle.** A campaign can be kept to one circle (a parish, a household,
+  friends: the circles of Read together, joined by a code). Then only its
+  members can open it, its thread is the circle's own
+  (`lib/community/groupAccess.ts`), and it is on no board.
+- **Not for search engines.** The page says so to them, it is in no sitemap,
+  and its link's preview names nobody.
+- **No reading it around the app.** The table stops answering the public key
+  at all (5.2). Every read is a route's, which leaves the account's id and the
+  counters out.
+
+### 4.3 Consent wording (drafts for his OK)
+
+One line to tick before Create, chosen by who it is for, kept with its day
+(`consent_kind`, `consent_at`). Today the tick is checked and thrown away.
+
+| For | The line | Kept as |
+|---|---|---|
+| Oneself | "This is my own request." | `self` |
+| Another living person | "They have given me their blessing to ask for prayers by name, and to share what I have written here." | `blessing` |
+| A child | "I am this child's parent or guardian." | `guardian` |
+| The reposed | "I am of the family, or the family has given its blessing." | `family` |
+| Each picture | "This picture is mine to share, and anyone in it has given me their blessing to post it." (exists: `campaigns.pictureConsent`) | `consent_at` on the picture |
+
+And one line of counsel over the words, in place of a rule nobody reads: "Say
+as little as prayer needs. A first name is enough."
+
+### 4.4 What a creator can delete
+
+- **Their words:** edit them (read again by a moderator), end the campaign
+  early, close comments, take a comment off.
+- **A picture:** removed from the page and from storage at once.
+- **Everything:** "Take this campaign down" (the control exists). Today it
+  marks the row removed and deletes the one picture. Reworked, it deletes the
+  campaign from the servers with its pictures, its updates and its comments
+  (the tables cascade; tested, 5.5), and it leaves other readers' prayers the
+  next time their app is online. The line that asks first already says most
+  of this (`campaigns.takeDownConfirm`).
+- **Their account:** deleting it deletes their campaigns and their join rows
+  (the tables cascade from `auth.users`, read in the migrations).
+- A campaign a moderator removed for breaking the rules is kept, unseen,
+  for thirty days in case of an appeal or a lawful request, then deleted.
+
+### 4.5 How long things are kept
+
+- **Running:** until its last day.
+- **Ended, for a living person:** off the board at once; deleted thirty days
+  after its last day unless renewed. Nobody's illness stays up by neglect.
+- **Ended, for the reposed:** the same, unless the creator ticked "Keep it on
+  my profile", in which case it stays there as a memorial until they remove
+  it.
+- **A reader's join row:** deleted when they take the campaign out, and with
+  the campaign.
+- **On a reader's device:** the name and the title, while it is carried.
+
+Question 9 for him.
+
+### 4.6 Location kept coarse
+
+2.9: a country and a town, typed by the creator, optional, never from the
+device, never coordinates, the country alone for a child.
+
+### 4.7 The privacy page: what it says today, and the new lines
+
+**It says nothing of Community today.** `app/(app)/privacy/page.tsx` does not
+contain the words community, campaign, picture, photo or upload (a search of
+the file finds none). Posts, the prayer wall, profile pictures and banners are
+live and public, and the page that promises "this page is updated first" does
+not name them. That is a gap whatever is decided about campaigns (9, item 4).
+
+**New lines for campaigns** (a draft, in the format of
+`docs/1.9-build/drafts/privacy-sharing.md`; true once the rework is built as
+these notes say, and not before):
+
+> **Prayer campaigns.** A prayer campaign is public unless you keep it to a
+> circle: its title, the first name of the person it is for, what you wrote,
+> its pictures, its place if you gave one, your updates, and the name and
+> picture on your profile. People's comments on it are public too. Give only
+> what prayer needs: a first name is enough, and say nothing of another
+> person's health or life that they have not agreed to share. Before a
+> campaign for someone else is made, you are asked to affirm that they, or
+> their family, have given their blessing, and we keep the day you did.
+>
+> Pictures are made again on our server before they are stored, which removes
+> the place and the device a photo carries inside it, and a moderator looks at
+> each one before it is shown. A place is a country and a town that you type;
+> the app never asks where you are.
+>
+> Who has added a campaign to their prayers is never shown, to its creator or
+> to anyone, and nothing is counted in public. If you are signed in, the
+> campaigns you carry are kept with your account so they follow you to your
+> other devices; if you are not, they are kept on your device alone. The name
+> and the campaign's title are kept on your device while you carry it, and
+> leave when it ends.
+>
+> You can end a campaign, remove a picture, close its comments, or take the
+> whole campaign down at any time. Taking it down deletes it from our servers
+> with its pictures, updates and comments, and it leaves other people's
+> prayers the next time their app is online. A campaign for a living person is
+> deleted thirty days after its last day unless you renew it. Deleting your
+> account deletes your campaigns.
+>
+> If a campaign names you, or someone in your care, and you did not agree to
+> it, report it from its page or write to support@purifyapp.net and we will
+> take it down.
+
+**German (the page says "du"):**
+
+> **Gebetskampagnen.** Eine Gebetskampagne ist öffentlich, es sei denn, du
+> beschränkst sie auf einen Kreis: ihr Titel, der Vorname des Menschen, für
+> den gebetet wird, dein Text, ihre Bilder, ihr Ort, falls du einen angibst,
+> deine Neuigkeiten sowie der Name und das Bild deines Profils. Auch die
+> Kommentare anderer sind öffentlich. Gib nur an, was das Gebet braucht: Ein
+> Vorname genügt, und schreibe nichts über die Gesundheit oder das Leben eines
+> anderen Menschen, dem er nicht zugestimmt hat. Bevor eine Kampagne für
+> jemand anderen angelegt wird, bestätigst du, dass dieser Mensch oder seine
+> Familie den Segen dazu gegeben hat, und wir speichern den Tag, an dem du das
+> bestätigt hast.
+>
+> Bilder werden auf unserem Server neu erzeugt, bevor sie gespeichert werden.
+> Dabei gehen der Ort und das Gerät verloren, die ein Foto in sich trägt, und
+> ein Moderator sieht sich jedes Bild an, bevor es gezeigt wird. Ein Ort
+> besteht aus einem Land und einer Stadt, die du selbst eintippst; die App
+> fragt nie, wo du bist.
+>
+> Wer eine Kampagne in seine Gebete aufgenommen hat, wird niemandem gezeigt,
+> auch nicht dem, der sie angelegt hat, und nichts wird öffentlich gezählt.
+> Bist du angemeldet, werden die Kampagnen, die du mitträgst, bei deinem Konto
+> gespeichert, damit sie dir auf deine anderen Geräte folgen; bist du es
+> nicht, bleiben sie allein auf deinem Gerät. Der Name und der Titel der
+> Kampagne liegen auf deinem Gerät, solange du sie mitträgst, und verschwinden,
+> wenn sie endet.
+>
+> Du kannst eine Kampagne jederzeit beenden, ein Bild entfernen, ihre
+> Kommentare schließen oder die ganze Kampagne löschen. Beim Löschen wird sie
+> mit ihren Bildern, Neuigkeiten und Kommentaren von unseren Servern entfernt,
+> und sie verschwindet aus den Gebeten anderer, sobald deren App das nächste
+> Mal online ist. Eine Kampagne für einen lebenden Menschen wird dreißig Tage
+> nach ihrem letzten Tag gelöscht, wenn du sie nicht erneuerst. Wenn du dein
+> Konto löschst, werden auch deine Kampagnen gelöscht.
+>
+> Nennt eine Kampagne dich oder einen Menschen in deiner Obhut, ohne dass du
+> zugestimmt hast, melde sie auf ihrer Seite oder schreib an
+> support@purifyapp.net, und wir nehmen sie herunter.
+
+**What each sentence rests on** (so nothing is promised that the build does not
+do):
+
+- Public unless kept to a circle: `audience`, `circle_id`, and the routes'
+  list of columns (5.2).
+- The blessing and its day: `consent_kind`, `consent_at`.
+- Pictures made again, and looked at: 3.5, steps 2 and 5, and the test of
+  step 2.
+- A place typed, never asked: 2.9; the app has no location permission today
+  (`docs/app-store-review-notes.md:41`).
+- Who has added it is never shown: no route returns join rows or counts
+  (5.2, step 3), and `prayer_campaign_prayers` is readable by its own reader
+  alone (the policy of July).
+- Kept with the account, or on the device alone: 2.3.
+- Taking it down deletes it: the cascades, tested (5.5).
+- Thirty days: a scheduled job, to be built with phase 1.
+- The address: `support@purifyapp.net`, the inbox the Terms now name.
+
+**The 1.9 letter** must list the change, as the page promises ("the change is
+listed in the next /whats-new letter"), in the release that turns campaigns on.
+
+---
+
+## 5. The data changes
+
+### 5.1 The rules these follow
+
+- **New files only.** No migration that has reached `main` is edited.
+- **Not in `supabase/migrations/` yet.** A file there runs against production
+  on the merge, so the three below stay in this note until he signs the SQL
+  off. Then each is named `<YYYYMMDDHHMMSS>_<name>.sql` from
+  `date -u +%Y%m%d%H%M%S` on that day, fourteen digits, later than every file
+  in the folder (the newest today is `20261110012059_user_kept.sql`).
+- **Each runs twice.** Every statement is "if not exists" or drops what it is
+  about to make.
+- **Nothing a reader can reach changes when they run:** the campaigns routes
+  answer 404 while the flag stands, and Read together's circles are not
+  touched.
+
+### 5.2 File one: the campaign itself, joining it, and reports
+
+For phase 1. What it does:
+
+1. `intention` may also be `study`, `travel` or `other`; `status` may also be
+   `held` or `ended`.
+2. New columns on `prayer_campaigns` for 2.1 to 2.9, each with its check.
+3. **The public policy goes.** `prayer_campaigns_public_select` is dropped and
+   the table stops answering the public key. Every read becomes a route's,
+   with the service role and a list of columns that leaves out `creator_id`
+   and the counters. This is the code change
+   `20260802000100_revoke_public_user_id.sql` says is owed, and it must land
+   in the same release as the new routes; the old client code that read the
+   table directly (`lib/campaigns/client.ts`, `fetchMyPrayers`) is replaced in
+   that release.
+4. The join row gains `places`, `until_on` and `notify_updates`.
+5. Reports gain a target, a reason to tick and a state, and are held to one
+   open report a reader for each thing. Old repeats are closed, not deleted.
+6. The moderators' log may name a campaign or a picture.
+
+```sql
+-- Prayer campaigns, reworked: the campaign itself, joining it, and reports.
+--
+-- DRAFT in docs/1.9-build/notes/campaigns-fable.md. Not a migration until
+-- Edgar signs the SQL off; then it is named <YYYYMMDDHHMMSS>_campaigns_rework.sql
+-- from `date -u +%Y%m%d%H%M%S`, later than every file in the folder.
+--
+-- Follows 20260713000200, 20260713000300, 20260725000000 and
+-- 20260811000000, none of which is edited. Written to run twice: every
+-- statement is "if not exists", or drops what it is about to make.
+--
+-- Nothing a reader can reach changes when this runs: the campaigns routes
+-- answer 404 while lib/campaigns/flags.ts holds WITHDRAWN_FOR_REWORK, and
+-- Read together's circles (prayer_campaign_groups and its members) are not
+-- touched.
+
+set lock_timeout = '3s';
+set statement_timeout = '120s';
+
+-- 1. What a campaign may be for, and the states it may be in ---------------
+--
+-- Three more intentions beside the six of July: study (an exam, a school
+-- year), travel (a journey) and other (anything else, in the creator's own
+-- words). Two more states: held (waiting for a moderator, as a held post in
+-- Community is) and ended (its last day has passed). The old checks were
+-- written inline, so they are found by what they say (the way
+-- 20261005000000_community_three.sql finds its own).
+do $$
+declare
+  c record;
+begin
+  for c in
+    select con.conname
+      from pg_constraint con
+     where con.contype = 'c'
+       and con.conrelid = 'public.prayer_campaigns'::regclass
+       and pg_get_constraintdef(con.oid) ~ 'intention'
+       and pg_get_constraintdef(con.oid) ~ 'healing'
+       and pg_get_constraintdef(con.oid) !~ 'study'
+  loop
+    execute format('alter table public.prayer_campaigns drop constraint %I', c.conname);
+  end loop;
+  if not exists (
+    select 1 from pg_constraint
+     where conrelid = 'public.prayer_campaigns'::regclass
+       and conname = 'prayer_campaigns_intention_check'
+  ) then
+    alter table public.prayer_campaigns
+      add constraint prayer_campaigns_intention_check
+      check (intention in ('healing', 'comfort', 'guidance', 'persecuted', 'thanksgiving', 'departed', 'study', 'travel', 'other'));
+  end if;
+
+  for c in
+    select con.conname
+      from pg_constraint con
+     where con.contype = 'c'
+       and con.conrelid = 'public.prayer_campaigns'::regclass
+       and pg_get_constraintdef(con.oid) ~ 'status'
+       and pg_get_constraintdef(con.oid) ~ 'removed'
+       and pg_get_constraintdef(con.oid) !~ 'held'
+  loop
+    execute format('alter table public.prayer_campaigns drop constraint %I', c.conname);
+  end loop;
+  if not exists (
+    select 1 from pg_constraint
+     where conrelid = 'public.prayer_campaigns'::regclass
+       and conname = 'prayer_campaigns_status_check'
+  ) then
+    alter table public.prayer_campaigns
+      add constraint prayer_campaigns_status_check
+      check (status in ('held', 'active', 'answered', 'memory_eternal', 'ended', 'removed'));
+  end if;
+end $$;
+
+-- 2. What a campaign carries ----------------------------------------------
+alter table public.prayer_campaigns
+  -- More than the one line of `note`: what the creator asks prayers for.
+  add column if not exists details text,
+  -- Its length, set by the creator: 1 to 40 days, on the creator's own
+  -- calendar. ends_at (20260713000300) stays as the moment the server treats
+  -- it as over, noon UTC of the day after ends_on, when that day has ended
+  -- everywhere.
+  add column if not exists days smallint,
+  add column if not exists starts_on date,
+  add column if not exists ends_on date,
+  -- The prayer it places in a reader's prayers: a prayer of the prayer book
+  -- by its rule and its own id (lib/prayers/rules.ts), whose words are read
+  -- from the book's own files and never copied here. prayer_key (July) named
+  -- lines Purify wrote; it stays for the old rows and is not written again.
+  add column if not exists prayer_rule text,
+  add column if not exists prayer_id text,
+  -- A coarse place, only if the creator gives one: a country and a city or
+  -- region by name. Never coordinates.
+  add column if not exists place_country text,
+  add column if not exists place_name text,
+  -- Who can see it: everyone in Community, or one circle (a parish, a
+  -- household, friends: prayer_campaign_groups, which Read together shares).
+  add column if not exists audience text not null default 'public',
+  add column if not exists circle_id uuid,
+  add column if not exists comments_open boolean not null default true,
+  -- Whether it may stand in a list ordered by how many carry it (later, and
+  -- only on Edgar's word), and whether it stays on the creator's profile
+  -- once it has ended.
+  add column if not exists listed boolean not null default true,
+  add column if not exists keep_after_end boolean not null default false,
+  -- The creator as Community shows them, kept on the row as a post keeps its
+  -- author_name, so a read never has to carry creator_id to a browser.
+  add column if not exists creator_name text,
+  add column if not exists creator_handle text,
+  -- What the creator affirmed, and when: their own request, the person's
+  -- blessing, a parent or guardian, or the family of the departed.
+  add column if not exists consent_kind text,
+  add column if not exists consent_at timestamptz,
+  -- Moderation, as a post has it.
+  add column if not exists held_reason text,
+  add column if not exists mod_cleared_at timestamptz,
+  add column if not exists removed_reason text,
+  add column if not exists removed_by_email text,
+  add column if not exists ended_at timestamptz;
+
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'prayer_campaigns_details_len') then
+    alter table public.prayer_campaigns add constraint prayer_campaigns_details_len
+      check (details is null or char_length(details) <= 2000);
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'prayer_campaigns_days_range') then
+    alter table public.prayer_campaigns add constraint prayer_campaigns_days_range
+      check (days is null or days between 1 and 40);
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'prayer_campaigns_days_order') then
+    alter table public.prayer_campaigns add constraint prayer_campaigns_days_order
+      check (starts_on is null or ends_on is null or ends_on >= starts_on);
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'prayer_campaigns_prayer_ref') then
+    alter table public.prayer_campaigns add constraint prayer_campaigns_prayer_ref
+      check (
+        -- Both or neither. Said this way because a check passes on NULL:
+        -- "rule ~ x and id ~ x" is NULL, not false, when one of them is missing.
+        (prayer_rule is null) = (prayer_id is null)
+        and (prayer_rule is null or prayer_rule ~ '^[a-z0-9-]{1,80}$')
+        and (prayer_id is null or prayer_id ~ '^[a-z0-9-]{1,80}$')
+      );
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'prayer_campaigns_place_shape') then
+    alter table public.prayer_campaigns add constraint prayer_campaigns_place_shape
+      check (
+        (place_country is null or place_country ~ '^[A-Z]{2}$')
+        and (place_name is null or char_length(place_name) between 2 and 60)
+        and (place_name is null or place_country is not null)
+      );
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'prayer_campaigns_audience_check') then
+    alter table public.prayer_campaigns add constraint prayer_campaigns_audience_check
+      check (audience in ('public', 'circle') and ((audience = 'circle') = (circle_id is not null)));
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'prayer_campaigns_consent_check') then
+    alter table public.prayer_campaigns add constraint prayer_campaigns_consent_check
+      check (consent_kind is null or consent_kind in ('self', 'blessing', 'guardian', 'family'));
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'prayer_campaigns_names_len') then
+    alter table public.prayer_campaigns add constraint prayer_campaigns_names_len
+      check (
+        (creator_name is null or char_length(creator_name) <= 80)
+        and (creator_handle is null or char_length(creator_handle) <= 40)
+        and (held_reason is null or char_length(held_reason) <= 300)
+        and (removed_reason is null or char_length(removed_reason) <= 300)
+      );
+  end if;
+  -- A circle that is deleted takes its campaign's audience with it: the
+  -- campaign is then nobody's to see until its creator chooses again, so the
+  -- row is removed with the circle rather than turned public by a default.
+  if not exists (select 1 from pg_constraint where conname = 'prayer_campaigns_circle_id_fkey') then
+    alter table public.prayer_campaigns add constraint prayer_campaigns_circle_id_fkey
+      foreign key (circle_id) references public.prayer_campaign_groups (id) on delete cascade;
+  end if;
+end $$;
+
+-- The board reads what is active, soonest to end last; a circle reads its own.
+create index if not exists prayer_campaigns_board_idx
+  on public.prayer_campaigns (status, created_at desc)
+  where audience = 'public';
+create index if not exists prayer_campaigns_circle_idx
+  on public.prayer_campaigns (circle_id, created_at desc)
+  where circle_id is not null;
+create index if not exists prayer_campaigns_ending_idx
+  on public.prayer_campaigns (ends_at)
+  where status = 'active' and ends_at is not null;
+
+-- 3. No reading it straight from the table --------------------------------
+--
+-- July's policy let anyone holding the public key read every campaign that
+-- was not removed, whole: creator_id (the account's id, which
+-- 20260802000100_revoke_public_user_id.sql names as owed), the counters the
+-- 2026-08-22 rule says are never shown, and now a held campaign and one kept
+-- to a circle. RLS is by row, not by column, so the policy goes and every
+-- read is a route's (app/api/campaigns), with the service role and a list of
+-- columns that leaves those out, as Community's posts are read.
+drop policy if exists "prayer_campaigns_public_select" on public.prayer_campaigns;
+revoke all on public.prayer_campaigns from anon, authenticated;
+grant all on public.prayer_campaigns to service_role;
+
+-- 4. Joining: where it goes in a reader's prayers, and until when ----------
+alter table public.prayer_campaign_prayers
+  -- The prayers that carry it, as lib/prayers/commemoration.ts names them.
+  add column if not exists places text[],
+  -- The reader's own last day when it is sooner than the campaign's.
+  add column if not exists until_on date,
+  -- Asked for by the reader, never on by joining: a notification when the
+  -- creator posts an update.
+  add column if not exists notify_updates boolean not null default false;
+
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'prayer_campaign_prayers_places_known') then
+    alter table public.prayer_campaign_prayers add constraint prayer_campaign_prayers_places_known
+      check (places is null or (
+        cardinality(places) between 1 and 6
+        and places <@ array['morning', 'midday', 'evening', 'hours', 'compline', 'mine']::text[]
+      ));
+  end if;
+end $$;
+
+create index if not exists prayer_campaign_prayers_notify_idx
+  on public.prayer_campaign_prayers (campaign_id)
+  where notify_updates = true;
+
+-- 5. Reports: of a campaign or one of its pictures, each once, with a state -
+alter table public.prayer_campaign_reports
+  add column if not exists target_kind text not null default 'campaign',
+  add column if not exists target_id uuid,
+  add column if not exists reason_code text,
+  add column if not exists status text not null default 'open',
+  add column if not exists closed_at timestamptz;
+
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'prayer_campaign_reports_shape') then
+    alter table public.prayer_campaign_reports add constraint prayer_campaign_reports_shape
+      check (
+        target_kind in ('campaign', 'picture')
+        and ((target_kind = 'campaign') = (target_id is null))
+        and status in ('open', 'actioned', 'dismissed')
+        and (reason_code is null or reason_code in ('about_me', 'private_details', 'money', 'unkind', 'not_prayer', 'picture', 'other'))
+      );
+  end if;
+end $$;
+
+-- Until now the same reader could report the same campaign any number of
+-- times. All but each reader's first open report are closed (not deleted)
+-- before the index that holds them to one.
+update public.prayer_campaign_reports r
+   set status = 'dismissed', closed_at = now()
+ where r.status = 'open'
+   and r.reporter_id is not null
+   and exists (
+     select 1 from public.prayer_campaign_reports o
+      where o.campaign_id = r.campaign_id
+        and o.reporter_id = r.reporter_id
+        and o.status = 'open'
+        and coalesce(o.target_id, o.campaign_id) = coalesce(r.target_id, r.campaign_id)
+        and (o.created_at, o.id) < (r.created_at, r.id)
+   );
+
+create unique index if not exists prayer_campaign_reports_once_idx
+  on public.prayer_campaign_reports (campaign_id, reporter_id, coalesce(target_id, campaign_id))
+  where status = 'open' and reporter_id is not null;
+
+revoke all on public.prayer_campaign_reports from anon, authenticated;
+grant all on public.prayer_campaign_reports to service_role;
+
+-- 6. The moderators' log may name a campaign or a picture -------------------
+--
+-- community_mod_log (20261005000000) lists what a line may be about. Found
+-- by what it says, as above.
+do $$
+declare
+  c record;
+begin
+  for c in
+    select con.conname
+      from pg_constraint con
+     where con.contype = 'c'
+       and con.conrelid = 'public.community_mod_log'::regclass
+       and pg_get_constraintdef(con.oid) ~ 'target_kind'
+       and pg_get_constraintdef(con.oid) !~ 'campaign'
+  loop
+    execute format('alter table public.community_mod_log drop constraint %I', c.conname);
+  end loop;
+  if not exists (
+    select 1 from pg_constraint
+     where conrelid = 'public.community_mod_log'::regclass
+       and conname = 'community_mod_log_target_kind_check'
+  ) then
+    alter table public.community_mod_log
+      add constraint community_mod_log_target_kind_check
+      check (target_kind is null or target_kind in ('post', 'reply', 'profile', 'report', 'hold', 'term', 'clergy', 'campaign', 'picture'));
+  end if;
+end $$;
+```
+
+### 5.3 File two: updates and comments, as a thread in Community
+
+For phase 2. One nullable column on `community_posts`, one on its replies. The
+thread's `category` stays null: the table's check allows only `question` and
+`feast` there, which the first test of this draft found. The public feed must
+ask for `campaign_id is null`, as it asks for `group_id is null`
+(`app/api/community/posts/route.ts`, `listPosts`).
+
+```sql
+-- Prayer campaigns, reworked: a campaign's updates and comments are its own
+-- thread in Community.
+--
+-- DRAFT in docs/1.9-build/notes/campaigns-fable.md. Named
+-- <YYYYMMDDHHMMSS>_campaign_threads.sql when Edgar signs it off, after the
+-- core file. Written to run twice.
+--
+-- One thread per campaign: a row of community_posts that carries the
+-- campaign's id. A comment is a reply to it, and an update is a reply of the
+-- creator's marked as one. So the word filter, the spam guard, holds,
+-- reports, blocks, mutes, the moderators' queue, its log and its Undo all
+-- apply to campaigns as they stand, with nothing built twice.
+--
+-- A column added to these two tables is not readable with the public key
+-- (20260802000100_revoke_public_user_id.sql left them on column grants), and
+-- that is wanted: both are read by routes, with the service role.
+
+set lock_timeout = '3s';
+set statement_timeout = '120s';
+
+alter table public.community_posts
+  add column if not exists campaign_id uuid;
+
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'community_posts_campaign_id_fkey') then
+    alter table public.community_posts add constraint community_posts_campaign_id_fkey
+      foreign key (campaign_id) references public.prayer_campaigns (id) on delete cascade;
+  end if;
+end $$;
+
+-- One thread a campaign, and the feed's own read stays an index scan: the
+-- public feed asks for campaign_id is null, as it asks for group_id is null.
+create unique index if not exists community_posts_campaign_thread_idx
+  on public.community_posts (campaign_id)
+  where campaign_id is not null;
+
+alter table public.community_post_replies
+  add column if not exists campaign_update boolean not null default false;
+
+-- The Updates door: the creator's updates, newest first.
+create index if not exists community_post_replies_updates_idx
+  on public.community_post_replies (post_id, created_at desc)
+  where campaign_update;
+```
+
+### 5.4 File three: pictures
+
+For phase 3.
+
+```sql
+-- Prayer campaigns, reworked: a campaign's pictures, up to 3, or 20 with
+-- Purify Plus.
+--
+-- DRAFT in docs/1.9-build/notes/campaigns-fable.md. Named
+-- <YYYYMMDDHHMMSS>_campaign_pictures.sql when Edgar signs it off, after the
+-- core file. Written to run twice.
+--
+-- The limit of 3 or 20 is the route's to hold, from the creator's
+-- entitlement at the moment of the upload (the table's own ceiling is 20). A
+-- picture is stored only after the server has made it again from its pixels
+-- (no EXIF, so no place and no device), and it is `held` until a moderator
+-- has looked: its address is random and is given to nobody before then.
+--
+-- image_url on prayer_campaigns (20260725000000) stays for the old rows and
+-- is not written again.
+
+set lock_timeout = '3s';
+set statement_timeout = '120s';
+
+create table if not exists public.prayer_campaign_pictures (
+  id uuid primary key default gen_random_uuid(),
+  campaign_id uuid not null references public.prayer_campaigns (id) on delete cascade,
+  bucket text not null default 'campaign-media' check (char_length(bucket) between 1 and 60),
+  -- c/<uuid>.<ext>: a random name, as lib/campaigns/image.ts already makes.
+  path text not null check (char_length(path) between 3 and 200),
+  -- Its place in the row of pictures; the first is the page's head.
+  position smallint not null check (position between 0 and 19),
+  width integer check (width is null or width between 1 and 4096),
+  height integer check (height is null or height between 1 and 4096),
+  -- What it shows, in the creator's words, for a reader who cannot see it.
+  alt text check (alt is null or char_length(alt) <= 140),
+  status text not null default 'held' check (status in ('held', 'shown', 'removed')),
+  -- What the automatic check answered, in a word, when there is one.
+  check_result text check (check_result is null or char_length(check_result) <= 120),
+  reviewed_by_email text,
+  reviewed_at timestamptz,
+  -- "This picture is mine to share, and anyone in it has given me their
+  -- blessing to post it": when the creator affirmed it.
+  consent_at timestamptz not null default now(),
+  created_at timestamptz not null default now(),
+  unique (bucket, path)
+);
+
+-- A place in the row is held by one picture at a time; a removed picture
+-- gives its place up.
+create unique index if not exists prayer_campaign_pictures_place_idx
+  on public.prayer_campaign_pictures (campaign_id, position)
+  where status <> 'removed';
+
+-- The moderators' queue: what waits, oldest first.
+create index if not exists prayer_campaign_pictures_held_idx
+  on public.prayer_campaign_pictures (created_at)
+  where status = 'held';
+
+alter table public.prayer_campaign_pictures enable row level security;
+-- No policy: read and written by routes, with the service role.
+revoke all on public.prayer_campaign_pictures from anon, authenticated;
+grant all on public.prayer_campaign_pictures to service_role;
+```
+
+### 5.5 How these were checked
+
+On a scratch PostgreSQL 16.15 in this session, with stand-ins for what a
+Supabase project has before any migration (the `auth` schema, `auth.uid()`,
+the three roles):
+
+- **The ground:** 97 of the 98 files in `supabase/migrations/` applied in
+  order (the one that did not, `20260526000000_profiles_has_password.sql`,
+  reads a column of the real `auth.users` that the stand-in lacks), then the
+  six files of `docs/1.8-build/sql/`, among them `read-together.sql`, which he
+  ran by hand, so the circles are as that file leaves them.
+- **Twice:** each draft ran twice on a fresh copy of that ground, with no
+  error. The second run changed nothing (only "already exists, skipping").
+- **Old data kept:** a July campaign, a circle that follows a reading path
+  with no campaign, and one reader's three reports of one campaign were put
+  in first. After the drafts: the campaign unchanged, the circle unchanged,
+  the first report open and the two repeats closed, none deleted.
+- **The door shut:** before, the `anon` role read the campaign; after, it and
+  `authenticated` are refused on `prayer_campaigns` and on the pictures, and
+  the service role reads.
+- **The checks hold:** 41 days, a circle audience with no circle, a town with
+  no country, half a prayer reference, an unknown state, an unknown place in
+  a join, a second thread for one campaign, a second picture in one place, a
+  place past the twentieth, and the same picture reported twice are each
+  refused.
+- **Taking down:** deleting a campaign deletes its thread, its replies, its
+  pictures and its join rows.
+- **One fault found and fixed on the way:** the first draft's check on the
+  prayer reference let half a reference through, because a check passes on
+  NULL. The draft above says it the safe way and says why.
+
+Not checked, because it cannot be from here: production itself. Before file
+one is signed off, probe what is there (the public key answers 200, 404 or
+401):
+
+```
+for t in prayer_campaigns prayer_campaign_prayers prayer_campaign_days \
+         prayer_campaign_reports prayer_campaign_groups; do
+  curl -s -o /dev/null -w "$t %{http_code}\n" \
+    "$NEXT_PUBLIC_SUPABASE_URL/rest/v1/$t?select=*&limit=1" \
+    -H "apikey: $NEXT_PUBLIC_SUPABASE_ANON_KEY"
+done
+curl -s -o /dev/null -w "remind_enabled %{http_code}\n" \
+  "$NEXT_PUBLIC_SUPABASE_URL/rest/v1/prayer_campaign_prayers?select=remind_enabled&limit=1" \
+  -H "apikey: $NEXT_PUBLIC_SUPABASE_ANON_KEY"
+```
+
+File one alters `prayer_campaign_prayers` and `prayer_campaign_reports`, and
+adds a reference to `prayer_campaign_groups`. If any of the three answers 404,
+its migration never ran, and that comes first, by his hand.
+
+### 5.6 Smaller changes, each with its phase
+
+- **An acceptance of the rules** (with the rules page, 3.2):
+  `terms_acceptances.context` allows `signup`, `checkout`, `eikon_claim` and
+  `seller_agreement` today; it needs `community`. One statement, found by what
+  it says, as above.
+- **A notification of an update** (phase 4):
+  `community_notifications.kind` needs one more word.
+- **Nothing is dropped.** `prayer_campaign_days`, `prayer_key`, `image_url`,
+  `last_prayed_at`, `prayer_days` and the two counters stay where they are and
+  are no longer written. Whether to remove them one day is his, in a file of
+  its own.
+
+---
+
+## 6. A phased plan, with sizes
+
+Sizes are hours of a building chat, the unit `HANDOFF.md` uses (its own
+examples: Compare's line about half an hour, chants offline about three, F-49
+about six). They do not include his time, a priest's or a lawyer's.
+
+### Phase 1: the campaign in words (about 30 hours)
+
+What a reader gets: start a campaign for anyone or anything, for one to forty
+days; find it in Pray together; add it to their prayers in the places they
+choose; pray it there; let it go when it ends. Reported, blocked, filtered and
+read by a moderator from the first day.
+
+| Piece | Hours |
+|---|---|
+| The model and the device's list (kinds, lengths, the prayer's reference, `purify.prayers.campaigns` after `wallNames.ts`), with tests | 3 |
+| The routes: create through the filter and the spam check, the board, one campaign, mine, join and leave with places, the state route, end and take down, report with reasons and auto-hide; none hands out `creator_id` or a count; tests at each route, the sign-in code among them | 6 |
+| The screens: Pray together's rows, the page (About), Starting one and its sheets, the joining sheet, Your rule's medallion and step, the two lines in the prayers, "Keep this name", You's rows; the pages in the list of pages with their own bar; every switch moving; five palettes; Arabic | 9 |
+| Moderation: campaigns waiting and reports with a state in the one queue, the moderators' page, the log | 3 |
+| About 70 new lines in 21 languages | 2 |
+| The privacy lines on the page (English and German), the rules page, the release note's line, the stores' review notes | 1.5 |
+| The switch's middle position, testers first, asked by every route, with tests ("What can safely ride in 1.9", below) | 1.5 |
+| The gates: typecheck, unit, lint, both exports, a new section of the export walk, the website's build, the four stills rendered again from the real screens with `checkMock` | 4 |
+
+Needs before it is built: his answers to questions 1, 3, 4, 6, 8, 9 and 10
+(8.1); his sign-off of file one; the probes of 5.5.
+
+Needs before it opens to every reader: his own walk of it on his phone; the
+words for a reader in crisis, his with a priest (question 12); his OK of the
+privacy lines, the rules and the Terms' new section, once a lawyer has read
+them (question 13); the stores' answers (question 14).
+
+### Phase 2: updates and comments (about 10 hours)
+
+File two. The thread made when a campaign is cleared; the two doors and their
+fields; the creator closing comments and taking one off; Report on a reply and
+no writing past a block, for all of Community; tests; words in 21 languages.
+
+### Phase 3: pictures, 3 and 20 (about 14 hours, and a wait)
+
+File three. The pipeline of 3.5; the row and the viewer; the Plus place, its
+row in `lib/premium/plusRows.ts` and its words in 21 languages; the admin's
+pictures; the check service; the test that a stored photo carries no place.
+The wait is for the service he chooses and the lawyer's word (8.3), not for
+the code.
+
+### Phase 4: the rest (about 16 hours)
+
+A place (2). A campaign kept to a circle (4). The door on a profile (2). An
+update's notification for a reader who asked (4; it needs native push, F-21,
+which is still open). "Prayed by many" (4), only on his word.
+
+### Beside any phase: the prayers (about 5 hours, and a search)
+
+The three offices from Hapgood read off their page images with a test each,
+and the table of which prayer goes with which need, for a priest to read. The
+search for a prayer for the sick in a public-domain book is about two hours to
+look, and unknown to finish.
+
+### What can safely ride in 1.9
+
+His two words of the same night pull apart, so this is his to settle
+(question 10). First: "I wanted version 1.9 to have the prayer campaign
+system, right? I never saw that implemented" (`BRAINSTORM.md`). Later, about
+03:15 UTC: "remember when you finish with everything and the questions are
+answered you finalize the v1.9 so I can retest it out" (`HANDOFF.md`).
+
+**One fact decides how any of it can be walked.** A test build "talks to the
+live 1.8 website and database until release day" (`notes/build-89.md`), and
+today's switch is cut into a build when the build is made
+(`lib/campaigns/flags.ts`). So as things stand he could not walk campaigns on
+his phone before they were either open to every reader or missing from the
+build.
+
+**So the switch gains a middle position** (the hour and a half in phase 1's
+table):
+
+- **Closed,** as today: every campaign page and route answers 404.
+- **Testers first:** the routes answer for the accounts the server names as
+  admins, his own among them, which is the answer Testers mode already asks
+  for from a phone (`app/api/admin/whoami`), and 404 for everyone else. Seeing
+  campaigns early gives no powers: moderating still asks for the sign-in code
+  (3.4). The onboarding was given the same kind of flag the same night, "off
+  for readers and on for testers" (`HANDOFF.md`).
+- **Open:** every reader.
+
+It stays one constant in `lib/campaigns/flags.ts`, in version control with its
+date and its reason, as that file argues for today. The website obeys it on a
+push. An app carries the campaign pages unless its build says closed, and
+shows the doors to them only when the server answers, so an app follows the
+website with no new store build.
+
+**The order, whichever release carries it:**
+
+1. Phase 1 is built with the switch closed. Nothing of it can be reached, as
+   today.
+2. File one is signed and run, and the website is pushed at "testers first".
+   Both are production, so both wait for his word.
+3. He walks it on his phone, in a test build cut from that commit, against the
+   live website: starting a campaign, clearing it as a moderator on the
+   website, joining it, praying it, ending it.
+4. When the walk is clean and questions 12 to 14 are answered: open, and the
+   store builds are cut from that commit, with campaigns described in the
+   notes for review. The release's own note names campaigns only from then: a
+   note may not claim what is dark in production (AGENTS.md, the release
+   ritual, 4).
+
+A build sent to a store's review is cut closed or open, never in the middle
+position. Apple asks that a new feature be "described with specificity in the
+Notes for Review" and "accessible for review" (guideline 2.3.1), and forbids
+"hidden, dormant, or undocumented features" (2.5.19; both as its page read on
+2026-11-10).
+
+**Recommended: 1.9 goes out as it is, and campaigns lead a small release
+straight after it (1.9.1).**
+
+- 1.9's retest and its store builds wait for nothing here.
+- Phase 1 can start the day he says start, on the same branch, with the switch
+  closed. Its changes to the three screens he has approved (below) wait until
+  1.9 has merged, so the build he is retesting does not move under him.
+- After 1.9's release day the four steps above run. The website has campaigns
+  as soon as they open, and the apps have them with 1.9.1.
+- The words that wait on a priest and on a lawyer (questions 12 to 14) have
+  time to come back without holding a release.
+- Campaigns reach the apps at about the same date either way. What differs is
+  whether the rest of 1.9 waits with them, and whether a public feature about
+  the sick and the departed stands on the critical path of a release he wants
+  finished.
+
+**If he wants campaigns inside 1.9's own store builds,** it can be done, and
+the cost is that 1.9 reaches the stores later. Its store builds would wait for
+phase 1 (about 30 hours of building, so about two days with two chats at it),
+then for release day's push, his walk of campaigns and its fixes, and
+questions 12 to 14. The website's 1.9 would not wait; the stores' would.
+
+**Why not as the onboarding rides,** asleep inside 1.9 and lit on his word
+(`BRAINSTORM.md`)? The onboarding lives on the device, so he can try it in a test
+build before release day. Campaigns need the website and the database, so he
+cannot. They would go into every reader's app unwalked, his first walk would
+most likely bring fixes that need a new store build anyway, and a feature
+that sleeps in a reviewed build is what the store's rule above warns of.
+
+**Why phase 1 is safe to build beside 1.9 either way:**
+
+- It adds pages and rows. It changes three screens he has approved only by
+  adding to them: Pray together gains a section, Your rule's names gain a kind
+  of medallion, and "Those I pray for" gains one line, each only for a reader
+  who carries a campaign.
+- While the switch is closed, no reader meets any of it, as today.
+- It adds one file to a release day (file one), which changes nothing a reader
+  can reach.
+- The campaign for the reposed is whole today: its prayer is already in the
+  app, word for word.
+
+**Better after phase 1 in any case:** comments (the first days of a public
+feature are when a moderator is busiest), pictures (a service, a lawyer, and
+the stores' forms), the list, and everything in phase 4.
+
+---
+
+## 7. The stills
+
+https://claude.ai/artifact/7EuY9gDq4iu5iRQNGEhfP9 (private to him until he
+shares it). Four screens, one version each, as his rule of 2026-11-09 asks.
+
+| # | Screen | Made from | New words on it |
+|---|---|---|---|
+| 1 | A campaign's page | `MobileTopBar` (overlay), the saint page's picture and fade, the doors (`components/ui/doors.ts`), `CommunityAvatar`, `ShareButton`, the top's one plate (`components/nav/topPlate.ts`), and the prayer from `lib/prayers/commemoration.ts` | "Updates", "Comments", "The prayer", "Pictures", "Started November 10", "Forty days, to December 19" |
+| 2 | Starting one | The page for a new post (`ComposePage`): its head, its doors, its fields, its foot; the rows of Your rule; the tick of In which prayers | "A first name only, as the Church remembers them.", "What you ask prayers for", "How long", "Place", "None yet. Up to three.", "I am of the family, or the family has given its blessing.", "A campaign is read by a moderator before everyone can see it. No links, and no asking for money." |
+| 3 | Joining, and where it goes | `Sheet` and `PlaceChips`, as `AddToPrayersSheet` draws them | "For how long", "Until its last day, December 19", "It leaves your prayers by itself after the last day. Only you can see this." |
+| 4 | The campaign inside the prayers | The app's own Evening prayers at `CommemorationStep`, with one line added | "With the prayer campaign “Forty days for Nicholas”, until December 19." |
+
+Everything else on them is an existing key.
+
+**How they were made.** From the native export, as CLAUDE.md asks. In a scratch
+copy of the branch, never committed: one page that draws the three proposed
+screens from the app's own components, and one added line in
+`CommemorationStep`. The export was built as `scripts/promo/README.md` says a
+cloud session builds one (placeholder public settings, a stand-in for the
+shop's two catalog pages), opened with `openPhone` at 390 by 844, and
+photographed at twice that. No app code on the branch was changed.
+
+**Rendered twice, because the branch moved.** First from `6a302fb4`. While
+these notes were being checked the branch went thirty-three commits on, and
+one of them changed a part still 1 is made of: build 89 note 15 put every
+round button at the top of a page on one plate (`components/nav/topPlate.ts`,
+`9e6fe463`). So the export was built again from `f6987145`, the campaign's
+menu button was drawn on that plate as the works' reader draws its own
+(`MobileWorkActions`), and all four were rendered and checked again. Stills 2,
+3 and 4 came out the same to the pixel. Still 1 differs in that button and in
+the weight of Share's mark. The page above shows the second render.
+
+Two things for whoever builds this:
+
+- Your rule's rows are now one component, `WayRow`
+  (`components/prayers/mine/WayRow.tsx`, `52dbbe27`). The rows of Starting one
+  and the row For how long are drawn as it draws its own, with the padding set
+  by start and end (9, item 3), and should be that component.
+- What a page puts opposite the way back must be one of the plates the new
+  test knows (`lib/ui/__tests__/topPlates.test.ts`). The campaign's menu
+  button is a new one: drawn from `TOP_PLATE`, and added to that test's list.
+
+**The check.** `checkMock` from `scripts/mock-check.mjs`, on each still, on all
+five palettes and in Arabic's direction:
+
+```
+Mock check: a campaign's page ([data-still=page])
+  ok   contrast, placeholder, target, glyph, palette, gold, stripe, mirror, emdash, rays
+Mock check: starting a campaign ([data-still=create])
+  ok   contrast, placeholder, target, glyph, palette, gold, stripe, mirror, emdash, rays
+Mock check: joining: add to my prayers ([role=dialog])
+  ok   contrast, placeholder, target, glyph, palette, gold, stripe, mirror, emdash, rays
+Mock check: the campaign inside the prayers (#commemoration)
+  ok   contrast, placeholder, target, glyph, palette, gold, stripe, mirror, emdash, rays
+```
+
+- **One thing is excused, and named on the piece itself:** on still 4 the
+  report also prints three lines marked "allowed, contrast", one for each line
+  of the prayer that is not being read. Those lines are dimmed by the reader's
+  own reading light as it ships (`useLitLine`), not by this proposal. They
+  measure 3.82:1 on Dark and 2.31:1 on Light (9, item 7). Without the
+  allowance the still fails on them, as the app's own page would.
+- **What the tool could not measure** (words on the lit panels, which stand on
+  a gradient) was looked at by eye on Light, Black, Candlelight and Monastery
+  as well as Dark.
+- **Three faults were caught before anything was sent,** and all three turned
+  out to be the app's own, borrowed with its parts: the check found the rows
+  2 pixels off in Arabic (9, item 3), and the eye found the rows stacked (9,
+  item 2) and the doors drawn under the picture (9, item 1). The stills avoid
+  each. The app has since mended the second (`52dbbe27`); the other two stand.
+
+**By eye,** the checker's four questions:
+
+- Built from the app's own component for the job: yes, as the table says.
+- Icons from `components/ui/icons`: yes. The globe at the foot of still 2 is
+  the page for a new post's own. Plus is not on the stills; "Up to three" is
+  what every reader has.
+- Sample words plain: the campaign's words are a plain request; the prayer is
+  the Church's, read from the app's own data and not typed.
+- Existing words first: every label that had a key uses it; the new lines are
+  listed above.
+
+**The sample.** "Forty days for Nicholas" is the sample the 1.8 sheet used
+(`lib/community/runningCampaign.ts`). It is a campaign for the reposed because
+that is the one kind whose prayer the app carries today. The picture is the
+app's own icon of the Resurrection (`lib/prayers/icons.ts`, public domain),
+standing where a campaign's first picture would be.
+
+---
+
+## 8. What waits on Edgar, on a priest and on a lawyer
+
+### 8.1 His word (each with a recommendation; "all recs" answers them)
+
+1. **Is every campaign read by a moderator before it is public?** Recommend:
+   yes while campaigns are new; a trusted creator publishes at once later.
+2. **Top campaigns against his rule of 2026-08-22.** Recommend: later, as
+   "Prayed by many", the order shown and no figure, beside "Newly asked", with
+   a way for a creator to stay out; and he amends the rule in his own words
+   (2.8).
+3. **Lengths.** Recommend: a day, a week, thirty days, forty days, or a chosen
+   last day up to forty days; longer needs are renewed.
+4. **A reader's own shorter stay** (until its last day, a week, today only).
+   Recommend: yes, with "until its last day" ticked.
+5. **Pictures.** Recommend: 3 and 20 as he said; each held until looked at;
+   "I am 18 or older" to put one up; three on iPhone until Plus is sold there.
+6. **Who can see it.** Recommend: everyone in Community, or one circle; the
+   reader chooses when creating.
+7. **The prayers.** Recommend: ingest the three offices from Hapgood (study,
+   journey, thanksgiving); look for a prayer for the sick in a public-domain
+   book; until then a campaign for the living carries the name, and a psalm if
+   the creator wishes. The line over the living stays the one he chose in
+   1.7.1.
+8. **No links and no asking for money.** Recommend: yes.
+9. **How long an ended campaign is kept.** Recommend: thirty days for the
+   living unless renewed; for the reposed, as long as its creator keeps it on
+   their profile.
+10. **1.9 or after.** Recommend: 1.9 goes out as it is; phase 1 is built
+    beside it with the switch closed, opens to testers first (his own
+    account), and leads a small release straight after (1.9.1). Campaigns
+    inside 1.9's own store builds can be done, and hold those builds for it
+    (section 6).
+11. **Comments.** Recommend: the creator can close them and take one off; no
+    reactions under a campaign.
+12. **The words for a reader in crisis** (3.3). His, with a priest.
+13. **The privacy lines** (4.7), **the rules of praying together** (3.2) and
+    the Terms' new section. His OK, after the lawyer.
+14. **The stores' forms:** the age rating answers and Play's child safety
+    form, now that public content is back. His, after the lawyer.
+15. **The table prayers as a seventh place** for "the dinner". Recommend: no;
+    Evening prayers is where the books keep names.
+16. **The name.** Recommend: keep "Prayer campaigns", his own word.
+
+### 8.2 A priest
+
+- Which prayer goes with which need, and whether a reader may say in their
+  own rule a prayer the book gives to a priest. The same question is already
+  open for the prayer over the departed (`docs/editorial-standards.md`, Clergy
+  item 17).
+- The forty days as the length offered first for the reposed.
+- The words shown to a reader in crisis.
+- Whether a list ordered by how many pray is fitting at all (2.8).
+- The line the app keeps at the foot of every campaign ("Campaigns are the
+  prayers of the faithful, not the teaching of the Church ..."), which stays.
+
+None of this is shown to readers as awaiting review (his rule of 2026-11-06);
+the marks stay in the files.
+
+### 8.3 A lawyer
+
+- **The Terms and the rules:** a section for Community and campaigns that
+  names what is not allowed, and the acceptance before a first campaign or
+  comment. The lawyer's pass on the Terms is already an open item
+  (`docs/editorial-standards.md`, "Rights / legal").
+- **Health data of a third party,** and data that shows a person's faith,
+  under European law: whether a creator's affirmed blessing is enough, what
+  the page must say, and how a named person asks for removal.
+- **The departed:** the countries where a family has rights over a dead
+  person's data.
+- **Children:** the 13 in the Terms against no age being asked; whether a
+  campaign or a picture should ask an age first; what the stores' newer age
+  rules require; the app's 4+ listing.
+- **Pictures:** the duty to report illegal images of children once known, to
+  whom, and what must be kept; the choice of a checking service.
+- **Play's child safety standards** and whether they bind Purify; **Europe's
+  rules for services that host what users post** (a contact point, a way to
+  give notice, reasons given when something is removed).
+
+I am not a lawyer and none of section 3 or 4 is legal advice. They are the
+design a lawyer should be asked to read.
+
+---
+
+## 9. Found on the way
+
+Not part of the design. Each was seen while reading or while making the
+stills, and each is for the chat whose area it is. None was fixed here: no app
+code on the branch was touched. The first ten were held against `f6987145`
+before this file was pushed: item 2 has been mended by another chat in the
+meantime; item 1 was measured again on the second export and stands to the
+number; the files the rest name did not change in those thirty-three commits,
+but for the stylesheet, whose changes touch neither item 3's rule nor item
+7's reading light. The eleventh was found on the second render.
+
+1. **The page for a new post draws its doors under its picture.** In the
+   export, Discussion, Ask a Priest and Share a line cannot be seen: the doors
+   stand from 193 to 267 pixels and the head's picture reaches 284 and is
+   painted over them (`components/community/ComposePage.tsx`). With the
+   picture hidden they are there. The smallest fix: `relative` on the block
+   that holds the doors. `checkMock` on the same page also fails Close (42.5
+   pixels), the title field (41.6 pixels tall) and the house rules line (3.82:1
+   on Dark, 2.31:1 on Light). Worth a look on a phone before 1.9.
+2. **Build 89 note 14 had this cause, and is mended since.** `.set-row` is
+   `display: block` (in `app/globals.css`), and it wins over `flex` on the
+   same element, so "In which prayers" stacked. My first still stacked the
+   same way with the same classes. The chat that took note 14 found the same
+   cause and mended it while these notes were being written (`52dbbe27`): all
+   three of Your rule's rows are now one component, `WayRow`. Nothing is left
+   to do.
+3. **That row sits 2 pixels off in Arabic.** `.rule-way` sets its padding by
+   left and right (`padding: 11px 14px 11px 12px`, in `app/globals.css`), and
+   since `52dbbe27` all three of Your rule's rows wear it.
+   `padding-inline: 12px 14px` mirrors it. Found by the checker.
+4. **The privacy page says nothing of Community** (4.7): posts, the prayer
+   wall, profile pictures and banners are public and unnamed there.
+5. **No screen offers Report on a reply.** The route takes one
+   (`app/api/community/report/route.ts`); only a post's menu calls it
+   (`CommunityClient.tsx:1245`). Apple's rule asks for a way to report
+   content.
+6. **A block does not stop writing.** A blocked person can still reply under
+   the posts of the one who blocked them (the replies route's POST never asks),
+   and that reply still notifies (`notifyOfReply` in `lib/community/notify.ts`
+   does not look at blocks; mentions and follows do).
+7. **The prayer reader's dimmed lines are under the contrast floor on every
+   palette:** 3.82:1 Dark, 2.31:1 Light, 3.66:1 Black, 2.86:1 Candlelight,
+   3.39:1 Monastery, against 4.5:1. They are the reading light he likes
+   (build 89 note 7). Candlelight's stepped-back verses were lifted for the
+   same reason on 2026-11-09 (`d24b9161`). His call.
+8. **The prayer wall still sends a count.** Nothing draws it, by design
+   (`PrayerWall.tsx`), but `app/api/community/prayer-wall` hands every reader
+   how many prayed for each request.
+9. **The stores' age answers predate Community.** The listing says 4+ with "no
+   objectionable content in any category" (`docs/launch/STORE-LISTINGS.md:73`)
+   while public posts are live.
+10. **A blessing ticked is not kept.** The campaign's consent and the
+    picture's are checked when sent and then forgotten
+    (`lib/security/schemas.ts:419`, `:435`). File one keeps them.
+11. **A field the page focuses before any touch still wears the white box.**
+    The quiet edge of build 89 note 11 is drawn only once the app has seen a
+    tap (`html[data-input="pointer"]`, set on the first `pointerdown`,
+    `components/ui/InputModality.tsx`). The page for a new post puts the
+    caret in its words field by itself, so opened at its own address that
+    field shows the keyboard's ring: 2 pixels of white at 70 percent,
+    measured in the export at `f6987145`. After one tap the same field
+    measures the new edge, 1 pixel at 32 percent. A reader who arrives by
+    tapping never sees it; a page opened whole does (a link, a reload, the
+    app brought back to that page). For the chat that holds note 11.
