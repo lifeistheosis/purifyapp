@@ -148,7 +148,7 @@ export function StoreClient({ slug }: { slug: string }) {
           </p>
           <Link
             href="/shop/seller/store"
-            className="tap-press mt-3 inline-flex min-h-[40px] items-center rounded-pill border border-paper/45 px-4 font-sans text-detail font-semibold text-paper hover:bg-paper/[0.14]"
+            className="tap-press mt-3 inline-flex min-h-11 items-center rounded-pill border border-paper/45 px-4 font-sans text-detail font-semibold text-paper hover:bg-paper/[0.14]"
           >
             {t("shop.previewBannerEdit")}
           </Link>

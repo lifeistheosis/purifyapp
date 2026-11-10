@@ -118,7 +118,7 @@ export function TodayMasthead({ day }: { day: ChurchDay | null }) {
           {day ? (
             <Link
               href="/fasting"
-              className={cn("group inline-flex items-baseline gap-2.5", FOCUS)}
+              className={cn("group hit-44 inline-flex items-baseline gap-2.5", FOCUS)}
             >
               <span
                 aria-hidden

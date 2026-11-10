@@ -201,7 +201,7 @@ export function MessageThread({
                         aria-pressed
                         aria-label={t("shop.removeHeartReaction")}
                         className={cn(
-                          "shop-heart heart-pop absolute -bottom-[11px] inline-flex h-[22px] items-center rounded-pill px-[7px]",
+                          "shop-heart heart-pop hit-44 absolute -bottom-[11px] inline-flex h-[22px] items-center rounded-pill px-[7px]",
                           mine ? "start-2.5" : "end-2.5",
                         )}
                       >

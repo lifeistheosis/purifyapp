@@ -361,7 +361,7 @@ export function NowPlayingSheet() {
               className={optionClass(audio.loopMode !== "off")}
             >
               {typeof audio.loopMode === "number" ? (
-                <span aria-hidden className="grid h-[21px] place-items-center text-[15px] font-bold leading-none">
+                <span aria-hidden className="grid place-items-center text-[15px] font-bold leading-none" style={{ height: 21 }}>
                   {audio.loopMode}×
                 </span>
               ) : (

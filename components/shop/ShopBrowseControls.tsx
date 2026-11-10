@@ -119,14 +119,14 @@ export function ShopBrowseControls({
 
       {/* Active facets, each removable in place. */}
       {facetChips.length > 0 ? (
-        <ul className="mt-3 flex flex-wrap items-center gap-2">
+        <ul className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-2.5">
           {facetChips.map((c) => (
             <li key={c.label}>
               <button
                 type="button"
                 onClick={c.clear}
                 aria-label={t("shop.removeFilterNamed", { label: c.label })}
-                className="tap-press inline-flex min-h-[34px] items-center gap-1.5 rounded-pill border border-paper/40 bg-paper/10 px-3 font-sans text-caption font-medium text-paper hover:border-paper/70"
+                className="tap-press hit-44 inline-flex min-h-[34px] items-center gap-1.5 rounded-pill border border-paper/40 bg-paper/10 px-3 font-sans text-caption font-medium text-paper hover:border-paper/70"
               >
                 {c.label}
                 <Close size={11} />
@@ -139,7 +139,7 @@ export function ShopBrowseControls({
               onClick={() =>
                 onChange({ q: filters.q, readyOnly: false, classification: null, priceBand: null, saint: null })
               }
-              className="min-h-[34px] px-2 font-sans text-caption text-paper/55 underline underline-offset-2 hover:text-paper"
+              className="hit-44 min-h-[34px] px-2 font-sans text-caption text-paper/55 underline underline-offset-2 hover:text-paper"
             >
               {t("shop.clearAll")}
             </button>
@@ -267,7 +267,7 @@ function FacetChip({
       onClick={onClick}
       aria-pressed={selected}
       className={cn(
-        "tap-press inline-flex min-h-[40px] items-center rounded-pill border px-4 font-sans text-detail font-medium transition-colors",
+        "tap-press inline-flex min-h-11 items-center rounded-pill border px-4 font-sans text-detail font-medium transition-colors",
         selected
           ? "border-paper bg-paper text-night"
           : "border-paper/15 bg-paper/[0.03] text-paper/75 hover:border-paper/35 hover:text-paper",

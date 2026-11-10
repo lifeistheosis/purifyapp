@@ -164,7 +164,18 @@ const MAX_SMALL_TARGETS = 26;
 // were a child's height read as the button's (the handle's 4px bar, a 20px
 // code badge): each button is min-h-11 now, and the child keeps its look by
 // its style or its line height.
-const MAX_WRITTEN_SMALL_TARGETS = 12;
+// The last 12, the ones a reader meets, went the same night (the arbiter's
+// word): the 40px controls are 44 (the reader's settings rows, the Ambience
+// row beside them too, which sat past this count's window; the shop's
+// preview banner, its filter options and the seller's next step); the chips
+// and the message's heart keep their size and carry .hit-44 (the product's
+// chips, the shop's facet chips and their Clear all, whose wrapped rows now
+// stand 10px apart so the touch boxes do not overlap; the profile's
+// toggles; the masthead's fasting link, a line of text); and two were a
+// child's height read as the control's (Today's icon tile in a 54px row,
+// Now Playing's loop number in a 44px option), which keep their look by
+// size-[38px] and by style. None is left.
+const MAX_WRITTEN_SMALL_TARGETS = 0;
 
 describe("touch targets", () => {
   const { total, byFile, written, writtenByFile } = countSmallTargets();

@@ -122,7 +122,7 @@ export function SetupChecklist({ steps }: { steps: SetupStep[] }) {
                   {!step.done && !step.blockedBy ? (
                     <Link
                       href={step.href}
-                      className="tap-press mt-3 inline-flex min-h-[40px] items-center rounded-pill border border-paper/40 bg-paper/[0.08] px-4 font-sans text-detail font-semibold text-paper hover:bg-paper/[0.16]"
+                      className="tap-press mt-3 inline-flex min-h-11 items-center rounded-pill border border-paper/40 bg-paper/[0.08] px-4 font-sans text-detail font-semibold text-paper hover:bg-paper/[0.16]"
                     >
                       {isNext ? t("shop.setupNext") : t(copy.title)}
                     </Link>

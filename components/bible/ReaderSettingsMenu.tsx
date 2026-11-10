@@ -112,7 +112,7 @@ function AmbienceRow({ touch, onLeave }: { touch: boolean; onLeave?: () => void 
       }}
       className={cn(
         "w-full inline-flex items-center justify-between gap-3 rounded-pill border border-paper/15 bg-paper/[0.04] px-3.5 font-sans text-detail font-medium text-paper/85 hover:bg-paper/10 hover:border-paper/30",
-        touch ? "min-h-12" : "h-[40px]",
+        touch ? "min-h-12" : "min-h-11",
       )}
     >
       <span className="inline-flex min-w-0 items-center gap-2">
@@ -152,7 +152,7 @@ export function ToggleRow({
       aria-pressed={on}
       className={cn(
         "w-full inline-flex items-center justify-between gap-3 rounded-pill border px-3.5 font-sans text-detail font-medium transition-colors",
-        touch ? "min-h-12" : "h-[40px]",
+        touch ? "min-h-12" : "min-h-11",
         on
           ? "reader-lit border-paper bg-paper text-night"
           : "border-paper/15 bg-paper/[0.04] text-paper/85 hover:bg-paper/10 hover:border-paper/30",

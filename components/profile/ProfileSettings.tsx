@@ -119,7 +119,7 @@ function Toggle({
       onClick={onChange}
       aria-pressed={on}
       className={
-        "inline-flex items-center gap-2 rounded-pill border px-4 h-[36px] font-sans text-detail font-medium transition-colors " +
+        "hit-44 inline-flex items-center gap-2 rounded-pill border px-4 h-[36px] font-sans text-detail font-medium transition-colors " +
         (on
           ? "border-gold text-night bg-gold hover:bg-gold/90"
           : "border-paper/15 bg-paper/[0.04] text-paper/85 hover:bg-paper/10 hover:border-paper/30")
