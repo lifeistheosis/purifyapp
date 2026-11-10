@@ -3233,6 +3233,15 @@ twenty languages (0.5), tests, three stills, the walk and the builds (2).
 groups' private threads included, because nothing has reached them since 26
 August.
 
+**Since then:** Admin's second read passed (clear to ship, nothing to
+change, 18:15 UTC). Its one legal note, that a campaign ever reported to
+the authorities must be kept by US law, was put to him, and he answered
+(about 20:12 UTC): "I don't know what you're talking about to the
+authorities. Like, no, we didn't do that." None was ever reported, nothing
+is held back, and the release commit can write the day. Its other note, that
+a hundred kept rows would be all a run ever read, is written in the job's
+header: nothing keeps a hundred today.
+
 **The job** is `lib/campaigns/julyRows.ts`, carried by the heartbeat once a
 day in a build that has campaigns (`lib/ops/maintenance.ts`,
 `julyCampaignRows` in its report).
@@ -3453,6 +3462,22 @@ campaigns' switch says.
   has one (the words of long-lapsed requests too, which used to stay unseen);
   the holds still waiting on a request's words (`community_text_holds` with
   `profile_id` set and `status` pending); and every row of `profile_prayers`.
+- **A hold a moderator had already decided** keeps its record, who decided
+  and when, and loses the reader's own words (`original_body` set to empty
+  where `profile_id` is set). Admin found on the second read that the
+  moderators' history would otherwise keep, for good, the words the wall's
+  end is meant to let go; the arbiter said yes as the plain consequence of
+  his wall B.
+- **One line in the moderators' log** for a run that changed something, in
+  counts, with no words and no names (`requests_ended`), so a moderator who
+  saw a hold yesterday can see why it went. Admin's suggestion, the
+  arbiter's yes.
+- **Nothing is held back for a report.** What was ever reported to the
+  authorities must be kept, by US law, so it was asked of him. His answer
+  (`BRAINSTORM.md`, 2026-11-10 about 20:12 UTC): "I don't know what you're
+  talking about to the authorities. Like, no, we didn't do that." No request
+  and no July campaign was ever reported, and the release commit can write
+  the day.
 - **What it leaves:** the "prayed for you" notices already in a reader's
   inbox, the names a reader carried from the wall into their own prayers
   (on their device, gone after their week), and the two columns and the
@@ -3466,7 +3491,9 @@ campaigns' switch says.
   on a request's words stays in the moderators' queue until it is decided or
   the job deletes it.
 - It changes production data, so a second chat (Admin) reads it before it
-  ships.
+  ships. Admin read the first four statements on a scratch PostgreSQL
+  standing on all 104 files, twice: clear to ship (2026-11-10, 20:05 UTC).
+  The fifth statement and the log line go to Admin for the same read.
 
 ### 26.4 The words
 
@@ -3495,10 +3522,11 @@ one is still one sentence and names no wall.
 
 ### 26.5 What holds it
 
-- `lib/community/__tests__/prayerRequestsEnd.test.ts` (13 cases: the day,
-  nothing before it, what is cleared and what is left, a second run, a
-  missing column or table, a failed step, the heartbeat). Four ways of
-  breaking the job were tried, and each failed a case.
+- `lib/community/__tests__/prayerRequestsEnd.test.ts` (15 cases: the day,
+  nothing before it, what is cleared and what is left, a decided hold's
+  record without its words, the log's one line, a second run, a missing
+  column or table, a failed step, the heartbeat). Eight ways of breaking
+  the job were tried, and each failed a case.
 - `prayerWallRoute.test.ts` (6: the wall's and I prayed's answers, and that
   neither reads or writes), `lib/profile/__tests__/prayerIntention.test.ts`
   (12: the profile's route, an ask alone and among other changes, taking one
@@ -3623,7 +3651,19 @@ items 5, 7 and 8, which that figure did not count. Nothing here waits on SQL.
 It does not miss 1.9 on its own account: the build can go ahead in English
 and the five lines take their other languages after his OK.
 
-### 27.5 As built (2026-11-10, in English; the other languages follow his OK of call 22)
+### 27.5 As built (2026-11-10)
+
+**His yes** (`BRAINSTORM.md`, about 20:07 UTC, to his decisions page):
+"Yes to all recommended suggestions. Do them all." Call 22 carried circles
+with all seven lines below and both rules (a moderator reads a circle's
+campaign first; the choice is shown only to a reader in a circle). The seven
+lines are in all twenty-one languages: each of the twenty is written from
+that language's own neighbouring line (the note under the rules, the
+waiting page's line, "Everyone in Community can read this", "Only your group
+can read this", Read together's word for a circle), with only who sees it
+changed. Where a circle's name stands in a sentence whose grammar would
+bend it (Greek, French, Georgian, Hungarian, Turkish, Arabic), the word for
+a circle or its members carries the grammar and the name stands as it is.
 
 - **The question, in one place:** `mayRead` (pure) now takes the circles a
   reader is known to be in, and `mayOpen` finds them for a route

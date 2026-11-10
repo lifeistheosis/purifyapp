@@ -20,7 +20,7 @@
 //   WALK=1 node scripts/mock-campaigns.mjs                    the walk
 //   WALK=1 FLOWS="starting one" node scripts/mock-campaigns.mjs   only the flows whose names hold those words
 //   EYE=parchment,black node scripts/mock-campaigns.mjs 1     and by eye, on other palettes
-//   ALL_LOOKS=1 node scripts/mock-campaigns.mjs 1             held on the eighteen looks as well as the five palettes
+//   ALL_LOOKS=1 node scripts/mock-campaigns.mjs 1             held on every look as well as the five palettes
 //   LOCALE=ro WIDTH=360 node scripts/mock-campaigns.mjs 2 19   a still in another language, on a narrower phone
 //
 // `scale` 2 for pictures a person will see (1 to check); `only` is "all" or
@@ -72,7 +72,7 @@ const LOCALE = process.env.LOCALE ?? null;
 const PICTURES_BUILD = process.env.PICTURES_BUILD === "1";
 /** The phone's width, for a still on a narrower one. */
 const WIDTH = Number(process.env.WIDTH ?? 390);
-/** The eighteen looks as well as the five palettes (scripts/mock-check.mjs, LOOKS). */
+/** Every look as well as the five palettes (scripts/mock-check.mjs, LOOKS: the registry says how many). */
 const WORN = process.env.ALL_LOOKS === "1" ? { palettes: [...PALETTES, ...LOOKS] } : {};
 if (!WALK) fs.mkdirSync(OUT, { recursive: true });
 const tag = SCALE === 2 ? "" : "x1-";
@@ -1033,6 +1033,9 @@ if (WALK) {
     expectThat((await row.innerText()).includes("Everyone in Community"), "the row does not start at everyone");
     await row.click();
     const lines = page.locator("[data-campaign-audience] [role=radio]");
+    // The sheet rises: its lines are read once they are there.
+    await lines.first().waitFor({ timeout: 8000 });
+    await settle(page, 500);
     expectThat((await lines.allInnerTexts()).map((x) => x.split("\n")[0].trim()).join("|") === `Everyone in Community|${PARISH.name}|${HOUSEHOLD.name}`, `the choices are ${(await lines.allInnerTexts()).join(" | ")}`);
     expectThat((await page.locator("[data-campaign-audience]").innerText()).includes("A campaign kept to a circle is seen by its members only, and is on no list."), "the sheet does not say what keeping it to a circle means");
     await lines.filter({ hasText: PARISH.name }).click();
