@@ -104,3 +104,11 @@ Planned for the way back (brainstorm, nothing built until his start):
 2. **Each clear-bar page names its first words:** a council its ordinal line, a Theology topic its quoted line, a Theology path and Your rule their first lines. A saint and a chant keep the default, the name.
 3. **The plate shows over any picture:** a fine edge of paper at 13%, as the new post page's Close has, so it reads on a dark icon too. At rest the bar stays clear, as today.
 4. **Held by:** a test that every clear-bar page names its first words (or its name is its first word); the same scroll measurement as a script on the export, which must find no words under a button while the bar is clear on any of these pages; and `checkMock` on a council's head in all five palettes.
+
+### 5. Still no covers on St John Cassian's books (2026-11-10)
+
+What he saw: in the reading room's rows "The passions" and "The virtues", The Institutes and The Conferences of St John Cassian still on the plain plate (`build-90/05-cassian-plates.png`). His words: "still no cover photos even though I told you to fix that".
+
+What the record says: The Conferences took St Moses the Ethiopian's icon in `7c8bfb39`, pushed after build 90 was cut (from `53dbb696`); The Institutes kept the plate, since no old icon of St John Cassian or of the book passed the rules (Updates 2, 2026-11-10). Whether build 90 can show any of note 3's new covers at all, or only once the 1.9 website serves the covers pack, is asked of Updates 2.
+
+Planned (brainstorm, nothing built until his start): every reading room book shows a cover in the next test build; The Institutes borrows a cover by the borrowed covers' rule (rec: St Pachomius, whose Egyptian rule the Institutes' first books describe), unless he names another; and the covers reach the test build itself, not only the release.
