@@ -42,7 +42,8 @@ export type NotificationKey =
   | "communityGift"
   | "communityQuestion"
   | "communityAnswer"
-  | "communityApproved";
+  | "communityApproved"
+  | "panelTest";
 
 export type NotificationCopy = {
   key: NotificationKey;
@@ -100,6 +101,14 @@ export const NOTIFICATION_COPY: Readonly<Record<NotificationKey, NotificationCop
     url: "/whats-new",
     rationale:
       "The default template for an operator broadcast. Free text remains possible through the admin route, but it passes the same check this row does, so the template is the path of least resistance rather than the only one.",
+  },
+  panelTest: {
+    key: "panelTest",
+    title: "Purify",
+    body: "A test from the panel, sent to your own devices and no one else.",
+    url: "/",
+    rationale:
+      "The panel's test to the admin's own devices (app/api/admin/push/test, lib/push/selfTest.ts), so the owner can see whether a push reaches his own phone and what Google or Apple answered for it, without a broadcast. It reaches only the account that asks, never a reader. It opens Today, so the tap is tested with it.",
   },
   eikonBoxOpen: {
     key: "eikonBoxOpen",
