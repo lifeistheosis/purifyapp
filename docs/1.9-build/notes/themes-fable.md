@@ -3410,3 +3410,205 @@ follows with the next change.
 its count comes from the registry, so it walks seventeen; the words are
 theirs to change.
 
+## 34. Match light: the strip and the marks suit the page, on every phone
+
+**His word**, 2026-11-10 about 18:15 UTC, his answer to call 4 with the two
+stills of section 32 in front of him: "match light". As the arbiter put it
+to me: on Android 14 and older, Light and the light looks paint the status
+strip in their own paper with dark marks, so the top reads as one page.
+
+**What the code showed before anything was changed.** I read the status bar
+plugin, the safe-area plugin and `MainActivity.java`. Nothing here can show
+a phone's status bar, so all of this is read, not seen.
+
+1. The colour of the clock and battery marks is one call for every phone,
+   and it asked for light marks on every palette.
+2. The app paints the strip only on Android 14 and older. That is the phone
+   his word names.
+3. On the iPhone, and on Android 15 and newer with a web view of 140 or
+   later, the page itself lies under the status bar. On Light that is Light's
+   paper, with light marks on it: by the code, a white clock on cream paper,
+   on the free palette older readers asked for. If his own phone is Android
+   15 or newer, "match light" as worded would have changed nothing he could
+   see.
+4. On Android 15 and newer with an older web view, the page is set below
+   the bar and the app's night colour shows there on every palette. Light
+   marks are right there and must stay.
+
+**The arbiter's call: one rule for every phone.** I put two ways to the
+arbiter: his words exactly (Android 14 and older only), or one rule, the
+marks suit what is behind them. The arbiter chose the second, on its own
+word ("it is what match light means on every phone, and white marks on
+cream paper break the house's own contrast rule, so mending it needs no new
+word from him"), with the guard kept exactly: night behind the marks, or the
+app cannot tell, means light marks as today, so no phone ends up worse than
+it was. Dark palettes do not change anywhere.
+
+**The guard needed more than the palette.** Eight surfaces are dark on every
+palette and reach the top of a Light reader's screen: the launch frame at
+every start, the tour, the gift box, the councils' atlas, Now playing, the
+Plus sheet, Your plan and the EIKON pages. Dark marks tied to the palette
+alone would be dark on dark over those, which is worse than today. So where
+the page lies under the bar, the bridge looks at what the page shows at the
+bar's place and chooses the marks from that.
+
+**What is built** (`3ff380d7`).
+
+- `lib/reader/statusBarColor.ts`, pure. The strip is the page colour of the
+  palette worn, on every palette now. Where the marks stand is one of four
+  answers (`barPlace`): the strip the app painted (an Android phone gives
+  back the colour it was asked for), the page itself (the page is given room
+  under the bar), the window's own night (the page is set below a bar the
+  app cannot paint), or unknown. The marks (`statusBarMarks`) are dark where
+  dark marks stand out more than light ones on what is behind them, and
+  light everywhere else and wherever it is not known. `groundOf` reads a
+  stack of the page's layers at a point: a surface the house marks as dark
+  on every palette (`.dark-island`) is the night; a picture, or a gradient
+  with something dark in it, cannot be told; a veil of colour is laid over
+  the first solid colour beneath it.
+- `components/native/statusBar.ts` asks the page and the phone those
+  questions and tells the phone the answer: it paints the strip, asks the
+  phone what colour its strip is, and draws the marks. It paints again when
+  the root's two palette attributes change, or the room under the bar does.
+  Where the page lies under the bar, and only while a light palette is worn,
+  it looks at the bar's place again when the page's parts come and go, when
+  a slide or a fade ends, and when the app comes back to the front: at most
+  four looks a second. A dark surface that lets taps through while it is
+  still drawn (the launch frame for the half second it fades) is asked for
+  by its box, since the browser's own stack at a point leaves it out.
+- `components/native/NativeBridge.tsx` starts with light marks, as before,
+  and hands the bar to the follower.
+
+**What it costs.** A reader on a dark palette pays for none of it: the marks
+are light as before and the page is never asked (the walk counted no look at
+all). Neither does any phone whose strip is the app's own, which is every
+Android 14 phone.
+
+**What holds it.** `lib/reader/__tests__/statusBarPalette.test.ts`, 25
+tests: every one of the 24 palettes paints the strip its own page; dark
+marks on Light and the nine light looks, light on the fourteen dark, each
+at 7:1 or more on its strip (light marks on Light's paper would have been
+under 1.5:1); where the marks stand on each kind of phone, True black's odd
+case among them; what a stack of layers shows; and the wiring.
+
+**Walked against the app's own screens**, on a gate-on export. A browser has
+no status bar, so the phone was a stand-in that records what it is told and
+answers as each kind of phone would; the room under the bar was given the
+way a phone gives it a moment after the page. The two modules were the
+repository's own, turned to plain JavaScript.
+
+- The iPhone, and a newer Android with a current web view: Today, John 1,
+  Settings, the reading modes, Discover, the saints, the calendar, search,
+  Theology and the reading room on Light all draw dark marks on a paper
+  strip. Dark picked: light marks and the night strip. Candlelight: its own
+  black. Roses: dark marks. Mosaic: its lapis and light marks. Light again:
+  dark.
+- The councils' atlas opened over a Light page turns the marks light, and
+  closing it turns them dark again.
+- The launch frame over a Light page reads as the night, also while it
+  fades with taps passing through it: light marks until it has gone.
+- Your plan on Light has the page's own paper bar at the top, with the dark
+  page under it: dark marks, which is what is there.
+- Android 14: the strip is the paper and the marks are dark, over a dark
+  page too, and moving between screens asks the phone nothing.
+- A newer Android with an old web view, and a phone that does not answer:
+  the marks are never made dark.
+- A reader on Dark on the iPhone: nothing is ever changed, and the page is
+  never asked.
+
+**Not proven, and his on a phone.** All of it. The walk shows the rule is
+right for what the page draws; only a phone shows the bar. The line is in
+the handoff for both an Android phone and an iPhone: Light on, look at the
+clock and battery.
+
+**Known limits, said plainly.** The marks follow the page at rest. A dark
+picture scrolled under the bar on a screen with no bar of its own is not
+looked at until the next change, so the marks can stand dark over it for a
+moment. A picture at the bar's place cannot be told, so the marks are light
+over it, as today. Now playing, the tour, the gift box, the Plus sheet and
+the EIKON pages were not opened in the walk; each is a `.dark-island`, which
+is what the rule reads.
+
+## 35. The contrast leftovers of section 25: three mended, one withdrawn
+
+The arbiter's word (19:29 UTC): I mend them, since I hold the measures, each
+with its owner's yes so no two chats are in one file at once. All three
+owners said yes. Everything below is measured on the export where the
+letters are (`scripts/words-on-pictures.mjs`), on seven palettes: the five,
+and the two earned.
+
+**The Plus page's two lines** (`38b5f9c8`; Admin's page, Admin's terms: classes
+only).
+
+| Line | Change | Dark | Light | True black | Candlelight | Monastery | Councils | Cappadocian |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| The trial line | `text-paper/60` to `/62` | 6.10 to 6.39 | 7.68 | 6.10 to 6.39 | 4.46 to 4.62 | 5.27 to 5.55 | 5.17 to 5.38 | 5.14 to 5.39 |
+| "Entirely optional. Give once, or not at all." | `text-paper/40` to `/42` | 3.82 to 5.29 | 3.82 to 9.12 | 3.82 to 4.80 | 2.97 to 5.09 | 3.40 to 5.27 | 3.32 to 5.15 | 3.32 to 5.12 |
+
+62 is the next share a palette's rule names that clears on Candlelight; 65
+would be 4.97 there, and Admin has the number. 42 is the lowest named share
+that holds on all seven; 40 is the share the house keeps for marks that are
+decorative or disabled, and this is a line a reader reads.
+
+**The names under Settings' size slider** (`b23a4bb8`; Updates' lists). The
+ones not chosen were the ink at 50 percent, at 10.5px. They join Settings'
+quiet words: 62 percent, and on Light, Candlelight and a dark look at that
+palette's own share. The lowest of the three names, before and after: Dark
+5.09 to 7.07, Light 2.97 to 5.57, True black 5.22 to 7.27, Candlelight 3.87
+to 5.57, Monastery 4.42 to 6.08, Councils 4.35 to 5.93, Cappadocian 4.35 to
+5.97. `faintText.test.ts` is extended as Updates asked.
+
+**Two lines on Theology's hub** (`3702200b`; Updates' yes, the Theology chat
+told first; the stylesheet only). "7 citations from the Fathers" read 4.49
+on Monastery and 4.38 on Councils and Cappadocian: the three palettes' rule
+names 52 now, and it is 4.79, 4.71 and 4.67. "1 of 9" on the step's card
+read 4.26 on Light: faint words on a tray are drawn at 75 percent on Light
+alone, and it is 4.83.
+
+`checkMock` passes on every changed part on all seven palettes.
+
+**The reading room's covers on Light: withdrawn.** I told Updates 2 the
+covers' names read 3.70 to 4.10 on Light. They do not. My measure brought
+each cover just into view at the end of its row, under the row's fading
+edge, and on Light that fade goes toward the paper, so a cover half under it
+reads low. With each cover brought to the middle of its row: 160 lines of
+titles and authors on Light and Dark, none under its need, the lowest on
+Light 9.05:1. Nothing was changed in `WorkCover.tsx`. I had named it a
+leftover before checking the place it was measured at, and said so to
+Updates 2 and the arbiter.
+
+**Found on the way, and open with Admin.** The gate-on build is the only one
+that draws the sheet a reader without Plus meets, so the longer count words
+of section 33 were walked there: the sheet's title and body are whole in
+all 21 languages at 390, 360 and 320 wide. The preview's title bar is not:
+its name takes two lines before it is cut, and with "nineteen" the name is
+cut at 360 wide in Greek and Georgian (both were whole with "twenty"), and
+at 320 in seven languages (five were cut already; Spanish and Italian are
+new). At 390 all 21 are whole. Words cannot mend it, since the short name is
+the approved title's first words. The bar is Admin's
+(`components/billing/PlusTry.tsx`); I put two ways to Admin with the
+numbers and a recommendation (the name over "Preview", so it has the bar's
+whole width) and touched nothing.
+
+## 36. After 1.9: the roadmap, as he answered call 5
+
+His word, 2026-11-10 about 18:15 UTC ("all recs", to call 5 on his decisions
+page, with `notes/decisions/themes-3-wide.png` in front of him):
+
+- **Picture themes on tablets and the website come after 1.9.** Today a
+  look on a wide screen is its colours and its sign at a chapter's head;
+  the scene at the foot stands down from 768px (section 21, point 7), and
+  so does the room a page leaves for it (section 32). A panorama for each
+  scene is new drawing. On the website at a phone's width a Plus reader's
+  look still has the site's last lines in its foot: the end room of section
+  32 is the apps' frame only. Both belong to this item.
+- **The season themes (Lent, Pascha, Pentecost) come after 1.9.** Candlelight
+  already keeps the fasts by its own light (section 27); a theme a season
+  puts on is a different thing and waits.
+- **No gold theme**, by his own rule: gold is only ever a flame's own colour.
+  With Fire out of the looks (section 33), no look carries any.
+
+Also waiting, from this chat's own notes: the tablet's last lines under the
+reader's dock (with Updates, who holds the tablet dock); and the preview's
+title bar in the longer languages (section 35, with Admin).
+
