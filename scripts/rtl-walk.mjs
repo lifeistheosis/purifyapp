@@ -76,6 +76,46 @@ export function englishOutOfPlace() {
   return out;
 }
 
+/**
+ * A row's English words stand beside its mark (1.9, build 90 note 4, the rows' rule, decided on
+ * the arbiter's word of 2026-11-10 after the Fable Theology chat saw it). Under Arabic and Urdu a
+ * row runs from the right, its mark (an icon, a picture, a chevron) at its start; an element that
+ * says dir="ltr" in it keeps its words left to right but aligns them to the row's start, beside
+ * the mark, with rtl:text-right. Left alone, a name that fills the row's width stood at the far
+ * side of it. A block of prose (a verse, a paragraph) is no row's name: it keeps to the left edge
+ * as English does. Runs in the page; returns each English name standing more than 16px from the
+ * row's start side, where a row is a horizontal flex box within three levels up that also holds
+ * a mark outside the name. Centred words and words already aligned to the row are not counted.
+ */
+export function namesAwayFromMark() {
+  const out = [];
+  for (const el of document.querySelectorAll('[dir="ltr"]')) {
+    const r = el.getBoundingClientRect();
+    if (r.width < 40 || r.height < 8) continue;
+    const s = getComputedStyle(el);
+    if (s.display === "inline" || s.visibility === "hidden" || el.classList.contains("sr-only") || el.closest("[aria-hidden='true']")) continue;
+    if (["center", "-webkit-center", "right", "end"].includes(s.textAlign)) continue;
+    let row = null;
+    for (let p = el.parentElement, i = 0; p && i < 3; p = p.parentElement, i++) {
+      const ps = getComputedStyle(p);
+      if ((ps.display === "flex" || ps.display === "inline-flex") && !ps.flexDirection.startsWith("column")) {
+        if ([...p.querySelectorAll("svg, img, picture")].some((m) => !el.contains(m) && m.getBoundingClientRect().width > 6)) {
+          row = p;
+          break;
+        }
+      }
+    }
+    if (!row || getComputedStyle(row).direction !== "rtl") continue;
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const rects = [...range.getClientRects()].filter((x) => x.width > 0);
+    if (!rects.length) continue;
+    const gap = Math.round(r.right - Math.max(...rects.map((x) => x.right)));
+    if (gap > 16) out.push({ tag: el.tagName.toLowerCase(), id: el.closest("[id]")?.id ?? "", cls: [...el.classList].slice(0, 4).join("."), gap, words: (el.textContent || "").replace(/\s+/g, " ").trim().slice(0, 60) });
+  }
+  return out;
+}
+
 const SELF_TEST = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"></head><body style="width:390px">
 <h1>عنوان الصفحة</h1>
 <p id="bare">In the beginning was the Word, and the Word was with God.</p>
@@ -85,20 +125,25 @@ const SELF_TEST = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset=
 <p id="own" dir="auto">My own note about this verse, in English.</p>
 <a id="row" href="#" style="display:flex"><span lang="en" dir="ltr">St. John Chrysostom, Homilies on Matthew 1</span><span>›</span></a>
 <a id="row-bare" href="#" style="display:flex"><span>St. John Chrysostom, Homilies on Matthew 2</span><span>›</span></a>
+<a id="named-row" href="#" style="display:flex;width:390px"><svg width="20" height="20"></svg><span lang="en" dir="ltr" style="flex:1">The Holy Trinity</span></a>
+<a id="named-row-beside" href="#" style="display:flex;width:390px"><svg width="20" height="20"></svg><span lang="en" dir="ltr" style="flex:1;text-align:right">The Holy Trinity</span></a>
 </body></html>`;
 
 async function selfTest(browser) {
   const page = await browser.newPage();
   await page.setContent(SELF_TEST);
   const found = await page.evaluate(englishOutOfPlace);
+  const far = await page.evaluate(namesAwayFromMark);
   await page.close();
   // The bare paragraph and the one with lang alone fail, each for its reason; lang with dir, an
   // English name inside Arabic and a reader's own note pass.
   const got = Object.fromEntries(found.map((f) => [f.id, f.why]));
   // A row of the page's whose English says its language and runs left to right passes; the same row bare fails.
   const want = { bare: "runs right to left and is announced as ar", "lang-only": "runs right to left", "row-bare": "runs right to left and is announced as ar" };
-  const ok = JSON.stringify(got) === JSON.stringify(want);
-  console.log(ok ? "self-test: an unmarked block, one with lang alone and a bare row fail; lang with dir, a row whose English says both, an English name inside Arabic and a reader's own note pass" : `self-test FAILED: found ${JSON.stringify(got)}, wanted ${JSON.stringify(want)}`);
+  // A row's English name at the row's far side fails; the same name aligned beside its mark, and prose, pass.
+  const farIds = far.map((f) => f.id);
+  const ok = JSON.stringify(got) === JSON.stringify(want) && JSON.stringify(farIds) === JSON.stringify(["named-row"]);
+  console.log(ok ? "self-test: an unmarked block, one with lang alone and a bare row fail; lang with dir, a row whose English says both, an English name inside Arabic and a reader's own note pass; a row's English name at its far side fails, beside its mark passes" : `self-test FAILED: found ${JSON.stringify(got)} and rows ${JSON.stringify(farIds)}, wanted ${JSON.stringify(want)} and ["named-row"]`);
   return ok;
 }
 
@@ -165,6 +210,7 @@ async function main() {
   const list = ONLY ?? screens(OUT);
   console.log(`${list.length} screens, in ${LANGS.join(" and ")}`);
   const failures = [];
+  const rows = [];
   let blocks = 0;
   for (const lang of LANGS) {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
@@ -185,6 +231,7 @@ async function main() {
         const found = await page.evaluate(englishOutOfPlace);
         blocks += found.length;
         for (const f of found) failures.push(`${lang} ${at}: <${f.tag}${f.cls ? `.${f.cls}` : ""}> ${f.why}: "${f.words}"`);
+        for (const f of await page.evaluate(namesAwayFromMark)) rows.push(`${lang} ${at}: <${f.tag}${f.cls ? `.${f.cls}` : ""}> ${f.gap}px from the row's start: "${f.words}"`);
       } catch (e) {
         failures.push(`${lang} ${at}: the walk could not measure it (${String(e).split("\n")[0].slice(0, 120)})`);
       }
@@ -194,7 +241,9 @@ async function main() {
   await browser.close();
   console.log(failures.length ? `\n${blocks} block(s) of English out of place:` : "\nevery block of English reads left to right, and says it is English");
   for (const f of failures) console.log(`  ${f}`);
-  process.exit(failures.length ? 1 : 0);
+  console.log(rows.length ? `\n${rows.length} English name(s) at the far side of their row:` : "\nevery row's English name stands beside its mark");
+  for (const f of rows) console.log(`  ${f}`);
+  process.exit(failures.length || rows.length ? 1 : 0);
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) await main();
