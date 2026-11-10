@@ -55,7 +55,8 @@ describe("a made-up address under /saints", () => {
     expect(unknownSaintAddress("/saints/zzz-not-a-saint/web")).toBe(true);
     expect(unknownSaintAddress("/saints/theotokos/not-a-work")).toBe(true);
     const proxy = read("proxy.ts");
-    expect(proxy).toContain("if (unknownSaintAddress(request.nextUrl.pathname)) {");
+    expect(proxy).toContain("if (await unknownAddress(request.nextUrl.pathname)) {");
+    expect(read("lib/seo/unknownAddress.ts")).toContain('const { unknownSaintAddress } = await import("@/lib/saints/addresses");');
     expect(proxy).toMatch(/NextResponse\.rewrite\(new URL\("\/_not-found", request\.url\), \{\s*status: 404,/);
   });
 

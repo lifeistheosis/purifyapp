@@ -3,7 +3,7 @@ import { recordClick } from "@/lib/ambassadors/clicks";
 import { REF_COOKIE, REF_MAX_AGE_S, refFromUrl } from "@/lib/ambassadors/referral";
 import { checkoutReturnOrigin } from "@/lib/site";
 import { updateSession } from "@/lib/supabase/middleware";
-import { unknownSaintAddress } from "@/lib/saints/addresses";
+import { unknownAddress } from "@/lib/seo/unknownAddress";
 import {
   isLocaleSelectable,
   negotiateFromAcceptLanguage,
@@ -68,10 +68,11 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
   const nonce = generateNonce();
   request.headers.set(NONCE_HEADER, nonce);
 
-  // A saint or a work the library does not have answers a true 404 (1.9,
-  // lib/saints/addresses.ts): its page streams before it can say so, which
-  // left the status at 200. The app's own not-found page, with its status.
-  if (unknownSaintAddress(request.nextUrl.pathname)) {
+  // A saint, a work, a chapter, a council, an akathist or an hour the app
+  // does not have answers a true 404 (1.9, lib/seo/unknownAddress.ts): its
+  // page streams before it can say so, which left the status at 200. The
+  // app's own not-found page, with its status.
+  if (await unknownAddress(request.nextUrl.pathname)) {
     const notFound = NextResponse.rewrite(new URL("/_not-found", request.url), {
       status: 404,
       request: { headers: request.headers },
