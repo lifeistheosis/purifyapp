@@ -369,3 +369,7 @@ saint's screen, with stills to the arbiter.
   docs/editorial/menologion-month.md.
 - **The apps**: the held Lives are not in them; the icons are 122 KB lighter
   (eight new files, twelve gone).
+- **Stills** (the Android export, the app's way): St Paul among Sardica's
+  Fathers (`november-saints/11-st-paul-at-sardica.png`); St Andrew, St Nikon
+  and St Nektarios with their new pictures, and St Iakovos's page without one
+  (`november-saints/12-the-older-icons-settled.png`).
