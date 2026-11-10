@@ -8304,6 +8304,80 @@ await section(52, async () => {
     await ctx.close();
   }
 });
+
+// Build 90 note 9, the owner on build 90: a saved verse of Matthew 1 opened at
+// verse 9 of 25 with his Greek on. The chapter is drawn in English first and
+// its Greek is read a moment later and set beside every verse, about doubling
+// each verse's height, so the page that had landed on the verse stood on one
+// about half as far in (Matthew 5:44 at 5:22, John 3:16 at 3:8). Every place
+// that opens a verse lands the same way (a link with #v<n>, VerseFocusFlash),
+// which now holds the verse while the chapter settles (lib/ui/readingPlace.ts,
+// holdAtReadingPlace). Opened here as a tapped link opens one: the router.
+await section(53, async () => {
+  console.log("\n53. A link to a verse lands on it, with the Greek on and off (build 90 note 9)");
+  // The verse standing at the reading place, two fifths down the screen, and
+  // how many verses wear their Greek.
+  const standing = (page) =>
+    page.evaluate(() => {
+      const line = innerHeight * 0.4;
+      const rows = [...document.querySelectorAll("[id^=v]")].filter((x) => /^v\d+$/.test(x.id));
+      const row = rows.find((x) => {
+        const b = x.getBoundingClientRect();
+        return b.top <= line && b.bottom >= line;
+      });
+      return { at: row?.id ?? null, greek: document.querySelectorAll("[lang=grc], [lang=el]").length };
+    });
+  for (const greek of [true, false]) {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: greek ? { "purify:interlinear": "1" } : {} });
+    await go(page, "/");
+    const missed = [];
+    let drawn = 0;
+    const places = greek
+      ? ["/bible/matthew/1/#v21", "/bible/matthew/5/#v44", "/bible/john/3/#v16", "/bible/romans/8/#v28", "/bible/genesis/1/#v26", "/bible/matthew/1/#v2"]
+      : ["/bible/matthew/5/#v44", "/bible/john/3/#v16"];
+    for (const to of places) {
+      await go(page, "/");
+      await page.waitForTimeout(400);
+      await go(page, to);
+      await page.waitForTimeout(3000);
+      const { at, greek: cols } = await standing(page);
+      if (cols > 0) drawn++;
+      const want = `v${/#v(\d+)/.exec(to)[1]}`;
+      if (at !== want) missed.push(`${to} stood at ${at ?? "nothing"}`);
+    }
+    must(greek ? drawn === places.length : drawn === 0, greek ? `the Greek is drawn beside every chapter opened (${drawn} of ${places.length})` : "with the Greek off, none is drawn");
+    must(missed.length === 0, `with the Greek ${greek ? "on" : "off"}, every verse opened lands at the reading place (${places.length - missed.length} of ${places.length}${missed.length ? "; " + missed.join(", ") : ""})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A reader who scrolls at once, while the Greek is still coming in, is
+  // never pulled back to the verse.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify:interlinear": "1" } });
+    const cdp = await ctx.newCDPSession(page);
+    await go(page, "/");
+    await page.waitForTimeout(400);
+    await page.evaluate(() => window.next.router.push("/bible/john/3/#v16"));
+    await page.waitForFunction(() => location.pathname.startsWith("/bible/john/3"), null, { timeout: 15000 });
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 195, y: 600 }] });
+    for (let i = 1; i <= 8; i++) {
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: 195, y: 600 - i * 40 }] });
+      await page.waitForTimeout(16);
+    }
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await page.waitForTimeout(500);
+    const handY = await page.evaluate(() => Math.round(scrollY));
+    await page.waitForTimeout(3000);
+    const laterY = await page.evaluate(() => Math.round(scrollY));
+    const { at } = await standing(page);
+    // A hold that had not let go would stand 3:16 at the reading place; the
+    // last few pixels of the hand's own glide are the hand's.
+    must(at !== "v16" && Math.abs(laterY - handY) < 60, `a reader who scrolls while the Greek comes in stays where the hand left the page (${handY}px, then ${laterY}px, at ${at ?? "no verse"})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

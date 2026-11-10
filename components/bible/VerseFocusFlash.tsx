@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-import { goToReadingPlace } from "@/lib/ui/readingPlace";
+import { goToReadingPlace, holdAtReadingPlace } from "@/lib/ui/readingPlace";
 
 /**
  * When a chapter page loads with a `#v123` hash, whether from the
@@ -26,12 +26,22 @@ import { goToReadingPlace } from "@/lib/ui/readingPlace";
  * (app/globals.css, data-verse-focus), with no box at all, then all of them
  * come back. The verse element (in VerseRow) is `<div id="v{n}" ...>`; it
  * carries `data-focus="true"` while the moment lasts.
+ *
+ * Once it has landed, the verse is held at the reading place while the
+ * chapter settles (build 90 note 9, the owner: a saved verse of Matthew 1
+ * opened at verse 9 of 25 with his Greek on). The chapter is drawn in
+ * English first; the Greek, for a reader who keeps it on, is read a moment
+ * later and set beside every verse, which about doubles the height above the
+ * verse, so the page that had landed on Matthew 5:44 stood at 5:22. Held
+ * until the reader moves the page, or for a few seconds at most
+ * (lib/ui/readingPlace.ts, holdAtReadingPlace).
  */
 export function VerseFocusFlash() {
  const pathname = usePathname();
 
  useEffect(() => {
  let timer: ReturnType<typeof setTimeout> | null = null;
+ let letGo: (() => void) | null = null;
 
  function focusFromHash() {
  const hash = window.location.hash;
@@ -60,6 +70,8 @@ export function VerseFocusFlash() {
  // A range stands there together: centred when it is short, its first
  // verse at the reading place when it is not.
  goToReadingPlace(flashed);
+ letGo?.();
+ letGo = holdAtReadingPlace(flashed);
  root.setAttribute("data-verse-focus", "");
  if (timer) clearTimeout(timer);
  timer = setTimeout(() => {
@@ -74,6 +86,7 @@ export function VerseFocusFlash() {
  return () => {
  window.removeEventListener("hashchange", focusFromHash);
  if (timer) clearTimeout(timer);
+ letGo?.();
  document.documentElement.removeAttribute("data-verse-focus");
  };
  }, [pathname]);

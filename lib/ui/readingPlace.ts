@@ -276,3 +276,98 @@ export function goToReadingPlace(
   window.scrollTo({ top, behavior: smooth && !prefersReducedMotion() ? "smooth" : "auto" });
   return top;
 }
+
+/**
+ * How long a place gone to is held while the page settles under it (build 90
+ * note 9). The page can still change after it has gone somewhere: a Bible
+ * chapter is drawn in English first and its Greek, when the reader keeps it
+ * on, is read a moment later and set beside every verse, which about doubles
+ * the height above the verse landed on. Held for this long at most; the
+ * reader's own hand lets go at once.
+ */
+export const HOLD_MS = 8000;
+
+/**
+ * What a held place does when the page has changed under it: let go (the
+ * reader moved the page, or the hold has run its time), keep still (it
+ * stands where it was set, to a hair), or move the page by this much.
+ */
+export function heldPlace(
+  { elapsedMs, readerMoved, shift }: { elapsedMs: number; readerMoved: boolean; shift: number },
+  holdMs: number = HOLD_MS,
+): "let go" | "still" | number {
+  if (readerMoved || elapsedMs > holdMs) return "let go";
+  if (Math.abs(shift) <= HAIR_PX) return "still";
+  return shift;
+}
+
+/** What a reader's hand does to a page: any of these lets a held place go. */
+export const HAND_EVENTS = ["pointerdown", "touchstart", "wheel", "keydown"] as const;
+
+/**
+ * Holds what was just gone to at the reading place while the page settles
+ * (build 90 note 9, the owner on build 90: a saved verse of Matthew 1 opened
+ * at verse 9 with his Greek on). Whenever the page or the block holding the
+ * target changes size, the target is set back at the reading place, at once
+ * and not smoothly, so it does not seem to move at all while the rest of the
+ * page moves around it. Nothing is moved unless the page changed, so it costs
+ * nothing while the page is still; and the reader's first touch, wheel or key
+ * lets it go, so a hold never fights a hand. Answers the way to let go early.
+ */
+export function holdAtReadingPlace(
+  target: Element | readonly Element[],
+  { align = "auto", holdMs = HOLD_MS }: { align?: Align; holdMs?: number } = {},
+): () => void {
+  if (typeof window === "undefined" || typeof ResizeObserver === "undefined") return () => {};
+  const list: readonly Element[] = Array.isArray(target) ? target : [target as Element];
+  const started = performance.now();
+  const heights = new Map<Element, number>();
+  let readerMoved = false;
+  let frame = 0;
+  let done = false;
+
+  const setBack = () => {
+    frame = 0;
+    if (done) return;
+    const block = spanOf(list.map((el) => el.getBoundingClientRect()));
+    if (!block) return;
+    const move = heldPlace({ elapsedMs: performance.now() - started, readerMoved, shift: shiftToReadingPlace(visibleBand(), block, align) }, holdMs);
+    if (move === "let go") {
+      letGo();
+      return;
+    }
+    if (move === "still") return;
+    const end = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    window.scrollTo({ top: Math.min(end, Math.max(0, window.scrollY + move)), behavior: "auto" });
+  };
+  // The first report of each element is its size as it stands, not a change.
+  const observer = new ResizeObserver((entries) => {
+    let changed = false;
+    for (const entry of entries) {
+      const height = entry.contentRect.height;
+      const was = heights.get(entry.target);
+      heights.set(entry.target, height);
+      if (was !== undefined && Math.abs(was - height) > 0.5) changed = true;
+    }
+    if (changed && !frame) frame = requestAnimationFrame(setBack);
+  });
+  const hand = () => {
+    readerMoved = true;
+    letGo();
+  };
+  const timer = setTimeout(() => letGo(), holdMs);
+  function letGo() {
+    if (done) return;
+    done = true;
+    observer.disconnect();
+    clearTimeout(timer);
+    if (frame) cancelAnimationFrame(frame);
+    for (const type of HAND_EVENTS) window.removeEventListener(type, hand, true);
+  }
+
+  observer.observe(document.body);
+  const holder = list[0]?.closest("article");
+  if (holder) observer.observe(holder);
+  for (const type of HAND_EVENTS) window.addEventListener(type, hand, { capture: true, passive: true });
+  return letGo;
+}

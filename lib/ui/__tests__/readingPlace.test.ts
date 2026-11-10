@@ -24,6 +24,8 @@ vi.mock("../motion", () => ({ prefersReducedMotion: () => motion.reduce }));
 
 import {
   HAIR_PX,
+  HAND_EVENTS,
+  HOLD_MS,
   KEPT_AT,
   MIN_BAND_PX,
   READING_PLACE,
@@ -31,6 +33,8 @@ import {
   bandOf,
   blockAt,
   goToReadingPlace,
+  heldPlace,
+  holdAtReadingPlace,
   inReadingZone,
   placeIn,
   readScreen,
@@ -435,5 +439,124 @@ describe("the bars a place keeps clear of", () => {
     // layer over the whole screen; the card is what covers the foot.
     expect(code("components/nav/MobileTopBar.tsx")).toMatch(/<div data-plates-row data-screen-edge="top"/);
     expect(code("components/bible/MobileVerseToolbar.tsx")).toMatch(/data-verse-tools=""\s+data-screen-edge="bottom"/);
+  });
+});
+
+// Build 90 note 9, the owner on build 90: a saved verse of Matthew 1 opened at
+// verse 9 of 25 with his Greek on. The chapter is drawn in English first and
+// its Greek is read a moment later and set beside every verse, which about
+// doubles the height above the verse landed on: on the export Matthew 5:44
+// stood at 5:22, John 3:16 at 3:8. The place gone to is now held while the
+// page settles, until the reader's hand moves it.
+describe("holding a place while the page settles (build 90 note 9)", () => {
+  it("lets go on the reader's hand or when its time is up, keeps still to a hair, and otherwise moves by the rest", () => {
+    expect(heldPlace({ elapsedMs: 100, readerMoved: true, shift: 900 })).toBe("let go");
+    expect(heldPlace({ elapsedMs: HOLD_MS + 1, readerMoved: false, shift: 900 })).toBe("let go");
+    expect(heldPlace({ elapsedMs: 100, readerMoved: false, shift: HAIR_PX })).toBe("still");
+    expect(heldPlace({ elapsedMs: 100, readerMoved: false, shift: -HAIR_PX })).toBe("still");
+    expect(heldPlace({ elapsedMs: 100, readerMoved: false, shift: 1800 })).toBe(1800);
+    expect(heldPlace({ elapsedMs: 100, readerMoved: false, shift: -40 })).toBe(-40);
+  });
+
+  /** A stubbed phone with the hold's own needs: the hand's events, a ResizeObserver to report through, frames at once. */
+  function stubHold() {
+    const { scrolls } = stubScreen({
+      width: 407,
+      marked: [
+        { edge: "top", rect: PLATES },
+        { edge: "bottom", rect: TAB_BAR },
+        { edge: "bottom", rect: MINI_PLAYER },
+        { edge: "bottom", rect: PILL },
+      ],
+    });
+    const hands = new Map<string, () => void>();
+    const win = (globalThis as unknown as { window: Record<string, unknown> }).window;
+    win.addEventListener = (type: string, fn: () => void) => hands.set(type, fn);
+    win.removeEventListener = (type: string) => hands.delete(type);
+    const observed: unknown[] = [];
+    let report: ((entries: { target: unknown; contentRect: { height: number } }[]) => void) | null = null;
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        constructor(cb: typeof report) {
+          report = cb;
+        }
+        observe(el: unknown) {
+          observed.push(el);
+        }
+        disconnect() {
+          report = null;
+        }
+      },
+    );
+    vi.stubGlobal("requestAnimationFrame", (fn: FrameRequestCallback) => {
+      fn(0);
+      return 1;
+    });
+    vi.stubGlobal("cancelAnimationFrame", () => {});
+    const body = (globalThis as unknown as { document: { body: unknown } }).document.body;
+    const article = { tag: "article" };
+    let rect: Span = { top: 330, bottom: 420 };
+    const verse = {
+      getBoundingClientRect: () => ({ ...rect, width: 380, height: rect.bottom - rect.top }),
+      closest: (sel: string) => (sel === "article" ? article : null),
+    } as unknown as Element;
+    const grow = (height: number) => report?.([{ target: body, contentRect: { height } }, { target: article, contentRect: { height: height - 400 } }]);
+    return { scrolls, hands, observed, body, article, verse, grow, sink: (to: Span) => (rect = to) };
+  }
+
+  it("watches the page and the chapter that holds the verse, and the reader's hand", () => {
+    const { observed, hands, body, article, verse } = stubHold();
+    const letGo = holdAtReadingPlace([verse]);
+    expect(observed).toEqual([body, article]);
+    expect([...hands.keys()].sort()).toEqual([...HAND_EVENTS].sort());
+    letGo();
+    expect(hands.size).toBe(0);
+  });
+
+  it("sets the verse back at the reading place, at once, when the Greek arrives above it", () => {
+    const { scrolls, verse, grow, sink } = stubHold();
+    const letGo = holdAtReadingPlace([verse]);
+    // The first report is the page as it stands: nothing moves.
+    grow(8000);
+    expect(scrolls).toEqual([]);
+    // The Greek: every verse about twice as tall, this one sunk far below.
+    sink({ top: 2130, bottom: 2310 });
+    grow(15000);
+    const shift = shiftToReadingPlace(BAND, { top: 2130, bottom: 2310 });
+    expect(scrolls).toEqual([{ top: 2000 + shift, behavior: "auto" }]);
+    letGo();
+  });
+
+  it("keeps still when the page changes and the verse has not moved", () => {
+    const { scrolls, verse, grow, sink } = stubHold();
+    // A short verse centred in the band, as a link sets it: nothing to put right.
+    const half = 45;
+    const centre = placeIn(BAND, 0.5);
+    sink({ top: centre - half, bottom: centre + half });
+    expect(Math.abs(shiftToReadingPlace(BAND, { top: centre - half, bottom: centre + half }))).toBeLessThanOrEqual(HAIR_PX);
+    const letGo = holdAtReadingPlace([verse]);
+    grow(8000);
+    // A change below the verse leaves it where it stands.
+    grow(9000);
+    expect(scrolls).toEqual([]);
+    letGo();
+  });
+
+  it("never moves the page after the reader's first touch", () => {
+    const { scrolls, hands, verse, grow, sink } = stubHold();
+    holdAtReadingPlace([verse]);
+    grow(8000);
+    hands.get("touchstart")?.();
+    expect(hands.size).toBe(0);
+    sink({ top: 2130, bottom: 2310 });
+    grow(15000);
+    expect(scrolls).toEqual([]);
+  });
+
+  it("is what a link to a verse does once it has landed, and is let go when the page goes", () => {
+    const flash = code("components/bible/VerseFocusFlash.tsx");
+    expect(flash).toMatch(/goToReadingPlace\(flashed\);\s*letGo\?\.\(\);\s*letGo = holdAtReadingPlace\(flashed\);/);
+    expect(flash).toMatch(/return \(\) => \{[\s\S]*letGo\?\.\(\);[\s\S]*\};/);
   });
 });
