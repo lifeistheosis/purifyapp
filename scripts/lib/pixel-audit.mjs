@@ -36,6 +36,12 @@
 //    page's chip as it appears, the chant's question as it is put away). It
 //    is measured where it rests. (The first whole walk caught "Pray with
 //    chant" a fifth of the way in, at 1.76:1.)
+//  - a word taken away or moved while it was being measured. The screen is
+//    pictured twice, and something that leaves between the two pictures (the
+//    chant's question puts itself away after fifteen seconds) would be held
+//    to the page it left behind: "Choose", dark on its white button, read
+//    1.24:1 against the dark page where the button had been. Each word's
+//    place is asked again after the second picture.
 //
 // A look's foot, said exactly. The foot is the look's picture again, drawn
 // OVER the page's last lines by an eased share: nothing at --foot-clear from
@@ -81,6 +87,9 @@ function words([footShare, within, fadeShare]) {
     return o;
   };
   const out = [];
+  // Each word's element and where it stood, kept on the page so its place can be asked again
+  // once the screen has been pictured (stillThere, below).
+  window.__auditSeen = [];
   // The foot of the screen, where the app itself fades a page out under its
   // bars (the reader's dock and its fade, the tab bar): words there are on
   // their way off the screen on every palette.
@@ -198,10 +207,23 @@ function words([footShare, within, fadeShare]) {
       if (y1 > footFrom && !el.closest("[data-tab-bar], .reader-dock, [data-reader-dock]")) continue;
       // In a look's foot, above its quarter: on its way out if the page can still bring it up clear.
       if (moves && y1 > fadeFrom && y1 - rise <= fadeFrom) continue;
+      const box = el.getBoundingClientRect();
+      window.__auditSeen.push([el, box.left, box.top]);
       out.push({ text: text.slice(0, 40), fg: fg.slice(0, 3), alpha, large, disabled, x0, y0, x1, y1 });
     }
   }
   return out;
+}
+
+/** For each word listed: is its element still on the page, drawn, and where it stood? Runs in the page. */
+function stillThere() {
+  const seen = window.__auditSeen ?? [];
+  delete window.__auditSeen;
+  return seen.map(([el, left, top]) => {
+    if (!el.isConnected || !el.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })) return false;
+    const box = el.getBoundingClientRect();
+    return Math.abs(box.left - left) < 1.5 && Math.abs(box.top - top) < 1.5;
+  });
 }
 
 /**
@@ -229,6 +251,7 @@ export async function audit(page, { footShare = null, fadeShare = null, every = 
   });
   await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
   const shot = await page.screenshot();
+  const stayed = await page.evaluate(stillThere);
   await hide.evaluate((n) => n.remove());
   const { data, info } = await sharp(shot).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const scale = info.width / (await page.evaluate(() => innerWidth));
@@ -236,8 +259,8 @@ export async function audit(page, { footShare = null, fadeShare = null, every = 
   let lowest = Infinity;
   let lowestText = "";
   let measured = 0;
-  for (const w of list) {
-    if (w.disabled) continue;
+  for (const [i, w] of list.entries()) {
+    if (w.disabled || !stayed[i]) continue;
     const X0 = Math.floor(w.x0 * scale), X1 = Math.min(info.width, Math.ceil(w.x1 * scale));
     const Y0 = Math.floor(w.y0 * scale), Y1 = Math.min(info.height, Math.ceil(w.y1 * scale));
     const px = [];
