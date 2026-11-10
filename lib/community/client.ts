@@ -469,7 +469,6 @@ export type PrayerRequest = {
   name: string;
   avatar: string | null;
   since: string;
-  count: number;
   prayed: boolean;
   mine: boolean;
   /** What they ask prayers for, in their own words (1.7.1); null when they wrote nothing. */

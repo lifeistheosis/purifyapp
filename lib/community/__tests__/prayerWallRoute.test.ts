@@ -8,7 +8,9 @@ import { cappedApi } from "@/lib/supabase/__tests__/cappedApi";
  * for, in the reader's own words, and says whether the server can keep words
  * at all yet, so the ask offers the field only once
  * docs/1.8-build/sql/prayer-request-intention.sql has run. What leaves is a
- * handle, a name, a picture, a count and those words: never an account id.
+ * handle, a name, a picture and those words: never an account id, and from
+ * 1.9 never a count (campaigns-fable.md section 9, item 8): the wall draws no
+ * number beside anyone, so the route neither counts nor sends one.
  */
 
 type Row = Record<string, unknown>;
@@ -16,7 +18,7 @@ type Row = Record<string, unknown>;
 const ANNA = "11111111-1111-4111-8111-111111111111";
 const BEN = "22222222-2222-4222-8222-222222222222";
 
-const state = vi.hoisted(() => ({ admin: null as unknown, user: null as null | { id: string } }));
+const state = vi.hoisted(() => ({ admin: null as unknown, user: null as null | { id: string }, reads: [] as { table: string }[] }));
 
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient: () => state.admin }));
 vi.mock("@/lib/security/ratelimit", () => ({ rateLimited: async () => false, ipKey: () => "test" }));
@@ -29,14 +31,19 @@ function world({ open = true } = {}) {
     { id: ANNA, handle: "anna", display_name: "Anna", avatar_url: null, prayer_request_at: asked(1), profile_private: false, prayer_request_intention: "For my mother, who is ill" },
     { id: BEN, handle: "ben", display_name: "Ben", avatar_url: null, prayer_request_at: asked(2), profile_private: false, prayer_request_intention: null },
   ];
-  const { client } = cappedApi(
-    { profiles, profile_prayers: [] },
+  const prayers: Row[] = [
+    // Ben prayed for Anna's request: that is Ben's own answer, and nobody's count.
+    { owner_id: ANNA, prayer_id: BEN, request_at: profiles[0].prayer_request_at },
+  ];
+  const { client, requests } = cappedApi(
+    { profiles, profile_prayers: prayers },
     {},
     {
       // Before the SQL the first read names the column and fails as Postgres fails it.
       fail: ({ table, n }) => (!open && table === "profiles" && n === 1 ? { code: "42703", message: "column profiles.prayer_request_intention does not exist" } : null),
     },
   );
+  state.reads = requests;
   state.admin = {
     ...client,
     from: client.from.bind(client),
@@ -70,6 +77,21 @@ describe("the prayer wall", () => {
     const text = JSON.stringify(json);
     expect(text).not.toContain(ANNA);
     expect(text).not.toContain(BEN);
+  });
+
+  it("sends no count, to anyone, and reads no prayers to make one", async () => {
+    const { json } = await wall();
+    for (const r of json.requests) expect(r).not.toHaveProperty("count");
+    // Signed out, nobody's prayers are read at all.
+    expect(state.reads.filter((r) => r.table === "profile_prayers")).toEqual([]);
+
+    // Signed in, only the reader's own answers: whether they prayed.
+    state.user = { id: BEN };
+    world();
+    const signedIn = await wall();
+    for (const r of signedIn.json.requests) expect(r).not.toHaveProperty("count");
+    expect(signedIn.json.requests.find((r) => r.handle === "anna")).toMatchObject({ prayed: true });
+    expect(state.reads.filter((r) => r.table === "profile_prayers")).toHaveLength(1);
   });
 
   it("shows the reader their own request as it is now, words and all", async () => {

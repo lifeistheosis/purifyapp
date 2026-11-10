@@ -8,15 +8,19 @@ import { PRAYER_REQUEST_MS, identity } from "@/lib/profile/server";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
-import { pageAllSettled } from "@/lib/supabase/pageAll";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
  * The prayer wall: every reader asking for prayers right now, in one place,
- * newest first, with how many have prayed (20261002's "pray for me"). A
- * private profile is never on it.
+ * newest first (20261002's "pray for me"). A private profile is never on it.
+ *
+ * No count leaves (1.9, campaigns-fable.md section 9, item 8). The wall has
+ * drawn no number beside anyone since 1.8 ("3 prayed" went, as a campaign
+ * carries none), and until then this route still counted every prayer for
+ * the sixty requests and handed each reader how many prayed for each. What is
+ * not drawn is not sent, and not counted.
  *
  * From 1.7.1 a request may say what it asks prayers for, in the reader's own
  * words (profiles.prayer_request_intention, docs/1.8-build/sql/
@@ -38,7 +42,6 @@ type WallEntry = {
   name: string;
   avatar: string | null;
   since: string;
-  count: number;
   intention: string | null;
 };
 
@@ -80,30 +83,6 @@ async function loadWall(admin: ReturnType<typeof createAdminClient>): Promise<{ 
     return null;
   }
   const rows = (data ?? []) as unknown as WallRow[];
-  const ids = rows.map((r) => r.id);
-  // Every prayer for the sixty requests on the wall, in pages. One request
-  // stops at 1,000 rows whatever .limit() asks for, so once the wall had
-  // drawn more than a thousand prayers between them, each count would have
-  // been of whichever thousand came back. At most once a minute per server,
-  // so the pages cost little.
-  const { data: prayers } = ids.length
-    ? await pageAllSettled<{ owner_id: string; request_at: string }>((from, to) =>
-        admin
-          .from("profile_prayers")
-          .select("owner_id, request_at")
-          .in("owner_id", ids)
-          .gte("request_at", since)
-          .order("owner_id")
-          .order("prayer_id")
-          .order("request_at")
-          .range(from, to),
-      )
-    : { data: [] };
-  const counts = new Map<string, number>();
-  for (const p of prayers ?? []) {
-    const key = `${p.owner_id}|${new Date(p.request_at).getTime()}`;
-    counts.set(key, (counts.get(key) ?? 0) + 1);
-  }
   const named = await Promise.all(rows.map((r) => identity(admin, r)));
   const entries = rows.map((r, i) => ({
     id: r.id,
@@ -111,7 +90,6 @@ async function loadWall(admin: ReturnType<typeof createAdminClient>): Promise<{ 
     name: named[i].name,
     avatar: named[i].avatar,
     since: r.prayer_request_at,
-    count: counts.get(`${r.id}|${new Date(r.prayer_request_at).getTime()}`) ?? 0,
     intention: wordsOf(r.prayer_request_intention),
   }));
   cache = { at: Date.now(), entries, intentions };
@@ -155,10 +133,7 @@ export async function GET(req: Request) {
     const active = row?.prayer_request_at && Date.now() - new Date(row.prayer_request_at).getTime() < PRAYER_REQUEST_MS ? row.prayer_request_at : null;
     entries = wall.entries.filter((w) => w.id !== user.id);
     if (row && row.handle && active && !row.profile_private) {
-      const [{ count }, who] = await Promise.all([
-        admin.from("profile_prayers").select("prayer_id", { count: "exact", head: true }).eq("owner_id", row.id).eq("request_at", active),
-        identity(admin, row),
-      ]);
+      const who = await identity(admin, row);
       entries = [
         {
           id: row.id,
@@ -166,7 +141,6 @@ export async function GET(req: Request) {
           name: who.name,
           avatar: who.avatar,
           since: active,
-          count: count ?? 0,
           intention: wordsOf(row.prayer_request_intention),
         },
         ...entries,
@@ -195,8 +169,8 @@ export async function GET(req: Request) {
     hidden = new Set([...h.blocked, ...h.muted]);
   }
 
-  // The ids stop here: what leaves is a handle, a name, a picture, a count
-  // and the request's own words.
+  // The ids stop here: what leaves is a handle, a name, a picture and the
+  // request's own words, and whether this reader prayed and asked.
   const requests = entries
     .filter((w) => !hidden.has(w.id))
     .map((w) => ({
@@ -204,7 +178,6 @@ export async function GET(req: Request) {
       name: w.name,
       avatar: w.avatar,
       since: w.since,
-      count: w.count,
       prayed: prayed.has(w.id),
       mine: user?.id === w.id,
       intention: w.intention,

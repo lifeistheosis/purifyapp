@@ -37,7 +37,7 @@ import { saveMyProfile, sayPrayed } from "@/lib/profile/client";
  * running now. Set like a page: its name and Ask for prayers on one line, then
  * the requests as rows with no box around them. No number beside anyone:
  * "3 prayed" went, as a campaign carries no count (the sheet's open question,
- * built as drawn). The server still sends the count; nothing draws it.
+ * built as drawn). Nor does the server send one, since 1.9.
  */
 export function PrayerWall({
   signedIn,
@@ -81,13 +81,11 @@ export function PrayerWall({
   async function pray(r: PrayerRequest) {
     if (busy || r.prayed || r.mine) return;
     setBusy(r.handle);
-    setRequests((list) => list.map((x) => (x.handle === r.handle ? { ...x, prayed: true, count: x.count + 1 } : x)));
+    setRequests((list) => list.map((x) => (x.handle === r.handle ? { ...x, prayed: true } : x)));
     const res = await sayPrayed(r.handle);
     setBusy(null);
-    if (res.ok) {
-      setRequests((list) => list.map((x) => (x.handle === r.handle ? { ...x, count: res.count } : x)));
-    } else {
-      setRequests((list) => list.map((x) => (x.handle === r.handle ? { ...x, prayed: false, count: Math.max(0, x.count - 1) } : x)));
+    if (!res.ok) {
+      setRequests((list) => list.map((x) => (x.handle === r.handle ? { ...x, prayed: false } : x)));
       setNotice(t("profile.prayFailed"));
     }
   }
