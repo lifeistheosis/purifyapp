@@ -130,6 +130,16 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   // the month keep the plate until a picture of each is settled.
   "paul-the-confessor": bundled("paul-the-confessor.jpg", 26),
   "varlaam-of-khutyn": bundled("varlaam-of-khutyn.jpg", 36),
+  // November's Lives in Alban Butler's words (released 2026-11-10): their
+  // saints' icons, settled with full rights rows, on the books. St. Marcian
+  // has no icon, and his book keeps the plate.
+  "joannicius-the-great": bundled("joannicius-the-great.jpg", 25),
+  "menas-of-egypt": bundled("menas-of-egypt.jpg", 27),
+  "nilus-of-sinai": bundled("nilus-of-sinai.jpg", 25),
+  "catherine-of-alexandria": bundled("catherine-of-alexandria.jpg", 32),
+  "james-the-persian": bundled("james-the-persian.jpg", 45),
+  "stephen-the-new": bundled("stephen-the-new.jpg", 25),
+  "john-the-merciful": bundled("john-the-merciful.jpg", 18),
   // Push 2: the second half of the month's icons, on their books.
   "gregory-the-wonderworker": bundled("gregory-the-wonderworker.jpg", 34),
   "clement-of-rome": bundled("clement-of-rome.jpg", 31),

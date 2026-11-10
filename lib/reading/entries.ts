@@ -199,6 +199,16 @@ export const AUTHOR_META: Readonly<Record<string, MetaRow>> = {
   "varlaam-of-khutyn": { traditions: ["russian"], era: "byzantine" },
   "alexander-nevsky": { traditions: ["russian"], era: "byzantine" },
   "michael-of-tver": { traditions: ["russian"], era: "byzantine" },
+  // November's Lives in Alban Butler's words (released 2026-11-10, the owner's
+  // word: no priest's check before 1.9).
+  "marcian-of-cyrrhus": { traditions: ["syriac", "desert"], era: "councils" },
+  "joannicius-the-great": { traditions: ["greek"], era: "byzantine" },
+  "menas-of-egypt": { traditions: ["egypt"], era: "early" },
+  "nilus-of-sinai": { traditions: ["greek", "desert"], era: "councils" },
+  "catherine-of-alexandria": { traditions: ["egypt"], era: "early" },
+  "james-the-persian": { traditions: ["syriac"], era: "councils" },
+  "stephen-the-new": { traditions: ["greek"], era: "councils" },
+  "john-the-merciful": { traditions: ["egypt"], era: "councils" },
   "innocent-of-irkutsk": { traditions: ["russian"], era: "afterByzantium" },
 };
 
@@ -1186,6 +1196,17 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
   "proclus-of-constantinople/life-of-proclus": { by: null, about: "proclus-of-constantinople", form: "life", scope: "selections", themes: [], review: R },
   "philemon-and-apphia/the-epistle-to-philemon": { by: "apostle-paul", about: "philemon-and-apphia", form: "scripture", scope: "complete", themes: [], review: R },
   "michael-of-tver/life-of-michael-of-tver": { by: null, about: "michael-of-tver", form: "life", scope: "selections", themes: [], review: R },
+  // November's Lives in Alban Butler's words (docs/editorial-standards.md,
+  // clergy item 31, released on the owner's word of 2026-11-10). Two have a
+  // sentence of Butler's left out and shown.
+  "marcian-of-cyrrhus/life-of-marcian": { by: null, about: "marcian-of-cyrrhus", form: "life", scope: "complete", themes: [], review: R },
+  "joannicius-the-great/life-of-joannicius": { by: null, about: "joannicius-the-great", form: "life", scope: "complete", themes: [], review: R },
+  "menas-of-egypt/martyrdom-of-menas": { by: null, about: "menas-of-egypt", form: "life", scope: "complete", themes: [], review: R },
+  "nilus-of-sinai/life-of-nilus": { by: null, about: "nilus-of-sinai", form: "life", scope: "complete", themes: [], review: R },
+  "catherine-of-alexandria/life-of-catherine": { by: null, about: "catherine-of-alexandria", form: "life", scope: "selections", themes: [], review: R },
+  "james-the-persian/martyrdom-of-james-the-persian": { by: null, about: "james-the-persian", form: "life", scope: "complete", themes: [], review: R },
+  "stephen-the-new/martyrdom-of-stephen-the-new": { by: null, about: "stephen-the-new", form: "life", scope: "selections", themes: [], review: R },
+  "john-the-merciful/life-of-john-the-merciful": { by: null, about: "john-the-merciful", form: "life", scope: "complete", themes: [], review: R },
   "amphilochius-of-iconium/life-of-amphilochius": { by: null, about: "amphilochius-of-iconium", form: "life", scope: "selections", themes: [], review: R },
   "alexander-nevsky/life-of-alexander-nevsky": { by: null, about: "alexander-nevsky", form: "life", scope: "selections", themes: [], review: R },
   "clement-of-rome/life-of-clement": { by: null, about: "clement-of-rome", form: "life", scope: "selections", themes: [], review: R },

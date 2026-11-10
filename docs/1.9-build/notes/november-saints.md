@@ -374,3 +374,32 @@ saint's screen, with stills to the arbiter.
   Fathers (`november-saints/11-st-paul-at-sardica.png`); St Andrew, St Nikon
   and St Nektarios with their new pictures, and St Iakovos's page without one
   (`november-saints/12-the-older-icons-settled.png`).
+
+## Push 5, as built: Butler's Lives released (2026-11-10)
+
+His word, about 18:41 UTC: "again no preist so just full publish" (call 11
+in docs/1.9-build/BRAINSTORM.md). The eight Lives held for a priest are
+published in 1.9 with no priest's check.
+
+- `node scripts/ingest-witness-lives.mjs november --held --release` wrote them
+  to `data/saints/`; each file is identical to its held copy, and the held
+  folder is empty. The two cuts stay cut and shown as […] (St Stephen the
+  New's sentence on the pope of Rome; St Catherine's sentence likening
+  peoples to apes), and each Life's source says so.
+- Each is a work on its saint's page ("As Alban Butler tells it") and a book
+  in the reading room. Seven wear their saint's settled icon on the cover;
+  St Marcian has no icon and his book keeps the plate.
+- Clergy item 31 says RELEASED, and keeps the text it waited under as the
+  record of what a priest may still be asked to read. A test now holds every
+  released Life from Butler to his name on every passage and to its cuts
+  being shown (lib/saints/__tests__/menologionMonth.test.ts).
+- **The apps**: about 60 KB of text more (eight Lives, 9,200 words); the
+  Android export is 62.9 MB packed of 85.
+- **Still** (the Android export, the app's way): St Catherine's Life with her
+  icon on the cover and Butler named under it
+  (`november-saints/13-a-life-from-butler-released.png`).
+- **Seen on the walk, not from this push**: on every Life page, the eight and
+  the older ones alike (St Paul the Confessor's, St Antony's), checkMock finds
+  the reader's chapter buttons 42.5px (44 is the floor) and its "Source:"
+  line under the 4.5:1 contrast floor on all five palettes. Told to the
+  arbiter for whoever holds the reader.

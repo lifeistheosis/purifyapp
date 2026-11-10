@@ -136,6 +136,7 @@ describe("the covers' pictures", () => {
       "erastus-olympas-rodion-sosipater-quartus-and-tertius/their-names-in-scripture",
       "frumentius-of-axum/life-of-frumentius",
       "gurias-samonas-and-habib/acts-of-gurias-samonas-and-habib",
+      "marcian-of-cyrrhus/life-of-marcian",
       "patrobas-hermas-linus-gaius-and-philologus/their-names-in-scripture",
       "plato-and-romanus/martyrdom-of-romanus",
       "proclus-of-constantinople/life-of-proclus",

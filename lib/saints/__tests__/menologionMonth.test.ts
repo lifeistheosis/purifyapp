@@ -104,6 +104,12 @@ describe("a Life held for a priest", () => {
     : [];
   const EM_DASH = String.fromCharCode(0x2014);
 
+  // Nothing may be held and shipped at once. (The folder is empty since
+  // November's eight were released on 2026-11-10; it is ready for the next.)
+  it("holds no Life that is already in the apps", () => {
+    for (const h of held) expect(fs.existsSync(path.join(ROOT, "data", "saints", h.saint, `${h.slug}.json`)), `${h.saint}/${h.slug}`).toBe(false);
+  });
+
   for (const h of held) {
     it(`${h.month}: ${h.saint}/${h.slug} stays out of the apps until it is released`, () => {
       expect(fs.existsSync(path.join(ROOT, "data", "saints", h.saint, `${h.slug}.json`)), "in data/saints").toBe(false);
@@ -125,6 +131,48 @@ describe("a Life held for a priest", () => {
       for (const ours of [doc.title, doc.subtitle ?? "", doc.source, ...doc.sections.map((s: { title: string; citation: string }) => s.title + s.citation)]) {
         expect(ours.includes(EM_DASH), ours).toBe(false);
       }
+    });
+  }
+});
+
+/**
+ * The same Lives once released (the owner's word of 2026-11-10, "again no
+ * preist so just full publish"; clergy item 31): in the apps as works of their
+ * saints, still naming Butler on every passage and in the source, and any
+ * passage of his left out still shown as […].
+ */
+describe("a compiler's Life, released", () => {
+  const SAINTS_DIR = path.join(ROOT, "data", "saints");
+  const butler = fs
+    .readdirSync(SAINTS_DIR)
+    .flatMap((saint) =>
+      fs.statSync(path.join(SAINTS_DIR, saint)).isDirectory()
+        ? fs
+            .readdirSync(path.join(SAINTS_DIR, saint))
+            .filter((f) => f.endsWith(".json"))
+            .map((f) => ({ saint, slug: f.replace(/\.json$/, ""), file: path.join(SAINTS_DIR, saint, f) }))
+        : [],
+    )
+    .filter((w) => fs.readFileSync(w.file, "utf8").includes('"voiceAuthor": "Alban Butler"'));
+
+  it("counts November's eight at least", () => {
+    expect(butler.length).toBeGreaterThanOrEqual(8);
+  });
+
+  for (const w of butler) {
+    it(`${w.saint}/${w.slug} is a work of its saint and names Butler on every passage`, () => {
+      const saint = SAINTS.find((s) => s.slug === w.saint);
+      expect(saint?.works.some((x) => x.slug === w.slug), "a work in the registry").toBe(true);
+      const doc = JSON.parse(fs.readFileSync(w.file, "utf8"));
+      expect(doc.source).toContain("Alban Butler");
+      for (const s of doc.sections) {
+        expect(s.voice).toBe("witness");
+        expect(s.voiceAuthor).toBe("Alban Butler");
+        expect(s.citation).toContain("Alban Butler");
+      }
+      // A cut is shown where it is made, and said in the source.
+      const cut = doc.sections.some((s: { paragraphs: string[] }) => s.paragraphs.some((p) => p.includes("[\u2026]")));
+      expect(cut, "a cut shown in the text is said in the source").toBe(doc.source.includes("[\u2026]"));
     });
   }
 });

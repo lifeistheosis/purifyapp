@@ -12,6 +12,12 @@
 // never to data/saints/, and `--held --release` moves them into the app only
 // once the queue item is cleared.
 //
+// RELEASED 2026-11-10. The owner's later word ("again no preist so just full
+// publish", call 11 in docs/1.9-build/BRAINSTORM.md) published them with no
+// priest's check: `--held --release` wrote them to data/saints/, word for word
+// as held, and the clergy item records it. This spec stays as the record of
+// how they were typed and checked.
+//
 // THE EDITION. The London stereotype edition in twelve volumes, printed for
 // John Murphy: vol. I, 1812, and vol. XI, 1815, as their title pages date
 // them. Each Life was read from the page images of archive.org's scan of

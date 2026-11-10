@@ -5955,7 +5955,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under Marcian; A Dictionary of Christian Biography III (1882), under Marcianus (3)",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "life-of-marcian",
+        title: "The Life of St. Marcian",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's Life of the patrician of Cyrus who left the court for a narrow cell in the desert of Chalcis, and the two disciples who lived beside him. In the public-domain English of 1815.",
+        topics: ["Asceticism", "Desert"],
+      },
+    ],
   },
 
   {
@@ -5999,7 +6009,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under Joannicius; Baring-Gould, The Lives of the Saints XIII (1897), S. Joannicus",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "life-of-joannicius",
+        title: "The Life of St. Joannicius",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's Life of the Bithynian herdsman and soldier who left the army at forty for the monasteries of Mount Olympus. In the public-domain English of 1815.",
+        topics: ["Repentance", "Monasticism"],
+      },
+    ],
   },
 
   {
@@ -6246,7 +6266,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under Mennas; Baring-Gould, The Lives of the Saints XIII (1897), S. Mennas",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-menas",
+        title: "The Martyrdom of St. Menas",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's account of the Egyptian soldier beheaded in Phrygia under Diocletian, probably about the year 304. In the public-domain English of 1815.",
+        topics: ["Martyrdom"],
+      },
+    ],
   },
 
   {
@@ -6300,7 +6330,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under John the Almoner; A Dictionary of Christian Biography III (1882), under Joannes (15)",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "life-of-john-the-merciful",
+        title: "The Life of St. John the Merciful",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's Life of the widower of Amathus in Cyprus made patriarch of Alexandria about 608, named for his almsgiving, and of his poverty and his meekness. In the public-domain English of 1812.",
+        topics: ["Almsgiving", "Mercy"],
+      },
+    ],
   },
 
   {
@@ -6317,7 +6357,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "A Dictionary of Christian Biography IV (1887), under Nilus (3); The Book of Saints (1921), under Nilus; Baring-Gould, The Lives of the Saints XIII (1897), S. Nilus",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "life-of-nilus",
+        title: "The Life of St. Nilus",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's Life of the prefect of Constantinople who left the world with his son Theodulus for the desert of Sinai, and of the works he left. In the public-domain English of 1815.",
+        topics: ["Monasticism", "Desert"],
+      },
+    ],
   },
 
   {
@@ -6768,7 +6818,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under Catharine; A Dictionary of Christian Biography I (1877), under Catharine; Baring-Gould, The Lives of the Saints XIV (1897), S. Catharine",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "life-of-catherine",
+        title: "The Life of St. Catherine",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's Life of the martyr of Alexandria under Maximinus II: what the Greek Menology and Eusebius say of her, and the carrying of her body to Sinai. In the public-domain English of 1815, with one sentence of his left out and shown.",
+        topics: ["Martyrdom", "Wisdom"],
+      },
+    ],
   },
 
   {
@@ -6830,7 +6890,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under James Intercisus; Baring-Gould, The Lives of the Saints XIV (1897), S. James Intercisus",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-james-the-persian",
+        title: "The Martyrdom of St. James the Persian",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's account of the Persian noble who gave up the faith for the king's favour, came back to it at his mother's and his wife's letter, and was cut to pieces joint by joint in 421. In the public-domain English of 1815.",
+        topics: ["Martyrdom", "Repentance"],
+      },
+    ],
   },
 
   {
@@ -6847,7 +6917,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "A Dictionary of Christian Biography IV (1887), under Stephanus (51); Baring-Gould, The Lives of the Saints XIV (1897), S. Stephen the Younger",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-stephen-the-new",
+        title: "The Martyrdom of St. Stephen the New",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's account of the monk of Mount St. Auxentius, born at Constantinople in 714 and put to death under Constantine Copronymus in the persecution of the Iconoclasts. In the public-domain English of 1815, with one sentence of his left out and shown.",
+        topics: ["Martyrdom", "Icons"],
+      },
+    ],
   },
 
   {
