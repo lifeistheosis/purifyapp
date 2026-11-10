@@ -16,7 +16,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getClientPlan, type ClientPlan } from "@/lib/entitlements/client";
-import type { PremiumPlanCopy } from "@/lib/premium/plans";
 import { PLUS_ROWS, PRO_ROWS, SOON_LABEL, rowsHere } from "@/lib/premium/plusRows";
 import { useDesktopApp } from "@/lib/desktop/useDesktopApp";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -24,14 +23,18 @@ import { FeatureShowcase, type ShowcaseItem } from "@/components/premium/Feature
 import { PREMIUM_CTA, PREMIUM_GHOST } from "@/components/premium/PremiumUI";
 import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
+// How the plan came, and when it renews, in the reader's language (the Plus
+// page and Your plan in all twenty-one languages, 2026-11-10). The stores keep
+// their own names.
 const SOURCE_LABEL: Record<string, string> = {
   google: "Google Play",
   apple: "App Store",
-  stripe: "Web billing",
-  comp: "Complimentary",
-  gift: "Gift",
-  test: "Test purchase",
-  unknown: "Not recorded",
+};
+const SOURCE_KEY: Record<string, string> = {
+  stripe: "yourPlan.source.web",
+  comp: "yourPlan.source.comp",
+  gift: "yourPlan.source.gift",
+  test: "yourPlan.source.test",
 };
 
 function fmtDate(iso: string): string {
@@ -42,19 +45,28 @@ function fmtDate(iso: string): string {
   });
 }
 
-function billing(plan: ClientPlan): { label: string; value: string } {
+function billing(plan: ClientPlan, t: (key: string, replacements?: Record<string, string | number>) => string): { label: string; value: string } {
   const until = plan.tier === "pro" ? plan.proUntil : plan.plusUntil;
   const comp = plan.source === "comp";
-  if (plan.supporter && !until) return { label: "Access", value: "Lifetime" };
-  if (!until) return { label: "Renews", value: "Not recorded" };
+  if (plan.supporter && !until) return { label: t("yourPlan.access"), value: t("yourPlan.lifetime") };
+  if (!until) return { label: t("yourPlan.renews"), value: t("yourPlan.notRecorded") };
   const farFuture = new Date(until).getFullYear() >= 2090;
   if (comp) {
     return {
-      label: "Complimentary",
-      value: farFuture ? "No expiry" : `Until ${fmtDate(until)}`,
+      label: t("yourPlan.source.comp"),
+      value: farFuture ? t("yourPlan.noExpiry") : t("yourPlan.until", { date: fmtDate(until) }),
     };
   }
-  return { label: "Renews on", value: fmtDate(until) };
+  return { label: t("yourPlan.renewsOn"), value: fmtDate(until) };
+}
+
+/** How the plan came: a store by its own name, anything else in the reader's language. */
+function sourceLabel(source: string | null, t: (key: string) => string): string {
+  const s = source ?? "unknown";
+  if (SOURCE_LABEL[s]) return SOURCE_LABEL[s];
+  if (SOURCE_KEY[s]) return t(SOURCE_KEY[s]);
+  // A source this screen has no word for: said as it was recorded, or not at all.
+  return source ?? t("yourPlan.notRecorded");
 }
 
 const FREE: ClientPlan = {
@@ -65,7 +77,7 @@ const FREE: ClientPlan = {
   supporter: false,
 };
 
-export function PlanScreen({ planCopy }: { planCopy: PremiumPlanCopy }) {
+export function PlanScreen() {
   const { t } = useTranslate();
   const router = useRouter();
   const [plan, setPlan] = useState<ClientPlan | null>(null);
@@ -105,16 +117,16 @@ export function PlanScreen({ planCopy }: { planCopy: PremiumPlanCopy }) {
     );
   }
 
-  return <PlanView plan={plan} planCopy={planCopy} />;
+  return <PlanView plan={plan} />;
 }
 
 /** The plan, drawn. Apart from the loading so it can be rendered from a
  *  known plan (a subscriber's, once read; a sample, in a design check). */
-export function PlanView({ plan, planCopy }: { plan: ClientPlan; planCopy: PremiumPlanCopy }) {
+export function PlanView({ plan }: { plan: ClientPlan }) {
   const { t } = useTranslate();
   const isPro = plan.tier === "pro";
-  const name = isPro ? planCopy.proTitle : planCopy.plusTitle;
-  const lede = isPro ? planCopy.proLede : planCopy.plusLede;
+  const name = t(isPro ? "profile.badge.pro" : "plus.badge");
+  const lede = t(isPro ? "premium.proLede" : "premium.plusLede");
   const desktopApp = useDesktopApp();
   // What it opens, in the paywall's own rows and words, in all twenty-one
   // languages (build 89 note 12): lib/premium/plans.ts is written in English
@@ -127,8 +139,8 @@ export function PlanView({ plan, planCopy }: { plan: ClientPlan; planCopy: Premi
         : rowsHere(PLUS_ROWS, { desktopApp }).map((r) => ({ id: r.id, title: t(r.name), sub: t(r.body), row: r })),
     [isPro, desktopApp, t],
   );
-  const bill = billing(plan);
-  const source = SOURCE_LABEL[plan.source ?? "unknown"] ?? plan.source ?? "Not recorded";
+  const bill = billing(plan, t);
+  const source = sourceLabel(plan.source, t);
   const delay = (i: number) => ({ animationDelay: `${i * 90}ms` });
 
   return (

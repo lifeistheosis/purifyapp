@@ -14,7 +14,8 @@ import { describe, expect, it } from "vitest";
 describe("the Pro card's note", () => {
   it("is written at a share the palettes lift", () => {
     const page = fs.readFileSync(path.join(process.cwd(), "app/(app)/premium/page.tsx"), "utf8");
-    const cls = /<p className="([^"]*)">\{plan\.proNote\}<\/p>/.exec(page)?.[1] ?? "";
+    // Said from the catalog (the Plus page in every language, 2026-11-10).
+    const cls = /<p className="([^"]*)"><T k=\{PRO_TERMS\} \/><\/p>/.exec(page)?.[1] ?? "";
     expect(cls, "the note's paragraph").not.toBe("");
     const share = Number(/(?:^|\s)text-paper\/(\d+)(?:\s|$)/.exec(cls)?.[1]);
     expect(share).toBeGreaterThanOrEqual(45);

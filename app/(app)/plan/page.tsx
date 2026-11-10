@@ -1,5 +1,3 @@
-import { getServerLocale } from "@/lib/i18n/server";
-import { getPremiumPlan } from "@/lib/premium/plans";
 import { PlanScreen } from "@/components/premium/PlanScreen";
 
 export const metadata = {
@@ -7,11 +5,10 @@ export const metadata = {
   description: "Your Purify subscription: what it includes and when it renews.",
 };
 
-// The subscriber's plan detail. Copy (tier names, feature lists) is resolved
-// server-side for the locale; the tier + dates are read client-side from the
-// entitlements row inside PlanScreen.
-export default async function PlanPage() {
-  const locale = await getServerLocale();
-  const plan = getPremiumPlan(locale);
-  return <PlanScreen planCopy={plan} />;
+// The subscriber's plan detail. Its words are the catalog's, in the reader's
+// language and following it in the apps (2026-11-10: they were resolved here,
+// once, which the apps did in English); the tier and dates are read
+// client-side from the entitlements row inside PlanScreen.
+export default function PlanPage() {
+  return <PlanScreen />;
 }

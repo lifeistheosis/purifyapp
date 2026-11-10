@@ -22,7 +22,6 @@
 import type { ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
-import type { PlanFeature } from "@/lib/premium/plans";
 
 /** The primary premium action: white on the dark, its ink the page's, with a soft light under it. */
 export const PREMIUM_CTA =
@@ -61,7 +60,7 @@ export function PlusCheck({ size = 16, className }: { size?: number; className?:
   );
 }
 
-export function SoonPill({ label }: { label: string }) {
+export function SoonPill({ label }: { label: React.ReactNode }) {
   return (
     <span className="ml-2 inline-flex translate-y-[-1px] items-center rounded-pill border border-paper/25 bg-paper/[0.06] px-1.5 py-px align-middle font-sans text-[10px] font-semibold tracking-[0.6px] text-paper/70">
       {label}
@@ -259,7 +258,10 @@ export function FeatureTile({ id, className }: { id: string; className?: string 
 }
 
 /** One feature: its mark, its title (with Coming soon when promised, not live), and a line of what it is. */
-export function FeatureRow({ item, soonLabel }: { item: PlanFeature; soonLabel: string }) {
+/** A feature as a row draws it: its words may be a catalog island (<T>), as the Plus page's are. */
+export type FeatureRowItem = { id: string; title: React.ReactNode; sub: React.ReactNode; soon?: boolean };
+
+export function FeatureRow({ item, soonLabel }: { item: FeatureRowItem; soonLabel: React.ReactNode }) {
   return (
     <li className="flex items-start gap-3.5">
       <FeatureTile id={item.id} />
@@ -280,8 +282,8 @@ export function FeatureList({
   columns = 1,
   className,
 }: {
-  items: PlanFeature[];
-  soonLabel: string;
+  items: FeatureRowItem[];
+  soonLabel: React.ReactNode;
   columns?: 1 | 2;
   className?: string;
 }) {

@@ -63,6 +63,15 @@ export const PLAN_PRICE_CENTS = {
   proYearly: 19900,
 } as const;
 
+/**
+ * The yearly plan's free trial, in days, as the stores grant it on a first
+ * subscription (2026-10-18; plusTrial below says it in words). The Plus page
+ * reads it in every language (lib/premium/planWords.ts), so no sentence
+ * carries the number typed in; the paywall reads the store's own offer.
+ * lib/premium/__tests__/planWords.test.ts holds it to the English and German.
+ */
+export const PLUS_TRIAL_DAYS = 7;
+
 export type PlanFeature = {
   /** Stable slug, shared across locales. Renderers key icons off it and
    * the parity test pins EN/DE against drift. */
@@ -346,6 +355,75 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
     "Wenn die App dich getragen hat, kannst du sie ein wenig zurücktragen. Über Plus und Pro hinaus ist eine freiwillige Gabe stets willkommen und nie erforderlich.",
   supportCta: "Eine Kerze anzünden",
   supportFoot: "Völlig freiwillig. Einmal geben, oder gar nicht.",
+};
+
+/**
+ * The Plus page's own words (its heading, its buttons, its cards' labels), as
+ * approved in English and German: moved here from app/(app)/premium/page.tsx
+ * word for word on 2026-11-10, when the page began to say every word from the
+ * catalogs in all twenty-one languages (lib/premium/planWords.ts).
+ * lib/premium/__tests__/planWords.test.ts holds the catalogs' English and
+ * German to these, letter for letter. `perYear` is the "or" before the yearly
+ * price (premium.orPerYear).
+ */
+export type PremiumPageCopy = {
+  h1: string;
+  lede: string;
+  seePlus: string;
+  seePro: string;
+  freeHeading: string;
+  plansHeading: string;
+  plansSub: string;
+  standardName: string;
+  standardPrice: string;
+  standardPriceSub: string;
+  standardTagline: string;
+  standardCta: string;
+  plusBadge: string;
+  plusCta: string;
+  proRibbon: string;
+  proCta: string;
+  perYear: string;
+};
+
+export const PREMIUM_PAGE_EN: PremiumPageCopy = {
+  h1: "The whole Church, carried with you.",
+  lede: "Everything at the heart of Purify is free, and it stays free. Plus and Pro add an optional layer: your reading on every device, the Church in fuller dress, and a way to keep the lamps lit.",
+  seePlus: "See Purify Plus",
+  seePro: "See Purify Pro",
+  freeHeading: "Free, and always",
+  plansHeading: "Choose your plan",
+  plansSub: "Two optional subscriptions. Cancel anytime. The free core never changes.",
+  standardName: "Standard",
+  standardPrice: "Free",
+  standardPriceSub: "forever",
+  standardTagline: "The whole spiritual treasury, for anyone who needs it.",
+  standardCta: "Open Purify",
+  plusBadge: "Available now",
+  plusCta: "Get Purify Plus",
+  proRibbon: "Most complete",
+  proCta: "Get Purify Pro",
+  perYear: "or",
+};
+
+export const PREMIUM_PAGE_DE: PremiumPageCopy = {
+  h1: "Die ganze Kirche, mit dir getragen.",
+  lede: "Alles im Herzen von Purify ist frei und bleibt frei. Plus und Pro fügen eine optionale Schicht hinzu: dein Lesen auf jedem Gerät, die Kirche in vollerem Gewand und ein Weg, die Lampen am Brennen zu halten.",
+  seePlus: "Purify Plus ansehen",
+  seePro: "Purify Pro ansehen",
+  freeHeading: "Frei, und immer",
+  plansHeading: "Wähle deinen Plan",
+  plansSub: "Zwei optionale Abonnements. Jederzeit kündbar. Der freie Kern ändert sich nie.",
+  standardName: "Standard",
+  standardPrice: "Frei",
+  standardPriceSub: "für immer",
+  standardTagline: "Der ganze geistliche Schatz, für jeden, der ihn braucht.",
+  standardCta: "Purify öffnen",
+  plusBadge: "Jetzt verfügbar",
+  plusCta: "Purify Plus holen",
+  proRibbon: "Am umfassendsten",
+  proCta: "Purify Pro holen",
+  perYear: "oder",
 };
 
 /**

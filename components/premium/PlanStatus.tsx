@@ -56,13 +56,15 @@ export function PlanUpgradeCta({
 }: {
   tier: "plus" | "pro";
   href: string;
-  label: string;
+  /** Its words: a catalog island on the Plus page (<T>). */
+  label: React.ReactNode;
 }) {
+  const { t } = useTranslate();
   const userTier = usePremiumTier();
   const covered = coversTier(userTier, tier);
 
   if (covered) {
-    const activeLabel = ownedLabel(userTier, tier);
+    const activeLabel = t(ownedLabel(userTier, tier));
     return (
       <span className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.05] px-6 font-sans text-ui font-semibold text-paper/90">
         <PlusCheck />

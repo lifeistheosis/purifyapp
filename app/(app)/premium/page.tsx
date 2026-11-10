@@ -1,6 +1,9 @@
 import Link from "next/link";
-import { getServerLocale } from "@/lib/i18n/server";
-import { getPremiumPlan, type PremiumPlanCopy } from "@/lib/premium/plans";
+import { T } from "@/components/i18n/T";
+import { PLAN_PRICE_CENTS } from "@/lib/premium/plans";
+import { PLUS_ITEM_KEYS, freeKeys } from "@/lib/premium/planWords";
+import { PRO_ROWS, PRO_TERMS, SOON_LABEL } from "@/lib/premium/plusRows";
+import { PlanPrice, PlusTrialLine } from "@/components/premium/PlanWords";
 import { CurrentPlanBanner, PlanUpgradeCta } from "@/components/premium/PlanStatus";
 import {
   FeatureList as PlanFeatureList,
@@ -19,83 +22,13 @@ export const metadata = {
     "The whole spiritual treasury of Purify is free, and it stays free. Plus is the reading and study tools; Pro adds the EIKON Box and member benefits. See everything each plan includes.",
 };
 
-// Page chrome (hero + section + card labels). The tier substance — items,
-// prices, the opening offer, the promise — comes from lib/premium/plans, the
-// single source of truth shared with /pricing.
-type PremiumChrome = {
-  eyebrow: string;
-  h1: string;
-  lede: string;
-  seePlus: string;
-  seePro: string;
-  freeHeading: string;
-  plansHeading: string;
-  plansSub: string;
-  standardName: string;
-  standardPrice: string;
-  standardPriceSub: string;
-  standardTagline: string;
-  standardCta: string;
-  plusBadge: string;
-  plusCta: string;
-  proBadge: string;
-  proRibbon: string;
-  proCta: string;
-  compareAll: string;
-  perYear: string;
-};
-
-const CHROME_EN: PremiumChrome = {
-  eyebrow: "Purify Plus",
-  h1: "The whole Church, carried with you.",
-  lede: "Everything at the heart of Purify is free, and it stays free. Plus and Pro add an optional layer: your reading on every device, the Church in fuller dress, and a way to keep the lamps lit.",
-  seePlus: "See Purify Plus",
-  seePro: "See Purify Pro",
-  freeHeading: "Free, and always",
-  plansHeading: "Choose your plan",
-  plansSub: "Two optional subscriptions. Cancel anytime. The free core never changes.",
-  standardName: "Standard",
-  standardPrice: "Free",
-  standardPriceSub: "forever",
-  standardTagline: "The whole spiritual treasury, for anyone who needs it.",
-  standardCta: "Open Purify",
-  plusBadge: "Available now",
-  plusCta: "Get Purify Plus",
-  proBadge: "Members",
-  proRibbon: "Most complete",
-  proCta: "Get Purify Pro",
-  compareAll: "See full plan details",
-  perYear: "or",
-};
-
-const CHROME_DE: PremiumChrome = {
-  eyebrow: "Purify Plus",
-  h1: "Die ganze Kirche, mit dir getragen.",
-  lede: "Alles im Herzen von Purify ist frei und bleibt frei. Plus und Pro fügen eine optionale Schicht hinzu: dein Lesen auf jedem Gerät, die Kirche in vollerem Gewand und ein Weg, die Lampen am Brennen zu halten.",
-  seePlus: "Purify Plus ansehen",
-  seePro: "Purify Pro ansehen",
-  freeHeading: "Frei, und immer",
-  plansHeading: "Wähle deinen Plan",
-  plansSub: "Zwei optionale Abonnements. Jederzeit kündbar. Der freie Kern ändert sich nie.",
-  standardName: "Standard",
-  standardPrice: "Frei",
-  standardPriceSub: "für immer",
-  standardTagline: "Der ganze geistliche Schatz, für jeden, der ihn braucht.",
-  standardCta: "Purify öffnen",
-  plusBadge: "Jetzt verfügbar",
-  plusCta: "Purify Plus holen",
-  proBadge: "Mitglieder",
-  proRibbon: "Am umfassendsten",
-  proCta: "Purify Pro holen",
-  compareAll: "Alle Plandetails ansehen",
-  perYear: "oder",
-};
-
-export default async function PremiumPage() {
-  const locale = await getServerLocale();
-  const chrome = locale === "de" ? CHROME_DE : CHROME_EN;
-  const plan = getPremiumPlan(locale);
-  return <PremiumView chrome={chrome} plan={plan} />;
+// Every word on this page is a catalog key (lib/premium/planWords.ts), in all
+// twenty-one languages, and follows the app's language in the apps: the page's
+// words and the plans' (his yes of 2026-11-10; build 90 note 4 found them in
+// English and German only, and in English alone in the apps). The English and
+// German are lib/premium/plans.ts's and the page's own, letter for letter.
+export default function PremiumPage() {
+  return <PremiumView />;
 }
 
 /*
@@ -104,13 +37,7 @@ export default async function PremiumPage() {
  * gold, every paid feature with its own mark, prices in DM Sans, and no DM
  * Serif Display anywhere, at the owner's request.
  */
-function PremiumView({
-  chrome,
-  plan,
-}: {
-  chrome: PremiumChrome;
-  plan: PremiumPlanCopy;
-}) {
+function PremiumView() {
   return (
     <div className="bg-night">
       {/* Recognizes a signed-in subscriber; renders nothing for free users. */}
@@ -126,21 +53,21 @@ function PremiumView({
         />
         <div className="relative mx-auto max-w-[820px] text-center">
           <p className="mb-4 inline-flex items-center gap-2 font-sans text-detail font-semibold text-paper/55">
-            {chrome.eyebrow}
+            <T k="plus.badge" />
           </p>
           <h1 className="text-display-sm font-bold leading-[1.05] tracking-[-0.02em] text-paper md:text-display">
-            {chrome.h1}
+            <T k="premium.h1" />
           </h1>
           <p className="mx-auto mt-6 max-w-[620px] font-sans text-body leading-relaxed text-paper/75 md:text-lede">
-            {chrome.lede}
+            <T k="premium.lede" />
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <a href="#plus" className={PREMIUM_CTA}>
-              {chrome.seePlus}
+              <T k="premium.seePlus" />
               <ArrowDown />
             </a>
             <a href="#pro" className={PREMIUM_GHOST}>
-              {chrome.seePro}
+              <T k="premium.seePro" />
               <ArrowDown />
             </a>
           </div>
@@ -151,51 +78,59 @@ function PremiumView({
       <section className="px-5 pb-6 md:px-8">
         <div className="mx-auto max-w-[1120px]">
           <div className="mb-8 text-center md:mb-10">
-            <h2 className="text-title font-bold tracking-[-0.01em] text-paper">{chrome.plansHeading}</h2>
-            <p className="mx-auto mt-3 max-w-[520px] font-sans text-ui text-paper/60">{chrome.plansSub}</p>
+            <h2 className="text-title font-bold tracking-[-0.01em] text-paper"><T k="premium.plansHeading" /></h2>
+            <p className="mx-auto mt-3 max-w-[520px] font-sans text-ui text-paper/60"><T k="premium.plansSub" /></p>
           </div>
 
           <div className="grid items-stretch gap-5 lg:grid-cols-3">
             {/* Standard */}
             <PlanCard tone="plain">
-              <PlanHead name={chrome.standardName} />
-              <PriceBlock main={chrome.standardPrice} sub={chrome.standardPriceSub} />
-              <p className="mt-3 font-sans text-ui leading-relaxed text-paper/65">{chrome.standardTagline}</p>
-              <StarList items={plan.freeItems} className="mt-6 flex-1 content-start" />
-              <p className="mt-5 border-t border-paper/8 pt-4 font-sans text-caption text-paper/45">{plan.freeFoot}</p>
+              <PlanHead name={<T k="premium.standardName" />} />
+              <PriceBlock main={<T k="premium.standardPrice" />} sub={<T k="premium.standardPriceSub" />} />
+              <p className="mt-3 font-sans text-ui leading-relaxed text-paper/65"><T k="premium.standardTagline" /></p>
+              <StarList keys={freeKeys()} className="mt-6 flex-1 content-start" />
+              <p className="mt-5 border-t border-paper/8 pt-4 font-sans text-caption text-paper/45"><T k="premium.freeFoot" /></p>
               <Link
                 href="/prayers/today"
                 className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-pill border border-paper/20 px-6 font-sans text-ui font-semibold text-paper/85 transition-colors hover:border-paper/40 hover:text-paper"
               >
-                {chrome.standardCta}
+                <T k="premium.standardCta" />
                 <ArrowRight />
               </Link>
             </PlanCard>
 
             {/* Plus */}
             <PlanCard tone="plus" id="plus">
-              <PlanHead name={plan.plusTitle} badge={chrome.plusBadge} />
-              <PriceBlock main={plan.plusPriceMonthly} sub={`${chrome.perYear} ${plan.plusPriceYearly}`} />
-              <p className="mt-2 font-sans text-caption leading-relaxed text-paper/60">{plan.plusTrial}</p>
-              <p className="mt-3 font-sans text-ui leading-relaxed text-paper/70">{plan.plusLede}</p>
-              <PlanFeatureList items={plan.plusItems} soonLabel={plan.soonLabel} className="mt-6 flex-1 content-start" />
-              <PlanUpgradeCta tier="plus" href="/pricing" label={chrome.plusCta} />
+              <PlanHead name={<T k="plus.badge" />} badge={<T k="premium.plusBadge" />} />
+              <PriceBlock main={<PlanPrice cents={PLAN_PRICE_CENTS.plusMonthly} per="month" />} sub={<PlanPrice cents={PLAN_PRICE_CENTS.plusYearly} per="orYear" />} />
+              <p className="mt-2 font-sans text-caption leading-relaxed text-paper/60"><PlusTrialLine /></p>
+              <p className="mt-3 font-sans text-ui leading-relaxed text-paper/70"><T k="premium.plusLede" /></p>
+              <PlanFeatureList
+                items={PLUS_ITEM_KEYS.map((k) => ({ id: k.id, title: <T k={k.title} />, sub: <T k={k.sub} /> }))}
+                soonLabel={<T k={SOON_LABEL} />}
+                className="mt-6 flex-1 content-start"
+              />
+              <PlanUpgradeCta tier="plus" href="/pricing" label={<T k="premium.plusCta" />} />
             </PlanCard>
 
             {/* Pro (the ribbon marks the tier; no inline badge, so it never
                 collides with "Most complete" in the corner). */}
-            <PlanCard tone="pro" id="pro" ribbon={chrome.proRibbon}>
-              <PlanHead name={plan.proTitle} />
-              <PriceBlock main={plan.proPriceMonthly} sub={`${chrome.perYear} ${plan.proPriceYearly}`} />
-              <p className="mt-3 font-sans text-ui leading-relaxed text-paper/70">{plan.proLede}</p>
-              <PlanFeatureList items={plan.proItems} soonLabel={plan.soonLabel} className="mt-6 flex-1 content-start" />
+            <PlanCard tone="pro" id="pro" ribbon={<T k="premium.proRibbon" />}>
+              <PlanHead name={<T k="profile.badge.pro" />} />
+              <PriceBlock main={<PlanPrice cents={PLAN_PRICE_CENTS.proMonthly} per="month" />} sub={<PlanPrice cents={PLAN_PRICE_CENTS.proYearly} per="orYear" />} />
+              <p className="mt-3 font-sans text-ui leading-relaxed text-paper/70"><T k="premium.proLede" /></p>
+              <PlanFeatureList
+                items={PRO_ROWS.map((r) => ({ id: r.id, title: <T k={r.name} />, sub: <T k={r.body} />, soon: r.soon }))}
+                soonLabel={<T k={SOON_LABEL} />}
+                className="mt-6 flex-1 content-start"
+              />
               {/* Pro routes to the pricing page, where the Pro web checkout
                   (or the Play fallback) lives, not straight to Play. */}
-              <PlanUpgradeCta tier="pro" href="/pricing" label={chrome.proCta} />
+              <PlanUpgradeCta tier="pro" href="/pricing" label={<T k="premium.proCta" />} />
             </PlanCard>
           </div>
 
-          <p className="mt-6 text-center font-sans text-caption leading-[1.6] text-paper/45">{plan.proNote}</p>
+          <p className="mt-6 text-center font-sans text-caption leading-[1.6] text-paper/45"><T k={PRO_TERMS} /></p>
         </div>
       </section>
 
@@ -204,10 +139,10 @@ function PremiumView({
         <div className="mx-auto max-w-[820px]">
           <div className={cn(CARD, "hover:translate-y-0 md:p-9")} style={CARD_BG}>
             <p className="font-sans text-caption font-semibold text-paper/50">
-              {chrome.freeHeading}
+              <T k="premium.freeHeading" />
             </p>
-            <StarList items={plan.freeItems} className="mt-5 sm:grid-cols-2 sm:gap-x-6" />
-            <p className="mt-6 border-t border-paper/8 pt-5 font-sans text-ui text-paper/55">{plan.freeFoot}</p>
+            <StarList keys={freeKeys()} className="mt-5 sm:grid-cols-2 sm:gap-x-6" />
+            <p className="mt-6 border-t border-paper/8 pt-5 font-sans text-ui text-paper/55"><T k="premium.freeFoot" /></p>
           </div>
         </div>
       </section>
@@ -216,7 +151,7 @@ function PremiumView({
       <section className="px-5 pb-20 md:px-8 md:pb-28">
         <div className="mx-auto max-w-[820px]">
           <p className="mx-auto max-w-[640px] text-center font-sans text-caption leading-[1.7] text-paper/45">
-            {plan.plusPromise}
+            <T k="plus.promise.supporters" />
           </p>
 
           <div
@@ -226,15 +161,15 @@ function PremiumView({
             <div className="flex justify-center">
               <LampMark />
             </div>
-            <p className="mt-4 font-heading text-title font-bold text-paper">{plan.supportKicker}</p>
+            <p className="mt-4 font-heading text-title font-bold text-paper"><T k="premium.supportKicker" /></p>
             <p className="mx-auto mt-3 max-w-[460px] font-sans text-ui leading-relaxed text-paper/65">
-              {plan.supportLine}
+              <T k="premium.supportLine" />
             </p>
             <Link href="/support" className={cn(PREMIUM_GHOST, "mt-6")}>
-              {plan.supportCta}
+              <T k="premium.supportCta" />
               <ArrowRight />
             </Link>
-            <p className="mt-4 font-sans text-caption text-paper/40">{plan.supportFoot}</p>
+            <p className="mt-4 font-sans text-caption text-paper/40"><T k="premium.supportFoot" /></p>
           </div>
         </div>
       </section>
@@ -254,7 +189,7 @@ function PlanCard({
 }: {
   tone: Tone;
   id?: string;
-  ribbon?: string;
+  ribbon?: React.ReactNode;
   children: React.ReactNode;
 }) {
   if (tone === "plain") {
@@ -279,7 +214,7 @@ function PlanCard({
   );
 }
 
-function PlanHead({ name, badge }: { name: string; badge?: string }) {
+function PlanHead({ name, badge }: { name: React.ReactNode; badge?: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-center gap-3">
       <h3 className="text-title font-bold leading-tight text-paper">{name}</h3>
@@ -288,7 +223,7 @@ function PlanHead({ name, badge }: { name: string; badge?: string }) {
   );
 }
 
-function PriceBlock({ main, sub }: { main: string; sub?: string }) {
+function PriceBlock({ main, sub }: { main: React.ReactNode; sub?: React.ReactNode }) {
   return (
     <div className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
       <span className="font-sans text-heading font-bold tracking-[-0.02em] tabular-nums text-paper">{main}</span>
@@ -298,13 +233,15 @@ function PriceBlock({ main, sub }: { main: string; sub?: string }) {
 }
 
 /** The free foundation, a plain line each with a check (a gold star until 1.7.2). */
-function StarList({ items, className }: { items: string[]; className?: string }) {
+function StarList({ keys, className }: { keys: string[]; className?: string }) {
   return (
     <ul className={cn("grid gap-3.5", className)}>
-      {items.map((item) => (
-        <li key={item} className="flex gap-3">
+      {keys.map((key) => (
+        <li key={key} className="flex gap-3">
           <PlusCheck size={15} className="mt-[3px]" />
-          <span className="font-sans text-ui leading-snug text-paper/90">{item}</span>
+          <span className="font-sans text-ui leading-snug text-paper/90">
+            <T k={key} />
+          </span>
         </li>
       ))}
     </ul>

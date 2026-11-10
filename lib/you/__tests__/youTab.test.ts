@@ -181,7 +181,9 @@ describe("one name for the subscription: Plus", () => {
   it("names the plans pages Purify Plus, and says what Plus and Pro are", () => {
     const premium = read("app/(app)/premium/page.tsx");
     expect(premium).toContain('title: "Purify Plus",');
-    expect(premium.match(/eyebrow: "Purify Plus",/g)).toHaveLength(2);
+    // The eyebrow is the catalog's name for it, in every language (2026-11-10).
+    expect(premium).toContain('<T k="plus.badge" />');
+    expect(JSON.parse(read("lib/i18n/messages/en.json"))["plus.badge"]).toBe("Purify Plus");
     expect(premium).not.toContain("Purify Premium");
     for (const file of ["app/(app)/premium/page.tsx", "app/(app)/pricing/page.tsx"]) {
       const head = read(file);

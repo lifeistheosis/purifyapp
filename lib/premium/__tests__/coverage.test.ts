@@ -32,11 +32,11 @@ describe("coversTier", () => {
 
 describe("ownedLabel", () => {
   it("tells a Pro member the Plus card came with Pro", () => {
-    expect(ownedLabel("pro", "plus")).toBe("Included with Purify Pro");
+    expect(ownedLabel("pro", "plus")).toBe("premium.owned.includedWithPro");
   });
 
   it("calls the tier the reader actually bought their current plan", () => {
-    expect(ownedLabel("pro", "pro")).toBe("Your current plan");
-    expect(ownedLabel("plus", "plus")).toBe("Your current plan");
+    expect(ownedLabel("pro", "pro")).toBe("premium.owned.current");
+    expect(ownedLabel("plus", "plus")).toBe("premium.owned.current");
   });
 });

@@ -21,15 +21,16 @@ export function coversTier(
 }
 
 /**
- * Label for a card the reader already holds. Distinguishes "you bought this"
- * from "this came free with the tier above it", which is the difference a Pro
- * member should see on the Plus card.
+ * Label for a card the reader already holds, as its catalog key (the Plus
+ * page in all twenty-one languages, 2026-11-10). Distinguishes "you bought
+ * this" from "this came free with the tier above it", which is the
+ * difference a Pro member should see on the Plus card.
  */
 export function ownedLabel(
   userTier: PremiumTier | "loading",
   card: CardTier,
-): string {
+): "premium.owned.includedWithPro" | "premium.owned.current" {
   return userTier === "pro" && card === "plus"
-    ? "Included with Purify Pro"
-    : "Your current plan";
+    ? "premium.owned.includedWithPro"
+    : "premium.owned.current";
 }
