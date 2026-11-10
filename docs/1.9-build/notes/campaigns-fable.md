@@ -1905,16 +1905,19 @@ asks for the sign-in code, as it does for a post.
 
 `open`: for everyone.
 
-**The SQL, for his signature:** `docs/1.9-build/sql/campaigns-1-rework.sql`.
+**File one is signed** (2026-11-10, "R0b yes 1", on its summary in plain
+words; `HANDOFF.md`) **and is now a migration:**
+`supabase/migrations/20261110084116_campaigns_rework.sql`, word for word the
+copy below, which the merge of 1.9 runs. A test holds the two together, and
+holds file two, which he has not signed, out of that folder.
+
+**The SQL, as it was put before him:** `docs/1.9-build/sql/campaigns-1-rework.sql`.
 It is file one of 5.2, word for word (a test holds the two together), under a
 header in plain words: what it changes, what a reader can reach once it has
 run (nothing new), what happens to July's campaigns (nothing), and a read-only
 check to run after it. It makes no new table. It ran twice on a scratch
 PostgreSQL 16 standing on every migration in the folder as of this date, and
-the schema after the second run is the schema after the first. On his yes
-(`OWNER-STEPS.md`, R0b) it is copied into `supabase/migrations/` under a
-fourteen-digit name from that day's clock, and the test that today holds it
-out of that folder changes to hold the migration to the SQL he signed. Files
+the schema after the second run is the schema after the first. Files
 two and three (updates and comments; pictures) join it in `docs/1.9-build/sql/`
 as their phases are built against them. File two is there now:
 `docs/1.9-build/sql/campaigns-2-threads.sql` (section 11).
@@ -1956,9 +1959,9 @@ word either way, so the notes for review name them plainly (his item 130).
   constant is committed closed and read from no setting of the environment;
   each of the five pages is not found before anything of theirs is drawn;
   the device makes no request and touches no list, whatever it holds; the
-  screens that carry campaigns reach them only through the two gates; none of
-  the rework's columns is named in `supabase/migrations` until he has signed;
-  and the file put before him is the SQL that was checked, word for word.
+  screens that carry campaigns reach them only through the two gates; only
+  SQL he has signed is in `supabase/migrations`, word for word as he signed
+  it; and the file put before him is the SQL that was checked, word for word.
 - `routes.test.ts`: every route, run against an in-memory database: closed
   means 404 and no read; testers first; 404 where the SQL has not run; a
   campaign is written held; no response carries an account id or a count;

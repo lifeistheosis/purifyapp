@@ -18,9 +18,9 @@
 //                campaigns is neither read nor written, whatever it holds
 //   the doors    the screens that carry campaigns reach them only through
 //                those two gates, and draw nothing of them
-//   the data     the rework's SQL waits for his signature in docs/1.9-build/
-//                sql, word for word what the notes hold, not in the folder a merge
-//                runs against production
+//   the data     only SQL he has signed is in the folder a merge runs
+//                against production, word for word as he signed it; what
+//                he has not signed waits in docs/1.9-build/sql
 //
 // What would go wrong if this broke: a reader of 1.9 shown a door to a
 // feature that is not open, a request to a route that answers 404 on every
@@ -316,27 +316,43 @@ describe("closed: the doors", () => {
 });
 
 describe("closed: the data", () => {
-  // Columns only the rework has (July's file made the tables themselves).
-  const NEW = /consent_kind|keep_after_end|until_on|prayer_rule|creator_handle|campaign_update|community_posts_campaign_thread/;
+  // Columns only the rework's file one has (July's file made the tables themselves).
+  const NEW = /consent_kind|keep_after_end|until_on|prayer_rule|creator_handle/;
+  /** What only file two makes. */
+  const NEW_IN_TWO = /campaign_update|community_posts_campaign_thread/;
+  /** File one, the copy to paste, and the migration it became on his signature ("R0b yes 1", 2026-11-10). */
   const FOR_HIS_SIGNATURE = "docs/1.9-build/sql/campaigns-1-rework.sql";
-  /** File two: a campaign's updates and comments, as its own thread in Community. */
+  const SIGNED = "supabase/migrations/20261110084116_campaigns_rework.sql";
+  /** File two: a campaign's updates and comments, as its own thread in Community. Not signed yet. */
   const THREADS_FOR_HIS_SIGNATURE = "docs/1.9-build/sql/campaigns-2-threads.sql";
   /** A file's SQL from its first statement on, its header left out. */
   const statements = (sql: string) => sql.slice(sql.search(/^set lock_timeout/m));
 
-  it("keeps the rework's SQL out of the folder a merge runs against production, until he has signed it", () => {
+  it("runs file one from the folder a merge runs against production: once, signed, and word for word as he signed it", () => {
     // A migration on this branch runs on production when 1.9 merges
-    // (AGENTS.md, "Merging a migration to main runs it"), and campaigns ship
-    // in 1.9, so the SQL goes into that folder: but only once the owner has
-    // signed the SQL itself (docs/1.9-build/OWNER-STEPS.md, R0b). Until
-    // then it waits in docs/1.9-build/sql and says so. On his signature this
-    // test changes, to hold the migration to the SQL he signed, word for word.
+    // (AGENTS.md, "Merging a migration to main runs it"), so only SQL the
+    // owner has signed is in that folder (docs/1.9-build/OWNER-STEPS.md,
+    // R0b). File one is: "R0b yes 1", 2026-11-10 (docs/1.9-build/HANDOFF.md).
+    // The migration is the copy he was shown, statement for statement, so
+    // what runs on the merge is what was checked and what was signed.
     const hits = readdirSync(join(ROOT, "supabase/migrations")).filter((f) => NEW.test(read(`supabase/migrations/${f}`)));
-    expect(hits).toEqual([]);
-    for (const file of [FOR_HIS_SIGNATURE, THREADS_FOR_HIS_SIGNATURE]) {
-      expect(existsSync(join(ROOT, file)), file).toBe(true);
-      expect(read(file), file).toMatch(/^-- NOT APPLIED YET, AND NOT SIGNED YET\./m);
+    expect(hits.map((f) => `supabase/migrations/${f}`)).toEqual([SIGNED]);
+    expect(statements(read(SIGNED))).toBe(statements(read(FOR_HIS_SIGNATURE)));
+    for (const file of [SIGNED, FOR_HIS_SIGNATURE]) {
+      expect(read(file), file).toMatch(/Signed off by the owner on 2026-11-10/);
+      expect(read(file), file).not.toMatch(/NOT SIGNED YET/);
     }
+    // Neither says it was applied by hand: a probe of production that day
+    // found it had not run, and a header may only say what a probe has seen.
+    expect(read(SIGNED)).toMatch(/^-- SIGNED, AND NOT APPLIED BY HAND\./m);
+    expect(read(FOR_HIS_SIGNATURE)).toMatch(/^-- NOT APPLIED YET\./m);
+  });
+
+  it("keeps what he has not signed out of that folder: file two waits in docs", () => {
+    const hits = readdirSync(join(ROOT, "supabase/migrations")).filter((f) => NEW_IN_TWO.test(read(`supabase/migrations/${f}`)));
+    expect(hits).toEqual([]);
+    expect(existsSync(join(ROOT, THREADS_FOR_HIS_SIGNATURE))).toBe(true);
+    expect(read(THREADS_FOR_HIS_SIGNATURE)).toMatch(/^-- NOT APPLIED YET, AND NOT SIGNED YET\./m);
   });
 
   it("makes a campaign's thread a post with a state of its own, which is what keeps it out of Community", () => {

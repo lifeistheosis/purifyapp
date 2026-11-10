@@ -45,10 +45,11 @@ const COLUMNS: Record<string, string[]> = {
     "status", "created_at", "updated_at",
   ],
   // 20260713000200_prayer_campaigns.sql, 20260713000300 (prayer duration), 20260725000000_prayer_campaign_image.sql,
-  // then the rework's columns (REWORK_COLUMNS below), which are NOT a migration
-  // yet: their SQL is a draft in docs/1.9-build/notes/campaigns-fable.md, 5.2,
-  // until the owner signs it. A suite that wants the table as production has
-  // it today names them in World.missing.
+  // then the rework's columns (REWORK_COLUMNS below): file one's are a
+  // migration since the owner signed it (20261110084116_campaigns_rework.sql),
+  // and run on production at 1.9's merge; file two's wait in
+  // docs/1.9-build/sql for his signature. A suite that wants the table as
+  // production has it today names them in World.missing.
   prayer_campaigns: [
     "id", "creator_id", "title", "intention", "for_whom", "subject_name", "note", "praying_count",
     "prayer_count", "status", "created_at", "updated_at", "prayer_key", "ends_at", "image_url",

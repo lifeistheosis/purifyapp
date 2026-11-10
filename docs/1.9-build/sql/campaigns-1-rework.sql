@@ -1,13 +1,18 @@
 -- Prayer campaigns, reworked, file one: the campaign itself, joining it, and
 -- reports (1.9; docs/1.9-build/notes/campaigns-fable.md, sections 5.2 and 10).
 --
--- NOT APPLIED YET, AND NOT SIGNED YET. It waits for the owner's yes to the SQL
--- itself (docs/1.9-build/OWNER-STEPS.md, R0b). On his yes it is copied, word
--- for word from "set lock_timeout" down, into
--- supabase/migrations/<14 digits>_campaigns_rework.sql, named from the clock
--- that day so that it sorts last, and the integration runs it on the merge to
--- main. This copy is then the SQL to paste into the editor, should he run it
--- by hand first or the integration's check be red.
+-- NOT APPLIED YET. Signed off by the owner on 2026-11-10 ("R0b yes 1", on its
+-- summary in plain words: he does not read SQL, docs/1.9-build/HANDOFF.md)
+-- and copied, word for word from "set lock_timeout" down, into
+-- supabase/migrations/20261110084116_campaigns_rework.sql, which the
+-- integration runs on the merge to main. This copy is the SQL to paste into
+-- the editor, should he run it by hand first or the integration's check be
+-- red.
+--
+-- Probed on production on 2026-11-10 at 08:38 UTC, with the site's public
+-- key: not run. The column "days" was not there, and that key still read the
+-- campaigns table. A word that it had been run by hand that morning did not
+-- hold, so nothing here says applied until a probe does.
 --
 -- Written to run twice: every statement is "if not exists", or drops what it
 -- is about to make. Run twice on 2026-11-10 on a scratch PostgreSQL 16
