@@ -263,7 +263,7 @@ function PartLabel({ children, count, quiet = false }: { children: React.ReactNo
       }`}
     >
       {children}
-      {count !== null ? <span className="text-[11.5px] font-semibold normal-case tracking-normal tabular-nums text-paper/40">{count}</span> : null}
+      {count !== null ? <span className="text-[11.5px] font-semibold normal-case tracking-normal tabular-nums text-paper/50">{count}</span> : null}
     </h2>
   );
 }

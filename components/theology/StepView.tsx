@@ -95,7 +95,7 @@ export function StepView({
               <h2 className="flex min-h-[22px] items-center justify-between gap-3 font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/50">
                 <span>{tn(LABEL[part.kind], part.items.length)}</span>
                 {part.kind === "question" ? null : (
-                  <span className="text-[11.5px] font-semibold normal-case tracking-normal tabular-nums text-paper/40">{part.items.length}</span>
+                  <span className="text-[11.5px] font-semibold normal-case tracking-normal tabular-nums text-paper/50">{part.items.length}</span>
                 )}
               </h2>
               {part.kind === "question" ? (
