@@ -1,0 +1,157 @@
+# December's saints (1.9): the plan
+
+**Opened.** 2026-11-10, on the arbiter's word ("Then December, with the same
+brief as November"), the owner's of 2026-11-10 carried on: every saint the
+month commemorates shown, with a page, his Life, his works and his links, done
+the same way each month and ready before the month's first day.
+**The path.** docs/editorial/menologion-month.md, as November left it.
+**Binding.** docs/editorial-standards.md: public-domain sources only,
+verbatim, cited per passage; no life of ours; no AI-drafted framing shipped.
+
+`node --experimental-strip-types scripts/menologion-month.mjs plan december`
+reads the calendar (data/calendar/daily-saints.json).
+
+## The counts
+
+- **57 lines**: 50 saints' lines and 7 feasts.
+- **7 saints' lines with a page** already, all written before November (a life
+  of ours, kept and reported, never failed): St Cleopas of Sihăstria, St
+  Porphyrios, St John of Damascus, St Daniel the Stylite, St Spyridon, St
+  Herman of Alaska, St Ignatius of Antioch.
+- **3 more lines whose page exists but is not linked** from the calendar: St
+  Ambrose (December 7), St Peter of Moscow (December 21) and the feast of St
+  Stephen the Protomartyr (December 27). Their lines get their slugs.
+- **41 lines need a page.** The feasts: St Nicholas's opens his page, the
+  Synaxis of the Theotokos and her Conception open hers, St Stephen's opens
+  his; the three of the Nativity are feasts of the Lord and stay as they are.
+  The icon "Unexpected Joy" is a feast of an icon: it opens the Theotokos's
+  page, with no page of its own.
+- **Lives in a witness's words** for 12 of the 41 new lines and for 3 pages
+  that exist: Scripture for 7 lines (five prophets, the apostles of the
+  Seventy, the Holy Innocents) and for St Stephen's page; the historians and
+  the chronicles for 5 (the Martyrs of Nicomedia, St Melania, St Savva of
+  Storozhevsk, St Nilus of Stolobny, and St Modestus, to confirm) and for St
+  Ambrose's and St Peter of Moscow's pages. The rest have an entry with its
+  source.
+- **Butler only, on his word**: about 15 saints whose only public-domain
+  English life is Alban Butler's (below), to be held for the priest as
+  November's eight are, if he says yes.
+- **Works**: St Ambrose's (NPNF II 10, 1896), St John of Damascus's On Holy
+  Images with his three sermons on the Dormition (tr. Mary H. Allies, 1898),
+  the books of the five prophets (Brenton's Septuagint, the app's own Bible),
+  and, on his word, St John of Kronstadt's My Life in Christ (tr. E. E.
+  Goulaeff, 1897).
+
+The Old Calendar keeps these days thirteen days later (December 25 is January
+7), so for readers on it the month runs to mid-January; the pages carry the
+calendar's day as the calendar gives it, as November's do.
+
+## Every December line
+
+| Day | Line | Page | Life (whose words) | Works | Links | Icon |
+|---|---|---|---|---|---|---|
+| 1 | Prophet Nahum | new | Scripture: his book (Brenton) | his book | | to find |
+| 1 | Righteous Philaret the Merciful | new | entry (his Life by Niketas has no public-domain English) | | | to find |
+| 2 | St Cleopas of Sihăstria | older | | | | unsettled: Updates 2 or plate (20th century) |
+| 2 | Prophet Habakkuk | new | Scripture: his book (Brenton) | his book | | to find |
+| 2 | St Porphyrios | older | | | | unsettled: plate likely (20th century) |
+| 3 | Prophet Zephaniah | new | Scripture: his book (Brenton) | his book | | to find |
+| 3 | St Savva of Storozhevsk | new | Mouravieff (1842), the finding of his relics | | St Sergius (disciple) | to find |
+| 4 | Great-martyr Barbara | new | entry; Butler, December 4, on his word | | martyrs, women | to find |
+| 4 | St John of Damascus | older | | + On Holy Images and the three sermons (Allies, 1898) | Iconoclasm (linked) | unsettled: to settle |
+| 5 | St Sabbas the Sanctified | new | entry; Butler, December 5, on his word | | desert monastics | to find |
+| 6 | St Nicholas (feast) | opens his page | | | | his page hero: cut from it |
+| 7 | St Ambrose of Milan | link the page | Augustine, Confessions (the app's Pusey); Theodoret V.17-18; Sozomen VII.25 | On the Mysteries; On Repentance; On the Holy Spirit; On the Duties of the Clergy (NPNF II 10) | church fathers, hierarchs | to find |
+| 7 | St Nilus of Stolobny | new | Mouravieff (1842), one sentence | | | to find |
+| 8 | St Patapius of Egypt | new | entry | | desert monastics | to find |
+| 8 | Apostles Sosthenes, Apollos, Cephas, Tychicus | new | Scripture: their names (Acts, 1 Corinthians, Ephesians, Colossians, 2 Timothy, Titus); not for Cephas, whose Scripture name is St Peter's | | apostles | to find |
+| 9 | Conception of the Theotokos (feast) | opens the Theotokos | | | | settled |
+| 9 | Icon "Unexpected Joy" | opens the Theotokos | | | | |
+| 10 | Martyrs Menas, Hermogenes, Eugraphus | new | entry | | martyrs | to find |
+| 10 | St Joasaph of Belgorod | new | entry | | hierarchs | to find |
+| 11 | St Daniel the Stylite | older | | | stylites | settled |
+| 11 | St Luke the New Stylite | new | entry | | stylites | to find |
+| 12 | St Spyridon | older | | | Nicaea (linked) | his books' cover: cut from it |
+| 13 | Martyrs Eustratius and Companions | new | entry; Butler, on his word, if he has them | | martyrs | to find |
+| 13 | St Herman of Alaska | older | | | Alaska mission (linked) | settled |
+| 13 | Virgin-martyr Lucia of Syracuse | new | entry; Butler, December 13, on his word | | martyrs, women | to find |
+| 14 | Martyrs Thyrsus, Leucius, Callinicus | new | entry; Butler, January 28, on his word | | martyrs | to find |
+| 14 | Martyrs Philemon, Apollonius, Arrianus | new | entry; Butler, March 8, on his word, to confirm | | martyrs | to find |
+| 15 | Hieromartyr Eleutherius | new | entry; Butler, April 18, on his word, to confirm | | martyrs | to find |
+| 15 | St Stephen of Surozh | new | entry | | First Iconoclasm | to find |
+| 16 | Prophet Haggai | new | Scripture: his book (Brenton) | his book | | to find |
+| 16 | St Theophano the Empress | new | entry | | rulers, women | to find |
+| 17 | Prophet Daniel | new | Scripture: his book (Brenton, with Susanna and Bel) | his book | | to find |
+| 18 | Martyr Sebastian and Companions | new | entry; Butler, January 20, on his word | | martyrs | to find |
+| 18 | St Modestus of Jerusalem | new | Antiochus Strategos on the sack of Jerusalem (tr. F. C. Conybeare, 1910), to confirm | | hierarchs | to find |
+| 19 | Martyr Boniface at Tarsus | new | entry; Butler, May 14, on his word | | martyrs | to find |
+| 19 | St Elias of Murom | new | entry | | | to find |
+| 20 | St Ignatius of Antioch | older | | (8 works) | Martyrdom of Ignatius (linked) | unsettled: to settle |
+| 20 | St John of Kronstadt | new | entry | My Life in Christ (1897), on his word | | to find (20th century: plate likely) |
+| 21 | Virgin-martyr Juliana | new | entry; Butler, February 16, on his word | | martyrs, women | to find |
+| 21 | St Peter of Moscow | link the page | Mouravieff (1842) | | | unsettled: to settle |
+| 22 | Great-martyr Anastasia | new | entry; Butler, December 25, on his word | | martyrs, women | to find |
+| 22 | Martyr Chrysogonus | new | entry; Butler, November 24, on his word | | martyrs | to find |
+| 23 | Ten Martyrs of Crete | new | entry; Butler, on his word, if he has them | | martyrs | to find |
+| 23 | St Niphon of Cyprus | new | entry | | hierarchs | to find |
+| 24 | Venerable-martyr Eugenia | new | entry; Butler, December 25, on his word | | martyrs, women | to find |
+| 26 | Synaxis of the Theotokos (feast) | opens the Theotokos | | | | settled |
+| 27 | St Stephen the Protomartyr (feast) | link the page | Scripture: Acts 6:1 to 8:2 | | martyrs | unsettled: to settle |
+| 27 | St Theodore the Branded | new | entry; Butler, December 27, on his word | | Second Iconoclasm | to find |
+| 28 | 20,000 Martyrs of Nicomedia | new | Eusebius, Church History VIII.6 (NPNF II 1) | | Great Persecution | to find |
+| 29 | Holy Innocents | new | Scripture: Matthew 2:13-18 | | martyrs | to find |
+| 29 | St Marcellus of the Unsleeping Ones | new | entry; Butler, December 29, on his word | | desert monastics | to find |
+| 30 | Martyr Anysia | new | entry; Butler, December 30, on his word | | martyrs, women | to find |
+| 30 | St Zoticus the Orphanmaster | new | entry | | | to find |
+| 31 | St Melania the Younger | new | Palladius, The Lausiac History 61 (Clarke, 1918) | | women | to find |
+
+The entries are read, as November's were, from the Dictionary of Christian
+Biography (1877 to 1887), The Book of Saints (1921), Baring-Gould (1897 and
+1898), Dunbar (1905) and Mouravieff (1842), each fact checked on the printed
+page and its source named under it. A saint with no public-domain source
+keeps only what the calendar line says, and says so.
+
+## Needs his word
+
+1. **Butler's Lives for the Butler-only saints**, held for a priest exactly as
+   November's eight (word for word, his name on each, his passages on Roman
+   doctrine left out and the cut shown, one clergy item): St Barbara, St
+   Sabbas, St Lucy, St Anastasia, St Eugenia, St Theodore the Branded, St
+   Marcellus and St Anysia in his December volume; St Sebastian, St Juliana,
+   St Chrysogonus, Sts Thyrsus, Leucius and Callinicus and St Boniface in
+   others; St Eleutherius, Sts Philemon and Apollonius, Sts Eustratius and
+   the Ten Martyrs of Crete if he has them (to confirm). Rec: yes, the same
+   way. Until his word they have the short entry.
+2. **St John of Kronstadt's My Life in Christ** (tr. E. E. Goulaeff, 1897,
+   public domain): his own words, but no one has transcribed the printing,
+   and the whole book typed from its scans is more than three days. Rec: a
+   selection now (about 50 pages from the start, typed and checked, about a
+   day), the rest later.
+
+Nothing else needs his word: every other source is public domain, there is
+no framing for the clergy queue, and the size and time are under the bounds.
+
+## The size
+
+- **Work:** about 25 hours: the 41 pages, their entries, the calendar links and
+  groups (8); the witness Lives (5); the works, St Ambrose's the largest (6);
+  icons for the new pages and the December icons still unsettled (6). Done
+  before December 1.
+- **The apps:** about 2 MB more, packed: 41 pages (about 0.4 MB), the works
+  (about 1.6 MB of text, 0.5 MB packed), the witness Lives (small), and about
+  25 icons (0.75 MB). With Butler's Lives released, about 0.2 MB more; My Life
+  in Christ's selection about 0.1 MB. The export is 62.6 MB of 85.
+
+## Order of work
+
+1. Push 1: the 41 pages with their entries and sources, the calendar's links
+   (St Ambrose, St Peter, St Stephen, and the feasts that open a page), the
+   Lives in Scripture's and the historians' words, the groups, and December in
+   DONE_MONTHS.
+2. Push 2: the works (St Ambrose, St John of Damascus, the five prophets'
+   books) and the icons that pass, the list shared with Updates 2 first.
+3. On his word: Butler's Lives, held for the priest; My Life in Christ.
+
+Each push passes typecheck, the unit tests, lint, the Android and then the iOS
+export, a walk of new pages on the export and checkMock on what changed, with
+stills to the arbiter.
