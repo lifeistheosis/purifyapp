@@ -131,6 +131,13 @@ his call.
 
 All three work on the one branch, `ccr-07896cf2-bo0afd`. Each pulls
 (`git pull --rebase origin ccr-07896cf2-bo0afd`) before it pushes.
+A migration that has reached the branch is never edited again; a change goes in
+a new file (Admin, 2026-11-10: once the test web's database is linked to the
+branch, it runs each file in `supabase/migrations` once, when the file first
+reaches the branch, signed or not, while the main web runs it only at the
+merge). SQL waiting for his yes stays in `docs/1.9-build/sql/` until signed,
+unless it is meant for the test web first and named for his signature in
+OWNER-STEPS R0b, as the production baseline is.
 After a pull that changes `package-lock.json`, a chat runs `npm ci` before its
 gates, or they run on the old packages (2026-11-10: Next 16.4.6, Capacitor
 8.4.3 and zod 4.6.6 came in by pull, and Fable Theology's first unit run failed
