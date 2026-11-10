@@ -14,8 +14,207 @@ Three rules for all of them:
 - "Send back" never includes a key. A yes, a number from a chart, or a red
   message is enough.
 
-The order: **Anytime** first, whenever suits you. **Release day** waits until
-the arbiter says go.
+The order: **Now** (the company) as you start it, **Anytime** whenever
+suits you. **Release day** waits until the arbiter says go.
+
+---
+
+## Now: move to the company
+
+You start tonight. Four rules for this whole section:
+
+- **Numbers stay out of chats and files.** Never post the EIN, the D-U-N-S
+  number, an address or a phone number in a chat or in this repository. They
+  go only into the vendors' own forms.
+- **If a switch is still going on release day, the store upload may have to
+  wait.** Google asks you to wait at least 72 hours after its change before
+  submitting a new app, and Apple's change can take days. Tell the arbiter
+  where each one stands before R4 and R5.
+- **The company's name exactly as the IRS and D&B have it.** No "DBA", no
+  trade name. Send the arbiter the exact form from the EIN letter (a comma
+  before LLC, or not): the website's pages take it from one line.
+- Where a step says **(from Google's page; not opened directly)**, it comes
+  from Google's or D&B's own help page as search results showed it, because
+  those pages could not be opened from here. If the screen differs, stop and
+  tell the arbiter.
+
+### C0. FIRST: the address on the D-U-N-S record
+
+Your word: the company record is right except its location address. Fix that
+first, because:
+
+- Apple takes the organization's details from the D-U-N-S record, and for an
+  organization the App Store shows **the address on that record** to readers
+  in the EU (the trader details the EU's Digital Services Act asks of anyone
+  who sells, and Purify sells Plus).
+- Google checks the organization against the same record, and shows a
+  trader's address to EU readers too.
+- So if the address on the record today is your home: switch the stores only
+  after the new address is on the record.
+
+At Dun & Bradstreet (from D&B's page; not opened directly):
+
+1. dnb.com, **D-U-N-S Manager**, **Update My Company Information**.
+2. Find the company.
+3. Verify your identity, and give your role (owner).
+4. Request the change of address. Updating is free.
+5. Also there: if D&B lists the company as a sole proprietorship, attach the
+   LLC's registration papers (Apple refuses a record that is not listed as
+   a legal entity).
+
+Apple's own route to the same update is an email form:
+support.dnb.com/?CUST=APPLEDEV (Apple's D-U-N-S page links it).
+
+D&B gives no time for its review. Once D&B has updated, Apple sees it within
+two business days (Apple's page) and Google within five (Google's page).
+
+Done: Apple's D-U-N-S lookup (developer.apple.com/support/D-U-N-S/, then the
+lookup tool) shows the company at the new address.
+
+The same corrected business address goes into `EMAIL_POSTAL_ADDRESS` (the
+**Mail** step below), never a home.
+
+Send back: "C0 asked" when sent, "C0 done" when Apple's lookup shows it.
+
+### C1. Apple: from Individual to Organization
+
+Before you start: C0 done; you are the Account Holder; you are the company's
+founder with the authority to bind it; the company has a website on its own
+domain (purifyapp.net) and you have a work email on that domain.
+
+1. developer.apple.com, sign in as the Account Holder.
+2. Open developer.apple.com/contact/request/migrate-individual-account
+   (Apple's request to change an individual membership to an organization).
+3. Give the company's legal name exactly as on the D-U-N-S record, the
+   D-U-N-S number, the website, and your work email. Confirm you can bind
+   the company.
+4. In the same request, ask Apple: does the Team ID stay the same, and is
+   anything about the app's installs or keys changed? (Apple's pages do not
+   say.)
+5. Submit. Apple may email or call, and may ask for business documents,
+   sometimes notarized.
+6. Wait. The developer site shows the migration as in progress.
+
+Do not start it just before an iPhone build you need: ship urgent builds
+first (others report the change taking from a day to months).
+
+Done: **Membership details** says Organization, with the company's name. On
+the App Store the seller becomes the company.
+
+Send back: "C1 asked", then "C1 done".
+
+### C2. Google Play: from Personal to Organization (in place)
+
+From Google's page (not opened directly), Play Console can change the account
+in place. Before you start: C0 done.
+
+1. play.google.com/console, **Developer account**, **About you**.
+2. **Website**: enter purifyapp.net and save. Click **Send verification
+   request**. (Google verifies it through Search Console. If purifyapp.net is
+   not in Search Console under your Google account yet, add it there first.)
+3. Once the site shows as verified, and no other verification warning is
+   pending, click **Change account type**.
+4. Select or create an **organization payments profile**: the company's
+   legal name, the D-U-N-S number, organization type, size and a business
+   phone. Google may ask for documents. (A personal payments profile cannot
+   become an organization one: this is a new profile.)
+5. Click **Link your payments profile to your developer account**, then
+   **Confirm and save**.
+6. Watch the status on **Account details**.
+
+After it completes, Google asks you to wait at least 72 hours before
+submitting any new app.
+
+If Play Console shows no **Change account type**: stop and tell the arbiter.
+The other way is a new organization account and an app transfer, which also
+needs RevenueCat re-linked (C4); do not start that alone.
+
+Done: **About you** says Organization; **Account details** shows the new
+payments profile linked.
+
+Send back: "C2 done".
+
+### C3. Payouts, tax and Stripe
+
+1. Apple: App Store Connect, **Business** (agreements, tax and banking). On
+   the **Paid Apps** agreement: the company's tax form (W-9) with the EIN and
+   the name exactly as the IRS has it, and the company's bank account.
+2. Google: the new organization payments profile (from C2), at
+   payments.google.com: the company's bank account and its W-9, in the IRS
+   name.
+3. Stripe: dashboard.stripe.com, **Test mode** OFF. **Settings**,
+   **Business details** (or **Business**), **Business type**: **Company**.
+   Add the EIN and the legal name exactly as the IRS has it. Stripe may ask
+   for an updated W-9 and verify the account again, even if it was verified.
+4. Stripe: **Settings**, **Bank accounts and currencies** (or **Payouts**):
+   the company's bank account.
+5. Stripe: **Settings**, **Business settings**, **Public details**: the
+   public business name (Purify), and the **statement descriptor** readers
+   see on their card statement (5 to 22 characters, for example PURIFY), and
+   the shortened descriptor. Use the support email, support@purifyapp.net,
+   as the public support email.
+
+Done: Apple, Google and Stripe each show the company, its EIN on file, and
+the company's bank account.
+
+Send back: "C3 done" (and "Stripe asked to verify again" if it did).
+
+### C4. Re-check afterwards
+
+1. RevenueCat (app.revenuecat.com): open the Play Store app and the App
+   Store app, and run each one's credential check. RevenueCat's pages do not
+   cover an in-place change; nothing should need re-linking, and the check
+   says if something does.
+2. Only if Google went the transfer way (C2's fallback): RevenueCat needs a
+   new service account key from the new account and the notifications
+   (Pub/Sub topic) set up again there. The arbiter writes those steps.
+3. Render, Supabase and GitHub: only if one of those accounts moves to the
+   company. Then: the site still deploys (Render, **Events**), Services in
+   Admin shows the heartbeat green, and the GitHub builds still run.
+4. Admin, **Money**: the next renewals still arrive (the RevenueCat webhook
+   address does not change).
+
+Send back: "C4 done", or what failed.
+
+### C5. The EU trader details (DSA)
+
+What EU readers see on each store's page for Purify: the company's name,
+address, phone and email. Use the business phone and support@purifyapp.net,
+never personal ones.
+
+Apple (Apple's page):
+
+1. App Store Connect, **Business**, **Agreements**, **Compliance**,
+   **Digital Services Act**, **Complete Compliance Requirements**.
+2. Choose **This is a trader account.**
+3. The address comes from the D-U-N-S record by itself (C0). Enter the phone
+   and email; Apple sends each a code to confirm.
+4. **Done**, **Next**, **Confirm**.
+5. Then for the app: **App Information**, **App Store Regulations and
+   Permits**, **Digital Services Act**, **Edit**.
+6. If the address shown is wrong later: Apple says to contact it; others
+   report a request from **Membership details** with documents worked.
+
+Google (from Google's page; not opened directly):
+
+1. Play Console, **Account details**, **About you**: the trader
+   declaration. The address comes from the payments profile (C2), which
+   follows D&B (C0).
+2. Then for the app: **Policy and programs**, **App content**.
+
+Google's notices give a deadline for existing accounts between November 2026
+and 1 February 2027: do it with C2.
+
+Send back: "C5 done".
+
+### C6. The website's pages name the company
+
+Already on the branch, for your OK on the words (the arbiter sends them): the
+terms are between you and the company, the privacy page (English and German)
+says the company runs Purify, the footer says "© 2026 Purify Orthodox LLC",
+and list emails name the company with the postal address. Your part: send
+the arbiter the exact name from the EIN letter, and say yes or no to the
+words.
 
 ---
 
@@ -100,6 +299,20 @@ Done: the endpoint's event list shows both `checkout.session.completed` and
 the signing secret, so Render needs nothing.
 
 Send back: "42 done".
+
+### 42b. Do any sellers or ambassadors have a Stripe account? (1 minute)
+
+Stripe sends news about sellers' and ambassadors' own Stripe accounts (for
+example when Stripe lets a seller take payments) only to a second endpoint
+set to "connected accounts", with its own signing secret. Purify has only the
+one endpoint today. Whether a second one is needed now depends on this:
+
+1. purifyapp.net/admin, **Catalogue**, then **Marketplace**: is there any
+   store besides EIKON with a Stripe line under it?
+2. **Community**, then **Ambassadors**: does any ambassador have payouts set
+   up?
+
+Send back: "42b: none" or "42b: yes, N". If none, it waits until after 1.9.
 
 ### 67. One iPhone test build, nothing sent to Apple (5 minutes, then about 40 minutes of waiting)
 
