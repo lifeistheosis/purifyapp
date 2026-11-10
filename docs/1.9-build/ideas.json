@@ -2153,6 +2153,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "Each line says its language and direction; 28 out of place in Arabic and Urdu before, 0 after. 9398bcfdf. PLAN 13x."
+  },
+  {
+   "id": "c-campaign-kind-prayers",
+   "section": "Practice",
+   "kind": "content",
+   "title": "Prayer campaigns: a prayer made for the need (the sick, studies, a journey, thanksgiving), word for word from public-domain books, one at a time, in place of the psalm each kind starts with in 1.9",
+   "from": "both",
+   "asked": "2026-11-10",
+   "status": "approved",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "After 1.9. His \"yes prayers\" (BRAINSTORM.md, 2026-11-10 about 18:15 UTC): in 1.9 each kind of campaign starts with a psalm or the Trisagion prayers (built, a8ffd0d77); the prayers made for each need come after, one at a time. Hapgood's Service Book (1906) has a thanksgiving for an answer to prayer (p. 512), a service for children beginning instruction (p. 519) and a blessing for a journey (p. 524), each a priest's service and read from the book's contents only so far; a prayer for the sick still needs its source found. Each is read off its page image, word for word, and held by a test, about three hours apiece. A preset is a pointer (lib/campaigns/model.ts, KIND_PRAYER), so a prayer takes a psalm's place and nothing else changes. Notes: campaigns-fable.md, 22.4 and 28.6."
   }
  ]
 }
