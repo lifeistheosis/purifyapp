@@ -232,6 +232,24 @@ describe("the veil and the switch", () => {
     expect(toggle).toContain("return { on: stored && !shut, set, locked: shut };");
   });
 
+  it("the candle's room follows the palette that is worn, not the one stored", () => {
+    // Candlelight at Vespers wears Candlelight over the reader's own palette,
+    // and a reader the gate has refused wears Dark with Candlelight still
+    // stored. The readers asked the stored one, so the first had no room (and
+    // no season) and the second had the candle's dimming on Dark.
+    for (const reader of ["components/bible/ChapterReader.tsx", "components/bible/DownloadedChapter.tsx"]) {
+      const src = code(reader);
+      expect(src, reader).toContain("const candle = useCandlelightWorn();");
+      expect(src, reader).not.toMatch(/theme === "candlelight"/);
+      expect(src, reader).toContain("useReadingLine(candle);");
+    }
+    const hook = code("components/theme/useWornPalette.ts");
+    expect(hook).toContain('document.documentElement.getAttribute("data-reading-mode") === "candlelight"');
+    expect(hook).toContain('observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-reading-mode"] });');
+    // Nothing is said on the server, so the export bakes no candle in.
+    expect(hook).toContain("return useSyncExternalStore(subscribe, candlelight, () => false);");
+  });
+
   it("stands under Candlelight at Vespers in both places", () => {
     const menu = code("components/bible/ReaderSettingsMenu.tsx");
     expect(menu).toMatch(/<VespersToggle touch=\{touch\} \/>\s*<CandleSeasonToggle touch=\{touch\} \/>/);

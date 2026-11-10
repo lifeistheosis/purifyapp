@@ -34,6 +34,7 @@ import type { DownloadableBible } from "@/lib/bible/downloads/catalog";
 import { verseAnchor } from "@/lib/bible/downloads/page";
 import type { BibleText } from "@/lib/bible/downloads/useShownBible";
 import { CandleVeil } from "@/components/reader/CandleVeil";
+import { useCandlelightWorn } from "@/components/theme/useWornPalette";
 import { cn } from "@/lib/cn";
 import { useReadingLine } from "@/lib/reader/useReadingLine";
 
@@ -50,8 +51,10 @@ export function DownloadedChapter({
   chapter: number;
 }) {
   const { t, locale } = useTranslate();
-  const { size, font, leadingValue, theme } = useReaderPrefs(BIBLE_START_SIZE);
-  const candle = theme === "candlelight";
+  const { size, font, leadingValue } = useReaderPrefs(BIBLE_START_SIZE);
+  // The palette that is worn, not the one stored: Candlelight at Vespers wears it over
+  // the reader's own, and a reader the gate has refused does not wear it at all.
+  const candle = useCandlelightWorn();
   useReadingLine(candle);
   const greek = bible.textLang === "grc";
 

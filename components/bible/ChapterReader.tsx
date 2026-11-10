@@ -28,6 +28,7 @@ import {
 } from "@/components/reader/ReaderPrefs";
 import { useReadingLine } from "@/lib/reader/useReadingLine";
 import { CandleVeil } from "@/components/reader/CandleVeil";
+import { useCandlelightWorn } from "@/components/theme/useWornPalette";
 import { cn } from "@/lib/cn";
 import { reportNowReading } from "@/lib/profile/client";
 import { useUndo } from "@/lib/ui/useUndo";
@@ -77,10 +78,12 @@ export function ChapterReader({
   paragraphStarts?: number[];
 }) {
   // Large for a reader who has never chosen a size (1.8): BIBLE_START_SIZE.
-  const { size, font, leadingValue, theme } = useReaderPrefs(BIBLE_START_SIZE);
+  const { size, font, leadingValue } = useReaderPrefs(BIBLE_START_SIZE);
   // Candlelight (1.9, the owner's pick A and B): the verse being read lit,
   // the rest a little dimmed, a soft glow where the eye rests, dark edges.
-  const candle = theme === "candlelight";
+  // The palette that is worn, not the one stored: Candlelight at Vespers wears it over
+  // the reader's own, and a reader the gate has refused does not wear it at all.
+  const candle = useCandlelightWorn();
   useReadingLine(candle);
   // Paragraph view: where the chapter has paragraphs, and not while the
   // Greek stands beside each verse.
