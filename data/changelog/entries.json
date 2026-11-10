@@ -83,11 +83,19 @@
       },
       {
         "category": "perks",
+        "text": "If your Purify Plus ends, the gatherings in your Florilegium stay yours to read."
+      },
+      {
+        "category": "perks",
         "text": "The Thread, in Purify Plus: 35 events of Orthodox History step by step on their maps, year by year."
       },
       {
         "category": "perks",
         "text": "Candlelight lights the lines you are reading with a soft glow and darkens the edges. Night reading turns it on in one tap, and it can come on by itself at Vespers, from your city's sunset."
+      },
+      {
+        "category": "perks",
+        "text": "Earn two palettes by reading: Councils, for every council's page read to the end, and Cappadocian, for a work by each of the three Cappadocian Fathers. Both are Purify Plus palettes."
       },
       {
         "category": "perks",
@@ -112,6 +120,10 @@
       {
         "category": "fixes",
         "text": "The reader's bars leave later and slower, and the mini player moves with them at their pace."
+      },
+      {
+        "category": "fixes",
+        "text": "The words under the player's buttons fit in every language."
       },
       {
         "category": "fixes",

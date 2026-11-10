@@ -36,8 +36,6 @@ Also:
 - "a month": the sharing limit's wording (three shared pages a month for everyone, without limit in Purify Plus) waits on his item 93
 - "chants offline": keeping chants offline (rec 8) is not built
 - "tour": the 1.9 What's New tour is not built
-- "earned theme": the earned themes (rec 79) are not built
-- "earned palette": the earned palettes (rec 79) are not built
 - "every work has a cover": the covers pack for the reading room is not in yet
 - "Find a parish": the parish directory is not built
 
