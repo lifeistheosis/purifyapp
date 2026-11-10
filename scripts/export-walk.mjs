@@ -7395,16 +7395,49 @@ await section(48, async () => {
     );
 
     // Devotional opened by a tap: the daily rule above it shuts at once and
-    // the chapter stays where the finger left it, its page opening under it.
+    // the chapter is not jumped away from the finger; its page folds open
+    // under it, and since 1.9 (build 89 note 8) the screen glides with the
+    // fold, so the page ends in sight above the tab bar, its title never
+    // under the header. Watched a frame at a time from the tap.
     await page.evaluate(() => document.querySelector('[data-prayer-book] button[data-chapter-at="3"]')?.scrollIntoView({ block: "center" }));
     await page.waitForTimeout(400);
     const was = (await chapters(page))[3]?.top ?? -1;
+    const watching = page.evaluate(
+      () =>
+        new Promise((done) => {
+          const tops = [];
+          const t0 = performance.now();
+          const step = () => {
+            const b = document.querySelector('[data-prayer-book] button[data-chapter-at="3"]');
+            if (b) tops.push(Math.round(b.getBoundingClientRect().top));
+            if (performance.now() - t0 < 900) requestAnimationFrame(step);
+            else done(tops);
+          };
+          requestAnimationFrame(step);
+        }),
+    );
     await tap(page.locator('[data-prayer-book] button[data-chapter-at="3"]'));
-    await page.waitForTimeout(700);
+    const tops = await watching;
+    await page.waitForTimeout(200);
     const c2 = await chapters(page);
     const iv = c2[3];
     must(c2.map((x) => x.open).join(" ") === "false false false true" && c2[0].height === 0 && c2[0].inert, `${w}: one chapter at a time: Devotional open, the daily rule shut (${c2.map((x) => `${x.id} ${x.open ? "open" : "shut"}`).join(", ")})`);
-    must(Math.abs((iv?.top ?? -999) - was) <= 2, `${w}: the tapped chapter stays under the finger as the page above it shuts (${was}px, then ${iv?.top}px)`);
+    // A glide, not a jump: the chapter only ever goes up, a frame at a time,
+    // no faster than the fold it follows opens (its first frame, the fastest,
+    // grows 77px), where the jump build 87 found was 278px in one frame.
+    const steps = tops.slice(1).map((t, i) => t - tops[i]);
+    must(
+      Math.abs(tops[0] - was) <= 80 && steps.every((d) => d <= 2) && Math.max(0, ...steps.map((d) => -d)) <= 80,
+      `${w}: the tapped chapter never jumps as the page above it shuts and its own opens: it glides up a frame at a time, the largest move ${Math.max(0, ...steps.map((d) => -d))}px (from ${was}px: ${tops.slice(0, 8).join(", ")} ... ${tops[tops.length - 1]}px)`,
+    );
+    const sight = await page.evaluate(() => {
+      const b = document.querySelector('[data-prayer-book] button[data-chapter-at="3"]');
+      const leaf = document.getElementById(b?.getAttribute("aria-controls") ?? "");
+      const bar = document.querySelector("[data-tab-bar]")?.getBoundingClientRect();
+      const head = document.querySelector("[data-mobile-topbar]")?.getBoundingClientRect();
+      return { title: Math.round(b?.getBoundingClientRect().top ?? -1), end: Math.round(leaf?.getBoundingClientRect().bottom ?? -1), bar: Math.round(bar?.top ?? window.innerHeight), roof: Math.round(head?.bottom ?? 0) };
+    });
+    must(sight.end <= sight.bar && sight.title >= sight.roof, `${w}: the screen followed the page as it opened: it ends in sight above the tab bar (${sight.end}px, the bar at ${sight.bar}px) and its title is under the header (${sight.title}px, the header's foot at ${sight.roof}px)`);
     must(
       !!iv && iv.height > 150 && iv.rows.some((r) => bare(r.href) === "/prayers/akathists" && r.text.includes(en["prayers.akathist.theotokos.title"]) && r.plate === "/icons/prayer/theotokos-of-vladimir.jpg") && (iv.planned ?? "").startsWith(en["study.planned"]) && (iv.planned ?? "").includes(en["prayers.rule.psalms-needs.title"]),
       `${w}: Devotional's page ends on the akathist and what is planned (${iv?.rows.map((r) => bare(r.href)).join(", ")}; "${iv?.planned ?? ""}")`,

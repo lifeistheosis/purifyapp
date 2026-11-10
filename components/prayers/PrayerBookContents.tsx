@@ -13,6 +13,8 @@ import type { HourSlug } from "@/lib/prayers/hourNow";
 import { cropStyle, plateCrop } from "@/lib/prayers/iconCrops";
 import type { RuleMeta } from "@/lib/prayers/rules";
 import { serviceArt } from "@/lib/prayers/serviceArt";
+import { glidePageBy } from "@/lib/ui/glideScroll";
+import { visibleBand } from "@/lib/ui/readingPlace";
 import { prefersReducedMotion } from "@/lib/ui/motion";
 
 /**
@@ -48,10 +50,37 @@ import { prefersReducedMotion } from "@/lib/ui/motion";
  * the screen (build 87's walk, section 48). Held, the page never shortens
  * under the finger, so the chapter can always be put back; the hold lets go
  * once the fold has run, and at once with Purify's motion off.
+ *
+ * And the screen follows the page as it opens (1.9, build 89 note 8, his
+ * words: "I don't like how it doesn't move the screen also down in a smooth
+ * way"). Put back under the finger, a chapter opened near the foot of the
+ * screen unfolded under the tab bar, out of sight. Now, when its page would
+ * end out of sight, the screen glides with the fold, on the same curve and in
+ * the same time, carrying the chapter's title up towards the top (never under
+ * the header), so its first prayers are in sight when the fold ends. A page
+ * that opens in sight is not moved; with Purify's motion off it opens in
+ * place, at once, as before.
  */
 
-/** How long a page takes to open (.book-fold in app/globals.css), and a frame or two over. */
-const FOLD_HOLD_MS = 240 + 80;
+/** How long a page takes to open (.book-fold in app/globals.css). */
+const FOLD_MS = 240;
+/** And a frame or two over, for the hold. */
+const FOLD_HOLD_MS = FOLD_MS + 80;
+/** The room kept between the opened page and the bars, top and foot. */
+const CLEAR_PX = 12;
+
+/**
+ * How far the screen should go for a chapter opening: enough for its page to
+ * end above the lowest bar (the tab bar, the mini player), but never so far
+ * that its title goes under the header. Zero when it opens in sight. Pure, for
+ * its test: heights from the top of the screen.
+ */
+export function followBy({ titleTop, pageBottom, roof, floor }: { titleTop: number; pageBottom: number; roof: number; floor: number }): number {
+  const hidden = pageBottom - (floor - CLEAR_PX);
+  if (hidden <= 0) return 0;
+  return Math.max(0, Math.min(hidden, titleTop - (roof + CLEAR_PX)));
+}
+
 
 const BOOK_BG = {
   background:
@@ -74,7 +103,11 @@ export function PrayerBookContents({ hourNow }: { hourNow: HourSlug | null }) {
   /** When the card lets go of the length it held. */
   const letGo = useRef<number | undefined>(undefined);
 
+  /** The glide under way, to stop when another chapter is tapped. */
+  const follow = useRef<() => void>(() => {});
+
   function toggle(at: number, head: HTMLElement) {
+    follow.current();
     tapped.current = { at, top: head.getBoundingClientRect().top };
     // The page shutting above the one opening shuts at once, and the card
     // holds its length until the new page has opened into it.
@@ -92,6 +125,16 @@ export function PrayerBookContents({ hourNow }: { hourNow: HourSlug | null }) {
     if (was && head) {
       const off = head.getBoundingClientRect().top - was.top;
       if (Math.abs(off) > 1) window.scrollBy({ top: off, left: 0, behavior: "instant" as ScrollBehavior });
+      // Opened: follow its page as it folds open, when it would end out of sight.
+      const page = open.at === was.at ? document.getElementById(head.getAttribute("aria-controls") ?? "")?.firstElementChild : null;
+      if (page instanceof HTMLElement && !prefersReducedMotion()) {
+        const title = head.getBoundingClientRect();
+        // The part of the screen the page is seen through: clear of the
+        // header, the tab bar, the mini player and the phone's own edges.
+        const band = visibleBand();
+        const by = followBy({ titleTop: title.top, pageBottom: title.bottom + page.scrollHeight, roof: band.top, floor: band.bottom });
+        if (by > 0) follow.current = glidePageBy(by, { ms: FOLD_MS });
+      }
     }
     if (card?.style.minHeight) {
       window.clearTimeout(letGo.current);
@@ -103,7 +146,13 @@ export function PrayerBookContents({ hourNow }: { hourNow: HourSlug | null }) {
     }
   }, [open]);
 
-  useEffect(() => () => window.clearTimeout(letGo.current), []);
+  useEffect(
+    () => () => {
+      window.clearTimeout(letGo.current);
+      follow.current();
+    },
+    [],
+  );
 
   // A catalog title when the rule has one, else the registry's English: a
   // missing key must never reach the screen as the key itself.
