@@ -166,3 +166,50 @@ describe("the theology tray's rows", () => {
     expect(short, short.join("\n")).toEqual([]);
   });
 });
+
+// Settings' quiet words (build 89's guardrail list of 2026-11-10): the hint
+// under a section's title, the line under a row's name, what a chosen answer
+// means, and a track's unchosen choices. Each is held to 4.5:1 on its own
+// ground on every palette: the hint on the page, the track's choices on the
+// track (night-deep), the row's lines on the panel where it is lightest (on
+// Light, the panel's own cream at its darkest stop).
+describe("Settings' quiet words", () => {
+  const share = (re: RegExp, what: string): number => {
+    const m = re.exec(BARE);
+    if (!m) throw new Error(`no rule for ${what}`);
+    return Number(m[1]);
+  };
+  const ink = (selector: string) => new RegExp(`(?:^|\\})\\s*${selector} \\{[^}]*?color: color-mix\\(in srgb, var\\(--color-paper\\) (\\d+)%`);
+  const BASE = {
+    hint: share(ink("\\.set-hint"), ".set-hint"),
+    desc: share(ink("\\.set-desc"), ".set-desc"),
+    sub: share(ink("\\.set-sub"), ".set-sub"),
+    track: share(ink("\\.set-track > button"), ".set-track > button"),
+  };
+  const quiet = (mode: string) =>
+    new RegExp(`html\\[data-reading-mode="${mode}"\\] :is\\(\\.set-hint, \\.set-desc, \\.set-sub, \\.set-track > button\\[aria-checked="false"\\]:not\\(:hover\\)\\) \\{\\s*color: color-mix\\(in srgb, var\\(--color-paper\\) (\\d+)%`);
+  const OWN: Partial<Record<Mode, number>> = { parchment: share(quiet("parchment"), "Light"), candlelight: share(quiet("candlelight"), "Candlelight") };
+  const TRIO = share(/:where\(html\[data-reading-mode="monastery"\], html\[data-reading-mode="councils"\], html\[data-reading-mode="cappadocian"\]\) \.set-desc \{\s*color: color-mix\(in srgb, var\(--color-paper\) (\d+)%/, "the trio's .set-desc");
+  const lightPanel = hex(/html\[data-reading-mode="parchment"\] \.set-panel \{[^}]*linear-gradient\([^;]*?(#[0-9a-f]{6}) 100%\)/.exec(BARE)?.[1] ?? "");
+  const deep = (mode: Mode) => hex((mode === "default" ? null : token(`html[data-reading-mode="${mode}"]`, "--color-night-deep")) ?? token("@theme", "--color-night-deep") ?? token(":root", "--color-night-deep") ?? "");
+
+  for (const mode of MODES) {
+    it(`${mode}: every quiet line holds 4.5:1 on its own ground`, () => {
+      const { night, soft, paper } = colours(mode);
+      const panel = mode === "parchment" ? lightPanel : mix([255, 255, 255], mix(paper, soft, 0.04), 0.065);
+      const own = OWN[mode];
+      const trio = mode === "monastery" || mode === "councils" || mode === "cappadocian";
+      const lines: [string, number, Rgb][] = [
+        ["the section's hint", own ?? BASE.hint, night],
+        ["a row's line", own ?? (trio ? TRIO : BASE.desc), panel],
+        ["what a chosen answer means", own ?? BASE.sub, panel],
+        ["a track's unchosen choice", own ?? BASE.track, deep(mode)],
+      ];
+      const short = lines
+        .map(([what, at, ground]) => ({ what, at, r: ratio(mix(paper, ground, at / 100), ground) }))
+        .filter((l) => l.r < 4.5)
+        .map((l) => `${l.what} at ${l.at}%: ${l.r.toFixed(2)}:1`);
+      expect(short, short.join("\n")).toEqual([]);
+    });
+  }
+});

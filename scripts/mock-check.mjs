@@ -106,11 +106,37 @@ function look(arg) {
     for (let n = el; n; n = n.parentElement) o *= Number(getComputedStyle(n).opacity);
     return o;
   };
-  // The ground a thing sits on: its own and its parents' backgrounds, laid
-  // one over another down to the first that is opaque.
+  // A face drawn behind a thing's words: a ::before or ::after that covers it
+  // and sits behind its content, as Settings lights its chosen choice
+  // (.set-track). Opaque, it is the ground (a gradient: each of its stops);
+  // a face that lets the ground through is not trusted, and the walk goes on.
+  // Without it the chosen "New" read as its dark words on the dark track,
+  // about 1:1 on every palette (build 89's guardrail list, 2026-11-10).
+  const STOP = /(?:rgba?|hsla?|color|oklab|oklch|lab|lch)\([^()]*(?:\([^()]*\)[^()]*)*\)|#[0-9a-f]{3,8}\b/gi;
+  const faceOf = (n) => {
+    for (const pseudo of ["::before", "::after"]) {
+      const p = getComputedStyle(n, pseudo);
+      if (!p.content || p.content === "none" || p.position !== "absolute") continue;
+      if (Number(p.opacity) < 0.999 || p.visibility === "hidden" || !(parseInt(p.zIndex, 10) < 0)) continue;
+      if (!["top", "right", "bottom", "left"].every((side) => parseFloat(p[side]) <= 0.5)) continue;
+      const image = p.backgroundImage && p.backgroundImage !== "none" ? p.backgroundImage : null;
+      if (image && !/^(?:linear|radial)-gradient\(/.test(image)) return { unknown: `${n.tagName.toLowerCase()} has a picture behind its words` };
+      const stops = image ? [...image.matchAll(STOP)].map((m) => rgba(m[0])) : [rgba(p.backgroundColor)];
+      if (!stops.length || stops.some((s) => s[3] < 0.999)) continue;
+      return { rgbs: stops.map((s) => s.slice(0, 3)) };
+    }
+    return null;
+  };
+  // The ground a thing sits on: a face drawn behind its words, or its own
+  // and its parents' backgrounds, laid one over another down to the first
+  // that is opaque.
   const groundOf = (el) => {
     const layers = [];
     for (let n = el; n; n = n.parentElement) {
+      if (!layers.length) {
+        const face = faceOf(n);
+        if (face) return face;
+      }
       const cs = getComputedStyle(n);
       if (cs.backgroundImage && cs.backgroundImage !== "none") return { unknown: `${n.tagName.toLowerCase()} has a picture or a gradient` };
       const c = rgba(cs.backgroundColor);
@@ -374,7 +400,8 @@ export async function checkMock(page, selector, { allowGold = false } = {}) {
             continue;
           }
           const need = w.large ? 3 : 4.5;
-          const r = contrast(w.fg, w.alpha, w.ground.rgb);
+          // A face drawn as a gradient counts by its worst stop.
+          const r = Math.min(...(w.ground.rgbs ?? [w.ground.rgb]).map((g) => contrast(w.fg, w.alpha, g)));
           if (r + 1e-9 >= need) continue;
           if (w.allow) allow(check, `"${w.text}"`, w.allow);
           else fail(check, palette, `"${w.text}"`, `${r.toFixed(2)}:1, needs ${need}:1`);
@@ -537,6 +564,10 @@ const FIXTURES = `
       <span class="min-w-0 truncate">John 1:47</span>
       <a href="/bible/john/1/#v47" class="ms-auto inline-flex min-h-11 shrink-0 items-center px-3 font-semibold text-paper/75 underline underline-offset-4">Open</a>
     </p>
+  </div>
+  <div role="radiogroup" aria-label="Calendar reckoning" class="set-track" style="--set-cols:2">
+    <button type="button" role="radio" aria-checked="true" class="hit-44">New</button>
+    <button type="button" role="radio" aria-checked="false" class="hit-44">Old (Julian)</button>
   </div>
 </div>`;
 

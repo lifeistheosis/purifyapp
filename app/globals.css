@@ -6616,6 +6616,25 @@ html[data-reading-mode="parchment"] .set-switch {
 html[data-reading-mode="parchment"] .set-track > button::before {
  box-shadow: 0 2px 5px rgb(70 52 20 / 0.3);
 }
+/* Settings' quiet words, legible on every palette (found by checkMock on
+   Settings' calendar section, 2026-11-10). The hint under a section's title, the line under a row's
+   name, what a chosen answer means and a track's unchosen choices are the
+   ink at 55 or 62 percent. On Light they read 3.3 to 4.1:1, on Candlelight
+   they sat on 4.5:1 or under it where the panel is lit, and Monastery,
+   Councils and Cappadocian dipped under it there too. Each palette that
+   needs it draws them at the share that holds 4.5:1 on its own ground (the
+   page, the panel where it is lightest, the track), as the faint-text rules
+   do for the short shares; Dark and True black keep theirs.
+   lib/ui/__tests__/faintText.test.ts does the arithmetic. */
+html[data-reading-mode="parchment"] :is(.set-hint, .set-desc, .set-sub, .set-track > button[aria-checked="false"]:not(:hover)) {
+ color: color-mix(in srgb, var(--color-paper) 72%, transparent);
+}
+html[data-reading-mode="candlelight"] :is(.set-hint, .set-desc, .set-sub, .set-track > button[aria-checked="false"]:not(:hover)) {
+ color: color-mix(in srgb, var(--color-paper) 64%, transparent);
+}
+:where(html[data-reading-mode="monastery"], html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) .set-desc {
+ color: color-mix(in srgb, var(--color-paper) 60%, transparent);
+}
 html[data-reading-mode="parchment"] .set-switch[aria-checked="true"] {
  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.25);
 }
