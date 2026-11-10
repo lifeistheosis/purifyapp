@@ -371,6 +371,19 @@ export default async function PrivacyPage() {
  for. Anything that looks like an email address or a phone number is
  removed before it is kept.
 </p>
+{/* 1.9 (lib/ab/): the owner's "sure" of 2026-11-10 to this line as written,
+    listed in the 1.9 letter. A test holds it
+    (lib/admin/__tests__/privacyLines.test.ts). No test of two versions
+    runs before it is on this page. */}
+<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+  Sometimes two readers are shown a different version of the same
+  screen, so we can learn which one helps. Which version your device
+  shows is decided on your device, by a random number that never
+  leaves it. A count may then also say which version it was, and
+  nothing else is added: no session id, no account, no device id.
+  &ldquo;A reader shown the second version came back a week
+  later&rdquo; is one more on a total, never you.
+</p>
 
  {/* Retention. Until 2026-10-29 this said a scheduled job deleted
  these rows at 90 days. That job (docs/operations/analytics-retention.md)
@@ -1113,6 +1126,17 @@ function PrivacyDe() {
  ergänzen können, wonach Leser suchen. Alles, was wie eine
  E-Mail-Adresse oder eine Telefonnummer aussieht, wird entfernt,
  bevor es behalten wird.
+ </p>
+ {/* 1.9 (lib/ab/): the owner's line of 2026-11-10, in German. A test holds it. */}
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+   Manchmal sehen zwei Leser eine unterschiedliche Fassung desselben
+   Bildschirms, damit wir lernen, welche hilft. Welche Fassung dein
+   Gerät zeigt, wird auf deinem Gerät entschieden, durch eine
+   Zufallszahl, die es nie verlässt. Eine Zählung kann dann auch
+   sagen, welche Fassung es war, und sonst kommt nichts hinzu: keine
+   Sitzungs-Kennung, kein Konto, keine Geräte-Kennung. &bdquo;Ein
+   Leser, dem die zweite Fassung gezeigt wurde, kam eine Woche später
+   wieder&ldquo; ist einer mehr in einer Summe, nie du.
  </p>
 
  {/* Retention */}

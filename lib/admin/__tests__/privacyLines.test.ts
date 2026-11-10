@@ -37,7 +37,17 @@ const LINES_DE = {
 const german = page.slice(page.indexOf("function PrivacyDe()"));
 const english = page.slice(0, page.indexOf("function PrivacyDe()"));
 
+// The line for tests of two versions (lib/ab/), his "sure" of 2026-11-10 to
+// it as written. No test may run before the page says this.
+const TESTS_LINE =
+  "Sometimes two readers are shown a different version of the same screen, so we can learn which one helps. Which version your device shows is decided on your device, by a random number that never leaves it. A count may then also say which version it was, and nothing else is added: no session id, no account, no device id. &ldquo;A reader shown the second version came back a week later&rdquo; is one more on a total, never you.";
+const TESTS_LINE_DE =
+  "Manchmal sehen zwei Leser eine unterschiedliche Fassung desselben Bildschirms, damit wir lernen, welche hilft. Welche Fassung dein Gerät zeigt, wird auf deinem Gerät entschieden, durch eine Zufallszahl, die es nie verlässt. Eine Zählung kann dann auch sagen, welche Fassung es war, und sonst kommt nichts hinzu: keine Sitzungs-Kennung, kein Konto, keine Geräte-Kennung. &bdquo;Ein Leser, dem die zweite Fassung gezeigt wurde, kam eine Woche später wieder&ldquo; ist einer mehr in einer Summe, nie du.";
+
 describe("the privacy page carries each approved line, word for word", () => {
+  it("Tests of two versions (lib/ab/)", () => expect(english).toContain(TESTS_LINE));
+  it("Tests of two versions, in German", () => expect(german).toContain(TESTS_LINE_DE));
+
   for (const [what, line] of Object.entries(LINES)) {
     it(what, () => expect(english).toContain(line));
   }
