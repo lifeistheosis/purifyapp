@@ -40,6 +40,8 @@
 //   const ok = printMockCheck(await checkMock(page, "[data-journal-composer]"), "the note sheet");
 // On a page of the native export (npm run build:android first), as it loads:
 //   node scripts/mock-check.mjs /journal/ main
+// The same, held on the eighteen looks as well as the five palettes (1.9):
+//   node scripts/mock-check.mjs /journal/ main --looks
 // Its own proof, the first drawings' mistakes caught and a house piece passed:
 //   node scripts/mock-check.mjs --self-test
 
@@ -47,6 +49,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
+import { READING_THEMES, themeAttributes } from "../lib/reader/readingModes.ts";
 import { isGoldTone, oklchOf } from "../lib/ui/goldTone.ts";
 
 /** The five palettes, as AppThemeController wears them on <html>. */
@@ -57,6 +60,33 @@ export const PALETTES = [
   ["Candlelight", "candlelight"],
   ["Monastery", "monastery"],
 ];
+
+/**
+ * The looks (1.9): the eighteen Plus themes of the registry, each worn as
+ * data-look over Dark or over Light (lib/reader/readingModes.ts,
+ * themeAttributes). A third value names the look. They are not in PALETTES:
+ * a mockup is held on the five, as CLAUDE.md says, and a screen is held on
+ * the looks as well where the looks are what is being checked:
+ *   checkMock(page, selector, { palettes: [...PALETTES, ...LOOKS] })
+ * or, from the command line, --looks.
+ */
+export const LOOKS = READING_THEMES.filter((theme) => theme.look).map((theme) => {
+  const { mode, look } = themeAttributes(theme.id);
+  return [theme.label, mode, look];
+});
+
+/** Put a palette on the page, as the app does: its mode, and its look or none. */
+const wear = (page, mode, look) =>
+  page.evaluate(
+    ([m, l]) => {
+      const h = document.documentElement;
+      if (m) h.setAttribute("data-reading-mode", m);
+      else h.removeAttribute("data-reading-mode");
+      if (l) h.setAttribute("data-look", l);
+      else h.removeAttribute("data-look");
+    },
+    [mode ?? null, look ?? null],
+  );
 
 export const CHECKS = ["contrast", "placeholder", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays"];
 
@@ -383,7 +413,7 @@ const settle = (page) => page.evaluate(() => new Promise((done) => requestAnimat
  * `allowGold`: only for a mockup of a Plus member's profile, the one place
  * gold is allowed (noGold.test.ts).
  */
-export async function checkMock(page, selector, { allowGold = false } = {}) {
+export async function checkMock(page, selector, { allowGold = false, palettes = PALETTES } = {}) {
   const failures = [];
   const unmeasured = [];
   const allowed = new Set();
@@ -398,16 +428,12 @@ export async function checkMock(page, selector, { allowGold = false } = {}) {
     still.setAttribute("data-mock-check", "");
     still.textContent = "*, *::before, *::after { transition: none !important; }";
     document.head.appendChild(still);
-    return { mode: h.getAttribute("data-reading-mode"), dir: h.getAttribute("dir") };
+    return { mode: h.getAttribute("data-reading-mode"), look: h.getAttribute("data-look"), dir: h.getAttribute("dir") };
   });
   const shots = {};
   try {
-    for (const [palette, mode] of PALETTES) {
-      await page.evaluate((m) => {
-        const h = document.documentElement;
-        if (m) h.setAttribute("data-reading-mode", m);
-        else h.removeAttribute("data-reading-mode");
-      }, mode);
+    for (const [palette, mode, worn] of palettes) {
+      await wear(page, mode, worn);
       await settle(page);
       const s = await page.evaluate(look, selector);
       if (!s) throw new Error(`nothing on the page answers ${selector}`);
@@ -439,7 +465,9 @@ export async function checkMock(page, selector, { allowGold = false } = {}) {
       }
     }
 
-    const dark = shots.Dark;
+    // What does not change with the palette is read once, on Dark (or on the
+    // first palette of a list that leaves Dark out).
+    const dark = shots.Dark ?? Object.values(shots)[0];
     const light = shots.Light;
     for (const c of dark.controls) {
       const small = !c.inline && !c.hit44 && (c.w < 44 - 0.5 || c.h < 44 - 0.5);
@@ -454,7 +482,8 @@ export async function checkMock(page, selector, { allowGold = false } = {}) {
       }
     }
     dark.paints.forEach((p, i) => {
-      const q = light.paints[i];
+      // A colour typed in shows by staying the same on Light; a list with no Light cannot say.
+      const q = light?.paints[i];
       if (!p || !q) return;
       for (const part of ["color", "bg", "border"]) {
         if (!same(p[part], q[part])) continue;
@@ -473,11 +502,7 @@ export async function checkMock(page, selector, { allowGold = false } = {}) {
     if (dark.emDash) fail("emdash", null, "the words", "an em dash; use a comma, a colon or a full stop");
 
     // Arabic: everything is where it was, measured from the other side.
-    await page.evaluate((m) => {
-      const h = document.documentElement;
-      if (m) h.setAttribute("data-reading-mode", m);
-      else h.removeAttribute("data-reading-mode");
-    }, before.mode);
+    await wear(page, before.mode, before.look);
     await settle(page);
     const ltr = await page.evaluate(boxes, selector);
     await page.evaluate(() => document.documentElement.setAttribute("dir", "rtl"));
@@ -504,10 +529,9 @@ export async function checkMock(page, selector, { allowGold = false } = {}) {
       unmeasured.push("Arabic: the part of the page changed between the two directions, so it was not compared");
     }
   } finally {
+    await wear(page, before.mode, before.look);
     await page.evaluate((b) => {
       const h = document.documentElement;
-      if (b.mode) h.setAttribute("data-reading-mode", b.mode);
-      else h.removeAttribute("data-reading-mode");
       if (b.dir) h.setAttribute("dir", b.dir);
       else h.removeAttribute("dir");
       document.querySelector("style[data-mock-check]")?.remove();
@@ -622,9 +646,11 @@ async function selfTest() {
 
 async function main(args) {
   if (args[0] === "--self-test") return selfTest();
-  const [where, selector] = args;
+  // --looks: the eighteen looks as well as the five palettes.
+  const looks = args.includes("--looks");
+  const [where, selector] = args.filter((a) => a !== "--looks");
   if (!where || !selector) {
-    console.log('Use: node scripts/mock-check.mjs <path in the app> "<selector>"   or   --self-test');
+    console.log('Use: node scripts/mock-check.mjs <path in the app> "<selector>" [--looks]   or   --self-test');
     return false;
   }
   const { go } = await import("./lib/shell-server.mjs");
@@ -632,7 +658,7 @@ async function main(args) {
   try {
     await go(page, where);
     await page.waitForTimeout(2000);
-    return printMockCheck(await checkMock(page, selector), `${where} ${selector}`);
+    return printMockCheck(await checkMock(page, selector, looks ? { palettes: [...PALETTES, ...LOOKS] } : {}), `${where} ${selector}`);
   } finally {
     await browser.close();
   }
