@@ -11,25 +11,46 @@
 //
 // No until the server has said yes: a door is never drawn and then taken
 // away.
+//
+// The same answer carries the parts of campaigns the server has switched on
+// ("Prayed by many", pictures: lib/campaigns/parts.ts, which only the server
+// can load). An app has no value of its own for a part: it is off until the
+// server says it is on, so a part opens for every app the moment the website
+// says so, with no new store build.
 
 import { useSyncExternalStore } from "react";
 
 import { apiFetch } from "@/lib/api/client";
 
 import { campaignsInBuild } from "./flags";
+import { CAMPAIGN_PART_NAMES, type CampaignPart } from "./model";
 
 let answer: boolean | null = null;
 let asking = false;
+/** The parts the server said are on. None until it has answered, and none it did not name. */
+let partsOn: ReadonlySet<CampaignPart> = new Set();
 const waiting = new Set<() => void>();
 
 function ask(): void {
   if (asking || answer !== null) return;
   asking = true;
   void apiFetch("/api/campaigns/open")
-    .then((res) => res.ok)
-    .catch(() => false)
-    .then((open) => {
+    .then(async (res) => {
+      if (!res.ok) return { open: false, on: new Set<CampaignPart>() };
+      let told: unknown = null;
+      try {
+        told = ((await res.json()) as { parts?: unknown }).parts;
+      } catch {
+        told = null;
+      }
+      const said = (told && typeof told === "object" ? told : {}) as Record<string, unknown>;
+      // Only a part this build knows, and only a plain yes.
+      return { open: true, on: new Set(CAMPAIGN_PART_NAMES.filter((p) => said[p] === true)) };
+    })
+    .catch(() => ({ open: false, on: new Set<CampaignPart>() }))
+    .then(({ open, on }) => {
       answer = open;
+      partsOn = on;
       asking = false;
       for (const cb of waiting) cb();
     });
@@ -72,8 +93,27 @@ export function useCampaignsAnswer(): boolean | null {
   return useSyncExternalStore(subscribe, campaignsInBuild() ? readAnswer : closedAnswer, campaignsInBuild() ? unasked : closedAnswer);
 }
 
+/** Whether the server has switched a part on, as it stands. Exported for the test that holds it. */
+export function campaignPartNow(part: CampaignPart): boolean {
+  return campaignsInBuild() && answer === true && partsOn.has(part);
+}
+
+/**
+ * Whether a part of campaigns is on for this reader: "Prayed by many", or
+ * pictures. False on the server, in a closed build, until the server has
+ * answered, and whenever it has not said yes.
+ */
+export function useCampaignPart(part: CampaignPart): boolean {
+  return useSyncExternalStore(
+    subscribe,
+    campaignsInBuild() ? () => campaignPartNow(part) : never,
+    never,
+  );
+}
+
 /** Test seam: forget the answer. */
 export function __forgetCampaignsOpen(): void {
   answer = null;
   asking = false;
+  partsOn = new Set();
 }

@@ -270,6 +270,8 @@ export type PublicCampaign = {
   mine?: boolean;
   /** Its creator keeps it after its last day (for the reposed; his yes to item 125). Told to its creator alone. */
   keep_after_end?: boolean;
+  /** Only for its creator: whether it may stand in "Prayed by many". */
+  listed?: boolean;
 };
 
 /** Every column a read may name. No creator_id, no praying_count, no prayer_count. */
@@ -308,6 +310,54 @@ export function publicCampaign(row: Record<string, unknown>): PublicCampaign {
     created_at: String(row.created_at ?? ""),
   };
 }
+
+// ── Parts that ship switched off ────────────────────────────────────────────
+
+/**
+ * A part of campaigns that the server can turn on by itself
+ * (lib/campaigns/parts.ts): "Prayed by many", and pictures. An app never
+ * decides one from its own bundle; it is told with the answer that says
+ * campaigns are open.
+ */
+export type CampaignPart = "many" | "pictures";
+export const CAMPAIGN_PART_NAMES: readonly CampaignPart[] = ["many", "pictures"];
+
+// ── "Prayed by many" ────────────────────────────────────────────────────────
+//
+// His item 118, said yes to as written: top campaigns later, named for what
+// the list is, with no number, and a creator can stay out. Built in 1.9 and
+// switched off on the server.
+//
+// It meets a rule he made himself (CONTRIBUTING.md, 2026-08-22, "On prayer,
+// no figures at all"), so it is held to this form and no wider:
+//
+//   - The order is shown and no figure ever is: no number of people, no rank.
+//   - It is ordered by how many readers with an account added a campaign to
+//     their prayers in the time chosen, one for each account. Never by
+//     comments, and never by anything a reader does while praying.
+//   - It never stands alone: the board opens on "Newly asked", so a need
+//     nobody carries yet is seen first.
+//   - A floor: a campaign appears only once enough readers carry it that the
+//     list says nothing about any one of them.
+//   - A way out: its creator can keep a campaign out of it (`listed`), and a
+//     campaign kept to a circle never appears.
+
+/** The times "Prayed by many" can be asked over. */
+export const MANY_SPANS = ["day", "week", "month", "year"] as const;
+export type ManySpan = (typeof MANY_SPANS)[number];
+
+export function isManySpan(v: unknown): v is ManySpan {
+  return typeof v === "string" && (MANY_SPANS as readonly string[]).includes(v);
+}
+
+/** Each span in days. */
+export const MANY_SPAN_DAYS: Readonly<Record<ManySpan, number>> = { day: 1, week: 7, month: 30, year: 365 };
+
+/** How many readers must have added a campaign in the span before it is listed at all. */
+export const MANY_FLOOR = 5;
+
+/** How many campaigns the list holds. */
+export const MANY_SHOWN = 12;
 
 // ── Updates and comments ────────────────────────────────────────────────────
 //

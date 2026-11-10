@@ -55,12 +55,18 @@ import {
   dropJoin,
   fetchBoard,
   fetchCampaign,
+  fetchMany,
   fetchMine,
   fetchStates,
+  fetchThread,
   keepJoin,
+  removeNote,
   reportCampaign,
+  setCommentsOpen,
+  setListed,
   startCampaign,
   takeDownCampaign,
+  writeNote,
 } from "@/lib/campaigns/client";
 import { CAMPAIGNS_OPENING, __setCampaignsOpening, campaignsEnabled, campaignsInBuild, julyCampaignRoutes } from "@/lib/campaigns/flags";
 import { __forgetCampaignsOpen, campaignsOpenNow, subscribeCampaignsOpen } from "@/lib/campaigns/useCampaignsOpen";
@@ -209,6 +215,13 @@ describe("closed: the device", () => {
       rules: true,
     });
     expect(started.ok).toBe(false);
+    // Updates and comments, and "Prayed by many", as closed as the rest.
+    expect(await fetchThread(ID)).toEqual({ state: "missing" });
+    expect((await writeNote(ID, "comment", "Praying.")).ok).toBe(false);
+    expect((await removeNote(ID, ID)).ok).toBe(false);
+    expect((await setCommentsOpen(ID, false)).ok).toBe(false);
+    expect(await fetchMany("week")).toEqual([]);
+    expect((await setListed(ID, false)).ok).toBe(false);
     await campaignUpkeep(true);
     expect(calls).toEqual([]);
   });

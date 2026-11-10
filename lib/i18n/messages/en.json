@@ -5328,5 +5328,11 @@
   "campaigns.noteDeleteTitle": "Delete your words?",
   "campaigns.noteDeleteBody": "They are deleted for good.",
   "campaigns.noteRemoveFailed": "We could not take that off. Please try again.",
-  "mod.action.creator_remove_comment": "took a comment off their own campaign"
+  "mod.action.creator_remove_comment": "took a comment off their own campaign",
+  "campaigns.many.title": "Prayed by many",
+  "campaigns.many.year": "This year",
+  "campaigns.many.over": "Over what time",
+  "campaigns.many.none": "Nothing here for this time.",
+  "campaigns.many.listed": "In Prayed by many",
+  "campaigns.many.listedBody": "The list of campaigns many readers carry. It never shows a number."
 }

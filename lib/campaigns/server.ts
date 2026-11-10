@@ -9,9 +9,13 @@ import { readTrust } from "@/lib/community/trustServer";
 import { censorName, censorPost } from "@/lib/moderation/server";
 import { ensureCleanHandle } from "@/lib/profile/server";
 import { rateLimited } from "@/lib/security/ratelimit";
+import { pageAllSettled } from "@/lib/supabase/pageAll";
 
 import {
   CAMPAIGN_COLS,
+  MANY_FLOOR,
+  MANY_SHOWN,
+  MANY_SPAN_DAYS,
   RUNNING_CAP,
   STARTED_A_DAY,
   campaignPsalm,
@@ -24,6 +28,7 @@ import {
   type CampaignKind,
   type ConsentKind,
   type ForWhom,
+  type ManySpan,
   type PrayerRef,
   type PublicCampaign,
 } from "./model";
@@ -50,7 +55,7 @@ export type CampaignRow = Record<string, unknown> & {
   mod_cleared_at?: string | null;
 };
 
-const SERVER_COLS = `${CAMPAIGN_COLS}, creator_id, audience, held_reason, mod_cleared_at, keep_after_end, comments_open`;
+const SERVER_COLS = `${CAMPAIGN_COLS}, creator_id, audience, held_reason, mod_cleared_at, keep_after_end, comments_open, listed`;
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -124,8 +129,9 @@ export async function hiddenLists(admin: SupabaseClient, userId: string | null):
 /** The row as its reader receives it, saying whether they started it. */
 export function forReader(row: CampaignRow, userId: string | null): PublicCampaign {
   const mine = userId !== null && row.creator_id === userId;
-  // Whether it is kept after its last day is its creator's own setting, and told to nobody else.
-  return { ...publicCampaign(row), mine, ...(mine ? { keep_after_end: row.keep_after_end === true } : {}) };
+  // Whether it is kept after its last day, and whether it may stand in
+  // "Prayed by many", are its creator's own settings, and told to nobody else.
+  return { ...publicCampaign(row), mine, ...(mine ? { keep_after_end: row.keep_after_end === true, listed: row.listed !== false } : {}) };
 }
 
 /**
@@ -160,6 +166,101 @@ export async function listBoard(
   }
   const rows = ((data ?? []) as unknown as CampaignRow[]).filter((r) => !isOver(r, now));
   return { ok: true, value: { campaigns: rows.map((r) => forReader(r, opts.userId)), personalised: hidden.length > 0 } };
+}
+
+/** How many join rows one tally reads at most: fifty requests, once a minute for each span. */
+const MANY_ROWS_READ = 50_000;
+
+/** The order of "Prayed by many" for each span, kept for a minute: the ids alone, and never a figure. */
+const manyKept = new Map<ManySpan, { at: number; ids: string[] }>();
+const MANY_KEPT_MS = 60_000;
+
+/** Test seam: forget the kept orders. */
+export function __forgetMany(): void {
+  manyKept.clear();
+}
+
+/**
+ * "Prayed by many" (his item 118; lib/campaigns/model.ts says the form it is
+ * held to): running public campaigns ordered by how many readers with an
+ * account added them to their prayers in the span, most first.
+ *
+ * What leaves this function is an order of campaigns and nothing else: the
+ * tally is made here, used to sort, and dropped. A campaign under the floor
+ * is not listed at all, so the list never says of a small campaign who
+ * carries it. One whose creator chose to stay out (`listed`), one kept to a
+ * circle, one of July's, one that waits or is over, and one by someone this
+ * reader has blocked or muted are never in it.
+ *
+ * Only a reader with an account is counted, since only they have a row: one
+ * who carries a campaign on the device alone tells the server nothing, and
+ * that is kept so.
+ */
+export async function listMany(
+  admin: SupabaseClient,
+  opts: { userId: string | null; span: ManySpan; now?: number },
+): Promise<Read<{ campaigns: PublicCampaign[] }>> {
+  const now = opts.now ?? Date.now();
+  let ids: string[];
+  const kept = manyKept.get(opts.span);
+  if (kept && now - kept.at < MANY_KEPT_MS && now >= kept.at) {
+    ids = kept.ids;
+  } else {
+    const since = new Date(now - MANY_SPAN_DAYS[opts.span] * 86_400_000).toISOString();
+    // Every join row of the span, read in pages: one request returns a
+    // thousand rows at most and says nothing when it stops, and a tally cut
+    // there would order the board wrongly without a sign
+    // (lib/supabase/pageAll.ts). Newest first, then by the row's own key, so
+    // the pages are pages of one list. The stop is a cost limit, said aloud
+    // when it is met: past it a table of sums by day is the answer (the
+    // notes, 2.8), not a bigger number here.
+    const { data, error } = await pageAllSettled<{ campaign_id: string }, { message: string; code?: string | null }>(
+      (from, to) =>
+        admin
+          .from("prayer_campaign_prayers")
+          .select("campaign_id")
+          .gte("joined_at", since)
+          .order("joined_at", { ascending: false })
+          .order("campaign_id", { ascending: true })
+          .order("user_id", { ascending: true })
+          .range(from, to),
+      MANY_ROWS_READ,
+    );
+    if (error) {
+      if (reworkAbsent(error)) return { ok: false, why: "absent" };
+      console.warn("[campaigns] many failed", error.message);
+      return { ok: false, why: "failed" };
+    }
+    if (data.length >= MANY_ROWS_READ) console.warn(`[campaigns] many: the tally stopped at ${MANY_ROWS_READ} join rows for "${opts.span}"; it wants a table of sums by day now`);
+    // One row a reader a campaign, so the rows of a campaign are its readers.
+    const tally = new Map<string, number>();
+    for (const r of data) tally.set(r.campaign_id, (tally.get(r.campaign_id) ?? 0) + 1);
+    ids = [...tally.entries()]
+      .filter(([, n]) => n >= MANY_FLOOR)
+      .sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))
+      .slice(0, MANY_SHOWN * 3)
+      .map(([id]) => id);
+    manyKept.set(opts.span, { at: now, ids });
+  }
+  if (ids.length === 0) return { ok: true, value: { campaigns: [] } };
+
+  const hidden = await hiddenFor(admin, opts.userId);
+  let query = admin.from("prayer_campaigns").select(SERVER_COLS).in("id", ids).eq("status", "active").eq("audience", "public").eq("listed", true);
+  query = query.not("days", "is", null);
+  if (hidden.length > 0) query = query.not("creator_id", "in", `(${hidden.join(",")})`);
+  const { data: found, error: readError } = await query;
+  if (readError) {
+    if (reworkAbsent(readError)) return { ok: false, why: "absent" };
+    console.warn("[campaigns] many read failed", readError.message);
+    return { ok: false, why: "failed" };
+  }
+  const byId = new Map(((found ?? []) as unknown as CampaignRow[]).filter((r) => !isOver(r, now)).map((r) => [r.id, r]));
+  const campaigns = ids
+    .map((id) => byId.get(id))
+    .filter((r): r is CampaignRow => Boolean(r))
+    .slice(0, MANY_SHOWN)
+    .map((r) => forReader(r, opts.userId));
+  return { ok: true, value: { campaigns } };
 }
 
 /** The campaigns a reader started, newest first, the held and the ended among them. */

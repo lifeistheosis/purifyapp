@@ -18,7 +18,7 @@ import type { PrayPlace } from "@/lib/prayers/commemoration";
 
 import type { CampaignState } from "./carried";
 import { campaignsInBuild } from "./flags";
-import type { CampaignKind, CampaignModAction, CampaignThread, Closing, ConsentKind, ForWhom, NoteKind, PrayerRef, PublicCampaign, ReportReason } from "./model";
+import type { CampaignKind, CampaignModAction, CampaignThread, Closing, ConsentKind, ForWhom, ManySpan, NoteKind, PrayerRef, PublicCampaign, ReportReason } from "./model";
 
 const JSON_POST = { method: "POST", headers: { "content-type": "application/json" } } as const;
 
@@ -198,6 +198,37 @@ export async function takeDownCampaign(id: string): Promise<Sent> {
   if (!campaignsInBuild()) return CLOSED;
   try {
     return await sent(await apiFetch(`/api/campaigns/${encodeURIComponent(id)}`, { method: "DELETE" }));
+  } catch {
+    return { ok: false, status: 0, error: null };
+  }
+}
+
+// ── "Prayed by many" ────────────────────────────────────────────────────────
+
+/**
+ * The board's second list, over a span. Asked only by a screen the server
+ * has told this part is on (./useCampaignsOpen.ts, useCampaignPart): a
+ * build never asks for it on its own belief. Off, closed and empty read
+ * alike here, since each means there is no list to draw.
+ */
+export async function fetchMany(span: ManySpan): Promise<PublicCampaign[]> {
+  if (!campaignsInBuild()) return [];
+  try {
+    const res = await apiFetch(`/api/campaigns/many?span=${encodeURIComponent(span)}`);
+    if (!res.ok) return [];
+    return ((await body(res)).campaigns as PublicCampaign[] | undefined) ?? [];
+  } catch {
+    return [];
+  }
+}
+
+/** The creator keeps a campaign out of "Prayed by many", or lets it stand there. */
+export async function setListed(id: string, listed: boolean): Promise<Sent> {
+  if (!campaignsInBuild()) return CLOSED;
+  try {
+    return await sent(
+      await apiFetch(`/api/campaigns/${encodeURIComponent(id)}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ listed }) }),
+    );
   } catch {
     return { ok: false, status: 0, error: null };
   }

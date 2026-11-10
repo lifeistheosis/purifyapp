@@ -21,16 +21,18 @@ import { Close } from "@/components/ui/icons/Close";
 import { Erase } from "@/components/ui/icons/Erase";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { Lampada } from "@/components/ui/icons/Lampada";
+import { Orans } from "@/components/ui/icons/Orans";
 import { Plus } from "@/components/ui/icons/Plus";
 import { Shield } from "@/components/ui/icons/Shield";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { Sheet } from "@/components/ui/Sheet";
 import { carriedOne, type CarryPick } from "@/lib/campaigns/carried";
-import { closeCampaign, fetchCampaign, keepCampaign, setCommentsOpen, takeDownCampaign, type OneResult } from "@/lib/campaigns/client";
+import { closeCampaign, fetchCampaign, keepCampaign, setCommentsOpen, setListed, takeDownCampaign, type OneResult } from "@/lib/campaigns/client";
 import { CLOSINGS, isDay, isRunning, type Closing, type PublicCampaign } from "@/lib/campaigns/model";
 import { CAMPAIGN_MENU_EVENT } from "@/lib/campaigns/pageMenu";
 import { campaignUpkeep } from "@/lib/campaigns/useCampaignUpkeep";
 import { useCampaignPsalm } from "@/lib/campaigns/useCampaignPsalm";
+import { useCampaignPart } from "@/lib/campaigns/useCampaignsOpen";
 import { useCarried } from "@/lib/campaigns/useCarried";
 import { campaignIcon, dayText, forWhomLabel, lengthTo, setIn, standingLabel } from "@/lib/campaigns/words";
 import { cn } from "@/lib/cn";
@@ -137,6 +139,9 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
   // Its updates and comments (phase 2). None while it waits for a moderator,
   // and none under one of July's, which takes no words.
   const hasThread = campaign.status !== "held" && campaign.days !== null;
+  // "Prayed by many" is switched off on the server; its row in the creator's
+  // menu is drawn only once the server says the part is on.
+  const manyOn = useCampaignPart("many");
   const { result: thread, reload: reloadThread } = useCampaignThread(campaign.id, hasThread);
 
   const name = campaign.subject_name ?? campaign.title;
@@ -193,6 +198,20 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
     e.preventDefault();
     openDoor("about");
     setToPrayer((n) => n + 1);
+  }
+
+  /** Its creator keeps it out of "Prayed by many", or lets it stand there (his yes to item 118). */
+  async function list(next: boolean) {
+    if (busy) return;
+    setBusy(true);
+    const res = await setListed(campaign.id, next);
+    setBusy(false);
+    if (!res.ok) {
+      setSheet(null);
+      setFailed(t("campaigns.err.failed"));
+      return;
+    }
+    setCampaign({ ...campaign, listed: next });
   }
 
   /** Its creator opens comments, or closes them (his yes to item 126). */
@@ -447,6 +466,14 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
                   label={t("campaigns.comments")}
                   description={t("campaigns.commentsSwitchBody")}
                   control={<Switch on={thread.thread.commentsOpen} onChange={(on) => void comments(on)} label={t("campaigns.comments")} />}
+                />
+              ) : null}
+              {running && manyOn ? (
+                <Row
+                  icon={<Orans size={17} />}
+                  label={t("campaigns.many.listed")}
+                  description={t("campaigns.many.listedBody")}
+                  control={<Switch on={campaign.listed !== false} onChange={(on) => void list(on)} label={t("campaigns.many.listed")} />}
                 />
               ) : null}
               {running ? <ButtonRow icon={<Hourglass size={17} />} label={t("campaigns.end")} onClick={() => setSheet("end")} /> : null}

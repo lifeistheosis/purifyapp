@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { BoardRow } from "@/components/campaigns/CampaignRow";
+import { PrayedByMany } from "@/components/campaigns/PrayedByMany";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { WayPlate } from "@/components/prayers/mine/WayRow";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
@@ -28,7 +29,8 @@ const DOOR_ROW = "set-link rule-way flex w-full items-center gap-3 text-start";
  * campaigns-fable.md); until then the board is one list.
  *
  * Nobody is counted, here or anywhere: a row says what a campaign is for and
- * until when.
+ * until when. "Prayed by many" (components/campaigns/PrayedByMany.tsx) shows
+ * an order and no figure, and is switched off on the server.
  */
 export function CampaignBoard() {
   const { t } = useTranslate();
@@ -95,6 +97,11 @@ export function CampaignBoard() {
             </div>
           )}
         </div>
+
+        {/* "Prayed by many", the second list and never the first: built, and
+            switched off on the server (lib/campaigns/parts.ts). It draws
+            nothing and asks nothing until the server says it is on. */}
+        <PrayedByMany />
 
         {/* The reader's own, and the rules, as rows of a panel of their own. */}
         <div className="set-panel mt-9">

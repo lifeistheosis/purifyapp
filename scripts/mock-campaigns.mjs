@@ -231,6 +231,14 @@ function threadFor(id, { mine = false, signedIn = true, commentsOpen = true } = 
   return { ...t, updates, commentsOpen, signedIn, canUpdate: running && mine, canComment: running && signedIn && commentsOpen };
 }
 
+// "Prayed by many" (switched off on the server): an order for each span, and never a figure.
+const MANY = {
+  day: [],
+  week: [CAMPAIGNS[NICHOLAS], CAMPAIGNS[MARIA]],
+  month: [CAMPAIGNS[NICHOLAS], CAMPAIGNS[MARIA], CAMPAIGNS[PETER]],
+  year: [CAMPAIGNS[NICHOLAS], CAMPAIGNS[MARIA], CAMPAIGNS[PETER]],
+};
+
 const seen = new Set();
 /** Every request a screen made of the server, for the walk to hold. */
 let calls = [];
@@ -249,7 +257,13 @@ async function answer(ctx, opts = {}) {
       sent = null;
     }
     calls.push({ method: req.method(), path: p, body: sent });
-    if (p === "/api/campaigns/open") return opts.closed ? json({ error: "Not found." }, 404) : json({ open: true });
+    // The parts that ship switched off are off unless a picture asks for one, as the server says them.
+    const parts = { many: false, pictures: false, ...(opts.parts ?? {}) };
+    if (p === "/api/campaigns/open") return opts.closed ? json({ error: "Not found." }, 404) : json({ open: true, parts });
+    if (p === "/api/campaigns/many") {
+      if (opts.closed || !parts.many) return json({ error: "Not found." }, 404);
+      return json({ campaigns: MANY[url.searchParams.get("span") ?? "week"] ?? [] });
+    }
     if (opts.closed && p.startsWith("/api/campaigns")) return json({ error: "Not found." }, 404);
     if (p === "/api/campaigns" && req.method() === "POST") return json({ ok: true, id: HELD, status: "held" });
     if (/^\/api\/campaigns\/[0-9a-f-]{36}\/(join|report)$/.test(p)) return json({ ok: true });
@@ -269,7 +283,7 @@ async function answer(ctx, opts = {}) {
     const one = /^\/api\/campaigns\/([0-9a-f-]{36})$/.exec(p);
     if (one && req.method() === "GET") {
       const c = CAMPAIGNS[one[1]];
-      return c ? json({ campaign: { ...c, ...(opts.mine?.includes(c.id) ? { mine: true, keep_after_end: false } : {}) } }) : json({ error: "Not found." }, 404);
+      return c ? json({ campaign: { ...c, ...(opts.mine?.includes(c.id) ? { mine: true, keep_after_end: false, listed: true } : {}) } }) : json({ error: "Not found." }, 404);
     }
     if (p === "/api/community/prayer-wall") return json(WALL);
     if (p === "/api/community/moderation") return json(url.searchParams.get("summary") ? { waiting: 2 } : MOD_QUEUE);
@@ -286,7 +300,7 @@ async function whole(page, min = 844) {
   await page.setViewportSize({ width: 390, height: Math.max(min, h) });
 }
 
-async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, check = true } = {}) {
+async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, check = true } = {}) {
   if (WALK) return;
   if (ONLY && !ONLY.has(name.slice(0, 2))) return;
   const seed = {
@@ -298,7 +312,7 @@ async function shot(name, label, where, selector, { set = {}, prepare, signedIn 
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   try {
-    await answer(ctx, { mine, board, signedIn });
+    await answer(ctx, { mine, board, signedIn, parts });
     await go(page, where);
     await settle(page);
     if (prepare) await prepare(page);
@@ -524,7 +538,16 @@ await shot("18-comments", "a campaign's comments", `/campaigns/detail?id=${MARIA
   },
 });
 
-async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false } = {}) {
+// 19 The board with "Prayed by many", as it would be once the server switches it on.
+await shot("19-prayed-by-many", "the board with Prayed by many, switched on", "/campaigns", "[data-campaign-board]", {
+  parts: { many: true },
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaigns-many] [data-campaign-row]", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
+async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts } = {}) {
   const seed = {
     "purify.prayers.campaigns": JSON.stringify(CARRIED),
     ...(signedIn ? { "purify.supabase.auth": JSON.stringify([{ name: "sb-placeholder-auth-token", value: JSON.stringify(SESSION) }]) } : {}),
@@ -537,7 +560,7 @@ async function walk(label, where, run, { set = {}, signedIn = true, mine, closed
   let ok = true;
   let why = "";
   try {
-    await answer(ctx, { mine, closed });
+    await answer(ctx, { mine, closed, parts });
     await go(page, where);
     await settle(page, 1800);
     await run(page);
@@ -725,6 +748,51 @@ if (WALK) {
     await settle(page, 700);
     expectThat(sentTo("PATCH", /^\/api\/campaigns\/[0-9a-f-]{36}$/).some((c) => c.body.commentsOpen === false), "closing comments was not sent");
   }, { mine: [NICHOLAS] });
+
+  await walk("Prayed by many, off: the board draws no second list and asks for none", "/campaigns", async (page) => {
+    await page.waitForSelector("[data-campaign-row]", { timeout: 15000 });
+    await settle(page, 900);
+    expectThat((await page.locator("[data-campaigns-many]").count()) === 0, "the second list is drawn while its part is off");
+    expectThat(sentTo("GET", /^\/api\/campaigns\/many$/).length === 0, "the list was asked for while its part is off");
+  });
+
+  await walk("Prayed by many, on: a second list under the newest, by the time chosen, with no number in it", "/campaigns", async (page) => {
+    await page.waitForSelector("[data-campaigns-many] [data-campaign-row]", { timeout: 15000 });
+    // Under "Newly asked", never over it.
+    const order = await page.evaluate(() => {
+      const asked = document.getElementById("board-asked").getBoundingClientRect().top;
+      const many = document.getElementById("board-many").getBoundingClientRect().top;
+      return many > asked;
+    });
+    expectThat(order, "Prayed by many stands over the newest");
+    expectThat((await page.locator("[data-campaigns-many] [data-campaign-row]").count()) === 2, "this week's list is not two rows");
+    await page.locator("#many-tab-month").click();
+    await settle(page, 800);
+    expectThat((await page.locator("[data-campaigns-many] [data-campaign-row]").count()) === 3, "this month's list is not three rows");
+    await page.locator("#many-tab-day").click();
+    await settle(page, 800);
+    expectThat((await page.locator("[data-campaigns-many] [data-campaign-row]").count()) === 0, "today's list is not empty");
+    expectThat((await page.locator("[data-campaigns-many]").innerText()).includes("Nothing here for this time"), "an empty time is not said plainly");
+    // No figure anywhere in it: the only digits are a date's.
+    await page.locator("#many-tab-month").click();
+    await settle(page, 500);
+    const text = await page.locator("[data-campaigns-many]").innerText();
+    const digits = text.match(/\d+/g) ?? [];
+    expectThat(digits.every((d) => Number(d) >= 1 && Number(d) <= 31), `a number stands in the list: ${text.replace(/\s+/g, " ")}`);
+  }, { parts: { many: true } });
+
+  await walk("Prayed by many, on: its creator keeps a campaign out of it from the menu", `/campaigns/detail?id=${MARIA}`, async (page) => {
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    await page.evaluate(() => window.dispatchEvent(new Event("purify:campaign-menu-open")));
+    await page.waitForSelector("[role=dialog] [role=switch]", { timeout: 8000 });
+    // For the living the menu has two switches now: comments, then Prayed by many.
+    const sw = page.locator("[role=dialog] [role=switch]").nth(1);
+    expectThat((await sw.getAttribute("aria-checked")) === "true", "a campaign does not start in the list");
+    await sw.click();
+    await settle(page, 700);
+    expectThat(sentTo("PATCH", /^\/api\/campaigns\/[0-9a-f-]{36}$/).some((c) => c.body.listed === false), "staying out was not sent");
+    expectThat((await sw.getAttribute("aria-checked")) === "false", "the switch did not turn");
+  }, { mine: [MARIA], parts: { many: true } });
 
   await walk("not open for this reader: the pages are the app's not-found page, and Pray together shows nothing of campaigns", "/campaigns", async (page) => {
     await settle(page, 1500);

@@ -56,6 +56,7 @@ Contents:
 9. Found on the way
 10. Phase 1, as built
 11. Phase 2, as built: updates and comments
+12. The parts that ship switched off, and "Prayed by many"
 
 ---
 
@@ -2215,3 +2216,82 @@ and the approval of a held reply reads its parent only where it always did.
   so only when it asked for money).
 - The day of the latest update on a campaign's card and row (2.6).
 - Telling anyone anything (phase 4).
+
+---
+
+## 12. The parts that ship switched off, and "Prayed by many" (2026-11-10)
+
+His word, as `BRAINSTORM.md` records it: pictures and top campaigns are "built
+and shipped switched off by a server-side switch until the image check service
+and the lawyer, then turned on with no store build".
+
+### 12.1 The switch for a part
+
+`lib/campaigns/parts.ts` holds two constants, `many` and `pictures`, both off.
+
+- **A constant in version control,** as the campaigns' own switch is and for
+  its reasons: a date, a reason, and nothing a dashboard can flip.
+- **The server's alone.** The file can only be loaded on the server. No app
+  reads a part from its own bundle: it is told, by the same answer that tells
+  it campaigns are open (`app/api/campaigns/open`), and believes a part is on
+  only on a plain yes. So the website's value is every app's value, and
+  turning a part on is one line on main and no store build.
+- **Off is off on the server too.** A part's routes answer 404 and read
+  nothing while it is off, so a request written by hand reaches nothing the
+  screens do not offer.
+- **What the stores' rule asks** (10.2): both parts are in the reviewed
+  builds and asleep, by his word, so the notes for review name them
+  (`OWNER-STEPS.md`, R5d).
+
+### 12.2 "Prayed by many" (his item 118)
+
+Built to the form 2.8 proposed and he said yes to, and no wider:
+
+- **A second list on the board,** under "Newly asked" and never in its
+  place, with one switch for the time: Today, This week, This month, This
+  year. A switch that filters what is on screen is where a pill belongs.
+- **An order, and never a figure.** A row is the board's own row: what a
+  campaign is for and until when. The route hands on campaigns and nothing
+  else; the tally is made on the server, used to sort, and dropped.
+- **Ordered by how many readers with an account added a campaign to their
+  prayers** in that time, one each. A reader who carries a campaign on the
+  device alone tells the server nothing, and is not counted: that is kept so.
+- **A floor of five.** Under it a campaign is not listed at all, so the list
+  never says who carries a small one. While no campaign in the whole year has
+  reached the floor, the list is not drawn.
+- **A way out.** Its creator's menu has a switch, "In Prayed by many", on to
+  begin with. A campaign kept to a circle, one of July's, one that waits or
+  is over, and one by someone the reader has blocked or muted are never in
+  it.
+- **Kept for a minute,** so the board cannot be used to watch one reader
+  join.
+
+**Two things stand between this and the day it is turned on, both his:**
+
+1. **His own rule.** `CONTRIBUTING.md` (2026-08-22, "On prayer, no figures at
+   all") allows no list ordered by how many pray. The words for it are in
+   2.8, for his hand. Until that line is in the file, the switch stays off.
+2. **One line on main:** `many: true` in `lib/campaigns/parts.ts`.
+
+It needs no SQL: the join rows and `listed` are file one's.
+
+| Part | Where |
+|---|---|
+| The switches | `lib/campaigns/parts.ts` |
+| What an app is told, and believes | `app/api/campaigns/open`, `lib/campaigns/useCampaignsOpen.ts` (`useCampaignPart`) |
+| The list | `lib/campaigns/server.ts` (`listMany`), `app/api/campaigns/many` |
+| The board's second list | `components/campaigns/PrayedByMany.tsx` |
+| The creator's switch | `components/campaigns/CampaignPage.tsx`, `app/api/campaigns/[id]` (PATCH `listed`) |
+
+`lib/campaigns/__tests__/parts.test.ts` holds it, 20 cases: the switches
+committed off and the server's alone; what an app believes; off means 404 and
+no read; the order, the spans, the floor, who is left out; every reader
+counted past the thousand rows one request returns; no figure in what is
+handed on; the minute; and the creator's switch.
+
+**Found while building it:** the first draft tallied one request's rows, and
+the house's own test refused it (`lib/supabase/__tests__/rowCap.test.ts`):
+the API returns a thousand rows a request and says nothing when it stops, so
+the board would have been ordered by the newest thousand joins and read as
+whole. The tally reads every row of the span in pages now, with a total
+order, and says aloud if it ever meets its cost limit.

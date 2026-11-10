@@ -464,8 +464,10 @@ export const campaignStatusSchema = z
     keepAfterEnd: z.boolean().optional(),
     /** Whether readers may comment (his yes to item 126: its creator can close comments). */
     commentsOpen: z.boolean().optional(),
+    /** Whether it may stand in "Prayed by many" (his yes to item 118: a creator can stay out). */
+    listed: z.boolean().optional(),
   })
-  .refine((c) => c.status !== undefined || c.keepAfterEnd !== undefined || c.commentsOpen !== undefined, { message: "Nothing to change." });
+  .refine((c) => c.status !== undefined || c.keepAfterEnd !== undefined || c.commentsOpen !== undefined || c.listed !== undefined, { message: "Nothing to change." });
 
 /**
  * /api/campaigns/[id]/thread POST body: the creator's update, or a reader's
