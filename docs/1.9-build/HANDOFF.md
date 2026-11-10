@@ -131,6 +131,10 @@ his call.
 
 All three work on the one branch, `ccr-07896cf2-bo0afd`. Each pulls
 (`git pull --rebase origin ccr-07896cf2-bo0afd`) before it pushes.
+A walk, picture or smoke script that needs a reader past the questions sets
+`purify:onboarded` to `"99"`, never to a version number (Fable onboarding,
+2026-11-10: with the onboarding's version raised, ten scripts that used `3` met
+the questions on every screen). `mock-check`'s openPhone already does.
 A migration that has reached the branch is never edited again; a change goes in
 a new file (Admin, 2026-11-10: once the test web's database is linked to the
 branch, it runs each file in `supabase/migrations` once, when the file first
