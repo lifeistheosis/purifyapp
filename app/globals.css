@@ -7312,11 +7312,33 @@ html[data-reading-mode="parchment"] .doctrine-shadow {
  box-shadow: 0 26px 40px -22px rgb(0 0 0 / 0.95), 0 2px 8px rgb(0 0 0 / 0.4);
  transition: opacity var(--duration-base) var(--ease-house), scale var(--duration-base) var(--ease-house);
 }
+/* The cards not in view wait smaller and dim, as C draws them: his face and
+   the card's edge dim, his words a step quieter, and every word still read on
+   every palette (1.9: the whole card at half opacity put its lines at 2.0 to
+   3.9:1, 154 of them on the Filioque's fourth part; checkMock, 2026-11-10).
+   Where color-mix is unknown the words keep the card's own ink. */
 .theology-card:not([data-current]) {
- opacity: 0.5;
  scale: 0.92;
+ border-color: color-mix(in srgb, var(--color-paper) 7%, transparent);
+}
+.theology-card .theology-card-picture,
+.theology-card .theology-ring,
+.theology-card [data-card-words] {
+ transition: opacity var(--duration-base) var(--ease-house), color var(--duration-base) var(--ease-house);
+}
+.theology-card:not([data-current]) .theology-card-picture {
+ opacity: 0.45;
+}
+.theology-card:not([data-current]) .theology-ring {
+ opacity: 0.65;
+}
+.theology-card:not([data-current]) [data-card-words] {
+ color: color-mix(in srgb, var(--color-paper) 72%, transparent);
 }
 :where([data-motion="reduce"]) .theology-card {
+ transition: none;
+}
+:where([data-motion="reduce"]) .theology-card :is(.theology-card-picture, .theology-ring, [data-card-words]) {
  transition: none;
 }
 .theology-card-picture {
