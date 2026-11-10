@@ -166,7 +166,7 @@ in the owner's words.
 
 ## If it goes wrong
 
-Way back: not recorded yet (node scripts/release.mjs back)
+Way back: 27f1bcaf203abcfaf0a726e07efbfb85ddce6109 Admin: his picks of 2026-11-04 built: Home A and B in Settings, the rail, pace bars, three lines on one chart, today counting or apart, a zoomable map with green readers, and Live
 
 The line above is the commit on `origin/main` that this push replaces.
 `node scripts/release.mjs back` writes it before the push and again after

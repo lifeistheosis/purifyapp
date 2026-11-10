@@ -466,8 +466,16 @@ function check() {
   console.log("\nGit");
   const dirty = git("status", "--porcelain");
   line(dirty === "", dirty ? `${dirty.split("\n").length} file(s) not committed` : "everything is committed");
-  const behind = git("rev-list", "--count", "HEAD..origin/main");
-  if (behind !== null) line(behind === "0", `${behind} commit(s) on origin/main are not in this branch (as of the last fetch)`, "git fetch origin && git rebase origin/main, then run the gates again");
+  // A shallow clone (a cloud session's is) holds too little history to find
+  // where this branch left main, so the count below would be every commit of
+  // main the clone happens to hold: 2,259 "behind" on 2026-11-10, for a branch
+  // that was 0 behind. Say so instead of counting.
+  if (git("rev-parse", "--is-shallow-repository") === "true") {
+    line(false, "this clone is shallow, so how far main has moved cannot be counted", "git fetch --unshallow origin, then run check again");
+  } else {
+    const behind = git("rev-list", "--count", "HEAD..origin/main");
+    if (behind !== null) line(behind === "0", `${behind} commit(s) on origin/main are not in this branch (as of the last fetch)`, "git fetch origin && git rebase origin/main, then run the gates again");
+  }
   // The way back (docs/RELEASE.md, "If it goes wrong"): the commit the push
   // replaces, written down before the push, and still origin/main.
   const backPath = `${dir(want)}/RELEASE.md`;
