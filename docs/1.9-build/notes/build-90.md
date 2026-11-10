@@ -60,3 +60,13 @@ Planned (brainstorm, nothing built until his start):
 4. **For testers only, the reason in plain words.** In Testers mode a small line under the sentence says which wait failed ("the phone did not answer", "Google gave no address", "the website said no"), so his next note names the cause and nobody has to guess from here. Readers never see it.
 5. **The proof, on the phone walk (row 19, Android).** Signed in: the questions' step turns reminders on and its cards appear. Then a test reminder to his devices is watched arriving as a banner. Only then does Android turn to yes in `lib/onboarding/reminderPromise.ts`, and the account card may say its line there. If it turns on and nothing arrives, that is F-21, and the offer on Android is hidden until it is mended, as recommended to the arbiter.
 6. **Held by:** unit tests that the step settles inside its limits when the phone never answers, and that a reader with no account is never drawn the button; the walk of the export run here, kept as a script, for both sets of questions; `checkMock` on any screen that changes.
+
+### 3. The councils' Fathers: their pictures missing, or not framed right (2026-11-10)
+
+What he saw: on an Ecumenical Council's page (the Second Council of Nicaea), under "The Holy Fathers principally associated", St Tarasius, St Irene and St Adrian show only a letter in a circle, and St John's icon is cut off-centre in its round frame (`build-90/03-council-fathers.png`). His words: "I noticed that in the ecumenical councils, the profile pictures of the Holy Fathers principally associated either don't show, or they do show and it's not framed correctly."
+
+Also in his screenshot: at the top, the way back's chevron stands on the small heading "Seventh Ecumenical Council" ("S<venth"), with no plate under it over the picture.
+
+Where it is: the faces for Updates 2 to find (note 3's covers and their faces; some come through the covers pack, which the live 1.8 website does not serve yet, so say which are a build 90 limit and which are real); the way back on the heading for Admin (the top plates of note 15).
+
+Planned (brainstorm, nothing built until his start): every Father with an icon shows it, cut about the face and centred in its round frame, on every council page; a Father with no icon that passes our rules shows the house's plate, not a bare letter, or a related icon by the same rule as the borrowed covers; the way back stands on its plate, clear of the heading, on every page with a picture at its head. Held by a test and checkMock on the seven councils.
