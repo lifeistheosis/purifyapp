@@ -37,20 +37,11 @@
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 
-# ── SQLCipher, under @capacitor-community/sqlite ────────────────────────
-# The database's C library finds Java classes, fields and methods by name.
-# Version 4.10.0 ships a short list of them. The library has since widened
-# its own rules to the whole package, and these are those. The plugin's own
-# guide names the package SQLCipher used before; it is kept as well, in case
-# a version of the plugin goes back to it.
--keep,includedescriptorclasses class net.zetetic.database.** { *; }
--keep,includedescriptorclasses interface net.zetetic.database.** { *; }
--keepclasseswithmembernames class net.zetetic.database.** {
-    native <methods>;
-}
--dontwarn net.zetetic.database.**
--keep class net.sqlcipher.** { *; }
--dontwarn net.sqlcipher.**
+# ── SQLCipher: gone with @capacitor-community/sqlite (1.9) ──────────────
+# The plugin left the app with the on-device content layer switched off
+# (lib/content/storage/capacitorStore.ts says how to bring it back). Its keep
+# rules for net.zetetic.database.** and net.sqlcipher.** went with it; they
+# are in this file's history and must return with the plugin.
 
 # ── Gson, under com.auth0.android:jwtdecode (Sign in with Apple) ────────
 # Gson reads generic types at run time, and R8's full mode drops them unless

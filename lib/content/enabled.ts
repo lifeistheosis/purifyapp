@@ -26,7 +26,11 @@
  * To turn it on, a screen has to read through `useRepository()` first. Then
  * set this to true and the build ships the package again; the test will ask
  * for the size limits in lib/build/exportSize.ts to be raised to carry it.
- * A phone that installed 1.5 still holds the store it filled then. Nothing
- * here deletes it.
+ * The plugin the store runs on left the app in 1.9, so it has to come back
+ * first as well: lib/content/storage/capacitorStore.ts says how.
+ *
+ * A phone that installed 1.5 held the store it filled then, about 33 MB, until
+ * 1.9: the shells delete that file at start now (MainActivity.java,
+ * AppDelegate.swift), since no screen ever read it.
  */
 export const LOCAL_CONTENT_ENABLED = false;

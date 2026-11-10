@@ -7,7 +7,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        // The on-device content store of 1.5 (lib/content): about 33 MB that
+        // every phone which installed 1.5 still held, for a layer switched off
+        // on 2026-10-12 and read by no screen. The plugin that made it left the
+        // app in 1.9, so the shell removes the file itself, with the two files
+        // SQLite keeps beside it. The plugin kept it in Documents. Removing a
+        // file that is not there throws, and that is every start after the
+        // first, so each failure is let go. The name is
+        // lib/content/storage/capacitorStore.ts, DEVICE_DB_FILE;
+        // lib/content/__tests__/pluginOut.test.ts holds the two together.
+        if let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            for name in ["purify_contentSQLite.db", "purify_contentSQLite.db-wal", "purify_contentSQLite.db-shm"] {
+                try? FileManager.default.removeItem(at: documents.appendingPathComponent(name))
+            }
+        }
         return true
     }
 

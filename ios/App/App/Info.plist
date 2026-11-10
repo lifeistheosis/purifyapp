@@ -42,10 +42,10 @@
 		</dict>
 	</array>
 	<!-- Pre-answers the export-compliance question so TestFlight builds are
-	     not held on every upload. @capacitor-community/sqlite links SQLCipher,
-	     but lib/content/storage/capacitorStore.ts opens every database with
-	     "no-encryption", so the app uses no non-exempt encryption. Revisit
-	     this if the content store is ever opened with a passphrase. -->
+	     not held on every upload. The app links no SQLCipher since 1.9
+	     (@capacitor-community/sqlite left with the on-device content layer
+	     off) and uses no non-exempt encryption. Revisit this if that plugin
+	     returns and the content store is ever opened with a passphrase. -->
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>

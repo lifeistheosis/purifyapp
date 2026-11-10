@@ -43,6 +43,19 @@ public class MainActivity extends BridgeActivity {
         // the bridge starts, as Capacitor asks of a plugin that lives in the app.
         registerPlugin(WidgetBridgePlugin.class);
         super.onCreate(savedInstanceState);
+        // The on-device content store of 1.5 (lib/content): about 33 MB that
+        // every phone which installed 1.5 still held, for a layer switched off
+        // on 2026-10-12 and read by no screen. The plugin that made it left
+        // the app in 1.9, so the shell removes the file itself. deleteDatabase
+        // takes the journal files with it, and answers false, doing nothing,
+        // when there is no such database, which is every start after the first.
+        // The name is lib/content/storage/capacitorStore.ts, DEVICE_DB_FILE;
+        // lib/content/__tests__/pluginOut.test.ts holds the two together.
+        try {
+            deleteDatabase("purify_contentSQLite.db");
+        } catch (RuntimeException ignored) {
+            // A store that cannot be removed is left where it was.
+        }
         holdPortraitOnPhones(getResources().getConfiguration());
         // Required by @capacitor-community/safe-area so the system reports
         // correct safe-area insets under Android's forced edge-to-edge mode.

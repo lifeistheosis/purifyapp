@@ -1,7 +1,20 @@
-// @capacitor-community/sqlite ContentStore — the device backend. Validated on
+// @capacitor-community/sqlite ContentStore: the device backend. Validated on
 // an Android build (a later milestone), not in the node test suite. Everything
 // is lazy-imported so neither the web bundle nor the node tests load the plugin
 // merely by importing this module.
+//
+// THE PLUGIN IS NOT INSTALLED since 1.9. The layer has been off since
+// 2026-10-12 (lib/content/enabled.ts), and the plugin still put SQLCipher in
+// every app: 5.0 MB installed and 2.2 MB of download on an arm64 phone
+// (docs/1.9-build/notes/optimization-fable.md, item 6). The code here is kept
+// as it was built. The import below names the package through a constant, so
+// a build does not look for a package that is not there; it would fail at run
+// time, and nothing runs it while the layer is off. To turn the layer on
+// again: `npm install @capacitor-community/sqlite`, put the literal import
+// back, and restore the SQLCipher keep rules in android/app/proguard-rules.pro
+// (git history, the commit that took them out). The store a 1.5 phone filled
+// is deleted by the shells themselves now (MainActivity.java, AppDelegate.swift),
+// under the file name DEVICE_DB_FILE below.
 
 import type { ContentStore, SqlParams } from "./types";
 
@@ -57,10 +70,17 @@ class CapacitorStore implements ContentStore {
  * applied by the caller (importPackage / ensureSchema) so this stays a thin
  * connection factory.
  */
+/** The database's name, as the plugin is asked for it. */
+export const DEVICE_DB_NAME = "purify_content";
+/** The file the plugin keeps it in, on both platforms: it adds this ending. */
+export const DEVICE_DB_FILE = `${DEVICE_DB_NAME}SQLite.db`;
+
+const SQLITE_PLUGIN = "@capacitor-community/sqlite";
+
 export async function openCapacitorStore(
-  dbName = "purify_content",
+  dbName = DEVICE_DB_NAME,
 ): Promise<ContentStore> {
-  const mod = (await import("@capacitor-community/sqlite")) as unknown as {
+  const mod = (await import(/* webpackIgnore: true */ /* turbopackIgnore: true */ SQLITE_PLUGIN)) as unknown as {
     CapacitorSQLite: unknown;
     SQLiteConnection: new (plugin: unknown) => {
       createConnection(
