@@ -379,6 +379,7 @@ function AddPictureSheet({ open, campaignId, onClose, onAdded }: { open: boolean
           {t("campaigns.pictureShows")} <span className="font-normal text-paper/70">({t("common.optional")})</span>
         </label>
         <input
+          dir="auto"
           id="campaign-picture-alt"
           type="text"
           value={alt}

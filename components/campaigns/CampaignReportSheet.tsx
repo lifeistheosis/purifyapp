@@ -80,6 +80,7 @@ export function CampaignReportSheet({
           <span className="font-normal text-paper/70">({t("common.optional")})</span>
         </label>
         <textarea
+          dir="auto"
           id="campaign-report-words"
           value={words}
           onChange={(e) => setWords(e.target.value)}

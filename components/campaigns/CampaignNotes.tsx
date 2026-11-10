@@ -114,6 +114,7 @@ function NoteField({ campaignId, kind, onSent }: { campaignId: string; kind: Not
           {label}
         </label>
         <textarea
+          dir="auto"
           id={fieldId}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}

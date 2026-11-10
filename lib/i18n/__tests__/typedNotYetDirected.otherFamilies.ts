@@ -23,9 +23,4 @@ export const OTHER_FAMILIES: Record<string, number> = {
   "components/shop/threadParts.tsx": 1,
   "components/support/ContactForm.tsx": 3,
   "components/walkthrough/Synthesis.tsx": 1,
-  // The campaigns chat's.
-  "components/campaigns/CampaignNotes.tsx": 1,
-  "components/campaigns/CampaignPictures.tsx": 1,
-  "components/campaigns/CampaignReportSheet.tsx": 1,
-  "components/campaigns/StartCampaign.tsx": 3,
 };

@@ -297,6 +297,7 @@ export function StartCampaign() {
                     {t("journal.page.title")}
                   </label>
                   <input
+                    dir="auto"
                     id="campaign-title-field"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
@@ -310,6 +311,7 @@ export function StartCampaign() {
                     {t("prayers.diptychs.name")}
                   </label>
                   <input
+                    dir="auto"
                     id="campaign-name-field"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -327,6 +329,7 @@ export function StartCampaign() {
                     {t("campaigns.new.words")}
                   </label>
                   <textarea
+                    dir="auto"
                     id="campaign-words-field"
                     value={words}
                     onChange={(e) => setWords(e.target.value)}
