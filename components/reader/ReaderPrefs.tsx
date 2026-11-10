@@ -281,9 +281,12 @@ export function useReaderPrefs(startSize?: ReaderSize): Ctx {
    * silently undo a frame later.
    */
   const cycleTheme = useCallback((allows?: (t: ReadingTheme) => boolean) => {
-    const ids = READING_THEMES.map((t) => t.id).filter(
-      (id) => !allows || allows(id),
-    );
+    // The looks (1.9) are chosen on their own page, eighteen of them: a tap
+    // on the bar steps through the palettes it always has, and from a look
+    // it steps back to the first.
+    const ids = READING_THEMES.filter((t) => !t.look)
+      .map((t) => t.id)
+      .filter((id) => !allows || allows(id));
     if (ids.length === 0) return;
     const cur = readPrefs().theme;
     const at = ids.indexOf(cur);

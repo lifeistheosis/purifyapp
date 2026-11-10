@@ -15,6 +15,8 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { READING_THEMES } from "@/lib/reader/readingModes";
+
 const CSS = readFileSync(join(process.cwd(), "app", "globals.css"), "utf8");
 
 type Rgb = { r: number; g: number; b: number; a: number };
@@ -229,6 +231,60 @@ describe("liturgical surface palette", () => {
       it("clears its WCAG threshold on every pair", () => {
         for (const [label, fg, bg, min] of pairs(palette(id))) {
           expect(Number(contrast(fg, bg).toFixed(2)), `${id}: ${label}`).toBeGreaterThanOrEqual(min);
+        }
+      });
+    });
+  }
+});
+
+// The looks (1.9). A look is worn as data-look on the html element, over Dark
+// (no data-reading-mode) or over Light (data-reading-mode="parchment" beside
+// it), so its liturgical surfaces start from Dark's tokens or from Light's and
+// its own block says what it changes. The list is the registry's, so a look
+// added there is held here the day it is added.
+describe("liturgical surface palette on the looks", () => {
+  const LOOKS = READING_THEMES.filter((theme) => theme.look);
+  const LIGHT_LIT = rules('html[data-reading-mode="parchment"] .lit-surface');
+
+  function look(id: string, kind: "dark" | "light"): Palette {
+    const own = rules(`html[data-look="${id}"]`);
+    const lit = rules(`html[data-look="${id}"] .lit-surface`);
+    return {
+      page: color(own, "--color-night"),
+      card: color(own, "--color-night-soft"),
+      // Dark remaps the surfaces' ink to Alabaster; a dark look sets it back
+      // to its own, in its own block, which stands later in the file.
+      paper: color(kind === "dark" ? lit : own, "--color-paper"),
+      lit: kind === "dark" ? { ...BASE_LIT, ...lit } : { ...BASE_LIT, ...LIGHT_LIT, ...lit },
+    };
+  }
+
+  it("are the registry's eighteen, nine on Dark and nine on Light", () => {
+    expect(LOOKS.length).toBe(18);
+    expect(LOOKS.filter((theme) => theme.look === "dark").length).toBe(9);
+  });
+
+  it("a dark look's surfaces wear its own ink, and a light look leaves the ink to its token", () => {
+    for (const theme of LOOKS) {
+      const own = rules(`html[data-look="${theme.id}"]`);
+      const lit = rules(`html[data-look="${theme.id}"] .lit-surface`);
+      if (theme.look === "dark") expect(lit["--color-paper"], theme.id).toBe(own["--color-paper"]);
+      else expect(lit["--color-paper"], theme.id).toBeUndefined();
+    }
+  });
+
+  it("a look's block stands after Dark's and Light's, so it wins where they meet", () => {
+    const last = Math.max(BARE.lastIndexOf("html:not([data-reading-mode]) .lit-surface"), BARE.lastIndexOf('html[data-reading-mode="parchment"] .lit-surface'));
+    for (const theme of LOOKS) {
+      expect(BARE.indexOf(`html[data-look="${theme.id}"] .lit-surface`), theme.id).toBeGreaterThan(last);
+    }
+  });
+
+  for (const theme of LOOKS) {
+    describe(theme.id, () => {
+      it("clears its WCAG threshold on every pair", () => {
+        for (const [label, fg, bg, min] of pairs(look(theme.id, theme.look ?? "dark"))) {
+          expect(Number(contrast(fg, bg).toFixed(2)), `${theme.id}: ${label}`).toBeGreaterThanOrEqual(min);
         }
       });
     });

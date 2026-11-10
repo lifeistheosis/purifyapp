@@ -20,6 +20,8 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { READING_THEMES } from "@/lib/reader/readingModes";
+
 const read = (rel: string) => readFileSync(join(process.cwd(), rel), "utf8");
 const CSS = read("app/globals.css");
 const BARE = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
@@ -87,9 +89,20 @@ function drawnPlaceholder(mode: Mode, share: number): number {
   return m ? Number(m[1]) : share;
 }
 
+/**
+ * The base layer's block that holds the default placeholder: the one that
+ * opens with it. It was the last base-layer block in the file until the looks
+ * (1.9) added one each after it, for their own default.
+ */
+const DEFAULT_BLOCK = (() => {
+  const m = /@layer base \{\s*::placeholder \{/.exec(BARE);
+  if (!m) throw new Error("no base placeholder default");
+  return `\n${BARE.slice(m.index, BARE.indexOf("\n}", m.index))}`;
+})();
+
 /** The share the base layer's default draws a field's placeholder at, on a palette. */
 function drawnDefault(mode: Mode): number {
-  const base = BARE.slice(BARE.lastIndexOf("@layer base {"));
+  const base = DEFAULT_BLOCK;
   const own = mode === "default" ? null : new RegExp(`:where\\(html\\[data-reading-mode="${mode}"\\]\\) ::placeholder \\{\\s*color: color-mix\\(in oklab, var\\(--color-paper\\) (\\d+)%`).exec(base);
   if (own) return Number(own[1]);
   const all = /\n ::placeholder \{\s*color: color-mix\(in oklab, var\(--color-paper\) (\d+)%/.exec(base);
@@ -159,8 +172,7 @@ describe("placeholders, on every palette", () => {
   });
 
   it("a field with no placeholder colour of its own takes the base layer's default, which passes the same way", () => {
-    const base = CSS.slice(CSS.lastIndexOf("@layer base {"));
-    expect(base).toMatch(/@layer base \{\s*::placeholder \{/);
+    expect(DEFAULT_BLOCK).toMatch(/@layer base \{\s*::placeholder \{/);
     expect([drawnDefault("default"), drawnDefault("parchment"), drawnDefault("candlelight")]).toEqual([55, 70, 60]);
     const short = shortOf(drawnDefault, "the default placeholder");
     expect(short, short.join("\n")).toEqual([]);
@@ -178,6 +190,59 @@ describe("placeholders, on every palette", () => {
     ] as const) {
       expect(theme).toContain(`--adm-ink-3: ${ink};`);
       for (const ground of grounds) expect(ratio(hex(ink), hex(ground)), `${ink} on ${ground}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+});
+
+// The looks (1.9): each worn as data-look over Dark or over Light, each with
+// its own share for a field's hint, written twice as the palettes' are: once
+// for placeholder:text-paper/55 in the utilities layer, once for a field with
+// no colour of its own in the base layer. Both stand after Dark's and
+// Light's, so they are what a reader wearing the look sees.
+describe("placeholders, on every look", () => {
+  const LOOKS = READING_THEMES.filter((theme) => theme.look).map((theme) => theme.id as string);
+  const shareOf = (look: string, selector: string): number => {
+    const m = new RegExp(`:where\\(html\\[data-look="${look}"\\]\\) ${selector} \\{\\s*color: color-mix\\(in oklab, var\\(--color-paper\\) (\\d+)%`).exec(BARE);
+    if (!m) throw new Error(`${look}: no rule for ${selector}`);
+    return Number(m[1]);
+  };
+  const own = (look: string, name: string): Rgb => {
+    const raw = token(`html[data-look="${look}"]`, name);
+    if (!raw) throw new Error(`${look}: no ${name}`);
+    return hex(raw);
+  };
+
+  it("each look draws a field's hint at one share, with or without a colour of its own, at 4.5:1 or more on every ground a field sits on", () => {
+    expect(LOOKS.length).toBe(18);
+    const short: string[] = [];
+    for (const look of LOOKS) {
+      const classed = shareOf(look, "\\.placeholder\\\\:text-paper\\\\\\/55::placeholder");
+      const plain = shareOf(look, "::placeholder");
+      expect(plain, look).toBe(classed);
+      const night = own(look, "--color-night");
+      const soft = own(look, "--color-night-soft");
+      const paper = own(look, "--color-paper");
+      const grounds: [string, Rgb][] = [
+        ["the page", night],
+        ["a card", soft],
+        ...FILLS.flatMap((a): [string, Rgb][] => [
+          [`a ${Math.round(a * 100)}% field on the page`, mix(paper, night, a)],
+          [`a ${Math.round(a * 100)}% field on a card`, mix(paper, soft, a)],
+        ]),
+      ];
+      for (const [where, ground] of grounds) {
+        const r = ratio(mix(paper, ground, classed / 100), ground);
+        if (r < 4.5) short.push(`${look}: a placeholder at ${classed}% on ${where}: ${r.toFixed(2)}:1`);
+      }
+    }
+    expect(short, short.join("\n")).toEqual([]);
+  });
+
+  it("each look's default sits in the base layer, so a field's own placeholder class still wins", () => {
+    for (const look of LOOKS) {
+      const at = BARE.indexOf(`:where(html[data-look="${look}"]) ::placeholder {`);
+      expect(at, look).toBeGreaterThan(0);
+      expect(BARE.lastIndexOf("@layer base {", at), look).toBeGreaterThan(BARE.lastIndexOf("@layer utilities {", at));
     }
   });
 });

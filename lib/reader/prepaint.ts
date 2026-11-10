@@ -8,6 +8,9 @@
 // palette added to the registry cannot be forgotten here. "default" is not
 // listed because it is the absence of the attribute.
 //
+// A look (1.9) is not in that list: it has two of its own below, by what it
+// is worn over.
+//
 // Applying is optimistic. The script cannot consult entitlements (they are
 // async and it runs before paint), so it applies whatever the device stored
 // and components/theme/AppThemeController.tsx corrects it a frame later when
@@ -23,6 +26,12 @@ export const PREPAINT_THEME_IDS: readonly string[] = [
   "cappadocian",
 ];
 
+// The looks (1.9), by what each is worn over: `data-look` alone over Dark,
+// and over Light with Light's own mode beside it (themeAttributes in
+// lib/reader/readingModes.ts, which the test holds these two lists to).
+export const PREPAINT_LOOKS_DARK: readonly string[] = ["nightsky", "dawn", "fire", "incense", "athos", "forest", "galilee", "mosaic", "damask"];
+export const PREPAINT_LOOKS_LIGHT: readonly string[] = ["desert", "jordan", "patmos", "blush", "rose", "lavender", "olive", "stone", "linen"];
+
 /** The storage key, mirrored from lib/reader/readingModes.ts as a literal. */
 const KEY = "purify.reader.theme";
 /** Candlelight at Vespers (1.9), mirrored from lib/reader/vespers.ts: the switch, and the night's two moments. */
@@ -37,7 +46,13 @@ export const THEME_PREPAINT = [
   `if(localStorage.getItem('${VESPERS}')==='1'){`,
   `var w=(localStorage.getItem('${VESPERS_WINDOW}')||'').split(','),n=Date.now();`,
   "if(w.length===2&&n>=+w[0]&&n<+w[1])t='candlelight';}",
+  "var d=document.documentElement;",
   `if(t&&${JSON.stringify(PREPAINT_THEME_IDS)}.indexOf(t)>-1){`,
-  "document.documentElement.setAttribute('data-reading-mode',t);}",
+  "d.setAttribute('data-reading-mode',t);}",
+  // A look: itself over Dark, or over Light with Light's mode beside it.
+  `else if(t&&${JSON.stringify(PREPAINT_LOOKS_DARK)}.indexOf(t)>-1){`,
+  "d.setAttribute('data-look',t);}",
+  `else if(t&&${JSON.stringify(PREPAINT_LOOKS_LIGHT)}.indexOf(t)>-1){`,
+  "d.setAttribute('data-reading-mode','parchment');d.setAttribute('data-look',t);}",
   "}catch(e){}})();",
 ].join("");

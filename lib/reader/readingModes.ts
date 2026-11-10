@@ -22,7 +22,44 @@ export type ReadingTheme =
   // data/catechism/collections.json. Paid like Candlelight and Monastery;
   // shown in the chips only once the collection is complete.
   | "councils"
-  | "cappadocian";
+  | "cappadocian"
+  // The looks (1.9): eighteen Plus themes in four families. A look is worn
+  // over Dark or over Light as a second attribute, `data-look`, so every rule
+  // the app has for those two palettes still answers (themeAttributes below).
+  | "nightsky"
+  | "dawn"
+  | "fire"
+  | "incense"
+  | "athos"
+  | "forest"
+  | "desert"
+  | "jordan"
+  | "galilee"
+  | "patmos"
+  | "blush"
+  | "rose"
+  | "lavender"
+  | "olive"
+  | "mosaic"
+  | "stone"
+  | "damask"
+  | "linen";
+
+/** The four families the looks are shelved in (the picker, components/settings/ReadingModeGallery.tsx). */
+export type ThemeFamily = "night" | "land" | "garden" | "sanctuary";
+
+export const THEME_FAMILIES: {
+  id: ThemeFamily;
+  label: string;
+  line: string;
+  labelKey: string;
+  lineKey: string;
+}[] = [
+  { id: "night", label: "Night", line: "The hours of the dark, and what lights them", labelKey: "settings.familyNight", lineKey: "settings.familyNightLine" },
+  { id: "land", label: "Land and sea", line: "The places the Church has prayed in", labelKey: "settings.familyLand", lineKey: "settings.familyLandLine" },
+  { id: "garden", label: "Garden", line: "Paper and flowers", labelKey: "settings.familyGarden", lineKey: "settings.familyGardenLine" },
+  { id: "sanctuary", label: "Sanctuary", line: "What the hands of the Church have made", labelKey: "settings.familySanctuary", lineKey: "settings.familySanctuaryLine" },
+];
 
 export const READING_THEME_KEY = "purify.reader.theme";
 
@@ -53,6 +90,14 @@ export const READING_THEMES: {
    * advertise palettes a reader has no path to yet.
    */
   collection?: true;
+  /**
+   * A look (1.9): a Plus theme with a sign of its own, shelved under this
+   * family in the picker. Candlelight and Monastery are shelved too, so the
+   * picker has every palette; they are palettes of their own, not looks.
+   */
+  family?: ThemeFamily;
+  /** A look, and what it is worn over: Dark, or Light (whose rules it then keeps). */
+  look?: "dark" | "light";
 }[] = [
   {
     id: "default",
@@ -87,6 +132,7 @@ export const READING_THEMES: {
     blurb: "Black and light grey, late-hour reading",
     labelKey: "settings.paletteCandlelight",
     blurbKey: "settings.paletteCandlelightHint",
+    family: "night",
   },
   {
     id: "monastery",
@@ -94,6 +140,178 @@ export const READING_THEMES: {
     blurb: "Cool stone and quiet indigo",
     labelKey: "settings.paletteMonastery",
     blurbKey: "settings.paletteMonasteryHint",
+    family: "sanctuary",
+  },
+  // The looks (1.9, docs/1.9-build/notes/themes-fable.md, "The third set"):
+  // Plus, like the two above. Each is one calm page and one sign: a still
+  // picture at the foot of the screen, or the rule at a page's head. Six carry
+  // the names of the quote picture looks they are painted from
+  // (lib/share/verseCard.ts, QUOTE_LOOKS), already in every catalog. Adding
+  // one: its entry here, its id in the ReadingTheme union and in
+  // lib/reader/prepaint.ts, its block in app/globals.css under
+  // html[data-look="<id>"], its small page (.set-mode-page[data-palette]),
+  // and its words in the catalogs.
+  {
+    id: "nightsky",
+    label: "Night sky",
+    blurb: "A still night, small stars, the star above",
+    labelKey: "settings.paletteNightSky",
+    blurbKey: "settings.paletteNightSkyHint",
+    family: "night",
+    look: "dark",
+  },
+  {
+    id: "dawn",
+    label: "Dawn",
+    blurb: "The last of the night, and the light coming up",
+    labelKey: "picture.look.dawn",
+    blurbKey: "settings.paletteDawnHint",
+    family: "night",
+    look: "dark",
+  },
+  {
+    id: "fire",
+    label: "Fire",
+    blurb: "Flames at the foot of the page, embers rising in the dark",
+    labelKey: "picture.look.fire",
+    blurbKey: "settings.paletteFireHint",
+    family: "night",
+    look: "dark",
+  },
+  {
+    id: "incense",
+    label: "Incense",
+    blurb: "The evening's smoke, rising slowly",
+    labelKey: "settings.paletteIncense",
+    blurbKey: "settings.paletteIncenseHint",
+    family: "night",
+    look: "dark",
+  },
+  {
+    id: "athos",
+    label: "Holy Mountain",
+    blurb: "The peak of Athos over the sea at dusk",
+    labelKey: "settings.paletteHolyMountain",
+    blurbKey: "settings.paletteHolyMountainHint",
+    family: "land",
+    look: "dark",
+  },
+  {
+    id: "forest",
+    label: "Forest",
+    blurb: "The firs of the north, mist between them",
+    labelKey: "settings.paletteForest",
+    blurbKey: "settings.paletteForestHint",
+    family: "land",
+    look: "dark",
+  },
+  {
+    id: "desert",
+    label: "Desert",
+    blurb: "The dunes of the Fathers in the last light",
+    labelKey: "settings.paletteDesert",
+    blurbKey: "settings.paletteDesertHint",
+    family: "land",
+    look: "light",
+  },
+  {
+    id: "jordan",
+    label: "Jordan",
+    blurb: "Still water, and the rings going out over it",
+    labelKey: "settings.paletteJordan",
+    blurbKey: "settings.paletteJordanHint",
+    family: "land",
+    look: "light",
+  },
+  {
+    id: "galilee",
+    label: "Galilee",
+    blurb: "The sea by night, and the light lying on the water",
+    labelKey: "settings.paletteGalilee",
+    blurbKey: "settings.paletteGalileeHint",
+    family: "land",
+    look: "dark",
+  },
+  {
+    id: "patmos",
+    label: "Patmos",
+    blurb: "A white wall, and the sea beyond it",
+    labelKey: "settings.palettePatmos",
+    blurbKey: "settings.palettePatmosHint",
+    family: "land",
+    look: "light",
+  },
+  {
+    id: "blush",
+    label: "Blush",
+    blurb: "Pink paper, a bloom of rose low on the page",
+    labelKey: "picture.look.blush",
+    blurbKey: "settings.paletteBlushHint",
+    family: "garden",
+    look: "light",
+  },
+  {
+    id: "rose",
+    label: "Roses",
+    blurb: "Cream paper and Redouté's roses",
+    labelKey: "picture.look.rose",
+    blurbKey: "settings.paletteRosesHint",
+    family: "garden",
+    look: "light",
+  },
+  {
+    id: "lavender",
+    label: "Lavender",
+    blurb: "Lilac paper and sprigs of lavender",
+    labelKey: "picture.look.lavender",
+    blurbKey: "settings.paletteLavenderHint",
+    family: "garden",
+    look: "light",
+  },
+  {
+    id: "olive",
+    label: "Olive",
+    blurb: "Pale green paper and a branch of olive",
+    labelKey: "picture.look.olive",
+    blurbKey: "settings.paletteOliveHint",
+    family: "garden",
+    look: "light",
+  },
+  {
+    id: "mosaic",
+    label: "Mosaic",
+    blurb: "Lapis, and a wall of tesserae",
+    labelKey: "settings.paletteMosaic",
+    blurbKey: "settings.paletteMosaicHint",
+    family: "sanctuary",
+    look: "dark",
+  },
+  {
+    id: "stone",
+    label: "Stone",
+    blurb: "The foot of a monastery wall",
+    labelKey: "settings.paletteStone",
+    blurbKey: "settings.paletteStoneHint",
+    family: "sanctuary",
+    look: "light",
+  },
+  {
+    id: "damask",
+    label: "Damask",
+    blurb: "Wine-red cloth, its own weave a step lighter",
+    labelKey: "settings.paletteDamask",
+    blurbKey: "settings.paletteDamaskHint",
+    family: "sanctuary",
+    look: "dark",
+  },
+  {
+    id: "linen",
+    label: "Linen",
+    blurb: "White cloth, embroidered in red",
+    labelKey: "settings.paletteLinen",
+    blurbKey: "settings.paletteLinenHint",
+    family: "sanctuary",
+    look: "light",
   },
   // Collection palettes. Adding one: a token block in app/globals.css under
   // html[data-reading-mode="<id>"], the id in the ReadingTheme union above, an
@@ -156,6 +374,31 @@ export const COLLECTION_THEME_IDS: ReadonlySet<string> = new Set(
 
 export function isCollectionTheme(theme: string): boolean {
   return COLLECTION_THEME_IDS.has(theme);
+}
+
+/** Is this a look: a Plus theme of 1.9, worn over Dark or over Light? */
+export function isLook(theme: string): boolean {
+  return READING_THEMES.some((t) => t.id === theme && t.look !== undefined);
+}
+
+/**
+ * What a palette puts on <html>. The palettes the app has always had are
+ * their own `data-reading-mode` (Dark is its absence). A look is `data-look`
+ * over Dark, or over Light with Light's own mode beside it, so the two
+ * hundred rules written for Light answer every light look unchanged.
+ * components/theme/AppThemeController.tsx writes these, and the pre-paint
+ * script (lib/reader/prepaint.ts) the same from its own literal lists.
+ */
+export function themeAttributes(theme: ReadingTheme): { mode: string | null; look: string | null } {
+  const entry = READING_THEMES.find((t) => t.id === theme);
+  if (entry?.look) return { mode: entry.look === "light" ? "parchment" : null, look: theme };
+  return { mode: theme === "default" ? null : theme, look: null };
+}
+
+/** The palettes of one family, in the order the picker shelves them: its looks, then a palette the app had before them. */
+export function themesOfFamily(family: ThemeFamily): (typeof READING_THEMES)[number][] {
+  const mine = READING_THEMES.filter((t) => t.family === family);
+  return [...mine.filter((t) => t.look), ...mine.filter((t) => !t.look)];
 }
 
 /** The label a reader sees for a palette id, or the id when unknown. */

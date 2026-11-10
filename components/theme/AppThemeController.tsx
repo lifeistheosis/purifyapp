@@ -26,8 +26,10 @@ import type { Night } from "@/lib/calendar/sun";
 import {
   READING_THEME_KEY,
   coerceReadingTheme,
+  themeAttributes,
 } from "@/lib/reader/readingModes";
 import { keepWindow, nightHolds, nightNow, readWindow, vespersOn, vespersTheme } from "@/lib/reader/vespers";
+import { canMove } from "@/lib/ui/routeMotion";
 
 /** The longest the controller sleeps before it looks at the night again. */
 const LOOK_AGAIN_MS = 6 * 3_600_000;
@@ -51,8 +53,18 @@ export function AppThemeController() {
   const reckoning = useRef(false);
   // The latest apply, for the clock and the reckoning to call when they come due.
   const latest = useRef<() => void>(() => {});
+  // What this controller last put on the page, so a change can be told from
+  // the first apply after a load.
+  const worn = useRef<{ mode: string | null; look: string | null } | null>(null);
 
-  const apply = useCallback(() => {
+  /**
+   * `chosen` is true when a reader has just changed a setting on this screen
+   * (the event ReaderPrefs broadcasts): a palette that changes then arrives
+   * as a cross-fade. Every other apply (the first after a load, the gate's
+   * answer, the clock at sunset, a phone waking) lands at once, as it always
+   * has.
+   */
+  const apply = useCallback((chosen = false) => {
     const el = document.documentElement;
     let raw: string | null = null;
     try {
@@ -87,8 +99,33 @@ export function AppThemeController() {
     const held = on && nightHolds(night.current, now) ? night.current : null;
     const wanted = vespersTheme(stored, on, held);
     const theme = allows(wanted) ? wanted : allows(stored) ? stored : "default";
-    if (theme === "default") el.removeAttribute("data-reading-mode");
-    else el.setAttribute("data-reading-mode", theme);
+    // A palette is its own mode; a look (1.9) is worn over Dark or over Light.
+    const { mode, look } = themeAttributes(theme);
+    const wear = () => {
+      if (mode) el.setAttribute("data-reading-mode", mode);
+      else el.removeAttribute("data-reading-mode");
+      if (look) el.setAttribute("data-look", look);
+      else el.removeAttribute("data-look");
+    };
+    // A palette a reader has just picked arrives the way the reader's focus
+    // does (1.9, the brief for the reading modes' page: "a tap applies it
+    // with the house's motion"): the screen as it was and the screen as it
+    // is are pictured, and the two cross-fade on the house curve ("View
+    // Transition tuning", app/globals.css). Nothing travels, so nothing is
+    // mirrored in Arabic. With motion off, or on a phone with no View
+    // Transitions, canMove() says no and the palette lands at once.
+    const before = worn.current;
+    worn.current = { mode, look };
+    const changed = before !== null && (before.mode !== mode || before.look !== look);
+    if (chosen && changed && canMove()) {
+      try {
+        const moving = document as Document & { startViewTransition: (update: () => void) => { ready: Promise<unknown> } };
+        // A skipped transition still runs the update; only its promise is refused.
+        moving.startViewTransition(wear).ready.catch(() => {});
+      } catch {
+        wear();
+      }
+    } else wear();
     // At sunset or sunrise, look again.
     if (held) {
       const wait = (held.now ? held.end : held.start) - now;
@@ -108,12 +145,17 @@ export function AppThemeController() {
     const onVisible = () => {
       if (document.visibilityState === "visible") apply();
     };
-    window.addEventListener(PREFS_EVENT, apply);
-    window.addEventListener("storage", apply);
+    // A setting changed on this screen: the one apply that may be pictured.
+    // Not the account's own writes (lib/sync/kept.ts marks them): a palette
+    // arriving from another device is not a tap.
+    const onPrefs = (event: Event) => apply((event as CustomEvent<{ source?: string } | null>).detail?.source !== "sync");
+    const onStorage = () => apply();
+    window.addEventListener(PREFS_EVENT, onPrefs);
+    window.addEventListener("storage", onStorage);
     document.addEventListener("visibilitychange", onVisible);
     return () => {
-      window.removeEventListener(PREFS_EVENT, apply);
-      window.removeEventListener("storage", apply);
+      window.removeEventListener(PREFS_EVENT, onPrefs);
+      window.removeEventListener("storage", onStorage);
       document.removeEventListener("visibilitychange", onVisible);
       if (turn.current !== null) window.clearTimeout(turn.current);
     };

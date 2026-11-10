@@ -11360,4 +11360,1076 @@ html[data-reading-mode="parchment"] .chant-version-dot {
   }
 }
 
+/* ── The looks (1.9) ───────────────────────────────────────────────────
+   Eighteen Plus themes in four families (lib/reader/readingModes.ts,
+   THEME_FAMILIES; docs/1.9-build/notes/themes-fable.md, "The third set"),
+   by the owner's words of 2026-11-10: "make a lot more designs", "clean and
+   unique".
 
+   A look is one calm page and one sign. The sign is a still picture at the
+   foot of the screen, or the rule at a page's head. No grain, no texture
+   laid over the page, nothing that moves, and no gold (the one flame is
+   Fire's own, in its picture).
+
+   A look is worn as data-look on <html>, over Dark or over Light
+   (components/theme/AppThemeController.tsx, themeAttributes). A light look
+   keeps data-reading-mode="parchment" beside it, so every rule written for
+   Light answers it unchanged, and this section only has to say what a look
+   changes. It stands last in the file on purpose: where one of its rules
+   meets one of Light's at the same weight, the later one wins.
+
+   The pictures are files in public/themes, made by
+   scripts/theme-pictures.mjs. A custom property that names one costs
+   nothing until a look that uses it is worn. */
+:root {
+ --sky-stars: url("/themes/nightsky-stars.svg");
+ --sky-horizon: url("/themes/nightsky-horizon.svg");
+ --room-dawn: url("/themes/dawn-room.webp");
+ --room-fire: url("/themes/fire-room.webp");
+ --scene-incense: url("/themes/incense.svg");
+ --scene-athos: url("/themes/athos.svg");
+ --scene-forest: url("/themes/forest.svg");
+ --scene-desert: url("/themes/desert.svg");
+ --scene-jordan: url("/themes/jordan.svg");
+ --scene-galilee: url("/themes/galilee.svg");
+ --scene-patmos: url("/themes/patmos.svg");
+ --room-blush: url("/themes/blush-room.webp");
+ --room-rose: url("/themes/rose-room.webp");
+ --head-rose: url("/themes/rose-head.webp");
+ --room-lavender: url("/themes/lavender-room.webp");
+ --head-lavender: url("/themes/lavender-head.webp");
+ --room-olive: url("/themes/olive-room.webp");
+ --head-olive: url("/themes/olive-head.webp");
+ --scene-mosaic: url("/themes/mosaic.svg");
+ --scene-stone: url("/themes/stone.svg");
+ --scene-damask: url("/themes/damask.svg");
+ --rule-mosaic: url("/themes/mosaic-rule.svg");
+ --rule-linen: url("/themes/linen-rule.svg");
+ --head-linen: url("/themes/linen-head.svg");
+}
+
+/* A room: one still picture under the page, held to the foot of the screen.
+   The html element paints the page colour, so the body steps aside for it.
+   Nothing in it moves and nothing is blended, so it costs one paint. What a
+   picture puts behind the words has to carry the look's faintest text
+   anywhere above its foot: scripts/scene-check.mjs measures each picture on
+   its own, and Dawn's sunrise and Incense's plume were brought down by it. */
+html[data-look] body {
+ background-color: transparent;
+}
+html[data-look] body::before {
+ content: "";
+ position: fixed;
+ inset: 0;
+ z-index: -1;
+ pointer-events: none;
+ background: var(--room, none);
+}
+
+/* The page lets its room through. A page's own sections repeat the page
+   colour (the html element already paints it), and under a look that would
+   cover the room, so inside the page (the shell's main, and Today's own
+   shell beside it) they stand clear. What is its own
+   surface keeps its fill: a bar that stays in place, a scrim, a rounded
+   well or field, a label set over a line, a set piece that is dark by
+   design, a cell of a grid whose lines are its own ground showing between
+   the cells (a heresy's claim beside the Church's answer).
+   scripts/room-walk.mjs walks every screen of the export to hold this to
+   what is really drawn. */
+html[data-look] :is(main, body > .safe-pt) .bg-night:not(.sticky, .fixed, .absolute, .inline-block, .dark-island, [class*="rounded"], .gap-px > *),
+html[data-look] body > .bg-night.min-h-screen {
+ background-color: transparent;
+}
+
+/* A foot: the same picture once more, over the page's last lines and under
+   the bars, so the words go quiet into the scene the way they go quiet under
+   the reader's dock. It is measured from the foot of the screen, so it keeps
+   its place under the bars on any phone, and it comes in by an eased share.
+   The dock's own fade steps aside for it. Night sky has stars and no foot;
+   Linen's sign is its rule. */
+html[data-look]:not([data-look="nightsky"], [data-look="linen"]) body::after {
+ --foot-lift: env(safe-area-inset-bottom, 0px);
+ --foot-rise: calc(var(--foot-clear) - var(--foot-solid));
+ content: "";
+ position: fixed;
+ inset: 0;
+ z-index: 35;
+ pointer-events: none;
+ background: var(--room);
+ -webkit-mask-image: linear-gradient(to top, #000 calc(var(--foot-lift) + var(--foot-solid)), rgb(0 0 0 / 0.56) calc(var(--foot-lift) + var(--foot-solid) + var(--foot-rise) * 0.25), rgb(0 0 0 / 0.25) calc(var(--foot-lift) + var(--foot-solid) + var(--foot-rise) * 0.5), rgb(0 0 0 / 0.06) calc(var(--foot-lift) + var(--foot-solid) + var(--foot-rise) * 0.75), transparent calc(var(--foot-lift) + var(--foot-clear)));
+ mask-image: linear-gradient(to top, #000 calc(var(--foot-lift) + var(--foot-solid)), rgb(0 0 0 / 0.56) calc(var(--foot-lift) + var(--foot-solid) + var(--foot-rise) * 0.25), rgb(0 0 0 / 0.25) calc(var(--foot-lift) + var(--foot-solid) + var(--foot-rise) * 0.5), rgb(0 0 0 / 0.06) calc(var(--foot-lift) + var(--foot-solid) + var(--foot-rise) * 0.75), transparent calc(var(--foot-lift) + var(--foot-clear)));
+}
+html[data-look]:not([data-look="nightsky"], [data-look="linen"]) .pill-fade {
+ background-image: none;
+}
+
+/* On a wide screen (a tablet on its side, the website on a computer) a look
+   keeps its colours and the sign at a chapter's head, and its picture at the
+   foot stands down: the pictures are drawn for a phone's width, and stretched
+   they would be another picture. Night sky's stars fill any screen. */
+@media (min-width: 768px) {
+ html[data-look]:not([data-look="nightsky"]) body::before,
+ html[data-look] body::after {
+  display: none;
+ }
+ html[data-look]:not([data-look="nightsky"], [data-look="linen"]) .pill-fade {
+  background-image: linear-gradient(to bottom, transparent, var(--color-night) 72%);
+ }
+}
+
+/* The cards and bands the app draws with a literal (the lm-* classes, as
+   True black and Light re-ink them): each look's own. */
+html[data-look] :is(.lm-card, .lm-violet, .lm-gold) {
+ background: var(--surface-card) !important;
+}
+html[data-look] :is(.lm-feature, .lm-avatar) {
+ background: var(--surface-band) !important;
+}
+html[data-look] .lm-hero {
+ background: transparent !important;
+}
+
+/* A light look on Light's rules. Light's own surfaces are paper typed in as
+   cream; under a look each is the look's own paper, mixed from its tokens,
+   so no cream is left on a pink, a lilac or a white page. */
+html[data-look][data-reading-mode="parchment"] {
+ --look-paper-high: color-mix(in oklab, var(--color-night) 42%, #ffffff);
+ --look-paper-low: var(--color-night-soft);
+}
+html[data-look][data-reading-mode="parchment"] .lm-band {
+ background: var(--color-night-soft) !important;
+}
+html[data-look][data-reading-mode="parchment"] .set-panel {
+ background:
+  radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.55) 0%, transparent 55%),
+  linear-gradient(155deg, var(--look-paper-high) 0%, color-mix(in oklab, var(--color-night) 70%, #ffffff) 60%, var(--color-night) 100%);
+ box-shadow:
+  inset 0 1px 0 rgb(255 255 255 / 0.7),
+  inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 8%, transparent),
+  0 12px 28px -18px color-mix(in srgb, var(--color-paper) 45%, transparent);
+}
+html[data-look][data-reading-mode="parchment"] :is(.rule-med-disc:not([data-add]), .tour-mark, .set-btn, .set-switch-knob, .shop-knob) {
+ background: linear-gradient(180deg, var(--look-paper-high), var(--look-paper-low));
+}
+html[data-look][data-reading-mode="parchment"] :is(.community-half-thumb, .community-tray::after) {
+ background-color: var(--look-paper-high);
+}
+html[data-look][data-reading-mode="parchment"] .community-tray::after {
+ background-color: var(--look-paper-high);
+}
+html[data-look][data-reading-mode="parchment"] .community-campaign {
+ background: linear-gradient(155deg, var(--look-paper-high) 0%, var(--look-paper-low) 100%);
+}
+html[data-look][data-reading-mode="parchment"] .community-head-shade {
+ background: linear-gradient(to bottom, color-mix(in srgb, var(--color-night) 82%, transparent) 0%, color-mix(in srgb, var(--color-night) 74%, transparent) 40%, color-mix(in srgb, var(--color-night) 90%, transparent) 70%, var(--color-night) 96%);
+}
+
+/* Theology's picture plates throw a shadow made for the dark, black at nine
+   tenths, and on a light page it darkens the first line of the name under
+   each plate: 4.2:1 to 4.5:1 on three light looks, by the pixels. A look
+   throws it in its own ink, soft, as its cards do. The plate in hand keeps
+   Light's own rule, a ring and no shadow. */
+html[data-look][data-reading-mode="parchment"] .path-plate:not([data-state="current"]) {
+ box-shadow:
+  inset 0 1px 0 rgb(255 255 255 / 0.5),
+  0 12px 20px -14px color-mix(in srgb, var(--color-paper) 55%, transparent),
+  0 1px 3px color-mix(in srgb, var(--color-paper) 18%, transparent);
+}
+
+/* Settings' quiet words (its hints, its lines, a track's unlit choices) on a
+   dark look, at the share that holds 4.5:1 on its page and its panels, as
+   Candlelight has its own. A light look takes Light's. */
+html[data-look]:not([data-reading-mode]) :is(.set-hint, .set-desc, .set-sub, .set-track > button[aria-checked="false"]:not(:hover)) {
+ color: color-mix(in srgb, var(--color-paper) var(--look-quiet), transparent);
+}
+
+/* A light look's accent, where the app writes it at a share for words
+   (text-gold/65 to /80, text-gold-pale/70): a look's accent is a colour, the
+   wine of Roses or the green of Olive, lighter than the graphite Light keeps
+   in its place, and under 85 percent it would fall below 4.5:1 on the page.
+   So a look draws those at the share that holds it. The fainter shares (/35
+   to /55) are ornaments, hidden from a screen reader, and stay as written.
+   lib/ui/__tests__/faintText.test.ts does the sums. */
+@layer utilities {
+ :where(html[data-look][data-reading-mode="parchment"]) :is(.text-gold\/65, .text-gold\/70, .text-gold\/75, .text-gold\/80) {
+  color: color-mix(in oklab, var(--color-gold) 85%, transparent);
+ }
+ :where(html[data-look][data-reading-mode="parchment"]) .text-gold-pale\/70 {
+  color: color-mix(in oklab, var(--color-gold-pale) 80%, transparent);
+ }
+}
+
+/* Each look: its tokens, its cards, its picture, its foot, the liturgical
+   surfaces in its own ink (lib/ui/__tests__/litPalette.test.ts), and the
+   share its faint text is drawn at ("Faint text on every palette", above).
+   Every share the app writes from 40 to 60 percent is named, the odd ones
+   too (42, 48, 52, 56, 58), so none slips between two rules. A light look
+   draws every share under 70 percent at that one share (Light leaves 62 to
+   68 as written, which its darker ink can carry), and its ink is dark
+   enough that Light's own 70 percent holds 4.5:1 on its page, its cards and
+   a 4 percent box, so Light's rules need no second copy. Mosaic, whose
+   bands are the lightest of the dark looks, lifts 62 and 65 as well.
+   lib/ui/__tests__/faintText.test.ts reads every share written in app/ and
+   components/ and does the sums for each look. */
+html[data-look="nightsky"] {
+ --color-night: #05070d;
+ --color-night-soft: #0f1420;
+ --color-night-deep: #020308;
+ --color-paper: #edf0f6;
+ --color-gold: #f3f5f9;
+ --color-gold-soft: #c5cddb;
+ --color-gold-pale: #fbfcfe;
+ --color-festal: #f3f5f9;
+ --look-quiet: 64%;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #141a2a 0%, #0d1220 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #1a2236 0%, #111827 100%);
+ --room:
+  linear-gradient(180deg, transparent 76%, #05070d 89%),
+  var(--sky-stars) center top / cover no-repeat,
+  radial-gradient(140% 52% at 50% 112%, rgb(72 100 168 / 0.2), rgb(72 100 168 / 0) 66%),
+  linear-gradient(180deg, #03050a 0%, #05070d 40%, #070b14 100%);
+}
+
+html[data-look="nightsky"] .lit-surface {
+ --color-paper: #edf0f6;
+ --lit-muted: rgb(237 240 246 / 0.6);
+ --lit-line: rgb(237 240 246 / 0.4);
+}
+
+@layer utilities {
+ :where(html[data-look="nightsky"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
+  color: color-mix(in oklab, var(--color-paper) 60%, transparent);
+ }
+ :where(html[data-look="nightsky"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 60%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="nightsky"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 60%, transparent);
+ }
+}
+
+html[data-look="dawn"] {
+ --color-night: #080a1e;
+ --color-night-soft: #151938;
+ --color-night-deep: #05061a;
+ --color-paper: #f2eff8;
+ --color-gold: #f7f3fc;
+ --color-gold-soft: #cbc2df;
+ --color-gold-pale: #fcfaff;
+ --color-festal: #f6c5cc;
+ --ink-rubric: 244 170 180;
+ --look-quiet: 64%;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #1a1f42 0%, #10142e 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #21274f 0%, #151938 100%);
+ --room: var(--room-dawn) center bottom / cover no-repeat;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="dawn"] .lit-surface {
+ --color-paper: #f2eff8;
+ --lit-muted: rgb(242 239 248 / 0.6);
+ --lit-line: rgb(242 239 248 / 0.4);
+}
+
+@layer utilities {
+ :where(html[data-look="dawn"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+ :where(html[data-look="dawn"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="dawn"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+
+html[data-look="fire"] {
+ --color-night: #040301;
+ --color-night-soft: #1a110c;
+ --color-night-deep: #000000;
+ --color-paper: #fff1e4;
+ --color-gold: #fff6ea;
+ --color-gold-soft: #dcc3b2;
+ --color-gold-pale: #fffaf3;
+ --color-festal: #ffd9c2;
+ --ink-rubric: 255 150 120;
+ --look-quiet: 64%;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #1f140e 0%, #140c08 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #281a12 0%, #1a110c 100%);
+ --room: var(--room-fire) center bottom / cover no-repeat;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="fire"] .lit-surface {
+ --color-paper: #fff1e4;
+ --lit-muted: rgb(255 241 228 / 0.6);
+ --lit-line: rgb(255 241 228 / 0.4);
+}
+
+@layer utilities {
+ :where(html[data-look="fire"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
+  color: color-mix(in oklab, var(--color-paper) 60%, transparent);
+ }
+ :where(html[data-look="fire"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 60%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="fire"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 60%, transparent);
+ }
+}
+
+html[data-look="incense"] {
+ --color-night: #17141d;
+ --color-night-soft: #221e2a;
+ --color-night-deep: #0f0d14;
+ --color-paper: #f1eef7;
+ --color-gold: #f8f5fd;
+ --color-gold-soft: #c4bcd8;
+ --color-gold-pale: #fdfcff;
+ --color-festal: #e3d9f7;
+ --ink-rubric: 255 160 150;
+ --color-comment: #ff8a7d;
+ --color-comment-hover: #ffa89c;
+ --look-quiet: 64%;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #2a2534 0%, #1c1924 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #322c3e 0%, #24202d 100%);
+ --room: var(--scene-incense) center bottom / 100% auto no-repeat, #17141d;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="incense"] .lit-surface {
+ --color-paper: #f1eef7;
+ --lit-muted: rgb(241 238 247 / 0.6);
+ --lit-line: rgb(241 238 247 / 0.4);
+}
+
+@layer utilities {
+ :where(html[data-look="incense"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+ :where(html[data-look="incense"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="incense"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+
+html[data-look="athos"] {
+ --color-night: #0e1420;
+ --color-night-soft: #182031;
+ --color-night-deep: #090d16;
+ --color-paper: #edf1f8;
+ --color-gold: #f6f8fd;
+ --color-gold-soft: #b8c3dc;
+ --color-gold-pale: #fcfdff;
+ --color-festal: #d6e0f8;
+ --ink-rubric: 255 165 150;
+ --color-comment: #ff8a7d;
+ --color-comment-hover: #ffa89c;
+ --look-quiet: 64%;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #1f283c 0%, #141b2b 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #273147 0%, #1a2233 100%);
+ --room: var(--scene-athos) center bottom / 100% auto no-repeat, #0e1420;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="athos"] .lit-surface {
+ --color-paper: #edf1f8;
+ --lit-muted: rgb(237 241 248 / 0.6);
+ --lit-line: rgb(237 241 248 / 0.4);
+}
+
+@layer utilities {
+ :where(html[data-look="athos"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+ :where(html[data-look="athos"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="athos"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+
+html[data-look="forest"] {
+ --color-night: #0b1711;
+ --color-night-soft: #14231b;
+ --color-night-deep: #060f0b;
+ --color-paper: #edf5ef;
+ --color-gold: #f5faf6;
+ --color-gold-soft: #b4cbbd;
+ --color-gold-pale: #fbfefc;
+ --color-festal: #cfe9d9;
+ --ink-rubric: 255 165 150;
+ --color-comment: #ff8a7d;
+ --color-comment-hover: #ffa89c;
+ --look-quiet: 64%;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #1b2d23 0%, #122019 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #22372b 0%, #16261d 100%);
+ --room: var(--scene-forest) center bottom / 100% auto no-repeat, #0b1711;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="forest"] .lit-surface {
+ --color-paper: #edf5ef;
+ --lit-muted: rgb(237 245 239 / 0.6);
+ --lit-line: rgb(237 245 239 / 0.4);
+}
+
+@layer utilities {
+ :where(html[data-look="forest"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+ :where(html[data-look="forest"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="forest"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+
+html[data-look="desert"] {
+ --color-night: #efe2d9;
+ --color-night-soft: #ead9ce;
+ --color-night-deep: #e2cdbf;
+ --color-paper: #361f17;
+ --color-gold: #6f2c16;
+ --color-gold-soft: #864630;
+ --color-gold-pale: #5e2410;
+ --color-festal: #6f2c16;
+ --ink-rubric: 150 40 32;
+ --color-comment: #a3202a;
+ --color-comment-hover: #861824;
+ --color-on-paper: #efe2d9;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.7) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #fbf5f0 0%, #f5e9e1 60%, #eedbd0 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #e9d5c8 0%, #e0c7b8 100%);
+ --room: var(--scene-desert) center bottom / 100% auto no-repeat, #efe2d9;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="desert"] .lm-card {
+ --tw-shadow: 0 12px 28px -18px rgb(54 31 23 / 0.4);
+}
+
+html[data-look="desert"] .lit-surface {
+ --lit-on-fast: #361f17;
+ --lit-muted: rgb(54 31 23 / 0.7);
+ --lit-line: rgb(54 31 23 / 0.55);
+}
+
+@layer utilities {
+ :where(html[data-look="desert"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68) {
+  color: color-mix(in oklab, var(--color-paper) 80%, transparent);
+ }
+ :where(html[data-look="desert"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 80%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="desert"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 80%, transparent);
+ }
+}
+
+html[data-look="jordan"] {
+ --color-night: #e4efed;
+ --color-night-soft: #d6e6e3;
+ --color-night-deep: #cbdfdc;
+ --color-paper: #132e36;
+ --color-gold: #13525a;
+ --color-gold-soft: #2a5a62;
+ --color-gold-pale: #0e464f;
+ --color-festal: #13525a;
+ --ink-rubric: 150 40 32;
+ --color-on-paper: #e4efed;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.7) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #f8fcfb 0%, #eef6f4 60%, #e2efec 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #d9e9e6 0%, #cde1dd 100%);
+ --room: var(--scene-jordan) center bottom / 100% auto no-repeat, #e4efed;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="jordan"] .lm-card {
+ --tw-shadow: 0 12px 28px -18px rgb(19 46 54 / 0.4);
+}
+
+html[data-look="jordan"] .lit-surface {
+ --lit-on-fast: #132e36;
+ --lit-muted: rgb(19 46 54 / 0.7);
+ --lit-line: rgb(19 46 54 / 0.55);
+}
+
+@layer utilities {
+ :where(html[data-look="jordan"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68) {
+  color: color-mix(in oklab, var(--color-paper) 78%, transparent);
+ }
+ :where(html[data-look="jordan"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 78%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="jordan"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 78%, transparent);
+ }
+}
+
+html[data-look="galilee"] {
+ --color-night: #06181d;
+ --color-night-soft: #0c2228;
+ --color-night-deep: #031014;
+ --color-paper: #eaf6f6;
+ --color-gold: #f4fbfb;
+ --color-gold-soft: #a9cdd0;
+ --color-gold-pale: #fbffff;
+ --color-festal: #c5eef0;
+ --ink-rubric: 255 165 150;
+ --color-comment: #ff8a7d;
+ --color-comment-hover: #ffa89c;
+ --look-quiet: 64%;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #143037 0%, #0c2228 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #1a3a42 0%, #10292f 100%);
+ --room: var(--scene-galilee) center bottom / 100% auto no-repeat, #06181d;
+ --foot-solid: 134px;
+ --foot-clear: 244px;
+}
+
+html[data-look="galilee"] .lit-surface {
+ --color-paper: #eaf6f6;
+ --lit-muted: rgb(234 246 246 / 0.6);
+ --lit-line: rgb(234 246 246 / 0.4);
+}
+
+@layer utilities {
+ :where(html[data-look="galilee"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+ :where(html[data-look="galilee"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="galilee"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+
+html[data-look="patmos"] {
+ --color-night: #f7f7f5;
+ --color-night-soft: #ecedf0;
+ --color-night-deep: #e3e5ea;
+ --color-paper: #18202e;
+ --color-gold: #1c4aa6;
+ --color-gold-soft: #2f4f8f;
+ --color-gold-pale: #153a85;
+ --color-festal: #1c4aa6;
+ --ink-rubric: 150 40 32;
+ --color-on-paper: #f7f7f5;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.7) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #ffffff 0%, #f8f9fb 60%, #eff1f5 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #e9ecf2 0%, #dfe3ec 100%);
+ --room: var(--scene-patmos) center bottom / 100% auto no-repeat, #f7f7f5;
+ --foot-solid: 134px;
+ --foot-clear: 244px;
+}
+
+html[data-look="patmos"] .lm-card {
+ --tw-shadow: 0 12px 28px -18px rgb(24 32 46 / 0.4);
+}
+
+html[data-look="patmos"] .lit-surface {
+ --lit-on-fast: #18202e;
+ --lit-muted: rgb(24 32 46 / 0.7);
+ --lit-line: rgb(24 32 46 / 0.55);
+}
+
+@layer utilities {
+ :where(html[data-look="patmos"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68) {
+  color: color-mix(in oklab, var(--color-paper) 74%, transparent);
+ }
+ :where(html[data-look="patmos"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 74%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="patmos"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 74%, transparent);
+ }
+}
+
+html[data-look="blush"] {
+ --color-night: #efe8e8;
+ --color-night-soft: #f0d9dd;
+ --color-night-deep: #ecd5d9;
+ --color-paper: #3d202b;
+ --color-gold: #842544;
+ --color-gold-soft: #96385f;
+ --color-gold-pale: #6f1c3a;
+ --color-festal: #842544;
+ --ink-rubric: 150 40 32;
+ --color-comment: #a3202a;
+ --color-comment-hover: #861824;
+ --color-on-paper: #efe8e8;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.7) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #fffafa 0%, #fbeff1 60%, #f6e4e8 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #f3dde1 0%, #ecd0d6 100%);
+ --room: var(--room-blush) center bottom / cover no-repeat;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="blush"] .lm-card {
+ --tw-shadow: 0 12px 28px -18px rgb(61 32 43 / 0.4);
+}
+
+html[data-look="blush"] .lit-surface {
+ --lit-on-fast: #3d202b;
+ --lit-muted: rgb(61 32 43 / 0.74);
+ --lit-line: rgb(61 32 43 / 0.58);
+}
+
+@layer utilities {
+ :where(html[data-look="blush"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68) {
+  color: color-mix(in oklab, var(--color-paper) 78%, transparent);
+ }
+ :where(html[data-look="blush"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 78%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="blush"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 78%, transparent);
+ }
+}
+
+html[data-look="rose"] {
+ --color-night: #eceae4;
+ --color-night-soft: #e8dfcf;
+ --color-night-deep: #e5dccb;
+ --color-paper: #392327;
+ --color-gold: #91213e;
+ --color-gold-soft: #8a2a40;
+ --color-gold-pale: #7a1c36;
+ --color-festal: #91213e;
+ --ink-rubric: 150 40 32;
+ --color-comment: #a3202a;
+ --color-comment-hover: #861824;
+ --color-on-paper: #eceae4;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.7) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #fdfaf4 0%, #f8f2e7 60%, #f2eadc 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #ebe2d2 0%, #e3d8c5 100%);
+ --room: var(--room-rose) center bottom / cover no-repeat;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="rose"] .lm-card {
+ --tw-shadow: 0 12px 28px -18px rgb(57 35 39 / 0.4);
+}
+
+html[data-look="rose"] .lit-surface {
+ --lit-on-fast: #392327;
+ --lit-muted: rgb(57 35 39 / 0.7);
+ --lit-line: rgb(57 35 39 / 0.55);
+}
+
+@layer utilities {
+ :where(html[data-look="rose"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68) {
+  color: color-mix(in oklab, var(--color-paper) 76%, transparent);
+ }
+ :where(html[data-look="rose"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 76%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="rose"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 76%, transparent);
+ }
+}
+
+html[data-look="lavender"] {
+ --color-night: #e9e6eb;
+ --color-night-soft: #e1d9ed;
+ --color-night-deep: #dad0e8;
+ --color-paper: #2c233c;
+ --color-gold: #523982;
+ --color-gold-soft: #5b4683;
+ --color-gold-pale: #432e6e;
+ --color-festal: #523982;
+ --ink-rubric: 150 40 32;
+ --color-on-paper: #e9e6eb;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.7) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #fbf9fd 0%, #f3eef8 60%, #ebe3f3 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #e1d8ee 0%, #d8cde8 100%);
+ --room: var(--room-lavender) center bottom / cover no-repeat;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="lavender"] .lm-card {
+ --tw-shadow: 0 12px 28px -18px rgb(44 35 60 / 0.4);
+}
+
+html[data-look="lavender"] .lit-surface {
+ --lit-on-fast: #2c233c;
+ --lit-muted: rgb(44 35 60 / 0.7);
+ --lit-line: rgb(44 35 60 / 0.55);
+}
+
+@layer utilities {
+ :where(html[data-look="lavender"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68) {
+  color: color-mix(in oklab, var(--color-paper) 76%, transparent);
+ }
+ :where(html[data-look="lavender"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 76%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="lavender"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 76%, transparent);
+ }
+}
+
+html[data-look="olive"] {
+ --color-night: #e7e6df;
+ --color-night-soft: #dddcc9;
+ --color-night-deep: #d8d7c2;
+ --color-paper: #24281a;
+ --color-gold: #3e4a1e;
+ --color-gold-soft: #48511f;
+ --color-gold-pale: #343d17;
+ --color-festal: #3e4a1e;
+ --ink-rubric: 150 40 32;
+ --color-on-paper: #e7e6df;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.7) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #fafaf3 0%, #f2f1e6 60%, #eae9d9 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #e0dfcc 0%, #d6d5bf 100%);
+ --room: var(--room-olive) center bottom / cover no-repeat;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="olive"] .lm-card {
+ --tw-shadow: 0 12px 28px -18px rgb(36 40 26 / 0.4);
+}
+
+html[data-look="olive"] .lit-surface {
+ --lit-on-fast: #24281a;
+ --lit-muted: rgb(36 40 26 / 0.74);
+ --lit-line: rgb(36 40 26 / 0.58);
+}
+
+@layer utilities {
+ :where(html[data-look="olive"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68) {
+  color: color-mix(in oklab, var(--color-paper) 78%, transparent);
+ }
+ :where(html[data-look="olive"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 78%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="olive"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 78%, transparent);
+ }
+}
+
+html[data-look="mosaic"] {
+ --color-night: #0d1c40;
+ --color-night-soft: #182b58;
+ --color-night-deep: #08142f;
+ --color-paper: #eef3fd;
+ --color-gold: #f7f9ff;
+ --color-gold-soft: #b7c7ea;
+ --color-gold-pale: #fcfdff;
+ --color-festal: #cfe0ff;
+ --ink-rubric: 255 175 160;
+ --color-comment: #ff8a7d;
+ --color-comment-hover: #ffa89c;
+ --color-streak: #ff7a70;
+ --look-quiet: 66%;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #1d3263 0%, #13244c 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #243b70 0%, #182b58 100%);
+ --room: var(--scene-mosaic) center bottom / 100% auto no-repeat, #0d1c40;
+ --foot-solid: 146px;
+ --foot-clear: 246px;
+}
+
+html[data-look="mosaic"] .lit-surface {
+ --color-paper: #eef3fd;
+ --lit-fast-accent: #a996e6;
+ --lit-fast-border: rgb(169 150 230 / 0.85);
+ --lit-muted: rgb(238 243 253 / 0.6);
+ --lit-line: rgb(238 243 253 / 0.4);
+}
+
+@layer utilities {
+ :where(html[data-look="mosaic"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65) {
+  color: color-mix(in oklab, var(--color-paper) 66%, transparent);
+ }
+ :where(html[data-look="mosaic"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 66%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="mosaic"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 66%, transparent);
+ }
+}
+
+html[data-look="stone"] {
+ --color-night: #e3e0d9;
+ --color-night-soft: #d8d4cb;
+ --color-night-deep: #cfcbc1;
+ --color-paper: #25231f;
+ --color-gold: #3a3833;
+ --color-gold-soft: #55524a;
+ --color-gold-pale: #2a2824;
+ --color-festal: #3a3833;
+ --ink-rubric: 150 40 32;
+ --color-comment: #a3202a;
+ --color-comment-hover: #861824;
+ --color-streak: #a01f18;
+ --color-sage-soft: #285a4a;
+ --color-on-paper: #e3e0d9;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.7) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #f4f2ee 0%, #ebe9e3 60%, #e2dfd8 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #dbd8d0 0%, #d1cdc3 100%);
+ --room: var(--scene-stone) center bottom / 100% auto no-repeat, #e3e0d9;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="stone"] .lm-card {
+ --tw-shadow: 0 12px 28px -18px rgb(37 35 31 / 0.4);
+}
+
+html[data-look="stone"] .lit-surface {
+ --lit-on-fast: #25231f;
+ --lit-muted: rgb(37 35 31 / 0.7);
+ --lit-line: rgb(37 35 31 / 0.55);
+}
+
+@layer utilities {
+ :where(html[data-look="stone"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68) {
+  color: color-mix(in oklab, var(--color-paper) 78%, transparent);
+ }
+ :where(html[data-look="stone"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 78%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="stone"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 78%, transparent);
+ }
+}
+
+html[data-look="damask"] {
+ --color-night: #240b14;
+ --color-night-soft: #351523;
+ --color-night-deep: #17060c;
+ --color-paper: #f9eef1;
+ --color-gold: #fdf6f8;
+ --color-gold-soft: #dcbcc6;
+ --color-gold-pale: #fffafb;
+ --color-festal: #f6cfd9;
+ --ink-rubric: 255 175 155;
+ --color-comment: #ff8a7d;
+ --color-comment-hover: #ffa89c;
+ --look-quiet: 64%;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #3c1a29 0%, #2a101c 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #462031 0%, #361624 100%);
+ --room: var(--scene-damask) center bottom / 100% auto no-repeat, #240b14;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="damask"] .lit-surface {
+ --color-paper: #f9eef1;
+ --lit-muted: rgb(249 238 241 / 0.6);
+ --lit-line: rgb(249 238 241 / 0.4);
+}
+
+@layer utilities {
+ :where(html[data-look="damask"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
+  color: color-mix(in oklab, var(--color-paper) 64%, transparent);
+ }
+ :where(html[data-look="damask"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 64%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="damask"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 64%, transparent);
+ }
+}
+
+html[data-look="linen"] {
+ --color-night: #f6f4ef;
+ --color-night-soft: #ebe8e1;
+ --color-night-deep: #e3dfd6;
+ --color-paper: #1f1b1a;
+ --color-gold: #a31c29;
+ --color-gold-soft: #8f2a33;
+ --color-gold-pale: #8c1522;
+ --color-festal: #a31c29;
+ --ink-rubric: 150 40 32;
+ --color-on-paper: #f6f4ef;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.7) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #ffffff 0%, #faf8f4 60%, #f1eee8 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #ebe7df 0%, #e2ddd3 100%);
+}
+
+html[data-look="linen"] .lm-card {
+ --tw-shadow: 0 12px 28px -18px rgb(31 27 26 / 0.4);
+}
+
+html[data-look="linen"] .lit-surface {
+ --lit-on-fast: #1f1b1a;
+ --lit-muted: rgb(31 27 26 / 0.7);
+ --lit-line: rgb(31 27 26 / 0.55);
+}
+
+@layer utilities {
+ :where(html[data-look="linen"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68) {
+  color: color-mix(in oklab, var(--color-paper) 72%, transparent);
+ }
+ :where(html[data-look="linen"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 72%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="linen"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 72%, transparent);
+ }
+}
+
+/* Each look's own rules: what stands in the place of the short rule at a
+   chapter's head, and Linen's rule under a page's bar. */
+/* The star over the horizon, in the place of the short rule at a chapter's
+   head: the Nativity card's own star, halo and lit edge. It leaves with the
+   heading as the chapter scrolls, so no word ever lies over it. */
+html[data-look="nightsky"] .page-open-rule {
+ width: min(300px, 88%);
+ height: 64px;
+ margin-top: 2px;
+ background: var(--sky-horizon) center / 100% 100% no-repeat;
+}
+html[data-look="nightsky"][dir="rtl"] .page-open-rule {
+ transform: scaleX(-1);
+}
+
+/* The rule at a chapter's head is an ember: a hairline of the flame's own
+   light with a soft glow round it. A pool, not a ray. */
+html[data-look="fire"] .page-open-rule {
+ width: 132px;
+ background: linear-gradient(90deg, rgb(255 150 100 / 0), rgb(255 190 150 / 0.9) 50%, rgb(255 150 100 / 0));
+ box-shadow: 0 0 16px 1px rgb(255 110 50 / 0.45);
+}
+
+/* The flower's plate at the head of a chapter, in the place of the short rule
+   (docs/licensing/SHARE_FLOWERS.md), its white paper taken out. It leaves
+   with the heading as the chapter scrolls, so no word lies over it. */
+html[data-look="rose"] .page-open-rule {
+ width: 100%;
+ max-width: 348px;
+ height: 132px;
+ margin-top: 6px;
+ background: var(--head-rose) center / contain no-repeat;
+}
+
+/* The flower's plate at the head of a chapter, in the place of the short rule
+   (docs/licensing/SHARE_FLOWERS.md), its white paper taken out. It leaves
+   with the heading as the chapter scrolls, so no word lies over it. */
+html[data-look="lavender"] .page-open-rule {
+ width: 100%;
+ max-width: 348px;
+ height: 132px;
+ margin-top: 6px;
+ background: var(--head-lavender) center / contain no-repeat;
+}
+
+/* The flower's plate at the head of a chapter, in the place of the short rule
+   (docs/licensing/SHARE_FLOWERS.md), its white paper taken out. It leaves
+   with the heading as the chapter scrolls, so no word lies over it. */
+html[data-look="olive"] .page-open-rule {
+ width: 100%;
+ max-width: 348px;
+ height: 132px;
+ margin-top: 6px;
+ background: var(--head-olive) center / contain no-repeat;
+}
+
+/* The rule at a chapter's head is a row of the same tesserae. */
+html[data-look="mosaic"] .page-open-rule {
+ width: 112px;
+ height: 10px;
+ background: var(--rule-mosaic) center / 112px 10px no-repeat;
+}
+
+/* Linen's sign is its rule. Under a page's bar the hairline is a row of cross
+   stitches, and at a chapter's head the short rule is a stitched diamond. */
+html[data-look="linen"] .tab-topbar {
+ border-bottom-color: transparent;
+}
+html[data-look="linen"] .tab-topbar::after {
+ content: "";
+ position: absolute;
+ inset-inline: 0;
+ bottom: -4px;
+ height: 7px;
+ pointer-events: none;
+ background: var(--rule-linen) center / 8px 7px repeat-x;
+}
+html[data-look="linen"] .page-open-rule {
+ width: 168px;
+ height: 52px;
+ margin-top: 14px;
+ background: var(--head-linen) center / 168px 52px no-repeat;
+}

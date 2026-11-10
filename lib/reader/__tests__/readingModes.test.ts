@@ -27,9 +27,13 @@ import {
   FREE_THEMES,
   READING_THEMES,
   READING_THEME_KEY,
+  THEME_FAMILIES,
   coerceReadingTheme,
   isCollectionTheme,
   isFreeTheme,
+  isLook,
+  themeAttributes,
+  themesOfFamily,
   type ReadingTheme,
 } from "@/lib/reader/readingModes";
 
@@ -47,7 +51,10 @@ describe("READING_THEMES", () => {
     // Collection palettes (v1.4) are filtered out here: they sit after the
     // five and are shown only once their collection is complete, so they do
     // not change what a reader meets first.
-    expect(READING_THEMES.filter((t) => !t.collection).map((t) => t.id)).toEqual([
+    //
+    // The looks (1.9) are filtered out too: eighteen Plus themes chosen on a
+    // page of their own, held by "the looks" below.
+    expect(READING_THEMES.filter((t) => !t.collection && !t.look).map((t) => t.id)).toEqual([
       "default",
       "parchment",
       "black",
@@ -166,5 +173,96 @@ describe("the free palettes", () => {
       ...ids.filter((id) => !isFreeTheme(id)).map((id) => ids.indexOf(id)),
     );
     expect(lastFree).toBeLessThan(firstPro);
+  });
+});
+
+// The looks (1.9): the owner's words of 2026-11-10, "make a lot more designs"
+// and "I want clean and unique". Eighteen Plus themes in four families, each
+// worn over Dark or over Light as a second attribute, so the rules written
+// for those two palettes answer every one of them
+// (docs/1.9-build/notes/themes-fable.md, "The third set").
+describe("the looks", () => {
+  const looks = READING_THEMES.filter((t) => t.look);
+
+  it("are the eighteen, in the order the picker shelves them, with ids that must not move", () => {
+    expect(looks.map((t) => t.id)).toEqual([
+      "nightsky",
+      "dawn",
+      "fire",
+      "incense",
+      "athos",
+      "forest",
+      "desert",
+      "jordan",
+      "galilee",
+      "patmos",
+      "blush",
+      "rose",
+      "lavender",
+      "olive",
+      "mosaic",
+      "stone",
+      "damask",
+      "linen",
+    ]);
+  });
+
+  it("are Purify Plus, every one: what Plus includes is the owner's to change, not a refactor's", () => {
+    for (const t of looks) {
+      expect(isFreeTheme(t.id), `${t.id} is a Plus theme`).toBe(false);
+      expect(isCollectionTheme(t.id), t.id).toBe(false);
+      expect(isLook(t.id), t.id).toBe(true);
+    }
+    for (const id of ["default", "parchment", "black", "candlelight", "monastery", "councils", "cappadocian", "sepia"]) expect(isLook(id), id).toBe(false);
+  });
+
+  it("are nine over Dark and nine over Light", () => {
+    expect(looks.filter((t) => t.look === "dark").map((t) => t.id)).toEqual(["nightsky", "dawn", "fire", "incense", "athos", "forest", "galilee", "mosaic", "damask"]);
+    expect(looks.filter((t) => t.look === "light").map((t) => t.id)).toEqual(["desert", "jordan", "patmos", "blush", "rose", "lavender", "olive", "stone", "linen"]);
+  });
+
+  it("put a look on the page as data-look, over Dark or over Light's own mode, and leave the old palettes as they were", () => {
+    expect(themeAttributes("default")).toEqual({ mode: null, look: null });
+    expect(themeAttributes("parchment")).toEqual({ mode: "parchment", look: null });
+    expect(themeAttributes("black")).toEqual({ mode: "black", look: null });
+    expect(themeAttributes("candlelight")).toEqual({ mode: "candlelight", look: null });
+    expect(themeAttributes("councils")).toEqual({ mode: "councils", look: null });
+    expect(themeAttributes("athos")).toEqual({ mode: null, look: "athos" });
+    expect(themeAttributes("nightsky")).toEqual({ mode: null, look: "nightsky" });
+    // A light look keeps Light's mode beside it, so Light's two hundred rules answer it.
+    expect(themeAttributes("rose")).toEqual({ mode: "parchment", look: "rose" });
+    expect(themeAttributes("linen")).toEqual({ mode: "parchment", look: "linen" });
+  });
+
+  it("stand in four families, each look in one, with Candlelight and Monastery shelved after the looks", () => {
+    expect(THEME_FAMILIES.map((f) => f.id)).toEqual(["night", "land", "garden", "sanctuary"]);
+    for (const t of looks) expect(THEME_FAMILIES.some((f) => f.id === t.family), `${t.id} has a family`).toBe(true);
+    expect(themesOfFamily("night").map((t) => t.id)).toEqual(["nightsky", "dawn", "fire", "incense", "candlelight"]);
+    expect(themesOfFamily("land").map((t) => t.id)).toEqual(["athos", "forest", "desert", "jordan", "galilee", "patmos"]);
+    expect(themesOfFamily("garden").map((t) => t.id)).toEqual(["blush", "rose", "lavender", "olive"]);
+    expect(themesOfFamily("sanctuary").map((t) => t.id)).toEqual(["mosaic", "stone", "damask", "linen", "monastery"]);
+    // Every palette is on a shelf of the picker but the free three and the two earned.
+    for (const t of READING_THEMES) expect(Boolean(t.family), t.id).toBe(!isFreeTheme(t.id) && !t.collection);
+  });
+
+  it("name six of them as the quote pictures name the looks they are painted from", () => {
+    const named = Object.fromEntries(looks.filter((t) => t.labelKey?.startsWith("picture.look.")).map((t) => [t.id, t.labelKey]));
+    expect(named).toEqual({
+      dawn: "picture.look.dawn",
+      fire: "picture.look.fire",
+      blush: "picture.look.blush",
+      rose: "picture.look.rose",
+      lavender: "picture.look.lavender",
+      olive: "picture.look.olive",
+    });
+  });
+
+  it("have a family name and a line with keys of their own, and no em dash", () => {
+    for (const f of THEME_FAMILIES) {
+      expect(f.label.length && f.line.length, f.id).toBeGreaterThan(0);
+      expect(f.labelKey).toMatch(/^settings\.family[A-Z]/);
+      expect(f.lineKey).toBe(`${f.labelKey}Line`);
+      expect(`${f.label}${f.line}`.includes("\u2014"), f.id).toBe(false);
+    }
   });
 });
