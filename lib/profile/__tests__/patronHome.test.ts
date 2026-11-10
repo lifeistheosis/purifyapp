@@ -7,7 +7,8 @@
 //
 // What it holds: the widget's address for the choice is the reader's own page
 // with the picker named (#patron), which that page draws and brings into view
-// once it has its list.
+// once it has its list; and Settings has a row of its own with the same
+// picker, in the calendar's section, whose reckoning a name day follows.
 //
 // What a reader would notice if this broke: a widget that asks for a saint and
 // a tap that leads nowhere to choose one.
@@ -34,5 +35,17 @@ describe("the patron saint's picker", () => {
     expect(picker).toContain("<section id={PATRON_ANCHOR}");
     expect(picker).toContain("window.location.hash !== `#${PATRON_ANCHOR}`");
     expect(picker).toMatch(/scrollIntoView\(\{ block: "center", behavior: prefersReducedMotion\(\) \? "auto" : "smooth" \}\)/);
+  });
+
+  it("has a row of its own in Settings, the same picker, in the calendar's section", () => {
+    const settings = read("components/settings/SettingsClient.tsx");
+    const calendar = settings.slice(settings.indexOf('<Section id="calendar"'), settings.indexOf("</Section>", settings.indexOf('<Section id="calendar"')));
+    expect(calendar).toContain("<PatronRow />");
+    const row = read("components/settings/PatronRow.tsx");
+    expect(row).toContain("usePatronChoice()");
+    expect(row).toContain("<PatronSelect choice={choice} />");
+    expect(row).toContain('label={t("patron.title")}');
+    // Saving from either place tells the widget at once (lib/profile/patronEvent.ts).
+    expect(read("components/profile/PatronSaintPicker.tsx")).toContain("announcePatron(next || null);");
   });
 });

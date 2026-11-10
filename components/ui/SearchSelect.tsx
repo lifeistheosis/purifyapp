@@ -278,7 +278,7 @@ export function SearchSelect<V extends string>({
         disabled={disabled}
         onClick={() => (open ? close() : openMenu())}
         onKeyDown={(e) => onKeys(e)}
-        className="flex w-full min-w-0 items-center gap-3 rounded-md border border-paper/20 bg-night px-3.5 py-2.5 text-left font-sans text-ui text-paper outline-none transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none hover:border-paper/40 focus-visible:border-paper/60 focus-visible:ring-2 focus-visible:ring-paper/25 disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex w-full min-w-0 items-center gap-3 rounded-md border border-paper/20 bg-night px-3.5 py-2.5 text-start font-sans text-ui text-paper outline-none transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none hover:border-paper/40 focus-visible:border-paper/60 focus-visible:ring-2 focus-visible:ring-paper/25 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <span className={"min-w-0 flex-1 truncate " + (selected ? "text-paper" : "text-paper/55")}>
           {selected ? selected.label : placeholder}

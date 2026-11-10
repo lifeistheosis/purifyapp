@@ -119,6 +119,7 @@ import { resolveUser } from "@/lib/supabase/resolveUser";
 
 import { FirstFocus, useOnboardedAgain } from "./FirstFocus";
 import { ButtonRow, LinkRow, Plate, Row, Section, Switch, Track } from "./LitPanel";
+import { PatronRow } from "./PatronRow";
 import { StorageSection } from "./StorageSection";
 import { ReaderSizeRow } from "./ReaderSize";
 import { ReadingModePages } from "./ReadingModePages";
@@ -610,6 +611,8 @@ function Body() {
             label={t("ui.calendarReckoning")}
           />
         </Row>
+        {/* The patron saint, whose name day the reckoning above decides (note 17). */}
+        <PatronRow />
       </Section>
 
       <MotionSection />
