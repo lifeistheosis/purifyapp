@@ -14,10 +14,11 @@
 // equal quarters, 22 words were cut in fourteen languages at 390 and 360
 // pixels (German lost three of four). Four parts are tight, so each part's
 // padding is 4 pixels a side, not 8: measured with the export's own fonts in
-// all twenty-one languages, every row then holds its words at 390 and 360
-// pixels. At 320, five still need more (German, Bulgarian, Filipino, Georgian
-// and Hungarian, by 9 to 39 pixels), and there the row scrolls inside its rim;
-// nothing is cut.
+// all twenty-one languages, every row then holds its words at 390, 360 and
+// 320 pixels. At 320 five needed shorter words for it, each measured in this
+// row (German Hergang and Sinn, Bulgarian Извори, Filipino Batis, Georgian
+// აზრი, Hungarian Jelentés and Alakok). Should a row ever not hold its words,
+// it scrolls inside its rim; nothing is cut.
 // It is a list of links, not tabs: every
 // part is always there. A tap moves the page and never the history, so Back
 // still leaves the page. Solid, never blurred (a blurred layer over moving
