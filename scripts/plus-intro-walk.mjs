@@ -79,6 +79,9 @@ for (const [road, answers] of ROADS) {
       say(!(await page.locator(".testers-mark").isVisible()), "the Testers mark steps aside while the sheet is open");
       say((await page.locator(CARD).count()) === 0, "tapped, the card is gone");
       if (STILLS && opened) await page.screenshot({ path: path.join(STILLS, "tried.png") });
+      // The sheet closed, as a reader closes it.
+      await page.keyboard.press("Escape");
+      await sheet.waitFor({ state: "hidden", timeout: 10000 }).catch(() => {});
       await go(page, "/");
       await page.waitForTimeout(2500);
       say((await page.locator(CARD).count()) === 0, "and it does not come back");
