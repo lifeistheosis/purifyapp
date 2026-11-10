@@ -15,6 +15,7 @@ import { Hands } from "@/components/ui/icons/Hands";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Lyre } from "@/components/ui/icons/Lyre";
 import { Orans } from "@/components/ui/icons/Orans";
+import { Play } from "@/components/ui/icons/Play";
 
 export const metadata = {
   title: "Prayer",
@@ -155,9 +156,7 @@ export default function PrayersPage() {
                     aria-hidden
                     className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-paper/[0.08] text-paper ring-1 ring-inset ring-paper/15 transition-transform duration-200 group-hover:scale-[1.04] motion-reduce:transition-none"
                   >
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className="translate-x-[1px]">
-                      <path d="M7 5.5v13l11-6.5L7 5.5z" />
-                    </svg>
+                    <Play size={19} centered />
                   </span>
                   {/* The words sit at the card's foot, the play button at
                       its head, however tall the heart card beside it makes it. */}

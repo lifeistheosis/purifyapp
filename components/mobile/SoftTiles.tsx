@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ArrivingImage } from "@/components/ui/ArrivingImage";
+import { Play } from "@/components/ui/icons/Play";
 import { cn } from "@/lib/cn";
 import { TILE_PREVIEWS } from "@/lib/discover/tilePreviews.generated";
 import { cropStyle, type Crop } from "@/lib/prayers/iconCrops";
@@ -91,7 +92,7 @@ export function SoftTile({
     >
       <span
         aria-hidden
-        className="tile-sheen pointer-events-none absolute -right-5 -bottom-6 h-24 w-24 rounded-full bg-paper/10 blur-xl"
+        className="tile-sheen pointer-events-none absolute -end-5 -bottom-6 h-24 w-24 rounded-full bg-paper/10 blur-xl"
       />
       {picture && wide ? (
         // Whole, or not yet at all (build 85, note 52): its plate is its box meanwhile.
@@ -263,7 +264,7 @@ export function FeatureBand({
     >
       <span
         aria-hidden
-        className="tile-sheen pointer-events-none absolute -right-6 -top-8 h-32 w-32 rounded-full bg-paper/15 blur-2xl"
+        className="tile-sheen pointer-events-none absolute -end-6 -top-8 h-32 w-32 rounded-full bg-paper/15 blur-2xl"
       />
       <div className="relative flex items-start gap-4">
         {/* White and silver, the app's own ink: no gold or yellow in the UI
@@ -272,7 +273,7 @@ export function FeatureBand({
           aria-hidden
           className="shrink-0 inline-flex h-12 w-12 items-center justify-center rounded-full bg-paper text-night shadow-[0_6px_16px_-6px_rgba(0,0,0,0.6)]"
         >
-          {icon ?? <PlayGlyph />}
+          {icon ?? <Play size={15} centered />}
         </span>
         <div className="min-w-0 flex-1 pt-0.5">
           <p className="font-sans text-caption font-semibold text-paper/60">
@@ -297,14 +298,6 @@ export function FeatureBand({
         </div>
       ) : null}
     </Link>
-  );
-}
-
-function PlayGlyph() {
-  return (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" className="translate-x-[1px]" aria-hidden>
-      <path d="M7 5.5v13l11-6.5L7 5.5z" />
-    </svg>
   );
 }
 
