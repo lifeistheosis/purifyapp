@@ -210,6 +210,21 @@ export const AUTHOR_META: Readonly<Record<string, MetaRow>> = {
   "stephen-the-new": { traditions: ["greek"], era: "councils" },
   "john-the-merciful": { traditions: ["egypt"], era: "councils" },
   "innocent-of-irkutsk": { traditions: ["russian"], era: "afterByzantium" },
+
+  // December's saints (1.9): the saints of the month's Lives in the witnesses' words.
+  // Before the apostles, as St. Obadiah is.
+  "prophet-nahum": { traditions: [] },
+  "prophet-habakkuk": { traditions: [] },
+  "prophet-zephaniah": { traditions: [] },
+  "prophet-haggai": { traditions: [] },
+  "prophet-daniel": { traditions: [] },
+  "sosthenes-apollos-cephas-and-tychicus": { traditions: [], era: "apostolic" },
+  "holy-innocents": { traditions: [], era: "apostolic" },
+  "stephen-the-protomartyr": { traditions: [], era: "apostolic" },
+  "martyrs-of-nicomedia": { traditions: ["greek"], era: "early" },
+  "ambrose-of-milan": { traditions: ["latin"], era: "councils" },
+  "melania-the-younger": { traditions: ["latin"], era: "councils" },
+  "peter-of-moscow": { traditions: ["russian"], era: "byzantine" },
 };
 
 /**
@@ -1218,6 +1233,20 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
   "innocent-of-irkutsk/life-of-innocent-of-irkutsk": { by: null, about: "innocent-of-irkutsk", form: "life", scope: "selections", themes: [], review: R },
   "frumentius-of-axum/life-of-frumentius": { by: null, about: "frumentius-of-axum", form: "life", scope: "selections", themes: [], review: R },
   "varlaam-of-khutyn/life-of-varlaam": { by: null, about: "varlaam-of-khutyn", form: "life", scope: "selections", themes: [], review: R },
+  // December's saints (1.9): each Life is its witnesses' own words
+  // (scripts/menologion/december-lives.mjs); the prophets' books are whole.
+  "prophet-nahum/the-prophecy-of-nahum": { by: "prophet-nahum", form: "scripture", scope: "complete", themes: [], review: R },
+  "prophet-habakkuk/the-prophecy-of-habakkuk": { by: "prophet-habakkuk", form: "scripture", scope: "complete", themes: [], review: R },
+  "prophet-zephaniah/the-prophecy-of-zephaniah": { by: "prophet-zephaniah", form: "scripture", scope: "complete", themes: [], review: R },
+  "prophet-haggai/the-prophecy-of-haggai": { by: "prophet-haggai", form: "scripture", scope: "complete", themes: [], review: R },
+  "prophet-daniel/the-book-of-daniel": { by: "prophet-daniel", form: "scripture", scope: "complete", themes: [], review: R },
+  "sosthenes-apollos-cephas-and-tychicus/their-names-in-scripture": { by: null, about: "sosthenes-apollos-cephas-and-tychicus", form: "scripture", scope: "selections", themes: [], review: R },
+  "holy-innocents/the-slaughter-of-the-innocents": { by: "apostle-matthew", about: "holy-innocents", form: "scripture", scope: "selections", themes: [], review: R },
+  "stephen-the-protomartyr/the-martyrdom-of-stephen": { by: null, about: "stephen-the-protomartyr", form: "scripture", scope: "selections", themes: [], review: R },
+  "martyrs-of-nicomedia/the-martyrs-of-nicomedia": { by: null, about: "martyrs-of-nicomedia", form: "life", scope: "selections", themes: [], review: R },
+  "melania-the-younger/life-of-melania-the-younger": { by: null, about: "melania-the-younger", form: "life", scope: "selections", themes: [], review: R },
+  "ambrose-of-milan/ambrose-in-the-witnesses": { by: null, about: "ambrose-of-milan", form: "life", scope: "selections", themes: [], review: R },
+  "peter-of-moscow/life-of-peter-of-moscow": { by: null, about: "peter-of-moscow", form: "life", scope: "selections", themes: [], review: R },
 };
 
 /**

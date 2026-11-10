@@ -155,3 +155,86 @@ no framing for the clergy queue, and the size and time are under the bounds.
 Each push passes typecheck, the unit tests, lint, the Android and then the iOS
 export, a walk of new pages on the export and checkMock on what changed, with
 stills to the arbiter.
+
+## Push 1, as built (2026-11-10)
+
+`node --experimental-strip-types scripts/menologion-month.mjs check december`:
+every saint's line has a page, and every new page meets the standard.
+December is in DONE_MONTHS (lib/saints/month.ts), and the month test holds it
+there.
+
+- **40 new pages**, not 41 as planned: the line of the icon "Unexpected Joy"
+  opens the Theotokos's page and needed none. Each holds a short entry of
+  plain facts (at most 80 words) and names its sources under it. The facts
+  were read by a helper from the Dictionary of Christian Biography, The Book
+  of Saints, Baring-Gould, Dunbar, Mouravieff and the translator's preface to
+  My Life in Christ (1897), each quote checked on the printed page, and the
+  entries were written from those quotes and the calendar's own lines only. Where the books disagree (St
+  Barbara's place, St Sabbas's years, St Lucy's death, St Eugenia's two
+  stories, St Menas's calling) the entry says so rather than choosing. Where a
+  source differs from the Church's own account (the Dictionary, after
+  Zonaras, makes St Philaret the father of the empress Maria; his Life makes
+  him her grandfather), or from itself (St Modestus's years), the entry says
+  only what both bear; St Eleutherius's Acts are named as Baring-Gould doubts
+  them.
+- **Five saints have nothing in public-domain English**: St Joasaph of
+  Belgorod, St Luke the New Stylite, St Stephen of Surozh, St Elias of Murom
+  and St Niphon of Cyprus. Their pages hold what the calendar keeps, and say
+  that no account of their lives in public-domain English has been found.
+  St Philaret the Merciful has one passing mention (the Dictionary of
+  Christian Biography, after Zonaras) and St Savva and St Nilus of Stolobny
+  one or two sentences of Mouravieff each; their entries say no more.
+- **The Lives in the witnesses' own words**
+  (`scripts/menologion/december-lives.mjs`, review in
+  `docs/editorial/ingest-review/december-lives.md`): the five prophets'
+  books whole (Brenton's Septuagint, the app's Bible; Daniel with Susanna and
+  Bel); every verse that names Sosthenes, Apollos and Tychicus; the Holy
+  Innocents (Matthew 2:13-18); St Stephen (Acts 6:1 to 8:2); the Martyrs of
+  Nicomedia (Eusebius VIII.6); St Melania (Palladius LXI, Clarke 1918); St
+  Ambrose (Socrates IV.30, St Augustine's Confessions V.13, VI.3 and IX.7,
+  Sozomen VII.25, Theodoret V.17); St Peter of Moscow (Mouravieff's chapter,
+  pp. 51 to 54, typed from the page images). Every passage read against the
+  scans; nothing open.
+  - St Melania's text is the page's, not the transcription's: "thou" where
+    the transcription has "thon", the footnotes' numbers out, its section
+    numbers kept as the book's other chapters in the app keep them (a new
+    `sectionNumbers` switch in the ingest).
+  - Socrates IV.30 in CCEL lost the page's opening quotation marks and a
+    comma; they are put back from the page (pp. 113 and 114).
+  - **For his word**: Mouravieff says the khan and the Mongols "had lately
+    embraced the lying imposture of the Koran". It stays, word for word, as
+    the "shame of the Jews" kontakion did; it can be cut and shown as […] if
+    he wants it out.
+- **Links**: 45 calendar lines open pages (the 40, St Ambrose, St Peter of
+  Moscow, St Stephen's feast, and the Conception and "Unexpected Joy", which
+  open the Theotokos's). History's Great Persecution names the Martyrs of
+  Nicomedia and eight more of the month's martyrs of 302 to 313; the Second
+  Iconoclasm names St Theodore the Branded. St Sergius's page names St Savva
+  among his disciples. The groups take 33 of the new pages and St Ambrose and
+  St Stephen; the prophets, St Philaret and St Zoticus fit none.
+- **The reading room**: twelve books. St Peter of Moscow's and St Stephen's
+  wear their pages' icons (supplied by the owner with full permission), the
+  Holy Innocents' wears St Matthew's as its author's, and nine stand on the
+  plate until push 2's icons.
+- **Two tests changed**: the edition-summary rule
+  (lib/saints/__tests__/editionHeadings.test.ts) passes Scripture's sections
+  by, as it passes editorial ones: Acts 20:4 and 1 Corinthians 1:12, lists of
+  names on semicolons, read to it like an editor's summary. And the search
+  for "susanna" (lib/search/__tests__/corpus.test.ts) now finds St Daniel's
+  whole book after the passage, and says so.
+- **The apps**: December's pages and Lives add about 0.5 MB packed. The
+  Android and iOS exports are 66.8 MB packed of 85; the other 3.4 MB of the
+  rise since November's push 5 (62.9 MB) is 36 more carried covers from
+  another chat's push in between (the export's own line: 30 covers then, 66
+  now).
+- **Walked** on the Android export, the app's way: St Daniel's page and book,
+  St Melania's Life, St Peter's page and Life, St Ambrose's Lives, St Sabbas's
+  and St John of Kronstadt's entries, the Holy Innocents' page and its book.
+  checkMock passes St Daniel's and St Sabbas's pages; St Melania's Life shows
+  the reader's own faults, the same on the older Lives (told to the arbiter
+  with push 5). St Peter's page draws his small icon inside the hero layout
+  on the walk, because the walk cannot fetch his wide hero from the website;
+  this is older than December and the app on a network shows the hero.
+- **Stills** (the Android export): `december-saints/01-new-page-prophet-daniel.png`,
+  `02-entry-and-source-sabbas.png`,
+  `03-life-in-the-witnesses-words-melania.png`, `04-st-peter-in-mouravieff.png`.

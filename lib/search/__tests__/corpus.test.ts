@@ -107,7 +107,9 @@ describe("the one search's list", () => {
     expect(finds("filioque")).toContain("theology-filioque");
 
     // Passages a reader knows by name and the Septuagint files inside Daniel.
-    expect(finds("susanna")).toEqual(["passage-susanna"]);
+    // Since December's saints (1.9), the prophet's whole book, which holds her
+    // history, follows the passage.
+    expect(finds("susanna")).toEqual(["passage-susanna", "work-prophet-daniel-the-book-of-daniel"]);
     expect(finds("bel and the dragon")).toContain("passage-bel");
     expect(finds("benedicite")).toContain("passage-song-of-the-three");
 

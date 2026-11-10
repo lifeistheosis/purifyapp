@@ -531,8 +531,12 @@ async function buildLife(spec) {
     if (p.expect && paras.length !== p.expect) {
       throw new Error(`${label}: ${paras.length} paragraphs, the spec expects ${p.expect}`);
     }
+    // `sectionNumbers`: an edition that prints its sections' numbers in the
+    // text in brackets (Lowther Clarke's Palladius, "[1]") keeps them, as the
+    // app's other chapters of that book do; anywhere else "[n]" is a note's mark.
+    const markup = p.sectionNumbers ? /\{\{|\}\}|<[a-z/]|file:\/\//i : /\[\d+\]|\{\{|\}\}|<[a-z/]|file:\/\//i;
     for (const para of paras) {
-      if (/\[\d+\]|\{\{|\}\}|<[a-z/]|file:\/\//i.test(para)) throw new Error(`${label}: markup left in "${para.slice(0, 60)}"`);
+      if (markup.test(para)) throw new Error(`${label}: markup left in "${para.slice(0, 60)}"`);
       if (para.includes("�")) throw new Error(`${label}: a replacement character in "${para.slice(0, 60)}"`);
     }
     const minWords = p.minWords ?? 20;

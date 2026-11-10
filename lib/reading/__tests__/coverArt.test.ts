@@ -143,6 +143,21 @@ describe("the covers' pictures", () => {
       "victorinus-of-pettau/on-the-creation-of-the-world",
       "zacchaeus-and-alphaeus/martyrdom-of-zacchaeus-and-alphaeus",
     ];
+    // December's saints (1.9, docs/1.9-build/notes/december-saints.md), the
+    // same way: these books' saints have no settled icon yet (their search is
+    // the month's second push). St. Peter of Moscow's and St. Stephen's wear
+    // theirs, and the Holy Innocents' wears St. Matthew's, its author's.
+    const december = [
+      "ambrose-of-milan/ambrose-in-the-witnesses",
+      "martyrs-of-nicomedia/the-martyrs-of-nicomedia",
+      "melania-the-younger/life-of-melania-the-younger",
+      "prophet-daniel/the-book-of-daniel",
+      "prophet-habakkuk/the-prophecy-of-habakkuk",
+      "prophet-haggai/the-prophecy-of-haggai",
+      "prophet-nahum/the-prophecy-of-nahum",
+      "prophet-zephaniah/the-prophecy-of-zephaniah",
+      "sosthenes-apollos-cephas-and-tychicus/their-names-in-scripture",
+    ];
     const plate = buildRoom(false)
       .cards.filter((c) => !c.cover)
       .map((c) => c.key)
@@ -154,6 +169,7 @@ describe("the covers' pictures", () => {
         "isaac-the-syrian/mystic-treatises",
         "symeon-the-new-theologian/discourse-on-faith",
         ...november,
+        ...december,
       ].sort(),
     );
   });

@@ -101,7 +101,10 @@ describe("an edition's headings, across the library", () => {
     for (const { key, sections } of works) {
       let is: ReturnType<typeof known> | null = null;
       sections.forEach((sec, s) => {
-        if (sec.voice === "editorial") return;
+        // Scripture is the app's own Bible, verse for verse, and has no
+        // editor's summary; a verse of names strung on semicolons (Acts 20:4,
+        // 1 Corinthians 1:12, in December's saints) only reads like one.
+        if (sec.voice === "editorial" || sec.voice === "scripture") return;
         const first = sec.paragraphs.findIndex((p) => p.trim() !== "");
         if (first < 0 || !readsAsSummary(sec.paragraphs[first])) return;
         found++;

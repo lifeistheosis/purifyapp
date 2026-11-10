@@ -3209,10 +3209,12 @@
   "12-01": [
     {
       "name": "Prophet Nahum",
+      "slug": "prophet-nahum",
       "note": "of the Twelve, +7th c. BC"
     },
     {
       "name": "Righteous Philaret the Merciful",
+      "slug": "philaret-the-merciful",
       "note": "of Amnia, +792"
     }
   ],
@@ -3224,6 +3226,7 @@
     },
     {
       "name": "Prophet Habakkuk",
+      "slug": "prophet-habakkuk",
       "note": "of the Twelve, +7th c. BC"
     },
     {
@@ -3235,16 +3238,19 @@
   "12-03": [
     {
       "name": "Prophet Zephaniah",
+      "slug": "prophet-zephaniah",
       "note": "of the Twelve, +7th c. BC"
     },
     {
       "name": "St. Savva of Storozhevsk",
+      "slug": "savva-of-storozhevsk",
       "note": "abbot of Zvenigorod, disciple of St. Sergius, +1407"
     }
   ],
   "12-04": [
     {
       "name": "Great-martyr Barbara of Heliopolis",
+      "slug": "barbara-the-great-martyr",
       "note": "+ca. 306"
     },
     {
@@ -3256,6 +3262,7 @@
   "12-05": [
     {
       "name": "St. Sabbas the Sanctified",
+      "slug": "sabbas-the-sanctified",
       "note": "founder of the Great Lavra of Palestine, +532"
     }
   ],
@@ -3270,40 +3277,48 @@
   "12-07": [
     {
       "name": "St. Ambrose, Bishop of Milan",
+      "slug": "ambrose-of-milan",
       "note": "baptizer of Augustine, +397"
     },
     {
       "name": "St. Nilus of Stolobny",
+      "slug": "nilus-of-stolobny",
       "note": "wonderworker of Seliger, +1554"
     }
   ],
   "12-08": [
     {
       "name": "St. Patapius of Egypt",
+      "slug": "patapius-of-egypt",
       "note": "+7th c."
     },
     {
       "name": "Apostles Sosthenes, Apollos, Cephas, and Tychicus",
+      "slug": "sosthenes-apollos-cephas-and-tychicus",
       "note": "of the Seventy"
     }
   ],
   "12-09": [
     {
       "name": "Conception of the Most Holy Theotokos by Righteous Anna",
+      "slug": "theotokos",
       "kind": "feast"
     },
     {
       "name": "Icon of the Theotokos 'Unexpected Joy'",
+      "slug": "theotokos",
       "note": "of Moscow"
     }
   ],
   "12-10": [
     {
       "name": "Martyrs Menas, Hermogenes, and Eugraphus of Alexandria",
+      "slug": "menas-hermogenes-and-eugraphus",
       "note": "+313"
     },
     {
       "name": "St. Joasaph, Bishop of Belgorod",
+      "slug": "joasaph-of-belgorod",
       "note": "+1754"
     }
   ],
@@ -3315,6 +3330,7 @@
     },
     {
       "name": "St. Luke the New Stylite of Chalcedon",
+      "slug": "luke-the-new-stylite",
       "note": "+979"
     }
   ],
@@ -3328,6 +3344,7 @@
   "12-13": [
     {
       "name": "Martyrs Eustratius, Auxentius, Eugene, Mardarius, and Orestes",
+      "slug": "eustratius-and-companions",
       "note": "of Sebaste, +ca. 284"
     },
     {
@@ -3337,62 +3354,74 @@
     },
     {
       "name": "Virgin-martyr Lucia of Syracuse",
+      "slug": "lucia-of-syracuse",
       "note": "+304"
     }
   ],
   "12-14": [
     {
       "name": "Martyrs Thyrsus, Leucius, and Callinicus",
+      "slug": "thyrsus-leucius-and-callinicus",
       "note": "of Bithynia, +ca. 251"
     },
     {
       "name": "Martyrs Philemon, Apollonius, and Arrianus",
+      "slug": "philemon-apollonius-and-arrianus",
       "note": "of Egypt, +ca. 305"
     }
   ],
   "12-15": [
     {
       "name": "Hieromartyr Eleutherius, Bishop of Illyria",
+      "slug": "eleutherius-of-illyria",
       "note": "+126"
     },
     {
       "name": "St. Stephen the Confessor, Archbishop of Surozh",
+      "slug": "stephen-of-surozh",
       "note": "+8th c."
     }
   ],
   "12-16": [
     {
       "name": "Prophet Aggeus (Haggai)",
+      "slug": "prophet-haggai",
       "note": "of the Twelve, +6th c. BC"
     },
     {
       "name": "St. Theophano the Empress",
+      "slug": "theophano-the-empress",
       "note": "of Constantinople, +ca. 894"
     }
   ],
   "12-17": [
     {
       "name": "Prophet Daniel",
+      "slug": "prophet-daniel",
       "note": "and the Three Holy Youths Ananias, Azarias, and Misael, +6th c. BC"
     }
   ],
   "12-18": [
     {
       "name": "Martyr Sebastian of Rome and Companions",
+      "slug": "sebastian-and-companions",
       "note": "+287"
     },
     {
       "name": "St. Modestus, Patriarch of Jerusalem",
+      "slug": "modestus-of-jerusalem",
       "note": "+634"
     }
   ],
   "12-19": [
     {
       "name": "Martyr Boniface at Tarsus",
+      "slug": "boniface-of-tarsus",
       "note": "+290"
     },
     {
       "name": "St. Elias of Murom, of the Kiev Caves",
+      "slug": "elias-of-murom",
       "note": "the warrior-monk, +1188"
     }
   ],
@@ -3408,36 +3437,43 @@
     },
     {
       "name": "St. John of Kronstadt",
+      "slug": "john-of-kronstadt",
       "note": "wonderworker and pastor, +1908"
     }
   ],
   "12-21": [
     {
       "name": "Virgin-martyr Juliana of Nicomedia",
+      "slug": "juliana-of-nicomedia",
       "note": "+304"
     },
     {
       "name": "St. Peter, Metropolitan of Moscow and All Russia",
+      "slug": "peter-of-moscow",
       "note": "+1326"
     }
   ],
   "12-22": [
     {
       "name": "Great-martyr Anastasia the Pharmakolytria (Deliverer from Poisons)",
+      "slug": "anastasia-the-pharmakolytria",
       "note": "+304"
     },
     {
       "name": "Martyr Chrysogonus",
+      "slug": "chrysogonus",
       "note": "teacher of St. Anastasia, +304"
     }
   ],
   "12-23": [
     {
       "name": "Ten Martyrs of Crete",
+      "slug": "ten-martyrs-of-crete",
       "note": "+250"
     },
     {
       "name": "St. Niphon, Bishop of Cyprus",
+      "slug": "niphon-of-cyprus",
       "note": "+4th c."
     }
   ],
@@ -3448,6 +3484,7 @@
     },
     {
       "name": "Venerable-martyr Eugenia",
+      "slug": "eugenia-of-rome",
       "note": "of Rome, +ca. 262"
     }
   ],
@@ -3467,43 +3504,51 @@
   "12-27": [
     {
       "name": "Protomartyr and Archdeacon Stephen",
+      "slug": "stephen-the-protomartyr",
       "kind": "feast",
       "note": "+ca. 34"
     },
     {
       "name": "St. Theodore the Branded, Confessor",
+      "slug": "theodore-the-branded",
       "note": "+840"
     }
   ],
   "12-28": [
     {
       "name": "20,000 Martyrs Burned at Nicomedia",
+      "slug": "martyrs-of-nicomedia",
       "note": "+ca. 303"
     }
   ],
   "12-29": [
     {
       "name": "14,000 Holy Innocents Slain by Herod in Bethlehem",
+      "slug": "holy-innocents",
       "note": "+1 BC"
     },
     {
       "name": "Ven. Marcellus, Abbot of the Unsleeping Ones",
+      "slug": "marcellus-of-the-unsleeping-ones",
       "note": "+485"
     }
   ],
   "12-30": [
     {
       "name": "Martyr Anysia of Thessaloniki",
+      "slug": "anysia-of-thessaloniki",
       "note": "+ca. 298"
     },
     {
       "name": "St. Zoticus the Orphanmaster, Servant of the Poor",
+      "slug": "zoticus-the-orphanmaster",
       "note": "of Constantinople, +4th c."
     }
   ],
   "12-31": [
     {
       "name": "St. Melania the Younger of Rome",
+      "slug": "melania-the-younger",
       "note": "+439"
     }
   ]

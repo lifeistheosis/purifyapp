@@ -708,7 +708,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
-      saints: ["saint-george", "florian-of-lorch", "peter-of-alexandria", "zacchaeus-and-alphaeus", "plato-and-romanus"],
+      saints: ["saint-george", "florian-of-lorch", "peter-of-alexandria", "zacchaeus-and-alphaeus", "plato-and-romanus", "martyrs-of-nicomedia", "eustratius-and-companions", "lucia-of-syracuse", "philemon-apollonius-and-arrianus", "juliana-of-nicomedia", "anastasia-the-pharmakolytria", "chrysogonus", "anysia-of-thessaloniki", "menas-hermogenes-and-eugraphus"],
       resultedIn: ["edict-of-milan"],
     },
     media: {
@@ -1272,7 +1272,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
-      saints: ["theodore-the-studite"],
+      saints: ["theodore-the-studite", "theodore-the-branded"],
       heresies: ["iconoclasm"],
       precededBy: ["second-council-of-nicaea"],
       resultedIn: ["triumph-of-orthodoxy"],

@@ -140,6 +140,11 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   "james-the-persian": bundled("james-the-persian.jpg", 45),
   "stephen-the-new": bundled("stephen-the-new.jpg", 25),
   "john-the-merciful": bundled("john-the-merciful.jpg", 18),
+  // December's saints (1.9, docs/1.9-build/notes/december-saints.md): the two
+  // older pages whose icons the owner supplied with full permission
+  // (lib/saints/iconRights.ts), on the books of their Lives.
+  "peter-of-moscow": bundled("peter-of-moscow.jpg", 36),
+  "stephen-the-protomartyr": bundled("stephen-the-protomartyr.jpg", 29),
   // Push 2: the second half of the month's icons, on their books.
   "gregory-the-wonderworker": bundled("gregory-the-wonderworker.jpg", 34),
   "clement-of-rome": bundled("clement-of-rome.jpg", 31),

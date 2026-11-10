@@ -4434,7 +4434,17 @@ export const SAINTS: Saint[] = [
       "He would not flatter power. He refused the emperor Theodosius communion until he had done public penance for the massacre at Thessalonica, and the emperor submitted. He resisted the restoration of the altar of Victory in the Senate and the attempts of the empress Justina to take a church for the Arians.",
       "Among those who came to hear him preach was a teacher of rhetoric from Africa named Augustine, whom he baptized at Milan in 387. Ambrose reposed on Holy Saturday, the fourth of April, in the year 397. The Orthodox Church keeps his memory on the seventh of December.",
     ],
-    works: [],
+    works: [
+      {
+        slug: "ambrose-in-the-witnesses",
+        title: "St. Ambrose in the Witnesses' Words",
+        subtitle: "Socrates, Augustine, Sozomen and Theodoret",
+        year: "c. 397 to 450",
+        blurb:
+          "Socrates on how he was chosen bishop of Milan, St. Augustine on the bishop who received him there and on the church of Milan in the days of Justina, and Sozomen and Theodoret on the emperor Theodosius kept from the church after Thessalonica. In the public-domain English of Pusey and of the Nicene and Post-Nicene Fathers.",
+        topics: ["Episcopate", "Repentance", "Baptism"],
+      },
+    ],
   },
   {
     slug: "victorinus-of-pettau",
@@ -4529,6 +4539,12 @@ export const SAINTS: Saint[] = [
         relation: "Disciple, and hegumen after him",
         blurb:
           "A disciple of St. Sergius and hegumen of the Trinity Lavra. Building its stone church of the Holy Trinity after the invasion of Edigei, he found St. Sergius's relics and laid them in it (Mouravieff, 1842).",
+      },
+      {
+        slug: "savva-of-storozhevsk",
+        relation: "Disciple, founder of the monastery of Zvenigorod",
+        blurb:
+          "A pupil of St. Sergius who laid the foundation of the monastery of Zvenigorod; his relics were found in the days of the Patriarch Joseph of Moscow (Mouravieff, 1842).",
       },
     ],
   },
@@ -5602,7 +5618,17 @@ export const SAINTS: Saint[] = [
       "He settled at last at Moscow, which was then a small principality of no particular standing, and worked with its prince Ivan Kalita. The Life records what he told him: to build a stone church to the Dormition of the Theotokos in the Kremlin, and that if he did, the city would be exalted above all the cities of Rus and the hierarchs would live in it. The cathedral was begun in 1326.",
       "Peter died on the twenty first of December of that year and was buried in the wall of the unfinished church, and Moscow became what he had said it would. He was glorified in 1339. The Church keeps the twenty fourth of August for the translation of his relics into the rebuilt Dormition Cathedral in 1479, and the twenty first of December for his repose.",
     ],
-    works: [],
+    works: [
+      {
+        slug: "life-of-peter-of-moscow",
+        title: "St. Peter of Moscow in Mouravieff",
+        subtitle: "How the see came to Moscow",
+        year: "1838",
+        blurb:
+          "Mouravieff's chapter on the monk of Ratno made metropolitan of all Russia: the synod where he forgave his accuser, the khan's charter for the Church, and his word to the Great Prince John that Moscow would be glorious. In the public-domain English of 1842.",
+        topics: ["Episcopate", "Humility"],
+      },
+    ],
   },
 
   {
@@ -5731,7 +5757,17 @@ export const SAINTS: Saint[] = [
       "They ran him out of the city and stoned him, and the witnesses laid their clothes at the feet of a young man named Saul. He saw the heavens opened and the Son of Man standing at the right hand of God, and he died praying for the men who were killing him, which is the second time in the New Testament that prayer is made and the first was from the Cross.",
       "His relics were found at Kaphar Gamala near Jerusalem in the year 415, an event the Church commemorates in its own right, and were translated to Constantinople and later to Rome. The Church keeps his memory on the twenty seventh of December, on the day after the Nativity, and again on the second of August for the translation of the relics.",
     ],
-    works: [],
+    works: [
+      {
+        slug: "the-martyrdom-of-stephen",
+        title: "The Martyrdom of St. Stephen",
+        subtitle: "In the Acts of the Apostles",
+        year: "1st century",
+        blurb:
+          "The Acts of the Apostles from the choosing of the seven to his burial: his defense before the council and his stoning, in the King James Version.",
+        topics: ["Scripture", "Martyrdom"],
+      },
+    ],
   },
 
   {
@@ -6992,6 +7028,758 @@ export const SAINTS: Saint[] = [
         blurb:
           "Socrates's account of the captive youths of Tyre and the faith they brought to the far south, and St. Athanasius on the emperor's letter against Frumentius, Bishop of Auxumis. In the public-domain English of 1890 and 1892.",
         topics: ["Mission", "Episcopate"],
+      },
+    ],
+  },
+
+  // December's saints (1.9; docs/1.9-build/notes/december-saints.md and
+  // docs/editorial/menologion-month.md), as November's: a short entry of plain
+  // facts, `entrySource` naming where they are read, and, where a witness
+  // wrote of the saint, the witness's own words as a work.
+
+  {
+    slug: "prophet-nahum",
+    name: "The Prophet Nahum",
+    byname: "Naum",
+    epithet: "One of the Twelve Minor Prophets",
+    feastDays: ["December 1"],
+    see: "(prophet)",
+    pronoun: "his",
+    shortBio:
+      "One of the Twelve, called in his book the Elkesite, whose prophecy is the burden of Nineveh: the Lord's vengeance on His adversaries, and the fall of the Assyrian city, at whose report all that hear shall clap their hands.",
+    entrySource:
+      "The Book of Nahum, in Brenton's Septuagint (1851)",
+    life: [],
+    works: [
+      {
+        slug: "the-prophecy-of-nahum",
+        title: "The Prophecy of Nahum",
+        subtitle: "His prophecy, whole",
+        year: "Before Christ",
+        blurb:
+          "The whole of his prophecy, three chapters, as the Septuagint gives it in Brenton's English.",
+        topics: ["Scripture", "Prophecy", "Judgment"],
+      },
+    ],
+  },
+
+  {
+    slug: "philaret-the-merciful",
+    name: "St. Philaret the Merciful",
+    byname: "Philaret of Amnia",
+    epithet: "Righteous",
+    reposed: "792",
+    feastDays: ["December 1"],
+    see: "(layman)",
+    pronoun: "his",
+    shortBio:
+      "Philaret of Amnia, called the Merciful, whose repose the Church's calendar gives as 792. The Dictionary of Christian Biography, after the historian Zonaras, counts a St. Philaret in the family of Maria, whom the empress Irene chose in 788 as the bride of her son Constantine VI. No fuller account of him in public-domain English has been found.",
+    entrySource:
+      "A Dictionary of Christian Biography III (1882), under Maria (7); the Church's calendar, December 1",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "prophet-habakkuk",
+    name: "The Prophet Habakkuk",
+    byname: "Ambacum",
+    epithet: "One of the Twelve Minor Prophets",
+    feastDays: ["December 2"],
+    see: "(prophet)",
+    pronoun: "his",
+    shortBio:
+      "One of the Twelve, who asks how long the Lord will not hearken while the ungodly prevail, hears that the Chaldeans are stirred up, and hears that “the just shall live by my faith”; his book ends with his prayer, with a song. In Bel and the Dragon an angel carries him to Babylon to bring Daniel his dinner in the lions' den.",
+    entrySource:
+      "The Book of Habakkuk and Bel and the Dragon 33 to 39, in Brenton's Septuagint (1851)",
+    life: [],
+    works: [
+      {
+        slug: "the-prophecy-of-habakkuk",
+        title: "The Prophecy of Habakkuk",
+        subtitle: "His prophecy, whole",
+        year: "Before Christ",
+        blurb:
+          "The whole of his prophecy, three chapters ending with his prayer, as the Septuagint gives it in Brenton's English.",
+        topics: ["Scripture", "Prophecy", "Faith"],
+      },
+    ],
+  },
+
+  {
+    slug: "prophet-zephaniah",
+    name: "The Prophet Zephaniah",
+    byname: "Sophonias",
+    epithet: "One of the Twelve Minor Prophets",
+    feastDays: ["December 3"],
+    see: "(prophet)",
+    pronoun: "his",
+    shortBio:
+      "One of the Twelve, the son of Chusi and of the line of Ezekias, to whom the word of the Lord came in the days of Josias, king of Juda. His prophecy is the great day of the Lord, a day of wrath on Juda and the nations, and the meek and lowly people the Lord will leave.",
+    entrySource:
+      "The Book of Zephaniah, in Brenton's Septuagint (1851)",
+    life: [],
+    works: [
+      {
+        slug: "the-prophecy-of-zephaniah",
+        title: "The Prophecy of Zephaniah",
+        subtitle: "His prophecy, whole",
+        year: "Before Christ",
+        blurb:
+          "The whole of his prophecy, three chapters, as the Septuagint gives it in Brenton's English.",
+        topics: ["Scripture", "Prophecy", "Repentance"],
+      },
+    ],
+  },
+
+  {
+    slug: "savva-of-storozhevsk",
+    name: "St. Savva of Storozhevsk",
+    byname: "Sabba of Zvenigorod",
+    epithet: "Disciple of St. Sergius · Founder of the monastery of Zvenigorod",
+    reposed: "1407",
+    feastDays: ["December 3"],
+    see: "(abbot)",
+    pronoun: "his",
+    shortBio:
+      "A disciple of St. Sergius of Radonezh, who laid the foundation of the monastery of Zvenigorod. Mouravieff, who calls him Sabba, records that his relics were found in the days of the Patriarch Joseph of Moscow, and that the Tsar, in thanksgiving, soon afterwards called a synod. The calendar gives his repose as 1407.",
+    entrySource:
+      "A. N. Mouravieff, A History of the Church of Russia, tr. R. W. Blackmore (1842), pp. 62 and 200; the Church's calendar, December 3",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "barbara-the-great-martyr",
+    name: "St. Barbara the Great-martyr",
+    byname: "Barbara of Heliopolis",
+    epithet: "Great-martyr · Virgin",
+    reposed: "3rd or early 4th century",
+    feastDays: ["December 4"],
+    see: "(martyr)",
+    pronoun: "her",
+    shortBio:
+      "A virgin martyr of the third century, honoured in the East and the West, of whose life no reliable account survives. Some put her martyrdom at Nicomedia about 235, others at Heliopolis as late as 306, under Galerius. In her Acts her own father beheaded her, and a woman named Juliana suffered with her. All the Greek Menaea keep her.",
+    entrySource:
+      "The Book of Saints (1921), under Barbara; Baring-Gould, The Lives of the Saints XV (1898), December 4",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "sabbas-the-sanctified",
+    name: "St. Sabbas the Sanctified",
+    byname: "Sabas of Palestine",
+    epithet: "Abbot · Founder of the Great Lavra",
+    born: "About 439 (near Caesarea in Cappadocia)",
+    reposed: "December 5, 531 or 532 (his laura)",
+    feastDays: ["December 5"],
+    see: "(abbot)",
+    pronoun: "his",
+    shortBio:
+      "A Cappadocian, born near Caesarea about 439, who became one of the most famous monks of Palestine. At thirty he went into the desert as an anchorite and lived in a cave; others joined him, and he built his monastery, the Laura of St. Sabas, on a rock above the Kidron, where it still stands. He reformed the monks' discipline, and died at his laura on December 5, 531 or 532.",
+    entrySource:
+      "A Dictionary of Christian Biography IV (1887), under Sabas (6); The Book of Saints (1921), under Sabbas; Baring-Gould, The Lives of the Saints XV (1898), December 5",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "nilus-of-stolobny",
+    name: "St. Nilus of Stolobny",
+    byname: "Nilus of Stolben",
+    epithet: "Hermit of Seliger · Wonderworker",
+    reposed: "1554",
+    feastDays: ["December 7"],
+    see: "(hermit)",
+    pronoun: "his",
+    shortBio:
+      "One of the celebrated hermits of Russia, who, as Mouravieff writes, worked out his salvation in the district of Tver. The calendar calls him the wonderworker of Seliger and gives his repose as 1554.",
+    entrySource:
+      "A. N. Mouravieff, A History of the Church of Russia, tr. R. W. Blackmore (1842), p. 96; the Church's calendar, December 7",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "patapius-of-egypt",
+    name: "St. Patapius of Egypt",
+    byname: "Patapius of Thebes",
+    epithet: "Hermit at Constantinople",
+    reposed: "Before the 8th century (Constantinople)",
+    feastDays: ["December 8"],
+    see: "(hermit)",
+    pronoun: "his",
+    shortBio:
+      "A native of Thebes in Egypt who passed his life as a hermit in the suburbs of Constantinople, and is much venerated in the East. He lived before the eighth century, and St. Andrew of Crete wrote three homilies on him.",
+    entrySource:
+      "A Dictionary of Christian Biography IV (1887), under Patapius; The Book of Saints (1921), under Patapius",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "sosthenes-apollos-cephas-and-tychicus",
+    name: "Sts. Sosthenes, Apollos, Cephas and Tychicus",
+    epithet: "Apostles of the Seventy",
+    reposed: "1st century",
+    feastDays: ["December 8"],
+    see: "(apostles of the Seventy)",
+    pronoun: "his",
+    shortBio:
+      "Four of the Seventy. Sosthenes, chief ruler of the synagogue at Corinth, was beaten before Gallio's judgment seat, and St. Paul names a brother Sosthenes with himself in First Corinthians. Apollos, a Jew of Alexandria mighty in the Scriptures, watered where Paul had planted. Tychicus of Asia, a beloved brother and faithful minister, Paul sent to Ephesus and Colossae. Cephas is one of the Seventy, not the apostle Peter.",
+    entrySource:
+      "Acts 18:17 to 19:1 and 20:4, 1 Corinthians 1:1 and 3:4-6, Ephesians 6:21-22 and Colossians 4:7-8 (King James Version); the Church's calendar, December 8",
+    life: [],
+    works: [
+      {
+        slug: "their-names-in-scripture",
+        title: "Their Names in Scripture",
+        subtitle: "Sosthenes, Apollos and Tychicus",
+        year: "1st century",
+        blurb:
+          "Every verse of the Acts and of St. Paul's letters that names Sosthenes, Apollos or Tychicus, in the King James Version.",
+        topics: ["Scripture", "Mission"],
+      },
+    ],
+  },
+
+  {
+    slug: "menas-hermogenes-and-eugraphus",
+    name: "Sts. Menas, Hermogenes and Eugraphus",
+    epithet: "Martyrs of Alexandria",
+    reposed: "Early 4th century (Alexandria)",
+    feastDays: ["December 10"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "Martyrs at Alexandria, where all three were beheaded. The Book of Saints makes Menas an Athenian sent by Galerius to quell a revolt in Egypt, who with Eugraphus, his subordinate, made many converts, Hermogenes the imperial prefect among them; Baring-Gould makes Menas a senator of Alexandria and Eugraphus his servant. The Dictionary of Christian Biography puts their death under Maximin.",
+    entrySource:
+      "The Book of Saints (1921), under Mennas, Hermogenes and Eugraphus; A Dictionary of Christian Biography II (1880), under Eugraphus; Baring-Gould, The Lives of the Saints XV (1898), December 10",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "joasaph-of-belgorod",
+    name: "St. Joasaph of Belgorod",
+    epithet: "Bishop of Belgorod",
+    reposed: "1754",
+    feastDays: ["December 10"],
+    see: "Belgorod",
+    pronoun: "his",
+    shortBio:
+      "Bishop of Belgorod, who reposed in 1754, as the Church's calendar records. No account of his life in public-domain English has been found, so his page holds only what the calendar keeps.",
+    entrySource:
+      "The Church's calendar, December 10",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "luke-the-new-stylite",
+    name: "St. Luke the New Stylite",
+    byname: "Luke of Chalcedon",
+    epithet: "Stylite of Chalcedon",
+    reposed: "979",
+    feastDays: ["December 11"],
+    see: "(stylite)",
+    pronoun: "his",
+    shortBio:
+      "A stylite of Chalcedon who reposed in 979, as the Church's calendar records. No account of his life in public-domain English has been found, so his page holds only what the calendar keeps.",
+    entrySource:
+      "The Church's calendar, December 11",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "eustratius-and-companions",
+    name: "Sts. Eustratius, Auxentius, Eugene, Mardarius and Orestes",
+    epithet: "Martyrs of Sebaste in Armenia",
+    reposed: "About 302, under Diocletian (Sebaste)",
+    feastDays: ["December 13"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "Five martyrs of Sebaste in Armenia, in the persecution of Diocletian, about 302; Eustratius was judged by the prefect Agricolaus. Eustratius was burned to death in a furnace and Orestes on a gridiron; the others were put to death in various ways. Their relics are venerated at Rome, in the church of St. Apollinaris.",
+    entrySource:
+      "The Book of Saints (1921), under Eustratius, Auxentius, Eugene, Mardarius and Orestes; A Dictionary of Christian Biography II (1880), under Eustratius (1)",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "lucia-of-syracuse",
+    name: "St. Lucia of Syracuse",
+    byname: "Lucy",
+    epithet: "Virgin-martyr of Sicily",
+    reposed: "304, under Diocletian (Syracuse)",
+    feastDays: ["December 13"],
+    see: "(martyr)",
+    pronoun: "her",
+    shortBio:
+      "A virgin of Syracuse, one of the most famous martyrs of the great persecution under Diocletian, in 304. Her Acts relate that she had vowed herself to God, refused the pagan suitor her mother Eutychia wished her to marry, and was denounced by him to the governor Paschasius. The sources differ on her death: by a sword through the throat, or in prison under later tortures.",
+    entrySource:
+      "A Dictionary of Christian Biography III (1882), under Lucia (1); The Book of Saints (1921), under Lucy; Baring-Gould, The Lives of the Saints XV (1898), December 13",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "thyrsus-leucius-and-callinicus",
+    name: "Sts. Thyrsus, Leucius and Callinicus",
+    epithet: "Martyrs of Bithynia",
+    reposed: "About 250, under Decius (Bithynia)",
+    feastDays: ["December 14"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "Martyrs of Bithynia in the reign of Decius, about 250, when Combritius, the governor, went round the province enforcing the edict against the Christians. Thyrsus, his arms and legs broken, died in prison; Leucius was hung up, torn with iron hooks and beheaded; Callinicus and others died by various deaths. The Greek Menaea keep them on December 14, the Roman calendar on January 28.",
+    entrySource:
+      "Baring-Gould, The Lives of the Saints I (1897), January 28; A Dictionary of Christian Biography III (1882), under Leucius (3)",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "philemon-apollonius-and-arrianus",
+    name: "Sts. Philemon, Apollonius and Arrianus",
+    epithet: "Martyrs of Egypt",
+    reposed: "About 303, under Diocletian (Alexandria)",
+    feastDays: ["December 14"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "Christians of Egypt in the persecution of Diocletian. Apollonius, a deacon, converted Philemon, and the two were tortured together at Antinoe; their constancy converted Arrianus, the magistrate who tortured them, and the prefect at Alexandria had all three drowned, probably about 303. The Greeks keep them on December 14, the Latins on March 8.",
+    entrySource:
+      "The Book of Saints (1921), under Philemon and Apollonius; A Dictionary of Christian Biography IV (1887), under Philemon (1); Baring-Gould, The Lives of the Saints III (1897), March 8",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "eleutherius-of-illyria",
+    name: "St. Eleutherius of Illyricum",
+    byname: "Eleutherius and his mother Anthia",
+    epithet: "Hieromartyr · Bishop of Illyricum",
+    reposed: "2nd century, under Hadrian",
+    feastDays: ["December 15"],
+    see: "Illyricum",
+    pronoun: "his",
+    shortBio:
+      "In his Acts, which Baring-Gould doubts, a bishop of Illyricum, son of the consul Eugenius and of Anthia, martyred with his mother in the reign of Hadrian; they were tortured and beheaded. Part of their relics was taken to Constantinople, where a church was built in their honour, and the Greeks keep them on December 15, the day the emperor Arcadius dedicated it in 400.",
+    entrySource:
+      "A Dictionary of Christian Biography II (1880), under Eleutherius (2); The Book of Saints (1921), under Eleutherius and Anthia; Baring-Gould, The Lives of the Saints IV (1897), April 18",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "stephen-of-surozh",
+    name: "St. Stephen of Surozh",
+    epithet: "Confessor · Archbishop of Surozh",
+    reposed: "8th century",
+    feastDays: ["December 15"],
+    see: "Surozh",
+    pronoun: "his",
+    shortBio:
+      "Archbishop of Surozh and a confessor, of the eighth century, as the Church's calendar records. No account of his life in public-domain English has been found, so his page holds only what the calendar keeps.",
+    entrySource:
+      "The Church's calendar, December 15",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "prophet-haggai",
+    name: "The Prophet Haggai",
+    byname: "Aggaeus",
+    epithet: "One of the Twelve Minor Prophets",
+    feastDays: ["December 16"],
+    see: "(prophet)",
+    pronoun: "his",
+    shortBio:
+      "One of the Twelve, by whose hand the word of the Lord came in the second year of Darius the king to Zorobabel and to Jesus the high priest, while the people said the time was not come to build the house of the Lord. He called them to build it, and said its latter glory would be greater than the former.",
+    entrySource:
+      "The Book of Haggai, in Brenton's Septuagint (1851)",
+    life: [],
+    works: [
+      {
+        slug: "the-prophecy-of-haggai",
+        title: "The Prophecy of Haggai",
+        subtitle: "His prophecy, whole",
+        year: "Before Christ",
+        blurb:
+          "The whole of his prophecy, two chapters, as the Septuagint gives it in Brenton's English.",
+        topics: ["Scripture", "Prophecy", "The Temple"],
+      },
+    ],
+  },
+
+  {
+    slug: "theophano-the-empress",
+    name: "St. Theophano the Empress",
+    epithet: "Empress · Wife of Leo VI the Wise",
+    reposed: "Late 9th century (Constantinople)",
+    feastDays: ["December 16"],
+    see: "(empress)",
+    pronoun: "her",
+    shortBio:
+      "Daughter of Constantine Martiniake and Anna, and wife of the emperor Leo VI, the Wise; she was crowned by her father-in-law, Basil the Macedonian. She was charitable and devout, free of jealousy, and never remembered an injury. Miracles began a few days after her death, and Leo built a church in her honour. Dunbar gives her death as 882 or 892; the calendar, about 894.",
+    entrySource:
+      "Agnes B. C. Dunbar, A Dictionary of Saintly Women II (1905), under Theophano; the Church's calendar, December 16",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "prophet-daniel",
+    name: "The Prophet Daniel and the Three Holy Youths",
+    byname: "Daniel, Ananias, Azarias and Misael",
+    epithet: "Prophet at Babylon · The three in the furnace",
+    feastDays: ["December 17"],
+    see: "(prophet)",
+    pronoun: "his",
+    shortBio:
+      "Daniel, Ananias, Azarias and Misael, of the children of Juda, whom Nabuchodonosor carried to Babylon and had taught the learning of the Chaldeans. The three would not worship the king's golden image and were cast into the burning fiery furnace, where the angel of the Lord came down to them; Daniel, a governor under Darius the Mede, was cast into the den of lions and delivered.",
+    entrySource:
+      "The Book of Daniel, in Brenton's Septuagint (1851)",
+    life: [],
+    works: [
+      {
+        slug: "the-book-of-daniel",
+        title: "The Book of Daniel",
+        subtitle: "His book, whole, with Susanna and Bel",
+        year: "Before Christ",
+        blurb:
+          "The whole of his book, fourteen chapters with the Song of the Three Children, Susanna, and Bel and the Dragon, as the Septuagint gives it in Brenton's English.",
+        topics: ["Scripture", "Prophecy", "Faith"],
+      },
+    ],
+  },
+
+  {
+    slug: "sebastian-and-companions",
+    name: "St. Sebastian and his Companions",
+    byname: "Sebastian of Rome",
+    epithet: "Martyrs of Rome under Diocletian",
+    reposed: "Late 3rd century, under Diocletian (Rome)",
+    feastDays: ["December 18"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "A soldier of Milan, where he commanded the first cohort, martyred at Rome under Diocletian. Shot with arrows and left for dead, he was found alive and healed by a pious woman, Irene; arrested again, he was beaten to death with clubs in the Hippodrome, and the matron Lucina buried him in the catacombs. Among his companions was Nicostratus, whom he converted, and who was martyred too.",
+    entrySource:
+      "A Dictionary of Christian Biography IV (1887), under Sebastianus (2) and Nicostratus (2); Baring-Gould, The Lives of the Saints I (1897), January 20",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "modestus-of-jerusalem",
+    name: "St. Modestus of Jerusalem",
+    epithet: "Patriarch of Jerusalem",
+    reposed: "633 or 634 (Jerusalem)",
+    feastDays: ["December 18"],
+    see: "Jerusalem",
+    pronoun: "his",
+    shortBio:
+      "Abbot of the monastery of St. Theodosius, consecrated to govern the see of Jerusalem after Chosroes sacked the city in 614 and carried the patriarch Zacharias into Persia. He gathered and buried the relics of the slain monks of St. Sabas, and restored the churches of the Holy Sepulchre, the Holy Cross and the Anastasis. He succeeded Zacharias on his death, in 633 by the Dictionary's reckoning, and held the see alone only nine months.",
+    entrySource:
+      "A Dictionary of Christian Biography III (1882), under Modestus (1)",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "boniface-of-tarsus",
+    name: "St. Boniface of Tarsus",
+    epithet: "Martyr",
+    reposed: "290 or 307 (Tarsus)",
+    feastDays: ["December 19"],
+    see: "(martyr)",
+    pronoun: "his",
+    shortBio:
+      "A Christian of Rome who went to Tarsus in Cilicia to recover the bodies of martyrs, and was himself tortured and beheaded there. His relics rest in the church dedicated to him on the Aventine in Rome, with those of St. Aglae, the woman joined to him before and after their conversion. The Greek Menaea keep him on December 19.",
+    entrySource:
+      "The Book of Saints (1921), under Boniface; Baring-Gould, The Lives of the Saints V (1898), May 14",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "elias-of-murom",
+    name: "St. Elias of Murom",
+    epithet: "Monk of the Kiev Caves",
+    reposed: "1188",
+    feastDays: ["December 19"],
+    see: "(monk)",
+    pronoun: "his",
+    shortBio:
+      "A monk of the Kiev Caves, called in the calendar the warrior-monk, who reposed in 1188. No account of his life in public-domain English has been found, so his page holds only what the calendar keeps.",
+    entrySource:
+      "The Church's calendar, December 19",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "john-of-kronstadt",
+    name: "St. John of Kronstadt",
+    byname: "John Sergieff",
+    epithet: "Priest of Kronstadt · Wonderworker",
+    reposed: "1908",
+    feastDays: ["December 20"],
+    see: "(priest)",
+    pronoun: "his",
+    shortBio:
+      "John Sergieff, a priest of Kronstadt, whose life, his translator wrote in 1897, was given to charity among the poor, the sick and the needy: great sums passed through his hands to the poor, and he stayed poor himself. He was with the emperor Alexander III at his last moments at Livadia. The Church's calendar names him wonderworker and pastor, and gives his repose as 1908.",
+    entrySource:
+      "My Life in Christ, tr. E. E. Goulaeff (London: Cassell, 1897), the dedication and the translator's preface; the Church's calendar, December 20",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "juliana-of-nicomedia",
+    name: "St. Juliana of Nicomedia",
+    epithet: "Virgin-martyr",
+    reposed: "304 or 306 (Nicomedia)",
+    feastDays: ["December 21"],
+    see: "(martyr)",
+    pronoun: "her",
+    shortBio:
+      "A virgin martyred in the persecution of Diocletian, said to have been beheaded at Nicomedia with a hundred and thirty other Christians, under Galerius. A Christian maiden of heathen parents, she would not marry the prefect Eleusius, being resolved not to marry a heathen. In the sixth century her relics were taken to Puteoli, near Naples. The Greeks keep her on December 21, the Latin martyrologies on February 16.",
+    entrySource:
+      "The Book of Saints (1921), under Juliana; A Dictionary of Christian Biography III (1882), under Juliana (3); Baring-Gould, The Lives of the Saints II (1897), February 16",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "anastasia-the-pharmakolytria",
+    name: "St. Anastasia the Deliverer from Poisons",
+    byname: "Anastasia Pharmakolytria",
+    epithet: "Great-martyr",
+    reposed: "304, under Diocletian",
+    feastDays: ["December 22"],
+    see: "(martyr)",
+    pronoun: "her",
+    shortBio:
+      "A martyr under Diocletian in 304, called the Deliverer from Poisons. She followed St. Chrysogonus into Illyria when he was taken there a prisoner, and was herself seized, tortured and burned alive on an island off the Gulf of Gaeta. Her relics were brought from Sirmium to Constantinople, by Pulcheria before 450 in one account, under the patriarch Gennadius in another.",
+    entrySource:
+      "A Dictionary of Christian Biography I (1877), under Anastasia; The Book of Saints (1921), under Anastasia; Baring-Gould, The Lives of the Saints XV (1898), December 25",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "chrysogonus",
+    name: "St. Chrysogonus",
+    epithet: "Martyr · Teacher of St. Anastasia",
+    reposed: "304, under Diocletian",
+    feastDays: ["December 22"],
+    see: "(martyr)",
+    pronoun: "his",
+    shortBio:
+      "A Roman priest, the spiritual guide of St. Anastasia in her care for the Christian prisoners, martyred in the persecution of Diocletian. The emperor had him brought before his own tribunal, at Nicomedia or, as others say, at Aquileia, and had him tortured and beheaded in 304. The Menology keeps him with St. Anastasia on December 22.",
+    entrySource:
+      "A Dictionary of Christian Biography I (1877), under Chrysogonus (4); The Book of Saints (1921), under Chrysogonus",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "ten-martyrs-of-crete",
+    name: "The Ten Martyrs of Crete",
+    epithet: "Theodulus, Saturninus, Euporus, Gelasius, Eunicianus, Zoticus, Cleomenes, Agathopodus, Basilides and Evaristus",
+    reposed: "250, under Decius (Gortyna)",
+    feastDays: ["December 23"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "Theodulus, Saturninus, Euporus, Gelasius, Eunicianus, Zoticus, Cleomenes, Agathopodus, Basilides and Evaristus, called the Cretan Martyrs, who suffered in the persecution of Decius in 250 and were all beheaded at Gortyna. Basilides was a layman of Cydonia in Crete. Their relics were afterwards taken to Rome.",
+    entrySource:
+      "The Book of Saints (1921), under Theodulus, Saturninus, Euporus, &c., and under Basilides; Baring-Gould, The Lives of the Saints XV (1898), December 23",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "niphon-of-cyprus",
+    name: "St. Niphon of Cyprus",
+    epithet: "Bishop in Cyprus",
+    reposed: "4th century",
+    feastDays: ["December 23"],
+    see: "Cyprus",
+    pronoun: "his",
+    shortBio:
+      "A bishop in Cyprus of the fourth century, as the Church's calendar records. No account of his life in public-domain English has been found, so his page holds only what the calendar keeps.",
+    entrySource:
+      "The Church's calendar, December 23",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "eugenia-of-rome",
+    name: "St. Eugenia",
+    byname: "Eugenia of Rome",
+    epithet: "Venerable-martyr",
+    reposed: "3rd century",
+    feastDays: ["December 24"],
+    see: "(martyr)",
+    pronoun: "her",
+    shortBio:
+      "A martyr of the third century, of whom the sources tell two stories. In the Dictionary of Christian Biography she is the daughter of Philippus, whom Commodus made governor of Alexandria, and disguised herself as a man and entered a monastery until she was found out. In The Book of Saints she is a learned Roman maiden, converted by her slaves Protus and Hyacinth, and put to death in her prison at Rome under Valerian, on Christmas Day, 257.",
+    entrySource:
+      "A Dictionary of Christian Biography II (1880), under Eugenia (1); The Book of Saints (1921), under Eugenia",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "theodore-the-branded",
+    name: "St. Theodore the Branded",
+    epithet: "Confessor · Monk of St. Sabbas",
+    reposed: "840 or 842 (in prison)",
+    feastDays: ["December 27"],
+    see: "(monk)",
+    pronoun: "his",
+    shortBio:
+      "A monk of the ninth century who, with his brother Theophanes, entered the monastery of St. Sabbas at Jerusalem. Under the iconoclast emperors of Constantinople the brothers stood for the faith and were imprisoned and banished again and again. Theodore died in prison; Theophanes survived the persecution and was made bishop of Nicaea.",
+    entrySource:
+      "The Book of Saints (1921), under Theodore and Theophanes; Baring-Gould, The Lives of the Saints XV (1898), December 27; the Church's calendar, December 27",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "martyrs-of-nicomedia",
+    name: "The Twenty Thousand Martyrs of Nicomedia",
+    epithet: "Burned at Nicomedia under Diocletian",
+    reposed: "Early 4th century, under Diocletian (Nicomedia)",
+    feastDays: ["December 28"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "Christians of Nicomedia, the imperial residence, put to death at the beginning of Diocletian's persecution: Anthimus their bishop and many of his flock, under suspicion of setting fire to the palace. The Greeks reckon some twenty thousand, and the Roman Martyrology tells of the faithful gathered in their church for the Nativity, shut in by the emperor's order and burned when they would not offer incense.",
+    entrySource:
+      "Eusebius, Church History VIII.6 (NPNF II 1, 1890); A Dictionary of Christian Biography IV (1887), under Nicomedia, Martyrs of; The Book of Saints (1921), under Nicomedia (Martyrs of); Baring-Gould, The Lives of the Saints XV (1898), December 25",
+    life: [],
+    works: [
+      {
+        slug: "the-martyrs-of-nicomedia",
+        title: "The Martyrs of Nicomedia",
+        subtitle: "As Eusebius tells it",
+        year: "c. 313 to 325",
+        blurb:
+          "Eusebius on the servants of the palace at Nicomedia, Peter, Dorotheus and Gorgonius, and on Anthimus the bishop and the multitude put to death with him at the beginning of the persecution. In the public-domain English of 1890.",
+        topics: ["Martyrdom", "Persecution"],
+      },
+    ],
+  },
+
+  {
+    slug: "holy-innocents",
+    name: "The Holy Innocents",
+    byname: "The children of Bethlehem",
+    epithet: "Slain by Herod in Bethlehem",
+    reposed: "At the birth of Christ (Bethlehem)",
+    feastDays: ["December 29"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "The children of Bethlehem and all its coasts, from two years old and under, whom Herod slew when he saw that he was mocked of the wise men, after Joseph had been warned in a dream to take the young Child and His mother into Egypt.",
+    entrySource:
+      "Matthew 2:13-18 (King James Version)",
+    life: [],
+    works: [
+      {
+        slug: "the-slaughter-of-the-innocents",
+        title: "The Slaughter of the Innocents",
+        subtitle: "In the Gospel of St. Matthew",
+        year: "1st century",
+        blurb:
+          "St. Matthew's account of the flight into Egypt and of the children of Bethlehem whom Herod slew, in the King James Version.",
+        topics: ["Scripture", "Martyrdom"],
+      },
+    ],
+  },
+
+  {
+    slug: "marcellus-of-the-unsleeping-ones",
+    name: "St. Marcellus of the Unsleeping Ones",
+    byname: "Marcellus the Acoemete",
+    epithet: "Abbot of the Acoemetae at Constantinople",
+    reposed: "About 485 (Constantinople)",
+    feastDays: ["December 29"],
+    see: "(abbot)",
+    pronoun: "his",
+    shortBio:
+      "A native of Apamea in Syria, who gave his fortune to his younger brother and the poor and joined the Acoemetae, the Unsleeping Ones, monks named for singing the Office day and night without a break. He became their abbot at Constantinople, founded several other monasteries, and was one of nineteen Orthodox abbots who stood together against the heresy of Eutyches. He died about 485.",
+    entrySource:
+      "The Book of Saints (1921), under Marcellus, Abbot; A Dictionary of Christian Biography III (1882), under Marcellus (8)",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "anysia-of-thessaloniki",
+    name: "St. Anysia of Thessaloniki",
+    epithet: "Martyr",
+    reposed: "December 30, 304 (Thessalonica)",
+    feastDays: ["December 30"],
+    see: "(martyr)",
+    pronoun: "her",
+    shortBio:
+      "A Christian woman of Thessalonica, of noble birth, put to death on December 30, 304, under Galerius, as she came into the city for the assembly of the faithful. The Book of Saints says she was arrested by order of Dulcitius, the governor; in Baring-Gould's account a heathen at the gate ran his sword into her side, and she bled to death on the spot, where the church of Thessalonica afterwards built an oratory.",
+    entrySource:
+      "The Book of Saints (1921), under Anysia; Baring-Gould, The Lives of the Saints XV (1898), December 30",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "zoticus-the-orphanmaster",
+    name: "St. Zoticus the Orphanmaster",
+    epithet: "Priest · Servant of the poor",
+    reposed: "4th century (Constantinople)",
+    feastDays: ["December 30"],
+    see: "(priest)",
+    pronoun: "his",
+    shortBio:
+      "A priest of the fourth century, a Roman by birth, who went to Constantinople when Constantine moved the capital there, and set up hospitals and refuges for the poor among the new buildings of the city. The calendar calls him the Orphanmaster, servant of the poor.",
+    entrySource:
+      "The Book of Saints (1921), under Zoticus; the Church's calendar, December 30",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "melania-the-younger",
+    name: "St. Melania the Younger",
+    epithet: "Of Rome · Founder of monasteries in Palestine",
+    born: "About 383 (Rome)",
+    reposed: "439 or 440",
+    feastDays: ["December 31"],
+    see: "(nun)",
+    pronoun: "her",
+    shortBio:
+      "Granddaughter of Melania the Elder, born at Rome about 383 and married at thirteen to Pinianus. When their two children died, the two sold all they had, gave it to the poor, and went to Palestine; at Bethlehem, with her mother Albina, she entered a convent and Pinianus became head of a monastery. She outlived him, and died on the last day of the year, in 439 or the year after.",
+    entrySource:
+      "A Dictionary of Christian Biography III (1882), under Melania (2); The Book of Saints (1921), under Melania the Younger and Pinianus; Baring-Gould, The Lives of the Saints XV (1898), December 31; Palladius, The Lausiac History LXI (tr. 1918)",
+    life: [],
+    works: [
+      {
+        slug: "life-of-melania-the-younger",
+        title: "The Life of St. Melania the Younger",
+        subtitle: "As Palladius tells it",
+        year: "c. 420",
+        blurb:
+          "Palladius's chapter on the granddaughter of Melania the Elder: her marriage and her renunciation, the riches she gave away across the empire, her fasting, and the welcome she and Pinianus gave him at Rome. In the public-domain English of 1918.",
+        topics: ["Almsgiving", "Asceticism", "Marriage"],
       },
     ],
   },

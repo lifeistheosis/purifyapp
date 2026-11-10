@@ -144,6 +144,7 @@
   "jerome-of-stridon/life-of-saint-hilarion": {"words":11395,"minutes":63,"sections":[[1,106],[2,351],[3,124],[4,358],[5,197],[6,214],[7,177],[8,88],[9,81],[10,68],[11,141],[12,240],[13,168],[14,202],[15,485],[16,104],[17,89],[18,229],[19,437],[20,98],[21,455],[22,446],[23,493],[24,324],[25,148],[26,309],[27,173],[28,234],[29,222],[30,282],[31,524],[32,393],[33,207],[34,260],[35,244],[36,180],[37,88],[38,255],[39,276],[40,168],[41,274],[42,272],[43,251],[44,485],[45,153],[46,67],[47,112],[48,143]]},
   "jerome-of-stridon/life-of-malchus-the-captive-monk": {"words":3396,"minutes":19,"sections":[[1,22],[2,267],[3,217],[4,442],[5,209],[6,174],[7,662],[8,269],[9,288],[10,613],[11,233]]},
   "jerome-of-stridon/the-perpetual-virginity-of-blessed-mary": {"words":10830,"minutes":60,"sections":[[1,367],[2,238],[3,161],[4,237],[5,1219],[6,219],[7,519],[8,397],[9,476],[10,91],[11,319],[12,147],[13,730],[14,491],[15,253],[16,619],[17,959],[18,540],[19,620],[20,208],[21,273],[22,224],[23,859],[24,532],[25,132]]},
+  "ambrose-of-milan/ambrose-in-the-witnesses": {"words":3838,"minutes":21,"sections":[[1,316],[2,242],[3,381],[4,361],[5,885],[6,1653]]},
   "victorinus-of-pettau/on-the-creation-of-the-world": {"words":1973,"minutes":11,"sections":[[1,1973]]},
   "theophan-the-recluse/way-of-a-pilgrim": {"words":35077,"minutes":195,"sections":[[1,5249],[2,14489],[3,1565],[4,13774]]},
   "cyprian-of-carthage/the-bishop-of-carthage": {"words":1457,"minutes":8,"sections":[[1,204],[2,251],[3,249],[4,177],[5,245],[6,331]]},
@@ -163,6 +164,8 @@
   "titus-of-crete/left-behind-in-crete": {"words":525,"minutes":3,"sections":[[1,190],[2,189],[3,146]]},
   "euplus-of-catania/the-deacon-with-the-book": {"words":458,"minutes":3,"sections":[[1,188],[2,137],[3,133]]},
   "seven-sleepers-of-ephesus/the-sleepers-of-ephesus": {"words":508,"minutes":3,"sections":[[1,113],[2,217],[3,178]]},
+  "peter-of-moscow/life-of-peter-of-moscow": {"words":1216,"minutes":7,"sections":[[1,1216]]},
+  "stephen-the-protomartyr/the-martyrdom-of-stephen": {"words":1838,"minutes":10,"sections":[[1,355],[2,1430],[3,53]]},
   "marcian-of-cyrrhus/life-of-marcian": {"words":851,"minutes":5,"sections":[[1,851]]},
   "acepsimas-joseph-and-aithalas/life-of-acepsimas": {"words":320,"minutes":2,"sections":[[1,320]]},
   "joannicius-the-great/life-of-joannicius": {"words":419,"minutes":2,"sections":[[1,419]]},
@@ -197,5 +200,14 @@
   "innocent-of-irkutsk/life-of-innocent-of-irkutsk": {"words":87,"minutes":1,"sections":[[1,87]]},
   "james-the-persian/martyrdom-of-james-the-persian": {"words":1665,"minutes":9,"sections":[[1,1665]]},
   "stephen-the-new/martyrdom-of-stephen-the-new": {"words":1831,"minutes":10,"sections":[[1,1831]]},
-  "frumentius-of-axum/life-of-frumentius": {"words":795,"minutes":4,"sections":[[1,692],[2,103]]}
+  "frumentius-of-axum/life-of-frumentius": {"words":795,"minutes":4,"sections":[[1,692],[2,103]]},
+  "prophet-nahum/the-prophecy-of-nahum": {"words":1311,"minutes":7,"sections":[[1,391],[2,393],[3,527]]},
+  "prophet-habakkuk/the-prophecy-of-habakkuk": {"words":1507,"minutes":8,"sections":[[1,428],[2,567],[3,512]]},
+  "prophet-zephaniah/the-prophecy-of-zephaniah": {"words":1675,"minutes":9,"sections":[[1,578],[2,420],[3,677]]},
+  "sosthenes-apollos-cephas-and-tychicus/their-names-in-scripture": {"words":484,"minutes":3,"sections":[[1,27],[2,18],[3,131],[4,25],[5,26],[6,50],[7,38],[8,40],[9,28],[10,52],[11,42],[12,7]]},
+  "prophet-haggai/the-prophecy-of-haggai": {"words":1183,"minutes":7,"sections":[[1,458],[2,725]]},
+  "prophet-daniel/the-book-of-daniel": {"words":15324,"minutes":85,"sections":[[1,570],[2,1492],[3,1600],[4,743],[5,1274],[6,971],[7,867],[8,885],[9,834],[10,1008],[11,644],[12,1514],[13,404],[14,1447],[15,1071]]},
+  "martyrs-of-nicomedia/the-martyrs-of-nicomedia": {"words":560,"minutes":3,"sections":[[1,560]]},
+  "holy-innocents/the-slaughter-of-the-innocents": {"words":190,"minutes":1,"sections":[[1,190]]},
+  "melania-the-younger/life-of-melania-the-younger": {"words":674,"minutes":4,"sections":[[1,674]]}
 }
