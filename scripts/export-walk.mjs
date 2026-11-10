@@ -1352,7 +1352,16 @@ await section(20, async () => {
 // browser, so the gain cannot quietly go back.
 await section(21, async () => {
   console.log("\n21. What every page carries");
-  const at = (file) => fs.readFileSync(path.join(OUT, "bible", "john", "1", file), "utf8");
+  // The layout's and the head's own files leave the bundle since 1.9
+  // (scripts/native-build.mjs, pruneRouterFiles), which keeps John 1's copies
+  // in .release-logs/router-files/ for this check. An older export still
+  // holds them beside the page.
+  const at = (file) => {
+    const inBundleFile = path.join(OUT, "bible", "john", "1", file);
+    return fs.readFileSync(fs.existsSync(inBundleFile) ? inBundleFile : path.resolve(".release-logs/router-files", file), "utf8");
+  };
+  const routerFiles = ["__next._index.txt", "__next._tree.txt", "__next._head.txt"].filter((f) => fs.existsSync(path.join(OUT, "bible", "john", "1", f)) || fs.existsSync(path.join(OUT, f)));
+  must(routerFiles.length === 0, `no page carries the router files that only led to pruned segment files${routerFiles.length ? ": " + routerFiles.join(", ") : ""} (they were 7.0 MB packed)`);
   // One line of a payload per client component it names.
   const named = (text) => text.split("\n").filter((row) => /^[0-9a-f]+:I\[/.test(row)).map((row) => (row.match(/"([^"]*)"\]$/) ?? [])[1] ?? "");
   const layout = named(at("__next._index.txt"));

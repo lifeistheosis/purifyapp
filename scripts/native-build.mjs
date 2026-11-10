@@ -362,6 +362,68 @@ function pruneSegmentCache(dir) {
   );
 }
 
+// Prune the three router files every page still carried beside its index.txt:
+// __next._index.txt, __next._tree.txt and __next._head.txt.
+//
+// They are the first step of a prefetch: the router reads a page's tree, then
+// asks for the segment files the tree names. Those segment files have been
+// gone since pruneSegmentCache above, so in the apps the first step only ever
+// led to a row of 404s, and a tapped link read the page's index.txt as it
+// always had. Measured on the 1.9 export (2026-11-10,
+// docs/1.9-build/notes/optimization-fable.md, item 1): 6,528 files, 23.4 MB on
+// disk, 7.0 MB packed, a tenth of what a phone downloads. __next._index.txt
+// was the same file, byte for byte, in all 2,176 pages.
+//
+// The router is written for a prefetch that fails: a tree that does not
+// answer marks the route rejected for ten seconds
+// (next/dist/client/components/segment-cache/cache.js, the `!response.ok`
+// branch that calls rejectRouteCacheEntry), and a navigation to a rejected
+// route asks for the whole page, which is index.txt.
+//
+// Verified before enabling, the way the two prunes above were: the export
+// served as the shells serve it with all three refused, and twelve screens
+// reached by the router (Today, Bible, John 1, Saints, a saint, Prayers,
+// Reading, Settings, Discover, Chants, Community, the shop). All arrived, no
+// page error. A cold start asked the bundle for 70 files where it had asked
+// for 124, because a refused tree ends the prefetch before the segment files
+// are asked for.
+//
+// Before they go, John 1's layout and head files are copied to
+// .release-logs/router-files/, where section 21 of scripts/export-walk.mjs
+// reads them: what every page's layout names and what its head carries is
+// still written into every index.txt, so that check keeps its meaning.
+//
+// Next writes these every build, so this runs each build.
+const ROUTER_FILES = ["__next._index.txt", "__next._tree.txt", "__next._head.txt"];
+
+function pruneRouterFiles(dir) {
+  const sample = path.join(ROOT, ".release-logs", "router-files");
+  fs.rmSync(sample, { recursive: true, force: true });
+  fs.mkdirSync(sample, { recursive: true });
+  for (const name of ROUTER_FILES) {
+    const from = path.join(dir, "bible", "john", "1", name);
+    if (fs.existsSync(from)) fs.copyFileSync(from, path.join(sample, name));
+  }
+  let files = 0;
+  let bytes = 0;
+  const walk = (d) => {
+    for (const entry of fs.readdirSync(d, { withFileTypes: true })) {
+      const p = path.join(d, entry.name);
+      if (entry.isDirectory()) {
+        if (entry.name !== "_next") walk(p);
+      } else if (entry.isFile() && ROUTER_FILES.includes(entry.name)) {
+        bytes += fs.statSync(p).size;
+        fs.rmSync(p);
+        files += 1;
+      }
+    }
+  };
+  if (fs.existsSync(dir)) walk(dir);
+  console.log(
+    `• pruned ${files} router file(s) that only led to pruned segment files, reclaimed ${(bytes / 1048576).toFixed(1)} MB`,
+  );
+}
+
 // Prune every page's own document, keeping the front door's.
 //
 // The export writes an index.html for every route: 1,923 of them on the
@@ -603,6 +665,7 @@ if (localContentEnabled()) {
 // the pruned files).
 pruneFullPayloadDuplicates(path.join(ROOT, "out"));
 pruneSegmentCache(path.join(ROOT, "out"));
+pruneRouterFiles(path.join(ROOT, "out"));
 prunePageDocuments(path.join(ROOT, "out"));
 pruneEmailPictures(path.join(ROOT, "out"));
 
