@@ -1554,3 +1554,84 @@ will.
 Found on the way: two older tests took for granted that where a reader comes
 from is copied to and from the account, which the new onboarding stops (his
 108). They hold in both states now (`a2333e5ac`).
+
+## 13. In 1.9 on his "everything in 1.9", and the roadmap after it (2026-11-10)
+
+His words: "Again, not off at release. I want everything in version 1.9"
+(about 15:50 UTC), then "rec yes to all" to the arbiter's timeline, "A now, B
+after" (about 16:45 UTC). So three things from this area's later list went
+into 1.9, and the rest became the start of the roadmap for 1.9.1 and after.
+
+### Built into 1.9
+
+**Readers who already answered are asked once (his 110).** The questions'
+version is 4 while the new onboarding is lit and 3 with it off
+(`lib/onboarding/state.ts`), so it follows the one flag. A reader who is
+back, with an account or without one, is greeted "We updated our
+onboarding", finds their earlier answers marked, and is asked once
+(`FirstRunGate.tsx`, `finishedEarlierVersion`). Three things hold for that
+reader because they are not new: they are never taken into the first test;
+the streak's rope and its evening card never wait behind the week's card
+(`lib/onboarding/useDayOne.ts`, `streakWaits`: for a new reader they do, and
+for this reader that would have hidden the evening warning on seven days);
+and the week's steps are called "Your next step". The counts' version is 6
+with the flag. No new words.
+
+Found on the way: ten scripts and two smoke tests stood for "a reader who
+has answered" by the number 3, and would all have met the questions. They
+use 99 now, which no version reaches. A new script does the same.
+
+Held by `lib/onboarding/__tests__/askedAgain.test.ts` and
+`node scripts/asked-again-walk.mjs`. Not checked from here: a real phone with
+a real reader's months of data. His install over the app he has is that check.
+
+**Plus, introduced once (his 111).** One card on Today a week after a new
+reader's questions, with the one Plus feature that fits their road, opening
+its Try it (`lib/onboarding/plusIntro.ts`, `RoadCards.tsx`, `PlusIntroCard`).
+The words are the feature's own, as the Plus sheet says them; none was
+written. Never a reader who is back, never where Plus is not sold, never the
+newcomer's road, never while a step of the week is up. Once.
+
+| Road | The feature |
+|---|---|
+| practicing | Remember the verse |
+| returning, catechumen | Reading plans |
+| catholic, seeker | History in full |
+| protestant, christian | Cross-references |
+| newcomer | none |
+
+It runs as a test against Purify as it is (`lib/ab/tests.ts`,
+`PLUS_INTRODUCED`: judged by Plus bought, readers coming back guarded,
+1,140 a version to tell 2 in 100 from 4 in 100). SHUT behind
+`PLUS_INTRO_LIVE` (`lib/onboarding/flags.ts`) until he has seen its stills;
+its days are set when it is lit. In Testers mode an admin who picks "card"
+sees it at once. It never runs beside the Plus sheet's order (the registry's
+new rule, `apart`). A purchase is rare, so this test may well end unsettled,
+and then Purify stays as it is.
+
+Held by `lib/onboarding/__tests__/plusIntro.test.ts` and
+`node scripts/plus-intro-walk.mjs`.
+
+**The Plus sheet's order** is next, the same way: built, shut, stills first.
+
+### The roadmap after 1.9, as put to him
+
+Sizes are working days of build, tests and stills, not his review rounds.
+
+| # | What | Size | Risk | Only he, or who |
+|---|---|---|---|---|
+| 6 | Reminders that need no account on the phones | 4 to 5 days, then a walk on a real Android phone and a real iPhone | High for a date: a new native part, and the Android build is shrunk | Both phone walks |
+| 7 | The reminders test (after a first prayer, or on the account card) | 1.5 days, after 6; it cannot start until the first test ends | Low | Nothing |
+| 8 | The door: Purify opening by the ad or link a reader came from | 5 days, a privacy sentence, a second native part on Android, his store pages | Medium; worth nothing until ads run by theme | Whether they will; the sentence; the store pages |
+| 9 | Two fuller sentences for a reminder that could not be turned on | Half a day with 20 languages | Low | His phone walk first, then yes to the words |
+| 10 | Words explained (about 100 terms) and the Bible's three bridges | 5 to 7 days | Doctrinal | Every entry read by him or a priest |
+| 11 | The road for a reader who comes with a need | 5 days | High: pastoral, close to health data, his 129 | Every line with a priest; the lawyer for the sentence |
+| 12 | The bridges in words (Rome, the Reformation, the Old Testament) | Two weeks or more, mostly writing | The highest here | A priest |
+| 13 | Framing lines on the first week's cards | A few days of writing | Doctrinal | The editorial queue |
+| 14 | Comparing the kinds of reader in the numbers | 2 days | Sensitive data | The lawyer (113) |
+| 15 | Removing the faith-background copies already in accounts | 1 day, a change to live data, its SQL signed | Live data | He, after the lawyer |
+| 16 | A first price or trial experiment | Hours, in RevenueCat's dashboard | A price | His word for that one test |
+
+Not code, still open: a reminder seen arriving on an Android phone (F-21,
+his 89); a native reader for the 20 translations and the German privacy
+sentences; his hour in Admin, Onboarding (114).
