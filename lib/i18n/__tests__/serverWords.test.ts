@@ -203,7 +203,9 @@ describe("the screens that were frozen in English", () => {
     const en = getMessages("en");
     for (const file of FIXED) {
       const keys = [...code(file).matchAll(/<T\s+k="([^"]+)"/g), ...code(file).matchAll(/titleKey="([^"]+)"/g)].map((m) => m[1]);
-      for (const key of keys) expect(en[key], `${file}: ${key}`).toBeTypeOf("string");
+      // A key drawn with a count (<T k="topics.citations" count={n} />, 1.9)
+      // is the base of its plural forms, which the island resolves (tn).
+      for (const key of keys) expect(en[key] ?? en[`${key}.one`] ?? en[`${key}.singular`], `${file}: ${key}`).toBeTypeOf("string");
     }
   });
 });

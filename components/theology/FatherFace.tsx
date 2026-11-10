@@ -3,6 +3,7 @@
 import { SaintFace } from "@/components/today/SaintFace";
 import { isNativeClient } from "@/lib/platform/native";
 import { medallionInitial } from "@/lib/theology/page";
+import { COVER_FACES } from "@/lib/today/saintFaces";
 import { useMounted } from "@/lib/useMounted";
 
 import { fatherPicture } from "./fatherPicture";
@@ -14,6 +15,12 @@ import { fatherPicture } from "./fatherPicture";
  * the app carries when it cannot be had (lib/today/saintFaces.ts), chosen on
  * the device; his initial in a ring when the app has no picture of him.
  * Decoration: his name, or the study's, is beside it.
+ *
+ * The frame is cut about his face, where his portrait has him to one side
+ * (1.9, build 89 note 2; lib/today/saintFaces.ts, faceShift and COVER_FACES):
+ * St Basil's face stood half out of it. A face is where it is in its
+ * picture, so the frame keeps its direction in Arabic (`dir`), as a picture
+ * does: it is not mirrored.
  */
 export function FatherFace({
   father,
@@ -34,11 +41,12 @@ export function FatherFace({
   return (
     <span
       aria-hidden
+      dir="ltr"
       className={`theology-face relative block shrink-0 overflow-hidden rounded-full bg-night-soft ${className ?? ""}`}
       style={{ width: size, height: size }}
     >
       {picture ? (
-        <SaintFace key={picture.src} picture={picture} zoom={zoom} />
+        <SaintFace key={picture.src} picture={picture} zoom={zoom} across={father?.slug ? COVER_FACES[father.slug]?.[0] : undefined} />
       ) : coming || !father ? null : (
         <span
           className="theology-all grid size-full place-items-center rounded-full font-serif font-bold text-paper/85"

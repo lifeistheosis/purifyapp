@@ -1,9 +1,13 @@
 import Link from "next/link";
-import { HERESIES } from "@/lib/heresies/heresies";
-import { COUNCILS } from "@/lib/councils/councils";
-import { OTHER_COUNCILS } from "@/lib/heresies/conciliar";
-import { TheologyShell } from "@/components/theology/TheologyShell";
+
 import { T } from "@/components/i18n/T";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { WayPage } from "@/components/theology/WayPage";
+import { WAY_FACT, WAY_H2, WAY_TITLE, WAY_TRAY } from "@/components/theology/wayStyle";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+import { Scroll } from "@/components/ui/icons/Scroll";
+import { HERESIES } from "@/lib/heresies/heresies";
+import { wayCounts } from "@/lib/theology/wayCounts";
 
 export const metadata = {
   title: "Heresies",
@@ -13,91 +17,86 @@ export const metadata = {
 
 export const revalidate = 3600;
 
-const councilByname = (slug: string) =>
-  COUNCILS.find((c) => c.slug === slug)?.byname;
-
-// Heresies, the dossier mode. A chronological record, grouped by era, each
-// entry showing the proponent and the council that condemned it. Compact,
-// archival, fact-first, no card grid.
-export default function HeresiesIndexPage() {
-  // Group by era in first-appearance order (the registry is already roughly
-  // chronological, one heresy per Ecumenical Council).
-  const eras: { era: string; items: typeof HERESIES }[] = [];
+/**
+ * Heresies, the record (1.9, build 89 note 2: the page behind the third of
+ * Theology's four buttons, revamped in the house style;
+ * docs/1.9-build/notes/theology-fable.md has the plan).
+ *
+ * The page's own bar, then the frame the four ways share
+ * (components/theology/WayPage.tsx), and in it the centuries in order, each
+ * a raised tray of the errors that arose in it (the registry is in that
+ * order, lib/heresies/heresies.ts): the scroll on its plate, as an error
+ * wears it on the path (components/theology/PathRead.tsx), the error's name,
+ * and the registry's own one line on it, which says what it claimed and, for
+ * most, which council named it. Who taught it, its other names and the
+ * council's own words are on its own page.
+ *
+ * Until 1.9 each error was four lines of text under a hairline, with no
+ * surface and no mark.
+ */
+export default async function HeresiesIndexPage() {
+  const counts = await wayCounts();
+  // By the century each arose in, in the registry's order.
+  const centuries: { era: string; errors: typeof HERESIES }[] = [];
   for (const h of HERESIES) {
-    const bucket = eras.find((e) => e.era === h.era);
-    if (bucket) bucket.items.push(h);
-    else eras.push({ era: h.era, items: [h] });
+    const last = centuries.find((c) => c.era === h.era);
+    if (last) last.errors.push(h);
+    else centuries.push({ era: h.era, errors: [h] });
   }
 
   return (
-    <TheologyShell>
-      <header>
-        <p className="font-sans text-caption font-semibold text-paper/70">
-          <T k="discover.tile.heresies" />
-        </p>
-        <h1 className="mt-3 font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper">
-          <T k="study.heresies.lead" />
-        </h1>
-        <p className="mt-5 font-serif text-body text-paper/80 leading-[1.75] max-w-[64ch]">
-          <T k="study.everyEcumenicalCouncilIsDefined" />
-        </p>
-      </header>
-
-      <div className="mt-12 space-y-10">
-        {eras.map(({ era, items }) => (
-          <section key={era}>
-            <p className="font-sans text-caption text-paper/40 border-b border-paper/[0.08] pb-2">
-              {era}
+    <>
+      <MobileTopBar titleKey="discover.tile.heresies" back backFallback="/theology" revealTitleOn={WAY_TITLE} searchPlace="theology" />
+      <WayPage
+        way="heresies"
+        counts={counts}
+        lead="study.heresies.lead"
+        note={
+          <>
+            <p>
+              <T k="study.everyEcumenicalCouncilIsDefined" />
             </p>
-            <ul className="mt-3 divide-y divide-paper/[0.07]">
-              {items.map((h) => {
-                const council =
-                  h.condemnedBy.map(councilByname).filter(Boolean)[0] ?? OTHER_COUNCILS[h.slug]?.[0]?.name;
-                return (
-                  <li key={h.slug}>
-                    <Link href={`/heresies/${h.slug}`} className="group block py-5">
-                      <div className="flex items-baseline justify-between gap-4">
-                        <h2 className="font-serif text-lede font-semibold text-paper leading-tight group-hover:text-paper transition-colors">
-                          {h.name}
-                        </h2>
-                        {council ? (
-                          // Shrinkable so long council names wrap on phones
-                          // instead of pushing the page into horizontal
-                          // scroll (shrink-0 clipped at 412px and below).
-                          <span className="max-w-[45%] font-sans text-caption text-paper/40 text-right leading-tight">
-                            <T k="study.condemnedAt" /> {council}
-                          </span>
-                        ) : null}
-                      </div>
-                      {/* Metadata line: the dossier header. */}
-                      <p className="mt-1.5 font-sans text-caption text-paper/55">
-                        {h.heresiarch}
-                        {h.alsoCalled?.length
-                          ? ` · also called ${h.alsoCalled.join(", ")}`
-                          : ""}
-                      </p>
-                      <p className="mt-2.5 font-serif text-ui text-paper/75 leading-[1.65]">
+            <p>
+              <T k="saints.see" />{" "}
+              <Link href="/councils" className="underline decoration-paper/30 underline-offset-4 hover:text-paper">
+                <T k="study.heresies.theCouncilsLink" />
+              </Link>{" "}
+              <T k="study.forTheDoctrineEachError" />
+            </p>
+          </>
+        }
+      >
+        {centuries.map(({ era, errors }, at) => (
+          <section key={era} data-century={era} aria-labelledby={`century-${at}`} className={at === 0 ? "mt-7" : "mt-8"}>
+            <div className="flex items-baseline justify-between gap-3">
+              <h2 id={`century-${at}`} lang="en" className={WAY_H2}>
+                {era}
+              </h2>
+              <span className={WAY_FACT}>{errors.length}</span>
+            </div>
+            <ul className={`${WAY_TRAY} mt-2.5`}>
+              {errors.map((h) => (
+                <li key={h.slug} className="theology-rule">
+                  <Link href={`/heresies/${h.slug}`} className="theology-row flex min-h-[56px] items-start gap-3 rounded-[14px] px-2 py-2.5">
+                    <span aria-hidden className="theology-plate mt-px grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
+                      <Scroll size={17} />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span lang="en" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92">
+                        {h.name}
+                      </span>
+                      <span lang="en" className="mt-[3px] block font-sans text-detail leading-[1.45] text-paper/60">
                         {h.shortBio}
-                      </p>
-                    </Link>
-                  </li>
-                );
-              })}
+                      </span>
+                    </span>
+                    <ChevronRight size={14} className="mt-[9px] shrink-0 text-paper/45 rtl:-scale-x-100" />
+                  </Link>
+                </li>
+              ))}
             </ul>
           </section>
         ))}
-      </div>
-
-      <p className="mt-12 border-t border-paper/[0.08] pt-6 font-sans text-detail text-paper/50 leading-[1.6]">
-        <T k="saints.see" />{" "}
-        <Link
-          href="/councils"
-          className="underline decoration-paper/30 underline-offset-4 hover:text-paper"
-        >
-          <T k="study.heresies.theCouncilsLink" />
-        </Link>{" "}
-        <T k="study.forTheDoctrineEachError" />
-      </p>
-    </TheologyShell>
+      </WayPage>
+    </>
   );
 }

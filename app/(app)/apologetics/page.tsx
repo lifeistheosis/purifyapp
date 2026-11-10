@@ -1,12 +1,13 @@
 import Link from "next/link";
 
-import {
-  APOLOGETICS_GROUP_ORDER,
-  APOLOGETICS_GROUP_LABEL,
-  apologeticsByGroup,
-} from "@/lib/apologetics/topics";
-import { TheologyShell } from "@/components/theology/TheologyShell";
 import { T } from "@/components/i18n/T";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { WayPage } from "@/components/theology/WayPage";
+import { WAY_FACT, WAY_H2, WAY_TITLE } from "@/components/theology/wayStyle";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+import { Shield } from "@/components/ui/icons/Shield";
+import { APOLOGETICS_GROUP_LABEL, APOLOGETICS_GROUP_ORDER, apologeticsByGroup } from "@/lib/apologetics/topics";
+import { wayCounts } from "@/lib/theology/wayCounts";
 
 export const metadata = {
   title: "Apologetics",
@@ -16,88 +17,76 @@ export const metadata = {
 
 export const revalidate = 3600;
 
-// Apologetics, the argument-driven mode. Grouped by the objection it answers,
-// each entry framed as a question taken up and replied to, with a clear path
-// to the deeper Doctrine study.
-export default function ApologeticsIndexPage() {
+/**
+ * Apologetics, the answers (1.9, build 89 note 2: the page behind the fourth
+ * of Theology's four buttons, revamped in the house style;
+ * docs/1.9-build/notes/theology-fable.md has the plan).
+ *
+ * The page's own bar, then the frame the four ways share
+ * (components/theology/WayPage.tsx), and in it the objections by kind, each
+ * kind named with its own line (lib/apologetics/topics.ts), each answer a
+ * raised card: the shield on its plate, the answer's name and its length,
+ * its line, and its summary whole, since there are few and a reader chooses
+ * by what an answer says. Nothing is cut short with dots (his build 86 note
+ * 76, of Discover's lines). What is planned and not yet written is not
+ * listed, as it is not counted.
+ *
+ * Until 1.9 each answer was text under a hairline, its summary cut at three
+ * lines.
+ */
+export default async function ApologeticsIndexPage() {
+  const counts = await wayCounts();
+  const kinds = APOLOGETICS_GROUP_ORDER.map((group) => ({
+    group,
+    label: APOLOGETICS_GROUP_LABEL[group],
+    answers: apologeticsByGroup(group).filter((answer) => !answer.planned),
+  })).filter((kind) => kind.answers.length > 0);
+
   return (
-    <TheologyShell>
-      <header>
-        <p className="font-sans text-caption font-semibold text-paper/70">
-          <T k="study.apologetics.title" />
-        </p>
-        <h1 className="mt-3 font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper">
-          <T k="study.apologetics.lead" />
-        </h1>
-        <p className="mt-5 font-serif text-body text-paper/80 leading-[1.75] max-w-[64ch]">
-          <T k="study.whereDoctrineAndTopicsArgue" />
-        </p>
-      </header>
-
-      <div className="mt-12 space-y-12">
-        {APOLOGETICS_GROUP_ORDER.map((group) => {
-          const list = apologeticsByGroup(group);
-          if (list.length === 0) return null;
-          const label = APOLOGETICS_GROUP_LABEL[group];
-          return (
-            <section key={group}>
-              <div className="border-b border-paper/10 pb-3">
-                <h2 className="font-serif text-title-sm text-paper leading-tight">
-                  {label.en}
-                </h2>
-                <p className="mt-1 font-serif italic text-detail text-paper/55 leading-[1.6]">
-                  {label.subtitle}
-                </p>
-              </div>
-
-              <ul className="mt-5 divide-y divide-paper/[0.07]">
-                {list.map((tp) => {
-                  const inner = (
-                    <>
-                      <div className="flex items-baseline justify-between gap-4">
-                        <p className="font-serif text-lede font-semibold text-paper leading-tight">
-                          {tp.title}
-                        </p>
-                        {tp.planned ? (
-                          <span className="shrink-0 font-sans text-caption text-paper/40">
-                            <T k="study.planned" />
-                          </span>
-                        ) : tp.estimatedMinutes ? (
-                          <span className="shrink-0 font-sans text-caption text-paper/40 tabular-nums">
-                            ~{tp.estimatedMinutes} <T k="study.min" />
-                          </span>
-                        ) : null}
-                      </div>
-                      {tp.subtitle ? (
-                        <p className="mt-1 font-serif italic text-detail text-paper/55 leading-[1.5]">
-                          {tp.subtitle}
-                        </p>
+    <>
+      <MobileTopBar titleKey="discover.tile.apologetics" back backFallback="/theology" revealTitleOn={WAY_TITLE} searchPlace="theology" />
+      <WayPage way="apologetics" counts={counts} lead="study.apologetics.lead" note={<p><T k="study.whereDoctrineAndTopicsArgue" /></p>}>
+        {kinds.map(({ group, label, answers }, at) => (
+          <section key={group} data-objection={group} aria-labelledby={`objection-${group}`} className={at === 0 ? "mt-7" : "mt-8"}>
+            <h2 id={`objection-${group}`} lang="en" className={WAY_H2}>
+              {label.en}
+            </h2>
+            <p lang="en" className="mt-1 font-sans text-caption leading-[1.42] text-paper/55">
+              {label.subtitle}
+            </p>
+            <ul className="mt-3 space-y-3">
+              {answers.map((answer) => (
+                <li key={answer.slug}>
+                  <Link href={`/apologetics/${answer.slug}`} data-answer-card={answer.slug} className="theology-tray press-card block rounded-[20px] p-3.5">
+                    <div className="flex items-center gap-3">
+                      <span aria-hidden className="theology-plate grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
+                        <Shield size={17} />
+                      </span>
+                      <h3 lang="en" className="min-w-0 flex-1 font-serif text-[17px] font-bold leading-tight text-paper">
+                        {answer.title}
+                      </h3>
+                      {answer.estimatedMinutes ? (
+                        <span className={WAY_FACT}>
+                          <T k="bible.minRead" replacements={{ minutes: answer.estimatedMinutes }} />
+                        </span>
                       ) : null}
-                      <p className="mt-2.5 font-serif text-ui text-paper/72 leading-[1.7] line-clamp-3">
-                        {tp.summary}
+                      <ChevronRight size={14} className="shrink-0 text-paper/45 rtl:-scale-x-100" />
+                    </div>
+                    {answer.subtitle ? (
+                      <p lang="en" className="mt-3 font-serif text-[14.5px] italic leading-[1.45] text-paper/80">
+                        {answer.subtitle}
                       </p>
-                    </>
-                  );
-                  return (
-                    <li key={tp.slug}>
-                      {tp.planned ? (
-                        <div className="block py-5 opacity-60">{inner}</div>
-                      ) : (
-                        <Link
-                          href={`/apologetics/${tp.slug}`}
-                          className="block py-5 transition-colors hover:bg-paper/[0.02]"
-                        >
-                          {inner}
-                        </Link>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          );
-        })}
-      </div>
-    </TheologyShell>
+                    ) : null}
+                    <p lang="en" className="mt-2 font-sans text-detail leading-[1.55] text-paper/60">
+                      {answer.summary}
+                    </p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </WayPage>
+    </>
   );
 }

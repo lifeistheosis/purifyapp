@@ -1,12 +1,11 @@
-import Link from "next/link";
-
-import {
-  THEOLOGY_GROUP_ORDER,
-  THEOLOGY_GROUP_LABEL,
-  topicsByGroup,
-} from "@/lib/theology/topics";
-import { TheologyShell } from "@/components/theology/TheologyShell";
 import { T } from "@/components/i18n/T";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { StudyShelves, type StudyShelf } from "@/components/theology/StudyShelves";
+import { WayPage } from "@/components/theology/WayPage";
+import { WAY_TITLE } from "@/components/theology/wayStyle";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
+import { pathSteps } from "@/lib/theology/pathSteps";
+import { wayCounts } from "@/lib/theology/wayCounts";
 
 export const metadata = {
   title: "Doctrine",
@@ -16,87 +15,42 @@ export const metadata = {
 
 export const revalidate = 3600;
 
-// Doctrine, the treatise library. Grouped by doctrinal category, text-first,
-// chapter-like. The richest, most formal of the four modes.
-export default function DoctrineIndexPage() {
+/**
+ * Doctrine, the treatises (1.9, build 89 note 2: the page behind the first
+ * of Theology's four buttons, revamped in the house style;
+ * docs/1.9-build/notes/theology-fable.md has the plan).
+ *
+ * The page's own bar, then the frame the four ways share
+ * (components/theology/WayPage.tsx), and in it the studies as shelves by
+ * subject, in the order of the Creed, each under its subject's icon
+ * (components/theology/StudyShelves.tsx). The shelves are the path's own
+ * studies (lib/theology/pathSteps.ts), so a study stands here under the
+ * subject it stands under on the path, by its registry's own title, wearing
+ * the same Father's face. lib/theology/__tests__/ways.test.ts holds every
+ * study the library has to a subject, so none is left off this page.
+ *
+ * Until 1.9 the studies were grouped by seven doctrinal categories of this
+ * page's own (THEOLOGY_GROUP_LABEL, lib/theology/topics.ts), a second map of
+ * the faith beside the hub's nine subjects, drawn as text under hairlines.
+ */
+export default async function DoctrineIndexPage() {
+  const [steps, counts] = await Promise.all([pathSteps(IS_STATIC_EXPORT), wayCounts()]);
+  const shelves: StudyShelf[] = steps
+    .map((step) => ({
+      id: step.id,
+      title: step.title,
+      line: step.line,
+      picture: step.picture.src,
+      studies: step.reads.filter((read) => read.kind === "study"),
+    }))
+    .filter((shelf) => shelf.studies.length > 0);
+
   return (
-    <TheologyShell>
-      <header>
-        <p className="font-sans text-caption font-semibold text-paper/70">
-          <T k="study.doctrine" />
-        </p>
-        <h1 className="mt-3 font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper">
-          <T k="study.theology.doctrineLead" />
-        </h1>
-        <p className="mt-5 font-serif text-body text-paper/80 leading-[1.75] max-w-[62ch]">
-          <T k="study.eachStudyLaysOutThe" />
-        </p>
-      </header>
-
-      <div className="mt-12 md:mt-14 space-y-12">
-        {THEOLOGY_GROUP_ORDER.map((group) => {
-          const list = topicsByGroup(group);
-          if (list.length === 0) return null;
-          const label = THEOLOGY_GROUP_LABEL[group];
-          return (
-            <section key={group}>
-              <div className="border-b border-paper/10 pb-3">
-                <h2 className="font-serif text-title-sm text-paper leading-tight">
-                  {label.en}
-                </h2>
-                <p className="mt-1 font-serif italic text-detail text-paper/55 leading-[1.6]">
-                  {label.subtitle}
-                </p>
-              </div>
-
-              <ul className="mt-5 divide-y divide-paper/[0.07]">
-                {list.map((tp) => {
-                  const inner = (
-                    <>
-                      <div className="flex items-baseline justify-between gap-4">
-                        <p className="font-serif text-lede font-semibold text-paper leading-tight">
-                          {tp.title}
-                        </p>
-                        {tp.planned ? (
-                          <span className="shrink-0 font-sans text-caption text-paper/40">
-                            <T k="study.planned" />
-                          </span>
-                        ) : tp.estimatedMinutes ? (
-                          <span className="shrink-0 font-sans text-caption text-paper/40 tabular-nums">
-                            ~{tp.estimatedMinutes} <T k="study.min" />
-                          </span>
-                        ) : null}
-                      </div>
-                      {tp.subtitle ? (
-                        <p className="mt-1 font-serif italic text-detail text-paper/55 leading-[1.5]">
-                          {tp.subtitle}
-                        </p>
-                      ) : null}
-                      <p className="mt-2.5 font-serif text-ui text-paper/72 leading-[1.7] line-clamp-3">
-                        {tp.summary}
-                      </p>
-                    </>
-                  );
-                  return (
-                    <li key={tp.slug}>
-                      {tp.planned ? (
-                        <div className="block py-5 opacity-60">{inner}</div>
-                      ) : (
-                        <Link
-                          href={`/theology/${tp.slug}`}
-                          className="block py-5 transition-colors hover:bg-paper/[0.02]"
-                        >
-                          {inner}
-                        </Link>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          );
-        })}
-      </div>
-    </TheologyShell>
+    <>
+      <MobileTopBar titleKey="study.doctrine" back backFallback="/theology" revealTitleOn={WAY_TITLE} searchPlace="theology" />
+      <WayPage way="doctrine" counts={counts} lead="study.theology.doctrineLead" note={<p><T k="study.eachStudyLaysOutThe" /></p>}>
+        <StudyShelves shelves={shelves} />
+      </WayPage>
+    </>
   );
 }

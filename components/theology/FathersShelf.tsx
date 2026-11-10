@@ -6,6 +6,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SaintFace } from "@/components/today/SaintFace";
 import { isNativeClient } from "@/lib/platform/native";
 import { medallionInitial, medallionName } from "@/lib/theology/page";
+import { COVER_FACES } from "@/lib/today/saintFaces";
 import { useMounted } from "@/lib/useMounted";
 
 import { fatherPicture } from "./fatherPicture";
@@ -31,9 +32,10 @@ export function FathersShelf({ fathers }: { fathers: { slug: string; name: strin
           return (
             <li key={f.slug} className="shrink-0">
               <Link href={`/saints/${f.slug}`} prefetch={false} className="tap-press flex w-[76px] flex-col items-center gap-1.5">
-                <span className="theology-face relative size-[52px] overflow-hidden rounded-full bg-night-soft">
+                {/* Cut about his face, as FatherFace cuts it (1.9); a picture is not mirrored. */}
+                <span dir="ltr" className="theology-face relative size-[52px] overflow-hidden rounded-full bg-night-soft">
                   {picture ? (
-                    <SaintFace key={picture.src} picture={picture} zoom={1.4} />
+                    <SaintFace key={picture.src} picture={picture} zoom={1.4} across={COVER_FACES[f.slug]?.[0]} />
                   ) : !onDevice ? null : (
                     <span aria-hidden className="theology-all grid size-full place-items-center rounded-full font-serif text-[17px] font-bold text-paper/85">
                       {medallionInitial(f.name)}

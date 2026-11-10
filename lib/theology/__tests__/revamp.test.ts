@@ -258,7 +258,10 @@ describe("the new screens' addresses", () => {
     for (const route of ["/theology", "/theology/path/salvation", "/theology/essence-energies/read", "/theology/essence-energies"]) {
       expect(shouldShowBack(route), route).toBe(false);
     }
-    expect(shouldShowBack("/theology/doctrine")).toBe(true);
+    // The doctrine index wears its own bar too since 1.9 (build 89 note 2,
+    // lib/theology/__tests__/ways.test.ts); the Creed by council keeps the back bar.
+    expect(shouldShowBack("/theology/doctrine")).toBe(false);
+    expect(shouldShowBack("/theology/creed")).toBe(true);
   });
 
   it("are each a screen of their own in the counts", () => {

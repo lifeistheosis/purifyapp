@@ -66,10 +66,21 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   /^\/walkthroughs\/[^/]+\/[^/]+$/,
   // A doctrine's own page (1.8, round 3 r3-04): the bar starts clear over
   // the subject's icon and turns solid with the study's name, as a saint's
-  // does, its way back leading to Theology. Not the doctrine index
-  // (/theology/doctrine) nor the Creed by council (/theology/creed, 1.9),
-  // which keep the back bar.
+  // does, its way back leading to Theology. Not the Creed by council
+  // (/theology/creed, 1.9), which keeps the back bar; the doctrine index
+  // (/theology/doctrine) is one of the four ways' own pages, below.
   /^\/theology\/(?!(?:doctrine|creed)$)[^/]+$/,
+  // The pages behind Theology's four buttons (1.9, build 89 note 2):
+  // Doctrine, Topics, Heresies and Apologetics each wear their own bar,
+  // whose title arrives once the page's heading has gone up under it, whose
+  // way back leads to Theology and whose search opens turned to Theology
+  // (components/theology/WayPage.tsx). Each wore this back bar, a chevron
+  // with no name, until then. Not the pages they list (a topic, a heresy, an
+  // answer), which keep the back bar.
+  /^\/theology\/doctrine$/,
+  /^\/topics$/,
+  /^\/heresies$/,
+  /^\/apologetics$/,
   // Theology's hub, a step of its path and a study read part by part (1.8,
   // round 3 r3-13): phone pages with their own bar, whose search opens
   // turned to Theology. The hub leads back to Discover, a step to the hub

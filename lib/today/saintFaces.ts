@@ -266,6 +266,26 @@ function carriedFace(file: string, src: string): QuoteFace | null {
 }
 
 /**
+ * A face in a small round frame, where the portrait has him to one side
+ * (1.9, build 89 note 2: St Basil's face stood half out of the frame beside
+ * the studies that quote him, since the frame was cut about the portrait's
+ * middle and he stands at its right). The frame brings the portrait closer
+ * (`zoom`) about the point his face is at, then moves it across so the face
+ * stands as near the frame's middle as the portrait's own edges allow: never
+ * so far that the frame shows past the picture's side.
+ *
+ * `across` is where the face is across the portrait, 0 to 1 (COVER_FACES
+ * above). The answer is a share of the frame's width, to the right when it
+ * is more than nothing. A portrait is as wide as its frame before it is
+ * brought closer, so a zoom of 1 leaves no room to move it at all.
+ */
+export function faceShift(across: number, zoom: number): number {
+  const room = Math.max(zoom - 1, 0);
+  const wanted = 0.5 - across;
+  return Math.min(across * room, Math.max(-(1 - across) * room, wanted));
+}
+
+/**
  * His face for a picture of his words (lib/share/verseCard.ts, QuoteFace):
  * his cover portrait, asked of the website in the apps, with the icon the app
  * carries for when it cannot be had, where its rights are recorded. A saint

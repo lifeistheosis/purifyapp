@@ -1,8 +1,16 @@
 import Link from "next/link";
-import { loadAllTopics } from "@/lib/topics/topics";
-import { getServerLocale } from "@/lib/i18n/server";
-import { TheologyShell } from "@/components/theology/TheologyShell";
+
 import { T } from "@/components/i18n/T";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { WayPage } from "@/components/theology/WayPage";
+import { WholeIcon } from "@/components/theology/WholeIcon";
+import { WAY_TITLE } from "@/components/theology/wayStyle";
+import { Book } from "@/components/ui/icons/Book";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+import { firstSentence } from "@/lib/theology/path";
+import { THEOLOGY_SUBJECTS } from "@/lib/theology/subjects";
+import { wayCounts } from "@/lib/theology/wayCounts";
+import { loadAllTopics } from "@/lib/topics/topics";
 
 export const metadata = {
   title: "Topics",
@@ -12,64 +20,84 @@ export const metadata = {
 
 export const revalidate = 3600;
 
-// Topics, the approachable mode. A focused question, a plain definition, and
-// the Fathers who confess it. Lighter than Doctrine, generous spacing,
-// definition-forward.
+/**
+ * Topics, the questions answered (1.9, build 89 note 2: the page behind the
+ * second of Theology's four buttons, revamped in the house style;
+ * docs/1.9-build/notes/theology-fable.md has the plan).
+ *
+ * The page's own bar, then the frame the four ways share
+ * (components/theology/WayPage.tsx), and in it one card for each question,
+ * in the order of the Creed: its subject's icon whole in its own light on a
+ * plate (the hub's nine plates; lib/theology/subjects.ts says which subject
+ * a question belongs to), the question's name, its short answer, and how
+ * many of the Fathers it cites. The short answer is the first sentence of
+ * the question's own definition, as the path gives it on the hub and on a
+ * step (lib/theology/path.ts, firstSentence): nothing is written for this
+ * page. A question no subject names yet follows the others by its name,
+ * with the book on a plate where its icon would stand.
+ *
+ * Until 1.9 the page printed each definition whole under hairlines, in the
+ * order of the alphabet, with its German written into this file; the words
+ * are the catalog's now, in every language.
+ */
 export default async function TopicsIndexPage() {
-  const topics = await loadAllTopics();
-  const locale = await getServerLocale();
-  const isDe = locale === "de";
+  const [topics, counts] = await Promise.all([loadAllTopics(), wayCounts()]);
+  const subjectOf = (slug: string) => THEOLOGY_SUBJECTS.findIndex((s) => s.topics.includes(slug));
+  const cards = topics
+    .map((topic) => {
+      const at = subjectOf(topic.slug);
+      return {
+        slug: topic.slug,
+        title: topic.title,
+        short: firstSentence(topic.definition),
+        citations: topic.citations.length,
+        // In the order of the Creed; a question no subject names comes after.
+        order: at < 0 ? THEOLOGY_SUBJECTS.length : at,
+        picture: at < 0 ? null : THEOLOGY_SUBJECTS[at].picture.src,
+      };
+    })
+    .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
 
   return (
-    <TheologyShell>
-      <header>
-        <p className="font-sans text-caption font-semibold text-paper/70">
-          {isDe ? "Themen" : "Topics"}
-        </p>
-        <h1 className="mt-3 font-serif text-display-sm md:text-display font-bold leading-[1.08] tracking-[-0.02em] text-paper">
-          {isDe
-            ? "Was die Väter über jede Lehre bekannten."
-            : <T k="topics.h1" />}
-        </h1>
-        <p className="mt-5 font-serif text-body text-paper/80 leading-[1.75] max-w-[62ch]">
-          {isDe
-            ? "Ein Lehr-Index für Suchende, Katechumenen und Laienapologeten. Wähle ein Thema und lies, was die Väter bekannten, wobei jedes Zitat unmittelbar auf das Werk verweist, dem es entstammt."
-            : "A doctrinal index for enquirers, catechumens, and lay apologists. Pick a topic and read what the Fathers confessed, with each citation linking straight to the work it is drawn from."}
-        </p>
-      </header>
-
-      {topics.length === 0 ? (
-        <p className="mt-12 font-serif italic text-body text-paper/55 leading-[1.7]">
-          {isDe
-            ? "Noch keine kuratierten Themen. Die ersten Einträge landen, sobald die Redaktion sie schreibt; schau bald wieder vorbei."
-            : "No curated topics yet. The first entries are landing as the editorial team writes them; check back soon."}
-        </p>
-      ) : (
-        <ul className="mt-12 divide-y divide-paper/[0.07] border-t border-paper/[0.07]">
-          {topics.map((tp) => (
-            <li key={tp.slug}>
-              <Link href={`/topics/${tp.slug}`} className="group block py-6">
-                <p className="font-serif text-title-sm font-semibold text-paper leading-tight group-hover:text-paper transition-colors">
-                  {tp.title}
-                </p>
-                <p className="mt-2 font-serif text-ui text-paper/72 leading-[1.7]">
-                  {tp.definition}
-                </p>
-                <p className="mt-3 font-sans text-caption text-paper/80">
-                  {tp.citations.length}{" "}
-                  {isDe
-                    ? tp.citations.length === 1
-                      ? "Zitat aus den Vätern"
-                      : "Zitate aus den Vätern"
-                    : tp.citations.length === 1
-                      ? "citation from the Fathers"
-                      : "citations from the Fathers"}
-                </p>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </TheologyShell>
+    <>
+      <MobileTopBar titleKey="discover.tile.topics" back backFallback="/theology" revealTitleOn={WAY_TITLE} searchPlace="theology" />
+      <WayPage way="topics" counts={counts} lead="topics.h1" note={<p><T k="topics.intro" /></p>}>
+        {cards.length === 0 ? (
+          <p className="mt-7 font-sans text-detail leading-[1.6] text-paper/60">
+            <T k="topics.emptyState" />
+          </p>
+        ) : (
+          <ul data-topic-cards="" className="mt-7 space-y-3">
+            {cards.map((card, at) => (
+              <li key={card.slug}>
+                <Link href={`/topics/${card.slug}`} data-topic-card={card.slug} className="theology-tray press-card flex items-start gap-3.5 rounded-[20px] p-3">
+                  {card.picture ? (
+                    <span aria-hidden data-row-picture="" className="path-plate w-[78px] shrink-0">
+                      <WholeIcon src={card.picture} eager={at < 4} className="aspect-[4/5] w-full rounded-[3px]" />
+                    </span>
+                  ) : (
+                    <span aria-hidden className="theology-plate grid size-10 shrink-0 place-items-center rounded-[12px] text-paper/85">
+                      <Book size={19} />
+                    </span>
+                  )}
+                  <div className="min-w-0 flex-1 py-0.5">
+                    <h2 lang="en" className="font-serif text-[17px] font-bold leading-tight text-paper">
+                      {card.title}
+                    </h2>
+                    <p lang="en" className="mt-[5px] font-serif text-[14px] italic leading-[1.48] text-paper/80">
+                      {card.short}
+                    </p>
+                    <p className="mt-2 flex items-center justify-between gap-3 font-sans text-caption text-paper/55">
+                      <T k="topics.citations" count={card.citations} />
+                      <ChevronRight size={14} className="shrink-0 rtl:-scale-x-100" />
+                    </p>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </WayPage>
+    </>
   );
 }

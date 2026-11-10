@@ -5,9 +5,12 @@
 //
 // Round 3 r3-13 (the owner's hybrid of B and C, the same day) revamped the
 // hub, a doctrine's page and its reading (lib/theology/__tests__/
-// revamp.test.ts holds those now). What is still r3-04's is held here: the
-// library's search on the four ways' own pages, its kinds as rows, the
-// related studies as rows, and no pill clouds.
+// revamp.test.ts holds those now), and 1.9 (build 89 note 2) the four ways'
+// own pages, Doctrine, Topics, Heresies and Apologetics, which wear their
+// own bar with its search now (lib/theology/__tests__/ways.test.ts). What is
+// still r3-04's is held here: the library's search as a pill on the pages
+// those four list, its kinds as rows, the related studies as rows, and no
+// pill clouds.
 //
 // What a reader would notice if this broke: a cloud of pills again, a search
 // pill that hides the last line of a page or sits under the mini player, or
@@ -39,14 +42,17 @@ const SEARCH = "components/theology/TheologySearch.tsx";
 const SHELF = "components/theology/FathersShelf.tsx";
 const RAIL = "components/theology/RelatedRail.tsx";
 
-describe("the library's search on the four ways' own pages", () => {
-  it("floats as a pill on the doctrine index and the Topics, Heresies and Apologetics pages", () => {
+describe("the library's search on the pages the four ways list", () => {
+  it("floats as a pill on a topic, a heresy, an answer and the shell the Creed by council wears", () => {
     for (const file of ["components/theology/TheologyShell.tsx", "app/(app)/topics/[slug]/page.tsx", "app/(app)/heresies/[slug]/page.tsx", "app/(app)/apologetics/[slug]/page.tsx"]) {
       expect(code(file), file).toContain("<TheologySearch />");
     }
-    // The doctrine index and the Topics, Heresies and Apologetics indexes wear the shell.
+    expect(code("app/(app)/theology/creed/page.tsx")).toContain("<TheologyShell");
+    // The four ways' own pages left the shell in 1.9 (build 89 note 2): each
+    // asks the bar's search, turned to Theology, as the hub has since r3-13.
     for (const file of ["app/(app)/theology/doctrine/page.tsx", "app/(app)/topics/page.tsx", "app/(app)/heresies/page.tsx", "app/(app)/apologetics/page.tsx"]) {
-      expect(code(file), file).toContain("<TheologyShell");
+      expect(code(file), file).toContain('searchPlace="theology"');
+      expect(code(file), file).not.toContain("TheologyShell");
     }
   });
 

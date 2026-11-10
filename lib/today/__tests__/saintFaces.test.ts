@@ -20,6 +20,7 @@ import {
   SAYING_FACES,
   SHAREABLE_ICONS,
   coverFile,
+  faceShift,
   placePortrait,
   quoteFace,
   saintPicture,
@@ -319,5 +320,57 @@ describe("the faces for the saints' words", () => {
 
   it("keeps the lit cross for St Alexander of Alexandria, whose own icon has no recorded rights", () => {
     expect(quoteFace(brief("alexander-of-alexandria"), false)).toBeNull();
+  });
+});
+
+// A face in a small round frame (1.9, build 89 note 2). Beside the studies
+// that quote him, St Basil's face stood half out of its frame: the frame was
+// cut about the portrait's middle, and his portrait has him at its right.
+// What a reader would notice if this broke: a Father's vestment in the frame
+// and his face cut by its edge, or the frame showing past the picture's side.
+describe("a face in a small round frame", () => {
+  /** The frame brings a portrait this close in Theology's rows and on its shelf of faces. */
+  const ZOOM = 1.4;
+
+  it("leaves a portrait that has him in its middle where it was", () => {
+    expect(faceShift(0.5, ZOOM)).toBe(0);
+    expect(faceShift(0.5, 1)).toBe(0);
+  });
+
+  it("has no room to move a portrait it does not bring closer", () => {
+    for (const across of [0.2, 0.74, 0.9]) expect(faceShift(across, 1)).toBeCloseTo(0, 10);
+  });
+
+  it("brings every cover's face nearer the middle, and never shows past the picture's side", () => {
+    const faces = Object.entries(COVER_FACES);
+    expect(faces.length).toBeGreaterThan(40);
+    for (const [slug, [across]] of faces) {
+      const shift = faceShift(across, ZOOM);
+      // Where his face stands across the frame: it was (across - 0.5) * zoom from the middle.
+      const now = across + shift;
+      const before = 0.5 + (across - 0.5) * ZOOM;
+      expect(Math.abs(now - 0.5), slug).toBeLessThanOrEqual(Math.abs(before - 0.5) + 1e-9);
+      // Inside the frame's circle with room about it: its middle three fifths.
+      expect(now, slug).toBeGreaterThanOrEqual(0.3);
+      expect(now, slug).toBeLessThanOrEqual(0.7);
+      // The picture's two sides are still at or past the frame's.
+      expect(across - ZOOM * across + shift, slug).toBeLessThanOrEqual(1e-9);
+      expect(across + ZOOM * (1 - across) + shift, slug).toBeGreaterThanOrEqual(1 - 1e-9);
+    }
+    // St Basil, who stands at his portrait's right: from 0.84 of the way across to 0.64.
+    expect(COVER_FACES["basil-the-great"][0] + faceShift(COVER_FACES["basil-the-great"][0], ZOOM)).toBeCloseTo(0.636, 3);
+  });
+
+  it("is what Theology's faces are cut by, and only where a face's place is known", () => {
+    const read = (file: string) => fs.readFileSync(path.join(process.cwd(), file), "utf8");
+    const face = read("components/today/SaintFace.tsx");
+    expect(face).toContain("const fx = cover && across !== undefined ? across : null;");
+    expect(face).toContain("transform: `translateX(${+(faceShift(fx, zoom) * 100).toFixed(2)}%) scale(${zoom})`,");
+    // Left out, the frame is cut about the middle, as it always was (Today's saint).
+    expect(face).toContain("? { transform: `scale(${zoom})`, transformOrigin: `50% ${focusY}%` }");
+    expect(read("components/theology/FatherFace.tsx")).toContain("across={father?.slug ? COVER_FACES[father.slug]?.[0] : undefined}");
+    expect(read("components/theology/FathersShelf.tsx")).toContain("across={COVER_FACES[f.slug]?.[0]}");
+    // A picture is not mirrored: its frame keeps its direction in Arabic.
+    expect(read("components/theology/FatherFace.tsx")).toMatch(/aria-hidden\s+dir="ltr"/);
   });
 });

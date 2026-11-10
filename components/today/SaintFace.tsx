@@ -3,7 +3,7 @@
 import { useState, type CSSProperties } from "react";
 
 import { cn } from "@/lib/cn";
-import { ICON_FOCUS, type SaintPicture } from "@/lib/today/saintFaces";
+import { ICON_FOCUS, faceShift, type SaintPicture } from "@/lib/today/saintFaces";
 import { useArrivingImage } from "@/lib/ui/useArrivingImage";
 
 /**
@@ -23,9 +23,25 @@ import { useArrivingImage } from "@/lib/ui/useArrivingImage";
  * page could listen is read from the <img> itself.
  *
  * `zoom` brings the face closer for a small round frame, about the face.
+ * `across` (1.9) is where his face is across his portrait, 0 to 1, for a
+ * portrait that has him to one side: the frame is then cut about his face
+ * and not about the portrait's middle (lib/today/saintFaces.ts, faceShift).
+ * Left out, the frame is cut about the middle, as it always was. The icon
+ * the app carries is a figure standing in its middle, so it is never moved.
  * The picture is decoration: the name beside it says who it is.
  */
-export function SaintFace({ picture, zoom = 1, className }: { picture: SaintPicture; zoom?: number; className?: string }) {
+export function SaintFace({
+  picture,
+  zoom = 1,
+  across,
+  className,
+}: {
+  picture: SaintPicture;
+  zoom?: number;
+  /** Where the face is across the cover portrait, 0 to 1 (COVER_FACES). */
+  across?: number;
+  className?: string;
+}) {
   const sources = picture.kind === "cover" && picture.fallback ? [picture.src, picture.fallback] : [picture.src];
   const [at, setAt] = useState(0);
   const [jpegOnly, setJpegOnly] = useState(false);
@@ -41,9 +57,18 @@ export function SaintFace({ picture, zoom = 1, className }: { picture: SaintPict
   const { ref, onArrive } = useArrivingImage(key, failed);
   if (!src) return null;
   const focusY = cover ? picture.focusY : ICON_FOCUS;
+  // About his face where the portrait has him to one side; else about the middle.
+  const fx = cover && across !== undefined ? across : null;
   const style: CSSProperties = {
     objectPosition: `50% ${focusY}%`,
-    ...(zoom !== 1 ? { transform: `scale(${zoom})`, transformOrigin: `50% ${focusY}%` } : {}),
+    ...(zoom === 1
+      ? {}
+      : fx === null
+        ? { transform: `scale(${zoom})`, transformOrigin: `50% ${focusY}%` }
+        : {
+            transform: `translateX(${+(faceShift(fx, zoom) * 100).toFixed(2)}%) scale(${zoom})`,
+            transformOrigin: `${+(fx * 100).toFixed(2)}% ${focusY}%`,
+          }),
   };
   return (
     <picture className="contents">
