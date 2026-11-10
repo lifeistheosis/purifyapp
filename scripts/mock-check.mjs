@@ -312,6 +312,25 @@ function boxes(selector) {
     return -1;
   };
   const els = [...root.querySelectorAll("*")].filter((e) => !(e.closest("svg") && e.tagName.toLowerCase() !== "svg"));
+  // What is seen of a box, across: cut to every frame inside the part that
+  // hides what spills out of it (overflow hidden or clip). A picture zoomed in
+  // its frame around its own focus (lib/prayers/iconCrops.ts) spills past the
+  // frame unevenly, by the picture's own subject, which stays where it is in
+  // Arabic, as a picture should; the frame is what is placed, and it mirrors.
+  // A scroller (overflow auto or scroll) is not a frame: what it scrolls out
+  // of sight is still compared.
+  const seen = (e, r) => {
+    let left = r.left;
+    let right = r.right;
+    for (let p = e.parentElement; p && p !== root; p = p.parentElement) {
+      const o = getComputedStyle(p).overflowX;
+      if (o !== "hidden" && o !== "clip") continue;
+      const q = p.getBoundingClientRect();
+      left = Math.max(left, q.left);
+      right = Math.min(right, q.right);
+    }
+    return { left, right, width: right - left };
+  };
   // What text flow places (a highlight inside a sentence, a link in a line)
   // is not layout: English inside an Arabic line keeps its own order, which
   // is right. Boxes are compared; words are not.
@@ -321,8 +340,9 @@ function boxes(selector) {
     return d.startsWith("inline") && !/flex|grid/.test(parent);
   };
   for (const e of els) {
-    const r = e.getBoundingClientRect();
-    if (r.width < 1 || r.height < 1 || pinned(e) || flowed(e)) continue;
+    const whole = e.getBoundingClientRect();
+    const r = seen(e, whole);
+    if (r.width < 1 || whole.height < 1 || pinned(e) || flowed(e)) continue;
     const words = (e.getAttribute("aria-label") || e.innerText || "").replace(/\s+/g, " ").trim();
     index.set(e, out.length);
     // Text set left or right, not start or end, stays put in Arabic.
@@ -569,6 +589,9 @@ const FIXTURES = `
     <button type="button" role="radio" aria-checked="true" class="hit-44">New</button>
     <button type="button" role="radio" aria-checked="false" class="hit-44">Old (Julian)</button>
   </div>
+  <span class="relative mt-3 block h-[72px] w-[72px] overflow-hidden rounded-[18px] bg-night-soft">
+    <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="absolute inset-0 h-full w-full object-cover" style="object-position:30% 40%;transform:scale(1.25);transform-origin:30% 40%">
+  </span>
 </div>`;
 
 async function selfTest() {
