@@ -481,7 +481,8 @@ export function PlansDock({
     : null;
   const cancel = place === "store" ? t("plus.billedThroughStore") : chosen ? t("plus.billedOnWeb") : null;
   const renews = terms || cancel ? t("plus.fine.renews") : null;
-  const links = "inline-flex min-h-11 items-center transition-colors hover:text-paper";
+  // 44 by 44 to the touch, however short the word ("Terms" is 34px wide).
+  const links = "inline-flex min-h-11 min-w-11 items-center justify-center transition-colors hover:text-paper";
 
   return (
     <div

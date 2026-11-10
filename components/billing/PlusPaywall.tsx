@@ -705,10 +705,10 @@ export function FooterRow({
           {busy === "restore" ? t("plus.restoring") : t("plus.restore")}
         </button>
       ) : null}
-      <Link href="/terms" className="inline-flex min-h-11 items-center hover:text-paper">
+      <Link href="/terms" className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-paper">
         {t("shop.terms")}
       </Link>
-      <Link href="/privacy" className="inline-flex min-h-11 items-center hover:text-paper">
+      <Link href="/privacy" className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-paper">
         {t("footer.privacy")}
       </Link>
     </div>
