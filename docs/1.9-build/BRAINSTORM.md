@@ -834,3 +834,5 @@ Claude's proposal, for his word:
 - **Free and Plus:** Scripture and quotes of one's own for everyone; the
   whole library (saints, Fathers, prayers, chants) and the styles in Plus,
   shown with the Plus mark.
+
+**The onboarding, built (his word, 2026-11-10, about 03:25 UTC):** "and also start working on and implement the revised on boarding system with new sections or new screens". The Fable onboarding chat builds it from its own notes (`notes/onboarding-fable.md`): phase 1 (the road, the first week on four roads), phase 3's account step out of the questions, phase 4 (the other roads and the questions' new shape), then phase 2's A/B system with no test running. Behind one flag, off for readers and on for testers, so 1.9 ships with or without it and he tries it first; lit for readers only on his word. Where his word is pending it builds to its recs, which are his questions page's 105 to 112; 113 (an hour with a lawyer on holding a reader's faith background) and 114 (the onboarding numbers in the admin) are his alone. Not this round: phases 5 to 9, any price or trial, which plan is free. Stills of every new screen go to him before any push.
