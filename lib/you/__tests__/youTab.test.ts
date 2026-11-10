@@ -157,7 +157,11 @@ describe("black, white and grey, on every palette", () => {
     for (const rule of [".you-mark-lit {\n filter: none;", ".you-go,\nhtml[data-reading-mode=\"parchment\"] .you-progress-lit {\n box-shadow: none;"]) {
       expect(css, rule).toContain(rule);
     }
-    expect(css).toMatch(/html\[data-reading-mode="parchment"\] \.you-hero-ink \{/);
+    // The words over the Ladder stand in the house's halo of the page's own
+    // ground (.words-halo, held in lib/ui/__tests__/wordsOnPictures.test.ts),
+    // which is paper on Parchment: no black shadow under the ink there.
+    expect(code(WHO)).toMatch(/const NAME = "words-halo /);
+    expect(css).not.toContain(".you-hero-ink");
     expect(css).toMatch(/html\[data-reading-mode="parchment"\] \.you-lit \{/);
     expect(css).toMatch(/html\[data-reading-mode="black"\] \.you-lit \{\s*box-shadow: inset 0 0 0 1px rgb\(255 255 255 \/ 0\.1\);/);
   });

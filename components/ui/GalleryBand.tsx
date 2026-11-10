@@ -135,7 +135,7 @@ export function GalleryBand({
         </Heading>
         <span
           className={cn(
-            "font-sans text-caption text-paper/70",
+            "words-halo font-sans text-caption text-paper/80",
             tall ? cn("mt-1.5 leading-[1.4]", kicker ? "line-clamp-2" : "line-clamp-4") : "mt-1 line-clamp-2 leading-[1.38]",
           )}
         >

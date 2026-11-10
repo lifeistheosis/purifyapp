@@ -68,11 +68,11 @@ export function PrayersHero({ children }: { children?: ReactNode }) {
 
       <figure className="prayers-hero-verse prayers-hero-in relative px-5">
         <blockquote>
-          <p className="font-heading text-title font-bold leading-[1.1] tracking-[-0.01em] text-paper text-balance">
+          <p className="words-halo font-heading text-title font-bold leading-[1.1] tracking-[-0.01em] text-paper text-balance">
             {t("ui.prayWithoutCeasing")}
           </p>
         </blockquote>
-        <figcaption className="mt-1.5 font-serif text-detail italic text-paper/70">{t("ui.1Thessalonians517")}</figcaption>
+        <figcaption className="words-halo mt-1.5 font-serif text-detail italic text-paper/85">{t("ui.1Thessalonians517")}</figcaption>
       </figure>
 
       {children ? <div className="prayers-hero-in prayers-hero-rule relative mt-10">{children}</div> : null}

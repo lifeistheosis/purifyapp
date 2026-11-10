@@ -136,7 +136,7 @@ export function FeaturedWork({
                   priority
                   hold="parent"
                   onArrive={() => setReady(card.key)}
-                  className="w-[200px] shadow-[0_32px_70px_-26px_rgba(0,0,0,0.9)] md:w-[220px]"
+                  className={cn("w-[200px] md:w-[220px]", styles.posterShadow)}
                 />
               </Link>
             </div>

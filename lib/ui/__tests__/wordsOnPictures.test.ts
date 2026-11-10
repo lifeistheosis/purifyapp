@@ -1,0 +1,142 @@
+import fs from "node:fs";
+import path from "node:path";
+
+import { describe, expect, it } from "vitest";
+
+/**
+ * Words on a picture (1.9, the Themes chat's sweep: docs/1.9-build/notes/
+ * themes-fable.md, section 25). A picture has no one colour, so these words
+ * were measured by the pixels behind them, on all five palettes, with
+ * scripts/words-on-pictures.mjs: Prayers' verse ("Pray without ceasing."
+ * at 1.93:1 on Light), You's lines ("Private on this device" at 1.40:1 to
+ * 2.38:1 on all five), Discover's card lines (3.07:1 to 4.49:1), the line
+ * under the reading room's poster on Light (3.63:1) and the Plus pill over
+ * the Pantocrator (3.07:1 on Candlelight). What mended each is held here: a
+ * soft edge of the page's own ground at the letters (.words-halo), each
+ * line's ink at the share it was measured at, the poster's warm shade on
+ * Light and the plate under the pill. To change one, measure it again.
+ */
+
+const ROOT = process.cwd();
+const read = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8").replace(/\r\n/g, "\n");
+const bare = (text: string) => text.replace(/\/\*[\s\S]*?\*\//g, "");
+const CSS = bare(read("app/globals.css"));
+
+/** The body of the one rule whose selector is exactly this. */
+function rule(css: string, selector: string): string {
+  const found = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter((m) => m[1].trim() === selector);
+  expect(found, `one rule for ${selector}`).toHaveLength(1);
+  return found[0][2];
+}
+/** A palette's own colour, as rgb channels. */
+function own(selector: string, name: string): string {
+  const at = CSS.indexOf(`\n${selector} {`);
+  const body = CSS.slice(at, CSS.indexOf("}", at));
+  const hex = new RegExp(`${name}:\\s*(#[0-9a-f]{6})`, "i").exec(body)?.[1] ?? "";
+  expect(hex, `${selector} ${name}`).toMatch(/^#[0-9a-f]{6}$/i);
+  return [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(" ");
+}
+
+describe("the house's halo for words on a picture", () => {
+  /** A shadow's layers: its commas outside any brackets. */
+  const layers = (value: string) => {
+    const out = [""];
+    let depth = 0;
+    for (const ch of value) {
+      if (ch === "(") depth++;
+      if (ch === ")") depth--;
+      if (ch === "," && depth === 0) out.push("");
+      else out[out.length - 1] += ch;
+    }
+    return out.map((layer) => layer.trim());
+  };
+
+  it("is an edge of the page's own ground at the letters: no offset, no black, inside the line's own leading", () => {
+    const body = rule(CSS, ".words-halo");
+    const values = [...body.matchAll(/text-shadow:\s*([^;]+);/g)].map((m) => m[1].replace(/\s+/g, " ").trim());
+    expect(values).toHaveLength(2);
+    const [plain, mixed] = values;
+    for (const value of values) {
+      const each = layers(value);
+      expect(each, value).toHaveLength(3);
+      // Centred on the letters, never thrown one way as a drop shadow is.
+      for (const layer of each) expect(layer, layer).toMatch(/^0 0 \d+px /);
+      const blurs = each.map((layer) => Number(/^0 0 (\d+)px/.exec(layer)?.[1]));
+      // A clamped or truncated line hides what overflows its box, and cut a
+      // wider halo there into a dark rectangle (Discover's card lines).
+      expect(Math.max(...blurs), "it stays inside a line's own leading").toBeLessThanOrEqual(6);
+      expect(value).not.toMatch(/rgb\(0 0 0|rgba\(0, ?0, ?0|#000\b/);
+    }
+    // The ground on every palette, and Dark's own first for a WebView without color-mix.
+    for (const layer of layers(mixed)) expect(layer).toMatch(/color-mix\(in srgb, var\(--color-night\) \d+%, transparent\)$/);
+    expect(plain).toContain(`rgb(${own("@theme", "--color-night")} / `);
+  });
+
+  it("is paper under the ink on Light, an old WebView's too", () => {
+    const body = rule(CSS, 'html[data-reading-mode="parchment"] .words-halo');
+    const [plain, mixed] = [...body.matchAll(/text-shadow:\s*([^;]+);/g)].map((m) => m[1].replace(/\s+/g, " ").trim());
+    expect(plain).toContain(`rgb(${own('html[data-reading-mode="parchment"]', "--color-night")} / `);
+    for (const layer of layers(mixed)) expect(layer).toMatch(/var\(--color-night\)/);
+  });
+});
+
+describe("the words that wear it, at the ink they were measured at", () => {
+  // In the order each file writes them; a share of 100 is the ink itself.
+  const WORN = [
+    { file: "components/mobile/PrayersHero.tsx", what: ["the verse", "its citation"], at: [100, 85] },
+    { file: "components/you/YouIdentity.tsx", what: ["the name", "the line under it", "where things are kept"], at: [100, 90, 100] },
+    { file: "components/ui/GalleryBand.tsx", what: ["a card's line"], at: [80] },
+  ];
+
+  for (const { file, what, at } of WORN) {
+    it(`${file}: ${what.join(", ")}`, () => {
+      const classes = [...read(file).matchAll(/"([^"]*\bwords-halo\b[^"]*)"/g)].map((m) => m[1]);
+      expect(classes, "each line that stands on the picture").toHaveLength(at.length);
+      classes.forEach((cls, i) => {
+        const share = /(?:^|\s)text-paper(?:\/(\d+))?(?:\s|$)/.exec(cls);
+        expect(share, `${what[i]}: its ink`).not.toBeNull();
+        const got = share?.[1] ? Number(share[1]) : 100;
+        expect(got, `${what[i]}: measured at ${at[i]} percent of the ink`).toBeGreaterThanOrEqual(at[i]);
+      });
+    });
+  }
+
+  it("leaves no older shadow of its own on You's words", () => {
+    expect(CSS).not.toContain(".you-hero-ink");
+  });
+});
+
+describe("the reading room's poster", () => {
+  const ROOM = bare(read("components/reading/room.module.css"));
+
+  it("throws a warm shade on Light, softer, and keeps its deep one on the dark", () => {
+    expect(read("components/reading/FeaturedWork.tsx")).toContain('className={cn("w-[200px] md:w-[220px]", styles.posterShadow)}');
+    expect(rule(ROOM, ".posterShadow")).toMatch(/box-shadow: 0 32px 70px -26px rgb\(0 0 0 \/ 0\.9\);/);
+    const light = rule(ROOM, 'html[data-reading-mode="parchment"] .posterShadow');
+    expect(light).toMatch(/box-shadow: [^;]*rgb\(70 52 20 \/ 0\.\d+\);/);
+    expect(light).not.toMatch(/rgb\(0 0 0/);
+  });
+});
+
+describe("the Plus pill where the bar stands over a picture", () => {
+  it("lays its silver over the same plate as the bar's round buttons, over both pictures", () => {
+    const plates = [...CSS.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find((m) =>
+      m[1].includes("html:has(.prayers-hero):not([data-bar-solid]) [data-tab-actions] > button"),
+    );
+    expect(plates, "the plates' rule").toBeDefined();
+    const selectors = (plates?.[1] ?? "").split(",").map((s) => s.trim());
+    for (const hero of [".you-hero", ".prayers-hero"]) {
+      expect(selectors).toContain(`html:has(${hero}):not([data-bar-solid]) [data-tab-actions] .premium-pill`);
+    }
+    expect(plates?.[2]).toMatch(/background-color: rgb\(16 16 19 \/ 0\.55\);\s*background-color: color-mix\(in srgb, var\(--color-night\) 55%, transparent\);/);
+  });
+});
+
+describe("the pixel walk", () => {
+  it("measures every place this file holds", () => {
+    const tool = read("scripts/words-on-pictures.mjs");
+    for (const place of ["prayers", "you", "discover", "reading", '"pill-prayers"', '"pill-you"']) {
+      expect(tool, place).toMatch(new RegExp(`\\n  ${place}: \\{ to: "/`));
+    }
+  });
+});

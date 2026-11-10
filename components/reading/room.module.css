@@ -91,6 +91,17 @@
     );
 }
 
+/* The poster stands on the stage in a deep shadow. On Light it is the
+   house's warm shade, softer: black at nine tenths fell on the line under
+   the poster on a phone and held it to 3.66:1 by the pixels (the Themes
+   chat's sweep, docs/1.9-build/notes/themes-fable.md section 25). */
+.posterShadow {
+  box-shadow: 0 32px 70px -26px rgb(0 0 0 / 0.9);
+}
+html[data-reading-mode="parchment"] .posterShadow {
+  box-shadow: 0 24px 44px -24px rgb(70 52 20 / 0.45);
+}
+
 /* On Light the stage is the page itself: the picture a faint grey on paper,
    and the light a shade darker, as the house bloom is on paper. */
 html[data-reading-mode="parchment"] .heroArt {

@@ -32,8 +32,8 @@ import { useMyPicture } from "@/lib/profile/myPicture";
 /** Who is here: not known yet, nobody, or a reader with a name. */
 export type YouWho = { state: "unknown" } | { state: "out" } | { state: "in"; id: string; name: string };
 
-const NAME = "you-hero-ink block truncate font-heading text-[30px] font-bold leading-[1.15] tracking-[-0.01em] text-paper";
-const UNDER = "you-hero-ink mt-1 flex items-center gap-1.5 font-sans text-detail text-paper/80";
+const NAME = "words-halo block truncate font-heading text-[30px] font-bold leading-[1.15] tracking-[-0.01em] text-paper";
+const UNDER = "words-halo mt-1 flex items-center gap-1.5 font-sans text-detail text-paper/90";
 
 /** The Pro cross draws its ring in the crimson token: on You it is the ink. */
 const INK = { "--color-crimson": "var(--color-paper)" } as CSSProperties;
@@ -51,7 +51,7 @@ export function YouIdentity({ who }: { who: YouWho }) {
   const known = who.state === "out";
   return (
     <div data-you-who={who.state} aria-hidden={known ? undefined : true} className={cn(!known && "invisible")}>
-      <p className="you-hero-ink mb-2.5 font-sans text-caption text-paper/75">{t("ui.privateOnThisDeviceNo")}</p>
+      <p className="words-halo mb-2.5 font-sans text-caption text-paper">{t("ui.privateOnThisDeviceNo")}</p>
       <Link
         href="/signin?next=/account"
         data-you-signin={known ? "" : undefined}

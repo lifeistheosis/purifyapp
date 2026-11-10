@@ -1681,13 +1681,44 @@ html.is-native .prayers-hero {
  padding-top: calc(var(--hero-top) + 6.5rem);
 }
 
+/* Words on a picture (1.9, the Themes chat's sweep: docs/1.9-build/notes/
+   themes-fable.md, section 25). A picture has no one colour, so words over
+   one stand in a soft edge of the page's own ground, close at the letters:
+   dark under light words on a dark palette, paper under the ink on Light.
+   Not a glow and not a box. It stays inside a line's own leading, six
+   pixels at most, because a line that is clamped or truncated hides what
+   overflows its box, and a wider halo was cut there into a dark rectangle
+   (seen on Discover's two-line card lines). Prayers' verse,
+   You's name and lines and Discover's card lines wear it, each at an ink
+   share measured by the pixels behind it on all five palettes
+   (scripts/words-on-pictures.mjs), and lib/ui/__tests__/wordsOnPictures.test.ts
+   holds them. The plain values first are for a WebView without color-mix
+   (Android before 111). */
+.words-halo {
+ text-shadow: 0 0 1px rgb(16 16 19 / 0.95), 0 0 3px rgb(16 16 19 / 0.9), 0 0 6px rgb(16 16 19 / 0.8);
+ text-shadow:
+  0 0 1px color-mix(in srgb, var(--color-night) 95%, transparent),
+  0 0 3px color-mix(in srgb, var(--color-night) 90%, transparent),
+  0 0 6px color-mix(in srgb, var(--color-night) 80%, transparent);
+}
+html[data-reading-mode="parchment"] .words-halo {
+ text-shadow: 0 0 1px rgb(241 232 212 / 0.95), 0 0 3px rgb(241 232 212 / 0.9), 0 0 6px rgb(241 232 212 / 0.8);
+ text-shadow:
+  0 0 1px color-mix(in srgb, var(--color-night) 95%, transparent),
+  0 0 3px color-mix(in srgb, var(--color-night) 90%, transparent),
+  0 0 6px color-mix(in srgb, var(--color-night) 80%, transparent);
+}
+
 /* The bar over the picture: clear, its round buttons on plates, until the
    picture has gone up under it, when the page's hero sets data-bar-solid on
    <html> (components/mobile/barOverPicture.ts). Decided by html:has(), as
    the one bar on a phone is above, so the bar is clear from the first paint;
    a WebView without :has() keeps the solid bar. The plates are the page
-   bar's above, and the pill keeps its own silver while it sells; held, its
-   graphite stands on the same plate (data-pill-held, MobilePremiumButton).
+   bar's above. The pill keeps its own silver while it sells, laid over the
+   same plate (the Themes chat's sweep: over the Pantocrator its word read
+   3.07:1 on Candlelight and 3.49:1 on Monastery, and on the plate 5.6:1 and
+   over); held, its graphite stands on the plate (data-pill-held,
+   MobilePremiumButton).
    On the web the bar is not pinned, so it is lifted to stand over the
    picture it covers. Phones only. Prayers' Pantocrator and, from note 71,
    You's Ladder. */
@@ -1703,7 +1734,9 @@ html.is-native .prayers-hero {
  }
  html:has(.you-hero):not([data-bar-solid]) [data-tab-actions] > button,
  html:has(.you-hero):not([data-bar-solid]) [data-tab-actions] [data-pill-held],
+ html:has(.you-hero):not([data-bar-solid]) [data-tab-actions] .premium-pill,
  html:has(.prayers-hero):not([data-bar-solid]) [data-tab-actions] [data-pill-held],
+ html:has(.prayers-hero):not([data-bar-solid]) [data-tab-actions] .premium-pill,
  html:has(.prayers-hero):not([data-bar-solid]) [data-tab-actions] > button {
   border-radius: 9999px;
   /* For a WebView without color-mix (Android before 111). */
@@ -2913,9 +2946,6 @@ html[data-reading-mode="black"] .shop-raise {
 .you-hero-who[data-you-who-place="out"] {
  padding-top: calc(var(--hero-top) + 5.6rem);
 }
-.you-hero-ink {
- text-shadow: 0 2px 16px rgb(0 0 0 / 0.7);
-}
 .you-hero-ring {
  box-shadow: 0 0 0 1.5px rgb(255 255 255 / 0.85), 0 0 18px rgb(255 255 255 / 0.35), 0 10px 22px -8px rgb(0 0 0 / 0.9);
 }
@@ -2933,9 +2963,6 @@ html[data-reading-mode="black"] .shop-raise {
 }
 .you-mark-lit {
  filter: drop-shadow(0 0 3px rgb(255 255 255 / 0.45));
-}
-html[data-reading-mode="parchment"] .you-hero-ink {
- text-shadow: 0 1px 12px rgb(241 232 212 / 0.9);
 }
 html[data-reading-mode="parchment"] .you-hero-ring {
  box-shadow: 0 0 0 1.5px rgb(43 35 23 / 0.75), 0 10px 22px -10px rgb(70 52 20 / 0.5);
