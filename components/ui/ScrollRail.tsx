@@ -33,6 +33,7 @@ import { useCallback, useEffect, useRef, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { scrollBehavior } from "@/lib/ui/motion";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
+import { useScrollTicks } from "@/lib/ui/scrollTicks";
 
 /** How close to an end, in px, still counts as being at it. */
 const EDGE = 6;
@@ -48,6 +49,7 @@ export function ScrollRail({
   fade = "from-night",
   arrows = true,
   snap = false,
+  ticks = false,
 }: {
   children: ReactNode;
   /** Names the row for assistive technology. */
@@ -70,10 +72,13 @@ export function ScrollRail({
   arrows?: boolean;
   /** Settle on an item when the scroll stops. For rows of cards. */
   snap?: boolean;
+  /** A small click in the hand as each item passes the row's middle, in the apps (lib/ui/scrollTicks.ts). */
+  ticks?: boolean;
 }) {
   const wrap = useRef<HTMLDivElement | null>(null);
   const track = useRef<HTMLElement | null>(null);
   const settled = useRef(false);
+  useScrollTicks(track, { enabled: ticks });
 
   const measure = useCallback(() => {
     const el = track.current;

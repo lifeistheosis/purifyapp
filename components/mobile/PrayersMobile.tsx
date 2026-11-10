@@ -12,21 +12,13 @@ import { PrayersHero } from "./PrayersHero";
 import { PictureTile, SoftTileGrid, FeatureBand } from "./SoftTiles";
 import { PrayNow } from "@/components/prayers/PrayNow";
 import { PrayerBookContents } from "@/components/prayers/PrayerBookContents";
+import { PrayerPieces } from "@/components/prayers/PrayerPieces";
 import { RuleToday } from "@/components/prayers/RuleToday";
 import { CARD, CARD_BG, PILL } from "@/components/ui/Graphite";
-import { ScrollRail } from "@/components/ui/ScrollRail";
 import { cn } from "@/lib/cn";
 import { T } from "@/components/i18n/T";
 
 /** The quick ways in, the same five the desktop hero carries. */
-const QUICK = [
-  { href: "/prayers/morning", k: "prayers.rule.morning.title" },
-  { href: "/prayers/evening", k: "prayers.rule.evening.title" },
-  { href: "/prayers/hours", k: "prayers.hours" },
-  { href: "/prayers/akathists", k: "prayers.akathists" },
-  { href: "/prayers/learning", k: "ui.learnToPray" },
-] as const;
-
 /** A section's name, as the design sets "All prayers": Lora, no label over it. */
 const H2 = "text-lede leading-tight tracking-[-0.005em] text-paper";
 
@@ -88,22 +80,16 @@ export function PrayersMobile() {
       }
     >
       {/* All prayers: the quick ways in, one row scrolled sideways and
-          bleeding to the screen's edges. A ScrollRail like the shop's rows,
-          so the end that has more to show fades into the page. */}
+          bleeding to the screen's edges, each a small piece with its icon
+          (components/prayers/PrayerPieces.tsx), in a ScrollRail like the
+          shop's rows, so the end that has more to show fades into the page. */}
       <section aria-labelledby="prayers-all">
         <h2 id="prayers-all" className={H2}>
           <T k="prayers.allPrayers" />
         </h2>
         <nav aria-labelledby="prayers-all" className="-mx-5 mt-3">
-          <ScrollRail as="ul" arrows={false} trackClassName="gap-2 px-5 pb-1">
-            {QUICK.map((q) => (
-              <li key={q.href}>
-                <Link href={q.href} className={cn(PILL, "whitespace-nowrap px-4 text-detail")}>
-                  <T k={q.k} />
-                </Link>
-              </li>
-            ))}
-          </ScrollRail>
+          {/* Small pieces, not pills (1.9, build 89 note 10). */}
+          <PrayerPieces hourNow={hourNow} />
         </nav>
       </section>
 

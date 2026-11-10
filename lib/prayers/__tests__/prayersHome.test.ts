@@ -143,10 +143,31 @@ describe("your rule today", () => {
 });
 
 describe("the rest of the page", () => {
+  it("draws All prayers as small pieces, not a row of pills, with a tick as each passes (build 89 note 10)", () => {
+    // His words on build 89: "I'm kind of getting sick of the like floating
+    // pills". Each way in is a piece: its own picture, its name, and its length
+    // or its one line, in a row that gives a small click in the hand as each
+    // piece passes its middle (lib/ui/scrollTicks.ts, in the apps only).
+    const pieces = code("components/prayers/PrayerPieces.tsx");
+    expect(pieces).toMatch(/<ScrollRail[^>]*\bticks\b/);
+    expect(pieces).toContain("data-prayer-piece={p.href}");
+    expect(pieces).toContain("<ArrivingImage");
+    expect(pieces).toContain("{p.name}");
+    expect(pieces).toContain("{p.line ?");
+    expect(pieces).not.toContain("PILL");
+    expect(code("components/ui/ScrollRail.tsx")).toContain("useScrollTicks(track, { enabled: ticks })");
+    const page = code(PAGE);
+    expect(page).toContain("<PrayerPieces hourNow={hourNow} />");
+    // The pill row is gone from All prayers.
+    const all = page.slice(page.indexOf('aria-labelledby="prayers-all"'), page.indexOf("</section>", page.indexOf('aria-labelledby="prayers-all"')));
+    expect(all).not.toContain("PILL");
+  });
+
   it("keeps every door the 1.7 page had", () => {
     // Today's prayer went from a tile to a row of the daily rule (note 72),
     // which the book's own file holds.
-    const page = [code(PAGE), code(BOOK), code("lib/prayers/book.ts")].join("\n");
+    // All prayers' pieces (1.9, build 89 note 10) are their own file.
+    const page = [code(PAGE), code(BOOK), code("lib/prayers/book.ts"), code("components/prayers/PrayerPieces.tsx")].join("\n");
     for (const href of [
       "/prayers/morning",
       "/prayers/evening",
