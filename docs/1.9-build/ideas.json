@@ -1929,6 +1929,20 @@
    "version": null,
    "outcome": null,
    "note": "The arbiter's yes. f0333363 prayers' small marks; 8ad8525f the language picker; 484fea9d Saints' chips and century marks; c0d1f6aa the icon stand-in's initials; 0a1478a6 Prayers in Arabic; fe6c5277 the export walk's two stale checks. PLAN 13j."
+  },
+  {
+   "id": "c-plus-small-fixes",
+   "section": "Beauty",
+   "kind": "flag",
+   "title": "Four small fixes: a saint's initials, the Plus sheet's names and links, the Pro card's EIKON Box note",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "The Themes chat's findings, the arbiter's list and yes. 16998e76 initials; 84b85224 the links under the plans; d17c470f the EIKON note; d4828028 the Pro ribbon in Arabic. The supporters' names were already mended by 14aa6ce8. PLAN 13k."
   }
  ]
 }
