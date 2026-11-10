@@ -3221,3 +3221,65 @@ when it is needed, with its printing's line (2), the start screen (1.5), the
 campaign's page and the prayer's step (1), new words if any for his OK and
 twenty languages (0.5), tests, three stills, the walk and the builds (2).
 
+## 23. July's rows go thirty days after 1.9 ships (2026-11-10; built, waiting for a second read)
+
+**His word** (`BRAINSTORM.md`, "all recs yes", about 17:05 UTC;
+`OWNER-STEPS.md`, R9): July's old campaign rows are deleted 30 days after
+1.9 ships. Put to him plainly since, by the arbiter: all of it goes, the
+groups' private threads included, because nothing has reached them since 26
+August.
+
+**The job** is `lib/campaigns/julyRows.ts`, carried by the heartbeat once a
+day in a build that has campaigns (`lib/ops/maintenance.ts`,
+`julyCampaignRows` in its report).
+
+- **The day** is one constant, `SHIPPED_ON`, null on the branch. The release
+  commit writes the day 1.9 shipped there, as it writes the first test's
+  days. Rows go on that day plus thirty. Null, a string that is not a real
+  day, or a day before 2026-11-10 means nothing is read and nothing is
+  deleted, and the report says which. Agreed with Admin, who adds the line to
+  R9 and to R0c's release-commit list.
+- **Only July's:** no length AND made before 2026-09-01, both, at every read
+  and again at the delete, by id. A row with no length made later is left
+  alone and counted as a stray.
+- **The picture first,** by the rule a take-down uses: only when it is
+  provably its creator's own upload. A file the storage will not delete keeps
+  its row for the next run. A file that is not provably theirs is left, and
+  the log says where it is.
+- **Never a reading circle, and never a campaign of 1.9.** A circle on a path
+  has no campaign, so nothing reaches it. Should a group of one of July's
+  campaigns be in use (a circle on a path, or a campaign of 1.9 kept to it),
+  that campaign of July's is kept and the report says so. Where the job
+  cannot ask, it deletes nothing.
+- **One switch** if he says the groups stay: `JULY_GROUPS_GO`. Then a
+  campaign a group hangs from stays with it.
+- **Twice is safe.** When nothing of July's is left to delete it leaves one
+  public mark, a name and a time, in `data_moves`
+  (`campaigns-july-rows-deleted`), so it can be seen to have happened with
+  the public key.
+
+**Run on a scratch PostgreSQL 16** standing on all 104 files of the folder,
+with made-up rows: three of July's, one of 1.9 with its thread and a reader
+joined, a stray, a parish group of July's with a member and a thread post,
+and a reading circle with a member and a day's post. The delete the job
+makes took the three, and with them the reader who had joined, the day log,
+the report, the parish group, its member and its post. It left the campaign
+of 1.9 whole, the stray, and the reading circle whole. A second time it took
+nothing.
+
+**What that run found, which reading the code had not:** a campaign kept to
+a circle is deleted with that group (`prayer_campaigns.circle_id`, the
+rework's own key). With a campaign of 1.9 kept to July's parish group, the
+same delete took the campaign of 1.9 too. Nothing can make that row today,
+since keeping a campaign to a circle is not built; the job asks all the
+same, and when the circle is built its chooser must offer circles on a path
+and never one of July's groups.
+
+**Held by** `lib/campaigns/__tests__/julyRows.test.ts`, 23 cases against the
+in-memory database, which now cascades on as the real one does. Eight ways
+of breaking the job were tried one at a time, and each failed a case: the
+second condition dropped, the day not waited for, a circle not kept, a row
+deleted though its picture stayed, the delete not narrowed, an unwritten day
+taken as today, a group in use not kept, a failed read passed over. The
+tables' keys the job relies on are read from the SQL that made them.
+

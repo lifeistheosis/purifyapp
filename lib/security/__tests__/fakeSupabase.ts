@@ -131,6 +131,15 @@ const COLUMNS: Record<string, string[]> = {
   ],
   // 20261001000000_profiles_badges.sql
   user_badges: ["user_id", "badge", "granted_at", "granted_by", "note"],
+  // 20260811000000_campaign_groups_and_streaks.sql (a parish group inside a campaign), then
+  // docs/1.8-build/sql/read-together.sql and 20261110155643_production_baseline.sql (a circle on a
+  // path: campaign_id may be empty, and kind, path_id, path_started_on).
+  prayer_campaign_groups: [
+    "id", "campaign_id", "creator_id", "name", "invite_code", "member_count", "prayer_count",
+    "created_at", "updated_at", "kind", "path_id", "path_started_on",
+  ],
+  // 20261110001550_psalms_113_115_move.sql: the names of the moves made, and when.
+  data_moves: ["name", "done_at"],
   // 20261005000000_community_three.sql
   community_mod_log: [
     "id", "actor_id", "actor_name", "actor_email", "action", "target_kind", "target_id",
@@ -193,8 +202,32 @@ const UNIQUE: Record<string, { columns: string[]; where?: (row: Row) => boolean 
  * with it, and their FILES do not, which is why the code deletes those first.
  */
 const CASCADE: Record<string, [table: string, column: string][]> = {
-  prayer_campaigns: [["prayer_campaign_pictures", "campaign_id"]],
+  // And a parish group made inside a campaign goes with it too
+  // (20260811000000: campaign_id references prayer_campaigns on delete
+  // cascade). A circle on a path has no campaign, so nothing reaches it.
+  prayer_campaigns: [
+    ["prayer_campaign_pictures", "campaign_id"],
+    ["prayer_campaign_groups", "campaign_id"],
+  ],
+  // And a campaign kept to a circle goes with that group (the rework's file
+  // one: prayer_campaigns.circle_id references prayer_campaign_groups on
+  // delete cascade). So a delete can run on from a campaign to its group to
+  // another campaign, as it does in the database.
+  prayer_campaign_groups: [["prayer_campaigns", "circle_id"]],
 };
+
+/** Delete what hangs from these rows, and what hangs from that, as the tables' keys say. */
+function cascade(w: World, table: string, gone: Row[]) {
+  if (gone.length === 0) return;
+  for (const [child, column] of CASCADE[table] ?? []) {
+    const theirs = w.tables[child];
+    if (!theirs) continue;
+    const taken = theirs.filter((row) => row[column] != null && gone.some((parent) => parent.id === row[column]));
+    if (taken.length === 0) continue;
+    w.tables[child] = theirs.filter((row) => !taken.includes(row));
+    cascade(w, child, taken);
+  }
+}
 
 export type World = {
   /** Rows by table. null is a table whose migration has not been applied. */
@@ -373,6 +406,11 @@ class Query {
   lt(column: string, value: unknown) {
     return this.where(column, (v) => v != null && String(v) < String(value));
   }
+  /** PostgREST's is, for the one value these suites ask: `is("col", null)`. */
+  is(column: string, value: null) {
+    if (value !== null) throw new Error("fakeSupabase: is() is kept for null alone");
+    return this.where(column, (v) => v === null || v === undefined);
+  }
   /** PostgREST's not: `not("col", "in", "(a,b)")` and `not("col", "is", null)`. */
   not(column: string, operator: string, value: unknown) {
     if (operator === "in") {
@@ -463,10 +501,7 @@ class Query {
     if (this.op === "delete") {
       const gone = hit();
       this.w.tables[this.table] = rows.filter((row) => !gone.includes(row));
-      for (const [table, column] of CASCADE[this.table] ?? []) {
-        const theirs = this.w.tables[table];
-        if (theirs) this.w.tables[table] = theirs.filter((row) => !gone.some((parent) => parent.id === row[column]));
-      }
+      cascade(this.w, this.table, gone);
       return { data: copy(gone), error: null };
     }
     if (this.op === "update") {

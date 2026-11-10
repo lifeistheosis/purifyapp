@@ -66,6 +66,20 @@ not found. It now follows July's routes and sends nothing
 On the main web it stops with the deploy that carries this, or sooner if the
 owner switches July's opt-ins off by hand.
 
+**July's campaign rows are deleted thirty days after 1.9 ships (his word of
+2026-11-10; `lib/campaigns/julyRows.ts`).** The heartbeat's housekeeping
+carries it once a day, in a build that has campaigns, as `julyCampaignRows`
+in its report. Until the release commit writes the day 1.9 shipped
+(`SHIPPED_ON`), and until thirty days after it, the job reads nothing and its
+report says so. From that day it deletes the campaigns that have no length
+and were made before 2026-09-01, a hundred a run, each one's picture first,
+and never a campaign of 1.9, a reading circle, or a campaign whose group is
+in use. What hangs from a row goes with it by the tables' own keys. When
+nothing of July's is left to delete it leaves one row in `data_moves`
+(`campaigns-july-rows-deleted`), which can be read with the public key. It is
+a change to the live database made by code, so a second chat reads it before
+it ships.
+
 ## Turning the snapshot on, on Render
 
 The existing cron job `purifyapp` (crn-dabehhad0e5s73e7ppog) runs every ten

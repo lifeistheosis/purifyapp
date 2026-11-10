@@ -37,7 +37,9 @@ import { deletePicturesOf } from "./pictures";
 // ONLY THE REWORK'S OWN ROWS. A campaign of July's has no `days`, and may
 // carry a picture in a public bucket that a bare delete would orphan. Every
 // statement here names `days is not null`, so July's rows stay exactly as
-// they are until someone decides about them by hand.
+// they are here. He has decided about them since (2026-11-10): they go
+// thirty days after 1.9 ships, by a job of their own that deletes the
+// picture first (./julyRows.ts), and never by this one.
 
 /** How long an ended or removed campaign is kept. */
 export const KEPT_DAYS = 30;

@@ -7,6 +7,7 @@ import { sendWeeklyLetter } from "@/lib/admin/weeklyLetter";
 import { pruneReports } from "@/lib/ops/prune";
 import { clearMatured, runAmbassadorPayouts } from "@/lib/ambassadors/payouts";
 import { campaignsInBuild } from "@/lib/campaigns/flags";
+import { forgetJulyRows } from "@/lib/campaigns/julyRows";
 import { runCampaignUpkeep } from "@/lib/campaigns/upkeep";
 import { runEmailJobs } from "@/lib/email/jobs";
 import { sweepAbandonedCheckouts, type SweepReport } from "@/lib/shop/abandonedSweep";
@@ -138,6 +139,11 @@ export async function runMaintenance(admin: SupabaseClient, now: number = Date.n
   // read or written.
   if (campaignsInBuild()) {
     report.campaignUpkeep = await every("campaignUpkeep", 55 * 60_000, now, () => runCampaignUpkeep(admin, now));
+    // July's campaign rows (lib/campaigns/julyRows.ts): deleted thirty days
+    // after 1.9 ships, on his word. Once a day. Until the release commit
+    // writes the day 1.9 shipped, and until thirty days after it, the job
+    // reads nothing and says so; after the rows have gone it finds none.
+    report.julyCampaignRows = await every("julyCampaignRows", 20 * 3_600_000, now, () => forgetJulyRows(admin, now));
   }
   // The Monday email (lib/admin/weekly.ts): last week in numbers, to the
   // owner, from the same morning hour. The email log keys it by week, so it
