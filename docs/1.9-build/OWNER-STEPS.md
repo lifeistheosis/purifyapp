@@ -699,7 +699,9 @@ Send back: "R2b sent", or what went wrong.
 6. play.google.com/console, **Purify**, **Test and release**, **Production**.
 7. **Create new release**.
 8. Upload `app-release.aab`. Note the **version code** it shows.
-9. Release notes: the arbiter sends the text.
+9. Release notes: purifyapp.net/admin, **Releases**, the **Google Play**
+   piece, **Copy**, and paste. The arbiter confirms that morning that it is
+   final.
 10. **Next**, **Save**, then **Send for review** (or **Start rollout**).
 
 Send back: "R4 sent, version code N".
@@ -714,7 +716,10 @@ Send back: "R4 sent, version code N".
 5. **App Store** tab, the **1.9** version (click **+** next to iOS App to make
    it, if needed).
 6. **Build**: **Add Build**, pick the new one.
-7. **What's New in This Version**: the arbiter sends the text. On the same
+7. **What's New in This Version**: purifyapp.net/admin, **Releases**, the
+   **App Store** piece, **Copy**, and paste (it names no Purify Plus, since
+   every feature is free on iPhone; if 87 is done, the arbiter sends the
+   version with Plus). On the same
    page: **Support URL** https://purifyapp.net/support, and **Copyright**
    2026 Purify Orthodox LLC. Under **App Review Information**, the contact
    email is one you read on review days (support@ lands in Admin,
@@ -755,3 +760,19 @@ From then on, the admin and Community moderation ask for the code. The phone
 apps have no code screen, so you moderate from the website.
 
 Send back: "R7 done".
+
+### R8. Tell people, in the drop's order
+
+1. purifyapp.net/admin, **Releases**. The page runs in the order things go
+   out: before anything, the store texts, the announcement (Discord, your
+   Community post, the board message), the day a store has it (the release
+   email, the cards, the captions), a few days later (the notification),
+   and a week later (the numbers).
+2. Each piece has **Copy**, and a mark for when it has gone. Nothing later
+   goes before what is earlier is marked.
+3. The board message, the notification and the email go out in the wording
+   you OK (your item 100). The release email also needs the Mail step done.
+
+The arbiter says the day for each moment.
+
+Send back: what went, as you go.
