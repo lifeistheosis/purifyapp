@@ -579,6 +579,8 @@ Send back: "56 done, N changed". Never the ids.
 
 ### Inboxes. Two test emails, so a notice cannot bounce (3 minutes)
 
+**Done, on his word (2026-11-10 about 16:25 UTC):** "I ALREADY confirmed that those 2 emails works." Both support@purifyapp.net and legal@purifyapp.net receive mail; he had checked them when he set up Cloudflare's email (his word earlier that day: "I fixed the cloud flare for both email and web analytics"). Do not ask him again. The steps below stay for the record.
+
 The terms send copyright and legal notices to legal@purifyapp.net, and help to
 support@purifyapp.net. Nothing on record shows either one arriving yet, and an
 address that bounces would cost Purify the protection the takedown address
