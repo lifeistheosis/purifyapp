@@ -9,6 +9,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 import { shopEnabled } from "@/lib/shop/flags";
 import { CURRENT_VERSION } from "@/lib/whatsNew/version";
+import { COPYRIGHT_LINE } from "@/lib/legal/entity";
 
 type LinkItem = { label: string; href: string; external?: boolean };
 
@@ -215,7 +216,7 @@ export function Footer() {
       {t("footer.glory")}
      </p>
      <p className="font-sans text-caption text-paper/45 text-center sm:flex-1 sm:text-right">
-      © {new Date().getFullYear()} · {CURRENT_VERSION} · {t("footer.copyright")}
+      {COPYRIGHT_LINE} · {CURRENT_VERSION} · {t("footer.copyright")}
      </p>
     </div>
    </div>

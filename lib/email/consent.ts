@@ -1,3 +1,5 @@
+import { LEGAL_NAME } from "@/lib/legal/entity";
+
 import { siteUrl } from "./templates/build";
 
 /**
@@ -67,5 +69,7 @@ export function marketingFooter(opts: { list: MarketingList; postalAddress: stri
     opts.list === RELEASE_NEWS
       ? "You are getting this because you have a Purify account. We send it a few times a year, when a new version is released, and the button below stops it."
       : `You are getting this because you turned on "${LIST_LABEL[opts.list]}" in your Purify settings.`;
-  return `${why} Purify, ${opts.postalAddress.trim()}.`;
+  // The sender CAN-SPAM asks a list email to name, with its postal address:
+  // the company that runs Purify (lib/legal/entity.ts).
+  return `${why} ${LEGAL_NAME}, ${opts.postalAddress.trim()}.`;
 }

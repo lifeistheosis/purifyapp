@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { LEGAL_NAME } from "@/lib/legal/entity";
 
 export const metadata = {
   title: "Terms of Service",
@@ -37,7 +38,7 @@ export default function TermsPage() {
         </h1>
         <p className="mt-6 font-serif text-body leading-[1.7] text-paper/65">
           Effective August 14, 2026. These terms are a binding agreement
-          between you and Purify (&ldquo;Purify,&rdquo; &ldquo;we,&rdquo;
+          between you and {LEGAL_NAME} (&ldquo;Purify,&rdquo; &ldquo;we,&rdquo;
           &ldquo;us&rdquo;), covering the website at purifyapp.net, the
           Purify mobile applications, and the EIKON shop. By using Purify or
           placing an order, you agree to them. They include a{" "}
