@@ -341,20 +341,11 @@ Send back: "C7 done".
 
 ## Anytime
 
-### 23. Do iPhone purchases reach your account? (1 minute)
+### 23. Do iPhone purchases reach your account? Done
 
-Plus has been sold on iPhone since 1.8 (87, below). This checks that what a
-reader buys there unlocks Plus for them.
-
-1. Open purifyapp.net/admin and sign in.
-2. In the left menu, click **Money**.
-3. Click the **Subscriptions** view.
-4. Find the round chart titled **By source**.
-5. Hover over (or tap) each slice. Look for one named **App Store**.
-
-Done: you know whether an **App Store** slice is there.
-
-Send back: "23: App Store slice yes, N members" or "23: no App Store slice".
+Your word, 2026-11-10 about 18:05 UTC, after looking at Admin, **Money**,
+**Subscriptions**, **By source**: "App Store: yes". iPhone purchases reach
+your account and unlock Plus. Nothing more to do here.
 
 ### 53. RevenueCat's reading key on Render (10 minutes)
 
@@ -534,8 +525,8 @@ Nothing to do. Found on 2026-11-10, from the apps themselves:
 - Leave that switch as it is (the arbiter's recommendation): the 1.9 iPhone
   build takes it as 1.8 did.
 
-What is left is 23: one look that the purchases reach your account. The
-steps this item held are in the repository's history (before 2026-11-10).
+23 confirmed the purchases reach your account ("App Store: yes", 2026-11-10).
+The steps this item held are in the repository's history (before 2026-11-10).
 
 ### Mail. The company's postal address for list email (5 minutes; before the 1.9 email)
 
