@@ -6597,6 +6597,13 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
  margin-top: 6px;
  margin-inline: 28px 30px;
 }
+/* The names under the slider are words a reader reads, small ones (10.5px),
+   so they are held to 4.5:1 like Settings' other quiet words: the ink at 62
+   percent, and on Light and Candlelight at those palettes' own share (the
+   quiet words' lists further down). At 50 percent they read 2.97:1 on Light,
+   3.87:1 on Candlelight and 4.35:1 to 4.45:1 on Monastery, Councils and
+   Cappadocian, measured on the export where the letters are
+   (scripts/words-on-pictures.mjs; 1.9, the Themes chat's sweep). */
 .set-slider-names > span {
  position: absolute;
  top: 0;
@@ -6605,7 +6612,7 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
  font-size: 10.5px;
  line-height: 15px;
  white-space: nowrap;
- color: color-mix(in srgb, var(--color-paper) 50%, transparent);
+ color: color-mix(in srgb, var(--color-paper) 62%, transparent);
 }
 [dir="rtl"] .set-slider-names > span {
  translate: 50% 0;
@@ -6798,12 +6805,14 @@ html[data-reading-mode="parchment"] .set-track > button::before {
    Themes chat's sweep: at 40 percent it read 2.31:1 to 3.82:1 on all five.
    Its verse numbers too, which were the accent at 50 percent (2.39:1 on
    Light, by checkMock on the export): now the ink at the quiet share, as
-   the Bible draws its verse numbers in the ink.
+   the Bible draws its verse numbers in the ink. And the names under the
+   size slider (the ones not chosen: the chosen one is the ink whole), which
+   were the ink at 50 percent, 2.97:1 on Light.
    lib/ui/__tests__/faintText.test.ts does the arithmetic. */
-html[data-reading-mode="parchment"] :is(.set-hint, .set-desc, .set-sub, .set-well-ref, .set-well .set-vn, .set-track > button[aria-checked="false"]:not(:hover)) {
+html[data-reading-mode="parchment"] :is(.set-hint, .set-desc, .set-sub, .set-well-ref, .set-well .set-vn, .set-slider-names > span:not([data-on]), .set-track > button[aria-checked="false"]:not(:hover)) {
  color: color-mix(in srgb, var(--color-paper) 72%, transparent);
 }
-html[data-reading-mode="candlelight"] :is(.set-hint, .set-desc, .set-sub, .set-well-ref, .set-well .set-vn, .set-track > button[aria-checked="false"]:not(:hover)) {
+html[data-reading-mode="candlelight"] :is(.set-hint, .set-desc, .set-sub, .set-well-ref, .set-well .set-vn, .set-slider-names > span:not([data-on]), .set-track > button[aria-checked="false"]:not(:hover)) {
  color: color-mix(in srgb, var(--color-paper) 64%, transparent);
 }
 :where(html[data-reading-mode="monastery"], html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) .set-desc {
@@ -11902,7 +11911,7 @@ html[data-look][data-reading-mode="parchment"] .community-head-shade {
 /* Settings' quiet words (its hints, its lines, a track's unlit choices) on a
    dark look, at the share that holds 4.5:1 on its page and its panels, as
    Candlelight has its own. A light look takes Light's. */
-html[data-look]:not([data-reading-mode]) :is(.set-hint, .set-desc, .set-sub, .set-well-ref, .set-well .set-vn, .set-track > button[aria-checked="false"]:not(:hover)) {
+html[data-look]:not([data-reading-mode]) :is(.set-hint, .set-desc, .set-sub, .set-well-ref, .set-well .set-vn, .set-slider-names > span:not([data-on]), .set-track > button[aria-checked="false"]:not(:hover)) {
  color: color-mix(in srgb, var(--color-paper) var(--look-quiet), transparent);
 }
 

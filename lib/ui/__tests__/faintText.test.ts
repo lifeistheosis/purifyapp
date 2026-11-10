@@ -419,11 +419,14 @@ describe("the theology tray's rows", () => {
 // under a section's title, the line under a row's name, what a chosen answer
 // means, and a track's unchosen choices; and since the Themes chat's sweep
 // (1.9, section 25) the size preview's caption, "John 1" over the verse,
-// and its verse numbers.
+// and its verse numbers; and the names under the size slider that are not
+// the chosen one ("Small", "Medium", "Extra large": the ink at 50 percent
+// until then, 2.97:1 on Light where the letters are).
 // Each is held to 4.5:1 on its own ground on every palette: the hint and the
 // caption on the page's own ground (the preview's well is drawn in it), the
-// track's choices on the track (night-deep), the row's lines on the panel
-// where it is lightest (on Light, the panel's own cream at its darkest stop).
+// track's choices on the track (night-deep), the row's lines and the
+// slider's names on the panel where it is lightest (on Light, the panel's
+// own cream at its darkest stop).
 describe("Settings' quiet words", () => {
   const share = (re: RegExp, what: string): number => {
     const m = re.exec(BARE);
@@ -438,9 +441,10 @@ describe("Settings' quiet words", () => {
     track: share(ink("\\.set-track > button"), ".set-track > button"),
     caption: share(ink("\\.set-well-ref"), ".set-well-ref"),
     numbers: share(ink("\\.set-well \\.set-vn"), ".set-well .set-vn"),
+    slider: share(ink("\\.set-slider-names > span"), ".set-slider-names > span"),
   };
   const quiet = (mode: string) =>
-    new RegExp(`html\\[data-reading-mode="${mode}"\\] :is\\(\\.set-hint, \\.set-desc, \\.set-sub, \\.set-well-ref, \\.set-well \\.set-vn, \\.set-track > button\\[aria-checked="false"\\]:not\\(:hover\\)\\) \\{\\s*color: color-mix\\(in srgb, var\\(--color-paper\\) (\\d+)%`);
+    new RegExp(`html\\[data-reading-mode="${mode}"\\] :is\\(\\.set-hint, \\.set-desc, \\.set-sub, \\.set-well-ref, \\.set-well \\.set-vn, \\.set-slider-names > span:not\\(\\[data-on\\]\\), \\.set-track > button\\[aria-checked="false"\\]:not\\(:hover\\)\\) \\{\\s*color: color-mix\\(in srgb, var\\(--color-paper\\) (\\d+)%`);
   const OWN: Partial<Record<Mode, number>> = { parchment: share(quiet("parchment"), "Light"), candlelight: share(quiet("candlelight"), "Candlelight") };
   const TRIO = share(/:where\(html\[data-reading-mode="monastery"\], html\[data-reading-mode="councils"\], html\[data-reading-mode="cappadocian"\]\) \.set-desc \{\s*color: color-mix\(in srgb, var\(--color-paper\) (\d+)%/, "the trio's .set-desc");
   const lightPanel = hex(/html\[data-reading-mode="parchment"\] \.set-panel \{[^}]*linear-gradient\([^;]*?(#[0-9a-f]{6}) 100%\)/.exec(BARE)?.[1] ?? "");
@@ -459,6 +463,7 @@ describe("Settings' quiet words", () => {
         ["a track's unchosen choice", own ?? BASE.track, deep(mode)],
         ["the size preview's caption", own ?? BASE.caption, night],
         ["the size preview's verse numbers", own ?? BASE.numbers, night],
+        ["the size slider's names", own ?? BASE.slider, panel],
       ];
       const short = lines
         .map(([what, at, ground]) => ({ what, at, r: ratio(mix(paper, ground, at / 100), ground) }))
@@ -468,12 +473,21 @@ describe("Settings' quiet words", () => {
     });
   }
 
+  it("the slider's chosen name is the ink whole, and the quiet lists leave it alone", () => {
+    expect(BARE).toMatch(/\.set-slider-names > span\[data-on\] \{[^}]*color: var\(--color-paper\);/);
+    // Each of the three lists (Light, Candlelight, a dark look) names only the ones not chosen: a
+    // list weighs more than the chosen name's own rule, and would dim it.
+    expect(BARE.match(/\.set-slider-names > span:not\(\[data-on\]\), \.set-track/g)).toHaveLength(3);
+    expect(BARE).not.toMatch(/:is\([^{]*\.set-slider-names > span[,)]/);
+    expect(BASE.slider).toBeGreaterThanOrEqual(62);
+  });
+
   // The looks (1.9). A dark look draws all four lines at one share of its
   // own (--look-quiet), as Candlelight does; a light look takes Light's rule
   // unchanged. A dark look's panel is the app's own; a light look's is its
   // own paper, a gradient that ends on its page colour, where it is darkest.
   it("a dark look draws them at its own share, by one rule that reads it", () => {
-    expect(BARE).toMatch(/html\[data-look\]:not\(\[data-reading-mode\]\) :is\(\.set-hint, \.set-desc, \.set-sub, \.set-well-ref, \.set-well \.set-vn, \.set-track > button\[aria-checked="false"\]:not\(:hover\)\) \{\s*color: color-mix\(in srgb, var\(--color-paper\) var\(--look-quiet\), transparent\);/);
+    expect(BARE).toMatch(/html\[data-look\]:not\(\[data-reading-mode\]\) :is\(\.set-hint, \.set-desc, \.set-sub, \.set-well-ref, \.set-well \.set-vn, \.set-slider-names > span:not\(\[data-on\]\), \.set-track > button\[aria-checked="false"\]:not\(:hover\)\) \{\s*color: color-mix\(in srgb, var\(--color-paper\) var\(--look-quiet\), transparent\);/);
     expect(BARE).toMatch(/html\[data-look\]\[data-reading-mode="parchment"\] \.set-panel \{[^}]*linear-gradient\(155deg, var\(--look-paper-high\) 0%, [^;]*var\(--color-night\) 100%\)/);
   });
 
@@ -491,6 +505,7 @@ describe("Settings' quiet words", () => {
         ["a track's unchosen choice", c.deep],
         ["the size preview's caption", c.night],
         ["the size preview's verse numbers", c.night],
+        ["the size slider's names", panel],
       ];
       const short = lines
         .map(([what, ground]) => ({ what, r: ratio(mix(c.paper, ground, at / 100), ground) }))
