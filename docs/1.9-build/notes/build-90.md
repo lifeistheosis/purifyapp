@@ -190,3 +190,11 @@ What he saw: the prayer page as it is in build 90 (both screenshots of notes 6 a
 Where it is and why: asked of Fable Themes, which made the looks; Updates owns the page's scrolling (note 6), so the two plans name their files and the arbiter orders the work at his start.
 
 Planned (brainstorm, nothing built until his start): to come from Fable Themes.
+
+### 9. With the Greek on, a saved verse does not open at its verse (2026-11-10)
+
+What he saw: in You, Your saved (`build-90/09-your-saved.png`), he tapped a saved verse of Matthew 1 (the list shows 1:18, 1:20 and 1:21; which one is not in the screenshots). Matthew 1 opened with the Greek beside the English, but not at the verse: the reader stood at verse 9 of 25 (`build-90/09-reader-greek-on.png`). His Greek is on. His words: "So I found an actual real bug. If you have the Greek turned on, and I'm not sure if that's what causes this, but my Greek is turned on. When you click on this section of the saved verses, it messes up. And it doesn't actually go to the verse."
+
+Where it is and why: asked of Updates (the Bible reader), with the Greek on and off, and from every place that opens a verse.
+
+Planned (brainstorm, nothing built until his start): to come from Updates.
