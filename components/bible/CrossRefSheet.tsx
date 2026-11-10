@@ -58,7 +58,14 @@ export function CrossRefList({ items, onLeave }: { items: CrossRefItem[]; onLeav
               <p className="font-sans text-detail font-semibold text-premium-ink group-hover:text-premium-bright">
                 {t(`bible.books.${ref.book}`)} {crossRefNumbers(ref)}
               </p>
-              {ref.text ? <p className="mt-1 font-serif text-body leading-[1.6] text-paper/80">{ref.text}</p> : null}
+              {/* The words are the app's own English for every reader, whatever their language or Bible
+                  (lib/bible/crossRefs.ts reads them from data/bible at build time): they say so and run left
+                  to right, so a right-to-left page does not set a verse's full stop at its start. */}
+              {ref.text ? (
+                <p lang="en" dir="ltr" className="mt-1 font-serif text-body leading-[1.6] text-paper/80">
+                  {ref.text}
+                </p>
+              ) : null}
             </Link>
           </li>
         ))}
