@@ -17,19 +17,11 @@ import {
   subscriptionTier,
   themeNeedsPlus,
 } from "@/lib/profile/cosmetics";
-import { findLinks } from "@/lib/community/spam";
 import { cleanSocialLinks } from "@/lib/profile/socialLinks";
-import { censorPost, getBlockedHosts, handleIsBlocked, textHasListedWord } from "@/lib/moderation/server";
+import { getBlockedHosts, handleIsBlocked, textHasListedWord } from "@/lib/moderation/server";
 import { handleChangeAllowed, handleProblem, normalizeHandle } from "@/lib/profile/handle";
 import { verseRef } from "@/lib/profile/publicProfile";
-import {
-  activePrayerRequest,
-  buildMyProfile,
-  cleanIntention,
-  ensureHandle,
-  loadProfileRow,
-  readPrayerIntention,
-} from "@/lib/profile/server";
+import { buildMyProfile, ensureHandle, loadProfileRow, readPrayerIntention } from "@/lib/profile/server";
 import { getSaint } from "@/lib/saints/saints";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { rateLimited } from "@/lib/security/ratelimit";
@@ -38,6 +30,9 @@ import { createClientFromRequest } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+/** What the wall's own button sent, and nothing else: a request, its words, and the yes to the word filter. */
+const REQUEST_FIELDS = new Set(["prayerRequest", "prayerIntention", "confirmFiltered"]);
 
 /**
  * The signed-in reader's own profile: GET for the editor, PUT to save.
@@ -78,9 +73,10 @@ const schema = z
     hidePosts: z.boolean().optional(),
     hideJoined: z.boolean().optional(),
     showNowReading: z.boolean().optional(),
+    // Asking for prayers went in 1.9. These three are still read from an app
+    // of 1.8, only so that it can be answered (see REQUEST_FIELDS, and the
+    // handler): a request can be taken down, and none can be made.
     prayerRequest: z.boolean().optional(),
-    // What the request asks prayers for (docs/1.8-build/sql/prayer-request-intention.sql),
-    // cut to 120 characters below; and the reader's yes to the word filter's question.
     prayerIntention: z.string().max(400).nullable().optional(),
     confirmFiltered: z.boolean().optional(),
     // The device's calendar, synced so a name day falls on the reader's own.
@@ -181,30 +177,20 @@ async function handlePUT(req: Request) {
     return NextResponse.json({ error: "Some words here aren't allowed on a profile.", code: "filtered" }, { status: 400 });
   }
 
-  // What a request asks prayers for (1.7.1): the reader's own words, put
-  // through the word filter the way a post is (app/api/community/posts). A
-  // listed word is masked, the reader is asked first, and the words as written
-  // wait for a moderator (lib/community/moderation.ts). A link has no place in
-  // a prayer request. Before the column exists the words are neither read nor
-  // written, and asking is the one tap it always was.
-  let intention: { text: string | null; written: string | null; hits: number } | null = null;
-  if (p.prayerRequest !== undefined && (await readPrayerIntention(admin, user.id)).open) {
-    const written = p.prayerRequest && p.prayerIntention !== undefined ? cleanIntention(p.prayerIntention) : null;
-    if (written && findLinks([written]).length > 0) {
-      return NextResponse.json({ error: "A prayer request can't carry a link.", code: "intention_link" }, { status: 400 });
-    }
-    const censored = written ? await censorPost(admin, { body: written }) : { body: null, hits: 0 };
-    if (censored.hits > 0 && !p.confirmFiltered) {
-      return NextResponse.json(
-        {
-          error: "Some words in this request will be hidden until a moderator reviews them.",
-          code: "filtered",
-          preview: { body: censored.body },
-        },
-        { status: 409 },
-      );
-    }
-    intention = { text: censored.body, written, hits: censored.hits };
+  // ASKING FOR PRAYERS WENT IN 1.9 (his "wall B", 2026-11-10: the wall, the
+  // line on a profile and its switch, I prayed and its notice;
+  // docs/1.9-build/notes/campaigns-fable.md, section 26). The one way to ask
+  // for prayer is a campaign. An app of 1.8 can still send the old fields:
+  //
+  //   false   Taking one's own request down is always done, and its words go
+  //           with it (below).
+  //   true    Is not taken, and no words are read, filtered or held. Sent by
+  //           itself, as the wall's own button sent it, it is refused, and
+  //           that app says it could not save, which is true. Sent among
+  //           other changes, as the profile's editor sends it, the rest is
+  //           saved and this is passed over.
+  if (p.prayerRequest === true && Object.keys(p).every((key) => REQUEST_FIELDS.has(key))) {
+    return NextResponse.json({ error: "Asking for prayers on the wall has closed.", code: "request_closed" }, { status: 410 });
   }
 
   const patch: Record<string, string | boolean | null | string[] | { k: string; v: string }[]> = {};
@@ -261,16 +247,15 @@ async function handlePUT(req: Request) {
       patch.now_reading_at = null;
     }
   }
-  if (p.prayerRequest !== undefined) {
-    // Asking again starts a fresh count; leaving it on keeps the one running.
-    const active = activePrayerRequest(row);
-    if (!p.prayerRequest) patch.prayer_request_at = null;
-    else if (!active) patch.prayer_request_at = new Date().toISOString();
-    // Its words go with it when it comes down, start over with a new one
-    // (a lapsed request's words never come back under a new one), and change
-    // on a live one only when the reader sends words.
-    if (intention && (!p.prayerRequest || !active || p.prayerIntention !== undefined)) {
-      patch.prayer_request_intention = p.prayerRequest ? intention.text : null;
+  // Taking one's own request down, from an app of 1.8: the time and the words together.
+  let takenDown = false;
+  if (p.prayerRequest === false) {
+    const words = await readPrayerIntention(admin, user.id);
+    if (row.prayer_request_at || words.intention) {
+      patch.prayer_request_at = null;
+      // Before its column exists there are no words to take down.
+      if (words.open) patch.prayer_request_intention = null;
+      takenDown = true;
     }
   }
   if (p.status !== undefined) patch.status_text = cleanText(p.status, 60)?.replace(/\n/g, " ") ?? null;
@@ -384,10 +369,9 @@ async function handlePUT(req: Request) {
     }
   }
 
-  // The request's words changed or came down: words a moderator was still to
-  // look at are no longer up, so their hold goes, as a deleted post's goes with
-  // it. New masked words wait in its place, as written, for a moderator.
-  if (intention && "prayer_request_intention" in patch) {
+  // The request came down: words a moderator was still to look at are no
+  // longer up, so their hold goes, as a deleted post's goes with it.
+  if (takenDown) {
     const { error: clearError } = await admin
       .from("community_text_holds")
       .delete()
@@ -395,12 +379,6 @@ async function handlePUT(req: Request) {
       .eq("status", "pending");
     if (clearError && !isColumnAbsent(clearError) && !isTableAbsent(clearError)) {
       console.warn("[profile] old request hold not cleared", clearError.message);
-    }
-    if (intention.hits > 0 && intention.written && patch.prayer_request_intention) {
-      const { error: holdError } = await admin
-        .from("community_text_holds")
-        .insert({ profile_id: user.id, original_body: intention.written, hits: Math.min(500, intention.hits) });
-      if (holdError) console.warn("[profile] request words hold not written", holdError.message);
     }
   }
 

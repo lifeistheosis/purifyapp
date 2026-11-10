@@ -297,10 +297,11 @@ describe("closed: the doors", () => {
     const el = createElement(
       MessagesProvider,
       { locale: "en", messages } as Parameters<typeof MessagesProvider>[0],
-      createElement(PrayTogether, { signedIn: true, campaign: null, onOpenProfile: () => {} }),
+      createElement(PrayTogether, { signedIn: true, campaign: null }),
     );
     const html = renderToStaticMarkup(el);
-    expect(html).toContain("data-prayer-wall");
+    // The prayer wall stood here until 1.9 and is gone (his "wall B"): closed, Pray together draws nothing at all.
+    expect(html).not.toContain("data-prayer-wall");
     expect(html).not.toContain("data-campaigns");
     expect(html).not.toContain("data-campaign-card");
     expect(html).not.toMatch(/\/campaigns/);

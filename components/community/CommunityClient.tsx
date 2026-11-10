@@ -28,6 +28,7 @@ import {
   type CommunityHalf,
   type FeedFilter,
 } from "@/lib/community/halves";
+import { useCampaignsOpen } from "@/lib/campaigns/useCampaignsOpen";
 import { runningCampaign } from "@/lib/community/runningCampaign";
 import {
   addReply,
@@ -253,11 +254,15 @@ const ProfileOpenerContext = createContext<ProfileOpener | null>(null);
 /* ── The screen: the head, then Pray together or Talk together ──────────── */
 
 function CommunityScreen({
-  half,
+  half: asked,
   groupId,
   onChoose,
   onShowTalk,
 }: {
+  // The half the address or the switch asks for. Shown only where it has
+  // something in it. (A line note, not a block: lib/community/__tests__/
+  // compose.test.ts reads this file without its notes, and a block note
+  // straight after a brace reads there as a note in the markup.)
   half: CommunityHalf;
   groupId: string | null;
   onChoose: (next: CommunityHalf) => void;
@@ -265,10 +270,20 @@ function CommunityScreen({
   onShowTalk: () => void;
 }) {
   const { t, tn } = useTranslate();
-  // Pray together, unless a group's thread is open: that is a conversation.
-  const praying = half === "pray" && !groupId;
   // The campaign running now, for Pray together's head. None runs in 1.8.
   const campaign = runningCampaign();
+  // Pray together holds prayer campaigns and nothing else since the prayer
+  // wall went (1.9). Where none is open for this reader, and the app runs
+  // none of its own, there is nothing behind its door: the door is not
+  // drawn, an address that asks for it shows the conversations, and
+  // Community is as a group's thread is, with no switch. The door comes when
+  // the server says campaigns are open (lib/campaigns/useCampaignsOpen.ts),
+  // and is never drawn and then taken away.
+  const campaignsOpen = useCampaignsOpen();
+  const prayDoor = campaignsOpen || campaign !== null;
+  const half: CommunityHalf = prayDoor ? asked : "talk";
+  // Pray together, unless a group's thread is open: that is a conversation.
+  const praying = half === "pray" && !groupId;
   const [me, setMe] = useState<Me>(null);
   const [authSettled, setAuthSettled] = useState(false);
   // undefined = still loading. Otherwise the discriminated result from
@@ -700,7 +715,7 @@ function CommunityScreen({
     <CommunityHead
       half={half}
       onChoose={onChoose}
-      showSwitch={!groupId}
+      showSwitch={!groupId && prayDoor}
       idBase={HALF_ID}
       bell={authSettled && me ? <CommunityBell onOpen={openNotification} onPicture={praying} /> : null}
     />
@@ -709,11 +724,12 @@ function CommunityScreen({
     <section className="relative mx-auto w-full max-w-[720px] px-5 pb-16 pt-6 lg:grid lg:max-w-[1060px] lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start lg:gap-10">
       <div
         className="min-w-0"
-        // The half the switch has open. A group's thread has no switch.
-        {...(groupId ? {} : { role: "tabpanel", id: `${HALF_ID}-panel-${half}`, "aria-labelledby": `${HALF_ID}-tab-${half}` })}
+        // The half the switch has open. A group's thread has no switch, and
+        // neither has Community where Pray together has nothing in it.
+        {...(groupId || !prayDoor ? {} : { role: "tabpanel", id: `${HALF_ID}-panel-${half}`, "aria-labelledby": `${HALF_ID}-tab-${half}` })}
       >
         {praying ? (
-          <PrayTogether signedIn={Boolean(me)} campaign={campaign} onOpenProfile={(h, seed) => openProfile(h, seed)} />
+          <PrayTogether signedIn={Boolean(me)} campaign={campaign} />
         ) : result?.state === "dark" ? (
           <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
             <p className="font-serif text-lede text-paper/80">

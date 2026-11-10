@@ -94,7 +94,6 @@ type Draft = {
   hidePosts: boolean;
   hideJoined: boolean;
   showNowReading: boolean;
-  prayerRequest: boolean;
   // 20261005
   links: { k: SocialNetwork; v: string }[];
   nameColor: string | null;
@@ -141,7 +140,6 @@ function draftFrom(p: MyProfile): Draft {
     hidePosts: p.settings?.hidePosts ?? false,
     hideJoined: p.settings?.hideJoined ?? false,
     showNowReading: p.settings?.showNowReading ?? false,
-    prayerRequest: p.settings?.prayerRequest ?? false,
     links: (p.socialLinks ?? []).map((l) => ({ k: l.k, v: l.v })),
     nameColor: p.saved.nameColor ?? null,
     bannerMotion: p.saved.bannerMotion ?? null,
@@ -393,7 +391,6 @@ export function ProfileEditor() {
     if (draft.hidePosts !== saved.hidePosts) patch.hidePosts = draft.hidePosts;
     if (draft.hideJoined !== saved.hideJoined) patch.hideJoined = draft.hideJoined;
     if (draft.showNowReading !== saved.showNowReading) patch.showNowReading = draft.showNowReading;
-    if (draft.prayerRequest !== saved.prayerRequest) patch.prayerRequest = draft.prayerRequest;
     if (draft.pushCommunity !== saved.pushCommunity) patch.pushCommunity = draft.pushCommunity;
     if (JSON.stringify(draft.links) !== JSON.stringify(saved.links)) {
       patch.socialLinks = draft.links.filter((l) => l.v.trim()).map((l) => ({ k: l.k, v: l.v.trim() }));
@@ -712,12 +709,6 @@ export function ProfileEditor() {
           </Section>
 
           <Section title={t("profile.sectionSharing")}>
-            <Toggle
-              label={t("profile.prayerToggle")}
-              hint={t("profile.prayerToggleHint")}
-              on={draft.prayerRequest}
-              onChange={(v) => set({ prayerRequest: v })}
-            />
             <Toggle
               label={t("profile.nowReadingToggle")}
               hint={t("profile.nowReadingToggleHint")}

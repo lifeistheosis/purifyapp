@@ -190,14 +190,6 @@ const SESSION = {
   },
 };
 
-const WALL = {
-  intentions: true,
-  requests: [
-    { handle: "thomas", name: "Thomas", avatar: null, since: now, count: 0, prayed: false, mine: false, intention: "For my mother, who is unwell." },
-    { handle: "nina", name: "Nina", avatar: null, since: now, count: 0, prayed: false, mine: false, intention: null },
-  ],
-};
-
 const MOD_QUEUE = {
   holds: [],
   reports: [],
@@ -383,7 +375,8 @@ async function answer(ctx, opts = {}) {
       const c = CAMPAIGNS[one[1]];
       return c ? json({ campaign: { ...c, ...(opts.mine?.includes(c.id) ? { mine: true, keep_after_end: false, listed: true } : {}) } }) : json({ error: "Not found." }, 404);
     }
-    if (p === "/api/community/prayer-wall") return json(opts.wall ?? WALL);
+    // The prayer wall went in 1.9: the server answers an app of 1.8 with nobody on it, and this app never asks.
+    if (p === "/api/community/prayer-wall") return json({ requests: [], intentions: false });
     if (p === "/api/community/moderation") {
       if (url.searchParams.get("summary")) return json({ waiting: 2 });
       // The team's queue carries pictures only while the server has them on, and never for a build that says it has none.
@@ -403,7 +396,7 @@ async function whole(page, min = 844) {
   await page.setViewportSize({ width: WIDTH, height: Math.max(min, h) });
 }
 
-async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, wall, check = true } = {}) {
+async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true } = {}) {
   if (WALK) return;
   if (ONLY && !ONLY.has(name.slice(0, 2))) return;
   const seed = {
@@ -417,7 +410,7 @@ async function shot(name, label, where, selector, { set = {}, prepare, signedIn 
   page.on("pageerror", (e) => errors.push(e.message));
   try {
     if (WIDTH !== 390) await page.setViewportSize({ width: WIDTH, height: 844 });
-    await answer(ctx, { mine, board, signedIn, parts, pictures, wall });
+    await answer(ctx, { mine, board, signedIn, parts, pictures });
     await go(page, where);
     await settle(page);
     if (prepare) await prepare(page);
@@ -448,8 +441,9 @@ async function pictureShot(name, ...rest) {
   if (!WALK && (!ONLY || ONLY.has(name.slice(0, 2)))) console.log(`left: ${name} needs an export cut with pictures (PICTURES_BUILD=1; see the header)`);
 }
 
-// 01 Pray together: the carried card, the others carried, Newly asked, then the wall.
-await shot("01-pray-together", "Pray together, with campaigns", "/community#pray", "[data-campaigns]", {
+// 01 Pray together: the carried card, the others carried, Newly asked. The whole half: the prayer wall
+// stood under it until 1.9 and went at his word (2026-11-10).
+await shot("01-pray-together", "Pray together: prayer campaigns, and nothing else", "/community#pray", "[role=tabpanel]", {
   prepare: async (page) => {
     await page.waitForSelector("[data-campaigns]", { timeout: 15000 });
     await whole(page);
@@ -712,39 +706,10 @@ await pictureShot("24-pictures-team", "the team's queue: pictures to look at", "
   },
 });
 
-// 30 and 31 The photos for a decision of his (2026-11-10, docs/1.9-build/BRAINSTORM.md: "I'd say remove the
-// prayer wall and just keep the prayer campaigns"): Pray together as it stands, with a few requests on the
-// wall, and the same page with the wall's section gone, which is the one thing proposed. Every name and
-// every word is made up. Copied by hand to docs/1.9-build/notes/decisions/wall-1-today.png and
-// wall-2-after.png.
-const WALL_FEW = {
-  intentions: true,
-  requests: [
-    { handle: "thomas", name: "Thomas", avatar: null, since: ago(35), count: 0, prayed: false, mine: false, intention: "For my mother, who is unwell." },
-    { handle: "nina", name: "Nina", avatar: null, since: ago(3 * 60), count: 0, prayed: true, mine: false, intention: null },
-    { handle: "george", name: "George", avatar: null, since: ago(26 * 60), count: 0, prayed: false, mine: false, intention: "For a safe journey home." },
-    { handle: "elena", name: "Elena", avatar: null, since: ago(3 * 1440), count: 0, prayed: false, mine: false, intention: "For my exams this week." },
-  ],
-};
-await shot("30-wall-today", "Pray together today: campaigns, then the prayer wall", "/community#pray", "[role=tabpanel]", {
-  wall: WALL_FEW,
-  prepare: async (page) => {
-    await page.waitForSelector("[data-campaigns]", { timeout: 15000 });
-    await page.waitForSelector("[data-wall-row]", { timeout: 15000 });
-    await whole(page);
-  },
-});
-await shot("31-wall-after", "Pray together with the wall gone: campaigns alone", "/community#pray", "[role=tabpanel]", {
-  wall: WALL_FEW,
-  prepare: async (page) => {
-    await page.waitForSelector("[data-campaigns]", { timeout: 15000 });
-    await page.waitForSelector("[data-wall-row]", { timeout: 15000 });
-    // The one thing proposed: the wall's own section is not drawn.
-    await page.evaluate(() => document.querySelector("[data-prayer-wall]")?.remove());
-    await page.setViewportSize({ width: WIDTH, height: 844 });
-    await whole(page);
-  },
-});
+// The two photos his decision on the prayer wall was made from
+// (docs/1.9-build/notes/decisions/wall-1-today.png and wall-2-after.png) were stills 30 and 31 of this
+// script as it stood at commit 35205d89c, drawn while the wall was still in the app. It is not any more,
+// so they cannot be drawn again from here; still 01 is what "after" became.
 
 /** A flow of the pictures themselves: walked only on an export cut with them, and otherwise named and left. */
 async function pictureWalk(label, ...rest) {
@@ -836,6 +801,16 @@ if (WALK) {
     expectThat(b.termsAccepted === true, `the acceptance of the Terms was not sent: ${JSON.stringify(b)}`);
     expectThat((await page.locator("[data-campaign-standing]").innerText()).includes("Waiting for a moderator"), "the campaign does not say it waits");
   }, { mine: [HELD] });
+
+  await walk("Pray together: campaigns alone, behind its own door, and nothing is asked of the prayer wall", "/community#pray", async (page) => {
+    await page.waitForSelector("[data-campaigns]", { timeout: 15000 });
+    await settle(page, 1200);
+    expectThat((await page.locator("[role=tablist] [role=tab]").count()) === 2, "the switch between the two halves is not drawn");
+    expectThat((await page.locator("[data-prayer-wall]").count()) === 0, "the prayer wall is drawn");
+    const said = await page.locator("[role=tabpanel]").innerText();
+    expectThat(!/prayer wall|Ask for prayers|I prayed/i.test(said), `the wall's words are on the page: ${said.slice(0, 120)}`);
+    expectThat(!calls.some((c) => c.path === "/api/community/prayer-wall"), "the prayer wall was asked for");
+  });
 
   await walk("joining: the name goes into the device's list and the choice to the account; taking it out lets go", `/campaigns/detail?id=${PETER}`, async (page) => {
     await page.waitForSelector("#campaign-title", { timeout: 15000 });
@@ -1138,12 +1113,17 @@ if (WALK) {
     await settle(page, 1500);
     expectThat((await page.locator("[data-campaign-board]").count()) === 0, "the board is drawn");
     expectThat((await page.locator("main h1").first().innerText()).length > 0 && (await page.getByText("404").count()) > 0, "the not-found page is not shown");
+    // Pray together holds campaigns and nothing else since the wall went, so for this reader it has no
+    // door: an address that asks for it shows the conversations, with no switch and no empty half.
     await go(page, "/community#pray");
-    await page.waitForSelector("[data-prayer-wall]", { timeout: 15000 });
-    await settle(page, 1200);
+    await page.waitForSelector("h1", { timeout: 15000 });
+    await settle(page, 1800);
     expectThat((await page.locator("[data-campaigns]").count()) === 0, "Pray together draws campaigns");
-    const asked = calls.filter((c) => c.path.startsWith("/api/campaigns")).map((c) => c.path);
-    expectThat(asked.every((p) => p === "/api/campaigns/open") && asked.length === 1, `asked ${asked.join(", ")}`);
+    expectThat((await page.locator("[data-prayer-wall]").count()) === 0, "the prayer wall is drawn");
+    expectThat((await page.locator("[role=tablist] [role=tab]").count()) === 0, "the switch to Pray together is drawn with nothing behind it");
+    const ofCampaigns = calls.filter((c) => c.path.startsWith("/api/campaigns")).map((c) => c.path);
+    expectThat(ofCampaigns.every((p) => p === "/api/campaigns/open") && ofCampaigns.length === 1, `asked ${ofCampaigns.join(", ")}`);
+    expectThat(!calls.some((c) => c.path === "/api/community/prayer-wall"), "the prayer wall was asked for");
   }, { closed: true });
 
   console.log("\n" + walked.map(([l, ok]) => `${ok ? "PASS" : "FAIL"}  ${l}`).join("\n"));

@@ -9,6 +9,7 @@ import { clearMatured, runAmbassadorPayouts } from "@/lib/ambassadors/payouts";
 import { campaignsInBuild } from "@/lib/campaigns/flags";
 import { forgetJulyRows } from "@/lib/campaigns/julyRows";
 import { runCampaignUpkeep } from "@/lib/campaigns/upkeep";
+import { endPrayerRequests } from "@/lib/community/prayerRequestsEnd";
 import { runEmailJobs } from "@/lib/email/jobs";
 import { sweepAbandonedCheckouts, type SweepReport } from "@/lib/shop/abandonedSweep";
 import { sendCartReminders } from "@/lib/shop/cartReminderSweep";
@@ -145,6 +146,13 @@ export async function runMaintenance(admin: SupabaseClient, now: number = Date.n
     // reads nothing and says so; after the rows have gone it finds none.
     report.julyCampaignRows = await every("julyCampaignRows", 20 * 3_600_000, now, () => forgetJulyRows(admin, now));
   }
+  // What was asked on the prayer wall before 1.9
+  // (lib/community/prayerRequestsEnd.ts): cleared fourteen days after 1.9
+  // ships, when the last of those requests would have lapsed anyway. Once a
+  // day. Until the release commit writes the day 1.9 shipped, and until
+  // fourteen days after it, the job reads nothing and says so; after it has
+  // cleared them it finds nothing set.
+  report.prayerRequestsEnd = await every("prayerRequestsEnd", 20 * 3_600_000, now, () => endPrayerRequests(admin, now));
   // The Monday email (lib/admin/weekly.ts): last week in numbers, to the
   // owner, from the same morning hour. The email log keys it by week, so it
   // goes once whatever the heartbeat or a restart does.

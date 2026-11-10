@@ -36,11 +36,8 @@ describe("the row's mark", () => {
   });
 
   it("leaves the praying figure where it is used elsewhere", () => {
-    for (const file of [
-      "components/community/PrayerWall.tsx",
-      "app/(app)/prayers/page.tsx",
-      "components/search/SearchRows.tsx",
-    ]) {
+    // The prayer wall wore it too, until the wall went in 1.9.
+    for (const file of ["app/(app)/prayers/page.tsx", "components/search/SearchRows.tsx"]) {
       expect(read(file), file).toContain('import { Orans } from "@/components/ui/icons/Orans";');
     }
   });

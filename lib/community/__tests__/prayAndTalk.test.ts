@@ -2,13 +2,15 @@
 // (Homebase/boards/purify-master/variants/r3-02-community.html), drawn to
 // markup: the head with its one switch, A's head in Pray together (the
 // Pentecost icon behind the name, the running campaign's card under it, gone
-// when none runs), the prayer wall under that, and Talk together's three
-// words with the rest behind the sliders.
+// when none runs), and Talk together's three words with the rest behind the
+// sliders. The prayer wall stood under the card until 1.9, when it went at
+// his word ("I'd say remove the prayer wall and just keep the prayer
+// campaigns", and then "wall B", 2026-11-10).
 //
 // vitest runs in node with no DOM (vitest.config.ts); react-dom/server needs
 // none, and what is checked here is all in the markup.
 
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 import { createElement, type ReactElement } from "react";
@@ -104,19 +106,22 @@ describe("Pray together", () => {
     expect(runningCampaign()).toBeNull();
   });
 
-  it("draws no card and no sample when none runs: the wall stands under the head", () => {
-    const html = draw(createElement(PrayTogether, { signedIn: true, campaign: null, onOpenProfile: () => {} }));
+  it("draws no card and no sample when none runs", () => {
+    const html = draw(createElement(PrayTogether, { signedIn: true, campaign: null }));
     expect(html).not.toContain("data-campaign-card");
     expect(html).not.toMatch(/SAMPLE/i);
-    expect(html).toContain("data-prayer-wall");
-    expect(html).toContain(">The prayer wall</h2>");
-    expect(html).toContain("Ask for prayers");
   });
 
-  it("asks a reader with no account to sign in where Ask for prayers stands", () => {
-    const html = draw(createElement(PrayTogether, { signedIn: false, campaign: null, onOpenProfile: () => {} }));
-    expect(html).toMatch(/<a[^>]*href="\/signin\?next=\/community"[^>]*>Sign in<\/a>/);
-    expect(html).not.toContain("Ask for prayers");
+  it("has no prayer wall: nothing of it is drawn, to a reader signed in or not, and nothing stands in its place", () => {
+    for (const signedIn of [true, false]) {
+      const html = draw(createElement(PrayTogether, { signedIn, campaign: null }));
+      expect(html).not.toContain("data-prayer-wall");
+      expect(html).not.toContain("The prayer wall");
+      expect(html).not.toContain("Ask for prayers");
+      expect(html).not.toContain("I prayed");
+      // With campaigns not open for this reader either, the half is empty: no heading, no button, no line of words.
+      expect(html.replace(/<[^>]+>/g, "").trim()).toBe("");
+    }
   });
 
   it("draws a campaign that runs under the head: its picture, the Church's words as printed, Pray, Add to my prayers and Share", () => {
@@ -133,11 +138,9 @@ describe("Pray together", () => {
       href: "/campaigns/detail?id=c1",
       name: "Nicholas",
     };
-    const html = draw(createElement(PrayTogether, { signedIn: true, campaign, onOpenProfile: () => {} }));
+    const html = draw(createElement(PrayTogether, { signedIn: true, campaign }));
     const card = /<article data-campaign-card=""[\s\S]*?<\/article>/.exec(html)?.[0] ?? "";
     expect(card).not.toBe("");
-    // Under the head and above the wall.
-    expect(html.indexOf("data-campaign-card")).toBeLessThan(html.indexOf("data-prayer-wall"));
     expect(card).toContain('src="/icons/prayer/anastasis.jpg"');
     expect(card).toContain('alt="The Resurrection"');
     expect(card).toContain(campaign.prayer.text);
@@ -164,23 +167,47 @@ describe("Pray together", () => {
   });
 });
 
-describe("the prayer wall, one step in", () => {
-  const wall = read("components/community/PrayerWall.tsx");
-
-  it("draws no number beside anyone (the sheet's open question, built as drawn)", () => {
-    expect(wall).not.toContain("prayedCount");
-    expect(wall).not.toMatch(/\{r\.count\}/);
+describe("the prayer wall is gone, with everything that drew it", () => {
+  it("its two screens are not in the app, and nothing imports them", () => {
+    expect(existsSync(join(root, "components/community/PrayerWall.tsx"))).toBe(false);
+    expect(existsSync(join(root, "components/community/AskPrayersSheet.tsx"))).toBe(false);
+    const naming: string[] = [];
+    const walk = (dir: string) => {
+      for (const name of readdirSync(join(root, dir))) {
+        const rel = `${dir}/${name}`;
+        if (name === "node_modules" || name === "__tests__" || name.startsWith(".")) continue;
+        if (statSync(join(root, rel)).isDirectory()) walk(rel);
+        else if (/\.(ts|tsx)$/.test(name) && /PrayerWall\b|AskPrayersSheet|fetchPrayerWall|sayPrayed\b/.test(read(rel))) naming.push(rel);
+      }
+    };
+    for (const dir of ["app", "components", "lib"]) walk(dir);
+    expect(naming).toEqual([]);
   });
 
-  it("is set like a page: the requests as rows with no box around them", () => {
-    expect(wall).toContain('<ul className="divide-y divide-paper/[0.08]">');
-    expect(wall).not.toMatch(/<ul className="[^"]*rounded-2xl border/);
+  it("Pray together's door is drawn only where there is something behind it", () => {
+    // It holds prayer campaigns and nothing else now. Where none is open for
+    // this reader, and the app runs none of its own, Community shows no
+    // switch, and an address that asks for Pray together shows the
+    // conversations: never an empty half behind a door.
+    const screen = read("components/community/CommunityClient.tsx");
+    expect(screen).toContain("const prayDoor = campaignsOpen || campaign !== null;");
+    expect(screen).toContain('const half: CommunityHalf = prayDoor ? asked : "talk";');
+    expect(screen).toContain("showSwitch={!groupId && prayDoor}");
+    // The panel names a tab only where the switch that holds it is drawn.
+    expect(screen).toContain("{...(groupId || !prayDoor ? {} : { role: \"tabpanel\"");
+    // And the head without its switch is the head a group's thread has: the title and the bell.
+    const html = head("talk", false);
+    expect(html).toContain(">Community</h1>");
+    expect(html).not.toContain('role="tablist"');
+    expect(html).not.toContain("Pray together");
   });
 
-  it("lights I prayed white and keeps every colour out of it", () => {
-    expect(wall).toContain('"reader-lit bg-paper text-night hover:bg-paper/90"');
-    // It was the fasting green (sage) once said.
-    expect(wall).not.toMatch(/(?:border|bg|text)-sage/);
+  it("a profile draws no request, no I prayed and no count of who prayed, and its editor has no switch for one", () => {
+    const viewer = read("components/community/profile/ProfileViewer.tsx");
+    const editor = read("components/community/profile/ProfileEditor.tsx");
+    for (const source of [viewer, editor]) {
+      expect(source).not.toMatch(/prayerRequest|prayedCount|profile\.pray\b|profile\.prayed\b|prayerToggle/);
+    }
   });
 });
 

@@ -5,7 +5,7 @@ import { communityEnabled } from "@/lib/community/flags";
 import { giftConfig, handleFrom, signedInUser } from "@/lib/community/social";
 import { nameDay } from "@/lib/profile/nameDay";
 import type { ProfileRelation } from "@/lib/profile/publicProfile";
-import { activePrayerRequest, identity, loadProfileRow } from "@/lib/profile/server";
+import { identity, loadProfileRow } from "@/lib/profile/server";
 import { getSaint } from "@/lib/saints/saints";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -16,8 +16,9 @@ export const dynamic = "force-dynamic";
 
 /**
  * How the signed-in viewer stands with a profile: following, followed back,
- * who they both follow, whether they have already greeted or prayed, and
- * whether Gift Plus is on. Read separately from the profile itself, which is
+ * who they both follow, whether they have already greeted, and whether Gift
+ * Plus is on. ("I prayed" went with asking for prayers in 1.9; the answer
+ * still carries `prayed: false` for an app of 1.8.) Read separately from the profile itself, which is
  * public and cached for everyone; this is one viewer's and never cached.
  *
  * Follows are never listed. The only lists that leave are the readers the
@@ -57,9 +58,8 @@ async function handleGET(req: Request) {
 
   const saint = row.patron_saint ? getSaint(row.patron_saint) : null;
   const day = saint ? nameDay(saint.feastDays, row.calendar_reckoning) : null;
-  const request = activePrayerRequest(row);
 
-  const [mineFollows, theirFollows, following, followsYou, greeted, prayed, muted] = await Promise.all([
+  const [mineFollows, theirFollows, following, followsYou, greeted, muted] = await Promise.all([
     // Each one reader's own follows, the newest 1,000: all one request gives.
     // They are only used to find up to eight people both follow, so a list
     // cut at a thousand costs a mutual at most. Whether the viewer follows
@@ -95,15 +95,6 @@ async function handleGET(req: Request) {
           .eq("recipient_id", row.id)
           .eq("sender_id", user.id)
           .eq("year", day.year)
-          .maybeSingle()
-      : Promise.resolve({ data: null }),
-    request
-      ? admin
-          .from("profile_prayers")
-          .select("prayer_id")
-          .eq("owner_id", row.id)
-          .eq("prayer_id", user.id)
-          .eq("request_at", request)
           .maybeSingle()
       : Promise.resolve({ data: null }),
     // Absent before 20261005, which reads as not muted.
@@ -143,7 +134,8 @@ async function handleGET(req: Request) {
     followsYou: Boolean(followsYou.data),
     mutuals,
     greeted: Boolean(greeted.data),
-    prayed: Boolean(prayed.data),
+    // Asking for prayers went in 1.9: an app of 1.8 still reads this, and it is no.
+    prayed: false,
     canGift: gift !== null,
     muted: !muted.error && Boolean(muted.data),
   };

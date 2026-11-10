@@ -22,7 +22,6 @@ import { SymbolText } from "@/components/community/SymbolText";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Close } from "@/components/ui/icons/Close";
-import { Orans } from "@/components/ui/icons/Orans";
 import { Sparkle } from "@/components/ui/icons/Sparkle";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/cn";
@@ -35,7 +34,6 @@ import {
   fetchRelation,
   greetNameDay,
   reportProfile,
-  sayPrayed,
   setFollow,
   startGiftCheckout,
 } from "@/lib/profile/client";
@@ -67,7 +65,7 @@ import { copyText as putOnClipboard } from "@/lib/ui/copyText";
  *
  * Read by @handle from /api/community/profile, which serves a fixed
  * projection: nothing here can learn an auth id or an email. How the viewer
- * stands with the profile (following, greeted, prayed) is a second, private
+ * stands with the profile (following, greeted) is a second, private
  * read, /api/community/relation.
  *
  * FAST TO OPEN. The request starts when a finger touches the name
@@ -113,7 +111,6 @@ function seedProfile(seed: ProfileSeed): PublicProfile {
     private: false,
     postsHidden: false,
     nameDay: null,
-    prayerRequest: null,
     nowReading: null,
     // The seal is known from the feed, so it is there from the first frame.
     clergy: seed.clergy ? { rank: seed.clergy === "clergy" ? null : seed.clergy, jurisdiction: null, parish: null } : null,
@@ -161,7 +158,7 @@ export function ProfileViewer({
   const [reported, setReported] = useState(false);
   const [confirmingBlock, setConfirmingBlock] = useState(false);
   const [effectReady, setEffectReady] = useState(false);
-  const [busy, setBusy] = useState<"follow" | "greet" | "pray" | "gift" | null>(null);
+  const [busy, setBusy] = useState<"follow" | "greet" | "gift" | null>(null);
   // The verse's picture sheet stands over the card (VerseCard): while it is
   // up, Escape and the Android back button are its, not the card's.
   const [picturing, setPicturing] = useState(false);
@@ -356,21 +353,6 @@ export function ProfileViewer({
     } else {
       setRelation((r) => (r ? { ...r, greeted: false } : r));
       setNotice(t("profile.greetFailed"));
-    }
-  }
-
-  async function pray() {
-    if (!shown || !relation || busy || relation.prayed) return;
-    setRelation({ ...relation, prayed: true });
-    setBusy("pray");
-    const res = await sayPrayed(shown);
-    setBusy(null);
-    if (res.ok) {
-      const request = loaded.state === "ok" ? loaded.profile.prayerRequest : null;
-      if (request) patchProfile({ prayerRequest: { ...request, count: res.count } });
-    } else {
-      setRelation((r) => (r ? { ...r, prayed: false } : r));
-      setNotice(t("profile.prayFailed"));
     }
   }
 
@@ -595,22 +577,6 @@ export function ProfileViewer({
                     relation && !relation.mine ? (
                       <MomentButton done={relation.greeted} onClick={() => void greet()}>
                         {relation.greeted ? t("profile.greeted") : t("profile.greet")}
-                      </MomentButton>
-                    ) : null
-                  }
-                />
-              ) : null}
-
-              {profile.prayerRequest ? (
-                <ProfileMoment
-                  icon={<Orans size={16} />}
-                  title={mine ? t("profile.prayerRequestMine") : t("profile.prayerRequest")}
-                  detail={profile.prayerRequest.intention ?? undefined}
-                  count={tn("profile.prayedCount", profile.prayerRequest.count)}
-                  action={
-                    relation && !relation.mine ? (
-                      <MomentButton done={relation.prayed} onClick={() => void pray()}>
-                        {relation.prayed ? t("profile.prayed") : t("profile.pray")}
                       </MomentButton>
                     ) : null
                   }

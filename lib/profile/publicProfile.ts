@@ -49,11 +49,11 @@ export type PublicProfile = {
   /** Set only on the reader's name day, while it is that date somewhere. */
   nameDay: { saint: string; year: number; greetings: number } | null;
   /**
-   * "Pray for me": since when, how many have prayed, and what for, in the
-   * reader's own words as the word filter left them (1.7.1; absent from
-   * older payloads, null when they wrote nothing).
+   * Asking for prayers went in 1.9 (his "wall B", 2026-11-10). The server
+   * still sends this, always null, for an app of 1.8, which reads it;
+   * nothing in this code does.
    */
-  prayerRequest: { since: string; count: number; intention?: string | null } | null;
+  prayerRequest?: null;
   /** The chapter the reader has open, when they share it and it is recent. */
   nowReading: { ref: string; label: string; href: string; at: string } | null;
   /** Verified clergy: their rank and where they serve. 20261005; optional for older payloads. */
@@ -71,7 +71,8 @@ export type ProfileSettings = {
   hidePosts: boolean;
   hideJoined: boolean;
   showNowReading: boolean;
-  prayerRequest: boolean;
+  /** Always false since 1.9, sent for an app of 1.8's editor; nothing in this code reads it. */
+  prayerRequest?: false;
   /** The calendar the reader's name day is counted on, kept in step with their device. */
   calendar: "new" | "old";
   /** Community notifications on the reader's devices (20261005). */
@@ -113,8 +114,8 @@ export type ProfileRelation = {
   mutuals: { handle: string; name: string; avatar: string | null; decoration: string | null }[];
   /** "Many years!" already sent this name day. */
   greeted: boolean;
-  /** "I prayed" already said for the current request. */
-  prayed: boolean;
+  /** Always false since 1.9, sent for an app of 1.8; nothing in this code reads it. */
+  prayed?: false;
   /** Gift Plus is switched on (website only) and this is someone else. */
   canGift: boolean;
   /** The viewer muted this reader (20261005). Optional for older payloads. */

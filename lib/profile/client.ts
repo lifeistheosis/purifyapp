@@ -62,11 +62,6 @@ export type ProfilePatch = {
   hidePosts?: boolean;
   hideJoined?: boolean;
   showNowReading?: boolean;
-  prayerRequest?: boolean;
-  /** What the request asks prayers for, sent with `prayerRequest: true` (1.7.1). */
-  prayerIntention?: string | null;
-  /** Yes to the word filter's question: publish with the listed words masked. */
-  confirmFiltered?: boolean;
   calendar?: "new" | "old";
   bio?: string | null;
   status?: string | null;
@@ -193,10 +188,6 @@ export function greetNameDay(handle: string) {
   return postJson<{ count: number }>("/api/community/greet", { handle });
 }
 
-/** "I prayed", in answer to "pray for me". Answers with the count. */
-export function sayPrayed(handle: string) {
-  return postJson<{ count: number }>("/api/community/pray", { handle });
-}
 
 /** Handles starting with what is being typed after "@". */
 export async function searchHandles(q: string): Promise<string[]> {

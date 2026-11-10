@@ -6,7 +6,6 @@ import { z } from "zod";
 import { LOCALES } from "@/lib/i18n/locales";
 import { PRAY_PLACES } from "@/lib/prayers/commemoration";
 import { MY_RULE_IDS } from "@/lib/prayers/myRule";
-import { PRAYER_INTENTION_MAX } from "@/lib/profile/server";
 import {
   WALL_CAP,
   WALL_DAYS,
@@ -247,12 +246,11 @@ describe("in the reader's own account", () => {
   });
 });
 
-describe("the words the reader sees on the wall", () => {
+describe("the words of a name carried into a reader's prayers", () => {
+  // The wall's own words (asking, its heading, I prayed) went with the wall
+  // in 1.9. These stay: joining a campaign is the same "Add to my prayers",
+  // and the names a reader carried from the wall keep theirs for their week.
   const KEYS = [
-    "community.wallIntentionLabel",
-    "community.wallIntentionPlaceholder",
-    "community.wallIntentionHint",
-    "community.wallNoLinks",
     "community.wallAdd",
     "community.wallInMyPrayers",
     "community.wallAddWhen",
@@ -275,15 +273,33 @@ describe("the words the reader sees on the wall", () => {
     }
   });
 
+  it("the wall's own words are in no language any more", () => {
+    // Asking, the wall's heading and its lines, I prayed and how many prayed,
+    // and the profile's switch: retired with the wall in 1.9 (his "wall B").
+    const GONE = [
+      "community.filterPrayer", "community.wallAsk", "community.wallAsked", "community.wallAskedAgo", "community.wallBody", "community.wallEmpty",
+      "community.wallIntentionHint", "community.wallIntentionLabel", "community.wallIntentionPlaceholder", "community.wallNoLinks", "community.wallTitle",
+      "community.wallWithdraw", "community.wallWithdrawn", "community.wallYou", "profile.pray", "profile.prayFailed", "profile.prayed",
+      "profile.prayerRequest", "profile.prayerRequestMine", "profile.prayerToggle", "profile.prayerToggleHint",
+    ];
+    for (const { code } of LOCALES) {
+      const m = catalog(code);
+      for (const key of GONE) expect(key in m, `${code} ${key}`).toBe(false);
+      expect(Object.keys(m).filter((key) => key.startsWith("profile.prayedCount")), code).toEqual([]);
+    }
+  });
+
   it("say the days as the model keeps them: a week", () => {
     expect(WALL_DAYS).toBe(7);
     expect(catalog("en")["community.wallAddNote"]).toContain("for a week");
   });
 
-  it("keep the request's words to the limit the server and the column keep", () => {
-    expect(WALL_INTENTION_MAX).toBe(PRAYER_INTENTION_MAX);
+  it("keep the words carried with a name to what a request on the wall could hold: the column's own limit", () => {
+    // The wall went in 1.9 and the server reads no request's words any more;
+    // the names a reader carried from it keep theirs for their week.
+    expect(WALL_INTENTION_MAX).toBe(120);
     const sql = read("docs", "1.8-build", "sql", "prayer-request-intention.sql");
-    expect(sql).toContain(`char_length(prayer_request_intention) <= ${PRAYER_INTENTION_MAX}`);
+    expect(sql).toContain(`char_length(prayer_request_intention) <= ${WALL_INTENTION_MAX}`);
     // Run by the owner's hand, never by a merge.
     expect(fs.readdirSync(path.join(ROOT, "supabase", "migrations")).some((f) => f.includes("prayer_request_intention"))).toBe(false);
   });

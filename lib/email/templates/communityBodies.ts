@@ -3,8 +3,11 @@ import type { MarketingBody } from "./marketingBodies";
 
 /**
  * The weekly Community email's words (lib/email/communityDigest.ts): the
- * week's most answered conversations, what the people a reader follows
- * wrote, and how many asked for prayers. Only the words live here; the
+ * week's most answered conversations and what the people a reader follows
+ * wrote. (Until 1.9 it also said how many had asked for prayers, and that
+ * the prayer wall is in Community: the wall went, his word of 2026-11-10,
+ * and its line with it. Nothing was written in its place.) Only the words
+ * live here; the
  * footer, unsubscribe and address are added by lib/email/marketing.ts, which
  * sends it only to readers who turned "The week in Community" on.
  *
@@ -28,11 +31,7 @@ function line(p: DigestPost): EmailDay {
   return { day: `${p.label} · ${p.author}`, name: p.text, kind: "saint" };
 }
 
-export function communityDigestBody(opts: {
-  top: readonly DigestPost[];
-  following: readonly DigestPost[];
-  prayers: number;
-}): MarketingBody {
+export function communityDigestBody(opts: { top: readonly DigestPost[]; following: readonly DigestPost[] }): MarketingBody {
   const paragraphs = ["Here is what readers talked about in Community this week."];
   const after: string[] = [];
   if (opts.following.length > 0) {
@@ -40,13 +39,6 @@ export function communityDigestBody(opts: {
       `From the people you follow: ${opts.following
         .map((p) => `${p.author}, "${p.text}"`)
         .join("; ")}.`,
-    );
-  }
-  if (opts.prayers > 0) {
-    after.push(
-      opts.prayers === 1
-        ? "One reader asked for prayers this week. The prayer wall is in Community."
-        : `${opts.prayers} readers asked for prayers this week. The prayer wall is in Community.`,
     );
   }
   return {

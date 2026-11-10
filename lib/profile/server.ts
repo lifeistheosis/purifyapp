@@ -95,33 +95,25 @@ export type ProfileRow = {
 
 /** How long "now reading" stays on a profile after the last chapter opened. */
 export const NOW_READING_MS = 3 * 60 * 60 * 1000;
-/** How long a "pray for me" stays up before it lapses on its own. */
+/**
+ * How long a "pray for me" stayed up before it lapsed on its own. Asking for
+ * prayers went in 1.9; the requests that stood then are cleared this long
+ * after it ships, when the last of them would have lapsed anyway
+ * (lib/community/prayerRequestsEnd.ts).
+ */
 export const PRAYER_REQUEST_MS = 14 * 24 * 60 * 60 * 1000;
-/** The longest a request's own words may be (the column's check says the same). */
-export const PRAYER_INTENTION_MAX = 120;
 
 /**
- * What a reader's request asks prayers for, in their own words, as the word
- * filter left it (1.7.1). Read on its own rather than in loadProfileRow, so
- * that before its column exists (docs/1.8-build/sql/prayer-request-intention.sql)
- * the profile read costs nothing extra: `open` is false then, and the routes
- * neither show nor write the words.
+ * What a reader's request asked prayers for, in their own words (1.7.1).
+ * Read only to take a request down (app/api/profile/me): nothing shows it
+ * since 1.9. `open` is false before its column exists
+ * (docs/1.8-build/sql/prayer-request-intention.sql).
  */
 export async function readPrayerIntention(admin: SupabaseClient, id: string): Promise<{ open: boolean; intention: string | null }> {
   const { data, error } = await admin.from("profiles").select("prayer_request_intention").eq("id", id).maybeSingle();
   if (error) return { open: false, intention: null };
   const intention = (data as { prayer_request_intention?: string | null } | null)?.prayer_request_intention;
   return { open: true, intention: typeof intention === "string" && intention.trim() ? intention : null };
-}
-
-/**
- * A request's words, made one line: whitespace run together, cut to the
- * limit, null when nothing is left. The same before the filter and in the hold.
- */
-export function cleanIntention(v: string | null | undefined): string | null {
-  if (v == null) return null;
-  const s = v.replace(/\s+/g, " ").trim();
-  return s ? [...s].slice(0, PRAYER_INTENTION_MAX).join("").trim() : null;
 }
 
 /** "unavailable" when 20261001000000_profiles_badges.sql has not been applied yet. */
@@ -161,26 +153,20 @@ export function savedCosmetics(row: ProfileRow): Cosmetics {
   };
 }
 
-export function profileSettings(row: ProfileRow, now: number = Date.now()): ProfileSettings {
+export function profileSettings(row: ProfileRow): ProfileSettings {
   return {
     parish: row.parish ?? null,
     private: row.profile_private === true,
     hidePosts: row.hide_posts === true,
     hideJoined: row.hide_joined === true,
     showNowReading: row.show_now_reading === true,
-    prayerRequest: activePrayerRequest(row, now) !== null,
+    // Asking for prayers went in 1.9: an app of 1.8 still reads this, and it is no.
+    prayerRequest: false,
     calendar: row.calendar_reckoning === "old" ? "old" : "new",
     // Asked for, never on by default: only a reader who turned them on.
     pushCommunity: row.push_community === true,
     showStreak: row.show_streak !== false,
   };
-}
-
-/** The live "pray for me" request's start, or null when none or lapsed. */
-export function activePrayerRequest(row: Pick<ProfileRow, "prayer_request_at">, now: number = Date.now()): string | null {
-  if (!row.prayer_request_at) return null;
-  const at = new Date(row.prayer_request_at).getTime();
-  return Number.isFinite(at) && now - at < PRAYER_REQUEST_MS ? row.prayer_request_at : null;
 }
 
 /** The name and picture a reader goes by in Community, the same as on their posts. */
@@ -255,10 +241,9 @@ export async function buildProfile(
   const now = opts.now ?? new Date();
   const saint = row.patron_saint ? getSaint(row.patron_saint) : null;
   const day = saint ? nameDay(saint.feastDays, row.calendar_reckoning, now) : null;
-  const request = activePrayerRequest(row, now.getTime());
   const isPrivate = row.profile_private === true;
 
-  const [who, ent, verification, clergyRow, ambassador, granted, posts, earned, greetings, prayers, streak, intention] = await Promise.all([
+  const [who, ent, verification, clergyRow, ambassador, granted, posts, earned, greetings, streak] = await Promise.all([
     identity(admin, row),
     admin.from("entitlements").select("plus_until, pro_until").eq("user_id", row.id).maybeSingle(),
     admin.from("user_verification").select("status").eq("user_id", row.id).maybeSingle(),
@@ -281,21 +266,8 @@ export async function buildProfile(
             .eq("year", day.year),
         )
       : Promise.resolve(0),
-    request
-      ? countOf(
-          admin
-            .from("profile_prayers")
-            .select("prayer_id", { count: "exact", head: true })
-            .eq("owner_id", row.id)
-            .eq("request_at", request),
-        )
-      : Promise.resolve(0),
     // 20261006. Before it, and before the reader's first visit after it, none.
     profileStreak(admin, row.id, now).catch(() => ({ current: 0, badge: null })),
-    // What the request asks prayers for (1.7.1), only while one is up.
-    request && !isPrivate
-      ? readPrayerIntention(admin, row.id).catch(() => ({ open: false, intention: null }))
-      : Promise.resolve({ open: false, intention: null }),
   ]);
 
   const paid = subscriptionTier(ent.data as { plus_until?: string | null; pro_until?: string | null } | null);
@@ -343,7 +315,10 @@ export async function buildProfile(
     private: isPrivate,
     postsHidden: isPrivate || row.hide_posts === true,
     nameDay: !isPrivate && day?.today && saint ? { saint: saint.name, year: day.year, greetings } : null,
-    prayerRequest: !isPrivate && request ? { since: request, count: prayers, intention: intention.intention } : null,
+    // Asking for prayers went in 1.9 (his "wall B"): no request is shown to
+    // anyone, and how many prayed is not counted. An app of 1.8 still reads
+    // this, and it is nothing.
+    prayerRequest: null,
     nowReading: !isPrivate && reading && row.now_reading_at ? { ...reading, at: row.now_reading_at } : null,
     // The seal is standing, so a private profile keeps its rank; where they
     // serve is the reader's own business on a private one.
@@ -396,7 +371,7 @@ export async function buildMyProfile(admin: SupabaseClient, row: ProfileRow): Pr
     saved: built.saved,
     subscribed: built.subscribed,
     handleChangedAt: row.handle_changed_at,
-    settings: profileSettings(row, now.getTime()),
+    settings: profileSettings(row),
     nextNameDay: next && saint ? { date: next.date, saint: saint.name, today: next.today } : null,
     allBadges: built.allBadges,
     hiddenBadges: Array.isArray(row.hidden_badges) ? row.hidden_badges : [],

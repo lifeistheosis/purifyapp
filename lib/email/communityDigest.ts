@@ -19,8 +19,9 @@ import { communityDigestBody, digestText, type DigestPost } from "./templates/co
  * list is off until a reader turns it on (20261005), like every list.
  *
  * What it carries: the week's five most answered conversations in the public
- * feed, up to three things the people the reader follows wrote, and how many
- * readers asked for prayers. A reader who blocked an author never sees them
+ * feed, and up to three things the people the reader follows wrote. (How
+ * many readers asked for prayers left it with the prayer wall, in 1.9.) A
+ * reader who blocked an author never sees them
  * here either. Nothing from a parish group, nothing held for review.
  */
 
@@ -148,10 +149,6 @@ export async function runCommunityDigest(
     errors.push(`community follows and blocks: ${(e as Error).message}`);
     return { due: true, report: null, errors };
   }
-  const prayers = await admin
-    .from("profiles")
-    .select("id", { count: "exact", head: true })
-    .gte("prayer_request_at", since);
   const followsOf = new Map<string, Set<string>>();
   for (const f of follows) {
     (followsOf.get(f.follower_id) ?? followsOf.set(f.follower_id, new Set()).get(f.follower_id)!).add(f.followee_id);
@@ -177,7 +174,6 @@ export async function runCommunityDigest(
       return communityDigestBody({
         top: top.map(asDigest),
         following: following.map(asDigest),
-        prayers: prayers.error ? 0 : (prayers.count ?? 0),
       });
     },
   });

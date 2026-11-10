@@ -56,7 +56,7 @@ export const WALL_DAYS = 7;
 /** At most this many at once: a few names, not a second wall. */
 export const WALL_CAP = 40;
 export const WALL_NAME_MAX = 80;
-/** As long as a request's words may be (lib/profile/server.ts PRAYER_INTENTION_MAX). */
+/** As long as the words carried with a name may be: what a request on the wall could hold. */
 export const WALL_INTENTION_MAX = 120;
 
 const DAY = 86_400_000;

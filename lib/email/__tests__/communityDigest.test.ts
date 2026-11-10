@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { digestScore } from "../communityDigest";
@@ -16,7 +19,6 @@ describe("the weekly Community email", () => {
       { author: "John", text: "For God so loved the world", label: "John 3:16" },
     ],
     following: [{ author: "Anna", text: "A question about the Nativity Fast", label: "Question for clergy" }],
-    prayers: 12,
   });
 
   it("says only what Purify may say in an email", () => {
@@ -24,9 +26,8 @@ describe("the weekly Community email", () => {
     expect(checkEmailCopy({ subject: body.subject, body: own })).toEqual([]);
   });
 
-  it("lists the week's conversations and counts the prayer requests", () => {
+  it("lists the week's conversations and what the people a reader follows wrote", () => {
     expect(body.lines?.map((l) => l.name)).toEqual(["How do you keep the Jesus Prayer at work", "For God so loved the world"]);
-    expect(body.after?.join(" ")).toContain("12 readers asked for prayers");
     expect(body.after?.join(" ")).toContain("Anna");
   });
 
@@ -38,9 +39,15 @@ describe("the weekly Community email", () => {
     expect(email.headers["List-Unsubscribe-Post"]).toBe("List-Unsubscribe=One-Click");
   });
 
-  it("says nothing about prayers when nobody asked, and one when one did", () => {
-    expect(communityDigestBody({ top: [], following: [], prayers: 0 }).after).toEqual([]);
-    expect(communityDigestBody({ top: [], following: [], prayers: 1 }).after?.[0]).toMatch(/^One reader/);
+  it("says nothing of the prayer wall or of who asked for prayers: the wall went in 1.9, and its line with it", () => {
+    // It used to end "N readers asked for prayers this week. The prayer wall
+    // is in Community." Nothing was written in its place.
+    const said = JSON.stringify(body);
+    expect(said).not.toMatch(/prayer wall/i);
+    expect(said).not.toMatch(/asked for prayers/i);
+    expect(communityDigestBody({ top: [], following: [] }).after).toEqual([]);
+    // And the email no longer counts requests to say so.
+    expect(readFileSync(join(process.cwd(), "lib/email/communityDigest.ts"), "utf8")).not.toContain("prayer_request_at");
   });
 });
 

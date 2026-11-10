@@ -464,38 +464,6 @@ export async function listMutedReaders(): Promise<MutedReader[] | null> {
   }
 }
 
-// ── The prayer wall ──────────────────────────────────────────────────────────
-
-export type PrayerRequest = {
-  handle: string;
-  name: string;
-  avatar: string | null;
-  since: string;
-  prayed: boolean;
-  mine: boolean;
-  /** What they ask prayers for, in their own words (1.7.1); null when they wrote nothing. */
-  intention?: string | null;
-};
-
-/**
- * The wall, and whether a request can carry words yet (`intentions`, false
- * until docs/1.8-build/sql/prayer-request-intention.sql has run, and from an
- * older server).
- */
-export async function fetchPrayerWall(): Promise<
-  { state: "ok"; requests: PrayerRequest[]; intentions: boolean } | { state: "error" | "dark" }
-> {
-  try {
-    const res = await apiFetch("/api/community/prayer-wall");
-    if (res.status === 404) return { state: "dark" };
-    if (!res.ok) return { state: "error" };
-    const json = (await res.json()) as { requests?: PrayerRequest[]; intentions?: boolean };
-    return { state: "ok", requests: Array.isArray(json.requests) ? json.requests : [], intentions: json.intentions === true };
-  } catch {
-    return { state: "error" };
-  }
-}
-
 // ── Moderation ───────────────────────────────────────────────────────────────
 
 export type ModAction =
