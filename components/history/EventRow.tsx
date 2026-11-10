@@ -77,12 +77,12 @@ export function EventRow({
         ) : null}
         <div className="flex items-start gap-3">
           <div className="min-w-0 flex-1">
-            <p lang="en" dir="ltr" className="font-sans text-caption font-semibold text-paper/60 tabular-nums">
+            <p lang="en" dir="ltr" className="font-sans text-caption font-semibold text-paper/60 tabular-nums rtl:text-right">
               {event.displayDate}
               {event.region ? <span className="font-normal text-paper/50"> · {event.region}</span> : null}
             </p>
-            <h3 lang="en" dir="ltr" className="mt-1 text-lede leading-snug text-paper md:text-title-sm">{event.title}</h3>
-            <p lang="en" dir="ltr" className="mt-1 line-clamp-2 font-sans text-detail leading-[1.55] text-paper/65">{event.preview}</p>
+            <h3 lang="en" dir="ltr" className="mt-1 text-lede leading-snug text-paper md:text-title-sm rtl:text-right">{event.title}</h3>
+            <p lang="en" dir="ltr" className="mt-1 line-clamp-2 font-sans text-detail leading-[1.55] text-paper/65 rtl:text-right">{event.preview}</p>
           </div>
           {major ? null : <EventThumb event={event} frame="square" frameClassName="mt-1 size-16 shrink-0 rounded-[12px]" sizes="64px" />}
         </div>

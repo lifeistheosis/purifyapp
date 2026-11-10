@@ -31,14 +31,14 @@ export function SaintCard({ saint }: { saint: Saint }) {
         <SaintIcon saint={saint} size="md" />
         <div className="min-w-0 flex flex-col">
           {saint.byname && (
-            <p lang="en" dir="ltr" className="font-serif text-detail italic text-gold/90 mb-1 line-clamp-1">
+            <p lang="en" dir="ltr" className="font-serif text-detail italic text-gold/90 mb-1 line-clamp-1 rtl:text-right">
               &ldquo;{saint.byname}&rdquo;
             </p>
           )}
-          <h3 lang="en" dir="ltr" className="font-sans text-lede font-semibold text-paper leading-tight">
+          <h3 lang="en" dir="ltr" className="font-sans text-lede font-semibold text-paper leading-tight rtl:text-right">
             {saint.name}
           </h3>
-          <p lang="en" dir="ltr" className="font-sans text-detail text-paper/55 mt-1.5 line-clamp-1">
+          <p lang="en" dir="ltr" className="font-sans text-detail text-paper/55 mt-1.5 line-clamp-1 rtl:text-right">
             {saint.epithet}
           </p>
           <p lang="en" dir="ltr" className="mt-3 font-sans text-ui text-paper/70 leading-relaxed line-clamp-3">
