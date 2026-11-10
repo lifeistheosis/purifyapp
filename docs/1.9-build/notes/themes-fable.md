@@ -2479,6 +2479,21 @@ Also his:
   words come. Stills: `build-89/palette-names-*.png` (Settings in Greek,
   the reading mode page in Georgian, the Plus preview in Filipino, all at
   360px).
+  Then, at his "all recs" of about 08:25 UTC, the three Plus lines drafted
+  above (`plus.palettes.title`, `plus.palettes.body`, `plus.active.modes`)
+  in all 20 catalogs with these names (Updates 2, `47309a23`). Measured on
+  an export built with the Plus gate on for both stores, as a reader
+  without Plus, in all 21 languages at 390 and 360px: the sheet a tap on a
+  look opens and its lit row (title, body, the free three's line), the
+  row's name in the sheet, and the preview's head (two lines at most).
+  Every word whole, but for three hyphenated ones broken at their own
+  hyphen as type breaks them (French dix-huit, Indonesian masing-masing
+  and berjam-jam), and Ukrainian's name, cut in the head at both widths:
+  the head's word beside it was two long words, so it is one now,
+  "Перегляд" (`d7747a0b`), and the name is whole. The palette earned by
+  the Cappadocians agrees with the five in Russian, Bulgarian and
+  Ukrainian (`d862e24b`). Stills: `build-89/palette-names-plus-lit-el-360.png`
+  and `palette-names-cappadocian-ru-360.png`.
 - **The new words were written by the chat**, 38 in each of 20 languages,
   and not read by a reader of each language. Places and things of the
   Church were given the Church's own names (Άγιον Όρος, Святая Гора).
