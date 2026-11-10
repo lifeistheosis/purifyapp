@@ -1955,7 +1955,15 @@ findings:
       to 1061; John 20, 1062 to 1092, which had run on into John 21).
       lib/saints/__tests__/cyrilJohnPlaces.test.ts holds the titles, the
       books' stretches, the four steps back and every copy; five of its seven
-      checks fail on the old titles.
+      checks fail on the old titles. The same day, on the arbiter's yes: Book
+      5's table of chapters ("3. That no work of Jewish might was the
+      Suffering on the Cross ...; on the words, ...") was read in as the first
+      four paragraphs of section 453, under St Cyril's name, and copied onto
+      the rail at John 7:39. They are empty slots now, so no reader's mark
+      moves, the section opens with the book's first lemma (John 7:25), and
+      the rail's copy begins with his words (4,745 of 4,745 notes still
+      placed); cyrilJohnPlaces.test.ts holds that no paragraph of the work is
+      an entry of the table.
       STILL OPEN: the quotation marks still to settle (18 paragraphs where CCEL
       itself differs, the 28 paragraph-opening marks of Antony's speeches and
       4 in 2 Corinthians that CCEL never closes, 6 lost double marks at
@@ -1969,9 +1977,7 @@ findings:
       quotation, often mid-sentence (moving their bounds would move readers'
       marks); the openings of seven books are not in the library, about 1,370
       words (Book 12's first three paragraphs, 806, and the opening of Cyril's
-      preface to Book 1, 183, the largest); and Book 5's table of chapters is
-      read in as the words of its first section (453, paragraphs 0 to 3, and
-      the rail's copy at John 7:39); on the rail, 518 of its 1,067 notes from
+      preface to Book 1, 183, the largest); on the rail, 518 of its 1,067 notes from
       Cyril on John stand on the verse the ingest took them for, not the one
       their passage expounds (440 of them in another chapter or more than
       three verses away); and a test

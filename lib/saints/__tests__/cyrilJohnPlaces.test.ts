@@ -114,6 +114,26 @@ describe("St Cyril on John: each section names the verse he is on", () => {
     expect(back).toEqual([...STEPS_BACK.keys()]);
   });
 
+  it("shows none of the edition's table of chapters as his words", () => {
+    // Book 5's table of chapters ("3. That no work of Jewish might was the
+    // Suffering on the Cross ...; on the words, ...") was read in as the first
+    // four paragraphs of section 453, and copied onto the rail at John 7:39.
+    // They are empty slots now, so no reader's mark moves (F-49's way with an
+    // edition's matter), and the section opens with the book's first lemma.
+    const entries: string[] = [];
+    for (const s of WORK.sections)
+      s.paragraphs.forEach((p, i) => {
+        if (/^\d{1,2}\. That\b[\s\S]*\bon the words\b/.test(p)) entries.push(`${s.n}/${i}: ${p.slice(0, 50)}`);
+      });
+    expect(entries, entries.join("\n")).toEqual([]);
+    const s453 = WORK.sections.find((s) => s.n === 453)!;
+    expect(s453.paragraphs.slice(0, 4)).toEqual(["", "", "", ""]);
+    expect(s453.paragraphs.find((p) => p !== "")).toMatch(/^25 Some therefore of them of Jerusalem said/);
+    const rail = read<Record<string, { at?: { section?: number }; text?: string }[]>>("data/bible/commentary/john/7.json");
+    const copy = Object.values(rail).flat().find((n) => n.at?.section === 453);
+    expect(copy?.text).toMatch(/^25 Some therefore of them of Jerusalem said/);
+  });
+
   it("keeps its sections in order and numbered once", () => {
     const ns = WORK.sections.map((s) => s.n);
     expect(new Set(ns).size).toBe(ns.length);

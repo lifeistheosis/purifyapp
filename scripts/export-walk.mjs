@@ -9050,17 +9050,21 @@ await section(62, async () => {
     await go(page, "/");
     await page.waitForTimeout(300);
     await go(page, `/saints/cyril-of-alexandria/commentary-on-john/#s${n}`);
-    await page.waitForFunction((n) => !!document.getElementById(`p-${n}-0`), n, { timeout: 20000 }).catch(() => {});
+    // Any paragraph of it: an empty slot (section 453's first four) is not drawn.
+    await page.waitForFunction((n) => !!document.querySelector(`[id^="p-${n}-"]`), n, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(600);
     return page.evaluate((n) => (document.getElementById(`s${n}`)?.querySelector("[data-work-head]")?.textContent ?? "").replace(/\s+/g, " ").trim(), n);
   };
   const preface = await heading(1);
   const eunomius = await heading(17);
   const book5 = await heading(453);
+  // Read while it is here (the work loads in parts); textContent, as a long work lays out only what is near.
+  const book5Words = await page.evaluate(() => (document.getElementById("s453")?.textContent ?? "").replace(/\s+/g, " "));
   const cross = await heading(1053);
   must(/Preface/.test(preface) && !/John 12:35/.test(preface), `Book 1's opening is its Preface, not "on John 12:35" (${preface})`);
   must(/John 1:1\b/.test(eunomius) && !/3:35/.test(eunomius), `the answer to Eunomius is under John 1:1, not 3:35 (${eunomius})`);
   must(/John 7:25\b/.test(book5) && !/7:39/.test(book5), `Book 5 opens on John 7:25, not 7:39 (${book5})`);
+  must(!/That no work of Jewish might/.test(book5Words) && /Some therefore of them of Jerusalem said/.test(book5Words), `Book 5's table of chapters is not shown as his words; the section opens with its first lemma (${book5Words.slice(0, 90)})`);
   must(/John 19:30\b/.test(cross) && !/20:31/.test(cross), `the section after "It is finished" is still on John 19:30, not 20:31 (${cross})`);
 
   // The rail's place, as the apps carry it: the note on John 7:39 is from Book 5's opening, on 7:25.
