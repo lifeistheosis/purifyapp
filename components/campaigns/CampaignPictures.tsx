@@ -2,8 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { PlusMark } from "@/components/billing/PlusMark";
-import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { CampaignReportSheet } from "@/components/campaigns/CampaignReportSheet";
 import { TickBox } from "@/components/campaigns/TickLines";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -17,13 +15,12 @@ import { Plus } from "@/components/ui/icons/Plus";
 import { Shield } from "@/components/ui/icons/Shield";
 import { Sheet } from "@/components/ui/Sheet";
 import { addPicture, fetchPictures, removePicture, type PictureAdded, type PicturesResult } from "@/lib/campaigns/client";
-import { PICTURE_ALT_MAX, PICTURE_MAX_BYTES, PICTURE_TYPES, showsPlusPlace } from "@/lib/campaigns/model";
+import { PICTURE_ALT_MAX, PICTURE_MAX_BYTES, PICTURE_TYPES } from "@/lib/campaigns/model";
 import { cn } from "@/lib/cn";
-import { clientSurface } from "@/lib/entitlements/client";
-import { plusEnforcedFor } from "@/lib/entitlements/entitlements";
 
 /**
- * A campaign's pictures (his item 121): three, or twenty with Purify Plus.
+ * A campaign's pictures (his item 121): five, for every reader alike. Not
+ * a Plus perk (his word of 2026-11-10): nothing here names Plus or sells it.
  *
  * BUILT, AND SWITCHED OFF ON THE SERVER (lib/campaigns/parts.ts). Nothing
  * here is drawn, and nothing is asked, until the server has told this device
@@ -33,10 +30,8 @@ import { plusEnforcedFor } from "@/lib/entitlements/entitlements";
  * What a reader sees: the pictures a moderator has cleared, in a row under
  * About; a tap opens one, with what its creator says it shows, and Report.
  * What its creator sees besides: their own pictures that still wait, each
- * marked so; a place to add one; and, at three, the next place with the Plus
- * mark, which opens the upgrade sheet. Plus is shown where it is met and
- * never promised to every reader, and not at all where it cannot be bought
- * (the server holds the limit either way, from the creator's entitlement).
+ * marked so; and a place to add one while a place is free. At five the
+ * place to add is no longer drawn (the server holds the limit either way).
  *
  * A picture is added with two lines ticked: "I am 18 or older", and that it
  * is theirs to share with the blessing of anyone in it.
@@ -104,7 +99,6 @@ export function CampaignPictures({
   onNotice: (message: string) => void;
 }) {
   const { t } = useTranslate();
-  const upgrade = useUpgradeModal();
   const [openId, setOpenId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [reporting, setReporting] = useState<string | null>(null);
@@ -113,14 +107,12 @@ export function CampaignPictures({
   const [failed, setFailed] = useState<string | null>(null);
 
   if (result?.state !== "ok") return null;
-  const { pictures, canAdd, limit } = result.pictures;
+  const { pictures, canAdd } = result.pictures;
   if (pictures.length === 0 && !mine) return null;
 
   const openAt = pictures.findIndex((p) => p.id === openId);
   const open = openAt >= 0 ? pictures[openAt] : null;
   const waits = pictures.some((p) => p.held);
-  // At three, where Plus can be bought: the next place is shown, with its mark.
-  const plusPlace = showsPlusPlace({ mine, canAdd, limit, pictures: pictures.length, plusSold: plusEnforcedFor(clientSurface()) });
 
   async function remove() {
     const id = removing;
@@ -143,9 +135,9 @@ export function CampaignPictures({
       <h2 id="campaign-pictures-title" className="font-heading text-lede leading-tight text-paper">
         {t("campaigns.pictures")}
       </h2>
-      {/* A grid, four to a row, and never a row to scroll sideways: twenty
-          pictures stand in five rows, and the place after the third is on
-          the screen where its creator will see it. */}
+      {/* A grid, four to a row, and never a row to scroll sideways: five
+          pictures are a row and one more, and the place to add one stands
+          after the last. */}
       <div className="mt-3 grid grid-cols-4 gap-2">
         {pictures.map((p) => (
           <button key={p.id} type="button" aria-haspopup="dialog" onClick={() => setOpenId(p.id)} className={cn(TILE, "tap-press bg-paper/[0.06]")}>
@@ -170,17 +162,6 @@ export function CampaignPictures({
             className={cn(TILE, "tap-press flex items-center justify-center border border-paper/25 text-paper hover:border-paper/45")}
           >
             <Plus size={22} />
-          </button>
-        ) : null}
-        {plusPlace ? (
-          // Two places wide, so the one Plus mark stands whole in it (components/billing/PlusMark.tsx).
-          <button
-            type="button"
-            aria-label={t("campaigns.picturesPlus")}
-            onClick={() => upgrade.open("general")}
-            className="tap-press col-span-2 flex aspect-[2/1] min-w-0 items-center justify-center rounded-[14px] border border-paper/15 px-2 hover:border-paper/35"
-          >
-            <PlusMark />
           </button>
         ) : null}
       </div>

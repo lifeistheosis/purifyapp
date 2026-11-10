@@ -7,14 +7,12 @@ import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { AUTO, logMod, type ModActor, type ModResult } from "@/lib/community/moderation";
 import { writeRemovalNotice, type RemovalReason } from "@/lib/community/removal";
 import { findLinks } from "@/lib/community/spam";
-import { subscriptionTier } from "@/lib/profile/cosmetics";
 import { forgetUploads, recordUploadOwner } from "@/lib/security/uploadOwners";
-import { normalizeShopImage } from "@/lib/shop/imageNormalize";
+import { normalizeShopImage, type NormalizedImage } from "@/lib/shop/imageNormalize";
 
 import { CAMPAIGN_BUCKET } from "./image";
 import {
-  PICTURES_FREE,
-  PICTURES_PLUS,
+  PICTURES_MAX,
   PICTURE_ALT_MAX,
   PICTURE_MAX_BYTES,
   PICTURE_TYPES,
@@ -28,7 +26,7 @@ import { pictureCheck } from "./pictureCheck";
 import { reportsSay } from "./reportsSay";
 import type { CampaignRow, Read } from "./server";
 
-// A campaign's pictures (his item 121): three, or twenty with Purify Plus.
+// A campaign's pictures (his item 121): five, for every reader alike.
 //
 // BUILT, AND SWITCHED OFF ON THE SERVER (./parts.ts). The routes that call
 // this file answer 404 while the part is off. And with the part on, no
@@ -44,7 +42,9 @@ import type { CampaignRow, Read } from "./server";
 //      turned upright, 1600 pixels at most, and written with no EXIF at all.
 //      Only that new copy is ever stored, so no place, no device and no
 //      hidden text in a photograph reaches anyone. A test uploads a photo
-//      that carries a place and reads back what was kept.
+//      that carries a place and reads back what was kept. It is always a
+//      JPEG with nothing see-through in it (opaqueJpeg), so the picture the
+//      check looks at is the picture a reader is shown.
 //   2. The automatic check looks at that copy, before any person does.
 //   3. It is stored in a PRIVATE bucket, under a random name that says
 //      nothing of whose it is, and marked held. Nobody can load it but its
@@ -64,10 +64,9 @@ import type { CampaignRow, Read } from "./server";
 //      every file upload_owners gives a reader, and every copy is written
 //      there in its creator's name before it exists).
 //
-// THE LIMIT IS THE SERVER'S, from the creator's own entitlement at the
-// moment of the upload, as the profile banner's is. What the app believes
-// about Plus is never asked. If Plus lapses, pictures already up stay up and
-// no more can be added past three: what was given is not taken back.
+// THE LIMIT IS THE SERVER'S, and the same for every reader: five
+// (./model.ts, PICTURES_MAX; his word of 2026-11-10, not a Plus perk). No
+// entitlement is read for it, and nothing a request says can raise it.
 //
 // No faces are read, matched or named, here or anywhere.
 
@@ -138,11 +137,14 @@ function takesPictures(campaign: CampaignRow, now: number): boolean {
   return campaign.status === "held" || (campaign.status === "active" && !isOver(campaign, now));
 }
 
-/** How many pictures this reader's campaigns may carry right now: twenty with Plus, three without. */
-export async function pictureLimit(admin: SupabaseClient, userId: string): Promise<number> {
-  const { data } = await admin.from("entitlements").select("plus_until, pro_until").eq("user_id", userId).maybeSingle();
-  return subscriptionTier(data as { plus_until?: string | null; pro_until?: string | null } | null) ? PICTURES_PLUS : PICTURES_FREE;
-}
+/**
+ * How many of a campaign's rows one read asks for. More than the limit on
+ * purpose: the limit was twenty for a Plus member before 2026-11-10 and may
+ * be raised again, and a read is never to be cut short of what is stored. A
+ * picture a read did not see is a picture nobody moderates and no clean-up
+ * deletes.
+ */
+const PICTURES_READ = Math.max(20, PICTURES_MAX);
 
 /** A campaign's pictures that have not been removed, in their order. */
 async function rowsOf(admin: SupabaseClient, campaignId: string): Promise<Read<PictureRow[]>> {
@@ -152,7 +154,7 @@ async function rowsOf(admin: SupabaseClient, campaignId: string): Promise<Read<P
     .eq("campaign_id", campaignId)
     .neq("status", "removed")
     .order("position", { ascending: true })
-    .limit(PICTURES_PLUS);
+    .limit(PICTURES_READ);
   if (error) {
     if (absent(error)) return { ok: false, why: "absent" };
     console.warn("[campaigns] pictures read failed", error.message);
@@ -197,16 +199,38 @@ export async function readPictures(
     }
   }
   if (!mine) return { ok: true, value: { pictures, limit: null, canAdd: false } };
-  const limit = await pictureLimit(admin, reader.id);
   return {
     ok: true,
-    value: { pictures, limit, canAdd: takesPictures(campaign, now) && rows.value.length < limit && pictureCheck() !== null },
+    value: { pictures, limit: PICTURES_MAX, canAdd: takesPictures(campaign, now) && rows.value.length < PICTURES_MAX && pictureCheck() !== null },
   };
+}
+
+/**
+ * A campaign's picture as a JPEG with nothing see-through in it.
+ *
+ * The shop keeps a cut-out product as a PNG so that it gains no box
+ * (lib/shop/imageNormalize.ts). A campaign's picture must not: a picture
+ * with see-through parts looks one way on the white a checking service
+ * lays it on and another on this app's dark page, so something drawn in
+ * white on nothing would pass the check unseen and be plain to a reader.
+ * Laid on white once, here, it is the same picture to the check, to the
+ * moderator and to every reader. The service also takes a JPEG and no WebP.
+ * Null when it could not be made.
+ */
+async function opaqueJpeg(image: NormalizedImage): Promise<NormalizedImage | null> {
+  if (image.contentType === "image/jpeg") return image;
+  try {
+    const { data, info } = await sharp(image.bytes).flatten({ background: "#ffffff" }).jpeg({ quality: 82, mozjpeg: true, progressive: true }).toBuffer({ resolveWithObject: true });
+    return { bytes: data, contentType: "image/jpeg", extension: "jpg", width: info.width, height: info.height };
+  } catch (e) {
+    console.warn("[campaigns] picture not made a JPEG", e instanceof Error ? e.message : String(e));
+    return null;
+  }
 }
 
 export type Added =
   | { ok: true; id: string }
-  | { ok: false; status: number; error: string; code?: string; limit?: number; plus?: boolean };
+  | { ok: false; status: number; error: string; code?: string; limit?: number };
 
 /**
  * Its creator puts a picture on their campaign.
@@ -215,7 +239,7 @@ export type Added =
  * that it is theirs to share with the blessing of anyone in it). Here: only
  * the campaign's creator; only on a campaign that waits or runs; only while
  * an automatic check exists; a still JPEG, PNG or WebP of 4 MB at most; and
- * only up to their limit, read from their entitlement now.
+ * only up to the limit, which is the same for every reader.
  */
 export async function addPicture(
   admin: SupabaseClient,
@@ -252,26 +276,21 @@ export async function addPicture(
     return { ok: false, status: 400, error: "A prayer campaign can't carry a link.", code: "campaign_link" };
   }
 
-  const limit = await pictureLimit(admin, user.id);
   const existing = await rowsOf(admin, campaign.id);
   if (!existing.ok) {
     return existing.why === "absent" ? { ok: false, status: 404, error: "Not found." } : { ok: false, status: 500, error: "Couldn't add the picture. Please try again." };
   }
-  if (existing.value.length >= limit) {
-    return {
-      ok: false,
-      status: 409,
-      error: limit === PICTURES_FREE ? "A campaign can carry three pictures." : "A campaign can carry twenty pictures.",
-      code: "picture_limit",
-      limit,
-      // Whether Plus would give more room: said so that the screen can show where Plus is met.
-      plus: limit === PICTURES_FREE,
-    };
+  if (existing.value.length >= PICTURES_MAX) {
+    return { ok: false, status: 409, error: `A campaign can carry ${PICTURES_MAX} pictures.`, code: "picture_limit", limit: PICTURES_MAX };
   }
 
   // 1. Made again from its pixels: upright, 1600 pixels at most, no EXIF.
-  const made = await normalizeShopImage(file.bytes);
-  if ("error" in made) return { ok: false, status: 400, error: made.error, code: "picture_unreadable" };
+  //    And always a JPEG, on white (opaqueJpeg): what is checked, what is
+  //    stored and what a reader is shown are one and the same picture.
+  const normalized = await normalizeShopImage(file.bytes);
+  if ("error" in normalized) return { ok: false, status: 400, error: normalized.error, code: "picture_unreadable" };
+  const made = await opaqueJpeg(normalized);
+  if (!made) return { ok: false, status: 400, error: "That file is not an image we can read.", code: "picture_unreadable" };
 
   // 2. The automatic check, on the copy that would be stored.
   let verdict: Awaited<ReturnType<typeof check>>;
@@ -467,15 +486,16 @@ export async function removeOwnPicture(admin: SupabaseClient, user: { id: string
 export async function deletePicturesOf(admin: SupabaseClient, campaignIds: readonly string[], opts: { keepRows?: string } = {}): Promise<void> {
   // A few campaigns at a time, so that one read holds every picture of
   // them: the API hands back a thousand rows at most and says nothing when
-  // it stops (lib/supabase/__tests__/rowCap.test.ts), a campaign carries
-  // twenty pictures at most, and a picture missed here is a file left
-  // behind once its row has gone with its campaign.
+  // it stops (lib/supabase/__tests__/rowCap.test.ts), a campaign has never
+  // been able to carry more than twenty pictures (PICTURES_READ), and a
+  // picture missed here is a file left behind once its row has gone with
+  // its campaign.
   for (let at = 0; at < campaignIds.length; at += CAMPAIGNS_A_READ) {
     await deletePicturesOfFew(admin, campaignIds.slice(at, at + CAMPAIGNS_A_READ), opts);
   }
 }
 
-/** How many campaigns' pictures one read can be sure to hold whole: a thousand rows, twenty pictures a campaign. */
+/** How many campaigns' pictures one read can be sure to hold whole: a thousand rows, twenty pictures a campaign at the very most. */
 const CAMPAIGNS_A_READ = 50;
 
 async function deletePicturesOfFew(admin: SupabaseClient, campaignIds: readonly string[], opts: { keepRows?: string }): Promise<void> {
@@ -486,7 +506,7 @@ async function deletePicturesOfFew(admin: SupabaseClient, campaignIds: readonly 
       .select("id, bucket, path")
       .in("campaign_id", [...campaignIds])
       .neq("status", "removed")
-      .limit(CAMPAIGNS_A_READ * PICTURES_PLUS);
+      .limit(CAMPAIGNS_A_READ * PICTURES_READ);
     if (error) {
       if (!absent(error)) console.warn("[campaigns] pictures of removed campaigns not read", error.message);
       return;

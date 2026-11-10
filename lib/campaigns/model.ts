@@ -436,33 +436,28 @@ export const MANY_SHOWN = 12;
 
 // ── Pictures ────────────────────────────────────────────────────────────────
 //
-// His words: "a 3-image photo limit for normal users. And for premium users,
-// they can add as up to 20 photos." His yes to item 121: three, or twenty
-// with Plus; each checked before it is shown; "I am 18 or older" to put one
-// up. Built in 1.9 and switched off on the server until the image checking
-// service is chosen and a lawyer has answered (lib/campaigns/parts.ts,
-// lib/campaigns/pictures.ts).
+// His first words were "a 3-image photo limit for normal users. And for
+// premium users, they can add as up to 20 photos", and his yes to item 121
+// built it so: three, or twenty with Plus. His "rec yes to all" of 2026-11-10
+// changed it: the same limit for every reader, not a Plus perk, and five
+// (the arbiter's answer the same day; nine is this one constant away if he
+// asks). Each picture is checked before it is shown, and "I am 18 or older"
+// is ticked to put one up. Built in 1.9 and switched off on the server until
+// his steps for the check are done (lib/campaigns/parts.ts,
+// lib/campaigns/pictureCheck.ts).
 
-/** How many pictures a campaign may carry: for everyone, and with Purify Plus. */
-export const PICTURES_FREE = 3;
-export const PICTURES_PLUS = 20;
+/**
+ * How many pictures a campaign may carry: five, whoever started it. Not a
+ * Plus perk: no entitlement is read for it, and nothing about pictures is
+ * sold. Every picture is a moderator's look before anyone sees it, so the
+ * limit is also the moderators' load.
+ */
+export const PICTURES_MAX = 5;
 /** What may be sent: a still JPEG, PNG or WebP of at most 4 MB. The server makes it again from its pixels. */
 export const PICTURE_MAX_BYTES = 4 * 1024 * 1024;
 export const PICTURE_TYPES: readonly string[] = ["image/jpeg", "image/png", "image/webp"];
 /** What it shows, in its creator's words, for a reader who cannot see it. */
 export const PICTURE_ALT_MAX = 140;
-
-/**
- * Whether the creator's row of pictures ends in the place that wears the
- * Plus mark. Only for the campaign's own creator; only when the server says
- * their limit is the three everyone has and all three are taken; and only
- * where Plus can be bought on this device. So Plus is shown where it is met
- * and never promised to every reader, and a reader on a phone that cannot
- * sell it is not shown a door that does not open.
- */
-export function showsPlusPlace(at: { mine: boolean; canAdd: boolean; limit: number | null; pictures: number; plusSold: boolean }): boolean {
-  return at.mine && at.plusSold && !at.canAdd && at.limit === PICTURES_FREE && at.pictures >= PICTURES_FREE;
-}
 
 /** A picture as a reader receives it: where to load it, its size, and what it shows. */
 export type CampaignPicture = {
@@ -479,7 +474,7 @@ export type CampaignPicture = {
 /** A campaign's pictures, in their order, with what this reader may do. */
 export type CampaignPictures = {
   pictures: CampaignPicture[];
-  /** For its creator: how many this campaign may carry now, by their own Plus at this moment. */
+  /** For its creator: how many a campaign may carry (PICTURES_MAX, the same for everyone). Null for any other reader. */
   limit: number | null;
   /** Its creator, on a campaign that waits or runs, with a place still free. */
   canAdd: boolean;

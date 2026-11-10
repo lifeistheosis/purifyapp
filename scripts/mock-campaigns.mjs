@@ -39,20 +39,10 @@
 //   PICTURES_BUILD=1 node scripts/mock-campaigns.mjs 2 20,21,22,23,24
 //   PICTURES_BUILD=1 WALK=1 FLOWS="pictures" node scripts/mock-campaigns.mjs
 //
-// THE PLACE THAT WEARS THE PLUS MARK (still 21, and one flow of the walk) is
-// drawn only where Plus can be bought, which a build knows from its purchase
-// keys. This harness wears the apps' own user agent with no Capacitor behind
-// it, so to the app it is a phone whose store is not known yet, and Plus is
-// held to be sold there only when both stores sell it
-// (lib/entitlements/entitlements.ts, "native-unknown"). So that scratch
-// build is also given made-up keys for both:
-//
-//   NEXT_PUBLIC_REVENUECAT_ANDROID_KEY=placeholder
-//   NEXT_PUBLIC_REVENUECAT_IOS_KEY=placeholder
-//   NEXT_PUBLIC_PLUS_ENFORCED_IOS=true
-//
-// Without them the still shows the pictures with no such place, which is
-// what an iPhone shows today, and the flow says so.
+// NOTHING HERE NAMES PLUS. Until 2026-11-10 a creator at three pictures was
+// shown a place wearing the Plus mark; his word that day made the limit five
+// for every reader and not a Plus perk, so that place, its still and its
+// flow are gone, and two flows hold that nothing of Plus is drawn.
 import fs from "node:fs";
 import path from "node:path";
 
@@ -300,15 +290,18 @@ const MANY = {
 // made up for a drawing.
 const pic = (n, src, over = {}) => ({ id: `dddddddd-dddd-4ddd-8ddd-ddddddddddd${n}`, url: src, width: 1200, height: 1600, alt: null, held: false, ...over });
 const PICTURES = {
+  // Five: every picture a campaign may carry (lib/campaigns/model.ts, PICTURES_MAX).
   [MARIA]: [
     pic(1, "/icons/prayer/theotokos-of-vladimir.jpg", { alt: "The icon in her room" }),
     pic(2, "/icons/prayer/christ-pantocrator.v2.jpg"),
     pic(3, "/icons/prayer/anastasis.jpg", { alt: "From the parish, at Pascha" }),
+    pic(4, "/icons/prayer/three-hierarchs.v2.jpg"),
+    pic(5, "/icons/prayer/pentecost.jpg"),
   ],
 };
-/** What the route answers: every reader the ones cleared; its creator also their own that wait, their limit, and whether a place is free. */
-function picturesFor(id, { mine = false, waiting = 0, limit = 3 } = {}) {
-  const all = PICTURES[id] ?? [];
+/** What the route answers: every reader the ones cleared; its creator also their own that wait, the limit, and whether a place is free. `count` is how many of the samples the campaign has so far. */
+function picturesFor(id, { mine = false, waiting = 0, limit = 5, count } = {}) {
+  const all = (PICTURES[id] ?? []).slice(0, count ?? limit);
   if (!mine) return { pictures: all, limit: null, canAdd: false };
   const pictures = all.map((p, i) => (i >= all.length - waiting ? { ...p, held: true } : p));
   return { pictures, limit, canAdd: pictures.length < limit };
@@ -741,11 +734,11 @@ await pictureShot("20-pictures", "a campaign with pictures, switched on", `/camp
   },
 });
 
-// 21 Its creator's view at three: one still waits, and the next place wears the Plus mark.
-await pictureShot("21-pictures-creator", "its creator's pictures: one waiting, and where Plus is met", `/campaigns/detail?id=${MARIA}`, "[data-campaign-page]", {
+// 21 Its creator's view with a place still free: one still waits, and the place to add stands after the last.
+await pictureShot("21-pictures-creator", "its creator's pictures: one waiting, and the place to add one", `/campaigns/detail?id=${MARIA}`, "[data-campaign-page]", {
   mine: [MARIA],
   parts: { pictures: true },
-  pictures: { waiting: 1 },
+  pictures: { waiting: 1, count: 4 },
   prepare: async (page) => {
     await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
     await whole(page);
@@ -1399,7 +1392,7 @@ if (WALK) {
 
   await pictureWalk("pictures, on: a reader opens one and reports it, by the picture and with a picture's own reason", `/campaigns/detail?id=${MARIA}`, async (page) => {
     await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
-    expectThat((await page.locator("[data-campaign-pictures] button").count()) === 3, "a reader is offered more than the three pictures");
+    expectThat((await page.locator("[data-campaign-pictures] button").count()) === 5, `a reader is shown ${await page.locator("[data-campaign-pictures] button").count()} places, not the campaign's five pictures`);
     await page.locator("[data-campaign-pictures] button").first().click();
     await page.waitForSelector("[role=dialog] img", { timeout: 8000 });
     expectThat((await page.locator("[role=dialog]").innerText()).includes("The icon in her room"), "what it shows is not said");
@@ -1425,22 +1418,22 @@ if (WALK) {
     expectThat(Boolean(gone), "the removal was not sent");
   }, { mine: [MARIA], parts: { pictures: true }, pictures: { waiting: 1 } });
 
-  await pictureWalk("pictures, on: at three its creator meets the Plus mark, which opens the upgrade sheet; a reader never sees it", `/campaigns/detail?id=${MARIA}`, async (page) => {
+  await pictureWalk("pictures, on: with a place free its creator is offered it; at five no more, and nothing names Plus", `/campaigns/detail?id=${MARIA}`, async (page) => {
     await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
-    const place = page.getByRole("button", { name: "Up to twenty pictures with Purify Plus" });
-    expectThat((await place.count()) === 1, "the place with the Plus mark is not drawn (was this export built with a purchase key? see the head of this file)");
-    expectThat((await place.innerText()).includes("Purify Plus"), "the place does not wear the mark");
-    expectThat((await page.locator('[data-campaign-pictures] button[aria-label="Add a picture"]').count()) === 0, "a fourth picture is offered without Plus");
-    await place.click();
-    await settle(page, 900);
-    expectThat((await page.locator("[role=dialog]").count()) > 0, "the upgrade sheet did not open");
+    const section = page.locator("[data-campaign-pictures]");
+    // Five pictures, the last one waiting: no place to add, and no door to anything else.
+    expectThat((await section.locator("button img").count()) === 5, `its creator is shown ${await section.locator("button img").count()} pictures, not five`);
+    expectThat((await section.locator('button[aria-label="Add a picture"]').count()) === 0, "a sixth picture is offered");
+    expectThat((await section.locator("button").count()) === 5, "there is a place among the pictures that is not a picture");
+    expectThat(!/Plus/.test(await section.innerText()), "Plus is named among its creator's pictures");
+    expectThat((await page.getByRole("button", { name: /Purify Plus/ }).count()) === 0, "a door to Plus is drawn on the campaign's page");
     expectThat(!calls.some((c) => c.method === "POST" && c.path.endsWith("/pictures")), "something was uploaded");
   }, { mine: [MARIA], parts: { pictures: true }, pictures: { waiting: 1 } });
 
-  await pictureWalk("pictures, on: a reader who did not start the campaign is shown no Plus mark and no place to add", `/campaigns/detail?id=${MARIA}`, async (page) => {
+  await pictureWalk("pictures, on: a reader who did not start the campaign is shown no place to add, and nothing names Plus", `/campaigns/detail?id=${MARIA}`, async (page) => {
     await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
-    expectThat((await page.getByRole("button", { name: "Up to twenty pictures with Purify Plus" }).count()) === 0, "a reader is shown the Plus mark");
-    expectThat((await page.locator("[data-campaign-pictures]").innerText()).includes("Purify Plus") === false, "Plus is named to a reader");
+    expectThat((await page.getByRole("button", { name: /Purify Plus/ }).count()) === 0, "a reader is shown a door to Plus");
+    expectThat((await page.locator("[data-campaign-pictures]").innerText()).includes("Plus") === false, "Plus is named to a reader");
     expectThat((await page.locator('[data-campaign-pictures] button[aria-label="Add a picture"]').count()) === 0, "a reader is offered a place to add");
   }, { parts: { pictures: true } });
 

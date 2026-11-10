@@ -3035,6 +3035,101 @@ section is finished then: the one constant, the Plus place and its row on the
 Plus page gone, the check's adapter and what it lacks (his key), and his
 steps.
 
+### 20.1 As built (2026-11-10, in the evening)
+
+**Five, for every reader.** One constant, `PICTURES_MAX`
+(`lib/campaigns/model.ts`). No entitlement is read for it and nothing a
+request says can raise it. The place that wore the Plus mark is gone from a
+creator's pictures, with its line ("Up to twenty pictures with Purify Plus")
+out of the 21 catalogs; the server's refusal at the limit says nothing of
+Plus. There was no row for pictures on the Plus page to remove: the only
+place Plus was named was that one tile. A campaign that somehow holds more
+than five is still read whole (a read asks for up to twenty), so nothing
+stored is ever hidden from a moderator or missed by a clean-up.
+
+**One correction to my own reason for five.** I told the arbiter that five
+"fills the page exactly, a head and one full row". It does not: the row
+under About shows every picture, the head's among them, so five is a row of
+four and one more. Five stands as he said it. If the row is to fill, the
+head's picture can leave the row; not built, and said to the arbiter.
+
+**The check is written, and only his key is missing.**
+`lib/campaigns/pictureCheckRekognition.ts` calls Amazon Rekognition's
+content moderation (DetectModerationLabels), written to the service's own
+documentation as read that day, and signed by
+`lib/security/awsSigV4.ts`, a signer in Node's own crypto held to the
+service's published examples (its test suite's two plainest requests and
+the worked example's signing key, each to the last hex digit). No new
+package. With no key on the server there is no check, and with no check no
+picture is accepted: the second lock stands as it did.
+
+- **The key** is three values in the server's environment, pasted there by
+  his hand and never in chat or in the code:
+  `PICTURE_CHECK_AWS_ACCESS_KEY_ID`, `PICTURE_CHECK_AWS_SECRET_ACCESS_KEY`,
+  `PICTURE_CHECK_AWS_REGION`. It should be allowed one action only,
+  `rekognition:DetectModerationLabels`. A key that is half set or
+  misshapen is no key, said once in the log by the names of what is wrong.
+  The region is part of the address a picture is sent to, so it is held to
+  the shape of a region.
+- **What is sent:** the picture as the server made it again, and nothing
+  else: not who, not which campaign, not a name. A redirect is an error and
+  is never followed.
+- **What it refuses, with no person looking,** when the service is at least
+  60 percent sure: everything it files under Explicit; nudity short of
+  explicit that is still not for a prayer page (implied nudity, a partly
+  exposed breast or buttocks); an intimate part that is covered but is the
+  picture's subject; violence that is shown (blood, a fight, self-harm, an
+  explosion); hate symbols.
+- **What it leaves to the moderator, with a note of what it noticed:** a
+  bare back or a man's bare chest (a patient in a hospital bed, a child at
+  the sea), a kiss (a wedding), swimwear, a weapon that is only carried (a
+  soldier someone prays for), a body or a coffin (a funeral), a crash,
+  alcohol, tobacco, pills, a rude gesture, gambling. The note stands on the
+  moderators' card before they uncover the picture. This line between the
+  two lists is a judgment, and it is one table to change
+  (`REFUSED`, `REFUSE_AT`).
+- **It fails closed.** A picture that is not the JPEG the server made, a
+  call that takes more than ten seconds, an answer that is not 200, an
+  answer that is not the documented shape: each is "the check could not
+  answer", which is never a pass. Nothing is stored and the reader is asked
+  to try again later. An answer that says the picture can never be read
+  refuses it instead, since trying again would not help.
+- **It never answers "report".** It knows no list of known illegal images.
+  That is PhotoDNA's, which waits for Microsoft's approval, and the branch
+  that handles that verdict still says it is not to be relied on until
+  NCMEC's guidance for providers is written into it.
+
+**Every campaign picture is now a JPEG with nothing see-through in it.**
+Found while writing the check: a picture with see-through parts was stored
+as a PNG, and a PNG shows one way on the white a checking service lays it
+on and another on this app's dark page, so white writing on nothing would
+pass the check unseen and be plain to a reader. A campaign's picture is
+laid on white once, on the server, before the check: what is checked, what
+a moderator sees and what a reader is shown are one picture
+(`opaqueJpeg`, `lib/campaigns/pictures.ts`). The shop's cut-out pictures
+are untouched.
+
+**Not proved against the service itself.** There is no key, so the tests
+answer as the documentation says the service does. The first real picture
+on the test web, with his key, is the proof that the service reads the
+JPEGs this server writes and accepts the signature. Named to Admin with the
+steps.
+
+**Held by** `lib/campaigns/__tests__/pictureCheckRekognition.test.ts` (25
+cases), `lib/security/__tests__/awsSigV4.test.ts` (8) and
+`lib/campaigns/__tests__/pictures.test.ts` (57: five for everyone and for a
+Plus member alike, no door to Plus, the opaque JPEG, and four cases of the
+real check deciding through the route). Eighteen ways of breaking it were
+tried: fifteen failed a case at once; two were doubled by another guard
+and have a case of their own now; one is doubled by the language itself (a
+labels list that is not a list cannot be walked) and is left.
+
+**Still off, and his:** the pictures' switch on the server
+(`lib/campaigns/parts.ts`) and `PICTURES_IN_STORE_BUILDS`, until his steps
+are done: the AWS account and key, the registration with NCMEC's
+CyberTipline, the Copyright Office's agent; PhotoDNA when Microsoft
+approves. The steps are with Admin for `OWNER-STEPS.md`.
+
 ## 21. The prayer wall goes: the plan and its size (2026-11-10; a plan, nothing built)
 
 **His word** (`BRAINSTORM.md`, about 17:25 UTC): "I'd say remove the prayer

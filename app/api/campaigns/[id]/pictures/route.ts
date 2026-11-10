@@ -132,7 +132,7 @@ async function handlePOST(req: Request, id: string) {
     { alt: typeof alt === "string" ? alt : null },
   );
   if (!added.ok) {
-    return NextResponse.json({ error: added.error, code: added.code, limit: added.limit, plus: added.plus }, { status: added.status });
+    return NextResponse.json({ error: added.error, code: added.code, limit: added.limit }, { status: added.status });
   }
   return NextResponse.json({ ok: true, id: added.id });
 }

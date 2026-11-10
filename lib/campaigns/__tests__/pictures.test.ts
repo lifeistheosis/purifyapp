@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import sharp from "sharp";
@@ -20,8 +20,8 @@ import { client, world, type Row, type World } from "@/lib/security/__tests__/fa
  * by anyone before a moderator has looked; a picture left at a public
  * address after its creator removed it, after its campaign was taken down,
  * or after readers said it shows someone who did not agree; a reader given
- * twenty pictures by telling the server they have Plus; and any of it
- * answering at all while it is switched off.
+ * more than five by anything they say or pay; and any of it answering at
+ * all while it is switched off.
  */
 
 const state = vi.hoisted(() => ({
@@ -68,10 +68,11 @@ import { GET as queue, POST as decide } from "@/app/api/community/moderation/rou
 import { accountFiles } from "@/lib/auth/accountFiles";
 import { __setCampaignsOpening } from "@/lib/campaigns/flags";
 import { CAMPAIGN_BUCKET } from "@/lib/campaigns/image";
-import { PICTURES_FREE, PICTURES_PLUS, showsPlusPlace, type CampaignPictures, type WaitingPicture } from "@/lib/campaigns/model";
+import { PICTURES_MAX, type CampaignPictures, type WaitingPicture } from "@/lib/campaigns/model";
 import { approveCampaign, removeCampaign } from "@/lib/campaigns/moderation";
 import { __resetCampaignParts, __setCampaignPart } from "@/lib/campaigns/parts";
-import { PICTURE_CHECK, __setPictureCheck, type PictureVerdict } from "@/lib/campaigns/pictureCheck";
+import { __setPictureCheck, pictureCheck, type PictureVerdict } from "@/lib/campaigns/pictureCheck";
+import { PICTURE_CHECK_ENV } from "@/lib/campaigns/pictureCheckRekognition";
 import { HELD_BUCKET } from "@/lib/campaigns/pictures";
 import { runCampaignUpkeep } from "@/lib/campaigns/upkeep";
 
@@ -219,7 +220,8 @@ beforeEach(() => {
 afterEach(() => {
   __setCampaignsOpening("closed");
   __resetCampaignParts();
-  __setPictureCheck(PICTURE_CHECK);
+  __setPictureCheck(undefined);
+  vi.unstubAllEnvs();
   vi.restoreAllMocks();
 });
 
@@ -264,10 +266,11 @@ describe("switched off, as it ships", () => {
     expect(w.tables.prayer_campaign_reports).toEqual([]);
   });
 
-  it("has a second lock: with the switch on and no checking service, no picture is accepted at all", async () => {
-    // What is committed: no service.
-    expect(PICTURE_CHECK).toBeNull();
-    __setPictureCheck(PICTURE_CHECK);
+  it("has a second lock: with the switch on and no key for the checking service, no picture is accepted at all", async () => {
+    // A server whose environment carries no key: there is no check.
+    for (const name of Object.values(PICTURE_CHECK_ENV)) vi.stubEnv(name, "");
+    __setPictureCheck(undefined);
+    expect(pictureCheck()).toBeNull();
     const id = running();
     const res = await send(id, await smallPhoto());
     expect(res.status).toBe(503);
@@ -316,6 +319,40 @@ describe("what is stored", () => {
     expect((await sharp(checked[0].bytes).metadata()).exif).toBeUndefined();
     expect(checked[0].bytes.equals(w.bodies.get(stored(HELD_BUCKET)[0]) as Buffer)).toBe(true);
     expect(checked[0].type).toBe("image/jpeg");
+  });
+
+  it("is always a JPEG with nothing see-through in it, so the check sees what a reader would", async () => {
+    // White writing on nothing: on the white a checking service lays a
+    // see-through picture on it cannot be seen, and on this app's dark page
+    // it can. Stored as it came, the check and the reader would see two
+    // different pictures.
+    const writing = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect x="50" y="100" width="300" height="100" fill="#ffffff"/></svg>');
+    const seeThrough = await sharp({ create: { width: 400, height: 300, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+      .composite([{ input: writing }])
+      .png()
+      .toBuffer();
+    expect((await sharp(seeThrough).metadata()).hasAlpha).toBe(true);
+    for (const type of ["image/png", "image/webp"] as const) {
+      w.objects.clear();
+      w.bodies.clear();
+      checked = [];
+      const bytes = type === "image/png" ? seeThrough : await sharp(seeThrough).webp({ lossless: true }).toBuffer();
+      const id = running();
+      expect((await send(id, bytes, { name: type === "image/png" ? "note.png" : "note.webp", type })).status, type).toBe(200);
+      const [object] = stored(HELD_BUCKET);
+      expect(object, type).toMatch(/\.jpg$/);
+      const kept = w.bodies.get(object) as Buffer;
+      const meta = await sharp(kept).metadata();
+      expect([meta.format, meta.hasAlpha, meta.width, meta.height], type).toEqual(["jpeg", false, 400, 300]);
+      // What was see-through is white now, for everyone alike.
+      const { data } = await sharp(kept).raw().toBuffer({ resolveWithObject: true });
+      expect([data[0], data[1], data[2]].every((v) => v > 245), type).toBe(true);
+      // And that very file is what the check was shown, as a JPEG.
+      expect(checked).toHaveLength(1);
+      expect(checked[0].type).toBe("image/jpeg");
+      expect(checked[0].bytes.equals(kept)).toBe(true);
+      expect(String(pictures()[pictures().length - 1].path)).toMatch(/\.jpg$/);
+    }
   });
 
   it("waits in a private place under a name that says nothing, written down as its creator's", async () => {
@@ -398,7 +435,7 @@ describe("who is handed a picture that waits", () => {
     const id = running();
     await added(id);
     const mine = await shown(id);
-    expect(mine).toMatchObject({ limit: PICTURES_FREE, canAdd: true });
+    expect(mine).toMatchObject({ limit: PICTURES_MAX, canAdd: true });
     expect(mine.pictures).toHaveLength(1);
     expect(mine.pictures[0].held).toBe(true);
     expect(mine.pictures[0].url).toContain(`/object/sign/${HELD_BUCKET}/`);
@@ -515,55 +552,56 @@ describe("what is asked before a picture is taken", () => {
   });
 });
 
-describe("three, or twenty with Plus, by the server's own record", () => {
+describe("five for every reader, and Plus changes nothing", () => {
   const give = (until: string | null) => {
     w.tables.entitlements = [{ user_id: ANNA, plus_until: until, pro_until: null }];
   };
 
-  it("stops at three and says where Plus is met", async () => {
-    const id = running();
-    for (let i = 0; i < PICTURES_FREE; i++) await added(id);
-    const res = await send(id, await smallPhoto());
-    expect(res.status).toBe(409);
-    expect(await res.json()).toMatchObject({ code: "picture_limit", limit: 3, plus: true });
-    expect(pictures()).toHaveLength(3);
-    expect(stored(HELD_BUCKET)).toHaveLength(3);
-    expect(await shown(id)).toMatchObject({ limit: 3, canAdd: false });
-    expect(pictures().map((p) => p.position)).toEqual([0, 1, 2]);
+  it("is five (his word of 2026-11-10: the same limit for everyone, not a Plus perk)", () => {
+    expect(PICTURES_MAX).toBe(5);
   });
 
-  it("takes twenty from a reader whose entitlement says Plus now, and no more", async () => {
+  it("stops at five, and says nothing of Plus", async () => {
+    const id = running();
+    for (let i = 0; i < PICTURES_MAX; i++) await added(id);
+    const res = await send(id, await smallPhoto());
+    expect(res.status).toBe(409);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(body).toMatchObject({ code: "picture_limit", limit: 5 });
+    // The answer carries no word of Plus: there is nothing to sell here.
+    expect("plus" in body).toBe(false);
+    expect(JSON.stringify(body)).not.toMatch(/plus/i);
+    expect(pictures()).toHaveLength(5);
+    expect(stored(HELD_BUCKET)).toHaveLength(5);
+    expect(await shown(id)).toMatchObject({ limit: 5, canAdd: false });
+    expect(pictures().map((p) => p.position)).toEqual([0, 1, 2, 3, 4]);
+  });
+
+  it("is five for a Plus member too: no entitlement is read for it", async () => {
     give(plus(30));
     const id = running();
-    for (let i = 0; i < PICTURES_PLUS; i++) await added(id);
+    for (let i = 0; i < PICTURES_MAX; i++) await added(id);
     const res = await send(id, await smallPhoto());
     expect(res.status).toBe(409);
-    expect(await res.json()).toMatchObject({ code: "picture_limit", limit: 20, plus: false });
-    expect(pictures()).toHaveLength(20);
+    expect(await res.json()).toMatchObject({ code: "picture_limit", limit: 5 });
+    expect(pictures()).toHaveLength(5);
+    expect(await shown(id)).toMatchObject({ limit: 5, canAdd: false });
+    // And the file that holds the limit asks nothing of who has paid.
+    expect(source("lib/campaigns/pictures.ts")).not.toMatch(/entitlements|subscriptionTier|plus_until/);
   });
 
-  it("never believes the request about Plus", async () => {
+  it("never believes the request about a larger limit", async () => {
     const id = running();
-    for (let i = 0; i < PICTURES_FREE; i++) await added(id);
+    for (let i = 0; i < PICTURES_MAX; i++) await added(id);
     const form = new FormData();
     form.set("file", new File([new Uint8Array(await smallPhoto())], "p.jpg", { type: "image/jpeg" }));
     form.set("adult", "yes");
     form.set("consent", "yes");
     form.set("plus", "true");
     form.set("limit", "20");
-    const res = await add(new Request(`${SITE}/api/campaigns/${id}/pictures?plus=1`, { method: "POST", body: form, headers: { "x-plus": "1" } }), params(id));
+    const res = await add(new Request(`${SITE}/api/campaigns/${id}/pictures?plus=1&limit=20`, { method: "POST", body: form, headers: { "x-plus": "1" } }), params(id));
     expect(res.status).toBe(409);
-    expect(pictures()).toHaveLength(3);
-  });
-
-  it("when Plus lapses, leaves what is up and adds no more past three", async () => {
-    give(plus(30));
-    const id = running();
-    for (let i = 0; i < 5; i++) await added(id);
-    give(plus(-1));
-    expect((await send(id, await smallPhoto())).status).toBe(409);
     expect(pictures()).toHaveLength(5);
-    expect((await shown(id)).pictures).toHaveLength(5);
   });
 
   it("gives a removed picture's place to the next one", async () => {
@@ -573,27 +611,109 @@ describe("three, or twenty with Plus, by the server's own record", () => {
     const next = await added(id);
     expect(picture(next).position).toBe(1);
   });
+
+  it("a campaign that somehow holds more than five is read whole, and takes no more", async () => {
+    // The limit was twenty for a Plus member while this was being built, and
+    // may be raised again: what is stored is never cut out of a read, so a
+    // moderator and a clean-up always see every picture.
+    const id = running();
+    for (let i = 0; i < PICTURES_MAX; i++) await added(id);
+    const first = pictures()[0];
+    for (let position = PICTURES_MAX; position < 8; position++) {
+      const path = `c/${crypto.randomUUID()}.jpg`;
+      w.objects.add(`${HELD_BUCKET}/${path}`);
+      pictures().push({ ...first, id: crypto.randomUUID(), position, path });
+    }
+    expect((await shown(id)).pictures).toHaveLength(8);
+    expect(await shown(id)).toMatchObject({ canAdd: false });
+    expect((await send(id, await smallPhoto())).status).toBe(409);
+  });
 });
 
-describe("the place that wears the Plus mark", () => {
-  // Its creator, at the three everyone has, where Plus can be bought.
-  const met = { mine: true, canAdd: false, limit: PICTURES_FREE, pictures: PICTURES_FREE, plusSold: true };
+describe("no door to Plus among a campaign's pictures", () => {
+  it("the screen draws no Plus mark and opens no upgrade sheet, and no catalog keeps the old line", () => {
+    const screen = source("components/campaigns/CampaignPictures.tsx");
+    expect(screen).not.toMatch(/PlusMark|useUpgradeModal|plusEnforcedFor|picturesPlus/);
+    const dir = join(process.cwd(), "lib/i18n/messages");
+    for (const file of readdirSync(dir).filter((f) => f.endsWith(".json"))) {
+      expect(readFileSync(join(dir, file), "utf8"), file).not.toContain('"campaigns.picturesPlus"');
+    }
+  });
+});
 
-  it("is drawn where Plus is met: its creator, at three, on a device that can buy it", () => {
-    expect(showsPlusPlace(met)).toBe(true);
+describe("with his key on the server, the service itself decides", () => {
+  // The example key pair of the service's own documentation. Never a real key.
+  const key = () => {
+    vi.stubEnv(PICTURE_CHECK_ENV.id, "AKIAIOSFODNN7EXAMPLE");
+    vi.stubEnv(PICTURE_CHECK_ENV.secret, "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY");
+    vi.stubEnv(PICTURE_CHECK_ENV.region, "us-east-1");
+    __setPictureCheck(undefined);
+  };
+  /** The service, answering as its documentation says it does. */
+  const serviceSays = (labels: { Name: string; ParentName: string; Confidence: number; TaxonomyLevel: number }[], status = 200) => {
+    const calls: { url: string; body: string }[] = [];
+    vi.stubGlobal("fetch", async (url: RequestInfo | URL, init?: RequestInit) => {
+      calls.push({ url: String(url), body: String(init?.body ?? "") });
+      return new Response(JSON.stringify(status === 200 ? { ModerationLabels: labels, ModerationModelVersion: "7.0" } : { __type: "ThrottlingException" }), { status });
+    });
+    return calls;
+  };
+  const realPhoto = () => sharp({ create: { width: 640, height: 480, channels: 3, background: "#335577" } }).jpeg().toBuffer();
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("a picture it finds nothing in is stored and waits for a moderator, with the service's word beside it", async () => {
+    key();
+    const calls = serviceSays([]);
+    const id = running();
+    const res = await send(id, await realPhoto());
+    expect(res.status).toBe(200);
+    expect(calls).toHaveLength(1);
+    expect(calls[0].url).toBe("https://rekognition.us-east-1.amazonaws.com/");
+    // What went to the service is the picture as it is stored, and nothing about who or what for.
+    const sentBytes = Buffer.from((JSON.parse(calls[0].body) as { Image: { Bytes: string } }).Image.Bytes, "base64");
+    expect(sentBytes.equals(w.bodies.get(stored(HELD_BUCKET)[0]) as Buffer)).toBe(true);
+    for (const secret of [ANNA, id, "Anna", "team@example.com"]) expect(calls[0].body.includes(secret), secret).toBe(false);
+    expect(pictures()[0]).toMatchObject({ status: "held", check_result: "Rekognition 7.0: nothing found" });
+    expect((await shown(id)).canAdd).toBe(true);
   });
 
-  it("is never promised to every reader, and never where it cannot be bought", () => {
-    // Another reader is told no limit at all.
-    expect(showsPlusPlace({ ...met, mine: false, limit: null })).toBe(false);
-    // A phone whose store does not sell Plus: the limit there is three, and no door is shown.
-    expect(showsPlusPlace({ ...met, plusSold: false })).toBe(false);
-    // While a place is still free, "Add a picture" stands there.
-    expect(showsPlusPlace({ ...met, canAdd: true, pictures: 2 })).toBe(false);
-    // With Plus, twenty is the whole of it.
-    expect(showsPlusPlace({ ...met, limit: PICTURES_PLUS, pictures: PICTURES_PLUS })).toBe(false);
-    // Nothing can be added because the campaign has ended, with one picture up: that is not the limit, and Plus would not change it.
-    expect(showsPlusPlace({ ...met, pictures: 1 })).toBe(false);
+  it("a picture it is sure shows nudity is not stored, and its creator is told only that it cannot be used", async () => {
+    key();
+    serviceSays([
+      { Name: "Explicit", ParentName: "", Confidence: 98, TaxonomyLevel: 1 },
+      { Name: "Explicit Nudity", ParentName: "Explicit", Confidence: 98, TaxonomyLevel: 2 },
+    ]);
+    const id = running();
+    const res = await send(id, await realPhoto());
+    expect(res.status).toBe(422);
+    const body = (await res.json()) as { code: string; error: string };
+    expect(body.code).toBe("picture_refused");
+    expect(JSON.stringify(body)).not.toMatch(/Explicit|Rekognition|nudity/i);
+    expect(pictures()).toEqual([]);
+    expect([...w.objects]).toEqual([]);
+    expect(w.tables.upload_owners).toEqual([]);
+  });
+
+  it("what a person should decide is stored for the moderator with a note of what was noticed", async () => {
+    key();
+    serviceSays([
+      { Name: "Violence", ParentName: "", Confidence: 91, TaxonomyLevel: 1 },
+      { Name: "Weapons", ParentName: "Violence", Confidence: 91, TaxonomyLevel: 2 },
+    ]);
+    const id = running();
+    expect((await send(id, await realPhoto())).status).toBe(200);
+    expect(pictures()[0]).toMatchObject({ status: "held", check_result: "Rekognition 7.0 noticed: Weapons 91" });
+  });
+
+  it("a service that does not answer is not a pass: nothing is stored, and the reader is asked to try later", async () => {
+    key();
+    serviceSays([], 500);
+    const id = running();
+    const res = await send(id, await realPhoto());
+    expect(res.status).toBe(503);
+    expect(((await res.json()) as { code: string }).code).toBe("check_failed");
+    expect(pictures()).toEqual([]);
+    expect([...w.objects]).toEqual([]);
   });
 });
 
@@ -960,13 +1080,14 @@ describe("when its campaign goes, its pictures' files go", () => {
   });
 
   it("the housekeeping misses no file when many campaigns go at once, past the thousand rows one read returns", async () => {
-    // Sixty campaigns, twenty pictures each, all thirty-one days past their
-    // last day: twelve hundred pictures, and the API returns a thousand rows
-    // a request and says nothing when it stops.
+    // Sixty campaigns, twenty pictures each (the most a campaign could ever
+    // have held, and what one read still allows for), all thirty-one days
+    // past their last day: twelve hundred pictures, and the API returns a
+    // thousand rows a request and says nothing when it stops.
     w.maxRows = 1000;
     for (let c = 0; c < 60; c++) {
       const id = running({ ends_at: plus(-31), status: "ended" });
-      for (let i = 0; i < PICTURES_PLUS; i++) {
+      for (let i = 0; i < 20; i++) {
         const path = `c/${crypto.randomUUID()}.jpg`;
         w.objects.add(`${CAMPAIGN_BUCKET}/${path}`);
         w.tables.upload_owners!.push({ bucket: CAMPAIGN_BUCKET, path, owner_id: ANNA });

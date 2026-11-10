@@ -382,8 +382,8 @@ export async function fetchPictures(id: string): Promise<PicturesResult> {
   }
 }
 
-/** What adding a picture came to. `plus` is the server saying Purify Plus would give more room. */
-export type PictureAdded = { ok: true; id: string } | { ok: false; status: number; code: string | null; plus: boolean };
+/** What adding a picture came to. */
+export type PictureAdded = { ok: true; id: string } | { ok: false; status: number; code: string | null };
 
 /**
  * Its creator adds one picture. `said` is the two lines ticked on the sheet:
@@ -392,7 +392,7 @@ export type PictureAdded = { ok: true; id: string } | { ok: false; status: numbe
  * reader's data; the server makes it again whatever it is sent.
  */
 export async function addPicture(id: string, file: File, said: { adult: boolean; consent: boolean; alt: string }): Promise<PictureAdded> {
-  if (picturesOff()) return { ok: false, status: 404, code: null, plus: false };
+  if (picturesOff()) return { ok: false, status: 404, code: null };
   try {
     const blob = await shrink(file);
     const form = new FormData();
@@ -403,9 +403,9 @@ export async function addPicture(id: string, file: File, said: { adult: boolean;
     const res = await apiFetch(`/api/campaigns/${encodeURIComponent(id)}/pictures`, { method: "POST", body: form });
     const json = await body(res);
     if (res.ok && typeof json.id === "string") return { ok: true, id: json.id };
-    return { ok: false, status: res.status, code: typeof json.code === "string" ? json.code : null, plus: json.plus === true };
+    return { ok: false, status: res.status, code: typeof json.code === "string" ? json.code : null };
   } catch {
-    return { ok: false, status: 0, code: null, plus: false };
+    return { ok: false, status: 0, code: null };
   }
 }
 
