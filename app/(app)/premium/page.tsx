@@ -273,7 +273,7 @@ function PlanCard({
       )}
       style={premiumCardBg(tone === "pro" ? "full" : "soft")}
     >
-      {ribbon && <span className={cn(PREMIUM_CHIP, "absolute right-5 top-6")}>{ribbon}</span>}
+      {ribbon && <span className={cn(PREMIUM_CHIP, "absolute end-5 top-6")}>{ribbon}</span>}
       {children}
     </div>
   );

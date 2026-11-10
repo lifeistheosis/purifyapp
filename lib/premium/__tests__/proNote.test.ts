@@ -20,3 +20,17 @@ describe("the Pro card's note", () => {
     expect(share).toBeGreaterThanOrEqual(45);
   });
 });
+
+/**
+ * The Pro card's ribbon ("Most complete") stands in the card's far corner in
+ * every language: placed from its end, so Arabic mirrors it (checkMock's
+ * mirror check found it placed from the right, 2026-11-10).
+ */
+describe("the Pro card's ribbon", () => {
+  it("is placed from the card's end, not its right", () => {
+    const page = fs.readFileSync(path.join(process.cwd(), "app/(app)/premium/page.tsx"), "utf8");
+    const ribbon = /\{ribbon && <span className=\{cn\(PREMIUM_CHIP, "([^"]*)"\)\}>/.exec(page)?.[1] ?? "";
+    expect(ribbon.split(/\s+/)).toContain("end-5");
+    expect(ribbon).not.toMatch(/(?:^|\s)(?:left|right)-\d/);
+  });
+});
