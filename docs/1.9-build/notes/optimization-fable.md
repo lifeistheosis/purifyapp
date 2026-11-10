@@ -553,6 +553,7 @@ next test build's phone walk (`HANDOFF.md`).
 | 8. The patch notes leave the start-up scripts | "The front door no longer loads every patch note ever written" | 32 scripts, 2,509 KB (760 KB packed) at the front door | 2,345 KB (705 KB packed) |
 | 7a. Pictures kept at the edge | "The website's pictures are kept at the edge" | every picture `max-age=0` at the origin | a year for a name with a version, a day for any other; the streamed folders unchanged |
 | 6. SQLCipher out, the old store deleted | "SQLCipher leaves the apps, and the store 1.5 filled is deleted" | 5.0 MB installed, 2.2 MB of download on an arm64 phone; 33 MB held on phones that had 1.5 | the plugin in no build; each shell deletes the old file at start |
+| 5. The Fathers' words once | "The Fathers' words are in the apps once" | 195.5 MB on disk, 68.1 MB packed (the same head, built without it) | 176.0 MB, **61.9 MB packed**; 6.2 MB off the download |
 
 Item 6's gates: typecheck 0; unit tests 10,905 passed, 8 skipped, 0 failed;
 lint 0 errors; the website build; `build:android` then `build:ios`. The
@@ -561,6 +562,36 @@ native lines (one in `MainActivity.java`, a short loop in
 run and one "iOS build (signed)" run prove them, and the AAB's weight is
 measured from that build. The code in `lib/content` is kept, as he said on
 2026-10-12.
+
+Item 5 as built. A work the commentary quotes (the list in
+`lib/bible/commentaryWorks.ts`) is written as an index and parts of about
+32 KB; a note found whole in the section it points to is stored as a span of
+it, and the reader cuts it out (`lib/saints/writingParts.ts`,
+`lib/saints/writingClient.ts`, `lib/bible/chapterData.ts`). The reader's
+screens are unchanged: the loaders hand them what they were handed before.
+The website's pages still carry the words themselves.
+
+What it costs, measured six times slowed, one run each: the first tap on a
+verse's commentary went from 519 ms to 690 ms on John 14 and from 641 ms to
+1,138 ms on John 1, the two heaviest chapters, because the notes are read
+from about 45 small files where there was one. After that first tap the
+chapter is kept. A work in parts opens whole as before (Chrysostom on John:
+68 files, 3.2 MB, 193 ms).
+
+Held by tests on the real data: every quoted work comes back whole from its
+parts, every span comes back as its note word for word (more than 4,000 of
+them), a part that cannot be read leaves its note out and shows nothing in
+its place.
+
+Gates: typecheck 0; lint 0 errors; the website build; `build:android` then
+`build:ios`, 62.5 MB packed on the merged head. Unit tests: 11,115 passed,
+8 skipped, 1 failed, and the one is not this work:
+`lib/bible/__tests__/commentaryPlaces.test.ts` fails the same way on the
+commit before, since "St Cyril on Luke: Sermon 29's fragments" (`50aa710b`)
+gave those sections numbers of their own. The export walk, every section:
+1,567 passed, 2 did not (section 12, a tap that selects a verse; section 35,
+a read-aloud cover inside the app); both fail the same way on an export
+built without this change.
 
 Item 8 is one part, not the two planned. Measured before building: the
 home page's chip imported the whole changelog for one title, and that was
