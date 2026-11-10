@@ -1969,7 +1969,9 @@ html[data-reading-mode="parchment"] .rule-ring-lit {
 /* The two ways into an empty part, rows of one lit panel (.set-panel). */
 .rule-way {
  min-height: 66px;
- padding: 11px 14px 11px 12px;
+ /* By start and end, so it turns in Arabic (it stood 2px off a mirror). */
+ padding-block: 11px;
+ padding-inline: 12px 14px;
 }
 .rule-way-pic {
  flex: none;
