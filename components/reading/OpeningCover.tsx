@@ -1,12 +1,14 @@
 "use client";
 
+import { useEffect } from "react";
+
 import { WorkCover } from "@/components/covers/WorkCover";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useOnOpening } from "@/components/saints/useWorkPlace";
 import { useCoversVersion } from "@/lib/readAloud/useCovers";
 import { packedCard } from "@/lib/reading/packedCovers";
 import type { Card } from "@/lib/reading/select";
-import { openWorkAbout } from "@/lib/saints/workNow";
+import { forgetWorkAbout, openWorkAbout } from "@/lib/saints/workNow";
 
 /**
  * How large it is held up: by the height of the screen. 160px wide, as a
@@ -61,7 +63,9 @@ const HELD_UP =
  * button, all of it, so it is far larger than the 44px a finger needs; it
  * dips as a pressed cover does anywhere in the app (`.press-card`), and the
  * sheet it opens is the reader's own, with the sheet's own motion
- * (lib/saints/workNow.ts, openWorkAbout: the door the three dots use).
+ * (lib/saints/workNow.ts, openWorkAbout: the door the three dots use). In
+ * the apps the reader arrives a moment after the cover, with the work's
+ * text; a tap in that moment is kept and answered when it does.
  *
  * The cover's words are hidden from assistive technology, as every cover's
  * are, so the button is named for what it does, in the reader's language
@@ -84,6 +88,8 @@ export function OpeningCover({
   const { t } = useTranslate();
   const card = packedCard(built, useCoversVersion());
   const here = useOnOpening(owner, slug, first);
+  // A tap no reader answered (the text was still arriving) is kept for the reader that comes; it goes with this page.
+  useEffect(() => forgetWorkAbout, []);
   if (!here) return null;
   return (
     <div data-opening-cover="" className="mb-7 flex justify-center">

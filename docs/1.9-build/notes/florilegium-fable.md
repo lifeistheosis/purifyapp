@@ -252,10 +252,47 @@ changed.
 - The Gather button and the sheet that picks a gathering as a line is
   gathered (`AddToFlorilegium`, `FlorilegiumPickerSheet`) are as they were.
 - A gathering has no picture of its own, so nothing travels from a row into
-  its page. One kept from a starter could wear the starter's picture; it
-  does not yet.
-- The bar over a gathering names the Florilegium, not the gathering: the
-  gathering's name is known only on the device, and a page's bar is mounted
-  by the page.
+  its page. One kept from a starter wears the starter's picture now (F1, the
+  evening of 2026-11-10, on his "finalize all the builds"): on its row, in
+  the mark's place, and at the head of its page, and the picture travels
+  between the two under the gathering's own key. It is told by its lines (it
+  holds every verse of the starter), not by its name, which is in the
+  language the reader had on the day they kept it (`starterOf`,
+  `lib/florilegium/starters.ts`). The booklet does not print the picture.
+- The bar over a gathering named the Florilegium, not the gathering. It takes
+  the gathering's own name now, once the name has gone up under it (F2, the
+  same evening; `components/florilegium/GatheringBar.tsx`). The name is known
+  only on the device, so the gathering says it as it is drawn
+  (`lib/florilegium/gatheringNow.ts`), and with none on the screen (the
+  device not read yet, a gathering it does not keep) the bar still names the
+  Florilegium.
+
+  How it was first built, and why it is not built that way: the bar read the
+  gathering from the page's query itself, which in this Next has to stand in
+  a Suspense boundary. The page-switch walk then failed one time in a few
+  ("pictured 2 transitions, not one"). The cause, found on the export: when
+  the page's own script is still arriving as React first draws the page, a
+  part in a boundary of its own is left as its stand-in and drawn in a second
+  commit, about 390ms later, and React pictures that second commit as a page
+  switch (its transitions are started for any change that comes in a
+  transition while the route's mark is on the page). Holding the page's
+  script back 300ms made it happen every time (3 of 3); with the bar outside
+  any boundary and fed by the gathering, it is one commit every time. The
+  gathering tells the bar its name from an effect, and when a page arrives
+  in a transition React keeps an effect's update until the transition is
+  over (measured: the bar changed at 386ms, the transition ending at 369ms).
+  A bar that said "The Florilegium" for that third of a second and then took
+  its name away would be a flicker on every opening, so the two bars are the
+  same to the eye at the top of a page: both hold their name back until the
+  gathering's heading has gone up, and only the name differs. Where no
+  heading comes (a gathering this device does not keep) the Florilegium's
+  name is shown. The walk holds all of it (`scripts/route-motion.mjs`, "a
+  gathering in the apps, its script still on its way": one switch, and no
+  name on show in the bar while the page arrives), with the picture's
+  journey for a kept starter beside it.
+- One catalog line nothing drew was taken out of all 21 languages (F7:
+  `study.florilegium.beginNewEllipsis`), with three more that the old
+  Theology shell had been the last to use (`topics.eyebrow`, `study.period`,
+  `topics.curatedBy`).
 - The starters are in English in every language, as before
   (`data/florilegium/starters.json`).

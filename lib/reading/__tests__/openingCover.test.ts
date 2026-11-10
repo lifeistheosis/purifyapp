@@ -46,7 +46,7 @@ import { COUNCILS } from "@/lib/councils/councils";
 import { getMessages } from "@/lib/i18n";
 import { LOCALES } from "@/lib/i18n/locales";
 import { SIZES } from "@/lib/reading/coverText";
-import { WORK_ABOUT_EVENT, openWorkAbout } from "@/lib/saints/workNow";
+import { WORK_ABOUT_EVENT, answerWorkAbout, forgetWorkAbout, hearWaitingWorkAbout, openWorkAbout, workAboutWaiting } from "@/lib/saints/workNow";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");
 const read = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8").replace(/\r\n/g, "\n");
@@ -227,17 +227,75 @@ describe("a tap on the cover", () => {
       openWorkAbout();
     } finally {
       delete (globalThis as { window?: unknown }).window;
+      forgetWorkAbout();
     }
     expect(heard).toEqual([WORK_ABOUT_EVENT]);
     // A Father's work and a council's document both open their sheet on it.
     for (const reader of ["components/saints/WritingReader.tsx", "components/councils/CouncilReader.tsx"]) {
       const text = code(reader);
       expect(text, reader).toContain("window.addEventListener(WORK_ABOUT_EVENT, aboutOpen);");
-      expect(text, reader).toContain('const aboutOpen = () => setSheet("about");');
+      expect(text, reader).toMatch(/const aboutOpen = \(\) => \{\s+answerWorkAbout\(\);\s+setSheet\("about"\);\s+\};/);
     }
     // And About this book stays under the three dots and in the contents.
     expect(code("components/saints/MobileWorkActions.tsx")).toContain("openWorkAbout();");
     expect(code("components/saints/WorkContents.tsx")).toMatch(/onAbout\(\);/);
+  });
+
+  // P9 (1.9). In the apps a work's text is read a moment after its page
+  // opens, and the sheet is the reader's: a tap on the cover in that moment
+  // opened nothing, and a second tap did.
+  it("keeps a tap no reader was there to answer, and the reader that arrives hears it", async () => {
+    type Heard = (e: Event) => void;
+    const listeners = new Set<Heard>();
+    const win = {
+      dispatchEvent: (e: Event) => (listeners.forEach((l) => l(e)), true),
+      addEventListener: (_: string, l: Heard) => void listeners.add(l),
+      removeEventListener: (_: string, l: Heard) => void listeners.delete(l),
+    };
+    (globalThis as { window?: unknown }).window = win;
+    try {
+      // No reader yet: the tap is kept.
+      openWorkAbout();
+      expect(workAboutWaiting()).toBe(true);
+      // The reader arrives: it listens, then asks for what was waiting, and hears it once.
+      let opened = 0;
+      const aboutOpen = () => {
+        answerWorkAbout();
+        opened++;
+      };
+      win.addEventListener(WORK_ABOUT_EVENT, aboutOpen);
+      hearWaitingWorkAbout();
+      expect(opened).toBe(0);
+      await Promise.resolve();
+      expect(opened).toBe(1);
+      expect(workAboutWaiting()).toBe(false);
+      // Nothing waits now, so a second reader's arrival opens nothing.
+      hearWaitingWorkAbout();
+      await Promise.resolve();
+      expect(opened).toBe(1);
+      // With a reader there, a tap is answered inside the tap and nothing is kept.
+      openWorkAbout();
+      expect(opened).toBe(2);
+      expect(workAboutWaiting()).toBe(false);
+      // A tap no reader answers goes with the cover's page: it never opens over another book.
+      win.removeEventListener(WORK_ABOUT_EVENT, aboutOpen);
+      openWorkAbout();
+      expect(workAboutWaiting()).toBe(true);
+      forgetWorkAbout();
+      win.addEventListener(WORK_ABOUT_EVENT, aboutOpen);
+      hearWaitingWorkAbout();
+      await Promise.resolve();
+      expect(opened).toBe(2);
+    } finally {
+      delete (globalThis as { window?: unknown }).window;
+      forgetWorkAbout();
+    }
+    // Both readers ask as they begin to listen, and the cover forgets as its page goes.
+    for (const reader of ["components/saints/WritingReader.tsx", "components/councils/CouncilReader.tsx"]) {
+      const text = code(reader);
+      expect(text.indexOf("hearWaitingWorkAbout();"), reader).toBeGreaterThan(text.indexOf("window.addEventListener(WORK_ABOUT_EVENT, aboutOpen);"));
+    }
+    expect(code(COVER)).toContain("useEffect(() => forgetWorkAbout, []);");
   });
 
   it("is the whole cover under the finger, far over 44px, and dips as a pressed cover does", () => {

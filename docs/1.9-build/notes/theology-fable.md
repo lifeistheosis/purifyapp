@@ -136,8 +136,9 @@ patch, with the gates and the checker run again on the branch as it stood
    turned to Theology, and nothing floats over the list. One line brings it
    back (`<TheologySearch />`).
 2. **Doctrine is shelved by the hub's nine subjects**, not by the seven
-   categories this page had of its own (`THEOLOGY_GROUP_LABEL`, still in
-   `lib/theology/topics.ts`, now drawn nowhere). One study moves: The Essence
+   categories this page had of its own (their names, `THEOLOGY_GROUP_LABEL`,
+   were drawn nowhere after this and were taken out the same day with their
+   order and their one helper, T3). One study moves: The Essence
    and the Energies stood under The Holy Trinity and stands under Salvation
    and theosis, where the path has it. A study's subtitle and summary are on
    its own page, not in the list.

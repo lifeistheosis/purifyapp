@@ -380,11 +380,22 @@ function wear(el: HTMLElement, key: string, landing = false): void {
   wearing.push(el);
 }
 
-/** Every picture gives the name back. */
+/**
+ * Every picture gives the name back.
+ *
+ * One that a picture has just landed on keeps a mark of it (`data-landed`,
+ * 1.9). While it wore the name it was shown whole, whatever it was waiting
+ * for (app/globals.css, `[data-carried-in]`): the reading room's covers wait
+ * unseen for their pictures, and a tile is seen at once while its cover
+ * travels back into it. Given the name back, a tile whose picture the phone
+ * had dropped from memory went unseen again for a moment, under the reader's
+ * eyes, until the picture was back. What has landed stays seen.
+ */
 export function setDown(): void {
   for (const el of wearing) {
     el.style.removeProperty("view-transition-name");
     el.style.removeProperty("view-transition-class");
+    if ("carriedIn" in el.dataset) el.dataset.landed = "";
     delete el.dataset.carriedIn;
   }
   wearing = [];

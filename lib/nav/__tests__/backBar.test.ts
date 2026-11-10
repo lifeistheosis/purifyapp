@@ -38,13 +38,16 @@ const APP = path.join(process.cwd(), "app", "(app)");
 /**
  * A JSX mount, not a mention. Half this repo's files discuss the bar in prose.
  *
- * AccountTopBar is the one component allowed to stand for the bar (1.6): the
+ * AccountTopBar is a component allowed to stand for the bar (1.6): the
  * account layout mounts it, and it is a MobileTopBar whose name and way back
- * follow the address, which a layout cannot know. The last test of this
- * block holds it to drawing a MobileTopBar on every path.
+ * follow the address, which a layout cannot know. GatheringBar is the other
+ * (1.9): a gathering's page mounts it, and it is a MobileTopBar whose name is
+ * the gathering's own, which only the device knows. The last tests of this
+ * block hold each to drawing a MobileTopBar on every path.
  */
-const MOUNTS = /<(MobileTopBar|AccountTopBar)[\s/>]/;
+const MOUNTS = /<(MobileTopBar|AccountTopBar|GatheringBar)[\s/>]/;
 const STANDS_FOR_THE_BAR = "AccountTopBar.tsx";
+const STAND_FOR_THE_BAR = new Set([STANDS_FOR_THE_BAR, "GatheringBar.tsx"]);
 
 function read(file: string): string {
   return fs.readFileSync(file, "utf8");
@@ -161,7 +164,7 @@ describe("NativeBackBar exclusions vs the tree", () => {
       for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
         const p = path.join(dir, e.name);
         if (e.isDirectory()) walk(p);
-        else if (/\.tsx$/.test(e.name) && e.name !== "MobileTopBar.tsx" && e.name !== STANDS_FOR_THE_BAR) {
+        else if (/\.tsx$/.test(e.name) && e.name !== "MobileTopBar.tsx" && !STAND_FOR_THE_BAR.has(e.name)) {
           if (MOUNTS.test(read(p))) offenders.push(path.relative(process.cwd(), p));
         }
       }
@@ -191,6 +194,35 @@ describe("NativeBackBar exclusions vs the tree", () => {
     const named = [...source.matchAll(/path: "([^"]+)"/g)].map((m) => m[1]);
     expect(named.length).toBeGreaterThanOrEqual(6);
     for (const route of named) expect(shouldShowBack(route), route).toBe(false);
+  });
+
+  it("the gathering's bar draws it on every path too", () => {
+    // The scan counts <GatheringBar /> as a bar (1.9). The gathering's name is
+    // the device's own, so the page cannot draw the bar with it; the component
+    // can, and must never draw nothing: with no gathering on the screen (the
+    // device not read yet, a gathering it does not keep) it is the
+    // Florilegium's bar.
+    const source = read(path.join(process.cwd(), "components", "florilegium", "GatheringBar.tsx"))
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/^\s*\/\/.*$/gm, "");
+    const returns = [...source.matchAll(/\breturn\s+([^;]+);/g)].map((m) => m[1].trim());
+    expect(returns.length).toBe(2);
+    for (const r of returns) expect(r.startsWith("<MobileTopBar "), r).toBe(true);
+    expect(source).not.toMatch(/return null/);
+    // Each of its bars has the way back, to the gatherings.
+    expect(source.split('back backFallback="/florilegium"').length - 1).toBe(2);
+    // And both of the gathering's addresses are ones the back bar steps aside for.
+    for (const route of ["/florilegium/abc123", "/florilegium/gathering"]) expect(shouldShowBack(route), route).toBe(false);
+    // Both of its pages draw it themselves, in no boundary of its own: a bar
+    // that waits in one is drawn a beat after its page when the page's script
+    // is still arriving, and for that beat the page's bar is a stand-in
+    // (lib/florilegium/gatheringNow.ts). So it reads no query, which would
+    // need one.
+    expect(source).not.toMatch(/useSearchParams|usePathname|useParams/);
+    for (const page of [path.join(APP, "florilegium", "gathering", "page.tsx"), path.join(APP, "florilegium", "[id]", "page.tsx")]) {
+      const jsx = read(page).replace(/\{\/\*[\s\S]*?\*\/\}/g, "");
+      expect(jsx, page).toMatch(/<>\s*<GatheringBar \/>\s*<section /);
+    }
   });
 });
 

@@ -33,7 +33,7 @@ import { BookHeader } from "@/components/reading/BookHeader";
 import { MoreLikeThis } from "@/components/reading/MoreLikeThis";
 import { Sheet } from "@/components/ui/Sheet";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
-import { WORK_ABOUT_EVENT, WORK_CONTENTS_EVENT, setWorkNow } from "@/lib/saints/workNow";
+import { WORK_ABOUT_EVENT, WORK_CONTENTS_EVENT, answerWorkAbout, hearWaitingWorkAbout, setWorkNow } from "@/lib/saints/workNow";
 import { useScrollAway } from "@/lib/ui/scrollAway";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { unitFor } from "@/lib/desktop/presenceModes";
@@ -143,9 +143,14 @@ export function WritingReader({
  const [sheet, setSheet] = useState<"contents" | "about" | null>(null);
  useEffect(() => {
  const contentsOpen = () => setSheet("contents");
- const aboutOpen = () => setSheet("about");
+ const aboutOpen = () => {
+  answerWorkAbout();
+  setSheet("about");
+ };
  window.addEventListener(WORK_CONTENTS_EVENT, contentsOpen);
  window.addEventListener(WORK_ABOUT_EVENT, aboutOpen);
+ // A tap on the cover before this reader was here (the apps read a work's text a moment after its page opens): heard now.
+ hearWaitingWorkAbout();
  return () => {
  window.removeEventListener(WORK_CONTENTS_EVENT, contentsOpen);
  window.removeEventListener(WORK_ABOUT_EVENT, aboutOpen);

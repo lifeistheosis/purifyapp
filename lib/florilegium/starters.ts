@@ -62,6 +62,21 @@ export function keptStarter<T extends { title: string; description?: string }>(f
 }
 
 /**
+ * The starter a gathering was kept from, if any (1.9): it holds every verse
+ * of the starter, as Keep wrote them (starterItems), whatever the reader has
+ * gathered into it since. Told by its lines and not by its name, which is in
+ * the language the reader had on the day they kept it, and theirs to change.
+ * A gathering kept from a starter wears the starter's picture, on its row
+ * and at the head of its page (components/florilegium/GatheringRow.tsx,
+ * FlorilegiumDetail.tsx); every other gathering has none of its own.
+ */
+export function starterOf(f: { items: readonly { kind: string; book?: string; chapter?: number; verse?: number }[] }): Starter | undefined {
+  if (f.items.length === 0) return undefined;
+  const has = (book: string, chapter: number, verse: number) => f.items.some((i) => i.kind === "scripture" && i.book === book && i.chapter === chapter && i.verse === verse);
+  return STARTERS.find((s) => s.lines.length > 0 && s.lines.every((l) => has(s.book, s.chapter, l.verse)));
+}
+
+/**
  * The lines as the Florilegium keeps a gathered verse. The store puts the
  * newest first, so they are handed over last verse first and read from the
  * first verse down.

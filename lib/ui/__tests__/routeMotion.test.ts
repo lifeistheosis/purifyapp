@@ -569,6 +569,12 @@ describe("a picture that leads to its own page", () => {
     await vi.runAllTimersAsync();
     expect([wears(head), wears(secondPicture)]).toEqual([false, false]);
     expect(secondPicture.dataset.carriedIn).toBeUndefined();
+    // P10 (1.9): the card that took its picture back keeps a mark of it, and stays seen. The reading
+    // room's covers wait unseen for their pictures, and a tile is shown at once while its cover travels
+    // back into it; given the name back, one whose picture the phone had dropped from memory went unseen
+    // again for a moment after the cover had landed. The card nothing landed on keeps no mark.
+    expect(secondPicture.dataset.landed).toBe("");
+    expect("landed" in firstPicture.dataset).toBe(false);
   });
 
   // A book read on, and then left: its cover is far up the page. The browser
@@ -694,6 +700,11 @@ describe("a picture that leads to its own page", () => {
     setDown();
     expect(cover.names.size).toBe(0);
     expect(head.names.size).toBe(0);
+    // The one a picture landed on keeps a mark of it, and stays seen (P10);
+    // the one it left, which nothing landed on, keeps none.
+    expect("carriedIn" in head.dataset).toBe(false);
+    expect(head.dataset.landed).toBe("");
+    expect("landed" in cover.dataset).toBe(false);
   });
 
   it("the pictures say so themselves: the attributes are on the shared components", () => {
@@ -757,6 +768,10 @@ describe("a picture that leads to its own page", () => {
     expect(css.slice(arrives, css.indexOf("}", arrives))).toContain("animation: route-arrive var(--duration-route-enter) var(--ease-house) 40ms both;");
     // The cover it is becoming is whole from the first frame: seen, and its picture shown.
     expect(css).toMatch(/\[data-carried-in\]\[data-cover\],\s*\[data-carried-in\] \[data-cover-picture\] \{\s*opacity: 1;\s*\}/);
+    // And it stays seen once it has landed, with its own motion its own again (P10).
+    expect(css).toMatch(/\[data-landed\]\[data-cover\],\s*\[data-landed\] \[data-cover-picture\] \{\s*opacity: 1;\s*\}/);
+    expect(css).not.toMatch(/\[data-landed\][^{]*\{[^}]*transition: none/);
+    expect(read("lib/ui/routeMotion.ts")).toContain('if ("carriedIn" in el.dataset) el.dataset.landed = "";');
     // And the cover's own marks are still what the stylesheet looks for.
     const cover = read("components/covers/WorkCover.tsx");
     expect(cover).toContain('data-cover=""');

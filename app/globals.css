@@ -8930,6 +8930,16 @@ body[data-route-exit] [data-route-content] {
 [data-carried-in] [data-cover-picture] {
  opacity: 1;
 }
+/* And it stays seen once it has landed (1.9; lib/ui/routeMotion.ts,
+   setDown). A tile is shown at once while its cover travels back into it;
+   given the name back, one whose picture the phone had dropped from memory
+   went unseen again for a moment, under the reader's eyes, until the picture
+   was back. Its plate and its words hold the place until then, and its own
+   motion is its own again: only the waiting is over. */
+[data-landed][data-cover],
+[data-landed] [data-cover-picture] {
+ opacity: 1;
+}
 
 /* What React is asked to picture on a route change: one transparent pixel
    (components/nav/RouteTransition.tsx). Its own picture takes no time, so

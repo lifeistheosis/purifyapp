@@ -30,8 +30,10 @@ export const revalidate = 3600;
  * study the library has to a subject, so none is left off this page.
  *
  * Until 1.9 the studies were grouped by seven doctrinal categories of this
- * page's own (THEOLOGY_GROUP_LABEL, lib/theology/topics.ts), a second map of
- * the faith beside the hub's nine subjects, drawn as text under hairlines.
+ * page's own, a second map of the faith beside the hub's nine subjects, drawn
+ * as text under hairlines. Their names and lines went with them (they were
+ * drawn nowhere); a study still says which of the seven it is, `group`
+ * (lib/theology/topics.ts), which the editors' files use.
  */
 export default async function DoctrineIndexPage() {
   const [steps, counts] = await Promise.all([pathSteps(IS_STATIC_EXPORT), wayCounts()]);

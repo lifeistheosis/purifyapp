@@ -326,22 +326,46 @@ Held by `lib/reading/__tests__/openingCover.test.ts` ("a tap on the cover"),
 and opened on the export by `scripts/mock-opening-cover.mjs`, which taps the
 cover, checks the sheet came and went, and pictures it.
 
-One thing known and left: in the apps a work's text is read a moment after
-the page opens, and the sheet belongs to the reader, so a tap in that first
-moment (about a tenth of a second, while the page is still arriving) opens
-nothing. A second tap does.
+One thing was known and left that day, and is mended (P9, the same evening,
+on his "finalize all the builds"): in the apps a work's text is read a moment
+after the page opens, and the sheet belongs to the reader, so a tap in that
+first moment (about a tenth of a second, while the page is still arriving)
+opened nothing, and a second tap did. A tap is kept now until a reader
+answers it: the one that is there hears it at once, and the one that arrives
+next hears it as it begins to listen (`lib/saints/workNow.ts`, `openWorkAbout`,
+`hearWaitingWorkAbout`). The cover forgets an unanswered tap as its page
+goes, so it never opens over another book. Held by "keeps a tap no reader was
+there to answer" in `lib/reading/__tests__/openingCover.test.ts`.
 
 ### What it is not
 
 - A book opened by a link to one paragraph (a citation, a search result)
   opens on its cover as well, and goes down to the paragraph.
 - The Bible's chapters are not books of the reading room and are unchanged.
-- One rare case, known and left: the room's covers wait unseen for their
-  pictures (`hold`), and a tile is shown at once for as long as a cover is
-  travelling back into it. If a phone has dropped that picture from its
-  memory in the meantime, the tile can go unseen again for a moment after
-  the cover has landed, until its picture is back. It did not happen in any
-  walk here; the pictures were on the screen a moment before.
+- One rare case was known and left, and is mended (P10, the same evening):
+  the room's covers wait unseen for their pictures (`hold`), and a tile is
+  shown at once for as long as a cover is travelling back into it. If a phone
+  had dropped that picture from its memory in the meantime, the tile could go
+  unseen again for a moment after the cover had landed, until its picture was
+  back. What a picture has landed on keeps a mark of it now (`data-landed`,
+  `setDown` in `lib/ui/routeMotion.ts`) and stays seen, its plate and words
+  holding the place (app/globals.css, beside `[data-carried-in]`). It did not
+  happen in any walk here, so it is held by a test of the mark and of the
+  stylesheet's rule (`lib/ui/__tests__/routeMotion.test.ts`), not by a film.
+- A rule the walk taught (the evening of 2026-11-10, from the bar over a
+  gathering): **the first part of a page that comes from the page's own
+  script must not stand in a Suspense boundary of its own.** A page's script
+  is fetched at the tap. If React reaches a boundary before the script is
+  in, it draws the boundary's stand-in and moves on; a part outside any
+  boundary makes it wait instead, and by then everything after it is ready.
+  So a page whose first such part is in a boundary arrives in two commits on
+  a slow start, the second about a transition's length after the first, and
+  React pictures the second as a page switch of its own: for that length of
+  time the screen takes no touch. A page's bar is that first part on almost
+  every page, drawn by the page outside any boundary, which is why no other
+  walk has shown it. The walk now takes one page switch with every script
+  held back 300ms (`withScriptsHeld`), and a page that needs a boundary
+  early (it reads the query) can be walked the same way.
 
 ## What a phone still has to say
 

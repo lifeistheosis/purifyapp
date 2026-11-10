@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { textDir } from "@/lib/i18n/textDir";
+import { CoverArt } from "@/components/player/CoverArt";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Book } from "@/components/ui/icons/Book";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
@@ -17,12 +18,19 @@ import {
   useFlorilegia,
   type FlorilegiumItem,
 } from "@/lib/florilegium/florilegium";
+import { hideGathering, showGathering } from "@/lib/florilegium/gatheringNow";
+import { starterOf, starterPicture } from "@/lib/florilegium/starters";
 import { useIsNative } from "@/lib/platform/native";
 import { shareText } from "@/lib/share/shareImage";
 import { printPart } from "@/lib/ui/printPart";
 import { useMounted } from "@/lib/useMounted";
 
 import { FLOR_FIELD, FLOR_H1, FLOR_KICKER, FLOR_PLATE, FLOR_QUIET, FLOR_ROW, FLOR_TITLE, FLOR_TRAY } from "./florStyle";
+import { gatheringCarry } from "./GatheringRow";
+
+// On the server there is no layout to read and useLayoutEffect only warns
+// (the same choice components/nav/RouteTransition.tsx makes).
+const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 /**
  * One gathering: its name, and its lines set to read (1.9, build 89 note 12,
@@ -56,6 +64,23 @@ export function FlorilegiumDetail({ id, readOnly = false }: { id: string; readOn
   );
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const mounted = useMounted();
+  // Kept from a starter: it wears the starter's picture (lib/florilegium/starters.ts).
+  const starter = f ? starterOf(f) : undefined;
+  const picture = starter ? starterPicture(starter) : null;
+
+  // The bar over the page takes this gathering's name, and only the
+  // gathering knows which it is (lib/florilegium/gatheringNow.ts). A layout
+  // effect, so on a plain arrival the name is with the bar before the page
+  // is painted. In a transition React keeps it until the transition is
+  // over, and the bar is made so that nothing is seen of the wait
+  // (components/florilegium/GatheringBar.tsx).
+  const openId = f?.id;
+  const openTitle = f?.title;
+  useIsoLayoutEffect(() => {
+    if (openId === undefined || openTitle === undefined) return;
+    showGathering(openId, openTitle);
+    return () => hideGathering(openId);
+  }, [openId, openTitle]);
 
   // The gatherings are the device's own, so a server, and the first draw
   // that must agree with it, know none: nothing is said until the device has
@@ -89,15 +114,29 @@ export function FlorilegiumDetail({ id, readOnly = false }: { id: string; readOn
 
       {/* What the booklet prints: the name, its line, and the lines (1.9). */}
       <div data-print-part="">
-        <header>
-          {/* The reader's own words, and lines in whatever language they were gathered in: each reads its own way (dir="auto"), as a kept verse does on You. */}
-          <h1 id={FLOR_TITLE} dir="auto" className={cn(FLOR_H1, "text-balance")}>
-            {f.title}
-          </h1>
-          <p className={FLOR_KICKER}>
-            {f.description ? `${f.description} · ` : null}
-            <span className="tabular-nums">{tn("study.florilegium.lineCount", f.items.length)}</span>
-          </p>
+        <header className={picture ? "flex items-center gap-4" : undefined}>
+          {/* Kept from a starter: its picture, which the row carried in (GatheringRow.tsx). Not in the booklet, which is the reader's words. */}
+          {picture ? (
+            <span
+              aria-hidden
+              data-gathering-picture=""
+              data-carry-into={gatheringCarry(f.id)}
+              className="relative block aspect-[4/5] w-[72px] shrink-0 overflow-hidden rounded-[12px] bg-night-soft shadow-[0_18px_40px_-20px_rgba(0,0,0,0.75)] print:hidden"
+            >
+              <CoverArt src={picture.src} fallback={picture.fallback} size={144} className="absolute inset-0 h-full w-full" />
+              <span className="pointer-events-none absolute inset-0 rounded-[inherit] ring-1 ring-inset ring-paper/10" />
+            </span>
+          ) : null}
+          <div className="min-w-0">
+            {/* The reader's own words, and lines in whatever language they were gathered in: each reads its own way (dir="auto"), as a kept verse does on You. */}
+            <h1 id={FLOR_TITLE} dir="auto" className={cn(FLOR_H1, "text-balance")}>
+              {f.title}
+            </h1>
+            <p className={FLOR_KICKER}>
+              {f.description ? `${f.description} · ` : null}
+              <span className="tabular-nums">{tn("study.florilegium.lineCount", f.items.length)}</span>
+            </p>
+          </div>
         </header>
 
         {f.items.length === 0 ? (

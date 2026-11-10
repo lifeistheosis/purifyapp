@@ -196,22 +196,27 @@ try {
     console.log("\nThe sheet showed where the line went, and closed itself.");
   }
 
-  // The same sheet from a verse in the Bible: a tap on the verse, Study, Gather to florilegium.
+  // The same sheet from a verse in the Bible: a hold on the verse raises its tools (build 90 note 10;
+  // a tap no longer does), then Study, Gather to florilegium.
   await page.goto("about:blank");
   await go(page, "/bible/john/8/");
   await page.waitForSelector("#v12", { timeout: 20000 });
   await page.waitForTimeout(1500);
   const at = await page.evaluate(() => {
-    const el = document.querySelector("#v12");
-    window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 300);
+    const el = document.querySelector("#v12 [data-own-press]") ?? document.querySelector("#v12");
+    el.scrollIntoView({ block: "center" });
     const r = el.getBoundingClientRect();
-    return { x: Math.round(r.left + 140), y: Math.round(r.top + 16) };
+    return { x: Math.round(r.left + Math.min(140, r.width / 2)), y: Math.round(r.top + r.height / 2) };
   });
   await page.waitForTimeout(500);
-  await page.touchscreen.tap(at.x, at.y);
-  const study = page.locator("[role=dialog] [role=menuitem]").filter({ hasText: /^Study/ }).first();
+  // A finger down, held, and lifted: real touch events, as scripts/export-walk.mjs holds a verse.
+  const cdp = await ctx.newCDPSession(page);
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: at.x, y: at.y }] });
+  await page.waitForTimeout(800);
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  const study = page.locator("[data-verse-focus] button, [role=dialog] [role=menuitem]").filter({ hasText: /^Study/ }).first();
   await study.waitFor({ timeout: 10000 });
-  // The verse's card takes no tap in the moment after the one that opened it, so a lifting finger chooses nothing.
+  // The verse's tools take no tap in the moment after the hold that raised them, so a lifting finger chooses nothing.
   await page.waitForTimeout(1000);
   await study.click();
   const toGather = page.locator("[role=dialog] button, [role=dialog] [role=menuitem]").filter({ hasText: /Gather to florilegium/ }).first();

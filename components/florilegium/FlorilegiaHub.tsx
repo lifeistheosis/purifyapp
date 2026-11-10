@@ -232,7 +232,7 @@ function SyncLine() {
 function GatheringRow({ f }: { f: Florilegium }) {
   return (
     <Link href={gatheringHref(f.id)} className={FLOR_ROW} data-gathering={f.id}>
-      <GatheringRowBody f={f} />
+      <GatheringRowBody f={f} carry />
       <ChevronRight size={14} aria-hidden className="shrink-0 text-paper/45 rtl:-scale-x-100" />
     </Link>
   );

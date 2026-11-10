@@ -117,7 +117,8 @@ describe("the first page", () => {
     // A row says what the gathering is by what is in it: its newest line, and how many it keeps.
     const row = hub.slice(hub.indexOf("function GatheringRow"));
     expect(row).toContain("href={gatheringHref(f.id)}");
-    expect(row).toContain("<GatheringRowBody f={f} />");
+    // The row is a place to go, so a picture it wears travels to the page (F1).
+    expect(row).toContain("<GatheringRowBody f={f} carry />");
     const body = code("components/florilegium/GatheringRow.tsx");
     expect(body).toContain("{newest.text}");
     expect(body).toContain('tn("study.florilegium.lineCount", f.items.length)');
@@ -269,10 +270,33 @@ describe("a gathering's page", () => {
     expect(src).toContain("if (!mounted) return null;");
   });
 
-  it("is a page with its own bar at both of its addresses", () => {
-    for (const file of ["app/(app)/florilegium/gathering/page.tsx", "app/(app)/florilegium/[id]/page.tsx"]) {
-      expect(code(file), file).toContain('<MobileTopBar titleKey="study.florilegium.title" back backFallback="/florilegium" />');
-    }
+  it("is a page with its own bar at both of its addresses, which takes the gathering's own name", () => {
+    // The bar is the gathering's (F2), at both addresses, and the gathering says which it is.
+    const onTheWeb = code("app/(app)/florilegium/[id]/page.tsx");
+    const inApps = code("app/(app)/florilegium/gathering/page.tsx");
+    for (const page of [onTheWeb, inApps]) expect(page).toContain("<GatheringBar />");
+    // In the apps the query is read on the device, in a boundary; the bar is not in it, nor in one of its own.
+    expect(inApps.match(/<Suspense /g)).toHaveLength(1);
+    expect(inApps).toMatch(/<Suspense fallback=\{null\}>\s*<FlorilegiumByQuery \/>\s*<\/Suspense>/);
+    expect(inApps.indexOf("<GatheringBar />")).toBeLessThan(inApps.indexOf("<Suspense "));
+    const bar = code("components/florilegium/GatheringBar.tsx");
+    // Its name once the name has gone up under the bar, and the way back to the gatherings.
+    expect(bar).toContain("const open = useGatheringNow();");
+    expect(bar).toContain('<MobileTopBar key={`gathering:${open.id}`} title={open.title} titles={{ [locale]: open.title }} back backFallback="/florilegium" revealTitleOn={FLOR_TITLE} />');
+    // With no gathering on the screen (the device not read yet, one it does not keep) the bar is the Florilegium's.
+    expect(bar).toContain('if (!open) return <MobileTopBar key="florilegium" titleKey="study.florilegium.title" back backFallback="/florilegium" revealTitleOn={FLOR_TITLE} />;');
+    // The name reaches the bar a moment after the page (a transition holds it back), so the two bars are
+    // the same to the eye at the top of a page: both wait for the gathering's heading, and none shows a
+    // name over it. And the bar that knows its gathering is a new one, which looks for the heading afresh.
+    expect(bar.match(/revealTitleOn=\{FLOR_TITLE\}/g)).toHaveLength(2);
+    expect(bar.match(/<MobileTopBar key=/g)).toHaveLength(2);
+    // The gathering says it as it is drawn and takes it away as it goes, before the page is painted.
+    const detail = code(DETAIL);
+    expect(detail).toMatch(/useIsoLayoutEffect\(\(\) => \{\s*if \(openId === undefined \|\| openTitle === undefined\) return;\s*showGathering\(openId, openTitle\);\s*return \(\) => hideGathering\(openId\);\s*\}, \[openId, openTitle\]\);/);
+    expect(detail).toContain("const openId = f?.id;");
+    expect(detail).toContain("const openTitle = f?.title;");
+    // The heading the bar waits for is the gathering's own.
+    expect(detail).toContain("<h1 id={FLOR_TITLE}");
   });
 });
 
@@ -292,7 +316,7 @@ describe("the sheet that picks a gathering", () => {
     const picker = code(PICKER);
     expect(picker).toContain('<ul className={FLOR_TRAY} data-gather-into="">');
     expect(picker).toContain("<GatheringRowBody f={f} gathered={into === f.id} />");
-    expect(code(HUB)).toContain("<GatheringRowBody f={f} />");
+    expect(code(HUB)).toContain("<GatheringRowBody f={f} carry />");
     expect(picker).toContain('data-florilegium-begin="" className={FLOR_ROW}');
     expect(picker).toContain('{t("study.florilegium.beginNew")}');
     // It has a field, so it stands on the keyboard; and the field lights its own fill, nothing round it.

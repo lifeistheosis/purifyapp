@@ -7,7 +7,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { STARTERS, starterItems, starterReference } from "@/lib/florilegium/starters";
+import { STARTERS, starterItems, starterOf, starterPicture, starterReference } from "@/lib/florilegium/starters";
 
 const read = (rel: string) => fs.readFileSync(path.resolve(__dirname, "../../..", rel), "utf8");
 const HUB = read("components/florilegium/FlorilegiaHub.tsx");
@@ -73,5 +73,62 @@ describe("the first page", () => {
     const code = HUB.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
     // A count of devices, or a line about them; the date helper's name (deviceDates) is neither.
     expect(code).not.toMatch(/devices|deviceCount|t\("[^"]*device/i);
+  });
+});
+
+// A gathering kept from a starter wears the starter's picture (1.9, F1). Until
+// then no gathering had a picture, so nothing travelled from its row into its
+// page, and a kept Magnificat looked like any list of verses.
+//
+// What a reader would notice if this broke: the Theotokos's icon on a
+// gathering that is not her song, or a kept starter back under the plain book.
+describe("a gathering kept from a starter", () => {
+  const ROW = read("components/florilegium/GatheringRow.tsx");
+  const DETAIL = read("components/florilegium/FlorilegiumDetail.tsx");
+  const kept = (id: string) => {
+    const s = STARTERS.find((x) => x.id === id)!;
+    return { s, items: starterItems(s, "Book") };
+  };
+
+  it("is told by its lines, whatever it is named and whatever was gathered into it since", () => {
+    for (const s of STARTERS) expect(starterOf({ items: starterItems(s, "Any name") })?.id, s.id).toBe(s.id);
+    const { s, items } = kept("magnificat");
+    // A line of a Father gathered in later, and another verse: still her song.
+    const more = [{ kind: "father", text: "x" }, { kind: "scripture", book: "john", chapter: 1, verse: 1 }, ...items];
+    expect(starterOf({ items: more })?.id).toBe(s.id);
+    // In whatever order the device keeps them.
+    expect(starterOf({ items: [...items].reverse() })?.id).toBe(s.id);
+  });
+
+  it("is not claimed for a gathering that lacks a verse of it, or keeps nothing", () => {
+    const { items } = kept("magnificat");
+    expect(starterOf({ items: items.slice(1) })).toBeUndefined();
+    expect(starterOf({ items: [] })).toBeUndefined();
+    const aFather = [{ kind: "father", text: "x" }];
+    expect(starterOf({ items: aFather })).toBeUndefined();
+    // The same verse numbers of another chapter are another passage.
+    expect(starterOf({ items: items.map((i) => ({ ...i, chapter: 2 })) })).toBeUndefined();
+  });
+
+  it("wears the starter's own picture on its row, and the check while a line goes in", () => {
+    expect(starterPicture(kept("magnificat").s).src).toBeTruthy();
+    expect(ROW).toContain("const starter = gathered ? undefined : starterOf(f);");
+    expect(ROW).toContain("const picture = starter ? starterPicture(starter) : null;");
+    expect(ROW).toContain("<CoverArt src={picture.src} fallback={picture.fallback} size={72}");
+    // Every other gathering keeps the mark of where its newest line is from.
+    expect(ROW).toContain("<span aria-hidden className={FLOR_PLATE}>");
+  });
+
+  it("carries the picture from its row on the first page to the head of its own page, under its own key", () => {
+    expect(ROW).toContain("export const gatheringCarry = (id: string) => `gathering:${id}`;");
+    // Only where the row is a place to go: in the sheet that picks a gathering it is a choice.
+    expect(ROW).toContain("data-carry={carry ? gatheringCarry(f.id) : undefined}");
+    expect(HUB).toContain("<GatheringRowBody f={f} carry />");
+    expect(read("components/florilegium/FlorilegiumPickerSheet.tsx")).not.toMatch(/<GatheringRowBody[^>]*\bcarry\b/);
+    expect(DETAIL).toContain("data-carry-into={gatheringCarry(f.id)}");
+    // Not the picture's address, which the starter's own tile on the same page travels under.
+    expect(ROW).not.toContain("data-carry={picture.src}");
+    // The booklet is the reader's words: the picture stays off the printed page.
+    expect(DETAIL).toMatch(/data-carry-into=\{gatheringCarry\(f\.id\)\}\s+className="[^"]*\bprint:hidden\b/);
   });
 });

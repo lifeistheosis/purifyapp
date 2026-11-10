@@ -37,58 +37,6 @@ export type TheologyTopicMeta = {
   estimatedMinutes?: number;
 };
 
-export const THEOLOGY_GROUP_ORDER: TheologyGroup[] = [
-  "trinity",
-  "christology",
-  "mariology",
-  "soteriology",
-  "ecclesiology",
-  "liturgics",
-  "textual",
-];
-
-export const THEOLOGY_GROUP_LABEL: Record<
-  TheologyGroup,
-  { en: string; de: string; subtitle: string }
-> = {
-  trinity: {
-    en: "The Holy Trinity",
-    de: "Die Heilige Dreifaltigkeit",
-    subtitle: "The one God in three Persons, the eternal cause and the procession of the Spirit.",
-  },
-  christology: {
-    en: "Christology",
-    de: "Christologie",
-    subtitle: "The one Christ, two natures, and the Hypostasis of the Word.",
-  },
-  mariology: {
-    en: "The Theotokos",
-    de: "Die Gottesgebärerin",
-    subtitle: "Mary the God-bearer, ever-virgin, more honorable than the cherubim.",
-  },
-  soteriology: {
-    en: "Salvation & the human person",
-    de: "Erlösung & der Mensch",
-    subtitle: "Theosis, original sin, grace, and the path from likeness to communion.",
-  },
-  ecclesiology: {
-    en: "The Church",
-    de: "Die Kirche",
-    subtitle: "Conciliarity, the rejection of papal supremacy, and the unity of the bishops.",
-  },
-  liturgics: {
-    en: "The worship of the Church",
-    de: "Der Gottesdienst der Kirche",
-    subtitle:
-      "The Divine Liturgy, the vesting of the clergy, and the meaning of what the Church does when she prays.",
-  },
-  textual: {
-    en: "Scripture & textual criticism",
-    de: "Schrift & Textkritik",
-    subtitle: "Defenses of disputed passages on textual, patristic, and historical grounds.",
-  },
-};
-
 export const THEOLOGY_TOPICS: TheologyTopicMeta[] = [
   {
     slug: "filioque",
@@ -237,10 +185,6 @@ export const THEOLOGY_TOPICS: TheologyTopicMeta[] = [
 
 export function getTopicMeta(slug: string): TheologyTopicMeta | undefined {
   return THEOLOGY_TOPICS.find((t) => t.slug === slug);
-}
-
-export function topicsByGroup(g: TheologyGroup): TheologyTopicMeta[] {
-  return THEOLOGY_TOPICS.filter((t) => t.group === g);
 }
 
 export function topicParams(): { topic: string }[] {

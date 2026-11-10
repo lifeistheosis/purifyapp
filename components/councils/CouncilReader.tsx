@@ -13,7 +13,7 @@ import { usePartWords } from "@/components/saints/partWords";
 import { chapterOf, useChapterTarget, useGoToChapter, useKeepPlace, useLanding } from "@/components/saints/useWorkPlace";
 import { Sheet } from "@/components/ui/Sheet";
 import { neighbours, partsOf } from "@/lib/saints/parts";
-import { WORK_ABOUT_EVENT, WORK_CONTENTS_EVENT, setWorkNow } from "@/lib/saints/workNow";
+import { WORK_ABOUT_EVENT, WORK_CONTENTS_EVENT, answerWorkAbout, hearWaitingWorkAbout, setWorkNow } from "@/lib/saints/workNow";
 import { useScrollAway } from "@/lib/ui/scrollAway";
 
 /**
@@ -91,9 +91,14 @@ export function CouncilReader({
   const [sheet, setSheet] = useState<"contents" | "about" | null>(null);
   useEffect(() => {
     const contentsOpen = () => setSheet("contents");
-    const aboutOpen = () => setSheet("about");
+    const aboutOpen = () => {
+      answerWorkAbout();
+      setSheet("about");
+    };
     window.addEventListener(WORK_CONTENTS_EVENT, contentsOpen);
     window.addEventListener(WORK_ABOUT_EVENT, aboutOpen);
+    // A tap on the cover before this reader was here (the apps read a work's text a moment after its page opens): heard now.
+    hearWaitingWorkAbout();
     return () => {
       window.removeEventListener(WORK_CONTENTS_EVENT, contentsOpen);
       window.removeEventListener(WORK_ABOUT_EVENT, aboutOpen);

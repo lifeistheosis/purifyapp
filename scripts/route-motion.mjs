@@ -25,6 +25,12 @@
 //             the Florilegium, and back)
 //   a gathering, whose page in the apps is one page for all of them named in
 //             its query, is a page switch like any (lib/florilegium/href.ts)
+//             and is one switch still when the page's own script is on its
+//             way as the page is first drawn: nothing of the page waits in a
+//             boundary of its own to be drawn a beat later and pictured as a
+//             second switch (lib/florilegium/gatheringNow.ts); a gathering
+//             kept from a starter carries the starter's picture from its row
+//             to the head of its page, and back
 //   a question's card carries its subject's icon to the head of its own page
 //             and back; an error's row its scroll; the Creed's row its book
 //             (components/theology/LeafPage.tsx)
@@ -120,6 +126,28 @@ function watchTransitions() {
 }
 
 const sleep = (page, ms) => page.waitForTimeout(ms);
+
+/**
+ * `during`, with every script the page asks for meanwhile kept back for `ms`:
+ * a page whose own script is still on its way as the page is first drawn, as
+ * on a slow phone. The bundle is on the phone, so it is never long; it only
+ * has to be longer than React takes to start drawing.
+ */
+async function withScriptsHeld(page, ms, during) {
+  const scripts = "**/_next/static/chunks/*.js";
+  let held = 0;
+  const hold = async (route) => {
+    held += 1;
+    await new Promise((done) => setTimeout(done, ms));
+    await route.fallback();
+  };
+  await page.route(scripts, hold);
+  try {
+    return { ...(await during()), held };
+  } finally {
+    await page.unroute(scripts, hold);
+  }
+}
 const pathOf = (page) => page.evaluate(() => location.pathname);
 const seen = (page) =>
   page.evaluate(() =>
@@ -231,6 +259,38 @@ function judge(result, { old, fresh, tabBar = true, to, carried = false }) {
 
 const sameAddress = (a, b) => a.replace(/\/+$/, "") === b.replace(/\/+$/, "");
 
+/**
+ * `during`, with the phone's bar looked at on every frame meanwhile: what it
+ * says, whether the name is on show, and on which page, each time one of
+ * them changes. A page whose bar is right only a beat after it arrives shows
+ * the wrong name for that beat, and a still taken after it sees nothing.
+ */
+async function watchingBar(page, during) {
+  await page.evaluate(() => {
+    const seen = (window.__barSeen = []);
+    const until = performance.now() + 2500;
+    let last = "";
+    const look = () => {
+      const bar = document.querySelector("[data-mobile-topbar]");
+      // A name the bar holds back until the page's own has gone up, or a plain one, always on show.
+      const held = bar?.querySelector("[data-topbar-title]");
+      const plain = bar?.querySelector("h1");
+      const state = {
+        path: location.pathname,
+        says: (held ?? plain)?.textContent?.trim() ?? "",
+        shown: held ? Number(getComputedStyle(held).opacity) > 0.1 : Boolean(plain),
+      };
+      const said = JSON.stringify(state);
+      if (said !== last) seen.push(state);
+      last = said;
+      if (performance.now() < until) requestAnimationFrame(look);
+    };
+    requestAnimationFrame(look);
+  });
+  const result = await during();
+  return { ...result, bar: await page.evaluate(() => window.__barSeen) };
+}
+
 /** A contact sheet of a walk's stills, for looking at. */
 async function sheet(ctx, film, name, stills) {
   if (!stills.length) return;
@@ -262,6 +322,28 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
       items: [{ id: "walk-line", addedAt: 1, kind: "scripture", text: verse.text, reference: "John 1:5", book: "john", chapter: 1, verse: 5 }],
     },
   ];
+  // And one kept from a starter and since renamed: it is told by its lines
+  // (lib/florilegium/starters.ts, starterOf) and wears the starter's picture.
+  // The Song of the Theotokos, whose icon the apps carry.
+  const starter = JSON.parse(fs.readFileSync(path.resolve("data/florilegium/starters.json"), "utf8")).starters.find((s) => s.id === "magnificat");
+  const sung = JSON.parse(fs.readFileSync(path.resolve(`data/bible/${starter.book}/${starter.chapter}.json`), "utf8")).verses;
+  mine.push({
+    id: "walk-kept",
+    title: "Her song",
+    description: "Luke 1:46-55",
+    createdAt: 0,
+    updatedAt: 0,
+    items: starter.lines.map((l) => ({
+      id: `walk-kept-${l.verse}`,
+      addedAt: 0,
+      kind: "scripture",
+      text: sung.find((v) => v.n === l.verse).text,
+      reference: `Luke ${starter.chapter}:${l.verse}`,
+      book: starter.book,
+      chapter: starter.chapter,
+      verse: l.verse,
+    })),
+  });
   const { browser, ctx, page } = await openPhone({ scale, set: { "purify:florilegia": JSON.stringify(mine) } });
   await ctx.addInitScript(watchTransitions);
   // The books' covers are pictures the apps ask the website for and never
@@ -479,7 +561,7 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
 
     // A gathering: in the apps, one page for all of them, which one named in
     // its query. A page of its own, so opening it moves, and so does the way back.
-    r = await walk(page, "gathering", () => page.locator("a[data-gathering]").first().click(), { film });
+    r = await walk(page, "gathering", () => page.locator('a[data-gathering="walk-gathering"]').first().click(), { film });
     const opened = judge(r, { old: "route-leave", fresh: "route-settle", to: "/florilegium/gathering" });
     const named = await page.evaluate(() => new URLSearchParams(location.search).get("g"));
     if (named !== "walk-gathering") opened.push(`the gathering named in the address is "${named}", not the one tapped`);
@@ -488,6 +570,48 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
     if (film) await sheet(ctx, film, "gathering", r.stills);
     r = await walk(page, "gathering-back", () => page.locator(chevron).first().click());
     note("a gathering: back to the Florilegium", judge(r, { old: "route-sink", fresh: "route-arrive", to: "/florilegium" }), `${r.from} to ${r.to}`);
+
+    // The same gathering on a fresh start, with the page's own script still
+    // on its way as the page is first drawn: a new page of the same phone,
+    // which has none of the gathering's script yet (the walks above go from
+    // page to page inside one, and keep what they have loaded), and every
+    // script it asks for after the tap held back. One switch all the same: a
+    // bar that waited in a Suspense boundary of its own was drawn a beat
+    // after its page, as a stand-in until then, and React pictured its
+    // arrival as a second switch (lib/florilegium/gatheringNow.ts).
+    const fresh = await ctx.newPage();
+    try {
+      await go(fresh, "/florilegium/");
+      await fresh.waitForSelector('a[data-gathering="walk-gathering"]', { timeout: 20000 });
+      await sleep(fresh, 1200);
+      r = await withScriptsHeld(fresh, 300, () =>
+        watchingBar(fresh, () => walk(fresh, "gathering-late", () => fresh.locator('a[data-gathering="walk-gathering"]').first().click())),
+      );
+      const late = judge(r, { old: "route-leave", fresh: "route-settle", to: "/florilegium/gathering" });
+      if (!r.held) late.push("no script was asked for after the tap, so nothing was late: the walk proved nothing");
+      const barSays = await fresh.evaluate(() => document.querySelector("[data-mobile-topbar] [data-topbar-title]")?.textContent?.trim() ?? null);
+      if (barSays !== "On the light") late.push(`the bar over the gathering says "${barSays}", not the gathering's own name`);
+      // The name reaches the bar after the page (React keeps it until the
+      // transition is over). At the top of the page no name is on show in
+      // the bar at any frame of that wait, the Florilegium's least of all.
+      const over = r.bar.filter((b) => b.path.startsWith("/florilegium/gathering"));
+      if (!over.length) late.push("the bar was never looked at over the gathering");
+      for (const b of over.filter((b) => b.shown)) late.push(`the bar showed "${b.says}" over the gathering as it arrived`);
+      note("a gathering in the apps, its script still on its way: one switch all the same", late, `${r.from} to ${r.to} (${r.held} script${r.held === 1 ? "" : "s"} held 300ms)`);
+    } finally {
+      await fresh.close();
+    }
+
+    // A gathering kept from a starter wears the starter's picture in its row
+    // (1.9, F1), and the picture travels to the head of its page, and back.
+    r = await walk(page, "kept", () => page.locator('a[data-gathering="walk-kept"]').first().click(), { film });
+    const kept = judge(r, { old: "route-leave", fresh: "route-settle", to: "/florilegium/gathering", carried: true });
+    if (!(await page.locator('[data-gathering-page="walk-kept"] [data-gathering-picture]').count())) kept.push("the gathering's page has no picture at its head");
+    note("a gathering kept from a starter: its row's picture travelling to the head of its page", kept, `${r.from} to ${r.to}`);
+    if (film) await sheet(ctx, film, "kept", r.stills);
+    r = await walk(page, "kept-back", () => page.locator(chevron).first().click(), { film });
+    note("a gathering kept from a starter: back, the picture back in its row", judge(r, { old: "route-sink", fresh: "route-arrive", to: "/florilegium", carried: true }), `${r.from} to ${r.to}`);
+    if (film) await sheet(ctx, film, "kept-back", r.stills);
 
     // Theology's leaf pages (1.9; components/theology/LeafPage.tsx). A
     // question's card carries its subject's icon to the head of the
