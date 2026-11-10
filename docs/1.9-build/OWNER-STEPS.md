@@ -609,15 +609,18 @@ that runs the 1.9 branch with its own database, so a test build can try
 everything that needs a website before release, as a reader will see it. The
 main web, purifyapp.net, is not touched by any step here.
 
-**What it costs:** about $7 a month (Render's Starter size). The database is a
-free Supabase project. App test builds are free (the repository is public).
+**What it costs:** nothing until payday. It starts on Render's free size,
+which has the same memory as the $7 size and sleeps when nobody uses it, so
+each walk starts by waking it (T10). On payday one change moves it to the $7
+size, which never sleeps (T11). The database is a free Supabase project. App
+test builds are free (the repository is public).
 
 **What it never does,** whatever a setting says, because the code refuses it:
 touch the main web's database, hold a live payment key, email anyone but you,
 appear in a search engine, or be named in a store build.
 
 **Order:** T1 to T6 once (about 30 minutes), T7 to T9 once (about 15
-minutes), then T10 for every test build. Keep the test web's address and its
+minutes), then T10 for every test build, and T11 on payday. Keep the test web's address and its
 password to yourself, like any key: nothing should link to it.
 
 ### T1. A free Supabase project for the test web (5 minutes, then a few minutes of waiting)
@@ -674,8 +677,10 @@ integration's page says.
 3. **Branch**: `ccr-07896cf2-bo0afd`. **Region**: the same as purifyapp.
 4. **Build Command** and **Start Command**: copy each exactly from the
    purifyapp service's **Settings** page.
-5. **Instance Type**: **Starter**. If purifyapp itself runs on a bigger size,
-   choose the same size as purifyapp.
+5. **Compute plan** (until August, Render called it **Instance Type**):
+   **Free**. It has the same memory as the $7 size, 512 MB, with less of a
+   processor, and it sleeps after 15 minutes unused (Render's pages, read
+   2026-11-10). Its builds run on the same build machine as purifyapp's.
 6. Open **Advanced**. **Auto-Deploy**: **Off**. (It builds only when you press
    the button, so the branch's many pushes cost nothing.)
 7. **Create Web Service**. If Render starts a first build straight away, let
@@ -782,6 +787,9 @@ Send back: "T6 done".
 
 Done: the page, the mark, your sign-in and the admin.
 
+If the test web's **Events** ever say it ran out of memory, tell the arbiter:
+the free size cannot hold it, and it needs a bigger size, after payday.
+
 Send back: "T7 done", or what you see.
 
 ### T8. Your Google account as a license tester (3 minutes)
@@ -844,11 +852,15 @@ Every time:
 4. Uninstall Purify from the phone first. (The test file is signed with your
    upload key and Play's copy with Google's; Android will not put one over
    the other.)
-5. Install the file. Open it, sign in fresh with an account on the test web,
+5. Until T11 (the free size): wake the test web first. Open its address in
+   the phone's browser and wait until it asks for the password (up to a
+   minute). Then go on. If you stop for more than 15 minutes, wake it again
+   the same way.
+6. Install the file. Open it, sign in fresh with an account on the test web,
    and keep **Testers mode** off.
-6. Walk it as a reader would. Campaigns are open to every account there. Buy
+7. Walk it as a reader would. Campaigns are open to every account there. Buy
    Plus with the test card (T8).
-7. To go back to the store build: uninstall the test app, install Purify from
+8. To go back to the store build: uninstall the test app, install Purify from
    Play.
 
 What the test web cannot show, so these wait for the release candidate on
@@ -858,6 +870,19 @@ posts and counts (the test web starts empty), links opening in the app (they
 open in the browser), and the stores' own pages. The iPhone comes later.
 
 Send back: what you found, as you go.
+
+### T11. On payday: the $7 size, so it never sleeps (2 minutes)
+
+1. Render, the test web, **Compute**, **Edit**.
+2. Choose the 512 MB size at $7 a month (Render's name for it: 0.5c-512mb;
+   it was called Starter). **Save**.
+3. Render deploys the test web again by itself. The new size starts with
+   that deploy, with no time offline (Render's page).
+
+Done: **Compute** shows the $7 size. From then on, T10's step 5 is not
+needed.
+
+Send back: "T11 done".
 
 ---
 
@@ -934,13 +959,19 @@ SQL (above).
   signed 2026-11-10 ("yes florilegium"), and in `supabase/migrations/` as
   `20261110090516_florilegium_kinds.sql`.
 
-- **Waiting for your yes:** the baseline,
-  `20261110155643_production_baseline.sql`. It makes, on a new database
-  (the test web's), the ten tables the live database was once given by
-  hand, and on the live database it does nothing at all. It is already in
-  `supabase/migrations/` because the test web needs it, so it needs your yes
-  before the push like the rest. The arbiter sends you its plain words once
-  its second reader is done.
+- The baseline, `20261110155643_production_baseline.sql`: signed
+  2026-11-10 by "rec yes to all", where it was put to you as "yes baseline"
+  after a second chat, the Updates chat, had read it again. It makes, on a
+  new database (the test web's), the ten tables the live database was once
+  given by hand, and on the live database it does nothing at all.
+- Prayer campaigns, file four (whoever starts a campaign accepts the Terms):
+  signed 2026-11-10 by "rec yes to all", which covered it once the Admin
+  chat's second read passed; it passed the same day. The campaigns chat
+  moves it into `supabase/migrations/` under its own name.
+- **Waiting for your yes:** the notice that tells a reader why something
+  they posted was removed, `docs/1.9-build/sql/removal-notices.sql`. It
+  stays out of `supabase/migrations/` until then. The arbiter sends you its
+  plain words after its second read.
 
 Do not run any of these by hand: the push runs them.
 
@@ -949,29 +980,36 @@ waits for your yes in the same way.
 
 ### R0c. The new onboarding: your word, after you try it again
 
-1.9 carries the new onboarding (the roads) switched off. It is switched on
-in the release commit, and only on your word, after you have walked it once
-more on your phone:
+The new onboarding (the roads) is already switched on in the branch, on your
+word of 2026-11-10: "I want to try everything as if it was public release."
+So every test build shows it exactly as 1.9 would: a new reader meets the
+new questions, the first week, the two cards on Today and the first test
+(where a new reader is offered an account). A reader who answered the old
+questions is greeted "We updated our onboarding" and asked the new ones once.
+1.9 keeps all of it on unless you say otherwise after your walk:
 
-1. In the app, **Settings**, **Testers**, then **First open**. It walks the
-   new questions as a new reader meets them. Nothing is counted or synced
-   while you test.
-2. Leave Testers mode when you are done.
+1. Walk the newest test build as a new reader would: uninstall the old
+   build first, and keep Testers mode off.
+2. To walk the questions again: **Settings**, **Testers**, then **First
+   open**. Nothing is counted or synced while you test. Leave Testers mode
+   when you are done.
 
 Send back: "roads on", or "roads off".
 
-On "roads on", the chat that pushes puts two changes in the release commit:
+On "roads on", the chat that pushes changes one thing in the release
+commit: the first test gets its days again in `lib/ab/tests.ts`,
+`ACCOUNT_PLACE`. Its first day becomes release day and its last day twelve
+weeks later (84 days); today they count from 10 November, when it was
+switched on for the test builds. A unit test refuses any other span.
 
-- `ROADS_LIVE` turns to `true` in `lib/onboarding/flags.ts`. That one switch
-  lights the new questions, the first week, the two cards on Today and the
-  first test for every reader.
-- The first test (where a new reader is offered an account) gets its days in
-  `lib/ab/tests.ts`, `ACCOUNT_PLACE`: its first day is release day, its last
-  day twelve weeks later (84 days). A unit test refuses the switch without
-  them, so the commit cannot go out with one and not the other.
+On "roads off", one line changes in the release commit: `ROADS_LIVE` turns
+to `false` in `lib/onboarding/flags.ts`. 1.9 then ships with the welcome
+questions readers have today, nobody is asked again, and the first test does
+not run, since it runs only with the roads.
 
-On "roads off", neither changes, and 1.9 ships with the welcome questions
-readers have today.
+Either way the website goes before the apps (R2, then R4 and R5): the first
+test's shares and its counts are kept by the website, so it must be serving
+1.9 before any phone asks it which version to show.
 
 ### R1. Two SQL pastes, just before the push
 
@@ -1059,14 +1097,14 @@ Send back: "R2b sent", or what went wrong.
        signed 2026-11-10)
      - `20261110135545_campaign_pictures.sql` (prayer campaigns, file three,
        signed 2026-11-10)
+     - `20261110155643_production_baseline.sql` (signed 2026-11-10; on the
+       live database it does nothing)
 
 The order on the day (your word, 2026-11-10): the website first (R2), then
 both store builds to internal testing (R4, R5), then your walk on a phone
 (R5b), then campaigns open on the website (R5c), and only then do the stores
-go public (R5d). With the roads on (R0c)
-the website has to go first for one more reason: the first test's shares and
-its counts are kept by the website, so it must be serving 1.9 before any
-phone asks it which version to show.
+go public (R5d). With the roads on, the website has to go first for one
+more reason (R0c).
 
 ### R4. Android: build, then Play Console's internal testing
 

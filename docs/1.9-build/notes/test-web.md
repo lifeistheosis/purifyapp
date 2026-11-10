@@ -10,10 +10,28 @@ what evidence, and what the code does.
 ## What was decided (the arbiter's yes to plan v2, 15:44 UTC; his yes pending)
 
 - **A second Render web service** running `ccr-07896cf2-bo0afd`, at the
-  onrender.com address Render gives it. Starter size, $7 a month (pricing page
-  read 2026-11-10; $25 if the main web needs the 2 GB size). Render's free size
-  sleeps after 15 minutes and wakes in about a minute, so an app's first call
-  would time out.
+  onrender.com address Render gives it. **Free size until his payday, then
+  the $7 size** (his word through the arbiter: "I don't really want to pay $7
+  a month yet"; the arbiter then asked whether the free size could carry his
+  walk until payday, and this is the answer). Render's pages, read 2026-11-10 (render.com/docs/compute-plans,
+  /docs/free, /docs/build-pipeline, /pricing): Render renamed instance types
+  to compute plans in August 2026; Free is 0.1 CPU and 512 MB, the $7 plan
+  (`0.5c-512mb`, once Starter) 0.5 CPU and the same 512 MB, the next one up
+  (`1c-2g`) $25. So memory is no reason to pay: what holds on $7 holds on
+  Free. What Free changes: it "spins down a Free web service that goes 15
+  minutes without receiving any inbound traffic", waking "takes about one
+  minute", and Render shows browsers a loading page meanwhile; it "might
+  restart a Free web service at any time"; Render "may suspend a Free web
+  service that initiates an uncommonly high volume of traffic", which one
+  tester's walk does not. Builds are the workspace's, on the same 2 CPU and
+  8 GB build machine and the same pipeline minutes whatever the size. So his
+  walk starts by opening the test web in the phone's browser until it asks
+  for the password (T10, step 5), and an app's first call never meets it
+  asleep. Moving up is the service's **Compute**, **Edit**, a plan, **Save**:
+  "Render automatically triggers a deploy to apply the new compute plan", and
+  services without a disk "redeploy with zero downtime" (T11). If the server
+  ever runs out of memory on 512 MB, it would on the $7 plan too, and needs
+  `1c-2g`.
 - **Deploys on his button** (Auto-Deploy off). The branch took 107 commits on
   9 Nov; a build per push would cost about $25 to $45 a month in build minutes,
   and when the workspace's minutes run out with a spending limit set, Render
