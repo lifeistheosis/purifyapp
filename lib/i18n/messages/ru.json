@@ -2846,6 +2846,8 @@
   "community.answeredByClergy": "Ответил священнослужитель",
   "community.answeredYou": "отвечает на ваш вопрос",
   "community.approvedYours": "одобряет вашу запись",
+  "community.campaignApproved": "Purify одобрил вашу молитвенную просьбу",
+  "community.campaignUpdate": "В молитвенной просьбе, за которую вы молитесь, есть новости",
   "push.community.reply": "Кто-то ответил на вашу запись",
   "push.community.mention": "Кто-то упомянул вас",
   "push.community.follow": "Кто-то теперь отслеживает вас",

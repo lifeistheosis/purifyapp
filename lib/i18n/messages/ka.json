@@ -2800,6 +2800,8 @@
   "community.answeredByClergy": "უპასუხა სასულიერო პირმა",
   "community.answeredYou": "უპასუხა თქვენს კითხვას",
   "community.approvedYours": "დაამტკიცა თქვენი პოსტი",
+  "community.campaignApproved": "Purify-მ დაამტკიცა თქვენი ლოცვის კამპანია",
+  "community.campaignUpdate": "ლოცვის კამპანიას, რომლისთვისაც ლოცულობთ, სიახლე აქვს",
   "push.community.reply": "ვიღაცამ უპასუხა თქვენს პოსტს",
   "push.community.mention": "ვიღაცამ მოგიხსენიათ",
   "push.community.follow": "ვიღაც თქვენი მიმდევარი გახდა",

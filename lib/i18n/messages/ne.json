@@ -2800,6 +2800,8 @@
   "community.answeredByClergy": "पुरोहितले जवाफ दिनुभएको",
   "community.answeredYou": "तपाईंको प्रश्नको जवाफ दिनुभयो",
   "community.approvedYours": "तपाईंको पोस्ट स्वीकृत गर्नुभयो",
+  "community.campaignApproved": "Purify ले तपाईंको प्रार्थना अभियान स्वीकृत गर्‍यो",
+  "community.campaignUpdate": "तपाईंले प्रार्थना गर्ने एउटा प्रार्थना अभियानमा नयाँ जानकारी छ",
   "push.community.reply": "कसैले तपाईंको पोस्टमा जवाफ दिनुभयो",
   "push.community.mention": "कसैले तपाईंलाई उल्लेख गर्नुभयो",
   "push.community.follow": "कसैले तपाईंलाई फलो गर्नुभयो",

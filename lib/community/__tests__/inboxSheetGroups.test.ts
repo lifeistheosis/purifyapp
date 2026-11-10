@@ -176,3 +176,46 @@ describe("the one rule", () => {
     }
   });
 });
+
+describe("a notice about a prayer campaign, in both inboxes", () => {
+  const APPROVED = esc(en["community.campaignApproved"]);
+  const UPDATE = esc(en["community.campaignUpdate"]);
+  const CAMPAIGN = "5e6f7a8b-9c0d-4e1f-8a2b-3c4d5e6f7a8b";
+  const approved = () => notice("c1", "approved", "For my mother", { post_id: null, target_kind: "campaign" });
+  const update = () => notice("c2", "reply", "", { excerpt: null, actor_name: "Purify", actor_handle: null, target_kind: "campaign", reply_id: "upd-1", campaign_id: CAMPAIGN });
+
+  it("says what happened, never \"replied to your post\", and opens the campaign's pages", () => {
+    const { readers, purify } = draw([approved(), update()]);
+    expect(purify).toContain(APPROVED);
+    expect(purify).toContain('href="/campaigns/mine"');
+    expect(readers).toContain(UPDATE);
+    expect(readers).toContain(`href="/campaigns/detail?id=${CAMPAIGN}#updates"`);
+    expect(readers + purify).not.toContain(esc(en["community.repliedToYou"]));
+    expect(readers + purify).not.toContain(esc(en["community.approvedYours"]));
+  });
+
+  it("Community's bell draws the same lines, as links", () => {
+    inboxNow = { notifications: [approved(), update()], unread: 2, loaded: true };
+    const html = renderToStaticMarkup(
+      createElement(
+        MessagesProvider,
+        { locale: "en", messages: getMessages("en") } as Parameters<typeof MessagesProvider>[0],
+        createElement(NotificationsInbox, { whole: true, onOpen: () => {} }),
+      ),
+    );
+    expect(html).toContain(APPROVED);
+    expect(html).toContain(UPDATE);
+    expect(html).toContain('href="/campaigns/mine"');
+    expect(html).toContain(`href="/campaigns/detail?id=${CAMPAIGN}#updates"`);
+  });
+
+  it("is in all 21 languages, with no dash", () => {
+    for (const code of ["ar", "bg", "de", "el", "en", "es", "fil", "fr", "hu", "id", "it", "ka", "ne", "pl", "pt", "ro", "ru", "sr", "tr", "uk", "ur"]) {
+      const m = getMessages(code as Parameters<typeof getMessages>[0]) as Record<string, string>;
+      for (const k of ["community.campaignApproved", "community.campaignUpdate"]) {
+        expect(typeof m[k] === "string" && m[k].trim().length > 0, `${code} ${k}`).toBe(true);
+        expect(m[k], `${code} ${k}`).not.toMatch(/[\u2013\u2014]/);
+      }
+    }
+  });
+});

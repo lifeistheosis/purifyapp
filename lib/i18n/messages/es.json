@@ -2802,6 +2802,8 @@
   "community.answeredByClergy": "Con respuesta del clero",
   "community.answeredYou": "respondió a tu pregunta",
   "community.approvedYours": "aprobó tu publicación",
+  "community.campaignApproved": "Purify aprobó tu campaña de oración",
+  "community.campaignUpdate": "Una campaña de oración por la que rezas tiene novedades",
   "push.community.reply": "Alguien respondió a tu publicación",
   "push.community.mention": "Alguien te mencionó",
   "push.community.follow": "Alguien comenzó a seguirte",

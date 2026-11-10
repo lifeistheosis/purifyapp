@@ -2824,6 +2824,8 @@
   "community.answeredByClergy": "Одговорио свештенослужитељ",
   "community.answeredYou": "одговара на ваше питање",
   "community.approvedYours": "одобрава вашу објаву",
+  "community.campaignApproved": "Purify је одобрио вашу молитвену кампању",
+  "community.campaignUpdate": "Молитвена кампања за коју се молите има новости",
   "push.community.reply": "Неко је одговорио на вашу објаву",
   "push.community.mention": "Неко вас је поменуо",
   "push.community.follow": "Неко вас је запратио",

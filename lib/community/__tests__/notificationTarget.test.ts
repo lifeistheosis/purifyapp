@@ -5,7 +5,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { CommunityNotification } from "../inbox";
-import { notificationTarget } from "../notificationTarget";
+import { campaignNoticeHref, notificationTarget } from "../notificationTarget";
 
 type Kind = CommunityNotification["kind"];
 const row = (
@@ -86,5 +86,29 @@ describe("where a notification goes", () => {
 
   it("an empty string is not a handle and not a post", () => {
     expect(notificationTarget(row("reply", { post_id: "", actor_handle: "" }))).toEqual({ kind: "none" });
+  });
+});
+
+describe("a notice about a prayer campaign (phase 4, 2026-11-10)", () => {
+  const CAMPAIGN = "5e6f7a8b-9c0d-4e1f-8a2b-3c4d5e6f7a8b";
+  it("a moderator's approval opens Your campaigns", () => {
+    expect(campaignNoticeHref({ kind: "approved", target_kind: "campaign" })).toBe("/campaigns/mine");
+  });
+
+  it("an update opens that campaign's updates, or Your campaigns when its campaign is not known", () => {
+    expect(campaignNoticeHref({ kind: "reply", target_kind: "campaign", campaign_id: CAMPAIGN })).toBe(`/campaigns/detail?id=${CAMPAIGN}#updates`);
+    expect(campaignNoticeHref({ kind: "reply", target_kind: "campaign", campaign_id: null })).toBe("/campaigns/mine");
+  });
+
+  it("never opens the campaign's thread post as a Community post", () => {
+    expect(notificationTarget({ ...row("reply", { post_id: POST, reply_id: REPLY }), target_kind: "campaign" })).toEqual({ kind: "none" });
+    expect(notificationTarget({ ...row("approved"), target_kind: "campaign" })).toEqual({ kind: "none" });
+  });
+
+  it("leaves every other notice as it was", () => {
+    expect(campaignNoticeHref({ kind: "reply", target_kind: null })).toBeNull();
+    expect(campaignNoticeHref({ kind: "approved" })).toBeNull();
+    expect(campaignNoticeHref({ kind: "removed", target_kind: "campaign" })).toBeNull();
+    expect(notificationTarget(row("reply", { post_id: POST, reply_id: REPLY }))).toEqual({ kind: "post", postId: POST, replyId: REPLY });
   });
 });

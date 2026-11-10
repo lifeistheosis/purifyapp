@@ -2800,6 +2800,8 @@
   "community.answeredByClergy": "Klerikus válaszolt",
   "community.answeredYou": "válaszolt a kérdésedre",
   "community.approvedYours": "jóváhagyta a bejegyzésedet",
+  "community.campaignApproved": "A Purify jóváhagyta az imakampányodat",
+  "community.campaignUpdate": "Egy imakampánynak, amelyért imádkozol, új híre van",
   "push.community.reply": "Valaki válaszolt a bejegyzésedre",
   "push.community.mention": "Valaki megemlített téged",
   "push.community.follow": "Valaki elkezdett követni",

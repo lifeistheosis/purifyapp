@@ -2845,6 +2845,8 @@
   "community.answeredByClergy": "Відповів священнослужитель",
   "community.answeredYou": "відповідає на ваше запитання",
   "community.approvedYours": "схвалює ваш допис",
+  "community.campaignApproved": "Purify схвалив вашу молитовну кампанію",
+  "community.campaignUpdate": "У молитовній кампанії, за яку ви молитеся, є новини",
   "push.community.reply": "Хтось відповів на ваш допис",
   "push.community.mention": "Хтось згадав вас",
   "push.community.follow": "Хтось тепер стежить за вами",

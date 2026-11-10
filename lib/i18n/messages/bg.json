@@ -2800,6 +2800,8 @@
   "community.answeredByClergy": "Отговорено от свещенослужител",
   "community.answeredYou": "отговори на въпроса ви",
   "community.approvedYours": "одобри публикацията ви",
+  "community.campaignApproved": "Purify одобри молитвената ви кампания",
+  "community.campaignUpdate": "Молитвена кампания във вашите молитви има ново известие",
   "push.community.reply": "Някой отговори на публикацията ви",
   "push.community.mention": "Някой ви спомена",
   "push.community.follow": "Някой ви последва",

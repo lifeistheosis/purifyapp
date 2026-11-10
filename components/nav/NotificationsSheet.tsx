@@ -11,7 +11,7 @@ import { Sheet } from "@/components/ui/Sheet";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/cn";
 import { fromPurify, useInbox, type CommunityNotification } from "@/lib/community/inbox";
-import { notificationTarget } from "@/lib/community/notificationTarget";
+import { campaignNoticeHref, notificationTarget } from "@/lib/community/notificationTarget";
 import { relativeTime } from "@/lib/community/relativeTime";
 
 /** Rows shown here; the whole inbox is in Chat. */
@@ -21,6 +21,9 @@ const ROW = "flex items-center gap-3 px-4 py-3";
 
 /** Where a row opens: the person, or what was said. Chat opens either on load. */
 function hrefOf(n: CommunityNotification): string | null {
+  // A notice about a prayer campaign: the campaign's own pages.
+  const campaign = campaignNoticeHref(n);
+  if (campaign) return campaign;
   const target = notificationTarget(n);
   if (target.kind === "profile") return `/community#@${target.handle}`;
   if (target.kind === "post") return `/community#post-${target.postId}`;

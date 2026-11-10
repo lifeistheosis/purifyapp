@@ -2879,6 +2879,8 @@
   "community.answeredByClergy": "أجاب عنه الإكليروس",
   "community.answeredYou": "أجاب عن سؤالك",
   "community.approvedYours": "وافق على منشورك",
+  "community.campaignApproved": "وافقت Purify على حملة الصلاة الخاصة بك",
+  "community.campaignUpdate": "حملة صلاة في صلواتك فيها تحديث جديد",
   "push.community.reply": "ردّ أحدهم على منشورك",
   "push.community.mention": "أشار إليك أحدهم",
   "push.community.follow": "بدأ أحدهم بمتابعتك",

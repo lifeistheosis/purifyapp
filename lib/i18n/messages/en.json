@@ -2808,6 +2808,8 @@
   "community.answeredByClergy": "Answered by clergy",
   "community.answeredYou": "answered your question",
   "community.approvedYours": "approved your post",
+  "community.campaignApproved": "Purify approved your prayer campaign",
+  "community.campaignUpdate": "A prayer campaign in your prayers has an update",
   "push.community.reply": "Someone replied to your post",
   "push.community.mention": "Someone mentioned you",
   "push.community.follow": "Someone followed you",

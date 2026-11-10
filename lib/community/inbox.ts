@@ -38,6 +38,8 @@ export type CommunityNotification = {
   /** A "removed" notice: what was removed, and why (lib/community/removal.ts; supabase/migrations/20261110204814_removal_notices.sql). */
   target_kind?: string | null;
   reason?: string | null;
+  /** A notice about a prayer campaign's update: the campaign, read by the route from its thread post. */
+  campaign_id?: string | null;
 };
 
 /**
@@ -89,7 +91,10 @@ function set(next: Inbox): void {
 
 async function fetchInbox(): Promise<Inbox> {
   try {
-    const res = await apiFetch("/api/community/notifications");
+    // "campaigns=1": this inbox can draw a notice about a prayer campaign
+    // (lib/community/notificationTarget.ts, campaignNoticeHref). A build from
+    // before it asks without it and is never handed one it would misname.
+    const res = await apiFetch("/api/community/notifications?campaigns=1");
     if (!res.ok) return { notifications: [], unread: 0, loaded: true };
     const json = (await res.json()) as {
       notifications?: CommunityNotification[];

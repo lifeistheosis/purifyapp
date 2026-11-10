@@ -2800,6 +2800,8 @@
   "community.answeredByClergy": "Απάντησε κληρικός",
   "community.answeredYou": "απάντησε στην ερώτησή σας",
   "community.approvedYours": "ενέκρινε την ανάρτησή σας",
+  "community.campaignApproved": "Το Purify ενέκρινε το αίτημα προσευχής σας",
+  "community.campaignUpdate": "Ένα αίτημα προσευχής για το οποίο προσεύχεστε έχει νέα",
   "push.community.reply": "Κάποιος απάντησε στην ανάρτησή σας",
   "push.community.mention": "Κάποιος σας ανέφερε",
   "push.community.follow": "Κάποιος άρχισε να σας ακολουθεί",

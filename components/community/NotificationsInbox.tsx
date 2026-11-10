@@ -22,6 +22,7 @@
 // hands the row to the page (`onOpen`), which opens the person's profile, or
 // the post with its thread open and the reply lit.
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -38,7 +39,7 @@ import {
   useInbox,
   type CommunityNotification,
 } from "@/lib/community/inbox";
-import { notificationTarget } from "@/lib/community/notificationTarget";
+import { campaignNoticeHref, notificationTarget } from "@/lib/community/notificationTarget";
 import { REMOVED_APPEAL_KEY, REMOVED_WHY_KEY, REMOVED_YOUR_KEY, isRemovalReason, isRemovalTarget } from "@/lib/community/removal";
 import { SUPPORT_EMAIL } from "@/lib/legal/entity";
 import { deviceDateLocale } from "@/lib/i18n/deviceDates";
@@ -154,6 +155,10 @@ export const KIND_KEYS: Record<string, string> = {
  */
 export function NoticeLine({ n }: { n: Pick<CommunityNotification, "kind" | "actor_name" | "target_kind" | "reason"> }) {
   const { t } = useTranslate();
+  // About a prayer campaign (phase 4): what happened, without a name. Asked
+  // before the kind's own line, which would say "replied to your post".
+  if (n.target_kind === "campaign" && n.kind === "approved") return <>{t("community.campaignApproved")}</>;
+  if (n.target_kind === "campaign" && n.kind === "reply") return <>{t("community.campaignUpdate")}</>;
   if (n.kind === "removed") {
     const target = isRemovalTarget(n.target_kind) ? n.target_kind : "post";
     const reason = isRemovalReason(n.reason) ? n.reason : "rules";
@@ -327,7 +332,9 @@ export function NotificationsInbox({
     <ul className={cn("divide-y divide-paper/8 overflow-hidden rounded-2xl border border-paper/12 bg-paper/[0.02]", className)}>
       {rows.map((n) => {
         const isNew = fresh.has(n.id);
-        const opens = notificationTarget(n).kind !== "none";
+        // A notice about a prayer campaign opens the campaign's own pages.
+        const campaignHref = campaignNoticeHref(n);
+        const opens = Boolean(campaignHref) || notificationTarget(n).kind !== "none";
         const inner = (
           <>
             <span
@@ -384,7 +391,17 @@ export function NotificationsInbox({
         );
         return (
           <li key={n.id}>
-            {opens ? (
+            {campaignHref ? (
+              // A link, so the move is the house's page transition. The page
+              // still hears of it, which closes the bell's sheet.
+              <Link
+                href={campaignHref}
+                onClick={() => onOpen(n)}
+                className={cn(ROW, "press-card transition-colors hover:bg-paper/[0.04]")}
+              >
+                {inner}
+              </Link>
+            ) : opens ? (
               <button
                 type="button"
                 onClick={() => onOpen(n)}

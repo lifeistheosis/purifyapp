@@ -31,7 +31,8 @@ export type NotificationTarget =
   | { kind: "post"; postId: string; replyId: string | null }
   | { kind: "none" };
 
-type Row = Pick<CommunityNotification, "kind" | "post_id" | "reply_id" | "actor_handle">;
+type Row = Pick<CommunityNotification, "kind" | "post_id" | "reply_id" | "actor_handle"> &
+  Partial<Pick<CommunityNotification, "target_kind" | "campaign_id">>;
 
 /** A row that is about the person who did it, not about something written. */
 const PERSON_KINDS: ReadonlySet<string> = new Set(["follow", "name_day", "gift"]);
@@ -39,6 +40,10 @@ const PERSON_KINDS: ReadonlySet<string> = new Set(["follow", "name_day", "gift"]
 export function notificationTarget(n: Row): NotificationTarget {
   // A removal notice is about something that is gone: nothing to open.
   if (n.kind === "removed") return { kind: "none" };
+  // A notice about a prayer campaign opens the campaign's own pages
+  // (campaignNoticeHref below), never a post: its post is the campaign's
+  // thread, which Community does not show.
+  if (n.target_kind === "campaign") return { kind: "none" };
   const handle = typeof n.actor_handle === "string" && n.actor_handle ? n.actor_handle : null;
   const post = typeof n.post_id === "string" && n.post_id ? n.post_id : null;
   const reply = typeof n.reply_id === "string" && n.reply_id ? n.reply_id : null;
@@ -51,4 +56,25 @@ export function notificationTarget(n: Row): NotificationTarget {
   if (post) return { kind: "post", postId: post, replyId: reply };
   if (handle) return { kind: "profile", handle };
   return { kind: "none" };
+}
+
+/**
+ * Where a notice about a prayer campaign opens (phase 4, 2026-11-10), or
+ * null for every other notice:
+ *
+ *   - "Purify approved your prayer campaign" (approved): Your campaigns, which
+ *     lists it first. The row has no place for a campaign's id.
+ *   - "A prayer campaign in your prayers has an update" (reply): that
+ *     campaign's updates, by the id the inbox's route reads from the thread
+ *     post (app/api/community/notifications); Your campaigns when it has none.
+ */
+export function campaignNoticeHref(
+  n: Pick<CommunityNotification, "kind"> & Partial<Pick<CommunityNotification, "target_kind" | "campaign_id">>,
+): string | null {
+  if (n.target_kind !== "campaign") return null;
+  if (n.kind === "approved") return "/campaigns/mine";
+  if (n.kind === "reply") {
+    return n.campaign_id ? `/campaigns/detail?id=${encodeURIComponent(n.campaign_id)}#updates` : "/campaigns/mine";
+  }
+  return null;
 }

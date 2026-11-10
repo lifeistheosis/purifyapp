@@ -2800,6 +2800,8 @@
   "community.answeredByClergy": "Ruhban yanıtladı",
   "community.answeredYou": "sorunuzu yanıtladı",
   "community.approvedYours": "gönderinizi onayladı",
+  "community.campaignApproved": "Purify dua kampanyanızı onayladı",
+  "community.campaignUpdate": "Dua ettiğiniz bir dua kampanyasında yeni bir gelişme var",
   "push.community.reply": "Birisi gönderinize yanıt verdi",
   "push.community.mention": "Birisi sizden bahsetti",
   "push.community.follow": "Birisi sizi takip etmeye başladı",
