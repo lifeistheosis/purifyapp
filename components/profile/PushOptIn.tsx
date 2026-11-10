@@ -171,7 +171,7 @@ export function PushOptIn() {
                 step={TIME_STEP_MINUTES * 60}
                 defaultValue={stepTime(state.times.morning) ?? state.times.morning}
                 onBlur={(e) => saveTime("morning", e.currentTarget)}
-                className="rounded-md border border-paper/15 bg-night px-3 py-1.5 font-sans text-detail text-paper [color-scheme:dark] focus:outline-none focus:border-gold/45 transition-colors"
+                className="rounded-md border border-paper/15 bg-night px-3 py-1.5 font-sans text-detail text-paper [color-scheme:dark] focus:outline-none focus:border-paper/45 transition-colors"
               />
             </label>
             <label className="flex flex-col gap-1">
@@ -183,7 +183,7 @@ export function PushOptIn() {
                 step={TIME_STEP_MINUTES * 60}
                 defaultValue={stepTime(state.times.evening) ?? state.times.evening}
                 onBlur={(e) => saveTime("evening", e.currentTarget)}
-                className="rounded-md border border-paper/15 bg-night px-3 py-1.5 font-sans text-detail text-paper [color-scheme:dark] focus:outline-none focus:border-gold/45 transition-colors"
+                className="rounded-md border border-paper/15 bg-night px-3 py-1.5 font-sans text-detail text-paper [color-scheme:dark] focus:outline-none focus:border-paper/45 transition-colors"
               />
             </label>
           </div>

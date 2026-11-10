@@ -33,6 +33,15 @@ const NAV_KEYS = new Set([
   "PageDown",
 ]);
 
+/** A place the reader types: a text field, a text area, a select, or editable text. */
+export function isEditable(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  if (target.isContentEditable) return true;
+  if (target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement) return true;
+  if (!(target instanceof HTMLInputElement)) return false;
+  return !["checkbox", "radio", "range", "button", "submit", "reset", "color", "file"].includes(target.type);
+}
+
 export function InputModality() {
   useEffect(() => {
     const root = document.documentElement;
@@ -42,6 +51,11 @@ export function InputModality() {
     const onPointer = () => set("pointer");
     const onKey = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+      // In a field, a space, Enter, the arrows, Home and End are typing and
+      // moving the caret, not reaching for the page: only Tab and Escape
+      // leave a field. A space used to bring the keyboard's ring back round
+      // the field mid-word (build 89 note 11: "a white box ... appears").
+      if (e.key !== "Tab" && e.key !== "Escape" && isEditable(e.target)) return;
       if (NAV_KEYS.has(e.key)) set("keyboard");
     };
     window.addEventListener("pointerdown", onPointer, { capture: true, passive: true });

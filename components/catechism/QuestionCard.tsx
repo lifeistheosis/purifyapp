@@ -121,7 +121,7 @@ export function QuestionCard({
             aria-describedby={promptId}
             placeholder={t("catechism.typedPlaceholder")}
             className={cn(
-              "w-full rounded-pill border bg-paper/[0.04] px-4 py-3 font-serif text-body text-paper placeholder:text-paper/55 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/70 transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none",
+              "w-full rounded-pill border bg-paper/[0.04] px-4 py-3 font-serif text-body text-paper placeholder:text-paper/55 focus:outline-none transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none",
               revealed ? "border-paper/15 text-paper/70" : "border-paper/20 focus:border-paper/55",
             )}
           />

@@ -3041,6 +3041,28 @@ html[data-input="pointer"] *:focus-visible:not(input, textarea, select, [content
  outline: none;
 }
 
+/* A field a finger or a mouse has reached (the owner's word of 2026-11-10,
+   build 89 note 11: "a white box or a red box ... like outline. I don't like
+   that"). Text fields kept the keyboard's ring above after a tap, to mark
+   where typing goes; a tapped field now shows it is active the house's quiet
+   way instead: a fine edge in the palette's ink on its own edge, with the
+   caret, and its own fill where it lights one (focus:bg-...). No ring round
+   it, and never red. A keyboard still gets the ring (html[data-input=
+   "keyboard"]), which accessibility needs. :where() keeps this at the weight
+   of :focus-visible alone, so a field that lights in its own way (the search
+   pill, the journal's sheet) keeps its own. Held by
+   lib/ui/__tests__/fieldFocus.test.ts. */
+:where(html[data-input="pointer"]) :where(input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"], [type="color"], [type="file"]), textarea, select, [contenteditable="true"]):focus-visible {
+ outline: 1px solid rgb(255 255 255 / 0.32);
+ outline: 1px solid color-mix(in srgb, var(--color-paper) 32%, transparent);
+ outline-offset: -1px;
+}
+/* A field inside a box that lights as a whole (a focus-within: utility on
+   the box) draws nothing of its own: the box is what lights. */
+:where(html[data-input="pointer"]) :where([class*="focus-within:"]) :where(input, textarea, select):focus-visible {
+ outline: none;
+}
+
 /* The journal's writing sheet, where a verse's note is written too (1.9,
    build 88 note 3): the sheet is the field, with no border of its own, so the
    ring above drew a square frame inside the round sheet, the frame he saw on
