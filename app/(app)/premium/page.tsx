@@ -103,7 +103,7 @@ function PremiumView() {
             <PlanCard tone="plus" id="plus">
               <PlanHead name={<T k="plus.badge" />} badge={<T k="premium.plusBadge" />} />
               <PriceBlock main={<PlanPrice cents={PLAN_PRICE_CENTS.plusMonthly} per="month" />} sub={<PlanPrice cents={PLAN_PRICE_CENTS.plusYearly} per="orYear" />} />
-              <p className="mt-2 font-sans text-caption leading-relaxed text-paper/60"><PlusTrialLine /></p>
+              <p className="mt-2 font-sans text-caption leading-relaxed text-paper/62"><PlusTrialLine /></p>
               <p className="mt-3 font-sans text-ui leading-relaxed text-paper/70"><T k="premium.plusLede" /></p>
               <PlanFeatureList
                 items={PLUS_ITEM_KEYS.map((k) => ({ id: k.id, title: <T k={k.title} />, sub: <T k={k.sub} /> }))}
@@ -169,7 +169,7 @@ function PremiumView() {
               <T k="premium.supportCta" />
               <ArrowRight />
             </Link>
-            <p className="mt-4 font-sans text-caption text-paper/40"><T k="premium.supportFoot" /></p>
+            <p className="mt-4 font-sans text-caption text-paper/42"><T k="premium.supportFoot" /></p>
           </div>
         </div>
       </section>
