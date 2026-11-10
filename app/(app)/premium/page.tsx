@@ -195,7 +195,7 @@ function PremiumView({
             </PlanCard>
           </div>
 
-          <p className="mt-6 text-center font-sans text-caption leading-[1.6] text-paper/40">{plan.proNote}</p>
+          <p className="mt-6 text-center font-sans text-caption leading-[1.6] text-paper/45">{plan.proNote}</p>
         </div>
       </section>
 
