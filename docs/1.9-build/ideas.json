@@ -2251,6 +2251,34 @@
    "version": "1.9",
    "outcome": null,
    "note": "Restored from the transcription, no mark moved; four sections numbered past any the file has had; the rail's five copies begin with them. ff51834c0. PLAN 13ac."
+  },
+  {
+   "id": "e-cyril-john-openings-rail",
+   "section": "Saints",
+   "kind": "bug",
+   "title": "St Cyril on John: the four restored openings on the Bible's rail too",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The arbiter's yes. John 1:29, 5:34, 6:38 and 18:24, in book order. 16f2d4e64. PLAN 13ad."
+  },
+  {
+   "id": "e-written-small-targets-12",
+   "section": "Design",
+   "kind": "bug",
+   "title": "The last 12 written small targets a reader meets (shop, reader settings, Today, Now Playing, profile)",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "44 or .hit-44; the written-heights ceiling is 0. afe0c8b54. PLAN 13ae."
   }
  ]
 }
