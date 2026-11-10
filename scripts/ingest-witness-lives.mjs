@@ -75,9 +75,30 @@ async function fetchText(url, file) {
 export const ccelVolume = (vol) =>
   fetchText(`https://ccel.org/ccel/s/schaff/${vol}/cache/${vol}.txt`, path.join(CACHE, "ccel", `${vol}.txt`));
 
-/** archive.org's text of a scan (the OCR of the printed pages). */
-export const scanText = (id) =>
-  fetchText(`https://archive.org/download/${id}/${id}_djvu.txt`, path.join(CACHE, "scans", `${id}.txt`));
+/**
+ * archive.org's text of a scan (the OCR of the printed pages). An item whose
+ * text file is not named after it is given as "<item>/<file>".
+ */
+export const scanText = (id) => {
+  const [item, file] = id.includes("/") ? [id.slice(0, id.indexOf("/")), id.slice(id.indexOf("/") + 1)] : [id, `${id}_djvu.txt`];
+  return fetchText(`https://archive.org/download/${item}/${encodeURIComponent(file)}`, path.join(CACHE, "scans", `${item}.txt`));
+};
+
+/**
+ * Project Gutenberg's plain text of a book (`vol: "gutenberg:<n>"`), for a
+ * printed English edition with no CCEL transcription (the Loeb Barlaam and
+ * Ioasaph). Its byte-order mark and Windows line ends are taken off.
+ */
+const gutenbergText = async (n) =>
+  (await fetchText(`https://www.gutenberg.org/cache/epub/${n}/pg${n}.txt`, path.join(CACHE, "gutenberg", `pg${n}.txt`)))
+    .replace(/^\uFEFF/, "")
+    .replace(/\r\n/g, "\n");
+
+/** The transcription a passage is cut from: CCEL's volume, or Gutenberg's book. */
+const sourceText = (vol) => {
+  const g = /^gutenberg:(\d+)$/.exec(vol);
+  return g ? gutenbergText(g[1]) : ccelVolume(vol);
+};
 
 /* ---------- Cutting a passage out of CCEL ---------- */
 
@@ -182,11 +203,19 @@ function cutWork(text, p, label) {
   const dropFrom = p.chapters.dropFrom ? new RegExp(p.chapters.dropFrom) : null;
   const chapters = [];
   for (const para of paragraphsOf(kept).slice(p.heading ?? 0)) {
+    // `lead`: the edition's opening before chapter I (Barlaam's
+    // "INTRODUCTION") is a section of its own, numbered 0.
+    if (p.chapters.lead && para === p.chapters.lead && !chapters.length) {
+      chapters.push({ numeral: "", n: 0, title: p.chapters.leadTitle ?? para, paras: [], closed: false });
+      continue;
+    }
     const m = heading.exec(para);
     if (m) {
-      // A chapter with no title of its own ("Canon I.") is titled as printed.
-      const title = (m[2] ?? "").trim() || para;
-      chapters.push({ numeral: m[1], n: /^[IVXLC]+$/i.test(m[1]) ? fromRoman(m[1]) : Number(m[1]), title: title.replace(/\.$/, "").replace(/\s*—\s*/g, ": "), paras: [], closed: false });
+      const n = /^[IVXLC]+$/i.test(m[1]) ? fromRoman(m[1]) : Number(m[1]);
+      // A chapter with no title of its own ("Canon I.") is titled as printed,
+      // or as the spec's `title` names it ("Chapter III").
+      const title = p.chapters.title?.(m[1], n) ?? ((m[2] ?? "").trim() || para);
+      chapters.push({ numeral: m[1], n, title: title.replace(/\.$/, "").replace(/\s*—\s*/g, ": "), paras: [], closed: false });
     } else if (chapters.length) {
       const c = chapters[chapters.length - 1];
       if (dropFrom?.test(para)) c.closed = true;
@@ -277,16 +306,44 @@ function inOrder(scan, words, start) {
  * the candidate where most of its first sixty words follow in order wins. A
  * run with one word misread is tried only when no exact run is found.
  */
+const INDEX = new WeakMap();
+/** Where each word stands in a scan, built once per scan. */
+function wordIndex(scan) {
+  let ix = INDEX.get(scan);
+  if (!ix) {
+    ix = new Map();
+    scan.forEach((w, i) => {
+      const at = ix.get(w);
+      if (at) at.push(i);
+      else ix.set(w, [i]);
+    });
+    INDEX.set(scan, ix);
+  }
+  return ix;
+}
+
 function locate(scan, words) {
   const N = 6;
   const probes = [];
   for (let k = 0; k + N <= Math.min(words.length, 48); k += 3) probes.push(k);
   if (!probes.length) probes.push(0);
+  const ix = wordIndex(scan);
   for (const tolerance of [0, 1]) {
     const candidates = new Set();
     for (const k of probes) {
       const probe = words.slice(k, k + N);
-      for (let i = 0; i + probe.length <= scan.length; i++) {
+      // A run can only stand where its first word does, or, with one word
+      // misread, where its second does: the index gives those places, in
+      // order, so the candidates are the ones a full pass would find.
+      let starts;
+      if (probe.length < 2) starts = scan.map((_, i) => i);
+      else {
+        const at = new Set(ix.get(probe[0]) ?? []);
+        if (tolerance) for (const i of ix.get(probe[1]) ?? []) if (i >= 1) at.add(i - 1);
+        starts = [...at].sort((a, b) => a - b);
+      }
+      for (const i of starts) {
+        if (i + probe.length > scan.length) continue;
         let miss = 0;
         for (let j = 0; j < probe.length && miss <= tolerance; j++) if (scan[i + j] !== probe[j]) miss++;
         if (miss <= tolerance) candidates.add(Math.max(0, i - k));
@@ -403,9 +460,18 @@ async function checkAgainstScans(paras, p, label) {
   }
   if (!scans.length) throw new Error(`${label}: no scan of ${p.vol} could be read, so nothing was compared`);
   const result = compareWithScans(paras, scans);
-  const ocr = new Set((p.ocr ?? []).map(norm));
-  const checked = result.differences.filter((d) => ocr.has(d.ours));
-  const open = result.differences.filter((d) => !ocr.has(d.ours));
+  // An `ocr` entry is a word, settled wherever it is flagged, or, in a long
+  // book where a common word may be flagged for different reasons, a pair
+  // [word, the words around it] settled only there.
+  const ocrWords = new Set();
+  const ocrAt = [];
+  for (const o of p.ocr ?? []) {
+    if (Array.isArray(o)) ocrAt.push([norm(o[0]), wordsOf(o[1]).join(" ")]);
+    else ocrWords.add(norm(o));
+  }
+  const settled = (d) => ocrWords.has(d.ours) || ocrAt.some(([w, at]) => w === d.ours && d.context.includes(at));
+  const checked = result.differences.filter(settled);
+  const open = result.differences.filter((d) => !settled(d));
   return { label, scansRead: read, fixes: p.fix ?? [], ...result, checked, open };
 }
 
@@ -419,7 +485,7 @@ async function buildLife(spec) {
     if (p.chapters) {
       // A whole work: one section for each of the edition's chapters, in the
       // author's own voice, each cited to its chapter.
-      const chapters = cutWork(await ccelVolume(p.vol), p, label);
+      const chapters = cutWork(await sourceText(p.vol), p, label);
       // Each fix once, in the first paragraph of the work that holds it.
       for (const [from, to] of p.fix ?? []) {
         const c = chapters.find((ch) => ch.paras.some((x) => x.includes(from)));
@@ -448,7 +514,7 @@ async function buildLife(spec) {
     let paras;
     if (p.kind === "scripture") paras = scripture(p, label);
     else if (p.kind === "transcribed") paras = p.text.slice();
-    else paras = cutPassage(await ccelVolume(p.vol), p, label);
+    else paras = cutPassage(await sourceText(p.vol), p, label);
     paras = applyFixes(paras, p.fix, label);
 
     if (p.expect && paras.length !== p.expect) {

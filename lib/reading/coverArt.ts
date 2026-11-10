@@ -138,6 +138,7 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   "michael-of-tver": bundled("michael-of-tver.jpg", 25),
   "alexander-nevsky": bundled("alexander-nevsky.jpg", 34),
   "innocent-of-irkutsk": bundled("innocent-of-irkutsk.jpg", 31),
+  "barlaam-and-josaphat": bundled("barlaam-and-josaphat.jpg", 35),
 
   // From Wikimedia Commons for the covers (lib/reading/authorCovers.ts).
   ...AUTHOR_COVERS,

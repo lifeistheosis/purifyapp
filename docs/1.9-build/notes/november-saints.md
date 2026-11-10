@@ -309,3 +309,17 @@ saint's screen, with stills to the arbiter.
 - **Barlaam and Ioasaph goes in push 3**: the Gutenberg transcription of the
   Loeb has no chapter marks, so the forty chapters are being placed from the
   scan before every word is compared.
+
+## Push 3, as built (2026-11-10)
+
+- **Barlaam and Ioasaph**, the whole book (82,504 words, its Introduction
+  and forty chapters), on Sts Barlaam and Josaphat's page, in the 1914 Loeb
+  English, from Project Gutenberg's transcription read word for word against
+  three scans of the printed book (the 1914 printing twice, the 1937 reprint
+  from the same plates). The transcription, made in 1996, had 55 slips the
+  page corrects ("weft" for "wert", "wily" for "why", "time" for "thee",
+  "ease" for "case"); each is put back, and the page's own misprint "anwers"
+  is kept. It is ascribed to St John of Damascus, as the Loeb gives it; the
+  book names its writer John the Monk, of the monastery of St Sabas, and the
+  page says both. Their icon (the Russian North, 17th century) is on its
+  cover.

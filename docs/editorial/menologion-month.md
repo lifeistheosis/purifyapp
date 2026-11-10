@@ -67,6 +67,12 @@ Pages written before November (with a life of ours) are reported, never failed.
    prints after each chapter is left out (`dropFrom`), and a part the
    edition itself judges not the author's is left out and said so in the
    work's source line (St Gregory's eleventh canon, November).
+   A printed English edition with no CCEL text can come from Project
+   Gutenberg's transcription of it (`vol: "gutenberg:<n>"`), read against
+   the scans the same way; with three scans of the same printing, a long
+   book's misreadings are tied to their place (`ocr: [[word, the words
+   around it]]`). Barlaam and Ioasaph, November: 82,504 words, 55 of the
+   transcription's slips put back to the page.
 
 5. **Write the pages.** For each saint: the registry entry (`life: []`, the
    entry, `entrySource`, the works); the group membership (groups.ts); the

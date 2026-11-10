@@ -182,6 +182,8 @@ export const AUTHOR_META: Readonly<Record<string, MetaRow>> = {
   "philemon-and-apphia": { traditions: [], era: "apostolic" },
   "clement-of-rome": { traditions: ["latin"], era: "apostolic" },
   "victorinus-of-pettau": { traditions: ["latin"], era: "early" },
+  // The book of their lives, ascribed to St John of Damascus (d. 749).
+  "barlaam-and-josaphat": { traditions: ["greek"], era: "councils" },
   // Before the apostles, as the Maccabees are.
   "prophet-obadiah": { traditions: [] },
   "gregory-the-wonderworker": { traditions: ["greek"], era: "early" },
@@ -1191,6 +1193,7 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
   "peter-of-alexandria/life-of-peter-of-alexandria": { by: null, about: "peter-of-alexandria", form: "life", scope: "selections", themes: [], review: R },
   "peter-of-alexandria/the-canonical-epistle": { by: "peter-of-alexandria", form: "letters", scope: "complete", themes: [], review: R },
   "victorinus-of-pettau/on-the-creation-of-the-world": { by: "victorinus-of-pettau", form: "treatise", scope: "complete", themes: [], review: R },
+  "barlaam-and-josaphat/barlaam-and-ioasaph": { by: null, about: "barlaam-and-josaphat", form: "life", scope: "complete", themes: [], review: R },
   "innocent-of-irkutsk/life-of-innocent-of-irkutsk": { by: null, about: "innocent-of-irkutsk", form: "life", scope: "selections", themes: [], review: R },
   "frumentius-of-axum/life-of-frumentius": { by: null, about: "frumentius-of-axum", form: "life", scope: "selections", themes: [], review: R },
   "varlaam-of-khutyn/life-of-varlaam": { by: null, about: "varlaam-of-khutyn", form: "life", scope: "selections", themes: [], review: R },

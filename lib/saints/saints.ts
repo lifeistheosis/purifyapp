@@ -6524,7 +6524,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "Barlaam and Ioasaph, ascribed to St. John of Damascus, tr. G. R. Woodward and H. Mattingly (Loeb Classical Library, 1914)",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "barlaam-and-ioasaph",
+        title: "Barlaam and Ioasaph",
+        subtitle: "The edifying story of their lives",
+        year: "8th to 11th century",
+        blurb:
+          "The book of their lives: how the monk Barlaam came to the king's son Ioasaph in the guise of a merchant and taught him the faith, and how the prince, his father won to Christ, left his kingdom for the desert. Nachor's speech in it is the Apology of Aristides. In the public-domain English of the 1914 Loeb.",
+        topics: ["Monasticism", "Conversion", "Parables"],
+      },
+    ],
   },
 
   {
