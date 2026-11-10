@@ -68,27 +68,31 @@ describe("the apps' check", () => {
 
   it("keeps a figure the build does not know, with its names, when its file is the website's", () => {
     const pack = good();
-    pack.figures.zechariah = { file: "/covers/zechariah.v1.jpg", names: { en: "The Prophet Zechariah", ru: "Пророк Захария" } };
-    pack.books.zechariah = "zechariah";
+    pack.figures.nehemiah = { file: "/covers/nehemiah.v1.jpg", names: { en: "Nehemiah", ru: "Неемия" } };
+    pack.books.nehemiah = "nehemiah";
     const read = readCoversPack(pack)!;
-    expect(read.books.zechariah).toBe("zechariah");
-    expect(read.figures.zechariah.names.ru).toBe("Пророк Захария");
+    expect(read.books.nehemiah).toBe("nehemiah");
+    expect(read.figures.nehemiah.names.ru).toBe("Неемия");
   });
 });
 
 describe("a book's cover in the app", () => {
   it("is the build's own until the pack is put in place, and the pack's after", () => {
-    expect(readAloudCover("zechariah").src).toBe(COVER_PLATE);
+    // Nehemiah is on the plate in this build: no picture of him passed
+    // (docs/licensing/READ_COVERS.md), so the pack is what can give him one.
+    // Should he get a cover, pick another book still on the plate.
+    expect(BOOK_COVERS.nehemiah, "a book still on the plate").toBe("plate");
+    expect(readAloudCover("nehemiah").src).toBe(COVER_PLATE);
     const pack = WEBSITE();
-    pack.figures.zechariah = { file: "/covers/zechariah.v1.jpg", names: { en: "The Prophet Zechariah", ru: "Пророк Захария" } };
-    pack.books.zechariah = "zechariah";
+    pack.figures.nehemiah = { file: "/covers/nehemiah.v1.jpg", names: { en: "Nehemiah", ru: "Неемия" } };
+    pack.books.nehemiah = "nehemiah";
     setCoversPack(pack);
-    const cover = readAloudCover("zechariah");
-    expect(cover.src).toMatch(/\/covers\/zechariah\.v1\.jpg$/);
+    const cover = readAloudCover("nehemiah");
+    expect(cover.src).toMatch(/\/covers\/nehemiah\.v1\.jpg$/);
     expect(cover.fallback).toBe(COVER_PLATE);
     expect(cover.size).toBe("1024x1024");
-    expect(coverName(cover, t, "ru")).toBe("Пророк Захария");
-    expect(coverName(cover, t, "de")).toBe("The Prophet Zechariah");
+    expect(coverName(cover, t, "ru")).toBe("Неемия");
+    expect(coverName(cover, t, "de")).toBe("Nehemiah");
     // A book the build knows keeps its own words where the pack has them too.
     expect(coverName(readAloudCover("john"), t, "en")).toBe("St John the Theologian");
   });

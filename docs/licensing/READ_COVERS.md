@@ -57,7 +57,7 @@ never inside the apps: the native build sets the folder aside
 (`scripts/native-build.mjs`). An app with no signal shows the plate the apps
 carry, `/sections/bible.jpg` (`SECTION_MEDIA.md`), in the cover's place. Each
 file is 1024 by 1024, a square cut from the source and saved with mozjpeg,
-under 200 KB; the 32 are 4.9 MB together. A replacement gets a new version
+under 200 KB; the 33 are 5.1 MB together. A replacement gets a new version
 in its name (`moses.v2.jpg`), and taking a file off the website takes it out
 of every app within a day.
 
@@ -84,6 +84,7 @@ to build anything. Squares are in `scripts/fetch-read-covers.mjs`.
 | `davidLagoudera.v1.jpg` | The Prophet and King David | 1 Chronicles | The Prophet David, fresco in the drum of the dome, Panagia tou Arakou, Lagoudera, Cyprus | Unknown painter; photograph by the Byzantine Institute (Dumbarton Oaks) | 1192; the photograph between 1968 and 1973 | CC0 | [Commons](https://commons.wikimedia.org/wiki/File:Church_of_Panagia_tou_Arakos,_nave,_center_bay,_drum,_wall_paintings,_Lagoudera,_Cyprus_-_Prophet_David_-_MSBZ004_BF_S_1979_2019_-_Dumbarton_Oaks.jpg) |
 | `solomonLagoudera.v1.jpg` | King Solomon | 2 Chronicles | The Prophet Solomon, the same dome | Unknown painter; photograph by the Byzantine Institute (Dumbarton Oaks) | 1192; the photograph between 1968 and 1973 | CC0 | [Commons](https://commons.wikimedia.org/wiki/File:Church_of_Panagia_tou_Arakos,_nave,_center_bay,_drum,_wall_paintings,_Lagoudera,_Cyprus_-_Prophet_Solomon_-_MSBZ004_BF_S_1979_1980_-_Dumbarton_Oaks.jpg) |
 | `obadiah.v1.jpg` | The Prophet Obadiah | Obadiah | The Prophet Obadiah, mosaic in the dome of the parekklesion, Pammakaristos (Fethiye Camii), Istanbul | Unknown mosaicist; photograph by Dosseman (credited on the Photo credits page) | Early 14th century; the photograph 2010 | CC BY-SA 4.0 | [Commons](https://commons.wikimedia.org/wiki/File:Pammakaristos_Church_Main_dome_mosaic_Zacharias_-_Obadiah_in_2010_05_9612.jpg) |
+| `zechariah.v1.jpg` | The Prophet Zechariah | Zechariah | The Prophet Zechariah, mosaic in the dome of the parekklesion, Pammakaristos (Fethiye Camii), Istanbul | Unknown mosaicist; photograph by the Byzantine Institute (Dumbarton Oaks) | Early 14th century; the photograph between 1949 and 1963 | CC0 | [Commons](https://commons.wikimedia.org/wiki/File:Fethiye_Camii,_parekklesion,_dome,_mosaics,_Istanbul,_Turkey_-_Zechariah,_detail_of_head_-_MSBZ004_BF_S_1979_0434_-_Dumbarton_Oaks.jpg) |
 | `ezraUriel.v1.jpg` | The Prophet Ezra and the Archangel Uriel | 2 Esdras | The Prophet Ezra and the Archangel Uriel, panel, Moldavia | Unknown | Late 18th century | Public domain | [Commons](https://commons.wikimedia.org/wiki/File:Prophet_Esdra_und_Erzengel_Uriel.jpg) |
 | `hosea.v1.jpg` | The Prophet Hosea | Hosea | the same, board 06 (left) | Anonymous Russian icon painters | 1497 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File:Kirillo-Belozersky_iconostasis_06._Hosea,_Amos,_Zephaniah.jpg) |
 | `amos.v1.jpg` | The Prophet Amos | Amos | the same, board 06 (middle) | Anonymous Russian icon painters | 1497 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File:Kirillo-Belozersky_iconostasis_06._Hosea,_Amos,_Zephaniah.jpg) |
@@ -177,6 +178,24 @@ Notes, by file:
   original, 4256x2832): a 700px square of his head, halo and shoulders, the
   young Zechariah beside him and the name above left out, saved at quality
   76 to stay under 200 KB (the tesserae are a busy surface).
+- **Zechariah (1.9, the owner's 98)**: held by the owner "until someone
+  checks who the picture shows", since the close-up of the head carries no
+  name and the titles of this Dumbarton Oaks set are scrambled (see
+  Rejected). The check: the young, beardless, bowed prophet with dark curly
+  hair is inscribed "ΖΑΧΑΡΙΑΣ" beside "ΑΒΔΙΟΥ" in the Dumbarton Oaks colour
+  slides BF T F 007 B, C and 2, whose fourth, 007 D, is this head; and the
+  inscription over the same figure was read again on 2026-11-10 in the 2010
+  photograph that gives Obadiah's cover (`File:Pammakaristos Church Main
+  dome mosaic Zacharias - Obadiah in 2010 05 9612.jpg`, "...ΑΧΑΡΙΑΣ" above
+  the young prophet to Obadiah's left). The dome's other young prophet,
+  Habakkuk (inscribed ΑΜΒΑΚΟΥΜ), raises a finger to his temple; this head
+  has no hand by it. The arbiter's word, the same day, that this is the
+  check his 98 asked for. The page states CC0. The same head is also
+  `... Habakkuk and Jonah - MSBZ004 BF S 1995 0042 ...`, mistitled, so the
+  file titled with his name was used. Cut from Commons' 1920px copy at its
+  whole width, his head whole from the hair to the chin with the gold of his
+  halo around it, at quality 72 to stay under 200 KB. Not the Zechariah of
+  the Kirillo boards, who is the priest (see Rejected).
 - **2 Esdras (1.9, the owner's 86, a scene of the book)**: the Prophet Ezra
   and the Archangel Uriel, who answers him from the book's fourth chapter
   on. A Moldavian panel of the late 18th century (its page: "Moldau, Ende 18.
@@ -196,11 +215,11 @@ Notes, by file:
 These books show the manuscript plate, `/sections/bible.jpg` (the Codex
 Sinaiticus, `SECTION_MEDIA.md`), and the line under the title says "Read
 aloud" rather than a name: 1 Esdras, Ezra, Nehemiah, Tobit, Judith,
-Esther, 1 to 3 Maccabees, Sirach, Zechariah, Baruch, the Prayer of Manasseh
-and Jude. Either no holy person is named for them, or no public-domain icon
-of the one named passed. 1 and 2 Chronicles, Obadiah and 2 Esdras left the
-plate in 1.9 (above). Zechariah and Jude are held by the owner until checked
-(his 98). Ruth shows Samuel, whom
+Esther, 1 to 3 Maccabees, Sirach, Baruch, the Prayer of Manasseh and Jude.
+Either no holy person is named for them, or no public-domain icon of the one
+named passed. 1 and 2 Chronicles, Obadiah, Zechariah and 2 Esdras left the
+plate in 1.9 (above). Jude is held by the owner (his 98): the one mosaic of
+him at size names him Thaddeus, a question for the clergy review. Ruth shows Samuel, whom
 her "by" line names, because no icon of Ruth passed.
 
 ## Rejected, and why
@@ -210,7 +229,7 @@ not tell you any of this. Open the image and look at it.**
 
 | Candidate | Why rejected |
 | --- | --- |
-| `File:Kirillo-Belozersky iconostasis 07. Elisha, Zechariah, Joel.jpg`, middle figure | Titled Zechariah and inscribed "ЗАХАРИА", but he wears a priest's hat and his scroll is the Benedictus (Luke 1:68): Zechariah the priest, father of the Forerunner, not the prophet of the book. The book of Zechariah has the plate. |
+| `File:Kirillo-Belozersky iconostasis 07. Elisha, Zechariah, Joel.jpg`, middle figure | Titled Zechariah and inscribed "ЗАХАРИА", but he wears a priest's hat and his scroll is the Benedictus (Luke 1:68): Zechariah the priest, father of the Forerunner, not the prophet of the book. (From 1.9 the book has the Pammakaristos mosaic, above.) |
 | `File:Пророк Захария Prophet Zachariah.jpg` | CC0, but the same wrong Zechariah (the Luke 1:68 scroll). |
 | `File:Prophets from Ferapontov05 (Kirillo-Belozersk).jpg` (Zechariah the Sickle-seer) | The right prophet, but his face is blackened, cracked and under glare. |
 | `File:Saints Maccabees.jpg` | The right subject (embroidered names), but 700x590: each head about 45px, and the nine halos wider than any square. No other public-domain Orthodox Maccabees passed. |

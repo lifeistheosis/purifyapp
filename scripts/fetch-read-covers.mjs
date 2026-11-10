@@ -119,6 +119,14 @@ const COVERS = [
   // Moldavian panel of the late 18th century, both named on it in Slavonic.
   // Public domain. The square holds both figures and their names, inside the
   // gilded frame strips and right of the panel's text, in Commons' 1280px copy.
+  // Zechariah (1.9, the owner's 98, held until someone checked who the picture
+  // shows): the young, bowed prophet of the same dome as Obadiah's cover, a
+  // close-up with no inscription in it. Named by the inscription over the
+  // same figure, "ΖΑΧΑΡΙΑΣ", in the Dumbarton Oaks slides BF T F 007 B, C and 2
+  // (007 D is this head) and in the 2010 photograph of Obadiah's cover, read
+  // on 2026-11-10; the arbiter's word that this is the check. CC0. The whole
+  // width of Commons' 1920px copy, his head whole, the halo's gold around it.
+  { id: "zechariah", name: "The Prophet Zechariah", books: ["Zechariah"], title: "File:Fethiye Camii, parekklesion, dome, mosaics, Istanbul, Turkey - Zechariah, detail of head - MSBZ004 BF S 1979 0434 - Dumbarton Oaks.jpg", license: "CC0", width: 1920, size: { width: 1920, height: 2810 }, crop: { left: 0, top: 250, size: 1920 }, quality: 72 },
   { id: "ezraUriel", name: "The Prophet Ezra and the Archangel Uriel", books: ["2 Esdras"], title: "File:Prophet Esdra und Erzengel Uriel.jpg", license: "Public domain", width: 1280, size: { width: 1280, height: 632 }, crop: { left: 238, top: 47, size: 543 }, quality: 66 },
   { id: "hosea", name: "The Prophet Hosea", books: ["Hosea"], title: K06, crop: { left: 40, top: 30, size: 592 } },
   { id: "amos", name: "The Prophet Amos", books: ["Amos"], title: K06, crop: { left: 725, top: 30, size: 600 } },
@@ -295,7 +303,7 @@ const PLATE = {
   id: "plate",
   name: "The manuscript plate",
   file: path.join(ROOT, "public", "sections", "bible.jpg"),
-  books: ["1 Esdras", "Ezra", "Nehemiah", "Tobit", "Judith", "Esther", "1 to 3 Maccabees", "Sirach", "Baruch", "Zechariah", "Prayer of Manasseh", "Jude"],
+  books: ["1 Esdras", "Ezra", "Nehemiah", "Tobit", "Judith", "Esther", "1 to 3 Maccabees", "Sirach", "Baruch", "Prayer of Manasseh", "Jude"],
 };
 
 if (sheetPath) {

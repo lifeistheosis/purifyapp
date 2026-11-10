@@ -270,6 +270,24 @@ export const FIGURES: Partial<Record<FigureId, Figure>> = {
     inspectedOn: "2026-11-10",
     review: "clergy",
   },
+  // Zechariah (the owner's 98, held until someone checked who the picture
+  // shows; released by the arbiter on 2026-11-10): the young prophet of the
+  // same dome as Obadiah, his head bowed. The close-up carries no name; the
+  // inscription over the same figure, ΖΑΧΑΡΙΑΣ, is read in the Dumbarton Oaks
+  // slides of the dome and in the photograph of Obadiah's cover.
+  zechariah: {
+    nameKey: "readAloud.cover.zechariah",
+    file: "/covers/zechariah.v1.jpg",
+    alt: "The Prophet Zechariah in mosaic, young and beardless, his dark curly head bowed to one side, against the gold of his halo.",
+    work: "The Prophet Zechariah, mosaic in the dome of the parekklesion, Pammakaristos (Fethiye Camii), Istanbul",
+    artist: "Unknown mosaicist; photograph by the Byzantine Institute (Dumbarton Oaks)",
+    workDate: "Early 14th century; the photograph between 1949 and 1963",
+    source: "File:Fethiye Camii, parekklesion, dome, mosaics, Istanbul, Turkey - Zechariah, detail of head - MSBZ004 BF S 1979 0434 - Dumbarton Oaks.jpg",
+    license: "CC0",
+    evidenceUrl: commons("File:Fethiye Camii, parekklesion, dome, mosaics, Istanbul, Turkey - Zechariah, detail of head - MSBZ004 BF S 1979 0434 - Dumbarton Oaks.jpg"),
+    inspectedOn: "2026-11-10",
+    review: "clergy",
+  },
   // 2 Esdras (the owner's 86, a scene of the book): the Prophet Ezra and the
   // Archangel Uriel, who answers him from the book's fourth chapter on; a
   // Moldavian panel of the late 18th century, both named on it in Slavonic.
@@ -403,12 +421,12 @@ export const COVER_SIZE = "1024x1024";
  * data/bible/books.json. Where the rule's first figure has no picture that
  * passed, the book takes the next by the rule (Ruth, Samuel), or the plate.
  * No public-domain icon passed for Ezra, Nehemiah, Tobit, Judith, Esther,
- * the Maccabees, Jesus son of Sirach, Baruch or Jude, nor for the prophet
- * Zechariah (the Zechariah of the Kirillo boards is the priest, the
- * Forerunner's father); docs/licensing/READ_COVERS.md says why for each.
- * From 1.9 (rule C): 1 and 2 Chronicles take David and Solomon, Obadiah a
- * CC BY-SA photograph of his mosaic, and 2 Esdras the scene of Ezra with
- * the Archangel Uriel.
+ * the Maccabees, Jesus son of Sirach, Baruch or Jude;
+ * docs/licensing/READ_COVERS.md says why for each. From 1.9 (rule C): 1 and
+ * 2 Chronicles take David and Solomon, Obadiah a CC BY-SA photograph of his
+ * mosaic, Zechariah the mosaic beside it (not the Zechariah of the Kirillo
+ * boards, who is the priest, the Forerunner's father), and 2 Esdras the
+ * scene of Ezra with the Archangel Uriel.
  */
 export const BOOK_COVERS: Record<string, FigureId | "plate"> = {
   genesis: "moses",
@@ -452,7 +470,7 @@ export const BOOK_COVERS: Record<string, FigureId | "plate"> = {
   habakkuk: "habakkuk",
   zephaniah: "zephaniah",
   haggai: "haggai",
-  zechariah: "plate",
+  zechariah: "zechariah",
   malachi: "malachi",
   isaiah: "isaiah",
   jeremiah: "jeremiah",
