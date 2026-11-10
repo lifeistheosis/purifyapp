@@ -14,6 +14,7 @@ file is what it needs to take over. Read it first, then `BRAINSTORM.md` and
 | Admin panel | `session_01VuYTwbteJqs1UmDUwqRvzC` | the admin panel (app/admin and its API) |
 | SSM board | `session_01VuYTwcSQmKLThRirvSeWa5` | social media: each release's cards, videos and posts |
 | Updates | `session_01VuYTwcNqTWyT6Yab696Eri` | builds the 1.9 updates in the app itself: everything in `PLAN.md` outside the admin panel and social media |
+| Updates 2 | `session_01VuYTwdk3C8grkpfDPo8LHF` | the fourth chat, on his word of 2026-11-10 ("Yeah, I guess you can put another chat. And yes, use Opus"), Opus 5.5 at Max: 88 (F-49) and 8 (chants offline), beside Updates |
 | Discord requests (deleted the same day, see below) | `session_01VuYTwa9F5ZBKXx8cqDTxg9` | was to read every section of the Purify Discord and lists what members asked for, with no member named; replies and moderates on his word (below). It replaced `session_01VuYTwa7ccHk91ufBdtnExY`, which started before the bot's token was saved: a running chat does not pick up a network secret added in the settings, a new one does |
 | Fable 5.2 (specialist) | `session_01VuYTwZWzkKEYDgBp6Gkg7e` | Claude Fable 5.2 (`claude-fable-5-2`), effort High: only the hardest work, one brief from the arbiter at a time, a new chat for each big task (below) |
 
