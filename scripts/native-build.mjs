@@ -8,7 +8,7 @@
 //      1.6 (lib/content/enabled.ts): emit TS registries + build the content
 //      package into out/content.
 //
-// Usage: node scripts/native-build.mjs --platform android|ios
+// Usage: node scripts/native-build.mjs --platform android|ios [--test-web]
 //        (npm run build:android / npm run build:ios)
 //
 // The export itself is IDENTICAL for the two platforms. Everything that differs
@@ -28,6 +28,8 @@
 import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+
+import { appBuildProblems } from "../lib/testWeb/rules.ts";
 
 const PLATFORMS = ["android", "ios"];
 
@@ -52,6 +54,22 @@ function parsePlatform(argv) {
 
 const PLATFORM = parsePlatform(process.argv.slice(2));
 const LABEL = PLATFORM === "ios" ? "iOS" : "Android";
+
+// Which website the build talks to (lib/testWeb/rules.ts). A build for the
+// stores talks to purifyapp.net, the main web, and never says it is the test
+// web; `--test-web` makes a build for the test web, with its own database and
+// address, which never goes to a store (the Android workflow makes only an
+// APK of it, under its own release). Checked before anything is touched.
+const TEST_WEB = process.argv.slice(2).includes("--test-web");
+{
+  const problems = appBuildProblems(process.env, { testWeb: TEST_WEB });
+  if (problems.length) {
+    console.error(`✗ ${TEST_WEB ? "test web" : "store"} build refused:\n  - ${problems.join("\n  - ")}`);
+    process.exit(1);
+  }
+  // Its address is not printed: this repository's Actions logs are public.
+  if (TEST_WEB) console.log("▶ building for the test web, never for a store");
+}
 
 const ROOT = process.cwd();
 const STASH_DIR = path.join(ROOT, ".native-export-stash");

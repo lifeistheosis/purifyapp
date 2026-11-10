@@ -7,11 +7,14 @@ import { SITE_URL as SITE } from "@/lib/site";
 import { liveChants } from "@/lib/chants/registry.server";
 import { WALKTHROUGHS } from "@/lib/walkthroughs";
 import { walkthroughsEnabled } from "@/lib/walkthroughs/flags";
+import { isTestWeb } from "@/lib/testWeb";
 
 // Static for the Android export (output:export); unchanged on the website.
 export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  // The test web lists nothing (lib/testWeb/rules.ts).
+  if (isTestWeb()) return [];
   const now = new Date();
 
   const STATIC = [

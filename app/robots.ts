@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL as SITE } from "@/lib/site";
+import { isTestWeb } from "@/lib/testWeb";
 import {
   ANSWER_ENGINES,
   USER_TRIGGERED,
@@ -16,6 +17,9 @@ export const dynamic = "force-static";
 // stay in step with the privacy page, all live in lib/seo/aiCrawlers.ts.
 // This file only renders it.
 export default function robots(): MetadataRoute.Robots {
+  // The test web is for its owner and his test builds, never for a search
+  // engine: shut to every crawler, and no sitemap (lib/testWeb/rules.ts).
+  if (isTestWeb()) return { rules: [{ userAgent: "*", disallow: "/" }] };
   return {
     rules: [
       {

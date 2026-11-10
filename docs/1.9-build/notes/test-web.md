@@ -83,3 +83,50 @@ names exactly the eight.
 
 Status: NOT SIGNED. Second reader: the Updates chat. Then his yes in plain
 words, with the other migrations, before the merge.
+
+## The code (built 2026-11-10, before his yes; nothing touches Render, Supabase or Play)
+
+One file holds the rules, with no imports, so the website and the apps' build
+script share it: `lib/testWeb/rules.ts`. A server or build is the test web when
+`NEXT_PUBLIC_TEST_WEB` is `1`, and safely so only with its own database (by
+address and by the project its public key names), an address that is not
+purifyapp.net, and no live Stripe key. `isTestWeb()` (`lib/testWeb/index.ts`)
+is false otherwise, so the main web can never act as the test web by a
+setting; the campaigns chat's override in `lib/campaigns/opening.ts` asks it.
+
+| Where | What it does on the test web | On the main web |
+|---|---|---|
+| `instrumentation.ts` `register()` | refuses to start with a broken rule, and says which | nothing |
+| `proxy.ts` | pages ask for `TEST_WEB_PASSWORD` (HTTP Basic, any name; shut with 503 if none is set); `/api/`, `/_next/`, `/.well-known/` and `robots.txt` pass, for the apps; `X-Robots-Tag: noindex, nofollow` on every answer | nothing |
+| `app/robots.ts`, `app/sitemap.ts` | every crawler shut out; an empty sitemap | as before |
+| `app/layout.tsx` | `noindex`; titles end "Purify test web" | as before |
+| `components/layout/Footer.tsx` | "1.9 · Test web" | as before |
+| `lib/email/send.ts` | mail only to `ADMIN_EMAILS` and `OWNER_EMAILS` (and it holds no Resend key) | as before |
+| `scripts/native-build.mjs` | `--test-web` builds only as the test web, with its own database and address | a store build refuses the flag, and any address but purifyapp.net (or this machine) |
+| `.github/workflows/android-apk.yml` | the "website" choice: "test web" makes the release APK alone, no AAB, published as `purify-test-web.apk` under `android-test-web` | the store build, unchanged |
+
+Tests: `lib/testWeb/__tests__/rules.test.ts` (the rules, the main web's own
+settings among the cases) and `wiring.test.ts` (each place above obeys them).
+
+Walked on a local server started as the test web, 2026-11-10: a page without
+the password 401 with `WWW-Authenticate` and `noindex`; a wrong password 401;
+the right one 200 with `noindex`, the title "Saints | Purify test web", the
+robots meta and the footer mark; `robots.txt` "Disallow: /"; an empty
+sitemap; an app's call to `/api/admin/whoami` 200 with no password. The build
+script refused, before touching anything, a store build carrying the flag, a
+store build naming another address, and a test web build missing its values
+or naming the main web's database and address. The Android export (a store
+build) built clean.
+
+Two things to know:
+
+- **The test database runs each migration file once, when it first reaches
+  the branch,** signed or not; production runs it only at the merge, after his
+  yes. So a file that has already run there is not edited afterwards: a
+  change goes in a new file, as on main. An edit would leave the test
+  database on the first version.
+- **The test APK is public,** like the store's files: this repository's
+  releases can be downloaded by anyone. It holds no secret (the test web's
+  address and its database's public key), and whoever installed it could
+  reach nothing of the main web's. Closing sign-ups on the test project
+  between walks (his step T4) keeps strangers from making accounts there.

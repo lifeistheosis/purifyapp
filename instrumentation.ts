@@ -1,6 +1,21 @@
 import type { Instrumentation } from "next";
 
 /**
+ * The test web refuses to start when it is not safely the test web: pointed
+ * at the main web's database, calling itself purifyapp.net, or holding a live
+ * payment key (lib/testWeb/rules.ts). Render then keeps the last good deploy
+ * running and shows the reason in the deploy's log. On the main web, and in
+ * the apps, this does nothing.
+ */
+export async function register() {
+  const { testWebStartProblems } = await import("./lib/testWeb");
+  const problems = testWebStartProblems();
+  if (problems.length) {
+    throw new Error(`The test web will not start:\n- ${problems.join("\n- ")}`);
+  }
+}
+
+/**
  * The website's own server errors, kept for the admin's list of errors
  * readers hit (admin item A10, lib/errors/store.ts).
  *

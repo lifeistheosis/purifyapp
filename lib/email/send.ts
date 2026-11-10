@@ -4,6 +4,9 @@ import { randomUUID } from "node:crypto";
 
 import { SUPPORT_EMAIL } from "@/lib/legal/entity";
 
+import { testWebEnv } from "@/lib/testWeb";
+import { testWebMayEmail } from "@/lib/testWeb/rules";
+
 import { bareAddress, suppressedAmong } from "./suppression";
 import { UNSUBSCRIBE_PAGE, fillUnsubscribe } from "./unsubscribe";
 
@@ -96,7 +99,14 @@ export async function sendEmail(opts: {
   // The addresses that bounced for good, bounced three times, or (for list
   // mail, which carries List-Unsubscribe) called us spam (lib/email/suppression.ts).
   const marketing = Boolean(opts.headers?.["List-Unsubscribe"]);
-  const all = Array.isArray(opts.to) ? opts.to : [opts.to];
+  // The test web emails nobody but an admin or the owner, whatever asked it
+  // to (lib/testWeb/rules.ts). Everywhere else every address passes.
+  const env = testWebEnv();
+  const all = (Array.isArray(opts.to) ? opts.to : [opts.to]).filter((a) => testWebMayEmail(a, env));
+  if (!all.length) {
+    console.info(`[email] the test web mails admins only; skipped: "${opts.subject}"`);
+    return { ok: false, skipped: true, code: "test_web" };
+  }
   const blocked = new Set(await suppressedAmong(all, marketing));
   const to = blocked.size ? all.filter((a) => !blocked.has(bareAddress(a))) : all;
   if (!to.length) {

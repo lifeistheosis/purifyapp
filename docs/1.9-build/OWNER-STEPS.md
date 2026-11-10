@@ -15,7 +15,8 @@ Three rules for all of them:
   message is enough.
 
 The order: **Now** (the company) as you start it, **Anytime** whenever
-suits you. **Release day** waits until the arbiter says go.
+suits you. **The test web** waits for the arbiter's word. **Release day**
+waits until the arbiter says go.
 
 ---
 
@@ -575,6 +576,286 @@ When the arbiter says go:
 Done: it lists each member it changed. Run again, it changes nothing.
 
 Send back: "56 done, N changed". Never the ids.
+
+### Inboxes. Two test emails, so a notice cannot bounce (3 minutes)
+
+The terms send copyright and legal notices to legal@purifyapp.net, and help to
+support@purifyapp.net. Nothing on record shows either one arriving yet, and an
+address that bounces would cost Purify the protection the takedown address
+gives.
+
+1. From your own address, send a short email to support@purifyapp.net with
+   the subject "Inbox test".
+2. Within a minute it is a request in purifyapp.net/admin, **Messages**.
+3. Send one to legal@purifyapp.net with the subject "Inbox test".
+4. Today the website files only support@ as a request; legal@ joins it with
+   1.9 (step R2b checks that). So for now look in Resend: **Emails**, the
+   **Receiving** tab. The legal@ test is listed there.
+
+Done: the support@ test is in Messages, and the legal@ test is in Resend's
+Receiving list.
+
+Send back: "Inboxes: both arrived", or which one did not. If one bounced back
+to you, send the bounce's first lines (they hold no key).
+
+---
+
+## The test web: WAIT for the arbiter's word
+
+**What it is** (your word, 2026-11-10): a second, private website on Render
+that runs the 1.9 branch with its own database, so a test build can try
+everything that needs a website before release, as a reader will see it. The
+main web, purifyapp.net, is not touched by any step here.
+
+**What it costs:** about $7 a month (Render's Starter size). The database is a
+free Supabase project. App test builds are free (the repository is public).
+
+**What it never does,** whatever a setting says, because the code refuses it:
+touch the main web's database, hold a live payment key, email anyone but you,
+appear in a search engine, or be named in a store build.
+
+**Order:** T1 to T6 once (about 30 minutes), T7 to T9 once (about 15
+minutes), then T10 for every test build. Keep the test web's address and its
+password to yourself, like any key: nothing should link to it.
+
+### T1. A free Supabase project for the test web (5 minutes, then a few minutes of waiting)
+
+1. supabase.com, sign in. At the top left, open the organization menu.
+2. If your Purify organization's plan says **Free**, stay in it. If it says
+   **Pro**, click **New organization**, name it "Purify test", plan **Free**.
+   (A project inside a Pro organization costs $10 a month; this way it costs
+   nothing.)
+3. **New project**. Name: **purify-test**. Database password: click
+   **Generate a password** and keep it in your password manager only. Region:
+   the same as the Purify project. **Create new project**.
+4. Wait until it says the project is ready.
+5. Look at its address at the top of the page. It must not contain
+   `avbqyvjgcrucjwevwixt` (that is the live one). If it does, stop and tell
+   the arbiter.
+
+Done: a project named purify-test, ready, with an address of its own.
+
+Send back: "T1 done". Never a key or the password.
+
+### T2. Its GitHub link, so the branch's database changes reach it (3 minutes)
+
+1. In purify-test: **Project Settings**, **Integrations**, **GitHub
+   Integration**, **Authorize GitHub**, then **Authorize Supabase**.
+2. Choose the repository **lifeistheosis/purifyapp**.
+3. **Working directory**: leave it empty (the `supabase` folder is at the top
+   of the repository).
+4. **Production branch**: `ccr-07896cf2-bo0afd`.
+5. Turn **Deploy to production** on. Leave **Automatic branching** off.
+6. **Enable integration**.
+7. If Supabase says the repository is already linked to another project, do
+   not change the live project's link. Stop and tell the arbiter: there is
+   another way.
+
+The first run comes with the next push to the branch (there are several a
+day). It builds the whole database from the repository, about a hundred
+files, the last of which makes what the live database was once given by
+hand.
+
+Done: the integration page shows the repository and the branch. After the
+next push, **Table Editor** lists tables (journal_entries among them).
+
+Send back: "T2 done", and after the next push, "tables there" or what the
+integration's page says.
+
+### T3. The Render test web (10 minutes)
+
+1. dashboard.render.com, **New**, **Web Service**, the **purifyapp**
+   repository.
+2. **Name**: purify-test plus a short word of your own (the name becomes its
+   address, https://<name>.onrender.com, so a word nobody would guess is
+   better).
+3. **Branch**: `ccr-07896cf2-bo0afd`. **Region**: the same as purifyapp.
+4. **Build Command** and **Start Command**: copy each exactly from the
+   purifyapp service's **Settings** page.
+5. **Instance Type**: **Starter**. If purifyapp itself runs on a bigger size,
+   choose the same size as purifyapp.
+6. Open **Advanced**. **Auto-Deploy**: **Off**. (It builds only when you press
+   the button, so the branch's many pushes cost nothing.)
+7. **Create Web Service**. If Render starts a first build straight away, let
+   it fail: without its settings (T5) the test web refuses to start, by
+   design.
+8. Copy its address, shown under its name (https://....onrender.com).
+
+Done: a second web service on the branch, Auto-Deploy off, and its address.
+
+Send back: "T3 done". Not the address.
+
+### T4. The test project's sign-in settings (8 minutes)
+
+All in purify-test on supabase.com, under **Authentication**.
+
+1. **URL Configuration**. **Site URL**: the test web's address (T3).
+2. **Redirect URLs**: open the live Purify project's same page in another tab.
+   Add each line it has to purify-test, with https://purifyapp.net replaced by
+   the test web's address. Lines that start with anything else (the apps' own
+   addresses) are copied as they are. **Save**.
+3. **Sign In / Providers**, **Email**: on, with **Confirm email** on. Its
+   emails come from Supabase's own sender, which only delivers to the
+   project's team, that is you.
+4. **Google**: on. **Client ID** and **Client Secret**: the same as the live
+   project's Google provider (the secret is in Google Cloud Console,
+   **Credentials**, that OAuth client). **Authorized Client IDs** (or "Client
+   IDs"): the same list as the live project's. **Save**.
+5. Apple: leave off for now (the iPhone comes later).
+6. **Allow new users to sign up**: on, so you can walk signing up as a reader
+   does. You may turn it off between walks: anyone who found the test app
+   could otherwise make an account there. They could never reach the live
+   database, money or anyone's email.
+
+Done: the address, the redirect list, email and Google set.
+
+Send back: "T4 done".
+
+### T5. The test web's settings on Render, by name (10 minutes)
+
+Render, the test web, **Environment**. Add each line. Values come from the
+places named; never paste one into a chat.
+
+The test web's own:
+
+- `NEXT_PUBLIC_TEST_WEB`: `1`
+- `NEXT_PUBLIC_SITE_URL`: the test web's address (T3)
+- `NEXT_PUBLIC_SUPABASE_URL`: purify-test's **Project URL** (Supabase,
+  **Project Settings**, **API**)
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: purify-test's **anon public** key (same
+  page)
+- `SUPABASE_SERVICE_ROLE_KEY`: purify-test's **service_role** key (same page)
+- `TEST_WEB_PASSWORD`: a long phrase of your own. The test web's pages ask
+  for it.
+- `ADMIN_EMAILS` and `OWNER_EMAILS`: the same as purifyapp's.
+
+As release day will have them, copied from purifyapp's **Environment** page
+with the same values:
+
+- every setting whose name starts with `NEXT_PUBLIC_`, except the three above
+  and `NEXT_PUBLIC_APPLE_SIGNIN_ENABLED` (leave that one out);
+- `LICENSED_BIBLE`, `BIBLE_API_KEY`, `GIFT_PLUS_DAYS`,
+  `SHOP_FLAT_SHIPPING_CENTS`, if purifyapp has them.
+
+Never on the test web: `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` (test
+mode ones come later, if you want to try the shop), `RESEND_API_KEY`,
+`RESEND_WEBHOOK_SECRET`, `FCM_SERVICE_ACCOUNT_JSON`, anything starting
+`APNS_`, `REVENUECAT_REST_API_KEY`, `REVENUECAT_V2_API_KEY`,
+`REVENUECAT_PROJECT_ID`, `RENDER_API_KEY`, `BMC_ACCESS_TOKEN`, `ADMIN_MFA`,
+`CRON_SECRET`.
+
+**Save Changes** (not "Save and deploy" yet).
+
+Done: the list saved.
+
+Send back: "T5 done".
+
+### T6. Google: one added line (3 minutes)
+
+1. console.cloud.google.com, **APIs & Services**, **Credentials**.
+2. Open the OAuth client of type **Web application** that the live project
+   uses (its Client ID is the one in T4).
+3. **Authorized redirect URIs**, **Add URI**: purify-test's address followed
+   by `/auth/v1/callback` (it is shown in purify-test's Google provider page
+   as the **Callback URL**; copy it from there).
+4. **Save**. Nothing about purifyapp changes: this adds one line beside its
+   own.
+
+Done: the new line saved.
+
+Send back: "T6 done".
+
+### T7. The first deploy, and a look (5 minutes, plus the build)
+
+1. Render, the test web, **Manual Deploy**, **Deploy latest commit**. It takes
+   about as long as a purifyapp deploy.
+2. If the log says "The test web will not start", the lines under it name
+   the setting to fix. Fix it in **Environment** and deploy again.
+3. When it says **Live**, open its address on your phone. It asks for a name
+   and a password: any name, and the phrase from T5.
+4. At the foot of the page: "1.9 · Test web". The browser tab ends "Purify
+   test web".
+5. Sign in with Google. Then open <the address>/admin: the admin opens for
+   your account.
+
+Done: the page, the mark, your sign-in and the admin.
+
+Send back: "T7 done", or what you see.
+
+### T8. Your Google account as a license tester (3 minutes)
+
+So you can buy Plus in a test build without paying.
+
+1. play.google.com/console, **Settings** (the left menu, at the account
+   level), **License testing**.
+2. Add the Google account you use on the phone. **Save changes**.
+3. On the phone, be signed in to Google Play with that account only. Purchases
+   can fail when two accounts are signed in.
+
+A test purchase uses a test card and charges nothing. Its clock is fast: the
+7-day trial lasts 3 minutes, a monthly plan renews every 5 minutes and a
+yearly every 30, six times at most, then it ends.
+
+Send back: "T8 done".
+
+### T9. RevenueCat: a webhook for the test web (5 minutes)
+
+So the test web knows when you bought Plus there.
+
+1. RevenueCat, the Purify project, **Integrations**, **Webhooks**, add a new
+   one.
+2. Name: **Test web**. URL: the test web's address followed by
+   `/api/billing/revenuecat`.
+3. **Authorization header value**: a new phrase of your own, nothing before
+   it (no "Bearer").
+4. Environment: **Sandbox** only. **Save**.
+5. Render, the test web, **Environment**: add `REVENUECAT_WEBHOOK_SECRET` with
+   the same phrase. **Save and deploy**.
+
+The live webhook is not touched. When it also hears a test purchase, it
+writes nothing (the account does not exist on the live database) and
+RevenueCat gives up after five tries.
+
+Send back: "T9 done".
+
+### T10. A test build, every time (5 minutes, plus about 10 of building)
+
+The first time only: GitHub, the repository, **Settings**, **Secrets and
+variables**, **Actions**, **New repository secret**, three times:
+
+- `TEST_WEB_SUPABASE_URL`: purify-test's Project URL
+- `TEST_WEB_SUPABASE_ANON_KEY`: purify-test's anon public key
+- `TEST_WEB_SITE_URL`: the test web's address
+
+(All three as secrets, so the address never shows in the build's log, which
+anyone can read.)
+
+Every time:
+
+1. If the branch has changed since the last deploy: Render, the test web,
+   **Manual Deploy**, **Deploy latest commit**, and wait for **Live**.
+2. GitHub, **Actions**, **Android build**, **Run workflow**. Branch
+   `ccr-07896cf2-bo0afd`, **local first** ticked, **website**: **test web**.
+   **Run workflow**.
+3. When it is green: the repository's **Releases**, **Purify Android (test
+   web)**, download **purify-test-web.apk** on the phone.
+4. Uninstall Purify from the phone first. (The test file is signed with your
+   upload key and Play's copy with Google's; Android will not put one over
+   the other.)
+5. Install the file. Open it, sign in fresh with an account on the test web,
+   and keep **Testers mode** off.
+6. Walk it as a reader would. Campaigns are open to every account there. Buy
+   Plus with the test card (T8).
+7. To go back to the store build: uninstall the test app, install Purify from
+   Play.
+
+What the test web cannot show, so these wait for the release candidate on
+Play's internal testing (R5b): Play's own install and update, real money,
+notifications (until push is set up for the test web), emails, real readers'
+posts and counts (the test web starts empty), links opening in the app (they
+open in the browser), and the stores' own pages. The iPhone comes later.
+
+Send back: what you found, as you go.
 
 ---
 

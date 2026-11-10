@@ -8,6 +8,16 @@ name: Android build
 #
 # The release builds are signed with the upload key supplied via repo
 # secrets (ANDROID_KEYSTORE_BASE64 + passwords); no keystore is committed.
+#
+# THE TEST WEB (the "website" input; docs/1.9-build/notes/test-web.md). A
+# test web build is the same release APK, shrunk the same way, with the same
+# switches, pointed at the private test web and its own database
+# (TEST_WEB_SUPABASE_URL, TEST_WEB_SUPABASE_ANON_KEY, TEST_WEB_SITE_URL). It
+# makes no AAB, so there is nothing of it to upload to Play, and it is
+# published under its own release, android-test-web, as purify-test-web.apk.
+# scripts/native-build.mjs refuses a store build that says it is the test web
+# and a test web build that names the main web's database or address, and
+# lib/testWeb/__tests__/workflow.test.ts holds this file to all of it.
 # The app is a thin Capacitor shell that loads purifyapp.net. Trigger from
 # the Actions tab (Run workflow).
 on:
@@ -17,6 +27,13 @@ on:
         description: "Bundle the local-first offline build (out/). Uncheck to build the remote-wrapper AAB that loads purifyapp.net."
         type: boolean
         default: true
+      website:
+        description: "Which website the build talks to. \"main web\": purifyapp.net, the store build (AAB and APKs, as always). \"test web\": the private test web, an installable APK only, never for a store (docs/1.9-build/notes/test-web.md)."
+        type: choice
+        options:
+          - main web
+          - test web
+        default: main web
 
 permissions:
   contents: write
@@ -27,6 +44,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: A test web build is the local-first release build
+        if: ${{ inputs.website == 'test web' && !inputs.local_first }}
+        run: |
+          echo "::error::The test web build bundles the local-first app (out/). The remote wrapper loads purifyapp.net, the main web."
+          exit 1
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -70,13 +93,19 @@ jobs:
       # back to a placeholder); those features just stay inert until real keys ship.
       - name: Build local-first web bundle
         if: ${{ inputs.local_first }}
-        run: npm run build:android
+        # The store build as always; with "test web", the same build pointed at
+        # the test web, whose three values replace the main web's. Should one
+        # of them be missing, the main web's would stand in its place, and
+        # scripts/native-build.mjs refuses that build (the main web's database
+        # or address in a test web build), so it can only fail, never mix.
+        run: node scripts/native-build.mjs --platform android ${{ inputs.website == 'test web' && '--test-web' || '' }}
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_TEST_WEB: ${{ inputs.website == 'test web' && '1' || '' }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ inputs.website == 'test web' && secrets.TEST_WEB_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ inputs.website == 'test web' && secrets.TEST_WEB_SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_REVENUECAT_ANDROID_KEY: ${{ secrets.NEXT_PUBLIC_REVENUECAT_ANDROID_KEY }}
           NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
-          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ inputs.website == 'test web' && secrets.TEST_WEB_SITE_URL || secrets.NEXT_PUBLIC_SITE_URL }}
           # Android's own launch switch. The legacy shared
           # NEXT_PUBLIC_PLUS_ENFORCED_NATIVE secret is still honoured by
           # lib/entitlements/entitlements.ts and still means Android, which is
@@ -152,7 +181,7 @@ jobs:
           fi
           echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/upload.keystore"
 
-      - name: Build signed release (AAB + APK) and debug APK
+      - name: Build signed release (AAB + APK) and debug APK, or the test web's APK
         working-directory: android
         env:
           # Auto-incrementing versionCode (build.gradle reads this); the run
@@ -173,13 +202,22 @@ jobs:
           # killing the starved step). Sequential invocations reuse the compiled
           # release outputs from the first pass, so the extra passes only re-run
           # packaging. Do NOT merge these back into fewer lines.
-          ./gradlew bundleRelease --stacktrace --no-daemon
-          ./gradlew assembleRelease --stacktrace --no-daemon
-          ./gradlew assembleDebug --stacktrace --no-daemon
+          # A test web build makes the release APK alone: no AAB, so nothing of
+          # it can be uploaded to Play, and no debug build, which is not what
+          # readers get.
+          if [ "${{ inputs.website }}" = "test web" ]; then
+            ./gradlew assembleRelease --stacktrace --no-daemon
+            cp app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/purify-test-web.apk
+          else
+            ./gradlew bundleRelease --stacktrace --no-daemon
+            ./gradlew assembleRelease --stacktrace --no-daemon
+            ./gradlew assembleDebug --stacktrace --no-daemon
+          fi
 
       # Published as release assets (private repo): raw downloads, separate
       # storage from the Actions artifact quota.
       - name: Publish to the android-release release
+        if: ${{ inputs.website != 'test web' }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: android-release
@@ -194,4 +232,20 @@ jobs:
             android/app/build/outputs/bundle/release/app-release.aab
             android/app/build/outputs/apk/release/app-release.apk
             android/app/build/outputs/apk/debug/app-debug.apk
+          fail_on_unmatched_files: true
+
+      - name: Publish the test web's APK to its own release
+        if: ${{ inputs.website == 'test web' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-test-web
+          name: Purify Android (test web)
+          prerelease: true
+          body: >
+            The release APK pointed at the private test web and its own
+            database, for testing before a release. Never for a store: there is
+            no AAB. Uninstall the store build first, then install this file.
+            Replaced on every test web run.
+          files: |
+            android/app/build/outputs/apk/release/purify-test-web.apk
           fail_on_unmatched_files: true

@@ -8,10 +8,30 @@ import {
   negotiateFromAcceptLanguage,
 } from "@/lib/i18n/locales";
 import { buildCsp, generateNonce, NONCE_HEADER } from "@/lib/security/headers";
+import { testWebEnv } from "@/lib/testWeb";
+import { testWebGate } from "@/lib/testWeb/rules";
 
 const LOCALE_COOKIE = "purify_locale";
 
 export async function proxy(request: NextRequest, event: NextFetchEvent) {
+  // The test web (lib/testWeb/rules.ts): its pages ask for its password, the
+  // apps' calls to /api do not, and nothing on it is for search engines. On
+  // the main web both lines below do nothing.
+  const testWeb = testWebEnv();
+  const gate = testWebGate(request.nextUrl.pathname, request.headers.get("authorization"), testWeb);
+  if (!gate.pass) {
+    return new NextResponse(gate.body, {
+      status: gate.status,
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "no-store",
+        "X-Robots-Tag": "noindex, nofollow",
+        ...(gate.status === 401 ? { "WWW-Authenticate": 'Basic realm="Purify test web", charset="UTF-8"' } : {}),
+      },
+    });
+  }
+  const noindex = testWeb.NEXT_PUBLIC_TEST_WEB === "1";
+
   // Ambassador links (lib/ambassadors/referral.ts): remember the code in a
   // first-party, HTTP-only cookie for 30 days, count the visit, and send the
   // reader on to the same page without `?ref=`. The redirect's origin is the
@@ -36,6 +56,7 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
           event.waitUntil(recordClick(ref.code));
         }
       }
+      if (noindex) redirect.headers.set("X-Robots-Tag", "noindex, nofollow");
       return redirect;
     }
   }
@@ -78,6 +99,7 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
   response.headers.set("Content-Security-Policy-Report-Only", csp);
   // Echo the nonce so server components can read it via headers().
   response.headers.set(NONCE_HEADER, nonce);
+  if (noindex) response.headers.set("X-Robots-Tag", "noindex, nofollow");
 
   return response;
 }
