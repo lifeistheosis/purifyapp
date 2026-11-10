@@ -77,6 +77,8 @@ Planned fix (on his start), as one design with notes 2, 4 and 6:
 - No circle and no bookmark under each prayer: a prayer counts as prayed as the reader passes it (Easy Scroll knows where they are), one quiet Amen at the end marks the whole rule, and saving a single prayer moves to the long-press menu. The prayer-rule check-offs keep working and keep syncing.
 - Kept as they are, his word: the text and the highlighting.
 
+Done in part (Updates, 2026-11-10, his "ok to all" of about 04:13 UTC, his page's 103): the head is one way in, Begin, wide and plain, between Save and Share as a matching pair of round 44px marks; nothing is ticked under a prayer; one quiet Amen at the end marks the whole rule prayed, the names with it, and the doxology then says so with Reset beside it (`beaecf24`). The highlighting is kept and every word of it now reads at 4.5:1 on every palette, his page's 131 (`a6833ed8`). Still to build: Easy Scroll, each prayer counted as prayed as it is passed, and saving one prayer from a long press (asked of the arbiter whether "ok to all" covers them); the names step keeps its own mark for now (asked whether it goes too).
+
 ### 8. The prayer book: the screen follows a chapter as it opens (2026-11-10)
 
 What he saw: on the Prayers tab, opening a chapter of the prayer book (Devotional, near the foot of the screen) unfolds it, but the screen stays where it was, so the new page opens under the tab bar and out of sight (`build-89/08-prayer-book-shut.png`, `08-prayer-book-open.png`). His words: "So for this section, when you open it, it bugs out for a little bit and it doesn't open optimized. So for example, if you open it, I like the animation that it has, that it moves, right? The individual like box, but I don't like how it doesn't move the screen also down in a smooth way, right? So if it like opens, right, you notice that it doesn't move with the actual opening. So I want you to fix that."
@@ -100,6 +102,8 @@ What he saw: Prayers' All prayers row (Morning prayers, Evening prayers, The Hou
 Where it is: `components/mobile/PrayersMobile.tsx` (`prayers.allPrayers`). The click as a row scrolls already exists for the Bible's chapter strip and the saints' timeline (`lib/ui/scrollTicks.ts`), so no new native dependency.
 
 Planned fix (on his start), with the design pass of notes 2, 4, 6 and 7: each prayer in the row becomes a small piece in the house style (its own icon or art, its name, its length) in place of a pill, drawn from the app's components and checked with `checkMock`; the row clicks under the finger as each passes the middle, through `scrollTicks`; reduced motion and the browser stay silent, as the strip already does.
+
+Done (Updates, 2026-11-10, his "ok to all", his page's 103): five small pieces (Morning prayers, Evening prayers, The Hours, Akathists, Learn to pray), each with its own icon from the prayer pictures, its name, and its length or its one line; the row clicks in the hand as each passes its middle, in the apps only (`f7ede74e`). `checkMock` passes it on all five palettes and in Arabic, once the checker measured what is seen of an icon zoomed in its frame (`97285a64`).
 
 ### 11. For the living: the sheet revamped, and no box on a tapped field (2026-11-10)
 
@@ -167,7 +171,7 @@ Where it is: for Updates to find (the Android widget is `android/app/src/main/ja
 
 Planned fix (given to Updates the same hour): the widget's tap lands exactly where a reader chooses their patron saint, and that choice is easy to find in the app itself (Settings or You), with one still to him if a screen changes; find the cause, fix it, prove it on the release APK where a phone is needed (the R8 walk), and say plainly whether it is a bug or something build 89 cannot show.
 
-Done (Updates, 2026-11-10): a bug build 89 shows, not a test-build limit. "Choose your saint in Purify" now opens the picker on Android and iPhone (`d9d1f830`), and the widget fills within a second of choosing. A "Patron saint" row in Settings, under The calendar, opens the same picker: his word on his page's 139, about 04:05 UTC, "yes".
+Done (Updates, 2026-11-10): a bug build 89 shows, not a test-build limit. "Choose your saint in Purify" now opens the picker on Android and iPhone (`d9d1f830`), and the widget fills within a second of choosing. A "Patron saint" row in Settings, under The calendar, opens the same picker: his word on his page's 139, about 04:05 UTC, "yes"; built and pushed (`982433f4`).
 
 ### 18. The Remember the verse widget stays on "Open Purify to refresh" (2026-11-10)
 
