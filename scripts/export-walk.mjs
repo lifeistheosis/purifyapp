@@ -9117,6 +9117,14 @@ await section(62, async () => {
     return { status: r.status, spans: (d["44"] ?? []).filter((n) => n.at?.work === "cyril-of-alexandria/commentary-on-john" && n.at.section === 585).map((n) => n.span ?? null) };
   });
   must(b6.status === 200 && b6.spans?.length === 1 && b6.spans[0]?.[0] === 0, `the rail's copy of Book 6's opening begins with its first words, "44 Ye" (${JSON.stringify(b6)})`);
+  // Book 12's restored opening stands on the rail at John 18:24, whole.
+  const b12 = await page.evaluate(async () => {
+    const r = await fetch("/bible-data/commentary/john/18.json");
+    if (!r.ok) return { status: r.status };
+    const d = await r.json();
+    return { status: r.status, spans: (d["24"] ?? []).filter((n) => n.at?.work === "cyril-of-alexandria/commentary-on-john" && n.at.section === 2012).map((n) => [n.span ?? null, n.at.place]) };
+  });
+  must(b12.status === 200 && b12.spans?.length === 1 && b12.spans[0][0]?.[0] === 0 && b12.spans[0][1] === "Book 12, on John 18:24", `Book 12's restored opening stands on the rail at John 18:24 (${JSON.stringify(b12)})`);
 
   await go(page, "/theology/theosis/read/");
   await page.waitForTimeout(1200);

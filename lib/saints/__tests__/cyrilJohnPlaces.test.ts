@@ -155,7 +155,9 @@ describe("St Cyril on John: each section names the verse he is on", () => {
           if (n.at?.work !== "cyril-of-alexandria/commentary-on-john") continue;
           const m = PLACE.exec(TITLE.get(n.at.section!) ?? "");
           if (!m?.[2]) {
-            if (c !== 1 || v !== "1") preface.push(`${c}:${v} from section ${n.at.section}`);
+            // Book 1's Preface opens John 1:1; Book 3's opens 5:34, where that book begins.
+            const where = n.at.section === 2003 ? "5:34" : "1:1";
+            if (`${c}:${v}` !== where) preface.push(`${c}:${v} from section ${n.at.section}`);
             continue;
           }
           const [tc, tv] = [Number(m[2]), Number(m[3])];
@@ -202,7 +204,8 @@ describe("St Cyril on John: each section names the verse he is on", () => {
         }
       }
     }
-    expect(notes).toBe(1067);
+    // 1,067, and the four sections of restored openings ((b), 2002 to 2012).
+    expect(notes).toBe(1071);
     expect(wrong, wrong.join("\n")).toEqual([]);
   });
 
@@ -263,6 +266,16 @@ describe("St Cyril on John: each section names the verse he is on", () => {
       const rail = read<Record<string, { text: string; at?: { work?: string; section?: number; paragraph?: number } }[]>>(`data/bible/commentary/john/${c}.json`);
       const copy = (rail[String(v)] ?? []).find((x) => x.at?.work === "cyril-of-alexandria/commentary-on-john" && x.at.section === n && x.at.paragraph === 0);
       expect(copy?.text.startsWith(at(n).paragraphs[0]), `${c}:${v}, section ${n}`).toBe(true);
+    }
+    // And the four sections of restored openings stand on the rail too, at
+    // the verse each opens on, ahead of their book's next note: his words
+    // restored, not new matter (the arbiter's word, 2026-11-10).
+    for (const [c, v, n, before] of [[1, 29, 2002, 110], [5, 34, 2003, 266], [6, 38, 2004, 354], [18, 24, 2012, null]] as const) {
+      const notes = read<Record<string, { text: string; at?: { work?: string; section?: number } }[]>>(`data/bible/commentary/john/${c}.json`)[String(v)] ?? [];
+      const sections = notes.filter((x) => x.at?.work === "cyril-of-alexandria/commentary-on-john").map((x) => x.at!.section);
+      const note = notes.find((x) => x.at?.section === n);
+      expect(note?.text, `${c}:${v}, section ${n}`).toBe(at(n).paragraphs.join("\n\n"));
+      if (before !== null) expect(sections.indexOf(n), `${c}:${v}`).toBe(sections.indexOf(before) - 1);
     }
   });
 });
