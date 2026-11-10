@@ -55,7 +55,7 @@ export function CenturyTimeline({
   return (
     <div className="relative">
       <div ref={row} className="-mx-5 overflow-x-auto overscroll-x-contain px-5 [scrollbar-width:none] md:-mx-8 md:px-8 lg:mx-0 lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden">
-        <div role="group" aria-label={label} className="flex min-w-[640px] items-stretch gap-1 lg:min-w-0">
+        <div role="group" aria-label={label} className="flex w-max min-w-full items-stretch gap-1 lg:w-auto lg:min-w-0">
           {centuries.map((c) => {
             const n = counts.get(c) ?? 0;
             const on = active === c;
@@ -70,7 +70,7 @@ export function CenturyTimeline({
                 title={`${centuryLabel(c)} · ${n}`}
                 onClick={() => onSelect(on ? null : c)}
                 className={cn(
-                  "group flex min-h-11 min-w-0 flex-1 flex-col items-center justify-end gap-1.5 rounded-xl px-0.5 pb-1.5 pt-2 transition-colors duration-150",
+                  "group flex min-h-11 min-w-11 flex-1 flex-col items-center justify-end gap-1.5 rounded-xl px-0.5 pb-1.5 pt-2 transition-colors duration-150 lg:min-w-0",
                   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper",
                   "disabled:cursor-default",
                   on ? "bg-paper/[0.08]" : "enabled:hover:bg-paper/[0.05]",
