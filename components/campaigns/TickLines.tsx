@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 
 import { Check } from "@/components/ui/icons/Check";
 
@@ -64,11 +64,33 @@ export function TickLines<T extends string | number>({
 }
 
 /**
- * One line to tick, on its own: the family's blessing and the rules when a
- * campaign is started, and the two lines a picture needs
+ * One line to tick, on its own: the family's blessing, the rules and the
+ * Terms when a campaign is started, and the two lines a picture needs
  * (components/campaigns/CampaignPictures.tsx).
+ *
+ * `link` is for a line whose last words open something (the Terms of
+ * Service, in their sheet). A link cannot stand inside a button, so with one
+ * the tick is the button and the words are its label beside it: a tap on the
+ * tick or on the words ticks, as before, and a tap on the link opens it and
+ * ticks nothing (the browser's own rule for a link inside a label). It reads
+ * to a screen reader as one line, the link's words in it.
  */
-export function TickBox({ on, onChange, children }: { on: boolean; onChange: (next: boolean) => void; children: ReactNode }) {
+export function TickBox({ on, onChange, children, link }: { on: boolean; onChange: (next: boolean) => void; children: ReactNode; link?: ReactNode }) {
+  const id = useId();
+  if (link) {
+    return (
+      <div className="flex min-h-11 w-full items-start gap-3 py-2 text-start">
+        <button id={id} type="button" role="checkbox" aria-checked={on} onClick={() => onChange(!on)} className="hit-44 flex-none">
+          <span aria-hidden className="rule-tick mt-0.5" data-on={on ? "" : undefined}>
+            {on ? <Check size={12} /> : null}
+          </span>
+        </button>
+        <label htmlFor={id} className="min-w-0 flex-1 cursor-pointer font-sans text-detail leading-relaxed text-paper/85">
+          {children} {link}
+        </label>
+      </div>
+    );
+  }
   return (
     <button type="button" role="checkbox" aria-checked={on} onClick={() => onChange(!on)} className="flex min-h-11 w-full items-start gap-3 py-2 text-start">
       <span aria-hidden className="rule-tick mt-0.5" data-on={on ? "" : undefined}>

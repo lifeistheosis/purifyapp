@@ -18,6 +18,7 @@
 //
 //   node scripts/mock-campaigns.mjs [scale] [only] [folder]   the stills
 //   WALK=1 node scripts/mock-campaigns.mjs                    the walk
+//   WALK=1 FLOWS="starting one" node scripts/mock-campaigns.mjs   only the flows whose names hold those words
 //   EYE=parchment,black node scripts/mock-campaigns.mjs 1     and by eye, on other palettes
 //   ALL_LOOKS=1 node scripts/mock-campaigns.mjs 1             held on the eighteen looks as well as the five palettes
 //   LOCALE=ro WIDTH=360 node scripts/mock-campaigns.mjs 2 19   a still in another language, on a narrower phone
@@ -51,6 +52,8 @@ const ONLY = process.argv[3] && process.argv[3] !== "all" ? new Set(process.argv
 const OUT = path.resolve(process.argv[4] ?? "campaign-stills");
 const EYE = (process.env.EYE ?? "").split(",").filter(Boolean);
 const WALK = process.env.WALK === "1";
+/** Only the flows whose names hold one of these (comma separated). All of them when unset. */
+const FLOWS = (process.env.FLOWS ?? "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
 /** Another language for the stills, as the app keeps a reader's choice on the phone. The walk reads English and is not run in one. */
 const LOCALE = process.env.LOCALE ?? null;
 /** The phone's width, for a still on a narrower one. */
@@ -686,6 +689,7 @@ await shot("24-pictures-team", "the team's queue: pictures to look at", "/commun
 });
 
 async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures } = {}) {
+  if (FLOWS.length && !FLOWS.some((f) => label.toLowerCase().includes(f))) return;
   const seed = {
     "purify.prayers.campaigns": JSON.stringify(CARRIED),
     ...(signedIn ? { "purify.supabase.auth": JSON.stringify([{ name: "sb-placeholder-auth-token", value: JSON.stringify(SESSION) }]) } : {}),
@@ -738,7 +742,22 @@ if (WALK) {
     await settle(page, 700);
     expectThat(await create.isDisabled(), "Create is lit with no blessing ticked");
     await page.locator("[role=radio]", { hasText: "Someone else" }).click();
-    await page.locator("[data-campaign-new] [role=checkbox]").click();
+    // Two lines to tick: the rules, and the Terms of Service.
+    const boxes = page.locator("[data-campaign-new] [role=checkbox]");
+    expectThat((await boxes.count()) === 2, `there are ${await boxes.count()} lines to tick, not the rules and the Terms`);
+    await boxes.nth(0).click();
+    expectThat(await create.isDisabled(), "Create is lit with the Terms of Service not accepted");
+    // The Terms open in their sheet over the page; the link ticks nothing, and what was written stays.
+    const terms = page.locator("[data-campaign-terms]");
+    await terms.locator("a[data-legal-link=terms]").click();
+    await page.waitForSelector("[data-legal-sheet]", { timeout: 15000 });
+    expectThat((await terms.locator("[role=checkbox]").getAttribute("aria-checked")) === "false", "opening the Terms ticked the line");
+    await page.keyboard.press("Escape");
+    await page.waitForSelector("[data-legal-sheet]", { state: "detached", timeout: 15000 });
+    expectThat((await page.inputValue("#campaign-title-field")) === "For Elias on his journey", "what was written was lost behind the Terms");
+    // A tap on the line's words ticks it, as a tap on its tick does.
+    await terms.locator("label").click({ position: { x: 6, y: 8 } });
+    expectThat((await terms.locator("[role=checkbox]").getAttribute("aria-checked")) === "true", "a tap on the line's words did not tick it");
     expectThat(!(await create.isDisabled()), "Create stays dim when everything is said");
     await create.click();
     await page.waitForFunction(() => location.pathname.replace(/\/$/, "") === "/campaigns/detail", null, { timeout: 15000 });
@@ -749,6 +768,7 @@ if (WALK) {
     expectThat(b.forWhom === "living" && b.kind === "travel" && b.title === "For Elias on his journey" && b.name === "Elias", `sent ${JSON.stringify(b)}`);
     expectThat(b.words === "He travels home on Friday." && b.days === 7 && b.startsOn === TODAY, `sent ${JSON.stringify(b)}`);
     expectThat(b.prayer?.rule === "protection" && b.prayer?.id === "psalm-90" && b.consent === "blessing" && b.blessing === true && b.rules === true, `sent ${JSON.stringify(b)}`);
+    expectThat(b.termsAccepted === true, `the acceptance of the Terms was not sent: ${JSON.stringify(b)}`);
     expectThat((await page.locator("[data-campaign-standing]").innerText()).includes("Waiting for a moderator"), "the campaign does not say it waits");
   }, { mine: [HELD] });
 

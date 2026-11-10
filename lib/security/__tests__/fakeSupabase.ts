@@ -57,6 +57,8 @@ const COLUMNS: Record<string, string[]> = {
     "place_name", "audience", "circle_id", "comments_open", "listed", "keep_after_end",
     "creator_name", "creator_handle", "consent_kind", "consent_at", "held_reason",
     "mod_cleared_at", "removed_reason", "removed_by_email", "ended_at",
+    // File four (docs/1.9-build/sql/campaigns-4-terms.sql).
+    "terms_accepted_at",
   ],
   // 20260713000200 (the join row), 20260811000000 (the reminder), then the rework's places, until_on, notify_updates
   prayer_campaign_prayers: [
@@ -143,6 +145,8 @@ export const REWORK_COLUMNS: Record<string, string[]> = {
     "place_name", "audience", "circle_id", "comments_open", "listed", "keep_after_end",
     "creator_name", "creator_handle", "consent_kind", "consent_at", "held_reason",
     "mod_cleared_at", "removed_reason", "removed_by_email", "ended_at",
+    // File four (docs/1.9-build/sql/campaigns-4-terms.sql).
+    "terms_accepted_at",
   ],
   prayer_campaign_prayers: ["places", "until_on", "notify_updates"],
   prayer_campaign_reports: ["target_kind", "target_id", "reason_code", "status", "closed_at"],

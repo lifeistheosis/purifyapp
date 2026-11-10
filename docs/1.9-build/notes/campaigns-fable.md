@@ -2863,7 +2863,7 @@ this server is the test web, it answers "open", to every account there.
   If the rules are ever loosened so that a server shaped like the main web
   passes, it fails.
 
-**A collision on the way, mine, and mended within the half hour.** I first
+**A collision on the way, mine, and mended in seven minutes.** I first
 wrote the marker's reader as a file of my own, `lib/testWeb.ts`, with a
 marker of my own, and pushed it (`a0eb97365`) minutes after Admin had pushed
 the test web's rules as the folder `lib/testWeb/`. A file of that name is
@@ -2871,12 +2871,15 @@ found before a folder of it, so every page of Admin's that asked the folder
 (the layout, robots, the sitemap, the footer, mail, the proxy) was handed my
 file instead, which has none of what they ask for. The rebase had no
 conflict to show, and I had run campaigns' tests after it and not the
-typecheck. The file is gone; the rule asks Admin's `isTestWeb()`; there is
-one marker, Admin's. What it costs to say plainly: for that half hour the
-branch did not build. Nothing ran from it: the main web runs main, and the
-test web does not exist yet. The lesson is in how I work from here: after a
-pull that brings code in, the typecheck runs again before the push, every
-time.
+typecheck. The file is gone (`d2f6260f3`); the rule asks Admin's
+`isTestWeb()`; there is one marker, Admin's. What it costs to say plainly:
+from about 16:21 to 16:28 UTC the branch did not build, and a chat whose
+gates ran in those minutes saw eight errors that were not its own. Nothing
+ran from it: the main web runs main, and the test web does not exist yet.
+(This note first said "half an hour"; the commits' own times say seven
+minutes.) The lesson is in how I work from here: after a pull that brings
+code in, the typecheck runs again before the push, every time; and I read
+what a chat I am agreeing something with has pushed before I push my side.
 
 **What will differ from the release on the test web, to tell him before he
 walks:** two quiet places read the constant itself and do not follow the
@@ -2892,3 +2895,62 @@ run in a build that has the rework as well
 campaign that waits and the open reports on it as one row, a decision is
 handed to the campaigns' own moderation as that admin, and the route deletes
 nothing itself.
+
+## 18. The Terms of Service, accepted on starting a campaign (2026-11-10)
+
+**His word** (`BRAINSTORM.md`, the same day, answering 113 and 129): "we
+don't need a priest or a lawyer to make prayer campaigns. Just make it clear
+that the prayer campaigns are made by the people ... whenever they make a
+prayer campaign, they accept to the terms of service so that it's like their
+prayer campaigns are distinct from us."
+
+**Phase 1 did not have it.** A creator ticked the blessing and the house
+rules, and the campaign kept what they affirmed and when. Now there is a
+third line.
+
+- **The line:** "I agree to the Terms of Service", under the rules line on
+  the start screen. No new words: "I agree to the" and "Terms of Service" are
+  the sign-up form's own, already in all twenty-one languages. The Terms open
+  in the legal sheet over the page (Admin's, build 90 note 1), so nothing a
+  creator has written is lost; the link ticks nothing.
+- **How the line is drawn:** the campaigns' own tick
+  (`components/campaigns/TickLines.tsx`, `TickBox`) learned one thing. A link
+  cannot stand inside a button, so on a line with a link the tick is the
+  button and the words are its label: a tap on either ticks, a tap on the
+  link opens it.
+- **Required as checkout's is:** the request must say `termsAccepted: true`,
+  literally (`lib/security/schemas.ts`). Create stays dim until all the lines
+  are ticked.
+- **Kept with the campaign and its time:** `terms_accepted_at`, the moment by
+  the server's own clock, never the sender's. It is the same instant as the
+  blessing's (`consent_at`), kept as its own fact.
+- **The fourth SQL file:** `docs/1.9-build/sql/campaigns-4-terms.sql`, one
+  statement, one new column, no right given to anyone, safe to run twice. Run
+  twice on the scratch database: the first run adds the one column and
+  nothing else, the second changes nothing, and the public key's role and a
+  signed-in reader's are both refused the column. **Not signed and not in
+  the folder a merge runs:** it waits for Admin's read and his yes, and
+  `closed.test.ts` holds it out.
+- **Until that file has run on a database, no campaign can be started
+  there.** The route starts none where it cannot keep the acceptance, and
+  answers as a closed door does. That is deliberate: a campaign with no
+  record of its acceptance is the one thing this must not make. It means
+  file four has to be signed and in the folder before he walks campaigns on
+  the test web.
+
+**Found by its first walk, and mended before it was pushed:** with the
+Terms' sheet open, Escape closed the sheet and also left the start page, with
+everything written on it. The page left on Escape unless one of its own three
+sheets was open, and the Terms' sheet is not one of its own. The page now
+asks whether any sheet stands over it (`lib/ui/overlay.ts`, `isSheetUp`) and
+stands aside. The phone's Back was never wrong: there the topmost layer alone
+answers.
+
+**Held by:** three cases in `routes.test.ts` (not started without it, with
+nothing written; the moment is the server's; none started where the column is
+absent), one in `model.test.ts`, the file-four case in `closed.test.ts`,
+`startTerms.test.ts` (the line, Create, the tick with a link, Escape, and
+when a sheet counts as standing over the page), and the walk's first flow,
+which now also opens the Terms from the line, sees the tick untouched,
+closes the sheet with Escape and finds the page and its written words still
+there, and ticks the line by its words.

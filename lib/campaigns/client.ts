@@ -90,6 +90,8 @@ export type StartInput = {
   consent: ConsentKind;
   blessing: true;
   rules: true;
+  /** "I agree to the Terms of Service", ticked. */
+  termsAccepted: true;
   confirmFiltered?: boolean;
 };
 

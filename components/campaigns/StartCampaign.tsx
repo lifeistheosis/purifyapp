@@ -7,6 +7,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { TickBox, TickLines } from "@/components/campaigns/TickLines";
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { LegalLink } from "@/components/legal/LegalLink";
 import { TOP_PLATE } from "@/components/nav/topPlate";
 import { WayPlate, WayRow } from "@/components/prayers/mine/WayRow";
 import { ArrivingImage } from "@/components/ui/ArrivingImage";
@@ -49,7 +50,7 @@ import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 import { getPrayerIcon } from "@/lib/prayers/icons";
 import { todayKey } from "@/lib/rhythm/dayKey";
 import { resolveUser } from "@/lib/supabase/resolveUser";
-import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
+import { isSheetUp, lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { useKeyboardUp, useVisibleFrame } from "@/lib/ui/viewport";
 
 /** Where the campaigns live in the app: Community's first half. */
@@ -97,6 +98,7 @@ export function StartCampaign() {
   const [consent, setConsent] = useState<Exclude<ConsentKind, "family"> | null>(null);
   const [family, setFamily] = useState(false);
   const [rules, setRules] = useState(false);
+  const [terms, setTerms] = useState(false);
   const [opened, setOpened] = useState<Opened>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -134,7 +136,10 @@ export function StartCampaign() {
   useAndroidBack(opened === null && !askFiltered, leave);
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape" && !e.defaultPrevented && opened === null && !askFiltered) leave();
+      // Not while a sheet stands over the page: its own three, and the Terms
+      // of Service, which the line to tick opens and this page does not
+      // hold. Escape there closes the sheet, and what is written stays.
+      if (e.key === "Escape" && !e.defaultPrevented && opened === null && !askFiltered && !isSheetUp()) leave();
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -156,6 +161,7 @@ export function StartCampaign() {
     (whom === "departed" || kind !== null) &&
     blessed &&
     rules &&
+    terms &&
     !busy;
 
   const doors: { id: ForWhom; label: string; icon: ReactNode }[] = [
@@ -192,6 +198,7 @@ export function StartCampaign() {
       consent: whom === "departed" ? "family" : (consent as ConsentKind),
       blessing: true,
       rules: true,
+      termsAccepted: true,
       confirmFiltered,
     });
     setBusy(false);
@@ -412,6 +419,26 @@ export function StartCampaign() {
                   <Link href="/campaigns/rules" className="hit-44 ms-9 inline-flex font-sans text-detail font-semibold text-paper underline underline-offset-4">
                     {t("campaigns.rules.read")}
                   </Link>
+                </div>
+
+                {/* The Terms of Service, accepted on starting one (his word,
+                    2026-11-10: a campaign is its creator's own, and they
+                    accept the Terms when they make it). The words are the
+                    sign-up form's own, in every language, and the Terms open
+                    in their sheet over this page, so nothing written is lost.
+                    The route keeps the moment with the campaign. */}
+                <div className="mt-1" data-campaign-terms="">
+                  <TickBox
+                    on={terms}
+                    onChange={setTerms}
+                    link={
+                      <LegalLink doc="terms" className="font-semibold text-paper underline underline-offset-4">
+                        {t("ui.termsOfServiceX")}
+                      </LegalLink>
+                    }
+                  >
+                    {t("ui.iAgreeToThe")}
+                  </TickBox>
                 </div>
 
                 <p className="mt-6 font-sans text-caption leading-[1.5] text-paper/70">{t("campaigns.new.note")}</p>

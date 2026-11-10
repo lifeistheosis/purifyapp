@@ -75,6 +75,19 @@ export function sheetRises(): () => void {
 }
 
 /**
+ * A sheet stands over the page: risen, or on its way out and not yet gone.
+ * A page that answers Escape itself asks, and stands aside: every listener
+ * hears the key, and the press that closes a sheet must not also leave the
+ * page under it (as the phone's Back is kept, lib/platform/useAndroidBack.ts,
+ * overlayOwnsBack). Found on the page that starts a prayer campaign, where
+ * Escape over the Terms of Service closed the sheet and left the page, with
+ * everything written on it.
+ */
+export function isSheetUp(): boolean {
+  return up > 0 || leaving > 0;
+}
+
+/**
  * A sheet on its way out: what stood behind it comes back with it, on its
  * time and curve. It is still open (isOverlayOpen) until it has gone, and it
  * covers nothing (useOverlayOpen). A sheet that never raised the overlay

@@ -282,6 +282,7 @@ describe("a request to start one", () => {
     consent: "family",
     blessing: true,
     rules: true,
+    termsAccepted: true,
   };
   const parse = (over: Record<string, unknown>) => campaignCreateSchema.safeParse({ ...good, ...over }).success;
 
@@ -290,9 +291,11 @@ describe("a request to start one", () => {
     expect(parse({ forWhom: "living", kind: "healing", consent: "blessing", days: 7, prayer: { rule: "protection", id: "psalm-90" } })).toBe(true);
   });
 
-  it("is refused without the blessing ticked or the rules agreed", () => {
+  it("is refused without the blessing ticked, the rules agreed or the Terms of Service accepted", () => {
     expect(parse({ blessing: false })).toBe(false);
     expect(parse({ rules: undefined })).toBe(false);
+    expect(parse({ termsAccepted: undefined })).toBe(false);
+    expect(parse({ termsAccepted: false })).toBe(false);
   });
 
   it("is refused past forty days, or with no day at all", () => {

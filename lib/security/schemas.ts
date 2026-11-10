@@ -436,6 +436,11 @@ export const campaignCreateSchema = z
     consent: z.enum(["self", "blessing", "guardian", "family"]),
     blessing: z.literal(true),
     rules: z.literal(true),
+    // "I agree to the Terms of Service", ticked. Literally true, as
+    // checkout's is: his word of 2026-11-10 is that whoever starts a campaign
+    // accepts the Terms, so a campaign is its creator's own and not
+    // Purify's. The route keeps the moment with the campaign.
+    termsAccepted: z.literal(true),
     // The writer has seen which of their words the filter will mask, and
     // sends it all the same (as a post does).
     confirmFiltered: z.boolean().optional(),

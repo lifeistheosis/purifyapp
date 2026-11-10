@@ -147,6 +147,7 @@ const FOR_NICHOLAS = {
   consent: "family",
   blessing: true,
   rules: true,
+  termsAccepted: true,
 };
 const start = (over: Record<string, unknown> = {}) => create(new Request(`${SITE}/api/campaigns`, json({ ...FOR_NICHOLAS, startsOn: today(), ...over })));
 
@@ -266,8 +267,39 @@ describe("starting a campaign", () => {
       held_reason: "new",
     });
     expect(typeof row.consent_at).toBe("string");
+    // The Terms, accepted in the same breath: one moment, kept twice.
+    expect(row.terms_accepted_at).toBe(row.consent_at);
     // Noon UTC of the day after its last day.
     expect(row.ends_at).toBe(new Date(Date.parse(`${last}T12:00:00Z`) + DAY).toISOString());
+  });
+
+  it("is not started without the Terms of Service accepted, and nothing is written", async () => {
+    // His word, 2026-11-10: whoever makes a campaign accepts the Terms, so
+    // it is their own and not Purify's. Literally true, as checkout's is.
+    for (const termsAccepted of [undefined, false, "true", 1, null]) {
+      const res = await start({ termsAccepted });
+      expect(res.status, String(termsAccepted)).toBe(400);
+    }
+    expect(campaigns()).toEqual([]);
+  });
+
+  it("keeps the moment the Terms were accepted by its own clock, never the sender's", async () => {
+    const before = Date.now();
+    const res = await start({ terms_accepted_at: "2020-01-01T00:00:00.000Z", termsAcceptedAt: "2020-01-01T00:00:00.000Z" });
+    expect(res.status).toBe(200);
+    const { id } = (await res.json()) as { id: string };
+    const kept = Date.parse(byId(id).terms_accepted_at as string);
+    expect(kept).toBeGreaterThanOrEqual(before - 1000);
+    expect(kept).toBeLessThanOrEqual(Date.now() + 1000);
+  });
+
+  it("starts no campaign where the acceptance cannot be kept: its SQL, file four, has not run", async () => {
+    // Files one to three have run and file four has not. A campaign with no
+    // record of its acceptance is the one thing this must never make, so the
+    // route answers as a closed door does and writes nothing.
+    w.missing = { prayer_campaigns: ["terms_accepted_at"] };
+    expect((await start()).status).toBe(404);
+    expect(campaigns()).toEqual([]);
   });
 
   it("is on no board, and nobody's to open but its creator's, until a moderator has read it", async () => {

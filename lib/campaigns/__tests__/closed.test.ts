@@ -235,6 +235,7 @@ describe("closed: the device", () => {
       consent: "family",
       blessing: true,
       rules: true,
+      termsAccepted: true,
     });
     expect(started.ok).toBe(false);
     // Updates and comments, and "Prayed by many", as closed as the rest.
@@ -426,6 +427,27 @@ describe("closed: the data", () => {
     // The folder is run by name: one, then two, then three.
     const order = [SIGNED, THREADS_SIGNED, PICTURES_SIGNED].map((f) => f.slice(f.lastIndexOf("/") + 1));
     expect([...order].sort()).toEqual(order);
+  });
+
+  it("file four, the acceptance of the Terms, waits for his yes: in docs, unsigned, and in no file the folder runs", () => {
+    // A file in supabase/migrations runs on production at the merge, and on
+    // the test web's database the moment it reaches the branch, signed or
+    // not (docs/1.9-build/HANDOFF.md). So until he has said yes, on a plain
+    // summary and after a second chat's read, the column is made by nothing
+    // in that folder, and the route starts no campaign where it is absent
+    // (routes.test.ts).
+    const TERMS_FOR_HIS_SIGNATURE = "docs/1.9-build/sql/campaigns-4-terms.sql";
+    expect(existsSync(join(ROOT, TERMS_FOR_HIS_SIGNATURE))).toBe(true);
+    const sql = read(TERMS_FOR_HIS_SIGNATURE);
+    expect(sql).toMatch(/^-- NOT SIGNED YET, AND NOT APPLIED\./m);
+    expect(sql).not.toMatch(/Signed off by the owner/);
+    // One statement, which can run twice, and nothing that gives a right.
+    const body = statements(sql).replace(/^--.*$/gm, "");
+    expect(body.match(/;/g)).toHaveLength(3);
+    expect(body).toMatch(/alter table public\.prayer_campaigns\s+add column if not exists terms_accepted_at timestamptz;/);
+    expect(body).not.toMatch(/\bgrant\b|\bdefault\b|\bdrop\b|\bdelete\b|\bupdate\b/i);
+    const folder = readdirSync(join(ROOT, "supabase/migrations"));
+    expect(folder.filter((f) => /terms_accepted_at/.test(read(`supabase/migrations/${f}`)))).toEqual([]);
   });
 
   it("file three gives the public key nothing, and takes no yes that was not asked for", () => {

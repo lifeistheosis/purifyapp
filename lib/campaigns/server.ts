@@ -475,6 +475,12 @@ export async function startCampaign(
       creator_handle: handle,
       consent_kind: input.consent,
       consent_at: new Date(now).toISOString(),
+      // The Terms of Service, accepted on starting it (the schema takes no
+      // campaign without the tick): the moment by this server's own clock,
+      // never the sender's. Where the column is not there yet (its SQL,
+      // file four, has not run) the insert fails and no campaign is
+      // started, so none exists without its acceptance kept.
+      terms_accepted_at: new Date(now).toISOString(),
       // Read by a moderator before anyone else sees it.
       status: "held",
       held_reason: heldReasons(texts, hits),
