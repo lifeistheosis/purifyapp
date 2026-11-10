@@ -17,9 +17,11 @@ import org.json.JSONObject;
  *
  * <p>The app works out the next seven days' faces (lib/widget/remember.ts),
  * since a widget cannot run the schedule; this looks up today's and draws
- * it. Every word arrives finished, in the app's language. A day with no
- * face (nothing due, or the app not opened for a week) is the plain line
- * every widget has for that, and no verse saved asks for one.
+ * it. Every word arrives finished, in the app's language. A day with
+ * nothing due has a face too: the verse that comes back first, by its
+ * reference, and when (build 89, note 18). A day with no face (the app not
+ * opened for a week) is the plain line every widget has for that, and no
+ * verse saved asks for one.
  *
  * <p>Four cells show the verse; two cells, where its words could not be read,
  * show the reference and the line.

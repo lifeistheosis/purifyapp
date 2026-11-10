@@ -132,10 +132,24 @@ describe("the faces the widget is handed", () => {
     for (const face of Object.values(faces)) expect(face.ref).toBe("John 3:16");
   });
 
-  it("has no face on a day with nothing due", () => {
-    const waiting = store({ entries: { [john.key]: { box: 3, due: "2026-11-12" } } });
-    const faces = days(rememberFaces({ saved: [john], store: waiting, today: TODAY, t }));
-    expect(Object.keys(faces)).toEqual(["2026-11-12", "2026-11-13", "2026-11-14", "2026-11-15"]);
+  it("shows the verse that comes back first, by its reference alone, on a day with nothing due (build 89, note 18)", () => {
+    // The widget said "Open Purify to refresh" on such a day, and opening the
+    // app handed over the same empty day: stuck until a verse came due.
+    const waiting = store({ entries: { [john.key]: { box: 3, due: "2026-11-12" }, [psalm.key]: { box: 5, due: "2026-11-20" } } });
+    const faces = days(rememberFaces({ saved: [john, psalm], store: waiting, today: TODAY, t }));
+    expect(Object.keys(faces)).toHaveLength(REMEMBER_DAYS);
+    expect(faces[TODAY]).toEqual({ ref: "John 3:16", words: null, line: "It comes back in 3 days." });
+    expect(faces["2026-11-10"]).toEqual({ ref: "John 3:16", words: null, line: "It comes back in 2 days." });
+    expect(faces["2026-11-11"]).toEqual({ ref: "John 3:16", words: null, line: "It comes back tomorrow." });
+    // The day it is due, it is asked again, at its step.
+    expect(faces["2026-11-12"]).toMatchObject({ ref: "John 3:16", step: 2 });
+  });
+
+  it("leaves no day of the seven without a face while a verse is saved", () => {
+    const known = store({ entries: { [john.key]: { box: 6, due: "2026-12-09" } } });
+    const faces = days(rememberFaces({ saved: [john], store: known, today: TODAY, t }));
+    expect(Object.keys(faces)).toHaveLength(REMEMBER_DAYS);
+    for (const face of Object.values(faces)) expect(face).toEqual({ ref: "John 3:16", words: null, line: "Known by heart. It comes back once a month." });
   });
 
   it("shows the reference alone for a verse whose words were never fetched", () => {
@@ -143,10 +157,11 @@ describe("the faces the widget is handed", () => {
     expect(faces[TODAY]).toMatchObject({ ref: "John 3:16", words: null, line: "A verse you saved. Say it from memory, then check." });
   });
 
-  it("leaves today without a face when an answer from before 1.9 does not say which verse", () => {
-    const old = store({ answeredOn: TODAY, entries: { [john.key]: { box: 1, due: "2026-11-10" } } });
-    const faces = days(rememberFaces({ saved: [john], store: old, today: TODAY, t }));
-    expect(faces[TODAY]).toBeUndefined();
+  it("shows the verse that comes back first today when an answer from before 1.9 does not say which verse", () => {
+    const old = store({ answeredOn: TODAY, entries: { [john.key]: { box: 1, due: "2026-11-10" }, [psalm.key]: { box: 0, due: TODAY } } });
+    const faces = days(rememberFaces({ saved: [john, psalm], store: old, today: TODAY, t }));
+    // The psalm was due today, but one verse a day is asked and today's is answered: it comes back tomorrow.
+    expect(faces[TODAY]).toEqual({ ref: "Psalms 23:1", words: null, line: "It comes back tomorrow." });
     expect(faces["2026-11-10"]).toMatchObject({ ref: "John 3:16" });
   });
 

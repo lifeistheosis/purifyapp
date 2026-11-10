@@ -1,6 +1,6 @@
 import { localBookNames, referenceIn } from "@/lib/bible/books";
 import { stepWords } from "@/lib/remember/blanks";
-import { addDays, backWords, dueOn, stepOf, type RememberStep, type RememberStore, type SavedVerse } from "@/lib/remember/schedule";
+import { addDays, backWords, dueOn, stepOf, type Entry, type RememberStep, type RememberStore, type SavedVerse } from "@/lib/remember/schedule";
 
 /**
  * Remember the verse on the home screen widget (1.9, s4-07 of
@@ -21,8 +21,10 @@ import { addDays, backWords, dueOn, stepOf, type RememberStep, type RememberStor
  * the verse answered today with when it comes back. A day ahead is the verse
  * that day brings if nothing is answered before it, which holds, since an
  * answer is only ever given in the app, and the app then hands the faces over
- * again. A widget whose day is not among them (the app not opened for a
- * week) says to open Purify, as every widget does with nothing true to show.
+ * again. A day with nothing to ask shows the verse that comes back first
+ * (build 89, note 18; `rest` below). A widget whose day is not among them
+ * (the app not opened for a week) says to open Purify, as every widget does
+ * with nothing true to show.
  *
  * Every word arrives finished, in the app's language: the reference with its
  * book in that language, and the line under the verse in the card's own
@@ -107,6 +109,30 @@ export function rememberFaces(input: RememberInput): RememberEntry | undefined {
   const byKey = new Map(saved.map((v) => [v.key, v]));
   const ref = (v: SavedVerse) => referenceIn(v.label, v.book, books);
 
+  /**
+   * A day with nothing to ask (build 89, note 18): every saved verse answered
+   * and none back yet, or today's answer, given on a build before 1.9, not
+   * saying which verse it was. Such a day had no face, so the widget said
+   * "Open Purify to refresh", and opening the app handed over the same empty
+   * day: it was stuck until a verse came due. It shows the verse that comes
+   * back first instead, by its reference alone (its words are not shown
+   * before it is asked), with when it comes back, counted from that day; one
+   * already due, on a day whose verse was answered, comes back tomorrow.
+   */
+  const rest = (day: string): RememberFace | null => {
+    let soonest: { verse: SavedVerse; entry: Entry } | null = null;
+    for (const verse of saved) {
+      const entry = store.entries[verse.key];
+      if (!entry) continue;
+      if (!soonest || entry.due < soonest.entry.due || (entry.due === soonest.entry.due && verse.addedAt < soonest.verse.addedAt)) {
+        soonest = { verse, entry };
+      }
+    }
+    if (!soonest) return null;
+    const line = soonest.entry.due <= day ? t("remember.backTomorrow") : backWords(t, soonest.entry, day);
+    return { ref: ref(soonest.verse), words: null, line };
+  };
+
   const days: Record<string, RememberFace> = {};
   const count = Math.max(1, Math.min(input.days ?? REMEMBER_DAYS, 31));
   for (let i = 0; i < count; i++) {
@@ -115,22 +141,23 @@ export function rememberFaces(input: RememberInput): RememberEntry | undefined {
       // Answered today: that verse, whole, and when it comes back. A store
       // written before 1.9 does not say which verse it was (an answer given
       // on the old build on the day of the update), and a verse since taken
-      // off the bookmarks has nothing to show: today then has no face, and
-      // the widget says to open Purify, until tomorrow's face takes over.
+      // off the bookmarks has nothing to show: today then shows the verse
+      // that comes back first.
       const answered = store.answeredKey ? byKey.get(store.answeredKey) : undefined;
       const entry = answered ? store.entries[answered.key] : undefined;
-      if (answered && entry) {
-        days[day] = {
-          ref: ref(answered),
-          words: store.texts[answered.key] ?? null,
-          line: backWords(t, entry, today),
-          done: true,
-        };
-      }
+      const face: RememberFace | null =
+        answered && entry
+          ? { ref: ref(answered), words: store.texts[answered.key] ?? null, line: backWords(t, entry, today), done: true }
+          : rest(day);
+      if (face) days[day] = face;
       continue;
     }
     const due = dueOn(saved, store.entries, day);
-    if (!due) continue;
+    if (!due) {
+      const face = rest(day);
+      if (face) days[day] = face;
+      continue;
+    }
     const step = stepOf(store.entries[due.key]?.box ?? 0);
     const text = store.texts[due.key];
     days[day] = {
