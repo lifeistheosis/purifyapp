@@ -11,6 +11,7 @@ import type { CSSProperties, ReactNode, Ref } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/cn";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * The window: a page of the feature's own screen, working, set into the Plus
@@ -98,7 +99,7 @@ export function TrySwitch<T extends string>({
             type="button"
             role="radio"
             aria-checked={on}
-            lang={o.lang}
+            lang={o.lang} dir={textDir(o.lang)}
             onClick={() => onChange(o.id)}
             className={cn(
               "paywall-choice min-h-11 min-w-0 flex-1 rounded-pill px-2 font-sans text-detail font-semibold",

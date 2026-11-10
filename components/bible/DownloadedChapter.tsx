@@ -36,6 +36,7 @@ import type { BibleText } from "@/lib/bible/downloads/useShownBible";
 import { CandleVeil } from "@/components/reader/CandleVeil";
 import { useCandlelightWorn } from "@/components/theme/useWornPalette";
 import { cn } from "@/lib/cn";
+import { textDir } from "@/lib/i18n/textDir";
 import { useReadingLine } from "@/lib/reader/useReadingLine";
 
 export function DownloadedChapter({
@@ -84,7 +85,7 @@ export function DownloadedChapter({
   return (
     <article
       lang={bible.textLang}
-      dir={bible.dir}
+      dir={textDir(bible.textLang)}
       data-bible={bible.id}
       className={cn("text-paper/90", FONT_CLASSES[font], SIZE_CLASSES[size])}
       style={{ ...(leadingValue ? { lineHeight: leadingValue } : {}), ...(greek ? { fontFamily: "var(--font-greek), serif" } : {}) }}
@@ -94,7 +95,7 @@ export function DownloadedChapter({
         {page.sections.map((section) => (
           <Fragment key={section.chapter}>
             {section.chapter !== chapter ? (
-              <h2 lang={locale} className="pt-8 pb-2 text-center font-sans text-ui font-normal text-paper/55">
+              <h2 lang={locale} dir={textDir(locale)} className="pt-8 pb-2 text-center font-sans text-ui font-normal text-paper/55">
                 {t("bible.chapterN", { n: section.chapter })}
               </h2>
             ) : null}

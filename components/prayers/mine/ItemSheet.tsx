@@ -3,6 +3,7 @@
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * One prayer of a reader's rule, opened (1.7): its words, so the reader can
@@ -43,7 +44,7 @@ export function ItemSheet({
     <Sheet open={open} onClose={onClose} title={title} desktop>
       {from ? <p className="font-sans text-caption text-paper/55">{from}</p> : null}
       {words ? (
-        <p lang={lang} className="mt-3 line-clamp-[12] whitespace-pre-line font-serif text-body leading-[1.7] text-paper/85">
+        <p lang={lang} dir={textDir(lang)} className="mt-3 line-clamp-[12] whitespace-pre-line font-serif text-body leading-[1.7] text-paper/85">
           {words}
         </p>
       ) : null}

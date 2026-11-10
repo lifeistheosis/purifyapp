@@ -154,7 +154,7 @@ export function WhoSaidIt() {
                   <p className="font-sans text-caption font-semibold text-paper/55">
                     {f.match === "exact" ? t("whoSaidIt.exact") : t("whoSaidIt.close")}
                   </p>
-                  <blockquote lang="en" className="mt-2 max-w-[62ch] font-serif text-body leading-[1.7] text-paper/85">
+                  <blockquote lang="en" dir="ltr" className="mt-2 max-w-[62ch] font-serif text-body leading-[1.7] text-paper/85">
                     {f.excerpt}
                   </blockquote>
                   <SourceLine cite={f.cite} className="mt-2" />

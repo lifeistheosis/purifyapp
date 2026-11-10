@@ -21,7 +21,7 @@ export function CitationCard({ c }: { c: ResolvedCitation }) {
         </p>
       ) : null}
       {c.paragraph ? (
-        <blockquote lang="en" className="font-serif italic text-body text-paper/90 leading-[1.65] mb-3">
+        <blockquote lang="en" dir="ltr" className="font-serif italic text-body text-paper/90 leading-[1.65] mb-3">
           &ldquo;{c.paragraph}&rdquo;
         </blockquote>
       ) : null}

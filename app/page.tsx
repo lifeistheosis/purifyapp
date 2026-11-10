@@ -359,7 +359,7 @@ export default async function Home() {
             (Was a full-bleed white band that broke the candlelit palette.) */}
  <section className={`${sectionBase} ${desktopOnly} bg-black text-center lm-band`}>
  <div className="mx-auto max-w-[820px] w-full">
- <p lang="en" className="font-serif text-title md:text-display-sm leading-[1.15] tracking-[-0.01em] text-paper">
+ <p lang="en" dir="ltr" className="font-serif text-title md:text-display-sm leading-[1.15] tracking-[-0.01em] text-paper">
  {`“${FRONT_VERSE.en}”`}
  </p>
  <Link

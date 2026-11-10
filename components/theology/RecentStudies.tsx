@@ -32,7 +32,7 @@ export function RecentStudies({ studies }: { studies: RecentStudy[] }) {
           <li key={s.slug} className="theology-rule">
             <Link href={`/theology/${s.slug}`} className="theology-row flex min-h-[56px] items-center gap-3 rounded-[14px] px-2 py-2">
               <FatherFace father={s.father} size={38} />
-              <span lang="en" className="min-w-0 flex-1 font-serif text-[15px] font-semibold leading-[1.26] text-paper/92">
+              <span lang="en" dir="ltr" className="min-w-0 flex-1 font-serif text-[15px] font-semibold leading-[1.26] text-paper/92">
                 {s.title}
               </span>
               {s.minutes ? (

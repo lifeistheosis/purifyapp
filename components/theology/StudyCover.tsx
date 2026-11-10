@@ -64,7 +64,7 @@ export function StudyCover({ subject, passage, firstId }: { subject: { src: stri
       {passage ? (
         <figure ref={words} id={firstId} data-study-epigraph="" className="study-cover-words relative px-3 text-center">
           <blockquote
-            lang="en"
+            lang="en" dir="ltr"
             data-card-words=""
             className="post-fold doctrine-shadow font-serif font-medium text-paper"
             style={
@@ -80,7 +80,7 @@ export function StudyCover({ subject, passage, firstId }: { subject: { src: stri
           </blockquote>
           <div aria-hidden className="mx-auto mt-3 h-[1.5px] w-[30px] bg-paper/75" />
           <figcaption>
-            <span lang="en" className="mt-[9px] block font-sans text-[9.5px] font-bold uppercase tracking-[0.16em] text-paper/82">
+            <span lang="en" dir="ltr" className="mt-[9px] block font-sans text-[9.5px] font-bold uppercase tracking-[0.16em] text-paper/82">
               {passage.saintSlug ? (
                 <Link href={`/saints/${passage.saintSlug}`} prefetch={false} className="hover:text-paper">
                   {passage.name}
@@ -90,7 +90,7 @@ export function StudyCover({ subject, passage, firstId }: { subject: { src: stri
               )}
             </span>
             {passage.work || passage.place ? (
-              <span lang="en" className="mt-1 block font-sans text-[11px] leading-[1.35] text-paper/55">
+              <span lang="en" dir="ltr" className="mt-1 block font-sans text-[11px] leading-[1.35] text-paper/55">
                 {passage.work}
                 {passage.work && passage.place ? <br /> : null}
                 {passage.place}

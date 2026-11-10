@@ -24,12 +24,12 @@ export default function TryHistory({ row }: TryProps) {
     <TryWindow label={t(row.name)} tall>
       {meta ? (
         <div className="px-5 pb-16 pt-5">
-          <div lang="en">
+          <div lang="en" dir="ltr">
             <p className="font-sans text-caption font-semibold tabular-nums text-paper/55">{meta.displayDate}</p>
             <h3 className="mt-1 text-title-sm font-bold leading-[1.15] text-paper">{meta.title}</h3>
           </div>
           <InEnglishNote />
-          <div lang="en">
+          <div lang="en" dir="ltr">
             <Thread steps={TRY_THREAD.steps} home={TRY_THREAD.home} />
           </div>
         </div>

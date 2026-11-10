@@ -258,7 +258,7 @@ function NextRow({ step, steps, progress, short = false }: { step: PathStep; ste
             <ReadMeta read={read} progress={progress} />
           </span>
           {short && read.kind === "question" && step.short ? (
-            <span lang="en" className="mt-[7px] block font-serif text-[14px] italic leading-[1.45] text-paper/80">
+            <span lang="en" dir="ltr" className="mt-[7px] block font-serif text-[14px] italic leading-[1.45] text-paper/80">
               {step.short}
             </span>
           ) : null}

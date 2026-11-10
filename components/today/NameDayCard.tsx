@@ -152,7 +152,7 @@ export function NameDayCard({ className }: { className?: string }) {
       </div>
       {words ? (
         <>
-          <blockquote lang="en" className="mt-3 font-serif text-ui leading-[1.5] text-paper/85">
+          <blockquote lang="en" dir="ltr" className="mt-3 font-serif text-ui leading-[1.5] text-paper/85">
             {words.text}
           </blockquote>
           <SourceLine cite={words.shown} className="mt-2" />

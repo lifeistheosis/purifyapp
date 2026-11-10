@@ -38,7 +38,7 @@ export function ReadMeta({ read, progress }: { read: PathRead; progress: PathPro
     }
     return read.minutes ? <>{t("bible.minRead", { minutes: read.minutes })}</> : null;
   }
-  if (read.kind === "error") return read.era ? <span lang="en">{read.era}</span> : null;
+  if (read.kind === "error") return read.era ? <span lang="en" dir="ltr">{read.era}</span> : null;
   return read.year ? <>{read.year}</> : null;
 }
 

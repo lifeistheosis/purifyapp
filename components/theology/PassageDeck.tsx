@@ -140,7 +140,7 @@ export function PassageDeck({ passages }: { passages: DeckPassage[] }) {
                     height, so a short passage is centred. A long one folds. */}
                 <div className="flex flex-1 flex-col justify-center px-[22px] text-center">
                   <blockquote
-                    lang="en"
+                    lang="en" dir="ltr"
                     data-card-words=""
                     className="post-fold font-serif font-medium text-paper"
                     style={
@@ -155,7 +155,7 @@ export function PassageDeck({ passages }: { passages: DeckPassage[] }) {
                     {p.text}
                   </blockquote>
                   <div aria-hidden className="mx-auto mt-3 h-[1.5px] w-[30px] bg-paper/70" />
-                  <p lang="en" className="mt-[9px] font-sans text-[9.5px] font-bold uppercase tracking-[0.16em] text-paper/78">
+                  <p lang="en" dir="ltr" className="mt-[9px] font-sans text-[9.5px] font-bold uppercase tracking-[0.16em] text-paper/78">
                     {p.saintSlug ? (
                       <Link href={`/saints/${p.saintSlug}`} prefetch={false} className="hover:text-paper">
                         {p.name}
@@ -165,7 +165,7 @@ export function PassageDeck({ passages }: { passages: DeckPassage[] }) {
                     )}
                   </p>
                   {p.work || p.place ? (
-                    <p lang="en" className="mt-[3px] font-sans text-[11px] leading-[1.35] text-paper/50">
+                    <p lang="en" dir="ltr" className="mt-[3px] font-sans text-[11px] leading-[1.35] text-paper/50">
                       {p.work}
                       {p.work && p.place ? <br /> : null}
                       {p.place}

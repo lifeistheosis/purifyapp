@@ -251,7 +251,7 @@ function WordAnchored({
 
  {/* The word itself */}
  <p
- lang="grc"
+ lang="grc" dir="ltr"
  style={{ fontFamily: "var(--font-greek), serif" }}
  className="text-title-sm text-paper font-semibold leading-tight pr-7"
  >
@@ -280,7 +280,7 @@ function WordDetails({
  {entry && (
  <p className="mt-2 font-sans text-ui text-paper/80">
  <span
- lang="grc"
+ lang="grc" dir="ltr"
  style={{ fontFamily: "var(--font-greek), serif" }}
  className="text-body text-paper"
  >
@@ -396,7 +396,7 @@ function WordSheet({ token, entry, onClose, onWordStudy, english }: WordPopoverP
           <div className="flex items-start justify-between gap-3 px-5 pb-1">
             <div className="min-w-0 pt-1">
               {english ? <p className="font-sans text-caption text-paper/55">{english}</p> : null}
-              <p lang="grc" style={GREEK} className="text-title-sm font-semibold leading-tight text-paper">
+              <p lang="grc" dir="ltr" style={GREEK} className="text-title-sm font-semibold leading-tight text-paper">
                 {token.w}
               </p>
             </div>

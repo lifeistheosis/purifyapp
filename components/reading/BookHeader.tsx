@@ -100,11 +100,11 @@ export function BookHeader({
           className="shadow-[0_24px_60px_-24px_rgba(0,0,0,0.75)]"
         />
         <div className="mt-6 flex min-w-0 max-w-[620px] flex-col items-center md:mt-1 md:items-start">
-          <Heading id={heading === "h1" ? "work-title" : undefined} lang="en" className="text-title font-semibold leading-[1.12] tracking-[-0.01em] text-paper text-balance md:text-heading">
+          <Heading id={heading === "h1" ? "work-title" : undefined} lang="en" dir="ltr" className="text-title font-semibold leading-[1.12] tracking-[-0.01em] text-paper text-balance md:text-heading">
             {card.title}
           </Heading>
           {card.subtitle ? (
-            <p lang="en" className="mt-2 font-sans text-ui leading-[1.5] text-paper/60">
+            <p lang="en" dir="ltr" className="mt-2 font-sans text-ui leading-[1.5] text-paper/60">
               {card.subtitle}
             </p>
           ) : null}
@@ -152,7 +152,7 @@ export function BookHeader({
             </ul>
           ) : null}
           {blurb ? (
-            <p lang="en" className="mt-4 max-w-[58ch] font-sans text-ui leading-[1.6] text-paper/70">
+            <p lang="en" dir="ltr" className="mt-4 max-w-[58ch] font-sans text-ui leading-[1.6] text-paper/70">
               {blurb}
             </p>
           ) : null}

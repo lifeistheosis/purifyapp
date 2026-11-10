@@ -28,6 +28,7 @@ import { hasBook, megabytes, type DownloadableBible } from "@/lib/bible/download
 import { cancelBibleDownload, downloadBible, removeBible, useBibles } from "@/lib/bible/downloads/store";
 import { cn } from "@/lib/cn";
 import { useIsNative } from "@/lib/platform/native";
+import { textDir } from "@/lib/i18n/textDir";
 
 export function BibleRow({
   bible,
@@ -93,11 +94,11 @@ export function BibleRow({
           <span className="min-w-0 flex-1">
             <span className="block font-sans text-ui font-semibold text-paper">
               {/* Its own direction inside, the row's alignment outside: the Arabic name reads right to left and starts where the others do. */}
-              <span lang={bible.textLang} dir={bible.dir}>
+              <span lang={bible.textLang} dir={textDir(bible.textLang)}>
                 {bible.title}
               </span>
             </span>
-            <span lang={locale} aria-live={downloading ? "polite" : undefined} className="mt-0.5 block font-sans text-caption text-paper/50">
+            <span lang={locale} dir={textDir(locale)} aria-live={downloading ? "polite" : undefined} className="mt-0.5 block font-sans text-caption text-paper/50">
               {note}
             </span>
           </span>

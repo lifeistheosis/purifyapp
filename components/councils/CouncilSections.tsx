@@ -1,6 +1,7 @@
 import { T } from "@/components/i18n/T";
 import { SaintNames } from "@/components/saints/SaintNames";
 import type { CouncilDocumentContent } from "@/lib/councils/load";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * A council's document's sections as its page draws them (1.8): each one a
@@ -15,22 +16,29 @@ import type { CouncilDocumentContent } from "@/lib/councils/load";
  * differ. A translation keeps the English sections' numbers and paragraphs
  * (lib/i18n/__tests__/serverLocale.test.ts), so the reader's place is the
  * same place in either.
+ *
+ * Its words say their language and direction, each block of them (build 90
+ * note 4): English, or the file's own, left to right under Arabic and Urdu,
+ * while the labels between them ("Editor's note") are the reader's.
  */
 export function CouncilSections({ content, lang }: { content: CouncilDocumentContent; lang?: string }) {
   const last = content.sections[content.sections.length - 1];
+  const text = lang ?? "en";
   return (
     <>
       {content.sections.map((s) => (
         // A section can be opened by its number (#s3, 1.8): a quotation
         // elsewhere in the app links to the canon or decree it quotes. Its
         // title is the page's head (components/saints/WorkHead.tsx).
-        <section key={s.n} id={`s${s.n}`} lang={lang} data-council-part={s.n} className="mx-auto max-w-[680px] scroll-mt-24">
+        <section key={s.n} id={`s${s.n}`} data-council-part={s.n} className="mx-auto max-w-[680px] scroll-mt-24">
           {s.framing && (
             <div className="mb-8">
               <p className="font-sans text-caption font-semibold text-paper/45 mb-2">
                 <T k="saints.editorsNote" />
               </p>
-              <p className="font-sans text-ui md:text-body text-paper/70 leading-[1.65] italic">{s.framing}</p>
+              <p lang={text} dir={textDir(text)} className="font-sans text-ui md:text-body text-paper/70 leading-[1.65] italic">
+                {s.framing}
+              </p>
               {content.review && (
                 <p className="mt-2 font-sans text-caption text-paper/45">
                   <T k="study.councils.framingAwaitingReview" />
@@ -38,8 +46,12 @@ export function CouncilSections({ content, lang }: { content: CouncilDocumentCon
               )}
             </div>
           )}
-          {s.citation && <p className="font-sans text-caption text-paper/70 font-semibold mb-4">{s.citation}</p>}
-          <div className="space-y-5 text-paper/90">
+          {s.citation && (
+            <p lang={text} dir={textDir(text)} className="font-sans text-caption text-paper/70 font-semibold mb-4">
+              {s.citation}
+            </p>
+          )}
+          <div lang={text} dir={textDir(text)} className="space-y-5 text-paper/90">
             {s.paragraphs.map((p, i) => (
               // Each paragraph a place the reader's place is kept by (lib/saints/paragraphInView.ts).
               <p key={i} id={`p-${s.n}-${i}`} data-place={`${s.n}:${i}`} data-work-end={s === last && i === s.paragraphs.length - 1 ? "" : undefined}>
@@ -54,7 +66,7 @@ export function CouncilSections({ content, lang }: { content: CouncilDocumentCon
               </p>
               <ul className="space-y-4">
                 {s.notes.map((n, i) => (
-                  <li key={i} className="font-sans text-ui text-paper/70 leading-[1.55]">
+                  <li key={i} lang={text} dir={textDir(text)} className="font-sans text-ui text-paper/70 leading-[1.55]">
                     {n}
                   </li>
                 ))}

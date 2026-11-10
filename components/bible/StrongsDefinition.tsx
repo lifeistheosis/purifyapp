@@ -15,7 +15,7 @@ export function StrongsDefinition({ text }: { text: string }) {
         if (p.kind === "text") return <span key={i}>{p.text}</span>;
         if (p.kind === "greek") {
           return (
-            <span key={i} lang="grc" style={GREEK} className="text-paper">
+            <span key={i} lang="grc" dir="ltr" style={GREEK} className="text-paper">
               {p.text}
             </span>
           );
@@ -23,7 +23,7 @@ export function StrongsDefinition({ text }: { text: string }) {
         return (
           <span key={i} className="whitespace-nowrap">
             {p.lemma ? (
-              <span lang="grc" style={GREEK} className="text-paper">
+              <span lang="grc" dir="ltr" style={GREEK} className="text-paper">
                 {p.lemma}{" "}
               </span>
             ) : null}

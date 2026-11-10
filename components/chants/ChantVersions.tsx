@@ -12,6 +12,7 @@ import type { ChantIndexVariant, ChantLine } from "@/lib/chants/types";
 import { usePreview } from "@/lib/player/preview";
 
 import { availabilityKey, isBlocked, useChantPlay } from "./ChantPlay";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * A chant's versions, one row each (1.7): the version's name in its own
@@ -121,7 +122,7 @@ function VersionRow({
     <>
       <span className="flex min-w-0 items-center gap-2">
         <span
-          dir="auto"
+          dir={textDir(variant.language)}
           lang={variant.language}
           className={cn("truncate font-sans text-[15.5px] font-semibold leading-snug", current ? "text-paper" : "text-paper/85")}
         >

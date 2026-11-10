@@ -25,6 +25,7 @@ import { ChantRow } from "./ChantRow";
 import { ChantVersions } from "./ChantVersions";
 import { ChantWords, ChantWordsSource } from "./ChantWords";
 import { firstVersion } from "./ChantsHome";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * One chant's page (1.7): the same page for every chant, the owner's note 15
@@ -184,7 +185,7 @@ export function ChantPage({ chant, row, related }: { chant: Chant; row: ChantInd
             ) : null}
             <p className="doctrine-shadow mt-[7px] line-clamp-2 font-sans text-[14px] font-semibold leading-[19px] text-paper/90">{sings}</p>
             <p className="doctrine-shadow mt-1 truncate font-sans text-[13px] leading-[18px] text-paper/60">
-              <bdi lang={variant.language}>{variant.label}</bdi>
+              <bdi lang={variant.language} dir={textDir(variant.language)}>{variant.label}</bdi>
               {what.map((w) => (
                 <span key={w}> · {w}</span>
               ))}

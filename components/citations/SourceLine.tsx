@@ -55,7 +55,7 @@ export function SourceLine({ cite, className }: { cite: ShownCite; className?: s
     return (
       <div data-cite="summary" className={cn(words, className)}>
         <p className="text-paper/45">{t("cite.summary")}</p>
-        <p lang="en" className="mt-0.5 text-paper/60">
+        <p lang="en" dir="ltr" className="mt-0.5 text-paper/60">
           <span className="font-medium text-paper/80">{cite.author}</span>
           {cite.work ? `, ${cite.work}` : ""}
         </p>
@@ -107,7 +107,7 @@ function Words({ cite, t }: { cite: Exclude<ShownCite, { kind: "untraced" | "ine
   }
   if (cite.kind === "text") {
     return (
-      <span lang="en">
+      <span lang="en" dir="ltr">
         <span className="font-medium text-paper/80">{cite.author}</span>
         {["", cite.work, cite.place, cite.edition].filter((part, k) => k === 0 || part).join(", ")}
       </span>
@@ -116,7 +116,7 @@ function Words({ cite, t }: { cite: Exclude<ShownCite, { kind: "untraced" | "ine
   const where = cite.place ? `${cite.work}, ${cite.place}` : cite.work;
   const mark = cite.mark ? `, ${cite.mark}` : "";
   return (
-    <span lang="en">
+    <span lang="en" dir="ltr">
       {cite.author ? (
         <>
           <span className="font-medium text-paper/80">{cite.author}</span>

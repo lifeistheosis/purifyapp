@@ -5,6 +5,7 @@ import { useRef, type KeyboardEvent, type PointerEvent, type ReactNode } from "r
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Grip } from "@/components/ui/icons/Grip";
 import { Orans } from "@/components/ui/icons/Orans";
+import { textDir } from "@/lib/i18n/textDir";
 
 export type ReorderRow = {
   key: string;
@@ -155,7 +156,7 @@ export function ReorderList({
               aria-haspopup="dialog"
               className="tap-press flex min-h-14 min-w-0 flex-1 flex-col items-start justify-center py-2.5 text-start"
             >
-              <span data-step-title lang={row.lang} className="max-w-full truncate font-serif text-[15.5px] font-semibold leading-snug text-paper">
+              <span data-step-title lang={row.lang} dir={textDir(row.lang)} className="max-w-full truncate font-serif text-[15.5px] font-semibold leading-snug text-paper">
                 {row.title}
               </span>
               {row.meta ? <span className="mt-0.5 max-w-full truncate font-sans text-caption text-paper/55">{row.meta}</span> : null}

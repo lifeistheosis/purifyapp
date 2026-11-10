@@ -69,7 +69,7 @@ export default async function HeresiesIndexPage() {
         {centuries.map(({ era, errors }, at) => (
           <section key={era} data-century={era} aria-labelledby={`century-${at}`} className={at === 0 ? "mt-7" : "mt-8"}>
             <div className="flex items-baseline justify-between gap-3">
-              <h2 id={`century-${at}`} lang="en" className={WAY_H2}>
+              <h2 id={`century-${at}`} lang="en" dir="ltr" className={WAY_H2}>
                 {era}
               </h2>
               <span className={WAY_FACT}>{errors.length}</span>
@@ -82,10 +82,10 @@ export default async function HeresiesIndexPage() {
                       <Scroll size={17} />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span lang="en" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92">
+                      <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92">
                         {h.name}
                       </span>
-                      <span lang="en" className="mt-[3px] block font-sans text-detail leading-[1.45] text-paper/60">
+                      <span lang="en" dir="ltr" className="mt-[3px] block font-sans text-detail leading-[1.45] text-paper/60">
                         {h.shortBio}
                       </span>
                     </span>

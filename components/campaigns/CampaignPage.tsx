@@ -316,7 +316,7 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
       </h2>
       {campaign.for_whom === "departed" ? (
         <>
-          <div lang="en" className="mt-3">
+          <div lang="en" dir="ltr" className="mt-3">
             {departedPrayer([name]).map((line, i) => (
               <p key={i} className={cn("break-words font-serif text-[16px] italic leading-[1.6] text-paper/90", i > 0 && "mt-2")}>
                 {line}
@@ -336,7 +336,7 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
       {psalm ? (
         <div className="mt-6">
           <h3 className="font-sans text-detail font-semibold text-paper/80">{t("today.greet.psalm", { ref: psalm.number })}</h3>
-          <div lang="en" className="mt-2">
+          <div lang="en" dir="ltr" className="mt-2">
             {(psalm.prayer.text ?? "").split(/\n\n+/).map((stanza, i) => (
               <p key={i} className={cn("whitespace-pre-line break-words font-serif text-[16px] leading-[1.6] text-paper/90", i > 0 && "mt-3")}>
                 {stanza}

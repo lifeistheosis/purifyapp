@@ -202,7 +202,7 @@ export function WordStudyBody({
   const title = answer?.lemma ?? lemma ?? "";
   return (
     <>
-      <p lang="grc" style={GREEK} className="text-title text-paper">
+      <p lang="grc" dir="ltr" style={GREEK} className="text-title text-paper">
         {title}
       </p>
       {answer?.translit ? <p className="mt-1 font-sans text-ui text-paper/60">{answer.translit}</p> : null}
@@ -246,7 +246,7 @@ export function WordStudyBody({
                 {t(`bible.books.${it.book}`)} {it.chapter}:{it.verse}
               </p>
               {it.english ? <p className="mt-1 font-serif text-body leading-[1.6] text-paper/85">{it.english}</p> : null}
-              <p lang="grc" style={GREEK} className="mt-1 text-ui leading-[1.6] text-paper/65">
+              <p lang="grc" dir="ltr" style={GREEK} className="mt-1 text-ui leading-[1.6] text-paper/65">
                 <Marked text={it.greek} forms={it.forms} />
               </p>
               {it.english === null ? (

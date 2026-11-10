@@ -8,6 +8,7 @@ import { hebrewLine } from "@/lib/bible/psalmNumbers";
 import type { Chant } from "@/lib/chants/types";
 
 import { EnglishForNow } from "./EnglishForNow";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * What a chant is, where it comes from and when it is sung (1.7), then its
@@ -42,11 +43,11 @@ export function ChantAbout({ chant }: { chant: Chant }) {
           <h2 id={`chant-about-${p.id}`} className="text-lede font-bold leading-snug text-paper">
             {p.heading}
           </h2>
-          <p lang={p.english ? "en" : undefined} className="mt-2 font-serif text-body leading-[1.7] text-paper/85">
+          <p lang={p.english ? "en" : undefined} dir={textDir(p.english ? "en" : undefined)} className="mt-2 font-serif text-body leading-[1.7] text-paper/85">
             {p.text}
           </p>
           {p.id === "when" && chant.when.services?.length ? (
-            <ul lang="en" className="mt-3 space-y-1 font-sans text-detail text-paper/65">
+            <ul lang="en" dir="ltr" className="mt-3 space-y-1 font-sans text-detail text-paper/65">
               {chant.when.services.map((s) => (
                 <li key={s}>{s}</li>
               ))}
@@ -73,7 +74,7 @@ export function ChantAbout({ chant }: { chant: Chant }) {
           <h2 id="chant-about-sources" className="text-lede font-bold leading-snug text-paper">
             {t("chants.about.sources")}
           </h2>
-          <ul lang="en" className="mt-3 space-y-3 font-sans text-detail leading-[1.55] text-paper/70">
+          <ul lang="en" dir="ltr" className="mt-3 space-y-3 font-sans text-detail leading-[1.55] text-paper/70">
             {chant.sources.map((s) => {
               const by = [s.author, s.year].filter(Boolean).join(", ");
               const after = by ? `, ${by}` : "";

@@ -48,10 +48,10 @@ export default async function ApologeticsIndexPage() {
       <WayPage way="apologetics" counts={counts} lead="study.apologetics.lead" note={<p><T k="study.whereDoctrineAndTopicsArgue" /></p>}>
         {kinds.map(({ group, label, answers }, at) => (
           <section key={group} data-objection={group} aria-labelledby={`objection-${group}`} className={at === 0 ? "mt-7" : "mt-8"}>
-            <h2 id={`objection-${group}`} lang="en" className={WAY_H2}>
+            <h2 id={`objection-${group}`} lang="en" dir="ltr" className={WAY_H2}>
               {label.en}
             </h2>
-            <p lang="en" className="mt-1 font-sans text-caption leading-[1.42] text-paper/55">
+            <p lang="en" dir="ltr" className="mt-1 font-sans text-caption leading-[1.42] text-paper/55">
               {label.subtitle}
             </p>
             <ul className="mt-3 space-y-3">
@@ -62,7 +62,7 @@ export default async function ApologeticsIndexPage() {
                       <span aria-hidden className="theology-plate grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
                         <Shield size={17} />
                       </span>
-                      <h3 lang="en" className="min-w-0 flex-1 font-serif text-[17px] font-bold leading-tight text-paper">
+                      <h3 lang="en" dir="ltr" className="min-w-0 flex-1 font-serif text-[17px] font-bold leading-tight text-paper">
                         {answer.title}
                       </h3>
                       {answer.estimatedMinutes ? (
@@ -73,11 +73,11 @@ export default async function ApologeticsIndexPage() {
                       <ChevronRight size={14} className="shrink-0 text-paper/45 rtl:-scale-x-100" />
                     </div>
                     {answer.subtitle ? (
-                      <p lang="en" className="mt-3 font-serif text-[14.5px] italic leading-[1.45] text-paper/80">
+                      <p lang="en" dir="ltr" className="mt-3 font-serif text-[14.5px] italic leading-[1.45] text-paper/80">
                         {answer.subtitle}
                       </p>
                     ) : null}
-                    <p lang="en" className="mt-2 font-sans text-detail leading-[1.55] text-paper/60">
+                    <p lang="en" dir="ltr" className="mt-2 font-sans text-detail leading-[1.55] text-paper/60">
                       {answer.summary}
                     </p>
                   </Link>

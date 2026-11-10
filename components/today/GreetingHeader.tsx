@@ -136,7 +136,7 @@ export function GreetingHeader({ verses }: { verses: HourVerses | null }) {
           ) : null}
           {/* h2, not h1: the bar above names the screen ("Today") and owns
               its one h1 (1.7). The calendar's names are English. */}
-          <h2 lang="en" className="title-in min-w-0 font-serif text-title-sm font-bold leading-[1.22] text-paper">
+          <h2 lang="en" dir="ltr" className="title-in min-w-0 font-serif text-title-sm font-bold leading-[1.22] text-paper">
             {lead.name}
           </h2>
         </div>
@@ -184,7 +184,7 @@ export function GreetingHeader({ verses }: { verses: HourVerses | null }) {
       ) : kind === "verse" && verse ? (
         <>
           {/* The app's Psalter is English (Brenton), as the verse of the day is. */}
-          <p lang="en" className="mt-1.5 font-serif text-[15px] italic leading-[1.5] text-paper/70">
+          <p lang="en" dir="ltr" className="mt-1.5 font-serif text-[15px] italic leading-[1.5] text-paper/70">
             &ldquo;{verse.text}&rdquo;
           </p>
           <p className="mt-[5px] font-sans text-[11.5px] font-semibold uppercase tracking-[0.12em] text-paper/45">

@@ -1052,6 +1052,7 @@ export function VerseRow({
  {hasInterlinear && (
  <p
  lang="grc"
+ dir="ltr"
  style={{ fontFamily: "var(--font-greek), serif" }}
  className="indent-0 min-w-0 text-paper/85"
  >

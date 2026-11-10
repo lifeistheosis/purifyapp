@@ -109,7 +109,7 @@ export function CommemorationStep({
 
       {hasDeparted ? (
         <div className={hasLiving ? "mt-[1.6em]" : "mt-5"} style={leading}>
-          <div lang="en">
+          <div lang="en" dir="ltr">
             {departedPrayer([...departed.map((n) => n.name), ...campaignDeparted.map((c) => c.name)]).map((line, i) => (
               <span key={i} data-line {...(i === 0 && !hasLiving ? { "data-snap-start": "" } : {})} className={cn("block break-words", i > 0 && "mt-[0.35em]", lineClass)}>
                 {line}

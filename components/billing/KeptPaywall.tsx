@@ -141,7 +141,7 @@ function FeaturePicture({ id }: { id: string }) {
   if (id === "word-study") {
     return (
       <span aria-hidden className={box}>
-        <span lang="grc" className="font-serif text-[19px] font-semibold">
+        <span lang="grc" dir="ltr" className="font-serif text-[19px] font-semibold">
           λόγος
         </span>
       </span>
@@ -314,11 +314,11 @@ export function PlusReviews({ className }: { className?: string }) {
               <span className="block opacity-70">
                 <Stars label={t("home.apps.outOfFive", { rating: r.stars.toFixed(1) })} count={r.stars} outOf={5} size={11} tone="ink" />
               </span>
-              <blockquote lang="en" className="mt-1.5 font-serif text-[13.5px] leading-[1.5] text-paper/75">
+              <blockquote lang="en" dir="ltr" className="mt-1.5 font-serif text-[13.5px] leading-[1.5] text-paper/75">
                 {`“${r.quote}”`}
               </blockquote>
               <figcaption className="mt-1.5 font-sans text-[11.5px] leading-snug text-paper/45">
-                <span lang="en" className="font-semibold text-paper/65">
+                <span lang="en" dir="ltr" className="font-semibold text-paper/65">
                   {r.name}
                 </span>
                 {" · "}

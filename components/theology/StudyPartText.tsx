@@ -16,7 +16,7 @@ import { SaintNames } from "@/components/saints/SaintNames";
  */
 export function StudyPartText({ blocks, summary }: { blocks: EssayBlock[]; summary?: string }) {
   return (
-    <div lang="en" className="mt-3 space-y-5">
+    <div lang="en" dir="ltr" className="mt-3 space-y-5">
       {summary ? <p className="font-serif text-[17px] leading-[1.65] text-paper/90">{summary}</p> : null}
       {blocks.map((b, i) => (
         <EssayPart key={i} block={b} />
@@ -66,20 +66,20 @@ export function StudyCouncils({ councils }: { councils: NonNullable<TheologyBody
       <ul className="mt-3 space-y-3">
         {councils.map((c, i) => (
           <li key={i} className="theology-tray rounded-[18px] px-5 py-5">
-            <p lang="en" className="font-sans text-caption text-paper/55">
+            <p lang="en" dir="ltr" className="font-sans text-caption text-paper/55">
               {c.name} · {c.year}
             </p>
             {c.reference ? (
-              <p lang="en" className="mt-1 font-sans text-caption text-paper/45">
+              <p lang="en" dir="ltr" className="mt-1 font-sans text-caption text-paper/45">
                 {c.reference}
               </p>
             ) : null}
-            <p lang="en" className="mt-4 font-serif text-ui italic leading-[1.7] text-paper/85">
+            <p lang="en" dir="ltr" className="mt-4 font-serif text-ui italic leading-[1.7] text-paper/85">
               {c.text}
             </p>
             <QuotedLine cite={c.cite} />
             {c.gloss ? (
-              <p lang="en" className="mt-3 font-sans text-detail leading-[1.6] text-paper/55">
+              <p lang="en" dir="ltr" className="mt-3 font-sans text-detail leading-[1.6] text-paper/55">
                 {c.gloss}
               </p>
             ) : null}

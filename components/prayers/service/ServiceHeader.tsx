@@ -11,6 +11,7 @@ import { Bookmark } from "@/components/ui/icons/Bookmark";
 import { Check } from "@/components/ui/icons/Check";
 import { Info } from "@/components/ui/icons/Info";
 import type { Rule } from "@/lib/prayers/types";
+import { textDir } from "@/lib/i18n/textDir";
 
 /** Save, drawn as Share's own round button beside it (components/ui/ShareButton.tsx, round): the two quiet marks match. */
 const ROUND =
@@ -85,7 +86,7 @@ export function ServiceHeader({
         {title}
       </h1>
       {rule.subtitle ? (
-        <p lang={contentLang} className="mt-2 max-w-[44ch] font-serif text-detail italic leading-[1.55] text-paper/60">
+        <p lang={contentLang} dir={textDir(contentLang)} className="mt-2 max-w-[44ch] font-serif text-detail italic leading-[1.55] text-paper/60">
           {rule.subtitle}
         </p>
       ) : null}
@@ -143,13 +144,13 @@ export function ServiceHeader({
           {/* A computer has the room: the words stand under the head. A
               tablet in the apps keeps the phone's sheet. */}
           <p
-            lang={contentLang}
+            lang={contentLang} dir={textDir(contentLang)}
             className="mt-8 hidden max-w-[60ch] text-start font-serif text-body leading-[1.75] text-paper/70 md:block native-md-hidden"
           >
             {rule.intro}
           </p>
           <Sheet open={about} onClose={() => setAbout(false)} title={t("prayers.reader.aboutThis")}>
-            <p lang={contentLang} className="font-serif text-body leading-[1.75] text-paper/80">
+            <p lang={contentLang} dir={textDir(contentLang)} className="font-serif text-body leading-[1.75] text-paper/80">
               {rule.intro}
             </p>
           </Sheet>

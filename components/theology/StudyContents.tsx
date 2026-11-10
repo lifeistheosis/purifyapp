@@ -6,6 +6,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Check } from "@/components/ui/icons/Check";
 import { readIdOf, resumePart, type ReadState } from "@/lib/theology/path";
 import { usePathProgress } from "@/lib/theology/usePathProgress";
+import { textDir } from "@/lib/i18n/textDir";
 
 import { FatherFace } from "./FatherFace";
 
@@ -50,8 +51,10 @@ export function StudyContents({ slug, parts, end }: { slug: string; parts: Conte
               <span aria-hidden data-state={state} className="path-node font-sans text-[11px] font-bold text-paper/70">
                 {state === "read" ? <Check size={13} strokeWidth={2.4} /> : state === "ahead" ? n : null}
               </span>
+              {/* A part's own heading is English; in its place the reader's words ("Part 2"), with the page. */}
               <span
-                lang="en"
+                lang={part.heading ? "en" : undefined}
+                dir={textDir(part.heading ? "en" : undefined)}
                 className={`min-w-0 flex-1 font-serif text-[14.5px] font-semibold leading-[1.28] ${state === "next" ? "text-paper" : "text-paper/86"}`}
               >
                 {part.heading || t("paths.part", { n, total })}

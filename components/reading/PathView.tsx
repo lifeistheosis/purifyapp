@@ -68,7 +68,7 @@ export function PathView({ path }: { path: View }) {
                   {day.readings.map((r) => (
                     <li key={r.href}>
                       <Link href={r.href} className={`group block ${read ? "opacity-60" : ""}`}>
-                        <span lang="en" className="block font-serif text-title-sm font-semibold leading-tight text-paper group-hover:underline">
+                        <span lang="en" dir="ltr" className="block font-serif text-title-sm font-semibold leading-tight text-paper group-hover:underline">
                           {r.title}
                         </span>
                         <span className="mt-0.5 block font-sans text-caption text-paper/55">
@@ -76,7 +76,7 @@ export function PathView({ path }: { path: View }) {
                           {r.place ? (
                             <>
                               {r.author || r.part ? " · " : null}
-                              <span lang="en">{r.place}</span>
+                              <span lang="en" dir="ltr">{r.place}</span>
                             </>
                           ) : null}
                         </span>

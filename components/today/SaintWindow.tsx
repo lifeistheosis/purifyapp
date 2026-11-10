@@ -187,7 +187,7 @@ export function SaintWindowBody({
   return (
     <div className="px-1.5 pb-3">
       <blockquote
-        lang="en"
+        lang="en" dir="ltr"
         data-saint-words=""
         className={`mt-4 font-heading italic leading-[1.42] text-paper ${long ? "text-lede" : "text-title-sm"}`}
       >

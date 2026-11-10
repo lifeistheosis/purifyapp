@@ -90,11 +90,11 @@ export function CouncilBookHeader({
           className="shadow-[0_24px_60px_-24px_rgba(0,0,0,0.75)]"
         />
         <div className="mt-6 flex min-w-0 max-w-[620px] flex-col items-center md:mt-1 md:items-start">
-          <Heading id={heading === "h1" ? "work-title" : undefined} lang="en" className="text-title font-semibold leading-[1.12] tracking-[-0.01em] text-paper text-balance md:text-heading">
+          <Heading id={heading === "h1" ? "work-title" : undefined} lang="en" dir="ltr" className="text-title font-semibold leading-[1.12] tracking-[-0.01em] text-paper text-balance md:text-heading">
             {title}
           </Heading>
           {subtitle ? (
-            <p lang="en" className="mt-2 font-sans text-ui leading-[1.5] text-paper/60 text-balance">
+            <p lang="en" dir="ltr" className="mt-2 font-sans text-ui leading-[1.5] text-paper/60 text-balance">
               {subtitle}
             </p>
           ) : null}
@@ -103,7 +103,7 @@ export function CouncilBookHeader({
             <Link
               href={council.href}
               data-byline=""
-              lang="en"
+              lang="en" dir="ltr"
               className="min-w-0 truncate underline decoration-paper/30 underline-offset-4 hover:decoration-paper"
             >
               {author}
@@ -112,11 +112,11 @@ export function CouncilBookHeader({
           <p className="mt-1.5 font-sans text-caption text-paper/50">
             {readingTime(minutes, t)} · {t(eraKey(era))}
           </p>
-          <p data-council-edition="" lang="en" className="mt-1 max-w-[46ch] font-sans text-caption leading-[1.45] text-paper/50 text-balance">
+          <p data-council-edition="" lang="en" dir="ltr" className="mt-1 max-w-[46ch] font-sans text-caption leading-[1.45] text-paper/50 text-balance">
             {edition}
           </p>
           {blurb ? (
-            <p lang="en" className="mt-4 max-w-[58ch] font-sans text-ui leading-[1.6] text-paper/70">
+            <p lang="en" dir="ltr" className="mt-4 max-w-[58ch] font-sans text-ui leading-[1.6] text-paper/70">
               {blurb}
             </p>
           ) : null}

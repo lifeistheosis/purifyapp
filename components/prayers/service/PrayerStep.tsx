@@ -9,6 +9,7 @@ import { Cross } from "@/components/ui/icons/Cross";
 import { cn } from "@/lib/cn";
 import { stanzasOf } from "@/lib/prayers/lines";
 import type { Prayer, PrayerVariant } from "@/lib/prayers/types";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * One prayer of a prayer page (1.7): its name, the rubric that says how it is
@@ -129,7 +130,7 @@ export function PrayerStep({
       ) : null}
 
       {instruction ? (
-        <p lang={contentLang} className="mx-auto mt-4 max-w-[46ch] font-serif text-detail italic leading-[1.55] text-paper/55">
+        <p lang={contentLang} dir={textDir(contentLang)} className="mx-auto mt-4 max-w-[46ch] font-serif text-detail italic leading-[1.55] text-paper/55">
           {instruction}
         </p>
       ) : null}
@@ -141,6 +142,7 @@ export function PrayerStep({
           data-copy
           data-prayer-words
           lang={contentLang}
+          dir={textDir(contentLang)}
           {...(variants.length > 1
             ? {
                 id: `${wordingBase}-panel-v${Math.min(variantIdx, variants.length - 1)}`,
@@ -174,7 +176,7 @@ export function PrayerStep({
       ) : null}
 
       {refrain ? (
-        <p data-line {...(settlesOn === "refrain" ? snap : {})} lang={contentLang} className={cn("mt-[1.1em] italic", lineClass, "text-paper/85")} style={leading}>
+        <p data-line {...(settlesOn === "refrain" ? snap : {})} lang={contentLang} dir={textDir(contentLang)} className={cn("mt-[1.1em] italic", lineClass, "text-paper/85")} style={leading}>
           {refrain}
         </p>
       ) : null}

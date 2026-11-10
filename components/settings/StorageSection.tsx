@@ -31,6 +31,7 @@ import { setWeekReadings, useWeekReadings } from "@/lib/readAloud/week";
 import { weekKept } from "@/lib/readAloud/weekKept";
 
 import { Row, Section, Switch } from "./LitPanel";
+import { textDir } from "@/lib/i18n/textDir";
 
 const NONE: Record<string, Saved> = {};
 let savedRaw = "";
@@ -93,7 +94,7 @@ export function StorageSection() {
         <Row
           key={b.id}
           label={
-            <span lang={b.textLang} dir={b.dir}>
+            <span lang={b.textLang} dir={textDir(b.textLang)}>
               {b.title}
             </span>
           }

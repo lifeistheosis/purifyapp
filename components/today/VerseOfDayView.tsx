@@ -16,6 +16,7 @@ import {
 } from "@/lib/today/verseOfDay.types";
 import { VerseCardActions } from "./VerseCardActions";
 import { T } from "@/components/i18n/T";
+import { textDir } from "@/lib/i18n/textDir";
 
 /** The reading the verse is from, as the card's line names it. */
 const KIND_KEY = { gospel: "bible.kindGospelLong", epistle: "bible.kindEpistleLong", ot: "bible.kindOtLong" } as const;
@@ -75,6 +76,10 @@ export function VerseOfDayView({
   const machine = machineShown(machineLanguage, machineFile, vod, books);
   const [english, setEnglish] = useState(false);
   const translated = machine && !english ? machine : null;
+  // The verse's own language: the translation's when one is shown, else the app's English (build 90
+  // note 4: English, marked, reads left to right under Arabic and Urdu); none while it loads, when
+  // the words in its place are the reader's.
+  const verseLang = translated ? translated.language : vod?.text ? "en" : undefined;
 
   return (
     <article className="lm-card relative overflow-hidden rounded-[24px] border border-paper/10 bg-night-deep px-[22px] pb-5 pt-6 text-center">
@@ -100,10 +105,7 @@ export function VerseOfDayView({
 
         {/* The verse whole and its reference open the chapter. */}
         <Link href={vod?.href ?? "/bible"} className="tap-press mt-3 block">
-          <p
-            lang={machine ? (translated ? machine.language : "en") : undefined}
-            className="font-serif text-[21px] font-medium leading-[1.45] text-paper"
-          >
+          <p lang={verseLang} dir={textDir(verseLang)} className="font-serif text-[21px] font-medium leading-[1.45] text-paper">
             {translated ? translated.text : vod?.text ?? (
               <span className="text-paper/45 italic">
                 <T k="today.loadingVerse" />
@@ -121,7 +123,7 @@ export function VerseOfDayView({
         {/* The label sits outside the link, so a tap on it is never a tap
             into the chapter. */}
         {machine && (
-          <div lang={machine.language} className="mt-3 flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1">
+          <div lang={machine.language} dir={textDir(machine.language)} className="mt-3 flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1">
             <p className="font-sans text-caption leading-snug text-paper/60">
               {translated ? machine.note : machine.original}
             </p>

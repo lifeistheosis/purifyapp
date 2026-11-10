@@ -39,7 +39,7 @@ export default async function StrugglePage({ params }: { params: Params }) {
           <ol className="mt-8 divide-y divide-paper/[0.07]">
             {passages.map((p) => (
               <li key={p.shown.href} data-struggle-passage="" className="py-6">
-                <blockquote lang="en" className="max-w-[62ch] font-serif text-body leading-[1.75] text-paper/90">
+                <blockquote lang="en" dir="ltr" className="max-w-[62ch] font-serif text-body leading-[1.75] text-paper/90">
                   {p.text}
                 </blockquote>
                 <SourceLine cite={p.shown} className="mt-3" />

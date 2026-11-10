@@ -13,6 +13,7 @@ import { setWordsPrefs, useWordsPrefs } from "@/lib/chants/wordsPrefs";
 import { useSungLines } from "@/lib/player/clock";
 import { getAudioSnapshot, play, seek, setTrack } from "@/lib/prayers/persistentAudioStore";
 import { tabForKey } from "@/lib/ui/sectionTabs";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * A version's words on its chant's page, behind the Words door (1.8, sheet
@@ -201,7 +202,7 @@ export function WordsViewSwitch({
           disabled={disabled && id !== "original"}
           onClick={() => setWordsPrefs({ view: id })}
           onKeyDown={onKeyDown}
-          lang={id === "original" ? variant.language : undefined}
+          lang={id === "original" ? variant.language : undefined} dir={textDir(id === "original" ? variant.language : undefined)}
           className="tap-press hit-44"
         >
           <span dir="auto" className="block truncate">
@@ -221,14 +222,14 @@ export function ChantWordsSource({ variant, className }: { variant: ChantVariant
     <dl className={cn("space-y-3 font-sans text-caption leading-[1.55]", className)}>
       <div>
         <dt className="font-semibold text-paper/70">{t("chants.tab.words")}</dt>
-        <dd lang="en" className="mt-0.5 text-paper/50">
+        <dd lang="en" dir="ltr" className="mt-0.5 text-paper/50">
           {variant.wordsSource}
         </dd>
       </div>
       {hasEnglish && variant.translation ? (
         <div>
           <dt className="font-semibold text-paper/70">{t("chants.words.english")}</dt>
-          <dd lang="en" className="mt-0.5 text-paper/50">
+          <dd lang="en" dir="ltr" className="mt-0.5 text-paper/50">
             {variant.translation.title}
           </dd>
         </div>

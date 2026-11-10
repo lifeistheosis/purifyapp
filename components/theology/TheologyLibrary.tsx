@@ -179,7 +179,7 @@ export function CouncilFilm({ councils }: { councils: FilmCouncil[] }) {
                 <span className="block font-serif text-[14.5px] font-bold leading-tight text-paper">
                   {NUMERALS[c.ordinal] ?? ""} · <span className="tabular-nums">{c.year}</span>
                 </span>
-                <span lang="en" className="mt-0.5 block font-sans text-[10.5px] leading-[1.3] text-paper/72">
+                <span lang="en" dir="ltr" className="mt-0.5 block font-sans text-[10.5px] leading-[1.3] text-paper/72">
                   {c.byname}
                 </span>
               </span>

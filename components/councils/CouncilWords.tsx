@@ -58,7 +58,7 @@ export function CouncilWords({
       <h2 id="council-words" className="font-sans text-caption font-semibold text-paper/55">
         {t("study.heresies.inTheirWords")}
       </h2>
-      <blockquote lang="en" className="mt-2.5 font-heading text-title-sm italic leading-[1.42] text-paper">
+      <blockquote lang="en" dir="ltr" className="mt-2.5 font-heading text-title-sm italic leading-[1.42] text-paper">
         {`${OPEN}${text}${CLOSE}`}
       </blockquote>
       <SourceLine cite={shown} className="mt-2.5" />

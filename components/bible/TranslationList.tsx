@@ -19,6 +19,7 @@ import {
 } from "@/lib/bible/translations";
 import { writeTranslationPref } from "@/lib/bible/translationPref";
 import { cn } from "@/lib/cn";
+import { textDir } from "@/lib/i18n/textDir";
 
 import { BibleRow } from "./BibleRow";
 
@@ -136,7 +137,6 @@ export function TranslationList({
                 <li key={tr.id}>
                   <button
                     type="button"
-                    lang={tr.language}
                     disabled={!selectable}
                     aria-current={isCurrent ? "true" : undefined}
                     onClick={() => onChoose(tr)}
@@ -149,9 +149,12 @@ export function TranslationList({
                           : "border-transparent opacity-50",
                     )}
                   >
+                    {/* The row keeps the page's direction (its check on the page's far side); its words say their own. */}
                     <span className="min-w-0 flex-1">
-                      <span className="block font-sans text-ui font-semibold text-paper">{tr.fullLabel}</span>
-                      <span lang={locale} className="mt-0.5 block font-sans text-caption text-paper/50">
+                      <span lang={tr.language} dir={textDir(tr.language)} className="block font-sans text-ui font-semibold text-paper">
+                        {tr.fullLabel}
+                      </span>
+                      <span lang={locale} dir={textDir(locale)} className="mt-0.5 block font-sans text-caption text-paper/50">
                         {t(`bible.translationNote.${tr.id}`)}
                       </span>
                     </span>

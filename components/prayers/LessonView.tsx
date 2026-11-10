@@ -13,6 +13,7 @@ import { CROSS_FIGURE_LESSON } from "@/lib/prayers/signOfTheCross";
 
 import { LessonEnd } from "./LessonEnd";
 import { SignOfTheCrossFigure } from "./SignOfTheCrossFigure";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * Every language Learn to pray is written in besides English, each its own
@@ -36,7 +37,7 @@ const SOURCE = "lesson-source-";
 function LessonText({ blocks, lang, marks = [] }: { blocks: Block[]; lang: string; marks?: Mark[] }) {
   if (!blocks.length) return null;
   return (
-    <div lang={lang} className="font-serif text-body leading-[1.85] text-paper/80">
+    <div lang={lang} dir={textDir(lang)} className="font-serif text-body leading-[1.85] text-paper/80">
       {blocks.map((b, i) => {
         // More room above a heading than below it.
         const gap = i === 0 ? "" : b.kind === "heading" ? "mt-12" : blocks[i - 1].kind === "heading" ? "mt-3" : "mt-[1.85em]";
@@ -95,7 +96,7 @@ export function LessonView({ english, shown }: { english: LessonPlace<PrayerLess
         <p className="font-sans text-caption text-paper/55">
           <T k="prayers.lessonMeta" replacements={{ order: lesson.order, minutes: lesson.estimatedMinutes }} />
         </p>
-        <h1 id="lesson-title" lang={lang} className="mt-3 text-title font-bold leading-[1.12] tracking-[-0.01em] text-paper md:text-heading">
+        <h1 id="lesson-title" lang={lang} dir={textDir(lang)} className="mt-3 text-title font-bold leading-[1.12] tracking-[-0.01em] text-paper md:text-heading">
           {lesson.title}
         </h1>
       </header>
@@ -117,7 +118,7 @@ export function LessonView({ english, shown }: { english: LessonPlace<PrayerLess
           <h2 id="lesson-prayer" className="font-sans text-caption text-paper/55" style={{ fontFamily: "var(--font-sans)", fontWeight: 600 }}>
             <T k="footer.prayer" />
           </h2>
-          <div lang={lang} className="mt-4 whitespace-pre-line font-serif text-lede leading-[1.75] text-paper">
+          <div lang={lang} dir={textDir(lang)} className="mt-4 whitespace-pre-line font-serif text-lede leading-[1.75] text-paper">
             {lesson.prayer}
           </div>
         </section>
@@ -128,7 +129,7 @@ export function LessonView({ english, shown }: { english: LessonPlace<PrayerLess
           <h2 id="lesson-try" className="font-sans text-caption text-paper/55" style={{ fontFamily: "var(--font-sans)", fontWeight: 600 }}>
             <T k="prayers.tryThis" />
           </h2>
-          <p lang={lang} className="mt-3 font-serif text-body italic leading-[1.7] text-paper/75">
+          <p lang={lang} dir={textDir(lang)} className="mt-3 font-serif text-body italic leading-[1.7] text-paper/75">
             {lesson.tryThis}
           </p>
         </section>

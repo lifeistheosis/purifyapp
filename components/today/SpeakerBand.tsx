@@ -117,7 +117,7 @@ export function SpeakerBand({ eyebrow, name, words, who, cite, face, onShare, sh
           </Link>
         ) : null}
         <blockquote
-          lang="en"
+          lang="en" dir="ltr"
           data-band-words=""
           className={cn(
             "font-heading italic font-medium text-paper/90",

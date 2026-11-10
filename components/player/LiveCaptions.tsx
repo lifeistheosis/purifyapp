@@ -6,6 +6,7 @@ import { clockNow, subscribeClock } from "@/lib/player/clock";
 import { followWord, lineAt, lineParts, wordAt, wordsOf, type CaptionLine } from "@/lib/player/captions";
 import { getAudioSnapshot, type CaptionSource } from "@/lib/prayers/persistentAudioStore";
 import { cn } from "@/lib/cn";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * The words, lit as they are sung or read (1.7, redrawn for 1.8). One
@@ -496,7 +497,7 @@ export const LiveCaptions = memo(function LiveCaptions({
                   <span key={j}>
                     <span ref={ref(j)} data-sung-pair>
                       <span>{word}</span>
-                      <span data-sung-sound dir="ltr" lang={latinLang}>
+                      <span data-sung-sound dir={textDir(latinLang)} lang={latinLang}>
                         {sounds[j]}
                       </span>
                     </span>
@@ -516,7 +517,7 @@ export const LiveCaptions = memo(function LiveCaptions({
               <span
                 data-sung-main
                 data-sung-latin={main.sung && main.latin ? "" : undefined}
-                dir="auto"
+                dir={textDir(main.sung ? sungLang : "en")}
                 lang={main.sung ? sungLang : "en"}
                 className="block"
               >
@@ -531,7 +532,7 @@ export const LiveCaptions = memo(function LiveCaptions({
                       {under.map((u, k) => (
                         <span
                           key={k}
-                          dir="auto"
+                          dir={textDir(u.sung ? sungLang : latinLang)}
                           lang={u.sung ? sungLang : latinLang}
                           data-sung-part={u.sung ? "sung" : "translit"}
                           className="block"
@@ -544,7 +545,7 @@ export const LiveCaptions = memo(function LiveCaptions({
                   {/* The English, under the sung words: shown under the line
                       being sung only, and under every line at rest. */}
                   {gloss ? (
-                    <span data-sung-gloss dir="auto" lang="en">
+                    <span data-sung-gloss dir="ltr" lang="en">
                       {gloss}
                     </span>
                   ) : null}

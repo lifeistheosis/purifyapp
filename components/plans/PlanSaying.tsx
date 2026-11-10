@@ -24,7 +24,7 @@ export function PlanSaying({ saying }: { saying: Saying }) {
       <p id="plan-saying" className="font-sans text-caption font-semibold text-paper/55">
         {t("plans.fromTheFathers")}
       </p>
-      <blockquote lang="en" className="mt-2 font-serif text-body leading-[1.65] text-paper/90">
+      <blockquote lang="en" dir="ltr" className="mt-2 font-serif text-body leading-[1.65] text-paper/90">
         {midSentence ? <span aria-hidden>{"…"}</span> : null}
         {saying.text}
       </blockquote>

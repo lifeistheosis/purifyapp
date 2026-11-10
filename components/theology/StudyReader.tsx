@@ -8,6 +8,7 @@ import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { partFromHash, partHash, readIdOf, withPart, withRead, type ReadKind } from "@/lib/theology/path";
 import { updatePathProgress } from "@/lib/theology/usePathProgress";
 import { useScrollAway } from "@/lib/ui/scrollAway";
+import { textDir } from "@/lib/i18n/textDir";
 
 import { noteOpened } from "./PathRead";
 
@@ -104,6 +105,8 @@ export function StudyReader({
   }, [slug, part, total]);
 
   const nextHeading = part < total ? headings[part] : null;
+  // What Up next names is English when it is a part's heading or the path's next title; else the reader's words.
+  const nextLang = (nextHeading !== null && nextHeading) || (nextHeading === null && end.title) ? "en" : undefined;
 
   return (
     <div data-study-reader="" className="relative">
@@ -112,7 +115,7 @@ export function StudyReader({
 
       {/* On a computer, the study's name, the way back to it, and where the reader is; a phone's bar says both. */}
       <header className="relative mb-4 hidden md:block native-md-hidden">
-        <h1 lang="en" className="font-serif text-title-sm font-bold leading-tight text-paper">
+        <h1 lang="en" dir="ltr" className="font-serif text-title-sm font-bold leading-tight text-paper">
           <Link href={`/theology/${slug}`} className="hover:underline">
             {title}
           </Link>
@@ -151,7 +154,13 @@ export function StudyReader({
           const n = i + 1;
           return (
             <section key={n} data-part={n} hidden={n !== part} aria-labelledby={`study-part-${n}`}>
-              <h2 id={`study-part-${n}`} lang="en" className="font-serif text-[13.5px] italic leading-snug text-paper/58">
+              {/* The part's own heading is English; in its place the reader's words, with the page. */}
+              <h2
+                id={`study-part-${n}`}
+                lang={heading ? "en" : undefined}
+                dir={textDir(heading ? "en" : undefined)}
+                className="font-serif text-[13.5px] italic leading-snug text-paper/58"
+              >
                 {heading || t("paths.part", { n, total })}
               </h2>
               {panels[i]}
@@ -165,10 +174,7 @@ export function StudyReader({
             <span className="block font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/50">
               {nextHeading !== null ? `${t("walk.upNext")} · ${part + 1}` : t("walk.upNext")}
             </span>
-            <span
-              lang={(nextHeading !== null && nextHeading) || (nextHeading === null && end.title) ? "en" : undefined}
-              className="mt-1 block font-serif text-[15px] font-semibold leading-[1.3] text-paper"
-            >
+            <span lang={nextLang} dir={textDir(nextLang)} className="mt-1 block font-serif text-[15px] font-semibold leading-[1.3] text-paper">
               {nextHeading !== null ? nextHeading || t("paths.part", { n: part + 1, total }) : end.title ?? t("study.apologetics.goDeeper")}
             </span>
           </span>

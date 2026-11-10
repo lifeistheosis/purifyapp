@@ -28,6 +28,7 @@ import { DOWNLOADABLE_BIBLES, hasBook, type DownloadableBible } from "@/lib/bibl
 import { readBibleBook, useBibles } from "@/lib/bible/downloads/store";
 import { TRANSLATIONS } from "@/lib/bible/translations";
 import { isNativeClient } from "@/lib/platform/native";
+import { textDir } from "@/lib/i18n/textDir";
 
 /** What a Bible's row shows. */
 export type CompareRow =
@@ -107,7 +108,7 @@ export function CompareSheet({
             <p className="font-sans text-detail font-semibold text-premium-ink">
               {t("bible.strip.greek")} · {testament === "NT" ? "Nestle 1904" : t("bible.wordStudyOT")}
             </p>
-            <p lang="grc" className="mt-1 text-body leading-[1.6] text-paper/80" style={GREEK}>
+            <p lang="grc" dir="ltr" className="mt-1 text-body leading-[1.6] text-paper/80" style={GREEK}>
               {greekWords}
             </p>
           </li>
@@ -126,7 +127,7 @@ export function CompareEnglishRow({ label, words }: { label: string; words: stri
   return (
     <li className="py-3.5" data-compare-row="english">
       <p className="font-sans text-detail font-semibold text-premium-ink">{label}</p>
-      <p lang="en" className="mt-1 font-serif text-body leading-[1.6] text-paper/80">
+      <p lang="en" dir="ltr" className="mt-1 font-serif text-body leading-[1.6] text-paper/80">
         {words}
       </p>
     </li>
@@ -140,7 +141,7 @@ export function CompareBibleRow({ bible, row }: { bible: DownloadableBible; row:
   return (
     <li className="py-3.5" data-compare-row={bible.id}>
       <p className="font-sans text-detail font-semibold text-premium-ink">
-        <span lang={bible.textLang} dir={bible.dir}>
+        <span lang={bible.textLang} dir={textDir(bible.textLang)}>
           {bible.title}
         </span>
         {row.state === "words" && row.at ? <span className="font-normal tabular-nums text-paper/60"> · {row.at}</span> : null}
@@ -148,7 +149,7 @@ export function CompareBibleRow({ bible, row }: { bible: DownloadableBible; row:
       {row.state === "loading" ? (
         <SkeletonText lines={2} className="mt-2" />
       ) : row.state === "words" ? (
-        <p lang={bible.textLang} dir={bible.dir} className={greek ? "mt-1 text-body leading-[1.6] text-paper/80" : "mt-1 font-serif text-body leading-[1.6] text-paper/80"} style={greek ? GREEK : undefined}>
+        <p lang={bible.textLang} dir={textDir(bible.textLang)} className={greek ? "mt-1 text-body leading-[1.6] text-paper/80" : "mt-1 font-serif text-body leading-[1.6] text-paper/80"} style={greek ? GREEK : undefined}>
           {row.words}
         </p>
       ) : (

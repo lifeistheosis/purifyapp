@@ -52,7 +52,7 @@ export function CollectionView({
           {passages.map((p, i) => (
             <li key={`${p.href}-${i}`} className="border-t border-paper/10 py-9 first:border-t-0 first:pt-2 md:py-11">
               <figure>
-                <blockquote lang="en" className="font-serif text-[19px] leading-[1.7] text-paper/90 md:text-[21px]">
+                <blockquote lang="en" dir="ltr" className="font-serif text-[19px] leading-[1.7] text-paper/90 md:text-[21px]">
                   <p>{p.text}</p>
                 </blockquote>
                 <figcaption className="mt-4">

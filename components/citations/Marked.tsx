@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { SourceLine } from "@/components/citations/SourceLine";
 import { T } from "@/components/i18n/T";
 import type { ShownCite } from "@/lib/citations/cite";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * Words inside a longer text that a source is given for (1.8): a quotation,
@@ -102,7 +103,7 @@ export function SourceList({
             </li>
           ) : (
             <li key={s.n} id={`${idPrefix}${s.n}`} className="scroll-mt-24">
-              <p lang={lang} className="font-serif text-ui leading-[1.6] text-paper/70">
+              <p lang={lang} dir={textDir(lang)} className="font-serif text-ui leading-[1.6] text-paper/70">
                 <span className="me-1.5 font-sans text-caption text-paper/45">{s.n}</span>
                 {s.words}
               </p>

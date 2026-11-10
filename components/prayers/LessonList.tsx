@@ -7,6 +7,7 @@ import { Check } from "@/components/ui/icons/Check";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { cn } from "@/lib/cn";
 import { nextLessonId, useLessonsRead } from "@/lib/prayers/lessonProgress";
+import { textDir } from "@/lib/i18n/textDir";
 
 export type LessonRow = {
   id: string;
@@ -82,10 +83,10 @@ export function LessonList({ lessons, lang }: { lessons: LessonRow[]; lang: stri
                 {done ? <Check size={15} /> : l.order}
               </span>
               <span className="flex min-w-0 flex-1 flex-col">
-                <span lang={lang} className="font-serif text-lede font-semibold leading-tight text-paper">
+                <span lang={lang} dir={textDir(lang)} className="font-serif text-lede font-semibold leading-tight text-paper">
                   {l.title}
                 </span>
-                <span lang={lang} className="mt-1 font-sans text-detail leading-[1.55] text-paper/60">
+                <span lang={lang} dir={textDir(lang)} className="mt-1 font-sans text-detail leading-[1.55] text-paper/60">
                   {l.summary}
                 </span>
                 <span className="mt-1.5 font-sans text-caption text-paper/50">

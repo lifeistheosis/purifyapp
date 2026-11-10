@@ -12,6 +12,7 @@ import { cn } from "@/lib/cn";
 import { savedPrayers } from "@/lib/prayers/bookmarks";
 import type { LibraryGroup, LibraryRule } from "@/lib/prayers/library";
 import { itemKey, prayerMinutes, type MyRuleItem } from "@/lib/prayers/myRule";
+import { textDir } from "@/lib/i18n/textDir";
 
 /** The prayer book's groups, by the names the prayer book itself uses. */
 const GROUP_KEY: Record<LibraryGroup, string> = {
@@ -95,7 +96,7 @@ export function LibrarySheet({
     return (
       <li key={`${r.id}/${prayerId}`} className="flex items-center gap-3 py-2.5">
         <span className="flex min-w-0 flex-1 flex-col">
-          <span lang={r.lang} className="truncate font-serif text-ui font-semibold text-paper">
+          <span lang={r.lang} dir={textDir(r.lang)} className="truncate font-serif text-ui font-semibold text-paper">
             {title}
           </span>
           <span className="truncate font-sans text-caption text-paper/50">

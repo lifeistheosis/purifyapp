@@ -325,15 +325,16 @@ export function ChapterScreen({
                       </svg>
                     </summary>
                     <div className="border-t border-paper/[0.08] px-5 pt-4 pb-4">
-                      <p lang="en" className="font-serif text-body leading-[1.55] text-paper/90">{introFacts.about}</p>
-                      <dl lang="en" className="mt-3 grid grid-cols-2 gap-3 font-sans text-caption">
+                      <p lang="en" dir="ltr" className="font-serif text-body leading-[1.55] text-paper/90">{introFacts.about}</p>
+                      {/* The labels are the reader's words; the facts, English, say so each (build 90 note 4). */}
+                      <dl className="mt-3 grid grid-cols-2 gap-3 font-sans text-caption">
                         <div className="min-w-0">
                           <dt className="text-paper/50"><T k="bible.introBy" /></dt>
-                          <dd className="mt-0.5 text-paper/80">{introFacts.by}</dd>
+                          <dd lang="en" dir="ltr" className="mt-0.5 text-paper/80">{introFacts.by}</dd>
                         </div>
                         <div className="min-w-0">
                           <dt className="text-paper/50"><T k="bible.introWhen" /></dt>
-                          <dd className="mt-0.5 text-paper/80">{introFacts.when}</dd>
+                          <dd lang="en" dir="ltr" className="mt-0.5 text-paper/80">{introFacts.when}</dd>
                         </div>
                       </dl>
                     </div>

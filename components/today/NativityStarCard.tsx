@@ -186,10 +186,10 @@ export function NativityStarCard({ days, className }: { days: readonly NativityD
           <span className="mt-2 block font-sans text-detail leading-[1.45] text-paper/70">
             {t("today.nativityStar.today")}{" "}
             {/* The library keeps the works' and the Fathers' English names. */}
-            <b lang="en" className="font-semibold text-paper">
+            <b lang="en" dir="ltr" className="font-semibold text-paper">
               {reading.title}
             </b>
-            {byline ? <span lang="en">{byline}</span> : null}
+            {byline ? <span lang="en" dir="ltr">{byline}</span> : null}
           </span>
         ) : null}
       </span>

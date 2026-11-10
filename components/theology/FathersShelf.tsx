@@ -42,7 +42,7 @@ export function FathersShelf({ fathers }: { fathers: { slug: string; name: strin
                     </span>
                   )}
                 </span>
-                <span lang="en" className="line-clamp-2 max-w-full text-center font-sans text-[10.5px] font-semibold leading-tight text-paper/70">
+                <span lang="en" dir="ltr" className="line-clamp-2 max-w-full text-center font-sans text-[10.5px] font-semibold leading-tight text-paper/70">
                   {medallionName(f.name)}
                 </span>
               </Link>

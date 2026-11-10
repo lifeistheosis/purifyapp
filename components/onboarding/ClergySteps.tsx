@@ -22,6 +22,7 @@ import { placeLine, searchParishes } from "@/lib/parishes/search";
 import type { UsParish, UsParishList } from "@/lib/parishes/usParishes";
 
 import { PrimaryButton } from "./PrimaryButton";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * A priest's or deacon's screens in the welcome questions (1.8.x, the
@@ -126,7 +127,7 @@ function Row({
       style={rises ? { animationDelay: `${300 + index * 40}ms` } : undefined}
     >
       <span className="min-w-0 flex-1">
-        <span lang={lang} className="block font-sans text-ui font-semibold text-paper">
+        <span lang={lang} dir={textDir(lang)} className="block font-sans text-ui font-semibold text-paper">
           {title}
         </span>
         {sub ? <span className="mt-0.5 block font-sans text-caption leading-[1.45] text-paper/60">{sub}</span> : null}
@@ -307,11 +308,11 @@ function parishSub(p: UsParish): ReactNode {
   const j = usJurisdiction(p.jurisdiction);
   return (
     <>
-      <span lang="en" className="block">
+      <span lang="en" dir="ltr" className="block">
         {placeLine(p)}
       </span>
       {j ? (
-        <span lang="en" className="block text-paper/45">
+        <span lang="en" dir="ltr" className="block text-paper/45">
           {j.name}
         </span>
       ) : null}
