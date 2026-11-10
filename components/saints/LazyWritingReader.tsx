@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import type { WritingContent } from "@/lib/saints/load";
 import type { Saint } from "@/lib/saints/saints";
+import { fetchWriting } from "@/lib/saints/writingClient";
 import { watchInput } from "@/lib/ui/lastInput";
 
 import { WritingReader, type AboutBook } from "./WritingReader";
@@ -36,9 +37,9 @@ export function LazyWritingReader({ saint, work, author, about }: { saint: Saint
     let live = true;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const ask = (left: number) => {
-      fetch(`/saints-data/${saint.slug}/${work}.json`)
-        .then((r) => (r.ok ? (r.json() as Promise<WritingContent>) : null))
-        .catch(() => null)
+      // Whole, however the build wrote it: a work the commentary quotes is an
+      // index and parts from 1.9 (lib/saints/writingClient.ts).
+      fetchWriting<WritingContent>(saint.slug, work)
         .then((content) => {
           if (!live) return;
           if (content) setRead({ key: `${saint.slug}/${work}`, content });

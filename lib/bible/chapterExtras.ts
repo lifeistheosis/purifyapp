@@ -6,7 +6,10 @@ import type { CrossRefWords } from "./crossRefPack";
 import type { CrossRefItem } from "./crossRefShape";
 import { greekAlignment, numberedAsEnglish } from "./greekText";
 import { interlinearAvailable } from "./interlinearBooks";
-import { loadCommentary, loadEnglishTagged, loadOriginal, type ChapterCommentary, type Token } from "./load";
+import { isInParts, workInParts } from "@/lib/saints/writingFile";
+import { spanOf, type NoteSpan } from "@/lib/saints/writingParts";
+
+import { loadCommentary, loadEnglishTagged, loadOriginal, type CommentaryNote, type Token } from "./load";
 import { strongsAll, type StrongsEntry } from "./strongs";
 
 /**
@@ -129,10 +132,37 @@ export async function crossRefVerses(book: string, chapter: number): Promise<num
   return refs ? Object.keys(refs).map(Number) : [];
 }
 
-/** The Fathers on a chapter, or null when nobody is quoted on it. */
-export async function chapterCommentaryFile(book: string, chapter: number): Promise<ChapterCommentary | null> {
+/**
+ * A note as the chapter's file holds it. One that is found whole inside the
+ * section of the library work it points to carries no words of its own: `text`
+ * is empty and `span` says where the words are in that section
+ * (lib/saints/writingParts.ts). The reader cuts them back out
+ * (lib/bible/chapterData.ts), so the Fathers' words are in the apps once.
+ */
+export type StoredCommentaryNote = CommentaryNote & { span?: NoteSpan };
+export type StoredCommentary = Record<string, StoredCommentaryNote[]>;
+
+/** The Fathers on a chapter as its file holds them, or null when nobody is quoted on it. */
+export async function chapterCommentaryFile(book: string, chapter: number): Promise<StoredCommentary | null> {
   const commentary = await loadCommentary(book, chapter);
-  return Object.values(commentary).some((notes) => notes.length > 0) ? commentary : null;
+  if (!Object.values(commentary).some((notes) => notes.length > 0)) return null;
+  const stored: StoredCommentary = {};
+  for (const [verse, notes] of Object.entries(commentary)) {
+    stored[verse] = await Promise.all(notes.map(storedNote));
+  }
+  return stored;
+}
+
+/** The note with its words taken out, where the work it points to holds them whole. */
+async function storedNote(note: CommentaryNote): Promise<StoredCommentaryNote> {
+  if (!note.at || !note.text) return note;
+  const [saint, work] = note.at.work.split("/");
+  if (!saint || !work || !isInParts(saint, work)) return note;
+  const parts = await workInParts(saint, work);
+  const sections = parts?.parts.flat().filter((s) => s.n === note.at!.section) ?? [];
+  // A number the work gives twice names no one section: the note keeps its words.
+  const span = sections.length === 1 ? spanOf(sections[0], note.text) : null;
+  return span ? { ...note, text: "", span } : note;
 }
 
 /** The whole Strong's lexicon, keyed by the bare number the tokens carry ("25"). One file for every chapter. */

@@ -23,6 +23,8 @@
 
 import { useEffect, useSyncExternalStore } from "react";
 
+import { fetchWorkSection, fetchWorkTitle } from "@/lib/saints/writingClient";
+
 import { passageFrom, passageKey, type SavedPassage } from "./feed";
 
 // ── Every highlighted paragraph ──────────────────────────────────────────
@@ -81,7 +83,6 @@ export function useSavedPassages(): SavedPassage[] {
 
 // ── A paragraph's words ──────────────────────────────────────────────────
 
-type WorkFile = { title?: string; sections?: { n: number; title?: string; paragraphs?: string[] }[] };
 
 export type PassageWords = {
   /** The paragraph's words, or null until they are read (or when they cannot be). */
@@ -92,34 +93,19 @@ export type PassageWords = {
 };
 
 const LOADING: PassageWords = { text: null, work: null, status: "loading" };
-const works = new Map<string, Promise<WorkFile | null>>();
 const read = new Map<string, PassageWords>();
 const listeners = new Set<() => void>();
-
-function workFile(saintSlug: string, workSlug: string): Promise<WorkFile | null> {
-  const key = `${saintSlug}/${workSlug}`;
-  let file = works.get(key);
-  if (!file) {
-    file = fetch(`/saints-data/${encodeURIComponent(saintSlug)}/${encodeURIComponent(workSlug)}.json`)
-      .then((res) => (res.ok ? (res.json() as Promise<WorkFile>) : null))
-      .catch(() => null);
-    works.set(key, file);
-    // A failed read may be tried again on the next visit to the screen.
-    void file.then((f) => {
-      if (!f) works.delete(key);
-    });
-  }
-  return file;
-}
 
 function ask(p: SavedPassage) {
   const key = passageKey(p);
   if (read.has(key)) return;
   read.set(key, LOADING);
-  void workFile(p.saintSlug, p.workSlug).then((file) => {
-    const section = file?.sections?.find((s) => s.n === p.sectionN);
+  // The section alone, and the work's title: a work the commentary quotes is
+  // written in parts from 1.9, and a saved paragraph reads the one part that
+  // holds it (lib/saints/writingClient.ts keeps what it has read).
+  void Promise.all([fetchWorkSection(p.saintSlug, p.workSlug, p.sectionN), fetchWorkTitle(p.saintSlug, p.workSlug)]).then(([section, title]) => {
     const text = section?.paragraphs?.[p.paragraphIdx]?.trim() || null;
-    read.set(key, { text, work: file?.title?.trim() || null, status: text ? "ready" : "missing" });
+    read.set(key, { text, work: title, status: text ? "ready" : "missing" });
     listeners.forEach((l) => l());
   });
 }

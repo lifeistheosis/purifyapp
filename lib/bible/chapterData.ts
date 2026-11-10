@@ -3,6 +3,9 @@ import type { CrossRefItem } from "./crossRefShape";
 import type { ChapterCommentary } from "./load";
 import type { StrongsEntry } from "./strongs";
 import { booksPointedTo, unpackCrossRefs, type CrossRefWords, type StoredCrossRefs } from "./crossRefPack";
+import { fetchWorkSection } from "@/lib/saints/writingClient";
+import { cutSpan, type NoteSpan } from "@/lib/saints/writingParts";
+
 import { unpackInterlinear, type PackedInterlinear } from "./interlinearPack";
 
 /**
@@ -80,9 +83,71 @@ export async function loadChapterCrossRefs(book: string, chapter: number): Promi
   return unpackCrossRefs(packed, (b) => words.get(b) ?? null);
 }
 
-/** The Fathers on a chapter by verse, or null. */
+/**
+ * The Fathers on a chapter by verse, or null.
+ *
+ * From 1.9 a note that is word for word inside the library work it points to
+ * is stored as a span of that work's section, and its words are cut out of
+ * the work here (lib/saints/writingParts.ts): the part that holds the section
+ * is read, never the whole work. A note whose work could not be read is left
+ * out, the same as a chapter whose file could not be: nothing is shown in
+ * place of a Father's words. Resolved once, inside the kept promise.
+ */
 export function loadChapterCommentary(book: string, chapter: number): Promise<ChapterCommentary | null> {
-  return read<ChapterCommentary>(`/bible-data/commentary/${book}/${chapter}.json`);
+  const path = `/bible-data/commentary/${book}/${chapter}.json`;
+  const hit = kept.get(`${path}#words`);
+  if (hit) return hit as Promise<ChapterCommentary | null>;
+  let whole = true;
+  const asked = read<StoredCommentary>(path).then(async (stored) => {
+    if (!stored) return null;
+    const read = await withWords(stored);
+    whole = !read.missed;
+    return read.commentary;
+  });
+  kept.set(`${path}#words`, asked);
+  // A miss is not kept, nor a chapter read with a note's work missing: the next ask reads again.
+  void asked.then((v) => {
+    if ((v === null || !whole) && kept.get(`${path}#words`) === asked) kept.delete(`${path}#words`);
+  });
+  return asked;
+}
+
+type StoredNote = ChapterCommentary[string][number] & { span?: NoteSpan };
+type StoredCommentary = Record<string, StoredNote[]>;
+
+async function withWords(stored: StoredCommentary): Promise<{ commentary: ChapterCommentary; missed: boolean }> {
+  const out: ChapterCommentary = {};
+  let missed = false;
+  await Promise.all(
+    Object.entries(stored).map(async ([verse, notes]) => {
+      // Anything that is not a list of notes is handed on as it came.
+      if (!Array.isArray(notes)) {
+        out[verse] = notes;
+        return;
+      }
+      const read = await Promise.all(
+        notes.map(async (note) => {
+          if (!note.span || !note.at) return note;
+          const [saint, work] = note.at.work.split("/");
+          const section = saint && work ? await fetchWorkSection(saint, work, note.at.section) : null;
+          const text = section ? cutSpan(section, note.span) : null;
+          if (text === null) {
+            missed = true;
+            return null;
+          }
+          const { span, ...rest } = note;
+          void span;
+          return { ...rest, text };
+        }),
+      );
+      const whole = read.filter((n): n is NonNullable<typeof n> => n !== null);
+      if (whole.length > 0) out[verse] = whole;
+    }),
+  );
+  // Verses in the file's own order, whatever order their parts arrived in.
+  const ordered: ChapterCommentary = {};
+  for (const verse of Object.keys(stored)) if (out[verse]) ordered[verse] = out[verse];
+  return { commentary: ordered, missed };
 }
 
 /** For tests: forget everything that was read. */
