@@ -9,6 +9,12 @@ forward. The set now proposed, eighteen Plus themes in four families with the
 picker for Settings, starts at "The third set" further down, and its pictures
 are at https://claude.ai/artifact/ALDy4Fz1XPGyHfQ7vcVZwD.
 
+**And then it was built**, on his word of about 04:48 UTC ("finalize all of
+this and let's get going"). What is in the app, how it differs from what was
+drawn, what was measured and what still waits for him are at "Built", the
+last part of this file (sections 19 to 26). The same page now shows the real
+build.
+
 His words, the same day: "I also want you to cook up better themes ... I don't
 like the themes we have now, except that light mode, parchment, and the dark
 one, and the one we have now for the default. Everything else, honestly, can
@@ -2251,3 +2257,259 @@ Kept here so nobody draws them twice.
   year, these themes can serve it, as section 7, point 6, said of the first.
 - **An icon-and-gold family**, one of the arbiter's examples: the house has
   no gold, so it was not drawn. It would need his word first.
+
+# Built: the looks and the reading modes' page
+
+Built on 2026-11-10, on his word of about 04:48 UTC the same day ("finalize
+all of this and let's get going"): design and build in one pass, pushed when
+the gates pass, his to change after. What sections 9 to 18 proposed is in the
+app now, on `ccr-07896cf2-bo0afd`, with the differences section 21 lists.
+Nothing is on main.
+
+## 19. What is in the app
+
+- **Eighteen looks**, all Purify Plus, in the four families of section 10:
+  Night (Night sky, Dawn, Fire, Incense), Land and sea (Holy Mountain,
+  Forest, Desert, Jordan, Galilee, Patmos), Garden (Blush, Roses, Lavender,
+  Olive), Sanctuary (Mosaic, Stone, Damask, Linen). Nine are worn over Dark
+  and nine over Light.
+- **Candlelight and Monastery stay**, as they are, and stay Plus: twenty
+  Plus reading modes in all. Nobody's chosen palette moves. Dark, Light and
+  True black are free, unchanged.
+- **The reading modes' own page**, `/settings/reading-mode/`: the free three
+  first, then a shelf for each family swept sideways, then the two earned by
+  reading as goals with how far the reader is. Settings' Reading mode row
+  opens it from its head, which names the palette that is on; the Bible's
+  own sheet has the same way in under its chips.
+- **A tap applies a palette as a cross-fade** of the whole screen on the
+  house curve; with motion off it lands at once.
+- **The words** in all 21 languages: 12 new names, 18 one-line descriptions,
+  4 family names and their 4 lines.
+
+Where it lives:
+
+| What | Where |
+| --- | --- |
+| The registry: ids, families, which palette a look is worn over | `lib/reader/readingModes.ts` |
+| The look before first paint | `lib/reader/prepaint.ts` |
+| The look on the page, the gate, the cross-fade | `components/theme/AppThemeController.tsx` |
+| Every look's colours, room, foot and signs | `app/globals.css`, "The looks (1.9)" |
+| The page and its shelves | `app/(app)/settings/reading-mode/page.tsx`, `components/settings/ReadingModeGallery.tsx`, and "The reading modes' own page (1.9)" in the stylesheet |
+| The row's head, the sixth page, the chips' way in | `components/settings/LitPanel.tsx`, `SettingsClient.tsx`, `ReadingModePages.tsx`, `components/reader/ReadingModeChips.tsx` |
+| The pictures, the script that makes them, their record | `public/themes/`, `scripts/theme-pictures.mjs`, `docs/licensing/THEME_PICTURES.md` |
+
+## 20. How a look is worn
+
+A look is one attribute on the page's root element, `data-look="<id>"`. A
+dark look stands on Dark, with no reading mode beside it. A light look keeps
+`data-reading-mode="parchment"` beside it, so every one of Light's own rules
+(about 210) answers a light look unchanged, and the looks' section of the
+stylesheet only says what a look changes. That section is last in the file on
+purpose: where one of its rules meets one of Light's at the same weight, the
+later wins. `themeAttributes(theme)` in the registry is the one place that
+says which two attributes a stored choice becomes, and the pre-paint script
+and the controller both follow it (a test runs the script against a stand-in
+for the phone's storage and holds its answer to the registry's for all 25
+palettes).
+
+The stored choice is the look's id under the same key as before
+(`purify.reader.theme`). No table holds a theme's id, so there is no
+migration. The server's rule for a written palette (`lib/reader/themeWrite.ts`)
+reads the registry, so it knows the new ids and holds them to Plus as it
+holds Candlelight. The account's sync carries the id as it carries any
+other; a phone still on 1.8 that receives one reads Dark, as it does for any
+id it does not know.
+
+A room is one still picture under the page (`body::before`), and the page's
+own sections step aside for it by one rule. A foot is the same picture once
+more over the page's last lines (`body::after`, masked), under the bars.
+Nothing moves and nothing is blended.
+
+## 21. What changed between the drawing and the build
+
+1. **Settings' row is still the five.** The stills showed the row cut to the
+   free three, with the rest on the new page. That was drawn while
+   Candlelight and Monastery were to be replaced. They stay, so the row a
+   reader knows stays: Dark, Light, True black, Candlelight, Monastery, and
+   under them the two earned by reading. What is new in the row is its head,
+   which opens the page and names the palette that is on, and a sixth small
+   page while a look is the one applied, so it can be seen and put down from
+   Settings.
+2. **The earned two are in both places**: on the row as before, and on the
+   page's last shelf.
+3. **A light look's ink is a shade darker than drawn**, so that Light's own
+   rules, which write some lines at 70 percent of the ink, hold 4.5:1 on a
+   look's page, cards and boxes with no second copy of those rules.
+4. **Every text share the app writes is named for every look.** The app
+   writes its quiet text at many shares of the ink, not only the four the
+   palettes' rules name (42, 48, 52, 56 and 58 beside 45, 50, 55 and 60; and
+   62, 65, 66 and 68 above them). On the real screens the checker found
+   65 percent a hair under on eight light looks (4.37:1 to 4.45:1). Each
+   look's rule now names every share from 40 up, and a test reads the shares
+   from the source, so one written tomorrow is held the day it is written.
+5. **A light look's accent words are drawn at 85 percent.** A look's accent
+   is a colour (the wine of Roses, the green of Olive), lighter than the
+   graphite Light keeps in its place, and the app writes accent words as low
+   as 65 percent. One rule lifts those for every light look.
+6. **A grid ruled by its own ground keeps its cells.** The rule that lets the
+   page's sections stand clear for the room also cleared the two cells of a
+   heresy's "claim and answer" block, whose dividing line is its own ground
+   showing between them. The walk of every screen found it; the cells keep
+   their fill.
+7. **On a wide screen a look is its colours and the sign at a chapter's
+   head.** The scenes at the foot are drawn for a phone's width and stand
+   down from 768 pixels; Night sky's stars fill any screen. A tablet and the
+   website on a computer are in this case.
+8. **The pictures are files**, 24 of them, 840 KB together, not text inside
+   the stylesheet: a look that is not worn fetches nothing.
+9. **No haptic was added.** The brief asked for a tick "where the app
+   already ticks". The app ticks on its bars, in search, on the bell and on
+   the streak, and not on a choice in Settings, so a palette is chosen
+   silently, as every other setting is.
+
+## 22. What was measured
+
+On the export of this build (`npm run build:android`), opened the way a phone
+opens it, 390 wide. A look is worn the reader's own way throughout: the
+stored choice, and the app putting it on.
+
+| Check | What it read | Result |
+| --- | --- | --- |
+| The stills | 23 palettes (the five and the eighteen) on the Bible at John 1 and on Today: `checkMock` on each, then the pixels behind every word | 46 stills, no finding; 1,884 words, none under 4.5:1; lowest on a look 4.68:1 (Galilee and Mosaic, on Today) |
+| Whole screens | 11 screens (Today, John 1, Prayers, Discover, You, Settings, the reading modes' page, the calendar, Theology, the reading room, Saints), `checkMock` on all 23 palettes | Nothing on a look that the five do not also have (section 25 lists what the five have) |
+| The reading modes' page | `checkMock` on all 23 palettes, with its small pages named as pictures | No finding |
+| The room | `scripts/room-walk.mjs`: every screen of the export (121), in Holy Mountain and in Roses | 242 screens, no section covering the room and nothing cut out of a card; two blocks cover it by design and are named |
+| The pictures | `scripts/scene-check.mjs`: each look's picture alone, against its faintest text and its full ink, anywhere above its foot | All 18 hold; the tightest are Dawn and Holy Mountain at 4.67:1 for faint text |
+| The walk | The row in Settings, the page, a tap, the same tap again, the way back, the sixth page, Dark again, motion off, the Bible's sheet, Arabic | 36 steps, all as they should be |
+| A reader without Plus | The same page on a build with the gate on | A look kept in storage is put down and the page is Dark; each family says Purify Plus once by its name and no tile repeats it; a tap opens the Plus sheet and changes nothing; Light still applies; `checkMock` passes on the page |
+| Wide | The page and a chapter at 820 wide | The shelves wrap, the scenes stand down, nothing runs off the side |
+
+The gates: `npm run typecheck` 0; `npm run test:unit` 855 files and 10,409 tests pass; `npm run
+lint` 0 errors (its 8 warnings are in files this build does not touch);
+`npm run build:android` and `npm run build:ios` clean, about 226.5 MB on disk
+of a ceiling of 240 and 72 MB packed of 85; `npm run build` (the website)
+clean, with `/settings/reading-mode` among its routes.
+
+Two things the measuring changed, beyond section 21:
+
+- **Dawn and Incense were repainted.** The stills passed on both, because
+  no faint line happened to lie where their pictures were light. The scene
+  check asks the question of the picture itself, and found Dawn's sunrise
+  reaching the lines still being read and Incense's plume at seven tenths of
+  its strength behind them (faint text 2.7:1 and 2.8:1). The sunrise now
+  keeps to a little over a quarter of the screen. The plume is a wisp where
+  words are read and comes into its strength at the foot. Both are quieter
+  than the stills he first saw.
+- **Theology's picture plates** throw a black shadow that darkened the name
+  under each on three light looks (4.2:1 to 4.5:1). On a light look the
+  plate throws its shadow in the look's own ink.
+
+## 23. Held for his word
+
+Nothing in this build changes what Purify Plus includes in words, a price or
+a trial. Three lines still name two palettes where there are now twenty, and
+they wait for him:
+
+| Where | Today | Draft |
+| --- | --- | --- |
+| The sheet a reader without Plus meets, its title (`plus.palettes.title`) | Candlelight and Monastery are part of Purify Plus | Twenty reading modes are part of Purify Plus |
+| The same sheet, its body (`plus.palettes.body`) | Two reading palettes built for long hours in the Scriptures and the Fathers, easier on the eyes than either default. | Candlelight, Monastery and eighteen looks in four families, each one calm page with a sign of its own, built for long hours in the Scriptures and the Fathers. |
+| "Your plan", the Reading modes line (`lib/premium/plans.ts`) | Candlelight and Monastery reading, in the Scriptures and the writings of the Fathers | Twenty reading modes, from Candlelight to the Holy Mountain, in the Scriptures and the writings of the Fathers |
+
+Until he says, a reader without Plus who taps a look meets the sheet as it
+is today, which names Candlelight and Monastery and not the look they
+tapped. It says nothing untrue; it says less than it could.
+
+Also his:
+
+- **Fire's flames.** They keep a flame's own colours, in the picture at the
+  foot of the page. That is the one place gold appears on any look, under his
+  own exception ("gold is only ever a flame's own colour").
+- **Any look to drop or change.** Each is one id in the registry, one block
+  in the stylesheet and its pictures; a look taken out leaves the others
+  untouched, and a reader who had chosen it reads Dark.
+
+## 24. Limits, said plainly
+
+- **Wide screens**: a look is its colours and its sign at a chapter's head;
+  the scene at the foot stands down (section 21, point 7). A panorama for
+  each scene would be new drawing.
+- **The status bar on Android 14 and older** is an opaque strip, and it stays
+  the app's night colour on every look, as it does on Candlelight and
+  Monastery today (`components/native/NativeBridge.tsx`, `barColor`). On
+  Night sky, whose page is nearly black, that strip is a shade lighter than
+  the page. Not changed here: it is native behaviour, and it wants a phone
+  to be seen on.
+- **A phone has not seen any of this.** Everything was measured in the
+  export, in a browser the size of a phone. The foot's place over the bars,
+  the cross-fade on a tap and the pictures' weight on an older phone belong
+  on the next phone walk.
+- **The five everyday palettes are still named in English** in most
+  languages ("Dark", "Light", "True black", "Candlelight", "Monastery";
+  Russian has its own). The looks' names beside them are translated, so a
+  Greek or Arabic reader sees both on one page. Those five are older words,
+  not touched here.
+- **The new words were written by the chat**, 38 in each of 20 languages,
+  and not read by a reader of each language. Places and things of the
+  Church were given the Church's own names (Άγιον Όρος, Святая Гора).
+- **A reader without Plus** is shown by the page's own test and on a build
+  with the gate switched on; the gate's own behaviour (the store, a
+  purchase) is not part of this build.
+
+## 25. Seen on the way: the app's own, on the palettes it already has
+
+The checks that held the looks read whole screens, so they also met things
+that are not the looks'. None is changed here; each is another chat's
+screen. Each was measured on the palettes named, from the export of this
+build.
+
+- **Light, accent words under 85 percent.** Light's accent is a graphite
+  (`#45454b`), and words written at `text-gold/65` to `/80` or
+  `text-gold-pale/70` are 3.0:1 to 4.2:1 on its page (34 places; the Saints'
+  Greek line at 3.32:1 is one). The looks have a rule for this; the same
+  rule without `[data-look]` in its selector would mend Light.
+- **Light, the odd text shares.** The palettes' rules name 45, 50, 55 and 60
+  percent. The app also writes 42, 48, 52, 56 and 58 (about twenty places),
+  which Light draws as written and which fall short there (Theology's "7
+  citations from the Fathers", at 52, is 2.93:1 on Light, 4.10:1 on
+  Candlelight, 4.43:1 on Monastery).
+- **Settings, the size preview's caption** ("John 1"): 3.82:1 on Dark, 2.31:1
+  on Light, 3.66:1 on True black, 2.86:1 on Candlelight, 3.39:1 on Monastery.
+- **Settings, First focus on Light**: the caption's first line lies where the
+  paper wash over the picture is still thin, 1.94:1 to 3.54:1 by the pixels.
+  The same on any light look.
+- **Words over pictures**, by the pixels behind them, on the palettes the app
+  has: Prayers' verse at its head ("Pray without ceasing.", 1.93:1 on Light),
+  You's "Private on this device" (1.40:1 to 2.38:1 on all five), Discover's
+  card lines (3.07:1 to 4.49:1), the reading room's "22 min" line on Light
+  (3.63:1), and the Plus pill on Candlelight and Monastery (3.59:1, 4.02:1).
+  The mock checker calls these "not measured, look", which is right for a
+  checker of colours; a picture needs the pixels.
+- **Light, Theology's picture plates**: a plate throws a black shadow made
+  for the dark, and the numeral under it is 4.32:1 on Light by the pixels.
+  The looks throw it in their own ink (section 22).
+- **True black, Prayers**: the arrows at 3.21:1 and the Roman numerals at
+  3.83:1.
+
+## 26. What is left in the repository to hold it
+
+- `scripts/theme-pictures.mjs` makes every picture again, and a test holds
+  each drawing on disk to what the script draws, to the letter.
+- `scripts/room-walk.mjs` walks every screen of the export in a look for a
+  section that covers the room or a patch cut out of a card.
+- `scripts/scene-check.mjs` measures each look's picture against its own
+  faintest text.
+- `scripts/mock-check.mjs` can wear a look: `--looks` on the command line,
+  or `checkMock(page, selector, { palettes: [...PALETTES, ...LOOKS] })`. Its
+  default is still the five, as CLAUDE.md says a mockup is held.
+- Tests: the registry and the pre-paint script against each other
+  (`lib/reader/__tests__/readingModes.test.ts`, `prepaint.test.ts`); every
+  look's liturgical pairs, its faint text at every share the app writes, its
+  accent words and its placeholders, by arithmetic from the stylesheet
+  (`lib/ui/__tests__/litPalette.test.ts`, `faintText.test.ts`,
+  `placeholderContrast.test.ts`); the pictures against the stylesheet, the
+  script and their licensing record
+  (`lib/reader/__tests__/themePictures.test.ts`); the page as it is drawn
+  (`lib/settings/__tests__/readingModeGallery.test.ts`, `litPanels.test.ts`);
+  the cross-fade's rules (`lib/reader/__tests__/themeDissolve.test.ts`); the
+  words in 21 languages (`lib/i18n/__tests__/smallLabels.test.ts`).
