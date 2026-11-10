@@ -65,6 +65,12 @@ describe("the tests Purify runs", () => {
     if (!ROADS_LIVE) return;
     const days = (Date.parse(ACCOUNT_PLACE.ends) - Date.parse(ACCOUNT_PLACE.begins)) / 86_400_000;
     expect(days).toBe(84);
+    // And lit, it runs: on its first day, on its last, and not the day after.
+    const open = { roads: true };
+    expect(runningTest("onboarding", ACCOUNT_PLACE.begins, open)?.id).toBe("account-place");
+    expect(runningTest("onboarding", ACCOUNT_PLACE.ends, open)?.id).toBe("account-place");
+    const after = new Date(Date.parse(ACCOUNT_PLACE.ends) + 86_400_000).toISOString().slice(0, 10);
+    expect(runningTest("onboarding", after, open)).toBeNull();
   });
 
   it("send only once the privacy page says how a test is counted", () => {

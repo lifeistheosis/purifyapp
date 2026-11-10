@@ -3,23 +3,29 @@
 // boarding system with new sections or new screens"). What it is and why is
 // docs/1.9-build/notes/onboarding-fable.md.
 //
-// Off for readers. On in two places, so he tries it on his own phone before
-// anyone meets it, and 1.9 ships the same with or without it:
+// LIT ON THE BRANCH since 2026-11-10, on his word for the test builds: "when I
+// try the latest build, I want to try everything as if it was public release.
+// So I want to see everything they see so we could test out the bugs
+// accurately." So a test build shows the new onboarding to every reader, as
+// a release would, with its first test running (lib/ab/tests.ts,
+// ACCOUNT_PLACE). It stays lit into 1.9 on his "roads on" after that walk,
+// and "roads off" is this one line turned back (docs/1.9-build/OWNER-STEPS.md,
+// R0c). In the release commit the first test's two days are set again, to
+// the day of release.
 //
-//   - while Testers mode is on (./testing.ts): Settings, Testers, "First
-//     open" walks the new questions, and nothing is counted or synced;
-//   - in a build made with NEXT_PUBLIC_ONBOARDING_ROADS=1.
+// Testers mode (./testing.ts) still walks the new questions with nothing
+// counted or synced, and a build made with NEXT_PUBLIC_ONBOARDING_ROADS=1
+// has them whatever this says.
 //
-// Lit for readers only on his word, by turning ROADS_LIVE to true. Everything
-// the roads change reads this one answer: the questions' new shape
+// Everything the roads change reads this one answer: the questions' new shape
 // (./flowSteps.ts), the first week in place of Day 1 (./week.ts), the two
 // cards on Today, and where "Where are you coming from?" is kept
 // (./accountSync.ts).
 
 import { isTesting } from "./testing";
 
-/** Turned to true on the owner's word, after he has tried it. Nothing else lights the roads for readers. */
-export const ROADS_LIVE = false;
+/** The owner's word lights the roads for readers, and his word turns them off. See the head of this file. */
+export const ROADS_LIVE = true;
 
 /** The roads as the build has them, whoever is reading. */
 export function roadsBuilt(): boolean {

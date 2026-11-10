@@ -4,8 +4,10 @@
 // (lib/push/__tests__/nativeLimits.test.ts); this reads what a reader is
 // drawn, on both sets of questions:
 //
-//   1. the older questions, no account, as the Android app: the sign-in is
-//      offered at once, and no button says it turns reminders on;
+//   1. a reader with no account, as the Android app. On the older questions
+//      (the new onboarding turned off): the sign-in is offered at once, and
+//      no button says it turns reminders on. With the new onboarding lit
+//      (lib/onboarding/flags.ts): the questions end with no reminders step;
 //   2. the new questions, signed in, on a phone that asks its question and
 //      then never gives its address: the button does not stay on "…", the
 //      step says it did not work and offers the tap again;
@@ -116,24 +118,29 @@ const atStep = (page) => page.getByText("A nudge to pray, morning and evening.")
   let last = "";
   for (let i = 0; i < 20; i++) {
     const now = await words(page);
-    if (now.includes("A nudge to pray")) break;
+    if (now.includes("A nudge to pray") || now.includes("Setting up your space")) break;
     const same = now === last;
     last = now;
     if (await tap(/^Begin$/)) continue;
     if (await tap(/^Continue without an account/)) continue;
     if (same || /Continue with \d/.test(now)) if (await tap(/^Continue/)) continue;
     if (await tap(/^Catholic$/)) continue;
-    if (await tap(/^Completely new/)) continue;
+    if (await tap(/^(Completely new|Not yet)/)) continue;
     if (await tap(/^(Scripture|A rule of prayer|The councils)/)) continue;
     if (await tap(/^Continue/)) continue;
     break;
   }
-  await atStep(page);
-  const b = await buttons(page);
-  say(!b.includes("Turn on reminders"), "the older questions, no account: no button says it turns reminders on");
-  say(b.includes("Sign in") && (await words(page)).includes("Sign in, and they turn on."), "the older questions, no account: the sign-in is offered at once, with its line");
-  say(b.includes("Not now"), "the older questions, no account: Not now is still there");
-  await still(page, "1-no-account.png");
+  if ((await words(page)).includes("Setting up your space")) {
+    // The new onboarding is lit: a reader with no account is asked nothing about reminders here.
+    say(true, "no account, the new onboarding lit: the questions end with no reminders step");
+  } else {
+    await atStep(page);
+    const b = await buttons(page);
+    say(!b.includes("Turn on reminders"), "the older questions, no account: no button says it turns reminders on");
+    say(b.includes("Sign in") && (await words(page)).includes("Sign in, and they turn on."), "the older questions, no account: the sign-in is offered at once, with its line");
+    say(b.includes("Not now"), "the older questions, no account: Not now is still there");
+    await still(page, "1-no-account.png");
+  }
   await ctx.close();
 }
 

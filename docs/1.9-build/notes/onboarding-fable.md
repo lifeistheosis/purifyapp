@@ -1522,3 +1522,35 @@ different versions of a screen."
 
 One thing for Admin's item 141: its new "How long we keep it" paragraph
 lists the kept counts by name, and should cover these as well.
+
+## 12. Lit on the branch for the test builds (2026-11-10, about 15:50 UTC)
+
+His word: "Remember, when I try the latest build, I want to try everything as
+if it was public release. So I want to see everything they see so we could
+test out the bugs accurately." So, on the arbiter's yes:
+
+- `ROADS_LIVE` is `true` (`lib/onboarding/flags.ts`). Every reader of a build
+  from the branch meets the new onboarding, not only a tester.
+- The first test has its days (`lib/ab/tests.ts`, `ACCOUNT_PLACE`):
+  2026-11-10 to 2027-02-02, twelve weeks. A fresh install with no account is
+  given one of its two versions by chance and keeps it.
+
+Why on the branch and not for one build: the Android build has no setting
+that lights it for a single build, and adding one is a change to the audited
+workflow. The branch is the release candidate, so the test build, the test
+web and the release are now the same thing.
+
+What changes at release: the two days are set again to the day of release
+and twelve weeks on (a test holds the span, not the date, so the checklist
+has to carry it: `OWNER-STEPS.md`, R0c). "Roads off" is the one line turned
+back.
+
+What a true run needs: Testers mode off ("Back to my own"), then a fresh
+install or the app's data cleared. In Testers mode nothing is counted and the
+device is in no test. To see the other version: a fresh install gives a new
+chance at it; Testers mode's "A test's version to look at" shows either at
+will.
+
+Found on the way: two older tests took for granted that where a reader comes
+from is copied to and from the account, which the new onboarding stops (his
+108). They hold in both states now (`a2333e5ac`).

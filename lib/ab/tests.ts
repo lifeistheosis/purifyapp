@@ -82,11 +82,13 @@ export type AbTest = {
  * week; finishing the questions, accounts and Plus must not get clearly
  * worse. A reader who is signed in already is in neither version.
  *
- * ITS DAYS ARE SET IN THE RELEASE COMMIT, with ROADS_LIVE: the first day the
- * day of release, the last twelve weeks on. Until the roads are lit the days
- * below hold nothing open, since the gate keeps the test shut, and
- * lib/ab/__tests__/tests.test.ts refuses lit roads with days that are not
- * twelve weeks apart.
+ * ITS DAYS ARE SET AGAIN IN THE RELEASE COMMIT: the first day the day of
+ * release, the last twelve weeks on. The days below are the test builds'
+ * (his word of 2026-11-10, to try everything "as if it was public release"):
+ * they begin on the day the roads were lit on the branch, so a test build
+ * runs the test as a release will. A test build talks to the test web, so
+ * none of its rows reach the main web. lib/ab/__tests__/tests.test.ts
+ * refuses lit roads with days that are not twelve weeks apart.
  */
 export const ACCOUNT_PLACE: AbTest = {
   id: "account-place",
@@ -95,7 +97,7 @@ export const ACCOUNT_PLACE: AbTest = {
   arms: ["card", "end"],
   share: 1,
   begins: "2026-11-10",
-  ends: "2026-11-10",
+  ends: "2027-02-02",
   gate: "roads",
   judge: "back_week2",
   guards: ["finished", "account", "plus_bought"],
