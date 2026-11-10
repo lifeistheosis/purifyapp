@@ -124,8 +124,9 @@ export function TourLayer() {
   const router = useRouter();
   const { t } = useTranslate();
   const ids = useId();
-  // Purify Plus is named only where it is enforced for this reader: never in
-  // the iPhone app, where every feature is free (lib/whatsNew/tour.ts, storyKey).
+  // Purify Plus is named only where it is enforced for this reader: never in a
+  // build whose store's switch is off, where every feature is open
+  // (lib/whatsNew/tour.ts, storyKey).
   const plusSold = plusEnforcedFor(clientSurface());
 
   const [place, setPlace] = useState<FootPlace>("bottom");

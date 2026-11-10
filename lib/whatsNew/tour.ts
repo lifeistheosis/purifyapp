@@ -45,10 +45,11 @@ export type TourStep = {
   title: string;
   body: string;
   /**
-   * The line where Purify Plus is not enforced for this reader: the iPhone
-   * app, where every feature is free and nothing is sold
-   * (docs/app-store-review-notes.md). Only on a stop whose `body` names Purify
-   * Plus, so a reader is never told something is Plus's that is free for them.
+   * The line where Purify Plus is not enforced for this reader: a build whose
+   * store's Plus switch is off, where every feature is open and nothing is
+   * sold (lib/entitlements/entitlements.ts, plusEnforcedFor; the iPhone app
+   * has sold Plus since 1.8). Only on a stop whose `body` names Purify Plus,
+   * so a reader is never told something is Plus's that is free for them.
    */
   bodyFree?: string;
   /**
@@ -161,8 +162,9 @@ const TOUR_1_8: Tour = {
  *
  * Purify Plus is named where it is meant, and only there: the new plans are
  * Plus's, and their line says so in every language; the other stops are
- * every reader's. Where Plus is not enforced (the iPhone app, where every
- * feature is free) the plans' line names no Plus (`bodyFree`, storyKey).
+ * every reader's. Where Plus is not enforced (a build whose store's switch is
+ * off, where every feature is open) the plans' line names no Plus
+ * (`bodyFree`, storyKey).
  * lib/whatsNew/__tests__/tour.test.ts holds all three. The title page names
  * the first three stops, the release's line in three stops.
  *
@@ -234,8 +236,8 @@ export function tourFor(version: string): Tour | null {
 
 /**
  * The stop's line for this reader: `bodyFree` where Purify Plus is not
- * enforced (`plusSold` false: the iPhone app, where every feature is free),
- * its own line everywhere else.
+ * enforced (`plusSold` false: a build whose store's switch is off, where every
+ * feature is open), its own line everywhere else.
  */
 export function storyKey(step: TourStep, plusSold: boolean): string {
   return !plusSold && step.bodyFree ? step.bodyFree : step.body;

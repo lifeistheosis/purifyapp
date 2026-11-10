@@ -164,10 +164,11 @@ describe("the 1.9 tour as data", () => {
     for (const id of TOUR.highlights) expect(plus, id).not.toContain(id);
   });
 
-  it("names no Plus where Plus is not enforced: the iPhone app, where every feature is free", () => {
-    // docs/app-store-review-notes.md: nothing is sold on iOS and every feature
-    // is free there, so a stop that names Plus has a line of its own for it,
-    // naming none, and only such a stop has one.
+  it("names no Plus where Plus is not enforced: a build whose store's switch is off, where every feature is open", () => {
+    // lib/entitlements/entitlements.ts: where a build's switch for its store is
+    // off, nothing is sold and every feature is open (the iPhone app has sold
+    // Plus since 1.8, so this is no longer the iPhone), so a stop that names
+    // Plus has a line of its own for it, naming none, and only such a stop has one.
     for (const s of TOUR.steps) {
       const namesPlus = /\bPlus\b/.test(CATALOGS.en[s.body]);
       expect(Boolean(s.bodyFree), `${s.id}: a line without Plus exactly where its own names Plus`).toBe(namesPlus);
