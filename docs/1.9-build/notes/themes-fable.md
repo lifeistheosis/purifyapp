@@ -3,6 +3,12 @@
 Proposals only, 2026-11-10. Nothing here is in the app. Edgar picks first, and
 the build comes on his word through the arbiter.
 
+**Later the same day** he asked for a new and larger set ("make a lot more
+designs", "I want clean and unique"). Of sections 1 to 8, only Night sky goes
+forward. The set now proposed, eighteen Plus themes in four families with the
+picker for Settings, starts at "The third set" further down, and its pictures
+are at https://claude.ai/artifact/ALDy4Fz1XPGyHfQ7vcVZwD.
+
 His words, the same day: "I also want you to cook up better themes ... I don't
 like the themes we have now, except that light mode, parchment, and the dark
 one, and the one we have now for the default. Everything else, honestly, can
@@ -986,3 +992,1262 @@ wants them looked at:
   allowance in the checker, not a change.
 - **Today, 48 one-pixel marks that do not mirror in Arabic** (`<i>`
   elements placed from the left).
+
+---
+
+# The third set: 18 Plus themes in four families, and the picker
+
+Proposals only, 2026-11-10, later the same day. Nothing here is in the app.
+
+What happened between the first set and this one, in his words as the
+arbiter passed them on and as `docs/1.9-build/BRAINSTORM.md` records them:
+
+- After the first set: "can we do a new set of designs?", and "ok to all" to
+  a brand new set of Plus themes that keeps Night sky.
+- Then: "make a lot more designs I want this expanded in v1.9 and a nice
+  scrollable theme system in the settings when picking a theme".
+- Then, on all of it: "I want clean and unique".
+
+So of sections 1 to 8 above, **only Night sky goes forward**, as it is. The
+other six Plus palettes of section 3 and the two new looks for the earned
+palettes stay here as the record and are not proposed any more. A second set
+of six, his own quote-picture looks carried to the whole app, was being drawn
+when the brief widened; those six are in this set and were never sent alone.
+
+**The pictures:** https://claude.ai/artifact/ALDy4Fz1XPGyHfQ7vcVZwD (his private page). The free three, then the
+18 Plus themes by family, each on the Bible at John 1 and on Today, then
+the picker in five stills, then the questions of section 16. Taken from the
+native export of `86969792` at 390 wide.
+
+Contents of this part:
+
+9. The set, and what a theme is now
+10. The families and their themes
+11. Every colour
+12. The CSS: what is shared, one theme whole, and each theme's own rules
+13. The pictures: the drawings' code and the painted ones' code
+14. The picker
+15. How the stills were made, and what was measured
+16. For Edgar to decide
+17. What building it would take
+18. Tried and dropped on the way
+
+## 9. The set, and what a theme is now
+
+The first set failed in one way: six of its seven were the same page in
+another colour with a faint light on it. This set starts from the one he
+kept. Night sky is a picture you could name with your eyes shut (stars), so
+every theme here is one too, and "clean and unique" is held as two rules:
+
+- **Clean.** A theme is one calm page and one sign. The sign is a still
+  picture at the foot of the screen, or the rule at the head of a page. There
+  is no grain, no texture laid over the page, no glow for its own sake, and
+  nothing moves. Where bold and clean pulled apart, clean won: the embers of
+  Fire stop half way up the page, the flowers stand only in the two corners
+  of the foot, and the ideas that were busier were dropped (section 18).
+- **Unique.** No two signs are the same kind of thing: stars, a sunrise,
+  flames, smoke, a peak, firs, dunes, rings on water, a far shore, a sea
+  behind a wall, a bloom, three different plants, tesserae, a wall, a weave,
+  stitches. The colours follow the sign, not the other way round, so no two
+  could be taken for each other and none is a recolour of another.
+
+Six of the seventeen new ones are the looks he already picked for the quote
+pictures on 2026-10-30 ("dark, light, pink ... flowers, freaking fire ... the
+space one"): Fire, Dawn, Blush, Roses, Lavender and Olive, each painted by the
+same code that paints the quote picture, so a reader's theme and the picture
+they share are the same thing. Their names are already in the catalogs in 21
+languages (`picture.look.*`).
+
+18, not 20. I stopped where the next idea would have been one of these
+in another colour.
+
+## 10. The families and their themes
+
+Four families, with names a reader feels, so a catalog this size reads as a
+shelf and not a pile:
+
+- **Night.** The hours of the dark, and what lights them.
+- **Land and sea.** The places the Church has prayed in.
+- **Garden.** Paper and flowers.
+- **Sanctuary.** What the hands of the Church have made.
+
+| Theme | Family | | Its sign | Where the picture comes from | Lowest contrast measured |
+|---|---|---|---|---|---|
+| Night sky | Night | dark | Small stars, and the star over the horizon at a chapter's head | kept from the first set (section 3) | 5.10:1 |
+| Dawn | Night | dark | The sunrise at the foot of the page | painted by the app's quote-picture code | 5.06:1 |
+| Fire | Night | dark | The fire at the foot of the page | painted by the app's quote-picture code | 5.45:1 |
+| Incense | Night | dark | One plume of smoke rising from the foot of the page | an SVG drawing, 1.6 KB | 4.77:1 |
+| Holy Mountain | Land and sea | dark | The mountain at the foot of the page | an SVG drawing, 1.5 KB | 4.78:1 |
+| Forest | Land and sea | dark | A line of firs at the foot of the page | an SVG drawing, 10.0 KB | 4.84:1 |
+| Desert | Land and sea | light | Three dunes at the foot of the page | an SVG drawing, 1.2 KB | 5.92:1 |
+| Jordan | Land and sea | light | Rings on the water at the foot of the page | an SVG drawing, 1.1 KB | 5.56:1 |
+| Galilee | Land and sea | dark | The far hills and the light on the water at the foot of the page | an SVG drawing, 1.4 KB | 4.68:1 |
+| Patmos | Land and sea | light | The sea at the foot of the page | an SVG drawing, 1.0 KB | 6.09:1 |
+| Blush | Garden | light | A soft bloom of rose in the paper | painted by the app's quote-picture code | 5.31:1 |
+| Roses | Garden | light | Roses at the chapter's head and the foot's corners | painted by the app's quote-picture code | 5.46:1 |
+| Lavender | Garden | light | Lavender at the chapter's head and the foot's corners | painted by the app's quote-picture code | 5.26:1 |
+| Olive | Garden | light | An olive branch at the chapter's head and the foot's corners | painted by the app's quote-picture code | 5.29:1 |
+| Mosaic | Sanctuary | dark | Tesserae at the foot of the page and in the chapter's rule | an SVG drawing, 23.0 KB | 4.69:1 |
+| Stone | Sanctuary | light | A wall's blocks at the foot of the page | an SVG drawing, 5.1 KB | 5.69:1 |
+| Damask | Sanctuary | dark | A woven ground of rings at the foot of the page | an SVG drawing, 1.0 KB | 5.16:1 |
+| Linen | Sanctuary | light | A line of cross stitch under every page's head | two small SVG rules | 5.89:1 |
+
+9 of the new ones are light and 8 are dark. With Night sky that is 9 dark and 9 light.
+
+Where the sign stands:
+
+- **At the foot of every screen** (sixteen of the new seventeen). The picture
+  is held to the foot of the screen under the page, and the page's last lines
+  go quiet into it a little above the tab bar, the way they already go quiet
+  under the Bible's dock. In the Bible the dock stands in the picture; on
+  Today the tab bar does.
+- **At a chapter's head** as well, in the place of the short rule, on six:
+  Fire (one ember), the three plants (their plates), Mosaic (a row of
+  tesserae) and Linen (a stitched diamond). It scrolls away with the heading,
+  so no word ever lies over it.
+- **Linen alone has no picture at the foot.** Its sign is its rule: the
+  hairline under every page's bar becomes a row of cross stitches.
+
+## 11. Every colour
+
+The tokens each theme sets, as in section 3. `rubric` is `--ink-rubric`.
+`faint` is the share its faint text is drawn at (the shape of the
+stylesheet's own "Faint text on every palette"). `foot` is where the foot
+is fully the picture and where it is fully the page, in px from the foot of
+the screen.
+
+| id | night | night-soft | night-deep | paper | gold | gold-soft | gold-pale | festal | rubric | faint % | foot |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| `dawn` | #080a1e | #151938 | #05061a | #f2eff8 | #f7f3fc | #cbc2df | #fcfaff | #f6c5cc | 244 170 180 | 62 | 104 / 240 |
+| `fire` | #040301 | #1a110c | #000000 | #fff1e4 | #fff6ea | #dcc3b2 | #fffaf3 | #ffd9c2 | 255 150 120 | 60 | 104 / 240 |
+| `incense` | #17141d | #221e2a | #0f0d14 | #f1eef7 | #f8f5fd | #c4bcd8 | #fdfcff | #e3d9f7 | 255 160 150 | 62 | 104 / 240 |
+| `athos` | #0e1420 | #182031 | #090d16 | #edf1f8 | #f6f8fd | #b8c3dc | #fcfdff | #d6e0f8 | 255 165 150 | 62 | 104 / 240 |
+| `forest` | #0b1711 | #14231b | #060f0b | #edf5ef | #f5faf6 | #b4cbbd | #fbfefc | #cfe9d9 | 255 165 150 | 62 | 104 / 240 |
+| `desert` | #efe2d9 | #ead9ce | #e2cdbf | #3a2119 | #6f2c16 | #864630 | #5e2410 | #6f2c16 | 150 40 32 | 80 | 104 / 240 |
+| `jordan` | #e4efed | #d6e6e3 | #cbdfdc | #14323a | #13525a | #2a5a62 | #0e464f | #13525a | 150 40 32 | 78 | 104 / 240 |
+| `galilee` | #06181d | #0c2228 | #031014 | #eaf6f6 | #f4fbfb | #a9cdd0 | #fbffff | #c5eef0 | 255 165 150 | 62 | 134 / 244 |
+| `patmos` | #f7f7f5 | #ecedf0 | #e3e5ea | #18202e | #1c4aa6 | #2f4f8f | #153a85 | #1c4aa6 | 150 40 32 | 74 | 134 / 244 |
+| `blush` | #efe8e8 | #f0d9dd | #ecd5d9 | #4c2836 | #842544 | #96385f | #6f1c3a | #842544 | 150 40 32 | 78 | 104 / 240 |
+| `rose` | #eceae4 | #e8dfcf | #e5dccb | #3e262a | #91213e | #8a2a40 | #7a1c36 | #91213e | 150 40 32 | 76 | 104 / 240 |
+| `lavender` | #e9e6eb | #e1d9ed | #dad0e8 | #302642 | #523982 | #5b4683 | #432e6e | #523982 | 150 40 32 | 76 | 104 / 240 |
+| `olive` | #e7e6df | #dddcc9 | #d8d7c2 | #2c3220 | #3e4a1e | #48511f | #343d17 | #3e4a1e | 150 40 32 | 78 | 104 / 240 |
+| `mosaic` | #0d1c40 | #182b58 | #08142f | #eef3fd | #f7f9ff | #b7c7ea | #fcfdff | #cfe0ff | 255 175 160 | 66 | 146 / 246 |
+| `stone` | #e3e0d9 | #d8d4cb | #cfcbc1 | #25231f | #3a3833 | #55524a | #2a2824 | #3a3833 | 150 40 32 | 78 | 104 / 240 |
+| `damask` | #240b14 | #351523 | #17060c | #f9eef1 | #fdf6f8 | #dcbcc6 | #fffafb | #f6cfd9 | 255 175 155 | 64 | 104 / 240 |
+| `linen` | #f6f4ef | #ebe8e1 | #e3dfd6 | #1f1b1a | #a31c29 | #8f2a33 | #8c1522 | #a31c29 | 150 40 32 | 72 | none |
+
+No token here is gold, yellow or amber by `lib/ui/goldTone.ts`. On a dark
+theme the accent is the page's own light, a white a breath towards the
+theme's colour. On a light theme it is a deep colour of the theme, dark
+enough to hold 4.5:1 where the app draws it at 85 percent on a 3 percent box
+("Continue reading").
+
+What a theme sets beyond those:
+
+- `incense`: `--color-comment: #ff8a7d`, `--color-comment-hover: #ffa89c`
+- `athos`: `--color-comment: #ff8a7d`, `--color-comment-hover: #ffa89c`
+- `forest`: `--color-comment: #ff8a7d`, `--color-comment-hover: #ffa89c`
+- `desert`: `--color-comment: #a3202a`, `--color-comment-hover: #861824`
+- `galilee`: `--color-comment: #ff8a7d`, `--color-comment-hover: #ffa89c`
+- `blush`: `--color-comment: #a3202a`, `--color-comment-hover: #861824`, `--lit-muted at 0.74`, `--lit-line at 0.58`
+- `rose`: `--color-comment: #a3202a`, `--color-comment-hover: #861824`
+- `olive`: `--lit-muted at 0.74`, `--lit-line at 0.58`
+- `mosaic`: `--color-comment: #ff8a7d`, `--color-comment-hover: #ffa89c`, `--color-streak: #ff7a70`, `--lit-fast-accent: #a996e6`, `--lit-fast-border: rgb(169 150 230 / 0.85)`
+- `stone`: `--color-comment: #a3202a`, `--color-comment-hover: #861824`, `--color-streak: #a01f18`, `--color-sage-soft: #285a4a`
+- `damask`: `--color-comment: #ff8a7d`, `--color-comment-hover: #ffa89c`
+
+The lighter commentary red on six dark themes is there because their scenes
+lie under the last lines of a page, and the app's red (`#f2594e`) does not
+hold 4.5:1 on a peak or a line of firs. It is still red, a step lighter.
+
+The cards and bands the app draws with a literal (the `lm-*` classes), as
+two stops each of the same two gradients section 3 uses:
+
+| id | card, from and to | band, from and to |
+|---|---|---|
+| `dawn` | #1a1f42 to #10142e | #21274f to #151938 |
+| `fire` | #1f140e to #140c08 | #281a12 to #1a110c |
+| `incense` | #2a2534 to #1c1924 | #322c3e to #24202d |
+| `athos` | #1f283c to #141b2b | #273147 to #1a2233 |
+| `forest` | #1b2d23 to #122019 | #22372b to #16261d |
+| `desert` | #fbf5f0 to #f5e9e1 to #eedbd0 | #e9d5c8 to #e0c7b8 |
+| `jordan` | #f8fcfb to #eef6f4 to #e2efec | #d9e9e6 to #cde1dd |
+| `galilee` | #143037 to #0c2228 | #1a3a42 to #10292f |
+| `patmos` | #ffffff to #f8f9fb to #eff1f5 | #e9ecf2 to #dfe3ec |
+| `blush` | #fffafa to #fbeff1 to #f6e4e8 | #f3dde1 to #ecd0d6 |
+| `rose` | #fdfaf4 to #f8f2e7 to #f2eadc | #ebe2d2 to #e3d8c5 |
+| `lavender` | #fbf9fd to #f3eef8 to #ebe3f3 | #e1d8ee to #d8cde8 |
+| `olive` | #fafaf3 to #f2f1e6 to #eae9d9 | #e0dfcc to #d6d5bf |
+| `mosaic` | #1d3263 to #13244c | #243b70 to #182b58 |
+| `stone` | #f4f2ee to #ebe9e3 to #e2dfd8 | #dbd8d0 to #d1cdc3 |
+| `damask` | #3c1a29 to #2a101c | #462031 to #361624 |
+| `linen` | #ffffff to #faf8f4 to #f1eee8 | #ebe7df to #e2ddd3 |
+
+## 12. The CSS
+
+### What is shared
+
+Said once for every theme with a room. In the stylesheet each selector list
+names every such theme; here the first and the last stand for the list.
+
+```css
+/* A room: one still picture under the page, held to the foot of the screen.
+   The html element paints the page colour, so the body steps aside for it. */
+html[data-reading-mode="dawn"] body,
+/* ... one line for each theme with a room ... */
+html[data-reading-mode="damask"] body {
+ background-color: transparent;
+}
+html[data-reading-mode="dawn"] body::before,
+/* ... */
+html[data-reading-mode="damask"] body::before {
+ content: "";
+ position: fixed;
+ inset: 0;
+ z-index: -1;
+ pointer-events: none;
+ background: var(--room);
+}
+
+/* A foot: the same picture once more, over the page's last lines and under
+   the bars, so the words go quiet into the scene the way they go quiet under
+   the reader's dock today. It is measured from the foot of the screen, so it
+   keeps its place under the bars on any phone, and it comes in by an eased
+   share. The dock's own fade steps aside for it. */
+html[data-reading-mode="dawn"] body::after,
+/* ... */
+html[data-reading-mode="damask"] body::after {
+ --foot-rise: calc(var(--foot-clear) - var(--foot-solid));
+ content: "";
+ position: fixed;
+ inset: 0;
+ z-index: 35;
+ pointer-events: none;
+ background: var(--room);
+ mask-image: linear-gradient(to top, #000 var(--foot-solid), rgb(0 0 0 / 0.56) calc(var(--foot-solid) + var(--foot-rise) * 0.25), rgb(0 0 0 / 0.25) calc(var(--foot-solid) + var(--foot-rise) * 0.5), rgb(0 0 0 / 0.06) calc(var(--foot-solid) + var(--foot-rise) * 0.75), transparent var(--foot-clear));
+}
+html[data-reading-mode="dawn"] .pill-fade,
+/* ... */
+html[data-reading-mode="damask"] .pill-fade {
+ background-image: none;
+}
+
+/* The cards and bands the app draws with a literal: each palette's own. */
+html[data-reading-mode="dawn"] :is(.lm-card, .lm-violet, .lm-gold) {
+ background: var(--surface-card) !important;
+}
+html[data-reading-mode="dawn"] :is(.lm-feature, .lm-avatar) {
+ background: var(--surface-band) !important;
+}
+html[data-reading-mode="dawn"] .lm-hero {
+ background: transparent !important;
+}
+```
+
+The foot's numbers: the tab bar is 83px high on the phone the stills were
+taken on, and the Bible's dock stands from 98 to 158px above the foot of the
+screen. The app's own fade under that dock starts 272px above the foot. The
+foot is all picture up to 104px, and gone by 240px. Three themes
+whose picture has a hard line near the bar hold it a little higher: Galilee
+and Patmos at 134 and 244, Mosaic at 146 and 246. In a build the two lengths
+would add `env(safe-area-inset-bottom)`, and `-webkit-mask-image` goes
+beside `mask-image`.
+
+### One theme whole
+
+Every theme's block has this shape. Its tokens are the table's; its
+`.lit-surface` lines are the theme's ink at 60 and 40 percent (70 and 55
+on a light theme, Light's inverted set with them); its faint text is drawn at
+the table's share. A theme painted by the app's code has
+`--room: var(--room-<id>) center bottom / cover no-repeat` in the place of
+the drawing.
+
+```css
+html[data-reading-mode="athos"] {
+ --color-night: #0e1420;
+ --color-night-soft: #182031;
+ --color-night-deep: #090d16;
+ --color-paper: #edf1f8;
+ --color-gold: #f6f8fd;
+ --color-gold-soft: #b8c3dc;
+ --color-gold-pale: #fcfdff;
+ --color-festal: #d6e0f8;
+ --ink-rubric: 255 165 150;
+ --color-comment: #ff8a7d;
+ --color-comment-hover: #ffa89c;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #1f283c 0%, #141b2b 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #273147 0%, #1a2233 100%);
+ --room: var(--scene-athos) center bottom / 100% auto no-repeat, #0e1420;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-reading-mode="athos"] .lit-surface {
+ --lit-muted: rgb(237 241 248 / 0.6);
+ --lit-line: rgb(237 241 248 / 0.4);
+}
+
+@layer utilities {
+ :where(html[data-reading-mode="athos"]) :is(.text-paper\/40, .text-paper\/45, .text-paper\/50, .text-paper\/55, .text-paper\/60) {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+ :where(html[data-reading-mode="athos"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-reading-mode="athos"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+```
+
+A light theme also sets `color-scheme: light`, and draws its 65 and 70
+percent text at the same floor as its faint text, since its ink is a colour
+and not Light's near-black.
+
+### Each theme's own rules
+
+```css
+/* The rule at a chapter's head is an ember: a hairline of the flame's own
+   light with a soft glow round it. A pool, not a ray. */
+html[data-reading-mode="fire"] .page-open-rule {
+ width: 132px;
+ background: linear-gradient(90deg, rgb(255 150 100 / 0), rgb(255 190 150 / 0.9) 50%, rgb(255 150 100 / 0));
+ box-shadow: 0 0 16px 1px rgb(255 110 50 / 0.45);
+}
+
+/* The flower's plate at the head of a chapter, in the place of the short rule
+   (docs/licensing/SHARE_FLOWERS.md), its white paper taken out. It leaves
+   with the heading as the chapter scrolls, so no word lies over it. */
+html[data-reading-mode="rose"] .page-open-rule {
+ width: 100%;
+ max-width: 348px;
+ height: 132px;
+ margin-top: 6px;
+ background: var(--head-rose) center / contain no-repeat;
+}
+
+/* The flower's plate at the head of a chapter, in the place of the short rule
+   (docs/licensing/SHARE_FLOWERS.md), its white paper taken out. It leaves
+   with the heading as the chapter scrolls, so no word lies over it. */
+html[data-reading-mode="lavender"] .page-open-rule {
+ width: 100%;
+ max-width: 348px;
+ height: 132px;
+ margin-top: 6px;
+ background: var(--head-lavender) center / contain no-repeat;
+}
+
+/* The flower's plate at the head of a chapter, in the place of the short rule
+   (docs/licensing/SHARE_FLOWERS.md), its white paper taken out. It leaves
+   with the heading as the chapter scrolls, so no word lies over it. */
+html[data-reading-mode="olive"] .page-open-rule {
+ width: 100%;
+ max-width: 348px;
+ height: 132px;
+ margin-top: 6px;
+ background: var(--head-olive) center / contain no-repeat;
+}
+
+/* The rule at a chapter's head is a row of the same tesserae. */
+html[data-reading-mode="mosaic"] .page-open-rule {
+ width: 112px;
+ height: 10px;
+ background: var(--rule-mosaic) center / 112px 10px no-repeat;
+}
+
+/* Linen's sign is its rule. Under a page's bar the hairline is a row of cross
+   stitches, and at a chapter's head the short rule is a stitched diamond. */
+html[data-reading-mode="linen"] .tab-topbar {
+ border-bottom-color: transparent;
+}
+html[data-reading-mode="linen"] .tab-topbar::after {
+ content: "";
+ position: absolute;
+ inset-inline: 0;
+ bottom: -4px;
+ height: 7px;
+ pointer-events: none;
+ background: var(--rule-linen) center / 8px 7px repeat-x;
+}
+html[data-reading-mode="linen"] .page-open-rule {
+ width: 168px;
+ height: 52px;
+ margin-top: 14px;
+ background: var(--head-linen) center / 168px 52px no-repeat;
+}
+```
+
+## 13. The pictures
+
+### The drawings
+
+Ten scenes and three rules, each an SVG written by this one file. Together
+the ten scenes are 47 KB. A drawing is 390 wide, the width of the phone,
+and is laid at the foot at the page's width (`100% auto`), so it scales
+with the screen. Kept whole here, because it exists nowhere else:
+
+```js
+// The scenes of the third set, each one small still drawing held to the foot
+// of the screen (or, for two, to a rule at a page's head). Every one is an
+// SVG a few hundred bytes to a few kilobytes long: no photograph, no grain,
+// nothing that moves. They are drawn 390 wide, the width of the phone the
+// stills are taken at, and the CSS lays them at the foot at the page's width.
+//
+// A scene is text-safe by its colours where words can still lie over it (the
+// dark ones are the page's own colour a few steps lighter or darker), and
+// where it is not, it stands under the foot's cover (css3.mjs).
+
+const rng = (seed) => {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+};
+const n1 = (v) => Math.round(v * 10) / 10;
+const svg = (w, h, body, defs = "") =>
+  `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${defs ? `<defs>${defs}</defs>` : ""}${body}</svg>`;
+export const uri = (s) => `url("data:image/svg+xml,${encodeURIComponent(s).replace(/%20/g, " ").replace(/%3D/g, "=").replace(/%3A/g, ":").replace(/%2F/g, "/").replace(/%2C/g, ",")}")`;
+const vgrad = (id, stops) => `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">${stops.map(([o, c, a = 1]) => `<stop offset="${o}" stop-color="${c}" stop-opacity="${a}"/>`).join("")}</linearGradient>`;
+
+/** The Holy Mountain: Athos's peak over the sea at dusk, the water still. */
+export function athos() {
+  const H = 300;
+  const defs =
+    vgrad("sky", [[0, "#93a8de", 0], [0.55, "#93a8de", 0.05], [1, "#a9b6e2", 0.26]]) +
+    vgrad("sea", [[0, "#1d2946"], [0.5, "#111a2e"], [1, "#0e1420"]]) +
+    vgrad("mist", [[0, "#c9d6f5", 0], [0.7, "#c9d6f5", 0.13], [1, "#c9d6f5", 0.04]]);
+  const body =
+    `<rect width="390" height="189" fill="url(#sky)"/>` +
+    // The long shoulder of the peninsula, then the peak.
+    `<path d="M-10,189 L-10,173.7 C30,167.2 70,165.9 112,169.8 C150,173.7 178,169.8 205,154.2 C232,137.3 248,102.2 262,84 C268,77.5 273,78.8 278,86.6 C292,110 306,138.6 330,156.8 C352,172.4 376,177.6 400,180.2 L400,189 Z" fill="#2c3a5e"/>` +
+    `<path d="M262,84 C268,77.5 273,78.8 278,86.6 C286,102.2 292,117.8 302,133.4 C290,123 280,112.6 270,107.4 C262,112.6 250,128.2 238,138.6 C248,120.4 254,99.6 262,84 Z" fill="#3a4a74" opacity="0.3"/>` +
+    `<rect y="150" width="390" height="39" fill="url(#mist)"/>` +
+    `<rect y="188" width="390" height="112" fill="url(#sea)"/>` +
+    `<path d="M0,188.5 H390" stroke="#b9c8f0" stroke-opacity="0.3" stroke-width="1"/>`;
+  return { svg: svg(390, H, body, defs), height: H };
+}
+
+function fir(x, base, h, w, r) {
+  const n = Math.max(4, Math.round(h / 13));
+  const left = [];
+  const right = [];
+  for (let i = 1; i <= n; i++) {
+    const y = base - h + (h * i) / n;
+    const hw = w * Math.pow(i / n, 0.9) * (0.88 + r() * 0.24);
+    left.push([x - hw, y], [x - hw * 0.46, y - 1.2]);
+    right.push([x + hw, y], [x + hw * 0.46, y - 1.2]);
+  }
+  let d = `M${n1(x)},${n1(base - h)}`;
+  for (let i = 0; i < left.length - 1; i++) d += `L${n1(left[i][0])},${n1(left[i][1])}`;
+  d += `L${n1(x - w * 0.12)},${n1(base)}L${n1(x - w * 0.12)},${n1(base + 40)}L${n1(x + w * 0.12)},${n1(base + 40)}L${n1(x + w * 0.12)},${n1(base)}`;
+  for (let i = right.length - 2; i >= 0; i--) d += `L${n1(right[i][0])},${n1(right[i][1])}`;
+  return d + "Z";
+}
+
+/** The forest of the north: two lines of firs, mist between them, the last light behind. */
+export function forest() {
+  const H = 300;
+  const r = rng(41);
+  const defs =
+    vgrad("sky", [[0, "#8fd0b0", 0], [0.5, "#8fd0b0", 0.04], [1, "#a6dcc0", 0.2]]) +
+    vgrad("mist", [[0, "#cfeadd", 0], [0.6, "#cfeadd", 0.1], [1, "#cfeadd", 0]]) +
+    vgrad("floor", [[0, "#0a1510"], [1, "#070f0b"]]);
+  let far = "";
+  for (let x = -6; x < 400; x += 15 + r() * 13) far += fir(x, 176 + r() * 6, 34 + r() * 46, 8 + r() * 5, r);
+  let near = "";
+  for (let x = -14; x < 410; x += 30 + r() * 30) near += fir(x, 232 + r() * 8, 78 + r() * 74, 15 + r() * 8, r);
+  const body =
+    `<rect width="390" height="182" fill="url(#sky)"/>` +
+    `<path d="${far}" fill="#1b3528"/>` +
+    `<rect y="176" width="390" height="124" fill="#1b3528"/>` +
+    `<rect y="140" width="390" height="70" fill="url(#mist)"/>` +
+    `<path d="${near}" fill="#08120d"/>` +
+    `<rect y="236" width="390" height="64" fill="url(#floor)"/>`;
+  return { svg: svg(390, H, body, defs), height: H };
+}
+
+/** The desert: three dunes, one behind another, each a step deeper, in the last light. */
+export function desert() {
+  const H = 270;
+  const defs =
+    vgrad("sky", [[0, "#d9977a", 0], [1, "#d9977a", 0.18]]) +
+    vgrad("d1", [[0, "#ecd6c9"], [1, "#e6cab9"]]) +
+    vgrad("d2", [[0, "#e3c4b1"], [1, "#dab49e"]]) +
+    vgrad("d3", [[0, "#d7ad96"], [1, "#cb9a80"]]);
+  const body =
+    `<rect width="390" height="120" fill="url(#sky)"/>` +
+    `<path d="M-10,118 C40,96 96,74 150,70 C196,68 226,86 262,100 C304,116 352,118 400,102 L400,270 L-10,270 Z" fill="url(#d1)"/>` +
+    `<path d="M-10,164 C30,160 70,142 112,126 C140,116 160,116 184,126 C240,150 318,170 400,162 L400,270 L-10,270 Z" fill="url(#d2)"/>` +
+    `<path d="M-10,214 C60,210 150,194 230,172 C268,162 296,158 322,162 C352,167 378,178 400,190 L400,270 L-10,270 Z" fill="url(#d3)"/>`;
+  return { svg: svg(390, H, body, defs), height: H };
+}
+
+/** The Jordan: the water, and the rings that go out over it from one place. */
+export function jordan() {
+  const H = 280;
+  const defs = vgrad("water", [[0, "#9fc9c7", 0], [0.5, "#9fc9c7", 0.2], [1, "#8fbfbe", 0.42]]);
+  const rings = [
+    [30, 0.95],
+    [72, 0.8],
+    [124, 0.62],
+    [186, 0.46],
+    [258, 0.32],
+    [340, 0.2],
+  ];
+  const body =
+    `<rect width="390" height="${H}" fill="url(#water)"/>` +
+    rings.map(([rx, a]) => `<ellipse cx="195" cy="178" rx="${rx}" ry="${n1(rx * 0.3)}" fill="none" stroke="#3f8f95" stroke-opacity="${a}" stroke-width="1.1"/>`).join("") +
+    `<ellipse cx="195" cy="178" rx="5" ry="1.6" fill="#3f8f95" opacity="0.55"/>`;
+  return { svg: svg(390, H, body, defs), height: H };
+}
+
+/** The Sea of Galilee by night: the far hills, the water's edge, and the light lying on the water. */
+export function galilee() {
+  const H = 300;
+  const defs =
+    vgrad("sky", [[0, "#7fd0d6", 0], [0.6, "#7fd0d6", 0.05], [1, "#9fe0e2", 0.24]]) +
+    vgrad("water", [[0, "#103740"], [0.5, "#0a252c"], [1, "#06181d"]]) +
+    `<filter id="soft" filterUnits="userSpaceOnUse" x="0" y="140" width="390" height="120"><feGaussianBlur stdDeviation="9"/></filter>`;
+  const body =
+    `<rect width="390" height="168" fill="url(#sky)"/>` +
+    `<path d="M-10,168 L-10,141 C30,129 76,123 120,133 C160,142 190,139 230,125 C280,109 340,113 400,129 L400,168 Z" fill="#0d2f37"/>` +
+    `<rect y="167" width="390" height="133" fill="url(#water)"/>` +
+    `<ellipse cx="150" cy="188" rx="118" ry="13" fill="#bff3f2" opacity="0.2" filter="url(#soft)"/>` +
+    `<path d="M0,167.5 H390" stroke="#a9eef0" stroke-opacity="0.34" stroke-width="1"/>` +
+    // Three long glints on the water, each quieter than the last.
+    `<path d="M92,176 H212" stroke="#dffbfa" stroke-opacity="0.4" stroke-width="1" stroke-linecap="round"/>` +
+    `<path d="M178,186 H306" stroke="#dffbfa" stroke-opacity="0.26" stroke-width="1" stroke-linecap="round"/>` +
+    `<path d="M54,195 H150" stroke="#dffbfa" stroke-opacity="0.17" stroke-width="1" stroke-linecap="round"/>`;
+  return { svg: svg(390, H, body, defs), height: H };
+}
+
+/** Patmos: the white wall, and the sea beyond it. Two fields of colour and the line between them. */
+export function patmos() {
+  const H = 220;
+  const defs = vgrad("haze", [[0, "#7fa6ea", 0], [1, "#7fa6ea", 0.2]]) + vgrad("sea", [[0, "#2f63c8"], [0.4, "#2453b2"], [1, "#1b4296"]]);
+  const body =
+    `<rect width="390" height="88" fill="url(#haze)"/>` +
+    `<rect y="88" width="390" height="132" fill="url(#sea)"/>` +
+    `<path d="M0,88.5 H390" stroke="#a9c6f7" stroke-opacity="0.9" stroke-width="1"/>` +
+    // Three long glints, each quieter than the last.
+    `<path d="M214,101 H318" stroke="#ffffff" stroke-opacity="0.34" stroke-width="1" stroke-linecap="round"/>` +
+    `<path d="M40,113 H126" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1" stroke-linecap="round"/>` +
+    `<path d="M252,124 H352" stroke="#ffffff" stroke-opacity="0.14" stroke-width="1" stroke-linecap="round"/>`;
+  return { svg: svg(390, H, body, defs), height: H };
+}
+
+/** The mosaic: a band of tesserae along the foot of the wall, hand-set, with a pale row to close it. */
+export function mosaic() {
+  const H = 150;
+  const r = rng(7);
+  const cell = 13;
+  const cols = 30;
+  const rows = 11;
+  const deep = ["#15306b", "#1a3a7e", "#122a5c", "#1e4491", "#173672", "#1b4a86", "#12335f", "#183f7a"];
+  const bright = ["#2d63b4", "#3a7fb8", "#5f93d6", "#9fbde9"];
+  const edge = ["#9fbde9", "#d7e3f6", "#5f93d6", "#c3d5f1"];
+  let tiles = "";
+  for (let row = 0; row < rows; row++) {
+    for (let c = 0; c < cols; c++) {
+      const top = row === rows - 1;
+      const color = top ? edge[Math.floor(r() * edge.length)] : row === rows - 2 ? deep[Math.floor(r() * 3)] : r() < 0.1 ? bright[Math.min(bright.length - 1, Math.floor(Math.pow(r(), 1.8) * bright.length))] : deep[Math.floor(r() * deep.length)];
+      const x = c * cell + 0.9;
+      const y = H - (row + 1) * cell + 0.9;
+      const s = cell - 1.8;
+      const j = () => (r() - 0.5) * 1.7;
+      const pts = [
+        [x + j(), y + j()],
+        [x + s + j(), y + j()],
+        [x + s + j(), y + s + j()],
+        [x + j(), y + s + j()],
+      ];
+      tiles += `<path d="M${pts.map((q) => `${n1(q[0])},${n1(q[1])}`).join("L")}Z" fill="${color}"/>`;
+    }
+  }
+  return { svg: svg(390, H, tiles), height: H };
+}
+
+/** A row of tesserae for the rule at a page's head. */
+export function mosaicRule() {
+  const colors = ["#2d63b4", "#1e4491", "#5f93d6", "#1a3a7e", "#d7e3f6", "#1b4a86", "#3a7fb8", "#15306b", "#9fbde9", "#1e4491", "#2d63b4"];
+  const tiles = colors.map((c, i) => `<rect x="${n1(i * 10.2 + 0.6)}" y="0.6" width="8.6" height="8.6" rx="1.1" fill="${c}" transform="rotate(${[-3, 2, -1, 3, 0, -2, 2, -3, 1, 2, -2][i]} ${n1(i * 10.2 + 4.9)} 4.9)"/>`).join("");
+  return { svg: svg(112, 10, tiles), width: 112, height: 10 };
+}
+
+/** Stone: the foot of a monastery wall, its blocks of two heights, each a breath lighter or darker than the next. */
+export function stone() {
+  const H = 200;
+  const r = rng(23);
+  const courses = [40, 27, 36, 25, 32, 24];
+  let out = "";
+  let y = H;
+  courses.forEach((h, i) => {
+    y -= h;
+    const a = Math.max(0, 1 - i / 5.4);
+    let x = -((i * 43) % 67) - 24;
+    while (x < 390) {
+      const w = (h > 30 ? 74 : 54) + r() * 52;
+      const tone = r();
+      out += `<rect x="${n1(x)}" y="${n1(y)}" width="${n1(w)}" height="${h}" fill="${tone < 0.55 ? "#4f483b" : "#ffffff"}" opacity="${n1((tone < 0.55 ? 0.03 + r() * 0.08 : 0.12 + r() * 0.2) * a)}"/>`;
+      x += w;
+      if (x > 0 && x < 390) out += `<path d="M${n1(x + 0.5)},${n1(y + 1)} V${n1(y + h)}" stroke="#7d7669" stroke-opacity="${n1(0.6 * a)}" stroke-width="1"/>`;
+    }
+    out += `<path d="M0,${n1(y + 0.5)} H390" stroke="#7d7669" stroke-opacity="${n1(0.66 * a)}" stroke-width="1"/>`;
+  });
+  return { svg: svg(390, H, out), height: H };
+}
+
+/** Damask: a woven ground of rings and small flowers, the cloth's own colour a step lighter. */
+export function damask() {
+  const H = 300;
+  const defs =
+    `<pattern id="p" width="46" height="46" patternUnits="userSpaceOnUse">` +
+    `<g fill="none" stroke="#6a2740" stroke-width="1.1">` +
+    `<circle cx="23" cy="23" r="17.5"/><circle cx="23" cy="23" r="12"/>` +
+    `<path d="M23,15 C26,19 26,27 23,31 C20,27 20,19 23,15 Z M15,23 C19,20 27,20 31,23 C27,26 19,26 15,23 Z"/>` +
+    `<path d="M0,-4.6 L4.6,0 L0,4.6 L-4.6,0 Z M46,-4.6 L50.6,0 L46,4.6 L41.4,0 Z M0,41.4 L4.6,46 L0,50.6 L-4.6,46 Z M46,41.4 L50.6,46 L46,50.6 L41.4,46 Z"/>` +
+    `</g><circle cx="23" cy="23" r="1.7" fill="#6a2740"/></pattern>` +
+    vgrad("fade", [[0, "#ffffff", 0], [0.42, "#ffffff", 0.3], [1, "#ffffff", 1]]) +
+    `<mask id="m"><rect width="390" height="${H}" fill="url(#fade)"/></mask>`;
+  const body = `<rect width="390" height="${H}" fill="url(#p)" mask="url(#m)" transform="translate(-3 -1)"/>`;
+  return { svg: svg(390, H, body, defs), height: H };
+}
+
+/** Incense: the smoke of the censer at the foot of the page, slow curves seen only as their softness. */
+export function incense() {
+  const H = 350;
+  const blur = (id, d) => `<filter id="${id}" filterUnits="userSpaceOnUse" x="0" y="-40" width="390" height="${H + 80}"><feGaussianBlur stdDeviation="${d}"/></filter>`;
+  const defs =
+    blur("b1", 11) +
+    blur("b2", 5) +
+    blur("b3", 1.8) +
+    vgrad("fade", [[0, "#ffffff", 0], [0.28, "#ffffff", 0.7], [0.75, "#ffffff", 1], [1, "#ffffff", 0.6]]) +
+    `<mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="390" height="${H}"><rect width="390" height="${H}" fill="url(#fade)"/></mask>`;
+  const body =
+    `<g mask="url(#m)" fill="none" stroke-linecap="round">` +
+    `<path d="M300,318 C278,270 326,238 304,196 C284,158 238,148 252,102 C260,76 288,60 282,22" stroke="#b9aede" stroke-opacity="0.3" stroke-width="34" filter="url(#b1)"/>` +
+    `<path d="M302,320 C284,274 320,242 302,200 C286,164 246,150 258,106 C266,82 286,64 282,28" stroke="#cdc4ea" stroke-opacity="0.34" stroke-width="12" filter="url(#b2)"/>` +
+    `<path d="M304,322 C290,278 314,246 300,204 C288,170 254,152 264,110 C270,88 284,68 282,34" stroke="#e6e0f6" stroke-opacity="0.34" stroke-width="2.6" filter="url(#b3)"/>` +
+    `<path d="M298,318 C262,286 306,236 274,200 C254,178 262,150 276,128" stroke="#cdc4ea" stroke-opacity="0.2" stroke-width="8" filter="url(#b2)"/>` +
+    `</g>`;
+  return { svg: svg(390, H, body, defs), height: H };
+}
+
+const X = (x, y, s, color, w) => `<path d="M${n1(x)},${n1(y)} l${s},${s} M${n1(x + s)},${n1(y)} l${-s},${s}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/>`;
+
+/** Linen's rule under a page's bar: one row of cross stitches, a pattern that repeats along the line. */
+export function stitchLine(color = "#b21f2d") {
+  const cell = 8;
+  const body = X(2.3, 1.8, 3.4, color, 1.15);
+  return { svg: svg(cell, 7, body), width: cell, height: 7 };
+}
+
+/** Linen's ornament at a chapter's head: a stitched diamond with a star in it, and a short row of stitches each side. */
+export function stitchHead(color = "#b21f2d", dark = "#2a2320") {
+  const cell = 4;
+  const N = 13;
+  const W = 168;
+  const Hh = N * cell;
+  const x0 = (W - N * cell) / 2;
+  let out = "";
+  for (let y = 0; y < N; y++) {
+    for (let x = 0; x < N; x++) {
+      const d = Math.abs(x - 6) + Math.abs(y - 6);
+      const star = (x === 6 && Math.abs(y - 6) <= 2) || (y === 6 && Math.abs(x - 6) <= 2) || (Math.abs(x - 6) === 1 && Math.abs(y - 6) === 1);
+      if (d === 6 || star) out += X(x0 + x * cell + 0.8, y * cell + 0.8, cell - 1.6, d === 6 ? color : dark, 1.15);
+      else if (d === 4 && (x + y) % 2 === 0) out += X(x0 + x * cell + 0.8, y * cell + 0.8, cell - 1.6, color, 1.15);
+    }
+  }
+  const mid = 6 * cell;
+  for (let i = 0; i < 6; i++) {
+    out += X(x0 - 12 - i * 8 + 0.8, mid + 0.8, cell - 1.6, i % 2 ? dark : color, 1.15);
+    out += X(x0 + N * cell + 8 + i * 8 + 0.8, mid + 0.8, cell - 1.6, i % 2 ? dark : color, 1.15);
+  }
+  return { svg: svg(W, Hh, out), width: W, height: Hh };
+}
+
+export const SCENES = { athos, forest, desert, jordan, galilee, patmos, mosaic, stone, damask, incense };
+```
+
+### The painted ones
+
+Dawn, Fire, Blush and the three plants are painted by the app's own
+`lib/share/drawVerseCard.ts` and `lib/share/verseCard.ts`, turned to
+plain JavaScript and nothing else (`ts.transpileModule`, ES2022), loaded
+in a page of the export and run on a canvas the shape of a phone. The plates
+are the public-domain ones of `public/share/flowers/`
+(`docs/licensing/SHARE_FLOWERS.md`): Redouté's roses, Köhler's lavender and
+olive. What this file adds is only where on a phone each picture stands: the
+fire in the lower seven tenths with its embers going quiet upward, the
+sunrise in the lowest third under the night, the flowers at six tenths of
+their size in the two corners above the tab bar.
+
+| File | What | Size |
+|---|---|---|
+| `dawn-room.webp` | Dawn's room | 179 KB |
+| `fire-room.webp` | Fire's room | 208 KB |
+| `blush-room.webp` | Blush's room | 97 KB |
+| `rose-room.webp` | Roses' room | 107 KB |
+| `rose-head.webp` | Roses' plate at a chapter's head | 163 KB |
+| `lavender-room.webp` | Lavender's room | 96 KB |
+| `lavender-head.webp` | Lavender's plate | 80 KB |
+| `olive-room.webp` | Olive's room | 102 KB |
+| `olive-head.webp` | Olive's plate | 186 KB |
+
+1.2 MB in all, at 1080 by 2337. They would ship in the apps as files.
+
+```js
+// The second set's pictures, painted by the app's own share-picture code.
+//
+// lib/share/drawVerseCard.ts paints the grounds of the quote looks he picked
+// on 2026-10-30 (Fire, Dawn, Blush, Roses, Lavender, Olive), and
+// lib/share/verseCard.ts says where a look's flowers grow. Both are loaded
+// here unchanged (turned to plain JavaScript, nothing else) and run in a page
+// of the native export, on a canvas the shape of a phone. What this file adds
+// is only where on a phone's screen each picture stands.
+//
+// Run from the repository's root: node <this>
+import fs from "node:fs";
+import path from "node:path";
+import { openPhone } from "/home/user/purifyapp/scripts/mock-check.mjs";
+import { go } from "/home/user/purifyapp/scripts/lib/shell-server.mjs";
+
+const HERE = path.dirname(new URL(import.meta.url).pathname);
+const OUT = path.join(HERE, "pictures");
+const PAINT = path.join(HERE, "..", "r2", "paint");
+fs.mkdirSync(OUT, { recursive: true });
+
+const { browser, ctx, page } = await openPhone({ scale: 1, set: { "purify.motion": "off" } });
+await ctx.route("**/__paint/*.js", (route) => {
+  const name = path.basename(new URL(route.request().url()).pathname);
+  route.fulfill({ contentType: "text/javascript", body: fs.readFileSync(path.join(PAINT, name)) });
+});
+page.on("pageerror", (e) => console.log("page error:", String(e).slice(0, 200)));
+await go(page, "/");
+await page.waitForTimeout(2500);
+
+const made = await page.evaluate(async () => {
+  const draw = await import("/__paint/drawVerseCard.js");
+  const verse = await import("/__paint/verseCard.js");
+  const W = 1080;
+  const H = Math.round((W * innerHeight) / innerWidth);
+  const mk = (w, h) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    return { canvas, ctx: canvas.getContext("2d", { willReadFrequently: true }) };
+  };
+  const load = (src) =>
+    new Promise((done, fail) => {
+      const img = new Image();
+      img.onload = () => done(img);
+      img.onerror = () => fail(new Error(`could not load ${src}`));
+      img.src = src;
+    });
+  // The picture's grain, as drawVerseCard.ts lays it: noise 240 square, by a soft light.
+  let noise = null;
+  const grain = (c, w, h, amount) => {
+    if (!amount) return;
+    if (!noise) {
+      const layer = mk(240, 240);
+      const data = layer.ctx.createImageData(240, 240);
+      let s = 11;
+      for (let i = 0; i < data.data.length; i += 4) {
+        s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+        const v = s >>> 24;
+        data.data[i] = data.data[i + 1] = data.data[i + 2] = v;
+        data.data[i + 3] = 255;
+      }
+      layer.ctx.putImageData(data, 0, 0);
+      noise = layer.canvas;
+    }
+    c.save();
+    c.globalAlpha = amount;
+    c.globalCompositeOperation = "soft-light";
+    c.fillStyle = c.createPattern(noise, "repeat");
+    c.fillRect(0, 0, w, h);
+    c.restore();
+  };
+  const plates = {};
+  for (const [name, p] of Object.entries(verse.FLOWER_PLATES)) plates[name] = await load(p.src);
+  const hex = (d) => "#" + [d[0], d[1], d[2]].map((v) => v.toString(16).padStart(2, "0")).join("");
+  const at = (c, x, y) => hex(c.getImageData(Math.round(x), Math.round(y), 1, 1).data);
+  // The tab bar's own height on this screen, in the picture's pixels: a look's flowers are planted on it, not under it.
+  const bar = document.querySelector("[data-tab-bar]")?.getBoundingClientRect();
+  const lift = Math.round((((bar ? innerHeight - bar.top : 83) + 0) * W) / innerWidth);
+
+  const out = {};
+  const keep = (id, name, canvas, quality = 0.92) => ((out[id] ??= {})[name] = canvas.toDataURL("image/webp", quality));
+  const sample = (id, values) => ((out[id] ??= {}).sample = values);
+
+  // Fire: the look's own ground, standing in the lower seven tenths of the screen, the dark of its own top above it.
+  {
+    const look = verse.quoteLookOf("fire");
+    const Hf = Math.round(H * 0.7);
+    const f = mk(W, Hf);
+    draw.paintQuoteGround(f.ctx, look, W, Hf, "portrait", 1);
+    const room = mk(W, H);
+    room.ctx.fillStyle = at(f.ctx, W / 2, 2);
+    room.ctx.fillRect(0, 0, W, H);
+    // The embers go quiet as they rise: the fire's own picture comes in from nothing over its upper half.
+    f.ctx.globalCompositeOperation = "destination-in";
+    const fm = f.ctx.createLinearGradient(0, 0, 0, Hf);
+    for (let i = 0; i <= 10; i++) {
+      const t = i / 10;
+      fm.addColorStop(0.12 + t * 0.5, `rgba(0, 0, 0, ${(t * t * (3 - 2 * t)).toFixed(3)})`);
+    }
+    fm.addColorStop(0, "rgba(0, 0, 0, 0)");
+    fm.addColorStop(1, "rgba(0, 0, 0, 1)");
+    f.ctx.fillStyle = fm;
+    f.ctx.fillRect(0, 0, W, Hf);
+    f.ctx.globalCompositeOperation = "source-over";
+    room.ctx.drawImage(f.canvas, 0, H - Hf);
+    grain(room.ctx, W, H, look.grain);
+    keep("fire", "room", room.canvas);
+    sample("fire", { top: at(room.ctx, W / 2, 180), mid: at(room.ctx, W / 2, H * 0.5), low: at(room.ctx, W / 2, H * 0.72), ink: look.ink, lit: look.lit });
+  }
+
+  // Dawn: the night above, and the look's own sky before sunrise coming up under it.
+  {
+    const look = verse.quoteLookOf("dawn");
+    const room = mk(W, H);
+    const g = room.ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "#070919");
+    g.addColorStop(0.5, "#0b0e26");
+    g.addColorStop(1, "#11143a");
+    room.ctx.fillStyle = g;
+    room.ctx.fillRect(0, 0, W, H);
+    const Hd = Math.round(H * 0.32);
+    const d = mk(W, Hd);
+    draw.paintQuoteGround(d.ctx, look, W, Hd, "portrait", 1);
+    d.ctx.globalCompositeOperation = "destination-in";
+    const m = d.ctx.createLinearGradient(0, 0, 0, Hd);
+    // The sunrise comes in by an eased share, so the night gives way with no line.
+    for (let i = 0; i <= 10; i++) {
+      const t = i / 10;
+      m.addColorStop(t * 0.7, `rgba(0, 0, 0, ${(t * t * (3 - 2 * t)).toFixed(3)})`);
+    }
+    m.addColorStop(1, "rgba(0, 0, 0, 1)");
+    d.ctx.fillStyle = m;
+    d.ctx.fillRect(0, 0, W, Hd);
+    room.ctx.drawImage(d.canvas, 0, H - Hd);
+    grain(room.ctx, W, H, look.grain);
+    keep("dawn", "room", room.canvas);
+    sample("dawn", { top: at(room.ctx, W / 2, 180), mid: at(room.ctx, W / 2, H * 0.5), low: at(room.ctx, W / 2, H * 0.72), foot: at(room.ctx, W / 2, H * 0.95) });
+  }
+
+  // The papers: Blush alone, and Roses, Lavender and Olive with their flowers growing from the tab bar's corners.
+  for (const id of ["blush", "rose", "lavender", "olive"]) {
+    const look = verse.quoteLookOf(id);
+    const room = mk(W, H);
+    draw.paintQuoteGround(room.ctx, look, W, H, "portrait", 1);
+    const floor = H - lift;
+    const k = 0.62;
+    for (const f of verse.flowerBeds(look, W, floor, "both").flowers) {
+      const cx = f.cx < W / 2 ? f.cx * k : W - (W - f.cx) * k;
+      const cy = floor - (floor - f.cy) * k;
+      room.ctx.save();
+      room.ctx.globalCompositeOperation = "multiply";
+      room.ctx.translate(cx, cy);
+      room.ctx.rotate(f.rotate);
+      room.ctx.drawImage(plates[f.plate], (-f.width * k) / 2, (-f.height * k) / 2, f.width * k, f.height * k);
+      room.ctx.restore();
+    }
+    grain(room.ctx, W, H, look.grain);
+    keep(id, "room", room.canvas);
+    sample(id, { top: at(room.ctx, W / 2, 180), mid: at(room.ctx, W / 2, H * 0.5), low: at(room.ctx, W / 2, H * 0.72), corner: at(room.ctx, 30, H * 0.3), ink: look.ink, lit: look.lit, cross: look.cross, paper: look.paper });
+  }
+
+  // A plate with its white paper taken out, so it stands on any light page with no blend.
+  const cut = (img) => {
+    const c = mk(img.naturalWidth, img.naturalHeight);
+    c.ctx.drawImage(img, 0, 0);
+    const d = c.ctx.getImageData(0, 0, c.canvas.width, c.canvas.height);
+    for (let i = 0; i < d.data.length; i += 4) {
+      const [r, g, b] = [d.data[i], d.data[i + 1], d.data[i + 2]];
+      const a = 255 - Math.min(r, g, b);
+      if (a === 0) {
+        d.data[i + 3] = 0;
+        continue;
+      }
+      d.data[i] = Math.max(0, Math.round(((r - (255 - a)) * 255) / a));
+      d.data[i + 1] = Math.max(0, Math.round(((g - (255 - a)) * 255) / a));
+      d.data[i + 2] = Math.max(0, Math.round(((b - (255 - a)) * 255) / a));
+      d.data[i + 3] = a;
+    }
+    c.ctx.putImageData(d, 0, 0);
+    return c.canvas;
+  };
+  const clear = {};
+  for (const [name, img] of Object.entries(plates)) clear[name] = cut(img);
+
+  // The flowers at the head of a chapter, in the place of the short rule: 348 by 132, three times over.
+  const head = (id, place) => {
+    const S = 3, w = 348, h = 132;
+    const c = mk(w * S, h * S);
+    c.ctx.scale(S, S);
+    for (const p of place) {
+      const img = clear[p.plate];
+      const part = p.keep ?? 1;
+      const ph = p.height;
+      const pw = (ph * img.width) / (img.height * part);
+      c.ctx.save();
+      c.ctx.translate(p.x, p.y);
+      c.ctx.rotate(p.rotate ?? 0);
+      if (p.flip) c.ctx.scale(-1, 1);
+      c.ctx.drawImage(img, 0, 0, img.width, img.height * part, -pw / 2, -ph / 2, pw, ph);
+      c.ctx.restore();
+    }
+    // A plate cut at its foot goes soft there, so the cut is never a line.
+    if (place.some((p) => p.keep)) {
+      c.ctx.globalCompositeOperation = "destination-in";
+      const g = c.ctx.createLinearGradient(0, 0, 0, h);
+      g.addColorStop(0, "rgba(0, 0, 0, 1)");
+      g.addColorStop(0.78, "rgba(0, 0, 0, 1)");
+      g.addColorStop(1, "rgba(0, 0, 0, 0)");
+      c.ctx.fillStyle = g;
+      c.ctx.fillRect(0, 0, w, h);
+      c.ctx.globalCompositeOperation = "source-over";
+    }
+    keep(id, "head", c.canvas, 0.9);
+  };
+  head("rose", [
+    { plate: "rose-centifolia", x: 128, y: 70, height: 128, rotate: -0.16 },
+    { plate: "rose-regalis", x: 222, y: 68, height: 132, rotate: 0.14 },
+  ]);
+  head("lavender", [{ plate: "lavender", x: 174, y: 66, height: 128, keep: 0.8 }]);
+  head("olive", [{ plate: "olive", x: 174, y: 66, height: 190, rotate: -1.12 }]);
+
+  // Each look's swatch as the app paints it in its own sheet.
+  for (const id of ["fire", "dawn", "blush", "rose", "lavender", "olive", "space"]) {
+    const look = verse.quoteLookOf(id);
+    const s = mk(96, 96);
+    const plate = draw.swatchPlate(look);
+    draw.paintQuoteSwatch(s.ctx, look, 48, 2, plate ? { source: plates[plate], width: plates[plate].naturalWidth, height: plates[plate].naturalHeight } : null);
+    keep(id, "swatch", s.canvas, 0.9);
+  }
+  return { W, H, lift, out };
+});
+
+console.log(`pictures ${made.W} by ${made.H}; the tab bar is ${made.lift} of them high`);
+const samples = {};
+for (const [id, set] of Object.entries(made.out)) {
+  for (const [name, value] of Object.entries(set)) {
+    if (name === "sample") {
+      samples[id] = value;
+      continue;
+    }
+    const file = path.join(OUT, `${id}-${name}.webp`);
+    fs.writeFileSync(file, Buffer.from(value.split(",")[1], "base64"));
+    console.log(`  ${path.basename(file)} ${(fs.statSync(file).size / 1024).toFixed(0)} KB`);
+  }
+}
+fs.writeFileSync(path.join(OUT, "samples.json"), JSON.stringify(samples, null, 1));
+console.log(JSON.stringify(samples));
+await browser.close();
+```
+
+## 14. The picker
+
+His words: "a nice scrollable theme system in the settings when picking a
+theme". Built in the export's own Settings screen from that screen's own
+parts, with nothing drawn by hand.
+
+**In Settings** the Reading mode row keeps the three every reader has, one
+tap each, under the same five columns as today, and the one applied if it is
+another. The row's head becomes the way in: it says which mode is on, in the
+row's own small line, and carries the chevron every link row here has. The
+earned two leave this row for the page's last shelf.
+
+**The page** (its bar says Reading mode, the row's own words):
+
+- First the screen's own line ("These apply everywhere ...") and the free
+  three.
+- Then a shelf for each family, under the family's name and its one line. A
+  shelf is Settings' own picture row, the one First focus uses
+  (`.set-focus`): it runs to the screen's edges and is swept sideways,
+  with the next page cut off at the edge so a reader sees there is more. On a
+  computer it wraps, as that row does.
+- Each theme is the screen's own small lit page (`ModePage`), the Bible's
+  page in that theme with John 1 on it, made taller so the sign at its foot
+  is in it, and with the chapter rule's ornament where the theme has one. At
+  0.62 of its drawing size a page is 104 by 186, so every one is far over 44
+  across.
+- A family that needs Plus says so once, by its name, in the app's own
+  words and class for it (`set-mode-plus`, "Purify Plus"), and only where
+  the gate has said no, as today. The free three carry no mark, so Plus is
+  never promised to every reader. A tap by a reader without Plus opens the
+  same sheet it opens today.
+- Last, "Earned by reading" (the row's own name today): Councils and
+  Cappadocian as goals, dashed, with "0 of 19" and "0 of 3" as they have
+  now. Their rules are untouched.
+
+A tap applies a theme the way the row does today: the palette's own
+transition (`.set-root[data-live] .set-mode-page`), still under
+`data-motion="reduce"`, and the row's own check on the one chosen. No
+haptic is added: the app ticks on its bars, its search, the bell and the
+streak (`haptic()` of `lib/ui/motion.ts`), not on a choice in Settings,
+and the picker keeps to that. Because a theme is the whole app's, the page
+itself is the preview:
+the fifth still shows it after a reader with Plus has tapped Holy Mountain.
+Opening the page from the row is a page switch, so it moves in the house's
+motion, and the applied theme's small page is the picture it carries in.
+
+Everything is placed with start and end, so it mirrors in Arabic (the
+checker's own measure passes). The page is 1,982px long at 390 wide.
+
+What it adds to the stylesheet, under "Settings: lit panels":
+
+```css
+/* The reading modes on their own page (1.9): a shelf for each family, the
+   free ones first. A shelf is Settings' own picture row (.set-focus): it runs
+   to the screen's edges and is swept sideways, its first page under the
+   family's name. Each page is the Bible's page in its palette, as before,
+   taller now so the palette's sign at the foot is in it. */
+.set-fam-head {
+ display: flex;
+ align-items: baseline;
+ justify-content: space-between;
+ gap: 12px;
+}
+.set-fam-head .set-mode-plus {
+ margin: 0;
+ padding-inline-end: 6px;
+ font-size: 10px;
+}
+.set-shelf {
+ --mp-k: 0.62;
+ display: flex;
+ gap: 12px;
+ margin-inline: -16px;
+ padding-block: 14px 4px;
+ padding-inline: 22px 0;
+ overflow-x: auto;
+ overscroll-behavior-x: contain;
+ scroll-snap-type: x proximity;
+ scroll-padding-inline: 22px;
+ scrollbar-width: none;
+}
+.set-shelf::-webkit-scrollbar {
+ display: none;
+}
+.set-shelf::after {
+ content: "";
+ flex: none;
+ width: 10px;
+}
+.set-shelf > .set-mode {
+ flex: none;
+ scroll-snap-align: start;
+}
+@media (min-width: 768px) {
+ .set-shelf {
+  flex-wrap: wrap;
+  margin-inline: 0;
+  padding-inline: 6px 0;
+  overflow: visible;
+ }
+}
+.set-shelf .set-mode-page {
+ height: calc(300px * var(--mp-k));
+ border-radius: 12px;
+ background: var(--mp-back, var(--mp-ground));
+}
+.set-shelf .set-mode-canvas {
+ height: 300px;
+}
+/* The page's last lines go quiet into its foot, as the real page's do. */
+.set-shelf .set-mode-page::before {
+ content: "";
+ position: absolute;
+ inset-inline: 0;
+ bottom: 0;
+ z-index: 1;
+ height: 46%;
+ background: inherit;
+ -webkit-mask-image: linear-gradient(to top, #000 34%, transparent);
+ mask-image: linear-gradient(to top, #000 34%, transparent);
+}
+.set-shelf .set-mode-name {
+ max-width: none;
+ margin-top: 10px;
+ font-size: 12px;
+ /* On the page's own ground, not a panel's: the share that holds 4.5:1 on Light. */
+ color: color-mix(in srgb, var(--color-paper) 75%, transparent);
+}
+.set-shelf .set-mode[aria-pressed="true"] .set-mode-name {
+ color: var(--color-paper);
+}
+.set-shelf .set-mode-check {
+ top: calc(300px * var(--mp-k) - 14px);
+}
+.set-shelf .set-mode-progress {
+ font-size: 10px;
+}
+
+/* In Settings the row keeps the three every reader has (and the one applied),
+   under the same five columns as before, and its head is the way in. */
+.set-modes-few {
+ justify-content: flex-start;
+ gap: calc((100% - 5 * 168px * var(--mp-k)) / 4);
+}
+a.set-lab.set-link {
+ min-height: 44px;
+ margin: -6px -8px;
+ padding: 6px 8px;
+ border-radius: 14px;
+}
+```
+
+and for each theme one rule giving its small page its ground, ink and accent
+(the table's `night`, `paper` and the accent) and its picture, of this
+shape:
+
+```css
+.set-mode-page[data-palette="athos"] {
+ --mp-ground: #0e1420;
+ --mp-ink: #edf1f8;
+ --mp-accent: #b8c3dc;
+ --mp-back: var(--scene-athos) center bottom calc(-35.75px * var(--mp-k)) / 100% auto no-repeat, var(--mp-ground);
+}
+```
+
+The `-35.75px` is the tab bar's 83px at the small page's scale: a small
+page has no bar, so its picture is set down by that much.
+
+## 15. How the stills were made, and what was measured
+
+As in section 5: the native export, opened as a phone opens it at 390 by 844,
+the app's own two screens, and a theme worn as the CSS it would add. A light
+theme rides on Light for the still (`data-reading-mode="parchment"` and a
+second attribute), for the reason section 6 gives. Then two measures on every
+still, and four on the colours:
+
+- **The app's mockup checker** (`checkMock` on the whole screen, with a
+  dark proposal added to its list of palettes). On this export the app's own
+  two screens give it nothing to report on any palette, so there is no
+  baseline to subtract this time: 0 findings on 42 stills of 21 palettes (the
+  free three, Night sky and the seventeen). It could not measure one thing on
+  each Today still, on every palette: the app's own Plus chip, which is a
+  gradient.
+- **The pixels behind every word** (section 5's audit): 1,712 words, 0 under
+  4.5:1 (3:1 for large type), the lowest 4.68:1. Words inside the foot are
+  left out, as words under the dock's fade were: they are going quiet on
+  purpose.
+- **The picker**: the row in Settings and the page each pass all ten of the
+  checker's measures (contrast, placeholder, target, glyph, palette, gold,
+  stripe, mirror, em dash, rays). Two things are said plainly beside that.
+  The small pages are allowed by name for contrast and palette (25
+  allowances), because a palette's small page is drawn in that palette's own
+  colours, which is what the app's own Settings fails the checker on today.
+  And the checker could not measure the 175 words that stand on a small
+  page's picture; they are the picture of a page, hidden from a screen
+  reader as they are today.
+- **The arithmetic** of section 5 on every token: no pair short.
+- **The 18 pairs** of `litPalette.test.ts` on each of the seventeen: all
+  hold.
+- **Gold**: 311 colours are written in the CSS, the drawings and the picker,
+  and none is gold by the house's measure. The nearest are a dune
+  (`#e3c4b1`, hue 53) and the ember's light (`rgb(255 190 150)`, hue 53),
+  both under the line at 60. The one gold in the set is inside Fire's
+  painted picture: the flames are a flame's colours (section 16, 1).
+- No conic gradient, no one-sided border, nothing placed by left or right,
+  no em dash.
+
+By eye: every part of the picker is the app's own (the small pages, the
+headings, the line, the chevron, the tick, the mark for Plus); no icon is
+new; the sample words are the row's own John 1; Plus is marked and never
+promised; the words that exist are used first (Reading mode, the line under
+it, Earned by reading, Purify Plus, the progress).
+
+## 16. For Edgar to decide
+
+1. **Fire's flames.** They are a flame's own colours, painted by the code of
+   the quote picture he approved. `noGold.test.ts` lets that file through
+   by his word that gold is only ever a flame's own colour. In the app that
+   would be the only gold on any theme. Yes for the app too, or Fire keeps
+   its embers and its glow and loses the yellow.
+2. **The foot.** On a theme with a scene, a page's last lines go quiet into
+   the picture from 240px above the foot of the screen, on every screen. In
+   the Bible they go quiet from 272px today, under the dock. On Today and the rest it is
+   new, and it takes about a finger's height of page above the tab bar. It
+   is what lets the sign be seen everywhere. Yes or no; if no, the sign
+   shows only where no card covers it.
+3. **Candlelight and Monastery.** This set replaces them. A reader wearing
+   one needs a home: Fire for Candlelight and Holy Mountain for Monastery are
+   the nearest, and the two ids can simply take those looks, so nothing is
+   lost on a device. "Candlelight at Vespers" would then light Fire at
+   sunset, or the theme he names, or go.
+4. **Which of the eighteen**, and whether he wants more in any family.
+5. **The names.** Six exist in 21 languages. New: Night sky, Incense, Holy
+   Mountain, Forest, Desert, Jordan, Galilee, Patmos, Mosaic, Stone, Damask,
+   Linen, the four family names and their four lines.
+6. **The earned two** move from the Settings row to the page's last shelf.
+   Their rules and looks stay as they are.
+
+## 17. What building it would take
+
+Not started, and not to be started before his picks. Section 6 still holds
+for the room (57 page roots step aside), for a theme's ids and tests, and for
+the phone walk. What this set adds or changes:
+
+1. **Nine light themes, not two.** Section 6, point 3, is now most of the
+   work: the 207 lines that name `parchment` have to answer any light
+   theme. One attribute beside the mode, set by the controller and the
+   pre-paint script.
+2. **The foot is a fixed layer at z-index 35**, above the page and under the
+   dock (40) and the tab bar (50). Sheets and the sticky bars sit above or
+   beside it today; the walk has to prove nothing else sits between. Its two
+   lengths add the safe area at the foot.
+3. **Pictures as files.** 1.2 MB of painted pictures in `public/`,
+   shipped in the apps, made by a script from the app's own painter so they
+   can be made again. The drawings stay in the stylesheet or beside it.
+4. **Wide screens.** A drawing is laid at the page's width, right for a
+   phone. On a tablet or the website it needs a height of its own, or to sit
+   in the reading column.
+5. **Fire and `noGold.test.ts`**: a picture is not read by that test, so
+   nothing fails, which is why question 1 is asked and not assumed.
+6. **The picker** is a new page under Settings in the static export
+   (`/settings/reading-mode/`), a server shell and a client child like its
+   neighbours, with the row's own component drawing each small page.
+   `lib/settings/__tests__/litPanels.test.ts` holds each small page's
+   colours to its theme's tokens and would take the seventeen.
+7. **The gate.** `lib/reader/readingModes.ts` (the union, the list, the
+   free three unchanged), `lib/reader/prepaint.ts`, the chips in the
+   Bible's own settings, and `lib/reader/themeWrite.ts` on the server.
+8. **Words** in 21 languages (question 5), and the paywall's lines that name
+   two palettes (`plus.palettes.title`, `plus.palettes.body`).
+9. **The moves of question 3**, if he says yes: two ids keep their place in
+   storage and change their look, and the release's note says so.
+
+## 18. Tried and dropped on the way
+
+Kept here so nobody draws them twice.
+
+- **Moonlight**: a pool of pale light in a corner and a moon at a chapter's
+  head. Dropped: the light on Galilee's water says it better, and a glow in a
+  corner is what a generic app theme looks like.
+- **A vigil lamp**: a ruby pool on black. The same kind of sign as the above
+  in another colour.
+- **Vespers**: a whole page of evening sky. A purple gradient is the mark of
+  a made-by-machine app; left out.
+- **Mosaic as scattered tiles** thinning upward: read as pixels dissolving.
+  It is a set band now, hand-laid, closed by a pale row.
+- **Stone as an arcade** of four arches: at this size four round heads read
+  as gravestones. It is the foot of a wall now.
+- **Galilee's light as a ladder of short strokes**: read as a menu icon
+  where only four showed. It is a soft pool and three long glints now.
+- **Tall flowers** to a quarter of the screen: words ran into the leaves.
+  They stand at six tenths of that, in the corners.
+- **A seasons family** (Lent, Pascha, Pentecost): each would have been one of
+  these in a feast's colour. If he wants the app to follow the Church's
+  year, these themes can serve it, as section 7, point 6, said of the first.
+- **An icon-and-gold family**, one of the arbiter's examples: the house has
+  no gold, so it was not drawn. It would need his word first.
