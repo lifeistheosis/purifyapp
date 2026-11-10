@@ -218,6 +218,11 @@ export default async function RootLayout({
  <html
  lang={localeCode}
  dir={localeRecord.dir}
+ // Pointer until the reader reaches for the page with the keyboard
+ // (components/ui/InputModality.tsx): a field a page focuses by itself, before
+ // any touch, shows the quiet edge, not the keyboard's ring (build 89 note 11;
+ // the campaigns chat's item 11, the page for a new post at its own address).
+ data-input="pointer"
  // The pre-paint scripts below set data-reading-mode (and, under /admin,
  // data-adm-theme) on this element before React hydrates, which is the
  // whole point of running them early. React sees attributes on <html> that

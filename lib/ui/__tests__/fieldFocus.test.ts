@@ -73,6 +73,17 @@ describe("a tapped field", () => {
     expect(css).toContain('html[data-input="pointer"] *:focus-visible:not(input, textarea, select, [contenteditable="true"])');
   });
 
+  it("shows the quiet edge when the page focuses it by itself, before any touch", () => {
+    // The campaigns chat's item 11: the page for a new post, opened at its own
+    // address, focused its title and drew the keyboard's ring round it,
+    // because pointer mode waited for the first tap. The page starts in it.
+    const layout = read("app/layout.tsx");
+    const html = layout.slice(layout.indexOf("<html"), layout.indexOf("<body"));
+    expect(html).toContain('data-input="pointer"');
+    // And the reader's first key that moves still sets keyboard mode.
+    expect(read("components/ui/InputModality.tsx")).toContain('if (NAV_KEYS.has(e.key)) set("keyboard");');
+  });
+
   it("is not counted as keyboard use when a space or Enter is typed into it", () => {
     const modality = read("components/ui/InputModality.tsx");
     expect(modality).toContain('if (e.key !== "Tab" && e.key !== "Escape" && isEditable(e.target)) return;');

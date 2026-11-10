@@ -4,7 +4,10 @@
 // "pointer" after a mouse click or a tap, "keyboard" after a key that moves
 // or acts. globals.css hides the focus ring in pointer mode (outside text
 // fields), so a click never leaves a ring behind and keyboard users always
-// get one.
+// get one. The page starts in pointer mode (app/layout.tsx): before the
+// reader has reached for it at all, a field the page focuses by itself is not
+// keyboard use, and shows the quiet edge (build 89 note 11); the first key
+// that moves sets keyboard mode, as ever.
 //
 // Needed because the browser's own :focus-visible guess is wrong in one case
 // this site hits constantly: after a click navigates, Next's router focuses
