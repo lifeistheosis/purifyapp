@@ -5,8 +5,9 @@
 //   npm run build:android && node scripts/mock-opening-cover.mjs [folder]
 //
 // The screens: the reading room, where a cover is tapped; the book's page as
-// that tap opens it, its cover over the head of its first chapter; the next
-// chapter, which wears none; the same book left in the middle, gone down to
+// that tap opens it, its cover over the head of its first chapter; About this
+// book, which a tap on that cover opens; the next chapter, which wears no
+// cover; the same book left in the middle, gone down to
 // the reader's paragraph; the page on a phone 640px tall and on one 667px
 // tall, where the cover is held smaller; on Parchment; and a council's
 // document from its shelf.
@@ -101,12 +102,41 @@ try {
     if (opened.width !== 160) fail(`on a phone 844px tall the cover is ${opened.width}px wide, not 160`);
   }
 
+  // A tap on the cover opens About this book (his word of 2026-11-10, about
+  // 13:50 UTC): the cover is the button, named for a screen reader, and the
+  // sheet is the reader's own, the one the three dots and the contents open.
+  const door = page.locator(`${HEAD} button[data-about-book]`);
+  const named = await door.getAttribute("aria-label").catch(() => null);
+  if (named !== "About this book") fail(`the cover's button is named "${named}", not About this book`);
+  const under = await door.boundingBox().catch(() => null);
+  if (!under || under.width < 44 || under.height < 44) fail(`the cover's button is ${Math.round(under?.width ?? 0)} by ${Math.round(under?.height ?? 0)}px under the finger, under 44`);
+  else if (opened && Math.round(under.width) !== opened.width) fail(`the button is ${Math.round(under.width)}px wide and the cover ${opened.width}px: the cover is not the whole of it`);
+  await door.click();
+  const about = "[role=dialog]:has([data-about-sheet])";
+  const up = await page
+    .waitForSelector(`${about} [data-book-header]`, { timeout: 8000 })
+    .then(() => true)
+    .catch(() => false);
+  if (!up) fail("a tap on the cover did not open About this book");
+  else {
+    await page.waitForSelector(`${about} [data-cover-picture="shown"]`, { timeout: 8000 }).catch(() => {});
+    await screen(page, "3-about-this-book", "", { check: false });
+    // Closed as a reader closes it, and the page is as it was.
+    await page.keyboard.press("Escape");
+    const down = await page
+      .waitForSelector(about, { state: "detached", timeout: 6000 })
+      .then(() => true)
+      .catch(() => false);
+    if (!down) fail("About this book did not close");
+    if (!(await page.locator(COVER).count())) fail("the cover is gone after About this book closed");
+  }
+
   // The next chapter, by the pill: the chapter's own page, as before.
   await page.locator('[data-work-pill] button[aria-label^="Next"]').click();
   await page.waitForFunction(() => /^#s\d+$/.test(location.hash), null, { timeout: 8000 });
   await page.waitForTimeout(600);
   if (await page.locator(COVER).count()) fail("the next chapter wears the cover too");
-  await screen(page, "3-next-chapter", "", { check: false });
+  await screen(page, "4-next-chapter", "", { check: false });
 
   // And back to the chapter the book opened on: the page as it was left.
   await page.locator('[data-work-pill] button[aria-label^="Previous"]').click();
@@ -131,7 +161,7 @@ try {
     .catch(() => false);
   if (!landed) fail("a book left in the middle did not go on to the reader's paragraph");
   await page.waitForTimeout(1200);
-  await screen(page, "4-left-in-the-middle", "", { check: false });
+  await screen(page, "5-left-in-the-middle", "", { check: false });
   await page.evaluate((key) => localStorage.removeItem(key), `purify.reader.position.${BOOK.saint}/${BOOK.work}`);
 
   // Short phones: the cover held smaller, so the book's first lines are
@@ -167,7 +197,7 @@ try {
       else console.log(`\nOn a phone ${height}px tall the cover is ${small.width}px wide and ${seen.toFixed(1)} lines of the book stand over the pill (${small.room}px).`);
     }
   }
-  await screen(page, "5-small-phone", "the same on a phone 640px tall");
+  await screen(page, "6-small-phone", "the same on a phone 640px tall");
   await page.setViewportSize({ width: 390, height: 844 });
 
   // A council's document, from its council's shelf.
@@ -179,7 +209,7 @@ try {
   await page.locator(book).first().click();
   await page.waitForSelector("[data-work-head]", { timeout: 20000 });
   await pictured(page);
-  await screen(page, "6-council-document", "a council's document: its shelf's cover over the section's head");
+  await screen(page, "7-council-document", "a council's document: its shelf's cover over the section's head");
 } finally {
   await first.ctx.close();
 }
@@ -194,7 +224,7 @@ try {
   await pictured(page);
   const mode = await page.evaluate(() => document.documentElement.getAttribute("data-reading-mode"));
   if (mode !== "parchment") fail(`the reading palette was "${mode}", so this did not draw Parchment`);
-  await screen(page, "7-parchment", "the same on Parchment");
+  await screen(page, "8-parchment", "the same on Parchment");
 } finally {
   await light.ctx.close();
   await first.browser.close();

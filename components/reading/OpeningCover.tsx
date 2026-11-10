@@ -6,6 +6,7 @@ import { useOnOpening } from "@/components/saints/useWorkPlace";
 import { useCoversVersion } from "@/lib/readAloud/useCovers";
 import { packedCard } from "@/lib/reading/packedCovers";
 import type { Card } from "@/lib/reading/select";
+import { openWorkAbout } from "@/lib/saints/workNow";
 
 /**
  * How large it is held up: by the height of the screen. 160px wide, as a
@@ -52,8 +53,19 @@ const HELD_UP =
  * it in the apps as the room lays it (lib/reading/packedCovers.ts), and a
  * council's document through its window onto the council's icon.
  *
- * Hidden from assistive technology, as every cover is: its words are the
- * book's title and author, which About this book says.
+ * A tap on it opens About this book (his word, 2026-11-10 about 13:50 UTC,
+ * "All recommendations. Start.", which said yes to it): the book's own page,
+ * where the same cover is held up beside what the book is, who wrote it and
+ * where its words are from. Until then a reader had to find it under the
+ * three dots or in the contents, where it also stays. The cover is the
+ * button, all of it, so it is far larger than the 44px a finger needs; it
+ * dips as a pressed cover does anywhere in the app (`.press-card`), and the
+ * sheet it opens is the reader's own, with the sheet's own motion
+ * (lib/saints/workNow.ts, openWorkAbout: the door the three dots use).
+ *
+ * The cover's words are hidden from assistive technology, as every cover's
+ * are, so the button is named for what it does, in the reader's language
+ * and in the words the other two doors use.
  */
 export function OpeningCover({
   owner,
@@ -75,19 +87,28 @@ export function OpeningCover({
   if (!here) return null;
   return (
     <div data-opening-cover="" className="mb-7 flex justify-center">
-      <WorkCover
-        title={card.title}
-        author={card.author ?? t("reading.work.anonymous")}
-        iconUrl={card.cover?.src}
-        focusY={card.cover?.focusY}
-        crop={card.cover?.crop}
-        // The row's own design, its words broken and fitted as the row's
-        // tile breaks and fits them, so the cover that travels here is the
-        // same poster, larger.
-        size="row"
-        priority
-        className={HELD_UP}
-      />
+      <button
+        type="button"
+        aria-haspopup="dialog"
+        aria-label={t("bible.aboutThisBook")}
+        onClick={openWorkAbout}
+        data-about-book=""
+        className="press-card block cursor-pointer rounded-[6px]"
+      >
+        <WorkCover
+          title={card.title}
+          author={card.author ?? t("reading.work.anonymous")}
+          iconUrl={card.cover?.src}
+          focusY={card.cover?.focusY}
+          crop={card.cover?.crop}
+          // The row's own design, its words broken and fitted as the row's
+          // tile breaks and fits them, so the cover that travels here is the
+          // same poster, larger.
+          size="row"
+          priority
+          className={HELD_UP}
+        />
+      </button>
     </div>
   );
 }

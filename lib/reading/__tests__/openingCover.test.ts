@@ -17,11 +17,16 @@
 //                     its words are fitted to
 //   a return          goes on to the reader's paragraph once the page has
 //                     arrived, not while the cover is still travelling
+//   a tap on it       opens About this book (his word of 2026-11-10, about
+//                     13:50 UTC: "All recommendations. Start."): the cover is
+//                     the button, named for a screen reader in the reader's
+//                     language, and the other two doors stay where they were
 //
 // What a reader would notice if this broke: the cover they tapped vanishing
 // with the reading room again; a cover over every chapter as they read on; a
-// cover that jumps in when the text lands; or a page that scrolls away under
-// the cover while it is still on its way.
+// cover that jumps in when the text lands; a page that scrolls away under
+// the cover while it is still on its way; or a cover that does nothing under
+// the finger, and says nothing to a screen reader.
 //
 // What it does not hold: the travel itself, which no test here can see. That
 // is scripts/route-motion.mjs, on the export (three walks: a book, a book
@@ -39,7 +44,9 @@ import { OpeningCover } from "@/components/reading/OpeningCover";
 import { chapterNamed, chapterOf } from "@/components/saints/useWorkPlace";
 import { COUNCILS } from "@/lib/councils/councils";
 import { getMessages } from "@/lib/i18n";
+import { LOCALES } from "@/lib/i18n/locales";
 import { SIZES } from "@/lib/reading/coverText";
+import { WORK_ABOUT_EVENT, openWorkAbout } from "@/lib/saints/workNow";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");
 const read = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8").replace(/\r\n/g, "\n");
@@ -57,9 +64,11 @@ const COVER = "components/reading/OpeningCover.tsx";
 const PLACE = "components/saints/useWorkPlace.ts";
 
 type ProviderProps = Parameters<typeof MessagesProvider>[0];
-function render(node: ReactElement): string {
-  return renderToString(createElement(MessagesProvider, { locale: "en", messages: getMessages("en") } as ProviderProps, node));
+function render(node: ReactElement, lang = "en"): string {
+  return renderToString(createElement(MessagesProvider, { locale: lang, messages: getMessages(lang) } as ProviderProps, node));
 }
+/** What React writes for a piece of text in an attribute. */
+const attr = (text: string) => text.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/'/g, "&#x27;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 describe("the chapter a book was opened on", () => {
   it("is named by what the page was asked for, before any text is read", () => {
@@ -170,6 +179,79 @@ describe("the cover at a book's head", () => {
     const cover = code(COVER);
     expect(cover).toContain("const here = useOnOpening(owner, slug, first);");
     expect(cover).toContain("if (!here) return null;");
+  });
+});
+
+describe("a tap on the cover", () => {
+  const card = { key: "augustine-of-hippo/confessions", title: "Confessions", author: "St. Augustine of Hippo", cover: { src: "/covers/augustine-of-hippo.jpg", focusY: 20 } };
+  const cover = (lang = "en") => render(createElement(OpeningCover, { owner: "augustine-of-hippo", slug: "confessions", first: 1, card }), lang);
+
+  it("opens About this book: the cover is a button, and says so to a screen reader", () => {
+    const out = cover();
+    // One button, which opens a sheet, named for what it does.
+    expect(out.match(/<button\b/g) ?? []).toHaveLength(1);
+    expect(out).toMatch(/<button type="button" aria-haspopup="dialog" aria-label="About this book" data-about-book=""/);
+    // The cover is inside it, all of it, still hidden itself: its words are a picture's.
+    const button = out.slice(out.indexOf("<button"), out.indexOf("</button>"));
+    expect(button).toContain('<div aria-hidden="true" data-cover=""');
+    // And still what a travelling picture looks for.
+    expect(button).toContain('data-carry-into="cover:Confessions"');
+  });
+
+  it("is named in the reader's language, in the words the three dots and the contents use", () => {
+    const code21 = LOCALES.map((l) => l.code);
+    expect(code21.length).toBe(21);
+    for (const lang of code21) {
+      const said = getMessages(lang)["bible.aboutThisBook"] as string;
+      expect(said, lang).toBeTruthy();
+      expect(cover(lang), lang).toContain(`aria-label="${attr(said)}"`);
+    }
+    // Its own words in each: a catalog that only fell back to English would say so here.
+    const own = code21.filter((lang) => JSON.parse(read(`lib/i18n/messages/${lang}.json`))["bible.aboutThisBook"]);
+    expect(own).toEqual(code21);
+    const source = code(COVER);
+    expect(source).toContain('aria-label={t("bible.aboutThisBook")}');
+    for (const door of ["components/saints/MobileWorkActions.tsx", "components/saints/WorkContents.tsx"]) {
+      expect(code(door), door).toContain('t("bible.aboutThisBook")');
+    }
+  });
+
+  it("uses the door the three dots use, which both readers answer", () => {
+    const source = code(COVER);
+    expect(source).toContain("onClick={openWorkAbout}");
+    // The door: one event on the window (lib/saints/workNow.ts).
+    const heard: string[] = [];
+    const stub = { dispatchEvent: (e: Event) => (heard.push(e.type), true) };
+    (globalThis as { window?: unknown }).window = stub;
+    try {
+      openWorkAbout();
+    } finally {
+      delete (globalThis as { window?: unknown }).window;
+    }
+    expect(heard).toEqual([WORK_ABOUT_EVENT]);
+    // A Father's work and a council's document both open their sheet on it.
+    for (const reader of ["components/saints/WritingReader.tsx", "components/councils/CouncilReader.tsx"]) {
+      const text = code(reader);
+      expect(text, reader).toContain("window.addEventListener(WORK_ABOUT_EVENT, aboutOpen);");
+      expect(text, reader).toContain('const aboutOpen = () => setSheet("about");');
+    }
+    // And About this book stays under the three dots and in the contents.
+    expect(code("components/saints/MobileWorkActions.tsx")).toContain("openWorkAbout();");
+    expect(code("components/saints/WorkContents.tsx")).toMatch(/onAbout\(\);/);
+  });
+
+  it("is the whole cover under the finger, far over 44px, and dips as a pressed cover does", () => {
+    const source = code(COVER);
+    const button = source.slice(source.indexOf("<button"), source.indexOf("<WorkCover"));
+    // The house's press for a cover, as every cover in the reading room has it.
+    expect(button).toContain('className="press-card block cursor-pointer rounded-[6px]"');
+    expect(read("components/reading/CoverRow.tsx")).toContain('className="press-card group block rounded-[6px]"');
+    // Nothing of its own between the finger and the cover: no padding, no frame.
+    expect(button).not.toMatch(/\bp[xytblrse]?-\d|\bborder\b|\bring-/);
+    // The cover is never narrower than the row's own tile, two by three.
+    expect(SIZES.row.min).toBeGreaterThanOrEqual(44);
+    // The keyboard's ring is the house's, and a finger leaves none (app/globals.css).
+    expect(button).not.toMatch(/outline|focus/);
   });
 });
 

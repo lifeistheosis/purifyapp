@@ -178,8 +178,10 @@ which said yes to a cover at the head of a reading room book
   page it opens, and the page forms round it. Going back, it returns into
   the tile it came out of.
 - **The page is otherwise as it was.** Under the cover the chapter's head
-  stands as the Bible's does, then the words. Nothing was taken out and
-  nothing else was added: no new words, no new button.
+  stands as the Bible's does, then the words. Nothing was taken out, and
+  there are no new words.
+- **A tap on the cover opens About this book** (added the same day, on his
+  word; below).
 - **Only the chapter the book opened on wears it.** Turn to the next chapter
   and the page is the chapter's own, as before. Come back to that first
   chapter, by the way back or by the pill, and the page is as it was left.
@@ -260,7 +262,8 @@ which said yes to a cover at the head of a reading room book
 
 ### What was built
 
-- `components/reading/OpeningCover.tsx` (new): the cover.
+- `components/reading/OpeningCover.tsx` (new): the cover, and the button it
+  is.
 - `components/saints/useWorkPlace.ts`: `chapterNamed`, `useOnOpening`, and
   the landing's wait.
 - `app/(app)/saints/[slug]/[work]/page.tsx` and
@@ -298,10 +301,38 @@ which said yes to a cover at the head of a reading room book
 - Whether the moment before a return goes down to its paragraph feels right
   in the hand. One number: `SETTLE_MS` in `lib/ui/routeMotion.ts`.
 
+### A tap on the cover opens About this book (the same day, on his word)
+
+Left for his word in the first build ("A tap on the cover does nothing. It
+could open About this book."), and answered about 13:50 UTC: "All
+recommendations. Start." (`BRAINSTORM.md`).
+
+- The cover is the button, all of it: 112 by 168px at its smallest, far over
+  the 44px a finger needs. It dips as a pressed cover does anywhere in the
+  app (`.press-card`), and the sheet rises in the sheet's own motion.
+- It opens the reader's own sheet, the one the three dots and the contents
+  open (`openWorkAbout`, lib/saints/workNow.ts), so there is one About this
+  book and three doors to it. The other two stay where they were.
+- A screen reader hears "About this book", in the reader's language, the
+  words the other two doors use (`bible.aboutThisBook`, in all twenty-one
+  catalogs). The cover's own words stay hidden from it, as every cover's
+  are. No new words.
+- A keyboard gets the house's ring round the cover; a finger leaves none
+  (app/globals.css, `html[data-input]`).
+- Nothing about the travel changes: the cover inside the button is still
+  what the tile's picture travels to, and all eighteen walks pass as before.
+
+Held by `lib/reading/__tests__/openingCover.test.ts` ("a tap on the cover"),
+and opened on the export by `scripts/mock-opening-cover.mjs`, which taps the
+cover, checks the sheet came and went, and pictures it.
+
+One thing known and left: in the apps a work's text is read a moment after
+the page opens, and the sheet belongs to the reader, so a tap in that first
+moment (about a tenth of a second, while the page is still arriving) opens
+nothing. A second tap does.
+
 ### What it is not
 
-- The cover does nothing when tapped. About this book is where it was, under
-  the three dots and in the contents.
 - A book opened by a link to one paragraph (a citation, a search result)
   opens on its cover as well, and goes down to the paragraph.
 - The Bible's chapters are not books of the reading room and are unchanged.
