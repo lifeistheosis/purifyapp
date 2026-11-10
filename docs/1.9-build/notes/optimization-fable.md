@@ -553,6 +553,16 @@ next test build's phone walk (`HANDOFF.md`).
 | 8. The patch notes leave the start-up scripts | "The front door no longer loads every patch note ever written" | 32 scripts, 2,509 KB (760 KB packed) at the front door | 2,345 KB (705 KB packed) |
 | 7a. Pictures kept at the edge | "The website's pictures are kept at the edge" | every picture `max-age=0` at the origin | a year for a name with a version, a day for any other; the streamed folders unchanged |
 
+| 6. SQLCipher out, the old store deleted | "SQLCipher leaves the apps, and the store 1.5 filled is deleted" | 5.0 MB installed, 2.2 MB of download on an arm64 phone; 33 MB held on phones that had 1.5 | the plugin in no build; each shell deletes the old file at start |
+
+Item 6's gates: typecheck 0; unit tests 10,905 passed, 8 skipped, 0 failed;
+lint 0 errors; the website build; `build:android` then `build:ios`. The
+native lines (one in `MainActivity.java`, a short loop in
+`AppDelegate.swift`) cannot be compiled in a cloud chat: the "Android build"
+run and one "iOS build (signed)" run prove them, and the AAB's weight is
+measured from that build. The code in `lib/content` is kept, as he said on
+2026-10-12.
+
 Item 8 is one part, not the two planned. Measured before building: the
 home page's chip imported the whole changelog for one title, and that was
 all 175 KB of it. The second part, the calendar's year, turned out to be
