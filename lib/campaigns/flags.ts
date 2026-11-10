@@ -77,6 +77,17 @@
 // should step 3 have to wait, the build's notes for review say plainly what
 // is in it and switched off.
 //
+// THE SAME RULE FOR PICTURES, WHICH HAVE A SWITCH OF THEIR OWN ON THE SERVER
+// (lib/campaigns/parts.ts). A store build that carried the pictures'
+// controls while the server had them off, to be turned on later by the
+// server alone, would carry a feature asleep. So a store build has pictures
+// only when it was cut with them: PICTURES_IN_STORE_BUILDS, below. False, an
+// app draws no picture and no picture control and asks the pictures' route
+// for nothing, whatever the server answers, and turning pictures on in the
+// apps takes a new store build, which is reviewed. The website has no such
+// rule and follows the server. In the release commit it is true only if
+// pictures are on at submission (docs/1.9-build/OWNER-STEPS.md, R0c).
+//
 // WHERE IT IS NOT CLOSED, THE REWORK'S SQL MUST HAVE RUN: the four files he
 // signed (supabase/migrations, the four campaign files of 2026-11-10, the
 // fourth being the acceptance of the Terms). On the test web's own database,
@@ -139,4 +150,26 @@ export function campaignsEnabled(): boolean {
  */
 export function julyCampaignRoutes(): boolean {
   return false;
+}
+
+/**
+ * Whether a store build has campaign pictures at all (see the header, "the
+ * same rule for pictures"). False since 2026-11-10, while pictures are off
+ * on the server and his three steps are open; lib/campaigns/__tests__/
+ * storePictures.test.ts holds it false for as long as the server's own
+ * switch is off. Which build is asking is not known here: the app's side of
+ * campaigns asks (./partsHere.ts).
+ */
+export const PICTURES_IN_STORE_BUILDS: boolean = false;
+
+let picturesInStore: boolean = PICTURES_IN_STORE_BUILDS;
+
+/** Whether a store build cut from this code has pictures. */
+export function picturesInStoreBuilds(): boolean {
+  return picturesInStore;
+}
+
+/** Test seam: cut the build with pictures, or without. */
+export function __setPicturesInStoreBuilds(on: boolean): void {
+  picturesInStore = on;
 }

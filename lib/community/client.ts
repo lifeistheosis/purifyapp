@@ -6,6 +6,7 @@
 
 import { apiFetch } from "@/lib/api/client";
 import type { CampaignQueue } from "@/lib/campaigns/model";
+import { partInThisBuild, queueInThisBuild } from "@/lib/campaigns/partsHere";
 import { parseReactionMap, type ReactionState } from "@/lib/community/reactions";
 import { parseResponseMap, type ResponseCounts, type ResponseKind } from "@/lib/community/responses";
 import type { CommunityPost, CommunityReply } from "./types";
@@ -567,7 +568,8 @@ export type ModQueue = {
 
 export async function fetchModQueue(): Promise<{ ok: true; queue: ModQueue } | { ok: false; status: number; error: string }> {
   try {
-    const res = await apiFetch("/api/community/moderation", { cache: "no-store" });
+    // A build with no pictures says so, and is sent none (lib/campaigns/partsHere.ts).
+    const res = await apiFetch(`/api/community/moderation${partInThisBuild("pictures") ? "" : "?pictures=0"}`, { cache: "no-store" });
     const json = (await res.json().catch(() => ({}))) as Partial<ModQueue> & { error?: string };
     if (!res.ok) return { ok: false, status: res.status, error: json.error ?? "The queue could not be read." };
     return {
@@ -577,7 +579,8 @@ export async function fetchModQueue(): Promise<{ ok: true; queue: ModQueue } | {
         reports: Array.isArray(json.reports) ? json.reports : [],
         log: Array.isArray(json.log) ? json.log : [],
         me: json.me ?? { name: "", admin: false },
-        ...(json.campaigns ? { campaigns: json.campaigns } : {}),
+        // Without its pictures in a store build cut without them (lib/campaigns/partsHere.ts).
+        ...(json.campaigns ? { campaigns: queueInThisBuild(json.campaigns) } : {}),
       },
     };
   } catch {
@@ -588,7 +591,8 @@ export async function fetchModQueue(): Promise<{ ok: true; queue: ModQueue } | {
 /** How many things wait, for the moderators' button; null when unknown. */
 export async function fetchModWaiting(): Promise<number | null> {
   try {
-    const res = await apiFetch("/api/community/moderation?summary=1", { cache: "no-store" });
+    // A build with no pictures says so, and they are left out of the count: a number is never shown for what the page cannot draw.
+    const res = await apiFetch(`/api/community/moderation?summary=1${partInThisBuild("pictures") ? "" : "&pictures=0"}`, { cache: "no-store" });
     if (!res.ok) return null;
     const json = (await res.json()) as { waiting?: number };
     return typeof json.waiting === "number" ? json.waiting : null;

@@ -27,6 +27,18 @@
 // the stills' numbers ("01,08"); `folder` is where they are written, a
 // folder of its own name and never one in docs.
 //
+// PICTURES NEED AN EXPORT CUT WITH THEM. A store build has campaign pictures
+// only when it was cut with them (lib/campaigns/flags.ts,
+// PICTURES_IN_STORE_BUILDS), and this harness wears the apps' own user
+// agent, so to the app it is a store build. The committed export has none:
+// on it the walk holds that nothing of pictures is drawn or asked for even
+// while the server says they are on. The pictures' own stills (20 to 24) and
+// flows are for a scratch build with that constant set true, and are run
+// only when told so:
+//
+//   PICTURES_BUILD=1 node scripts/mock-campaigns.mjs 2 20,21,22,23,24
+//   PICTURES_BUILD=1 WALK=1 FLOWS="pictures" node scripts/mock-campaigns.mjs
+//
 // THE PLACE THAT WEARS THE PLUS MARK (still 21, and one flow of the walk) is
 // drawn only where Plus can be bought, which a build knows from its purchase
 // keys. This harness wears the apps' own user agent with no Capacitor behind
@@ -56,6 +68,8 @@ const WALK = process.env.WALK === "1";
 const FLOWS = (process.env.FLOWS ?? "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
 /** Another language for the stills, as the app keeps a reader's choice on the phone. The walk reads English and is not run in one. */
 const LOCALE = process.env.LOCALE ?? null;
+/** The export was cut with pictures (see the header): their own stills and flows are run. Without it they are named and left. */
+const PICTURES_BUILD = process.env.PICTURES_BUILD === "1";
 /** The phone's width, for a still on a narrower one. */
 const WIDTH = Number(process.env.WIDTH ?? 390);
 /** The eighteen looks as well as the five palettes (scripts/mock-check.mjs, LOOKS). */
@@ -315,6 +329,8 @@ const MOD_PICTURES = [
 const seen = new Set();
 /** Every request a screen made of the server, for the walk to hold. */
 let calls = [];
+/** And each one's address with its query, in order. */
+let asked = [];
 async function answer(ctx, opts = {}) {
   await ctx.route("https://purifyapp.net/api/**", async (route) => {
     const req = route.request();
@@ -330,6 +346,7 @@ async function answer(ctx, opts = {}) {
       sent = null;
     }
     calls.push({ method: req.method(), path: p, body: sent });
+    asked.push(`${p}${url.search}`);
     // The parts that ship switched off are off unless a picture asks for one, as the server says them.
     const parts = { many: false, pictures: false, ...(opts.parts ?? {}) };
     if (p === "/api/campaigns/open") return opts.closed ? json({ error: "Not found." }, 404) : json({ open: true, parts });
@@ -369,8 +386,9 @@ async function answer(ctx, opts = {}) {
     if (p === "/api/community/prayer-wall") return json(opts.wall ?? WALL);
     if (p === "/api/community/moderation") {
       if (url.searchParams.get("summary")) return json({ waiting: 2 });
-      // The team's queue carries pictures only while the server has them on.
-      return json(parts.pictures ? { ...MOD_QUEUE, campaigns: { ...MOD_QUEUE.campaigns, waiting: [], reports: [], pictures: MOD_PICTURES } } : MOD_QUEUE);
+      // The team's queue carries pictures only while the server has them on, and never for a build that says it has none.
+      const sendsPictures = parts.pictures && url.searchParams.get("pictures") !== "0";
+      return json(sendsPictures ? { ...MOD_QUEUE, campaigns: { ...MOD_QUEUE.campaigns, waiting: [], reports: [], pictures: MOD_PICTURES } } : MOD_QUEUE);
     }
     return json({ error: "Not found." }, 404);
   });
@@ -422,6 +440,12 @@ async function shot(name, label, where, selector, { set = {}, prepare, signedIn 
   } finally {
     await browser.close();
   }
+}
+
+/** A still of the pictures themselves: drawn only on an export cut with them, and otherwise named and left. */
+async function pictureShot(name, ...rest) {
+  if (PICTURES_BUILD) return shot(name, ...rest);
+  if (!WALK && (!ONLY || ONLY.has(name.slice(0, 2)))) console.log(`left: ${name} needs an export cut with pictures (PICTURES_BUILD=1; see the header)`);
 }
 
 // 01 Pray together: the carried card, the others carried, Newly asked, then the wall.
@@ -638,7 +662,7 @@ await shot("19-prayed-by-many", "the board with Prayed by many, switched on", "/
 // them on. They ship switched off, and the walk holds that off draws nothing.
 
 // 20 A reader's view: the first picture is the page's head, the rest stand in a row under About.
-await shot("20-pictures", "a campaign with pictures, switched on", `/campaigns/detail?id=${MARIA}`, "[data-campaign-page]", {
+await pictureShot("20-pictures", "a campaign with pictures, switched on", `/campaigns/detail?id=${MARIA}`, "[data-campaign-page]", {
   parts: { pictures: true },
   prepare: async (page) => {
     await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
@@ -647,7 +671,7 @@ await shot("20-pictures", "a campaign with pictures, switched on", `/campaigns/d
 });
 
 // 21 Its creator's view at three: one still waits, and the next place wears the Plus mark.
-await shot("21-pictures-creator", "its creator's pictures: one waiting, and where Plus is met", `/campaigns/detail?id=${MARIA}`, "[data-campaign-page]", {
+await pictureShot("21-pictures-creator", "its creator's pictures: one waiting, and where Plus is met", `/campaigns/detail?id=${MARIA}`, "[data-campaign-page]", {
   mine: [MARIA],
   parts: { pictures: true },
   pictures: { waiting: 1 },
@@ -658,7 +682,7 @@ await shot("21-pictures-creator", "its creator's pictures: one waiting, and wher
 });
 
 // 22 Adding one: the picture, what it shows, and the two lines to tick.
-await shot("22-picture-add", "adding a picture: the two lines to tick", `/campaigns/detail?id=${NICHOLAS}`, "[role=dialog]", {
+await pictureShot("22-picture-add", "adding a picture: the two lines to tick", `/campaigns/detail?id=${NICHOLAS}`, "[role=dialog]", {
   mine: [NICHOLAS],
   parts: { pictures: true },
   prepare: async (page) => {
@@ -670,7 +694,7 @@ await shot("22-picture-add", "adding a picture: the two lines to tick", `/campai
 });
 
 // 23 One picture, opened: what it shows, and Report.
-await shot("23-picture-open", "a picture opened, with Report", `/campaigns/detail?id=${MARIA}`, "[role=dialog]", {
+await pictureShot("23-picture-open", "a picture opened, with Report", `/campaigns/detail?id=${MARIA}`, "[role=dialog]", {
   parts: { pictures: true },
   prepare: async (page) => {
     await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
@@ -680,7 +704,7 @@ await shot("23-picture-open", "a picture opened, with Report", `/campaigns/detai
 });
 
 // 24 The team's queue: a picture is covered until it is tapped.
-await shot("24-pictures-team", "the team's queue: pictures to look at", "/community/moderate", "[data-mod-campaigns]", {
+await pictureShot("24-pictures-team", "the team's queue: pictures to look at", "/community/moderate", "[data-mod-campaigns]", {
   parts: { pictures: true },
   prepare: async (page) => {
     await page.waitForSelector("[data-mod-campaign-picture]", { timeout: 15000 });
@@ -722,6 +746,12 @@ await shot("31-wall-after", "Pray together with the wall gone: campaigns alone",
   },
 });
 
+/** A flow of the pictures themselves: walked only on an export cut with them, and otherwise named and left. */
+async function pictureWalk(label, ...rest) {
+  if (PICTURES_BUILD) return walk(label, ...rest);
+  if (!FLOWS.length || FLOWS.some((f) => label.toLowerCase().includes(f))) console.log(`left  ${label}: needs an export cut with pictures (PICTURES_BUILD=1; see the header)`);
+}
+
 async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures } = {}) {
   if (FLOWS.length && !FLOWS.some((f) => label.toLowerCase().includes(f))) return;
   const seed = {
@@ -733,6 +763,7 @@ async function walk(label, where, run, { set = {}, signedIn = true, mine, closed
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   calls = [];
+  asked = [];
   let ok = true;
   let why = "";
   try {
@@ -995,7 +1026,25 @@ if (WALK) {
     expectThat((await page.locator('button[aria-label="Add a picture"]').count()) === 0, "a place to add one is offered");
   }, { mine: [MARIA] });
 
-  await walk("pictures, on: its creator adds one only with both lines ticked, and it is sent with both", `/campaigns/detail?id=${NICHOLAS}`, async (page) => {
+  if (!PICTURES_BUILD) {
+    await walk("pictures, on at the server, in a build cut without them: the page draws none and asks for none, and its creator is offered no place to add one", `/campaigns/detail?id=${MARIA}`, async (page) => {
+      await page.waitForSelector("#campaign-title", { timeout: 15000 });
+      await settle(page, 1500);
+      expectThat(calls.some((c) => c.path === "/api/campaigns/open"), "the app never asked whether campaigns are open");
+      expectThat((await page.locator("[data-campaign-pictures]").count()) === 0, "pictures are drawn in a build cut without them");
+      expectThat(!calls.some((c) => c.path.endsWith("/pictures")), "the pictures were asked for");
+      expectThat((await page.locator('button[aria-label="Add a picture"]').count()) === 0, "a place to add one is offered");
+    }, { mine: [MARIA], parts: { pictures: true }, pictures: { waiting: 1 } });
+
+    await walk("pictures, on at the server, in a build cut without them: the team's queue shows none, and says so when it asks", "/community/moderate", async (page) => {
+      await page.waitForSelector("[data-mod-campaigns]", { timeout: 15000 });
+      await settle(page, 900);
+      expectThat((await page.locator("[data-mod-campaign-picture]").count()) === 0, "the team's queue draws a picture in a build cut without them");
+      expectThat(asked.some((a) => a === "/api/community/moderation?pictures=0"), `the queue was asked without saying the build has no pictures (${asked.filter((a) => a.startsWith("/api/community/moderation")).join(", ")})`);
+    }, { parts: { pictures: true } });
+  }
+
+  await pictureWalk("pictures, on: its creator adds one only with both lines ticked, and it is sent with both", `/campaigns/detail?id=${NICHOLAS}`, async (page) => {
     await page.waitForSelector("[data-campaign-pictures]", { timeout: 15000 });
     await page.locator('[data-campaign-pictures] button[aria-label="Add a picture"]').click();
     await page.waitForSelector("[role=dialog] [role=checkbox]", { timeout: 8000 });
@@ -1022,7 +1071,7 @@ if (WALK) {
     expectThat((await page.getByText("Your picture is waiting for a moderator.").count()) > 0, "its creator is not told it waits");
   }, { mine: [NICHOLAS], parts: { pictures: true } });
 
-  await walk("pictures, on: a reader opens one and reports it, by the picture and with a picture's own reason", `/campaigns/detail?id=${MARIA}`, async (page) => {
+  await pictureWalk("pictures, on: a reader opens one and reports it, by the picture and with a picture's own reason", `/campaigns/detail?id=${MARIA}`, async (page) => {
     await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
     expectThat((await page.locator("[data-campaign-pictures] button").count()) === 3, "a reader is offered more than the three pictures");
     await page.locator("[data-campaign-pictures] button").first().click();
@@ -1038,7 +1087,7 @@ if (WALK) {
     expectThat(report && report.body.picture === PICTURES[MARIA][0].id && report.body.reason === "about_me", `reported ${JSON.stringify(report?.body)}`);
   }, { parts: { pictures: true } });
 
-  await walk("pictures, on: its creator removes one, after being asked", `/campaigns/detail?id=${MARIA}`, async (page) => {
+  await pictureWalk("pictures, on: its creator removes one, after being asked", `/campaigns/detail?id=${MARIA}`, async (page) => {
     await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
     await page.locator("[data-campaign-pictures] button").nth(1).click();
     await page.locator("[role=dialog] button", { hasText: "Remove" }).click();
@@ -1050,7 +1099,7 @@ if (WALK) {
     expectThat(Boolean(gone), "the removal was not sent");
   }, { mine: [MARIA], parts: { pictures: true }, pictures: { waiting: 1 } });
 
-  await walk("pictures, on: at three its creator meets the Plus mark, which opens the upgrade sheet; a reader never sees it", `/campaigns/detail?id=${MARIA}`, async (page) => {
+  await pictureWalk("pictures, on: at three its creator meets the Plus mark, which opens the upgrade sheet; a reader never sees it", `/campaigns/detail?id=${MARIA}`, async (page) => {
     await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
     const place = page.getByRole("button", { name: "Up to twenty pictures with Purify Plus" });
     expectThat((await place.count()) === 1, "the place with the Plus mark is not drawn (was this export built with a purchase key? see the head of this file)");
@@ -1062,14 +1111,14 @@ if (WALK) {
     expectThat(!calls.some((c) => c.method === "POST" && c.path.endsWith("/pictures")), "something was uploaded");
   }, { mine: [MARIA], parts: { pictures: true }, pictures: { waiting: 1 } });
 
-  await walk("pictures, on: a reader who did not start the campaign is shown no Plus mark and no place to add", `/campaigns/detail?id=${MARIA}`, async (page) => {
+  await pictureWalk("pictures, on: a reader who did not start the campaign is shown no Plus mark and no place to add", `/campaigns/detail?id=${MARIA}`, async (page) => {
     await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
     expectThat((await page.getByRole("button", { name: "Up to twenty pictures with Purify Plus" }).count()) === 0, "a reader is shown the Plus mark");
     expectThat((await page.locator("[data-campaign-pictures]").innerText()).includes("Purify Plus") === false, "Plus is named to a reader");
     expectThat((await page.locator('[data-campaign-pictures] button[aria-label="Add a picture"]').count()) === 0, "a reader is offered a place to add");
   }, { parts: { pictures: true } });
 
-  await walk("pictures, on: the team's queue covers each picture until it is tapped, and clears one", "/community/moderate", async (page) => {
+  await pictureWalk("pictures, on: the team's queue covers each picture until it is tapped, and clears one", "/community/moderate", async (page) => {
     await page.waitForSelector("[data-mod-campaign-picture]", { timeout: 15000 });
     const card = page.locator("[data-mod-campaign-picture]").first();
     expectThat((await card.locator("img").count()) === 0, "a picture is drawn before it is asked for");

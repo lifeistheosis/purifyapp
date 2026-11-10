@@ -16,7 +16,9 @@
 // ("Prayed by many", pictures: lib/campaigns/parts.ts, which only the server
 // can load). An app has no value of its own for a part: it is off until the
 // server says it is on, so a part opens for every app the moment the website
-// says so, with no new store build.
+// says so, with no new store build. One part is held back by the build as
+// well: a store build cut without pictures never has them, whatever the
+// server says (./partsHere.ts).
 
 import { useSyncExternalStore } from "react";
 
@@ -24,6 +26,7 @@ import { apiFetch } from "@/lib/api/client";
 
 import { campaignsInBuild } from "./flags";
 import { CAMPAIGN_PART_NAMES, type CampaignPart } from "./model";
+import { partInThisBuild } from "./partsHere";
 
 let answer: boolean | null = null;
 let asking = false;
@@ -44,8 +47,8 @@ function ask(): void {
         told = null;
       }
       const said = (told && typeof told === "object" ? told : {}) as Record<string, unknown>;
-      // Only a part this build knows, and only a plain yes.
-      return { open: true, on: new Set(CAMPAIGN_PART_NAMES.filter((p) => said[p] === true)) };
+      // Only a part this build knows and has, and only a plain yes.
+      return { open: true, on: new Set(CAMPAIGN_PART_NAMES.filter((p) => said[p] === true && partInThisBuild(p))) };
     })
     .catch(() => ({ open: false, on: new Set<CampaignPart>() }))
     .then(({ open, on }) => {

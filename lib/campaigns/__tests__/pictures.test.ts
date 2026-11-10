@@ -704,6 +704,25 @@ describe("a moderator looks", () => {
     expect(summary.waiting).toBe(1);
   });
 
+  it("a build that has no pictures is sent none and counted none, and the pictures' table is not read for it", async () => {
+    // A store build cut without pictures says so (lib/campaigns/partsHere.ts).
+    // Its page could draw none of them, so its button shows no number for
+    // them, and no address of a waiting picture goes where it has no use.
+    const id = running();
+    await added(id, { alt: "Maria in the garden" });
+    signInTeam();
+    const asked: string[] = [];
+    const real = client(w);
+    state.admin = { ...real, from: (table: string) => (asked.push(table), real.from(table)) };
+    const res = await queue(new Request(`${SITE}/api/community/moderation?pictures=0`));
+    const text = await res.text();
+    expect(JSON.parse(text).campaigns).toEqual({ waiting: [], reports: [], live: true });
+    expect(text).not.toContain("/object/sign/");
+    const summary = (await (await queue(new Request(`${SITE}/api/community/moderation?summary=1&pictures=0`))).json()) as { waiting: number };
+    expect(summary.waiting).toBe(0);
+    expect(asked).not.toContain("prayer_campaign_pictures");
+  });
+
   it("a file that could not be deleted is not called removed", async () => {
     const id = running();
     const pic = await added(id);

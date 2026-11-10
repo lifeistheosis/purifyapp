@@ -105,12 +105,17 @@ type Admin = ReturnType<typeof createAdminClient>;
  * and only for the team: nobody else is shown a picture before it is
  * cleared (the notes, 3.4). While they are off the key is absent and the
  * pictures' table is never read.
+ *
+ * Nor for a build that has no pictures: a store build cut without them says
+ * so with `pictures=0` (lib/campaigns/partsHere.ts), and is then sent none
+ * and counted none, so its button never shows a number for what its page
+ * cannot draw, and no address of a waiting picture goes where it has no use.
  */
 async function campaignQueue(req: Request, admin: Admin, team: boolean) {
   if (!(await campaignsCaller(req)).open) return null;
   const [waiting, reports] = await Promise.all([readWaitingCampaigns(admin), readOpenCampaignReports(admin)]);
   const queue = { waiting: waiting.rows, reports: reports.rows, live: waiting.live && reports.live };
-  if (!team || !campaignPart("pictures")) return queue;
+  if (!team || !campaignPart("pictures") || new URL(req.url).searchParams.get("pictures") === "0") return queue;
   return { ...queue, pictures: (await readWaitingPictures(admin)).rows };
 }
 

@@ -3331,3 +3331,48 @@ more in `lib/admin/__tests__/communityRoute.test.ts` (the panel's reason
 reaches the removal). Five ways of breaking it were tried, and each failed a
 case.
 
+## 25. A store build has pictures only when it was cut with them (2026-11-10)
+
+**Why.** The stores' rule against a feature asleep in a build (Apple's 2.3.1
+and 2.5.19, already the rule for campaigns as a whole in
+`lib/campaigns/flags.ts`). Pictures have a switch of their own on the server
+(`lib/campaigns/parts.ts`). A store build that carried their controls while
+the server had them off, to be turned on later by the server alone, would
+carry them asleep. Raised by the arbiter and Admin; agreed with Admin, who
+asked for it alone and first, so that every test build from now on is the
+build he will submit.
+
+- **The constant:** `PICTURES_IN_STORE_BUILDS` in `lib/campaigns/flags.ts`,
+  committed false. In the release commit it is true only if pictures are on
+  at submission (`OWNER-STEPS.md`, R0c). A test holds it false for as long
+  as the server's own switch is off.
+- **False:** an app draws no picture and no picture control and asks the
+  pictures' route for nothing, whatever the server answers. Turning pictures
+  on in the apps then takes a new store build, which is reviewed.
+- **True:** the server decides, as before.
+- **The website** has no such rule and follows the server.
+- **Where it is asked** (`lib/campaigns/partsHere.ts`): where the server's
+  answers come into the app. The parts it says are on
+  (`useCampaignsOpen.ts`), so the campaign's page, the rules and every call
+  to the pictures' route follow; and the moderators' queue and the count on
+  the moderators' button (`lib/community/client.ts`), which now say
+  `pictures=0` to the server, are sent none and count none.
+- **A picture put up on the website while a store build has none:** an app
+  reader sees that campaign as one with no picture looks, under the app's
+  own icon of its kind. Nothing says a picture is missing.
+- **Whether it is a store build** is asked of the running app
+  (`lib/platform/native.ts`): what a build was made for cannot be read in the
+  app's own code.
+
+**The harness** (`scripts/mock-campaigns.mjs`) wears the apps' own user
+agent, so to the app it is a store build. On the committed export the walk
+now holds, with the server saying pictures are on, that a campaign's page
+draws none and asks for none and that the team's queue shows none. The
+pictures' own stills (20 to 24) and flows need a scratch export cut with
+the constant true, and are run only with `PICTURES_BUILD=1`.
+
+**Held by** `lib/campaigns/__tests__/storePictures.test.ts` (10 cases) and one
+more in `pictures.test.ts` (the route sends and counts none for a build that
+says it has none). Three ways of breaking it were tried, and each failed a
+case.
+
