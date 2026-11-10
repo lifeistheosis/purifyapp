@@ -226,7 +226,9 @@ const THREADS = {
 function threadFor(id, { mine = false, signedIn = true, commentsOpen = true } = {}) {
   const t = THREADS[id] ?? { updates: [], comments: [] };
   const running = CAMPAIGNS[id]?.status === "active";
-  return { ...t, commentsOpen, signedIn, canUpdate: running && mine, canComment: running && signedIn && commentsOpen };
+  // Its creator's updates are their own words, as the route says of them.
+  const updates = mine ? t.updates.map((u) => ({ ...u, mine: true })) : t.updates;
+  return { ...t, updates, commentsOpen, signedIn, canUpdate: running && mine, canComment: running && signedIn && commentsOpen };
 }
 
 const seen = new Set();
