@@ -1361,3 +1361,112 @@ starts at 200 devices a version, settling needs 1,100. At a few hundred new
 readers a week, of whom only those with no account are in it, a settled
 answer is two to three months away, and may not come inside twelve weeks.
 
+
+## 11. The wider system and the seven counts, as built (2026-11-10)
+
+His word, about 04:40 UTC: "allow fable to cook up on the A/B test system and
+ensure its applicable to other parts of our system too. we need to track
+certain things also". Then "we can change terms if we need to implement new
+tracking system of course", and "finalize all of this and let's get going".
+The plain page he was sent is the record of the proposal
+(https://claude.ai/artifact/94eopwRhoMrd991kvz1mg6); this section is the
+record of what was built.
+
+### The system, for any screen
+
+The first test's machinery (section 10) already took any test. Three things
+were added to `lib/ab/tests.ts`, each held by `lib/ab/__tests__/tests.test.ts`:
+
+- **More surfaces.** A test may live on the welcome questions, Today, the Plus
+  sheet, plans, reminders, the theme picker, or be an "offer".
+- **One test judged on readers coming back at a time.** Two such tests on two
+  screens would each move the thing the other is judged by, and neither could
+  be read. The registry refuses the pair. Two tests on one screen at one time
+  were refused already.
+- **An offer names his word.** A test on a price, a trial or what Plus
+  includes carries `word`, the day he said yes to that one test. Without it
+  the registry refuses the test. None is registered.
+
+### The next three tests: on record, none built
+
+`AB_PLANNED` in the same file holds them in his order, and his panel lists
+them under the first test ("The tests after it, in order. None is built.").
+They are not in `AB_TESTS`, so no device can be given one.
+
+1. **Reminders in their moment.** On the account card as built, or in one line
+   after a first finished prayer or chapter. It waits for more than its turn:
+   a reminder today is kept with an account (`components/profile/PushOptIn.tsx`
+   is the server's push, for a signed-in reader, and the apps hold no local
+   notifications). For a reader with no account the second version would be
+   the account card under another name, which is the first test again. It is
+   worth running once a phone can remind without an account, which this round
+   was told not to build.
+2. **The Plus sheet's order.** The tapped feature first, or the plans first.
+   Same price, same words, same close.
+3. **Plus, introduced once.** Locks only, or one calm card on Today after the
+   first week. The card is his item 111 and is not built.
+
+Why none is built now: they run one at a time, the first test may take twelve
+weeks, and a second version built today would sit unused while the screens
+around it change. Each is built two weeks before its turn and ships in the
+store build before that turn, since both versions must be in an app the
+stores reviewed.
+
+### The seven counts
+
+All in `lib/analytics/moreCounting.ts` (the rules, pure) and
+`lib/analytics/moreCount.ts` (the sending). Each is a total in
+`analytics_events` through `/api/track/event`, on the server's closed list
+(`lib/security/schemas.ts`), kept to the day and not the time, with no
+account, no device id, no session id and no page. Nothing about where a
+reader comes from in faith is on any of them, and a test holds that.
+
+| Count | The row | The decision it serves | Where it is sent from |
+| --- | --- | --- | --- |
+| The first prayer or chapter | `first_act`: prayer or chapter; 0, 1, 2 to 6, or 7 and more days after first open | What Today leads with; the early sign for every later test | `components/analytics/AnalyticsTracker.tsx`, once for a device |
+| The first week's steps | `week_step`: the day of the seven; opened or passed | Whether seven is right, and which day to mend | `components/onboarding/FirstStepsNudge.tsx` |
+| Accounts, by where | `account_made`: questions, card, signup or plus | Which moment is worth asking at | marked where the reader leaves to sign in, sent by `FirstRunGate.tsx` when an account under half an hour old is met |
+| Reminders | `reminders_set`: on or off; questions, card or settings | Whether reminders keep readers, and where to ask | `OnboardingFlow.tsx`, `RoadCards.tsx`, `PushOptIn.tsx` |
+| The Plus sheet, step by step | `plus_step`: the lock; tried or pay | Which part of Plus to rework first | `components/billing/UpgradeModal.tsx` |
+| A purchase on the pricing page | `pricing_bought`: yearly or monthly | Completes the count of purchases, which today sees only the sheet's | `PlusPaywall.tsx`, `WebPaywall.tsx` |
+| The two cards on Today | `today_card`: keep or second; answered or closed | Whether each earns its place | `RoadCards.tsx` |
+
+Two words on rows that already exist: `first` on `screen_closed` (the device's
+first day, so the screen new readers leave from is seen apart), and
+`reminders` on `came_back` (was the device reminded when it came back).
+
+The purchase on the pricing page is a row of its own, not a new lock on the
+sheet's count, because the list of locks is the sheet's own and a test holds
+the two equal. Its sentence is the second half of the Plus sheet's.
+
+In the billing components the change is count calls only. Nothing a reader
+sees or pays is touched, and `docs/audit/findings.yaml` was read first.
+
+### The switch, and the words
+
+**Nothing here is sent.** `MORE_COUNTS_SENDING` is `false`, every sender passes
+through it, and the two added words ride only when it is on. The server
+accepts the seven names, so the website can go out before the apps, and
+receives none.
+
+`PRIVACY_SENTENCES` in `moreCounting.ts` holds the eight sentences in English
+and German as they were put to him (seven for the counts, and one naming the
+first step opened, which is counted today and which the page omits).
+`lib/analytics/__tests__/moreCounting.test.ts` refuses the switch on while
+`/privacy` lacks any one of them, in either language. So a count cannot go
+live ahead of its sentence.
+
+At release, on his yes to the words (his page's items 140 and 141): the eight
+sentences into `app/(app)/privacy/page.tsx` in both languages, the Terms
+paragraph into the Terms, the switch on, and the 1.9 letter lists the changes
+as the privacy page promises.
+
+### What differs from the page he read
+
+- The pricing page's purchase is its own row, as above. The sentence he read
+  is unchanged.
+- The reminders test is on record and not built, for the reason above. The
+  arbiter had accepted building it now; this is a change of recommendation,
+  said to the arbiter at the push.
+- The guardrails of the three later tests are written against what the system
+  measures (a device's first two weeks), not "back on day 30".
