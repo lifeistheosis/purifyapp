@@ -1312,11 +1312,12 @@ For phase 3.
 -- Prayer campaigns, reworked: a campaign's pictures, up to 3, or 20 with
 -- Purify Plus.
 --
--- The copy for his signature, with its header in plain words and its check,
--- is docs/1.9-build/sql/campaigns-3-pictures.sql, and the statements below
--- are that file's, word for word (lib/campaigns/__tests__/closed.test.ts
--- holds the two together). Named <YYYYMMDDHHMMSS>_campaign_pictures.sql when
--- Edgar signs it off, after files one and two. Written to run twice.
+-- The copy that was put before him, with its header in plain words and its
+-- check, is docs/1.9-build/sql/campaigns-3-pictures.sql, and the statements
+-- below are that file's, word for word (lib/campaigns/__tests__/closed.test.ts
+-- holds the two together). Signed on 2026-11-10, and since then also
+-- supabase/migrations/20261110135545_campaign_pictures.sql, after files one
+-- and two (section 15). Written to run twice.
 --
 -- The limit of 3 or 20 is the server's to hold, from the creator's
 -- entitlement at the moment of the upload (the table's own ceiling is 20). A
@@ -1927,8 +1928,9 @@ asks for the sign-in code, as it does for a post.
 **File one is signed** (2026-11-10, "R0b yes 1", on its summary in plain
 words; `HANDOFF.md`) **and is now a migration:**
 `supabase/migrations/20261110084116_campaigns_rework.sql`, word for word the
-copy below, which the merge of 1.9 runs. A test holds the two together, and
-holds file two, which he has not signed, out of that folder.
+copy below, which the merge of 1.9 runs. A test holds the two together.
+Files two and three were held out of that folder by the same test until he
+signed them later that day, and are migrations too now (section 15).
 
 **The SQL, as it was put before him:** `docs/1.9-build/sql/campaigns-1-rework.sql`.
 It is file one of 5.2, word for word (a test holds the two together), under a
@@ -2172,7 +2174,8 @@ is a post with a state of its own, `campaign`:
 makes no new table: one column and one more state on posts, one column on
 replies. It ran twice on the scratch database standing on every migration and
 on file one, and the schema after the second run is the schema after the
-first. Not signed, and not in `supabase/migrations`.
+first. Not signed when this was written; signed since, and a migration
+(section 15).
 
 | Part | Where |
 |---|---|
@@ -2222,8 +2225,9 @@ and the approval of a held reply reads its parent only where it always did.
   reader is handed; blocks and mutes; each rule of 11.3; taking one off and
   its line in the log; the guards on reactions; and that every read of
   Community still asks for a post that is visible.
-- `closed.test.ts`: file two is held out of `supabase/migrations` until he
-  signs, and has to go on giving a thread its own state.
+- `closed.test.ts`: file two was held out of `supabase/migrations` until he
+  signed (section 15: it is held to the signed words now), and has to go on
+  giving a thread its own state.
 - The stills and the walk (`scripts/mock-campaigns.mjs`): two more screens
   and three more flows.
 
@@ -2507,9 +2511,10 @@ believed, a report that only marks the row, the second lock removed, a file
 taken by the name it gives itself, the housekeeping reading every campaign's
 pictures at once, and the waiting place taken to be private without asking.
 
-`closed.test.ts` holds file three out of the migrations folder, to the notes'
-own words, and to giving the public key nothing; and holds that a closed
-device asks nothing of the four new calls.
+`closed.test.ts` held file three out of the migrations folder until he signed
+it (section 15: it is held to the signed words now), and holds it to the
+notes' own words and to giving the public key nothing; and holds that a
+closed device asks nothing of the four new calls.
 
 The in-memory Supabase gained what this needed and nothing more: a private
 bucket and an address that expires, a copy to another bucket, the bytes of
@@ -2528,8 +2533,8 @@ one cascade.
   and enough; whether a removed picture must be kept for a time.
 - **The words:** the rule about pictures on the rules page is the draft of
   3.2; the privacy page's lines are 4.7's, with item 113.
-- **File three's signature,** on its plain summary, after a second chat has
-  read the SQL.
+- **File three's signature:** given on 2026-11-10, on its plain summary, after
+  a second chat had read the SQL (section 15).
 
 ### 13.7 Found while building it, in phase 1's own code
 
@@ -2647,4 +2652,50 @@ Twenty-four stills, one of each screen, and twenty flows walked in a browser
 against the same export, with what each sends checked. The scratch export
 for them has the switch open, and made-up purchase keys so that Plus counts
 as sold and the Plus place is drawn (the head of the script says which).
+
+## 15. The three SQL files, signed (2026-11-10)
+
+All three are signed, and all three are in the folder a merge runs against
+production. **Nothing has run on production, and nothing will until 1.9
+merges to main, which waits for his word.**
+
+| File | What it is | His word | The migration |
+|---|---|---|---|
+| One | The campaign itself, joining it, reports | "R0b yes 1", about 08:40 UTC | `20261110084116_campaigns_rework.sql` |
+| Two | A campaign's updates and comments, as its own thread | "All recommendations. Start.", about 13:50 UTC, answering the arbiter's list of 10:41 whose item 7 was this file | `20261110135543_campaign_threads.sql` |
+| Three | A campaign's pictures | The same words: it had been put to him at 12:02 UTC on its plain summary, after Admin's read and its one change | `20261110135545_campaign_pictures.sql` |
+
+His words are in `BRAINSTORM.md` and the list of his signatures in
+`HANDOFF.md`. He does not read SQL: each yes is on a summary in plain words,
+and each file was read by a second chat first.
+
+**Each migration is the copy he was asked about, statement for statement.** A
+header of its own says it is signed and not applied by hand, with his words,
+the day, and what a probe of production saw. `closed.test.ts` holds each
+migration to its copy in `docs/1.9-build/sql` word for word, to being in the
+folder exactly once, to saying whose word signed it, and holds the three to
+running in order by name: one, two, three.
+
+**Checked once more as they now stand in the folder:**
+
+- A scratch database was built from empty by running every migration in the
+  folder in name order. The three ran in order with no error. (One old
+  migration of May's fails there, and only there: it reads a column of the
+  accounts table that the scratch stand-in for it does not have. It is not
+  one of these and was the same before them.)
+- Each of the three was then run a second time: no error.
+- Each file's own check, from its header, gave what the header says it
+  should: file two 1, 1, true, 0; file three 15, true, 0, false, 0.
+- `lib/supabase/__tests__/migrationVersions.test.ts` passes: fourteen digits
+  each, shared with no other file, and the two new ones sort last.
+
+**Probed on production at 13:55 UTC, with the site's public key: none of the
+three has run.** The campaigns table has no "days", posts have no
+"campaign_id", and there is no pictures table. So the headers say signed,
+and not applied. When a probe shows one applied, its header in
+`docs/1.9-build/sql` is where that is written.
+
+**What each merge-time run changes for a reader: nothing.** Campaigns are
+closed, and pictures are switched off besides. File one also closes July's
+table to the public key, which nothing in the live app reads.
 

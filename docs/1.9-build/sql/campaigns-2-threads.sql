@@ -2,12 +2,21 @@
 -- its own thread in Community (1.9; docs/1.9-build/notes/campaigns-fable.md,
 -- sections 5.3 and 11).
 --
--- NOT APPLIED YET, AND NOT SIGNED YET. It waits for the owner's yes to the SQL
--- itself (docs/1.9-build/OWNER-STEPS.md, R0b), with file one
--- (campaigns-1-rework.sql), which runs before it. On his yes it is copied,
--- word for word from "set lock_timeout" down, into
--- supabase/migrations/<14 digits>_campaign_threads.sql, named from the clock
--- that day so that it sorts last and after file one.
+-- NOT APPLIED YET. Signed off by the owner on 2026-11-10 at about 13:50 UTC,
+-- his words: "All recommendations. Start." They answered the arbiter's list
+-- of 10:41 UTC, whose item 7 was this file ("R0b yes 2"), on its summary in
+-- plain words after a second chat had read the SQL (he does not read SQL:
+-- docs/1.9-build/HANDOFF.md; his words are in docs/1.9-build/BRAINSTORM.md).
+-- Copied, word for word from "set lock_timeout" down, into
+-- supabase/migrations/20261110135543_campaign_threads.sql, which the
+-- integration runs on the merge to main, after file one. This copy is the
+-- SQL to paste into the editor, should he run it by hand first or the
+-- integration's check be red.
+--
+-- Probed on production on 2026-11-10 at 13:55 UTC, with the site's public
+-- key: not run. The column "campaign_id" was not on community_posts, nor
+-- "campaign_update" on its replies. Nothing here says applied until a probe
+-- does.
 --
 -- Written to run twice: every statement is "if not exists", or drops what it
 -- is about to make. Run twice on 2026-11-10 on a scratch PostgreSQL 16

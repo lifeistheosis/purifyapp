@@ -345,10 +345,19 @@ describe("closed: the data", () => {
   /** File one, the copy to paste, and the migration it became on his signature ("R0b yes 1", 2026-11-10). */
   const FOR_HIS_SIGNATURE = "docs/1.9-build/sql/campaigns-1-rework.sql";
   const SIGNED = "supabase/migrations/20261110084116_campaigns_rework.sql";
-  /** File two: a campaign's updates and comments, as its own thread in Community. Not signed yet. */
+  /**
+   * File two: a campaign's updates and comments, as its own thread in
+   * Community. And file three: a campaign's pictures, which are switched off
+   * on the server besides. Each with the migration it became on his
+   * signature: "All recommendations. Start.", 2026-11-10 at about 13:50 UTC,
+   * which answered the arbiter's list whose item 7 was file two, and file
+   * three, put to him at 12:02 after a second chat had read it
+   * (docs/1.9-build/HANDOFF.md, docs/1.9-build/BRAINSTORM.md).
+   */
   const THREADS_FOR_HIS_SIGNATURE = "docs/1.9-build/sql/campaigns-2-threads.sql";
-  /** File three: a campaign's pictures. Not signed yet, and switched off on the server besides. */
+  const THREADS_SIGNED = "supabase/migrations/20261110135543_campaign_threads.sql";
   const PICTURES_FOR_HIS_SIGNATURE = "docs/1.9-build/sql/campaigns-3-pictures.sql";
+  const PICTURES_SIGNED = "supabase/migrations/20261110135545_campaign_pictures.sql";
   /** A file's SQL from its first statement on, its header left out. */
   const statements = (sql: string) => sql.slice(sql.search(/^set lock_timeout/m));
 
@@ -372,17 +381,36 @@ describe("closed: the data", () => {
     expect(read(FOR_HIS_SIGNATURE)).toMatch(/^-- NOT APPLIED YET\./m);
   });
 
-  it("keeps what he has not signed out of that folder: file two waits in docs", () => {
-    const hits = readdirSync(join(ROOT, "supabase/migrations")).filter((f) => NEW_IN_TWO.test(read(`supabase/migrations/${f}`)));
-    expect(hits).toEqual([]);
-    expect(existsSync(join(ROOT, THREADS_FOR_HIS_SIGNATURE))).toBe(true);
-    expect(read(THREADS_FOR_HIS_SIGNATURE)).toMatch(/^-- NOT APPLIED YET, AND NOT SIGNED YET\./m);
+  it("runs files two and three from that folder as well: each once, signed, word for word, and after file one", () => {
+    // Until he signed them they were held out of the folder by this test.
+    // Now each is in it exactly once, and is the copy that was read by a
+    // second chat and put to him in plain words, statement for statement.
+    const folder = readdirSync(join(ROOT, "supabase/migrations"));
+    const files = [
+      [NEW_IN_TWO, THREADS_SIGNED, THREADS_FOR_HIS_SIGNATURE],
+      [/prayer_campaign_pictures/, PICTURES_SIGNED, PICTURES_FOR_HIS_SIGNATURE],
+    ] as const;
+    for (const [makes, signed, copy] of files) {
+      const hits = folder.filter((f) => makes.test(read(`supabase/migrations/${f}`)));
+      expect(hits.map((f) => `supabase/migrations/${f}`)).toEqual([signed]);
+      expect(existsSync(join(ROOT, copy))).toBe(true);
+      expect(statements(read(signed))).toBe(statements(read(copy)));
+      for (const file of [signed, copy]) {
+        expect(read(file), file).toMatch(/Signed off by the owner on 2026-11-10/);
+        expect(read(file), file).toContain('"All recommendations. Start."');
+        expect(read(file), file).not.toMatch(/NOT SIGNED YET/);
+      }
+      // Neither says it was applied: a probe of production that day found it
+      // had not run, and a header may only say what a probe has seen.
+      expect(read(signed)).toMatch(/^-- SIGNED, AND NOT APPLIED BY HAND\./m);
+      expect(read(copy)).toMatch(/^-- NOT APPLIED YET\./m);
+    }
+    // The folder is run by name: one, then two, then three.
+    const order = [SIGNED, THREADS_SIGNED, PICTURES_SIGNED].map((f) => f.slice(f.lastIndexOf("/") + 1));
+    expect([...order].sort()).toEqual(order);
   });
 
-  it("keeps file three out of that folder too, and it gives the public key nothing", () => {
-    const hits = readdirSync(join(ROOT, "supabase/migrations")).filter((f) => /prayer_campaign_pictures/.test(read(`supabase/migrations/${f}`)));
-    expect(hits).toEqual([]);
-    expect(read(PICTURES_FOR_HIS_SIGNATURE)).toMatch(/^-- NOT APPLIED YET, AND NOT SIGNED YET\./m);
+  it("file three gives the public key nothing, and takes no yes that was not asked for", () => {
     const sql = statements(read(PICTURES_FOR_HIS_SIGNATURE));
     // Nobody reads a picture's row straight from the table: row level
     // security with no policy, and no right for the public key or a

@@ -45,10 +45,10 @@ const COLUMNS: Record<string, string[]> = {
     "status", "created_at", "updated_at",
   ],
   // 20260713000200_prayer_campaigns.sql, 20260713000300 (prayer duration), 20260725000000_prayer_campaign_image.sql,
-  // then the rework's columns (REWORK_COLUMNS below): file one's are a
-  // migration since the owner signed it (20261110084116_campaigns_rework.sql),
-  // and run on production at 1.9's merge; file two's wait in
-  // docs/1.9-build/sql for his signature. A suite that wants the table as
+  // then the rework's columns (REWORK_COLUMNS below): all three files are
+  // migrations since the owner signed them (20261110084116_campaigns_rework,
+  // 20261110135543_campaign_threads, 20261110135545_campaign_pictures), and
+  // run on production at 1.9's merge. A suite that wants the table as
   // production has it today names them in World.missing.
   prayer_campaigns: [
     "id", "creator_id", "title", "intention", "for_whom", "subject_name", "note", "praying_count",
@@ -68,7 +68,7 @@ const COLUMNS: Record<string, string[]> = {
     "id", "campaign_id", "reporter_id", "reason", "created_at", "target_kind", "target_id",
     "reason_code", "status", "closed_at",
   ],
-  // The rework's file three (docs/1.9-build/sql/campaigns-3-pictures.sql): a campaign's pictures.
+  // The rework's file three (supabase/migrations/20261110135545_campaign_pictures.sql): a campaign's pictures.
   prayer_campaign_pictures: [
     "id", "campaign_id", "bucket", "path", "position", "width", "height", "alt", "status",
     "check_result", "reviewed_by_email", "reviewed_at", "removed_reason", "consent_at", "created_at",
@@ -146,7 +146,7 @@ export const REWORK_COLUMNS: Record<string, string[]> = {
   ],
   prayer_campaign_prayers: ["places", "until_on", "notify_updates"],
   prayer_campaign_reports: ["target_kind", "target_id", "reason_code", "status", "closed_at"],
-  // File two (docs/1.9-build/sql/campaigns-2-threads.sql): a campaign's thread and its updates.
+  // File two (supabase/migrations/20261110135543_campaign_threads.sql): a campaign's thread and its updates.
   community_posts: ["campaign_id"],
   community_post_replies: ["campaign_update"],
 };

@@ -2,12 +2,22 @@
 -- 20 with Purify Plus (1.9; docs/1.9-build/notes/campaigns-fable.md, sections
 -- 5.4 and 13).
 --
--- NOT APPLIED YET, AND NOT SIGNED YET. It waits for the owner's yes, on its
--- summary in plain words, after a second chat has read the SQL
--- (docs/1.9-build/HANDOFF.md; docs/1.9-build/OWNER-STEPS.md, R0b). On his
--- yes it is copied, word for word from "set lock_timeout" down, into
--- supabase/migrations/<14 digits>_campaign_pictures.sql, named from the
--- clock that day so that it sorts after files one and two.
+-- NOT APPLIED YET. Signed off by the owner on 2026-11-10 at about 13:50 UTC,
+-- his words: "All recommendations. Start." They answered every
+-- recommendation put to him so far,
+-- and this file was one: put to him at 12:02 UTC on its summary in plain
+-- words, after a second chat had read the SQL and its one change had been
+-- made (he does not read SQL: docs/1.9-build/HANDOFF.md; his words are in
+-- docs/1.9-build/BRAINSTORM.md). Copied, word for word from
+-- "set lock_timeout" down, into
+-- supabase/migrations/20261110135545_campaign_pictures.sql, which the
+-- integration runs on the merge to main, after files one and two. This copy
+-- is the SQL to paste into the editor, should he run it by hand first or
+-- the integration's check be red.
+--
+-- Probed on production on 2026-11-10 at 13:55 UTC, with the site's public
+-- key: not run. There was no table of that name. Nothing here says applied
+-- until a probe does.
 --
 -- Written to run twice: every statement is "if not exists" or changes
 -- nothing the second time. Run twice on 2026-11-10 on a scratch PostgreSQL
