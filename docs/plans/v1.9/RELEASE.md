@@ -207,7 +207,7 @@ in the owner's words.
 
 ## If it goes wrong
 
-Way back: d973feaf0c9f0248ecec0bcd591970fe10b0e2a7 Twelve saints' icons that carry another's mark come off the website
+Way back: a63d37c7a7cbd29cd368989d81b521fd55197319 Push: a test to the admin's own devices (Releases, Records, Notifications sent)
 
 The line above is the commit on `origin/main` that this push replaces.
 `node scripts/release.mjs back` writes it before the push and again after
