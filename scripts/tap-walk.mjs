@@ -136,6 +136,7 @@ const EXPECT = {
   "/read-more/": { verdict: "pass" },
   "/here/": { verdict: "pass", why: /^names the page it stands on/ },
   "/wrapped/": { verdict: "pass", why: /^went to \/other\// },
+  "/required/": { verdict: "pass" },
 };
 
 /** The self-test's page: one front door that draws a case by its address, as the shell answers every address with it. */
@@ -198,6 +199,13 @@ if (at === "/sticky/") {
   });
   more.setAttribute("aria-expanded", "false"); more.setAttribute("aria-controls", "more-words");
   m.append(block(600), words, more, block(1500));
+} else if (at === "/required/") {
+  // A form whose field is required: the browser asks for it, and focuses it.
+  const f = document.createElement("form"); f.onsubmit = (e) => e.preventDefault();
+  const i = document.createElement("input"); i.type = "email"; i.required = true; i.name = "email"; i.style.cssText = "display:block;margin:0 16px;height:44px";
+  const go = document.createElement("button"); go.type = "submit"; go.textContent = "Sign in";
+  f.append(i, go);
+  m.append(block(300), f, block(1200));
 } else if (at === "/wrapped/") {
   // A link that wraps across two lines in a sentence, its box's middle on the sentence's other words.
   // In a face of one width, "Support" ends the first line (23 + 7 of 30) and "page" starts the second.
@@ -553,6 +561,14 @@ async function walkScreen(ctx, at, kept) {
         // Count every change the page makes after the finger lifts.
         await page.evaluate(() => {
           window.__tapwalkChanges = 0;
+          // The browser asking for a field left empty (a form's required words) is the tap's answer:
+          // its bubble and the field it focuses are no change to the page (Sign in, 2026-11-11).
+          window.__tapwalkInvalid = 0;
+          if (!window.__tapwalkInvalidHeard) {
+            window.__tapwalkInvalidHeard = true;
+            document.addEventListener("invalid", () => (window.__tapwalkInvalid += 1), true);
+          }
+          window.__tapwalkFocusBefore = document.activeElement;
           window.__tapwalkObserver?.disconnect();
           window.__tapwalkObserver = new MutationObserver((list) => {
             window.__tapwalkChanges += list.length;
@@ -612,6 +628,17 @@ async function walkScreen(ctx, at, kept) {
         await page.waitForTimeout(700);
         const after = await page.evaluate(snapshot).catch(() => null);
         const changes = await page.evaluate(() => window.__tapwalkChanges ?? 0).catch(() => 0);
+        // Focus gone somewhere else (a field opened for words, the browser's own ask): a tap's
+        // answer the page's elements do not show. Focus on the tapped control itself is not,
+        // since a browser focuses whatever is tapped, the dead control as much as the live one.
+        const answered = await page
+          .evaluate((i) => {
+            const el = document.querySelector(`[data-tapwalk="${i}"]`);
+            const now = document.activeElement;
+            const moved = now && now !== document.body && now !== document.documentElement && now !== window.__tapwalkFocusBefore && !(el && (el === now || el.contains(now)));
+            return Boolean(moved) || (window.__tapwalkInvalid ?? 0) > 0;
+          }, c.i)
+          .catch(() => false);
         if (!after) {
           row.why.push("the page went away");
           result.controls.push(row);
@@ -721,7 +748,7 @@ async function walkScreen(ctx, at, kept) {
             row.held = Math.round(held);
             row.why.push(`held: what stands above it moved ${row.held}px, and the browser's scroll anchoring kept it under the finger`);
           }
-          const anything = changes > 0 || after.y !== before.y || after.html !== before.html || after.kept !== before.kept || after.dialogs !== before.dialogs;
+          const anything = changes > 0 || answered || after.y !== before.y || after.html !== before.html || after.kept !== before.kept || after.dialogs !== before.dialogs;
           if (!anything) {
             if (namesHere) row.why.push("names the page it stands on, at its top: nothing to do");
             else {
