@@ -2069,6 +2069,57 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Athonite_Fresco_Icon_of_Saint_Ambrose_of_Milan.jpg",
   },
+  // 1.9, build 93 note 12 (the owner: "Ensure every single saint has a icon
+  // photo"): four saints off the plate, each cut from the picture his books
+  // already wear (lib/reading/authorCovers.ts, its rights recorded there), as
+  // the seventeen of 2026-11-10 were: three wide by four tall about the
+  // middle, at the house's 315 by 420, never enlarged.
+  "apostle-thomas.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A beardless young apostle with short dark hair in an ornate gold halo, in a black tunic under a red cloak, holding an unrolled scroll beside a carved gold throne, on a bright gold ground with his name in red Greek letters.",
+    work: "Icon of St Thomas the Apostle, signed by Konstantinos Tzanes (the picture on his books' covers, lib/reading/authorCovers.ts)",
+    artist: "Konstantinos Tzanes",
+    workDate: "1670",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Saint_Thomas_K._Tzanes.png",
+  },
+  "gregory-the-dialogist.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A bishop with a grey forked beard in a tall gold headdress and a white omophorion with black crosses, holding a long unrolled scroll of Greek text, on a gold ground with seams in its boards.",
+    work: "Icon of St Gregory the Dialogist, from the Savvathiana monastery, the collection of St Catherine, Heraklion (the picture on his books' covers, lib/reading/authorCovers.ts)",
+    artist: "Unknown Cretan painter (the photograph is C. Messier's, CC0)",
+    workDate: "Second half of the 17th century",
+    source: "Wikimedia Commons",
+    license: "CC0",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%CE%86%CE%B3%CE%B9%CE%BF%CF%82_%CE%93%CF%81%CE%B7%CE%B3%CF%8C%CF%81%CE%B9%CE%BF%CF%82_%CE%BF_%CE%94%CE%B9%CE%AC%CE%BB%CE%BF%CE%B3%CE%BF%CF%82_0633.jpg",
+  },
+  "meletius-of-antioch.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A balding bishop with a long dark forked beard in a large ochre halo, in a white omophorion with large dark crosses, holding a jewelled Gospel, on a deep blue ground with white Greek letters.",
+    work: "Fresco of St Meletius of Antioch, the church of St George, Staro Nagoričane (the picture on his books' covers, lib/reading/authorCovers.ts)",
+    artist: "Unknown",
+    workDate: "1317",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Saint_Meletios_of_Antioch_Staro_Nagori%C4%8Dane.jpg",
+  },
+  // A Western Father, by the arbiter's rule for the Western ten (2026-11-11):
+  // the oldest image first, otherwise the painting his books wear.
+  "jerome-of-stridon.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "An old man with short white hair and a long white beard falling to his chest, in a crimson cape over a red cassock, against a plain black ground.",
+    work: "Saint Jerome as Scholar by El Greco, the Metropolitan Museum of Art (the picture on his books' covers, lib/reading/authorCovers.ts)",
+    artist: "El Greco",
+    workDate: "c. 1610",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Saint_Jerome_as_Scholar_MET_DT3103.jpg",
+  },
 };
 
 /**

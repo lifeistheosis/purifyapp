@@ -103,7 +103,7 @@ export const AUTHOR_ICONS: Record<string, string> = {
   // lib/saints/iconRights.ts: permission from the owner, inspected 2026-08-12,
   // alt text written. The note that used to sit here asked for exactly this,
   // "restore the mapping in the same commit that adds the file", so it is
-  // restored. Jerome's file still does not exist and stays unmapped.
+  // restored.
   "St. Cyprian of Carthage": "/saints/icons/cyprian-of-carthage.jpg",
   "St. Cyprian": "/saints/icons/cyprian-of-carthage.jpg",
 
@@ -111,6 +111,13 @@ export const AUTHOR_ICONS: Record<string, string> = {
   // Greek fresco, lib/saints/iconRights.ts), as the note that stood here asked:
   // "Map them in the commit that records their rights, not before."
   "St. Leo the Great": "/saints/icons/leo-the-great.v2.jpg",
+
+  // St Gregory the Dialogist's and St Jerome's, now that each has an icon with
+  // its rights recorded (2026-11-11, build 93 note 12: cut from the pictures
+  // their books wear), under the names the commentary gives them.
+  "St. Gregory the Great": "/saints/icons/gregory-the-dialogist.v2.jpg",
+  "St. Gregory the Dialogist": "/saints/icons/gregory-the-dialogist.v2.jpg",
+  "St. Jerome": "/saints/icons/jerome-of-stridon.v2.jpg",
 
   // St John Cassian's too, now that his icon's rights are recorded (2026-11-11:
   // an 18th-century Russian icon). Two of the first four icons ever inspected

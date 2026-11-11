@@ -75,7 +75,11 @@ describe("the saint's band picture", () => {
   });
 
   it("is his cover alone when the app carries no icon of him", () => {
-    expect(saintPicture(brief("jerome-of-stridon"), false)).toMatchObject({ kind: "cover", fallback: null });
+    // St Hosius's books wear a 19th-century painting, and by the arbiter's
+    // rule for him only an old icon, fresco or mosaic may be his icon, so he
+    // carries none (St Jerome stood here until build 93 note 12 gave him one).
+    expect(brief("hosius-of-cordova").iconUrl).toBeUndefined();
+    expect(saintPicture(brief("hosius-of-cordova"), false)).toMatchObject({ kind: "cover", fallback: null });
   });
 
   it("is his icon when he has no cover portrait", () => {

@@ -2104,6 +2104,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-thomas",
  byname: "Didymus, the Twin",
+ iconUrl: "/saints/icons/apostle-thomas.v2.jpg",
  name: "Holy Apostle Thomas",
  epithet: "Apostle to India · The Twin",
  born: "1st century (Galilee)",
@@ -3036,6 +3037,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "meletius-of-antioch",
  byname: "Confessor of Antioch",
+ iconUrl: "/saints/icons/meletius-of-antioch.v2.jpg",
  name: "St. Meletius of Antioch",
  epithet: "Patriarch of Antioch · Confessor · Presider of the Second Council",
  born: "c. 310 (Melitene, Armenia)",
@@ -4313,6 +4315,7 @@ export const SAINTS: Saint[] = [
     slug: "gregory-the-dialogist",
     name: "St. Gregory the Great",
     byname: "The Dialogist",
+    iconUrl: "/saints/icons/gregory-the-dialogist.v2.jpg",
     epithet: "Pope of Rome · Father of the Moralia",
     born: "c. 540 (Rome)",
     reposed: "12 March 604 (Rome)",
@@ -4342,6 +4345,7 @@ export const SAINTS: Saint[] = [
     slug: "jerome-of-stridon",
     name: "St. Jerome",
     byname: "Jerome of Stridon",
+    iconUrl: "/saints/icons/jerome-of-stridon.v2.jpg",
     epithet: "Translator of the Scriptures · Ascetic of Bethlehem",
     born: "c. 347 (Stridon, Dalmatia)",
     reposed: "c. 420 (Bethlehem)",
