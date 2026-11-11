@@ -33,6 +33,22 @@ const KEYBOARD = /\bEscape[- ](?:key|to[- ]close)\b|\barrow[- ]keys?\b|\bspace ?
 /** A mouse's ways: hovering, a right-click, a mouse button. */
 const MOUSE = /\bhover(?:s|ed|ing)?\b|\bright[- ]click\b|\bmouse(?:down|up|over)\b/i;
 
+/** Code in a reader's line, by kind. */
+const CODE: readonly (readonly [string, RegExp])[] = [
+  ["backtick", /`[^`]+`/],
+  ["file", /\b[\w.-]+\.(?:tsx?|mjs|jsx?|json|sql|css|md)\b/],
+  ["path", /\b(?:lib|components|app|data|supabase|scripts|docs)\/[\w./[\]{}<>-]+/],
+  ["call", /\b[a-z]\w*\([^)]*\)/],
+  ["component", /\b[A-Z][a-z]+(?:[A-Z][a-z0-9]+)+\b/],
+  ["class", /\b(?:md|lg|sm|xl):[\w[\]-]+/],
+  ["browser", /\b(?:window|router|document)\.\w+/],
+  ["constant", /\b[A-Z][A-Z0-9]*_[A-Z0-9_]{2,}\b/],
+  ["tag", /<\/?(?:details|button|a|html|div|span|msg|kbd)\b[^>]*>/],
+  ["table", /\b[a-z]+_[a-z_]+\b/],
+];
+/** Words the patterns would take for code: readers' handles and the names of products. */
+const NOT_CODE = new Set(["ChristosAnesti", "cloudw_w", "PostHog", "PostCSS", "Next.js", "McEnerney", "McGuckin", "PayPal", "YouTube", "TikTok", "GitHub", "RevenueCat"]);
+
 type Item = string | { text?: string };
 type Note = { version: string; blurb?: string; items?: Item[] };
 
@@ -72,6 +88,39 @@ describe("the notes on What's new speak to a reader's finger", () => {
   it("asks for no mouse: no hovering, no right-click", () => {
     const found = all.filter((l) => MOUSE.test(l.text)).map((l) => `${l.where}: ${l.text.slice(0, 90)}`);
     expect(found, "say what changed, not what a mouse does").toEqual([]);
+  });
+
+  it("carries no code: no file, path, function, component, class, tag or table name", () => {
+    // The arbiter's bar (2026-11-11): code becomes plain words, or goes where
+    // it said nothing to a reader. Readers' handles, products and plurals
+    // written "saint(s)" are words, and are named here.
+    const found = all.flatMap((l) =>
+      CODE.flatMap(([kind, re]) =>
+        [...l.text.matchAll(new RegExp(re.source, "g"))].map((m) => m[0]).filter((w) => !NOT_CODE.has(w) && !/^\w+\(s\)$/.test(w)).map((w) => `${l.where}: ${kind} ${w}`),
+      ),
+    );
+    expect(found, "say it in plain words").toEqual([]);
+  });
+
+  it("knows code when it sees it", () => {
+    for (const [bad, kind] of [
+      ["the `saint_bumps` table", "backtick"],
+      ["see lib/i18n/locales.ts", "path"],
+      ["SECURITY.md at the root", "file"],
+      ["calls getMessages() on the server", "call"],
+      ["the new TodayMenologionHero", "component"],
+      ["hidden md:flex on phones", "class"],
+      ["does a window.location.reload", "browser"],
+      ["the ADMIN_DEBUG_ENABLED flag", "constant"],
+      ["a <details> block", "tag"],
+      ["rows in prayer_completions", "table"],
+    ] as const) {
+      expect(CODE.some(([k, re]) => k === kind && re.test(bad)), bad).toBe(true);
+    }
+    for (const ok of ["a reader on the Discord (ChristosAnesti)", "the saint(s) of the day", "a Next.js upgrade", "PostHog", "the Saved page", "Ephesians 1:19"]) {
+      const words = CODE.flatMap(([, re]) => [...ok.matchAll(new RegExp(re.source, "g"))].map((m) => m[0])).filter((w) => !NOT_CODE.has(w) && !/^\w+\(s\)$/.test(w));
+      expect(words, ok).toEqual([]);
+    }
   });
 
   it("knows a key and a mouse when it sees them, and the words that are neither", () => {
