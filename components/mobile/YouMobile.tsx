@@ -48,6 +48,9 @@ import Link from "next/link";
 import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { PlusLock } from "@/components/billing/PlusMark";
+import { Flower } from "@/components/ui/icons/Flower";
+import { Pen } from "@/components/ui/icons/Pen";
 import { Seal } from "@/components/ui/icons/Seal";
 import { SettingsGlyph as Glyph } from "./SettingsGlyph";
 import { StreakRope } from "@/components/today/StreakRow";
@@ -62,6 +65,7 @@ import { readIntentions } from "@/lib/prayers/storage";
 import { useCompletedCollections } from "@/lib/catechism/useCollectionProgress";
 import { useCompletionCount } from "@/lib/catechism/useCompletionCount";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { useCampaignsOpen } from "@/lib/campaigns/useCampaignsOpen";
 import { eikonBoxEnabled } from "@/lib/eikonBox/flags";
@@ -164,6 +168,8 @@ export function YouMobile() {
   }, []);
 
   const tier = usePremiumTier();
+  // Without Plus (known, not guessed: null while the answer loads draws no mark).
+  const plusLocked = usePlusFeatures() === false;
   const catechisms = useCompletionCount();
   const completed = useCompletedCollections();
 
@@ -204,6 +210,38 @@ export function YouMobile() {
       icon: <Glyph kind="box" />,
     });
   }
+
+  // What the reader writes and what they gather, always here, written in or
+  // not (build 93 note 9, the owner: "Ensure the journal and anything related
+  // to that specific journal UI, like the florigelium, ensure it's all
+  // available to be chosen on the settings page"; the arbiter's word: these
+  // two rows on You, and the same two in Settings). Until then the journal's
+  // one door on You was its cover on the shelf, drawn only once something was
+  // written, and the Florilegium had none. Gathering is Plus's, so without
+  // Plus its row wears the mark's padlock alone, as the verse card above does
+  // (KeptVerse): the subscription is named once on this screen, by the pill in
+  // the bar. The page it opens shows that reader what is theirs
+  // (components/florilegium/FlorilegiumGate.tsx).
+  settings.push(
+    {
+      label: t("journal.title"),
+      href: "/journal",
+      hint: t("you.journalHint"),
+      icon: <Pen size={15} />,
+    },
+    {
+      label: t("community.yourFlorilegium"),
+      href: "/florilegium",
+      hint: t("study.florilegium.lead"),
+      icon: <Flower size={15} />,
+      mark: plusLocked ? (
+        <span data-you-row-plus="" className="inline-flex shrink-0 items-center text-paper/55">
+          <PlusLock size={13} />
+          <span className="sr-only">{t("plus.badge")}</span>
+        </span>
+      ) : undefined,
+    },
+  );
 
   settings.push(
     {

@@ -129,6 +129,9 @@ const SETTINGS: SearchItem[] = [
   { id: "setting-security", ...said("account.tabs.security", "Security"), sublabel: IN_ACCOUNT, sublabelKey: "settings.account", href: "/account/security", group: "Settings", keywords: "password email sign in google apple sessions devices blocked muted" },
   { id: "setting-notifications", ...said("settings.notifications", "Notifications"), sublabel: IN_ACCOUNT, sublabelKey: "settings.account", href: "/account/notifications", group: "Settings", keywords: "push reminders prayer reminder alerts email" },
   { id: "setting-export", ...said("settings.export", "Export your library"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/account/export", group: "Settings", keywords: "download backup my data" },
+  // The journal and the Florilegium are in Settings to be chosen (build 93 note 9), so a search finds them there too.
+  { id: "setting-journal", ...said("journal.title", "Your journal"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#journal", group: "Settings", keywords: "notes diary write page notebook" },
+  { id: "setting-florilegium", ...said("community.yourFlorilegium", "Your Florilegium"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#journal", group: "Settings", keywords: "gather gathering quotes passages collection florilegia" },
 ];
 
 export async function buildSearchCorpus(): Promise<SearchItem[]> {

@@ -16,8 +16,12 @@ import type { ReactNode } from "react";
 import { Plate } from "@/components/settings/LitPanel";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 
-/** One row: where it goes, its name, a line under it and its glyph. */
-export type YouRow = { label: string; href: string; hint?: string; icon?: ReactNode };
+/**
+ * One row: where it goes, its name, a line under it and its glyph. `mark` is
+ * the Plus mark on a row whose page is Plus's and not yet this reader's
+ * (components/billing/PlusMark.tsx): shown, never hidden, and never promised.
+ */
+export type YouRow = { label: string; href: string; hint?: string; icon?: ReactNode; mark?: ReactNode };
 
 export function YouRows({ items }: { items: readonly YouRow[] }) {
   return (
@@ -32,6 +36,7 @@ export function YouRows({ items }: { items: readonly YouRow[] }) {
               <p className="font-sans text-[14.5px] font-semibold leading-tight text-paper">{it.label}</p>
               {it.hint ? <p className="mt-0.5 font-sans text-caption leading-snug text-paper/55">{it.hint}</p> : null}
             </div>
+            {it.mark ?? null}
             <span aria-hidden className="shrink-0 text-paper/30">
               <ChevronLeft size={15} className="-scale-x-100 rtl:scale-x-100" />
             </span>

@@ -44,7 +44,9 @@ describe("the You tab's rows", () => {
     // 1.8, note 71 (the owner's pick A of r3-25): Sign in left the list for
     // the name's place on the Ladder, and the Purify Premium row went, the
     // pill in the bar being the subscription's one door (refinement 3).
-    expect(hrefs).toEqual(["/account/eikon-box", "/prayers/personal", "/campaigns/mine", "/settings"]);
+    // 1.9, build 93 note 9: the journal and the Florilegium, always there,
+    // lead the reader's own rows (lib/journal/__tests__/waysIn.test.ts).
+    expect(hrefs).toEqual(["/account/eikon-box", "/journal", "/florilegium", "/prayers/personal", "/campaigns/mine", "/settings"]);
   });
 
   it("name the subscription nowhere: the pill in the bar is its one door", () => {
@@ -117,6 +119,7 @@ describe("the one Settings", () => {
     const drawn = [...body.matchAll(/<((?:[A-Z][A-Za-z]*)?Section)\b/g)].map((m) => m[1]);
     expect(drawn).toEqual([
       "AccountSection",
+      "JournalSection", // 1.9, build 93 note 9: the journal and the Florilegium, here to be chosen
       "SpaceSection",
       "TestersSection", // 1.8, admins alone: lib/onboarding/__tests__/testers.test.ts
       "Section", // Reading
@@ -134,6 +137,7 @@ describe("the one Settings", () => {
 
   it("opens every account screen from one row, and nothing twice", () => {
     expect(hrefsOf("AccountSection")).toEqual(["/signin?next=/settings", "/account/profile", "/account/security", "/account/notifications"]);
+    expect(hrefsOf("JournalSection")).toEqual(["/journal", "/florilegium"]);
     expect(hrefsOf("DataSection")).toEqual(["/account/export", "/account/data#danger"]);
     expect(hrefsOf("AboutSection")).toEqual(["/privacy", "/support", "/whats-new", "/about", "/account/developer"]);
     expect(hrefsOf("SignOutSection")).toEqual(["/signout"]);

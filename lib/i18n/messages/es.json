@@ -5486,5 +5486,6 @@
   "profile.signInLink": "Iniciar sesión →",
   "profile.signInKeeps": "Iniciar sesión no quita nada de este dispositivo.",
   "profile.bridgeBody": "Tus subrayados, notas y marcadores de este dispositivo van ahora a tu cuenta, y estarán en cada dispositivo en el que inicies sesión.",
-  "journal.page.highlightNone": "Resaltar marca tus propias palabras. Escribe algunas primero."
+  "journal.page.highlightNone": "Resaltar marca tus propias palabras. Escribe algunas primero.",
+  "you.journalHint": "Lo que escribes, y tus notas en los versículos"
 }

@@ -5476,5 +5476,6 @@
   "profile.signInLink": "Bejelentkezés →",
   "profile.signInKeeps": "A bejelentkezés semmit nem töröl erről az eszközről.",
   "profile.bridgeBody": "A kiemeléseid, jegyzeteid és könyvjelzőid erről az eszközről most a fiókodba kerülnek, és ott lesznek minden eszközön, ahol bejelentkezel.",
-  "journal.page.highlightNone": "A kiemelés a saját szavaidat jelöli. Előbb írj néhányat."
+  "journal.page.highlightNone": "A kiemelés a saját szavaidat jelöli. Előbb írj néhányat.",
+  "you.journalHint": "Amit írsz, és a versekhez írt jegyzeteid"
 }

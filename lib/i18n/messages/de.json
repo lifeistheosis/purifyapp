@@ -5476,5 +5476,6 @@
   "profile.signInLink": "Anmelden →",
   "profile.signInKeeps": "Die Anmeldung entfernt nichts von diesem Gerät.",
   "profile.bridgeBody": "Deine Markierungen, Notizen und Lesezeichen von diesem Gerät gehen jetzt in dein Konto und sind auf jedem Gerät, auf dem du dich anmeldest.",
-  "journal.page.highlightNone": "Markieren kannst du deine eigenen Worte. Schreib zuerst ein paar."
+  "journal.page.highlightNone": "Markieren kannst du deine eigenen Worte. Schreib zuerst ein paar.",
+  "you.journalHint": "Was du schreibst, und deine Notizen zu den Versen"
 }

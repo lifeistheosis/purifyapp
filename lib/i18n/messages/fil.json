@@ -5476,5 +5476,6 @@
   "profile.signInLink": "Mag-sign in →",
   "profile.signInKeeps": "Walang tinatanggal sa device na ito ang pag-sign in.",
   "profile.bridgeBody": "Papunta na ngayon sa iyong account ang iyong mga highlight, tala at bookmark mula sa device na ito, at makikita ang mga ito sa bawat device na pinag-sign-in-an mo.",
-  "journal.page.highlightNone": "Para sa sarili mong mga salita ang highlight. Sumulat muna ng ilan."
+  "journal.page.highlightNone": "Para sa sarili mong mga salita ang highlight. Sumulat muna ng ilan.",
+  "you.journalHint": "Ang isinusulat mo, at ang iyong mga tala sa mga talata"
 }

@@ -5481,5 +5481,6 @@
   "profile.signInLink": "Entrar →",
   "profile.signInKeeps": "Entrar não tira nada deste aparelho.",
   "profile.bridgeBody": "Seus destaques, notas e marcadores deste aparelho estão indo agora para sua conta, e estarão em cada aparelho em que você entrar.",
-  "journal.page.highlightNone": "O destaque marca suas próprias palavras. Escreva algumas primeiro."
+  "journal.page.highlightNone": "O destaque marca suas próprias palavras. Escreva algumas primeiro.",
+  "you.journalHint": "O que você escreve, e suas notas nos versículos"
 }

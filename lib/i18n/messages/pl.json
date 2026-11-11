@@ -5638,5 +5638,6 @@
   "profile.signInLink": "Zaloguj się →",
   "profile.signInKeeps": "Logowanie niczego nie usuwa z tego urządzenia.",
   "profile.bridgeBody": "Twoje wyróżnienia, notatki i zakładki z tego urządzenia trafiają teraz na twoje konto i będą na każdym urządzeniu, na którym się zalogujesz.",
-  "journal.page.highlightNone": "Zaznaczyć można twoje własne słowa. Najpierw napisz kilka."
+  "journal.page.highlightNone": "Zaznaczyć można twoje własne słowa. Najpierw napisz kilka.",
+  "you.journalHint": "To, co piszesz, i twoje notatki przy wersetach"
 }

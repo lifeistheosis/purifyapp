@@ -5481,5 +5481,6 @@
   "profile.signInLink": "Accedi →",
   "profile.signInKeeps": "Accedere non toglie nulla da questo dispositivo.",
   "profile.bridgeBody": "Le tue evidenziazioni, note e segnalibri di questo dispositivo stanno andando ora nel tuo account, e saranno su ogni dispositivo in cui accedi.",
-  "journal.page.highlightNone": "L’evidenziazione segna le tue parole. Scrivine prima qualcuna."
+  "journal.page.highlightNone": "L’evidenziazione segna le tue parole. Scrivine prima qualcuna.",
+  "you.journalHint": "Ciò che scrivi, e le tue note sui versetti"
 }

@@ -75,10 +75,12 @@ import { Church } from "@/components/ui/icons/Church";
 import { Compass } from "@/components/ui/icons/Compass";
 import { Cross } from "@/components/ui/icons/Cross";
 import { Erase } from "@/components/ui/icons/Erase";
+import { Flower } from "@/components/ui/icons/Flower";
 import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Info } from "@/components/ui/icons/Info";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Lock } from "@/components/ui/icons/Lock";
+import { Pen } from "@/components/ui/icons/Pen";
 import { Share } from "@/components/ui/icons/Share";
 import { Shield } from "@/components/ui/icons/Shield";
 import { Sliders } from "@/components/ui/icons/Sliders";
@@ -122,6 +124,7 @@ import {
 } from "@/lib/onboarding/state";
 import { ALL_BACKGROUNDS, FASTING_RULES, LEVELS, depthFor, focusFor } from "@/lib/onboarding/space";
 import { isDeveloperEmail } from "@/lib/dev/developer";
+import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { useShowSupporterMark } from "@/lib/profile/useShowSupporterMark";
 import { READING_THEMES } from "@/lib/reader/readingModes";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
@@ -282,6 +285,37 @@ function CandleSeasonRow() {
       description={t("bible.season.hint")}
       control={<Switch on={on} onChange={set} label={t("bible.season.title")} />}
     />
+  );
+}
+
+/**
+ * The journal and the Florilegium, here to be chosen (build 93 note 9, the
+ * owner: "Ensure the journal and anything related to that specific journal
+ * UI, like the florigelium, ensure it's all available to be chosen on the
+ * settings page"). The same two rows You carries
+ * (components/mobile/YouMobile.tsx), under the account, with no heading over
+ * them: each name says what it opens. Gathering is Plus's, so without Plus
+ * its row wears the mark; the page it opens shows that reader what is theirs.
+ */
+function JournalSection() {
+  const { t } = useTranslate();
+  const plusLocked = usePlusFeatures() === false;
+  return (
+    <Section id="journal">
+      <LinkRow href="/journal" icon={<Pen size={17} />} label={t("journal.title")} description={t("you.journalHint")} />
+      <LinkRow
+        href="/florilegium"
+        icon={<Flower size={17} />}
+        // The mark beside the name, as Candlelight at Vespers wears it below.
+        label={
+          <span className="inline-flex items-center gap-2">
+            {t("community.yourFlorilegium")}
+            {plusLocked ? <PlusMark /> : null}
+          </span>
+        }
+        description={t("study.florilegium.lead")}
+      />
+    </Section>
   );
 }
 
@@ -626,6 +660,8 @@ function Body() {
   return (
     <>
       <AccountSection reader={reader} />
+
+      <JournalSection />
 
       <SpaceSection />
 

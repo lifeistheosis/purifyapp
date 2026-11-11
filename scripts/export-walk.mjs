@@ -2668,10 +2668,16 @@ await section(28, async () => {
     // 1.8, note 71 (r3-25 A): Sign in left the list for the name's place on
     // the Ladder, and the Purify Premium row went, the pill in the bar being
     // the subscription's one door. Section 46 walks the rest of the tab.
-    const want = ["/prayers/personal", "/campaigns/mine", "/settings"];
+    // 1.9, build 93 note 9: the journal and the Florilegium lead the list,
+    // always there, written in or not (lib/journal/__tests__/waysIn.test.ts).
+    const want = ["/journal", "/florilegium", "/prayers/personal", "/campaigns/mine", "/settings"];
     must(
-      you.rows.length >= 2 && you.rows.length <= 3 && you.rows.every((r) => want.includes(bare(r.href))) && bare(you.rows.at(-1).href) === "/settings",
+      you.rows.length >= 4 && you.rows.length <= 5 && you.rows.every((r) => want.includes(bare(r.href))) && bare(you.rows.at(-1).href) === "/settings",
       `the You tab's list is the reader's own rows and one door (${you.rows.map((r) => r.label).join(", ")})`,
+    );
+    must(
+      bare(you.rows[0].href) === "/journal" && you.rows[0].label === en["journal.title"] && bare(you.rows[1].href) === "/florilegium" && you.rows[1].label === en["community.yourFlorilegium"],
+      `it opens on the journal and the Florilegium, for a reader who has written and gathered nothing (${you.rows.slice(0, 2).map((r) => r.label).join(", ")})`,
     );
     must(you.rows.at(-1).label === en["settings.title"] && !you.door, `the door is Settings, the list's last row, and the bar is the tabs' own with no second door (${you.door ? "a door in the bar" : "none in the bar"})`);
     must(you.onlyTheList, "with no heading over the list");
@@ -2711,6 +2717,12 @@ await section(28, async () => {
     must(ids[0] === "account" && ids.slice(-3).join(" ") === "data storage about" && ["space", "reading", "calendar", "language"].every((id) => ids.includes(id)), `Settings is the account, then the device's settings, then data, what this device keeps, and Purify (${ids.join(", ")})`);
     const account = set.groups.find((g) => g.id === "account");
     must(!!account && account.heading === en["settings.account"] && account.rows.length === 1 && bare(account.rows[0].href) === "/signin?next=/settings" && account.rows[0].label === en["common.signIn"], "signed out, the account is one row: Sign in");
+    // 1.9, build 93 note 9 (his words: "available to be chosen on the settings page"): the same two rows You carries, under the account.
+    const journal = set.groups.find((g) => g.id === "journal");
+    must(
+      ids[1] === "journal" && !!journal && !journal.heading && journal.rows.map((r) => bare(r.href)).join(" ") === "/journal /florilegium" && journal.rows[0].label === en["journal.title"] && journal.rows[1].label.startsWith(en["community.yourFlorilegium"]),
+      `under the account, the journal and the Florilegium are there to choose (${journal?.rows.map((r) => r.label).join(", ") ?? "no such group"})`,
+    );
     const data = set.groups.find((g) => g.id === "data");
     must(!!data && data.heading === en["account.tabs.data"] && data.rows.map((r) => bare(r.href)).join(" ") === "/account/export", "Data is Export your library, with nothing to delete");
     const about = set.groups.find((g) => g.id === "about");
@@ -2887,7 +2899,10 @@ await section(46, async () => {
     must(!!m.rope && m.rope.knots === 7 && !!m.picture && m.rope.box.top < m.picture.bottom + 40, `the prayer rope at the picture's foot, seven knots (${m.rope ? `${m.rope.knots} knots at ${Math.round(m.rope.box.top)}` : "no rope"})`);
     must(!m.red, "and no red and no flame anywhere on the tab");
     must(!m.premium && m.pill === en["nav.premium"] && en["nav.premium"] === "Plus", `one name for the subscription: the pill says Plus and nothing says Premium (pill "${m.pill}")`);
-    must(m.rows.every((h) => ["/prayers/personal", "/campaigns/mine", "/settings"].includes(bare(h))) && bare(m.rows.at(-1)) === "/settings", `the rows: Your rule and Settings (${m.rows.map(bare).join(", ")})`);
+    must(
+      m.rows.every((h) => ["/journal", "/florilegium", "/prayers/personal", "/campaigns/mine", "/settings"].includes(bare(h))) && bare(m.rows[0]) === "/journal" && bare(m.rows[1]) === "/florilegium" && bare(m.rows.at(-1)) === "/settings",
+      `the rows: the journal, the Florilegium, Your rule and Settings (${m.rows.map(bare).join(", ")})`,
+    );
     must(m.empty.includes(en["saved.emptyLine"]), "nothing kept yet, so the shelf is its one line");
     must(m.img?.animation === "prayers-picture-in", `the picture fades in as the tab arrives (${m.img?.animation})`);
     await page.screenshot({ path: path.join(SHOTS, "you-ladder-signed-out.png") });
