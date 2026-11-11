@@ -1630,7 +1630,7 @@ export const SAINTS: Saint[] = [
  slug: "marina-the-great-martyr",
  pronoun: "her",
  byname: "Margaret of Antioch",
- iconUrl: "/saints/icons/marina-the-great-martyr.jpg",
+ iconUrl: "/saints/icons/marina-the-great-martyr.v2.jpg",
  name: "St. Marina the Great-Martyr",
  epithet: "Great-Martyr of Antioch in Pisidia · Margaret",
  born: "c. 255 (Antioch in Pisidia)",
@@ -1722,7 +1722,7 @@ export const SAINTS: Saint[] = [
  slug: "olympias-the-deaconess",
  pronoun: "her",
  byname: "Deaconess of Constantinople",
- iconUrl: "/saints/icons/olympias-the-deaconess.jpg",
+ iconUrl: "/saints/icons/olympias-the-deaconess.v2.jpg",
  name: "St. Olympias the Deaconess",
  epithet: "Deaconess of the Great Church · Friend of St. John Chrysostom",
  born: "c. 361 (Constantinople)",
@@ -3669,7 +3669,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "marcian-the-emperor",
  byname: "The Right-believing Emperor",
- iconUrl: "/saints/icons/marcian-the-emperor.jpg",
+ iconUrl: "/saints/icons/marcian-the-emperor.v2.jpg",
  name: "St. Marcian the Emperor",
  epithet: "Emperor of the Romans · Convener of the Fourth Ecumenical Council",
  born: "c. 392 (Thrace)",
@@ -3689,7 +3689,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "pulcheria-the-empress",
  byname: "The Virgin Empress",
- iconUrl: "/saints/icons/pulcheria-the-empress.jpg",
+ iconUrl: "/saints/icons/pulcheria-the-empress.v2.jpg",
  name: "St. Pulcheria the Empress",
  epithet: "Empress of the Romans · Guardian of the Faith of Chalcedon",
  born: "January 19, 399 (Constantinople)",
@@ -3824,7 +3824,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "martin-the-confessor",
  byname: "The Confessor",
- iconUrl: "/saints/icons/martin-the-confessor.v2.jpg",
+ iconUrl: "/saints/icons/martin-the-confessor.v3.jpg",
  name: "St. Martin the Confessor",
  epithet: "Pope of Rome · Confessor · Martyr of the Two Wills",
  born: "Todi, Umbria",
@@ -4026,7 +4026,7 @@ export const SAINTS: Saint[] = [
   // a confirmed public-domain source before any verbatim text is ingested.
   {
     slug: "simeon-the-myrrh-streaming",
-    iconUrl: "/saints/icons/simeon-streaming-myrrh.jpg",
+    iconUrl: "/saints/icons/simeon-the-myrrh-streaming.jpg",
     byname: "the Myrrh-streaming",
     name: "St. Simeon the Myrrh-streaming",
     epithet: "Grand Prince of Serbia · Founder of the Nemanjić Dynasty",
@@ -4046,7 +4046,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "sava-of-serbia",
-    iconUrl: "/saints/icons/sava-of-serbia.jpg",
+    iconUrl: "/saints/icons/sava-of-serbia.v2.jpg",
     byname: "Enlightener of Serbia",
     name: "St. Sava of Serbia",
     epithet: "First Archbishop of Serbia · Enlightener of the Serbs",
@@ -4169,7 +4169,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "niketas-the-goth",
-    iconUrl: "/saints/icons/niketas-the-goth.jpg",
+    iconUrl: "/saints/icons/niketas-the-goth.v2.jpg",
     name: "St. Niketas the Goth",
     byname: "The Great Martyr",
     epithet: "Greatmartyr among the Goths",
@@ -4190,7 +4190,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "nino-of-georgia",
-    iconUrl: "/saints/icons/nino-nina-of-georiga.jpg",
+    iconUrl: "/saints/icons/nino-of-georgia.jpg",
     name: "St. Nino of Georgia",
     byname: "Equal-to-the-Apostles, Enlightener of Georgia",
     epithet: "Equal-to-the-Apostles · Enlightener of Iberia",
@@ -4552,7 +4552,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "sergius-of-radonezh",
-    iconUrl: "/saints/icons/sergius-of-radonezh.jpg",
+    iconUrl: "/saints/icons/sergius-of-radonezh.v2.jpg",
     name: "St. Sergius of Radonezh",
     byname: "Abbot of Russia, the Wonderworker",
     epithet: "Abbot of the Holy Trinity · Father of Russian monasticism",
@@ -4716,7 +4716,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "quadratus-the-apologist",
-    iconUrl: "/saints/icons/quadratus-the-apologist.v2.jpg",
+    iconUrl: "/saints/icons/quadratus-the-apologist.v3.jpg",
     name: "St. Quadratus of Athens",
     byname: "The Apologist",
     epithet: "The earliest of the apologists · Bishop of Athens",

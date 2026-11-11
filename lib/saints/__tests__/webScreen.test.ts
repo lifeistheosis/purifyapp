@@ -153,7 +153,7 @@ describe("St John Chrysostom's web, as it arrives", () => {
     // 3 sheet r3-23, which the cut every icon keeps suits; the standing figure
     // it replaced needed its own (lib/saints/iconFaces.ts).
     expect(html).toMatch(/src="\/saints\/icons\/john-chrysostom\.v2\.jpg"[^>]*style="object-position:50% 20%"/);
-    expect(html).toMatch(/src="\/saints\/icons\/olympias-the-deaconess\.jpg"[^>]*style="object-position:50% 20%"/);
+    expect(html).toMatch(/src="\/saints\/icons\/olympias-the-deaconess\.v2\.jpg"[^>]*style="object-position:50% 20%"/);
     expect(html).not.toContain("object-[50%_20%]");
   });
 

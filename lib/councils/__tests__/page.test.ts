@@ -169,8 +169,11 @@ describe("the Holy Fathers principally associated", () => {
     // Memnon at Ephesus, his page and Commons' unmarked copy of his fresco
     // (build 90 note 3, his answer of 2026-11-10); and St. Alexander at the
     // First Council and St. Adrian at the Seventh, their settled page icons
-    // carried (build 93 notes 1 and 12, 2026-11-11).
-    expect(pictured).toHaveLength(23);
+    // carried (build 93 notes 1 and 12, 2026-11-11); and St. Marcian and St.
+    // Pulcheria at the Fourth and St. Martin at the Sixth, their uncleared
+    // icons replaced by free pictures and carried the same way (the
+    // arbiter's word of 2026-11-11, 15:09).
+    expect(pictured).toHaveLength(26);
     for (const f of pictured) {
       const slug = f.href!.replace("/saints/", "");
       expect(COVER_ART[slug], slug).toBeDefined();

@@ -513,3 +513,66 @@ a monastery or a publisher to write to, modern or old. None was found:
   says what it shows and why there is no face. His book, Micaiah before
   Ahab, wears it, and he leaves both waiting lists: no saint in the app is
   left on "search".
+
+## The twelve uncleared pictures (2026-11-11, the arbiter's 15:09)
+
+`UNVERIFIED_ICONS` held 26 pictures shown with no source, licence or painter
+recorded, several plainly contemporary icons. The arbiter gave this chat
+twelve and Fable voices the other twelve (the prayer slideshow's two left
+too, files and all, in voices' `f855a94d6`). His method, in his words: "if
+the file is shown to be an old public-domain work with its source, record it
+fully; else the oldest public-domain picture whose freedom shows ... else the
+plate with a "permission" row and an addressee. Never an uncleared picture
+left showing."
+
+None of the twelve files could be traced to an old work, so each was
+replaced. The old files are gone from the folder; git keeps them.
+
+- **Ten wear the icon printed for their day in the Russian Lives of the
+  Saints** (Moscow, Synodal Press, 1903 to 1911), the same book as January's
+  and December's prints, each fetched with the house tool, its Commons page
+  the evidence, cut as January's are: from just above the halo to the knees,
+  the halo near half the width, inside the print's frame lines (measured, so
+  no frame line runs down an edge). St Marina (July, no. 11171), St Nino
+  (January, 05142), St Sava (January, 05122; the Russian book keeps him on
+  the 12th, and Commons files the print under St Sava's icons), St Olympias
+  (July, 11252), the Apostle Quadratus (September, 01211; the registry's St
+  Quadratus of Athens, kept on the same day), St Martin (April, 08141), St
+  Niketas (September, 01151; his sword at his side, point down), St Pulcheria
+  (September, 01102), St Sergius (September, 01252) and St Simeon the
+  Myrrh-streaming (February, 06134; Commons files it under Stefan Nemanja's
+  icons).
+- **St Marina** had a second candidate, a Greek print of 1858 of her
+  hammering a devil. It has a burst of rays in its sky (the owner's no-rays
+  rule) and a blow, so the Lives print was taken. The 1858 print was not
+  added to the app.
+- **St Marcian** has no print of his own in the book (its February volume
+  has none for the 17th). His is the oldest free picture of him found: Hubert
+  Goltzius's portrait of him as on a coin lettered with his name, from Les
+  images presque de tous les empereurs (Antwerp, 1557 to 1559), the block cut
+  by Joos Gietleughen (Rijksmuseum BI-2008-4132-87, the Public Domain Mark): a
+  detail, his head and shoulders. It is a portrait, not an icon, and its row
+  and alt say so.
+- **St Nicholas Cabasilas** went to the plate (`38d84d461`): no picture of
+  him is old enough to be free, and the one on Commons came from a forum. His
+  section in `ICON-PERMISSIONS.md` says what was searched.
+
+Each file left `UNVERIFIED_ICONS` as it was settled. The list is now empty,
+and `MAX_UNVERIFIED` is 0. The ten prints stand in the edge check's ACCEPTED
+list with January's, their light being the print's own ground. St Marcian, St
+Pulcheria and St Martin stood on the plate in the councils' Fathers rows,
+which draw only a covers' picture (build 90, note 3). Their new pictures are
+now carried as their covers, as St Alexander's and St Adrian's were, so the
+Fourth and Sixth Councils show the picture their pages show (build 93, note
+1: one picture on the page and in every row). St Marcian's face is placed by
+eye in `ICON_FACES`, since his portrait is a profile to the right of the
+middle. The councils' test counts 26 faces, up from 23.
+
+On the Android export: each of the eleven saints' pages and their cards in
+Discover's saints draw the new picture; St Nicholas Cabasilas's page draws
+none; Chalcedon's Fathers row draws St Marcian and St Pulcheria and the Sixth
+Council's St Martin; no retired file is asked for, and none is left in the
+export, by file or by name. `checkMock` passes on every screen walked. The
+apps are 74.0 MB packed of the 85 MB ceiling. Still:
+`january-saints/07-the-twelve-uncleared.png` (the eleven new pictures; St
+Sergius's page; the two councils' Fathers).

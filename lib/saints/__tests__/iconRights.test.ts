@@ -40,7 +40,7 @@ const ALLOWED = /^(public domain|pd-art|cc0|cc by(-sa)?( \d\.\d)?)$/i;
  * THIS NUMBER MAY ONLY FALL. Raising it means a file shipped without
  * provenance, which is the thing this suite exists to prevent.
  */
-const MAX_UNVERIFIED = 11;
+const MAX_UNVERIFIED = 0;
 
 /**
  * Total bytes in public/saints/icons/. Update in the same commit as the files

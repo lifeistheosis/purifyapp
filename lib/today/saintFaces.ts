@@ -265,6 +265,9 @@ const ICON_FACES: Readonly<Record<string, readonly [number, number, number?]>> =
   // 1.9, build 93 note 1, the gate's twelve: St Alexander's engraving of about 1899, cut inside
   // its oval about his head and shoulders, his face by eye.
   "alexander-of-alexandria.jpg": [0.48, 0.36],
+  // 1.9, the uncleared pictures of 2026-11-11: St Marcian's portrait by Goltzius, in profile
+  // to the right, his face right of the middle, by eye.
+  "marcian-the-emperor.v2.jpg": [0.62, 0.45],
 };
 
 /**

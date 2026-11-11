@@ -231,6 +231,14 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   // Alexander's letter keeps the First Council's icon as its own (WORK_ART).
   "alexander-of-alexandria": bundled("alexander-of-alexandria.jpg", 36),
   "adrian-of-rome": bundled("adrian-of-rome.v2.jpg", 33),
+  // The uncleared pictures of 2026-11-11 (the arbiter, 15:09): St Marcian's
+  // portrait by Goltzius (1557 to 1559) and St Pulcheria's and St Martin's
+  // prints of the Lives of the Saints, settled as their page icons and carried
+  // the same way, so the Fourth and Sixth Councils' Fathers rows show the
+  // picture their pages show (build 93 note 1), never the plate beside it.
+  "marcian-the-emperor": bundled("marcian-the-emperor.v2.jpg", 45),
+  "pulcheria-the-empress": bundled("pulcheria-the-empress.v2.jpg", 24),
+  "martin-the-confessor": bundled("martin-the-confessor.v3.jpg", 20),
   // January's Lives in Butler's words (2026-11-11): their saints' own pictures,
   // placed in the January chat's pushes 2 and 3, at the focus each was cut to.
   "gordius-of-caesarea": bundled("gordius-of-caesarea.jpg", 18),

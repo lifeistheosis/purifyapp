@@ -3093,6 +3093,136 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     creditAs: "icon",
     creditPage: "https://www.flickr.com/photos/107233269@N08/20781338902/",
   },
+  // The uncleared pictures of 2026-11-11 (the arbiter, 15:09: "none may ship
+  // uncleared"): eleven saints' pages wore pictures with no source, licence or
+  // painter recorded, several plainly contemporary icons. Ten now wear the icon
+  // printed for the saint's day in the Russian Lives of the Saints (before
+  // 1911), cut as January's are, from above the halo to the knees and inside
+  // the frame lines. The book prints none of St Marcian's own, so his is the
+  // oldest free picture of him found: Hubert Goltzius's portrait of him as on
+  // a coin (1557 to 1559). Each row's number is the print's on Commons, which
+  // files Sava's under St Sava's icons and Simeon's under Stefan Nemanja's.
+  "marcian-the-emperor.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A brown print of a Roman emperor in profile facing right, his head bound with a pearl diadem and a cloak at his shoulders, inside the lettered rim of a medallion.",
+    work: "Hubert Goltzius, the emperor Marcian's portrait drawn as a coin lettered round its rim, from Les images presque de tous les empereurs (Antwerp), an etching over a brown woodcut tone block cut by Joos Gietleughen, the Rijksmuseum's sheet: a detail, his head and shoulders",
+    artist: "Hubert Goltzius",
+    workDate: "1557 to 1559",
+    source: "Rijksmuseum, Amsterdam (BI-2008-4132-87), its IIIF image, under the Public Domain Mark",
+    license: "Public domain",
+    evidenceUrl: "https://id.rijksmuseum.nl/200624944",
+  },
+  "marina-the-great-martyr.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A black-and-white print of an icon of a young woman with long dark hair falling loose over her shoulders, inside the outline of a halo, in a light tunic and a dark mantle, holding a small cross to her breast.",
+    work: "The icon printed for the day in the Russian Lives of the Saints after St Dimitry of Rostov (Moscow, Synodal Press, the July volume), no. 11171: a detail, St Marina, her figure",
+    artist: "Not named",
+    workDate: "Before 1911",
+    source: "Wikimedia Commons (from the volume's scan)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%96%D0%B8%D1%82%D0%B8%D1%8F_%D0%A1%D0%B2%D1%8F%D1%82%D1%8B%D1%85_(1903-1911)_-_%D0%B8%D0%BA%D0%BE%D0%BD%D0%B0_11171_%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0.png",
+  },
+  "martin-the-confessor.v3.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A black-and-white print of an icon of a bald, bearded bishop inside the outline of a halo, in an omophorion marked with crosses, blessing with his right hand.",
+    work: "The icon printed for the day in the Russian Lives of the Saints after St Dimitry of Rostov (Moscow, Synodal Press, the April volume), no. 08141: a detail, St Martin, his figure",
+    artist: "Not named",
+    workDate: "Before 1911",
+    source: "Wikimedia Commons (from the volume's scan)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%96%D0%B8%D1%82%D0%B8%D1%8F_%D0%A1%D0%B2%D1%8F%D1%82%D1%8B%D1%85_(1903-1911)_-_%D0%B8%D0%BA%D0%BE%D0%BD%D0%B0_08141_%D0%9C%D0%B0%D1%80%D1%82%D0%B8%D0%BD.png",
+  },
+  "niketas-the-goth.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A black-and-white print of an icon of a bearded young man with long hair, inside the outline of a halo, in a soldier's armour and a cloak, one hand at his belt and the other on the hilt of a sword held point down at his side.",
+    work: "The icon printed for the day in the Russian Lives of the Saints after St Dimitry of Rostov (Moscow, Synodal Press, the September volume), no. 01151: a detail, St Niketas, his figure",
+    artist: "Not named",
+    workDate: "Before 1911",
+    source: "Wikimedia Commons (from the volume's scan)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%96%D0%B8%D1%82%D0%B8%D1%8F_%D0%A1%D0%B2%D1%8F%D1%82%D1%8B%D1%85_(1903-1911)_-_%D0%B8%D0%BA%D0%BE%D0%BD%D0%B0_01151_%D0%9D%D0%B8%D0%BA%D0%B8%D1%82%D0%B0.png",
+  },
+  "nino-of-georgia.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A black-and-white print of an icon of a woman in a head covering, inside the outline of a halo, holding up a tall cross in her right hand and an open scroll of writing in her left.",
+    work: "The icon printed for the day in the Russian Lives of the Saints after St Dimitry of Rostov (Moscow, Synodal Press, the January volume), no. 05142: a detail, St Nino, her figure",
+    artist: "Not named",
+    workDate: "Before 1911",
+    source: "Wikimedia Commons (from the volume's scan)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%96%D0%B8%D1%82%D0%B8%D1%8F_%D0%A1%D0%B2%D1%8F%D1%82%D1%8B%D1%85_(1903-1911)_-_%D0%B8%D0%BA%D0%BE%D0%BD%D0%B0_05142_%D0%9D%D0%B8%D0%BD%D0%B0.png",
+  },
+  "olympias-the-deaconess.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A black-and-white print of an icon of a woman in a dark veil and a long dark mantle, inside the outline of a halo, her hands raised before her breast.",
+    work: "The icon printed for the day in the Russian Lives of the Saints after St Dimitry of Rostov (Moscow, Synodal Press, the July volume), no. 11252: a detail, St Olympias, her figure",
+    artist: "Not named",
+    workDate: "Before 1911",
+    source: "Wikimedia Commons (from the volume's scan)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%96%D0%B8%D1%82%D0%B8%D1%8F_%D0%A1%D0%B2%D1%8F%D1%82%D1%8B%D1%85_(1903-1911)_-_%D0%B8%D0%BA%D0%BE%D0%BD%D0%B0_11252_%D0%9E%D0%BB%D0%B8%D0%BC%D0%BF%D0%B8%D0%B0%D0%B4%D0%B0.png",
+  },
+  "pulcheria-the-empress.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A black-and-white print of an icon of an empress in a tall crown and a broad jewelled collar, inside the outline of a halo, standing before a curtain and holding a rolled scroll.",
+    work: "The icon printed for the day in the Russian Lives of the Saints after St Dimitry of Rostov (Moscow, Synodal Press, the September volume), no. 01102: a detail, St Pulcheria, her figure",
+    artist: "Not named",
+    workDate: "Before 1911",
+    source: "Wikimedia Commons (from the volume's scan)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%96%D0%B8%D1%82%D0%B8%D1%8F_%D0%A1%D0%B2%D1%8F%D1%82%D1%8B%D1%85_(1903-1911)_-_%D0%B8%D0%BA%D0%BE%D0%BD%D0%B0_01102_%D0%9F%D1%83%D0%BB%D1%8C%D1%85%D0%B5%D1%80%D0%B8%D1%8F.png",
+  },
+  "quadratus-the-apologist.v3.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A black-and-white print of an icon of a bishop with curly hair and a short beard, inside the outline of a halo, in an omophorion marked with crosses, blessing with his right hand and holding a closed book at his left side.",
+    work: "The icon printed for the day in the Russian Lives of the Saints after St Dimitry of Rostov (Moscow, Synodal Press, the September volume), no. 01211: a detail, the Apostle Quadratus, his figure",
+    artist: "Not named",
+    workDate: "Before 1911",
+    source: "Wikimedia Commons (from the volume's scan)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%96%D0%B8%D1%82%D0%B8%D1%8F_%D0%A1%D0%B2%D1%8F%D1%82%D1%8B%D1%85_(1903-1911)_-_%D0%B8%D0%BA%D0%BE%D0%BD%D0%B0_01211_%D0%9A%D0%BE%D0%B4%D1%80%D0%B0%D1%82.png",
+  },
+  "sava-of-serbia.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A black-and-white print of an icon of a bald, white-bearded bishop inside the outline of a halo, in an omophorion marked with crosses, blessing with his right hand and holding a closed Gospel book in his left.",
+    work: "The icon printed for the day in the Russian Lives of the Saints after St Dimitry of Rostov (Moscow, Synodal Press, the January volume), no. 05122: a detail, St Sava, his figure",
+    artist: "Not named",
+    workDate: "Before 1911",
+    source: "Wikimedia Commons (from the volume's scan)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%96%D0%B8%D1%82%D0%B8%D1%8F_%D0%A1%D0%B2%D1%8F%D1%82%D1%8B%D1%85_(1903-1911)_-_%D0%B8%D0%BA%D0%BE%D0%BD%D0%B0_05122_%D0%A1%D0%B0%D0%B2%D0%B2%D0%B0.png",
+  },
+  "sergius-of-radonezh.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A black-and-white print of an icon of an old monk with a long white beard, inside the outline of a halo, in a dark monastic mantle, blessing with his right hand.",
+    work: "The icon printed for the day in the Russian Lives of the Saints after St Dimitry of Rostov (Moscow, Synodal Press, the September volume), no. 01252: a detail, St Sergius, his figure",
+    artist: "Not named",
+    workDate: "Before 1911",
+    source: "Wikimedia Commons (from the volume's scan)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%96%D0%B8%D1%82%D0%B8%D1%8F_%D0%A1%D0%B2%D1%8F%D1%82%D1%8B%D1%85_(1903-1911)_-_%D0%B8%D0%BA%D0%BE%D0%BD%D0%B0_01252_%D0%A1%D0%B5%D1%80%D0%B3%D0%B8%D0%B9.png",
+  },
+  "simeon-the-myrrh-streaming.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A black-and-white print of an icon of an old monk with a long beard, in the pointed hood of the great schema marked with a cross, inside the outline of a halo, holding a cross before his breast.",
+    work: "The icon printed for the day in the Russian Lives of the Saints after St Dimitry of Rostov (Moscow, Synodal Press, the February volume), no. 06134: a detail, St Simeon, his figure",
+    artist: "Not named",
+    workDate: "Before 1911",
+    source: "Wikimedia Commons (from the volume's scan)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%96%D0%B8%D1%82%D0%B8%D1%8F_%D0%A1%D0%B2%D1%8F%D1%82%D1%8B%D1%85_(1903-1911)_-_%D0%B8%D0%BA%D0%BE%D0%BD%D0%B0_06134_%D0%A1%D0%B8%D0%BC%D0%B5%D0%BE%D0%BD.png",
+  },
 };
 
 /**
@@ -3145,30 +3275,7 @@ export const ICON_QUESTIONS: Record<string, IconQuestion> = {
  * in one of these two maps, and putting it here breaches the ceiling, so the
  * only way to add one is to add a rights-complete row.
  */
-export const UNVERIFIED_ICONS: Record<string, string> = {
-  "marcian-the-emperor.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for marcian-the-emperor. 235x420 JPG, 21 KB. Opened 2026-11-10 (build 90 note 3): a contemporary icon of a standing emperor in a crown and red cloak under a painted arch, holding a scroll written in English, his name in Latin letters. Not found on Commons by search and picture hash (nearest 29 of 64 bits apart).",
-  "marina-the-great-martyr.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for marina-the-great-martyr. 305x420 JPG, 31 KB. Not yet opened and inspected.",
-  "martin-the-confessor.v2.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for martin-the-confessor. 319x390 JPG, 28 KB, cut on 2026-10-17 from the 329x400 file, inside the white lines at its edges (1.7.1). Its source is not yet looked into. Opened 2026-11-10 (build 90 note 3): a contemporary icon in the Russian manner, a white-bearded pope in a white mitre holding the Image Not Made by Hands, his name in Church Slavonic. Not found on Commons by search and picture hash of the file it was cut from (nearest 24 of 64 bits apart).",
-  "niketas-the-goth.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for niketas-the-goth. 315x420 JPG, 36 KB. Not yet opened and inspected.",
-  "nino-nina-of-georiga.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nino-of-georgia. 322x420 JPG, 24 KB. Not yet opened and inspected.",
-  "olympias-the-deaconess.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for olympias-the-deaconess. 315x420 JPG, 17 KB. Not yet opened and inspected.",
-  "pulcheria-the-empress.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for pulcheria-the-empress. 336x420 JPG, 28 KB. Opened 2026-11-10 (build 90 note 3): a contemporary icon of a crowned empress holding a cross, her name in Latin letters on a gold ground. Not found on Commons by search and picture hash (nearest 19 of 64 bits apart, another picture).",
-  "quadratus-the-apologist.v2.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for quadratus-the-apologist. 330x404 JPG, 22 KB, cut on 2026-10-17 from the 351x420 file, inside the white border it was scanned on (1.7.1). Its source is not yet looked into.",
-  "sava-of-serbia.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for sava-of-serbia. 322x420 JPG, 31 KB. Not yet opened and inspected.",
-  "sergius-of-radonezh.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for sergius-of-radonezh. 345x420 JPG, 24 KB. Not yet opened and inspected.",
-  "simeon-streaming-myrrh.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for simeon-the-myrrh-streaming. 315x420 JPG, 26 KB. Not yet opened and inspected.",
-};
+export const UNVERIFIED_ICONS: Record<string, string> = {};
 
 /** Strip the URL prefix so callers can pass either form. */
 function toKey(src: string): string {
