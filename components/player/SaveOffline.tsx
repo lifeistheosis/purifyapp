@@ -49,6 +49,8 @@ import { plusFeaturesNow } from "@/lib/entitlements/usePlusFeatures";
 import { isNativeClient } from "@/lib/platform/native";
 import { loadChantIndex } from "@/lib/player/chants";
 import { chantVersionOf } from "@/lib/player/steps";
+import { listenOfSrc, shelfOfListen } from "@/lib/listen/recordings";
+import { shelfName } from "@/lib/listen/shelf";
 import { bookOfSrc, hasReadAloud } from "@/lib/readAloud/chapters";
 import { checkSaved, onSavedChange, removeBook, savedChapters } from "@/lib/readAloud/offline";
 import { cancelSaving, saveOverMobileData, startSaving, useSaving, type SavingJob } from "@/lib/readAloud/saving";
@@ -97,6 +99,14 @@ function useOfflineBook(src: string | null) {
   const { t, locale } = useTranslate();
   const saved = useSavedKeys();
   const book = bookOfSrc(src);
+  // Another text read aloud (1.9): its document is kept as a book is (lib/listen/shelf.ts).
+  const text = listenOfSrc(src);
+  if (text && isNativeClient()) {
+    const shelf = shelfOfListen(text.id);
+    if (!shelf || !shelf.chapters.length) return null;
+    const keys = new Set(saved.split(",").filter((k) => k.startsWith(`${shelf.book}/`)));
+    return { book: shelf.book, chapters: shelf.chapters, name: shelfName(shelf.book), saved: keys.size >= shelf.chapters.length, size: megabytes(unsavedBytes(shelf.book, shelf.chapters, keys), locale) };
+  }
   if (!book || !isNativeClient()) return null;
   const meta = getBook(book);
   if (!meta) return null;

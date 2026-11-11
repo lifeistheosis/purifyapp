@@ -10,7 +10,8 @@ import { describe, expect, it } from "vitest";
 import { playingOf, readHref, shareHref } from "@/lib/player/steps";
 
 import { listenOfSrc, listenRecording, readingAt } from "../recordings";
-import { listenSteps, type ListenTimings } from "../texts";
+import { idOfSavedSrc, idOfShelf, isTextShelf, shelfChapters, shelfName, shelfOf } from "../shelf";
+import { listenSteps, parseListenId, type ListenTimings } from "../texts";
 
 const read = (rel: string) => fs.readFileSync(path.join(process.cwd(), rel), "utf8");
 
@@ -80,7 +81,7 @@ describe("Listen on the pages", () => {
 
   it("plays through the one player, and keeps the reader's place in the text", () => {
     const play = read("lib/listen/play.ts");
-    expect(play).toContain("setTrack(listenRecording(id), {");
+    expect(play).toContain("setTrack(listenSrc(id), {");
     expect(play).toContain("rate: readSpeed(),");
     expect(play).toContain("const at = startOf(placeKey(id), 0);");
   });
@@ -111,6 +112,43 @@ describe("previous and next", () => {
     expect(here).toContain("if (began) router.push(listenHref(ref));");
     // A recording stepped to from any page is named by its own timings.
     expect(read("scripts/listen-index.mjs")).toContain("title: batch.title, by: batch.by");
+  });
+});
+
+describe("a text kept on the phone", () => {
+  const ids = ["council/first-nicaea/the-twenty-canons/7", "work/athanasius-the-great/life-of-antony/2", "theology/papacy/2", "life/anthony-the-great", "history/pentecost"];
+
+  it("is kept as a book's chapter is, on a shelf no book of the Bible can be mistaken for", () => {
+    for (const id of ids) {
+      const { book, chapter } = shelfOf(parseListenId(id)!);
+      expect(isTextShelf(book), id).toBe(true);
+      expect(book).toMatch(/^~[a-z0-9~-]+$/);
+      expect(idOfShelf(book, chapter)).toBe(id);
+      // The address its saved file plays from names it too, so the player still knows what it is.
+      expect(idOfSavedSrc(`https://localhost/_capacitor_file_/data/files/audio/read/${book}/${chapter}.mp3`)).toBe(id);
+      expect(listenOfSrc(`https://localhost/_capacitor_file_/data/files/audio/read/${book}/${chapter}.mp3`)?.id).toBe(id);
+    }
+    expect(isTextShelf("john")).toBe(false);
+    expect(idOfShelf("john", 1)).toBeNull();
+    expect(idOfSavedSrc("https://localhost/_capacitor_file_/audio/read/john/1.mp3")).toBeNull();
+  });
+
+  it("is saved with the rest of its document, and named plainly under Storage", () => {
+    const recorded = ["council/first-nicaea/the-twenty-canons/2", "council/first-nicaea/the-twenty-canons/7", "council/first-nicaea/the-synodal-letter/1", "life/anthony-the-great"];
+    expect(shelfChapters(parseListenId("council/first-nicaea/the-twenty-canons/7")!, recorded)).toEqual([2, 7]);
+    expect(shelfChapters(parseListenId("life/anthony-the-great")!, recorded)).toEqual([0]);
+    expect(shelfName("~council~first-nicaea~the-twenty-canons")).toBe("First Nicaea · The Twenty Canons");
+    expect(shelfName("~work~athanasius-the-great~life-of-antony")).toBe("Athanasius the Great · Life of Antony");
+    expect(shelfName("~history~pentecost")).toBe("Pentecost");
+  });
+
+  it("goes through the Bible's own saving: Plus asked first, Wi-Fi waited for, the same mark and the same row", () => {
+    expect(read("lib/readAloud/saving.ts")).toContain("const text = idOfShelf(book, chapter);");
+    const mark = read("components/player/SaveOffline.tsx");
+    expect(mark).toContain("const shelf = shelfOfListen(text.id);");
+    expect(mark).toMatch(/if \(\(await plusFeaturesNow\(\)\) === false\) \{\s*upgrade\.open\("offline"/);
+    expect(read("components/settings/StorageSection.tsx")).toContain("isTextShelf(b.book) ? shelfName(b.book)");
+    expect(read("lib/listen/recordings.ts")).toContain("savedSrc(shelf.book, shelf.chapter)");
   });
 });
 

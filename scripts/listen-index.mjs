@@ -17,11 +17,13 @@ import fs from "node:fs";
 import path from "node:path";
 
 const { allBatches } = await import("../lib/listen/batches.ts");
-const { timingsFit } = await import("../lib/listen/texts.ts");
+const { timingsFit, parseListenId } = await import("../lib/listen/texts.ts");
+const { shelfOf } = await import("../lib/listen/shelf.ts");
 
 const ROOT = path.join("public", "audio", "listen");
 const list = [];
 const refused = [];
+const seconds = {};
 for (const { batches } of await allBatches()) {
   for (const batch of batches) {
     const file = path.join(ROOT, `${batch.id}.json`);
@@ -39,7 +41,12 @@ for (const { batches } of await allBatches()) {
       why = `not timings: ${String(e?.message ?? e).split("\n")[0]}`;
     }
     if (why) refused.push(`${batch.id}: ${why}`);
-    else list.push(batch.id);
+    else {
+      list.push(batch.id);
+      // Its length, under the name it is kept by on a phone, for the size beside the save mark (lib/readAloud/size.ts).
+      const shelf = shelfOf(parseListenId(batch.id));
+      seconds[`${shelf.book}/${shelf.chapter}`] = Math.round(JSON.parse(fs.readFileSync(file, "utf8")).seconds);
+    }
   }
 }
 list.sort();
@@ -47,6 +54,7 @@ const json = `${JSON.stringify(list)}\n`;
 fs.mkdirSync(path.join("data", "listen"), { recursive: true });
 fs.writeFileSync(path.join("data", "listen", "index.json"), json);
 fs.writeFileSync(path.join(ROOT, "index.json"), json);
+fs.writeFileSync(path.join("data", "listen", "seconds.json"), `${JSON.stringify(seconds)}\n`);
 console.log(`${list.length} texts have a recording`);
 if (refused.length) {
   console.log(`${refused.length} timings were not taken:`);

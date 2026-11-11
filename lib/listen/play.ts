@@ -5,7 +5,7 @@ import { readSpeed } from "@/lib/player/speed";
 import { getAudioSnapshot, play, seek, setLoopMode, setTrack, subscribeAudio, type CaptionSource } from "@/lib/prayers/persistentAudioStore";
 import { keepPlace, startOf } from "@/lib/readAloud/resume";
 
-import { listenOfSrc, listenRecording, listenTimings } from "./recordings";
+import { listenOfSrc, listenSrc, listenTimings } from "./recordings";
 import { hostKeyOf, parseListenId, type ListenRef, type ListenTimings } from "./texts";
 
 /**
@@ -89,7 +89,7 @@ export async function startListening(id: string, about?: { title: string; by: st
   const timings = await listenTimings(id);
   const title = about?.title ?? timings?.title;
   if (!title) return false;
-  setTrack(listenRecording(id), {
+  setTrack(listenSrc(id), {
     title,
     artist: about?.by ?? timings?.by,
     art: about?.art ?? undefined,

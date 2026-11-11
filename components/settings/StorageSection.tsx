@@ -26,6 +26,7 @@ import { DOWNLOADABLE_BIBLES, megabytes } from "@/lib/bible/downloads/catalog";
 import { removeBible, useBibles } from "@/lib/bible/downloads/store";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { useIsNative } from "@/lib/platform/native";
+import { isTextShelf, shelfName } from "@/lib/listen/shelf";
 import { onSavedChange, removeBook, savedChapters, type Saved } from "@/lib/readAloud/offline";
 import { setWeekReadings, useWeekReadings } from "@/lib/readAloud/week";
 import { weekKept } from "@/lib/readAloud/weekKept";
@@ -103,7 +104,8 @@ export function StorageSection() {
         />
       ))}
       {books.map((b) => {
-        const name = t(`bible.books.${b.book}`);
+        // A document of another text kept for listening (1.9) is named from its address (lib/listen/shelf.ts).
+        const name = isTextShelf(b.book) ? shelfName(b.book) : t(`bible.books.${b.book}`);
         return (
           <Row
             key={b.book}

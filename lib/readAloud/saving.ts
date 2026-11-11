@@ -26,6 +26,7 @@
 // saving starts, and a saving picked up by itself is dropped, quietly, for a
 // reader who no longer has Plus.
 
+import { idOfShelf } from "@/lib/listen/shelf";
 import { useSyncExternalStore } from "react";
 
 import { plusFeaturesNow } from "@/lib/entitlements/usePlusFeatures";
@@ -136,7 +137,13 @@ function unsaved(p: Pending): number[] {
   return p.chapters.filter((c) => !saved[`${p.book}/${c}`]);
 }
 
+/** Where the other texts' recordings are (lib/listen/recordings.ts, LISTEN_RECORDINGS). */
+const LISTEN_RECORDINGS = "https://audio.purifyapp.net/listen";
+
 function urlsOf(book: string, chapter: number) {
+  // Another text's recording, kept as a book's chapter is (1.9, lib/listen/shelf.ts).
+  const text = idOfShelf(book, chapter);
+  if (text) return { mp3: `${LISTEN_RECORDINGS}/${text}.mp3`, json: streamedUrl(`/audio/listen/${text}.json`, true) };
   return { mp3: readAloudRecording(book, chapter), json: streamedUrl(`/audio/read/${book}/${chapter}.json`, true) };
 }
 

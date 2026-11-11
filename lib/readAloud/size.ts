@@ -11,11 +11,13 @@
  * to 5,052 bytes a second, about 40 kbit/s: 5,000 is within 1% of each.
  */
 
+import listenSeconds from "@/data/listen/seconds.json";
 import seconds from "@/data/readAloud/seconds.json";
 
 export const BYTES_PER_SECOND = 5_000;
 
-const LENGTHS = seconds as Record<string, number>;
+// The Bible's chapters, and the other texts' recordings under their shelf's name (lib/listen/shelf.ts, scripts/listen-index.mjs).
+const LENGTHS = { ...(seconds as Record<string, number>), ...(listenSeconds as Record<string, number>) };
 
 /** The bytes the chapters given would take, less those already saved ("book/chapter" keys). */
 export function unsavedBytes(book: string, chapters: readonly number[], saved: ReadonlySet<string>): number {

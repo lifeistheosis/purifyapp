@@ -1,5 +1,6 @@
 import { nextChapter, prevChapter } from "@/lib/bible/books";
 import { sameRecording } from "@/lib/chants/media";
+import { idOfSavedSrc } from "@/lib/listen/shelf";
 import { listenHref, parseListenId } from "@/lib/listen/texts";
 import { readingOfSrc } from "@/lib/readAloud/chapters";
 
@@ -72,9 +73,10 @@ export function playingOf(src: string | null, chants: readonly ChantRowLike[] | 
   if (!src) return null;
   const reading = readingOfSrc(src);
   if (reading) return { kind: "chapter", ...reading };
-  const text = TEXT_RECORDING.exec(src);
-  const ref = text ? parseListenId(text[1]) : null;
-  if (text && ref) return { kind: "text", id: text[1], href: listenHref(ref) };
+  // Another text: the bucket's recording, or its copy saved on the phone.
+  const text = TEXT_RECORDING.exec(src)?.[1] ?? idOfSavedSrc(src);
+  const ref = text ? parseListenId(text) : null;
+  if (text && ref) return { kind: "text", id: text, href: listenHref(ref) };
   const found = chantVersionOf(src, chants);
   if (found) return { kind: "chant", slug: found.row.slug };
   const m = CHANT_RECORDING.exec(src);
