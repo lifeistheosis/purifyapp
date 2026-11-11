@@ -9,6 +9,11 @@
 -- integration runs this file on the merge of 1.9 to main. It was kept in
 -- docs/1.9-build/sql/ until then, and moved here unchanged below this header.
 --
+-- AND THE COUNT OWED SINCE (his cell of 2026-11-10 was cut off, so a second
+-- kind check under another name was not ruled out): run by him on
+-- production on 2026-11-11 about 14:58 UTC, the kind checks on
+-- community_notifications counted 1, community_notifications_kind_check.
+--
 -- THE READ-ONLY LOOK, as he ran it before signing (it changes nothing and
 -- returns no counts), because the public key cannot read the table's checks
 -- or other readers' rows:

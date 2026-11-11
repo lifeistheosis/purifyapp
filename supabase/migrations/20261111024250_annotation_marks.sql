@@ -7,9 +7,12 @@
 -- and moved here below this header. Not applied by hand: the integration runs
 -- this file on the merge of 1.9 to main.
 --
--- STILL OWED BEFORE THE MERGE: his read-only look below, which the arbiter is
--- tracking. If "kinds_outside" names any kind, this file is not merged as it
--- stands: a new file names that kind first.
+-- HIS READ-ONLY LOOK, DONE: run by him on production on 2026-11-11 about
+-- 14:58 to 15:03 UTC (screenshots in the arbiter's chat): "kinds_outside"
+-- said none; "locator_index" was the unique index
+-- annotations_user_locator_idx; and, since the "checks" cell was cut off on
+-- his screen, a count of the kind checks gave 1, annotations_kind_check. So
+-- this file stands as signed.
 --
 -- WHY. His words of 2026-11-11 (build 93 note 13): "allow you to quote
 -- sentences and highlight whichever section or whichever word you want in the
