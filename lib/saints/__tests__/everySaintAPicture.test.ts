@@ -57,11 +57,9 @@ const WAITING: Record<string, string> = {
   "hermione-of-ephesus": "permission: the Holy Metropolis of Chios, for the Church of St Hermione at Thymiana (an old icon of theirs)",
   "elias-of-murom": "permission: the Orthodox Church in America (the unsigned icon on its page for him)",
   // January's saints (1.9): twenty took their pictures in the January chat's
-  // pushes 2 and 3 (docs/1.9-build/notes/january-saints.md); these two have
-  // none that passes. The icon oca.org shows on the Prophet Micaiah's day is
-  // the Prophet Micah of the Twelve (filed under August 14, his scroll Micah
-  // 5:2), another prophet's face, so it is not asked for.
-  "prophet-micaiah": "search: the January chat found none (Weigel's engraving of 1695 shows him struck; oca.org's icon on his day is the Prophet Micah of the Twelve)",
+  // pushes 2 and 3, and the Prophet Micaiah his, Jan Luyken's scene of his
+  // witness before the kings (2026-11-11; docs/1.9-build/notes/
+  // january-saints.md). St George waits on a letter.
   "george-the-chozebite": "permission: the Orthodox Church in America (the unsigned icon on its page for him, with St Domnica and St Helladius: a detail of him alone)",
 };
 

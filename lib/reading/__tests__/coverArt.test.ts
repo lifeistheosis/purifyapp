@@ -144,12 +144,6 @@ describe("the covers' pictures", () => {
       "irenaeus-of-lyons/against-heresies-on-john": "search: Updates 2, build 93 note 12",
       "irene-the-empress/letters-for-the-seventh-council": "search: Updates 2, build 93 note 12",
       "symeon-the-new-theologian/discourse-on-faith": "search: Updates 2, build 93 note 12",
-      // January's saints (1.9): the Prophet Micaiah's book waits with him on
-      // the plate. No free picture of him passed (docs/1.9-build/notes/
-      // january-saints.md, push 2): the Lives of 1903 to 1911 picture no one
-      // on his day, and Commons' one old picture of him, Weigel's engraving of
-      // 1695, shows Sedecias striking him, not the prophet himself.
-      "prophet-micaiah/micaiah-before-ahab": "search: January push 2, no free picture of him",
     };
     const plate = buildRoom(false)
       .cards.filter((c) => !c.cover)

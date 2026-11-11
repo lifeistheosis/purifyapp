@@ -8025,6 +8025,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "prophet-micaiah",
+    iconUrl: "/saints/icons/prophet-micaiah.jpg",
     name: "The Prophet Micaiah",
     byname: "Micah the Elder",
     epithet: "Son of Imlah · Prophet in the days of King Ahab",

@@ -505,3 +505,11 @@ a monastery or a publisher to write to, modern or old. None was found:
 - **Otherwise** only a new icon, painted for us by a living iconographer, is
   left, which is the owner's to decide. Commons' search refused twice that
   day (429); January's push 2 had searched it and found only Weigel's plate.
+- **Placed** (the arbiter's word of 15:04 UTC, "Luyken"): not his back
+  alone, but the scene of his witness, cut from the Rijksmuseum's full scan
+  (its IIIF image, 5528 by 6882): Micaiah before Ahab and Jehoshaphat, his
+  arm held out to them, Zedekiah beside him in his horns, not striking. It is
+  `prophet-micaiah.jpg`; its rights row credits the Rijksmuseum's CC0 and
+  says what it shows and why there is no face. His book, Micaiah before
+  Ahab, wears it, and he leaves both waiting lists: no saint in the app is
+  left on "search".

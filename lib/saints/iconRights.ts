@@ -2945,6 +2945,26 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%96%D0%B8%D1%82%D0%B8%D1%8F_%D0%A1%D0%B2%D1%8F%D1%82%D1%8B%D1%85_(1903-1911)_-_%D0%B8%D0%BA%D0%BE%D0%BD%D0%B0_05141_%D0%9F%D1%80%D0%B5%D0%BF%D0%BE%D0%B4%D0%BE%D0%B1%D0%BD%D1%8B%D0%B5_%D0%BE%D1%82%D1%86%D1%8B,_%D0%B2_%D0%A1%D0%B8%D0%BD%D0%B0%D0%B8_%D0%B8_%D0%A0%D0%B0%D0%B8%D1%84%D0%B5_%D0%B8%D0%B7%D0%B1%D0%B8%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5.png",
   },
+  // The Prophet Micaiah (the arbiter's word of 2026-11-11, 15:04 UTC,
+  // "Luyken"): no icon of him with a maker to write to exists, and every old
+  // picture of him found shows Zedekiah's blow, his death, or the other Micah
+  // (docs/1.9-build/notes/january-saints.md, "The Prophet Micaiah: the last
+  // search"). This one shows no blow: the scene of his witness, Micaiah before
+  // Ahab and Jehoshaphat with his arm held out to them, Zedekiah beside him in
+  // his horns, not striking. There is no face because the etcher drew him from
+  // behind, turned to the kings; the scene, not a portrait, is what stands for
+  // him, so it is cut wide enough to read as his story at a card's size.
+  "prophet-micaiah.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "An etching of a crowded palace hall: two crowned kings sit enthroned on stepped daises, and before them a robed man seen from behind holds out his arm to them, while a man in a horned headdress stands at his side and a crowd looks on.",
+    work: "Jan Luyken, De Propheet Micha, voor Achab, en Josaphat (1 Kings 22), an etching for Christoph Weigel's Historiae Celebriores Veteris Testamenti (Nuremberg, 1708), the Rijksmuseum's proof: a detail, the prophet before the two kings, Zedekiah beside him",
+    artist: "Jan Luyken",
+    workDate: "Before 1708",
+    source: "Rijksmuseum, Amsterdam (RP-P-OB-45.373), its IIIF image, under CC0 1.0 and the Public Domain Mark",
+    license: "Public domain",
+    evidenceUrl: "https://id.rijksmuseum.nl/200226269",
+  },
   // Two of Updates 2's search (build 93 note 12), from the woodcuts of the
   // Nuremberg Chronicle (1493), as St Papias's: each the oldest picture of him
   // found whose freedom can be shown, his name over him on the block, the

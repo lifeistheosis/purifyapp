@@ -240,6 +240,9 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   "clement-of-ancyra": bundled("clement-of-ancyra.jpg", 18),
   "cyrus-and-john": bundled("cyrus-and-john.jpg", 20),
   "polyeuctus-of-melitene": bundled("polyeuctus-of-melitene.jpg", 18),
+  // The Prophet Micaiah (the arbiter's "Luyken", 2026-11-11): the scene of his
+  // witness before the two kings, set on him and the kings.
+  "prophet-micaiah": bundled("prophet-micaiah.jpg", 40),
   // From Wikimedia Commons for the covers (lib/reading/authorCovers.ts).
   ...AUTHOR_COVERS,
 };
