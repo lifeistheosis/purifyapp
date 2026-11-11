@@ -2377,6 +2377,48 @@
    "version": "1.9",
    "outcome": null,
    "note": "1.9, by his word of 2026-11-11 about 01:57 UTC (CLAUDE.md, \"A release ships finished\": \"all of it is going into version 1.9\"); it had been set for 1.9.1 by the arbiter at about 01:21 UTC as a reflow too near the release. Found by Admin while raising the panel's last seven controls (887452d45): components/admin/Select.tsx's trigger paints about 38px on the 17px root (px-3 py-2 at 13px), under 44, and the touch count cannot see it because its height comes from padding. The pass: the trigger to 44 to a finger, stills of every form that holds a picker before and after, and the rows beside it (the multi-buy's Remove keeps h-10 to stay level with it today)."
+  },
+  {
+   "id": "e-build93-note2-phone-scroll",
+   "section": "Practice",
+   "kind": "bug",
+   "title": "The prayers scroll as the phone does: Easy Scroll's snapping pulled a swipe back and let it run on, so it is taken out, the click, the lit verse and the count kept (build 93 note 2)",
+   "from": "edgar",
+   "asked": "2026-11-11",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "Measured on build 93's export with real touch at three sizes: a fling pulled back 65 to 66px, a flick running on 29 to 273px, a held drag moving on 30 to 73px; now 0px, 0 to 30px (the phone's momentum) and never pulled back. The Settings row and its two lines in 21 languages went with it. 52e9f49c5. PLAN 13am."
+  },
+  {
+   "id": "e-build93-note16-switch-still",
+   "section": "Practice",
+   "kind": "bug",
+   "title": "Your rule's Morning and Evening switch never moves under the finger, and an empty part starts where Pray my rule stands, with no dashed placeholder (build 93 note 16)",
+   "from": "edgar",
+   "asked": "2026-11-11",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The head's action row kept at one height; the page always tall enough to bring the switch under the bar (a tablet had been pulled 133px); the list follows with the page's fade. 0px every frame at three sizes, at the top and scrolled. c1d1165cf. PLAN 13an."
+  },
+  {
+   "id": "e-build93-note14-rule-complete",
+   "section": "Practice",
+   "kind": "idea",
+   "title": "The end of a rule: one moment of completion, the lampada's soft pool growing to rest with the click and \"Glory to God\" settling in, nothing that loops (build 93 note 14)",
+   "from": "edgar",
+   "asked": "2026-11-11",
+   "status": "proposed",
+   "decided": null,
+   "needsDesign": true,
+   "version": "1.9",
+   "outcome": null,
+   "note": "Plan and one still sent to the arbiter (627e6af93, notes/build-93/14b-rule-complete-plan.png, checkMock on five palettes); built after the yes. PLAN 13ao."
   }
  ]
 }
