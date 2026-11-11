@@ -35,6 +35,14 @@ const read = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8").repl
 const PAPER_80 = "[html[data-reading-mode=parchment]_&]:text-paper/80";
 
 describe("words over pictures, mended", () => {
+  it("Prayers' chants door: its kicker inked at 80% on Candlelight, the line under its name at 80% on paper", () => {
+    // The card's sheen lies under its words: "Sung prayer" read 4.10:1 on Candlelight and
+    // "Hymns to listen to..." 4.40:1 on Light (the gate's faint lines, the arbiter's word of 18:40 UTC).
+    const src = read("components/mobile/SoftTiles.tsx");
+    expect(src).toContain('className="font-sans text-caption font-semibold text-paper/60 [html[data-reading-mode=candlelight]_&]:text-paper/80"');
+    expect(src).toContain(`className="mt-1.5 font-sans text-caption text-paper/65 leading-[1.5] ${PAPER_80}"`);
+  });
+
   it("Plans: a tile's picture ends where its words begin, so they stand on the tile's ground", () => {
     const src = read("components/plans/PlansClient.tsx");
     // The picture is a box of its own above the words, taking the room they leave.
