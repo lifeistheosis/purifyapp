@@ -115,7 +115,9 @@ async function walk(page) {
 // 1 and 2. A reader who answered the earlier questions, with no account and with one.
 for (const account of [false, true]) {
   const who = account ? "with an account" : "no account";
-  const { ctx, page } = await phone({ ...ANSWERED_BEFORE, ...(account ? { "sb-placeholder-auth-token": SESSION } : {}) });
+  // Where the apps keep the session (lib/supabase/nativeStore.ts), and the key the page's first look reads (lib/supabase/localSession.ts).
+  const signedIn = { "sb-placeholder-auth-token": SESSION, "purify.supabase.auth": JSON.stringify([{ name: "sb-placeholder-auth-token", value: SESSION }]) };
+  const { ctx, page } = await phone({ ...ANSWERED_BEFORE, ...(account ? signedIn : {}) });
   await go(page, "/");
   const greeted = await page.getByText("We updated our onboarding").first().waitFor({ timeout: 30000 }).then(() => true, () => false);
   say(greeted, `answered before, ${who}: greeted "We updated our onboarding"`);
