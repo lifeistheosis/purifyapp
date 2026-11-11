@@ -428,15 +428,17 @@ check of every word against three more scans is
   a page, which opens St Theodosius's last years ("Our saint survived his
   return eleven years"); Butler's source notes and the dates under the
   headings taken as text, and left out as in November and December.
-- **Nothing cut**: no passage of Roman doctrine against the Orthodox Church
-  and no sentence that demeans a people in the nine. Butler's "Leo the
-  Isarian" (for the Isaurian), the second "Hist. Mon d’Orient" without its
-  stop, and "comply" with no stop before the saint's words are kept as
-  printed and named in each source. One phrase is the arbiter's to weigh, not
-  cut: the Fathers of Sinai were "massacred the same year by the Blemmyans, a
-  savage infidel nation of Ethiopia". It names the raiders who killed them, as
-  the Church's own synaxaria call them barbarians; St Catherine's sentence,
-  cut in November, likened peoples to apes.
+- **One cut, on the arbiter's word** (14:52 UTC): no passage of Roman
+  doctrine against the Orthodox Church in the nine, but the Fathers of Sinai
+  were "massacred the same year by the Blemmyans", and Butler's words after
+  that, describing them, call a people savage, and today's readers,
+  Ethiopian Orthodox among them, would read the land he names as theirs. The
+  arbiter: "cut the descriptor, keep the fact". It reads "by the Blemmyans
+  […]", and the source says what was left out and why, as November's cut of a
+  sentence likening peoples to apes does. Butler's "Leo the Isarian" (for the
+  Isaurian), the second "Hist. Mon d’Orient" without its stop, and "comply"
+  with no stop before the saint's words are kept as printed and named in each
+  source.
 - **Two headings set at the head of their sentences**: Butler's "St.
   Gordius," and "SS. Isaias, Sabbas," are the subjects of the sentences
   printed under them ("Martyred at Cesarea ... was a centurion"; "And
@@ -469,3 +471,37 @@ check of every word against three more scans is
   their page; 29 of 29 on Android and on iOS, checkMock clean on every page.
 - **Still**: `january-saints/05-butler-st-theodosius.png` (St Theodosius's
   Writings, his Life, and the Fathers of Sinai in their whole print).
+
+## The Prophet Micaiah: the last search (2026-11-11, the arbiter's 14:51)
+
+He is the last saint on "search" in the app, and the gate lets only a
+permission through, so the arbiter asked for any icon of him with a painter,
+a monastery or a publisher to write to, modern or old. None was found:
+
+- **Every icon offered for January 5 is the Micah of the Twelve.** The OCA's
+  (filed under August 14), Pravoslavie.ru's (the Sretensky Monastery's site:
+  his scroll is Micah 5:2, "И ты, Вифлееме"), and Legacy Icons' two, by Fr
+  Theodore Koufos and by Brian Whirledge, each described as the minor prophet
+  and listed on January 5 and August 14, the two being merged. The Greek
+  calendar does not keep him on January 5 (imoph.org's Iconological
+  Synaxarion), and searches in Russian ("Михей, сын Иемвлая", "Михей
+  Старший", azbyka.ru) found no icon of him.
+- **The old free pictures show the blow, his death, or the other Micah**: the
+  medieval menologia (Vatican gr. 1613, p. 298; Walters 521, fol. 36r: an
+  executioner leading him to an abyss); Weigel's plate of 1695; the 1582
+  engraving after Maerten de Vos (MSK Gent, Public Domain Mark: "in maxillam
+  percutitur", the fist raised, Micaiah from behind); Eskrich's woodcuts of
+  1567 and 1573 and Scio's Bible of 1794 (Pitts Theology Library: Zedekiah
+  "preparing to strike him"); Caspar Luyken's print of 1712 (Rijksmuseum:
+  Zedekiah's hand raised over him); a 1690 Vulgate woodcut (234 px, Naboth's
+  stoning beside him); the Nuremberg Chronicle's "Micheas" (Rijksmuseum, fol.
+  53v, among the later prophets: the other Micah).
+- **One without the blow**: Jan Luyken's etching for Weigel's Historiae
+  Celebriores (1708; Rijksmuseum RP-P-OB-45.373, CC0 and the Public Domain
+  Mark, 5528 by 6882), "De Propheet Micha, voor Achab, en Josaphat": Zedekiah
+  stands beside him in his iron horns and does not strike, but Micaiah is
+  seen from behind, his face turned to the kings. Put to the arbiter: a
+  detail of him alone would be a figure from the back.
+- **Otherwise** only a new icon, painted for us by a living iconographer, is
+  left, which is the owner's to decide. Commons' search refused twice that
+  day (429); January's push 2 had searched it and found only Weigel's plate.

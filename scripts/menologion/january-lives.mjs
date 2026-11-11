@@ -50,8 +50,11 @@ const e = (vol, from, more) => ({ vol, from, scans: SCAN[vol], ...more });
  * The owner's word (2026-11-11, call 34, "yes Butler January"): published
  * with no priest's check, as November's and December's were, word for word
  * with Butler's name on each, any passage of Roman doctrine against the
- * Orthodox Church cut and shown as […]. None was found in these nine, and no
- * sentence that demeans a people, so nothing is cut.
+ * Orthodox Church cut and shown as […]. None was found in these nine. One
+ * phrase that calls a people savage is cut, on the arbiter's word of
+ * 2026-11-11, 14:52 UTC (the Fathers of Sinai: who killed them is kept, the
+ * words describing the Blemmyans are not), as November's likening of peoples
+ * to apes was.
  *
  * THE EDITION. The London stereotype edition in twelve volumes, printed for
  * John Murphy: vol. I for the January saints, vol. II for St. Polyeuctus,
@@ -373,12 +376,12 @@ export const LIVES = [
     slug: "the-fathers-of-sinai-and-raithu",
     title: "The Fathers of Sinai and Raithu",
     subtitle: "As Alban Butler tells it",
-    source: `${BUTLER_VOL.i}, January 14, pp. 180-181, public domain. ${READ_BUTLER} Butler's heading, “SS. Isaias, Sabbas,” is the subject of his first sentence, and is set at its head, before “and thirty-eight”. He spells Raithu Raithe. The page prints “Hist. Mon d’Orient” in the second note, without the stop of the first; it is kept as printed.`,
+    source: `${BUTLER_VOL.i}, January 14, pp. 180-181, public domain. ${READ_BUTLER} Butler's heading, “SS. Isaias, Sabbas,” is the subject of his first sentence, and is set at its head, before “and thirty-eight”. He spells Raithu Raithe. Where […] stands, Butler's words describing the Blemmyans are left out, because they call a people savage; that the Blemmyans killed the Fathers is kept. The page prints “Hist. Mon d’Orient” in the second note, without the stop of the first; it is kept as printed.`,
     passages: [
       butler(
         "i",
         [
-        "SS. Isaias, Sabbas, and thirty-eight other holy solitaries on mount Sinai, martyred by a troop of Arabians in 273; likewise Paul, the abbot; Moses, who by his preaching and miracles had converted to the faith the Ishmaelites of Pharan; Psaes, a prodigy of austerity, and many other hermits in the desert of Raithe, two days journey from Sinai, near the Red sea, were massacred the same year by the Blemmyans, a savage infidel nation of Ethiopia. All these anchorets lived on dates, or other fruits, never tasted bread, worked at making baskets in cells at a considerable distance from each other, and met on Saturdays, in the evening, in one common church, where they watched and said the night office, and on the Sunday received together the holy eucharist. They were remarkable for their assiduity in prayer and fasting. See their acts by Ammonius, an eye-witness, published by F. Combefis; also Bulteau, Hist. Mon. d’Orient, l. 2. c. 1. p. 209.",
+        "SS. Isaias, Sabbas, and thirty-eight other holy solitaries on mount Sinai, martyred by a troop of Arabians in 273; likewise Paul, the abbot; Moses, who by his preaching and miracles had converted to the faith the Ishmaelites of Pharan; Psaes, a prodigy of austerity, and many other hermits in the desert of Raithe, two days journey from Sinai, near the Red sea, were massacred the same year by the Blemmyans […]. All these anchorets lived on dates, or other fruits, never tasted bread, worked at making baskets in cells at a considerable distance from each other, and met on Saturdays, in the evening, in one common church, where they watched and said the night office, and on the Sunday received together the holy eucharist. They were remarkable for their assiduity in prayer and fasting. See their acts by Ammonius, an eye-witness, published by F. Combefis; also Bulteau, Hist. Mon. d’Orient, l. 2. c. 1. p. 209.",
         "Also many holy anchorets on mount Sinai, whose lives were faithful copies of christian perfection, and who met on Sundays to receive the holy eucharist, were martyred by a band of Saracens in the fifth century. A boy of fourteen years of age led among them an ascetic life of great perfection. The Saracens threatened to kill him, if he did not discover where the ancient monks had concealed themselves. He answered, that death did not terrify him, and that he could not ransom his life by a sin in betraying his fathers. They bade him put off his clothes: “After you have killed me, said the modest youth, take my clothes and welcome: but as I never saw my body naked, have so much compassion and regard for my shamefacedness, as to let me die covered.” The barbarians enraged at this answer, fell on him with all their weapons at once, and the pious youth died by as many martyrdoms as he had executioners. St. Nilus, who had been formerly governor of Constantinople, has left us an account of this massacre in seven narratives: at that time he led an eremitical life in those deserts, and had placed his son Theodulus in this holy company. He was carried away captive, but redeemed after many dangers. See S. Nili septem narrationes, also Bulteau, Hist. Mon d’Orient, l. 2. c. 2. p. 220.",
         ],
         "January 14",
