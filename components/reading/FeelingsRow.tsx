@@ -16,8 +16,18 @@ import styles from "./room.module.css";
 /** Where each door's pool of light sits across it, in turn, so no two neighbours are lit alike. */
 const LIGHT = ["40%", "60%", "48%", "36%", "64%"];
 
-/** The fade a door's words sit on over its icon: clear where it begins, as dark as a cover's at the foot. */
-const FADE = "linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.3) 30%, rgba(0,0,0,0.62) 62%, rgba(0,0,0,0.85))";
+/**
+ * The fade a door's words sit on over its icon: clear where it begins, 60
+ * percent dark where the words begin (under the fade's own top padding,
+ * pt-12, 3rem, at a name of any length), as dark as a cover's at the foot.
+ * It was placed by percent of its own height, so a name of two lines began
+ * where it was lighter, and it was 44 and 36 percent dark where the words
+ * began: on their pixels (the gate's sweep of words over pictures,
+ * 2026-11-11) "Hatred" read 3.60:1 on Candlelight and "Fear and worry" 4.42.
+ * At 60 percent nothing on the doors is under 4.5:1 on the five palettes or
+ * the seventeen looks (lib/ui/__tests__/gateWordsOnPictures.test.ts).
+ */
+const FADE = "linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.6) 3rem, rgba(0,0,0,0.85))";
 
 const ARRIVE = "motion-safe:transition-opacity motion-safe:duration-500 motion-safe:ease-[var(--ease-house)]";
 
