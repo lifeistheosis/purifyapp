@@ -31,7 +31,7 @@
 // is the Plus feature it was (components/you/PractiseSheet.tsx). No line here
 // says anything travels between devices: lib/sync/keptMerge.ts says what does.
 
-import { useMemo, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 
 import { SourceLine } from "@/components/citations/SourceLine";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -142,14 +142,21 @@ function Row({
 }) {
   const { t } = useTranslate();
   return (
-    <li className={cn("flex items-stretch", !first && "border-t border-paper/[0.06]")}>
+    <li
+      className={cn(
+        "flex items-stretch rounded-[14px] motion-safe:transition-colors",
+        // The line between two rows; none over the first, nor against the one that is lit.
+        !first && !current && "border-t border-paper/[0.06]",
+        current && "bg-paper/[0.06]",
+      )}
+    >
       <button
         type="button"
         data-learn-row=""
         aria-pressed={current}
         disabled={!onTake}
         onClick={onTake}
-        className={cn("flex min-h-[56px] min-w-0 flex-1 items-start gap-3 px-1 py-3 text-start motion-safe:transition-colors active:bg-paper/[0.04]", current && "bg-paper/[0.04]")}
+        className="flex min-h-[56px] min-w-0 flex-1 items-start gap-3 rounded-[14px] px-3 py-3 text-start active:bg-paper/[0.04]"
       >
         <span className="min-w-0 flex-1">
           <span className="block font-sans text-detail font-semibold text-paper/85" {...(nameLang ? { lang: nameLang, dir: "ltr" } : {})}>
@@ -168,7 +175,7 @@ function Row({
           data-learn-remove=""
           aria-label={`${t("common.remove")}: ${name}`}
           onClick={onRemove}
-          className="tap-press inline-flex min-h-11 w-11 shrink-0 items-center justify-center self-center rounded-pill text-paper/55 hover:text-paper"
+          className="tap-press me-1 inline-flex min-h-11 w-11 shrink-0 items-center justify-center self-center rounded-pill text-paper/55 hover:text-paper"
         >
           <Close size={15} />
         </button>
@@ -245,7 +252,7 @@ function Verses({ onTake, onDaily }: { onTake: (item: LearnItem) => void; onDail
             />
           ))}
         </ul>
-      ) : (
+      ) : query.trim() ? null : (
         <p className={cn(NOTE, "mt-4")}>{t("widget.rememberNone")}</p>
       )}
 
@@ -321,6 +328,11 @@ function Quotes({ onTake }: { onTake: (item: LearnItem) => void }) {
   const [line, setLine] = useState("");
   const [asked, setAsked] = useState<Asked>({ kind: "idle" });
   const [long, setLong] = useState(false);
+  // The answer opens under the field: the sheet moves to it, so it is never below the screen (the owner's rule, build 93 note 15).
+  const answer = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (asked.kind === "done" || asked.kind === "error") answer.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [asked]);
 
   // What can be taken: the quotes already on the list, then lines gathered, then the app's own, each once.
   const offers = useMemo(() => {
@@ -349,6 +361,8 @@ function Quotes({ onTake }: { onTake: (item: LearnItem) => void }) {
     const q = line.trim();
     if ((q.match(/[\p{L}\p{N}]+/gu) ?? []).length < MIN_WORDS) return setAsked({ kind: "error", key: "whoSaidIt.tooShort" });
     if (typeof navigator !== "undefined" && navigator.onLine === false) return setAsked({ kind: "error", key: "learn.offline" });
+    // The keyboard goes down, so the answer has the screen.
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     setAsked({ kind: "busy" });
     try {
       const res = await apiFetch(`/api/quotes/find?q=${encodeURIComponent(q)}`);
@@ -384,7 +398,7 @@ function Quotes({ onTake }: { onTake: (item: LearnItem) => void }) {
         </button>
       </form>
 
-      <div aria-live="polite">
+      <div ref={answer} aria-live="polite" className="scroll-mb-4">
         {asked.kind === "error" ? (
           <p data-learn-said={asked.key} className={cn(NOTE, "mt-3")}>
             {t(asked.key)}

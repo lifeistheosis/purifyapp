@@ -298,7 +298,7 @@ async function openChooser(page, kind) {
   await today.evaluate((el) => el.scrollIntoView({ block: "center" }));
   const words = (await today.innerText()).replace(/\s+/g, " ");
   say(/^Learn by heart/.test(words) && !/Remember the verse/.test(words), "named Learn by heart, since it is not a verse");
-  await still(page, "14-today-quote", "main");
+  await still(page, "14-today-quote", "section:has([data-learn-change])");
   await today.locator("[data-learn-change]").tap();
   let sheet = sheetOf(page, "What will you learn?");
   say(await sheet.waitFor({ timeout: 15000 }).then(() => true, () => false), "Change on Today's card opens the chooser");
@@ -320,7 +320,7 @@ async function openChooser(page, kind) {
   await settle(page);
   const done = page.locator("section", { has: page.locator("[data-learn-change]") }).filter({ hasText: "It comes back tomorrow." }).first();
   say(await done.waitFor({ timeout: 10000 }).then(() => true, () => false), "answered, the card says when it comes back, and Change is still there");
-  await still(page, "16-today-answered", "main");
+  await still(page, "16-today-answered", "section:has([data-learn-change])");
 
   // You shows the day's kept verse again, with Change.
   await go(page, "/account");
