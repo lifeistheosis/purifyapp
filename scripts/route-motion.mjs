@@ -678,7 +678,9 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
         };
       });
       if (!head.box) into.push("his page did not open on the wide picture's box, so the walk proves nothing");
-      if (head.takes.length !== 1 || head.takes[0] !== card.icon) into.push(`the page takes ${JSON.stringify(head.takes)}, not the one icon of his card (${card.icon})`);
+      // His books' covers take pictures of their own; his card's icon is taken once, and only by his icon.
+      const takers = head.takes.filter((k) => k === card.icon).length;
+      if (takers !== 1) into.push(`his card's icon (${card.icon}) is taken ${takers} times on his page, not once`);
       if (head.top > 2) into.push(`his page opened ${head.top}px down, not at its top`);
       if (signal === "with signal") {
         if (head.wide?.state !== "shown" || head.wide.seen < 0.99) into.push(`the wide picture has not come in over the icon: ${JSON.stringify(head.wide)}`);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ArrivingImage } from "@/components/ui/ArrivingImage";
@@ -45,11 +45,22 @@ import { avifFor } from "@/lib/media/streamed";
  * does show his icon: the one the app carries stands in the box until the
  * wide picture has come. That icon takes the card's (lib/ui/routeMotion.ts,
  * "A picture that leads to its own page"), and the wide picture waits for it
- * to land before it comes in over it, so the icon is never taken away in
- * mid-flight by a picture that happened to arrive then (a hero the phone
- * already holds arrives within a frame). With no signal the icon simply
- * stays, as before. Going back, the same icon goes back into its card.
+ * to land before it comes in over it. A hero the phone already holds arrives
+ * within a frame, and the icon in flight is drawn from the icon it is landing
+ * on: shown at once, the wide picture took that icon away and the card's icon
+ * faded out half way there (seen in the film, 2026-11-11). So for the length
+ * of the flight the wide picture is held back, on a page an icon travelled
+ * to; any other page shows it the moment it has come, as before. With no
+ * signal the icon simply stays. Going back, the same icon goes back into its
+ * card.
  */
+
+/**
+ * How long a picture travels (app/globals.css, `::view-transition-group(carried)`,
+ * 320ms), and a frame more. lib/saints/__tests__/heroPicture.test.ts holds the
+ * two together.
+ */
+export const FLIGHT_MS = 340;
 export function SaintHeroPicture({
   name,
   iconUrl,
@@ -64,7 +75,8 @@ export function SaintHeroPicture({
   const alt = t("saints.iconAlt", { name });
   const ref = useRef<HTMLImageElement>(null);
   const box = useRef<HTMLDivElement>(null);
-  const landing = useRef(0);
+  const opened = useRef(0);
+  const landing = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [failed, setFailed] = useState(false);
   const [shown, setShown] = useState(false);
   const [again, setAgain] = useState(false);
@@ -72,24 +84,26 @@ export function SaintHeroPicture({
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const avif = hero ? avifFor(hero.src) : null;
 
-  // The wide picture is shown, unless the card's icon is still arriving on
-  // the icon under it: then once that has landed (the page switch marks what
-  // it lands on, `data-carried-in`, for exactly as long), or after a second
-  // at the most, should the mark ever be left behind.
+  // When the page was drawn, which is when a picture that travels to it sets out.
+  useLayoutEffect(() => {
+    opened.current = performance.now();
+  }, []);
+
+  // The wide picture is shown; on a page the card's icon travelled to, not
+  // before that icon has landed. The page switch marks what a picture lands
+  // on while it wears the name and after (`data-carried-in`, `data-landed`;
+  // lib/ui/routeMotion.ts), and it has done so by the time any picture can
+  // have loaded.
   const reveal = () => {
     const icon = box.current?.querySelector<HTMLElement>("[data-hero-stand-in]");
-    const arriving = () => Boolean(icon && "carriedIn" in icon.dataset);
-    if (!arriving()) {
+    const travelledTo = Boolean(icon && ("carriedIn" in icon.dataset || "landed" in icon.dataset));
+    const wait = travelledTo ? opened.current + FLIGHT_MS - performance.now() : 0;
+    if (landing.current) clearTimeout(landing.current);
+    if (wait <= 0) {
       setShown(true);
       return;
     }
-    const until = performance.now() + 1000;
-    const look = () => {
-      if (!arriving() || performance.now() > until) setShown(true);
-      else landing.current = requestAnimationFrame(look);
-    };
-    cancelAnimationFrame(landing.current);
-    landing.current = requestAnimationFrame(look);
+    landing.current = setTimeout(() => setShown(true), wait);
   };
 
   const fail = () => {
@@ -115,7 +129,7 @@ export function SaintHeroPicture({
   }, [again]);
   useEffect(() => () => {
     if (timer.current) clearTimeout(timer.current);
-    cancelAnimationFrame(landing.current);
+    if (landing.current) clearTimeout(landing.current);
   }, []);
 
   if (hero) {
