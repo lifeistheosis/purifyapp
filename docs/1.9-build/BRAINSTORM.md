@@ -2,6 +2,8 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
+**The pre-build gate (his word, 2026-11-11 about 01:46 UTC, after twenty notes on build 93):** "and as you can see I've noticed a lot of issues with this build ensure our next build doesn't have any similar issues or any other issues of this nature." A standing rule in CLAUDE.md; the gate is in `notes/build-93.md`, "The pre-build gate".
+
 **Build 93, note 20 (his word, 2026-11-11 about 01:45 UTC):** "And also changing the bibles translation or the version of the Bible should be as easy as switching your chapter. So incorporate that." (`notes/build-93.md`, note 20).
 
 **Build 93, note 19 (his word, 2026-11-11 about 01:44 UTC, screenshots of the Song of the Theotokos collection and of Today's Florilegium card):** "I'm not sure why the Your Flor Gelium just is the song of the Theotokos. Also, when you click the verse in the Florigelium, it just takes you to the book. It doesn't take you to the actual verse. And also, I want the Florigelium and the notebook system like intertwined." (`notes/build-93.md`, note 19).

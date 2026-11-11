@@ -232,3 +232,23 @@ His words: "And also changing the bibles translation or the version of the Bible
 Where it is today: on a phone the translation hides behind the reader's ••• menu; on a computer it is a pill (the 1.9 tour's third stop says so). The chapter is one tap under the book's name ("Chapter 2 ⌄").
 
 Who has it: Updates 2 (the Bibles, their downloads, Almeida), after Almeida so the new translation is in it. The bar: the translation sits beside the chapter where the chapter is chosen, one tap from the reader on a phone as on a computer, opening the house's sheet with the translations the reader has and those to download, the current one checked; the switch keeps the reader's place (the same chapter and verse); a translation without the chapter (the deuterocanon in a Protestant Bible) says so plainly instead of failing; 44px, the house's motion, his standing rules. A still with the push.
+
+## The pre-build gate (his word, 2026-11-11 about 01:46 UTC)
+
+His words: "and as you can see I've noticed a lot of issues with this build ensure our next build doesn't have any similar issues or any other issues of this nature."
+
+What his twenty notes have in common, so the gate looks for the kind and not only the case:
+- A tap that shows a change and makes none, or meets something else first (3, 8).
+- The page moving against the reader: Back to the wrong place, a snap that fights, a switch that jumps, an opening that runs under the tab bar (1, 2, 15, 16).
+- A picture missing: an empty circle, a saint or a work on the plate (1, 12, 18).
+- A guardrail or a rough design that no check looked for: the sparkle, dashed boxes, a boxed field, a keyboard hint on a phone, a year printed twice, a dropdown off the screen (4, 5, 6, 7, 17).
+- Words that are no longer true: "Nothing in this app is locked behind a payment", the prayer wall named after it went (10, 14).
+- Things he wants that were never asked of the app before (9, 11, 13, 19, 20): these are features, held to the same gate once built.
+
+The gate (CLAUDE.md, "No test build reaches him until it passes the pre-build gate"), and who builds its parts:
+1. The tap walk (Admin): on the native export at 390 by 844 with real touch (`Input.dispatchTouchEvent`, as Easy Scroll's walk does), every tab and every screen reachable from it as a new reader; every control tapped; a fail where nothing on the page changes, where a check moves with nothing changed behind it, where the element under the finger moves more than a few pixels during a toggle, where Back does not restore the scroll it left, or where an opened part ends under the tab bar. Its report lists each screen and control, pass or fail. Built on `scripts/export-walk.mjs` and `scripts/stripe-walk.mjs`.
+2. The guardrail walk (Admin): every screen of the export through every `checkMock` rule, as `stripe-walk.mjs` does for stripes today, plus the three new looks to refuse: an empty picture, a dashed placeholder box, a keyboard hint ("Esc", "Ctrl") on a phone.
+3. No saint or work without a picture (Updates 2 and the December chat, in their notes 12 and 18): a unit test, with the named list of permissions awaited.
+4. The words (Admin): a test that no reader-facing line names a removed feature (the prayer wall first), and a list of what the app says is free and what is Plus, checked against the code.
+5. Every note has its test (each chat, as briefed): the arbiter reads the twenty before the build and names any without one.
+6. Fresh eyes (proposed to him, a Fable run, so his yes first): one Fable chat walks the release-like export as a new reader, end to end, and reports what is rough by severity, before he sees the build.
