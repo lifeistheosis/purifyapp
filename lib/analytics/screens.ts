@@ -239,6 +239,8 @@ const RULES: readonly (readonly [string, ScreenKey])[] = [
   ["/about", "about"],
   // Photo credits (1.9): a part of About, which alone leads there.
   ["/credits", "about"],
+  // The GNU GPL beside the Almeida (1.9): reached from the Almeida's line under a chapter, so a part of the Bible.
+  ["/credits/gpl", "bible"],
   ["/faq", "faq"],
   ["/privacy", "legal"],
   ["/terms", "legal"],

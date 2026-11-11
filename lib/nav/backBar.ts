@@ -130,6 +130,8 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   // Photo credits (1.9): reached from About, with its own bar as About's
   // other pages have.
   /^\/credits$/,
+  // The GNU GPL beside the Almeida (1.9): its own bar, as the credits page has.
+  /^\/credits\/gpl$/,
   /^\/settings$/,
   // The reading modes' own page (1.9): every palette on its shelf, opened
   // from Settings' Reading mode row, with its own bar and the way back to

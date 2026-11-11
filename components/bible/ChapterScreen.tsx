@@ -440,21 +440,19 @@ export function ChapterScreen({
                 {!usingLicensed && (
                   <p className="mt-6 md:mt-3 font-sans text-eyebrow text-paper/55 leading-[1.6]">
                     <T k={downloaded ? `bible.downloads.source.${downloaded.bible.id}` : "bible.chapterSources"} />
-                    {/* The GPL asks that its terms travel with the text (the Almeida of 1911): its page, offline in the apps. */}
-                    {downloaded && LICENCE_PAGES[downloaded.bible.id] ? (
-                      <>
-                        {" "}
-                        <Link
-                          href={LICENCE_PAGES[downloaded.bible.id]}
-                          data-licence-link={downloaded.bible.id}
-                          className="inline-flex min-h-11 items-center underline underline-offset-2 decoration-paper/30 hover:text-paper"
-                        >
-                          <T k="credits.gpl.link" />
-                        </Link>
-                      </>
-                    ) : null}
                   </p>
                 )}
+                {/* The GPL asks that its terms travel with the text (the Almeida of 1911): its page, offline in the
+                    apps, on a line of its own under the source, so the source keeps its even lines. */}
+                {!usingLicensed && downloaded && LICENCE_PAGES[downloaded.bible.id] ? (
+                  <Link
+                    href={LICENCE_PAGES[downloaded.bible.id]}
+                    data-licence-link={downloaded.bible.id}
+                    className="inline-flex min-h-11 items-center font-sans text-eyebrow text-paper/55 underline underline-offset-2 decoration-paper/30 hover:text-paper"
+                  >
+                    <T k="credits.gpl.link" />
+                  </Link>
+                ) : null}
 
                 {/* The next chapter, waiting at the foot: scroll on into it (1.7). */}
                 <KeepScrolling slug={slug} chapter={chapter} v={licensedId ?? undefined} />

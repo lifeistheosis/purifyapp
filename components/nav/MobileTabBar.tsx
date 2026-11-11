@@ -177,7 +177,10 @@ export function MobileTabBar() {
         p === "/plans" ||
         p.startsWith("/plans/") ||
         p === "/journal" ||
-        p.startsWith("/journal/"),
+        p.startsWith("/journal/") ||
+        // The GNU GPL beside the Almeida (1.9), reached from its line under a chapter.
+        p === "/credits/gpl" ||
+        p.startsWith("/credits/gpl/"),
     },
     {
       key: "discover",
@@ -275,9 +278,9 @@ export function MobileTabBar() {
         p.startsWith("/faq/") ||
         p === "/terms" ||
         p.startsWith("/terms/") ||
-        // Photo credits (1.9), which only About leads to.
+        // Photo credits (1.9), which only About leads to (the GPL's page is the Bible's).
         p === "/credits" ||
-        p.startsWith("/credits/"),
+        (p.startsWith("/credits/") && !p.startsWith("/credits/gpl")),
     },
   ];
 
