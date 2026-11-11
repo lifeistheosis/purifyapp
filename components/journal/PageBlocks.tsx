@@ -362,7 +362,7 @@ function LibraryCard({ index, block, onRemove }: { index: number; block: Extract
         {/* Under a source's name, what kind of quote this is, where the name begins. */}
         {block.cite ? <p className={cn("-mt-2 pb-1 font-sans text-caption text-paper/60", BLOCK_INSET)}>{t("journal.page.fromLibrary")}</p> : null}
       </figcaption>
-      <RemoveButton onClick={onRemove} label={t("common.remove")} />
+      <RemoveButton high onClick={onRemove} label={t("common.remove")} />
     </figure>
   );
 }
@@ -417,7 +417,7 @@ function QuoteCard({
           className="block h-11 min-w-0 flex-1 bg-transparent font-sans text-[16px] text-paper/85 placeholder:text-paper/55 focus:outline-none"
         />
       </label>
-      <RemoveButton onClick={onRemove} label={t("common.remove")} />
+      <RemoveButton high onClick={onRemove} label={t("common.remove")} />
     </figure>
   );
 }
@@ -598,13 +598,14 @@ function CalloutBlock({
   );
 }
 
-function RemoveButton({ onClick, label }: { onClick: () => void; label: string }) {
+/** A block's remove, at its head on the screen's side. `high` sits it level with a first line of words that has no row over it. */
+function RemoveButton({ onClick, label, high = false }: { onClick: () => void; label: string; high?: boolean }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="tap-press absolute end-0.5 top-0.5 inline-flex h-11 w-11 items-center justify-center rounded-full text-paper/70 hover:text-paper"
+      className={cn("tap-press absolute end-0.5 top-0.5 inline-flex h-11 w-11 items-center justify-center rounded-full text-paper/70 hover:text-paper", high && "-mt-2.5")}
     >
       <Close size={16} />
     </button>

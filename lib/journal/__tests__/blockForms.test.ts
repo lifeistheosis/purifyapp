@@ -135,6 +135,18 @@ describe("a Father's words: the words, then the way back", () => {
   });
 });
 
+describe("a block's remove sits level with the block's first line", () => {
+  it("a Father's words and a quote of one's own open on words, so their remove is raised to them; Scripture's sits with its heading", () => {
+    expect(father).toContain("<RemoveButton high onClick={onRemove}");
+    expect(own).toContain("<RemoveButton high onClick={onRemove}");
+    expect(verse).toContain("<RemoveButton onClick={onRemove}");
+    const remove = code(blocks.slice(blocks.indexOf("function RemoveButton("), blocks.indexOf("// ── The tools")));
+    expect(remove).toContain('high && "-mt-2.5"');
+    // Still a finger wide and high.
+    expect(remove).toContain("inline-flex h-11 w-11");
+  });
+});
+
 describe("the tools' names are read whole", () => {
   it("a tool's name has a line of its own height, so no letter is cut at its foot", () => {
     // checkMock's "cut" rule, 2026-11-11: at the tile's leading of 1 the name's box was a pixel shorter than its letters.
