@@ -48,9 +48,21 @@ describe("none of the three is in a box, and none stands beside a rule", () => {
   });
 
   it("the words of all three are in the size the app reads at", () => {
-    expect(verseWords).toContain('className="font-serif text-body leading-[1.7] text-paper/90"');
-    expect(father).toContain('className="whitespace-pre-line font-serif text-body leading-[1.7] text-paper/90"');
+    expect(verseWords).toContain('"font-serif text-body leading-[1.7] text-paper/90"');
+    expect(father).toContain('"whitespace-pre-line font-serif text-body leading-[1.7] text-paper/90"');
     expect(own).toMatch(/font-serif text-body italic leading-\[1\.7\] text-paper /);
+  });
+
+  it("what is brought onto the page is set in from the writer's own words, by an indent and never a rule", () => {
+    // The marks hang in the margin; the words begin under the block's name, past its mark (15px and its 8px).
+    expect(blocks).toContain('const BLOCK_INSET = "ps-[23px]";');
+    expect(verseWords.match(/BLOCK_INSET/g)).toHaveLength(2);
+    expect(father.match(/BLOCK_INSET/g)).toHaveLength(2);
+    expect(own.match(/BLOCK_INSET/g)).toHaveLength(1);
+    // The writer's own words stand at the margin.
+    const words = part("function TextBlock(", "const BLOCK_SOURCE");
+    expect(words).not.toContain("BLOCK_INSET");
+    for (const src of [verse, verseWords, father, own]) expect(src).not.toMatch(/border-(s|e|l|r)\b|border-(s|e|l|r)-/);
   });
 });
 
@@ -115,11 +127,19 @@ describe("a Father's words: the words, then the way back", () => {
 
   it("it says it is quoted from the library, under the source's name or in its place", () => {
     expect(father).toContain('{block.cite || t("journal.page.fromLibrary")}');
-    expect(father).toMatch(/\{block\.cite \? <p className="[^"]*">\{t\("journal\.page\.fromLibrary"\)\}<\/p> : null\}/);
+    expect(father).toMatch(/\{block\.cite \? <p className=\{cn\("[^"]*", BLOCK_INSET\)\}>\{t\("journal\.page\.fromLibrary"\)\}<\/p> : null\}/);
   });
 
   it("its words are never typed here", () => {
     expect(father).not.toMatch(/<textarea|<input/);
+  });
+});
+
+describe("the tools' names are read whole", () => {
+  it("a tool's name has a line of its own height, so no letter is cut at its foot", () => {
+    // checkMock's "cut" rule, 2026-11-11: at the tile's leading of 1 the name's box was a pixel shorter than its letters.
+    const tool = code(blocks.slice(blocks.indexOf("function Tool("), blocks.indexOf("function VerseFinder(")));
+    expect(tool).toContain('<span className="max-w-full truncate leading-[1.35]">{label}</span>');
   });
 });
 

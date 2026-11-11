@@ -261,6 +261,13 @@ function TextBlock({
  * (components/florilegium/FlorilegiumDetail.tsx, ItemCard).
  */
 const BLOCK_SOURCE = "inline-flex min-w-0 items-center gap-2 font-sans text-caption font-semibold text-paper/65";
+/**
+ * Where a block's words begin: under its name, past its mark (15px and the
+ * 8px after it). So the marks hang in the margin and everything brought onto
+ * the page is set in from the writer's own words, which alone stand at the
+ * margin: what is set in is not mine. An indent, never a rule.
+ */
+const BLOCK_INSET = "ps-[23px]";
 
 /**
  * Scripture on the page: its place as its heading, which opens the passage at
@@ -309,13 +316,15 @@ function VerseCardWords({ block, verses }: { block: VerseCardBlock; verses: numb
   const states = verses.map((v, i) => ({ v, words: words[i] ?? { text: null, status: "loading" as const } }));
   if (states.every((s) => s.words.status === "missing")) {
     return (
-      <Link href={`/bible/${block.book}/${block.chapter}#v${block.from}`} className="-mt-1.5 inline-flex min-h-11 items-center font-sans text-detail text-paper/70 underline underline-offset-4 hover:text-paper">
-        {t("saved.openToRead")}
-      </Link>
+      <span className={cn("block", BLOCK_INSET)}>
+        <Link href={`/bible/${block.book}/${block.chapter}#v${block.from}`} className="-mt-1.5 inline-flex min-h-11 items-center font-sans text-detail text-paper/70 underline underline-offset-4 hover:text-paper">
+          {t("saved.openToRead")}
+        </Link>
+      </span>
     );
   }
   return (
-    <blockquote dir="auto" className="font-serif text-body leading-[1.7] text-paper/90">
+    <blockquote dir="auto" className={cn("font-serif text-body leading-[1.7] text-paper/90", BLOCK_INSET)}>
       {states.map(({ v, words }) =>
         words.text ? (
           <span key={v}>
@@ -340,7 +349,9 @@ function LibraryCard({ index, block, onRemove }: { index: number; block: Extract
   const { t } = useTranslate();
   return (
     <figure data-page-block={index} data-page-library="" className="relative pe-12">
-      <blockquote dir="auto" className="whitespace-pre-line font-serif text-body leading-[1.7] text-paper/90">{block.text}</blockquote>
+      <blockquote dir="auto" className={cn("whitespace-pre-line font-serif text-body leading-[1.7] text-paper/90", BLOCK_INSET)}>
+        {block.text}
+      </blockquote>
       <figcaption>
         <Link href={block.href} data-page-library-source="" className={cn(BLOCK_SOURCE, "min-h-11 hover:text-paper")}>
           <Quill size={15} aria-hidden className="shrink-0 text-paper/55" />
@@ -349,7 +360,7 @@ function LibraryCard({ index, block, onRemove }: { index: number; block: Extract
           </span>
         </Link>
         {/* Under a source's name, what kind of quote this is, where the name begins. */}
-        {block.cite ? <p className="-mt-2 pb-1 ps-[23px] font-sans text-caption text-paper/60">{t("journal.page.fromLibrary")}</p> : null}
+        {block.cite ? <p className={cn("-mt-2 pb-1 font-sans text-caption text-paper/60", BLOCK_INSET)}>{t("journal.page.fromLibrary")}</p> : null}
       </figcaption>
       <RemoveButton onClick={onRemove} label={t("common.remove")} />
     </figure>
@@ -390,7 +401,7 @@ function QuoteCard({
           rows={1}
           onChange={(e) => onText(e.target.value)}
           placeholder={t("journal.page.quotePlaceholder")}
-          className="block min-h-11 w-full resize-none overflow-hidden bg-transparent font-serif text-body italic leading-[1.7] text-paper placeholder:text-paper/55 focus:outline-none"
+          className={cn("block min-h-11 w-full resize-none overflow-hidden bg-transparent font-serif text-body italic leading-[1.7] text-paper placeholder:text-paper/55 focus:outline-none", BLOCK_INSET)}
         />
       </label>
       {/* Who said it, behind the speech mark: the writer's own word for it, typed here. */}
@@ -928,7 +939,9 @@ function Tool({ icon, label, pressed, onClick }: { icon: ReactNode; label: strin
       )}
     >
       {icon}
-      <span className="max-w-full truncate">{label}</span>
+      {/* A line of its own height: at the tile's leading of 1 the box was a pixel
+          shorter than the letters, and cut them at the foot (checkMock, "cut"). */}
+      <span className="max-w-full truncate leading-[1.35]">{label}</span>
     </button>
   );
 }
