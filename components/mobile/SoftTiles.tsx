@@ -160,6 +160,7 @@ export function PictureTile({
   sub,
   picture,
   crop,
+  carry,
   lit = false,
   heading = "h2",
   tone = "a",
@@ -174,6 +175,12 @@ export function PictureTile({
   picture: string | null;
   /** Where the picture is held and how close it is drawn (lib/prayers/iconCrops.ts). */
   crop?: Crop;
+  /**
+   * The name the picture travels under into the page it opens, where that is
+   * not the picture's own address (Your rule: the head wears the same icon in
+   * another cut, lib/prayers/serviceArt.ts, ruleCarry).
+   */
+  carry?: string;
   /** The door that is now (the Hour the clock is in): ringed and glowing white, ink on Parchment. */
   lit?: boolean;
   /** h3 under a section's own heading (Prayers' Practices). */
@@ -200,7 +207,7 @@ export function PictureTile({
           travels into the page the tile opens (lib/ui/routeMotion.ts, 1.9).
           It fills the tile, so the tile is drawn as it was. */}
       {picture ? (
-        <span data-carry={picture} className="absolute inset-0 overflow-hidden rounded-[inherit]">
+        <span data-carry={carry ?? picture} className="absolute inset-0 overflow-hidden rounded-[inherit]">
           {/* The picture's tiny preview, blurred, at once (1.8): the tile is
               never an empty box while its picture comes. */}
           {TILE_PREVIEWS[picture] ? (

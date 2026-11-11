@@ -307,6 +307,22 @@ export function composeRule(
 }
 
 /**
+ * The half Your rule opens on (1.8, the page; 1.9, the tile too): the half
+ * the address names (#evening); else the hour's half if it has prayers; else
+ * the first half that has any; else the hour's. One rule, read by the page
+ * (components/prayers/mine/MyRuleBuilder.tsx) and by the tile that leads to
+ * it on Prayers, so the tile wears the half the page will open on and its
+ * picture is the one at the page's head (the arbiter, 2026-11-11: "let Your
+ * rule's tile wear the half the page will open on (morning or evening), so
+ * one picture travels").
+ */
+export function openingPart(rule: MyRule, hourPart: MyRulePart, named: MyRulePart | null = null): MyRulePart {
+  if (named) return named;
+  if (rule[hourPart].length > 0) return hourPart;
+  return MY_RULE_PARTS.find((p) => rule[p].length > 0) ?? hourPart;
+}
+
+/**
  * The card Today leads its Pray row with, when the reader's rule has the
  * part the hour calls for; null otherwise, and Today is as it always was.
  */

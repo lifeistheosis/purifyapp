@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { MY_RULE_PARTS, type MyRulePart } from "@/lib/prayers/myRule";
-import { ruleHeadArt } from "@/lib/prayers/serviceArt";
+import { ruleCarry, ruleHeadArt } from "@/lib/prayers/serviceArt";
 
 /**
  * The head of Your rule (1.8, the owner's pick A of round r3-27, "A with a
@@ -63,6 +63,9 @@ export function RuleHead({
                   fetchPriority={on ? "high" : "low"}
                   data-part={p}
                   data-on={on ? "" : undefined}
+                  // The one shown is what the tile's picture on Prayers travels into, and back out of (1.9). Only the one shown:
+                  // two pictures under one name stop the whole page switch.
+                  data-carry-into={on ? ruleCarry(p) : undefined}
                   className="rule-head-img"
                   style={{ objectPosition: art.focus }}
                 />

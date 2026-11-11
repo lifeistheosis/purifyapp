@@ -65,6 +65,23 @@ export const WIDE_CUTS: Readonly<Record<string, { src: string; width: number; he
   "christ-pantocrator": { src: "/sections/prayers.v4.jpg", width: 1290, height: 1359, focus: "50% 30%" },
 };
 
+/**
+ * The name a half's picture travels under, from Your rule's tile on Prayers
+ * into the head of the page it opens and back (1.9; lib/ui/routeMotion.ts,
+ * "A picture that leads to its own page"). A name of its own kind, not the
+ * picture's address: the tile wears the icon in the cut his sheet drew for
+ * it, and the head the same icon in its wide cut, which for the Pantocrator
+ * is another file of the same painting (WIDE_CUTS above).
+ */
+export function ruleCarry(part: "morning" | "evening"): string {
+  return `rule:${part}`;
+}
+
+/** The icon Your rule's tile wears for the half the page will open on: the icon at that half's head. */
+export function ruleTileArt(part: "morning" | "evening"): PrayerIcon {
+  return serviceArt(part === "morning" ? "mine-morning" : "mine-evening");
+}
+
 /** The picture at the head of Your rule (1.8, r3-27 A): the part's own icon, wide. */
 export function ruleHeadArt(part: "morning" | "evening"): { src: string; width: number; height: number; focus: string; alt: string } {
   const icon = serviceArt(part === "morning" ? "mine-morning" : "mine-evening");

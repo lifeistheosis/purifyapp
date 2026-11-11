@@ -29,6 +29,8 @@ const TILE: Readonly<Record<string, Crop>> = {
   "three-hierarchs": { zoom: 1.18, focus: "50% 9%" },
   // Your rule, and the First Hour: the face of Christ in its halo.
   "christ-pantocrator": { zoom: 1.04, focus: "50% 21%" },
+  // Your rule in its morning half (1.9): Christ in white, His hand to Adam's.
+  anastasis: { zoom: 1.15, focus: "50% 40%" },
   // The Sixth Hour: Christ on the Cross, with His Mother and St John.
   crucifixion: { zoom: 1.5, focus: "50% 30%" },
   // The Ninth Hour: the mourners over the Lord laid in the tomb.

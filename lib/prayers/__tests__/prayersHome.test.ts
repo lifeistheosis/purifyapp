@@ -17,7 +17,7 @@ import { HOUR_STARTS, currentHourSlug } from "@/lib/prayers/hourNow";
 import { cropTables, plateCrop, tileCrop } from "@/lib/prayers/iconCrops";
 import { PRAYER_ICONS } from "@/lib/prayers/icons";
 import { RULE_CATEGORY_ORDER } from "@/lib/prayers/rules";
-import { serviceArt } from "@/lib/prayers/serviceArt";
+import { WIDE_CUTS, ruleCarry, ruleHeadArt, ruleTileArt, serviceArt } from "@/lib/prayers/serviceArt";
 import { placeForPath, turnFor } from "@/lib/search/places";
 
 /**
@@ -238,7 +238,6 @@ describe("Practices (note 72, r3-26 A: the icon tiles)", () => {
   it("wears the icon the app pairs with each, the Hours the icon of the Hour the clock is in, once the page knows it", () => {
     expect(page).toContain('serviceArt("akathist-theotokos")');
     expect(page).toContain('serviceArt("learning")');
-    expect(page).toContain('serviceArt("mine")');
     // The clock is read on the device, after the page wakes: until then no Hour is lit.
     expect(page).toContain("const hour = mounted ? new Date().getHours() : null;");
     expect(page).toContain("const hourNow = hour === null ? null : currentHourSlug(hour);");
@@ -255,6 +254,45 @@ describe("Practices (note 72, r3-26 A: the icon tiles)", () => {
     for (const id of ["akathist-theotokos", "learning", "mine", ...HOUR_STARTS.map((h) => h.slug)]) {
       expect(serviceArt(id).src.startsWith("/icons/prayer/"), id).toBe(true);
     }
+  });
+
+  // 1.9, the arbiter's call of 2026-11-11: "let Your rule's tile wear the half
+  // the page will open on (morning or evening), so one picture travels." Until
+  // then the tile wore Christ Pantocrator at every hour, the page opened on the
+  // Anastasis in the morning, and nothing travelled: a picture travels only
+  // where the page shows the same picture (lib/ui/routeMotion.ts).
+  it("gives Your rule's tile the icon of the half its page will open on, chosen by the page's own rule", () => {
+    // One rule for both: the tile and the page read openingPart.
+    expect(page).toContain("const rulePart = hour === null ? null : openingPart(myRule, hourPart);");
+    expect(code("components/prayers/mine/MyRuleBuilder.tsx")).toContain("setPart(openingPart(kept, hour, partInAddress(window.location.hash)));");
+    // The device's knowledge: no icon until the page wakes, as the Hours' tile, and never one that is then swapped.
+    expect(page).toContain("const ruleArt = rulePart ? ruleTileArt(rulePart) : null;");
+    expect(practices).toContain("picture={ruleArt?.src ?? null}");
+    expect(practices).toContain("crop={ruleArt ? tileCrop(ruleArt.slug) : undefined}");
+    expect(page).not.toContain('serviceArt("mine")');
+    // The tile's icon is the icon at that half's head, in the head's wide cut there.
+    for (const part of ["morning", "evening"] as const) {
+      const tile = ruleTileArt(part);
+      expect(tile.src.startsWith("/icons/prayer/"), part).toBe(true);
+      expect(WIDE_CUTS[tile.slug]?.src, part).toBe(ruleHeadArt(part).src);
+      expect(cropTables().tile[tile.slug], `${part}'s tile cut`).toBeDefined();
+    }
+    expect(ruleTileArt("morning").slug).toBe("anastasis");
+    expect(ruleTileArt("evening").slug).toBe("christ-pantocrator");
+    // In the evening half the tile is as his sheet drew it.
+    expect(tileCrop(ruleTileArt("evening").slug)).toEqual({ zoom: 1.04, focus: "50% 21%" });
+  });
+
+  it("and the tile's picture and the head's wear one name, so the one travels into the other and back", () => {
+    expect(practices).toContain("carry={rulePart ? ruleCarry(rulePart) : undefined}");
+    expect(code(TILES)).toContain("<span data-carry={carry ?? picture}");
+    const head = code("components/prayers/mine/RuleHead.tsx");
+    // Only the picture shown takes the name: two under one name stop the whole page switch.
+    expect(head).toContain("data-carry-into={on ? ruleCarry(p) : undefined}");
+    expect(head.match(/data-carry-into/g)).toHaveLength(1);
+    expect(ruleCarry("morning")).toBe("rule:morning");
+    expect(ruleCarry("evening")).toBe("rule:evening");
+    expect(ruleCarry("morning")).not.toBe(ruleCarry("evening"));
   });
 
   it("cuts each icon where its meaning is, for every Hour the tile and the book's row can wear", () => {

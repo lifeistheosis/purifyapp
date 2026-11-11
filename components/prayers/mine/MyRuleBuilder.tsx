@@ -16,6 +16,7 @@ import {
   insertAt,
   itemKey,
   moveItem,
+  openingPart,
   partMinutes,
   removeAt,
   withMinutes,
@@ -127,7 +128,8 @@ export function MyRuleBuilder() {
   useLayoutEffect(() => {
     const kept = readMyRule();
     const hour = ruleIdForHour(new Date().getHours());
-    setPart(partInAddress(window.location.hash) ?? (kept[hour].length > 0 ? hour : (MY_RULE_PARTS.find((p) => kept[p].length > 0) ?? hour)));
+    // The rule the tile on Prayers reads too, so its picture is this head's (lib/prayers/myRule.ts, openingPart).
+    setPart(openingPart(kept, hour, partInAddress(window.location.hash)));
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 

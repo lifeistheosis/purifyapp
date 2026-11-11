@@ -15,6 +15,7 @@ import {
   insertAt,
   itemKey,
   moveItem,
+  openingPart,
   parseMyRule,
   partMinutes,
   partSeconds,
@@ -222,5 +223,36 @@ describe("on Today", () => {
     expect(todayRuleCard(rule, "morning")).toEqual({ part: "morning", id: "mine-morning", href: "/prayers/personal/morning", minutes: 3 });
     expect(todayRuleCard(rule, "evening")).toBeNull();
     expect(todayRuleCard(emptyMyRule(), "morning")).toBeNull();
+  });
+});
+
+// 1.9: one rule for which half Your rule opens on, read by the page and by
+// the tile that leads to it on Prayers, so the tile wears the picture at the
+// page's head (the arbiter's call of 2026-11-11).
+describe("the half Your rule opens on", () => {
+  const empty = emptyMyRule();
+  const morningOnly = addItem(empty, "morning", p("morning", "trisagion"));
+  const eveningOnly = addItem(empty, "evening", p("evening", "trisagion"));
+  const both = addItem(morningOnly, "evening", p("evening", "trisagion"));
+
+  it("is the hour's half when it has prayers", () => {
+    expect(openingPart(both, "morning")).toBe("morning");
+    expect(openingPart(both, "evening")).toBe("evening");
+  });
+
+  it("is the half that has prayers when the hour's has none", () => {
+    expect(openingPart(eveningOnly, "morning")).toBe("evening");
+    expect(openingPart(morningOnly, "evening")).toBe("morning");
+  });
+
+  it("is the hour's half for a rule with nothing in it yet", () => {
+    expect(openingPart(empty, "morning")).toBe("morning");
+    expect(openingPart(empty, "evening")).toBe("evening");
+  });
+
+  it("is the half the address names, whatever the hour and the rule say", () => {
+    expect(openingPart(morningOnly, "morning", "evening")).toBe("evening");
+    expect(openingPart(empty, "evening", "morning")).toBe("morning");
+    expect(openingPart(both, "evening", null)).toBe("evening");
   });
 });

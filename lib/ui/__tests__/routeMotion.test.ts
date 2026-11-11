@@ -755,7 +755,8 @@ describe("a picture that leads to its own page", () => {
   it("the pictures say so themselves: the attributes are on the shared components", () => {
     const has = (file: string, mark: string) => expect(read(file), `${file}: ${mark}`).toContain(mark);
     // Out of a card.
-    has("components/mobile/SoftTiles.tsx", "data-carry={picture}");
+    // Under the picture's own address, or a name the tile is given (Your rule's, below).
+    has("components/mobile/SoftTiles.tsx", "data-carry={carry ?? picture}");
     // All prayers' pieces wear the icons Practices' tiles do, and go where
     // they go (build 89 note 10 made them pictures, the same night).
     has("components/prayers/PrayerPieces.tsx", "data-carry={p.art?.src}");
@@ -766,10 +767,14 @@ describe("a picture that leads to its own page", () => {
     has("components/theology/TheologyLibrary.tsx", "data-carry={`way:${w.key}`}");
     // Into a page.
     has("components/saints/SaintHeroPicture.tsx", "data-carry-into={iconUrl}");
-    // Only where the page shows the same picture. Your rule's head and a
-    // saint's wide picture are other pictures, with words over them: a
-    // picture carried there covered the words until the change was over.
-    expect(read("components/prayers/mine/RuleHead.tsx")).not.toContain("data-carry-into");
+    // Only where the page shows the same picture. A saint's wide picture is
+    // another picture, with words over it: a picture carried there covered
+    // the words until the change was over. Your rule's head was the same,
+    // until its tile wore the half the page opens on (the arbiter's call of
+    // 2026-11-11, P1): the head's picture that is shown takes the tile's, by
+    // the half's own name (lib/prayers/serviceArt.ts, ruleCarry).
+    has("components/prayers/mine/RuleHead.tsx", "data-carry-into={on ? ruleCarry(p) : undefined}");
+    has("components/mobile/PrayersMobile.tsx", "carry={rulePart ? ruleCarry(rulePart) : undefined}");
     expect(read("components/saints/SaintHeroPicture.tsx").match(/data-carry-into/g) ?? []).toHaveLength(1);
     has("components/theology/WayPage.tsx", "data-carry-into={`way:${way}`}");
     // Both: the same plate, the same poster, at two sizes.

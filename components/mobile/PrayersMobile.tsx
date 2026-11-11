@@ -4,7 +4,9 @@ import Link from "next/link";
 import { currentHourSlug } from "@/lib/prayers/hourNow";
 import { tileCrop } from "@/lib/prayers/iconCrops";
 import { ruleIdForHour } from "@/lib/prayers/ruleForHour";
-import { serviceArt } from "@/lib/prayers/serviceArt";
+import { openingPart } from "@/lib/prayers/myRule";
+import { ruleCarry, ruleTileArt, serviceArt } from "@/lib/prayers/serviceArt";
+import { useMyRule } from "@/lib/prayers/useMyRule";
 import { useMounted } from "@/lib/useMounted";
 import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
@@ -25,7 +27,6 @@ const H2 = "text-lede leading-tight tracking-[-0.005em] text-paper";
 /** The icons Practices wear, the ones the app pairs with each (lib/prayers/serviceArt.ts). */
 const AKATHISTS = serviceArt("akathist-theotokos");
 const LEARNING = serviceArt("learning");
-const YOUR_RULE = serviceArt("mine");
 
 /**
  * Prayers on a phone. Redrawn for 1.8 as the owner's merged pick of round 4
@@ -69,6 +70,12 @@ export function PrayersMobile() {
   const hourPart = hour === null ? "morning" : ruleIdForHour(hour);
   const hourNow = hour === null ? null : currentHourSlug(hour);
   const hourArt = hourNow ? serviceArt(hourNow) : null;
+  // Your rule's tile wears the half its page will open on, chosen by the page's own rule (lib/prayers/myRule.ts,
+  // openingPart), so the tile's picture is the one at the page's head and travels into it (1.9). The rule and the hour
+  // are the device's: until the page wakes the tile wears no icon yet, as the Hours' does not.
+  const myRule = useMyRule();
+  const rulePart = hour === null ? null : openingPart(myRule, hourPart);
+  const ruleArt = rulePart ? ruleTileArt(rulePart) : null;
 
   return (
     <MobileShell
@@ -190,8 +197,9 @@ export function PrayersMobile() {
             heading="h3"
             label={<T k="prayers.mine.title" />}
             sub={<T k="prayers.mine.youHint" />}
-            picture={YOUR_RULE.src}
-            crop={tileCrop(YOUR_RULE.slug)}
+            picture={ruleArt?.src ?? null}
+            crop={ruleArt ? tileCrop(ruleArt.slug) : undefined}
+            carry={rulePart ? ruleCarry(rulePart) : undefined}
           />
         </SoftTileGrid>
       </section>
