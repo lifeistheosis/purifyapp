@@ -457,11 +457,11 @@ export function writeFastingRule(rule: FastingRule): void {
  * here is never overwritten by an older one from elsewhere, the same rule
  * lib/profile/preferences.ts keeps for focus. True when there was a copy.
  *
- * Only what the reader is looking for and the fast they keep. The answers
- * about their faith (the level, coming back, where they come from) are never
+ * Only what the reader is looking for. The answers about their faith (the
+ * level, coming back, where they come from, the fast they keep) are never
  * taken from an account, even from an older copy that still holds them: they
- * stay on the device they were given on (his "yes privacy", 2026-11-11,
- * ./accountSync.ts).
+ * stay on the device they were given on (his "yes privacy" and "yes
+ * fasting", 2026-11-11, ./accountSync.ts).
  */
 export function fillSpaceFromAccount(remote: unknown): boolean {
   // Testers mode: the device holds a test, and the account's answers stay out of it.
@@ -471,7 +471,6 @@ export function fillSpaceFromAccount(remote: unknown): boolean {
   // The picks behind the intent come with it (1.8); a copy from before then
   // holds the intent alone.
   if (readIntent() == null && isIntent(r.intent)) writeIntents([r.intent, ...cleanIntents(r.intents)]);
-  if (readString(FASTING_KEY) == null && isFastingRule(r.fasting)) writeFastingRule(r.fasting);
   return true;
 }
 

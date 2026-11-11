@@ -394,7 +394,6 @@ function SpaceSection() {
             writeLevel(l);
             writeDepth(depthFor(l));
             refreshDayOne();
-            void saveSpaceToAccount();
           }}
           label={t("settings.level")}
         />
@@ -410,7 +409,6 @@ function SpaceSection() {
           options={FASTING_RULES.map((f) => ({ value: f, label: t(`onboard.fasting.${f}`) }))}
           onChange={(f) => {
             writeFastingRule(f);
-            void saveSpaceToAccount();
           }}
           label={t("settings.fasting")}
         />

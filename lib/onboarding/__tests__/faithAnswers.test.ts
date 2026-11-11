@@ -6,19 +6,23 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 /**
  * The answers about a reader's faith stay on the device (his "yes privacy",
  * 2026-11-11, call 32: "the welcome answers about one's faith no longer kept
- * with accounts and every copy cleared").
+ * with accounts and every copy cleared"; and his "yes fasting" of the same
+ * day: the fast stays on the device only).
  *
- * Three answers say what a reader believes or where they stand: how familiar
- * they are with Orthodox Christianity (the level), whether they are coming
- * back after time away (returning, asked only of the baptized Orthodox), and
- * where they come from (the background). Until this change the first two went
- * to every signed-in reader's account, and the third did too while the new
+ * Four answers say what a reader believes, where they stand or how they keep
+ * the faith: how familiar they are with Orthodox Christianity (the level),
+ * whether they are coming back after time away (returning, asked only of the
+ * baptized Orthodox), where they come from (the background), and the fast
+ * they keep, which also follows from the level (../space.ts, defaultsFor).
+ * Until this change the level, coming back and the fast went to every
+ * signed-in reader's account, and the background did too while the new
  * onboarding was dark. Now none is sent, none is taken from an account, and a
- * copy an account still holds is taken off at the reader's next sign-in.
+ * copy an account still holds is cleared of them at the reader's next
+ * sign-in.
  *
  * What still travels in the account's copy is what the privacy page names:
- * what the reader is looking for, the fasting rule, and the version of the
- * questions they answered.
+ * what the reader is looking for, and the version of the questions they
+ * answered.
  */
 
 const net = vi.hoisted(() => ({
@@ -53,7 +57,6 @@ import {
   accountAnsweredThisVersion,
   fillSpaceFromAccount,
   readBackground,
-  readFastingRule,
   readIntents,
   readLevel,
   readReturning,
@@ -104,8 +107,8 @@ function answered() {
 const sent = () => net.updateUser.mock.calls.map((c) => c[0].data.purify_space);
 
 describe("the answers about a reader's faith", () => {
-  it("are three, and named", () => {
-    expect([...FAITH_ANSWERS].sort()).toEqual(["background", "level", "returning"]);
+  it("are four, and named", () => {
+    expect([...FAITH_ANSWERS].sort()).toEqual(["background", "fasting", "level", "returning"]);
   });
 
   it("are not in what is saved to the account, at the end of the questions or from Settings", async () => {
@@ -120,8 +123,10 @@ describe("the answers about a reader's faith", () => {
       expect(words).not.toContain("practicing");
       expect(words).not.toContain("orthodox");
       expect(words).not.toContain("returning");
-      // What the page names does go: what they are looking for, and the fast they keep.
-      expect(space).toMatchObject({ intent: "prayer", intents: ["prayer", "liturgy"], fasting: "modified" });
+      expect(words).not.toContain("modified");
+      // What the page names does go, and nothing else: what they are looking for, when, and the version.
+      expect(space).toMatchObject({ intent: "prayer", intents: ["prayer", "liturgy"] });
+      expect(Object.keys(space).filter((k) => !["intent", "intents", "savedAt", "v"].includes(k))).toEqual([]);
     }
     // The end of the questions stamps the version; a change in Settings keeps what the copy carried.
     expect(sent()[0]).toMatchObject({ v: ONBOARDING_VERSION });
@@ -133,16 +138,21 @@ describe("the answers about a reader's faith", () => {
     expect(readLevel()).toBeNull();
     expect(readBackground()).toBeNull();
     expect(readReturning()).toBe(false);
+    expect(window.localStorage.getItem("purify:fasting-rule")).toBeNull();
     // The rest of the copy is still taken where this device has none.
     expect(readIntents()).toEqual(["study", "saints"]);
-    expect(readFastingRule()).toBe("hidden");
   });
 
   it("are taken off a copy an account still holds, and the rest of the copy is left as it was", async () => {
     net.space = { level: "practicing", returning: true, background: "catholic", intent: "study", intents: ["study"], fasting: "strict", savedAt: "2026-10-01T10:00:00.000Z", v: 3 };
     await clearFaithAnswersFromAccount();
     expect(net.updateUser).toHaveBeenCalledTimes(1);
-    expect(sent()[0]).toEqual({ intent: "study", intents: ["study"], fasting: "strict", savedAt: "2026-10-01T10:00:00.000Z", v: 3 });
+    expect(sent()[0]).toEqual({ intent: "study", intents: ["study"], savedAt: "2026-10-01T10:00:00.000Z", v: 3 });
+    // The fast alone is enough to clear a copy: an older build wrote it for every reader who answered.
+    net.updateUser.mockClear();
+    net.space = { intent: "prayer", intents: ["prayer"], fasting: "hidden", v: 4 };
+    await clearFaithAnswersFromAccount();
+    expect(sent()).toEqual([{ intent: "prayer", intents: ["prayer"], v: 4 }]);
   });
 
   it("are taken off once when two ask in the same moment, as a cold start does", async () => {
@@ -155,7 +165,7 @@ describe("the answers about a reader's faith", () => {
   });
 
   it("and nothing is sent when the copy holds none of them, when there is no copy, or when nobody is signed in", async () => {
-    net.space = { intent: "study", intents: ["study"], fasting: "strict", v: 4 };
+    net.space = { intent: "study", intents: ["study"], v: 4 };
     await clearFaithAnswersFromAccount();
     net.space = null;
     await clearFaithAnswersFromAccount();
@@ -196,6 +206,16 @@ describe("a second device of the same account", () => {
 describe("the code that keeps them home", () => {
   const sync = fs.readFileSync("lib/onboarding/accountSync.ts", "utf8");
   const bridge = fs.readFileSync("components/profile/ProfilePrefsBridge.tsx", "utf8");
+  const settings = fs.readFileSync("components/settings/SettingsClient.tsx", "utf8");
+
+  it("changing the level or the fast in Settings writes nothing to the account", () => {
+    // Only what one is looking for is in the copy, so only that row saves it.
+    expect(settings.match(/saveSpaceToAccount\(\)/g)?.length).toBe(1);
+    const row = settings.slice(settings.indexOf("writeFastingRule(f);"), settings.indexOf("writeFastingRule(f);") + 120);
+    expect(row).not.toContain("saveSpaceToAccount");
+    const level = settings.slice(settings.indexOf("writeLevel(l);"), settings.indexOf("writeLevel(l);") + 160);
+    expect(level).not.toContain("saveSpaceToAccount");
+  });
 
   it("the account's copy is written with no faith answer in it", () => {
     const written = sync.slice(sync.indexOf("purify_space: {"), sync.indexOf("savedAt:"));
@@ -203,8 +223,10 @@ describe("the code that keeps them home", () => {
     expect(written).not.toMatch(/\blevel\b/);
     expect(written).not.toMatch(/\bbackground\b/i);
     expect(written).not.toMatch(/\breturning\b/i);
+    expect(written).not.toMatch(/\bfasting\b/i);
     expect(sync).not.toContain("readBackground");
     expect(sync).not.toContain("readReturning");
+    expect(sync).not.toContain("readFastingRule");
   });
 
   it("a sign-in and a signed-in cold start both clear an older copy", () => {

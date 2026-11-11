@@ -139,7 +139,7 @@ export function FirstRunGate({
         if (session) {
           const space = session.user.user_metadata?.purify_space;
           // What the account keeps of the answers (what they are looking
-          // for, the fast they keep) is taken where this device has none.
+          // for) is taken where this device has none.
           // The answers about their faith are not in an account (his "yes
           // privacy", lib/onboarding/accountSync.ts), so this device asks.
           fillSpaceFromAccount(space);

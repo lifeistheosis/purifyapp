@@ -219,11 +219,13 @@ describe("onboarding state", () => {
   });
 
   describe("the account copy", () => {
-    it("fills a fresh device with the picks and the fast, and never with the level", () => {
+    it("fills a fresh device with the picks, and never with the level or the fast", () => {
       expect(fillSpaceFromAccount({ level: "practicing", intent: "study", fasting: "modified" })).toBe(true);
       expect(readLevel()).toBeNull();
       expect(readIntent()).toBe("study");
-      expect(readFastingRule()).toBe("modified");
+      // Strict is what an unanswered fast reads as; the account's "modified" was not taken.
+      expect(readFastingRule()).toBe("strict");
+      expect(store.getItem("purify:fasting-rule")).toBeNull();
     });
 
     it("never overwrites an answer given on this device", () => {

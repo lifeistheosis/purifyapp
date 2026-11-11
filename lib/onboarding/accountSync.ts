@@ -10,13 +10,17 @@
 // arrives with the session, so a fresh device can read it without a query.
 //
 // What the copy holds is what the privacy page names: what the reader is
-// looking for, the fast they keep, and the version of the questions they
-// answered. The answers about their faith are NOT in it (his "yes privacy",
-// 2026-11-11, call 32): how familiar they are with Orthodox Christianity,
-// whether they are coming back after time away, and where they come from say
-// what a person believes (special-category data, GDPR Art. 9), nobody was
-// asked whether they may be kept beside an email, and the app is drawn on the
-// device, which is where they stay. A copy written by an older build is
+// looking for, and the version of the questions they answered. The answers
+// about their faith are NOT in it (his "yes privacy", 2026-11-11, call 32):
+// how familiar they are with Orthodox Christianity, whether they are coming
+// back after time away, and where they come from say what a person believes
+// (special-category data, GDPR Art. 9), nobody was asked whether they may be
+// kept beside an email, and the app is drawn on the device, which is where
+// they stay. The fast they keep stays there with them (his "yes fasting",
+// the same day): it is a practice of the faith in itself, and it follows
+// from the level, since a new reader's fast is set by it (./space.ts,
+// defaultsFor: an inquirer's is hidden, the practicing keep it strictly), so
+// a copy that kept the fast would still tell the level. A copy written by an older build is
 // cleared of them at the reader's next sign-in (clearFaithAnswersFromAccount
 // below); the copies of readers who never open 1.9 are cleared by the owner's
 // SQL (docs/1.9-build/HANDOFF.md, 2026-11-11 05:03). Held by
@@ -24,7 +28,7 @@
 
 import { pushProfilePrefs } from "@/lib/profile/preferences";
 import { createClient } from "@/lib/supabase/client";
-import { ONBOARDING_VERSION, readFastingRule, readIntent, readIntents, readLevel } from "./state";
+import { ONBOARDING_VERSION, readIntent, readIntents, readLevel } from "./state";
 import { isTesting } from "./testing";
 
 /**
@@ -60,7 +64,6 @@ export async function saveSpaceToAccount(opts: { finished?: boolean } = {}): Pro
           // Every pick of "What are you looking for?" in the order tapped
           // (1.8), the intent first. Read back by fillSpaceFromAccount.
           intents: readIntents(),
-          fasting: readFastingRule(),
           savedAt: new Date().toISOString(),
           ...(v === undefined ? {} : { v }),
         },
@@ -74,8 +77,8 @@ export async function saveSpaceToAccount(opts: { finished?: boolean } = {}): Pro
   }
 }
 
-/** The answers that say what a reader believes or where they stand. None is kept with an account. */
-export const FAITH_ANSWERS = ["level", "returning", "background"] as const;
+/** The answers that say what a reader believes, where they stand or how they keep the faith. None is kept with an account. */
+export const FAITH_ANSWERS = ["level", "returning", "background", "fasting"] as const;
 
 /** An account's copy with the faith answers taken off, or null when it holds none of them. */
 export function withoutFaithAnswers(space: unknown): Record<string, unknown> | null {

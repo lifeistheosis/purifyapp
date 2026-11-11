@@ -284,7 +284,8 @@ describe("while testing", () => {
     await saveSpaceToAccount();
     expect(net.updateUser).toHaveBeenCalledTimes(1);
     const sent = (net.updateUser.mock.calls[0]?.[0] as { data: { purify_space: Record<string, unknown> } }).data.purify_space;
-    expect(sent).toMatchObject({ intent: "prayer", fasting: "strict" });
+    expect(sent).toMatchObject({ intent: "prayer" });
+    expect(sent).not.toHaveProperty("fasting");
     // The answers about a reader's faith stay on the device (his "yes
     // privacy", 2026-11-11; ./faithAnswers.test.ts).
     expect(sent).not.toHaveProperty("level");

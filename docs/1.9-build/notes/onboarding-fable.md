@@ -1747,39 +1747,48 @@ privacy". Of its ten changes, this is the one in the welcome's own code: "the
 welcome answers about one's faith no longer kept with accounts and every copy
 cleared". Section 6.3 above asked for it for the background; Admin's finding
 (e) of the same night showed the level was in the same place, for every
-signed-in reader.
+signed-in reader. **And at about 14:24 UTC, "yes fasting":** the fast stays
+on the device only. Admin found that the copy's fast tells the level by
+itself, since a new reader's fast is set from it (`lib/onboarding/space.ts`,
+`defaultsFor`: an inquirer's is hidden, a learner's modified, the practicing
+keep it strictly, and only the practicing are asked).
 
-**Which answers.** Three say what a reader believes or where they stand:
+**Which answers.** Four say what a reader believes, where they stand or how
+they keep the faith:
 
 | Answer | Asked as | On the device | Was in the account |
 | --- | --- | --- | --- |
 | Level | "How familiar are you with Orthodox Christianity?", and with the roads "Where are you now?" | `purify:level` | `purify_space.level`, every signed-in reader |
 | Coming back | "Baptized Orthodox, coming back" | `purify:returning` | `purify_space.returning` |
 | Background | "Where are you coming from?" | `purify:background` | `purify_space.background`, while the roads were dark |
+| The fast | The rule's question, and Settings | `purify:fasting-rule` | `purify_space.fasting`, every signed-in reader |
 
 **As built.**
 
 - `lib/onboarding/accountSync.ts`: the copy written to the account
   (`user_metadata.purify_space`) holds what the reader is looking for
-  (`intent`, `intents`), the fast they keep (`fasting`), when it was saved and
-  the version of the questions answered (`v`). None of the three is written,
-  in any flag state. `FAITH_ANSWERS` names them.
-- `clearFaithAnswersFromAccount()` in the same file takes the three off a copy
+  (`intent`, `intents`), when it was saved and the version of the questions
+  answered (`v`), and nothing else. None of the four is written, in any flag
+  state. `FAITH_ANSWERS` names them.
+- `clearFaithAnswersFromAccount()` in the same file takes the four off a copy
   an account still holds from an older build, leaving the rest of the copy as
   it was. It runs at every sign-in and at a signed-in cold start
   (`components/profile/ProfilePrefsBridge.tsx`, beside the clergy request and
   on the same timer), sends nothing once they are gone, and is sent once when
   two ask in the same moment. It runs in Testers mode too: it writes none of
   a test's answers.
-- `lib/onboarding/state.ts`: `fillSpaceFromAccount` takes the picks and the
-  fast where the device has none, and never the three, even from an older
-  copy that still holds them. `accountAnsweredThisVersion` reads the version
-  on the copy alone.
+- `lib/onboarding/state.ts`: `fillSpaceFromAccount` takes the picks where the
+  device has none, and never the four, even from an older copy that still
+  holds them. `accountAnsweredThisVersion` reads the version on the copy
+  alone.
 - `components/onboarding/FirstRunGate.tsx`: an account's word no longer
   finishes the questions on a device (`markOnboardedSilently` is gone). A
   signed-in reader on a device that has not answered is asked: at the first
   question when the account is new or answered this version elsewhere, and
   by "We updated our onboarding" when it is from before, as it was.
+- `components/settings/SettingsClient.tsx`: changing the level or the fast in
+  Settings writes nothing to the account any more (there is nothing of them
+  to write); "what draws you" still saves the copy.
 - Nothing on a device is removed by any of this. Signing in removes nothing,
   and signing out removes nothing.
 
@@ -1793,25 +1802,29 @@ in an account either, so that device had no calendar to start from before.
 **What is not mine and is with Admin:** `profiles.depth` and `PROFILE_PREFS`
 (`lib/profile/preferences.ts`), the two migrations, the SQL he runs after the
 merge and again three weeks later for the accounts of readers who never open
-1.9, and the Privacy page's words.
+1.9 (which takes the fast off too), and the Privacy page's words.
 
-**Held by** `lib/onboarding/__tests__/faithAnswers.test.ts` (eleven tests;
-ten failed on the code before it) and `scripts/faith-answers-walk.mjs`, which
-walks the export with a stand-in for the account's server that keeps every
-word sent to it: a new phone of an account whose older copy says "practicing",
-"catholic" and "coming back" is asked the first question, has none of the
-three put on it, and the copy is cleared once with the rest as it was; the
-questions answered there save no word of the three; a phone that answered
-long ago, opened cold, clears the older copy and keeps its own answers; and a
-copy with none of the three has nothing sent.
+**Held by** `lib/onboarding/__tests__/faithAnswers.test.ts` (twelve tests;
+ten of the first eleven failed on the code before the first push, and six of
+the twelve on the code before the fast was added) and
+`scripts/faith-answers-walk.mjs`, which walks the export with a stand-in for
+the account's server that keeps every word sent to it: a new phone of an
+account whose older copy says "practicing", "catholic", "coming back" and a
+fast is asked the first question, has none of the four put on it, and the
+copy is cleared once with the rest as it was; the questions answered there
+save no word of the four; a phone that answered long ago, opened cold, clears
+the older copy and keeps its own answers, and its fast changed in Settings
+sends nothing; and a copy with none of the four has nothing sent.
 
 **Not run:** a real account on the main web. What a phone can show of this is
 nothing new (the apps asked on a second device already), so there is no row
 for it in `docs/PHONE-WALK.md`; the check on production is Admin's count of
-accounts whose metadata still names a level, before and after the merge.
+accounts whose metadata still names a level or a fast, before and after the
+merge.
 
 **Learn by heart's switch** (`LEARNED_WORDS_TRAVEL`, `lib/sync/keptMerge.ts`)
-is the other half of his yes that is mine. Admin places the clause on the
-Privacy page (the arbiter's word, 13:30 UTC); the switch goes on in a commit
-on top of that one, since `lib/sync/__tests__/learnedWordsTravel.test.ts`
-refuses the switch while the page lacks the clause.
+is the other half of his yes that touched my code. It went on in Admin's
+commit `035ea71bb`, together with the clause on the Privacy page in English
+and German, since `lib/sync/__tests__/learnedWordsTravel.test.ts` refuses
+either without the other. A quote's words and a reader's own now travel with
+what Purify Plus keeps.
