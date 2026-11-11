@@ -566,7 +566,7 @@ async function whole(page, min = 844) {
   await page.setViewportSize({ width: WIDTH, height: Math.max(min, h) });
 }
 
-async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true, inbox, circles = false, tellMe, profileCampaigns } = {}) {
+async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true, inbox, circles = false, tellMe, profileCampaigns, late = false } = {}) {
   if (WALK) return;
   if (ONLY && !ONLY.has(name.slice(0, 2))) return;
   const seed = {
@@ -580,7 +580,7 @@ async function shot(name, label, where, selector, { set = {}, prepare, signedIn 
   page.on("pageerror", (e) => errors.push(e.message));
   try {
     if (WIDTH !== 390) await page.setViewportSize({ width: WIDTH, height: 844 });
-    await answer(ctx, { mine, board, signedIn, parts, pictures, inbox, circles, tellMe, profileCampaigns });
+    await answer(ctx, { mine, board, signedIn, parts, pictures, inbox, circles, tellMe, profileCampaigns, late });
     await go(page, where);
     await settle(page);
     if (prepare) await prepare(page);
@@ -1035,6 +1035,23 @@ await shot("35-campaign-place", "a campaign's page with its place beside who sta
   prepare: async (page) => {
     await page.waitForSelector("[data-campaign-page] [data-campaign-place]", { timeout: 15000 });
     await whole(page);
+  },
+});
+
+// 43 A campaign a moderator read while its creator had the sheet open: Save keeps nothing, and the sheet says why.
+await shot("43-change-words-read", "a campaign a moderator has read in the meantime: its words stay, and the sheet says why", `/campaigns/detail?id=${HELD}`, "[role=dialog]:has([data-campaign-change])", {
+  mine: [HELD],
+  late: true,
+  prepare: async (page) => {
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    await page.evaluate(() => window.dispatchEvent(new Event("purify:campaign-menu-open")));
+    await page.locator("[role=dialog] button", { hasText: "Change the words" }).click();
+    await page.waitForSelector("[data-campaign-change] #campaign-change-title", { timeout: 8000 });
+    await page.fill("#campaign-change-title", "For Elias on his way home");
+    await page.locator("[data-campaign-change] button", { hasText: "Save" }).click();
+    await page.waitForSelector("[data-campaign-change-error]", { timeout: 8000 });
+    await settle(page, 600);
+    await page.evaluate(() => document.activeElement?.blur());
   },
 });
 
