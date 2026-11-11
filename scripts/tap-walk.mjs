@@ -95,6 +95,20 @@ if (SELF_TEST) argv.splice(argv.indexOf("--self-test"), 1);
 const OUT = SELF_TEST ? selfTestPage() : path.resolve(argv[0] ?? "out");
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}: run npm run build:android first`);
 
+/**
+ * A fail allowed by name and reason, the arbiter's to grant: the screens, the control, the
+ * verdict it lifts, and why. Printed with its reason on every walk, never silent.
+ */
+const ALLOWED = [
+  {
+    screens: /^\/saints\/[^/]+\/web\/$/,
+    control: /^button "[IVXL]+ /,
+    verdict: "moved",
+    why: "a saint's web lifts the chosen council above the sheet it opens, so the node stays in sight: the page following what opened (the arbiter, 2026-11-11)",
+  },
+  ...(SELF_TEST ? [{ screens: /^\/allowed\/$/, control: /^button "Add a note"$/, verdict: "moved", why: "the self-test's own allowance" }] : []),
+];
+
 /** What each of the self-test's cases must come to. */
 const EXPECT = {
   "/sticky/": { verdict: "pass", why: /^took the page/ },
@@ -104,6 +118,7 @@ const EXPECT = {
   "/back-held/": { verdict: "pass" },
   "/back-lost/": { verdict: "fail", why: /^back: Back returned with what was tapped/ },
   "/redrawn/": { verdict: "pass" },
+  "/allowed/": { verdict: "allowed" },
 };
 
 /** The self-test's page: one front door that draws a case by its address, as the shell answers every address with it. */
@@ -125,7 +140,7 @@ if (at === "/sticky/") {
   m.append(block(300), bar, block(900, "p1"), block(900, "p2"), block(900, "p3"), block(900));
 } else if (at === "/held/") {
   m.append(block(700, "top"), block(600), button("Choose", (b) => { document.getElementById("top")?.remove(); b.textContent = "Chosen"; }), block(2000));
-} else if (at === "/jump/") {
+} else if (at === "/jump/" || at === "/allowed/") {
   document.documentElement.style.overflowAnchor = "none"; document.body.style.overflowAnchor = "none";
   m.append(block(150), button("Add a note", (b) => b.before(block(60))), block(2000));
 } else if (at === "/pulled/") {
@@ -585,6 +600,15 @@ async function walkScreen(ctx, at, kept) {
         row.verdict = "skipped";
         row.why.push(`the walk could not tap it (${String(e).split("\n")[0].slice(0, 100)})`);
       }
+      // A fail allowed by name and reason: every fail line it carries is the allowed kind.
+      if (row.verdict === "fail") {
+        const fails = row.why.filter((w) => /^(nothing|moved|back|under|covered):/.test(w));
+        const grant = ALLOWED.find((a) => a.screens.test(at) && a.control.test(c.name) && fails.every((w) => w.startsWith(`${a.verdict}:`)));
+        if (grant) {
+          row.verdict = "allowed";
+          row.allowed = grant.why;
+        }
+      }
       if (row.verdict === "fail" && SHOTS) row.still = await still(page, at, c.i);
       result.controls.push(row);
     }
@@ -642,6 +666,7 @@ let tapped = 0;
 let failed = 0;
 const looks = [];
 const helds = [];
+const allowed = [];
 for (const r of results) {
   const fails = r.controls.filter((c) => c.verdict === "fail");
   tapped += r.controls.filter((c) => c.verdict !== "skipped").length;
@@ -653,6 +678,7 @@ for (const r of results) {
   }
   for (const c of r.controls) if (c.look) looks.push(`${r.at} ${c.name}: ${c.look}`);
   for (const c of r.controls) if (c.held) helds.push(`${r.at} ${c.name}: ${c.held}px`);
+  for (const c of r.controls) if (c.allowed) allowed.push(`${r.at} ${c.name}: ${c.why.filter((w) => /^(moved|back|under|covered|nothing):/.test(w)).join("; ")}; allowed: ${c.allowed}`);
 }
 console.log(`\n${results.length} screens, ${tapped} controls tapped, ${failed} failed`);
 const capped = results.filter((r) => r.found > r.controls.length);
@@ -660,6 +686,10 @@ if (capped.length) console.log(`more controls than the ${MAX} walked on ${capped
 if (looks.length) {
   console.log(`\nto look at by eye (${looks.length}):`);
   for (const l of looks) console.log(`  ${l}`);
+}
+if (allowed.length) {
+  console.log(`\nallowed by name and reason (${allowed.length}):`);
+  for (const l of allowed) console.log(`  ${l}`);
 }
 if (helds.length) {
   console.log(`\nheld under the finger by the browser's scroll anchoring alone (${helds.length}): Chrome and the Android app hold these; a browser that does not anchor would let them jump`);

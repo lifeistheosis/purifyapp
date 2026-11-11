@@ -125,6 +125,26 @@ screen with the mended walk.
   27 in 2026, not confirmed here in Apple's own notes), so an iPhone on an
   older iOS would see the chips leave the screen. Thirty-five.
 
+### Who has each, Part 1 (the arbiter, 2026-11-11 05:30 UTC)
+
+- **Fable Themes**: PathView, PlanPath, ChantsHome (its M4), SaintsBrowser
+  (its L7: the mend must not lean on Safari's scroll anchoring), Community's
+  "Read more" and "N replies", and FeaturedWork's covered link. Fasting was
+  mended after this export (8a5c3cf7); the second run checks it.
+- **Fable Theology**: ReadingRoom's and BibleMobileContinue's Back, and
+  PrayerBookContents' 21px.
+- **Updates 2**: "Continue with Google" (its M6): the error line keeps its
+  room, so nothing moves when Google fails.
+- **Admin**: What's new (at one level since 0c95f35f4: 18 taps, none failed).
+- **Allowed by name and reason**: SaintWebScreen's council node rising with
+  its sheet keeps the chosen node in sight above the sheet, which is the page
+  following what opened. The walk's ALLOWED list names it, and prints it with
+  its reason on every walk.
+
+The second run walks every screen with the mended walk on a selling export
+(`NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1 NEXT_PUBLIC_REVENUECAT_ANDROID_KEY=walk
+npm run build:android`), as he walks: a new reader with no Plus.
+
 ## Part 2: the guardrail walk
 
 ### Touch: under 44 to a finger
