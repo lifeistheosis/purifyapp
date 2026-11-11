@@ -36,6 +36,7 @@ Also:
 - "a month": the sharing limit's wording (three shared pages a month for everyone, without limit in Purify Plus) waits on his item 93
 - "every work has a cover": the covers pack for the reading room is not in yet
 - "Find a parish": the parish directory is not built
+- "prayer campaign": campaigns open for every reader only at R5c (OWNER-STEPS); until the step below brings their line into the 1.9 note, no piece names them (the arbiter, 2026-11-11)
 
 ## The notes
 
@@ -244,6 +245,14 @@ Purify 1.9 keeps a journal with you by the Church's day, free for everyone, open
 The Scriptures, the saints, the prayers and the calendar stay free.
 
 Tell us what you find, and what breaks. We read everything.
+~~~
+
+### Prayer campaigns join the note only when they open for every reader
+
+`step-campaigns-line` · A step · Ours, on your word · To do
+
+~~~text
+Only at R5c, in the push that opens campaigns for every reader, and not before: add this line to the 1.9 note, in data/changelog/entries.json and docs/plans/v1.9/patch-note-1.9.json, under the library: "Prayer campaigns: ask others to pray with you for someone, living or reposed, for the days you choose, up to forty. Those who join carry the name in their prayers, with a psalm if the campaign names one. Every campaign is read before it is public." It names no pictures while those are off in the store builds. Then Admin, Releases, Patch notes: Put them in the queue, and Accept. Then take "prayer campaign" off this drop's never list; from then the board, the letter and the cards may name them.
 ~~~
 
 ## The day a store has it

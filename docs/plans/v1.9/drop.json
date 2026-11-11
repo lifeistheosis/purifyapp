@@ -53,6 +53,10 @@
     {
       "word": "Find a parish",
       "why": "the parish directory is not built"
+    },
+    {
+      "word": "prayer campaign",
+      "why": "campaigns open for every reader only at R5c (OWNER-STEPS); until the step below brings their line into the 1.9 note, no piece names them (the arbiter, 2026-11-11)"
     }
   ],
   "figures": [
@@ -386,6 +390,14 @@
       "title": "Purify's own post in Community",
       "subject": "Purify 1.9 is here",
       "text": "Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.\n\n📓 Your journal, by the Church's day. Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.\n📖 Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.\n🌍 Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.\n🔎 Study a verse, in Purify Plus. Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.\n🗓️ New reading plans, in Purify Plus. John in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day.\n☦️ The Creed by council. The Symbol of Faith article by article, with the words the Council of Constantinople added lit.\n📜 Church history on Today. On the days an event of Orthodox History fell, it is on Today under the saint of the day.\n🌿 The Florilegium and the Thread. In Purify Plus, your gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps.\n🕯️ Candlelight and ambience. In Purify Plus, Candlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once.\n📱 Remember the verse on your home screen. A widget keeps your verse on your home screen, the same for every reader.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.\n\nTell us what you find, and what breaks. We read everything."
+    },
+    {
+      "id": "step-campaigns-line",
+      "channel": "step",
+      "moment": "web",
+      "title": "Prayer campaigns join the note only when they open for every reader",
+      "who": "us",
+      "text": "Only at R5c, in the push that opens campaigns for every reader, and not before: add this line to the 1.9 note, in data/changelog/entries.json and docs/plans/v1.9/patch-note-1.9.json, under the library: \"Prayer campaigns: ask others to pray with you for someone, living or reposed, for the days you choose, up to forty. Those who join carry the name in their prayers, with a psalm if the campaign names one. Every campaign is read before it is public.\" It names no pictures while those are off in the store builds. Then Admin, Releases, Patch notes: Put them in the queue, and Accept. Then take \"prayer campaign\" off this drop's never list; from then the board, the letter and the cards may name them."
     },
     {
       "id": "step-update-prompt",
