@@ -130,6 +130,8 @@ const EXPECT = {
   "/back-lost/": { verdict: "fail", why: /^back: Back returned with what was tapped/ },
   "/redrawn/": { verdict: "pass" },
   "/allowed/": { verdict: "allowed" },
+  "/dead/": { verdict: "fail", why: /^nothing:/ },
+  "/grows/": { verdict: "pass" },
 };
 
 /** The self-test's page: one front door that draws a case by its address, as the shell answers every address with it. */
@@ -164,6 +166,15 @@ if (at === "/sticky/") {
     if (!sessionStorage.getItem("went") || document.getElementById("shelf")) return;
     setTimeout(() => (at === "/back-held/" ? m.prepend(block(300, "shelf")) : scrollTo(0, 0)), 300);
   });
+} else if (at === "/dead/") {
+  // As the export does at a first touch: <html>'s style let go, and something put in the head.
+  document.documentElement.style.overflowAnchor = "none";
+  addEventListener("touchstart", () => { document.documentElement.style.removeProperty("overflow-anchor"); document.head.append(document.createElement("script")); }, { once: true, passive: true });
+  const dead = document.createElement("button"); dead.type = "button"; dead.textContent = "Does nothing";
+  m.append(block(300), dead, block(1200));
+} else if (at === "/grows/") {
+  const b = button("More", (x) => { x.style.paddingBottom = "48px"; x.textContent = "Less"; });
+  m.append(block(300), b, block(1200));
 } else if (at === "/redrawn/") {
   let b = button("Open", (x) => (x.textContent = "Opened"));
   m.append(block(1500), b, block(1500));
@@ -316,6 +327,34 @@ async function still(page, at, i) {
   }
 }
 
+/** A first touch where no control stands (an edge of the page's own ground), then quiet: no change for 450ms, up to 3s. */
+async function firstTouch(page, cdp) {
+  const spot = await page.evaluate((controls) => {
+    const tries = [[3, 0.5], [387, 0.5], [3, 0.3], [387, 0.3], [3, 0.7], [387, 0.7], [195, 0.5]];
+    for (const [x, f] of tries) {
+      const y = Math.round(innerHeight * f);
+      const hit = document.elementFromPoint(x, y);
+      if (hit && !hit.closest(controls) && !hit.closest("input, textarea, select, [contenteditable], [role=dialog], [data-screen-edge]")) return { x, y };
+    }
+    return null;
+  }, "button, a[href], summary, label, [role=button], [role=link], [role=tab], [role=radio], [role=checkbox], [role=switch], [role=menuitem], [role=option], [tabindex]:not([tabindex='-1'])");
+  if (spot) await tapAt(cdp, spot.x, spot.y);
+  await page.evaluate(async () => {
+    let n = 0;
+    const seen = new MutationObserver((list) => (n += list.length));
+    seen.observe(document.documentElement, { subtree: true, childList: true, attributes: true, characterData: true });
+    const t0 = performance.now();
+    let last = -1;
+    let quiet = 0;
+    while (performance.now() - t0 < 3000 && quiet < 3) {
+      await new Promise((r) => setTimeout(r, 150));
+      quiet = n === last ? quiet + 1 : 0;
+      last = n;
+    }
+    seen.disconnect();
+  });
+}
+
 /**
  * Scroll a control into reach and wait until it stands still (two looks 100ms apart within a
  * pixel, up to two seconds). A control whose node the page replaced as it was reached (the same
@@ -426,6 +465,13 @@ async function walkScreen(ctx, at, kept) {
           result.controls.push(row);
           continue;
         }
+        // A reader has touched the screen before the control they tap, and a freshly started
+        // page does work at its first touch (on the export: <html>'s style let go, its
+        // launch mark set again, code loaded into the head). Judged on a first touch, no tap
+        // could ever change nothing, which is how the first run's 1,966 taps found no dead
+        // control (Fable Theology's find, 2026-11-11). So the page is touched once where no
+        // control stands, and let fall quiet, before the tap that is judged.
+        await firstTouch(page, cdp);
         const before = await page.evaluate(snapshot);
         // Where the reader stands in the history, to tell a step forward from a step back or a
         // changed address (a tab that replaces it), which Back is not asked to undo.
@@ -453,7 +499,7 @@ async function walkScreen(ctx, at, kept) {
               const r = el.getBoundingClientRect();
               let stuck = false;
               for (let q = el; q && q !== document.body && !stuck; q = q.parentElement) stuck = /^(fixed|sticky)$/.test(getComputedStyle(q).position);
-              return { x: r.x + r.width / 2, y: r.y + r.height / 2, sx: scrollX, sy: scrollY, tall: innerHeight, long: document.documentElement.scrollHeight, stuck };
+              return { x: r.x + r.width / 2, y: r.y + r.height / 2, top: r.top, bottom: r.bottom, left: r.left, right: r.right, sx: scrollX, sy: scrollY, tall: innerHeight, long: document.documentElement.scrollHeight, stuck };
             }, c.i)
             .catch(() => null);
         const start = await where();
@@ -474,8 +520,13 @@ async function walkScreen(ctx, at, kept) {
           await page.waitForTimeout(60);
           const w = await where();
           if (!w || !start || page.url() !== before.href) continue;
-          const onScreen = Math.max(Math.abs(w.x - start.x), Math.abs(w.y - start.y));
-          const onPage = Math.max(Math.abs(w.x + w.sx - (start.x + start.sx)), Math.abs(w.y + w.sy - (start.y + start.sy)));
+          // By its top, middle and foot (and its two sides): one of them still means it grew, or
+          // a press scaled it in place, and the finger is on it as before (the prayer book's
+          // chapter, whose title grows 48 to 90px as it shuts: Fable Theology, 2026-11-11).
+          const least = (a, b, keys) => Math.min(...keys.map((k) => Math.abs(a[k] - b[k])));
+          const onScreen = Math.max(least(w, start, ["left", "x", "right"]), least(w, start, ["top", "y", "bottom"]));
+          const page_ = (v) => ({ left: v.left + v.sx, x: v.x + v.sx, right: v.right + v.sx, top: v.top + v.sy, y: v.y + v.sy, bottom: v.bottom + v.sy });
+          const onPage = Math.max(least(page_(w), page_(start), ["left", "x", "right"]), least(page_(w), page_(start), ["top", "y", "bottom"]));
           const scrolledBy = Math.max(Math.abs(w.sx - start.sx), Math.abs(w.sy - start.sy));
           const atEnd = w.sy + w.tall >= w.long - 2;
           const pulledUp = w.long < start.long && w.sy < start.sy && atEnd;
