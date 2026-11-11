@@ -6,7 +6,7 @@ import bundled from "@/data/listen/index.json";
 import { streamedUrl } from "@/lib/media/streamed";
 import { isNativeClient } from "@/lib/platform/native";
 
-import { parseListenId, type ListenRef, type ListenTimings } from "./texts";
+import { listenSteps, parseListenId, type ListenRef, type ListenTimings } from "./texts";
 
 /**
  * Which texts have a recording, and where each one is (1.9, ./texts.ts).
@@ -66,6 +66,11 @@ function askTheWebsite(): void {
 
 export function hasListen(id: string): boolean {
   return recorded.has(id);
+}
+
+/** The recordings either side of one, among those the list names now. */
+export function stepsOf(id: string): { previous: string | null; next: string | null } {
+  return listenSteps(id, recorded);
 }
 
 /** hasListen for a component, which draws again once the website's list names the text. */

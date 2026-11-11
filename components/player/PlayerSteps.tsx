@@ -8,6 +8,8 @@ import { chantTitleKey } from "@/lib/chants/names";
 import { playChant } from "@/lib/chants/play";
 import type { ChantIndexRow, ChantIndexVariant } from "@/lib/chants/types";
 import { useWordsPrefs } from "@/lib/chants/wordsPrefs";
+import { startListening } from "@/lib/listen/play";
+import { stepsOf } from "@/lib/listen/recordings";
 import { loadChantIndex } from "@/lib/player/chants";
 import { chapterSteps, chantVersionOf, playingOf, versionSteps, type ChapterRef } from "@/lib/player/steps";
 import { skipBy, toggle, type AudioSnapshot } from "@/lib/prayers/persistentAudioStore";
@@ -73,6 +75,16 @@ function useSteps(audio: AudioSnapshot): { previous: Step; next: Step } {
     return {
       previous: previous ? { label: t("bible.previousTargetAria", { book: name(previous), chapter: previous.chapter }), go: read(previous) } : null,
       next: next ? { label: t("bible.nextTargetAria", { book: name(next), chapter: next.chapter }), go: read(next) } : null,
+    };
+  }
+
+  // Another text read aloud (1.9): the section or the part before and after, where it has a recording.
+  if (playing?.kind === "text") {
+    const { previous, next } = stepsOf(playing.id);
+    const number = (id: string) => id.slice(id.lastIndexOf("/") + 1);
+    return {
+      previous: previous ? { label: t("player.previous", { name: number(previous) }), go: () => void startListening(previous) } : null,
+      next: next ? { label: t("player.next", { name: number(next) }), go: () => void startListening(next) } : null,
     };
   }
 

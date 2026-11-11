@@ -62,6 +62,13 @@ export type ListenBatch = {
 export type ListenTimings = {
   voice: string;
   seconds: number;
+  /**
+   * What the recording is called and whose words it reads, copied from its
+   * batch when the list is written (scripts/listen-index.mjs), so the player
+   * can name a recording it steps to from any page.
+   */
+  title?: string;
+  by?: string;
   blocks: { at?: { sectionN: number; paragraphIdx: number }; s: [number, number][] }[];
 };
 
@@ -96,6 +103,27 @@ export function parseListenId(id: string): ListenRef | null {
     return n === null ? null : { kind, slug, doc: parts[2], n };
   }
   return null;
+}
+
+/**
+ * The recordings either side of one, among those that exist: the sections of
+ * the same document, or the parts of the same study, by their numbers. A
+ * life and an event's account stand alone.
+ */
+export function listenSteps(id: string, recorded: Iterable<string>): { previous: string | null; next: string | null } {
+  const ref = parseListenId(id);
+  if (!ref || ref.kind === "life" || ref.kind === "history") return { previous: null, next: null };
+  const prefix = id.slice(0, id.lastIndexOf("/") + 1);
+  const numbers: number[] = [];
+  for (const other of recorded) {
+    if (!other.startsWith(prefix)) continue;
+    const there = parseListenId(other);
+    if (there && "n" in there) numbers.push(there.n);
+  }
+  numbers.sort((a, b) => a - b);
+  const before = numbers.filter((n) => n < ref.n).pop();
+  const after = numbers.find((n) => n > ref.n);
+  return { previous: before === undefined ? null : `${prefix}${before}`, next: after === undefined ? null : `${prefix}${after}` };
 }
 
 /** The page a recording is read on, at the part it reads. */

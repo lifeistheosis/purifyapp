@@ -78,15 +78,22 @@ function watchPlaces(): void {
   });
 }
 
-export async function startListening(id: string, about: { title: string; by: string; art?: string | null; artFallback?: string | null }): Promise<boolean> {
+/**
+ * `about` is what the page calls it; a recording stepped to from the player,
+ * on any page, is named by its own timings (scripts/listen-index.mjs writes
+ * the name into them).
+ */
+export async function startListening(id: string, about?: { title: string; by: string; art?: string | null; artFallback?: string | null }): Promise<boolean> {
   const ref = parseListenId(id);
   if (!ref) return false;
   const timings = await listenTimings(id);
+  const title = about?.title ?? timings?.title;
+  if (!title) return false;
   setTrack(listenRecording(id), {
-    title: about.title,
-    artist: about.by,
-    art: about.art ?? undefined,
-    artFallback: about.artFallback ?? undefined,
+    title,
+    artist: about?.by ?? timings?.by,
+    art: about?.art ?? undefined,
+    artFallback: about?.artFallback ?? undefined,
     captions: timings ? captionsFromPage(ref, timings) : undefined,
     rate: readSpeed(),
   });

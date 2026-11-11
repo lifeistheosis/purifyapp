@@ -28,7 +28,13 @@ for (const { batches } of await allBatches()) {
     if (!fs.existsSync(file)) continue;
     let why;
     try {
-      why = timingsFit(batch, JSON.parse(fs.readFileSync(file, "utf8")));
+      const timings = JSON.parse(fs.readFileSync(file, "utf8"));
+      why = timingsFit(batch, timings);
+      // The recording's name and whose words it reads go into its timings, so
+      // the player can name a recording it steps to from any page.
+      if (!why && (timings.title !== batch.title || timings.by !== batch.by)) {
+        fs.writeFileSync(file, `${JSON.stringify({ ...timings, title: batch.title, by: batch.by })}\n`);
+      }
     } catch (e) {
       why = `not timings: ${String(e?.message ?? e).split("\n")[0]}`;
     }

@@ -10,7 +10,7 @@ import { describe, expect, it } from "vitest";
 import { playingOf, readHref, shareHref } from "@/lib/player/steps";
 
 import { listenOfSrc, listenRecording, readingAt } from "../recordings";
-import type { ListenTimings } from "../texts";
+import { listenSteps, type ListenTimings } from "../texts";
 
 const read = (rel: string) => fs.readFileSync(path.join(process.cwd(), rel), "utf8");
 
@@ -85,3 +85,32 @@ describe("Listen on the pages", () => {
     expect(play).toContain("const at = startOf(placeKey(id), 0);");
   });
 });
+
+describe("previous and next", () => {
+  const recorded = ["council/first-nicaea/the-twenty-canons/2", "council/first-nicaea/the-twenty-canons/3", "council/first-nicaea/the-twenty-canons/7", "council/first-nicaea/the-synodal-letter/3", "theology/papacy/1", "theology/papacy/2", "life/anthony-the-great", "history/pentecost"];
+
+  it("are the sections of the same document that have a recording, by their numbers", () => {
+    expect(listenSteps("council/first-nicaea/the-twenty-canons/3", recorded)).toEqual({ previous: "council/first-nicaea/the-twenty-canons/2", next: "council/first-nicaea/the-twenty-canons/7" });
+    expect(listenSteps("council/first-nicaea/the-twenty-canons/2", recorded)).toEqual({ previous: null, next: "council/first-nicaea/the-twenty-canons/3" });
+    expect(listenSteps("council/first-nicaea/the-twenty-canons/7", recorded).next).toBeNull();
+    expect(listenSteps("theology/papacy/1", recorded)).toEqual({ previous: null, next: "theology/papacy/2" });
+  });
+
+  it("never step out of a document into another, and a life or an event stands alone", () => {
+    expect(listenSteps("council/first-nicaea/the-synodal-letter/3", recorded)).toEqual({ previous: null, next: null });
+    expect(listenSteps("life/anthony-the-great", recorded)).toEqual({ previous: null, next: null });
+    expect(listenSteps("history/pentecost", recorded)).toEqual({ previous: null, next: null });
+  });
+
+  it("are in the player, and a recording that ends rolls on into the next", () => {
+    const steps = read("components/player/PlayerSteps.tsx");
+    expect(steps).toContain('if (playing?.kind === "text") {');
+    expect(steps).toContain("go: () => void startListening(next)");
+    const here = read("components/reading/ListenHere.tsx");
+    expect(here).toContain("const { next } = stepsOf(id);");
+    expect(here).toContain("if (began) router.push(listenHref(ref));");
+    // A recording stepped to from any page is named by its own timings.
+    expect(read("scripts/listen-index.mjs")).toContain("title: batch.title, by: batch.by");
+  });
+});
+

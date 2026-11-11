@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -9,8 +10,8 @@ import { Headphones } from "@/components/ui/icons/Headphones";
 import { Pause } from "@/components/ui/icons/Pause";
 import { Play } from "@/components/ui/icons/Play";
 import { sentenceOnPage, startListening } from "@/lib/listen/play";
-import { listenOfSrc, listenTimings, readingAt, useHasListen } from "@/lib/listen/recordings";
-import { parseListenId, type ListenTimings } from "@/lib/listen/texts";
+import { listenOfSrc, listenTimings, readingAt, stepsOf, useHasListen } from "@/lib/listen/recordings";
+import { listenHref, parseListenId, type ListenTimings } from "@/lib/listen/texts";
 import { lineBoxes, type Box } from "@/lib/marks/dom";
 import { currentTimeNow, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 import { goToReadingPlace, inReadingZone, visibleBand } from "@/lib/ui/readingPlace";
@@ -42,6 +43,22 @@ export function ListenHere({ id, title, by, art, className }: { id: string; titl
   const loaded = listenOfSrc(audio.src)?.id === id;
   const playing = loaded && audio.playing;
   const [busy, setBusy] = useState(false);
+  const router = useRouter();
+
+  // The recording ended at its last sentence: on into the next section or
+  // part, if it has a recording, as a chapter rolls on into the next
+  // (components/bible/ReadAloud.tsx). The page opens that part, so the reader
+  // sees what is read.
+  const ended = loaded && !audio.playing && audio.duration > 0 && audio.currentTime >= audio.duration - 0.3;
+  useEffect(() => {
+    if (!ended) return;
+    const { next } = stepsOf(id);
+    const ref = next ? parseListenId(next) : null;
+    if (!next || !ref) return;
+    void startListening(next).then((began) => {
+      if (began) router.push(listenHref(ref));
+    });
+  }, [ended, id, router]);
 
   if (!available) return null;
 
