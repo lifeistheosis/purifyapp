@@ -190,7 +190,7 @@ export function MapAtlas({
       <div ref={year} className="atlas-year" aria-hidden="true">
         <span ref={odo} className="atlas-odo">
           {[3, 2, 1, 0].map((k) => (
-            <span key={k} className="atlas-odo-col">
+            <span key={k} className="atlas-odo-col" data-mock-allow="mirror" data-mock-why="a year's digits keep their order in Arabic">
               <span className="atlas-odo-strip">
                 {DIGITS.map((d, i) => (
                   <span key={i}>{d}</span>
@@ -211,7 +211,7 @@ export function MapAtlas({
         <div className="atlas-head">
           <svg ref={mini} className="atlas-mini" aria-hidden="true" />
           <button ref={playButton} type="button" className="atlas-play tap-press" aria-label={t("prayers.play")}>
-            <Play size={18} data-icon="play" />
+            <Play size={18} data-icon="play" centered />
             <Pause size={18} data-icon="pause" />
           </button>
         </div>

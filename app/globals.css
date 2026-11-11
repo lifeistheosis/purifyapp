@@ -9863,9 +9863,12 @@ html[data-reading-mode="parchment"] .history-saved-lit {
  pointer-events: none;
 }
 /* The year: each digit a wheel of 0 to 9, three times over, turned to its
-   digit (atlasEngine.ts, setYear). Lora's lining figures, a soft white glow. */
+   digit (atlasEngine.ts, setYear). Lora's lining figures, a soft white glow.
+   As wide as its digits, so in Arabic they stand at the start, as the era's
+   name under them does, and still read left to right. */
 .atlas-odo {
  display: flex;
+ width: max-content;
  height: 1em;
  overflow: hidden;
  direction: ltr;
@@ -9979,9 +9982,6 @@ html[data-reading-mode="parchment"] .history-saved-lit {
  background: #fff;
  color: #101013;
  box-shadow: 0 0 0 5px rgb(255 255 255 / 0.06), 0 0 22px rgb(255 255 255 / 0.26), 0 6px 14px rgb(0 0 0 / 0.5);
-}
-.atlas-play [data-icon="play"] {
- translate: 1px 0;
 }
 .atlas-play [data-icon="pause"],
 .atlas-play[data-playing] [data-icon="play"] {
