@@ -145,8 +145,14 @@ function look(arg) {
     }
     return null;
   };
+  // The words an element holds. innerText is empty for what the browser has
+  // not drawn yet (a card under content-visibility: auto, off the screen), so
+  // a name or a letter there is read from textContent instead (Fable Themes'
+  // find on /community/, 2026-11-11: authors' names read as nameless buttons,
+  // a reader's disc with its letter as an empty frame).
+  const textOf = (el) => (el.innerText || "").trim() || (el.textContent || "").trim();
   const nameOf = (el) => {
-    const words = (el.getAttribute("aria-label") || el.innerText || el.getAttribute("placeholder") || "").replace(/\s+/g, " ").trim();
+    const words = (el.getAttribute("aria-label") || textOf(el) || el.getAttribute("placeholder") || "").replace(/\s+/g, " ").trim();
     return `${el.tagName.toLowerCase()}${words ? ` "${words.slice(0, 32)}"` : ""}`;
   };
   const opacityOf = (el) => {
@@ -215,7 +221,7 @@ function look(arg) {
     const cs = getComputedStyle(e);
     const width = (s) => (cs[`border${s}Style`] === "none" ? 0 : parseFloat(cs[`border${s}Width`]));
     const [top, right, bottom, left] = ["Top", "Right", "Bottom", "Left"].map(width);
-    const oneSide = (left > 0) !== (right > 0) && top === 0 && bottom === 0 && (e.innerText || "").trim().length > 0;
+    const oneSide = (left > 0) !== (right > 0) && top === 0 && bottom === 0 && textOf(e).length > 0;
     let bar = false;
     const r = e.getBoundingClientRect();
     const parent = e.parentElement?.getBoundingClientRect();
@@ -436,7 +442,7 @@ function look(arg) {
     const ground = rgba(cs.backgroundColor)[3] >= 0.05;
     const edge = ["Top", "Right", "Bottom", "Left"].some((side) => cs[`border${side}Style`] !== "none" && parseFloat(cs[`border${side}Width`]) > 0);
     if (!ground && !edge) continue;
-    if ((e.innerText || "").trim() || e.getAttribute("aria-label")) continue;
+    if (textOf(e) || e.getAttribute("aria-label")) continue;
     const pictured = (n) => {
       const c = getComputedStyle(n);
       if (c.backgroundImage && c.backgroundImage !== "none") return true;
@@ -448,7 +454,7 @@ function look(arg) {
     if (pictured(e)) continue;
     const inside = [...e.querySelectorAll("*")].some((n) => {
       const q = n.getBoundingClientRect();
-      return q.width * q.height >= r.width * r.height * 0.1 && (n.matches(FILLED) || pictured(n) || (n.innerText || "").trim());
+      return q.width * q.height >= r.width * r.height * 0.1 && (n.matches(FILLED) || pictured(n) || textOf(n));
     });
     if (inside) continue;
     pictures.push({ name: nameOf(e), how: `an empty round frame, ${Math.round(r.width)}px across, with nothing in it`, allow: allowance(e, "picture") });
@@ -842,6 +848,7 @@ const FIXTURES = `
   </span>
   <span class="mt-3 block h-12 w-12 animate-pulse rounded-full bg-paper/10"></span>
   <span class="relative mt-3 block h-14 w-14 overflow-hidden rounded-[18px] bg-night-soft"><span aria-hidden="true" class="pointer-events-none absolute -end-6 -top-8 h-32 w-32 rounded-full bg-paper/15 blur-2xl"></span></span>
+  <div style="content-visibility:auto;contain-intrinsic-size:auto 80px;margin-top:2400px"><span class="flex h-10 w-10 items-center justify-center rounded-full bg-night-soft font-sans text-detail font-semibold text-paper">M</span><button type="button" class="mt-1 min-h-11 font-sans text-detail text-paper">Reader M</button></div>
   <blockquote lang="en" data-mock-allow="emdash" data-mock-why="a Father's own words, as his edition prints them" class="mt-3 font-serif text-body italic leading-[1.6] text-paper/85">Chapter I.\u2014Introduction. Reason for writing</blockquote>
 </div>`;
 

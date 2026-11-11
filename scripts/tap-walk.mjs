@@ -130,7 +130,8 @@ function markControls(max) {
       if (el.getAttribute("target") === "_blank") continue;
     }
     seen.add(el);
-    const words = (el.getAttribute("aria-label") || el.innerText || el.getAttribute("title") || "").replace(/\s+/g, " ").trim();
+    // innerText is empty for what the browser has not drawn yet (content-visibility: auto), so textContent then.
+    const words = (el.getAttribute("aria-label") || el.innerText.trim() || el.textContent || el.getAttribute("title") || "").replace(/\s+/g, " ").trim();
     out.push({ el, name: `${el.tagName.toLowerCase()}${el.getAttribute("role") ? `[${el.getAttribute("role")}]` : ""}${words ? ` "${words.slice(0, 40)}"` : ""}`, href });
   }
   // Every control is counted, the first `max` in reading order are walked: the record says how many were left.
