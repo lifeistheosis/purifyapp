@@ -7396,7 +7396,9 @@ await section(48, async () => {
   const min = (n) => en["prayers.approxMin.other"].replace("{count}", String(n));
   const NINE_FORTY_ONE = new Date("2026-10-31T09:41:00");
   const TILES = ["/prayers/hours", "/prayers/akathists", "/prayers/learning", "/prayers/personal"];
-  const ICONS = ["/icons/prayer/pentecost.jpg", "/icons/prayer/theotokos-of-vladimir.jpg", "/icons/prayer/three-hierarchs.v2.jpg", "/icons/prayer/christ-pantocrator.v2.jpg"];
+  // Your rule's tile wears the half its page will open on (1.9, lib/prayers/myRule.ts, openingPart): at 9:41, with
+  // no rule kept yet, the morning half, under the Anastasis. From five in the afternoon it is the Pantocrator.
+  const ICONS = ["/icons/prayer/pentecost.jpg", "/icons/prayer/theotokos-of-vladimir.jpg", "/icons/prayer/three-hierarchs.v2.jpg", "/icons/prayer/anastasis.jpg"];
   const opened = async (page) => {
     await go(page, "/prayers/");
     // The Hours are lit once the page has read the clock.
@@ -7501,7 +7503,7 @@ await section(48, async () => {
       `${w}: at 9:41 the Hours say "${en["prayers.timeline.now"]} · ${en["prayers.rule.third-hour.title"]}", and Your rule has the You tab's line (${t.map((x) => x.line).join(" | ")})`,
     );
     must(t.map((x) => x.lit).join(" ") === "true false false false" && /rgba\(255, 255, 255, 0\.2\)/.test(t[0]?.shadow ?? ""), `${w}: the Hours alone are lit, ringed and glowing white (${t[0]?.shadow ?? "none"})`);
-    must(t.every((x, i) => x.src === ICONS[i] && x.arrived), `${w}: each wears its icon, the Hours the Third Hour's Pentecost, every one arrived (${t.map((x) => `${x.src}${x.arrived ? "" : " not arrived"}`).join(", ")})`);
+    must(t.every((x, i) => x.src === ICONS[i] && x.arrived), `${w}: each wears its icon, the Hours the Third Hour's Pentecost, Your rule its morning half's Anastasis, every one arrived (${t.map((x) => `${x.src}${x.arrived ? "" : " not arrived"}`).join(", ")})`);
     must(t.every((x) => x.past3x !== null && x.past3x <= 1.4), `${w}: no icon drawn more than 1.4 times past its own pixels on a phone at 3x (${t.map((x) => x.past3x?.toFixed(2)).join(", ")})`);
     if (size.width === 390) await page.screenshot({ path: path.join(SHOTS, "prayers-practices-390.png") });
 

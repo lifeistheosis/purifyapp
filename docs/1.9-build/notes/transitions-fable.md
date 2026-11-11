@@ -155,10 +155,77 @@ closed; the other two stand:
   book now opens on its cover ("A book opens on its cover", below).
 - **Your rule.** Its head is another picture, with the title over it. Tried:
   the tile's Christ changed into the head's fresco on the way and covered the
-  title until the change was over.
+  title until the change was over. **Closed 2026-11-11** on the arbiter's
+  call ("let Your rule's tile wear the half the page will open on (morning or
+  evening), so one picture travels"), built by the Fable onboarding chat
+  (P1; "Your rule's tile", below).
 - **A saint with a wide picture at the head.** The same: another picture,
   with the name over its foot. A saint whose page opens on his icon (most of
   them) does carry.
+
+### Your rule's tile (P1, 2026-11-11, the Fable onboarding chat)
+
+The arbiter's call of 02:39 UTC: "let Your rule's tile wear the half the page
+will open on (morning or evening), so one picture travels."
+
+- **The tile wears the half.** The Anastasis in the morning half, Christ
+  Pantocrator in the evening half, in the cut his sheet drew for it
+  (r3-26 A), so in the evening the tile is as it was. Which half is one
+  function, `openingPart` (`lib/prayers/myRule.ts`), read by the tile
+  (`components/mobile/PrayersMobile.tsx`) and by the page
+  (`components/prayers/mine/MyRuleBuilder.tsx`): the half the address names,
+  else the hour's if it has prayers, else the first that has any, else the
+  hour's. The hour and the rule are the device's, so until Prayers wakes the
+  tile wears no icon yet, as the Hours' tile does not; it is never drawn with
+  one icon and then given another.
+- **One name.** The tile's picture and the head's wear `rule:morning` or
+  `rule:evening` (`ruleCarry`, `lib/prayers/serviceArt.ts`), a name of its
+  own kind and not the picture's address, because the head's Pantocrator is
+  the same painting in its wide cut, another file. `PictureTile` takes the
+  name as an optional `carry`; every other tile travels under its picture's
+  address as before.
+- **The page knows its half at its first drawing.** It learned it in a
+  layout effect, one drawing after it committed, and the bridge looks for
+  what takes the picture as the page commits (`carryIn`): it found nothing,
+  and route-motion said "its sides drawn: old". The half is now read once on
+  the device at the first drawing of a page reached inside the app (the idiom
+  of `lib/useMounted.ts`). A page loaded whole is still drawn once with
+  neither part lit, as before. Nothing in `lib/ui/routeMotion.ts` changed.
+- **What the film showed, and the three mends** (all in the Your rule block of
+  `app/globals.css`, none in the page-switch rules):
+  1. The picture covered the name, its line and Pray my rule until it landed.
+     They stand on the picture's lower half, and a picture in flight is drawn
+     over the page. While the head's box wears the name they are their own
+     part of the change (`view-transition-name: rule-words`): arriving, they
+     come up over the picture as it lands, once (180ms from 150ms); leaving,
+     they go before it does.
+  2. The head's shade and its melt appeared at once at the end. The whole box
+     takes the name now (`data-carry-into` on `.rule-head-picture`, not on
+     the icon), so it arrives as it then stands.
+  3. With the box named, the icon inside it would still fade in as a saint's
+     does, under the picture arriving on it. It is there at once while the
+     box wears the name and after it has landed (`[data-carried-in]`,
+     `[data-landed]`), or the fade would begin again when the name is given
+     back. The switch still crosses the two halves by the icon's transition.
+  The picture travels with no plate corners
+  (`::view-transition-old/new(carried.carried-rule)`): the tile is cut to its
+  own corners already and the head has none.
+- **If the reader switches halves on the page and goes Back**, the head wears
+  the other half's name and nothing travels: the page's own switch stands, by
+  the rule above.
+- **Seen and left as it is**: on the way Back the returning picture covers
+  the tile's own name ("Your rule", and its line) until it lands, as it does
+  for the other three Practices tiles, which already travelled. That is how a
+  `PictureTile` travels and is not this job's to change.
+- **Held by**: `lib/prayers/__tests__/myRule.test.ts` (the half),
+  `prayersHome.test.ts` (the tile, the one name, the three mends),
+  `yourRulePage.test.ts` (the first drawing), `lib/ui/__tests__/
+  routeMotion.test.ts` (the attributes), and four walks more in
+  `scripts/route-motion.mjs`: each half forward (carried, the head taking
+  exactly one name, its icon whole, one name on the page, the words pictured
+  apart) and back (carried, the words pictured apart). `scripts/
+  export-walk.mjs`, section 48, expects the Anastasis on the tile at 9:41.
+  Stills: `docs/1.9-build/notes/build-93/p1-rule-tile/`.
 
 ### The check
 
