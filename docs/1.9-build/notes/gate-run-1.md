@@ -426,13 +426,16 @@ the second run; it has 27 since Updates 2's pushes of 14:00 to 14:35 UTC,
 in which St Alexander of Alexandria, St Isidora of Tabenna, St Adrian and
 St Theodosius came to wear old pictures, and St Symeon the New Theologian,
 St Mark of Ephesus and St Xenia of Petersburg went to the permissions list.
-26 wait on a permission (`docs/1.9-build/ICON-PERMISSIONS.md`), with a
-letter drafted for each in `docs/1.9-build/PERMISSION-LETTERS.md` for him to
-send (19 letters), but four: St Gabriel of Georgia and St Lazarus of Mount
-Galesion have no address yet, Sts Zacchaeus and Alphaeus no icon, and St
-Mark of Ephesus takes the Eleon workshop's own free icon by his word of
-about 14:54 UTC (Updates 2 places it, and he leaves the list). One is still
-searched for a free picture: the Prophet Micaiah (the January chat).
+By 16:10 UTC it is 25, all on a permission: St Mark of Ephesus wears the
+Eleon workshop's own free icon by his word of about 14:54 (3ee67b401), St
+Victorinus Brollo's fresco of 1886, in the public domain (97e5102eb), and
+the Prophet Micaiah, the one still searched, Luyken's scene of his witness
+(608c6c7b1); St Hermione of Ephesus went to permission when her page's
+icon, with no source, came down (d328d1b6a). A letter is drafted for each in
+`docs/1.9-build/PERMISSION-LETTERS.md` for him to send (19 letters; 12 and 20
+taken out, with why, and 21 for St Hermione, in Greek), but three: St
+Gabriel of Georgia and St Lazarus of Mount Galesion have no address yet, and
+Sts Zacchaeus and Alphaeus no icon.
 Run again at 14:43 UTC on the pulled tree: passes. A work without a cover:
 held by `lib/reading/__tests__/coverArt.test.ts`, which passes.
 

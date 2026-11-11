@@ -641,38 +641,12 @@ No letter yet, and why:
 > Purify Orthodox LLC
 > legal@purifyapp.net
 
-### 12. The Archdiocese of Maribor: St Victorinus of Pettau
+### 12. Not sent: the Archdiocese of Maribor, for St Victorinus of Pettau
 
-- **To:** the Archdiocese of Maribor (Nadškofija Maribor). Its address is to
-  be read from its own site before the letter goes: not confirmed in the
-  list.
-- **In:** English (Slovenian or English, the list says).
-
-> Your Excellency, Reverend Fathers,
->
-> I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
-> Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
-> Each saint's life in Purify is shown with an icon of the saint, and the
-> lives and their icons are free for every reader. Purify also offers an
-> optional subscription for some reading tools; the lives of the saints and
-> their icons are never part of it.
->
-> St Victorinus of Pettau, bishop and martyr of Poetovio, is one of the few
-> saints for whom we have found no picture at all. May we ask what is the
-> oldest picture of him kept at Ptuj, who made it and when, and whether the
-> Archdiocese would allow us a photograph of it, with written leave to show
-> it beside his life?
->
-> We would show it only where a reader meets the saint, in the app and on our
-> website, with the credit you give us, and never in advertising, in store
-> listings or in anything sold. If you ever asked us to, we would take it
-> down at once.
->
-> With thanks,
->
-> Edgar, the Purify Team
-> Purify Orthodox LLC
-> legal@purifyapp.net
+Taken out on 2026-11-11 at the arbiter's word: St Victorinus wears Brollo's
+fresco of 1886 now, which is in the public domain (Updates 2, 97e5102eb), so
+no permission is asked. The number is kept, so no letter after it changes
+its own.
 
 ---
 
@@ -800,7 +774,7 @@ The Greek, in the same words:
 
 ---
 
-## Part three: three more icons (Updates 2's rows of 2026-11-11, 14:33 UTC)
+## Part three: icons added to the list on 2026-11-11, after the first letters
 
 Added to `docs/1.9-build/ICON-PERMISSIONS.md` after the first list, for
 saints who had none. Numbered on from part two, so no letter above changes
@@ -883,3 +857,72 @@ it), so that letter was taken out.
 > Purify Orthodox LLC
 > legal@purifyapp.net
 
+### 21. The Holy Metropolis of Chios, Psara and Oinousses: St Hermione of Ephesus
+
+- **To:** the Holy Metropolis of Chios, Psara and Oinousses (imchiou.gr), for
+  the Church of St Hermione at Thymiana on Chios. Its address is to be read
+  from its own site before the letter goes: not confirmed in the list.
+- **In:** Greek.
+- **Why:** her page's icon, contemporary and with no source, painter or leave
+  recorded, was taken down on 2026-11-11 (d328d1b6a); the one old picture
+  found, the Menologion of Basil II's, shows no figure of her alone and
+  carries the Vatican Library's mark.
+
+**English**
+
+> Your Eminence, your blessing.
+>
+> I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
+> Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
+> Each saint's life in Purify is shown with an icon of the saint, and the
+> lives and their icons are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their icons are never part of it.
+>
+> St Hermione, the daughter of the Holy Apostle Philip, is one of the few
+> saints for whom we have found no icon that we may show. May we ask whether
+> the Church of St Hermione at Thymiana keeps an old icon of her, and if it
+> does, for a photograph of it, with who painted it and when, and for your
+> blessing and written permission to show it beside her life?
+>
+> We would show it only where a reader meets the saint, in the app and on our
+> website, with the credit you give us, and never in advertising, in store
+> listings or in anything sold. If you ever asked us to, we would take it
+> down at once.
+>
+> With thanks, and asking your prayers,
+>
+> Edgar, the Purify Team
+> Purify Orthodox LLC
+> legal@purifyapp.net
+
+**Ελληνικά**
+
+> Σεβασμιώτατε, ευλογείτε.
+>
+> Σας γράφω εκ μέρους του Purify (purifyapp.net), μιας ορθόδοξης εφαρμογής
+> για την προσευχή, την Αγία Γραφή και τους βίους των αγίων, την οποία
+> δημιουργεί η εταιρεία Purify Orthodox LLC. Κάθε βίος αγίου στο Purify
+> συνοδεύεται από μια εικόνα του αγίου, και οι βίοι μαζί με τις εικόνες τους
+> είναι δωρεάν για κάθε αναγνώστη. Το Purify προσφέρει επίσης μια
+> προαιρετική συνδρομή για ορισμένα εργαλεία ανάγνωσης· οι βίοι των αγίων
+> και οι εικόνες τους δεν αποτελούν ποτέ μέρος της.
+>
+> Η Αγία Ερμιόνη, η θυγατέρα του Αγίου Αποστόλου Φιλίππου, είναι από τους
+> λίγους αγίους για τους οποίους δεν έχουμε βρει καμία εικόνα που να
+> μπορούμε να δείξουμε. Θα μπορούσαμε να ρωτήσουμε αν ο Ιερός Ναός της Αγίας
+> Ερμιόνης στα Θυμιανά φυλάσσει μια παλαιά εικόνα της, και αν ναι, να
+> ζητήσουμε μια φωτογραφία της, μαζί με το ποιος την αγιογράφησε και πότε,
+> καθώς και την ευλογία σας και τη γραπτή σας άδεια να τη δείχνουμε δίπλα
+> στον βίο της;
+>
+> Θα τη δείχναμε μόνο εκεί όπου ο αναγνώστης συναντά την αγία, στην εφαρμογή
+> και στην ιστοσελίδα μας, με την αναφορά που εσείς θα μας ορίσετε, και ποτέ
+> σε διαφημίσεις, σε σελίδες καταστημάτων εφαρμογών ή σε οτιδήποτε πωλείται.
+> Αν ποτέ μας το ζητούσατε, θα την αφαιρούσαμε αμέσως.
+>
+> Με ευχαριστίες, και ζητώντας τις ευχές σας,
+>
+> Edgar, εκ μέρους της ομάδας του Purify
+> Purify Orthodox LLC
+> legal@purifyapp.net
