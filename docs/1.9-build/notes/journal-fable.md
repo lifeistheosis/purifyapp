@@ -552,6 +552,12 @@ One of the walk's own checks was wrong on its first run and was mended
 before the pass above: it waited for a Write button that a phone never
 shows (the copy a computer draws in the title's row).
 
+Pushed as `035ea71bb..62df344ae` (14:14). On the pushed tip: typecheck 0,
+`npm run test:unit` 13,587 of 13,587 (9 skipped). The 21 commits of other
+chats that came in after the final export touch none of the journal's or the
+Florilegium's code, and the committed code is byte for byte what that export
+was cut from.
+
 ## What a phone still has to say
 
 The harness has no keyboard on the screen. On his phone:
