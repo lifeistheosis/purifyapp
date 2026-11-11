@@ -14116,6 +14116,3 @@ html[data-reading-mode="parchment"] .gift-check {
   inset 0 0 0 1px rgb(0 0 0 / 0.5),
   0 1px 0 color-mix(in srgb, var(--color-paper) 7%, transparent);
 }
-.gift-field::placeholder {
- color: color-mix(in srgb, var(--color-paper) 30%, transparent);
-}
