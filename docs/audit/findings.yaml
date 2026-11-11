@@ -2139,14 +2139,19 @@ findings:
       whole); three leads that are a bare reference ("Chap. ix.", "S. John
       ix. 2, 3", "ch. x. 18."); and section 551, whose opening could not
       be found in the transcription to check.
-      OPEN, for the arbiter: section 452 ("Book 4, on John 7:24") is one
-      paragraph, and it is not St Cyril's. It is the tail of the
-      translator's footnote at the end of Book 4 ("a S. Cyril seems to be
-      alluding to the words that | God rested the seventh day, as being a
-      memorial of a promise that we too shall rest, as he says above that
-      our rest on that day signifies this."), cut at its italics, shown
-      as a section of the commentary and as a note on John 7's rail under
-      his name. Not changed here.
+      Section 452 ("Book 4, on John 7:24") was one paragraph, and not St
+      Cyril's: the tail of the translator's footnote at the end of Book 4
+      ("a S. Cyril seems to be alluding to the words that | God rested the
+      seventh day, as being a memorial of a promise that we too shall rest,
+      as he says above that our rest on that day signifies this."), cut at
+      its italics, shown as a section of the commentary and as a note on
+      John 7:24's rail under his name. EMPTIED 2026-11-11 on the arbiter's
+      word, as section 453's table of chapters was: the section is a slot
+      (nothing renumbered), its note is off the rail (1,070 of his notes
+      now), and lib/saints/load.ts gives the reader a work without a
+      section that has no words left, so it is no empty page and no line
+      of the contents. cyrilJohnOpenings.test.ts holds it; these 29 words
+      are the only words taken out of the work.
       STILL OPEN, planned for the release after 1.9 (PLAN, "Planned for
       the next release"): Cyril on John and the Morals read against the
       printed page, as Cyril on Luke was (their words are their

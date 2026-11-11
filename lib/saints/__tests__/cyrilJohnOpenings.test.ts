@@ -31,6 +31,8 @@ const WORK = read<{ sections: Section[] }>("data/saints/cyril-of-alexandria/comm
 const BEFORE = read<{ words: number; sha256: string; paragraphs: [number, number][] }>("lib/saints/__tests__/fixtures/cyril-john-before.json");
 const LEADS = read<{ leads: { section: number; lead: string; before: string }[] }>("scripts/cyril-john/lost-leads.json").leads;
 const SECTION = new Map(WORK.sections.map((s) => [s.n, s]));
+/** What stood as section 452: the translator's words, not St Cyril's. */
+const NOT_HIS = "God rested the seventh day, as being a memorial of a promise that we too shall rest, as he says above that our rest on that day signifies this.";
 
 const said = (paragraphs: string[]) => paragraphs.filter((p) => p.trim() !== "").join("\n\n");
 const firstWords = (s: Section) => s.paragraphs.find((p) => p.trim() !== "") ?? "";
@@ -85,6 +87,8 @@ describe("St Cyril on John, the work", () => {
     const leadOf = new Map(LEADS.map((l) => [l.section, l.lead]));
     const words: string[] = [];
     for (const s of WORK.sections) {
+      // The one thing taken out: the translator's footnote that stood as section 452.
+      if (s.n === 452) words.push(...NOT_HIS.split(/\s+/));
       s.paragraphs.forEach((p, i) => {
         const lead = i === 0 ? leadOf.get(s.n) : undefined;
         if (lead) expect(p.startsWith(`${lead} `), `section ${s.n} opens with its lead`).toBe(true);
@@ -98,8 +102,9 @@ describe("St Cyril on John, the work", () => {
   it("keeps a paragraph that was all one open sentence as an empty slot, and no section is left without words", () => {
     const slots = WORK.sections.flatMap((s) => s.paragraphs.filter((p) => p === ""));
     // Four older ones stand at the head of section 453 (Book 5's table of chapters, F-49).
-    expect(slots.length).toBe(92);
-    expect(WORK.sections.filter((s) => said(s.paragraphs) === "").map((s) => s.n)).toEqual([]);
+    // And section 452, which was not his at all (below).
+    expect(slots.length).toBe(93);
+    expect(WORK.sections.filter((s) => said(s.paragraphs) === "").map((s) => s.n)).toEqual([452]);
     for (const s of WORK.sections) for (const p of s.paragraphs) expect(p, `section ${s.n}`).toBe(p.trim());
   });
 
@@ -116,11 +121,38 @@ describe("St Cyril on John, the work", () => {
   });
 });
 
+describe("St Cyril on John, section 452", () => {
+  it("shows none of the translator's footnote as St Cyril's: the section is a slot, off the rail and out of the reader", async () => {
+    // Book 4 ends on the translator's footnote a: "S. Cyril seems to be
+    // alluding to the words that God rested the seventh day, as being a
+    // memorial of a promise that we too shall rest, as he says above that our
+    // rest on that day signifies this." The ingest cut at its italics and
+    // made the rest a section of the commentary, "Book 4, on John 7:24", and
+    // a note under his name on John 7:24. Emptied on the arbiter's word of
+    // 2026-11-11, as section 453's table of chapters was.
+    expect(SECTION.get(452)?.paragraphs).toEqual([""]);
+    for (const s of WORK.sections) for (const p of s.paragraphs) expect(p.includes("God rested the seventh day, as being a memorial of a promise"), `section ${s.n}`).toBe(false);
+    const rail = read<Record<string, Note[]>>("data/bible/commentary/john/7.json");
+    const all = Object.values(rail).flat();
+    expect(all.some((n) => n.at?.section === 452)).toBe(false);
+    expect(all.some((n) => n.text.includes("memorial of a promise that we too shall rest"))).toBe(false);
+    // The reader is given the work without it: no empty page to turn to, no line of the contents, nothing renumbered.
+    const { loadWriting, withWords } = await import("../load");
+    const shown = await loadWriting("cyril-of-alexandria", "commentary-on-john");
+    expect(shown?.sections.length).toBe(1069);
+    expect(shown?.sections.some((s) => s.n === 452)).toBe(false);
+    expect(shown?.sections.find((s) => s.n === 453)?.title).toBe("Book 5, on John 7:25");
+    const whole = { sections: [{ n: 1, title: "a", paragraphs: ["One."] }, { n: 2, title: "b", paragraphs: ["", "Two."] }] };
+    expect(withWords(whole)).toBe(whole);
+  });
+});
+
 describe("St Cyril on John, on the rail", () => {
   const notes = railNotes();
 
   it("says each note in its section's own words, as the work now has them", () => {
-    expect(notes.length).toBe(1071);
+    // 1,071 before section 452's, which was the translator's, came off the rail.
+    expect(notes.length).toBe(1070);
     for (const { where, note } of notes) {
       expect(note.at?.work, where).toBe("cyril-of-alexandria/commentary-on-john");
       const section = SECTION.get(note.at?.section ?? -1);

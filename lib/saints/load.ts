@@ -158,15 +158,28 @@ export async function loadWriting(
  if (tryLocale) {
  try {
  const raw = await fs.readFile(tryLocale, "utf8");
- return { ...(JSON.parse(raw) as WritingContent), isLocalized: true };
+ return { ...withWords(JSON.parse(raw) as WritingContent), isLocalized: true };
  } catch {
  /* fall through to English */
  }
  }
  try {
  const raw = await fs.readFile(fallback, "utf8");
- return { ...(JSON.parse(raw) as WritingContent), isLocalized: locale === "en" };
+ return { ...withWords(JSON.parse(raw) as WritingContent), isLocalized: locale === "en" };
  } catch {
  return null;
  }
+}
+
+/**
+ * A work without the sections that have no words left. A section whose every
+ * paragraph is an empty slot was all an edition's matter read in as the
+ * author's (St Cyril on John's section 452 was the tail of the translator's
+ * footnote that closes Book 4; 1.9, F-49). It stays in the file, so nothing
+ * is renumbered, but it is no page to turn to and no line of the contents.
+ * Readers' marks are kept by a section's own number, so none moves.
+ */
+export function withWords<T extends { sections: Section[] }>(work: T): T {
+ const sections = work.sections.filter((s) => s.paragraphs.some((p) => p.trim() !== ""));
+ return sections.length === work.sections.length ? work : { ...work, sections };
 }

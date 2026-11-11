@@ -10396,6 +10396,19 @@ await section(74, async () => {
     await ctx.close();
   }
 
+  // Section 452 was the translator's footnote, not St Cyril's: no page of it, and the next section opens as it did.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, `${WORK}#s453`);
+    await page.waitForSelector('[data-mk^="saint|cyril-of-alexandria|commentary-on-john|453|"]', { timeout: 30000 }).catch(() => {});
+    const next = await paragraphs(page, 453);
+    const body = await page.evaluate(() => document.body.innerText);
+    must(next.length > 0 && next[0].idx === 4 && next[0].text.startsWith("25 Some therefore of them of Jerusalem said"), `Book 5 opens on its first lemma, its paragraphs numbered as before (first is ${next[0]?.idx})`);
+    must(!body.includes("memorial of a promise that we too shall rest"), "the translator's footnote is not on the page");
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
   // A word mark made before the mend, over words that have since gone forward.
   {
     const lastIdx = sec(793).paragraphs.length - 1;

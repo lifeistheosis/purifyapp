@@ -205,7 +205,8 @@ describe("St Cyril on John: each section names the verse he is on", () => {
       }
     }
     // 1,067, and the four sections of restored openings ((b), 2002 to 2012).
-    expect(notes).toBe(1071);
+    // Less one: section 452 was the translator's footnote, and its note came off the rail (cyrilJohnOpenings.test.ts).
+    expect(notes).toBe(1070);
     expect(wrong, wrong.join("\n")).toEqual([]);
   });
 
