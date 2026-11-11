@@ -378,7 +378,13 @@ function SectionParagraphs({
 
  {/* Editorial prose drops out of the reading serif into sans, so the
  register is legible at a glance and not only from the band. */}
- <div className={sec.voice === "editorial" ? "space-y-5 font-sans" : "space-y-5"}>
+ {/* The work's words keep their edition's dashes, and say so to checkMock;
+ an editorial section's prose is the house's own, and never does. */}
+ <div
+ className={sec.voice === "editorial" ? "space-y-5 font-sans" : "space-y-5"}
+ data-mock-allow={sec.voice === "editorial" ? undefined : "emdash"}
+ data-mock-why={sec.voice === "editorial" ? undefined : "the work's own words, as its edition prints them"}
+ >
  {sec.paragraphs.map((p, i) => {
  const lines = linesAt.get(i);
  const body = paragraph(p, i);

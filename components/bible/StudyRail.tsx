@@ -93,7 +93,8 @@ function CommentaryCard({
  {digest}
  </p>
  )}
- <div lang="en" dir="ltr" className="space-y-2.5">
+ {/* The edition's dashes stay in his words (checkMock allows them here by name; never in the app's own). */}
+ <div lang="en" dir="ltr" data-mock-allow="emdash" data-mock-why="a Father's own words, as his edition prints them" className="space-y-2.5">
  {paras.map((para, i) => (
  <GlossedText
  key={i}

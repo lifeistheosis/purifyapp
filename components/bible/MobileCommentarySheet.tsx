@@ -155,6 +155,9 @@ function NoteCard({
         ref={textRef}
         lang="en"
         dir="ltr"
+        // The edition's dashes stay in his words (checkMock allows them here by name; never in the app's own).
+        data-mock-allow="emdash"
+        data-mock-why="a Father's own words, as his edition prints them"
         className="space-y-2.5 overflow-hidden"
         style={
           teaser
