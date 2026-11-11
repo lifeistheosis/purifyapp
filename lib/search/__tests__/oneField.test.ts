@@ -69,17 +69,35 @@ describe("the one field", () => {
     expect(field).toContain("h-[48px]");
   });
 
-  it("draws no box inside itself: the field lights as a whole, white on the dark palettes, ink on Parchment", () => {
+  it("draws no box inside itself: the field as a whole shows it is active, the house's quiet way", () => {
     // The keyboard ring is still the app's everywhere else.
     expect(rule("*:focus-visible")).toMatch(/outline: 2px solid/);
     expect(css).toMatch(/\.search-field input:focus,\s*\.search-field input:focus-visible,\s*\.search-door:focus-visible \{\s*outline: none;/);
-    const lit = rule(".search-field:focus-within,\n.search-door:focus-visible");
-    expect(lit).toContain("0 0 24px rgb(255 255 255 / 0.16)");
-    const ink = rule('html[data-reading-mode="parchment"] .search-field:focus-within,\nhtml[data-reading-mode="parchment"] .search-door:focus-visible');
-    expect(ink).toContain("var(--color-paper) 66%");
-    expect(ink).not.toContain("0 0 24px");
+    // Active (1.9): a fine edge in the palette's ink, the share every tapped field wears. It lit
+    // with a 58 percent white edge, a 3px ring and a 24px glow until his word of 2026-11-10
+    // ("it appears a white box ... like outline. I don't like that"), which names search.
+    const active = rule(".search-field:focus-within,\n.search-door:focus-visible");
+    expect(active).toContain("border-color: color-mix(in srgb, var(--color-paper) 32%, transparent);");
+    expect(active).not.toContain("box-shadow");
+    expect(active).not.toMatch(/outline|58%/);
+    // Nothing round the pill on any palette: no glow, no ring, and no rule of Light's own that draws one.
+    const block = css.slice(css.indexOf("/* ── Search: the one field and the one screen"), css.indexOf(".search-field .search-glass {"));
+    expect(block).not.toMatch(/0 0 24px|0 0 0 3px/);
+    expect(css).not.toContain('html[data-reading-mode="parchment"] .search-field:focus-within');
+    // The token turns with the palette, so Light's edge is its own ink.
+    expect(active).not.toMatch(/#[0-9a-f]{3,6}/i);
     // Its browser cross is hidden: it draws its own.
     expect(css).toMatch(/\.search-field input::-webkit-search-cancel-button/);
+  });
+
+  it("keeps the keyboard's ring for a keyboard, round the pill as a whole", () => {
+    const ring = rule('html[data-input="keyboard"] .search-field:focus-within,\nhtml[data-input="keyboard"] .search-door:focus-visible');
+    expect(ring).toContain("outline: 2px solid color-mix(in srgb, var(--color-paper) 70%, transparent);");
+    expect(ring).toContain("outline-offset: 2px;");
+    // After the rule that puts the door's own ring away, so a keyboard's wins it.
+    expect(css.indexOf('html[data-input="keyboard"] .search-door:focus-visible')).toBeGreaterThan(-1);
+    // And a finger never gets it: the page starts in pointer mode, and typing does not leave it (fieldFocus.test.ts).
+    expect(css).not.toMatch(/html\[data-input="pointer"\] \.search-field:focus-within[^{]*\{[^}]*outline: 2px/);
   });
 
   it("moves only with Purify's motion on", () => {

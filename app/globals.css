@@ -7433,10 +7433,22 @@ html[data-reading-mode="parchment"] .theology-search-button {
    (*:focus-visible): a text field matches it on a tap too, and each field's
    own focus:outline-none is a utility, which loses to an unlayered rule. So
    the field takes the focus on itself instead: the ring is off inside
-   .search-field, and the field lights as a whole, a soft white glow round
-   the pill, ink with no glow on Parchment. A keyboard reaching it sees that
-   light, as a finger does. Every colour is a token, so all five palettes
-   follow; the rgb lines first are for a WebView without color-mix.
+   .search-field, and the field as a whole shows it is active.
+
+   How it shows it changed in 1.9. It lit: a 58 percent white edge, a 3px
+   ring and a 24px glow round the pill, his pick in build 80. His word of
+   2026-11-10 (CLAUDE.md, "No box around a tapped field") names search
+   outright: "A lot of times when you click something and you have to
+   search, it appears a white box or a red box. like outline. I don't like
+   that." So a search field a finger has reached is active the house's
+   quiet way, as every other field is: its own fill, a fine edge in the
+   palette's ink (32 percent, the share a tapped field wears above), the
+   glass a step brighter, and the caret. No ring and no glow. A keyboard
+   reaching it still gets the keyboard's ring, round the pill as a whole
+   (html[data-input="keyboard"]), which accessibility needs. Every colour is
+   a token, so every palette follows; the rgb lines first are for a WebView
+   without color-mix. Held by lib/search/__tests__/oneField.test.ts and
+   lib/ui/__tests__/fieldFocus.test.ts.
 
    The field's well, as the theology field was carved: */
 .search-field {
@@ -7447,22 +7459,26 @@ html[data-reading-mode="parchment"] .theology-search-button {
  box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.55), 0 1px 0 rgb(var(--panel-sheen) / 0.04);
  transition: border-color var(--duration-fast) var(--ease-house), box-shadow var(--duration-fast) var(--ease-house);
 }
+/* Active: the fine edge, and the well as it was. Nothing round the pill. */
 .search-field:focus-within,
 .search-door:focus-visible {
- border-color: rgb(255 255 255 / 0.58);
- border-color: color-mix(in srgb, var(--color-paper) 58%, transparent);
- box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.55), 0 0 0 3px rgb(255 255 255 / 0.07), 0 0 24px rgb(255 255 255 / 0.16);
+ border-color: rgb(255 255 255 / 0.32);
+ border-color: color-mix(in srgb, var(--color-paper) 32%, transparent);
 }
 html[data-reading-mode="parchment"] .search-field {
  box-shadow: inset 0 2px 5px rgb(43 35 23 / 0.12);
 }
-html[data-reading-mode="parchment"] .search-field:focus-within,
-html[data-reading-mode="parchment"] .search-door:focus-visible {
- border-color: color-mix(in srgb, var(--color-paper) 66%, transparent);
- box-shadow: inset 0 2px 5px rgb(43 35 23 / 0.12), 0 0 0 3px color-mix(in srgb, var(--color-paper) 8%, transparent);
+/* A keyboard's ring, round the pill as a whole. After the rule below in
+   weight (the root's attribute), so the door keeps it too. */
+html[data-input="keyboard"] .search-field:focus-within,
+html[data-input="keyboard"] .search-door:focus-visible {
+ outline: 2px solid rgba(255, 255, 255, 0.7);
+ outline: 2px solid color-mix(in srgb, var(--color-paper) 70%, transparent);
+ outline-offset: 2px;
 }
-/* No box inside it: the field is what lights. The door (a field at rest that
-   opens the search) lights the same way and draws no ring of its own. */
+/* No box inside it: the field is what shows it is active. The door (a field
+   at rest that opens the search) does the same and draws no ring of its own
+   for a finger. */
 .search-field input:focus,
 .search-field input:focus-visible,
 .search-door:focus-visible {

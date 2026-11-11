@@ -17,9 +17,11 @@ import { haptic } from "@/lib/ui/motion";
  * one but two the keyboard's ring drawn as a sharp box inside the round
  * field, the box in his photo. Now every place uses this one:
  *
- *   - no box inside it: the field itself lights, a soft white glow round the
- *     pill, ink on Parchment (globals.css, .search-field), and a keyboard
- *     reaching it sees that light;
+ *   - no box inside it: the field as a whole shows it is active, the
+ *     house's quiet way (a fine edge in the palette's ink, the glass a step
+ *     brighter, the caret; globals.css, .search-field). It lit with a white
+ *     edge, a ring and a glow until 1.9, which his word of 2026-11-10 put
+ *     away. A keyboard reaching it gets the keyboard's ring round the pill;
  *   - 16px type, so no phone zooms the page;
  *   - a clear button once something is typed;
  *   - the keyboard's own Search key (enterKeyHint), which submits;

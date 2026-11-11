@@ -105,6 +105,20 @@ describe("a tapped field", () => {
     expect(modality.indexOf("isEditable(e.target)")).toBeLessThan(modality.indexOf('if (NAV_KEYS.has(e.key)) set("keyboard");'));
   });
 
+  it("holds a field that shows it in its own way to the same quiet: the search field has no ring and no glow", () => {
+    // The search pill kept a way of its own under the standard above (a 58 percent white edge, a 3px ring
+    // and a 24px glow, build 80). His word names search outright, so its own way is the quiet one too.
+    const at = css.indexOf(".search-field:focus-within,\n.search-door:focus-visible {");
+    expect(at).toBeGreaterThan(-1);
+    const body = css.slice(at, css.indexOf("}", at));
+    expect(body).toContain("border-color: color-mix(in srgb, var(--color-paper) 32%, transparent);");
+    expect(body).not.toMatch(/box-shadow|outline/);
+    // The same share as the fine edge every other tapped field wears.
+    expect(css).toContain("outline: 1px solid color-mix(in srgb, var(--color-paper) 32%, transparent);");
+    // The keyboard keeps its ring there, as everywhere.
+    expect(css).toMatch(/html\[data-input="keyboard"\] \.search-field:focus-within,\s*html\[data-input="keyboard"\] \.search-door:focus-visible \{[^}]*outline: 2px solid color-mix\(in srgb, var\(--color-paper\) 70%, transparent\);/);
+  });
+
   it("draws no ring of its own, and nothing gold or red, anywhere a reader types", () => {
     const files = [...sources("app"), ...sources("components")];
     const found = files.flatMap((f) => fields(read(f)).map((attrs) => ({ f, attrs })));
