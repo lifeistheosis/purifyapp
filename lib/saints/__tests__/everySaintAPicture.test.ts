@@ -60,6 +60,11 @@ const WAITING: Record<string, string> = {
   // pushes 2 and 3, and the Prophet Micaiah his, Jan Luyken's scene of his
   // witness before the kings (2026-11-11; docs/1.9-build/notes/
   // january-saints.md). St George waits on a letter.
+  // St Nicholas Cabasilas (the arbiter's word of 2026-11-11, 15:09: no
+  // uncleared picture left showing): his icon had no source, and no picture
+  // of him is old enough to be free (he was glorified in 1983); the only one
+  // Commons carries came from a forum with no painter's leave.
+  "nicholas-cabasilas": "permission: no icon of him with a named maker found yet (docs/1.9-build/ICON-PERMISSIONS.md)",
   "george-the-chozebite": "permission: the Orthodox Church in America (the unsigned icon on its page for him, with St Domnica and St Helladius: a detail of him alone)",
 };
 

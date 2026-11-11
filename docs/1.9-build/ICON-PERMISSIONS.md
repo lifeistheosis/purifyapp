@@ -559,3 +559,26 @@ https://pravoslavie.ru/100843.html); it is not an icon, and it is not used.
 - **Until then:** her page stands on the plate, and her Life wears the
   Apostle Philip, her father's picture by the house's rule
   (lib/reading/coverArt.ts).
+
+## St Nicholas Cabasilas
+
+The December saints chat, 2026-11-11, on the arbiter's word of 15:09 UTC (no
+uncleared picture left showing).
+
+- **The picture:** none that may be shown. His page wore a contemporary
+  Greek icon of him writing at a desk before the walls of Thessalonica, with
+  no source, painter or leave recorded; it was taken down on 2026-11-11. No
+  picture of him is old enough to be free: he was glorified in 1983, and no
+  older portrait of him was found (a Paris manuscript's frontispiece
+  sometimes named with him is not shown to be of him). The one icon of him
+  Commons carries, "Nikolaj_Kavasila.jpg", came from a forum
+  (logoslovo.ru), and its CC0 is the uploader's, not the painter's to give;
+  it is refused.
+- **Made by:** not known.
+- **To write to:** no one yet. No icon of him with a named painter, workshop
+  or monastery was found (Legacy Icons, Uncut Mountain Supply and the St
+  Isaac of Syria Skete carry none), so there is no letter to write until
+  one is found. The Holy Metropolis of Thessaloniki, his city, would be the
+  first to ask whom it commissioned.
+- **Until then:** his page stands on the plate. He has no book in the
+  reading room, so no cover waits with him.

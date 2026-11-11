@@ -4587,7 +4587,6 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "nicholas-cabasilas",
-    iconUrl: "/saints/icons/nicholas-of-cabasilas.jpg",
     name: "St. Nicholas Cabasilas",
     epithet: "Theologian of the Mysteries · Lay teacher of Thessalonica",
     born: "c. 1322 (Thessalonica)",
