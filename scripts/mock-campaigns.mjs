@@ -479,6 +479,11 @@ async function answer(ctx, opts = {}) {
     if (p === "/api/campaigns/open") {
       // An answer held back until the walk lets it go, so it can look at Community while the app waits to hear.
       if (opts.heldOpen) await opts.heldOpen.until;
+      // No signal: the question never reaches a server, as many times as a case asks for (`openFails`).
+      if (opts.openFails > 0) {
+        opts.openFails--;
+        return route.abort("internetdisconnected");
+      }
       return opts.closed ? json({ error: "Not found." }, 404) : json({ open: true, parts });
     }
     if (p === "/api/campaigns/many") {
@@ -607,7 +612,7 @@ async function whole(page, min = 844) {
   await page.setViewportSize({ width: WIDTH, height: Math.max(min, h) });
 }
 
-async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true, inbox, circles = false, tellMe, profileCampaigns, late = false, holds, crisis = false, care = false } = {}) {
+async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true, inbox, circles = false, tellMe, profileCampaigns, late = false, holds, crisis = false, care = false, closed = false, openFails = 0 } = {}) {
   if (WALK) return;
   if (ONLY && !ONLY.has(name.slice(0, 2))) return;
   // What one still told the stand-in server is not the next still's.
@@ -624,7 +629,7 @@ async function shot(name, label, where, selector, { set = {}, prepare, signedIn 
   page.on("pageerror", (e) => errors.push(e.message));
   try {
     if (WIDTH !== 390) await page.setViewportSize({ width: WIDTH, height: 844 });
-    await answer(ctx, { mine, board, signedIn, parts, pictures, inbox, circles, tellMe, profileCampaigns, late, holds, crisis, care });
+    await answer(ctx, { mine, board, signedIn, parts, pictures, inbox, circles, tellMe, profileCampaigns, late, holds, crisis, care, closed, openFails });
     await go(page, where);
     await settle(page);
     if (prepare) await prepare(page);
@@ -1082,6 +1087,24 @@ await shot("35-campaign-place", "a campaign's page with its place beside who sta
   },
 });
 
+// 47 A campaign's address with no signal: said as that, with Try again. Never that campaigns are closed.
+await shot("47-campaigns-no-signal", "a campaign's address with no signal: it says so, and offers to try again", "/campaigns", "[data-campaigns-closed]", {
+  openFails: 99,
+  prepare: async (page) => {
+    await page.waitForSelector('[data-campaigns-closed="unreached"]', { timeout: 15000 });
+    await settle(page, 600);
+  },
+});
+
+// 46 A campaign's address where campaigns are not open for this reader: said plainly, with a way on.
+await shot("46-campaigns-not-open", "a campaign's address where campaigns are not open: it says so, with a way on to Community", "/campaigns", "[data-campaigns-closed]", {
+  closed: true,
+  prepare: async (page) => {
+    await page.waitForSelector('[data-campaigns-closed="closed"]', { timeout: 15000 });
+    await settle(page, 600);
+  },
+});
+
 // 45 The care note's question: what a moderator is told before one is sent.
 await shot("45-care-note-ask", "the care note: what a moderator is asked before it is sent", "/community/moderate", "[role=alertdialog], [role=dialog]", {
   crisis: true,
@@ -1226,7 +1249,7 @@ async function pictureWalk(label, ...rest) {
   if (!FLOWS.length || FLOWS.some((f) => label.toLowerCase().includes(f))) console.log(`left  ${label}: needs an export cut with pictures (PICTURES_BUILD=1; see the header)`);
 }
 
-async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false, circles = false, holds, board, late = false, tellMe, tellFails = false, profileCampaigns, crisis = false, care = false, careAlready = false } = {}) {
+async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false, circles = false, holds, board, late = false, tellMe, tellFails = false, profileCampaigns, crisis = false, care = false, careAlready = false, openFails = 0 } = {}) {
   if (FLOWS.length && !FLOWS.some((f) => label.toLowerCase().includes(f))) return;
   const seed = {
     "purify.prayers.campaigns": JSON.stringify(CARRIED),
@@ -1247,7 +1270,7 @@ async function walk(label, where, run, { set = {}, signedIn = true, mine, closed
     // With `holdOpen`, the website's answer to "are campaigns open for this reader" waits for the flow's own word.
     let letGo = () => {};
     const heldOpen = holdOpen ? { until: new Promise((done) => (letGo = done)) } : null;
-    await answer(ctx, { mine, closed, parts, pictures, heldOpen, circles, holds, board, late, tellMe, tellFails, profileCampaigns, crisis, care, careAlready });
+    await answer(ctx, { mine, closed, parts, pictures, heldOpen, circles, holds, board, late, tellMe, tellFails, profileCampaigns, crisis, care, careAlready, openFails });
     await go(page, where);
     await settle(page, 1800);
     try {
@@ -2372,10 +2395,38 @@ if (WALK) {
     expectThat((await reported.locator("button", { hasText: "Keep it" }).count()) === 1, "a reported picture cannot be kept");
   }, { parts: { pictures: true } });
 
-  await walk("not open for this reader: the pages are the app's not-found page, and Pray together shows nothing of campaigns", "/campaigns", async (page) => {
-    await settle(page, 1500);
+  await walk("no signal: a campaign's address says it could not be loaded, never that the page is missing or campaigns are closed; Try again asks once more and the board comes", "/campaigns", async (page) => {
+    const page1 = page.locator('[data-campaigns-closed="unreached"]');
+    await page1.waitFor({ timeout: 15000 });
+    const said = await page1.innerText();
+    expectThat(said.includes("We could not load the campaigns just now."), `the page says "${said.replace(/\n/g, " / ")}"`);
+    const whole = await page.evaluate(() => document.body.innerText);
+    expectThat(!/404|not in our index|may not be built|not open yet/i.test(whole), "the page says a page is missing, or that campaigns are closed");
+    expectThat((await page.locator("[data-campaign-board]").count()) === 0, "the board is drawn with no answer from the server");
+    const asks = () => calls.filter((c) => c.path === "/api/campaigns/open").length;
+    const before = asks();
+    const again = page1.locator("button", { hasText: "Try again" });
+    const box = await again.boundingBox();
+    expectThat(box && box.height >= 44, `Try again is ${JSON.stringify(box)}`);
+    await again.click();
+    await page.waitForSelector("[data-campaign-board]", { timeout: 15000 });
+    expectThat(asks() === before + 1, `the server was asked ${asks() - before} times for one tap`);
+    expectThat((await page.locator("[data-campaigns-closed]").count()) === 0, "the page still says it could not be loaded");
+  }, { openFails: 1 });
+
+  await walk("not open for this reader: a campaign's address says so in its own words, with a way on to Community, and Pray together shows nothing of campaigns", "/campaigns", async (page) => {
+    const closed = page.locator('[data-campaigns-closed="closed"]');
+    await closed.waitFor({ timeout: 15000 });
+    await settle(page, 600);
     expectThat((await page.locator("[data-campaign-board]").count()) === 0, "the board is drawn");
-    expectThat((await page.locator("main h1").first().innerText()).length > 0 && (await page.getByText("404").count()) > 0, "the not-found page is not shown");
+    expectThat((await closed.locator("h1").innerText()).trim() === "Prayer campaigns are not open yet.", `the page says "${await closed.locator("h1").innerText()}"`);
+    // Its own words: not the page for an address that leads nowhere.
+    const whole = await page.evaluate(() => document.body.innerText);
+    expectThat(!/404|not in our index|may not be built/i.test(whole), "the page says a page is missing");
+    expectThat((await closed.locator("button").count()) === 0, "Try again is offered for an answer the server gave");
+    const on = closed.locator("a", { hasText: "Community" });
+    const box = await on.boundingBox();
+    expectThat((await on.getAttribute("href"))?.replace(/\/$/, "") === "/community" && box && box.height >= 44, `the way on is ${await on.getAttribute("href")}, ${JSON.stringify(box)}`);
     // Pray together holds campaigns and nothing else since the wall went, so for this reader it has no
     // door: an address that asks for it shows the conversations, with no switch and no empty half.
     await go(page, "/community#pray");

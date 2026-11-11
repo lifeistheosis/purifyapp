@@ -4635,3 +4635,65 @@ What the server answers a moderator is in English, as its other answers on
 that page are: "A care note was already sent to this writer today.", "A care
 note is only for words the safety line marked."
 
+---
+
+## 39. A campaign's address when campaigns are not this reader's to open (fresh eyes, 2026-11-11)
+
+Found by the fresh-eyes walk and sent by the arbiter (02:28 UTC): with no
+answer from the server, `/campaigns` drew the app's page for a link that
+leads nowhere, which says "The link may be wrong, or the page may not be
+built yet." Both halves were false there, and a reader with no signal was
+told a page did not exist.
+
+It was built that way on purpose while campaigns were for testers alone
+("not visible means absent"), and one thing in it was simply wrong: inside
+the app, a server that could not be reached and a server that said no were
+the same answer.
+
+### 39.1 What a reader sees now
+
+- **The server said no** (campaigns are not open for this reader): "Prayer
+  campaigns are not open yet." and one way on, to Community.
+- **The server was not reached** (no signal, or it failed): "We could not
+  load the campaigns just now." with Try again. These are the words the
+  board already uses for a read that failed. The app also asks again by
+  itself the moment the signal returns, so the doors to campaigns appear
+  with no reload.
+- Neither says 404, "not in our index" or "may not be built".
+- Nothing of campaigns is drawn in either: no board, no name, no count.
+  Every other door (Pray together, You, the menu) still reads both as "not
+  yes" and draws nothing.
+- A build with no campaigns in it at all keeps the ordinary not-found page:
+  there the address does lead nowhere.
+
+### 39.2 What changed underneath
+
+`lib/campaigns/useCampaignsOpen.ts` keeps one more thing with the answer:
+whether the server was reached. A refusal (404, 401, 403) is an answer and
+stands for the page load, as a yes does; it is never asked again. A request
+that fails, or a server error, is no answer: it can be asked again by the
+reader's tap, and is asked again by itself when the device says it is
+online, waited for once however often the server is missed.
+`components/campaigns/CampaignsGate.tsx` draws the campaign on a yes, waits
+while it asks, and otherwise draws `CampaignsClosed.tsx`, which says which
+of the two it is.
+
+### 39.3 What holds it
+
+`lib/campaigns/__tests__/doorStates.test.ts` (20 cases: the three answers,
+which statuses are answers, asked again by a tap and by the signal's return
+and never for a no, one question for three taps, the two pages' words and
+their one control each, the gate). Fifteen ways of breaking it were tried:
+fourteen failed a case, and the fifteenth took out a line that did nothing,
+which was removed. The walk: the closed-door flow now reads the new page,
+and a new flow opens the address with no signal, taps Try again and reaches
+the board. Stills: not open (46), no signal (47).
+
+### 39.4 Words
+
+One new line, `campaigns.notOpen`: "Prayer campaigns are not open yet." The
+other three it uses were in the catalog already (`campaigns.loadFailed`,
+`community.tryAgain`, `nav.community`). The twenty languages are written,
+each with its own catalog's name for prayer campaigns, and go in on the
+arbiter's word.
+

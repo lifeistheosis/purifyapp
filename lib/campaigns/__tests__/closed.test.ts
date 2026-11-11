@@ -327,7 +327,7 @@ describe("closed: the doors", () => {
       "components/prayers/PrayerRuleReader.tsx": /const carriedList = useCarried\(\);/,
       "components/mobile/YouMobile.tsx": /const campaignsOpen = useCampaignsOpen\(\);[\s\S]*\.\.\.\(campaignsOpen\s/,
       "components/profile/AccountSettingsLinks.tsx": /const campaignsOpen = useCampaignsOpen\(\);[\s\S]*\.\.\.\(campaignsOpen\s/,
-      "components/campaigns/CampaignsGate.tsx": /const answer = useCampaignsAnswer\(\);\s*if \(answer === true\) return <>\{children\}<\/>;/,
+      "components/campaigns/CampaignsGate.tsx": /const door = useCampaignsDoor\(\);\s*if \(door === "open"\) return <>\{children\}<\/>;/,
     };
     for (const [file, gate] of Object.entries(doors)) expect(code(file), file).toMatch(gate);
 

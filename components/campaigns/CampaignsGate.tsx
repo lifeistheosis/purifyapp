@@ -2,8 +2,10 @@
 
 import type { ReactNode } from "react";
 
+import { CampaignsClosed } from "@/components/campaigns/CampaignsClosed";
 import { NotFoundScreen } from "@/components/layout/NotFoundScreen";
-import { useCampaignsAnswer } from "@/lib/campaigns/useCampaignsOpen";
+import { campaignsInBuild } from "@/lib/campaigns/flags";
+import { useCampaignsDoor } from "@/lib/campaigns/useCampaignsOpen";
 
 /**
  * The door of every campaign page (1.9). A page shown in the apps cannot
@@ -14,14 +16,20 @@ import { useCampaignsAnswer } from "@/lib/campaigns/useCampaignsOpen";
  * (lib/campaigns/useCampaignsOpen.ts), as the developer panel's gate does
  * (components/dev/DeveloperGate.tsx).
  *
- * Until the answer is yes, nothing of campaigns is drawn. A no draws the
- * app's own page for an address that leads nowhere: while campaigns are open
- * to testers alone, everyone else finds here exactly what they found before
- * campaigns were built. Not visible means absent, not politely deferred.
+ * Until the answer is yes, nothing of campaigns is drawn. What stands in
+ * their place says what is true (./CampaignsClosed.tsx): that campaigns are
+ * not open, where the server said no, or that it could not be reached, where
+ * it gave no answer. Until 2026-11-11 both drew the app's page for an address
+ * that leads nowhere, whose words ("the page may not be built yet") were
+ * false here; a reader with no signal was told a page did not exist.
+ *
+ * A build with no campaigns in it at all keeps that page: there the address
+ * does lead nowhere.
  */
 export function CampaignsGate({ children }: { children: ReactNode }) {
-  const answer = useCampaignsAnswer();
-  if (answer === true) return <>{children}</>;
-  if (answer === null) return <div data-campaigns-asking="" className="min-h-[60vh]" />;
-  return <NotFoundScreen />;
+  const door = useCampaignsDoor();
+  if (door === "open") return <>{children}</>;
+  if (door === "asking") return <div data-campaigns-asking="" className="min-h-[60vh]" />;
+  if (!campaignsInBuild()) return <NotFoundScreen />;
+  return <CampaignsClosed unreached={door === "unreached"} />;
 }
