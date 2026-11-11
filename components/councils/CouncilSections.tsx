@@ -1,4 +1,6 @@
 import { T } from "@/components/i18n/T";
+import { ListenHere } from "@/components/reading/ListenHere";
+import { listenId } from "@/lib/listen/texts";
 import { MarkHost } from "@/components/reading/MarkHost";
 import { SaintNames } from "@/components/saints/SaintNames";
 import type { CouncilDocumentContent } from "@/lib/councils/load";
@@ -52,6 +54,15 @@ export function CouncilSections({ content, lang, council }: { content: CouncilDo
               {s.citation}
             </p>
           )}
+          {/* The section read aloud, where it has a recording (1.9): the English, as it was recorded. */}
+          {text === "en" ? (
+            <ListenHere
+              id={listenId("council", council.slug, content.slug, s.n)}
+              title={s.title && s.title !== content.title ? `${content.title}. ${s.title}` : content.title}
+              by={council.name}
+              className="mb-5"
+            />
+          ) : null}
           <div lang={text} dir={textDir(text)} className="space-y-5 text-paper/90">
             {s.paragraphs.map((p, i) => (
               // Each paragraph a place the reader's place is kept by (lib/saints/paragraphInView.ts).

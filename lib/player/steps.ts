@@ -1,5 +1,6 @@
 import { nextChapter, prevChapter } from "@/lib/bible/books";
 import { sameRecording } from "@/lib/chants/media";
+import { listenHref, parseListenId } from "@/lib/listen/texts";
 import { readingOfSrc } from "@/lib/readAloud/chapters";
 
 /**
@@ -25,8 +26,8 @@ import { readingOfSrc } from "@/lib/readAloud/chapters";
  *    the verse being read, or the chant's page.
  */
 
-/** The Bible read aloud: a chapter. A chant: its slug. */
-export type Playing = { kind: "chapter"; book: string; chapter: number } | { kind: "chant"; slug: string } | null;
+/** The Bible read aloud: a chapter. A chant: its slug. Another text read aloud (1.9, lib/listen/texts.ts): its recording's name and the page it is read on. */
+export type Playing = { kind: "chapter"; book: string; chapter: number } | { kind: "chant"; slug: string } | { kind: "text"; id: string; href: string } | null;
 
 /**
  * Where a chant's recordings are kept: Purify's bucket since 1.8
@@ -34,6 +35,9 @@ export type Playing = { kind: "chapter"; book: string; chapter: number } | { kin
  * the website's /audio/chants/<slug>/<version>.mp3, its own in the apps.
  */
 const CHANT_RECORDING = /(?:\/audio\/chants|\/\/audio\.purifyapp\.net\/chants)\/([a-z0-9-]+)\/[^/?#]+\.mp3(?:$|[?#])/;
+
+/** Where another text's recording is kept: Purify's bucket, audio.purifyapp.net/listen/<its name>.mp3 (lib/listen/recordings.ts). */
+const TEXT_RECORDING = /\/listen\/((?:life|history|theology|council)\/[a-z0-9/-]+)\.mp3(?:$|[?#])/;
 
 /** A chant's row as the player needs it: its slug and its versions' recordings, in order. */
 export type ChantRowLike<V extends ChantVersionLike = ChantVersionLike> = { slug: string; variants: readonly V[] };
@@ -68,6 +72,9 @@ export function playingOf(src: string | null, chants: readonly ChantRowLike[] | 
   if (!src) return null;
   const reading = readingOfSrc(src);
   if (reading) return { kind: "chapter", ...reading };
+  const text = TEXT_RECORDING.exec(src);
+  const ref = text ? parseListenId(text[1]) : null;
+  if (text && ref) return { kind: "text", id: text[1], href: listenHref(ref) };
   const found = chantVersionOf(src, chants);
   if (found) return { kind: "chant", slug: found.row.slug };
   const m = CHANT_RECORDING.exec(src);
@@ -126,11 +133,14 @@ export function readHref(playing: Playing, verse?: number | null): string | null
     const at = typeof verse === "number" && verse > 0 ? `#v${verse}` : "";
     return `/bible/${playing.book}/${playing.chapter}${at}`;
   }
+  // Another text: its page, at the part being read.
+  if (playing.kind === "text") return playing.href;
   return `/chants/${playing.slug}`;
 }
 
 /** What Share hands on: the page of what is playing, the chapter or the chant. */
 export function shareHref(playing: Playing): string | null {
   if (!playing) return null;
+  if (playing.kind === "text") return playing.href.split("#")[0];
   return playing.kind === "chapter" ? `/bible/${playing.book}/${playing.chapter}` : `/chants/${playing.slug}`;
 }

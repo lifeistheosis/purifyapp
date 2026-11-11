@@ -35,6 +35,8 @@ import { EventPeople } from "./EventPeople";
 import { EventThread } from "./EventThread";
 import { InEnglishNote } from "./InEnglishNote";
 import { ShareButton } from "@/components/ui/ShareButton";
+import { ListenHere } from "@/components/reading/ListenHere";
+import { listenId } from "@/lib/listen/texts";
 import { MarkHost } from "@/components/reading/MarkHost";
 import { ReadingMarks } from "@/components/reading/SelectionToolsLazy";
 import { SaintNames } from "@/components/saints/SaintNames";
@@ -286,6 +288,8 @@ export function EventArticle({
       <EventPartsNav parts={parts} />
 
       <Part id={PART_IDS.happened} titleKey="study.history.whatHappened">
+        {/* The account read aloud, where it has a recording (1.9, lib/listen/recordings.ts). */}
+        <ListenHere id={listenId("history", meta.slug)} title={meta.title} by="Purify" className="mb-5" />
         <div className="space-y-5">
           <Blocks blocks={body.context} at={{ ...here, sectionN: 1 }} />
           <Blocks blocks={body.narrative} at={{ ...here, sectionN: 2 }} />

@@ -11019,6 +11019,17 @@ html[data-intro-pace="quick"] .launch-cross {
 html[data-read-aloud] [data-verse]:not([data-read-now]) {
  opacity: 0.4;
 }
+/* The same on the texts beside the Bible (1.9, components/reading/ListenHere.tsx):
+   the paragraph being read keeps its strength and the others step back. */
+[data-mk-layer] {
+ transition: opacity 520ms var(--ease-house);
+}
+html[data-read-aloud] [data-mk-layer]:not([data-read-now]) {
+ opacity: 0.4;
+}
+:where([data-motion="reduce"]) [data-mk-layer] {
+ transition: none;
+}
 /* Landing on a verse (components/bible/VerseFocusFlash.tsx): the verses asked
    for keep their strength and the rest of the chapter steps back for two
    seconds, then comes back, the same quiet light as read-aloud. No box: in

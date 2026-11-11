@@ -228,6 +228,13 @@ const STASH_PATHS = [
   // icons and have no server to answer with. Appended, for the slot-index
   // reason above.
   ["app", "(app)", "saints", "icons"],
+  // The other texts read aloud (1.9, lib/listen/recordings.ts): each
+  // recording's timings and the list of what has one, on the website alone.
+  // The apps carry only the list as it stood at the build
+  // (data/listen/index.json) and ask the website for the rest, so a text
+  // recorded after a build is heard in it. Appended, for the slot-index
+  // reason above.
+  ["public", "audio", "listen"],
 ];
 
 function slot(i) {

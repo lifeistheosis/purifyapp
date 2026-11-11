@@ -5,6 +5,8 @@ import { shownCite } from "@/lib/citations/shown";
 import type { EssayBlock, TheologyBody } from "@/lib/theology/load";
 import { SourceLine } from "@/components/citations/SourceLine";
 import { T } from "@/components/i18n/T";
+import { ListenHere } from "@/components/reading/ListenHere";
+import { listenId } from "@/lib/listen/texts";
 import { MarkHost } from "@/components/reading/MarkHost";
 import { SaintNames } from "@/components/saints/SaintNames";
 
@@ -27,6 +29,8 @@ export function StudyPartText({ blocks, summary, study, part }: { blocks: EssayB
   });
   return (
     <div lang="en" dir="ltr" className="mt-3 space-y-5">
+      {/* The part read aloud, where it has a recording (1.9, lib/listen/recordings.ts). */}
+      <ListenHere id={listenId("theology", study.slug, undefined, part)} title={study.title} by="Purify" />
       {summary ? (
         // The summary stands before the first part: part 0.
         <MarkHost {...host(0, 0)}>
