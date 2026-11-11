@@ -10,10 +10,17 @@
 // the same keys with the same rules. Two copies of a counter is two
 // answers waiting to disagree.
 
+import { cleanMarks } from "@/lib/marks/anchor";
+
 export type AnnotationCounts = {
   /** Highlighted verses, from purify:bible:* */
   verses: number;
-  /** Highlighted paragraphs of the Fathers, from purify:saint:* */
+  /**
+   * Highlighted paragraphs of the Fathers, from purify:saint:*, and every run
+   * of words marked in a text (1.9, lib/marks/anchor.ts), there or under
+   * purify:text:*. What Saved lists under Writings beside the starred
+   * sections (lib/saved/feed.ts), so the two always agree.
+   */
   paragraphs: number;
   /** Notes written, across both. */
   notes: number;
@@ -21,6 +28,7 @@ export type AnnotationCounts = {
 
 const BIBLE_PREFIX = "purify:bible:";
 const SAINT_PREFIX = "purify:saint:";
+const TEXT_PREFIX = "purify:text:";
 
 export const BOOKMARKS_KEY = "purify:bookmarks";
 
@@ -42,7 +50,7 @@ export function countAnnotations(
 
   for (const [key, raw] of entries) {
     const isBible = key.startsWith(BIBLE_PREFIX);
-    const isSaint = key.startsWith(SAINT_PREFIX);
+    const isSaint = key.startsWith(SAINT_PREFIX) || key.startsWith(TEXT_PREFIX);
     if (!isBible && !isSaint) continue;
 
     let value: unknown;
@@ -59,6 +67,12 @@ export function countAnnotations(
       else paragraphs++;
     }
     if (typeof v.note === "string" && v.note.trim().length > 0) notes++;
+    if (isSaint) {
+      for (const m of cleanMarks((value as { marks?: unknown }).marks) ?? []) {
+        paragraphs++;
+        if (m.note) notes++;
+      }
+    }
   }
 
   return { verses, paragraphs, notes };

@@ -37,7 +37,9 @@ import {
   type SavedItem,
 } from "@/lib/saved/feed";
 import { useSavedHighlights } from "@/lib/saved/highlights";
-import { passageWordsNow, saintNameOf, useSavedPassages } from "@/lib/saved/passages";
+import { passageWordsNow, saintNameOf, useSavedPassages, useSavedWords } from "@/lib/saved/passages";
+import { withMark, withoutMark } from "@/lib/marks/anchor";
+import { placeOfKey, readAt, writeAt } from "@/lib/marks/place";
 import { keptWordsOf } from "@/lib/saved/verseWords";
 import { useUndo } from "@/lib/ui/useUndo";
 import { useMounted } from "@/lib/useMounted";
@@ -95,6 +97,7 @@ export function SavedList() {
   const { bookmarks } = useBookmarks();
   const highlights = useSavedHighlights();
   const passages = useSavedPassages();
+  const marked = useSavedWords();
   const reading = useReadingHistory();
   const prayers = useRecentPrayers();
   const { labelOf, colorName, nameOf } = useHighlightNames();
@@ -103,7 +106,7 @@ export function SavedList() {
   const [color, setColor] = useState<string | null>(null);
   const [naming, setNaming] = useState(false);
 
-  const feed = useMemo(() => savedFeed(bookmarks, highlights, passages), [bookmarks, highlights, passages]);
+  const feed = useMemo(() => savedFeed(bookmarks, highlights, passages, marked), [bookmarks, highlights, passages, marked]);
   const historyCount = reading.length + prayers.length;
   const chips = useMemo(() => chipsFor(feed, historyCount), [feed, historyCount]);
 
@@ -146,6 +149,10 @@ export function SavedList() {
         p ? saintNameOf(p.saintSlug) : null,
         words?.text ?? null,
         words?.work ?? null,
+        // Marked words of a text: the words themselves, whose they are, and the note on them.
+        item.words?.quote ?? null,
+        item.words?.cite ?? null,
+        item.words?.note ?? null,
       ]
         .filter(Boolean)
         .join(" ");
@@ -184,9 +191,21 @@ export function SavedList() {
         // The same for a paragraph of the Fathers: its note stays.
         writeParagraphAnnotation(p.saintSlug, p.workSlug, p.sectionN, p.paragraphIdx, { ...beforeP, highlighted: undefined, at: undefined });
       }
+      // Marked words of a text: that one mark goes, the rest of its paragraph stays.
+      const w = item.words ?? null;
+      const place = w ? placeOfKey(w.storeKey) : null;
+      const goneMark = place && w ? (readAt(place).marks?.find((m) => m.id === w.id) ?? null) : null;
+      if (place && goneMark) {
+        const now = readAt(place);
+        writeAt(place, { ...now, marks: withoutMark(now.marks, goneMark.id) });
+      }
       offer({
         label: t("saved.removed"),
         restore: () => {
+          if (place && goneMark) {
+            const now = readAt(place);
+            writeAt(place, { ...now, marks: withMark(now.marks, goneMark) });
+          }
           if (gone) restoreBookmark(gone);
           // Back as it was, dated now, so the sync carries the return too.
           if (unmark && h && before) writeVerseAnnotation(h.book, h.chapter, h.verse, { ...before, at: undefined });

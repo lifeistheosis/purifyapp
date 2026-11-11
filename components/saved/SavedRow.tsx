@@ -80,14 +80,16 @@ export function SavedRow({
   const b = item.bookmark;
   const h = item.highlight;
   const p = item.passage ?? null;
+  const w = item.words ?? null;
   const verse = verseOf(item);
   const color = colorOf(item);
 
-  const kind = b ? t(KIND_LABEL_KEY[b.kind]) : t("saved.kind.highlight");
+  // Words kept or noted without a colour are a writing kept, not a highlight.
+  const kind = b ? t(KIND_LABEL_KEY[b.kind]) : w && !w.color ? t(KIND_LABEL_KEY["writing-section"]) : t("saved.kind.highlight");
   const meaning = color ? nameOf(color) || null : null;
   const thisYear = item.at !== null && new Date(item.at).getFullYear() === new Date().getFullYear();
   const date = item.at !== null ? shortDate(item.at, locale, !thisYear) : "";
-  const href = b ? bookmarkHref(b) : p ? passageHref(p) : `/bible/${h!.book}/${h!.chapter}#v${h!.verse}`;
+  const href = b ? bookmarkHref(b) : p ? passageHref(p) : w ? (w.href ?? wordsHref(w.storeKey)) : `/bible/${h!.book}/${h!.chapter}#v${h!.verse}`;
   const source = verse ? verseLabel(verse.book, verse.chapter, verse.verse) : b ? savedSource(b) : null;
 
   return (
@@ -108,7 +110,14 @@ export function SavedRow({
           <span className="min-w-0 truncate">{meaning ? `${kind} · ${meaning}` : kind}</span>
           {date ? <span className="ms-auto shrink-0 ps-3 tabular-nums">{date}</span> : null}
         </p>
-        {p ? (
+        {w ? (
+          // Marked words of a text (1.9): the words, the reader's note on them, and whose they are.
+          <>
+            <p lang="en" dir="ltr" className="mt-1 line-clamp-3 font-serif text-ui leading-snug text-paper">{w.quote}</p>
+            {w.note ? <p className="mt-1 line-clamp-2 font-sans text-detail leading-snug text-paper/75">{w.note}</p> : null}
+            {w.cite ? <p lang="en" dir="ltr" className="mt-1 truncate font-sans text-caption text-paper/55">{w.cite}</p> : null}
+          </>
+        ) : p ? (
           <PassageWords passage={p} near={near} />
         ) : verse ? (
           <VerseWords book={verse.book} chapter={verse.chapter} verse={verse.verse} near={near} words={h && !h.whole ? h.words : null} />
@@ -119,6 +128,13 @@ export function SavedRow({
       </Link>
     </SwipeRow>
   );
+}
+
+/** Where marked words open when the mark carries no address of its own: their paragraph, from its key. */
+function wordsHref(storeKey: string): string {
+  const [, kind, a, b, c, d] = storeKey.split(":");
+  if (kind === "saint") return `/saints/${a}/${b}#p-${c}-${d}`;
+  return "/saved";
 }
 
 /** A highlighted paragraph: its words, then whose they are. */

@@ -74,7 +74,7 @@ import { readerName } from "@/lib/profile/myPicture";
 import { todayKey } from "@/lib/rhythm/dayKey";
 import { inFilter, savedFeed } from "@/lib/saved/feed";
 import { useSavedHighlights } from "@/lib/saved/highlights";
-import { useSavedPassages } from "@/lib/saved/passages";
+import { useSavedPassages, useSavedWords } from "@/lib/saved/passages";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { resolveUser } from "@/lib/supabase/resolveUser";
 import { verseOf } from "@/components/saved/SavedRow";
@@ -126,9 +126,10 @@ export function YouMobile() {
   const { bookmarks } = useBookmarks();
   const highlights = useSavedHighlights();
   const passages = useSavedPassages();
+  const marked = useSavedWords();
   const notes = useJournal();
   const records = useJournalRecords();
-  const feed = useMemo(() => savedFeed(bookmarks, highlights, passages), [bookmarks, highlights, passages]);
+  const feed = useMemo(() => savedFeed(bookmarks, highlights, passages, marked), [bookmarks, highlights, passages, marked]);
   const journal = useMemo(() => journalFeed(notes, records), [notes, records]);
 
   const books = useMemo(() => localBookNames(t), [t]);

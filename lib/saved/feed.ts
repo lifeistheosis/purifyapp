@@ -35,6 +35,7 @@
  * uncoloured verse does.
  */
 
+import { cleanMarks } from "@/lib/marks/anchor";
 import { BOOKS } from "@/lib/bible/books";
 import { DEFAULT_HIGHLIGHT_COLOR, HIGHLIGHT_COLORS, isHighlightColor } from "@/lib/bible/highlightPalette";
 import type { Bookmark } from "@/lib/bookmarks";
@@ -76,6 +77,25 @@ export type SavedPassage = {
   at: string | null;
 };
 
+/**
+ * Words of a text a reader marked (build 93 note 13, lib/marks/anchor.ts): a
+ * highlight on some words of a paragraph, words kept, or words with a note.
+ * The row needs nothing looked up: the mark carries its words, whose they
+ * are and where they stand.
+ */
+export type SavedWords = {
+  /** The paragraph's own key in storage, and the mark's name in it. */
+  storeKey: string;
+  id: string;
+  quote: string;
+  cite?: string;
+  href?: string;
+  /** The highlight's colour, or null on words only kept or noted. */
+  color: string | null;
+  note?: string;
+  at: string | null;
+};
+
 export type SavedItem = {
   /** Stable across renders and removals: the row's React key. */
   key: string;
@@ -83,6 +103,8 @@ export type SavedItem = {
   highlight: SavedHighlight | null;
   /** A highlighted paragraph of the Fathers, for a row that is one (1.8). */
   passage?: SavedPassage | null;
+  /** Marked words of a text, for a row that is one (1.9). */
+  words?: SavedWords | null;
   /** When it was saved or marked (ms), or null when nobody knows. */
   at: number | null;
 };
@@ -119,6 +141,28 @@ export function passageFrom(key: string, raw: string | null): SavedPassage | nul
     };
   } catch {
     return null;
+  }
+}
+
+const TEXT_PREFIX = "purify:text:";
+
+/** The marked words in one localStorage entry: a Father's paragraph or another text's. */
+export function wordsFrom(key: string, raw: string | null): SavedWords[] {
+  if (!raw || !(key.startsWith(SAINT_PREFIX) || key.startsWith(TEXT_PREFIX))) return [];
+  try {
+    const marks = cleanMarks((JSON.parse(raw) as { marks?: unknown }).marks) ?? [];
+    return marks.map((m) => ({
+      storeKey: key,
+      id: m.id,
+      quote: m.q,
+      ...(m.cite ? { cite: m.cite } : {}),
+      ...(m.href ? { href: m.href } : {}),
+      color: m.color ? colorFrom(m.color) : null,
+      ...(m.note ? { note: m.note } : {}),
+      at: m.at && Date.parse(m.at) > 0 ? m.at : null,
+    }));
+  } catch {
+    return [];
   }
 }
 
@@ -181,6 +225,7 @@ export function savedFeed(
   bookmarks: readonly Bookmark[],
   highlights: readonly SavedHighlight[],
   passages: readonly SavedPassage[] = [],
+  words: readonly SavedWords[] = [],
 ): SavedItem[] {
   const byVerse = new Map<string, SavedHighlight>();
   for (const h of highlights) byVerse.set(verseKey(h.book, h.chapter, h.verse), h);
@@ -216,6 +261,14 @@ export function savedFeed(
     out.push({ key, bookmark: null, highlight: null, passage: p, at: Number.isFinite(at) ? at : null });
   }
 
+  for (const w of words) {
+    const key = `words:${w.storeKey}:${w.id}`;
+    if (used.has(key)) continue;
+    used.add(key);
+    const at = w.at ? Date.parse(w.at) : NaN;
+    out.push({ key, bookmark: null, highlight: null, words: w, at: Number.isFinite(at) ? at : null });
+  }
+
   return out.sort((a, b) => {
     if (a.at !== null && b.at !== null) return b.at - a.at;
     if (a.at !== null) return -1;
@@ -248,10 +301,10 @@ export function inFilter(item: SavedItem, filter: SavedFilter): boolean {
       // Every verse kept: starred, highlighted, or both.
       return kind === "bible-verse" || item.highlight !== null;
     case "highlights":
-      return item.highlight !== null || !!item.passage;
+      return item.highlight !== null || !!item.passage || !!item.words?.color;
     case "writings":
       // What the Fathers wrote: a section starred, or a paragraph highlighted.
-      return kind === "writing-section" || !!item.passage;
+      return kind === "writing-section" || !!item.passage || !!item.words;
     case "prayers":
       return kind === "prayer" || kind === "prayer-rule";
     case "saints":
@@ -287,7 +340,7 @@ export function countFor(items: readonly SavedItem[], filter: SavedFilter, histo
 
 /** A row's highlight colour: its verse's or its paragraph's, or null for a bookmark alone. */
 export function colorOf(item: SavedItem): string | null {
-  return item.highlight?.color ?? item.passage?.color ?? null;
+  return item.highlight?.color ?? item.passage?.color ?? item.words?.color ?? null;
 }
 
 /** Whether a row is highlighted in this colour (null: any row, coloured or not). */

@@ -6,6 +6,7 @@
 // gatherLibrary() reads localStorage; toJson / toMarkdown / librarySummary are
 // pure over the gathered shape so they can be unit-tested.
 
+import { cleanMarks } from "@/lib/marks/anchor";
 import type { Florilegium, FlorilegiumItem } from "@/lib/florilegium/florilegium";
 import { listFlorilegia } from "@/lib/florilegium/florilegium";
 import type { JournalKind, JournalRecord } from "@/lib/journal/entries";
@@ -16,6 +17,8 @@ export type ExportedAnnotation = {
   note?: string;
   color?: string;
   highlighted?: boolean;
+  /** The words themselves, for a mark on some words of a text (1.9, lib/marks/anchor.ts). */
+  quote?: string;
 };
 
 export type LibraryData = {
@@ -52,6 +55,11 @@ export function humanRefFromKey(key: string): string {
     const work = titleCase(parts[3].replace(/-/g, " "));
     return `${saint} · ${work} §${parts[4]}.${parts[5]}`;
   }
+  // purify:text:council:first-nicaea:the-twenty-canons:7:1 -> First Nicaea · The Twenty Canons §7.1
+  if (parts[1] === "text" && parts.length >= 7) {
+    const names = [parts[3], parts[4] === "-" ? "" : parts[4]].filter(Boolean).map((p) => titleCase(p.replace(/-/g, " ")));
+    return `${names.join(" · ")} §${parts[5]}.${parts[6]}`;
+  }
   return key;
 }
 
@@ -72,13 +80,18 @@ export function gatherLibrary(): LibraryData {
     for (let i = 0; i < window.localStorage.length; i++) {
       const k = window.localStorage.key(i);
       if (!k) continue;
-      if (!k.startsWith("purify:bible:") && !k.startsWith("purify:saint:")) continue;
+      if (!k.startsWith("purify:bible:") && !k.startsWith("purify:saint:") && !k.startsWith("purify:text:")) continue;
       try {
         const v = JSON.parse(window.localStorage.getItem(k) ?? "{}") as {
           note?: string;
           color?: string;
           highlighted?: boolean;
+          marks?: unknown;
         };
+        // Words marked inside the paragraph: each with its words, whose they are and its note.
+        for (const m of cleanMarks(v.marks) ?? []) {
+          annotations.push({ ref: m.cite ?? humanRefFromKey(k), quote: m.q, note: m.note, color: m.color, highlighted: m.color ? true : undefined });
+        }
         if (v.note || v.highlighted || v.color) {
           annotations.push({
             ref: humanRefFromKey(k),
@@ -174,7 +187,8 @@ export function toMarkdown(data: LibraryData): string {
   if (data.annotations.length) {
     out.push("\n## Notes and highlights\n");
     for (const a of data.annotations) {
-      out.push(a.note ? `- **${a.ref}**: ${a.note}` : `- **${a.ref}** (highlighted)`);
+      if (a.quote) out.push(a.note ? `- **${a.ref}**: "${a.quote}" ${a.note}` : `- **${a.ref}**: "${a.quote}"`);
+      else out.push(a.note ? `- **${a.ref}**: ${a.note}` : `- **${a.ref}** (highlighted)`);
     }
     out.push("");
   }

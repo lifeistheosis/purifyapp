@@ -47,13 +47,24 @@ const PictureSheet = dynamic(() => import("@/components/share/PictureSheet").the
  * marked opens the card on that mark.
  */
 
-type Sel = {
+/** Words of one paragraph: the paragraph, its text, and the run chosen in it. */
+type Part = {
   host: HTMLElement;
   textEl: HTMLElement;
   place: MarkPlace;
   text: string;
   s: number;
   e: number;
+};
+
+type Sel = Part & {
+  /**
+   * The paragraphs after this one that the selection runs on through, in
+   * order: each to its end but the last, which stops at the last word chosen.
+   * A mark lives in one paragraph (lib/marks/anchor.ts), so a run over three
+   * paragraphs is kept as three marks, made and changed together.
+   */
+  more?: Part[];
   /** The mark these words already are, when a mark was tapped or has just been made. */
   markId?: string;
   /** The browser's own selection (a mouse on the website): nothing is drawn over it. */
@@ -63,13 +74,57 @@ type Sel = {
 };
 
 const NO_BOXES: Box[] = [];
+/** The most paragraphs one selection runs through. */
+const MOST_PARAGRAPHS = 12;
+
+type Found = { host: HTMLElement; textEl: HTMLElement; place: MarkPlace };
+/** One end of a selection: a word of a paragraph. */
+type End = { at: Found; word: Span };
+
+/** The selection between two ends, whichever comes first on the page. */
+function between(a: End, b: End): { head: Part; more: Part[] } {
+  const part = (f: Found, s: number, e: number): Part => ({ ...f, text: f.textEl.textContent ?? "", s, e });
+  if (a.at.host === b.at.host) return { head: part(a.at, Math.min(a.word.s, b.word.s), Math.max(a.word.e, b.word.e)), more: [] };
+  const aFirst = !!(a.at.host.compareDocumentPosition(b.at.host) & Node.DOCUMENT_POSITION_FOLLOWING);
+  const first = aFirst ? a : b;
+  const last = aFirst ? b : a;
+  // Every paragraph on the page between the two that a reader can see.
+  const all = Array.from(document.querySelectorAll<HTMLElement>(MARK_HOST)).filter((h) => h.offsetParent !== null);
+  const from = all.indexOf(first.at.host);
+  const to = all.indexOf(last.at.host);
+  const middle: Part[] = [];
+  if (from !== -1 && to > from) {
+    for (const host of all.slice(from + 1, to).slice(0, MOST_PARAGRAPHS - 2)) {
+      const found = hostOf(host);
+      const text = found?.textEl.textContent ?? "";
+      const whole = wholeSpan(text);
+      if (found && whole.e > whole.s) middle.push(part(found, whole.s, whole.e));
+    }
+  }
+  const firstText = first.at.textEl.textContent ?? "";
+  const lastText = last.at.textEl.textContent ?? "";
+  return {
+    head: part(first.at, first.word.s, wholeSpan(firstText).e),
+    more: [...middle, part(last.at, wholeSpan(lastText).s, last.word.e)],
+  };
+}
+
+/** The paragraph under a point of the screen, past the selection's own handles and card. */
+function hostAt(x: number, y: number): Found | null {
+  for (const el of document.elementsFromPoint(x, y)) {
+    if (el.closest("[data-mk-ui]")) continue;
+    const found = hostOf(el);
+    if (found) return found;
+  }
+  return null;
+}
 const HOLD_MS = 400;
 const SLOP_PX = 8;
 /** A touch is echoed as mouse events for about this long. */
 const TOUCH_ECHO_MS = 700;
 const TOOL = "tap-press grid h-11 w-11 min-w-0 shrink place-items-center rounded-full text-paper/80 motion-safe:transition-colors active:bg-paper/10 hover:bg-paper/10";
 
-function hostOf(target: EventTarget | null): { host: HTMLElement; textEl: HTMLElement; place: MarkPlace } | null {
+function hostOf(target: EventTarget | null): Found | null {
   const el = target instanceof Element ? target : target instanceof Node ? target.parentElement : null;
   // The paragraph, not only its letters: a finger lands between two lines as often as on one.
   const host = el?.closest<HTMLElement>(MARK_HOST);
@@ -90,7 +145,8 @@ export function SelectionTools() {
   // What the finger is doing: holding still on a word, or dragging an end.
   const gesture = useRef<{
     hold?: { target: ReturnType<typeof hostOf> & object; x: number; y: number; timer: number };
-    drag?: { measured: WordBoxes; anchor?: Span; end?: "s" | "e" };
+    /** The end that stays while the finger moves the other, each paragraph's words measured once, and the paragraph the finger was last over. */
+    drag?: { fixed: End; measured: Map<HTMLElement, WordBoxes>; over: Found };
     outside?: { x: number; y: number; moved: boolean };
     lastTouch: number;
     edge?: number;
@@ -152,7 +208,7 @@ export function SelectionTools() {
           const measured = measureWords(found.textEl);
           const word = wordAt(measured, x, y);
           if (!word) return;
-          g.drag = { measured, anchor: word };
+          g.drag = { fixed: { at: found, word }, measured: new Map([[found.host, measured]]), over: found };
           g.outside = undefined;
           lift.reset();
           setMode("tools");
@@ -171,30 +227,21 @@ export function SelectionTools() {
       const d = g.drag;
       const cur = selRef.current;
       if (!d || !cur) return;
-      const word = wordAt(d.measured, x, y);
-      if (!word) return;
-      let s = cur.s;
-      let e = cur.e;
-      if (d.anchor) {
-        s = Math.min(d.anchor.s, word.s);
-        e = Math.max(d.anchor.e, word.e);
-      } else if (d.end === "s") {
-        s = Math.min(word.s, cur.e - 1);
-        if (word.s >= cur.e) {
-          // The start dragged past the end: the ends change hands.
-          s = snapToWords(cur.text, cur.e - 1, cur.e - 1)?.s ?? cur.s;
-          e = word.e;
-          d.end = "e";
-        }
-      } else if (d.end === "e") {
-        e = Math.max(word.e, cur.s + 1);
-        if (word.e <= cur.s) {
-          e = snapToWords(cur.text, cur.s, cur.s)?.e ?? cur.e;
-          s = word.s;
-          d.end = "s";
-        }
+      // The paragraph under the finger; between two paragraphs, the one it was last over.
+      const over = hostAt(x, y) ?? d.over;
+      d.over = over;
+      let measured = d.measured.get(over.host);
+      if (!measured) {
+        measured = measureWords(over.textEl);
+        d.measured.set(over.host, measured);
       }
-      if (s !== cur.s || e !== cur.e) setSel({ ...cur, s, e, markId: undefined });
+      const word = wordAt(measured, x, y);
+      if (!word) return;
+      const { head, more } = between(d.fixed, { at: over, word });
+      const lastNow = cur.more?.[cur.more.length - 1];
+      const lastNext = more[more.length - 1];
+      const same = head.host === cur.host && head.s === cur.s && head.e === cur.e && (cur.more?.length ?? 0) === more.length && lastNow?.host === lastNext?.host && lastNow?.e === lastNext?.e && lastNow?.s === lastNext?.s;
+      if (!same) setSel({ ...head, more: more.length ? more : undefined, touch: cur.touch, markId: undefined });
     }
 
     // A finger dragging near the top or the foot of the screen moves the page under it.
@@ -268,6 +315,21 @@ export function SelectionTools() {
       if (!found) return;
       const text = found.textEl.textContent ?? "";
       const s = offsetIn(found.textEl, range.startContainer, range.startOffset);
+      const end = hostOf(range.endContainer);
+      if (s !== null && end && end.host !== found.host) {
+        // It runs on into another paragraph: every paragraph between is taken whole.
+        const endText = end.textEl.textContent ?? "";
+        const eAt = end.textEl.contains(range.endContainer) ? offsetIn(end.textEl, range.endContainer, range.endOffset) : 0;
+        const firstWord = snapToWords(text, s, s) ?? snapToWords(text, s, text.length);
+        const lastWord = eAt ? (snapToWords(endText, eAt, eAt) ?? snapToWords(endText, 0, eAt)) : null;
+        if (firstWord && lastWord) {
+          const run = between({ at: found, word: { s: firstWord.s, e: firstWord.e } }, { at: end, word: { s: lastWord.e - 1, e: lastWord.e } });
+          setMode("tools");
+          setCopied(null);
+          setSel({ ...run.head, more: run.more, native: true });
+          return;
+        }
+      }
       // A selection that runs past the paragraph is taken to the paragraph's end.
       const e = found.textEl.contains(range.endContainer) ? offsetIn(found.textEl, range.endContainer, range.endOffset) : text.length;
       if (s === null || e === null || e <= s || !text.slice(s, e).trim()) return;
@@ -372,7 +434,7 @@ export function SelectionTools() {
   useLayoutEffect(() => {
     if (!sel) return;
     const measure = () => {
-      setBoxes(lineBoxes(sel.textEl, sel));
+      setBoxes([sel, ...(sel.more ?? [])].flatMap((part) => lineBoxes(part.textEl, part)));
       setWide(window.matchMedia("(min-width: 768px)").matches && !document.documentElement.classList.contains("is-native"));
     };
     measure();
@@ -398,15 +460,18 @@ export function SelectionTools() {
   }, [sel]);
 
   // ── What is on these words now ─────────────────────────────────────────
-  const whole = !!sel && coversAll(sel.text, sel);
+  const parts: Part[] = sel ? [sel, ...(sel.more ?? [])] : [];
+  const many = parts.length > 1;
+  const whole = !!sel && !many && coversAll(sel.text, sel);
   const value = sel ? readAt(sel.place) : null;
   const mark = sel?.markId ? value?.marks?.find((m) => m.id === sel.markId) : undefined;
   // The whole paragraph, with no mark of its own, speaks for the paragraph's highlight and note.
-  const asParagraph = whole && !mark;
+  // (A Father's paragraph only: on the other texts everything is a mark, which carries its own words to Saved.)
+  const asParagraph = whole && !mark && sel?.place.kind === "saint";
   const color = mark ? (mark.color ?? null) : asParagraph && value?.highlighted ? (value.color ?? "yellow") : null;
   const note = mark ? mark.note : asParagraph ? value?.note : undefined;
   const kept = !!mark?.kept;
-  const words = sel ? sel.text.slice(sel.s, sel.e) : "";
+  const words = parts.map((part) => part.text.slice(part.s, part.e)).join("\n\n");
   const cite = sel?.host.dataset.mkCite ?? "";
 
   /** The mark for these words, changed by `change`: made if there is none, taken away if nothing is left on it. */
@@ -415,11 +480,21 @@ export function SelectionTools() {
     if (!cur) return;
     const now = readAt(cur.place);
     const existing = cur.markId ? now.marks?.find((m) => m.id === cur.markId) : undefined;
-    const base = existing ?? makeMark(cur.text, cur.s, cur.e);
+    const base = existing ?? makeMark(cur.text, cur.s, cur.e, { cite: cur.host.dataset.mkCite, href: cur.host.dataset.mkLink });
     if (!base) return;
     const next = { ...change(base), at: new Date().toISOString() };
     const marks = isBare(next) ? withoutMark(now.marks, next.id) : withMark(now.marks, next);
     writeAt(cur.place, { ...now, marks });
+    // The paragraphs the selection runs on through take the same change, each on its own mark;
+    // a note is written once, on the first.
+    for (const part of cur.more ?? []) {
+      const there = readAt(part.place);
+      const fresh = makeMark(part.text, part.s, part.e, { cite: part.host.dataset.mkCite, href: part.host.dataset.mkLink });
+      if (!fresh) continue;
+      const mine = there.marks?.find((m) => m.s === fresh.s && m.e === fresh.e && m.q === fresh.q) ?? fresh;
+      const changed = { ...change({ ...mine, note: undefined }), note: mine.note, at: new Date().toISOString() };
+      writeAt(part.place, { ...there, marks: isBare(changed) ? withoutMark(there.marks, changed.id) : withMark(there.marks, changed) });
+    }
     setSel({ ...cur, s: base.s, e: base.e, native: cur.native && isBare(next), markId: isBare(next) ? undefined : next.id });
   }
 
@@ -468,11 +543,18 @@ export function SelectionTools() {
   function widen(to: Span) {
     if (!sel) return;
     if (sel.native) window.getSelection()?.removeAllRanges();
-    setSel({ ...sel, s: to.s, e: to.e, markId: undefined, native: false });
+    setSel({ ...sel, s: to.s, e: to.e, more: undefined, markId: undefined, native: false });
   }
   function startHandle(end: "s" | "e") {
     if (!sel) return;
-    gesture.current.drag = { measured: measureWords(sel.textEl), end };
+    // The other end stays where it is: its own word, in its own paragraph.
+    const last = parts[parts.length - 1];
+    const stay = end === "s" ? last : sel;
+    const word = end === "s" ? snapToWords(stay.text, stay.e - 1, stay.e - 1) : snapToWords(stay.text, stay.s, stay.s);
+    if (!word) return;
+    const at = { host: stay.host, textEl: stay.textEl, place: stay.place };
+    const moving = end === "s" ? sel : last;
+    gesture.current.drag = { fixed: { at, word }, measured: new Map(), over: { host: moving.host, textEl: moving.textEl, place: moving.place } };
   }
 
   const pictureWords = useMemo(
@@ -610,7 +692,7 @@ export function SelectionTools() {
                     hint={t(asParagraph ? "saints.highlightParagraph" : "saints.words.highlight")}
                     guard={guard}
                   />
-                  {!whole && !mark ? (
+                  {!whole && !mark && !many ? (
                     <div className="flex items-center justify-center gap-1 px-2 pt-0.5">
                       {canSentence && sentence ? (
                         <button type="button" onClick={act(() => widen(sentence))} className="min-h-11 rounded-pill px-3 font-sans text-caption text-paper/70 hover:text-paper active:bg-paper/10">

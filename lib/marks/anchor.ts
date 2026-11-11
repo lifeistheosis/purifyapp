@@ -32,6 +32,13 @@ export type Mark = {
   /** Kept: listed in Saved as a passage of its own. */
   kept?: boolean;
   note?: string;
+  /**
+   * Whose words and where, and the paragraph's address, as the page gave them
+   * when the mark was made: Saved shows a mark by these and its own words,
+   * with nothing else to look up.
+   */
+  cite?: string;
+  href?: string;
   /** When it last changed (ISO). */
   at: string;
 };
@@ -132,7 +139,7 @@ function newId(): string {
 }
 
 /** A mark on `text` from `s` to `e`, remembering its words and what stands either side. */
-export function makeMark(text: string, s: number, e: number, more: Partial<Pick<Mark, "color" | "kept" | "note" | "id" | "at">> = {}): Mark | null {
+export function makeMark(text: string, s: number, e: number, more: Partial<Pick<Mark, "color" | "kept" | "note" | "id" | "at" | "cite" | "href">> = {}): Mark | null {
   let lo = Math.max(0, Math.min(s, e));
   let hi = Math.min(text.length, Math.max(s, e));
   while (lo < hi && /\s/.test(text[lo])) lo += 1;
@@ -146,12 +153,14 @@ export function makeMark(text: string, s: number, e: number, more: Partial<Pick<
   if (more.color) mark.color = more.color;
   if (more.kept) mark.kept = true;
   if (more.note) mark.note = more.note;
+  if (more.cite) mark.cite = more.cite.slice(0, 240);
+  if (more.href && more.href.startsWith("/")) mark.href = more.href.slice(0, 300);
   return mark;
 }
 
 /** The same mark moved to where it now stands, its words and surroundings read again from the text. */
 export function reanchor(text: string, mark: Mark, at: Span): Mark {
-  const fresh = makeMark(text, at.s, at.e, { id: mark.id, at: mark.at, color: mark.color, kept: mark.kept, note: mark.note });
+  const fresh = makeMark(text, at.s, at.e, { id: mark.id, at: mark.at, color: mark.color, kept: mark.kept, note: mark.note, cite: mark.cite, href: mark.href });
   return fresh ?? mark;
 }
 
@@ -382,6 +391,9 @@ export function cleanMarks(value: unknown): Mark[] | undefined {
     if (typeof m.color === "string" && /^[a-z]{1,16}$/.test(m.color)) mark.color = m.color;
     if (m.kept === true) mark.kept = true;
     if (typeof m.note === "string" && m.note.trim()) mark.note = m.note;
+    if (typeof m.cite === "string" && m.cite) mark.cite = m.cite.slice(0, 240);
+    // An address inside the app, never one that leaves it.
+    if (typeof m.href === "string" && /^\/[^/\\]/.test(m.href)) mark.href = m.href.slice(0, 300);
     if (!isBare(mark)) out.push(mark);
   }
   return out.length ? out : undefined;

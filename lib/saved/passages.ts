@@ -25,14 +25,15 @@ import { useEffect, useSyncExternalStore } from "react";
 
 import { fetchWorkSection, fetchWorkTitle } from "@/lib/saints/writingClient";
 
-import { passageFrom, passageKey, type SavedPassage } from "./feed";
+import { passageFrom, passageKey, wordsFrom, type SavedPassage, type SavedWords } from "./feed";
 
 // ── Every highlighted paragraph ──────────────────────────────────────────
 
 const EMPTY: SavedPassage[] = [];
+const NO_WORDS: SavedWords[] = [];
 let version = 0;
 let listening = false;
-let cached: { version: number; list: SavedPassage[] } | null = null;
+let cached: { version: number; list: SavedPassage[]; words: SavedWords[] } | null = null;
 
 function listen() {
   if (listening || typeof window === "undefined") return;
@@ -44,26 +45,44 @@ function listen() {
   window.addEventListener("storage", bump);
 }
 
-function scan(): SavedPassage[] {
-  const out: SavedPassage[] = [];
+function scan(): { list: SavedPassage[]; words: SavedWords[] } {
+  const list: SavedPassage[] = [];
+  const words: SavedWords[] = [];
   try {
     for (let i = 0; i < window.localStorage.length; i += 1) {
       const key = window.localStorage.key(i);
-      if (!key || !key.startsWith("purify:saint:")) continue;
-      const p = passageFrom(key, window.localStorage.getItem(key));
-      if (p) out.push(p);
+      if (!key || !(key.startsWith("purify:saint:") || key.startsWith("purify:text:"))) continue;
+      const raw = window.localStorage.getItem(key);
+      const p = passageFrom(key, raw);
+      if (p) list.push(p);
+      // The words marked inside it, a Father's paragraph or another text's (1.9).
+      words.push(...wordsFrom(key, raw));
     }
   } catch {
-    return EMPTY;
+    return { list: EMPTY, words: NO_WORDS };
   }
-  return out;
+  return { list, words: words.length ? words : NO_WORDS };
+}
+
+function scanned() {
+  listen();
+  if (!cached || cached.version !== version) cached = { version, ...scan() };
+  return cached;
 }
 
 function snapshot(): SavedPassage[] {
   if (typeof window === "undefined") return EMPTY;
-  listen();
-  if (!cached || cached.version !== version) cached = { version, list: scan() };
-  return cached.list;
+  return scanned().list;
+}
+
+function wordsSnapshot(): SavedWords[] {
+  if (typeof window === "undefined") return NO_WORDS;
+  return scanned().words;
+}
+
+/** Every run of words a reader marked in a text. Empty on the server and on first paint. */
+export function useSavedWords(): SavedWords[] {
+  return useSyncExternalStore(subscribe, wordsSnapshot, () => NO_WORDS);
 }
 
 function subscribe(cb: () => void): () => void {
