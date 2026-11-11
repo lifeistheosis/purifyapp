@@ -403,6 +403,22 @@ self-test proves it: a sheet whose Close is 24px square fails, where the walk
 before the measure passed it, and the same sheet at 44 passes
 (`node scripts/tap-walk.mjs --self-test`, 22 of 22).
 
+Its first trial, on /community/, /prayers/ and /settings/ as a reader with
+no Plus (14:35 to 15:05 UTC), found three that no walk had seen, all mended
+the same hour: Search's Close, 38px square on every screen's Search sheet
+(`hit-44`, the plate kept at 38: the arbiter's word, Admin's hand,
+`2743f0288`); the bell's sheet, signed out, its "Sign in" 41px across
+(Admin's own, `min-w-11`, `9f277d9cd`); and a Plus member's profile, whose
+gold dust and drifting specks did not say what the app's own test allows
+(`data-mock-allow="gold mirror"` with the reason, on the effect and the
+frames, no change a reader sees, `2743f0288`). The trials also mended the
+measure: a sheet settles before it is named and measured (a profile was
+measured half-loaded), a sheet is told apart by its frame (Search counts
+once though what it suggests changes with the screen), and with `--online`
+both walks read the public pictures the main web keeps in its storage (a
+profile picture read as missing because the walk blocked it). On a selling
+export of the mended tree: 90 taps, 0 failed, 9 distinct sheets, all clean.
+
 **3. No saint or work without a picture:**
 `lib/saints/__tests__/everySaintAPicture.test.ts` passes: every saint has a
 picture or stands in its list, with what he waits for. The list had 31 at
