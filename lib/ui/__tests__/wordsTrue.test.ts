@@ -97,9 +97,6 @@ type Waiting = { rule: string; key?: string; file?: string; owner: string; note:
 
 /** Known, owned, and in hand. The gate passes only when this is empty. */
 export const WAITING: readonly Waiting[] = [
-  // Build 93 note 14: shown only to a reader who still holds names from the wall.
-  { rule: "prayer-wall", key: "prayers.diptychs.wallHeading", owner: "Updates, with the campaigns chat", note: "build 93 note 14" },
-  { rule: "prayer-wall", key: "prayers.wall.left", owner: "Updates, with the campaigns chat", note: "build 93 note 14" },
   // The Privacy page, English and German: its lines on signing in (the arbiter's A and B, and (j)) and
   // Buy Me a Coffee among its third parties, waiting on his yes through the arbiter.
   { rule: "sync-on-sign-in", file: "components/legal/PrivacyText.tsx", owner: "Admin", note: "the arbiter's A and B and words-h2-h3.md (j), on his yes" },
