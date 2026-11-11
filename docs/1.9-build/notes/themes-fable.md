@@ -3719,3 +3719,228 @@ stays.
 errors. `lib/premium/__tests__/plusTryScreens.test.ts` holds the bar's
 shape.
 
+## 39. Build 93 note 3: a tap on a look always changes something
+
+His words, 2026-11-11, on You, Reading mode: "So this screen actually doesn't
+do anything. When I click on the stuff, it doesn't change anything." Dawn
+carried the check and the app stayed in Dark
+(`build-93/03-reading-mode-dawn-not-applied.png`).
+
+**The cause.** Every part that asked "may this reader wear a Plus palette?"
+asked once, when it first appeared, and kept its answer. The part that
+dresses the whole app lives as long as the app is open, so its answer was
+from the moment the app opened; a page asked when it was opened. He opened
+the app signed out and signed in afterwards, and the sign-in form steps on
+without loading the app again. The page, asked after the sign-in, said yes,
+kept his tap and drew the check. The dresser, asked before it, still said
+no. Only a purchase told anything to ask again.
+
+Found by reading, then reproduced on the gate-on export with those same
+steps: the palette kept was dawn, Dawn carried the check, the app was in
+Dark. The same fault is in the live 1.8 app for Candlelight and Monastery,
+since Plus was locked.
+
+**The mend** (`bc279916`, and `82ace459` for the last two lines).
+
+- One answer for the whole app (`lib/reader/plusModesGate.ts`), read by the
+  dresser and by every picker and switch through `usePlusReadingModes`. Two
+  parts cannot disagree, because there is nothing for them to disagree
+  with.
+- It is asked again when it can have changed: a sign-in or a sign-out, the
+  signal coming back, the app coming back to the front, a purchase as
+  before, and a part appearing. Only the newest asking's answer is taken.
+- The check stands on the palette the app is in, read off the page itself
+  (`useThemeWorn`), on Settings' row, the Reading mode page and the reader's
+  own settings, and the name under Settings' row is that palette's. A kept
+  look the gate refuses leaves the app in Dark, and Dark carries the check.
+- One tap rule (`lib/reader/pickPalette.ts`), handed to all three pickers by
+  one hook (`components/reader/usePalettePick.ts`): worn at once, or the
+  Purify Plus sheet for a reader the gate has said no to.
+- A tap made while the gate is still asking is not lost. It waits for the
+  answer and is carried out when it comes.
+
+**A second fault beside it, measured on the export.** A reader WITH Plus
+opened the app to their look, then Dark while the account server was asked,
+then their look again: Dark from 306 to 529 ms after opening on a fast
+answer, and from 278 to 7,033 ms when each answer took 400 ms (Linen: light,
+dark, light). The device now keeps what it last heard
+(`purify.reader.plusModes`), and a reader it last knew to have Plus keeps
+their palette while it asks. What it last heard never draws a lock and
+never outlives the answer.
+
+**Walked on a gate-on export built from this change**, with a stand-in for
+the account server (the export is built against a placeholder address
+nobody answers). 50 checks, all passing:
+
+- His note: opened signed out, signed in with Plus, Reading mode, a tap on
+  Dawn: worn at once, Dawn alone checked. A tap on Linen: worn, light.
+  Settings' row names the palette the app is in.
+- Without Plus, signed out and signed in: each Plus family says Purify
+  Plus, a tap on Dawn opens the sheet, nothing is kept, no check moves, and
+  Light is worn at once.
+- A subscriber opening the app, in Dawn and in Linen, on a fast answer and a
+  slow one: their look from the first paint, never Dark in between, no lock
+  drawn.
+- Signing out with a look on: the look is put down, the page says Purify
+  Plus, the check is on Dark, and the pick is still kept for the next
+  sign-in.
+- A tap while the gate is asking (an account server a second and a half
+  away): Dawn is worn when the answer comes, with no second tap; the sheet
+  opens when the answer is no.
+
+Tests: `lib/reader/__tests__/plusModesGate.test.ts` (the gate and how the
+app is wired to it), `pickPalette.test.ts`.
+
+## 40. Candlelight at Vespers: the reader's tap wins for that night
+
+The same thing could happen in one more place, found while reading for note
+3 and put to the arbiter: with that switch on, after sunset the app wore
+Candlelight whatever was picked, so a tap on a palette moved the check and
+changed nothing until morning. The arbiter's word, 2026-11-11: "the
+reader's tap wins for that night and Candlelight returns at the next
+sunset." The switch's own chat is archived, so its files were taken on the
+arbiter's word (`bc279916`).
+
+- A palette picked after sunset is given the rest of that night: what is
+  kept is the night's own sunrise (`purify.reader.vespers.pass`,
+  `lib/reader/vespers.ts`). The next sunset is past it, so Candlelight comes
+  back by itself with the switch never touched.
+- Only a tap gives it. A palette arriving from the reader's account does
+  not.
+- The switch turned off takes it back, so on again that night means
+  Candlelight now.
+- The check stands on Candlelight while the app is in it, and a tap on that
+  Candlelight changes nothing kept (it would otherwise have become the
+  reader's palette by day).
+- The pre-paint script opens the app the same way, from the first paint.
+
+Walked with the phone's clock at 21:00 UTC (12 checks, in the 50): Candlelight
+with the check on it; a tap on Dawn worn at once, the night theirs until
+06:52 the next morning; opened again that night in Dawn, never Candlelight;
+the switch off and on again, Candlelight; and on a second phone, Dawn at
+the next day's noon and Candlelight back the next evening.
+`lib/reader/__tests__/vespersPass.test.ts` holds it.
+
+## 41. A subscriber with no signal keeps their palette
+
+His word, 2026-11-11: "No, not 1.9.1. Again, all of it is going into
+version 1.9" (CLAUDE.md, "A release ships finished"). So what section 39
+had left for later came in, on the arbiter's word: "a palette is cosmetic
+and on the phone, so a device that last knew its reader to have Plus keeps
+their palette with no signal until the server answers otherwise; nothing
+that the server grants (sync, downloads, voices) is ever opened that way."
+
+- The entitlement lookup now says whether the account server was reached
+  (`askClientEntitlements` in `lib/entitlements/client.ts`, with Admin's
+  yes). `getClientEntitlements` answers its seven other callers exactly as
+  before, FREE on a failed reach.
+- The palettes' gate alone reads it. When the server cannot be asked, a
+  reader the device last knew to have Plus keeps their palette; any other
+  reader's Plus palettes stay shut, and a tap still opens the sheet.
+  Nothing is kept from an asking that reached nobody.
+
+Walked with the signal off (9 checks, in the 50): last heard yes, the app
+opens in Dawn and stays, a tap on Linen is worn; the signal back with Plus
+ended, the look is put down and the lock drawn; last heard no, Dark and the
+sheet; the signal back with Plus, Dawn worn without the app being opened
+again. `lib/entitlements/__tests__/askClientEntitlements.test.ts` holds the
+lookup.
+
+## 42. Build 93 note 4: the reader's Reading mode section
+
+His words: "Refine this section and refine the design also."
+(`build-93/04-reading-mode-chips.png`: a grid of radio-dot chips, the two
+earned palettes in dashed boxes with a count, Cappadocian alone on its row,
+"See all" under it.) His standing rules for it: minimal, photos over words,
+no dashed placeholder boxes, no orphan on a row, floating pills only where
+they belong, 44px to the touch, the house's motion.
+
+**What it is now** (`82ace459`, `components/reader/ReadingModeChips.tsx`;
+after: `build-93/04b-reading-mode-shelf-after.png`, and
+`04c-reading-mode-shelf-without-plus.png` for a reader without Plus).
+
+- Each mode is shown as itself: the small page Settings draws, the Bible's
+  page in that palette, on one shelf. In the phone's sheet it is swept
+  sideways and runs to the sheet's edges, the next page cut off so a reader
+  sees there is more. In the computer's popover, where nothing sweeps, it is
+  four columns: seven or eight pages, so never one alone.
+- The way to every mode is the head's own link, a finger tall, not a row
+  under the shelf.
+- The two earned by reading stand unlit, with how far the reader is, until
+  they are earned. No dashed edge, here or on Settings' row or the Reading
+  mode page, since it is one tile (Updates' yes, on its condition that only
+  the page's picture is dimmed: the name and the count hold 4.5:1 on five
+  palettes in all three places).
+- The shelf opens with the checked page in sight (a look is the sixth page)
+  and brings a tapped page whole into view, sideways only, to a place the
+  shelf rests at. The first try moved it anywhere and the shelf's own snap
+  pulled it back, leaving the page cut off; the walk caught it.
+- A sweep along the shelf is the shelf's, never the sheet's own pull.
+- No colour is copied into the section by hand any more: a small page takes
+  its ground and ink from the stylesheet.
+
+**Walked on the same export.**
+
+- 36 checks as a reader with Plus and as one without: one shelf, seven
+  pages (eight with a look), every page 67 by 120, the link 72 by 47,
+  nothing dashed, the check on the palette the app is in; a tap on
+  Monastery, cut off at the edge, worn at once and brought whole into view;
+  the earned palettes' line under the shelf, with the Plus note for a
+  reader without it; a tap on Candlelight without Plus opens the sheet over
+  the reader; See all opens the reading modes' own page; the Fathers'
+  reader opens the same shelf; in Arabic it runs from the right.
+- `checkMock` passes on the section on the five palettes: with Plus and a
+  goal's line open, with a light look worn, and without Plus.
+- The sweep, with real touch points: at the sheet's half height with the
+  finger drifting up 34px, and at its full height drifting down, the shelf
+  moves 174px and the sheet stays; the same finger beside the shelf does
+  pull the sheet (472 to 356, and 177 to 293), so the measure can see one
+  move.
+- Names in 21 languages at 390, 360 and 320 wide, with Plus and a look worn
+  and without Plus: 126 sheets, every name whole, on two lines at most,
+  clear of its neighbour and of the shelf's edge at both ends.
+
+`lib/reader/__tests__/readerShelf.test.ts` holds its shape.
+
+## 43. Night sky's star (build 93 note 7)
+
+His rule of 2026-11-11, "No sparkle star". Admin's shape check found the
+four-point star drawn twice in the Night sky mode's picture, the star over
+the horizon at a chapter's head. It is the Octogram's two squares now, the
+star of Bethlehem's eight points, as Today's Nativity card wears since the
+same sweep; its light is the soft pool it was (`2d3bac13`,
+`scripts/theme-pictures.mjs`, `public/themes/nightsky-horizon.svg`; after:
+`build-93/07c-night-sky-star-after.png`). The other fourteen drawings came
+out byte for byte as they were, and `noSparkle.test.ts`'s waiting list is
+empty again.
+
+## 44. What is not proven, and what was found on the way
+
+- **Nothing here has been seen on a phone.** Every walk is a browser on the
+  export. The lines for the next test build's walk are in HANDOFF.
+- **The account server in the walks is a stand-in.** It answers a sign-in,
+  "who am I" and the entitlements row, with Plus or without, with a delay or
+  with no signal. The real one may answer in ways it does not.
+- **The computer's popover was walked on the dev server, not on a built
+  website.** The apps' export draws no Reader pill. There: four to a row,
+  the names whole in 21 languages, `checkMock` passing. One long name
+  (Cappadocian in Russian) turns inside itself there, with no hyphen: the
+  house keeps one hyphenation rule, for headings, and this did not add a
+  second.
+- **The "before" still of the section is his own screenshot.** The export it
+  could have been taken from was gone by the time the stills were, and a
+  build for one picture is not what was asked.
+- **On a slow signal the page logs an error nobody catches**: "Lock broken
+  by another request with the 'steal' option", from the account library's
+  lock when a call waits five seconds behind another. It is not from the
+  palettes' gate, whose asking handles a failure, and nothing visible broke
+  in the walks; it is there before this change. For whoever owns sign-in.
+- **A sign-in tells no other Plus gate to ask again.** The others ask per
+  page, so they mend themselves on the next page, except
+  `usePlusFeatures`, whose shared answer lives a minute. Told to Admin, with
+  the one place that would mend them all.
+- **Two tests were red at the branch's head from other chats' work** while
+  this was gated, neither in these files: a page with no screen name
+  (mended by its owner the same hour) and the app build's set-aside list
+  (its owner told).
+
