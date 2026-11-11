@@ -382,3 +382,34 @@ describe("words that may mean their writer is in danger (the safety line; the mo
     expect(queue).toContain("disabled={Boolean(a.needsReason && !why)}");
   });
 });
+
+describe("a waiting campaign's place (2026-11-11)", () => {
+  const waiting = (over: Record<string, unknown>) => ({
+    id: "c9",
+    title: "For my brother",
+    intention: "healing",
+    for_whom: "living",
+    subject_name: "Marko",
+    details: null,
+    days: 7,
+    ends_on: null,
+    creator_name: "Reader E",
+    creator_handle: "reader_e",
+    held_reason: "new",
+    created_at: "2026-11-11T00:00:00Z",
+    ...over,
+  });
+
+  it("is on the row, as readers will see it once it is up", () => {
+    const row = buildQueue({ ...EMPTY, waitingCampaigns: [waiting({ place_country: "RS", place_name: "Novi Sad" })] })[0];
+    expect(row.note).toContain("Place: ");
+    expect(row.note).toContain("Novi Sad");
+    expect(row.note).toContain("Serbia");
+    expect(row.note!.indexOf("For Marko")).toBeLessThan(row.note!.indexOf("Place: "));
+  });
+
+  it("says the country alone, or nothing", () => {
+    expect(buildQueue({ ...EMPTY, waitingCampaigns: [waiting({ place_country: "GR", place_name: null })] })[0].note).toContain("Place: Greece");
+    expect(buildQueue({ ...EMPTY, waitingCampaigns: [waiting({})] })[0].note ?? "").not.toContain("Place:");
+  });
+});

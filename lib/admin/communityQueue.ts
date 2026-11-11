@@ -25,6 +25,7 @@
 
 import { heldWhy, type HeldWhy, type WaitingCampaign, type WaitingPicture } from "@/lib/campaigns/model";
 import { DANGER_MARK, saysDanger } from "@/lib/campaigns/safety";
+import { placeText } from "@/lib/campaigns/words";
 import type { RemovalReason } from "@/lib/community/removal";
 
 import { openReports, sharedKey, sharedWords, waitsForDecision, type SharedPageIn } from "./sharedPages";
@@ -543,6 +544,9 @@ export function buildQueue(src: QueueSources): QueueRow[] {
       note:
         [
           c.subject_name ? `For ${c.subject_name}` : null,
+          // Every reader sees the place once the campaign is up, so the
+          // moderator reads it first (the panel is English).
+          placeText(c, "en") ? `Place: ${placeText(c, "en")}` : null,
           c.for_whom === "departed" ? "for the reposed" : c.intention,
           c.days ? `${plural(c.days, "day", "days")}${c.ends_on ? `, to ${c.ends_on}` : ""}` : null,
         ]
