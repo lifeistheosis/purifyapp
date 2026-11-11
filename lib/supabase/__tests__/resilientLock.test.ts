@@ -42,6 +42,43 @@ describe("resilientNavigatorLock", () => {
     expect(fn).toHaveBeenCalledTimes(1);
   });
 
+  it("answers with the operation's own outcome, run once, when its lock is stolen while it runs (supabase's typed error)", async () => {
+    // supabase-js 2.105: the holder whose lock another request steals gets
+    // its typed timeout error while its operation runs on. The wrapper used
+    // to run the operation a second time beside the first.
+    withLocksApi();
+    navigatorLock.mockImplementation(async (_name: string, _timeout: number, fn: () => Promise<unknown>) => {
+      void fn();
+      throw new FakeAcquireTimeout('Lock "lock:x" was released because another request stole it');
+    });
+    const fn = vi.fn().mockResolvedValue("its own outcome");
+    await expect(resilientNavigatorLock("lock:x", 5000, fn)).resolves.toBe("its own outcome");
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it("answers with the operation's own outcome when the lock it took is stolen in turn (the raw AbortError)", async () => {
+    // Three calls overlapping on a slow signal: the second steals from the
+    // first, the third from the second, whose request then rejects with the
+    // Web Locks API's own AbortError, which reached the page uncaught.
+    withLocksApi();
+    navigatorLock.mockImplementation(async (_name: string, _timeout: number, fn: () => Promise<unknown>) => {
+      void fn();
+      throw new DOMException("Lock broken by another request with the 'steal' option.", "AbortError");
+    });
+    const fn = vi.fn().mockResolvedValue("its own outcome");
+    await expect(resilientNavigatorLock("lock:x", 5000, fn)).resolves.toBe("its own outcome");
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it("passes an \"only if free\" timeout (0) on as asked, so supabase's refresh tick skips a busy lock", async () => {
+    withLocksApi();
+    const busy = new FakeAcquireTimeout('Acquiring an exclusive Navigator LockManager lock "lock:x" immediately failed');
+    navigatorLock.mockRejectedValue(busy);
+    const fn = vi.fn();
+    await expect(resilientNavigatorLock("lock:x", 0, fn)).rejects.toBe(busy);
+    expect(fn).not.toHaveBeenCalled();
+  });
+
   it("rethrows every non-timeout error from the locked operation", async () => {
     withLocksApi();
     navigatorLock.mockRejectedValue(new Error("real failure inside the lock"));

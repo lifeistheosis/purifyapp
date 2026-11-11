@@ -2197,6 +2197,51 @@ findings:
     action: "Branch: done. A phone: docs/PHONE-WALK.md rows 27 to 29 on the next test build. Main web: nothing, the apps carry it."
     safe_to_automate: false
     review: owner (walk on device)
+  - id: F-52
+    title: A stolen auth lock answered the stolen call with an error while its work ran on, and the F-13 wrapper ran a stolen call a second time beside itself
+    area: reliability/web
+    severity: P2
+    confidence: high
+    status: corrected-unverified
+    status_notes: >-
+      Found 2026-11-11 on ccr-07896cf2-bo0afd, from Fable Themes' walk on a
+      slow signal: an uncaught "Lock broken by another request with the
+      'steal' option", from the account library's lock. Cause, read in
+      @supabase/auth-js 2.105.4 (lib/locks.js, navigatorLock): a request that
+      waits past its timeout now steals the lock, and the Web Locks API then
+      rejects the holder's request while the holder's callback runs on. Two
+      faults followed in lib/supabase/resilientLock.ts (F-13's wrapper). The
+      holder whose lock was taken got supabase's typed timeout error, and the
+      wrapper, which ran lockless on any timeout, ran its operation a second
+      time beside the first, still running. And a thief whose lock was stolen
+      in turn (three calls overlapping) got the raw AbortError, which the
+      wrapper passed on and no caller expects: GoTrueClient's getSession,
+      code exchange after a sign-in, refresh or initialisation answered with
+      an error while its work went on and landed; where the caller was a
+      background task, the error reached the page uncaught. A third: a
+      timeout of 0, supabase's "only if the lock is free" (its refresh tick,
+      which skips a tick while another holds the lock), was run lockless
+      beside the holder. What a reader could lose: not the stored session (the
+      stolen work finishes and saves it), but the answer to the call. A
+      sign-in could report a failure it did not have (an OAuth code exchange
+      run twice fails the second time, and that answer was the one returned),
+      the account gate could show "couldn't confirm" (resolveUser maps a
+      throw to unresolved, never a fake sign-out), and a sync round could
+      stop and wait for the next. CORRECTED ON THE BRANCH: the operation runs
+      once; when its lock is taken from it while it runs, its own outcome
+      (result or failure) is the answer; a timeout of 0 is passed on as
+      asked, so the tick skips; a lock that times out before the operation
+      starts still runs it lockless (F-13). lib/supabase/__tests__/
+      resilientLock.test.ts (three cases) and resilientLockSteal.test.ts
+      (supabase's own navigatorLock on a stand-in for the Web Locks API, three
+      calls overlapping and the lock stolen twice) fail on the old wrapper,
+      five of five. Not walked in a browser: three overlapping auth calls on a
+      slow signal cannot be made on demand on the export, which has no auth
+      server; the stand-in keeps the Web Locks rules that matter here.
+    evidence: lib/supabase/resilientLock.ts; lib/supabase/__tests__/resilientLock.test.ts; lib/supabase/__tests__/resilientLockSteal.test.ts; node_modules/@supabase/auth-js/dist/module/lib/locks.js (navigatorLock's steal and the typed error for a stolen holder); GoTrueClient.js (_acquireLock, _autoRefreshTokenTick's acquire of 0)
+    action: "Branch: done. Main web: with the 1.9 merge. Watch for the message on a slow signal after the merge."
+    safe_to_automate: false
+    review: none (library behaviour, read in its source)
 
 corrections:
   - id: C-01

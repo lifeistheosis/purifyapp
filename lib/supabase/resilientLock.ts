@@ -9,11 +9,28 @@
 // signature behind the 2026-07-12 "couldn't confirm your sign-in" report).
 //
 // This wrapper delegates to supabase's own navigatorLock, and when (and only
-// when) acquisition times out, runs the operation WITHOUT the lock instead of
-// failing. The lock exists to serialize token refreshes between tabs; running
-// lockless risks at worst a redundant refresh, which Supabase tolerates
-// (refresh-token reuse grace interval). A jammed lock, by contrast, is a
-// guaranteed outage. Every other error passes through untouched.
+// when) acquisition times out before the operation starts, runs the
+// operation WITHOUT the lock instead of failing. The lock exists to
+// serialize token refreshes between tabs; running lockless risks at worst a
+// redundant refresh, which Supabase tolerates (refresh-token reuse grace
+// interval). A jammed lock, by contrast, is a guaranteed outage. Every other
+// error passes through untouched.
+//
+// A stolen lock (1.9, found by Fable Themes on a slow signal, 2026-11-11:
+// an uncaught "Lock broken by another request with the 'steal' option").
+// From supabase-js 2.105 navigatorLock steals a lock it has waited on past
+// its timeout, and the Web Locks API then rejects the holder's request while
+// the holder's operation runs on to its end. Two things followed here. The
+// holder whose lock was taken got supabase's typed timeout error, and this
+// wrapper ran its operation a SECOND time, beside the first, still running;
+// and a thief whose lock was stolen in turn (three calls overlapping on a
+// slow signal) got the raw AbortError, which no caller expects: a session
+// read, a code exchange after a sign-in or a refresh answered with an error
+// while its work went on and landed. Now the operation runs once: when its
+// lock is taken from it while it runs, its own outcome is the answer. And a
+// timeout of 0, supabase's "only if the lock is free" (the refresh tick,
+// which skips a tick while another holds the lock), is passed on as asked
+// rather than run lockless beside the holder.
 
 import { navigatorLock } from "@supabase/supabase-js";
 
@@ -23,6 +40,11 @@ function isAcquireTimeout(e: unknown): boolean {
       typeof e === "object" &&
       (e as { isAcquireTimeout?: boolean }).isAcquireTimeout,
   );
+}
+
+/** The Web Locks API's answer to a request whose lock another request took ("steal"), as it comes raw. */
+function isAbort(e: unknown): boolean {
+  return Boolean(e && typeof e === "object" && (e as { name?: string }).name === "AbortError");
 }
 
 export async function resilientNavigatorLock<R>(
@@ -50,10 +72,17 @@ export async function resilientNavigatorLock<R>(
     acquireTimeout >= 0
       ? acquireTimeout
       : 5000;
+  // The operation, once the lock has let it start. If the lock is then
+  // taken from it, it runs on, and its own outcome is the answer.
+  let started: Promise<R> | null = null;
+  const run = (): Promise<R> => (started = fn());
   try {
-    return await navigatorLock(name, cappedTimeout, fn);
+    return await navigatorLock(name, cappedTimeout, run);
   } catch (e) {
+    if (started && (isAcquireTimeout(e) || isAbort(e))) return await started;
     if (isAcquireTimeout(e)) {
+      // Asked to take the lock only if it is free: say it was not.
+      if (cappedTimeout === 0) throw e;
       return await fn();
     }
     throw e;
