@@ -9518,7 +9518,7 @@ await section(66, async () => {
   }
 });
 
-// 66. Listen on the texts beside the Bible (1.9, his word of 2026-11-10:
+// 67. Listen on the texts beside the Bible (1.9, his word of 2026-11-10:
 // "make sure the Bible section, the saints' lives ... the ecumenical councils,
 // the theology section ... Even the history section, allow that to be read
 // out"). His PC records them, so this walk has no recording to play: it
@@ -9527,8 +9527,8 @@ await section(66, async () => {
 // app does with them. No speech is made. lib/listen/__tests__ holds the
 // source; a real recording is proved by his steps V1 to V6
 // (docs/1.9-build/OWNER-STEPS.md).
-await section(66, async () => {
-  console.log("\n66. Listen on the texts beside the Bible");
+await section(67, async () => {
+  console.log("\n67. Listen on the texts beside the Bible");
   const { sentenceSpans } = await import("../lib/marks/anchor.ts");
   // Seconds of silence, as a WAV a browser plays: 8 kHz, one channel, 8 bits.
   const silence = (seconds) => {

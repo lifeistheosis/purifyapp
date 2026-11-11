@@ -505,9 +505,12 @@ that is another chat's (`screens.test.ts`, the change-of-email page). Walked in
 a phone-sized browser with silent stand-in files and made-up timings built
 from the real batches and served to the test browser only (no speech was
 made): Listen stood on the text that had a recording and on no other; the
-paragraphs lit in order; nothing was lit while a quoted passage was read;
-Canon I of Nicaea ended, the page moved to Canon II and lit it. The exports'
-results are in the commit that adds this section.
+paragraphs lit in order; Canon I of Nicaea ended, the page moved to Canon II
+and lit it. On the final state: the whole unit suite green (975 files, 12,562
+tests), both native exports green with the release's shop and community
+switches on (69.0 MB packed of the 85 MB ceiling), and the export walk's
+sections 64, 65 and 67 passing every check (67 is Listen against a silent
+stand-in).
 
 **Not provable here, named for his walk.**
 
@@ -521,7 +524,9 @@ results are in the commit that adds this section.
 
 **Known edges, said plainly.**
 
-- A quoted passage and a list are read but not lit: only paragraphs are.
+- A passage an event's account quotes is lit as it is read and can be marked,
+  signed with its own source. The one list in all of History is read but not
+  lit.
 - The size beside the save mark is known for recordings that existed when the
   app was built; one recorded after shows no size until the next build, and
   still saves.
