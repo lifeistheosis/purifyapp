@@ -149,9 +149,9 @@ describe("his face on the picture of his words", () => {
     expect(quoteFace(null, false)).toBeNull();
   });
 
-  it("is known for every saint whose words Today shows but St Alexander of Alexandria, whose words keep the lit cross", () => {
+  it("is known for every saint whose words Today shows, St Alexander of Alexandria too since his picture was cleared", () => {
     const faceless = SAINT_WORDS_SLUGS.filter((slug) => !quoteFace(brief(slug), false));
-    expect(faceless).toEqual(["alexander-of-alexandria"]);
+    expect(faceless).toEqual([]);
   });
 });
 
@@ -334,8 +334,10 @@ describe("the faces for the saints' words", () => {
     expect(face?.fallback).toEqual({ src: "/saints/icons/john-chrysostom.v2.jpg", point: [0.53, 0.39], looks: "ahead" });
   });
 
-  it("keeps the lit cross for St Alexander of Alexandria, who has no cleared picture (build 93 note 1)", () => {
-    expect(quoteFace(brief("alexander-of-alexandria"), false)).toBeNull();
+  it("shows St Alexander of Alexandria's engraving, cleared on 2026-11-11, where his words kept the lit cross (build 93 note 1)", () => {
+    expect(quoteFace(brief("alexander-of-alexandria"), false)).toEqual({ src: "/saints/icons/alexander-of-alexandria.jpg", point: [0.48, 0.36], looks: "ahead", fallback: null });
+    // Carried, so the same with no signal.
+    expect(quoteFace(brief("alexander-of-alexandria"), true)?.src).toBe("/saints/icons/alexander-of-alexandria.jpg");
   });
 });
 

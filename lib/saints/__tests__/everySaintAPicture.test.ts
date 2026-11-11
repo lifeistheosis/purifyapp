@@ -38,7 +38,6 @@ const WAITING: Record<string, string> = {
   // Updates 2's search (build 93 note 12), at Commons' pace.
   "symeon-the-new-theologian": "permission: the Monastery of the Virgin Mary the Consolatory, Brownsburg-Chatham, Quebec (no older picture of him is free)",
   "mark-of-ephesus": "search: Updates 2 (the Illustrated Chronicle's miniature of 1568 to 1576 to be read; a permission if none passes)",
-  "alexander-of-alexandria": "search: Updates 2",
   "xenia-of-petersburg": "permission: Holy Cross Monastery, Wayne, West Virginia (glorified in 1988; no picture of her is free)",
   "victorinus-of-pettau": "permission: the Archdiocese of Maribor, for Ptuj, his see (no old picture of him found in any library searched)",
   // November's and December's saints are the November and December chat's

@@ -2850,6 +2850,28 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%96%D0%B8%D1%82%D0%B8%D1%8F_%D0%A1%D0%B2%D1%8F%D1%82%D1%8B%D1%85_(1903-1911)_-_%D0%B8%D0%BA%D0%BE%D0%BD%D0%B0_09102_%D0%98%D1%81%D0%B8%D0%B4%D0%BE%D1%80%D0%B0.png",
   },
+  // St Alexander: the oldest picture of him found, a fresco of the Veljusa
+  // monastery (11th to 14th century), is on Commons only as a small
+  // photograph taken from a university website and put under the Free Art
+  // License by whoever uploaded it, which shows nothing of who took it; the
+  // Russian Lives of the Saints have no print of him on his day, 29 May. So
+  // this engraving, from a Hungarian Lives of the Saints printed in Budapest
+  // about 1899: public domain by age, its engraver unnamed and the book's
+  // author dead since 1933. Its file page tags the 2012 scan CC BY-SA 3.0,
+  // which a faithful scan of a flat public-domain print cannot add to (the
+  // house's rule, docs/licensing/SHARE_FLOWERS.md). Cut inside the
+  // engraving's oval, so none of the page shows.
+  "alexander-of-alexandria.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "An engraving of an old bishop with a short white beard and thinning hair, a fine halo about his head and a pallium marked with a cross over his shoulders, on a ground of fine engraved lines.",
+    work: "St Alexander of Alexandria, an engraving in Lajos Dedek Crescens's Lives of the Saints (Szentek élete), Budapest (a detail inside its oval: his head and shoulders)",
+    artist: "Unknown",
+    workDate: "About 1899",
+    source: "Wikimedia Commons (a scan of the book)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Alexander-Alexandria.JPG",
+  },
 };
 
 /**

@@ -186,6 +186,7 @@ export const SHAREABLE_ICONS: ReadonlySet<string> = new Set([
   "adrian-and-natalia.jpg",
   "aemilian-of-cyzicus.jpg",
   "agathonicus-of-nicomedia.jpg",
+  "alexander-of-alexandria.jpg",
   "alexander-of-svir.jpg",
   "alypius-the-stylite.jpg",
   "ammon-of-nitria.jpg",
@@ -261,6 +262,9 @@ const ICON_FACES: Readonly<Record<string, readonly [number, number, number?]>> =
   "justinian-the-great.v2.jpg": [0.5, 0.27, 0.51],
   // 1.9, build 90 note 3: St Memnon's fresco at Dionysiou, wider than tall, his face by eye.
   "memnon-of-ephesus.v3.jpg": [0.49, 0.37],
+  // 1.9, build 93 note 1, the gate's twelve: St Alexander's engraving of about 1899, cut inside
+  // its oval about his head and shoulders, his face by eye.
+  "alexander-of-alexandria.jpg": [0.48, 0.36],
 };
 
 /**
