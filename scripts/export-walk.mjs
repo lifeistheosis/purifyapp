@@ -9836,9 +9836,11 @@ await section(69, async () => {
   console.log("\n69. Bows and prostrations in the Hours");
   const { checkMock, printMockCheck } = await import("./mock-check.mjs");
   const touch = async (page, selector) => {
+    // Brought to the middle and left to come to rest first: a touch on a page still moving stops the scroll and opens nothing.
+    await page.evaluate((sel) => document.querySelector(sel)?.scrollIntoView({ block: "center", behavior: "instant" }), selector);
+    await page.waitForTimeout(500);
     const at = await page.evaluate((sel) => {
       const el = document.querySelector(sel);
-      el?.scrollIntoView({ block: "center" });
       const r = el?.getBoundingClientRect();
       return r ? { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2), w: r.width, h: r.height } : null;
     }, selector);
