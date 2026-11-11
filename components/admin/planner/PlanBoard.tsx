@@ -25,6 +25,8 @@ import {
 import { useToday } from "@/lib/calendar/useToday";
 import { keyOf } from "@/lib/rhythm/dayKey";
 
+import { Check } from "@/components/ui/icons/Check";
+
 import { Card, Mark, Modal, Pill, ToolbarButton } from "../primitives";
 import { Select } from "../Select";
 
@@ -364,17 +366,25 @@ function Chip({
         opacity: skipped ? 0.55 : 1,
       }}
     >
+      {/* 44 to a finger, the 16px box to a mouse (as the traffic rows are,
+          TrafficViews); the box is drawn inside, and the check is the icon,
+          never a typed character (checkMock's glyph rule). */}
       <button
         type="button"
         onClick={onToggle}
         aria-label={done ? `Reopen ${task.title}` : `Mark ${task.title} done`}
-        className="mt-px inline-flex size-4 shrink-0 items-center justify-center rounded-[4px] border font-sans text-[10px] leading-none"
-        style={{
-          borderColor: done ? "var(--adm-good)" : "var(--adm-line-strong)",
-          color: "var(--adm-good)",
-        }}
+        className="inline-flex size-11 shrink-0 items-center justify-center pointer-fine:mt-px pointer-fine:size-4"
       >
-        {done ? "✓" : ""}
+        <span
+          aria-hidden="true"
+          className="inline-flex size-4 items-center justify-center rounded-[4px] border"
+          style={{
+            borderColor: done ? "var(--adm-good)" : "var(--adm-line-strong)",
+            color: "var(--adm-good)",
+          }}
+        >
+          {done ? <Check size={12} strokeWidth={2.2} /> : null}
+        </span>
       </button>
       <button type="button" onClick={onOpen} className="min-w-0 text-left">
         <span

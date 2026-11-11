@@ -334,9 +334,11 @@ const MAX_WRITTEN_SMALL_TARGETS = 0;
 // at md; 6px apart now so the touch boxes do not overlap) and the topic
 // reader's step link (25px); and Now Playing's sound bar, 42.5px tall from
 // its disc, too. The scroll rail's arrows are drawn only for a fine pointer,
-// a mouse's (mouseOnly above). Left: the admin planner's 16px checkbox
-// (components/admin/planner/PlanBoard.tsx), Admin's. IT MAY ONLY FALL.
-const MAX_SIZED_SMALL_TARGETS = 1;
+// a mouse's (mouseOnly above). The last, the admin planner's 16px
+// checkbox (components/admin/planner/PlanBoard.tsx), is 44 to a finger and
+// keeps its 16px box for a mouse (pointer-fine), the box drawn inside it, 1
+// -> 0 the same night. None is left. IT MAY ONLY FALL.
+const MAX_SIZED_SMALL_TARGETS = 0;
 
 describe("touch targets", () => {
   const { total, byFile, written, writtenByFile, sized, sizedByFile } = countSmallTargets();
