@@ -89,7 +89,7 @@ describe("the head an app's page carries", () => {
     // scripts/native-build.mjs recovers a killed build by the POSITION of each
     // entry, so new ones go on the end and nothing above them may move.
     const build = code("scripts/native-build.mjs");
-    const list = build.slice(build.indexOf("const STASH_PATHS = ["), build.indexOf("function slot("));
+    const list = build.slice(build.indexOf("const STASH_PATHS = ["), build.indexOf("const stash = exportStash("));
     // One entry to a line: ["app", "(app)", "campaigns", "[id]"],
     const entries = [...list.matchAll(/^\s*\[(".+")\],\s*$/gm)].map((m) =>
       [...m[1].matchAll(/"([^"]+)"/g)].map((part) => part[1]).join("/"),

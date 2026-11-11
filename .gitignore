@@ -115,6 +115,8 @@ distribution.pem
 # Generated content registries (emitted from TS at build time)
 data/_generated/
 .native-export-stash/
+# Stashed copies a later build found beside trees that had already come back (scripts/lib/export-stash.mjs).
+.native-export-stash-kept/
 test-results/
 .cache/
 *.log

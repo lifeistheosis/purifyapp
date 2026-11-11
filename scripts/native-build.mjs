@@ -3,7 +3,9 @@
 //      export; they stay on the remote website and are called over the network
 //      for auth / billing / sync / content-updates / licensed Bible),
 //   2. run the Next static export (BUILD_TARGET=android|ios → output:'export'),
-//   3. ALWAYS restore app/api (finally), even if the build fails,
+//   3. ALWAYS restore app/api, even if the build fails or is STOPPED: in a
+//      finally, on a stop signal, and, for a build that was killed outright,
+//      on the next build's entry (scripts/lib/export-stash.mjs),
 //   4. while the on-device content layer is switched on, and it is off since
 //      1.6 (lib/content/enabled.ts): emit TS registries + build the content
 //      package into out/content.
@@ -25,11 +27,12 @@
 // The website build (npm run build) is untouched: app/api is only moved for the
 // duration of the export and restored immediately after.
 
-import { execSync } from "node:child_process";
+import { execSync, spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
 import { appBuildProblems } from "../lib/testWeb/rules.ts";
+import { exportStash, killGroup } from "./lib/export-stash.mjs";
 
 const PLATFORMS = ["android", "ios"];
 
@@ -237,30 +240,76 @@ const STASH_PATHS = [
   ["public", "audio", "listen"],
 ];
 
-function slot(i) {
-  return path.join(STASH_DIR, String(i));
+// Setting them aside, putting them back, and what a stopped build left
+// behind: scripts/lib/export-stash.mjs.
+const stash = exportStash({ root: ROOT, dir: STASH_DIR, paths: STASH_PATHS });
+
+// ON ENTRY, before anything reads the tree: a build that was stopped midway
+// (a kill, a closed terminal) never reached its `finally`, and left the
+// website's files in the stash, where git shows them deleted. Put them back
+// first, and say so. Never under a build that is still running: both write
+// out/, and putting the trees back would break the other one's export.
+{
+  const left = stash.recover();
+  if (left.state === "running") {
+    console.error(
+      `✗ another native build is running in this checkout (process ${left.pid}). Both write out/ and share the stash:\n` +
+        "  wait for it to finish. If that process is not a build, delete .native-export-stash/owner.json and start again.",
+    );
+    process.exit(1);
+  }
 }
-function stashAll() {
-  STASH_PATHS.forEach((parts, i) => {
-    const src = path.join(ROOT, ...parts);
-    if (fs.existsSync(src)) {
-      fs.mkdirSync(STASH_DIR, { recursive: true });
-      fs.rmSync(slot(i), { recursive: true, force: true });
-      fs.renameSync(src, slot(i));
-      console.log(`• stashed ${parts.join("/")} (excluded from static export)`);
+
+/**
+ * `next build`, with the website's files set aside for as long as it runs and
+ * put back however it ends: done, failed, or STOPPED. A stop signal
+ * (Ctrl-C, a kill, a closed terminal) stops the build and its workers, which
+ * would otherwise go on holding .next/lock, puts the files back and only then
+ * exits. It runs as a child we can wait on, not execSync, because a handler
+ * cannot run while execSync holds the process.
+ */
+async function buildWithTheWebsiteSetAside(cmd, extraEnv = {}) {
+  const env = withBin({ ...process.env, ...extraEnv });
+  let child = null;
+  let stopped = null;
+  const SIGNALS = { SIGINT: 2, SIGTERM: 15, SIGHUP: 1 };
+  const onSignal = (signal) => {
+    if (stopped) return;
+    stopped = signal;
+    console.log(`\n• ${signal}: stopping the export, then putting the website's files back`);
+    if (child?.pid) {
+      killGroup(child.pid, signal);
+      // Workers that do not go on being asked are made to.
+      setTimeout(() => killGroup(child.pid, "SIGKILL"), 8000).unref();
     }
-  });
-}
-function restoreAll() {
-  STASH_PATHS.forEach((parts, i) => {
-    if (fs.existsSync(slot(i))) {
-      const dest = path.join(ROOT, ...parts);
-      fs.rmSync(dest, { recursive: true, force: true });
-      fs.renameSync(slot(i), dest);
-      console.log(`• restored ${parts.join("/")}`);
-    }
-  });
-  fs.rmSync(STASH_DIR, { recursive: true, force: true });
+  };
+  for (const signal of Object.keys(SIGNALS)) process.on(signal, () => onSignal(signal));
+  // Whatever else ends the process while the files are aside (an exception, an exit elsewhere).
+  process.on("exit", () => stash.restoreAll());
+
+  let code = 0;
+  try {
+    stash.stashAll();
+    code = stopped
+      ? 1
+      : await new Promise((resolve, reject) => {
+          // Its own group where there are groups, so a stop reaches `next` and every worker it started.
+          child = spawn(cmd, { shell: true, stdio: ["ignore", "inherit", "inherit"], env, detached: process.platform !== "win32" });
+          stash.ownBuild(child.pid);
+          child.on("error", reject);
+          child.on("exit", (exit, signal) => resolve(exit ?? (signal ? 1 : 0)));
+        });
+  } finally {
+    stash.restoreAll();
+  }
+  if (stopped) {
+    console.log("• the export was stopped; the website's files are back in place");
+    process.exit(128 + SIGNALS[stopped]);
+  }
+  if (code !== 0) {
+    console.error(`✗ ${cmd} failed (exit ${code})`);
+    process.exit(code);
+  }
 }
 
 /**
@@ -281,11 +330,13 @@ function localContentEnabled() {
 // the script was started.
 const BIN = path.join(ROOT, "node_modules", ".bin");
 
-function run(cmd, extraEnv = {}) {
-  const env = { ...process.env, ...extraEnv };
+function withBin(env) {
   const key = Object.keys(env).find((k) => k.toUpperCase() === "PATH") ?? "PATH";
   env[key] = [BIN, env[key]].filter(Boolean).join(path.delimiter);
-  execSync(cmd, { stdio: "inherit", env });
+  return env;
+}
+function run(cmd, extraEnv = {}) {
+  execSync(cmd, { stdio: "inherit", env: withBin({ ...process.env, ...extraEnv }) });
 }
 
 // Prune the RSC prefetch payload duplicate that `next build` emits per route.
@@ -680,12 +731,7 @@ run(
     "scripts/emit-widget-data.mjs",
 );
 
-try {
-  stashAll();
-  run("next build", { BUILD_TARGET: PLATFORM });
-} finally {
-  restoreAll();
-}
+await buildWithTheWebsiteSetAside("next build", { BUILD_TARGET: PLATFORM });
 
 // The covers the apps carry as well as the website (1.9, build 90 note 5): the
 // pictures new since the website's last deploy, which the live site cannot

@@ -555,3 +555,16 @@ One sentence is the editorials' own and not a quotation: "A lesser reverence is 
 Where it is: `lib/prayers/metanies.ts` (the rules, the quotations, the day), `components/prayers/MetanyLine.tsx` (under each Hour's title, mounted by `afterHead` on `PrayerRuleReader` from `app/(app)/prayers/hours/[id]/page.tsx`), `components/prayers/MetanyGuide.tsx` and `app/(app)/prayers/bows/page.tsx` (the guide; it is not under `/prayers/hours/` because the site answers 404 for any Hour it does not have, lib/seo/unknownAddress.ts). Fourteen lines in the 21 languages; the quotations stay in the English they were published in.
 
 The gate: `lib/prayers/__tests__/metanies.test.ts` (20 tests: every quotation verbatim in its file, Hapgood's page for each, each rule by date over four years, Holy Monday, Holy Thursday, the Annunciation on both calendars, the catalogs, no em dash, no word of review to a reader); export walk section 69 (ten days at the Hours on both calendars, the door touched, the guide, Back, checkMock on five palettes for the line and the guide, Arabic).
+
+## The native build puts the website's files back when it is stopped (2026-11-11)
+
+Found by Fable Themes, given to this chat by the arbiter. `scripts/native-build.mjs` set 29 website-only trees aside in `.native-export-stash/` and put them back only in a `finally`. A build that was stopped left them there: git showed `app/api` and the rest deleted, and orphaned workers held `.next/lock`, so the next build refused to start.
+
+Now (`scripts/lib/export-stash.mjs`):
+
+- **On entry** a leftover stash is put back first, and the build says so. If the build that owns it is still running, the new one refuses to start and touches nothing. If the dead build's `next build` is still alive it is stopped, which frees `.next/lock`. A tree that had already come back another way (git) is never overwritten: it stays, and the stashed copy is moved to `.native-export-stash-kept/` (ignored by git), nothing deleted.
+- **On a stop signal** (SIGINT, SIGTERM, SIGHUP) the build stops `next build` and every worker it started, puts the files back, and exits 130, 143 or 129. `next build` now runs as a child the script waits on, in a group of its own, because a handler cannot run while `execSync` holds the process.
+- The stash says whose it is (`owner.json`: the build's pid and its `next build`).
+
+Proved on the real build, three ways: SIGTERM midway (1,367 files shown deleted while building, 0 after, no worker left, exit 143); SIGKILL (the stash and one worker left behind), then the next build's entry (the worker stopped, 29 trees restored, said in its first two lines); SIGINT (exit 130, 0 deleted, no worker). `lib/build/__tests__/exportStash.test.ts` holds the entry guard on a scratch checkout (eight cases) and the script's wiring.
+

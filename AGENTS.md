@@ -22,6 +22,8 @@ Both native builds are `scripts/native-build.mjs --platform <p>` and both write 
 `out/`, which the script wipes on entry. Run them one after the other, never at
 the same time in one checkout.
 
+While a native build runs, git shows the website-only trees (`app/api` and 28 more) as deleted: they are set aside in `.native-export-stash/` and put back when it ends. Never commit in that state. A build that is stopped puts them back before it exits, and one that was killed outright has them put back by the next build's first step, which says so (`scripts/lib/export-stash.mjs`); a second build started while one is running refuses to start.
+
 Node ≥ 22.5 required (`lib/content` uses `node:sqlite`); local dev and CI use Node 24. If `tsc` reports errors under `.next/dev/types` referencing stashed routes, run `rm -rf .next && npx next typegen` (stale generated types from a mixed dev/android build — a known trap).
 
 ## Architecture: the one gotcha that breaks everything
