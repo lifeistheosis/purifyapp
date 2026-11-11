@@ -94,3 +94,13 @@ Screenshot: `build-93/06-language-list-off-screen.png`: the language list opens 
 Already mended after build 93: `209c3ad64` (Updates 2, 2026-11-10 22:31, "The language list opens whole on the screen, its last languages in reach"; build 93 is from `8abb0fc88`, 22:10, so it does not have it; `build-90/c17-language-list-390.png` is the mended list). But the mended list is still a floating dropdown over the page, scrolled part way, with the page showing round it.
 
 Who has it: Updates 2 (LocaleMenu). On the arbiter's word under his standing rules: the language opens the house's own sheet from the foot of the screen, every language by its own name with its English name beside it, the reader's own language checked and in view when it opens, Arabic and Urdu mirrored, 44px rows, the house's motion, never a floating panel. A still with the push.
+
+### 7. The sparkle star is AI slop: replace it everywhere (2026-11-11 about 01:27 UTC)
+
+His words: "I made it very clear to not use this icon widget design of that like star, because that is a vibe coded AI slop detected design. So anywhere where it's used, replace it with a new design."
+
+Screenshot: `build-93/07-whats-new-sparkle.png`: Settings, "What's new", a four-point sparkle in the row's icon tile.
+
+Where it is (the arbiter, by search on the branch): the `Sparkle` icon (`components/ui/icons/Sparkle.tsx`, "Four-point spark for the verse highlight toggle") in `components/community/NotificationsInbox.tsx`, `components/community/profile/ProfileViewer.tsx`, `components/journal/PageBlocks.tsx`, `components/journal/TodayPage.tsx`, `components/saints/ParagraphRow.tsx`, `components/settings/SettingsClient.tsx`, `components/billing/plusTry/TryProfile.tsx`, `components/bible/VerseRow.tsx`, `components/shop/PrayerCornerSet.tsx`, `components/shop/CartSignals.tsx`; the ✦ glyph in `components/calendar/FeastPanel.tsx` and `components/calendar/Colophon.tsx`. Not sparkles: the five-point `Star` of bookmarks and ratings, and the eight-point `Octogram`. `lib/community/symbols.ts` names ✨ only to draw what readers type, which stays.
+
+A standing guardrail from now (CLAUDE.md, "No sparkle star"). Who has it: Admin (free until the note freeze): each place gets an icon from `components/ui/icons` that names what the row or control is, chosen per place and listed in the record; the `Sparkle` icon leaves the set; `lib/ui/__tests__/noSparkle.test.ts` fails on the icon and the glyphs in app/, components/ and lib/ (readers' own text excepted by name); `checkMock` gains a `sparkle` rule with its self-test. Stills of the changed rows with the push.
