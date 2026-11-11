@@ -17,6 +17,7 @@ import { ReadingsFlowBar } from "@/components/bible/ReadingsFlowBar";
 import { PlanFlowBar } from "@/components/plans/PlanFlowBar";
 import { ListenButton, ReadAloudFollow } from "@/components/bible/ReadAloud";
 import { GreekNumberingNote } from "@/components/bible/GreekNumberingNote";
+import { HebrewChapterNote } from "@/components/bible/HebrewNote";
 import { InterlinearToggle } from "@/components/bible/InterlinearToggle";
 import { MobileChapterPill } from "@/components/bible/MobileChapterPill";
 import { ReaderSettingsMenu } from "@/components/bible/ReaderSettingsMenu";
@@ -94,6 +95,7 @@ export function ChapterScreen({
   totalVerses,
   showInterlinear,
   greekNumberedApart,
+  hebrewNote = null,
   configuredLicensed,
   licensedId,
   usingLicensed,
@@ -114,6 +116,12 @@ export function ChapterScreen({
   showInterlinear: boolean;
   /** An Old Testament chapter whose Greek is numbered apart from its English. */
   greekNumberedApart: boolean;
+  /**
+   * An Old Testament chapter beside which the Hebrew does not stand, and why
+   * (lib/bible/hebrewText.ts): its book or this chapter is not in the Hebrew
+   * Bible, or the two do not answer verse for verse here.
+   */
+  hebrewNote?: "book" | "chapter" | "apart" | null;
   /** Licensed translations that are set up, for the switcher. */
   configuredLicensed: string[];
   /** The licensed translation asked for, carried on to the next chapter. */
@@ -317,6 +325,7 @@ export function ChapterScreen({
                   <span aria-hidden className="page-open-rule mx-auto mt-5 block h-px w-7 bg-paper/25" />
                 </header>
                 {greekNumberedApart && !downloaded ? <GreekNumberingNote /> : null}
+                {hebrewNote && !downloaded ? <HebrewChapterNote state={hebrewNote} /> : null}
 
                 {/* Before you read (1.7, the owner's "Do all of these" of
                     2026-10-15): at the start of every book, what it is, who

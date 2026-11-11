@@ -12,6 +12,7 @@ import { loadChapter, loadIntro, loadIntroFacts, loadIntroQuotes, loadCommentary
 import type { ListedSource } from "@/components/citations/Marked";
 import { shownCite } from "@/lib/citations/shown";
 import { crossRefVerses, interlinearState } from "@/lib/bible/chapterExtras";
+import { hebrewState } from "@/lib/bible/hebrewText";
 import {
  isLicensed,
  isApiConfigured,
@@ -90,6 +91,12 @@ export default async function BibleChapterPage({
  const greek = usingLicensed ? "none" : await interlinearState(book, chapterNum);
  const showInterlinear = greek === "shown";
  const greekNumberedApart = greek === "apart";
+ // The Hebrew beside the Old Testament (1.9, lib/bible/hebrewText.ts): where
+ // the verse map places it, as a study aid, whether or not the Greek can
+ // stand beside the chapter; elsewhere a note says why it is not there.
+ const hebrew = usingLicensed ? "none" : await hebrewState(book, chapterNum);
+ const showOriginals = showInterlinear || hebrew === "shown";
+ const hebrewNote = hebrew === "book" || hebrew === "chapter" || hebrew === "apart" ? hebrew : null;
  // The Greek, the lexicon and the cross-references are not props of the
  // reader any more. Each is a static file it fetches when it is asked for
  // (app/bible-data/; lib/bible/chapterExtras.ts says why and what it saved).
@@ -144,8 +151,9 @@ export default async function BibleChapterPage({
    book={b!}
    chapter={chapterNum}
    totalVerses={totalVerses}
-   showInterlinear={showInterlinear}
+   showInterlinear={showOriginals}
    greekNumberedApart={greekNumberedApart}
+   hebrewNote={hebrewNote}
    configuredLicensed={configuredLicensed}
    licensedId={licensedId}
    usingLicensed={usingLicensed}
@@ -182,7 +190,7 @@ export default async function BibleChapterPage({
        book={book}
        bookName={b!.name}
        chapter={chapterNum}
-       showInterlinear={showInterlinear}
+       showInterlinear={showOriginals}
        configuredLicensed={configuredLicensed}
       />
      }
@@ -208,7 +216,7 @@ export default async function BibleChapterPage({
       // reads it there. The apps carry it as a file and fetch it when a
       // verse's commentary is opened: it was the heaviest thing on the page.
       commentary={IS_STATIC_EXPORT ? undefined : commentary}
-      hasInterlinear={showInterlinear}
+      hasInterlinear={showOriginals}
       crossRefVerses={refVerses}
       testament={b!.testament}
       paragraphStarts={paragraphStarts}

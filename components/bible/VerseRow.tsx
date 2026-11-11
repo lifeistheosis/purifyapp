@@ -44,6 +44,7 @@ import { Highlighter } from "@/components/ui/icons/Highlighter";
 import { Star } from "@/components/ui/icons/Star";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { textDir } from "@/lib/i18n/textDir";
+import { HebrewWords } from "@/components/bible/HebrewNote";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { CompareSheet } from "@/components/bible/CompareSheet";
 import { cn } from "@/lib/cn";
@@ -117,6 +118,8 @@ export function VerseRow({
  originalText,
  originalTokens,
  englishTokens,
+ hebrew,
+ hebrewApart,
  strongs,
  onOpenCrossRefs,
  onWordStudy,
@@ -153,6 +156,11 @@ export function VerseRow({
  * and Interlinear is on, the English column re-renders as tokens so
  * hovering a Greek word can highlight the matching English word(s). */
  englishTokens?: { w: string; s?: string }[];
+ /** The Old Testament's Hebrew for this verse (1.9, lib/bible/hebrewText.ts):
+  * its own place in the Hebrew and its words, when Interlinear is on. */
+ hebrew?: [string, string];
+ /** Set on the first verse of a run beside which no Hebrew stands: the run. */
+ hebrewApart?: [number, number];
  /** Chapter-scoped Strong's lexicon, only entries for this chapter's tokens. */
  strongs?: Record<string, StrongsEntry>;
  /** Opens the passages this verse echoes (ChapterReader decides Plus). Set
@@ -279,10 +287,13 @@ export function VerseRow({
  const { on: showInterlinear, toggle: toggleInterlinear } = useInterlinear();
  const hasInterlinear =
  showInterlinear && (!!originalText || (originalTokens?.length ?? 0) > 0);
+ // The Hebrew under the verse (1.9): under the Greek, across both columns,
+ // or under the English where the chapter has no Greek beside it.
+ const hebrewShown = showInterlinear && (!!hebrew || !!hebrewApart);
  const hasTokens = (originalTokens?.length ?? 0) > 0;
  // Drop cap only on the plain reading view, never inside the 2-column
  // interlinear layout (where a floated initial would break the grid).
- const showDropCap = dropCap && !hasInterlinear;
+ const showDropCap = dropCap && !hasInterlinear && !hebrewShown;
  const hasEnglishTokens =
  hasInterlinear && (englishTokens?.length ?? 0) > 0;
 
@@ -1143,6 +1154,33 @@ export function VerseRow({
  : originalText}
  </p>
  )}
+
+ {hebrewShown && hebrew ? (
+ <p
+ lang="hbo"
+ dir="rtl"
+ data-hebrew-verse={hebrew[0]}
+ style={{ fontFamily: "var(--font-greek), serif" }}
+ className={cn("indent-0 min-w-0 text-paper/85", hasInterlinear && "col-span-2")}
+ >
+ {/* Its own place in the Hebrew, which numbers some verses otherwise (the Psalms one ahead). */}
+ <sup lang="en" dir="ltr" className="font-sans text-eyebrow font-medium text-paper/55 tracking-[0.05em] me-1.5 align-super">
+ {hebrew[0]}
+ </sup>
+ <HebrewWords text={hebrew[1]} />
+ </p>
+ ) : hebrewShown && hebrewApart ? (
+ <p
+ lang={locale}
+ dir={textDir(locale)}
+ data-hebrew-apart={`${hebrewApart[0]}-${hebrewApart[1]}`}
+ className={cn("indent-0 min-w-0 font-sans text-detail text-paper/60", hasInterlinear && "col-span-2")}
+ >
+ {hebrewApart[0] === hebrewApart[1]
+ ? t("bible.hebrew.noneHere")
+ : t("bible.hebrew.noneRange", { from: hebrewApart[0], to: hebrewApart[1] })}
+ </p>
+ ) : null}
 
  {popoverIdx !== null && anchorRect && greekTokens && (
  <WordPopover

@@ -24,6 +24,9 @@ export type PackedInterlinear = {
   text: Record<number, string>;
   tokens: Record<number, PackedWord[]>;
   english: Record<number, PackedWord[]>;
+  /** The Old Testament's Hebrew (1.9): already short, [its place, its words], so carried as it is. */
+  hebrew?: Record<number, [string, string]>;
+  hebrewApart?: [number, number][];
 };
 
 /** The Greek beside a chapter, as the reader draws it (lib/bible/chapterExtras.ts, ChapterInterlinear). */
@@ -31,6 +34,8 @@ export type Interlinear = {
   text: Record<number, string>;
   tokens: Record<number, Token[]>;
   english: Record<number, { w: string; s?: string }[]>;
+  hebrew?: Record<number, [string, string]>;
+  hebrewApart?: [number, number][];
 };
 
 export function packWord(t: { w: string; s?: string; p?: string }): PackedWord {
@@ -55,12 +60,17 @@ function mapVerses<A, B>(verses: Record<number, A[]>, f: (a: A) => B): Record<nu
 }
 
 export function packInterlinear(c: Interlinear): PackedInterlinear {
-  return { text: c.text, tokens: mapVerses(c.tokens, packWord), english: mapVerses(c.english, packWord) };
+  const packed: PackedInterlinear = { text: c.text, tokens: mapVerses(c.tokens, packWord), english: mapVerses(c.english, packWord) };
+  if (c.hebrew && Object.keys(c.hebrew).length) packed.hebrew = c.hebrew;
+  if (c.hebrewApart?.length) packed.hebrewApart = c.hebrewApart;
+  return packed;
 }
 
 /** Never throws on a file short of a part: a part it lacks is empty, as a chapter with none would be. */
 export function unpackInterlinear(p: Partial<PackedInterlinear | Interlinear>): Interlinear {
   return {
+    ...(p.hebrew ? { hebrew: p.hebrew } : {}),
+    ...(p.hebrewApart ? { hebrewApart: p.hebrewApart } : {}),
     text: p.text ?? {},
     tokens: mapVerses<PackedWord | Token, Token>(p.tokens ?? {}, unpackWord),
     english: mapVerses<PackedWord | Token, { w: string; s?: string }>(p.english ?? {}, (w) => {

@@ -16,6 +16,7 @@ import {
   strongsFile,
 } from "../chapterExtras";
 import { loadChapter } from "../load";
+import { hebrewState } from "../hebrewText";
 
 /**
  * A chapter's files (app/bible-data/) and the chapter page that no longer
@@ -63,10 +64,13 @@ describe("the Greek beside a chapter", () => {
     const files = await interlinearFiles();
     expect(files).toContainEqual({ book: "john", file: "1.json" });
     expect(files).toContainEqual({ book: "genesis", file: "1.json" });
-    // 260 New Testament chapters and the Old Testament ones that pair verse for verse.
+    // 260 New Testament chapters and the Old Testament ones that pair verse for verse,
+    // with the Greek or, from 1.9, with the Hebrew (lib/bible/hebrewText.ts).
     expect(files.length).toBeGreaterThan(1000);
     for (const f of files.slice(0, 40)) {
-      expect(await interlinearState(f.book, chapterOfFile(f.file)!), `${f.book} ${f.file}`).toBe("shown");
+      const c = chapterOfFile(f.file)!;
+      const either = (await interlinearState(f.book, c)) === "shown" || (await hebrewState(f.book, c)) === "shown";
+      expect(either, `${f.book} ${f.file}`).toBe(true);
     }
   }, 120_000);
 });
@@ -129,7 +133,8 @@ describe("the chapter page", () => {
     for (const gone of ["tokensByNum", "englishTokensByNum", "originalByNum", "strongsMap", "loadOriginal", "loadEnglishTagged", "chapterCrossRefs("]) {
       expect(page, gone).not.toContain(gone);
     }
-    expect(page).toContain("hasInterlinear={showInterlinear}");
+    // The Greek or, from 1.9, the Hebrew (lib/bible/hebrewText.ts): either is fetched as a file, never handed over.
+    expect(page).toContain("hasInterlinear={showOriginals}");
     expect(page).toContain("crossRefVerses={refVerses}");
   });
 

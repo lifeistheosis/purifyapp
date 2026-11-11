@@ -5,11 +5,12 @@ import { chapterCrossRefs, isCrossRefBook } from "./crossRefs";
 import type { CrossRefWords } from "./crossRefPack";
 import type { CrossRefItem } from "./crossRefShape";
 import { greekAlignment, numberedAsEnglish } from "./greekText";
+import { chapterHebrew, hebrewState, type HebrewLine } from "./hebrewText";
 import { interlinearAvailable } from "./interlinearBooks";
 import { isInParts, workInParts } from "@/lib/saints/writingFile";
 import { spanOf, type NoteSpan } from "@/lib/saints/writingParts";
 
-import { loadCommentary, loadEnglishTagged, loadOriginal, type CommentaryNote, type Token } from "./load";
+import { loadChapter, loadCommentary, loadEnglishTagged, loadOriginal, type CommentaryNote, type Token } from "./load";
 import { strongsAll, type StrongsEntry } from "./strongs";
 
 /**
@@ -42,6 +43,13 @@ export type ChapterInterlinear = {
   tokens: Record<number, Token[]>;
   /** Verse number to the English word by word, tagged to pair with the Greek. */
   english: Record<number, { w: string; s?: string }[]>;
+  /**
+   * The Old Testament's Hebrew (1.9, lib/bible/hebrewText.ts): verse number to
+   * its place in the Hebrew and its words, where the verse map places it.
+   */
+  hebrew?: Record<number, HebrewLine>;
+  /** The runs of verses beside which no Hebrew stands, in a chapter it stands beside. */
+  hebrewApart?: [number, number][];
 };
 
 /**
@@ -55,20 +63,42 @@ export async function interlinearState(book: string, chapter: number): Promise<"
   return (await greekAlignment(book, chapter)) === null ? "apart" : "shown";
 }
 
-export async function chapterInterlinear(book: string, chapter: number): Promise<ChapterInterlinear | null> {
-  if ((await interlinearState(book, chapter)) !== "shown") return null;
-  const offset = await greekAlignment(book, chapter);
-  const [asNumbered, englishTagged] = await Promise.all([loadOriginal(book, chapter), loadEnglishTagged(book, chapter)]);
-  // Renumbered past a psalm's title where Swete counts it (lib/bible/greekText.ts).
-  const original = asNumbered && offset ? numberedAsEnglish(asNumbered, offset) : asNumbered;
+/**
+ * Whether the chapter has an interlinear file: the Greek beside it, or from
+ * 1.9 the Hebrew, or both. A chapter whose Greek is numbered apart still has
+ * its Hebrew, where the verse map places it.
+ */
+export async function interlinearFileState(book: string, chapter: number): Promise<boolean> {
+  if ((await interlinearState(book, chapter)) === "shown") return true;
+  return (await hebrewState(book, chapter)) === "shown";
+}
 
+export async function chapterInterlinear(book: string, chapter: number): Promise<ChapterInterlinear | null> {
+  const [greek, hebrewHere] = await Promise.all([interlinearState(book, chapter), hebrewState(book, chapter)]);
+  if (greek !== "shown" && hebrewHere !== "shown") return null;
   const out: ChapterInterlinear = { text: {}, tokens: {}, english: {} };
-  for (const v of original?.verses ?? []) {
-    out.text[v.n] = v.text;
-    if (v.tokens?.length) out.tokens[v.n] = v.tokens;
+
+  if (greek === "shown") {
+    const offset = await greekAlignment(book, chapter);
+    const [asNumbered, englishTagged] = await Promise.all([loadOriginal(book, chapter), loadEnglishTagged(book, chapter)]);
+    // Renumbered past a psalm's title where Swete counts it (lib/bible/greekText.ts).
+    const original = asNumbered && offset ? numberedAsEnglish(asNumbered, offset) : asNumbered;
+    for (const v of original?.verses ?? []) {
+      out.text[v.n] = v.text;
+      if (v.tokens?.length) out.tokens[v.n] = v.tokens;
+    }
+    for (const v of englishTagged?.verses ?? []) {
+      if (v.tokens?.length) out.english[v.n] = v.tokens;
+    }
   }
-  for (const v of englishTagged?.verses ?? []) {
-    if (v.tokens?.length) out.english[v.n] = v.tokens;
+
+  if (hebrewHere === "shown") {
+    const english = await loadChapter(book, chapter);
+    const hebrew = await chapterHebrew(book, chapter, (english?.verses ?? []).map((v) => v.n));
+    if (hebrew) {
+      out.hebrew = hebrew.verses;
+      if (hebrew.apart.length) out.hebrewApart = hebrew.apart;
+    }
   }
   return out;
 }
@@ -181,7 +211,7 @@ async function filesWhere(has: (book: string, chapter: number) => Promise<boolea
   return out;
 }
 
-export const interlinearFiles = () => filesWhere(async (b, c) => (await interlinearState(b, c)) === "shown");
+export const interlinearFiles = () => filesWhere(interlinearFileState);
 export const crossRefFiles = () => filesWhere(async (b, c) => (await chapterCrossRefFile(b, c)) !== null);
 export const commentaryFiles = () => filesWhere(async (b, c) => (await chapterCommentaryFile(b, c)) !== null);
 

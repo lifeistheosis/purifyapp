@@ -17,12 +17,12 @@ import { LOCALES } from "./locales";
  * The app's 21 languages answer from their own row (lib/i18n/locales.ts,
  * `dir`, which also sets the page's); any other language (a downloaded
  * Bible's, the Fathers' Greek) by its script: right to left for Arabic,
- * Aramaic, Hebrew, Persian, Syriac, Urdu and their kin, left to right for the
+ * Aramaic, Hebrew (the Old Testament's, "hbo", too), Persian, Syriac, Urdu and their kin, left to right for the
  * rest. A tag's region is set aside ("ar-EG" is "ar"); a script named in the
  * tag decides before the language does: "ar-Latn", a chant's Arabic sounds in
  * Latin letters, runs left to right.
  */
-const RIGHT_TO_LEFT = new Set(["ar", "arc", "ckb", "dv", "fa", "he", "ks", "ps", "sd", "syc", "syr", "ug", "ur", "yi"]);
+const RIGHT_TO_LEFT = new Set(["ar", "arc", "ckb", "dv", "fa", "hbo", "he", "ks", "ps", "sd", "syc", "syr", "ug", "ur", "yi"]);
 /** Scripts (ISO 15924) that run right to left; any other script named in a tag runs left to right. */
 const RIGHT_TO_LEFT_SCRIPTS = new Set(["arab", "aran", "hebr", "syrc", "syre", "syrj", "syrn", "thaa", "nkoo", "samr", "mand", "adlm", "rohg"]);
 

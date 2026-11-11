@@ -2,7 +2,7 @@
 // the sheet's 14 and PLAN.md row 21b; his yes of 2026-11-09: "the Copenhagen
 // maps, credited, the map file shared alike").
 //
-//   node scripts/bibles/compare-map.mjs [--report]
+//   node scripts/bibles/compare-map.mjs [--report] [--only <bible>]
 //
 // Writes data/bibles/maps/<bible>.json for each downloaded Bible: for every
 // chapter of the app that can be placed surely, its verses as runs, each
@@ -64,6 +64,21 @@ const CPH = path.join(ROOT, "data/bibles/copenhagen");
 const STANDARD = Object.fromEntries(
   ["eng", "lxx", "rso"].map((k) => [k, JSON.parse(fs.readFileSync(path.join(CPH, `${k}.json`), "utf8"))]),
 );
+// The original-language numbering itself, for the Hebrew (1.9, the
+// Westminster Leningrad Codex beside the Old Testament): its verse counts are
+// the codex's own, and it maps to itself. The Copenhagen standards above are
+// each given against it, so a verse reaches it through any of them.
+const HEBREW_DIR = path.join(ROOT, "data/bible/hebrew");
+STANDARD.org = { maxVerses: {}, mappedVerses: {} };
+if (fs.existsSync(HEBREW_DIR)) {
+  for (const f of fs.readdirSync(HEBREW_DIR).filter((n) => n.endsWith(".json"))) {
+    const slug = f.slice(0, -".json".length);
+    const code = CODE[slug];
+    if (!code) throw new Error(`a Hebrew book the codes do not name: ${slug}`);
+    const { chapters } = JSON.parse(fs.readFileSync(path.join(HEBREW_DIR, f), "utf8"));
+    STANDARD.org.maxVerses[code] = chapters.map((c) => String(Math.max(0, ...c.map(([n]) => n))));
+  }
+}
 
 function parseRef(ref) {
   const m = /^(\S+) (\d+):(\d+)[a-z]?(?:-(\d+)[a-z]?)?$/.exec(ref);
@@ -117,8 +132,10 @@ function appBook(slug) {
     JSON.parse(fs.readFileSync(path.join(dir, `${i + 1}.json`), "utf8")).verses.map((v) => ({ n: v.n, len: letters(v.text) })),
   );
 }
+/** Where a Bible's text is kept: the downloaded Bibles' files, or the Hebrew's own folder (it is carried in the apps, not downloaded). */
+const TEXT_DIRS = { "he-wlc": HEBREW_DIR };
 function bibleBook(bible, slug) {
-  const file = path.join(ROOT, "public/bibles", bible, `${slug}.json`);
+  const file = path.join(TEXT_DIRS[bible] ?? path.join(ROOT, "public/bibles", bible), `${slug}.json`);
   if (!fs.existsSync(file)) return null;
   return JSON.parse(fs.readFileSync(file, "utf8")).chapters.map((c) => (c ?? []).map(([n, text]) => ({ n, len: letters(text) })));
 }
@@ -463,12 +480,18 @@ const BIBLES = [
   { id: "pt-almeida-1911", target: "eng", sameEdition: false },
 ];
 
-export { expected, appBook, bibleBook, placeBible, BIBLES };
+// The Hebrew, set beside the Old Testament in the interlinear (1.9): the
+// Westminster Leningrad Codex, numbered as the original is. Not one of
+// Compare's Bibles, so it is listed apart (lib/bible/__tests__/hebrewMap.test.ts).
+const HEBREW = [{ id: "he-wlc", target: "org", sameEdition: false }];
+
+export { expected, appBook, bibleBook, placeBible, BIBLES, HEBREW };
 
 const run = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname);
 const outDir = path.join(ROOT, "data/bibles/maps");
 if (run) fs.mkdirSync(outDir, { recursive: true });
-for (const { id, target, sameEdition } of run ? BIBLES : []) {
+const ONLY = process.argv.includes("--only") ? process.argv[process.argv.indexOf("--only") + 1] : null;
+for (const { id, target, sameEdition } of run ? [...BIBLES, ...HEBREW].filter((b) => !ONLY || b.id === ONLY) : []) {
   const { books, report } = placeBible(id, target, sameEdition);
   const file = {
     bible: id,

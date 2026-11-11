@@ -116,7 +116,10 @@ const notoSansDevanagari = Noto_Sans_Devanagari({
 // in it, and `swap` shows the fallback face until they arrive.
 const cardo = Cardo({
  variable: "--font-greek",
- subsets: ["latin", "greek", "greek-ext"],
+ // Hebrew from 1.9: the Old Testament's Hebrew stands under the Greek in the
+ // same face (lib/bible/hebrewText.ts). Its files too are fetched only when
+ // Hebrew is drawn (each subset's unicode-range).
+ subsets: ["latin", "greek", "greek-ext", "hebrew"],
  weight: ["400", "700"],
  style: ["normal", "italic"],
  display: "swap",

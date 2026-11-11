@@ -12,6 +12,7 @@ import {
 } from "@/lib/bible/chapterData";
 import { warmCommentaryWhenIdle } from "@/lib/bible/warmCommentary";
 import { useInterlinear } from "@/lib/bible/interlinear";
+import { HebrewHeadNote } from "@/components/bible/HebrewNote";
 import { isNativeClient } from "@/lib/platform/native";
 import { useReadingFlow } from "@/lib/reader/readingFlow";
 import { plusFeaturesNow } from "@/lib/entitlements/usePlusFeatures";
@@ -125,6 +126,14 @@ export function ChapterReader({
   }, [book, chapter, hasInterlinear, interlinearOn]);
   // What was read for another chapter is never drawn beside this one.
   const g = greek?.key === key ? greek.data : null;
+  // The Hebrew beside an Old Testament chapter (1.9, lib/bible/hebrewText.ts),
+  // read with the Greek in the same file: each verse's line, the first verse
+  // of each run beside which none stands, and whether a written word in
+  // brackets occurs, so the note over the chapter says what the brackets are.
+  const hebrewLines = g?.lines.hebrew;
+  const hebrewShown = interlinearOn && !!hebrewLines && Object.keys(hebrewLines).length > 0;
+  const apartFrom = new Map((g?.lines.hebrewApart ?? []).map((run) => [run[0], run] as const));
+  const hebrewWritten = hebrewShown && Object.values(hebrewLines!).some(([, words]) => words.includes("("));
 
   // The commentary, read the first time a verse's commentary is opened,
   // unless the page brought it. In the apps it is also read ahead once the
@@ -199,6 +208,7 @@ export function ChapterReader({
             page's opening now, and the drop cap it had until 1.7 is not in
             the owner's pick (round 2, B). */}
         {candle ? <CandleVeil /> : null}
+        {hebrewShown ? <HebrewHeadNote written={hebrewWritten} /> : null}
         <div className={cn("page-open-words", flowing ? "reading-paragraphs" : "space-y-2", candle && "candle-reading")}>
           {verses.map((v) => (
             <VerseRow
@@ -216,6 +226,8 @@ export function ChapterReader({
               originalText={g?.lines.text[v.n]}
               originalTokens={g?.lines.tokens[v.n]}
               englishTokens={g?.lines.english[v.n]}
+              hebrew={hebrewShown ? hebrewLines![v.n] : undefined}
+              hebrewApart={hebrewShown ? apartFrom.get(v.n) : undefined}
               strongs={g?.strongs}
               onOpenCrossRefs={hasRefs.has(v.n) ? () => openRefs(v.n) : undefined}
               onWordStudy={openStudy}
