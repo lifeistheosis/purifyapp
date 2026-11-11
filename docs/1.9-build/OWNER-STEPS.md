@@ -15,8 +15,10 @@ Three rules for all of them:
   message is enough.
 
 The order: **Now** (the company) as you start it, **Anytime** whenever
-suits you. **The test web** when you are home (T1 to T10), and T11 at
-payday. **Release day** waits until the arbiter says go.
+suits you. **Release day** waits until the arbiter says go. **The test web**
+(T1 to T11) is not used for 1.9: your word, 2026-11-11, "I won't make the
+test web just make it public". It stays in this file for a later release;
+nothing in it is needed now.
 
 ---
 
@@ -1020,6 +1022,13 @@ Send the arbiter: the lines it printed. Nothing is uploaded for this step.
 
 ## The test web: on Render's free size now, the $7 size at payday
 
+**Not used for 1.9** (your word, 2026-11-11: "I won't make the test web just
+make it public. im tryna get v1.9 out as soon as possible"). For 1.9 the
+release-day order in `lib/campaigns/flags.ts` stands in for it: the merge
+brings campaigns live on the main web for your account alone, you walk them
+there, and only then do they open for every reader (R5c). T1 to T11 are kept
+here, unchanged, for a later release. Skip this section.
+
 Your word, 2026-11-10 ("rec yes to all"): yes to the test web, at payday, or
 on Render's free size before then if it carries your walk. It does (Render's
 own pages, checked the same day), so you do T1 to T10 on the free size when
@@ -1692,10 +1701,13 @@ Send back: "R5b walked", or what broke.
 
 ### R5c. Open prayer campaigns to every reader (one line; your word)
 
-Only after R5b and your walk on the test web (T10), and once the two things
-the Terms promise for campaigns are in the release: circles ("public unless
-you keep it to a circle") and the removal notice with its SQL ("we tell you
-why"). The words are already settled by you: items 113 and 129 ("we don't
+Only after R5b, where you walk campaigns on your phones as the release-day
+order in `lib/campaigns/flags.ts` has it: the merge carries them at
+"testers", so the main web shows them to your account alone, and the store
+builds cut from that commit ask the main web, so they show them to you too.
+And only once the two things the Terms promise for campaigns are in the
+release: circles ("public unless you keep it to a circle") and the removal
+notice with its SQL ("we tell you why"). The words are already settled by you: items 113 and 129 ("we don't
 need a priest or a lawyer to make prayer campaigns", 2026-11-10), the
 Terms' words ("yes those terms are good") and the safety line's words
 ("rec yes to all").
@@ -1716,11 +1728,13 @@ circles or the removal notice is not ready when the stores go, you choose:
 - send the builds now, and say in R5d's notes for review that campaigns are
   in the build and switched off.
 
-Pictures on campaigns are the one part still off. The store builds carry
-them only if your three steps are done before the builds are cut; otherwise
-an app has no picture and no picture control at all, whatever the website
-says, and turning them on in the apps takes a new build, which Apple
-reviews. "Prayed by many" is on, by your word, and ships live.
+Pictures on campaigns are not in 1.9 (your word, 2026-11-11 about 14:43:
+"We're gonna fully launch campaign in version 1.9. In version 1.9.1, we'll
+include those extra legal additions"). Campaigns open to every reader
+without them: the store builds carry no picture and no picture control
+(`PICTURES_IN_STORE_BUILDS` stays false in `lib/campaigns/flags.ts`, and the
+server's own switch stays off), and pictures come in 1.9.1 with P1, P2, P4
+and P5. "Prayed by many" is on, by your word, and ships live.
 
 Send back: "R5c open", or "R5c wait, hold the stores", or "R5c wait, send
 with notes".
@@ -1738,11 +1752,11 @@ it is.
 
 Your word, 2026-11-10 ("all recs for 6"): violence is answered "infrequent
 or mild", for the martyrdoms the saints' lives tell; Play's audience stays 13
-and over; campaign pictures are on at submission only if your three steps
-are done, and otherwise left out of the store builds (one line in the
-release commit, `PICTURES_IN_STORE_BUILDS` in `lib/campaigns/flags.ts`; the
-arbiter says which that morning); Australia's law gets a
-lawyer's look after 1.9, and nothing waits on it.
+and over; Australia's law gets a lawyer's look after 1.9, and nothing waits
+on it. The choice about campaign pictures does not arise for 1.9: they are
+not in it (your word, 2026-11-11 about 14:43), so the store builds go with
+`PICTURES_IN_STORE_BUILDS` false and no picture in a campaign, and pictures
+come in 1.9.1 with P1, P2, P4 and P5.
 
 Google Play:
 1. Play Console, **Purify**, **Policy and programs** (under **Monitor and

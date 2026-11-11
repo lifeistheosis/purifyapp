@@ -125,15 +125,17 @@ Drafted now, sent later. The owner sends every one. How a drop works is in
       (`lib/community/prayerRequestsEnd.ts`, 88931feae): on that day the
       requests' words, their holds and who prayed are cleared, and the mark
       `prayer-requests-cleared` stands in `data_moves`.
-- [ ] Campaign pictures in the store builds (OWNER-STEPS R5d; the review
-      notes, part A, items 4 and 9): `PICTURES_IN_STORE_BUILDS` in
-      `lib/campaigns/flags.ts` stays `false` unless pictures are on when the
-      store builds are cut, and is set `true` only together with the
+- [ ] Campaign pictures are not in 1.9 (his word, 2026-11-11 about 14:43
+      UTC: campaigns open fully in 1.9, and their pictures come in 1.9.1
+      with P1, P2, P4 and P5; OWNER-STEPS R5c and R5d; the review notes,
+      part A, items 4 and 9): `PICTURES_IN_STORE_BUILDS` in
+      `lib/campaigns/flags.ts` stays `false` in the release commit, and the
       server's own switch (`CAMPAIGN_PARTS.pictures` in
-      `lib/campaigns/parts.ts`); `lib/campaigns/__tests__/storePictures.test.ts`
-      refuses `true` while the server's switch is off. While it is `false`,
-      the apps draw no picture and no picture control, whatever the server
-      says, and the review notes' part B says so.
+      `lib/campaigns/parts.ts`) stays off;
+      `lib/campaigns/__tests__/storePictures.test.ts` refuses `true` while
+      the server's switch is off. The apps draw no picture and no picture
+      control, the review notes' part B says so, and no note, board or
+      drop text names campaign pictures.
 - [ ] The tests' days (OWNER-STEPS R0c, by his "roads on" or "roads off"):
       on "roads on", in `lib/ab/tests.ts`, `ACCOUNT_PLACE` and
       `PLUS_INTRODUCED` begin on the release day and end 84 days later, and

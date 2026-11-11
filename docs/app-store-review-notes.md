@@ -47,6 +47,9 @@ written as 1.9 is planned to ship.
    server says. If both are true in the build being submitted, replace part
    B's pictures line with "Pictures on prayer campaigns: every picture is
    checked by a moderator before anyone else sees it, and each has Report."
+   For 1.9 both stay false and part B's line stands as written: his word,
+   2026-11-11 about 14:43 UTC, is campaigns in 1.9 without pictures, and the
+   pictures in 1.9.1 with their steps P1, P2, P4 and P5.
 5. **The safety line** for a campaign whose writer may be in danger (his yes
    to its words, 2026-11-10) is named in part B only once it is in the build.
    The moderators' queue already reads such a campaign first.
