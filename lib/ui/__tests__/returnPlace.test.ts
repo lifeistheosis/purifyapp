@@ -511,29 +511,100 @@ describe("going back returns the reader to the link they tapped", () => {
     expect(todayTab.position).toBe("fixed");
   });
 
-  it("leaves the page alone when two links to the place stand between the same two", () => {
-    // The same list drawn twice, and a third link to the place since: neither of the two can be called the tapped one.
+  // Two links to the place may stand between the same two. The reading room
+  // shelves The Paschal Homily between The Martyrdom of Polycarp and A
+  // Declaration of Faith twice, in "Short reads" and in "Greek and
+  // Byzantine". Until the gate's full walk of that room (2026-11-11, one
+  // control of 185) such a page was left alone, "neither of the two can be
+  // called the tapped one" (this test's own words), and the cover came back
+  // 553px below the thumb. It can be called: it is the same one of them, in
+  // the page's order, while the page has as many of them again.
+  function shelvedTwice() {
     const b = stubBrowser("/reading/");
-    const list = (at: number) => [
-      b.link("/saints/john-chrysostom/paschal-homily/", at),
-      b.link("/saints/gregory-the-wonderworker/a-declaration-of-faith/", at + 277),
-      b.link("/saints/gregory-theologian/against-the-arians/", at + 550),
+    const shelf = (at: number) => [
+      b.link("/saints/polycarp-of-smyrna/the-martyrdom-of-polycarp/", at),
+      b.link("/saints/john-chrysostom/paschal-homily/", at + 277),
+      b.link("/saints/gregory-the-wonderworker/a-declaration-of-faith/", at + 550),
     ];
-    list(1000);
-    const second = list(2100);
-    b.state.scrollY = 2000;
-    noteLinkTap({ target: second[1] as unknown as EventTarget });
-    b.goTo("/saints/gregory-the-wonderworker/a-declaration-of-faith/");
-    keepPlace();
+    const shortReads = shelf(400);
+    const greek = shelf(2100);
+    return { b, shelf, shortReads, greek };
+  }
+
+  /** Back from the work: "Continue reading" stands above the shelves with a link of its own to it, and all below is 553px lower. */
+  function comeBack(b: ReturnType<typeof stubBrowser>) {
     b.goTo("/reading/");
-    const onShelf = b.link("/saints/gregory-the-wonderworker/a-declaration-of-faith/", 240);
+    const onShelf = b.link("/saints/john-chrysostom/paschal-homily/", 240);
     b.links.unshift(b.links.pop()!);
     expect(b.links[0]).toBe(onShelf);
-    for (const link of b.links.slice(1)) link.top += 300;
+    for (const link of b.links.slice(1)) link.top += 553;
+    return onShelf;
+  }
+
+  it("takes the same one of two links to the place that stand between the same two: the second, when that was tapped", () => {
+    const { b, greek } = shelvedTwice();
+    b.state.scrollY = 1919;
+    expect(greek[1].getBoundingClientRect().top).toBe(458);
+    noteLinkTap({ target: greek[1] as unknown as EventTarget });
+    b.goTo("/saints/john-chrysostom/paschal-homily/");
+    keepPlace();
+    comeBack(b);
+    expect(greek[1].getBoundingClientRect().top).toBe(1011);
+    expect(returnToPlace()).toBe(true);
+    b.run();
+    expect(b.state.scrolls).toEqual([553]);
+    expect(greek[1].getBoundingClientRect().top).toBe(458);
+  });
+
+  it("and the first, when that was tapped", () => {
+    const { b, shortReads, greek } = shelvedTwice();
+    b.state.scrollY = 219;
+    noteLinkTap({ target: shortReads[1] as unknown as EventTarget });
+    b.goTo("/saints/john-chrysostom/paschal-homily/");
+    keepPlace();
+    comeBack(b);
+    returnToPlace();
+    b.run();
+    expect(b.state.scrolls).toEqual([553]);
+    expect(shortReads[1].getBoundingClientRect().top).toBe(458);
+    expect(greek[1].getBoundingClientRect().top).not.toBe(458);
+  });
+
+  it("leaves the page alone when it comes back with more links to the place between those two than it had", () => {
+    // A third shelf of the same three has been drawn while the reader was away: which is which cannot be said.
+    const { b, shelf, greek } = shelvedTwice();
+    b.state.scrollY = 1919;
+    noteLinkTap({ target: greek[1] as unknown as EventTarget });
+    b.goTo("/saints/john-chrysostom/paschal-homily/");
+    keepPlace();
+    b.goTo("/reading/");
+    const third = shelf(100);
+    b.links.splice(0, b.links.length, ...third, ...b.links.slice(0, 6));
+    for (const link of b.links.slice(3)) link.top += 553;
     returnToPlace();
     b.run();
     expect(b.state.scrolls).toEqual([]);
-    expect(b.state.scrollY).toBe(2000);
+    expect(b.state.scrollY).toBe(1919);
+  });
+
+  it("and when it comes back with fewer of them, and another link to the place besides", () => {
+    // "Short reads" is gone, "Continue reading" has come: one of the two is left, and it may be either.
+    const { b, shortReads, greek } = shelvedTwice();
+    b.state.scrollY = 1919;
+    noteLinkTap({ target: greek[1] as unknown as EventTarget });
+    b.goTo("/saints/john-chrysostom/paschal-homily/");
+    keepPlace();
+    b.goTo("/reading/");
+    b.links.splice(0, 3);
+    for (const link of greek) link.top -= 827;
+    // A link of another kind to the place, so the page has neither as many as it had nor as many between the two.
+    b.link("/saints/john-chrysostom/paschal-homily/", 3000);
+    b.link("/saints/john-chrysostom/paschal-homily/", 3100);
+    expect(shortReads[1].top).toBe(677);
+    returnToPlace();
+    b.run();
+    expect(b.state.scrolls).toEqual([]);
+    expect(b.state.scrollY).toBe(1919);
   });
 
   it("takes the one of them that is drawn when the other is the same list kept for a wider screen", () => {

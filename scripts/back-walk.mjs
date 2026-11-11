@@ -17,6 +17,11 @@
 //                      new link to it on the first of them
 //                      and a book in "Short reads", above them, which nothing
 //                      moves: it has to stay where it was too
+//                      and a book the room shelves twice between the same
+//                      two (The Paschal Homily, in "Short reads" and again in
+//                      "Greek and Byzantine"), the lower of the two: the
+//                      helper could not tell them apart, and the gate's full
+//                      walk of the room found it 553px below the thumb
 //   the Bible's list   a book's row (the first, one in the middle, the last);
 //                      the list draws a "Continue reading" row above the
 //                      books once a chapter has been opened
@@ -192,6 +197,30 @@ const PLACES = {
   ),
 };
 
+// A book the room shelves twice between the same two, the lower one: found on the page as it is, not by name,
+// so the walk still holds it when the shelves change. Told again by its shelf, which holds it once.
+PLACES.twice = {
+  name: "the reading room, a book shelved twice between the same two books, the lower one",
+  address: "/reading/",
+  wait: "[data-reading-row]",
+  choose: `() => {
+    const drawn = [...document.links].filter(${IN_PAGE});
+    const stands = new Map();
+    drawn.forEach((a, i) => {
+      if (!a.closest("[data-reading-row]")) return;
+      const key = [a.getAttribute("href"), drawn[i - 1]?.getAttribute("href") ?? "", drawn[i + 1]?.getAttribute("href") ?? ""].join(" ");
+      stands.set(key, [...(stands.get(key) ?? []), a]);
+    });
+    const twice = [...stands.values()].find((links) => links.length > 1 && new Set(links.map((a) => a.closest("[data-reading-row]"))).size === links.length);
+    return twice ? twice[twice.length - 1] : null;
+  }`,
+  partOf: `(a) => a.closest("[data-reading-row]")?.getAttribute("data-reading-row") ?? null`,
+  again: `(href, part) => document.querySelector('[data-reading-row="' + part + '"] a[href="' + href + '"]')`,
+  grows: true,
+  // Not every export has one: said, and counted as not walked.
+  rare: "no book of this export is shelved twice between the same two",
+};
+
 PLACES.plus = {
   name: "the Plus page, the link to sign in at its foot",
   address: "/pricing/",
@@ -238,6 +267,11 @@ async function walk(browser, size, place, way) {
       },
       { choose: place.choose, partOf: place.partOf, at: SET_AT },
     );
+    if (!set && place.rare) {
+      console.log(`not walked  ${name}  (${place.rare})`);
+      unwalked += 1;
+      return;
+    }
     if (!set) return say(false, name, "no such link on the page");
     await page.waitForTimeout(600);
     const read = () =>
@@ -350,6 +384,8 @@ try {
     [PLACES.library, WAYS.browser, PHONE],
     [PLACES.library, WAYS.chevron, PHONE],
     [PLACES.short, WAYS.browser, PHONE],
+    [PLACES.twice, WAYS.browser, PHONE],
+    [PLACES.twice, WAYS.chevron, PHONE],
     [PLACES["1-kings"], WAYS.browser, PHONE],
     [PLACES["1-kings"], WAYS.chevron, PHONE],
     [PLACES["1-kings"], WAYS.older, PHONE],

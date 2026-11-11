@@ -51,9 +51,21 @@
  * So a place also remembers the two links the tapped one stood between.
  * When the page has another number of links to the place, the tapped one is
  * the link to it that still stands between those two, is drawn and is not
- * in a bar. If none does, or two do, it cannot be told, and the page is left
- * where the browser put it, as before. The council's page stays safe: the
- * line in its account stands between other links than the card did.
+ * in a bar. If none does, it cannot be told, and the page is left where the
+ * browser put it, as before. The council's page stays safe: the line in its
+ * account stands between other links than the card did.
+ *
+ * Two may stand so. The reading room shelves one book more than once, and
+ * two of its shelves hold the same three side by side: The Paschal Homily
+ * stands between The Martyrdom of Polycarp and A Declaration of Faith in
+ * "Short reads" and again in "Greek and Byzantine". With two such links the
+ * tapped one could not be told, and it came back 553px below the thumb (the
+ * gate's full walk of the reading room, 2026-11-11: one control of 185). So
+ * a place remembers which of them it was, in the page's order, and how many
+ * there were. While the page has as many again, it is the same one of them:
+ * what is added while the reader is away (the new shelf's own link) stands
+ * between other links, and does not come between them. With more of them, or
+ * fewer, it cannot be told, and the page is left alone.
  *
  * And the link is measured where it will stand, not where it is while it is
  * still being brought in. A page may bring a part of itself in as it opens
@@ -90,7 +102,8 @@
  *   - A page that no longer has the link, or cannot tell it from another to
  *     the same place (above). Among them, on a page that has gained a link
  *     to the place, a tapped link that stood right beside what was added: it
- *     no longer stands between the same two.
+ *     no longer stands between the same two. And one of several between the
+ *     same two, when the page comes back with more of those, or fewer.
  *   - A page left some other way (the tab bar, a button). The browser's
  *     number is all there is, and the placeholders are now sized close to
  *     the real cards so that it lands near (`.cv-card` in app/globals.css).
@@ -102,10 +115,11 @@
 
 /**
  * The tapped link: which one of how many to the same place, where the two
- * links it stood between lead (null: there was none on that side), and where
- * on the screen it was.
+ * links it stood between lead (null: there was none on that side), which one
+ * it was of how many links to the place that stood between those same two,
+ * and where on the screen it was.
  */
-export type Place = { href: string; nth: number; of: number; top: number; before: string | null; after: string | null };
+export type Place = { href: string; nth: number; of: number; top: number; before: string | null; after: string | null; twin: number; twins: number };
 
 /** A tap older than this did not cause the navigation that follows it. */
 export const TAP_MS = 15000;
@@ -171,6 +185,13 @@ function beside(all: readonly Element[], i: number, step: -1 | 1): string | null
   return null;
 }
 
+/** True when the link at `all[i]` is drawn, is not in a bar, and stands between links that lead to `before` and `after`. */
+function standsBetween(all: readonly Element[], i: number, before: string | null, after: string | null): boolean {
+  const link = all[i];
+  if (link.getClientRects().length === 0 || isPinned(link)) return false;
+  return beside(all, i, -1) === before && beside(all, i, 1) === after;
+}
+
 /**
  * The link the place names, if the page has drawn it and it can be told from
  * every other.
@@ -184,7 +205,8 @@ function beside(all: readonly Element[], i: number, step: -1 | 1): string | null
  * When the page has another number of them (it has drawn a shelf of what was
  * last opened, or dropped one), it is the link to that place that still
  * stands between the two links the tapped one stood between, is drawn and is
- * not in a bar. One such link is the tapped one. None, or two, and it cannot
+ * not in a bar. As many such links as there were when it was tapped, and it
+ * is the same one of them in the page's order. More, or fewer, and it cannot
  * be told.
  */
 function find(place: Place): HTMLAnchorElement | null {
@@ -197,15 +219,8 @@ function find(place: Place): HTMLAnchorElement | null {
     const link = all[same[place.nth]];
     return link && link.getClientRects().length > 0 ? link : null;
   }
-  let found: HTMLAnchorElement | null = null;
-  for (const i of same) {
-    const link = all[i];
-    if (link.getClientRects().length === 0 || isPinned(link)) continue;
-    if (beside(all, i, -1) !== place.before || beside(all, i, 1) !== place.after) continue;
-    if (found) return null;
-    found = link;
-  }
-  return found;
+  const twins = same.filter((i) => standsBetween(all, i, place.before, place.after));
+  return twins.length === place.twins ? (all[twins[place.twin]] ?? null) : null;
 }
 
 /** How far down the screen a `transform` is holding what it is on: the y of its matrix, as the browser gives it. */
@@ -277,14 +292,20 @@ export function noteLinkTap(event: { target: EventTarget | null }): void {
   const all = Array.from(document.links) as HTMLAnchorElement[];
   const same = all.filter((a) => a.getAttribute("href") === href);
   const at = all.indexOf(link);
+  const before = at < 0 ? null : beside(all, at, -1);
+  const after = at < 0 ? null : beside(all, at, 1);
+  // The links to the same place that stand between the same two, in the page's order.
+  const twins = all.filter((a, i) => a.getAttribute("href") === href && standsBetween(all, i, before, after));
   lastTap = {
     place: {
       href,
       nth: Math.max(0, same.indexOf(link)),
       of: same.length,
       top: link.getBoundingClientRect().top,
-      before: at < 0 ? null : beside(all, at, -1),
-      after: at < 0 ? null : beside(all, at, 1),
+      before,
+      after,
+      twin: Math.max(0, twins.indexOf(link)),
+      twins: Math.max(1, twins.length),
     },
     from: address(),
     at: now(),

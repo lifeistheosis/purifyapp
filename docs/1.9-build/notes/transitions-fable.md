@@ -646,8 +646,9 @@ new rows standing above it. The unit test even said so in its own words
   When the page has another number of links to the place, the tapped one is
   the link to it that still stands between those two, is drawn, and is not
   in a bar. One such link is it. None, or two, and the page is left where
-  the browser put it, as before. The council's page is still safe: the line
-  in its account stands between other links than the card did.
+  the browser put it, as before (two can be told as well, since the same
+  day: "A book shelved twice", below). The council's page is still safe:
+  the line in its account stands between other links than the card did.
 - Only a link a reader could see beside it is a neighbour: not one in a bar
   (the Bible tab leads to the chapter last read, so it changes), and not one
   that is not drawn. The first run of the new walk found that one: the
@@ -675,8 +676,9 @@ new rows standing above it. The unit test even said so in its own words
   row met where it will land while it is still coming in (67px at once, not
   75px and not later), a shift read from a transform or a translate and
   added up, and a part that comes in without one followed and let go only
-  when it has landed. The tenth holds what must stay: two links between the
-  same two, and the page is left alone. The test that held the old answer ("left
+  when it has landed. The tenth held what was thought to have to stay: two
+  links between the same two, and the page is left alone (mended the same
+  day, below). The test that held the old answer ("left
   alone") now holds the case that still cannot be told: the tapped card
   gone, and two new links to the same place.
 - `scripts/back-walk.mjs`, new, on the export: a new reader, each link
@@ -727,6 +729,47 @@ and not later; it fails on the helper as it was) and by a place in
 `scripts/back-walk.mjs`, walked as the Android shell on an export that
 sells Plus, which is where that link is drawn. The walk is 11 of 11, and
 Admin's own tap walk passes the page: 21 controls, none failed.
+
+**A book shelved twice between the same two, the same day (the gate's full
+walk again).** Admin then walked every control of the reading room, 185 of
+them, and one failed: a cover of The Paschal Homily in "Greek and
+Byzantine", tapped at 458px, came back at 1011px, the two new shelves'
+553px below the thumb. I walked the same 80 controls on my own export
+before changing anything and saw the same numbers.
+
+The room shelves that book four times, and twice between the same two
+books, The Martyrdom of Polycarp before it and A Declaration of Faith after
+it: in "Short reads" and again in "Greek and Byzantine". For two links to
+the place between the same two, the rule above said "none, or two, and the
+page is left where the browser put it". For the cover in "Short reads" that
+is right by luck, since nothing is drawn above it. For the one in "Greek
+and Byzantine" it is 553px wrong. My own walk never met it: it taps a book
+in "New to Orthodoxy?", which stands between two of its own.
+
+The rule now: a place also remembers **which one it was** of the links to
+the place that stood between those two, in the page's order, and **how many
+there were**. While the page comes back with as many, it is the same one of
+them. What is added while the reader is away (the new shelf's own link)
+stands between other links, and does not come between them. With more of
+them than there were, or fewer, it cannot be told, and the page is left
+alone, as before.
+
+- `lib/ui/__tests__/returnPlace.test.ts`, 38 cases, four of them for this:
+  the second of two and the first of two each come back under the thumb,
+  and the page is left alone when it returns with a third such link, or
+  with one of the two gone. The first two fail on the helper as it was
+  (no move where 553px is asked). The case that held "two between the same
+  two: left alone" is the first of them now.
+- `scripts/back-walk.mjs` has the place, found on the page as it is and not
+  by the book's name (the lower of two covers of one book that stand
+  between the same two, in different shelves), by the browser's own Back
+  and by the page's own Back button: 552px drawn above it while away, 4
+  links to it before and 5 after, under the thumb again, never more than
+  0px from it. The walk is 15 of 15.
+- Admin's walk on the new export (`SELLS_PLUS=1`, `--only /reading/
+  --online`), every control of the room: 185 tapped, none failed; the
+  covers of that book among them (the 6th, 37th and 70th links of the
+  first 80) all pass.
 
 ### A chapter's round button is a step back (the same day, on the arbiter's word)
 
