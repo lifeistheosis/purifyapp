@@ -570,6 +570,9 @@ export async function stripesOn(page, selector = "body") {
 }
 
 /** Where each thing is across the part of the page, start to end, to compare in Arabic. */
+/** The languages Tailwind's rtl: reads as right to left, as its compiled selector lists them. */
+const RTL_LANGS = "^(ae|ar|arc|bcc|bqi|ckb|dv|fa|glk|he|ku|mzn|nqo|pnb|ps|sd|ug|ur|yi)(-|$)";
+
 function boxes(selector) {
   const root = document.querySelector(selector);
   if (!root) return null;
@@ -694,7 +697,7 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
       el.setAttribute("data-mock-was-animation", el.style.getPropertyValue("animation"));
       el.style.setProperty("animation", "none", "important");
     }
-    return { mode: h.getAttribute("data-reading-mode"), look: h.getAttribute("data-look"), dir: h.getAttribute("dir") };
+    return { mode: h.getAttribute("data-reading-mode"), look: h.getAttribute("data-look"), dir: h.getAttribute("dir"), lang: h.getAttribute("lang") };
   });
   const shots = {};
   try {
@@ -793,11 +796,29 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
     // already in Arabic or Urdu is compared with itself turned round, not
     // with itself (2026-11-11: every row of the language sheet in Arabic
     // "stayed put", having been measured twice the same way round).
+    //
+    // Tailwind's rtl: is on for a right-to-left language as well as under
+    // [dir=rtl] (it compiles to :where(:is(:lang(ar), :lang(ur), ...),
+    // [dir=rtl], [dir=rtl] *)), so a page in Arabic turned round by dir alone
+    // kept its rtl: rules on, and a bar filling from the right in Arabic, as
+    // it should, read as placed with left or right (Updates' find,
+    // 2026-11-11: FirstLiturgyGuide, PlusTry, ReaderDock, WalkProgress). Such
+    // a page is measured left to right in English; a page in any other
+    // language keeps it (German's headings break by its own hyphens).
     await wear(page, before.mode, before.look);
-    await page.evaluate(() => document.documentElement.setAttribute("dir", "ltr"));
+    await page.evaluate((rtlLangs) => {
+      const h = document.documentElement;
+      h.setAttribute("dir", "ltr");
+      if (new RegExp(rtlLangs, "i").test(h.getAttribute("lang") || "")) h.setAttribute("lang", "en");
+    }, RTL_LANGS);
     await settle(page);
     const ltr = await page.evaluate(boxes, selector);
-    await page.evaluate(() => document.documentElement.setAttribute("dir", "rtl"));
+    await page.evaluate((lang) => {
+      const h = document.documentElement;
+      h.setAttribute("dir", "rtl");
+      if (lang) h.setAttribute("lang", lang);
+      else h.removeAttribute("lang");
+    }, before.lang);
     await settle(page);
     const rtl = await page.evaluate(boxes, selector);
     if (ltr && rtl && ltr.out.length === rtl.out.length) {
@@ -826,6 +847,8 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
       const h = document.documentElement;
       if (b.dir) h.setAttribute("dir", b.dir);
       else h.removeAttribute("dir");
+      if (b.lang) h.setAttribute("lang", b.lang);
+      else h.removeAttribute("lang");
       document.querySelector("style[data-mock-check]")?.remove();
       for (const el of document.querySelectorAll("[data-mock-was-animation]")) {
         const was = el.getAttribute("data-mock-was-animation");
@@ -942,6 +965,17 @@ const FIXTURES = `
   <blockquote lang="en" data-mock-allow="emdash" data-mock-why="a Father's own words, as his edition prints them" class="mt-3 font-serif text-body italic leading-[1.6] text-paper/85">Chapter I.\u2014Introduction. Reason for writing</blockquote>
 </div>`;
 
+// An Arabic page's progress bar, as the app draws them (FirstLiturgyGuide,
+// PlusTry, ReaderDock, WalkProgress): it fills from the start of its track,
+// from the right in Arabic, by origin-left rtl:origin-right and the reader's
+// place as a scale. A reader sees it right both ways round.
+const ARABIC = `
+<div data-mock-fixture="arabic" class="bg-night px-4 pb-4" style="position:fixed;left:0;right:0;bottom:0;z-index:302">
+  <span class="mt-3 block h-1.5 w-40 overflow-hidden rounded-full bg-paper/10">
+    <span class="block h-full w-full origin-left rounded-full bg-paper/80 rtl:origin-right" style="transform:scaleX(0.4)"></span>
+  </span>
+</div>`;
+
 async function selfTest() {
   const { go } = await import("./lib/shell-server.mjs");
   const { browser, page } = await openPhone();
@@ -956,17 +990,27 @@ async function selfTest() {
     printMockCheck(bad, "the first drawings' mistakes");
     const good = await checkMock(page, "[data-mock-fixture=good]");
     printMockCheck(good, "the same parts from the house's classes");
+    // The page in Arabic, as the app sets it, and its bar.
+    await page.evaluate((html) => {
+      const h = document.documentElement;
+      h.setAttribute("lang", "ar");
+      h.setAttribute("dir", "rtl");
+      document.body.insertAdjacentHTML("beforeend", html);
+    }, ARABIC);
+    await settle(page);
+    const arabic = await checkMock(page, "[data-mock-fixture=arabic]");
+    printMockCheck(arabic, "an Arabic page's bar, filling from its start");
     const caught = new Set(bad.failures.map((f) => f.check));
     const missed = ["contrast", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays", "sparkle", "picture", "dashed", "keys", "cut"].filter((c) => !caught.has(c));
     // A Father's own words keep their edition's dash, and a reader's own title its cut, by name; each allowance is said in the report.
     const named = good.allowed.some((a) => a.startsWith("emdash on ")) && good.allowed.some((a) => a.startsWith("cut on "));
     // Both names cut: the tile's, and the card's first line (the saints' byname, the arbiter's word of 2026-11-11).
     const bothCut = bad.failures.filter((f) => f.check === "cut").length >= 2;
-    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut;
+    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut && arabic.failures.length === 0;
     console.log(
       ok
         ? "\nself-test: every mistake caught, and the house's own parts pass"
-        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}`,
+        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}`,
     );
     return ok;
   } finally {
