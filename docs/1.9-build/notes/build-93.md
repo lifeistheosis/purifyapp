@@ -128,3 +128,13 @@ Screenshots: `build-93/09a-your-journal.png` (Your journal, reached from the Bib
 What the code says (the arbiter): You shows a journal tile only once something is written (`components/you/KeptShelf.tsx`, `newestNote ? <Tile href="/journal"> : null`), and the Florilegium (`app/(app)/florilegium`) has no way in from You at all. Read as: on You, the page with Settings, the journal and the Florilegium are always there to open, written in or not, beside what is kept; and both are found from Settings' search.
 
 Who has it: the prayer campaigns chat, with note 8, so the journal's page, its way in and the Florilegium are designed together under his standing rules. If the chat reads his words as a setting to choose what You shows, it says so with its plan and the arbiter asks him.
+
+### 10. Support this work: say where the money goes (2026-11-11 about 01:31 UTC)
+
+His words: "Go on certain things. The support this work section is pretty much useless. You can explain how and where the profits would go in reference to, you know, store and subscription usage. So explain that it goes into sourcing products, tithing to the church, running maintenance, etc., and that they could support through either the subscription or buying a product from the store."
+
+Screenshot: `build-93/10-support-this-work.png` (`components/support/SupportBody.tsx`).
+
+Found by the arbiter, and wrong today whatever the rewrite: "Nothing in this app is locked behind a payment." (`ui.theSaintsTheScripturesWith`) is not true since Purify Plus (the journal, the looks, plans and more are Plus); and "a small community that sources the texts, reviews them" should say only what is done (sourced and checked against their printed editions; no priest reviews Purify at present).
+
+Who has it: Admin (knows the shop, Plus and their money), after the sparkle sweep. The page says plainly where what Purify earns goes (sourcing the shop's products, a tithe to the Church, running and maintaining the app: its servers, its recordings and the work on it) and the two ways to support it (Purify Plus, or something from the EIKON shop), in the house's voice, signed as the house signs, in all 21 languages. Risk rules: it is Purify's own giving from what it earns, never "a part of your purchase goes to charity" and never called a donation (that wording can bring charity-sale rules in some US states, and the stores do not let an app raise money for a charity through its purchases); no figure or receiver for the tithe until his answer (asked in the chat, 2026-11-11); the free core stays named as free. A still with the push.

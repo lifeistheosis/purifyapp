@@ -2,6 +2,8 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
+**Build 93, note 10 (his word, 2026-11-11 about 01:31 UTC, a screenshot of Support this work):** "Go on certain things. The support this work section is pretty much useless. You can explain how and where the profits would go in reference to, you know, store and subscription usage. So explain that it goes into sourcing products, tithing to the church, running maintenance, etc., and that they could support through either the subscription or buying a product from the store." (`notes/build-93.md`, note 10).
+
 **Build 93, note 9 (his word, 2026-11-11 about 01:30 UTC, screenshots of Your journal and of You):** "Ensure the journal and anything related to that specific journal UI, like the florigelium, ensure it's all available to be chosen on the settings page." (`notes/build-93.md`, note 9).
 
 **Build 93, note 8 continued (his word, 2026-11-11 about 01:29 UTC, the journal's blocks):** "Honestly, that same bug happens in each of these sections. I want all of it refined, and I want all of them to actually be unique in their context and their use."
