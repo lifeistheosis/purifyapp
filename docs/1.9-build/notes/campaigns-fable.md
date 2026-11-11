@@ -4120,7 +4120,7 @@ campaign"), and `lib/ui/__tests__/listbox.test.ts` (the list's hidden
 search words). The walk: six flows. Stills: the Place sheet (34) and a
 campaign's page with its place (35).
 
-### 30.5 Words for his OK (English; the twenty languages after)
+### 30.5 Words (his yes to call 29, 2026-11-11; in all 21 languages)
 
 | Key | English |
 |---|---|
@@ -4178,7 +4178,7 @@ server: a campaign run again is a new campaign through the same door.
   Stills: the ended campaign with the offer (36) and the start screen as it
   opens from it (37).
 
-### 31.3 Words for his OK (English; the twenty languages after)
+### 31.3 Words (his yes to call 29, 2026-11-11; in all 21 languages)
 
 | Key | English |
 |---|---|
@@ -4298,7 +4298,7 @@ Save gone dim (43). They are on
 his page with call 31 as `decisions/change-words.png` and
 `decisions/change-words-read.png`.
 
-### 33.4 Words for his OK (English; the twenty languages after)
+### 33.4 Words (his yes to call 31, 2026-11-11; in all 21 languages)
 
 | Key | English |
 |---|---|
@@ -4394,7 +4394,7 @@ unticking; a tick the account could not keep; never for its creator).
 Still: the Updates door with the line (41), drawn from the server's answer
 as it will be once the notices are on.
 
-### 34.5 Words for his OK (English; the twenty languages after)
+### 34.5 Words (his yes to call 29, 2026-11-11; in all 21 languages)
 
 | Key | English |
 |---|---|
@@ -4462,3 +4462,60 @@ open page with the router's push, which fires no `hashchange`, so no profile
 opened to look at. It now leaves Community and comes back by the profile's
 address, as a link from anywhere else does. Still: a profile with the door
 open (42).
+
+---
+
+## 36. His answers of 2026-11-11, and what they put in
+
+His word, about 00:56 UTC: "rec for all and finalize this build"
+(`BRAINSTORM.md`). For campaigns it answered five calls, each as it was
+recommended on his page:
+
+| Call | His answer | What it put in |
+|---|---|---|
+| 26 | Yes to the short private note to a writer who may be in danger, sent only after a moderator has read the words | Admin: the notice, its words in 21 languages and its SQL. Here: the moderator's button and what it writes (section 38) |
+| 27 | Yes to the picture check as built | Nothing to change. Pictures stay off until his key and his steps |
+| 28 | Yes to the truer line under a campaign's prayer list | `campaigns.new.psalmNote`, in all 21 languages: "It is prayed by those who add this campaign to their prayers, in the same prayers as the name." The line of 28.4 is settled |
+| 29 | Yes to the eleven lines: a place, Run it again, the two inbox notices, the line to be told of an update | The nine of them that are here, in twenty more languages (30.5, 31.3, 34.5). The notices are turned on with Admin (34.3) |
+| 31 | Yes to the four lines for changing a waiting campaign's words; a running campaign's words stay as they are in 1.9 | Those four in twenty more languages (33.4). 33.2 is closed for 1.9: no SQL |
+
+Each language follows its own catalog's words for a campaign, a moderator
+and an update (German "Gebetsaktion" and "Neuigkeit", Greek "αίτημα", Russian
+"просьба", Polish "intencja" and "wieści", French "nouvelles"), and its own
+way of addressing the reader. The whole set was run through the language
+tests before it was written in.
+
+His rule of the same night binds what is left: "A release ships finished"
+(`CLAUDE.md`). Nothing found while 1.9 is made waits for a 1.9.1.
+
+---
+
+## 37. The names carried from the prayer wall: two lines that named it (build 93, note 14)
+
+When the wall went (section 26) two lines were kept on purpose, for a
+reader who had taken a name from it into their own prayers before 1.9: the
+heading over those names, "From the prayer wall", and the line at the end
+of a rule when they are let go, "Those from the prayer wall leave your
+prayers now." He met the second in build 93, and the arbiter's note is
+right: both name a page nobody has.
+
+The names themselves stay to their promised end. They were added under the
+words "They stay in your prayers for a week, or until you have prayed for
+them", and that is a promise about praying for a real person. A week after a
+reader updates, nobody carries one and neither line can be seen again.
+
+So the two lines say the same thing without naming where the names came
+from:
+
+| Key | Was | Is |
+|---|---|---|
+| `prayers.diptychs.wallHeading` | From the prayer wall | For a week |
+| `prayers.wall.left` | Those from the prayer wall leave your prayers now. | The names you added for a week leave your prayers now. |
+
+English is in. They are new words, so they are on his page ("yes week
+lines"); the other way, put to him with them, is to let the names go at once
+when a reader updates and delete both lines. The twenty languages are
+written and wait for his answer. No other line a reader sees names the
+wall, in any of the 21 languages (checked by each language's own word for
+it); `lib/community/__tests__/prayAndTalk.test.ts` holds the English.
+

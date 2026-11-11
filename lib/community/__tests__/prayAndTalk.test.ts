@@ -169,6 +169,21 @@ describe("Pray together", () => {
 });
 
 describe("the prayer wall is gone, with everything that drew it", () => {
+  it("no line a reader sees names it: the names carried from it are said by how long they stay", () => {
+    // Build 93, note 14: at the end of a rule the app said "Those from the
+    // prayer wall leave your prayers now." to a reader who still carried a
+    // name from it, and headed those names "From the prayer wall", a page
+    // nobody has. The names stay to their promised end (a week, or until
+    // prayed for); the two lines say so without naming where they came from.
+    const en = getMessages("en") as Record<string, string>;
+    const naming = Object.entries(en).filter(([, line]) => typeof line === "string" && /prayer wall/i.test(line));
+    expect(naming.map(([key]) => key)).toEqual([]);
+    expect(en["prayers.diptychs.wallHeading"]).toBe("For a week");
+    expect(en["prayers.wall.left"]).toBe("The names you added for a week leave your prayers now.");
+    // And the promise those two lines keep is still the one made when a name was added.
+    expect(en["community.wallAddNote"]).toMatch(/for a week, or until you have prayed for them/);
+  });
+
   it("its two screens are not in the app, and nothing imports them", () => {
     expect(existsSync(join(root, "components/community/PrayerWall.tsx"))).toBe(false);
     expect(existsSync(join(root, "components/community/AskPrayersSheet.tsx"))).toBe(false);
