@@ -89,6 +89,14 @@ describe("the reading room", () => {
     expect(room).not.toMatch(/from "@\/lib\/reading\/collections"/);
   });
 
+  // The arbiter's word of 2026-11-11: the search printed "0 works" over its
+  // "nothing matches" line. The count stands only when there is a work to count.
+  it("counts its works only when there are some, and says nothing matches otherwise, in one live line", () => {
+    const search = code("components/reading/ReadingSearch.tsx");
+    expect(search).toMatch(/<div aria-live="polite">\s*\{results\.length > 0 \? \(\s*<p[^>]*>\{tn\("saints\.workCount", results\.length\)\}<\/p>\s*\) : \(\s*<p[^>]*>\{t\("reading\.empty\.search"\)\}<\/p>/);
+    expect(search.match(/tn\("saints\.workCount"/g)?.length).toBe(1);
+  });
+
   it("opens every filter in the shared movable sheet", () => {
     expect(code("components/reading/FilterSheet.tsx")).toMatch(/<Sheet\b[^>]*\bdesktop\b/);
     expect(code("components/reading/ReadingSearch.tsx")).toContain("<FilterSheet");

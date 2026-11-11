@@ -147,13 +147,18 @@ export function ReadingSearch({ room, query, filters, onFilter }: { room: Room; 
         ) : null}
       </ChipScroller>
 
-      <p aria-live="polite" className="mt-4 font-sans text-detail text-paper/50">
-        {tn("saints.workCount", results.length)}
-      </p>
+      {/* How many works, or that nothing matches: one line, never "0 works"
+          over the empty line (the arbiter's word of 2026-11-11), in one live
+          region so a screen reader hears whichever stands. */}
+      <div aria-live="polite">
+        {results.length > 0 ? (
+          <p className="mt-4 font-sans text-detail text-paper/50">{tn("saints.workCount", results.length)}</p>
+        ) : (
+          <p className="mt-8 max-w-[40ch] font-sans text-ui leading-[1.55] text-paper/65">{t("reading.empty.search")}</p>
+        )}
+      </div>
 
-      {results.length === 0 ? (
-        <p className="mt-8 max-w-[40ch] font-sans text-ui leading-[1.55] text-paper/65">{t("reading.empty.search")}</p>
-      ) : (
+      {results.length === 0 ? null : (
         <ul className="mt-3 grid grid-cols-2 gap-x-2.5 gap-y-6 min-[360px]:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 md:gap-x-4 lg:grid-cols-6">
           {results.map((c, i) => {
             const author = c.author ?? t("reading.work.anonymous");
