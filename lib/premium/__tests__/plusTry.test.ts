@@ -227,11 +227,17 @@ describe("the reader's own things, shown as examples", () => {
 describe("the Thread the history preview follows", () => {
   it("is the Council of Florence's own, step for step, as lib/history/thread.ts gives it", async () => {
     const { loadEventBody } = await import("@/lib/history/load");
-    const { eventThread } = await import("@/lib/history/thread");
+    const { eventThread, stepWhen } = await import("@/lib/history/thread");
     const body = await loadEventBody(TRY_EVENT);
     const real = eventThread(TRY_EVENT, body?.chronology ?? []);
     expect(TRY_THREAD.home).toEqual(real.home);
-    expect(TRY_THREAD.steps).toEqual(real.steps.slice(TRY_THREAD_FROM, TRY_THREAD_FROM + TRY_THREAD.steps.length));
+    const bare = (steps: typeof real.steps) => steps.map(({ mark: _mark, line: _line, ...step }) => step);
+    const slice = bare(real.steps.slice(TRY_THREAD_FROM, TRY_THREAD_FROM + TRY_THREAD.steps.length));
+    expect(bare(TRY_THREAD.steps)).toEqual(slice);
+    // Each year said once over the preview's own six steps, so its first says
+    // its year (build 93 note 5; in the whole Thread the step before it does).
+    expect(TRY_THREAD.steps.map(({ mark, line }) => ({ mark, line }))).toEqual(stepWhen(slice));
+    expect(TRY_THREAD.steps[0].mark).toBe("1437");
     expect(TRY_THREAD.steps.length).toBe(6);
   });
 });

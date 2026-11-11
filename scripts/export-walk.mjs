@@ -9942,6 +9942,136 @@ await section(69, async () => {
   }
 });
 
+await section(70, async () => {
+  console.log("\n70. An event's steps: the click as each comes to the reading place, each year said once, the map named, the event's pictures under their steps (build 93 note 5)");
+  // His words: "add haptic feedback and make the design more... I feel like
+  // you can make the design better on this." His screenshot was 1054's Story:
+  // "867" beside a step and "867" again over it, a map with an unnamed dot,
+  // and no click. The walk's phone sees Plus's Thread (nothing is locked
+  // before both stores enforce it).
+  const rowsOf = (page) =>
+    page.evaluate(() =>
+      [...document.querySelectorAll("[data-event-thread] li[data-step]")].map((li) => ({
+        year: li.querySelector("[data-step-year]")?.textContent?.trim() ?? "",
+        when: li.querySelector("[data-step-when]")?.textContent?.trim() ?? "",
+        plate: li.querySelector("[data-event-plate]") ? Math.round(li.querySelector("[data-event-plate] > div").getBoundingClientRect().height) : 0,
+        credit: li.querySelector("[data-event-plate] figcaption")?.textContent?.trim() ?? "",
+      })),
+    );
+  const toThread = (page) =>
+    page.evaluate(() => {
+      const t = document.querySelector("[data-event-thread]");
+      window.scrollTo({ top: window.scrollY + t.getBoundingClientRect().top - 140, behavior: "instant" });
+    });
+
+  // 1054, as he saw it.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify.motion": "on" } });
+    await ctx.addInitScript(() => {
+      window.__pulses = [];
+      navigator.vibrate = (p) => {
+        window.__pulses.push(p);
+        return true;
+      };
+    });
+    const cdp = await ctx.newCDPSession(page);
+    await go(page, "/");
+    await go(page, "/history/great-schism-1054/");
+    await page.waitForSelector("[data-event-thread] li[data-step]", { timeout: 20000 });
+    await page.waitForTimeout(800);
+    const rows = await rowsOf(page);
+    const twice = rows.filter((r) => {
+      const years = `${r.year} ${r.when}`.match(/\b\d{3,4}\b/g) ?? [];
+      return new Set(years).size !== years.length;
+    });
+    must(twice.length === 0, `each step says its year once (${twice.length ? twice.map((r) => `${r.year} | ${r.when}`).join("; ") : rows.length + " steps"})`);
+    const shown = rows.slice(0, 5).map((r) => `${r.year}|${r.when}`).join(" ; ");
+    must(shown === "867| ; c. 1014|Rome ; 1053| ; 1054|19 April ; |Late April · Constantinople", `the years mark where they change and the day and place stand over the words (${shown})`);
+
+    await toThread(page);
+    await page.waitForTimeout(1200);
+    const home = await page.evaluate(() => document.querySelector("[data-thread-map-home]")?.textContent?.trim() ?? "");
+    must(home === "Constantinople", `the map names the event's place in its corner (${home || "nothing"})`);
+
+    // A page that moves itself clicks nothing.
+    await page.evaluate(() => (window.__pulses = []));
+    await page.evaluate(() => window.scrollBy({ top: 360, behavior: "instant" }));
+    await page.waitForTimeout(600);
+    must((await page.evaluate(() => window.__pulses.length)) === 0, "a page that moves itself brings steps up in silence");
+    await page.evaluate(() => window.scrollBy({ top: -360, behavior: "instant" }));
+    await page.waitForTimeout(600);
+
+    // A hand: a click as each new step comes to the reading place.
+    await page.evaluate(() => (window.__pulses = []));
+    const currentOf = () => page.evaluate(() => document.querySelector('[data-event-thread] li[aria-current="step"]')?.dataset.step ?? null);
+    let arrivals = 0;
+    let prev = await currentOf();
+    let named = "";
+    for (let k = 0; k < 14; k++) {
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 195, y: 620 }] });
+      for (let i = 1; i <= 8; i++) {
+        await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: 195, y: 620 - (110 * i) / 8 }] });
+        await page.waitForTimeout(25);
+      }
+      await page.waitForTimeout(120);
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+      await page.waitForTimeout(500);
+      const now = await currentOf();
+      if (now !== null && now !== prev) arrivals++;
+      if (now !== null) prev = now;
+      const place = await page.evaluate(() => document.querySelector("[data-thread-map-place]")?.textContent?.trim() ?? "");
+      if (place && !named) named = place;
+    }
+    const pulses = await page.evaluate(() => window.__pulses.length);
+    must(arrivals >= 3 && Math.abs(pulses - arrivals) <= 1, `a click in the hand as each new step comes to the reading place (${pulses} clicks for ${arrivals} steps reached)`);
+    must(named.length > 0, `the step's own place stands named beside its mark (${named || "never named"})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // The Fall of Constantinople: the event's pictures under the steps they
+  // show. Served here from the repository, as the website serves them...
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await ctx.route(/\/history\/media\/[^?]+/, (route) => {
+      const file = path.resolve("public", new URL(route.request().url()).pathname.slice(1));
+      return fs.existsSync(file) ? route.fulfill({ path: file }) : route.abort();
+    });
+    await go(page, "/");
+    await go(page, "/history/fall-of-constantinople/");
+    await page.waitForSelector("[data-event-thread] li[data-step]", { timeout: 20000 });
+    // Through the steps, so each picture is asked for.
+    for (let k = 0; k < 16; k++) {
+      await page.evaluate(() => window.scrollBy({ top: 380, behavior: "instant" }));
+      await page.waitForTimeout(250);
+    }
+    await page.waitForTimeout(1500);
+    const rows = await rowsOf(page);
+    const at = rows.map((r, i) => (r.plate ? i : -1)).filter((i) => i >= 0).join(",");
+    must(at === "0,1,3,4,5,7,8,9", `eight of its pictures stand under the steps they show (${at || "none"})`);
+    const tall = rows.filter((r) => r.plate > 201);
+    must(tall.length === 0 && rows.filter((r) => r.plate).every((r) => r.credit.length > 0), `each no taller than 200px, its credit under it (${rows.filter((r) => r.plate).map((r) => r.plate).join(", ")})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+  // ...and with no signal, as the apps may be: no empty box is left.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/");
+    await go(page, "/history/fall-of-constantinople/");
+    await page.waitForSelector("[data-event-thread] li[data-step]", { timeout: 20000 });
+    for (let k = 0; k < 16; k++) {
+      await page.evaluate(() => window.scrollBy({ top: 380, behavior: "instant" }));
+      await page.waitForTimeout(250);
+    }
+    await page.waitForTimeout(1500);
+    const left = await page.evaluate(() => document.querySelectorAll("[data-event-thread] [data-event-plate]").length);
+    must(left === 0, `with no signal the pictures are gone and leave no box (${left} left)`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

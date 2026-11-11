@@ -165,6 +165,12 @@ export type HistoryEventMeta = {
     gallery?: {
       /** The file on the website, under /history/media/. */
       src: string;
+      /** The step of the event's chronology this picture shows, by that
+       *  step's own date line (data/history/<slug>.json), where it shows
+       *  one: the steps draw it under that step, the photo before the words
+       *  (build 93 note 5). One picture to a step; the integrity suite holds
+       *  every one to a step the account has. */
+      step?: string;
       width: number;
       height: number;
       alt: string;
@@ -1620,6 +1626,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       gallery: [
         {
           src: "/history/media/council-of-florence-pisanello.jpg",
+          step: "9 April 1438",
           width: 1280,
           height: 886,
           alt: "A sheet of pen studies: the emperor on horseback, two horses' heads, a standing figure from behind, and lines of Arabic script",
@@ -1633,6 +1640,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
         },
         {
           src: "/history/media/council-of-florence-decree.jpg",
+          step: "6 July 1439",
           width: 1144,
           height: 922,
           alt: "The parchment of the union decree, two columns of Latin and Greek text above a long block of subscriptions, with the emperor's signature in the margin and two lead seals on cords",
@@ -1706,6 +1714,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
       gallery: [
         {
           src: "/history/media/fall-of-constantinople-bellini.v1.jpg",
+          step: "February 1451",
           width: 888,
           height: 1200,
           alt: "Sultan Mehmed II in profile, bearded, in a white turban and a fur-collared red robe, under a painted arch with three crowns in each upper corner and a jewelled cloth over the parapet",
@@ -1731,6 +1740,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
         },
         {
           src: "/history/media/fall-of-constantinople-rumeli-hisar.v1.jpg",
+          step: "March–August 1452",
           width: 1200,
           height: 849,
           alt: "A coloured photograph over the Bosporus: the round towers and walls of Rumeli Hisarı on the wooded slope in front, the strait, and the far shore with its houses and hills",
@@ -1744,6 +1754,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
         },
         {
           src: "/history/media/fall-of-constantinople-buondelmonti.v1.jpg",
+          step: "2 April 1453",
           width: 801,
           height: 1200,
           alt: "A hand-drawn map: the walled City with the dome of Hagia Sophia and the great columns among its houses, the land walls down its left side, and Pera across the blue water of the Golden Horn",
@@ -1756,6 +1767,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
         },
         {
           src: "/history/media/fall-of-constantinople-zonaro-gun.v1.jpg",
+          step: "12 April 1453",
           width: 1200,
           height: 836,
           alt: "Sultan Mehmed II on a white horse at the head of his horsemen and banners, the great gun on its cart drawn by oxen at the right, and the walls of the City white on the hills far off",
@@ -1768,6 +1780,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
         },
         {
           src: "/history/media/fall-of-constantinople-land-walls.v1.jpg",
+          step: "5–7 April 1453",
           width: 1200,
           height: 799,
           alt: "A sepia photograph of the land walls: square towers in ruins, one split by a long crack, above the grassy moat, with a dirt road at the left",
@@ -1780,6 +1793,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
         },
         {
           src: "/history/media/fall-of-constantinople-zonaro-ships.v1.jpg",
+          step: "22 April 1453",
           width: 694,
           height: 502,
           alt: "Sultan Mehmed II on a white horse points to the ships being hauled up and over the hill, his officers around him and boats on the water below",
@@ -1792,6 +1806,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
         },
         {
           src: "/history/media/fall-of-constantinople-moldovita.v1.jpg",
+          step: "28 May 1453",
           width: 1200,
           height: 861,
           alt: "A fresco of the walled City under its Slavonic title: icons of the Theotokos and of Christ carried along the walls, bishops, nuns and a crowned figure behind them, archers on the towers and cannon in their walls",
@@ -1829,6 +1844,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
         },
         {
           src: "/history/media/fall-of-constantinople-zografos.v1.jpg",
+          step: "29 May 1453",
           width: 1200,
           height: 809,
           alt: "A painting of the fall: the sultan enthroned among his guards before the City and its harbour, the clergy brought before him, and armed Greeks taking to the mountains at the left",

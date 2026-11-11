@@ -67,8 +67,8 @@ describe("the steps' places", () => {
 
 describe("the Thread on an event's page", () => {
   it("keeps the steps free as the plain list, and is Plus's way to follow them", () => {
-    expect(THREAD).toContain("if (plus === true) return <Thread steps={steps} home={home} />;");
-    expect(THREAD).toContain("<PlainSteps steps={steps} />");
+    expect(THREAD).toContain("if (plus === true) return <Thread steps={steps} home={home} pictures={pictures} />;");
+    expect(THREAD).toContain("<PlainSteps steps={steps} pictures={pictures} />");
     expect(THREAD).toMatch(/plus === false \? \(\s*<button[\s\S]*?onClick=\{\(\) => upgrade\.open\("history"\)\}[\s\S]*?<PlusMark \/>/);
   });
 
@@ -82,10 +82,11 @@ describe("the Thread on an event's page", () => {
 
   it("names a place on its map only when the step being read names it", () => {
     expect(THREAD).toContain("const own = steps[current]?.place ?? null;");
-    expect(THREAD).toMatch(/\{own \? \(\s*<p aria-hidden/);
+    expect(THREAD).toMatch(/\{own \? \(\s*<p\s+aria-hidden/);
   });
 
   it("moves its map only on the app's motion switch", () => {
-    expect(THREAD).toContain('className="motion-safe:transition-transform motion-safe:duration-700"');
+    // On the house's curve since build 93 note 5.
+    expect(THREAD).toContain('className="motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-[var(--ease-house)]"');
   });
 });

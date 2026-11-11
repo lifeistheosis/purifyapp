@@ -41,6 +41,8 @@ export type EventPicture = {
   alt: string;
   /** "work · artist · licence", printed inside the plate's foot. */
   credit: string;
+  /** The date line of the step this picture shows, where it shows one (lib/history/events.ts, media.gallery). */
+  step?: string;
 };
 
 /**
@@ -53,8 +55,8 @@ export type EventPicture = {
  * place when a page grows above it (WebKit has no scroll anchoring), so a part
  * of the account tapped to in that moment fell 440px down the screen.
  */
-export function wholePlateWidth(picture: { width: number; height: number }): string {
-  return `min(100%, ${picture.width}px, calc(min(58svh, 440px) * ${picture.width} / ${picture.height}))`;
+export function wholePlateWidth(picture: { width: number; height: number }, tallest = "min(58svh, 440px)"): string {
+  return `min(100%, ${picture.width}px, calc(${tallest} * ${picture.width} / ${picture.height}))`;
 }
 
 /**
@@ -108,5 +110,6 @@ export function eventGallery(meta: HistoryEventMeta, native: boolean): EventPict
     height: g.height,
     alt: g.alt,
     credit: creditLine(g),
+    ...(g.step ? { step: g.step } : {}),
   }));
 }

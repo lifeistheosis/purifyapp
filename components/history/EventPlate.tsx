@@ -38,12 +38,15 @@ export function EventPlate({
   picture,
   pan = false,
   priority = false,
+  tallest,
   className,
 }: {
   picture: EventPicture;
   pan?: boolean;
   /** The page's first picture: asked for at once. */
   priority?: boolean;
+  /** How tall a whole picture may stand (a CSS length); the screen's own share by default, less under a step. */
+  tallest?: string;
   className?: string;
 }) {
   const ref = useRef<HTMLImageElement>(null);
@@ -124,7 +127,7 @@ export function EventPlate({
       <figure data-event-plate="whole" className={cn("flex flex-col items-center", className)}>
         <div
           className="relative overflow-hidden rounded-[12px] bg-night-soft ring-1 ring-paper/10"
-          style={{ width: wholePlateWidth(picture) }}
+          style={{ width: wholePlateWidth(picture, tallest) }}
         >
           {preview}
           {img}

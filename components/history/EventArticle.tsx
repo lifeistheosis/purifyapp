@@ -22,6 +22,7 @@ import { T } from "@/components/i18n/T";
 import type { HistoryEventMeta } from "@/lib/history/events";
 import { certaintyKey, eraKey } from "@/lib/history/labels";
 import type { EventPerson, HistoryEventBody, SourceCitation } from "@/lib/history/load";
+import type { EventPicture } from "@/lib/history/media";
 import { scriptureHref } from "@/lib/history/scripture";
 import type { EssayBlock } from "@/lib/theology/load";
 import { SourceLine } from "@/components/citations/SourceLine";
@@ -285,11 +286,14 @@ export function EventArticle({
   meta,
   body,
   people,
+  pictures = [],
 }: {
   meta: HistoryEventMeta;
   body: HistoryEventBody;
   /** The account's own people, or the registry's saints for an older account. */
   people: EventPerson[];
+  /** The event's further pictures, each drawn under the step it shows (build 93 note 5). */
+  pictures?: EventPicture[];
 }) {
   const primary = body.sources.filter((s) => s.kind === "primary");
   const secondary = body.sources.filter((s) => s.kind === "secondary");
@@ -322,7 +326,7 @@ export function EventArticle({
           <>
             <Subhead k="study.history.stepByStep" />
             {/* The plain list for every reader, the Thread with its map for Plus (1.9). */}
-            <EventThread thread={eventThread(meta.slug, body.chronology)} />
+            <EventThread thread={eventThread(meta.slug, body.chronology)} pictures={pictures} />
           </>
         ) : null}
       </Part>

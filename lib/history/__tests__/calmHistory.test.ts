@@ -287,8 +287,10 @@ describe("History's pictures", () => {
     // line 24px tall, then 464px. An iPad keeps no place when a page grows
     // above it, so a part tapped to in that moment fell 440px (1.7.1).
     expect(wholePlateWidth({ width: 941, height: 1200 })).toBe("min(100%, 941px, calc(min(58svh, 440px) * 941 / 1200))");
+    // Under a step of the account, shorter, and as still (build 93 note 5).
+    expect(wholePlateWidth({ width: 941, height: 1200 }, "200px")).toBe("min(100%, 941px, calc(200px * 941 / 1200))");
     const plate = code("components/history/EventPlate.tsx");
-    expect(plate).toContain("style={{ width: wholePlateWidth(picture) }}");
+    expect(plate).toContain("style={{ width: wholePlateWidth(picture, tallest) }}");
     expect(plate).toContain('"relative block h-auto w-full"');
     expect(plate).not.toMatch(/\bw-auto\b/);
     // The picture's own width and height give its proportions before it comes.

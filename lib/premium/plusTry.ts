@@ -224,7 +224,9 @@ export const TRY_THREAD: EventThreadData = {
         "name": "Constantinople",
         "x": 3588.6,
         "y": 514.1
-      }
+      },
+      "mark": "1437",
+      "line": "27 November · Constantinople"
     },
     {
       "date": "8 February 1438",
@@ -234,7 +236,9 @@ export const TRY_THREAD: EventThreadData = {
         "name": "Venice",
         "x": 3291.5,
         "y": 415
-      }
+      },
+      "mark": "1438",
+      "line": "8 February · Venice"
     },
     {
       "date": "9 April 1438",
@@ -245,13 +249,17 @@ export const TRY_THREAD: EventThreadData = {
         "name": "Ferrara",
         "x": 3278.7,
         "y": 428.4
-      }
+      },
+      "mark": null,
+      "line": "9 April · Ferrara"
     },
     {
       "date": "Summer 1438",
       "text": "Committees take up purgatory and reach no agreement.",
       "year": "1438",
-      "place": null
+      "place": null,
+      "mark": null,
+      "line": "Summer"
     },
     {
       "date": "8 October to 13 December 1438",
@@ -261,7 +269,9 @@ export const TRY_THREAD: EventThreadData = {
         "name": "Ferrara",
         "x": 3278.7,
         "y": 428.4
-      }
+      },
+      "mark": null,
+      "line": "8 October to 13 December · Ferrara"
     },
     {
       "date": "January 1439",
@@ -271,7 +281,9 @@ export const TRY_THREAD: EventThreadData = {
         "name": "Florence",
         "x": 3272.2,
         "y": 452.3
-      }
+      },
+      "mark": "1439",
+      "line": "January · Florence"
     }
   ]
 };

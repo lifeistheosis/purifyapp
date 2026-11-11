@@ -94,7 +94,7 @@ export default async function HistoryEventPage({ params }: { params: Promise<{ s
         <div className="mx-auto w-full max-w-[760px]">
           <EventPictures picture={picture} gallery={gallery} className="mb-7" />
           <EventHeader meta={meta} />
-          <EventArticle meta={meta} body={body} people={people} />
+          <EventArticle meta={meta} body={body} people={people} pictures={gallery} />
           <EventRelations meta={meta} />
         </div>
       </section>

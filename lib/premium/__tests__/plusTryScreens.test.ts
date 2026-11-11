@@ -279,7 +279,10 @@ describe("each feature's own screen", () => {
     expect(out).toContain("data-event-thread");
     expect(out).toContain("data-thread-map");
     expect(out).toContain("The delegation lands at Venice.");
-    expect(out).toContain("8 February 1438 · Venice");
+    // Each year said once (build 93 note 5): 1438 beside the step, its day and place over its words.
+    expect(out).toContain("8 February · Venice");
+    expect(out).not.toContain("8 February 1438 · Venice");
+    expect(out).toMatch(/data-step-year=""[^>]*>1438</);
     // The pictures are every reader's now: the preview no longer sells them.
     expect(out).not.toContain(">More pictures</p>");
   });
