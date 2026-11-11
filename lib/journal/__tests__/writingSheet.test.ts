@@ -60,14 +60,14 @@ describe("one empty quote at a time", () => {
   it("knows where an empty quote waits", () => {
     expect(emptyQuoteAt([text("")])).toBe(-1);
     expect(emptyQuoteAt([quote(""), text("")])).toBe(0);
-    expect(emptyQuoteAt([text("Words"), quote("Acquire the Spirit of peace"), quote(""), text("")])).toBe(2);
+    expect(emptyQuoteAt([text("Words"), quote("Begin again tomorrow."), quote(""), text("")])).toBe(2);
     // Spaces alone are still empty.
     expect(emptyQuoteAt([quote("  \n "), text("")])).toBe(0);
   });
 
   it("a quote with its giver named and no words yet is not empty: the writer has begun it", () => {
-    expect(emptyQuoteAt([quote("", "St Seraphim"), text("")])).toBe(-1);
-    expect(emptyQuoteAt([quote("Acquire the Spirit of peace"), text("")])).toBe(-1);
+    expect(emptyQuoteAt([quote("", "My grandmother"), text("")])).toBe(-1);
+    expect(emptyQuoteAt([quote("Begin again tomorrow."), text("")])).toBe(-1);
   });
 
   it("Quote goes to the one waiting, and lays a card only when none waits", () => {
@@ -211,7 +211,7 @@ describe("More's choices can be read", () => {
 });
 
 describe("a quote laid from the library keeps the page's own", () => {
-  const library: PageBlock = { type: "library", text: "Acquire the Spirit of peace.", cite: "St Seraphim of Sarov", href: "/saints/seraphim-of-sarov/" };
+  const library: PageBlock = { type: "library", text: "A line kept from the library.", cite: "A work in the library", href: "/saints/a-saint/" };
   const page: Page = {
     title: "A day in November",
     blocks: [text("What I read this morning.")],
@@ -254,9 +254,9 @@ describe("Highlight marks words, and says so when there are none", () => {
     expect(highlightTarget([text("")], undefined)).toBeNull();
     // The cursor on an empty line: until 2026-11-11 that line took the colour, and nothing showed.
     expect(highlightTarget([text("")], 0)).toBeNull();
-    expect(highlightTarget([quote("Acquire the Spirit of peace"), text("")], 1)).toBeNull();
+    expect(highlightTarget([quote("Begin again tomorrow."), text("")], 1)).toBeNull();
     // A quote is not the writer's own words, and neither is a verse.
-    expect(highlightTarget([john316, quote("Acquire the Spirit of peace", "St Seraphim"), text("  ")], 0)).toBeNull();
+    expect(highlightTarget([john316, quote("Begin again tomorrow.", "My grandmother"), text("  ")], 0)).toBeNull();
   });
 
   it("marks the paragraph the cursor is in, and with the cursor elsewhere the last one written", () => {
