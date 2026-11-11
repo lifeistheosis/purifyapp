@@ -473,6 +473,116 @@ is deferred.
   Prayers walk now fails if any of its three parts is still being brought in
   as the page comes back.
 
+### A page that has changed while the reader was away (the same day, the pre-build gate)
+
+The gate's tap walk (`gate-run-1.md`, Part 1) found two places where Back
+did not return the reader to where they were: the reading room, 553px off
+after a work, and the Bible's list, 67px off after a book, on 33 of its 40
+rows. I measured both by the link under the thumb before changing anything,
+since two other reports of the same walk had turned out to be its measure
+(above). These were real.
+
+| Place, on the export at 390 by 844 | Tapped at | Came back at | What the page had drawn while the reader was away |
+| --- | --- | --- | --- |
+| The Bible's list, 1 Kings | 436px | 504px, 68 below the thumb | A "Continue reading" row above the books, 67px, and with it three more links to 1 Kings 1: that row, its copy for a wide screen, and the Bible tab |
+| The reading room, a book under "Short reads" | 422px | 974px, 552 below | "Continue reading" and "Because you read", 552px of new shelves above it, the first beginning with the book just opened |
+
+**Why.** The rule made for his note 1 (a link is never taken for another to
+the same place) refused to choose whenever the page had another number of
+links to the place than when it was left. That was right for the council's
+page. But each of these pages draws something new *because* the reader
+opened something, and what it draws is a link to the very place they have
+just been. So the page that came back always had one more, the tapped link
+was never looked for, and the page stayed at the browser's number with the
+new rows standing above it. The unit test even said so in its own words
+("which was tapped cannot be said"). It can be said.
+
+**The rule now**, in `lib/ui/returnPlace.ts`:
+
+- A place also remembers **the two links the tapped one stood between**.
+  When the page has another number of links to the place, the tapped one is
+  the link to it that still stands between those two, is drawn, and is not
+  in a bar. One such link is it. None, or two, and the page is left where
+  the browser put it, as before. The council's page is still safe: the line
+  in its account stands between other links than the card did.
+- Only a link a reader could see beside it is a neighbour: not one in a bar
+  (the Bible tab leads to the chapter last read, so it changes), and not one
+  that is not drawn. The first run of the new walk found that one: the
+  Bible's list is in the page twice, for a phone and for a wide screen, the
+  wide copy begins right after the phone's last book, and when it gained its
+  own "Continue reading" row, Revelation's row had a new neighbour no reader
+  could see and came back 67px off.
+- **The link is measured where it will stand**, not where it is while it is
+  still being brought in. Until now nothing was measured while an entrance
+  ran, and the page was put right when it ended. That was right for
+  Prayers, where the page did not need to move, and late wherever it did:
+  on the browser's own Back the Bible's list brings its rows in again (held
+  8px low for a third of a second, then rising), so its row would have
+  stood 68px off for three quarters of a second and then jumped. What the
+  entrance still holds the link by is taken off the measure, the page is
+  put right at once, before it is painted, and the watch stays until the
+  entrance is over and looks again.
+
+**The check.**
+
+- `lib/ui/__tests__/returnPlace.test.ts`, 34 cases, 10 of them new. Nine
+  fail on the helper as it was: a shelf drawn above, a link dropped, the
+  new row never taken for the tapped one, a bar's link and a link that is
+  not drawn not counted as neighbours, the list kept for a wide screen, a
+  row met where it will land while it is still coming in (67px at once, not
+  75px and not later), a shift read from a transform or a translate and
+  added up, and a part that comes in without one followed and let go only
+  when it has landed. The tenth holds what must stay: two links between the
+  same two, and the page is left alone. The test that held the old answer ("left
+  alone") now holds the case that still cannot be told: the tapped card
+  gone, and two new links to the same place.
+- `scripts/back-walk.mjs`, new, on the export: a new reader, each link
+  tapped with a real touch, and the tapped link measured after every frame
+  is painted for three seconds after Back. It finds the link again by where
+  it stands (its shelf, its list), never by counting links, which is the
+  helper's own way and so no check of it. Ten walks: a book under the two
+  new shelves of the reading room by the browser's own Back at three sizes
+  (552, 576 and 685px drawn above it while away) and by the page's own
+  Back button, the Bible's first, middle and last rows, the middle one at
+  three sizes, and the book above the new shelves. 10 of 10, three times
+  over, and in those 30 walks no frame was painted more than a row's own
+  8px rise from the thumb.
+- How a frame is measured matters, and the walk's first way was wrong. It
+  read the link in a task posted from each frame, "after the paint", and
+  twice in some fifty walks called a frame painted 75px off. I had written
+  that down as the browser's doing before I traced it. Traced, it was the
+  walk: the task of the frame before the step back ran late, after the page
+  had come back and the browser had set its own number, and before the next
+  frame, in which the helper put the page right before anything was
+  painted. The walk now reads the link after each frame's layout (a
+  ResizeObserver on a thing of its own that changes size every frame), when
+  every script of the frame has run and before the frame is painted. The
+  trace also shows the order of a return: the step is heard, the page is
+  committed and put right by the helper, the browser then sets its own
+  number, and the helper's next look puts the page right again before that
+  frame is painted. Taking the restoring over at the step back does not
+  stop the browser (`history.scrollRestoration` set to "manual" as the step
+  is heard: it put its number back all the same).
+- The walk holds itself to having proved something: the page did grow above
+  the link, and does have another number of links to it. A book in "Short
+  reads", above the new shelves, is walked too and has to stay where it was.
+
+**Named, not mended.**
+
+- **A tapped link right beside what was added** no longer stands between
+  the same two links, and is left at the browser's number. No shelf here
+  has one today: the two new shelves stand after "Short reads", whose books
+  are above them and do not move.
+- **A chapter's round button is a door, not a step back.** It leads to the
+  whole list (`back="/bible"`, held by two tests), so the list opens at its
+  top even for a reader who came from one of its rows. The phone's Back
+  returns them to the row. Put to the arbiter.
+- **The browser's own Back brings a page's rows in again.** In the apps a
+  step back is the phone's Back or the page's own button; both are
+  pictured, and the page comes back whole. A browser's own button on the
+  website is not pictured, and the page that returns plays its rows'
+  entrance again, as it does when opened. Put to the arbiter.
+
 ## What opens shows itself: the page moves with it (2026-11-11, build 93 note 15)
 
 His words, on the prayer book with every chapter shut and "Before & after
@@ -566,12 +676,56 @@ opens on its own moves it under their finger.
   build 87 and 89) passes unchanged: "the tapped chapter never jumps", its
   largest move in a frame now 31px where the fold's own first frame is 77.
 
+### A part that is still filling (2026-11-11, the pre-build gate; Fable Themes' finding)
+
+Community's "3 replies" opens on two grey rows while its replies come from
+the website, and says it is busy (`aria-busy`). The grey rows ended in
+sight, the page was still, the watch let go after its 0.4s, and the replies
+then landed with nothing watching: their end 939px down a screen whose tab
+bar stood at 761px. The tap walk failed it as "under" although the control
+names its part.
+
+**The rule**: while what opened says it is busy, itself or anything in it,
+the watch does not end on "still"; its moment (the 1.4s at most, the 0.36s
+at least) begins when it stops saying so, so what has arrived is followed
+as anything that opens is. It is not waited for for ever (12s), and the
+reader's hand ends it as before: a reader who has moved on is not pulled
+back to replies that come late.
+
+**The check.**
+
+- `lib/ui/__tests__/showOpened.test.ts`, 36 cases, 5 of them new, and each
+  of the 5 fails on the helper as it was (it let go at frame 23, 0.37s in).
+- `scripts/opened-walk.mjs`, four new walks. No walk here has a network, so
+  the part is made for the walk on a real page of the export: a control
+  that says what it opens, a part that opens on grey rows that say they are
+  busy, and its words a moment later, taller than the screen has room for.
+  The helper is the export's own, hearing a real touch. Its words 0.9s
+  after the tap, and 2.4s after (later than any opening is watched): the
+  page stays while the part waits, in sight, then moves 181px, and the
+  words end 749px down a screen that shows to 761. With Purify's motion off
+  the page is with them a tenth of a second after they come. And with the
+  reader's finger drawn up the page while it waits (63px), the page stays
+  where they left it when the words come. 46 of 46 with the walks that
+  were there.
+- Community's own replies, on the export reading the website (GET only,
+  nothing sent, and no picture taken of readers' posts): four posts that
+  say they have two or three replies, each opened on its grey rows; the
+  replies came 211, 213, 369 and 515ms after the tap; the page moved 135 to
+  334px with them, and all four end 748 or 749px down a screen that shows
+  to 761. Fable Themes, who found it, had measured a thread's end at 852px
+  with the bar at 697 where the replies came late.
+- The gate's own walk on Community, the Bible's list and the reading room,
+  reading the website, as a new reader with no Plus: 166 controls tapped,
+  none failed.
+
 ### What it is not
 
 - A part taller than the screen can show ends under the tab bar, with its
   control at the top. That is the rule's second half, not a miss.
 - Nothing is followed that opens later than two seconds after the tap, or
-  after the reader has moved the page themselves.
+  after the reader has moved the page themselves. (A part that has opened
+  and is still filling is another matter: above.)
 - A field the reader types in is not followed (the browser minds the
   caret), and neither is anything marked `data-opens-in-place`.
 
@@ -866,7 +1020,12 @@ What it leaves alone, each on purpose:
 - `node scripts/closing-walk.mjs` (new): the five places above at three
   sizes with a real touch, then the giving back, then motion off. 19 of 19
   on the export with the mend; 18 of the same 19 fail on the export without
-  it.
+  it. (What's new was rebuilt the same morning as months and their updates,
+  with no year's box. The walk follows it: the oldest month's box is shut
+  at its own title at three sizes, and the open month's last update is
+  opened and shut on a wide screen only, since on a phone the months after
+  it fill the screen and the page stays long enough of itself, with 182px
+  to spare at 360 by 740 and 120px at 390 by 844. 17 of 17 since.)
 - The gate's own walk on the same screens (`node scripts/tap-walk.mjs out
   --only /whats-new/,/faq/,/chants/,/prayers/`): What's new, the FAQ and
   Chants with nothing failed, 98 controls tapped.
