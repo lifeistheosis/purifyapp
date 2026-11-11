@@ -302,3 +302,64 @@ changed.
   `topics.curatedBy`).
 - The starters are in English in every language, as before
   (`data/florilegium/starters.json`).
+
+## Build 93 note 19: a verse opens at the verse, and Today says whose the line is (2026-11-11)
+
+His words, on build 93: "I'm not sure why the Your Flor Gelium just is the
+song of the Theotokos. Also, when you click the verse in the Florigelium, it
+just takes you to the book. It doesn't take you to the actual verse." (His
+third ask in the same note, the Florilegium and the journal's notebooks made
+one, is the prayer campaigns chat's.)
+
+### What was wrong
+
+- **A gathering's page wrote the chapter alone.** A gathered verse's source
+  linked to `/bible/luke/1`, so a tap opened Luke 1 at its first line. Every
+  other link to a verse in the app ends in the verse (`#v53`), which the
+  Bible's page takes to the reading place and lights
+  (`components/bible/VerseFocusFlash.tsx`). Today's card, written a week
+  after the page, had it right; the page it sits beside did not. Two places
+  each wrote the address, and one was wrong.
+- **Today called a starter his.** He had kept the Song of the Theotokos, one
+  of the four starters every build knows, and gathered nothing else. Today's
+  card is headed "Your Florilegium" and takes its line from the reader's
+  gatherings, and a kept starter is one of them, so it showed Luke 1:53
+  under "Your Florilegium".
+
+### What a reader sees now
+
+- A verse tapped on a gathering's page, or on Today's card, opens the Bible
+  at that verse, in sight between the bars and lit while the eye finds it.
+- Today's card is headed "Your Florilegium" only over a line the reader
+  gathered themselves. While they have gathered any line of their own (in a
+  gathering of their own, or added to a kept starter), the day's line is one
+  of those and only those. With nothing of their own yet, a kept starter's
+  verses still come round, headed "The Florilegium", which is what they are.
+
+### How
+
+- One place writes a gathered line's address, `lineHref` in
+  `lib/florilegium/href.ts`, and the page and the card both draw from it.
+- `lib/florilegium/todayLine.ts` tells a starter's own verse (a verse of the
+  starter, in the gathering kept from it: `starterOf`, by its lines and not
+  by its name) from a line the reader gathered, and prefers the reader's.
+  The card takes its heading from that. Both headings are words every
+  language already has (`study.florilegium.title`,
+  `community.yourFlorilegium`), so nothing waits for a translator.
+
+### The check
+
+- `lib/florilegium/__tests__/href.test.ts`: his line opens
+  `/bible/luke/1#v53`; a Father's line opens where it was gathered; the page
+  and the card both use the one address and neither writes its own.
+- `lib/florilegium/__tests__/todayLine.test.ts`: his case (one starter kept:
+  the line is the starter's and says so); a line of the reader's own takes
+  over; a line they added to a kept starter is theirs; one verse of a
+  starter gathered by hand is theirs.
+- `scripts/florilegium-walk.mjs`, on the export with a real touch: Luke 1:53
+  tapped on the kept starter's page opens `/bible/luke/1/#v53`, the verse 321
+  to 420px down between the bars at 66 and 661, lit; Today with the starter
+  alone says "The Florilegium"; Today with a line of the reader's own says
+  "Your Florilegium" over that line. 3 of 3.
+- And on the website's own build, served on this machine, on a computer and
+  at a phone's width: the same tap, the same verse in sight and lit.

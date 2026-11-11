@@ -10,6 +10,13 @@
 //
 // Their own words and gatherings, so shown whatever their Plus: a reader's
 // gathered text is never at risk from a billing state (lib/florilegium).
+//
+// "Your Florilegium" heads only what the reader gathered (build 93 note 19:
+// Today called a starter he had kept his). A starter's own verse is headed
+// "The Florilegium", and comes round only while the reader has gathered
+// nothing themselves (lib/florilegium/todayLine.ts). And the line's source
+// opens at the verse, from the one place that writes that address
+// (lib/florilegium/href.ts).
 
 import Link from "next/link";
 import { useMemo } from "react";
@@ -18,7 +25,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useToday } from "@/lib/calendar/useToday";
 import { cn } from "@/lib/cn";
 import { useFlorilegia } from "@/lib/florilegium/florilegium";
-import { gatheringHref } from "@/lib/florilegium/href";
+import { gatheringHref, lineHref } from "@/lib/florilegium/href";
 import { lineForDay } from "@/lib/florilegium/todayLine";
 import { todayKey } from "@/lib/rhythm/dayKey";
 
@@ -28,15 +35,15 @@ export function FlorilegiumLineCard({ className }: { className?: string }) {
   const { florilegia } = useFlorilegia();
   const line = useMemo(() => (today ? lineForDay(florilegia, todayKey(today)) : null), [florilegia, today]);
   if (!line) return null;
-  const { item, florilegium } = line;
-  const source =
-    item.kind === "scripture"
-      ? { text: item.reference, href: `/bible/${item.book}/${item.chapter}#v${item.verse}` }
-      : { text: item.work ? `${item.author}, ${item.work}` : item.author, href: item.href };
+  const { item, florilegium, fromStarter } = line;
+  const source = {
+    text: item.kind === "scripture" ? item.reference : item.work ? `${item.author}, ${item.work}` : item.author,
+    href: lineHref(item),
+  };
 
   return (
-    <article data-florilegium-line="" className={cn("rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5", className)}>
-      <h2 className="font-heading text-ui font-semibold leading-tight text-paper">{t("community.yourFlorilegium")}</h2>
+    <article data-florilegium-line={fromStarter ? "starter" : "own"} className={cn("rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5", className)}>
+      <h2 className="font-heading text-ui font-semibold leading-tight text-paper">{t(fromStarter ? "study.florilegium.title" : "community.yourFlorilegium")}</h2>
       <Link
         href={gatheringHref(florilegium.id)}
         className="mt-0.5 block font-sans text-caption text-paper/60 underline-offset-4 hover:underline"

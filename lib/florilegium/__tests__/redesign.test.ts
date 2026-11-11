@@ -244,7 +244,8 @@ describe("a gathering's page", () => {
     // Each line reads its own way, whatever language it was gathered in.
     expect(out).toContain('<blockquote dir="auto" class="font-serif text-[17px] leading-[1.7] text-paper/90">');
     expect(out).toContain(html(verse.text));
-    expect(out).toContain('href="/bible/john/1"');
+    // At the verse, not at its chapter's first line (build 93 note 19; lib/florilegium/href.ts).
+    expect(out).toContain('href="/bible/john/1#v5"');
     expect(out).toContain('<span dir="auto" class="min-w-0">John 1:5</span>');
     expect(out).toContain(">Your note</p>");
     expect(words(out)).toContain("Your note Read at Pascha.");

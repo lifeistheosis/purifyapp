@@ -1,5 +1,7 @@
 import { isNativeClient } from "@/lib/platform/native";
 
+import type { FlorilegiumItem } from "./florilegium";
+
 /**
  * Where a gathering opens (1.9). On the website, its own page,
  * /florilegium/<id>. In the apps that page is not in the bundle: a reader's
@@ -31,4 +33,24 @@ export function gatheringHref(id: string): string {
  */
 export function starterHref(id: string): string {
   return `/florilegium/begin/${id}`;
+}
+
+/**
+ * Where a gathered line came from, or none where it cannot be opened.
+ *
+ * A verse opens the Bible at that verse, in view and lit, as every other
+ * link to a verse in the app does: the address ends in the verse (`#v53`),
+ * and the Bible's page takes it to the reading place and lights it
+ * (components/bible/VerseFocusFlash.tsx). Until 1.9 a gathering's page
+ * wrote the chapter alone, so a verse tapped there opened the chapter at
+ * its first line (build 93 note 19, the owner: "when you click the verse in
+ * the Florilegium, it just takes you to the book. It doesn't take you to
+ * the actual verse"); Today's card, written a week later, had it right. One
+ * place writes the address now, and both draw from it.
+ *
+ * A Father's line opens where it was gathered, when that is known.
+ */
+export function lineHref(item: FlorilegiumItem): string | null {
+  if (item.kind === "scripture") return `/bible/${item.book}/${item.chapter}#v${item.verse}`;
+  return item.href ?? null;
 }

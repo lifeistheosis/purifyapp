@@ -19,6 +19,7 @@ import {
   type FlorilegiumItem,
 } from "@/lib/florilegium/florilegium";
 import { hideGathering, showGathering } from "@/lib/florilegium/gatheringNow";
+import { lineHref } from "@/lib/florilegium/href";
 import { starterOf, starterPicture } from "@/lib/florilegium/starters";
 import { useIsNative } from "@/lib/platform/native";
 import { shareText } from "@/lib/share/shareImage";
@@ -246,10 +247,8 @@ export function ItemCard({
   const [draft, setDraft] = useState(item.note ?? "");
 
   const source = itemSource(item);
-  const href =
-    item.kind === "scripture"
-      ? `/bible/${item.book}/${item.chapter}`
-      : item.href;
+  // A verse opens at the verse, not at its chapter's first line (build 93 note 19; lib/florilegium/href.ts).
+  const href = lineHref(item);
   const mark = item.kind === "scripture" ? <Book size={15} aria-hidden className="shrink-0 text-paper/55" /> : <Quill size={15} aria-hidden className="shrink-0 text-paper/55" />;
   const SOURCE = "inline-flex min-h-11 min-w-0 items-center gap-2 font-sans text-caption font-semibold text-paper/65";
   const said = textLang ? { lang: textLang, dir: textDir(textLang) } : { dir: "auto" as const };
