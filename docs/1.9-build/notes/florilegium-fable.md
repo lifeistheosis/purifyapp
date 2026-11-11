@@ -236,11 +236,19 @@ changed.
 
 ## What a phone still has to say
 
-- The starters' pictures are the saints' covers the apps ask the website for
-  (`lib/readAloud/covers.ts`); with no signal a tile and its page wear the
-  manuscript plate. The stills were drawn with those addresses answered from
-  the same files in the checkout, as a phone with signal gets them; a walk
-  with no signal is the phone's to show.
+- ~~The starters' pictures are the saints' covers the apps ask the website
+  for (`lib/readAloud/covers.ts`); with no signal a tile and its page wear
+  the manuscript plate.~~ Closed in 1.9 (2026-11-11). The apps carry the
+  three now (`/covers/john.v1.jpg`, `/covers/matthew.v1.jpg`,
+  `/covers/david.v1.jpg`; Updates 2, in `lib/media/carriedCovers.json`, held
+  by `lib/media/__tests__/carried.test.ts`), and the Song of the Theotokos
+  always wore an icon they carry. Checked on the export with everything
+  outside the bundle refused, which is a phone with no signal: the four
+  tiles on the hub and the head of each starter's page draw their own
+  picture (John, Matthew, the Theotokos, David), none the plate. The only
+  things asked of the world outside were the website's own (the pack, the
+  notifications, the gifts, the read-aloud index), and none of them a
+  picture.
 - Whether a kept starter should leave the starters' row. It stays, saying it
   is kept, so a reader who deletes their copy can keep it again.
 - The lapsed reader's view could not be drawn on a build made here: with no
