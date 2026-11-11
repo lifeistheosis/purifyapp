@@ -177,6 +177,12 @@ function moveBy(where: Where, by: number): void {
   }
 }
 
+/** How far `where` is scrolled. */
+function placeOf(where: Where): number {
+  if (where.kind === "page") return window.scrollY;
+  return where.kind === "box" ? where.el.scrollTop : 0;
+}
+
 /** Whether what opened says it is still filling: itself, or anything in it. */
 function isFilling(part: Element): boolean {
   if (part.getAttribute("aria-busy") === "true") return true;
@@ -262,8 +268,19 @@ export function showOpened(
       by = moveFor({ top, bottom, roof: band.top, floor: band.bottom });
       const step = stepFor(by, ms, glide);
       if (step > 0) {
+        // Counted by how far the page went, not by how far it was asked to
+        // go. A screen sets a page on whole pixels, so each step of a glide
+        // lands a part of a pixel from where it was sent; counted as asked,
+        // twenty steps on, the place the thumb was is a few pixels from
+        // where this believes it is, and the page stops that far short
+        // (Community's "Read more", the gate's third run: the place came to
+        // rest 66px down for the 63 it was sent to).
+        const from = placeOf(where);
         moveBy(where, step);
-        moved += step;
+        const went = placeOf(where) - from;
+        moved += went;
+        // It would not go (the foot of the page): asked again and again, it is still.
+        if (Math.abs(went) < 0.5) by = 0;
       }
     }
     first = false;

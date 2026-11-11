@@ -68,19 +68,23 @@ type Fake = {
   getBoundingClientRect: () => { top: number; bottom: number };
 };
 
-function stubBrowser() {
+function stubBrowser({ whole = false }: { /** A screen that sets its page on whole pixels, dropping the part of one. */ whole?: boolean } = {}) {
   const listeners = new Map<string, Set<Listener>>();
   const frames: (() => void)[] = [];
   const state = { scrollY: 0, scrolls: [] as number[] };
+  const set = (to: number) => (whole ? Math.floor(to) : to);
   const ids = new Map<string, Fake>();
   const body = { tagName: "BODY", parentElement: null } as unknown as Fake;
 
   const win = {
     innerHeight: 844,
+    get scrollY() {
+      return state.scrollY;
+    },
     getComputedStyle: (el: Fake) => ({ position: el.position, overflowY: el.overflowY }),
     scrollBy: ({ top }: { top: number }) => {
       state.scrolls.push(top);
-      state.scrollY += top;
+      state.scrollY = set(state.scrollY + top);
     },
     requestAnimationFrame: (fn: () => void) => {
       frames.push(fn);
@@ -137,7 +141,7 @@ function stubBrowser() {
       scrolls: [],
       scrollBy: ({ top: by }) => {
         made.scrolls.push(by);
-        made.scrollTop += by;
+        made.scrollTop = set(made.scrollTop + by);
       },
       getAttribute: (name) => made.attrs[name] ?? null,
       hasAttribute: (name) => name in made.attrs,
@@ -417,6 +421,38 @@ describe("the page moves with what has opened", () => {
     // Not until the control reaches the bar (that would be 1,376px, the reader's place long gone),
     // and not until the words' own top does: until the place the thumb was has reached it.
     expect(b.moved()).toBeCloseTo(600 - (112 + CLEAR_PX), 5);
+  });
+
+  it("on a screen that sets its page on whole pixels, the place the thumb was still comes to rest where it was sent", () => {
+    // The gate's third run, Community's "Read more": tapped 448px down, the words it opened end
+    // 1,660px down. Each step of the glide is a share of what is left, so nearly every one asks
+    // for a part of a pixel the screen does not give; counted as asked, the place the thumb was
+    // came to rest 66px down for the 63 it was sent to, three pixels past what the gate allows.
+    const b = stubBrowser({ whole: true });
+    band = { top: 51, bottom: 761 };
+    const words = b.el("div", 300, 1360);
+    const more = b.el("button", 1667, 44);
+    follow(words, { head: more, tapped: 448 });
+    b.run();
+    // Where the place the thumb was stands now: where it was, less how far the page has really gone.
+    const place = 448 - b.state.scrollY;
+    expect(place).toBeGreaterThanOrEqual(51 + CLEAR_PX - 1);
+    expect(place).toBeLessThanOrEqual(51 + CLEAR_PX + 1);
+  });
+
+  it("at the foot of a page that will not go further, it is still and it is over: never asked for the whole of its time", () => {
+    const b = stubBrowser();
+    // The page can go 100px and no more.
+    const scrollBy = b.win.scrollBy;
+    b.win.scrollBy = ({ top }: { top: number }) => scrollBy({ top: Math.min(top, 100 - b.state.scrollY) });
+    const title = b.el("button", 505, 55);
+    const page = b.el("div", 560, 1500);
+    follow(page, { head: title, tapped: 505 });
+    const frames = b.run();
+    expect(b.state.scrollY).toBe(100);
+    // Still for its frames once the page has stopped, and let go: far short of the frames its whole time holds.
+    expect(isShowingOpened()).toBe(false);
+    expect(frames).toBeLessThan(WATCH_MS / FRAME_MS);
   });
 
   it("a part inside a sheet moves the sheet's own scroll, and the page under it stays", () => {
