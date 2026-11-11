@@ -329,3 +329,21 @@ These were still in my build; the fixes may have landed since.
 On the arbiter's word, on the release candidate: the same commands above, then
 each of his twenty-one notes and each finding here checked by hand with
 `drive.mjs`, and a list of which are gone.
+
+## Addendum: the tap walk finished (all 68 kinds of screen)
+
+Nothing new of its own kind. More places with his note 15 fault (what opens
+ends under the tab bar and the page does not move with it), for the one helper
+Fable Theology is building to cover:
+
+- FAQ: every answer that opens near the foot (five flagged, ending 70 to 200px
+  under the bar). `app/(app)/faq/page.tsx`.
+- Terms and Privacy: the "Contents" list (ends 280 to 530px under the bar).
+  `components/legal/LegalContents.tsx`.
+- What's new: a month, and the 1.9 note itself. Opening the year also pulls the
+  page back 200px.
+
+Two small "moves under the finger" to look at with the others: Sign in's
+"Continue with Google" shifts 24px on the first tap (an error line appears
+above it with no network), and a council document's "Next" bar shifts 47px
+when tapped.
