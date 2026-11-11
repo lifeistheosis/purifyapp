@@ -55,15 +55,15 @@ const WAITING: Record<string, string> = {
   "sophrony-of-essex": "permission: the Monastery of St John the Baptist, Tolleshunt Knights (Sister Gabriela's icon)",
   "philoumenos-of-jacobs-well": "permission: the Holy Metropolis of Morphou (the icons of Hieromonk Ambrosios, 2009, and Michalis Koullepos, 1999)",
   "gabriel-of-georgia": "permission: Samtavro Convent or the Georgian Patriarchate (no icon with a named painter and no address found yet)",
-  "theodota-mother-of-the-unmercenaries": "search: the November and December chat",
-  "marcian-of-cyrrhus": "search: the November and December chat",
-  "nicander-and-hermas": "search: the November and December chat",
-  "lazarus-of-galesion": "search: the November and December chat",
-  "onesiphorus-and-porphyrius": "search: the November and December chat",
+  "theodota-mother-of-the-unmercenaries": "permission: the Byzantine and Christian Museum, Athens (to say which St Theodota its mural BXM 1371 is; no icon of her with a named maker found)",
+  "marcian-of-cyrrhus": "permission: the Orthodox Church in America (the unsigned icon on its page for him)",
+  "nicander-and-hermas": "permission: the Holy Metropolis of Oropos and Phyle (an unsigned icon of St Nicander; no address found yet)",
+  "lazarus-of-galesion": "permission: the Holy Metropolis of Oropos and Phyle (an unsigned icon; no address found yet)",
+  "onesiphorus-and-porphyrius": "permission: the Holy Metropolis of Oropos and Phyle (an unsigned icon; no address found yet), unless the Rotunda's mosaic of the two is used",
   "arsenius-of-cappadocia": "permission: the Hesychasterion of St John the Theologian, Souroti",
-  "zacchaeus-and-alphaeus": "search: the November and December chat",
-  "irenarchus-and-the-seven-women": "search: the November and December chat",
-  "elias-of-murom": "search: the November and December chat",
+  "zacchaeus-and-alphaeus": "permission: no icon of them found yet, so no one to write to",
+  "irenarchus-and-the-seven-women": "permission: the Orthodox Church in America (the unsigned icon on its page for him)",
+  "elias-of-murom": "permission: the Orthodox Church in America (the unsigned icon on its page for him)",
   // January's saints (1.9): twenty took their pictures in the January chat's
   // pushes 2 and 3 (docs/1.9-build/notes/january-saints.md); these two have
   // none that passes.

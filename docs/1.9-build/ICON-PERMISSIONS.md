@@ -309,6 +309,151 @@ Basil II has no page for him), so he waits here.
   and the photographer's, for her photograph without the share-alike terms,
   or else her name and the CC BY-SA licence shown with the picture.
 
+## The eight older saints of November and December with no free picture
+
+Fable voices, 2026-11-11, on the arbiter's word: a saint for whom no old
+public-domain picture passed moves here, so the gate can pass. None of the
+eight has a modern icon whose painter is named on any page read, and that is
+said under each. Two bodies show unsigned icons of several of them: the
+Orthodox Church in America (oca.org), which can be written to, and the
+"Iconological Synaxarion" of the Holy Metropolis of Oropos and Phyle
+(imoph.org), for which no address, telephone or email was found on its home
+pages. What was refused, and why, is under each saint; the searches are in
+docs/1.9-build/notes/voices-fable.md.
+
+## St Theodota
+
+The mother of the Holy Unmercenaries Cosmas and Damian (November 1).
+
+- **The icon:** not found. No icon of her with a named maker; the day's
+  pages at oca.org and imoph.org show only her sons.
+- **An old picture, not shown to be hers:** an 11th-century mural of "Saint
+  Theodota (Αγία Θεοδότη)" in the Byzantine and Christian Museum of Athens,
+  inv. no. BXM 1371, photographed by George E. Koronaios in 2023 under CC
+  BY-SA 4.0
+  (https://commons.wikimedia.org/wiki/File:Saint_Theodota_(Byzantine_and_Christian_Museum_of_Athens,_1-15-2023).jpg).
+  The page does not say which St Theodota it is, and Commons files it under
+  St Theodota of Philippi (September 29). The house tool passes only the
+  public domain, and a picture of another Theodota may not stand for her.
+- **To write to:** the Byzantine and Christian Museum, 22 Vasilissis Sofias
+  Ave., Athens 10675; Tel. 2132139517; bma@culture.gr
+  (https://www.byzantinemuseum.gr/en/), to ask which St Theodota BXM 1371 is.
+- **For the letter:** in Greek or English. If it is the mother of the
+  Unmercenaries, the photograph may be used with its credit and licence, on
+  the owner's word that a CC BY-SA picture may stand in the app.
+
+## St Marcian of Cyrrhus
+
+- **The icon:** the icon on his page at oca.org
+  (https://www.oca.org/saints/lives/2021/11/02/103156-saint-marcian-of-cyrrhus;
+  the picture is https://images.oca.org/icons/lg/november/1102.marcian-of-cyprus.jpg).
+  It has no caption, and its file is named "of Cyprus", so look at it before
+  the letter: it must be the hermit of Cyrrhus.
+- **Made by:** not named.
+- **To write to:** the Orthodox Church in America, whose site shows it: PO Box 31409,
+  Alexandria, VA 22310, United States; office 516-922-0550. Its contact page
+  has a "Permissions" line ("To obtain permission for reproduction: send a
+  request to" an address the page shows only in a browser) and says its
+  photographs and other resources "may not be reproduced without the
+  permission of The Orthodox Church in America" (https://www.oca.org/contact).
+- **For the letter:** in English. Ask who painted it.
+
+## St Nicander and Hermas
+
+- **The icon:** an icon of St Nicander alone, half-length, a bishop holding
+  a Gospel, captioned "Ὁ Ἅγιος Ἱερομάρτυς Νίκανδρος, Ἐπίσκοπος Μύρων"
+  (https://www.imoph.org/pdfs/IconologicalSynaxarion/11-November/04nov.pdf).
+  The picture oca.org shows for the two is the same file it shows for St
+  Nicander of Gorodensk on the same day, so it is not asked for.
+- **Made by:** not named.
+- **To write to:** not found (imoph.org, above).
+- **Refused:** the fresco of their martyrdom at Dionysiou Monastery, Mount
+  Athos (1547, public domain, on Commons) shows the killing itself, the nail
+  at the bishop's head; no part of it stands apart from the act.
+
+## St Lazarus of Mount Galesion
+
+- **The icon:** full-length, an ascetic in a garment of hair with his hands
+  raised and a small building beside him, captioned "Ὁ Ὅσιος καὶ
+  Θαυματουργὸς Λάζαρος, ὁ ἐν τῷ Γαλλησίῳ Ὄρει ἀσκήσας"
+  (https://www.imoph.org/pdfs/IconologicalSynaxarion/11-November/07nov.pdf,
+  its second page). His page at oca.org has no icon.
+- **Made by:** not named.
+- **To write to:** not found (imoph.org, above).
+- **Refused:** the only old picture on Commons is a 17th-century icon of the
+  whole month of November, where he is one figure among dozens, a few dozen
+  pixels high.
+
+## St Onesiphorus and Porphyrius
+
+- **An old picture, held for the arbiter's word:** the mosaic of the two in
+  the Rotunda of St George at Thessaloniki, 5th century, both standing with
+  their hands raised in prayer before a palace front; public domain
+  (https://commons.wikimedia.org/wiki/File:ThessHagGeorgOnesiphPorphMos.jpg).
+  It is their own picture and shows no death, but the only free file is 400
+  pixels wide: cut to the two, the saints are small and soft beside a wide
+  loss in the mosaic (docs/1.9-build/notes/build-93/pictures-onesiphorus-candidate.jpg,
+  enlarged three times to be judged). A larger free photograph of the same
+  mosaic would settle it.
+- **The icon, if the mosaic is not used:** two half-length figures holding
+  crosses, captioned "Οἱ Ἅγιοι Μάρτυρες Πορφύριος καὶ Ὀνησιφόρος"
+  (https://www.imoph.org/pdfs/IconologicalSynaxarion/11-November/09nov.pdf).
+- **Made by:** not named.
+- **To write to:** not found (imoph.org, above).
+- **Refused:** the fresco of their martyrdom at Dionysiou Monastery (1547,
+  on Commons) is the martyrdom itself.
+
+## St Zacchaeus and Alphaeus
+
+- **The icon:** not found. The one picture met with their names, on a blog,
+  is a file named for St Romanus, and no page with a maker shows them;
+  oca.org's page has no icon and imoph.org's day does not list them.
+- **Made by:** nothing to name.
+- **To write to:** not found. There is no letter to write until an icon of
+  them is found.
+
+## St Irenarchus and the Seven Women
+
+- **The icon:** the icon on his page at oca.org
+  (https://oca.org/saints/lives/2016/11/28/103422-martyr-irenarchus-at-sebaste;
+  https://images.oca.org/icons/lg/november/1128irenarchus.jpg), uncaptioned.
+  Another, half-length, holding a cross, alone, captioned "Holy Martyr
+  Irenarchos of Sebaste"
+  (https://www.imoph.org/pdfs/IconologicalSynaxarion/11-November/28novEng.pdf).
+- **Made by:** not named on either.
+- **To write to:** the Orthodox Church in America, whose site shows it: PO Box 31409,
+  Alexandria, VA 22310, United States; office 516-922-0550. Its contact page
+  has a "Permissions" line ("To obtain permission for reproduction: send a
+  request to" an address the page shows only in a browser) and says its
+  photographs and other resources "may not be reproduced without the
+  permission of The Orthodox Church in America" (https://www.oca.org/contact).
+- **For the letter:** in English. Ask who painted it.
+- **Refused:** his miniature in the Menologion of Basil II (about 1000,
+  public domain, a clean copy on Commons) shows his beheading in the act,
+  the sword raised over him as he bows; no part of it stands apart.
+
+## St Elias of Murom
+
+- **The icon:** the icon on his page at oca.org
+  (https://www.oca.org/saints/lives/2025/12/19/103585-venerable-elias-of-murom-wonderworker-of-the-kiev-near-caves;
+  https://images.oca.org/icons/lg/december/1219elias-murom-kievcaves.jpg),
+  uncaptioned. Another, half-length, a monk in a cowl with Slavonic
+  lettering (https://www.imoph.org/pdfs/IconologicalSynaxarion/12-December/19dec.pdf,
+  its second page).
+- **Made by:** not named on either.
+- **To write to:** the Orthodox Church in America, whose site shows it: PO Box 31409,
+  Alexandria, VA 22310, United States; office 516-922-0550. Its contact page
+  has a "Permissions" line ("To obtain permission for reproduction: send a
+  request to" an address the page shows only in a browser) and says its
+  photographs and other resources "may not be reproduced without the
+  permission of The Orthodox Church in America" (https://www.oca.org/contact). The Kiev Caves Lavra, where his relics lie, would
+  be the better body to ask; no address for it was looked up.
+- **For the letter:** in English. Ask who painted it.
+- **Refused, and not found:** the one picture the December chat found has a
+  doubtful date and looks modern (docs/1.9-build/notes/december-saints.md).
+  The Russian Lives of the Saints prints no icon for December 19, and no
+  engraving of him from a printed Kiev Caves Paterikon was found.
+
 ## Still searched, not yet on this list
 
 Two older saints may yet have a free picture, and are named here so the
