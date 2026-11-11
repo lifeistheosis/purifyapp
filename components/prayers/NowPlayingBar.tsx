@@ -170,7 +170,7 @@ export function NowPlayingBar() {
             type="button"
             onClick={() => openNowPlaying()}
             aria-label={openLabel}
-            className="tap-press flex min-w-0 flex-1 items-center gap-3 text-left"
+            className="tap-press flex min-w-0 flex-1 items-center gap-3 text-start"
           >
             <RingCover art={art} fallback={artFallback} played={played} lit={playing} size="card" />
             <span className="min-w-0">
@@ -188,7 +188,7 @@ export function NowPlayingBar() {
             aria-label={toggleLabel}
             className="tap-press hit-44 grid h-10 w-10 shrink-0 place-items-center rounded-full text-paper hover:bg-paper/10"
           >
-            {playing ? <Pause size={22} /> : <Play size={22} className="translate-x-[1px]" />}
+            {playing ? <Pause size={22} /> : <Play size={22} centered />}
           </button>
 
           <button
@@ -215,7 +215,7 @@ export function NowPlayingBar() {
             <PillName>{name}</PillName>
           </button>
           <PillButton onClick={toggle} label={toggleLabel}>
-            {playing ? <Pause size={16} /> : <Play size={16} className="translate-x-[1px]" />}
+            {playing ? <Pause size={16} /> : <Play size={16} centered />}
           </PillButton>
         </>
       }
@@ -324,7 +324,7 @@ function MiniPlayer({ card, pill }: { card: ReactNode; pill: ReactNode }) {
           <div
             inert={drawn}
             aria-hidden={drawn || undefined}
-            className="mini-player-card absolute inset-0 flex items-center gap-3 overflow-hidden rounded-[inherit] pl-2 pr-1.5"
+            className="mini-player-card absolute inset-0 flex items-center gap-3 overflow-hidden rounded-[inherit] ps-2 pe-1.5"
           >
             {card}
           </div>
