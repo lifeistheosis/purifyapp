@@ -103,6 +103,19 @@ export async function fetchCampaign(id: string): Promise<OneResult> {
   }
 }
 
+/** A reader's campaigns as their profile shows them. Empty for anything that is not a list: closed, not there, or unread. */
+export async function fetchByCreator(handle: string): Promise<PublicCampaign[]> {
+  if (!campaignsInBuild() || !handle) return [];
+  try {
+    const res = await apiFetch(`/api/campaigns/by?handle=${encodeURIComponent(handle)}`);
+    if (!res.ok) return [];
+    const list = (await body(res)).campaigns;
+    return Array.isArray(list) ? (list as PublicCampaign[]) : [];
+  } catch {
+    return [];
+  }
+}
+
 export type StartInput = {
   forWhom: ForWhom;
   kind: CampaignKind;

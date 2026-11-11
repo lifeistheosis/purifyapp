@@ -527,6 +527,8 @@ async function answer(ctx, opts = {}) {
     // The prayer wall went in 1.9: the server answers an app of 1.8 with nobody on it, and this app never asks.
     if (p === "/api/community/prayer-wall") return json({ requests: [], intentions: false });
     // A profile, opened over Community (/community/#@handle).
+    // A reader's campaigns as their profile shows them (lib/campaigns/server.ts, listByCreator): none unless a picture or a flow gives some.
+    if (p === "/api/campaigns/by") return json({ campaigns: opts.profileCampaigns ?? [] });
     if (p === "/api/community/profile") return url.searchParams.get("h") === SAMPLE_READER.handle ? json({ profile: SAMPLE_READER }) : json({ error: "Profile not found." }, 404);
     if (p === "/api/community/relation") return json({ relation: SAMPLE_RELATION });
     if (p === "/api/bible/verse") return json({ name: "", verses: [{ n: 5, text: "And the light shineth in darkness; and the darkness comprehended it not." }] });
@@ -564,7 +566,7 @@ async function whole(page, min = 844) {
   await page.setViewportSize({ width: WIDTH, height: Math.max(min, h) });
 }
 
-async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true, inbox, circles = false, tellMe } = {}) {
+async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true, inbox, circles = false, tellMe, profileCampaigns } = {}) {
   if (WALK) return;
   if (ONLY && !ONLY.has(name.slice(0, 2))) return;
   const seed = {
@@ -578,7 +580,7 @@ async function shot(name, label, where, selector, { set = {}, prepare, signedIn 
   page.on("pageerror", (e) => errors.push(e.message));
   try {
     if (WIDTH !== 390) await page.setViewportSize({ width: WIDTH, height: 844 });
-    await answer(ctx, { mine, board, signedIn, parts, pictures, inbox, circles, tellMe });
+    await answer(ctx, { mine, board, signedIn, parts, pictures, inbox, circles, tellMe, profileCampaigns });
     await go(page, where);
     await settle(page);
     if (prepare) await prepare(page);
@@ -1036,6 +1038,19 @@ await shot("35-campaign-place", "a campaign's page with its place beside who sta
   },
 });
 
+// 42 A reader's profile with the Campaigns door open: their campaigns as rows. A SAMPLE reader, no one real,
+// and the sample campaigns the other pictures use.
+await shot("42-profile-campaigns", "a reader's profile: the Campaigns door, and what stands behind it", `/community/#@${SAMPLE_READER.handle}`, "[data-profile-card]", {
+  profileCampaigns: [CAMPAIGNS[MARIA], CAMPAIGNS[NICHOLAS]],
+  prepare: async (page) => {
+    await page.waitForSelector("[data-profile-card] #profile-tab-campaigns", { timeout: 25000 });
+    await settle(page, 1600);
+    await page.locator("#profile-tab-campaigns").click();
+    await page.waitForSelector("[data-profile-campaigns] [data-campaign-row]", { timeout: 8000 });
+    await settle(page, 500);
+  },
+});
+
 // 41 The Updates door for a reader whose account carries the campaign, once the notices are on: the line to tick.
 await shot("41-tell-me", "a campaign's updates, with the line a reader ticks to be told of one", `/campaigns/detail?id=${NICHOLAS}#updates`, "[data-campaign-page]", {
   tellMe: false,
@@ -1127,7 +1142,7 @@ async function pictureWalk(label, ...rest) {
   if (!FLOWS.length || FLOWS.some((f) => label.toLowerCase().includes(f))) console.log(`left  ${label}: needs an export cut with pictures (PICTURES_BUILD=1; see the header)`);
 }
 
-async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false, circles = false, holds, board, late = false, tellMe, tellFails = false } = {}) {
+async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false, circles = false, holds, board, late = false, tellMe, tellFails = false, profileCampaigns } = {}) {
   if (FLOWS.length && !FLOWS.some((f) => label.toLowerCase().includes(f))) return;
   const seed = {
     "purify.prayers.campaigns": JSON.stringify(CARRIED),
@@ -1147,7 +1162,7 @@ async function walk(label, where, run, { set = {}, signedIn = true, mine, closed
     // With `holdOpen`, the website's answer to "are campaigns open for this reader" waits for the flow's own word.
     let letGo = () => {};
     const heldOpen = holdOpen ? { until: new Promise((done) => (letGo = done)) } : null;
-    await answer(ctx, { mine, closed, parts, pictures, heldOpen, circles, holds, board, late, tellMe, tellFails });
+    await answer(ctx, { mine, closed, parts, pictures, heldOpen, circles, holds, board, late, tellMe, tellFails, profileCampaigns });
     await go(page, where);
     await settle(page, 1800);
     try {
@@ -1502,6 +1517,33 @@ if (WALK) {
     await page.waitForSelector("[data-mod-campaign]", { timeout: 15000 });
     const place = page.locator("[data-mod-campaign] [data-mod-campaign-place]");
     expectThat((await place.count()) === 1 && plain(await place.innerText()) === "Place: Novi Sad, Serbia", `the moderators' list says "${(await place.count()) ? plain(await place.innerText()) : "nothing"}"`);
+  });
+
+  // The Campaigns door on a profile (1.9; the notes, section 35).
+  await walk("a profile: the Campaigns door is drawn where that reader has a campaign to show, and behind it are rows that open the campaign's page", `/community/#@${SAMPLE_READER.handle}`, async (page) => {
+    const door = page.locator("[data-profile-card] #profile-tab-campaigns");
+    await door.waitFor({ timeout: 25000 });
+    await settle(page, 1600);
+    expectThat((await door.innerText()).trim() === "Campaigns", `the door reads "${await door.innerText()}"`);
+    const by = asked.filter((a) => a.startsWith("/api/campaigns/by"));
+    expectThat(by.length === 1 && by[0] === `/api/campaigns/by?handle=${SAMPLE_READER.handle}`, `the profile's campaigns were asked for as ${JSON.stringify(by)}`);
+    await door.click();
+    const rows = page.locator("[data-profile-campaigns] [data-campaign-row]");
+    await rows.first().waitFor({ timeout: 8000 });
+    expectThat((await rows.allInnerTexts()).map((x) => x.split("\n")[0]).join("|") === "For Maria before her operation|Forty days for Nicholas", `behind the door: ${(await rows.allInnerTexts()).join(" | ")}`);
+    // Never a count of anyone, here as on the board.
+    expectThat(!/\d+\s+(?:pray|people|readers)/i.test(await page.locator("[data-profile-campaigns]").innerText()), "a count stands on a profile");
+    await rows.first().click();
+    await page.waitForFunction(() => location.pathname.replace(/\/$/, "") === "/campaigns/detail", null, { timeout: 15000 });
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    expectThat((await page.locator("[data-profile-card]").count()) === 0, "the profile's card stayed over the campaign's page");
+  }, { profileCampaigns: [CAMPAIGNS[MARIA], CAMPAIGNS[NICHOLAS]] });
+
+  await walk("a profile: with no campaign to show there is no Campaigns door", `/community/#@${SAMPLE_READER.handle}`, async (page) => {
+    await page.waitForFunction((h) => document.querySelector("[data-profile-card]")?.innerText.includes(`@${h}`) && !!document.querySelector("[data-profile-card] [data-profile-doors]"), SAMPLE_READER.handle, { timeout: 25000 });
+    await settle(page, 1600);
+    expectThat(asked.some((a) => a.startsWith("/api/campaigns/by")), "the profile's campaigns were not asked for");
+    expectThat((await page.locator("#profile-tab-campaigns").count()) === 0, "a Campaigns door is drawn with nothing behind it");
   });
 
   // The notices (1.9; the notes, section 34). The screen draws the line only where the server says it is this
@@ -2174,7 +2216,13 @@ if (WALK) {
     const ofCampaigns = calls.filter((c) => c.path.startsWith("/api/campaigns")).map((c) => c.path);
     expectThat(ofCampaigns.every((p) => p === "/api/campaigns/open") && ofCampaigns.length === 1, `asked ${ofCampaigns.join(", ")}`);
     expectThat(!calls.some((c) => c.path === "/api/community/prayer-wall"), "the prayer wall was asked for");
-  }, { closed: true });
+    // And a profile, for this reader: no Campaigns door, and that reader's campaigns are asked of no one.
+    await go(page, `/community/#@${SAMPLE_READER.handle}`);
+    await page.waitForFunction((h) => document.querySelector("[data-profile-card]")?.innerText.includes(`@${h}`) && !!document.querySelector("[data-profile-card] [data-profile-doors]"), SAMPLE_READER.handle, { timeout: 25000 });
+    await settle(page, 1600);
+    expectThat((await page.locator("#profile-tab-campaigns").count()) === 0, "a profile draws the Campaigns door for a reader campaigns are not open for");
+    expectThat(!calls.some((c) => c.path === "/api/campaigns/by"), "a profile's campaigns were asked for while campaigns are closed for this reader");
+  }, { closed: true, profileCampaigns: [CAMPAIGNS[MARIA]] });
 
   console.log("\n" + walked.map(([l, ok]) => `${ok ? "PASS" : "FAIL"}  ${l}`).join("\n"));
   process.exit(walked.every(([, ok]) => ok) ? 0 : 1);

@@ -8,6 +8,7 @@ import { NEW_ACCOUNT_MS } from "@/lib/community/trust";
 import { readTrust } from "@/lib/community/trustServer";
 import { censorName, censorPost } from "@/lib/moderation/server";
 import { isCountry } from "@/lib/onboarding/clergy";
+import { handleProblem, normalizeHandle } from "@/lib/profile/handle";
 import { ensureCleanHandle } from "@/lib/profile/server";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { pageAllSettled } from "@/lib/supabase/pageAll";
@@ -214,6 +215,57 @@ export async function listBoard(
   }
   const rows = ((data ?? []) as unknown as CampaignRow[]).filter((r) => !isOver(r, now));
   return { ok: true, value: { campaigns: rows.map((r) => forReader(r, opts.userId)), personalised: hidden.length > 0 } };
+}
+
+/** How many of one reader's campaigns their profile shows at most. */
+export const PROFILE_CAMPAIGNS_MAX = 12;
+
+/**
+ * A reader's campaigns as their profile shows them (the Campaigns door on a
+ * profile; the notes, 2.10 and section 35), newest first: those that run now
+ * for everyone in Community, and those for the reposed that their creator
+ * chose to keep after the last day (keep_after_end; his yes to item 125).
+ *
+ * Never one kept to a circle, one that waits for a moderator, one that was
+ * taken down, or one of July's. Never one for the living once it is over:
+ * nobody's illness stays up by neglect (the notes, 4.5).
+ *
+ * And nothing at all for a private profile, which shows a name, a picture
+ * and standing badges only; for a reader the asker has blocked or muted; or
+ * for a handle nobody holds. Each of those answers with the same empty list,
+ * so this tells nobody which it was.
+ */
+export async function listByCreator(admin: SupabaseClient, opts: { handle: string; userId: string | null; now?: number }): Promise<Read<PublicCampaign[]>> {
+  const now = opts.now ?? Date.now();
+  const handle = normalizeHandle(opts.handle);
+  const problem = handleProblem(handle);
+  if (problem && problem !== "reserved") return { ok: true, value: [] };
+  const { data: found } = await admin.from("profiles").select("id, profile_private").eq("handle", handle).maybeSingle();
+  const profile = found as { id?: unknown; profile_private?: unknown } | null;
+  // A profile whose privacy cannot be read is treated as private.
+  if (!profile || typeof profile.id !== "string" || profile.profile_private !== false) return { ok: true, value: [] };
+  const creatorId = profile.id;
+  if (opts.userId && opts.userId !== creatorId && (await hiddenFor(admin, opts.userId)).includes(creatorId)) return { ok: true, value: [] };
+
+  const { data, error } = await admin
+    .from("prayer_campaigns")
+    .select(SERVER_COLS)
+    .eq("creator_id", creatorId)
+    .eq("audience", "public")
+    .in("status", ["active", "ended", "answered", "memory_eternal"])
+    // One of July's is on nobody's profile (isJulyRow).
+    .not("days", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(60);
+  if (error) {
+    if (reworkAbsent(error)) return { ok: false, why: "absent" };
+    console.warn("[campaigns] profile list failed", error.message);
+    return { ok: false, why: "failed" };
+  }
+  const rows = ((data ?? []) as unknown as CampaignRow[]).filter(
+    (r) => (r.status === "active" && !isOver(r, now)) || (r.for_whom === "departed" && r.keep_after_end === true && isOver(r, now)),
+  );
+  return { ok: true, value: rows.slice(0, PROFILE_CAMPAIGNS_MAX).map((r) => forReader(r, opts.userId)) };
 }
 
 /** How many join rows one tally reads at most: fifty requests, once a minute for each span. */

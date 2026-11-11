@@ -4376,3 +4376,59 @@ as it will be once the notices are on.
 | `campaigns.tellMe.note` | A notice in the app, with no name in it. It stays off until you ask. |
 
 The two inbox lines are Admin's and are already with him (call 29).
+
+---
+
+## 35. The Campaigns door on a profile: as built (2026-11-11)
+
+The notes, 2.10: "A profile: the Campaigns door, for the campaigns a reader
+chose to keep there." No SQL and no new words: the door and its name
+("Campaigns") were drawn in 1.8 and switched off.
+
+Agreed with the Updates chat, which holds the profile's files: the door's
+hook, its panel and its route are in the campaigns' folders, and the three
+lines that mount them in `components/community/profile/ProfileViewer.tsx`
+went in with them, at Updates' word, so the door and what is behind it
+landed together.
+
+### 35.1 What a reader sees
+
+- On a reader's profile card, a fourth door, **Campaigns**, beside About,
+  Badges and Posts, **only when that reader has a campaign to show**. With
+  none there is no door, never a door onto an empty box.
+- Behind it, the board's own rows in one lit panel, newest first: a small
+  picture, the title, and what it is for and until when. Rows, because each
+  is a place to go. Never a count of anyone.
+- A row opens the campaign's own page, and the profile's card steps aside.
+
+### 35.2 What is on a profile, and what never is
+
+`lib/campaigns/server.ts`, `listByCreator`:
+
+- **On it:** that reader's campaigns that run now for everyone in
+  Community; and one for the reposed that its creator chose to keep after
+  its last day (his yes to item 125), which is the memorial the notes meant.
+  Twelve at most.
+- **Never:** one kept to a circle, one that waits for a moderator, one that
+  was taken down, one of July's. Never one for the living once it is over:
+  nobody's illness stays up by neglect (4.5).
+- **Nothing at all** for a private profile (which shows a name, a picture
+  and standing badges only), its owner included, so nobody is drawn
+  something others cannot see; for a reader the asker has blocked or muted;
+  or for a handle nobody holds. Each answers with the same empty list, so
+  the answer tells nobody which it was.
+- **Not on the page a search engine can read.** The shareable profile page
+  (`/u/<handle>`) shows no campaigns: campaigns are not for search (4.2).
+- While campaigns are closed for a reader, the door is not drawn and that
+  reader's app asks for nothing.
+
+### 35.3 What holds it
+
+`lib/campaigns/__tests__/routes.test.ts`, "a reader's profile: the Campaigns
+door" (10 cases through the route) and `profileDoor.test.ts` (10 cases: the
+door, the viewer, the hook, the panel, the shareable page). Fifteen ways of
+breaking it were tried: thirteen failed a case, and the other two were each
+one of two locks on the same rule (which campaigns may be shown), where the
+second lock still held; with both off, a case fails. The walk: two flows,
+and the closed-door flow now opens a profile too. Still: a profile with the
+door open (42).

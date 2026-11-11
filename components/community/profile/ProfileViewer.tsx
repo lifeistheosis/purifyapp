@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
+import { ProfileCampaigns } from "@/components/campaigns/ProfileCampaigns";
 import { ActionMenu, type ActionMenuItem } from "@/components/community/ActionMenu";
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
 import { MedalCase } from "@/components/community/profile/ProfileBadges";
@@ -37,6 +38,7 @@ import {
   setFollow,
   startGiftCheckout,
 } from "@/lib/profile/client";
+import { useProfileCampaigns } from "@/lib/campaigns/useProfileCampaigns";
 import { profileDoors } from "@/lib/profile/doors";
 import type { ProfileRelation, ProfileSeed, PublicProfile } from "@/lib/profile/publicProfile";
 import { SITE_URL } from "@/lib/site";
@@ -168,6 +170,12 @@ export function ProfileViewer({
   const closeRef = useRef<HTMLButtonElement | null>(null);
 
   const { mounted, panelRef, scrimRef, bodyRef, grab } = useDraggableSheet({ open, onClose, reduced, half: 1 });
+
+  // The Campaigns door (1.9; lib/campaigns/useProfileCampaigns.ts): this
+  // reader's campaigns as anyone may see them, asked for once the profile
+  // itself has come and never for a private one. Empty while campaigns are
+  // closed, so the door is drawn only where something stands behind it.
+  const campaigns = useProfileCampaigns(open && loaded.state === "ok" && !loaded.profile.private ? loaded.profile.handle : null);
 
   // Each opening starts on the first door with nothing left over from the
   // last one (the doors are keyed by the handle). Done while rendering, not
@@ -414,7 +422,7 @@ export function ProfileViewer({
 
   const posts = profile?.posts ?? [];
   const mutuals = relation?.mutuals ?? [];
-  const doors = profile && ready ? profileDoors(profile, { inCommon: mutuals.length }) : [];
+  const doors = profile && ready ? profileDoors(profile, { inCommon: mutuals.length, campaigns: campaigns.length > 0 }) : [];
 
   const postList =
     posts.length === 0 ? (
@@ -599,6 +607,7 @@ export function ProfileViewer({
                     about: <ProfileAboutDoor profile={profile} onNavigate={onClose} onPicture={onPicture} inCommon={inCommon} />,
                     badges: <MedalCase badges={profile.badges} />,
                     posts: postList,
+                    campaigns: campaigns.length > 0 ? <ProfileCampaigns campaigns={campaigns} onOpen={onClose} /> : undefined,
                   }}
                 />
               )}

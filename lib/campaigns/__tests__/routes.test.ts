@@ -78,6 +78,7 @@ import { GET as getOne, PATCH as patchOne } from "@/app/api/campaigns/[id]/route
 import { DELETE as leave, PATCH as tell, POST as join } from "@/app/api/campaigns/[id]/join/route";
 import { POST as report } from "@/app/api/campaigns/[id]/report/route";
 import { POST as words } from "@/app/api/campaigns/[id]/words/route";
+import { GET as byHandle } from "@/app/api/campaigns/by/route";
 import { GET as mine } from "@/app/api/campaigns/mine/route";
 import { GET as isOpen } from "@/app/api/campaigns/open/route";
 import { GET as board, POST as create } from "@/app/api/campaigns/route";
@@ -521,6 +522,119 @@ describe("starting a campaign", () => {
     // One that is over does not count against the three.
     campaigns().find((r) => r.creator_id === BEN)!.status = "ended";
     expect((await start({ title: "A fourth" })).status).toBe(200);
+  });
+});
+
+describe("a reader's profile: the Campaigns door", () => {
+  const profileOf = (id: string) => (w.tables.profiles as Row[]).find((p) => p.id === id) as Row;
+  const on = async (handle: string) => byHandle(new Request(`${SITE}/api/campaigns/by?handle=${encodeURIComponent(handle)}`));
+  const titles = async (handle: string) => (((await (await on(handle)).json()) as { campaigns: { title: string }[] }).campaigns ?? []).map((c) => c.title);
+  const past = { ends_on: new Date(Date.now() - 2 * DAY).toISOString().slice(0, 10), ends_at: plus(-1) };
+
+  beforeEach(() => {
+    profileOf(ANNA).profile_private = false;
+    signIn(BEN);
+  });
+
+  it("shows what runs for everyone in Community, newest first", async () => {
+    running(ANNA, { title: "First", created_at: plus(-2) });
+    running(ANNA, { title: "Second", created_at: plus(-1) });
+    running(BEN, { title: "Someone else's" });
+    expect(await titles("anna")).toEqual(["Second", "First"]);
+    // By the handle as a reader writes it, too.
+    expect(await titles("@Anna")).toEqual(["Second", "First"]);
+  });
+
+  it("never one that waits, was taken down, is kept to a circle, or is one of July's", async () => {
+    running(ANNA, { title: "Up" });
+    running(ANNA, { title: "Waiting", status: "held", held_reason: "new" });
+    running(ANNA, { title: "Taken down", status: "removed" });
+    running(ANNA, { title: "For the parish", audience: "circle", circle_id: crypto.randomUUID() });
+    running(ANNA, { title: "July's", days: null, ends_at: null, ends_on: null });
+    expect(await titles("anna")).toEqual(["Up"]);
+  });
+
+  it("never one for the living once it is over: nobody's illness stays up by neglect", async () => {
+    running(ANNA, { title: "Over", ...past });
+    running(ANNA, { title: "Answered", status: "answered" });
+    running(ANNA, { title: "Ended", status: "ended", ...past });
+    // Kept or not: keeping is for the reposed.
+    running(ANNA, { title: "Over and kept", keep_after_end: true, ...past });
+    expect(await titles("anna")).toEqual([]);
+  });
+
+  it("keeps one for the reposed that its creator chose to keep after its last day, and not one they did not", async () => {
+    const reposed = { for_whom: "departed", intention: "departed" };
+    running(ANNA, { title: "Kept", ...reposed, keep_after_end: true, status: "memory_eternal", created_at: plus(-3) });
+    running(ANNA, { title: "Kept, past its day", ...reposed, keep_after_end: true, ...past, created_at: plus(-2) });
+    running(ANNA, { title: "Not kept", ...reposed, keep_after_end: false, status: "memory_eternal" });
+    running(ANNA, { title: "Running", ...reposed, created_at: plus(-1) });
+    expect(await titles("anna")).toEqual(["Running", "Kept, past its day", "Kept"]);
+  });
+
+  it("answers a private profile, a reader the asker blocked or muted, and a handle nobody holds with the same empty list", async () => {
+    running(ANNA, { title: "Up" });
+    const empty = async () => {
+      const res = await on("anna");
+      return [res.status, JSON.stringify(await res.json())];
+    };
+    expect(await titles("anna")).toEqual(["Up"]);
+    profileOf(ANNA).profile_private = true;
+    const asPrivate = await empty();
+    expect(asPrivate).toEqual([200, '{"campaigns":[]}']);
+    profileOf(ANNA).profile_private = false;
+    w.tables.community_blocks!.push({ blocker_id: BEN, blocked_id: ANNA });
+    expect(await empty()).toEqual(asPrivate);
+    w.tables.community_blocks = [];
+    w.tables.community_mutes!.push({ muter_id: BEN, muted_id: ANNA });
+    expect(await empty()).toEqual(asPrivate);
+    w.tables.community_mutes = [];
+    const nobody = await on("nobody.here");
+    expect([nobody.status, JSON.stringify(await nobody.json())]).toEqual(asPrivate);
+    // And a profile whose privacy cannot be read is treated as private.
+    delete profileOf(ANNA).profile_private;
+    expect(await empty()).toEqual(asPrivate);
+  });
+
+  it("shows a private profile's campaigns to nobody, its owner included: what others cannot see is not drawn for them either", async () => {
+    running(ANNA, { title: "Up" });
+    profileOf(ANNA).profile_private = true;
+    signIn(ANNA);
+    expect(await titles("anna")).toEqual([]);
+  });
+
+  it("is open to a reader who is not signed in, as the board is, and says which are the asker's own", async () => {
+    running(ANNA, { title: "Up" });
+    signIn(null);
+    const out = (await (await on("anna")).json()) as { campaigns: { mine?: boolean }[] };
+    expect(out.campaigns).toHaveLength(1);
+    expect(out.campaigns[0].mine).toBe(false);
+    signIn(ANNA);
+    expect(((await (await on("anna")).json()) as { campaigns: { mine?: boolean }[] }).campaigns[0].mine).toBe(true);
+  });
+
+  it("never carries a creator's account id or a count of anyone, and is never a shared cache's", async () => {
+    running(ANNA, { title: "Up", praying_count: 12, prayer_count: 300 });
+    const res = await on("anna");
+    expect(res.headers.get("cache-control")).toBe("private, no-store");
+    const text = await res.text();
+    expect(text).not.toContain(ANNA);
+    expect(text).not.toMatch(/creator_id|praying_count|prayer_count|held_reason|consent|profile_private/);
+  });
+
+  it("shows twelve at most", async () => {
+    for (let i = 0; i < 15; i++) running(ANNA, { title: `Campaign ${i}`, created_at: plus(-i - 1) });
+    expect(await titles("anna")).toHaveLength(12);
+  });
+
+  it("needs a handle, and answers 404 while campaigns are closed", async () => {
+    expect((await byHandle(new Request(`${SITE}/api/campaigns/by`))).status).toBe(400);
+    expect((await on("x".repeat(61))).status).toBe(400);
+    // A handle that could never be one is nobody's.
+    expect(await titles("not a handle!")).toEqual([]);
+    running(ANNA, { title: "Up" });
+    __setCampaignsOpening("closed");
+    expect((await on("anna")).status).toBe(404);
   });
 });
 
