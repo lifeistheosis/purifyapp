@@ -275,6 +275,21 @@ export of `def6a1b53`:
 
 `08c-before-today.png` is today's page, which neither push changes.
 
+Push 3's, the before from the export of `def6a1b53` and the after from the
+export of `417e38e74`. The reader is the same in each: the app's own starter
+kept through the app, and two plain pages written in a notebook of its name.
+
+| Before | After | What it shows |
+| --- | --- | --- |
+| `19d-before-gathering.png` | `19d-after-gathering-pages.png` | A gathering's page at the foot of its lines. After: each line can begin a page, and under the lines the journal's pages written in the gathering, with the way to write one. |
+| `19e-before-journal-notebook.png` | `19e-after-journal-gathering.png` | The journal with that notebook chosen. Before: its name on three lines in its chip, and nothing to say it is a gathering's. After: one line, the flower, and the line that leads to the gathering's 18 lines. |
+| | `19f-after-notebook-choice.png` | A page's notebook choice: the gathering first, with the flower, then the other notebook. |
+| | `19g-after-gathering-320.png` | A gathering on a 320px phone (640 by 1400): a line's three things to do under its source, every name whole. |
+| | `19h-after-gathering-lapsed.png` | The same gathering for a reader whose Plus has lapsed: the pages they wrote, to open, and no way to write; the Plus card under them. |
+
+`19c-plan-gathering-with-pages.png` is the plan's still the arbiter passed
+before the rest was built.
+
 ## Push 2: what was built
 
 The arbiter's yes, 06:09 UTC, to the one new line, the two rows, the mark on
@@ -359,6 +374,184 @@ Two of the walk's own checks were wrong on its first run and were mended
 before the pass above: one read a clear colour only in one of the two ways a
 browser writes it, the other read a name and the mark beside it as one word.
 
+## Push 3: the Florilegium and the notebooks as one (note 19)
+
+His words: "And also, I want the Florigelium and the notebook system like
+intertwined." Before this push they met nowhere: a notebook was only a name
+written on pages, a gathering was its own list of lines.
+
+They are joined by that name. **A gathering's notebook is the journal's
+notebook that bears its name.** Nothing new is kept anywhere for it: no
+column, no table, no SQL, nothing new on the server. A page still keeps its
+notebook's name in its own text, a gathering is still its list, and both
+travel as they did. The rules are `lib/journal/gatherings.ts` (pure) and
+`lib/journal/gatheringActions.ts` (the device's side).
+
+The arbiter passed the shape (07:25), then the still
+(`build-93/19c-plan-gathering-with-pages.png`, 12:09: "approved as drawn"),
+then the three new lines, which are in every language the app has:
+`study.florilegium.pages` "Your pages", `study.florilegium.writeHere` "Write
+in this gathering", `study.florilegium.writePage` "Write a page".
+
+What a reader meets:
+
+- **A gathering's page shows the journal's pages written in it**, under its
+  lines and over Share and Delete (`components/florilegium/GatheringPages.tsx`):
+  a part named "Your pages", drawn as the Florilegium's first page draws the
+  reader's gatherings (the part's name in Lora, one raised tray, a row for
+  each). A row is the page's title, or its first words, a line of its words
+  and its day, newest first, and opens that page in the journal. The tray's
+  last row is "Write in this gathering". The pages are not in the booklet or
+  the shared words: those stay the gathering's lines.
+- **A gathered line begins a page**: "Write a page", between Add note and
+  Remove, begins a journal page in this gathering with that line as its
+  card. A verse is a verse card (where it is, its words from the app's own
+  Bible); a Father's line gathered from a place in the app is a quote from
+  the library with that place as its way back; one with no place to return
+  to is a quote with its source named, and never wears the library's mark.
+  A line is laid once: asked for again, the page being written there goes on
+  as it was, and a second line joins it.
+- **A page's notebook choice offers the reader's gatherings first**, by name,
+  each with the Florilegium's flower, then the other notebooks
+  (`PageBlocks.tsx`, `PropsPanel`). A notebook that bears a gathering's name
+  is offered once, as the gathering.
+- **The journal knows a gathering's notebook**: its chip wears the flower
+  (and on a computer its row at the side), and while its pages are shown one
+  quiet line over them says how many lines the gathering keeps and opens it.
+  Existing words only (`study.florilegium.lineCount`).
+- **A gathering renamed takes its pages with it**
+  (`lib/florilegium/florilegium.ts`, `renameFlorilegium`). No screen renames
+  a gathering today; the rule is written and tested for the day one does,
+  and the store's own `rename` is that rule. The pages stay where they are
+  only while another gathering still bears the old name.
+- **A gathering taken away leaves its pages**: they stay in the journal, in a
+  notebook of that name, which wears the plain notebook's mark again.
+
+Both sides stay Plus's, as they were. What each reader sees:
+
+- With Plus: all of the above.
+- Plus lapsed (the gathering is read-only, with the Plus card under it): the
+  pages they wrote are listed to open, and nothing new is begun here: no
+  "Write in this gathering", no "Write a page". With nothing written, no
+  part stands there at all.
+- Never had Plus: the Florilegium is the Plus card, as before. No "Your
+  pages", no way to write, no new words. The journal's own door to notebooks
+  is the one it had (More's row with the Plus mark).
+
+The line's row had two things to do and has three. On a narrow phone or in a
+long language there is no room for the source and the three on one line, so
+they go under the source and wrap among themselves before any name is cut
+(`data-gathered-tools`). Measured on the export in all 21 languages at 390,
+360 and 320px: every name whole, 44px, on the screen (0 failures of 63; the
+three wrap among themselves in 3 languages at 390, 10 at 360 and 15 at 320).
+
+Found drawing the gathering's chip, and mended: in the journal's list, with
+enough chips for the row to scroll, a notebook's name stood on as many lines
+as it had words ("The / Prologue / of John" in one pill). The notebooks'
+chips are not the row's own children, so the row's rule that no chip is
+squeezed never reached them. Each keeps its name on one line now, and a name
+longer than a chip should be is cut, by name.
+
+Fable Theology's files (the Florilegium's pages) were changed only as they
+agreed: the verse's own link, the page's marks and the order of a line's
+buttons are as they were ("Write a page" stands after the note's button,
+which their own drawing finds as the line's first), and nothing stands above
+the lines.
+
+### What waits is never lost (facts 17, 18 and 19)
+
+Found while the journal was open on the bench, and mended in this push by the
+arbiter's word (11:58: "fact 17 is a real loss, well caught").
+
+**Fact 17.** The journal keeps one page being written. Closed, it waits, and
+Write says "Continue writing". Whatever the journal opened next took its
+place: a reader who wrote half a thought, closed the sheet and tapped an
+older entry lost the half thought without a word. Proven on the export
+before a line was changed (the draft read `Half a thought I mean to finish.`,
+then the older entry's body, then nothing). The same from a reading's pen, a
+plan's question, a quote laid while a verse's note waited, and a page begun
+from a gathering.
+
+The rule, as approved: **before the journal opens anything else, what waits
+is kept exactly as Done keeps it, and opening the same page goes on with
+it.** Two edges: an empty page makes nothing (and never takes an entry away;
+only Done on an emptied page does that), and a kept page opened and left
+unchanged makes no second copy and takes no new date. What is kept this way
+is kept by the same functions Done uses, so it syncs as Done's would, and
+nothing more.
+
+Done's own rules moved into one place so that "as Done keeps it" is one
+function and not two that drift: `lib/journal/waiting.ts` (pure: `keeping`,
+`openOver`, `samePage`, `waits`) and `lib/journal/keepDraft.ts` (the
+device's side). Every way the journal opens a page goes through it
+(`JournalClient`'s `begin`), and so do Quote in journal and a gathering's
+two ways to write.
+
+**Fact 18.** An older entry opened only to be read, then closed, waited too:
+Write said "Continue writing" and opened that entry again, and a new page
+could not be begun until Done was pressed on the old one. Now what waits is
+what is not kept yet: a new page with something on it, or a kept one with
+changes. An entry read and left as it was does not wait, and neither does a
+page with nothing on it (one that only names its notebook, begun from a
+gathering and closed).
+
+**Fact 19.** An entry with changes waiting, then swiped away: Continue
+writing opened the removed entry, and Done put the words on it, where no one
+saw them again. Now the changes are kept on the entry before it goes, the
+draft is let go, Write is Write, and Undo brings back the entry with what
+was written. The same loss from another side, read in the code and not met
+on a walk (it takes two devices): an entry taken away on one device while
+changes to it wait on another. There the words are now kept as a page of
+their own; an entry that was only opened is not brought back.
+
+One more thing follows from Done's rules being one function: Done no longer
+stamps a new date on an entry it did not change.
+
+Tests, each failing on the code before it:
+`lib/journal/__tests__/waiting.test.ts` (the rules, the device with a
+stand-in store, and the journal's own screen held to them),
+`lib/journal/__tests__/gatherings.test.ts`,
+`lib/florilegium/__tests__/gatheringPages.test.ts`.
+
+### Checked, push 3 (2026-11-11 UTC)
+
+On `417e38e74`: push 3's code on the branch as it stood at 13:27
+(`5d52919b5`).
+
+- `npm run typecheck` 0. `npm run lint` 0 errors. `npm run test:unit` 13,479
+  of 13,479 (9 skipped).
+- `npm run build:android` 0 (13:34, the house's export for Plus's locks).
+  The other three were built on `749970bd5`, which is the same work before
+  its last two small changes (a notebook chip's one line, and the words of
+  an entry removed on another device) and before 32 commits from other
+  chats: `npm run build:android` 0 (13:08, the plain export),
+  `npm run build:ios` 0 (13:14), `npm run build` 0 (13:18).
+- The journal's walk on the one export, in one pass: **37 of 37 as a reader
+  for whom nothing is locked, 33 of 33 as a new reader with no Plus.** 43
+  flows in all; 27 are walked as both readers.
+- The arbiter's three checks, each in the walk: at 320px a line's row keeps
+  every name whole and 44px and passes every `checkMock` rule; a reader who
+  never had Plus sees the Florilegium as before, with no pages part, no way
+  to write and no new words; and the three new lines are in all 21
+  languages (read from the 21 files: each holds the three, and none is left
+  in English).
+- The line's row and the pages' part, with each language's own words put in
+  on the export, at 390, 360 and 320px: 0 failures in 63 (every name whole,
+  44px, on the screen).
+- 5 stills, each passing every `checkMock` rule on the five palettes, the cut
+  rule among them, and each looked at by eye.
+- The Florilegium's own checks, on the same export, as Fable Theology asked:
+  `scripts/florilegium-walk.mjs` 3 of 3; `scripts/mock-florilegium.mjs` 11
+  screens, each passing every `checkMock` rule; `scripts/route-motion.mjs`
+  46 of 46 ("Every walk moved as it should"), a gathering's five page
+  switches among them.
+- The release's own walk, `scripts/export-walk.mjs --sections 14,28,40,46`
+  (search, Settings, the journal, You): 202 checks, every one passed.
+
+One of the walk's own checks was wrong on its first run and was mended
+before the pass above: it waited for a Write button that a phone never
+shows (the copy a computer draws in the title's row).
+
 ## What a phone still has to say
 
 The harness has no keyboard on the screen. On his phone:
@@ -380,8 +573,9 @@ The harness has no keyboard on the screen. On his phone:
   are kept from then on; reading them out of the Bible the apps carry would
   put a Bible's text in the app a second time (AGENTS.md, "A page carries
   what it shows"), so it is not done here.
-- The Florilegium and the notebooks as one (note 19): push 3, after Fable
-  Theology's word on the Florilegium's files and the arbiter's on the still.
+- The Florilegium and the notebooks as one (note 19): done in push 3, above.
+- Renaming a gathering: no screen does it yet. When one does, its pages go
+  with it by the rule already in the store.
 - Seen while drawing You, not this chat's: scrolled a little, the tab's own
   name in the bar and the reader's name on the picture pass over each other.
   Named to the arbiter.
