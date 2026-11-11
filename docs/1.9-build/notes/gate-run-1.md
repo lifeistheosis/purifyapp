@@ -427,8 +427,9 @@ is for the arbiter's read):
   sparkle rule.
 - **8** (the journal's Title explanation): lib/bible/__tests__/
   verseFocus.test.ts; lib/journal/__tests__/blockForms.test.ts,
-  pageEditor.test.ts, writingSheet.test.ts; lib/whatsNew/__tests__/
-  tourTaps.test.ts; scripts/tap-walk.mjs.
+  pageEditor.test.ts, writingSheet.test.ts, waiting.test.ts (a waiting page
+  lost when another opened, found mending it); lib/whatsNew/__tests__/
+  tourTaps.test.ts; scripts/tap-walk.mjs, scripts/mock-journal.mjs.
 - **9** (the journal and the Florilegium always there): lib/journal/__tests__/
   waysIn.test.ts; lib/nav/__tests__/oneSettings.test.ts.
 - **10** (Support this work, where the money goes): lib/support/__tests__/
@@ -453,8 +454,11 @@ is for the arbiter's read):
 - **17** (a Father's notes and highlights as the Bible's):
   lib/marks/__tests__/pages.test.ts.
 - **18** (works without a cover): lib/reading/__tests__/coverArt.test.ts.
-- **19** (the Florilegium): lib/florilegium/__tests__/href.test.ts,
-  redesign.test.ts, todayLine.test.ts; scripts/florilegium-walk.mjs.
+- **19** (the Florilegium, and with it the journal "intertwined"):
+  lib/florilegium/__tests__/href.test.ts, redesign.test.ts, todayLine.test.ts,
+  gatheringPages.test.ts; lib/journal/__tests__/gatherings.test.ts;
+  scripts/florilegium-walk.mjs, scripts/mock-journal.mjs (the journal's half,
+  the campaigns and journal chat's, 8b437eba5).
 - **20** (the Bible's translation as easy as the chapter): lib/bible/__tests__/
   translationBeside.test.ts.
 - **21** (campaigns not in build 93; the themes do not change): two named
