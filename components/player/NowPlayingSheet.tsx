@@ -228,7 +228,7 @@ export function NowPlayingSheet() {
               type="button"
               onClick={closeNowPlaying}
               aria-label={t("common.close")}
-              className="tap-press -ml-2 grid h-11 w-11 shrink-0 place-items-center rounded-full text-paper hover:bg-paper/[0.06]"
+              className="tap-press -ms-2 grid h-11 w-11 shrink-0 place-items-center rounded-full text-paper hover:bg-paper/[0.06]"
             >
               <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <path d="m6 9 6 6 6-6" />
@@ -292,7 +292,7 @@ export function NowPlayingSheet() {
                   <h2 className="font-serif text-[26px] font-bold leading-tight text-paper">{audio.title ? <Reference>{audio.title}</Reference> : null}</h2>
                   {audio.artist ? <p className="mt-1 truncate font-sans text-ui text-paper/55">{audio.artist}</p> : null}
                 </div>
-                <SaveOffline src={audio.src} className="-mr-2.5" />
+                <SaveOffline src={audio.src} className="-me-2.5" />
               </div>
             </div>
 
@@ -326,7 +326,7 @@ export function NowPlayingSheet() {
                       <p className="mt-0.5 truncate font-sans text-detail text-paper/55">{audio.artist}</p>
                     ) : null}
                   </div>
-                  <SaveOffline src={audio.src} className="-mr-2.5" />
+                  <SaveOffline src={audio.src} className="-me-2.5" />
                 </div>
                 <LiveCaptions
                   source={audio.captions!}
