@@ -419,6 +419,26 @@ both walks read the public pictures the main web keeps in its storage (a
 profile picture read as missing because the walk blocked it). On a selling
 export of the mended tree: 90 taps, 0 failed, 9 distinct sheets, all clean.
 
+Two mends to the checker itself during the third run (Admin's, 16:41 UTC).
+The Arabic check failed Now Playing's countdown while a recording played: the
+clock ticked between the two directions, and the check read its narrower
+words as a box placed with left or right (Updates' find, 16:26). The check
+now measures left to right a second time after Arabic. A box passes if it
+mirrors either left-to-right measure. One that moved between those two
+measures and mirrors neither is listed as not measured, not as a fail. The
+self-test holds a clock that ticks once between the two directions, which the
+old check failed and the new one passes, and a bar that grows every frame,
+which is listed. The self-test's own proof of the pixels pass was also wrong.
+Its two test pictures were written with double quotes inside a style that was
+itself in double quotes, so the style ended at "url(" and neither picture was
+drawn. The proof had passed by reading the app's tab bar under the words
+instead (the grey words read 2.33:1 there, not their own 1.30:1). It showed
+once the picture measure began reading only what a reader sees (Fable Themes,
+`7bd238108`). With the quoting fixed and the test standing over everything,
+the light words read 19.03:1 on their dark picture and the grey 1.30:1 on
+theirs. The pass's first trial (125 of 125 look words answered) was taken on
+the measure before that change, so the final run's counts replace it.
+
 **3. No saint or work without a picture:**
 `lib/saints/__tests__/everySaintAPicture.test.ts` passes: every saint has a
 picture or stands in its list, with what he waits for. The list had 31 at

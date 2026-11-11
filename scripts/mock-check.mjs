@@ -1382,14 +1382,28 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
     // 2026-11-11: FirstLiturgyGuide, PlusTry, ReaderDock, WalkProgress). Such
     // a page is measured left to right in English; a page in any other
     // language keeps it (German's headings break by its own hyphens).
+    //
+    // And measured left to right once more after Arabic: what changes while
+    // it is measured (a clock that ticks, a count) moves between two
+    // measures, and what stands beside it with it, so a box is where it
+    // should be when it mirrors either measure the first way round (Updates'
+    // find, 2026-11-11: Now Playing's countdown, "-2:02", read as placed
+    // with left or right while a recording played, its outer edge matched
+    // and its words 3.2px narrower in the second measure). One that moved
+    // between the two measures the same way round, and mirrors neither, was
+    // moving while it was measured: it is said, not failed, as nothing
+    // could be compared.
     await wear(page, before.mode, before.look);
-    await page.evaluate((rtlLangs) => {
-      const h = document.documentElement;
-      h.setAttribute("dir", "ltr");
-      if (new RegExp(rtlLangs, "i").test(h.getAttribute("lang") || "")) h.setAttribute("lang", "en");
-    }, RTL_LANGS);
-    await settle(page);
-    const ltr = await page.evaluate(boxes, selector);
+    const leftToRight = async () => {
+      await page.evaluate((rtlLangs) => {
+        const h = document.documentElement;
+        h.setAttribute("dir", "ltr");
+        if (new RegExp(rtlLangs, "i").test(h.getAttribute("lang") || "")) h.setAttribute("lang", "en");
+      }, RTL_LANGS);
+      await settle(page);
+      return page.evaluate(boxes, selector);
+    };
+    const ltr = await leftToRight();
     await page.evaluate((lang) => {
       const h = document.documentElement;
       h.setAttribute("dir", "rtl");
@@ -1398,21 +1412,26 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
     }, before.lang);
     await settle(page);
     const rtl = await page.evaluate(boxes, selector);
+    const again = await leftToRight();
     if (ltr && rtl && ltr.out.length === rtl.out.length) {
+      const twice = Boolean(again) && again.out.length === ltr.out.length;
+      const mirrors = (a, b) => Math.abs(b.x[0] - (rtl.width - a.x[1])) <= 1.5 && Math.abs(b.x[1] - (rtl.width - a.x[0])) <= 1.5;
       // Where a parent is placed wrong, its children go with it: only the
       // parent is said.
       const wrong = new Set();
       ltr.out.forEach((a, i) => {
         const b = rtl.out[i];
+        const c = twice ? again.out[i] : a;
         if (a.physicalAlign) {
           if (a.allow) allow("mirror", a.name, a.allow);
           else fail("mirror", null, a.name, `its text is set ${a.physicalAlign}, not start or end, so it stays ${a.physicalAlign} in Arabic`);
         }
-        const mirrored = Math.abs(b.x[0] - (rtl.width - a.x[1])) <= 1.5 && Math.abs(b.x[1] - (rtl.width - a.x[0])) <= 1.5;
-        if (mirrored) return;
+        if (mirrors(a, b) || mirrors(c, b)) return;
         wrong.add(i);
         if (wrong.has(a.parent)) return;
         if (a.allow) allow("mirror", a.name, a.allow);
+        else if (Math.abs(a.x[0] - c.x[0]) > 1.5 || Math.abs(a.x[1] - c.x[1]) > 1.5)
+          unmeasured.push(`Arabic: ${a.name} moved while it was measured (at ${a.x[0]} to ${a.x[1]}px, then ${c.x[0]} to ${c.x[1]}px, the same way round), so its place was not compared`);
         else fail("mirror", null, a.name, `at ${a.x[0]} to ${a.x[1]}px, and in Arabic at ${b.x[0]} to ${b.x[1]}px of ${rtl.width}: placed with left or right, not start or end`);
       });
     } else {
@@ -1565,9 +1584,15 @@ const ARABIC = `
   </span>
 </div>`;
 
-/** The pixels pass's own proof: words on two pictures of one colour each, drawn as pictures (not colours). */
-const PICTURE = (hex) => `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='%23${hex}'/%3E%3C/svg%3E")`;
-const PIXELS = `<div data-mock-fixture="pixels" style="padding:16px">
+/**
+ * The pixels pass's own proof: words on two pictures of one colour each, drawn as pictures (not colours). Its
+ * quotes are single, inside a style written in double ones: written with double quotes, as it first was, the
+ * style ended at "url(", no picture was drawn, and the pass read the app's own page and tab bar under the words
+ * (the grey words read 2.33:1, not their own 1.30:1) until the measure learned to read only words a reader is
+ * shown (7bd238108). So the fixture stands fixed at the top, over everything, and its pictures are drawn.
+ */
+const PICTURE = (hex) => `url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%228%22 height=%228%22%3E%3Crect width=%228%22 height=%228%22 fill=%22%23${hex}%22/%3E%3C/svg%3E')`;
+const PIXELS = `<div data-mock-fixture="pixels" style="position:fixed;left:0;right:0;top:120px;z-index:400;padding:16px">
   <div style="background-image:${PICTURE("101010")};padding:12px"><p style="margin:0;color:#ffffff;font:16px sans-serif">Light words on a dark picture</p></div>
   <div style="margin-top:12px;background-image:${PICTURE("777777")};padding:12px"><p style="margin:0;color:#8a8a8a;font:16px sans-serif">Grey words on a grey picture</p></div>
   <div style="position:fixed;inset-inline-start:2000px;top:120px;background-image:${PICTURE("101010")};padding:12px"><p style="margin:0;color:#ffffff;font:16px sans-serif">Words past the screen's edge</p></div>
@@ -1577,6 +1602,18 @@ const PIXELS = `<div data-mock-fixture="pixels" style="padding:16px">
 const RED = `<div data-mock-fixture="red" style="padding:16px;display:flex;gap:12px">
   <button type="button" class="inline-flex min-h-11 items-center rounded-pill bg-crimson px-4 font-sans text-ui font-semibold text-white">Pray</button>
   <button type="button" style="display:inline-flex;min-height:44px;align-items:center;border-radius:999px;background:#b22222;color:#ffffff;padding:0 16px;font:600 16px sans-serif">Take it down</button>
+</div>`;
+
+/**
+ * What changes while it is measured (Updates' find, 2026-11-11: Now Playing's countdown, "-2:02", read as placed
+ * with left or right while a recording played; its outer edge matched and its words were 3.2px narrower in the
+ * second measure, the clock having ticked between the two directions). The clock here ticks once, between the
+ * two directions, and is where it should be both ways round: it passes. The bar under it grows every frame, so no
+ * two measures of it agree: it cannot be compared, and is said, not failed.
+ */
+const CLOCK = `<div data-mock-fixture="clock" style="padding:16px;background:#101010;color:#ffffff;font:16px sans-serif">
+  <div style="display:flex;align-items:center"><span>Now playing</span><span data-mock-clock style="margin-inline-start:auto">-2:02</span></div>
+  <div style="margin-top:12px;height:6px"><span data-mock-grows style="display:block;height:6px;width:40px;background:#ffffff"></span></div>
 </div>`;
 
 async function selfTest() {
@@ -1608,7 +1645,12 @@ async function selfTest() {
     // The pixels pass (1.9, the gate's rule that no "look" stands unanswered): two words on pictures, light on a
     // dark one and grey on a grey one. Without the pass both are said; with it neither is, the first passes on its
     // pixels and the second fails on them.
-    await page.evaluate((html) => document.body.insertAdjacentHTML("beforeend", html), PIXELS);
+    // The pass reads only what a reader is shown (scripts/words-on-pictures.mjs, 7bd238108): the fixtures measured
+    // above stand fixed over the page and would cover these words, so they are put away first.
+    await page.evaluate((html) => {
+      for (const f of document.querySelectorAll("[data-mock-fixture]")) f.style.display = "none";
+      document.body.insertAdjacentHTML("beforeend", html);
+    }, PIXELS);
     await settle(page);
     const lookOnly = await checkMock(page, "[data-mock-fixture=pixels]", { palettes: [["Dark", null]] });
     const byPixels = await checkMock(page, "[data-mock-fixture=pixels]", { palettes: [["Dark", null]], pixels: true });
@@ -1618,6 +1660,30 @@ async function selfTest() {
     await settle(page);
     const red = await checkMock(page, "[data-mock-fixture=red]");
     printMockCheck(red, "the Church's red, and a red typed in");
+    // A clock that ticks once while it is measured, and a bar that grows every frame.
+    await page.evaluate((html) => {
+      document.body.insertAdjacentHTML("beforeend", html);
+      const clock = document.querySelector("[data-mock-clock]");
+      let ticked = false;
+      new MutationObserver(() => {
+        if (ticked || document.documentElement.getAttribute("dir") !== "rtl") return;
+        ticked = true;
+        clock.textContent = "-12:02";
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ["dir"] });
+      const bar = document.querySelector("[data-mock-grows]");
+      let width = 40;
+      const grow = () => {
+        width = width >= 300 ? 40 : width + 3;
+        bar.style.width = `${width}px`;
+        requestAnimationFrame(grow);
+      };
+      requestAnimationFrame(grow);
+    }, CLOCK);
+    await settle(page);
+    const clocks = await checkMock(page, "[data-mock-fixture=clock]", { palettes: [["Dark", null]] });
+    printMockCheck(clocks, "a clock that ticks while it is measured, and a bar that grows");
+    const clockRight =
+      clocks.failures.length === 0 && clocks.unmeasured.length === 1 && clocks.unmeasured[0].startsWith("Arabic: span moved while it was measured");
     const redRight =
       !red.failures.some((f) => f.check === "palette" && f.what === 'button "Pray"') &&
       red.allowed.some((a) => a.startsWith(`palette on button "Pray": the Church's red`)) &&
@@ -1655,11 +1721,11 @@ async function selfTest() {
       said("Words over a fade on a picture", "a picture is drawn across it (img)") &&
       said("Words over a picture, on plain colours", "a picture is drawn across it (img)") &&
       good.unmeasured.length === 3;
-    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight;
+    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight;
     console.log(
       ok
         ? "\nself-test: every mistake caught, and the house's own parts pass"
-        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}`,
+        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}`,
     );
     return ok;
   } finally {
