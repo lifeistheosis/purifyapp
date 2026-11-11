@@ -86,6 +86,7 @@ const ACCEPTED = {
   "saints/icons/sophronius-of-jerusalem.v2.jpg": "his white vestments with their black crosses, at the foot",
   "saints/icons/theophan-the-recluse.v2.jpg": "the photograph's own pale ground, all round him (a 19th-century photograph, not an icon)",
   "saints/icons/nikodemos-the-hagiorite.v2.jpg": "the engraving's own paper, in the band of letters round its oval, at the top",
+  "saints/icons/theophylact-of-ohrid.v2.jpg": "the manuscript page's own cream ground round his halo, his lettered name and his shoulders (a 17th-century miniature on paper)",
   // Looked at on 2026-11-11, December's icons (docs/1.9-build/notes/december-saints.md,
   // push 2b) and one of November's: the light is the work's own. The 1904 prints
   // are cut inside their frame lines, so none of the page is left; what is light

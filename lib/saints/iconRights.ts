@@ -1116,10 +1116,11 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
   // saint wears one picture everywhere; St Nikon's is the Hosios Loukas
   // mosaic, St Nektarios's a photograph taken before 1908. St Gabriel, St
   // Arsenie, St Iakovos and St Philoumenos keep the plate: no picture of them
-  // is in the public domain, and their files are gone. So does St Paisius,
+  // is in the public domain, and their files are gone. So did St Paisius,
   // on the arbiter's word: the one old portrait of him on Commons
-  // (File:Paisius.jpg) names no painter or date, so it waits until they are
-  // found. Every file was opened.
+  // (File:Paisius.jpg) names no painter or date, so it waited until a dated
+  // printing was found (his row below, paisius-velichkovsky.v3.jpg, from
+  // 1886). Every file was opened.
   "theotokos.jpg": {
     status: "verified",
     inspectedOn: "2026-11-10",
@@ -1623,11 +1624,13 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
   // Found through Wikidata's main image of him and read on its own Commons
   // page while Commons' search refused automated asking. St Papias: the
   // Nuremberg Chronicle's woodcut named for him, 1493 (its figures were cut
-  // from a few blocks used for many). St Paisius Velichkovsky stays on the
-  // plate: the one old portrait of him on Commons (File:Paisius.jpg) still
-  // names no source but "English Wikipedia", and no painter or date, which is
-  // why the arbiter held it back in November; the question is with him again,
-  // and the cut made of it waits in docs/1.9-build/kept/paisius-velichkovsky/.
+  // from a few blocks used for many). St Paisius Velichkovsky's Commons
+  // portrait (File:Paisius.jpg) names no source but "English Wikipedia", and
+  // no painter or date, so the arbiter turned it down a second time
+  // (2026-11-11: "the oldest public-domain picture whose freedom can be shown
+  // in its row"); the cut made of it is kept in
+  // docs/1.9-build/kept/paisius-velichkovsky/, and he wears a dated printing
+  // instead (his row below).
   "papias-of-hierapolis.v2.jpg": {
     status: "verified",
     inspectedOn: "2026-11-11",
@@ -2298,6 +2301,51 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     source: "«Бэйгуань» (Tianjin, 1939), pp. 72 and 73, its first printing; scanned on Wikimedia Commons",
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%98%D0%BE%D0%B0%D0%BD%D0%BD_(%D0%9C%D0%B0%D0%BA%D1%81%D0%B8%D0%BC%D0%BE%D0%B2%D0%B8%D1%87)_%D0%B8_%D0%AE%D0%B2%D0%B5%D0%BD%D0%B0%D0%BB%D0%B8%D0%B9_(%D0%9A%D0%B8%D0%BB%D0%B8%D0%BD)._1939.jpg",
+  },
+  // St Theophylact of Ohrid, on the arbiter's word of 2026-11-11: his
+  // 17th-century Russian miniature, lettered with his name and see. Its
+  // original on Commons is 341 by 600, the whole figure, so his head and
+  // shoulders are cut at the miniature's own pixels, 222 by 296, never
+  // enlarged (St John Cassian's, above, is 250 wide; the house's cut is 315
+  // by 420 where the source allows). The gold ornament inside his halo is
+  // part of a miniature of that century, not a burst of beams behind him,
+  // which is what the owner's rule against rays forbids (that rule is about
+  // our own design); St Symeon's icon was set in rays around the whole
+  // figure, so that call stands.
+  "theophylact-of-ohrid.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A manuscript miniature of a grey-bearded bishop with dark hair to his shoulders, in a patterned red and gold sakkos and a white omophorion with red crosses, under a gold halo ringed in pink, his name lettered above in Church Slavonic.",
+    work: "Miniature of St Theophylact, Archbishop of Bulgaria, from a Russian manuscript, as its Commons page gives it (a detail: his head and shoulders)",
+    artist: "Unknown (anonymous, as its Commons page gives it)",
+    workDate: "17th century",
+    source: "Wikimedia Commons (from biblia.okis.ru)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Theophylact_the_Bulgarian.jpg",
+  },
+  // St Paisius Velichkovsky, on the arbiter's word of 2026-11-11: the oldest
+  // printing of his portrait whose date can be shown. First printed as the
+  // frontispiece of «Житие и писания молдавского старца Паисия
+  // Величковского» (Odessa, 1886), published for the New Neamț monastery of
+  // the Ascension in Bessarabia: a lithograph of him with his staff and his
+  // prayer rope, captioned in Romanian in Cyrillic letters with the day of
+  // his repose, 15 November 1794, no artist named. The first printing of his
+  // Life (Optina, Moscow, 1847), in the scan read, has no portrait, and the
+  // portrait in a reprint of it is the reprint's (Optina, 2001), so not used.
+  // Why it is free: printed in 1886 with no artist named, so free in Russia
+  // (seventy years from publication for an anonymous work, Civil Code art.
+  // 1281) and, published before 1931, in the United States. The scan is the
+  // Russian State Library's copy, on the Internet Archive, page n4.
+  "paisius-velichkovsky.v3.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A lithograph of an old monk with a long white beard and long white hair, in a tall black kamilavka and veil and a pleated black mantle, one hand on his staff and the other holding a prayer rope, on a stippled grey ground.",
+    work: "A lithograph, not an icon: St Paisius Velichkovsky, the frontispiece of his Life, first printed in 1886 (a detail: his head and shoulders, cut inside its frame line)",
+    artist: "Not named",
+    workDate: "1886 or before",
+    source: "«Житие и писания молдавского старца Паисия Величковского» (Odessa, 1886), its frontispiece; scanned on the Internet Archive",
+    license: "Public domain",
+    evidenceUrl: "https://archive.org/details/zhitieipisanijamoldavskogostartsapaisija37/page/n4/mode/1up",
   },
 };
 
