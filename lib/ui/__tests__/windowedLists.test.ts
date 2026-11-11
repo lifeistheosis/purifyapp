@@ -136,7 +136,8 @@ describe("a list that draws only the rows near the screen", () => {
   it("keeps the room it gives a row outside the question, where it does nothing alone", () => {
     const css = read("app/globals.css");
     expect(css).toMatch(/\n\.cv-card \{\n contain-intrinsic-size: auto \d+px;\n\}\n@supports \(overflow-anchor: auto\) \{\n \.cv-card \{\n  content-visibility: auto;\n \}\n\}\n/);
-    expect(css).toMatch(/\n\.history-cv \{\n contain-intrinsic-size: auto 128px;\n/);
+    // Whatever the room is: its number is History's to set (lib/history/__tests__/calmHistory.test.ts).
+    expect(css).toMatch(/\n\.history-cv \{\n contain-intrinsic-size: auto \d+px;\n/);
     expect(read("components/community/CommunityClient.tsx")).toContain("[contain-intrinsic-size:auto_320px] supports-[overflow-anchor:auto]:[content-visibility:auto]");
   });
 
