@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { TOP_ICON, TOP_PLATE } from "@/components/nav/topPlate";
 import { goBack } from "@/lib/nav/goBack";
+import { leaveBy, type Room } from "@/lib/nav/readerWay";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { Search } from "@/components/ui/icons/Search";
 import { SearchTrigger } from "@/components/search/SearchTrigger";
@@ -81,6 +82,7 @@ export function MobileTopBar({
   subtitle,
   back,
   backFallback,
+  leaves,
   trailing,
   revealTitleOn,
   solidFrom,
@@ -105,6 +107,14 @@ export function MobileTopBar({
   back?: true | string;
   /** Where `back` goes when there is nothing of the app behind the page. Today unless given. */
   backFallback?: string;
+  /**
+   * With `back` as an address: the room this page is a page of
+   * (lib/nav/readerWay.ts). The button then returns a reader who came into
+   * the room from somewhere to where they were, in one tap however many
+   * pages they turned inside it, and is the door to `back` only for one with
+   * nothing behind them. A chapter of the Bible, and nothing else (1.9).
+   */
+  leaves?: Room;
   trailing?: React.ReactNode;
   /** The id of the page's own h1; the bar's title shows once it has scrolled away. */
   revealTitleOn?: string;
@@ -217,7 +227,23 @@ export function MobileTopBar({
         <ChevronLeft {...TOP_ICON} className="rtl:-scale-x-100" />
       </button>
     ) : (
-      <Link href={back} aria-label={t("nav.back")} className={backClass}>
+      <Link
+        href={back}
+        aria-label={t("nav.back")}
+        className={backClass}
+        // A page of a room: back to where the reader was before the room,
+        // if they came from somewhere. A tap that is the browser's to take
+        // (a new tab) is left to it, and so is a reader with nothing behind
+        // them: the link opens its own address, as it always did.
+        onClick={
+          leaves
+            ? (event) => {
+                if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                if (leaveBy(router, leaves, back)) event.preventDefault();
+              }
+            : undefined
+        }
+      >
         <ChevronLeft {...TOP_ICON} className="rtl:-scale-x-100" />
       </Link>
     )

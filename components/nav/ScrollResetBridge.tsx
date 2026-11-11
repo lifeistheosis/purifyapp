@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 import { endReturn, keepPlace, noteLinkTap, returnToPlace } from "@/lib/ui/returnPlace";
-import { endScrollHold, noteTraversal, onRouteCommitted } from "@/lib/ui/scrollReset";
+import { endScrollHold, noteTraversal, onRouteCommitted, takeReturnDown } from "@/lib/ui/scrollReset";
 
 // On the server there is no layout to read and useLayoutEffect only warns
 // (the same choice components/admin/charts.tsx makes).
@@ -62,8 +62,14 @@ export function ScrollResetBridge() {
       first.current = false;
       return;
     }
-    if (onRouteCommitted() === "traversal") returnToPlace();
-    else keepPlace();
+    if (onRouteCommitted() === "traversal") {
+      const placed = returnToPlace();
+      // A page opened again as the page behind (lib/nav/readerWay.ts) has no
+      // number of the browser's to come back to: where it keeps no place of
+      // its own, it is put as far down as the reader left it.
+      const down = takeReturnDown();
+      if (!placed && down !== null) window.scrollTo({ top: down, left: 0, behavior: "instant" });
+    } else keepPlace();
   }, [pathname]);
 
   return null;

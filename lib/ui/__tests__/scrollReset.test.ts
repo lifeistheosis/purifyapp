@@ -10,9 +10,11 @@ import {
   TRAVERSAL_MS,
   cameBack,
   endScrollHold,
+  noteReturn,
   noteTraversal,
   onRouteCommitted,
   resetScrollResetForTests,
+  takeReturnDown,
 } from "../scrollReset";
 
 type Listener = () => void;
@@ -206,5 +208,51 @@ describe("whether the reader came back", () => {
 
   it("is no where there is no window", () => {
     expect(cameBack()).toBe(false);
+  });
+});
+
+// A page opened again as the page behind (1.9, lib/nav/readerWay.ts: the way
+// out of a chapter where the browser cannot say how far back the page is).
+// To the reader it is a step back, so it is not put at its top.
+describe("a page opened again as the page behind", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    resetScrollResetForTests();
+  });
+  afterEach(() => {
+    resetScrollResetForTests();
+    vi.useRealTimers();
+    delete (globalThis as { window?: unknown }).window;
+    delete (globalThis as { document?: unknown }).document;
+  });
+
+  it("is treated as a step through history: not put at its top, and known to have come back", () => {
+    const b = stubBrowser("", "/bible/");
+    noteReturn(697);
+    expect(onRouteCommitted()).toBe("traversal");
+    expect(b.scrolls).toEqual([]);
+    expect(b.style.has("overflow-anchor")).toBe(false);
+    expect(cameBack()).toBe(true);
+  });
+
+  it("says how far down it stood once, and nothing for any other route", () => {
+    stubBrowser("", "/bible/");
+    expect(takeReturnDown()).toBeNull();
+    noteReturn(697);
+    onRouteCommitted();
+    expect(takeReturnDown()).toBe(697);
+    expect(takeReturnDown()).toBeNull();
+    // The browser's own step has no number of ours.
+    noteTraversal();
+    onRouteCommitted();
+    expect(takeReturnDown()).toBeNull();
+  });
+
+  it("and the route after it is a page opened forward again", () => {
+    const b = stubBrowser("", "/bible/");
+    noteReturn(0);
+    onRouteCommitted();
+    expect(onRouteCommitted()).toBe("reset");
+    expect(b.scrolls).toEqual([[0, 0]]);
   });
 });

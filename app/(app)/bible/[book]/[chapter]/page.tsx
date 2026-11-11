@@ -174,7 +174,10 @@ export default async function BibleChapterPage({
    // The phone's and the tablet's top, here on the web too: no bar at all
    // (1.8, the owner's pick B of round 2, "The page"), only round plates
    // over the page, the way back to /bible on one side and Aa and ••• on the
-   // other (and the site menu on the web). The chapter names itself with its
+   // other (and the site menu on the web). The way back is to where the
+   // reader was before the reader (their row of the list, the page they came
+   // from), and the whole list only when nothing is behind them: `leaves`,
+   // lib/nav/readerWay.ts (1.9). The chapter names itself with its
    // own title, and the verse being read is on the pill at the foot. Hidden
    // on md+; desktop uses the AppNav. Mounted here and not inside the
    // screen: the back bar's list of screens with a bar of their own is
@@ -185,6 +188,7 @@ export default async function BibleChapterPage({
      key="top-bar"
      plates
      back="/bible"
+     leaves="bible"
      trailing={
       <MobileReaderActions
        book={book}

@@ -25,7 +25,8 @@
  * reader is looking at.
  *
  * Left alone, on purpose:
- *   - Back and forward. Nothing here touches them. The browser restores a
+ *   - Back and forward, and a page opened again as the page behind
+ *     (noteReturn). Nothing here touches them. The browser restores a
  *     scroll number, which on a long list of placeholder cards is not where
  *     the reader was; lib/ui/returnPlace.ts puts them back on the link they
  *     had tapped.
@@ -51,6 +52,8 @@ export const TRAVERSAL_MS = 1500;
 const RELEASE_EVENTS = ["touchstart", "wheel", "keydown", "pointerdown"] as const;
 
 let lastTraversalAt = Number.NEGATIVE_INFINITY;
+/** How far down a page stood that is about to be opened again as the page behind (noteReturn). */
+let returnDown: number | null = null;
 let releaseHold: (() => void) | null = null;
 /** The page that committed last, and whether a step through history brought it. */
 let arrival: { path: string; back: boolean } | null = null;
@@ -62,6 +65,27 @@ function now(): number {
 /** Call from a `popstate` listener: the next route is a step through history. */
 export function noteTraversal(): void {
   lastTraversalAt = now();
+}
+
+/**
+ * Call just before a page is opened that is, to the reader, the page behind
+ * the one they are on, although the browser is asked for it as a new one
+ * (lib/nav/readerWay.ts: the way out of a chapter where the browser cannot
+ * say how far back that page is). The route that follows is treated as a
+ * step through history: it is not put at its top, and the reader's place on
+ * it is put back. `down` is how far down the page stood when they left it,
+ * for a page that keeps no place of its own.
+ */
+export function noteReturn(down: number): void {
+  lastTraversalAt = now();
+  returnDown = down;
+}
+
+/** How far down the page a `noteReturn` opened stood. Once, and null for every other route. */
+export function takeReturnDown(): number | null {
+  const down = returnDown;
+  returnDown = null;
+  return down;
 }
 
 /** True once, for the route that follows a popstate. */
@@ -141,6 +165,7 @@ export function onRouteCommitted(): "reset" | "traversal" | "hash" | "none" {
 export function resetScrollResetForTests(): void {
   endScrollHold();
   lastTraversalAt = Number.NEGATIVE_INFINITY;
+  returnDown = null;
   releaseHold = null;
   arrival = null;
 }

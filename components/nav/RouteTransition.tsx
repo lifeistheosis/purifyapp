@@ -3,6 +3,7 @@
 import { ViewTransition, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
+import { noteWayRoute, noteWayTap } from "@/lib/nav/readerWay";
 import { isNativeClient } from "@/lib/platform/native";
 import { overlayOwnsBack } from "@/lib/platform/useAndroidBack";
 import { outlinesForgotten } from "@/lib/ui/outlineLeave";
@@ -102,11 +103,18 @@ export function RouteTransition() {
     // lifted now, to travel (routeMotion, "A picture that leads to its own
     // page"). Capturing, so it is lifted before anything the tap does.
     const onTap = (event: MouseEvent) => liftFrom(event.target);
+    // And where the page stood at every tap, for a reader who is leaving it
+    // for a room they will come back out of (lib/nav/readerWay.ts). Once now
+    // too, so the page the visit began on is known.
+    const onWay = () => noteWayTap();
+    onWay();
     window.addEventListener("popstate", onStep);
     document.addEventListener("click", onTap, true);
+    document.addEventListener("click", onWay, true);
     return () => {
       window.removeEventListener("popstate", onStep);
       document.removeEventListener("click", onTap, true);
+      document.removeEventListener("click", onWay, true);
     };
   }, []);
 
@@ -161,9 +169,14 @@ export function RouteTransition() {
     outlinesForgotten();
     const note = takeNav(from, pathname);
     if (arrived()) {
+      // A step through history, whatever the two addresses say of it. Every
+      // route is told to the way out of a reader, with how it came
+      // (lib/nav/readerWay.ts).
+      noteWayRoute("traverse");
       quietEntrance("back");
       return;
     }
+    noteWayRoute(note);
     if (note === "traverse" || !canMove()) return;
     // Whatever arrived is pictured as the page arriving: the page, or its
     // outline where the page was slow to come (see above).

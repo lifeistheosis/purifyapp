@@ -28,12 +28,15 @@
 //                      Walked on an export that sells Plus, as the Android
 //                      shell, which is where that link is drawn
 // Each is come back to by the browser's own Back (a browser's button, and
-// what the gate's walk does), which is not pictured. The reading room is
-// come back to by the page's own Back button as well, which is pictured, and
-// is the step the phone's Back takes in the apps (routeMotion.returnBy). A
-// chapter's round button is not walked: it is a door to the whole list, not
-// a step back (app/(app)/bible/[book]/[chapter]/page.tsx, back="/bible"),
-// and opens the list at its top.
+// what the gate's walk does), which is not pictured. The reading room and
+// the Bible's list are come back to by the page's own Back button as well,
+// which is pictured, and is the step the phone's Back takes in the apps
+// (routeMotion.returnBy). A chapter's round button was a door to the whole
+// list until 1.9, and opened it at its top; it returns the reader to their
+// row now (lib/nav/readerWay.ts), and is walked both ways it has of doing
+// so: by a true step, where the browser can say how far back the list is,
+// and, with that taken away as on an iPhone before iOS 26.2, by opening the
+// list again as the page behind, where the reader left it.
 //
 // What it holds:
 //   - when the page has come back, the tapped link is where the thumb was,
@@ -101,9 +104,11 @@ const say = (ok, name, detail) => {
 /**
  * The app on a screen of this size, a new reader past the questions; the
  * website's own pictures from this branch's public/. `shell`: the page is the
- * Android shell, where Plus is sold (scripts/lib/sells-plus.mjs).
+ * Android shell, where Plus is sold (scripts/lib/sells-plus.mjs). `older`: a
+ * browser that cannot say what is behind the page (no Navigation API, as an
+ * iPhone before iOS 26.2).
  */
-async function open(browser, size, { shell = false } = {}) {
+async function open(browser, size, { shell = false, older = false } = {}) {
   const ctx = await browser.newContext({
     viewport: { width: size.width, height: size.height },
     deviceScaleFactor: 1,
@@ -117,6 +122,7 @@ async function open(browser, size, { shell = false } = {}) {
     localStorage.setItem("purify:whatsNewSeen", "99");
   });
   if (shell) await asAndroidShell(ctx);
+  if (older) await ctx.addInitScript(() => Object.defineProperty(window, "navigation", { value: undefined, configurable: true }));
   await serveLikeTheShell(ctx, OUT, {});
   await ctx.route("https://purifyapp.net/**", (route) => {
     const file = path.resolve("public", decodeURIComponent(new URL(route.request().url()).pathname).replace(/^\/+/, ""));
@@ -179,6 +185,8 @@ const PLACES = {
         partOf: `() => "books"`,
         again: `(href) => [...document.querySelectorAll('a[href="' + href + '"]')].find(${IN_PAGE}) ?? null`,
         grows: true,
+        // The chapter after the one the row opens, to turn to before leaving by the page's own button.
+        turns: `/bible/${book}/2/`,
       },
     ]),
   ),
@@ -202,6 +210,8 @@ PLACES.plus = {
 const WAYS = {
   browser: { name: "the browser's own Back", back: (page) => page.evaluate(() => history.back()) },
   chevron: { name: "the page's own Back button", back: (page) => page.locator(CHEVRON).first().click() },
+  // The same button on a browser that cannot say what is behind the page.
+  older: { name: "the page's own Back button, on a browser that cannot say what is behind it", back: (page) => page.locator(CHEVRON).first().click(), older: true },
 };
 
 async function walk(browser, size, place, way) {
@@ -212,7 +222,7 @@ async function walk(browser, size, place, way) {
     unwalked += 1;
     return;
   }
-  const { ctx, page, touch } = await open(browser, size, { shell: Boolean(place.sells) });
+  const { ctx, page, touch } = await open(browser, size, { shell: Boolean(place.sells), older: Boolean(way.older) });
   try {
     await go(page, place.address);
     await page.waitForSelector(place.wait, { timeout: 20000, state: "attached" }).catch(() => {});
@@ -251,6 +261,19 @@ async function walk(browser, size, place, way) {
     // Long enough for the page opened to be kept as the last thing read.
     await page.waitForTimeout(1800);
     const opened = await page.evaluate(() => location.pathname);
+    if (way.older && (await page.evaluate(() => typeof window.navigation !== "undefined"))) return say(false, name, "the walk could not take the Navigation API away, so it proves nothing of a browser without it");
+    // A chapter turned inside the reader first, where there is one to turn to: one tap must still leave it.
+    if (place.turns && way !== WAYS.browser) {
+      const turned = await page.evaluate((next) => {
+        const a = [...document.links].find((x) => x.getAttribute("href") === next);
+        if (!a) return false;
+        a.click();
+        return true;
+      }, place.turns);
+      if (!turned) return say(false, name, `the chapter has no link to ${place.turns} to turn by`);
+      await page.waitForFunction((p) => location.pathname === p, new URL(place.turns, "https://localhost").pathname, { timeout: 10000 }).catch(() => {});
+      await page.waitForTimeout(1200);
+    }
     // Watch the tapped link in every frame, as the frame is about to be painted, from before the step back is taken.
     await page.evaluate(
       ({ again, href, part, from, ms }) => {
@@ -300,7 +323,9 @@ async function walk(browser, size, place, way) {
     if (Math.abs(off) > STILL_PX) faults.push(`the link came back ${Math.round(Math.abs(off))}px ${off > 0 ? "below" : "above"} the thumb (${Math.round(after.top)}px down the screen, tapped at ${Math.round(before.top)}px)`);
     if (astray.length) faults.push(`it was painted ${Math.round(Math.abs(astray[0][1] - before.top))}px from the thumb ${astray[0][0]}ms after Back, for ${astray.length} frame${astray.length === 1 ? "" : "s"}`);
     if (place.grows && grew < 20) faults.push(`the page above the link grew ${grew}px while the reader was away, so the walk proved nothing`);
-    if (place.grows && after.same === before.same) faults.push(`the page has ${after.same} link${after.same === 1 ? "" : "s"} to it, as it had: the helper before this knew it too, so the walk proved nothing`);
+    // (Not asked of the page's own button after a chapter was turned: the new row then leads to the chapter
+    // turned to, not to the row's own, and what that walk proves is the button, which opened the list at its top.)
+    if (place.grows && after.same === before.same && !(place.turns && way !== WAYS.browser)) faults.push(`the page has ${after.same} link${after.same === 1 ? "" : "s"} to it, as it had: the helper before this knew it too, so the walk proved nothing`);
     if (!place.grows && Math.abs(grew) > 1) faults.push(`the page above this link changed by ${grew}px: it is no longer the place nothing moves`);
     if (place.arrives && worst < 4) faults.push(`the link was never more than ${Math.round(worst)}px from the thumb, so it was not being brought in as the page came back and the walk proved nothing`);
     say(
@@ -326,6 +351,8 @@ try {
     [PLACES.library, WAYS.chevron, PHONE],
     [PLACES.short, WAYS.browser, PHONE],
     [PLACES["1-kings"], WAYS.browser, PHONE],
+    [PLACES["1-kings"], WAYS.chevron, PHONE],
+    [PLACES["1-kings"], WAYS.older, PHONE],
     [PLACES.genesis, WAYS.browser, PHONE],
     [PLACES.revelation, WAYS.browser, PHONE],
     [PLACES.library, WAYS.browser, SMALL],
