@@ -2879,6 +2879,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "hosius-of-cordova",
  byname: "Confessor of the West",
+ iconUrl: "/saints/icons/hosius-of-cordova.v2.jpg",
  name: "St. Hosius of Cordova",
  epithet: "Bishop of Cordova · Confessor · Elder of the West at Nicaea",
  born: "c. 256 (Cordova, Hispania)",

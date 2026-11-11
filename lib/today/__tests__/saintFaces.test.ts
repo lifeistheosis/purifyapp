@@ -75,11 +75,22 @@ describe("the saint's band picture", () => {
   });
 
   it("is his cover alone when the app carries no icon of him", () => {
-    // St Hosius's books wear a 19th-century painting, and by the arbiter's
-    // rule for him only an old icon, fresco or mosaic may be his icon, so he
-    // carries none (St Jerome stood here until build 93 note 12 gave him one).
-    expect(brief("hosius-of-cordova").iconUrl).toBeUndefined();
-    expect(saintPicture(brief("hosius-of-cordova"), false)).toMatchObject({ kind: "cover", fallback: null });
+    // No saint with a cover portrait is without his icon now (St Jerome stood
+    // here until build 93 note 12 gave him one, St Hosius until its note 1), so
+    // the case is a saint's brief with its icon taken away.
+    const bare = { ...brief("hosius-of-cordova"), iconUrl: undefined };
+    expect(saintPicture(bare, false)).toMatchObject({ kind: "cover", fallback: null });
+  });
+
+  it("is one picture everywhere for St Hosius: his books' painting, on his page as on his round", () => {
+    // The arbiter's word (2026-11-11, build 93 note 1): by the covers' rule for
+    // a Western saint the East did not paint, his books' painting of about 1879
+    // is his icon too, cut from the same file, so the plate under his name is gone.
+    const icon = "/saints/icons/hosius-of-cordova.v2.jpg";
+    expect(brief("hosius-of-cordova").iconUrl).toBe(icon);
+    expect(saintPicture(brief("hosius-of-cordova"), false)).toMatchObject({ kind: "cover", src: "/covers/authors/hosius-of-cordova.v1.jpg", fallback: icon });
+    expect(ICON_RIGHTS["hosius-of-cordova.v2.jpg"]).toMatchObject({ status: "verified", artist: "Ángel María de Barcia Pavón", workDate: "c. 1879", license: "Public domain" });
+    expect(fs.existsSync(path.join(process.cwd(), "public", icon))).toBe(true);
   });
 
   it("is his icon when he has no cover portrait", () => {

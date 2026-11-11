@@ -88,10 +88,17 @@ Done, St Alexander and the faces (Updates 2, 2026-11-11, `342ad7c38`):
   page his round is the plate, and none of its 12 rounds is empty or a letter;
   no saint's icon was asked for and missing. `checkMock` on Nicaea's row and
   on his card: every check passes. Still: `build-93/01-after-alexander-plate-offline-390.png`.
-- **For a later pass, not changed:** St Hosius's round at Nicaea wears the
-  19th-century painting his books wear, while his page is on the plate (the
-  arbiter's rule for him: an old icon, fresco or mosaic, or the plate). The
-  pair is in the record of covers and pages that differ (`notes/build-90.md`).
+- **St Hosius, then (2026-11-11):** his round at Nicaea wore the 19th-century
+  painting his books wear, while his page was on the plate (the arbiter's
+  earlier rule for him: an old icon, fresco or mosaic, or the plate). On the
+  arbiter's word, "one picture everywhere, his books' 19th-century painting on
+  his page as in Nicaea's round, by the covers rule for a Western saint the
+  East did not paint (as St Augustine's and St Florian's)", his icon is now
+  that painting (Ángel María de Barcia, about 1879, the Museo de Bellas Artes,
+  Córdoba, public domain), cut from the same file to 315 by 420, with its
+  date and painter in its row (`lib/saints/iconRights.ts`). His pair leaves
+  the record of covers and pages that differ (`notes/build-90.md`), and
+  `lib/today/__tests__/saintFaces.test.ts` holds the one picture.
 
 ### 2. Easy Scroll on the prayers still fights the finger (2026-11-11 about 01:19 UTC)
 
@@ -247,6 +254,14 @@ Begun (Updates 2, 2026-11-11, `a1b987d18`):
   Commons' pace, and the list for Admin's letters follows.
 - The debt of unsourced icons is 28 (St John of Shanghai's came off with
   call 14), and its ceiling follows it down.
+- **St Theophan and St Nikodemos, on the arbiter's word** (Updates 2,
+  2026-11-11, `969e24fdd`): neither has an old icon that passes on Commons,
+  so each wears the oldest true picture of him, public domain: St Theophan
+  the Recluse a photograph of the 19th century, St Nikodemos the Hagiorite
+  the Zoulianis engraving of 1818 to 1819. Each picture's own pale ground is
+  named in `scripts/check-picture-edges.mjs`. The two unsourced files they
+  replace are gone, and the debt is 26. Still:
+  `build-93/12-theophan-nikodemos-offline-390.png`.
 
 ### 13. In a Father's work, highlight and quote any words, not only the whole paragraph (2026-11-11 about 01:37 UTC)
 

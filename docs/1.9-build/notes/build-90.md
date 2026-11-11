@@ -605,7 +605,7 @@ The debt of carried icons with no source fell from 75 to 42 (`lib/saints/iconRig
 - St Augustine: the Lateran fresco of about 550 to 600, the oldest portrait of him.
 - St Leo the Great: a Greek fresco of the 14th or 15th century, lettered with his name and see. His icon is now mapped for his notes (`lib/saints/icons.ts`), as its comment asked once his rights were recorded.
 - St Florian: del Cossa's panel of 1473, the oldest on Commons and his books' own.
-- St Hosius of Cordova and St Theodosius the Great: no old icon, fresco or mosaic of them on Commons (the old pictures named Theodosios are St Theodosius the Cenobiarch's), so the plate; their files are gone.
+- St Hosius of Cordova and St Theodosius the Great: no old icon, fresco or mosaic of them on Commons (the old pictures named Theodosios are St Theodosius the Cenobiarch's), so the plate; their files are gone. St Hosius's page later took his books' painting, on the arbiter's word of 2026-11-11 (`notes/build-93.md`, note 1).
 
 **Where a saint's carried icon and his books' cover now differ**, for a later pass (the arbiter: the covers stay as they are in 1.9):
 
@@ -617,7 +617,6 @@ The debt of carried icons with no source fell from 75 to 42 (`lib/saints/iconRig
 | St James son of Alphaeus | Mstyora icon (19th century) | El Greco (about 1600) |
 | St Augustine | Lateran fresco (about 550 to 600) | Philippe de Champaigne (about 1645 to 1650) |
 | St Leo the Great | Greek fresco (14th to 15th century) | Francisco de Herrera the Younger (17th century) |
-| St Hosius of Cordova | The plate | Ángel María de Barcia (about 1879) |
 | St Theodosius the Great | The plate | Van Dyck (1619 to 1620) |
 
 **Found on the way, not changed:** `scripts/check-picture-edges.mjs` flags two of November's icons (`nektarios-of-aegina.v2.jpg`, white along three sides; `theodore-the-studite.jpg`, at the foot), told to the November chat. With no signal, a saint with a large page picture showed his stand-in icon under his name; mended on the arbiter's yes (`969fbe07d`).

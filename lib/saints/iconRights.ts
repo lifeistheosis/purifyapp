@@ -1522,10 +1522,14 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
   // read as St Jude's, and its source is a page about him. St Augustine:
   // the Lateran fresco, the oldest portrait of him. St Leo: a Greek fresco
   // lettered with his name and see. St Florian: del Cossa's panel of 1473,
-  // the oldest on Commons and his books' own. St Hosius and St Theodosius
-  // have no old icon, fresco or mosaic on Commons and keep the plate; their
-  // files are gone. Where a page's icon and the books' cover now differ, the
-  // pairs are listed in docs/1.9-build/notes/build-90.md for a later pass.
+  // the oldest on Commons and his books' own. St Theodosius has no old icon,
+  // fresco or mosaic on Commons and keeps the plate; his file is gone. St
+  // Hosius had none either and kept the plate until the arbiter's word of
+  // 2026-11-11 (build 93 note 1): one picture everywhere, his books' own
+  // painting of about 1879 on his page as on his round at Nicaea, by the same
+  // rule for a Western saint the East did not paint. Where a page's icon and
+  // the books' cover now differ, the pairs are listed in
+  // docs/1.9-build/notes/build-90.md for a later pass.
   "apostle-simon-zealot.v2.jpg": {
     status: "verified",
     inspectedOn: "2026-11-11",
@@ -1613,6 +1617,17 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     source: "Wikimedia Commons",
     license: "CC0",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Francesco_del_Cossa,_Saint_Florian,_c._1473-1474,_NGA_368.jpg",
+  },
+  "hosius-of-cordova.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A bishop with a long white beard in a white mitre and a red chasuble, a crozier in his hand and an open book lettered in Latin with words of the Creed, before a dark niche.",
+    work: "El obispo Osio by Ángel María de Barcia, the Museo de Bellas Artes, Córdoba (the picture on his books' covers, lib/reading/authorCovers.ts)",
+    artist: "Ángel María de Barcia Pavón",
+    workDate: "c. 1879",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:El_obispo_Osio_-_%C3%81ngel_Mar%C3%ADa_de_Barcia_Pav%C3%B3n.jpg",
   },
   // Seven modern saints keep the plate, on the owner's word (2026-11-10, "rec
   // yes to all": "modern saints on the plate until a painter or monastery

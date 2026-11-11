@@ -60,6 +60,10 @@ const ACCEPTED = {
   "sections/reading.jpg": "the parchment of the Ostromir page; no screen has shown this plate since 1.7",
   "covers/authors/agatho-of-rome.v1.jpg": "the painted white outline of the miniature's ornament band",
   "covers/authors/ignatius-of-antioch.v1.jpg": "his white omophorion, at the foot",
+  // Looked at on 2026-11-11, three of build 89 note 3's covers: the light is the work's own.
+  "covers/authors/tarasius-of-constantinople.v1.jpg": "his white omophorion with its crosses, at the foot and in the lower corners (as his icon cut from it)",
+  "covers/authors/anianus-of-alexandria.v1.jpg": "a white turban at the top right corner, one of the crowd in Cima da Conegliano's painting",
+  "covers/feelings/hatred.v1.jpg": "the edge of the next figure's white robe in the fresco, low at the left; a cut clear of it loses St Stephen's name, lettered at the left, and takes in the panel's white and red border at the right",
   "history/media/bolshevik-persecution.v1.jpg": "a photograph of 1917: the windows' light and the council's white cloth",
   "history/media/council-of-florence-decree.jpg": "the decree on its sheet: its seals hang below it on the white of the scan, and a cut would lose them",
   "history/media/council-of-florence-pisanello.jpg": "Pisanello's drawings: the paper is the drawing's own",
