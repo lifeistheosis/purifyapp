@@ -27,6 +27,11 @@ verse's window and the journal's bar carried the four-point `Sparkle` icon in bu
 (`notes/build-93.md`, notes 7 and 8), so these snapshots are taken only from a build with
 that mended, and each is looked at for a four-point star before it goes out.
 
+**No picture from the heritage list** (`notes/pictures-heritage-law.md`; his word of
+2026-11-11: kept in the app, never in ads). A snapshot that shows one of its 31 pictures
+is not used, a saint's icon on the journal's day included, so the journal is taken on a
+day whose saint is not on the list.
+
 ## Its words
 
 From the 1.9 note once it is written, checked by the 1.9 drop's rules (`docs/DROP.md`):

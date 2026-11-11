@@ -47,6 +47,19 @@ stills, the clips and the reels.
   the app no longer draws it. The promo test reads every script for the
   glyphs, the icon and the shape (`scripts/lib/four-point-star.mjs`
   measures a drawn one).
+- **Not the pictures on the heritage list.** None of the 31 pictures in
+  `docs/1.9-build/notes/pictures-heritage-law.md` (frescoes, mosaics and
+  icons held in Greece and Italy: Mount Athos, Hosios Loukas, Nea Moni,
+  Ravenna and the rest) goes into a frame, a card, a video, a post, a store
+  picture or merchandise, and neither does a screen of the app that shows
+  one, until he lifts it (his word of 2026-11-11 on that note: "let's use all
+  the photos", kept in the app and never in ads). Greek and Italian law can
+  ask a fee for reproducing pictures of monuments held there, and every
+  enforcement found was an ad, a cover or merchandise. Already in the Vault
+  with one: look 3 (St John Chrysostom's mosaic at Hosios Loukas), and edit
+  frames 1 (the saint web, on that mosaic) and 9 (the wall of saints, with
+  St Moses the Ethiopian of Dionysiou, Justinian of Ravenna and Chrysostom).
+  Look at every screen in a frame for one before it is used.
 - **The house's voice and type**: Lora and DM Sans out of the export, the
   house colours, no em dashes. `lib/marketing/__tests__/promoLooks.test.ts`
   holds the words.
@@ -137,17 +150,17 @@ The shot list, three seconds each:
 
 1. The world: History's atlas, every place lit, tilted like an aerial, sliding and slowly turning.
 2. The fast: the day's reading in Toward the Nativity, a Father's words, the camera drifting down the page. (This shot was the Nativity star on Today until 2026-11-11: that star is a four-point sparkle.)
-3. Gold: St John Chrysostom's mosaic, close on the gold, a slow sideways drift.
+3. Gold: St John Chrysostom's mosaic, close on the gold, a slow sideways drift. (Out while the heritage rule stands: the mosaic is at Hosios Loukas.)
 4. The Word: John 1:1 lit as it is read aloud, macro along the line, edges out of focus.
 5. Red numbers: the Bible's red verse numbers and their commentary dots, a rack focus.
-6. The thread: the saint web, gliding along a link from Chrysostom to the next saint.
+6. The thread: the saint web, gliding along a link from Chrysostom to the next saint. (Out while the heritage rule stands: his icon is that mosaic. A web centred on a saint whose picture is not on the list can take its place.)
 7. The chant: Psalm 135's words lighting as they are sung, sliding past.
 8. The ring: Now Playing's progress ring, close on the arc, David's icon soft behind.
 9. Nicaea: the councils atlas at 325, the camera settling onto Nicaea's ring.
 10. The Pantocrator: Sinai's Christ, a slow push in to the face.
 11. Constantinople: the dedication mosaic, a slow pan across its gold.
 12. The page: Codex Sinaiticus in low light, a sideways pan.
-13. The saints: the wall of icons in perspective, tracking across.
+13. The saints: the wall of icons in perspective, tracking across. (Only icons not on the heritage list.)
 14. 1917: the Moscow Council photograph, a slow push on the faces.
 
 ## The looks (`looks.mjs`)
