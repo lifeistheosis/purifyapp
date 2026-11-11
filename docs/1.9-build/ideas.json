@@ -2489,6 +2489,34 @@
    "version": "1.9",
    "outcome": null,
    "note": "The arbiter's word: carry the seven (A) and drop a failed band's layer (B). The seven AVIFs, 0.82 MB, in the apps with the website's JPEG behind; walk section 75 offline, AVIF refused, and neither. 72825b925. PLAN 13at."
+  },
+  {
+   "id": "e-council-page-arabic",
+   "section": "Study",
+   "kind": "bug",
+   "title": "A council's page in Arabic: the books' fan mirrors whole, and the facts' line stands between the two facts",
+   "from": "claude",
+   "asked": "2026-11-11",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The guardrail on first-nicaea, the arbiter's word to take it. The covers placed from the start, leaning by direction; the facts' line a named divider, not reversed. The stripe test reads divide-x. c1b3da592. PLAN 13au."
+  },
+  {
+   "id": "e-fills-from-start",
+   "section": "Reading",
+   "kind": "bug",
+   "title": "In Arabic a fill grows from the right: the keep-reading mark, the Bible's keep-scrolling mark and the reading progress bar",
+   "from": "claude",
+   "asked": "2026-11-11",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "Fable voices' checkMock on the names-in-Scripture books, the arbiter's word. Three fills keyed on direction; a test holds every fill from the left to its counterpart. 3135b665c. PLAN 13av."
   }
  ]
 }
