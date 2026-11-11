@@ -184,6 +184,8 @@ export const AUTHOR_META: Readonly<Record<string, MetaRow>> = {
 
   "nektarios-of-aegina": { traditions: ["greek"], era: "modern" },
   "paisios-the-athonite": { traditions: ["greek"], era: "modern" },
+  // Call 14 (2026-11-11): the saint of his Life in our own words.
+  "john-of-shanghai": { traditions: ["russian"], era: "modern" },
 
   // November's saints (1.9): the saints of the month's Lives in the witnesses' words.
   "patrobas-hermas-linus-gaius-and-philologus": { traditions: [], era: "apostolic" },
@@ -1319,6 +1321,9 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
   // St. John of Kronstadt's My Life in Christ, whole, in E. E. Goulaeff's English (1897),
   // typed from the page images (scripts/menologion/scan-draft/book.py).
   "john-of-kronstadt/my-life-in-christ": { by: "john-of-kronstadt", form: "sayings", scope: "complete", themes: [], review: R },
+  // Call 14 (the owner's "Yes to all", 2026-11-10): St. John of Shanghai's Life in our
+  // own words, each part with its sources named under it.
+  "john-of-shanghai/life-of-st-john": { by: null, about: "john-of-shanghai", form: "retelling", scope: "complete", themes: [], review: R },
 };
 
 /**

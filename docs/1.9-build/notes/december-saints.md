@@ -488,8 +488,8 @@ to Updates 2 first.
   the page as it is now.
 - **The register:** `data/calendar/profiled-saints.json` rebuilt from it.
 - **Size:** 35 files, 1.36 MB; the icons folder is 7.17 MB of its 18 MB bound.
-  The Android export is 68.6 MB packed of 85.
-- **Walked** on the Android export: fifteen pages (St Ambrose, his writings,
+  Both exports are 68.6 MB packed of 85.
+- **Walked** on the Android and the iOS exports: fifteen pages (St Ambrose, his writings,
   the Prophet Daniel, St Luke, St Theodore the Branded, the Martyrs of
   Nicomedia, St Barbara, St Juliana, St Nicholas, St Chrysogonus, Sts
   Sosthenes, Apollos, Cephas and Tychicus, St Theodore the Studite, St
@@ -497,3 +497,41 @@ to Updates 2 first.
   file and no errors; checkMock passed on the four held to it.
 - **Stills**: `december-saints/11-st-ambrose-icon-and-book.png`,
   `12-st-chrysogonus-print.png`.
+
+## Call 14, as built: St John of Shanghai's Life in our own words (2026-11-11)
+
+His word (call 14, "Yes to all recommended suggestions", 2026-11-10): St
+John of Shanghai's full life in our own words, each part with its source
+named under it, nothing copied or closely paraphrased from a life under
+copyright, marked as the editorial's words like our other prose.
+
+- **The book:** `data/saints/john-of-shanghai/life-of-st-john.json`, "The
+  Life of St. John of Shanghai and San Francisco", in eight parts (his
+  birth and schooling; exile and the monastic life; Shanghai; Tubabao and
+  Washington; Western Europe; San Francisco; his repose; his
+  glorification), about 1,400 words. Every part is `voice: "editorial"`,
+  so the reader marks it "Editorial summary", and every part names its
+  sources in its notes, which the reader sets under it. In the reading
+  room it is a retelling (`form: "retelling"`, no author), so its badge
+  says the words are ours.
+- **Facts only.** Each fact is one the named sources state; where two
+  differ, both are given (why he went barefoot; whether he was laid in the
+  crypt on 7 or 11 July 1966; how many children the orphanage took in).
+  The dates were checked on 2026-11-11 against the Orthodox Encyclopedia
+  (vol. 23, read whole), the act of the 1993 commission on his relics and
+  OrthoChristian's report of 31 May 2024. The act corrected the research
+  notes: the commission began on 30 September 1993, and the coffin was
+  opened at ten past ten at night on St Chariton's day, 11 October. Two
+  facts the notes held and no source here confirmed are left out: a
+  conference at Geneva in 1952 on the Western saints, and a decree of 1953.
+- **Its cover** is the plate: the icon his page carries has no recorded
+  source (UNVERIFIED_ICONS), and no free icon of him was found.
+- **No priest:** the owner's word for these Lives stands; the entry is
+  `review: "pending-clergy"` like every entry, for a future review.
+- **Walked** on the Android and the iOS exports with push 2b: his page (the
+  book under Writings), the book opening on its first part with the
+  "Editorial summary" band and its sources under it, and the step on to the
+  second part. No errors; checkMock passed on the book. Both exports are
+  68.6 MB packed of 85.
+- **Still**: `december-saints/13-st-john-of-shanghai-sources.png`, the end of
+  the first part with its sources under it.

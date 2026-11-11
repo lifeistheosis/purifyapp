@@ -4659,7 +4659,17 @@ export const SAINTS: Saint[] = [
       "Everywhere he was followed by accounts of healing and of foreknowledge, and by the love of the poor and the mockery of the comfortable, for he kept the appearance of a fool for Christ. He honored the ancient saints of the West from before the schism and labored to restore their memory. In San Francisco he bore the sorrow of division in his flock with patience, falsely accused and vindicated.",
       "He reposed on the second of July, 1966, in Seattle, while visiting with the wonderworking Kursk Root Icon of the Mother of God, having foretold the nearness of his death. His body was found incorrupt, and he was glorified by the Russian Orthodox Church Abroad in 1994. His relics rest in the cathedral in San Francisco, and the Church keeps his memory on the second of July.",
     ],
-    works: [],
+    works: [
+      {
+        slug: "life-of-st-john",
+        title: "The Life of St. John of Shanghai and San Francisco",
+        subtitle: "In our own words, from the sources named under each part",
+        year: "1896 to 1966",
+        blurb:
+          "His life from the province of Kharkov to San Francisco, told in our own words with the sources named under each part: his tonsure and his years at Bitola, Shanghai and its orphans, the refugees of Tubabao and his plea before the Senate, Western Europe, his repose in Seattle in 1966, and his glorification.",
+        topics: ["Hagiography", "Bishopric", "Asceticism", "Emigration"],
+      },
+    ],
   },
   {
     slug: "porphyrios-of-kavsokalyvia",

@@ -160,6 +160,10 @@ describe("the covers' pictures", () => {
       "ten-martyrs-of-crete/the-ten-martyrs-of-crete",
       "john-of-kronstadt/my-life-in-christ",
     ];
+    // St. John of Shanghai's Life in our own words (call 14, 2026-11-11): the
+    // icon his page carries has no recorded source (lib/saints/iconRights.ts,
+    // UNVERIFIED_ICONS), so his book keeps the plate until one is settled.
+    const shanghai = ["john-of-shanghai/life-of-st-john"];
     const plate = buildRoom(false)
       .cards.filter((c) => !c.cover)
       .map((c) => c.key)
@@ -172,6 +176,7 @@ describe("the covers' pictures", () => {
         "symeon-the-new-theologian/discourse-on-faith",
         ...november,
         ...december,
+        ...shanghai,
       ].sort(),
     );
   });
