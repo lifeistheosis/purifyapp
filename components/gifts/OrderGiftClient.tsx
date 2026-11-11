@@ -505,11 +505,13 @@ export function OrderGiftClient() {
           <div className="mt-6">
             <p className="set-h">{t("orderGift.otherOrders")}</p>
             <div className="set-panel mt-2.5">
-              {others.map((o) => (
+              {others.map((o) => {
+                const Plate = o.claimed ? Check : !o.delivered ? Truck : Hourglass;
+                return (
                 <div key={o.id} className="set-row">
                   <div className="set-lab">
                     <span className="set-plate">
-                      {o.claimed ? <Check size={16} /> : !o.delivered ? <Truck size={16} /> : <Hourglass size={16} />}
+                      <Plate size={16} />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="set-label">{t("orderGift.orderLine", { number: o.number })}</span>
@@ -526,7 +528,8 @@ export function OrderGiftClient() {
                     </span>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         ) : null}
@@ -544,7 +547,8 @@ export function OrderGiftClient() {
                     className="gift-field"
                     value={number}
                     onChange={(e) => setNumber(e.target.value)}
-                    placeholder="EIK-72D8D24B"
+                    placeholder={t("orderGift.numberPlaceholder")}
+                    dir="auto"
                     autoCapitalize="characters"
                     autoComplete="off"
                     spellCheck={false}
@@ -558,6 +562,7 @@ export function OrderGiftClient() {
                     value={zip}
                     onChange={(e) => setZip(e.target.value)}
                     inputMode="numeric"
+                    dir="auto"
                     autoComplete="postal-code"
                     maxLength={20}
                   />

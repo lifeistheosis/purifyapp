@@ -5531,6 +5531,7 @@
   "orderGift.otherTitle": "A parcel someone sent you?",
   "orderGift.otherBody": "Enter the order number and ZIP code from the parcel's label.",
   "orderGift.numberLabel": "Order number",
+  "orderGift.numberPlaceholder": "EIK-72D8D24B",
   "orderGift.zipLabel": "ZIP code",
   "orderGift.claimWithNumber": "Claim the gift",
   "orderGift.errAlready": "This order's gift has already been claimed.",
