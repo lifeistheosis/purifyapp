@@ -95,7 +95,7 @@ describe("the head an app's page carries", () => {
       [...m[1].matchAll(/"([^"]+)"/g)].map((part) => part[1]).join("/"),
     );
     expect(entries.slice(0, 3)).toEqual(["app/api", "app/(app)/campaigns/[id]", "app/(app)/florilegium/[id]"]);
-    expect(entries.slice(-17, -12)).toEqual([
+    expect(entries.slice(-18, -13)).toEqual([
       "app/opengraph-image.png",
       "app/opengraph-image.alt.txt",
       "app/sitemap.ts",
@@ -107,7 +107,7 @@ describe("the head an app's page carries", () => {
     // recordings with the list that can pull one, the read-aloud covers, and
     // History's pictures; in 1.8 the Bible read aloud; and in 1.9 the shop's
     // product photos (the full optimize) and the Bibles a reader downloads.
-    expect(entries.slice(-12, -5)).toEqual([
+    expect(entries.slice(-13, -6)).toEqual([
       "public/kitchen-photos",
       "public/audio/chants",
       "public/covers",
@@ -122,9 +122,11 @@ describe("the head an app's page carries", () => {
     // (admin A7), which stood mid-list until Fable's release check 1, L1
     // (lib/build/__tests__/stashOrder.test.ts holds the whole order); and the
     // investor overview's own fonts (143), web only like the page; and the
-    // route that answers a missing saint's icon with a 404, on the website.
-    expect(entries.slice(-5)).toEqual(["app/(app)/p", "instrumentation.ts", "app/audio", "public/invest", "app/(app)/saints/icons"]);
-    for (const entry of entries.slice(-17)) {
+    // route that answers a missing saint's icon with a 404, on the website;
+    // and the timings of the other texts read aloud, with their list, which
+    // the apps ask the website for (lib/listen/recordings.ts).
+    expect(entries.slice(-6)).toEqual(["app/(app)/p", "instrumentation.ts", "app/audio", "public/invest", "app/(app)/saints/icons", "public/audio/listen"]);
+    for (const entry of entries.slice(-18)) {
       expect(fs.existsSync(path.join(ROOT, entry)), `${entry} is set aside by the build and is not there`).toBe(true);
     }
   });
