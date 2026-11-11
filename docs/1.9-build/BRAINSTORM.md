@@ -2,6 +2,8 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
+**Build 93, note 9 (his word, 2026-11-11 about 01:30 UTC, screenshots of Your journal and of You):** "Ensure the journal and anything related to that specific journal UI, like the florigelium, ensure it's all available to be chosen on the settings page." (`notes/build-93.md`, note 9).
+
 **Build 93, note 8 continued (his word, 2026-11-11 about 01:29 UTC, the journal's blocks):** "Honestly, that same bug happens in each of these sections. I want all of it refined, and I want all of them to actually be unique in their context and their use."
 
 **Build 93, note 8 (his word, 2026-11-11 about 01:28 UTC, a screenshot of the journal's page for the day):** "say 1,000. Refine the journal section because when I click title or anything, so just a quick explanation of how it works. Honestly, just buggy" (`notes/build-93.md`, note 8).

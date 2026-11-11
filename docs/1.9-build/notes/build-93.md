@@ -118,3 +118,13 @@ His second message, a minute later, with `build-93/08b-journal-blocks.png` (two 
 Who has it:
 - Updates 2 (built the 1.9 tour): the tour never takes a tap meant for the page; a tap on a field goes to the field, and the tour steps aside or ends. Small, first.
 - The prayer campaigns chat (Fable), once campaigns are done for 1.9: the journal's page refined whole. Walk every block (Verse, Quote, Highlight, More and what it holds) as a new reader and as an updater on the export, mend every rough edge (a tap that brings an explanation, a block added twice, focus, the keyboard, Done), and give each block a form of its own that fits what it holds and how it is used (a verse looks and reads as Scripture with its place, a Father's words as a quotation with its source, a highlight as the marked text), under his standing rules (minimal, photos over words, no sparkle, no side stripes, pills only where they belong, no box around a tapped field, 44px, the house's motion, checkMock on five palettes). The journal was built by the previous arbiter chat and last touched by Updates (stop sharing), whose lines stay as they are. Stills before and after.
+
+### 9. The journal and the Florilegium, always there to choose (2026-11-11 about 01:30 UTC)
+
+His words: "Ensure the journal and anything related to that specific journal UI, like the florigelium, ensure it's all available to be chosen on the settings page."
+
+Screenshots: `build-93/09a-your-journal.png` (Your journal, reached from the Bible tab: the day, its readings, "Nothing written yet", Write) and `09b-you-page.png` (You: a verse you kept, What you have kept, Your rule, Settings).
+
+What the code says (the arbiter): You shows a journal tile only once something is written (`components/you/KeptShelf.tsx`, `newestNote ? <Tile href="/journal"> : null`), and the Florilegium (`app/(app)/florilegium`) has no way in from You at all. Read as: on You, the page with Settings, the journal and the Florilegium are always there to open, written in or not, beside what is kept; and both are found from Settings' search.
+
+Who has it: the prayer campaigns chat, with note 8, so the journal's page, its way in and the Florilegium are designed together under his standing rules. If the chat reads his words as a setting to choose what You shows, it says so with its plan and the arbiter asks him.
