@@ -415,6 +415,8 @@ His words: "some suggestions from the discord. some are old so some may have bee
 | Listen to the lives of the saints (2026-11-08, feature) | To listen to the lives while making prayer ropes. | The voices plan: Listen on the lives (`notes/voices-fable.md`). | The Fable voices chat, with his voices call. |
 | Add Hebrew (2026-11-10, feature) | The Hebrew beside the Old Testament books, as the Greek is beside the New. | New. The Church's Old Testament is the Septuagint; a Hebrew text beside it is a study aid (the Westminster Leningrad Codex is public domain). | 1.9, by his word of 2026-11-11 ("No, not 1.9.1"): Updates 2, the pointed Hebrew text without cantillation, on the arbiter's word. |
 
+Done, Add Hebrew (Updates 2, 2026-11-11): the Westminster Leningrad Codex under each Old Testament verse with the interlinear on, pointed and without cantillation, right to left in the interlinear's face, beside the Greek or alone, placed by the app's verse map, saying plainly where none stands and claiming the Hebrew lacks only what it surely lacks (its absent books, Psalm 151, Susanna and Bel). Carried in the apps, read with no signal, in the 21 languages. The record, the walk and the still: `docs/1.9-build/BIBLES.md`, "the Hebrew beside the Old Testament".
+
 ## The pre-build gate (his word, 2026-11-11 about 01:46 UTC)
 
 His words: "and as you can see I've noticed a lot of issues with this build ensure our next build doesn't have any similar issues or any other issues of this nature."

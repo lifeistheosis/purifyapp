@@ -221,6 +221,81 @@ Compare preview shows it beside the others at its Psalm 51:1.
 line names the licence; a link to its text (gnu.org/licenses/gpl) from the
 credits is not there yet, and is for him to decide with the credits page.
 
+## What shipped (2026-11-11): the Hebrew beside the Old Testament
+
+The Discord's "Add Hebrew" (2026-11-10): "The Hebrew beside the Old
+Testament books, as the Greek is beside the New." For 1.9 on the owner's word
+of 2026-11-11 ("No, not 1.9.1") and the arbiter's: the Westminster Leningrad
+Codex, pointed, without cantillation, as a study aid. The Church's Old
+Testament is the Septuagint, and the app's English Old Testament is Brenton's
+translation of it; the Hebrew is never offered as the app's Old Testament, only
+set beside it in the interlinear.
+
+- **The text.** CrossWire's `WLC` 2.0 (its conf: `DistributionLicense=Public
+  Domain`; from the Westminster Hebrew Institute and tanach.us), read with
+  pysword by `scripts/bibles/hebrew-extract.py` into `data/bible/hebrew/`
+  (4.9 MB, one file per book in the downloaded Bibles' shape). The codex's 39
+  books and 23,213 verses, in its own numbering (Leningrad, which the
+  Copenhagen maps call "org"). Only marks are taken away, never a letter: the
+  accents (U+0591 to U+05AF), the meteg, the paseq and the joiner. The points,
+  the dagesh, the shin and sin dots, the maqaf and the sof pasuq stay.
+- **Written and read (ketiv and qere).** The module gives both, the written
+  word unpointed and then the word read, pointed. The written one is set in
+  round brackets before it, so the line reads as it is read and says what is
+  written: Genesis 8:17, "(הוצא) הַיְצֵא". 1,032 such words; nine of them are
+  written and not read, or written as two words and read as one, and stand in
+  brackets the same way.
+- **Its places.** `scripts/bibles/compare-map.mjs`, as for Compare, with the
+  original-language numbering as its own standard (its verse counts are the
+  codex's): app, KJV, the English standard, the original, then the verses'
+  lengths. `data/bibles/maps/he-wlc.json` (CC BY-SA 4.0, from the Copenhagen
+  Alliance's mappings, credited under the Hebrew's note in Compare's words).
+  Most books are placed whole or nearly (Genesis 1,503 of 1,529 verses, the
+  Psalms 2,427 of 2,467). Left out: Psalm 151 and Susanna and Bel (Daniel 13
+  and 14), which the Hebrew lacks; nine chapters the Septuagint orders or
+  divides otherwise (Exodus 37 and 38, Numbers 29, Joshua 20, 1 Samuel 5, Job
+  35, Jeremiah 25 and 34, Ezekiel 7); about 500 single verses whose lengths
+  do not answer (Daniel 3:9 and 3:10 among them); and Esther whole, whose
+  Greek runs too far from the Hebrew to pair, where the reader offers no
+  interlinear anyway.
+- **What is said where none stands.** Only what is sure is said to be missing
+  from the Hebrew: a whole book ("This book is not in the Hebrew Bible."),
+  and Psalm 151, Susanna and Bel ("This chapter is not in the Hebrew
+  Bible."). Everywhere else the map cannot tell a verse the Hebrew lacks from
+  one it could not place surely (it leaves Genesis 8:4 and 8:5 unplaced, which
+  the Hebrew plainly has), so a chapter says "Here the Hebrew and the
+  Septuagint do not answer verse for verse, so the Hebrew is not set beside
+  this chapter." and a run of verses, once at its first verse, "No verse of
+  the Hebrew is set beside verses 22 to 90." The note over a chapter: "The
+  Hebrew text (the Westminster Leningrad Codex), as a study aid. The Church's
+  Old Testament is the Septuagint.", and where brackets occur, "A word in
+  brackets is written in the Hebrew, and the word after it is read." All in
+  the 21 languages.
+- **On the page.** With the interlinear on, under each verse, under the Greek
+  across both columns, or under the English where the chapter has no Greek:
+  right to left (`lang="hbo"`, which `lib/i18n/textDir.ts` now knows), in
+  Cardo, the interlinear's own face, now with its Hebrew subset (fetched only
+  when Hebrew is drawn), with its own place in the Hebrew before it (the
+  Septuagint's Psalm 22 has the Hebrew's 23:1). It travels in the chapter's
+  interlinear file (`app/bible-data/interlinear/`), so the apps carry it and
+  it reads with no signal. A chapter whose Greek is numbered apart keeps its
+  Hebrew, and Ezra, where Swete's Greek does not reach here, has the Hebrew
+  alone. `lib/bible/__tests__/hebrew.test.ts` holds the text,
+  the map and the page.
+- **Its Aramaic.** The codex's Aramaic (Daniel 2:4 to 7:28, Ezra 4:8 to 6:18
+  and 7:12 to 26, Jeremiah 10:11) stands as the codex has it: "the Hebrew
+  text" is the Hebrew Bible's text, its Aramaic with it, as the note says of
+  the whole.
+- **Walked** on the export as the app with no signal and the interlinear on,
+  in English and in Arabic: Genesis 1 has the Hebrew under each of its 31
+  verses, right to left, in Cardo, with the Greek; the Septuagint's Psalm 22
+  has the Hebrew's 23:1; Daniel 3 says its runs once each (verses 9 to 10, 22
+  to 90, and 97); Tobit, Psalm 151 and Exodus 38 each say why none stands;
+  Ezra has its Hebrew alone. `checkMock` on the note and on Genesis 1:1, and
+  on the note in Arabic: every check passes. The Hebrew adds 4.9 MB to the
+  interlinear's files (34.4 MB, 1,263 files, 195 of them the Hebrew alone).
+  Still: `notes/build-93/hebrew-beside-ot-390.png`.
+
 ## How it fits the app
 
 - Every Bible needs the verse-number map (item 22): texts numbered as the
@@ -243,4 +318,5 @@ https://ebible.org/bible/details.php?id=srp1868,
 https://ebible.org/spaRV1909/copyright.htm,
 https://archive.org/details/biblia-1914-v123,
 https://commons.wikimedia.org/wiki/Commons:Copyright_rules_by_territory/Romania,
-https://crosswire.org/sword/modules/ModInfo.jsp?modName=RomCor.
+https://crosswire.org/sword/modules/ModInfo.jsp?modName=RomCor,
+https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=WLC (its conf, read from the module itself).
