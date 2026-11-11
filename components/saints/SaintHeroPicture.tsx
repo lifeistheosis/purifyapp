@@ -36,6 +36,19 @@ import { avifFor } from "@/lib/media/streamed";
  * fades in at the top as the page opens (`.saint-icon-in`, still on the
  * motion switch), nine wide by ten tall on a phone, the shape the design
  * drew, with a deeper shade under the bar and the name set over its foot.
+ *
+ * THE CARD'S ICON LANDS ON THE ICON (1.9, P2; the arbiter's call of
+ * 2026-11-11: "where the saint's page shows his icon anywhere, the card's
+ * icon flies to it"). A saint with a hero opened with nothing to take the
+ * icon of the card that was tapped: the wide picture is another picture,
+ * with the name over it, so the card's icon left with its page. But his page
+ * does show his icon: the one the app carries stands in the box until the
+ * wide picture has come. That icon takes the card's (lib/ui/routeMotion.ts,
+ * "A picture that leads to its own page"), and the wide picture waits for it
+ * to land before it comes in over it, so the icon is never taken away in
+ * mid-flight by a picture that happened to arrive then (a hero the phone
+ * already holds arrives within a frame). With no signal the icon simply
+ * stays, as before. Going back, the same icon goes back into its card.
  */
 export function SaintHeroPicture({
   name,
@@ -50,12 +63,34 @@ export function SaintHeroPicture({
   const { t } = useTranslate();
   const alt = t("saints.iconAlt", { name });
   const ref = useRef<HTMLImageElement>(null);
+  const box = useRef<HTMLDivElement>(null);
+  const landing = useRef(0);
   const [failed, setFailed] = useState(false);
   const [shown, setShown] = useState(false);
   const [again, setAgain] = useState(false);
   const [jpegOnly, setJpegOnly] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const avif = hero ? avifFor(hero.src) : null;
+
+  // The wide picture is shown, unless the card's icon is still arriving on
+  // the icon under it: then once that has landed (the page switch marks what
+  // it lands on, `data-carried-in`, for exactly as long), or after a second
+  // at the most, should the mark ever be left behind.
+  const reveal = () => {
+    const icon = box.current?.querySelector<HTMLElement>("[data-hero-stand-in]");
+    const arriving = () => Boolean(icon && "carriedIn" in icon.dataset);
+    if (!arriving()) {
+      setShown(true);
+      return;
+    }
+    const until = performance.now() + 1000;
+    const look = () => {
+      if (!arriving() || performance.now() > until) setShown(true);
+      else landing.current = requestAnimationFrame(look);
+    };
+    cancelAnimationFrame(landing.current);
+    landing.current = requestAnimationFrame(look);
+  };
 
   const fail = () => {
     if (again) {
@@ -72,7 +107,7 @@ export function SaintHeroPicture({
   useEffect(() => {
     const img = ref.current;
     if (!img || !img.complete || !img.currentSrc) return;
-    if (img.naturalWidth > 0) setShown(true);
+    if (img.naturalWidth > 0) reveal();
     // An AVIF that failed before the page woke: the JPEG next, as onError does.
     else if (avif && !jpegOnly && img.currentSrc.endsWith(".avif")) setJpegOnly(true);
     else fail();
@@ -80,11 +115,13 @@ export function SaintHeroPicture({
   }, [again]);
   useEffect(() => () => {
     if (timer.current) clearTimeout(timer.current);
+    cancelAnimationFrame(landing.current);
   }, []);
 
   if (hero) {
     return (
       <div
+        ref={box}
         data-saint-hero="picture"
         className={cn(
           "saint-icon-in under-topbar relative -mx-5 aspect-[9/10] max-h-[70svh] overflow-hidden",
@@ -100,6 +137,11 @@ export function SaintHeroPicture({
             alt={failed ? alt : ""}
             aria-hidden={failed ? undefined : true}
             decoding="async"
+            // The icon of the card that opened this page travels here, and
+            // back from here: his icon, which the page shows until the wide
+            // picture is over it (1.9, P2).
+            data-hero-stand-in=""
+            data-carry-into={iconUrl}
             className={cn(
               "hero-stand-in absolute inset-0 m-auto h-[240px] max-h-[70%] w-auto rounded-[10px] ring-1 ring-paper/10",
               shown ? "opacity-0" : "opacity-100",
@@ -121,7 +163,7 @@ export function SaintHeroPicture({
               onLoad={(e) => {
                 // Shown once it is decoded too, so it never paints in bands
                 // (build 85, note 52, the rule of lib/ui/useArrivingImage.ts).
-                const done = () => setShown(true);
+                const done = () => reveal();
                 e.currentTarget.decode().then(done, done);
               }}
               onError={(e) => {
@@ -154,8 +196,9 @@ export function SaintHeroPicture({
         decoding="async"
         fetchPriority="high"
         // The icon of the card that opened this page travels here: the same
-        // icon, larger (lib/ui/routeMotion.ts, 1.9). Not into the wide
-        // picture above, which is another picture with the name over it.
+        // icon, larger (lib/ui/routeMotion.ts, 1.9). On a page with a wide
+        // picture it travels to the icon that stands in for it, above; never
+        // into the wide picture, which is another picture with the name over it.
         data-carry-into={iconUrl}
         className="h-[260px] w-auto rounded-[12px] shadow-[0_24px_60px_-20px_rgba(0,0,0,0.7)] ring-1 ring-paper/10 md:h-[300px]"
       />

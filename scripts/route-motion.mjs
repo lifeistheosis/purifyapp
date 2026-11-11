@@ -632,6 +632,70 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
       if (film) await sheet(ctx, film, "return", r.stills);
     }
 
+    // A saint whose page opens on a wide picture (1.9, P2; the arbiter's call
+    // of 2026-11-11: "where the saint's page shows his icon anywhere, the
+    // card's icon flies to it"). The wide picture is another picture, with
+    // the name over it, and cannot take the card's icon; until now nothing
+    // did, and the icon left with its page. But the page shows his own icon
+    // in the box until the wide picture has come, and that icon takes it
+    // (components/saints/SaintHeroPicture.tsx). Twice, as a phone meets it:
+    // with signal, where the wide picture then comes in over the icon, and
+    // must not take it away in mid-flight; and with none, where the icon is
+    // what stays.
+    for (const [signal, slug] of [["with signal", "john-chrysostom"], ["with no signal", "basil-the-great"]]) {
+      const href = `/saints/${slug}/`;
+      const none = (route) => route.abort();
+      if (signal === "with no signal") await page.route("https://purifyapp.net/covers/saints/**", none);
+      await go(page, "/saints/");
+      await sleep(page, 1200);
+      const card = await page.evaluate((h) => {
+        document.querySelectorAll("[data-walk-target]").forEach((el) => el.removeAttribute("data-walk-target"));
+        const a = [...document.querySelectorAll(`a[href="${h}"]`)].find((x) => x.querySelector("[data-carry]"));
+        if (!a) return null;
+        a.scrollIntoView({ block: "center" });
+        a.setAttribute("data-walk-target", "");
+        return { icon: a.querySelector("[data-carry]").getAttribute("data-carry") };
+      }, href);
+      if (!card) {
+        note(`a saint with a wide picture, ${signal}: his card's icon travelling to his icon`, [`no card for ${href} with an icon on the saints' list`], "/saints/");
+        if (signal === "with no signal") await page.unroute("https://purifyapp.net/covers/saints/**", none);
+        continue;
+      }
+      await sleep(page, 800);
+      r = await walk(page, `wide-${slug}`, () => page.locator("[data-walk-target]").first().click(), { film });
+      const into = judge(r, { old: "route-leave", fresh: "route-settle", to: href, carried: true });
+      // Long enough for the wide picture to have come, or to have failed twice and been given up (2.5s between).
+      await sleep(page, signal === "with signal" ? 1800 : 4200);
+      const head = await page.evaluate(() => {
+        const icon = document.querySelector("[data-hero-stand-in]");
+        const wide = document.querySelector("[data-hero-picture]");
+        return {
+          box: Boolean(document.querySelector('[data-saint-hero="picture"]')),
+          takes: [...document.querySelectorAll("[data-carry-into]")].map((el) => el.getAttribute("data-carry-into")),
+          icon: icon ? Number(getComputedStyle(icon).opacity) : null,
+          wide: wide ? { state: wide.getAttribute("data-hero-picture"), seen: Number(getComputedStyle(wide).opacity) } : null,
+          top: Math.round(window.scrollY),
+        };
+      });
+      if (!head.box) into.push("his page did not open on the wide picture's box, so the walk proves nothing");
+      if (head.takes.length !== 1 || head.takes[0] !== card.icon) into.push(`the page takes ${JSON.stringify(head.takes)}, not the one icon of his card (${card.icon})`);
+      if (head.top > 2) into.push(`his page opened ${head.top}px down, not at its top`);
+      if (signal === "with signal") {
+        if (head.wide?.state !== "shown" || head.wide.seen < 0.99) into.push(`the wide picture has not come in over the icon: ${JSON.stringify(head.wide)}`);
+        if (head.icon === null || head.icon > 0.01) into.push(`the icon is still seen under the wide picture (${head.icon})`);
+      } else {
+        if (head.wide) into.push(`a wide picture is drawn with no signal: ${JSON.stringify(head.wide)}`);
+        if (head.icon === null || head.icon < 0.99) into.push(`with no signal the icon is not what stays (${head.icon})`);
+      }
+      note(`a saint with a wide picture, ${signal}: his card's icon travelling to his icon`, into, `${r.from} to ${r.to}`);
+      if (film) await sheet(ctx, film, `wide-${slug}`, r.stills);
+      r = await walk(page, `wide-${slug}-back`, () => page.locator(chevron).first().click(), { film });
+      note(`a saint with a wide picture, ${signal}: back, the icon back in his card`, judge(r, { old: "route-sink", fresh: "route-arrive", to: "/saints", carried: true }), `${r.from} to ${r.to}`);
+      if (film) await sheet(ctx, film, `wide-${slug}-back`, r.stills);
+      if (signal === "with no signal") await page.unroute("https://purifyapp.net/covers/saints/**", none);
+      await sleep(page, 500);
+    }
+
     // A book (1.9, the owner's yes of 2026-11-10 to a cover at a book's
     // head). The cover tapped in the reading room travels to the head of the
     // page it opens, and back into its tile.

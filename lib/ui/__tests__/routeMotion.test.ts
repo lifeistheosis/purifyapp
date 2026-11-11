@@ -775,7 +775,11 @@ describe("a picture that leads to its own page", () => {
     // the half's own name (lib/prayers/serviceArt.ts, ruleCarry).
     has("components/prayers/mine/RuleHead.tsx", "data-carry-into={part ? ruleCarry(part) : undefined}");
     has("components/mobile/PrayersMobile.tsx", "carry={rulePart ? ruleCarry(rulePart) : undefined}");
-    expect(read("components/saints/SaintHeroPicture.tsx").match(/data-carry-into/g) ?? []).toHaveLength(1);
+    // A saint whose page opens on a wide picture shows his own icon in the box until that picture has come: the
+    // card's icon lands on that icon (P2, the arbiter's call of 2026-11-11: "where the saint's page shows his icon
+    // anywhere, the card's icon flies to it"), never on the wide picture. So two takers in the file, one a page.
+    expect(read("components/saints/SaintHeroPicture.tsx").match(/data-carry-into=\{iconUrl\}/g) ?? []).toHaveLength(2);
+    has("components/saints/SaintHeroPicture.tsx", 'data-hero-stand-in=""');
     has("components/theology/WayPage.tsx", "data-carry-into={`way:${way}`}");
     // Both: the same plate, the same poster, at two sizes.
     has("components/prayers/ArtPlate.tsx", "data-carry={art.src}");
