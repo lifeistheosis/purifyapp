@@ -5,6 +5,7 @@ import { useSyncExternalStore } from "react";
 import { addTombstone, dropTombstone } from "@/lib/sync/tombstones";
 
 import type { Mark } from "./anchor";
+import { TEXT_KINDS, type TextKind } from "./placeAttr";
 
 /**
  * Highlights and notes on the paragraphs of the texts that are not a
@@ -27,8 +28,7 @@ import type { Mark } from "./anchor";
  * find their place again after an edit.
  */
 
-export type TextKind = "life" | "council" | "theology" | "history";
-export const TEXT_KINDS: readonly TextKind[] = ["life", "council", "theology", "history"];
+export { TEXT_KINDS, type TextKind } from "./placeAttr";
 
 export type TextPlace = { text: TextKind; slug: string; doc: string; sectionN: number; paragraphIdx: number };
 

@@ -226,7 +226,7 @@ describe("a study read one part at a time (C) on the icon's light (B)", () => {
 
   it("sets the part's Fathers as a deck at its end; the last part closes with the councils, the rest of the Fathers and who curated it", () => {
     const page = code(READ_PAGE);
-    expect(page).toMatch(/<StudyPartText blocks=\{part\.blocks\} summary=\{i === 0 \? body\.summary : undefined\} \/>/);
+    expect(page).toMatch(/<StudyPartText blocks=\{part\.blocks\} summary=\{i === 0 \? body\.summary : undefined\} study=\{\{ slug: topic, title: meta\.title \}\} part=\{i \+ 1\} \/>/);
     expect(page).toContain("<PassageDeck passages={[...part.passages, ...(i === last ? placed.end : [])].map((j) => passages[j])} />");
     expect(page).toContain("<StudyCouncils councils={body.councils ?? []} />");
     expect(page).toContain("<StudyCurated body={body} />");

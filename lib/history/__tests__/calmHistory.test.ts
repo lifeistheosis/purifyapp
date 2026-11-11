@@ -179,7 +179,7 @@ describe("an event's page", () => {
     expect(article).toContain("<EventPartsNav");
     expect(article).toContain("<EventPeople");
     expect(article).toMatch(/<blockquote className="font-serif text-body italic/);
-    expect(article).toMatch(/return <p className="font-sans text-body/);
+    expect(article).toMatch(/<p data-mk-text=\{at \? "" : undefined\} className="font-sans text-body/);
     // One h1, the event's title.
     expect((article.match(/<h1\b/g) ?? []).length).toBe(1);
     for (const file of FILES.filter((f) => f !== "components/history/EventArticle.tsx" && f !== "app/(app)/history/page.tsx")) {

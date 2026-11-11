@@ -35,6 +35,8 @@ import { EventPeople } from "./EventPeople";
 import { EventThread } from "./EventThread";
 import { InEnglishNote } from "./InEnglishNote";
 import { ShareButton } from "@/components/ui/ShareButton";
+import { MarkHost } from "@/components/reading/MarkHost";
+import { ReadingMarks } from "@/components/reading/SelectionToolsLazy";
 import { SaintNames } from "@/components/saints/SaintNames";
 
 /** The ids of the four parts, which the row of parts and its tests name. */
@@ -45,7 +47,10 @@ export const PART_IDS = {
   sources: "event-sources",
 } as const;
 
-function Block({ block }: { block: EssayBlock }) {
+/** Where a block of the account stands, for a reader's marks on its words (1.9, components/reading/MarkHost.tsx). */
+type BlockAt = { slug: string; title: string; sectionN: number; paragraphIdx: number };
+
+function Block({ block, at }: { block: EssayBlock; at?: BlockAt }) {
   switch (block.kind) {
     case "heading":
       return <h3 className="pt-2 text-lede leading-snug text-paper">{block.text}</h3>;
@@ -77,19 +82,28 @@ function Block({ block }: { block: EssayBlock }) {
           ))}
         </ul>
       );
-    default:
-      return <p className="font-sans text-body leading-[1.75] text-paper/85"><SaintNames text={block.text} /></p>;
+    default: {
+      const words = <p data-mk-text={at ? "" : undefined} className="font-sans text-body leading-[1.75] text-paper/85"><SaintNames text={block.text} /></p>;
+      // The account is Purify's own, and a copy or a picture of its words says so.
+      return at ? (
+        <MarkHost place={{ kind: "text", text: "history", slug: at.slug, doc: "-", sectionN: at.sectionN, paragraphIdx: at.paragraphIdx }} cite={`${at.title}, Purify`} link={`/history/${at.slug}`} name="Purify" work={at.title}>
+          {words}
+        </MarkHost>
+      ) : (
+        words
+      );
+    }
   }
 }
 
-function Blocks({ blocks }: { blocks?: EssayBlock[] }) {
+function Blocks({ blocks, at }: { blocks?: EssayBlock[]; at?: Omit<BlockAt, "paragraphIdx"> }) {
   if (!blocks?.length) return null;
   // The account is English for every reader, and says so (build 90 note 4);
   // a quotation's source line says the reader's own language on its frame.
   return (
     <div lang="en" dir="ltr" className="space-y-5">
       {blocks.map((b, i) => (
-        <Block key={i} block={b} />
+        <Block key={i} block={b} at={at ? { ...at, paragraphIdx: i } : undefined} />
       ))}
     </div>
   );
@@ -254,6 +268,7 @@ export function EventArticle({
   const primary = body.sources.filter((s) => s.kind === "primary");
   const secondary = body.sources.filter((s) => s.kind === "secondary");
   const scripture = meta.rel?.scripture ?? [];
+  const here = { slug: meta.slug, title: meta.title };
 
   const parts: EventPart[] = [
     { id: PART_IDS.happened, labelKey: "study.history.pill.story" },
@@ -266,12 +281,14 @@ export function EventArticle({
 
   return (
     <article className="w-full">
+      {/* Any words of the account, selected and marked (1.9). */}
+      <ReadingMarks />
       <EventPartsNav parts={parts} />
 
       <Part id={PART_IDS.happened} titleKey="study.history.whatHappened">
         <div className="space-y-5">
-          <Blocks blocks={body.context} />
-          <Blocks blocks={body.narrative} />
+          <Blocks blocks={body.context} at={{ ...here, sectionN: 1 }} />
+          <Blocks blocks={body.narrative} at={{ ...here, sectionN: 2 }} />
         </div>
         {body.chronology?.length ? (
           <>
@@ -284,12 +301,12 @@ export function EventArticle({
 
       {body.significance?.length || body.consequences?.length ? (
         <Part id={PART_IDS.matters} titleKey="study.history.part.matters">
-          <Blocks blocks={body.significance} />
+          <Blocks blocks={body.significance} at={{ ...here, sectionN: 3 }} />
           {body.consequences?.length ? (
             <>
               <Subhead k="study.history.whatFlowed" />
               <div className="mt-4">
-                <Blocks blocks={body.consequences} />
+                <Blocks blocks={body.consequences} at={{ ...here, sectionN: 4 }} />
               </div>
             </>
           ) : null}

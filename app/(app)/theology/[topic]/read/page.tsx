@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { PassageDeck } from "@/components/theology/PassageDeck";
 import { ReaderPartLine, StudyReader, type ReaderEnd } from "@/components/theology/StudyReader";
+import { ReadingMarks } from "@/components/reading/SelectionToolsLazy";
 import { StudyCouncils, StudyCurated, StudyPartText } from "@/components/theology/StudyPartText";
 import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { loadTopicBody } from "@/lib/theology/load";
@@ -62,7 +63,7 @@ export default async function StudyReadPage({ params }: { params: Promise<{ topi
 
   const panels = placed.parts.map((part, i) => (
     <div key={i}>
-      <StudyPartText blocks={part.blocks} summary={i === 0 ? body.summary : undefined} />
+      <StudyPartText blocks={part.blocks} summary={i === 0 ? body.summary : undefined} study={{ slug: topic, title: meta.title }} part={i + 1} />
       {i === last ? <StudyCouncils councils={body.councils ?? []} /> : null}
       <PassageDeck passages={[...part.passages, ...(i === last ? placed.end : [])].map((j) => passages[j])} />
       {i === last ? <StudyCurated body={body} /> : null}
@@ -71,6 +72,8 @@ export default async function StudyReadPage({ params }: { params: Promise<{ topi
 
   return (
     <>
+      {/* Any words of the study, selected and marked (1.9). */}
+      <ReadingMarks />
       <MobileTopBar
         title={meta.title}
         back

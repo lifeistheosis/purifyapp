@@ -15,7 +15,7 @@ import { Picture } from "@/components/ui/icons/Picture";
 import { Star } from "@/components/ui/icons/Star";
 import { rememberHighlightColor } from "@/lib/bible/highlightColors";
 import { cn } from "@/lib/cn";
-import { coversAll, isBare, locate, makeMark, sentenceAround, snapToWords, wholeSpan, withMark, withoutMark, type Mark, type Span } from "@/lib/marks/anchor";
+import { coversAll, isBare, locate, makeMark, placeMarks, sentenceAround, snapToWords, wholeSpan, withMark, withoutMark, type Mark, type Span } from "@/lib/marks/anchor";
 import { MARK_HOST, MARK_TEXT, lineBoxes, measureWords, offsetIn, wordAt, type Box, type WordBoxes } from "@/lib/marks/dom";
 import { parsePlace, readAt, writeAt, type MarkPlace } from "@/lib/marks/place";
 import { shareLink } from "@/lib/site";
@@ -305,17 +305,30 @@ export function SelectionTools() {
 
     function onClick(e: MouseEvent) {
       const target = e.target as Element | null;
-      const markEl = target?.closest<HTMLElement>("[data-mk-id]");
-      if (!markEl || target?.closest("a, button")) return;
+      if (target?.closest("a, button, [data-mk-ui]")) return;
       const picked = window.getSelection();
       if (picked && !picked.isCollapsed) return;
-      const found = hostOf(markEl);
-      const id = markEl.dataset.mkId;
-      if (!found || !id) return;
+      const markEl = target?.closest<HTMLElement>("[data-mk-id]");
+      const found = hostOf(markEl ?? target);
+      if (!found) return;
       const text = found.textEl.textContent ?? "";
-      const mark = readAt(found.place).marks?.find((m) => m.id === id);
-      const at = mark ? locate(text, mark) : null;
+      const marks = readAt(found.place).marks;
+      let mark = markEl ? marks?.find((m) => m.id === markEl.dataset.mkId) : undefined;
+      let at = mark ? locate(text, mark) : null;
+      if (!markEl && marks?.length && found.host.hasAttribute("data-mk-layer")) {
+        // A page that wrote its own text has its marks painted behind the
+        // words (./MarksLayer.tsx): the mark tapped is the one over the word
+        // under the tap, the newest where two overlap.
+        const word = wordAt(measureWords(found.textEl), e.clientX, e.clientY);
+        const over = word ? placeMarks(text, marks).filter((p) => p.s <= word.s && p.e >= word.e) : [];
+        const top = over.sort((x, y) => (x.mark.at < y.mark.at ? 1 : -1))[0];
+        if (top) {
+          mark = top.mark;
+          at = { s: top.s, e: top.e };
+        }
+      }
       if (!mark || !at) return;
+      const id = mark.id;
       lift.reset();
       setMode("tools");
       setCopied(null);

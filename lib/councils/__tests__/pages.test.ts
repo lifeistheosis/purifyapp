@@ -160,7 +160,7 @@ describe("a council's books in the reading room", () => {
     expect(page).toContain("<MobileWorkProgressBar />");
     // The reader, in the reader's language (1.9): the page writes the English sections into it.
     expect(page).toContain("<CouncilReaderHere docKey={`${c.slug}/${docRef.slug}`} positionKey={positionKey} docSlug={docRef.slug} title={content.title} sections={sections} about={about}>");
-    expect(page).toContain("<CouncilSections content={content} />");
+    expect(page).toContain("<CouncilSections content={content} council={{ slug: c.slug, name: c.byname }} />");
     expect(code("components/councils/CouncilTextHere.tsx")).toContain("<CouncilReader {...reader}>{children}</CouncilReader>");
     // Each section at its own address, which a quotation elsewhere opens, and its paragraphs places a return lands on.
     const sections = code("components/councils/CouncilSections.tsx");

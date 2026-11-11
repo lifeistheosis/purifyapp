@@ -8,6 +8,7 @@ import { MobileWorkProgressBar } from "@/components/saints/MobileWorkProgressBar
 import { MobileWorkActions } from "@/components/saints/MobileWorkActions";
 import { ReaderPrefsProvider, ReadingModeController } from "@/components/reader/ReaderPrefs";
 import { CouncilSections } from "@/components/councils/CouncilSections";
+import { ReadingMarks } from "@/components/reading/SelectionToolsLazy";
 import { CouncilReaderHere, CouncilSourceHere } from "@/components/councils/CouncilTextHere";
 import { OpeningCover } from "@/components/reading/OpeningCover";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
@@ -102,6 +103,8 @@ export default async function CouncilDocumentPage({
  <MobileTopBar plates back backFallback={`/reading/councils/${c.slug}`} trailing={<MobileWorkActions />} />
  <MobileWorkProgressBar />
  <ReadingModeController />
+ {/* Any words of the document, selected and marked (1.9). */}
+ <ReadingMarks />
 
  <section className="bg-night px-5 md:px-8 under-plates md:pt-16">
  <div className="mx-auto max-w-[1100px] w-full">
@@ -121,7 +124,7 @@ export default async function CouncilDocumentPage({
      the reader, for a reader in another language, the line that says the
      text is English (components/i18n/StillInEnglish.tsx). */}
  <CouncilReaderHere docKey={`${c.slug}/${docRef.slug}`} positionKey={positionKey} docSlug={docRef.slug} title={content.title} sections={sections} about={about}>
- <CouncilSections content={content} />
+ <CouncilSections content={content} council={{ slug: c.slug, name: c.byname }} />
  </CouncilReaderHere>
 
  <footer id="source" className="mx-auto max-w-[680px] scroll-mt-24 pt-8 border-t border-paper/8">

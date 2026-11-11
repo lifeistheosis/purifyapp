@@ -11,6 +11,7 @@ import { cn } from "@/lib/cn";
 import { DisciplesSection } from "./DisciplesSection";
 import { GreatFeastsSection } from "./GreatFeastsSection";
 import { SaintLifeIn, SaintShortBio, SaintTitlesIn } from "./SaintInReadersLanguage";
+import { ReadingMarks } from "@/components/reading/SelectionToolsLazy";
 import { LifeSection } from "./LifeSection";
 import { QuotesSection } from "./QuotesSection";
 import { SaintFacts } from "./SaintFacts";
@@ -112,8 +113,10 @@ export function SaintLife({
         </div>
       ) : null}
       <div className="mt-10">
-        <SaintLifeIn slug={saint.slug} quotes={(LIFE_QUOTES[saint.slug] ?? []).map((q) => ({ words: q.words, shown: shownCite(q.cite) }))}>
-          <LifeSection paragraphs={saint.life} sources={lifeSources} saint={saint.slug} />
+        {/* Any words of the life, selected and marked (1.9). */}
+        <ReadingMarks />
+        <SaintLifeIn slug={saint.slug} name={saint.name} quotes={(LIFE_QUOTES[saint.slug] ?? []).map((q) => ({ words: q.words, shown: shownCite(q.cite) }))}>
+          <LifeSection paragraphs={saint.life} sources={lifeSources} saint={saint.slug} name={saint.name} />
         </SaintLifeIn>
       </div>
       {/* What would you add, and where is it written (1.9, call 24): under every life. */}

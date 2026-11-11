@@ -162,7 +162,7 @@ describe("a saint's life in the reader's language", () => {
     expect(islands.startsWith('"use client";')).toBe(true);
     expect(islands).toContain("LIFE_LOADERS[slug] ?? NONE");
     // The life keeps its marks where it shares the English one's quotations.
-    expect(read("components/saints/SaintLife.tsx")).toContain("<SaintLifeIn slug={saint.slug} quotes=");
+    expect(read("components/saints/SaintLife.tsx")).toContain("<SaintLifeIn slug={saint.slug} name={saint.name} quotes=");
     // No route serves the lives outside the bundle's chunks.
     expect(fs.existsSync(path.join(process.cwd(), "app/saints-data/[slug]/i18n"))).toBe(false);
   });

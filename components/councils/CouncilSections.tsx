@@ -1,4 +1,5 @@
 import { T } from "@/components/i18n/T";
+import { MarkHost } from "@/components/reading/MarkHost";
 import { SaintNames } from "@/components/saints/SaintNames";
 import type { CouncilDocumentContent } from "@/lib/councils/load";
 import { textDir } from "@/lib/i18n/textDir";
@@ -21,7 +22,7 @@ import { textDir } from "@/lib/i18n/textDir";
  * note 4): English, or the file's own, left to right under Arabic and Urdu,
  * while the labels between them ("Editor's note") are the reader's.
  */
-export function CouncilSections({ content, lang }: { content: CouncilDocumentContent; lang?: string }) {
+export function CouncilSections({ content, lang, council }: { content: CouncilDocumentContent; lang?: string; council: { slug: string; name: string } }) {
   const last = content.sections[content.sections.length - 1];
   const text = lang ?? "en";
   return (
@@ -54,9 +55,19 @@ export function CouncilSections({ content, lang }: { content: CouncilDocumentCon
           <div lang={text} dir={textDir(text)} className="space-y-5 text-paper/90">
             {s.paragraphs.map((p, i) => (
               // Each paragraph a place the reader's place is kept by (lib/saints/paragraphInView.ts).
-              <p key={i} id={`p-${s.n}-${i}`} data-place={`${s.n}:${i}`} data-work-end={s === last && i === s.paragraphs.length - 1 ? "" : undefined}>
-                <SaintNames text={p} />
-              </p>
+              // Any of its words can be marked (1.9, components/reading/MarkHost.tsx).
+              <MarkHost
+                key={i}
+                place={{ kind: "text", text: "council", slug: council.slug, doc: content.slug, sectionN: s.n, paragraphIdx: i }}
+                cite={`${council.name}, ${content.title}${s.title && s.title !== content.title ? `, ${s.title}` : ""}`}
+                link={`/councils/${council.slug}/${content.slug}#p-${s.n}-${i}`}
+                name={council.name}
+                work={s.title && s.title !== content.title ? `${content.title}, ${s.title}` : content.title}
+              >
+                <p id={`p-${s.n}-${i}`} data-place={`${s.n}:${i}`} data-work-end={s === last && i === s.paragraphs.length - 1 ? "" : undefined} data-mk-text="">
+                  <SaintNames text={p} />
+                </p>
+              </MarkHost>
             ))}
           </div>
           {s.notes && s.notes.length > 0 && (

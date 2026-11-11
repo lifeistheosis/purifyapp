@@ -63,7 +63,7 @@ export function CouncilReaderHere({
     <>
       {note}
       <CouncilReader {...reader} title={own.title} sections={own.sections.map((s) => ({ n: s.n, title: s.title }))} about={about}>
-        <CouncilSections content={own} lang={lang} />
+        <CouncilSections content={own} lang={lang} council={{ slug: docKey.split("/")[0], name: reader.about.council.name }} />
       </CouncilReader>
     </>
   );

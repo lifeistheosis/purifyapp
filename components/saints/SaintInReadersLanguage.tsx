@@ -81,7 +81,7 @@ export function SaintTitlesIn({ pronoun, children }: { pronoun?: Pronoun; childr
  * the quotations it shares with the English one (`quotes`, numbered in the
  * order they stand), else the English (`children`, drawn on the server).
  */
-export function SaintLifeIn({ slug, quotes, children }: { slug: string; quotes: readonly { words: string; shown: ShownCite | null }[]; children: ReactNode }) {
+export function SaintLifeIn({ slug, name, quotes, children }: { slug: string; name?: string; quotes: readonly { words: string; shown: ShownCite | null }[]; children: ReactNode }) {
   const { words, lang } = useContext(Words);
   const life = words?.life;
   const sources = useMemo<ListedSource[]>(() => {
@@ -95,7 +95,7 @@ export function SaintLifeIn({ slug, quotes, children }: { slug: string; quotes: 
   }, [life, quotes]);
   if (!life?.length) return <>{children}</>;
   return (
-    <LifeSection paragraphs={life} sources={sources} saint={slug} lang={lang} />
+    <LifeSection paragraphs={life} sources={sources} saint={slug} name={name} lang={lang} />
   );
 }
 

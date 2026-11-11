@@ -5,6 +5,7 @@ import { shownCite } from "@/lib/citations/shown";
 import type { EssayBlock, TheologyBody } from "@/lib/theology/load";
 import { SourceLine } from "@/components/citations/SourceLine";
 import { T } from "@/components/i18n/T";
+import { MarkHost } from "@/components/reading/MarkHost";
 import { SaintNames } from "@/components/saints/SaintNames";
 
 /**
@@ -14,18 +15,38 @@ import { SaintNames } from "@/components/saints/SaintNames";
  * has; the last closes with what the councils said and who curated it. The
  * part's Fathers follow as a deck (app/(app)/theology/[topic]/read/page.tsx).
  */
-export function StudyPartText({ blocks, summary }: { blocks: EssayBlock[]; summary?: string }) {
+export function StudyPartText({ blocks, summary, study, part }: { blocks: EssayBlock[]; summary?: string; study: { slug: string; title: string }; part: number }) {
+  // Any words of the study can be marked (1.9, components/reading/MarkHost.tsx).
+  // The study is the editors' own, and a copy or a picture of its words says so.
+  const host = (paragraphIdx: number, sectionN = part) => ({
+    place: { kind: "text" as const, text: "theology" as const, slug: study.slug, doc: "-", sectionN, paragraphIdx },
+    cite: `${study.title}, Purify`,
+    link: `/theology/${study.slug}/read`,
+    name: "Purify",
+    work: study.title,
+  });
   return (
     <div lang="en" dir="ltr" className="mt-3 space-y-5">
-      {summary ? <p className="font-serif text-[17px] leading-[1.65] text-paper/90">{summary}</p> : null}
-      {blocks.map((b, i) => (
-        <EssayPart key={i} block={b} />
-      ))}
+      {summary ? (
+        // The summary stands before the first part: part 0.
+        <MarkHost {...host(0, 0)}>
+          <p data-mk-text="" className="font-serif text-[17px] leading-[1.65] text-paper/90">{summary}</p>
+        </MarkHost>
+      ) : null}
+      {blocks.map((b, i) =>
+        b.kind === "para" ? (
+          <MarkHost key={i} {...host(i)}>
+            <EssayPart block={b} markable />
+          </MarkHost>
+        ) : (
+          <EssayPart key={i} block={b} />
+        ),
+      )}
     </div>
   );
 }
 
-function EssayPart({ block }: { block: EssayBlock }) {
+function EssayPart({ block, markable }: { block: EssayBlock; markable?: boolean }) {
   if (block.kind === "heading") {
     return <h3 className="pt-3 font-sans text-lede font-semibold text-paper">{block.text}</h3>;
   }
@@ -49,7 +70,7 @@ function EssayPart({ block }: { block: EssayBlock }) {
     );
   }
   return (
-    <p className="font-serif text-[16.5px] leading-[1.7] text-paper/88">
+    <p data-mk-text={markable ? "" : undefined} className="font-serif text-[16.5px] leading-[1.7] text-paper/88">
       <SaintNames text={block.text} />
     </p>
   );
