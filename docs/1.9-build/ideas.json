@@ -2605,16 +2605,44 @@
   {
    "id": "e-now-playing-sung-contrast",
    "section": "Listening",
-   "kind": "flag",
+   "kind": "bug",
    "title": "Now Playing's sung words: the lines not being sung below 3:1",
    "from": "claude",
    "asked": "2026-11-11",
-   "status": "proposed",
-   "decided": null,
+   "status": "built",
+   "decided": "2026-11-11",
    "needsDesign": false,
    "version": "1.9",
    "outcome": null,
-   "note": "Found checking 13bb: 30% and 17% measure 1.39 to 1.64:1. The step back is his pick (rounds 8 B and 9 A), so it is asked through the arbiter, recommending 131's way: three steps kept, the faintest at 3:1 on each palette. PLAN 13bc."
+   "note": "Decided by his own precedent (131), the arbiter's ruling. Steps per palette: the faintest words 3:1, the English under 4.5:1, the waiting words of the line sung a step too (--sung-wait). 640e91ac9. PLAN 13bc."
+  },
+  {
+   "id": "e-mini-player-mirror",
+   "section": "Listening",
+   "kind": "bug",
+   "title": "The mini player turns round in Arabic: padded by start and end, the name from its start, its play marks centred",
+   "from": "claude",
+   "asked": "2026-11-11",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "Found checking 13bb. ps-2 pe-1.5, text-start, Play centered. d93736bb3. PLAN 13bd."
+  },
+  {
+   "id": "e-walk-34-hidden-lines",
+   "section": "Listening",
+   "kind": "bug",
+   "title": "Walk section 34 reads hidden chant lines as build 93 left them",
+   "from": "claude",
+   "asked": "2026-11-11",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "b8d715316's rule: served timing line for line with the shown words; the Canon draws its words' source alone. eef7fc147. PLAN 13be."
   }
  ]
 }
