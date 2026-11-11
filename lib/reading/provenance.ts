@@ -17,7 +17,8 @@ import type { ReadingEntry, WorkKey } from "./entries";
  */
 export type Provenance = { kind: "checked"; edition: string; withNotes: boolean } | { kind: "ours" };
 
-type Row = { edition: string; share?: number; withNotes?: boolean };
+/** `note`: a change of ours to the edition's punctuation, kept as the work's record and never shown (St Justin's chapter X heading, 2026-11-11). */
+type Row = { edition: string; share?: number; withNotes?: boolean; note?: string };
 const WORKS = (provenance as { works: Record<string, Row> }).works;
 
 export function provenanceOf(key: WorkKey, entry: Pick<ReadingEntry, "form">): Provenance | null {

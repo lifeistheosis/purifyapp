@@ -439,7 +439,8 @@
   "justin-martyr/dialogue-with-trypho": {
    "edition": "Ante-Nicene Fathers, Vol. 1",
    "share": 0.999,
-   "withNotes": true
+   "withNotes": true,
+   "note": "Chapter X's heading is the edition's, \"Trypho blames the Christians for this alone: the non-observance of the law\". The Ante-Nicene Fathers print a dash between its two halves; a colon stands there here, on the arbiter's word of 2026-11-11 (the headings are the editors' summaries and on screen our navigation). Only its punctuation changed."
   },
   "justin-martyr/first-apology": {
    "edition": "Ante-Nicene Fathers, Vol. 1",

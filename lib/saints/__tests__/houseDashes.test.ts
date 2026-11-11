@@ -7,7 +7,12 @@
 // note, its citation and its notes, and in the Lives the editors compiled
 // themselves, whose sections are not marked editorial. The arbiter found four
 // in St Ignatius's Life and fourteen in Photius's Bibliotheca on 2026-11-11
-// (titles, framing and notes); St Olympias's Life held three more.
+// (titles, framing and notes); St Olympias's Life held three more. A heading
+// is ours even where an edition wrote it: the chapter headings of the
+// Ante-Nicene Fathers are their editors' summaries, and on screen our
+// navigation in our type, so St Justin's chapter X takes a colon where the
+// edition prints a dash (the arbiter's word, 2026-11-11), recorded in
+// data/reading/provenance.json.
 //
 // What would go wrong if this broke: an em dash of ours on a reader's screen,
 // waved through by the allowance meant for the Fathers' editions.
@@ -24,15 +29,6 @@ const EM_DASH = "—";
 
 /** A Life the editors of Purify compiled: every paragraph is the house's own words. */
 const COMPILED = /^Compiled by the editors of Purify\b/;
-
-/**
- * A heading the edition itself prints with an em dash, named with where it
- * stands. Its words are the edition's, as a paragraph's are.
- */
-const EDITION_HEADINGS: Record<string, string> = {
-  "justin-martyr/dialogue-with-trypho: Trypho blames the Christians for this alone—the non-observance of the law":
-    "chapter X's heading as the Ante-Nicene Fathers print it (vol. 1, 1885)",
-};
 
 type Section = { n?: number; title?: string; framing?: string; citation?: string; notes?: unknown; voice?: string; voiceAuthor?: string; paragraphs?: unknown };
 type Work = { title?: string; subtitle?: string; source?: string; sections?: Section[] };
@@ -69,7 +65,7 @@ function houseDashes(): string[] {
     }
     for (const sec of work.sections ?? []) {
       const at = `${key} section ${sec.n}`;
-      if (sec.title?.includes(EM_DASH) && !EDITION_HEADINGS[`${key}: ${sec.title}`]) found.push(`${at} title`);
+      if (sec.title?.includes(EM_DASH)) found.push(`${at} title`);
       for (const field of ["framing", "citation", "voiceAuthor", "notes"] as const) {
         if (strings(sec[field]).some((s) => s.includes(EM_DASH))) found.push(`${at} ${field}`);
       }
@@ -86,16 +82,7 @@ describe("the house's words in a work", () => {
     expect(works().length).toBeGreaterThanOrEqual(SAINTS.reduce((n, s) => n + s.works.length, 0));
   });
 
-  it("carry no em dash: headings, editor's notes, citations, notes, and the Lives the editors compiled", () => {
+  it("carry no em dash: headings (an edition's too), editor's notes, citations, notes, and the Lives the editors compiled", () => {
     expect(houseDashes()).toEqual([]);
-  });
-
-  it("let an edition's heading keep its dash only by name, and each one named still stands", () => {
-    const titles = new Set(works().flatMap(({ key, work }) => (work.sections ?? []).map((s) => `${key}: ${s.title}`)));
-    for (const [heading, why] of Object.entries(EDITION_HEADINGS)) {
-      expect(titles.has(heading), heading).toBe(true);
-      expect(heading).toContain(EM_DASH);
-      expect(why.length, heading).toBeGreaterThan(10);
-    }
   });
 });
