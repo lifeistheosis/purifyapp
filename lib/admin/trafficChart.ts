@@ -14,10 +14,49 @@
  */
 
 export const CHART_RANGES = [7, 14, 21, 30, 60, 90, 120] as const;
-export type ChartRange = (typeof CHART_RANGES)[number];
+/**
+ * A range the chart offers: a number of days, or "all", All time (the owner,
+ * 2026-11-11: "set up a all time option for the charts").
+ */
+export type ChartRange = (typeof CHART_RANGES)[number] | "all";
 
-/** The longest range: the one read the chart makes. */
-export const CHART_FETCH: ChartRange = 120;
+/** The longest range in days: the one read every other reader cuts from. */
+export const CHART_FETCH: (typeof CHART_RANGES)[number] = 120;
+
+/**
+ * All time, asked for on its own when it is picked: every day from the
+ * oldest visit to today, which the traffic route measures with daysSince
+ * (lib/admin/dayWindow.ts, capped at two years). The shared read above stays
+ * as it is for Home, Overview and the activity bell.
+ */
+export function trafficAllUrl(latest: "now" | "complete" = "now"): string {
+  return `/api/admin/traffic?range=all&latest=${latest}`;
+}
+
+/**
+ * Past this many days the chart draws weeks, not days: by then a day is about
+ * two pixels wide on a phone and the line is noise.
+ */
+export const DAILY_UP_TO = 180;
+
+type Day = { date: string; visitors: number; views: number; signups: number };
+
+/**
+ * A long window as weeks: seven days at a time, counted back from the newest,
+ * so the last week ends on the last day and only the oldest may be shorter.
+ * Each week is the mean of its days, a day's worth, the unit the daily chart
+ * and its median line speak in; its date is the week's first day, and `days`
+ * says how many days it holds.
+ */
+export function byWeek(points: readonly Day[]): (Day & { days: number })[] {
+  const weeks: (Day & { days: number })[] = [];
+  for (let end = points.length; end > 0; end -= 7) {
+    const week = points.slice(Math.max(0, end - 7), end);
+    const mean = (k: "visitors" | "views" | "signups") => Math.round((week.reduce((s, p) => s + p[k], 0) / week.length) * 10) / 10;
+    weeks.unshift({ date: week[0].date, visitors: mean("visitors"), views: mean("views"), signups: mean("signups"), days: week.length });
+  }
+  return weeks;
+}
 
 /**
  * The one address the admin reads its days from. Home, Traffic's Overview,

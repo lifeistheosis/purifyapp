@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { getAdminUser } from "@/lib/admin/access";
+import { allTimeDays } from "@/lib/admin/allTime";
+import { parseDaysWindow } from "@/lib/admin/dayWindow";
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { FEATURE_EVENTS, summarizeFeatures, type FeatureEventRow, type FeatureSums } from "@/lib/analytics/featureCounting";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -28,11 +30,12 @@ export async function GET(req: Request) {
   const admin = await getAdminUser();
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const asked = Number(new URL(req.url).searchParams.get("days"));
-  const days = asked === 7 || asked === 90 ? asked : 30;
+  const supa = createAdminClient();
+  // 7, 30 or 90 days, or All time, from the first of these events.
+  const asked = parseDaysWindow(new URL(req.url).searchParams.get("days"), [7, 30, 90], 30);
+  const days = asked === "all" ? await allTimeDays(supa, "analytics_events", "ts", FEATURE_EVENTS) : asked;
   const from = new Date(Date.now() - days * DAY).toISOString();
 
-  const supa = createAdminClient();
   const rows: FeatureEventRow[] = [];
   let truncated = false;
   for (let start = 0; ; start += PAGE) {

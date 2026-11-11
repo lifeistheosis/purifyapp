@@ -21,12 +21,14 @@ import { AbTests } from "./AbTests";
  * every one of them is a total of rows that name no reader.
  */
 
-type Days = "7" | "30" | "90";
+type Days = "7" | "30" | "90" | "all";
 
 const PERIODS = [
   ["7", "7 days"],
   ["30", "30 days"],
   ["90", "90 days"],
+  // From the first of its rows (the owner, 2026-11-11: "set up a all time option for the charts").
+  ["all", "All time"],
 ] as const;
 
 const BACKGROUND_LABELS: Record<string, string> = {

@@ -144,6 +144,17 @@ export function isPartial(key: string, now: Date = new Date()): boolean {
 }
 
 /**
+ * The window an admin route reads from `?days=`: one of the lengths its picker
+ * offers, "all" for All time (measured from the oldest row, lib/admin/allTime.ts),
+ * or `fallback` for anything else, so a bad value degrades to the default.
+ */
+export function parseDaysWindow(raw: string | null | undefined, offered: readonly number[], fallback: number): number | "all" {
+  if (raw === "all") return "all";
+  const n = Number(raw);
+  return offered.includes(n) ? n : fallback;
+}
+
+/**
  * How many day buckets "all time" is, given the oldest record.
  *
  * ── Why this is not just a very large number ────────────────────────────

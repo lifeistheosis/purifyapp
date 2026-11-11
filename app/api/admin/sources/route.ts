@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getAdminUser } from "@/lib/admin/access";
+import { allTimeDays } from "@/lib/admin/allTime";
 import { rollupArrivals } from "@/lib/admin/arrivals";
 import { windowStart } from "@/lib/admin/dayWindow";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -34,7 +35,8 @@ export const dynamic = "force-dynamic";
  */
 
 const RANGES = { "1d": 1, "7d": 7, "30d": 30 } as const;
-type Range = keyof typeof RANGES;
+/** A window of days, or "all": All time, from the first session (the owner, 2026-11-11). */
+type Range = keyof typeof RANGES | "all";
 
 /** The most sessions one answer reads. */
 const MOST_ROWS = 40_000;
@@ -46,11 +48,12 @@ export async function GET(req: Request) {
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const asked = new URL(req.url).searchParams.get("range") ?? "7d";
-  const range: Range = asked in RANGES ? (asked as Range) : "7d";
-  const windowDays = RANGES[range];
+  const range: Range = asked === "all" || asked in RANGES ? (asked as Range) : "7d";
+  const supa = createAdminClient();
+  // All time is measured from the first session, through daysSince's cap; MOST_ROWS still bounds the read.
+  const windowDays = range === "all" ? await allTimeDays(supa, "analytics_sessions", "first_seen") : RANGES[range];
   const since = windowStart(windowDays);
 
-  const supa = createAdminClient();
   let rows: { referrer: string | null; user_agent: string | null }[];
   try {
     rows = await pageAll(

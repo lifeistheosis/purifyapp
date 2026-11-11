@@ -37,7 +37,7 @@ import {
 import { adminJson } from "@/lib/admin/fetchJson";
 import { useLayout } from "@/lib/admin/layoutPreference";
 import { type Place, tallyCountries, tallyRegions, type Visit } from "@/lib/admin/map/tally";
-import { CHART_RANGES, median, trafficUrl, windowOf } from "@/lib/admin/trafficChart";
+import { CHART_RANGES, DAILY_UP_TO, byWeek, median, trafficAllUrl, trafficUrl, windowOf } from "@/lib/admin/trafficChart";
 import {
   appsLine,
   liveFigures,
@@ -320,7 +320,8 @@ function MapCard({
 
 // ── Visitors by day ───────────────────────────────────────────────────────
 
-const RANGE_OPTIONS = CHART_RANGES.map((d) => [String(d), `${d}d`] as const);
+// All time last, its own read (the owner, 2026-11-11: "set up a all time option for the charts").
+const RANGE_OPTIONS = [...CHART_RANGES.map((d) => [String(d), `${d}d`] as const), ["all", "All"] as const];
 /** The three lines, as the old Traffic tab named them (his pick A on sheet r3-35). */
 const SERIES: Record<ChartSeries, { label: string; one: string; many: string; dash: string }> = {
   visitors: { label: "Visitors", one: "visitor", many: "visitors", dash: "" },
@@ -400,38 +401,45 @@ function TodayApart({ value, byNow, max, height, text }: { value: number | null;
  * night switch he flipped twenty times in one visit is gone.
  */
 function VisitorsChart() {
-  const range = String(useChartRange());
+  const choice = useChartRange();
+  const range = String(choice);
+  const all = choice === "all";
   const setRange = (v: string) => setChartRange(parseChartRange(v));
   const seriesKey = useChartSeriesKey();
   const on = parseChartSeries(seriesKey);
   const toggle = (k: ChartSeries) => setChartSeries(on.includes(k) ? (on.length > 1 ? on.filter((x) => x !== k) : on) : [...on, k]);
   const today = useLayout("today");
   const latest = today === "a" ? "now" : "complete";
-  const read = useLiveData<{ points?: Point[] }>(trafficUrl(latest), 300_000);
+  const read = useLiveData<{ points?: Point[] }>(all ? trafficAllUrl(latest) : trafficUrl(latest), 300_000);
   const stats = useLiveData<Stats>("/api/admin/stats", 20_000);
-  const shown = windowOf(read.data?.points ?? [], Number(range));
+  // Every day of the window; past DAILY_UP_TO days the line is drawn by week, each a day's mean.
+  const daily = all ? (read.data?.points ?? []) : windowOf(read.data?.points ?? [], Number(range));
+  const weekly = daily.length > DAILY_UP_TO;
+  const shown: Point[] = weekly ? byWeek(daily) : daily;
   const [lead, ...rest] = on;
   const values = shown.map((p) => p[lead]);
   const mid = median(values);
   const midText = mid === null ? "" : Number.isInteger(mid) ? n(mid) : mid.toFixed(1);
-  const total = values.reduce((s, v) => s + v, 0);
+  const total = daily.reduce((s, p) => s + p[lead], 0);
+  const span = all ? `all time, since ${day(daily[0]?.date)}` : `the last ${range} days`;
+  const each = weekly ? "a day, week by week" : "each day";
   const to = latest === "now" ? "today" : "last night";
   const t = stats.data?.today;
   const todayValue = (lead === "visitors" ? t?.visitors : lead === "views" ? t?.views : t?.signups) ?? null;
   const byNow = lead === "visitors" ? (t?.visitorsYesterdayByNow ?? null) : null;
   const height = 150;
-  const title = on.length === 1 ? `${SERIES[lead].label} each day, the last ${range} days` : `Each day, the last ${range} days`;
+  const title = on.length === 1 ? `${SERIES[lead].label} ${each}, ${all ? "all time" : span}` : `${weekly ? "A day, week by week" : "Each day"}, ${all ? "all time" : span}`;
 
   const chart = (
     <TrendLine
       drawKey={`${range}:${latest}:${seriesKey}`}
-      label={`${SERIES[lead].label} each day for the last ${range} days, to ${to}, median ${midText} a day: ${shown.map((p) => `${p.date} ${p[lead]}`).join(", ")}`}
+      label={`${SERIES[lead].label} ${each}, ${span}, to ${to}, median ${midText} a day: ${shown.map((p) => `${weekly ? "week of " : ""}${p.date} ${p[lead]}`).join(", ")}`}
       values={values}
       height={height}
       soFar={latest === "now"}
       overlays={rest.map((k) => ({ values: shown.map((p) => p[k]), valueText: said(k), dash: SERIES[k].dash }))}
       median={mid === null ? null : { value: mid, text: `median ${midText}` }}
-      days={shown.map((p, i) => (latest === "now" && i === shown.length - 1 ? `${day(p.date)}, so far` : day(p.date)))}
+      days={shown.map((p, i) => `${weekly ? "week of " : ""}${day(p.date)}${latest === "now" && i === shown.length - 1 ? ", so far" : ""}`)}
       valueText={said(lead)}
       marks={[day(shown[0]?.date), day(shown[Math.floor(shown.length / 2)]?.date), latest === "now" ? "today" : day(shown[shown.length - 1]?.date)]}
     />
@@ -478,7 +486,7 @@ function VisitorsChart() {
             </p>
           ) : null}
           <p className="mt-1.5 font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
-            {n(total)} {SERIES[lead].many} in {shown.length} days to {to}, a median day of {midText}.
+            {n(total)} {SERIES[lead].many} in {daily.length} days to {to}, {weekly ? `a median week of ${midText} a day` : `a median day of ${midText}`}.
             {rest.length > 0 ? " Each line is drawn to its own height; the day you pick says the figures." : ""}
           </p>
         </>
@@ -486,9 +494,9 @@ function VisitorsChart() {
       <div className="mt-3">
         <Disclosure title="Every day, as a table">
           <DataTable
-            rows={shown.slice().reverse()}
+            rows={daily.slice().reverse()}
             rowKey={(r) => r.date}
-            csvFilename={`traffic-${range}d.csv`}
+            csvFilename={`traffic-${all ? "all" : `${range}d`}.csv`}
             columns={[
               { key: "date", label: "Day", render: (r) => r.date, csv: (r) => r.date },
               { key: "visitors", label: "Visitors", align: "right", render: (r) => n(r.visitors), csv: (r) => r.visitors },

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { getAdminUser } from "@/lib/admin/access";
+import { allTimeDays } from "@/lib/admin/allTime";
+import { parseDaysWindow } from "@/lib/admin/dayWindow";
 import { AT_ONCE, readScreenEvents, readTabPlaces, readTabs } from "@/lib/admin/screensRead";
 import {
   WHERES,
@@ -25,6 +27,8 @@ export type ScreensAdminPayload =
   | {
       absent: false;
       days: number;
+      /** Asked for as All time: `days` is then the days since the first page view. */
+      all?: boolean;
       countedAt: string;
       /** Page views read; `cutAt` is the oldest, when only the newest could be read. */
       pageviews: { rows: number; cutAt: string | null };
@@ -50,18 +54,21 @@ export async function GET(req: Request) {
   const admin = await getAdminUser();
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const asked = Number(new URL(req.url).searchParams.get("days"));
-  const days = asked === 7 || asked === 90 ? asked : 30;
+  // 7, 30 or 90 days, or All time, from the first page view.
+  const asked = parseDaysWindow(new URL(req.url).searchParams.get("days"), [7, 30, 90], 30);
+  const days = asked === "all" ? await allTimeDays(createAdminClient(), "analytics_pageviews", "ts") : asked;
 
+  // An answer asked for as All time says so, kept or fresh.
+  const mark = (a: ScreensAdminPayload) => (asked === "all" && "where" in a ? { ...a, all: true } : a);
   const hit = kept.get(days);
   if (hit && Date.now() - hit.at < KEEP_MS) {
-    return NextResponse.json(await hit.payload, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json(mark(await hit.payload), { headers: { "Cache-Control": "no-store" } });
   }
   const payload = count(days);
   kept.set(days, { at: Date.now(), payload });
   const answer = await payload;
   if ("unavailable" in answer) kept.delete(days);
-  return NextResponse.json(answer, { headers: { "Cache-Control": "no-store" } });
+  return NextResponse.json(mark(answer), { headers: { "Cache-Control": "no-store" } });
 }
 
 async function count(days: number): Promise<ScreensAdminPayload> {

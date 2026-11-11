@@ -22,8 +22,9 @@ export const DEFAULT_CHART_RANGE: ChartRange = 30;
 
 let memory: ChartRange = DEFAULT_CHART_RANGE;
 
-/** A stored value as a range the chart offers, or the default. */
+/** A stored value as a range the chart offers ("all" for All time), or the default. */
 export function parseChartRange(raw: string | null | undefined): ChartRange {
+  if (raw === "all") return "all";
   const days = Number(raw);
   return (CHART_RANGES as readonly number[]).includes(days) ? (days as ChartRange) : DEFAULT_CHART_RANGE;
 }

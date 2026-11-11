@@ -35,13 +35,15 @@
 
 import { keptCents, partlyRefundedCents, type RefundsByOrder } from "@/lib/shop/partialRefunds";
 
-export type MoneyPeriod = "month" | "30d" | "90d" | "12m";
+/** "all": All time, from the month of the first paid order (the owner, 2026-11-11). */
+export type MoneyPeriod = "month" | "30d" | "90d" | "12m" | "all";
 
 export const MONEY_PERIODS: readonly (readonly [MoneyPeriod, string])[] = [
   ["month", "This month"],
   ["30d", "30 days"],
   ["90d", "90 days"],
   ["12m", "12 months"],
+  ["all", "All time"],
 ];
 
 const DAY_MS = 86_400_000;
@@ -70,9 +72,25 @@ function utcMidnight(t: number): number {
 const monthName = (y: number, m: number) =>
   new Date(Date.UTC(y, m, 1)).toLocaleDateString("en-US", { month: "long", timeZone: "UTC" });
 
-export function moneyWindow(period: MoneyPeriod, now: Date): MoneyWindow {
+/** All time holds at most this many months, as daysSince holds at most two years (lib/admin/dayWindow.ts). */
+export const ALL_TIME_MONTHS = 24;
+
+/**
+ * `earliest`, for All time only: when the first paid order's checkout began. All
+ * time runs by month from that month to now, at most ALL_TIME_MONTHS, and has no
+ * period before it to compare with (`beforeSince` is `since`, `beforeLabel` empty).
+ */
+export function moneyWindow(period: MoneyPeriod, now: Date, earliest?: string | null): MoneyWindow {
   const y = now.getUTCFullYear();
   const m = now.getUTCMonth();
+  if (period === "all") {
+    const t = earliest ? Date.parse(earliest) : NaN;
+    const first = Number.isFinite(t) && t <= now.getTime() ? new Date(t) : now;
+    const span = (y - first.getUTCFullYear()) * 12 + (m - first.getUTCMonth()) + 1;
+    const months = Math.min(ALL_TIME_MONTHS, Math.max(1, span));
+    const since = new Date(Date.UTC(y, m - (months - 1), 1)).toISOString();
+    return { period, since, beforeSince: since, label: "all time", beforeLabel: "", months, buckets: "month" };
+  }
   if (period === "month") {
     return {
       period,
@@ -304,16 +322,18 @@ export function shopBuckets(
       const d = new Date(t);
       return d.getUTCFullYear() * 12 + d.getUTCMonth();
     };
+    // A bucket a month: twelve for 12 months, as many as All time holds, and no
+    // months before when there is no period before (All time).
     const first = key(since);
     const firstBefore = key(beforeSince);
-    const current = new Array<number>(12).fill(0);
-    const before = new Array<number>(12).fill(0);
+    const current = new Array<number>(w.months).fill(0);
+    const before = new Array<number>(beforeSince < since ? w.months : 0).fill(0);
     for (const o of orders) {
       const t = Date.parse(landedAt(o));
       if (!Number.isFinite(t)) continue;
       const k = key(t);
-      if (t >= since && k - first < 12) current[k - first] += net(o);
-      else if (t >= beforeSince && t < since && k - firstBefore < 12) before[k - firstBefore] += net(o);
+      if (t >= since && k - first < current.length) current[k - first] += net(o);
+      else if (t >= beforeSince && t < since && k - firstBefore < before.length) before[k - firstBefore] += net(o);
     }
     return { current, before };
   }

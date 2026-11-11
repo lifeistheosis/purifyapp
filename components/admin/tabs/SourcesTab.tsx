@@ -38,12 +38,14 @@ type Sources = {
   unavailable?: string;
 };
 
-type Range = "1d" | "7d" | "30d";
+type Range = "1d" | "7d" | "30d" | "all";
 
 const RANGES: readonly (readonly [Range, string])[] = [
   ["1d", "Today"],
   ["7d", "7 days"],
   ["30d", "30 days"],
+  // From the first session (the owner, 2026-11-11: "set up a all time option for the charts").
+  ["all", "All time"],
 ];
 
 const KIND_WORD: Record<string, string> = {

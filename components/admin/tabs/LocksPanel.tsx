@@ -15,12 +15,14 @@ import { Card, DataTable, KpiCard, SubTabs } from "../primitives";
  * Four numbers across the top and one table, the Onboarding view's shape.
  */
 
-type Days = "7" | "30" | "90";
+type Days = "7" | "30" | "90" | "all";
 
 const PERIODS = [
   ["7", "7 days"],
   ["30", "30 days"],
   ["90", "90 days"],
+  // From the first of its rows (the owner, 2026-11-11: "set up a all time option for the charts").
+  ["all", "All time"],
 ] as const;
 
 // The locks' names live beside the counting, so the Monday email (a server
@@ -93,7 +95,7 @@ export function LocksPanel() {
           rows={data.locks}
           rowKey={(r) => r.lock}
           empty="Nothing counted in this window."
-          csvFilename={`purify-locks-${days}d.csv`}
+          csvFilename={`purify-locks-${days === "all" ? "all" : `${days}d`}.csv`}
           columns={[
             { key: "lock", label: "Feature", render: (r) => LOCK_LABELS[r.lock], csv: (r) => r.lock },
             { key: "taps", label: "Met", render: (r) => r.taps, csv: (r) => r.taps, align: "right" },

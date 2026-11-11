@@ -17,12 +17,14 @@ import { Card, DataTable, KpiCard, SubTabs } from "../primitives";
  * panel's shape: the window, four numbers, then a table each.
  */
 
-type Days = "7" | "30" | "90";
+type Days = "7" | "30" | "90" | "all";
 
 const PERIODS = [
   ["7", "7 days"],
   ["30", "30 days"],
   ["90", "90 days"],
+  // From the first of its rows (the owner, 2026-11-11: "set up a all time option for the charts").
+  ["all", "All time"],
 ] as const;
 
 /** The plans by the names the app gives them (lib/i18n/messages/en.json, plans.<id>.name). A test holds every plan named. */
@@ -106,7 +108,7 @@ export function InUseTab() {
             rows={data.bibles}
             rowKey={(r) => r.translation}
             empty="No download in this window."
-            csvFilename={`purify-bibles-${days}d.csv`}
+            csvFilename={`purify-bibles-${days === "all" ? "all" : `${days}d`}.csv`}
             columns={[
               { key: "translation", label: "Bible", render: (r) => bibleName(r.translation), csv: (r) => r.translation },
               { key: "downloads", label: "Downloads", render: (r) => r.downloads, csv: (r) => r.downloads, align: "right" },
@@ -119,7 +121,7 @@ export function InUseTab() {
             rows={data.versions}
             rowKey={(r) => r.version}
             empty="No open in this window."
-            csvFilename={`purify-versions-${days}d.csv`}
+            csvFilename={`purify-versions-${days === "all" ? "all" : `${days}d`}.csv`}
             columns={[
               { key: "version", label: "Version", render: (r) => r.version, csv: (r) => r.version },
               { key: "deviceDays", label: "Device days", render: (r) => r.deviceDays, csv: (r) => r.deviceDays, align: "right" },
@@ -134,7 +136,7 @@ export function InUseTab() {
           rows={data.plans}
           rowKey={(r) => r.plan}
           empty="No plan begun or finished in this window."
-          csvFilename={`purify-plans-${days}d.csv`}
+          csvFilename={`purify-plans-${days === "all" ? "all" : `${days}d`}.csv`}
           columns={[
             { key: "plan", label: "Plan", render: (r) => planName(r.plan), csv: (r) => r.plan },
             { key: "begun", label: "Begun", render: (r) => r.begun, csv: (r) => r.begun, align: "right" },

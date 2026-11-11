@@ -33,12 +33,14 @@ import { Card, DataTable, KpiCard, SubTabs } from "../primitives";
  * both. The sums are lib/admin/screensSummary.ts.
  */
 
-type Days = "7" | "30" | "90";
+type Days = "7" | "30" | "90" | "all";
 
 const PERIODS = [
   ["7", "7 days"],
   ["30", "30 days"],
   ["90", "90 days"],
+  // From the first of its rows (the owner, 2026-11-11: "set up a all time option for the charts").
+  ["all", "All time"],
 ] as const;
 
 const PLACES = [
@@ -142,7 +144,8 @@ export function ScreensTab() {
     );
   }
 
-  const stale = String(data.days) !== days;
+  // All time comes back as the days since the first page view, so it is told by its own mark.
+  const stale = days === "all" ? !data.all : Boolean(data.all) || String(data.days) !== days;
   const place = data.where[where];
   const v = place.views;
   const e = place.events;
@@ -158,7 +161,7 @@ export function ScreensTab() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         {switches}
         <div className="space-y-0.5 text-right">
-          {stale ? <Quiet>Counting the last {days} days.</Quiet> : null}
+          {stale ? <Quiet>{days === "all" ? "Counting every day since the first." : `Counting the last ${days} days.`}</Quiet> : null}
           {data.pageviews.cutAt ? (
             <Quiet>Partial: the newest {num(data.pageviews.rows)} page views, from {dayLabel(data.pageviews.cutAt)} on.</Quiet>
           ) : null}
@@ -199,7 +202,7 @@ export function ScreensTab() {
               rows={v.screens}
               rowKey={(r) => r.screen}
               empty="No screens opened in this window."
-              csvFilename={`screens-${where}-${data.days}d.csv`}
+              csvFilename={`screens-${where}-${data.all ? "all" : `${data.days}d`}.csv`}
             />
             <div className="mt-3 space-y-1.5 border-t pt-3" style={{ borderColor: "var(--adm-line)" }}>
               {leave ? <Said>{leave}</Said> : null}

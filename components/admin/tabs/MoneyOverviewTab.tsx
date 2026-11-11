@@ -189,7 +189,7 @@ export function MoneyOverviewTab() {
           line:
             rev && rev.paidOrders !== null
               ? [
-                  `${plural(rev.paidOrders, "paid order", "paid orders")} ${p.period === "month" ? "this month" : `in ${p.label}`}${
+                  `${plural(rev.paidOrders, "paid order", "paid orders")} ${p.period === "month" ? "this month" : p.period === "all" ? "so far" : `in ${p.label}`}${
                     rev.averageCents !== null ? `, ${usd(rev.averageCents)} on average` : ""
                   }`,
                   rev.openCheckouts !== null ? `${plural(rev.openCheckouts, "checkout", "checkouts")} still open` : null,
@@ -230,7 +230,7 @@ export function MoneyOverviewTab() {
       <div className="md:hidden">
         <Segmented<MoneyPeriod>
           label="Period"
-          options={MONEY_PERIODS.map(([id, l]) => [id, id === "12m" ? "12 mo" : l] as const)}
+          options={MONEY_PERIODS.map(([id, l]) => [id, id === "12m" ? "12 mo" : id === "all" ? "All" : l] as const)}
           value={period}
           onChange={setPeriod}
           stretch
@@ -331,8 +331,8 @@ export function MoneyOverviewTab() {
           title={
             p
               ? p.buckets === "month"
-                ? `The shop, net by month: ${p.label}, with ${p.beforeLabel} dashed`
-                : `The shop, net by day: ${p.label}, with ${p.beforeLabel} dashed`
+                ? `The shop, net by month: ${p.label}${p.beforeLabel ? `, with ${p.beforeLabel} dashed` : ""}`
+                : `The shop, net by day: ${p.label}${p.beforeLabel ? `, with ${p.beforeLabel} dashed` : ""}`
               : "The shop, net by day"
           }
           pad="px-4 pt-3.5 pb-3"
@@ -357,7 +357,7 @@ export function MoneyOverviewTab() {
           {!p ? (
             <Quiet className="pb-2">{loading ? "Reading." : "Not read."}</Quiet>
           ) : p.recent.length === 0 ? (
-            <Quiet className="pb-2">No paid orders {p.period === "month" ? "this month" : `in ${p.label}`}.</Quiet>
+            <Quiet className="pb-2">No paid orders {p.period === "month" ? "this month" : p.period === "all" ? "yet" : `in ${p.label}`}.</Quiet>
           ) : (
             <ul>
               {p.recent.slice(0, 4).map((o, i) => (

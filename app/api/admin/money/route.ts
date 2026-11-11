@@ -48,7 +48,7 @@ export const dynamic = "force-dynamic";
  * Admin only: 403 to anyone else.
  */
 
-const PERIODS: readonly MoneyPeriod[] = ["month", "30d", "90d", "12m"];
+const PERIODS: readonly MoneyPeriod[] = ["month", "30d", "90d", "12m", "all"];
 const NO_STORE = { headers: { "Cache-Control": "no-store" } };
 
 type Order = MoneyOrder & { email: string | null };
@@ -60,8 +60,13 @@ export async function GET(req: NextRequest) {
   const asked = req.nextUrl.searchParams.get("period") ?? "month";
   const period: MoneyPeriod = (PERIODS as readonly string[]).includes(asked) ? (asked as MoneyPeriod) : "month";
   const now = new Date();
-  const w = moneyWindow(period, now);
   const admin = createAdminClient();
+  // All time starts at the month of the first paid order (its checkout's start).
+  const earliest =
+    period === "all"
+      ? (((await admin.from("shop_orders").select("created_at").in("payment_status", ["paid", "refunded"]).order("created_at", { ascending: true }).limit(1)).data?.[0] as { created_at?: string } | undefined)?.created_at ?? null)
+      : null;
+  const w = moneyWindow(period, now, earliest);
   const unread: string[] = [];
 
   const [ordersRes, openRes, expensesRes, donationsRes, subs] = await Promise.all([
