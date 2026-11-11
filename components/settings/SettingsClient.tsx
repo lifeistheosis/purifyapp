@@ -85,6 +85,7 @@ import { Sliders } from "@/components/ui/icons/Sliders";
 import { Sun } from "@/components/ui/icons/Sun";
 import { TimelineList } from "@/components/ui/icons/TimelineList";
 import { User } from "@/components/ui/icons/User";
+import { Vibrate } from "@/components/ui/icons/Vibrate";
 import { Wheat } from "@/components/ui/icons/Wheat";
 import { Wind } from "@/components/ui/icons/Wind";
 import { WidgetTipSheet, useWidgetPlatform } from "@/components/widget/WidgetTip";
@@ -92,6 +93,8 @@ import { useInterlinear } from "@/lib/bible/interlinear";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import type { CalendarStyleDefault } from "@/lib/calendar/styleDefault";
 import { useIsDesktopApp } from "@/lib/desktop/bridge";
+import { useIsNative } from "@/lib/platform/native";
+import { useClicksSetting } from "@/lib/ui/clicksSetting";
 import {
   motionPlatform,
   motionPreference,
@@ -532,6 +535,28 @@ function MotionSection() {
 }
 
 /**
+ * Clicks as you scroll (1.9; the arbiter's ask of 2026-11-11 and its yes to
+ * these words): the light click in the hand as each prayer, chapter or event
+ * passes, and when a rule is complete (lib/ui/clicksSetting.ts). On unless
+ * turned off. In the phone apps only, where the clicks are: a browser never
+ * gives one, so the row would promise nothing there.
+ */
+function ClicksRow() {
+  const { t } = useTranslate();
+  const native = useIsNative();
+  const [on, setOn] = useClicksSetting();
+  if (!native) return null;
+  return (
+    <Row
+      icon={<Vibrate size={18} />}
+      label={t("settings.clicks")}
+      description={t("settings.clicksHint")}
+      control={<Switch on={on} onChange={setOn} label={t("settings.clicks")} />}
+    />
+  );
+}
+
+/**
  * Discord status, in the desktop app only (desktop/, lib/desktop/). Decided
  * after mount: a server render and every other shell have no desktop bridge,
  * and rendering the section there would promise something they cannot do.
@@ -656,6 +681,7 @@ function Body() {
             />
           }
         />
+        <ClicksRow />
       </Section>
 
       <Section id="calendar" title={t("settings.calendar")} hint={t("settings.calendarHint")}>

@@ -2659,6 +2659,8 @@
   "settings.fontHint": "Jenis huruf untuk teks isi.",
   "settings.sizeHint": "Seberapa besar teks isi tampak pada perbesaran bawaan.",
   "settings.interlinearHint": "Tampilkan bahasa asli di samping bahasa Inggris bila suatu pasal memilikinya.",
+  "settings.clicks": "Klik saat menggulir",
+  "settings.clicksHint": "Klik ringan di tangan Anda setiap kali doa, pasal, atau peristiwa terlewati, dan saat aturan doa selesai. Saat mati, ponsel tetap diam.",
   "settings.calendar": "Kalender",
   "settings.calendarHint": "Perhitungan yang diikuti oleh santo hari ini, puasa, dan bacaan.",
   "settings.language": "Bahasa",

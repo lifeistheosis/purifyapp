@@ -2692,6 +2692,8 @@
   "settings.fontHint": "Fontul textului principal.",
   "settings.sizeHint": "Cât de mare apare textul principal la mărirea implicită.",
   "settings.interlinearHint": "Arată limba originală alături de cea engleză, atunci când capitolul o are.",
+  "settings.clicks": "Clicuri la derulare",
+  "settings.clicksHint": "Un clic ușor în mână când trece fiecare rugăciune, capitol sau eveniment, și când pravila este împlinită. Oprite, telefonul rămâne nemișcat.",
   "settings.calendar": "Calendarul",
   "settings.calendarHint": "După ce stil se socotesc sfântul zilei, postul și citirile.",
   "settings.language": "Limbă",

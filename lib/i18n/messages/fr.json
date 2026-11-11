@@ -2664,6 +2664,8 @@
   "settings.fontHint": "La police du corps du texte.",
   "settings.sizeHint": "La taille du texte courant au zoom par défaut.",
   "settings.interlinearHint": "Afficher la langue originale à côté de la traduction lorsqu'un chapitre la propose.",
+  "settings.clicks": "Clics au défilement",
+  "settings.clicksHint": "Un léger clic dans la main à chaque prière, chapitre ou événement qui passe, et quand une règle est achevée. Désactivés, le téléphone reste immobile.",
   "settings.calendar": "Le calendrier",
   "settings.calendarHint": "Le comput que suivent le saint du jour, le jeûne et les lectures.",
   "settings.language": "Langue",

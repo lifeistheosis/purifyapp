@@ -2661,6 +2661,8 @@
   "settings.fontHint": "Die Schriftart des Fließtextes.",
   "settings.sizeHint": "Wie groß der Fließtext bei normaler Vergrößerung erscheint.",
   "settings.interlinearHint": "Die Ursprache neben der Übersetzung anzeigen, wenn ein Kapitel sie hat.",
+  "settings.clicks": "Klicks beim Scrollen",
+  "settings.clicksHint": "Ein leichtes Klicken in der Hand, wenn ein Gebet, ein Kapitel oder ein Ereignis vorüberzieht, und wenn eine Gebetsregel vollendet ist. Aus hält das Handy still.",
   "settings.calendar": "Der Kalender",
   "settings.calendarHint": "Nach welcher Zeitrechnung sich der Heilige des Tages, das Fasten und die Lesungen richten.",
   "settings.language": "Sprache",

@@ -287,15 +287,18 @@ describe("the page as the owner picked it, r3-27 A", () => {
     expect(builder).toContain('className="rule-step rule-add');
   });
 
-  it("offers an empty part's two ways in as one choice of two rows drawn alike, each saying what it brings", () => {
+  it("offers an empty part's start once, in the head, and the other way in below it, the shared row", () => {
     const ways = builder.slice(builder.indexOf("data-mine-ways"), builder.indexOf("{undo && undo.part === p"));
-    // Both are the one shared row (build 89 note 14).
-    expect(ways.match(/<WayRow\b/g)).toHaveLength(2);
+    // The start stood twice on one screen, the head's pill and a row here
+    // (build 93 note 16); the arbiter's word: the head's pill is the one start.
+    expect(ways.match(/<WayRow\b/g)).toHaveLength(1);
+    expect(ways).not.toContain("prayers.mine.startFromMorning");
+    expect(ways).not.toContain("prayers.mine.startFromWhat");
+    expect(builder.match(/t\("prayers\.mine\.startFromMorning"\)/g)).toHaveLength(1);
+    // The row is the one shared row (build 89 note 14).
     expect(code("components/prayers/mine/WayRow.tsx")).toContain('className="set-link rule-way flex w-full items-center gap-3 text-start"');
-    expect(ways).toContain('t("prayers.mine.startFromWhat"');
     expect(ways).toContain('t("prayers.mine.addOneByOne")');
     expect(ways).toContain('t("prayers.mine.addOneByOneWhat")');
-    expect(catalog("en")["prayers.mine.startFromWhat"]).toBe("The prayer book's own, {prayers} · {minutes}");
   });
 
   it("keeps the names as rows of medallions, a tap opening a name, the wall's with their day", () => {

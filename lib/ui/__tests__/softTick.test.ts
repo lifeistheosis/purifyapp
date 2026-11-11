@@ -192,3 +192,23 @@ describe("where the tick is given", () => {
     }
   });
 });
+
+// Clicks as you scroll off (lib/ui/clicksSetting.ts): a rule completed is
+// still, and so is the day its mark keeps, whose tick comes from inside the
+// mark (lib/streak/useStreak.ts). The reader quiets the moment first.
+describe("a moment kept still", () => {
+  it("drops a tick that lands in the same moment, and lets the next moment's come", async () => {
+    const haptics = plugin();
+    const softTick = await load(() => true, haptics.factory);
+    const { quietMoment } = await import("../softTick");
+    const clock = vi.spyOn(Date, "now").mockReturnValue(1_000_000);
+    quietMoment();
+    clock.mockRestore();
+    tickAt(softTick, 1_000_000);
+    tickAt(softTick, 1_000_399);
+    await behind();
+    expect(haptics.impact).not.toHaveBeenCalled();
+    tickAt(softTick, 1_000_400);
+    await vi.waitFor(() => expect(haptics.impact).toHaveBeenCalledTimes(1), soon);
+  });
+});

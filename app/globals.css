@@ -11238,6 +11238,61 @@ html[data-candle-season] .prayer-light-breath {
  display: none;
 }
 
+/* The end of a rule (1.9, build 93 note 14; components/prayers/service/RuleEnd.tsx).
+   Reaching the end completes the rule, and the end answers once: the
+   lampada's soft pool of the palette's own light grows to rest as its line
+   brightens, the closing line settles in, then Reset. Light is a soft pool or
+   nothing (CLAUDE.md, "No light rays"): a plain radial gradient in the
+   palette's own ink, no beams, no sparkle, no burst, and nothing loops or
+   breathes after it. On Light and on a look, no pool. With motion off, all
+   of it simply stands. */
+.rule-complete-lamp {
+ position: relative;
+ display: grid;
+ place-items: center;
+ width: 88px;
+ height: 64px;
+ color: color-mix(in srgb, var(--color-paper) 90%, transparent);
+}
+.rule-complete-lamp > svg {
+ position: relative;
+}
+.rule-complete-pool {
+ position: absolute;
+ inset: -26px -84px;
+ border-radius: 9999px;
+ background: radial-gradient(closest-side, color-mix(in srgb, var(--color-paper) 11%, transparent), transparent);
+ pointer-events: none;
+}
+html[data-reading-mode="parchment"] .rule-complete-pool,
+html[data-look] .rule-complete-pool {
+ display: none;
+}
+[data-rule-end][data-moment] .rule-complete-pool {
+ animation: rule-pool-in 1400ms var(--ease-house) both;
+}
+[data-rule-end][data-moment] .rule-complete-lamp > svg {
+ animation: rule-lamp-lit 1400ms var(--ease-house) both;
+}
+[data-rule-end][data-moment] [data-rule-complete-words] {
+ animation: rule-words-settle 700ms var(--ease-house) 300ms both;
+}
+[data-rule-end][data-moment] [data-rule-complete-after] {
+ animation: page-open-fade 500ms var(--ease-house) 900ms both;
+}
+@keyframes rule-pool-in {
+ from { opacity: 0; transform: scale(0.6); }
+}
+@keyframes rule-lamp-lit {
+ from { opacity: 0.35; }
+}
+@keyframes rule-words-settle {
+ from { opacity: 0; transform: translateY(8px); }
+}
+:where([data-motion="reduce"]) [data-rule-end][data-moment] :is(.rule-complete-pool, .rule-complete-lamp > svg, [data-rule-complete-words], [data-rule-complete-after]) {
+ animation: none;
+}
+
 /* The rest dim: once the reader is following, the prayers before and after
    the one being prayed step back further than its own unlit lines. Only with
    motion on, as the lit line is.

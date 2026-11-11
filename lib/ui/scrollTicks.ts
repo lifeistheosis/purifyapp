@@ -21,11 +21,18 @@
 // Clicks are at least MIN_GAP_MS apart, so a fling past a hundred psalms is a
 // run of clicks and never a buzz.
 //
+// The reader can turn every one of these clicks off in Settings, Clicks as
+// you scroll (./clicksSetting.ts, 1.9). The choice is read when a hand takes
+// a row or a wheel, so it holds at once on a row already in the page; with it
+// off nothing clicks and the plugin is not loaded.
+//
 // Fire-and-forget, as softTick is: nothing here answers, and nothing throws.
 
 import { useEffect, type RefObject } from "react";
 
 import { isNativeClient, nativePlatform } from "@/lib/platform/native";
+
+import { clicksOn } from "./clicksSetting";
 
 /** The closest two clicks may come. */
 export const MIN_GAP_MS = 40;
@@ -70,7 +77,7 @@ export function slotAt(middles: readonly number[], mid: number): number {
  * browser, an inert pair that loads nothing.
  */
 export function handTicks(): { tick: () => void; end: () => void } {
-  if (!isNativeClient()) return { tick: () => {}, end: () => {} };
+  if (!isNativeClient() || !clicksOn()) return { tick: () => {}, end: () => {} };
   const ios = nativePlatform() === "ios";
   let lastAt = -Infinity;
   let ended = false;
@@ -150,7 +157,8 @@ export function attachScrollTicks(row: HTMLElement, items = ":scope > *"): () =>
   };
 
   const arm = () => {
-    if (armed) return;
+    // Clicks as you scroll off: the hand is not followed at all.
+    if (armed || !clicksOn()) return;
     armed = true;
     moved = false;
     measure();

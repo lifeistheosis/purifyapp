@@ -30,8 +30,10 @@ let lastAt = 0;
  * A finished rule is not a prize, so it gets the tap and not the fanfare.
  *
  * Fire-and-forget: it answers nothing and never throws. Whether the phone
- * moves is the phone's to decide: its own vibration settings stand above this,
- * and Purify has no switch of its own for it.
+ * moves is the phone's to decide: its own vibration settings stand above this.
+ * Purify's one switch, Clicks as you scroll (./clicksSetting.ts, 1.9), stills
+ * a rule's completion and the day that completion keeps (quietMoment); a
+ * verse or a chapter saved answers its tap as before.
  */
 export function softTick(): void {
   try {
@@ -46,4 +48,14 @@ export function softTick(): void {
   } catch {
     // A tick is never worth an error on the screen.
   }
+}
+
+/**
+ * Keep this moment still: a tick within SAME_MOMENT_MS of it is dropped, as
+ * if it had been felt. For a moment the reader asked to be still (Clicks as
+ * you scroll off, ./clicksSetting.ts): a rule completed, whose mark also keeps
+ * the day, and the day's own tick (lib/streak/useStreak.ts) comes inside it.
+ */
+export function quietMoment(): void {
+  lastAt = Date.now();
 }

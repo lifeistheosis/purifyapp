@@ -134,22 +134,23 @@ describe("a prayer page", () => {
     }
   });
 
-  it("one Amen at the end marks the whole rule prayed, and keeps the day", () => {
+  it("reaching the end marks the whole rule prayed, and keeps the day", () => {
     // Build 89 note 7 (his "ok to all" of 2026-11-10): nothing ticked under
-    // each prayer; at the end of the page one quiet Amen marks every prayer of
-    // the rule, the names with them, and the doxology then says it once, with
-    // Reset beside it.
+    // each prayer. Build 93 note 14 (his words: "instead of just a generic
+    // amen button, make it so that when you scroll past the bottom..."): no
+    // Amen button either; the last prayer is counted as every one before it,
+    // carried past the reading place, and the end answers with the doxology
+    // and Reset (lib/prayers/__tests__/ruleEnd.test.ts holds the moment).
     expect(step).not.toContain('t("prayers.reader.markPrayed")');
-    const end = reader.slice(reader.indexOf("data-rule-end"));
-    expect(end).toContain("data-amen");
-    expect(end).toContain('t("community.respond.amen")');
-    expect(end).toMatch(/persist\(new Set\(\[\.\.\.rule\.prayers\.map\(\(p\) => p\.id\)/);
+    expect(reader).not.toContain("data-amen");
+    expect(reader).not.toContain('t("community.respond.amen")');
+    expect(reader).toContain("usePassedSteps(article, passed, { ready: hydrated });");
+    const end = code("components/prayers/service/RuleEnd.tsx");
     expect(end).toContain('t("prayers.reader.complete")');
     expect(end).toContain('t("prayers.rope.reset")');
-    // The names go with the rule, and the end says the wall's names leave now.
-    expect(end).toMatch(/\.\.\.\(commemorated \? \[commemorationId\] : \[\]\)/);
-    expect(end).toContain("markWallPrayed(list, wallIds)");
-    expect(end).toContain('t("prayers.wall.left")');
+    // The names go with the rule as they are passed, and the end says the wall's names leave now.
+    expect(reader).toContain("markWallPrayed(list, wallIds)");
+    expect(reader).toContain('wallLeft={commemorationDone && wall.length > 0 ? t("prayers.wall.left") : null}');
     expect(reader).toContain("writeTodayDone(rule.id");
     expect(reader).toContain("markRuleCompletedToday(rule.id)");
     expect(reader).toContain("softTick()");

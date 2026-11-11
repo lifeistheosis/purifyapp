@@ -2663,6 +2663,8 @@
   "settings.fontHint": "Il carattere del testo principale.",
   "settings.sizeHint": "Quanto appare grande il testo con lo zoom predefinito.",
   "settings.interlinearHint": "Mostra la lingua originale accanto al testo italiano quando un capitolo la prevede.",
+  "settings.clicks": "Clic durante lo scorrimento",
+  "settings.clicksHint": "Un leggero clic nella mano a ogni preghiera, capitolo o evento che passa, e quando una regola è completa. Disattivati, il telefono resta fermo.",
   "settings.calendar": "Il calendario",
   "settings.calendarHint": "Quale computo seguono il santo del giorno, il digiuno e le letture.",
   "settings.language": "Lingua",

@@ -5001,9 +5001,9 @@ await section(39, async () => {
     must(lit.following && lit.on === 1 && lit.bright > 0.95 && lit.back < 0.6, `${size.width}px: the line being read is lit and the rest step back (${lit.on} lit, ${lit.bright} against ${lit.back})`);
     must(lit.barTitle, `${size.width}px: once the name has scrolled away the bar shows it`);
     await page.screenshot({ path: path.join(SHOTS, `prayers-hour-lines-${size.width}.png`) });
-    // The rule's one Amen at its end keeps the Hour for today (build 89 note
-    // 7: nothing is ticked under each prayer, and Mark all went with the marks).
-    await tap(page.locator("[data-prayer-reader] [data-amen]").first());
+    // Reaching the end keeps the Hour for today (build 93 note 14: no Amen
+    // button; every prayer counted as it is carried past the reading place).
+    await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" }));
     await page.waitForTimeout(700);
     const day = await today(page);
     const done = await page.evaluate(
@@ -5095,16 +5095,15 @@ await section(39, async () => {
     must(empty.clearBar && empty.nameOnIt, `${size.width}px: the bar is clear over the icon, and the page's name stands on it`);
     must(empty.tabs.join(" ") === "mine-tab-morning:true mine-tab-evening:false" && empty.pray === null, `${size.width}px: Morning and Evening on one switch, Morning chosen, and no Pray my rule for an empty part (${empty.tabs.join(" ")})`);
     const ways = await page.evaluate(() => [...document.querySelectorAll("#mine-panel-morning [data-mine-ways] > button")].map((b) => (b.textContent ?? "").replace(/\s+/g, " ").trim()));
-    const startWhat = en["prayers.mine.startFromWhat"]
-      .replace("{prayers}", en["prayers.reader.prayerCount.other"].replace("{count}", "10"))
-      .replace("{minutes}", en["today.minRead"].replace("{count}", "8"));
+    const startHead = await page.evaluate(() => document.querySelector("[data-mine-start]")?.textContent?.trim() ?? "");
+    // The part's start once, the head's pill (build 93 note 16), and the other way in below.
     must(
-      ways.length === 2 && ways[0].includes(en["prayers.mine.startFromMorning"]) && ways[0].includes(startWhat) && ways[1].includes(en["prayers.mine.addOneByOne"]),
-      `${size.width}px: the two ways in are one choice of two rows, each saying what it brings (${ways[0] ?? "none"})`,
+      startHead === en["prayers.mine.startFromMorning"] && ways.length === 1 && ways[0].includes(en["prayers.mine.addOneByOne"]),
+      `${size.width}px: the empty part's start stands once, in the head, and Add prayers one by one below (${startHead || "no start"}; ${ways.join(" | ")})`,
     );
     await page.screenshot({ path: path.join(SHOTS, `prayers-mine-empty-${size.width}.png`), fullPage: true });
 
-    await tap(page.locator("#mine-panel-morning [data-mine-ways] > button", { hasText: en["prayers.mine.startFromMorning"] }));
+    await tap(page.locator("[data-mine-start]"));
     await page.waitForTimeout(700);
     const rows = () => page.evaluate(() => [...document.querySelectorAll("#mine-panel-morning ol > li")].map((li) => li.querySelector("[data-step-title]")?.textContent?.trim() ?? ""));
     const built = await rows();
@@ -5152,8 +5151,8 @@ await section(39, async () => {
       mine.title === en["prayers.mine.morningTitle"] && mine.steps.length === 10 && mine.steps[0] === "morning--glory-to-thee" && mine.steps[1] === "morning--sign-of-cross",
       `${size.width}px: Pray my rule opens Your morning rule, its ten prayers in the reader's order (${mine.steps.slice(0, 2).join(", ")})`,
     );
-    // Its Amen, as every rule's (build 89 note 7).
-    await tap(page.locator("[data-prayer-reader] [data-amen]").first());
+    // Reaching its end, as every rule's (build 93 note 14).
+    await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" }));
     await page.waitForTimeout(700);
     must((await kept(page, "mine-morning")).includes(await today(page)), `${size.width}px: praying it through keeps the day under mine-morning, which the streak reads`);
     await page.screenshot({ path: path.join(SHOTS, `prayers-mine-reader-${size.width}.png`) });
@@ -8318,7 +8317,7 @@ await section(52, async () => {
 
     // Note 14: In which prayers is the same row as Add prayers one by one.
     const rows = await page.evaluate((part) => {
-      const add = document.querySelectorAll(`#mine-panel-${part} [data-mine-ways] > button`)[1];
+      const add = document.querySelectorAll(`#mine-panel-${part} [data-mine-ways] > button`)[0];
       const where = document.querySelector("[data-remembered-in]");
       const shape = (b) => {
         const r = b.getBoundingClientRect();
@@ -8699,7 +8698,7 @@ await section(55, async () => {
     });
     const counted = new Set(today);
     const missed = ids.filter((id) => !counted.has(id));
-    must(missed.length <= 1 && today.length === counted.size, `every prayer passed is counted once (${counted.size} of ${ids.length}${missed.length ? "; the last, not passed: " + missed.join(", ") : ""})`);
+    must(missed.length === 0 && today.length === counted.size, `every prayer passed is counted once, the last too (${counted.size} of ${ids.length}${missed.length ? "; not passed: " + missed.join(", ") : ""})`);
     // A hold on a verse still offers Save.
     await page.evaluate(() => document.querySelector("#creed [data-line]").scrollIntoView({ block: "center" }));
     await page.waitForTimeout(500);
@@ -10092,6 +10091,207 @@ await section(71, async () => {
   must(/Reading/.test(bars.title) && bars.backButton, `the bar says the room's name and carries the way back ("${bars.title}")`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
+});
+
+await section(72, async () => {
+  console.log("\n72. The end of a rule: reached, not pressed, and it answers once (build 93 note 14)");
+  // His words: "instead of just a generic amen button, make it so that when
+  // you scroll past the bottom, it creates like an animation". No Amen; the
+  // last prayer is carried past the reading place by a hand, and the end
+  // answers: the lampada's soft pool, the closing line settling in, Reset.
+  const endState = (page) =>
+    page.evaluate(() => {
+      const end = document.querySelector("[data-rule-end]");
+      const anims = end ? end.getAnimations({ subtree: true }) : [];
+      return {
+        amen: !!document.querySelector("[data-amen]"),
+        words: end?.querySelector("[data-rule-complete-words]")?.textContent?.trim() ?? "",
+        lamp: !!end?.querySelector(".rule-complete-lamp svg"),
+        moment: end?.hasAttribute("data-moment") ?? false,
+        reset: !!end?.querySelector("button"),
+        running: anims.filter((a) => a.playState === "running").length,
+        forever: anims.filter((a) => a.effect?.getComputedTiming?.().iterations === Infinity).length,
+        names: anims.map((a) => a.animationName ?? "").filter(Boolean),
+        height: end ? Math.round(end.getBoundingClientRect().height) : 0,
+      };
+    });
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    const w = `${size.width}x${size.height}`;
+    const { ctx, page, errors } = await open({ ...size, phone: true, set: { "purify.motion": "on" } });
+    const cdp = await ctx.newCDPSession(page);
+    await go(page, "/");
+    await go(page, "/prayers/evening/");
+    await page.waitForSelector("[data-prayer-reader] [data-step]", { timeout: 20000 });
+    await page.waitForTimeout(900);
+    const before = await endState(page);
+    must(!before.amen && !before.words && before.height > 200, `${w}: no Amen button, and the end keeps its room before it answers (${before.height}px)`);
+    // A hand through the rule to its end. The finger starts mid-screen, above
+    // the chant question's card at the foot, which follows a finger down to
+    // go (components/player/PrayWithChant.tsx) and so moves no page.
+    const from = Math.round(size.height * 0.6);
+    let last = -1;
+    for (let k = 0; k < 120; k++) {
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 195, y: from }] });
+      for (let i = 1; i <= 6; i++) {
+        await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: 195, y: from - (300 * i) / 6 }] });
+        await page.waitForTimeout(16);
+      }
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+      await page.waitForTimeout(350);
+      const y = await page.evaluate(() => Math.round(window.scrollY));
+      if (y === last) break;
+      last = y;
+    }
+    const during = await endState(page);
+    must(during.words === en["prayers.reader.complete"] && during.lamp && during.moment && during.reset, `${w}: reaching the end completes the rule, and the end answers with the lampada, the closing line and Reset ("${during.words}")`);
+    await page.waitForTimeout(2200);
+    const after = await endState(page);
+    must(after.running === 0 && after.forever === 0, `${w}: the moment plays once and rests, nothing running after it and nothing that loops (${after.running} running, ${after.forever} forever; ${[...new Set(during.names)].join(", ")})`);
+    const kept = await page.evaluate(() => {
+      const d = new Date();
+      const day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      return JSON.parse(localStorage.getItem("purify.prayers.evening.dates") ?? "[]").includes(day);
+    });
+    must(kept, `${w}: the day is kept for Evening Prayers, which the streak reads`);
+    await page.screenshot({ path: path.join(SHOTS, `prayers-rule-end-${size.width}.png`) });
+    // Opened again, complete already: the end at rest, no moment.
+    await go(page, "/");
+    await go(page, "/prayers/evening/");
+    await page.waitForSelector("[data-prayer-reader] [data-step]", { timeout: 20000 });
+    await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" }));
+    await page.waitForTimeout(900);
+    const again = await endState(page);
+    must(again.words === en["prayers.reader.complete"] && !again.moment && again.names.length === 0, `${w}: opened again, the end stands at rest and says it once more without moving (${again.names.length} animations)`);
+    must(errors.length === 0, `${w}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+  // Motion off: the same end, simply there.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify.motion": "off" } });
+    await go(page, "/");
+    await go(page, "/prayers/evening/");
+    await page.waitForSelector("[data-prayer-reader] [data-step]", { timeout: 20000 });
+    await page.waitForTimeout(800);
+    for (let k = 0; k < 40; k++) {
+      await page.evaluate(() => window.scrollBy({ top: 500, behavior: "instant" }));
+      await page.waitForTimeout(120);
+    }
+    await page.waitForTimeout(400);
+    const s = await endState(page);
+    must(s.words === en["prayers.reader.complete"] && s.lamp && s.names.length === 0, `motion off: the end answers with the same words and lampada, nothing moving (${s.names.length} animations)`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+
+await section(73, async () => {
+  console.log("\n73. Clicks as you scroll: one row in Settings, in the apps only, and off keeps the phone still (the arbiter's ask, 2026-11-11)");
+  // The words the arbiter said yes to: "Clicks as you scroll" / "A light click
+  // in your hand as each prayer, chapter or event passes, and when a rule is
+  // complete. Off keeps the phone still." Every click is counted where the
+  // phone would feel it (navigator.vibrate, under the plugin).
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const { checkMock, printMockCheck } = await import("./mock-check.mjs");
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify.motion": "on" } });
+  await ctx.addInitScript(() => {
+    window.__pulses = [];
+    navigator.vibrate = (p) => {
+      window.__pulses.push(p);
+      return true;
+    };
+  });
+  const cdp = await ctx.newCDPSession(page);
+  const pulses = () => page.evaluate(() => window.__pulses.length);
+  /** A finger drawing the page up from mid-screen, `times` times, as a reader reads on. */
+  const swipe = async (times) => {
+    const from = 506;
+    let last = -1;
+    for (let k = 0; k < times; k++) {
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 195, y: from }] });
+      for (let i = 1; i <= 6; i++) {
+        await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: 195, y: from - (300 * i) / 6 }] });
+        await page.waitForTimeout(16);
+      }
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+      await page.waitForTimeout(350);
+      const y = await page.evaluate(() => Math.round(window.scrollY));
+      if (y === last) break;
+      last = y;
+    }
+  };
+  const row = page.locator(`[role="switch"][aria-label="${en["settings.clicks"]}"]`);
+  const toSettings = async () => {
+    await go(page, "/settings/");
+    await row.waitFor({ timeout: 20000 });
+    await row.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(400);
+  };
+
+  await go(page, "/");
+  await toSettings();
+  const line = await page.getByText(en["settings.clicksHint"], { exact: true }).count();
+  must((await row.getAttribute("aria-checked")) === "true" && line === 1, `the row stands under Reading with its line, and is on (${await row.getAttribute("aria-checked")}, ${line} line)`);
+  must(printMockCheck(await checkMock(page, `.set-row:has([role="switch"][aria-label="${en["settings.clicks"]}"])`), "the clicks row in Settings"), "the row passes every rule of the mock check on the five palettes");
+  await page.screenshot({ path: path.join(SHOTS, "settings-clicks-390.png") });
+  await row.tap();
+  await page.waitForTimeout(300);
+  const kept = await page.evaluate(() => localStorage.getItem("purify:scroll-clicks"));
+  must((await row.getAttribute("aria-checked")) === "false" && kept === "off", `a finger turns it off, and the phone keeps the choice (${kept})`);
+
+  // Off: an event's steps by hand, and a rule prayed to its end.
+  await go(page, "/history/great-schism-1054/");
+  await page.waitForSelector("[data-event-thread] li[data-step]", { timeout: 20000 });
+  await page.evaluate(() => {
+    const t = document.querySelector("[data-event-thread]");
+    window.scrollTo({ top: window.scrollY + t.getBoundingClientRect().top - 140, behavior: "instant" });
+  });
+  await page.waitForTimeout(800);
+  const stepAt = () => page.evaluate(() => document.querySelector('[data-event-thread] li[aria-current="step"]')?.dataset.step ?? null);
+  await page.evaluate(() => (window.__pulses = []));
+  const firstStep = await stepAt();
+  await swipe(6);
+  const laterStep = await stepAt();
+  must(laterStep !== null && laterStep !== firstStep && (await pulses()) === 0, `off: a hand through an event's steps feels nothing (${await pulses()} clicks; from step ${firstStep} to ${laterStep})`);
+
+  await go(page, "/prayers/evening/");
+  await page.waitForSelector("[data-prayer-reader] [data-step]", { timeout: 20000 });
+  await page.waitForTimeout(900);
+  await page.evaluate(() => (window.__pulses = []));
+  await swipe(120);
+  const words = await page.evaluate(() => document.querySelector("[data-rule-end] [data-rule-complete-words]")?.textContent?.trim() ?? "");
+  must(words === en["prayers.reader.complete"] && (await pulses()) === 0, `off: a rule prayed to its end, each prayer passing and the rule completing, keeps the phone still (${await pulses()} clicks; "${words}")`);
+
+  // On again: the click comes back.
+  await toSettings();
+  await row.tap();
+  await page.waitForTimeout(300);
+  must((await row.getAttribute("aria-checked")) === "true" && (await page.evaluate(() => localStorage.getItem("purify:scroll-clicks"))) === null, "a finger turns it on again, and nothing is kept");
+  await go(page, "/history/great-schism-1054/");
+  await page.waitForSelector("[data-event-thread] li[data-step]", { timeout: 20000 });
+  await page.evaluate(() => {
+    const t = document.querySelector("[data-event-thread]");
+    window.scrollTo({ top: window.scrollY + t.getBoundingClientRect().top - 140, behavior: "instant" });
+  });
+  await page.waitForTimeout(800);
+  await page.evaluate(() => (window.__pulses = []));
+  await swipe(6);
+  must((await pulses()) >= 2, `on: the click is back as each step comes to the reading place (${await pulses()} clicks)`);
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+
+  // A browser never clicks, so the row is not offered there.
+  {
+    const { ctx, page, errors } = await open({ width: 1280, height: 860, phone: false });
+    await go(page, "/");
+    await go(page, "/settings/");
+    await page.waitForSelector('[role="switch"]', { timeout: 20000 });
+    await page.waitForTimeout(600);
+    const there = await page.locator(`[role="switch"][aria-label="${en["settings.clicks"]}"]`).count();
+    must(there === 0, `in a browser the row is not there (${there})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
 });
 
 await browser.close();

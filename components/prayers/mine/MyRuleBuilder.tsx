@@ -24,14 +24,13 @@ import {
   type MyRulePart,
 } from "@/lib/prayers/myRule";
 import { ruleIdForHour } from "@/lib/prayers/ruleForHour";
-import { ruleHeadArt } from "@/lib/prayers/serviceArt";
 import { useIntentions } from "@/lib/prayers/storage";
 import { readMyRule, useMyRule, writeMyRule } from "@/lib/prayers/useMyRule";
 
 import { ItemSheet } from "./ItemSheet";
 import { LibrarySheet } from "./LibrarySheet";
 import { RememberedIn } from "./RememberedIn";
-import { WayPicture, WayPlate, WayRow } from "./WayRow";
+import { WayPlate, WayRow } from "./WayRow";
 import { ReorderList, type ReorderRow } from "./ReorderList";
 
 /** How long "Removed ... Undo" stays. */
@@ -87,7 +86,7 @@ function listed(names: string[], locale: string): string {
  * its last day. Nothing is drawn for it before then.
  */
 export function MyRuleBuilder() {
-  const { t, tn, locale } = useTranslate();
+  const { t, locale } = useTranslate();
   const rule = useMyRule();
   const living = useIntentions("living");
   const departed = useIntentions("departed");
@@ -270,8 +269,6 @@ export function MyRuleBuilder() {
       : null;
 
   const panel = (p: MyRulePart) => {
-    const seed = seedOf(p);
-    const art = ruleHeadArt(p);
     return (
       <>
         {has(p) ? (
@@ -305,17 +302,10 @@ export function MyRuleBuilder() {
             {/* No placeholder (build 93 note 16): the part's start stands in the
                 head, and here its two ways in, said in one line. */}
             <p className="font-sans text-detail leading-[1.5] text-paper/70">{t("prayers.mine.emptyBody")}</p>
-            {/* The two ways in: one choice of two rows drawn alike, each saying what it brings. */}
+            {/* The other way in. The part's start is the head's pill, where Pray
+                my rule stands (build 93 note 16): drawn here too, it stood
+                twice on one screen, and the arbiter's word was to drop it. */}
             <div data-mine-ways className="set-panel mt-4">
-              <WayRow
-                lead={<WayPicture src={art.src} focus={art.focus} />}
-                label={p === "morning" ? t("prayers.mine.startFromMorning") : t("prayers.mine.startFromEvening")}
-                desc={t("prayers.mine.startFromWhat", {
-                  prayers: tn("prayers.reader.prayerCount", seed.length),
-                  minutes: t("today.minRead", { count: partMinutes(seed, lookup) }),
-                })}
-                onClick={() => save(addItems(rule, p, seed))}
-              />
               <WayRow
                 lead={
                   <WayPlate>

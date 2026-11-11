@@ -2663,6 +2663,8 @@
   "settings.fontHint": "La tipografía del texto principal.",
   "settings.sizeHint": "El tamaño con que se ve el texto principal con el zoom predeterminado.",
   "settings.interlinearHint": "Muestra el idioma original junto al inglés cuando el capítulo lo tiene.",
+  "settings.clicks": "Clics al desplazarte",
+  "settings.clicksHint": "Un clic ligero en la mano al pasar cada oración, capítulo o acontecimiento, y cuando una regla se completa. Desactivados, el teléfono queda quieto.",
   "settings.calendar": "El calendario",
   "settings.calendarHint": "Qué cómputo siguen el santo del día, el ayuno y las lecturas.",
   "settings.language": "Idioma",

@@ -2708,6 +2708,8 @@
   "settings.fontHint": "Krój tekstu głównego.",
   "settings.sizeHint": "Jak duży jest tekst główny przy domyślnym powiększeniu.",
   "settings.interlinearHint": "Pokazuj język oryginału obok angielskiego, gdy rozdział go zawiera.",
+  "settings.clicks": "Kliknięcia przy przewijaniu",
+  "settings.clicksHint": "Lekkie kliknięcie w dłoni, gdy mija każda modlitwa, rozdział lub wydarzenie, i gdy reguła jest ukończona. Wyłączone: telefon pozostaje nieruchomy.",
   "settings.calendar": "Kalendarz",
   "settings.calendarHint": "Według której rachuby wyznaczane są święty dnia, post i czytania.",
   "settings.language": "Język",

@@ -2669,6 +2669,8 @@
   "settings.fontHint": "The face of the body text.",
   "settings.sizeHint": "How large the body text appears at default zoom.",
   "settings.interlinearHint": "Show the original language beside the English when a chapter has it.",
+  "settings.clicks": "Clicks as you scroll",
+  "settings.clicksHint": "A light click in your hand as each prayer, chapter or event passes, and when a rule is complete. Off keeps the phone still.",
   "settings.calendar": "The calendar",
   "settings.calendarHint": "Which reckoning the saint of the day, the fast, and the readings follow.",
   "settings.language": "Language",

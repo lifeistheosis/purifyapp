@@ -25,9 +25,11 @@
 // path, no "continue from", no counter at the end. Begin always begins.
 //
 // When every prayer is marked the rule is kept for today
-// (markRuleCompletedToday, which the streak reads), the tap that finishes it
-// is felt in the phone apps (softTick), and the doxology says so, once and
-// quietly.
+// (markRuleCompletedToday, which the streak reads). Reaching the end is what
+// marks the last of them (build 93 note 14: no Amen button), and the end
+// answers once, with the click in the phone apps (softTick) and the
+// doxology settling in under the lampada's soft light
+// (service/RuleEnd.tsx).
 //
 // Each prayer's bookmark writes a `kind: 'prayer'` row to the Saved store
 // (and to the reader's account when signed in, through the bookmarks sync).
@@ -65,6 +67,7 @@ import { CommemorationStep } from "@/components/prayers/service/CommemorationSte
 import { PrayerLight } from "@/components/prayers/service/PrayerLight";
 import { ServiceHeader } from "@/components/prayers/service/ServiceHeader";
 import { PrayerStep } from "@/components/prayers/service/PrayerStep";
+import { RuleEnd } from "@/components/prayers/service/RuleEnd";
 import { useEasyScroll } from "@/components/prayers/service/useEasyScroll";
 import { goToPrayer, useLitLine } from "@/components/prayers/service/useLitLine";
 import { usePassedSteps } from "@/components/prayers/service/usePassedSteps";
@@ -80,8 +83,16 @@ import { markWallPrayed, unmarkWallPrayed, wallNamesFor } from "@/lib/prayers/wa
 
 /** The day's mark for "Those I pray for" where it is no prayer of the rule. */
 const COMMEMORATION_ID = "commemoration";
+/**
+ * How long the end's answer is held (build 93 note 14): past its last motion
+ * (globals.css, "The end of a rule": the pool and the lines after it end at
+ * 1400ms), then let go, so nothing can play it again. A pool shown again, by
+ * a palette changed at the end, would otherwise grow in a second time.
+ */
+const MOMENT_MS = 1600;
 import { isKept } from "@/lib/rhythm/marks";
-import { softTick } from "@/lib/ui/softTick";
+import { clicksOn } from "@/lib/ui/clicksSetting";
+import { quietMoment, softTick } from "@/lib/ui/softTick";
 import { textDir } from "@/lib/i18n/textDir";
 
 // Re-exported for back-compat: the rule pages import these as types.
@@ -212,16 +223,33 @@ export function PrayerRuleReader({
   const commemorationDone = done.has(commemorationId) && wall.every((n) => n.doneAt);
   const commemorationAt = commemorated ? placement.index : -1;
 
+  // The rule became complete during this visit: its end answers once (build
+  // 93 note 14). Set where the completion happens, never on opening a rule
+  // already complete today, which shows its end at rest.
+  const [moment, setMoment] = useState(false);
+  const letGo = useRef(0);
+
   function persist(next: Set<string>) {
     if (typeof window === "undefined") return;
     writeTodayDone(rule.id, [...next]);
     cache.delete(rule.id);
     if (total > 0 && rule.prayers.every((p) => next.has(p.id))) {
+      // Completing the rule is felt in the phone apps, as the end answers.
+      // `allDone` is how the rule stood before this, so a rule that was
+      // finished already neither clicks nor answers again. With Clicks as
+      // you scroll off (lib/ui/clicksSetting.ts) the moment is still, and so
+      // is the day it keeps: that tick comes from inside the mark
+      // (lib/streak/useStreak.ts), so the moment is quieted before it.
+      const completes = !allDone;
+      const felt = completes && clicksOn();
+      if (completes && !felt) quietMoment();
       markRuleCompletedToday(rule.id);
-      // The tap that finishes the rule is felt in the phone apps, as the
-      // closing line appears. `allDone` is how the rule stood before this
-      // tap, so a rule that was finished already does not tick again.
-      if (!allDone) softTick();
+      if (completes) {
+        if (felt) softTick();
+        setMoment(true);
+        window.clearTimeout(letGo.current);
+        letGo.current = window.setTimeout(() => setMoment(false), MOMENT_MS);
+      }
     }
   }
 
@@ -320,61 +348,40 @@ export function PrayerRuleReader({
           {commemorationAt === rule.prayers.length ? commemorationStep : null}
         </div>
 
-        {/* The end of the rule (1.9, build 89 note 7): one quiet Amen marks
-            the whole rule prayed, where a mark stood under every prayer. Once
-            it is, the doxology says so, once and quietly, with Reset beside it.
-            Nothing counts up to it and nothing is lost by not reaching it. */}
-        <div data-rule-end="" className="mt-4 flex flex-col items-center gap-3 border-t border-paper/10 pt-8 text-center">
-          {allDone ? (
-            <>
-              <p role="status" className="font-serif text-body italic leading-[1.6] text-paper/80">
-                {t("prayers.reader.complete")}
-              </p>
-              {/* The names from the prayer wall were marked with the rule and
-                  leave the reader's prayers now; said where they were let go. */}
-              {commemorationDone && wall.length > 0 ? (
-                <p className="font-sans text-caption text-paper/55">{t("prayers.wall.left")}</p>
-              ) : null}
-              <button
-                type="button"
-                onClick={() => {
-                  persist(new Set());
-                  if (wallIds.length > 0) updateWallNames((list) => unmarkWallPrayed(list, wallIds));
-                }}
-                disabled={!hydrated}
-                className="tap-press inline-flex min-h-11 items-center px-3 font-sans text-caption text-paper/55 hover:text-paper disabled:opacity-40"
-              >
-                {t("prayers.rope.reset")}
-              </button>
-            </>
-          ) : (
-            <button
-              type="button"
-              data-amen=""
-              onClick={() => {
-                persist(new Set([...rule.prayers.map((p) => p.id), ...(commemorated ? [commemorationId] : [])]));
-                if (wallIds.length > 0) updateWallNames((list) => markWallPrayed(list, wallIds));
-              }}
-              disabled={!hydrated}
-              className="tap-press inline-flex min-h-12 min-w-[160px] items-center justify-center rounded-[14px] border border-paper/15 bg-paper/[0.06] px-8 font-serif text-title-sm italic text-paper hover:border-paper/30 disabled:opacity-40"
-            >
-              {t("community.respond.amen")}
-            </button>
-          )}
-        </div>
+        {/* The end of the rule (build 93 note 14): reaching it completes the
+            rule, and it answers once (service/RuleEnd.tsx). No Amen button:
+            the last prayer is counted as every one before it, carried past
+            the reading place. So that a hand can carry it there, the end and
+            the source stand in room enough (62svh), on every rule however
+            short; a page whose last prayer could not pass the reading place
+            could never be completed. */}
+        <div data-rule-room="" className="min-h-[62svh]">
+          <RuleEnd
+            complete={allDone}
+            moment={moment}
+            wallLeft={commemorationDone && wall.length > 0 ? t("prayers.wall.left") : null}
+            onReset={() => {
+              window.clearTimeout(letGo.current);
+              setMoment(false);
+              persist(new Set());
+              if (wallIds.length > 0) updateWallNames((list) => unmarkWallPrayed(list, wallIds));
+            }}
+            resetDisabled={!hydrated}
+          />
 
-        {/* A reader's own rule has no one source: each of its prayers names its own. */}
-        {rule.source ? (
-          <footer className="mt-12 border-t border-paper/10 pt-6 text-center">
-            {/* "Source:" is the reader's word; the source itself is the rule's own language (build 90 note 4). */}
-            <p className="font-sans text-caption leading-[1.6] text-paper/50">
-              {t("prayers.reader.sourceLabel")}{" "}
-              <span lang={contentLocale} dir={textDir(contentLocale)}>
-                {rule.source}
-              </span>
-            </p>
-          </footer>
-        ) : null}
+          {/* A reader's own rule has no one source: each of its prayers names its own. */}
+          {rule.source ? (
+            <footer className="mt-12 border-t border-paper/10 pt-6 text-center">
+              {/* "Source:" is the reader's word; the source itself is the rule's own language (build 90 note 4). */}
+              <p className="font-sans text-caption leading-[1.6] text-paper/50">
+                {t("prayers.reader.sourceLabel")}{" "}
+                <span lang={contentLocale} dir={textDir(contentLocale)}>
+                  {rule.source}
+                </span>
+              </p>
+            </footer>
+          ) : null}
+        </div>
       </article>
     </>
   );

@@ -2661,6 +2661,8 @@
   "settings.fontHint": "Gövde metninin yazı tipi.",
   "settings.sizeHint": "Varsayılan yakınlaştırmada gövde metninin ne kadar büyük görüneceği.",
   "settings.interlinearHint": "Bir bölümde varsa özgün dili İngilizcenin yanında göster.",
+  "settings.clicks": "Kaydırırken tıklama",
+  "settings.clicksHint": "Her dua, bölüm veya olay geçerken ve bir kural tamamlandığında elinizde hafif bir tıklama. Kapalıyken telefon sabit kalır.",
   "settings.calendar": "Takvim",
   "settings.calendarHint": "Günün azizi, oruç ve okumalar hangi hesaba göre belirlenir.",
   "settings.language": "Dil",

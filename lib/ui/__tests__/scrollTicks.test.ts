@@ -274,3 +274,103 @@ describe("handTicks", () => {
     expect(p.loads).toBe(0);
   });
 });
+
+// Clicks as you scroll (1.9, ../clicksSetting.ts): one switch in Settings for
+// every click here. With it off a hand feels nothing, on a row or a wheel, and
+// the plugin is never loaded; it is read as the hand arrives, so it holds at
+// once on a row already in the page.
+describe("the clicks switch", () => {
+  const middles = Array.from({ length: 10 }, (_, i) => 20 + i * 40);
+
+  async function loadWith(on: () => boolean, p: ReturnType<typeof plugin>, platform: Platform = "android") {
+    vi.resetModules();
+    vi.doMock("@/lib/platform/native", () => ({
+      isNativeClient: () => platform !== null,
+      nativePlatform: () => platform,
+    }));
+    vi.doMock("@capacitor/haptics", p.factory);
+    vi.doMock("@/lib/ui/clicksSetting", () => ({ clicksOn: on }));
+    return import("../scrollTicks");
+  }
+
+  afterEach(() => {
+    vi.doUnmock("@/lib/ui/clicksSetting");
+  });
+
+  /** A finger dragging the row's middle from 50 to 140, past the items at 60 and 100. */
+  function drag(row: Row) {
+    row.fire("touchstart");
+    for (const left of [10, 30, 50, 70, 90]) {
+      clock += 100;
+      row.scrollTo(left);
+    }
+    row.fire("touchend");
+  }
+
+  it("off: a finger dragging a row past its items feels nothing, and the plugin is never loaded", async () => {
+    const p = plugin();
+    const { attachScrollTicks } = await loadWith(() => false, p);
+    const row = new Row(middles);
+    attachScrollTicks(row as unknown as HTMLElement);
+    drag(row);
+    await settle(250);
+    expect(p.calls).toEqual([]);
+    expect(p.loads).toBe(0);
+  });
+
+  it("off: a wheel or a page turned by hand (the atlas, the prayers, an event's steps) feels nothing", async () => {
+    const p = plugin();
+    const { handTicks } = await loadWith(() => false, p);
+    const hand = handTicks();
+    hand.tick();
+    clock += 100;
+    hand.tick();
+    hand.end();
+    await settle();
+    expect(p.calls).toEqual([]);
+    expect(p.loads).toBe(0);
+  });
+
+  it("off on an iPhone: not even the picker's start and end", async () => {
+    const p = plugin();
+    const { attachScrollTicks, handTicks } = await loadWith(() => false, p, "ios");
+    const row = new Row(middles);
+    attachScrollTicks(row as unknown as HTMLElement);
+    drag(row);
+    const hand = handTicks();
+    hand.tick();
+    hand.end();
+    await settle(250);
+    expect(p.calls).toEqual([]);
+  });
+
+  it("on: the same hand clicks as it always has", async () => {
+    const p = plugin();
+    const { attachScrollTicks, handTicks } = await loadWith(() => true, p);
+    const row = new Row(middles);
+    attachScrollTicks(row as unknown as HTMLElement);
+    drag(row);
+    await vi.waitFor(() => expect(p.calls).toEqual(["vibrate:10", "vibrate:10"]), soon);
+    clock += 100;
+    const hand = handTicks();
+    hand.tick();
+    hand.end();
+    await vi.waitFor(() => expect(p.calls).toEqual(["vibrate:10", "vibrate:10", "vibrate:10"]), soon);
+  });
+
+  it("is read as the hand arrives: turned off in Settings, a row already in the page goes still", async () => {
+    let on = true;
+    const p = plugin();
+    const { attachScrollTicks } = await loadWith(() => on, p);
+    const row = new Row(middles);
+    attachScrollTicks(row as unknown as HTMLElement);
+    on = false;
+    drag(row);
+    await settle(250);
+    expect(p.calls).toEqual([]);
+    on = true;
+    row.scrollLeft = 0;
+    drag(row);
+    await vi.waitFor(() => expect(p.calls).toEqual(["vibrate:10", "vibrate:10"]), soon);
+  });
+});
