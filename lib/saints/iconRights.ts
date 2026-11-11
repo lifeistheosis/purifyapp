@@ -2833,6 +2833,23 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://www.rijksmuseum.nl/en/collection/RP-P-2016-49-46-4",
   },
+  // St Isidora: the three older-looking icons of her on Commons give no
+  // maker, place or date, only their uploader's word that they are several
+  // hundred years old; this print's date and its freedom are shown by the
+  // volume it is cut from. Public domain by age, as the December volume's
+  // prints above are; cut about her inside the page, at its own pixels (the
+  // copy Commons serves is 500 pixels wide).
+  "isidora-of-tabenna.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A black and white print of a young woman in a veil drawn over her head and falling about her shoulders, her hands folded at her breast under her mantle, within a plain halo, on the page's white ground.",
+    work: "St Isidora, a print in the Russian Lives of the Saints after St Demetrius of Rostov, May volume",
+    artist: "Unknown",
+    workDate: "1903 to 1911",
+    source: "Wikimedia Commons (from the volume's scan)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%96%D0%B8%D1%82%D0%B8%D1%8F_%D0%A1%D0%B2%D1%8F%D1%82%D1%8B%D1%85_(1903-1911)_-_%D0%B8%D0%BA%D0%BE%D0%BD%D0%B0_09102_%D0%98%D1%81%D0%B8%D0%B4%D0%BE%D1%80%D0%B0.png",
+  },
 };
 
 /**

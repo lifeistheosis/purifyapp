@@ -1685,6 +1685,7 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "isidora-of-tabenna",
+ iconUrl: "/saints/icons/isidora-of-tabenna.jpg",
  pronoun: "her",
  byname: "The Fool-for-Christ",
  name: "St. Isidora of Tabenna",

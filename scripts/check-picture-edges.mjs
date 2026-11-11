@@ -92,6 +92,10 @@ const ACCEPTED = {
   // figure, in the block itself, and no cut inside it keeps the figure and his name whole.
   "saints/icons/adrian-of-rome.v2.jpg": "a woodcut of 1493, uncoloured: its own paper beside his cross, at the right",
   "saints/icons/theodosius-the-great.jpg": "a woodcut of 1493, uncoloured: its own paper round his head, his orb and his sceptre",
+  // Looked at on 2026-11-11, St Isidora's print in the Russian Lives of the Saints (May volume,
+  // 1903 to 1911): the print draws no ground behind her, so the light all round her is the page's
+  // own white inside the print's frame line, and any cut of her keeps it.
+  "saints/icons/isidora-of-tabenna.jpg": "a print of 1903 to 1911: the page's own white round her, inside its frame line (no ground is drawn behind her)",
   // Looked at on 2026-11-11, December's icons (docs/1.9-build/notes/december-saints.md,
   // push 2b) and one of November's: the light is the work's own. The 1904 prints
   // are cut inside their frame lines, so none of the page is left; what is light
