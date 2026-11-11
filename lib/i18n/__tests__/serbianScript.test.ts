@@ -43,7 +43,6 @@ const PHRASES: Array<[string, string]> = [
   ["Service Book of the Holy Orthodox-Catholic Apostolic Church", "a book's title, cited as it was published"],
   ["Supabase Dashboard → Authentication → Settings", "another service's screens, named as it shows them"],
   ["Manual Linking", "a setting of another service, named as it shows it"],
-  ["Buy Me a Coffee", "a service's name"],
   ["New King James", "a translation's name"],
   ["New International", "a translation's name"],
   ["New Living", "a translation's name"],

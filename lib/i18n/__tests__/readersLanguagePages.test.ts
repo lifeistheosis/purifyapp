@@ -43,7 +43,6 @@ describe("the pages that had German in them", () => {
       "components/about/AboutInReadersLanguage.tsx": /de: \(\) => import\("\.\/AboutDe"\)/,
       "components/privacy/PrivacyInReadersLanguage.tsx": /de: \(\) => import\("\.\/PrivacyDe"\)/,
       "components/faq/FaqInReadersLanguage.tsx": /de: \(\) => import\("\.\/FaqDe"\)/,
-      "components/support/SupportInReadersLanguage.tsx": /import\("\.\/SupportBody"\)[\s\S]*<Body \{\.\.\.props\} isDe \/>/,
       "components/whats-new/WhatsNewInReadersLanguage.tsx": /de: \(\) => import\("@\/data\/pages\/whats-new\.de\.json"\)/,
     };
     for (const [file, loads] of Object.entries(wrappers)) {
@@ -57,7 +56,10 @@ describe("the pages that had German in them", () => {
     expect(read("app/(app)/faq/page.tsx")).not.toMatch(/FaqDe|QUESTIONS_DE/);
     expect(read("app/(app)/privacy/page.tsx")).toContain('<PrivacyText lang="en" />');
     expect(read("app/(app)/privacy/page.tsx")).not.toContain('lang="de"');
-    expect(read("app/(app)/support/page.tsx")).toContain("<SupportBody native={native} data={data} isDe={false} />");
+    // Support's words are all the catalog's since its rewrite (1.9), so each
+    // reader reads their own language with no file of German of its own.
+    expect(read("app/(app)/support/page.tsx")).toContain("<SupportBody />");
+    expect(read("components/support/SupportBody.tsx")).not.toMatch(/isDe|[äöüÄÖÜß]/);
   });
 
   it("keep What's New's German words in its file, every one the page asks for", () => {
@@ -114,62 +116,18 @@ describe("an English page says English only where it is", () => {
   });
 });
 
-describe("Support's own words on the website say their language", () => {
-  // The website's Support page (the month's goal, the ways to give, the costs)
-  // writes its own English, or German for the German reader, beside the
-  // catalog's words in the reader's language. The apps do not draw this part
-  // (Apple 3.1.1), so the export walk cannot read it; this holds each line of
-  // the page's own words to saying so, with its direction (build 90 note 4).
-  it("every line of the page's own words is marked", () => {
+describe("Support writes no words of its own", () => {
+  // Until its rewrite (1.9, his word of 2026-11-11) the website's Support page
+  // wrote its own English, or German, beside the catalog's (the month's goal,
+  // the ways to give, the costs), and each such line had to say its language
+  // (build 90 note 4). Now every word on it is the catalog's, drawn by <T>, so
+  // every reader reads their own language and there is nothing to mark.
+  it("draws every word through the catalog", () => {
     const src = read("components/support/SupportBody.tsx");
-    const web = src.slice(src.indexOf("if (!data) return null;"));
-    // As the code writes them (a string's quotes, a template's words), so a comment naming a section is not taken for its line.
-    const phrases = [
-      '"This month’s goal"',
-      "`Live · refreshed",
-      '"of"',
-      '"supporters"',
-      '"How to give"',
-      "{d.label}",
-      "{d.note}",
-      '"Open →"',
-      '"Where the money goes"',
-      "{expensesAsOf}",
-      "{e.label}",
-      "{e.note}",
-      '"/mo"',
-      '"Monthly total"',
-      '"These figures come from',
-      '"The core stays free"',
-      '"Whatever you give',
-    ];
-    for (const phrase of phrases) {
-      // The drawn one, not an attribute (key={d.label}).
-      let at = web.indexOf(phrase);
-      while (at > 0 && web[at - 1] === "=") at = web.indexOf(phrase, at + 1);
-      expect(at, phrase).toBeGreaterThan(0);
-      for (let from = at; ; ) {
-        // The element that holds it: the nearest <p or <span opened before it and not yet closed.
-        const open = Math.max(web.lastIndexOf("<p ", from), web.lastIndexOf("<span ", from));
-        const tag = web.slice(open, web.indexOf(">", open) + 1);
-        const closes = web.slice(open, at).match(/<\/(p|span)>/g)?.length ?? 0;
-        const opens = web.slice(open + 1, at).match(/<(p|span)\b/g)?.length ?? 0;
-        if (closes > opens) {
-          from = open - 1;
-          continue;
-        }
-        // The app's English by hand, or the page's own language (German or English) with its direction from it (lib/i18n/textDir.ts).
-        expect(tag, phrase).toMatch(/\blang="en" dir="ltr"|\blang=\{own\} dir=\{textDir\(own\)\}/);
-        break;
-      }
-    }
-  });
-
-  it("the German page's time and date are German", () => {
-    const src = read("components/support/SupportBody.tsx");
-    expect(src).toContain("ago(live.fetchedAt, true)");
-    expect(src).not.toContain("aktualisiert vor ${ago(");
-    expect(src).toContain("lastUpdatedIn(true)");
+    const body = src.slice(src.indexOf("export function SupportBody"));
+    // No text between tags but a space: a word written into the page would show here.
+    expect(body.match(/>[^<>{}]*[A-Za-z][^<>{}]*</g) ?? []).toEqual([]);
+    expect(body).not.toMatch(/lang="en"|lang=\{own\}/);
   });
 });
 

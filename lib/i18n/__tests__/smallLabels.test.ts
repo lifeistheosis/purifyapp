@@ -99,8 +99,8 @@ const questions: Pair[] = Array.from(englishList.matchAll(/\bq: "([^"]+)",\s*k: 
 // These three are no longer written out anywhere in the source: the catalog
 // is the only place their English lives, so it is held here.
 const writtenOut: Pair[] = [
-  { key: "support.workBehindTheApp", english: "The work behind the app.", from: "the support screen in the apps, its heading" },
-  { key: "support.gladYouAreHere", english: "We are glad you are here.", from: "the support screen in the apps, its last line" },
+  { key: "support.title", english: "Where what Purify earns goes.", from: "the support screen, its heading (1.9: one page in the apps and on the website)" },
+  { key: "support.gladYouAreHere", english: "We are glad you are here.", from: "the support screen, its last line" },
   {
     key: "shop.couldntReachTheShop",
     english: "We couldn't reach the shop. Check your connection and try again.",
@@ -155,10 +155,10 @@ describe("the small labels", () => {
     expect(written.length).toBe(12);
     for (const question of written) expect(inCatalog.has(question), question).toBe(true);
 
-    // Drawn in English by the page and in German on the device, from one file (1.9).
+    // The support screen's German is the catalog's now, as every language's
+    // is (1.9, the page rewritten on his word): it writes out no German.
     const support = read("components/support/SupportBody.tsx");
-    expect(support).toContain(`? "${de["support.workBehindTheApp"]}"`);
-    expect(support).toContain(`? "${de["support.gladYouAreHere"]}"`);
+    expect(support).not.toMatch(/isDe|[äöüÄÖÜß]/);
   });
 });
 
@@ -228,7 +228,7 @@ describe("the screens that draw the small labels", () => {
     // into the apps for good (lib/i18n/__tests__/serverWords.test.ts).
     expect(faqList).toContain("{qa.k ? <T k={qa.k} /> : qa.q}");
     const support = read("components/support/SupportBody.tsx");
-    expect(support).toContain('<T k="support.workBehindTheApp" />');
+    expect(support).toContain('<T k="support.title" />');
     expect(support).toContain('<T k="support.gladYouAreHere" />');
   });
 });
