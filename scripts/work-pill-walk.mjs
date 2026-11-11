@@ -54,6 +54,9 @@ const say = (label, fine, seen) => {
   ok = ok && Boolean(fine);
 };
 
+/** A title's own numbering, where it opens with one: "Codex 6", "Conference 10". */
+const numberingOf = (title) => title.match(/^(?:Book|Conference|Sermon|Homily|Chapter|Discourse|Part|Codex|Hymn|Epistle|Letter) [0-9IVXLC]+(?=$|[\s.,:;])/)?.[0] ?? null;
+
 const pillName = (page) =>
   page.evaluate(() => {
     const button = document.querySelector("[data-work-pill] [data-pill-name]");
@@ -96,11 +99,13 @@ for (const key of WORKS) {
       const p = await pillName(page);
       seen.push(`${p?.text} (${p?.level})`);
       say(`${key} at ${width}, chapter ${sec.n}: the pill's name is whole`, p && p.text && p.cut.length === 0 && p.h >= 44, p);
-      // Where the pill says "Part 3", a screen reader still hears the chapter's own title (the work's, for a work of one section).
-      // A numbered name ("Codex 6", "Conference 1 · 2") is its full name already, and the contents list it by its number.
+      // Where the pill says "Part 3", a screen reader still hears the chapter's full name: its own
+      // title (the work's, for a work of one section), or for a numbered part ("Codex 6", which a
+      // work that goes by place calls "Part 4" too) its own numbered name.
       if (p?.text && /^Part \d+$/.test(p.text)) {
         asParts.push(sec);
-        const full = work.sections.length === 1 ? work.title : sec.title;
+        const numbered = numberingOf(sec.title);
+        const full = numbered ?? (work.sections.length === 1 ? work.title : sec.title);
         say(`${key} at ${width}, chapter ${sec.n}: a screen reader hears its full name`, Boolean(p.aria?.includes(full)), p.aria);
       }
     }
@@ -108,8 +113,14 @@ for (const key of WORKS) {
       // The contents the name opens name every chapter in full (their own words, after any numbering).
       await page.click("[data-work-pill] [data-pill-name]");
       await page.waitForTimeout(800);
-      const sheet = await page.evaluate(() => document.querySelector('[role="dialog"]')?.textContent ?? "");
-      const missing = asParts.filter((s) => !sheet.includes(s.title.slice(-24))).map((s) => s.n);
+      const sheet = await page.evaluate(() => document.querySelector('[role="dialog"]')?.innerText ?? "");
+      // A titled chapter by its own words; a numbered one by its number in the grid of its part.
+      const tokens = new Set(sheet.split(/\s+/));
+      const named = (sec) => {
+        const numbered = numberingOf(sec.title);
+        return numbered ? tokens.has(numbered.split(" ")[1]) : sheet.includes(sec.title.slice(-24));
+      };
+      const missing = asParts.filter((sec) => !named(sec)).map((sec) => sec.n);
       say(`${key}: the contents name in full each chapter the pill calls by its place (${asParts.length})`, missing.length === 0, { missing });
       await page.keyboard.press("Escape");
       await page.waitForTimeout(500);
