@@ -1282,5 +1282,45 @@
   "group": "footnote",
   "now": "",
   "not": "he may not seem to pay court.\""
+ },
+ {
+  "work": "john-chrysostom/homilies-on-john",
+  "n": 21,
+  "i": 2,
+  "group": "printersSlip",
+  "now": "Son of God’ but",
+  "not": "Son of God\" but"
+ },
+ {
+  "work": "john-chrysostom/homilies-on-2-corinthians",
+  "n": 3,
+  "i": 19,
+  "group": "printersSlip",
+  "now": "minded.’ For though",
+  "not": "minded.’ ‘For though"
+ },
+ {
+  "work": "john-chrysostom/homilies-on-2-corinthians",
+  "n": 13,
+  "i": 14,
+  "group": "printersSlip",
+  "now": "saith he, nor go near them.’",
+  "not": "saith he, ‘nor go near them.’"
+ },
+ {
+  "work": "john-chrysostom/homilies-on-2-corinthians",
+  "n": 17,
+  "i": 24,
+  "group": "printersSlip",
+  "now": "God.’ Give ye",
+  "not": "God.’ ‘Give ye"
+ },
+ {
+  "work": "john-chrysostom/homilies-on-2-corinthians",
+  "n": 28,
+  "i": 1,
+  "group": "printersSlip",
+  "now": "him the ‘spoil, refused",
+  "not": "him the spoil, refused"
  }
 ]

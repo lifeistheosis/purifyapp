@@ -28,9 +28,11 @@
 // Nothing else moved: every edit stands inside its paragraph, so no reader's
 // mark moves, and every copy of a changed paragraph on the Bible's rail and
 // in the plans' sayings was given the same words: no rail note that stood
-// whole in its section stopped doing so, and 15 more now do. Six places
-// where the page is itself inconsistent (a printer's slip) are not here:
-// they wait for the owner's word.
+// whole in its section stopped doing so, and 15 more now do. Where the page
+// is itself inconsistent (a printer's slip) it is followed as printed, on
+// the owner's standing yes (F-49): John, Homily 21:2 and 2 Corinthians,
+// Homilies 3:19, 13:14, 17:24 and 28:1 (printersSlip); 2 Corinthians 8:17
+// already stood as printed.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -55,7 +57,7 @@ function paragraph(work: string, n: number, i: number): string | undefined {
 
 describe("the Fathers' quotation marks, as the printed page has them", () => {
   it("holds every mark and every restored line read against the page", () => {
-    expect(EDITS.length).toBe(163);
+    expect(EDITS.length).toBe(168);
     const wrong: string[] = [];
     for (const e of EDITS) {
       const p = paragraph(e.work, e.n, e.i);
