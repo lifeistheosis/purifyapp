@@ -1006,6 +1006,8 @@
   "saints.notes": "Notes",
   "saints.notesOn": "Notes on {title}",
   "saints.eventsDuringLife": "Events during this saint's life",
+  "saints.suggest.line": "What would you add to this life, and where is it written?",
+  "saints.suggest.link": "Suggest an addition",
   "saints.saveAria": "Save {name} to your saved list",
   "saints.saveRemoveAria": "Remove {name} from your saved list",
   "saints.inOrthodoxHistory": "In Orthodox History",

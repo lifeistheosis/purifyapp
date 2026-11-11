@@ -1004,6 +1004,8 @@
   "saints.notes": "Catatan",
   "saints.notesOn": "Catatan tentang {title}",
   "saints.eventsDuringLife": "Peristiwa semasa hidup orang kudus ini",
+  "saints.suggest.line": "Apa yang akan Anda tambahkan pada riwayat ini, dan di mana hal itu tertulis?",
+  "saints.suggest.link": "Usulkan tambahan",
   "saints.saveAria": "Simpan {name} ke daftar simpanan Anda",
   "saints.saveRemoveAria": "Hapus {name} dari daftar simpanan Anda",
   "saints.inOrthodoxHistory": "Dalam Sejarah Ortodoks",

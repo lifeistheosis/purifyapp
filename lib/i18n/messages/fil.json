@@ -1006,6 +1006,8 @@
   "saints.notes": "Mga tala",
   "saints.notesOn": "Mga tala sa {title}",
   "saints.eventsDuringLife": "Mga pangyayari noong panahon ng santong ito",
+  "saints.suggest.line": "Ano ang idaragdag mo sa buhay na ito, at saan ito nakasulat?",
+  "saints.suggest.link": "Magmungkahi ng dagdag",
   "saints.saveAria": "I-save si {name} sa iyong listahan",
   "saints.saveRemoveAria": "Alisin si {name} sa iyong listahan",
   "saints.inOrthodoxHistory": "Sa Kasaysayang Ortodokso",

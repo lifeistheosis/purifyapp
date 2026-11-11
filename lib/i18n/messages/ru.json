@@ -1030,6 +1030,8 @@
   "saints.notes": "Заметки",
   "saints.notesOn": "Заметки к {title}",
   "saints.eventsDuringLife": "События при жизни этого святого",
+  "saints.suggest.line": "Что бы вы добавили к этому житию и где это написано?",
+  "saints.suggest.link": "Предложить дополнение",
   "saints.saveAria": "Сохранить {name} в список сохранённого",
   "saints.saveRemoveAria": "Убрать {name} из списка сохранённого",
   "saints.inOrthodoxHistory": "В православной истории",

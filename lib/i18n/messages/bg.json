@@ -1006,6 +1006,8 @@
   "saints.notes": "Бележки",
   "saints.notesOn": "Бележки към {title}",
   "saints.eventsDuringLife": "Събития приживе на този светец",
+  "saints.suggest.line": "Какво бихте добавили към това житие и къде е написано?",
+  "saints.suggest.link": "Предложете допълнение",
   "saints.saveAria": "Запазете {name} в списъка със запазени",
   "saints.saveRemoveAria": "Премахнете {name} от списъка със запазени",
   "saints.inOrthodoxHistory": "В православната история",

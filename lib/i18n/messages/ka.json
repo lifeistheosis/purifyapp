@@ -1006,6 +1006,8 @@
   "saints.notes": "შენიშვნები",
   "saints.notesOn": "შენიშვნები: {title}",
   "saints.eventsDuringLife": "მოვლენები ამ წმინდანის სიცოცხლეში",
+  "saints.suggest.line": "რას დაამატებდით ამ ცხოვრებას და სად წერია ეს?",
+  "saints.suggest.link": "დამატების შეთავაზება",
   "saints.saveAria": "{name}-ის შენახვა თქვენს სიაში",
   "saints.saveRemoveAria": "{name}-ის ამოღება თქვენი სიიდან",
   "saints.inOrthodoxHistory": "მართლმადიდებლურ ისტორიაში",

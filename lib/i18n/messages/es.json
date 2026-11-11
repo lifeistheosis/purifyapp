@@ -1008,6 +1008,8 @@
   "saints.notes": "Notas",
   "saints.notesOn": "Notas sobre {title}",
   "saints.eventsDuringLife": "Sucesos durante la vida de este santo",
+  "saints.suggest.line": "¿Qué añadiría a esta vida y dónde está escrito?",
+  "saints.suggest.link": "Sugerir una adición",
   "saints.saveAria": "Guardar a {name} en tu lista",
   "saints.saveRemoveAria": "Quitar a {name} de tu lista",
   "saints.inOrthodoxHistory": "En la Historia Ortodoxa",

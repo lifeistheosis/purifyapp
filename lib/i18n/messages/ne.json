@@ -1006,6 +1006,8 @@
   "saints.notes": "टिप्पणीहरू",
   "saints.notesOn": "{title} माथिका टिप्पणीहरू",
   "saints.eventsDuringLife": "यी सन्तको जीवनकालका घटनाहरू",
+  "saints.suggest.line": "यो जीवनीमा तपाईं के थप्नुहुन्छ, र त्यो कहाँ लेखिएको छ?",
+  "saints.suggest.link": "थप सुझाव दिनुहोस्",
   "saints.saveAria": "{name} लाई आफ्नो सुरक्षित सूचीमा राख्नुहोस्",
   "saints.saveRemoveAria": "{name} लाई आफ्नो सुरक्षित सूचीबाट हटाउनुहोस्",
   "saints.inOrthodoxHistory": "अर्थोडक्स इतिहासमा",

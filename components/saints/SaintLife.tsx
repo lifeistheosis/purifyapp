@@ -14,6 +14,7 @@ import { SaintLifeIn, SaintShortBio, SaintTitlesIn } from "./SaintInReadersLangu
 import { LifeSection } from "./LifeSection";
 import { QuotesSection } from "./QuotesSection";
 import { SaintFacts } from "./SaintFacts";
+import { SuggestAddition } from "./SuggestAddition";
 import { TitlesSection } from "./TitlesSection";
 
 /**
@@ -42,7 +43,7 @@ export function SaintLife({
 }: {
   saint: Pick<
     Saint,
-    "slug" | "shortBio" | "entrySource" | "life" | "titles" | "greatFeasts" | "quotes" | "disciples" | "pronoun" | "featured" | "born" | "reposed" | "see" | "feastDays"
+    "slug" | "name" | "shortBio" | "entrySource" | "life" | "titles" | "greatFeasts" | "quotes" | "disciples" | "pronoun" | "featured" | "born" | "reposed" | "see" | "feastDays"
   >;
   events: HistoryEventMeta[];
   /** The account of his miracles (MiraclesSection), when there is one. */
@@ -115,6 +116,8 @@ export function SaintLife({
           <LifeSection paragraphs={saint.life} sources={lifeSources} saint={saint.slug} />
         </SaintLifeIn>
       </div>
+      {/* What would you add, and where is it written (1.9, call 24): under every life. */}
+      <SuggestAddition name={saint.name} />
       {after.map((section) => (
         <div key={section.key} className={cn("mt-12 border-t border-paper/8 pt-10", section.className)}>
           {section.node}

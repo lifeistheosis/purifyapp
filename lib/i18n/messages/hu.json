@@ -1006,6 +1006,8 @@
   "saints.notes": "Jegyzetek",
   "saints.notesOn": "Jegyzetek ehhez: {title}",
   "saints.eventsDuringLife": "Események a szent életében",
+  "saints.suggest.line": "Mit tennél hozzá ehhez az élettörténethez, és hol van ez megírva?",
+  "saints.suggest.link": "Kiegészítés javaslata",
   "saints.saveAria": "{name} mentése a listádra",
   "saints.saveRemoveAria": "{name} eltávolítása a listádról",
   "saints.inOrthodoxHistory": "Az ortodox történelemben",

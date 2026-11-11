@@ -1018,6 +1018,8 @@
   "saints.notes": "Белешке",
   "saints.notesOn": "Белешке уз {title}",
   "saints.eventsDuringLife": "Догађаји за живота овог светитеља",
+  "saints.suggest.line": "Шта бисте додали овом житију и где је то записано?",
+  "saints.suggest.link": "Предложите допуну",
   "saints.saveAria": "Сачувајте {name} на списак сачуваног",
   "saints.saveRemoveAria": "Уклоните {name} са списка сачуваног",
   "saints.inOrthodoxHistory": "У православној историји",

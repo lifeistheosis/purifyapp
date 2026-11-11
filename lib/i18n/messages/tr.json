@@ -1006,6 +1006,8 @@
   "saints.notes": "Notlar",
   "saints.notesOn": "{title} üzerine notlar",
   "saints.eventsDuringLife": "Bu azizin yaşadığı dönemdeki olaylar",
+  "saints.suggest.line": "Bu hayat hikâyesine ne eklerdiniz ve bu nerede yazılı?",
+  "saints.suggest.link": "Ekleme önerin",
   "saints.saveAria": "{name} adlı azizi listenize kaydedin",
   "saints.saveRemoveAria": "{name} adlı azizi listenizden çıkarın",
   "saints.inOrthodoxHistory": "Ortodoks Tarihinde",

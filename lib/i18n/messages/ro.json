@@ -1025,6 +1025,8 @@
   "saints.notes": "Însemnări",
   "saints.notesOn": "Însemnări la {title}",
   "saints.eventsDuringLife": "Evenimente din timpul vieții acestui sfânt",
+  "saints.suggest.line": "Ce ați adăuga la această viață și unde este scris?",
+  "saints.suggest.link": "Propuneți o completare",
   "saints.saveAria": "Salvează-l pe {name} în lista ta",
   "saints.saveRemoveAria": "Scoate-l pe {name} din lista ta",
   "saints.inOrthodoxHistory": "În istoria ortodoxă",

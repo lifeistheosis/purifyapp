@@ -1006,6 +1006,8 @@
   "saints.notes": "Σημειώσεις",
   "saints.notesOn": "Σημειώσεις για {title}",
   "saints.eventsDuringLife": "Γεγονότα κατά τη διάρκεια της ζωής αυτού του αγίου",
+  "saints.suggest.line": "Τι θα προσθέτατε σε αυτόν τον βίο, και πού είναι γραμμένο;",
+  "saints.suggest.link": "Προτείνετε μια προσθήκη",
   "saints.saveAria": "Αποθηκεύστε τον/την {name} στη λίστα αποθηκευμένων",
   "saints.saveRemoveAria": "Αφαιρέστε τον/την {name} από τη λίστα αποθηκευμένων",
   "saints.inOrthodoxHistory": "Στην Ορθόδοξη Ιστορία",

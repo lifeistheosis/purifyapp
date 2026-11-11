@@ -1029,6 +1029,8 @@
   "saints.notes": "Нотатки",
   "saints.notesOn": "Нотатки до {title}",
   "saints.eventsDuringLife": "Події за життя цього святого",
+  "saints.suggest.line": "Що б ви додали до цього житія і де це записано?",
+  "saints.suggest.link": "Запропонувати доповнення",
   "saints.saveAria": "Зберегти {name} до списку збереженого",
   "saints.saveRemoveAria": "Прибрати {name} зі списку збереженого",
   "saints.inOrthodoxHistory": "У православній історії",

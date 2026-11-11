@@ -1032,6 +1032,8 @@
   "saints.notes": "Notatki",
   "saints.notesOn": "Notatki do {title}",
   "saints.eventsDuringLife": "Wydarzenia z czasów życia tego świętego",
+  "saints.suggest.line": "Co warto dodać do tego żywotu i gdzie jest to zapisane?",
+  "saints.suggest.link": "Zaproponuj uzupełnienie",
   "saints.saveAria": "Zapisz {name} na swojej liście",
   "saints.saveRemoveAria": "Usuń {name} ze swojej listy",
   "saints.inOrthodoxHistory": "W historii prawosławia",

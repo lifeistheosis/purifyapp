@@ -1046,6 +1046,8 @@
   "saints.notes": "ملاحظات",
   "saints.notesOn": "ملاحظات على {title}",
   "saints.eventsDuringLife": "أحداث في زمن هذا القديس",
+  "saints.suggest.line": "ما الذي تضيفه إلى هذه السيرة، وأين هو مكتوب؟",
+  "saints.suggest.link": "اقترح إضافة",
   "saints.saveAria": "احفظ {name} في قائمة المحفوظات",
   "saints.saveRemoveAria": "أزل {name} من قائمة المحفوظات",
   "saints.inOrthodoxHistory": "في التاريخ الأرثوذكسي",
