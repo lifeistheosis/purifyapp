@@ -1848,8 +1848,13 @@ function PostCardInner({
                 <p className="font-sans text-caption leading-relaxed text-paper/50">{t("community.askThreadNote")}</p>
               ) : null}
               {repliesState === "loading" && replies === null ? (
+                // As many rows as the post says it has replies, three at most, so what opens
+                // is near the size of what arrives: with two rows whatever the count, a
+                // thread with no replies opened 254px tall and folded back to 67px a moment
+                // later. Busy while it waits, which is also what the page follows it by
+                // (lib/ui/showOpened.ts).
                 <div aria-busy aria-label={t("community.loadingReplies")}>
-                  <SkeletonList rows={2} />
+                  <SkeletonList rows={Math.min(Math.max(post.reply_count, 0), 3)} />
                 </div>
               ) : repliesState === "error" && replies === null ? (
                 <div className="rounded-lg border border-paper/10 bg-black/20 p-4 text-center">
@@ -1868,11 +1873,15 @@ function PostCardInner({
                 orderedReplies.map((r) => {
                   if (r.author_muted && !opened.has(r.id)) {
                     return (
+                      // A row a finger can meet (it stood at 35px, made of its padding
+                      // and one line), with a fine whole edge: a dashed box reads as a
+                      // place where something is missing (build 93 note 4), and this is a
+                      // reply that is there. Its words start where the reader's language does.
                       <button
                         key={r.id}
                         type="button"
                         onClick={() => setOpened((s) => new Set(s).add(r.id))}
-                        className="block w-full rounded-lg border border-dashed border-paper/12 px-3 py-2 text-left font-sans text-caption text-paper/45 hover:text-paper/70"
+                        className="flex min-h-11 w-full items-center rounded-lg border border-paper/12 px-3 py-2 text-start font-sans text-caption text-paper/45 hover:text-paper/70"
                       >
                         {t("community.mutedReply")}
                       </button>

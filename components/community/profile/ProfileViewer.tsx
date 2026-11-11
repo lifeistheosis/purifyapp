@@ -634,7 +634,7 @@ export function ProfileViewer({
                         setLoaded({ state: "loading" });
                         setVersion((v) => v + 1);
                       }}
-                      className="mt-4 inline-flex items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
+                      className="mt-4 inline-flex min-h-11 items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
                     >
                       {t("community.tryAgain")}
                     </button>

@@ -146,7 +146,7 @@ export function ModerationClient() {
               setLoaded({ state: "loading" });
               void load();
             }}
-            className="mt-3 inline-flex items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
+            className="mt-3 inline-flex min-h-11 items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
           >
             {t("community.tryAgain")}
           </button>
@@ -171,7 +171,8 @@ export function ModerationClient() {
                 aria-selected={tab === id}
                 onClick={() => setTab(id)}
                 className={cn(
-                  "rounded-pill px-4 py-1.5 font-sans text-detail font-semibold transition-colors",
+                  // 32px drawn, inside the switch's own pill; 44 to the touch (.hit-44), the two side by side.
+                  "hit-44 rounded-pill px-4 py-1.5 font-sans text-detail font-semibold transition-colors",
                   tab === id ? "bg-paper text-night" : "text-paper/65 hover:text-paper",
                 )}
               >
@@ -258,7 +259,7 @@ function Gate({ text, href, cta }: { text: string; href: string; cta: string }) 
   return (
     <div className="mt-6 rounded-2xl border border-paper/10 bg-paper/[0.03] p-6 text-center">
       <p className="font-sans text-ui text-paper/75">{text}</p>
-      <Link href={href} className="mt-3 inline-flex items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night">
+      <Link href={href} className="mt-3 inline-flex min-h-11 items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night">
         {cta}
       </Link>
     </div>

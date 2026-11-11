@@ -427,7 +427,13 @@ const MAX_SIZED_SMALL_TARGETS = 0;
 // pill (both navs), profile's See all and its segmented choices, and the
 // shared Share pill keep their look and are 44 to the touch (.hit-44). Left:
 // Community's 5 (Fable Themes).
-const MAX_PADDED_SMALL_TARGETS = 5;
+// 5 -> 0 the next morning (Fable Themes): Community's five. A muted reply's
+// folded row in a thread (35px) is 44 tall; the moderators' page's Try again
+// and its way back, and a profile's Try again (38px each), are 44 tall
+// (min-h-11); the moderators' two tabs, 32px inside their own pill, keep
+// their look and are 44 to the touch (.hit-44). None is left. IT MAY ONLY
+// FALL, and from here that means it stays at none.
+const MAX_PADDED_SMALL_TARGETS = 0;
 
 describe("touch targets", () => {
   const { total, byFile, written, writtenByFile, sized, sizedByFile, padded, paddedByFile } = countSmallTargets();
