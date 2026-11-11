@@ -15,6 +15,7 @@ vi.mock("../motion", () => ({ prefersReducedMotion: () => motionOff }));
 vi.mock("../readingPlace", () => ({ visibleBand: () => band }));
 
 import {
+  BUSY_WATCH_MS,
   CATCH_UP_MS,
   CLEAR_PX,
   IN_PLACE_ATTR,
@@ -220,6 +221,28 @@ function prayerBook(b: ReturnType<typeof stubBrowser>) {
     chapters.height += grew;
   };
   return { chapters, title, page, openTo };
+}
+
+/**
+ * Community as it was measured on the export, online (2026-11-11): a post's
+ * "3 replies" 600px down the screen, and its part opened on two grey rows
+ * that end in sight over the tab bar and say they are busy while the replies
+ * come from the website. `on` is what says so: the grey rows' own box, as
+ * Community has it, or the part itself.
+ */
+function replies(b: ReturnType<typeof stubBrowser>, on: "rows" | "part" = "rows") {
+  const control = b.el("button", 600, 36, { attrs: { "aria-expanded": "true", "aria-controls": "replies" } });
+  const part = b.el("div", 650, 96, { attrs: on === "part" ? { id: "replies", "aria-busy": "true" } : { id: "replies" } });
+  const rows = b.el("div", 650, 96, { within: part, attrs: on === "rows" ? { "aria-busy": "true" } : {} });
+  (part as Fake & { querySelector: (selector: string) => Fake | null }).querySelector = (selector) =>
+    selector === '[aria-busy="true"]' && rows.isConnected && rows.attrs["aria-busy"] === "true" ? rows : null;
+  /** The replies come: the grey rows go, and the part is as tall as they are. */
+  const arrive = (height: number) => {
+    rows.isConnected = false;
+    delete part.attrs["aria-busy"];
+    part.height = height;
+  };
+  return { control, part, arrive };
 }
 
 /** The helper, asked with the fakes: they are elements as far as it looks. */
@@ -477,6 +500,96 @@ describe("the page moves with what has opened", () => {
     });
     expect(ran).toBeLessThanOrEqual(Math.ceil(WATCH_MS / FRAME_MS) + 1);
     expect(isShowingOpened()).toBe(false);
+  });
+
+  // A part that is still filling has not arrived (1.9, the pre-build gate,
+  // 2026-11-11). The two grey rows ended in sight, the watch let go after
+  // its 0.4s, and the replies then landed with their end 939px down a screen
+  // whose tab bar began well above that.
+  it("a part that says it is still filling is not let go for being still, and what comes is followed", () => {
+    for (const on of ["rows", "part"] as const) {
+      const b = stubBrowser();
+      const post = replies(b, on);
+      follow(post.part, { head: post.control, tapped: 600 });
+      // A second and a half of grey rows, in sight, nothing to move: longer than any opening is watched.
+      const waiting = Math.ceil(1500 / FRAME_MS);
+      expect(waiting * FRAME_MS).toBeGreaterThan(WATCH_MS);
+      for (let i = 0; i < waiting; i += 1) b.frame();
+      expect(b.moved(), on).toBe(0);
+      expect(isShowingOpened(), on).toBe(true);
+      // The replies land, their end 939px down the screen.
+      post.arrive(289);
+      expect(post.part.getBoundingClientRect().bottom).toBe(939);
+      b.run();
+      // The page has gone with them: their end stands clear of the tab bar, and it is over.
+      expect(b.moved(), on).toBeCloseTo(939 - (806 - CLEAR_PX), 5);
+      expect(post.part.getBoundingClientRect().bottom, on).toBeCloseTo(806 - CLEAR_PX, 5);
+      expect(isShowingOpened(), on).toBe(false);
+      resetShowOpenedForTests();
+    }
+  });
+
+  it("what has arrived is given an opening's own time, and no more", () => {
+    const b = stubBrowser();
+    const post = replies(b);
+    follow(post.part, { head: post.control, tapped: 600 });
+    const waiting = Math.ceil(2000 / FRAME_MS);
+    for (let i = 0; i < waiting; i += 1) b.frame();
+    // They arrive in sight, and a picture in them begins to unfold a moment later: it is still followed.
+    post.arrive(120);
+    const quiet = Math.floor(SETTLE_MS / FRAME_MS) - 2;
+    for (let i = 0; i < quiet; i += 1) b.frame();
+    expect(isShowingOpened()).toBe(true);
+    expect(b.moved()).toBe(0);
+    post.part.height = 300;
+    b.frame();
+    expect(b.moved()).toBeGreaterThan(0);
+    // And replies that never stop growing are let go after an opening's time, counted from when they came.
+    let tall = 300;
+    const ran = b.run(1000, () => {
+      tall += 40;
+      post.part.height = tall;
+    });
+    expect(ran).toBeLessThanOrEqual(Math.ceil(WATCH_MS / FRAME_MS) + 1);
+    expect(isShowingOpened()).toBe(false);
+  });
+
+  it("with Purify's motion off the page is with them at once when they come", () => {
+    motionOff = true;
+    const b = stubBrowser();
+    const post = replies(b);
+    follow(post.part, { head: post.control, tapped: 600 });
+    for (let i = 0; i < 60; i += 1) b.frame();
+    post.arrive(289);
+    b.frame();
+    expect(b.state.scrolls).toEqual([939 - (806 - CLEAR_PX)]);
+  });
+
+  it("it is not waited for for ever", () => {
+    const b = stubBrowser();
+    const post = replies(b);
+    follow(post.part, { head: post.control, tapped: 600 });
+    const ran = b.run(5000);
+    expect(ran).toBeGreaterThan(Math.ceil(WATCH_MS / FRAME_MS) + 1);
+    expect(ran).toBeLessThanOrEqual(Math.ceil(BUSY_WATCH_MS / FRAME_MS) + 1);
+    expect(isShowingOpened()).toBe(false);
+    // What comes after that moves nothing.
+    post.arrive(289);
+    b.run();
+    expect(b.moved()).toBe(0);
+  });
+
+  it("the reader's hand ends the wait: replies that come late pull nobody back", () => {
+    const b = stubBrowser();
+    const post = replies(b);
+    follow(post.part, { head: post.control, tapped: 600 });
+    for (let i = 0; i < 30; i += 1) b.frame();
+    expect(isShowingOpened()).toBe(true);
+    b.fire("touchmove");
+    expect(isShowingOpened()).toBe(false);
+    post.arrive(289);
+    b.run();
+    expect(b.moved()).toBe(0);
   });
 
   it("a part taken away ends it, and a new opening ends the last", () => {

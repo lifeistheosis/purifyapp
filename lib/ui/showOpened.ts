@@ -38,6 +38,18 @@
  *
  * The reader's hand ends it at once: a touch, a drag, a wheel, a key.
  *
+ * A part that is still filling has not arrived (1.9, the pre-build gate,
+ * 2026-11-11). Community's "3 replies" opens on two grey rows while the
+ * replies come from the website, and says so (`aria-busy`). The grey rows
+ * ended in sight, the page was still, the watch let go after its 0.4s, and
+ * the replies then landed under the tab bar with nothing watching: their end
+ * 939px down a screen whose bar stood at 761px. So while what opened says it
+ * is busy, itself or anything in it, the watch does not end on "still", and
+ * its moment (WATCH_MS, SETTLE_MS) begins when it stops saying so: what has
+ * arrived is followed as anything that opens is. It is not waited for for
+ * ever (BUSY_WATCH_MS), and the reader's hand ends it as before: a reader
+ * who has moved on is not pulled back to replies that come late.
+ *
  * Nothing calls this by hand. One mount at the root
  * (components/nav/OpenedBridge.tsx) hears a tap on anything that says it
  * opens something (`aria-expanded`, a `<summary>`), and when that control
@@ -59,6 +71,12 @@ export const CLEAR_PX = 12;
 
 /** How long an opening is watched, at most. */
 export const WATCH_MS = 1400;
+
+/** How long a part that says it is still filling is waited for, at most. */
+export const BUSY_WATCH_MS = 12000;
+
+/** What says it is still filling: `aria-busy`, on the part or on anything in it. */
+const BUSY = '[aria-busy="true"]';
 
 /** It is not let go before this, so a fold that starts a moment late is still followed. */
 export const SETTLE_MS = 360;
@@ -159,6 +177,12 @@ function moveBy(where: Where, by: number): void {
   }
 }
 
+/** Whether what opened says it is still filling: itself, or anything in it. */
+function isFilling(part: Element): boolean {
+  if (part.getAttribute("aria-busy") === "true") return true;
+  return typeof part.querySelector === "function" && part.querySelector(BUSY) !== null;
+}
+
 /** Ends the following. Safe to call at any time. */
 export function endShowOpened(): void {
   stopWatching?.();
@@ -191,6 +215,8 @@ export function showOpened(
   endShowOpened();
   const glide = smooth ?? !prefersReducedMotion();
   const began = now();
+  // When it arrived: as it opened, or when it last said it was still filling.
+  let arrived = began;
   let last = began;
   let moved = 0;
   let steady = 0;
@@ -242,8 +268,11 @@ export function showOpened(
     }
     first = false;
     steady = by < 0.5 ? steady + 1 : 0;
-    const spent = at - began;
-    if (spent >= WATCH_MS || (steady >= STEADY_FRAMES && spent >= SETTLE_MS)) {
+    // Still filling: it has not arrived, and being still is not being done.
+    const filling = isFilling(part);
+    if (filling) arrived = at;
+    const spent = at - arrived;
+    if (at - began >= BUSY_WATCH_MS || (!filling && (spent >= WATCH_MS || (steady >= STEADY_FRAMES && spent >= SETTLE_MS)))) {
       stop();
       return;
     }

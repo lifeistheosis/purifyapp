@@ -20,8 +20,9 @@
 // the prayer book as he had it in build 93 (every chapter shut, the second
 // opened), with a chapter open above, at the foot of the screen, and with
 // Purify's motion off; the FAQ's answers near the foot; the Terms' and the
-// Privacy Policy's Contents; What's new's months and its newest note. After
-// them, a sweep: on each page listed, every control that says it opens
+// Privacy Policy's Contents; What's new's months and its newest note; and a
+// part that fills late, as Community's replies do when they come from the
+// website. After them, a sweep: on each page listed, every control that says it opens
 // something in the page is set low on the screen, tapped, and judged.
 //
 // Exit 1 when anything fails. A walk that could not be made (no such control
@@ -356,6 +357,124 @@ async function namedPlaces() {
   }
 }
 
+// ── A part that fills late ───────────────────────────────────────────
+// Community's "3 replies" opens on two grey rows while its replies come from
+// the website, and says it is busy (`aria-busy`) until they have. The helper
+// let go of it once the grey rows were still, 0.4s in, and the replies then
+// landed under the tab bar with nothing watching (the pre-build gate,
+// 2026-11-11: their end 939px down, the bar at 761px). No walk here has a
+// network, so the part is made for the walk, on a real page of the export: a
+// control that says what it opens, a part that opens on grey rows that say
+// they are busy, and its words a moment later, taller than the screen has
+// room for. Nothing of the app is changed: the helper that follows it is the
+// one the export carries, hearing a real touch.
+async function fillsLate() {
+  const walks = [
+    { name: "a part that fills late: in sight while it waits, and followed when its words come", comes: 900 },
+    { name: "a part that fills late, later than any opening is watched: followed all the same", comes: 2400 },
+    { name: "a part that fills late with Purify's motion off: the page is with it at once", comes: 900, set: { "purify.motion": "off" }, atOnce: true },
+    { name: "a part that fills late, the reader's hand on the page while it waits: nobody is pulled back", comes: 1500, hand: true },
+  ];
+  for (const walk of walks) {
+    if (!wanted(walk.name)) continue;
+    const p = await phone(walk.set ?? {});
+    const { page, touch } = p;
+    try {
+      await go(page, "/faq/");
+      await page.waitForSelector("details > summary", { timeout: 20000 }).catch(() => {});
+      await page.waitForTimeout(900);
+      const made = await page.evaluate((comes) => {
+        const first = [...document.querySelectorAll("details > summary")].filter((s) => !s.closest("header, footer, nav"))[0]?.closest("details");
+        if (!first?.parentElement) return false;
+        const wrap = document.createElement("div");
+        wrap.innerHTML =
+          '<button type="button" data-walk-control aria-expanded="false" aria-controls="walk-late" style="display:block;width:100%;min-height:44px;text-align:start">3 replies</button><div id="walk-late" hidden></div>';
+        first.parentElement.insertBefore(wrap, first);
+        const [control, part] = wrap.children;
+        control.addEventListener("click", () => {
+          if (control.getAttribute("aria-expanded") === "true") return;
+          part.hidden = false;
+          part.innerHTML = '<div aria-busy="true" aria-label="Loading replies" style="height:96px;border-radius:12px;background:rgb(128 128 128 / 0.2)"></div>';
+          control.setAttribute("aria-expanded", "true");
+          setTimeout(() => {
+            part.innerHTML = `<div style="height:520px;border-radius:12px;background:rgb(128 128 128 / 0.12)">${Array.from({ length: 6 }, (_, i) => `<p style="margin:0;padding:14px">Reply ${i + 1}</p>`).join("")}</div>`;
+          }, comes);
+        });
+        return true;
+      }, walk.comes);
+      if (!made) {
+        say(false, walk.name, "the page had nowhere to put the walk's part");
+        continue;
+      }
+      // Set the control so that the grey rows end in sight: its foot 140px over the tab bar.
+      await page.evaluate((READ) => {
+        const { floor } = new Function(`return ${READ}`)();
+        const r = document.querySelector("[data-walk-control]").getBoundingClientRect();
+        window.scrollBy({ top: r.bottom - (floor - 140), behavior: "instant" });
+      }, READ);
+      await page.waitForTimeout(350);
+      const before = await measure(page);
+      const at = await page.evaluate(() => { const r = document.querySelector("[data-walk-control]").getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+      const reduced = await page.evaluate(() => document.documentElement.dataset.motion);
+      if (walk.atOnce && reduced !== "reduce") {
+        say(false, walk.name, `the walk could not turn motion off (the page says "${reduced}")`);
+        continue;
+      }
+      const tapped = Date.now();
+      await touch(at.x, at.y);
+      // While it waits: the grey rows are in sight, and the page has not moved.
+      await page.waitForTimeout(Math.min(600, walk.comes - 250));
+      const waiting = await measure(page);
+      const faults = [];
+      const busy = await page.evaluate(() => document.querySelector('#walk-late [aria-busy="true"]') !== null);
+      if (!waiting.open || !busy) faults.push("the part did not open on rows that say they are busy, so the walk proves nothing");
+      if (Math.abs(waiting.scrollY - before.scrollY) > 1) faults.push(`the page moved ${waiting.scrollY - before.scrollY}px while the part was only waiting, in sight`);
+      let held = waiting.scrollY;
+      if (walk.hand) {
+        // The reader takes the page: a finger drawn up the screen, which takes the page a little way down.
+        const cdp = await p.ctx.newCDPSession(page);
+        const x = 195;
+        await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y: 300 }] });
+        for (let step = 1; step <= 12; step += 1) {
+          await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x, y: 300 - step * 6 }] });
+          await page.waitForTimeout(16);
+        }
+        await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+        await page.waitForTimeout(500);
+        held = (await measure(page)).scrollY;
+        if (held <= waiting.scrollY) faults.push("the walk's drag did not move the page, so the walk proves nothing");
+      }
+      // Its words come. With motion off the page is judged a tenth of a second after; else when the glide is over.
+      await page.waitForTimeout(Math.max(0, walk.comes - (Date.now() - tapped)) + (walk.atOnce ? 120 : SETTLED_MS));
+      const after = await measure(page);
+      if (stills) await page.screenshot({ path: path.join(stills, `${walk.name.replace(/[^a-z0-9]+/gi, "-").toLowerCase().slice(0, 70)}.png`) });
+      const filled = await page.evaluate(() => document.querySelector('#walk-late [aria-busy="true"]') === null && document.getElementById("walk-late").getBoundingClientRect().height > 400);
+      if (!filled) faults.push("the part's words had not come when it was judged");
+      const moved = after.scrollY - held;
+      if (walk.hand) {
+        if (Math.abs(moved) > 1) faults.push(`the reader had taken the page, and it was moved ${moved}px all the same when the words came`);
+      } else {
+        const clear = after.bottom <= after.floor - CLEAR + HAIR;
+        const asFar = after.top <= after.roof + CLEAR + 4;
+        if (!clear && !asFar) faults.push(`its words end ${Math.round(after.bottom)}px down and the page shows to ${Math.round(after.floor)}; its control stands ${Math.round(after.top)}px down with room to rise to ${Math.round(after.roof + CLEAR)}`);
+        if (after.top < after.roof + CLEAR - HAIR) faults.push(`its control was carried to ${Math.round(after.top)}px, under the bar that ends at ${Math.round(after.roof)}`);
+        if (moved < 20) faults.push(`the page moved ${moved}px when the words came; they end out of sight, so this proves nothing`);
+      }
+      say(
+        faults.length === 0,
+        walk.name,
+        faults.length
+          ? faults.join("; ")
+          : walk.hand
+            ? `its words came ${walk.comes}ms after the tap; the reader had drawn the page ${held - waiting.scrollY}px down by then, and it stayed where they left it`
+            : `its words came ${walk.comes}ms after the tap; the page stayed while it waited and then moved ${moved}px; they end ${Math.round(after.bottom)}px down, the page shows to ${Math.round(after.floor)}; its control ${Math.round(after.top)}px down`,
+      );
+    } finally {
+      await p.browser.close();
+    }
+  }
+}
+
 // ── What is tapped stays under the finger ────────────────────────────
 // A work's pill hugs its name in the middle of the screen, so a name longer or
 // shorter than the last one moved both arrows sideways as the part turned
@@ -480,6 +599,7 @@ async function sweep() {
 
 await prayerBook();
 await namedPlaces();
+await fillsLate();
 await underTheFinger();
 const swept = namedOnly || (only && !only.toLowerCase().includes("sweep") && !SWEEP.some((a) => `sweep ${a}`.includes(only.toLowerCase()))) ? 0 : await sweep();
 

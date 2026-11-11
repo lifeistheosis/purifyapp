@@ -10,9 +10,12 @@
 //   node scripts/closing-walk.mjs [folder for stills]
 //
 // The places, each where it was found or where it is bound to be:
-//   What's new   the year's box shut with the reader at its title (the gate's
-//                tap walk, 2026-11-11: its own title pulled 204px), and a
-//                month near the foot opened and shut again
+//   What's new   a month's box shut with the reader at its title (the gate's
+//                tap walk, 2026-11-11, on the page as it then was: a year's
+//                box, its own title pulled 204px; the page is months and
+//                their updates since, and the oldest month is walked), and
+//                on a wide screen the open month's last update opened and
+//                shut again (a phone has the months after it to stand on)
 //   the FAQ      its last question opened and shut again
 //   Prayers      the prayer book's open chapter shut, the book at the foot of
 //                the screen
@@ -252,23 +255,21 @@ async function closing(phone, size, name, address, pick, { shot = null, asItStan
 /** The places. Each `pick` is run in the page as it is written, and returns the thing to tap. */
 const PLACES = [
   {
-    name: "What's new: the year's box shut at its own title",
+    name: "What's new: the oldest month's box shut at its own title",
     address: "/whats-new/",
-    // The outermost boxes are the years; the last of them is the oldest.
+    // The outermost boxes are the months; the last of them is the oldest.
     pick: () => [...document.querySelectorAll("details")].filter((d) => !d.parentElement.closest("details")).pop()?.querySelector(":scope > summary") ?? null,
-    shot: "whats-new-year",
+    shot: "whats-new-month",
   },
   {
-    name: "What's new: the last month opened and shut again",
+    name: "What's new: the open month's last update opened and shut again",
     address: "/whats-new/",
-    pick: () => {
-      const depth = (d) => {
-        let n = 0;
-        for (let p = d.parentElement?.closest("details"); p; p = p.parentElement?.closest("details")) n += 1;
-        return n;
-      };
-      return [...document.querySelectorAll("details")].filter((d) => depth(d) === 1).pop()?.querySelector(":scope > summary") ?? null;
-    },
+    // On a wide screen only. On a phone the months that follow the open one fill the screen under an update that
+    // has shut, so the page stays long enough of itself and there is nothing to hold (measured: 182px to spare at
+    // 360 by 740, 120px at 390 by 844). On a tablet they do not, and the page would be pulled.
+    from: 768,
+    // An update is a box inside its month's. One in a month that is shut cannot be reached, whatever it measures.
+    pick: () => [...document.querySelectorAll("details[open] > details, details[open] > :not(summary) details")].filter((d) => d.parentElement.closest("details")?.open && !d.parentElement.closest("details").parentElement.closest("details")).pop()?.querySelector(":scope > summary") ?? null,
   },
   {
     name: "the FAQ: its last question opened and shut again",
@@ -300,6 +301,7 @@ try {
     const phone = await open(browser, size);
     try {
       for (const place of PLACES) {
+        if (place.from && size.width < place.from) continue;
         await closing(phone, size, place.name, place.address, place.pick, { shot: place.shot && size.width === 390 ? place.shot : null, asItStands: place.asItStands, at: place.at });
       }
 
@@ -343,7 +345,7 @@ try {
       return still.page.evaluate(() => document.documentElement.dataset.motion);
     })();
     if (motion !== "reduce") say(false, "with Purify's motion off", `motion was "${motion}", so this did not test it`);
-    else await closing(still, SIZES[1], "with Purify's motion off, What's new: the year's box shut at its own title", "/whats-new/", PLACES[0].pick);
+    else await closing(still, SIZES[1], "with Purify's motion off, What's new: the oldest month's box shut at its own title", "/whats-new/", PLACES[0].pick);
   } finally {
     await still.ctx.close();
   }
