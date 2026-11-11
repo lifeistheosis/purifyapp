@@ -7,23 +7,28 @@ How each step works is in `docs/RELEASE.md`.
 
 ## 1. Freeze the scope
 
-- [ ] `since-1.8.md` lists every change readers can see since the last
+- [x] `since-1.8.md` lists every change readers can see since the last
       note, each with its commit and whether it is live, gated, or waits for
-      the store builds.
-- [ ] Everything gated off (a switch, an env value, a job that is not running)
-      is marked. It does not go in the note.
-- [ ] What is not ready is named, with the release it moves to.
+      the store builds. (By reference, 2026-11-11: the note's 43 lines are
+      the list, their commits in the 1.9 record.)
+- [x] Everything gated off (a switch, an env value, a job that is not running)
+      is marked. It does not go in the note. (`since-1.8.md`, "Gated off".)
+- [x] What is not ready is named, with the release it moves to.
+      (`since-1.8.md`, "Not ready".)
 
 ## 2. The note
 
 - [ ] `docs/release/OWED.md` read: every line under "Owed" is in the note, in
       Purify's voice, and is moved to "Said" with this version. Those are
       promises (the privacy page's, mostly) and the note is where they are kept.
-- [ ] `patch-note-1.9.json`: plain lines first, then lines under the six
+      (Checked 2026-11-11: every Owed line is in the note. They move to
+      "Said" when the note is published, as OWED.md says.)
+- [x] `patch-note-1.9.json`: plain lines first, then lines under the six
       categories. From Purify to readers, leading with what they get.
-- [ ] `patch-long-1.9.json`: the intro and the sections.
-- [ ] `node scripts/release.mjs note 1.9`
-- [ ] A reason written in `data/changelog/checklists/1.9.json` for every
+- [x] `patch-long-1.9.json`: the intro and the sections.
+- [x] `node scripts/release.mjs note 1.9` (2026-11-11: 43 lines, 6 sections,
+      nothing changed).
+- [x] A reason written in `data/changelog/checklists/1.9.json` for every
       skipped category.
 - [ ] The highlights at the top of What's New: `lib/whatsNew/highlights.ts`,
       real screenshots in `public/whats-new/1.9/`, strings in all 21
@@ -33,7 +38,9 @@ How each step works is in `docs/RELEASE.md`.
       through the queue, never alone. One whose condition is not met at the
       push stays out of the note.
 
-      Held lines (drafts; his voice settles the words):
+      Held lines (drafts; his voice settles the words). For campaigns, the
+      words are the drop's step `step-campaigns-line` (2026-11-11, naming no
+      pictures), which replace the draft below:
 
       1. A plain line, from the prayer campaigns chat by way of the arbiter
          (2026-11-10): "Asking for prayers is now a prayer campaign. The
@@ -51,9 +58,10 @@ How each step works is in `docs/RELEASE.md`.
 
 ## 3. The versions
 
-- [ ] `node scripts/release.mjs bump 1.9`
-- [ ] `androidVersionCode` and `iosBuildNumber` in `lib/appUpdate/release.ts`
-      left as they were.
+- [x] `node scripts/release.mjs bump 1.9` (2026-11-11: "Already 1.9", all
+      six identifiers).
+- [x] `androidVersionCode` and `iosBuildNumber` in `lib/appUpdate/release.ts`
+      left as they were (0 and 0, as on `main`).
 
 ## 4. The gates
 
