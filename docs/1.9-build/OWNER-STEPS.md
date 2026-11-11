@@ -377,20 +377,16 @@ Send back what the Android row says, and whether the phone showed it:
 - No Android row at all: step 2 did not reach your account. Send what the
   Notifications screen says under the button.
 
-### Email. A change of email that finishes (5 minutes of settings now; a 5-minute test once 1.9 is live)
+### Email. A change of email that finishes (5 minutes of settings, any time before release day)
 
 A reader on the Discord could not change their email (2026-10-31). The app's side is mended on the branch (80536b131). Supabase sends a link to the old address and one to the new, and changes nothing until both are opened, so the screen now says so, and every link lands on a page that says where the change stands. Three settings are yours, in the Supabase dashboard (project avbqyvjgcrucjwevwixt), and nothing here is typed by anyone else.
+
+Your word on the three, 2026-11-11: "yes these are all fine". They stand as listed: set each one, or check it is already so. The test is on release day (R3b), once 1.9 is live.
 
 1. Authentication, URL Configuration: Site URL reads `https://purifyapp.net`. Under Redirect URLs, `https://purifyapp.net/**` is on the list (add it if not; it lets the change land on its page).
 2. Authentication, Email Templates, "Change Email Address": the button's link reads `{{ .SiteURL }}/api/auth/callback?token_hash={{ .TokenHash }}&type=email_change&next=/account/profile` (as in `docs/SUPABASE_EMAIL_TEMPLATES.md`). If it reads `{{ .ConfirmationURL }}`, the change still works and lands on the same page, but a phone's mail app can open the link in a browser that cannot finish it.
 3. Authentication, Sign In / Providers, Email: "Secure email change" is on. It is what makes both addresses confirm, so an account cannot be taken by someone who only reaches the new inbox. Leave it on.
 
-The test, once 1.9 is live on purifyapp.net. Use your own account and your own second address, never a reader's:
-1. Account, Security, Change email: type your second address and press Send confirmation. The card says to open both links.
-2. Open the link in the second inbox. A page says one link is opened and to open the other.
-3. Open the link in your usual inbox. The page says it is done. Security shows the new address.
-4. Change it back the same way.
-If any step says otherwise, send the arbiter a photo of that page.
 
 ### Pictures. What campaigns need before they carry pictures (P1 to P5)
 
@@ -1116,6 +1112,11 @@ SQL (above).
   `community_notifications_kind_check` and `none` beside `kinds_outside`
   (second read: the Updates chat). In `supabase/migrations/` as
   `20261110204814_removal_notices.sql`.
+- The care note, a notice a moderator may send by hand to a writer whose
+  words may mean they are in danger, with where to find help: signed
+  2026-11-11 by your "yes these are all fine", answering "yes care SQL".
+  It adds one kind of notice and changes no row. In `supabase/migrations/`
+  as `20261111023026_care_note.sql`, after the removal notice's.
 
 Do not run any of these by hand: the push runs them.
 
@@ -1263,12 +1264,32 @@ Send back: "R2b sent", or what went wrong.
        live database it does nothing)
      - `20261110172648_campaign_terms.sql` (prayer campaigns, file four,
        signed 2026-11-10)
+     - `20261110204814_removal_notices.sql` (the notice that says why
+       something was removed, signed 2026-11-10)
+     - `20261111023026_care_note.sql` (the care note, signed 2026-11-11)
 
 The order on the day (your word, 2026-11-10): the website first (R2), then
 both store builds to internal testing (R4, R5), then your walk on a phone
 (R5b), then campaigns open on the website (R5c), and only then do the stores
 go public (R5d). With the roads on, the website has to go first for one
 more reason (R0c).
+
+### R3b. Change your email once, on the website (5 minutes)
+
+After R3, on purifyapp.net. It proves a change of email finishes (the
+reader's report of 2026-10-31, mended in 1.9), with the three settings of
+"Email" under Anytime. Use your own account and your own second address,
+never a reader's:
+
+1. Account, Security, Change email: type your second address and press
+   Send confirmation. The card says to open both links.
+2. Open the link in the second inbox. A page says one link is opened and to
+   open the other.
+3. Open the link in your usual inbox. The page says it is done. Security
+   shows the new address.
+4. Change it back the same way.
+
+If any step says otherwise, send the arbiter a photo of that page.
 
 ### R4. Android: build, then Play Console's internal testing
 
