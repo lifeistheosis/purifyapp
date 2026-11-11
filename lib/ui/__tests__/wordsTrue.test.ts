@@ -39,7 +39,8 @@ type Rule = { id: string; says: string; why: string; pattern: RegExp };
 export const RULES: readonly Rule[] = [
   // Features the app no longer has.
   { id: "prayer-wall", says: "names the prayer wall", why: "the wall went to the Vault in 1.9 (88931feae); campaigns took its place", pattern: /prayer wall|Gebetswand/i },
-  { id: "coffee", says: "names Buy Me a Coffee", why: "Support this work names Plus and the EIKON shop since 1.9 (a22707708)", pattern: /buy\s*me\s*a\s*coffee/i },
+  // The Privacy page's "Changes to this page" says the entry went (call 32, his yes of 2026-11-11): that is so.
+  { id: "coffee", says: "names Buy Me a Coffee", why: "Support this work names Plus and the EIKON shop since 1.9 (a22707708)", pattern: /buy\s*me\s*a\s*coffee(?! is no longer listed| wird nicht mehr genannt)/i },
   { id: "magic-link", says: "says sign-in is by an emailed link", why: "sign-in is an email and a password, or Google or Apple (components/auth/SignInForm.tsx)", pattern: /magic link/i },
   // Promises that stopped being true.
   { id: "nothing-locked", says: "says nothing is locked or paywalled", why: "Purify Plus, sold since 1.8 (docs/1.9-build/free-and-plus.md)", pattern: /locked behind a payment|nothing is paywalled/i },
@@ -96,13 +97,7 @@ export const TRUE_LINES: readonly TrueLine[] = [
 type Waiting = { rule: string; key?: string; file?: string; owner: string; note: string };
 
 /** Known, owned, and in hand. The gate passes only when this is empty. */
-export const WAITING: readonly Waiting[] = [
-  // The Privacy page, English and German: its lines on signing in (the arbiter's A and B, and (j)) and
-  // Buy Me a Coffee among its third parties, waiting on his yes through the arbiter.
-  { rule: "sync-on-sign-in", file: "components/legal/PrivacyText.tsx", owner: "Admin", note: "the arbiter's A and B and words-h2-h3.md (j), on his yes" },
-  { rule: "settings-stay", file: "components/legal/PrivacyText.tsx", owner: "Admin", note: "the arbiter's A, on his yes" },
-  { rule: "coffee", file: "components/legal/PrivacyText.tsx", owner: "Admin", note: "words-h2-h3.md (j), on his yes" },
-];
+export const WAITING: readonly Waiting[] = [];
 
 // ── What a reader reads ─────────────────────────────────────────────────
 
@@ -210,6 +205,8 @@ describe("the words: nothing a reader reads names what is gone or promises what 
     expect(RULES.find((r) => r.id === "no-analytics")!.pattern.test("Keine Analytik, die mit deiner Konto-Identit\u00e4t verkn\u00fcpft wird.")).toBe(false);
     // And the true lines beside them pass.
     expect(RULES.find((r) => r.id === "no-analytics")!.pattern.test("+ Still no ads, no analytics tied to identity, no selling.")).toBe(false);
+    expect(RULES.find((r) => r.id === "coffee")!.pattern.test("Buy Me a Coffee is no longer listed: the Support page asks for no donation.")).toBe(false);
+    expect(RULES.find((r) => r.id === "coffee")!.pattern.test("Buy Me a Coffee wird nicht mehr genannt: die Seite zur Unterst\u00fctzung bittet um keine Spende.")).toBe(false);
   });
 });
 

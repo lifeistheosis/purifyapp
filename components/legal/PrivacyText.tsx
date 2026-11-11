@@ -66,8 +66,9 @@ function PrivacyEn() {
  </h2>
  <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Purify works privately on this device with no account; signing in
- exists to keep your reading synchronized across devices. When you
- open{" "}
+ carries the days you have prayed and the names you pray for to
+ every device, and with Purify Plus your highlights, notes and
+ bookmarks too. When you open{" "}
  <Link
  href="/account"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
@@ -100,19 +101,28 @@ function PrivacyEn() {
  </div>
  <div className="theology-tray rounded-[18px] px-4 py-4">
  <p className="mb-2 font-sans text-detail font-semibold text-paper">
- Signed in (synchronized)
+ Signed in
  </p>
  <p className="font-serif text-[16px] leading-[1.65] text-paper/88">
- The same items go to our Supabase Postgres database so they
- sync across every device you sign in on. We store: your email
- (used to sign you in and to send confirmations on
+ What you keep with your account goes to our Supabase Postgres
+ database, so it reaches every device you sign in on. We store:
+ your email (used to sign you in and to send confirmations on
  password/email changes), an Argon2 hash of your password
  (never the password itself), a display name, and a
  <code className="font-mono text-ui text-paper/70"> profiles </code>
- row with your account creation date plus a boolean flag for
- whether you&rsquo;ve set a password. Highlights, notes,
- bookmarks, and prayer-rule check-offs travel as their own rows.
- If you sign in with Google or Apple, we additionally store an
+ row with your account creation date, when the row last changed,
+ a flag for whether you&rsquo;ve set a password, the language you
+ chose (so your other devices and our emails use it), and your
+ answer to what you came for, so another device does not ask
+ again. What you fill in on your Community profile is kept there
+ too, and anyone can see it unless you make your profile private:
+ your bio and status, your parish, your patron saint, your
+ favourite verse and your links, and, when you turn it on, what
+ you are reading now. The colour you give your name shows
+ wherever your name does. Prayer-rule check-offs and the names
+ you pray for travel as their own rows, and with Purify Plus so
+ do highlights, notes and bookmarks. If you sign in with Google
+ or Apple, we additionally store an
  <code className="font-mono text-ui text-paper/70"> identities </code>
  row linking your account to that provider; we never see your
  Google/Apple password, only the OAuth token.
@@ -137,12 +147,12 @@ function PrivacyEn() {
  </div>
  </div>
  <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
- If you start on this device and later sign in, your existing
- highlights, notes, and bookmarks are pushed to your account on
- first sign-in; nothing on the device is removed. Prayer streaks,
- reader preferences, and calendar style stay on this device only,
- they have no server table yet. Signing out never deletes what is
- saved on the device.
+ If you start on this device and later sign in, the days you have
+ prayed and the names you pray for are kept with your account, and
+ with Purify Plus your highlights, notes and bookmarks too;
+ nothing on the device is removed. Your calendar style stays on
+ this device. Signing out never deletes what is saved on the
+ device.
  </p>
  <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Nothing in either path is sold, shared, or used to train models.
@@ -307,11 +317,11 @@ function PrivacyEn() {
  be paid; they see an order number and an amount, never your name.
  </p>
  <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
- If you sign in to sync your highlights and bookmarks, Supabase
- stores the email address you signed in with and the rows you
- create (highlights, notes, prayer-rule check-offs, bookmarks).
- None of that is joined to the anonymous session above; the two
- sit in separate tables and are not correlated.
+ If you sign in, Supabase stores the email address you signed in
+ with and the rows you create: the days you have prayed and the
+ names you pray for, and with Purify Plus your highlights, notes
+ and bookmarks. None of that is joined to the anonymous session
+ above; the two sit in separate tables and are not correlated.
  </p>
 
  {/* What we don't */}
@@ -554,18 +564,6 @@ function PrivacyEn() {
  lookup, used only on the first hit of an anonymous session, then
  cached server-side for six hours so the IP isn&rsquo;t looked up
  again.
- </li>
- <li>
- <strong>Buy Me a Coffee</strong>, only on{" "}
- <Link
- href="/support"
- className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
- >
- /support
- </Link>{" "}
- when you choose to donate. Their checkout collects whatever
- they collect from a donor; the site receives a webhook that
- records the donation total, not your identity.
  </li>
  <li>
  <strong>Discord</strong>, an external link, not embedded.
@@ -891,8 +889,9 @@ function PrivacyDe() {
  </h2>
  <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Purify funktioniert privat auf diesem Gerät, ohne Konto; die
- Anmeldung gibt es, damit dein Lesen auf allen deinen Geräten
- abgeglichen bleibt. Wenn du{" "}
+ Anmeldung bringt die Tage, an denen du gebetet hast, und die Namen,
+ für die du betest, auf jedes Gerät, und mit Purify Plus auch deine
+ Markierungen, Notizen und Lesezeichen. Wenn du{" "}
  <Link
  href="/account"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
@@ -927,20 +926,30 @@ function PrivacyDe() {
  </div>
  <div className="theology-tray rounded-[18px] px-4 py-4">
  <p className="mb-2 font-sans text-detail font-semibold text-paper">
- Angemeldet (abgeglichen)
+ Angemeldet
  </p>
  <p className="font-serif text-[16px] leading-[1.65] text-paper/88">
- Dieselben Posten gehen in unsere Supabase-Postgres-Datenbank,
- damit sie sich auf jedem Gerät abgleichen, auf dem du dich
- anmeldest. Wir speichern: deine E-Mail (um dich anzumelden und
- um Bestätigungen bei Passwort- oder E-Mail-Änderungen zu
- senden), einen Argon2-Hash deines Passworts (nie das Passwort
- selbst), einen Anzeigenamen und eine{" "}
+ Was du mit deinem Konto behältst, geht in unsere
+ Supabase-Postgres-Datenbank, damit es jedes Gerät erreicht, auf
+ dem du dich anmeldest. Wir speichern: deine E-Mail (um dich
+ anzumelden und um Bestätigungen bei Passwort- oder
+ E-Mail-Änderungen zu senden), einen Argon2-Hash deines Passworts
+ (nie das Passwort selbst), einen Anzeigenamen und eine{" "}
  <code className="font-mono text-ui text-paper/70">profiles</code>
- -Zeile mit dem Erstellungsdatum deines Kontos sowie ein
- boolesches Kennzeichen, ob du ein Passwort gesetzt hast.
- Markierungen, Notizen, Lesezeichen und Abhakungen der
- Gebetsregel wandern als eigene Zeilen. Wenn du dich mit Google
+ -Zeile mit dem Erstellungsdatum deines Kontos, dem Zeitpunkt, an dem
+ die Zeile zuletzt geändert wurde, einem Kennzeichen, ob du ein
+ Passwort gesetzt hast, der Sprache, die du gewählt hast (damit
+ deine anderen Geräte und unsere E-Mails sie verwenden), und deiner
+ Antwort darauf, wozu du gekommen bist, damit ein anderes Gerät
+ nicht noch einmal fragt. Was du in deinem Profil in der
+ Gemeinschaft ausfüllst, wird ebenfalls dort gespeichert, und jeder
+ kann es sehen, außer du machst dein Profil privat: &bdquo;Über
+ mich&ldquo; und dein Status, deine Gemeinde, dein Namenspatron, dein
+ Lieblingsvers und deine Links und, wenn du es einschaltest, was du
+ gerade liest. Die Namensfarbe, die du wählst, zeigt sich überall,
+ wo dein Name steht. Abhakungen der Gebetsregel und die Namen, für
+ die du betest, wandern als eigene Zeilen, und mit Purify Plus auch
+ Markierungen, Notizen und Lesezeichen. Wenn du dich mit Google
  oder Apple anmeldest, speichern wir zusätzlich eine{" "}
  <code className="font-mono text-ui text-paper/70">identities</code>
  -Zeile, die dein Konto mit jenem Anbieter verbindet; wir sehen
@@ -966,12 +975,11 @@ function PrivacyDe() {
  </div>
  <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Wenn du auf diesem Gerät beginnst und dich später anmeldest,
- werden deine bestehenden Markierungen, Notizen und Lesezeichen bei
- der ersten Anmeldung in dein Konto übertragen; auf dem Gerät wird
- nichts entfernt. Gebets-Strähnen, Lese-Einstellungen und
- Kalenderstil bleiben nur auf diesem Gerät, sie haben noch keine
- Servertabelle. Die Abmeldung löscht niemals, was auf dem Gerät
- gespeichert ist.
+ werden die Tage, an denen du gebetet hast, und die Namen, für die du
+ betest, mit deinem Konto bewahrt, und mit Purify Plus auch deine
+ Markierungen, Notizen und Lesezeichen; auf dem Gerät wird nichts
+ entfernt. Dein Kalenderstil bleibt auf diesem Gerät. Die Abmeldung
+ löscht niemals, was auf dem Gerät gespeichert ist.
  </p>
  <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Nichts auf beiden Wegen wird verkauft, geteilt oder zum Training
@@ -1156,10 +1164,10 @@ function PrivacyDe() {
  deinen Namen.
  </p>
  <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
- Wenn du dich anmeldest, um deine Markierungen und Lesezeichen
- abzugleichen, speichert Supabase die E-Mail-Adresse, mit der du
- dich angemeldet hast, sowie die Zeilen, die du erstellst
- (Markierungen, Notizen, Abhakungen der Gebetsregel, Lesezeichen).
+ Wenn du dich anmeldest, speichert Supabase die E-Mail-Adresse, mit
+ der du dich angemeldet hast, sowie die Zeilen, die du erstellst: die
+ Tage, an denen du gebetet hast, und die Namen, für die du betest,
+ und mit Purify Plus deine Markierungen, Notizen und Lesezeichen.
  Nichts davon wird mit der anonymen Sitzung oben verknüpft; die
  beiden liegen in getrennten Tabellen und werden nicht in Beziehung
  gesetzt.
@@ -1411,19 +1419,6 @@ function PrivacyDe() {
  Sitzung gebraucht, danach sechs Stunden lang serverseitig
  zwischengespeichert, damit die IP nicht erneut nachgeschlagen
  wird.
- </li>
- <li>
- <strong>Buy Me a Coffee</strong>, nur auf{" "}
- <Link
- href="/support"
- className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
- >
- /support
- </Link>
- , wenn du dich zum Spenden entscheidest. Ihre Bezahlseite sammelt,
- was sie von einem Spender sammelt; die Seite empfängt einen
- Webhook, der die Gesamtsumme der Spende aufzeichnet, nicht deine
- Identität.
  </li>
  <li>
  <strong>Discord</strong>, ein externer Verweis, nicht
