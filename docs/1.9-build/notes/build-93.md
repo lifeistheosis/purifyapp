@@ -139,6 +139,8 @@ Found by the arbiter, and wrong today whatever the rewrite: "Nothing in this app
 
 Who has it: Admin (knows the shop, Plus and their money), after the sparkle sweep. The page says plainly where what Purify earns goes (sourcing the shop's products, a tithe to the Church, running and maintaining the app: its servers, its recordings and the work on it) and the two ways to support it (Purify Plus, or something from the EIKON shop), in the house's voice, signed as the house signs, in all 21 languages. Risk rules: it is Purify's own giving from what it earns, never "a part of your purchase goes to charity" and never called a donation (that wording can bring charity-sale rules in some US states, and the stores do not let an app raise money for a charity through its purchases); no figure or receiver for the tithe until his answer (asked in the chat, 2026-11-11); the free core stays named as free. A still with the push.
 
+His answer, 2026-11-11 about 01:34 UTC: "editing the settings. Well, you don't have to be too specific on the percentages. Just make it clear that, like, where the profits are going." So: no percentage and no named parish; the line says plainly that part of what Purify earns is given to the Church, as Purify's own giving.
+
 ### 11. Learn by heart: switch the verse any time, learn a quote too, or your own (2026-11-11 about 01:32 UTC)
 
 His words: "Allow you to switch the learn the verse whenever you want. Also allow a learn the quote. And for this example, so it's not just scripture based, it could be realistically any of the quotes that are popular, or maybe they want to pick a custom quote, allow them to do that, or a custom verse."

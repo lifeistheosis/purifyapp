@@ -2,6 +2,8 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
+**The tithe on Support this work (his word, 2026-11-11 about 01:34 UTC, answering the arbiter's question):** "editing the settings. Well, you don't have to be too specific on the percentages. Just make it clear that, like, where the profits are going. A couple of minutes, it's going to" (the message ends there). No percentage, no named parish (`notes/build-93.md`, note 10).
+
 **Build 93, note 11 (his word, 2026-11-11 about 01:32 UTC, a screenshot of You's "A verse you kept"):** "Allow you to switch the learn the verse whenever you want. Also allow a learn the quote. And for this example, so it's not just scripture based, it could be realistically any of the quotes that are popular, or maybe they want to pick a custom quote, allow them to do that, or a custom verse." (`notes/build-93.md`, note 11).
 
 **Build 93, note 10 (his word, 2026-11-11 about 01:31 UTC, a screenshot of Support this work):** "Go on certain things. The support this work section is pretty much useless. You can explain how and where the profits would go in reference to, you know, store and subscription usage. So explain that it goes into sourcing products, tithing to the church, running maintenance, etc., and that they could support through either the subscription or buying a product from the store." (`notes/build-93.md`, note 10).
