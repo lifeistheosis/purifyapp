@@ -5037,3 +5037,51 @@ the arbiter.
 - **Community's feed with every post drawn** was not dragged: its class and
   the built rule were read, and the gate's two walks passed on it as built.
 - **History with every row drawn** was timed, not dragged.
+
+## 67. The picture's measure reads only what a reader is shown, and where it stopped
+
+`scripts/words-on-pictures.mjs` is what the mock checker's pixels pass calls
+for every word with a picture behind it (Admin, `ff5bd9ee`), so the gate's
+guardrail walk stands on it. Run over every screen of build 14, it read three
+things that no reader sees, and `7bd23810` mended each:
+
+- **A clamped box, scrolled.** Bringing a word to the middle of the screen
+  also scrolled a box that hides what spills from it, which no reader can
+  scroll: on `/councils/` three bands' lines read 1.00:1 on every palette.
+  Each such box is remembered before the scroll and put back after, and each
+  line is cut to every box around it that clips.
+- **A word with no letters on the screen was given a ratio** (a name under
+  its own picture, a line clipped away). It is told apart now by how many
+  pixels change when its fill is hidden, and left out.
+- **A ground that would not hold still** (a picture still arriving) was
+  photographed once. The photograph is taken twice now, a moment apart, and
+  the two have to agree before it is trusted.
+
+`lib/ui/__tests__/wordsOnPictures.test.ts` holds these in its last four
+cases, "the pixel walk": the boxes put back, the cut, no ratio without
+letters or on a restless ground, and the `--said` sweep on the gate walk's
+own phone, reading the main web and never writing it. Four cases fail on the
+file as it was.
+
+Where the work stopped (the arbiter, 2026-11-11 17:00 UTC: the account's last
+weekly allowance, so only what the test build needs goes on, and Admin's
+pixels pass answers these words in the final run):
+
+- **One whole run of the sweep**, on build 14 (cut from `c240515a`, the
+  gate's selling recipe, 126 screens, the main web read): 567 words on 22
+  screens, 51 under their need. Six of the 51 are the sweep's own fault: it
+  found a handed-over word by its text, and on Community the count "3"
+  stands six times in buttons that are off. The other 45 are in ten
+  families, none in a file of mine. The arbiter routed them at 17:54 UTC:
+  the councils' filmstrip is already mended by Fable Theology (`7c8c0a49`),
+  and the study's head with its reader, Your rule's tile line and Your
+  rule's head line are Fable Theology's too; Plans' tiles, a chant's head
+  and Today's hour card are Updates'; a saint's web, the Bible hub's credit
+  and the reading room's doors are Updates 2's.
+- **`themes-fable-said-sweep-unfinished.patch`**, beside this file, is the
+  sweep finding each word by the checker's own mark (`data-mock-look`) in
+  place of its text, with the checker's reading kept beside its own. It is
+  unfinished: never run whole, not wired in, kept so that nothing made is
+  lost.
+- **Not done:** a mend measured for any of the ten, and the sweep's count
+  laid beside the pass's.

@@ -1,0 +1,122 @@
+Unfinished, never run whole and not wired in (Themes, stopped 2026-11-11 17:06 UTC at the arbiter's word): the --said sweep of scripts/words-on-pictures.mjs finding each handed-over word by the checker's own mark, not by its text. Kept so nothing made is lost; see themes-fable.md, section 67.
+
+diff --git a/scripts/words-on-pictures.mjs b/scripts/words-on-pictures.mjs
+index 3e2b7db6..8dbf1a1c 100644
+--- a/scripts/words-on-pictures.mjs
++++ b/scripts/words-on-pictures.mjs
+@@ -294,26 +294,24 @@ export const PLACES = {
+ /**
+  * The words on the page the checker would not vouch for because a picture is
+  * behind them, each marked for wordsOnPicture to find (`[data-said-word]`).
+- * `unmeasured` is the checker's own list for this page, `"words": why`. A
+- * word is found again by its text, as the checker reads it: a text's own
+- * words, their first 48 letters. Where the same words stand twice on a page,
+- * both are marked and both measured.
++ * `looks` is the checker's own list from its pixels pass (checkMock with
++ * `pixels`), and a word is found again by the mark that pass left on it
++ * (`data-mock-look`), so what is measured here is what the checker handed
++ * over and nothing else. It was found by its text until 2026-11-11, and the
++ * same text standing elsewhere on the page was marked with it: Community's
++ * six counts of "3" in buttons that are off, for one reader's initial under
++ * their picture.
+  */
+-export async function markSaidWords(page, unmeasured) {
+-  const said = unmeasured
+-    .map((u) => /^"(.*)": (.*)$/s.exec(u))
+-    .filter((m) => m && /picture/.test(m[2]))
+-    .map((m) => ({ text: m[1], why: m[2] }));
+-  const marked = await page.evaluate((texts) => {
++export async function markSaidWords(page, looks) {
++  const said = looks.filter((l) => /picture/.test(l.why)).map((l) => ({ at: String(l.at), why: l.why }));
++  const marked = await page.evaluate((list) => {
+     document.querySelectorAll("[data-said-word]").forEach((el) => el.removeAttribute("data-said-word"));
+-    const want = new Map(texts.map((t) => [t.text, t.why]));
+-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+     let n = 0;
+     const allowed = {};
+-    for (let t = walker.nextNode(); t; t = walker.nextNode()) {
+-      const text = t.textContent.replace(/\s+/g, " ").trim().slice(0, 48);
+-      const el = t.parentElement;
+-      if (!text || !el || !want.has(text) || el.hasAttribute("data-said-word") || el.closest(".sr-only, svg, [hidden]")) continue;
++    for (const one of list) {
++      const el = [...document.querySelectorAll("[data-mock-look]")].find((e) => e.getAttribute("data-mock-look") === one.at);
++      // Two texts in one piece are one piece to measure: its worst line speaks for it.
++      if (!el || el.hasAttribute("data-said-word")) continue;
+       // Allowed by name and reason for contrast, as the checker allows it (data-mock-allow, data-mock-why): a
+       // small picture of a page in one palette's own colours, a reader's own picture. Not measured; its reason said.
+       const by = el.closest('[data-mock-allow~="contrast"]');
+@@ -322,7 +320,7 @@ export async function markSaidWords(page, unmeasured) {
+         allowed[why] = (allowed[why] ?? 0) + 1;
+         continue;
+       }
+-      el.setAttribute("data-said-word", want.get(text));
++      el.setAttribute("data-said-word", one.why);
+       n += 1;
+     }
+     return { n, allowed };
+@@ -392,18 +390,22 @@ export async function saidWordsOnPictures({ out = path.resolve("out"), only = nu
+     // With no network the covers are answered from this checkout, as the main web answers them.
+     if (!online) await serveCovers(page);
+     for (let at = queue.shift(); at; at = queue.shift()) {
+-      const one = { at, said: 0, words: [], allowed: {}, error: null };
++      const one = { at, said: 0, words: [], pass: [], allowed: {}, error: null };
+       try {
+         await go(page, at, { timeout: 15000 });
+         await page.waitForTimeout(1800);
+-        const checked = await checkMock(page, "body");
+-        const { said, marked, allowed } = await markSaidWords(page, checked.unmeasured);
++        // The checker's own pixels pass first: it marks each word it hands over, and its reading is kept
++        // beside this one (`pass`), so the two can be laid side by side word for word.
++        const checked = await checkMock(page, "body", { pixels: true });
++        const { said, marked, allowed } = await markSaidWords(page, checked.looks);
+         one.said = said;
+         one.allowed = allowed;
++        one.pass = checked.looks.filter((l) => /picture/.test(l.why)).map((l) => ({ at: String(l.at), text: l.text, need: l.need, ratios: l.ratios, left: l.left }));
++        const marks = marked ? await page.evaluate(() => [...document.querySelectorAll("[data-said-word]")].map((el) => el.getAttribute("data-mock-look"))) : [];
+         if (marked) {
+           const byWord = new Map();
+           for (const row of await wordsOnPicture(page, "[data-said-word]", { own: true, every: true })) {
+-            const word = byWord.get(row.at) ?? { text: row.text, why: row.mark, need: row.need, by: {}, seen: false, moving: [] };
++            const word = byWord.get(row.at) ?? { mark: marks[row.at], text: row.text, why: row.mark, need: row.need, by: {}, seen: false, moving: [] };
+             word.by[row.palette] = Math.round(row.ratio * 100) / 100;
+             if (!row.still) word.moving.push(row.palette);
+             // Seen on any palette is seen: a word is drawn or it is not, whatever the colours.
+@@ -457,6 +459,26 @@ export function printSaidWords(results) {
+       console.log(`  "${w.text}" needs ${w.need}: ${by}\n      ${w.why}`);
+     }
+   }
++  // The checker's own pass beside this one, word for word by the checker's mark: the same words, and on each
++  // palette the same side of the word's need. A reading may differ in its hundredths (two photographs); a word
++  // that passes one and fails the other is said, since one of the two is then wrong.
++  let both = 0;
++  let apart = 0;
++  for (const r of results) {
++    const mine = new Map(r.words.map((w) => [w.mark, w]));
++    for (const theirs of r.pass ?? []) {
++      const w = mine.get(theirs.at);
++      if (!w || !w.seen || w.moving.length || theirs.left || theirs.need === null) continue;
++      both += 1;
++      const split = Object.entries(theirs.ratios).filter(([palette, ratio]) => ratio !== null && w.by[palette] !== undefined && ratio + 1e-9 < theirs.need !== w.by[palette] + 1e-9 < w.need);
++      if (!split.length) continue;
++      apart += 1;
++      console.log(`\n${r.at}  the checker's pass and this one read "${w.text}" apart: ${split.map(([palette, ratio]) => `${palette} ${ratio.toFixed(2)} there, ${w.by[palette].toFixed(2)} here`).join(", ")} (needs ${w.need})`);
++    }
++  }
++  const passWords = results.reduce((n, r) => n + (r.pass ?? []).length, 0);
++  const passLeft = results.reduce((n, r) => n + (r.pass ?? []).filter((l) => l.left).length, 0);
++  const passUnder = results.reduce((n, r) => n + (r.pass ?? []).filter((l) => !l.left && l.need !== null && Object.values(l.ratios).some((v) => v !== null && v + 1e-9 < l.need)).length, 0);
+   const screens = results.filter((r) => r.words.length).length;
+   const errors = results.filter((r) => r.error).length;
+   // Allowed by name and reason: said once per reason, with how many words carry it and where.
+@@ -467,7 +489,10 @@ export function printSaidWords(results) {
+   console.log(
+     `\n${words} words handed over on ${screens} of ${results.length} screens, each measured by its pixels on five palettes: ${under} under their need, ${words - under} at or over it.${unseen ? ` ${unseen} more are not drawn on the screen at all (above).` : ""}${restless ? ` ${restless} stand on a ground that would not hold still (above).` : ""}${errors ? ` ${errors} screen(s) could not be measured.` : ""}`,
+   );
+-  return under === 0 && errors === 0 && restless === 0;
++  console.log(
++    `The checker's own pass on the same screens: ${passWords} words handed over because of a picture, ${passUnder} under their need, ${passLeft} left for the eye. Read by both: ${both}; on the same side of their need on every palette: ${both - apart}${apart ? `; apart: ${apart} (above)` : ""}.`,
++  );
++  return under === 0 && errors === 0 && restless === 0 && apart === 0;
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}` && process.argv.includes("--said")) {
