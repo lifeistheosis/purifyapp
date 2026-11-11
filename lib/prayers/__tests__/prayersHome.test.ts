@@ -287,9 +287,18 @@ describe("Practices (note 72, r3-26 A: the icon tiles)", () => {
     expect(practices).toContain("carry={rulePart ? ruleCarry(rulePart) : undefined}");
     expect(code(TILES)).toContain("<span data-carry={carry ?? picture}");
     const head = code("components/prayers/mine/RuleHead.tsx");
-    // Only the picture shown takes the name: two under one name stop the whole page switch.
-    expect(head).toContain("data-carry-into={on ? ruleCarry(p) : undefined}");
+    // One box takes the name, the head's whole picture with its shade, as the half shown: two things under one name
+    // stop the whole page switch.
+    expect(head).toContain("data-carry-into={part ? ruleCarry(part) : undefined}");
     expect(head.match(/data-carry-into/g)).toHaveLength(1);
+    // The head's words stand on the picture, and a picture in flight is drawn over the page: they are pictured
+    // apart while the box wears the name, so the name is never covered and then shown, nor seen twice.
+    const css = code(CSS);
+    expect(css).toContain('.rule-head:has(> .rule-head-picture[style*="view-transition-name"]) > .rule-head-words {\n view-transition-name: rule-words;');
+    expect(css).toContain("::view-transition-new(rule-words):only-child {\n animation: route-arrive 180ms var(--ease-house) 150ms both;");
+    expect(css).toContain("::view-transition-old(rule-words):only-child {\n animation: route-leave var(--duration-route-exit) var(--ease-house) both;");
+    // And the icon under an arriving picture is there at once, and does not fade in again once the name is given back.
+    expect(css).toContain(".rule-head-picture:is([data-carried-in], [data-landed]) .rule-head-img[data-on] {\n animation: none;");
     expect(ruleCarry("morning")).toBe("rule:morning");
     expect(ruleCarry("evening")).toBe("rule:evening");
     expect(ruleCarry("morning")).not.toBe(ruleCarry("evening"));

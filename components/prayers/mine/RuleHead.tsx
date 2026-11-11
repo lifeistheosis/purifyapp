@@ -43,7 +43,15 @@ export function RuleHead({
   const { t } = useTranslate();
   return (
     <header className="rule-head relative">
-      <div data-rule-picture={part ?? undefined} className="rule-head-picture under-topbar picture-melt relative -mx-5 overflow-hidden md:mx-0">
+      {/* The picture of Your rule's tile on Prayers travels into this, and back out of it (1.9; lib/ui/routeMotion.ts,
+          "A picture that leads to its own page"). The whole box takes the name, not the icon alone: it arrives with its
+          shade and melted into the page, exactly as it then stands. One box, so one thing wears the name, and it is
+          the half shown: the tile chose the same half by the same rule (lib/prayers/myRule.ts, openingPart). */}
+      <div
+        data-rule-picture={part ?? undefined}
+        data-carry-into={part ? ruleCarry(part) : undefined}
+        className="rule-head-picture under-topbar picture-melt relative -mx-5 overflow-hidden md:mx-0"
+      >
         {part
           ? MY_RULE_PARTS.map((p) => {
               const art = ruleHeadArt(p);
@@ -63,9 +71,6 @@ export function RuleHead({
                   fetchPriority={on ? "high" : "low"}
                   data-part={p}
                   data-on={on ? "" : undefined}
-                  // The one shown is what the tile's picture on Prayers travels into, and back out of (1.9). Only the one shown:
-                  // two pictures under one name stop the whole page switch.
-                  data-carry-into={on ? ruleCarry(p) : undefined}
                   className="rule-head-img"
                   style={{ objectPosition: art.focus }}
                 />

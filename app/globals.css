@@ -1921,6 +1921,53 @@ html[data-reading-mode="parchment"] .rule-ring-lit {
    var(--color-night) 97%
   );
 }
+/* The picture of Your rule's tile on Prayers travels into this head, and
+   back out of it (1.9, the arbiter's call of 2026-11-11: "let Your rule's
+   tile wear the half the page will open on, so one picture travels";
+   lib/ui/routeMotion.ts, "A picture that leads to its own page"). Three
+   things make that one clean move, each seen first in the film
+   (node scripts/route-motion.mjs --film):
+
+   The icon is there at once. It fades in as a saint's does when the page is
+   simply opened, and under a picture arriving on it that fade is the picture
+   going out and coming back. Not while the box wears the name, nor after it
+   has landed, or the fade would begin again when the name is given back; the
+   switch still crosses from one half to the other by the icon's own
+   transition.
+
+   The picture travels as itself. A travelling picture is cut to a plate's
+   corners on the way; this one is a tile at one end, cut to its own corners
+   already, and the head at the other, which has none.
+
+   The head's words are pictured apart, over it. They stand on the picture's
+   lower half, and a picture in flight is drawn over the page it is arriving
+   on: the name, its line and Pray my rule were covered until it landed, then
+   appeared at once (the fault Fable Theology's first try met). While the box
+   wears the name they are their own part of the change: arriving, they come
+   up over the picture as it lands, once; leaving, they go before it does.
+   Where a browser has the transitions and not yet their classes, the picture
+   keeps a plate's corners on the way and nothing else differs. */
+.rule-head-picture:is([data-carried-in], [data-landed]) .rule-head-img[data-on] {
+ animation: none;
+}
+::view-transition-old(carried.carried-rule),
+::view-transition-new(carried.carried-rule) {
+ border-radius: 0;
+}
+.rule-head:has(> .rule-head-picture[style*="view-transition-name"]) > .rule-head-words {
+ view-transition-name: rule-words;
+}
+::view-transition-old(rule-words),
+::view-transition-new(rule-words) {
+ mix-blend-mode: normal;
+}
+::view-transition-new(rule-words):only-child {
+ animation: route-arrive 180ms var(--ease-house) 150ms both;
+}
+::view-transition-old(rule-words):only-child {
+ animation: route-leave var(--duration-route-exit) var(--ease-house) both;
+}
+
 /* The name and its line on the icon's lower half. */
 .rule-head-words {
  margin-top: -196px;

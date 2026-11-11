@@ -90,7 +90,7 @@ function watchTransitions() {
   const start = Document.prototype.startViewTransition;
   if (!start) return;
   Document.prototype.startViewTransition = function (arg) {
-    const entry = { from: location.pathname, at: performance.now(), parts: [], tabBar: false, carried: [], travelled: false, leaving: null, ready: false, done: false };
+    const entry = { from: location.pathname, at: performance.now(), parts: [], tabBar: false, carried: [], travelled: false, leaving: null, apart: [], ready: false, done: false };
     log.seen.push(entry);
     const transition = start.call(this, arg);
     const held = transition.ready.then(
@@ -104,6 +104,8 @@ function watchTransitions() {
           const timing = a.effect.getComputedTiming();
           const part = a.effect.pseudoElement;
           if (part.includes("(tab-bar)")) entry.tabBar = true;
+          // Words that stand on a travelling picture and are pictured apart, over it (Your rule's head, 1.9).
+          if (part.includes("(rule-words)") && !entry.apart.includes(part)) entry.apart.push(part);
           // The travelling picture: its two sides, the card's and the page's,
           // where each is drawn fading. (A cover draws only the one it is
           // becoming, which does not fade: app/globals.css, "A cover is one
@@ -556,15 +558,29 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
       const into = judge(r, { old: "route-leave", fresh: "route-settle", to: "/prayers/personal", carried: true });
       const head = await page.evaluate(() => {
         const on = document.querySelector(".rule-head-img[data-on]");
-        return { part: on?.getAttribute("data-part") ?? null, takes: [...document.querySelectorAll("[data-carry-into]")].map((el) => el.getAttribute("data-carry-into")), top: Math.round(window.scrollY) };
+        return {
+          part: on?.getAttribute("data-part") ?? null,
+          takes: [...document.querySelectorAll("[data-carry-into]")].map((el) => el.getAttribute("data-carry-into")),
+          top: Math.round(window.scrollY),
+          // The icon under the picture that arrived: whole, and not fading in again now the name is given back.
+          icon: on ? { opacity: Number(getComputedStyle(on).opacity), fading: on.getAnimations().filter((a) => a.playState === "running").length } : null,
+          titles: [...document.querySelectorAll("h1")].filter((h) => h.getClientRects().length).length,
+        };
       });
       if (head.part !== half) into.push(`the page opened on its ${head.part} half, and the tile wore the ${half} half`);
       if (head.takes.length !== 1 || head.takes[0] !== `rule:${half}`) into.push(`the head takes ${JSON.stringify(head.takes)}, not the one picture of the ${half} half`);
       if (head.top > 2) into.push(`the page opened ${head.top}px down, not at its top`);
+      if (!head.icon || head.icon.opacity < 0.99 || head.icon.fading) into.push(`the head's icon is not simply there once the picture has landed: ${JSON.stringify(head.icon)}`);
+      if (head.titles !== 1) into.push(`the page shows ${head.titles} names, not one`);
+      // The head's words stand on the picture, and a picture in flight is drawn over the page it arrives on: unless
+      // they are pictured apart, over it, the name is covered until the picture lands and then appears at once.
+      if (!r.pictured[0]?.apart?.includes("::view-transition-new(rule-words)")) into.push("the head's words are not pictured apart, over the picture arriving under them");
       note(`Your rule's tile, the ${half} half: its picture travelling into the head of its page`, into, `${r.from} to ${r.to}, the tile in ${tile.icon}`);
       if (film) await sheet(ctx, film, `rule-${half}`, r.stills);
       r = await walk(page, `rule-${half}-back`, () => page.locator(chevron).first().click(), { film });
-      note(`Your rule's tile, the ${half} half: back, the picture back in its tile`, judge(r, { old: "route-sink", fresh: "route-arrive", to: "/prayers", carried: true }), `${r.from} to ${r.to}`);
+      const out = judge(r, { old: "route-sink", fresh: "route-arrive", to: "/prayers", carried: true });
+      if (!r.pictured[0]?.apart?.includes("::view-transition-old(rule-words)")) out.push("the head's words are not pictured apart as the picture leaves from under them");
+      note(`Your rule's tile, the ${half} half: back, the picture back in its tile`, out, `${r.from} to ${r.to}`);
       if (film) await sheet(ctx, film, `rule-${half}-back`, r.stills);
       await sleep(page, 600);
     }

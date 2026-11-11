@@ -771,9 +771,9 @@ describe("a picture that leads to its own page", () => {
     // another picture, with words over it: a picture carried there covered
     // the words until the change was over. Your rule's head was the same,
     // until its tile wore the half the page opens on (the arbiter's call of
-    // 2026-11-11, P1): the head's picture that is shown takes the tile's, by
+    // 2026-11-11, P1): the head's picture, as the half shown, takes the tile's, by
     // the half's own name (lib/prayers/serviceArt.ts, ruleCarry).
-    has("components/prayers/mine/RuleHead.tsx", "data-carry-into={on ? ruleCarry(p) : undefined}");
+    has("components/prayers/mine/RuleHead.tsx", "data-carry-into={part ? ruleCarry(part) : undefined}");
     has("components/mobile/PrayersMobile.tsx", "carry={rulePart ? ruleCarry(rulePart) : undefined}");
     expect(read("components/saints/SaintHeroPicture.tsx").match(/data-carry-into/g) ?? []).toHaveLength(1);
     has("components/theology/WayPage.tsx", "data-carry-into={`way:${way}`}");
