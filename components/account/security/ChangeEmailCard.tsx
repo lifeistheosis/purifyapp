@@ -95,7 +95,7 @@ export function ChangeEmailCard({ currentEmail, pendingEmail = null }: { current
         <button
           type="submit"
           disabled={pending}
-          className="self-start rounded-pill bg-paper text-night font-sans text-detail font-semibold px-5 py-2.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
+          className="self-start min-h-11 rounded-pill bg-paper text-night font-sans text-detail font-semibold px-5 py-2.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
         >
           {pending ? t("forgot.pending") : t("ui.sendConfirmation")}
         </button>

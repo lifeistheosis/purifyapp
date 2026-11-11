@@ -328,7 +328,7 @@ export function OAuthConnectionsCard({
                 type="button"
                 onClick={() => setConfirmingUnlink(true)}
                 disabled={pending !== null}
-                className="font-sans text-caption font-semibold rounded-pill border border-crimson/55 text-crimson-soft bg-crimson/[0.06] hover:bg-crimson/[0.15] hover:border-crimson/75 px-4 py-1.5 disabled:opacity-50 disabled:cursor-wait transition-colors"
+                className="min-h-11 font-sans text-caption font-semibold rounded-pill border border-crimson/55 text-crimson-soft bg-crimson/[0.06] hover:bg-crimson/[0.15] hover:border-crimson/75 px-4 py-1.5 disabled:opacity-50 disabled:cursor-wait transition-colors"
               >
                 {pending === "google" ? t("ui.working") : t("ui.unlink")}
               </button>
@@ -336,7 +336,7 @@ export function OAuthConnectionsCard({
               <button
                 type="button"
                 onClick={focusPasswordCard}
-                className="font-sans text-caption font-medium rounded-pill border border-gold/45 text-gold bg-gold/[0.06] hover:bg-gold/[0.12] hover:border-gold/70 px-4 py-1.5 transition-colors"
+                className="min-h-11 font-sans text-caption font-medium rounded-pill border border-gold/45 text-gold bg-gold/[0.06] hover:bg-gold/[0.12] hover:border-gold/70 px-4 py-1.5 transition-colors"
               >
                 {t("ui.setAPasswordFirst")}
               </button>
@@ -346,7 +346,7 @@ export function OAuthConnectionsCard({
               type="button"
               onClick={connectGoogle}
               disabled={pending !== null}
-              className="font-sans text-caption font-semibold rounded-pill bg-paper text-night px-4 py-1.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
+              className="min-h-11 font-sans text-caption font-semibold rounded-pill bg-paper text-night px-4 py-1.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
             >
               {pending === "google" ? t("ui.opening") : t("ui.connect")}
             </button>
@@ -375,7 +375,7 @@ export function OAuthConnectionsCard({
               type="button"
               onClick={connectApple}
               disabled={pending !== null}
-              className="font-sans text-caption font-semibold rounded-pill bg-paper text-night px-4 py-1.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
+              className="min-h-11 font-sans text-caption font-semibold rounded-pill bg-paper text-night px-4 py-1.5 hover:bg-paper/90 disabled:opacity-60 disabled:cursor-wait transition-colors"
             >
               {pending === "apple" ? t("ui.opening") : t("ui.connect")}
             </button>
@@ -420,7 +420,7 @@ export function OAuthConnectionsCard({
           <button
             type="button"
             onClick={focusPasswordCard}
-            className="mt-3 inline-flex items-center gap-1.5 rounded-pill border border-gold/55 bg-gold/15 text-gold font-sans text-detail font-semibold px-4 py-2 hover:bg-gold/25 hover:border-gold/80 transition-colors"
+            className="mt-3 inline-flex min-h-11 items-center gap-1.5 rounded-pill border border-gold/55 bg-gold/15 text-gold font-sans text-detail font-semibold px-4 py-2 hover:bg-gold/25 hover:border-gold/80 transition-colors"
           >
             {t("ui.setAPassword")}
             <span aria-hidden>→</span>

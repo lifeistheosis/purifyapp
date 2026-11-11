@@ -84,7 +84,7 @@ export function ShareButton({
       onClick={onShare}
       aria-label={t("common.share")}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-pill border border-paper/15 bg-paper/[0.04] px-3 py-1.5 font-sans text-detail text-paper/70 transition-colors hover:border-paper/35 hover:text-paper",
+        "hit-44 inline-flex items-center gap-1.5 rounded-pill border border-paper/15 bg-paper/[0.04] px-3 py-1.5 font-sans text-detail text-paper/70 transition-colors hover:border-paper/35 hover:text-paper",
         className,
       )}
     >

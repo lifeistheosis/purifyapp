@@ -82,7 +82,7 @@ export function LocaleSwitcher() {
         aria-expanded={open}
         disabled={pending}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-2 rounded-lg border border-paper/15 bg-night-soft px-3 py-1.5 font-sans text-caption text-paper/85 hover:border-paper/35 hover:text-paper focus:outline-none focus-visible:border-gold/55 focus-visible:outline-2 focus-visible:outline-gold/40 focus-visible:outline-offset-1 transition-colors disabled:opacity-50"
+        className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-paper/15 bg-night-soft px-3 py-1.5 font-sans text-caption text-paper/85 hover:border-paper/35 hover:text-paper focus:outline-none focus-visible:border-gold/55 focus-visible:outline-2 focus-visible:outline-gold/40 focus-visible:outline-offset-1 transition-colors disabled:opacity-50"
       >
         <Globe className="h-3.5 w-3.5 shrink-0 text-paper/50" />
         <span className="min-w-[64px] text-left">{current?.nativeLabel}</span>

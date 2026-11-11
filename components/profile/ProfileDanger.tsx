@@ -99,7 +99,7 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
                   page. Two sign-out affordances, and only one worked. */}
               <Link
                 href="/signout"
-                className="inline-flex font-sans text-detail font-medium border border-paper/25 text-paper rounded-pill px-4 py-2 hover:bg-paper/10 transition-colors"
+                className="inline-flex min-h-11 items-center font-sans text-detail font-medium border border-paper/25 text-paper rounded-pill px-4 py-2 hover:bg-paper/10 transition-colors"
               >
                 {t("common.signOut")}
               </Link>
@@ -114,7 +114,7 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
               <button
                 type="button"
                 onClick={() => setConfirmClear(true)}
-                className="font-sans text-detail font-medium border border-paper/25 text-paper rounded-pill px-4 py-2 hover:bg-paper/10 transition-colors"
+                className="min-h-11 font-sans text-detail font-medium border border-paper/25 text-paper rounded-pill px-4 py-2 hover:bg-paper/10 transition-colors"
               >
                 {t("ui.clearLocalData")}
               </button>
@@ -123,14 +123,14 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
                 <button
                   type="button"
                   onClick={clearLocal}
-                  className="font-sans text-detail font-semibold bg-crimson text-paper rounded-pill px-4 py-2 hover:bg-[#a31f24] transition-colors"
+                  className="min-h-11 font-sans text-detail font-semibold bg-crimson text-paper rounded-pill px-4 py-2 hover:bg-[#a31f24] transition-colors"
                 >
                   {t("ui.yesWipeLocal")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setConfirmClear(false)}
-                  className="font-sans text-detail text-paper/55 hover:text-paper transition-colors px-3 py-2"
+                  className="min-h-11 font-sans text-detail text-paper/55 hover:text-paper transition-colors px-3 py-2"
                 >
                   {t("common.cancel")}
                 </button>
@@ -148,7 +148,7 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
                 <button
                   type="button"
                   onClick={() => setConfirmDelete(true)}
-                  className="font-sans text-detail font-medium border border-crimson/40 text-crimson-soft rounded-pill px-4 py-2 hover:bg-crimson/15 transition-colors"
+                  className="min-h-11 font-sans text-detail font-medium border border-crimson/40 text-crimson-soft rounded-pill px-4 py-2 hover:bg-crimson/15 transition-colors"
                 >
                   {t("ui.deleteAccount")}
                 </button>
@@ -159,7 +159,7 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
                       type="button"
                       onClick={deleteAccount}
                       disabled={deleting}
-                      className="font-sans text-detail font-semibold bg-crimson text-paper rounded-pill px-4 py-2 hover:bg-[#a31f24] transition-colors disabled:opacity-60"
+                      className="min-h-11 font-sans text-detail font-semibold bg-crimson text-paper rounded-pill px-4 py-2 hover:bg-[#a31f24] transition-colors disabled:opacity-60"
                     >
                       {deleting
                         ? t("ui.deletingAccount")
@@ -169,7 +169,7 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
                       type="button"
                       onClick={() => setConfirmDelete(false)}
                       disabled={deleting}
-                      className="font-sans text-detail text-paper/55 hover:text-paper transition-colors px-3 py-2 disabled:opacity-60"
+                      className="min-h-11 font-sans text-detail text-paper/55 hover:text-paper transition-colors px-3 py-2 disabled:opacity-60"
                     >
                       {t("common.cancel")}
                     </button>

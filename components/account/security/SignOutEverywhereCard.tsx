@@ -50,7 +50,7 @@ export function SignOutEverywhereCard() {
         type="button"
         onClick={() => setConfirming(true)}
         disabled={pending}
-        className="rounded-pill border border-crimson/60 text-crimson-soft font-sans text-detail font-semibold px-5 py-2.5 hover:bg-crimson/15 disabled:opacity-60 disabled:cursor-wait transition-colors"
+        className="min-h-11 rounded-pill border border-crimson/60 text-crimson-soft font-sans text-detail font-semibold px-5 py-2.5 hover:bg-crimson/15 disabled:opacity-60 disabled:cursor-wait transition-colors"
       >
         {pending ? t("ui.signingOut") : t("account.signOutEverywhere")}
       </button>

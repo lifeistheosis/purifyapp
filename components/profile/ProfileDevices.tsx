@@ -101,7 +101,7 @@ export function ProfileDevices() {
             type="button"
             onClick={signOutOthers}
             disabled={busy}
-            className="shrink-0 font-sans text-detail font-medium rounded-pill border border-paper/25 bg-paper/[0.06] text-paper px-4 py-2 hover:bg-paper/10 hover:border-paper/45 disabled:opacity-60 transition-colors"
+            className="shrink-0 min-h-11 font-sans text-detail font-medium rounded-pill border border-paper/25 bg-paper/[0.06] text-paper px-4 py-2 hover:bg-paper/10 hover:border-paper/45 disabled:opacity-60 transition-colors"
           >
             {busy ? t("ui.working") : t("ui.signOutOthers")}
           </button>

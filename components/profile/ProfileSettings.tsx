@@ -187,7 +187,7 @@ function SegGroup<T extends string>({
           onClick={() => onChange(o.value)}
           aria-pressed={value === o.value}
           className={
-            "font-sans text-detail font-medium rounded-pill px-3 py-1 transition-colors duration-150 " +
+            "hit-44 font-sans text-detail font-medium rounded-pill px-3 py-1 transition-colors duration-150 " +
             (value === o.value
               ? "bg-paper text-night"
               : "text-paper/65 hover:text-paper")

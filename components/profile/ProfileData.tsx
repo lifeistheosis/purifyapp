@@ -137,7 +137,7 @@ export function ProfileData({
           type="button"
           onClick={doExport}
           disabled={busy !== "idle"}
-          className="font-sans text-detail font-medium bg-paper text-night rounded-pill px-4 py-2 hover:bg-paper/90 disabled:opacity-60 transition-colors"
+          className="min-h-11 font-sans text-detail font-medium bg-paper text-night rounded-pill px-4 py-2 hover:bg-paper/90 disabled:opacity-60 transition-colors"
         >
           {busy === "export" ? t("ui.exporting") : t("ui.export")}
         </button>
@@ -145,7 +145,7 @@ export function ProfileData({
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={busy !== "idle"}
-          className="font-sans text-detail font-medium border border-paper/25 text-paper rounded-pill px-4 py-2 hover:bg-paper/10 disabled:opacity-60 transition-colors"
+          className="min-h-11 font-sans text-detail font-medium border border-paper/25 text-paper rounded-pill px-4 py-2 hover:bg-paper/10 disabled:opacity-60 transition-colors"
         >
           {busy === "import" ? t("ui.importing") : t("ui.importEllipsis")}
         </button>
@@ -161,7 +161,7 @@ export function ProfileData({
             type="button"
             onClick={doSync}
             disabled={busy !== "idle"}
-            className="font-sans text-detail font-medium border border-gold/40 text-gold rounded-pill px-4 py-2 hover:bg-gold/10 disabled:opacity-60 transition-colors"
+            className="min-h-11 font-sans text-detail font-medium border border-gold/40 text-gold rounded-pill px-4 py-2 hover:bg-gold/10 disabled:opacity-60 transition-colors"
           >
             {busy === "sync" ? t("ui.syncing") : t("ui.syncNow")}
           </button>

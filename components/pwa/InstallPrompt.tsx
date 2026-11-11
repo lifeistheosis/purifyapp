@@ -205,7 +205,7 @@ export function InstallPrompt() {
             <button
               type="button"
               onClick={install}
-              className="rounded-pill bg-gold text-night font-sans text-detail font-semibold px-4 py-2"
+              className="min-h-11 rounded-pill bg-gold text-night font-sans text-detail font-semibold px-4 py-2"
             >
               {t("ui.install")}
             </button>

@@ -153,6 +153,12 @@ describe("a council's books in the reading room", () => {
     expect(code(SHELVES)).toContain("<CouncilShelves shelves={allShelves(IS_STATIC_EXPORT, councilFocus)} />");
   });
 
+  it("names each shelf with a link 44 to the touch, its heading's look kept (fresh eyes M3, the 19 at 24px)", () => {
+    expect(code("components/councils/CouncilShelves.tsx")).toContain(
+      'href={`/reading/councils/${council.slug}`} className="hit-44 inline-flex max-w-full items-baseline gap-1',
+    );
+  });
+
   it("opens each document in the room's reader, read as the Bible reads (r3-29 A): its own page behind About this book, the reader's own type, Start reading and Continue", () => {
     const page = code(DOCUMENT);
     expect(page).toContain("<ReaderPrefsProvider>");

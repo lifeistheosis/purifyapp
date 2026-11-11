@@ -197,8 +197,8 @@ export function ProfileSyncStatus() {
           disabled={busy}
           className={
             locked
-              ? "shrink-0 font-sans text-detail font-medium rounded-pill border border-gold/45 bg-gold/10 text-gold px-4 py-2 hover:bg-gold/15 hover:border-gold/70 transition-colors"
-              : "shrink-0 font-sans text-detail font-medium rounded-pill border border-paper/25 bg-paper/[0.06] text-paper px-4 py-2 hover:bg-paper/10 hover:border-paper/45 disabled:opacity-60 transition-colors"
+              ? "shrink-0 min-h-11 font-sans text-detail font-medium rounded-pill border border-gold/45 bg-gold/10 text-gold px-4 py-2 hover:bg-gold/15 hover:border-gold/70 transition-colors"
+              : "shrink-0 min-h-11 font-sans text-detail font-medium rounded-pill border border-paper/25 bg-paper/[0.06] text-paper px-4 py-2 hover:bg-paper/10 hover:border-paper/45 disabled:opacity-60 transition-colors"
           }
         >
           {locked ? t("ui.syncSeePlus") : busy ? t("ui.syncing") : t("ui.syncNow")}

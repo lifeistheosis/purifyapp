@@ -240,7 +240,7 @@ export function DiscoverDropdown({
                 href={c.href}
                 role="menuitem"
                 className={cn(
-                  "block px-4 py-2 font-sans text-ui font-medium",
+                  "flex min-h-11 items-center px-4 py-2 font-sans text-ui font-medium",
                   "transition-colors duration-150",
                   isActive
                     ? "text-paper"

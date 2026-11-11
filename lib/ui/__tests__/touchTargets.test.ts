@@ -419,7 +419,15 @@ const MAX_SIZED_SMALL_TARGETS = 0;
 // since 2026-11-10); the EIKON box's four and the shop's three are 44
 // (min-h-11), and the seller form's Remove, which stands on the line of the
 // fields beside it, keeps its look and is 44 to the touch (.hit-44).
-const MAX_PADDED_SMALL_TARGETS = 43;
+// 43 -> 5 the same night (Updates), each looked at first: profile's 14 and
+// account's 10, the website's footer (44 by 44 on a phone already, short
+// from md up) and its language switcher, Discover's two door pills and its
+// menu's rows, the install prompt, the unsubscribe page and the search
+// select are 44 tall (min-h-11) where the layout had room; the nav's Shop
+// pill (both navs), profile's See all and its segmented choices, and the
+// shared Share pill keep their look and are 44 to the touch (.hit-44). Left:
+// Community's 5 (Fable Themes).
+const MAX_PADDED_SMALL_TARGETS = 5;
 
 describe("touch targets", () => {
   const { total, byFile, written, writtenByFile, sized, sizedByFile, padded, paddedByFile } = countSmallTargets();

@@ -80,7 +80,7 @@ export function AccountTabs() {
                 href={tab.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "inline-flex items-center gap-2 whitespace-nowrap rounded-lg px-3.5 py-2",
+                  "inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-lg px-3.5 py-2",
                   "font-sans text-detail font-medium",
                   "transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none",
                   active

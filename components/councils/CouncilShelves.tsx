@@ -29,7 +29,10 @@ export function CouncilShelves({ shelves }: { shelves: { council: ShelfCouncil; 
             key={council.slug}
             id={`council-${council.slug}`}
             title={
-              <Link href={`/reading/councils/${council.slug}`} className="inline-flex max-w-full items-baseline gap-1 hover:underline hover:underline-offset-4">
+              // 44 to the touch with its look kept (.hit-44), as a row's See
+              // all is (CoverRow): the heading's line is 24px, and the covers
+              // stand 14px below, clear of the 10px it reaches.
+              <Link href={`/reading/councils/${council.slug}`} className="hit-44 inline-flex max-w-full items-baseline gap-1 hover:underline hover:underline-offset-4">
                 <span lang="en" dir="ltr" className="truncate">
                   {council.byname}
                 </span>

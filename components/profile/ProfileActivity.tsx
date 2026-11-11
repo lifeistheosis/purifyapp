@@ -42,7 +42,7 @@ export function ProfileActivity() {
       <div className="flex items-center justify-between gap-3">
         <Eyebrow level={2}>{t("ui.lastSaved")}</Eyebrow>
         {/* ui.seeAll carries its own arrow in every language. */}
-        <Link href="/saved" className={cn(PILL, "px-4 py-1.5 text-detail")}>
+        <Link href="/saved" className={cn(PILL, "hit-44 px-4 py-1.5 text-detail")}>
           {t("ui.seeAll")}
         </Link>
       </div>

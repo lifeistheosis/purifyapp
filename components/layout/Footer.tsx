@@ -163,7 +163,7 @@ export function Footer() {
        target="_blank"
        rel="noopener noreferrer"
        aria-label="Discord"
-       className="inline-flex items-center gap-2 rounded-pill border border-[#5865F2]/35 bg-[#5865F2]/[0.06] px-4 py-2 font-sans text-detail text-link hover:bg-[#5865F2]/[0.12] hover:border-[#5865F2]/55 hover:text-paper transition-colors"
+       className="inline-flex min-h-11 items-center gap-2 rounded-pill border border-[#5865F2]/35 bg-[#5865F2]/[0.06] px-4 py-2 font-sans text-detail text-link hover:bg-[#5865F2]/[0.12] hover:border-[#5865F2]/55 hover:text-paper transition-colors"
       >
        <Discord size={14} />
        <span>{t("footer.discord")}</span>
@@ -173,7 +173,7 @@ export function Footer() {
        target="_blank"
        rel="noopener noreferrer"
        aria-label="Instagram"
-       className="inline-flex items-center gap-2 rounded-pill border border-[#E1306C]/40 bg-[#E1306C]/[0.07] px-4 py-2 font-sans text-detail text-social-ig hover:bg-[#E1306C]/[0.13] hover:border-[#E1306C]/65 hover:text-paper transition-colors"
+       className="inline-flex min-h-11 items-center gap-2 rounded-pill border border-[#E1306C]/40 bg-[#E1306C]/[0.07] px-4 py-2 font-sans text-detail text-social-ig hover:bg-[#E1306C]/[0.13] hover:border-[#E1306C]/65 hover:text-paper transition-colors"
       >
        <Instagram size={14} />
        <span>@purifymylife</span>
@@ -183,7 +183,7 @@ export function Footer() {
        target="_blank"
        rel="noopener noreferrer"
        aria-label="TikTok"
-       className="inline-flex items-center gap-2 rounded-pill border border-paper/30 bg-paper/[0.06] px-4 py-2 font-sans text-detail text-paper/85 hover:bg-paper/[0.12] hover:border-paper/50 hover:text-paper transition-colors"
+       className="inline-flex min-h-11 items-center gap-2 rounded-pill border border-paper/30 bg-paper/[0.06] px-4 py-2 font-sans text-detail text-paper/85 hover:bg-paper/[0.12] hover:border-paper/50 hover:text-paper transition-colors"
       >
        <TikTok size={14} />
        <span>@purify.app</span>
@@ -193,7 +193,7 @@ export function Footer() {
        target="_blank"
        rel="noopener noreferrer"
        aria-label="Reddit"
-       className="inline-flex items-center gap-2 rounded-pill border border-[#FF4500]/40 bg-[#FF4500]/[0.07] px-4 py-2 font-sans text-detail text-social-reddit hover:bg-[#FF4500]/[0.13] hover:border-[#FF4500]/65 hover:text-paper transition-colors"
+       className="inline-flex min-h-11 items-center gap-2 rounded-pill border border-[#FF4500]/40 bg-[#FF4500]/[0.07] px-4 py-2 font-sans text-detail text-social-reddit hover:bg-[#FF4500]/[0.13] hover:border-[#FF4500]/65 hover:text-paper transition-colors"
       >
        <Reddit size={14} />
        <span>@purifymylife</span>

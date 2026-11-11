@@ -138,7 +138,7 @@ export function Navbar() {
                 // hugs the label instead of pushing it right. Only from xl:
                 // below it the row's gap is 16px, and -ml-4 would put the
                 // ring against the link before it.
-                "-ml-1 xl:-ml-4 inline-flex items-center whitespace-nowrap rounded-pill border px-4 py-1.5 font-sans text-ui font-medium transition-colors duration-150",
+                "hit-44 -ml-1 xl:-ml-4 inline-flex items-center whitespace-nowrap rounded-pill border px-4 py-1.5 font-sans text-ui font-medium transition-colors duration-150",
                 isActive("/shop")
                   ? "border-gold text-gold-pale bg-gold/10"
                   : "border-gold/45 text-gold-pale hover:border-gold hover:bg-gold/10",

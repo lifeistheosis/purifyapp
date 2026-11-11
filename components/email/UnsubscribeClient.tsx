@@ -81,7 +81,7 @@ export function UnsubscribeClient() {
             type="button"
             onClick={() => void unsubscribe()}
             disabled={state === "busy"}
-            className="mt-8 rounded-pill border border-gold/40 bg-gold/[0.08] px-6 py-2.5 font-sans text-detail font-semibold text-gold transition-colors hover:bg-gold/[0.14] disabled:opacity-40"
+            className="mt-8 min-h-11 rounded-pill border border-gold/40 bg-gold/[0.08] px-6 py-2.5 font-sans text-detail font-semibold text-gold transition-colors hover:bg-gold/[0.14] disabled:opacity-40"
           >
             {state === "busy" ? "Unsubscribing…" : "Unsubscribe"}
           </button>

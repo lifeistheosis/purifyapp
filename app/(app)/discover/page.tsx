@@ -131,7 +131,7 @@ export default async function DiscoverPage() {
                   <Link
                     key={q.href}
                     href={q.href}
-                    className="rounded-pill border border-paper/15 bg-paper/[0.04] px-5 py-2.5 font-sans text-ui font-medium text-paper transition-colors duration-150 hover:border-paper/30 hover:bg-paper/10"
+                    className="inline-flex min-h-11 items-center rounded-pill border border-paper/15 bg-paper/[0.04] px-5 py-2.5 font-sans text-ui font-medium text-paper transition-colors duration-150 hover:border-paper/30 hover:bg-paper/10"
                   >
                     {q.label}
                   </Link>
@@ -229,7 +229,7 @@ export default async function DiscoverPage() {
                       <Link
                         key={mode.href}
                         href={mode.href}
-                        className="rounded-pill border border-paper/15 bg-paper/[0.04] px-5 py-2.5 font-sans text-ui font-medium text-paper transition-colors hover:border-paper/30 hover:bg-paper/10"
+                        className="inline-flex min-h-11 items-center rounded-pill border border-paper/15 bg-paper/[0.04] px-5 py-2.5 font-sans text-ui font-medium text-paper transition-colors hover:border-paper/30 hover:bg-paper/10"
                       >
                         {mode.label}
                       </Link>
