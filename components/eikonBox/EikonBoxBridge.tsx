@@ -115,7 +115,7 @@ export function EikonBoxBridge() {
           <Link
             href="/account/eikon-box"
             onClick={dismiss}
-            className="inline-flex items-center rounded-pill bg-gold px-4 py-2 font-sans text-detail font-semibold text-night"
+            className="inline-flex min-h-11 items-center rounded-pill bg-gold px-4 py-2 font-sans text-detail font-semibold text-night"
           >
             Claim your box
           </Link>

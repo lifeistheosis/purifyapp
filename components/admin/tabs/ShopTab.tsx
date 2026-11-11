@@ -1205,14 +1205,14 @@ function ProductOverview({
             <button
               type="button"
               onClick={onEdit}
-              className="rounded-pill bg-paper px-4 py-1.5 font-sans text-detail font-semibold text-night"
+              className="rounded-pill bg-paper px-4 py-1.5 font-sans text-detail font-semibold text-night min-h-11 pointer-fine:min-h-0"
             >
               Edit product
             </button>
             <button
               type="button"
               onClick={() => onToggleStatus(p)}
-              className="rounded-pill border border-paper/20 px-4 py-1.5 font-sans text-detail text-paper/75 hover:text-paper"
+              className="rounded-pill border border-paper/20 px-4 py-1.5 font-sans text-detail text-paper/75 hover:text-paper min-h-11 pointer-fine:min-h-0"
             >
               {p.status === "published" ? "Pause" : "Publish"}
             </button>
@@ -1223,14 +1223,14 @@ function ProductOverview({
               href={productHref(p.slug, false)}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-pill border border-paper/20 px-4 py-1.5 font-sans text-detail text-paper/75 hover:text-paper"
+              className="inline-flex items-center rounded-pill border border-paper/20 px-4 py-1.5 font-sans text-detail text-paper/75 hover:text-paper min-h-11 pointer-fine:min-h-0"
             >
               View on site ↗
             </a>
             <button
               type="button"
               onClick={() => onDelete(p)}
-              className="rounded-pill border border-[color:color-mix(in_oklab,var(--adm-critical),transparent_60%)] px-4 py-1.5 font-sans text-detail text-[color:var(--adm-critical)] hover:bg-[color:color-mix(in_oklab,var(--adm-critical),transparent_90%)]"
+              className="rounded-pill border border-[color:color-mix(in_oklab,var(--adm-critical),transparent_60%)] px-4 py-1.5 font-sans text-detail text-[color:var(--adm-critical)] hover:bg-[color:color-mix(in_oklab,var(--adm-critical),transparent_90%)] min-h-11 pointer-fine:min-h-0"
             >
               Delete
             </button>
@@ -2061,7 +2061,7 @@ function ProductEditor({
           type="button"
           onClick={() => void save()}
           disabled={busy}
-          className="rounded-pill bg-paper px-6 py-2.5 font-sans text-ui font-semibold text-night disabled:opacity-60"
+          className="rounded-pill bg-paper px-6 py-2.5 font-sans text-ui font-semibold text-night disabled:opacity-60 min-h-11 pointer-fine:min-h-0"
         >
           {busy ? "Saving…" : "Save product"}
         </button>
@@ -3096,7 +3096,7 @@ function SeedReviewSheet({
               type="button"
               onClick={() => photoRef.current?.click()}
               disabled={uploading || photos.length >= 12}
-              className="rounded-pill border adm-outline bg-[var(--adm-control)] px-3 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
+              className="rounded-pill border adm-outline bg-[var(--adm-control)] px-3 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50 min-h-11 pointer-fine:min-h-0"
             >
               {uploading ? "Uploading…" : "Add photo"}
             </button>
@@ -3136,7 +3136,7 @@ function SeedReviewSheet({
           onClick={() => void seed()}
           disabled={busy || uploading}
           title={uploading ? "Wait for the photo upload to finish" : undefined}
-          className="rounded-pill border adm-outline bg-[var(--adm-control)] px-4 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
+          className="rounded-pill border adm-outline bg-[var(--adm-control)] px-4 py-1.5 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50 min-h-11 pointer-fine:min-h-0"
         >
           {busy ? "Saving…" : uploading ? "Photo uploading…" : "Add review"}
         </button>

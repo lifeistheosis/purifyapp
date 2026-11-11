@@ -169,7 +169,7 @@ export function ListingForm({
             <button
               type="button"
               onClick={() => setMedia((rows) => rows.filter((_, j) => j !== i))}
-              className="self-end pb-3 font-sans text-detail font-medium text-paper/55 hover:text-paper"
+              className="hit-44 self-end pb-3 font-sans text-detail font-medium text-paper/55 hover:text-paper"
             >
               {t("prayers.diptychs.remove")}
             </button>

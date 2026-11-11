@@ -49,7 +49,7 @@ export function SellerNav({ storeName }: { storeName: string }) {
                   href={s.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "inline-block rounded-pill px-3.5 py-1.5 font-sans text-detail font-medium transition-colors",
+                    "inline-flex min-h-11 items-center rounded-pill px-3.5 py-1.5 font-sans text-detail font-medium transition-colors",
                     active
                       ? "bg-paper text-night"
                       : "text-paper/70 hover:text-paper border border-paper/15 bg-paper/[0.03]",
@@ -80,7 +80,7 @@ export function SellerNav({ storeName }: { storeName: string }) {
                   href={s.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "block rounded-lg px-4 py-2.5 font-sans text-ui font-medium transition-colors",
+                    "flex min-h-11 items-center rounded-lg px-4 py-2.5 font-sans text-ui font-medium transition-colors",
                     active
                       ? "bg-paper/[0.07] text-paper"
                       : "text-paper/65 hover:bg-paper/[0.04] hover:text-paper",

@@ -176,7 +176,7 @@ export function EikonBoxClient() {
             setLoadError(false);
             void load();
           }}
-          className="mt-3 rounded-pill border border-paper/20 px-4 py-2 font-sans text-detail font-semibold text-paper"
+          className="mt-3 min-h-11 rounded-pill border border-paper/20 px-4 py-2 font-sans text-detail font-semibold text-paper"
         >
           Try again
         </button>
@@ -199,7 +199,7 @@ export function EikonBoxClient() {
         </p>
         <Link
           href="/pricing"
-          className="mt-4 inline-flex items-center rounded-pill border border-gold/45 bg-gold/12 px-4 py-2.5 font-sans text-detail font-semibold text-gold-pale"
+          className="mt-4 inline-flex min-h-11 items-center rounded-pill border border-gold/45 bg-gold/12 px-4 py-2.5 font-sans text-detail font-semibold text-gold-pale"
         >
           See what Pro includes →
         </Link>

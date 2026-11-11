@@ -36,7 +36,7 @@ export function ProductMediaManager({
   const field =
     "w-full rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/56 focus:outline-none focus:border-paper/40";
   const smallBtn =
-    "rounded-pill border border-paper/20 px-3 py-1 font-sans text-eyebrow font-semibold text-paper/70 hover:text-paper disabled:opacity-50";
+    "rounded-pill border border-paper/20 px-3 py-1 font-sans text-eyebrow font-semibold text-paper/70 hover:text-paper disabled:opacity-50 min-h-11 pointer-fine:min-h-0";
 
   const setRow = (i: number, patch: Partial<ProductMediaRow>) =>
     onChange(rows.map((r, j) => (j === i ? { ...r, ...patch } : r)));
@@ -158,7 +158,7 @@ export function ProductMediaManager({
                   type="button"
                   onClick={() => removeRow(i)}
                   className={
-                    "rounded-pill border border-[color-mix(in_oklab,var(--adm-critical),transparent_60%)] bg-[color-mix(in_oklab,var(--adm-critical),transparent_94%)] px-3 py-1 font-sans text-eyebrow font-semibold text-[color:var(--adm-critical)] hover:bg-[color-mix(in_oklab,var(--adm-critical),transparent_88%)]"
+                    "rounded-pill border border-[color-mix(in_oklab,var(--adm-critical),transparent_60%)] bg-[color-mix(in_oklab,var(--adm-critical),transparent_94%)] px-3 py-1 font-sans text-eyebrow font-semibold text-[color:var(--adm-critical)] hover:bg-[color-mix(in_oklab,var(--adm-critical),transparent_88%)] min-h-11 pointer-fine:min-h-0"
                   }
                 >
                   Remove
@@ -199,7 +199,7 @@ export function ProductMediaManager({
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={busy}
-          className="rounded-pill border adm-outline bg-[var(--adm-control)] px-3 py-2 font-sans text-eyebrow font-semibold text-gold-pale disabled:opacity-50"
+          className="rounded-pill border adm-outline bg-[var(--adm-control)] px-3 py-2 font-sans text-eyebrow font-semibold text-gold-pale disabled:opacity-50 min-h-11 pointer-fine:min-h-0"
         >
           {busy ? "Uploading…" : "Upload images"}
         </button>

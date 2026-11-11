@@ -388,7 +388,7 @@ export function Modal({
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="rounded-[var(--adm-radius-sm)] border px-2 py-1 font-sans text-[12px] transition-colors"
+              className="rounded-[var(--adm-radius-sm)] border px-2 py-1 font-sans text-[12px] transition-colors min-h-11 pointer-fine:min-h-0"
               style={{
                 borderColor: "var(--adm-line-strong)",
                 color: "var(--adm-ink-2)",
@@ -1302,7 +1302,7 @@ export function FilterChips<T extends string>({
             type="button"
             onClick={() => onChange(o.id)}
             aria-pressed={on}
-            className="adm-rail-item adm-control inline-flex items-center gap-1.5 rounded-[var(--adm-radius-pill)] px-3 py-1 font-sans text-[12.5px] font-medium capitalize"
+            className="adm-rail-item adm-control inline-flex items-center gap-1.5 rounded-[var(--adm-radius-pill)] px-3 py-1 font-sans text-[12.5px] font-medium capitalize min-h-11 pointer-fine:min-h-0"
             style={
               on
                 ? ({

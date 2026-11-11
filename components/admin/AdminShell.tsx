@@ -961,7 +961,7 @@ export function AdminShell({
                     setLarp(false);
                     window.location.reload();
                   }}
-                  className="ml-auto rounded-pill border px-2.5 py-1 font-sans text-caption font-semibold text-paper/85"
+                  className="ml-auto rounded-pill border px-2.5 py-1 font-sans text-caption font-semibold text-paper/85 min-h-11 pointer-fine:min-h-0"
                   style={{ borderColor: "var(--adm-line-strong)" }}
                 >
                   Turn off

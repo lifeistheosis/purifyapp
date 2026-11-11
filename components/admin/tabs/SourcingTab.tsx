@@ -227,7 +227,7 @@ export function SourcingTab() {
                         href={r.supplierUrl}
                         target="_blank"
                         rel="noreferrer noopener"
-                        className="rounded-[var(--adm-radius-sm)] border px-2.5 py-1 font-sans text-[12px]"
+                        className="inline-flex items-center rounded-[var(--adm-radius-sm)] border px-2.5 py-1 font-sans text-[12px] min-h-11 pointer-fine:min-h-0"
                         style={{ borderColor: "var(--adm-line)", color: "var(--adm-accent)" }}
                       >
                         Open supplier

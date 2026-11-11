@@ -249,7 +249,7 @@ export function ImportListingPanel({
             type="button"
             disabled={busy}
             onClick={() => void scan()}
-            className="rounded-pill border adm-outline bg-[var(--adm-control)] px-4 py-2 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
+            className="rounded-pill border adm-outline bg-[var(--adm-control)] px-4 py-2 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50 min-h-11 pointer-fine:min-h-0"
           >
             {busy ? "Reading…" : "Scan page"}
           </button>
@@ -257,7 +257,7 @@ export function ImportListingPanel({
             <button
               type="button"
               onClick={reset}
-              className="rounded-pill border border-paper/15 px-3 py-2 font-sans text-caption text-paper/70"
+              className="rounded-pill border border-paper/15 px-3 py-2 font-sans text-caption text-paper/70 min-h-11 pointer-fine:min-h-0"
             >
               Clear
             </button>
@@ -316,7 +316,7 @@ export function ImportListingPanel({
             type="button"
             disabled={busy || pasted.trim().length < 50}
             onClick={() => void scan(pasted)}
-            className="rounded-pill border adm-outline bg-[var(--adm-control)] px-4 py-2 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
+            className="rounded-pill border adm-outline bg-[var(--adm-control)] px-4 py-2 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50 min-h-11 pointer-fine:min-h-0"
           >
             {busy ? "Reading…" : "Read the pasted page"}
           </button>
@@ -395,7 +395,7 @@ export function ImportListingPanel({
                         setRetail((p / 100).toFixed(2));
                         keep({ result, retail: (p / 100).toFixed(2) });
                       }}
-                      className="rounded-pill border border-paper/15 px-3 py-2 font-sans text-caption text-paper/70"
+                      className="rounded-pill border border-paper/15 px-3 py-2 font-sans text-caption text-paper/70 min-h-11 pointer-fine:min-h-0"
                     >
                       {Math.round(m * 100)}% margin, {money(p)}
                     </button>
@@ -420,7 +420,7 @@ export function ImportListingPanel({
               // From here the editor keeps its own draft of this listing.
               writeScan(null);
             }}
-            className="rounded-pill border adm-outline bg-[var(--adm-control)] px-4 py-2 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50"
+            className="rounded-pill border adm-outline bg-[var(--adm-control)] px-4 py-2 font-sans text-caption font-semibold text-gold-pale disabled:opacity-50 min-h-11 pointer-fine:min-h-0"
           >
             {busyLabel ?? "Open as a draft listing"}
           </button>

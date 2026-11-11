@@ -639,7 +639,10 @@ async function worker() {
   const kept = await first.evaluate(() => Object.entries({ ...localStorage }));
   await first.close();
   for (let at = queue.shift(); at; at = queue.shift()) {
-    results.push(await walkScreen(ctx, at, kept));
+    const r = await walkScreen(ctx, at, kept);
+    results.push(r);
+    // Each screen's fails as it ends, so an owner can have them before the walk is over.
+    for (const c of r.controls.filter((x) => x.verdict === "fail")) console.log(`  FAIL ${at} ${c.name}: ${c.why.filter((w) => /^(nothing|moved|back|under|covered):/.test(w)).join("; ")}`);
     done += 1;
     if (done % 5 === 0) console.log(`  ${done} of ${list.length}`);
   }

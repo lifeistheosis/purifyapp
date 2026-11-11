@@ -122,7 +122,7 @@ export function ApiLimitBanner() {
         </div>
         <a
           href={`mailto:${API_BIBLE_SUPPORT_EMAIL}?subject=Enterprise%20licence%20enquiry%20for%20Purify`}
-          className="adm-control shrink-0 rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-[12px] font-medium"
+          className="adm-control inline-flex shrink-0 items-center rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-[12px] font-medium min-h-11 pointer-fine:min-h-0"
           style={
             {
               borderColor: "var(--adm-line-strong)",

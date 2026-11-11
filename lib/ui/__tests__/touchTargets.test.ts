@@ -414,7 +414,12 @@ const MAX_SIZED_SMALL_TARGETS = 0;
 // and Discover's two door pills, which a phone does not show; and one each
 // in the install prompt, the language switcher, the unsubscribe page, and
 // two shared controls (ShareButton, SearchSelect).
-const MAX_PADDED_SMALL_TARGETS = 76;
+// 76 -> 43 the same night (Admin): the admin panel's 25 are 44 to a finger
+// and compact to a mouse (min-h-11 pointer-fine:min-h-0, the panel's rule
+// since 2026-11-10); the EIKON box's four and the shop's three are 44
+// (min-h-11), and the seller form's Remove, which stands on the line of the
+// fields beside it, keeps its look and is 44 to the touch (.hit-44).
+const MAX_PADDED_SMALL_TARGETS = 43;
 
 describe("touch targets", () => {
   const { total, byFile, written, writtenByFile, sized, sizedByFile, padded, paddedByFile } = countSmallTargets();

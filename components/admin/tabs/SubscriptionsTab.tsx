@@ -342,7 +342,7 @@ function GiftCard() {
         <button
           type="submit"
           disabled={busy || !email.trim()}
-          className="rounded-pill border adm-outline bg-[var(--adm-control)] px-5 py-2 font-sans text-detail font-semibold text-gold-pale disabled:opacity-40"
+          className="rounded-pill border adm-outline bg-[var(--adm-control)] px-5 py-2 font-sans text-detail font-semibold text-gold-pale disabled:opacity-40 min-h-11 pointer-fine:min-h-0"
         >
           {busy ? "Sending…" : "Send gift"}
         </button>
@@ -501,7 +501,7 @@ function MembersPanel() {
           <button
             type="submit"
             disabled={busy || !email.trim()}
-            className="rounded-pill border adm-outline bg-[var(--adm-control)] px-5 py-2 font-sans text-detail font-semibold text-[color:var(--adm-good)] disabled:opacity-40"
+            className="rounded-pill border adm-outline bg-[var(--adm-control)] px-5 py-2 font-sans text-detail font-semibold text-[color:var(--adm-good)] disabled:opacity-40 min-h-11 pointer-fine:min-h-0"
           >
             {busy ? "Granting…" : "Grant"}
           </button>
