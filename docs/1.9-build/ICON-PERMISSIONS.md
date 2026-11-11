@@ -148,6 +148,140 @@ gate", part 3).
 - **To write to:** the Chancellery of the Holy Synod (above).
 - **For the letter:** as for St Cleopas.
 
+## The six modern saints of November and December
+
+Fable voices, 2026-11-11, on the arbiter's word (they came from the November
+and December chat's list). Read from each page's text and captions; where
+this says a page shows an icon, look at it before the letter is written. No
+photograph of any of the four checked could be shown to be free (noted under
+each).
+
+## St Arsenius of Prislop (1910 to 1989)
+
+- **The icon:** the Church's own icon of him ("Icoana Sfântului Cuvios
+  Mărturisitor Arsenie de la Prislop"), presented at the local proclamation
+  at Prislop on 28 November 2025
+  (https://eprb.ro/ps-teofil-trotusanul-participat-la-proclamarea-locala-sf-cuv-arsenie-de-la-prislop).
+  It can be seen, so captioned, at
+  https://romania.rferl.org/a/arsenie-boca-dumitru-staniloae-ilie-cleopa-si-alti-13-devin-sfinti-cum-arata-icoanele-lor/33034174.html.
+  What it shows is not described in the text read.
+- **Made by:** not named on any page read (Radio Free Europe, eprb.ro,
+  doxologia.ro, Agerpres). It may be by the painters of the Patriarchate's
+  other icons of 2024 and 2025 (St Cleopas, above): not shown.
+- **To write to:** his monastery's diocese, Episcopia Devei și Hunedoarei,
+  Str. Andrei Șaguna, nr. 1, Deva; Tel./fax 0254 211 241;
+  secretariat@episcopiadevei.ro, cultural@episcopiadevei.ro; the exarch of
+  its monasteries, exarh@episcopiadevei.ro (https://episcopiadevei.ro/contact/).
+  Prislop Monastery's own address: not found.
+- **For the letter:** in Romanian. Ask the diocese who painted it and who
+  holds its rights; if it is the Patriarchate's, the Chancellery of the Holy
+  Synod (St Cleopas, above) is the one to ask, and one letter may cover both.
+
+## St Iakovos of Evia (1920 to 1991)
+
+- **The icon:** an icon of him in egg tempera, 30 by 40 cm, its frame and
+  halo in 23 carat gold, on the iconographer Lydia Gourioti's own pages
+  (https://lydiagourioti-iconography.blogspot.com/2021/02/saint-iakovos-tsalikis.html;
+  also at https://www.saint.gr/4442/saint.aspx, credited "Λυδία Γουριώτη©").
+  His pose and what he holds are not said in the text read.
+- **Made by:** Lydia Gourioti (Λυδία Γουριώτη). The page is her blog of her
+  own work ("Orthodox Iconography - Lydia Gourioti") and gives the icon's
+  size and technique; it does not say "painted by" in so many words. No icon
+  of him from his monastery or the Patriarchate with a named painter was
+  found.
+- **To write to:** byzantineicons39@gmail.com, given on the same page ("For
+  your questions"). A postal address: not found. The Monastery of St David
+  in Evia: no site, address or telephone of its own found.
+- **For the letter:** in Greek or English (her pages are in both). Her pages
+  say: "All the images are copyrighted and All Rights Reserved. They may not
+  be used or reproduced in any way without my explicit written permission."
+  A written permission is what she asks for.
+
+## St Sophrony of Essex (1896 to 1993)
+
+- **The icon:** the icon made for his tomb after his canonization: in full
+  liturgical vestments, holding a Gospel book open; in pastel. A first icon
+  on the same page shows him in monastic dress, holding an icon of St
+  Silouan.
+  https://essexmonastery.org/articles/english/the-icon-of-a-new-saint-sophrony-the-athonite/
+- **Made by:** Sister Gabriela of his monastery, who writes the page in her
+  own person ("For the first icon, I painted St. Sophrony in monks'
+  clothing").
+- **To write to:** the Patriarchal Stavropegic Monastery of St John the
+  Baptist, The Old Rectory, Rectory Road, Tolleshunt Knights, by Maldon,
+  Essex CM9 8EZ, England; telephone +44 (0)1621 816471
+  (https://ec-patr.org/en/entities/sacred-patriarchal-and-stavropegic-monastery-of-the-venerable-forerunner-in-essex-uk/).
+  No email is published. The same monastery is asked for St Silouan (above):
+  one letter can ask for both.
+- **For the letter:** in English, by post. The site's footer reads "© 2026
+  The Stavropegic Monastery of Saint John the Baptist, Essex" and states no
+  licence.
+- **A photograph:** Commons has one of 1976 marked as released by its
+  uploader ("Own work", a pseudonym, no permission ticket:
+  https://commons.wikimedia.org/wiki/File:Eldersophrony.jpg). That it is his
+  to release is not shown, so it is not used.
+
+## St Philoumenos of Jacob's Well (1913 to 1979)
+
+- **The icon:** "Saint Hieromartyr Philoumenos. Icon painted by the hand of
+  Hieromonk Ambrosios at the time of the Saint's canonization (2009)". A
+  second on the same page: "Icon of Saint Philoumenos (Michalis Koullepos,
+  1999). In the church of the Holy Monastery of Saint Nikolaos, Orounda."
+  https://immorfou.org.cy/hieromartyr-saint-philoumenos-of-cyprus-the-first-martyr-of-recent-times/
+  What each shows is not described in the text read.
+- **Made by:** Hieromonk Ambrosios (2009); Michalis Koullepos (1999). An
+  address for either: not found. Where the icon of 2009 is kept: not found.
+- **To write to:** the Holy Metropolis of Morphou, whose page it is and in
+  whose diocese Orounda lies: Μητροπόλεως 3, Τ.Κ. 2831 Ευρύχου, Cyprus;
+  telephone 22932414; info@immorfou.org.cy (the same page's footer). The
+  Patriarchate of Jerusalem, which glorified him: no contact page that
+  answered was found.
+- **For the letter:** in Greek. Ask the Metropolis for its permission for
+  the Orounda icon, or for the painters' addresses. Its footer reads "© 2021
+  ΙΕΡΑ ΜΗΤΡΟΠΟΛΙΣ ΜΟΡΦΟΥ" and states no licence.
+- **A photograph:** his last, at Jacob's Well in November 1979, has a named
+  photographer and no licence; a family photograph said to be of 1910 has no
+  photographer and no publication shown. Neither can be shown to be free.
+
+## St Gabriel of Georgia (1929 to 1995)
+
+- **The icon:** not found. No icon of him with a named painter stands on
+  any official page read. His own site says only that "A new icon of Saint
+  Gabriel was written specialty for this day"
+  (https://monkgabriel.ge/eng/2.nov.2015.htm).
+- **Made by:** not named for any icon at Samtavro. Tamuna Gochiashvili is
+  named as painting icons of two saints with the blessing of Patriarch Ilia
+  II (https://orthochristian.com/131345.html); no address for her is given.
+- **To write to:** not found. Samtavro Convent has no site that was found,
+  monkgabriel.ge lists no contact, and the Georgian Patriarchate's site
+  answered with nothing. The letter waits on an address.
+- **For the letter:** in Georgian, or Russian or English.
+- **Not an icon, and not asked for:** a painting of him in oils (Andrey
+  Mironov, 2020) is on Commons under CC BY-SA 4.0 with a permission ticket
+  (https://commons.wikimedia.org/wiki/File:Gabriel_(Urgebadze)._A._Mironov.jpg).
+  It is free to use with its credit, but it is a modern portrait, not an
+  icon of the Church; whether it may stand for him is the owner's call.
+- **A photograph:** Commons has one of about the 1960s marked CC0, from
+  monkgabriel.ge, whose own page states no licence and no photographer. Its
+  freedom is not shown, so it is not used.
+
+## St Arsenius of Cappadocia (about 1840 to 1924)
+
+- **The icon:** the first icon of him, painted at the Hesychasterion of St
+  John the Theologian at Souroti under the guidance of St Paisios, who knew
+  him ("Η πρώτη εικόνα του Αγίου Αρσενίου του Καππαδόκη"):
+  https://www.saint.gr/2973/saint.aspx. The Hesychasterion's own pages show
+  its icons of him with St Paisios (https://agiospaisios.gr/icons). What it
+  shows is not described in the text read.
+- **Made by:** the sisters of the Hesychasterion, not named.
+- **To write to:** as for St Paisios (above): the contact form at
+  https://agiospaisios.gr/contact, or by post to Ιερό Ησυχαστήριο Ευαγγ.
+  Ιωάννης ο Θεολόγος, Βασιλικά, 57006 Θεσσαλονίκη, Greece; telephone +30
+  23960 41320 or 41315. One letter can ask for both saints.
+- **For the letter:** in Greek, by post.
+- **A photograph:** none was found. He reposed in 1924; a photograph of him
+  published before 1929 would be free, but none is shown anywhere read.
+
 ## Still searched, not yet on this list
 
 Two older saints may yet have a free picture, and are named here so the
