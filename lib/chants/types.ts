@@ -93,6 +93,18 @@ export type ChantLine = {
   nearest?: true;
   /** Why these words are not confirmed against the recording yet. */
   unsure?: string;
+  /**
+   * Why these words are not shown (build 93, the owner's word of 2026-11-11:
+   * "the lyrics on some of the chants is wrong, so fix that"). A line is shown
+   * only where the recording sings its words and a published text of the
+   * chant in that language has them; one that cannot be confirmed both ways
+   * keeps its place and its time here, so the recording plays and the lines
+   * around it stay timed, and a reader sees neither its words nor its time
+   * (lib/chants/registry.server.ts forPage, lib/chants/timing.server.ts
+   * servedTiming). Words confirmed later lift it. The check and each line's
+   * verdict: docs/chants/lyrics-check.md.
+   */
+  hidden?: string;
 };
 
 /**

@@ -88,13 +88,15 @@
           "text": "اِحْمَدُوا ٱلرَّبَّ لِأَنَّهُ صَالِحٌ،",
           "translit": "Ihmadu r-Rabba li-annahu salihun,",
           "en": "Give thanks to the Lord; for he is good:",
-          "nearest": true
+          "nearest": true,
+          "hidden": "Van Dyck's words, not the words sung: the singers sing this verse in other words (heard whole by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing of their wording has been found."
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
           "translit": "li-anna ila l-abadi rahmatahu.",
           "en": "for his mercy endures for ever.",
-          "nearest": true
+          "nearest": true,
+          "hidden": "Van Dyck's words, not the words sung: the singers sing this verse in other words (heard whole by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing of their wording has been found."
         },
         {
           "text": "هَلِّلُويَا.",
@@ -105,7 +107,8 @@
           "text": "مِنَ ٱلضِّيقِ دَعَوْتُ ٱلرَّبَّ فَأَجَابَنِي مِنَ ٱلرُّحْبِ.",
           "translit": "Mina d-diqi da'awtu r-Rabba fa-ajabani mina r-ruhbi.",
           "en": "I called on the Lord out of affliction: and he hearkened to me, so as to bring me into a wide place.",
-          "nearest": true
+          "nearest": true,
+          "hidden": "Van Dyck's words, not the words sung: the singers sing this verse in other words (heard whole by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing of their wording has been found."
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -121,13 +124,15 @@
           "text": "ٱلِٱحْتِمَاءُ بِٱلرَّبِّ",
           "translit": "Al-ihtima'u bir-Rabbi",
           "en": "It is better to trust in the Lord",
-          "nearest": true
+          "nearest": true,
+          "hidden": "Van Dyck's words, not the words sung: the singers sing this verse in other words (heard whole by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing of their wording has been found."
         },
         {
           "text": "خَيْرٌ مِنَ ٱلتَّوَكُّلِ عَلَى إِنْسَانٍ.",
           "translit": "khayrun mina t-tawakkuli 'ala insanin.",
           "en": "than to trust in man.",
-          "nearest": true
+          "nearest": true,
+          "hidden": "Van Dyck's words, not the words sung: the singers sing this verse in other words (heard whole by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing of their wording has been found."
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -143,13 +148,15 @@
           "text": "ٱلِٱحْتِمَاءُ بِٱلرَّبِّ",
           "translit": "Al-ihtima'u bir-Rabbi",
           "en": "It is better to hope in the Lord,",
-          "nearest": true
+          "nearest": true,
+          "hidden": "Van Dyck's words, not the words sung: the singers sing this verse in other words (heard whole by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing of their wording has been found."
         },
         {
           "text": "خَيْرٌ مِنَ ٱلتَّوَكُّلِ عَلَى ٱلرُّؤَسَاءِ.",
           "translit": "khayrun mina t-tawakkuli 'ala r-ru'asa'i.",
           "en": "than to hope in princes.",
-          "nearest": true
+          "nearest": true,
+          "hidden": "Van Dyck's words, not the words sung: the singers sing this verse in other words (heard whole by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing of their wording has been found."
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -165,7 +172,8 @@
           "text": "قُوَّتِي وَتَرَنُّمِي ٱلرَّبُّ، وَقَدْ صَارَ لِي خَلَاصًا.",
           "translit": "Quwwati wa-tarannumi r-Rabbu, wa-qad sara li khalasan.",
           "en": "The Lord is my strength and my song, and is become my salvation.",
-          "unsure": "Heard only in part by the speech model; it wants a listener who knows Arabic."
+          "unsure": "Heard only in part by the speech model; it wants a listener who knows Arabic.",
+          "hidden": "Van Dyck's words, not the words sung: the singers sing this verse in other words (heard whole by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing of their wording has been found."
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -181,7 +189,8 @@
           "text": "يَمِينُ ٱلرَّبِّ مُرْتَفِعَةٌ. يَمِينُ ٱلرَّبِّ صَانِعَةٌ بِبَأْسٍ.",
           "translit": "Yaminu r-Rabbi murtafi'atun. Yaminu r-Rabbi sani'atun bi-ba'sin.",
           "en": "The right hand of the Lord has exalted me: the right hand of the Lord has wrought powerfully.",
-          "nearest": true
+          "nearest": true,
+          "hidden": "Van Dyck's words, not the words sung: the singers sing this verse in other words (heard whole by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing of their wording has been found."
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -196,7 +205,8 @@
         {
           "text": "تَأْدِيبًا أَدَّبَنِي ٱلرَّبُّ، وَإِلَى ٱلْمَوْتِ لَمْ يُسْلِمْنِي.",
           "translit": "Ta'diban addabani r-Rabbu, wa-ila l-mawti lam yuslimni.",
-          "en": "The Lord has chastened me sore: but he has not given me up to death."
+          "en": "The Lord has chastened me sore: but he has not given me up to death.",
+          "hidden": "Van Dyck's words, not the words sung: the singers sing this verse in other words (heard whole by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing of their wording has been found."
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -211,7 +221,8 @@
         {
           "text": "اِفْتَحُوا لِي أَبْوَابَ ٱلْبِرِّ. أَدْخُلْ فِيهَا وَأَحْمَدِ ٱلرَّبَّ.",
           "translit": "Iftahu li abwaba l-birri. Adkhul fiha wa-ahmadi r-Rabba.",
-          "en": "Open to me the gates of righteousness: I will go into them, and give praise to the Lord."
+          "en": "Open to me the gates of righteousness: I will go into them, and give praise to the Lord.",
+          "hidden": "The singers' words differ from Van Dyck's here (the speech model hears افتحوا لي أبواب البر فأدخلها), and no public-domain printing has the words sung."
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -227,7 +238,8 @@
           "text": "هَذَا ٱلْبَابُ لِلرَّبِّ. ٱلصِّدِّيقُونَ يَدْخُلُونَ فِيهِ.",
           "translit": "Hadha l-babu lir-Rabbi. As-siddiquna yadkhuluna fihi.",
           "en": "This is the gate of the Lord: the righteous shall enter by it.",
-          "unsure": "Heard only in part by the speech model; it wants a listener who knows Arabic."
+          "unsure": "Heard only in part by the speech model; it wants a listener who knows Arabic.",
+          "hidden": "Van Dyck's words, not the words sung: the singers sing this verse in other words (heard whole by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing of their wording has been found."
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -243,7 +255,8 @@
           "text": "أَحْمَدُكَ لِأَنَّكَ ٱسْتَجَبْتَ لِي وَصِرْتَ لِي خَلَاصًا.",
           "translit": "Ahmaduka li-annaka stajabta li wa-sirta li khalasan.",
           "en": "I will give thanks to thee; because thou hast heard me, and art become my salvation.",
-          "nearest": true
+          "nearest": true,
+          "hidden": "Van Dyck's words, not the words sung: the singers sing this verse in other words (heard whole by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing of their wording has been found."
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -259,7 +272,8 @@
           "text": "ٱلْحَجَرُ ٱلَّذِي رَفَضَهُ ٱلْبَنَّاؤُونَ قَدْ صَارَ رَأْسَ ٱلزَّاوِيَةِ.",
           "translit": "Al-hajaru lladhi rafadahu l-banna'una qad sara ra'sa z-zawiyati.",
           "en": "The stone which the builders rejected, the same is become the head of the corner.",
-          "nearest": true
+          "nearest": true,
+          "hidden": "Van Dyck's words, not the words sung: the singers sing this verse in other words (heard whole by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing of their wording has been found."
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -290,25 +304,29 @@
           "text": "هَذَا هُوَ ٱلْيَوْمُ ٱلَّذِي صَنَعُهُ ٱلرَّبُّ، نَبْتَهِجُ وَنَفْرَحُ فِيهِ.",
           "translit": "Hadha huwa l-yawmu lladhi sana'ahu r-Rabbu, nabtahiju wa-nafrahu fihi.",
           "en": "This is the day which the Lord has made: let us exult and rejoice in it.",
-          "nearest": true
+          "nearest": true,
+          "hidden": "Van Dyck's words, not the words sung: the singers sing this verse in other words (heard whole by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing of their wording has been found."
         },
         {
           "text": "آهِ يَارَبُّ خَلِّصْ! آهِ يَارَبُّ أَنْقِذْ!",
           "translit": "Ahi ya-Rabbu khallis! Ahi ya-Rabbu anqidh!",
           "en": "O Lord, save now: O Lord, send now prosperity.",
-          "nearest": true
+          "nearest": true,
+          "hidden": "Van Dyck's words, not the words sung: the singers sing this verse in other words (heard whole by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing of their wording has been found."
         },
         {
           "text": "إِلَهِي أَنْتَ فَأَحْمَدُكَ، إِلَهِي فَأَرْفَعُكَ.",
           "translit": "Ilahi anta fa-ahmaduka, ilahi fa-arfa'uka.",
           "en": "Thou art my God, and I will give thee thanks: thou art my God, and I will exalt thee.",
-          "nearest": true
+          "nearest": true,
+          "hidden": "Van Dyck's words, not the words sung: the singers sing this verse in other words (heard whole by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing of their wording has been found."
         },
         {
           "text": "أَحْمَدُكَ لِأَنَّكَ ٱسْتَجَبْتَ لِي وَصِرْتَ لِي خَلَاصًا.",
           "translit": "Ahmaduka li-annaka stajabta li wa-sirta li khalasan.",
           "en": "I will give thanks to thee; because thou hast heard me, and art become my salvation.",
-          "nearest": true
+          "nearest": true,
+          "hidden": "Van Dyck's words, not the words sung: the singers sing this verse in other words (heard whole by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing of their wording has been found."
         },
         {
           "text": "ٱحْمَدُوا ٱلرَّبَّ لِأَنَّهُ صَالِحٌ،",
@@ -326,7 +344,7 @@
           "en": "Alleluia."
         }
       ],
-      "wordsSource": "The whole of what the recording sings, printed from the Van Dyck Arabic Bible (1865, public domain; Psalm 118 in its count) verse by verse, in the order the soloist and the choir sing them: the first verse (by the soloist, then the choir), then the fifth, eighth, ninth, fourteenth, sixteenth, eighteenth to twenty-fifth, twenty-eighth, the twenty-first again, and the last, each followed by the first verse's refrain and hallelujah, in Van Dyck's own words and spelling. The verses and their order were heard in the recording by a speech model. Van Dyck's wording is printed as it is: where the singers' Arabic differs from it (the choir's first verse and verses 5, 8, 9, 16, 21, 22, 24, 25 and 28 are sung in other words), the line is Van Dyck's, not the words sung, and verses 14 and 20 were heard only in part. The English over each line is Brenton's for the same verse. Each line is timed to the recording. The transliteration is ours.",
+      "wordsSource": "Printed from the Van Dyck Arabic Bible (1865, public domain; Psalm 118 in its count) where the soloist and the choir sing its words: the first verse and its refrain, the twenty-third verse, the last verse, and the refrain and hallelujah after every verse. The other verses they sing in other words, the Antiochian Church's own, which no public-domain printing has been found to give, so those lines are not shown. A speech model heard the whole recording to tell them apart (Whisper large-v3, 2026-11-11). The English over each line is Brenton's for the same verse. The transliteration is ours.",
       "translation": {
         "kind": "public-domain",
         "title": "Brenton's English of the Septuagint (1851), verse for verse"

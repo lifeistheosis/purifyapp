@@ -390,11 +390,13 @@ describe("each version of a chant", () => {
   });
 
   it("keeps those marks for the data: a page carries the words, not the marks", () => {
+    // A hidden line (build 93) is not on the page at all
+    // (lib/chants/__tests__/lyricsCheck.test.ts).
     for (const c of allChants()) {
       const page = forPage(c);
       page.variants.forEach((v, k) => {
-        expect(v.lines.map((l) => l.text), c.slug).toEqual(c.variants[k].lines.map((l) => l.text));
-        for (const l of v.lines) expect("nearest" in l || "unsure" in l, c.slug).toBe(false);
+        expect(v.lines.map((l) => l.text), c.slug).toEqual(c.variants[k].lines.filter((l) => !l.hidden).map((l) => l.text));
+        for (const l of v.lines) expect("nearest" in l || "unsure" in l || "hidden" in l, c.slug).toBe(false);
       });
     }
   });

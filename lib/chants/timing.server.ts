@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { readTiming } from "./media";
+import { allChants } from "./registry.server";
 import type { ChantTiming } from "./types";
 
 /**
@@ -43,4 +44,22 @@ export function timingFile(slug: string, file: string): ChantTiming | null {
   } catch {
     return null;
   }
+}
+
+/**
+ * A timing file as the app is given it: without the lines its version hides
+ * (build 93, ChantLine.hidden), so the words a page shows and the times it is
+ * given stay line for line, and Pray with chant, which draws a timing file's
+ * own words (lib/chants/play.ts captionsFromTiming), never shows a hidden
+ * line. The file on disk keeps every line, the hidden ones with their times.
+ */
+export function servedTiming(slug: string, file: string): ChantTiming | null {
+  const timing = timingFile(slug, file);
+  if (!timing) return null;
+  const id = file.slice(0, -".json".length);
+  const variant = allChants()
+    .find((c) => c.slug === slug)
+    ?.variants.find((v) => v.id === id);
+  if (!variant || variant.lines.length !== timing.lines.length) return timing;
+  return { ...timing, lines: timing.lines.filter((_, i) => !variant.lines[i].hidden) };
 }

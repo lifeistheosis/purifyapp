@@ -94,7 +94,8 @@
           "text": "ٱحْمَدُوا إِلَهَ ٱلْآلِهَةِ،",
           "translit": "Ihmadu ilaha l-alihati,",
           "en": "Give thanks to the God of gods;",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording (Van Dyck's), not the words sung: the choir sings this half verse in the Antiochian Church's own Arabic, and no public-domain printing of that wording has been found."
         },
         {
           "text": "الليلويا.",
@@ -115,7 +116,8 @@
           "text": "ٱحْمَدُوا رَبَّ ٱلْأَرْبَابِ،",
           "translit": "Ihmadu rabba l-arbabi,",
           "en": "Give thanks to the Lord of lords:",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording (Van Dyck's), not the words sung: the choir sings this half verse in the Antiochian Church's own Arabic, and no public-domain printing of that wording has been found."
         },
         {
           "text": "الليلويا.",
@@ -136,7 +138,8 @@
           "text": "ٱلصَّانِعَ ٱلْعَجَائِبَ ٱلْعِظَامَ وَحْدَهُ،",
           "translit": "As-sani'a l-'aja'iba l-'izama wahdahu,",
           "en": "To him who alone has wrought great wonders:",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording (Van Dyck's), not the words sung: the choir sings this half verse in the Antiochian Church's own Arabic, and no public-domain printing of that wording has been found."
         },
         {
           "text": "الليلويا.",
@@ -157,7 +160,8 @@
           "text": "ٱلصَّانِعَ ٱلسَّمَاوَاتِ بِفَهْمٍ،",
           "translit": "As-sani'a s-samawati bi-fahmin,",
           "en": "To him who made the heavens by understanding;",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording (Van Dyck's), not the words sung: the choir sings this half verse in the Antiochian Church's own Arabic, and no public-domain printing of that wording has been found."
         },
         {
           "text": "الليلويا.",
@@ -178,7 +182,8 @@
           "text": "ٱلْبَاسِطَ ٱلْأَرْضَ عَلَى ٱلْمِيَاهِ،",
           "translit": "Al-basita l-arda 'ala l-miyahi,",
           "en": "To him who established the earth on the waters;",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording (Van Dyck's), not the words sung: the choir sings this half verse in the Antiochian Church's own Arabic, and no public-domain printing of that wording has been found."
         },
         {
           "text": "الليلويا.",
@@ -199,7 +204,8 @@
           "text": "ٱلَّذِي فِي مَذَلَّتِنَا ذَكَرَنَا،",
           "translit": "Alladhi fi madhallatina dhakarana,",
           "en": "For the Lord remembered us in our low estate;",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording (Van Dyck's), not the words sung: the choir sings this half verse in the Antiochian Church's own Arabic, and no public-domain printing of that wording has been found."
         },
         {
           "text": "الليلويا.",
@@ -220,7 +226,8 @@
           "text": "وَنَجَّانَا مِنْ أَعْدَائِنَا،",
           "translit": "Wa-najjana min a'da'ina,",
           "en": "and redeemed us from our enemies;",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording (Van Dyck's), not the words sung: the choir sings this half verse in the Antiochian Church's own Arabic, and no public-domain printing of that wording has been found."
         },
         {
           "text": "الليلويا.",
@@ -241,7 +248,8 @@
           "text": "ٱلَّذِي يُعْطِي خُبْزًا لِكُلِّ بَشَرٍ،",
           "translit": "Alladhi yu'ti khubzan li-kulli basharin,",
           "en": "Who gives food to all flesh;",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording (Van Dyck's), not the words sung: the choir sings this half verse in the Antiochian Church's own Arabic, and no public-domain printing of that wording has been found."
         },
         {
           "text": "الليلويا.",
@@ -262,7 +270,8 @@
           "text": "ٱحْمَدُوا إِلَهَ ٱلسَّمَاوَاتِ،",
           "translit": "Ihmadu ilaha s-samawati,",
           "en": "Give thanks to the God of heaven;",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording (Van Dyck's), not the words sung: the choir sings this half verse in the Antiochian Church's own Arabic, and no public-domain printing of that wording has been found."
         },
         {
           "text": "الليلويا.",
@@ -278,10 +287,11 @@
           "text": "الليلويا.",
           "translit": "Alliluia.",
           "en": "Alleluia.",
-          "unsure": "Sung long, with a breath halfway (at 4:06.5): perhaps a second Alliluia. One line holds both until a listener who knows the chant confirms it."
+          "unsure": "Sung long, with a breath halfway (at 4:06.5): perhaps a second Alliluia. One line holds both until a listener who knows the chant confirms it.",
+          "hidden": "Sung long, with a breath halfway, perhaps as a second Alliluia; not shown until a listener who knows the chant confirms it."
         }
       ],
-      "wordsSource": "All ten verses the choir sings (1 to 6 and 23 to 26), in its order, each half followed by the Alliluia it sings. The first verse is as the owner took it down beside the recording, in Latin letters, set here in Arabic letters by Purify, and a speech model heard it word for word (i'tarifu lir-Rabbi fa-innahu salihun, Alliluia, fa-inna ila l-abadi rahmatahu, Alliluia), sung without the h of the Arabic Bible's hallelujah; the same refrain and Alliluia close every verse. The choir sings the first half of the other nine verses in the Antiochian Church's own Arabic, and no public-domain printing of that wording has been found, so each of those nine lines is the nearest public-domain wording, printed verbatim from the Van Dyck Arabic Bible (1865; Psalm 136 in its count), and not the words sung. Each line is timed to the recording, word by word. The transliteration is ours.",
+      "wordsSource": "The choir sings ten verses (1 to 6 and 23 to 26), each half followed by Alliluia. Shown: the first verse and its refrain, as the owner took them down beside the recording, in Latin letters, set here in Arabic letters, and as a speech model hears them word for word (Whisper large-v3, 2026-11-11), and the Alliluia after each half. Not shown: the first halves of the other nine verses, which the choir sings in the Antiochian Church's own Arabic, a wording no public-domain printing has been found to give, and the last Alliluia, sung long. The transliteration is ours.",
       "translation": {
         "kind": "public-domain",
         "title": "Brenton's English of the Septuagint (1851), verse for verse"
@@ -342,7 +352,8 @@
         },
         {
           "text": "To him who alone has wrought great wonders:",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording, not the words sung: the choir sings this half verse from a modern psalter, and no public-domain printing has its words (docs/chants/psalm-135-english.md)."
         },
         {
           "text": "Alleluia."
@@ -355,7 +366,8 @@
         },
         {
           "text": "To him who made the heavens by understanding;",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording, not the words sung: the choir sings this half verse from a modern psalter, and no public-domain printing has its words (docs/chants/psalm-135-english.md)."
         },
         {
           "text": "Alleluia."
@@ -368,7 +380,8 @@
         },
         {
           "text": "To him who established the earth on the waters;",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording, not the words sung: the choir sings this half verse from a modern psalter, and no public-domain printing has its words (docs/chants/psalm-135-english.md)."
         },
         {
           "text": "Alleluia."
@@ -381,7 +394,8 @@
         },
         {
           "text": "To him who alone made great lights;",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording, not the words sung: the choir sings this half verse from a modern psalter, and no public-domain printing has its words (docs/chants/psalm-135-english.md)."
         },
         {
           "text": "Alleluia."
@@ -394,7 +408,8 @@
         },
         {
           "text": "the sun to rule the day:",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording, not the words sung: the choir sings this half verse from a modern psalter, and no public-domain printing has its words (docs/chants/psalm-135-english.md)."
         },
         {
           "text": "Alleluia."
@@ -407,7 +422,8 @@
         },
         {
           "text": "The moon and the stars to rule the night;",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording, not the words sung: the choir sings this half verse from a modern psalter, and no public-domain printing has its words (docs/chants/psalm-135-english.md)."
         },
         {
           "text": "Alleluia."
@@ -420,7 +436,8 @@
         },
         {
           "text": "To him that smote Egypt in their firstborn:",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording, not the words sung: the choir sings this half verse from a modern psalter, and no public-domain printing has its words (docs/chants/psalm-135-english.md)."
         },
         {
           "text": "Alleluia."
@@ -433,7 +450,8 @@
         },
         {
           "text": "And brought Israel out of the midst of them;",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording, not the words sung: the choir sings this half verse from a modern psalter, and no public-domain printing has its words (docs/chants/psalm-135-english.md)."
         },
         {
           "text": "Alleluia."
@@ -446,7 +464,8 @@
         },
         {
           "text": "with a strong hand, and a high arm:",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording, not the words sung: the choir sings this half verse from a modern psalter, and no public-domain printing has its words (docs/chants/psalm-135-english.md)."
         },
         {
           "text": "Alleluia."
@@ -459,7 +478,8 @@
         },
         {
           "text": "To him which divided the Red sea into parts:",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording, not the words sung: the choir sings this half verse from a modern psalter, and no public-domain printing has its words (docs/chants/psalm-135-english.md)."
         },
         {
           "text": "Alleluia."
@@ -544,7 +564,8 @@
         },
         {
           "text": "And Og the king of Bashan:",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording, not the words sung: the choir sings this half verse from a modern psalter, and no public-domain printing has its words (docs/chants/psalm-135-english.md)."
         },
         {
           "text": "Alleluia."
@@ -581,7 +602,8 @@
         },
         {
           "text": "because in our affliction the Lord remembered us;",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording, not the words sung: the choir sings this half verse from a modern psalter, and no public-domain printing has its words (docs/chants/psalm-135-english.md)."
         },
         {
           "text": "Alleluia."
@@ -606,7 +628,8 @@
         },
         {
           "text": "Who giveth food to all flesh:",
-          "nearest": true
+          "nearest": true,
+          "hidden": "The nearest public-domain wording, not the words sung: the choir sings this half verse from a modern psalter, and no public-domain printing has its words (docs/chants/psalm-135-english.md)."
         },
         {
           "text": "Alleluia."
@@ -618,7 +641,8 @@
           "text": "Alleluia."
         },
         {
-          "text": "O give thanks unto the God of heaven:"
+          "text": "O give thanks unto the God of heaven:",
+          "hidden": "The choir sings \"O give thanks unto the Lord of heaven\" (heard by a speech model, Whisper large-v3, 2026-11-11), and no public-domain printing has that wording; the King James line has \"God of heaven\"."
         },
         {
           "text": "Alleluia."
@@ -630,7 +654,7 @@
           "text": "Alleluia."
         }
       ],
-      "wordsSource": "The words the choir sings, line by line, each line printed verbatim from a public-domain English psalter: the King James Version (1611), which has the choir's “O give thanks unto the Lord” and its refrain “for his mercy endureth for ever”, and where the King James words differ from the singing, the line of the printing nearest to it: Brenton's Septuagint (1851), Thomson's Septuagint (1808), the American Standard Version (1901) or the Douay-Rheims (Challoner). The choir sings a modern psalter whose own wording is not copied; where no public-domain printing has a sung line, the nearest printed line stands, and each line's printing, and whether it is the words sung or the nearest wording, is listed in docs/chants/psalm-135-english.md. After each half, the Alleluia the choir sings, the psalm's own first word in Brenton. Each line is timed to the singing."
+      "wordsSource": "The words the choir sings, each line printed verbatim from a public-domain English psalter: the King James Version (1611), which has the choir's “O give thanks unto the Lord” and its refrain “for his mercy endureth for ever”, and where the King James words differ from the singing, the same line in Brenton's Septuagint (1851), Thomson's Septuagint (1808) or the American Standard Version (1901). The choir sings a modern psalter whose wording is not copied, so where no public-domain printing has a first half as it is sung, that line is not shown: fourteen of the twenty-six. After each half, the Alleluia the choir sings, the psalm's own first word in Brenton. Every line was checked against the singing by a speech model (Whisper large-v3, 2026-11-11)."
     },
     {
       "id": "el",
@@ -732,7 +756,8 @@
         {
           "text": "Τῷ ποιήσαντι τοὺς οὐρανοὺς ἐν συνέσει,",
           "translit": "To piisanti tous ouranous en synesi,",
-          "en": "To him who made the heavens by understanding;"
+          "en": "To him who made the heavens by understanding;",
+          "hidden": "Not confirmed in the singing: a speech model (Whisper large-v3, 2026-11-11) could not hear this half verse, on its own, with its verse or in the whole recording, and no listener has confirmed it."
         },
         {
           "text": "Ἀλληλούϊα.",
@@ -792,7 +817,8 @@
         {
           "text": "Τὸν ἥλιον εἰς ἐξουσίαν τῆς ἡμέρας,",
           "translit": "Ton ilion is exousian tis imeras,",
-          "en": "The sun to rule by day;"
+          "en": "The sun to rule by day;",
+          "hidden": "Not confirmed in the singing: a speech model (Whisper large-v3, 2026-11-11) could not hear this half verse, on its own, with its verse or in the whole recording, and no listener has confirmed it."
         },
         {
           "text": "Ἀλληλούϊα.",
@@ -812,7 +838,8 @@
         {
           "text": "Τὴν σελήνην καὶ τοὺς ἀστέρας εἰς ἐξουσίαν τῆς νυκτός,",
           "translit": "Tin selinin ke tous asteras is exousian tis nyktos,",
-          "en": "The moon and the stars to rule the night;"
+          "en": "The moon and the stars to rule the night;",
+          "hidden": "Not confirmed in the singing: a speech model (Whisper large-v3, 2026-11-11) could not hear this half verse, on its own, with its verse or in the whole recording, and no listener has confirmed it."
         },
         {
           "text": "Ἀλληλούϊα.",
@@ -832,7 +859,8 @@
         {
           "text": "Τῷ πατάξαντι Αἴγυπτον σὺν τοῖς πρωτοτόκοις αὐτῶν,",
           "translit": "To pataxanti Egypton syn tis prototokis afton,",
-          "en": "To him who smote Egypt with their first-born;"
+          "en": "To him who smote Egypt with their first-born;",
+          "hidden": "Not confirmed in the singing: a speech model (Whisper large-v3, 2026-11-11) could not hear this half verse, on its own, with its verse or in the whole recording, and no listener has confirmed it."
         },
         {
           "text": "Ἀλληλούϊα.",
@@ -852,7 +880,8 @@
         {
           "text": "Καὶ ἐξαγαγόντι τὸν Ἰσραὴλ ἐκ μέσου αὐτῶν,",
           "translit": "Ke exagagonti ton Israil ek mesou afton,",
-          "en": "And brought Israel out of the midst of them;"
+          "en": "And brought Israel out of the midst of them;",
+          "hidden": "Not confirmed in the singing: a speech model (Whisper large-v3, 2026-11-11) could not hear this half verse, on its own, with its verse or in the whole recording, and no listener has confirmed it."
         },
         {
           "text": "Ἀλληλούϊα.",
@@ -892,7 +921,8 @@
         {
           "text": "Τῷ καταδιελόντι τὴν ἐρυθρὰν θάλασσαν εἰς διαιρέσεις,",
           "translit": "To katadielonti tin erythran thalassan is dieresis,",
-          "en": "To him who divided the Red Sea into parts:"
+          "en": "To him who divided the Red Sea into parts:",
+          "hidden": "Not confirmed in the singing: a speech model (Whisper large-v3, 2026-11-11) could not hear this half verse, on its own, with its verse or in the whole recording, and no listener has confirmed it."
         },
         {
           "text": "Ἀλληλούϊα.",
@@ -952,7 +982,8 @@
         {
           "text": "Τῷ διαγαγόντι τὸν λαὸν αὐτοῦ ἐν τῇ ἐρήμῳ,",
           "translit": "To diagagonti ton laon aftou en ti erimo,",
-          "en": "To him who led his people through the wilderness:"
+          "en": "To him who led his people through the wilderness:",
+          "hidden": "Not confirmed in the singing: a speech model (Whisper large-v3, 2026-11-11) could not hear this half verse, on its own, with its verse or in the whole recording, and no listener has confirmed it."
         },
         {
           "text": "Ἀλληλούϊα.",
@@ -1052,7 +1083,8 @@
         {
           "text": "Καὶ δόντι τὴν γῆν αὐτῶν κληρονομίαν,",
           "translit": "Ke donti tin gin afton klironomian,",
-          "en": "and gave their land for an inheritance:"
+          "en": "and gave their land for an inheritance:",
+          "hidden": "Not confirmed in the singing: a speech model (Whisper large-v3, 2026-11-11) could not hear this half verse, on its own, with its verse or in the whole recording, and no listener has confirmed it."
         },
         {
           "text": "Ἀλληλούϊα.",
@@ -1072,7 +1104,8 @@
         {
           "text": "κληρονομίαν Ἰσραὴλ δούλῳ αὐτοῦ,",
           "translit": "klironomian Israil doulo aftou,",
-          "en": "even an inheritance to Israel his servant:"
+          "en": "even an inheritance to Israel his servant:",
+          "hidden": "Not confirmed in the singing: a speech model (Whisper large-v3, 2026-11-11) could not hear this half verse, on its own, with its verse or in the whole recording, and no listener has confirmed it."
         },
         {
           "text": "Ἀλληλούϊα.",
@@ -1132,7 +1165,8 @@
         {
           "text": "Ὁ διδοὺς τροφὴν πάσῃ σαρκὶ,",
           "translit": "O didous trofin pasi sarki,",
-          "en": "Who gives food to all flesh;"
+          "en": "Who gives food to all flesh;",
+          "hidden": "Heard only in part by a speech model (Whisper large-v3, 2026-11-11), not enough to confirm its words, and no listener has confirmed them."
         },
         {
           "text": "Ἀλληλούϊα.",
@@ -1152,7 +1186,8 @@
         {
           "text": "Ἐξομολογεῖσθε τῷ Θεῷ τοῦ οὐρανοῦ,",
           "translit": "Exomologiste to Theo tou ouranou,",
-          "en": "Give thanks to the God of heaven;"
+          "en": "Give thanks to the God of heaven;",
+          "hidden": "Heard only in part by a speech model (Whisper large-v3, 2026-11-11), not enough to confirm its words, and no listener has confirmed them."
         },
         {
           "text": "Ἀλληλούϊα.",
@@ -1170,7 +1205,7 @@
           "en": "Alleluia."
         }
       ],
-      "wordsSource": "Brenton's Greek of the Septuagint (1851), as eBible.org transcribes it: the whole psalm, each verse in two halves, and after each half the Alleluia the choir sings, Ἀλληλούϊα as the same edition writes it at the head of this psalm. The owner's note beside the recording takes down its first four verses as sung. A Greek speech model then heard the recording verse by verse, and all twenty-six verses, each with its two Alleluias, agree with these words, in this order, as far as a model can hear a choir. Each line is timed to the recording. The transliteration is ours.",
+      "wordsSource": "Brenton's Greek of the Septuagint (1851), as eBible.org transcribes it: the whole psalm, each verse in two halves, and after each half the Alleluia the choir sings, Ἀλληλούϊα as the same edition writes it at the head of this psalm. The owner's note beside the recording takes down its first four verses as sung. A speech model heard the recording verse by verse (Whisper large-v3, 2026-11-11): fifteen first halves in Brenton's words, and the refrain and the Alleluia throughout. The other eleven first halves it could not hear clearly enough, so they are not shown until a listener who knows the chant confirms them. Each line is timed to the recording. The transliteration is ours.",
       "translation": {
         "kind": "public-domain",
         "title": "Brenton's English of the Septuagint (1851), line for line"
@@ -1515,7 +1550,8 @@
         {
           "text": "I dade zemlju njihovu u dostojanje;",
           "en": "and gave their land for an inheritance:",
-          "nearest": true
+          "nearest": true,
+          "hidden": "Daničić's u dostojanje, not the words sung: the singer sings u nasleđe here (and sluzi svojemu in verse 22), and no public-domain printing of that wording has been found."
         },
         {
           "text": "Aliluja.",
@@ -1532,7 +1568,8 @@
         {
           "text": "U dostojanje Izrailju, sluzi svom;",
           "en": "even an inheritance to Israel his servant:",
-          "nearest": true
+          "nearest": true,
+          "hidden": "Daničić's u dostojanje, not the words sung: the singer sings u nasleđe here (and sluzi svojemu in verse 22), and no public-domain printing of that wording has been found."
         },
         {
           "text": "Aliluja.",
@@ -1548,7 +1585,8 @@
         },
         {
           "text": "Koji nas se opomenu u poniženju našem;",
-          "en": "For the Lord remembered us in our low estate;"
+          "en": "For the Lord remembered us in our low estate;",
+          "hidden": "The singer sings koji nas se seti (heard by a speech model, Whisper large-v3, 2026-11-11), where Daničić has koji nas se opomenu, and no public-domain printing has the words sung."
         },
         {
           "text": "Aliluja.",
@@ -1580,7 +1618,8 @@
         },
         {
           "text": "Koji daje hranu svakom telu;",
-          "en": "Who gives food to all flesh;"
+          "en": "Who gives food to all flesh;",
+          "hidden": "The singer sings svakomu telu (heard twice by a speech model, Whisper large-v3, 2026-11-11), where Daničić has svakom telu, and no public-domain printing has the words sung."
         },
         {
           "text": "Aliluja.",
@@ -1611,7 +1650,7 @@
           "en": "Alleluia."
         }
       ],
-      "wordsSource": "Daničić's Serbian (the Karadžić and Daničić Bible, 1868), the whole psalm as eBible.org has it, in Latin letters, and after each half the Aliluja the singer sings, spelt as Daničić spells it at the head and foot of the psalm before (Psalm 135 in his count). A Serbian speech model heard the recording verse by verse: all twenty-six verses agree with Daničić's in order, except that the singer sings u nasleđe where Daničić has u dostojanje (verses 21 and 22) and sluzi svojemu for sluzi svom (verse 22). Daničić's words stand, as the public-domain text. Each line is timed to the recording.",
+      "wordsSource": "Daničić's Serbian (the Karadžić and Daničić Bible, 1868), the whole psalm as eBible.org has it, in Latin letters, and after each half the Aliluja the singer sings, spelt as Daničić spells it at the head and foot of the psalm before (Psalm 135 in his count). A speech model heard the recording whole (Whisper large-v3, 2026-11-11): the singer follows Daničić's words in every verse but four first halves, sung u nasleđe in verses 21 and 22, koji nas se seti in verse 23 and svakomu telu in verse 25; those four lines are not shown, since no public-domain printing has the words sung. Each line is timed to the recording.",
       "translation": {
         "kind": "public-domain",
         "title": "Brenton's English of the Septuagint (1851), line for line"

@@ -34,6 +34,8 @@ it, entered in the admin's Chant words (lib/chants/cleared.ts).
 
 ## The first half of each verse
 
+From build 93 (2026-11-11), a line marked "the nearest wording" is not shown, and neither is verse 26, which a stronger speech model heard sung otherwise: each keeps its place and its time in the data, hidden, with its reason (docs/chants/lyrics-check.md).
+
 | Verse | Line shown | Printing | Against the singing |
 | --- | --- | --- | --- |
 | 1 | O give thanks unto the Lord; for he is good: | King James | word for word as sung |
@@ -61,7 +63,7 @@ it, entered in the admin's Chant words (lib/chants/cleared.ts).
 | 23 | because in our affliction the Lord remembered us; | Thomson | the nearest wording |
 | 24 | and redeemed us from our enemies; | Brenton | word for word as sung |
 | 25 | Who giveth food to all flesh: | King James | the nearest wording |
-| 26 | O give thanks unto the God of heaven: | King James | word for word as sung |
+| 26 | O give thanks unto the God of heaven: | King James | not shown: the choir sings "Lord of heaven" (Whisper large-v3, 2026-11-11, heard twice) |
 
 ## The rest of each verse
 

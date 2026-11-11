@@ -116,7 +116,13 @@ export function ChantWords({
 
   // Under the last line, in the same box: where the words come from. Made
   // once per version, so the words are not drawn again with every render.
-  const footer = useMemo(() => <ChantWordsSource variant={variant} className="mt-6 border-t border-paper/[0.08] pt-3.5" />, [variant]);
+  // A version with none of its lines shown (build 93: none could be
+  // confirmed in the singing) has only this, with no rule above it.
+  const noLines = variant.lines.length === 0;
+  const footer = useMemo(
+    () => <ChantWordsSource variant={variant} className={noLines ? "pt-1" : "mt-6 border-t border-paper/[0.08] pt-3.5"} />,
+    [noLines, variant],
+  );
 
   // Their sound alone reads left to right, in Latin letters.
   const latin = hasSound && view === "translit";

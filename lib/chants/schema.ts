@@ -27,6 +27,8 @@ const line = z
     nearest: z.literal(true).optional(),
     // Note 78: why the words are not confirmed against the recording yet.
     unsure: z.string().trim().min(10).optional(),
+    // Build 93: why the line is not shown (lib/chants/types.ts, ChantLine).
+    hidden: z.string().trim().min(20).optional(),
   })
   .strict();
 

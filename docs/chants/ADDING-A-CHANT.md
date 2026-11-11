@@ -109,8 +109,16 @@ For a chant with the slug `christ-is-risen` and a version `el-byzantine`:
    A line whose words could not be confirmed carries `unsure` in the data
    file, saying why; a line that is the nearest public-domain wording rather
    than the words sung (a choir singing a wording still under copyright, or
-   one no public-domain printing has) carries `nearest`. Neither is shown to
-   readers: the version's `wordsSource` says it in prose.
+   one no public-domain printing has) carries `nearest`. Since build 93
+   neither is shown at all: a line is shown only where the recording sings
+   its words and a published text of the chant in that language has them,
+   and every other line also carries `hidden`, saying why. A hidden line
+   keeps its place and its time in the data, so the recording plays and the
+   lines around it stay timed, but the page does not carry it and the timing
+   file the app is given leaves it out. The version's `wordsSource` says it
+   in prose. Check every line against the singing with a speech model before
+   a chant ships, as docs/chants/lyrics-check.md did, and lift `hidden` only
+   for words confirmed both ways.
 4. **The prose.** `about.what`, `about.history` and `about.when`, in English,
    plain, with no em dash, nothing invented, every claim resting on a source
    in `sources`. Set `review` to `{ "status": "awaiting-clergy-review", "since": "<today>" }`.
