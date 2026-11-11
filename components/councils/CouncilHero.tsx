@@ -15,10 +15,12 @@ import type { EventPicture } from "@/lib/history/media";
  * picture above the name.
  *
  * It is History's picture of the council (lib/history/media.ts), on the
- * website and asked of the website by the apps. It opens on its own preview,
- * blurred, and fades in once it has loaded and decoded (on the app's motion
- * switch); with no signal there is no picture, and the page keeps its place
- * with the preview, or the ground, under the name. The credit is the
+ * website, and carried in the apps as AVIF since 2026-11-11 with the
+ * website's JPEG behind it (lib/media/carried.ts), so it is there with no
+ * signal. It opens on its own preview, blurred, and fades in once it has
+ * loaded and decoded (on the app's motion switch); if neither comes there is
+ * no picture, and the page keeps its place with the preview, or the ground,
+ * under the name. The credit is the
  * picture's title, and the page prints it at its foot.
  *
  * The picture moves, slowly, inside its frame (`.history-pan`, only with the

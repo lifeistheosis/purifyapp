@@ -21,6 +21,8 @@ const code = (file: string) =>
     .replace(/^\s*\/\/.*$/gm, "");
 
 const BAND = "components/ui/GalleryBand.tsx";
+/** The picture's layer, its own client piece since 2026-11-11 so that a picture that does not come can take it away. */
+const PICTURE = "components/ui/BandPicture.tsx";
 const THEOLOGY = "app/(app)/theology/page.tsx";
 const DISCOVER = "components/mobile/DiscoverMobile.tsx";
 
@@ -44,7 +46,7 @@ describe("the gallery band", () => {
     // picture, and the picture is faded into it by a mask (the next case).
     const band = code(BAND);
     expect(band).toContain('<span aria-hidden className="absolute inset-0 bg-night" />');
-    expect(band).toContain('tall ? "band-picture-tall" : "band-picture"');
+    expect(code(PICTURE)).toContain('tall ? "band-picture-tall" : "band-picture"');
     expect(band).toMatch(/text-lede leading-\[1\.15\] text-paper/);
     expect(band).not.toMatch(/rgba?\(\s*0\s*,\s*0\s*,\s*0|#0[0-9a-f]{5}\b|bg-black\b/i);
 
@@ -83,22 +85,26 @@ describe("the gallery band", () => {
   it("keeps its shade to the very edge: the picture is one faded layer over the ground, with nothing laid over it", () => {
     const band = code(BAND);
     const ground = band.indexOf('<span aria-hidden className="absolute inset-0 bg-night" />');
-    const layer = band.indexOf('<span aria-hidden className={cn("absolute inset-0 bg-night-soft", tall ? "band-picture-tall" : "band-picture")}>');
-    const preview = band.indexOf("blur-md");
-    const img = band.indexOf("<img");
-    const closed = band.indexOf("</span>", img);
+    const picture = band.indexOf("<BandPicture ");
     const words = band.indexOf('"relative flex h-full flex-col"');
-    // The ground, then the picture's layer holding the preview and the
-    // picture, then the words: in that order, and nothing of the picture
-    // outside its layer.
+    // The ground, then the picture's layer, then the words: in that order.
     expect(ground).toBeGreaterThan(-1);
-    expect(layer).toBeGreaterThan(ground);
+    expect(picture).toBeGreaterThan(ground);
+    expect(words).toBeGreaterThan(picture);
+    expect(band).not.toMatch(/<img\b|blur-md/);
+    // The layer holds the preview and the picture, and nothing of the picture is outside it.
+    const piece = code(PICTURE);
+    const layer = piece.indexOf('className={cn("absolute inset-0 bg-night-soft", tall ? "band-picture-tall" : "band-picture")}>');
+    const preview = piece.indexOf("blur-md");
+    const img = piece.indexOf("<img");
+    const closed = piece.indexOf("</span>", img);
+    expect(layer).toBeGreaterThan(-1);
     expect(preview).toBeGreaterThan(layer);
     expect(img).toBeGreaterThan(preview);
-    expect(words).toBeGreaterThan(closed);
-    expect(band.match(/<img\b/g)?.length).toBe(1);
-    expect(band.match(/blur-md/g)?.length).toBe(1);
-    expect(band.slice(img, closed)).not.toContain("<span");
+    expect(closed).toBeGreaterThan(img);
+    expect(piece.match(/<img\b/g)?.length).toBe(1);
+    expect(piece.match(/blur-md/g)?.length).toBe(1);
+    expect(piece.slice(img, closed)).not.toContain("<span");
     // No dark layer over the picture any more, in either direction.
     expect(band).not.toMatch(/bg-gradient-to-|\bfrom-night\/|\bto-night\//);
     // And the band's own box has no colour under its edge: its grey is in
@@ -115,7 +121,25 @@ describe("the gallery band", () => {
   });
 
   it("is a picture for the eye, the name says what it is", () => {
-    expect(code(BAND)).toMatch(/<img\s+src=\{picture\}\s+alt=""/);
+    const img = /<img\b[^>]*>/.exec(code(PICTURE).replace(/\s+/g, " "))?.[0] ?? "";
+    expect(img).toContain("src={picture}");
+    expect(img).toContain('alt=""');
+  });
+
+  // The arbiter's word of 2026-11-11 on the councils' bands: a band whose
+  // picture fails drops its layer, as an event's plate does since build 93
+  // note 5, and leaves no grey where the picture was to be.
+  it("takes its picture's layer away, grey and all, when the picture does not come", () => {
+    const piece = code(PICTURE);
+    expect(piece.startsWith('"use client";')).toBe(true);
+    expect(piece).toContain("if (failed) return null;");
+    expect(piece).toContain("onError={(e) => fail(e.currentTarget)}");
+    // One that failed before the page could listen is read from the <img>.
+    expect(piece).toContain("if (img && img.complete && img.naturalWidth === 0) fail(img);");
+    // An AVIF offered first that fails tries the JPEG behind it before the layer goes.
+    expect(piece).toMatch(/if \(avif && !jpegOnly && img\.currentSrc\.endsWith\("\.avif"\)\) setJpegOnly\(true\);\s*else setFailed\(true\);/);
+    expect(piece).toContain('{avif && !jpegOnly ? <source type="image/avif" srcSet={avif} /> : null}');
+    expect(code(BAND)).toContain("<BandPicture picture={picture} avif={avif} preview={preview} credit={credit} focus={focus} tall={tall} priority={priority} />");
   });
 
   // The Ecumenical Councils (1.8, the owner's pick of r3-03, "the seven as a

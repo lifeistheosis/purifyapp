@@ -54,6 +54,7 @@ export default function CouncilsPage() {
   href={`/councils/${c.slug}`}
   size="tall"
   picture={picture.src}
+  avif={picture.avif}
   preview={picture.preview}
   focus={councilFocus(c.slug)}
   credit={picture.credit}

@@ -45,12 +45,24 @@ import CARRIED from "./carriedCovers.json";
  */
 export const CARRIED_COVERS: readonly string[] = [...CARRIED.covers, ...CARRIED.jpegOnly];
 
+/**
+ * History's pictures of the seven Ecumenical Councils, carried as the AVIF
+ * alone (the arbiter's word of 2026-11-11: the councils index is a front
+ * door, and he wants photos over words, offline too, since the apps are
+ * local-first; about 0.82 MB). The apps draw them first from their own files
+ * and keep the website's JPEG behind them, for a phone that cannot draw an
+ * AVIF (components/ui/BandPicture.tsx, components/history/EventPlate.tsx): in
+ * the apps the AVIF's address is the bundle's (lib/history/media.ts,
+ * historyMediaSrc), the JPEG's still the website's.
+ */
+export const CARRIED_HISTORY: readonly string[] = CARRIED.historyAvif;
+
 /** The carried covers that come as the JPEG alone: the read-aloud covers, which the player draws with no AVIF. */
 export const JPEG_ONLY_COVERS: readonly string[] = CARRIED.jpegOnly;
 
-const CARRIED_SET = new Set<string>([...CARRIED.covers.flatMap((jpg) => [jpg, jpg.replace(/\.jpg$/, ".avif")]), ...CARRIED.jpegOnly]);
+const CARRIED_SET = new Set<string>([...CARRIED.covers.flatMap((jpg) => [jpg, jpg.replace(/\.jpg$/, ".avif")]), ...CARRIED.jpegOnly, ...CARRIED.historyAvif]);
 
-/** Whether the apps carry this file (a carried JPEG, or the AVIF beside one that offers it). */
+/** Whether the apps carry this file (a carried JPEG, the AVIF beside one that offers it, or a council's AVIF). */
 export function isCarried(path: string): boolean {
   return CARRIED_SET.has(path);
 }

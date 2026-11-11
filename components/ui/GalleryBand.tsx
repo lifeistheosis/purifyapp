@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
 
+import { BandPicture } from "./BandPicture";
+
 /**
  * A gallery band: a wide picture, and on a shade along its start a name and
  * one line on what is inside.
@@ -52,6 +54,7 @@ import { cn } from "@/lib/cn";
  */
 export function GalleryBand({
   picture,
+  avif,
   focus = "50% 30%",
   preview,
   credit,
@@ -67,6 +70,8 @@ export function GalleryBand({
 }: {
   /** The picture, a path under public/. Drawn for the eye: the name says what it is. */
   picture: string;
+  /** The same picture as AVIF, offered first, the JPEG behind it (a council's, carried in the apps). */
+  avif?: string;
   /** Where the crop sits (CSS object-position), for a picture whose faces fall outside the default. */
   focus?: string;
   /** A tiny preview (a data: URL), drawn blurred until the picture has loaded. */
@@ -95,26 +100,9 @@ export function GalleryBand({
       <span aria-hidden className="absolute inset-0 bg-night" />
       {/* The picture as one layer: the card's grey (what shows before the
           picture comes), the preview and the picture, faded along the start
-          by the shade's own figures as a mask. */}
-      <span aria-hidden className={cn("absolute inset-0 bg-night-soft", tall ? "band-picture-tall" : "band-picture")}>
-        {preview ? (
-          <span
-            className="absolute inset-0 scale-110 bg-cover bg-center blur-md"
-            style={{ backgroundImage: `url(${preview})` }}
-          />
-        ) : null}
-        {/* eslint-disable-next-line @next/next/no-img-element -- a static
-            export serves files as they are; next/image would add nothing. */}
-        <img
-          src={picture}
-          alt=""
-          title={credit}
-          loading={priority ? "eager" : "lazy"}
-          decoding="async"
-          className="absolute inset-0 h-full w-full object-cover"
-          style={{ objectPosition: focus }}
-        />
-      </span>
+          by the shade's own figures as a mask; gone whole if the picture
+          does not come (./BandPicture.tsx). */}
+      <BandPicture picture={picture} avif={avif} preview={preview} credit={credit} focus={focus} tall={tall} priority={priority} />
       <span
         className={cn(
           "relative flex h-full flex-col",

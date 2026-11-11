@@ -6091,7 +6091,14 @@ await section(41, async () => {
 await section(42, async () => {
   console.log("\n42. Orthodox History");
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
-  must(!fs.existsSync(path.join(OUT, "history", "media")), "no History picture ships inside the app: they stay on the website");
+  // But the seven Ecumenical Councils' pictures, as AVIF (the arbiter's word
+  // of 2026-11-11: the councils index is a front door, photos offline too;
+  // lib/media/carried.ts). Section 75 walks them.
+  {
+    const carried = JSON.parse(fs.readFileSync(path.resolve("lib/media/carriedCovers.json"), "utf8")).historyAvif.map((p) => path.basename(p)).sort();
+    const shipped = fs.existsSync(path.join(OUT, "history", "media")) ? fs.readdirSync(path.join(OUT, "history", "media")).sort() : [];
+    must(shipped.length === 7 && JSON.stringify(shipped) === JSON.stringify(carried), `no History picture ships inside the app but the seven councils' AVIFs: the rest stay on the website (${shipped.length} in out/history/media${shipped.some((f) => !carried.includes(f)) ? ", " + shipped.filter((f) => !carried.includes(f)).join(", ") + " not carried" : ""})`);
+  }
 
   for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
     const { ctx, page, errors } = await open({ ...size, phone: true });
@@ -6153,7 +6160,10 @@ await section(42, async () => {
     await page.waitForFunction(() => !!document.querySelector("h1#event-title"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(1500);
 
-    // The event's page: its own bar, one heading, the four parts, no picture without a signal.
+    // The event's page: its own bar, one heading, the four parts, and its
+    // picture with no signal, since the apps carry the seven councils'
+    // pictures (2026-11-11, lib/media/carried.ts; section 75). An event whose
+    // picture they do not carry is walked after this loop.
     const event = await page.evaluate(() => ({
       path: location.pathname,
       bars: document.querySelectorAll("[data-mobile-topbar]").length,
@@ -6162,13 +6172,18 @@ await section(42, async () => {
       pills: document.querySelectorAll("[data-event-parts] a").length,
       people: document.querySelectorAll("#event-people li").length,
       plates: document.querySelectorAll("[data-event-plate]").length,
+      hero: (() => {
+        const img = document.querySelector("[data-event-plate] picture img");
+        return img ? { drawn: img.complete && img.naturalWidth > 0, src: img.currentSrc } : null;
+      })(),
       broken: [...document.querySelectorAll("img")].filter((i) => i.complete && i.naturalWidth === 0 && i.getClientRects().length > 0).length,
       words: (document.getElementById("event-happened")?.textContent ?? "").split(/\s+/).length,
     }));
     must(event.path === "/history/first-council-of-nicaea/" && event.bars === 1 && event.h1s === 1, `${size.width}px: the event's page, with its own bar and its title the one heading (${event.path})`);
     must(event.parts === 4 && event.pills === 4 && event.people >= 3, `${size.width}px: four parts and the row naming them, and its people (${event.parts} parts, ${event.pills} pills, ${event.people} people)`);
     must(event.words >= 450, `${size.width}px: What happened is an account, not a line (${event.words} words)`);
-    must(event.plates === 0 && event.broken === 0, `${size.width}px: with no signal the picture is gone and nothing is broken (${event.plates} plates, ${event.broken} broken)`);
+    const fromBundle = !!event.hero?.drawn && event.hero.src.startsWith(`${ORIGIN}/history/media/`) && event.hero.src.endsWith(".avif");
+    must(event.plates === 1 && fromBundle && event.broken === 0, `${size.width}px: with no signal Nicaea's picture comes from the app's own file and nothing is broken (${event.plates} plate(s), ${event.hero ? (event.hero.drawn ? event.hero.src.replace(ORIGIN, "") : "not drawn") : "no picture"}, ${event.broken} broken)`);
     const outEvent = await page.evaluate(sticksOut);
     must(outEvent.length === 0, `${size.width}px: nothing past the event page's edge${outEvent.length ? ": " + outEvent.join(" | ") : ""}`);
     await page.screenshot({ path: path.join(SHOTS, `history-event-${size.width}.png`) });
@@ -6191,6 +6206,25 @@ await section(42, async () => {
     });
     must(back.path === "/history/" && back.top !== null && back.top > 0 && back.top < back.vh, `${size.width}px: back is the timeline, Nicaea's row on the screen (${back.path}, ${back.top}px of ${back.vh})`);
     must(errors.length === 0, `${size.width}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // An event whose picture the apps do not carry, as every event's but the
+  // seven councils': with no signal it stands without its picture and shows
+  // no broken one.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/");
+    await go(page, "/history/martyrdom-of-ignatius/");
+    await page.waitForFunction(() => !!document.querySelector("h1#event-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    const ignatius = await page.evaluate(() => ({
+      path: location.pathname,
+      plates: document.querySelectorAll("[data-event-plate]").length,
+      broken: [...document.querySelectorAll("img")].filter((i) => i.complete && i.naturalWidth === 0 && i.getClientRects().length > 0).length,
+    }));
+    must(ignatius.path === "/history/martyrdom-of-ignatius/" && ignatius.plates === 0 && ignatius.broken === 0, `390px: an event whose picture the apps do not carry stands without it with no signal, nothing broken (${ignatius.path}: ${ignatius.plates} plates, ${ignatius.broken} broken)`);
+    must(errors.length === 0, `390px, St Ignatius: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
 
@@ -6360,7 +6394,13 @@ await section(43, async () => {
     // answer, so it is asked first; the bundle's addresses pass on to that.
     await ctx.route(/\/history\/media\/[^/?#]+$/, async (route) => {
       const url = new URL(route.request().url());
-      if (url.origin === ORIGIN) return route.fallback();
+      // Nicaea's AVIF is the bundle's own since 2026-11-11 (the seven
+      // councils' pictures are carried, lib/media/carried.ts): held as well,
+      // then answered by the shell from the export.
+      if (url.origin === ORIGIN) {
+        await held;
+        return route.fallback();
+      }
       const file = path.join(media, path.basename(url.pathname));
       if (!fs.existsSync(file)) return route.abort();
       await held;
@@ -10437,6 +10477,120 @@ await section(74, async () => {
     }));
     must(drawn.painted === 0, `in the work the mark is not drawn: its words are no longer in its paragraph, and it is not painted over other words (${drawn.painted} painted)`);
     must(drawn.stored.length === 1 && drawn.stored[0][1] === 1, `and opening the work does not throw it away (${JSON.stringify(drawn.stored)})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+
+// 75. The councils' bands draw their pictures with no signal, and a picture
+// that does not come leaves no grey (1.9, the arbiter's word of 2026-11-11
+// on the councils index: "carry the seven pictures in the apps", "and B as
+// the fallback, so any band whose picture fails drops its layer, as an
+// event's do since note 5"). The seven are History's pictures, which the
+// apps ask of the website (lib/history/media.ts); the apps carry the seven as
+// AVIF (lib/media/carried.ts) and draw that first, the website's JPEG behind
+// it (components/ui/BandPicture.tsx). This walk has no network, as a phone
+// with no signal: the seven come from the bundle. With the bundle's AVIFs
+// refused, each band takes the website's JPEG when it comes, and with
+// neither, the picture's layer is gone whole, its grey with it, and the band
+// is the page's own ground under its name and line.
+// lib/media/__tests__/carried.test.ts and lib/ui/__tests__/galleryBand.test.ts
+// hold the source.
+await section(75, async () => {
+  console.log("\n75. The councils' bands draw their pictures offline, and a picture that does not come leaves no grey");
+  const seven = JSON.parse(fs.readFileSync(path.resolve("lib/media/carriedCovers.json"), "utf8")).historyAvif;
+  const there = seven.filter((p) => fs.existsSync(path.join(OUT, p)));
+  must(seven.length === 7 && there.length === 7, `the export carries the seven councils' pictures (${there.length} of ${seven.length} in out/)`);
+
+  // Each of the seven bands brought into view in turn, so the four below the
+  // first screen are asked for, then read: its picture's layer, the picture
+  // drawn and from where, and what lies where the picture would be.
+  const bands = async (page) => {
+    await page.waitForSelector("#councils-title ~ ul > li > a", { timeout: 20000 });
+    const count = await page.locator("#councils-title ~ ul > li > a").count();
+    for (let i = 0; i < count; i++) {
+      await page.evaluate((k) => document.querySelectorAll("#councils-title ~ ul > li > a")[k].scrollIntoView({ block: "center", behavior: "instant" }), i);
+      await page.waitForTimeout(350);
+    }
+    await page.waitForTimeout(1200);
+    const out = [];
+    for (let i = 0; i < count; i++) {
+      out.push(
+        await page.evaluate((k) => {
+          const a = document.querySelectorAll("#councils-title ~ ul > li > a")[k];
+          a.scrollIntoView({ block: "center", behavior: "instant" });
+          const layer = a.querySelector("[data-band-picture]");
+          const img = layer?.querySelector("img") ?? null;
+          const r = a.getBoundingClientRect();
+          const at = document.elementFromPoint(r.left + r.width * 0.85, r.top + r.height * 0.5);
+          const ground = getComputedStyle(document.getElementById("councils-title").closest("section")).backgroundColor;
+          return {
+            href: a.getAttribute("href"),
+            layer: !!layer,
+            drawn: !!img && img.complete && img.naturalWidth > 0,
+            src: img?.currentSrc ?? "",
+            named: (a.querySelector("h2")?.textContent ?? "").trim().length > 0 && (a.querySelector(".line-clamp-2")?.textContent ?? "").trim().length > 0,
+            bare: !!at && a.contains(at) && !at.closest("[data-band-picture]") && getComputedStyle(at).backgroundColor === ground,
+            under: at ? `${at.tagName.toLowerCase()}${at.closest("[data-band-picture]") ? " in the picture's layer" : ""} ${getComputedStyle(at).backgroundColor}` : "nothing",
+          };
+        }, i),
+      );
+    }
+    return out;
+  };
+  const slugOf = (b) => b.href.replace(/^\/councils\//, "").replace(/\/$/, "");
+
+  // With no signal, as the walk always is: the seven from the bundle.
+  {
+    const { ctx, page, asked, missing, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/");
+    await go(page, "/councils/");
+    const got = await bands(page);
+    must(got.length === 7, `seven bands, one for each Ecumenical Council (${got.length})`);
+    const own = got.filter((b) => b.layer && b.drawn && b.src.startsWith(`${ORIGIN}/history/media/`) && b.src.endsWith(".avif"));
+    must(own.length === 7, `each draws its picture from the app's own file, with no signal (${got.map((b) => `${slugOf(b)} ${b.drawn ? b.src.replace(ORIGIN, "").split("/").pop() : "not drawn"}`).join("; ")})`);
+    must(seven.every((p) => asked.includes(p)) && !missing.some((p) => p.startsWith("/history/media/")), `the seven are asked of the bundle and every one is there (${missing.filter((p) => p.startsWith("/history/media/")).join(", ") || "none missing"})`);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: path.join(SHOTS, "councils-offline-390.png") });
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // The bundle's AVIFs refused, as on a phone that cannot draw one, and the
+  // website's JPEGs served from the folder the website serves them from.
+  // Registered after the shell's own answer, so asked first.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await ctx.route(/\/history\/media\/[^/?#]+$/, (route) => {
+      const url = new URL(route.request().url());
+      if (url.pathname.endsWith(".avif")) return route.abort();
+      if (url.origin === ORIGIN) return route.fallback();
+      const file = path.resolve("public", url.pathname.slice(1));
+      return fs.existsSync(file) ? route.fulfill({ path: file, contentType: "image/jpeg" }) : route.abort();
+    });
+    await go(page, "/");
+    await go(page, "/councils/");
+    const got = await bands(page);
+    const jpeg = got.filter((b) => b.layer && b.drawn && !b.src.startsWith(ORIGIN) && /\/history\/media\/[a-z0-9-]+\.v\d+\.jpg$/.test(b.src));
+    must(got.length === 7 && jpeg.length === 7, `an AVIF that does not come gives way to the website's JPEG behind it (${got.map((b) => `${slugOf(b)} ${b.drawn ? b.src.split("/").pop() : "not drawn"}`).join("; ")})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // Neither: the bundle's AVIFs refused and the website out of reach.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await ctx.route(/\/history\/media\/[^/?#]+$/, (route) => (new URL(route.request().url()).pathname.endsWith(".avif") ? route.abort() : route.fallback()));
+    await go(page, "/");
+    await go(page, "/councils/");
+    const got = await bands(page);
+    must(got.length === 7 && got.every((b) => !b.layer), `a band whose picture does not come drops the picture's layer whole (${got.filter((b) => b.layer).map(slugOf).join(", ") || "every layer gone"})`);
+    must(got.every((b) => b.bare), `where the picture was to be, the band is the page's own ground: no grey box, no broken picture (${got.map((b) => `${slugOf(b)}: ${b.under}`).join("; ")})`);
+    must(got.every((b) => b.named), `and each band keeps its name and its line (${got.filter((b) => !b.named).map(slugOf).join(", ") || "all seven"})`);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: path.join(SHOTS, "councils-no-pictures-390.png") });
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }

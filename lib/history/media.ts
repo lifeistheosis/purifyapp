@@ -1,3 +1,4 @@
+import { isCarried } from "@/lib/media/carried";
 import { SITE_URL } from "@/lib/site";
 
 import type { HistoryEventMeta } from "./events";
@@ -69,7 +70,8 @@ export function wholePlateWidth(picture: { width: number; height: number }, tall
  * lib/history/__tests__/media.test.ts holds the two together.
  */
 export function historyMediaSrc(path: string, native: boolean): string {
-  return native && path.startsWith(HISTORY_MEDIA_ROOT) ? `${SITE_URL}${path}` : path;
+  // A picture the apps carry (the seven Ecumenical Councils' AVIFs, lib/media/carried.ts) is the bundle's own.
+  return native && path.startsWith(HISTORY_MEDIA_ROOT) && !isCarried(path) ? `${SITE_URL}${path}` : path;
 }
 
 /** The AVIF beside a JPEG, and the preview of it, when scripts/history-media.mjs has made them. */

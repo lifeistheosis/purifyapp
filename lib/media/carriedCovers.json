@@ -38,5 +38,14 @@
     "/covers/obadiah.v1.jpg",
     "/covers/solomonLagoudera.v1.jpg",
     "/covers/zechariah.v1.jpg"
+  ],
+  "historyAvif": [
+    "/history/media/first-council-of-nicaea.v1.avif",
+    "/history/media/first-council-of-constantinople.v1.avif",
+    "/history/media/council-of-ephesus.v1.avif",
+    "/history/media/council-of-chalcedon.v1.avif",
+    "/history/media/second-council-of-constantinople.v1.avif",
+    "/history/media/third-council-of-constantinople.v1.avif",
+    "/history/media/second-council-of-nicaea.v1.avif"
   ]
 }

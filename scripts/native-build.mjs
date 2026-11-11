@@ -182,7 +182,10 @@ const STASH_PATHS = [
   // needs ... photos"), on the website alone: the apps ask for them the way
   // they ask for a cover (lib/history/media.ts), and with no signal an event
   // page simply has no picture. The sixteen pictures of 1.6 were in the
-  // bundle, about 4.3 MB of it. Appended, for the slot-index reason above.
+  // bundle, about 4.3 MB of it. The seven Ecumenical Councils' pictures come
+  // back as the AVIF alone, about 0.82 MB (carryCovers, below; 2026-11-11),
+  // so the councils and their pages keep their pictures with no signal.
+  // Appended, for the slot-index reason above.
   ["public", "history", "media"],
   // The Bible read aloud (lib/readAloud/chapters.ts): every chapter as a
   // recording with its verse timings, about 86 hours of audio when all of it is
@@ -739,18 +742,21 @@ await buildWithTheWebsiteSetAside("next build", { BUILD_TARGET: PLATFORM });
 // few, each JPEG and the AVIF a cover offers first, are copied back into the
 // export, where the apps draw them from their own files (lib/media/carried.ts).
 function carryCovers(dir) {
-  const { covers, jpegOnly } = JSON.parse(fs.readFileSync(path.join(ROOT, "lib", "media", "carriedCovers.json"), "utf8"));
+  const { covers, jpegOnly, historyAvif } = JSON.parse(fs.readFileSync(path.join(ROOT, "lib", "media", "carriedCovers.json"), "utf8"));
   let files = 0;
   let bytes = 0;
-  // A cover with the AVIF it offers first; the read-aloud covers, which the player draws as a plain JPEG, alone.
-  for (const file of [...covers.flatMap((jpg) => [jpg, jpg.replace(/\.jpg$/, ".avif")]), ...jpegOnly]) {
+  // A cover with the AVIF it offers first; the read-aloud covers, which the
+  // player draws as a plain JPEG, alone; and the seven Ecumenical Councils'
+  // pictures from History's folder, as the AVIF alone (2026-11-11), which the
+  // councils draw first with the website's JPEG behind it.
+  for (const file of [...covers.flatMap((jpg) => [jpg, jpg.replace(/\.jpg$/, ".avif")]), ...jpegOnly, ...historyAvif]) {
     const to = path.join(dir, file);
     fs.mkdirSync(path.dirname(to), { recursive: true });
     fs.copyFileSync(path.join(ROOT, "public", file), to);
     files += 1;
     bytes += fs.statSync(to).size;
   }
-  console.log(`• carried ${files} cover file(s) the website cannot serve yet, ${(bytes / 1048576).toFixed(2)} MB`);
+  console.log(`• carried ${files} picture file(s) the apps draw from their own files, ${(bytes / 1048576).toFixed(2)} MB`);
 }
 carryCovers(path.join(ROOT, "out"));
 

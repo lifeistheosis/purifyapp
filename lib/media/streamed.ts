@@ -12,7 +12,8 @@ import { SITE_URL } from "@/lib/site";
  * The pictures at the top of a saint's page (lib/saints/heroes.ts) are in
  * the covers' folder, /covers/saints/, so they need nothing more. History's
  * pictures, one for each event (lib/history/media.ts), are a folder of their
- * own, and so is the Bible read aloud, every chapter's recording and its list
+ * own (the seven Ecumenical Councils' AVIFs are carried as well, from 1.9,
+ * lib/media/carried.ts), and so is the Bible read aloud, every chapter's recording and its list
  * (lib/readAloud/chapters.ts). From 1.9 the shop's photos stream too, and
  * the Bibles a reader downloads (lib/bible/downloads/), each book a file,
  * and the timings of every other text read aloud, with their list
@@ -41,8 +42,9 @@ import { SITE_URL } from "@/lib/site";
 export const STREAMED_ROOTS = ["/audio/chants/", "/covers/", "/history/media/", "/audio/read/", "/shop/media/", "/bibles/", "/audio/listen/"] as const;
 
 /**
- * A file the apps do not carry, asked of the website. A cover the apps carry
- * as well (lib/media/carried.ts, from 1.9) is the bundle's own, not this.
+ * A file the apps do not carry, asked of the website. A file the apps carry
+ * as well (a cover, or a council's AVIF; lib/media/carried.ts, from 1.9) is
+ * the bundle's own, not this.
  */
 export function isStreamedMedia(path: string): boolean {
   return STREAMED_ROOTS.some((root) => path.startsWith(root)) && !isCarried(path);

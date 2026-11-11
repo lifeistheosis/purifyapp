@@ -35,7 +35,8 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { COUNCILS } from "@/lib/councils/councils";
-import { CARRIED_COVERS, JPEG_ONLY_COVERS, isCarried } from "@/lib/media/carried";
+import { councilPicture, councilsInOrder } from "@/lib/councils/page";
+import { CARRIED_COVERS, CARRIED_HISTORY, JPEG_ONLY_COVERS, isCarried } from "@/lib/media/carried";
 import { isStreamedMedia, streamedUrl } from "@/lib/media/streamed";
 import { AUTHOR_COVERS, COUNCIL_COVERS, FEELING_COVERS, WORK_COVERS } from "@/lib/reading/authorCovers";
 import { WORK_ART, coverArtFor, coverSrc } from "@/lib/reading/coverArt";
@@ -189,7 +190,7 @@ describe("the covers the apps carry", () => {
   it("are copied into the export by the native build, JPEG and AVIF (the read-aloud covers' JPEG alone), before the size is weighed", () => {
     const build = fs.readFileSync(path.join(ROOT, "scripts/native-build.mjs"), "utf8");
     expect(build).toContain('path.join(ROOT, "lib", "media", "carriedCovers.json")');
-    expect(build).toMatch(/\[jpg, jpg\.replace\(\/\\\.jpg\$\/, "\.avif"\)\]\), \.\.\.jpegOnly\]/);
+    expect(build).toMatch(/\[jpg, jpg\.replace\(\/\\\.jpg\$\/, "\.avif"\)\]\), \.\.\.jpegOnly, \.\.\.historyAvif\]/);
     const carry = build.indexOf("carryCovers(path.join(ROOT, \"out\"))");
     expect(carry).toBeGreaterThan(build.indexOf("restoreAll();\n}"));
     expect(carry).toBeLessThan(build.indexOf('run("node --experimental-strip-types scripts/export-size.mjs'));
@@ -206,5 +207,53 @@ describe("the covers the apps carry", () => {
       expect(fs.existsSync(path.join(ROOT, "public", file)), file).toBe(true);
       expect(ICON_RIGHTS[path.basename(file)]?.status, file).toBe("verified");
     }
+  });
+});
+
+// The seven Ecumenical Councils' pictures (the arbiter's word of 2026-11-11):
+// the councils index is a front door, and he wants photos over words,
+// offline too, since the apps are local-first. History's pictures stream
+// from the website (lib/history/media.ts); these seven are carried as the
+// AVIF alone, about 0.82 MB, and drawn first, with the website's JPEG behind
+// them for a phone that cannot draw an AVIF.
+describe("the councils' pictures the apps carry", () => {
+  const seven = councilsInOrder().seven.map((c) => {
+    const picture = councilPicture(c.slug, false);
+    expect(picture?.avif, c.slug).toBeDefined();
+    return { slug: c.slug, jpg: picture!.src, avif: picture!.avif! };
+  });
+
+  it("are the seven councils' own pictures, each an AVIF of History's folder, and no more", () => {
+    expect(seven).toHaveLength(7);
+    expect([...CARRIED_HISTORY].sort()).toEqual(seven.map((s) => s.avif).sort());
+    let bytes = 0;
+    for (const { avif } of seven) {
+      expect(avif, avif).toMatch(/^\/history\/media\/[a-z0-9-]+\.v\d+\.avif$/);
+      expect(fs.existsSync(path.join(ROOT, "public", avif)), avif).toBe(true);
+      bytes += fs.statSync(path.join(ROOT, "public", avif)).size;
+    }
+    // The AVIF alone, as he agreed: under 0.9 MB, not the 2.2 MB the JPEGs would add.
+    expect(bytes).toBeLessThan(0.9 * 1048576);
+  });
+
+  it("are the bundle's own in the apps, with the website's JPEG behind each; on the website both are its own", () => {
+    for (const { slug, jpg, avif } of seven) {
+      expect(isCarried(avif), avif).toBe(true);
+      expect(isCarried(jpg), jpg).toBe(false);
+      expect(isStreamedMedia(avif), avif).toBe(false);
+      expect(isStreamedMedia(jpg), jpg).toBe(true);
+      const app = councilPicture(slug, true)!;
+      expect(app.avif, slug).toBe(avif);
+      expect(app.src, slug).toBe(`${SITE_URL}${jpg}`);
+      expect(streamedUrl(avif, true)).toBe(avif);
+      const web = councilPicture(slug, false)!;
+      expect([web.src, web.avif]).toEqual([jpg, avif]);
+    }
+  });
+
+  it("are offered first by the councils' bands, which the native build fills from the list", () => {
+    expect(fs.readFileSync(path.join(ROOT, "app/(app)/councils/page.tsx"), "utf8")).toContain("avif={picture.avif}");
+    const build = fs.readFileSync(path.join(ROOT, "scripts/native-build.mjs"), "utf8");
+    expect(build).toContain("const { covers, jpegOnly, historyAvif } = JSON.parse(");
   });
 });
