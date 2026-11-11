@@ -385,6 +385,14 @@ Plan (Updates, 2026-11-11), with one still of where it comes to rest, `build-93/
 - Words: none new. The closing line is the catalog's `prayers.reader.complete`, in all 21 languages. The prayer wall's leftover line (`prayers.wall.left`) is the campaigns chat's, as routed, and is left to them.
 - Held by: a unit test that fails on the old code (the lampada in the end, the moment only on a change to complete, nothing infinite, the escape under motion off, no rays and no sparkle in its rules), and an export walk step: Evening Prayers passed to the end with real touch, one click (the vibration spy), the words in, every animation in the end finished within two seconds and none infinite; reopened, the rest with no animation; motion off, none at all; `checkMock` on five palettes.
 - Size: about two hours after the yes.
+
+Done (Updates, 2026-11-11, `3ed50d182`), on the arbiter's yes of 04:05 UTC ("Build it as your still shows: the lampada's soft pool, 'Glory to God. The rule is complete for today.' settling in, Reset, no Amen button, motion off set at once"):
+
+- No Amen button. Reaching the end completes the rule: the last prayer is counted as every prayer before it, carried past the reading place by a hand. The walk found the last prayer could never pass it (9 of 10 counted), so the end and the source now stand in room enough (62svh) on every rule however short: 10 of 10.
+- The end answers once (`components/prayers/service/RuleEnd.tsx`), as the still showed: the click, the lampada's soft pool growing to rest, the closing line settling in, then Reset. It is held for 1600ms, past its last motion, then let go: checkMock's palette switch showed a pool shown again (a palette changed at the end) growing in a second time while it was held. A rule already complete opens at rest.
+- Motion off: everything set at once. The escape had weighed less than the rules it quiets, and the walk caught the end still moving; it now weighs what they weigh.
+- Held by `lib/prayers/__tests__/ruleEnd.test.ts` and walk section 72 (Evening Prayers by a finger at 360 and 390, the moment once, nothing running after it, the day kept, reopened at rest, motion off). The guardrail gate passes Evening Prayers and Your rule; `checkMock` passes the end on five palettes. Still: `build-93/14c-rule-end-after-390.png`.
+- With it, at the arbiter's word: note 16's doubled start dropped (the head's pill is the one start, and "Add prayers one by one" stays), and Clicks as you scroll in Settings (PLAN 13as), which stills this moment too when it is off.
 ### 15. What opens shows itself: the page moves with it (2026-11-11 about 01:39 UTC)
 
 His words: "Again, I want the screen to move with the bottom if it's too big."

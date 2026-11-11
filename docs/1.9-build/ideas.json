@@ -2413,12 +2413,12 @@
    "title": "The end of a rule: one moment of completion, the lampada's soft pool growing to rest with the click and \"Glory to God\" settling in, nothing that loops (build 93 note 14)",
    "from": "edgar",
    "asked": "2026-11-11",
-   "status": "proposed",
-   "decided": null,
-   "needsDesign": true,
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
    "version": "1.9",
    "outcome": null,
-   "note": "Plan and one still sent to the arbiter (627e6af93, notes/build-93/14b-rule-complete-plan.png, checkMock on five palettes); built after the yes. PLAN 13ao."
+   "note": "Built on the arbiter's yes (04:05 UTC): no Amen; the last prayer counted as it passes, room after it; the moment held 1600ms then let go; still with motion off. 3ed50d182. PLAN 13ao."
   },
   {
    "id": "e-build93-note5-event-steps",
@@ -2461,6 +2461,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "The room drew the tab roots' header under the apps' back bar. A test holds the tab header to the five tab roots. 022e4f971. PLAN 13ar."
+  },
+  {
+   "id": "e-clicks-as-you-scroll",
+   "section": "Settings",
+   "kind": "idea",
+   "title": "Clicks as you scroll: one row in Settings that turns the light click in the hand off, as each prayer, chapter or event passes and when a rule is complete",
+   "from": "claude",
+   "asked": "2026-11-11",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The arbiter's ask and its yes to the words. Phone apps only, on by default; off stills a rule's completion and the day it keeps. 21 languages. 3ed50d182. PLAN 13as."
   }
  ]
 }
