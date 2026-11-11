@@ -59,7 +59,11 @@ stills, the clips and the reels.
   with one: look 3 (St John Chrysostom's mosaic at Hosios Loukas), and edit
   frames 1 (the saint web, on that mosaic) and 9 (the wall of saints, with
   St Moses the Ethiopian of Dionysiou, Justinian of Ravenna and Chrysostom).
-  Look at every screen in a frame for one before it is used.
+  The list of their files is `lib/marketing/heritagePictures.ts`, and
+  `lib/marketing/__tests__/heritagePictures.test.ts` fails any promo, card
+  or store-picture script outside the Vault that names one. A screen that
+  shows one is not a file name: look at every screen in a frame before it is
+  used.
 - **The house's voice and type**: Lora and DM Sans out of the export, the
   house colours, no em dashes. `lib/marketing/__tests__/promoLooks.test.ts`
   holds the words.
