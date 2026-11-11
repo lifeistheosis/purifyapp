@@ -9649,6 +9649,180 @@ await section(67, async () => {
   }
 });
 
+await section(68, async () => {
+  console.log("\n68. Your rule: Morning and Evening never move under the finger, and an empty part starts where Pray my rule stands (build 93 note 16)");
+  // His words: "Switching from evening to morning is buggy in this situation."
+  // Evening held a rule and Morning none: the Pray my rule row went with the
+  // morning's emptiness, so the switch rose under his finger, the icon swapped
+  // at once, and "Nothing here yet" stood beside a dashed circle. Now the row
+  // stays, one height, an empty part's start in it; the icon crosses; the list
+  // comes in with the page's fade; nothing is dashed. The switch is measured
+  // every frame from a real tap, at the top of the page and scrolled as far
+  // as the switch can still be reached under the bar.
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const ro = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/ro.json"), "utf8"));
+  const eveningIds = JSON.parse(fs.readFileSync(path.resolve("data/prayers/rules/evening.json"), "utf8")).prayers.map((p) => p.id);
+  const rule = JSON.stringify({ v: 1, morning: [], evening: eveningIds.map((prayer) => ({ kind: "prayer", rule: "evening", prayer })), minutes: { morning: 0, evening: 0 }, updatedAt: "" });
+  // Where the switch stands on the screen: once now, then every frame for a while.
+  const watch = (page) =>
+    page.evaluate(() => {
+      const at = () => document.querySelector('[role="tablist"]')?.getBoundingClientRect().top ?? NaN;
+      window.__switchTops = [at()];
+      const t0 = performance.now();
+      const frame = () => {
+        window.__switchTops.push(at());
+        if (performance.now() - t0 < 1600) requestAnimationFrame(frame);
+      };
+      requestAnimationFrame(frame);
+    });
+  const moved = async (page) => {
+    await page.waitForTimeout(1700);
+    return page.evaluate(() => {
+      const t = window.__switchTops ?? [];
+      return t.length > 1 ? Math.round(Math.max(...t.map((v) => Math.abs(v - t[0]))) * 10) / 10 : -1;
+    });
+  };
+  const state = (page) =>
+    page.evaluate((nothingYet) => {
+      const content = document.querySelector("[data-route-content]") ?? document.body;
+      const row = document.querySelector("[data-mine-action]");
+      const start = row?.querySelector("[data-mine-start]");
+      const box = start?.getBoundingClientRect();
+      const shown = document.querySelector('[role="tabpanel"]:not([hidden])');
+      const img = document.querySelector(".rule-head-img");
+      const dashed = [...content.querySelectorAll("*")]
+        .filter((el) => {
+          if (!el.getClientRects().length) return false;
+          const cs = getComputedStyle(el);
+          return ["Top", "Right", "Bottom", "Left"].some((side) => cs[`border${side}Style`] === "dashed" && parseFloat(cs[`border${side}Width`]) > 0) || cs.outlineStyle === "dashed";
+        })
+        .map((el) => `${el.tagName.toLowerCase()}.${String(el.className).split(" ")[0]}`);
+      return {
+        part: document.querySelector("[data-rule-picture]")?.getAttribute("data-rule-picture") ?? "",
+        rowH: row ? Math.round(row.getBoundingClientRect().height) : 0,
+        pray: !!row?.querySelector("[data-mine-pray]"),
+        start: start ? { text: (start.textContent ?? "").trim(), right: Math.round(box.right), left: Math.round(box.left), h: Math.round(box.height), clipped: start.scrollWidth > start.clientWidth + 1 } : null,
+        rows: shown ? shown.querySelectorAll("ol > li").length : 0,
+        dashed,
+        nothingYet: (shown?.textContent ?? "").includes(nothingYet),
+        follow: shown ? getComputedStyle(shown).animationName : "",
+        cross: img ? getComputedStyle(img).transitionDuration : "",
+        width: document.documentElement.clientWidth,
+        // The row is h-12, three of the root's ems.
+        rem: parseFloat(getComputedStyle(document.documentElement).fontSize),
+      };
+    }, en["prayers.mine.emptyPart"]);
+  // A finger's tap: a touch where the control stands on the screen, nothing
+  // scrolled first (a locator's own tap brings its target clear of the
+  // page's scroll padding before it taps, which moved the page 9px).
+  const finger = async (page, selector) => {
+    const at = await page.evaluate((sel) => {
+      const r = document.querySelector(sel)?.getBoundingClientRect();
+      return r ? { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2) } : null;
+    }, selector);
+    if (!at) return must(false, `could not find ${selector} to touch`);
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [at] });
+    await page.waitForTimeout(70);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await cdp.detach().catch(() => {});
+  };
+  const settled = (page) =>
+    page.waitForFunction(() => !!document.querySelector("h1#mine-title") && !!document.querySelector("[data-rule-picture] img[data-on]") && !!document.querySelector('[role="tablist"]'), null, { timeout: 20000 }).catch(() => {});
+
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }, { width: 820, height: 1180 }]) {
+    const w = `${size.width}x${size.height}`;
+    const { ctx, page, errors } = await open({ ...size, phone: true, set: { "purify.motion": "on", "purify.prayers.mine": rule } });
+    await go(page, "/");
+    await go(page, "/prayers/personal/#evening");
+    await settled(page);
+    await page.waitForTimeout(1400);
+    const before = await state(page);
+    must(before.part === "evening" && before.pray && before.rows === eveningIds.length, `${w}: Evening holds its rule, Pray my rule in the head (${before.rows} prayers)`);
+
+    // Evening to Morning, from the top of the page.
+    await watch(page);
+    await finger(page, "#mine-tab-morning");
+    const toMorning = await moved(page);
+    const morning = await state(page);
+    must(toMorning >= 0 && toMorning <= 1, `${w}: Evening to Morning, the switch never moves under the finger (${toMorning}px at most, every frame)`);
+    must(
+      morning.part === "morning" && !morning.pray && morning.start?.text === en["prayers.mine.startFromMorning"] && morning.rowH === before.rowH,
+      `${w}: the empty morning's start stands where Pray my rule stood, the row one height (${morning.start?.text ?? "no start"}, ${morning.rowH}px against ${before.rowH}px)`,
+    );
+    must(morning.dashed.length === 0 && !morning.nothingYet, `${w}: no dashed placeholder and no "Nothing here yet" (${morning.dashed.join(", ") || "none dashed"})`);
+    must(morning.follow === "page-open-fade" && morning.cross === "0.6s", `${w}: the icon crosses and the list comes in with the page's fade (${morning.cross}, ${morning.follow})`);
+    must(morning.start && morning.start.h >= 44 && morning.start.left >= 0 && morning.start.right <= morning.width && !morning.start.clipped, `${w}: the start is 44 to the touch and whole on the screen (${morning.start?.h}px tall, ${morning.start?.left} to ${morning.start?.right} of ${morning.width})`);
+    await page.screenshot({ path: path.join(SHOTS, `prayers-mine-switch-morning-${size.width}.png`) });
+
+    // And back.
+    await watch(page);
+    await finger(page, "#mine-tab-evening");
+    const toEvening = await moved(page);
+    must(toEvening >= 0 && toEvening <= 1 && (await state(page)).pray, `${w}: Morning to Evening, the switch never moves and Pray my rule is back (${toEvening}px at most)`);
+
+    // Scrolled as far as the switch can still be reached, just under the bar.
+    await page.evaluate(() => {
+      const bar = document.querySelector("[data-mobile-topbar]")?.getBoundingClientRect().bottom ?? 0;
+      const top = document.querySelector('[role="tablist"]').getBoundingClientRect().top;
+      window.scrollTo({ top: Math.max(0, window.scrollY + top - bar - 8), behavior: "instant" });
+    });
+    await page.waitForTimeout(700);
+    const scrolled = await page.evaluate(() => Math.round(window.scrollY));
+    await watch(page);
+    await finger(page, "#mine-tab-morning");
+    const deep = await moved(page);
+    must(deep >= 0 && deep <= 1, `${w}: scrolled ${scrolled}px, the switch just under the bar, Evening to Morning still never moves it (${deep}px at most)`);
+
+    // The start, tapped where it stands: the morning's prayers, and still
+    // nothing moves. It stands in the head, above the switch, so first the
+    // page is brought back to it, as a reader would.
+    await page.locator("[data-mine-start]").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(700);
+    await watch(page);
+    await finger(page, "[data-mine-start]");
+    const started = await moved(page);
+    const built = await state(page);
+    must(started >= 0 && started <= 1 && built.pray && built.rows === 10, `${w}: the start sets the morning's ten prayers and Pray my rule takes its place, the switch still (${built.rows} prayers, ${started}px at most)`);
+    must(errors.length === 0, `${w}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // Romanian's start is the longest, 39 letters: at 360 it takes two lines in
+  // its pill and stays whole on the screen, and the row keeps its height.
+  {
+    const { ctx, page, errors } = await open({ width: 360, height: 740, phone: true, set: { "CapacitorStorage.purify_locale": "ro", "purify.prayers.mine": rule } });
+    await go(page, "/");
+    await go(page, "/prayers/personal/#morning");
+    await settled(page);
+    await page.waitForTimeout(1400);
+    const s = await state(page);
+    must(
+      s.start?.text === ro["prayers.mine.startFromMorning"] && s.start.right <= s.width && s.start.left >= 0 && !s.start.clipped && s.start.h <= s.rowH && s.rowH === Math.round(3 * s.rem),
+      `360x740, Romanian: "${ro["prayers.mine.startFromMorning"]}" stands whole in its row (${s.start ? `${s.start.left} to ${s.start.right} of ${s.width}, ${s.start.h}px tall` : "no start: " + (s.part || "no part")}, the row ${s.rowH}px, its own 3rem)`,
+    );
+    await page.screenshot({ path: path.join(SHOTS, `prayers-mine-switch-morning-ro-360.png`) });
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // Motion off: the same switch, the icon and the list set at once.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify.motion": "off", "purify.prayers.mine": rule } });
+    await go(page, "/");
+    await go(page, "/prayers/personal/#evening");
+    await settled(page);
+    await page.waitForTimeout(1000);
+    await watch(page);
+    await finger(page, "#mine-tab-morning");
+    const still = await moved(page);
+    const s = await state(page);
+    must(still >= 0 && still <= 1 && s.follow === "none" && s.cross === "0s" && s.start, `motion off: the switch still, the icon and the list set at once, the start in place (${still}px, ${s.cross}, ${s.follow})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

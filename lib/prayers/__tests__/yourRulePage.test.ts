@@ -256,13 +256,14 @@ describe("the page as the owner picked it, r3-27 A", () => {
     expect(track).toContain("value: MyRulePart | null;");
     expect(builder).toContain("<PartSwitch value={part} onChange={select} still={!arrived} />");
     expect(builder).toContain("part && has(part)");
-    expect(builder).toContain('className={holding ? "invisible mt-5" : arrived ? "mt-5" : "rule-panel-arrive mt-5"}');
+    // Once arrived, a part's list follows each switch with the same fade (build 93 note 16).
+    expect(builder).toContain('className={holding ? "invisible mt-5" : arrived ? "rule-panel-follow mt-5" : "rule-panel-arrive mt-5"}');
     // Set with no cross-fade, the list arriving with the page's own fade, and
     // still with motion off; a reader's tap keeps the cross.
     expect(track).toContain('data-still={still ? "" : undefined}');
     expect(block).toMatch(/\.rule-track\[data-still\] > button,\s*\.rule-track\[data-still\] > button::before \{\s*transition: none;/);
     expect(block).toContain(".rule-panel-arrive {\n animation: page-open-fade");
-    expect(block).toContain(':where([data-motion="reduce"]) .rule-panel-arrive');
+    expect(block).toContain(':where([data-motion="reduce"]) :is(.rule-panel-arrive, .rule-panel-follow, .rule-action-follow) {\n animation: none;');
   });
 
   it("sets Morning and Evening on a carved switch, a tablist kept in the address", () => {
@@ -373,5 +374,73 @@ describe("the page as the owner picked it, r3-27 A", () => {
     for (const moving of [".rule-head-img", ".rule-head-img[data-on]", ".rule-track > button", ".rule-track > button::before"]) {
       expect(block, moving).toContain(`:where([data-motion="reduce"]) ${moving}`);
     }
+  });
+});
+
+// Build 93 note 16, his words: "Switching from evening to morning is buggy in
+// this situation." An empty part dropped the head's Pray my rule row, so the
+// switch under the head rose under his finger; the icon above swapped at once;
+// and the empty part stood "Nothing here yet" beside a dashed circle.
+// scripts/export-walk.mjs, section 68, measures the switch every frame from a
+// real tap on the built page, at three sizes, at the top and scrolled.
+describe("switching Morning and Evening (build 93 note 16)", () => {
+  const builder = code("components/prayers/mine/MyRuleBuilder.tsx");
+  const head = code("components/prayers/mine/RuleHead.tsx");
+  const css = read("app/globals.css");
+  const block = css
+    .slice(css.indexOf("/* ── Your rule: the icon above, the steps below (1.8) ──"), css.indexOf("/* The shop's floating cart button"))
+    .replace(/\/\*[\s\S]*?\*\//g, "");
+
+  it("keeps the head's action row whatever the part holds, one height, so the switch below it never moves", () => {
+    expect(head).toContain('<div data-mine-action="" className="mt-4 flex h-12 flex-nowrap items-center">');
+    const row = head.slice(head.indexOf("data-mine-action"), head.indexOf("</header>"));
+    // Pray my rule, an empty part's start, or nothing yet: all inside the row.
+    expect(row).toContain("{pray ? (");
+    expect(row).toContain(") : start ? (");
+    expect(head.slice(0, head.indexOf("data-mine-action"))).not.toContain("{pray ? (");
+  });
+
+  it("keeps the page tall enough to bring the switch up under the bar, so a shorter part never pulls the page", () => {
+    // Scrolled down, a part shorter than the one before left the page too
+    // short for where it stood, and the browser pulled it up: 9px on a phone,
+    // 133px on a tablet, measured on the export. The room is kept at the foot.
+    expect(builder).toContain("<div ref={switchRef} className=\"mt-6\">");
+    expect(builder).toContain('document.querySelector("[data-mobile-topbar]")?.getBoundingClientRect().bottom ?? 0');
+    expect(builder).toContain("const reach = at.getBoundingClientRect().bottom + window.scrollY - bar;");
+    expect(builder).toContain("setRoom(Math.ceil(reach + window.innerHeight));");
+    expect(builder).toContain("style={room ? { minHeight: room } : undefined}");
+    expect(builder).toContain('window.addEventListener("resize", measure);');
+  });
+
+  it("offers an empty part's start where Pray my rule stands, a button that sets the part's prayers", () => {
+    expect(head).toContain("start: { label: string; onStart: () => void } | null;");
+    expect(head).toMatch(/<button\s+key=\{`start-\$\{part\}`\}\s+type="button"\s+data-mine-start=""\s+onClick=\{start\.onStart\}/);
+    expect(builder).toContain("<RuleHead part={part} pray={pray} start={start} />");
+    expect(builder).toContain("part && !has(part)");
+    expect(builder).toContain("save(addItems(rule, chosen, seedOf(chosen)));");
+    // 44 to the touch; a long label (Romanian's has 39 letters) wraps inside
+    // its pill rather than run off a phone's screen or lose its end.
+    const pill = head.slice(head.indexOf("data-mine-start"), head.indexOf("{start.label}"));
+    expect(pill).toContain("min-h-12");
+    expect(pill).toContain("min-w-0");
+    expect(pill).not.toContain("shrink-0");
+    expect(pill).not.toContain("truncate");
+  });
+
+  it("draws no dashed placeholder and no Nothing here yet", () => {
+    for (const rel of ["components/prayers/mine/MyRuleBuilder.tsx", "components/prayers/mine/RuleHead.tsx", "components/prayers/mine/ReorderList.tsx", "components/prayers/mine/WayRow.tsx"]) {
+      expect(code(rel), rel).not.toContain("data-dash");
+      expect(code(rel), rel).not.toContain("prayers.mine.emptyPart");
+    }
+    expect(block).not.toContain("dashed");
+    expect(block).toContain(".rule-node[data-quiet] {");
+  });
+
+  it("crosses the icon, brings the list and the head's action in with the page's fade, and is still with motion off", () => {
+    expect(block).toMatch(/\.rule-head-img \{[^}]*transition: opacity 600ms var\(--ease-house\);/);
+    expect(builder).toContain('arrived ? "rule-panel-follow mt-5"');
+    expect(head).toContain('className="rule-action-follow flex min-w-0 items-center gap-x-3.5"');
+    expect(block).toMatch(/\.rule-panel-follow,\s*\.rule-action-follow \{\s*animation: page-open-fade var\(--duration-base\) var\(--ease-house\) backwards;/);
+    expect(block).toContain(':where([data-motion="reduce"]) :is(.rule-panel-arrive, .rule-panel-follow, .rule-action-follow) {\n animation: none;');
   });
 });

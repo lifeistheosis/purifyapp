@@ -1991,8 +1991,8 @@ html[data-reading-mode="parchment"] .rule-ring-lit {
 }
 
 /* The steps: one thread from the first node to Add prayers, each node on it
-   numbered, Those I pray for lit, Add prayers dashed; a hairline between the
-   rows, past the nodes. */
+   numbered, Those I pray for lit, Add prayers a quiet ring; a hairline
+   between the rows, past the nodes. */
 .rule-thread {
  position: relative;
 }
@@ -2043,10 +2043,12 @@ html[data-reading-mode="parchment"] .rule-ring-lit {
  background: var(--color-paper);
  box-shadow: 0 0 14px rgb(255 255 255 / 0.55);
 }
-.rule-node[data-dash] {
+/* Add prayers: a quiet ring, never a dashed one (a dashed placeholder is the
+   kind the owner ruled out, build 93 notes 4 and 16). */
+.rule-node[data-quiet] {
  color: color-mix(in srgb, var(--color-paper) 70%, transparent);
  background: var(--color-night);
- border: 1.5px dashed color-mix(in srgb, var(--color-paper) 40%, transparent);
+ border: 1.5px solid color-mix(in srgb, var(--color-paper) 28%, transparent);
  box-shadow: none;
 }
 
@@ -2118,10 +2120,12 @@ html[data-reading-mode="parchment"] .rule-ring-lit {
   inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 16%, transparent),
   0 6px 14px -4px rgb(0 0 0 / 0.8);
 }
+/* Add a name: the quiet ring of Add prayers, never dashed (build 93 notes 4
+   and 16; checkMock's "dashed"). */
 .rule-med-disc[data-add] {
  color: color-mix(in srgb, var(--color-paper) 60%, transparent);
  background: none;
- border: 1.5px dashed color-mix(in srgb, var(--color-paper) 30%, transparent);
+ border: 1.5px solid color-mix(in srgb, var(--color-paper) 28%, transparent);
  box-shadow: none;
 }
 .rule-med-name,
@@ -2200,7 +2204,7 @@ html[data-reading-mode="parchment"] .rule-track {
 html[data-reading-mode="parchment"] .rule-track > button::before {
  box-shadow: 0 2px 5px rgb(70 52 20 / 0.3);
 }
-html[data-reading-mode="parchment"] .rule-node:not([data-lit]):not([data-dash]),
+html[data-reading-mode="parchment"] .rule-node:not([data-lit]):not([data-quiet]),
 html[data-reading-mode="parchment"] .rule-med-disc:not([data-add]) {
  background: linear-gradient(180deg, #fdf9f0, #ece2cb);
  box-shadow: inset 0 0 0 1px rgb(43 35 23 / 0.14), 0 2px 5px rgb(70 52 20 / 0.22);
@@ -2210,7 +2214,7 @@ html[data-reading-mode="parchment"] .rule-way-pic {
 }
 
 /* True black: no shadow shows on black, so the nodes and discs keep a hairline. */
-html[data-reading-mode="black"] .rule-node:not([data-lit]):not([data-dash]),
+html[data-reading-mode="black"] .rule-node:not([data-lit]):not([data-quiet]),
 html[data-reading-mode="black"] .rule-med-disc:not([data-add]) {
  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.2);
 }
@@ -2225,7 +2229,14 @@ html[data-reading-mode="black"] .rule-med-disc:not([data-add]) {
 .rule-panel-arrive {
  animation: page-open-fade var(--duration-base) var(--ease-house) backwards;
 }
-:where([data-motion="reduce"]) .rule-panel-arrive {
+/* The list follows the switch (build 93 note 16): a part's panel comes in
+   with the page's own fade each time it is shown, as the icon above crosses
+   to its own. A hidden panel shown again starts its animation over. */
+.rule-panel-follow,
+.rule-action-follow {
+ animation: page-open-fade var(--duration-base) var(--ease-house) backwards;
+}
+:where([data-motion="reduce"]) :is(.rule-panel-arrive, .rule-panel-follow, .rule-action-follow) {
  animation: none;
 }
 

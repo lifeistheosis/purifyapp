@@ -31,11 +31,14 @@ import { ruleHeadArt } from "@/lib/prayers/serviceArt";
 export function RuleHead({
   part,
   pray,
+  start,
 }: {
   /** The part shown, once the device has said which; null before. */
   part: MyRulePart | null;
   /** Pray my rule for the part shown, and its length; null for an empty part. */
   pray: { href: string; meta: string } | null;
+  /** An empty part's start, in Pray my rule's place; null when the part has prayers or is not known yet. */
+  start: { label: string; onStart: () => void } | null;
 }) {
   const { t } = useTranslate();
   return (
@@ -74,21 +77,43 @@ export function RuleHead({
           {t("prayers.mine.title")}
         </h1>
         <p className="rule-head-line mt-2 max-w-[46ch] font-sans text-detail leading-[1.5] text-paper/75">{t("prayers.mine.intro")}</p>
-        {pray ? (
-          <div className="mt-4 flex flex-wrap items-center gap-x-3.5 gap-y-2">
-            <Link
-              href={pray.href}
-              data-mine-pray
-              className="rule-pray tap-press inline-flex min-h-12 items-center gap-1.5 rounded-pill bg-paper ps-6 pe-5 font-sans text-ui font-semibold text-night"
+        {/* Pray my rule, or an empty part's start in its place: the row is
+            always there and one height (build 93 note 16), so Morning and
+            Evening below it never move under the finger, nor when the device
+            says which part. */}
+        <div data-mine-action="" className="mt-4 flex h-12 flex-nowrap items-center">
+          {/* What stands here comes in with the list below on each switch
+              (rule-action-follow), as the icon above crosses to its own. */}
+          {pray ? (
+            <div key={`pray-${part}`} className="rule-action-follow flex min-w-0 items-center gap-x-3.5">
+              <Link
+                href={pray.href}
+                data-mine-pray
+                className="rule-pray tap-press inline-flex min-h-12 items-center gap-1.5 rounded-pill bg-paper ps-6 pe-5 font-sans text-ui font-semibold text-night"
+              >
+                {t("prayers.mine.pray")}
+                <ChevronRight size={15} className="shrink-0 rtl:-scale-x-100" />
+              </Link>
+              <span data-mine-pray-meta className="rule-head-line min-w-0 truncate font-sans text-detail text-paper/65">
+                {pray.meta}
+              </span>
+            </div>
+          ) : start ? (
+            // A long start (Romanian's is 39 letters) takes two lines inside
+            // the pill rather than run off a phone's screen; the row keeps its
+            // height either way.
+            <button
+              key={`start-${part}`}
+              type="button"
+              data-mine-start=""
+              onClick={start.onStart}
+              className="rule-action-follow rule-pray tap-press inline-flex min-h-12 min-w-0 items-center gap-1.5 rounded-pill bg-paper py-1 ps-6 pe-5 text-start font-sans text-ui font-semibold leading-tight text-night"
             >
-              {t("prayers.mine.pray")}
+              {start.label}
               <ChevronRight size={15} className="shrink-0 rtl:-scale-x-100" />
-            </Link>
-            <span data-mine-pray-meta className="rule-head-line font-sans text-detail text-paper/65">
-              {pray.meta}
-            </span>
-          </div>
-        ) : null}
+            </button>
+          ) : null}
+        </div>
       </div>
     </header>
   );

@@ -109,6 +109,15 @@ export function MyRuleBuilder() {
   const [itemOpen, setItemOpen] = useState(false);
   const [undo, setUndo] = useState<{ part: MyRulePart; index: number; item: MyRuleItem; title: string } | null>(null);
   const undoTimer = useRef<number | undefined>(undefined);
+  // The switch keeps its place on the screen whatever the part holds (build
+  // 93 note 16). A part shorter than the one before could leave the page too
+  // short for where it was scrolled, and the browser would pull the page,
+  // and the switch with it, up under the finger (9px on a phone, 133px on a
+  // tablet, measured on the export). So the page is always tall enough to
+  // bring the switch up under the bar, and the room is kept at its foot,
+  // where a short page simply ends on its own ground.
+  const switchRef = useRef<HTMLDivElement>(null);
+  const [room, setRoom] = useState(0);
 
   /* eslint-disable react-hooks/set-state-in-effect -- one-time hydration
      gate: the address, the clock and the kept rule are the device's, and a
@@ -136,6 +145,27 @@ export function MyRuleBuilder() {
   }, [part, arrived]);
 
   useEffect(() => () => window.clearTimeout(undoTimer.current), []);
+
+  useEffect(() => {
+    const at = switchRef.current;
+    if (!at) return;
+    const measure = () => {
+      const bar = document.querySelector("[data-mobile-topbar]")?.getBoundingClientRect().bottom ?? 0;
+      // Scrolled this far, the switch has gone under the bar: no finger can reach it past here.
+      const reach = at.getBoundingClientRect().bottom + window.scrollY - bar;
+      setRoom(Math.ceil(reach + window.innerHeight));
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    // The head can change its height (its words wrap once the type arrives).
+    const head = at.parentElement?.querySelector("header");
+    const resized = head && typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    if (head) resized?.observe(head);
+    return () => {
+      window.removeEventListener("resize", measure);
+      resized?.disconnect();
+    };
+  }, []);
 
   // Each part's length, kept with the rule for Today, which does not carry
   // the prayer book. A rule kept before the count was made seconds first
@@ -226,6 +256,18 @@ export function MyRuleBuilder() {
     part && has(part)
       ? { href: `/prayers/personal/${part}`, meta: t("prayers.mine.partMinutes", { part: t(PART_KEY[part]), min: minutes[part] }) }
       : null;
+  // An empty part offers its start where Pray my rule stands (build 93 note
+  // 16), so the switch under the head never moves whichever part is chosen.
+  const start =
+    part && !has(part)
+      ? {
+          label: part === "morning" ? t("prayers.mine.startFromMorning") : t("prayers.mine.startFromEvening"),
+          onStart: () => {
+            const chosen = part;
+            save(addItems(rule, chosen, seedOf(chosen)));
+          },
+        }
+      : null;
 
   const panel = (p: MyRulePart) => {
     const seed = seedOf(p);
@@ -249,7 +291,7 @@ export function MyRuleBuilder() {
                   aria-haspopup="dialog"
                   className="rule-step rule-add tap-press flex min-h-14 w-full items-center gap-3 text-start"
                 >
-                  <span aria-hidden className="rule-node" data-dash="">
+                  <span aria-hidden className="rule-node" data-quiet="">
                     <Plus size={14} />
                   </span>
                   <span className="font-sans text-ui font-semibold text-paper">{t("prayers.mine.add")}</span>
@@ -260,13 +302,9 @@ export function MyRuleBuilder() {
           </>
         ) : (
           <div data-mine-empty>
-            <div className="flex items-start gap-3">
-              <span aria-hidden className="rule-node mt-0.5" data-dash="" />
-              <div className="min-w-0">
-                <p className="font-serif text-[17.5px] font-medium leading-snug text-paper/90">{t("prayers.mine.emptyPart")}</p>
-                <p className="mt-1 font-sans text-detail leading-[1.5] text-paper/60">{t("prayers.mine.emptyBody")}</p>
-              </div>
-            </div>
+            {/* No placeholder (build 93 note 16): the part's start stands in the
+                head, and here its two ways in, said in one line. */}
+            <p className="font-sans text-detail leading-[1.5] text-paper/70">{t("prayers.mine.emptyBody")}</p>
             {/* The two ways in: one choice of two rows drawn alike, each saying what it brings. */}
             <div data-mine-ways className="set-panel mt-4">
               <WayRow
@@ -318,11 +356,15 @@ export function MyRuleBuilder() {
   const openedPrayer = openedItem && openedItem.kind === "prayer" ? openedRule?.rule.prayers.find((p) => p.id === openedItem.prayer) : undefined;
 
   return (
-    <section className="rule-page min-h-screen bg-night px-5 pb-16 md:px-8 md:pt-10" aria-labelledby="mine-title">
+    <section
+      className="rule-page min-h-screen bg-night px-5 pb-16 md:px-8 md:pt-10"
+      style={room ? { minHeight: room } : undefined}
+      aria-labelledby="mine-title"
+    >
       <div className="mx-auto w-full max-w-[640px]">
-        <RuleHead part={part} pray={pray} />
+        <RuleHead part={part} pray={pray} start={start} />
 
-        <div className="mt-6">
+        <div ref={switchRef} className="mt-6">
           <PartSwitch value={part} onChange={select} still={!arrived} />
         </div>
         {MY_RULE_PARTS.map((p) => {
@@ -338,7 +380,7 @@ export function MyRuleBuilder() {
               aria-labelledby={`mine-tab-${p}`}
               aria-hidden={holding || undefined}
               hidden={holding ? p !== "morning" : p !== part}
-              className={holding ? "invisible mt-5" : arrived ? "mt-5" : "rule-panel-arrive mt-5"}
+              className={holding ? "invisible mt-5" : arrived ? "rule-panel-follow mt-5" : "rule-panel-arrive mt-5"}
             >
               {panel(p)}
             </div>
