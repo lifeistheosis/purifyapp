@@ -726,6 +726,39 @@ describe("going back returns the reader to the link they tapped", () => {
     expect(isReturning()).toBe(false);
   });
 
+  // The Plus page (the gate's tap walk, 2026-11-11): "Sign in to continue"
+  // at its foot, tapped with the page 2503px down. Back: the browser does
+  // not put its number back there (the page comes in two steps), and the
+  // page brings itself in over a second, 18px low and then rising. Nothing
+  // was measured until that ended, so the reader saw the top of the page
+  // and then a jump.
+  it("puts a page the browser left at its top where it was, at once, while the page is still bringing itself in", () => {
+    const b = stubBrowser("/pricing/");
+    const paywall = b.part();
+    b.state.scrollY = 2503;
+    const signIn = b.link("/signin/?next=/pricing", 3130, { within: paywall });
+    noteLinkTap({ target: signIn as unknown as EventTarget });
+    b.goTo("/signin/", "?next=/pricing");
+    keepPlace();
+    b.goTo("/pricing/");
+    b.state.scrollY = 0;
+    signIn.top = 3148;
+    paywall.held = 18;
+    paywall.animations = [entrance(1040)];
+    returnToPlace();
+    // Before anything is painted, and to where the link will land: 2503, not 2521.
+    expect(b.state.scrolls).toEqual([2503]);
+    expect(b.state.scrollY).toBe(2503);
+    for (let i = 0; i < 60; i += 1) b.frame();
+    signIn.top = 3130;
+    paywall.held = 0;
+    paywall.animations = [];
+    b.run();
+    expect(b.state.scrolls).toEqual([2503]);
+    expect(signIn.getBoundingClientRect().top).toBe(627);
+    expect(isReturning()).toBe(false);
+  });
+
   it("reads what holds the link low whether it is a transform or a translate, and adds up what several parts do", () => {
     const b = stubBrowser("/bible/");
     const page = b.part();

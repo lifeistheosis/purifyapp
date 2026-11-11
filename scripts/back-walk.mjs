@@ -20,6 +20,13 @@
 //   the Bible's list   a book's row (the first, one in the middle, the last);
 //                      the list draws a "Continue reading" row above the
 //                      books once a chapter has been opened
+//   the Plus page      "Sign in to continue" at its foot. Nothing is drawn
+//                      above it; the page brings itself in over a second
+//                      (18px low, then rising), and the helper used to wait
+//                      for that before it looked, with the page at its top:
+//                      the gate's walk saw the top for 2.5s and then a jump.
+//                      Walked on an export that sells Plus, as the Android
+//                      shell, which is where that link is drawn
 // Each is come back to by the browser's own Back (a browser's button, and
 // what the gate's walk does), which is not pictured. The reading room is
 // come back to by the page's own Back button as well, which is pictured, and
@@ -37,6 +44,8 @@
 //   - and the walk proved something: the page did grow above the link while
 //     the reader was away. Where it did not (the shelf above the new ones)
 //     the walk says so, and that place is held only to "it did not move".
+//     On the Plus page the proof is that the link was still on its way in
+//     when the page came back, and was already in its place.
 //
 // How a frame is measured. A thing of the walk's own changes size in every
 // animation frame, and a ResizeObserver on it is told after that frame's
@@ -56,6 +65,7 @@ import path from "node:path";
 
 import { chromium } from "playwright";
 
+import { asAndroidShell, sellsOnAndroid } from "./lib/sells-plus.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "./lib/shell-server.mjs";
 
 const stills = process.argv.slice(2).find((a) => !a.startsWith("--")) ?? null;
@@ -80,14 +90,20 @@ const CHEVRON = 'button[aria-label="Back"]:visible, a[aria-label="Back"]:visible
 
 let failed = 0;
 let passed = 0;
+/** Places that could not be walked on this export, and were said. */
+let unwalked = 0;
 const say = (ok, name, detail) => {
   if (ok) passed += 1;
   else failed += 1;
   console.log(`${ok ? "ok  " : "FAIL"}  ${name}${detail ? `  (${detail})` : ""}`);
 };
 
-/** The app on a screen of this size, a new reader past the questions; the website's own pictures from this branch's public/. */
-async function open(browser, size) {
+/**
+ * The app on a screen of this size, a new reader past the questions; the
+ * website's own pictures from this branch's public/. `shell`: the page is the
+ * Android shell, where Plus is sold (scripts/lib/sells-plus.mjs).
+ */
+async function open(browser, size, { shell = false } = {}) {
   const ctx = await browser.newContext({
     viewport: { width: size.width, height: size.height },
     deviceScaleFactor: 1,
@@ -100,6 +116,7 @@ async function open(browser, size) {
     localStorage.setItem("purify:onboarded", "99");
     localStorage.setItem("purify:whatsNewSeen", "99");
   });
+  if (shell) await asAndroidShell(ctx);
   await serveLikeTheShell(ctx, OUT, {});
   await ctx.route("https://purifyapp.net/**", (route) => {
     const file = path.resolve("public", decodeURIComponent(new URL(route.request().url()).pathname).replace(/^\/+/, ""));
@@ -167,6 +184,21 @@ const PLACES = {
   ),
 };
 
+PLACES.plus = {
+  name: "the Plus page, the link to sign in at its foot",
+  address: "/pricing/",
+  wait: 'a[href^="/signin/"]',
+  choose: `() => [...document.querySelectorAll('a[href^="/signin/"]')].filter(${IN_PAGE}).pop() ?? null`,
+  partOf: `() => "foot"`,
+  again: `(href) => [...document.querySelectorAll('a[href="' + href + '"]')].filter(${IN_PAGE}).pop() ?? null`,
+  grows: false,
+  // Drawn only where Plus is sold, and the page is the Android shell.
+  sells: true,
+  // The page's own entrance holds everything in it 18px low and then lets it rise (app/globals.css, paywall-in).
+  rise: 18,
+  arrives: true,
+};
+
 const WAYS = {
   browser: { name: "the browser's own Back", back: (page) => page.evaluate(() => history.back()) },
   chevron: { name: "the page's own Back button", back: (page) => page.locator(CHEVRON).first().click() },
@@ -174,7 +206,13 @@ const WAYS = {
 
 async function walk(browser, size, place, way) {
   const name = `${place.name}: back by ${way.name}, on ${size.name}`;
-  const { ctx, page, touch } = await open(browser, size);
+  if (place.sells && !sellsOnAndroid(OUT)) {
+    // Said, and counted as neither: the gate's export sells, and walks it.
+    console.log(`not walked  ${name}  (this export does not sell Plus; cut it the gate's way: NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1 NEXT_PUBLIC_REVENUECAT_ANDROID_KEY=walk npm run build:android)`);
+    unwalked += 1;
+    return;
+  }
+  const { ctx, page, touch } = await open(browser, size, { shell: Boolean(place.sells) });
   try {
     await go(page, place.address);
     await page.waitForSelector(place.wait, { timeout: 20000, state: "attached" }).catch(() => {});
@@ -255,8 +293,8 @@ async function walk(browser, size, place, way) {
     const faults = [];
     const off = after.top - before.top;
     const grew = Math.round(after.inPage - before.inPage);
-    // The frames painted further from the thumb than a row's own entrance holds it.
-    const astray = frames.filter(([, top]) => Math.abs(top - before.top) > RISE_PX + STILL_PX);
+    // The frames painted further from the thumb than the link's own entrance holds it.
+    const astray = frames.filter(([, top]) => Math.abs(top - before.top) > (place.rise ?? RISE_PX) + STILL_PX);
     let worst = 0;
     for (const [, top] of frames) worst = Math.max(worst, Math.abs(top - before.top));
     if (Math.abs(off) > STILL_PX) faults.push(`the link came back ${Math.round(Math.abs(off))}px ${off > 0 ? "below" : "above"} the thumb (${Math.round(after.top)}px down the screen, tapped at ${Math.round(before.top)}px)`);
@@ -264,12 +302,13 @@ async function walk(browser, size, place, way) {
     if (place.grows && grew < 20) faults.push(`the page above the link grew ${grew}px while the reader was away, so the walk proved nothing`);
     if (place.grows && after.same === before.same) faults.push(`the page has ${after.same} link${after.same === 1 ? "" : "s"} to it, as it had: the helper before this knew it too, so the walk proved nothing`);
     if (!place.grows && Math.abs(grew) > 1) faults.push(`the page above this link changed by ${grew}px: it is no longer the place nothing moves`);
+    if (place.arrives && worst < 4) faults.push(`the link was never more than ${Math.round(worst)}px from the thumb, so it was not being brought in as the page came back and the walk proved nothing`);
     say(
       faults.length === 0,
       name,
       faults.length
         ? faults.join("; ")
-        : `${grew ? `${grew}px drawn above it while away, ` : "nothing drawn above it, "}${before.same} link${before.same === 1 ? "" : "s"} to it before and ${after.same} after; under the thumb again, never more than ${Math.round(worst)}px from it in ${frames.length} frames`,
+        : `${place.arrives ? `still ${Math.round(worst)}px low on its way in as the page came back, and the page already in its place; ` : ""}${grew ? `${grew}px drawn above it while away, ` : "nothing drawn above it, "}${before.same} link${before.same === 1 ? "" : "s"} to it before and ${after.same} after; under the thumb again, never more than ${Math.round(worst)}px from it in ${frames.length} frames`,
     );
   } finally {
     await ctx.close();
@@ -293,6 +332,8 @@ try {
     [PLACES["1-kings"], WAYS.browser, SMALL],
     [PLACES.library, WAYS.browser, TABLET],
     [PLACES["1-kings"], WAYS.browser, TABLET],
+    // By the browser's own Back only: the page that link opens, Sign in, has no Back button of its own.
+    [PLACES.plus, WAYS.browser, PHONE],
   ]) {
     await walk(browser, size, place, way);
   }
@@ -300,5 +341,5 @@ try {
   await browser.close();
 }
 
-console.log(`\n${passed} as they should be; ${failed} not`);
+console.log(`\n${passed} as they should be; ${failed} not${unwalked ? `; ${unwalked} not walked on this export` : ""}`);
 process.exit(failed ? 1 : 0);

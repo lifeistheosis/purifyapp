@@ -525,8 +525,8 @@ new rows standing above it. The unit test even said so in its own words
 
 **The check.**
 
-- `lib/ui/__tests__/returnPlace.test.ts`, 34 cases, 10 of them new. Nine
-  fail on the helper as it was: a shelf drawn above, a link dropped, the
+- `lib/ui/__tests__/returnPlace.test.ts`, 34 cases (35 with the Plus
+  page's, below), 10 of them new. Nine fail on the helper as it was: a shelf drawn above, a link dropped, the
   new row never taken for the tapped one, a bar's link and a link that is
   not drawn not counted as neighbours, the list kept for a wide screen, a
   row met where it will land while it is still coming in (67px at once, not
@@ -567,8 +567,32 @@ new rows standing above it. The unit test even said so in its own words
   the link, and does have another number of links to it. A book in "Short
   reads", above the new shelves, is walked too and has to stay where it was.
 
+**The Plus page, the same day (the gate's full walk).** Admin's walk then
+found `/pricing/` coming back from its top: "Sign in to continue" tapped at
+the page's foot with the page 2503px down, Back, and the page stood at 0 for
+about 2.5s before it was at 2503 again. Nothing is drawn above that link.
+Two things met there. The browser does not put its own number back on that
+page (it comes in two steps, a screen's height first), so the page that
+returns is at its top. And the page brings itself in over a second, 18px
+low and then rising (`paywall-in`), and the helper measured nothing until
+an entrance had finished. Measured on the export with the mend above, which
+was built for the Bible's rows and is the same rule: the page is at 2503 in
+the first frame, 42ms after the step, with the link 18px low on its way in,
+and the link lands where it stood. No change of code was needed for it; it
+is held by a unit case with the page's own numbers (2503 at once, not 2521
+and not later; it fails on the helper as it was) and by a place in
+`scripts/back-walk.mjs`, walked as the Android shell on an export that
+sells Plus, which is where that link is drawn. The walk is 11 of 11, and
+Admin's own tap walk passes the page: 21 controls, none failed.
+
 **Named, not mended.**
 
+- **Sign in has no way back of its own in the apps.** The page that link
+  opens is drawn by the sign-in pages' own frame, which has the Purify mark
+  and a link to Privacy at its top and no Back button, and it is outside
+  the frame that gives every other page of the apps its back bar. The
+  phone's Back leaves it on Android. An iPhone has none. Put to the
+  arbiter; it is not a page switch, and the frame is not mine.
 - **A tapped link right beside what was added** no longer stands between
   the same two links, and is left at the browser's number. No shelf here
   has one today: the two new shelves stand after "Short reads", whose books
