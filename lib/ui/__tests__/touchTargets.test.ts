@@ -618,7 +618,10 @@ const MAX_PADDED_SMALL_TARGETS = 0;
 // min-h-11 ... pointer-fine:min-h-0, the admin panel's rule). Left: the
 // admin panel's 2 (the page list's names in AdminShell, the import panel's
 // link) and the chant page's sources (ChantAbout).
-const MAX_LISTED_SMALL_TARGETS = 3;
+// 3 -> 1 the same morning (Admin): the page list's names and the import
+// panel's link are 44 to a finger and compact to a mouse, by the panel's
+// rule. Left: the chant page's sources (ChantAbout).
+const MAX_LISTED_SMALL_TARGETS = 1;
 
 describe("touch targets", () => {
   const { total, byFile, written, writtenByFile, sized, sizedByFile, padded, paddedByFile, listed, listedByFile } = countSmallTargets();

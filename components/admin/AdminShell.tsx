@@ -390,7 +390,7 @@ function ToolsLine({
               onClick={() => onSelect(p.id)}
               aria-current={on ? "page" : undefined}
               title={badge?.title}
-              className="rounded-[var(--adm-radius-xs)] underline-offset-[3px] hover:text-[color:var(--adm-ink)] hover:underline"
+              className="inline-flex min-h-11 items-center rounded-[var(--adm-radius-xs)] underline-offset-[3px] hover:text-[color:var(--adm-ink)] hover:underline pointer-fine:min-h-0"
               style={on ? { color: "var(--adm-ink)", fontWeight: 600 } : undefined}
             >
               {p.label}
