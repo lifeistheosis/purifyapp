@@ -2,6 +2,9 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 
+import { renameGatheringPages } from "@/lib/journal/gatheringActions";
+import { sameNotebook } from "@/lib/journal/gatherings";
+
 /**
  * The Florilegium (literally "a gathering of flowers"): personal, named
  * collections into which a reader gathers the lines that strike them, a
@@ -178,22 +181,7 @@ export function useFlorilegia() {
     return next.id;
   }, []);
 
-  const rename = useCallback(
-    (id: string, title: string, description?: string) => {
-      const next = readAll().map((f) =>
-        f.id === id
-          ? {
-              ...f,
-              title: title.trim() || f.title,
-              description: description?.trim() || undefined,
-              updatedAt: Date.now(),
-            }
-          : f,
-      );
-      writeAll(next);
-    },
-    [],
-  );
+  const rename = useCallback((id: string, title: string, description?: string) => renameFlorilegium(id, title, description), []);
 
   const remove = useCallback((id: string) => {
     writeAll(readAll().filter((f) => f.id !== id));
@@ -260,6 +248,27 @@ export function useFlorilegia() {
     removeItem,
     setItemNote,
   };
+}
+
+/**
+ * Rename a gathering, and say again what it is.
+ *
+ * Its journal pages go with it (1.9, build 93 note 19): a gathering's notebook
+ * is the journal's notebook that bears its name (lib/journal/gatherings.ts),
+ * so the pages written in it are moved to the new name. They stay where they
+ * are only when another gathering still bears the old one, since they are
+ * that gathering's too. No screen renames a gathering yet; the rule is here
+ * for the day one does, and lib/florilegium/__tests__/renamePages.test.ts
+ * holds it.
+ */
+export function renameFlorilegium(id: string, title: string, description?: string): void {
+  const all = readAll();
+  const was = all.find((f) => f.id === id);
+  if (!was) return;
+  const name = title.trim() || was.title;
+  writeAll(all.map((f) => (f.id === id ? { ...f, title: name, description: description?.trim() || undefined, updatedAt: Date.now() } : f)));
+  const shared = all.some((f) => f.id !== id && sameNotebook(f.title, was.title));
+  if (!shared) renameGatheringPages(was.title, name);
 }
 
 /** Non-hook read for one-off callers (e.g. an "add to florilegium" menu). */

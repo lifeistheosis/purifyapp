@@ -15,6 +15,7 @@
 // there are more than five entries, a search. No gold: the reference that
 // used to lead each note in the premium ink now follows the words, small.
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { PlusMark } from "@/components/billing/PlusMark";
@@ -24,12 +25,16 @@ import { useVerseCardLabel } from "@/components/journal/PageBlocks";
 import { SearchField } from "@/components/search/SearchField";
 import { ChipScroller } from "@/components/ui/ChipScroller";
 import { FilterChip } from "@/components/ui/FilterChip";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { ClosedBook } from "@/components/ui/icons/ClosedBook";
+import { Flower } from "@/components/ui/icons/Flower";
 import { Search } from "@/components/ui/icons/Search";
 import { SwipeRow } from "@/components/ui/SwipeRow";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
+import { gatheringHref } from "@/lib/florilegium/href";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import { churchDayLine, dayFromKey } from "@/lib/journal/churchDay";
+import { gatheringOf } from "@/lib/journal/gatherings";
 import { pageText, parsePage } from "@/lib/journal/page";
 import type { JournalSource } from "@/lib/journal/entries";
 import { byDay, filterKind, journalChips, localDayKey, type JournalFilter, type JournalItem } from "@/lib/journal/feed";
@@ -46,6 +51,9 @@ const FILTER_KEY: Record<JournalFilter, string> = {
 /** The search shows once there are more entries than this. */
 const SEARCH_ABOVE = 5;
 
+/** One of the reader's gatherings, as the journal knows it: where it opens, its name, and how many lines it keeps. */
+export type JournalGathering = { id: string; name: string; lines: number };
+
 export function JournalFeed({
   items,
   onOpen,
@@ -53,6 +61,7 @@ export function JournalFeed({
   sourceLabel,
   onSearchLocked,
   notebooks = [],
+  gatherings = [],
   notebook: chosenBook,
   onNotebook,
   railShown = false,
@@ -69,13 +78,20 @@ export function JournalFeed({
   onSearchLocked?: () => void;
   /** Plus: the notebooks the pages name, each a chip that shows its pages. */
   notebooks?: readonly string[];
+  /**
+   * The reader's gatherings (1.9, build 93 note 19). A notebook that bears a
+   * gathering's name is that gathering's (lib/journal/gatherings.ts): its
+   * chip wears the Florilegium's flower, and while its pages are shown one
+   * line over them says how many lines the gathering keeps and opens it.
+   */
+  gatherings?: readonly JournalGathering[];
   /** The notebook shown, when the journal holds it (a computer's side column chooses it too). */
   notebook?: string | null;
   onNotebook?: (notebook: string | null) => void;
   /** On a computer the notebooks are at the side: the chips leave them to it. */
   railShown?: boolean;
 }) {
-  const { t, locale } = useTranslate();
+  const { t, tn, locale } = useTranslate();
   const [chosen, setChosen] = useState<JournalFilter>("all");
   const [ownBook, setOwnBook] = useState<string | null>(null);
   const book = onNotebook ? (chosenBook ?? null) : ownBook;
@@ -109,6 +125,7 @@ export function JournalFeed({
   }, [items, t]);
 
   const notebook = book && notebooks.includes(book) ? book : null;
+  const gathering = gatheringOf(notebook, gatherings);
   const shown = useMemo(() => {
     const kind = filterKind(items, filter).filter((i) => !notebook || pages.get(i.key)?.notebook === notebook);
     if (!query.trim()) return kind;
@@ -208,18 +225,54 @@ export function JournalFeed({
               </FilterChip>
             ))}
             {/* Plus: a notebook is a chip that shows its pages; on a computer
-                they are at the side instead (JournalClient's NotebookRail). */}
+                they are at the side instead (JournalClient's NotebookRail).
+                Its name stands on one line. These chips are not the row's own
+                children (the wrapper below is there only to step aside for
+                the side column), so the row's rule that no chip is squeezed
+                did not reach them: with enough chips to scroll, a notebook of
+                three words stood on three lines in its pill. Found drawing a
+                gathering's chip, 2026-11-11. */}
             <span className={railShown ? "contents md:hidden native-md-contents" : "contents"}>
               {notebooks.map((n) => (
                 <FilterChip key={`nb-${n}`} active={notebook === n} onClick={() => setBook(notebook === n ? null : n)}>
-                  <span className="inline-flex items-center gap-1.5">
-                    <ClosedBook size={14} />
-                    {n}
+                  <span data-journal-notebook={gatheringOf(n, gatherings) ? "gathering" : "notebook"} className="inline-flex max-w-[15rem] items-center gap-1.5 whitespace-nowrap">
+                    {gatheringOf(n, gatherings) ? <Flower size={14} className="shrink-0" /> : <ClosedBook size={14} className="shrink-0" />}
+                    {/* The reader's own name for it: one line, and cut only when it is longer than a chip should be. */}
+                    <span dir="auto" data-mock-allow="cut" data-mock-why="a reader's own name for a notebook or a gathering, cut to one line in a chip" className="min-w-0 truncate">
+                      {n}
+                    </span>
                   </span>
                 </FilterChip>
               ))}
             </span>
           </ChipScroller>
+        </div>
+      ) : null}
+
+      {/* The notebook shown is a gathering's: the way to its lines, over its
+          pages, named as the gathering is, with how many lines it keeps. */}
+      {gathering ? (
+        <div data-print-hide="">
+          <Link
+            href={gatheringHref(gathering.id)}
+            data-journal-gathering=""
+            className="tap-press mt-3 flex min-h-11 w-full min-w-0 items-center gap-2 font-sans text-caption font-semibold text-paper/70 hover:text-paper"
+          >
+            <Flower size={15} aria-hidden className="shrink-0" />
+            <span
+              dir="auto"
+              data-mock-allow="cut"
+              data-mock-why="a reader's own name for a gathering, cut to one line where the journal leads to it"
+              className="min-w-0 truncate"
+            >
+              {gathering.name}
+            </span>
+            <span aria-hidden className="shrink-0 text-paper/45">
+              ·
+            </span>
+            <span className="shrink-0 whitespace-nowrap tabular-nums text-paper/60">{tn("study.florilegium.lineCount", gathering.lines)}</span>
+            <ChevronRight size={14} aria-hidden className="ms-auto shrink-0 rtl:-scale-x-100" />
+          </Link>
         </div>
       ) : null}
 

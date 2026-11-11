@@ -5477,5 +5477,8 @@
   "profile.signInKeeps": "A bejelentkezés semmit nem töröl erről az eszközről.",
   "profile.bridgeBody": "A kiemeléseid, jegyzeteid és könyvjelzőid erről az eszközről most a fiókodba kerülnek, és ott lesznek minden eszközön, ahol bejelentkezel.",
   "journal.page.highlightNone": "A kiemelés a saját szavaidat jelöli. Előbb írj néhányat.",
-  "you.journalHint": "Amit írsz, és a versekhez írt jegyzeteid"
+  "you.journalHint": "Amit írsz, és a versekhez írt jegyzeteid",
+  "study.florilegium.pages": "Az oldalaid",
+  "study.florilegium.writeHere": "Írás ebbe a gyűjteménybe",
+  "study.florilegium.writePage": "Oldal írása"
 }

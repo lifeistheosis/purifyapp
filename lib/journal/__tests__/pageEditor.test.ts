@@ -128,7 +128,7 @@ describe("notebooks and tags (Plus, step 2b)", () => {
     expect(feed).toContain("notebooks.map((n) => (");
     expect(feed).toContain("pages.get(i.key)?.notebook === notebook");
     const panel = blocks.slice(blocks.indexOf("function PropsPanel"), blocks.indexOf("function MoreChoice"));
-    expect(panel).toContain("editor.setNotebook(n)");
+    expect(panel).toContain("editor.setNotebook(n.name)");
     expect(panel).toContain("cleanTags([...tags, tag])");
     expect(panel).toContain('t("journal.page.removeTag", { tag: x })');
   });

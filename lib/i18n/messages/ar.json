@@ -5774,5 +5774,8 @@
   "profile.signInKeeps": "تسجيل الدخول لا يحذف شيئًا من هذا الجهاز.",
   "profile.bridgeBody": "تنتقل تظليلاتك وملاحظاتك وإشاراتك المرجعية من هذا الجهاز إلى حسابك الآن، وستكون على كل جهاز تسجّل الدخول عليه.",
   "journal.page.highlightNone": "التظليل لكلماتك أنت. اكتب بضع كلمات أولًا.",
-  "you.journalHint": "ما تكتبه، وملاحظاتك على الآيات"
+  "you.journalHint": "ما تكتبه، وملاحظاتك على الآيات",
+  "study.florilegium.pages": "صفحاتك",
+  "study.florilegium.writeHere": "اكتب في هذه المجموعة",
+  "study.florilegium.writePage": "اكتب صفحة"
 }

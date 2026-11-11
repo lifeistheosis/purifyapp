@@ -30,6 +30,7 @@ import { Check } from "@/components/ui/icons/Check";
 import { ClosedBook } from "@/components/ui/icons/ClosedBook";
 import { Close } from "@/components/ui/icons/Close";
 import { Cross } from "@/components/ui/icons/Cross";
+import { Flower } from "@/components/ui/icons/Flower";
 import { Heart } from "@/components/ui/icons/Heart";
 import { Info } from "@/components/ui/icons/Info";
 import { Minus } from "@/components/ui/icons/Minus";
@@ -43,7 +44,9 @@ import { localBookNames, searchBible } from "@/lib/bible/books";
 import { cn } from "@/lib/cn";
 import { COVERS, coverById } from "@/lib/journal/covers";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
+import { useFlorilegia } from "@/lib/florilegium/florilegium";
 import { verseSpan } from "@/lib/journal/churchDay";
+import { notebookChoices } from "@/lib/journal/gatherings";
 import {
   BY_MAX,
   CALLOUT_ICONS,
@@ -745,12 +748,23 @@ export function PageToolbar({ editor, notebooks = [] }: { editor: PageEditor; no
  * Plus: the page's notebook and tags. A notebook is the pages that name it,
  * so the ones already named are offered to pick again; a tag goes on with
  * Enter and comes off with a tap.
+ *
+ * The reader's gatherings are offered first, by name, each with the
+ * Florilegium's flower (1.9, build 93 note 19): a gathering's notebook is the
+ * notebook that bears its name, so a page put in it is one of the
+ * gathering's pages (lib/journal/gatherings.ts).
  */
 function PropsPanel({ editor, notebooks, onDone }: { editor: PageEditor; notebooks: readonly string[]; onDone: () => void }) {
   const { t } = useTranslate();
   const [tag, setTag] = useState("");
   const tags = editor.page.tags ?? [];
   const current = editor.page.notebook ?? "";
+  const { florilegia } = useFlorilegia();
+  const offered = notebookChoices(
+    florilegia.map((f) => f.title),
+    notebooks,
+    current,
+  );
   const addTag = () => {
     const next = cleanTags([...tags, tag]);
     if (next.length !== tags.length) editor.setTags(next);
@@ -776,17 +790,23 @@ function PropsPanel({ editor, notebooks, onDone }: { editor: PageEditor; noteboo
           className="block h-11 w-full rounded-xl border border-paper/15 bg-transparent px-3 font-sans text-[16px] text-paper placeholder:text-paper/55 focus:border-paper/40 focus:outline-none"
         />
       </label>
-      {notebooks.length > 0 || current ? (
-        <div className="mt-2 flex flex-wrap gap-2">
-          {notebooks
-            .filter((n) => n !== current)
-            .slice(0, 6)
-            .map((n) => (
-              <button key={n} type="button" onClick={() => editor.setNotebook(n)} className={cn(chip, "border-paper/15 text-paper/85")}>
-                <ClosedBook size={14} className="shrink-0" />
-                <span className="min-w-0 truncate">{n}</span>
-              </button>
-            ))}
+      {offered.length > 0 || current ? (
+        <div data-page-notebook-choices="" className="mt-2 flex flex-wrap gap-2">
+          {offered.map((n) => (
+            <button
+              key={n.name}
+              type="button"
+              data-page-notebook-choice={n.gathering ? "gathering" : "notebook"}
+              onClick={() => editor.setNotebook(n.name)}
+              className={cn(chip, "border-paper/15 text-paper/85")}
+            >
+              {n.gathering ? <Flower size={14} className="shrink-0" /> : <ClosedBook size={14} className="shrink-0" />}
+              {/* The reader's own name for it, rightly cut to one line in a chip. */}
+              <span dir="auto" data-mock-allow="cut" data-mock-why="a reader's own name for a notebook or a gathering, cut to one line in a chip" className="min-w-0 truncate">
+                {n.name}
+              </span>
+            </button>
+          ))}
           {current ? (
             <button type="button" onClick={() => editor.setNotebook("")} className={cn(chip, "border-paper/15 text-paper/70")}>
               {t("journal.page.noNotebook")}

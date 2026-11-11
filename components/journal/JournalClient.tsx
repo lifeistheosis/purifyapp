@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { PlusMark } from "@/components/billing/PlusMark";
 import { ClosedBook } from "@/components/ui/icons/ClosedBook";
+import { Flower } from "@/components/ui/icons/Flower";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { JournalComposer } from "@/components/journal/JournalComposer";
@@ -16,23 +17,27 @@ import { UndoBar } from "@/components/ui/UndoBar";
 import { readVerseAnnotation, writeVerseAnnotation } from "@/lib/bible/annotations";
 import { localBookNames } from "@/lib/bible/books";
 import { fromThisDay, useJournal } from "@/lib/bible/journal";
+import { useFlorilegia } from "@/lib/florilegium/florilegium";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import {
-  addRecord,
   clearDraft,
   dismissPlanDay,
   readDraft,
+  readRecords,
   removeRecord,
   restoreRecord,
-  updateRecord,
   useDismissedPlanDays,
   useJournalRecords,
   writeDraft,
   type JournalDraft,
+  type JournalRecord,
   type JournalSource,
 } from "@/lib/journal/entries";
 import { READING_KIND_KEY, verseSpan } from "@/lib/journal/churchDay";
+import { takeJournalPage } from "@/lib/journal/gatheringActions";
+import { gatheringOf } from "@/lib/journal/gatherings";
+import { draftWaits, keepDone, keepWaiting, openKeeping } from "@/lib/journal/keepDraft";
 import { parsePage } from "@/lib/journal/page";
 import { takeJournalOpen } from "@/lib/journal/quoteInJournal";
 import { emptyPromptKey, journalFeed, noteKey, planPrompts, type JournalItem, type PlanQuestion } from "@/lib/journal/feed";
@@ -91,6 +96,11 @@ export function JournalClient() {
     }
     return [...names].sort((a, b) => a.localeCompare(b));
   }, [records]);
+  // The reader's gatherings (1.9, build 93 note 19): a notebook that bears a
+  // gathering's name is that gathering's (lib/journal/gatherings.ts), and the
+  // list says so and leads to it.
+  const { florilegia } = useFlorilegia();
+  const gatherings = useMemo(() => florilegia.map((f) => ({ id: f.id, name: f.title, lines: f.items.length })), [florilegia]);
   const books = useMemo(() => localBookNames(t), [t]);
   const bookName = useCallback((slug: string) => books[slug] ?? t(`bible.books.${slug}`), [books, t]);
   const sourceLabel = useCallback(
@@ -123,18 +133,25 @@ export function JournalClient() {
     const kept = readDraft();
     /* eslint-disable-next-line react-hooks/set-state-in-effect -- the kept
        draft is on the device, read after the first paint. */
-    setWaitingDraft(!!kept && kept.body.trim().length > 0);
+    setWaitingDraft(!!kept && draftWaits(kept));
   }, []);
 
+  // What waits is kept before anything else opens, and the same page goes on
+  // (lib/journal/waiting.ts). Until 2026-11-11 the page opened here took the
+  // waiting one's place: half a thought, closed, was lost to the next entry
+  // tapped (the journal's fact 17).
   const begin = useCallback((next: JournalDraft) => {
-    setDraft(next);
-    writeDraft(next);
+    const page = openKeeping(next);
+    setDraft(page);
+    writeDraft(page);
     setOpen(true);
   }, []);
 
+  // Write goes on with the page that waits, or with a question put to the
+  // reader and not yet answered; with neither, a new page.
   const write = () => {
     const kept = readDraft();
-    begin(kept && (kept.body.trim() || kept.prompt || kept.editing) ? kept : BLANK);
+    begin(kept && (draftWaits(kept) || (!kept.editing && kept.prompt)) ? kept : BLANK);
   };
 
   // A quote just laid on the page being written (Quote in journal, from a
@@ -148,6 +165,19 @@ export function JournalClient() {
        is on the device, read once after the first paint. */
     begin(kept);
   }, [mounted, begin]);
+
+  const openRecord = useCallback((r: JournalRecord) => begin({ kind: r.kind, body: r.body, prompt: r.prompt, source: r.source, editing: r.id }), [begin]);
+
+  // One of a gathering's pages, asked for from the gathering (components/
+  // florilegium/GatheringPages.tsx): the journal opens on it.
+  useEffect(() => {
+    if (!mounted) return;
+    const id = takeJournalPage();
+    const asked = id ? readRecords().find((r) => r.id === id && !r.deletedAt) : undefined;
+    /* eslint-disable-next-line react-hooks/set-state-in-effect -- the ask
+       is on the device, read once after the first paint. */
+    if (asked) openRecord(asked);
+  }, [mounted, openRecord]);
 
   const answer = (q: PlanQuestion) => {
     if (!waiting) return;
@@ -166,8 +196,7 @@ export function JournalClient() {
       });
       return;
     }
-    const r = item.record;
-    if (r) begin({ kind: r.kind, body: r.body, prompt: r.prompt, source: r.source, editing: r.id });
+    if (item.record) openRecord(item.record);
   };
 
   const change = (next: JournalDraft) => {
@@ -175,35 +204,40 @@ export function JournalClient() {
     writeDraft(next);
   };
 
+  // What waits is what is not kept yet (lib/journal/waiting.ts, `waits`). A
+  // page with nothing on it does not: one that only names its notebook (begun
+  // from a gathering and closed) is no page yet. Nor does a kept entry opened
+  // to be read and left as it was: Write begins a new page after it.
   const close = () => {
     setOpen(false);
-    const keep = draft.body.trim().length > 0;
+    const keep = draftWaits(draft);
     if (!keep) clearDraft();
     setWaitingDraft(keep);
   };
 
+  // Done's rules are lib/journal/waiting.ts (`keeping`), the same ones a page
+  // that waits is kept by.
   const done = () => {
-    const body = draft.body.trim();
-    const editing = draft.editing;
-    if (editing?.startsWith("note:")) {
-      const [, book, chapter, verse] = editing.split(":");
-      const before = readVerseAnnotation(book, Number(chapter), Number(verse));
-      const noteAt = !body ? undefined : body === before.note ? before.noteAt : new Date().toISOString();
-      writeVerseAnnotation(book, Number(chapter), Number(verse), { ...before, note: body || undefined, noteAt, at: undefined });
-    } else if (editing) {
-      if (body) updateRecord(editing, { kind: draft.kind, body, prompt: draft.prompt, source: draft.source });
-      else removeRecord(editing);
-    } else if (body) {
-      addRecord({ kind: draft.kind, body, prompt: draft.prompt, source: draft.source });
-    }
+    keepDone(draft);
     clearDraft();
     setWaitingDraft(false);
     setOpen(false);
-    if (body) softTick();
+    if (draft.body.trim()) softTick();
   };
 
   // ── Taking away, with Undo ───────────────────────────────────────────
   const remove = (item: JournalItem) => {
+    // The page taken away is the one that waits with changes: they are kept on
+    // it first, so Undo brings back what was written, and nothing waits on a
+    // page that is gone. Until 2026-11-11 Continue writing then opened it, and
+    // Done put the words on the removed entry, where no one saw them again.
+    const waiting = readDraft();
+    const itemKey = item.note ? noteKey(item.note.book, item.note.chapter, item.note.verse) : item.record?.id;
+    if (waiting?.editing && waiting.editing === itemKey) {
+      keepWaiting(waiting);
+      clearDraft();
+      setWaitingDraft(false);
+    }
     if (item.note) {
       const n = item.note;
       const before = readVerseAnnotation(n.book, n.chapter, n.verse);
@@ -235,7 +269,7 @@ export function JournalClient() {
           the page in its column of 720px (1.9, JOURNAL.md); in the apps, a
           tablet keeps the phone's one column. */}
       <div className={cn(rail ? "md:mx-auto md:grid md:max-w-[968px] md:grid-cols-[200px_minmax(0,1fr)] md:gap-12 native-md-block" : "mx-auto max-w-[760px]")}>
-        {rail ? <NotebookRail notebooks={notebooks} chosen={book} onChoose={setBook} /> : null}
+        {rail ? <NotebookRail notebooks={notebooks} gatherings={gatherings} chosen={book} onChoose={setBook} /> : null}
         <div className="min-w-0">
           <header className="flex items-end justify-between gap-6">
             <div className="min-w-0">
@@ -321,6 +355,7 @@ export function JournalClient() {
                     sourceLabel={sourceLabel}
                     onSearchLocked={locked ? () => upgrade.open("journal") : undefined}
                     notebooks={notebooks}
+                    gatherings={gatherings}
                     notebook={book}
                     onNotebook={setBook}
                     railShown={rail}
@@ -357,9 +392,21 @@ export function JournalClient() {
 /**
  * Plus: the notebooks at the side of the journal, on a computer (1.9,
  * JOURNAL.md, "notebooks at the side, the page in a column of 720px"). All,
- * then each notebook the pages name; the one shown stays lit.
+ * then each notebook the pages name; the one shown stays lit. A notebook that
+ * is a gathering's wears the Florilegium's flower (build 93 note 19).
  */
-function NotebookRail({ notebooks, chosen, onChoose }: { notebooks: readonly string[]; chosen: string | null; onChoose: (notebook: string | null) => void }) {
+function NotebookRail({
+  notebooks,
+  gatherings,
+  chosen,
+  onChoose,
+}: {
+  notebooks: readonly string[];
+  /** The reader's gatherings: a notebook that bears one's name wears the flower. */
+  gatherings: readonly { name: string }[];
+  chosen: string | null;
+  onChoose: (notebook: string | null) => void;
+}) {
   const { t } = useTranslate();
   const item = (on: boolean) =>
     cn(
@@ -379,7 +426,7 @@ function NotebookRail({ notebooks, chosen, onChoose }: { notebooks: readonly str
           {notebooks.map((n) => (
             <li key={n}>
               <button type="button" aria-pressed={chosen === n} onClick={() => onChoose(chosen === n ? null : n)} className={item(chosen === n)}>
-                <ClosedBook size={16} className="shrink-0" />
+                {gatheringOf(n, gatherings) ? <Flower size={16} className="shrink-0" /> : <ClosedBook size={16} className="shrink-0" />}
                 <span className="min-w-0 truncate">{n}</span>
               </button>
             </li>

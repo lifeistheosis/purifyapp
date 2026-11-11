@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { textDir } from "@/lib/i18n/textDir";
@@ -19,6 +20,8 @@ import {
   type FlorilegiumItem,
 } from "@/lib/florilegium/florilegium";
 import { hideGathering, showGathering } from "@/lib/florilegium/gatheringNow";
+import { writeInGathering } from "@/lib/journal/gatheringActions";
+import { lineBlock } from "@/lib/journal/gatherings";
 import { lineHref } from "@/lib/florilegium/href";
 import { starterOf, starterPicture } from "@/lib/florilegium/starters";
 import { useIsNative } from "@/lib/platform/native";
@@ -27,6 +30,7 @@ import { printPart } from "@/lib/ui/printPart";
 import { useMounted } from "@/lib/useMounted";
 
 import { FLOR_FIELD, FLOR_H1, FLOR_KICKER, FLOR_PLATE, FLOR_QUIET, FLOR_ROW, FLOR_TITLE, FLOR_TRAY } from "./florStyle";
+import { GatheringPages } from "./GatheringPages";
 import { gatheringCarry } from "./GatheringRow";
 
 // On the server there is no layout to read and useLayoutEffect only warns
@@ -58,6 +62,7 @@ const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : use
 export function FlorilegiumDetail({ id, readOnly = false }: { id: string; readOnly?: boolean }) {
   const { t, tn } = useTranslate();
   const native = useIsNative();
+  const router = useRouter();
   const { florilegia, remove, removeItem, setItemNote } = useFlorilegia();
   const f = useMemo(
     () => florilegia.find((x) => x.id === id),
@@ -155,12 +160,19 @@ export function FlorilegiumDetail({ id, readOnly = false }: { id: string; readOn
                   readOnly={readOnly}
                   onRemove={() => removeItem(f.id, item.id)}
                   onNote={(note) => setItemNote(f.id, item.id, note)}
+                  onWrite={() => {
+                    // A page in this gathering, with this line as its card (lib/journal/gatherings.ts).
+                    if (writeInGathering(f.title, lineBlock(item))) router.push("/journal/");
+                  }}
                 />
               </li>
             ))}
           </ul>
         )}
       </div>
+
+      {/* The journal's pages written in this gathering, and the way to write one (build 93 note 19; GatheringPages.tsx). */}
+      <GatheringPages title={f.title} readOnly={readOnly} />
 
       {readOnly ? null : (
         <div className="mt-8" data-gathering-tools="">
@@ -225,13 +237,16 @@ export function ItemCard({
   item,
   onRemove,
   onNote,
+  onWrite,
   readOnly = false,
   textLang,
 }: {
   item: FlorilegiumItem;
   onRemove: () => void;
   onNote: (note: string) => void;
-  /** To read only: no note added or changed, nothing removed (rec 10). */
+  /** Begin a journal page in this gathering with this line as its card (build 93 note 19). Left out where there is no gathering to write in: the Plus page's preview. */
+  onWrite?: () => void;
+  /** To read only: no note added or changed, nothing removed, no page begun (rec 10). */
   readOnly?: boolean;
   /**
    * The language the gathered words are known to be in: the Plus screen's
@@ -273,10 +288,19 @@ export function ItemCard({
           </p>
         )}
         {!editing && !readOnly && (
-          <span className="ms-auto flex shrink-0 items-center" data-print-hide="">
+          // The line's things to do, at the row's end. With three of them a narrow
+          // phone or a long language has no room on one line: they go under the
+          // source, and wrap among themselves before any name is cut.
+          <span className="ms-auto flex max-w-full flex-wrap items-center justify-end" data-gathered-tools="" data-print-hide="">
             <button type="button" onClick={() => setEditing(true)} className={FLOR_QUIET}>
               {item.note ? t("bible.editNote") : t("bible.addNote")}
             </button>
+            {/* After the note's button, which the Florilegium's own mock finds as the line's first. */}
+            {onWrite ? (
+              <button type="button" onClick={onWrite} data-gathered-write="" className={FLOR_QUIET}>
+                {t("study.florilegium.writePage")}
+              </button>
+            ) : null}
             <button type="button" onClick={onRemove} className={FLOR_QUIET}>
               {t("prayers.diptychs.remove")}
             </button>

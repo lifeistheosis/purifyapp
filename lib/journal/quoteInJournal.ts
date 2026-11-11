@@ -7,14 +7,18 @@
 // purify:journal.draft): the quote goes at its end, so a reader gathering
 // lines for one page gathers them onto one page. With no draft, it begins a
 // new page. A draft that is a verse's note is words alone, kept on its verse,
-// and takes no card: the quote begins a new page in its place. Then the
-// journal opens on that page (`JOURNAL_OPEN_KEY`, read by JournalClient).
+// and takes no card: the quote begins a new page in its place, and the note
+// that waited is kept on its verse first, as Done keeps it (lib/journal/
+// waiting.ts; until 2026-11-11 the new page took its place and what was being
+// written of the note was lost). Then the journal opens on that page
+// (`JOURNAL_OPEN_KEY`, read by JournalClient).
 //
 // Scripture is everyone's; the rest of the library is Plus's, and the places
 // that offer Quote in journal show it with the Plus mark (lib/journal/
 // libraryPlaces.ts). Nothing here grants or checks Plus.
 
 import { clearDraft, MAX_BODY, readDraft, writeDraft, type JournalDraft } from "./entries";
+import { keepWaiting } from "./keepDraft";
 import { parsePage, serializePage, tidyBlocks, type Page, type PageBlock } from "./page";
 
 /** Set as a quote is laid, read and cleared by the journal as it opens: open the page being written. */
@@ -37,8 +41,11 @@ export function draftWithQuote(kept: JournalDraft | null, block: PageBlock): Jou
 /** Lay the quote on the page being written, and ask the journal to open on it. True when it was laid. */
 export function quoteInJournal(block: PageBlock): boolean {
   if (typeof window === "undefined") return false;
-  const next = draftWithQuote(readDraft(), block);
+  const waiting = readDraft();
+  const next = draftWithQuote(waiting, block);
   if (!next) return false;
+  // The quote began a page of its own while a verse's note waited: the note is kept first.
+  if (waiting && next.editing !== waiting.editing) keepWaiting(waiting);
   if (!next.body.trim()) clearDraft();
   else writeDraft(next);
   try {

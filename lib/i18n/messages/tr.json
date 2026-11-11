@@ -5477,5 +5477,8 @@
   "profile.signInKeeps": "Giriş yapmak bu cihazdan hiçbir şeyi kaldırmaz.",
   "profile.bridgeBody": "Bu cihazdaki vurgularınız, notlarınız ve yer imleriniz şimdi hesabınıza gidiyor ve giriş yaptığınız her cihazda olacak.",
   "journal.page.highlightNone": "Vurgulama kendi sözlerinizi işaretler. Önce birkaç söz yazın.",
-  "you.journalHint": "Yazdıklarınız ve ayetlere düştüğünüz notlar"
+  "you.journalHint": "Yazdıklarınız ve ayetlere düştüğünüz notlar",
+  "study.florilegium.pages": "Sayfalarınız",
+  "study.florilegium.writeHere": "Bu derlemeye yaz",
+  "study.florilegium.writePage": "Bir sayfa yaz"
 }

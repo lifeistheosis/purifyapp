@@ -5494,5 +5494,8 @@
   "profile.signInKeeps": "Signing in removes nothing from this device.",
   "profile.bridgeBody": "Your highlights, notes and bookmarks from this device are going to your account now, and will be on every device you sign in on.",
   "journal.page.highlightNone": "Highlight marks your own words. Write a few first.",
-  "you.journalHint": "What you write, and your notes on verses"
+  "you.journalHint": "What you write, and your notes on verses",
+  "study.florilegium.pages": "Your pages",
+  "study.florilegium.writeHere": "Write in this gathering",
+  "study.florilegium.writePage": "Write a page"
 }

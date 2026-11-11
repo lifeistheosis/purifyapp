@@ -5505,5 +5505,8 @@
   "profile.signInKeeps": "Se connecter ne retire rien de cet appareil.",
   "profile.bridgeBody": "Vos surlignages, notes et signets de cet appareil vont maintenant dans votre compte, et seront sur chaque appareil où vous vous connectez.",
   "journal.page.highlightNone": "Le surlignage marque vos propres mots. Écrivez-en d’abord quelques-uns.",
-  "you.journalHint": "Ce que vous écrivez, et vos notes sur les versets"
+  "you.journalHint": "Ce que vous écrivez, et vos notes sur les versets",
+  "study.florilegium.pages": "Vos pages",
+  "study.florilegium.writeHere": "Écrire dans ce recueil",
+  "study.florilegium.writePage": "Écrire une page"
 }
