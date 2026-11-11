@@ -34,9 +34,9 @@ describe("the Android workflow keeps a test web build out of the stores", () => 
     expect(testBranch).not.toContain("assembleDebug");
     // The store's release is never written by a test web run.
     const storePublish = yml.slice(yml.indexOf("- name: Publish to the android-release release"));
-    expect(storePublish.slice(0, 200)).toContain("if: ${{ inputs.website != 'test web' }}");
+    expect(storePublish.slice(0, 200)).toContain("if: ${{ inputs.publish && inputs.website != 'test web' }}");
     const testPublish = yml.slice(yml.indexOf("- name: Publish the test web's APK to its own release"));
-    expect(testPublish).toContain("if: ${{ inputs.website == 'test web' }}");
+    expect(testPublish).toContain("if: ${{ inputs.publish && inputs.website == 'test web' }}");
     expect(testPublish).toContain("tag_name: android-test-web");
     expect(testPublish).toContain("purify-test-web.apk");
     expect(testPublish).not.toContain(".aab");
@@ -44,6 +44,28 @@ describe("the Android workflow keeps a test web build out of the stores", () => 
 
   it("refuses the remote wrapper for the test web", () => {
     expect(yml).toContain("if: ${{ inputs.website == 'test web' && !inputs.local_first }}");
+  });
+
+  // The arbiter's word of 2026-11-11: a compile check must not write the
+  // owner's download (CLAUDE.md, the pre-build gate). What would go wrong if
+  // this broke: a run meant only to compile replaces the build he fetches, or
+  // a store build stops publishing because the switch's default moved.
+  it("publishes only when asked, on by default, and keeps a compile check's release APK as the run's artifact for 3 days", () => {
+    expect(yml).toMatch(/publish:\s*\n\s*description:[^\n]*\n\s*type: boolean\s*\n\s*default: true/);
+    // Every step that writes a release is behind the switch.
+    const releaseSteps = yml.split("\n      - name: ").filter((s) => s.includes("softprops/action-gh-release"));
+    expect(releaseSteps).toHaveLength(2);
+    for (const step of releaseSteps) expect(step, step.split("\n")[0]).toMatch(/\n\s*if: \$\{\{ inputs\.publish && /);
+    const keep = yml.slice(yml.indexOf("- name: Keep the release APK as this run's artifact"));
+    expect(keep).toContain("if: ${{ !inputs.publish }}");
+    expect(keep).toContain("uses: actions/upload-artifact@v4");
+    expect(keep).toContain("path: android/app/build/outputs/apk/release/app-release.apk");
+    expect(keep).toContain("retention-days: 3");
+    expect(keep).not.toContain("action-gh-release");
+    // The gradle passes stay one artifact each (merging them starves the runner).
+    for (const pass of ["./gradlew bundleRelease --stacktrace --no-daemon", "./gradlew assembleRelease --stacktrace --no-daemon", "./gradlew assembleDebug --stacktrace --no-daemon"]) {
+      expect(yml, pass).toContain(pass);
+    }
   });
 });
 

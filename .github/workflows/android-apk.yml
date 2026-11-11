@@ -17,7 +17,15 @@ name: Android build
 # published under its own release, android-test-web, as purify-test-web.apk.
 # scripts/native-build.mjs refuses a store build that says it is the test web
 # and a test web build that names the main web's database or address, and
-# lib/testWeb/__tests__/workflow.test.ts holds this file to all of it.
+# lib/testWeb/__tests__/wiring.test.ts holds this file to all of it.
+#
+# A COMPILE CHECK (the "publish" input, 1.9, the arbiter's word of
+# 2026-11-11). The android-release release is the owner's download, and no
+# build reaches him before it passes the pre-build gate (CLAUDE.md). With
+# publish off, the run builds exactly what it would otherwise build and
+# publishes nothing: neither release is written, and the release APK is kept
+# as the run's own artifact for 3 days, for a compile check or a walk. On by
+# default, so a store build behaves as it always has.
 # The app is a thin Capacitor shell that loads purifyapp.net. Trigger from
 # the Actions tab (Run workflow).
 on:
@@ -34,6 +42,10 @@ on:
           - main web
           - test web
         default: main web
+      publish:
+        description: "Publish the build to its release (the downloads). Uncheck for a compile check: nothing is published, and the release APK is kept as this run's artifact for 3 days."
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -217,7 +229,7 @@ jobs:
       # Published as release assets (private repo): raw downloads, separate
       # storage from the Actions artifact quota.
       - name: Publish to the android-release release
-        if: ${{ inputs.website != 'test web' }}
+        if: ${{ inputs.publish && inputs.website != 'test web' }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: android-release
@@ -235,7 +247,7 @@ jobs:
           fail_on_unmatched_files: true
 
       - name: Publish the test web's APK to its own release
-        if: ${{ inputs.website == 'test web' }}
+        if: ${{ inputs.publish && inputs.website == 'test web' }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: android-test-web
@@ -249,3 +261,16 @@ jobs:
           files: |
             android/app/build/outputs/apk/release/purify-test-web.apk
           fail_on_unmatched_files: true
+
+      # A compile check publishes nothing (the "publish" input, above): the
+      # release APK, the signed and shrunk build a reader would get, is kept
+      # as this run's artifact for 3 days instead, so it can be walked on a
+      # phone (AGENTS.md 2a) without touching the owner's download.
+      - name: Keep the release APK as this run's artifact (a compile check)
+        if: ${{ !inputs.publish }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 3
+          if-no-files-found: error
