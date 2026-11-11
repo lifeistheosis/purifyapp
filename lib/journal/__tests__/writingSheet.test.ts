@@ -39,7 +39,9 @@ import { draftWithQuote } from "@/lib/journal/quoteInJournal";
  *   Highlight says why      with nothing to mark it went dim and said
  *                           nothing; with the cursor on an empty line it
  *                           took a colour no one could see. It is lit, and
- *                           with nothing written says so in one line.
+ *                           with nothing written says so in one line. And a
+ *                           colour chosen left the cursor nowhere: the
+ *                           colours hold it now, as the tools do.
  *
  * The walk itself is scripts/mock-journal.mjs, on the native export.
  */
@@ -244,12 +246,20 @@ describe("Highlight marks words, and says so when there are none", () => {
   it("the tool is never dim: it opens its colours, or one line where they would be", () => {
     const tools = code(blocks);
     expect(tools).not.toMatch(/disabled/);
-    expect(tools).toMatch(/panel === "color" && target !== null \? \(\s*<HighlightPicker/);
+    expect(tools).toMatch(/panel === "color" && target !== null \? \(\s*<div data-page-colors="" onPointerDown=\{\(e\) => e\.preventDefault\(\)\}>\s*<HighlightPicker/);
     expect(tools).toMatch(/panel === "color" && target === null \? \(\s*<p data-page-highlight-none=""[^>]*>\s*\{t\("journal\.page\.highlightNone"\)\}/);
     expect(code(hook)).toContain("highlightTarget(page.blocks, cursor?.index)");
   });
 
-  it("the line is the one the owner's arbiter passed, and every language has its own", () => {
+  it("a colour chosen, the cursor is still in the words: the colours hold it, as the tools do", () => {
+    // A tap on a colour left the cursor nowhere (the walk: BODY after the tap, and what was typed next went nowhere).
+    const tools = code(blocks);
+    const colours = tools.slice(tools.indexOf('data-page-colors=""'), tools.indexOf("data-page-highlight-none"));
+    expect(colours).toMatch(/^data-page-colors="" onPointerDown=\{\(e\) => e\.preventDefault\(\)\}>/);
+    expect(colours).toContain("<HighlightPicker");
+  });
+
+  it("the line is the one passed for it, and every language has its own", () => {
     const words = (lang: string) => (JSON.parse(read(`lib/i18n/messages/${lang}.json`)) as Record<string, string>)["journal.page.highlightNone"];
     expect(words("en")).toBe("Highlight marks your own words. Write a few first.");
     const others = ["ar", "bg", "de", "el", "es", "fil", "fr", "hu", "id", "it", "ka", "ne", "pl", "pt", "ro", "ru", "sr", "tr", "uk", "ur"];

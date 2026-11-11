@@ -612,20 +612,25 @@ export function PageToolbar({ editor, notebooks = [] }: { editor: PageEditor; no
         />
       ) : null}
       {panel === "color" && target !== null ? (
-        <HighlightPicker
-          className="px-2 pt-1"
-          active={active}
-          hint={t("journal.page.highlightHint")}
-          onPick={(id) => {
-            editor.setColor(target, id);
-            setPanel(null);
-          }}
-          onRemove={() => {
-            editor.setColor(target, null);
-            setPanel(null);
-          }}
-          onNames={(id) => setNaming(id)}
-        />
+        // The colours take no cursor from the words, as the tools do not: a
+        // colour chosen, the writer goes on writing. Until 2026-11-11 a tap on
+        // a colour left the cursor nowhere, and on a phone the keyboard fell.
+        <div data-page-colors="" onPointerDown={(e) => e.preventDefault()}>
+          <HighlightPicker
+            className="px-2 pt-1"
+            active={active}
+            hint={t("journal.page.highlightHint")}
+            onPick={(id) => {
+              editor.setColor(target, id);
+              setPanel(null);
+            }}
+            onRemove={() => {
+              editor.setColor(target, null);
+              setPanel(null);
+            }}
+            onNames={(id) => setNaming(id)}
+          />
+        </div>
       ) : null}
       {panel === "color" && target === null ? (
         // Nothing written to mark yet. The tool is lit all the same, and says
