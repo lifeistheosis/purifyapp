@@ -30,11 +30,18 @@ import { ruleCarry, ruleHeadArt } from "@/lib/prayers/serviceArt";
  */
 export function RuleHead({
   part,
+  takes,
   pray,
   start,
 }: {
   /** The part shown, once the device has said which; null before. */
   part: MyRulePart | null;
+  /**
+   * The half whose picture this head takes from Your rule's tile on Prayers:
+   * the part shown, and before that is known, the half the tile wore (known
+   * a drawing sooner; MyRuleBuilder says why). Null when neither is known.
+   */
+  takes: MyRulePart | null;
   /** Pray my rule for the part shown, and its length; null for an empty part. */
   pray: { href: string; meta: string } | null;
   /** An empty part's start, in Pray my rule's place; null when the part has prayers or is not known yet. */
@@ -45,11 +52,12 @@ export function RuleHead({
     <header className="rule-head relative">
       {/* The picture of Your rule's tile on Prayers travels into this, and back out of it (1.9; lib/ui/routeMotion.ts,
           "A picture that leads to its own page"). The whole box takes the name, not the icon alone: it arrives with its
-          shade and melted into the page, exactly as it then stands. One box, so one thing wears the name, and it is
-          the half shown: the tile chose the same half by the same rule (lib/prayers/myRule.ts, openingPart). */}
+          shade and melted into the page, exactly as it then stands. One box, so one thing wears the name: the half
+          shown, and at the page's first drawing, before that is known, the half the tile wore, which is the same half
+          by the same rule (lib/prayers/myRule.ts, openingPart). The icons are in the box by the time it is pictured. */}
       <div
         data-rule-picture={part ?? undefined}
-        data-carry-into={part ? ruleCarry(part) : undefined}
+        data-carry-into={takes ? ruleCarry(takes) : undefined}
         className="rule-head-picture under-topbar picture-melt relative -mx-5 overflow-hidden md:mx-0"
       >
         {part

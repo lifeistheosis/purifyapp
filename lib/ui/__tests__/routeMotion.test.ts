@@ -773,7 +773,7 @@ describe("a picture that leads to its own page", () => {
     // until its tile wore the half the page opens on (the arbiter's call of
     // 2026-11-11, P1): the head's picture, as the half shown, takes the tile's, by
     // the half's own name (lib/prayers/serviceArt.ts, ruleCarry).
-    has("components/prayers/mine/RuleHead.tsx", "data-carry-into={part ? ruleCarry(part) : undefined}");
+    has("components/prayers/mine/RuleHead.tsx", "data-carry-into={takes ? ruleCarry(takes) : undefined}");
     has("components/mobile/PrayersMobile.tsx", "carry={rulePart ? ruleCarry(rulePart) : undefined}");
     // A saint whose page opens on a wide picture shows his own icon in the box until that picture has come: the
     // card's icon lands on that icon (P2, the arbiter's call of 2026-11-11: "where the saint's page shows his icon

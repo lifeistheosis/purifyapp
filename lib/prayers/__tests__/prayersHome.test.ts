@@ -264,7 +264,7 @@ describe("Practices (note 72, r3-26 A: the icon tiles)", () => {
   it("gives Your rule's tile the icon of the half its page will open on, chosen by the page's own rule", () => {
     // One rule for both: the tile and the page read openingPart.
     expect(page).toContain("const rulePart = hour === null ? null : openingPart(myRule, hourPart);");
-    expect(code("components/prayers/mine/MyRuleBuilder.tsx")).toContain("once(() => openingPart(readMyRule(), ruleIdForHour(new Date().getHours()), partInAddress(window.location.hash)))");
+    expect(code("components/prayers/mine/MyRuleBuilder.tsx")).toContain("setPart(openingPart(kept, hour, partInAddress(window.location.hash)));");
     // The device's knowledge: no icon until the page wakes, as the Hours' tile, and never one that is then swapped.
     expect(page).toContain("const ruleArt = rulePart ? ruleTileArt(rulePart) : null;");
     expect(practices).toContain("picture={ruleArt?.src ?? null}");
@@ -289,7 +289,9 @@ describe("Practices (note 72, r3-26 A: the icon tiles)", () => {
     const head = code("components/prayers/mine/RuleHead.tsx");
     // One box takes the name, the head's whole picture with its shade, as the half shown: two things under one name
     // stop the whole page switch.
-    expect(head).toContain("data-carry-into={part ? ruleCarry(part) : undefined}");
+    expect(head).toContain("data-carry-into={takes ? ruleCarry(takes) : undefined}");
+    // From the page's first drawing, when the page switch looks: the half the tile wore, until the part is known.
+    expect(code("components/prayers/mine/MyRuleBuilder.tsx")).toContain("takes={part ?? taking}");
     expect(head.match(/data-carry-into/g)).toHaveLength(1);
     // The head's words stand on the picture, and a picture in flight is drawn over the page: they are pictured
     // apart while the box wears the name, so the name is never covered and then shown, nor seen twice.

@@ -249,13 +249,15 @@ describe("the page as the owner picked it, r3-27 A", () => {
   });
 
   it("opens on the part the device names, never Morning crossing to Evening (build 89 note 9)", () => {
-    // Decided at the first drawing of a page reached inside the app, read once on the device (1.9, P1: the head's
-    // picture is there when the page switch looks for what takes the tile's). A layout effect gave it one drawing
-    // later, after the switch had looked.
-    expect(builder).toContain("once(() => openingPart(readMyRule(), ruleIdForHour(new Date().getHours()), partInAddress(window.location.hash)))");
-    expect(builder).toContain("const opening = useSyncExternalStore<MyRulePart | null>(never, readOpening, () => null);");
-    expect(builder).toContain("const part = chosen ?? opening;");
-    expect(builder).not.toContain("useLayoutEffect");
+    // Decided before the first paint of a page reached inside the app.
+    expect(builder).toMatch(/useLayoutEffect\(\(\) => \{\s*const kept = readMyRule\(\);/);
+    // By the one rule the tile on Prayers reads too, and the address is read there and nowhere sooner: at a first
+    // drawing the address is still the page being left (1.9, P1; export walk section 68 opens "#morning").
+    expect(builder).toContain("setPart(openingPart(kept, hour, partInAddress(window.location.hash)));");
+    expect(builder.match(/partInAddress\(window\.location\.hash\)/g)).toHaveLength(1);
+    // What is read at the first drawing is only the half the tile wore, for the name the head's box takes.
+    expect(builder).toContain("once(() => openingPart(readMyRule(), ruleIdForHour(new Date().getHours())))");
+    expect(builder).toContain("<RuleHead part={part} takes={part ?? taking} pray={pray} start={start} />");
     // Until then neither part is lit, nothing about a part is said, and the
     // morning list holds its room unseen.
     expect(track).toContain("value: MyRulePart | null;");
@@ -423,7 +425,7 @@ describe("switching Morning and Evening (build 93 note 16)", () => {
   it("offers an empty part's start where Pray my rule stands, a button that sets the part's prayers", () => {
     expect(head).toContain("start: { label: string; onStart: () => void } | null;");
     expect(head).toMatch(/<button\s+key=\{`start-\$\{part\}`\}\s+type="button"\s+data-mine-start=""\s+onClick=\{start\.onStart\}/);
-    expect(builder).toContain("<RuleHead part={part} pray={pray} start={start} />");
+    expect(builder).toContain("<RuleHead part={part} takes={part ?? taking} pray={pray} start={start} />");
     expect(builder).toContain("part && !has(part)");
     expect(builder).toContain("save(addItems(rule, chosen, seedOf(chosen)));");
     // 44 to the touch; a long label (Romanian's has 39 letters) wraps inside
