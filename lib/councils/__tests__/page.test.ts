@@ -167,8 +167,10 @@ describe("the Holy Fathers principally associated", () => {
     // Gregory the Wonderworker at Antioch (268), his page and his mosaic,
     // and St. Paul the Confessor at Sardica, his page and his icon; and St.
     // Memnon at Ephesus, his page and Commons' unmarked copy of his fresco
-    // (build 90 note 3, his answer of 2026-11-10).
-    expect(pictured).toHaveLength(21);
+    // (build 90 note 3, his answer of 2026-11-10); and St. Alexander at the
+    // First Council and St. Adrian at the Seventh, their settled page icons
+    // carried (build 93 notes 1 and 12, 2026-11-11).
+    expect(pictured).toHaveLength(23);
     for (const f of pictured) {
       const slug = f.href!.replace("/saints/", "");
       expect(COVER_ART[slug], slug).toBeDefined();

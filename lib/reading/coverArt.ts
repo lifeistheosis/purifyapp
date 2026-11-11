@@ -222,6 +222,13 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   "sylvester-of-rome": bundled("sylvester-of-rome.jpg", 18),
   "prophet-malachi": bundled("prophet-malachi.jpg", 18),
   "apostle-timothy": bundled("apostle-timothy.jpg", 18),
+  // Build 93 notes 1 and 12 (Updates 2, 2026-11-11): St Alexander's engraving
+  // of about 1899 and St Adrian's woodcut of 1493, settled as their page
+  // icons and carried, so the councils' Fathers rows (Nicaea, the Seventh)
+  // show the picture their pages show, never the plate beside it. St
+  // Alexander's letter keeps the First Council's icon as its own (WORK_ART).
+  "alexander-of-alexandria": bundled("alexander-of-alexandria.jpg", 36),
+  "adrian-of-rome": bundled("adrian-of-rome.v2.jpg", 33),
   // From Wikimedia Commons for the covers (lib/reading/authorCovers.ts).
   ...AUTHOR_COVERS,
 };

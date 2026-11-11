@@ -30,12 +30,22 @@ describe("a council Father's face with no picture", () => {
     expect(html.indexOf('data-cover="plate"')).toBeLessThan(html.indexOf("<img"));
   });
 
-  it("stands for St Alexander at the First Council, and for every Father with no cleared picture", () => {
+  it("stands for every Father with no cleared picture; St Alexander, cleared on 2026-11-11, wears his engraving over it", () => {
     const nicaea = COUNCILS.find((c) => c.slug === "first-nicaea")!;
     const alexander = fatherFaces(nicaea, true).find((f) => /Alexander/.test(f.name));
     expect(alexander, "St Alexander is among the First Council's Fathers").toBeDefined();
-    expect(alexander!.picture ?? null, "no cleared picture of him").toBeNull();
-    const html = renderToStaticMarkup(createElement(FatherFace, { face: alexander!, shape: "round" }));
-    expect(html).toContain("cross-plate-mark");
+    // The picture his page shows, carried, with the plate under it so a picture that cannot come leaves the cross.
+    expect(alexander!.picture?.src).toBe("/saints/icons/alexander-of-alexandria.jpg");
+    const pictured = renderToStaticMarkup(createElement(FatherFace, { face: alexander!, shape: "round" }));
+    expect(pictured.indexOf('data-cover="plate"')).toBeGreaterThan(-1);
+    expect(pictured.indexOf('data-cover="plate"')).toBeLessThan(pictured.indexOf("<img"));
+    // Every Father still without a cleared picture stands on the plate, never an empty round.
+    const bare = COUNCILS.flatMap((c) => fatherFaces(c, true)).filter((f) => !f.picture);
+    expect(bare.length, "Fathers still waiting for a picture").toBeGreaterThan(0);
+    for (const f of bare) {
+      const html = renderToStaticMarkup(createElement(FatherFace, { face: f, shape: "round" }));
+      expect(html, f.name).toContain("cross-plate-mark");
+      expect(html, f.name).not.toContain("<img");
+    }
   });
 });
