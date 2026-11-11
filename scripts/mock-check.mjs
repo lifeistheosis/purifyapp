@@ -37,6 +37,15 @@
 //                one like it): AI slop, the owner's word of 2026-11-11
 //                (CLAUDE.md, "No sparkle star"); an icon from
 //                components/ui/icons that names what the place is
+//   picture      no empty picture: an image with no source or one that did
+//                not load, or a round frame the size of a portrait with a
+//                face and nothing in it (build 93 note 1, St Alexander's
+//                empty circle); a loading shimmer is not one
+//   dashed       no dashed placeholder box: a dashed or dotted edge on three
+//                sides or more, or round it as an outline (build 93 note 4)
+//   keys         no keyboard hint on a phone: Esc, Ctrl, Cmd, a chord with
+//                Alt or Shift, the Mac's key signs, or a key drawn as <kbd>,
+//                shown where the pointer is a finger (build 93 note 7's list)
 // What no measure can see is printed after it, to be answered by eye.
 //
 // A piece meant to break one of these says so on itself, with its reason,
@@ -97,7 +106,7 @@ const wear = (page, mode, look) =>
     [mode ?? null, look ?? null],
   );
 
-export const CHECKS = ["contrast", "placeholder", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays", "sparkle"];
+export const CHECKS = ["contrast", "placeholder", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays", "sparkle", "picture", "dashed", "keys"];
 
 /** What a measure cannot see. */
 export const BY_EYE = [
@@ -220,7 +229,7 @@ function look(arg) {
   }
 
   // The stripe measure alone, for the walk over every screen (stripesOn).
-  if (only === "stripe") return { words: [], placeholders: [], controls: [], paints: [], stripes, rays: [], sparkles: [], emDash: false, dashes: [] };
+  if (only === "stripe") return { words: [], placeholders: [], controls: [], paints: [], stripes, rays: [], sparkles: [], pictures: [], dashedBoxes: [], keyHints: [], emDash: false, dashes: [] };
 
   const words = [];
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -399,7 +408,82 @@ function look(arg) {
     sparkles.push({ name: nameOf(icon), how: "a star of four points drawn", allow: allowance(icon, "sparkle") });
   }
 
-  return { words, placeholders, controls, paints, stripes, rays, sparkles, emDash: labels.includes("\u2014") || dashes.some((d) => !d.allow), dashes: dashes.filter((d) => d.allow) };
+  // An empty picture (build 93 notes 1, 12 and 18): an image with no source
+  // or one that did not load, or a round frame the size of a portrait that
+  // shows a face (a ground or an edge) and holds nothing: no words, no
+  // picture, no icon. A shimmer standing in while a picture loads
+  // (animate-pulse, or inside aria-busy) is not one.
+  const pictures = [];
+  const loading = (e) => Boolean(e.closest(".animate-pulse, [aria-busy='true']"));
+  for (const img of root.querySelectorAll("img")) {
+    if (!shown(img) || loading(img)) continue;
+    const r = img.getBoundingClientRect();
+    if (r.width < 8 || r.height < 8) continue;
+    const src = img.currentSrc || img.getAttribute("src") || "";
+    if (!src) pictures.push({ name: nameOf(img), how: "a picture with no source", allow: allowance(img, "picture") });
+    else if (img.complete && img.naturalWidth === 0) pictures.push({ name: nameOf(img), how: `a picture that did not load (${src.split("/").pop().slice(0, 60)})`, allow: allowance(img, "picture") });
+  }
+  const FILLED = "img, svg, canvas, video, picture, object, iframe";
+  for (const e of all) {
+    if (!shown(e) || loading(e) || e.matches(FILLED)) continue;
+    const r = e.getBoundingClientRect();
+    if (r.width < 32 || r.height < 32 || r.width > 240 || r.height > 240) continue;
+    if (Math.abs(r.width - r.height) > Math.min(r.width, r.height) * 0.1) continue;
+    const cs = getComputedStyle(e);
+    if (parseFloat(cs.borderTopLeftRadius) < Math.min(r.width, r.height) * 0.4) continue;
+    const ground = rgba(cs.backgroundColor)[3] >= 0.05;
+    const edge = ["Top", "Right", "Bottom", "Left"].some((side) => cs[`border${side}Style`] !== "none" && parseFloat(cs[`border${side}Width`]) > 0);
+    if (!ground && !edge) continue;
+    if ((e.innerText || "").trim() || e.getAttribute("aria-label")) continue;
+    const pictured = (n) => {
+      const c = getComputedStyle(n);
+      if (c.backgroundImage && c.backgroundImage !== "none") return true;
+      return ["::before", "::after"].some((pseudo) => {
+        const q = getComputedStyle(n, pseudo);
+        return (q.backgroundImage && q.backgroundImage !== "none") || (q.content && !/^(none|normal|""|'')$/.test(q.content));
+      });
+    };
+    if (pictured(e)) continue;
+    const inside = [...e.querySelectorAll("*")].some((n) => {
+      const q = n.getBoundingClientRect();
+      return q.width * q.height >= r.width * r.height * 0.1 && (n.matches(FILLED) || pictured(n) || (n.innerText || "").trim());
+    });
+    if (inside) continue;
+    pictures.push({ name: nameOf(e), how: `an empty round frame, ${Math.round(r.width)}px across, with nothing in it`, allow: allowance(e, "picture") });
+  }
+
+  // A dashed placeholder box (build 93 note 4): a dashed or dotted edge on
+  // three sides or more, or round it as an outline. A dashed rule under a
+  // line is a divider, not a box.
+  const dashedBoxes = [];
+  for (const e of all) {
+    if (!shown(e)) continue;
+    const r = e.getBoundingClientRect();
+    if (r.width < 24 || r.height < 24) continue;
+    const cs = getComputedStyle(e);
+    const sides = ["Top", "Right", "Bottom", "Left"].filter((side) => /dashed|dotted/.test(cs[`border${side}Style`]) && parseFloat(cs[`border${side}Width`]) > 0);
+    const outline = /dashed|dotted/.test(cs.outlineStyle) && parseFloat(cs.outlineWidth) > 0;
+    if (sides.length >= 3 || outline) dashedBoxes.push({ name: nameOf(e), how: outline ? "a dashed outline round it" : `a dashed edge on ${sides.length === 4 ? "every side" : "three sides"}`, allow: allowance(e, "dashed") });
+  }
+
+  // A keyboard hint where the pointer is a finger (build 93's list: "a
+  // keyboard hint on a phone"): Esc, Ctrl, Cmd, a chord with Alt, Option or
+  // Shift, the Mac's key signs, or a key drawn as <kbd>.
+  const keyHints = [];
+  if (matchMedia("(pointer: coarse)").matches && !matchMedia("(any-pointer: fine)").matches) {
+    const KEY = /(?:^|[^\p{L}])(?:Esc|Ctrl|Cmd)(?![\p{L}])|(?:^|[^\p{L}])(?:Alt|Option|Shift)\s*\+|[\u2318\u2325\u21e7\u2303]/u;
+    for (const k of root.querySelectorAll("kbd")) {
+      if (shown(k)) keyHints.push({ name: nameOf(k), how: "a key drawn as <kbd>", allow: allowance(k, "keys") });
+    }
+    const keyWords = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    for (let t = keyWords.nextNode(); t; t = keyWords.nextNode()) {
+      const el = t.parentElement;
+      if (!el || el.closest("kbd") || !KEY.test(t.textContent) || el.getClientRects().length === 0 || getComputedStyle(el).visibility === "hidden") continue;
+      keyHints.push({ name: nameOf(el), how: `a keyboard hint in the words ("${t.textContent.trim().slice(0, 40)}")`, allow: allowance(el, "keys") });
+    }
+  }
+
+  return { words, placeholders, controls, paints, stripes, rays, sparkles, pictures, dashedBoxes, keyHints, emDash: labels.includes("\u2014") || dashes.some((d) => !d.allow), dashes: dashes.filter((d) => d.allow) };
 }
 
 /**
@@ -602,6 +686,18 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
       if (sp.allow) allow("sparkle", sp.name, sp.allow);
       else fail("sparkle", null, sp.name, `${sp.how}: the four-point sparkle is AI slop, the owner's word of 2026-11-11; an icon from components/ui/icons that names what the place is`);
     }
+    for (const p of dark.pictures) {
+      if (p.allow) allow("picture", p.name, p.allow);
+      else fail("picture", null, p.name, `${p.how}: every saint, work and face wears its picture (build 93 notes 1, 12 and 18)`);
+    }
+    for (const d of dark.dashedBoxes) {
+      if (d.allow) allow("dashed", d.name, d.allow);
+      else fail("dashed", null, d.name, `${d.how}: a dashed placeholder box (build 93 note 4); show the thing itself`);
+    }
+    for (const k of dark.keyHints) {
+      if (k.allow) allow("keys", k.name, k.allow);
+      else fail("keys", null, k.name, `${k.how}: a phone has no keyboard keys to press`);
+    }
     if (dark.emDash) fail("emdash", null, "the words", "an em dash; use a comma, a colon or a full stop");
     for (const d of dark.dashes) allow("emdash", d.name, d.allow);
 
@@ -700,6 +796,12 @@ const FIXTURES = `
   <p style="margin:8px 0 0;color:#d4af37;font-size:13px">Plus</p>
   <div style="margin-top:8px;width:120px;height:120px;background:repeating-conic-gradient(from 3deg, rgba(255,240,214,.4) 0deg 3.5deg, rgba(255,240,214,0) 3.5deg 13deg)"></div>
   <p style="margin:8px 0 0;display:flex;align-items:center;gap:8px;color:#e8e8ea;font-size:13px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3.5c.7 4 2.5 5.8 6.5 6.5-4 .7-5.8 2.5-6.5 6.5-.7-4-2.5-5.8-6.5-6.5 4-.7 5.8-2.5 6.5-6.5z" /></svg>What's new \u2726</p>
+  <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
+    <span style="display:block;width:48px;height:48px;border-radius:999px;background:#2a2a2e"></span>
+    <img alt="St Alexander" src="/__no-such-picture.png" style="width:48px;height:48px;border-radius:999px">
+    <div style="width:120px;height:48px;border:1.5px dashed rgba(255,255,255,0.35);border-radius:12px"></div>
+  </div>
+  <p style="margin:8px 0 0;color:#e8e8ea;font-size:13px">Search <kbd>Ctrl</kbd> K, close with Esc</p>
 </div>
 <div data-mock-fixture="good" class="bg-night px-4 pb-4" style="position:fixed;left:0;right:0;top:0;z-index:301">
   <div class="flex items-center gap-2">
@@ -728,6 +830,10 @@ const FIXTURES = `
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="12" y1="2.5" x2="12" y2="21.5" /><line x1="8.5" y1="6" x2="15.5" y2="6" /><line x1="5.5" y1="9.5" x2="18.5" y2="9.5" /><line x1="8" y1="14" x2="16" y2="16.5" /></svg>
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="5" width="14" height="14" rx="1" /><path d="M12 2.5l9.5 9.5-9.5 9.5-9.5-9.5z" /></svg>
   </span>
+  <span class="mt-3 block h-12 w-12 overflow-hidden rounded-full bg-night-soft">
+    <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="h-full w-full object-cover">
+  </span>
+  <span class="mt-3 block h-12 w-12 animate-pulse rounded-full bg-paper/10"></span>
   <blockquote lang="en" data-mock-allow="emdash" data-mock-why="a Father's own words, as his edition prints them" class="mt-3 font-serif text-body italic leading-[1.6] text-paper/85">Chapter I.\u2014Introduction. Reason for writing</blockquote>
 </div>`;
 
@@ -738,13 +844,15 @@ async function selfTest() {
     await go(page, "/");
     await page.waitForTimeout(1500);
     await page.evaluate((html) => document.body.insertAdjacentHTML("beforeend", html), FIXTURES);
+    // The picture that cannot load has to have failed before it is measured.
+    await page.waitForFunction(() => [...document.querySelectorAll("[data-mock-fixture] img")].every((i) => i.complete), null, { timeout: 5000 });
     await settle(page);
     const bad = await checkMock(page, "[data-mock-fixture=bad]");
     printMockCheck(bad, "the first drawings' mistakes");
     const good = await checkMock(page, "[data-mock-fixture=good]");
     printMockCheck(good, "the same parts from the house's classes");
     const caught = new Set(bad.failures.map((f) => f.check));
-    const missed = ["contrast", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays", "sparkle"].filter((c) => !caught.has(c));
+    const missed = ["contrast", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays", "sparkle", "picture", "dashed", "keys"].filter((c) => !caught.has(c));
     // A Father's own words keep their edition's dash, by name; the allowance is said in the report.
     const named = good.allowed.some((a) => a.startsWith("emdash on "));
     const ok = missed.length === 0 && good.failures.length === 0 && named;
