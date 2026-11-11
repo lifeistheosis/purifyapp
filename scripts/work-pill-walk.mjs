@@ -9,7 +9,10 @@
 // (Cassian's Conferences, which has hundreds, by its first chapters and its
 // longest names), fails on a name the pill cuts or a pill under 44px, checks
 // that the contents the name opens still name every chapter in full, and runs
-// checkMock's cut rule over the whole screen at 390.
+// checkMock's cut rule over the whole screen at 390. Each work stands one kind
+// of name through at the level it reaches (by place, or its own numbers; the
+// arbiter, 2026-11-11, of Photius), and is opened wide and turned to 320, where
+// a name that fitted wide once stayed cut (four Lives, the same day).
 //
 //   npm run build:android
 //   NODE_USE_ENV_PROXY=1 node scripts/work-pill-walk.mjs [--works saint/work,saint/work]
@@ -35,6 +38,13 @@ const WORKS =
         "john-cassian/conferences",
         // A work of one section, whose pill carried the work's whole title.
         "thyrsus-leucius-and-callinicus/martyrdom-of-thyrsus-leucius-and-callinicus",
+        // The four Lives checkMock failed on an export with the first of this
+        // ("Ecclesiastical History VII.28" cut once the screen narrowed; Fable
+        // voices, 2026-11-11), the Life of Acepsimas among them.
+        "acepsimas-joseph-and-aithalas/life-of-acepsimas",
+        "proclus-of-constantinople/life-of-proclus",
+        "frumentius-of-axum/life-of-frumentius",
+        "amphilochius-of-iconium/life-of-amphilochius",
       ];
 const MOST = 6;
 
@@ -109,7 +119,27 @@ for (const key of WORKS) {
       const cuts = r.failures.filter((f) => f.check === "cut");
       say(`${key}: checkMock finds no name cut on the screen`, cuts.length === 0, cuts.slice(0, 3));
     }
+    // One kind of name through the work at the level it stands at (the arbiter, of Photius's
+    // "Part 1, Codex 1, Part 3, Codex 6"): all by place, or all the work's own numbers.
+    const kinds = new Set(seen.map((x) => (/^Part \d+ /.test(x) ? "place" : /^[0-9IVXLC]+( \u00b7 \d+)? /.test(x) ? "numbers" : "named")));
+    const lvl = seen.map((x) => x.match(/\((\d)\)$/)?.[1]);
+    if (lvl.every((l) => l && l !== "0")) say(`${key} at ${width}: one kind of name through the work`, kinds.size === 1, [...kinds]);
     console.log(`  ${key} at ${width}: ${seen.join(" | ")}`);
+    await browser.close();
+  }
+  // A turned screen: wide first, where the names may stand whole, then narrow; the pill
+  // measures again and no name is cut (a turn left "Ecclesiastical History VII.28" cut).
+  {
+    const { browser, page } = await openPhone({ scale: 1 });
+    await page.setViewportSize({ width: 740, height: 800 });
+    await page.route(/^https?:\/\/(?!localhost)/, (r) => r.abort());
+    await go(page, "/");
+    await go(page, `/saints/${key}/`);
+    await page.waitForTimeout(1800);
+    await page.setViewportSize({ width: 320, height: 760 });
+    await page.waitForTimeout(900);
+    const p = await pillName(page);
+    say(`${key}: turned from 740 to 320, the pill's name is whole`, p && p.text && p.cut.length === 0 && p.h >= 44, p);
     await browser.close();
   }
 }

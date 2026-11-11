@@ -283,21 +283,35 @@ export function neighbours(heads: readonly SectionHead[], n: number): { prev: Se
  * (components/saints/MobileWorkPill.tsx measures it):
  *   0  the name as the reading room keeps it: "Conference 10 · 10", a
  *      chapter's own title, the work's title for a work of one section;
- *   1  a part named by its own words becomes "Part 3", by its place in the
- *      work; a numbered part keeps its name;
+ *   1  in a work with any part named by its own words, every part goes by
+ *      its place, "Part 3"; in a work whose parts are all numbered, each
+ *      keeps its name;
  *   2  a numbered part keeps its numbers only, as the edition prints them:
- *      "10 · 10", "XVIII", "141".
- * The full names stay in the contents sheet and in what the pill says to a
- * screen reader.
+ *      "10 · 10", "XVIII", "141"; a work that goes by place stays so.
+ * One kind of name per work at each level (the arbiter, 2026-11-11, of
+ * Photius's Bibliotheca, whose pill read "Part 1, Codex 1, Part 3, Codex 6"),
+ * so the count never jumps; the codices' numbers stay in the contents and the
+ * heading. The full names stay in the contents sheet and in what the pill
+ * says to a screen reader.
  */
 export type PillLevel = 0 | 1 | 2;
 
-/** A part's name in the pill at a level; `index` is its place among the work's parts, from 0. */
-export function pillAt(head: SectionHead, index: number, level: PillLevel): SectionHead["pill"] {
+/** Whether a work's pill goes by place from the second level on: any of its parts named by its own words. */
+export function goesByPlace(heads: readonly SectionHead[]): boolean {
+  return heads.some((h) => "text" in h.pill.name);
+}
+
+/**
+ * A part's name in the pill at a level; `index` is its place among the
+ * work's parts, from 0, and `byPlace` whether the work goes by place
+ * (goesByPlace, for the whole work).
+ */
+export function pillAt(head: SectionHead, index: number, level: PillLevel, byPlace: boolean): SectionHead["pill"] {
   if (level === 0) return head.pill;
-  const { name, inner } = head.pill;
-  if ("text" in name) return { name: { level: "part", n: index + 1 } };
+  if (byPlace) return { name: { level: "part", n: index + 1 } };
   if (level === 1) return head.pill;
+  const { name, inner } = head.pill;
+  if ("text" in name) return head.pill;
   return { name: { text: inner !== undefined ? `${numberShown(name)} \u00b7 ${inner}` : numberShown(name) } };
 }
 

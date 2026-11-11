@@ -198,7 +198,7 @@ describe("the pill's width", () => {
   it("the pill lays them under the name, unseen, in the name's own place, and both readers hand it every part", () => {
     const pill = fs.readFileSync(path.join(ROOT, "components", "saints", "MobileWorkPill.tsx"), "utf8");
     // The names at the level the pill could fit (lib/saints/__tests__/pillFits.test.ts).
-    expect(pill).toContain("const names = heads.map((h, i) => sayPill(pillAt(h, i, level)));");
+    expect(pill).toContain("const names = heads.map((h, i) => sayPill(pillAt(h, i, level, byPlace)));");
     expect(pill).toContain("const widest = widestNames(names).filter((n) => n !== name);");
     // One cell: the unseen names and the one shown stand in the same place.
     expect(pill).toMatch(/aria-hidden data-pill-width="" className="invisible col-start-1 row-start-1/);

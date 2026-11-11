@@ -7,7 +7,7 @@ import { AmbienceButton } from "@/components/player/AmbienceButton";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { WORDS_PER_MINUTE } from "@/lib/bible/readability";
 import { cn } from "@/lib/cn";
-import { pillAt, type PillLevel, type SectionHead } from "@/lib/saints/parts";
+import { goesByPlace, pillAt, type PillLevel, type SectionHead } from "@/lib/saints/parts";
 import { PLACE_ROWS, parsePlace } from "@/lib/saints/paragraphInView";
 import { openWorkContents } from "@/lib/saints/workNow";
 import { useOverlayOpen } from "@/lib/ui/overlay";
@@ -91,8 +91,8 @@ export function MobileWorkPill({
   // Every name shown whole, never cut at its end (the arbiter, 2026-11-11, on
   // checkMock's cut rule; a phone of 320 has 96px for it). The names start as
   // the work keeps them and step down, for the whole work at once, until none
-  // is cut: a chapter's own title to "Part 3", then a numbered name to its
-  // numbers (lib/saints/parts.ts, pillAt). The full names stay in the contents
+  // is cut: every part to "Part 3" where any is named by its own words, then
+  // a numbered name to its numbers (lib/saints/parts.ts, pillAt). The full names stay in the contents
   // the name opens and in what it says to a screen reader. Another work,
   // another language, a turned screen or the font arriving starts it again.
   const full = heads.map(pill).join("\n");
@@ -102,8 +102,16 @@ export function MobileWorkPill({
     setMeasuredFor(full);
     setLevel(0);
   }
+  // A turned screen or the font arriving measures again from the whole names,
+  // by a count: setting the level to 0 where it stood at 0 already changed
+  // nothing, so a name that fitted wide stayed cut once the screen narrowed
+  // ("Ecclesiastical History VII.28" at 320, on four Lives that checkMock
+  // failed, 2026-11-11).
+  const [measures, setMeasures] = useState(0);
+  // One kind of name per work at each level (lib/saints/parts.ts, goesByPlace).
+  const byPlace = goesByPlace(heads);
   const at = Math.max(0, heads.findIndex((h) => h.n === head.n));
-  const names = heads.map((h, i) => sayPill(pillAt(h, i, level)));
+  const names = heads.map((h, i) => sayPill(pillAt(h, i, level, byPlace)));
   const name = names[at] ?? pill(head);
   const widest = widestNames(names).filter((n) => n !== name);
   // A name of the work's own is English; one from the catalog, or a number, is the reader's.
@@ -115,11 +123,13 @@ export function MobileWorkPill({
     const cut = Array.from(box.children).some((el) => el.scrollWidth > el.clientWidth + 0.5);
     // A measured layout: the names step down before the frame is painted, and stop where none is cut.
     if (cut) setLevel((l) => (l < 2 ? ((l + 1) as PillLevel) : l));
-  }, [level, full]);
+  }, [level, full, measures]);
   useEffect(() => {
     let live = true;
     const again = () => {
-      if (live) setLevel(0);
+      if (!live) return;
+      setLevel(0);
+      setMeasures((m) => m + 1);
     };
     window.addEventListener("resize", again);
     if ("fonts" in document) void document.fonts.ready.then(again);
