@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
     return { row: data as unknown as PatchNoteRow | null, error };
   }
 
-  type RevisionToAccept = { id: string; version: string; status: string; note_id: string | null; author: string; after: unknown };
+  type RevisionToAccept = { id: string; version: string; status: string; note_id: string | null; author: string; after: Record<string, unknown> };
   type Accepted = { ok: true; row: PatchNoteRow | null } | { ok: false; error: string; response: NextResponse };
   const refuse = (response: NextResponse, error: string): Accepted => ({ ok: false, error, response });
 
@@ -186,7 +186,7 @@ export async function POST(req: NextRequest) {
     // The name comes from the proposal as it was filed, not from the parsed
     // copy, where a default has made "said nothing" look like "no name". A
     // proposal older than names would otherwise take the release's name off.
-    const input = { ...after.data, name: proposedName(rev.after as Record<string, unknown>, prior) };
+    const input = { ...after.data, name: proposedName(rev.after, prior) };
     const { row, error } = await writeNote(input, targetId ?? undefined, prior);
     if (isColumnAbsent(error)) {
       return refuse(nameNotApplied("send this proposal back without the name it gives the release"), "The table has no name column yet.");
