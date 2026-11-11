@@ -181,7 +181,7 @@ export const LEARNED_WORDS_TRAVEL = false;
 
 /** The words the privacy page must carry before the switch is on, in each of the page's languages. */
 export const LEARNED_WORDS_SENTENCES = {
-  en: "the quotes and the words of your own that you chose to learn by heart (these with their words, since they cannot be fetched again as a verse&rsquo;s can)",
+  en: "the quotes and your own words that you chose to learn by heart (kept with their words, since they cannot be fetched again the way a verse can)",
   de: "die Zitate und deine eigenen Worte, die du auswendig lernen willst (diese mit ihrem Wortlaut, weil sie sich nicht wie ein Vers neu laden lassen)",
 } as const;
 

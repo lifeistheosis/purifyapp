@@ -33,7 +33,7 @@ const WORDS: Record<string, string> = {
   "remember.backTomorrow": "It comes back tomorrow.",
   "remember.backIn": "It comes back in {count} days.",
   "remember.known": "Known by heart. It comes back once a month.",
-  "remember.own": "Your own words",
+  "remember.addedByYou": "Added by you",
   "remember.lineMemory": "Say it from memory, then check.",
 };
 const t = (key: string, vars?: Record<string, string | number>) => {
@@ -174,20 +174,20 @@ describe("the faces the widget is handed", () => {
   const quote: LearnItem = { kind: "quote", key: "q:abcdefgh012345", text: "Let Christ be as the breath you breathe.", by: "St. Antony the Great", cite: PLACE, addedAt: 5 };
   const own: LearnItem = { kind: "own", key: "own:abcdefgh0123", text: "Lord Jesus Christ, have mercy on me.", addedAt: 6 };
 
-  it("names whose words a quote is where a verse names its place, and the reader's own words as theirs", () => {
+  it("names whose words a quote is where a verse names its place, and words the reader put in as added by them", () => {
     const chosenQuote = store({ items: { [quote.key]: quote, [own.key]: own }, chosen: { key: quote.key, at: 9 } });
     const faces = days(rememberFaces({ saved: [john], store: chosenQuote, today: TODAY, t }));
     // The one chosen is asked first, with its own words, never fetched.
     expect(faces[TODAY]).toMatchObject({ ref: "St. Antony the Great", step: 1, line: "Say the missing words, then check." });
     expect(faces[TODAY].words).toBe(widgetVerse(quote.text, 1));
     const chosenOwn = store({ items: { [own.key]: own }, chosen: { key: own.key, at: 9 } });
-    expect(days(rememberFaces({ saved: [], store: chosenOwn, today: TODAY, t }))[TODAY]).toMatchObject({ ref: "Your own words", step: 1 });
+    expect(days(rememberFaces({ saved: [], store: chosenOwn, today: TODAY, t }))[TODAY]).toMatchObject({ ref: "Added by you", step: 1 });
   });
 
   it("never calls a quote or the reader's own words a verse they saved", () => {
     // Said from memory, the third step: the line that names no verse.
     const known = store({ items: { [own.key]: own }, entries: { [own.key]: { box: 4, due: TODAY } } });
-    expect(days(rememberFaces({ saved: [], store: known, today: TODAY, t }))[TODAY]).toEqual({ ref: "Your own words", step: 3, words: null, line: "Say it from memory, then check." });
+    expect(days(rememberFaces({ saved: [], store: known, today: TODAY, t }))[TODAY]).toEqual({ ref: "Added by you", step: 3, words: null, line: "Say it from memory, then check." });
   });
 
   it("has faces for a reader who saved no verse but learns their own words", () => {

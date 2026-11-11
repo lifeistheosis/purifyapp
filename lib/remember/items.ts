@@ -13,10 +13,11 @@
  *          the app's own cited sayings, a line the reader gathered from the
  *          app's pages, and "Who said it" finding the line in a book
  *          (lib/quotes/find.ts). The name on it is never typed by a reader.
- *   own    the reader's own words: a line they typed or pasted, a verse in
- *          the translation they know. It has no name on it but theirs. A line
- *          "Who said it" cannot find is learned this way, never under a
- *          saint's name by us.
+ *   own    words the reader put in themselves: a line they typed or pasted,
+ *          a verse in the translation they know. A line "Who said it" cannot
+ *          find is learned this way, never under a saint's name by us. On a
+ *          card it is marked "Added by you", which claims no author, since
+ *          such a line is someone's words and not always the reader's.
  *
  * So the shape itself keeps the rule: `own` has no field a name could go in,
  * and `quote` cannot be read back from the device or the server without the

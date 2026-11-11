@@ -33,7 +33,7 @@ import { addDays, askedOn, backWords, learnablesOf, stepOf, type Entry, type Rem
  *
  * Since build 93 note 11 a reader learns more than saved verses
  * (lib/remember/items.ts): a quote's face names whose words they are where a
- * verse's names its place, and the reader's own words are named as theirs.
+ * verse's names its place, and words the reader put in are "Added by you".
  * The one they chose is asked first on a day it is new or due, by the rule
  * Today's card reads (askedOn).
  */
@@ -119,7 +119,7 @@ export function rememberFaces(input: RememberInput): RememberEntry | undefined {
   if (!list.length) return { none: true };
   const books = localBookNames(t);
   const byKey = new Map(list.map((v) => [v.key, v]));
-  const ref = (v: LearnItem) => (v.kind === "verse" ? referenceIn(v.label, v.book, books) : v.kind === "quote" ? v.by : t("remember.own"));
+  const ref = (v: LearnItem) => (v.kind === "verse" ? referenceIn(v.label, v.book, books) : v.kind === "quote" ? v.by : t("remember.addedByYou"));
   const textOf = (v: LearnItem) => (v.kind === "verse" ? store.texts[v.key] : v.text);
   const chosen = store.chosen?.key || undefined;
 

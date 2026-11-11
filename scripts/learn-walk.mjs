@@ -9,13 +9,13 @@
 // the export, at phone size, with a finger's taps, as a new reader:
 //
 //   - a reader who has kept nothing is shown the way in, on You
-//   - their own words are learned as theirs, with no name on them and no
-//     share picture
+//   - their own words are learned marked "Added by you", with no name on
+//     them and no share picture
 //   - a quote is taken from the app's cited sayings, under whose words they
 //     are, with the line that opens its place
 //   - a pasted line that "Who said it" finds is learned in the book's words;
-//     one it cannot find is offered as the reader's own words; with no
-//     connection the sheet says so
+//     one it cannot find may be learned anyway, marked "Added by you" and
+//     never under a saint's name; with no connection the sheet says so
 //   - a verse is taken by its reference, shown from the Bible before it is
 //     taken; a reference that names no verse is said to
 //   - Change is on You's card, on Today's card and in the practise sheet
@@ -117,7 +117,7 @@ async function openChooser(page, kind) {
 // ── 1. A new reader, nothing kept: the way in, and their own words ─────────
 {
   const { ctx, page } = await phone();
-  await go(page, "/you");
+  await go(page, "/account");
   await launched(page);
   const card = page.locator(CARD);
   say(await card.waitFor({ timeout: 30000 }).then(() => true, () => false), "You: a reader who kept nothing is shown the way in");
@@ -142,7 +142,7 @@ async function openChooser(page, kind) {
   let practise = sheetOf(page, "Learn by heart");
   say(await practise.waitFor({ timeout: 15000 }).then(() => true, () => false), "taking them up opens the practise sheet, named Learn by heart");
   await settle(page);
-  say((await practise.locator("[data-practise-name]").innerText()).trim() === "Your own words", "they are named as the reader's own");
+  say((await practise.locator("[data-practise-name]").innerText()).trim() === "Added by you", "they are marked Added by you, which claims no author");
   say(!/St\.|Abba|Chrysostom/.test(await practise.innerText()), "and no saint's name stands on them");
   say((await practise.locator("[data-cite]").count()) === 0, "nor any source line");
   await still(page, "04-practise-own", '[role="dialog"]');
@@ -157,7 +157,7 @@ async function openChooser(page, kind) {
 
   say((await card.getAttribute("data-you-verse")) === "own", "You's card now holds the reader's own words");
   const words = (await card.innerText()).replace(/\s+/g, " ");
-  say(/You are learning/.test(words) && words.includes(OWN) && /Your own words/.test(words), "under You are learning, with the words and that they are theirs");
+  say(/You are learning/.test(words) && words.includes(OWN) && /Added by you/.test(words), "under You are learning, with the words and Added by you");
   say((await card.locator("[data-you-share]").count()) === 0, "with no Share: own words are not sent out as a picture in Purify's look");
   say((await card.locator("a").count()) === 0, "and they link nowhere");
   await card.evaluate((el) => el.scrollIntoView({ block: "center" }));
@@ -226,7 +226,7 @@ async function openChooser(page, kind) {
   practise = sheetOf(page, "Learn by heart");
   await practise.waitFor({ timeout: 15000 });
   await settle(page);
-  say((await practise.locator("[data-practise-name]").innerText()).trim() === "Your own words", "and may be learned only as the reader's own words");
+  say((await practise.locator("[data-practise-name]").innerText()).trim() === "Added by you", "and may be learned anyway, marked Added by you");
   say(!/Seraphim|St\./.test(await practise.innerText()), "never under a saint's name");
   await page.keyboard.press("Escape");
   await practise.waitFor({ state: "hidden", timeout: 10000 }).catch(() => {});
@@ -323,7 +323,7 @@ async function openChooser(page, kind) {
   await still(page, "16-today-answered", "main");
 
   // You shows the day's kept verse again, with Change.
-  await go(page, "/you");
+  await go(page, "/account");
   await settle(page, 1500);
   const you = page.locator(CARD);
   await you.waitFor({ timeout: 20000 }).catch(() => {});
@@ -335,7 +335,7 @@ async function openChooser(page, kind) {
 // ── 7. Without Plus: choosing is open, Show the words carries the lock ──────
 {
   const { ctx, page } = await phone({}, { android: true });
-  await go(page, "/you");
+  await go(page, "/account");
   await launched(page);
   const card = page.locator(CARD);
   await card.waitFor({ timeout: 30000 }).catch(() => {});

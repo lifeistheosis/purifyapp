@@ -19,7 +19,9 @@
 //                   said it" finds, learned in the book's words. A line it
 //                   cannot find is offered as the reader's own words, never
 //                   under a saint's name by us.
-//   Your own words  a field. They are shown as theirs everywhere.
+//   Your own words  a field. On a card they are marked "Added by you", which
+//                   claims no author: a line that was not found is someone's
+//                   words, not the reader's (the arbiter, 2026-11-11).
 //
 // Taking something up chooses it: it stands on You's card and is asked first
 // on Today's until the reader changes it, which they may at any time. The
@@ -507,7 +509,7 @@ function Own({ onTake }: { onTake: (item: LearnItem) => void }) {
             v.kind === "own" ? (
               <Row
                 key={v.key}
-                name={t("remember.own")}
+                name={t("remember.addedByYou")}
                 text={v.text}
                 current={chosen?.key === v.key}
                 first={i === 0}

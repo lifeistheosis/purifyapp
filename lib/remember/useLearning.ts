@@ -54,10 +54,13 @@ type Translate = (key: string, vars?: Record<string, string | number>) => string
 
 /**
  * The name an item goes by where a verse has its reference: the reference,
- * its book in the reader's language; whose words a quote is; and for the
- * reader's own words, that they are theirs.
+ * its book in the reader's language; whose words a quote is; and for words
+ * the reader put in themselves, "Added by you". Not "your own words" there
+ * (the arbiter, 2026-11-11): a line "Who said it" could not find is
+ * someone's words, not the reader's, and "Added by you" is true of both and
+ * claims no author.
  */
 export function learnName(item: LearnItem, t: Translate, books: Readonly<Record<string, string>> = localBookNames(t)): string {
   if (item.kind === "verse") return referenceIn(item.label, item.book, books);
-  return item.kind === "quote" ? item.by : t("remember.own");
+  return item.kind === "quote" ? item.by : t("remember.addedByYou");
 }
