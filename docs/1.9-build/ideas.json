@@ -2671,6 +2671,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "The gate's sweep, the arbiter's word. Plans' picture above its words; the hour card's line and a chant's kind at 80% on paper; a halo of the page under a chant's head on paper. 2765ea6e2. PLAN 13bg."
+  },
+  {
+   "id": "e-branch-green-prayers-faint",
+   "section": "Design",
+   "kind": "bug",
+   "title": "The gift's clear bar names its first words; Prayers' chants door reads on every palette; a test that parses the stylesheet",
+   "from": "claude",
+   "asked": "2026-11-11",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The arbiter's word, Fable Theology's finds. The lit Hours tile's 1.00 was the measure (Admin mended it). d3e190b0b, c4d2e1f62, faf995ea7. PLAN 13bh."
   }
  ]
 }
