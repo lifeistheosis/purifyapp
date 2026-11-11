@@ -207,6 +207,9 @@ export function NoteReview({ notes, versions }: { notes: PatchNotes; versions: r
   const { data, busy, error, post } = notes;
   const [suggesting, setSuggesting] = useState<{ rev: RevisionRow; draft: Draft } | null>(null);
   const [denying, setDenying] = useState<RevisionRow | null>(null);
+  // Accept all asks once, in words, before it writes (a note on What's new is read by every reader).
+  const [askingAll, setAskingAll] = useState(false);
+  const [allSaid, setAllSaid] = useState<string | null>(null);
 
   const notesByVersion = useMemo(() => {
     const m = new Map<string, PatchNoteRow>();
@@ -218,7 +221,22 @@ export function NoteReview({ notes, versions }: { notes: PatchNotes; versions: r
   // The release's own notes first; a proposal on another note is still shown,
   // after them, so nothing proposed is out of sight.
   const revisions = [...data.revisions].sort((a, b) => Number(!versions.includes(a.version)) - Number(!versions.includes(b.version)));
-  if (revisions.length === 0) return null;
+  // The notes the release's own file words differently from What's new (lib/whatsNew/branchWords.ts).
+  const differ = data.branchWords ?? [];
+  const pending = revisions.filter((r) => r.status === "pending");
+  if (revisions.length === 0 && differ.length === 0) return null;
+
+  async function acceptAll() {
+    setAskingAll(false);
+    setAllSaid(null);
+    const j = (await post("accept-all", { action: "revision-accept-all" })) as { accepted?: number; refused?: { version: string; error: string }[] } | null;
+    if (!j) return;
+    const refused = j.refused ?? [];
+    setAllSaid(
+      `${j.accepted ?? 0} accepted.` +
+        (refused.length ? ` Not accepted: ${refused.map((r) => `${r.version} (${r.error})`).join("; ")}.` : ""),
+    );
+  }
 
   async function sendBack(d: Draft, note?: string) {
     if (!suggesting || !note || !note.trim()) return;
@@ -243,6 +261,38 @@ export function NoteReview({ notes, versions }: { notes: PatchNotes; versions: r
   return (
     <div className="space-y-3">
       <ErrorLine error={error} />
+      {differ.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-3 rounded-[var(--adm-radius)] border px-4 py-3" style={{ borderColor: "var(--adm-line)", background: "var(--adm-panel)" }}>
+          <p className="min-w-0 flex-1 font-sans text-[13px]" style={{ color: "var(--adm-ink-2)" }}>
+            The release&apos;s own file words {differ.length === 1 ? "1 note" : `${differ.length} notes`} differently from What&apos;s new: {differ.map((d) => d.version).join(", ")}. Put them in the queue to read each before and after; nothing changes until you accept.
+          </p>
+          <ToolbarButton loading={busy === "branch"} onClick={() => void post("branch", { action: "branch-propose" })}>
+            Put them in the queue
+          </ToolbarButton>
+        </div>
+      ) : null}
+      {pending.length > 1 ? (
+        <div className="flex flex-wrap items-center gap-3">
+          {askingAll ? (
+            <>
+              <p className="min-w-0 flex-1 font-sans text-[13px]" style={{ color: "var(--adm-ink)" }}>
+                Accept all {pending.length}? Each one&apos;s before and after is below. They go to What&apos;s new at once.
+              </p>
+              <ToolbarButton variant="primary" loading={busy === "accept-all"} onClick={() => void acceptAll()}>
+                Accept all {pending.length}
+              </ToolbarButton>
+              <ToolbarButton onClick={() => setAskingAll(false)}>Cancel</ToolbarButton>
+            </>
+          ) : (
+            <ToolbarButton onClick={() => setAskingAll(true)}>Accept all {pending.length}</ToolbarButton>
+          )}
+        </div>
+      ) : null}
+      {allSaid ? (
+        <p role="status" className="font-sans text-[12.5px]" style={{ color: "var(--adm-ink-2)" }}>
+          {allSaid}
+        </p>
+      ) : null}
       {revisions.map((rev, i) => (
         <RevisionCard
           key={rev.id}

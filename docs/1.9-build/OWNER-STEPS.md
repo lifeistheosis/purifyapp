@@ -1209,12 +1209,9 @@ Then in Admin:
 
 1. purifyapp.net/admin, **Releases**, then **Patch notes**.
 2. Read the 1.9 note. **Accept** it, or **Suggest** a change.
-3. Your word: "change out all the stuff with the emails". The branch has
-   already done it in the files the apps carry. The website reads its notes
-   from the database, so one old line there needs the same change: open the
-   **Alpha v6.5** note. In the line that starts "New SECURITY.md", change
-   `security@purify.app` to `support@purifyapp.net`. **Save**. (purify.app is
-   not our domain, so a report sent there goes to a stranger.)
+3. Your word: "change out all the stuff with the emails". The old notes
+   carry it too (the Alpha v6.5 note's SECURITY.md line); that one goes with
+   the old notes' plain words after the push, in R2a, by one button.
 4. If the list of board messages there shows **2026-W37** (8 September),
    change the address in its last line to `support@purifyapp.net` too.
 
@@ -1356,6 +1353,25 @@ Send back: "R1 both green".
    until R5c.
 3. Render, the **purifyapp** service, **Events**: wait for **Deploy live**.
 4. purifyapp.net/whats-new shows 1.9.
+
+### R2a. The old notes in plain words (2 minutes, after the deploy)
+
+1.9 says the old notes' keys, mouse and code in plain words (the arbiter's
+word, 2026-11-11), each line keeping exactly what it said, and carries the
+Alpha v6.5 address from R0. The website reads old notes from the database,
+so they reach it only through your Accept, and you see every before and
+after first.
+
+1. purifyapp.net/admin, **Releases**, then **Patch notes**.
+2. At the top it says the release's own file words some notes differently
+   from What's new, and names them. Press **Put them in the queue**. Nothing
+   changes on the website yet.
+3. Each note is now in the queue with its before and after. Read as many as
+   you like.
+4. Press **Accept all**, then **Accept all** again where it asks. They go to
+   What's new at once.
+5. If a line under the button says one was not accepted, send that line to
+   the arbiter. The rest are in.
 
 ### R2b. Tell every account the terms changed (your item 96; 2 minutes)
 

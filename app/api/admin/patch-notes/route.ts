@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { branchWords } from "@/lib/whatsNew/branchWords";
 import { ENTRIES } from "@/lib/whatsNew/entries";
 import { displayDateToIso } from "@/lib/whatsNew/dates";
 import { withNameColumn, type PatchNoteRow } from "@/lib/whatsNew/notes";
@@ -43,6 +44,13 @@ export type PatchNotesPayload = {
    */
   nameReady: boolean;
   currentVersion: string;
+  /**
+   * The notes whose words in the release's own file differ from the table's
+   * and do not already wait in the queue (lib/whatsNew/branchWords.ts): what
+   * "Put them in the queue" files, each with its before and after. Empty
+   * while the notes come from the file itself.
+   */
+  branchWords: { version: string; summary: string }[];
   /** The weekly board message, same fallback rules as the notes. */
   board: BoardRow[];
   boardFromFallback: boolean;
@@ -130,11 +138,16 @@ export async function GET() {
       }))
     : [];
 
+  const liveRows = !notesError && notes && notes.length > 0 ? (notes as unknown as PatchNoteRow[]) : null;
+  const waiting = new Set(((revisions as RevisionRow[] | null) ?? []).map((r) => r.version));
+  const differ = liveRows && !revError ? branchWords(ENTRIES, liveRows, waiting).map(({ version, summary }) => ({ version, summary })) : [];
+
   const payload: PatchNotesPayload = {
     // Length, not nullish: an empty table answers [] and `[] ?? fallback` is
     // [], which rendered "Adopt all 0" against ninety-one committed entries.
     notes: !notesError && notes && notes.length > 0 ? (notes as unknown as PatchNoteRow[]) : fallbackRows,
     revisions: revError ? [] : ((revisions as RevisionRow[] | null) ?? []),
+    branchWords: differ,
     fromFallback: fromFallback || Boolean(notesError),
     tableAbsent,
     nameReady,

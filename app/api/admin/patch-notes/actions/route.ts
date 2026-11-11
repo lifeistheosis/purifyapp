@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logActivity } from "@/lib/admin/activityLog";
+import { branchWords } from "@/lib/whatsNew/branchWords";
 import { ENTRIES } from "@/lib/whatsNew/entries";
 import { displayDateToIso } from "@/lib/whatsNew/dates";
 import { withNameColumn, type PatchNoteRow } from "@/lib/whatsNew/notes";
@@ -49,6 +50,15 @@ const Body = z.discriminatedUnion("action", [
   // twice, or pressing it after one hand edit, never overwrites an edit.
   z.object({ action: z.literal("adopt-all") }),
   z.object({ action: z.literal("revision-accept"), id: Id }),
+  // Every waiting proposal accepted at once, once he has read them (the
+  // arbiter, 2026-11-11: "one Accept all that shows him every before and
+  // after"). A proposal the owner has sent back (suggested) is not his to
+  // accept, and is left.
+  z.object({ action: z.literal("revision-accept-all") }),
+  // The notes the release's own file words differently from the table, each
+  // filed as a proposal with its before and after (lib/whatsNew/branchWords.ts).
+  // Nothing reaches the table until he accepts it.
+  z.object({ action: z.literal("branch-propose") }),
   z.object({ action: z.literal("revision-deny"), id: Id, note: z.string().max(4000).optional() }),
   // The owner's counter-edit. `after` replaces the proposal and the note
   // tells the agent what to do with it.
@@ -135,6 +145,68 @@ export async function POST(req: NextRequest) {
         : supa.from("patch_notes").insert({ ...row, status: "draft" }).select(columns).maybeSingle(),
     );
     return { row: data as unknown as PatchNoteRow | null, error };
+  }
+
+  type RevisionToAccept = { id: string; version: string; status: string; note_id: string | null; author: string; after: unknown };
+  type Accepted = { ok: true; row: PatchNoteRow | null } | { ok: false; error: string; response: NextResponse };
+  const refuse = (response: NextResponse, error: string): Accepted => ({ ok: false, error, response });
+
+  /**
+   * Accept one proposal: write its note, mark it accepted, log it. The one
+   * path for Accept and for Accept all, so the two can never differ.
+   */
+  async function acceptRevision(rev: RevisionToAccept): Promise<Accepted> {
+    if (rev.status === "accepted" || rev.status === "denied") {
+      const error = `That revision is already ${rev.status}.`;
+      return refuse(NextResponse.json({ error }, { status: 409 }), error);
+    }
+    const after = PatchNoteInput.safeParse(rev.after);
+    if (!after.success) {
+      const error = "The proposed note is not a valid note.";
+      return refuse(NextResponse.json({ error, detail: String(after.error) }, { status: 400 }), error);
+    }
+    const bad = emDashField(after.data);
+    if (bad) {
+      const error = `The proposed ${bad} carries an em dash. Deny it or suggest a fix.`;
+      return refuse(NextResponse.json({ error }, { status: 400 }), error);
+    }
+
+    // A proposal for an existing note that was made by version rather than
+    // by id (the script does this) still lands on the right row.
+    let targetId: string | null = rev.note_id;
+    if (!targetId) {
+      const { data: byVersion } = await supa
+        .from("patch_notes")
+        .select("id")
+        .eq("version", after.data.version)
+        .maybeSingle();
+      targetId = (byVersion?.id as string | undefined) ?? null;
+    }
+    const prior = targetId ? (await readNote(targetId)).row : null;
+    // The name comes from the proposal as it was filed, not from the parsed
+    // copy, where a default has made "said nothing" look like "no name". A
+    // proposal older than names would otherwise take the release's name off.
+    const input = { ...after.data, name: proposedName(rev.after as Record<string, unknown>, prior) };
+    const { row, error } = await writeNote(input, targetId ?? undefined, prior);
+    if (isColumnAbsent(error)) {
+      return refuse(nameNotApplied("send this proposal back without the name it gives the release"), "The table has no name column yet.");
+    }
+    if (error) return refuse(failed("Could not apply that revision.", error.message), "Could not apply that revision.");
+
+    const { error: markErr } = await supa
+      .from("patch_note_revisions")
+      .update({ status: "accepted", reviewed_by_email: email, reviewed_at: now })
+      .eq("id", rev.id);
+    if (markErr) return refuse(failed("Applied, but could not mark the revision accepted.", markErr.message), "Applied, but could not mark it accepted.");
+
+    void logActivity({
+      actorEmail: admin!.email ?? null,
+      action: "patch_note_revision.accept",
+      entityType: "patch_note_revision",
+      entityId: rev.id,
+      detail: { author: rev.author, version: after.data.version, noteId: row?.id ?? null, previous: prior },
+    });
+    return { ok: true, row };
   }
 
   switch (parsed.action) {
@@ -271,59 +343,63 @@ export async function POST(req: NextRequest) {
         .maybeSingle();
       if (absent(readErr)) return notApplied();
       if (!rev) return NextResponse.json({ error: "No such revision." }, { status: 404 });
-      if (rev.status === "accepted" || rev.status === "denied") {
-        return NextResponse.json({ error: `That revision is already ${rev.status}.` }, { status: 409 });
-      }
-      const after = PatchNoteInput.safeParse(rev.after);
-      if (!after.success) {
-        return NextResponse.json(
-          { error: "The proposed note is not a valid note.", detail: String(after.error) },
-          { status: 400 },
-        );
-      }
-      const bad = emDashField(after.data);
-      if (bad) {
-        return NextResponse.json(
-          { error: `The proposed ${bad} carries an em dash. Deny it or suggest a fix.` },
-          { status: 400 },
-        );
-      }
+      const done = await acceptRevision(rev as RevisionToAccept);
+      if (!done.ok) return done.response;
+      revalidatePath("/whats-new");
+      return NextResponse.json({ ok: true, note: done.row });
+    }
 
-      // A proposal for an existing note that was made by version rather than
-      // by id (the script does this) still lands on the right row.
-      let targetId: string | null = rev.note_id as string | null;
-      if (!targetId) {
-        const { data: byVersion } = await supa
-          .from("patch_notes")
-          .select("id")
-          .eq("version", after.data.version)
-          .maybeSingle();
-        targetId = (byVersion?.id as string | undefined) ?? null;
-      }
-      const prior = targetId ? (await readNote(targetId)).row : null;
-      // The name comes from the proposal as it was filed, not from the parsed
-      // copy, where a default has made "said nothing" look like "no name". A
-      // proposal older than names would otherwise take the release's name off.
-      const input = { ...after.data, name: proposedName(rev.after, prior) };
-      const { row, error } = await writeNote(input, targetId ?? undefined, prior);
-      if (isColumnAbsent(error)) return nameNotApplied("send this proposal back without the name it gives the release");
-      if (error) return failed("Could not apply that revision.", error.message);
-
-      const { error: markErr } = await supa
+    case "revision-accept-all": {
+      const { data: waiting, error: readErr } = await supa
         .from("patch_note_revisions")
-        .update({ status: "accepted", reviewed_by_email: email, reviewed_at: now })
-        .eq("id", parsed.id);
-      if (markErr) return failed("Applied, but could not mark the revision accepted.", markErr.message);
+        .select("*")
+        .eq("status", "pending")
+        .order("created_at", { ascending: true });
+      if (absent(readErr)) return notApplied();
+      if (readErr) return failed("Could not read the queue.", readErr.message);
+      // One at a time, oldest first, as he would have pressed them: a second
+      // proposal on the same note lands after the first.
+      let accepted = 0;
+      const refused: { version: string; error: string }[] = [];
+      for (const rev of (waiting ?? []) as RevisionToAccept[]) {
+        const done = await acceptRevision(rev);
+        if (done.ok) accepted++;
+        else refused.push({ version: String(rev.version), error: done.error });
+      }
+      if (accepted) revalidatePath("/whats-new");
+      return NextResponse.json({ ok: refused.length === 0, accepted, refused });
+    }
 
+    case "branch-propose": {
+      const [{ data: rows, error: notesErr }, { data: open, error: revErr }] = await Promise.all([
+        withNameColumn(async (columns) => supa.from("patch_notes").select(columns)),
+        supa.from("patch_note_revisions").select("version").in("status", ["pending", "suggested"]),
+      ]);
+      if (absent(notesErr) || absent(revErr)) return notApplied();
+      if (notesErr || revErr) return failed("Could not read the notes.", (notesErr ?? revErr)!.message);
+      const waiting = new Set(((open ?? []) as { version: string }[]).map((r) => r.version));
+      const found = branchWords(ENTRIES, (rows ?? []) as unknown as PatchNoteRow[], waiting);
+      if (found.length === 0) return NextResponse.json({ ok: true, filed: 0 });
+      const { error } = await supa.from("patch_note_revisions").insert(
+        found.map((f) => ({
+          note_id: f.noteId,
+          version: f.version,
+          author: "claude",
+          summary: f.summary,
+          before: f.before,
+          after: f.after,
+          status: "pending",
+        })),
+      );
+      if (error) return failed("Could not put them in the queue.", error.message);
       void logActivity({
         actorEmail: admin.email ?? null,
-        action: "patch_note_revision.accept",
+        action: "patch_note_revision.branch_propose",
         entityType: "patch_note_revision",
-        entityId: parsed.id,
-        detail: { author: rev.author, version: after.data.version, noteId: row?.id ?? null, previous: prior },
+        entityId: null,
+        detail: { versions: found.map((f) => f.version) },
       });
-      revalidatePath("/whats-new");
-      return NextResponse.json({ ok: true, note: row });
+      return NextResponse.json({ ok: true, filed: found.length });
     }
 
     case "revision-deny": {
