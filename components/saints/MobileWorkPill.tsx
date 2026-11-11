@@ -7,7 +7,7 @@ import { AmbienceButton } from "@/components/player/AmbienceButton";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { WORDS_PER_MINUTE } from "@/lib/bible/readability";
 import { cn } from "@/lib/cn";
-import { goesByPlace, pillAt, type PillLevel, type SectionHead } from "@/lib/saints/parts";
+import { pillAt, type PillLevel, type SectionHead } from "@/lib/saints/parts";
 import { PLACE_ROWS, parsePlace } from "@/lib/saints/paragraphInView";
 import { openWorkContents } from "@/lib/saints/workNow";
 import { useOverlayOpen } from "@/lib/ui/overlay";
@@ -91,10 +91,11 @@ export function MobileWorkPill({
   // Every name shown whole, never cut at its end (the arbiter, 2026-11-11, on
   // checkMock's cut rule; a phone of 320 has 96px for it). The names start as
   // the work keeps them and step down, for the whole work at once, until none
-  // is cut: every part to "Part 3" where any is named by its own words, then
-  // a numbered name to its numbers (lib/saints/parts.ts, pillAt). The full names stay in the contents
-  // the name opens and in what it says to a screen reader. Another work,
-  // another language, a turned screen or the font arriving starts it again.
+  // is cut: a chapter's own title to "Part 3", then a numbered name to its
+  // numbers, a numbered part never by its place (lib/saints/parts.ts, pillAt).
+  // The full names stay in the contents the name opens and in what it says to
+  // a screen reader. Another work, another language, a turned screen or the
+  // font arriving starts it again.
   const full = heads.map(pill).join("\n");
   const [level, setLevel] = useState<PillLevel>(0);
   const [measuredFor, setMeasuredFor] = useState(full);
@@ -108,10 +109,8 @@ export function MobileWorkPill({
   // ("Ecclesiastical History VII.28" at 320, on four Lives that checkMock
   // failed, 2026-11-11).
   const [measures, setMeasures] = useState(0);
-  // One kind of name per work at each level (lib/saints/parts.ts, goesByPlace).
-  const byPlace = goesByPlace(heads);
   const at = Math.max(0, heads.findIndex((h) => h.n === head.n));
-  const names = heads.map((h, i) => sayPill(pillAt(h, i, level, byPlace)));
+  const names = heads.map((h, i) => sayPill(pillAt(h, i, level)));
   const name = names[at] ?? pill(head);
   const widest = widestNames(names).filter((n) => n !== name);
   // A name of the work's own is English; one from the catalog, or a number, is the reader's.

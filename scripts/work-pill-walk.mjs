@@ -9,10 +9,11 @@
 // (Cassian's Conferences, which has hundreds, by its first chapters and its
 // longest names), fails on a name the pill cuts or a pill under 44px, checks
 // that the contents the name opens still name every chapter in full, and runs
-// checkMock's cut rule over the whole screen at 390. Each work stands one kind
-// of name through at the level it reaches (by place, or its own numbers; the
-// arbiter, 2026-11-11, of Photius), and is opened wide and turned to 320, where
-// a name that fitted wide once stayed cut (four Lives, the same day).
+// checkMock's cut rule over the whole screen at 390. A numbered part keeps its
+// own number in the pill, as its heading has it, never "Part n" by its place
+// (the arbiter, 2026-11-11, after the stills of Photius: "Codex 1" over
+// "Part 2"), and each work is opened wide and turned to 320, where a name that
+// fitted wide once stayed cut (four Lives, the same day).
 //
 //   npm run build:android
 //   NODE_USE_ENV_PROXY=1 node scripts/work-pill-walk.mjs [--works saint/work,saint/work]
@@ -100,8 +101,16 @@ for (const key of WORKS) {
       seen.push(`${p?.text} (${p?.level})`);
       say(`${key} at ${width}, chapter ${sec.n}: the pill's name is whole`, p && p.text && p.cut.length === 0 && p.h >= 44, p);
       // Where the pill says "Part 3", a screen reader still hears the chapter's full name: its own
-      // title (the work's, for a work of one section), or for a numbered part ("Codex 6", which a
-      // work that goes by place calls "Part 4" too) its own numbered name.
+      // title (the work's, for a work of one section), or for a part whose heading is itself
+      // numbered "Part 3", that name.
+      // A numbered part ("Codex 1", "Conference 1, Chapter 10") keeps its own number in the pill,
+      // as its heading has it: its name, or its numbers alone ("1", "1 · 10"), never its place.
+      const own = numberingOf(sec.title);
+      if (own && p?.text) {
+        const number = own.split(" ")[1];
+        const kept = p.text === own || p.text.startsWith(`${own} `) || p.text === number || p.text.startsWith(`${number} \u00b7 `);
+        say(`${key} at ${width}, chapter ${sec.n}: the pill keeps its own number, as its heading "${own}" does`, kept, p.text);
+      }
       if (p?.text && /^Part \d+$/.test(p.text)) {
         asParts.push(sec);
         const numbered = numberingOf(sec.title);
@@ -130,11 +139,6 @@ for (const key of WORKS) {
       const cuts = r.failures.filter((f) => f.check === "cut");
       say(`${key}: checkMock finds no name cut on the screen`, cuts.length === 0, cuts.slice(0, 3));
     }
-    // One kind of name through the work at the level it stands at (the arbiter, of Photius's
-    // "Part 1, Codex 1, Part 3, Codex 6"): all by place, or all the work's own numbers.
-    const kinds = new Set(seen.map((x) => (/^Part \d+ /.test(x) ? "place" : /^[0-9IVXLC]+( \u00b7 \d+)? /.test(x) ? "numbers" : "named")));
-    const lvl = seen.map((x) => x.match(/\((\d)\)$/)?.[1]);
-    if (lvl.every((l) => l && l !== "0")) say(`${key} at ${width}: one kind of name through the work`, kinds.size === 1, [...kinds]);
     console.log(`  ${key} at ${width}: ${seen.join(" | ")}`);
     await browser.close();
   }

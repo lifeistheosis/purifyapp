@@ -19,7 +19,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { divisionsOf } from "@/lib/saints/divisions";
-import { goesByPlace, partsOf, pillAt, type PillLevel, type SectionHead } from "@/lib/saints/parts";
+import { numberShown, partsOf, pillAt, type PillLevel, type SectionHead } from "@/lib/saints/parts";
 import { SAINTS } from "@/lib/saints/saints";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");
@@ -45,31 +45,30 @@ const byKey = (key: string) => WORKS.find((w) => w.key === key)!.heads;
 describe("a part's name in the pill", () => {
   it("is the name as the work keeps it at the first level, for every part of every work", () => {
     expect(WORKS.length).toBeGreaterThan(200);
-    for (const { heads } of WORKS) heads.forEach((h, i) => expect(pillAt(h, i, 0, goesByPlace(heads))).toBe(h.pill));
+    for (const { heads } of WORKS) heads.forEach((h, i) => expect(pillAt(h, i, 0)).toBe(h.pill));
   });
 
   it("becomes Part 1, 2, 3 by its place where it is a chapter's own title or the work's, at the second", () => {
     const life = byKey("ignatius-of-antioch/life-of-ignatius");
     expect(life.map((h) => h.pill.name)).toEqual(life.map(() => ({ text: expect.any(String) })));
-    expect(life.map((h, i) => pillAt(h, i, 1, goesByPlace(life)))).toEqual([1, 2, 3, 4].map((n) => ({ name: { level: "part", n } })));
+    expect(life.map((h, i) => pillAt(h, i, 1))).toEqual([1, 2, 3, 4].map((n) => ({ name: { level: "part", n } })));
     // A numbered name stays as it is.
     const conferences = byKey("john-cassian/conferences");
     const second = conferences.find((h) => h.pill.inner !== undefined)!;
-    expect(goesByPlace(conferences)).toBe(false);
-    expect(pillAt(second, conferences.indexOf(second), 1, false)).toBe(second.pill);
+    expect(pillAt(second, conferences.indexOf(second), 1)).toBe(second.pill);
   });
 
   it("keeps a numbered name's numbers alone at the third, as the edition prints them", () => {
     const conferences = byKey("john-cassian/conferences");
     const h = conferences.find((x) => x.pill.inner !== undefined)!;
-    const shown = pillAt(h, conferences.indexOf(h), 2, goesByPlace(conferences)).name;
+    const shown = pillAt(h, conferences.indexOf(h), 2).name;
     expect(shown).toEqual({ text: `${"n" in h.pill.name ? h.pill.name.n : ""} \u00b7 ${h.pill.inner}` });
     const hymns = byKey("ephraim-the-syrian/hymns-on-the-nativity");
     const roman = hymns.find((x) => "roman" in x.pill.name)!;
-    expect(pillAt(roman, hymns.indexOf(roman), 2, goesByPlace(hymns)).name).toEqual({ text: expect.stringMatching(/^[IVXLC]+$/) });
+    expect(pillAt(roman, hymns.indexOf(roman), 2).name).toEqual({ text: expect.stringMatching(/^[IVXLC]+$/) });
     // A chapter's own title stays "Part n".
     const life = byKey("ignatius-of-antioch/life-of-ignatius");
-    expect(pillAt(life[2], 2, 2, goesByPlace(life))).toEqual({ name: { level: "part", n: 3 } });
+    expect(pillAt(life[2], 2, 2)).toEqual({ name: { level: "part", n: 3 } });
   });
 
   it("is short at the last level in every work of the library, so a phone of 320 has room for it", () => {
@@ -77,7 +76,7 @@ describe("a part's name in the pill", () => {
     let longest = "";
     for (const { heads } of WORKS) {
       heads.forEach((h, i) => {
-        const p = pillAt(h, i, 2, goesByPlace(heads));
+        const p = pillAt(h, i, 2);
         const said = "text" in p.name ? p.name.text : `Part ${p.name.n}`;
         if (said.length > longest.length) longest = said;
       });
@@ -85,24 +84,40 @@ describe("a part's name in the pill", () => {
     expect(longest.length, longest).toBeLessThanOrEqual(11);
   });
 
-  // The arbiter, 2026-11-11, of Photius's Bibliotheca, whose pill read "Part 1,
-  // Codex 1, Part 3, Codex 6" as it stepped down: one kind of name per work at
-  // each level, so the count never jumps; the codices' numbers stay in the
-  // contents and the heading.
-  it("is one kind of name through a work at each level: by place throughout, or the work's own numbers throughout", () => {
-    const kind = (p: SectionHead["pill"]) => ("text" in p.name ? (/^[0-9IVXLC]+( \u00b7 \d+)?$/.test(p.name.text) ? "numbers" : "title") : p.name.level === "part" ? "place" : "numbered");
+  // The arbiter, 2026-11-11, after the stills of Photius's Bibliotheca: a heading of "Codex 1"
+  // over a pill of "Part 2" told the reader two things at once (a ruling of the same day had made
+  // every part of a work go by its place once any did, and was reversed). A part the edition
+  // numbers keeps its own number in the pill at every level, as its heading has it; only a part
+  // named by its own words takes "Part n", by its place.
+  it("never names a part otherwise than its heading does: a numbered part keeps its own number at every level", () => {
+    let numbered = 0;
     for (const { key, heads } of WORKS) {
-      const byPlace = goesByPlace(heads);
-      for (const level of [1, 2] as PillLevel[]) {
-        const kinds = new Set(heads.map((h, i) => kind(pillAt(h, i, level, byPlace))));
-        expect(kinds.size, `${key} at level ${level}: ${[...kinds].join(", ")}`).toBe(1);
-        if (byPlace) expect(heads.map((h, i) => pillAt(h, i, level, byPlace)), key).toEqual(heads.map((_, i) => ({ name: { level: "part", n: i + 1 } })));
-      }
+      heads.forEach((h, i) => {
+        const { name, inner } = h.pill;
+        for (const level of [1, 2] as PillLevel[]) {
+          const shown = pillAt(h, i, level);
+          const where = `${key}, part ${i + 1}, at level ${level}`;
+          if ("text" in name) {
+            expect(shown, where).toEqual({ name: { level: "part", n: i + 1 } });
+            continue;
+          }
+          numbered++;
+          // Its own name as the work keeps it, or its own numbers alone; never its place.
+          if (level === 1) expect(shown, where).toBe(h.pill);
+          else expect(shown, where).toEqual({ name: { text: inner !== undefined ? `${numberShown(name)} \u00b7 ${inner}` : numberShown(name) } });
+        }
+      });
     }
-    // The Bibliotheca itself: its titled parts and its codices all go by place from the second level.
+    expect(numbered).toBeGreaterThan(1000);
+    // The Bibliotheca itself: "Codex 1", its second part, is "Codex 1" and then "1" in the pill, never "Part 2".
     const photius = byKey("photius-the-great/the-bibliotheca");
-    expect(photius.some((h) => "text" in h.pill.name) && photius.some((h) => !("text" in h.pill.name))).toBe(true);
-    expect(photius.slice(0, 5).map((h, i) => pillAt(h, i, 1, goesByPlace(photius)))).toEqual([1, 2, 3, 4, 5].map((n) => ({ name: { level: "part", n } })));
+    const at = photius.findIndex((h, i) => !("text" in h.pill.name) && h.pill.name.n !== i + 1);
+    const codex = photius[at];
+    expect(codex.pill.name).toEqual({ level: "codex", n: 1 });
+    expect(pillAt(codex, at, 1)).toBe(codex.pill);
+    expect(pillAt(codex, at, 2)).toEqual({ name: { text: "1" } });
+    // Its titled first part, Photius's letter to his brother, goes by its place.
+    expect(pillAt(photius[0], 0, 1)).toEqual({ name: { level: "part", n: 1 } });
   });
 });
 
@@ -110,8 +125,7 @@ describe("the pill", () => {
   const src = fs.readFileSync(path.join(ROOT, "components", "saints", "MobileWorkPill.tsx"), "utf8");
 
   it("measures its names before the frame is painted and steps down while one is cut, for the whole work", () => {
-    expect(src).toContain("const byPlace = goesByPlace(heads);");
-    expect(src).toContain("const names = heads.map((h, i) => sayPill(pillAt(h, i, level, byPlace)));");
+    expect(src).toContain("const names = heads.map((h, i) => sayPill(pillAt(h, i, level)));");
     expect(src).toContain("const cut = Array.from(box.children).some((el) => el.scrollWidth > el.clientWidth + 0.5);");
     expect(src).toContain("if (cut) setLevel((l) => (l < 2 ? ((l + 1) as PillLevel) : l));");
     expect(src).toContain("const useIsoLayoutEffect = typeof window !== \"undefined\" ? useLayoutEffect : useEffect;");
