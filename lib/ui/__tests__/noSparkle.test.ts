@@ -20,6 +20,8 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { fourPointStars } from "@/scripts/lib/four-point-star.mjs";
+
 const ROOT = path.resolve(__dirname, "..", "..", "..");
 const ROOTS = ["app", "components", "lib"];
 const KINDS = /\.(css|tsx?|mjs|js|json|svg|html)$/;
@@ -48,15 +50,27 @@ const ICON = [
   /(["'`])sparkles?\1/i,
 ];
 
-function walk(dir: string, out: string[] = []): string[] {
+function walk(dir: string, out: string[] = [], kinds: RegExp = KINDS): string[] {
   for (const name of readdirSync(dir)) {
     if (name === "node_modules" || name === "__tests__") continue;
     const file = path.join(dir, name);
-    if (statSync(file).isDirectory()) walk(file, out);
-    else if (KINDS.test(name)) out.push(file);
+    if (statSync(file).isDirectory()) walk(file, out, kinds);
+    else if (kinds.test(name)) out.push(file);
   }
   return out;
 }
+
+/**
+ * A star of four points drawn as its own shape, which no name finds: the
+ * Nativity card's star, the gift's wax seal and the desktop's Discord Plus
+ * mode were found this way (the SSM board's shape check,
+ * scripts/lib/four-point-star.mjs, 8c891a552). The pictures in public/ are
+ * read too. One waits on its owner, named here: it leaves this list when it
+ * is redrawn, and the test below fails until it does.
+ */
+const DRAWN_WAITING: Record<string, string> = {
+  "public/themes/nightsky-horizon.svg": "Fable Themes: the Night sky mode's picture, made by scripts/theme-pictures.mjs (build 93 note 7)",
+};
 
 const rel = (f: string) => path.relative(ROOT, f).replace(/\\/g, "/");
 
@@ -86,6 +100,21 @@ describe("no sparkle star in the app", () => {
       return GLYPH.test(src) || ESCAPED.test(src) ? [rel(f)] : [];
     });
     expect(found, "a sparkle character; give the place an icon from components/ui/icons that names what it is").toEqual([]);
+  });
+
+  it("draws no star of four points, in the code or in public/'s pictures", () => {
+    const pictures = walk(path.join(ROOT, "public"), [], /\.(svg|html)$/);
+    const found = [...files, ...pictures].flatMap((f) => {
+      const stars = fourPointStars(readFileSync(f, "utf8"));
+      return stars.length && !DRAWN_WAITING[rel(f)] ? [`${rel(f)}: ${stars.length}`] : [];
+    });
+    expect(found, "a four-point star drawn; draw what the place is (the Octogram for the star of Bethlehem)").toEqual([]);
+  });
+
+  it("each picture still waiting on its owner still holds one (so the list only shrinks)", () => {
+    for (const [file, owner] of Object.entries(DRAWN_WAITING)) {
+      expect(fourPointStars(readFileSync(path.join(ROOT, file), "utf8")).length, `${file} is redrawn: take it off DRAWN_WAITING (${owner})`).toBeGreaterThan(0);
+    }
   });
 
   it("knows a sparkle when it sees one, and the stars that are not", () => {

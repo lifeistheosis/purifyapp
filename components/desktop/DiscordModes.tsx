@@ -126,10 +126,14 @@ function ModeIcon({ mode }: { mode: Exclude<PresenceMode, "off"> }) {
         </svg>
       );
     default:
+      // Plus custom: any of the three, framed in the church season's color,
+      // so a portrait in its frame. It wore the four-point sparkle, which the
+      // owner named AI slop (CLAUDE.md, "No sparkle star").
       return (
         <svg {...common}>
-          <path d="M11 3.5l1.7 4.8 4.8 1.7-4.8 1.7-1.7 4.8-1.7-4.8-4.8-1.7 4.8-1.7z" />
-          <path d="M18 15l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" />
+          <rect x="3.5" y="3.5" width="17" height="17" rx="3" />
+          <circle cx="12" cy="10" r="2.6" />
+          <path d="M7.5 17.5c1-2.4 2.6-3.6 4.5-3.6s3.5 1.2 4.5 3.6" />
         </svg>
       );
   }

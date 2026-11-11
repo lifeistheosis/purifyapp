@@ -163,13 +163,11 @@ export function NativityStarCard({ days, className }: { days: readonly NativityD
             className="relative"
             style={{ filter: "drop-shadow(0 0 4px rgb(255 255 255 / 0.9))" }}
           >
-            <path d="M12 1.5 L13.3 10.7 L22.5 12 L13.3 13.3 L12 22.5 L10.7 13.3 L1.5 12 L10.7 10.7 Z" fill="#fff" />
-            <path
-              d="M12 6.5 L12.8 11.2 L17.5 12 L12.8 12.8 L12 17.5 L11.2 12.8 L6.5 12 L11.2 11.2 Z"
-              fill="#fff"
-              opacity={0.8}
-              transform="rotate(45 12 12)"
-            />
+            {/* The star of Bethlehem: eight points, the Octogram's two squares
+                (components/ui/icons/Octogram.tsx), never the four-point
+                sparkle (CLAUDE.md, "No sparkle star"). */}
+            <rect x="5.6" y="5.6" width="12.8" height="12.8" fill="#fff" />
+            <polygon points="12,2.5 21.5,12 12,21.5 2.5,12" fill="#fff" />
           </svg>
         </span>
       </span>

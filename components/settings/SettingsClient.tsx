@@ -78,11 +78,11 @@ import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Info } from "@/components/ui/icons/Info";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Lock } from "@/components/ui/icons/Lock";
-import { Scroll } from "@/components/ui/icons/Scroll";
 import { Share } from "@/components/ui/icons/Share";
 import { Shield } from "@/components/ui/icons/Shield";
 import { Sliders } from "@/components/ui/icons/Sliders";
 import { Sun } from "@/components/ui/icons/Sun";
+import { TimelineList } from "@/components/ui/icons/TimelineList";
 import { User } from "@/components/ui/icons/User";
 import { Wheat } from "@/components/ui/icons/Wheat";
 import { Wind } from "@/components/ui/icons/Wind";
@@ -309,7 +309,7 @@ function AboutSection({ developer }: { developer: boolean }) {
       {/* No second line under these: each name says what it opens. */}
       <LinkRow href="/privacy" icon={<Shield size={17} />} label={t("footer.privacy")} />
       <LinkRow href="/support" icon={<Lampada size={18} />} label={t("nav.supportPurify")} />
-      <LinkRow href="/whats-new" icon={<Scroll size={18} />} label={t("nav.whatsNew")} />
+      <LinkRow href="/whats-new" icon={<TimelineList size={17} />} label={t("nav.whatsNew")} />
       <LinkRow href="/about" icon={<Info size={17} />} label={t("nav.about")} />
       {developer ? <LinkRow href="/account/developer" icon={<Bolt size={16} strokeWidth={1.7} />} label={t("ui.developer")} /> : null}
     </Section>

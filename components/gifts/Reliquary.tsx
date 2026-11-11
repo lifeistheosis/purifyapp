@@ -274,9 +274,12 @@ export function Reliquary({
             <g className={opening ? "gift-seal-right" : ""} style={sealStyle}>
               <path d="M100 96 A12 12 0 0 1 100 120 Z" fill="url(#gx-wax)" />
               <path
-                d="M100 102 L101.4 107 L106 108 L101.4 109 L100 114 L98.6 109 L94 108 L98.6 107 Z"
-                fill="#8a7a5e"
-                fillOpacity="0.75"
+                d="M100 102.3v11.4M97.9 104.4h4.2M96.1 106.5h7.8M97.6 109.2l4.8 1.5"
+                fill="none"
+                stroke="#8a7a5e"
+                strokeOpacity="0.75"
+                strokeWidth="1.1"
+                strokeLinecap="round"
               />
             </g>
           </>
@@ -285,9 +288,12 @@ export function Reliquary({
           <g className={opening ? "gift-seal-right" : ""} style={sealStyle}>
             <circle cx="100" cy="108" r="12" fill="url(#gx-wax)" />
             <path
-              d="M100 102 L101.4 107 L106 108 L101.4 109 L100 114 L98.6 109 L94 108 L98.6 107 Z"
-              fill="#8a7a5e"
-              fillOpacity="0.75"
+              d="M100 102.3v11.4M97.9 104.4h4.2M96.1 106.5h7.8M97.6 109.2l4.8 1.5"
+              fill="none"
+              stroke="#8a7a5e"
+              strokeOpacity="0.75"
+              strokeWidth="1.1"
+              strokeLinecap="round"
             />
           </g>
         )}
