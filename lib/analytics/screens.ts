@@ -246,6 +246,8 @@ const RULES: readonly (readonly [string, ScreenKey])[] = [
   ["/support/**", "support"],
   ["/language-editor", "language-editor"],
   ["/email/unsubscribe", "email-lists"],
+  // Where the change-of-email links land (Admin's 80536b131): part of account settings.
+  ["/email/change", "account-settings"],
 
   ["/shop", "shop"],
   ["/shop/icons/*", "shop-item"],
