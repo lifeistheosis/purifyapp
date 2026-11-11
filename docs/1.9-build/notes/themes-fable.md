@@ -4692,3 +4692,209 @@ five cases fail on the code before.
   chat's copy was dropped unpushed. Read on the export as built: under
   Greek, "Psalm 135, Greek · Psalm · 8:25"; no line under any tradition
   names another.
+
+## 60. The page-switch walk loses no verdict, and walks the locked door
+
+`5dcec709`. The arbiter, 2026-11-11 12:44 UTC, giving `scripts/route-motion.mjs` to this
+chat: "one walk's throw must never lose the others' verdicts; on the gate's
+selling export the Plus walks run as a Plus reader the way Admin's walks do,
+and the Florilegium's locked door is walked as a reader without Plus."
+
+**What was wrong.** The walk was one long walk in one `try`, and its report
+was handed back at the end. A tap on something that was not there waited
+thirty seconds and threw, and every verdict already reached went with the
+throw. That is what happened here on an export that locked the Florilegium
+(section 59): of the 34 verdicts the walk then owed, the seventeen before
+the Florilegium had been reached and were lost, and the seventeen from it
+on were never walked.
+
+**A correction to section 59.** It said that export was cut "with Plus
+enforced, which is how the gate cuts its own". It was not cut as the gate
+cuts its own. This chat's build recipe sold Plus in both stores. The gate's
+sells on Android alone (`NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1
+NEXT_PUBLIC_REVENUECAT_ANDROID_KEY=walk`, gate-run-1.md), and a selling
+export locks a page only where the page says which app it is: the walk's
+phone is a page not known to be either app, which is locked only when both
+stores sell (`lib/entitlements/entitlements.ts`, `native-unknown`). So on
+the gate's export the Florilegium was never locked for this walk, and it
+would not have thrown there. The fault that one throw loses every verdict
+was real on any export, at any step.
+
+**What it does now.**
+
+- The walk is taken a stretch at a time (`scripts/lib/stretches.mjs`, new).
+  A stretch names the verdicts it owes before it sets out. A throw is
+  written against the first one it had not reached, in one line (what was
+  thrown, and what it was waiting for), the rest of that stretch as "not
+  walked", and the walk goes on. 32 stretches, 50 verdicts.
+- After a stretch that stopped, the next has a new page of the same phone:
+  the page that fell is closed with whatever it left open, and a rule or a
+  reader's place a stopped walk had set for itself is taken off the phone.
+  A stretch that used to begin where the one before ended (Back after
+  forward, a gathering after a starter) now looks whether it is there and
+  goes there if not.
+- Every verdict is said as it is reached, and every run says the same 50 by
+  the same names. Where a walk used to say one line for two (no saint on
+  screen to tap, so no way back either), it says both.
+- Nothing else of the walks changed: the same taps and waits in the same
+  order. Fable Theology added four verdicts to the walk in the same hour
+  (`176758a0`: a picture tile, a chapter's Back), so the change was put on
+  its version by a script anchored on the walk's own lines, and
+  `git diff -w` against its version shows the walks' lines as they were
+  but for the names.
+- **Two readers.** Every walk but one is the page as it was: not known to be
+  either app, for which the gate's export locks nothing, the way Admin's two
+  walks are without `SELLS_PLUS`. The locked door is walked on a second
+  phone that says it is the Android shell (`scripts/lib/sells-plus.mjs`,
+  Admin's): a reader with no Plus, with two gatherings on the phone as a
+  reader's are whose Plus has lapsed.
+- **The locked door, four verdicts.** You's row for the Florilegium wears
+  the padlock and opens the page all the same, in one switch; the door
+  stands on it, with no starter offered, the reader's two gatherings under
+  it, the page at its top, and on no frame of the way in is the hub drawn
+  first (every animation frame is read for 2.5 seconds). Back to You is one
+  switch and the row is where it was. A gathering under the door opens as a
+  page of its own, its lines there, nothing on it that changes it, the door
+  under the lines. Back from it, and the door still stands.
+- On an export that sells nothing there is no door: its four verdicts are
+  said as not asked, counted apart, never as passed. `SELLS_PLUS=1` refuses
+  such an export outright, as Admin's walks do. On an export that sells in
+  both stores the first reader is locked too, and the Florilegium's four
+  Plus stretches say so in a line each and fail, in seconds.
+
+**Measured.**
+
+- Build 11 (cut 12:11 UTC from `9578c864` with sections 56 to 58's work,
+  Plus sold in both stores, section 59's recipe): 46 verdicts said, none
+  lost, exit 1. 31 passed. Of the 15 that did not, 7 were the Plus
+  walks, each saying the reader was locked, and 8 were Fable Theology's two
+  newest walks (Your rule's tile, a saint's wide picture), whose code was
+  pushed at 12:19, after that export was cut. The door's four passed.
+- Build 12 (cut 13:15 UTC from `e6c2a49d` with this work, as the gate cuts
+  its own): `SELLS_PLUS=1 node scripts/route-motion.mjs`, 50 of 50, exit 0,
+  two and a quarter minutes. You's row was at 512px and came back at 512px.
+- `lib/ui/__tests__/walkStretches.test.ts`, 17 cases: the keeping of
+  verdicts (a throw before, between and after them; a verdict gone by; two
+  stretches owing one name; a phone that will not open), and the walk held
+  to it (no verdict written by a name of the walk's own, no page walked
+  outside a stretch, the door on a phone that says it is the Android shell
+  and only where the export sells). Seven fail on the walk as it was.
+
+## 61. The room kept for a saint's card not yet drawn follows the width
+
+`c154de0d`. The arbiter, 12:44 UTC: "let the undrawn card's height follow the width at
+the two ends (about 310), so a card that draws in never moves the page;
+prove it on the next build."
+
+The saints' list draws only the cards near the screen and gives every other
+card a height to stand in for it (`app/globals.css`, `.cv-card`). It was
+280px at every width. Measured again on the export at thirty-four widths,
+every card drawn, 269 saints, the mean height of a row:
+
+| wide | columns | a row's mean | the room kept now |
+| --- | --- | --- | --- |
+| 320 | 1 | 314 | 310 |
+| 340 | 1 | 296 | 293 |
+| 360 to 390 | 1 | 287 to 276 | 280 |
+| 400 to 430 | 1 | 271 to 261 | 266 |
+| 480 to 767 | 1 | 255 to 249 | 252 |
+| 768 | 2 | 289 | 284 |
+| 820 | 2 | 276 | 272 |
+| 912 to 1023 | 2 | 264 to 257 | 261 |
+| 1024 to 1100 | 3 | 310 to 300 | 303 |
+| 1120 to 1200 | 3 | 296 to 284 | 289 |
+| 1240 and up | 3 | 278 to 274 | 276 |
+
+A card is as tall as its lines, and its lines wrap by how wide the card is,
+so the mean falls as the screen widens and steps up wherever the grid gains
+a column. At 280 everywhere the list, before its cards were drawn, was
+8,984px short of itself at 320 wide (ten screens), 7,870px long at 600, and
+2,586px short at 1024.
+
+**This went one step past the arbiter's words, and it is told so.** It named
+the two ends, and they are about 310 as it said: 310 at 320 wide, 303 from
+1024 (310 at 1024 itself, 300 by 1100). The same measure showed the middle
+as far out the other way: from 450 to 767 wide a card was given 25 to 31px
+too much, as it has been since 1.5.2 (section 56 had said "up to 30px"
+there). The steps cover every width, on the same build. The five in the
+middle (400, 450, 768, 810 and 880) come out in a line each if it wants
+only the ends.
+
+**Proved on build 12.**
+
+- The list before its cards are drawn against the list with every card
+  drawn, a phone newly opened at each width, twenty-eight widths from 320 to
+  1440: within 2.6% everywhere (the worst at 1219 wide). At 320: 974px short
+  where it was 8,984. At 600: 422px long where it was 7,870. At 1024: 585px
+  short where it was 2,586. Build 11, with 280 everywhere, measured the same
+  way: 10.0% out at 320, 4.5% at 412, 10.8% at 600, 3.0% at 768, 8.7% at
+  1024.
+- **The saints' filters, under the finger:** 0px on every tap, 76 taps with
+  real touch at 320, 360, 390, 820 and 1024 wide, with the browser's
+  anchoring on and off.
+- The gate's two walks on Saints and You, as each reader: the guardrail walk
+  2 of 2 with nothing failed, twice; the tap walk 55 controls, 0 failed,
+  twice.
+- `lib/saints/__tests__/cardRoom.test.ts`, 6 cases, holds each step to the
+  measure it was taken from; five fail on the stylesheet as it was. The
+  export walk's new section 76 takes the measure again on every export, at
+  seven widths, and fails past 5%: the numbers are the cards' of the day,
+  and a card redrawn or a hundred saints more would move them.
+
+**What it does not do, measured.** A reader three quarters of the way down
+the list scrolls up, and the cards above draw in as they near the screen.
+Does what is on screen move by more than the scroll?
+
+- With the browser's anchoring on, as on Android: no. One step in 500
+  finger-sized steps moved the screen more than 2px, the same before and
+  after this change. The browser holds the screen; what this change mends
+  there is the list's length, so the scroll bar and a place the browser
+  restores are true.
+- With anchoring off, as an older iPhone behaves: the steady slip is gone,
+  and single cards still move the screen. Over 18,000px scrolled up, the
+  screen had slipped 1,835px at 320 wide and is at 236; 2,180px at 600 and
+  is at 420; 1,823px at 1024 and is at 604. A step of 120px moved the screen
+  12 to 15px beyond the scroll on average and moves it 6 to 9. But a card is not
+  the mean: at 320 wide cards run from 257 to 442px. One that draws in above
+  the reader still moves the screen by its own difference from the room it
+  was given, up to 83px in one step at 320 (it was 133) and 103px at 1024,
+  where a row is as tall as its tallest card of three. No one number for a
+  width can take that away. Taking it away means every card the same
+  height, or no windowing, or a room remembered card by card; none was
+  asked, and each is a design or a speed question for the arbiter.
+
+## 62. "Optional" at the ink, on a build
+
+The arbiter, 12:44 UTC: "prove it on that build too, all five palettes."
+Section 58's measure was made with the line's one class changed in the page.
+On build 12, which has the change (`9a8b6489`), `node
+scripts/words-on-pictures.mjs you,pill-you`: Dark 6.60, Light 7.57, Black
+7.60, Candlelight 4.99, Monastery 5.54, where 4.5 is needed. The same five
+numbers. The two lines beside it pass on all five as well (on Candlelight,
+"Private on this device · no account needed" 4.75 and "Sign in" 9.76). The
+export walk's section 46, the two bars, every check passed on the same
+build. Still: `build-93/you-optional-candlelight-390.png`, You signed out on
+Candlelight, from build 12; the mock checker finds nothing failed on the
+picture's words and boxes.
+
+## 63. What is not proven (sections 60 to 62)
+
+- **Nothing here has been seen on a phone.** The next test build's walk has
+  the lines.
+- **"A Plus reader" in the walk is a page the gate's export locks nothing
+  for**, as in Admin's two walks. It is not a signed-in subscriber: no
+  account stand-in was added. When Plus is sold in both stores that page is
+  locked too, and all three walks will need one. Told to the arbiter.
+- **`SELLS_PLUS=1` refusing an export that does not sell** was not run: this
+  chat has no such export, and one build was the budget. It is Admin's own
+  check (`checkSells`), called before anything else.
+- **The locked door was not filmed**, and no still of it was taken: nothing
+  a reader sees there was changed.
+- **The card's room is the mean row in English, for the whole list.** Under
+  a filter (the 21 Apostles) the mean is another, and names in another
+  language wrap otherwise. Neither was measured.
+- **Scrolling up through cards not yet drawn still moves the screen where
+  the browser does not hold it** (section 61). Measured, told, not mended.
+- **Whether iOS holds the screen itself** is not known here: there is no
+  WebKit in this session. "Anchoring off" is Chromium with its anchoring
+  turned off, as before.
