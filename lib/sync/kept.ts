@@ -20,6 +20,8 @@ import {
   mergeReading,
   mergeRemember,
   sameValue,
+  travelling,
+  withDeviceWords,
   type ReadingSlice,
 } from "./keptMerge";
 
@@ -177,11 +179,13 @@ const SLICES: Record<KeptSlice, Adapter> = {
     empty: (v: ReturnType<typeof cleanPlansSlice>) => !Object.keys(v.plans).length && !Object.keys(v.resets).length,
   },
   remember: {
-    local: () => cleanRememberSlice(rememberStore()),
-    clean: cleanRememberSlice,
+    // A quote's words and the reader's own stay on the device until the privacy
+    // page says they travel (LEARNED_WORDS_TRAVEL, lib/sync/keptMerge.ts).
+    local: () => travelling(cleanRememberSlice(rememberStore())),
+    clean: (v: unknown) => travelling(cleanRememberSlice(v)),
     merge: mergeRemember,
-    apply: (m: ReturnType<typeof cleanRememberSlice>) => writeScheduleFromSync(m),
-    empty: (v: ReturnType<typeof cleanRememberSlice>) => !Object.keys(v.entries).length,
+    apply: (m: ReturnType<typeof cleanRememberSlice>) => writeScheduleFromSync(withDeviceWords(m, cleanRememberSlice(rememberStore()))),
+    empty: (v: ReturnType<typeof cleanRememberSlice>) => !Object.keys(v.entries).length && !Object.keys(v.items).length && !v.chosen,
   },
   places: {
     local: () => cleanPlacesSlice({ bible: readLastRead(), works: readAllPositions(), cleared: readClearedPositions() }),

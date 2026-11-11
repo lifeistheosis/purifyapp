@@ -109,7 +109,9 @@ describe("when the sync pushes", () => {
     expect(sync).toMatch(/saved\.current = bookmarks;\s*changed\.current\?\.\(\);\s*\}, \[bookmarks\]\);/);
     // The faces are worked out in the widget code, loaded at the first push.
     expect(sync).toContain("state.rememberFaces({");
-    expect(eager("lib/remember/schedule.ts")).toEqual([]);
+    // The schedule brings one file with it, the shapes of what is learned (build 93 note 11), which brings nothing.
+    expect(eager("lib/remember/schedule.ts")).toEqual(["./items"]);
+    expect(eager("lib/remember/items.ts")).toEqual([]);
   });
 
   it("pushes again when the streak or the language changes", () => {

@@ -84,10 +84,10 @@ describe("android widgets: the contract", () => {
     // Remember the verse (1.9): its faces as lib/widget/remember.ts writes them.
     const verse = { key: "john/3/16", book: "john", chapter: 3, verse: 16, label: "John 3:16", addedAt: 1 };
     const t = (k: string) => k;
-    const due = rememberFaces({ saved: [verse], store: { entries: {}, texts: { "john/3/16": "For God so loved the world" } }, today: "2026-11-09", t });
+    const due = rememberFaces({ saved: [verse], store: { entries: {}, texts: { "john/3/16": "For God so loved the world" }, items: {} }, today: "2026-11-09", t });
     const done = rememberFaces({
       saved: [verse],
-      store: { entries: { "john/3/16": { box: 1, due: "2026-11-10", at: 1 } }, answeredOn: "2026-11-09", answeredKey: "john/3/16", texts: {} },
+      store: { entries: { "john/3/16": { box: 1, due: "2026-11-10", at: 1 } }, answeredOn: "2026-11-09", answeredKey: "john/3/16", texts: {}, items: {} },
       today: "2026-11-09",
       t,
     });

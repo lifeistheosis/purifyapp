@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { MIN_WORDS, findQuote, normWords } from "../find";
+import { MIN_WORDS, bookWords, findQuote, normWords } from "../find";
 
 // "Who said it" (1.8): a line is found where the app carries it word for
 // word, a reworded one is found as close and said to be, and one the app does
@@ -41,5 +41,45 @@ describe("who said it", () => {
     expect(normWords("God is love")).toHaveLength(3);
     expect(findQuote("God is love")).toEqual([]);
     expect(MIN_WORDS).toBe(5);
+  });
+
+  // 1.9, build 93 note 11: what a reader learns by heart is the book's own
+  // words for the line, never the line as it was pasted.
+  describe("the book's own words for a line", () => {
+    const PARA =
+      "And he said: \u201cLet no one fear death, for the Saviour\u2019s death hath set us free. He hath destroyed it by enduring it.\u201d Thus far the well-known homily; the rest is not ours to add.";
+
+    it("are exactly the words a line matched, as the book prints them", () => {
+      // Pasted in the spelling that goes round: the book's spelling comes back.
+      expect(bookWords(PARA, "let no one fear death for the saviors death has set us free")).toBe(
+        "Let no one fear death, for the Saviour\u2019s death hath set us free.",
+      );
+      // A word the book joins with a hyphen is two plain words and one printed run.
+      expect(bookWords(PARA, "thus far the well known homily")).toBe("Thus far the well-known homily");
+    });
+
+    it("are the stretch that holds most of a line that is close, and never the paste", () => {
+      const pasted = "Let no one fear death, because the Savior's death has set us free and he destroyed it by enduring it";
+      const words = bookWords(PARA, pasted)!;
+      expect(words).toContain("the Saviour\u2019s death hath set us free");
+      expect(words).not.toContain("because");
+      expect(PARA).toContain(words);
+    });
+
+    it("are nothing for a line the paragraph does not hold", () => {
+      expect(bookWords(PARA, "acquire a peaceful spirit and thousands around you")).toBeNull();
+    });
+
+    it("come with every answer, word for word in its paragraph", () => {
+      const [exact] = findQuote("Let no one fear death, for the Saviour's death hath set us free.");
+      expect(normWords(exact.words)).toEqual(normWords("Let no one fear death, for the Saviour's death hath set us free."));
+      expect(exact.words).toMatch(/^Let no one fear death/);
+      const close = findQuote("Let no one fear death, for the Savior's death has set us free. He has destroyed it by enduring it.");
+      for (const f of close) {
+        expect(f.words.length).toBeGreaterThan(20);
+        expect(f.words.length).toBeLessThanOrEqual(600);
+        expect(f.words).not.toMatch(/^\u2026|\u2026$/);
+      }
+    });
   });
 });

@@ -35,6 +35,14 @@ export type Found = {
   cite: Extract<ShownCite, { kind: "father" }>;
   /** The paragraph's own words around the match, at most about 320 letters. */
   excerpt: string;
+  /**
+   * The book's own words for the line itself (1.9, build 93 note 11, Learn by
+   * heart): for a line found word for word, exactly the words it matched, as
+   * the edition prints them; for a close one, the part of the paragraph that
+   * holds most of it. Whole words in the book's order, never ours, and never
+   * the line as it was pasted. What a reader learns when they take the quote.
+   */
+  words: string;
 };
 
 type Para = { at: { saint: string; work: string } | { council: string; document: string }; section: number; paragraph: number; norm: string; text: string };
@@ -119,6 +127,86 @@ function excerptOf(text: string, words: string[]): string {
   return `${start > 0 ? "… " : ""}${text.slice(start, end).trim()}${end < text.length ? " …" : ""}`;
 }
 
+/** The most letters of the book's words handed back to learn: lib/remember/items.ts keeps as many (QUOTE_MAX). */
+const WORDS_MAX = 600;
+
+/** A run of the book's text between spaces, and the plain words it holds ("well-known," holds two; a lone dash, none). */
+type Run = { raw: string; from: number; count: number };
+
+function runsOf(text: string): { runs: Run[]; flat: string[] } {
+  const runs: Run[] = [];
+  const flat: string[] = [];
+  for (const raw of text.split(/\s+/).filter(Boolean)) {
+    const words = normWords(raw);
+    runs.push({ raw, from: flat.length, count: words.length });
+    flat.push(...words);
+  }
+  return { runs, flat };
+}
+
+/** The runs from the one holding plain word `a` to the one holding plain word `b`, as the book prints them, its edges cleared of stray marks. */
+function printed(runs: readonly Run[], a: number, b: number): string {
+  const first = runs.findIndex((r) => r.count > 0 && r.from + r.count > a);
+  let last = first;
+  for (let i = first; i < runs.length && runs[i].from <= b; i++) if (runs[i].count > 0) last = i;
+  if (first < 0) return "";
+  return runs
+    .slice(first, last + 1)
+    .map((r) => r.raw)
+    .join(" ")
+    .replace(/^[^\p{L}\p{N}]+/u, "")
+    .replace(/[^\p{L}\p{N}.?!]+$/u, "");
+}
+
+/**
+ * The book's own words for a line (Found.words). Word for word: the words the
+ * line matched. Close: the stretch of the paragraph, about as long as the
+ * line, that holds the most of its three-word runs. Null when the paragraph
+ * holds nothing of it, which a paragraph that was found never does.
+ */
+export function bookWords(text: string, line: string): string | null {
+  const words = normWords(line);
+  const { runs, flat } = runsOf(text);
+  if (words.length < 1 || !flat.length) return null;
+  let at = -1;
+  for (let i = 0; i + words.length <= flat.length && at < 0; i++) {
+    let same = true;
+    for (let j = 0; j < words.length && same; j++) same = flat[i + j] === words[j];
+    if (same) at = i;
+  }
+  let from = at;
+  let to = at + words.length - 1;
+  if (at < 0) {
+    if (words.length < 3) return null;
+    const grams = new Set(words.slice(0, words.length - 2).map((_, i) => words.slice(i, i + 3).join(" ")));
+    const hit = flat.map((_, i) => (i + 2 < flat.length && grams.has(`${flat[i]} ${flat[i + 1]} ${flat[i + 2]}`) ? 1 : 0));
+    const width = Math.min(flat.length, Math.ceil(words.length * 1.25));
+    let best = -1;
+    let most = 0;
+    let sum = 0;
+    for (let i = 0; i < flat.length; i++) {
+      sum += hit[i];
+      if (i >= width) sum -= hit[i - width];
+      if (sum > most) {
+        most = sum;
+        best = i;
+      }
+    }
+    if (best < 0) return null;
+    // The window that ended at `best`, drawn in to its first and last run that are the line's.
+    from = Math.max(0, best - width + 1);
+    to = Math.min(flat.length - 1, best + 2);
+    while (from < to && !hit[from]) from += 1;
+  }
+  let out = printed(runs, from, to);
+  // Too long to learn: whole words from its start, as many as fit.
+  while (out.length > WORDS_MAX && to > from) {
+    to -= 1;
+    out = printed(runs, from, to);
+  }
+  return out || null;
+}
+
 function citeOf(p: Para): Extract<ShownCite, { kind: "father" }> | null {
   return "saint" in p.at
     ? shownWork({ saint: p.at.saint, work: p.at.work, section: p.section, paragraph: p.paragraph })
@@ -149,7 +237,8 @@ export function findQuote(line: string): Found[] {
     const cite = citeOf(p);
     if (!cite || seen.has(cite.href)) continue;
     seen.add(cite.href);
-    found.push({ match, share: Math.round(share * 100) / 100, cite, excerpt: excerptOf(p.text, words) });
+    const excerpt = excerptOf(p.text, words);
+    found.push({ match, share: Math.round(share * 100) / 100, cite, excerpt, words: bookWords(p.text, line) ?? excerpt });
     if (found.length >= MAX) break;
   }
   return found;

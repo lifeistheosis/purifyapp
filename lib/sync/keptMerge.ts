@@ -1,7 +1,8 @@
 import type { LastRead } from "@/lib/bible/lastRead";
 import type { PlanProgress, PlansState } from "@/lib/plans/progress";
 import type { ReaderPosition } from "@/lib/reader/position";
-import type { Entry, RememberStore } from "@/lib/remember/schedule";
+import { cleanItems, kindOfKey, mergeItems } from "@/lib/remember/items";
+import { cleanChosen, type Entry, type RememberStore } from "@/lib/remember/schedule";
 
 /**
  * How two devices' copies of what a reader keeps become one (1.9, PLAN row
@@ -20,7 +21,10 @@ import type { Entry, RememberStore } from "@/lib/remember/schedule";
  *             old progress back. Two copies from before 1.9, with no time on
  *             either, keep every day read on both.
  *   remember  verse by verse, by when the verse was last answered; the day's
- *             answer by the later day.
+ *             answer by the later day. What the reader learns besides their
+ *             saved verses (build 93 note 11, lib/remember/items.ts) item by
+ *             item, the later of its adding and its taking off; the one they
+ *             chose by when they chose it.
  *   places    the Bible's place, and each long work's, by when it was kept;
  *             a work finished leaves its time, as a plan started over does.
  *   reading   the palette and the reader's settings, as one, by when they
@@ -31,7 +35,7 @@ import type { Entry, RememberStore } from "@/lib/remember/schedule";
  */
 
 export type PlansSlice = { plans: PlansState; resets: Record<string, number> };
-export type RememberSlice = Pick<RememberStore, "entries" | "answeredOn" | "answeredKey">;
+export type RememberSlice = Pick<RememberStore, "entries" | "answeredOn" | "answeredKey" | "items" | "chosen">;
 export type PlacesSlice = {
   bible: LastRead | null;
   works: Record<string, ReaderPosition>;
@@ -126,13 +130,16 @@ export function cleanRememberSlice(v: unknown): RememberSlice {
   const entries: Record<string, Entry> = {};
   if (isObject(v) && isObject(v.entries)) {
     for (const [key, e] of Object.entries(v.entries)) {
-      const entry = /^[a-z0-9-]+\/\d{1,3}\/\d{1,3}$/.test(key) ? cleanEntry(e) : null;
+      const entry = kindOfKey(key) ? cleanEntry(e) : null;
       if (entry) entries[key] = entry;
     }
   }
   const answeredOn = isObject(v) && typeof v.answeredOn === "string" && DAY.test(v.answeredOn) ? v.answeredOn : undefined;
   const answeredKey = isObject(v) && typeof v.answeredKey === "string" && entries[v.answeredKey] ? v.answeredKey : undefined;
-  return { entries, answeredOn, answeredKey };
+  const slice: RememberSlice = { entries, answeredOn, answeredKey, items: cleanItems(isObject(v) ? v.items : undefined) };
+  const chosen = isObject(v) ? cleanChosen(v.chosen) : undefined;
+  if (chosen) slice.chosen = chosen;
+  return slice;
 }
 
 export function mergeRemember(local: RememberSlice, remote: RememberSlice): RememberSlice {
@@ -148,7 +155,53 @@ export function mergeRemember(local: RememberSlice, remote: RememberSlice): Reme
     (remote.answeredOn !== undefined && remote.answeredOn === local.answeredOn && answeredAt(remote) > answeredAt(local))
       ? remote
       : local;
-  return { entries, answeredOn: later.answeredOn, answeredKey: later.answeredKey };
+  const merged: RememberSlice = { entries, answeredOn: later.answeredOn, answeredKey: later.answeredKey, items: mergeItems(local.items, remote.items) };
+  // The one chosen is the one chosen last, on whichever device.
+  const chosen = (remote.chosen?.at ?? 0) > (local.chosen?.at ?? 0) ? remote.chosen : local.chosen;
+  if (chosen) merged.chosen = chosen;
+  return merged;
+}
+
+/**
+ * Whether a quote's words and the reader's own leave the device (build 93
+ * note 11). OFF until the privacy page says so: the page says of this row
+ * "which verse is due when, not its words" (his yes to 59, 2026-11-10), and
+ * a quote's words and a reader's own would be words. The sentence that makes
+ * it true is with the owner; his yes turns this on in the same commit that
+ * puts the sentence on the page, and
+ * lib/sync/__tests__/learnedWordsTravel.test.ts refuses one without the
+ * other.
+ *
+ * While it is off, what the page already says is what travels: each item's
+ * schedule, which one is chosen, and a verse taken by its place (its place,
+ * never its words). A quote and the reader's own words stay where they were
+ * made.
+ */
+export const LEARNED_WORDS_TRAVEL = false;
+
+/** The words the privacy page must carry before the switch is on, in each of the page's languages. */
+export const LEARNED_WORDS_SENTENCES = {
+  en: "the quotes and the words of your own that you chose to learn by heart (these with their words, since they cannot be fetched again as a verse&rsquo;s can)",
+  de: "die Zitate und deine eigenen Worte, die du auswendig lernen willst (diese mit ihrem Wortlaut, weil sie sich nicht wie ein Vers neu laden lassen)",
+} as const;
+
+const wordless = (items: RememberSlice["items"]): RememberSlice["items"] =>
+  Object.fromEntries(Object.entries(items).filter(([key]) => kindOfKey(key) === "verse"));
+
+/** A copy as it may leave the device, or be read from the server: with the switch off, without a quote's words or the reader's own. */
+export function travelling(slice: RememberSlice, on: boolean = LEARNED_WORDS_TRAVEL): RememberSlice {
+  return on ? slice : { ...slice, items: wordless(slice.items) };
+}
+
+/**
+ * A merged copy as it is put in place on the device: with the switch off the
+ * merge never saw this device's quotes and own words, so they are put back
+ * beside what it merged, and nothing typed here is lost to an exchange.
+ */
+export function withDeviceWords(merged: RememberSlice, device: RememberSlice, on: boolean = LEARNED_WORDS_TRAVEL): RememberSlice {
+  if (on) return merged;
+  const here = Object.fromEntries(Object.entries(device.items).filter(([key]) => kindOfKey(key) !== "verse"));
+  return { ...merged, items: { ...merged.items, ...here } };
 }
 
 // ── Places ───────────────────────────────────────────────────────────────

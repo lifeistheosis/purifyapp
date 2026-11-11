@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { stepWords } from "@/lib/remember/blanks";
+import type { LearnItem } from "@/lib/remember/items";
 import { verseKey, type RememberStore, type SavedVerse } from "@/lib/remember/schedule";
 
 import { REMEMBER_DAYS, rememberEntry, rememberFaces, widgetVerse, type RememberFace } from "../remember";
@@ -32,6 +33,8 @@ const WORDS: Record<string, string> = {
   "remember.backTomorrow": "It comes back tomorrow.",
   "remember.backIn": "It comes back in {count} days.",
   "remember.known": "Known by heart. It comes back once a month.",
+  "remember.own": "Your own words",
+  "remember.lineMemory": "Say it from memory, then check.",
 };
 const t = (key: string, vars?: Record<string, string | number>) => {
   const word = WORDS[key];
@@ -44,6 +47,7 @@ const TODAY = "2026-11-09";
 const store = (over: Partial<RememberStore> = {}): RememberStore => ({
   entries: {},
   texts: { [john.key]: JOHN, [psalm.key]: PSALM },
+  items: {},
   ...over,
 });
 const days = (entry: ReturnType<typeof rememberFaces>): Record<string, RememberFace> => {
@@ -163,6 +167,33 @@ describe("the faces the widget is handed", () => {
     // The psalm was due today, but one verse a day is asked and today's is answered: it comes back tomorrow.
     expect(faces[TODAY]).toEqual({ ref: "Psalms 23:1", words: null, line: "It comes back tomorrow." });
     expect(faces["2026-11-10"]).toMatchObject({ ref: "John 3:16" });
+  });
+
+  // Build 93 note 11: a quote and the reader's own words, on the widget as on the card.
+  const PLACE = { href: "/saints/anthony-the-great/life-of-antony#p-2-93", author: "St. Athanasius the Great", work: "Life of Antony", place: "§93" };
+  const quote: LearnItem = { kind: "quote", key: "q:abcdefgh012345", text: "Let Christ be as the breath you breathe.", by: "St. Antony the Great", cite: PLACE, addedAt: 5 };
+  const own: LearnItem = { kind: "own", key: "own:abcdefgh0123", text: "Lord Jesus Christ, have mercy on me.", addedAt: 6 };
+
+  it("names whose words a quote is where a verse names its place, and the reader's own words as theirs", () => {
+    const chosenQuote = store({ items: { [quote.key]: quote, [own.key]: own }, chosen: { key: quote.key, at: 9 } });
+    const faces = days(rememberFaces({ saved: [john], store: chosenQuote, today: TODAY, t }));
+    // The one chosen is asked first, with its own words, never fetched.
+    expect(faces[TODAY]).toMatchObject({ ref: "St. Antony the Great", step: 1, line: "Say the missing words, then check." });
+    expect(faces[TODAY].words).toBe(widgetVerse(quote.text, 1));
+    const chosenOwn = store({ items: { [own.key]: own }, chosen: { key: own.key, at: 9 } });
+    expect(days(rememberFaces({ saved: [], store: chosenOwn, today: TODAY, t }))[TODAY]).toMatchObject({ ref: "Your own words", step: 1 });
+  });
+
+  it("never calls a quote or the reader's own words a verse they saved", () => {
+    // Said from memory, the third step: the line that names no verse.
+    const known = store({ items: { [own.key]: own }, entries: { [own.key]: { box: 4, due: TODAY } } });
+    expect(days(rememberFaces({ saved: [], store: known, today: TODAY, t }))[TODAY]).toEqual({ ref: "Your own words", step: 3, words: null, line: "Say it from memory, then check." });
+  });
+
+  it("has faces for a reader who saved no verse but learns their own words", () => {
+    const only = store({ items: { [own.key]: own } });
+    expect(rememberFaces({ saved: [], store: only, today: TODAY, t })).not.toEqual({ none: true });
+    expect(rememberFaces({ saved: [], store: store({ items: { [own.key]: { gone: 9 } } }), today: TODAY, t })).toEqual({ none: true });
   });
 
   it("is nothing to hand over without a day to start from", () => {

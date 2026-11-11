@@ -101,9 +101,9 @@ describe("plans, by when each last changed", () => {
 describe("Remember the verse, verse by verse", () => {
   it("keeps the newer answer of each verse, and the later day's answer", () => {
     const merged = mergeRemember(
-      { entries: { "john/3/16": { box: 3, due: "2026-11-13", at: 1_000 }, "psalms/22/1": { box: 1, due: "2026-11-10", at: 5_000 } }, answeredOn: "2026-11-09", answeredKey: "psalms/22/1" },
+      { entries: { "john/3/16": { box: 3, due: "2026-11-13", at: 1_000 }, "psalms/22/1": { box: 1, due: "2026-11-10", at: 5_000 } }, answeredOn: "2026-11-09", answeredKey: "psalms/22/1", items: {} },
       // "Not yet" on the tablet, later: back to the first box, whatever the phone thought.
-      { entries: { "john/3/16": { box: 1, due: "2026-11-11", at: 9_000 } }, answeredOn: "2026-11-10", answeredKey: "john/3/16" },
+      { entries: { "john/3/16": { box: 1, due: "2026-11-11", at: 9_000 } }, answeredOn: "2026-11-10", answeredKey: "john/3/16", items: {} },
     );
     expect(merged.entries["john/3/16"]).toEqual({ box: 1, due: "2026-11-11", at: 9_000 });
     expect(merged.entries["psalms/22/1"]).toEqual({ box: 1, due: "2026-11-10", at: 5_000 });
@@ -115,7 +115,50 @@ describe("Remember the verse, verse by verse", () => {
       entries: {},
       answeredOn: undefined,
       answeredKey: undefined,
+      items: {},
     });
+  });
+
+  // Build 93 note 11: a quote, the reader's own words and the one they chose travel with the schedule.
+  const PLACE = { href: "/saints/anthony-the-great/life-of-antony#p-2-93", author: "St. Athanasius the Great", work: "Life of Antony", place: "§93" };
+  const quote = { kind: "quote", key: "q:abcdefgh012345", text: "Let Christ be as the breath you breathe.", by: "St. Antony the Great", cite: PLACE, addedAt: 100 } as const;
+  const own = { kind: "own", key: "own:abcdefgh0123", text: "Lord, have mercy.", addedAt: 200 } as const;
+
+  it("carries what the reader learns besides saved verses, and its answers", () => {
+    const slice = cleanRememberSlice({
+      entries: { [quote.key]: { box: 2, due: "2026-11-13", at: 7 }, [own.key]: { box: 1, due: "2026-11-12", at: 8 }, "nonsense:1": { box: 1, due: "2026-11-12" } },
+      items: { [quote.key]: quote, [own.key]: own },
+      chosen: { key: own.key, at: 300 },
+    });
+    expect(Object.keys(slice.entries).sort()).toEqual([own.key, quote.key].sort());
+    expect(slice.items).toEqual({ [quote.key]: quote, [own.key]: own });
+    expect(slice.chosen).toEqual({ key: own.key, at: 300 });
+  });
+
+  it("never reads a name onto the reader's own words, or a quote without its place, whatever the server sends", () => {
+    const slice = cleanRememberSlice({
+      items: {
+        [own.key]: { ...own, by: "St. John Chrysostom", cite: PLACE },
+        [quote.key]: { ...quote, cite: { ...PLACE, href: "https://example.com/elsewhere" } },
+        "own:zzzzzzzz": { kind: "quote", text: "x", by: "St. Basil", cite: PLACE, addedAt: 5 },
+      },
+      chosen: { key: "../x", at: 5 },
+    });
+    expect(slice.items).toEqual({ [own.key]: own });
+    expect(slice.chosen).toBeUndefined();
+  });
+
+  it("merges them item by item, and keeps the choice made last", () => {
+    const merged = mergeRemember(
+      { entries: {}, items: { [quote.key]: quote, [own.key]: { gone: 250 } }, chosen: { key: quote.key, at: 400 } },
+      { entries: {}, items: { [own.key]: own }, chosen: { key: own.key, at: 300 } },
+    );
+    expect(merged.items[quote.key]).toEqual(quote);
+    // Taken off on this device after the other added it: it stays off.
+    expect(merged.items[own.key]).toEqual({ gone: 250 });
+    expect(merged.chosen).toEqual({ key: quote.key, at: 400 });
+    // A choice given up later on the other device is given up here too.
+    expect(mergeRemember(merged, { entries: {}, items: {}, chosen: { key: "", at: 500 } }).chosen).toEqual({ key: "", at: 500 });
   });
 });
 

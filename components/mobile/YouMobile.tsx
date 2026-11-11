@@ -278,7 +278,8 @@ export function YouMobile() {
     <MobileShell header={<MobileHeader titleKey="nav.you" />} hero={hero}>
       <PickUpCard />
 
-      {verseToday ? <KeptVerse className="mt-6 first:mt-0" verse={verseToday} /> : null}
+      {/* What the reader is learning by heart: the one they chose, else the day's kept verse, else the way in (build 93 note 11). */}
+      <KeptVerse className="mt-6 first:mt-0" verse={verseToday} />
 
       <KeptShelf className="mt-6 first:mt-0" feed={feed} journal={journal} verseLabel={verseLabel} />
 

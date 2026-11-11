@@ -12,6 +12,8 @@
  */
 import type { Bookmark } from "@/lib/bookmarks";
 
+import { cleanItem, cleanItems, isGone, kindOfKey, type KeptItem, type LearnItem } from "./items";
+
 export type SavedVerse = { key: string; book: string; chapter: number; verse: number; label: string; addedAt: number };
 
 /** The verses a reader saved, from their bookmarks: what the card on Today and the widget remember. */
@@ -36,7 +38,25 @@ export type Entry = { box: number; due: string; at?: number };
  * after the app is closed; a store from before 1.9 has none, and the widget
  * then says only that today's verse was answered.
  */
-export type RememberStore = { entries: Record<string, Entry>; answeredOn?: string; answeredKey?: string; texts: Record<string, string> };
+export type RememberStore = {
+  entries: Record<string, Entry>;
+  answeredOn?: string;
+  answeredKey?: string;
+  texts: Record<string, string>;
+  /**
+   * What the reader learns besides their saved verses (build 93 note 11,
+   * ./items.ts): a verse taken by its place, a quote from a text the app
+   * carries, their own words; and the mark of each one taken off.
+   */
+  items: Record<string, KeptItem>;
+  /**
+   * The one the reader chose to learn now, and when they chose it; an empty
+   * key is the choice given up. It stands on You's card and is asked first on
+   * Today's when it is new or due. None chosen: the day picks, as before.
+   */
+  chosen?: Chosen;
+};
+export type Chosen = { key: string; at: number };
 type Store = RememberStore;
 
 const KEY = "purify:remember";
@@ -73,10 +93,20 @@ function load(): Store {
       answeredOn: parsed.answeredOn,
       answeredKey: typeof parsed.answeredKey === "string" ? parsed.answeredKey : undefined,
       texts: parsed.texts ?? {},
+      items: cleanItems(parsed.items),
+      chosen: cleanChosen(parsed.chosen),
     };
   } catch {
-    return { entries: {}, texts: {} };
+    return { entries: {}, texts: {}, items: {} };
   }
+}
+
+/** A choice as it may be kept: a key of one of the three kinds, or the empty key of a choice given up. */
+export function cleanChosen(v: unknown): Chosen | undefined {
+  if (!v || typeof v !== "object") return undefined;
+  const { key, at } = v as { key?: unknown; at?: unknown };
+  if (typeof key !== "string" || typeof at !== "number" || !Number.isFinite(at) || at <= 0) return undefined;
+  return key === "" || kindOfKey(key) ? { key, at: Math.floor(at) } : undefined;
 }
 
 function save(store: Store, source?: "sync"): void {
@@ -98,14 +128,42 @@ function save(store: Store, source?: "sync"): void {
  * and the day's answer, with the words kept on this device left as they are.
  * Marked as the sync's, so it is not sent back.
  */
-export function writeScheduleFromSync(next: Pick<RememberStore, "entries" | "answeredOn" | "answeredKey">): void {
+export function writeScheduleFromSync(next: Pick<RememberStore, "entries" | "answeredOn" | "answeredKey" | "items" | "chosen">): void {
   const store = load();
-  save({ ...store, entries: next.entries, answeredOn: next.answeredOn, answeredKey: next.answeredKey }, "sync");
+  save({ ...store, entries: next.entries, answeredOn: next.answeredOn, answeredKey: next.answeredKey, items: next.items, chosen: next.chosen }, "sync");
 }
 
 /** Everything kept, in one read: for the home screen widget (lib/widget/remember.ts). */
 export function rememberStore(): RememberStore {
   return load();
+}
+
+const NOTHING: RememberStore = { entries: {}, texts: {}, items: {} };
+let seenRaw: string | null | undefined;
+let seen: RememberStore = NOTHING;
+
+/**
+ * Everything kept, the same object until what is kept changes: what a
+ * component reads through useSyncExternalStore (./useLearning.ts), which asks
+ * again and again and must be given the same answer to the same store.
+ */
+export function rememberSnapshot(): RememberStore {
+  let raw: string | null = null;
+  try {
+    raw = window.localStorage.getItem(KEY);
+  } catch {
+    return NOTHING;
+  }
+  if (raw !== seenRaw) {
+    seenRaw = raw;
+    seen = raw ? load() : NOTHING;
+  }
+  return seen;
+}
+
+/** What the server draws, and a device that keeps nothing: an empty store, always the same one. */
+export function emptyRememberStore(): RememberStore {
+  return NOTHING;
 }
 
 /**
@@ -114,7 +172,7 @@ export function rememberStore(): RememberStore {
  * day ahead it is the verse that day brings if nothing is answered before
  * it, which is what the widget shows on the days the app is not opened.
  */
-export function dueOn(saved: readonly SavedVerse[], entries: Readonly<Record<string, Entry>>, day: string): SavedVerse | null {
+export function dueOn<T extends { key: string; addedAt: number }>(saved: readonly T[], entries: Readonly<Record<string, Entry>>, day: string): T | null {
   const due = saved
     .filter((v) => {
       const e = entries[v.key];
@@ -132,6 +190,89 @@ export function dueVerse(saved: SavedVerse[], today: string): SavedVerse | null 
   const store = load();
   if (store.answeredOn === today) return null;
   return dueOn(saved, store.entries, today);
+}
+
+// ── What is learned, and the one chosen (build 93 note 11) ──────────────
+
+/**
+ * Everything the reader is learning, as one list: the verses they saved, and
+ * after them what they added here (./items.ts), a saved verse standing once
+ * when it is in both.
+ */
+export function learnablesOf(saved: readonly SavedVerse[], items: Readonly<Record<string, KeptItem>>): LearnItem[] {
+  const out: LearnItem[] = saved.map((v) => ({ kind: "verse", ...v }));
+  const have = new Set(out.map((v) => v.key));
+  for (const item of Object.values(items)) {
+    if (!isGone(item) && !have.has(item.key)) out.push(item);
+  }
+  return out;
+}
+
+/**
+ * What `day` asks: the one the reader chose, when it is new or due that day,
+ * and otherwise the longest-kept that is. The card on Today and the widget's
+ * days ahead read the same rule here, so they never name different things.
+ */
+export function askedOn<T extends { key: string; addedAt: number }>(
+  list: readonly T[],
+  entries: Readonly<Record<string, Entry>>,
+  chosen: string | undefined,
+  day: string,
+): T | null {
+  const first = chosen ? list.find((v) => v.key === chosen) : undefined;
+  if (first) {
+    const e = entries[first.key];
+    if (!e || e.due <= day) return first;
+  }
+  return dueOn(list, entries, day);
+}
+
+/** Today's to remember, from everything being learned: none once one has been answered today. */
+export function dueItem(list: readonly LearnItem[], today: string): LearnItem | null {
+  const store = load();
+  if (store.answeredOn === today) return null;
+  return askedOn(list, store.entries, store.chosen?.key || undefined, today);
+}
+
+/** The key of the one chosen, or null when the day picks. */
+export function chosenKey(): string | null {
+  return load().chosen?.key || null;
+}
+
+/** Choose what to learn now; null gives the choice up, and the day picks again. */
+export function choose(key: string | null): void {
+  const store = load();
+  if ((store.chosen?.key || null) === key) return;
+  store.chosen = { key: key ?? "", at: Date.now() };
+  save(store);
+}
+
+/** Keep an item to learn, and choose it: taking something up is choosing it. */
+export function keepItem(item: LearnItem): void {
+  const clean = cleanItem(item.key, item);
+  if (!clean || isGone(clean)) return;
+  const store = load();
+  store.items = cleanItems({ ...store.items, [clean.key]: clean });
+  store.chosen = { key: clean.key, at: Date.now() };
+  save(store);
+}
+
+/**
+ * Take an item off the list. Its mark stays, so another device does not
+ * bring it back; a saved verse is taken off by taking off its bookmark, which
+ * is not this function's to do.
+ */
+export function dropItem(key: string): void {
+  const store = load();
+  const item = store.items[key];
+  if (!item || isGone(item)) return;
+  const now = Date.now();
+  store.items = cleanItems({ ...store.items, [key]: { gone: now } });
+  delete store.entries[key];
+  delete store.texts[key];
+  if (store.chosen?.key === key) store.chosen = { key: "", at: now };
+  if (store.answeredKey === key) store.answeredKey = undefined;
+  save(store);
 }
 
 /** The reader's answer: knew it, or not yet. Returns when it comes back. */
@@ -175,7 +316,11 @@ export function boxOf(key: string): number {
 }
 
 export function textOf(key: string): string | null {
-  return load().texts[key] ?? null;
+  const store = load();
+  const item = store.items[key];
+  // A quote's words and the reader's own are the item itself; a verse's are fetched and kept beside it.
+  if (item && !isGone(item) && item.kind !== "verse") return item.text;
+  return store.texts[key] ?? null;
 }
 
 /** Keep a verse's words with its schedule (when it is saved, or fetched). */

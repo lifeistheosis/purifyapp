@@ -14,17 +14,25 @@
 // A Plus feature, shown with its mark and never hidden (the owner's rule):
 // without Plus the tiles are there, and "Show the words" opens the upgrade
 // sheet named for Remember the verse.
+//
+// Since build 93 note 11 it takes whatever the reader is learning
+// (lib/remember/items.ts): a verse, a quote from a text the app carries,
+// under whose words they are and with the line that opens its place, or
+// their own words, named as theirs. And "Change" leads to the sheet that
+// chooses (components/learn/ChooseSheet.tsx), at any time.
 
 import { Fragment, useMemo, useState, type ReactNode } from "react";
 
 import { PlusLock, PlusMark } from "@/components/billing/PlusMark";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
+import { SourceLine } from "@/components/citations/SourceLine";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
 import { Check } from "@/components/ui/icons/Check";
 import { cn } from "@/lib/cn";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
-import { INTERVALS, addDays, answer, dayOf, hintWords, verseKey, type Entry, type HintWord } from "@/lib/remember/schedule";
+import type { QuotePlace } from "@/lib/remember/items";
+import { INTERVALS, addDays, answer, dayOf, hintWords, type Entry, type HintWord } from "@/lib/remember/schedule";
 
 const PILL = "tap-press inline-flex h-11 items-center gap-1.5 rounded-pill px-4 font-sans text-caption font-semibold disabled:opacity-50";
 const SOLID = "bg-paper text-night";
@@ -38,20 +46,57 @@ const WORD_IN =
 const STAGGER_MS = 18;
 const STAGGER_MAX_MS = 360;
 
-export type PractiseVerse = { book: string; chapter: number; verse: number; reference: string; text: string };
+/**
+ * What is practised: its key in the schedule, the name it goes by (a verse's
+ * reference, whose words a quote is, "Your own words"), and its words. A
+ * quote brings the place it stands at.
+ */
+export type PractiseText = { key: string; kind: "verse" | "quote" | "own"; name: string; text: string; cite?: QuotePlace };
 
-export function PractiseSheet({ open, onClose, verse }: { open: boolean; onClose: () => void; verse: PractiseVerse | null }) {
+export function PractiseSheet({
+  open,
+  onClose,
+  verse,
+  onChange,
+  waiting,
+  desktop,
+}: {
+  open: boolean;
+  onClose: () => void;
+  verse: PractiseText | null;
+  /** Opens the sheet that chooses what to learn; with none, there is no Change here. */
+  onChange?: () => void;
+  /** Said in the sheet while there are no words to practise (a verse's words still coming, or no signal the first time). */
+  waiting?: string | null;
+  /** On a computer too (Today's card is on the website's desktop Today). */
+  desktop?: boolean;
+}) {
   const { t } = useTranslate();
   const locked = usePlusFeatures() === false;
+  // "Remember the verse" is a verse's name; a quote and the reader's own words are learned by heart.
+  const title = !verse || verse.kind === "verse" ? t("remember.title") : t("you.verse.learn");
   return (
-    <Sheet open={open} onClose={onClose} title={t("remember.title")} titleExtra={locked ? <PlusMark /> : undefined} openFull>
-      {/* Keyed by the verse, so a new verse starts with its tiles closed. */}
-      {verse ? <Practise key={`${verse.book}/${verse.chapter}/${verse.verse}`} verse={verse} locked={locked} onClose={onClose} /> : null}
+    <Sheet open={open} onClose={onClose} title={title} titleExtra={locked ? <PlusMark /> : undefined} openFull desktop={desktop}>
+      {/* Keyed by what is practised, so a new one starts with its tiles closed. */}
+      {verse ? (
+        <Practise key={verse.key} verse={verse} locked={locked} onClose={onClose} onChange={onChange} />
+      ) : waiting ? (
+        <div className="pb-2">
+          <p role="status" className="font-sans text-detail leading-snug text-paper/65">
+            {waiting}
+          </p>
+          {onChange ? (
+            <button type="button" data-learn-change="" onClick={onChange} className={cn(PILL, QUIET, "mt-4")}>
+              {t("learn.change")}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </Sheet>
   );
 }
 
-function Practise({ verse, locked, onClose }: { verse: PractiseVerse; locked: boolean; onClose: () => void }) {
+function Practise({ verse, locked, onClose, onChange }: { verse: PractiseText; locked: boolean; onClose: () => void; onChange?: () => void }) {
   const { t } = useTranslate();
   const upgrade = useUpgradeModal();
   const [today] = useState(() => dayOf(new Date()));
@@ -62,7 +107,7 @@ function Practise({ verse, locked, onClose }: { verse: PractiseVerse; locked: bo
   const done = said.length > 0 && step.n >= said.length;
 
   const showTo = (n: number) => setStep({ n: Math.min(n, said.length), from: step.n });
-  const reply = (knew: boolean) => setAnswered({ entry: answer(verseKey(verse.book, verse.chapter, verse.verse), knew, today), knew });
+  const reply = (knew: boolean) => setAnswered({ entry: answer(verse.key, knew, today), knew });
 
   const back = answered
     ? answered.entry.box > INTERVALS.length
@@ -74,12 +119,23 @@ function Practise({ verse, locked, onClose }: { verse: PractiseVerse; locked: bo
 
   return (
     <div className="pb-2">
-      <p className="font-sans text-detail leading-snug text-paper/65">{t("remember.line")}</p>
-      <p className="mt-4 font-sans text-detail font-semibold text-paper/80">{verse.reference}</p>
+      <p className="font-sans text-detail leading-snug text-paper/65">{t(verse.kind === "verse" ? "remember.line" : "remember.lineMemory")}</p>
+      <div className="mt-2 flex min-h-11 items-center justify-between gap-3">
+        <p data-practise-name="" className="min-w-0 font-sans text-detail font-semibold text-paper/80" {...(verse.kind === "quote" ? { lang: "en", dir: "ltr" } : {})}>
+          {verse.name}
+        </p>
+        {onChange ? (
+          <button type="button" data-learn-change="" onClick={onChange} className="tap-press -me-2 inline-flex h-11 shrink-0 items-center rounded-pill px-3 font-sans text-caption font-semibold text-paper/70">
+            {t("learn.change")}
+          </button>
+        ) : null}
+      </div>
       {/* Tall lines while tiles stand in them; the verse's own once it is all shown. */}
       <p className={cn("mt-1 font-serif text-body text-paper/90", done || answered ? "leading-[1.6]" : "leading-[2.05]")} dir="auto">
         <VerseTiles words={words} n={answered ? said.length : step.n} from={step.from} />
       </p>
+      {/* A quote's place, as every quotation wears it: the line opens the words where they stand. */}
+      {verse.cite ? <SourceLine cite={{ kind: "father", ...verse.cite }} className="mt-2" /> : null}
       {/* What a tap shows, said for a screen reader. */}
       <p aria-live="polite" className="sr-only">
         {step.n > step.from ? said.slice(step.from, step.n).join(" ") : ""}

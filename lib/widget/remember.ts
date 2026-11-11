@@ -1,6 +1,7 @@
 import { localBookNames, referenceIn } from "@/lib/bible/books";
 import { stepWords } from "@/lib/remember/blanks";
-import { addDays, backWords, dueOn, stepOf, type Entry, type RememberStep, type RememberStore, type SavedVerse } from "@/lib/remember/schedule";
+import type { LearnItem } from "@/lib/remember/items";
+import { addDays, askedOn, backWords, learnablesOf, stepOf, type Entry, type RememberStep, type RememberStore, type SavedVerse } from "@/lib/remember/schedule";
 
 /**
  * Remember the verse on the home screen widget (1.9, s4-07 of
@@ -29,6 +30,12 @@ import { addDays, backWords, dueOn, stepOf, type Entry, type RememberStep, type 
  * Every word arrives finished, in the app's language: the reference with its
  * book in that language, and the line under the verse in the card's own
  * words. A widget never builds a sentence.
+ *
+ * Since build 93 note 11 a reader learns more than saved verses
+ * (lib/remember/items.ts): a quote's face names whose words they are where a
+ * verse's names its place, and the reader's own words are named as theirs.
+ * The one they chose is asked first on a day it is new or due, by the rule
+ * Today's card reads (askedOn).
  */
 
 /** How many days ahead a widget can draw without the app. */
@@ -80,9 +87,13 @@ export function widgetVerse(text: string, step: RememberStep): string | null {
     .join(" ");
 }
 
-/** The line under a verse at its step: the card's own words for it. */
-function stepLine(t: Translate, step: RememberStep): string {
-  return t(step === 3 ? "remember.line" : step === 2 ? "remember.lineFirst" : "remember.lineBlanks");
+/**
+ * The line under a verse at its step: the card's own words for it. Said from
+ * memory, a saved verse is "A verse you saved"; a quote and the reader's own
+ * words are not, and take the line that names no verse.
+ */
+function stepLine(t: Translate, step: RememberStep, verse = true): string {
+  return t(step === 3 ? (verse ? "remember.line" : "remember.lineMemory") : step === 2 ? "remember.lineFirst" : "remember.lineBlanks");
 }
 
 export type RememberInput = {
@@ -104,10 +115,13 @@ export type RememberInput = {
 export function rememberFaces(input: RememberInput): RememberEntry | undefined {
   const { saved, store, today, t } = input;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(today)) return undefined;
-  if (!saved.length) return { none: true };
+  const list = learnablesOf(saved, store.items);
+  if (!list.length) return { none: true };
   const books = localBookNames(t);
-  const byKey = new Map(saved.map((v) => [v.key, v]));
-  const ref = (v: SavedVerse) => referenceIn(v.label, v.book, books);
+  const byKey = new Map(list.map((v) => [v.key, v]));
+  const ref = (v: LearnItem) => (v.kind === "verse" ? referenceIn(v.label, v.book, books) : v.kind === "quote" ? v.by : t("remember.own"));
+  const textOf = (v: LearnItem) => (v.kind === "verse" ? store.texts[v.key] : v.text);
+  const chosen = store.chosen?.key || undefined;
 
   /**
    * A day with nothing to ask (build 89, note 18): every saved verse answered
@@ -120,8 +134,8 @@ export function rememberFaces(input: RememberInput): RememberEntry | undefined {
    * already due, on a day whose verse was answered, comes back tomorrow.
    */
   const rest = (day: string): RememberFace | null => {
-    let soonest: { verse: SavedVerse; entry: Entry } | null = null;
-    for (const verse of saved) {
+    let soonest: { verse: LearnItem; entry: Entry } | null = null;
+    for (const verse of list) {
       const entry = store.entries[verse.key];
       if (!entry) continue;
       if (!soonest || entry.due < soonest.entry.due || (entry.due === soonest.entry.due && verse.addedAt < soonest.verse.addedAt)) {
@@ -147,26 +161,26 @@ export function rememberFaces(input: RememberInput): RememberEntry | undefined {
       const entry = answered ? store.entries[answered.key] : undefined;
       const face: RememberFace | null =
         answered && entry
-          ? { ref: ref(answered), words: store.texts[answered.key] ?? null, line: backWords(t, entry, today), done: true }
+          ? { ref: ref(answered), words: textOf(answered) ?? null, line: backWords(t, entry, today), done: true }
           : rest(day);
       if (face) days[day] = face;
       continue;
     }
-    const due = dueOn(saved, store.entries, day);
+    const due = askedOn(list, store.entries, chosen, day);
     if (!due) {
       const face = rest(day);
       if (face) days[day] = face;
       continue;
     }
     const step = stepOf(store.entries[due.key]?.box ?? 0);
-    const text = store.texts[due.key];
+    const text = textOf(due);
     days[day] = {
       ref: ref(due),
       step,
       words: text ? widgetVerse(text, step) : null,
       // A verse whose words have not been fetched yet shows its reference
       // and the line for saying it from memory, the step that needs none.
-      line: stepLine(t, text ? step : 3),
+      line: stepLine(t, text ? step : 3, due.kind === "verse"),
     };
   }
   return { days };

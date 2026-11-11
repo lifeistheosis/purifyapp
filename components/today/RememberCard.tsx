@@ -18,6 +18,13 @@
 // could be shown one at a time ("Next word"): the blanks leave the verse
 // readable and ask only for the words that carry it.
 //
+// Since build 93 note 11 the card asks whatever the reader is learning
+// (lib/remember/items.ts): a saved verse, a verse taken by its place, a quote
+// from a text the app carries, under whose words they are, or their own
+// words, named as theirs. The one they chose is asked first when it is new or
+// due (lib/remember/schedule.ts, askedOn), and "Change" under the card opens
+// the sheet that chooses (components/learn/ChooseSheet.tsx), at any time.
+//
 // A Plus feature is never hidden (the owner's rule, components/billing/
 // UpgradeModal.tsx): a reader without Plus sees the card, its blanks and its
 // name, and "Show the words" opens the upgrade sheet named for it.
@@ -28,28 +35,26 @@ import { Fragment, useEffect, useId, useMemo, useRef, useState, useSyncExternalS
 import { PlusLock } from "@/components/billing/PlusMark";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { useLearnSheets } from "@/components/learn/LearnSheets";
 import { Check } from "@/components/ui/icons/Check";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { apiFetch } from "@/lib/api/client";
-import { localBookNames, referenceIn } from "@/lib/bible/books";
-import { useBookmarks } from "@/lib/bookmarks";
+import { localBookNames } from "@/lib/bible/books";
 import { cn } from "@/lib/cn";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { stepWords, type BlankedWord } from "@/lib/remember/blanks";
 import { textDir } from "@/lib/i18n/textDir";
+import { learnName, useLearning } from "@/lib/remember/useLearning";
 import {
   answer,
+  askedOn,
   backWords,
-  boxOf,
   dayOf,
-  dueVerse,
   keepText,
-  savedVersesOf,
   stepOf,
-  textOf,
+  rememberStore,
   type Entry,
   type RememberStep,
-  type SavedVerse,
 } from "@/lib/remember/schedule";
 
 const noop = () => () => {};
@@ -68,65 +73,87 @@ export function RememberCard({ className }: { className?: string }) {
   const { t } = useTranslate();
   const plus = usePlusFeatures();
   const upgrade = useUpgradeModal();
-  const { bookmarks } = useBookmarks();
+  const { list, store, saved } = useLearning();
+  const learn = useLearnSheets();
   // The schedule lives on the device: nothing is drawn until the page is.
   const client = useSyncExternalStore(noop, () => true, () => false);
   const [today] = useState(() => dayOf(new Date()));
+  // Answered before this visit: Today is left clear, as it was. Answered during it, here or in the sheet, the card says when it comes back.
+  const [doneAtOpen] = useState(() => rememberStore().answeredOn === dayOf(new Date()));
   const [shownFor, setShownFor] = useState<string | null>(null);
-  const [answered, setAnswered] = useState<{ entry: Entry; knew: boolean } | null>(null);
+  const [knewKey, setKnewKey] = useState<string | null>(null);
   const [fetched, setFetched] = useState<{ key: string; text: string | null } | null>(null);
 
-  const saved = useMemo<SavedVerse[]>(() => savedVersesOf(bookmarks), [bookmarks]);
-  const due = useMemo(() => (client && !answered ? dueVerse(saved, today) : null), [client, answered, saved, today]);
-  const kept = due ? textOf(due.key) : null;
-  // 1.9: missing words, first letters, then from memory, as the verse moves up its boxes.
-  const step = useMemo(() => (due ? stepOf(boxOf(due.key)) : 1), [due]);
+  const answeredKey = store.answeredOn === today ? store.answeredKey : undefined;
+  const answeredEntry: Entry | undefined = answeredKey ? store.entries[answeredKey] : undefined;
+  const back = !doneAtOpen && answeredEntry ? backWords(t, answeredEntry, today) : null;
+  const due = useMemo(
+    () => (client && store.answeredOn !== today ? askedOn(list, store.entries, store.chosen?.key || undefined, today) : null),
+    [client, list, store, today],
+  );
+  const verse = due?.kind === "verse" ? due : null;
+  // A verse's words are kept beside the schedule once fetched; a quote's and the reader's own are the item.
+  const kept = due ? (due.kind === "verse" ? (store.texts[due.key] ?? null) : due.text) : null;
+  // 1.9: missing words, first letters, then from memory, as it moves up its boxes.
+  const step = due ? stepOf(store.entries[due.key]?.box ?? 0) : 1;
   const text = kept ?? (fetched && due && fetched.key === due.key ? fetched.text : null);
   const shown = Boolean(due && shownFor === due.key);
 
-  // The words, the first time: from the website, then kept on the device.
+  // A verse's words, the first time: from the website, then kept on the device.
   useEffect(() => {
-    if (!due || kept) return;
+    if (!verse || kept) return;
     let cancelled = false;
-    apiFetch(`/api/bible/verse?book=${encodeURIComponent(due.book)}&chapter=${due.chapter}&verse=${due.verse}`)
+    apiFetch(`/api/bible/verse?book=${encodeURIComponent(verse.book)}&chapter=${verse.chapter}&verse=${verse.verse}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((json: { verses?: { text: string }[] } | null) => {
         const verseText = json?.verses?.map((v) => v.text).join(" ") ?? null;
-        if (verseText) keepText(due.key, verseText);
-        if (!cancelled) setFetched({ key: due.key, text: verseText });
+        if (verseText) keepText(verse.key, verseText);
+        if (!cancelled) setFetched({ key: verse.key, text: verseText });
       })
       .catch(() => {
-        if (!cancelled) setFetched({ key: due.key, text: null });
+        if (!cancelled) setFetched({ key: verse.key, text: null });
       });
     return () => {
       cancelled = true;
     };
-  }, [due, kept]);
+  }, [verse, kept]);
 
-  if (!client || (!due && !answered)) return null;
+  if (!client || (!due && !back)) return null;
   const books = localBookNames(t);
 
   return (
-    <RememberCardView
-      className={className}
-      reference={due ? referenceIn(due.label, due.book, books) : ""}
-      href={due ? `/bible/${due.book}/${due.chapter}#v${due.verse}` : undefined}
-      text={text}
-      textLang={kept ? null : "en"}
-      step={step}
-      failed={Boolean(fetched) && !text}
-      shown={shown}
-      back={answered ? backWords(t, answered.entry, today) : null}
-      knew={answered?.knew ?? false}
-      locked={plus === false}
-      onShow={(open) => {
-        if (due) setShownFor(open ? due.key : null);
-      }}
-      onReply={(knew) => {
-        if (due) setAnswered({ entry: answer(due.key, knew, today), knew });
-      }}
-      onLocked={() => upgrade.open("remember")}
-    />
+    <>
+      <RememberCardView
+        className={className}
+        // "Remember the verse" is a verse's name; a quote and the reader's own words are learned by heart.
+        title={due && due.kind !== "verse" ? t("you.verse.learn") : undefined}
+        reference={due ? learnName(due, t, books) : ""}
+        referenceLang={due?.kind === "quote" ? "en" : undefined}
+        href={due ? (due.kind === "verse" ? `/bible/${due.book}/${due.chapter}#v${due.verse}` : due.kind === "quote" ? due.cite.href : undefined) : undefined}
+        text={text}
+        // A quote is the edition's English; a verse kept from a downloaded Bible, and the reader's own words, run as they are written.
+        textLang={due?.kind === "quote" ? "en" : due?.kind === "own" || kept ? null : "en"}
+        step={step}
+        // "A verse you saved" only of a verse that is saved.
+        plainLine={Boolean(due && !saved.has(due.key))}
+        failed={Boolean(fetched) && !text}
+        shown={shown}
+        back={back}
+        knew={Boolean(answeredKey && knewKey === answeredKey)}
+        locked={plus === false}
+        onShow={(open) => {
+          if (due) setShownFor(open ? due.key : null);
+        }}
+        onReply={(knew) => {
+          if (!due) return;
+          setKnewKey(knew ? due.key : null);
+          answer(due.key, knew, today);
+        }}
+        onLocked={() => upgrade.open("remember")}
+        onChange={learn.change}
+      />
+      {learn.sheets}
+    </>
   );
 }
 
@@ -137,7 +164,9 @@ export function RememberCard({ className }: { className?: string }) {
  * verse (components/billing/plusTry/TryRemember.tsx) are the one card.
  */
 export function RememberCardView({
+  title,
   reference,
+  referenceLang,
   href,
   text,
   textLang = "en",
@@ -152,9 +181,15 @@ export function RememberCardView({
   onLocked,
   badge,
   className,
+  plainLine = false,
+  onChange,
 }: {
-  /** The verse's reference, as the reader's language writes it. */
+  /** The card's name; "Remember the verse" unless said (a quote and the reader's own words are "Learn by heart"). */
+  title?: string;
+  /** The verse's reference, as the reader's language writes it; for a quote, whose words they are; for the reader's own words, that they are theirs. */
   reference: string;
+  /** The reference's language when it is not the reader's (a Father's name, as the edition has it). */
+  referenceLang?: string;
   /** Where the reference leads; with none it is not a link. */
   href?: string;
   /** The verse's words, or null while they come (or when they could not). */
@@ -182,6 +217,10 @@ export function RememberCardView({
   /** Beside the card's name: a mark the place showing it adds (the preview's Example). */
   badge?: ReactNode;
   className?: string;
+  /** Said from memory, the line that names no saved verse (a quote, the reader's own words, a verse taken by its place). */
+  plainLine?: boolean;
+  /** Opens the sheet that chooses what to learn; with none, there is no Change on the card (the Plus page's preview). */
+  onChange?: () => void;
 }) {
   const { t } = useTranslate();
   const words = useMemo(() => (text ? stepWords(text, step) : []), [text, step]);
@@ -221,7 +260,7 @@ export function RememberCardView({
       <span aria-hidden className="verse-light pointer-events-none absolute left-1/2 top-[-120px] h-[300px] w-[380px] -translate-x-1/2" />
       <div className="relative">
         <p id={titleId} className="font-sans text-[12.5px] font-semibold text-paper/60">
-          {t("remember.title")}
+          {title ?? t("remember.title")}
           <span className="text-paper/45"> · {t("plus.badge")}</span>
           {badge}
         </p>
@@ -234,7 +273,11 @@ export function RememberCardView({
         ) : (
           <>
             {href ? (
-              <Link href={href} className="tap-press hit-44 mt-2 inline-block font-heading text-[24px] font-bold leading-tight text-paper">
+              <Link
+                href={href}
+                className="tap-press hit-44 mt-2 inline-block font-heading text-[24px] font-bold leading-tight text-paper"
+                {...(referenceLang ? { lang: referenceLang, dir: textDir(referenceLang) } : {})}
+              >
                 {reference}
               </Link>
             ) : (
@@ -247,7 +290,7 @@ export function RememberCardView({
                   <BlankedVerse words={words} shown={shown} blank={t("remember.blank")} firsts={step === 2} />
                 </p>
                 <p className="mt-2 font-sans text-caption text-paper/50">
-                  {t(step === 3 ? "remember.line" : step === 2 ? "remember.lineFirst" : "remember.lineBlanks")}
+                  {t(step === 3 ? (plainLine ? "remember.lineMemory" : "remember.line") : step === 2 ? "remember.lineFirst" : "remember.lineBlanks")}
                 </p>
               </>
             ) : failed ? (
@@ -297,6 +340,14 @@ export function RememberCardView({
             ) : null}
           </>
         )}
+        {/* What is learned can be changed at any time (build 93 note 11). */}
+        {onChange ? (
+          <p className="mt-2">
+            <button type="button" data-learn-change="" onClick={onChange} className="tap-press hit-44 inline-flex items-center font-sans text-caption font-semibold text-paper/60">
+              {t("learn.change")}
+            </button>
+          </p>
+        ) : null}
       </div>
     </section>
   );
