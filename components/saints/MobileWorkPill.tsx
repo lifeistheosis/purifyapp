@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { AmbienceButton } from "@/components/player/AmbienceButton";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { WORDS_PER_MINUTE } from "@/lib/bible/readability";
 import { cn } from "@/lib/cn";
-import type { SectionHead } from "@/lib/saints/parts";
+import { pillAt, type PillLevel, type SectionHead } from "@/lib/saints/parts";
 import { PLACE_ROWS, parsePlace } from "@/lib/saints/paragraphInView";
 import { openWorkContents } from "@/lib/saints/workNow";
 import { useOverlayOpen } from "@/lib/ui/overlay";
@@ -65,6 +65,9 @@ export function widestNames(names: readonly string[], keep: number = NAMES_KEPT)
   return each.sort((a, b) => b.length - a.length).slice(0, keep);
 }
 
+/** Measured before the frame is painted where there is one; the static export also renders this on the server. */
+const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
 export function MobileWorkPill({
   head,
   prev,
@@ -83,12 +86,48 @@ export function MobileWorkPill({
   words: readonly number[];
 }) {
   const { t } = useTranslate();
-  const { pill } = usePartWords();
+  const { pill, sayPill } = usePartWords();
   const covered = useOverlayOpen();
-  const name = pill(head);
-  const widest = widestNames(heads.map(pill)).filter((n) => n !== name);
-  // A name of the work's own is English; one from the catalog is the reader's.
-  const nameLang = "text" in head.pill.name ? "en" : undefined;
+  // Every name shown whole, never cut at its end (the arbiter, 2026-11-11, on
+  // checkMock's cut rule; a phone of 320 has 96px for it). The names start as
+  // the work keeps them and step down, for the whole work at once, until none
+  // is cut: a chapter's own title to "Part 3", then a numbered name to its
+  // numbers (lib/saints/parts.ts, pillAt). The full names stay in the contents
+  // the name opens and in what it says to a screen reader. Another work,
+  // another language, a turned screen or the font arriving starts it again.
+  const full = heads.map(pill).join("\n");
+  const [level, setLevel] = useState<PillLevel>(0);
+  const [measuredFor, setMeasuredFor] = useState(full);
+  if (measuredFor !== full) {
+    setMeasuredFor(full);
+    setLevel(0);
+  }
+  const at = Math.max(0, heads.findIndex((h) => h.n === head.n));
+  const names = heads.map((h, i) => sayPill(pillAt(h, i, level)));
+  const name = names[at] ?? pill(head);
+  const widest = widestNames(names).filter((n) => n !== name);
+  // A name of the work's own is English; one from the catalog, or a number, is the reader's.
+  const nameLang = level === 0 && "text" in head.pill.name ? "en" : undefined;
+  const namesBox = useRef<HTMLSpanElement>(null);
+  useIsoLayoutEffect(() => {
+    const box = namesBox.current;
+    if (!box || level === 2) return;
+    const cut = Array.from(box.children).some((el) => el.scrollWidth > el.clientWidth + 0.5);
+    // A measured layout: the names step down before the frame is painted, and stop where none is cut.
+    if (cut) setLevel((l) => (l < 2 ? ((l + 1) as PillLevel) : l));
+  }, [level, full]);
+  useEffect(() => {
+    let live = true;
+    const again = () => {
+      if (live) setLevel(0);
+    };
+    window.addEventListener("resize", again);
+    if ("fonts" in document) void document.fonts.ready.then(again);
+    return () => {
+      live = false;
+      window.removeEventListener("resize", again);
+    };
+  }, []);
   // 44 to the touch: h-10 drew 42.5px at the reader's text size (checkMock, 2026-11-10).
   const arrow = "h-11 w-11 shrink-0 inline-flex items-center justify-center";
   return (
@@ -134,14 +173,15 @@ export function MobileWorkPill({
           type="button"
           aria-haspopup="dialog"
           onClick={openWorkContents}
-          aria-label={t("bible.pickChapterCurrentAria", { book: name, chapter: "" }).trim()}
+          aria-label={t("bible.pickChapterCurrentAria", { book: pill(head), chapter: "" }).trim()}
           data-pill-name=""
           className="flex h-11 min-w-0 items-center px-2 font-sans text-[15px] font-semibold leading-tight text-paper"
         >
           {/* The work's widest names under the one shown, unseen, in the one
               place: they hold the pill's width, so the arrows do not move as
-              the parts turn. A long name gives way, at its end. */}
-          <span className="grid min-w-0 justify-items-center">
+              the parts turn. Measured above: where one would be cut, the
+              names step down instead. */}
+          <span ref={namesBox} data-pill-level={level} className="grid min-w-0 justify-items-center">
             {widest.map((n) => (
               <span key={n} aria-hidden data-pill-width="" className="invisible col-start-1 row-start-1 min-w-0 max-w-full truncate">
                 {n}

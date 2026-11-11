@@ -274,6 +274,33 @@ export function neighbours(heads: readonly SectionHead[], n: number): { prev: Se
 }
 
 /** A part's name for the eye: Roman where the edition prints it so. */
+/**
+ * How much of a part's name the pill can show (the arbiter, 2026-11-11, on
+ * checkMock's cut rule: "The pill shows what fits whole (the chapter's
+ * number, or its short form where the edition gives one), and the sheet that
+ * opens shows the full names"). The pill tries 0, then 1, then 2, for the
+ * whole work at once, until no name of the work is cut
+ * (components/saints/MobileWorkPill.tsx measures it):
+ *   0  the name as the reading room keeps it: "Conference 10 · 10", a
+ *      chapter's own title, the work's title for a work of one section;
+ *   1  a part named by its own words becomes "Part 3", by its place in the
+ *      work; a numbered part keeps its name;
+ *   2  a numbered part keeps its numbers only, as the edition prints them:
+ *      "10 · 10", "XVIII", "141".
+ * The full names stay in the contents sheet and in what the pill says to a
+ * screen reader.
+ */
+export type PillLevel = 0 | 1 | 2;
+
+/** A part's name in the pill at a level; `index` is its place among the work's parts, from 0. */
+export function pillAt(head: SectionHead, index: number, level: PillLevel): SectionHead["pill"] {
+  if (level === 0) return head.pill;
+  const { name, inner } = head.pill;
+  if ("text" in name) return { name: { level: "part", n: index + 1 } };
+  if (level === 1) return head.pill;
+  return { name: { text: inner !== undefined ? `${numberShown(name)} \u00b7 ${inner}` : numberShown(name) } };
+}
+
 export function numberShown(name: { n: number; roman?: true }): string {
   if (!name.roman) return String(name.n);
   const table: [number, string][] = [[100, "C"], [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]];
