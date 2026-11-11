@@ -10,6 +10,11 @@ He sends each himself. What every letter says, and only this:
 
 - what Purify is, and that the saints' lives and their pictures are free for
   every reader (`docs/1.9-build/free-and-plus.md`: the saints are free);
+- that Purify also offers an optional subscription for some reading tools,
+  and that the lives of the saints and their icons are never part of it (the
+  arbiter's sentence of 14:07 UTC: told whole at the start, and the paid
+  tier kept clear of the pictures on the record, as the heritage note
+  advises);
 - exactly which picture, as the list describes it;
 - shown only where a reader meets the saint, in the app and on the website,
   with the credit they ask for, and never in advertising, a store listing or
@@ -55,7 +60,9 @@ No letter yet, and why:
 > I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
 > Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
 > Each saint's life in Purify is shown with an icon of the saint, and the
-> lives and their icons are free for every reader.
+> lives and their icons are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their icons are never part of it.
 >
 > We ask your blessing and your written permission to show two icons of your
 > holy Hesychasterion beside the lives of the saints: the icon of St Paisios
@@ -83,7 +90,9 @@ No letter yet, and why:
 > για την προσευχή, την Αγία Γραφή και τους βίους των αγίων, την οποία
 > δημιουργεί η εταιρεία Purify Orthodox LLC. Κάθε βίος αγίου στο Purify
 > συνοδεύεται από μια εικόνα του αγίου, και οι βίοι μαζί με τις εικόνες τους
-> είναι δωρεάν για κάθε αναγνώστη.
+> είναι δωρεάν για κάθε αναγνώστη. Το Purify προσφέρει επίσης μια
+> προαιρετική συνδρομή για ορισμένα εργαλεία ανάγνωσης· οι βίοι των αγίων
+> και οι εικόνες τους δεν αποτελούν ποτέ μέρος της.
 >
 > Ζητούμε την ευλογία σας και τη γραπτή σας άδεια να δείχνουμε δύο εικόνες
 > του Ιερού σας Ησυχαστηρίου δίπλα στους βίους των αγίων: την εικόνα του
@@ -120,7 +129,9 @@ No letter yet, and why:
 > I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
 > Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
 > Each saint's life in Purify is shown with an icon of the saint, and the
-> lives and their icons are free for every reader.
+> lives and their icons are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their icons are never part of it.
 >
 > For the canonization of St Porphyrios of Kavsokalyvia in January 2014, the
 > Committee published two icons of him by the iconographer Mr Efstathios
@@ -152,7 +163,9 @@ No letter yet, and why:
 > για την προσευχή, την Αγία Γραφή και τους βίους των αγίων, την οποία
 > δημιουργεί η εταιρεία Purify Orthodox LLC. Κάθε βίος αγίου στο Purify
 > συνοδεύεται από μια εικόνα του αγίου, και οι βίοι μαζί με τις εικόνες τους
-> είναι δωρεάν για κάθε αναγνώστη.
+> είναι δωρεάν για κάθε αναγνώστη. Το Purify προσφέρει επίσης μια
+> προαιρετική συνδρομή για ορισμένα εργαλεία ανάγνωσης· οι βίοι των αγίων
+> και οι εικόνες τους δεν αποτελούν ποτέ μέρος της.
 >
 > Για την αγιοκατάταξη του Αγίου Πορφυρίου του Καυσοκαλυβίτου, τον Ιανουάριο
 > του 2014, η Επιτροπή δημοσίευσε δύο εικόνες του από τον αγιογράφο κ.
@@ -185,7 +198,9 @@ No letter yet, and why:
 > I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
 > Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
 > Each saint's life in Purify is shown with an icon of the saint, and the
-> lives and their icons are free for every reader.
+> lives and their icons are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their icons are never part of it.
 >
 > We ask your written permission to show two icons of your holy monastery
 > beside the lives of the saints: the icon of St Silouan the Athonite by St
@@ -219,7 +234,9 @@ No letter yet, and why:
 > I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
 > Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
 > Each saint's life in Purify is shown with an icon of the saint, and the
-> lives and their icons are free for every reader.
+> lives and their icons are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their icons are never part of it.
 >
 > We ask your written permission to show the icon of St Justin of Ćelije
 > that the Eparchy publishes with his Life: half-length, in the black
@@ -252,7 +269,9 @@ No letter yet, and why:
 > I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
 > Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
 > Each saint's life in Purify is shown with an icon of the saint, and the
-> lives and their icons are free for every reader.
+> lives and their icons are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their icons are never part of it.
 >
 > We ask the Holy Synod's written permission to show three of the official
 > icons of the saints canonized in 2024, painted by Mr Răzvan and Mrs Mihaela
@@ -281,7 +300,9 @@ No letter yet, and why:
 > rugăciune, Sfânta Scriptură și viețile sfinților, realizată de Purify
 > Orthodox LLC. Fiecare viață de sfânt din Purify este însoțită de o icoană a
 > sfântului, iar viețile, împreună cu icoanele lor, sunt gratuite pentru
-> fiecare cititor.
+> fiecare cititor. Purify oferă și un abonament opțional pentru câteva
+> instrumente de lectură; viețile sfinților și icoanele lor nu fac niciodată
+> parte din el.
 >
 > Cerem acordul scris al Sfântului Sinod pentru a arăta, alături de viețile
 > sfinților, trei dintre icoanele oficiale ale sfinților canonizați în 2024,
@@ -317,7 +338,9 @@ No letter yet, and why:
 > I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
 > Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
 > Each saint's life in Purify is shown with an icon of the saint, and the
-> lives and their icons are free for every reader.
+> lives and their icons are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their icons are never part of it.
 >
 > We would like to show, beside the life of St Arsenius of Prislop, the icon
 > presented at his proclamation at Prislop on 28 November 2025. May we ask
@@ -343,7 +366,9 @@ No letter yet, and why:
 > rugăciune, Sfânta Scriptură și viețile sfinților, realizată de Purify
 > Orthodox LLC. Fiecare viață de sfânt din Purify este însoțită de o icoană a
 > sfântului, iar viețile, împreună cu icoanele lor, sunt gratuite pentru
-> fiecare cititor.
+> fiecare cititor. Purify oferă și un abonament opțional pentru câteva
+> instrumente de lectură; viețile sfinților și icoanele lor nu fac niciodată
+> parte din el.
 >
 > Am dori să arătăm, alături de viața Sfântului Cuvios Mărturisitor Arsenie
 > de la Prislop, icoana prezentată la proclamarea sa, la Prislop, pe 28
@@ -375,7 +400,9 @@ No letter yet, and why:
 > I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
 > Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
 > Each saint's life in Purify is shown with an icon of the saint, and the
-> lives and their icons are free for every reader.
+> lives and their icons are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their icons are never part of it.
 >
 > Your pages ask for written permission before any of your icons is used, so
 > we ask it: may we show your icon of St Iakovos of Evia, in egg tempera, 30
@@ -408,7 +435,9 @@ No letter yet, and why:
 > I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
 > Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
 > Each saint's life in Purify is shown with an icon of the saint, and the
-> lives and their icons are free for every reader.
+> lives and their icons are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their icons are never part of it.
 >
 > The Holy Metropolis's page on the Hieromartyr Philoumenos of Jacob's Well
 > shows two icons of him: one painted by Hieromonk Ambrosios at the time of
@@ -437,7 +466,9 @@ No letter yet, and why:
 > για την προσευχή, την Αγία Γραφή και τους βίους των αγίων, την οποία
 > δημιουργεί η εταιρεία Purify Orthodox LLC. Κάθε βίος αγίου στο Purify
 > συνοδεύεται από μια εικόνα του αγίου, και οι βίοι μαζί με τις εικόνες τους
-> είναι δωρεάν για κάθε αναγνώστη.
+> είναι δωρεάν για κάθε αναγνώστη. Το Purify προσφέρει επίσης μια
+> προαιρετική συνδρομή για ορισμένα εργαλεία ανάγνωσης· οι βίοι των αγίων
+> και οι εικόνες τους δεν αποτελούν ποτέ μέρος της.
 >
 > Η σελίδα της Ιεράς Μητροπόλεως για τον Άγιο Ιερομάρτυρα Φιλούμενο του
 > Φρέατος του Ιακώβ δείχνει δύο εικόνες του: τη μία αγιογραφημένη από τον
@@ -476,7 +507,9 @@ No letter yet, and why:
 > I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
 > Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
 > Each saint's life in Purify is shown with an icon of the saint, and the
-> lives and their icons are free for every reader.
+> lives and their icons are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their icons are never part of it.
 >
 > For five saints we have found no picture that we may show, and your
 > website shows an icon of each. We ask your written permission to show
@@ -521,7 +554,9 @@ No letter yet, and why:
 > I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
 > Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
 > Each saint's life in Purify is shown with an icon of the saint, and the
-> lives and their icons are free for every reader.
+> lives and their icons are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their icons are never part of it.
 >
 > The Museum keeps an eleventh-century wall painting of a Saint Theodota
 > (Αγία Θεοδότη), inventory number BXM 1371. May we ask which St Theodota it
@@ -556,7 +591,9 @@ No letter yet, and why:
 > I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
 > Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
 > Each saint's life in Purify is shown with an icon of the saint, and the
-> lives and their icons are free for every reader.
+> lives and their icons are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their icons are never part of it.
 >
 > The Rotunda of St George keeps the fifth-century mosaic of the holy martyrs
 > Onesiphorus and Porphyrius, standing in prayer. It is the oldest picture of
@@ -583,7 +620,9 @@ No letter yet, and why:
 > για την προσευχή, την Αγία Γραφή και τους βίους των αγίων, την οποία
 > δημιουργεί η εταιρεία Purify Orthodox LLC. Κάθε βίος αγίου στο Purify
 > συνοδεύεται από μια εικόνα του αγίου, και οι βίοι μαζί με τις εικόνες τους
-> είναι δωρεάν για κάθε αναγνώστη.
+> είναι δωρεάν για κάθε αναγνώστη. Το Purify προσφέρει επίσης μια
+> προαιρετική συνδρομή για ορισμένα εργαλεία ανάγνωσης· οι βίοι των αγίων
+> και οι εικόνες τους δεν αποτελούν ποτέ μέρος της.
 >
 > Η Ροτόντα του Αγίου Γεωργίου φυλάσσει το ψηφιδωτό του 5ου αιώνα με τους
 > αγίους μάρτυρες Ονησιφόρο και Πορφύριο, όρθιους σε στάση προσευχής. Είναι
@@ -616,7 +655,9 @@ No letter yet, and why:
 > I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
 > Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
 > Each saint's life in Purify is shown with an icon of the saint, and the
-> lives and their icons are free for every reader.
+> lives and their icons are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their icons are never part of it.
 >
 > St Victorinus of Pettau, bishop and martyr of Poetovio, is one of the few
 > saints for whom we have found no picture at all. May we ask what is the
@@ -655,7 +696,9 @@ The English, the same for each but for its list:
 > I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
 > Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
 > Each saint's life in Purify is shown with an icon of the saint, and the
-> lives and their icons are free for every reader.
+> lives and their icons are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their icons are never part of it.
 >
 > Among the pictures we show are photographs of [the list]. We show them
 > only where a reader meets the saint, with your holy monastery named
@@ -678,7 +721,9 @@ The Greek, in the same words:
 > για την προσευχή, την Αγία Γραφή και τους βίους των αγίων, την οποία
 > δημιουργεί η εταιρεία Purify Orthodox LLC. Κάθε βίος αγίου στο Purify
 > συνοδεύεται από μια εικόνα του αγίου, και οι βίοι μαζί με τις εικόνες τους
-> είναι δωρεάν για κάθε αναγνώστη.
+> είναι δωρεάν για κάθε αναγνώστη. Το Purify προσφέρει επίσης μια
+> προαιρετική συνδρομή για ορισμένα εργαλεία ανάγνωσης· οι βίοι των αγίων
+> και οι εικόνες τους δεν αποτελούν ποτέ μέρος της.
 >
 > Ανάμεσα στις εικόνες που δείχνουμε είναι φωτογραφίες από [ο κατάλογος].
 > Τις δείχνουμε μόνο εκεί όπου ο αναγνώστης συναντά τον άγιο, με το όνομα
