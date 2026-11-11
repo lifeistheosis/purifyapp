@@ -19,3 +19,29 @@ export type Pronoun = "his" | "her" | "their";
 export function byPronoun<T>(pronoun: Pronoun | null | undefined, forms: Record<Pronoun, T>): T {
   return forms[pronoun ?? "his"];
 }
+
+/**
+ * Pages of exactly two saints (Sts. Cosmas and Damian, Sts. Adrian and
+ * Natalia), for the one catalog whose prayer tells two apart from more:
+ * Arabic says a pair in the dual ("أيها القدّيسان ... اطلبا"), a company in
+ * the plural. Every other catalog's pair form is its their form. Each of
+ * these is also "their"; the test holds every page named "Sts. A and B" here
+ * or among its named exceptions (lib/saints/__tests__/intercession.test.ts).
+ */
+export const PAIRS: ReadonlySet<string> = new Set([
+  "cyril-and-methodius",
+  "theodore-and-vasily-of-the-caves",
+  "photius-and-anicetus",
+  "floros-and-lauros",
+  "adrian-and-natalia",
+  "cosmas-and-damian-of-asia",
+  "nicander-and-hermas",
+  "galaction-and-episteme",
+  "onesiphorus-and-porphyrius",
+  "plato-and-romanus",
+  "zacchaeus-and-alphaeus",
+  "barlaam-and-josaphat",
+  "philemon-and-apphia",
+  "hermylas-and-stratonicus",
+  "cyrus-and-john",
+]);

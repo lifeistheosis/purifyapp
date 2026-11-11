@@ -199,3 +199,65 @@ stills to the arbiter.
   St John the Hut-Dweller can take theirs from the Athonite fresco St Jerome's
   Life already wears (lib/reading/authorCovers.ts). Butler's Lives wait on
   his word.
+
+## The petition, in every language (push 2)
+
+Found on push 1's walk: the closing petition at the foot of every saint's
+page put the registry name whole after its own "Holy", so it read "Holy St.
+Basil the Great, pray to God for us.", "Holy Holy Apostle Paul" and "Holy The
+Prophet Zephaniah", in every language ("San St. Basil the Great"). The name now
+goes in without its honorific (nameCore). And, on the arbiter's word of
+2026-11-11, each language prays to a woman as a woman and to two or more
+saints as more than one, the adjective and the verb agreeing, as its liturgy
+says it; before, every catalog had only the masculine singular.
+
+The petition is a liturgical formula, not a text of the Fathers: each form is
+the language's own common form of "Holy N., pray to God for us" (Church
+Slavonic "Святый ... моли Бога о нас", Greek "Άγιε ... πρέσβευε υπέρ ημών").
+Whose the page is comes from the saint's `pronoun` (his, her, their) and, for
+Arabic's dual, from PAIRS in lib/saints/pronoun.ts (the fifteen pages of
+exactly two saints). The test, lib/saints/__tests__/intercession.test.ts,
+walks every saint in all 21 languages and fails if a woman or two saints are
+prayed to in the masculine singular where the language tells them apart.
+
+| Language | To a man | To a woman | To two or more |
+|---|---|---|---|
+| Arabic | أيها القدّيس ... اطلب | أيتها القدّيسة ... اطلبي | أيها القدّيسون ... اطلبوا (two: أيها القدّيسان ... اطلبا) |
+| Bulgarian | Свети ... моли | Света ... моли | Свети ... молете |
+| German | Heiliger ... bitte | Heilige ... bitte | Heilige ... bittet |
+| Greek | Άγιε ... πρέσβευε | Αγία ... πρέσβευε | Άγιοι ... πρεσβεύσατε |
+| English | Holy ... pray | the same | the same |
+| Spanish | San ... ruega | Santa ... ruega | Santos ... rogad |
+| Filipino | Banal na ... ipanalangin mo | the same (no gender) | Mga banal na ... ipanalangin ninyo |
+| French | Saint ... priez | Sainte ... priez | Saints ... priez |
+| Hungarian | Szent ... könyörögj | the same (no gender) | Szent ... könyörögjetek |
+| Indonesian | Santo ... doakanlah | Santa ... doakanlah | Para Santo ... doakanlah |
+| Italian | Santo ... prega | Santa ... prega | Santi ... pregate |
+| Georgian | წმიდაო ... ევედრე | the same (no gender) | წმიდანო ... ევედრეთ |
+| Nepali | पवित्र ... गर्नुहोस् | the same | the same (the honorific is said to one and to more) |
+| Polish | Święty ... módl się | Święta ... módl się | Święci ... módlcie się |
+| Portuguese | Santo ... rogai | Santa ... rogai | Santos ... rogai |
+| Romanian | Sfinte ... roagă-te | Sfântă ... roagă-te | Sfinților ... rugați-vă |
+| Russian | Святый ... моли | Святая ... моли | Святии ... молите |
+| Serbian | Свети ... моли | Света ... моли | Свети ... молите |
+| Turkish | Kutsal ... dua et | the same (no gender) | Kutsal ... dua edin |
+| Ukrainian | Святий ... моли | Свята ... моли | Святі ... моліть |
+| Urdu | مقدس ... کریں | the same | the same (the honorific is said to one and to more) |
+
+Where I am unsure, said rather than guessed:
+- **Indonesian, to two or more**: "Para Santo" is the plural I am least sure
+  of; Indonesian litanies often set "Santo" before each name instead. A native
+  reader should confirm it.
+- **Portuguese**: "Santo" is kept before every man's name, as the catalog had
+  it ("Santo(a)" before); Brazilian use says "São" before a name that begins
+  with a consonant. The names are English in every catalog, so the choice
+  cannot follow the name; a native reader may prefer "São".
+- **Nepali and Urdu**: the honorific imperative serves one and many alike, so
+  the three forms are one; a native reader may prefer a plural word for a
+  company.
+- **A company of women alone** would need a feminine plural (Santas,
+  Sfintelor) that no catalog has: every page of more than one today has a man
+  among them, and the test names the four in the Holy Women that are mixed, so
+  a page of women alone fails until its form is written.
+- The names themselves stay English in every language, as before; only the
+  words around them change.
