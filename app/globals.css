@@ -13880,14 +13880,14 @@ a.set-lab.set-link {
 .gift-glow,
 .gift-burst {
  position: absolute;
- left: 50%;
+ inset-inline-start: 50%;
  pointer-events: none;
 }
 .gift-light {
  top: 44px;
  width: 440px;
  height: 380px;
- margin-left: -220px;
+ margin-inline-start: -220px;
  background: radial-gradient(closest-side, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0));
 }
 /* The light that stays on once the gift is theirs. */
@@ -13895,7 +13895,7 @@ a.set-lab.set-link {
  top: 30px;
  width: 520px;
  height: 440px;
- margin-left: -260px;
+ margin-inline-start: -260px;
  background: radial-gradient(closest-side, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0));
  opacity: 0;
 }
@@ -13917,7 +13917,8 @@ html[data-reading-mode="parchment"] .gift-glow {
  top: 244px;
  width: 320px;
  height: 320px;
- margin: -160px 0 0 -174px;
+ margin-top: -160px;
+ margin-inline-start: -174px;
  border-radius: 50%;
  background: radial-gradient(closest-side, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.16) 48%, rgb(255 255 255 / 0));
  opacity: 0;
@@ -13927,7 +13928,7 @@ html[data-reading-mode="parchment"] .gift-burst {
 }
 .gift-card {
  position: absolute;
- left: 50%;
+ inset-inline-start: 50%;
  width: 262px;
  height: 157px;
  border-radius: 7px;
@@ -13945,12 +13946,12 @@ html[data-reading-mode="parchment"] .gift-card {
    the page runs on transform underneath. */
 .gift-card-back {
  top: 118px;
- margin-left: -111px;
+ margin-inline-start: -111px;
  rotate: -7deg;
 }
 .gift-card-front {
  top: 166px;
- margin-left: -145px;
+ margin-inline-start: -145px;
  rotate: 4deg;
 }
 @keyframes gift-card-in {
@@ -13988,14 +13989,12 @@ html[data-reading-mode="parchment"] .gift-card {
  font-family: var(--font-serif);
  font-size: 14px;
  font-style: italic;
- color: color-mix(in srgb, var(--color-paper) 62%, transparent);
 }
 .gift-eyebrow {
  font-size: 11px;
  font-weight: 700;
  letter-spacing: 0.18em;
  text-transform: uppercase;
- color: color-mix(in srgb, var(--color-paper) 62%, transparent);
 }
 :where(html:not([data-reading-mode="parchment"])) [data-gift="reveal"] .gift-title,
 :where(html:not([data-reading-mode="parchment"])) [data-gift="lit"] .gift-title {
@@ -14059,7 +14058,6 @@ html[data-reading-mode="parchment"] .gift-check {
  text-align: center;
  font-size: 12.5px;
  line-height: 1.45;
- color: color-mix(in srgb, var(--color-paper) 55%, transparent);
 }
 
 @keyframes gift-burst-out {

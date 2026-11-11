@@ -326,7 +326,7 @@ export function OrderGiftClient() {
       ) : (
         homeLink
       )}
-      {native ? null : <p className="gift-hint">{t("orderGift.appHint")}</p>}
+      {native ? null : <p className="gift-hint text-paper/55">{t("orderGift.appHint")}</p>}
     </>
   );
 
@@ -434,14 +434,14 @@ export function OrderGiftClient() {
       </div>
 
       <div className="relative mx-auto w-full max-w-md px-[18px]">
-        <p id="gift-caption" className="gift-caption">{t("orderGift.caption")}</p>
+        <p id="gift-caption" className="gift-caption text-paper/62">{t("orderGift.caption")}</p>
 
         {/* The ticket: the gift above its torn line, the stub below. */}
         <div className="set-panel mt-4">
           <div>
             <div className="flex items-center gap-4 px-[18px] pb-4 pt-[18px]">
               <div className="min-w-0 flex-1">
-                <p className="gift-eyebrow">{t("orderGift.eyebrow")}</p>
+                <p className="gift-eyebrow text-paper/62">{t("orderGift.eyebrow")}</p>
                 <h1 id="gift-title" className="gift-title mt-[7px] font-serif text-[30px] font-bold leading-[1.05] text-paper">
                   {t("orderGift.title")}
                 </h1>
