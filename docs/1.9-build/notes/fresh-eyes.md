@@ -258,6 +258,26 @@ The count that let them slip (Updates, 2026-11-11, `0258a5320`): their height wa
 - Smallest fix: the house's Eye icon, placed with `end`; `min-h-11` on the
   four links; a neutral sample name.
 - Area: Updates 2.
+- **Done** (Updates 2, 2026-11-11, `0744305ab`, on the arbiter's word, with
+  the gate's first run): the house's own eye, open and closed
+  (`components/ui/icons/Eye.tsx`), placed with `end`, the field padded with
+  start and end; "Forgot password?", "New here? Create an account", the
+  Purify mark, "Privacy", "Back to sign in", "Sign out instead" and the
+  multi-verse page's two links 44px tall (the last two lose their typed
+  arrows for the house's chevron); the terms box keeps its 18px face inside
+  a 44 by 44 square of its label, named to the checker with its reason; the
+  sample name is the catalogs' plain "A first name". Continue with Google
+  moved because the form was centred: a line appearing under the button
+  lifted the whole form by half its height. On a phone the form now stands
+  from the top, and each form's error sits under its button. On the export
+  with no signal: `scripts/guardrail-walk.mjs` passes all six screens
+  (/signin, /signup, /forgot, /reset, /set-password, /bible/multi); the eye
+  sits at the field's end in English and in Arabic; Sign in and Continue
+  with Google stay where the finger pressed them when an error appears.
+  `lib/auth/__tests__/signInScreens.test.ts` fails on the old code, five of
+  five. Still: `build-93/m6-signin-offline-390.png`. Found on the way:
+  with no signal the forms showed the browser's own words ("Failed to
+  fetch"); a plain line follows in the next push.
 
 ### Low
 
