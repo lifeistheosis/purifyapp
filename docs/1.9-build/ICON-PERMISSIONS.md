@@ -524,7 +524,10 @@ The mother of the Holy Unmercenaries Cosmas and Damian (November 1).
 
 An older saint with no picture whose freedom can be shown (searched on
 2026-11-11: Commons' "Simeon_novyj.jpg" and "SYMEON-icon.jpg" are dated by
-their uploaders only, from personal sites, with no holder named).
+their uploaders only, from personal sites, with no holder named; the
+Russian Lives of the Saints, 1903 to 1911, whose prints several of our
+saints wear, have none of him on his day, 12 March, only St Theophanes and
+St Gregory the Dialogist).
 
 - **The icon:** the Greek Orthodox Monastery of the Virgin Mary the
   Consolatory's own icon of him, sold by the monastery as a mounted print,
@@ -559,15 +562,45 @@ https://pravoslavie.ru/100843.html); it is not an icon, and it is not used.
 - **For the letter:** ask whether the monastery or the monk who painted it
   holds the right to grant it, and for his name for the credit.
 
-## Still searched, not yet on this list
+## St Mark of Ephesus (1392 to 1444)
 
-One older saint may yet have a free picture, and is named here so the letter
-can follow at once if none passes:
+An older saint with no clean picture whose freedom can be shown (searched
+on 2026-11-11). The Illustrated Chronicle of Ivan the Terrible, 1568 to
+1576, shows him in two miniatures of the Council of Florence on Commons
+(https://commons.wikimedia.org/wiki/File:Facial_Chronicle_-_13-312.png and
+-13-313.png), each time small among other men, his face half behind
+another's; no cut gives him alone. Commons' "Mark of Ephesus.jpg", given
+there as a fresco of the end of the 19th century, is a 20th-century Greek
+icon with an English inscription and its painter's signature, so its
+public-domain tag is wrong, and "Марк Ефесский. Географ.jpg" is a copy of
+it. The Russian Lives of the Saints, 1903 to 1911, have no print of him on
+his day, 19 January. An 18th-century picture in the National Historical
+Museum, Athens, has no free copy found.
 
-- **St Mark of Ephesus.** Old pictures of him exist: a miniature in the
-  Illustrated Chronicle of Ivan the Terrible, 1568 to 1576, on Commons
-  (https://commons.wikimedia.org/wiki/File:Facial_Chronicle_-_13-312.png,
-  him refusing to sign and leaving Florence), and an 18th-century icon in
-  the National Historical Museum, Athens. Modern fallback: Brian Whirledge's
-  icon, prints through Legacy Icons; icons@brianwhirledge.com
-  (https://www.brianwhirledge.com/contact).
+- **The icon, free already if the owner takes it:** the Eleon icon-painting
+  workshop's "Sts Mark and Macarius" (St Mark of Ephesus with St Macarius
+  the Great, 2015), which the workshop photographed and published itself on
+  Flickr under CC BY 2.0
+  (https://www.flickr.com/photos/107233269@N08/20781338902/, the licence
+  still shown there on 2026-11-11; Commons' copy, its licence checked by
+  Commons' review bot in 2016:
+  https://commons.wikimedia.org/wiki/File:Марк_и_Макарий_(иконописная_мастерская_Елеон).jpg).
+  St Mark stands alone on its left half, his name lettered beside his
+  halo. It is not public domain: the house takes an old picture, or a
+  modern icon with written permission, and lib/credits/photos.ts takes CC
+  photographs of old works only. Whether the painter's own free licence
+  stands in for the letter is the owner's word, asked through the arbiter.
+- **Made by:** the Eleon icon-painting workshop (Иконописная мастерская
+  Елеон), in its Flickr account's own name. Its site named there,
+  eikon.org.ua, now serves another site; the Flickr account is the only
+  address found.
+- **The other icon, for a letter:** Brian Whirledge's "Saint Mark of
+  Ephesus", sold as a print by Legacy Icons (S681):
+  https://legacyicons.com/saint-mark-of-ephesus-whirledge-icon-s681/
+- **Made by:** Brian Matthew Whirledge, Painter of Sacred Icons, Goshen,
+  Indiana (https://www.brianwhirledge.com/contact).
+- **To write to:** icons@brianwhirledge.com, on his contact page, which
+  also says that Legacy Icons handles all his prints.
+- **For the letter:** needed only if the owner does not take the Eleon
+  icon. Ask him for the icon itself, with his credit; a question about a
+  print goes to Legacy Icons.
