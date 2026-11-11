@@ -247,6 +247,18 @@ await shot(
   { first: true },
 );
 
+// The pair of 08f: Quote twice and the verse finder open. One card, the kinds as a switch, nothing under Title,
+// Highlight lit, and the finder's field quiet (the search field's own, app/globals.css: no ring and no glow).
+await shot("11-verse-finder", "Quote tapped twice, then Verse: one card, and the finder's field quiet", "[role=dialog]", async (page) => {
+  await write(page);
+  await tap(page, tools(page).nth(QUOTE), "Quote");
+  await wait(400);
+  await tap(page, tools(page).nth(QUOTE), "Quote");
+  await wait(400);
+  await tap(page, tools(page).nth(VERSE), "Verse");
+  await wait(600);
+});
+
 // ── The walk ─────────────────────────────────────────────────────────────
 
 const walked = [];
