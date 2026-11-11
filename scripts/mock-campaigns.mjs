@@ -795,7 +795,10 @@ await shot("11-how-long", "starting one: how long", "/campaigns/new", "[role=dia
     await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
     await page.locator("[data-campaign-new] .set-panel button").nth(1).click();
     await page.waitForSelector("[role=radiogroup]", { timeout: 8000 });
-    await page.locator("[role=radio]").last().click();
+    // The sheet comes up on a spring: tap once it rests, and tap its own last line (a tap sent while it
+    // was still arriving met the sheet's head for thirty seconds, with four browsers at work at once).
+    await settle(page, 700);
+    await page.locator("[role=dialog]:not([data-campaign-new]) [role=radio]").last().click();
     await settle(page, 500);
   },
 });
