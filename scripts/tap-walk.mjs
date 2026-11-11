@@ -132,6 +132,9 @@ const EXPECT = {
   "/allowed/": { verdict: "allowed" },
   "/dead/": { verdict: "fail", why: /^nothing:/ },
   "/grows/": { verdict: "pass" },
+  "/sr-only/": { verdict: "pass", why: /^went to \/other\// },
+  "/read-more/": { verdict: "pass" },
+  "/here/": { verdict: "pass", why: /^names the page it stands on/ },
 };
 
 /** The self-test's page: one front door that draws a case by its address, as the shell answers every address with it. */
@@ -175,6 +178,28 @@ if (at === "/sticky/") {
 } else if (at === "/grows/") {
   const b = button("More", (x) => { x.style.paddingBottom = "48px"; x.textContent = "Less"; });
   m.append(block(300), b, block(1200));
+} else if (at === "/sr-only/") {
+  // A screen reader's heading, its link first in the order; then the cover a finger taps.
+  const h = document.createElement("h2");
+  h.style.cssText = "position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0";
+  const hidden = document.createElement("a"); hidden.href = "/other/"; hidden.textContent = "The First Apology, St Justin Martyr";
+  h.append(hidden);
+  const cover = document.createElement("a"); cover.href = "/other/"; cover.textContent = "The cover";
+  m.append(block(200), h, cover, block(1200));
+} else if (at === "/read-more/") {
+  // Words that open above their own control, and the page lifting the thumb's place to the top (showOpened's tapped).
+  const words = document.createElement("p"); words.id = "more-words"; words.style.margin = "0"; words.textContent = "The first lines of a long post.";
+  const more = button("Read more", (b) => {
+    const at = b.getBoundingClientRect().top;
+    words.style.height = "1400px";
+    b.setAttribute("aria-expanded", "true");
+    scrollBy(0, at);
+  });
+  more.setAttribute("aria-expanded", "false"); more.setAttribute("aria-controls", "more-words");
+  m.append(block(600), words, more, block(1500));
+} else if (at === "/here/") {
+  const tab = document.createElement("a"); tab.href = "/here/"; tab.textContent = "You";
+  m.append(block(300), tab, block(1200));
 } else if (at === "/redrawn/") {
   let b = button("Open", (x) => (x.textContent = "Opened"));
   m.append(block(1500), b, block(1500));
@@ -233,7 +258,16 @@ function markControls(max) {
     const cs = getComputedStyle(el);
     // checkVisibility: not inside something shut (a closed details draws nothing, though its
     // links still answer for a place on the page).
-    return r.width >= 8 && r.height >= 8 && cs.visibility !== "hidden" && cs.display !== "none" && Number(cs.opacity) > 0.05 && el.checkVisibility?.() !== false;
+    if (!(r.width >= 8 && r.height >= 8 && cs.visibility !== "hidden" && cs.display !== "none" && Number(cs.opacity) > 0.05 && el.checkVisibility?.() !== false)) return false;
+    // A screen reader's own words (a heading kept 1px square, clipped): a link inside one
+    // reads 18 by 467 on its own as its words wrap, and no finger meets it (Fable Themes,
+    // 2026-11-11, the reading room's featured work).
+    for (let q = el; q && q !== document.body; q = q.parentElement) {
+      const qs = getComputedStyle(q);
+      const b = q.getBoundingClientRect();
+      if ((qs.clip && qs.clip !== "auto") || ((qs.overflowX === "hidden" || qs.overflowX === "clip") && (b.width < 8 || b.height < 8))) return false;
+    }
+    return true;
   };
   const out = [];
   for (const el of document.querySelectorAll("[data-tapwalk]")) el.removeAttribute("data-tapwalk");
@@ -473,6 +507,19 @@ async function walkScreen(ctx, at, kept) {
         // control stands, and let fall quiet, before the tap that is judged.
         await firstTouch(page, cdp);
         const before = await page.evaluate(snapshot);
+        // The tab or link for the page it stands on (aria-current, or its own address), read
+        // before the tap: a reader at the top of that page taps it and nothing happens, as it should.
+        const namesHere = await page
+          .evaluate((i) => {
+            const el = document.querySelector(`[data-tapwalk="${i}"]`);
+            if (!el) return false;
+            if (/^(page|true|location)$/.test(el.getAttribute("aria-current") || "")) return true;
+            const href = el.getAttribute("href");
+            if (!href) return false;
+            const u = new URL(href, location.href);
+            return u.pathname.replace(/\/$/, "") === location.pathname.replace(/\/$/, "") && !u.hash;
+          }, c.i)
+          .catch(() => false);
         // Where the reader stands in the history, to tell a step forward from a step back or a
         // changed address (a tab that replaces it), which Back is not asked to undo.
         const step = () => page.evaluate(() => window.navigation?.currentEntry?.index ?? -1).catch(() => -1);
@@ -616,12 +663,17 @@ async function walkScreen(ctx, at, kept) {
               const end = Math.max(...parts.map((p) => p.getBoundingClientRect().bottom));
               const top = el.getBoundingClientRect().top;
               const atEnd = innerHeight + scrollY >= document.documentElement.scrollHeight - 2;
-              return { open: true, named: true, end: Math.round(end), floor: Math.round(floor), ceiling: Math.round(ceiling), top: Math.round(top), atEnd };
+              return { open: true, named: true, end: Math.round(end), floor: Math.round(floor), ceiling: Math.round(ceiling), top: Math.round(top), atEnd, sy: scrollY };
             }, c.i)
             .catch(() => null);
           const turnedOpen = opened?.open && !wasOpen;
           if (turnedOpen && opened.named && !opened.leftAlone) {
-            const shows = opened.end <= opened.floor - 12 + 2 || opened.top <= opened.ceiling + 14 || opened.atEnd;
+            // Words that open above their own control push it down the page, and the place to
+            // keep is where the thumb was (lib/ui/showOpened.ts, `tapped`): that place now, the
+            // control's top at the tap less how far the page has moved (Fable Themes, 2026-11-11,
+            // Community's "Read more").
+            const thumb = start ? start.top - (opened.sy - start.sy) : opened.top;
+            const shows = opened.end <= opened.floor - 12 + 2 || opened.top <= opened.ceiling + 14 || thumb <= opened.ceiling + 14 || opened.atEnd;
             if (!shows) {
               row.verdict = "fail";
               row.why.push(`under: what it opened ends at ${opened.end}px, under the bar at ${opened.floor}px, and the page did not move with it`);
@@ -646,8 +698,11 @@ async function walkScreen(ctx, at, kept) {
           }
           const anything = changes > 0 || after.y !== before.y || after.html !== before.html || after.kept !== before.kept || after.dialogs !== before.dialogs;
           if (!anything) {
-            row.verdict = "fail";
-            row.why.push("nothing: the tap changed nothing");
+            if (namesHere) row.why.push("names the page it stands on, at its top: nothing to do");
+            else {
+              row.verdict = "fail";
+              row.why.push("nothing: the tap changed nothing");
+            }
           }
           // A check that moved while nothing else did: to look at by eye.
           if (row.verdict === "pass" && after.html === before.html && after.dialogs === before.dialogs && changes > 0 && changes <= 4) {
