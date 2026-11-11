@@ -82,7 +82,9 @@ export function ProgressBar({
       <div
         ref={fillRef}
         className={cn(
-          "h-full origin-left",
+          // Filled from the start: from the right where the page reads right
+          // to left (lib/ui/__tests__/fillsFromStart.test.ts).
+          "h-full origin-left [[dir=rtl]_&]:origin-right",
           fillTone,
           // transform, never width. See the note at the top of this file.
           // `transition-none` under reduced motion sets transition-property to

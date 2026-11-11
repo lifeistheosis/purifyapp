@@ -93,7 +93,8 @@ export function KeepReading({ next, onGo }: { next: SectionHead | null; onGo: (n
   return (
     <div ref={zone} data-keep-reading="" className="mt-12 flex min-h-[62dvh] flex-col items-center pt-10 text-center" data-reader-chrome>
       <span aria-hidden className="relative block h-[2px] w-24 overflow-hidden rounded-full bg-paper/10">
-        <span ref={fill} className="absolute inset-0 origin-left rounded-full bg-paper/70" style={{ transform: "scaleX(0)" }} />
+        {/* Filled from the start: from the right where the page reads right to left (lib/ui/__tests__/fillsFromStart.test.ts). */}
+        <span ref={fill} className="absolute inset-0 origin-left [[dir=rtl]_&]:origin-right rounded-full bg-paper/70" style={{ transform: "scaleX(0)" }} />
       </span>
       <p lang={nextLang} dir={textDir(nextLang)} className="mt-6 font-serif text-title text-paper/90">
         {pill(next)}

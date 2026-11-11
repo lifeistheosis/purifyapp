@@ -109,9 +109,10 @@ export function KeepScrolling({ slug, chapter, v }: { slug: string; chapter: num
   return (
     <div ref={zone} data-keep-scrolling className="mt-12 flex min-h-[62dvh] flex-col items-center pt-10 text-center" data-reader-chrome>
       <span aria-hidden className="relative block h-[2px] w-24 overflow-hidden rounded-full bg-paper/10">
+        {/* Filled from the start: from the right where the page reads right to left (lib/ui/__tests__/fillsFromStart.test.ts). */}
         <span
           ref={fill}
-          className="absolute inset-0 origin-left rounded-full bg-paper/70"
+          className="absolute inset-0 origin-left [[dir=rtl]_&]:origin-right rounded-full bg-paper/70"
           style={{ transform: "scaleX(0)" }}
         />
       </span>
