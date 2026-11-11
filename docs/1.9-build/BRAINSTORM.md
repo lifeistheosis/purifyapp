@@ -2,6 +2,8 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
+**Build 93, note 5 (his word, 2026-11-11 about 01:24 UTC, a screenshot of the 1054 event's Story timeline):** "Remember, on this section, I wanted you to add haptic feedback and make the design more... I feel like you can make the design better on this. It's good, but..." (`notes/build-93.md`, note 5).
+
 **Build 93, note 4 (his word, 2026-11-11 about 01:21 UTC, a screenshot of the reader's Reading mode section):** "Refine this section and refine the design also." (`notes/build-93.md`, note 4).
 
 **Build 93, note 3 (his word, 2026-11-11 about 01:20 UTC, a screenshot of Reading mode with Dawn checked and the screen still Dark):** "So this screen actually doesn't do anything. When I click on the stuff, it doesn't change anything." (`notes/build-93.md`, note 3).
