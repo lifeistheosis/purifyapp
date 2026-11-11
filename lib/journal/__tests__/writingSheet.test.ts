@@ -167,16 +167,46 @@ describe("no door to Plus under Title", () => {
     expect(line).toContain("page.notebook");
   });
 
-  it("the door is in More, across both columns, with the Plus mark and the journal's own sheet without Plus", () => {
+  it("the door is in More, in a tray of its own under the blocks, with the Plus mark and the journal's own sheet without Plus", () => {
     const more = code(blocks).slice(code(blocks).indexOf('data-page-more=""'), code(blocks).indexOf('role="toolbar"'));
-    expect(more).toMatch(/<MoreChoice\s+wide\s+page\s+icon=\{<ClosedBook size=\{18\} \/>\}\s+label=\{editor\.page\.notebook \|\| t\("journal\.page\.addToNotebook"\)\}\s+locked=\{locked\}/);
+    expect(more).toMatch(/<MoreChoice\s+page\s+icon=\{<ClosedBook size=\{18\} \/>\}\s+label=\{editor\.page\.notebook \|\| t\("journal\.page\.addToNotebook"\)\}\s+locked=\{locked\}/);
     expect(more).toMatch(/if \(locked\) \{\s*setPanel\(null\);\s*upgrade\.open\("journal"\);\s*\} else setPanel\("props"\);/);
     const choice = blocks.slice(blocks.indexOf("function MoreChoice"), blocks.indexOf("function Tool("));
-    expect(choice).toContain('wide && "col-span-2"');
     expect(choice).toContain("{locked ? <PlusMark");
     expect(choice).toContain("min-h-12");
     // It holds the cursor, as every tool does.
     expect(choice).toContain("onPointerDown={(e) => e.preventDefault()}");
+  });
+});
+
+describe("More's choices can be read", () => {
+  // The walk on an export that sells Plus, as a new reader: the four tiles two across read "H...", "C...",
+  // "D..." and "C...", because the Plus mark took the room. Measured with the export's fonts, the padlock
+  // alone still cut a word in five languages on a 360px phone, and in sixteen on 320px.
+  const more = code(blocks).slice(code(blocks).indexOf('data-page-more=""'), code(blocks).indexOf('role="toolbar"'));
+  const choice = blocks.slice(blocks.indexOf("function MoreChoice"), blocks.indexOf("function Tool("));
+
+  it("they are rows the width of the sheet, never tiles two across", () => {
+    expect(more).not.toContain("grid-cols-2");
+    expect(choice).not.toContain("col-span-2");
+    expect(choice).toMatch(/<button[\s\S]*?className="[^"]*\bw-full\b/);
+    expect(more.match(/<MoreChoice/g)).toHaveLength(5);
+  });
+
+  it("a name is never cut: it takes as many lines as it needs", () => {
+    expect(choice).toContain('<span className="min-w-0 flex-1 leading-tight">{label}</span>');
+    expect(choice).not.toContain("truncate");
+  });
+
+  it("the rows lie in the tray the rows on You lie in, with no line down a side", () => {
+    const tray = blocks.match(/const MORE_TRAY = "([^"]+)";/)![1];
+    expect(read("components/you/YouRows.tsx")).toContain(`<ul className="${tray}">`);
+    expect(more.match(/<ul className=\{MORE_TRAY\}>/g)).toHaveLength(2);
+    expect(choice).not.toMatch(/border-(s|e|l|r|t|b)\b/);
+  });
+
+  it("on a small phone with the keyboard up, the list scrolls inside itself", () => {
+    expect(more).toMatch(/^data-page-more="" className="max-h-\[45vh\] space-y-2 overflow-y-auto px-3 pt-2"/);
   });
 });
 

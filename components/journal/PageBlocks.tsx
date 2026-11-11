@@ -642,25 +642,34 @@ export function PageToolbar({ editor, notebooks = [] }: { editor: PageEditor; no
       ) : null}
       {panel === "props" ? <PropsPanel editor={editor} notebooks={notebooks} onDone={() => setPanel(null)} /> : null}
       {panel === "more" ? (
-        <div data-page-more="" className="grid grid-cols-2 gap-2 px-3 pt-2">
-          <MoreChoice icon={<Heading size={18} />} label={t("journal.page.heading")} locked={locked} onClick={() => addPlus({ type: "heading", text: "" })} />
-          <MoreChoice icon={<Check size={18} />} label={t("journal.page.checklist")} locked={locked} onClick={() => addPlus({ type: "check", items: [{ text: "", done: false }] })} />
-          <MoreChoice icon={<Minus size={18} />} label={t("journal.page.divider")} locked={locked} onClick={() => addPlus({ type: "divider", style: "line" })} />
-          <MoreChoice icon={<Candle size={18} />} label={t("journal.page.callout")} locked={locked} onClick={() => addPlus({ type: "callout", icon: "candle", text: "" })} />
-          {/* The page's own: its notebook, its tags, its look. Across both columns, under the blocks. */}
-          <MoreChoice
-            wide
-            page
-            icon={<ClosedBook size={18} />}
-            label={editor.page.notebook || t("journal.page.addToNotebook")}
-            locked={locked}
-            onClick={() => {
-              if (locked) {
-                setPanel(null);
-                upgrade.open("journal");
-              } else setPanel("props");
-            }}
-          />
+        // Rows, one under another, each with its whole name, as the rows on You
+        // are drawn (components/you/YouRows.tsx). Until 2026-11-11 they were
+        // tiles two across, and for a reader without Plus the mark left only
+        // "H...", "C...", "D..." and "C..." to choose between (the walk on an
+        // export that sells Plus). The padlock alone did not mend it: on a
+        // 360px phone five languages still lost a word.
+        <div data-page-more="" className="max-h-[45vh] space-y-2 overflow-y-auto px-3 pt-2">
+          <ul className={MORE_TRAY}>
+            <MoreChoice icon={<Heading size={18} />} label={t("journal.page.heading")} locked={locked} onClick={() => addPlus({ type: "heading", text: "" })} />
+            <MoreChoice icon={<Check size={18} />} label={t("journal.page.checklist")} locked={locked} onClick={() => addPlus({ type: "check", items: [{ text: "", done: false }] })} />
+            <MoreChoice icon={<Minus size={18} />} label={t("journal.page.divider")} locked={locked} onClick={() => addPlus({ type: "divider", style: "line" })} />
+            <MoreChoice icon={<Candle size={18} />} label={t("journal.page.callout")} locked={locked} onClick={() => addPlus({ type: "callout", icon: "candle", text: "" })} />
+          </ul>
+          {/* The page's own: its notebook, its tags, its look. A tray of its own, under the blocks. */}
+          <ul className={MORE_TRAY}>
+            <MoreChoice
+              page
+              icon={<ClosedBook size={18} />}
+              label={editor.page.notebook || t("journal.page.addToNotebook")}
+              locked={locked}
+              onClick={() => {
+                if (locked) {
+                  setPanel(null);
+                  upgrade.open("journal");
+                } else setPanel("props");
+              }}
+            />
+          </ul>
         </div>
       ) : null}
       {/* Four tiles, each a quarter of the row, the icon over its name: the row
@@ -852,22 +861,27 @@ function StyleRows({ editor }: { editor: PageEditor }) {
 }
 
 /** One of Plus's blocks in the More panel: its icon, its name, and the Plus mark without Plus. */
-function MoreChoice({ icon, label, locked, wide = false, page = false, onClick }: { icon: ReactNode; label: string; locked: boolean; wide?: boolean; page?: boolean; onClick: () => void }) {
+/** The tray More's rows lie in: the faint list the rows on You are (components/you/YouRows.tsx). */
+const MORE_TRAY = "overflow-hidden rounded-[18px] bg-paper/[0.03] ring-1 ring-inset ring-paper/[0.08]";
+
+/** One of More's rows: its glyph, its whole name on as many lines as it needs, and without Plus the mark. */
+function MoreChoice({ icon, label, locked, page = false, onClick }: { icon: ReactNode; label: string; locked: boolean; page?: boolean; onClick: () => void }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      onPointerDown={(e) => e.preventDefault()}
-      data-page-more-props={page ? "" : undefined}
-      className={cn(
-        "tap-press flex min-h-12 min-w-0 items-center gap-2.5 rounded-2xl border border-paper/12 px-3 text-start font-sans text-detail font-semibold text-paper/90 hover:border-paper/30",
-        wide && "col-span-2",
-      )}
-    >
-      <span className="shrink-0 text-paper/80">{icon}</span>
-      <span className="min-w-0 flex-1 truncate">{label}</span>
-      {locked ? <PlusMark className="shrink-0" /> : null}
-    </button>
+    <li className="relative">
+      {/* The hairline between rows begins where the words do; the first row has none over it. */}
+      <span aria-hidden className="absolute inset-x-0 top-0 ms-[41px] h-px bg-paper/[0.065] [li:first-child>&]:hidden" />
+      <button
+        type="button"
+        onClick={onClick}
+        onPointerDown={(e) => e.preventDefault()}
+        data-page-more-props={page ? "" : undefined}
+        className="tap-press flex min-h-12 w-full min-w-0 items-center gap-2.5 px-3 py-1.5 text-start font-sans text-detail font-semibold text-paper/90 hover:bg-paper/[0.04]"
+      >
+        <span className="shrink-0 text-paper/80">{icon}</span>
+        <span className="min-w-0 flex-1 leading-tight">{label}</span>
+        {locked ? <PlusMark className="shrink-0" /> : null}
+      </button>
+    </li>
   );
 }
 
