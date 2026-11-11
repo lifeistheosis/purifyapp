@@ -178,7 +178,9 @@ describe("the timeline", () => {
     const css = read("app/globals.css");
     expect(css).toMatch(/\nhtml\[data-history-whole\] \.history-cv \{\n content-visibility: visible;\n\}/);
     // Windowed only where the browser holds the screen (1.9; lib/ui/__tests__/windowedLists.test.ts).
-    expect(css).toMatch(/\n\.history-cv \{\n contain-intrinsic-size: auto 128px;/);
+    // The height an undrawn row is given follows the width since 2026-11-11,
+    // each step the measured mean row (lib/history/__tests__/rowRoom.test.ts).
+    expect(css).toMatch(/\n\.history-cv \{\n contain-intrinsic-size: auto \d+px;/);
     expect(css).toMatch(/\n@supports \(overflow-anchor: auto\) \{\n \.history-cv \{\n  content-visibility: auto;\n \}\n\}/);
     // Continue at is handed its row with the page; it reads nothing after it.
     expect(page).toContain("<ContinueExploring slug={continueAt} onGo={jumpToEvent} />");

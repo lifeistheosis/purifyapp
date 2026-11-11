@@ -10654,9 +10654,10 @@ await section(76, async () => {
 // timeline is 11,484px before its rows draw and 15,772px after"). The
 // timeline draws only the rows near the screen and gives every other row a
 // height to stand in for it (app/globals.css, .history-cv). It was 128px at
-// every width, a row of 1.7 with no picture; with the pictures of 1.8 a row's
-// mean is 240 to 358px by the width. The height steps with the width now,
-// each step the mean row measured across its span, and
+// every width, a row of 1.7 with no picture. A row drawn once keeps its own
+// size, so the height stands in for the rows below the first screen, which
+// with the pictures of 1.8 average 266 to 458px by the width. The height
+// steps with the width now, each step those rows' mean across its span, and
 // lib/history/__tests__/rowRoom.test.ts holds the steps to that measure. This
 // takes it again on this export, a phone of its own at each width, newly
 // opened. Then a reader far down the line opens an event and comes Back: the
