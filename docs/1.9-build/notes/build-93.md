@@ -291,6 +291,27 @@ Begun (Updates 2, 2026-11-11, `a1b987d18`):
   named in `scripts/check-picture-edges.mjs`. The two unsourced files they
   replace are gone, and the debt is 26. Still:
   `build-93/12-theophan-nikodemos-offline-390.png`.
+- **St Papias off the plate; St Paisius Velichkovsky back to the arbiter**
+  (Updates 2, 2026-11-11), on his word "each saint's oldest picture where no
+  old icon of him exists, public domain". Commons' own search still refuses
+  automated asking, so each saint's main picture was found through Wikidata
+  and read on its own Commons page. St Papias wears the Nuremberg Chronicle's
+  woodcut named for him (Wolgemut and Pleydenwurff, 1493; its row says that
+  its figures were cut from a few blocks used for many). On the export with no
+  signal his card in the saints' list and his page wear it over the plate, his
+  row among St John's disciples (words, no faces) has no empty round, no icon
+  was asked for and missing, and `checkMock` on his page passes. Still:
+  `build-93/12-papias-offline-390.png`. St Paisius was cut too, from the one
+  old portrait of him on Commons, and then taken back out before the push:
+  its page still names no source but "English Wikipedia", and no painter or
+  date, which is why the arbiter held it back in November. The cut waits in
+  `docs/1.9-build/kept/paisius-velichkovsky/` with how to put it back if he
+  says yes. Looked at and left on the plate for now: St Mark of Ephesus (the
+  "end of the 19th century fresco" on Commons is a signed modern icon with an
+  English title), St Symeon (his "19th century" icon rests on a personal site
+  and is 269 pixels wide), St Hilary's miniature and St Xenia's icon (too
+  small to show), St Theophylact's 17th-century icon (341 pixels wide), and
+  St Bede (Wikidata's picture is not of him, by its own page).
 
 ### 13. In a Father's work, highlight and quote any words, not only the whole paragraph (2026-11-11 about 01:37 UTC)
 

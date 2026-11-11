@@ -1618,6 +1618,27 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "CC0",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Francesco_del_Cossa,_Saint_Florian,_c._1473-1474,_NGA_368.jpg",
   },
+  // On the arbiter's word of 2026-11-11 under his "a free icon or the plate":
+  // each saint's oldest picture where no old icon of him exists, public domain.
+  // Found through Wikidata's main image of him and read on its own Commons
+  // page while Commons' search refused automated asking. St Papias: the
+  // Nuremberg Chronicle's woodcut named for him, 1493 (its figures were cut
+  // from a few blocks used for many). St Paisius Velichkovsky stays on the
+  // plate: the one old portrait of him on Commons (File:Paisius.jpg) still
+  // names no source but "English Wikipedia", and no painter or date, which is
+  // why the arbiter held it back in November; the question is with him again,
+  // and the cut made of it waits in docs/1.9-build/kept/paisius-velichkovsky/.
+  "papias-of-hierapolis.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A woodcut of an old bishop in a white mitre and a red cope, holding a gilded crozier and pointing, his name printed over him, hand-coloured on cream paper.",
+    work: "Papias, a woodcut of the Nuremberg Chronicle (Hartmann Schedel's Liber chronicarum)",
+    artist: "Michael Wolgemut and Wilhelm Pleydenwurff",
+    workDate: "1493",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Papias.png",
+  },
   "hosius-of-cordova.v2.jpg": {
     status: "verified",
     inspectedOn: "2026-11-11",

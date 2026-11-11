@@ -2629,6 +2629,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "papias-of-hierapolis",
  byname: "Hearer of the Elders",
+ iconUrl: "/saints/icons/papias-of-hierapolis.v2.jpg",
  name: "St. Papias of Hierapolis",
  epithet: "Bishop of Hierapolis · Hearer of John · Companion of Polycarp",
  born: "c. 70",
