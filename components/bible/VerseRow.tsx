@@ -1289,7 +1289,7 @@ export function VerseRow({
  iPad. A tablet uses the long-press, as a phone does. */}
  <div
  className={
- "hidden md:flex native-md-hidden items-center gap-1 shrink-0 -mt-1 transition-opacity duration-150 " +
+ "hidden md:flex native-md-hidden items-center gap-4 shrink-0 -mt-1 transition-opacity duration-150 " +
  (ann.highlighted ||
  ann.note ||
  noteOpen ||
@@ -1311,7 +1311,7 @@ export function VerseRow({
  ann.highlighted ? t("bible.removeHighlight") : t("bible.highlightVerse")
  }
  className={
- "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150 " +
+ "hit-44 h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150 " +
  (ann.highlighted
  ? "border-[var(--hl-swatch)] bg-[var(--hl-verse)] text-[var(--hl-swatch)]"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper")
@@ -1330,7 +1330,7 @@ export function VerseRow({
  aria-expanded={showSwatches}
  aria-haspopup="true"
  title={t("bible.chooseHighlightColor")}
- className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center transition-colors duration-150"
+ className="hit-44 h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center transition-colors duration-150"
  >
  <ChevronDown size={14} className={cn("motion-safe:transition-transform", showSwatches && "rotate-180")} />
  </button>
@@ -1361,7 +1361,7 @@ export function VerseRow({
  onClick={ann.clearWords}
  aria-label={t("bible.clearWordHighlights")}
  title={t("bible.clearWordHighlights")}
- className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-ui md:text-caption transition-colors duration-150"
+ className="hit-44 h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-ui md:text-caption transition-colors duration-150"
  >
  <Erase size={16} />
  </button>
@@ -1385,7 +1385,7 @@ export function VerseRow({
  }
  title={copied ? t("common.copied") : t("bible.copyVerseLink")}
  className={cn(
- "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
+ "hit-44 h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  copied
  ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-300"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
@@ -1408,7 +1408,7 @@ export function VerseRow({
  : t("bible.bookmarkVerse")
  }
  className={cn(
- "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
+ "hit-44 h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  isVerseBookmarked
  ? "bg-gold/25 border-gold/55 text-gold"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",

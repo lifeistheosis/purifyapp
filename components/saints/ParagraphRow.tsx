@@ -389,7 +389,7 @@ export function ParagraphRow({
  of the column. A tablet uses the long-press, as a phone does. */}
  <div
  className={cn(
- "hidden md:flex native-md-hidden items-center gap-1 shrink-0 transition-opacity duration-150",
+ "hidden md:flex native-md-hidden items-center gap-4 shrink-0 transition-opacity duration-150",
  ann.highlighted || ann.note || editing || showSwatches
  ? "md:opacity-100"
  : "md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100",
@@ -410,7 +410,7 @@ export function ParagraphRow({
  : t("saints.highlightParagraph")
  }
  className={cn(
- "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
+ "hit-44 h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  ann.highlighted
  ? "border-[var(--hl-swatch)] bg-[var(--hl-verse)] text-[var(--hl-swatch)]"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
@@ -427,7 +427,7 @@ export function ParagraphRow({
  aria-expanded={showSwatches}
  aria-haspopup="true"
  title={t("bible.chooseHighlightColor")}
- className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center transition-colors duration-150"
+ className="hit-44 h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center transition-colors duration-150"
  >
  <ChevronDown size={14} className={cn("motion-safe:transition-transform", showSwatches && "rotate-180")} />
  </button>
@@ -460,7 +460,7 @@ export function ParagraphRow({
  }
  title={copied ? t("common.copied") : t("saints.copyParagraphLink")}
  className={cn(
- "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
+ "hit-44 h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  copied
  ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-300"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
@@ -478,7 +478,7 @@ export function ParagraphRow({
  aria-pressed={editing}
  title={ann.note ? t("bible.editNote") : t("bible.addNote")}
  className={cn(
- "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
+ "hit-44 h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  ann.note
  ? "bg-paper/15 border-paper/30 text-paper"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",

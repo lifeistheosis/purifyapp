@@ -224,7 +224,12 @@ function countSmallTargets(): { total: number; byFile: Record<string, number>; w
 // the traffic reader's scrim was never small, a full-screen button read by
 // the grab handle under it, and states its height (h-full) now. Left: the
 // seven circles above, which are the Updates chat's.
-const MAX_SMALL_TARGETS = 7;
+// 7 -> 0 the same night (the arbiter's word): the circles' rows stand 17px
+// apart at md (gap-4) and every circle carries .hit-44, the cross-references
+// and the bookmark circles too (the bookmark's classes sat past the window).
+// Checked at a tablet's width (820): no touch box reaches a neighbour, in 51
+// clusters of a Bible chapter and 13 of a Father's work. None is left.
+const MAX_SMALL_TARGETS = 0;
 
 // Heights written out (WRITTEN_H above), counted on their own so the ceiling
 // above keeps its history and still only falls. The count learned to read
