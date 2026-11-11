@@ -543,3 +543,68 @@ copyright, marked as the editorial's words like our other prose.
   errors, and both exports 68.4 MB packed of 85, the eighteen pages of push
   2b and this call walked again on both, checkMock passing on the five held
   to it.
+
+## Build 93 notes 12 and 18, as built (2026-11-11)
+
+His words in his walk of build 93: "Ensure every single saint has a icon
+photo" (note 12) and, of the reading room, "There's some works where the
+cover doesn't have photos" (note 18). With call 30 ("no killing on a first
+picture") both hold together.
+
+- **Note 12, the four martyrs:** each takes a detail of its own picture that
+  shows the saints and not the killing, cut at its own pixels and recorded as
+  a detail in its row. The Holy Innocents: a mother in yellow sheltering her
+  child, from the Dionysiou fresco (the mother in green was set aside: a
+  soldier's hand grips her baby). Sts Eustratius and his companions: St
+  Eugene, seated and named beside him, from the Dionysiou fresco of their
+  martyrdom; the four others are each shown at their deaths. The Ten Martyrs
+  of Crete: two of the martyrs standing above the scene of their deaths, from
+  Commons' 1920px copy of the Cretan icon, which a detail needed. St Anysia:
+  her head and shoulders, from the Menologion of Basil II, clear of the
+  soldier and his sword. The Holy Innocents' and St Eugene's details are
+  small (138 and 140 pixels wide), as their frescoes are on Commons.
+- **And one of push 2b's:** the Martyrs of Nicomedia's icon was the
+  Menologion's church with flames at its foot, the scene of their deaths. It
+  is now a detail of its arcade, the martyrs' faces above the parapet,
+  clear of the fire (`martyrs-of-nicomedia.v2.jpg`); the whole miniature
+  stays History's picture of the Great Persecution.
+- **Note 18, the covers:** the works with no picture were the seventeen the
+  cover test named. Of the thirteen this chat added, nine are dressed now:
+  My Life in Christ wears St John of Kronstadt's photograph;
+  Sts Gurias, Samonas and Habib wear the late Russian panel of the three,
+  whole (turned down on 2026-11-10 only because it would not cut to three by
+  four), on their page and their Acts; Sts Anysia's and the Ten Martyrs'
+  books wear their new details; and by build 89's covers rule, a saint of
+  the book's own text, or a council's picture for one of its Fathers: the
+  Apostle Paul for the two books of names from his letters, St John
+  Chrysostom for St Proclus, St Athanasius for St Frumentius, the Apostle
+  John for St Victorinus's On the Creation of the World, and the council of
+  381 for St Amphilochius.
+- **A photograph and a portrait**, on the arbiter's word under note 12: St
+  John of Kronstadt wears Alfred Fedecki's photograph of him, taken in
+  Kharkov in 1890 (Fedecki died in 1902), on his page and on My Life in
+  Christ; St Joasaph of Belgorod a detail of his portrait in the State
+  Historical Museum, painted between his death in 1754 and his glorification
+  in 1911, so without a halo. Each row says plainly "a photograph, not an
+  icon" or "a portrait, not an icon", with its date. St Elias of Murom gets
+  one more search next, then the plate if nothing passes.
+- **Still waiting, by name** (the cover test's WAITING, each with what it
+  waits for): St John of Shanghai's Life (a permission: a modern icon, from
+  its painter or monastery, unless a photograph of him can be shown to be
+  free); and, for Updates 2's search under note 12,
+  St Acepsimas's, St Marcian's, St Romanus's and Sts Zacchaeus and
+  Alphaeus's books, with St Irenaeus's, St Irene's, St Symeon's and St
+  Isaac's (whose settled icon is not yet on his book). Zurbarán's "St
+  Romanus", staged in November, is a Benedictine monk of that name, not the
+  martyr, and is not used.
+- **The test:** `lib/reading/__tests__/coverArt.test.ts`, "give every work a
+  picture, but the named few still waiting for one": the works with no
+  picture must be exactly the named list, each naming what it waits for; the
+  pre-build gate lets through only those that wait on a permission.
+- **Gates:** typecheck 0, the full unit suite 12,220 passed, lint 0 errors;
+  both exports 68.6 MB packed of 85, and fourteen pages walked on both (the
+  four martyrs, the Martyrs of Nicomedia, Sts Gurias, Samonas and Habib with
+  their Acts, the five books dressed by the rule, St John of Shanghai and the
+  reading room), checkMock passing on the five held to it.
+- **Still**: `december-saints/14-four-martyrs.png`, the four martyrs' pages as
+  a reader first meets them.

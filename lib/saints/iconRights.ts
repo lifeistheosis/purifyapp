@@ -1739,11 +1739,15 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Kirillo-Belozersky_iconostasis_17_-_Nicholas.jpg",
   },
-  "martyrs-of-nicomedia.jpg": {
+  // Build 93 note 12 ("no killing on a first picture"): the miniature shows
+  // their church in flames, so the icon is a detail of its arcade, the
+  // martyrs' faces above the parapet, clear of the fire (2026-11-11). The
+  // whole miniature stays History's picture of the Great Persecution.
+  "martyrs-of-nicomedia.v2.jpg": {
     status: "verified",
-    inspectedOn: "2026-11-10",
-    alt: "A manuscript miniature of a church with a green tiled roof, the faces of a crowd of men and one woman in blue looking out from under its arches, and red flames rising along its foot.",
-    work: "The twenty thousand martyrs of Nicomedia, the Menologion of Basil II (Vat. gr. 1613) (History's picture of the Great Persecution, lib/history/events.ts)",
+    inspectedOn: "2026-11-11",
+    alt: "A detail of a manuscript miniature: the faces of a crowd of men and one woman in a dark blue veil, looking out from under the arches of a church above its stone parapet.",
+    work: "The twenty thousand martyrs of Nicomedia, the Menologion of Basil II (Vat. gr. 1613): a detail, the martyrs in the arcade of their church (History's picture of the Great Persecution, lib/history/events.ts)",
     artist: "Byzantine illuminators of the Menologion of Basil II",
     workDate: "circa 985",
     source: "Wikimedia Commons (days.pravoslavie.ru's copy, which carries no watermark)",
@@ -2144,6 +2148,96 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     source: "Wikimedia Commons (from saint.gr)",
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:%CE%86%CE%B3%CE%B9%CE%BF%CF%82_%CE%9D%CE%B9%CE%BA%CF%8C%CE%B4%CE%B7%CE%BC%CE%BF%CF%82_%CE%BF_%CE%91%CE%B3%CE%B9%CE%BF%CF%81%CE%B5%CE%AF%CF%84%CE%B7%CF%82.jpg",
+  },
+  // Call 30 and build 93 note 12 (the owner's words of 2026-11-11, "quiet or
+  // plate" and then "Ensure every single saint has a icon photo"): the four
+  // whose only pictures show their deaths take a detail of their own picture
+  // that shows the saints and not the killing. Each is cut at its own pixels,
+  // never enlarged, so these are small; the Ten Martyrs' is from Commons'
+  // 1920px copy of the same file, which a detail needed.
+  "holy-innocents.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A detail of a wall painting: a woman in a yellow robe with long fair hair, kneeling and looking up and away, holding a small child behind her back, beside the folds of another woman's dark green mantle.",
+    work: "The Massacre of the Innocents (He Brephoktonia), fresco, Dionysiou Monastery, Mount Athos: a detail, a mother sheltering her child",
+    artist: "Tzortzis Phouka (some give the cycle to Theophanes the Cretan)",
+    workDate: "1547",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Brephoktonia_Dionysiou.jpg",
+  },
+  "eustratius-and-companions.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A detail of a wall painting: a young man with brown hair and a short beard under a gold halo, seated in a red cloak clasped at the breast over a grey tunic, his name in Greek letters either side of his head, on a dark blue ground with a pale rock behind him.",
+    work: "The Martyrdom of Sts Eugene, Eustratius and Orestes, fresco, Dionysiou Monastery, Mount Athos: a detail, St Eugene, named beside him",
+    artist: "Theophanes the Cretan, as the file's page gives it (the Dionysiou cycle of 1547 is usually given to Tzortzis Phouka)",
+    workDate: "1547",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Martyrion_Agion_Eugeniou_Eustratiou_Orestou_Dionysiou.jpg",
+  },
+  "ten-martyrs-of-crete.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A detail of an icon: two men standing side by side on a gold ground, one older with a dark beard in a dark robe, the other young and beardless in a red tunic with a black sash, looking up.",
+    work: "The Ten Martyrs of Crete, Cretan school, Petit Palais, Musée des Beaux-Arts de la Ville de Paris (PPP4887): a detail, two of the martyrs standing above the scene of their deaths",
+    artist: "School of Crete",
+    workDate: "Between 1668 and 1800",
+    source: "Wikimedia Commons (from Paris Musées), its 1920px copy",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Ecole_cr%C3%A9toise_-_Les_dix_martyrs_de_Cr%C3%A8te_-_PPP4887_-_Mus%C3%A9e_des_Beaux-Arts_de_la_ville_de_Paris.jpg",
+  },
+  "anysia-of-thessaloniki.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A detail of a manuscript miniature: a woman's face under a red veil over a blue-green cap, in a red mantle, inside the fine outline of a halo on a gold ground.",
+    work: "St Anysia at Thessalonica, the Menologion of Basil II (Vat. gr. 1613, p. 337): a detail, her head and shoulders",
+    artist: "Byzantine illuminators of the Menologion of Basil II",
+    workDate: "circa 985",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Anysia_at_Thessaloniki_(Menologion_of_Basil_II).jpg",
+  },
+  // Build 93 note 18 ("every work wears a picture"): the panel of the three
+  // martyrs, whole, cut inside the board's edge. On 2026-11-10 it was turned
+  // down only because three standing figures would not cut to a portrait of
+  // three by four; a whole panel needs no such cut.
+  "gurias-samonas-and-habib.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "An icon of three saints standing side by side on a dark olive ground under red Slavonic letters naming each: an old man with a long grey beard in a green mantle raising his hand, a younger bearded man in a red cloak holding a small cross, and a beardless deacon in a patterned silver vestment holding a censer, with Christ in a ring of cloud above them.",
+    work: "Icon of the holy martyrs Gurias, Samonas and Habib (Aviv), tempera on wood, 31 by 26 cm, Russian",
+    artist: "Unknown Russian icon painter",
+    workDate: "Late 19th century",
+    source: "Wikimedia Commons (from Bukowskis)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:The_holy_martyres_Gurias,_Samonas_and_Aviv.jpg",
+  },
+  // Under his "Ensure every single saint has a icon photo" (build 93 note 12),
+  // on the arbiter's word of 2026-11-11: where no old icon of a saint is free,
+  // a photograph or a portrait made in his time, recorded plainly as such.
+  "john-of-kronstadt.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A sepia photograph of a priest with long hair and a long dark beard, in a dark cassock with a large pectoral cross on a chain and the small cross of an order on his breast, looking out, on a pale studio ground.",
+    work: "A photograph, not an icon: St John of Kronstadt, taken by Alfred Fedecki in Kharkov in 1890 (the year is printed on it)",
+    artist: "Alfred Fedecki (died 1902)",
+    workDate: "1890",
+    source: "Wikimedia Commons (scanned by its uploader)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%A4%D0%B5%D0%B4%D0%B5%D1%86%D0%BA%D0%B8%D0%B9_%D0%98%D0%BE%D0%B0%D0%BD%D0%BD_%D0%9A%D1%80%D0%BE%D0%BD%D1%88%D1%82%D0%B0%D0%B4%D1%82%D1%81%D0%BA%D0%B8%D0%B9_%D0%A5%D0%B0%D1%80%D1%8C%D0%BA%D0%BE%D0%B2_1890.jpg",
+  },
+  "joasaph-of-belgorod.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A detail of a painted portrait: a bishop with a greying beard in a black klobuk, a red omophorion marked with crosses over a green mantle and a jewelled panagia, holding a staff, inside an oval band of Slavonic letters.",
+    work: "A portrait, not an icon: St Joasaph (Gorlenko), Bishop of Belgorod and Oboyan, State Historical Museum, Moscow, painted after his death in 1754 and before his glorification in 1911, so without a halo (a detail, inside its oval)",
+    artist: "Unknown",
+    workDate: "18th to 19th century",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Joasaph_of_Belgorod_(GIM).jpg",
   },
 };
 

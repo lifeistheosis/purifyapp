@@ -6462,6 +6462,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "gurias-samonas-and-habib",
+    iconUrl: "/saints/icons/gurias-samonas-and-habib.jpg",
     name: "Sts. Gurias, Samonas and Habib",
     epithet: "Confessors of Edessa",
     reposed: "4th century (Edessa)",
@@ -7356,6 +7357,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "joasaph-of-belgorod",
+    iconUrl: "/saints/icons/joasaph-of-belgorod.jpg",
     name: "St. Joasaph of Belgorod",
     epithet: "Bishop of Belgorod",
     reposed: "1754",
@@ -7390,6 +7392,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "eustratius-and-companions",
+    iconUrl: "/saints/icons/eustratius-and-companions.jpg",
     name: "Sts. Eustratius, Auxentius, Eugene, Mardarius and Orestes",
     epithet: "Martyrs of Sebaste in Armenia",
     reposed: "About 302, under Diocletian (Sebaste)",
@@ -7682,6 +7685,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "john-of-kronstadt",
+    iconUrl: "/saints/icons/john-of-kronstadt.jpg",
     name: "St. John of Kronstadt",
     byname: "John Sergieff",
     epithet: "Priest of Kronstadt · Wonderworker",
@@ -7791,6 +7795,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "ten-martyrs-of-crete",
+    iconUrl: "/saints/icons/ten-martyrs-of-crete.jpg",
     name: "The Ten Martyrs of Crete",
     epithet: "Theodulus, Saturninus, Euporus, Gelasius, Eunicianus, Zoticus, Cleomenes, Agathopodus, Basilides and Evaristus",
     reposed: "250, under Decius (Gortyna)",
@@ -7889,7 +7894,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "martyrs-of-nicomedia",
-    iconUrl: "/saints/icons/martyrs-of-nicomedia.jpg",
+    iconUrl: "/saints/icons/martyrs-of-nicomedia.v2.jpg",
     name: "The Twenty Thousand Martyrs of Nicomedia",
     epithet: "Burned at Nicomedia under Diocletian",
     reposed: "Early 4th century, under Diocletian (Nicomedia)",
@@ -7916,6 +7921,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "holy-innocents",
+    iconUrl: "/saints/icons/holy-innocents.jpg",
     name: "The Holy Innocents",
     byname: "The children of Bethlehem",
     epithet: "Slain by Herod in Bethlehem",
@@ -7971,6 +7977,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "anysia-of-thessaloniki",
+    iconUrl: "/saints/icons/anysia-of-thessaloniki.jpg",
     name: "St. Anysia of Thessaloniki",
     epithet: "Martyr",
     reposed: "December 30, 304 (Thessalonica)",

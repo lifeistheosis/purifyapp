@@ -158,16 +158,16 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   // books. The five prophets are cut from their read-aloud covers and the
   // Martyrs of Nicomedia from History's miniature; the rest are from
   // Wikimedia Commons. St Anastasia and St Sebastian wear the quiet pictures
-  // of call 30, the owner's word of 2026-11-11 ("rec for all"); St Anysia's
-  // and the Ten Martyrs of Crete's books keep the plate, the only pictures of
-  // them showing their deaths.
+  // of call 30, the owner's word of 2026-11-11 ("rec for all"), and St
+  // Anysia and the Ten Martyrs of Crete a detail of their own pictures that
+  // shows them and not their deaths (build 93 note 12).
   "prophet-nahum": bundled("prophet-nahum.jpg", 27),
   "prophet-habakkuk": bundled("prophet-habakkuk.jpg", 22),
   "prophet-zephaniah": bundled("prophet-zephaniah.jpg", 24),
   "prophet-haggai": bundled("prophet-haggai.jpg", 20),
   "prophet-daniel": bundled("prophet-daniel.jpg", 21),
   "ambrose-of-milan": bundled("ambrose-of-milan.jpg", 30),
-  "martyrs-of-nicomedia": bundled("martyrs-of-nicomedia.jpg", 47),
+  "martyrs-of-nicomedia": bundled("martyrs-of-nicomedia.v2.jpg", 45),
   "melania-the-younger": bundled("melania-the-younger.jpg", 27),
   "sosthenes-apollos-cephas-and-tychicus": bundled("sosthenes-apollos-cephas-and-tychicus.jpg", 15),
   "anastasia-the-pharmakolytria": bundled("anastasia-the-pharmakolytria.jpg", 20),
@@ -183,6 +183,14 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   "sebastian-and-companions": bundled("sebastian-and-companions.jpg", 28),
   "theodore-the-branded": bundled("theodore-the-branded.jpg", 25),
   "thyrsus-leucius-and-callinicus": bundled("thyrsus-leucius-and-callinicus.jpg", 13),
+  "anysia-of-thessaloniki": bundled("anysia-of-thessaloniki.jpg", 40),
+  "ten-martyrs-of-crete": bundled("ten-martyrs-of-crete.jpg", 25),
+  // November's, dressed with build 93 note 18 (2026-11-11): the panel of the
+  // three martyrs, whole.
+  "gurias-samonas-and-habib": bundled("gurias-samonas-and-habib.jpg", 30),
+  // St John of Kronstadt's photograph of 1890, on his My Life in Christ (the
+  // arbiter's word under build 93 note 12).
+  "john-of-kronstadt": bundled("john-of-kronstadt.jpg", 25),
 
   // 1.9, build 90 note 3: St Memnon, who hosted the Third Council, his face on
   // its page from Commons' unmarked copy of the fresco at Dionysiou (his
@@ -238,6 +246,22 @@ export const WORK_ART: Readonly<Record<string, CoverArt>> = {
   "papias-of-hierapolis/the-living-voice": COVER_ART["apostle-john"],
   "john-cassian/conferences": bundled("moses-the-black.v2.jpg", 27),
   "john-cassian/institutes": COVER_ART["pachomius-the-great"],
+  // Build 93 note 18 ("every work wears a picture", 2026-11-11): November's
+  // books whose saints have no picture yet wear, by the same rule, a saint of
+  // their own text who has one, or a council's picture for one of its Fathers.
+  // The Apostle Paul for the two books of names, which come from his letters
+  // (Romans 16, 2 Timothy 4); St John Chrysostom for St Proclus, whose Life
+  // tells of John's deposition and the bringing home of his relics; St
+  // Athanasius for St Frumentius, whom he made bishop and whose story he tells
+  // in his Apology; the Apostle John for St Victorinus's On the Creation of
+  // the World, which reads his Gospel and his Apocalypse; and the council of
+  // 381 for St Amphilochius, one of its Fathers. Each stays the book's alone.
+  "erastus-olympas-rodion-sosipater-quartus-and-tertius/their-names-in-scripture": COVER_ART["apostle-paul"],
+  "patrobas-hermas-linus-gaius-and-philologus/their-names-in-scripture": COVER_ART["apostle-paul"],
+  "proclus-of-constantinople/life-of-proclus": COVER_ART["john-chrysostom"],
+  "frumentius-of-axum/life-of-frumentius": COVER_ART["athanasius-the-great"],
+  "victorinus-of-pettau/on-the-creation-of-the-world": COVER_ART["apostle-john"],
+  "amphilochius-of-iconium/life-of-amphilochius": COUNCIL_COVERS["first-constantinople"],
 };
 
 /** The settled picture for a book's saint, or null for the plate alone. */

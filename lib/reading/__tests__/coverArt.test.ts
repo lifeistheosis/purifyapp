@@ -119,67 +119,44 @@ describe("the covers' pictures", () => {
     }
   });
 
-  it("leave on the plate only the books no picture has passed for yet (build 89 note 3)", () => {
-    // The owner's "ok to all" filled the rest, and his "all recs" (2026-11-10)
-    // gave St John Cassian's Conferences St Moses's icon; build 90 note 5 gave
-    // his Institutes St Pachomius's (both carried icons). These four stay on
-    // the plate: no picture passed for them, and no CC BY photograph fit
-    // (question 99). St Irene's letters wait for the Seventh Council's fresco
-    // to be fetched and cut.
-    //
-    // November's saints (1.9, docs/1.9-build/notes/november-saints.md) added
-    // the books of their Lives and works; those whose saint has a settled icon
-    // wear it, and these stand on the plate until a picture of each passes
-    // (none has yet: the searches of 2026-11-10 are in the note). St
-    // Victorinus's treatise joined them: he has no icon. Each leaves this
-    // list when its cover goes in.
-    const november = [
-      "acepsimas-joseph-and-aithalas/life-of-acepsimas",
-      "amphilochius-of-iconium/life-of-amphilochius",
-      "erastus-olympas-rodion-sosipater-quartus-and-tertius/their-names-in-scripture",
-      "frumentius-of-axum/life-of-frumentius",
-      "gurias-samonas-and-habib/acts-of-gurias-samonas-and-habib",
-      "marcian-of-cyrrhus/life-of-marcian",
-      "patrobas-hermas-linus-gaius-and-philologus/their-names-in-scripture",
-      "plato-and-romanus/martyrdom-of-romanus",
-      "proclus-of-constantinople/life-of-proclus",
-      "victorinus-of-pettau/on-the-creation-of-the-world",
-      "zacchaeus-and-alphaeus/martyrdom-of-zacchaeus-and-alphaeus",
-    ];
-    // December's saints (1.9, docs/1.9-build/notes/december-saints.md): the
-    // month's second push placed its icons (push 2b, 2026-11-11), and these
-    // books stay on the plate. St. Anysia's and the Ten Martyrs of Crete's
-    // only pictures show their deaths, and the owner's word on the violent
-    // scenes (call 30, 2026-11-11: "quiet or plate") leaves them the plate,
-    // while St. Anastasia and St. Sebastian wear the quiet pictures; St. John
-    // of Kronstadt's only free picture is an 1890 photograph, not an icon.
-    // St. Peter of Moscow's and St. Stephen's books wear theirs, and the Holy
-    // Innocents' wears St. Matthew's, its author's.
-    const december = [
-      "anysia-of-thessaloniki/martyrdom-of-anysia",
-      "ten-martyrs-of-crete/the-ten-martyrs-of-crete",
-      "john-of-kronstadt/my-life-in-christ",
-    ];
-    // St. John of Shanghai's Life in our own words (call 14, 2026-11-11): his
-    // page's icon, unsourced and a modern painting, came off with the modern
-    // saints' (the owner's word of 2026-11-10: the plate until a painter or
-    // monastery gives written permission), so his book keeps the plate.
-    const shanghai = ["john-of-shanghai/life-of-st-john"];
+  it("give every work a picture, but the named few still waiting for one (build 93 note 18)", () => {
+    // His word, 2026-11-11 (build 93 notes 12 and 18): "Ensure every single
+    // saint has a icon photo", and of the reading room, "There's some works
+    // where the cover doesn't have photos." So every work wears a picture:
+    // its saint's, or by build 89's covers rule a saint of its own text who
+    // has one, or a council's for one of its Fathers (WORK_ART). A book with
+    // none stands here by name with what it waits for; the pre-build gate
+    // lets through only those that wait on a permission (CLAUDE.md, "No test
+    // build reaches him until it passes the pre-build gate", part 3). Each
+    // leaves this list in the commit that gives it its picture.
+    const WAITING: Record<string, string> = {
+      // A permission: a modern saint's icon is a living painter's work, on
+      // the plate until a painter or monastery gives written permission (his
+      // word of 2026-11-10). St John of Shanghai's carried icon was such a
+      // painting with no source, and came off (call 14).
+      "john-of-shanghai/life-of-st-john": "permission: a modern icon of St John of Shanghai, from its painter or monastery",
+      // Updates 2's search (build 93 note 12): no picture of these saints has
+      // passed, and their texts name no saint who has one. Zurbaran's "St
+      // Romanus" is a Benedictine monk of that name, not the martyr.
+      "acepsimas-joseph-and-aithalas/life-of-acepsimas": "search: Updates 2, build 93 note 12",
+      "marcian-of-cyrrhus/life-of-marcian": "search: Updates 2, build 93 note 12",
+      "plato-and-romanus/martyrdom-of-romanus": "search: Updates 2, build 93 note 12",
+      "zacchaeus-and-alphaeus/martyrdom-of-zacchaeus-and-alphaeus": "search: Updates 2, build 93 note 12",
+      // Updates 2's, from before November: St Irenaeus's and St Irene's
+      // carried icons have no recorded source, St Symeon's no old icon passed,
+      // and St Isaac's new icon (isaac-the-syrian.v2.jpg) is not yet on his
+      // book.
+      "irenaeus-of-lyons/against-heresies-on-john": "search: Updates 2, build 93 note 12",
+      "irene-the-empress/letters-for-the-seventh-council": "search: Updates 2, build 93 note 12",
+      "isaac-the-syrian/mystic-treatises": "cover: Updates 2, his settled icon onto his book",
+      "symeon-the-new-theologian/discourse-on-faith": "search: Updates 2, build 93 note 12",
+    };
     const plate = buildRoom(false)
       .cards.filter((c) => !c.cover)
       .map((c) => c.key)
       .sort();
-    expect(plate).toEqual(
-      [
-        "irenaeus-of-lyons/against-heresies-on-john",
-        "irene-the-empress/letters-for-the-seventh-council",
-        "isaac-the-syrian/mystic-treatises",
-        "symeon-the-new-theologian/discourse-on-faith",
-        ...november,
-        ...december,
-        ...shanghai,
-      ].sort(),
-    );
+    expect(plate).toEqual(Object.keys(WAITING).sort());
+    for (const [key, why] of Object.entries(WAITING)) expect(why, key).toMatch(/^(permission|his word|search|cover): ./);
   });
 
   it("give every How you feel door its saint's icon, asked of the website in the apps", () => {
