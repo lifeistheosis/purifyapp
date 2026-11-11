@@ -89,7 +89,7 @@ export function ChantsHome({ index }: { index: ChantIndexRow[] }) {
             <ul className="mt-2">
               {all.map((r) => (
                 <li key={r.slug}>
-                  <ChantListItem row={r} />
+                  <ChantListItem row={r} tradition={tradition} />
                 </li>
               ))}
             </ul>

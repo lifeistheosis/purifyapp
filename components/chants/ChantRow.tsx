@@ -6,8 +6,9 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { ScrollRail } from "@/components/ui/ScrollRail";
 import { formatDuration } from "@/lib/chants/media";
+import { chantLineFacts } from "@/lib/chants/lineFacts";
 import { chantTitleKey, kindKey, traditionKey } from "@/lib/chants/names";
-import type { ChantIndexRow } from "@/lib/chants/types";
+import type { ChantIndexRow, ChantTradition } from "@/lib/chants/types";
 
 import { ChantCover, languagesOf } from "./ChantCover";
 
@@ -54,8 +55,11 @@ export function ChantCard({ row }: { row: ChantIndexRow }) {
   );
 }
 
-/** A chant as one calm row: a small cover, the name, its tradition and length. */
-export function ChantListItem({ row }: { row: ChantIndexRow }) {
+/**
+ * A chant as one calm row: a small cover, the name, its tradition and length.
+ * In a list chosen by tradition, the line is that tradition's (lineFacts).
+ */
+export function ChantListItem({ row, tradition = null }: { row: ChantIndexRow; tradition?: ChantTradition | null }) {
   const { t } = useTranslate();
   const title = t(chantTitleKey(row.key));
   return (
@@ -66,19 +70,24 @@ export function ChantListItem({ row }: { row: ChantIndexRow }) {
       <ChantCover cover={row.cover} size="thumb" className="w-12 shrink-0 rounded-[8px]" />
       <span className="min-w-0 flex-1">
         <span className="block truncate font-sans text-ui font-semibold text-paper">{title}</span>
-        <span className="mt-0.5 block truncate font-sans text-caption text-paper/50">{metaOf(row, t).join(" · ")}</span>
+        <span className="mt-0.5 block truncate font-sans text-caption text-paper/50">{metaOf(row, t, tradition).join(" · ")}</span>
       </span>
       <ChevronRight size={16} className="shrink-0 text-paper/40 rtl:-scale-x-100" />
     </Link>
   );
 }
 
-/** Tradition, kind, tone and length, the facts a list shows of a chant. */
-export function metaOf(row: ChantIndexRow, t: (key: string, vars?: Record<string, string | number>) => string): string[] {
+/** Tradition, kind, tone and length, the facts a list shows of a chant: a chosen tradition's own, where one is chosen. */
+export function metaOf(
+  row: ChantIndexRow,
+  t: (key: string, vars?: Record<string, string | number>) => string,
+  tradition: ChantTradition | null = null,
+): string[] {
+  const facts = chantLineFacts(row, tradition);
   return [
-    row.traditions[0] ? t(traditionKey(row.traditions[0])) : null,
+    facts.tradition ? t(traditionKey(facts.tradition)) : null,
     t(kindKey(row.kind)),
     row.tone ? t("chants.tone", { n: row.tone }) : null,
-    formatDuration(row.shortest),
+    formatDuration(facts.seconds),
   ].filter((x): x is string => Boolean(x));
 }
