@@ -124,7 +124,7 @@ export function CouncilReader({
       <div className="mx-auto w-full max-w-[680px]">
         <KeepReading next={next} onGo={go} />
       </div>
-      <MobileWorkPill head={head} prev={prev} next={next} onGo={go} words={words} />
+      <MobileWorkPill head={head} prev={prev} next={next} heads={heads} onGo={go} words={words} />
       <WorkContents
         open={sheet === "contents"}
         onClose={() => setSheet(null)}

@@ -14,7 +14,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { wordsLeft } from "@/components/saints/MobileWorkPill";
+import { widestNames, wordsLeft } from "@/components/saints/MobileWorkPill";
 import { divisionsOf } from "@/lib/saints/divisions";
 import { PART_LEVELS, captionOf, neighbours, partsOf, type ContentsEntry, type SectionHead } from "@/lib/saints/parts";
 import { SAINTS } from "@/lib/saints/saints";
@@ -175,5 +175,34 @@ describe("the running line's minutes", () => {
     expect(wordsLeft([100, 300, 200], 1, 0.25)).toBe(425);
     expect(wordsLeft([100, 300, 200], 2, 1)).toBe(0);
     expect(wordsLeft([100, 300, 200], 0, -1)).toBe(600);
+  });
+});
+
+// The pill keeps one width as the parts turn (1.9; the fresh-eyes walk: "a
+// council document's Next bar shifts 47px when tapped"). It hugs its name in
+// the middle of the screen, so a longer or shorter name moved both arrows out
+// from under the finger turning the parts.
+describe("the pill's width", () => {
+  it("is held by every name of a short work, each once", () => {
+    const names = ["On the Symbol of the Faith", "The Ecthesis of the Synod at Nice", "The Canons", "The Canons"];
+    expect(widestNames(names)).toEqual(["On the Symbol of the Faith", "The Ecthesis of the Synod at Nice", "The Canons"]);
+  });
+
+  it("and by the longest few of a long one, so six hundred names are not drawn under the one shown", () => {
+    const names = Array.from({ length: 603 }, (_, i) => `Chapter ${i + 1}`);
+    const kept = widestNames(names);
+    expect(kept.length).toBe(8);
+    for (const n of kept) expect(n.length).toBe("Chapter 603".length);
+  });
+
+  it("the pill lays them under the name, unseen, in the name's own place, and both readers hand it every part", () => {
+    const pill = fs.readFileSync(path.join(ROOT, "components", "saints", "MobileWorkPill.tsx"), "utf8");
+    expect(pill).toContain("const widest = widestNames(heads.map(pill)).filter((n) => n !== name);");
+    // One cell: the unseen names and the one shown stand in the same place.
+    expect(pill).toMatch(/aria-hidden data-pill-width="" className="invisible col-start-1 row-start-1/);
+    expect(pill).toMatch(/<span lang=\{nameLang\} dir=\{textDir\(nameLang\)\} className="col-start-1 row-start-1/);
+    for (const reader of ["components/saints/WritingReader.tsx", "components/councils/CouncilReader.tsx"]) {
+      expect(fs.readFileSync(path.join(ROOT, reader), "utf8"), reader).toContain("<MobileWorkPill head={head} prev={prev} next={next} heads={heads} onGo={go} words={words} />");
+    }
   });
 });

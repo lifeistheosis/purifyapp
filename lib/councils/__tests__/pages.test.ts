@@ -172,7 +172,7 @@ describe("a council's books in the reading room", () => {
     const reader = code("components/councils/CouncilReader.tsx");
     expect(reader).toContain('<CouncilBookHeader {...about} heading="h2" />');
     expect(reader).toContain("<WorkHead head={head} />");
-    expect(reader).toContain("<MobileWorkPill head={head} prev={prev} next={next} onGo={go} words={words} />");
+    expect(reader).toContain("<MobileWorkPill head={head} prev={prev} next={next} heads={heads} onGo={go} words={words} />");
     expect(reader).toContain("FONT_CLASSES[font]} ${SIZE_CLASSES[size]}");
     expect(reader).toContain("useKeepPlace(positionKey, docSlug, sections, null)");
     // Start reading reads the place the reader keeps (components/reading/BookHeader.tsx).

@@ -39,17 +39,45 @@ import { textDir } from "@/lib/i18n/textDir";
  * (lib/ui/overlay.ts). Its face fades in as it arrives with the work's text
  * (globals.css, .reader-pill-in), on the motion switch. Reader chrome: focus
  * mode puts it away.
+ *
+ * The pill is as wide as the work's longest name, whichever part is being
+ * read (1.9; the fresh-eyes walk of the release build: "a council
+ * document's Next bar shifts 47px when tapped"). It hugs its name and
+ * stands in the middle of the screen, so a name longer or shorter than the
+ * last one moved both arrows sideways as the part turned, out from under
+ * the finger that was turning the parts: the Symbol of the Faith to the
+ * Ecthesis of the Synod, 47px. So the name's place holds the widest of the
+ * work's names, unseen, under the one shown (widestNames), and the arrows
+ * stand where they stood.
  */
+
+/** How many of a work's names are laid under the one shown. A work may have six hundred parts. */
+const NAMES_KEPT = 8;
+
+/**
+ * The names that decide the pill's width: every one of a short work, the
+ * longest few of a long one (by their letters: near enough, a pixel or two,
+ * where the names are numbers). Pure, for its test.
+ */
+export function widestNames(names: readonly string[], keep: number = NAMES_KEPT): string[] {
+  const each = [...new Set(names)];
+  if (each.length <= keep) return each;
+  return each.sort((a, b) => b.length - a.length).slice(0, keep);
+}
+
 export function MobileWorkPill({
   head,
   prev,
   next,
+  heads,
   onGo,
   words,
 }: {
   head: SectionHead;
   prev: SectionHead | null;
   next: SectionHead | null;
+  /** Every part of the work, so the pill keeps one width as the parts turn. */
+  heads: readonly SectionHead[];
   onGo: (n: number) => void;
   /** The chapter's words, paragraph by paragraph, for the minutes left. */
   words: readonly number[];
@@ -58,6 +86,7 @@ export function MobileWorkPill({
   const { pill } = usePartWords();
   const covered = useOverlayOpen();
   const name = pill(head);
+  const widest = widestNames(heads.map(pill)).filter((n) => n !== name);
   // A name of the work's own is English; one from the catalog is the reader's.
   const nameLang = "text" in head.pill.name ? "en" : undefined;
   // 44 to the touch: h-10 drew 42.5px at the reader's text size (checkMock, 2026-11-10).
@@ -109,9 +138,18 @@ export function MobileWorkPill({
           data-pill-name=""
           className="flex h-11 min-w-0 items-center px-2 font-sans text-[15px] font-semibold leading-tight text-paper"
         >
-          {/* A long name gives way, at its end. */}
-          <span lang={nameLang} dir={textDir(nameLang)} className="truncate">
-            {name}
+          {/* The work's widest names under the one shown, unseen, in the one
+              place: they hold the pill's width, so the arrows do not move as
+              the parts turn. A long name gives way, at its end. */}
+          <span className="grid min-w-0 justify-items-center">
+            {widest.map((n) => (
+              <span key={n} aria-hidden data-pill-width="" className="invisible col-start-1 row-start-1 min-w-0 max-w-full truncate">
+                {n}
+              </span>
+            ))}
+            <span lang={nameLang} dir={textDir(nameLang)} className="col-start-1 row-start-1 min-w-0 max-w-full truncate">
+              {name}
+            </span>
           </span>
         </button>
         <button
