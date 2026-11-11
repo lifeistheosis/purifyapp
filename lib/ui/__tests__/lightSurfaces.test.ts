@@ -105,9 +105,11 @@ describe("surfaces drawn for dark say what they do on Light", () => {
   });
 
   it("the island puts back every token the Light palette changes for text", () => {
-    const island = CSS.slice(
-      CSS.indexOf('html[data-reading-mode="parchment"] .dark-island {'),
-    );
+    // The block's selector list also names .theme-island: a card painted in a
+    // reader's theme is its own island on every palette, with these same tokens.
+    const at = CSS.search(/html\[data-reading-mode="parchment"\] \.dark-island(?:,\s*\.theme-island)?\s*\{/);
+    expect(at, "Parchment's island block").toBeGreaterThan(-1);
+    const island = CSS.slice(at);
     const block = island.slice(0, island.indexOf("}"));
     for (const token of [
       "--color-night:",

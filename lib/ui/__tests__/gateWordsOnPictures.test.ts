@@ -5,8 +5,9 @@ import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { profileSurface } from "@/components/community/profile/ProfileCard";
+import { profileSurface, surfaceClass } from "@/components/community/profile/ProfileCard";
 import { SectionMasthead } from "@/components/mobile/SectionMasthead";
+import { GREYS, THEMES, type Cosmetics } from "@/lib/profile/cosmetics";
 
 /**
  * Words over pictures: the three finds of Fable Themes' sweep that fell to
@@ -220,5 +221,87 @@ describe("a reader's profile sheet", () => {
     for (const palette of Object.keys(PAPER) as (keyof typeof PAPER)[]) {
       expect(onGround(paperOf(PAPER[palette]), drawn(palette, share), ground), `${palette}, at ${share} percent`).toBeGreaterThanOrEqual(4.5);
     }
+  });
+});
+
+// The arbiter, 19:31 UTC: a card painted in its reader's theme is its own island. Its ground is the
+// reader's two colours whatever the palette, yet on Candlelight and Monastery it wore the palette's own
+// dimmer ink at the palette's own shares: on the house's gilded theme "Favorite verse" read 3.31:1 on
+// Candlelight, "Patron saint" 3.35:1 and "Parish" 4.30:1 (a reader's sheet with the theme painted by the
+// card's own code, measured by the mock checker's pixels pass). It wears the dark palette's ink on every
+// palette, as Parchment's islands did, with its faint lines at 75; the themes keep their colours.
+describe("a card painted in its reader's theme", () => {
+  const gilded: Cosmetics = { bannerColor: null, bannerUrl: null, themePrimary: "#8f6f35", themeAccent: "#221a0f", decoration: null, effect: null };
+  /** The declarations of the block whose selector list names `selector` on its own. */
+  const blockFor = (selector: string) =>
+    [...CSS.matchAll(/([^{}]*)\{([^{}]*)\}/g)].find((m) =>
+      (m[1].split(";").pop() ?? "")
+        .split(",")
+        .map((s) => s.trim())
+        .includes(selector),
+    )?.[2] ?? "";
+  const token = (decls: string, name: string) => new RegExp(`${name}\\s*:\\s*([^;]+);`).exec(decls)?.[1].trim();
+  const island = blockFor(".theme-island");
+  const rule = /:where\(\.theme-island\)\s*:is\(([^)]*)\)\s*\{\s*color:\s*color-mix\(in oklab, var\(--color-paper\) (\d+)%, transparent\);?\s*\}/.exec(CSS);
+  const share = Number(rule?.[2] ?? 0);
+
+  it("is its own island on every palette, in the dark palette's ink", () => {
+    expect(surfaceClass(profileSurface(gilded)).split(" ")).toEqual(expect.arrayContaining(["dark-island", "theme-island"]));
+    // A banner without a theme keeps the island it had (dark on Parchment); a plain card follows the palette.
+    expect(surfaceClass(profileSurface({ ...gilded, themePrimary: null, themeAccent: null, bannerColor: "#7d1d27" }))).toBe("dark-island bg-night-soft");
+    expect(surfaceClass(profileSurface({ ...gilded, themePrimary: null, themeAccent: null }))).toBe("bg-night-soft");
+    // The island's tokens, under no palette's name: the dark palette's own (the theme block's).
+    expect(island, "a block that names .theme-island on its own").not.toBe("");
+    const dark = blockFor("@theme");
+    for (const name of ["--color-paper", "--color-night", "--color-night-soft", "--color-gold"]) {
+      expect(token(island, name), name).toBe(token(dark, name));
+    }
+  });
+
+  it("draws its faint lines at 75 percent, after every palette's and every look's own rule for them", () => {
+    expect(rule, "the island's rule for its faint lines").not.toBeNull();
+    expect(share).toBe(75);
+    const listed = new Set([...rule![1].matchAll(/\.text-paper\\\/(\d+)/g)].map((m) => Number(m[1])));
+    // Every share under 75 that a profile's words are written at (a hover's or a placeholder's is not a line at rest).
+    const written = new Set<number>();
+    for (const file of fs.readdirSync(path.join(ROOT, "components/community/profile")).filter((f) => f.endsWith(".tsx"))) {
+      for (const m of code(`components/community/profile/${file}`).matchAll(/(?<![\w:-])text-paper\/(\d+)\b/g)) written.add(Number(m[1]));
+    }
+    const faint = [...written].filter((n) => n >= 40 && n < share).sort((a, b) => a - b);
+    expect(faint.length).toBeGreaterThan(6);
+    expect(faint.filter((n) => !listed.has(n)), "shares the island leaves as the palette draws them").toEqual([]);
+    // Each palette and each look redraws the same shares at its own; the island's rule weighs what
+    // theirs weigh (:where), so a hover still wins, and stands after all of them, so inside the card it is the one drawn.
+    const at = rule!.index;
+    const theirs = [...CSS.matchAll(/:where\(html[^{]*\.text-paper\\\/\d+[^{]*\{/g)].map((m) => m.index!);
+    expect(theirs.length).toBeGreaterThan(15);
+    expect(theirs.filter((i) => i > at), "a palette's or a look's rule after the island's").toEqual([]);
+  });
+
+  it("holds 4.5:1 where its faint lines stand, on every house theme and grey", () => {
+    const ink = (token(island, "--color-paper") ?? "#000000").replace("#", "");
+    const white = [0, 2, 4].map((i) => parseInt(ink.slice(i, i + 2), 16)) as Rgb;
+    // The ground under each card's least kind faint line, the least kind hundredth under its letters,
+    // measured on the export with the theme painted by the card's own code (a reader's sheet with its
+    // verse, saint, parish and links; the same on every palette now, the card being its own island).
+    const GROUND: Record<string, Rgb> = {
+      gilded: [97, 82, 57],
+      paschal: [91, 46, 51],
+      theotokos: [46, 61, 87],
+      vespers: [66, 51, 75],
+      pentecost: [54, 76, 59],
+      theophany: [72, 81, 87],
+      night: [49, 49, 52],
+      smoke: [60, 60, 63],
+      stone: [72, 72, 76],
+      silver: [83, 83, 88],
+    };
+    expect(Object.keys(GROUND)).toEqual(expect.arrayContaining([...THEMES.map((t) => t.id), ...GREYS.map((g) => g.id)]));
+    for (const [theme, ground] of Object.entries(GROUND)) {
+      expect(onGround(white, share / 100, ground), `${theme}, at ${share} percent`).toBeGreaterThanOrEqual(4.5);
+    }
+    // The least kind is the Favorite verse label in its panel's lit corner, on every one. What the card
+    // drew it in before on Candlelight, that palette's ink at the label's own 66, is 3.2:1 on the gilded card.
+    expect(onGround(paperOf('html[data-reading-mode="candlelight"]'), 0.66, GROUND.gilded)).toBeLessThan(4.5);
   });
 });

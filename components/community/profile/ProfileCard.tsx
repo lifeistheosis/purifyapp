@@ -56,6 +56,15 @@ const PictureSheet = dynamic(() => import("@/components/share/PictureSheet").the
  * a theme or an effect is light drawn over a dark card, so such a card is a
  * dark island (app/globals.css) and on the light Parchment palette keeps its
  * dark ground and light words. Every other card follows the palette.
+ *
+ * A card painted in a theme is its own island on every palette (the
+ * arbiter, 2026-11-11): its ground is the reader's two colours whatever the
+ * palette, so it wears the dark palette's ink everywhere, as it already did
+ * on Parchment, with its faint lines at 75 percent (theme-island,
+ * app/globals.css). On Candlelight and Monastery it had worn their dimmer
+ * ink, and on the house's gilded theme "Favorite verse" read 3.31:1 on
+ * Candlelight and "Patron saint" 3.35:1. The themes keep their colours; the
+ * words are set for the ground they stand on.
  */
 
 /** The card's ground: a theme's two colours, or the house card; and whether it stays dark on every palette. */
@@ -73,9 +82,9 @@ export function profileSurface(c: Cosmetics): { themed: boolean; island: boolean
   };
 }
 
-/** The card's own ground and island classes, for its surface; its border is the caller's. */
+/** The card's own ground and island classes, for its surface; its border is the caller's. A themed card is its own island on every palette. */
 export function surfaceClass(s: { themed: boolean; island: boolean }): string {
-  return cn(s.island && "dark-island", !s.themed && "bg-night-soft");
+  return cn(s.island && "dark-island", s.themed && "theme-island", !s.themed && "bg-night-soft");
 }
 
 /**

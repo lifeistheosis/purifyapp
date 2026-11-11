@@ -5324,7 +5324,13 @@ html[data-reading-mode="parchment"] .dark-island .bg-black\/30 {
  background-color: rgb(0 0 0 / 0.3);
 }
 
-html[data-reading-mode="parchment"] .dark-island {
+/* A card painted in a reader's theme (components/community/profile/ProfileCard.tsx,
+   surfaceClass) is its own island on every palette, not only on this one: its
+   ground is the reader's two colours whatever the palette, so it wears the dark
+   palette's ink everywhere (the arbiter, 2026-11-11). Its faint lines are drawn
+   at 75 percent by the rule after the looks below. */
+html[data-reading-mode="parchment"] .dark-island,
+.theme-island {
  --color-night: #101013;
  --color-night-soft: #1d1d20;
  --color-night-deep: #0b0b0e;
@@ -13409,6 +13415,24 @@ html[data-look="linen"] .page-open-rule {
  height: 52px;
  margin-top: 14px;
  background: var(--head-linen) center / 168px 52px no-repeat;
+}
+
+/* A themed profile card's faint lines (the arbiter, 2026-11-11). The card is
+   its own island on every palette (.theme-island, with Parchment's islands
+   above), so its ink is the dark palette's white, and every share under 75
+   that a line of its words is written at is drawn at 75: on the house's six
+   themes and four greys that holds 4.5:1 where the lines stand, on the five
+   palettes and the seventeen looks alike. Before, a themed card on Candlelight
+   wore that palette's dimmer ink at its own shares, and on the gilded theme
+   "Favorite verse" read 3.31:1, "Patron saint" 3.35:1, "Parish" 4.30:1.
+   Here, after every palette's and every look's own rule for the same shares,
+   and weighing what they weigh (:where), so it replaces theirs inside the card
+   and a hover:text-paper on the same element still wins.
+   lib/ui/__tests__/gateWordsOnPictures.test.ts holds the order and the sums. */
+@layer utilities {
+ :where(.theme-island) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68, .text-paper\/70, .text-paper\/72) {
+ color: color-mix(in oklab, var(--color-paper) 75%, transparent);
+ }
 }
 
 /* ── The reading modes' own page (1.9) ───────────────────────────────
