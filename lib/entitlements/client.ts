@@ -10,6 +10,8 @@
 // Where a surface is open this never queries: the caller gets
 // OPEN_ENTITLEMENTS.
 
+import { isAuthRetryableFetchError } from "@supabase/supabase-js";
+
 import { createClient } from "@/lib/supabase/client";
 import { isNativeClient, nativePlatform } from "@/lib/platform/native";
 import { isDeveloperEmail, DEV_PLUS_ENTITLEMENTS } from "@/lib/dev/developer";
@@ -43,7 +45,23 @@ export function clientSurface(): Surface {
   return "native-unknown";
 }
 
-export async function getClientEntitlements(): Promise<Entitlements> {
+/**
+ * The entitlement lookup, with whether the account server was reached for it.
+ *
+ * `heard` is false when the answer is only the fallback: the server could
+ * not be asked (no signal, a server that did not answer, a failed read).
+ * `entitlements` is then FREE_ENTITLEMENTS, as it has always been, so
+ * nothing the server grants (sync, downloads, voices) is ever opened on a
+ * guess. A reader with no session on the device is a real answer: signed
+ * out, heard.
+ *
+ * One caller reads `heard`: the reading palettes' gate
+ * (lib/reader/plusModesGate.ts). A palette is cosmetic and on the phone, so
+ * a device that last knew its reader to have Plus keeps their palette with
+ * no signal until the server answers otherwise (the arbiter's word,
+ * 2026-11-11, under CLAUDE.md's "A release ships finished").
+ */
+export async function askClientEntitlements(): Promise<{ entitlements: Entitlements; heard: boolean }> {
   // Developer test-premium override. The cookie is only a hint (cheap
   // pre-check); we still verify the signed-in account is an allowlisted
   // developer, so a forged cookie grants a normal user nothing.
@@ -52,17 +70,21 @@ export async function getClientEntitlements(): Promise<Entitlements> {
     const {
       data: { user },
     } = await dev.auth.getUser();
-    if (isDeveloperEmail(user?.email)) return DEV_PLUS_ENTITLEMENTS;
+    if (isDeveloperEmail(user?.email)) return { entitlements: DEV_PLUS_ENTITLEMENTS, heard: true };
   }
 
   const enforced = plusEnforcedFor(clientSurface());
-  if (!enforced) return OPEN_ENTITLEMENTS;
+  if (!enforced) return { entitlements: OPEN_ENTITLEMENTS, heard: true };
 
   const supabase = createClient();
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser();
-  if (!user) return FREE_ENTITLEMENTS;
+  // No user is "signed out" unless the account server could not be reached:
+  // the auth library names that failure (no signal, or a server that is
+  // down), and it is then not known who the reader is.
+  if (!user) return { entitlements: FREE_ENTITLEMENTS, heard: !isAuthRetryableFetchError(authError) };
 
   const { data, error } = await supabase
     .from("entitlements")
@@ -72,11 +94,16 @@ export async function getClientEntitlements(): Promise<Entitlements> {
 
   if (error) {
     // Never break the UI on an entitlement read; treat as no extra
-    // entitlements (local reading/saving never depends on this).
-    return FREE_ENTITLEMENTS;
+    // entitlements (local reading/saving never depends on this). A read that
+    // failed is not an answer.
+    return { entitlements: FREE_ENTITLEMENTS, heard: false };
   }
 
-  return deriveEntitlements(data as EntitlementRow | null, { enforced: true });
+  return { entitlements: deriveEntitlements(data as EntitlementRow | null, { enforced: true }), heard: true };
+}
+
+export async function getClientEntitlements(): Promise<Entitlements> {
+  return (await askClientEntitlements()).entitlements;
 }
 
 /** May this client use cross-device sync right now? True on the web and on

@@ -29,7 +29,8 @@
 //   - a purchase or a restore (lib/entitlements/refresh.ts), as before;
 //   - a sign-in or a sign-out. A sign-in steps to the next page without
 //     loading the app again, so nothing else would notice it;
-//   - the signal coming back: an answer asked for with no signal is a no;
+//   - the signal coming back: with no signal the server cannot be asked, and
+//     the gate keeps what this device last heard until it can;
 //   - the app coming back to the front, where a subscription bought or ended
 //     on another device shows;
 //   - and any part appearing, as each part always asked, unless the answer
@@ -37,7 +38,7 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 
-import { clientSurface, getClientEntitlements } from "@/lib/entitlements/client";
+import { askClientEntitlements, clientSurface } from "@/lib/entitlements/client";
 import { plusEnforcedFor } from "@/lib/entitlements/entitlements";
 import { onEntitlementsChanged } from "@/lib/entitlements/refresh";
 import { PLUS_MODES_ASKING, PLUS_MODES_OPEN, createPlusModesGate, type PlusModes } from "@/lib/reader/plusModesGate";
@@ -63,7 +64,15 @@ const gate = createPlusModesGate({
   // it is asked each time. The surface is three-valued, not a boolean, so iOS
   // cannot reach Android's launch switch.
   enforced: () => plusEnforcedFor(clientSurface()),
-  ask: () => getClientEntitlements().then((e) => e.plusFeatures),
+  // The app's own resolver, which also says whether the account server was
+  // reached. An answer got without it is no answer: the gate then keeps what
+  // this device last heard (a reader with Plus and no signal keeps their
+  // palette), and nothing is kept from it.
+  ask: async () => {
+    const { entitlements, heard } = await askClientEntitlements();
+    if (!heard) throw new Error("the account server could not be reached");
+    return entitlements.plusFeatures;
+  },
   recall: () => {
     try {
       const kept = window.localStorage.getItem(PLUS_MODES_KEPT_KEY);
@@ -73,9 +82,6 @@ const gate = createPlusModesGate({
     }
   },
   remember: (answer) => {
-    // An answer got with no signal says the reader could not be asked, not
-    // that they have no Plus: it is not kept for the next opening.
-    if (typeof navigator !== "undefined" && navigator.onLine === false) return;
     try {
       window.localStorage.setItem(PLUS_MODES_KEPT_KEY, answer ? "1" : "0");
     } catch {
@@ -92,11 +98,22 @@ function listen(): void {
   listening = true;
   onEntitlementsChanged(() => void gate.refresh(true));
   try {
-    createClient().auth.onAuthStateChange((event) => {
-      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+    // Who the account library last said the reader is: undefined until it has said.
+    let reader: string | null | undefined;
+    createClient().auth.onAuthStateChange((event, session) => {
+      if (event !== "INITIAL_SESSION" && event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+      const now = session?.user?.id ?? null;
+      // Another reader than before (a sign-in, a sign-out) can change the
+      // answer, so it is asked whatever is under way. The same reader named
+      // again is only the library waking (it says SIGNED_IN each time the app
+      // comes to the front): an answer a moment old is then enough.
+      const another = now !== reader || event === "USER_UPDATED";
+      reader = now;
+      // The first asking is already under way when the library first says who is here.
+      if (event === "INITIAL_SESSION") return;
       // On a timer: the asking reads the session, and this runs inside the
       // auth lock (lib/profile/myPicture.ts says why that must wait).
-      window.setTimeout(() => void gate.refresh(true), 0);
+      window.setTimeout(() => void gate.refresh(another), 0);
     });
   } catch {
     /* no account client: the other moments still ask */

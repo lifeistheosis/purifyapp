@@ -6472,13 +6472,22 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
  white-space: nowrap;
  color: var(--color-premium-soft);
 }
-/* A palette still to be earned (1.9, rec 79): its page drawn whole, inside a
-   dashed edge rather than the solid one, with how far the reader is under its
-   name, and how it is earned under the row once tapped. */
+/* A palette still to be earned (1.9, rec 79): its page drawn whole but
+   unlit, dimmed and without the light from above, with how far the reader is
+   under its name, and how it is earned under the row once tapped. It lights
+   when it is earned. Until build 93 note 4 it stood inside a dashed edge; the
+   owner's rule is no dashed placeholder boxes, and a page that is there but
+   not yet lit says "not yet" without one. */
 .set-mode-goal .set-mode-page {
- box-shadow: 0 10px 16px -6px rgb(0 0 0 / 0.85);
- outline: 1px dashed color-mix(in srgb, var(--color-paper) 40%, transparent);
- outline-offset: 2px;
+ box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-paper) 9%, transparent);
+ opacity: 0.5;
+}
+.set-mode-goal .set-mode-page::after {
+ content: none;
+}
+/* Tapped, it comes forward while the line under the row says how it is earned. */
+.set-mode-goal[aria-expanded="true"] .set-mode-page {
+ opacity: 0.8;
 }
 .set-mode-progress {
  margin-top: 1px;
@@ -6774,6 +6783,9 @@ html[data-reading-mode="parchment"] .set-focus-wash {
 .set-root[data-live] .set-mode-page {
  transition: translate 320ms var(--ease-house), box-shadow 320ms var(--ease-house);
 }
+.set-root[data-live] .set-mode-goal .set-mode-page {
+ transition: opacity 240ms var(--ease-house);
+}
 .set-root[data-live] .set-slider-fill {
  transition: width 260ms var(--ease-house);
 }
@@ -6789,6 +6801,7 @@ html[data-reading-mode="parchment"] .set-focus-wash {
 :where([data-motion="reduce"]) .set-root[data-live] .set-switch,
 :where([data-motion="reduce"]) .set-root[data-live] .set-switch-knob,
 :where([data-motion="reduce"]) .set-root[data-live] .set-mode-page,
+:where([data-motion="reduce"]) .set-root[data-live] .set-mode-goal .set-mode-page,
 :where([data-motion="reduce"]) .set-root[data-live] .set-slider-fill,
 :where([data-motion="reduce"]) .set-root[data-live] .set-slider-thumb,
 :where([data-motion="reduce"]) .set-root[data-live] .set-slider-stop,
@@ -12931,6 +12944,101 @@ a.set-lab.set-link {
  margin: -6px -8px;
  padding: 6px 8px;
  border-radius: 14px;
+}
+
+/* ── The reader's own shelf (build 93 note 4) ────────────────────────
+   components/reader/ReadingModeChips.tsx, the Reading mode section of the
+   reader's own settings. Each mode is its small page, the taller one this
+   page of shelves draws, so a look's sign at the foot is in it, on ONE
+   shelf.
+
+   In the computer's popover nothing sweeps, so the shelf is four columns:
+   seven or eight pages, never one alone on a row. In the phone's sheet
+   ([data-touch]) it is swept sideways and runs to the sheet's edges (the
+   sheet pads its body by 1rem), with the next page cut off at the edge so a
+   reader sees there is more. */
+.reader-shelf {
+ --mp-k: 0.3;
+ display: grid;
+ grid-template-columns: repeat(4, minmax(0, 1fr));
+ justify-items: center;
+ row-gap: 12px;
+ padding-block: 10px 2px;
+ /* A name is measured against the shelf, so it keeps to its own column. */
+ container-type: inline-size;
+}
+.reader-shelf[data-touch] {
+ --mp-k: 0.4;
+ display: flex;
+ container-type: normal;
+ gap: 10px;
+ margin-inline: -1rem;
+ padding-block: 14px 4px;
+ padding-inline: 1rem 0;
+ overflow-x: auto;
+ overscroll-behavior-x: contain;
+ scroll-snap-type: x proximity;
+ scroll-padding-inline: 1rem;
+ scrollbar-width: none;
+}
+.reader-shelf[data-touch]::-webkit-scrollbar {
+ display: none;
+}
+/* The room after the last page, so it can be swept clear of the edge. */
+.reader-shelf[data-touch]::after {
+ content: "";
+ flex: none;
+ width: calc(1rem - 10px);
+}
+.reader-shelf > .set-mode {
+ flex: none;
+ scroll-snap-align: start;
+}
+.reader-shelf .set-mode-page {
+ height: calc(300px * var(--mp-k));
+ border-radius: 9px;
+}
+.reader-shelf .set-mode-canvas {
+ height: 300px;
+}
+/* The page's last lines go quiet into its foot, as the real page's do. */
+.reader-shelf .set-mode-page::before {
+ content: "";
+ position: absolute;
+ inset-inline: 0;
+ bottom: 0;
+ z-index: 1;
+ height: 46%;
+ background: inherit;
+ -webkit-mask-image: linear-gradient(to top, #000 34%, transparent);
+ mask-image: linear-gradient(to top, #000 34%, transparent);
+}
+.reader-shelf .set-mode-check {
+ top: calc(300px * var(--mp-k) - 14px);
+}
+/* A name stands on the sheet's own ground, not a Settings panel's: the share
+   that holds 4.5:1 there on Light, as on the reading modes' own page. It may
+   run a little past its page, into the gap, before it turns to a second
+   line: to its column's width where the shelf is columns, to a few pixels
+   short of its neighbour where it is swept. In the columns a word wider than
+   its column (a palette's name in Russian) turns inside itself, so no name
+   runs into the next or past the popover's edge. On the swept shelf a word
+   stays whole: there is room beside each page, and a rem at both ends. */
+.reader-shelf .set-mode-name {
+ max-width: 60px;
+ max-width: calc(25cqw - 2px);
+ overflow-wrap: break-word;
+ color: color-mix(in srgb, var(--color-paper) 75%, transparent);
+}
+.reader-shelf[data-touch] .set-mode-name {
+ max-width: calc(168px * var(--mp-k) + 6px);
+ overflow-wrap: normal;
+}
+.reader-shelf .set-mode[aria-pressed="true"] .set-mode-name {
+ color: var(--color-paper);
+}
+.reader-modes .set-mode-goal-line {
+ margin-top: 8px;
 }
 
 /* A look's small page: its ground, ink and accent are its tokens

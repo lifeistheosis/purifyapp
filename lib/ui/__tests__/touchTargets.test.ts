@@ -388,18 +388,24 @@ describe("touch targets", () => {
   });
 
   it("keeps the reader settings' chips 44 to the touch on a computer too", () => {
-    // The text size, font, spacing and palette chips draw at 36 to 38px where
-    // the pointer is fine (a touch laptop or a tablet's browser at desktop
-    // width meets them with a finger). The count above cannot see them: the
-    // size chips' min-h-9 sits past its eight-line window and the palettes
-    // take their height from padding. So they are named here (the arbiter's
-    // word, 2026-11-10): each carries .hit-44 there, and the palettes' rows
-    // stand 8.5px apart so two touch boxes never overlap.
+    // The text size, font and spacing chips draw at 36 to 38px where the
+    // pointer is fine (a touch laptop or a tablet's browser at desktop width
+    // meets them with a finger). The count above cannot see them: the size
+    // chips' min-h-9 sits past its eight-line window. So they are named here
+    // (the arbiter's word, 2026-11-10): each carries .hit-44 there.
+    //
+    // The palettes were chips too, taking their height from padding, until
+    // build 93 note 4 made them a shelf of small pages
+    // (components/reader/ReadingModeChips.tsx). A page is 50px wide and 90px
+    // tall at the least (lib/reader/__tests__/readerShelf.test.ts holds the
+    // sizes), and the one link beside them is a finger tall.
     const menu = readFileSync(join(ROOT, "components/bible/ReaderSettingsMenu.tsx"), "utf8");
     const chips = readFileSync(join(ROOT, "components/reader/ReadingModeChips.tsx"), "utf8");
     expect(menu).toContain('touch ? "min-h-11 text-detail" : "hit-44 min-h-9 text-caption"');
-    expect(chips.split('touch ? "min-h-11 text-detail" : "hit-44 text-caption"').length - 1).toBe(2);
-    expect(chips).toContain('touch ? "gap-y-1.5" : "gap-y-2"');
+    expect(chips).toContain("<ModeTile");
+    expect(chips).toMatch(/data-all-modes=""\s*className="[^"]*\bmin-h-11\b/);
+    // And no control of its own is written there under a finger's height.
+    expect(chips).not.toMatch(/\b(?:min-h|h)-(?:[1-9]|10|\[(?:[1-3]?\d|4[0-3])px\])(?![\w.-])/);
   });
 
   it("reads a control by its own classes, and a child's height only where the control states none", () => {

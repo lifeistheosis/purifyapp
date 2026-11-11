@@ -180,11 +180,11 @@ describe("the page and its way in", () => {
     expect(panel).toContain('<Link href={href} className="set-lab set-link">');
     // A chevron from the app's own icons, turned for a reader of Arabic.
     expect(panel).toMatch(/<ChevronRight[^>]*className="set-chev rtl:-scale-x-100"/);
-    // The Bible's own sheet has the same way in, under its chips.
+    // The Bible's own sheet has the same way in, at the head of its shelf, a finger tall.
     const chips = read("components/reader/ReadingModeChips.tsx");
     expect(chips).toContain('href="/settings/reading-mode/"');
     expect(chips).toContain('t("common.seeAll")');
-    expect(chips).toMatch(/data-all-modes=""[\s\S]{0,80}min-h-11/);
+    expect(chips).toMatch(/data-all-modes=""\s*className="[^"]*\bmin-h-11\b/);
   });
 
   it("is a shelf of pictures swept sideways, not a row of pills", () => {

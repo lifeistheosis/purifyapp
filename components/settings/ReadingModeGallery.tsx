@@ -23,14 +23,11 @@
 
 import { useEffect, useState } from "react";
 
-import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ReaderPrefsProvider, useReaderPrefs, type ReaderFont } from "@/components/reader/ReaderPrefs";
 import { useEarnedPalettes } from "@/components/reader/useEarnedPalettes";
-import { usePlusReadingModes } from "@/components/reader/usePlusReadingModes";
-import { useThemeWorn } from "@/components/theme/useWornPalette";
+import { usePalettePick } from "@/components/reader/usePalettePick";
 import type { EarnedPalettes } from "@/lib/reader/earned";
-import { pickPalette } from "@/lib/reader/pickPalette";
 import { FREE_THEMES, READING_THEMES, THEME_FAMILIES, isCollectionTheme, themesOfFamily, type ReadingTheme } from "@/lib/reader/readingModes";
 import { PREVIEW_CHAPTER } from "@/lib/settings/preview";
 
@@ -58,22 +55,11 @@ export function ReadingModeGallery() {
 
 /** Wired to the reader's palette and the Plus gate. */
 function Shelves() {
-  const upgrade = useUpgradeModal();
-  const { theme, setTheme, font } = useReaderPrefs();
-  const { allows, locked } = usePlusReadingModes();
-  // What the app is in, read off the page: the check stands there.
-  const worn = useThemeWorn();
-  return (
-    <GalleryShelves
-      theme={theme}
-      worn={worn}
-      font={font}
-      allows={allows}
-      locked={locked}
-      // The tap every picker shares (lib/reader/pickPalette.ts): worn at once, or the sheet.
-      onPick={(id) => pickPalette(id, { worn, allows, locked, setTheme, sell: () => upgrade.open("palettes") })}
-    />
-  );
+  const { theme, font } = useReaderPrefs();
+  // The tap every picker shares, the palette the app is in (the check stands
+  // there) and the app's one Plus answer (components/reader/usePalettePick.ts).
+  const { pick, worn, allows, locked } = usePalettePick();
+  return <GalleryShelves theme={theme} worn={worn} font={font} allows={allows} locked={locked} onPick={pick} />;
 }
 
 /** The shelves themselves, from what they are handed (lib/settings/__tests__/readingModeGallery.test.ts draws them). */

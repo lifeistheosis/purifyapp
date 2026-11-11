@@ -142,7 +142,9 @@ describe("the marks and the palettes", () => {
     for (const file of ["components/reader/ReadingModeChips.tsx", "components/settings/ReadingModePages.tsx"]) {
       const src = fs.readFileSync(file, "utf8");
       expect(src, file).toContain("{locked ? ` ${t(\"settings.palettePlusNote\")}` : null}");
-      expect(src, file).toContain("data-palette-goal={mode.id}");
     }
+    // One tile for a goal, drawn by Settings and, since build 93 note 4, by the reader's own shelf.
+    expect(fs.readFileSync("components/settings/ReadingModePages.tsx", "utf8")).toContain("data-palette-goal={mode.id}");
+    expect(fs.readFileSync("components/reader/ReadingModeChips.tsx", "utf8")).toContain("<GoalTile");
   });
 });

@@ -195,17 +195,47 @@ describe("the Plus answer for the palettes, held once", () => {
     expect(since.kept.value).toBe(true);
   });
 
-  it("an asking that fails wears nothing on a guess, and leaves what the device last heard as it was", async () => {
+  it("with no signal, a reader the device last knew to have Plus keeps their palette until the server answers", async () => {
     const { gate, account, kept } = gateWith();
     kept.value = true;
     void gate.refresh();
     await account.fail();
-    expect(gate.get()).toEqual({ allowed: false, locked: true });
+    // The server could not be asked: the palette stays on, and no lock is drawn.
+    expect(gate.get()).toEqual({ allowed: true, locked: false });
+    // Nothing is kept from an asking that did not reach the server.
     expect(kept.writes).toEqual([]);
     expect(kept.value).toBe(true);
-    // The signal back asks again, and the palette returns without the app being opened again.
+    // The signal back asks again, and the server has the last word: Plus has ended.
     void gate.refresh(true);
+    await account.answer(false);
+    expect(gate.get()).toEqual({ allowed: false, locked: true });
+    expect(kept.value).toBe(false);
+  });
+
+  it("with no signal, a reader the device does not know to have Plus wears no Plus palette, and a tap still opens the sheet", async () => {
+    for (const lastHeard of [false, null]) {
+      const { gate, account, kept } = gateWith();
+      kept.value = lastHeard;
+      void gate.refresh();
+      await account.fail();
+      expect(gate.get(), String(lastHeard)).toEqual({ allowed: false, locked: true });
+      expect(kept.writes).toEqual([]);
+      expect(kept.value).toBe(lastHeard);
+      // The signal back, and they have Plus after all.
+      void gate.refresh(true);
+      await account.answer(true);
+      expect(gate.get()).toEqual({ allowed: true, locked: false });
+      expect(kept.value).toBe(true);
+    }
+  });
+
+  it("a reader heard to have Plus this visit keeps their palette when the signal drops", async () => {
+    const { gate, account } = gateWith();
+    void gate.refresh();
     await account.answer(true);
+    // The app comes back to the front in a tunnel.
+    void gate.refresh(true);
+    await account.fail();
     expect(gate.get()).toEqual({ allowed: true, locked: false });
   });
 
@@ -239,6 +269,17 @@ describe("the Plus answer for the palettes, held once", () => {
   });
 });
 
+describe("a tap made while the gate is still asking", () => {
+  const picker = read("components/reader/usePalettePick.ts");
+
+  it("is not lost: it waits for the answer and is carried out the moment it comes", () => {
+    // Kept only when the rule could do nothing yet.
+    expect(picker).toContain('waiting.current = did === "waited" ? id : null;');
+    // Carried out when the gate says yes or no, by the same rule.
+    expect(picker).toMatch(/useEffect\(\(\) => \{\s*const id = waiting\.current;\s*if \(id && \(allowed \|\| locked\)\) pick\(id\);\s*\}, \[allowed, locked, pick\]\);/);
+  });
+});
+
 describe("the palette a reader wears", () => {
   const plus = () => true;
   const none = (theme: ReadingTheme) => FREE_THEMES.includes(theme);
@@ -267,7 +308,9 @@ describe("how the app is wired to it", () => {
 
   it("asks the app's own resolver, where Plus is asked for on this surface", () => {
     expect(hook).toContain("enforced: () => plusEnforcedFor(clientSurface()),");
-    expect(hook).toContain("ask: () => getClientEntitlements().then((e) => e.plusFeatures),");
+    // The app's own resolver, which also says whether the server was reached: an answer got without it is none.
+    expect(hook).toMatch(/ask: async \(\) => \{\s*const \{ entitlements, heard \} = await askClientEntitlements\(\);\s*if \(!heard\) throw new Error\("the account server could not be reached"\);\s*return entitlements\.plusFeatures;\s*\},/);
+    expect(hook).not.toContain("getClientEntitlements");
     // The server draws as the web, and the first client render agrees with it.
     expect(hook).toContain('const serverAnswer = (): PlusModes => (plusEnforcedFor("web") ? PLUS_MODES_ASKING : PLUS_MODES_OPEN);');
   });
@@ -275,8 +318,9 @@ describe("how the app is wired to it", () => {
   it("asks again at each moment the answer can change", () => {
     // A purchase or a restore.
     expect(hook).toContain("onEntitlementsChanged(() => void gate.refresh(true));");
-    // A sign-in or a sign-out, on a timer: an auth call inside the callback never returns.
-    expect(hook).toMatch(/onAuthStateChange\(\(event\) => \{\s*if \(event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED"\) return;[\s\S]*?window\.setTimeout\(\(\) => void gate\.refresh\(true\), 0\);\s*\}\);/);
+    // A sign-in or a sign-out: another reader than before is asked for whatever is under way. On a timer: an auth
+    // call inside the callback never returns. The same reader named again (the library waking) is not asked twice.
+    expect(hook).toMatch(/onAuthStateChange\(\(event, session\) => \{\s*if \(event !== "INITIAL_SESSION" && event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED"\) return;\s*const now = session\?\.user\?\.id \?\? null;[\s\S]*?const another = now !== reader \|\| event === "USER_UPDATED";\s*reader = now;[\s\S]*?if \(event === "INITIAL_SESSION"\) return;[\s\S]*?window\.setTimeout\(\(\) => void gate\.refresh\(another\), 0\);\s*\}\);/);
     // The signal back.
     expect(hook).toContain('window.addEventListener("online", () => void gate.refresh(true));');
     // The app back at the front.
@@ -285,9 +329,15 @@ describe("how the app is wired to it", () => {
     expect(hook).toMatch(/function subscribe\(changed: \(\) => void\): \(\) => void \{\s*listen\(\);\s*const stop = gate\.subscribe\(changed\);[\s\S]*?void gate\.refresh\(\);\s*return stop;\s*\}/);
   });
 
-  it("keeps what it heard on the device, but not an answer got with no signal", () => {
+  it("keeps what it heard on the device, for the next opening and for a time with no signal", () => {
     expect(hook).toContain('export const PLUS_MODES_KEPT_KEY = "purify.reader.plusModes";');
-    expect(hook).toMatch(/remember: \(answer\) => \{[\s\S]*?if \(typeof navigator !== "undefined" && navigator\.onLine === false\) return;[\s\S]*?window\.localStorage\.setItem\(PLUS_MODES_KEPT_KEY, answer \? "1" : "0"\);/);
+    expect(hook).toMatch(/remember: \(answer\) => \{\s*try \{\s*window\.localStorage\.setItem\(PLUS_MODES_KEPT_KEY, answer \? "1" : "0"\);/);
+    expect(hook).toMatch(/recall: \(\) => \{\s*try \{\s*const kept = window\.localStorage\.getItem\(PLUS_MODES_KEPT_KEY\);\s*return kept === "1" \? true : kept === "0" \? false : null;/);
+    // The resolver says a failed reach apart from an answer, and answers FREE either way to everything else.
+    const client = read("lib/entitlements/client.ts");
+    expect(client).toContain("export async function askClientEntitlements(): Promise<{ entitlements: Entitlements; heard: boolean }> {");
+    expect(client).toContain("if (!user) return { entitlements: FREE_ENTITLEMENTS, heard: !isAuthRetryableFetchError(authError) };");
+    expect(client).toMatch(/export async function getClientEntitlements\(\): Promise<Entitlements> \{\s*return \(await askClientEntitlements\(\)\)\.entitlements;\s*\}/);
   });
 
   it("every part that asks about a palette asks through the hook", () => {
@@ -304,13 +354,17 @@ describe("how the app is wired to it", () => {
       "components/reader/CandleSeasonSwitch.tsx",
       "components/reader/NightReadingRow.tsx",
       "components/reader/ReaderPrefs.tsx",
-      "components/reader/ReadingModeChips.tsx",
       "components/reader/VespersSwitch.tsx",
+      // The three pickers ask through this one (Settings' row, the Reading mode page, the reader's own settings).
+      "components/reader/usePalettePick.ts",
       "components/reader/usePlusReadingModes.ts",
-      "components/settings/ReadingModeGallery.tsx",
-      "components/settings/ReadingModePages.tsx",
       "components/theme/AppThemeController.tsx",
     ]);
+    // And nothing asks the resolver for the palettes behind the hook's back.
+    for (const file of callers) {
+      if (file.endsWith("usePlusReadingModes.ts")) continue;
+      expect(read(file), file).not.toMatch(/askClientEntitlements|getClientEntitlements/);
+    }
   });
 
   it("the dresser decides what is worn by one rule, and every picker draws its check on what the page wears", () => {
@@ -323,11 +377,18 @@ describe("how the app is wired to it", () => {
     // Settings' row and the Reading mode page share the tile: its check is on what is worn.
     const tile = read("components/settings/ReadingModePages.tsx");
     expect(tile).toContain("const on = (worn ?? themeWorn(theme, allows)) === mode.id;");
+    // One hook hands every picker its tap, the palette worn and the gate's answer.
+    const picker = read("components/reader/usePalettePick.ts");
+    expect(picker).toContain("const worn = useThemeWorn();");
+    expect(picker).toContain("const { allows, allowed, locked } = usePlusReadingModes();");
+    expect(picker).toContain('const did = pickPalette(id, { worn, allows, locked, setTheme, sell: () => upgrade.open("palettes") });');
     for (const file of ["components/settings/ReadingModePages.tsx", "components/settings/ReadingModeGallery.tsx", "components/reader/ReadingModeChips.tsx"]) {
       const code = read(file);
-      expect(code, file).toContain("const worn = useThemeWorn();");
-      // And one tap rule between them (lib/reader/pickPalette.ts).
-      expect(code, file).toMatch(/pickPalette\((id|mode\.id), \{ worn, allows, locked, setTheme, sell: \(\) => upgrade\.open\("palettes"\) \}\)/);
+      expect(code, file).toContain("const { pick, worn, allows, locked } = usePalettePick();");
+      expect(code, file).toContain("worn={worn}");
+      expect(code, file).toMatch(/onPick=\{pick\}/);
+      // No picker keeps a tap rule, or an answer, of its own.
+      expect(code, file).not.toMatch(/setTheme\(|upgrade\.open\(|usePlusReadingModes\(\)/);
     }
     // The name under Settings' Reading mode row.
     expect(read("components/settings/SettingsClient.tsx")).toMatch(/const worn = useThemeWorn\(\);\s*const mode = READING_THEMES\.find\(\(m\) => m\.id === worn\);/);

@@ -207,10 +207,15 @@ describe("the screens that draw the small labels", () => {
   // Each of these drew the English from the source. Read as source, so that
   // putting the English back is noticed.
   it("ask the catalog, on the device", () => {
+    // The reader's Reading mode section draws Settings' own tile (build 93
+    // note 4), and the tile asks the catalog for the palette's name and line.
     const chips = read("components/reader/ReadingModeChips.tsx");
     expect(chips.trimStart().startsWith('"use client";')).toBe(true);
-    expect(chips).toContain("t(mode.labelKey)");
-    expect(chips).toContain("t(mode.blurbKey)");
+    expect(chips).toContain("<ModeTile");
+    const tile = read("components/settings/ReadingModePages.tsx");
+    expect(tile.trimStart().startsWith('"use client";')).toBe(true);
+    expect(tile).toContain("t(mode.labelKey)");
+    expect(tile).toContain("t(mode.blurbKey)");
 
     const browser = read("components/saints/SaintsBrowser.tsx");
     expect(browser.trimStart().startsWith('"use client";')).toBe(true);

@@ -1,191 +1,169 @@
 "use client";
 
-// The Reading-mode chip grid, shared by the Bible reader's settings menu
-// (desktop popover) and the mobile settings sheet. Palette half of
-// Premium Reading Modes; the Focus toggle (chrome half) stays separate
-// and composes with any palette.
+// The Reading mode section of the reader's own settings: the phone's sheet
+// and the computer's popover (components/bible/ReaderSettingsMenu.tsx).
+// Palette half of Premium Reading Modes; the Focus toggle (chrome half) stays
+// separate and composes with any palette.
+//
+// It was a grid of chips, each a dot of colour and a name, the two palettes
+// earned by reading in dashed boxes, one of them alone on its row, and a "See
+// all" row under them. The owner's note 4 of build 93 (2026-11-11): "Refine
+// this section and refine the design also." By his standing rules for it:
+// photos over words, no dashed placeholder boxes, no orphan on a row.
+//
+// So each mode is shown as itself: the small page Settings draws
+// (components/settings/ReadingModePages.tsx, ModeTile), the Bible's page in
+// that palette, on ONE shelf (app/globals.css, "The reader's own shelf"). On
+// a phone the shelf is swept sideways and runs to the sheet's edges, the next
+// page cut off so a reader sees there is more; in the computer's popover,
+// where nothing sweeps, it wraps four to a row (seven or eight pages, so
+// never one alone). The way to every mode
+// (components/settings/ReadingModeGallery.tsx) is the head's own link, not a
+// row under the shelf.
+//
+// What stands on it: the five a reader knows; a look (1.9) only while it is
+// the reader's own, so it can be seen and put down; and the two earned by
+// reading (lib/reader/earned.ts), which stand unlit with how far the reader
+// is until they are earned, and say how under the shelf once tapped.
+//
+// No colour is copied here by hand any more: a small page takes its ground
+// and ink from its palette's own tokens in the stylesheet
+// (lib/settings/__tests__/litPanels.test.ts holds the two together).
+//
+// The file keeps its name, and its export: the reader's settings import it.
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useReaderPrefs } from "@/components/reader/ReaderPrefs";
 import { useEarnedPalettes } from "@/components/reader/useEarnedPalettes";
-import { usePlusReadingModes } from "@/components/reader/usePlusReadingModes";
-import type { EarnedPalettes } from "@/lib/reader/earned";
-import { pickPalette } from "@/lib/reader/pickPalette";
-import { READING_THEMES, isCollectionTheme } from "@/lib/reader/readingModes";
-import { useThemeWorn } from "@/components/theme/useWornPalette";
-import { cn } from "@/lib/cn";
-import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { useUpgradeModal } from "@/components/billing/UpgradeModal";
+import { usePalettePick } from "@/components/reader/usePalettePick";
+import { GoalTile, ModeTile } from "@/components/settings/ReadingModePages";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
-
-/** Tiny page/ink swatch advertising each palette inside its chip. Hexes
- * mirror the html[data-reading-mode] blocks in app/globals.css. */
-const THEME_SWATCHES: Record<string, { page: string; ink: string }> = {
-  default: { page: "#101013", ink: "#eaeaec" },
-  candlelight: { page: "#050505", ink: "#d4d4d8" },
-  monastery: { page: "#0d1119", ink: "#aebedd" },
-  parchment: { page: "#f1e8d4", ink: "#2b2317" },
-  black: { page: "#000000", ink: "#ffffff" },
-  councils: { page: "#0a1020", ink: "#eaeaec" },
-  cappadocian: { page: "#160f12", ink: "#eaeaec" },
-};
-
-/** An applied look's swatch: the page and the ink the app is wearing. */
-const WORN = { page: "var(--color-night)", ink: "var(--color-paper)" };
+import type { EarnedPalettes } from "@/lib/reader/earned";
+import { READING_THEMES, isCollectionTheme } from "@/lib/reader/readingModes";
+import { PREVIEW_CHAPTER } from "@/lib/settings/preview";
 
 export function ReadingModeChips({
   touch = false,
 }: {
-  /** 44px chips and the larger label, to match the phone reader sheet. */
+  /** The phone's sheet: the shelf is swept. Without it (the computer's popover) it wraps. */
   touch?: boolean;
 } = {}) {
   const { t } = useTranslate();
-  const upgrade = useUpgradeModal();
-  const { theme, setTheme } = useReaderPrefs();
-  const { allows, locked } = usePlusReadingModes();
-  // What the app is in, read off the page: the lit chip is that one.
-  const worn = useThemeWorn();
+  const { theme, font } = useReaderPrefs();
+  // The tap every picker shares, the palette the app is in (the check stands
+  // there) and the app's one Plus answer (./usePalettePick.ts).
+  const { pick, worn, allows, locked } = usePalettePick();
   const earned = useEarnedPalettes();
-  // The goal a reader tapped: how it is earned, said under the grid.
+  // The goal a reader tapped: how it is earned, said under the shelf.
   const [goal, setGoal] = useState<keyof EarnedPalettes | null>(null);
+  // The pages' motion waits for the section to be up, as Settings' does
+  // (app/globals.css, "Settings: lit panels"): a choice read from the device
+  // after the first draw must not move as the sheet opens.
+  const [live, setLive] = useState(false);
+  useEffect(() => {
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => setLive(true));
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  // The page the app is in is kept in sight on a shelf that is swept: when
+  // the sheet opens it is already there (a look or Monastery would otherwise
+  // be past the edge, and a reader could not see what is on), and a tap on a
+  // page cut off at the edge brings it whole into view. Sideways only: the
+  // sheet itself is never moved from here. And to a place the shelf rests
+  // at, a page's own start: the shelf snaps to those, and a move to anywhere
+  // else is pulled back by the snap, which left the page cut off again.
+  const shelf = useRef<HTMLDivElement>(null);
+  const opened = useRef(false);
+  useEffect(() => {
+    const row = shelf.current;
+    if (!row || !touch) return;
+    /** False until the shelf is laid out (the sheet may still be opening). */
+    const align = (): boolean => {
+      if (!row.clientWidth) return false;
+      const pages = [...row.querySelectorAll<HTMLElement>(".set-mode")];
+      const at = pages.findIndex((page) => page.getAttribute("aria-pressed") === "true");
+      if (at < 0) return true;
+      const edge = row.getBoundingClientRect();
+      const on = pages[at].getBoundingClientRect();
+      // The room the shelf keeps at each end (its padding, 1rem).
+      const room = parseFloat(getComputedStyle(row).scrollPaddingInlineStart) || 16;
+      if (on.left >= edge.left + room - 1 && on.right <= edge.right - room + 1) return true;
+      // The page two before it leads the shelf, so it stands with a neighbour on each side.
+      const lead = pages[Math.max(0, at - 2)].getBoundingClientRect();
+      const by = getComputedStyle(row).direction === "rtl" ? lead.right - (edge.right - room) : lead.left - (edge.left + room);
+      const still = !opened.current || document.documentElement.dataset.motion === "reduce";
+      row.scrollBy({ left: by, behavior: still ? "auto" : "smooth" });
+      return true;
+    };
+    if (align()) {
+      opened.current = true;
+      return;
+    }
+    if (typeof ResizeObserver === "undefined") return;
+    const watch = new ResizeObserver(() => {
+      if (!align()) return;
+      opened.current = true;
+      watch.disconnect();
+    });
+    watch.observe(row);
+    return () => watch.disconnect();
+  }, [worn, theme, touch]);
+
+  const book = t("bible.books.john");
+  const chapter = t("bible.chapterN", { n: PREVIEW_CHAPTER });
+  const name = t("ui.readingMode");
 
   return (
-    <div>
-      {/* The badge moved off the group heading and onto the chips that are
-          actually paid. It sat here while light mode was gated with the rest,
-          which told a reader looking for a readable page that reading was a
-          paid feature. It is not. See FREE_THEMES in lib/reader/readingModes.
-          The tier named here is Plus since 2026-08-12; the palettes moved down
-          from Pro, so the badge has to move with them or it sells the wrong
-          subscription. */}
-      <p className="font-sans text-caption font-semibold text-paper/55 mb-2">
-        {t("ui.readingMode")}
-      </p>
-      <div className={cn("grid grid-cols-2 gap-x-1.5", touch ? "gap-y-1.5" : "gap-y-2")}>
-        {/* The earned palettes (1.9, rec 79, lib/reader/earned.ts): Councils
-            and Cappadocian stand here as goals, with how far the reader is,
-            until they are earned by reading; then they are palettes like the
-            rest. One already applied stays, so it can be put down again. */}
-        {/* The looks (1.9) are chosen on their own page, seventeen of them:
-            here only the one applied stands with the palettes, so it can be
-            put down, and the row under the grid opens the rest. Its swatch is
-            the page and ink the app is wearing. */}
+    <div className="set-root reader-modes" data-live={live ? "" : undefined}>
+      <div className="flex items-center justify-between gap-3">
+        <p className="font-sans text-caption font-semibold text-paper/55">{name}</p>
+        {/* Every palette, by family, on its own page: the head's own link, a finger tall. */}
+        <Link
+          href="/settings/reading-mode/"
+          data-all-modes=""
+          className="-me-2 inline-flex min-h-11 shrink-0 items-center gap-1 rounded-md px-2 font-sans text-caption font-medium text-paper/70 transition-colors hover:text-paper"
+          aria-label={`${name}: ${t("common.seeAll")}`}
+        >
+          <span>{t("common.seeAll")}</span>
+          <ChevronRight size={14} className="shrink-0 rtl:-scale-x-100" />
+        </Link>
+      </div>
+      {/* A sideways sweep here is the shelf's, never the sheet's own pull (lib/ui/useDraggableSheet.ts). */}
+      <div ref={shelf} role="group" aria-label={name} className="reader-shelf" data-touch={touch ? "" : undefined} data-sheet-nodrag="">
         {READING_THEMES.filter((mode) => !mode.look || mode.id === theme).map((mode) => {
-          const sw = THEME_SWATCHES[mode.id] ?? (mode.look ? WORN : undefined);
           const progress = isCollectionTheme(mode.id) ? earned[mode.id as keyof EarnedPalettes] : null;
+          // Earned, or already the reader's own (so it can be put down again): a palette like the rest.
           if (progress && !progress.earned && theme !== mode.id) {
             const id = mode.id as keyof EarnedPalettes;
-            const label = mode.labelKey ? t(mode.labelKey) : mode.label;
-            return (
-              <button
-                key={mode.id}
-                type="button"
-                data-palette-goal={mode.id}
-                aria-expanded={goal === id}
-                aria-controls="palette-goal"
-                onClick={() => setGoal(goal === id ? null : id)}
-                className={cn(
-                  "inline-flex items-center gap-2 rounded-md border border-dashed border-paper/20 px-2.5 py-2 text-start font-sans font-medium text-paper/70 transition-colors hover:text-paper",
-                  touch ? "min-h-11 text-detail" : "hit-44 text-caption",
-                )}
-              >
-                <span aria-hidden className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-paper/25" style={{ backgroundColor: sw?.page }}>
-                  <span className="block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: sw?.ink }} />
-                </span>
-                <span className="min-w-0 flex-1 break-words leading-tight">
-                  <span className="block">{label}</span>
-                  <span className="mt-0.5 block font-sans text-[10px] font-semibold tabular-nums text-paper/55">
-                    {t("settings.paletteProgress", { count: progress.read, total: progress.of })}
-                  </span>
-                </span>
-              </button>
-            );
+            return <GoalTile key={mode.id} mode={mode} progress={progress} open={goal === id} font={font} book={book} chapter={chapter} onToggle={() => setGoal(goal === id ? null : id)} />;
           }
-          const themeAllowed = allows(mode.id);
-          // Lit where the app is wearing it: a stored palette the gate does
-          // not let this reader wear leaves the app in Dark, and Dark is then
-          // the one lit (build 93 note 3).
-          const active = worn === mode.id;
-          const showPaidBadge = locked && !themeAllowed;
-          // The palette's name and its one line, in the reader's language. The
-          // registry holds the catalog keys beside the English (see labelKey in
-          // lib/reader/readingModes.ts), the earned two among them since 1.9.
-          const label = mode.labelKey ? t(mode.labelKey) : mode.label;
-          const blurb = mode.blurbKey ? t(mode.blurbKey) : mode.blurb;
           return (
-            <button
+            <ModeTile
               key={mode.id}
-              type="button"
-              onClick={() => {
-                // Router push, never `window.location.href`. The Android
-                // export is trailingSlash:true, so the bundled file is
-                // /pricing/index.html; a raw assignment to the bare string
-                // is unresolvable in the Capacitor shell, which falls back
-                // to the root document and dumps the reader on Today.
-                // Reported by a member on 2026-07-31. Same failure shape as
-                // the bible/multi note in scripts/native-build.mjs.
-                // The modal, not a navigation. Leaving the reader to sell them a
-                // palette cost them their place, and /pricing then pitched the
-                // whole tier rather than the one thing they had reached for.
-                // useUpgradeModal falls back to /pricing on its own when no
-                // provider is mounted above, and that fallback is a router push
-                // rather than a bare window.location.href for the reason the
-                // comment above records.
-                // The tap every picker shares (lib/reader/pickPalette.ts).
-                pickPalette(mode.id, { worn, allows, locked, setTheme, sell: () => upgrade.open("palettes") });
-              }}
-              title={showPaidBadge ? `${blurb}. Purify Plus.` : blurb}
-              aria-pressed={active}
-              className={cn(
-                "inline-flex items-center gap-2 rounded-md border px-2.5 py-2 text-start font-sans font-medium transition-colors",
-                touch ? "min-h-11 text-detail" : "hit-44 text-caption",
-                active
-                  ? "bg-paper/15 border-paper/45 text-paper"
-                  : "border-paper/12 text-paper/70 hover:bg-paper/8 hover:text-paper",
-              )}
-            >
-              <span
-                aria-hidden
-                className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-paper/25"
-                style={{ backgroundColor: sw?.page }}
-              >
-                <span
-                  className="block h-1.5 w-1.5 rounded-full"
-                  style={{ backgroundColor: sw?.ink }}
-                />
-              </span>
-              {/* The badge sits under the name, not beside it. Beside it, in
-                  a two-column grid inside a popover about 250px wide, a name
-                  as long as Candlelight left no room, and the badge was drawn
-                  over the name: "Purify PluMonastery", reported 2026-09-27. */}
-              <span className="min-w-0 flex-1 break-words leading-tight">
-                <span className="block">{label}</span>
-                {showPaidBadge && (
-                  // "Purify Plus" rather than "Plus": the brand name is what the
-                  // i18n ratchet allows as a literal (eslint.config.mjs, brand
-                  // names never translate), and it is clearer besides.
-                  <span className="mt-0.5 block font-sans text-[10px] font-semibold tracking-[0.6px] text-gold-pale/80">
-                    Purify Plus
-                  </span>
-                )}
-              </span>
-            </button>
+              mode={mode}
+              theme={theme}
+              worn={worn}
+              font={font}
+              allows={allows}
+              locked={locked}
+              book={book}
+              chapter={chapter}
+              // Worn at once, or the Purify Plus sheet for a reader the gate
+              // has said no to (lib/reader/pickPalette.ts). The sheet, not a
+              // navigation: leaving the reader to sell a palette cost the
+              // reader their place.
+              onPick={pick}
+            />
           );
         })}
       </div>
-      {/* Every palette, by family, on its own page (components/settings/ReadingModeGallery.tsx). */}
-      <Link
-        href="/settings/reading-mode/"
-        data-all-modes=""
-        className="mt-1.5 flex min-h-11 items-center justify-between gap-2 rounded-md px-2.5 font-sans text-caption font-medium text-paper/70 transition-colors hover:bg-paper/8 hover:text-paper"
-      >
-        <span>{t("common.seeAll")}</span>
-        <ChevronRight size={14} className="shrink-0 rtl:-scale-x-100" />
-      </Link>
       {goal ? (
-        <p id="palette-goal" role="status" className="mt-2 font-sans text-caption leading-[1.45] text-paper/70" data-palette-goal-line="">
+        <p id="set-palette-goal" role="status" className="set-mode-goal-line" data-palette-goal-line="">
           {t(goal === "councils" ? "settings.paletteEarnCouncils" : "settings.paletteEarnCappadocian", { count: earned[goal].read, total: earned[goal].of })}
           {/* Plus is never promised to every reader: a reader without it is told before they read for it. */}
           {locked ? ` ${t("settings.palettePlusNote")}` : null}
