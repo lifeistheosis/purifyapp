@@ -12,7 +12,7 @@ import { describe, expect, it } from "vitest";
 describe("the language picker", () => {
   it("is 44px tall to the touch", () => {
     const source = fs.readFileSync(path.join(process.cwd(), "components/i18n/LanguagePicker.tsx"), "utf8");
-    const button = /<button[\s\S]*?aria-haspopup="listbox"[\s\S]*?className="([^"]*)"/.exec(source)?.[1] ?? "";
+    const button = /<button[\s\S]*?aria-haspopup=\{asSheet \? "dialog" : "listbox"\}[\s\S]*?className="([^"]*)"/.exec(source)?.[1] ?? "";
     expect(button, "the picker's button").not.toBe("");
     expect(button.split(/\s+/)).toContain("h-11");
     expect(button).not.toMatch(/\bh-\[(?:[0-3]\d|4[0-3])px\]|\bh-(?:[1-9]|10)\b/);

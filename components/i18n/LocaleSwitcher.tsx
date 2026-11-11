@@ -1,15 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Sheet } from "@/components/ui/Sheet";
 import { LOCALES, type LocaleCode } from "@/lib/i18n/locales";
 import { useTranslate } from "./MessagesProvider";
 import { useApplyLocale } from "./useApplyLocale";
+import { LanguageSheetList } from "./LanguageSheetList";
 import { LocaleMenu } from "./LocaleMenu";
+import { useLanguageSheet } from "./useLanguageSheet";
 
 /**
  * Custom locale dropdown for switching languages in the footer. The
  * grouped list itself lives in LocaleMenu (shared with the account
- * settings picker); this owns the themed trigger and popover state.
+ * settings picker); this owns the themed trigger and popover state. On a
+ * phone it opens the house's sheet with the languages as rows instead
+ * (1.9, build 93 note 6), as the settings picker does.
  *
  * Why a custom popover instead of a native <select>:
  * The native control renders the OS-default option list, which ignores
@@ -31,6 +36,7 @@ export function LocaleSwitcher() {
   const [pending, setPending] = useState(false);
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const asSheet = useLanguageSheet();
 
   const ready = LOCALES.filter((l) => l.ready);
   const current =
@@ -38,9 +44,11 @@ export function LocaleSwitcher() {
     ready[0] ??
     LOCALES[0];
 
-  // Close on outside click or Escape.
+  // The dropdown closes on outside click or Escape; the sheet closes itself,
+  // and is drawn outside this box, so a tap on its rows is not "outside".
+  const menuOpen = open && !asSheet;
   useEffect(() => {
-    if (!open) return;
+    if (!menuOpen) return;
     function onDown(e: MouseEvent) {
       if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
         setOpen(false);
@@ -55,7 +63,7 @@ export function LocaleSwitcher() {
       document.removeEventListener("mousedown", onDown);
       document.removeEventListener("keydown", onKey);
     };
-  }, [open]);
+  }, [menuOpen]);
 
   function setLocale(next: LocaleCode) {
     setOpen(false);
@@ -70,7 +78,7 @@ export function LocaleSwitcher() {
       <button
         type="button"
         aria-label={t("footer.languageLabel")}
-        aria-haspopup="listbox"
+        aria-haspopup={asSheet ? "dialog" : "listbox"}
         aria-expanded={open}
         disabled={pending}
         onClick={() => setOpen((v) => !v)}
@@ -80,12 +88,12 @@ export function LocaleSwitcher() {
         <span className="min-w-[64px] text-left">{current?.nativeLabel}</span>
         <Chevron
           className={`h-3.5 w-3.5 shrink-0 text-paper/40 transition-transform duration-200 ${
-            open ? "rotate-180" : ""
+            menuOpen ? "rotate-180" : ""
           }`}
         />
       </button>
 
-      {open && (
+      {menuOpen && (
         <LocaleMenu
           locale={locale}
           onSelect={setLocale}
@@ -93,6 +101,9 @@ export function LocaleSwitcher() {
           placement="up"
         />
       )}
+      <Sheet open={open && asSheet} onClose={() => setOpen(false)} title={t("footer.languageLabel")} openFull>
+        <LanguageSheetList locale={locale} onSelect={setLocale} />
+      </Sheet>
     </div>
   );
 }
