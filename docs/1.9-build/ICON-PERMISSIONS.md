@@ -520,10 +520,49 @@ The mother of the Holy Unmercenaries Cosmas and Damian (November 1).
   Creation of the World wears the Apostle John, whose Gospel and
   Apocalypse it reads (lib/reading/coverArt.ts).
 
+## St Symeon the New Theologian (949 to 1022)
+
+An older saint with no picture whose freedom can be shown (searched on
+2026-11-11: Commons' "Simeon_novyj.jpg" and "SYMEON-icon.jpg" are dated by
+their uploaders only, from personal sites, with no holder named).
+
+- **The icon:** the Greek Orthodox Monastery of the Virgin Mary the
+  Consolatory's own icon of him, sold by the monastery as a mounted print,
+  "Saint Symeon the New Theologian Orthodox Icon".
+  https://www.monasterevmc.org/products/saint-symeon-the-new-theologian-orthodox-icon
+- **Made by:** "the sisters of monasterevmc.org", in the picture's own
+  caption on the collection page
+  (https://www.monasterevmc.org/collections/all/saint-symeon). No painter
+  named.
+- **To write to:** the contact form at
+  https://www.monasterevmc.org/pages/contact-us, or by telephone (450)
+  533-4313 or (450) 533-1170, or by post: 827, chemin de la Carrière,
+  Brownsburg-Chatham, Quebec, Canada. No email is published.
+- **For the letter:** the shop states no licence for its prints. Ask for the
+  icon itself, with the sisters' credit.
+
+## St Xenia of St. Petersburg (about 1730 to about 1803)
+
+Glorified in 1988; no picture of her is free. An oil portrait in the State
+Hermitage, late 18th or early 19th century and by an amateur, is believed by
+its restorers to be her, the only likeness from her lifetime, but the
+identification is not certain (Izvestia, 7 February 2017, as reported at
+https://pravoslavie.ru/100843.html); it is not an icon, and it is not used.
+
+- **The icon:** Holy Cross Monastery's "Blessed Xenia", sold as a mounted
+  print. https://holycross.org/products/blessed-xenia
+- **Made by:** "a monk of the Hermitage", in the page's own words. No name.
+- **To write to:** the contact form at https://www.holycross.org/pages/contact,
+  or by telephone (304) 849-2072 (the monastery) or (304) 849-4726 (the
+  store), or by post: Holy Cross Monastery, 505 Holy Cross Road, Wayne, WV
+  25570-5403, USA. No email is published.
+- **For the letter:** ask whether the monastery or the monk who painted it
+  holds the right to grant it, and for his name for the credit.
+
 ## Still searched, not yet on this list
 
-Two older saints may yet have a free picture, and are named here so the
-letter can follow at once if none passes:
+One older saint may yet have a free picture, and is named here so the letter
+can follow at once if none passes:
 
 - **St Mark of Ephesus.** Old pictures of him exist: a miniature in the
   Illustrated Chronicle of Ivan the Terrible, 1568 to 1576, on Commons
@@ -532,7 +571,3 @@ letter can follow at once if none passes:
   the National Historical Museum, Athens. Modern fallback: Brian Whirledge's
   icon, prints through Legacy Icons; icons@brianwhirledge.com
   (https://www.brianwhirledge.com/contact).
-- **St Symeon the New Theologian.** Commons' "Simeon_novyj.jpg" is dated to
-  the 19th century by its uploader, from a personal site, with no holder
-  named, so its freedom cannot be shown. No modern icon with a named painter
-  was found.
