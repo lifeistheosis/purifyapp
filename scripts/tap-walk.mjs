@@ -14,16 +14,19 @@
 //              page, no scroll, nothing kept (build 93 notes 3 and 8)
 //   covered    the finger meets something else at the control's middle
 //              (note 8, a tap that meets something else first)
-//   moved      the thing under the finger moves more than 4px while the page
-//              stays, because what stands above it changed, or because the
-//              page grew too short for where it stood and the browser pulled
-//              it (note 16, Evening to Morning, 133px on a tablet); a page
-//              taken somewhere on purpose (a Begin that scrolls to the
-//              prayer) is no jump
+//   moved      the thing under the finger moves more than 4px on the screen,
+//              where the finger is, because what stands above it changed, or
+//              because the page grew too short for where it stood and the
+//              browser pulled it (note 16, Evening to Morning, 133px on a
+//              tablet); a page taken somewhere on purpose (a Begin that
+//              scrolls to the prayer, a bar of tabs that stays at the top as
+//              its page goes to the part asked for) is no jump
 //   back       Back from where a tap went forward does not return the reader
-//              to the place they left (note 1, Nicaea after St Alexander); a
-//              step back, or an address changed in place (a tab), is not
-//              asked to
+//              to the place they left (note 1, Nicaea after St Alexander):
+//              what they tapped stands more than 48px from where it stood on
+//              the screen (or, for a control with no address to find it by,
+//              the page's scroll is that far off); a step back, or an address
+//              changed in place (a tab), is not asked to
 //   under      a part a tap opens ends under the bar at the foot, and the
 //              page did not move with it (note 15), judged by the rule of
 //              Fable Theology's lib/ui/showOpened.ts: it passes when the
@@ -34,7 +37,15 @@
 // and lists, to be looked at by eye, a choice whose check moved while
 // nothing else in the page did (note 3's look that changed nothing): many
 // a setting is kept and shown nowhere else, so this is a "look" and not a
-// fail.
+// fail. It lists too, as "held", a control that what stands above it moved
+// by more than 4px while the browser's scroll anchoring kept it under the
+// finger: Chrome, and so the Android app, holds it there; a browser that
+// does not anchor would let it jump.
+//
+// A control is measured once it stands still (a picture arriving, a list the
+// page draws again once the main web answers), and a control the page drew
+// again as it was reached (a new node with the same name in the same place
+// in the order) is found again, so neither is mistaken for a cover.
 //
 // Never a write anywhere: with no network the shell answers nothing outside
 // the bundle; with --online the main web is read (GET) and nothing is sent.
@@ -45,8 +56,20 @@
 //
 // --shots keeps a still of the screen at each fail, the control ringed, for the
 // one who mends it.
+//
+//   node scripts/tap-walk.mjs --self-test
+//
+// proves the measures on a page of its own that draws one case at each address:
+// a bar of tabs that stays at the top as its page goes where it was asked
+// (passes), what stands above a control taken away while the browser's scroll
+// anchoring holds it (passes, listed as held), the same with no anchoring (a
+// jump), a page grown too short at its end (pulled), Back to a page that adds a
+// shelf above the reader once it is back (passes) and Back to a page that loses
+// the reader's place (fails), and a control the page draws again as it is
+// reached (found again, and passes).
 
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 
 import { chromium } from "playwright";
@@ -67,10 +90,72 @@ const SHOTS = flag("--shots");
 if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 const ONLINE = argv.includes("--online");
 if (ONLINE) argv.splice(argv.indexOf("--online"), 1);
-const OUT = path.resolve(argv[0] ?? "out");
+const SELF_TEST = argv.includes("--self-test");
+if (SELF_TEST) argv.splice(argv.indexOf("--self-test"), 1);
+const OUT = SELF_TEST ? selfTestPage() : path.resolve(argv[0] ?? "out");
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}: run npm run build:android first`);
 
-const list = ONLY ?? screens(OUT);
+/** What each of the self-test's cases must come to. */
+const EXPECT = {
+  "/sticky/": { verdict: "pass", why: /^took the page/ },
+  "/held/": { verdict: "pass", held: true },
+  "/jump/": { verdict: "fail", why: /^moved: it moved/ },
+  "/pulled/": { verdict: "fail", why: /^moved: the page grew too short/ },
+  "/back-held/": { verdict: "pass" },
+  "/back-lost/": { verdict: "fail", why: /^back: Back returned with what was tapped/ },
+  "/redrawn/": { verdict: "pass" },
+};
+
+/** The self-test's page: one front door that draws a case by its address, as the shell answers every address with it. */
+function selfTestPage() {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tap-walk-self-test-"));
+  fs.writeFileSync(
+    path.join(dir, "index.html"),
+    `<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1">
+<style>html{scroll-behavior:auto}body{margin:0;font:16px/1.5 sans-serif;background:#fff;color:#000}button,a{display:block;box-sizing:border-box;min-height:44px;width:220px;margin:0 16px;font:16px sans-serif}.bar{position:sticky;top:0;background:#eee;padding:4px 0}</style>
+</head><body><main id="m"></main><script>
+window.next = { router: { push: (h) => location.assign(h) } };
+const m = document.getElementById("m");
+const block = (h, id) => { const d = document.createElement("div"); d.style.height = h + "px"; if (id) d.id = id; d.textContent = "Words to read."; return d; };
+const button = (words, onTap) => { const b = document.createElement("button"); b.type = "button"; b.textContent = words; b.onclick = () => onTap(b); return b; };
+const at = location.pathname;
+if (at === "/sticky/") {
+  const bar = document.createElement("div"); bar.className = "bar";
+  bar.append(button("Part three", () => document.getElementById("p3").scrollIntoView()));
+  m.append(block(300), bar, block(900, "p1"), block(900, "p2"), block(900, "p3"), block(900));
+} else if (at === "/held/") {
+  m.append(block(700, "top"), block(600), button("Choose", (b) => { document.getElementById("top")?.remove(); b.textContent = "Chosen"; }), block(2000));
+} else if (at === "/jump/") {
+  document.documentElement.style.overflowAnchor = "none"; document.body.style.overflowAnchor = "none";
+  m.append(block(150), button("Add a note", (b) => b.before(block(60))), block(2000));
+} else if (at === "/pulled/") {
+  document.documentElement.style.overflowAnchor = "none"; document.body.style.overflowAnchor = "none";
+  m.append(block(1500), button("Shorter", () => document.getElementById("tail").remove()), block(900, "tail"));
+} else if (at === "/back-held/" || at === "/back-lost/") {
+  const a = document.createElement("a"); a.href = "/other/"; a.textContent = "Read on"; a.onclick = () => sessionStorage.setItem("went", "1");
+  m.append(block(1000), a, block(2000));
+  addEventListener("pageshow", () => {
+    if (!sessionStorage.getItem("went") || document.getElementById("shelf")) return;
+    setTimeout(() => (at === "/back-held/" ? m.prepend(block(300, "shelf")) : scrollTo(0, 0)), 300);
+  });
+} else if (at === "/redrawn/") {
+  let b = button("Open", (x) => (x.textContent = "Opened"));
+  m.append(block(1500), b, block(1500));
+  new IntersectionObserver((seen, io) => {
+    if (!seen.some((e) => e.isIntersecting)) return;
+    io.disconnect();
+    const again = button("Open", (x) => (x.textContent = "Opened"));
+    b.replaceWith(again); b = again;
+  }).observe(b);
+} else {
+  m.append(block(400));
+}
+</script></body></html>`,
+  );
+  return dir;
+}
+
+const list = SELF_TEST ? Object.keys(EXPECT) : (ONLY ?? screens(OUT));
 console.log(`${list.length} screens on a phone, up to ${MAX} controls each, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}`);
 
 const OWN = "/opt/pw-browsers/chromium";
@@ -205,6 +290,41 @@ async function still(page, at, i) {
   }
 }
 
+/**
+ * Scroll a control into reach and wait until it stands still (two looks 100ms apart within a
+ * pixel, up to two seconds). A control whose node the page replaced as it was reached (the same
+ * name at the same place in the order, marked again) is found again; "redrawn" when it never
+ * stays.
+ */
+async function reach(page, c) {
+  let last = null;
+  let still = 0;
+  for (let t = 0; t < 20; t++) {
+    const now = await page.evaluate((i) => {
+      const el = document.querySelector(`[data-tapwalk="${i}"]`);
+      if (!el) return null;
+      if (!el.dataset.tapwalkReached) {
+        el.dataset.tapwalkReached = "1";
+        el.scrollIntoView({ block: "center", inline: "center" });
+      }
+      const r = el.getBoundingClientRect();
+      return { x: r.x, y: r.y };
+    }, c.i);
+    if (!now) {
+      const again = (await page.evaluate(markControls, MAX)).controls;
+      if (!again[c.i] || again[c.i].name !== c.name) return "redrawn";
+      last = null;
+      still = 0;
+    } else {
+      still = last && Math.abs(now.x - last.x) <= 1 && Math.abs(now.y - last.y) <= 1 ? still + 1 : 0;
+      if (still >= 2) return "still";
+      last = now;
+    }
+    await page.waitForTimeout(100);
+  }
+  return (await page.$(`[data-tapwalk="${c.i}"]`)) ? "moving" : "redrawn";
+}
+
 async function walkScreen(ctx, at, kept) {
   const page = await ctx.newPage();
   const cdp = await ctx.newCDPSession(page);
@@ -229,10 +349,15 @@ async function walkScreen(ctx, at, kept) {
           result.controls.push(row);
           continue;
         }
+        const reached = await reach(page, c);
+        if (reached === "redrawn") {
+          row.verdict = "skipped";
+          row.why.push("the screen kept drawing it again as it was reached");
+          result.controls.push(row);
+          continue;
+        }
         const handle = await page.$(`[data-tapwalk="${c.i}"]`);
-        await handle.evaluate((el) => el.scrollIntoView({ block: "center", inline: "center" }));
-        await page.waitForTimeout(250);
-        const box = await handle.boundingBox();
+        const box = handle && (await handle.boundingBox());
         if (!box) {
           row.verdict = "skipped";
           row.why.push("out of reach");
@@ -246,8 +371,9 @@ async function walkScreen(ctx, at, kept) {
           page.evaluate(
             ({ i, x, y }) => {
               const el = document.querySelector(`[data-tapwalk="${i}"]`);
+              if (!el) return "redrawn";
               const hit = document.elementFromPoint(x, y);
-              if (!el || !hit) return "nothing";
+              if (!hit) return "outside";
               if (el === hit || el.contains(hit) || hit.contains(el)) return null;
               const words = (hit.getAttribute("aria-label") || hit.innerText || "").replace(/\s+/g, " ").trim().slice(0, 40);
               return `${hit.tagName.toLowerCase()}${words ? ` "${words}"` : ""}`;
@@ -258,6 +384,14 @@ async function walkScreen(ctx, at, kept) {
         if (cover) {
           await page.waitForTimeout(400);
           cover = await meets();
+        }
+        if (cover === "redrawn" || cover === "outside") {
+          // Not a cover: the page drew it again after it stood still, or it stands where no
+          // finger reaches once scrolled to.
+          row.verdict = "skipped";
+          row.why.push(cover === "redrawn" ? "the screen kept drawing it again as it was reached" : "out of reach");
+          result.controls.push(row);
+          continue;
         }
         if (cover) {
           row.verdict = "fail";
@@ -291,7 +425,9 @@ async function walkScreen(ctx, at, kept) {
               const el = document.querySelector(`[data-tapwalk="${i}"]`);
               if (!el) return null;
               const r = el.getBoundingClientRect();
-              return { x: r.x + r.width / 2, y: r.y + r.height / 2, sx: scrollX, sy: scrollY, tall: innerHeight, long: document.documentElement.scrollHeight };
+              let stuck = false;
+              for (let q = el; q && q !== document.body && !stuck; q = q.parentElement) stuck = /^(fixed|sticky)$/.test(getComputedStyle(q).position);
+              return { x: r.x + r.width / 2, y: r.y + r.height / 2, sx: scrollX, sy: scrollY, tall: innerHeight, long: document.documentElement.scrollHeight, stuck };
             }, c.i)
             .catch(() => null);
         const start = await where();
@@ -300,17 +436,28 @@ async function walkScreen(ctx, at, kept) {
         // changes (a jump), the page grows too short for where it stood and the browser pulls
         // it up (note 16's 133px on a tablet), or the page is taken somewhere on purpose (a
         // Begin that scrolls to the prayer), which is no jump.
+        // The finger feels the screen: a move counts where it is seen there and on the page both
+        // (moved on the page alone is a move the browser's scroll anchoring held: "held"; on the
+        // screen alone, a scroll). A control that rides something stuck (a bar of tabs) stays at
+        // the top while its page goes where it was asked: that is a scroll, not a move.
         let moved = 0;
         let pulled = 0;
         let scrolled = 0;
+        let held = 0;
         for (let t = 0; t < 12; t++) {
           await page.waitForTimeout(60);
           const w = await where();
           if (!w || !start || page.url() !== before.href) continue;
           const onScreen = Math.max(Math.abs(w.x - start.x), Math.abs(w.y - start.y));
-          moved = Math.max(moved, Math.abs(w.x + w.sx - (start.x + start.sx)), Math.abs(w.y + w.sy - (start.y + start.sy)));
+          const onPage = Math.max(Math.abs(w.x + w.sx - (start.x + start.sx)), Math.abs(w.y + w.sy - (start.y + start.sy)));
+          const scrolledBy = Math.max(Math.abs(w.sx - start.sx), Math.abs(w.sy - start.sy));
           const atEnd = w.sy + w.tall >= w.long - 2;
-          if (w.long < start.long && w.sy < start.sy && atEnd) pulled = Math.max(pulled, onScreen);
+          const pulledUp = w.long < start.long && w.sy < start.sy && atEnd;
+          if (!(start.stuck && scrolledBy > 4)) {
+            moved = Math.max(moved, Math.min(onScreen, onPage));
+            if (onScreen <= 4 && scrolledBy > 4) held = Math.max(held, onPage);
+          }
+          if (pulledUp) pulled = Math.max(pulled, onScreen);
           else scrolled = Math.max(scrolled, onScreen);
         }
         await page.waitForTimeout(700);
@@ -334,10 +481,32 @@ async function walkScreen(ctx, at, kept) {
           await page.waitForFunction((h) => location.href === h, before.href, { timeout: 8000 }).catch(() => {});
           await page.waitForTimeout(900);
           const back = await page.evaluate(snapshot).catch(() => null);
+          // What was tapped, found again by its address: the one nearest where it stood.
+          const backAt =
+            back && c.href && start
+              ? await page
+                  .evaluate(
+                    ({ href, y }) => {
+                      const want = new URL(href, location.href).href;
+                      const ys = [...document.querySelectorAll("a[href]")]
+                        .filter((a) => a.href === want && a.checkVisibility())
+                        .map((a) => {
+                          const r = a.getBoundingClientRect();
+                          return r.y + r.height / 2;
+                        });
+                      return ys.length ? Math.round(ys.reduce((best, v) => (Math.abs(v - y) < Math.abs(best - y) ? v : best))) : null;
+                    },
+                    { href: c.href, y: start.y },
+                  )
+                  .catch(() => null)
+              : null;
           if (!back || back.href !== before.href) {
             row.verdict = "fail";
             row.why.push("back: Back did not return to this screen");
-          } else if (Math.abs(back.y - before.y) > 48) {
+          } else if (backAt !== null && Math.abs(backAt - start.y) > 48) {
+            row.verdict = "fail";
+            row.why.push(`back: Back returned with what was tapped at ${backAt}px on the screen; it stood at ${Math.round(start.y)}px`);
+          } else if (backAt === null && Math.abs(back.y - before.y) > 48) {
             row.verdict = "fail";
             row.why.push(`back: Back returned to ${back.y}px, the reader was at ${before.y}px`);
           }
@@ -393,6 +562,10 @@ async function walkScreen(ctx, at, kept) {
             row.why.push(`moved: the page grew too short for where it stood, and the browser pulled it ${Math.round(pulled)}px under the finger`);
           } else if (scrolled > 4) {
             row.why.push(`took the page ${Math.round(scrolled)}px, on purpose`);
+          }
+          if (row.verdict === "pass" && held > 4) {
+            row.held = Math.round(held);
+            row.why.push(`held: what stands above it moved ${row.held}px, and the browser's scroll anchoring kept it under the finger`);
           }
           const anything = changes > 0 || after.y !== before.y || after.html !== before.html || after.kept !== before.kept || after.dialogs !== before.dialogs;
           if (!anything) {
@@ -452,9 +625,23 @@ await Promise.all(Array.from({ length: WORKERS }, worker));
 await browser.close();
 
 results.sort((a, b) => a.at.localeCompare(b.at));
+if (SELF_TEST) {
+  const missed = [];
+  for (const [at, want] of Object.entries(EXPECT)) {
+    const c = results.find((r) => r.at === at)?.controls[0];
+    const why = c?.why ?? [];
+    const ok = c && c.verdict === want.verdict && (!want.why || why.some((w) => want.why.test(w))) && (!want.held || c.held > 4);
+    console.log(`  ${ok ? "ok    " : "MISSED"} ${at}: ${c ? `${c.verdict}; ${why.join("; ")}` : "not walked"}`);
+    if (!ok) missed.push(at);
+  }
+  fs.rmSync(OUT, { recursive: true, force: true });
+  console.log(missed.length ? `\nself-test FAILED: ${missed.join(", ")}` : "\nself-test: every case measured as it should be");
+  process.exit(missed.length ? 1 : 0);
+}
 let tapped = 0;
 let failed = 0;
 const looks = [];
+const helds = [];
 for (const r of results) {
   const fails = r.controls.filter((c) => c.verdict === "fail");
   tapped += r.controls.filter((c) => c.verdict !== "skipped").length;
@@ -465,6 +652,7 @@ for (const r of results) {
     for (const c of fails) console.log(`  ${c.name}: ${c.why.filter((w) => /^(nothing|moved|back|under|covered):/.test(w)).join("; ")}${c.still ? ` [${c.still}]` : ""}`);
   }
   for (const c of r.controls) if (c.look) looks.push(`${r.at} ${c.name}: ${c.look}`);
+  for (const c of r.controls) if (c.held) helds.push(`${r.at} ${c.name}: ${c.held}px`);
 }
 console.log(`\n${results.length} screens, ${tapped} controls tapped, ${failed} failed`);
 const capped = results.filter((r) => r.found > r.controls.length);
@@ -472,6 +660,10 @@ if (capped.length) console.log(`more controls than the ${MAX} walked on ${capped
 if (looks.length) {
   console.log(`\nto look at by eye (${looks.length}):`);
   for (const l of looks) console.log(`  ${l}`);
+}
+if (helds.length) {
+  console.log(`\nheld under the finger by the browser's scroll anchoring alone (${helds.length}): Chrome and the Android app hold these; a browser that does not anchor would let them jump`);
+  for (const l of helds) console.log(`  ${l}`);
 }
 if (JSON_OUT) {
   fs.writeFileSync(JSON_OUT, JSON.stringify({ screens: results.length, tapped, failed, results }, null, 1));
