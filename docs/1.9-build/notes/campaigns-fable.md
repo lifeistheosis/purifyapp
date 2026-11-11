@@ -4291,3 +4291,88 @@ two flows. Still: the sheet (39).
 | `campaigns.change.note` | You can change these until a moderator has read your campaign. After that, write an update, or end it and run it again. |
 | `campaigns.change.saved` | Saved. A moderator will read it as it is now. |
 | `campaigns.change.late` | A moderator has read this campaign, so its words stay as they are. |
+
+---
+
+## 34. The two notices: built, and switched off until the inbox says them (2026-11-11)
+
+The notes, 2.7 ("Nobody is told by default") and phase 4. No SQL: the
+inbox's table already allows the kinds and the target these use
+(`20261110204814_removal_notices.sql`).
+
+### 34.1 What they are
+
+1. **"Purify approved your prayer campaign."** To a campaign's creator,
+   once, the first time a moderator reads it and puts it up. Its own title
+   stands under the line. Not when a moderator keeps it after reports (its
+   creator was never told it was hidden), and not when its days ran out
+   while it waited. A tap opens "Your campaigns".
+2. **"A prayer campaign in your prayers has an update."** Only to a reader
+   who carries the campaign and asked to be told, on that campaign. The row
+   carries no title, no name and no word of the update, only where the
+   update is. A tap opens the campaign at its updates.
+
+Both are a line in the inbox inside the app. Neither is a push: Community's
+push would put "Your post was approved" on a lock screen, and a campaign has
+no words of its own for one, so these rows never go through that writer
+(`lib/campaigns/notices.ts`, "In the app only").
+
+### 34.2 How a reader asks
+
+- On a campaign's Updates door, a line to tick: **"Tell me when there is an
+  update"**, with under it "A notice in the app, with no name in it. It
+  stays off until you ask."
+- Off until ticked, as the rule for reminders requires (`CONTRIBUTING.md`,
+  "Reminders and streaks"). Adding a campaign to one's prayers never turns
+  it on, and changing which prayers carry it leaves it as it was set.
+- Kept on the reader's own row, so it is offered only where their account
+  already carries the campaign: never to its creator, to a signed-out
+  reader, or for a campaign carried on the device alone.
+- A reader whose own last day has passed is no longer told.
+- An update that waits for a moderator tells nobody until it is approved. A
+  comment never tells anyone.
+
+### 34.3 The switch
+
+`lib/campaigns/noticesOn.ts`, `CAMPAIGN_NOTICES`, **false**. While it is
+off no row is written, the line to tick is not drawn, and the route that
+keeps the tick is not a request at all. It is off because a row must be
+said in its own words before it is written: drawn by its kind alone, the
+first would read "approved your post" and the second "replied to your
+post".
+
+Admin has built the inbox's side (aec6ad665, 2a204f3e8): the two lines in
+21 languages, where each opens, and a rule that hands these rows only to an
+app new enough to say them, so an installed 1.8 never gets a dot for a row
+it cannot draw. The two English lines are on his page with call 29. **It is
+turned on when he says yes to those lines**, by one line in that file, and
+the first real rows are read on the test web.
+
+### 34.4 What holds it
+
+`lib/campaigns/__tests__/notices.test.ts` (20 cases: the rows, who is told,
+best effort, in the app only, the switch), `tellMe.test.ts` (12 cases,
+through the routes with the switch on), and the shipped, switched-off state
+in `routes.test.ts` and `thread.test.ts` (4 cases). Twenty-one ways of
+breaking it were tried and each failed a case. The test stand-in for the
+database now takes several rows in one insert, all or none, as the real one
+does.
+
+One fault of mine was caught by a guard that was already there
+(`lib/supabase/__tests__/rowCap.test.ts`): I read the readers to tell in one
+request, which the API cuts at a thousand rows without saying so. They are
+read a thousand at a time now, and a case with 2,300 readers holds it.
+
+The walk: four flows (the line is not drawn as campaigns ship; ticking and
+unticking; a tick the account could not keep; never for its creator).
+Still: the Updates door with the line (41), drawn from the server's answer
+as it will be once the notices are on.
+
+### 34.5 Words for his OK (English; the twenty languages after)
+
+| Key | English |
+|---|---|
+| `campaigns.tellMe` | Tell me when there is an update |
+| `campaigns.tellMe.note` | A notice in the app, with no name in it. It stays off until you ask. |
+
+The two inbox lines are Admin's and are already with him (call 29).

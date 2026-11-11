@@ -3,6 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
+import { tellOfApprovedNote } from "@/lib/campaigns/notices";
 import { takeDownPicture } from "@/lib/community/avatarFile";
 import { deleteBannerFiles } from "@/lib/profile/bannerFile";
 import { identity } from "@/lib/profile/server";
@@ -458,13 +459,17 @@ async function restoreReply(admin: SupabaseClient, actor: ModActor, id: string):
   await closeReports(admin, actor, { reply_id: id }, "dismissed");
   const reasons = await resolveHolds(admin, actor, { reply_id: id }, "approved", (r) => r !== "words");
   // The parent is read here as it always was, and now for its state too. A
-  // comment under a prayer campaign tells nobody yet: its thread is no post a
-  // notice could open (lib/campaigns/thread.ts), and notices for campaigns
-  // come in a later phase, asked for by each reader.
+  // note under a prayer campaign is told of in the campaigns' own way, never
+  // as a reply to a post: its thread is no post a notice could open
+  // (lib/campaigns/thread.ts). A comment tells nobody; an update that was
+  // held and is now shown tells the readers who carry the campaign and asked
+  // to be told (lib/campaigns/notices.ts, which is off until the inbox has
+  // words for it).
   const { data: parent } = reasons.some(HELD_AT_WRITE)
     ? await admin.from("community_posts").select("group_id, status").eq("id", reply.post_id).maybeSingle()
     : { data: null };
   const underCampaign = (parent as { status?: string } | null)?.status === "campaign";
+  if (underCampaign) await tellOfApprovedNote(admin, { replyId: id, threadId: reply.post_id, writerId: reply.user_id });
   if (!underCampaign && reasons.some(HELD_AT_WRITE)) {
     await insertNotifications(admin, [
       { user_id: reply.user_id, kind: "approved", post_id: reply.post_id, reply_id: id, actor_name: "Purify", excerpt: reply.body },

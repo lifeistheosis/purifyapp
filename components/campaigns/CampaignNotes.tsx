@@ -4,12 +4,13 @@ import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 
 import { SafetyLine } from "@/components/campaigns/SafetyLine";
+import { TickBox } from "@/components/campaigns/TickLines";
 import { ActionMenu, type ActionMenuItem } from "@/components/community/ActionMenu";
 import { ClergySeal } from "@/components/community/ClergySeal";
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { fetchThread, removeNote, writeNote, type NoteResult, type ThreadResult } from "@/lib/campaigns/client";
+import { fetchThread, removeNote, setTellMe, writeNote, type NoteResult, type ThreadResult } from "@/lib/campaigns/client";
 import { NOTE_MAX, type CampaignNote, type CampaignThread, type NoteKind } from "@/lib/campaigns/model";
 import { dayText } from "@/lib/campaigns/words";
 import { cn } from "@/lib/cn";
@@ -279,6 +280,10 @@ export function CampaignUpdates({ campaignId, result, reload, campaignMine }: Pa
           <NoteField campaignId={campaignId} kind="update" onSent={reload} />
         </div>
       ) : null}
+      {/* A reader whose account carries it can ask to be told of an update.
+          The server says whether the line is theirs to have (tellMe), and it
+          says so only while the campaigns' notices are on. */}
+      {thread.tellMe !== undefined ? <TellMe key={String(thread.tellMe)} campaignId={campaignId} asked={thread.tellMe} /> : null}
       {thread.updates.length === 0 ? (
         <p className="font-sans text-detail leading-relaxed text-paper/70">{t("campaigns.updatesNone")}</p>
       ) : (
@@ -311,6 +316,42 @@ export function CampaignUpdates({ campaignId, result, reload, campaignMine }: Pa
         </p>
       ) : null}
       {actions.dialog}
+    </div>
+  );
+}
+
+/**
+ * "Tell me when there is an update": off until a reader ticks it, on this
+ * campaign alone (CONTRIBUTING.md, "Reminders and streaks"). The notice it
+ * asks for is a line in their inbox with no name and no need in it
+ * (lib/campaigns/notices.ts). The tick moves at once and goes back if the
+ * account could not keep it.
+ */
+function TellMe({ campaignId, asked }: { campaignId: string; asked: boolean }) {
+  const { t } = useTranslate();
+  const [on, setOn] = useState(asked);
+  const [failed, setFailed] = useState(false);
+
+  async function change(next: boolean) {
+    setOn(next);
+    setFailed(false);
+    if (await setTellMe(campaignId, next)) return;
+    setOn(!next);
+    setFailed(true);
+  }
+
+  return (
+    <div data-campaign-tell="" className="mb-6">
+      <TickBox on={on} onChange={(next) => void change(next)}>
+        {t("campaigns.tellMe")}
+      </TickBox>
+      {/* Under the words, clear of the tick (22px and its gap). */}
+      <p className="ps-[34px] font-sans text-caption leading-relaxed text-paper/70">{t("campaigns.tellMe.note")}</p>
+      {failed ? (
+        <p role="alert" className="mt-2 font-sans text-detail text-crimson-soft">
+          {t("profile.followFailed")}
+        </p>
+      ) : null}
     </div>
   );
 }

@@ -594,3 +594,23 @@ describe("nothing is counted under a campaign", () => {
     expect(projection).not.toMatch(/count|user_id:|reply_count/);
   });
 });
+
+describe("the notices, as they ship: off until the inbox can say them", () => {
+  // lib/campaigns/noticesOn.ts is read here as it is committed (tellMe.test.ts
+  // runs the same routes with it on).
+  it("the Updates door is offered no line to ask on, even for a reader whose account carries the campaign", async () => {
+    const id = running();
+    w.tables.prayer_campaign_prayers = [{ campaign_id: id, user_id: BEN, places: ["evening"], until_on: null, notify_updates: true }];
+    expect("tellMe" in ((await thread(id)) as unknown as Record<string, unknown>)).toBe(false);
+  });
+
+  it("an update tells nobody, whoever asked", async () => {
+    const id = running();
+    w.tables.community_notifications = [];
+    w.tables.prayer_campaign_prayers = [{ campaign_id: id, user_id: BEN, places: ["evening"], until_on: null, notify_updates: true }];
+    signIn(ANNA);
+    const res = await write(new Request(`${SITE}/api/campaigns/${id}/thread`, json({ kind: "update", body: "She came through the operation, thank God." })), params(id));
+    expect(res.status).toBe(200);
+    expect(w.tables.community_notifications).toEqual([]);
+  });
+});

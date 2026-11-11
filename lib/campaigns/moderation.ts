@@ -17,6 +17,7 @@ import {
   type WaitingCampaign,
 } from "./model";
 import { CAMPAIGN_BUCKET, campaignImage } from "./image";
+import { tellCreatorItIsUp } from "./notices";
 import { reworkAbsent } from "./opening";
 import { campaignPart } from "./parts";
 import { approvePicture, deletePicturesOf, removePictureAsModerator } from "./pictures";
@@ -108,6 +109,10 @@ export async function approveCampaign(admin: SupabaseClient, actor: ModActor, id
   if (error) return { ok: false, status: 500, error: error.message };
   await closeReports(admin, actor, id, "dismissed");
   await logMod(admin, actor, { action: "approve_campaign", target: "campaign", targetId: id, summary: summary(c) });
+  // Its creator is told, once: at its first read, when it is put up. Not when
+  // it is kept after reports (they were never told it was hidden), and not
+  // when its days ran out while it waited (./notices.ts).
+  if (status === "active" && !hiddenByReports(c.held_reason)) await tellCreatorItIsUp(admin, c);
   return { ok: true };
 }
 

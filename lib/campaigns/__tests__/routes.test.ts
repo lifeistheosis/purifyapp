@@ -75,7 +75,7 @@ vi.mock("@/lib/community/notify", () => ({
 }));
 
 import { GET as getOne, PATCH as patchOne } from "@/app/api/campaigns/[id]/route";
-import { DELETE as leave, POST as join } from "@/app/api/campaigns/[id]/join/route";
+import { DELETE as leave, PATCH as tell, POST as join } from "@/app/api/campaigns/[id]/join/route";
 import { POST as report } from "@/app/api/campaigns/[id]/report/route";
 import { POST as words } from "@/app/api/campaigns/[id]/words/route";
 import { GET as mine } from "@/app/api/campaigns/mine/route";
@@ -521,6 +521,28 @@ describe("starting a campaign", () => {
     // One that is over does not count against the three.
     campaigns().find((r) => r.creator_id === BEN)!.status = "ended";
     expect((await start({ title: "A fourth" })).status).toBe(200);
+  });
+});
+
+describe("the notices, as they ship: off until the inbox can say them", () => {
+  // lib/campaigns/noticesOn.ts is read here as it is committed. What the
+  // writers do once it is on is notices.test.ts and tellMe.test.ts.
+  it("an approval tells nobody yet", async () => {
+    w.tables.community_notifications = [];
+    const id = ((await (await start()).json()) as { id: string }).id;
+    expect((await approveCampaign(state.admin as never, MOD, id)).ok).toBe(true);
+    expect(byId(id).status).toBe("active");
+    expect(w.tables.community_notifications).toEqual([]);
+  });
+
+  it("asking to be told of updates is not a request at all, and no row is touched", async () => {
+    const id = running(ANNA);
+    signIn(BEN);
+    expect((await join(new Request(`${SITE}/api/campaigns/${id}/join`, json({ places: ["evening"] })), params(id))).status).toBe(200);
+    const before = structuredClone(w.tables.prayer_campaign_prayers);
+    const res = await tell(new Request(`${SITE}/api/campaigns/${id}/join`, json({ tellMe: true }, "PATCH")), params(id));
+    expect(res.status).toBe(404);
+    expect(w.tables.prayer_campaign_prayers).toEqual(before);
   });
 });
 

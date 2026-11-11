@@ -669,6 +669,13 @@ export type CampaignThread = {
   canUpdate: boolean;
   /** A signed-in reader, while it runs and comments are open. */
   canComment: boolean;
+  /**
+   * Whether this reader asked to be told of its updates. Only there for a
+   * signed-in reader whose account carries the campaign, and only while the
+   * campaigns' notices are on (lib/campaigns/noticesOn.ts): absent, the
+   * Updates door offers no such line. Never there for its creator.
+   */
+  tellMe?: boolean;
 };
 
 // ── Reports ─────────────────────────────────────────────────────────────────

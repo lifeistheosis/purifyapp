@@ -15,6 +15,8 @@ import { signInPicture } from "@/lib/profile/signInPicture";
 
 import { campaignsInBuild } from "./flags";
 import { NOTE_MAX, UPDATES_A_DAY, isJulyRow, isOver, type CampaignNote, type CampaignThread, type NoteKind } from "./model";
+import { tellOfUpdate } from "./notices";
+import { CAMPAIGN_NOTICES } from "./noticesOn";
 import { reworkAbsent } from "./opening";
 import { maySpeakOfDanger, withDangerMark } from "./safety";
 import type { CampaignRow, Read } from "./server";
@@ -167,6 +169,13 @@ export async function readThread(
     canUpdate: running && userId !== null && campaign.creator_id === userId,
     canComment: running && commentsOpen && userId !== null,
   };
+  // Whether this reader asked to be told of its updates: their own choice on
+  // their own row, read only for a reader whose account carries it, never
+  // for its creator, and only while the notices are on (./noticesOn.ts).
+  if (CAMPAIGN_NOTICES && userId !== null && campaign.creator_id !== userId) {
+    const { data: carried } = await admin.from("prayer_campaign_prayers").select("notify_updates").eq("campaign_id", campaign.id).eq("user_id", userId).maybeSingle();
+    if (carried) base.tellMe = (carried as { notify_updates?: unknown }).notify_updates === true;
+  }
   const thread = await threadIdOf(admin, campaign.id);
   if (!thread.ok) return thread;
   if (!thread.value) return { ok: true, value: base };
@@ -327,6 +336,12 @@ export async function writeNote(
   if (censored.hits > 0) {
     const { error: holdError } = await admin.from("community_text_holds").insert({ reply_id: id, original_body: own, hits: Math.min(censored.hits, 500) });
     if (holdError) console.warn("[campaigns] filter hold not written", holdError.message);
+  }
+  // An update that is shown at once: the readers who carry the campaign and
+  // asked to be told are told (./notices.ts). One that waits for a moderator
+  // tells nobody until it is approved (lib/community/moderation.ts).
+  if (input.kind === "update" && !hold) {
+    await tellOfUpdate(admin, { campaignId: campaign.id, creatorId: campaign.creator_id, threadId, replyId: id }, now);
   }
   return { ok: true, id, held: hold !== null, safety: danger };
 }

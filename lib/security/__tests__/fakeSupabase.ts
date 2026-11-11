@@ -337,6 +337,8 @@ class Query {
   private filters: ((row: Row) => boolean)[] = [];
   private named = new Set<string>();
   private values: Row = {};
+  /** The rows of an insert that was handed several. */
+  private batch: Row[] | null = null;
   private conflict: string[] = [];
   private window: [number, number] = [0, Infinity];
   private sortBy = "id";
@@ -382,9 +384,15 @@ class Query {
     }
     return this;
   }
-  insert(values: Row) {
+  /** One row, or several at once as PostgREST takes them: all are written, or on the first refusal none is. */
+  insert(values: Row | Row[]) {
     this.op = "insert";
-    this.values = values;
+    if (Array.isArray(values)) {
+      this.batch = values;
+      this.values = values[0] ?? {};
+    } else {
+      this.values = values;
+    }
     return this;
   }
   upsert(values: Row, opts: { onConflict: string }) {
@@ -479,6 +487,28 @@ class Query {
   }
 
   private run(): Result {
+    if (this.op !== "insert" || !this.batch) return this.runOne();
+    // Several rows in one insert: each is held to what one row is, and a
+    // refusal of any leaves the table as it was.
+    const table = this.w.tables[this.table];
+    const before = table ? table.length : 0;
+    const written: Row[] = [];
+    for (const one of this.batch) {
+      this.values = one;
+      const saved = this.one;
+      this.one = null;
+      const result = this.runOne();
+      this.one = saved;
+      if (result.error) {
+        if (table) table.length = before;
+        return result;
+      }
+      written.push(...((result.data as Row[] | null) ?? []));
+    }
+    return { data: written, error: null };
+  }
+
+  private runOne(): Result {
     const rows = this.w.tables[this.table];
     const absent = this.w.missing[this.table] ?? [];
     const columns = COLUMNS[this.table]?.filter((c) => !absent.includes(c));

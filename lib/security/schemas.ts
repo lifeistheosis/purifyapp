@@ -529,6 +529,9 @@ export const campaignJoinSchema = z.object({
     .nullable(),
 });
 
+/** /api/campaigns/[id]/join PATCH body: a reader who carries a campaign asks to be told of its updates, or stops. */
+export const campaignTellSchema = z.object({ tellMe: z.boolean() });
+
 /** /api/campaigns/state POST body: the campaigns a device carries, by id. */
 export const campaignStateSchema = z.object({
   ids: z.array(z.string().uuid()).min(1).max(24),

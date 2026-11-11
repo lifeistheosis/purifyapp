@@ -5324,6 +5324,8 @@
   "campaigns.new.audience": "Who can see it",
   "campaigns.audience.everyone": "Everyone in Community",
   "campaigns.audience.note": "A campaign kept to a circle is seen by its members only, and is on no list.",
+  "campaigns.tellMe": "Tell me when there is an update",
+  "campaigns.tellMe.note": "A notice in the app, with no name in it. It stays off until you ask.",
   "campaigns.change": "Change the words",
   "campaigns.change.note": "You can change these until a moderator has read your campaign. After that, write an update, or end it and run it again.",
   "campaigns.change.saved": "Saved. A moderator will read it as it is now.",

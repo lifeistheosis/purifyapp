@@ -305,12 +305,14 @@ const THREADS = {
   },
 };
 /** The thread a page is handed: what this reader may do follows who they are, as the route decides it. */
-function threadFor(id, { mine = false, signedIn = true, commentsOpen = true } = {}) {
+function threadFor(id, { mine = false, signedIn = true, commentsOpen = true, tellMe } = {}) {
   const t = THREADS[id] ?? { updates: [], comments: [] };
   const running = CAMPAIGNS[id]?.status === "active";
   // Its creator's updates are their own words, as the route says of them.
   const updates = mine ? t.updates.map((u) => ({ ...u, mine: true })) : t.updates;
-  return { ...t, updates, commentsOpen, signedIn, canUpdate: running && mine, canComment: running && signedIn && commentsOpen };
+  // `tellMe`: what the route says only to a reader whose account carries the campaign, once the campaigns'
+  // notices are on (lib/campaigns/thread.ts): whether they asked to be told of its updates.
+  return { ...t, updates, commentsOpen, signedIn, canUpdate: running && mine, canComment: running && signedIn && commentsOpen, ...(tellMe === undefined || mine ? {} : { tellMe }) };
 }
 
 // "Prayed by many" (switched off on the server): an order for each span, and never a figure.
@@ -427,6 +429,8 @@ const seen = new Set();
 /** Every request a screen made of the server, for the walk to hold. */
 /** A waiting campaign's words as its creator last changed them, by id, for the page's read after a change. */
 const changedWords = new Map();
+/** Whether the reader asked to be told of updates, once they have ticked or unticked the line; null before. */
+let toldMe = null;
 let calls = [];
 /** And each one's address with its query, in order. */
 let asked = [];
@@ -469,9 +473,17 @@ async function answer(ctx, opts = {}) {
     // A reader's circles and the campaigns running in them: none, unless a picture or a flow puts the reader in two.
     if (p === "/api/campaigns/circles") return json(opts.circles ? { circles: [PARISH, HOUSEHOLD], campaigns: [CAMPAIGNS[THOMAS]] } : { circles: [], campaigns: [] });
     if (p === "/api/campaigns" && req.method() === "POST") return json({ ok: true, id: HELD, status: "held" });
+    // A reader's ask to be told of updates, kept on their own row; `tellFails`: the account could not keep it.
+    if (/^\/api\/campaigns\/[0-9a-f-]{36}\/join$/.test(p) && req.method() === "PATCH") {
+      if (opts.tellFails) return json({ error: "Couldn't keep that." }, 500);
+      toldMe = sent.tellMe === true;
+      return json({ ok: true, tellMe: toldMe });
+    }
     if (/^\/api\/campaigns\/[0-9a-f-]{36}\/(join|report)$/.test(p)) return json({ ok: true });
     const thread = /^\/api\/campaigns\/([0-9a-f-]{36})\/thread$/.exec(p);
-    if (thread && req.method() === "GET") return json(threadFor(thread[1], { mine: Boolean(opts.mine?.includes(thread[1])), signedIn: opts.signedIn !== false, commentsOpen: opts.commentsOpen !== false }));
+    if (thread && req.method() === "GET") {
+      return json(threadFor(thread[1], { mine: Boolean(opts.mine?.includes(thread[1])), signedIn: opts.signedIn !== false, commentsOpen: opts.commentsOpen !== false, tellMe: opts.tellMe === undefined ? undefined : (toldMe ?? opts.tellMe) }));
+    }
     if (thread && req.method() === "POST") {
       // As the route answers (lib/campaigns/thread.ts): words that may mean danger wait for a moderator, and their writer is told.
       const danger = /want to (?:live|die)|suicid/i.test(String(req.postDataJSON()?.body ?? ""));
@@ -552,7 +564,7 @@ async function whole(page, min = 844) {
   await page.setViewportSize({ width: WIDTH, height: Math.max(min, h) });
 }
 
-async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true, inbox, circles = false } = {}) {
+async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true, inbox, circles = false, tellMe } = {}) {
   if (WALK) return;
   if (ONLY && !ONLY.has(name.slice(0, 2))) return;
   const seed = {
@@ -566,7 +578,7 @@ async function shot(name, label, where, selector, { set = {}, prepare, signedIn 
   page.on("pageerror", (e) => errors.push(e.message));
   try {
     if (WIDTH !== 390) await page.setViewportSize({ width: WIDTH, height: 844 });
-    await answer(ctx, { mine, board, signedIn, parts, pictures, inbox, circles });
+    await answer(ctx, { mine, board, signedIn, parts, pictures, inbox, circles, tellMe });
     await go(page, where);
     await settle(page);
     if (prepare) await prepare(page);
@@ -1024,6 +1036,15 @@ await shot("35-campaign-place", "a campaign's page with its place beside who sta
   },
 });
 
+// 41 The Updates door for a reader whose account carries the campaign, once the notices are on: the line to tick.
+await shot("41-tell-me", "a campaign's updates, with the line a reader ticks to be told of one", `/campaigns/detail?id=${NICHOLAS}#updates`, "[data-campaign-page]", {
+  tellMe: false,
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaign-updates] [data-campaign-tell]", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
 // 39 Changing a waiting campaign's words: the sheet, with what was written.
 await shot("39-change-words", "a campaign that still waits: its creator changes its words", `/campaigns/detail?id=${HELD}`, "[role=dialog]:has([data-campaign-change])", {
   mine: [HELD],
@@ -1106,7 +1127,7 @@ async function pictureWalk(label, ...rest) {
   if (!FLOWS.length || FLOWS.some((f) => label.toLowerCase().includes(f))) console.log(`left  ${label}: needs an export cut with pictures (PICTURES_BUILD=1; see the header)`);
 }
 
-async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false, circles = false, holds, board, late = false } = {}) {
+async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false, circles = false, holds, board, late = false, tellMe, tellFails = false } = {}) {
   if (FLOWS.length && !FLOWS.some((f) => label.toLowerCase().includes(f))) return;
   const seed = {
     "purify.prayers.campaigns": JSON.stringify(CARRIED),
@@ -1119,13 +1140,14 @@ async function walk(label, where, run, { set = {}, signedIn = true, mine, closed
   calls = [];
   asked = [];
   changedWords.clear();
+  toldMe = null;
   let ok = true;
   let why = "";
   try {
     // With `holdOpen`, the website's answer to "are campaigns open for this reader" waits for the flow's own word.
     let letGo = () => {};
     const heldOpen = holdOpen ? { until: new Promise((done) => (letGo = done)) } : null;
-    await answer(ctx, { mine, closed, parts, pictures, heldOpen, circles, holds, board, late });
+    await answer(ctx, { mine, closed, parts, pictures, heldOpen, circles, holds, board, late, tellMe, tellFails });
     await go(page, where);
     await settle(page, 1800);
     try {
@@ -1481,6 +1503,47 @@ if (WALK) {
     const place = page.locator("[data-mod-campaign] [data-mod-campaign-place]");
     expectThat((await place.count()) === 1 && plain(await place.innerText()) === "Place: Novi Sad, Serbia", `the moderators' list says "${(await place.count()) ? plain(await place.innerText()) : "nothing"}"`);
   });
+
+  // The notices (1.9; the notes, section 34). The screen draws the line only where the server says it is this
+  // reader's to have, which it does only once the campaigns' notices are on (lib/campaigns/noticesOn.ts).
+  await walk("a notice of an update: as campaigns ship, the Updates door offers no line to ask on", `/campaigns/detail?id=${NICHOLAS}#updates`, async (page) => {
+    await page.waitForSelector("[data-campaign-updates]", { timeout: 15000 });
+    await settle(page, 900);
+    expectThat((await page.locator("[data-campaign-tell]").count()) === 0, "a line to ask on is drawn with the notices off");
+    expectThat(sentTo("PATCH", /\/join$/).length === 0, "something was asked of the account");
+  });
+
+  await walk("a notice of an update: off until a reader ticks the line, kept on their account when they do, and taken off when they untick it", `/campaigns/detail?id=${NICHOLAS}#updates`, async (page) => {
+    const line = page.locator("[data-campaign-updates] [data-campaign-tell]");
+    await line.waitFor({ timeout: 15000 });
+    const tick = line.locator("[role=checkbox]");
+    expectThat((await tick.getAttribute("aria-checked")) === "false", "the line is ticked before the reader asked");
+    expectThat((await line.innerText()).includes("Tell me when there is an update") && (await line.innerText()).includes("It stays off until you ask."), `the line reads "${(await line.innerText()).replace(/\n/g, " / ")}"`);
+    expectThat(sentTo("PATCH", /\/join$/).length === 0, "the account was asked before the reader was");
+    await tick.click();
+    await settle(page, 700);
+    expectThat((await tick.getAttribute("aria-checked")) === "true", "the tick did not move");
+    const asked = sentTo("PATCH", /\/join$/);
+    expectThat(asked.length === 1 && asked[0].path.includes(NICHOLAS) && asked[0].body.tellMe === true, `the account was sent ${JSON.stringify(asked.map((a) => a.body))}`);
+    await tick.click();
+    await settle(page, 700);
+    expectThat((await tick.getAttribute("aria-checked")) === "false", "the tick did not move back");
+    expectThat(sentTo("PATCH", /\/join$/).at(-1).body.tellMe === false, "taking it off was not sent");
+  }, { tellMe: false });
+
+  await walk("a notice of an update: a tick the account could not keep goes back, and says so", `/campaigns/detail?id=${NICHOLAS}#updates`, async (page) => {
+    const line = page.locator("[data-campaign-updates] [data-campaign-tell]");
+    await line.waitFor({ timeout: 15000 });
+    await line.locator("[role=checkbox]").click();
+    await line.locator("[role=alert]").waitFor({ timeout: 8000 });
+    expectThat((await line.locator("[role=checkbox]").getAttribute("aria-checked")) === "false", "the tick stayed on though nothing was kept");
+  }, { tellMe: false, tellFails: true });
+
+  await walk("a notice of an update: its creator is offered no line, whatever the notices are", `/campaigns/detail?id=${NICHOLAS}#updates`, async (page) => {
+    await page.waitForSelector("[data-campaign-updates]", { timeout: 15000 });
+    await settle(page, 900);
+    expectThat((await page.locator("[data-campaign-tell]").count()) === 0, "its creator is offered to be told of their own updates");
+  }, { mine: [NICHOLAS], tellMe: false });
 
   // Changing its words while it waits (1.9; the notes, section 33).
   await walk("changing its words: offered while a campaign waits for its first read; saved, the page shows the new words and says a moderator will read it as it is now", `/campaigns/detail?id=${HELD}`, async (page) => {

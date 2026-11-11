@@ -187,6 +187,17 @@ export async function keepJoin(id: string, places: readonly PrayPlace[], until: 
   }
 }
 
+/** A reader who carries a campaign asks to be told of its updates, or stops. True when the account kept it. */
+export async function setTellMe(id: string, tellMe: boolean): Promise<boolean> {
+  if (!campaignsInBuild()) return false;
+  try {
+    const res = await apiFetch(`/api/campaigns/${encodeURIComponent(id)}/join`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ tellMe }) });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 /** And take it off the account when the reader takes it out. Best effort, as above. */
 export async function dropJoin(id: string): Promise<void> {
   if (!campaignsInBuild()) return;
