@@ -36,6 +36,7 @@ import { Minus } from "@/components/ui/icons/Minus";
 import { Heading } from "@/components/ui/icons/Heading";
 import { Plus } from "@/components/ui/icons/Plus";
 import { Highlighter } from "@/components/ui/icons/Highlighter";
+import { Quill } from "@/components/ui/icons/Quill";
 import { Star } from "@/components/ui/icons/Star";
 import { highlightVars } from "@/lib/bible/highlightPalette";
 import { localBookNames, searchBible } from "@/lib/bible/books";
@@ -252,7 +253,26 @@ function TextBlock({
   );
 }
 
-/** Scripture as a card: the words from the app's own Bible, verbatim, and where they are. Never edited here. */
+/**
+ * What each block is from, in one line: its mark and its name. The mark is
+ * its tool's own glyph, so a reader tells the three apart at a glance: the
+ * Book for Scripture, the Quill for the Fathers, the speech mark for a quote
+ * of one's own. The line the Florilegium's gathered lines carry
+ * (components/florilegium/FlorilegiumDetail.tsx, ItemCard).
+ */
+const BLOCK_SOURCE = "inline-flex min-w-0 items-center gap-2 font-sans text-caption font-semibold text-paper/65";
+
+/**
+ * Scripture on the page: its place as its heading, which opens the passage at
+ * the verse, and under it the words from the app's own Bible, verbatim, in the
+ * size the app reads at. Never edited here.
+ *
+ * Until 2026-11-11 a verse, a quote of one's own and a quote from the library
+ * were three boxes alike, the verse's place a small line at its foot (build 93
+ * note 8, the owner: "I want all of them to actually be unique in their
+ * context and their use"). Now none is in a box and none stands beside a rule
+ * (CLAUDE.md, "No side stripes"): each is told by its mark and its own shape.
+ */
 function VerseCard({ index, block, label, noticed, onRemove }: { index: number; block: VerseCardBlock; label: string; noticed: boolean; onRemove: () => void }) {
   const { t } = useTranslate();
   const verses = Array.from({ length: block.to - block.from + 1 }, (_, k) => block.from + k);
@@ -261,12 +281,17 @@ function VerseCard({ index, block, label, noticed, onRemove }: { index: number; 
       data-page-block={index}
       data-page-verse=""
       data-page-noticed={noticed ? "" : undefined}
-      // Asked for a second time, the verse is not laid again: its card is
-      // brought into view and its edge lit for a moment (usePage, show).
-      className={cn("relative rounded-2xl border bg-paper/[0.04] py-3 pe-12 ps-4 motion-safe:transition-colors motion-safe:duration-500", noticed ? "border-paper/50" : "border-paper/10")}
+      // Asked for a second time, the verse is not laid again: it is brought
+      // into view and lit for a moment (usePage, show).
+      className={cn("relative -mx-2 rounded-2xl pb-1.5 pe-12 ps-2 motion-safe:transition-colors motion-safe:duration-500", noticed ? "bg-paper/[0.09]" : "bg-paper/0")}
     >
+      <figcaption>
+        <Link href={`/bible/${block.book}/${block.chapter}#v${block.from}`} data-page-verse-place="" className={cn(BLOCK_SOURCE, "min-h-11 hover:text-paper")}>
+          <Book size={15} aria-hidden className="shrink-0 text-paper/55" />
+          <span className="min-w-0">{label}</span>
+        </Link>
+      </figcaption>
       <VerseCardWords block={block} verses={verses} />
-      <figcaption className="mt-1.5 font-sans text-caption text-paper/70">{label}</figcaption>
       <RemoveButton onClick={onRemove} label={t("common.remove")} />
     </figure>
   );
@@ -284,13 +309,13 @@ function VerseCardWords({ block, verses }: { block: VerseCardBlock; verses: numb
   const states = verses.map((v, i) => ({ v, words: words[i] ?? { text: null, status: "loading" as const } }));
   if (states.every((s) => s.words.status === "missing")) {
     return (
-      <Link href={`/bible/${block.book}/${block.chapter}#v${block.from}`} className="inline-flex min-h-11 items-center font-sans text-detail text-paper/70 underline underline-offset-4 hover:text-paper">
+      <Link href={`/bible/${block.book}/${block.chapter}#v${block.from}`} className="-mt-1.5 inline-flex min-h-11 items-center font-sans text-detail text-paper/70 underline underline-offset-4 hover:text-paper">
         {t("saved.openToRead")}
       </Link>
     );
   }
   return (
-    <blockquote dir="auto" className="font-serif text-body leading-[1.65] text-paper/90">
+    <blockquote dir="auto" className="font-serif text-body leading-[1.7] text-paper/90">
       {states.map(({ v, words }) =>
         words.text ? (
           <span key={v}>
@@ -307,22 +332,24 @@ function VerseCardWords({ block, verses }: { block: VerseCardBlock; verses: numb
 
 /**
  * A quote from Purify's library (Quote in journal): the words as the page has
- * them, never edited here as the source's; the page they are from; the
- * library's mark, which only these wear; and the way back to the page.
+ * them, never edited here as the source's; then the library's mark, which
+ * only these wear, with the page they are from as the way back to it. The
+ * shape a Father's line has in the Florilegium.
  */
 function LibraryCard({ index, block, onRemove }: { index: number; block: Extract<PageBlock, { type: "library" }>; onRemove: () => void }) {
   const { t } = useTranslate();
   return (
-    <figure data-page-block={index} data-page-library="" className="relative rounded-2xl border border-paper/10 bg-paper/[0.04] py-3 pe-12 ps-4">
-      <blockquote dir="auto" className="whitespace-pre-line font-serif text-body leading-[1.65] text-paper/90">{block.text}</blockquote>
-      <figcaption className="mt-1.5 flex min-w-0 items-center gap-3 font-sans text-caption text-paper/70">
-        <span className="min-w-0 flex-1">
-          {block.cite ? <span className="block">{block.cite}</span> : null}
-          <span className="block">{t("journal.page.fromLibrary")}</span>
-        </span>
-        <Link href={block.href} className="inline-flex min-h-11 shrink-0 items-center px-3 font-semibold text-paper/75 underline underline-offset-4 hover:text-paper">
-          {t("journal.composer.open")}
+    <figure data-page-block={index} data-page-library="" className="relative pe-12">
+      <blockquote dir="auto" className="whitespace-pre-line font-serif text-body leading-[1.7] text-paper/90">{block.text}</blockquote>
+      <figcaption>
+        <Link href={block.href} data-page-library-source="" className={cn(BLOCK_SOURCE, "min-h-11 hover:text-paper")}>
+          <Quill size={15} aria-hidden className="shrink-0 text-paper/55" />
+          <span dir="auto" className="min-w-0">
+            {block.cite || t("journal.page.fromLibrary")}
+          </span>
         </Link>
+        {/* Under a source's name, what kind of quote this is, where the name begins. */}
+        {block.cite ? <p className="-mt-2 pb-1 ps-[23px] font-sans text-caption text-paper/60">{t("journal.page.fromLibrary")}</p> : null}
       </figcaption>
       <RemoveButton onClick={onRemove} label={t("common.remove")} />
     </figure>
@@ -354,7 +381,7 @@ function QuoteCard({
     el.style.height = `${el.scrollHeight}px`;
   }, [text]);
   return (
-    <figure data-page-block={index} data-page-quote="" className="relative rounded-2xl border border-paper/10 py-3 pe-12 ps-4">
+    <figure data-page-block={index} data-page-quote="" className="relative pe-12">
       <label className="block">
         <span className="sr-only">{t("journal.page.quotePlaceholder")}</span>
         <textarea dir="auto"
@@ -363,10 +390,12 @@ function QuoteCard({
           rows={1}
           onChange={(e) => onText(e.target.value)}
           placeholder={t("journal.page.quotePlaceholder")}
-          className="block min-h-11 w-full resize-none overflow-hidden bg-transparent font-serif text-body italic leading-[1.65] text-paper placeholder:text-paper/55 focus:outline-none"
+          className="block min-h-11 w-full resize-none overflow-hidden bg-transparent font-serif text-body italic leading-[1.7] text-paper placeholder:text-paper/55 focus:outline-none"
         />
       </label>
-      <label className="-mt-2 block">
+      {/* Who said it, behind the speech mark: the writer's own word for it, typed here. */}
+      <label className="-mt-1 flex items-center gap-2">
+        <ChatBubble size={15} aria-hidden className="shrink-0 text-paper/55" />
         <span className="sr-only">{t("journal.page.quoteBy")}</span>
         <input dir="auto"
           type="text"
@@ -374,7 +403,7 @@ function QuoteCard({
           maxLength={BY_MAX}
           onChange={(e) => onBy(e.target.value)}
           placeholder={t("journal.page.quoteBy")}
-          className="block h-11 w-full bg-transparent font-sans text-[16px] text-paper/85 placeholder:text-paper/55 focus:outline-none"
+          className="block h-11 min-w-0 flex-1 bg-transparent font-sans text-[16px] text-paper/85 placeholder:text-paper/55 focus:outline-none"
         />
       </label>
       <RemoveButton onClick={onRemove} label={t("common.remove")} />
