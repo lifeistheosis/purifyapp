@@ -43,11 +43,12 @@ const VAULT: Record<string, Record<string, number>> = {
 describe("the heritage list", () => {
   const note = read("docs/1.9-build/notes/pictures-heritage-law.md");
 
-  it("names each picture as the note names it, at the place the note gives", () => {
+  it("names each picture as the note names it, or says why one the note does not name is there", () => {
     for (const picture of HERITAGE_PICTURES) {
-      expect(note, picture.named).toContain(picture.named);
+      if (picture.why) expect(picture.why.length, picture.named).toBeGreaterThan(60);
+      else expect(note, picture.named).toContain(picture.named);
     }
-    expect(HERITAGE_PICTURES.length).toBeGreaterThanOrEqual(31);
+    expect(HERITAGE_PICTURES.filter((p) => !p.why).length).toBeGreaterThanOrEqual(31);
     for (const place of ["Dionysiou", "Stavronikita", "Protaton", "Hosios Loukas", "Nea Moni", "Loutraki", "Veria", "Loverdos", "Heraklion", "San Vitale", "Sant'Apollinare Nuovo", "Sancta Sanctorum"]) {
       expect(note, place).toContain(place);
       expect(HERITAGE_PICTURES.some((p) => p.place.includes(place)), place).toBe(true);

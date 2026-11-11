@@ -13,15 +13,19 @@
 // where the same work is also a book's cover, a read-aloud cover or History's
 // picture, those files too. The note's count is 31; it also names the
 // reading room's Joshua cover and History's picture for St Justin's Apologies
-// beside them, and both are here.
+// beside them, and both are here. Two more the note does not name were added
+// at the arbiter's word of 2026-11-11 ("the careful way costs nothing"), and
+// each of those rows says why it is there.
 
 export type HeritagePicture = {
-  /** The picture as the note names it, word for word. */
+  /** The picture as the note names it, word for word; for one the note does not name, what it is. */
   named: string;
   /** Where the work is held. */
   place: string;
   /** Every file under public/ that shows it. */
   files: readonly string[];
+  /** For a picture the note does not name: why it is on the list. */
+  why?: string;
 };
 
 const DIONYSIOU = "Dionysiou Monastery, Mount Athos";
@@ -78,6 +82,19 @@ export const HERITAGE_PICTURES: readonly HeritagePicture[] = [
   { named: "the Emperor Justinian", place: "San Vitale, Ravenna", files: ["saints/icons/justinian-the-great.v2.jpg"] },
   { named: "History's picture for the martyrdom of St Polycarp", place: "Sant'Apollinare Nuovo, Ravenna", files: ["history/media/martyrdom-of-polycarp.v1.jpg"] },
   { named: "St Augustine", place: "The Sancta Sanctorum, the Lateran, Rome", files: ["saints/icons/augustine-of-hippo.v2.jpg"] },
+  // Beyond the note.
+  {
+    named: "St Antony the Great, a Cretan icon of the 16th century",
+    place: DIONYSIOU,
+    files: ["covers/feelings/despondency.v1.jpg"],
+    why: "Not in the note's first pass, which it calls a floor and not a full count; added at the arbiter's word of 2026-11-11 because the reading room's cover for Despondency is this icon, held at Dionysiou on Mount Athos (lib/reading/authorCovers.ts).",
+  },
+  {
+    named: "The First Ecumenical Council, by Michael Damaskinos, 1591",
+    place: "The collection of St Catherine, Heraklion (from the Vrontisi monastery)",
+    files: ["covers/councils/first-nicaea.v1.jpg", "history/media/first-council-of-nicaea.v1.jpg"],
+    why: "Not in the note's first pass; added at the arbiter's word of 2026-11-11 because the First Council's cover and History's picture of the council are this icon, held in the Heraklion collection where the note puts St Gregory the Dialogist's (lib/reading/authorCovers.ts, lib/history/events.ts).",
+  },
 ];
 
 const stemOf = (file: string) => file.slice(file.lastIndexOf("/") + 1).replace(/\.(?:jpe?g|png|webp|avif)$/, "");

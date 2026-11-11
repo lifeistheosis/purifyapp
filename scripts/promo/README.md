@@ -48,9 +48,10 @@ stills, the clips and the reels.
   glyphs, the icon and the shape (`scripts/lib/four-point-star.mjs`
   measures a drawn one).
 - **Not the pictures on the heritage list.** None of the 31 pictures in
-  `docs/1.9-build/notes/pictures-heritage-law.md` (frescoes, mosaics and
-  icons held in Greece and Italy: Mount Athos, Hosios Loukas, Nea Moni,
-  Ravenna and the rest) goes into a frame, a card, a video, a post, a store
+  `docs/1.9-build/notes/pictures-heritage-law.md`, nor the two covers the
+  arbiter added beside them (frescoes, mosaics and icons held in Greece and
+  Italy: Mount Athos, Hosios Loukas, Nea Moni, Heraklion, Ravenna and the
+  rest), goes into a frame, a card, a video, a post, a store
   picture or merchandise, and neither does a screen of the app that shows
   one, until he lifts it (his word of 2026-11-11 on that note: "let's use all
   the photos", kept in the app and never in ads). Greek and Italian law can
