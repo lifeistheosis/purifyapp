@@ -2287,6 +2287,13 @@ html[data-reading-mode="parchment"] .rule-head-title,
 html[data-reading-mode="parchment"] .rule-head-line {
  text-shadow: none;
 }
+/* The line under the name, on Light: at the 75 percent it is written in it
+   read 4.49:1 over the morning's icon (the gate's third run, 2026-11-11);
+   at 80 it is about 4.9:1. The line alone: Pray my rule's length beside the
+   button is deeper in the head and keeps its own ink. */
+html[data-reading-mode="parchment"] .rule-head-words > .rule-head-line {
+ color: color-mix(in srgb, var(--color-paper) 80%, transparent);
+}
 html[data-reading-mode="parchment"] .rule-pray,
 html[data-reading-mode="parchment"] .rule-node[data-lit],
 html[data-reading-mode="parchment"] .rule-tick[data-on] {
@@ -2376,6 +2383,14 @@ html[data-reading-mode="parchment"] .tile-shade {
 html[data-reading-mode="parchment"] .tile-name,
 html[data-reading-mode="parchment"] .tile-line {
  text-shadow: 0 0 8px color-mix(in srgb, var(--color-night) 90%, transparent);
+}
+/* Candlelight's ink is the dimmest of the dark palettes. A tile's line, at
+   the 80 percent it is written in, read 4.28:1 on its picture where it runs
+   to two lines (Your rule's tile on Prayers, the gate's third run,
+   2026-11-11). There it is drawn at 88, about 4.9:1. A lit tile's line is
+   the whole ink already and is not touched. */
+html[data-reading-mode="candlelight"] :not([data-lit]) > .tile-line {
+ color: color-mix(in srgb, var(--color-paper) 88%, transparent);
 }
 /* The tile that is now, the Hours in the Hour the clock is in: a ring of the
    ink and a soft white glow; on Parchment the ring alone, and the paper's
@@ -8000,9 +8015,17 @@ html[data-reading-mode="parchment"] .path-node[data-state="next"] {
   height: calc(3rem + var(--inset-top) + 300px);
  }
 }
+/* The picture is whole over its upper third and nearly gone where the
+   Father's words begin (120px above the cover's foot: 65 percent down a
+   phone's cover, 60 a computer's), so the words stand on the ground and not
+   on the picture. It was 62 percent strong under their first line, and the
+   words measured on their pixels fell short on every one of the fourteen
+   studies (the gate's third run, 2026-11-11: 3.15:1 at the least on Dark,
+   2.21 on Candlelight, 1.40 on Light). Now it is 20 percent there, and none
+   is under 4.5:1 on the five palettes or the seventeen looks. */
 .study-cover-picture {
- -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 40%, rgb(0 0 0 / 0.55) 70%, transparent 100%);
- mask-image: linear-gradient(to bottom, #000 0, #000 40%, rgb(0 0 0 / 0.55) 70%, transparent 100%);
+ -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 34%, rgb(0 0 0 / 0.28) 58%, transparent 84%);
+ mask-image: linear-gradient(to bottom, #000 0, #000 34%, rgb(0 0 0 / 0.28) 58%, transparent 84%);
 }
 .study-cover-words {
  margin-top: -120px;
@@ -8060,6 +8083,21 @@ html[data-reading-mode="parchment"] .path-node[data-state="next"] {
 }
 html[data-reading-mode="parchment"] .reader-light {
  opacity: 0.16;
+}
+/* The part's own heading stands on that light, which is lighter than the
+   page. At the faint ink it is written in (58 percent) it read 3.99:1 at
+   the least on Candlelight, 4.23 on Monastery, 4.19 on Councils and 4.15 on
+   Cappadocian, on nine of the fourteen studies (the gate's third run,
+   2026-11-11). On those four it is drawn a step stronger, about 4.8:1 and
+   5.0 where it was least. Every other palette keeps the ink as written:
+   it passes there. */
+html[data-reading-mode="candlelight"] .reader-part-heading {
+ color: color-mix(in oklab, var(--color-paper) 68%, transparent);
+}
+html[data-reading-mode="monastery"] .reader-part-heading,
+html[data-reading-mode="councils"] .reader-part-heading,
+html[data-reading-mode="cappadocian"] .reader-part-heading {
+ color: color-mix(in oklab, var(--color-paper) 66%, transparent);
 }
 .part-segment {
  display: block;

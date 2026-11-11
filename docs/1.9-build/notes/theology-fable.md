@@ -1194,3 +1194,45 @@ stands there; not a fault". I read that message after the push, and took
 them out again in the next commit. The rules and their test are in
 26764883 for whoever wants them after 1.9: Dark's faint shares at 52
 percent on a graphite card (4.65), the three's at 60 (4.88, 4.77, 4.76).
+
+## Words over a picture: four more from the third run (2026-11-11)
+
+The arbiter's word of 17:54, from Fable Themes' sweep: the last gate fails
+on this chat's ground. The checker now measures words that stand on a
+picture by the pixels under their letters, and four places fell short. Each
+is mended by the least that passes on the five palettes and the seventeen
+looks, on one export, measured on the screens touched and no others.
+`lib/ui/__tests__/gateRunThreePictures.test.ts` holds all four; six of its
+ten cases fail on the old code, at least one for each place.
+
+1. **A study's cover** (`.study-cover-picture`). The Father's words begin
+   120px above the cover's foot, and the picture was 62 percent strong under
+   their first line. Every one of the fourteen studies fell short on some
+   palette, 44 lines in all: 1.40:1 at the least on Light, 2.21 on
+   Candlelight, 2.64 on Monastery, 3.15 on Dark. The picture now fades into
+   the page sooner (whole to a third of the way down, 20 percent strong
+   where the words begin), so the words stand on the ground and his face is
+   whole above them. Nothing moves. Now: none short on the fourteen covers.
+2. **A study's reader** (`.reader-part-heading`). The part's own heading
+   stands on the subject's grey light, which is lighter than the page. At
+   the faint ink it is written in it read 3.99:1 at the least on
+   Candlelight, 4.23 on Monastery, 4.19 on Councils and 4.15 on
+   Cappadocian, on nine of the fourteen studies. On those four palettes it
+   is drawn a step stronger (68 percent on Candlelight, 66 on the three);
+   every other palette keeps the ink as written. Now: none short on the
+   fourteen readers, on seven palettes.
+3. **A picture tile's line on Candlelight** (`.tile-line`). Your rule's tile
+   on Prayers, where the line runs to two: 4.28:1 at the 80 percent it is
+   written in. On Candlelight a tile that is not lit draws its line at 88.
+4. **Your rule's head on Light** (`.rule-head-words > .rule-head-line`). The
+   line under the name read 4.49:1 over the morning's icon at its 75
+   percent; on Light it is drawn at 80. The evening's icon passed already.
+
+Not mine and not touched, seen on the same screen: on Prayers the checker
+still names "Hymns to listen to and pray with" on Light (4.40), "Sung
+prayer" on Candlelight (4.10), and the lit Hours tile's "Now" and the hour's
+name on Light and the nine light looks at 1.00:1, which is the ink's own
+colour and looks more like the measure than like the screen.
+
+The councils' filmstrip that the same sweep measured (21 words, 2.05:1 at
+the least on Candlelight) is the film mended in 7c8c0a49, above.

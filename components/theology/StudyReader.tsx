@@ -159,7 +159,8 @@ export function StudyReader({
                 id={`study-part-${n}`}
                 lang={heading ? "en" : undefined}
                 dir={textDir(heading ? "en" : undefined)}
-                className="font-serif text-[13.5px] italic leading-snug text-paper/58"
+                // On the subject's light: a step stronger on the dimmest palettes (globals.css, .reader-part-heading).
+                className="reader-part-heading font-serif text-[13.5px] italic leading-snug text-paper/58"
               >
                 {heading || t("paths.part", { n, total })}
               </h2>
