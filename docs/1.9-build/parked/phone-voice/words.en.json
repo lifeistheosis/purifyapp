@@ -1,0 +1,22 @@
+{
+  "settings.voice": "The on-phone voice",
+  "settings.voice.hint": "A voice that reads on your phone, for texts that have no recording yet.",
+  "settings.voice.engine": "The voice",
+  "settings.voice.about": "Not on this phone. About {size}, once. Nothing you read is sent anywhere.",
+  "settings.voice.download": "Download",
+  "settings.voice.fetching": "Downloading. {done} of {total}",
+  "settings.voice.waitingWifi": "Waiting for Wi-Fi",
+  "settings.voice.waitingSignal": "Waiting for a signal",
+  "settings.voice.ready": "On this phone. {size}",
+  "settings.voice.failed": "It could not be downloaded. Try again when you have a connection.",
+  "settings.voice.removeAria": "Remove the on-phone voice from this device",
+  "settings.voice.choose": "Which voice reads",
+  "settings.voice.freeVoice": "Free",
+  "settings.voice.plusVoice": "With Purify Plus",
+  "settings.voice.hear": "Hear it",
+  "settings.voice.stop": "Stop",
+  "settings.voice.hearAria": "Hear {name}",
+  "settings.voice.stopAria": "Stop {name}",
+  "settings.voice.useAria": "Read in the voice {name}",
+  "settings.voice.name.af_heart": "Heart"
+}

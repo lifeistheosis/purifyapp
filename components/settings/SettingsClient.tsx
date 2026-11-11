@@ -134,7 +134,6 @@ import { FirstFocus, useOnboardedAgain } from "./FirstFocus";
 import { ButtonRow, LinkRow, Plate, Row, Section, Switch, Track } from "./LitPanel";
 import { PatronRow } from "./PatronRow";
 import { StorageSection } from "./StorageSection";
-import { PHONE_VOICE_PREVIEW, VoicePreview } from "./VoicePreview";
 import { ReaderSizeRow } from "./ReaderSize";
 import { ReadingModePages } from "./ReadingModePages";
 import { AlphaGlyph, FacesGlyph, GlobeGlyph } from "./glyphs";
@@ -759,8 +758,6 @@ function Body() {
       <DataSection signedIn={signedIn} />
       {/* What is kept on this phone, its size and Remove (1.9): the apps only. */}
       <StorageSection />
-      {/* The on-phone voice (1.9): shown only in the build its stills are made from, never in a release. */}
-      {PHONE_VOICE_PREVIEW ? <VoicePreview /> : null}
       <AboutSection developer={reader.known && isDeveloperEmail(reader.email ?? "")} />
       {signedIn ? <SignOutSection /> : null}
     </>

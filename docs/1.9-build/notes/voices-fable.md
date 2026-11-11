@@ -751,3 +751,9 @@ reach it (Settings draws it only when `PHONE_VOICE_PREVIEW` is true, and no
 release sets it; `lib/listen/__tests__/phoneVoiceDownload.test.ts` holds
 both). It fetches nothing unless drawn and tapped. If he would rather it were
 not in the 1.9 apps at all, the mount is one line to take out.
+
+**Taken out (the arbiter, 14:31 UTC).** The mount is gone from Settings, and
+the section, its preview, its stills script and its twenty English words are
+parked in `docs/1.9-build/parked/phone-voice/`, where no build reads them. A
+test holds that nothing in `app/` or `components/` but the website's own
+route names any of it, and that the catalogue has no word of it.
