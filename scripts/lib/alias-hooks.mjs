@@ -24,7 +24,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const ROOT = path.resolve(import.meta.dirname, "..", "..");
 const CANDIDATES = ["", ".ts", ".tsx", ".mjs", ".js", "/index.ts", "/index.tsx"];
@@ -35,9 +35,15 @@ export async function resolve(specifier, context, nextResolve) {
   // the Day, lib/today/verseOfDay.ts) is handed an empty module for it, the
   // same stand-in vitest.config.ts gives the tests.
   if (specifier === "server-only") return { url: "data:text/javascript,", shortCircuit: true };
-  if (!specifier.startsWith("@/")) return nextResolve(specifier, context);
+  // An app module's own neighbours, written as TypeScript writes them, with
+  // no extension ("./events" from lib/history/load.ts): the same candidates,
+  // beside the module that asks. Only for a file of this repository that is
+  // no package's, and only when the path as written is not a file already.
+  const relative = /^\.\.?\//.test(specifier) && context.parentURL?.startsWith("file:") && !context.parentURL.includes("/node_modules/");
+  if (!specifier.startsWith("@/") && !relative) return nextResolve(specifier, context);
 
-  const base = path.join(ROOT, specifier.slice(2));
+  const base = relative ? path.resolve(path.dirname(fileURLToPath(context.parentURL)), specifier) : path.join(ROOT, specifier.slice(2));
+  if (relative && !base.startsWith(ROOT + path.sep)) return nextResolve(specifier, context);
   for (const ext of CANDIDATES) {
     const candidate = base + ext;
     if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {

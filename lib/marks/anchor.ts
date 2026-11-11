@@ -101,6 +101,21 @@ function sentenceEnds(text: string): number[] {
   return ends;
 }
 
+/** Every sentence of a text, by where it starts and ends, the space between them left out. */
+export function sentenceSpans(text: string): Span[] {
+  const out: Span[] = [];
+  let from = 0;
+  for (const end of sentenceEnds(text)) {
+    let s = from;
+    let e = end;
+    while (s < e && /\s/.test(text[s])) s += 1;
+    while (e > s && /\s/.test(text[e - 1])) e -= 1;
+    if (e > s) out.push({ s, e });
+    from = end;
+  }
+  return out;
+}
+
 /** The whole sentence, or sentences, a span stands in. */
 export function sentenceAround(text: string, s: number, e: number): Span {
   const ends = sentenceEnds(text);

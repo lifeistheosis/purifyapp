@@ -163,3 +163,6 @@ public/audio/read/**/*.mp3
 # timing files and live.json stay here. The Anthem's three, from 1.7, stay.
 public/audio/chants/**/*.mp3
 !public/audio/chants/prayer-rope-anthem/*.mp3
+
+# What his PC reads aloud, written fresh by scripts/listen-batches.mjs
+/listen-batches/
