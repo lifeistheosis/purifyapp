@@ -77,7 +77,7 @@ describe("browser writes to profiles", () => {
 
   it("finds the writes the app is known to make (the scan works)", () => {
     const seen = new Set(writes.flatMap((w) => w.columns));
-    for (const col of ["display_name", "preferred_language", "focus", "depth"]) expect(seen, col).toContain(col);
+    for (const col of ["display_name", "preferred_language", "focus"]) expect(seen, col).toContain(col);
   });
 
   it("every column the browser writes is granted", () => {

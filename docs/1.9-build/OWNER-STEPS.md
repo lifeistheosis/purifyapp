@@ -1265,6 +1265,15 @@ SQL (above).
   2026-11-11 by your "yes these are all fine", answering "yes care SQL".
   It adds one kind of notice and changes no row. In `supabase/migrations/`
   as `20261111023026_care_note.sql`, after the removal notice's.
+- Your faith answer stays on your phone: the server keeps no answer to "How
+  familiar are you with Orthodox Christianity?", whatever an older app
+  sends, and the answers it kept are cleared. Signed 2026-11-11 by your
+  "yes privacy and phone voice in v1.9", answering call 32. In
+  `supabase/migrations/` as `20261111133008_profiles_keep_no_depth.sql`.
+- The prayer requests written before 1.9 are cleared when 1.9 goes live,
+  with the moderators' copies of their words and who prayed for them.
+  Signed by the same yes. In `supabase/migrations/` as
+  `20261111133009_prayer_requests_cleared.sql`.
 
 Do not run any of these by hand: the push runs them.
 
@@ -1324,7 +1333,8 @@ before any phone asks it which version to show.
 
 ### R1. Two SQL pastes, just before the push
 
-These two are the only files you run by hand, and only at this moment. In
+These two are the only files you run by hand before the push, and only at
+this moment (R2c has one more, after it). In
 Supabase, first check the project at the top is the live one: its address
 holds `avbqyvjgcrucjwevwixt`.
 
@@ -1391,6 +1401,32 @@ Done: the card says "Terms <today>: N sent", and both test messages are in
 Messages.
 
 Send back: "R2b sent", or what went wrong.
+
+### R2c. Take the faith answers off the accounts (3 minutes, after R2; again in three weeks)
+
+Your yes to call 32. The welcome answers about a reader's faith were kept in
+each account's sign-in data. 1.9 keeps them on the phone only, and this
+takes off the copies already there. Nothing else in an account changes.
+Supabase does not let the push do it, so you paste it.
+
+1. In Supabase, check the project at the top is the live one: its address
+   holds `avbqyvjgcrucjwevwixt`.
+2. **SQL Editor**, **New query**.
+3. Open `docs/1.9-build/sql/faith-answers-off-accounts.sql` on GitHub on the
+   branch `ccr-07896cf2-bo0afd` (after the push, on `main`), click **Raw**,
+   select all, copy, and paste it.
+4. Click **Run**. It says **UPDATE** and a number: how many accounts held
+   an answer. Any number is right, 0 too.
+5. purifyapp.net/admin, **Calendar**, **Add**. In "What has to happen" write
+   "Run the faith answers SQL again (R2c)". Set the date three weeks from
+   today. Click **Add it**.
+6. On that day, do steps 1 to 4 again. It should say **UPDATE 0**, or a
+   small number if an older app wrote an answer meanwhile. Mark the task
+   done.
+
+If it goes red: stop, change nothing else, send the arbiter the red message.
+
+Send back: "R2c UPDATE" and the number, and the same three weeks later.
 
 ### R3. Read the database check
 

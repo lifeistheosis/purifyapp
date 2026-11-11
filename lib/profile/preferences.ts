@@ -27,15 +27,7 @@
 // overwritten by an older answer from another one. That is the same rule
 // lib/prayers/sync.ts uses for intentions, for the same reason.
 
-import {
-  fillSpaceFromAccount,
-  readDepth,
-  readFocus,
-  writeDepth,
-  writeFocus,
-  type Depth,
-  type Focus,
-} from "@/lib/onboarding/state";
+import { fillSpaceFromAccount, readFocus, writeFocus, type Focus } from "@/lib/onboarding/state";
 import { isTesting } from "@/lib/onboarding/testing";
 import { createClient } from "@/lib/supabase/client";
 
@@ -44,16 +36,21 @@ import { createClient } from "@/lib/supabase/client";
  * here together with its local reader and writer. Adding a column to the
  * table without adding it here is how the calendar pair became dead schema.
  */
-const PROFILE_PREFS = ["focus", "depth"] as const;
+// Focus alone. Depth ("inquirer" or "faithful", from "How familiar are you
+// with Orthodox Christianity?") is a statement of the reader's faith, which
+// the law treats as sensitive and nobody was asked to keep beside their
+// email; it stays on the device (his word, 2026-11-11), and the server keeps
+// none, whatever an older build sends
+// (supabase/migrations/<stamp>_profiles_keep_no_depth.sql).
+const PROFILE_PREFS = ["focus"] as const;
 
 type ProfilePrefsRow = {
   focus: Focus[] | null;
-  depth: Depth | null;
 };
 
 function localSnapshot(): ProfilePrefsRow {
   const focus = readFocus();
-  return { focus: focus.length > 0 ? focus : null, depth: readDepth() };
+  return { focus: focus.length > 0 ? focus : null };
 }
 
 /**
@@ -74,7 +71,6 @@ export async function pushProfilePrefs(): Promise<void> {
     const local = localSnapshot();
     const patch: Partial<ProfilePrefsRow> = {};
     if (local.focus) patch.focus = local.focus;
-    if (local.depth) patch.depth = local.depth;
     if (Object.keys(patch).length === 0) return;
 
     await supa.from("profiles").update(patch).eq("id", user.id);
@@ -116,9 +112,6 @@ export async function pullProfilePrefs(): Promise<void> {
 
     if (!local.focus && Array.isArray(row.focus) && row.focus.length > 0) {
       writeFocus(row.focus);
-    }
-    if (!local.depth && row.depth) {
-      writeDepth(row.depth);
     }
   } catch {
     /* ignore */
