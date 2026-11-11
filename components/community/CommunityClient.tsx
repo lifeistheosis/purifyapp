@@ -1578,7 +1578,14 @@ function PostCardInner({
         // content-visibility: a card off screen is not laid out or painted
         // until it comes near, which is most of what scrolling a long feed
         // costs. The intrinsic size keeps the scrollbar honest meanwhile.
-        "community-post -mx-3 scroll-mt-24 rounded-2xl px-3 py-4 [contain-intrinsic-size:auto_320px] [content-visibility:auto]",
+        //
+        // Only where the browser holds the screen (1.9, the arbiter's word of
+        // 2026-11-11; app/globals.css, `.cv-card`, has the measure). A post is
+        // rarely the 320px it is given, so one that is drawn above a reader
+        // who is scrolling up changes size, and a browser that does not
+        // anchor its scroll lets the screen jump by the difference. There
+        // every post is drawn.
+        "community-post -mx-3 scroll-mt-24 rounded-2xl px-3 py-4 [contain-intrinsic-size:auto_320px] supports-[overflow-anchor:auto]:[content-visibility:auto]",
         lit === "post" && "notify-lit",
       )}
     >

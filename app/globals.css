@@ -9351,12 +9351,20 @@ html.is-native .event-thread {
 /* Windowed rendering without a virtualization dependency: off-screen rows
    skip layout and paint but keep their DOM (anchors, find-in-page and the
    scroll restore keep working). The placeholder is a row's height: a date
-   line, a title of one or two lines and a two-line preview (1.7). */
+   line, a title of one or two lines and a two-line preview (1.7).
+
+   Windowed only where the browser holds the screen (1.9, the arbiter's word
+   of 2026-11-11; the saints' list below says why, `.cv-card`). Elsewhere all
+   forty rows are drawn, which measured no slower to open. */
 .history-cv {
- content-visibility: auto;
  contain-intrinsic-size: auto 128px;
  /* A jump to a row lands it under the pinned era name (about 3.1rem). */
  scroll-margin-top: calc(var(--history-sticky-top) + 3.25rem);
+}
+@supports (overflow-anchor: auto) {
+ .history-cv {
+  content-visibility: auto;
+ }
 }
 /* Back to the timeline (lib/history/scroll.ts, restorePosition): every row
    is drawn at its real height while the reader's place is put back, so the
@@ -9435,10 +9443,33 @@ html[data-history-whole] .history-cv {
    names' and the cards' of 2026-11-11, in English: a card redrawn, or a
    hundred saints more, and they are measured again. The export walk's
    section 76 measures them on every export and fails past 5%;
-   lib/saints/__tests__/cardRoom.test.ts holds the steps to the measure. */
+   lib/saints/__tests__/cardRoom.test.ts holds the steps to the measure.
+
+   And the cards are windowed only where the browser holds the screen (1.9,
+   the arbiter's word of 2026-11-11: "Window the cards only where the browser
+   anchors the screen ... so a browser without anchoring (Safari, as far as
+   we know) draws every card and nothing above can change size"). A card is
+   not the mean: at 320 wide they run from 257px to 442px. A reader whom Back
+   has returned deep into the list has every card above still undrawn, and
+   as they scroll up each one that draws in changes by its own difference
+   from the room it was given. A browser that anchors its scroll moves the
+   page by as much and the screen stays still: measured, one step in 500
+   moved it. One that does not lets the screen jump: with anchoring turned
+   off, 55 of 150 steps up moved the screen more than 2px, up to 83px in a
+   step. With every card drawn and anchoring off, none of 500 did. So the
+   question asked of the browser is whether it anchors (`overflow-anchor`),
+   and where it does not every card is drawn. That costs the list about a
+   tenth of a second to open (298ms for 194 at full speed, 1,256ms for 747
+   on a processor slowed four times) and 15 to 30 MB; the pictures are lazy
+   either way. lib/ui/__tests__/windowedLists.test.ts holds every list that
+   windows its rows to the same question. */
 .cv-card {
- content-visibility: auto;
  contain-intrinsic-size: auto 310px;
+}
+@supports (overflow-anchor: auto) {
+ .cv-card {
+  content-visibility: auto;
+ }
 }
 @media (min-width: 335px) { .cv-card { contain-intrinsic-size: auto 293px; } }
 @media (min-width: 355px) { .cv-card { contain-intrinsic-size: auto 280px; } }

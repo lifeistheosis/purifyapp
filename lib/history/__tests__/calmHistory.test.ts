@@ -177,7 +177,9 @@ describe("the timeline", () => {
     // that painted Back's row 145px low for a frame.
     const css = read("app/globals.css");
     expect(css).toMatch(/\nhtml\[data-history-whole\] \.history-cv \{\n content-visibility: visible;\n\}/);
-    expect(css).toMatch(/\.history-cv \{\n content-visibility: auto;\n contain-intrinsic-size: auto 128px;/);
+    // Windowed only where the browser holds the screen (1.9; lib/ui/__tests__/windowedLists.test.ts).
+    expect(css).toMatch(/\n\.history-cv \{\n contain-intrinsic-size: auto 128px;/);
+    expect(css).toMatch(/\n@supports \(overflow-anchor: auto\) \{\n \.history-cv \{\n  content-visibility: auto;\n \}\n\}/);
     // Continue at is handed its row with the page; it reads nothing after it.
     expect(page).toContain("<ContinueExploring slug={continueAt} onGo={jumpToEvent} />");
     expect(code("components/history/ContinueExploring.tsx")).not.toMatch(/useEffect|useState|loadPosition/);

@@ -37,7 +37,7 @@ const css = read("app/globals.css");
 
 /** The steps as the stylesheet has them, in its order: from which width, and how many pixels. */
 function steps(): { from: number; px: number }[] {
-  const base = css.match(/\n\.cv-card \{\n content-visibility: auto;\n contain-intrinsic-size: auto (\d+)px;\n\}\n/);
+  const base = css.match(/\n\.cv-card \{\n contain-intrinsic-size: auto (\d+)px;\n\}\n/);
   const more = [...css.matchAll(/\n@media \(min-width: (\d+)px\) \{ \.cv-card \{ contain-intrinsic-size: auto (\d+)px; \} \}/g)];
   return [{ from: 0, px: Number(base?.[1]) }, ...more.map((m) => ({ from: Number(m[1]), px: Number(m[2]) }))];
 }
@@ -115,7 +115,7 @@ describe("the room kept for a saint's card not yet drawn", () => {
     expect(from).toEqual([...from].sort((a, b) => a - b));
     expect(new Set(from).size).toBe(from.length);
     // And they stand together, straight after the rule they step, with nothing between to speak over them.
-    const at = css.indexOf("\n.cv-card {\n content-visibility: auto;");
+    const at = css.indexOf("\n.cv-card {\n contain-intrinsic-size: auto");
     const block = css.slice(at, css.indexOf("\n\n", at + 1));
     expect(block.match(/@media \(min-width: \d+px\) \{ \.cv-card \{/g)).toHaveLength(10);
   });
@@ -141,13 +141,15 @@ describe("the room kept for a saint's card not yet drawn", () => {
   });
 
   it("is the saints' list's alone: the numbers are its cards', and no other list wears the class", () => {
+    // The code without its notes: a note may name the class.
+    const code = (src: string) => src.replace(/\{\/\*[\s\S]*?\*\/\}/g, "").replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'`])\/\/.*$/gm, "$1");
     const wearers: string[] = [];
     const walk = (dir: string) => {
       for (const d of fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true })) {
         const rel = `${dir}/${d.name}`;
         if (d.isDirectory()) {
           if (!["__tests__", "node_modules"].includes(d.name)) walk(rel);
-        } else if (d.name.endsWith(".tsx") && /className=[^>]*\bcv-card\b/.test(read(rel))) wearers.push(rel);
+        } else if (d.name.endsWith(".tsx") && /className=[^>]*\bcv-card\b/.test(code(read(rel)))) wearers.push(rel);
       }
     };
     walk("app");
