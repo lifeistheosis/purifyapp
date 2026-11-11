@@ -78,8 +78,8 @@ export const RELEASE_EMAIL: ReleaseEmail = {
     },
     {
       emoji: "🌍",
-      name: "Five more Bibles",
-      text: "The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and the Arabic Van Dyck and Spanish Reina-Valera, both Protestant and labelled so.",
+      name: "Six more Bibles",
+      text: "The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida, all three Protestant and labelled so.",
     },
     {
       emoji: "🔎",
