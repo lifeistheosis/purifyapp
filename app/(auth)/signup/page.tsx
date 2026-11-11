@@ -14,7 +14,7 @@ export default function SignUpPage() {
         <T k="ui.createAnAccount" />
       </h1>
       <p className="font-serif text-ui text-paper/75 mb-7">
-        <T k="ui.syncYourHighlightsNotesBookmarks" />
+        <T k="signup.lead" />
       </p>
       <SignUpForm />
       <p className="mt-6 font-sans text-caption text-paper/45 leading-[1.6]">

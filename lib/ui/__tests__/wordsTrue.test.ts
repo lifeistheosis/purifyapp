@@ -77,6 +77,12 @@ export const RULES: readonly Rule[] = [
       "im",
     ),
   },
+  {
+    id: "settings-stay",
+    says: "says reader settings have no server table",
+    why: "with Purify Plus the reading settings travel (supabase/migrations/20261110012059_user_kept.sql, the Privacy page's paragraph on what travels with Plus)",
+    pattern: /no server table yet|noch keine Servertabelle|keine Servertabelle/i,
+  },
 ];
 
 type TrueLine = { key: string; rule: string; why: string };
@@ -84,6 +90,7 @@ type TrueLine = { key: string; rule: string; why: string };
 /** Lines that use a rule's words and say what is so, each with its reason. */
 export const TRUE_LINES: readonly TrueLine[] = [
   { key: "signin.invalidCredentials", rule: "magic-link", why: "it speaks of the magic-link era to a reader who signed up then, and tells them how to set a password" },
+  { key: "ui.welcomeYourLocalDataIs", rule: "sync-on-sign-in", why: "the banner is drawn only where canSync() is true, Purify Plus or a supporter (components/profile/PostSignInBridge.tsx)" },
 ];
 
 type Waiting = { rule: string; key?: string; file?: string; owner: string; note: string };
@@ -93,36 +100,11 @@ export const WAITING: readonly Waiting[] = [
   // Build 93 note 14: shown only to a reader who still holds names from the wall.
   { rule: "prayer-wall", key: "prayers.diptychs.wallHeading", owner: "Updates, with the campaigns chat", note: "build 93 note 14" },
   { rule: "prayer-wall", key: "prayers.wall.left", owner: "Updates, with the campaigns chat", note: "build 93 note 14" },
-  // The FAQ and About, English and German (fresh eyes H2 and H3; the English is with the arbiter).
-  { rule: "magic-link", key: "ui.accountsAndCrossDeviceSync", owner: "Admin", note: "fresh eyes H2, docs/1.9-build/drafts/words-h2-h3.md" },
-  { rule: "magic-link", key: "ui.kontenUndGerTeabgleichKamen", owner: "Admin", note: "fresh eyes H2, the German FAQ" },
-  { rule: "nothing-locked", key: "ui.everythingInTheAppToday", owner: "Admin", note: "fresh eyes H2" },
-  { rule: "plus-planned", key: "ui.isPlannedForAfterThe", owner: "Admin", note: "fresh eyes H2" },
-  { rule: "plus-planned", key: "ui.ifYouSupportedPurifyBefore", owner: "Admin", note: "fresh eyes H2" },
-  { rule: "no-analytics", key: "ui.builtForThePrayingLife", owner: "Admin", note: "fresh eyes H3" },
-  { rule: "no-analytics", key: "ui.thereIsNoAnalyticsLayer", owner: "Admin", note: "fresh eyes H3" },
-  { rule: "no-analytics", key: "ui.noAnalyticsNoThirdParty", owner: "Admin", note: "fresh eyes H3" },
-  { rule: "no-analytics", key: "ui.fRDasBetendeLeben", owner: "Admin", note: "fresh eyes H3, the German About" },
-  { rule: "no-analytics", key: "ui.esGibtKeineAnalytikSchicht", owner: "Admin", note: "fresh eyes H3, the German About" },
-  { rule: "no-analytics", key: "ui.keineAnalytikKeineFremdenSkripte", owner: "Admin", note: "fresh eyes H3, the German FAQ" },
-  { rule: "no-notifications", key: "ui.builtForThePrayingLife", owner: "Admin", note: "fresh eyes H3" },
-  { rule: "no-notifications", key: "ui.fRDasBetendeLeben", owner: "Admin", note: "fresh eyes H3, the German About" },
-  // Sync promised on signing in alone (found with H2, in the same draft).
-  { rule: "sync-on-sign-in", key: "ui.signInToSync", owner: "Admin", note: "words-h2-h3.md, About" },
-  { rule: "sync-on-sign-in", key: "account.publicAccount", owner: "Admin", note: "words-h2-h3.md (c)" },
-  { rule: "sync-on-sign-in", key: "ui.theSameThingsYouD", owner: "Admin", note: "words-h2-h3.md (c)" },
-  { rule: "sync-on-sign-in", key: "ui.twoRealWaysToUse", owner: "Admin", note: "words-h2-h3.md (b)" },
-  { rule: "sync-on-sign-in", key: "ui.syncYourHighlightsNotesBookmarks", owner: "Admin", note: "words-h2-h3.md (a)" },
-  { rule: "sync-on-sign-in", key: "ui.highlightsNotesAndBookmarksAre", owner: "Admin", note: "words-h2-h3.md (d)" },
-  { rule: "sync-on-sign-in", key: "ui.signInToSyncAcross", owner: "Admin", note: "words-h2-h3.md (d)" },
-  { rule: "sync-on-sign-in", key: "ui.signingInSyncsYourLocal", owner: "Admin", note: "words-h2-h3.md (d)" },
-  { rule: "sync-on-sign-in", key: "ui.welcomeYourLocalDataIs", owner: "Admin", note: "words-h2-h3.md (e)" },
-  { rule: "sync-on-sign-in", key: "ui.syncAcrossDevicesOptional", owner: "Admin", note: "words-h2-h3.md (f)" },
-  { rule: "sync-on-sign-in", file: "app/(app)/account/(you)/page.tsx", owner: "Admin", note: "words-h2-h3.md (h)" },
-  { rule: "sync-on-sign-in", file: "components/marketing/MadeOfStrip.tsx", owner: "Admin", note: "words-h2-h3.md (i), the website's front page" },
-  { rule: "sync-on-sign-in", file: "components/legal/PrivacyText.tsx", owner: "Admin", note: "words-h2-h3.md (j), the Privacy page, English and German (to the arbiter)" },
-  // The Privacy page's list of third parties (English and German): /support offers no donation since 1.9.
-  { rule: "coffee", file: "components/legal/PrivacyText.tsx", owner: "Admin", note: "words-h2-h3.md, Privacy (to the arbiter)" },
+  // The Privacy page, English and German: its lines on signing in (the arbiter's A and B, and (j)) and
+  // Buy Me a Coffee among its third parties, waiting on his yes through the arbiter.
+  { rule: "sync-on-sign-in", file: "components/legal/PrivacyText.tsx", owner: "Admin", note: "the arbiter's A and B and words-h2-h3.md (j), on his yes" },
+  { rule: "settings-stay", file: "components/legal/PrivacyText.tsx", owner: "Admin", note: "the arbiter's A, on his yes" },
+  { rule: "coffee", file: "components/legal/PrivacyText.tsx", owner: "Admin", note: "words-h2-h3.md (j), on his yes" },
 ];
 
 // ── What a reader reads ─────────────────────────────────────────────────
@@ -179,7 +161,8 @@ function hits(): Hit[] {
       }
     }
     for (const file of READER_FILES) {
-      const text = drawn(read(file));
+      // JSX wraps its words across lines; they are read as one run of words.
+      const text = drawn(read(file)).replace(/\s+/g, " ");
       const flags = [...new Set(`${rule.pattern.flags.replace("g", "")}m`)].join("");
       const m = text.match(new RegExp(rule.pattern.source, flags));
       if (m) out.set(`${rule.id}|file|${file}`, { rule: rule.id, file, sample: m[0] });
@@ -223,6 +206,7 @@ describe("the words: nothing a reader reads names what is gone or promises what 
       "no-analytics": "There is no analytics layer.",
       "no-notifications": "no notifications pulling you back",
       "sync-on-sign-in": "Signing in syncs your local highlights.",
+      "settings-stay": "Reader settings stay on this device for now (no server table yet).",
     };
     for (const rule of RULES) expect(rule.pattern.test(samples[rule.id]), rule.id).toBe(true);
     expect(RULES.find((r) => r.id === "sync-on-sign-in")!.pattern.test("Die Anmeldung gibt es, damit dein Lesen auf allen deinen Ger\u00e4ten bleibt.")).toBe(true);

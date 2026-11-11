@@ -93,7 +93,9 @@ function PrivacyEn() {
  <p className="mt-3 font-sans text-detail leading-[1.55] text-paper/60">
  To remove the name you claimed on this device, open /account
  and click &ldquo;Remove this name.&rdquo; To wipe all local
- data, clear site data for this origin in your browser settings.
+ data: on the website, clear this site&rsquo;s data in your
+ browser&rsquo;s settings; in the app, clear its storage in your
+ phone&rsquo;s settings, or remove the app.
  </p>
  </div>
  <div className="theology-tray rounded-[18px] px-4 py-4">
@@ -917,8 +919,10 @@ function PrivacyDe() {
  <p className="mt-3 font-sans text-detail leading-[1.55] text-paper/60">
  Um den Namen zu entfernen, den du auf diesem Gerät gewählt hast,
  öffne /account und tippe auf &bdquo;Diesen Namen
- entfernen&ldquo;. Um alle lokalen Daten zu löschen, lösche in
- deinen Browser-Einstellungen die Seitendaten für diese Herkunft.
+ entfernen&ldquo;. Um alle lokalen Daten zu löschen: auf der
+ Website lösche in den Einstellungen deines Browsers die Daten
+ dieser Seite; in der App leere ihren Speicher in den
+ Einstellungen deines Telefons, oder entferne die App.
  </p>
  </div>
  <div className="theology-tray rounded-[18px] px-4 py-4">

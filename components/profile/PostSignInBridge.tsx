@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { canSync } from "@/lib/entitlements/client";
 import { releaseLocal } from "@/lib/profile/localAccount";
 import { flushPending } from "@/lib/push/client";
 import { flushPendingNative } from "@/lib/push/native";
@@ -35,7 +36,6 @@ export function PostSignInBridge() {
   const { t } = useTranslate();
   const [show, setShow] = useState(false);
 
-  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -73,9 +73,16 @@ export function PostSignInBridge() {
     } catch {
       /* noop */
     }
-    if (shouldShow) setShow(true);
+    // It says the device's highlights are going to the account, which is so
+    // only where sync is on: Purify Plus, or a pre-launch supporter
+    // (lib/sync/gate.ts). A free account carries no highlights, so it is
+    // told nothing here (the words test, lib/ui/__tests__/wordsTrue.test.ts).
+    if (shouldShow) {
+      void canSync().then((on) => {
+        if (on) setShow(true);
+      });
+    }
   }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   function dismiss() {
     try {
@@ -98,7 +105,7 @@ export function PostSignInBridge() {
           {t("ui.welcomeYourLocalDataIs")}
         </p>
         <p className="font-serif text-body text-paper/90 leading-[1.65]">
-          {t("ui.yourHighlightsNotesAndBookmarksX")}
+          {t("profile.bridgeBody")}
         </p>
       </div>
       <button

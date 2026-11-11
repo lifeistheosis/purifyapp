@@ -48,7 +48,7 @@ function AboutEn() {
  <T k="ui.theLiturgyIsWhereThe" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- <T k="ui.builtForThePrayingLife" />
+ <T k="about.prayingLife" />
  </p>
 
  {/* §2 Radical Textual Honesty */}
@@ -102,8 +102,8 @@ function AboutEn() {
  <T k="ui.byDefaultAllOfIt" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- <T k="ui.ifYouWantYourNotes" />{" "}
- <strong className="text-paper"><T k="ui.signInToSync" /></strong><T k="ui.withYourEmailAndA" />{" "}
+ <T k="about.syncLead" />{" "}
+ <strong className="text-paper"><T k="about.syncPlus" /></strong><T k="about.syncRest" />{" "}
  <Link
  href="/account"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
@@ -113,7 +113,7 @@ function AboutEn() {
  <T k="ui.andIsReversibleInEither" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- <T k="ui.thereIsNoAnalyticsLayer" />{" "}
+ <T k="about.counts" />{" "}
  <Link
  href="/privacy"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"

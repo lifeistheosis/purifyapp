@@ -64,7 +64,7 @@ export function YouIdentity({ who }: { who: YouWho }) {
         <span className="min-w-0">
           <span className={NAME}>{t("common.signIn")}</span>
           <span className={UNDER}>
-            {t("ui.syncAcrossDevicesOptional")}
+            {t("common.optional")}
             <Chevron />
           </span>
         </span>

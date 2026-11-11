@@ -95,17 +95,14 @@ const QUESTIONS_DE: QA[] = [
  a: (
  <>
  <p>
- <T k="ui.kontenUndGerTeabgleichKamen" />{" "}
+ <T k="faq.roadmap.a" />{" "}
  <a
  href="/account"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- <T k="ui.kontoseite" />
+ <T k="ui.accountPage" />
  </a>{" "}
- <T k="ui.lSchen" />
- </p>
- <p>
- <T k="ui.dieAkathisteAnDieGottesgeb" />
+ <T k="ui.atAnyTime" />
  </p>
  </>
  ),
@@ -115,13 +112,23 @@ const QUESTIONS_DE: QA[] = [
  a: (
  <>
  <p>
- <strong><T k="ui.ohneKonto" /></strong> <T k="ui.keineAnalytikKeineFremdenSkripte" />
+ <strong><T k="ui.withoutAnAccount" /></strong> <T k="faq.data.noAccount" />
  </p>
  <p>
- <strong><T k="ui.mitKonto" /></strong> <T k="ui.dieselbenPostenWerdenAuchAuf" />
+ <strong><T k="ui.withAnAccount" /></strong> <T k="faq.data.account" />
  </p>
  <p>
- <T k="ui.inBeidenFLlenSieht" />
+ <T k="ui.inBothCasesOurHosting" />
+ </p>
+ <p>
+ <T k="faq.data.counts" />{" "}
+ <a
+ href="/privacy"
+ className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
+ >
+ <T k="ui.privacyPage" />
+ </a>
+ .
  </p>
  </>
  ),
@@ -131,7 +138,7 @@ const QUESTIONS_DE: QA[] = [
  a: (
  <>
  <p>
- <T k="ui.purifyIstEineProgressiveWeb" />
+ <T k="faq.install.a" />
  </p>
  <p>
  <T k="ui.fRRCkmeldungSchreib" />{" "}

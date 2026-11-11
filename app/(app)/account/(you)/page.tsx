@@ -10,7 +10,7 @@ import { T } from "@/components/i18n/T";
 export const metadata = {
   title: "Your account",
   description:
-    "Sign in to sync your highlights, notes, and bookmarks across devices. Or keep everything local on this device. Your choice.",
+    "Keep everything on this device, or make an account. Your choice.",
 };
 
 const SECTION = "px-5 md:px-8 py-16 md:py-24";
@@ -52,7 +52,7 @@ export default async function AccountPage() {
           {t(m, "account.h1")}
         </h1>
         <p className="mt-6 font-serif text-body text-paper/85 leading-[1.7] max-w-[640px]">
-          <T k="ui.twoRealWaysToUse" />
+          <T k="account.twoWays" />
         </p>
 
         <div className="min-h-[520px]">

@@ -145,7 +145,7 @@ describe("the one Settings", () => {
     const keys = [
       "settings.account",
       "common.signIn",
-      "ui.syncAcrossDevicesOptional",
+      "common.optional",
       "account.tabs.profile",
       "account.tabs.security",
       "settings.notifications",

@@ -101,23 +101,20 @@ export function AccountChoice() {
         {/* PUBLIC */}
         <section className="rounded-lg border border-gold/35 bg-gold/[0.05] p-6 md:p-7 flex flex-col">
           <h2 className="font-sans text-lede font-bold text-paper leading-tight">
-            {t("account.publicAccount")}
+            {t("common.signIn")}
           </h2>
-          <p className="mt-1 font-sans text-caption text-gold">
-            {t("ui.yourReadingOnEveryDevice")}
-          </p>
           <p className="mt-4 font-serif text-ui text-paper/85 leading-[1.65]">
-            {t("ui.theSameThingsYouD")}
+            {t("account.publicBody")}
           </p>
           <ul className="mt-4 space-y-1.5 font-sans text-detail text-paper/70 leading-[1.55]">
-            <li>{t("ui.openTheAppOnA")}</li>
+            <li>{t("account.publicFind")}</li>
             <li>{t("ui.deleteTheAccountAndEvery")}</li>
             <li>{t("ui.stillNoAdsNoAnalytics")}</li>
             <li className="text-paper/55">
               {t("ui.yourEmailAndWhatYou")}
             </li>
             <li className="text-paper/55">
-              {t("ui.requiresAWorkingEmailTo")}
+              {t("account.publicEmail")}
             </li>
           </ul>
 

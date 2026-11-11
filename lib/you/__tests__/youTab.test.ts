@@ -63,7 +63,7 @@ describe("the head of You: the Ladder, and the reader on it", () => {
     expect(who).toContain("useMyBadges(id)");
     expect(who).toContain('href="/signin?next=/account"');
     expect(who).toContain('t("common.signIn")');
-    expect(who).toContain('t("ui.syncAcrossDevicesOptional")');
+    expect(who).toContain('t("common.optional")');
     expect(who).toContain('t("ui.privateOnThisDeviceNo")');
     // The badges are the house greys: never a badge's own colour, and the Pro
     // cross's red ring is the ink.

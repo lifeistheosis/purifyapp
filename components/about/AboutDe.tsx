@@ -36,7 +36,7 @@ export function AboutDe({ credits }: { credits: boolean }) {
  <T k="ui.dieGTtlicheLiturgieIst" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- <T k="ui.fRDasBetendeLeben" />
+ <T k="about.prayingLife" />
  </p>
 
  {/* §2 Radikale Texttreue */}
@@ -90,23 +90,23 @@ export function AboutDe({ credits }: { credits: boolean }) {
  <T k="ui.voreingestelltLebtAllDasAuf" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- <T k="ui.wennDuMChtestDa" />{" "}
- <strong className="text-paper"><T k="ui.ffentlichesKonto" /></strong> <T k="ui.ffnenDeineEMailUnd" />{" "}
+ <T k="about.syncLead" />{" "}
+ <strong className="text-paper"><T k="about.syncPlus" /></strong><T k="about.syncRest" />{" "}
  <Link
  href="/account"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
  <T k="ui.account" />
  </Link>{" "}
- <T k="ui.schlichtBenanntUndIstIn" />
+ <T k="ui.andIsReversibleInEither" />
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- <T k="ui.esGibtKeineAnalytikSchicht" />{" "}
+ <T k="about.counts" />{" "}
  <Link
  href="/privacy"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- <T k="ui.datenschutzseite" />
+ <T k="ui.privacyPage" />
  </Link>
  .
  </p>

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { FaqInReadersLanguage } from "@/components/faq/FaqInReadersLanguage";
 import { FaqList, type QA } from "@/components/faq/FaqList";
@@ -119,7 +121,7 @@ const QUESTIONS: QA[] = [
  a: (
  <>
  <p>
- <T k="ui.accountsAndCrossDeviceSync" />{" "}
+ <T k="faq.roadmap.a" />{" "}
  <a
  href="/account"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
@@ -127,9 +129,6 @@ const QUESTIONS: QA[] = [
  <T k="ui.accountPage" />
  </a>{" "}
  <T k="ui.atAnyTime" />
- </p>
- <p>
- <T k="ui.akathistsTheTheotokosChristThe" />
  </p>
  </>
  ),
@@ -140,13 +139,16 @@ const QUESTIONS: QA[] = [
  a: (
  <>
  <p>
- <T k="ui.everythingInTheAppToday" />
+ <T k="faq.free.a1" />
  </p>
  <p>
- <T k="ui.anOptionalLayerCalled" /> <strong><T k="study.purifyPlus" /></strong> <T k="ui.isPlannedForAfterThe" />
+ <T k="faq.free.a2" />{" "}
+ <Link href="/pricing" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">
+ <T k="premium.seePlus" />
+ </Link>
  </p>
  <p>
- <strong><T k="ui.preLaunchSupportersKeepLifetime" /></strong> <T k="ui.ifYouSupportedPurifyBefore" />
+ <T k="plus.promise.supporters" />
  </p>
  </>
  ),
@@ -171,13 +173,20 @@ const QUESTIONS: QA[] = [
  a: (
  <>
  <p>
- <strong><T k="ui.withoutAnAccount" /></strong> <T k="ui.noAnalyticsNoThirdParty" />
+ <strong><T k="ui.withoutAnAccount" /></strong> <T k="faq.data.noAccount" />
  </p>
  <p>
- <strong><T k="ui.withAnAccount" /></strong> <T k="ui.theSameItemsAreAlso" />
+ <strong><T k="ui.withAnAccount" /></strong> <T k="faq.data.account" />
  </p>
  <p>
  <T k="ui.inBothCasesOurHosting" />
+ </p>
+ <p>
+ <T k="faq.data.counts" />{" "}
+ <Link href="/privacy" className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">
+ <T k="ui.privacyPage" />
+ </Link>
+ .
  </p>
  </>
  ),
@@ -188,7 +197,7 @@ const QUESTIONS: QA[] = [
  a: (
  <>
  <p>
- <T k="ui.purifyIsAProgressiveWeb" />
+ <T k="faq.install.a" />
  </p>
  <p>
  <T k="ui.forFeedbackEmail" />{" "}

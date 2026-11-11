@@ -45,7 +45,7 @@ export function AccountSettingsLinks() {
     {
       label: "Purify Plus",
       href: "/pricing",
-      hint: t("ui.crossDeviceSyncNotesHighlights"),
+      hint: t("support.wayPlus.body"),
       icon: <Glyph kind="quill" />,
     },
     // Mirrors the mobile "You" list: the Pro perk sits directly under the

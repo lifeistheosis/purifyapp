@@ -2880,7 +2880,7 @@ await section(46, async () => {
     must(!!m.img && /\/sections\/you\.v2\.jpg$/.test(m.img.src) && m.img.natural === 1170, `and is the square cut, sharp on a 3x phone (${m.img?.src ?? "no picture"}, ${m.img?.natural ?? 0} wide)`);
     must(m.barGround === "rgba(0, 0, 0, 0)" && !m.solid, `the bar is clear over it (${m.barGround})`);
     must(
-      !!m.signIn && bare(m.signIn.href) === "/signin?next=/account" && m.signIn.text.startsWith(en["common.signIn"]) && m.signIn.text.includes(en["ui.syncAcrossDevicesOptional"]) && !!m.picture && m.signIn.box.top < m.picture.bottom,
+      !!m.signIn && bare(m.signIn.href) === "/signin?next=/account" && m.signIn.text.startsWith(en["common.signIn"]) && m.signIn.text.includes(en["common.optional"]) && !!m.picture && m.signIn.box.top < m.picture.bottom,
       `signed out, Sign in stands on the picture where the name stands (${m.signIn ? `"${m.signIn.text}" at ${Math.round(m.signIn.box.top)}` : "none"})`,
     );
     must(m.who.includes(en["ui.privateOnThisDeviceNo"]), "with the line on where things are kept over it");

@@ -72,15 +72,15 @@ const WORDS: Record<string, string> = {
   // Ours.
   Purify: "the app", Plus: "the membership", Pro: "the membership", EIKON: "the shop", Shop: "Purify Shop", Beta: "a release's name",
   // Companies, services and platforms.
-  Google: "", Apple: "", Amazon: "", Discord: "", Stripe: "", Supabase: "", Render: "", TikTok: "", Instagram: "", YouTube: "", X: "",
-  Windows: "", Android: "", iOS: "", iPhone: "", Chrome: "", Safari: "", Edge: "", Firefox: "", eBible: "", Biblica: "",
+  Google: "", Apple: "", Amazon: "", Discord: "", Stripe: "", Render: "", TikTok: "", Instagram: "", YouTube: "", X: "",
+  Windows: "", Android: "", iPhone: "", Chrome: "", Edge: "", Firefox: "", eBible: "", Biblica: "",
   Play: "Google's store, as a Serbian line names it (\"Play продавница\")",
   // Churches, editions, sources and people, by their own names.
   OCA: "the Orthodox Church in America's own initials", Nestle: "an edition", "Ante-Nicene": "a series' title", Schaff: "an editor", Wace: "an editor",
   Edgar: "the owner, as he signs", ChristosAnesti: "a reader's name, as he gives it", Markos: "a reader's name, as he gives it",
   // A typeface, a print, formats, units and terms of the trade.
   Lora: "a typeface", "Giclée": "a kind of print", "Wi-Fi": "", OLED: "", PDF: "", JPEG: "", PNG: "", WebP: "", AVIF: "", JSON: "",
-  Markdown: "", MB: "", IP: "", URL: "", USD: "", OAuth: "", localStorage: "a browser's store, by its name in code", push: "the phone's own push service",
+  Markdown: "", MB: "", IP: "", USD: "", localStorage: "a browser's store, by its name in code", push: "the phone's own push service",
   // Keys, and the marks on them.
   Enter: "", Esc: "", esc: "", Escape: "", Cmd: "",
   // Numbers and formats: a Roman century, Strong's Greek numbers, date patterns.
@@ -116,7 +116,7 @@ describe("the Serbian catalog is written in Cyrillic", () => {
   it("the rule catches Serbian in Latin letters and a Latin letter inside a Cyrillic word, and lets names through", () => {
     expect(unexplained("Pretraži istoriju Crkve")).toEqual(["Pretraži", "istoriju", "Crkve"]);
     expect(unexplained("Од Edgara, тим Purify.")).toEqual(["Edgara"]);
-    expect(unexplained("У Safariju на iOS-у")).toEqual(["Safariju"]);
+    expect(unexplained("У Safariju на iPhone-у")).toEqual(["Safariju"]);
     expect(unexplained("Прaвослaвнa Црква")).toEqual(["a", "a", "a"]);
     expect(unexplained("Book of the Holy")).toEqual(["Book", "of", "the", "Holy"]);
     expect(unexplained("Отвори Purify на iPhone-у, {count} пута, на purifyapp.net/who-said-it")).toEqual([]);
@@ -139,6 +139,5 @@ describe("the Serbian catalog is written in Cyrillic", () => {
 
   it("writes the owner's name in Cyrillic when it takes a Serbian ending, as Russian, Ukrainian and Bulgarian do", () => {
     expect(sr["whatsnew.fromTheTeam"]).toBe("Од Едгара, тим Purify.");
-    expect(sr["ui.purifyIstEineProgressiveWeb"]).toContain("У Safari-ју на iOS-у");
   });
 });

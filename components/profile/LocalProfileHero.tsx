@@ -67,7 +67,7 @@ export function LocalProfileHero() {
       </div>
 
       <p className="mt-5 font-serif text-body text-paper/80 leading-[1.7]">
-        {t("ui.highlightsNotesAndBookmarksAre")}
+        {t("ui.syncLockedBody")}
       </p>
 
       <div className="mt-5 flex flex-col sm:flex-row gap-3">
@@ -76,7 +76,7 @@ export function LocalProfileHero() {
           onClick={() => setUpgrading(true)}
           className="font-sans text-ui font-semibold rounded-pill px-5 py-3 bg-gold text-night hover:bg-gold-soft transition-colors"
         >
-          {t("ui.signInToSyncAcross")}
+          {t("profile.signInLink")}
         </button>
         <button
           type="button"
@@ -101,7 +101,7 @@ export function LocalProfileHero() {
       />
 
       <p className="mt-5 font-sans text-caption text-paper/45 leading-[1.55]">
-        {t("ui.signingInSyncsYourLocal")}
+        {t("profile.signInKeeps")}
       </p>
     </section>
   );

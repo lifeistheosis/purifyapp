@@ -185,7 +185,7 @@ function AccountSection({ reader }: { reader: Reader }) {
           href="/signin?next=/settings"
           icon={<User size={18} strokeWidth={1.7} />}
           label={t("common.signIn")}
-          description={t("ui.syncAcrossDevicesOptional")}
+          description={t("common.optional")}
         />
       </Section>
     );

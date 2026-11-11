@@ -29,7 +29,7 @@ const ITEMS: { title: string; body: string }[] = [
     // anonymous visit count, so "no tracking" and "no analytics, ever" were
     // no longer exactly true. What stays true is here.
     title: "No ad tracking, no ads",
-    body: "Your notes stay on your device. Sign in to sync. No ad trackers, no profiles.",
+    body: "Your notes stay on your device, and with Purify Plus they reach every device you sign in on. No ad trackers, no advertising profiles.",
   },
 ];
 
