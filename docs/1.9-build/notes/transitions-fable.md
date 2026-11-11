@@ -441,8 +441,11 @@ which said yes to a cover at the head of a reading room book
 ### What a phone still has to say
 
 - An iPhone on iOS 18.2 or later: a cover from the room into its book and
-  back. On iOS 18.0 and 18.1 the two covers pass into each other, and the
-  title can be read twice for a few frames.
+  back. On iOS 18.0 and 18.1 the two covers passed into each other, and the
+  title could be read twice for a few frames; a cover wears a name of its
+  own since 2026-11-11 so that it should not ("A cover travels alone on
+  every phone that has the transitions", below), and an iPhone on one of
+  those two versions is where that is proved (the phone walk's row 34).
 - Whether the moment before a return goes down to its paragraph feels right
   in the hand. One number: `SETTLE_MS` in `lib/ui/routeMotion.ts`.
 
@@ -725,6 +728,75 @@ and not later; it fails on the helper as it was) and by a place in
 sells Plus, which is where that link is drawn. The walk is 11 of 11, and
 Admin's own tap walk passes the page: 21 controls, none failed.
 
+### A chapter's round button is a step back (the same day, on the arbiter's word)
+
+Found while walking the Bible's list: a chapter of the Bible has one round
+button at its top left, a chevron named Back, and it was not a step back. It
+was a door, written so and held by two tests: it always opened the whole
+list of books, at its top. A reader who came from 1 Kings' row came back at
+Genesis, 778px from their row; one who came from Today's reading or a
+saint's page came back to the list, not to where they had been. The phone's
+Back returned them rightly; the button named Back did not. His own note 1 on
+build 93 was a page's Back button that did not return him to his place.
+
+**The rule** (the arbiter): from a row of the list, to that row; from
+anywhere else, to that place; with nothing behind (a fresh open, a shared
+link, the Bible tab), the whole list, as before; and chapters turned inside
+the reader are not steps, so one tap leaves it.
+
+**How** (`lib/nav/readerWay.ts`, new):
+
+- A reader's pages are told apart from the pages it is reached from (a
+  chapter is `/bible/<book>/<number>`), and the page the reader came in from
+  is remembered: its address, and how far down it stood. Only a page they
+  went *forward* from counts. The tab bar's tabs stand side by side: Today
+  is not behind a chapter the Bible tab opened, and stepping "back" to it
+  would leave the list of books with no way to it at all, since that button
+  is the only one.
+- Where the browser can say exactly what is behind the page (the Navigation
+  API: every Android WebView that has View Transitions, an iPhone from iOS
+  26.2), leaving is a true step through history as far as that page: the
+  nearest page behind that is not a chapter, which must be the page
+  remembered or nothing is done on its strength. It is pictured as any step
+  back, and the reader's place is put back as on any step back. Counting
+  the chapters turned would have been wrong the first time a verse's own
+  address made an entry of its own.
+- Where it cannot (an iPhone before 26.2), the page they came from is opened
+  as the page behind would return, and put where they left it: by the link
+  they had tapped, or by how far down the page stood
+  (`lib/ui/scrollReset.ts`, `noteReturn`). A new entry and not a step, which
+  no reader of an iPhone can tell: the phone has no Back of its own.
+- Nothing remembered, or the two disagree: the link opens the list, as it
+  always did. Nothing is remembered across a reload.
+- Scoped to the chapter's page: the top bar takes one new word, `leaves`,
+  and only that page says it. No other page's top bar changed, and a test
+  walks the tree to hold that.
+
+**The check.**
+
+- `lib/nav/__tests__/readerWay.test.ts`, 18 cases: a row of the list; three
+  chapters turned and one tap; an entry a verse's own address made; Today, a
+  saint's page and a search; the Bible tab and a fresh open (the door); the
+  tab after a visit from the list; a reader who went on and stepped back; a
+  chapter opened from the page they went on to; what is remembered and what
+  is behind disagreeing; a reload; a step that moved nothing; a browser that
+  cannot say what is behind; and the wiring, which walks `app/` and
+  `components/` to hold that only the chapter's page says `leaves`. On
+  today's code the module is not there and the button is a plain link, so
+  every path but "nothing behind" fails. Three more cases in
+  `lib/ui/__tests__/scrollReset.test.ts` hold a page opened again as the
+  page behind.
+- `scripts/back-walk.mjs`, on the export: 1 Kings' row tapped, a chapter
+  turned, and the round button tapped once, by a true step and again on a
+  browser with the Navigation API taken away. Both times the row is under
+  the thumb again, never more than a pixel from it in any frame. 13 of 13
+  with the walks that were there.
+- `scripts/route-motion.mjs`: from a row with a chapter turned, one step
+  back to the list, pictured as a return; from the Bible tab, the door to
+  the whole list, moving as it always did. 46 of 46.
+- The gate's tap walk on the list, a chapter, Prayers and the Florilegium,
+  as a new reader with no Plus: 122 controls, none failed.
+
 **Named, not mended.**
 
 - **Sign in has no way back of its own in the apps.** The page that link
@@ -732,20 +804,17 @@ Admin's own tap walk passes the page: 21 controls, none failed.
   and a link to Privacy at its top and no Back button, and it is outside
   the frame that gives every other page of the apps its back bar. The
   phone's Back leaves it on Android. An iPhone has none. Put to the
-  arbiter; it is not a page switch, and the frame is not mine.
+  arbiter, who gave it to Fable onboarding the same hour.
 - **A tapped link right beside what was added** no longer stands between
   the same two links, and is left at the browser's number. No shelf here
   has one today: the two new shelves stand after "Short reads", whose books
   are above them and do not move.
-- **A chapter's round button is a door, not a step back.** It leads to the
-  whole list (`back="/bible"`, held by two tests), so the list opens at its
-  top even for a reader who came from one of its rows. The phone's Back
-  returns them to the row. Put to the arbiter.
 - **The browser's own Back brings a page's rows in again.** In the apps a
   step back is the phone's Back or the page's own button; both are
   pictured, and the page comes back whole. A browser's own button on the
   website is not pictured, and the page that returns plays its rows'
-  entrance again, as it does when opened. Put to the arbiter.
+  entrance again, as it does when opened. Put to the arbiter, who agreed it
+  is left as it is.
 
 ## What opens shows itself: the page moves with it (2026-11-11, build 93 note 15)
 
@@ -1219,6 +1288,66 @@ Both seen while checking this, on the same export, and both measured:
 
 Both are told to Admin, whose walk it is, with the numbers.
 
+## What stands on a travelling picture (2026-11-11, P6)
+
+A picture tile's shade, name and line are drawn over its picture. The
+picture that travels is drawn over the page. So on the way back from a
+tile's page the picture arrived bare, bright where its shade should be and
+with no name on it, and the words stood on it again only when the change
+was over, all at once; and on the way out they were gone under their own
+picture in the first frame. It was named as left when the page switches were
+built ("Coming back to a tile, its name is under the arriving picture until
+the change is over"), and Fable onboarding saw it again on all four of
+Prayers' Practices tiles. Filmed before the mend: the Akathists tile,
+coming back.
+
+**The rule**: what stands on a picture in its card is pictured apart from
+it while it travels, over it. Going out, it is gone as the picture lifts
+from under it. Coming back, it comes in over the picture as it lands, in
+the second half of its way, and is whole as the picture arrives.
+
+**How**:
+
+- A thing that stands on the picture says so (`data-carry-over`), beside
+  the picture in the same card: a Practices tile's shade, name and line
+  (`components/mobile/SoftTiles.tsx`), and a Florilegium starter's name and
+  line. The shade is cut to the tile's corners itself now: a thing pictured
+  apart is not cut by the tile around it.
+- While the picture wears its name, each of those wears one of its own
+  (`lib/ui/routeMotion.ts`, `wear`: `carried-over-1` to `-3`), and gives it
+  back with the picture's (`setDown`). Whatever wears the travelling name
+  also says so in a mark (`data-carrying`), lifting or landing.
+- The stylesheet: out, `route-leave` over 110ms; back, `route-arrive` over
+  170ms after 150ms, which ends with the picture's own 320ms.
+
+**The check.** Four cases in `lib/ui/__tests__/routeMotion.test.ts` that
+fail on the code as it was (lifted, landed, never a fourth name, and the
+tiles' marks with the stylesheet's two rules). `scripts/route-motion.mjs`
+holds it both ways on the export, on a Practices tile (three things) and on
+a starter's tile (two): going out they are on the side being left and gone
+within 160ms; coming back they are on the side arriving, from 150ms to
+320ms. Filmed after: the Akathists tile coming back with "Akathists" and
+"Hymns of praise" already on it at 200ms, where before they appeared when
+the change was over. The guardrail walk passes Prayers, the Florilegium and
+a chapter on all five palettes with the shade cut to its own corners, and
+the words-on-pictures check passes Prayers.
+
+## A cover travels alone on every phone that has the transitions (2026-11-11, P7)
+
+A cover is one poster at both ends with its title on it, so it travels as
+the one it is becoming, alone, or the title is read twice. That was told to
+the browser by a class beside the name (`view-transition-class`). An iPhone
+on iOS 18.0 or 18.1 has the transitions and not the class: there the rule
+did not match, and the two covers passed into each other. A cover wears a
+name of its own now (`carried-cover`, `lib/ui/routeMotion.ts`), and the
+stylesheet tells it by that name alone, which needs nothing those phones
+lack. Every other picture is as it was.
+
+No WebKit runs here, so what is proved here is that nothing tells a cover
+by a class any longer (a test reads the stylesheet for it) and that, by its
+name alone, a cover still travels alone on this engine (the walk's four
+cover walks). The proof on the phone itself is in the phone walk's list.
+
 ## What a phone still has to say
 
 Nothing here can run iOS's WebKit, and a film is not a hand. For the phone
@@ -1243,8 +1372,13 @@ walk (`docs/PHONE-WALK.md`):
 - A council's canons (Ephesus, Nicaea): the arrow at the foot of the page
   tapped several times without moving the finger. It turns a canon each
   time.
-- What closes (2026-11-11): What's new, scrolled to the foot, the year's
-  box shut by its own title; and Chants, a tradition chosen under "All
+- The chapter's round button (2026-11-11; the phone walk's row 32): from a
+  book's row far down the list, with a chapter turned, one tap brings the
+  list back at that row. On an iPhone below iOS 26.2 the list is opened
+  again as the page behind and should look the same.
+- A tile's words as its picture lands (2026-11-11; row 33).
+- What closes (2026-11-11): What's new, scrolled to the foot, the oldest
+  month's box shut by its own title; and Chants, a tradition chosen under "All
   chants" with the list's foot in sight. The thing under the finger stays
   under it, and scrolling back up shows no gap opening or closing.
 - A page that is slow to come (2026-11-11). A phone reads its pages from
@@ -1275,8 +1409,9 @@ walk (`docs/PHONE-WALK.md`):
   cost of; it is put to the arbiter as a thing found, not built here.
 - A top bar a page draws for itself travels with its page. The tab bar and
   the website's header stand still.
-- Coming back to a tile, its name is under the arriving picture until the
-  change is over, and then stands on it again.
+- (Closed 2026-11-11: "What stands on a travelling picture", above.) Coming
+  back to a tile, its name was under the arriving picture until the change
+  was over, and then stood on it again.
 - (Closed with the Florilegium's redesign, notes 6 and 12, the same day.) In
   the apps a gathering opened on the Florilegium's own address, named in its
   query (`/florilegium?g=<id>`), and the bridge counts a change of query as a
