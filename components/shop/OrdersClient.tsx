@@ -18,6 +18,17 @@ import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { createClient } from "@/lib/supabase/client";
 import { AUTH_UNRESOLVED_MESSAGE, resolveUser } from "@/lib/supabase/resolveUser";
 
+/**
+ * The mark of a checkout not finished is dashed: one of the marks the owner
+ * chose for an order's life (Orders B, r3-16; app/globals.css, .shop-mark),
+ * a sign with a meaning and not an empty box. The gate fails a dashed edge
+ * on three sides wherever it meets one, so the mark says what it is.
+ */
+const DASHED_MARK = {
+  "data-mock-allow": "dashed",
+  "data-mock-why": "an order's mark for a checkout not finished: one of the marks chosen for an order's life (Orders B), a sign with a meaning and not an empty box",
+} as const;
+
 type Result = { signedIn: false } | { signedIn: true; orders: BuyerOrder[]; now: number };
 
 async function load(): Promise<Result> {
@@ -120,7 +131,7 @@ function Group({
   return (
     <section aria-label={label} className={rail ? "mb-3" : "mb-1"}>
       <Heading className="relative mb-2.5 flex items-center gap-3">
-        <span aria-hidden className="shop-mark" data-state={group.mark} data-size={rail ? "sm" : undefined} />
+        <span aria-hidden className="shop-mark" data-state={group.mark} data-size={rail ? "sm" : undefined} {...(group.mark === "dashed" ? DASHED_MARK : null)} />
         <span
           className={cn(
             "font-sans font-semibold",
@@ -217,7 +228,9 @@ function UnfinishedRow({ order, onRemoved }: { order: BuyerOrder; onRemoved?: ()
     onRemoved?.();
   }
   return (
-    <li className="flex items-center gap-3 rounded-2xl border border-dashed border-paper/20 px-3 py-2.5">
+    // A fine whole edge. It was dashed, which reads as a place where something is missing (build 93
+    // note 4); this is a basket that is there, waiting to be paid for or removed.
+    <li className="flex items-center gap-3 rounded-2xl border border-paper/15 px-3 py-2.5">
       <div className="min-w-0 flex-1">
         <p className="truncate font-sans text-[13.5px] font-semibold text-paper/80">
           {first}

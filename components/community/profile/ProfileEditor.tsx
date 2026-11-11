@@ -117,6 +117,13 @@ const PLUS_KEYS: readonly (keyof Draft)[] = ["decoration", "effect", "nameColor"
  */
 const NO_BANNER = "#3a3a40";
 
+/**
+ * The swatch for "no colour": an empty ring in the house's quiet one, whole and
+ * 1.5px (app/globals.css, .rule-node[data-quiet]). Never dashed: a dashed ring
+ * is a placeholder, and the gate fails one (scripts/mock-check.mjs, "dashed").
+ */
+const NO_COLOUR = "block size-full rounded-full border-[1.5px] border-paper/[0.28]";
+
 const STATUS_MAX = 60;
 const BIO_MAX = 190;
 
@@ -748,8 +755,10 @@ export function ProfileEditor() {
             {!subscribed ? <p className="-mt-1 font-sans text-caption leading-relaxed text-paper/55">{t("profile.colorsHint")}</p> : null}
             <Field label={t("profile.bannerColor")}>
               <div className="flex flex-wrap items-center gap-2" role="radiogroup" aria-label={t("profile.bannerColor")}>
+                {/* No colour: an empty ring, the house's quiet one (1.5px, whole). It was dashed, which
+                    reads as a place where something is missing (build 93 note 4), and this is a choice. */}
                 <Swatch selected={!draft.bannerColor} label={t("profile.none")} onClick={() => set({ bannerColor: null })}>
-                  <span className="block size-full rounded-full border border-dashed border-paper/35" />
+                  <span className={NO_COLOUR} />
                 </Swatch>
                 {GREYS.map((g) => (
                   <Swatch key={g.id} selected={draft.bannerColor === g.primary} label={t(`profile.color.${g.id}`)} onClick={() => set({ bannerColor: g.primary })}>
@@ -791,7 +800,7 @@ export function ProfileEditor() {
                   label={t("profile.none")}
                   onClick={() => set({ themePrimary: null, themeAccent: null })}
                 >
-                  <span className="block size-full rounded-full border border-dashed border-paper/35" />
+                  <span className={NO_COLOUR} />
                 </Swatch>
                 {GREYS.map((g) => (
                   <Swatch

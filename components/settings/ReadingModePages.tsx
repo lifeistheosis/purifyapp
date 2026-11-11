@@ -168,7 +168,7 @@ export function ModeTile({
   );
 }
 
-/** A palette still to be earned by reading (lib/reader/earned.ts): its page inside a dashed edge, and how far the reader is. */
+/** A palette still to be earned by reading (lib/reader/earned.ts): its page drawn whole but unlit, and how far the reader is. No dashed edge (build 93 note 4). */
 export function GoalTile({
   mode,
   progress,

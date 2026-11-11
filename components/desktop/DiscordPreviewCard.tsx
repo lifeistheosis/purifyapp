@@ -60,7 +60,9 @@ export function DiscordPreviewCard({
       <div
         className={cn(
           "dark-island max-w-[400px] rounded-xl border p-3.5",
-          request ? "border-white/10 bg-[#1b1c1f]" : "border-dashed border-white/15 bg-[#111214]",
+          // With nothing playing the card is darker, with a whole fine edge. It was a dashed
+          // box, the placeholder the house does not draw (build 93 note 4).
+          request ? "border-white/10 bg-[#1b1c1f]" : "border-white/15 bg-[#111214]",
         )}
         aria-live="polite"
       >
