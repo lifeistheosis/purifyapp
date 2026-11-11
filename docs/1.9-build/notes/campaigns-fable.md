@@ -4780,7 +4780,9 @@ are what his answers put in. This is what closed it.
   (`lib/campaigns/flags.ts`).
 - Opening them for every reader, once he has tried them there. The store
   builds follow.
-- Pictures: his steps P1 to P5 (`OWNER-STEPS.md`).
+- Pictures: his steps P1 to P5 (`OWNER-STEPS.md`). *Later the same day:
+  pictures are for 1.9.1, by his word, and nothing in 1.9 waits on them
+  (section 41).*
 
 ### 40.4 What is dark at release, and says so nowhere
 
@@ -4793,3 +4795,142 @@ are what his answers put in. This is what closed it.
 The release's patch note should name prayer campaigns only once they are
 open for every reader, and should not name pictures while they are off
 (`AGENTS.md`, the release ritual, step 4). That note is the arbiter's.
+
+## 41. Campaigns in 1.9, pictures in 1.9.1 (his word, 2026-11-11)
+
+His word at about 14:43 UTC, as the arbiter passed it on: "So this is the
+plan. We're gonna fully launch campaign in version 1.9. In version 1.9.1,
+we'll include those extra legal additions."
+
+So prayer campaigns open to every reader in 1.9 with no picture anywhere,
+and pictures come in 1.9.1 with what they wait for: the automatic check's
+key (P1), the registration with NCMEC (P2), PhotoDNA (P4) and the first real
+picture as the check's proof (P5). A planned feature of 1.9.1, by his word,
+and not a fault of 1.9. The copyright agent (P3) stays a step for now: it is
+for everything readers post, their words too, and the arbiter is
+recommending it to him.
+
+Earlier the same day he chose no test web for 1.9 ("I won't make the test
+web just make it public"), so P1's step 7 and P5 were rewritten for the main
+web (`4fe72843c`): the key on Render's purifyapp service, saved with a
+deploy, and the first real picture added on purifyapp.net. That rewrite
+stands; it is for 1.9.1 now.
+
+### 41.1 Made sure of: pictures are off everywhere in 1.9
+
+- **The server's switch is off.** `CAMPAIGN_PARTS.pictures` is `false`
+  (`lib/campaigns/parts.ts`). Off, each of the pictures' three routes
+  answers 404 before it reads anything, and no picture can be reported.
+- **The second lock stands too.** With no key on the server there is no
+  check, and with no check no picture is accepted, whatever the switch says
+  (`lib/campaigns/pictureCheck.ts`). No key exists.
+- **No store build has pictures.** `PICTURES_IN_STORE_BUILDS` is `false`
+  (`lib/campaigns/flags.ts`): an app draws no picture and no picture
+  control and asks the pictures' route for nothing, whatever a server says.
+- **The screens draw nothing of pictures** unless the server says the part
+  is on: the campaign's page asks for none and draws no Pictures part, and
+  the rules page leaves out the rule about pictures.
+- **One line did speak of a picture, and is mended.** A creator who tapped
+  "Take this campaign down" was asked, in July's words: "Take this campaign
+  down for good? The picture is deleted with it, and the people praying will
+  no longer see it. This cannot be undone." In 1.9 no campaign has a
+  picture. No existing line could stand in (Community's is written for a
+  post, and in German, French and Russian its grammar and its noun are a
+  post's). The arbiter passed one new line at 14:49:
+  `campaigns.takeDownConfirmPlain`, "Take this campaign down for good? The
+  people praying will no longer see it. This cannot be undone." It is July's
+  own sentence without the picture's clause, made the same way in each of
+  the 21 languages from that language's own July line. It is shown whenever
+  the campaign has no picture; July's line is kept for one that has, for
+  1.9.1 to use or reword.
+- **No other line a reader is shown names a campaign's picture.** Every
+  English line under `campaigns.` that names a picture is one of the
+  pictures' own (the Pictures part, its sheet, its errors, its report, its
+  rule, and July's take-down line), and those are said only in the
+  pictures' own files.
+- **The words for the stores and the notes** name no pictures: the line to
+  be added to the 1.9 note when campaigns open (`docs/plans/v1.9/drop.json`)
+  says so of itself, and part B of `docs/app-store-review-notes.md` already
+  reads "Pictures on prayer campaigns are not in this build".
+
+Held by `lib/campaigns/__tests__/noPicturesIn19.test.ts`: both switches off
+for as long as the app's version is 1.9, the routes' and the screens'
+guards, the take-down line and its 21 languages, the two lines of 41.3, and
+his steps. `parts.test.ts` and `storePictures.test.ts` hold the switches as
+before.
+
+### 41.2 His steps
+
+`docs/1.9-build/OWNER-STEPS.md`, the Pictures section: it opens with his
+word and says that nothing in 1.9 waits on P1, P2, P4 or P5; each of the
+four is marked "for 1.9.1" and P3 "now, when the arbiter says". P5 is
+written for what will be true then: campaigns will already be open to every
+reader, so pictures cannot be proved "while campaigns are live for his
+account alone", as P5 was written for 1.9. How pictures are switched on for
+his account alone first is built with 1.9.1; today that switch is for every
+reader or for none. R5c, his "open campaigns" after his walk, is untouched
+by this chat; Admin rewrote its condition for the main web and its paragraph
+on pictures the same hour (`ea5368b69`), and the two read as one.
+
+### 41.3 The free plan's line and the Discover row
+
+Both name prayer campaigns and nothing else, in all 21 languages (read one
+by one): "Prayer Campaigns, prayed together" (`premium.free.campaigns`, and
+`lib/premium/plans.ts` in English and German) and "Prayer Campaigns"
+(`nav.discoverMenu.campaigns`). Each stands only where campaigns are open to
+every reader (`campaignsEnabled()`), so they read true with campaigns open
+and no pictures. As section 40 says, both read the constant in the build,
+so in the 1.9 store builds, cut at "testers", they appear with the next
+store build; on the website they appear when campaigns open.
+
+### 41.4 Named to the arbiter, not mine to change, and what became of each
+
+- **The Privacy page and the Terms speak of campaign pictures**
+  (`components/legal/PrivacyText.tsx`, the campaigns' part: what a campaign
+  shows, "Pictures are made again on our server before they are stored",
+  removing a picture; `TermsText.tsx`: "campaigns with their updates and
+  pictures"). They are the words he signed, and true of how a picture will
+  be treated; in 1.9 no reader can add one. **His word, about 15:13 UTC
+  (`BRAINSTORM.md`): "keep legal".** They stay as they are in 1.9, and
+  1.9.1 rewrites that paragraph to name the check.
+- **The 1.9 note's line that named how a campaign's pictures are checked,
+  and three passages that read as if pictures in 1.9 were open** (R5c's
+  last paragraph and R5d's sentence in `OWNER-STEPS.md`, item 4 of
+  `docs/app-store-review-notes.md`): Admin's, and mended by Admin at 15:10
+  UTC (`ea5368b69`) before this list was sent.
+- **Readers can already add pictures of their own elsewhere**: a profile
+  picture (`app/api/community/avatar`) and, with Plus, a banner
+  (`app/api/profile/banner`), both public. What P2 is for (a service that
+  becomes aware of such material reports it) is not a matter of campaigns
+  alone. Read in the code; how those two are checked is not this chat's to
+  say.
+- German says "Gebetskampagnen" in the plan's line and "Gebetsaktionen" in
+  the Discover row: two names for one thing.
+
+### 41.5 Checked (2026-11-11 UTC)
+
+- **Gates.** Typecheck 0 and the whole unit suite 13,636 of 13,636 (9
+  skipped) at 14:58, before the rebase onto `a5c0078d6`; after it, typecheck
+  0, lint 0 and the whole suite 13,647 of 13,647 at 15:26, with section 42's
+  test in the tree as well. `noPicturesIn19.test.ts` 8 of 8.
+- **The export.** Android, of this work on `06b2448af`: 0 at 15:01.
+- **The walk on it.** Four flows, 4 of 4, the new one among them: "taking
+  one down: what its creator is asked names no picture; Keep it sends
+  nothing, and Yes takes it down".
+- **The look** (`decisions/take-down-ask.png`, still 48 of
+  `scripts/mock-campaigns.mjs`). The question reads as passed: "Take this
+  campaign down for good? The people praying will no longer see it. This
+  cannot be undone.", under "Take this campaign down", with "Keep it" and
+  "Yes, take it down". No picture is named.
+- **What the checker said of it, and what the look found.** Every rule ok
+  but one, and that one is the house's dialog, not the line: `palette`
+  fails on the red edge of "Yes, take it down" (the same red on Dark and on
+  Light), and the dialog's words are "not measured, look", because its card
+  lets a little of the page through. So it was looked at on all five
+  palettes and measured in the stills' own pixels. Dark, Black, Candlelight
+  and Monastery read well (the question 6.6:1 at the least). **On Light it
+  cannot be read: the title 2.01:1, the question 1.42:1, "Keep it" 1.07:1,
+  "Yes, take it down" 1.82:1.** Not this change's: the card's ground has
+  been Dark's two night colours typed out since 2026-06-14, in the one
+  component every screen asks through, and `main` has the same lines.
+  Its mend follows in section 42, in the next push.
