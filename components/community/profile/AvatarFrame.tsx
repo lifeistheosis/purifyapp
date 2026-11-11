@@ -461,6 +461,9 @@ export function AvatarFrame({ decoration, size }: { decoration: string | null | 
       className="pointer-events-none absolute"
       style={{ left: -inset, top: -inset, overflow: "visible" }}
       data-frame={decoration}
+      // Said to the guardrails' measure (scripts/mock-check.mjs), which reads only what the page says.
+      data-mock-allow="gold mirror"
+      data-mock-why="a Plus avatar frame: gold is allowed on a Plus member's profile (noGold.test.ts), and a frame is drawn art centred on the face, the same in Arabic"
     >
       <defs>
         <linearGradient id={`${id}m`} x1="0" y1="0" x2="1" y2="1">

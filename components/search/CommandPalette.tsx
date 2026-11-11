@@ -778,7 +778,9 @@ export function CommandPalette() {
                 type="button"
                 onClick={close}
                 aria-label={t("common.close")}
-                className="search-plate grid size-[38px] shrink-0 place-items-center rounded-full text-paper"
+                // The plate stays 38, beside the field; a finger meets 44 (.hit-44, 3px
+                // round it, inside the 6px gap to the field). The sheet measure's find, 2026-11-11.
+                className="search-plate hit-44 grid size-[38px] shrink-0 place-items-center rounded-full text-paper"
               >
                 <ChevronDown size={20} strokeWidth={1.9} />
               </button>

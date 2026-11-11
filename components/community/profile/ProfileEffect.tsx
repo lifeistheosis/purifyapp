@@ -138,6 +138,9 @@ export function ProfileEffect({
       aria-hidden="true"
       className={cn("pfx", `pfx-${effect}`, quiet && CROSSING.includes(effect) && "pfx-quiet")}
       data-effect={effect}
+      // Said to the guardrails' measure (scripts/mock-check.mjs), which reads only what the page says.
+      data-mock-allow="gold mirror"
+      data-mock-why="a Plus profile effect: gold is allowed on a Plus member's profile (noGold.test.ts), and its specks, placed from the start, drift as decoration, so two measures never find them in one place"
     >
       {LAYOUT[effect].map((p, i) => (
         <span
