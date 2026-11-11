@@ -1,18 +1,30 @@
 "use client";
 
 // The reader's space, copied to their account (user_metadata.purify_space) so
-// a new device they sign in on starts from the same answers. The device copy
+// a new device they sign in on starts from the same picks. The device copy
 // is still the one every surface reads; this is the backup. Filling a device
 // from it is fillSpaceFromAccount in ./state.ts, run on sign-in by
 // lib/profile/preferences.ts.
 //
 // user_metadata rather than a profiles column: it needs no migration, and it
 // arrives with the session, so a fresh device can read it without a query.
+//
+// What the copy holds is what the privacy page names: what the reader is
+// looking for, the fast they keep, and the version of the questions they
+// answered. The answers about their faith are NOT in it (his "yes privacy",
+// 2026-11-11, call 32): how familiar they are with Orthodox Christianity,
+// whether they are coming back after time away, and where they come from say
+// what a person believes (special-category data, GDPR Art. 9), nobody was
+// asked whether they may be kept beside an email, and the app is drawn on the
+// device, which is where they stay. A copy written by an older build is
+// cleared of them at the reader's next sign-in (clearFaithAnswersFromAccount
+// below); the copies of readers who never open 1.9 are cleared by the owner's
+// SQL (docs/1.9-build/HANDOFF.md, 2026-11-11 05:03). Held by
+// ./__tests__/faithAnswers.test.ts.
 
 import { pushProfilePrefs } from "@/lib/profile/preferences";
 import { createClient } from "@/lib/supabase/client";
-import { roadsEnabled } from "./flags";
-import { ONBOARDING_VERSION, readBackground, readFastingRule, readIntent, readIntents, readLevel, readReturning } from "./state";
+import { ONBOARDING_VERSION, readFastingRule, readIntent, readIntents, readLevel } from "./state";
 import { isTesting } from "./testing";
 
 /**
@@ -29,9 +41,9 @@ import { isTesting } from "./testing";
  */
 export async function saveSpaceToAccount(opts: { finished?: boolean } = {}): Promise<void> {
   if (isTesting()) return;
-  const level = readLevel();
-  // Nothing answered yet (a skipped flow): nothing worth keeping.
-  if (!level) return;
+  // Nothing answered yet (a skipped flow): nothing worth keeping. The level
+  // is read here only to know that, on the device; it is never sent.
+  if (!readLevel()) return;
   try {
     const supabase = createClient();
     const {
@@ -44,32 +56,73 @@ export async function saveSpaceToAccount(opts: { finished?: boolean } = {}): Pro
     await supabase.auth.updateUser({
       data: {
         purify_space: {
-          level,
           intent: readIntent(),
           // Every pick of "What are you looking for?" in the order tapped
           // (1.8), the intent first. Read back by fillSpaceFromAccount.
           intents: readIntents(),
           fasting: readFastingRule(),
-          // Where they come from (1.8), in their own account only, so a new
-          // device of theirs starts from it too. With the roads on (1.9) it
-          // stays on the device and is not written here: a reader's faith
-          // background is special-category data (GDPR Art. 9), the device is
-          // where Purify is drawn, and nobody was asked whether it may be
-          // kept beside their email (notes/onboarding-fable.md, 6.3). The
-          // copies already in accounts are left as they are: taking them out
-          // is a change to production data, and the owner's word.
-          ...(roadsEnabled() ? {} : { background: readBackground() }),
-          // Coming back after time away (1.9): practicing, on the road back.
-          ...(readReturning() ? { returning: true } : {}),
           savedAt: new Date().toISOString(),
           ...(v === undefined ? {} : { v }),
         },
       },
     });
-    // Focus and depth ride the older profiles sync; send them now rather
-    // than at the next sign-in.
+    // Focus rides the older profiles sync; send it now rather than at the
+    // next sign-in.
     await pushProfilePrefs();
   } catch {
     /* kept on the device */
+  }
+}
+
+/** The answers that say what a reader believes or where they stand. None is kept with an account. */
+export const FAITH_ANSWERS = ["level", "returning", "background"] as const;
+
+/** An account's copy with the faith answers taken off, or null when it holds none of them. */
+export function withoutFaithAnswers(space: unknown): Record<string, unknown> | null {
+  if (!space || typeof space !== "object" || Array.isArray(space)) return null;
+  const copy = { ...(space as Record<string, unknown>) };
+  let found = false;
+  for (const key of FAITH_ANSWERS) {
+    if (key in copy) {
+      delete copy[key];
+      found = true;
+    }
+  }
+  return found ? copy : null;
+}
+
+let clearing: Promise<void> | null = null;
+
+/**
+ * Takes the faith answers off the copy the reader's own account still holds
+ * from an older build. Run at every sign-in and at a signed-in cold start
+ * (components/profile/ProfilePrefsBridge.tsx); it sends nothing once they are
+ * gone. The rest of the copy is left exactly as it was.
+ *
+ * In Testers mode too: this writes none of a test's answers, it only takes
+ * the reader's own off the server.
+ *
+ * A cold start asks twice in the same moment (the bridge's own look and the
+ * session's first event), so askers share one run and the copy is sent once.
+ */
+export function clearFaithAnswersFromAccount(): Promise<void> {
+  clearing ??= clearOnce().finally(() => {
+    clearing = null;
+  });
+  return clearing;
+}
+
+async function clearOnce(): Promise<void> {
+  try {
+    const supabase = createClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) return;
+    const cleared = withoutFaithAnswers(session.user.user_metadata?.purify_space);
+    if (!cleared) return;
+    await supabase.auth.updateUser({ data: { purify_space: cleared } });
+  } catch {
+    /* the next sign-in tries again */
   }
 }

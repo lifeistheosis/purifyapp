@@ -30,6 +30,7 @@
 import { useEffect } from "react";
 
 import { syncCollectionProgressOnSignIn } from "@/lib/catechism/progressSync";
+import { clearFaithAnswersFromAccount } from "@/lib/onboarding/accountSync";
 import { flushClergyRequest } from "@/lib/onboarding/clergyRequest";
 import { syncProfilePrefsOnSignIn } from "@/lib/profile/preferences";
 import { createClient } from "@/lib/supabase/client";
@@ -49,6 +50,8 @@ export function ProfilePrefsBridge() {
           await syncProfilePrefsOnSignIn();
           await syncCollectionProgressOnSignIn();
           await flushClergyRequest();
+          // An older build's copy of the faith answers comes off the account.
+          await clearFaithAnswersFromAccount();
         }
       } catch {
         /* ignore */
@@ -67,7 +70,10 @@ export function ProfilePrefsBridge() {
         void syncCollectionProgressOnSignIn();
         // On a timer: it asks for the session, and the callback runs inside
         // the auth lock (lib/profile/myPicture.ts says why that must wait).
-        window.setTimeout(() => void flushClergyRequest(), 0);
+        window.setTimeout(() => {
+          void flushClergyRequest();
+          void clearFaithAnswersFromAccount();
+        }, 0);
       }
     });
 

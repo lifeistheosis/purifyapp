@@ -1739,3 +1739,79 @@ starts from the right and carried it off the edge, leaving a bare line
 whichever way the page runs, and the walk holds it on the screen in Arabic.
 
 **Not run:** an iPhone. Row 35 of `docs/PHONE-WALK.md` is his walk for it.
+
+## 15. The answers about a reader's faith stay on the device (2026-11-11)
+
+**His word** (2026-11-11, about 13:24 UTC, to call 32 on his page): "yes
+privacy". Of its ten changes, this is the one in the welcome's own code: "the
+welcome answers about one's faith no longer kept with accounts and every copy
+cleared". Section 6.3 above asked for it for the background; Admin's finding
+(e) of the same night showed the level was in the same place, for every
+signed-in reader.
+
+**Which answers.** Three say what a reader believes or where they stand:
+
+| Answer | Asked as | On the device | Was in the account |
+| --- | --- | --- | --- |
+| Level | "How familiar are you with Orthodox Christianity?", and with the roads "Where are you now?" | `purify:level` | `purify_space.level`, every signed-in reader |
+| Coming back | "Baptized Orthodox, coming back" | `purify:returning` | `purify_space.returning` |
+| Background | "Where are you coming from?" | `purify:background` | `purify_space.background`, while the roads were dark |
+
+**As built.**
+
+- `lib/onboarding/accountSync.ts`: the copy written to the account
+  (`user_metadata.purify_space`) holds what the reader is looking for
+  (`intent`, `intents`), the fast they keep (`fasting`), when it was saved and
+  the version of the questions answered (`v`). None of the three is written,
+  in any flag state. `FAITH_ANSWERS` names them.
+- `clearFaithAnswersFromAccount()` in the same file takes the three off a copy
+  an account still holds from an older build, leaving the rest of the copy as
+  it was. It runs at every sign-in and at a signed-in cold start
+  (`components/profile/ProfilePrefsBridge.tsx`, beside the clergy request and
+  on the same timer), sends nothing once they are gone, and is sent once when
+  two ask in the same moment. It runs in Testers mode too: it writes none of
+  a test's answers.
+- `lib/onboarding/state.ts`: `fillSpaceFromAccount` takes the picks and the
+  fast where the device has none, and never the three, even from an older
+  copy that still holds them. `accountAnsweredThisVersion` reads the version
+  on the copy alone.
+- `components/onboarding/FirstRunGate.tsx`: an account's word no longer
+  finishes the questions on a device (`markOnboardedSilently` is gone). A
+  signed-in reader on a device that has not answered is asked: at the first
+  question when the account is new or answered this version elsewhere, and
+  by "We updated our onboarding" when it is from before, as it was.
+- Nothing on a device is removed by any of this. Signing in removes nothing,
+  and signing out removes nothing.
+
+**What a reader meets.** One thing: a second device of the same account asks
+the welcome questions. In the apps it already did (a new install opens on the
+welcome, and the sign-in there returns to the first question). The change is
+on the website, where a reader who signed in on a new browser used to be
+taken past the questions on the account's word. The calendar style was never
+in an account either, so that device had no calendar to start from before.
+
+**What is not mine and is with Admin:** `profiles.depth` and `PROFILE_PREFS`
+(`lib/profile/preferences.ts`), the two migrations, the SQL he runs after the
+merge and again three weeks later for the accounts of readers who never open
+1.9, and the Privacy page's words.
+
+**Held by** `lib/onboarding/__tests__/faithAnswers.test.ts` (eleven tests;
+ten failed on the code before it) and `scripts/faith-answers-walk.mjs`, which
+walks the export with a stand-in for the account's server that keeps every
+word sent to it: a new phone of an account whose older copy says "practicing",
+"catholic" and "coming back" is asked the first question, has none of the
+three put on it, and the copy is cleared once with the rest as it was; the
+questions answered there save no word of the three; a phone that answered
+long ago, opened cold, clears the older copy and keeps its own answers; and a
+copy with none of the three has nothing sent.
+
+**Not run:** a real account on the main web. What a phone can show of this is
+nothing new (the apps asked on a second device already), so there is no row
+for it in `docs/PHONE-WALK.md`; the check on production is Admin's count of
+accounts whose metadata still names a level, before and after the merge.
+
+**Learn by heart's switch** (`LEARNED_WORDS_TRAVEL`, `lib/sync/keptMerge.ts`)
+is the other half of his yes that is mine. Admin places the clause on the
+Privacy page (the arbiter's word, 13:30 UTC); the switch goes on in a commit
+on top of that one, since `lib/sync/__tests__/learnedWordsTravel.test.ts`
+refuses the switch while the page lacks the clause.

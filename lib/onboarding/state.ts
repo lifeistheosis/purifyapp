@@ -18,7 +18,7 @@ import {
   type Intent,
   type Level,
 } from "./space";
-import { roadsBuilt, roadsEnabled } from "./flags";
+import { roadsBuilt } from "./flags";
 import { SIGNED_OUT_PREVIEW_KEY, isTesting } from "./testing";
 import { NEW_WEEK, localDay, parseWeek, type WeekState } from "./week";
 
@@ -455,38 +455,40 @@ export function writeFastingRule(rule: FastingRule): void {
  * The account's copy of the answers (user_metadata.purify_space, written by
  * ./accountSync.ts), taken only where this device has none: an answer given
  * here is never overwritten by an older one from elsewhere, the same rule
- * lib/profile/preferences.ts keeps for focus and depth. True when the account
- * holds an answered space, so a caller can spare the reader the questions.
+ * lib/profile/preferences.ts keeps for focus. True when there was a copy.
+ *
+ * Only what the reader is looking for and the fast they keep. The answers
+ * about their faith (the level, coming back, where they come from) are never
+ * taken from an account, even from an older copy that still holds them: they
+ * stay on the device they were given on (his "yes privacy", 2026-11-11,
+ * ./accountSync.ts).
  */
 export function fillSpaceFromAccount(remote: unknown): boolean {
   // Testers mode: the device holds a test, and the account's answers stay out of it.
   if (isTesting()) return false;
-  if (!remote || typeof remote !== "object") return false;
+  if (!remote || typeof remote !== "object" || Array.isArray(remote)) return false;
   const r = remote as Record<string, unknown>;
-  if (!isLevel(r.level)) return false;
-  if (readLevel() == null) writeLevel(r.level);
   // The picks behind the intent come with it (1.8); a copy from before then
   // holds the intent alone.
   if (readIntent() == null && isIntent(r.intent)) writeIntents([r.intent, ...cleanIntents(r.intents)]);
   if (readString(FASTING_KEY) == null && isFastingRule(r.fasting)) writeFastingRule(r.fasting);
-  // With the roads on, where the reader comes from is kept on the device
-  // alone (./accountSync.ts), so an older copy in the account is not taken.
-  if (!roadsEnabled() && readBackground() == null && isBackground(r.background)) writeBackground(r.background);
-  if (readString(RETURNING_KEY) == null && r.returning === true) writeReturning(true);
   return true;
 }
 
 /**
  * Whether the account's copy of the answers was given to THIS version of the
- * flow, on another device. Then this device takes them and asks nothing. A
- * copy with no version on it was written by version 2, before versions were
- * recorded; it is used to mark that reader's earlier answers, and they are
- * asked again.
+ * flow, on another device. Read from the version the copy carries and nothing
+ * else: the copy holds no faith answer to go by (./accountSync.ts). A copy
+ * with no version on it was written by version 2, before versions were
+ * recorded, and counts as from before this one.
+ *
+ * It no longer spares a device the questions (components/onboarding/
+ * FirstRunGate.tsx): the faith answers are not in the account, so each device
+ * asks. It decides only how the reader is greeted there.
  */
 export function accountAnsweredThisVersion(remote: unknown): boolean {
-  if (!remote || typeof remote !== "object") return false;
+  if (!remote || typeof remote !== "object" || Array.isArray(remote)) return false;
   const r = remote as Record<string, unknown>;
-  if (!isLevel(r.level)) return false;
   const v = typeof r.v === "number" && Number.isFinite(r.v) ? r.v : FIRST_ACCOUNT_VERSION;
   return v >= ONBOARDING_VERSION;
 }
@@ -573,20 +575,6 @@ export function readKeep(): KeepState {
 }
 export function writeKeep(state: KeepState): void {
   writeString(KEEP_KEY, state === "open" ? null : state);
-}
-
-/**
- * Marked done without seeing the flow or the nudge: a reader who answered
- * this version on another device.
- */
-export function markOnboardedSilently(): void {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(ONBOARDED_KEY, String(ONBOARDING_VERSION));
-  } catch {
-    /* ignore */
-  }
-  emit();
 }
 
 export function readFocus(): Focus[] {

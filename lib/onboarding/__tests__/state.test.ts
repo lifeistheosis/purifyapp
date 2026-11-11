@@ -1,7 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { roadsBuilt } from "../flags";
-
 import {
   ONBOARDING_EVENT,
   ONBOARDING_VERSION,
@@ -13,7 +11,6 @@ import {
   isOnboarded,
   isSecondChanceDone,
   markOnboarded,
-  markOnboardedSilently,
   markSecondChanceDone,
   parseSpaceSnapshot,
   priorUseDetected,
@@ -211,20 +208,20 @@ describe("onboarding state", () => {
     });
   });
 
-  it("takes where the reader comes from from the account, never over this device's answer; with the new onboarding lit, not at all", () => {
+  it("never takes where the reader comes from from an account, whatever the flags say", () => {
+    // His "yes privacy" (2026-11-11): the answers about a reader's faith stay
+    // on the device (./faithAnswers.test.ts holds the whole of it).
     expect(fillSpaceFromAccount({ level: "inquirer", background: "catholic" })).toBe(true);
-    // The new onboarding keeps where a reader comes from on the device alone
-    // (his 108, ../flags.ts), so the account's copy is not taken once it is lit.
-    expect(readBackground()).toBe(roadsBuilt() ? null : "catholic");
+    expect(readBackground()).toBeNull();
     writeBackground("prefer-not");
     fillSpaceFromAccount({ level: "inquirer", background: "orthodox" });
     expect(readBackground()).toBe("prefer-not");
   });
 
   describe("the account copy", () => {
-    it("fills a fresh device and says the account had answered", () => {
+    it("fills a fresh device with the picks and the fast, and never with the level", () => {
       expect(fillSpaceFromAccount({ level: "practicing", intent: "study", fasting: "modified" })).toBe(true);
-      expect(readLevel()).toBe("practicing");
+      expect(readLevel()).toBeNull();
       expect(readIntent()).toBe("study");
       expect(readFastingRule()).toBe("modified");
     });
@@ -239,11 +236,14 @@ describe("onboarding state", () => {
       expect(readIntent()).toBe("prayer");
     });
 
-    it("treats anything without a real level as no answer", () => {
+    it("takes nothing from what is not a copy, and no answer it does not know", () => {
       expect(fillSpaceFromAccount(undefined)).toBe(false);
       expect(fillSpaceFromAccount("practicing")).toBe(false);
-      expect(fillSpaceFromAccount({ level: "abbot", intent: "study" })).toBe(false);
+      expect(fillSpaceFromAccount(["study"])).toBe(false);
       expect(readIntent()).toBeNull();
+      fillSpaceFromAccount({ intent: "abbot", fasting: "feasting" });
+      expect(readIntent()).toBeNull();
+      expect(readFastingRule()).toBe("strict");
     });
   });
 
@@ -275,11 +275,6 @@ describe("onboarding state", () => {
       markOnboarded();
       expect(store.getItem("purify:onboarded")).toBe(String(ONBOARDING_VERSION));
       expect(isOnboarded()).toBe(true);
-      expect(shouldShowOnboarding()).toBe(false);
-    });
-
-    it("leaves alone a reader whose account answered this version on another device", () => {
-      markOnboardedSilently();
       expect(shouldShowOnboarding()).toBe(false);
     });
 
@@ -339,12 +334,6 @@ describe("onboarding state", () => {
       expect(isNudgeDismissed()).toBe(false);
     });
 
-    it("never shows a Day 1 card to a reader marked done silently", () => {
-      markOnboardedSilently();
-      dismissNudge();
-      refreshDayOne();
-      expect(isNudgeDismissed()).toBe(true);
-    });
   });
 
   describe("a reader who is back", () => {
@@ -363,7 +352,9 @@ describe("onboarding state", () => {
   });
 
   describe("which version the account answered", () => {
-    it("takes an account that answered this version on another device", () => {
+    it("knows an account that answered this version on another device, by the version alone", () => {
+      expect(accountAnsweredThisVersion({ intent: "study", v: ONBOARDING_VERSION })).toBe(true);
+      // An older build's copy, with the level still in it, reads the same.
       expect(accountAnsweredThisVersion({ level: "practicing", intent: "study", v: ONBOARDING_VERSION })).toBe(true);
     });
 
@@ -373,10 +364,10 @@ describe("onboarding state", () => {
       expect(accountAnsweredThisVersion({ level: "learning", v: ONBOARDING_VERSION - 1 })).toBe(false);
     });
 
-    it("does not take a version without an answer, or junk", () => {
-      expect(accountAnsweredThisVersion({ v: ONBOARDING_VERSION })).toBe(false);
-      expect(accountAnsweredThisVersion({ level: "abbot", v: 99 })).toBe(false);
-      expect(accountAnsweredThisVersion({ level: "learning", v: "3" })).toBe(false);
+    it("does not take junk for a version", () => {
+      expect(accountAnsweredThisVersion({ level: "learning", v: "99" })).toBe(false);
+      expect(accountAnsweredThisVersion({ v: Number.NaN })).toBe(false);
+      expect(accountAnsweredThisVersion([ONBOARDING_VERSION])).toBe(false);
       expect(accountAnsweredThisVersion(null)).toBe(false);
       expect(accountAnsweredThisVersion("practicing")).toBe(false);
     });

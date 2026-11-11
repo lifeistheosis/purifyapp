@@ -1,7 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { roadsBuilt } from "../flags";
-
 /**
  * Testers mode (1.8): an admin sees Purify as another kind of reader and
  * comes back (the owner, 2026-10-28: "I am able to easily switch the
@@ -286,11 +284,11 @@ describe("while testing", () => {
     await saveSpaceToAccount();
     expect(net.updateUser).toHaveBeenCalledTimes(1);
     const sent = (net.updateUser.mock.calls[0]?.[0] as { data: { purify_space: Record<string, unknown> } }).data.purify_space;
-    expect(sent).toMatchObject({ level: "practicing", intent: "prayer", fasting: "strict" });
-    // Where a reader comes from goes to the account only until the new
-    // onboarding is lit; from then it stays on the device (his 108, ../flags.ts).
-    if (roadsBuilt()) expect(sent).not.toHaveProperty("background");
-    else expect(sent).toMatchObject({ background: "orthodox" });
+    expect(sent).toMatchObject({ intent: "prayer", fasting: "strict" });
+    // The answers about a reader's faith stay on the device (his "yes
+    // privacy", 2026-11-11; ./faithAnswers.test.ts).
+    expect(sent).not.toHaveProperty("level");
+    expect(sent).not.toHaveProperty("background");
   });
 });
 

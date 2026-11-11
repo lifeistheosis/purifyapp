@@ -7,7 +7,6 @@ import {
   fillSpaceFromAccount,
   finishedEarlierVersion,
   isOnboarded,
-  markOnboardedSilently,
   readResumeStage,
   readWeek,
   setResumeStage,
@@ -139,21 +138,23 @@ export function FirstRunGate({
         } = await createClient().auth.getSession();
         if (session) {
           const space = session.user.user_metadata?.purify_space;
-          // Answered already, this version, on another device: take those
-          // answers and ask nothing.
-          if (accountAnsweredThisVersion(space) && fillSpaceFromAccount(space)) {
-            markOnboardedSilently();
-            return;
-          }
+          // What the account keeps of the answers (what they are looking
+          // for, the fast they keep) is taken where this device has none.
+          // The answers about their faith are not in an account (his "yes
+          // privacy", lib/onboarding/accountSync.ts), so this device asks.
+          fillSpaceFromAccount(space);
+          // A brand-new account, or one that answered this version on
+          // another device: the first question, with no screen that says the
+          // questions are new, which would not be true for either.
           const created = session.user.created_at ? Date.parse(session.user.created_at) : NaN;
-          if (Date.now() - created < NEW_ACCOUNT_WINDOW_MS) {
+          if (Date.now() - created < NEW_ACCOUNT_WINDOW_MS || accountAnsweredThisVersion(space)) {
             setResumeStage("assessment");
             if (alive) setStart("level");
             return;
           }
           // An account from before this version of the questions. What it
-          // answered then, on this device or another, is what gets marked.
-          fillSpaceFromAccount(space);
+          // answered then on this device, and its picks from another, are
+          // what gets marked.
           if (alive) setStart("returning");
           return;
         }
