@@ -30,6 +30,7 @@ Also:
 - Orthodox History shows its great events as large cards, and every picture for every reader.
 - Listening: one card at rest and a small pill as you scroll, and your place kept in every book.
 - The day's prayer hours no longer fade, and every field's hint is easier to read.
+- Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends.
 
 ## What may not be said
 
@@ -225,7 +226,7 @@ Purify 1.9 is live on the web: a journal by the Church's day, every verse opened
 
 ### Purify's own post in Community
 
-`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 1814 of 4000 characters
+`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 2023 of 4000 characters
 
 ~~~text
 Purify 1.9 is here
@@ -242,6 +243,7 @@ Purify 1.9 keeps a journal with you by the Church's day, free for everyone, open
 🌿 The Florilegium and the Thread. In Purify Plus, your gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps.
 🕯️ Candlelight and ambience. In Purify Plus, Candlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once.
 📱 Remember the verse on your home screen. A widget keeps your verse on your home screen, the same for every reader.
+🎁 Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends.
 
 The Scriptures, the saints, the prayers and the calendar stay free.
 
@@ -270,7 +272,7 @@ When a store shows 1.9: its number goes into lib/appUpdate/release.ts (Android 0
 
 ### In the stores
 
-`discord-stores` · Discord · Discord, #announcements · Ready · 475 of 2000 characters
+`discord-stores` · Discord · Discord, #announcements · Ready · 685 of 2000 characters
 
 > If one store approves first, post for that store alone and name it.
 
@@ -284,6 +286,8 @@ Update Purify to get it inside the app:
 • Plus: study, Compare and Remember the verse
 
 📱 Remember the verse on your home screen. A widget keeps your verse on your home screen, the same for every reader.
+
+🎁 Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends.
 
 App Store: https://apps.apple.com/app/id6798897857
 Google Play: https://play.google.com/store/apps/details?id=net.purifyapp.purify
@@ -315,6 +319,7 @@ What is new, briefly:
 - Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
 - Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
 - Study a verse, in Purify Plus. Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.
+- Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends.
 
 The Scriptures, the saints, the prayers and the calendar stay free.
 

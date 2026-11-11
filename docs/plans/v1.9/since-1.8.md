@@ -4,7 +4,8 @@ One entry per change readers can see, under its category, with the commit and wh
 
 ## The scope, frozen (Admin, 2026-11-11, the arbiter's word of 17:00 UTC)
 
-What readers can see is the 1.9 note itself: 43 lines under six categories
+What readers can see is the 1.9 note itself: 44 lines under six categories (the EIKON gift's
+line added at the arbiter's word of 18:49 UTC)
 (`patch-note-1.9.json`, put into `data/changelog/entries.json` and
 `patches.json` by `node scripts/release.mjs note 1.9`, which on 2026-11-11
 changed nothing). Each line's commits are in the 1.9 record, not copied here:

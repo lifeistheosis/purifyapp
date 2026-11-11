@@ -10,7 +10,7 @@ How each step works is in `docs/RELEASE.md`.
 - [x] `since-1.8.md` lists every change readers can see since the last
       note, each with its commit and whether it is live, gated, or waits for
       the store builds. (By reference, 2026-11-11: the note's 43 lines are
-      the list, their commits in the 1.9 record.)
+      the list, their commits in the 1.9 record; 44 with the gift's line.)
 - [x] Everything gated off (a switch, an env value, a job that is not running)
       is marked. It does not go in the note. (`since-1.8.md`, "Gated off".)
 - [x] What is not ready is named, with the release it moves to.
@@ -27,7 +27,7 @@ How each step works is in `docs/RELEASE.md`.
       categories. From Purify to readers, leading with what they get.
 - [x] `patch-long-1.9.json`: the intro and the sections.
 - [x] `node scripts/release.mjs note 1.9` (2026-11-11: 43 lines, 6 sections,
-      nothing changed).
+      nothing changed; run again for the EIKON gift's line under Shop: 44).
 - [x] A reason written in `data/changelog/checklists/1.9.json` for every
       skipped category.
 - [ ] The highlights at the top of What's New: `lib/whatsNew/highlights.ts`,
