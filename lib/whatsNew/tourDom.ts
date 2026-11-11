@@ -165,12 +165,13 @@ export function planStop(p: PlanInput): Plan {
 export const REPLAN_PX = 24;
 
 /**
- * What takes a tap round the lit box and does nothing with it, so the page
- * under a stop cannot be used: above, below, before and after it, and the box
- * itself too unless the stop asks for a try. Drawn from the light's own
- * variables (--tour-x, --tour-y, --tour-w, --tour-h), so they follow it as it
- * moves with nothing rendered; with the light gone out the box is nothing
- * and the four cover the whole screen.
+ * What takes a tap round the lit box and does nothing with it: above, below,
+ * before and after it, and the box itself too unless the stop asks for a try.
+ * Drawn from the light's own variables (--tour-x, --tour-y, --tour-w,
+ * --tour-h), so they follow it as it moves with nothing rendered; with the
+ * light gone out the box is nothing and the four cover the whole screen.
+ * Drawn only under the close now, never on a stop (build 93 note 8,
+ * tapEndsTour below): a tap meant for the page is the page's.
  */
 export type Blocker = { name: string; style: Record<string, string | number> };
 
@@ -187,6 +188,22 @@ export function tapBlockers(tryIt: boolean): Blocker[] {
   ];
   if (!tryIt) parts.push({ name: "over", style: { top: y, left: x, width: w, height: h } });
   return parts;
+}
+
+/**
+ * Whether a tap ends the tour while it shows a stop (1.9, build 93 note 8;
+ * the owner, in the journal under its stop: "when I click title or anything,
+ * so just a quick explanation of how it works ... Honestly, just buggy").
+ * Nothing of the tour stands over the page on a stop, so a tap meant for the
+ * page reaches it as any tap would: a field takes it and the keyboard comes
+ * with it, a button does what it does. The reader has gone back to the page,
+ * so the tour ends there, as Skip does. A tap on the tour's own words (Next,
+ * Back, Skip) is the tour's, and on a stop that asks for a try a tap on the
+ * lit thing is the try: neither ends it.
+ */
+export function tapEndsTour(at: { inTour: boolean; tryIt: boolean; inLit: boolean }): boolean {
+  if (at.inTour) return false;
+  return !(at.tryIt && at.inLit);
 }
 
 // ---------------------------------------------------------------------------

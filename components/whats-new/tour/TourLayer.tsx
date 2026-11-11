@@ -37,9 +37,13 @@
 //     apps: their export does not carry the per-part files a prefetch asks
 //     for (scripts/native-build.mjs leaves them out), and a prefetch that
 //     found none held the next page back by about 30 s on the export.
-//   - The page under a stop cannot be scrolled (lockBodyScroll) or tapped
-//     (the blockers round the lit box), except the lit element on a stop that
-//     asks for a try.
+//   - The page under a stop cannot be scrolled (lockBodyScroll), but a tap
+//     meant for it is its own (build 93 note 8, tourDom.ts tapEndsTour):
+//     nothing of the tour stands over it, so the tap reaches what it was
+//     meant for, a field taking it and the keyboard with it, and the tour
+//     ends there, as Skip does. On a stop that asks for a try, a tap on the
+//     lit element is the try, and the tour stays. Only the close keeps the
+//     blockers, under its night.
 //   - Escape and Android's back end it, as Skip does. The keyboard stays in
 //     the words (Tab), and the arrow keys move between stops.
 //   - The close's Done goes back to where the tour began.
@@ -80,6 +84,7 @@ import {
   samePage,
   tapBlockers,
   takeIntro,
+  tapEndsTour,
   targetComing,
   type Box,
   type FootPlace,
@@ -255,6 +260,7 @@ export function TourLayer() {
 
   useEffect(() => {
     returnFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const root = rootRef.current;
     lockBodyScroll();
     const onResize = () => {
       if (roomRef.current !== null) ensureRoom();
@@ -267,8 +273,13 @@ export function TourLayer() {
       stopGlide();
       giveRoom(null);
       releaseIntro();
+      // Given back only from the tour's own words or from nothing: a field
+      // the reader tapped on the page, which ended the tour (tapEndsTour),
+      // keeps the keyboard.
       const back = returnFocusRef.current;
-      if (back?.isConnected) back.focus({ preventScroll: true });
+      const now = document.activeElement;
+      const onThePage = now instanceof HTMLElement && now !== document.body && !root?.contains(now);
+      if (back?.isConnected && !onThePage) back.focus({ preventScroll: true });
     };
   }, [stopGlide, giveRoom, ensureRoom]);
 
@@ -662,13 +673,32 @@ export function TourLayer() {
     return () => window.removeEventListener("keydown", onKey, true);
   }, [leave, next, back]);
 
+  // A tap meant for the page is the page's (build 93 note 8): it goes on to
+  // what it was meant for, untouched, and the tour ends, as Skip does. Heard
+  // as the finger comes down, before the page acts on it.
+  const onAStop = state.phase === "step";
+  useEffect(() => {
+    if (!onAStop) return;
+    function onDown(e: PointerEvent) {
+      const s = getTourState();
+      if (s.phase !== "step") return;
+      const target = e.target instanceof Node ? e.target : null;
+      if (!target) return;
+      const step = tourFor(s.version)?.steps[s.index];
+      const lit = s.found && step ? findTarget(step.target) : null;
+      const inTour = Boolean(rootRef.current?.contains(target));
+      if (tapEndsTour({ inTour, tryIt: Boolean(s.found && step?.tryIt), inLit: Boolean(lit?.contains(target)) })) leave();
+    }
+    document.addEventListener("pointerdown", onDown, true);
+    return () => document.removeEventListener("pointerdown", onDown, true);
+  }, [onAStop, leave]);
+
   const steps = tour?.steps ?? [];
   const missing = state.phase === "step" || state.phase === "end" ? state.missing : [];
   const shown = state.phase === "step" ? state.shown : null;
   const shownStep = shown !== null ? steps[shown] : undefined;
   const found = state.phase === "step" && state.found;
   const moving = state.phase === "step" && !state.found;
-  const tryIt = found && state.phase === "step" && Boolean(steps[state.index]?.tryIt);
 
   // The keyboard goes to the way on: See what's new, Next, Done.
   useEffect(() => {
@@ -692,7 +722,8 @@ export function TourLayer() {
   };
   const count = shown !== null ? stepCount(shown, steps.length, missing) : null;
   const stepping = state.phase === "step";
-  const blockers = state.phase === "offer" ? [] : tapBlockers(tryIt);
+  // Under the close only: on a stop a tap meant for the page is the page's.
+  const blockers = state.phase === "end" ? tapBlockers(false) : [];
 
   return createPortal(
     <div
