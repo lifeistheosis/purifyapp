@@ -136,7 +136,6 @@ describe("the covers' pictures", () => {
       // passed, and their texts name no saint who has one. Zurbaran's "St
       // Romanus" is a Benedictine monk of that name, not the martyr.
       "marcian-of-cyrrhus/life-of-marcian": "search: Updates 2, build 93 note 12",
-      "plato-and-romanus/martyrdom-of-romanus": "search: Updates 2, build 93 note 12",
       "zacchaeus-and-alphaeus/martyrdom-of-zacchaeus-and-alphaeus": "search: Updates 2, build 93 note 12",
       // Updates 2's, from before November: St Irenaeus's and St Irene's
       // carried icons have no recorded source, and St Symeon's no old icon

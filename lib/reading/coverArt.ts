@@ -278,6 +278,9 @@ export const WORK_ART: Readonly<Record<string, CoverArt>> = {
   // Creation of the World, which reads his Gospel and his Apocalypse. It stays
   // the book's alone. (Five November books stood here until their saints'
   // own pictures came, 2026-11-11.)
+  // St Romanus's own print, with the child Barulas of his martyrdom, for his
+  // book alone: his page, with St Plato, wears St Plato's.
+  "plato-and-romanus/martyrdom-of-romanus": bundled("romanus-and-barulas.jpg", 24),
   "victorinus-of-pettau/on-the-creation-of-the-world": COVER_ART["apostle-john"],
 };
 

@@ -100,6 +100,7 @@ const ACCEPTED = {
   "saints/icons/martyrs-of-melitene.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
   "saints/icons/matrona-of-constantinople.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
   "saints/icons/erastus-olympas-rodion-sosipater-quartus-and-tertius.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/romanus-and-barulas.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
   "saints/icons/plato-and-romanus.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
   "saints/icons/proclus-of-constantinople.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
   "saints/icons/philemon-and-apphia.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",

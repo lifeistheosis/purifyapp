@@ -2017,6 +2017,20 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%96%D0%B8%D1%82%D0%B8%D1%8F_%D0%A1%D0%B2%D1%8F%D1%82%D1%8B%D1%85_(1903-1911)_-_%D0%B8%D0%BA%D0%BE%D0%BD%D0%B0_03302_%D0%A4%D1%80%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%B8%D0%B9.png",
   },
+  // Not a page's icon: the cover of the Martyrdom of Romanus alone, whose
+  // page (Sts Plato and Romanus) wears St Plato's print (the arbiter,
+  // 2026-11-11). The child is Barulas, who is in his martyrdom.
+  "romanus-and-barulas.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A black and white print of a bearded man within a plain halo, in a tunic and a cloak, holding a small cross against his breast, and beside him a curly-haired child within a halo of his own, whose hand he holds.",
+    work: "Sts Romanus and Barulas: the icon printed for the day in the Russian Lives of the Saints after St Demetrius of Rostov (Moscow, Synodal Press, the November volume), no. 03182: a detail, the two figures, the man to the waist",
+    artist: "Not named",
+    workDate: "Before 1911",
+    source: "Wikimedia Commons (from the volume's scan)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%96%D0%B8%D1%82%D0%B8%D1%8F_%D0%A1%D0%B2%D1%8F%D1%82%D1%8B%D1%85_(1903-1911)_-_%D0%B8%D0%BA%D0%BE%D0%BD%D0%B0_03182_%D0%A0%D0%BE%D0%BC%D0%B0%D0%BD_%D0%B8_%D0%92%D0%B0%D1%80%D1%83%D0%BB.png",
+  },
   // The 1904 prints: Russian Lives of the Saints, December volume (Moscow,
   // 1904), anonymous, public domain by age; used on the arbiter's word under
   // the owner's "a free icon or the plate" (2026-11-10). Each is cut inside
