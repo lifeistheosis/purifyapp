@@ -46,7 +46,8 @@ export function PlanPath({
   /** The day finished a moment ago, whose circle fills as it lands. */
   justRead: number | null;
   bookName: (slug: string) => string;
-  onToggle: (index: number, read: boolean) => void;
+  /** `pressed` is the circle the finger is on, so the page can keep it where it is (lib/ui/useHeldPlace.ts). */
+  onToggle: (index: number, read: boolean, pressed: Element) => void;
 }) {
   const { t } = useTranslate();
   const [all, setAll] = useState(false);
@@ -56,7 +57,16 @@ export function PlanPath({
 
   // The window: two read before today, today, four after (or the last days).
   const anchor = today ?? plan.days.length - 1;
-  const from = Math.max(0, anchor - BEHIND);
+  // A day that has been in the window stays in it while the page is open.
+  // Marking a third day read moved today on and dropped the first day off
+  // the window's head, and every row under it, the one the finger was on
+  // among them, went up a row (fresh eyes L3's kind). The window opens
+  // afresh the next time the page does.
+  const [first, setFirst] = useState<number | null>(null);
+  const start = Math.max(0, anchor - BEHIND);
+  const from = first === null ? start : Math.min(first, start);
+  // Kept for the next drawing, the way React asks for what one drawing owes the last.
+  if (first !== from) setFirst(from);
   const to = Math.min(plan.days.length - 1, anchor + AHEAD);
   const near = Array.from({ length: to - from + 1 }, (_, k) => from + k);
 
@@ -76,7 +86,7 @@ export function PlanPath({
       <li key={i} className={cn("flex items-center gap-3 py-1.5", rise && "path-rise", !isRead && !isToday && "text-paper/55")}>
         <button
           type="button"
-          onClick={() => onToggle(i, !isRead)}
+          onClick={(e) => onToggle(i, !isRead, e.currentTarget)}
           aria-pressed={isRead}
           aria-label={t(isRead ? "plans.markUnread" : "plans.markDayRead", { day: i + 1 })}
           className={cn(

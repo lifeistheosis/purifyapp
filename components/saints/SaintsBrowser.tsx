@@ -18,6 +18,7 @@ import { FilterPill } from "./FilterPill";
 import { CenturyTimeline } from "./CenturyTimeline";
 import { ChipScroller } from "@/components/ui/ChipScroller";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { cn } from "@/lib/cn";
 
 /*
  * The two filters, redrawn 2026-09-28 at the owner's request ("optimize the
@@ -27,6 +28,21 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * the kinds as one row that scrolls sideways (components/ui/ChipScroller),
  * the centuries as a timeline whose bars show how many saints each holds
  * (./CenturyTimeline). Counts still follow the other filter, as before.
+ *
+ * Nothing moves under the finger that chooses (1.9, fresh eyes L7; his build
+ * 93 note 16 kind). A kind or a century chosen used to take the pinned card
+ * away from over the filters and put it back with "All", and the row the
+ * finger was on went with it: 436px on a tablet with the card in sight, and
+ * 792px on a phone on the way back to "All". Only a browser's scroll
+ * anchoring held the row where it did hold, and not every phone's browser
+ * anchors. So what is over the filters never changes:
+ *  - the pinned card stays pinned while a filter is on (a saint it shows is
+ *    in the list below as well where the filter is hers);
+ *  - the label's row keeps one height: "Clear" is always in it, unseen until
+ *    there is something to clear (it grew the row 3px when it came).
+ * The list getting shorter UNDER the filters is not this page's to mind: the
+ * page keeps the length the reader is looking at after any tap, from one
+ * mount at the root (lib/ui/keepLength.ts).
  */
 const LABEL = "font-sans text-caption font-semibold text-paper/45";
 
@@ -93,12 +109,11 @@ export function SaintsBrowser({ saints = SAINTS }: { saints?: Saint[] }) {
 
   return (
     <>
-      {!isFiltering &&
-        featured.map((s) => (
-          <div key={s.slug} className="mt-10">
-            <FeaturedSaintCard saint={s} />
-          </div>
-        ))}
+      {featured.map((s) => (
+        <div key={s.slug} className="mt-10">
+          <FeaturedSaintCard saint={s} />
+        </div>
+      ))}
 
       <div className="mt-10">
         {/* The label row keeps to the label's own height; the clear button
@@ -106,18 +121,23 @@ export function SaintsBrowser({ saints = SAINTS }: { saints?: Saint[] }) {
             down. */}
         <div className="mb-3 flex items-center justify-between gap-4">
           <p className={LABEL}>{t("saints.byKind")}</p>
-          {isFiltering ? (
-            <button
-              type="button"
-              onClick={() => {
-                setActiveGroup(null);
-                setActiveCentury(null);
-              }}
-              className="-my-3 -mr-3 inline-flex min-h-11 items-center rounded-pill px-3 font-sans text-detail font-medium text-paper/60 transition-colors hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
-            >
-              {t("saints.clearFilters")}
-            </button>
-          ) : null}
+          {/* Always in the row, so the row is one height: unseen, and out of a
+              finger's and a keyboard's way, until a filter is on. */}
+          <button
+            type="button"
+            disabled={!isFiltering}
+            aria-hidden={!isFiltering || undefined}
+            onClick={() => {
+              setActiveGroup(null);
+              setActiveCentury(null);
+            }}
+            className={cn(
+              !isFiltering && "invisible",
+              "-my-3 -me-3 inline-flex min-h-11 items-center rounded-pill px-3 font-sans text-detail font-medium text-paper/60 transition-colors hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper",
+            )}
+          >
+            {t("saints.clearFilters")}
+          </button>
         </div>
         <ChipScroller label={t("saints.byKind")}>
           <FilterPill

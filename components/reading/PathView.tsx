@@ -97,13 +97,24 @@ export function PathView({ path }: { path: View }) {
                     </li>
                   ))}
                 </ul>
+                {/* One width in both states. The pill was as wide as its words, so a tap took it from
+                    "Mark as read" to "Read", 114px to 66px on a phone in English, and its middle went 24px
+                    sideways from under the finger (the gate's tap walk, 2026-11-11: seventeen days of this
+                    path). In a language whose first line is longer, the finger was left off the pill for the
+                    tap that takes the mark back. Both lines stand in the one cell now, the one not in use
+                    unseen, so the pill is as wide as the longer of them and a mark changes only its words. */}
                 <button
                   type="button"
                   aria-pressed={read}
                   onClick={() => toggle(i)}
-                  className="tap-press hit-44 mt-3 inline-flex h-9 items-center rounded-pill border border-paper/15 px-4 font-sans text-detail font-medium text-paper/75 hover:border-paper/35 hover:text-paper aria-pressed:border-paper/35 aria-pressed:text-paper"
+                  className="tap-press hit-44 mt-3 inline-grid h-9 items-center justify-items-center rounded-pill border border-paper/15 px-4 font-sans text-detail font-medium text-paper/75 hover:border-paper/35 hover:text-paper aria-pressed:border-paper/35 aria-pressed:text-paper"
                 >
-                  {read ? t("paths.read") : t("paths.markRead")}
+                  <span aria-hidden={read} className={`col-start-1 row-start-1 ${read ? "invisible" : ""}`}>
+                    {t("paths.markRead")}
+                  </span>
+                  <span aria-hidden={!read} className={`col-start-1 row-start-1 ${read ? "" : "invisible"}`}>
+                    {t("paths.read")}
+                  </span>
                 </button>
                 {readers.length ? (
                   <p className="mt-2 font-sans text-caption text-paper/55">{t("together.readBy", { names: readers.join(", ") })}</p>
