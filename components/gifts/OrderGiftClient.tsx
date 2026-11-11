@@ -434,7 +434,7 @@ export function OrderGiftClient() {
       </div>
 
       <div className="relative mx-auto w-full max-w-md px-[18px]">
-        <p className="gift-caption">{t("orderGift.caption")}</p>
+        <p id="gift-caption" className="gift-caption">{t("orderGift.caption")}</p>
 
         {/* The ticket: the gift above its torn line, the stub below. */}
         <div className="set-panel mt-4">

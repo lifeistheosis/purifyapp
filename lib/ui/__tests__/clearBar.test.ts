@@ -73,6 +73,8 @@ const FIRST_WORDS: Record<string, { file: string; drawn: RegExp }> = {
   "app/(app)/councils/[slug]/page.tsx": { file: "app/(app)/councils/[slug]/page.tsx", drawn: /<p id="council-ordinal"[^>]*>\s*<T k=\{ordinalKey\(c\)\} \/>/ },
   "app/(app)/theology/path/[subject]/page.tsx": { file: "app/(app)/theology/path/[subject]/page.tsx", drawn: /<p\s+id="step-kicker"[\s\S]*?\{stepNumeral\(step\.n\)\}/ },
   "app/(app)/theology/[topic]/page.tsx": { file: "components/theology/TopicReader.tsx", drawn: /firstId=\{epigraph \? DOCTRINE_FIRST_WORDS : undefined\}[\s\S]*?id=\{epigraph \? undefined : DOCTRINE_FIRST_WORDS\}/ },
+  // The gift's caption under the cards comes before its ticket's eyebrow and name.
+  "app/(app)/gift/page.tsx": { file: "components/gifts/OrderGiftClient.tsx", drawn: /<p id="gift-caption" className="gift-caption">\{t\("orderGift\.caption"\)\}<\/p>/ },
 };
 
 describe("a bar that starts clear over a picture turns solid at the head's first words", () => {

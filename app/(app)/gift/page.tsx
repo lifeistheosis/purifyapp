@@ -25,7 +25,7 @@ export const metadata = {
 export default function GiftPage() {
   return (
     <>
-      <MobileTopBar titleKey="orderGift.barTitle" back backFallback="/" revealTitleOn="gift-title" overlay />
+      <MobileTopBar titleKey="orderGift.barTitle" back backFallback="/" revealTitleOn="gift-title" solidFrom="gift-caption" overlay />
       <OrderGiftClient />
     </>
   );
