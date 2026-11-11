@@ -5488,6 +5488,20 @@ html[data-reading-mode="black"] .tile-sheen {
  :where(html[data-reading-mode="candlelight"]) :where(.lm-card) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65) {
  color: color-mix(in oklab, var(--color-paper) 66%, transparent);
  }
+ /* The same corner on the other dark palettes that wear the card as typed
+    (the arbiter's yes, 2026-11-11; True black draws the card flat, and has
+    no corner). At Dark's 50 percent the corner's lightest point reads
+    4.42:1, and at the 55 of Monastery, Councils and Cappadocian 4.36, 4.27
+    and 4.26. On a graphite card Dark draws its faint shares at 52 (4.65),
+    and the three draw theirs at 60 (4.88, 4.77 and 4.76). Every share under
+    the new one is named, so a fainter word is never drawn stronger than a
+    less faint one beside it. */
+ :where(html:not([data-reading-mode])) :where(.lm-card) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50) {
+ color: color-mix(in oklab, var(--color-paper) 52%, transparent);
+ }
+ :where(html[data-reading-mode="monastery"], html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) :where(.lm-card) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58) {
+ color: color-mix(in oklab, var(--color-paper) 60%, transparent);
+ }
  /* The saint web's sheet (.saint-web-card) is a step darker than Light's
     card, as a tray is: the line under a saint's name, at Light's 70, read
     4.41:1 ("787") and 4.47 ("Councils"). At 75, as faint words on a tray,
