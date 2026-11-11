@@ -16,7 +16,7 @@ import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 const CLOSING = "Thank you for walking this with us. Glory to God for all things.";
 const SIGNATURE = "From Edgar, the Purify Team.";
 const RELEASE_NOTES = "Release notes";
-const GROUPED = "Grouped by year, then month, then day. The most recent day is open by default; tap any year, month or day to expand it. Inside a day, tap a release to read its full item list.";
+const GROUPED = "Newest first, by month. The latest month is open; tap any other to see its releases, and tap a release to read its full list.";
 
 export const metadata = {
  title: "What's new",
@@ -27,8 +27,10 @@ export const metadata = {
 const SECTION = "px-5 md:px-8 py-16 md:py-24";
 
 
-// The changelog nests year > month > day > release. An entry carries only a
-// human date string, "August 11, 2026", which is also its group key, so the
+// The changelog is one level (the arbiter, 2026-11-11: "What's new's old
+// notes sit inside four nested boxes; one level"): the year is a heading,
+// each month a row that opens, and a release the one box, wearing its own
+// date. An entry carries only a human date string, "August 11, 2026", so the
 // year and month are read back out of that one field rather than stored a
 // second time. One release, one date, written once.
 const MONTH_NAMES = [
@@ -58,22 +60,21 @@ function parseEntryDate(date: string): ParsedDate | null {
   return { year: Number(m[3]), monthIndex, day: Number(m[2]) };
 }
 
-type DayGroup = { date: string; label: string; entries: Entry[] };
-type MonthGroup = { key: string; label: string; days: DayGroup[]; count: number };
+type Dated = { entry: Entry; when: string };
+type MonthGroup = { key: string; label: string; entries: Dated[] };
 type YearGroup = { key: string; label: string; months: MonthGroup[]; count: number };
 
 /**
- * Group entries into year > month > day, preserving array order at every
- * level, exactly as the flat date grouping did. The list is newest first and
- * stays that way; nothing here sorts, so a hand-ordered list is never
- * silently rearranged.
+ * Group entries into year > month, preserving array order at every level.
+ * The list is newest first and stays that way; nothing here sorts, so a
+ * hand-ordered list is never silently rearranged.
  *
  * A date this cannot parse does not vanish. It gets its own year and month
  * bucket labelled with the raw string and sits where the array already put
  * it, because a release dropping off the page is a worse failure than an
  * ugly heading.
  */
-function groupByYearMonthDay(entries: Entry[]): YearGroup[] {
+function groupByYearMonth(entries: Entry[]): YearGroup[] {
   const years: YearGroup[] = [];
 
   for (const e of entries) {
@@ -83,42 +84,18 @@ function groupByYearMonthDay(entries: Entry[]): YearGroup[] {
 
     let year = years[years.length - 1];
     if (!year || year.key !== yearKey) {
-      year = {
-        key: yearKey,
-        label: parsed ? String(parsed.year) : e.date,
-        months: [],
-        count: 0,
-      };
+      year = { key: yearKey, label: parsed ? String(parsed.year) : e.date, months: [], count: 0 };
       years.push(year);
     }
 
     let month = year.months[year.months.length - 1];
     if (!month || month.key !== monthKey) {
-      month = {
-        key: monthKey,
-        label: parsed ? MONTH_NAMES[parsed.monthIndex] : e.date,
-        days: [],
-        count: 0,
-      };
+      month = { key: monthKey, label: parsed ? MONTH_NAMES[parsed.monthIndex] : e.date, entries: [] };
       year.months.push(month);
     }
 
-    let day = month.days[month.days.length - 1];
-    if (!day || day.date !== e.date) {
-      day = {
-        date: e.date,
-        // Inside "2026 > August" the year is already overhead, so the day row
-        // carries "August 11" rather than repeating the whole string.
-        label: parsed
-          ? `${MONTH_NAMES[parsed.monthIndex]} ${parsed.day}`
-          : e.date,
-        entries: [],
-      };
-      month.days.push(day);
-    }
-
-    day.entries.push(e);
-    month.count += 1;
+    // Under "2026" and "August" the release says "August 11", not the whole string again.
+    month.entries.push({ entry: e, when: parsed ? `${MONTH_NAMES[parsed.monthIndex]} ${parsed.day}` : e.date });
     year.count += 1;
   }
 
@@ -129,7 +106,7 @@ async function WhatsNewContent() {
  // Live rows when the table answers, the committed file otherwise. See
  // lib/whatsNew/notes.ts for why the page never has to know which.
  const { entries } = await getPatchNotes();
- const years = groupByYearMonthDay(entries);
+ const years = groupByYearMonth(entries);
  // The page writes the English; the words it has in German are drawn on the
  // device (components/whats-new/WhatsNewInReadersLanguage.tsx).
 
@@ -243,7 +220,7 @@ async function WhatsNewContent() {
  </p>
  </div>
 
- {/* Changelog: dates collapse, releases inside also collapse. */}
+ {/* Changelog: a month opens to its releases, and a release to its list. */}
  <section className="mt-20 pt-10 border-t border-paper/10" data-changelog>
  <div className="flex items-baseline justify-between flex-wrap gap-3 mb-6">
  <p className="font-sans text-detail font-semibold text-paper/55">
@@ -255,95 +232,46 @@ async function WhatsNewContent() {
  <WhatsNewWord k="grouped"><span lang="en" dir="ltr">{GROUPED}</span></WhatsNewWord>
  </p>
 
- <div className="space-y-3">
+ <div>
+          {/* One level: the year a heading, a month a row that opens (no box
+              round it, a hairline above it), a release the one box. */}
           {years.map((y, yi) => (
-            <details
-              key={y.key}
-              open={yi === 0}
-              className="group/yr rounded-md border border-paper/12 bg-paper/[0.02] open:bg-paper/[0.04] transition-colors"
-            >
-              <summary className="cursor-pointer list-none px-5 py-4 flex items-center justify-between gap-3">
-                <span className="flex items-baseline gap-3 min-w-0">
-                  <span className="font-sans text-ui font-semibold text-paper truncate">
-                    {y.label}
-                  </span>
-                  <span className="font-sans text-caption text-paper/55">
-                    <WhatsNewCount n={y.count} />
-                  </span>
+            <section key={y.key} aria-labelledby={`changelog-${y.key}`} className={yi > 0 ? "mt-10" : undefined}>
+              <h3 id={`changelog-${y.key}`} className="flex items-baseline gap-3 pb-2">
+                <span lang="en" dir="ltr" className="font-sans text-ui font-semibold text-paper">
+                  {y.label}
                 </span>
-                <span
-                  aria-hidden
-                  className="text-paper/55 group-open/yr:rotate-180 transition-transform duration-200 text-caption"
-                >
-                  <ChevronDown size={14} className="block" />
+                <span className="font-sans text-caption text-paper/55">
+                  <WhatsNewCount n={y.count} />
                 </span>
-              </summary>
-
-              <div className="px-3 pb-4 pt-1 space-y-2">
-                {y.months.map((mo, mi) => (
-                  <details
-                    key={mo.key}
-                    open={yi === 0 && mi === 0}
-                    className="group/mo rounded-md border border-paper/10 bg-paper/[0.015] open:bg-paper/[0.03] transition-colors"
-                  >
-                    <summary className="cursor-pointer list-none min-h-11 px-4 py-3 flex items-center justify-between gap-3">
-                      <span className="flex items-baseline gap-3 min-w-0">
-                        <span lang="en" dir="ltr" className="font-sans text-detail font-semibold text-paper/90 truncate">
-                          {mo.label}
-                        </span>
-                        <span className="font-sans text-caption text-paper/55">
-                          <WhatsNewCount n={mo.count} />
-                        </span>
+              </h3>
+              {y.months.map((mo, mi) => (
+                <details key={mo.key} open={yi === 0 && mi === 0} className="group/mo border-t border-paper/10">
+                  <summary className="cursor-pointer list-none min-h-11 py-3 flex items-center justify-between gap-3">
+                    <span className="flex items-baseline gap-3 min-w-0">
+                      <span lang="en" dir="ltr" className="font-sans text-detail font-semibold text-paper/90 truncate">
+                        {mo.label}
                       </span>
-                      <span
-                        aria-hidden
-                        className="text-paper/55 group-open/mo:rotate-180 transition-transform duration-200 text-eyebrow"
-                      >
-                        <ChevronDown size={12} className="block" />
+                      <span className="font-sans text-caption text-paper/55">
+                        <WhatsNewCount n={mo.entries.length} />
                       </span>
-                    </summary>
+                    </span>
+                    <span
+                      aria-hidden
+                      className="text-paper/55 group-open/mo:rotate-180 transition-transform duration-200 text-eyebrow"
+                    >
+                      <ChevronDown size={12} className="block" />
+                    </span>
+                  </summary>
 
-                    <div className="px-3 pb-3 pt-1 space-y-2">
-                      {mo.days.map((d, di) => (
-                        <details
-                          key={d.date}
-                          open={yi === 0 && mi === 0 && di === 0}
-                          className="group/day rounded-md border border-paper/10 bg-night-soft/25 open:bg-night-soft/45 transition-colors"
-                        >
-                          <summary className="cursor-pointer list-none min-h-11 px-4 py-2.5 flex items-center justify-between gap-3">
-                            <span className="flex items-baseline gap-3 min-w-0">
-                              <span
-                                title={d.date}
-                                lang="en"
-                                dir="ltr"
-                                className="font-sans text-detail font-medium text-paper/85 truncate"
-                              >
-                                {d.label}
-                              </span>
-                              <span className="font-sans text-caption text-paper/55">
-                                <WhatsNewCount n={d.entries.length} />
-                              </span>
-                            </span>
-                            <span
-                              aria-hidden
-                              className="text-paper/55 group-open/day:rotate-180 transition-transform duration-200 text-eyebrow"
-                            >
-                              <ChevronDown size={12} className="block" />
-                            </span>
-                          </summary>
-
-                          <div className="px-3 pb-3 pt-1 space-y-2">
-                            {d.entries.map((e) => (
-                              <ReleaseDetails key={e.version} entry={e} />
-                            ))}
-                          </div>
-                        </details>
-                      ))}
-                    </div>
-                  </details>
-                ))}
-              </div>
-            </details>
+                  <div className="pb-5 space-y-2">
+                    {mo.entries.map(({ entry, when }) => (
+                      <ReleaseDetails key={entry.version} entry={entry} when={when} />
+                    ))}
+                  </div>
+                </details>
+              ))}
+            </section>
           ))}
  </div>
  </section>

@@ -19,8 +19,12 @@ import { ChevronDown } from "@/components/ui/icons/ChevronDown";
  * the two read as one and a long name wraps at a word with the number still
  * in front of it. A release with no name draws the number alone, in the
  * markup it always had.
+ *
+ * On the page it is the changelog's one box (2026-11-11), so it wears its own
+ * date (`when`, "August 11"), which a day's box above it used to carry, and
+ * its summary keeps to two lines until it is opened, the whole of it then.
  */
-export function ReleaseDetails({ entry: e }: { entry: Entry }) {
+export function ReleaseDetails({ entry: e, when }: { entry: Entry; when?: string }) {
   const { uncategorised, groups } = groupByCategory(e.items);
   const name = cleanName(e.name);
 
@@ -29,27 +33,35 @@ export function ReleaseDetails({ entry: e }: { entry: Entry }) {
   return (
     <details lang="en" dir="ltr" className="group/rel rounded-md border border-paper/10 bg-night-soft/40 open:bg-night-soft/70 transition-colors">
       <summary className="cursor-pointer list-none min-h-11 px-4 py-3">
-        <div className="flex items-baseline gap-3 flex-wrap">
-          <span className="font-sans text-body font-bold text-paper tracking-[-0.01em]">
-            {e.version}
-            {name ? (
-              <>
-                {" "}
-                <span className="font-medium text-paper/75 [overflow-wrap:anywhere]">{name}</span>
-              </>
+        {/* The words wrap on the left; the chevron keeps the top right whatever wraps. */}
+        <div className="flex items-start gap-3">
+          <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 gap-y-1">
+            <span className="font-sans text-body font-bold text-paper tracking-[-0.01em]">
+              {e.version}
+              {name ? (
+                <>
+                  {" "}
+                  <span className="font-medium text-paper/75 [overflow-wrap:anywhere]">{name}</span>
+                </>
+              ) : null}
+            </span>
+            <span className="font-sans text-caption text-paper/55">
+              {e.kind}
+            </span>
+            {when ? (
+              <span className="font-sans text-caption text-paper/55" title={e.date}>
+                {when}
+              </span>
             ) : null}
-          </span>
-          <span className="font-sans text-caption text-paper/50">
-            {e.kind}
-          </span>
+          </div>
           <span
             aria-hidden
-            className="ml-auto text-paper/55 group-open/rel:rotate-180 transition-transform duration-200 text-eyebrow"
+            className="mt-1.5 shrink-0 text-paper/55 group-open/rel:rotate-180 transition-transform duration-200 text-eyebrow"
           >
             <ChevronDown size={12} className="block" />
           </span>
         </div>
-        <p className="mt-1.5 font-sans text-detail text-paper/65 leading-[1.55] group-open/rel:text-paper/80 transition-colors">
+        <p className="mt-1.5 line-clamp-2 font-sans text-detail text-paper/65 leading-[1.55] group-open/rel:line-clamp-none group-open/rel:text-paper/80 transition-colors">
           {e.blurb}
         </p>
       </summary>
