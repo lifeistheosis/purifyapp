@@ -80,6 +80,8 @@ const ACCEPTED = {
   "saints/icons/ignatius-of-antioch.v2.jpg": "his white vestments with their red crosses, at the foot",
   "saints/icons/tarasius-of-constantinople.v2.jpg": "his white omophorion with its crosses, at the foot and in the lower corners",
   "saints/icons/sophronius-of-jerusalem.v2.jpg": "his white vestments with their black crosses, at the foot",
+  "saints/icons/theophan-the-recluse.v2.jpg": "the photograph's own pale ground, all round him (a 19th-century photograph, not an icon)",
+  "saints/icons/nikodemos-the-hagiorite.v2.jpg": "the engraving's own paper, in the band of letters round its oval, at the top",
   // Looked at on 2026-11-11, December's icons (docs/1.9-build/notes/december-saints.md,
   // push 2b) and one of November's: the light is the work's own. The 1904 prints
   // are cut inside their frame lines, so none of the page is left; what is light

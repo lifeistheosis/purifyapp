@@ -2120,6 +2120,31 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Saint_Jerome_as_Scholar_MET_DT3103.jpg",
   },
+  // On the arbiter's word of 2026-11-11 under his "a free icon or the plate":
+  // each saint's oldest picture where no old icon of him exists, public domain
+  // by its age, the date in its row.
+  "theophan-the-recluse.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A photograph of a monk with long dark hair parted in the middle and a long full beard, in a dark cassock with a cross on a chain, against a pale ground.",
+    work: "Photograph of St Theophan, Bishop of Tambov, later the Recluse of Vysha (a photograph, not an icon: he was canonized in 1988, and no icon of him is old enough to be free)",
+    artist: "Unknown photographer",
+    workDate: "19th century",
+    source: "Wikimedia Commons (from acmus.ru)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%95%D0%BF%D0%B8%D1%81%D0%BA%D0%BE%D0%BF_%D0%A2%D0%B0%D0%BC%D0%B1%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9_%D0%A4%D0%B5%D0%BE%D1%84%D0%B0%D0%BD.jpg",
+  },
+  "nikodemos-the-hagiorite.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "An engraving of a bearded monk in a tall cap, writing with a quill in an open book before shelves of books, inside an oval of Greek letters.",
+    work: "Engraved portrait of St Nikodemos the Hagiorite, signed by Antonios Zoulianis, Venice (an engraving, his oldest picture; the oval names him and his repose)",
+    artist: "Antonios Zoulianis",
+    workDate: "1818 (published 1819)",
+    source: "Wikimedia Commons (from saint.gr)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%CE%86%CE%B3%CE%B9%CE%BF%CF%82_%CE%9D%CE%B9%CE%BA%CF%8C%CE%B4%CE%B7%CE%BC%CE%BF%CF%82_%CE%BF_%CE%91%CE%B3%CE%B9%CE%BF%CF%81%CE%B5%CE%AF%CF%84%CE%B7%CF%82.jpg",
+  },
 };
 
 /**
@@ -2207,8 +2232,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nicholas-cabasilas. 315x420 JPG, 36 KB. Not yet opened and inspected.",
   "niketas-the-goth.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for niketas-the-goth. 315x420 JPG, 36 KB. Not yet opened and inspected.",
-  "nikodemos-the-hagiorite.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nikodemos-the-hagiorite. 336x420 JPG, 33 KB. Not yet opened and inspected.",
   "nino-nina-of-georiga.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nino-of-georgia. 322x420 JPG, 24 KB. Not yet opened and inspected.",
   "olympias-the-deaconess.jpg":
@@ -2227,8 +2250,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for sergius-of-radonezh. 345x420 JPG, 24 KB. Not yet opened and inspected.",
   "simeon-streaming-myrrh.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for simeon-the-myrrh-streaming. 315x420 JPG, 26 KB. Not yet opened and inspected.",
-  "theophan-the-recluse.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for theophan-the-recluse. 301x420 JPG, 24 KB. Not yet opened and inspected.",
 };
 
 /** Strip the URL prefix so callers can pass either form. */

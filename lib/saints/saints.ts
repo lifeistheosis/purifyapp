@@ -4777,7 +4777,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "nikodemos-the-hagiorite",
-    iconUrl: "/saints/icons/nikodemos-the-hagiorite.jpg",
+    iconUrl: "/saints/icons/nikodemos-the-hagiorite.v2.jpg",
     name: "St. Nikodemos the Hagiorite",
     byname: "Nikodemos of the Holy Mountain",
     epithet: "Compiler of the Philokalia · Teacher of the Church",
@@ -4798,7 +4798,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "theophan-the-recluse",
-    iconUrl: "/saints/icons/theophan-the-recluse.jpg",
+    iconUrl: "/saints/icons/theophan-the-recluse.v2.jpg",
     name: "St. Theophan the Recluse",
     byname: "Theophan the Recluse of Vysha",
     epithet: "Bishop and recluse · Teacher of the spiritual life",
