@@ -2703,8 +2703,6 @@
   "settings.fontHint": "Krój tekstu głównego.",
   "settings.sizeHint": "Jak duży jest tekst główny przy domyślnym powiększeniu.",
   "settings.interlinearHint": "Pokazuj język oryginału obok angielskiego, gdy rozdział go zawiera.",
-  "settings.easyScroll": "Łatwe przewijanie",
-  "settings.easyScrollHint": "Na stronie modlitwy krótkie przesunięcie prowadzi do następnej modlitwy.",
   "settings.calendar": "Kalendarz",
   "settings.calendarHint": "Według której rachuby wyznaczane są święty dnia, post i czytania.",
   "settings.language": "Język",

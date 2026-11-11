@@ -2662,8 +2662,6 @@
   "settings.fontHint": "La police du corps du texte.",
   "settings.sizeHint": "La taille du texte courant au zoom par défaut.",
   "settings.interlinearHint": "Afficher la langue originale à côté de la traduction lorsqu'un chapitre la propose.",
-  "settings.easyScroll": "Défilement facile",
-  "settings.easyScrollHint": "Sur une page de prière, un glissement bref mène à la prière suivante.",
   "settings.calendar": "Le calendrier",
   "settings.calendarHint": "Le comput que suivent le saint du jour, le jeûne et les lectures.",
   "settings.language": "Langue",

@@ -68,7 +68,6 @@ import { PrayerStep } from "@/components/prayers/service/PrayerStep";
 import { useEasyScroll } from "@/components/prayers/service/useEasyScroll";
 import { goToPrayer, useLitLine } from "@/components/prayers/service/useLitLine";
 import { usePassedSteps } from "@/components/prayers/service/usePassedSteps";
-import { useEasyScrollOn } from "@/lib/prayers/easyScrollSetting";
 import { isRuleBookmarked, toggleRuleBookmark } from "@/lib/prayers/bookmarks";
 import { carriedFor } from "@/lib/campaigns/carried";
 import { useCarried } from "@/lib/campaigns/useCarried";
@@ -153,11 +152,10 @@ export function PrayerRuleReader({
   const { t, locale } = useTranslate();
   const article = useRef<HTMLElement>(null);
   useLitLine(article);
-  // A short swipe settles on the next prayer, with a click as it arrives
-  // (build 89 note 7, his Easy Scroll), unless the reader turned it off in
-  // Settings.
-  const easyOn = useEasyScrollOn();
-  useEasyScroll(article, { enabled: easyOn });
+  // The phone's own scroll, with a click as each new prayer arrives at the
+  // reading place (build 89 note 7's Easy Scroll; its snapping went at build
+  // 93 note 2, service/useEasyScroll.ts).
+  useEasyScroll(article);
 
   const snap = useSyncExternalStore(subscribe, () => readSnap(rule.id), () => SERVER_SNAP);
   const done = useMemo(() => new Set(snap.done), [snap.done]);
@@ -285,8 +283,6 @@ export function PrayerRuleReader({
           itself heads the page. */}
       <PrayerLight />
       <article ref={article} data-prayer-reader className="relative mx-auto w-full max-w-[640px]">
-        {/* The head of the page and its foot are places Easy Scroll can rest too. */}
-        <span aria-hidden data-snap-edge="top" />
         <ServiceHeader
           rule={rule}
           title={title}
@@ -375,7 +371,6 @@ export function PrayerRuleReader({
             </p>
           </footer>
         ) : null}
-        <span aria-hidden data-snap-edge="bottom" />
       </article>
     </>
   );

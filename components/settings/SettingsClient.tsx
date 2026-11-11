@@ -126,7 +126,6 @@ import { resolveUser } from "@/lib/supabase/resolveUser";
 
 import { FirstFocus, useOnboardedAgain } from "./FirstFocus";
 import { ButtonRow, LinkRow, Plate, Row, Section, Switch, Track } from "./LitPanel";
-import { EasyScrollRow } from "./EasyScrollRow";
 import { PatronRow } from "./PatronRow";
 import { StorageSection } from "./StorageSection";
 import { ReaderSizeRow } from "./ReaderSize";
@@ -657,8 +656,6 @@ function Body() {
             />
           }
         />
-        {/* Easy Scroll on the prayer pages (build 89 note 7). */}
-        <EasyScrollRow />
       </Section>
 
       <Section id="calendar" title={t("settings.calendar")} hint={t("settings.calendarHint")}>

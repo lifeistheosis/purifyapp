@@ -73,8 +73,7 @@ export function CommemorationStep({
 
       {hasLiving ? (
         <div className="mt-5" style={leading}>
-          {/* Where this step begins (Easy Scroll rests at every name). */}
-          <span data-line data-snap-start="" className={cn("block", lineClass)}>
+          <span data-line className={cn("block", lineClass)}>
             {t("prayers.commemorate.living")}
           </span>
           <ul className="mt-[0.6em]">
@@ -111,7 +110,7 @@ export function CommemorationStep({
         <div className={hasLiving ? "mt-[1.6em]" : "mt-5"} style={leading}>
           <div lang="en" dir="ltr">
             {departedPrayer([...departed.map((n) => n.name), ...campaignDeparted.map((c) => c.name)]).map((line, i) => (
-              <span key={i} data-line {...(i === 0 && !hasLiving ? { "data-snap-start": "" } : {})} className={cn("block break-words", i > 0 && "mt-[0.35em]", lineClass)}>
+              <span key={i} data-line className={cn("block break-words", i > 0 && "mt-[0.35em]", lineClass)}>
                 {line}
               </span>
             ))}
@@ -129,9 +128,6 @@ export function CommemorationStep({
           ))}
         </div>
       ) : null}
-      {/* Where the names rest under Easy Scroll: each name and line, and a
-          last rest in the last (useEasyScroll.ts; build 90 note 6). */}
-      <span aria-hidden data-verse-rests="" />
     </section>
   );
 }

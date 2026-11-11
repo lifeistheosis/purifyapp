@@ -11222,66 +11222,12 @@ html[data-look="blush"] [data-prayer-reader] {
  opacity: var(--prayer-rest);
 }
 
-/* Easy Scroll (1.9, build 89 note 7, his name for it), by the verse since
-   build 90 note 6 (his words: "I noticed myself scrolling to another section
-   when I just realistically want to scroll to the next verse or next bar
-   within the same section"): on a prayer page a short swipe brings the next
-   verse to the reading place, where it is lit; a fling runs on through the
-   verses but never past a prayer's last; the next prayer comes on a swipe of
-   its own. It is the phone's own scroll snapping, so it has the phone's own
-   feel. On only while a prayer page is open, on a touch screen, with Purify's
-   motion on: components/prayers/service/useEasyScroll.ts sets
-   data-easy-scroll and --easy-place (the reading place, from the top of the
-   screen), and places each prayer's rests as small marks in its holder
-   (data-verse-rests): each verse's start ("edge" for its first and last,
-   "verse" between), the parts of a verse taller than the room ("inside"), and
-   a last rest a line into its last verse ("after"). No prayer is a stop as a
-   whole any more: a stop taller than the screen let the page run free inside
-   it, and on the export that freedom ended about 160px short of its end and
-   left the last verses below the reading place unread. A frame-by-frame
-   scroll would fight it; the page's own moves (Begin, Your rule) are the
-   browser's smooth scroll, which lands on a prayer's first verse. */
-@media (pointer: coarse) {
- html[data-easy-scroll] {
-  scroll-snap-type: y mandatory;
- }
- html[data-easy-scroll] [data-prayer-reader] [data-verse-stop] {
-  scroll-snap-align: start;
-  scroll-margin-top: var(--easy-place, 40vh);
- }
- /* A fling never runs past a prayer's first verse, its last, or its last rest. */
- html[data-easy-scroll] [data-prayer-reader] :is([data-verse-stop="edge"], [data-verse-stop="after"]) {
-  scroll-snap-stop: always;
- }
- /* The head of the page and its foot rest too: a margin wider than the screen
-    puts their places past the very top and the very end, where the browser
-    holds them. */
- html[data-easy-scroll] [data-prayer-reader] [data-snap-edge="top"] {
-  scroll-snap-align: start;
-  scroll-margin-top: 200vh;
- }
- html[data-easy-scroll] [data-prayer-reader] [data-snap-edge="bottom"] {
-  scroll-snap-align: end;
-  scroll-margin-bottom: 200vh;
- }
-}
-[data-prayer-reader] [data-snap-edge] {
- display: block;
- height: 0;
-}
-/* A prayer's rests: out of the flow, so placing them moves nothing. */
-[data-prayer-reader] [data-verse-rests] {
- position: absolute;
- inset-inline: 0;
- top: 0;
- height: 0;
- pointer-events: none;
-}
-[data-prayer-reader] [data-verse-stop] {
- position: absolute;
- inset-inline: 0;
- height: 0;
-}
+/* Easy Scroll's snapping (1.9, build 89 note 7; by the verse from build 90
+   note 6) went at build 93 note 2: it moved the page after the finger let
+   go, pulling a fling back up and running a flick on past the phone's own
+   momentum (the measures are in components/prayers/service/useEasyScroll.ts).
+   The prayers scroll as the phone does; the verse at the reading place is
+   still lit, below, and a click still marks each new prayer. */
 
 /* The line being prayed is the page's accent: white with a soft white glow
    (the owner, 2026-10-28: the accent is a glowing white, never yellow). On

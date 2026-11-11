@@ -2667,8 +2667,6 @@
   "settings.fontHint": "The face of the body text.",
   "settings.sizeHint": "How large the body text appears at default zoom.",
   "settings.interlinearHint": "Show the original language beside the English when a chapter has it.",
-  "settings.easyScroll": "Easy Scroll",
-  "settings.easyScrollHint": "On a prayer page, a short swipe settles on the next prayer.",
   "settings.calendar": "The calendar",
   "settings.calendarHint": "Which reckoning the saint of the day, the fast, and the readings follow.",
   "settings.language": "Language",

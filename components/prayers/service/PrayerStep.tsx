@@ -93,11 +93,6 @@ export function PrayerStep({
   // Save. A step brought from another rule is kept under its own rule.
   const where = prayer.origin ?? { ruleId, prayerId: prayer.id };
   const save = bookmarkable ? { "data-save-rule": where.ruleId, "data-save-prayer": where.prayerId, "data-save-title": title } : {};
-  // Where this prayer begins: its first line; a step of words without lines
-  // (the examination) begins at its refrain, or else at its name. Easy Scroll
-  // rests at every verse (useEasyScroll.ts); this marks the first of them.
-  const settlesOn: "line" | "refrain" | "title" = stanzas.length ? "line" : refrain ? "refrain" : "title";
-  const snap = { "data-snap-start": "" };
 
   return (
     <section
@@ -111,7 +106,6 @@ export function PrayerStep({
       {note ? <p className="mb-1 break-words font-sans text-caption text-paper/50">{note}</p> : null}
       <h2
         id={`${prayer.id}-title`}
-        {...(settlesOn === "title" ? snap : {})}
         tabIndex={-1}
         lang={contentLang}
         dir={textDir(contentLang)}
@@ -159,7 +153,7 @@ export function PrayerStep({
             <div key={s} className={s > 0 ? "mt-[1.1em]" : undefined}>
               {stanza.map((line, l) => (
                 // The first line is where this prayer begins (Easy Scroll rests at every line).
-                <span key={l} data-line {...(s === 0 && l === 0 ? snap : {})} className={cn("block", l > 0 && "mt-[0.35em]", lineClass)}>
+                <span key={l} data-line className={cn("block", l > 0 && "mt-[0.35em]", lineClass)}>
                   {line.cross ? (
                     <Cross
                       size={18}
@@ -178,7 +172,7 @@ export function PrayerStep({
       ) : null}
 
       {refrain ? (
-        <p data-line {...(settlesOn === "refrain" ? snap : {})} lang={contentLang} dir={textDir(contentLang)} className={cn("mt-[1.1em] italic", lineClass, "text-paper/85")} style={leading}>
+        <p data-line lang={contentLang} dir={textDir(contentLang)} className={cn("mt-[1.1em] italic", lineClass, "text-paper/85")} style={leading}>
           {refrain}
         </p>
       ) : null}
@@ -197,10 +191,6 @@ export function PrayerStep({
       ) : null}
 
       {prayer.audio ? <AudioRow src={prayer.audio} /> : null}
-      {/* Where this prayer rests under Easy Scroll: each verse's start, the
-          parts of a long verse, and a last rest in its last verse, placed by
-          the page's own measure (useEasyScroll.ts; build 90 note 6). */}
-      <span aria-hidden data-verse-rests="" />
     </section>
   );
 }
