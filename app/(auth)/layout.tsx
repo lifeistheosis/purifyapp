@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AuthBack } from "@/components/auth/AuthBack";
 import { T } from "@/components/i18n/T";
 
 /**
@@ -6,6 +7,11 @@ import { T } from "@/components/i18n/T";
  * set-password. No AppNav, no Footer, just a brand mark and a
  * single small footer link to /privacy. Lives in its own route
  * group `(auth)` so the in-app chrome doesn't compose over it.
+ *
+ * In the apps the head begins with the way back (1.9,
+ * components/auth/AuthBack.tsx): the apps' back bar belongs to the app's own
+ * frame and never stood here, so an iPhone could leave only by the Purify
+ * mark, to Today.
  */
 export default function AuthLayout({
   children,
@@ -24,12 +30,15 @@ export default function AuthLayout({
         style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 1.25rem)" }}
         className="px-6 pb-5 flex items-center justify-between"
       >
-        <Link
-          href="/"
-          className="inline-flex min-h-11 items-center font-sans text-lede font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors"
-        >
-          Purify
-        </Link>
+        <div className="flex min-w-0 items-center">
+          <AuthBack />
+          <Link
+            href="/"
+            className="inline-flex min-h-11 items-center font-sans text-lede font-bold tracking-[-0.01em] text-paper hover:text-paper/80 transition-colors"
+          >
+            Purify
+          </Link>
+        </div>
         <Link
           href="/privacy"
           className="inline-flex min-h-11 min-w-11 items-center justify-end font-sans text-caption text-paper/55 hover:text-paper transition-colors"
