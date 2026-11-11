@@ -80,6 +80,16 @@ describe("the care note's switch", () => {
   });
 });
 
+describe.runIf(CARE_NOTE_SEND)("as it ships, on", () => {
+  it("a moderator's two actions reach the writer of what was read, with the real switch", async () => {
+    expect(await runCampaignModAction(db(), MOD, "care_note_for_campaign", CAMPAIGN)).toEqual({ ok: true });
+    expect(w.tables.community_notifications!.map((n) => [n.user_id, n.kind, n.actor_name, n.excerpt])).toEqual([[ANNA, "care", "Purify", null]]);
+    // One a day for a writer: the same writer's held note sends no second.
+    expect((await runCampaignModAction(db(), MOD, "care_note_for_hold", HOLD)).ok).toBe(false);
+    expect(w.tables.community_notifications).toHaveLength(1);
+  });
+});
+
 describe.runIf(!CARE_NOTE_SEND)("while it is off", () => {
   it("sending is not an action at all: nothing is read, nothing is written, whoever asks and whatever the words", async () => {
     const before = structuredClone(w.tables);

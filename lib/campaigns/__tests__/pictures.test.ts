@@ -66,6 +66,7 @@ import { DELETE as removeOne, GET as list, POST as add } from "@/app/api/campaig
 import { POST as report } from "@/app/api/campaigns/[id]/report/route";
 import { GET as queue, POST as decide } from "@/app/api/community/moderation/route";
 import { accountFiles } from "@/lib/auth/accountFiles";
+import { CARE_NOTE_SEND } from "@/lib/campaigns/careOn";
 import { __setCampaignsOpening } from "@/lib/campaigns/flags";
 import { CAMPAIGN_BUCKET } from "@/lib/campaigns/image";
 import { PICTURES_MAX, type CampaignPictures, type WaitingPicture } from "@/lib/campaigns/model";
@@ -836,7 +837,8 @@ describe("a moderator looks", () => {
     state.admin = { ...real, from: (table: string) => (asked.push(table), real.from(table)) };
     const res = await queue(new Request(`${SITE}/api/community/moderation?pictures=0`));
     const text = await res.text();
-    expect(JSON.parse(text).campaigns).toEqual({ waiting: [], reports: [], live: true });
+    // No pictures key at all; the one other thing the queue says is whether the care note can be sent (lib/campaigns/careOn.ts).
+    expect(JSON.parse(text).campaigns).toEqual({ waiting: [], reports: [], live: true, ...(CARE_NOTE_SEND ? { care: true } : {}) });
     expect(text).not.toContain("/object/sign/");
     const summary = (await (await queue(new Request(`${SITE}/api/community/moderation?summary=1&pictures=0`))).json()) as { waiting: number };
     expect(summary.waiting).toBe(0);

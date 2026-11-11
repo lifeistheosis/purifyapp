@@ -4587,9 +4587,13 @@ taps and the one function that writes the row. No SQL of its own.
 
 ### 38.3 The switch
 
-`lib/campaigns/careOn.ts`, `CARE_NOTE_SEND`, **false**. The inbox's table
-checks every row's kind, and "care" is not among them until his SQL has run.
-Off, the action is not a request at all, and nothing is read or written.
+`lib/campaigns/careOn.ts`, `CARE_NOTE_SEND`, **true since 2026-11-11**. The
+inbox's table checks every row's kind, and "care" joins them in
+`supabase/migrations/20261111023026_care_note.sql`, which he signed that day
+("yes these are all fine", about 02:21 UTC, to the arbiter's message that
+showed the SQL; the admin chat moved the file, 1d1237d2f). The switch rides
+that file: both reach production in the 1.9 merge, the SQL first. Off, the
+action is not a request at all, and nothing is read or written.
 
 The screens never read the switch. The server says in the moderators' queue
 whether the note can be sent, and the button is drawn by that answer alone,
@@ -4597,9 +4601,12 @@ so no app can offer what the server would refuse. (The same lesson as the
 line to be told of an update: the app's cut-down copy of the queue names
 each thing it keeps, and this answer is named among them.)
 
-It is turned on by the admin chat in the same commit that moves the SQL into
-`supabase/migrations`, so the two ride one merge. A test refuses the switch
-on without that file there, and off with it (`careShips.test.ts`).
+It was to be turned on by the admin chat in the commit that moved the SQL.
+The SQL was signed and moved before this code had landed, so the switch
+landed already on, at the admin chat's word and by this file's own guard: a
+test refuses the switch on without that file among the migrations, and off
+with it (`careShips.test.ts`). If the SQL has not run on a database this
+code meets, a send fails quietly and says so.
 
 In the admin's own panel the two lines that offer it are the admin chat's to
 add, in its files: one more action on a held note the line marked, and the
@@ -4610,7 +4617,8 @@ two names in its route's list.
 `lib/campaigns/__tests__/careSend.test.ts` (30 cases, the switch on: the
 row, who it goes to, only marked words, one a day, two at once, never their
 words, never a push, the two actions, the screens) and `careShips.test.ts`
-(5 cases with the switch as committed). Twenty-five ways of breaking it were
+(5 cases with the switch as committed: on, with its SQL among the
+migrations). Twenty-five ways of breaking it were
 tried. Twenty-three failed a case at once. The other two showed two cases
 that were too loose (a second note was caught only by the second lock; a
 look that fails was hidden by a write that failed too); both cases were

@@ -65,6 +65,7 @@ vi.mock("@/lib/admin/weeklyLetter", () => ({ sendWeeklyLetter: async () => ({}) 
 
 import { GET as queue, POST as act } from "@/app/api/community/moderation/route";
 import { buildQueue, campaignKey, waitingKeys, type QueueSources } from "@/lib/admin/communityQueue";
+import { CARE_NOTE_SEND } from "@/lib/campaigns/careOn";
 import { __setCampaignsOpening } from "@/lib/campaigns/flags";
 import { heldWhy, type WaitingCampaign } from "@/lib/campaigns/model";
 import { KEPT_DAYS, runCampaignUpkeep } from "@/lib/campaigns/upkeep";
@@ -255,7 +256,8 @@ describe("the moderators' queue, by the switch", () => {
     w.missing.prayer_campaign_reports = ["reason_code", "status"];
     w.tables.prayer_campaigns = [{ id: C1, creator_id: ANNA, title: "July's", intention: "healing", for_whom: "living", status: "active", created_at: iso(NOW) }];
     const body = (await (await queue(get())).json()) as { campaigns: { waiting: unknown[]; reports: unknown[]; live: boolean } };
-    expect(body.campaigns).toEqual({ waiting: [], reports: [], live: false });
+    // And nothing else, but the server's word on whether the care note can be sent (lib/campaigns/careOn.ts).
+    expect(body.campaigns).toEqual({ waiting: [], reports: [], live: false, ...(CARE_NOTE_SEND ? { care: true } : {}) });
   });
 });
 
