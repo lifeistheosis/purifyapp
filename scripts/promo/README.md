@@ -40,6 +40,13 @@ stills, the clips and the reels.
   subject (a repeating conic gradient, a sunburst) is vibe-coded AI slop, the
   owner's word of 2026-11-08 on the first edit frames. The promo test fails
   any script that draws one.
+- **No sparkle star.** The four-point sparkle (the glyphs ✦ ✧ ✨, the app's
+  old `Sparkle` icon, or one drawn as its own shape) is AI slop, the owner's
+  word of 2026-11-11 (CLAUDE.md, "No sparkle star"). Not on a frame, a card
+  or a post, and not in a screen either: a screen that shows one waits until
+  the app no longer draws it. The promo test reads every script for the
+  glyphs, the icon and the shape (`scripts/lib/four-point-star.mjs`
+  measures a drawn one).
 - **The house's voice and type**: Lora and DM Sans out of the export, the
   house colours, no em dashes. `lib/marketing/__tests__/promoLooks.test.ts`
   holds the words.
@@ -77,10 +84,12 @@ build, both kept out of git (2026-11-09):
   fall back to one `"placeholder"` entry when the list comes back empty.
 
 The edit frames (`edits.mjs`) take their screens with
-`node scripts/promo/edit-capture.mjs --export <export>`. The fourteenth,
-Toward the Nativity, is Today's card for the Nativity Fast, which shows only
-while the fast runs, so its screen is taken with the clock on the fast's
-first day (15 November): the card every reader sees that morning.
+`node scripts/promo/edit-capture.mjs --export <export>`. A fourteenth frame,
+Toward the Nativity, was Today's Nativity Fast card close on its star. It is
+in the Vault (made 2026-11-09, at `f88395ad7`) and is not drawn again: that
+star is the four-point sparkle the app drew on the card. A screen that only
+shows on certain days can still be taken with the clock set (`open(route,
+{ at })` in `edit-capture.mjs`).
 
 ## Cards (`cards.mjs`, `card-looks.mjs`)
 
@@ -94,16 +103,18 @@ point, the closing for each store; the type, the safe box, the mark), and
 and the crown at the top of every card where the release's own motif lives.
 A release with no look of its own gets no cards: the script refuses.
 
-1.8's look is the night of the Nativity Fast, drawn as the app draws it on
-Today (`components/today/NativityStarCard.tsx`): the horizon's curve, and
-the star standing a little higher on each card of the set, as it does each
-day of the fast.
+1.8's look, the night of the Nativity Fast with the app's star standing a
+little higher on each card, drew the seven cards in the Vault (2026-11-09).
+Its star was the four-point sparkle the app drew on Today, out by the
+owner's word of 2026-11-11, so the look is retired: `cards.mjs 1.8` refuses,
+and the look as it was is at `811953d7d`. No release has a look until he
+asks for one, and a look's mark is never a four-point star.
 
 ```
 node scripts/promo/edit-capture.mjs --export <export>   # fonts, and the screens the edits share
 node scripts/promo/card-capture.mjs --export <export>   # the screens only the cards use
-node scripts/promo/cards.mjs 1.8                         # PROMO/cards/1.8/NN-name.png, send/, a sheet
-node scripts/drop.mjs cards <PROMO>/cards/1.8           # the small copies the Drop tab shows
+node scripts/promo/cards.mjs <release>                   # PROMO/cards/<release>/NN-name.png, send/, a sheet
+node scripts/drop.mjs cards <PROMO>/cards/<release>     # the small copies the Drop tab shows
 ```
 
 ## For later: the trailer look
@@ -125,7 +136,7 @@ closer.
 The shot list, three seconds each:
 
 1. The world: History's atlas, every place lit, tilted like an aerial, sliding and slowly turning.
-2. The star: Today's Nativity star just over its horizon, the camera rising with it.
+2. The fast: the day's reading in Toward the Nativity, a Father's words, the camera drifting down the page. (This shot was the Nativity star on Today until 2026-11-11: that star is a four-point sparkle.)
 3. Gold: St John Chrysostom's mosaic, close on the gold, a slow sideways drift.
 4. The Word: John 1:1 lit as it is read aloud, macro along the line, edges out of focus.
 5. Red numbers: the Bible's red verse numbers and their commentary dots, a rack focus.

@@ -22,6 +22,11 @@ only, with no phone around it and nothing drawn by hand:
 7. **The journal for Plus**: a cover, blocks, a notebook. Its words say Plus; nothing
    promises it to every reader.
 
+**No sparkle in any frame** (CLAUDE.md, "No sparkle star", his word of 2026-11-11). The
+verse's window and the journal's bar carried the four-point `Sparkle` icon in build 93
+(`notes/build-93.md`, notes 7 and 8), so these snapshots are taken only from a build with
+that mended, and each is looked at for a four-point star before it goes out.
+
 ## Its words
 
 From the 1.9 note once it is written, checked by the 1.9 drop's rules (`docs/DROP.md`):

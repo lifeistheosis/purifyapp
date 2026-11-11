@@ -146,21 +146,9 @@ if (process.argv[1] === new URL(import.meta.url).pathname) {
     await ctx.close();
   }
 
-  // Toward the Nativity (1.8): Today's card for the Nativity Fast, its star
-  // risen over the night (components/today/NativityStarCard.tsx). The card
-  // shows only while the fast runs, 15 November to 24 December
-  // (lib/reading/nativity.ts), so this screen is taken on the fast's first
-  // day, as every reader sees it that morning. Nothing on it is changed.
-  {
-    const { ctx, page } = await open("/", { at: new Date(new Date().getFullYear(), 10, 15, 10, 0) });
-    const card = page.locator("[data-nativity-star]").first();
-    await card.waitFor({ timeout: 20000 });
-    await card.evaluate((el) => el.scrollIntoView({ block: "center" }));
-    // The star rises on the day's first view; then its halo breathes.
-    await page.waitForTimeout(4500);
-    console.log("nativity card", JSON.stringify(await card.boundingBox()));
-    await shot(page, "nativity-star");
-    await ctx.close();
-  }
+  // Today's Nativity Fast card, taken for the fourteenth frame and 1.8's
+  // cards, is no longer taken: its star is the four-point sparkle, out by the
+  // owner's word of 2026-11-11 (CLAUDE.md, "No sparkle star"). Both are in
+  // the Vault; the capture as it was is at f88395ad7.
   await browser.close();
 }

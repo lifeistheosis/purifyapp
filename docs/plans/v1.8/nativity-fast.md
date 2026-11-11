@@ -4,6 +4,17 @@ His yes of 2026-11-10 ("ok to all", the sheet's 39): a post every three days thr
 Nativity Fast, 15 November to 24 December. Planned and drafted here; nothing is made or
 posted. He posts.
 
+## On hold (2026-11-11)
+
+Every picture below shows the star the app draws on Today's Nativity Fast card
+(`components/today/NativityStarCard.tsx`), and that star is a four-point sparkle, out by
+his word of 2026-11-11 (CLAUDE.md, "No sparkle star"). So none of the fourteen is posted
+as it is. A screen of the app is never painted over, so the fix is a new picture, and
+fourteen stills wait for his yes: each day framed on that day's reading in Toward the
+Nativity (`/reading/paths/nativity`), the page the card opens, which holds the Father's
+words the caption quotes and no star. The captions keep every word. When new pictures
+are made, these go to the Vault on the SSM board.
+
 ## What each post is
 
 - **One reading of the day**, from the app's own Toward the Nativity path
