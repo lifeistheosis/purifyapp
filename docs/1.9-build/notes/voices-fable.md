@@ -568,3 +568,7 @@ Now (`scripts/lib/export-stash.mjs`):
 
 Proved on the real build, three ways: SIGTERM midway (1,367 files shown deleted while building, 0 after, no worker left, exit 143); SIGKILL (the stash and one worker left behind), then the next build's entry (the worker stopped, 29 trees restored, said in its first two lines); SIGINT (exit 130, 0 deleted, no worker). `lib/build/__tests__/exportStash.test.ts` holds the entry guard on a scratch checkout (eight cases) and the script's wiring.
 
+## St Cyril on John opens no section inside a sentence (2026-11-11)
+
+Moved to this chat from Updates by the arbiter, with Updates' count (614 of 1,070 sections; 16,328 words). The whole record, with the numbers, is in docs/audit/findings.yaml under F-49 ("DONE 2026-11-11"). In short: `scripts/mend-cyril-john-openings.mjs` carried 640 open sentences forward verbatim (16,732 words), put back 32 openings the ingest had dropped (from the transcription, `scripts/cyril-john/lost-leads.json`), and rewrote 859 of the 1,071 notes on John's rail from their sections. No paragraph was added or removed (88 new empty slots), so no paragraph mark moves; every word the work had is there in the same order. `lib/saints/__tests__/cyrilJohnOpenings.test.ts` holds all of it, and export walk section 74 walks John 1, the 158-word sentence (sections 793 to 794) and a word mark over carried words. Left for the arbiter: section 452 is the tail of a translator's footnote shown as St Cyril's.
+

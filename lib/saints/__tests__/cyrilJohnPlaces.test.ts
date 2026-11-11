@@ -246,8 +246,10 @@ describe("St Cyril on John: each section names the verse he is on", () => {
     expect(at(110).paragraphs[0]).toMatch(/^No longer has prepare ye the way fit place/);
     expect(at(2003).title).toBe("Book 3, Preface");
     expect(at(2003).paragraphs[0]).toMatch(/^CHAPTER I\. A critical enquiry why the blessed Baptist/);
-    expect(at(2003).paragraphs[1]).toMatch(/^Having but now with toil stayed our pen on the second book[\s\S]*Our second book then ended with,$/);
-    expect(at(266).paragraphs[0]).toMatch(/^But I receive not testimony from man/);
+    // Its last sentence runs on into the lemma, and stands with it now (cyrilJohnOpenings.test.ts).
+    expect(at(2003).paragraphs[1]).toMatch(/^Having but now with toil stayed our pen on the second book/);
+    expect(at(2003).paragraphs[1]).not.toMatch(/Our second book then ended with,$/);
+    expect(at(266).paragraphs[0]).toMatch(/^Our second book then ended with, But I receive not testimony from man/);
     expect(at(2004).paragraphs.map((p) => p.slice(0, 30))).toEqual(["CHAPTER I. That in nothing is ", "38, 39 Because I have come dow"]);
     expect(at(354).paragraphs[0]).toMatch(/^This passage will seem hard[\s\S]*for all things are plain to them that understand, as it is written/);
     expect(at(585).paragraphs[0]).toMatch(/^44 Ye are of your father the devil/);

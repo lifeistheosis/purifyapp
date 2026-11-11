@@ -2097,6 +2097,56 @@ findings:
       sentence would stay as empty slots); a word mark inside the carried
       words would not be drawn there (Saved keeps its words), and word marks
       are new in 1.9, so none exists in a released build. About 8 hours.
+      DONE 2026-11-11 (Fable voices, on the arbiter's word that it is in 1.9
+      by the owner's rule): scripts/mend-cyril-john-openings.mjs carried 640
+      open sentences forward, 16,732 words (median 20, largest 158), each
+      verbatim into the first paragraph of the section it runs on in; 88 last
+      paragraphs that were only an open sentence stay as empty slots (92
+      with the four older ones of section 453). The 640 are the 614 counted,
+      less four the print itself leaves so (three sections that end on the
+      print's dashes before a lemma, "by saying:----", and a chapter's
+      heading with no stop, section 959), and 30 more the count had taken
+      for closed because they end on a bracket, a quotation mark or a
+      semicolon ("For YE (He says)" || "judge after the flesh"). Sections
+      that end on a colon stay: the print's own lead-in to a lemma set on
+      its own line.
+      Found in the same reading, and mended: 32 sections had LOST their
+      first words. Where a sentence's opening stands outside the lemma's
+      italics ("30 I can of Mine Own Self do nothing", the 30 and the I in
+      roman; "Another. If the Son is fulness (for"; "But, says one, John"),
+      what the ingest had left before the italics was a paragraph under
+      forty characters, which it dropped. Each is put back from the
+      transcription the work was made from (tertullian.org, LFC 43 and 48,
+      read 2026-11-11; scripts/cyril-john/lost-leads.json), 149 words.
+      Held by lib/saints/__tests__/cyrilJohnOpenings.test.ts: no section
+      ends on an open sentence; every section has its number and as many
+      paragraphs as before (a snapshot of the work as it stood,
+      fixtures/cyril-john-before.json), so no paragraph mark moves; every
+      one of the 504,986 words it had is there in the same order (SHA-256)
+      and the only new words are the 32 leads; every one of the 1,071
+      notes on John's rail is its section's words as the work now has
+      them (859 changed); none opens with a small letter but seven, each
+      named with why the print itself does (a lemma that is the second
+      half of a verse, 181, 331, 347, 361; Isaiah quoted past a question
+      mark, 460; a lemma after a colon, 638; the print's verse reference,
+      2012). 403 notes opened small before. Export walk section 74.
+      A word mark made before the mend over words since carried is not
+      drawn in its old paragraph and is not painted over other words;
+      Saved keeps its words, and opening the work does not throw it away.
+      Word marks are new in 1.9, so no reader has one.
+      NOT restored, and named: 167 lemmas whose verse number alone stood
+      before the italics lost that number the same way (the words are
+      whole); three leads that are a bare reference ("Chap. ix.", "S. John
+      ix. 2, 3", "ch. x. 18."); and section 551, whose opening could not
+      be found in the transcription to check.
+      OPEN, for the arbiter: section 452 ("Book 4, on John 7:24") is one
+      paragraph, and it is not St Cyril's. It is the tail of the
+      translator's footnote at the end of Book 4 ("a S. Cyril seems to be
+      alluding to the words that | God rested the seventh day, as being a
+      memorial of a promise that we too shall rest, as he says above that
+      our rest on that day signifies this."), cut at its italics, shown
+      as a section of the commentary and as a note on John 7's rail under
+      his name. Not changed here.
       STILL OPEN, planned for the release after 1.9 (PLAN, "Planned for
       the next release"): Cyril on John and the Morals read against the
       printed page, as Cyril on Luke was (their words are their

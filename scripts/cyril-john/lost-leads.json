@@ -1,0 +1,198 @@
+{
+  "source": "tertullian.org/fathers/cyril_on_john_NN_bookN.htm, the transcription of LFC 43 and 48 the work was ingested from, read on 2026-11-11",
+  "why": "Words that open a sentence or a lemma and stand outside its italics. The ingest cut each section at the italics and dropped what was left before them when it was under forty characters, so these sections opened inside a sentence with its first words gone.",
+  "leads": [
+    {
+      "section": 14,
+      "lead": "Another. If the Son is fulness (for",
+      "before": "of His fulness have all we received) how",
+      "book": 1
+    },
+    {
+      "section": 34,
+      "lead": "And well will one conceive of the words,",
+      "before": "without Him, was not anything made, if h",
+      "book": 1
+    },
+    {
+      "section": 58,
+      "lead": "Another. If the Word of God be not Alone",
+      "before": "the Very Light, but the creature too pos",
+      "book": 1
+    },
+    {
+      "section": 105,
+      "lead": "The same.",
+      "before": "I will give beginning to Sign, and will ",
+      "book": 1
+    },
+    {
+      "section": 114,
+      "lead": "But, says one, John",
+      "before": "saw the Spirit descending from Heaven up",
+      "book": 2
+    },
+    {
+      "section": 209,
+      "lead": "35 Say not YE,",
+      "before": "There are yet four months and the harves",
+      "book": 2
+    },
+    {
+      "section": 250,
+      "lead": "30 I",
+      "before": "can of Mine Own Self do nothing: as I he",
+      "book": 2
+    },
+    {
+      "section": 257,
+      "lead": "31, 32 If I",
+      "before": "bear witness of Myself, My witness is no",
+      "book": 2
+    },
+    {
+      "section": 288,
+      "lead": "After these things (saith he)",
+      "before": "Jesus departed across the sea of Tiberia",
+      "book": 3
+    },
+    {
+      "section": 333,
+      "lead": "And the Lord said unto Moses, Behold I",
+      "before": "rain you bread from heaven. In these wor",
+      "book": 3
+    },
+    {
+      "section": 369,
+      "lead": "And the Bread which I",
+      "before": "will give is My Flesh for the life of th",
+      "book": 4
+    },
+    {
+      "section": 410,
+      "lead": "69 And WE",
+      "before": "have believed and know that THOU art the",
+      "book": 4
+    },
+    {
+      "section": 416,
+      "lead": "8 Go YE",
+      "before": "up unto this feast, I go not up unto thi",
+      "book": 4
+    },
+    {
+      "section": 464,
+      "lead": "29 Whom YE know not, but I",
+      "before": "know Him, for I am from Him, and He sent",
+      "book": 5
+    },
+    {
+      "section": 549,
+      "lead": "But because to this He adds,",
+      "before": "As the Father taught Me, I speak these t",
+      "book": 5
+    },
+    {
+      "section": 566,
+      "lead": "38 I",
+      "before": "speak that which I have seen with My Fat",
+      "book": 5
+    },
+    {
+      "section": 596,
+      "lead": "But when Christ says,",
+      "before": "He that is of God heareth God's words, l",
+      "book": 6
+    },
+    {
+      "section": 600,
+      "lead": "49 Jesus answered, I",
+      "before": "have not a devil but I honour My Father ",
+      "book": 6
+    },
+    {
+      "section": 601,
+      "lead": "50 I",
+      "before": "seek not Mine own Glory, there is That s",
+      "book": 6
+    },
+    {
+      "section": 606,
+      "lead": "53 Art THOU",
+      "before": "greater than our father Abraham who died",
+      "book": 6
+    },
+    {
+      "section": 729,
+      "lead": "Or thus we must understand the words:",
+      "before": "He groaned in the spirit and was trouble",
+      "book": 7
+    },
+    {
+      "section": 888,
+      "lead": "But",
+      "before": "the prince of this world cometh, and hat",
+      "book": 10
+    },
+    {
+      "section": 901,
+      "lead": "But He calls the Father",
+      "before": "Husbandman, attributing to His Divine Na",
+      "book": 10
+    },
+    {
+      "section": 921,
+      "lead": "But whereas He did not say,",
+      "before": "Because they know not My Father, but Him",
+      "book": 10
+    },
+    {
+      "section": 930,
+      "lead": "He showed that the zeal of the Jews was",
+      "before": "a zeal not according to knowledge, as al",
+      "book": 10
+    },
+    {
+      "section": 935,
+      "lead": "But further, He says:",
+      "before": "He will reprove the world in respect of ",
+      "book": 10
+    },
+    {
+      "section": 950,
+      "lead": "And by the words",
+      "before": "I came out from God, we must surmise tha",
+      "book": 11
+    },
+    {
+      "section": 959,
+      "lead": "And, as the words,",
+      "before": "Thou gavest Him authority over all flesh",
+      "book": 11
+    },
+    {
+      "section": 962,
+      "lead": "This, then, He says,",
+      "before": "is eternal life, that they should know T",
+      "book": 11
+    },
+    {
+      "section": 968,
+      "lead": "And therefore He saith:",
+      "before": "All things whatsoever Thou hast given Me",
+      "book": 11
+    },
+    {
+      "section": 978,
+      "lead": "I have spoken then, He says,",
+      "before": "these things in the world, that My disci",
+      "book": 11
+    },
+    {
+      "section": 1066,
+      "lead": "The angels appeared",
+      "before": "sitting at the head and at the feet wher",
+      "book": 12
+    }
+  ]
+}

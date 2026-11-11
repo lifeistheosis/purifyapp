@@ -10294,6 +10294,124 @@ await section(73, async () => {
   }
 });
 
+// 74. St Cyril on John opens no section inside a sentence (1.9, F-49; the
+// arbiter's word of 2026-11-11). The ingest cut a section at each italic
+// quotation, so 614 of 1,070 began in the middle of a sentence and John 1:1's
+// note on the rail opened "mete out heaven with the span". Each open
+// sentence now stands whole at the head of the section it runs on in. Walked
+// here: the rail's file for John 1 as the apps fetch it, the work at its
+// second section and at the longest sentence carried (158 words, into
+// section 794), that a paragraph left as an empty slot draws nothing and
+// moves no paragraph's number, and what becomes of a word mark made over
+// words that have since been carried: it is not drawn, and Saved keeps its
+// words. lib/saints/__tests__/cyrilJohnOpenings.test.ts holds every section
+// and every note.
+await section(74, async () => {
+  console.log("\n74. St Cyril on John opens no section inside a sentence");
+  const work = JSON.parse(fs.readFileSync(path.join(process.cwd(), "data/saints/cyril-of-alexandria/commentary-on-john.json"), "utf8"));
+  const sec = (n) => work.sections.find((x) => x.n === n);
+  const WORK = "/saints/cyril-of-alexandria/commentary-on-john/";
+  const paragraphs = (page, n) =>
+    page.evaluate((num) => [...document.querySelectorAll(`[data-mk^="saint|cyril-of-alexandria|commentary-on-john|${num}|"]`)].map((h) => ({ idx: Number(h.getAttribute("data-mk").split("|")[4]), text: (h.querySelector("[data-mk-text]")?.textContent ?? "").trim(), tall: Math.round(h.getBoundingClientRect().height) })), n);
+
+  // The rail's file, as the apps fetch it.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/bible/john/1/");
+    const notes = await page.evaluate(async () => {
+      const chapter = await (await fetch("/bible-data/commentary/john/1.json")).json();
+      return Object.values(chapter).flat().filter((n) => /Cyril of Alexandria/.test(n.author) && !n.summary).map((n) => ({ section: n.at?.section, text: n.text, span: n.span ?? null }));
+    });
+    // In the apps a note the library holds is its place and a span of its section's words, not a second copy of them (lib/bible/chapterExtras.ts).
+    for (const n of notes) {
+      const whole = (sec(n.section)?.paragraphs ?? []).filter((p) => p.trim() !== "").join("\n\n");
+      n.opens = (n.span ? whole.slice(n.span[0], n.span[1]) : n.text).slice(0, 74);
+    }
+    must(notes.every((n) => n.opens.length > 20), `John 1's rail: every note of St Cyril's has its words, from the work where the apps keep them (${notes.filter((n) => n.opens.length <= 20).length} without)`);
+    const first = notes.find((n) => n.section === 2);
+    must(Boolean(first) && first.opens.startsWith("But since it was necessary in some sort to mete out heaven with the span,"), `John 1's rail: the note that opened "mete out heaven with the span" opens on its sentence (${first ? first.opens.slice(0, 44) : "not found"})`);
+    const small = notes.filter((n) => /^[\s"“‘(\[]*[a-z]/.test(n.opens));
+    must(notes.length > 20 && small.length === 0, `John 1's rail: none of St Cyril's ${notes.length} notes opens with a small letter (${small.length})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // The work: section 2, and the slot section 1 keeps.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, `${WORK}#s2`);
+    await page.waitForSelector('[data-mk^="saint|cyril-of-alexandria|commentary-on-john|2|"]', { timeout: 30000 }).catch(() => {});
+    const two = await paragraphs(page, 2);
+    must(two.length > 0 && two[0].idx === 0 && two[0].text.startsWith("But since it was necessary in some sort to mete out heaven with the span,"), `the work's second section opens on the whole sentence (${two[0] ? two[0].text.slice(0, 40) : "none"})`);
+    must(two.every((p) => p.text.length > 0) && two.map((p) => p.idx).join() === sec(2).paragraphs.map((p, i) => (p ? i : null)).filter((i) => i !== null).join(), `every paragraph of it keeps its own number (${two.map((p) => p.idx).join(",")})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, `${WORK}#s1`);
+    await page.waitForSelector('[data-mk^="saint|cyril-of-alexandria|commentary-on-john|1|"]', { timeout: 30000 }).catch(() => {});
+    const one = await paragraphs(page, 1);
+    const kept = sec(1).paragraphs.map((p, i) => (p ? i : null)).filter((i) => i !== null);
+    must(sec(1).paragraphs.at(-1) === "" && one.map((p) => p.idx).join() === kept.join() && one.every((p) => p.text.length > 0 && p.tall > 10), `the first section's last paragraph, which was all one open sentence, is a slot that draws nothing; the others keep their numbers (${one.map((p) => p.idx).join(",")} of ${sec(1).paragraphs.length})`);
+    must(/[.?!]["”’)\]]*$/.test(one.at(-1)?.text ?? ""), `and the section ends on a full stop ("…${(one.at(-1)?.text ?? "").slice(-32)}")`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // The longest sentence carried: 158 words, from section 793 into 794.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, `${WORK}#s794`);
+    await page.waitForSelector('[data-mk^="saint|cyril-of-alexandria|commentary-on-john|794|"]', { timeout: 30000 }).catch(() => {});
+    const to = await paragraphs(page, 794);
+    const sentence = (to[0]?.text ?? "").split(/(?<=[.?!])\s+(?=[A-Z])/)[0];
+    must(to[0]?.text.startsWith("For we shall not have so nearly reached the verge of madness") && sentence.includes("entered into him, finding his heart ready and open") && sentence.split(/\s+/).length > 158, `section 794 opens on the 158-word sentence whole, and runs on in it (${sentence.split(/\s+/).length} words in its first sentence)`);
+    await page.screenshot({ path: path.join(SHOTS, "cyril-john-794.png") });
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, `${WORK}#s793`);
+    await page.waitForSelector('[data-mk^="saint|cyril-of-alexandria|commentary-on-john|793|"]', { timeout: 30000 }).catch(() => {});
+    const from = await paragraphs(page, 793);
+    must(from.length > 0 && /[.?!]["”’)\]]*$/.test(from.at(-1).text), `section 793 ends on a full stop ("…${(from.at(-1)?.text ?? "").slice(-36)}")`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A word mark made before the mend, over words that have since gone forward.
+  {
+    const lastIdx = sec(793).paragraphs.length - 1;
+    const carried = sec(794).paragraphs[0].split(/(?<=[.?!])\s+(?=[A-Z])/)[0];
+    const old = `${sec(793).paragraphs[lastIdx]} ${carried}`.trim();
+    const q = "entered into him, finding his heart ready and open";
+    const s = old.indexOf(q);
+    const mark = { id: "walk74", s, e: s + q.length, q, pre: old.slice(Math.max(0, s - 32), s), suf: old.slice(s + q.length, s + q.length + 32), color: "blue", cite: "St. Cyril of Alexandria, Commentary on the Gospel of John, Book 9, on John 13:26", href: `/saints/cyril-of-alexandria/commentary-on-john#p-793-${lastIdx}`, at: new Date().toISOString() };
+    must(s > 0 && !sec(793).paragraphs[lastIdx].includes(q), "a mark is made as it would have been before: over words of section 793's last paragraph that have since been carried");
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { [`purify:saint:cyril-of-alexandria:commentary-on-john:793:${lastIdx}`]: JSON.stringify({ marks: [mark], at: mark.at }) } });
+    await go(page, "/saved/");
+    await page.waitForSelector("[data-saved-row]", { timeout: 20000 }).catch(() => {});
+    const row = await page.evaluate(() => {
+      const r = document.querySelector("[data-saved-row]");
+      return r ? { href: r.getAttribute("href"), text: r.textContent ?? "" } : null;
+    });
+    must(!!row && row.text.includes(q) && row.text.includes("St. Cyril of Alexandria"), `Saved keeps the mark's words and whose they are (${row ? "found" : "no row"})`);
+    await go(page, `${WORK}#s793`);
+    await page.waitForSelector('[data-mk^="saint|cyril-of-alexandria|commentary-on-john|793|"]', { timeout: 30000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const drawn = await page.evaluate(() => ({
+      painted: document.querySelectorAll('[data-mk^="saint|cyril-of-alexandria|commentary-on-john|793|"] [data-mk-id], [data-mk^="saint|cyril-of-alexandria|commentary-on-john|794|"] [data-mk-id]').length,
+      stored: Object.keys(localStorage).filter((k) => k.startsWith("purify:saint:cyril-of-alexandria:commentary-on-john:")).map((k) => [k, (JSON.parse(localStorage.getItem(k) ?? "{}").marks ?? []).length]),
+    }));
+    must(drawn.painted === 0, `in the work the mark is not drawn: its words are no longer in its paragraph, and it is not painted over other words (${drawn.painted} painted)`);
+    must(drawn.stored.length === 1 && drawn.stored[0][1] === 1, `and opening the work does not throw it away (${JSON.stringify(drawn.stored)})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
