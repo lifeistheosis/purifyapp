@@ -28,6 +28,19 @@
 //       --summary defaults to "Claude changed <fields> in <version>".
 //       --parent answers a suggestion the owner sent back.
 //
+//   node scripts/patch-notes.mjs propose --changed [--apply]
+//       Files one revision for every note whose words in
+//       data/changelog/entries.json differ from the live table's: the
+//       release's own changes to old notes (1.9 says their keys, hovering
+//       and code in plain words) and its own note, each with its before and
+//       after, for the owner's Accept or Accept all in /admin. The table's
+//       title, and a release name the file does not give, are kept; a note
+//       that already waits in the queue is left to that revision. Run it
+//       BEFORE `pull --apply`: a pull writes the table's words into the file,
+//       and would take back every change the table has not accepted yet.
+//       lib/whatsNew/branchWords.ts finds the same notes for the panel's own
+//       button, after a deploy. DRY RUN unless --apply.
+//
 //   node scripts/patch-notes.mjs inbox
 //       Prints every pending and suggested revision, with the owner's note.
 //       A `suggested` row is the owner saying "not like that, like this":
@@ -196,7 +209,54 @@ function absent(error) {
 
 try {
 
-if (cmd === "propose") {
+if (cmd === "propose" && args.includes("--changed")) {
+  const entries = JSON.parse(await fs.readFile(path.join(ROOT, "data/changelog/entries.json"), "utf8"));
+  const { data: rows, error, named } = await readNotes((columns) => admin.from("patch_notes").select(columns));
+  if (absent(error)) fail("patch_notes is not applied. Merge supabase/migrations/20260904000100_patch_notes.sql first.");
+  if (error) fail(`read failed: ${error.message}`);
+  const { data: open, error: openErr } = await admin.from("patch_note_revisions").select("version").in("status", ["pending", "suggested"]);
+  if (openErr) fail(`read failed: ${openErr.message}`);
+  const waiting = new Set((open ?? []).map((r) => r.version));
+  const byVersion = new Map((rows ?? []).map((r) => [r.version, r]));
+  const found = [];
+  for (const e of entries) {
+    if (waiting.has(e.version)) {
+      console.log(`  ${e.version}: already waits in the queue; left to it`);
+      continue;
+    }
+    const iso = displayToIso(e.date ?? "");
+    if (!iso) {
+      console.log(`  ${e.version}: the file's date "${e.date}" is not Month D, YYYY; skipped`);
+      continue;
+    }
+    const row = byVersion.get(e.version) ?? null;
+    const before = row ? shape(row) : null;
+    // What only the table holds is kept: its title, and a name the file does not give.
+    const after = shape({ ...e, name: cleanName(e.name) || cleanName(row?.name), date: iso, title: row?.title ?? "" });
+    if (before && JSON.stringify(before) === JSON.stringify(after)) continue;
+    if (/—/.test(JSON.stringify(after))) fail(`${e.version} in the file carries an em dash. Release notes may not. Fix it and run again.`);
+    const summary = describe(before, after);
+    if (summary) found.push({ row, before, after, summary });
+  }
+  if (found.length === 0) {
+    console.log("Every note in the file says what the table says. Nothing to propose.");
+    done();
+  }
+  console.log(`${APPLY ? "Filing" : "Would file"} ${found.length}:`);
+  for (const f of found) console.log(`  ${f.summary}`);
+  if (found.some((f) => f.after.name) && !named) console.log("  patch_notes has no name column yet: a proposal that gives a name waits, and accepting it is refused until the owner adds the column.");
+  if (!APPLY) {
+    console.log("Dry run. Add --apply to write them.");
+    done();
+  }
+  const { error: insErr } = await admin.from("patch_note_revisions").insert(
+    found.map((f) => ({ note_id: f.row?.id ?? null, version: f.after.version, author: "claude", summary: f.summary, before: f.before, after: f.after, status: "pending" })),
+  );
+  if (insErr) fail(`insert failed: ${insErr.message}`);
+  console.log(`Filed ${found.length}. They wait in /admin?tab=patch-notes, with Accept all.`);
+}
+
+if (cmd === "propose" && !args.includes("--changed")) {
   const file = opt("--file");
   if (!file) fail("propose needs --file <draft.json>");
   const raw = JSON.parse(await fs.readFile(path.resolve(ROOT, file), "utf8"));

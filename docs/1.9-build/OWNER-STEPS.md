@@ -1199,19 +1199,27 @@ On your PC, in a terminal, in your purifyapp folder:
 
 ```
 git pull origin ccr-07896cf2-bo0afd
-node scripts/patch-notes.mjs propose --file docs/plans/v1.9/patch-note-1.9.json
 node scripts/patch-notes.mjs propose --file docs/plans/v1.9/patch-note-1.9.json --apply
+node scripts/patch-notes.mjs propose --changed
+node scripts/patch-notes.mjs propose --changed --apply
 ```
 
-The first `propose` only shows what it would file. The second files it.
+The first files the 1.9 note. The second only shows, by name, the old notes
+1.9 words differently: their keys, mouse and code said in plain words (the
+arbiter's word, 2026-11-11), and the Alpha v6.5 address. The third files
+them. This comes before the notes are brought back into the apps' files
+(the drop's first step): that step writes the website's words into the
+files, and would take back any it had not accepted yet.
 
 Then in Admin:
 
 1. purifyapp.net/admin, **Releases**, then **Patch notes**.
-2. Read the 1.9 note. **Accept** it, or **Suggest** a change.
-3. Your word: "change out all the stuff with the emails". The old notes
-   carry it too (the Alpha v6.5 note's SECURITY.md line); that one goes with
-   the old notes' plain words after the push, in R2a, by one button.
+2. Read the 1.9 note, and as many of the old ones as you like: each shows
+   its before and after.
+3. **Accept all**, then **Accept all** again where it asks. Or accept them
+   one by one; **Suggest** sends one back with your change. Your word
+   "change out all the stuff with the emails" is among them: the Alpha v6.5
+   note's SECURITY.md line now says `support@purifyapp.net`.
 4. If the list of board messages there shows **2026-W37** (8 September),
    change the address in its last line to `support@purifyapp.net` too.
 
@@ -1354,24 +1362,15 @@ Send back: "R1 both green".
 3. Render, the **purifyapp** service, **Events**: wait for **Deploy live**.
 4. purifyapp.net/whats-new shows 1.9.
 
-### R2a. The old notes in plain words (2 minutes, after the deploy)
-
-1.9 says the old notes' keys, mouse and code in plain words (the arbiter's
-word, 2026-11-11), each line keeping exactly what it said, and carries the
-Alpha v6.5 address from R0. The website reads old notes from the database,
-so they reach it only through your Accept, and you see every before and
-after first.
+### R2a. Check the notes once the deploy is live (1 minute)
 
 1. purifyapp.net/admin, **Releases**, then **Patch notes**.
-2. At the top it says the release's own file words some notes differently
-   from What's new, and names them. Press **Put them in the queue**. Nothing
-   changes on the website yet.
-3. Each note is now in the queue with its before and after. Read as many as
-   you like.
-4. Press **Accept all**, then **Accept all** again where it asks. They go to
-   What's new at once.
-5. If a line under the button says one was not accepted, send that line to
-   the arbiter. The rest are in.
+2. If nothing at the top says the release's own file words some notes
+   differently from What's new, you are done: R0 brought them all in.
+3. If it does, it names them. Press **Put them in the queue**, read them,
+   then **Accept all** and **Accept all** again where it asks. If a line
+   under the button says one was not accepted, send that line to the
+   arbiter.
 
 ### R2b. Tell every account the terms changed (your item 96; 2 minutes)
 
