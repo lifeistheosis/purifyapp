@@ -92,6 +92,54 @@ function colours(p: Palette): { night: Rgb; paper: Rgb } {
   return { night: pick("--color-night"), paper: pick("--color-paper") };
 }
 
+/** The ink and the page on a palette, outside any island: a chant's own page. */
+function pageColours(p: Palette): { night: Rgb; paper: Rgb } {
+  const pick = (name: string) => {
+    const own = blockOf(p);
+    const raw = (own ? token(own, name) : null) ?? token("@theme", name) ?? token(":root", name);
+    if (!raw) throw new Error(`${p.id}: no ${name}`);
+    return hex(raw);
+  };
+  return { night: pick("--color-night"), paper: pick("--color-paper") };
+}
+
+const PAGE_STEPS = ["--sung-wait", "--sung-near", "--sung-far", "--sung-under", "--sung-under-dim", "--sung-gloss"] as const;
+type PageSteps = Record<(typeof PAGE_STEPS)[number], number>;
+
+/** A chant page's steps, as the cascade answers: paper's (a light look wears it), a look's, the mode's own, the page's. */
+function pageSteps(p: Palette): PageSteps {
+  const tries = light(p)
+    ? ['html[data-reading-mode="parchment"] [data-sung-look="page"]']
+    : p.look
+      ? [':where(html[data-look]) [data-sung-look="page"]']
+      : p.id === "default"
+        ? []
+        : [`html[data-reading-mode="${p.id}"] [data-sung-look="page"]`];
+  const out = {} as PageSteps;
+  for (const name of PAGE_STEPS) {
+    let v: number | null = null;
+    for (const selector of [...tries, '[data-sung-look="page"]']) {
+      const raw = token(selector, name);
+      if (raw) {
+        v = Number(raw);
+        break;
+      }
+    }
+    if (v === null || !Number.isFinite(v)) throw new Error(`${p.id}: no ${name} on the page`);
+    out[name] = v;
+  }
+  return out;
+}
+
+/** Candlelight's seasons light the room behind its page: each room's colour where it is fullest. */
+function rooms(): { season: string; rgb: Rgb; share: number }[] {
+  return [...BARE.matchAll(/html\[data-candle-season="([a-z]+)"\] \{\s*--room: radial-gradient\([^,]+, rgb\((\d+) (\d+) (\d+) \/ ([\d.]+)\)/g)].map((m) => ({
+    season: m[1],
+    rgb: [Number(m[2]), Number(m[3]), Number(m[4])] as Rgb,
+    share: Number(m[5]),
+  }));
+}
+
 const STEPS = ["--sung-wait", "--sung-near", "--sung-far", "--sung-under", "--sung-under-lit", "--sung-under-near", "--sung-under-far"] as const;
 type Steps = Record<(typeof STEPS)[number], number>;
 
@@ -197,6 +245,61 @@ describe("Now Playing's sung words, every line legible", () => {
       const ground = lightest(night);
       expect(ratio(mix(paper, ground, 0.17), ground), p.id).toBeLessThan(3);
       expect(ratio(mix(paper, ground, 0.15), ground), p.id).toBeLessThan(4.5);
+    }
+  });
+});
+
+describe("a chant page's sung words, every line legible (PLAN 13bf)", () => {
+  it("dims by the palette's steps, never by a fixed share", () => {
+    const at = (selector: string) => rules(selector).join("");
+    expect(at('[data-sung-look="page"] [data-sung="near"] [data-sung-main]')).toMatch(/opacity:\s*var\(--sung-near\)/);
+    expect(at('[data-sung-look="page"] [data-sung="far"] [data-sung-main]')).toMatch(/opacity:\s*var\(--sung-far\)/);
+    expect(at('[data-sung-look="page"] [data-sung-under]')).toMatch(/opacity:\s*var\(--sung-under\)/);
+    expect(at('[data-sung-look="page"] [data-sung="near"] [data-sung-under]')).toMatch(/opacity:\s*var\(--sung-under-dim\)/);
+    expect(at('[data-sung-look="page"] [data-sung="far"] [data-sung-under]')).toMatch(/opacity:\s*var\(--sung-under-dim\)/);
+    expect(at('[data-sung-look="page"] [data-sung="rest"] [data-sung-gloss]')).toMatch(/opacity:\s*var\(--sung-gloss\)/);
+    expect(at('[data-sung-look="page"] [data-sung="lit"] [data-sung-main]')).not.toMatch(/opacity/);
+    // Candlelight's three seasons are read, so their rooms are in the sum.
+    expect(rooms().map((r) => r.season).sort()).toEqual(["dormition", "lent", "nativity"]);
+  });
+
+  for (const p of PALETTES) {
+    it(`${p.id}: every word on the page holds 4.5:1 at every step, on its own page`, () => {
+      const { night, paper } = pageColours(p);
+      // Candlelight's page also stands under each season's room, where it is fullest.
+      const grounds: Rgb[] = [night, ...(p.id === "candlelight" ? rooms().map((r) => mix(r.rgb, night, r.share)) : [])];
+      const s = pageSteps(p);
+      const short: string[] = [];
+      for (const ground of grounds) {
+        for (const [what, at] of [
+          ["a word of the line sung, waiting (a long hymn lights at 21px)", s["--sung-wait"]],
+          ["a line beside the one sung", s["--sung-near"]],
+          ["a line further off", s["--sung-far"]],
+          ["a line's sound or English", s["--sung-under"]],
+          ["the sound or English of a line stepped back", s["--sung-under-dim"]],
+          ["a line's English, at rest or sung", s["--sung-gloss"]],
+        ] as const) {
+          const r = ratio(mix(paper, ground, at), ground);
+          if (r < 4.5) short.push(`${what}, at ${Math.round(at * 100)}% on ${ground.map(Math.round).join(",")}: ${r.toFixed(2)}:1`);
+        }
+      }
+      expect(short, short.join("\n")).toEqual([]);
+    });
+
+    it(`${p.id}: the page's steps are still steps`, () => {
+      const s = pageSteps(p);
+      expect(s["--sung-far"]).toBeLessThan(s["--sung-near"]);
+      expect(s["--sung-near"], "the line about to be sung never fainter than the lines beside it").toBeLessThan(s["--sung-wait"]);
+      expect(s["--sung-wait"]).toBeLessThan(1);
+      expect(s["--sung-under-dim"]).toBeLessThanOrEqual(s["--sung-under"]);
+    });
+  }
+
+  it("is the sum that failed the old steps: 30% and 34% fall short of 4.5:1 on every palette", () => {
+    for (const p of PALETTES) {
+      const { night, paper } = pageColours(p);
+      expect(ratio(mix(paper, night, 0.3), night), p.id).toBeLessThan(4.5);
+      expect(ratio(mix(paper, night, 0.34), night), p.id).toBeLessThan(4.5);
     }
   });
 });

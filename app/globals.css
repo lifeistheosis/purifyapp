@@ -11859,6 +11859,52 @@ html[data-reading-mode="cappadocian"] [data-sung-look="player"] {
 [data-sung-gloss] {
  display: none;
 }
+/* The page's lines not being sung step back and can still be read, as Now
+   Playing's do (1.9, PLAN 13bf, by the same precedent: the owner's "ok to
+   all" of 2026-11-10 on his page's 131). They stood at 36% and 30%, their
+   sound or English at 34%, which checkMock measured at 1.83 to 3.32:1 while
+   a line was sung; the page's words are 21px, so they are held to 4.5:1, and
+   the waiting words of the line being sung (26px) to 3:1 and never fainter
+   than the lines beside it. On the palette's own page, as 131 holds the
+   prayer page; a look's picture foot is held to nothing, as there. Paper
+   and the light looks ask the most. lib/player/__tests__/sungLight.test.ts
+   does the arithmetic for every palette. */
+[data-sung-look="page"] {
+ --sung-wait: 0.62;
+ --sung-near: 0.55;
+ --sung-far: 0.47;
+ --sung-under: 0.62;
+ --sung-under-dim: 0.47;
+ --sung-gloss: 0.6;
+}
+html[data-reading-mode="candlelight"] [data-sung-look="page"] {
+ --sung-wait: 0.71;
+ --sung-near: 0.64;
+ --sung-far: 0.56;
+ --sung-under-dim: 0.56;
+}
+html[data-reading-mode="monastery"] [data-sung-look="page"],
+html[data-reading-mode="councils"] [data-sung-look="page"],
+html[data-reading-mode="cappadocian"] [data-sung-look="page"] {
+ --sung-wait: 0.66;
+ --sung-near: 0.59;
+ --sung-far: 0.51;
+ --sung-under-dim: 0.51;
+}
+:where(html[data-look]) [data-sung-look="page"] {
+ --sung-wait: 0.65;
+ --sung-near: 0.58;
+ --sung-far: 0.5;
+ --sung-under-dim: 0.5;
+}
+html[data-reading-mode="parchment"] [data-sung-look="page"] {
+ --sung-wait: 0.84;
+ --sung-near: 0.76;
+ --sung-far: 0.68;
+ --sung-under: 0.72;
+ --sung-under-dim: 0.68;
+ --sung-gloss: 0.7;
+}
 [data-sung-look="page"] [data-sung="lit"] [data-sung-gloss],
 [data-sung-look="page"] [data-sung="rest"] [data-sung-gloss] {
  display: block;
@@ -11867,23 +11913,23 @@ html[data-reading-mode="cappadocian"] [data-sung-look="player"] {
  font-size: 13.5px;
  line-height: 1.45;
  color: var(--color-paper);
- opacity: 0.6;
+ opacity: var(--sung-gloss);
 }
 [data-sung-look="page"] [data-sung-under] {
  margin-top: 3px;
  font-size: 14.5px;
  line-height: 1.5;
- opacity: 0.62;
+ opacity: var(--sung-under);
 }
 [data-sung-look="page"] [data-sung="near"] [data-sung-main] {
- opacity: 0.36;
+ opacity: var(--sung-near);
 }
 [data-sung-look="page"] [data-sung="far"] [data-sung-main] {
- opacity: 0.3;
+ opacity: var(--sung-far);
 }
 [data-sung-look="page"] [data-sung="near"] [data-sung-under],
 [data-sung-look="page"] [data-sung="far"] [data-sung-under] {
- opacity: 0.34;
+ opacity: var(--sung-under-dim);
 }
 /* A white glow cannot be seen on paper: the page's ink is the light there.
    Over the words' own light too, which the component paints inline. */
