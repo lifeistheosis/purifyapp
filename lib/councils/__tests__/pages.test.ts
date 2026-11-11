@@ -137,6 +137,23 @@ describe("a council's page (C, at a glance)", () => {
     expect(door).toContain('tn("councils.booksInRoom", books)');
     expect(door).toContain("readingTime(minutes, t)");
   });
+
+  // The guardrail on /councils/first-nicaea/ (2026-11-11, the arbiter's word
+  // to take it): the two covers behind were placed from the left, so in
+  // Arabic they swapped places instead of the fan mirroring whole.
+  it("fans its covers from the start, the two behind leaning outward, so the fan mirrors whole in Arabic", () => {
+    const door = code("components/councils/DocumentsDoor.tsx");
+    expect(door).not.toMatch(/\b(left|right)-\[/);
+    expect(door).toContain('className="absolute bottom-[3px] start-[2px] origin-bottom -rotate-[10deg] [[dir=rtl]_&]:rotate-[10deg]"');
+    expect(door).toContain('className="absolute bottom-[3px] start-[42px] origin-bottom rotate-[10deg] [[dir=rtl]_&]:-rotate-[10deg]"');
+    expect(door).toContain('className="absolute bottom-0 start-[20px]"');
+  });
+
+  it("draws the line between its facts as a divider allowed by name, on its logical side, never reversed in Arabic", () => {
+    expect(page).toContain(`data-mock-allow="stripe"\n  data-mock-why="the line between a council's facts, side by side"`);
+    expect(page).toContain('sideBySide ? "grid-cols-2 divide-x divide-paper/8" : "grid-cols-1 divide-y divide-paper/8"');
+    expect(page).not.toContain("divide-x-reverse");
+  });
 });
 
 describe("a council's books in the reading room", () => {

@@ -63,9 +63,20 @@ function oneSided(sides: Set<Side>): boolean {
   return sides.has("start") !== sides.has("end") && !sides.has("top") && !sides.has("bottom");
 }
 
+/**
+ * A divide-x: a line down one side of every item but the last (Tailwind 4
+ * draws it with border-inline-end). The councils' facts slipped past this
+ * test on it and were caught on the export (2026-11-11).
+ */
+const DIVIDE_X = /^((?:[\w[\]&>*=-]+:)*)divide-x(?:-(\d+(?:\.\d+)?|px|\[\d*\.?\d+px\]|reverse))?$/;
+
 /** The class strings' borders on a line: one-sided for some variant (base, md:, first:...)? */
 function tailwindStripe(line: string): string | null {
   const tokens = line.split(/[\s"'`{}(),;]+/).map((t) => t.replace(/^!/, ""));
+  for (const t of tokens) {
+    const m = DIVIDE_X.exec(t);
+    if (m && m[2] !== "reverse" && !/^0(px)?$|^\[0(px)?\]$/.test(m[2] ?? "")) return `${t}: a line down one side of each item but the last`;
+  }
   const widths = tokens.flatMap((t) => {
     const m = WIDTH.exec(t);
     if (!m) return [];
@@ -198,6 +209,7 @@ const DIVIDERS: Divider[] = [
   { file: "components/player/NowPlayingSheet.tsx", has: "md:w-[440px] md:border-l", why: "the player's edge, docked beside the page on a wide screen", screen: true },
   { file: "components/bible/BookChapterSidebar.tsx", has: "border-r border-white/8", why: "the line between the computer's chapter list and the page", screen: true },
   { file: "components/theology/TopicReader.tsx", has: "gap-2 border-s border-paper/7", why: "the lines between the study's three figures", screen: true },
+  { file: "app/(app)/councils/[slug]/page.tsx", has: "grid-cols-2 divide-x divide-paper/8", why: "the line between a council's facts, side by side", screen: true },
   // Shapes drawn while a page loads: no words in them, nothing for checkMock to read.
   { file: "app/(app)/bible/[book]/[chapter]/loading.tsx", has: "border-r border-white/8", why: "the line between the computer's chapter list and the page, while it loads" },
   { file: "components/calendar/CalendarSkeleton.tsx", has: "grid grid-cols-7 border-l", why: "the month grid's lines, while it loads" },
@@ -239,6 +251,21 @@ describe("no side stripes in the app", () => {
     }
   });
 
+  // Tailwind 4 draws a divide-x on the logical side (border-inline-end), so it
+  // mirrors by itself where a page reads right to left. Reversed there, the
+  // line goes to the outer edge: the councils' facts in Arabic had no line
+  // between them, and a second one on the card's edge (2026-11-11).
+  it("never reverses a divide-x under right to left, where it already mirrors by itself", () => {
+    const reversed = files.flatMap((file) =>
+      readFileSync(file, "utf8")
+        .split("\n")
+        .map((line, i) => ({ line, i }))
+        .filter(({ line }) => !COMMENT.test(line) && /\brtl:divide-x-reverse\b/.test(line))
+        .map(({ i }) => `${path.relative(ROOT, file)}:${i + 1}`),
+    );
+    expect(reversed).toEqual([]);
+  });
+
   it("gives every allowance in the app its reason", () => {
     for (const file of files.filter((f) => /\.tsx$/.test(f))) {
       const source = readFileSync(file, "utf8");
@@ -257,6 +284,10 @@ describe("no side stripes in the app", () => {
     expect(tailwindStripe(`className="border-b border-paper/10 pb-4"`)).toBeNull();
     expect(tailwindStripe(`className="border-x border-paper/10"`)).toBeNull();
     expect(tailwindStripe(`className="border-separate border-spacing-2 border-solid"`)).toBeNull();
+    expect(tailwindStripe(`sideBySide ? "grid-cols-2 divide-x divide-paper/8" : "grid-cols-1 divide-y divide-paper/8",`)).not.toBeNull();
+    expect(tailwindStripe(`className="md:divide-x-2 divide-paper/10"`)).not.toBeNull();
+    expect(tailwindStripe(`className="divide-y divide-paper/8"`)).toBeNull();
+    expect(tailwindStripe(`className="divide-x-0 md:divide-y"`)).toBeNull();
     expect(tailwindBar(`<span className="absolute inset-y-0 start-0 w-0.5 bg-paper/40" />`)).not.toBeNull();
     expect(tailwindBar(`<span aria-hidden className="absolute inset-y-0 start-[6px] w-px bg-paper/12" />`)).toBeNull();
     expect(cssStripes(".a { border-left: 2px solid red; padding-left: 14px; }")).toHaveLength(1);

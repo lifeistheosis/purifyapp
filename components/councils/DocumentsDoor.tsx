@@ -22,8 +22,14 @@ export type FanBook = { src?: string; focusY?: number; crop?: CoverWindow };
  */
 export function DocumentsDoor({ href, books, minutes, fan }: { href: string; books: number; minutes: number; fan: FanBook[] }) {
   const { t, tn } = useTranslate();
-  // The first book in front, the second behind it to the left, the third to the right.
-  const [front, left, right] = fan;
+  // The first book in front, the second behind it at the start, the third at
+  // the end. Each is placed from the start and the two behind lean outward, so
+  // in Arabic and Urdu the fan mirrors whole (the guardrail's mirror rule,
+  // 2026-11-11: placed from the left, the two swapped places instead). The
+  // lean follows the page's direction, as the places do: Tailwind's rtl:
+  // also matches by language, which a page turned round in its own language
+  // would not follow.
+  const [front, atStart, atEnd] = fan;
   return (
     <Link
       href={href}
@@ -40,18 +46,18 @@ export function DocumentsDoor({ href, books, minutes, fan }: { href: string; boo
         </span>
       </span>
       <span aria-hidden className="relative block h-[58px] w-[78px] shrink-0">
-        {left ? (
-          <span className="absolute bottom-[3px] left-[2px] origin-bottom -rotate-[10deg]">
-            <MiniCover book={left} width={34} />
+        {atStart ? (
+          <span className="absolute bottom-[3px] start-[2px] origin-bottom -rotate-[10deg] [[dir=rtl]_&]:rotate-[10deg]">
+            <MiniCover book={atStart} width={34} />
           </span>
         ) : null}
-        {right ? (
-          <span className="absolute bottom-[3px] left-[42px] origin-bottom rotate-[10deg]">
-            <MiniCover book={right} width={34} />
+        {atEnd ? (
+          <span className="absolute bottom-[3px] start-[42px] origin-bottom rotate-[10deg] [[dir=rtl]_&]:-rotate-[10deg]">
+            <MiniCover book={atEnd} width={34} />
           </span>
         ) : null}
         {front ? (
-          <span className="absolute bottom-0 left-[20px]">
+          <span className="absolute bottom-0 start-[20px]">
             <MiniCover book={front} width={38} />
           </span>
         ) : null}

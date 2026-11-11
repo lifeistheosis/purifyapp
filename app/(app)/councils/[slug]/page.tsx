@@ -149,13 +149,19 @@ export default async function CouncilProfilePage({
  </p>
  </header>
 
- {/* Its facts, at a glance. */}
+ {/* Its facts, at a glance. Side by side, the line between the two is a
+     true divider, allowed by name (CLAUDE.md, no side stripes;
+     lib/ui/__tests__/noSideStripes.test.ts, DIVIDERS). Tailwind 4 draws it
+     on the logical side, so it mirrors by itself in Arabic; reversed there,
+     it stood on the card's outer edge and the two facts had no line. */}
  {facts.length > 0 && (
  <dl
   data-council-facts=""
+  data-mock-allow="stripe"
+  data-mock-why="the line between a council's facts, side by side"
   className={cn(
   "mt-5 grid rounded-[16px] border border-paper/8 bg-paper/[0.04] font-sans shadow-[inset_0_1px_0_rgb(255_255_255/0.04)]",
-  sideBySide ? "grid-cols-2 divide-x divide-paper/8 rtl:divide-x-reverse" : "grid-cols-1 divide-y divide-paper/8",
+  sideBySide ? "grid-cols-2 divide-x divide-paper/8" : "grid-cols-1 divide-y divide-paper/8",
   )}
  >
  {facts.map((f) => (
