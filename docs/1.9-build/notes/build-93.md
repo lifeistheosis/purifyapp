@@ -190,3 +190,11 @@ Screenshots: `build-93/15a-prayer-book-closed.png` and `15b-prayer-book-opened-u
 A standing rule from his "Again" (the language list was the same, build 90): anything that opens (a section of a list, a card, a menu) and ends below what the screen shows moves the page with it, so its end stands clear of the tab bar; it never moves the opened thing's top off the screen, and with reduced motion the page moves without the glide.
 
 Who has it: Fable Theology (built the page transitions and is mending Back's scroll, note 1): one helper the whole app uses for anything that opens, the prayer book first, every accordion and expanding part after, with a test that fails today.
+
+### 16. Your rule: switching Evening to Morning jumps (2026-11-11 about 01:40 UTC)
+
+His words: "Switching from evening to morning is buggy in this situation."
+
+Screenshots: `build-93/16a-rule-evening.png` (Evening: Pray my rule, about 8 min, nine prayers) and `16b-rule-morning.png` (Morning: no rule yet, so the Pray my rule row is gone, the Morning and Evening switch has jumped up under the finger, the picture above has swapped at once, and "Nothing here yet" stands beside a dashed circle) (`components/prayers/mine/RuleHead.tsx`, `components/prayers/RuleToday.tsx`; built by the previous arbiter chat).
+
+Who has it: Updates, with the prayer page's other notes. The bar: the switch never moves under the finger (it keeps its place whatever the chosen half holds); the change moves in the house's motion (the picture crossfades, the list follows); an empty half offers its start in place, with no dashed placeholder (his note 4); reproduced on the export first, held by a test. Order for Updates from here: the red test, Easy Scroll (note 2), this, the completion (note 14), the history timeline (note 5); quick win 16 only if time remains before November 17, else 1.9.1.

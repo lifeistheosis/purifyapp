@@ -2,6 +2,8 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
+**Build 93, note 16 (his word, 2026-11-11 about 01:40 UTC, screenshots of Your rule on Evening and on Morning):** "Switching from evening to morning is buggy in this situation." (`notes/build-93.md`, note 16).
+
 **Build 93, note 15 (his word, 2026-11-11 about 01:39 UTC, screenshots of the prayer book opened under the tab bar):** "Again, I want the screen to move with the bottom if it's too big." A standing rule: what opens shows itself (`notes/build-93.md`, note 15).
 
 **Build 93, note 14 (his word, 2026-11-11 about 01:38 UTC, a screenshot of the evening rule's end):** "Again, refine the prayer system and the actual UX experience. Like, instead of just a generic amen button, make it so that when you scroll past the bottom, it creates like an animation saying, you know, like a, just make an animation for when they complete the prayers." (`notes/build-93.md`, note 14).
