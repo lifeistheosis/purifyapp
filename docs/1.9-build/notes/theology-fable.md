@@ -749,3 +749,30 @@ of ours), and the mock check passes on it on all five palettes, all ten
 checks. `node scripts/mock-leaf-pages.mjs` passes. By eye, on a still: the
 two cards.
 
+
+## The gate's first run on a study's page (2026-11-11)
+
+The pre-build gate's first run (`docs/1.9-build/notes/gate-run-1.md`) named
+three things on `/theology/comma-johanneum/`. All three are in the
+components every study shares, so they are mended there.
+
+- **The step's link at the head of a study was 26px tall**
+  ("VIII · Scripture and the Fathers · 8 of 9"). It had a larger place to
+  tap laid over it (`.hit-44`), which the gate does not count: it measures
+  the box. The link is 44 tall in its own box now
+  (`components/theology/TopicReader.tsx`), and the room it gained is taken
+  from the space over it and under it, so the head stands where it stood.
+  47px on the export at the reader's text size.
+- **"Doctrine", the quiet label over the related studies, read 2.31:1 on
+  every palette.** It was ink at 40, below what the house lifts to 4.5:1
+  (45 to 60, `lib/ui/__tests__/faintText.test.ts`). It is smaller than the
+  label over a part, not fainter, now.
+- **"Part 1 of 4", inside the Begin button, read 3.97:1 on Dark, Candlelight
+  and Monastery.** It was the button's own ink at 55%
+  (`components/theology/StudyContents.tsx`); at 70% it is past 6:1.
+
+Held by `lib/theology/__tests__/studyGate.test.ts` (four cases) and by the
+touch test's own line for the link. On the export the mock check passes on
+the study's page on all five palettes: contrast, target and the rest. What
+it still cannot measure there is words on a tray's gradient, which is the
+checker's own item (T4).

@@ -368,7 +368,8 @@ describe("touch targets", () => {
     // The four small ones, 44 to the touch.
     const has = (file: string, text: string) => expect(readFileSync(join(ROOT, file), "utf8"), file).toContain(text);
     has("components/community/CommunityClient.tsx", 'className="hit-44 absolute -right-2 top-1 inline-flex size-9 items-center');
-    has("components/theology/TopicReader.tsx", 'className="tap-press hit-44 inline-flex max-w-full items-center gap-[9px]');
+    // A study's step link is 44 tall in its own box now (the gate's first run measured its 26; lib/theology/__tests__/studyGate.test.ts).
+    has("components/theology/TopicReader.tsx", 'className="tap-press inline-flex min-h-11 max-w-full items-center gap-[9px]');
     has("components/prayers/NowPlayingBar.tsx", 'className="tap-press hit-44 flex min-w-0 flex-1 items-center gap-3 text-start"');
     const deck = readFileSync(join(ROOT, "components/theology/PassageDeck.tsx"), "utf8");
     expect((deck.match(/className="tap-press hit-44 (?:ms-2|ms-0\.5) hidden size-9 /g) ?? []).length).toBe(2);

@@ -77,7 +77,8 @@ export function StudyContents({ slug, parts, end }: { slug: string; parts: Conte
         className="reader-lit tap-press mt-4 flex h-[46px] w-full items-center justify-center gap-2 rounded-pill bg-paper px-5 font-sans text-[15px] font-semibold text-night md:w-auto md:min-w-[280px]"
       >
         {begun ? t("common.continue") : t("onboard.day1.open")}
-        <span className="font-medium opacity-55">{t("paths.part", { n: resume, total })}</span>
+        {/* On the button's own ground: at 55% it read 3.97:1 on Dark, Candlelight and Monastery (the gate's first run). */}
+        <span className="font-medium opacity-70">{t("paths.part", { n: resume, total })}</span>
       </Link>
     </section>
   );

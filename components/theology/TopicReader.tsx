@@ -88,13 +88,16 @@ export function TopicReader({
             else the path's step, else the name itself. */}
         <StudyCover subject={subject ? { src: subject.picture.src } : FALLBACK_COVER} passage={epigraph} firstId={epigraph ? DOCTRINE_FIRST_WORDS : undefined} />
 
-        <div className="saint-head-in mt-7" style={{ "--i": 1 } as CSSProperties}>
+        {/* The step's link is 44 tall in its own box (the gate's first run
+            measured 26, 2026-11-11): the room it gained is taken from the
+            space over it and under it, so the head stands where it stood. */}
+        <div className={`saint-head-in ${subject ? "mt-[19px]" : "mt-7"}`} style={{ "--i": 1 } as CSSProperties}>
           {subject ? (
             <Link
               href={`/theology/path/${subject.id}`}
               id={epigraph ? undefined : DOCTRINE_FIRST_WORDS}
               data-study-step=""
-              className="tap-press hit-44 inline-flex max-w-full items-center gap-[9px] font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/55 hover:text-paper"
+              className="tap-press inline-flex min-h-11 max-w-full items-center gap-[9px] font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/55 hover:text-paper"
             >
               <span aria-hidden className="block size-6 shrink-0 overflow-hidden rounded-full bg-paper/[0.05] ring-1 ring-paper/20">
                 {/* Whole or not yet at all (build 85, note 52). */}
@@ -110,7 +113,7 @@ export function TopicReader({
             id="doctrine-title"
             lang="en"
             dir="ltr"
-            className="mt-3 font-serif text-[27px] font-bold leading-[1.12] tracking-[-0.2px] text-balance text-paper md:text-display-sm"
+            className={`${subject ? "mt-[3px]" : "mt-3"} font-serif text-[27px] font-bold leading-[1.12] tracking-[-0.2px] text-balance text-paper md:text-display-sm`}
           >
             {body.title}
           </h1>
@@ -259,7 +262,8 @@ function PartLabel({ children, count, quiet = false }: { children: React.ReactNo
   return (
     <h2
       className={`flex items-baseline justify-between px-1 font-sans font-bold uppercase tracking-[0.12em] ${
-        quiet ? "text-[10px] text-paper/40" : "text-[10.5px] text-paper/50"
+        // Smaller, not fainter: at paper/40 it read 2.31:1 on every palette (the gate's first run).
+        quiet ? "text-[10px] text-paper/50" : "text-[10.5px] text-paper/50"
       }`}
     >
       {children}
