@@ -1,6 +1,7 @@
 import { FIGURES } from "@/lib/readAloud/covers";
 import { COUNCIL_COVERS, FEELING_COVERS } from "@/lib/reading/authorCovers";
 import { COVER_ART, WORK_ART } from "@/lib/reading/coverArt";
+import { ICON_RIGHTS, ICONS_URL_PREFIX } from "@/lib/saints/iconRights";
 
 /**
  * The photographs Purify's pictures are made from that their makers share
@@ -12,8 +13,10 @@ import { COVER_ART, WORK_ART } from "@/lib/reading/coverArt";
  *
  * Read from the pictures' own registries, so nothing is written twice (the
  * shape Updates asked for): the reading room's covers and doors
- * (lib/reading/coverArt.ts, authorCovers.ts) and the Bible's read-aloud
- * covers (lib/readAloud/covers.ts). A picture whose licence is CC BY or CC
+ * (lib/reading/coverArt.ts, authorCovers.ts), the Bible's read-aloud
+ * covers (lib/readAloud/covers.ts), and the saints' own pictures
+ * (lib/saints/iconRights.ts, from 2026-11-11, when St Victorinus's fresco
+ * came to him through a CC BY-SA photograph). A picture whose licence is CC BY or CC
  * BY-SA carries `credit`, the photographer as its Commons page asks to be
  * credited, beside the licence and the page it was read on; this lists every
  * one. The work photographed must itself be old enough to be free: a
@@ -39,7 +42,7 @@ export type CcLicence = keyof typeof CC_LICENCES;
 export const isCcLicence = (license: string): license is CcLicence => Object.hasOwn(CC_LICENCES, license);
 
 export type PhotoCredit = {
-  /** Purify's file made from the photograph: a cover under /covers/. */
+  /** Purify's file made from the photograph: a cover under /covers/, or a saint's picture under /saints/icons/. */
   file: string;
   /** The work photographed, in the registry's words. */
   work: string;
@@ -59,6 +62,9 @@ function registered(): Registered[] {
     if (art.kind === "streamed") out.push(art);
   }
   for (const figure of Object.values(FIGURES)) if (figure) out.push(figure);
+  for (const [file, row] of Object.entries(ICON_RIGHTS)) {
+    if (row.status === "verified") out.push({ file: `${ICONS_URL_PREFIX}${file}`, work: row.work, license: row.license, credit: row.credit, evidenceUrl: row.evidenceUrl });
+  }
   return out;
 }
 

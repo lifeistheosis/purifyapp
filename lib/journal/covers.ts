@@ -4,8 +4,11 @@
 // settled as verified (lib/saints/iconRights.ts: opened and looked at, public
 // domain or CC0, with their source) are offered: never one used with an
 // iconographer's permission, which was given for the app's own pages, and
-// never a picture with no recorded source. They ship inside the apps
-// (public/saints/icons), so a cover shows with no signal.
+// never a picture with no recorded source. Nor a saint's picture made from a
+// CC BY or CC BY-SA photograph (from 2026-11-11, St Victorinus's fresco):
+// its photographer must be named wherever it is shown, and a banner, a
+// shared page and its link preview have no room for the name. They ship inside
+// the apps (public/saints/icons), so a cover shows with no signal.
 //
 // Pure: lib/journal/__tests__/covers.test.ts holds the list to the registry.
 
@@ -22,7 +25,7 @@ export type Cover = {
 };
 
 export const COVERS: readonly Cover[] = Object.entries(ICON_RIGHTS)
-  .filter(([, r]) => r.status === "verified")
+  .filter(([, r]) => r.status === "verified" && !/^cc by/i.test(r.license))
   .map(([file, r]) => ({ id: file, src: `${ICONS_URL_PREFIX}${file}`, alt: r.alt, credit: `${r.license} · ${r.source}` }));
 
 const BY_ID = new Map(COVERS.map((c) => [c.id, c]));

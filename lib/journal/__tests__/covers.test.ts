@@ -23,6 +23,13 @@ describe("a page's cover", () => {
     for (const f of permitted) expect(coverById(f)).toBeNull();
   });
 
+  it("never offers a picture made from a CC BY or CC BY-SA photograph, whose photographer a banner cannot name", () => {
+    const credited = Object.entries(ICON_RIGHTS).filter(([, r]) => /^cc by/i.test(r.license)).map(([f]) => f);
+    expect(credited).toContain("victorinus-of-pettau.jpg");
+    for (const f of credited) expect(coverById(f), f).toBeNull();
+    for (const c of COVERS) expect(c.credit, c.id).toMatch(/^(Public domain|CC0) · /);
+  });
+
   it("every cover ships inside the apps", () => {
     for (const c of COVERS) expect(existsSync(join(process.cwd(), "public", c.src)), c.src).toBe(true);
   });

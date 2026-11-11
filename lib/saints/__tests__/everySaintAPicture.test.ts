@@ -39,7 +39,6 @@ const WAITING: Record<string, string> = {
   "symeon-the-new-theologian": "permission: the Monastery of the Virgin Mary the Consolatory, Brownsburg-Chatham, Quebec (no older picture of him is free)",
   "mark-of-ephesus": "permission: Brian Whirledge, Goshen, Indiana, unless the owner takes the Eleon workshop's own CC BY icon (no clean free picture of him is older)",
   "xenia-of-petersburg": "permission: Holy Cross Monastery, Wayne, West Virginia (glorified in 1988; no picture of her is free)",
-  "victorinus-of-pettau": "permission: the Archdiocese of Maribor, for Ptuj, his see (no old picture of him found in any library searched)",
   // November's and December's saints are the November and December chat's
   // (docs/1.9-build/notes/november-saints.md, december-saints.md).
   "arsenius-of-prislop": "permission: the Diocese of Deva and Hunedoara (the Church's icon of 2025; its painter not named)",

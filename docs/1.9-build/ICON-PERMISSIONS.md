@@ -498,28 +498,6 @@ The mother of the Holy Unmercenaries Cosmas and Damian (November 1).
   The Russian Lives of the Saints prints no icon for December 19, and no
   engraving of him from a printed Kiev Caves Paterikon was found.
 
-## St Victorinus of Pettau
-
-- **The picture:** none found. He has no woodcut in the Nuremberg Chronicle
-  (he is only named in the paragraph on Papias, leaf 112 verso), none in
-  Thevet's portraits of 1584 and none in Lupton's Lives of the Primitive
-  Fathers of 1640; the Chronicle's other men named Victorinus are other
-  men. A wall painting of him at Nova Cerkev in Slovenia is spoken of, with
-  no date and no holder's page, and was not seen.
-- **Made by:** not known.
-- **To write to:** the Archdiocese of Maribor (Nadškofija Maribor), in
-  which Ptuj, the old Poetovio and his see, lies, to ask what picture of
-  him the church at Ptuj keeps and whether Purify may show a photograph of
-  it. Its address is to be read from its own site before the letter goes:
-  not confirmed here.
-- **For the letter:** in Slovenian or English. Ask for the oldest picture
-  of St Victorinus kept at Ptuj, who made it and when, and for a photograph
-  with written leave to show it in the app and on the website, never in an
-  advertisement.
-- **Until then:** his page stands on the plate, and his book On the
-  Creation of the World wears the Apostle John, whose Gospel and
-  Apocalypse it reads (lib/reading/coverArt.ts).
-
 ## St Symeon the New Theologian (949 to 1022)
 
 An older saint with no picture whose freedom can be shown (searched on

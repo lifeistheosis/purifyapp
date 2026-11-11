@@ -53,6 +53,12 @@ type RightsFields = {
   source: string;
   license: string;
   evidenceUrl: string;
+  /**
+   * A CC BY or CC BY-SA photograph of an old work only: the photographer, as
+   * the file's page asks to be credited. The credits page names every one
+   * (lib/credits/photos.ts); a public-domain or CC0 picture carries none.
+   */
+  credit?: string;
 };
 
 /**
@@ -2876,6 +2882,30 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     source: "Wikimedia Commons (a scan of the book)",
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Alexander-Alexandria.JPG",
+  },
+  // St Victorinus: the oldest picture of him whose freedom can be shown,
+  // Giacomo Brollo's fresco of 1886 in the parish church of St Leonard at
+  // Nova Cerkev, Slovenia. The fresco is public domain (Brollo died in
+  // 1918), and a faithful photograph of a wall painting adds no rights of
+  // its own, as with St Alexander's engraving above (the arbiter,
+  // 2026-11-11). Its photographer shares the photograph of 2010 under CC
+  // BY-SA 3.0 all the same, so the photographer is named as its page asks,
+  // and Purify's cut is shared under the same licence. Left: an 1888 Life
+  // of him whose cover has no picture of him;
+  // the photographs of St Aloysius's church in Maribor and St George's in
+  // Ptuj, whose pages name no painter or date for the picture of him they
+  // show; a statue of 2003 in Ptuj, too new to be free.
+  "victorinus-of-pettau.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A wall painting of a bearded bishop in a small mitre and a golden chasuble with a pale band down its front, holding a book marked with a cross, a crozier and the hilt of a sword beside him, against a pale sky.",
+    work: "St Victorinus of Pettau, fresco in the parish church of St Leonard, Nova Cerkev, Slovenia (a detail: his head and body to the knees)",
+    artist: "Giacomo Brollo",
+    workDate: "1886",
+    source: "Wikimedia Commons (a photograph of 2010)",
+    license: "CC BY-SA 3.0",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Victorinus.jpg",
+    credit: "Urharec",
   },
 };
 

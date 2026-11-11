@@ -103,7 +103,7 @@
   {"slug":"bede-the-venerable","name":"St. Bede","epithet":"Monk of Jarrow · Father of English history","feastDays":["May 27"],"iconUrl":"/saints/icons/bede-the-venerable.jpg","readMinutes":2},
   {"slug":"hilary-of-poitiers","name":"St. Hilary of Poitiers","epithet":"Bishop of Poitiers · Confessor against Arianism","feastDays":["January 14"],"iconUrl":"/saints/icons/hilary-of-poitiers.jpg","readMinutes":2},
   {"slug":"ambrose-of-milan","name":"St. Ambrose","epithet":"Bishop of Milan · Teacher of emperors","feastDays":["December 7"],"iconUrl":"/saints/icons/ambrose-of-milan.jpg","readMinutes":2},
-  {"slug":"victorinus-of-pettau","name":"St. Victorinus of Pettau","epithet":"Bishop and martyr · Earliest Latin commentator","feastDays":["November 2"],"readMinutes":2},
+  {"slug":"victorinus-of-pettau","name":"St. Victorinus of Pettau","epithet":"Bishop and martyr · Earliest Latin commentator","feastDays":["November 2"],"iconUrl":"/saints/icons/victorinus-of-pettau.jpg","readMinutes":2},
   {"slug":"isidore-of-seville","name":"St. Isidore of Seville","epithet":"Bishop of Seville · The last of the ancient Fathers","feastDays":["April 4"],"iconUrl":"/saints/icons/isidore-of-seville.jpg","readMinutes":2},
   {"slug":"peter-chrysologus","name":"St. Peter Chrysologus","epithet":"Bishop of Ravenna · Preacher of short sermons","feastDays":["December 4"],"iconUrl":"/saints/icons/peter-chrysologus.jpg","readMinutes":2},
   {"slug":"sergius-of-radonezh","name":"St. Sergius of Radonezh","epithet":"Abbot of the Holy Trinity · Father of Russian monasticism","feastDays":["September 25","July 5"],"iconUrl":"/saints/icons/sergius-of-radonezh.jpg","readMinutes":3},

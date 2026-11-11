@@ -22,6 +22,7 @@ import { CC_LICENCES, creditFor, isCcLicence, photoCredits } from "@/lib/credits
 import { FIGURES } from "@/lib/readAloud/covers";
 import { COUNCIL_COVERS, FEELING_COVERS } from "@/lib/reading/authorCovers";
 import { COVER_ART, WORK_ART } from "@/lib/reading/coverArt";
+import { ICON_RIGHTS, ICONS_URL_PREFIX } from "@/lib/saints/iconRights";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");
 const read = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8");
@@ -35,6 +36,10 @@ function pictures(): { file: string; license: string; credit?: string; evidenceU
     if (art.kind === "streamed") out.push(art);
   }
   for (const f of Object.values(FIGURES)) if (f) out.push(f);
+  // The saints' own pictures, settled public domain or CC0, or a CC photograph of an old work (2026-11-11).
+  for (const [file, row] of Object.entries(ICON_RIGHTS)) {
+    if (row.status === "verified") out.push({ file: `${ICONS_URL_PREFIX}${file}`, license: row.license, credit: row.credit, evidenceUrl: row.evidenceUrl });
+  }
   return out;
 }
 
@@ -57,14 +62,17 @@ describe("the photo credits", () => {
     }
   });
 
-  it("list each credited picture once, on the website with its lighter copy", () => {
+  it("list each credited picture once, a cover on the website with its lighter copy, a saint's picture in the apps", () => {
     const credits = photoCredits();
     expect(new Set(credits.map((c) => c.file)).size).toBe(credits.length);
     for (const c of credits) {
-      expect(c.file, c.file).toMatch(/^\/covers\//);
+      expect(c.file, c.file).toMatch(/^\/(covers|saints\/icons)\//);
       expect(fs.existsSync(path.join(ROOT, "public", c.file)), c.file).toBe(true);
-      expect(fs.existsSync(path.join(ROOT, "public", c.file.replace(/\.jpg$/, ".avif"))), c.file).toBe(true);
+      // A cover is streamed, with its lighter copy beside it; a saint's picture is carried as it is.
+      if (c.file.startsWith("/covers/")) expect(fs.existsSync(path.join(ROOT, "public", c.file.replace(/\.jpg$/, ".avif"))), c.file).toBe(true);
     }
+    // St Victorinus's fresco, the first saint's picture made from a CC photograph, names its photographer.
+    expect(creditFor("/saints/icons/victorinus-of-pettau.jpg")).toMatchObject({ photographer: "Urharec", licence: "CC BY-SA 3.0" });
   });
 
   it("are a page the apps carry, in the reader's language around each row, and the About page leads there once there is one", () => {

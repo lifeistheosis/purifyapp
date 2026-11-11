@@ -4482,6 +4482,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "victorinus-of-pettau",
+    iconUrl: "/saints/icons/victorinus-of-pettau.jpg",
     name: "St. Victorinus of Pettau",
     byname: "Victorinus the Martyr",
     epithet: "Bishop and martyr · Earliest Latin commentator",
