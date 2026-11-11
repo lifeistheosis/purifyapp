@@ -81,7 +81,13 @@ export function ChantAbout({ chant }: { chant: Chant }) {
               return (
                 <li key={`${s.title}-${s.year ?? ""}`}>
                   {s.url ? (
-                    <a href={s.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-paper hover:underline hover:underline-offset-4">
+                    <a
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      // 44 to a finger, its line's own height to a mouse (the touch count's rule for a link in a list).
+                      className="inline-flex min-h-11 items-center font-semibold text-paper hover:underline hover:underline-offset-4 pointer-fine:min-h-0"
+                    >
                       {s.title}
                     </a>
                   ) : (

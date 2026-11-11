@@ -621,7 +621,9 @@ const MAX_PADDED_SMALL_TARGETS = 0;
 // 3 -> 1 the same morning (Admin): the page list's names and the import
 // panel's link are 44 to a finger and compact to a mouse, by the panel's
 // rule. Left: the chant page's sources (ChantAbout).
-const MAX_LISTED_SMALL_TARGETS = 1;
+// 1 -> 0 the same day (Updates 2, on the arbiter's word): the chant page's
+// sources are 44 to a finger and their line's own height to a mouse.
+const MAX_LISTED_SMALL_TARGETS = 0;
 
 describe("touch targets", () => {
   const { total, byFile, written, writtenByFile, sized, sizedByFile, padded, paddedByFile, listed, listedByFile } = countSmallTargets();
