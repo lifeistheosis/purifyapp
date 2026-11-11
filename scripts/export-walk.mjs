@@ -9300,6 +9300,153 @@ await section(64, async () => {
   }
 });
 
+// 65. Any words of a text, selected and marked (build 93 note 13, his word of
+// 2026-11-11: "allow you to quote sentences and highlight whichever section or
+// whichever word you want in the actual work itself, so it doesn't just
+// highlight the whole paragraph"), and the same on every text he named the
+// day before: a saint's life, a council's document, a theology study, a
+// history page. As the apps, at a phone's size, with a finger. The apps turn
+// the system's selection off, so the selection walked here is Purify's own
+// (components/reading/SelectionTools.tsx). lib/marks/__tests__ holds the
+// source and the rules for finding a mark again after the text is mended.
+await section(65, async () => {
+  console.log("\n65. Any words of a text, selected and marked");
+  const CARD = '[data-mk-ui] [role="dialog"][aria-modal="false"]';
+  const visibleHost = (page, n = 0) =>
+    page.evaluate((i) => {
+      const hosts = [...document.querySelectorAll("[data-mk]")].filter((h) => h.offsetParent && h.getBoundingClientRect().height > 0);
+      const h = hosts[i] ?? hosts[0];
+      if (!h) return null;
+      h.scrollIntoView({ block: "center" });
+      const t = h.querySelector("[data-mk-text]");
+      const node = document.createTreeWalker(t, NodeFilter.SHOW_TEXT).nextNode();
+      const r = document.createRange();
+      r.setStart(node, Math.min(12, node.data.length - 4));
+      r.setEnd(node, Math.min(15, node.data.length - 1));
+      const b = r.getBoundingClientRect();
+      return { x: b.left + b.width / 2, y: b.top + b.height / 2, mk: h.dataset.mk, cite: h.dataset.mkCite ?? "", box: getComputedStyle(t.closest("p") ?? t).boxShadow };
+    }, n);
+  // A hold on a word, then the finger run on to the right and down a line before it lifts.
+  const holdAndRun = async (ctx, page, at) => {
+    const cdp = await ctx.newCDPSession(page);
+    const touch = (type, touchPoints) => cdp.send("Input.dispatchTouchEvent", { type, touchPoints });
+    await touch("touchStart", [{ x: at.x, y: at.y }]);
+    await page.waitForTimeout(650);
+    for (let i = 1; i <= 6; i++) {
+      await touch("touchMove", [{ x: at.x + i * 20, y: at.y + i * 6 }]);
+      await page.waitForTimeout(40);
+    }
+    await touch("touchEnd", []);
+    await page.waitForTimeout(600);
+    return touch;
+  };
+  const stored = (page, prefix) => page.evaluate((p) => Object.keys(localStorage).filter((k) => k.startsWith(p)).flatMap((k) => (JSON.parse(localStorage.getItem(k)).marks ?? []).map((m) => ({ key: k, ...m }))), prefix);
+
+  // A Father's work: the note itself.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/saints/cyprian-of-carthage/on-the-mortality/");
+    await page.waitForSelector("[data-mk]", { timeout: 20000 });
+    await page.waitForTimeout(1200);
+    const at = await visibleHost(page);
+    must(!!at && /^saint\|cyprian-of-carthage\|on-the-mortality\|/.test(at.mk), `a paragraph of On the Mortality says where its marks are kept (${at?.mk})`);
+    const touch = await holdAndRun(ctx, page, at);
+    const held = await page.evaluate((card) => ({ card: !!document.querySelector(card), ghost: document.querySelectorAll("[data-mk-ui] .verse-ghost").length, handles: document.querySelectorAll('[data-mk-ui] button[class*="touch-none"]').length, sheet: !!document.querySelector("[data-verse-tools]") }), CARD);
+    must(held.card && !held.sheet, `a hold on a word opens the selection's card, not the old "Highlight paragraph" sheet (card ${held.card}, sheet ${held.sheet})`);
+    must(held.ghost >= 2, `the finger ran the selection on across lines, washed line by line (${held.ghost} lines)`);
+    must(held.handles === 2, `its two ends have handles (${held.handles})`);
+    must(at.box === "none", `no box round the paragraph under the finger (box-shadow ${at.box})`);
+    const tools = await page.locator(`${CARD} button`).evaluateAll((bs) => bs.map((b) => ({ label: b.getAttribute("aria-label") ?? b.textContent ?? "", h: Math.round(b.getBoundingClientRect().height), w: Math.round(b.getBoundingClientRect().width) })));
+    must(tools.every((b) => b.h >= 44 || /Name colors|Remove/.test(b.label)), `every tool on the card is a finger's 44 (${tools.filter((b) => b.h < 44).map((b) => `${b.label} ${b.h}`).join(", ") || "all"})`);
+    await page.screenshot({ path: path.join(SHOTS, "marks-work-selection.png") });
+    await page.locator(`${CARD} [aria-label="Highlight color: Blue"]`).tap();
+    await page.waitForTimeout(500);
+    const marks = await stored(page, "purify:saint:cyprian-of-carthage:on-the-mortality:");
+    must(marks.length === 1 && marks[0].color === "blue" && marks[0].q.split(/\s+/).length >= 3, `the words chosen are highlighted, and only they (${marks.length} mark, "${(marks[0]?.q ?? "").slice(0, 50)}")`);
+    const drawn = await page.evaluate(() => [...document.querySelectorAll("[data-mk-id]")].map((e) => e.textContent).join(""));
+    must(drawn === marks[0]?.q, "the highlight is drawn on exactly those words");
+    const para = await page.evaluate(() => document.querySelector("[data-mk]")?.closest("[data-hl]")?.getAttribute("data-hl") ?? null);
+    must(para !== "true", "the whole paragraph is not highlighted with them");
+    must(!!marks[0]?.cite && /Cyprian/.test(marks[0].cite) && /^\/saints\/cyprian-of-carthage\/on-the-mortality#/.test(marks[0].href ?? ""), `the mark carries whose words they are and where (${marks[0]?.cite})`);
+    // One tap away: the whole paragraph.
+    await touch("touchStart", [{ x: 4, y: 300 }]);
+    await touch("touchEnd", []);
+    await page.waitForTimeout(500);
+    must(!(await page.locator(CARD).count()), "a tap elsewhere puts the card away");
+    await page.locator("[data-mk-id]").first().tap();
+    await page.waitForTimeout(700);
+    must((await page.locator(`${CARD} [aria-label="Remove highlight"], ${CARD} button:has-text("Remove")`).count()) > 0, "a tap on the highlighted words opens the card on that highlight");
+    await touch("touchStart", [{ x: 4, y: 300 }]);
+    await touch("touchEnd", []);
+    await page.waitForTimeout(400);
+
+    // A mended typo does not lose it: the same mark, its place off by five and a letter of its words wrong.
+    const first = marks[0];
+    await page.evaluate(({ key, mark }) => {
+      const typo = mark.q.replace(/([a-z])([a-z])/, "$2$1");
+      localStorage.setItem(key, JSON.stringify({ marks: [{ ...mark, q: typo, s: mark.s + 5, e: mark.e + 5 }], at: mark.at }));
+      window.dispatchEvent(new CustomEvent("purify:annotation", { detail: {} }));
+    }, { key: first.key, mark: first });
+    await page.waitForTimeout(500);
+    const after = await page.evaluate(() => [...document.querySelectorAll("[data-mk-id]")].map((e) => e.textContent).join(""));
+    must(after === first.q, `a mark whose words were mended since is still on its words ("${after.slice(0, 40)}")`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // The texts the page draws itself: their marks painted behind the words.
+  const TEXTS = [
+    ["a council's document", "/councils/first-nicaea/the-synodal-letter/", /^text\|council\|first-nicaea\|the-synodal-letter\|/, /First Council of Nicaea/, "purify:text:council:"],
+    ["a saint's life", "/saints/anthony-the-great/", /^text\|life\|anthony-the-great\|/, /Purify$/, "purify:text:life:"],
+    ["a theology study", "/theology/papacy/read/", /^text\|theology\|papacy\|/, /Purify$/, "purify:text:theology:"],
+    ["a history page", "/history/pentecost/", /^text\|history\|pentecost\|/, /Purify$/, "purify:text:history:"],
+  ];
+  for (const [name, href, place, whose, prefix] of TEXTS) {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, href);
+    await page.waitForSelector("[data-mk][data-mk-layer]", { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    const at = await visibleHost(page);
+    must(!!at && place.test(at.mk) && whose.test(at.cite), `${name}: a paragraph says where its marks are kept and whose words they are (${at?.mk}; ${at?.cite})`);
+    if (at) {
+      const touch = await holdAndRun(ctx, page, at);
+      must((await page.locator(CARD).count()) === 1, `${name}: a hold on a word opens the selection's card`);
+      await page.locator(`${CARD} [aria-label="Highlight color: Teal"]`).tap();
+      await page.waitForTimeout(500);
+      await touch("touchStart", [{ x: 4, y: 300 }]);
+      await touch("touchEnd", []);
+      await page.waitForTimeout(600);
+      const marks = await stored(page, prefix);
+      const painted = await page.locator('[data-mk-paint] [data-hl-color="teal"]').count();
+      must(marks.length === 1 && marks[0].color === "teal" && painted >= 1, `${name}: the words chosen are highlighted and painted behind the text (${marks.length} mark, ${painted} lines)`);
+      await touch("touchStart", [{ x: at.x + 30, y: at.y }]);
+      await touch("touchEnd", []);
+      await page.waitForTimeout(700);
+      must((await page.locator(CARD).count()) === 1, `${name}: a tap on the highlighted words opens the card on that highlight`);
+      await page.screenshot({ path: path.join(SHOTS, `marks-${prefix.split(":")[2]}.png`) });
+    }
+    must(errors.length === 0, `${name}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // Saved has them, with their words and whose they are.
+  {
+    const mark = { id: "walk65", s: 37, e: 140, q: "beloved brethren, there is a stedfast mind and a firm faith, and a devoted spirit that is not disturbed", color: "blue", note: "A firm faith.", cite: "St. Cyprian of Carthage, On the Mortality, Chapter 1", href: "/saints/cyprian-of-carthage/on-the-mortality#p-1-0", at: new Date().toISOString() };
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify:saint:cyprian-of-carthage:on-the-mortality:1:0": JSON.stringify({ marks: [mark], at: mark.at }) } });
+    await go(page, "/saved/");
+    await page.waitForSelector("[data-saved-row]", { timeout: 20000 }).catch(() => {});
+    const row = await page.evaluate(() => {
+      const r = document.querySelector("[data-saved-row]");
+      return r ? { href: r.getAttribute("href"), text: r.textContent ?? "" } : null;
+    });
+    must(!!row && row.text.includes("beloved brethren") && row.text.includes("A firm faith.") && row.text.includes("St. Cyprian of Carthage"), `Saved lists the marked words, the note on them and whose they are (${row ? "found" : "no row"})`);
+    must(!!row && /on-the-mortality\/?#p-1-0$/.test(row.href ?? ""), `and opens their place (${row?.href})`);
+    await page.screenshot({ path: path.join(SHOTS, "marks-saved.png") });
+    must(errors.length === 0, `Saved: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

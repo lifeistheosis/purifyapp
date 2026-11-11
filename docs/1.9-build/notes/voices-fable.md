@@ -35,10 +35,9 @@ Fable voices chat, 2026-11-11. Nothing is built and no audio was made. His words
 everything would be about 75 cents a month. Listening costs nothing per listen (the
 bucket does not charge for downloads). Nothing here starts a paid service.
 
-**The one real limit is render time on your PC.** One 10 minute test on a free GPU
-(Kaggle gives 30 free hours a week) would tell us whether the Fathers' works take a
-month or a few days. It makes a short test recording, so it needs your yes first.
-Cost: zero.
+**The one real limit is render time on your PC.** A rented GPU takes it off your PC
+for a few dollars (the follow-up of 2026-11-11, near the end of this file). Kaggle's
+free GPU is dropped: its terms could not be read, so it is not used.
 
 **My recommendation.**
 
@@ -336,3 +335,110 @@ works, and those arrive work by work.
 - One secret on Render (an R2 key that can only read the private voices).
 - His sign-off on the highlights migration SQL.
 - Optional: yes to the free GPU test.
+
+---
+
+## Follow-up, 2026-11-11: can the rendering run off his PC?
+
+Asked by the arbiter after reading the plan. Nothing was rendered to answer it.
+
+- **A rented GPU: yes.** RunPod or Vast.ai, an RTX 4090 at about $0.34 to $0.69 an
+  hour (third-party price pages checked late October 2026; read the price on the
+  day). Kokoro's speed on a GPU was not measured here; published figures disagree
+  by about ten times (35x to 100x real time in Kokoro-FastAPI's README, 17x to
+  25x in Spheron's write-up), so the plan uses 20x. At 20x: the 1.9 scope (81
+  hours of sound) is about 4 GPU hours, under $5; all the Fathers' works in one
+  voice (544 hours) about 27 GPU hours, under $25. A 10 minute paid test (about
+  10 cents) gives the true speed and needs his yes, since it makes a recording.
+  From him: an account and a card with prepaid credit, an R2 key that can only
+  write to the bucket typed into that machine and never a chat, and the Homebase
+  render tool put on the machine.
+- **The six voice samples can be made in this chat's own container**, on CPU, for
+  $0: the library and the model files are reachable from it. Made only on his yes.
+- **Kaggle is dropped.** Its Terms of Use could not be read and nothing found says
+  rendering for a commercial app is allowed.
+
+The lines above that say "1.9.1" were written before his rule of 2026-11-11 ("a
+release ships finished"). What goes in 1.9 and when is his call on the voices; the
+measurements stand either way.
+
+## Phase 2, part 1: highlight and share on every text (built 2026-11-11)
+
+The arbiter's go of 2026-11-11 about 01:37 UTC, with build 93 note 13: "allow you
+to quote sentences and highlight whichever section or whichever word you want in
+the actual work itself, so it doesn't just highlight the whole paragraph."
+
+**What a reader can do now**, in a Father's work, a saint's short life, a council's
+document, a theology study and a history page:
+
+- Hold a word: it is selected, washed the way a held verse is (no box). The
+  finger runs it on across lines and into the next paragraphs; two handles move
+  its ends; one tap widens it to its sentence or the whole paragraph.
+- One card for the selection: the seven colours, the words copied with whose they
+  are, the paragraph's link, the picture sheet, keep, and a note.
+- Tap marked words to recolour, note, share or remove them.
+- With a mouse on the website, the browser's own selection feeds the same card.
+- Saved lists every run of marked words with its words, the note, whose they are
+  and a tap to its place; a swipe removes that one mark, with Undo. The You tab's
+  count and the library a reader takes away include them.
+- A double tap still highlights a whole paragraph of the Fathers in the last
+  colour.
+
+**How it is kept.** A mark (`lib/marks/anchor.ts`) stores its offsets in the
+paragraph, its words, and up to 32 characters either side. When the text changes
+it is found again by its words, then by its words as a change of quotation marks
+or spacing leaves them, then between the words that stood either side, then in the
+section's other paragraphs. One that cannot be placed is not drawn and is never
+deleted. It rides in the paragraph's own value, so one paragraph is still one row.
+
+**How it is drawn.**
+
+- A Father's work is drawn by the device already, so its marks are drawn in the
+  text (`components/reading/MarkedText.tsx`).
+- The other four pages write their text on the server. Each paragraph says where
+  its marks are kept (`components/reading/MarkHost.tsx`) and the marks are painted
+  behind the words afterwards (`MarksLayer.tsx`). The page's words are never handed
+  to the device a second time (AGENTS.md, "A page carries what it shows").
+- The apps turn the system's selection off, so the selection is Purify's own
+  (`components/reading/SelectionTools.tsx`): the word under a finger is found from
+  the words' own boxes, including a finger that lands between two lines.
+
+**Whose words.** A life, a history page and a study are Purify's own telling. A
+copy or a picture of their words is signed Purify with the page's title, never
+with a saint's or a council's name. A Father's words and a council's are signed
+with theirs.
+
+**Sync.** `docs/1.9-build/sql/annotation-marks.sql` waits for his sign-off: one new
+column (marks), one new kind (text-paragraph) and its three keys in the unique
+index. Dry-run twice on a scratch PostgreSQL 16 standing on the folder's 105
+files. Until it runs, marks stay on the phone: the sync asks whether the column is
+there, sends nothing that the table cannot hold, and a row coming down never takes
+a paragraph's marks away (`lib/sync/__tests__/marks.test.ts`).
+
+**Checked.** Typecheck 0, lint 0 errors, the unit suite green but for one test
+that is another chat's (the new change-of-email page has no screen name yet,
+`lib/analytics/__tests__/screens.test.ts`). Walked in a phone-sized browser with
+real touch events on a work, a council document, a life, a study and a history
+page, and with a mouse at 1280. The exports' results are in the commit that adds
+this section.
+
+**Not checked, and why.** The feel of the hold, the drag and the handles on a real
+phone: that is his walk. The exports here ran against a local stand-in for the
+shop's catalog, since this container has no Supabase key; the store builds use the
+real one.
+
+**Tests of other chats that changed, because note 13 replaces what they held.**
+`lib/saints/__tests__/paragraphDoubleTap.test.ts` (the hold no longer opens the
+paragraph's sheet), one line of `lib/bible/__tests__/readerScreen.test.ts` and
+section 64 of `scripts/export-walk.mjs` (a hold on a paragraph opens the
+selection's card), and four tests that pinned the old markup of the council,
+history, life and study pages.
+
+**Known limits, said plainly.**
+
+- A mark made while reading a text in one language is found only in that
+  language's text.
+- A selection runs through at most 12 paragraphs.
+- On the four server-drawn pages a highlight is painted from the words' boxes, so
+  it is measured again when the type size or the width changes; between the change
+  and the next frame it can sit a line off.
