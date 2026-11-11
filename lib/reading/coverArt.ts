@@ -183,6 +183,8 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   "proclus-of-constantinople": bundled("proclus-of-constantinople.jpg", 30),
   "amphilochius-of-iconium": bundled("amphilochius-of-iconium.jpg", 30),
   "frumentius-of-axum": bundled("frumentius-of-axum.jpg", 30),
+  // Brollo's fresco of 1886 at Nova Cerkev (lib/saints/iconRights.ts): his face high in the picture.
+  "victorinus-of-pettau": bundled("victorinus-of-pettau.jpg", 15),
   "eugenia-of-rome": bundled("eugenia-of-rome.jpg", 25),
   "juliana-of-nicomedia": bundled("juliana-of-nicomedia.jpg", 24),
   "lucia-of-syracuse": bundled("lucia-of-syracuse.jpg", 30),
@@ -293,16 +295,14 @@ export const WORK_ART: Readonly<Record<string, CoverArt>> = {
   "olympias-the-deaconess/life-of-olympias": COVER_ART["john-chrysostom"],
   "john-cassian/conferences": bundled("moses-the-black.v2.jpg", 27),
   "john-cassian/institutes": COVER_ART["pachomius-the-great"],
-  // Build 93 note 18 ("every work wears a picture", 2026-11-11): November's
-  // a book whose saint has no picture yet wears, by the same rule, a saint of
-  // its own text who has one: the Apostle John for St Victorinus's On the
-  // Creation of the World, which reads his Gospel and his Apocalypse. It stays
-  // the book's alone. (Five November books stood here until their saints'
-  // own pictures came, 2026-11-11.)
+  // Build 93 note 18 ("every work wears a picture", 2026-11-11): a book whose
+  // saint has no picture yet wears, by the same rule, a saint of its own text
+  // who has one. (Five November books stood here until their saints' own
+  // pictures came, and St Victorinus's On the Creation of the World wore the
+  // Apostle John until his own fresco came the same day.)
   // St Romanus's own print, with the child Barulas of his martyrdom, for his
   // book alone: his page, with St Plato, wears St Plato's.
   "plato-and-romanus/martyrdom-of-romanus": bundled("romanus-and-barulas.jpg", 24),
-  "victorinus-of-pettau/on-the-creation-of-the-world": COVER_ART["apostle-john"],
 };
 
 /** The settled picture for a book's saint, or null for the plate alone. */

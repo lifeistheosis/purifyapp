@@ -47,6 +47,13 @@ export const CREDITED_SAINT_PICTURES: Readonly<Record<string, SaintPictureCredit
     deed: "https://creativecommons.org/licenses/by/4.0/",
     source: "https://www.blagofund.org/Archives/StaroNagorichane/Pictures/Interior/Nave/East_columns/SNAGORICANE_1_080A5498.html",
   },
+  "/saints/icons/juvenal-of-jerusalem.v2.jpg": {
+    name: "BLAGO Fund",
+    kind: "photograph",
+    licence: "CC BY 4.0",
+    deed: "https://creativecommons.org/licenses/by/4.0/",
+    source: "https://www.blagofund.org/Archives/Decani/Church/Pictures/Frescoes/Prothesis/Vault/CX4K3164.html",
+  },
   "/saints/icons/lazar-of-serbia.v2.jpg": {
     name: "Branko Jovanović, BLAGO Fund",
     kind: "photograph",

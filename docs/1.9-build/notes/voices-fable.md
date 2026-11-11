@@ -812,3 +812,17 @@ list; `MAX_UNVERIFIED` fell from 26 to 14.
   Aitolos.jpg" and "Saint Irenaeus.jpg" (no source or date); three icons of
   Basil of Ostrog that look contemporary whatever their captions say;
   Bégule's glass of Irenaeus (he died in 1935).
+
+**The arbiter's rulings (15:56 UTC), and what followed.** All eleven stand.
+Zograf's fresco stays: the rule on rays is about light we draw, not a
+painter's own Eye of Providence in a church of 1848. Three follow-ups, done
+the same hour:
+
+- **Juvenal** now wears the BLAGO Fund's own photograph of the same Dečani
+  fresco (the prothesis vault, CX4K3164), whose page states the licence, in
+  place of the scan with no photographer named. Credited to the BLAGO Fund.
+- **Basil of Ostrog's** row says his date rests on one caption.
+- **A note to BLAGO** asking it to confirm the CC BY 4.0 its picture pages
+  state is letter 22 in `docs/1.9-build/PERMISSION-LETTERS.md`, for Admin.
+- **St Victorinus's book** wears his own fresco, which Updates 2 placed at
+  14:34, and no longer the Apostle John.

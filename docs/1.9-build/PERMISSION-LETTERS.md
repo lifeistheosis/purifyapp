@@ -926,3 +926,63 @@ it), so that letter was taken out.
 > Edgar, εκ μέρους της ομάδας του Purify
 > Purify Orthodox LLC
 > legal@purifyapp.net
+
+---
+
+## Part four: a note to confirm a licence already stated (the voices chat, 2026-11-11, the arbiter's word of 15:56 UTC)
+
+Not a request for permission: these three pictures are shown now. Each is a
+photograph of a wall painting of the 14th or 15th century, a flat old work,
+and each picture's own page in the BLAGO Fund's archive says the collection
+is under Creative Commons Attribution and links CC BY 4.0, which is what
+`lib/saints/iconRights.ts` records, with the credit shown on the credits
+page. But BLAGO's image-request page says Attribution-Noncommercial, and its
+terms of service ask for written permission for public use. The note asks
+them which holds. If they answer that it is non-commercial or needs their
+leave, it comes to the arbiter the same day.
+
+### 22. The BLAGO Fund: three wall paintings from its archive
+
+- **To:** the BLAGO Fund, through its image-request page
+  (https://www.blagofund.org/image-request). No postal or email address
+  was read from its site; if the form gives one in reply, use it after.
+- **In:** English.
+- **The three pictures:**
+  - St Anatolius, from "Sts. Anatolius and Gennadius", Church of St George,
+    Staro Nagoričane (SNAGORICANE_1_080A5498), photograph Branko Jovanović;
+  - Prince Lazar, the founders' portrait, Ljubostinja Monastery
+    (LJUBOSTINJA_1_080A1394), photograph Branko Jovanović;
+  - St Juvenal, from the bishops in the vault of the prothesis, Visoki
+    Dečani (CX4K3164).
+
+> Dear friends at the BLAGO Fund,
+>
+> I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
+> Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
+> Each saint's life in Purify is shown with a picture of the saint, and the
+> lives and their pictures are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their pictures are never part of it.
+>
+> Three of those pictures are details from photographs in your archive: St
+> Anatolius at Staro Nagoričane (SNAGORICANE_1_080A5498) and Prince Lazar at
+> Ljubostinja (LJUBOSTINJA_1_080A1394), both by Branko Jovanović, and St
+> Juvenal at Dečani (CX4K3164). Each of those pages says the collection is
+> under Creative Commons Attribution, with a link to CC BY 4.0, and we have
+> used them on that footing, naming the BLAGO Fund and the photographer on
+> our credits page and under the picture.
+>
+> Your image-request page and your terms of service read a little
+> differently, so we would rather ask than assume. Could you confirm that
+> the licence on those pages covers this use, and tell us the wording of
+> the credit you prefer? If you would rather we did not use them, we will
+> take them down at once.
+>
+> They are shown only where a reader meets the saint, in the app and on our
+> website, and never in advertising, in store listings or in anything sold.
+>
+> With thanks for the work of the archive,
+>
+> Edgar, the Purify Team
+> Purify Orthodox LLC
+> legal@purifyapp.net
