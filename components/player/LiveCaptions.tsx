@@ -46,7 +46,21 @@ import { textDir } from "@/lib/i18n/textDir";
  * moves is carried from where it was by its own amount, not only the rows
  * under the line.
  */
+/**
+ * What a word of the line being sung waits at, as a share of the ink, until it
+ * is sung: the palette's own step (app/globals.css, `--sung-wait`), so the
+ * line about to be sung never stands fainter than the lines beside it nor
+ * under the floor its words are held to (1.9, PLAN 13bc). This share stands
+ * where no step is given.
+ */
 const WAIT = 0.36;
+
+/** The waiting share where `el` stands: its look's and palette's step, else WAIT. */
+function waitAt(el: Element | null | undefined): number {
+  if (!el) return WAIT;
+  const v = Number.parseFloat(getComputedStyle(el).getPropertyValue("--sung-wait"));
+  return Number.isFinite(v) && v > 0 && v < 1 ? v : WAIT;
+}
 /** Where the line being sung stands in the box, from the top. */
 const ANCHOR = 0.3;
 /** After the reader scrolls the words, they are left alone this long. */
@@ -141,6 +155,8 @@ export const LiveCaptions = memo(function LiveCaptions({
   /** The line the page shows lit, and the line whose words were painted last. */
   const shown = useRef(-1);
   const painted = useRef(-1);
+  /** The waiting share of the line painted, read once as it begins. */
+  const waiting = useRef(WAIT);
   const pending = useRef<First | null>(null);
   const lastHand = useRef(-Infinity);
   const scrolling = useRef(0);
@@ -333,6 +349,7 @@ export const LiveCaptions = memo(function LiveCaptions({
       if (cur !== painted.current) {
         clear(painted.current);
         painted.current = cur;
+        waiting.current = waitAt(cur >= 0 ? (wordRefs.current[cur] ?? []).find(Boolean) : null);
       }
       if (cur < 0) return;
       const els = wordRefs.current[cur] ?? [];
@@ -341,12 +358,12 @@ export const LiveCaptions = memo(function LiveCaptions({
         const el = els[j];
         if (!el) return;
         if (t < w.at) {
-          el.style.opacity = String(WAIT);
+          el.style.opacity = String(waiting.current);
           el.style.textShadow = "";
           return;
         }
         const since = t - w.at;
-        const o = WAIT + (1 - WAIT) * Math.min(1, since / 0.12);
+        const o = waiting.current + (1 - waiting.current) * Math.min(1, since / 0.12);
         // A word timed to its end (note 78) glows while it is held, and the
         // glow fades once it is sung; one with no end fades from its start.
         const after = typeof w.end === "number" ? Math.max(0, t - w.end) : since;

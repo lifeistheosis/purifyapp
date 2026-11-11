@@ -11739,26 +11739,87 @@ html[data-reading-mode="parchment"] [data-prayer-reader] [data-line][data-lit] {
 [data-sung-look="player"] [data-sung="lit"] [data-sung-main] {
  font-size: 29px;
 }
+/* The lines not being sung step back and can still be read (1.9, the
+   arbiter's ruling of 2026-11-11 by the owner's own precedent, his "ok to
+   all" of 2026-11-10 on his page's 131, the prayer page's reading light).
+   They stood at 30% and 17%, the English under them at 26% and 15%, which
+   checkMock measured at 1.39 to 1.64:1. Now the faintest words hold 3:1, being
+   large (24px), and the English under any line 4.5:1, on the lightest ground
+   the player can lay under them: its night under the cover at 30%, grey and
+   at half brightness, with the 6% glow. Three steps kept: the line being sung
+   leading, its words waiting a little short of whole until each is sung
+   (--sung-wait, read by components/player/LiveCaptions.tsx) and never fainter
+   than the lines beside it, those a step back, the rest further. Now Playing
+   is a dark island, so on Light and the light looks it keeps Dark's tokens and
+   Dark's steps; Candlelight's dimmer ink, Monastery's, the two earned
+   palettes' and the looks' ask a little more. lib/player/__tests__/
+   sungLight.test.ts does the arithmetic for every palette. */
+[data-sung-look="player"] {
+ --sung-wait: 0.58;
+ --sung-near: 0.5;
+ --sung-far: 0.4;
+ --sung-under: 0.62;
+ --sung-under-lit: 0.75;
+ --sung-under-near: 0.6;
+ --sung-under-far: 0.56;
+}
+html[data-reading-mode="candlelight"] [data-sung-look="player"] {
+ --sung-wait: 0.66;
+ --sung-near: 0.58;
+ --sung-far: 0.48;
+ --sung-under: 0.72;
+ --sung-under-lit: 0.8;
+ --sung-under-near: 0.7;
+ --sung-under-far: 0.67;
+}
+html[data-reading-mode="monastery"] [data-sung-look="player"] {
+ --sung-wait: 0.62;
+ --sung-near: 0.54;
+ --sung-far: 0.44;
+ --sung-under: 0.68;
+ --sung-under-lit: 0.78;
+ --sung-under-near: 0.66;
+ --sung-under-far: 0.63;
+}
+html[data-reading-mode="councils"] [data-sung-look="player"],
+html[data-reading-mode="cappadocian"] [data-sung-look="player"] {
+ --sung-wait: 0.63;
+ --sung-near: 0.55;
+ --sung-far: 0.45;
+ --sung-under: 0.69;
+ --sung-under-lit: 0.78;
+ --sung-under-near: 0.67;
+ --sung-under-far: 0.64;
+}
+:where(html[data-look]) [data-sung-look="player"] {
+ --sung-wait: 0.63;
+ --sung-near: 0.55;
+ --sung-far: 0.45;
+ --sung-under: 0.7;
+ --sung-under-lit: 0.78;
+ --sung-under-near: 0.68;
+ --sung-under-far: 0.65;
+}
 [data-sung-look="player"] [data-sung-under] {
  margin-top: 6px;
  font-size: 15px;
  line-height: 1.45;
- opacity: 0.55;
+ opacity: var(--sung-under);
 }
 [data-sung-look="player"] [data-sung="lit"] [data-sung-under] {
- opacity: 0.7;
+ opacity: var(--sung-under-lit);
 }
 [data-sung-look="player"] [data-sung="near"] [data-sung-main] {
- opacity: 0.3;
+ opacity: var(--sung-near);
 }
 [data-sung-look="player"] [data-sung="far"] [data-sung-main] {
- opacity: 0.17;
+ opacity: var(--sung-far);
 }
 [data-sung-look="player"] [data-sung="near"] [data-sung-under] {
- opacity: 0.26;
+ opacity: var(--sung-under-near);
 }
 [data-sung-look="player"] [data-sung="far"] [data-sung-under] {
- opacity: 0.15;
+ opacity: var(--sung-under-far);
 }
 /* A chant's own page (1.8, sheet r3-18, the owner's pick of 2026-10-31, B's
    page): the words as they are sung lead, 21px, the line being sung 26px; a
