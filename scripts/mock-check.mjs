@@ -22,7 +22,13 @@
 //                334 on 11 since). Words on a picture, or with a picture or
 //                another piece drawn across them, are not measured, and are
 //                said: a picture's own measure is by its pixels
-//                (scripts/words-on-pictures.mjs). That holds for words on
+//                (scripts/words-on-pictures.mjs). With { pixels: true }
+//                (the gate's walks), each such word is measured that way,
+//                on each palette, as part of the check: a shortfall is a
+//                contrast fail ("x:1 at its least on the pixels under it"),
+//                and only a word with no pixels to read (past the screen's
+//                edge, not drawn) is still said, for a still and an eye. The
+//                result's looks list each with its ratio on each palette. That holds for words on
 //                plain colours too, of pictures: a tile's words over its
 //                picture were summed on the tile's colours until 1.9, and
 //                are said now, with the picture's name
@@ -143,7 +149,8 @@ export const BY_EYE = [
 /** What the part of the page named by `selector` shows, on the palette it wears now. */
 async function look(arg) {
   // A selector, or { selector, only: "stripe" } for the stripe measure alone.
-  const { selector, only } = typeof arg === "string" ? { selector: arg, only: null } : arg;
+  // `tag`: mark each word whose ground it cannot read (data-mock-look), for the pixels pass.
+  const { selector, only, tag = false } = typeof arg === "string" ? { selector: arg, only: null } : arg;
   const root = document.querySelector(selector);
   if (!root) return null;
   // Any colour syntax (Tailwind's color-mix computes to oklab), read back as sRGB.
@@ -701,6 +708,8 @@ async function look(arg) {
       fg,
       alpha: fg[3] * opacityOf(el),
       ground: groundOf(el, seenOf(el, r)),
+      // Kept for the pixels pass's mark below, and dropped before the words leave the page.
+      el,
       large: largeText(cs),
       // WCAG asks nothing of a control that cannot be used.
       disabled: Boolean(el.closest(":disabled, [aria-disabled='true']")),
@@ -729,6 +738,20 @@ async function look(arg) {
       const pictured = picturedOf(w.ground.job);
       w.ground = pictured ? { unknown: pictured } : { rgb: w.ground.rgb };
     }
+  }
+
+  // The pixels pass's mark (`tag`): each word whose ground is not read from colours, now that every
+  // ground is settled, the same mark on every palette (the first look gives it, the others read it).
+  for (const w of words) {
+    w.lookAt = null;
+    if (tag && w.ground.unknown) {
+      w.lookAt = w.el.getAttribute("data-mock-look");
+      if (w.lookAt === null) {
+        w.lookAt = String(document.querySelectorAll("[data-mock-look]").length);
+        w.el.setAttribute("data-mock-look", w.lookAt);
+      }
+    }
+    delete w.el;
   }
 
   const CONTROL =
@@ -1139,20 +1162,29 @@ const settle = (page) => page.evaluate(() => new Promise((done) => requestAnimat
  * `allowGold`: only for a mockup of a Plus member's profile, the one place
  * gold is allowed (noGold.test.ts).
  */
-export async function checkMock(page, selector, { allowGold = false, palettes = PALETTES } = {}) {
+export async function checkMock(page, selector, { allowGold = false, palettes = PALETTES, pixels = false } = {}) {
   const failures = [];
   const unmeasured = [];
+  // With `pixels`, each word whose ground cannot be read from colours (a picture
+  // under it or across it) is measured on the pixels under its letters, on each
+  // palette, by scripts/words-on-pictures.mjs: a shortfall is a contrast fail like
+  // any other, and only a word with no pixels to read stays "look". Each is kept
+  // here by its mark: its words, why it was looked at, and its ratio on each palette.
+  const looks = new Map();
   const allowed = new Set();
   const fail = (check, palette, what, detail) => failures.push({ check, palette, what, detail });
   const allow = (check, what, why) => allowed.add(`${check} on ${what}: ${why}`);
 
   const before = await page.evaluate(() => {
     const h = document.documentElement;
+    // Marks a pixels pass left on an earlier measure of this page.
+    for (const e of document.querySelectorAll("[data-mock-look]")) e.removeAttribute("data-mock-look");
     // Colours change in steps of their own (body has a 0.35s transition);
     // the measure wants where they end.
     const still = document.createElement("style");
     still.setAttribute("data-mock-check", "");
-    still.textContent = "*, *::before, *::after { transition: none !important; }";
+    // A scroll put back by the measure lands at once, not gliding (scroll-behavior: smooth).
+    still.textContent = "*, *::before, *::after { transition: none !important; scroll-behavior: auto !important; }";
     document.head.appendChild(still);
     // So do entrances driven by the scroll (animation-timeline: view(), a
     // reading plan's rows rising in): a row resting at the screen's foot is
@@ -1173,14 +1205,16 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
     for (const [palette, mode, worn] of palettes) {
       await wear(page, mode, worn);
       await settle(page);
-      const s = await page.evaluate(look, selector);
+      const s = await page.evaluate(look, pixels ? { selector, only: null, tag: true } : selector);
       if (!s) throw new Error(`nothing on the page answers ${selector}`);
       shots[palette] = s;
+      const pending = [];
       for (const [check, list] of [["contrast", s.words], ["placeholder", s.placeholders]]) {
         for (const w of list) {
           if (w.disabled) continue;
           if (w.ground.unknown) {
-            if (palette === "Dark") unmeasured.push(`"${w.text}": ${w.ground.unknown}`);
+            if (check === "contrast" && w.lookAt !== null && w.lookAt !== undefined) pending.push(w);
+            else if (palette === "Dark") unmeasured.push(`"${w.text}": ${w.ground.unknown}`);
             continue;
           }
           const need = w.large ? 3 : 4.5;
@@ -1190,6 +1224,58 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
           if (r + 1e-9 >= need) continue;
           if (w.allow) allow(check, `"${w.text}"`, w.allow);
           else fail(check, palette, `"${w.text}"`, `${r.toFixed(2)}:1${w.ground.painted ? " at its least on the gradient under it" : ""}, needs ${need}:1`);
+        }
+      }
+      if (pending.length) {
+        const { wordsOnPicture } = await import("./words-on-pictures.mjs");
+        const order = await page.evaluate(() => [...document.querySelectorAll("[data-mock-look]")].map((e) => e.getAttribute("data-mock-look")));
+        // The pass brings each word to the middle of the screen, a sideways row's too; every
+        // scroll is put back after, or the Arabic pass below would compare a row scrolled one
+        // way with itself scrolled the other.
+        const win = await page.evaluate(() => {
+          for (const e of document.querySelectorAll("*")) {
+            if (e.scrollWidth > e.clientWidth || e.scrollHeight > e.clientHeight) e.setAttribute("data-mock-scroll", `${e.scrollLeft},${e.scrollTop}`);
+          }
+          return [scrollX, scrollY];
+        });
+        // Every picture in the part at rest first: one that loads only as it comes into sight would
+        // be photographed as it arrives, half faded in, as the pass brings it to the middle (the
+        // reading room's covers read 2.89:1 on Light that way, and 12.87:1 once arrived).
+        await page.evaluate(async (sel) => {
+          const root = document.querySelector(sel);
+          const pictures = [...(root?.querySelectorAll("img") ?? [])];
+          for (const i of pictures) if (i.loading === "lazy") i.loading = "eager";
+          const loaded = pictures.map((i) => (i.complete ? null : new Promise((done) => (i.addEventListener("load", done, { once: true }), i.addEventListener("error", done, { once: true })))));
+          await Promise.race([Promise.all(loaded), new Promise((done) => setTimeout(done, 8000))]);
+          await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+          const arriving = document.getAnimations().filter((a) => a.effect?.getComputedTiming().iterations !== Infinity).map((a) => a.finished.catch(() => {}));
+          await Promise.race([Promise.all(arriving), new Promise((done) => setTimeout(done, 3000))]);
+        }, selector);
+        const read = new Map();
+        try {
+          for (const r of await wordsOnPicture(page, "[data-mock-look]", { palettes: [[palette, mode]] })) read.set(order[r.at], r);
+        } finally {
+          await page.evaluate((w) => {
+            for (const e of document.querySelectorAll("[data-mock-scroll]")) {
+              const [x, y] = e.getAttribute("data-mock-scroll").split(",").map(Number);
+              e.scrollLeft = x;
+              e.scrollTop = y;
+              e.removeAttribute("data-mock-scroll");
+            }
+            scrollTo(w[0], w[1]);
+          }, win);
+        }
+        for (const w of pending) {
+          const key = `${w.lookAt}\u0000${w.text}`;
+          const entry = looks.get(key) ?? { text: w.text, why: w.ground.unknown, at: w.lookAt, ratios: {}, need: null };
+          looks.set(key, entry);
+          const r = read.get(w.lookAt);
+          entry.ratios[palette] = r ? Math.round(r.ratio * 100) / 100 : null;
+          if (!r) continue;
+          entry.need = r.need;
+          if (r.ratio + 1e-9 >= r.need) continue;
+          if (w.allow) allow("contrast", `"${w.text}"`, w.allow);
+          else fail("contrast", palette, `"${w.text}"`, `${r.ratio.toFixed(2)}:1 at its least on the pixels under it, needs ${r.need}:1`);
         }
       }
       if (!allowGold) {
@@ -1320,6 +1406,7 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
       if (b.lang) h.setAttribute("lang", b.lang);
       else h.removeAttribute("lang");
       document.querySelector("style[data-mock-check]")?.remove();
+      document.querySelector("style[data-words-on-pictures]")?.remove();
       for (const el of document.querySelectorAll("[data-mock-was-animation]")) {
         const was = el.getAttribute("data-mock-was-animation");
         if (was) el.style.setProperty("animation", was);
@@ -1329,7 +1416,9 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
     }, before);
     await settle(page);
   }
-  return { selector, failures, unmeasured, allowed: [...allowed], byEye: BY_EYE };
+  const lookList = [...looks.values()].map((l) => ({ ...l, left: Object.values(l.ratios).some((v) => v === null) }));
+  for (const l of lookList.filter((x) => x.left)) unmeasured.push(`"${l.text}": ${l.why}, and no pixels to read under it`);
+  return { selector, failures, unmeasured, allowed: [...allowed], byEye: BY_EYE, looks: lookList };
 }
 
 /** Say what `checkMock` found. True when nothing failed. */
@@ -1454,6 +1543,14 @@ const ARABIC = `
   </span>
 </div>`;
 
+/** The pixels pass's own proof: words on two pictures of one colour each, drawn as pictures (not colours). */
+const PICTURE = (hex) => `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='%23${hex}'/%3E%3C/svg%3E")`;
+const PIXELS = `<div data-mock-fixture="pixels" style="padding:16px">
+  <div style="background-image:${PICTURE("101010")};padding:12px"><p style="margin:0;color:#ffffff;font:16px sans-serif">Light words on a dark picture</p></div>
+  <div style="margin-top:12px;background-image:${PICTURE("777777")};padding:12px"><p style="margin:0;color:#8a8a8a;font:16px sans-serif">Grey words on a grey picture</p></div>
+  <div style="position:fixed;inset-inline-start:2000px;top:120px;background-image:${PICTURE("101010")};padding:12px"><p style="margin:0;color:#ffffff;font:16px sans-serif">Words past the screen's edge</p></div>
+</div>`;
+
 async function selfTest() {
   const { go } = await import("./lib/shell-server.mjs");
   const { browser, page } = await openPhone();
@@ -1480,6 +1577,25 @@ async function selfTest() {
     await settle(page);
     const arabic = await checkMock(page, "[data-mock-fixture=arabic]");
     printMockCheck(arabic, "an Arabic page's bar, filling from its start");
+    // The pixels pass (1.9, the gate's rule that no "look" stands unanswered): two words on pictures, light on a
+    // dark one and grey on a grey one. Without the pass both are said; with it neither is, the first passes on its
+    // pixels and the second fails on them.
+    await page.evaluate((html) => document.body.insertAdjacentHTML("beforeend", html), PIXELS);
+    await settle(page);
+    const lookOnly = await checkMock(page, "[data-mock-fixture=pixels]", { palettes: [["Dark", null]] });
+    const byPixels = await checkMock(page, "[data-mock-fixture=pixels]", { palettes: [["Dark", null]], pixels: true });
+    printMockCheck(byPixels, "words on pictures, measured on their pixels");
+    const lookSaid = lookOnly.unmeasured.length === 3 && lookOnly.failures.length === 0;
+    // The third stands past the screen's edge, where no pixel shows it: left "look", for a still and an eye.
+    const pastEdge = byPixels.looks.find((l) => l.text === "Words past the screen's edge");
+    const pixelsRead =
+      byPixels.looks.length === 3 &&
+      byPixels.failures.some((f) => f.check === "contrast" && f.what === '"Grey words on a grey picture"' && f.detail.includes("on the pixels under it")) &&
+      !byPixels.failures.some((f) => f.what === '"Light words on a dark picture"') &&
+      byPixels.looks.find((l) => l.text === "Light words on a dark picture")?.left === false &&
+      pastEdge?.left === true &&
+      byPixels.unmeasured.length === 1 &&
+      byPixels.unmeasured[0].startsWith(`"Words past the screen's edge": `);
     const caught = new Set(bad.failures.map((f) => f.check));
     const missed = ["contrast", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays", "sparkle", "picture", "dashed", "keys", "cut"].filter((c) => !caught.has(c));
     // A Father's own words keep their edition's dash, and a reader's own title its cut, by name; each allowance is said in the report.
@@ -1501,11 +1617,11 @@ async function selfTest() {
       said("Words over a fade on a picture", "a picture is drawn across it (img)") &&
       said("Words over a picture, on plain colours", "a picture is drawn across it (img)") &&
       good.unmeasured.length === 3;
-    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && picturesSaid && arabic.failures.length === 0;
+    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead;
     console.log(
       ok
         ? "\nself-test: every mistake caught, and the house's own parts pass"
-        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}`,
+        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}`,
     );
     return ok;
   } finally {

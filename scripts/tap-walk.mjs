@@ -176,6 +176,7 @@ const EXPECT = {
   "/required/": { verdict: "pass" },
   "/sheet-small/": { verdict: "fail", why: /^sheet: dialog "Share": target: button "Close": 24 by 24px/ },
   "/sheet-fine/": { verdict: "pass", why: /^opened dialog "Keep", held to checkMock's rules: nothing failed/ },
+  "/sheet-plays/": { verdict: "pass", why: /^dialog "Atlas" plays itself: paused by its own Pause/ },
 };
 
 /** The self-test's page: one front door that draws a case by its address, as the shell answers every address with it. */
@@ -323,6 +324,18 @@ if (at === "/sticky/") {
     document.body.append(sheet);
   });
   m.append(block(300), open, block(1200));
+} else if (at === "/sheet-plays/") {
+  // A sheet that plays itself, as the councils' atlas runs through the years, with its own Pause.
+  m.append(block(300), button("Atlas", () => {
+    const sheet = document.createElement("div");
+    sheet.setAttribute("role", "dialog"); sheet.setAttribute("aria-modal", "true"); sheet.setAttribute("aria-label", "Atlas");
+    sheet.style.cssText = "position:fixed;left:0;right:0;bottom:0;padding:16px 0;background:#fff;color:#000";
+    const year = document.createElement("p"); year.style.margin = "0 16px"; year.textContent = "325";
+    let y = 325;
+    const run = setInterval(() => (year.textContent = String((y += 1))), 150);
+    sheet.append(year, button("Pause", () => clearInterval(run)));
+    document.body.append(sheet);
+  }), block(1200));
 } else if (at === "/here/") {
   const tab = document.createElement("a"); tab.href = "/here/"; tab.textContent = "You";
   m.append(block(300), tab, block(1200));
@@ -628,44 +641,64 @@ async function measureSheets(page, row, at, c) {
   for (const n of opened) {
     // Settled first: a sheet that fetches what it shows (a reader's profile) is named and measured
     // once it has it, not as it arrives (no change in it for 450ms, up to 4s), and its entrance
-    // played out (a sheet measured as it rises reads fainter than it ends).
-    await page
-      .evaluate(async (k) => {
-        const el = document.querySelector(`[data-tapwalk-sheet="${k}"]`);
-        if (!el) return;
-        let changes = 0;
-        const seen = new MutationObserver((list) => (changes += list.length));
-        seen.observe(el, { subtree: true, childList: true, attributes: true, characterData: true });
-        const t0 = performance.now();
-        let last = -1;
-        let quiet = 0;
-        while (performance.now() - t0 < 4000 && quiet < 3) {
-          await new Promise((r) => setTimeout(r, 150));
-          quiet = changes === last ? quiet + 1 : 0;
-          last = changes;
-        }
-        seen.disconnect();
-        const ends = el
-          .getAnimations({ subtree: true })
-          .filter((a) => a.effect?.getComputedTiming().iterations !== Infinity)
-          .map((a) => a.finished.catch(() => {}));
-        await Promise.race([Promise.all(ends), new Promise((r) => setTimeout(r, 2500))]);
-      }, n)
-      .catch(() => {});
+    // played out (a sheet measured as it rises reads fainter than it ends). A sheet that plays
+    // itself (the councils' atlas runs through the years) never falls quiet: it is paused by its
+    // own Pause, as a reader who stops to read it would, and let settle again, so each palette is
+    // measured on the same frame.
+    const settle = (k) =>
+      page
+        .evaluate(async (k) => {
+          const el = document.querySelector(`[data-tapwalk-sheet="${k}"]`);
+          if (!el) return true;
+          let changes = 0;
+          const seen = new MutationObserver((list) => (changes += list.length));
+          seen.observe(el, { subtree: true, childList: true, attributes: true, characterData: true });
+          const t0 = performance.now();
+          let last = -1;
+          let quiet = 0;
+          while (performance.now() - t0 < 4000 && quiet < 3) {
+            await new Promise((r) => setTimeout(r, 150));
+            quiet = changes === last ? quiet + 1 : 0;
+            last = changes;
+          }
+          seen.disconnect();
+          const ends = el
+            .getAnimations({ subtree: true })
+            .filter((a) => a.effect?.getComputedTiming().iterations !== Infinity)
+            .map((a) => a.finished.catch(() => {}));
+          await Promise.race([Promise.all(ends), new Promise((r) => setTimeout(r, 2500))]);
+          return quiet >= 3;
+        }, k)
+        .catch(() => true);
+    let paused = false;
+    if (!(await settle(n))) {
+      paused = await page
+        .evaluate((k) => {
+          const el = document.querySelector(`[data-tapwalk-sheet="${k}"]`);
+          const pause = [...(el?.querySelectorAll("button, [role=button]") ?? [])].find((b) => /^pause\b/i.test((b.getAttribute("aria-label") || b.textContent || "").trim()));
+          if (!pause) return false;
+          pause.click();
+          return true;
+        }, n)
+        .catch(() => false);
+      if (paused) await settle(n);
+    }
     const s = await page.evaluate(describeSheet, n).catch(() => null);
     if (!s) continue;
     const said = `${s.role} "${s.name}"`;
+    if (paused) row.why.push(`${said} plays itself: paused by its own Pause to be measured`);
     const first = SHEETS.get(s.key);
     if (first) {
       row.why.push(`opened ${said}, held to checkMock's rules where it first opened (${first.at} ${first.opener})`);
       continue;
     }
-    const sheet = { at, opener: c.name, said, controls: s.controls, lines: [], unmeasured: [], allowed: [] };
+    const sheet = { at, opener: c.name, said, controls: s.controls, lines: [], unmeasured: [], allowed: [], looks: [] };
     SHEETS.set(s.key, sheet);
     const stood = await page.evaluate(() => [scrollX, scrollY]).catch(() => null);
     try {
-      // The self-test's page wears no palette of its own, so it is held on Dark alone.
-      const r = await checkMock(page, `[data-tapwalk-sheet="${s.n}"]`, SELF_TEST ? { palettes: [["Dark", null]] } : {});
+      // The self-test's page wears no palette of its own, so it is held on Dark alone. Words over a
+      // picture are measured on the pixels under their letters (checkMock's pixels pass).
+      const r = await checkMock(page, `[data-tapwalk-sheet="${s.n}"]`, { pixels: true, ...(SELF_TEST ? { palettes: [["Dark", null]] } : {}) });
       // One line per piece and rule: contrast with its palettes together, at its worst.
       const ratio = (d) => Number(/^([\d.]+):1/.exec(d)?.[1] ?? Infinity);
       const lines = new Map();
@@ -680,6 +713,15 @@ async function measureSheets(page, row, at, c) {
       sheet.lines = [...lines.values()].map((f) => `${f.check}${f.palettes.length ? ` [${f.palettes.join(", ")}]` : ""}: ${f.what}: ${f.detail}`);
       sheet.unmeasured = r.unmeasured;
       sheet.allowed = r.allowed;
+      sheet.looks = r.looks;
+      // A word over a picture with no pixels to read is left for the eye: its still, beside the fails'.
+      if (SHOTS) {
+        for (const l of r.looks.filter((x) => x.left)) {
+          const file = path.join(SHOTS, `look-${at.replace(/^\/|\/$/g, "").replace(/\//g, "_") || "home"}-${c.i}-${l.at}.png`);
+          const el = page.locator(`[data-mock-look="${l.at}"]`).first();
+          l.still = (await el.screenshot({ path: file }).then(() => path.basename(file)).catch(() => null)) ?? undefined;
+        }
+      }
     } catch (e) {
       sheet.unmeasured.push(`not measured: ${String(e).split("\n")[0].slice(0, 120)}`);
     }
@@ -1158,6 +1200,11 @@ const sheets = [...SHEETS.values()].sort((a, b) => a.at.localeCompare(b.at));
 const sheetsFailed = sheets.filter((s) => s.lines.length);
 console.log(`\nsheets, menus and dialogs the taps opened: ${sheets.length} distinct, each held to checkMock's rules once; ${sheetsFailed.length} failed`);
 for (const s of sheetsFailed) console.log(`  ${s.at} ${s.opener} opened ${s.said}: ${s.lines.length} fail(s)`);
+// Words over a picture in the sheets: answered by their pixels, or left for the eye with a still.
+const sheetLooks = sheets.flatMap((sh) => sh.looks.map((l) => ({ ...l, sheet: `${sh.at} ${sh.said}` })));
+const sheetLookLeft = sheetLooks.filter((l) => l.left);
+console.log(`words over a picture in them ("look"): ${sheetLooks.length}; answered by their pixels on every palette: ${sheetLooks.length - sheetLookLeft.length}; left for the eye: ${sheetLookLeft.length}`);
+for (const l of sheetLookLeft) console.log(`  ${l.sheet} "${l.text}": ${l.why}${l.still ? ` [${l.still}]` : ""}`);
 // A sheet the measure could not hold (it shut as it was measured): named, to look at by eye. The
 // words checkMock could not read the ground of are in the record (--json), as the guardrail
 // walk keeps them.

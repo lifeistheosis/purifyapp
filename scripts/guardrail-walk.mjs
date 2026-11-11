@@ -30,7 +30,15 @@
 // signal. Without it the walk is the app with no network.
 //
 //   npm run build:android, then:
-//   NODE_USE_ENV_PROXY=1 node scripts/guardrail-walk.mjs [out dir] [--only /path,/path] [--workers 3] [--json file] [--online]
+//   NODE_USE_ENV_PROXY=1 node scripts/guardrail-walk.mjs [out dir] [--only /path,/path] [--workers 3] [--json file] [--online] [--looks dir]
+//
+// Words over a picture, or with one drawn across them, have no one colour under
+// them, so checkMock measures each on the pixels under its letters, on every
+// palette (its pixels pass, scripts/words-on-pictures.mjs' method): a shortfall
+// is a contrast fail like any other. One with no pixels to read (past the
+// screen's edge, not drawn) is left for the eye, with a still in --looks. From
+// the gate's final run no "look" stands unanswered (the arbiter, 2026-11-11):
+// the report counts them, and the record names the answers.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -50,6 +58,9 @@ const flag = (name) => {
 const ONLY = flag("--only")?.split(",") ?? null;
 const WORKERS = Math.max(1, Number(flag("--workers") ?? 3));
 const JSON_OUT = flag("--json");
+// Where to keep a still of each word over a picture that had no pixels to read (the gate's rule
+// that no "look" stands unanswered: these are answered by eye).
+const LOOKS = flag("--looks");
 const ONLINE = argv.includes("--online");
 if (ONLINE) argv.splice(argv.indexOf("--online"), 1);
 const OUT = path.resolve(argv[0] ?? "out");
@@ -92,10 +103,21 @@ async function walkOne(page, at) {
   try {
     await go(page, at, { timeout: 15000 });
     await page.waitForTimeout(1500);
-    const r = await checkMock(page, "body");
-    return { at, failures: r.failures, unmeasured: r.unmeasured, allowed: r.allowed };
+    // Words over a picture are measured on the pixels under their letters, on every palette.
+    const r = await checkMock(page, "body", { pixels: true });
+    const left = r.looks.filter((l) => l.left);
+    if (LOOKS && left.length) {
+      fs.mkdirSync(LOOKS, { recursive: true });
+      for (const l of left) {
+        const file = path.join(LOOKS, `${at.replace(/^\/|\/$/g, "").replace(/\//g, "_") || "home"}-${l.at}.png`);
+        const el = page.locator(`[data-mock-look="${l.at}"]`).first();
+        await el.evaluate((n) => n.scrollIntoView({ block: "center", inline: "center", behavior: "instant" })).catch(() => {});
+        l.still = (await el.screenshot({ path: file }).then(() => path.basename(file)).catch(() => null)) ?? undefined;
+      }
+    }
+    return { at, failures: r.failures, unmeasured: r.unmeasured, allowed: r.allowed, looks: r.looks };
   } catch (e) {
-    return { at, error: String(e).split("\n")[0].slice(0, 160), failures: [], unmeasured: [], allowed: [] };
+    return { at, error: String(e).split("\n")[0].slice(0, 160), failures: [], unmeasured: [], allowed: [], looks: [] };
   }
 }
 
@@ -191,6 +213,14 @@ if (errors.length) {
   console.log(`\nnot measured (${errors.length}):`);
   for (const r of errors) console.log(`  ${r.at}: ${r.error}`);
 }
+// Words over a picture or with one across them: each measured on its pixels on every palette, or
+// left for the eye with a still (the gate's rule, the arbiter, 2026-11-11 15:28 UTC).
+const looks = results.flatMap((r) => r.looks.map((l) => ({ ...l, screen: r.at })));
+const lookLeft = looks.filter((l) => l.left);
+const lookShort = looks.filter((l) => !l.left && l.need !== null && Object.values(l.ratios).some((v) => v + 1e-9 < l.need));
+console.log(`\nwords over a picture ("look"): ${looks.length}; answered by their pixels on every palette: ${looks.length - lookLeft.length}, of which ${lookShort.length} under their need (in contrast above); left for the eye: ${lookLeft.length}${LOOKS && lookLeft.length ? ` (stills in ${LOOKS})` : ""}`);
+for (const l of lookLeft) console.log(`  ${l.screen} "${l.text}": ${l.why}${l.still ? ` [${l.still}]` : ""}`);
+
 // Allowed by name and reason: said once per reason, with how many pieces carry it.
 const allowed = new Map();
 for (const r of results) {
@@ -207,7 +237,7 @@ for (const [key, e] of allowed) console.log(`  ${key}  (${e.count}x, e.g. ${e.ex
 
 if (JSON_OUT) {
   const plain = [...findings.values()].map((f) => ({ ...f, palettes: [...f.palettes], screens: [...f.screens] }));
-  fs.writeFileSync(JSON_OUT, JSON.stringify({ screens: results.length, measured: results.length - errors.length, clean: clean.length, findings: plain, errors, results }, null, 1));
+  fs.writeFileSync(JSON_OUT, JSON.stringify({ screens: results.length, measured: results.length - errors.length, clean: clean.length, findings: plain, looks: { found: looks.length, answered: looks.length - lookLeft.length, short: lookShort.length, left: lookLeft.length }, errors, results }, null, 1));
   console.log(`\nwritten: ${JSON_OUT}`);
 }
 process.exit(findings.size || errors.length ? 1 : 0);

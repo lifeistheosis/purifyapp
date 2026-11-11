@@ -78,8 +78,10 @@ export async function wordsOnPicture(page, selector, { palettes = PALETTES } = {
     const count = await page.locator(selector).count();
     for (let i = 0; i < count; i++) {
       const el = page.locator(selector).nth(i);
-      // To the middle of the screen, clear of the bars fixed at its top and foot.
-      await el.evaluate((node) => node.scrollIntoView({ block: "center", behavior: "instant" })).catch(() => {});
+      // To the middle of the screen, clear of the bars fixed at its top and foot, and to the middle of
+      // a sideways shelf, clear of the fade at its edge (on Light the reading room's shelf fades to the
+      // page's own light colour, and a card left at the edge read 2.77:1 under it; at the middle, 9.5).
+      await el.evaluate((node) => node.scrollIntoView({ block: "center", inline: "center", behavior: "instant" })).catch(() => {});
       await page.waitForTimeout(250);
       const info = await el.evaluate((node) => {
         const cs = getComputedStyle(node);
@@ -170,7 +172,9 @@ export async function wordsOnPicture(page, selector, { palettes = PALETTES } = {
           window.__wordsBack = null;
         });
       }
-      if (worst) out.push({ palette, text: info.text, need: info.large ? 3 : 4.5, ratio: worst.ratio, ground: worst.ground });
+      // `at`: the element's place among the selector's matches, so a caller can tell whose line it is
+      // when an element gave none (scripts/mock-check.mjs, the pixels pass).
+      if (worst) out.push({ palette, at: i, text: info.text, need: info.large ? 3 : 4.5, ratio: worst.ratio, ground: worst.ground });
     }
   }
   return out;
