@@ -1,0 +1,46 @@
+{
+  "work": "Service Book of the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church",
+  "by": "Isabel Florence Hapgood",
+  "published": "Boston and New York: Houghton, Mifflin and Company, 1906",
+  "rights": "Public domain (published in the United States in 1906).",
+  "scan": "archive.org, cu31924029363128 (Cornell University Library)",
+  "read": "Each rubric below was read on the page image of the scan on 2026-11-11, not taken from its machine reading.",
+  "rubrics": [
+    {
+      "id": "lent-more",
+      "page": "xvi",
+      "leaf": 17,
+      "text": "More reverences to the earth are appointed for the Great Fast (Lent) than for the services at other seasons, and the penitential character of the Offices is augmented."
+    },
+    {
+      "id": "first-hour-lent",
+      "page": "41",
+      "leaf": 80,
+      "text": "And if it be the Great Fast, we make three great reverences to the earth, reciting the prescribed Prayer of St. Ephraim the Syrian."
+    },
+    {
+      "id": "third-hour-lent",
+      "page": "47",
+      "leaf": 86,
+      "text": "And if it be the Great Fast (Lent), we make three great reverences, reciting the prescribed Prayer of St. Ephraim the Syrian."
+    },
+    {
+      "id": "sixth-hour-lent",
+      "page": "52",
+      "leaf": 91,
+      "text": "And if it be a Fast, we make three great reverences to the very earth and say the prescribed Prayer of St. Ephraim the Syrian."
+    },
+    {
+      "id": "twelve-lesser",
+      "page": "41, 47, 52",
+      "leaf": 80,
+      "text": "Then twelve lesser reverences, saying at each: O God, cleanse thou me, a sinner. Then the whole Prayer is repeated; with one great reverence in conclusion."
+    },
+    {
+      "id": "great-fast-proper",
+      "page": "xvi",
+      "leaf": 17,
+      "text": "On the Eve of Lazarus's Saturday the Great Fast proper (called \"the Forty Days\") comes to an end"
+    }
+  ]
+}

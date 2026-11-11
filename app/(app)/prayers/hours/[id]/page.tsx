@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { MetanyLine } from "@/components/prayers/MetanyLine";
 import { PrayerRuleReader } from "@/components/prayers/PrayerRuleReader";
 import { RecordPrayerOpened } from "@/components/prayers/RecordPrayerOpened";
 import { getHour, listHours } from "@/lib/prayers/hours";
@@ -42,7 +43,7 @@ export default async function HourPage({
       <MobileTopBar titleKey={titleKey} back backFallback="/prayers/hours" revealTitleOn="prayer-title" />
       <section className="min-h-screen bg-night px-5 pb-16 pt-8 md:px-8 md:pt-14">
         <RecordPrayerOpened id={id} titleKey={titleKey} href={href} />
-        <PrayerRuleReader rule={hour} ruleHref={href} titleKey={titleKey} />
+        <PrayerRuleReader rule={hour} ruleHref={href} titleKey={titleKey} afterHead={<MetanyLine hour={id} />} />
       </section>
     </>
   );

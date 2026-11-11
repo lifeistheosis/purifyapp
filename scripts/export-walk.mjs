@@ -9823,6 +9823,122 @@ await section(68, async () => {
   }
 });
 
+// 69. Bows and prostrations in the Hours (1.9, the owner's ask of 2026-11-11
+// through the arbiter: "in the Hours, when to bow and when to prostrate,
+// following the Church year", every rule under a public-domain quotation).
+// The line under each Hour's title on the days of its three rules and on a
+// day none speaks to, on both calendars; the door to the guide touched as a
+// reader would, the guide's three rules and its quotations, Back to the
+// Hour; the line and the guide held to checkMock on the five palettes; and
+// Arabic. lib/prayers/__tests__/metanies.test.ts holds the dates and every
+// quotation to its source.
+await section(69, async () => {
+  console.log("\n69. Bows and prostrations in the Hours");
+  const { checkMock, printMockCheck } = await import("./mock-check.mjs");
+  const touch = async (page, selector) => {
+    const at = await page.evaluate((sel) => {
+      const el = document.querySelector(sel);
+      el?.scrollIntoView({ block: "center" });
+      const r = el?.getBoundingClientRect();
+      return r ? { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2), w: r.width, h: r.height } : null;
+    }, selector);
+    if (!at) return must(false, `could not find ${selector} to touch`);
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: at.x, y: at.y }] });
+    await page.waitForTimeout(70);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await cdp.detach().catch(() => {});
+    return at;
+  };
+  const line = (page) =>
+    page.evaluate(() => {
+      const el = document.querySelector("[data-metany]");
+      if (!el) return null;
+      return {
+        rule: el.dataset.metany,
+        says: el.querySelector("p")?.textContent ?? "",
+        quotes: [...el.querySelectorAll("blockquote")].map((q) => q.textContent),
+        cites: [...el.querySelectorAll("figcaption")].map((c) => c.textContent),
+        underTitle: el.getBoundingClientRect().top > (document.getElementById("prayer-title")?.getBoundingClientRect().bottom ?? Infinity),
+        beforePrayers: Boolean(el.compareDocumentPosition(document.querySelector("[data-prayer-reader] > div") ?? el) & Node.DOCUMENT_POSITION_FOLLOWING),
+      };
+    });
+  const at = async (when, href, set = {}) => {
+    const opened = await open({ width: 390, height: 844, phone: true, set });
+    await opened.page.clock.setFixedTime(new Date(when));
+    await go(opened.page, href);
+    await opened.page.waitForSelector("[data-metany]", { timeout: 20000 }).catch(() => {});
+    return opened;
+  };
+
+  // Each rule on a day of its own, and a day no rule speaks to.
+  const days = [
+    ["a Sunday, at the Third Hour", "2026-11-15T10:30:00", "/prayers/hours/third-hour/", {}, "lordsDay", /prayer be made to God standing/, "First Council of Nicaea, Canon 20"],
+    ["Saturday evening, at Compline", "2026-11-14T21:30:00", "/prayers/hours/compline/", {}, "lordsDay", /no one shall kneel in prayer until the evening of Sunday/, "Council in Trullo, Canon 90"],
+    ["a Wednesday between Pascha and Pentecost, at the Ninth Hour", "2027-05-12T15:30:00", "/prayers/hours/ninth-hour/", {}, "pentecost", /in the days of Pentecost/, "First Council of Nicaea, Canon 20"],
+    ["a Wednesday of the Great Fast, at the First Hour", "2027-03-17T06:30:00", "/prayers/hours/first-hour/", {}, "lent", /three great reverences to the earth/, "Hapgood, Service Book (1906), p. 41"],
+    ["a Wednesday of the Great Fast, at the Ninth Hour", "2027-03-17T15:30:00", "/prayers/hours/ninth-hour/", {}, "lent", /More reverences to the earth/, "Hapgood, Service Book (1906), p. xvi"],
+    ["Holy Thursday, at the Sixth Hour", "2027-04-29T12:30:00", "/prayers/hours/sixth-hour/", {}, "ask", null, null],
+    ["the Annunciation on the new calendar, a Thursday of the Fast", "2027-03-25T10:30:00", "/prayers/hours/third-hour/", {}, "ask", null, null],
+    ["the Annunciation on the old calendar, a Wednesday of the Fast", "2027-04-07T10:30:00", "/prayers/hours/third-hour/", { "purify:calendar.style": "old" }, "ask", null, null],
+    ["the same Wednesday on the new calendar", "2027-04-07T10:30:00", "/prayers/hours/third-hour/", {}, "lent", /three great reverences/, "Hapgood, Service Book (1906), p. 47"],
+    ["a plain Wednesday, at the Sixth Hour", "2026-11-11T12:30:00", "/prayers/hours/sixth-hour/", {}, "ask", null, null],
+  ];
+  for (const [name, when, href, set, rule, quote, cite] of days) {
+    const { ctx, page, errors } = await at(when, href, set);
+    const got = await line(page);
+    const right = got && got.rule === rule && (quote ? quote.test(got.quotes[0] ?? "") && got.cites[0] === cite : got.quotes.length === 0 && /Ask your priest\.$/.test(got.says));
+    must(Boolean(right), `${name}: ${rule === "ask" ? "the plain sentence, and no rule spoken" : `its rule, in its source's words, beside ${cite}`} (${got ? `${got.rule}: ${got.says.slice(0, 60)}` : "no line"})`);
+    if (got) must(got.underTitle && got.beforePrayers, `${name}: under the Hour's title and before its first prayer`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // The door to the guide, touched; the guide; Back to the Hour.
+  {
+    const { ctx, page, errors } = await at("2027-03-17T06:30:00", "/prayers/hours/first-hour/");
+    must(printMockCheck(await checkMock(page, "[data-metany]"), "the line under the Hour's title"), "the line passes every rule of the mock check on the five palettes");
+    const door = await touch(page, "[data-metany] a");
+    must(Boolean(door) && door.h >= 44, `the door to the guide is a finger's size (${door ? Math.round(door.h) : 0}px tall)`);
+    await page.waitForFunction(() => location.pathname.startsWith("/prayers/bows"), null, { timeout: 15000 }).catch(() => {});
+    await page.waitForSelector("[data-metany-rule]", { timeout: 15000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const guide = await page.evaluate(() => ({
+      path: location.pathname,
+      title: document.getElementById("metany-title")?.textContent ?? "",
+      rules: [...document.querySelectorAll("[data-metany-rule]")].map((r) => ({ id: r.dataset.metanyRule, quotes: r.querySelectorAll("blockquote").length, cites: r.querySelectorAll("figcaption").length, doors: [...r.querySelectorAll("a")].map((a) => a.getAttribute("href")) })),
+      ask: document.querySelector("[data-metany-ask]")?.textContent ?? "",
+      review: /review|clergy/i.test(document.querySelector("section[aria-labelledby='metany-title']")?.textContent ?? ""),
+    }));
+    must(guide.path.startsWith("/prayers/bows") && guide.title === "Bows and prostrations", `the touch opens the guide (${guide.path}, "${guide.title}")`);
+    must(guide.rules.map((r) => r.id).join() === "lordsDay,pentecost,lent" && guide.rules.every((r) => r.quotes >= 3 && r.quotes === r.cites), `three rules, each quotation with its citation (${guide.rules.map((r) => `${r.id} ${r.quotes}`).join(", ")})`);
+    must(guide.rules[0].doors.length === 3 && guide.rules[2].doors.length === 0, `the canons and St Basil open in Purify; Hapgood, which it does not carry, has no door (${guide.rules.map((r) => r.doors.length).join(", ")})`);
+    must(/Typikon/.test(guide.ask) && /Ask your priest\.$/.test(guide.ask) && !guide.review, "the foot says the custom is the Typikon's and differs, and to ask your priest; no reader is told of a review");
+    must(printMockCheck(await checkMock(page, "section[aria-labelledby='metany-title']"), "the guide"), "the guide passes every rule of the mock check on the five palettes");
+    await page.goBack();
+    await page.waitForFunction(() => location.pathname.startsWith("/prayers/hours/first-hour"), null, { timeout: 15000 }).catch(() => {});
+    await page.waitForSelector("[data-metany]", { timeout: 15000 }).catch(() => {});
+    const back = await page.evaluate(() => ({ path: location.pathname, line: Boolean(document.querySelector("[data-metany]")) }));
+    must(back.path.startsWith("/prayers/hours/first-hour") && back.line, `Back returns to the Hour, the line still under its title (${back.path})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // Arabic: the page turns, the source's English stays as it was printed.
+  {
+    const { ctx, page, errors } = await at("2026-11-15T10:30:00", "/prayers/hours/third-hour/", { "CapacitorStorage.purify_locale": "ar" });
+    await page.waitForFunction(() => document.documentElement.dir === "rtl", null, { timeout: 15000 }).catch(() => {});
+    const got = await page.evaluate(() => {
+      const el = document.querySelector("[data-metany]");
+      const q = el?.querySelector("blockquote");
+      return { dir: document.documentElement.dir, says: el?.querySelector("p")?.textContent ?? "", quoteDir: q ? getComputedStyle(q).direction : "", quoteLang: q?.lang ?? "" };
+    });
+    must(got.dir === "rtl" && /[؀-ۿ]/.test(got.says) && got.quoteDir === "ltr" && got.quoteLang === "en", `in Arabic the line is Arabic and the quotation stays English, left to right (${got.dir}, ${got.quoteDir})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

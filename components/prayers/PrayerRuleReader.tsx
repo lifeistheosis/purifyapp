@@ -57,7 +57,7 @@
 // Only in the reader's own rule is it one of the rule's prayers; anywhere else
 // the rule is complete without it.
 
-import { Fragment, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { Fragment, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CampaignPrayerSteps } from "@/components/campaigns/CampaignPrayerSteps";
@@ -138,6 +138,7 @@ export function PrayerRuleReader({
   titleKey,
   artId,
   contentLocale = "en",
+  afterHead,
 }: {
   rule: Rule;
   /** When set, the head offers a bookmark that keeps the whole rule in Saved. */
@@ -148,6 +149,8 @@ export function PrayerRuleReader({
   artId?: string;
   /** The language the prayers' words were drawn in: English unless the page found a wording in the reader's. */
   contentLocale?: string;
+  /** Stands under the head, before the first prayer (the Hours' line on bowing, MetanyLine.tsx). */
+  afterHead?: ReactNode;
 }) {
   const { t, locale } = useTranslate();
   const article = useRef<HTMLElement>(null);
@@ -295,6 +298,7 @@ export function PrayerRuleReader({
           contentLang={contentLocale}
           notInYourLanguage={locale !== "en" && locale !== contentLocale}
         />
+        {afterHead}
 
         <div className="mt-1">
           {rule.prayers.map((p, i) => (

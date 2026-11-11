@@ -536,3 +536,22 @@ stand-in).
 - A council's document read in another language than English shows no Listen:
   the recording is the English.
 
+## The metany guide (2026-11-11)
+
+Asked by the owner through the arbiter: in the Hours, when to bow and when to prostrate, following the Church year. His bar: every rule from a named public-domain source, quoted and cited; nothing invented; where no such text says it, the plain sentence and "ask your priest".
+
+What ships, and it is exactly what a quotation could be put under:
+
+1. The Lord's Day: prayer is made standing. First Nicaea canon 20, Trullo canon 90, St Basil, On the Holy Spirit 27, all from the files the app carries. The day runs from Saturday's Compline to Sunday's Ninth Hour, after Trullo.
+2. Pascha to Pentecost: the same. First Nicaea canon 20, St Basil 27.
+3. The weekdays of the Great Fast, Clean Monday to the Friday before Lazarus Saturday: the Prayer of St Ephraim with reverences to the earth, at the First, Third and Sixth Hours, each from its own page of Hapgood's Service Book of 1906 (pp. 41, 47, 52; p. xvi for the season). Each rubric was read on the page image of the scan (archive.org, cu31924029363128), not its machine reading, and is kept with its page and leaf in `data/prayers/metanies/hapgood-1906.json`.
+
+Every other day says only that the custom is given by the Typikon, differs between traditions and parishes, and to ask your priest.
+
+What does not ship, for want of a public-domain sentence, and the arbiter has told him so: the feasts; Saturdays of the Fast; Holy Week; the Fast's rubric at the Ninth Hour and at Compline (Hapgood prints it under the Interhour, and her Compline is the Grand one), which say only that more reverences are appointed in the Fast. The Annunciation on a weekday of the Forty Days, on the reader's own calendar, gets the plain sentence (the arbiter's mend). A Sunday in the Fast stands.
+
+One sentence is the editorials' own and not a quotation: "A lesser reverence is a bow from the waist. A great reverence is made to the earth." It is named as such in the clergy's queue (docs/editorial-standards.md, item 32). The reader is not told the guide awaits review (his standing note of 2026-11-06, item 27); the mark is `METANY_GUIDE_REVIEW` in the data. The arbiter had approved a reader-facing review line; it was left out for that note, and the arbiter was told.
+
+Where it is: `lib/prayers/metanies.ts` (the rules, the quotations, the day), `components/prayers/MetanyLine.tsx` (under each Hour's title, mounted by `afterHead` on `PrayerRuleReader` from `app/(app)/prayers/hours/[id]/page.tsx`), `components/prayers/MetanyGuide.tsx` and `app/(app)/prayers/bows/page.tsx` (the guide; it is not under `/prayers/hours/` because the site answers 404 for any Hour it does not have, lib/seo/unknownAddress.ts). Fourteen lines in the 21 languages; the quotations stay in the English they were published in.
+
+The gate: `lib/prayers/__tests__/metanies.test.ts` (20 tests: every quotation verbatim in its file, Hapgood's page for each, each rule by date over four years, Holy Monday, Holy Thursday, the Annunciation on both calendars, the catalogs, no em dash, no word of review to a reader); export walk section 69 (ten days at the Hours on both calendars, the door touched, the guide, Back, checkMock on five palettes for the line and the guide, Arabic).

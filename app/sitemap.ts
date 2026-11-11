@@ -38,6 +38,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/prayers/morning",
     "/prayers/evening",
     "/prayers/learning",
+    "/prayers/bows",
     // Chants (1.7) and every live chant's page.
     "/chants",
     ...liveChants().map((c) => `/chants/${c.slug}`),
