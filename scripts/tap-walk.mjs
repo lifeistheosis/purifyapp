@@ -135,6 +135,8 @@ const EXPECT = {
   "/sr-only/": { verdict: "pass", why: /^went to \/other\// },
   "/read-more/": { verdict: "pass" },
   "/here/": { verdict: "pass", why: /^names the page it stands on/ },
+  "/chosen/": { verdict: "pass", why: /a choice already made/ },
+  "/toggle-dead/": { verdict: "fail", why: /^nothing:/ },
   "/wrapped/": { verdict: "pass", why: /^went to \/other\// },
   "/required/": { verdict: "pass" },
 };
@@ -199,6 +201,15 @@ if (at === "/sticky/") {
   });
   more.setAttribute("aria-expanded", "false"); more.setAttribute("aria-controls", "more-words");
   m.append(block(600), words, more, block(1500));
+} else if (at === "/chosen/") {
+  // A row of chips where one is chosen: the chosen one, tapped again, has nothing to do.
+  const row = document.createElement("div"); row.setAttribute("role", "group");
+  for (const [w, on] of [["All", true], ["English", false]]) { const b = document.createElement("button"); b.type = "button"; b.textContent = w; b.setAttribute("aria-pressed", String(on)); row.append(b); }
+  m.append(block(300), row, block(1200));
+} else if (at === "/toggle-dead/") {
+  // A lone toggle that is on, tapped, stays on: dead.
+  const t = document.createElement("button"); t.type = "button"; t.textContent = "Keep"; t.setAttribute("aria-pressed", "true");
+  m.append(block(300), t, block(1200));
 } else if (at === "/required/") {
   // A form whose field is required: the browser asks for it, and focuses it.
   const f = document.createElement("form"); f.onsubmit = (e) => e.preventDefault();
@@ -547,6 +558,17 @@ async function walkScreen(ctx, at, kept) {
             const el = document.querySelector(`[data-tapwalk="${i}"]`);
             if (!el) return false;
             if (/^(page|true|location)$/.test(el.getAttribute("aria-current") || "")) return true;
+            // A choice already made, tapped again: a tab or radio that is chosen, or a chosen chip
+            // in a row of chips where only one is chosen (Chants' "All": Fable Themes,
+            // 2026-11-11). A lone toggle that is on is not one: tapped, it must go off.
+            const role = el.getAttribute("role") || "";
+            if (el.getAttribute("aria-selected") === "true" && /^(tab|option|gridcell|row)$/.test(role)) return true;
+            if (el.getAttribute("aria-checked") === "true" && /^(radio|menuitemradio)$/.test(role)) return true;
+            if (el.matches("input[type=radio]:checked")) return true;
+            if (el.getAttribute("aria-pressed") === "true") {
+              const group = el.parentElement?.closest("[role=group], [role=radiogroup], [role=toolbar]") ?? el.parentElement?.parentElement ?? el.parentElement;
+              if (group && [...group.querySelectorAll("[aria-pressed]")].some((x) => x !== el && x.getAttribute("aria-pressed") === "false")) return true;
+            }
             const href = el.getAttribute("href");
             if (!href) return false;
             const u = new URL(href, location.href);
@@ -750,7 +772,7 @@ async function walkScreen(ctx, at, kept) {
           }
           const anything = changes > 0 || answered || after.y !== before.y || after.html !== before.html || after.kept !== before.kept || after.dialogs !== before.dialogs;
           if (!anything) {
-            if (namesHere) row.why.push("names the page it stands on, at its top: nothing to do");
+            if (namesHere) row.why.push("names the page it stands on, or a choice already made: nothing to do");
             else {
               row.verdict = "fail";
               row.why.push("nothing: the tap changed nothing");

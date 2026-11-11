@@ -510,12 +510,18 @@ function look(arg) {
   const NAMED = "button, a[href], summary, [role=button], [role=link], [role=tab], [role=menuitem], [role=option], [role=radio], [role=checkbox], [role=switch]";
   for (const c of root.querySelectorAll(NAMED)) {
     if (!shown(c) || c.closest("svg")) continue;
-    const holder = [c, ...c.querySelectorAll("*")].find((n) => {
+    const holders = [c, ...c.querySelectorAll("*")].filter((n) => {
       if (n.closest("svg") || ![...n.childNodes].some((t) => t.nodeType === 3 && t.textContent.trim())) return false;
       const r = n.getBoundingClientRect();
       return r.width > 2 && r.height > 2 && getComputedStyle(n).visibility !== "hidden";
     });
-    if (!holder) continue;
+    if (!holders.length) continue;
+    // The name: a heading the control holds (a card's title), else its largest words, the first
+    // of equals. A saint's card sets a small byname and epithet round its title, each clamped
+    // to a line on purpose (Fable Themes, 2026-11-11: 29 read as cut by the first-words rule).
+    const heading = holders.find((n) => n.closest("h1, h2, h3, h4, h5, h6, [role=heading]"));
+    const size = (n) => parseFloat(getComputedStyle(n).fontSize) || 0;
+    const holder = heading ?? holders.reduce((a, b) => (size(b) > size(a) ? b : a));
     const range = document.createRange();
     range.selectNodeContents(holder);
     const w = range.getBoundingClientRect();
@@ -925,6 +931,7 @@ const FIXTURES = `
   <span class="relative mt-3 block h-14 w-14 overflow-hidden rounded-[18px] bg-night-soft"><span aria-hidden="true" class="pointer-events-none absolute -end-6 -top-8 h-32 w-32 rounded-full bg-paper/15 blur-2xl"></span></span>
   <div style="content-visibility:auto;contain-intrinsic-size:auto 80px;margin-top:2400px"><span class="flex h-10 w-10 items-center justify-center rounded-full bg-night-soft font-sans text-detail font-semibold text-paper">M</span><button type="button" class="mt-1 min-h-11 font-sans text-detail text-paper">Reader M</button></div>
   <a href="/prayers/" class="mt-3 flex min-h-11 flex-col justify-center font-sans"><span class="text-ui text-paper">The daily rule</span><span class="line-clamp-1 text-caption text-paper/70">Morning prayers, Midday prayers, Evening prayers, The Nicene Creed, the prayer for today, and more besides</span></a>
+  <a href="/saints/john-chrysostom/" class="mt-1 flex min-h-11 flex-col font-sans"><span class="line-clamp-1 w-24 font-serif text-detail italic text-paper/70">&ldquo;Golden-mouthed, the preacher of Antioch&rdquo;</span><span class="font-sans text-lede font-semibold text-paper">John Chrysostom</span></a>
   <button type="button" data-mock-allow="cut" data-mock-why="a reader's own title, rightly cut in a list" class="mt-1 block min-h-11 w-40 truncate text-start font-sans text-ui text-paper">A long title a reader wrote for the wall</button>
   <blockquote lang="en" data-mock-allow="emdash" data-mock-why="a Father's own words, as his edition prints them" class="mt-3 font-serif text-body italic leading-[1.6] text-paper/85">Chapter I.\u2014Introduction. Reason for writing</blockquote>
 </div>`;
