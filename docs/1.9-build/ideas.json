@@ -2657,6 +2657,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "Found playing the Anthem on its page with the recording standing in. Lines 44 with the 15px kept; steps per palette at 4.5:1. f55ad7a30, 0ee9d5274. PLAN 13bf."
+  },
+  {
+   "id": "e-words-over-pictures-three",
+   "section": "Design",
+   "kind": "bug",
+   "title": "Words over pictures read on every palette: Plans' tiles, Today's hour card, a chant's head",
+   "from": "claude",
+   "asked": "2026-11-11",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The gate's sweep, the arbiter's word. Plans' picture above its words; the hour card's line and a chant's kind at 80% on paper; a halo of the page under a chant's head on paper. 2765ea6e2. PLAN 13bg."
   }
  ]
 }
