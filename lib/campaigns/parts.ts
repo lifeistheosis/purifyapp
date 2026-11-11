@@ -26,8 +26,10 @@ import type { CampaignPart } from "./model";
 //              wait for: the account for the automatic check, the
 //              registration with NCMEC, PhotoDNA when Microsoft approves,
 //              and the first real picture as the check's proof
-//              (docs/1.9-build/OWNER-STEPS.md, P1, P2, P4, P5). Until that
-//              word it was "off until his three steps are done".
+//              (docs/1.9-build/OWNER-STEPS.md, P1, P2, P4, P5; P2 is
+//              asked of him sooner, since readers already add other
+//              pictures). Until that word it was "off until his three
+//              steps are done".
 //              lib/campaigns/__tests__/noPicturesIn19.test.ts holds it off
 //              while the app's version is 1.9.
 //

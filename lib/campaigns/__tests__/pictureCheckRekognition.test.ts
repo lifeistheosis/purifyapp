@@ -142,7 +142,7 @@ describe("the key", () => {
   it("is put where this code reads it: his steps name the same three, on the main web's service, saved with a deploy", () => {
     const steps = readFileSync(join(process.cwd(), "docs/1.9-build/OWNER-STEPS.md"), "utf8");
     const pictures = steps.slice(steps.indexOf("### Pictures. For 1.9.1"), steps.indexOf("### 23. "));
-    const step7 = pictures.slice(pictures.indexOf("\n7. Render"), pictures.indexOf("**P2 (for 1.9.1). "));
+    const step7 = pictures.slice(pictures.indexOf("\n7. Render"), pictures.indexOf("**P2 (now, when the arbiter says). "));
     for (const name of Object.values(PICTURE_CHECK_ENV)) expect(step7, name).toContain(`\`${name}\``);
     expect(step7.replace(/\s+/g, " ")).toContain("the **purifyapp** web service (the main web, purifyapp.net)");
     // The key is read once after the server starts (pictureCheck), so a save with no deploy is not seen.

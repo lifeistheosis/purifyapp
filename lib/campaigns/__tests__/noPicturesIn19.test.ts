@@ -8,6 +8,10 @@
 // P4 PhotoDNA, P5 the first real picture). A planned feature of 1.9.1, by
 // his word, and not a fault of 1.9.
 //
+// P2 is asked of him now all the same, beside P3 (the arbiter, 2026-11-11
+// about 15:28 UTC): the registration is about pictures readers add, and
+// readers already add a profile picture, a banner and a Kitchen photo.
+//
 // What a reader would notice if this broke: a way to add a picture in 1.9; a
 // store build with the pictures' controls asleep in it; or a line that
 // speaks of a picture no 1.9 campaign can have. A creator taking a campaign
@@ -18,7 +22,7 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { PICTURES_IN_STORE_BUILDS } from "@/lib/campaigns/flags";
+import { PICTURES_IN_STORE_BUILDS, julyCampaignRoutes } from "@/lib/campaigns/flags";
 import { CAMPAIGN_PARTS } from "@/lib/campaigns/parts";
 import en from "@/lib/i18n/messages/en.json";
 import { CAMPAIGNS_FREE_KEY, FREE_KEYS } from "@/lib/premium/planWords";
@@ -40,6 +44,11 @@ describe("pictures are off everywhere in 1.9", () => {
     const route = read("app/api/campaigns/[id]/pictures/route.ts");
     expect(route.match(/if \(!campaignPart\("pictures"\)\) return NOT_FOUND\(\);/g)).toHaveLength(3);
     expect(read("app/api/campaigns/[id]/report/route.ts")).toContain('if (picture && !campaignPart("pictures"))');
+  });
+
+  it("July's own way to send a campaign's picture is closed with the rest of July's routes", () => {
+    expect(julyCampaignRoutes()).toBe(false);
+    expect(read("app/api/campaigns/image/route.ts")).toMatch(/async function handlePOST\(req: Request\) \{\s*if \(!julyCampaignRoutes\(\)\) \{\s*return NextResponse\.json\(\{ error: "Not found\." \}, \{ status: 404 \}\);/);
   });
 
   it("the screens draw nothing of pictures, and ask for none, unless the server says the part is on", () => {
@@ -112,7 +121,7 @@ describe("the free plan's line and the Discover row read true with campaigns ope
     expect(read("components/nav/DiscoverDropdown.tsx")).toContain('...(campaignsEnabled() ? [{ key: "campaigns", href: "/campaigns" }] : []),');
     const plans = read("lib/premium/plans.ts");
     expect(plans).toContain('en: "Prayer Campaigns, prayed together",');
-    expect(plans).toContain('de: "Gebetskampagnen, gemeinsam gebetet",');
+    expect(plans).toContain('de: "Gebetsaktionen, gemeinsam gebetet",');
   });
 });
 
@@ -120,11 +129,14 @@ describe("his steps say the same", () => {
   const steps = read("docs/1.9-build/OWNER-STEPS.md");
   const pictures = steps.slice(steps.indexOf("### Pictures. For 1.9.1"), steps.indexOf("### 23. "));
 
-  it("the pictures' steps are for 1.9.1, the copyright agent is for now, and nothing in 1.9 waits on the rest", () => {
+  it("the pictures' own steps are for 1.9.1; the two that are not about campaigns alone are for now; nothing in 1.9 waits on the rest", () => {
     expect(pictures).toContain("fully launch campaign in version 1.9. In version 1.9.1, we'll include those\nextra legal additions.");
-    expect(pictures.replace(/\s+/g, " ")).toContain("**Nothing in 1.9 waits on P1, P2, P4 or P5.**");
-    for (const step of ["P1", "P2", "P4", "P5"]) expect(pictures, step).toContain(`**${step} (for 1.9.1). `);
+    expect(pictures.replace(/\s+/g, " ")).toContain("**Nothing in 1.9 waits on P1, P4 or P5.**");
+    for (const step of ["P1", "P4", "P5"]) expect(pictures, step).toContain(`**${step} (for 1.9.1). `);
+    expect(pictures).toContain("**P2 (now, when the arbiter says). NCMEC's CyberTipline");
     expect(pictures).toContain("**P3 (now, when the arbiter says). The Copyright Office");
-    expect(pictures).not.toMatch(/\*\*P[1245]\. /);
+    expect(pictures).not.toMatch(/\*\*P[1-5]\. /);
+    // Why P2 is for now, in the steps' own words: readers already add pictures others see.
+    expect(pictures.replace(/\s+/g, " ")).toContain("a profile picture, a profile banner (with Purify Plus) and a photo with a Kitchen review or recipe");
   });
 });

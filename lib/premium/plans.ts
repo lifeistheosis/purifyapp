@@ -248,7 +248,7 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
     "Die täglichen Gebete, die Horen und die Akathiste",
     "Der ganze Kirchenkalender, seine Fasten und der Fastentracker",
     "Dein Tagebuch, nach dem Tag der Kirche, und deine Notizen zu den Versen",
-    "Gebetskampagnen, gemeinsam gebetet",
+    "Gebetsaktionen, gemeinsam gebetet",
   ],
   freeFoot:
     "Keine Werbung. Kein Tracking. Keine überraschenden Sperren. Für jeden, der sie braucht.",
@@ -437,7 +437,7 @@ export const PREMIUM_PAGE_DE: PremiumPageCopy = {
  */
 const CAMPAIGN_FREE_ITEM: Record<string, string> = {
   en: "Prayer Campaigns, prayed together",
-  de: "Gebetskampagnen, gemeinsam gebetet",
+  de: "Gebetsaktionen, gemeinsam gebetet",
 };
 
 /**

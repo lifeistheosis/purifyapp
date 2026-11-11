@@ -392,7 +392,7 @@ Your word on the three, 2026-11-11: "yes these are all fine". They stand as list
 3. Authentication, Sign In / Providers, Email: "Secure email change" is on. It is what makes both addresses confirm, so an account cannot be taken by someone who only reaches the new inbox. Leave it on.
 
 
-### Pictures. For 1.9.1: what campaigns need before they carry pictures (P1, P2, P4, P5). For now: P3
+### Pictures. For 1.9.1: what campaigns need before they carry pictures (P1, P4, P5). For now: P2 and P3
 
 Your word, 2026-11-11 about 14:43 UTC: "So this is the plan. We're gonna
 fully launch campaign in version 1.9. In version 1.9.1, we'll include those
@@ -400,11 +400,15 @@ extra legal additions."
 
 So 1.9 opens prayer campaigns to every reader with no pictures: none on the
 website, none in the apps, and no way to add one. **Nothing in 1.9 waits on
-P1, P2, P4 or P5.** They are kept here, ready, for 1.9.1.
+P1, P4 or P5.** They are kept here, ready, for 1.9.1.
 
-**P3 is the one for now.** The copyright agent is not only for pictures: it
-is for everything readers post, their words too. The arbiter tells you
-when.
+**P2 and P3 are for now.** Neither is about campaigns' pictures alone. P3,
+the copyright agent, is for everything readers post, their words too. P2,
+the registration with NCMEC, is about pictures readers add, and readers
+already add three kinds that others see: a profile picture, a profile
+banner (with Purify Plus) and a photo with a Kitchen review or recipe.
+(Asked of purifyapp.net on 2026-11-11: all three take pictures today.) The
+arbiter tells you when.
 
 For the record, your earlier word ("rec yes to all", 2026-11-10 about 16:45
 UTC) had pictures open once P1 to P3 were done, with PhotoDNA (P4) joining
@@ -451,15 +455,17 @@ can only check pictures (about 20 minutes).**
    you do it: pictures are switched off in the code, and while they are
    off the server never uses the key.
 
-**P2 (for 1.9.1). NCMEC's CyberTipline: register Purify as a provider (one
-email, about 10 minutes).** NCMEC's page: US law requires a US service that
+**P2 (now, when the arbiter says). NCMEC's CyberTipline: register Purify as
+a provider (one email, about 10 minutes).** NCMEC's page: US law requires a US service that
 becomes aware of apparent child sexual abuse material on its systems to
 report it to NCMEC's CyberTipline, and a provider who wants to register
 writes to espteam@ncmec.org.
 1. From the company's address, write to espteam@ncmec.org: Purify Orthodox
    LLC; what Purify is (an Orthodox prayer and Scripture app and website,
-   purifyapp.net); that readers will be able to add pictures to prayer
-   campaigns; and that you ask to register to report to the CyberTipline.
+   purifyapp.net); that readers can add pictures others see (a profile
+   picture, a profile banner, a photo with a recipe or a review) and will
+   later be able to add pictures to prayer campaigns; and that you ask to
+   register to report to the CyberTipline.
 2. Send the arbiter what NCMEC answers about how to report, never a login
    or a password. The code's path for such a picture is not relied on
    until their guidance is written into it.
@@ -505,7 +511,7 @@ alone first is built with 1.9.1: today that switch is for every reader or
 for none (`CAMPAIGN_PARTS.pictures` in `lib/campaigns/parts.ts`). The
 arbiter gives you the moment; what you do then is below.
 
-Before that day: P1 and P2 done and sent back. Without the key on Render
+Before that day: P1 done and sent back, and P2 already sent. Without the key on Render
 (P1, step 7) a campaign shows no way to add a picture, and P5 waits.
 
 1. In a browser, open purifyapp.net and sign in as yourself. Not in the
@@ -534,8 +540,8 @@ Tell the arbiter the result at once. 1.9.1's store builds are cut with
 pictures only on "picture checked". On anything else pictures stay off for
 every reader, and the builds are cut without them.
 
-Send back, now: "P3 done". With 1.9.1: "P1 done", "P2 sent", "P4 applied",
-and for P5 "picture checked" or what the screen said.
+Send back, now: "P2 sent" and "P3 done". With 1.9.1: "P1 done", "P4
+applied", and for P5 "picture checked" or what the screen said.
 
 ### 23. Do iPhone purchases reach your account? Done
 

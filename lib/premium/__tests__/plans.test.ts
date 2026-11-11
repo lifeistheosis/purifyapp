@@ -190,7 +190,7 @@ describe("getPremiumPlan", () => {
     const expected = campaignsEnabled() ? 1 : 0;
     for (const [locale, needle] of [
       ["en", "Prayer Campaigns"],
-      ["de", "Gebetskampagnen"],
+      ["de", "Gebetsaktionen"],
     ] as const) {
       const shown = getPremiumPlan(locale).freeItems.filter((i) =>
         i.includes(needle),
@@ -208,7 +208,7 @@ describe("getPremiumPlan", () => {
       PREMIUM_PLAN_EN.freeItems.some((i) => i.includes("Prayer Campaigns")),
     ).toBe(true);
     expect(
-      PREMIUM_PLAN_DE.freeItems.some((i) => i.includes("Gebetskampagnen")),
+      PREMIUM_PLAN_DE.freeItems.some((i) => i.includes("Gebetsaktionen")),
     ).toBe(true);
   });
 });

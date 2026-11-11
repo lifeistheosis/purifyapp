@@ -5021,3 +5021,47 @@ tokens, so the card follows them as it follows the palettes, by the code
 and not by a picture. The other sixteen files that ask through the dialog
 were not each opened: it is one component, and what changed is its card's
 ground.
+
+## 43. German's one name, and P2 for now (the arbiter, 2026-11-11 about 15:28 UTC)
+
+**German.** The arbiter, to the two names of 41.4: "one word for campaigns
+everywhere, the one the campaign pages themselves use, in the plan's line
+and the Discover row." The campaigns' own pages say "Gebetsaktion", and
+have since July (59 lines). Four lines said "Gebetskampagne": the free
+plan's line, and the three notices a creator or a reader is sent (approved,
+an update, removed). All four say "Gebetsaktion" now, and so does the
+plans page, which keeps its own German (`lib/premium/plans.ts`, two
+places); the Discover row already did. Held by
+`lib/campaigns/__tests__/oneName.test.ts` (3 cases, each failing on the old
+words): no line the app says in German calls it a Kampagne.
+
+**Not changed, and named to the arbiter: the Privacy page's German**
+(`components/legal/PrivacyText.tsx`, 11 lines) says "Gebetskampagnen" and
+"Kampagne". It is a text he signed. So German has one name in everything
+the app says and another on that one page, until he says otherwise.
+
+**P2.** The arbiter: profile pictures and banners are already public, so
+P2 is put to him now, not in 1.9.1. Asked of purifyapp.net at 15:48 UTC,
+with nothing sent: the profile picture's route, the banner's and the
+Kitchen's photo route each answer 401 (open, and asking who you are), and
+July's campaign image route answers 404 (closed). So readers add three
+kinds of picture that others see today; the Kitchen's photo, with a review
+or a recipe, is the third, and was not in 41.4.
+
+His steps now read so (`OWNER-STEPS.md`, the Pictures section): P2 is
+marked "now, when the arbiter says", beside P3, with the reason in one
+sentence; "Nothing in 1.9 waits on P1, P4 or P5"; and the email P2 has him
+write says what is true today (readers can add those three, and will later
+be able to add pictures to campaigns). P5's "before that day" and the last
+"send back" line follow. Admin's three lines that say pictures come "with
+P1, P2, P4 and P5" (R5c, the release checklist, the review notes) still
+read true: pictures wait on all four, and P2 is only done sooner.
+
+`noPicturesIn19.test.ts` (9 cases now) holds the headings and the reason,
+and one thing more that "pictures off everywhere" should have named from
+the start: July's own route for a campaign's picture
+(`app/api/campaigns/image`) is closed with the rest of July's routes.
+
+**Checked (UTC).** Typecheck 0, lint 0 and the whole unit suite 13,703 of
+13,703 at 15:53. No export was cut for this push: the German lines are each
+one letter shorter than they were, and nothing else a reader sees changed.
