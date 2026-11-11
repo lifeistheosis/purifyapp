@@ -1182,13 +1182,15 @@ serves. Of the thirty profiles the feed's first screens lead to, two have a
 long dash, both in "About me": the checker lists each as a reader's own
 words and fails neither sheet.
 
-### The graphite card's lit corner on four more palettes
+### The graphite card's lit corner: written, then taken out
 
-The arbiter's yes of 15:36, written and tested before the word of 17:00 and
-sent as it stood. Candlelight was given a rule for the corner when the
-checker found "~5 min" there (above, "The nine, mended"). By the same
-arithmetic Dark's faint ink read 4.42:1 at the corner and Monastery's,
-Councils' and Cappadocian's 4.36, 4.27 and 4.26. On a graphite card Dark
-draws its faint shares at 52 percent (4.65) and the three at 60 (4.88, 4.77,
-4.76). True black draws the card flat. `faintText.test.ts` holds all five at
-the corner.
+The arbiter's yes of 15:36 was for two lines that hold the graphite card's
+lit corner on Dark and on Monastery, Councils and Cappadocian, as
+Candlelight's rule does ("The nine, mended", above). By arithmetic Dark's
+faint ink reads 4.42:1 at the corner's lightest point and the three's 4.36,
+4.27 and 4.26; no word of the app stands there today. They were written and
+pushed (26764883). The arbiter's word of 17:00 was to drop them: "no word
+stands there; not a fault". I read that message after the push, and took
+them out again in the next commit. The rules and their test are in
+26764883 for whoever wants them after 1.9: Dark's faint shares at 52
+percent on a graphite card (4.65), the three's at 60 (4.88, 4.77, 4.76).

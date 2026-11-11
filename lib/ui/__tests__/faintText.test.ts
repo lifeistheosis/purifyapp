@@ -188,10 +188,8 @@ describe("faint text on a graphite card and on the saint web's sheet", () => {
   const WRITTEN = sharesWritten().filter((share) => share > 40 && share < 70);
   /** The shares a palette draws otherwise on one ground, and the share it draws them at there. */
   const scoped = (mode: string, scope: string): { shares: number[]; at: number } => {
-    // The palette anywhere in the rule's list: the house's three share one rule.
-    const who = mode === "default" ? "html:not\\(\\[data-reading-mode\\]\\)" : `html\\[data-reading-mode="${mode}"\\]`;
     const m = new RegExp(
-      `:where\\((?:[^()]|\\([^()]*\\))*?${who}(?:[^()]|\\([^()]*\\))*\\) :where\\(${scope}\\) (?::is\\(([^)]*)\\)|\\.text-paper\\\\\\/(\\d+)) \\{\\s*color: color-mix\\(in oklab, var\\(--color-paper\\) (\\d+)%`,
+      `:where\\(html\\[data-reading-mode="${mode}"\\](?:[^()]|\\([^()]*\\))*\\) :where\\(${scope}\\) (?::is\\(([^)]*)\\)|\\.text-paper\\\\\\/(\\d+)) \\{\\s*color: color-mix\\(in oklab, var\\(--color-paper\\) (\\d+)%`,
     ).exec(BARE);
     if (!m) throw new Error(`no rule for faint text on ${scope} on ${mode}`);
     const shares = m[1] ? [...m[1].matchAll(/\.text-paper\\\/(\d+)/g)].map((c) => Number(c[1])) : [Number(m[2])];
@@ -211,29 +209,18 @@ describe("faint text on a graphite card and on the saint web's sheet", () => {
     expect(lum(litCorner)).toBeGreaterThan(lum(colours("default").soft));
   });
 
-  // Every dark palette that wears the card as it is typed in. Candlelight was found by the checker ("~5 min" on a
-  // row of Prayers' card); Dark and the house's three fall short at the same corner by the same arithmetic, and
-  // were given their rules the same day (the arbiter's yes, 2026-11-11).
-  const LIT: Mode[] = ["default", "candlelight", "monastery", "councils", "cappadocian"];
-  it.each(LIT)("%s: every share the app writes above 40 and under 70 percent is 4.5:1 or more at a graphite card's lightest point", (mode) => {
-    const { paper } = colours(mode);
-    const rule = scoped(mode, "\\.lm-card");
+  it("candlelight: every share the app writes above 40 and under 70 percent is 4.5:1 or more at a graphite card's lightest point", () => {
+    const { paper } = colours("candlelight");
+    const rule = scoped("candlelight", "\\.lm-card");
     const short: string[] = [];
     for (const share of WRITTEN) {
-      const at = (rule.shares.includes(share) ? rule.at : drawn(mode, share)) / 100;
+      const at = (rule.shares.includes(share) ? rule.at : drawn("candlelight", share)) / 100;
       const r = ratio(mix(paper, litCorner, at), litCorner);
       if (r < 4.5) short.push(`text-paper/${share} drawn at ${Math.round(at * 100)}% on the lit corner: ${r.toFixed(2)}:1`);
     }
     expect(short, short.join("\n")).toEqual([]);
     // The page's own share is what fell short there: without the rule this is the row that was found.
-    expect(ratio(mix(paper, litCorner, drawn(mode, 50) / 100), litCorner)).toBeLessThan(4.5);
-    // Every share the page draws under the card's own is named: a fainter word is never drawn stronger than a less faint one beside it.
-    const unnamed = WRITTEN.filter((share) => drawn(mode, share) < rule.at && !rule.shares.includes(share));
-    expect(unnamed, `on ${mode}, drawn under ${rule.at}% and not named on the card`).toEqual([]);
-  });
-
-  it("true black draws the card flat, so it has no lit corner to hold", () => {
-    expect(BARE).toMatch(/html\[data-reading-mode="black"\] \.lm-card,\s*html\[data-reading-mode="black"\] \.lm-violet \{\s*background: var\(--color-night-soft\) !important;/);
+    expect(ratio(mix(paper, litCorner, drawn("candlelight", 50) / 100), litCorner)).toBeLessThan(4.5);
   });
 
   it("light: the line under a saint's name is 4.5:1 or more on the web's sheet where it is darkest", () => {
@@ -256,8 +243,6 @@ describe("faint text on a graphite card and on the saint web's sheet", () => {
     const from = block.indexOf("@layer utilities {");
     const layer = block.slice(from, block.indexOf("\n}\n", from));
     expect(layer).toContain(':where(html[data-reading-mode="candlelight"]) :where(.lm-card) :is(');
-    expect(layer).toContain(":where(html:not([data-reading-mode])) :where(.lm-card) :is(");
-    expect(layer).toContain(':where(html[data-reading-mode="monastery"], html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) :where(.lm-card) :is(');
     expect(layer).toContain(':where(html[data-reading-mode="parchment"]:not([data-look])) :where(.saint-web-card) .text-paper\\/60');
     expect(layer).not.toMatch(/!important/);
   });
