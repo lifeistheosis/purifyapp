@@ -72,3 +72,40 @@ describe("every text he named", () => {
     expect(layer).toContain("lineBoxes(found.el,");
   });
 });
+
+// Build 93 note 17: "Refine the works note system, and it should be very
+// similar to the Bible's UI when you hold down a verse." His pictures showed
+// a boxed field inside the text with a resize grip, "Esc to close" on a phone,
+// and the old sheet laid over the note's own buttons.
+describe("a note on words of a text", () => {
+  const row = read("components/saints/ParagraphRow.tsx");
+  const tools = read("components/reading/SelectionTools.tsx");
+  const sheet = read("components/reading/WordsNoteSheet.tsx");
+
+  it("is written in the house's own sheet, the one a verse's note is written in", () => {
+    expect(sheet).toContain("<JournalComposer");
+    expect(read("components/bible/VerseNoteSheet.tsx")).toContain("<JournalComposer");
+    for (const code of [row, tools]) expect(code).toContain("<WordsNoteSheet");
+  });
+
+  it("is never a field in the text, and carries no keyboard's hints", () => {
+    for (const code of [row, tools]) {
+      expect(code).not.toContain("<textarea");
+      expect(code).not.toContain("bible.escToClose");
+      expect(code).not.toContain("bible.noteSaveHint");
+      expect(code).not.toContain("resize-y");
+    }
+  });
+
+  it("opens with nothing laid over it: the card and the handles step aside while it is written", () => {
+    expect(tools).toMatch(/\{sel &&\s+mode === "tools" &&\s+createPortal\(/);
+    expect(tools).toContain('sel.touch && !sel.native && first && last && mode === "tools"');
+    // And a tap inside the sheet is not a tap elsewhere: the selection stays until the note is done.
+    expect(tools).toContain('busy.current = mode === "note" || picture !== null || naming !== undefined;');
+  });
+
+  it("says what it is a note on", () => {
+    expect(read("components/journal/JournalComposer.tsx")).toContain('draft.editing?.startsWith("note:words:") ? "saints.words.note" : "bible.notePlaceholder"');
+  });
+});
+

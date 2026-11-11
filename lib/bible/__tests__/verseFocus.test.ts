@@ -139,7 +139,7 @@ describe("the note's sheet", () => {
 
   it("asks for a note in a note's form, its placeholder legible, its Open 44px wide", () => {
     // A note's field asks for a note; an entry is a page, whose words ask for what is on the heart.
-    expect(COMPOSER).toContain('placeholder={t("bible.notePlaceholder")}');
+    expect(COMPOSER).toContain('placeholder={t(draft.editing?.startsWith("note:words:") ? "saints.words.note" : "bible.notePlaceholder")}');
     expect(COMPOSER).toContain('<PageBlocks editor={editor} placeholder={t("journal.composer.placeholder")} />');
     expect(COMPOSER).toContain("placeholder:text-paper/55");
     expect(COMPOSER).not.toContain("placeholder:text-paper/35");

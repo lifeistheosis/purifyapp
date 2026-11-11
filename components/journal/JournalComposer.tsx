@@ -213,7 +213,8 @@ export function JournalComposer({
               rows={6}
               onChange={(e) => onChange({ ...draft, body: e.target.value })}
               // A verse's note asks for a note (1.9).
-              placeholder={t("bible.notePlaceholder")}
+              // A note on words of another text says so (components/reading/WordsNoteSheet.tsx).
+              placeholder={t(draft.editing?.startsWith("note:words:") ? "saints.words.note" : "bible.notePlaceholder")}
               // The placeholder at the house's caption share, legible on every
               // palette (55%; Light's own share in app/globals.css), not 35%.
               className="block min-h-[40vh] w-full resize-none bg-transparent font-serif text-body leading-[1.7] text-paper placeholder:text-paper/55 focus:outline-none"

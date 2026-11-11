@@ -22,6 +22,7 @@ import { shareLink } from "@/lib/site";
 import { copyText } from "@/lib/ui/copyText";
 import { createLiftGuard } from "@/lib/ui/liftGuard";
 
+const WordsNoteSheet = dynamic(() => import("./WordsNoteSheet").then((m) => m.WordsNoteSheet), { ssr: false });
 const PictureSheet = dynamic(() => import("@/components/share/PictureSheet").then((m) => m.PictureSheet), { ssr: false });
 
 /**
@@ -154,22 +155,22 @@ export function SelectionTools() {
 
   // ── The card's own state ───────────────────────────────────────────────
   const [mode, setMode] = useState<"tools" | "note">("tools");
-  const [draft, setDraft] = useState("");
   const [copied, setCopied] = useState<"words" | "link" | null>(null);
   const [naming, setNaming] = useState<string | null | undefined>(undefined);
   const [picture, setPicture] = useState<{ text: string; name: string; work: string } | null>(null);
+
+  // A sheet of the selection's own is up (its note, its picture, the colours' names):
+  // a tap inside it is not a tap elsewhere, and the selection stays.
+  const busy = useRef(false);
+  useEffect(() => {
+    busy.current = mode === "note" || picture !== null || naming !== undefined;
+  }, [mode, picture, naming]);
 
   const close = useCallback(() => {
     setSel(null);
     setMode("tools");
     setCopied(null);
   }, []);
-
-  // The note opens ready to be written.
-  const noteRef = useRef<HTMLTextAreaElement>(null);
-  useEffect(() => {
-    if (mode === "note") noteRef.current?.focus();
-  }, [mode]);
 
   // ── A finger ───────────────────────────────────────────────────────────
   useEffect(() => {
@@ -191,8 +192,8 @@ export function SelectionTools() {
         clearHold();
         return;
       }
-      // The card and the handles are the selection's own.
-      if (target?.closest("[data-mk-ui]")) return;
+      // The card and the handles are the selection's own, and so is a sheet it opened.
+      if (target?.closest("[data-mk-ui]") || busy.current) return;
       const found = target?.closest("a, button, textarea, input") ? null : hostOf(target);
       g.outside = { x: p.clientX, y: p.clientY, moved: false };
       if (!found) return;
@@ -284,7 +285,7 @@ export function SelectionTools() {
       }
       // A tap anywhere else puts the selection away; a scroll of the page does not.
       const cur = selRef.current;
-      if (cur && !cur.native && g.outside && !g.outside.moved) close();
+      if (cur && !cur.native && !busy.current && g.outside && !g.outside.moved) close();
       g.outside = undefined;
     }
 
@@ -341,13 +342,13 @@ export function SelectionTools() {
     }
 
     function onMouseUp(e: MouseEvent) {
-      if (fromTouch() || (e.target as Element | null)?.closest("[data-mk-ui]")) return;
+      if (fromTouch() || busy.current || (e.target as Element | null)?.closest("[data-mk-ui]")) return;
       // The browser settles its selection after the button lifts.
       window.setTimeout(fromBrowserSelection, 0);
     }
 
     function onMouseDown(e: MouseEvent) {
-      if (fromTouch()) return;
+      if (fromTouch() || busy.current) return;
       const cur = selRef.current;
       const target = e.target as Element | null;
       if (target?.closest("[data-mk-ui]")) {
@@ -360,14 +361,14 @@ export function SelectionTools() {
 
     function onSelectionChange() {
       const cur = selRef.current;
-      if (!cur?.native) return;
+      if (!cur?.native || busy.current) return;
       const picked = window.getSelection();
       if (!picked || picked.isCollapsed) close();
     }
 
     function onClick(e: MouseEvent) {
       const target = e.target as Element | null;
-      if (target?.closest("a, button, [data-mk-ui]")) return;
+      if (busy.current || target?.closest("a, button, [data-mk-ui]")) return;
       const picked = window.getSelection();
       if (picked && !picked.isCollapsed) return;
       const markEl = target?.closest<HTMLElement>("[data-mk-id]");
@@ -398,7 +399,7 @@ export function SelectionTools() {
     }
 
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape" && selRef.current) close();
+      if (e.key === "Escape" && selRef.current && !busy.current) close();
     }
 
     document.addEventListener("mouseup", onMouseUp);
@@ -518,12 +519,11 @@ export function SelectionTools() {
   function toggleKeep() {
     writeMark((m) => ({ ...m, kept: m.kept ? undefined : true }));
   }
-  function saveNote() {
+  function saveNote(written: string) {
     if (!sel) return;
-    const body = draft.trim();
+    const body = written.trim();
     if (asParagraph) writeAt(sel.place, { ...readAt(sel.place), note: body || undefined });
     else writeMark((m) => ({ ...m, note: body || undefined }));
-    setMode("tools");
   }
   async function copyWords() {
     if (!sel) return;
@@ -621,6 +621,7 @@ export function SelectionTools() {
         )}
 
       {sel &&
+        mode === "tools" &&
         createPortal(
           <div
             data-mk-ui=""
@@ -639,51 +640,7 @@ export function SelectionTools() {
               data-screen-edge={wide ? undefined : "bottom"}
               className="press-pill-in pointer-events-auto w-full max-w-[20rem] rounded-[26px] border border-paper/15 bg-night/95 px-1.5 pb-1.5 pt-1.5 shadow-[0_12px_32px_rgba(0,0,0,0.55)] backdrop-blur"
             >
-              {mode === "note" ? (
-                <div className="px-2.5 pb-1.5 pt-2">
-                  <p lang="en" dir="ltr" className="mb-2 line-clamp-2 font-serif text-detail italic leading-[1.5] text-paper/60">
-                    {words}
-                  </p>
-                  <textarea
-                    dir="auto"
-                    ref={noteRef}
-                    value={draft}
-                    onChange={(e) => setDraft(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-                        e.preventDefault();
-                        saveNote();
-                      }
-                    }}
-                    placeholder={t("saints.words.note")}
-                    rows={3}
-                    className="w-full resize-none rounded-xl border border-paper/10 bg-paper/[0.05] px-3 py-2 font-sans text-ui leading-[1.55] text-paper outline-none placeholder:text-paper/55"
-                  />
-                  <div className="mt-1.5 flex items-center justify-end gap-1">
-                    {note ? (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDraft("");
-                          if (asParagraph && sel) writeAt(sel.place, { ...readAt(sel.place), note: undefined });
-                          else writeMark((m) => ({ ...m, note: undefined }));
-                          setMode("tools");
-                        }}
-                        className="me-auto min-h-11 px-3 font-sans text-caption text-paper/60 hover:text-paper"
-                      >
-                        {t("common.delete")}
-                      </button>
-                    ) : null}
-                    <button type="button" onClick={() => setMode("tools")} className="min-h-11 px-3 font-sans text-caption text-paper/60 hover:text-paper">
-                      {t("common.cancel")}
-                    </button>
-                    <button type="button" onClick={saveNote} className="min-h-11 rounded-pill bg-paper px-4 font-sans text-caption font-medium text-night">
-                      {t("common.save")}
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <>
+              <>
                   <HighlightPicker
                     active={color}
                     onPick={pickColor}
@@ -727,10 +684,7 @@ export function SelectionTools() {
                     </button>
                     <button
                       type="button"
-                      onClick={act(() => {
-                        setDraft(note ?? "");
-                        setMode("note");
-                      })}
+                      onClick={act(() => setMode("note"))}
                       aria-label={note ? t("bible.editNote") : t("bible.addNote")}
                       aria-pressed={!!note}
                       className={cn(TOOL, note && "bg-paper/12 text-paper")}
@@ -738,13 +692,23 @@ export function SelectionTools() {
                       <Pen size={19} />
                     </button>
                   </div>
-                </>
-              )}
+              </>
             </div>
           </div>,
           document.body,
         )}
 
+      {/* The note, in the house's own sheet, as a verse's is (build 93 note 17). */}
+      {sel && mode === "note" ? (
+        <WordsNoteSheet
+          open
+          words={words}
+          note={note}
+          draftKey={`${sel.host.dataset.mk ?? ""}:${sel.s}:${sel.e}`}
+          onSave={saveNote}
+          onClose={() => setMode("tools")}
+        />
+      ) : null}
       <HighlightNamesSheet open={naming !== undefined} focusId={naming ?? null} onClose={() => setNaming(undefined)} />
       {picture && pictureWords ? (
         <PictureSheet

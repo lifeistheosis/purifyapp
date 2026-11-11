@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { readParagraphAnnotation, useParagraphAnnotation, writeParagraphAnnotation } from "@/lib/saints/annotations";
 import {
@@ -33,6 +34,10 @@ import { cn } from "@/lib/cn";
 import { shareLink } from "@/lib/site";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { MarkedText } from "@/components/reading/MarkedText";
+
+
+// Asked for when a note is first opened: no paragraph carries the sheet until then.
+const WordsNoteSheet = dynamic(() => import("@/components/reading/WordsNoteSheet").then((m) => m.WordsNoteSheet), { ssr: false });
 
 /**
  * One paragraph inside a saint's writing. Mirrors the affordances of the
@@ -141,12 +146,10 @@ export function ParagraphRow({
  const sectionBookmarked = bookmarks.isBookmarked(sectionLocator);
 
  const [editing, setEditing] = useState(false);
- const [draft, setDraft] = useState(ann.note ?? "");
  const [copied, setCopied] = useState(false);
  const [ctxAnchor, setCtxAnchor] = useState<{ x: number; y: number } | null>(
  null,
  );
- const textareaRef = useRef<HTMLTextAreaElement>(null);
 
  // A finger on the paragraph: where it came down and when, to tell a tap
  // from a hold (the selection tool's) and from a scroll.
@@ -231,13 +234,6 @@ export function ParagraphRow({
  if (dy > SCROLL_SLOP_PX || dx > SCROLL_SLOP_PX * 2) cancelPress();
  }
 
- useEffect(() => {
- if (!editing) return;
- const el = textareaRef.current;
- if (!el) return;
- el.focus();
- el.setSelectionRange(el.value.length, el.value.length);
- }, [editing]);
 
  async function copyToClipboard(value: string) {
  try {
@@ -300,15 +296,6 @@ export function ParagraphRow({
  }
  function closeContextMenu() {
  setCtxAnchor(null);
- }
-
- function saveNote() {
- ann.setNote(draft);
- setEditing(false);
- }
- function cancelEdit() {
- setDraft(ann.note ?? "");
- setEditing(false);
  }
 
  function toggleSectionBookmark() {
@@ -475,10 +462,7 @@ export function ParagraphRow({
  </button>
  <button
  type="button"
- onClick={() => {
- setDraft(ann.note ?? "");
- setEditing((v) => !v);
- }}
+ onClick={() => setEditing(true)}
  aria-label={ann.note ? t("bible.editNote") : t("bible.addNote")}
  aria-pressed={editing}
  title={ann.note ? t("bible.editNote") : t("bible.addNote")}
@@ -518,64 +502,18 @@ export function ParagraphRow({
  </div>
  ))}
 
- {/* Note editor */}
- {editing && (
- <div className="mt-2 rounded-md border border-paper/25 bg-paper/[0.05] p-3">
- <textarea dir="auto"
- ref={textareaRef}
- value={draft}
- onChange={(e) => setDraft(e.target.value)}
- onKeyDown={(e) => {
- if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
- e.preventDefault();
- saveNote();
- } else if (e.key === "Escape") {
- e.preventDefault();
- cancelEdit();
- }
- }}
- placeholder={t("saints.paragraphNotePlaceholder")}
- rows={3}
- className="w-full bg-transparent border-0 outline-none resize-y font-sans text-ui text-paper placeholder:text-paper/55 leading-[1.55]"
+ {/* The note is written in the house's own sheet, as a verse's is (build 93
+ note 17): not a boxed field in the text, and no keyboard's hints. */}
+ {editing ? (
+ <WordsNoteSheet
+ open
+ words={text}
+ note={ann.note}
+ draftKey={`saint:${saintSlug}:${workSlug}:${sectionN}:${paragraphIdx}`}
+ onSave={(body) => ann.setNote(body)}
+ onClose={() => setEditing(false)}
  />
- <div className="mt-2 flex items-center justify-between gap-2">
- <span className="font-sans text-eyebrow text-paper/40">
- {draft.length > 0
- ? t("bible.noteSaveHint")
- : t("bible.escToClose")}
- </span>
- <div className="flex items-center gap-2">
- {ann.note && (
- <button
- type="button"
- onClick={() => {
- ann.setNote("");
- setDraft("");
- setEditing(false);
- }}
- className="font-sans text-caption text-paper/55 hover:text-paper transition-colors px-2 py-1"
- >
- {t("common.delete")}
- </button>
- )}
- <button
- type="button"
- onClick={cancelEdit}
- className="font-sans text-caption text-paper/55 hover:text-paper transition-colors px-2 py-1"
- >
- {t("common.cancel")}
- </button>
- <button
- type="button"
- onClick={saveNote}
- className="font-sans text-caption font-medium bg-paper text-night rounded-pill px-3 py-1 hover:bg-paper/90 transition-colors"
- >
- {t("common.save")}
- </button>
- </div>
- </div>
- </div>
- )}
+ ) : null}
 
  {ctxAnchor && (
  <VerseContextMenu
@@ -600,10 +538,7 @@ export function ParagraphRow({
  },
  {
  label: ann.note ? t("bible.editNote") : t("bible.addNote"),
- onClick: () => {
- setDraft(ann.note ?? "");
- setEditing(true);
- },
+ onClick: () => setEditing(true),
  },
  ],
  // The colours, as on a verse: each by what it means, a check by
