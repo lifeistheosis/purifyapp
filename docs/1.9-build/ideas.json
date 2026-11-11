@@ -2419,6 +2419,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "Plan and one still sent to the arbiter (627e6af93, notes/build-93/14b-rule-complete-plan.png, checkMock on five palettes); built after the yes. PLAN 13ao."
+  },
+  {
+   "id": "e-build93-note5-event-steps",
+   "section": "Study",
+   "kind": "idea",
+   "title": "An event's steps: the click as each comes to the reading place, each year said once, the map naming its place, the event's own pictures under the steps they show (build 93 note 5)",
+   "from": "edgar",
+   "asked": "2026-11-11",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "Before, each year stood twice, the map named nothing and nothing clicked. Ten pictures placed by their steps' dates (Florence 2, the Fall of Constantinople 8). 3de24512f. PLAN 13ap."
   }
  ]
 }
