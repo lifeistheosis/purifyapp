@@ -523,6 +523,57 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
       if (now.top === null || Math.abs(now.top - rule.top) > 2) home.push(`the link came back ${now.top}px from the top, and was left ${rule.top}px from it`);
       note("Prayers, left by its rule's link: back whole, not brought in again, and where it was left", home, `${r.from} to ${r.to}, ${now.down}px down (was ${rule.down}px), the link ${now.top}px from the top (was ${rule.top}px)`);
     }
+    // Your rule's tile wears the half its page opens on, so its picture
+    // travels into the head of that page, and back into the tile (1.9; the
+    // arbiter's call of 2026-11-11, "let Your rule's tile wear the half the
+    // page will open on (morning or evening), so one picture travels").
+    // Until then the tile wore the Pantocrator at every hour, the head the
+    // half's own icon, and nothing travelled. Both halves, each chosen as a
+    // reader's is: by the rule kept on the device (lib/prayers/myRule.ts,
+    // openingPart), so the walk says the same at any hour.
+    for (const half of ["evening", "morning"]) {
+      await page.evaluate((h) => {
+        const names = [{ kind: "names" }];
+        localStorage.setItem("purify.prayers.mine", JSON.stringify({ v: 1, morning: h === "morning" ? names : [], evening: h === "evening" ? names : [], minutes: { morning: 0, evening: 0 }, updatedAt: "" }));
+        window.dispatchEvent(new CustomEvent("purify:my-rule"));
+      }, half);
+      await sleep(page, 600);
+      const tile = await page.evaluate((h) => {
+        for (const el of document.querySelectorAll("[data-walk-tile]")) el.removeAttribute("data-walk-tile");
+        const picture = document.querySelector(`a[href="/prayers/personal/"] [data-carry="rule:${h}"]`);
+        const a = picture?.closest("a");
+        if (!a) return null;
+        a.scrollIntoView({ block: "center" });
+        a.setAttribute("data-walk-tile", "");
+        return { icon: picture.querySelector("img")?.getAttribute("src") ?? "", wears: [...document.querySelectorAll('a[href="/prayers/personal/"] [data-carry]')].map((el) => el.getAttribute("data-carry")) };
+      }, half);
+      if (!tile) {
+        note(`Your rule's tile, the ${half} half: its picture travelling into the head of its page`, [`no tile on Prayers wears the ${half} half's picture`], "/prayers/");
+        continue;
+      }
+      await sleep(page, 500);
+      r = await walk(page, `rule-${half}`, () => page.locator("[data-walk-tile]").first().click(), { film });
+      const into = judge(r, { old: "route-leave", fresh: "route-settle", to: "/prayers/personal", carried: true });
+      const head = await page.evaluate(() => {
+        const on = document.querySelector(".rule-head-img[data-on]");
+        return { part: on?.getAttribute("data-part") ?? null, takes: [...document.querySelectorAll("[data-carry-into]")].map((el) => el.getAttribute("data-carry-into")), top: Math.round(window.scrollY) };
+      });
+      if (head.part !== half) into.push(`the page opened on its ${head.part} half, and the tile wore the ${half} half`);
+      if (head.takes.length !== 1 || head.takes[0] !== `rule:${half}`) into.push(`the head takes ${JSON.stringify(head.takes)}, not the one picture of the ${half} half`);
+      if (head.top > 2) into.push(`the page opened ${head.top}px down, not at its top`);
+      note(`Your rule's tile, the ${half} half: its picture travelling into the head of its page`, into, `${r.from} to ${r.to}, the tile in ${tile.icon}`);
+      if (film) await sheet(ctx, film, `rule-${half}`, r.stills);
+      r = await walk(page, `rule-${half}-back`, () => page.locator(chevron).first().click(), { film });
+      note(`Your rule's tile, the ${half} half: back, the picture back in its tile`, judge(r, { old: "route-sink", fresh: "route-arrive", to: "/prayers", carried: true }), `${r.from} to ${r.to}`);
+      if (film) await sheet(ctx, film, `rule-${half}-back`, r.stills);
+      await sleep(page, 600);
+    }
+    // The walks after this one meet Prayers as a reader with no rule does.
+    await page.evaluate(() => {
+      localStorage.removeItem("purify.prayers.mine");
+      window.dispatchEvent(new CustomEvent("purify:my-rule"));
+    });
+
     await page.evaluate(() => window.scrollTo(0, 0));
     await sleep(page, 300);
 
