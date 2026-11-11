@@ -1613,6 +1613,15 @@ findings:
       production with his word for the website push; his steps are in
       docs/1.9-build/OWNER-STEPS.md, Anytime, "Android. Do notifications
       reach your phone?".
+      Live on main 2026-11-11 00:51 UTC, his "push 77": a63d37c7a (code
+      only, the same as d0c174672 on the branch; the way back d973feaf0).
+      Checked on purifyapp.net: GET and POST from a stranger answer 403
+      Forbidden, the site's pages 200, Supabase Preview success with
+      nothing to apply. Left to see: his own phone's row and what it
+      showed. Found the same evening (F-51, the Updates 2 chat): the
+      phone's "is Purify blocked" check never answered, so a phone with
+      Purify's notifications switched off read as on; mended on the
+      branch for the next store builds.
     safe_to_automate: false
     review: owner
 
