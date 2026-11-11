@@ -135,7 +135,6 @@ describe("the covers' pictures", () => {
       // Updates 2's search (build 93 note 12): no picture of these saints has
       // passed, and their texts name no saint who has one. Zurbaran's "St
       // Romanus" is a Benedictine monk of that name, not the martyr.
-      "acepsimas-joseph-and-aithalas/life-of-acepsimas": "search: Updates 2, build 93 note 12",
       "marcian-of-cyrrhus/life-of-marcian": "search: Updates 2, build 93 note 12",
       "plato-and-romanus/martyrdom-of-romanus": "search: Updates 2, build 93 note 12",
       "zacchaeus-and-alphaeus/martyrdom-of-zacchaeus-and-alphaeus": "search: Updates 2, build 93 note 12",

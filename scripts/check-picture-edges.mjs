@@ -92,6 +92,20 @@ const ACCEPTED = {
   // are cut inside their frame lines, so none of the page is left; what is light
   // at their edges is the print's own ground, stippled in grey and pale where it
   // is sky, and no cut inside it would keep the figure whole.
+  // Looked at on 2026-11-11, the prints of November (lib/saints/iconRights.ts): the light is the print's own paper.
+  "saints/icons/acindynus-and-companions.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/acepsimas-joseph-and-aithalas.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/galaction-and-episteme.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/patrobas-hermas-linus-gaius-and-philologus.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/martyrs-of-melitene.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/matrona-of-constantinople.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/erastus-olympas-rodion-sosipater-quartus-and-tertius.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/plato-and-romanus.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/proclus-of-constantinople.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/philemon-and-apphia.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/amphilochius-of-iconium.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/paramonus-and-the-370.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/frumentius-of-axum.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
   "saints/icons/chrysogonus.jpg": "a print of 1904: its own stippled ground, pale where it is sky",
   "saints/icons/eugenia-of-rome.jpg": "a print of 1904: its own stippled ground, pale where it is sky",
   "saints/icons/juliana-of-nicomedia.jpg": "a print of 1904: its own stippled ground, pale where it is sky",

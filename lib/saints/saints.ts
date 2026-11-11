@@ -5960,6 +5960,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "acindynus-and-companions",
+    iconUrl: "/saints/icons/acindynus-and-companions.jpg",
     name: "Sts. Acindynus and Companions",
     epithet: "Martyrs of Persia · Acindynus, Pegasius, Aphthonius, Elpidephorus and Anempodistus",
     reposed: "4th century, under Sapor II (Persia)",
@@ -6001,6 +6002,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "acepsimas-joseph-and-aithalas",
+    iconUrl: "/saints/icons/acepsimas-joseph-and-aithalas.jpg",
     name: "Sts. Acepsimas, Joseph and Aithalas",
     epithet: "Martyrs of Persia under King Sapor",
     reposed: "4th century, in the persecution of Sapor II (Persia)",
@@ -6068,6 +6070,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "patrobas-hermas-linus-gaius-and-philologus",
+    iconUrl: "/saints/icons/patrobas-hermas-linus-gaius-and-philologus.jpg",
     name: "Sts. Patrobas, Hermas and Companions",
     epithet: "Apostles of the Seventy · Patrobas, Hermas, Linus, Gaius and Philologus",
     reposed: "1st century",
@@ -6093,6 +6096,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "galaction-and-episteme",
+    iconUrl: "/saints/icons/galaction-and-episteme.jpg",
     name: "Sts. Galaction and Episteme",
     epithet: "Martyrs of Emesa · Husband and wife",
     reposed: "3rd century (Emesa in Phoenicia)",
@@ -6161,6 +6165,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "martyrs-of-melitene",
+    iconUrl: "/saints/icons/martyrs-of-melitene.jpg",
     name: "The Thirty-three Martyrs of Melitene",
     epithet: "Hiero, Hesychius, Nicander and their companions",
     reposed: "Early 4th century, under Diocletian (Melitene in Armenia)",
@@ -6216,6 +6221,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "matrona-of-constantinople",
+    iconUrl: "/saints/icons/matrona-of-constantinople.jpg",
     name: "St. Matrona of Constantinople",
     epithet: "Matrona of Perga · Nun",
     born: "Perga in Pamphylia",
@@ -6232,6 +6238,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "erastus-olympas-rodion-sosipater-quartus-and-tertius",
+    iconUrl: "/saints/icons/erastus-olympas-rodion-sosipater-quartus-and-tertius.jpg",
     name: "Sts. Erastus, Olympas and Companions",
     epithet: "Apostles of the Seventy · Erastus, Olympas, Rodion, Sosipater, Quartus and Tertius",
     reposed: "1st century",
@@ -6493,6 +6500,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "plato-and-romanus",
+    iconUrl: "/saints/icons/plato-and-romanus.jpg",
     name: "Sts. Plato and Romanus",
     epithet: "Martyrs",
     reposed: "Early 4th century, in the Great Persecution",
@@ -6594,6 +6602,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "proclus-of-constantinople",
+    iconUrl: "/saints/icons/proclus-of-constantinople.jpg",
     name: "St. Proclus of Constantinople",
     epithet: "Archbishop of Constantinople",
     reposed: "5th century (Constantinople)",
@@ -6637,6 +6646,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "philemon-and-apphia",
+    iconUrl: "/saints/icons/philemon-and-apphia.jpg",
     name: "Sts. Philemon and Apphia",
     epithet: "Apostles of the Seventy",
     reposed: "1st century",
@@ -6688,6 +6698,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "amphilochius-of-iconium",
+    iconUrl: "/saints/icons/amphilochius-of-iconium.jpg",
     name: "St. Amphilochius of Iconium",
     epithet: "Bishop of Iconium",
     reposed: "Late 4th century (Iconium)",
@@ -6949,6 +6960,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "paramonus-and-the-370",
+    iconUrl: "/saints/icons/paramonus-and-the-370.jpg",
     name: "St. Paramonus and the 370 Martyrs",
     epithet: "Martyrs under Decius",
     reposed: "250, under Decius",
@@ -6980,6 +6992,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "frumentius-of-axum",
+    iconUrl: "/saints/icons/frumentius-of-axum.jpg",
     name: "St. Frumentius of Axum",
     epithet: "Enlightener of Abyssinia · Bishop of Auxumis",
     reposed: "4th century",

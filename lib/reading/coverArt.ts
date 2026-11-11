@@ -174,6 +174,15 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   "barbara-the-great-martyr": bundled("barbara-the-great-martyr.jpg", 22),
   "boniface-of-tarsus": bundled("boniface-of-tarsus.jpg", 16),
   chrysogonus: bundled("chrysogonus.jpg", 25),
+  // November's saints whose own picture came on 2026-11-11, the print for
+  // their day in the Russian Lives of the Saints (lib/saints/iconRights.ts).
+  // Their books wore another saint of their text until then.
+  "acepsimas-joseph-and-aithalas": bundled("acepsimas-joseph-and-aithalas.jpg", 17),
+  "patrobas-hermas-linus-gaius-and-philologus": bundled("patrobas-hermas-linus-gaius-and-philologus.jpg", 17),
+  "erastus-olympas-rodion-sosipater-quartus-and-tertius": bundled("erastus-olympas-rodion-sosipater-quartus-and-tertius.jpg", 22),
+  "proclus-of-constantinople": bundled("proclus-of-constantinople.jpg", 30),
+  "amphilochius-of-iconium": bundled("amphilochius-of-iconium.jpg", 30),
+  "frumentius-of-axum": bundled("frumentius-of-axum.jpg", 30),
   "eugenia-of-rome": bundled("eugenia-of-rome.jpg", 25),
   "juliana-of-nicomedia": bundled("juliana-of-nicomedia.jpg", 24),
   "lucia-of-syracuse": bundled("lucia-of-syracuse.jpg", 30),
@@ -264,21 +273,12 @@ export const WORK_ART: Readonly<Record<string, CoverArt>> = {
   "john-cassian/conferences": bundled("moses-the-black.v2.jpg", 27),
   "john-cassian/institutes": COVER_ART["pachomius-the-great"],
   // Build 93 note 18 ("every work wears a picture", 2026-11-11): November's
-  // books whose saints have no picture yet wear, by the same rule, a saint of
-  // their own text who has one, or a council's picture for one of its Fathers.
-  // The Apostle Paul for the two books of names, which come from his letters
-  // (Romans 16, 2 Timothy 4); St John Chrysostom for St Proclus, whose Life
-  // tells of John's deposition and the bringing home of his relics; St
-  // Athanasius for St Frumentius, whom he made bishop and whose story he tells
-  // in his Apology; the Apostle John for St Victorinus's On the Creation of
-  // the World, which reads his Gospel and his Apocalypse; and the council of
-  // 381 for St Amphilochius, one of its Fathers. Each stays the book's alone.
-  "erastus-olympas-rodion-sosipater-quartus-and-tertius/their-names-in-scripture": COVER_ART["apostle-paul"],
-  "patrobas-hermas-linus-gaius-and-philologus/their-names-in-scripture": COVER_ART["apostle-paul"],
-  "proclus-of-constantinople/life-of-proclus": COVER_ART["john-chrysostom"],
-  "frumentius-of-axum/life-of-frumentius": COVER_ART["athanasius-the-great"],
+  // a book whose saint has no picture yet wears, by the same rule, a saint of
+  // its own text who has one: the Apostle John for St Victorinus's On the
+  // Creation of the World, which reads his Gospel and his Apocalypse. It stays
+  // the book's alone. (Five November books stood here until their saints'
+  // own pictures came, 2026-11-11.)
   "victorinus-of-pettau/on-the-creation-of-the-world": COVER_ART["apostle-john"],
-  "amphilochius-of-iconium/life-of-amphilochius": COUNCIL_COVERS["first-constantinople"],
 };
 
 /** The settled picture for a book's saint, or null for the plate alone. */
