@@ -333,3 +333,28 @@ before anything was fetched, and Commons was asked at most once a minute.
   px; its new opt-in --detail stages up to 3840 px. The Ten Martyrs and
   Nicomedia gain most (1.6 times the pixels); the two Dionysiou frescoes gain
   little, since Commons serves them at 960 px at most.
+
+## Push 3, the last three and the titles (2026-11-11)
+
+On the arbiter's word of 12:22 UTC (the gate lets a saint through without a
+picture only on a permission, so the three on the plate go the way December's
+four went: a detail of their own picture that shows the saints and not the
+killing). Still: `january-saints/03-micaiah-and-the-sinai-fathers.png`.
+
+- **The Fathers slain at Sinai and Raithu** wear a detail of their print in
+  the Lives (no. 05141): three of them lying at rest, their faces and haloes,
+  with nothing of the slaying in it.
+- **The Prophet Micaiah** stays on the plate, and the question is the
+  arbiter's. His one old picture is Christoph Weigel's plate of 1695 (Commons'
+  second file of it is the same plate, small), and in it Sedecias's fist is on
+  the prophet's own face, so no detail of him alone leaves out the blow.
+- **St George the Chozebite** moves to permission: his picture is a wall
+  painting in the cave of the Prophet Elijah at his own monastery in the Wadi
+  Qelt, photographed by Britchi Mirela in 2014 under CC BY-SA 4.0. The letter's
+  facts are in docs/1.9-build/ICON-PERMISSIONS.md, and his row in
+  everySaintAPicture.test.ts says "permission".
+- **January's three books keep their short section titles** and the spec's
+  length refusal (the arbiter's word of 12:24 UTC, which replaced the titles
+  line of 12:22): they are our labels naming the place in each book, never
+  the editions' own headings, which are not carried, and the verbatim text
+  under them is untouched.

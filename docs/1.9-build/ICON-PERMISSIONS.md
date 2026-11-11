@@ -282,6 +282,33 @@ each).
 - **A photograph:** none was found. He reposed in 1924; a photograph of him
   published before 1929 would be free, but none is shown anywhere read.
 
+## St George the Chozebite (died in the 7th century)
+
+The January chat, 2026-11-11, on the arbiter's word of 12:22 UTC. No picture
+of him in the public domain was found (the Russian Lives of the Saints of
+1903 to 1911 picture no one of his name on his day, and the Menologion of
+Basil II has no page for him), so he waits here.
+
+- **The picture:** a wall painting of him in the cave of the Prophet Elijah
+  at the Monastery of St George of Choziba in the Wadi Qelt, photographed on
+  23 October 2014. Commons holds the enlarged fragment that shows him,
+  https://commons.wikimedia.org/wiki/File:%D0%93%D0%B5%D0%BE%D1%80%D0%B3%D0%B8%D0%B9_%D0%A5%D0%BE%D0%B7%D0%B5%D0%B2%D0%B8%D1%82_George_of_Choziba.jpg,
+  cut from the whole photograph,
+  https://commons.wikimedia.org/wiki/File:Palestine,_Valea_Hozevei._Manastirea_Sfantul_Gheorghe._Grota_Sfantului_Proroc_Ilie._Pictura_pe_peretele_grotei._(Octombrie_2014).jpg
+  (its caption, in Romanian: "Manastirea Sfantul Gheorghe. Grota Sfantului
+  Proroc Ilie. Pictura pe peretele grotei").
+- **Made by:** the painting: its painter and its date, not found. The
+  photograph: Britchi Mirela, under CC BY-SA 4.0 (uploaded to Commons by the
+  user Apr1, 2024). The house tool's licence gate does not pass CC BY-SA, and
+  a cut of it would have to carry the same licence.
+- **To write to:** the monastery, which is the Greek Orthodox Patriarchate of
+  Jerusalem's: its own address, not found. Britchi Mirela: not found beyond
+  her name on the Commons page.
+- **For the letter:** two permissions are needed: the monastery's, for its
+  painting (unless the painting can be shown to be old enough to be free),
+  and the photographer's, for her photograph without the share-alike terms,
+  or else her name and the CC BY-SA licence shown with the picture.
+
 ## Still searched, not yet on this list
 
 Two older saints may yet have a free picture, and are named here so the

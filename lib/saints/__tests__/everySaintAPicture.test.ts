@@ -64,12 +64,11 @@ const WAITING: Record<string, string> = {
   "zacchaeus-and-alphaeus": "search: the November and December chat",
   "irenarchus-and-the-seven-women": "search: the November and December chat",
   "elias-of-murom": "search: the November and December chat",
-  // January's saints (1.9): nineteen took their pictures in the January
-  // chat's push 2 (docs/1.9-build/notes/january-saints.md); these three have
+  // January's saints (1.9): twenty took their pictures in the January chat's
+  // pushes 2 and 3 (docs/1.9-build/notes/january-saints.md); these two have
   // none that passes.
   "prophet-micaiah": "search: the January chat found none (Weigel's engraving of 1695 shows him struck)",
-  "george-the-chozebite": "search: the January chat found none (Commons' one photograph is CC BY-SA, refused)",
-  "fathers-of-sinai-and-raithu": "search: the January chat found none (their one old picture shows them slain, call 30)",
+  "george-the-chozebite": "permission: his monastery's wall painting, photographed by Britchi Mirela (docs/1.9-build/ICON-PERMISSIONS.md)",
 };
 
 /** The saints whose pages have no picture: no entry of the saint names one (a saint may stand in the registry more than once). */

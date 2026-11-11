@@ -8175,6 +8175,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "fathers-of-sinai-and-raithu",
+    iconUrl: "/saints/icons/fathers-of-sinai-and-raithu.jpg",
     name: "The Fathers Slain at Sinai and Raithu",
     epithet: "Monks and martyrs of Mount Sinai and Raithu",
     reposed: "273, about 373, or the 5th century, by differing accounts",

@@ -137,6 +137,7 @@ const ACCEPTED = {
   "saints/icons/anastasius-the-persian.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
   "saints/icons/clement-of-ancyra.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
   "saints/icons/xenia-of-rome.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/fathers-of-sinai-and-raithu.jpg": "a print of the Lives of the Saints (before 1911): its own ground, pale where the haloes and the robes meet the edge",
   // Looked at on 2026-10-31, the Fall of Constantinople's gallery (the owner's note 84): the light is the work's own.
   "history/media/fall-of-constantinople-zonaro-gun.v1.jpg": "Zonaro's painted sky: a white cloud over the banners, at the top left; a cut would lose the banners or the horsemen",
   // Kept on the website for the 1.7 apps, which ask for these by name; 1.7.1
