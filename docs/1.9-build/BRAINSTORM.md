@@ -2,6 +2,8 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
+**Build 93, note 13 (his word, 2026-11-11 about 01:37 UTC, a screenshot of St Cyprian's On the Mortality with "Highlight paragraph"):** "allow you to quote sentences and highlight whichever section or whichever word you want in the actual work itself, so it doesn't just highlight the whole paragraph." (`notes/build-93.md`, note 13).
+
 **Every saint has an icon (his word, 2026-11-11 about 01:35 UTC, build 93 note 12, a screenshot of St Thomas on the plate):** "Ensure every single saint has a icon photo." The goal is no saint on the plate; modern icons still need a painter's or monastery's written permission (his word of 2026-11-10), so those wait for letters he sends (`notes/build-93.md`, note 12).
 
 **The tithe on Support this work (his word, 2026-11-11 about 01:34 UTC, answering the arbiter's question):** "editing the settings. Well, you don't have to be too specific on the percentages. Just make it clear that, like, where the profits are going. A couple of minutes, it's going to" (the message ends there). No percentage, no named parish (`notes/build-93.md`, note 10).

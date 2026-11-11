@@ -162,3 +162,11 @@ His new word is the goal: no saint on the plate. Who has what:
 - The December chat: the four martyrs take a detail of their own icon that shows the saints and not the killing (both of his words kept: an icon for every saint, and no killing on a first picture).
 - Admin, from Updates 2's list: a short letter per painter or monastery asking written permission to show that icon in the app and on the website with their credit, for him to send himself; a fee, if asked, comes to him.
 - Until a permission arrives in writing, that saint keeps the plate (his rule of 2026-11-10 stands for modern icons).
+
+### 13. In a Father's work, highlight and quote any words, not only the whole paragraph (2026-11-11 about 01:37 UTC)
+
+His words: "allow you to quote sentences and highlight whichever section or whichever word you want in the actual work itself, so it doesn't just highlight the whole paragraph."
+
+Screenshot: `build-93/13-works-highlight-paragraph.png` (St Cyprian, On the Mortality, chapter 2: a tapped paragraph drawn in a thin box, and the sheet "Highlight paragraph", seven colours, copy, link, keep, note; another app's floating video at the top right is hidden in the copy kept here).
+
+Who has it: the Fable voices chat, as the first part of its plan (highlight and share on every historical text, no spend, fits 1.9), started now on the arbiter's go while the voices themselves wait for his call. What it asks: the reader selects any words (a word, a sentence, a run across lines) in a Father's work, and in the lives, councils, theology and history the plan names, and highlights them, quotes them, keeps them, shares them as a picture or writes a note on them; a whole paragraph stays one tap away. A highlight is kept by its place in the text so it survives a mended typo; it syncs once his sign-off on the annotations migration is in (its SQL to him in the chat), and stays on the phone until then. The tapped paragraph is shown the house's quiet way, not in a box. His standing rules throughout.
