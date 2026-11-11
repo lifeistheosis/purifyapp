@@ -205,20 +205,45 @@ describe("the engine", () => {
     expect(phoneVoiceEngine()).toBeNull();
   });
 
-  it("is offered by no screen while it is a stub", () => {
-    const users: string[] = [];
+  it("is offered by no screen while it is a stub: the one section that uses it is mounted only in the build its stills are made from", () => {
+    const root = process.cwd();
+    const all: { file: string; src: string }[] = [];
     const walk = (d: string) => {
       for (const e of fs.readdirSync(d, { withFileTypes: true })) {
         const p = path.join(d, e.name);
         if (e.isDirectory()) walk(p);
-        else if (/\.tsx?$/.test(e.name) && /phoneVoiceDownload|phoneVoiceEngine/.test(fs.readFileSync(p, "utf8"))) users.push(p);
+        else if (/\.tsx?$/.test(e.name)) all.push({ file: path.relative(root, p), src: fs.readFileSync(p, "utf8") });
       }
     };
-    if (!PHONE_VOICE_ENGINE_READY) {
-      walk(path.join(process.cwd(), "app"));
-      walk(path.join(process.cwd(), "components"));
-      expect(users).toEqual([]);
-    }
+    walk(path.join(root, "app"));
+    walk(path.join(root, "components"));
+    if (PHONE_VOICE_ENGINE_READY) return;
+    const using = (re: RegExp) => all.filter((f) => re.test(f.src)).map((f) => f.file).sort();
+    expect(using(/phoneVoiceDownload|phoneVoiceEngine/)).toEqual(["components/settings/VoicePreview.tsx", "components/settings/VoiceSection.tsx"]);
+    // The section is drawn by the preview alone, and the preview by Settings alone, behind the switch.
+    expect(using(/from "\.\/VoiceSection"|settings\/VoiceSection"/)).toEqual(["components/settings/VoicePreview.tsx"]);
+    expect(using(/VoicePreview"/)).toEqual(["components/settings/SettingsClient.tsx"]);
+    const settings = all.find((f) => f.file === "components/settings/SettingsClient.tsx")!.src;
+    expect(settings).toContain("{PHONE_VOICE_PREVIEW ? <VoicePreview /> : null}");
+    const preview = all.find((f) => f.file === "components/settings/VoicePreview.tsx")!.src;
+    expect(preview).toContain('process.env.NEXT_PUBLIC_PHONE_VOICE_PREVIEW === "1"');
+    expect(preview).toContain("if (!PHONE_VOICE_PREVIEW) return null;");
+  });
+
+  it("is switched on by no release: no workflow, no deploy file and no build script sets the preview", () => {
+    const root = process.cwd();
+    const places = [".github/workflows", "scripts", "render.yaml", "package.json", "next.config.ts", "capacitor.config.ts"];
+    const setting: string[] = [];
+    const read = (p: string) => {
+      const full = path.join(root, p);
+      if (!fs.existsSync(full)) return;
+      if (fs.statSync(full).isDirectory()) return void fs.readdirSync(full).forEach((n) => read(path.join(p, n)));
+      // The script that makes the stills names the switch to say how it is run; it sets nothing a release reads.
+      if (p === path.join("scripts", "mock-phone-voice.mjs")) return;
+      if (fs.readFileSync(full, "utf8").includes("NEXT_PUBLIC_PHONE_VOICE_PREVIEW")) setting.push(p);
+    };
+    places.forEach(read);
+    expect(setting).toEqual([]);
   });
 
   it("sends nothing the reader reads: the download's only requests are for the list and its files", () => {

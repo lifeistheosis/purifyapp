@@ -883,12 +883,14 @@ Your word, 2026-11-11: "phone voice in v1.9", and "yes engine, yes free
 Heart". The app fetches the engine only from your own storage
 (audio.purifyapp.net), so that no other company sees a reader. I have no key
 to it and want none, so the upload is yours. **Do not start this until the
-voices chat says the engine has been measured on a phone**: the file list
-below is the one I expect, and I confirm it, file by file, once the engine
-runs on my side.
+arbiter says to**: the engine was measured on 2026-11-11 and is too slow in
+the app's web view to read as it goes (docs/1.9-build/notes/voices-fable.md),
+so whether this is used at all is your decision first. The file names below
+were confirmed against the engine as it ran.
 
 **What it is.** The free speech engine Kokoro 82M (open licence, Apache-2.0),
-about 93 MB in all, and the Heart voice, about half a megabyte. Nothing in it
+about 115 MB in all (the model, 92 MB; its runtime, 22 MB; the Heart voice,
+about half a megabyte), measured from the files on 2026-11-11. Nothing in it
 is a key or a password.
 
 1. On your PC, make an empty folder named `phone-voice`.
@@ -898,6 +900,9 @@ is a key or a password.
    - `onnx/model_quantized.onnx` (about 92 MB)
    - `config.json`, `tokenizer.json`, `tokenizer_config.json` (small)
    - `voices/af_heart.bin` (about half a megabyte)
+   - the runtime's two files, `ort-wasm-simd-threaded.jsep.mjs` and
+     `ort-wasm-simd-threaded.jsep.wasm` (22 MB), which the voices chat hands
+     you, since they come from the code and not from that page
 
    Only `af_heart.bin` from the voices. The other voices are Plus and are
    never put in the public storage; the next step refuses them.

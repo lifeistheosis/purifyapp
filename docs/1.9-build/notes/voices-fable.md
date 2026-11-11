@@ -630,3 +630,45 @@ server. The files come from his own storage and from nowhere else.
   file plugin can take its place.
 - **Whole files only.** A 92 MB file broken off begins again; a resume by
   byte range is the mend if his walk shows it is needed.
+
+### The engine measured (2026-11-11, about 14:10 to 14:25 UTC)
+
+He typed the yes in this window at about 14:00 ("yes: install kokoro-js and
+onnxruntime-web from npm and download the Kokoro 82M model in your scratch
+folder, to build and test the phone voice"). Installed in the scratch folder,
+not the repository: kokoro-js 1.2.1 (Apache-2.0), @huggingface/transformers
+3.8.1 (Apache-2.0), onnxruntime-web (MIT), the model `onnx/model_quantized.onnx`,
+92,361,116 bytes.
+
+**Speed, Heart voice, John 1:1 to 5, Chromium on one thread** (a page that is
+not cross-origin isolated, as the app's web view is not), every file served
+from this machine:
+
+| Where | Speech made per second of work | A 13.4 s passage took |
+|---|---:|---:|
+| This server (Xeon 2.1 GHz) | 0.31 to 0.36 | 37 s |
+| The same, slowed 4x to stand in for a mid-range phone | 0.07 to 0.08 | 3 min 6 s |
+| For scale: the native engine, four cores, Node (not possible in a web view; taken while an export ran) | 0.71 | |
+
+The 4x figure is an emulation, not a phone. Load: 2.8 s here, 9.8 s slowed.
+
+**So:** by route B a phone cannot speak as it reads. A 10 minute text on a
+mid-range phone is about two hours of the processor flat out. Sent to the
+arbiter at 14:25 with three options (recorded voices only for 1.9; route B as
+"make this text ready to hear", on charge; a native engine in both apps) and
+my recommendation of the first. His decision.
+
+**Found on the way.**
+
+- The first download is about 115 MB: the model and a 21.6 MB runtime
+  (`ort-wasm-simd-threaded.jsep.wasm` and its `.mjs`), not 90.
+- In a browser kokoro-js fetches voices from huggingface.co (the address is
+  hard-coded) and the runtime from cdn.jsdelivr.net. Neither may reach a
+  reader's phone: the app would load all of it from his storage through a
+  wrapper of its own over transformers.js.
+- `npm audit`: three high-severity findings, all through `sharp`, which the
+  speech path does not use in a browser. To be proven absent from the bundle
+  before anything ships.
+- The Voice section's first stills (scripts/mock-phone-voice.mjs) failed
+  checkMock on Light (a filled button typed as paper on ink, 1.60:1); mended
+  to the settings' own button. Not sent; the second pass waits on his choice.
