@@ -144,7 +144,11 @@ export function ChantPicker({ open, onClose }: { open: boolean; onClose: () => v
                     <CrossPlate size="thumb" className="h-11 w-11 shrink-0 rounded-[10px]" />
                   )}
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-sans text-ui font-semibold text-paper">{title}</span>
+                    {/* The chant's name whole, on two lines where a phone 320 wide needs
+                        them ("The Prayer Rope Anthem" was cut to an ellipsis there in
+                        English and Arabic; Updates 2, walking the gate's third run,
+                        2026-11-11). It is there from the first frame, so it moves nothing. */}
+                    <span className="block font-sans text-ui font-semibold leading-snug text-paper text-balance break-words">{title}</span>
                     {/* One line whatever happens: the version, then whether it
                         plays now or why it cannot (1.7.1: a line that arrived
                         late pushed the whole sheet down). */}
@@ -200,10 +204,14 @@ export function ChantPicker({ open, onClose }: { open: boolean; onClose: () => v
           aria-hidden
           className={cn("relative h-6 w-10 shrink-0 rounded-full motion-safe:transition-colors", ask ? "bg-paper" : "bg-paper/20")}
         >
+          {/* The knob from the start of its track, and it moves toward the end:
+              in Arabic and Urdu the track's start is its right (the gate's third
+              run, 2026-11-11, found it placed by physical sides, out of its
+              track there). */}
           <span
             className={cn(
-              "absolute top-0.5 h-5 w-5 rounded-full motion-safe:transition-transform",
-              ask ? "translate-x-[18px] bg-night" : "translate-x-0.5 bg-paper/80",
+              "absolute start-0 top-0.5 h-5 w-5 rounded-full motion-safe:transition-transform",
+              ask ? "translate-x-[18px] bg-night rtl:-translate-x-[18px]" : "translate-x-0.5 bg-paper/80 rtl:-translate-x-0.5",
             )}
           />
         </span>

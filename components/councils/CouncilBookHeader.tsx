@@ -106,9 +106,14 @@ export function CouncilBookHeader({
               href={council.href}
               data-byline=""
               lang="en" dir="ltr"
-              className="min-w-0 truncate underline decoration-paper/30 underline-offset-4 hover:decoration-paper"
+              // The whole line is the target, 44px to the finger (hit-44), as a
+              // Father's book has it (components/reading/BookHeader.tsx); the
+              // words inside it are what truncate, so the target is not
+              // clipped. It was 21.7px tall in the About sheet of every
+              // council's book (the gate's third run, 2026-11-11).
+              className="group hit-44 min-w-0"
             >
-              {author}
+              <span className="block truncate underline decoration-paper/30 underline-offset-4 group-hover:decoration-paper">{author}</span>
             </Link>
           </p>
           <p className="mt-1.5 font-sans text-caption text-paper/50">
