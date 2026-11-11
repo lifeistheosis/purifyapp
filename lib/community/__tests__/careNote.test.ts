@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -96,14 +96,18 @@ function kindsOf(sql: string): string[] {
   return [...list![1].matchAll(/'([a-z_]+)'/g)].map((m) => m[1]);
 }
 
-/** Where the care note's SQL is: waiting in docs/1.9-build/sql, or, after his yes, in supabase/migrations. */
+/**
+ * The care note's SQL, in supabase/migrations since his yes of 2026-11-11
+ * ("yes these are all fine", about 02:21 UTC): one file, named so the
+ * campaigns chat's guard on CARE_NOTE_SEND finds it, and run after the
+ * removal notice's, whose list of kinds it extends.
+ */
 function careSql(): { path: string; sql: string } {
-  const waiting = join(ROOT, "docs/1.9-build/sql/care-note.sql");
-  if (existsSync(waiting)) return { path: waiting, sql: readFileSync(waiting, "utf8") };
   const dir = join(ROOT, "supabase/migrations");
-  const name = readdirSync(dir).find((f) => /^\d{14}_care_note\.sql$/.test(f));
-  expect(name, "the care note's SQL is in docs/1.9-build/sql or supabase/migrations").toBeDefined();
-  return { path: join(dir, name!), sql: readFileSync(join(dir, name!), "utf8") };
+  const names = readdirSync(dir).filter((f) => /^\d{14}_care_note\.sql$/.test(f));
+  expect(names, "one care note SQL in supabase/migrations").toHaveLength(1);
+  expect(names[0] > "20261110204814_removal_notices.sql", "it runs after the removal notice's").toBe(true);
+  return { path: join(dir, names[0]), sql: readFileSync(join(dir, names[0]), "utf8") };
 }
 
 describe("the care note's SQL", () => {
@@ -129,7 +133,7 @@ describe("the care note's SQL", () => {
     const dir = join(ROOT, "supabase/migrations");
     const later = readdirSync(dir)
       .filter((f) => f.endsWith(".sql") && f > "20261110204814_removal_notices.sql")
-      .filter((f) => !path.startsWith(dir) || f > path.slice(dir.length + 1))
+      .filter((f) => f > path.slice(dir.length + 1))
       .filter((f) => readFileSync(join(dir, f), "utf8").includes("add constraint community_notifications_kind_check"));
     for (const f of later) {
       const theirs = kindsOf(readFileSync(join(dir, f), "utf8"));

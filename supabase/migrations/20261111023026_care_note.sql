@@ -4,11 +4,14 @@
 -- this build"). It stands in that writer's own inbox under "From Purify":
 -- never a push, never public, never automatic (lib/community/careNote.ts).
 --
--- WAITING FOR HIS SIGN-OFF ON THIS SQL, in the Admin chat. On his yes it
--- moves to supabase/migrations/ under a 14-digit name that sorts last, and
--- the 1.9 merge runs it. Until it has run on the live database nothing may
--- write a "care" notice: the database would refuse the row. The campaigns
--- chat's send button stays off until then.
+-- SIGNED 2026-11-11 about 02:21 UTC, his words "yes these are all fine",
+-- answering the arbiter's message that showed this SQL and asked "yes care
+-- SQL". Kept in docs/1.9-build/sql/ until then and moved here unchanged
+-- below this header. Not run by hand: the integration runs it on the merge
+-- of 1.9 to main, after the removal notice's file. Until it has run nothing
+-- may write a "care" notice (the database would refuse the row), so the
+-- campaigns chat's send button rides the same merge, behind its switch
+-- (lib/campaigns/careOn.ts, CARE_NOTE_SEND).
 --
 -- WHAT IT DOES: one more kind in community_notifications_kind_check,
 -- "care". The ten before it are exactly the removal notice's list
