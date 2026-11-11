@@ -107,7 +107,7 @@ Today it holds:
 - Part 5, every walk note with its own test (each chat; the arbiter reads).
 - Part 6, the fresh-eyes Fable walk (his yes first).
 
-## Who has each (the arbiter, 2026-11-11 03:25 UTC)
+## Who has each (the arbiter, 2026-11-11 03:07 UTC)
 
 - **Updates 2**, with fresh eyes M6: the sign-in form's four links and /signup's
   checkbox (SignInForm.tsx), "Show password" as an icon placed with end
