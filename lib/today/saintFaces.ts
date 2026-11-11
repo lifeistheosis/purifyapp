@@ -338,8 +338,8 @@ export function quoteFace(saint: { slug: string; iconUrl?: string } | null | und
  * (Cassian does not say his Abba Moses is St Moses the Ethiopian; tradition
  * joins them, and the owner took it); Abba Isaac and every saying with no
  * named Father, card 6, the Fathers of Sinai of the early thirteenth century,
- * since no icon of Abba Isaac exists, and never isaac-the-syrian.jpg, another
- * Isaac three centuries later. A Father with no entry, where no picture
+ * since no icon of Abba Isaac exists, and never St Isaac the Syrian's icon
+ * (isaac-the-syrian.v2.jpg), another Isaac three centuries later. A Father with no entry, where no picture
  * stands for all of them, has the lit cross where he would stand, never a
  * stand-in.
  */

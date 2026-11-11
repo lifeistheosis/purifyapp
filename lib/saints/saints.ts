@@ -1340,7 +1340,6 @@ export const SAINTS: Saint[] = [
  {
  slug: "symeon-the-new-theologian",
  byname: "The New Theologian",
- iconUrl: "/saints/icons/symeon-the-new-theologian.jpg",
  name: "St. Symeon the New Theologian",
  epithet: "Abbot of St. Mamas · Father of Hesychasm",
  born: "949 (Galatia)",
@@ -3386,7 +3385,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "isaac-the-syrian",
  byname: "of Nineveh",
- iconUrl: "/saints/icons/isaac-the-syrian.jpg",
+ iconUrl: "/saints/icons/isaac-the-syrian.v2.jpg",
  name: "St. Isaac the Syrian",
  epithet: "Bishop of Nineveh · Hermit of the Mountain",
  born: "7th c. (Beth Qatraye)",
@@ -3424,7 +3423,6 @@ export const SAINTS: Saint[] = [
  {
  slug: "mark-of-ephesus",
  byname: "Mark Eugenikos",
- iconUrl: "/saints/icons/mark-of-ephesus.jpg",
  name: "St. Mark of Ephesus",
  epithet: "Metropolitan of Ephesus · Pillar of Orthodoxy",
  born: "1392 (Constantinople)",
@@ -3822,7 +3820,7 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "sophronius-of-jerusalem",
- iconUrl: "/saints/icons/sophronius-of-jerusalem.jpg",
+ iconUrl: "/saints/icons/sophronius-of-jerusalem.v2.jpg",
  name: "St. Sophronius of Jerusalem",
  epithet: "Patriarch of Jerusalem · Defender against the Monothelites · Hymnographer",
  born: "c. 560 (Damascus)",
@@ -4255,7 +4253,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "john-cassian",
-    iconUrl: "/saints/icons/john-cassian.jpg",
+    iconUrl: "/saints/icons/john-cassian.v2.jpg",
     name: "St. John Cassian",
     byname: "Cassian the Roman",
     epithet: "Monk of East and West · Teacher of the ascetic life",

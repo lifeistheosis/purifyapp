@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import rows from "@/data/calendar/profiled-saints.json";
 import { COVER_ART } from "@/lib/reading/coverArt";
 import type { SaintBrief } from "@/lib/saints/brief";
-import { ICON_RIGHTS, MISSING_ATTRIBUTION } from "@/lib/saints/iconRights";
+import { ICON_RIGHTS, MISSING_ATTRIBUTION, UNVERIFIED_ICONS } from "@/lib/saints/iconRights";
 import { SITE_URL } from "@/lib/site";
 import { SAINT_WORDS_SLUGS } from "@/lib/today/saintWords";
 import { allSayings } from "@/lib/today/saying";
@@ -238,7 +238,7 @@ describe("the Fathers beside their sayings", () => {
     expect(SAYING_FACES[DESERT_FATHERS]).toEqual({ icon: "fathers-of-sinai.jpg" });
     // Never St Isaac the Syrian, another man three centuries later.
     const named = Object.values(SAYING_FACES).map((f) => ("icon" in f ? f.icon : f.cover));
-    expect(named).not.toContain("isaac-the-syrian.jpg");
+    expect(named.filter((n) => n.startsWith("isaac-the-syrian")), "St Isaac the Syrian's icon, by any of its names").toEqual([]);
   });
 
   it("names only pictures that are checked: a cover of the reading room, or an icon opened, public domain and recorded", () => {
@@ -278,7 +278,8 @@ describe("the Fathers beside their sayings", () => {
     // St Antony keeps his own whatever stands for the rest.
     expect(sayingFace(allSayings()[0], false, own)).toEqual(ANTONY);
     // An icon in the rights debt is no face, whatever an entry says: never a stand-in.
-    expect(sayingFace(moses, false, { "Abba Moses": { icon: "isaac-the-syrian.jpg" } })).toBeNull();
+    const unsettled = Object.keys(UNVERIFIED_ICONS)[0];
+    if (unsettled) expect(sayingFace(moses, false, { "Abba Moses": { icon: unsettled } })).toBeNull();
   });
 });
 

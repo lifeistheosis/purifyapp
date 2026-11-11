@@ -28,8 +28,6 @@ export const AUTHOR_ICONS: Record<string, string> = {
   "St. Ignatius": "/saints/icons/ignatius-of-antioch.v2.jpg",
   "St. Maximus the Confessor": "/saints/icons/maximus-the-confessor.v2.jpg",
   "St. Maximus": "/saints/icons/maximus-the-confessor.v2.jpg",
-  "St. Symeon the New Theologian": "/saints/icons/symeon-the-new-theologian.jpg",
-  "St. Symeon": "/saints/icons/symeon-the-new-theologian.jpg",
   "St. Seraphim of Sarov": "/saints/icons/seraphim-of-sarov.v2.jpg",
   "St. Seraphim": "/saints/icons/seraphim-of-sarov.v2.jpg",
 
@@ -114,12 +112,11 @@ export const AUTHOR_ICONS: Record<string, string> = {
   // "Map them in the commit that records their rights, not before."
   "St. Leo the Great": "/saints/icons/leo-the-great.v2.jpg",
 
-  // DELIBERATELY NOT MAPPED, though the file is on disk: john-cassian.jpg. Its
-  // record in iconRights.ts reads "No source, licence or attribution recorded".
-  // Two of the first four icons ever inspected turned out to be watermarked
-  // works by living iconographers, rendering in production, which is why that
-  // registry exists. Mapping an unsettled file would put it in front of every
-  // reader of a Cassian note. Map it in the commit that records its rights.
+  // St John Cassian's too, now that his icon's rights are recorded (2026-11-11:
+  // an 18th-century Russian icon). Two of the first four icons ever inspected
+  // were watermarked works by living iconographers, rendering in production,
+  // which is why a file is mapped only in the commit that records its rights.
+  "St. John Cassian": "/saints/icons/john-cassian.v2.jpg",
 };
 
 export function authorIcon(author: string): string | null {

@@ -69,18 +69,17 @@ const ACCEPTED = {
   "history/media/ukrainian-autocephaly-signing.jpg": "a photograph: the white doors of the hall",
   "saints/icons/aemilian-of-cyzicus.jpg": "his white omophorion, at the foot",
   "saints/icons/anatolius-of-constantinople.jpg": "his white omophorion, at the foot",
-  "saints/icons/sophronius-of-jerusalem.jpg": "his white omophorion, at the foot",
   // Looked at on 2026-10-31, the owner's picks of round 3 sheet r3-23: the light is the work's own.
   "saints/icons/justinian-the-great.v2.jpg": "the white tesserae of the courtiers' robes beside him, at the left and the foot of the mosaic",
   "saints/icons/cyril-of-jerusalem.v2.jpg": "his white omophorion and the open scroll in his hands, at the foot and the right",
   "saints/icons/photius-the-great.v2.jpg": "the bare parchment the Skylitzes miniature is painted on: its own ground",
   "saints/icons/prophet-samuel.jpg": "the white highlights of the painted ribbons",
-  "saints/icons/symeon-the-new-theologian.jpg": "the icon's own white ground above him",
   "saints/icons/thaddeus-of-edessa.jpg": "the gold leaf, photographed bright, where it meets the foot",
   "saints/icons/or-of-the-thebaid.jpg": "a drawing on white paper: the white is its ground",
   // Looked at on 2026-11-10, two of the icons cut from their books' covers: the light is the work's own.
   "saints/icons/ignatius-of-antioch.v2.jpg": "his white vestments with their red crosses, at the foot",
   "saints/icons/tarasius-of-constantinople.v2.jpg": "his white omophorion with its crosses, at the foot and in the lower corners",
+  "saints/icons/sophronius-of-jerusalem.v2.jpg": "his white vestments with their black crosses, at the foot",
   // Looked at on 2026-10-31, the Fall of Constantinople's gallery (the owner's note 84): the light is the work's own.
   "history/media/fall-of-constantinople-zonaro-gun.v1.jpg": "Zonaro's painted sky: a white cloud over the banners, at the top left; a cut would lose the banners or the horsemen",
   // Kept on the website for the 1.7 apps, which ask for these by name; 1.7.1

@@ -1617,6 +1617,49 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
   // Sihăstria, St Sofian of Antim and St Dumitru Stăniloae. Their icons are
   // living painters' work and their photographs are recent, so none is in
   // the public domain. Their files are gone (2026-11-11).
+  // Fathers from Commons (2026-11-11), the rule as above: an old icon, fresco
+  // or mosaic, or the plate. St Isaac's is a miniature dated 1802, clear where
+  // the older one of 1518 (Kirillo-Belozersky) is worn past his face; it is
+  // kept whole at its own size, so its painted border is not cut. St John
+  // Cassian's is the centre of an 18th-century Russian icon, kept at its own
+  // size (the file is 277 pixels wide; the 9th-century Paris Sacra Parallela
+  // medallion is smaller still). St Sophronius's is an Athonite fresco. St
+  // Mark of Ephesus and St Symeon the New Theologian keep the plate: Commons
+  // has no old icon of either that passes (St Mark's is lettered in English,
+  // so modern; St Symeon's are undated, modern, or set in rays).
+  "isaac-the-syrian.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A manuscript miniature of a grey-bearded monk in a brown habit and a dark cowl, seated at a writing desk and writing in an open book, before pink and gold buildings, within a blue border of painted flowers.",
+    work: "Miniature of St Isaac the Syrian writing at his desk, as the Commons page dates it",
+    artist: "Unknown",
+    workDate: "1802",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Isaac_Sirin.jpg",
+  },
+  "john-cassian.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A painted icon of an old monk with a long grey beard in a striped brown habit over a gold robe, his right hand raised in blessing and an open scroll in his left, on a pale ground with his name in white letters at the top.",
+    work: "Icon of St John Cassian the Roman, the centre of a Russian icon, as the Commons page describes it",
+    artist: "Unknown Russian icon painter",
+    workDate: "18th century",
+    source: "Wikimedia Commons (from cirota.ru)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%98%D0%BE%D0%B0%D0%BD%D0%BD_%D0%9A%D0%B0%D1%81%D1%81%D0%B8%D0%B0%D0%BD_%D0%A0%D0%B8%D0%BC%D0%BB%D1%8F%D0%BD%D0%B8%D0%BD_%E2%80%93_%D0%A1%D1%80%D0%B5%D0%B4%D0%BD%D0%B8%D0%BA.jpg",
+  },
+  "sophronius-of-jerusalem.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A fresco of an old bishop with grey hair and a long grey beard in a gold halo, in white vestments patterned with black crosses, holding a jewelled red and gold Gospel, on a dark blue ground with his name and see in white Greek letters.",
+    work: "Athonite fresco of St Sophronius of Jerusalem, as the Commons page describes it",
+    artist: "Unknown",
+    workDate: "14th to 15th century",
+    source: "Wikimedia Commons (from johnsanidopoulos.com)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Athonite_Fresco_Icon_of_Saint_Sophronios_of_Jerusalem.jpg",
+  },
 };
 
 /**
@@ -1690,10 +1733,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for irenaeus-of-lyons and AUTHOR_ICONS. 212x420 JPG, 23 KB. Not yet opened and inspected.",
   "irene-the-empress.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for irene-the-empress. 300x420 JPG, 32 KB. Opened 2026-11-10 (build 90 note 3): a contemporary icon of a crowned empress in a jewelled robe holding a scroll, her name in Latin letters on a gold ground. Not found on Commons by search and picture hash (nearest 21 of 64 bits apart, a coin of hers).",
-  "isaac-the-syrian.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for isaac-the-syrian. 293x420 JPG, 24 KB. Not found on Commons by search and picture hash (2026-11-10, the icon batches).",
-  "john-cassian.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for john-cassian. 313x420 JPG, 28 KB. Not yet opened and inspected.",
   "john-the-wonderworker.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for john-of-shanghai. 268x420 JPG, 23 KB. Not yet opened and inspected.",
   "juvenal-of-jerusalem.jpg":
@@ -1706,8 +1745,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for marcian-the-emperor. 235x420 JPG, 21 KB. Opened 2026-11-10 (build 90 note 3): a contemporary icon of a standing emperor in a crown and red cloak under a painted arch, holding a scroll written in English, his name in Latin letters. Not found on Commons by search and picture hash (nearest 29 of 64 bits apart).",
   "marina-the-great-martyr.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for marina-the-great-martyr. 305x420 JPG, 31 KB. Not yet opened and inspected.",
-  "mark-of-ephesus.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for mark-of-ephesus. 337x420 JPG, 30 KB. Not found on Commons by search and picture hash (2026-11-10, the icon batches).",
   "martin-the-confessor.v2.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for martin-the-confessor. 319x390 JPG, 28 KB, cut on 2026-10-17 from the 329x400 file, inside the white lines at its edges (1.7.1). Its source is not yet looked into. Opened 2026-11-10 (build 90 note 3): a contemporary icon in the Russian manner, a white-bearded pope in a white mitre holding the Image Not Made by Hands, his name in Church Slavonic. Not found on Commons by search and picture hash of the file it was cut from (nearest 24 of 64 bits apart).",
   "nicholas-of-cabasilas.jpg":
@@ -1734,10 +1771,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for sergius-of-radonezh. 345x420 JPG, 24 KB. Not yet opened and inspected.",
   "simeon-streaming-myrrh.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for simeon-the-myrrh-streaming. 315x420 JPG, 26 KB. Not yet opened and inspected.",
-  "sophronius-of-jerusalem.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for sophronius-of-jerusalem. 288x420 JPG, 33 KB. Opened 2026-11-10 (build 90 note 3): a contemporary panel icon of a brown-bearded bishop in a chequered phelonion with a blue omophorion and a red Gospel book, his name in Greek on a gold ground. Not found on Commons by search and picture hash (nearest 19 of 64 bits apart, another picture).",
-  "symeon-the-new-theologian.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for symeon-the-new-theologian and AUTHOR_ICONS. 256x420 JPG, 28 KB. Not yet opened and inspected.",
   "theophan-the-recluse.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for theophan-the-recluse. 301x420 JPG, 24 KB. Not yet opened and inspected.",
 };

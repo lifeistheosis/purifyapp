@@ -622,6 +622,13 @@ The debt of carried icons with no source fell from 75 to 42 (`lib/saints/iconRig
 
 **Found on the way, not changed:** `scripts/check-picture-edges.mjs` flags two of November's icons (`nektarios-of-aegina.v2.jpg`, white along three sides; `theodore-the-studite.jpg`, at the foot), told to the November chat. With no signal, a saint with a large page picture showed his stand-in icon under his name; mended on the arbiter's yes (`969fbe07d`).
 
+**Then through the night (2026-11-11)**, on the arbiter's word ("keep going at Commons' pace, Fathers first, by the same rule"), the debt fell from 42 to 30:
+
+- Seven modern saints keep the plate on the owner's word ("modern saints on the plate until a painter or monastery gives written permission"): St Paisios, St Porphyrios, St Silouan, St Justin Popović, St Cleopas, St Sofian and St Dumitru Stăniloae. St John of Shanghai waits for the December chat's call 14.
+- St Isaac the Syrian: a miniature dated 1802, kept whole with its painted border (the Kirillo-Belozersky miniature of 1518 is older, but worn past his face). St John Cassian: the centre of an 18th-century Russian icon, at its own 250 pixels (no larger copy is on Commons), and now mapped for his notes. St Sophronius of Jerusalem: an Athonite fresco of the 14th or 15th century.
+- St Mark of Ephesus and St Symeon the New Theologian keep the plate: Commons has no old icon of either that passes (St Mark's is lettered in English, so modern; St Symeon's are undated, modern, or set in rays).
+- Waiting on the arbiter: St Theophan the Recluse, canonized in 1988, has no old icon, only 19th-century portraits (a photograph of him as Bishop of Tambov), the case St Seraphim's portrait was; and St Nikodemos's oldest picture is an engraving made in Venice in 1819, a black-and-white print rather than an icon.
+
 ## Beside his notes: quick win 18, the Fathers' quotation marks against the printed page (2026-11-11)
 
 - **What it was** (`e0c4f7965`): the marks F-49 left after October's pass (about 72), read again against the printed volumes, the NPNF scans on archive.org (every copy's own OCR, each copy confirmed by its title page and by aligning the work, and the page image where the OCR was unclear). CCEL's transcription has no single opening marks at all, so it could never have settled the single ones.
