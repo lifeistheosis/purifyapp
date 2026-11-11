@@ -11,11 +11,19 @@
 // More than two levels of 255 apart, in any channel, is a failure: the
 // painting has missed something that is drawn there.
 //
+// Words scrolled out of their row (the later doors of a row that scrolls
+// sideways) are read at the middle of the row, with nothing on the page
+// moved. The proof does move it: each row is scrolled to bring the words to
+// its middle, they are seen to stand where they were read, and that place is
+// photographed. Where a row cannot bring them to its middle (its first and
+// its last), or is drawn anew as it scrolls (a cover's picture arrives),
+// they are counted and not compared. Until 2026-11-11 none of them was
+// photographed, and the fault of that day hid in them: the Search sheet's
+// later doors were read on the painting's bare paper.
+//
 // Not photographed, and counted apart: words pinned to the screen (a
 // photograph of the whole page shows a pinned bar once, where the first
-// screen ended, so pinned pieces are taken out of it), and words scrolled out
-// of their row (the checker measures them where they stand in the row; the
-// photograph does not show them).
+// screen ended, so pinned pieces are taken out of it).
 //
 //   npm run build:android, then:
 //   node scripts/painted-ground-check.mjs [/path,/path | --all] [--palettes Dark,Light]
@@ -57,7 +65,26 @@ const { browser, page } = await openPhone();
 let compared = 0;
 let apart = 0;
 let far = 0;
+let scrolled = 0;
+let unreached = 0;
+let woken = 0;
+let partly = 0;
 const wrong = [];
+/** The lightest and the darkest pixel of a box of a photograph. */
+const ends = (data, width, x, y, w, h) => {
+  let lightest = null;
+  let darkest = null;
+  for (let yy = y; yy < y + h; yy++) {
+    for (let xx = x; xx < x + w; xx++) {
+      const i = (yy * width + xx) * 3;
+      const c = [data[i], data[i + 1], data[i + 2]];
+      const l = lum(c);
+      if (!lightest || l > lightest.l) lightest = { c, l };
+      if (!darkest || l < darkest.l) darkest = { c, l };
+    }
+  }
+  return { lightest, darkest };
+};
 try {
   for (const where of pages) {
     try {
@@ -75,7 +102,7 @@ try {
         if (!document.querySelector("style[data-painted-ground]")) {
           const still = document.createElement("style");
           still.setAttribute("data-painted-ground", "");
-          still.textContent = "*, *::before, *::after { transition: none !important; }";
+          still.textContent = "*, *::before, *::after { transition: none !important; scroll-behavior: auto !important; scroll-snap-type: none !important; }";
           document.head.appendChild(still);
         }
       }, mode);
@@ -98,6 +125,74 @@ try {
       await page.waitForTimeout(250);
       const shot = sharp(await page.screenshot({ fullPage: true })).removeAlpha();
       const { data, info } = await shot.raw().toBuffer({ resolveWithObject: true });
+      let here = 0;
+      let hereFar = 0;
+      const beside = (g, seen, how = "") => {
+        const [x, y, w, h] = g.box;
+        const off = Math.max(...g.lightest.map((v, i) => Math.abs(v - seen.lightest.c[i])), ...g.darkest.map((v, i) => Math.abs(v - seen.darkest.c[i])));
+        here += 1;
+        if (g.bare > 0) partly += 1;
+        if (off > NEAR) {
+          hereFar += 1;
+          wrong.push(`${where} on ${palette}: "${g.text.slice(0, 32)}"${how} painted rgb(${g.lightest}) to rgb(${g.darkest}), the screen rgb(${seen.lightest.c}) to rgb(${seen.darkest.c}), ${off} levels apart, at ${x},${y} ${w}x${h}`);
+        }
+      };
+      for (const g of grounds) {
+        const [x, y, w, h] = g.box;
+        if (g.rows?.length && !g.pinned) continue;
+        if (g.apart || x < 0 || y < 0 || x + w > info.width || y + h > info.height) {
+          apart += 1;
+          continue;
+        }
+        beside(g, ends(data, info.width, x, y, w, h));
+      }
+      // Words scrolled out of their row are read at its middle. The row is scrolled to bring them there, they are seen to stand where they were read, and that place is photographed.
+      for (const g of grounds) {
+        if (!g.rows?.length || g.pinned) continue;
+        const [x, y, w, h] = g.box;
+        const moved = await page.evaluate(async ({ word, rows }) => {
+          const find = (way) => way.reduce((n, i) => n?.children[i] ?? null, document.documentElement);
+          const el = find(word);
+          const found = rows.map((r) => find(r.row));
+          if (!el || found.some((r) => !r)) return null;
+          const before = el.getBoundingClientRect();
+          // A row that is scrolled wakes what it brings into sight (a cover's picture arrives, and the cover is drawn anew).
+          let woke = false;
+          const watch = new MutationObserver(() => {
+            woke = true;
+          });
+          for (const r of found) watch.observe(r, { childList: true, subtree: true, attributes: true, characterData: true });
+          window.__paintedRows = found.map((r, i) => {
+            const was = [r, r.scrollLeft, r.scrollTop];
+            r.scrollTo({ left: r.scrollLeft - rows[i].dx, top: r.scrollTop - rows[i].dy, behavior: "instant" });
+            return was;
+          });
+          await new Promise((done) => setTimeout(done, 150));
+          watch.disconnect();
+          const after = el.isConnected ? el.getBoundingClientRect() : null;
+          return { by: after ? [after.left - before.left, after.top - before.top] : null, woke };
+        }, g);
+        const want = [g.rows.reduce((a, r) => a + r.dx, 0), g.rows.reduce((a, r) => a + r.dy, 0)];
+        const there = moved?.by && Math.abs(moved.by[0] - want[0]) <= 0.75 && Math.abs(moved.by[1] - want[1]) <= 0.75 && x >= 0 && y >= 0 && x + w <= info.width && y + h <= info.height;
+        if (there) {
+          const part = await sharp(await page.screenshot({ fullPage: true, clip: { x, y, width: w, height: h } }))
+            .removeAlpha()
+            .raw()
+            .toBuffer({ resolveWithObject: true });
+          const seen = ends(part.data, part.info.width, 0, 0, part.info.width, part.info.height);
+          const off = Math.max(...g.lightest.map((v, i) => Math.abs(v - seen.lightest.c[i])), ...g.darkest.map((v, i) => Math.abs(v - seen.darkest.c[i])));
+          // Apart, in a row that woke: the page is no longer the page that was measured, and that is no fault of the measure.
+          if (off > NEAR && moved.woke) woken += 1;
+          else {
+            beside(g, seen, ", its row scrolled to it,");
+            scrolled += 1;
+          }
+        } else unreached += 1;
+        await page.evaluate(() => {
+          for (const [r, left, top] of window.__paintedRows ?? []) r.scrollTo({ left, top, behavior: "instant" });
+          window.__paintedRows = null;
+        });
+      }
       await page.evaluate(() => {
         document.querySelector("style[data-painted-ground-clear]")?.remove();
         for (const e of document.querySelectorAll("[data-painted-ground-was]")) {
@@ -107,32 +202,6 @@ try {
           e.removeAttribute("data-painted-ground-was");
         }
       });
-      let here = 0;
-      let hereFar = 0;
-      for (const g of grounds) {
-        const [x, y, w, h] = g.box;
-        if (g.apart || x < 0 || y < 0 || x + w > info.width || y + h > info.height) {
-          apart += 1;
-          continue;
-        }
-        let lightest = null;
-        let darkest = null;
-        for (let yy = y; yy < y + h; yy++) {
-          for (let xx = x; xx < x + w; xx++) {
-            const i = (yy * info.width + xx) * 3;
-            const c = [data[i], data[i + 1], data[i + 2]];
-            const l = lum(c);
-            if (!lightest || l > lightest.l) lightest = { c, l };
-            if (!darkest || l < darkest.l) darkest = { c, l };
-          }
-        }
-        const off = Math.max(...g.lightest.map((v, i) => Math.abs(v - lightest.c[i])), ...g.darkest.map((v, i) => Math.abs(v - darkest.c[i])));
-        here += 1;
-        if (off > NEAR) {
-          hereFar += 1;
-          wrong.push(`${where} on ${palette}: "${g.text.slice(0, 32)}" painted rgb(${g.lightest}) to rgb(${g.darkest}), the screen rgb(${lightest.c}) to rgb(${darkest.c}), ${off} levels apart, at ${x},${y} ${w}x${h}`);
-        }
-      }
       compared += here;
       far += hereFar;
       console.log(`${hereFar ? "NO  " : "ok  "}${where} on ${palette}: ${here} painted grounds beside the screen${hereFar ? `, ${hereFar} more than ${NEAR} levels apart` : ""}`);
@@ -142,5 +211,7 @@ try {
   await browser.close();
 }
 for (const line of wrong) console.log(`  ${line}`);
-console.log(`\n${compared} painted grounds set beside the screen on ${pages.length} page(s) and ${palettes.length} palette(s): ${far} more than ${NEAR} levels apart${apart ? `; ${apart} not photographed (pinned to the screen, or scrolled out of their row)` : ""}`);
+console.log(
+  `\n${compared} painted grounds set beside the screen on ${pages.length} page(s) and ${palettes.length} palette(s): ${far} more than ${NEAR} levels apart${scrolled ? `; ${scrolled} of them words scrolled out of their row, photographed with the row scrolled to bring them to its middle` : ""}${unreached ? `; ${unreached} more that their row cannot bring to its middle (the first and the last of a row), not photographed` : ""}${woken ? `; ${woken} more whose row was drawn anew as it was scrolled (a picture arrived), not compared` : ""}${partly ? `; ${partly} read on part of their box, the rest of it past their ground` : ""}${apart ? `; ${apart} not photographed (pinned to the screen)` : ""}`,
+);
 process.exit(far || wrong.length ? 1 : 0);

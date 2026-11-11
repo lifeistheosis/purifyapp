@@ -1027,3 +1027,89 @@ by-eye list is 517 lines on 22 screens; the findings are the same six,
 none of them contrast. The checker's self-test holds it both ways: words
 over a picture on plain colours are said, and words beside a picture are
 measured as ever.
+
+### Words scrolled out of their row are read at its middle (the same day, Admin's find)
+
+The gate's third run opened the Search sheet from About and the checker
+said that "Theology", "Councils" and "History", three doors of its "Look
+in" row, read **1.00:1** on Dark and True black, 1.27 on Candlelight and
+1.11 on Monastery. They do not. They are the later doors of a row that
+scrolls sideways, and they were past the screen's right edge.
+
+The fault was mine, and it was in the part of T4 that no photograph had
+held. Words scrolled out of their row were read where their numbers put
+them, past the row's edge. That is right when their ground scrolls with
+them (a title on its cover in a rail), and wrong when their ground is
+behind the row. The Search sheet's doors stand on the sheet. Past the
+sheet's edge nothing was painted, the painting's paper was white, and the
+lightest ink on white is 1.00:1.
+
+What it does now, in `scripts/mock-check.mjs`:
+
+- **Words hidden whole by a box that scrolls are read at the middle of
+  that box**, where a reader brings them to read them, and whatever the
+  box carries as it scrolls is taken there with them (`seenOf`, `rectFor`).
+  What is behind the row stays where it is. Nothing on the page is moved.
+- **Which things a row carries** follows CSS's own rule (`holds`,
+  `carriedBy`): a thing placed out of the flow (a pinned sheet, a badge set
+  on a corner) is held only by the box it is placed by, and the parents
+  between neither cut it nor carry it. The same rule now decides which
+  boxes cut a line of words, which until today was every parent that hides
+  its overflow.
+- **The painting's paper is clear** wherever the words have an opaque
+  ground of their own, so a place that ground does not reach is never read
+  as white. If none of the ground is under the words they are said, with
+  the ground's name: "it stands past the ground it would be measured on".
+- Left where their numbers put them, as before: words out of a box with no
+  room at all (a part that is closed opens where it is), out of a box that
+  cannot scroll to them, and out of the page itself.
+
+Two ways not taken, both tried on the whole export:
+
+- **The row's near edge** (where the row would first show them). A rail
+  fades at its edges, and 51 titles of the reading room's and the councils'
+  rails were then said to have the fade across them. What stands under
+  that fade is on its way in, not yet being read.
+- **Really scrolling the row**, measuring, and putting it back. It is the
+  truest reading and it is not a gate's: a row that is scrolled wakes the
+  pictures it brings into sight, a cover is drawn anew when its picture
+  arrives, and two walks of the reading room gave 73 lines and then 71. A
+  gate has to say the same thing twice.
+
+What it does not see, named: the first and the last of a row are read at
+the row's middle although the row cannot bring them there, so a piece of
+the row's own frame that stays at its end is not held against them; and a
+piece the row does not carry that lies across its middle is held against
+every word read there.
+
+Held to itself and to the screen:
+
+- **The checker's self-test** has three new cases: a door past the edge of
+  a row that scrolls sideways and a line under the fold of a list that
+  scrolls in its own box, both on a house tray that scrolls with neither,
+  and a faint word past the edge of a row on a typed-in tray. On the
+  checker as it was pushed, the door read 1.00:1 on Dark and True black
+  (1.48 Candlelight, 1.20 Monastery), the line 1.43 (2.50 Light, 1.00
+  Candlelight, 1.19 Monastery), and the faint word was "caught" at 1.00:1,
+  which is no measure of it. Now the house's two pass, measured, and the
+  faint word is caught at 2.73:1.
+- **The Search sheet itself**, opened from About: the nine doors of the
+  row on five palettes, each painted ground beside a photograph of the
+  sheet with its letters cleared. 35 compared, none a single level apart;
+  "Theology" and "Councils" were photographed with the row scrolled to
+  bring them to its middle. "History" and "Shop" are read at the middle
+  too, and not photographed there: the row ends before it can bring them
+  that far. No door reads 1.00:1. On Light, eight of the nine read 4.21 to
+  4.42 (`text-paper/62` on the sheet's gradient). That is real, and it is
+  with the arbiter for an owner.
+- **The proof over the whole export** (`node
+  scripts/painted-ground-check.mjs --all`): 3,758 painted grounds beside
+  the screen on 127 screens and five palettes, none more than two levels
+  apart. 190 of them are words scrolled out of their row, photographed
+  with the row scrolled to bring them to its middle; the proof learned to
+  do that today, and until it did none of them was photographed. 60 more
+  are the first or the last of a row, which it cannot bring to its middle,
+  and 55 are pinned to the screen: counted, not photographed.
+- **The gate's walk** says what it said before the mend: 123 of 127
+  screens with nothing found, the same six findings (pictures), 517 lines
+  to be looked at on 22 screens, in 111 seconds.

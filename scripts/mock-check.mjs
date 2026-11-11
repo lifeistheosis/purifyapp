@@ -290,28 +290,114 @@ async function look(arg) {
     // The sum stands unless a picture is drawn across the words (picturedOf, below).
     return { rgb: g, job: { el, at, base } };
   };
+  // What holds a thing in place, and with that cuts what spills out of it
+  // and carries it as it scrolls: its parent, unless the thing is placed out
+  // of the flow (a pinned sheet, a badge set on a corner). Such a thing is
+  // held by the box it is placed by alone, and the parents between neither
+  // cut it nor carry it (CSS Positioned Layout, the containing block).
+  const none = (v) => !v || v === "none";
+  const pinsHere = (cs) =>
+    ![cs.transform, cs.translate, cs.rotate, cs.scale, cs.perspective, cs.filter, cs.backdropFilter].every(none) ||
+    /layout|paint|strict|content/.test(cs.contain || "") ||
+    Boolean(cs.containerType && cs.containerType !== "normal") ||
+    /transform|perspective|filter|translate|rotate|scale/.test(cs.willChange || "") ||
+    Boolean(cs.contentVisibility && cs.contentVisibility !== "visible");
+  const holds = (cs, pos) => (pos === "fixed" ? pinsHere(cs) : pos === "absolute" ? cs.position !== "static" || pinsHere(cs) : true);
+  // How far a row can carry what is in it, each way, from where it is
+  // scrolled now: [back, on], the first never above nought and the second
+  // never below. A box that hides without scrolling (overflow: clip)
+  // carries nothing.
+  const carry = (p, cs, sideways) => {
+    if ((sideways ? cs.overflowX : cs.overflowY) === "clip") return [0, 0];
+    const [at, most] = sideways ? [p.scrollLeft, Math.max(0, p.scrollWidth - p.clientWidth)] : [p.scrollTop, Math.max(0, p.scrollHeight - p.clientHeight)];
+    // A row read from the right counts its scroll down from nought.
+    const [least, greatest] = sideways && cs.direction === "rtl" ? [-most, 0] : [0, most];
+    return [Math.min(0, at - greatest), Math.max(0, at - least)];
+  };
   // What is seen of a line of words: its box, cut to every box that hides
   // what spills out of it (a clamped paragraph still reports the lines it
   // hides, and those lie over whatever is below it).
+  //
+  // Words scrolled right out of their row (the later doors of a row that
+  // scrolls sideways, the foot of a list that scrolls in a box of its own)
+  // are read at the middle of the row, where a reader brings them to read
+  // them, and whatever the row carries is taken there with them (`shifts`:
+  // for what `under` carries, by how much). Nothing on the page is moved:
+  // a row that is really scrolled wakes the pictures it brings into sight,
+  // and a page that changes as it is measured is measured differently each
+  // time. The middle, and not where the row would first show them: a rail
+  // fades at its edges, and what stands under that fade is on its way in,
+  // not yet being read.
+  //
+  // Until 2026-11-11 such words were read where their numbers put them,
+  // past the row's edge. That is right only when their ground scrolls with
+  // them (a cover in a rail). The Search sheet's later doors stand on the
+  // sheet behind the row: they were read past the sheet itself, on the
+  // painting's bare paper, 1.00:1 on Dark (the gate's third run, Admin's
+  // find).
+  //
+  // Left where their numbers put them, as before: words out of a box with
+  // no room at all (a part that is closed, and opens where it is), out of a
+  // box that cannot scroll to them, and out of the page itself.
   const seenOf = (el, r) => {
     let { left, right, top, bottom } = r;
+    const shifts = [];
+    let out = false;
+    let pos = null;
     for (let p = el; p; p = p.parentElement) {
       const cs = getComputedStyle(p);
-      if (cs.overflowX === "visible" && cs.overflowY === "visible") continue;
-      const q = p.getBoundingClientRect();
-      if (cs.overflowX !== "visible") {
-        left = Math.max(left, q.left);
-        right = Math.min(right, q.right);
+      // A parent the words are not placed by neither cuts them nor carries them.
+      if (pos !== null && !holds(cs, pos)) continue;
+      pos = cs.position;
+      const [cutX, cutY] = [cs.overflowX !== "visible", cs.overflowY !== "visible"];
+      if (!cutX && !cutY) continue;
+      const box = p.getBoundingClientRect();
+      const inX = !cutX || Math.min(right, box.right) - Math.max(left, box.left) >= 1;
+      const inY = !cutY || Math.min(bottom, box.bottom) - Math.max(top, box.top) >= 1;
+      if (inX && inY) {
+        if (cutX) [left, right] = [Math.max(left, box.left), Math.min(right, box.right)];
+        if (cutY) [top, bottom] = [Math.max(top, box.top), Math.min(bottom, box.bottom)];
+        continue;
       }
-      if (cs.overflowY !== "visible") {
-        top = Math.max(top, q.top);
-        bottom = Math.min(bottom, q.bottom);
-      }
+      out = true;
+      if (p === document.body || p === document.documentElement) continue;
+      // How far to the middle of the box along one line; null where the box cannot scroll the words into itself.
+      const toMiddle = (sideways) => {
+        const [a, b, lo, hi] = sideways ? [left, right, box.left, box.right] : [top, bottom, box.top, box.bottom];
+        if (hi - lo < 1) return null;
+        const want = (lo + hi) / 2 - (a + b) / 2;
+        const [back, on] = carry(p, cs, sideways);
+        const can = Math.min(on, Math.max(back, want));
+        return Math.min(b + can, hi) - Math.max(a + can, lo) >= 1 ? want : null;
+      };
+      const [dx, dy] = [inX ? 0 : toMiddle(true), inY ? 0 : toMiddle(false)];
+      if (dx === null || dy === null) continue;
+      shifts.push({ under: p, dx, dy });
+      [left, right, top, bottom] = [left + dx, right + dx, top + dy, bottom + dy];
+      // Not all of them fit in the row: cut to it, as words half in sight are.
+      if (cutX) [left, right] = [Math.max(left, box.left), Math.min(right, box.right)];
+      if (cutY) [top, bottom] = [Math.max(top, box.top), Math.min(bottom, box.bottom)];
     }
-    // Scrolled out of its row for now: measured where it stands in the row.
-    const out = right - left < 1 || bottom - top < 1;
-    if (out) ({ left, right, top, bottom } = r);
-    return { left, top, right, bottom, width: right - left, height: bottom - top, out };
+    return { left, top, right, bottom, width: right - left, height: bottom - top, out, shifts };
+  };
+  // Whether a row carries a thing as it scrolls: the row is one of the boxes that hold the thing in place.
+  const carriedBy = (row, e) => {
+    if (row === e || !row.contains(e)) return false;
+    let pos = getComputedStyle(e).position;
+    for (let p = e.parentElement; p; p = p.parentElement) {
+      const cs = getComputedStyle(p);
+      if (holds(cs, pos)) {
+        if (p === row) return true;
+        pos = cs.position;
+      } else if (p === row) return false;
+    }
+    return false;
+  };
+  // Where a thing stands for a line of words that is read in the middle of its row: taken there with them, when the row carries it too.
+  const rectFor = (at, e, r = e.getBoundingClientRect()) => {
+    let [dx, dy] = [0, 0];
+    for (const sh of at.shifts ?? []) if (carriedBy(sh.under, e)) [dx, dy] = [dx + sh.dx, dy + sh.dy];
+    return dx || dy ? { left: r.left + dx, top: r.top + dy, right: r.right + dx, bottom: r.bottom + dy, width: r.right - r.left, height: r.bottom - r.top } : r;
   };
   // What else is drawn across a line of words, inside the ground they stand
   // on, that is no parent of theirs: a picture laid behind them, a shade, a
@@ -404,7 +490,6 @@ async function look(arg) {
   // (`lifted`), and may be by what only sometimes does (`mayLift`: a z given
   // to a thing that may not take one, a will-change, a containment). A thing
   // that only may be lifted is a doubt, and a doubt is never "underneath".
-  const none = (v) => !v || v === "none";
   const lifted = (cs) =>
     /fixed|sticky/.test(cs.position) ||
     (cs.position !== "static" && cs.zIndex !== "auto") ||
@@ -465,12 +550,12 @@ async function look(arg) {
   };
   // What is seen of a piece from where the words are: its box, cut to every
   // box apart from the words that hides what spills out of it.
-  const seenFrom = (p, el) => {
-    let { left, top, right, bottom } = p.r;
+  const seenFrom = (p, el, at) => {
+    let { left, top, right, bottom } = rectFor(at, p.e, p.r);
     for (let n = p.e.parentElement; n && !n.contains(el); n = n.parentElement) {
       const cs = getComputedStyle(n);
       if (cs.overflowX === "visible" && cs.overflowY === "visible") continue;
-      const q = n.getBoundingClientRect();
+      const q = rectFor(at, n);
       if (cs.overflowX !== "visible") [left, right] = [Math.max(left, q.left), Math.min(right, q.right)];
       if (cs.overflowY !== "visible") [top, bottom] = [Math.max(top, q.top), Math.min(bottom, q.bottom)];
     }
@@ -478,13 +563,13 @@ async function look(arg) {
   };
   const acrossOf = ({ el, at, base }) => {
     for (const p of piecesOf()) {
-      if (p.paints && overlaps(p.r, at) && beside(p, el, base) && overlaps(seenFrom(p, el), at)) return p.what;
+      if (p.paints && overlaps(rectFor(at, p.e, p.r), at) && beside(p, el, base) && overlaps(seenFrom(p, el, at), at)) return p.what;
     }
     // A parent's own ::before or ::after laid across the words (a veil, a
     // sheen): placed from the parent's box, as CSS places it. Every parent
     // up to the ground, whether or not it paints a ground of its own.
     for (let n = el; n; n = n === base ? null : n.parentElement) {
-      const b = n.getBoundingClientRect();
+      const b = rectFor(at, n);
       const cs = getComputedStyle(n);
       for (const pseudo of ["::before", "::after"]) {
         const p = getComputedStyle(n, pseudo);
@@ -509,7 +594,7 @@ async function look(arg) {
   // picture: a plain piece across such words is left to the sum, as it was.
   const picturedOf = ({ el, at, base }) => {
     for (const p of piecesOf()) {
-      if (p.picture && overlaps(p.r, at) && beside(p, el, base) && overlaps(seenFrom(p, el), at)) return p.what;
+      if (p.picture && overlaps(rectFor(at, p.e, p.r), at) && beside(p, el, base) && overlaps(seenFrom(p, el, at), at)) return p.what;
     }
     return null;
   };
@@ -544,7 +629,7 @@ async function look(arg) {
     // that piece's edge: past it lies what is beside the words, not under them.
     const at = { ...job.at };
     if (!isPage(nodes[0])) {
-      const on = nodes[0].getBoundingClientRect();
+      const on = rectFor(at, nodes[0]);
       if (on.left > at.left && on.left - at.left < 2) at.left = on.left;
       if (on.top > at.top && on.top - at.top < 2) at.top = on.top;
       if (on.right < at.right && at.right - on.right < 2) at.right = on.right;
@@ -572,7 +657,7 @@ async function look(arg) {
       const cs = getComputedStyle(n);
       // The page's own ground is painted over the whole of it, whatever box
       // <body> has; a gradient of its own is placed by the page's box.
-      const b = !isPage(n) ? n.getBoundingClientRect() : cs.backgroundImage !== "none" ? document.documentElement.getBoundingClientRect() : { left, top, width: W, height: H };
+      const b = !isPage(n) ? rectFor(at, n) : cs.backgroundImage !== "none" ? document.documentElement.getBoundingClientRect() : { left, top, width: W, height: H };
       const sides = (name, tail = "") => ["Top", "Right", "Bottom", "Left"].map((side) => px(cs[`${name}${side}${tail}`])).join(" ");
       boxes += `<div style="${esc(
         [
@@ -600,22 +685,23 @@ async function look(arg) {
     // and dims them with their ground, which this counts as ground alone.
     for (const p of piecesOf()) {
       if (!p.shadow || !p.reach) continue;
-      if (!overlaps({ left: p.box.left - p.reach, top: p.box.top - p.reach, right: p.box.right + p.reach, bottom: p.box.bottom + p.reach }, read, 1) || !beside(p, el, base)) continue;
+      const pb = rectFor(at, p.e, p.box);
+      if (!overlaps({ left: pb.left - p.reach, top: pb.top - p.reach, right: pb.right + p.reach, bottom: pb.bottom + p.reach }, read, 1) || !beside(p, el, base)) continue;
       const cut = { left: -1e6, top: -1e6, right: 1e6, bottom: 1e6 };
       let opacity = 1;
       for (let n = p.e; n && !isPage(n); n = n.parentElement) {
         const cs = getComputedStyle(n);
         if (!n.contains(el)) opacity *= Number(cs.opacity);
         if (n === p.e || (cs.overflowX === "visible" && cs.overflowY === "visible")) continue;
-        const q = n.getBoundingClientRect();
+        const q = rectFor(at, n);
         if (cs.overflowX !== "visible") [cut.left, cut.right] = [Math.max(cut.left, q.left), Math.min(cut.right, q.right)];
         if (cs.overflowY !== "visible") [cut.top, cut.bottom] = [Math.max(cut.top, q.top), Math.min(cut.bottom, q.bottom)];
       }
       if (cut.right - cut.left < 1 || cut.bottom - cut.top < 1) continue;
       const frame = { left: cut.left, top: cut.top, width: cut.right - cut.left, height: cut.bottom - cut.top };
-      boxes += `<div style="${esc(`${place(frame)};overflow:hidden`)}"><div style="${esc(`position:absolute;box-sizing:border-box;left:${p.box.left - cut.left}px;top:${p.box.top - cut.top}px;width:${p.box.width}px;height:${p.box.height}px;${p.corners};box-shadow:${p.shadow};opacity:${opacity}`)}"></div></div>`;
+      boxes += `<div style="${esc(`${place(frame)};overflow:hidden`)}"><div style="${esc(`position:absolute;box-sizing:border-box;left:${pb.left - cut.left}px;top:${pb.top - cut.top}px;width:${p.box.width}px;height:${p.box.height}px;${p.corners};box-shadow:${p.shadow};opacity:${opacity}`)}"></div></div>`;
     }
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><foreignObject x="0" y="0" width="${W}" height="${H}"><div xmlns="http://www.w3.org/1999/xhtml" style="position:relative;width:${W}px;height:${H}px;overflow:hidden;background:#ffffff">${boxes}</div></foreignObject></svg>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><foreignObject x="0" y="0" width="${W}" height="${H}"><div xmlns="http://www.w3.org/1999/xhtml" style="position:relative;width:${W}px;height:${H}px;overflow:hidden;background:${base ? "transparent" : "#ffffff"}">${boxes}</div></foreignObject></svg>`;
     let data;
     try {
       const picture = new Image();
@@ -630,14 +716,23 @@ async function look(arg) {
     } catch {
       return { unknown: "the gradient behind it could not be painted to be read" };
     }
+    // The paper is clear under the words' ground (white only where nothing
+    // they stand on is opaque: the browser's own white is the ground then),
+    // so a pixel the ground does not reach comes back clear and is not read.
+    // It was white until 2026-11-11, and words that stood past their ground
+    // were read on that white: 1.00:1 for the lightest ink on a dark palette.
     const seen = new Map();
+    let bare = 0;
     for (let i = 0; i < data.length; i += 4) {
-      // Painted through (the paper under every box is white): a pixel left part clear was not.
-      if (data[i + 3] < 255) continue;
+      if (data[i + 3] < 255) {
+        bare += 1;
+        continue;
+      }
       const key = (data[i] << 16) | (data[i + 1] << 8) | data[i + 2];
       if (!seen.has(key)) seen.set(key, [data[i], data[i + 1], data[i + 2]]);
     }
-    if (!seen.size) return { unknown: "the gradient behind it could not be painted to be read" };
+    // Nothing of the ground is under the words where they stand: said, never read as paper.
+    if (!seen.size) return { unknown: base ? `it stands past the ground it would be measured on (${base.tagName.toLowerCase()}${classOf(base) ? `.${classOf(base)}` : ""})` : "the gradient behind it could not be painted to be read" };
     const light = (c) => 0.2126 * linear(c[0]) + 0.7152 * linear(c[1]) + 0.0722 * linear(c[2]);
     let worst = null;
     let lightest = null;
@@ -652,10 +747,18 @@ async function look(arg) {
     }
     // Where it was read, on the page, and whether a photograph of the page
     // would show it there (scripts/painted-ground-check.mjs): not when the
-    // words are scrolled out of their row, or pinned to the screen.
+    // words are pinned to the screen, and not, until their row is scrolled to
+    // them, when they are read at the middle of a row they are scrolled out of.
     let pinned = false;
     for (let n = el; n && !pinned; n = n.parentElement) pinned = /fixed|sticky/.test(getComputedStyle(n).position);
-    return { rgbs: [worst.g, lightest.g, darkest.g], painted: true, box: [left + scrollX, top + scrollY, W, H], apart: Boolean(job.at.out) || pinned };
+    // For the proof: the rows these words are read in the middle of, each as the way to it from the page's root, and how far it would carry them there.
+    const way = (e) => {
+      const steps = [];
+      for (let n = e; n && n !== document.documentElement; n = n.parentElement) steps.unshift([...n.parentElement.children].indexOf(n));
+      return steps;
+    };
+    const rows = (job.at.shifts ?? []).map((sh) => ({ row: way(sh.under), dx: sh.dx, dy: sh.dy }));
+    return { rgbs: [worst.g, lightest.g, darkest.g], painted: true, box: [left + scrollX, top + scrollY, W, H], apart: Boolean(job.at.out) || pinned, pinned, rows, word: rows.length ? way(el) : null, bare: bare / (data.length / 4) };
   };
   const largeText = (cs) => {
     const size = parseFloat(cs.fontSize);
@@ -1066,7 +1169,7 @@ export async function paintedGrounds(page, selector = "body") {
   if (!seen) return null;
   return [...seen.words, ...seen.placeholders]
     .filter((w) => w.ground.painted)
-    .map((w) => ({ text: w.text, box: w.ground.box, apart: w.ground.apart, lightest: w.ground.rgbs[1], darkest: w.ground.rgbs[2] }));
+    .map((w) => ({ text: w.text, box: w.ground.box, apart: w.ground.apart, pinned: w.ground.pinned, rows: w.ground.rows, word: w.ground.word, bare: w.ground.bare, lightest: w.ground.rgbs[1], darkest: w.ground.rgbs[2] }));
 }
 
 /**
@@ -1526,6 +1629,7 @@ const FIXTURES = `
   <a href="/saints/john-chrysostom/" style="margin-top:8px;display:flex;flex-direction:column;width:140px;color:#e8e8ea;text-decoration:none"><span style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;overflow:hidden;font-size:13px;font-style:italic">&ldquo;Golden-mouthed, the preacher of Antioch&rdquo;</span><span style="font-size:19px;font-weight:600">John Chrysostom</span></a>
   <div style="margin-top:8px;padding:10px 12px;border-radius:14px;background:linear-gradient(180deg,#1c1c1f,#151518)"><p style="margin:0;color:rgba(255,255,255,0.3);font-size:13px">Faint on a tray</p></div>
   <div style="margin-top:8px;height:120px;display:flex;flex-direction:column;justify-content:flex-end;background-image:linear-gradient(var(--color-night),var(--color-paper))"><p class="text-paper" style="margin:0;font-size:13px">Ink at the ink end</p></div>
+  <div style="margin-top:8px;padding:10px 0;border-radius:14px;background:linear-gradient(180deg,#1c1c1f,#151518)"><div style="display:flex;gap:8px;overflow-x:auto;padding:0 12px;scrollbar-width:none"><span style="flex:none;width:420px;height:18px"></span><p style="flex:none;margin:0;color:rgba(255,255,255,0.3);font-size:13px">Faint past its row</p></div></div>
 </div>
 <div data-mock-fixture="good" class="bg-night px-4 pb-4" style="position:fixed;left:0;right:0;top:0;z-index:301">
   <div class="flex items-center gap-2">
@@ -1566,6 +1670,10 @@ const FIXTURES = `
   <blockquote lang="en" data-mock-allow="emdash" data-mock-why="a Father's own words, as his edition prints them" class="mt-3 font-serif text-body italic leading-[1.6] text-paper/85">Chapter I.\u2014Introduction. Reason for writing</blockquote>
   <div class="theology-tray mt-3 rounded-[18px] px-4 py-3"><p class="font-sans text-ui text-paper">A line on a tray</p><p class="font-sans text-caption text-paper/70">And a quieter one under it</p></div>
   <div class="mt-3" style="height:120px;background-image:linear-gradient(var(--color-night),var(--color-paper))"><p class="font-sans text-ui text-paper">Ink at the ground end</p></div>
+  <div class="theology-tray mt-3 rounded-[18px] py-3">
+    <div class="flex gap-2 overflow-x-auto px-4" style="scrollbar-width:none"><button type="button" class="min-h-11 shrink-0 px-3 font-sans text-ui text-paper">A door in its row</button><button type="button" class="min-h-11 shrink-0 px-3 font-sans text-ui text-paper">And the door beside it</button><button type="button" class="min-h-11 shrink-0 px-3 font-sans text-ui text-paper">One at the row's edge</button><button type="button" class="min-h-11 shrink-0 px-3 font-sans text-ui text-paper">A door out of its row</button></div>
+    <div class="mt-2 h-12 overflow-y-auto px-4" style="scrollbar-width:none"><p class="font-sans text-ui text-paper">A line in its box</p><p class="mt-8 font-sans text-ui text-paper">A line under its fold</p></div>
+  </div>
   <div class="mt-3" style="background-image:url(data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==)"><p class="font-sans text-ui text-paper">Words on a picture</p></div>
   <div class="relative mt-3 h-24 overflow-hidden rounded-[18px] bg-night-soft"><img alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="absolute inset-0 h-full w-full object-cover"><p class="absolute inset-x-0 bottom-0 px-3 pb-2 pt-6 font-sans text-ui text-paper" style="background-image:linear-gradient(transparent,var(--color-night))">Words over a fade on a picture</p></div>
   <div class="relative mt-3 h-16 overflow-hidden rounded-[18px] bg-night-soft"><img alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="absolute inset-0 h-full w-full object-cover"><p class="relative px-3 pt-3 font-sans text-ui text-paper">Words over a picture, on plain colours</p></div>
@@ -1715,17 +1823,24 @@ async function selfTest() {
     const onGradient = (what) => bad.failures.some((f) => f.check === "contrast" && f.what === `"${what}"` && f.detail.includes("on the gradient under it"));
     const fadesCaught = onGradient("Faint on a tray") && onGradient("Ink at the ink end");
     const fadesRead = ["A line on a tray", "And a quieter one under it", "Ink at the ground end"].every((t) => painted.includes(t));
+    // Words scrolled out of their row, on a ground that does not scroll with them (2026-11-11, the Search sheet's
+    // doors): read at the middle of their row, on the tray behind the row. They stood, by their numbers, past
+    // the tray, and were read on the painting's bare paper: the house's two failed at 1.00:1, and the faint one
+    // was caught at 1.00:1, which is no measure of it.
+    const rowsRead = ["A door in its row", "A door out of its row", "A line in its box", "A line under its fold"].every((t) => painted.includes(t));
+    const pastRow = bad.failures.filter((f) => f.check === "contrast" && f.what === '"Faint past its row"');
+    const rowsCaught = pastRow.length > 0 && pastRow.every((f) => f.detail.includes("on the gradient under it") && parseFloat(f.detail) > 2 && parseFloat(f.detail) < 4);
     const said = (what, why) => good.unmeasured.includes(`"${what}": ${why}`);
     const picturesSaid =
       said("Words on a picture", "div has a picture") &&
       said("Words over a fade on a picture", "a picture is drawn across it (img)") &&
       said("Words over a picture, on plain colours", "a picture is drawn across it (img)") &&
       good.unmeasured.length === 3;
-    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight;
+    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && rowsRead && rowsCaught && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight;
     console.log(
       ok
         ? "\nself-test: every mistake caught, and the house's own parts pass"
-        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}`,
+        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${rowsRead && rowsCaught ? "" : " words scrolled out of their row were not read on the ground behind the row"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}`,
     );
     return ok;
   } finally {
