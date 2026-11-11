@@ -358,3 +358,38 @@ killing). Still: `january-saints/03-micaiah-and-the-sinai-fathers.png`.
   line of 12:22): they are our labels naming the place in each book, never
   the editions' own headings, which are not carried, and the verbatim text
   under them is untouched.
+
+## The arbiter's word of 13:14: the Sinai still, and the OCA (2026-11-11)
+
+- **The Fathers slain at Sinai and Raithu: two ways, for the arbiter to
+  pick.** Still: `january-saints/04-sinai-fathers-two-ways.png`, their page's
+  head and their card in Discover's saints at 390, rendered from the export
+  of 13:04: on the left the detail on the branch, on the right the whole
+  print cut inside its frame and above its Slavonic line (the same file, no.
+  05141, 458 by 611 of its 500 by 706 pixels, a strip taken off the right so
+  the haloes at the left stay whole; 315 by 420). The whole print was swapped
+  in by the browser and nothing else changed; checkMock passes on both pages.
+  The detail shows the scan's grain; the whole print shows them at rest under
+  their monastery, smaller.
+- **The Prophet Micaiah: the OCA does not cover him.** oca.org's page for him
+  on January 5 (https://www.oca.org/saints/lives/2027/01/05/100100-prophet-micah)
+  tells his life rightly, the companion of Elias who foretold Ahab's ruin (3
+  Kings 22), but the icon on it is the Prophet Micah of the Twelve: its file
+  is filed under August 14, his feast
+  (https://images.oca.org/icons/lg/august/0814micah.jpg), and the scroll in
+  his hand is Micah 5:2 in Slavonic ("И ты, Вифлееме, доме Евфрафов, еда мал
+  еси..."). oca.org's own page for that Micah, on August 14, makes him the
+  sixth of the Twelve, of Moresheth, prophesying from about 778 before Christ;
+  its January 5 page puts Micaiah in the ninth century before Christ. Another
+  prophet's face over his name is the one
+  thing a picture may not be, so it is not asked for. He stays on the plate
+  with his row on "search".
+- **St George the Chozebite: the OCA covers him.** oca.org's page for him on
+  January 8 shows an unsigned icon of three saints of the day, St Domnica, St
+  George and St Helladius, each named in Greek, George in the middle. His
+  picture would be a detail of him alone, so the letter asks for the file at
+  its full size (oca.org's is 414 by 559 pixels). The OCA is now his
+  addressee in docs/1.9-build/ICON-PERMISSIONS.md, in place of the
+  photographer and the monastery, whom no address reached, and his row in
+  everySaintAPicture.test.ts names it. Fable voices, who is putting the one
+  letter to the OCA together, has his name.

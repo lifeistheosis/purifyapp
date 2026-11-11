@@ -290,30 +290,39 @@ each).
 
 ## St George the Chozebite (died in the 7th century)
 
-The January chat, 2026-11-11, on the arbiter's word of 12:22 UTC. No picture
-of him in the public domain was found (the Russian Lives of the Saints of
-1903 to 1911 picture no one of his name on his day, and the Menologion of
-Basil II has no page for him), so he waits here.
+The January chat, 2026-11-11, on the arbiter's words of 12:22 and 13:14 UTC.
+No picture of him in the public domain was found (the Russian Lives of the
+Saints of 1903 to 1911 picture no one of his name on his day, and the
+Menologion of Basil II has no page for him), so he waits here.
 
-- **The picture:** a wall painting of him in the cave of the Prophet Elijah
+- **The icon:** the icon on his page at oca.org
+  (https://www.oca.org/saints/lives/2027/01/08/100112-venerable-george-the-chozebite-abbot;
+  the picture is https://images.oca.org/icons/lg/january/0108domnika-george-elladios.jpg).
+  It shows three saints of January 8 standing side by side, each named in
+  Greek: St Domnica, St George ("Ο Άγ. Γεώρ. ο Χοζεβίτης") and St Helladius.
+  He is the one in the middle, an old monk with a white beard, blessing, a
+  staff in his hand. His picture would be a detail of him alone. The file
+  oca.org shows is 414 by 559 pixels, so he would be about 140 pixels wide in
+  it: ask for it at its full size.
+- **Made by:** not named.
+- **To write to:** the Orthodox Church in America, whose site shows it: PO Box 31409,
+  Alexandria, VA 22310, United States; office 516-922-0550. Its contact page
+  has a "Permissions" line ("To obtain permission for reproduction: send a
+  request to" an address the page shows only in a browser) and says its
+  photographs and other resources "may not be reproduced without the
+  permission of The Orthodox Church in America" (https://www.oca.org/contact).
+- **For the letter:** in English, in the one letter to the OCA. Ask who
+  painted it, for leave to show him alone, cut from it, and for the file at
+  its full size.
+- **Not asked for:** a wall painting of him in the cave of the Prophet Elijah
   at the Monastery of St George of Choziba in the Wadi Qelt, photographed on
-  23 October 2014. Commons holds the enlarged fragment that shows him,
+  23 October 2014 by Britchi Mirela under CC BY-SA 4.0 (Commons:
   https://commons.wikimedia.org/wiki/File:%D0%93%D0%B5%D0%BE%D1%80%D0%B3%D0%B8%D0%B9_%D0%A5%D0%BE%D0%B7%D0%B5%D0%B2%D0%B8%D1%82_George_of_Choziba.jpg,
-  cut from the whole photograph,
-  https://commons.wikimedia.org/wiki/File:Palestine,_Valea_Hozevei._Manastirea_Sfantul_Gheorghe._Grota_Sfantului_Proroc_Ilie._Pictura_pe_peretele_grotei._(Octombrie_2014).jpg
-  (its caption, in Romanian: "Manastirea Sfantul Gheorghe. Grota Sfantului
-  Proroc Ilie. Pictura pe peretele grotei").
-- **Made by:** the painting: its painter and its date, not found. The
-  photograph: Britchi Mirela, under CC BY-SA 4.0 (uploaded to Commons by the
-  user Apr1, 2024). The house tool's licence gate does not pass CC BY-SA, and
-  a cut of it would have to carry the same licence.
-- **To write to:** the monastery, which is the Greek Orthodox Patriarchate of
-  Jerusalem's: its own address, not found. Britchi Mirela: not found beyond
-  her name on the Commons page.
-- **For the letter:** two permissions are needed: the monastery's, for its
-  painting (unless the painting can be shown to be old enough to be free),
-  and the photographer's, for her photograph without the share-alike terms,
-  or else her name and the CC BY-SA licence shown with the picture.
+  cut from
+  https://commons.wikimedia.org/wiki/File:Palestine,_Valea_Hozevei._Manastirea_Sfantul_Gheorghe._Grota_Sfantului_Proroc_Ilie._Pictura_pe_peretele_grotei._(Octombrie_2014).jpg).
+  Its painter and its date were not found, and no address was found for the
+  monastery (the Greek Orthodox Patriarchate of Jerusalem's) or for the
+  photographer, beyond her name on the Commons page.
 
 ## The eight older saints of November and December with no free picture
 
@@ -384,8 +393,8 @@ The mother of the Holy Unmercenaries Cosmas and Damian (November 1).
   request to" an address the page shows only in a browser) and says its
   photographs and other resources "may not be reproduced without the
   permission of The Orthodox Church in America" (https://www.oca.org/contact).
-  One letter to it can ask for all four of its icons named here (St Marcian,
-  these two, St Irenarchus, St Elias of Murom).
+  One letter to it can ask for all five of its icons named here (St Marcian,
+  these two, St Irenarchus, St Elias of Murom, St George the Chozebite).
 - **For the letter:** in English. Ask who painted it.
 - **Refused:** the fresco of their martyrdom at Dionysiou Monastery, Mount
   Athos (1547, public domain, on Commons) shows the killing itself, the nail

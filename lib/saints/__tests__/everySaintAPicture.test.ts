@@ -66,9 +66,11 @@ const WAITING: Record<string, string> = {
   "elias-of-murom": "permission: the Orthodox Church in America (the unsigned icon on its page for him)",
   // January's saints (1.9): twenty took their pictures in the January chat's
   // pushes 2 and 3 (docs/1.9-build/notes/january-saints.md); these two have
-  // none that passes.
-  "prophet-micaiah": "search: the January chat found none (Weigel's engraving of 1695 shows him struck)",
-  "george-the-chozebite": "permission: his monastery's wall painting, photographed by Britchi Mirela (docs/1.9-build/ICON-PERMISSIONS.md)",
+  // none that passes. The icon oca.org shows on the Prophet Micaiah's day is
+  // the Prophet Micah of the Twelve (filed under August 14, his scroll Micah
+  // 5:2), another prophet's face, so it is not asked for.
+  "prophet-micaiah": "search: the January chat found none (Weigel's engraving of 1695 shows him struck; oca.org's icon on his day is the Prophet Micah of the Twelve)",
+  "george-the-chozebite": "permission: the Orthodox Church in America (the unsigned icon on its page for him, with St Domnica and St Helladius: a detail of him alone)",
 };
 
 /** The saints whose pages have no picture: no entry of the saint names one (a saint may stand in the registry more than once). */
