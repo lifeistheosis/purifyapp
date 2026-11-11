@@ -229,6 +229,15 @@ arbiter knows better who holds what.
 - Smallest fix: 44px rows for past days (one control that cycles, or the three
   at full height), the note at `text-paper/60`, palette tokens for Kept.
 - Area: Updates.
+- **Done** (Fable Themes, 2026-11-11, `8a5c3cf7`; the buttons came to it from
+  Updates on the arbiter's word): the marks take a finger over 44px and are
+  drawn as they were; marking a day moves nothing (0px, walked); the note is
+  45, a share each palette draws at its own safe strength; Kept is the
+  palette's own soft green and Broke its soft red, each read on five palettes
+  with the mark on. The tap walk's "1 days kept in all." is counted in 21
+  languages. After: `fresh-eyes/M5-fasting-marked-after.png`,
+  `M5-fasting-marked-after-light.png`, `M5-fasting-note-after-light.png`.
+  Record: `notes/themes-fable.md`, section 46.
 
 #### M6. Sign in and Create account: a typed emoji and 19px links
 
@@ -252,6 +261,13 @@ arbiter knows better who holds what.
   The Hours, any hour, scroll: a pill sits mid-screen across a line of the
   Trisagion (`fresh-eyes/11-hours-chant-pill-over-words.png`). A floating pill
   where it does not belong. Area: Updates, with notes 2 and 14.
+  **Done** (Fable Themes, 2026-11-11, `5ac031d0`, on the arbiter's word):
+  the chant is a button in the prayer page's bar beside search, shown at the
+  moment the pill showed, and nothing floats over the prayer. Its coming
+  moves nothing in the bar, and it mirrors in Arabic. Before and after:
+  `fresh-eyes/L1-hours-chant-pill-before.png`,
+  `L1-hours-chant-in-bar-after.png`. Record: `notes/themes-fable.md`,
+  section 45.
 - **L2. The Bible's "v 7 of 38 · 3 min left" line lies across the verse under
   it** while scrolling (`fresh-eyes/13-bible-status-over-verse.png`; the same on
   a Father's work: "Hymn I of 19 · 13 min left"). `components/bible/ChapterVerseStatus.tsx:122`
@@ -273,6 +289,11 @@ arbiter knows better who holds what.
   (`components/start/StartHere.tsx:77`). Community: the house rules line
   "Speak with charity ..." is 3.82:1 on Dark, 2.31:1 on Light. Area: Admin's
   guardrail walk should catch both.
+  **Done** (Fable Themes, 2026-11-11, `94e49e90`): the step numbers are 50
+  and the house rules line 45, shares each palette draws at its own safe
+  strength; both screens pass the guardrail walk. Before and after:
+  `fresh-eyes/L5-start-numbers-before-light.png`,
+  `L5-start-numbers-after-light.png`, `L5-community-rules-after-light.png`.
 - **L6. Privacy speaks to a browser inside the app:** "open /account and click
   'Remove this name' ... clear site data for this origin in your browser
   settings" (`components/legal/PrivacyText.tsx`). Legal text, so his word.

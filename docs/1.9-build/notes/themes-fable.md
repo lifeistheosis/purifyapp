@@ -3944,3 +3944,251 @@ empty again.
   (mended by its owner the same hour) and the app build's set-aside list
   (its owner told).
 
+
+## 45. The chant at hand: a button in the bar, no pill over the prayer (fresh eyes L1)
+
+Fresh eyes L1: on an Hour, "Pray with chant" floated mid-screen across a line
+of the Trisagion. His rule of 2026-11-10 (CLAUDE.md, "Floating pills only
+where they belong") keeps such a pill out, and his 1.8 pick B wanted the
+chant one tap away at any line. The pill was his own pick by the code's
+note, so the arbiter was asked, and its word of 2026-11-11 03:22 UTC was to
+build the recommendation: a button in the prayer page's bar beside search,
+shown at the moment the pill showed. It keeps what he chose the pill for and
+removes a fault, so it needed no call from him.
+
+What was built (`5ac031d0`):
+
+- The pill is gone from Pray with (`components/player/PrayWith.tsx`) and its
+  styles with it. Pray with says when its chant is at hand (it has gone up
+  off the screen, nothing sounds, no question is up, the picker is shut) and
+  how to open the picker, through a small store
+  (`lib/player/chantAtHand.ts`). A page that is leaving cannot take the
+  next page's offer away.
+- The bar's button (`components/player/ChantInBar.tsx`): the house's 44px
+  plate and the two beamed notes at the bar's one weight, named "Pray with
+  chant" (an existing line, in every language). It opens the same picker.
+- Its place is kept whether it shows or not: it is always in the bar and
+  hidden with `visibility`, so its coming moves nothing. Hidden, it takes no
+  tap and no focus and is not read out. It comes and goes on the house's
+  curve; with motion off it is simply there.
+- `MobileTopBar` gains one optional slot before search (`beforeSearch`), for
+  a button that comes and goes; `trailing` stays for what a page always
+  shows. The six pages that show the prayer reader hand it the chant.
+
+Walked on the export (20 of 20):
+
+- At the head of an Hour the button is in the bar and hidden, its place 47
+  by 47, and a finger on that place does not reach it.
+- The page's name comes into the bar first. With Pray with gone up off the
+  screen the button comes. Back, the name and search stand where they stood:
+  search at 334.8px before and after, "The First Hour" 93.2px wide before
+  and after. A long name is cut no differently ("Akathist to the Most Holy
+  Theotokos", 222.1px, cut both times).
+- Nothing fixed to the screen offers the chant. A touch on the button opens
+  the picker; while it is open the button steps back, its place kept; the
+  picker put away, it is back; at the head of the page it has gone.
+- With motion on it has arrived whole a moment later.
+- In Arabic the bar turns round: the button from 286 to 333 becomes 57 to
+  104, search from 334.8 becomes 8.5.
+- A tablet in the app (820 wide) has the bar and the button.
+- `checkMock` passes on the bar on five palettes, and in Arabic.
+
+Stills: `fresh-eyes/L1-hours-chant-pill-before.png`,
+`fresh-eyes/L1-hours-chant-in-bar-after.png`,
+`fresh-eyes/L1-hours-chant-in-bar-arabic-after.png`.
+
+`lib/player/__tests__/chantAtHand.test.ts` holds it and fails on the old
+pill (five of its cases).
+
+**Where it is not:** a computer's browser. The page has no bar of its own
+there (the website's header stands in its place), so the chant is at the
+head of the page, in Pray with, and no longer follows the reader down. If it
+should, the website's header is its place, and that is its owner's file.
+
+## 46. The fasting tracker (fresh eyes M5, the gate's first run, the tap walk)
+
+Three lists met in one file, `components/fasting/FastingTrackerClient.tsx`
+(`8a5c3cf7`):
+
+- **Nothing moves when a day is marked.** The streak card's line changed
+  wording on the first mark, the card grew with it, and Kept, In part and
+  Broke dropped 19px under the finger. Both wordings of each card's line
+  stand in one place now and one is seen, so a card keeps the taller one's
+  height. Walked: every mark moves 0px when a day is marked Kept, In part
+  or Broke, on Dark and on Light.
+- **"1 days kept in all."** The second card's line was one string, written
+  for many days, in every language. It is counted with the number over it
+  now, and the 21 catalogs carry its forms: one and other everywhere, few in
+  Russian, Ukrainian, Polish, Serbian and Romanian, many in Arabic, as the
+  app's other counts do. Each catalog's own words for many days are kept
+  word for word (the script that wrote them refused to run otherwise). The
+  line that adds the days kept in part is counted the same way, and the
+  streak's line gains the form for 2 to 4 in the four Slavic catalogs, where
+  it read "2 постных дней подряд". Walked: "1 fasting day kept in a row."
+  and "1 day kept in all.", then "2 days kept in all, 1 in part."; in
+  Russian one, two and five days each take their own form on both cards.
+- **A finger's 44px.** Thirty pills 29px tall. They reach 44px by the
+  house's helper and are drawn as they were; drawn 44px tall they would have
+  made every day's row a wall of buttons. Walked: a finger 6px outside a
+  small mark lands on it, and the rows stand 74px apart, so one day's reach
+  never lies over the next day's.
+- **A mark that is on.** Kept was a fixed emerald, the one colour on the
+  page that followed no palette. It wears the palette's own soft green now,
+  and Broke the soft red: each palette sets those tones to be read on it.
+  The walk with marks on found what a walk at rest cannot see: Broke's word
+  was 2.3:1 on Dark and 3.2:1 on Light, and Kept's green on Light 4.25:1
+  over its own fill. Broke is the soft red on a tenth of itself. Kept has an
+  edge and no fill: on Light its green is 4.58:1 on a card with nothing
+  under it and 4.45:1 over a fill of 5 percent. `checkMock` passes on the
+  page with all three kinds of mark on, on five palettes.
+- **The line about where the marks are kept** is 45, a share each palette
+  draws at its own safe strength: at 40 it was 2.31:1 on Light.
+
+Kept could have been drawn another way that also passes: the word in the
+palette's ink on a green fill. The soft green word was chosen by eye,
+because it keeps the three marks apart by their words' colours, as they
+were. It is the one choice here that is taste, and it is his to turn.
+
+Stills: `fresh-eyes/M5-fasting-before.png`,
+`fresh-eyes/M5-fasting-marked-after.png`,
+`fresh-eyes/M5-fasting-marked-after-light.png`,
+`fresh-eyes/M5-fasting-note-before-light.png`,
+`fresh-eyes/M5-fasting-note-after-light.png`.
+
+`lib/fasting/__tests__/keptInAll.test.ts` holds the counted line (all five
+cases fail on the old one); the rest is in `lib/ui/__tests__/gateRunOne.test.ts`.
+
+## 47. The pre-build gate's first run: this chat's list
+
+`notes/gate-run-1.md`, "Who has each", with fresh eyes L5 (`94e49e90`).
+
+Before, on these eleven screens (`scripts/guardrail-walk.mjs`, reading the
+main web as a phone does): two passed. 41 findings under 44px, 14 of
+contrast, 2 of mirroring, 2 empty round frames, 1 star in a reader's post.
+After, on the export built from this work: 18 screens of 18 pass (the
+eleven, with an Hour, the morning and evening rules, an akathist, the Bible
+tab and the journal).
+
+- **A finger's 44px.** The export page's two downloads stood 22 and 24px
+  tall: each shared the row down a column and gave up its own height.
+  Community: Sign in and the feed's Try again are 44px tall; the writer's
+  picture on a post, the day's link, the replies' Try again and a waiting
+  reply's two buttons reach 44px by the house's helper, as their neighbours
+  do; the "All" word over the feed (18px wide) does too, and its lit rule
+  moved to `::before`, since `::after` is the helper's. Prayers: "Chants"
+  was a pixel short of 44 wide, and the four quiet links were bare lines of
+  20px.
+- **Under 44px by name.** A post's name, as a reply's already was by the
+  arbiter's yes of 2026-11-10: a reach there would cover the post's first
+  line, and the picture beside it and the menu's View profile are the 44px
+  ways to the profile. A name inside a reader's sentence: a link in a line,
+  drawn as a button, so the walk's own leave for a link in a line did not
+  reach it.
+- **Words a reader can read.** The arbiter asked whether the 2.31:1 lines
+  wear one class, to mend them at its source. They do, and it is not a
+  fault of the class: 40 and 35 percent are the shares the house keeps for
+  marks that are decorative or disabled (`app/globals.css`, "Faint text on
+  every palette"), and naming them would lift some seventy places across
+  the app, icons and dividers among them. So each line of words moves to a share
+  every palette draws at its own safe strength: the council document's
+  "Source:" line (45, as the same line under a Father's work), Start here's
+  step numbers and the first-liturgy guide's (50), Community's house rules
+  (45), the export page's waiting line (45). The chant's closed tabs on
+  Light take the palette's own 70 percent, 4.95:1 on the strip's deeper
+  ground, where the strip's 62 was 3.92:1.
+- **A play mark in Arabic.** On a chant's page and in the player it was
+  nudged a pixel or two to the right, which stayed on the right in Arabic.
+  It is the house's Play drawn centred on its own box, as Prayers' already
+  were (`lib/prayers/__tests__/prayersMirror.test.ts`): a play mark points
+  right in every language and is not turned.
+- **The two round frames, by eye.** Community's 38px frame is a reader's
+  disc with its letter in it; the walk could not read the letter in a post
+  the feed had not drawn yet. The disc says on itself that it is never
+  empty, and its letter can no longer come up blank: a name that began with
+  a space drew nothing, and one that began with an emoji drew half of it
+  (`lib/community/discInitial.ts`). A Georgian letter stays as written.
+  Prayers' 51px frame is the Chants card's play mark on its disc, whole as
+  it is, and it says so on itself.
+- **A reader's own words.** A post's title and words, a reply's words and
+  the names readers chose say on themselves that they are the reader's.
+
+Stills: `fresh-eyes/L5-start-numbers-before-light.png`,
+`fresh-eyes/L5-start-numbers-after-light.png`,
+`fresh-eyes/L5-community-rules-after-light.png`.
+
+`lib/ui/__tests__/gateRunOne.test.ts` holds each mend; fifteen of its
+sixteen cases fail on the code the gate walked.
+
+## 48. A tapped search field is quiet
+
+His word of 2026-11-10 (CLAUDE.md, "No box around a tapped field") names
+search outright. The one search field had kept a way of its own under that
+rule, his pick in build 80: a 58 percent white edge, a 3px ring and a 24px
+glow round the pill. The campaigns chat met it on the journal's verse
+finder, and the arbiter's word of 2026-11-11 03:56 UTC was that every search
+field shows it is active the house's quiet way (`f7afab6f`).
+
+- With a finger on it: its own fill, a fine edge in the palette's ink at 32
+  percent (the share every other tapped field wears), the glass a step
+  brighter, and the caret. Nothing round the pill. Light's own rule for the
+  lit field is gone: the token turns with the palette.
+- A keyboard reaching it still gets the keyboard's ring, round the pill as
+  a whole. Typing in the field does not bring it.
+- One rule (`.search-field`), so every place that uses the field follows.
+
+Measured on the export with a finger on each, Dark and Light, before and
+after: the Bible's search (the search screen opened from the Bible tab) and
+the journal's verse finder had a 1px edge at 58 percent (66 on Light), the
+3px ring and, on Dark, the 24px glow; both now have the 1px edge at 32
+percent and the well's own inner shade, and nothing else. After Tab away
+and back: the ring, 2px at 70 percent, 2px off the pill. `checkMock` passes
+on both fields on five palettes.
+
+Stills: `build-93/search-field-bible-before.png`,
+`build-93/search-field-bible-after.png`,
+`build-93/search-field-verse-finder-before.png`,
+`build-93/search-field-verse-finder-after.png`.
+
+`lib/search/__tests__/oneField.test.ts` and
+`lib/ui/__tests__/fieldFocus.test.ts` hold it; three of their cases fail on
+the old stylesheet.
+
+## 49. What is not proven, and what was found on the way (sections 45 to 48)
+
+- **Nothing here has been seen on a phone.** Every walk is a browser on the
+  export. The lines for the next test build's walk are in HANDOFF.
+- **The 21 languages' new lines were written here, not by a native reader.**
+  Each is built from words its own catalog already had (its streak line for
+  the singular, its old line for many days). The Arabic form for 11 to 99
+  and the Serbian form for 2 to 4 are the ones most worth a native eye.
+- **Community's line has no "before" still.** It stands at the foot of the
+  feed and the "before" still was of the head; the export it could have
+  come from was built over. The gate's own measure, 2.31:1 on Light, is its
+  before.
+- **Words at 40 and 35 percent elsewhere.** A reading of the source (a
+  heuristic: an element wearing one of the two shares, followed by words)
+  finds sixteen more places. The gate's walk of every screen at rest did not
+  name them, so each either shows only after a tap or is not what the
+  reading takes it for: they want a look, not a claim. For the arbiter to
+  route: `app/error.tsx:44`, `components/bible/BookSwitcher.tsx:152` and
+  `:176`, `components/bible/StudyRail.tsx:260`,
+  `components/bible/VerseContextMenu.tsx:144`,
+  `components/community/ComposePage.tsx:573`,
+  `components/community/profile/ProfileEditor.tsx:469`,
+  `components/eikonBox/DropProgress.tsx:71`,
+  `components/eikonBox/EikonBoxClient.tsx:301`,
+  `components/profile/ProfileDanger.tsx:80`,
+  `components/saints/WorkContents.tsx:215`,
+  `components/search/CommandPalette.tsx:754`,
+  `components/search/SearchRows.tsx:115`,
+  `components/shop/CategoryChips.tsx:92`,
+  `components/streak/StreakSheet.tsx:88`,
+  `components/walkthrough/Synthesis.tsx:211`.
+- **A blind spot in the walk**, told to Admin: for a card the feed has not
+  drawn yet (`content-visibility`), a control's words read empty while its
+  boxes still measure. That is why the first run listed Community's names
+  as nameless buttons 18px tall ("the reactions") and a disc with its letter
+  as an empty frame.
+- **The suite was red at the branch's head by one test** while this was
+  gated (the 1.9 release email one word over its limit, from a copy change);
+  its owner was told and it was green again by the last run here.
