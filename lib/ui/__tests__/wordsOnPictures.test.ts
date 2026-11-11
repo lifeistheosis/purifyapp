@@ -84,7 +84,9 @@ describe("the words that wear it, at the ink they were measured at", () => {
   // In the order each file writes them; a share of 100 is the ink itself.
   const WORN = [
     { file: "components/mobile/PrayersHero.tsx", what: ["the verse", "its citation"], at: [100, 85] },
-    { file: "components/you/YouIdentity.tsx", what: ["the name", "the line under it", "where things are kept"], at: [100, 90, 100] },
+    // The line under the name went from 90 to the ink itself on 2026-11-11: "Optional", the word it holds
+    // signed out since the sign-in lines were rewritten, measured 4.40:1 on Candlelight at 90 and 4.99:1 at 100.
+    { file: "components/you/YouIdentity.tsx", what: ["the name", "the line under it", "where things are kept"], at: [100, 100, 100] },
     { file: "components/ui/GalleryBand.tsx", what: ["a card's line"], at: [80] },
   ];
 

@@ -33,7 +33,10 @@ import { useMyPicture } from "@/lib/profile/myPicture";
 export type YouWho = { state: "unknown" } | { state: "out" } | { state: "in"; id: string; name: string };
 
 const NAME = "words-halo block truncate font-heading text-[30px] font-bold leading-[1.15] tracking-[-0.01em] text-paper";
-const UNDER = "words-halo mt-1 flex items-center gap-1.5 font-sans text-detail text-paper/90";
+// The ink itself, not nine tenths of it: "Optional", the word under Sign in since the sign-in lines
+// were rewritten, stands on a lighter part of the Ladder than the line it replaced, and at 90 percent
+// it measured 4.40:1 on Candlelight (scripts/words-on-pictures.mjs, 2026-11-11; 4.99:1 at the ink).
+const UNDER = "words-halo mt-1 flex items-center gap-1.5 font-sans text-detail text-paper";
 
 /** The Pro cross draws its ring in the crimson token: on You it is the ink. */
 const INK = { "--color-crimson": "var(--color-paper)" } as CSSProperties;
