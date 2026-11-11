@@ -13830,6 +13830,7 @@ a.set-lab.set-link {
  :where(h1, h2, h3):where(:lang(de), :lang(ka)) {
   hyphens: auto;
  }
+}
 
 /* ── The order gift: the card in your hand (1.8, r3-39 C) ─────────────────
    purifyapp.net/gift, where the QR on the EIKON thank-you card lands. The
