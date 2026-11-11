@@ -155,7 +155,7 @@ const TOUR_1_8: Tour = {
  * 1.9, told the way 1.8 was (his note 49 of build 80 asks a tour of every
  * release), after the release's own line: "Keep a journal by the Church's
  * day, and go deeper into every verse." Six stops, in the order of the note:
- * the journal's page for the day, a verse opened, the five Bibles to
+ * the journal's page for the day, a verse opened, the six Bibles to
  * download, the new reading plans, the Creed by council, and History's great
  * events in their pictures. Each is a line of the 1.9 note that is lit in
  * the build, and each lights what every reader sees on its page.

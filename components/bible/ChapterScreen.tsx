@@ -12,6 +12,7 @@ import { ChapterKeyNav } from "@/components/bible/ChapterKeyNav";
 import { ChapterPager } from "@/components/bible/ChapterPager";
 import { DownloadedChapter } from "@/components/bible/DownloadedChapter";
 import { KeepScrolling } from "@/components/bible/KeepScrolling";
+import { KeptPlace } from "@/components/bible/KeptPlace";
 import { ReadingsFlowBar } from "@/components/bible/ReadingsFlowBar";
 import { PlanFlowBar } from "@/components/plans/PlanFlowBar";
 import { ListenButton, ReadAloudFollow } from "@/components/bible/ReadAloud";
@@ -22,6 +23,7 @@ import { ReaderSettingsMenu } from "@/components/bible/ReaderSettingsMenu";
 import { AmbienceButton } from "@/components/player/AmbienceButton";
 import { ReadingProgressBar } from "@/components/bible/ReadingProgressBar";
 import { RestoreTranslation } from "@/components/bible/RestoreTranslation";
+import { TitleTranslation } from "@/components/bible/TitleTranslation";
 import { TranslationSwitcher } from "@/components/bible/TranslationSwitcher";
 import { VerseFocusFlash } from "@/components/bible/VerseFocusFlash";
 import { SourceList, marked, type ListedSource } from "@/components/citations/Marked";
@@ -225,6 +227,13 @@ export function ChapterScreen({
             </div>
 
             <RestoreTranslation testament={book.testament} />
+            {/* A change of translation keeps the reader's verse: once the
+                chapter stands in the new one, the verse is set back at the
+                reading place (build 93 note 20, lib/bible/keepPlace.ts). */}
+            <KeptPlace
+              textKey={downloaded ? `${downloaded.bible.id}:${downloaded.text.state}` : usingLicensed ? `licensed:${licensedId}` : "english"}
+              ready={downloaded ? downloaded.text.state === "ready" : true}
+            />
 
             {/* 280px at lg, 320 at xl, and only where there is a rail. At
                 exactly 1024 (iPad landscape, small laptops) the old 320 +
@@ -271,6 +280,9 @@ export function ChapterScreen({
                     </h1>
                     <TitleOpensBooks slug={slug} chapter={chapter} />
                   </div>
+                  {/* The translation beside the chapter, one tap from the page on a
+                      phone and a tablet (build 93 note 20). */}
+                  <TitleTranslation currentSlug={slug} configuredLicensed={configuredLicensed} />
                   {/* The passages the Church knows by name, said where a reader looks.
                       Daniel 13 IS Susanna and 14 IS Bel and the Dragon, so they get their
                       name as a subtitle; Daniel 3 holds the Prayer of Azariah and the Song

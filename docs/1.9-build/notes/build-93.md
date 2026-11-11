@@ -312,6 +312,38 @@ Where it is today: on a phone the translation hides behind the reader's ••�
 
 Who has it: Updates 2 (the Bibles, their downloads, Almeida), after Almeida so the new translation is in it. The bar: the translation sits beside the chapter where the chapter is chosen, one tap from the reader on a phone as on a computer, opening the house's sheet with the translations the reader has and those to download, the current one checked; the switch keeps the reader's place (the same chapter and verse); a translation without the chapter (the deuterocanon in a Protestant Bible) says so plainly instead of failing; 44px, the house's motion, his standing rules. A still with the push.
 
+Done (Updates 2, 2026-11-11):
+
+- **The translation beside the chapter.** On a phone and a tablet, under the
+  chapter's title, where "Chapter 1 ⌄" opens the books, the translation the
+  chapter is read in now stands with the same small chevron
+  (`components/bible/TitleTranslation.tsx`): one tap opens the house's sheet
+  with the translations the reader has and those to download, the one being
+  read checked (the same rows the ••• sheet and the computer's pill show).
+  It is outside the page's one heading, 44px to the touch, put away with the
+  rest of the reader's chrome in focus, and the computer keeps its toolbar
+  pill. The 1.9 tour's stop for the new Bibles lights it on a phone, and the
+  tour now says six (the Almeida joined them), in all 21 languages.
+- **The switch keeps the reader's place.** The verse over the reading line is
+  read as another translation is chosen, the page no longer jumps to its top,
+  and once the chapter stands in the new translation the verse is set back at
+  the reading place (`lib/bible/keepPlace.ts`, `KeptPlace`), from the title's
+  line and from the ••• sheet alike. A Bible without the book says so in its
+  row, and its chapter in English says why, as before.
+- **Genesis to John from the title** (the Discord report of 2026-10-24) works
+  on this branch: the title opens the books, John's row opens its chapters,
+  and chapter 1 opens John 1. Held with the rest.
+- **Held by** `lib/bible/__tests__/translationBeside.test.ts`.
+- **On the export, as the app:** the line stands under "Chapter 1", centred,
+  47px tall; its sheet holds the translations with Brenton's checked and the
+  Almeida offered; reading at verse 10, a switch to the Almeida (downloaded
+  from its files) leaves the reader at verse 10, the line now saying
+  "Almeida"; from Genesis the title's books open John 1. `checkMock` on the
+  title: every check passes. Still: `build-93/20-translation-beside-chapter-390.png`.
+- **For the release's own words (with the arbiter):** the 1.9 patch notes,
+  board, release email and drop still say "Five more Bibles"; with the
+  Almeida it is six, and the notes go through the admin's proposal queue.
+
 ### 21. Campaigns are not in build 93, and the themes do not change (2026-11-11 about 01:48 UTC)
 
 His words: "and the themes doesn't change I'm not sure if I told you that already" and "and also the campaigns isn't even on its just flat out removed I wanted it in".

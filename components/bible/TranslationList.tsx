@@ -7,6 +7,7 @@ import { Check } from "@/components/ui/icons/Check";
 import { getBook } from "@/lib/bible/books";
 import { DOWNLOADABLE_BIBLES, type DownloadableBible } from "@/lib/bible/downloads/catalog";
 import { writeBibleChoice } from "@/lib/bible/downloads/choice";
+import { holdPlace } from "@/lib/bible/keepPlace";
 import { offerLanguageFor } from "@/lib/bible/downloads/languageOffer";
 import { useShownBible } from "@/lib/bible/downloads/useShownBible";
 import {
@@ -49,27 +50,34 @@ export function useTranslationChoice(currentSlug: string, configured: readonly s
   const current = currentTranslation({ ...scope, activeV: searchParams.get("v") });
   const { shown } = useShownBible(currentSlug);
 
-  /** Opens the chapter in `t`. The one being read, or one that cannot be picked, changes nothing. */
+  /**
+   * Opens the chapter in `t`. The one being read, or one that cannot be picked,
+   * changes nothing. A switch keeps the reader's verse (1.9, build 93 note 20,
+   * lib/bible/keepPlace.ts): it is read before, the page does not jump to its
+   * top, and the chapter sets it back at the reading place (KeptPlace).
+   */
   function choose(t: Translation): void {
     if (!isSelectable(t, configured)) return;
+    if (shown || t.id !== current.id) holdPlace(pathname);
     // From a downloaded Bible back to the English the chapter already names.
     if (shown) writeBibleChoice(null);
     if (t.id === current.id) return;
     writeTranslationPref(t.licensed ? t.id : null);
     const qs = queryFor(t, searchParams.toString());
-    router.push(qs ? `${pathname}?${qs}` : pathname);
+    router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }
 
   /** Reads on in a downloaded Bible (on the phone, in the apps), and offers the app in its language. */
   function chooseBible(bible: DownloadableBible): void {
     if (shown?.id === bible.id) return;
+    holdPlace(pathname);
     writeBibleChoice(bible.id);
     writeTranslationPref(null);
     if (searchParams.get("v")) {
       const params = new URLSearchParams(searchParams.toString());
       params.delete("v");
       const qs = params.toString();
-      router.replace(qs ? `${pathname}?${qs}` : pathname);
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     }
     offerLanguageFor(bible, locale);
   }
