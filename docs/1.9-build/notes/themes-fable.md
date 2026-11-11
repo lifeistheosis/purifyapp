@@ -4898,3 +4898,142 @@ picture's words and boxes.
 - **Whether iOS holds the screen itself** is not known here: there is no
   WebKit in this session. "Anchoring off" is Chromium with its anchoring
   turned off, as before.
+
+## 64. A saint's card says how many works only when there is one
+
+`c6802c33`. The arbiter, 13:39 UTC: "components/saints/SaintCard.tsx line 69
+always prints the works count, so every martyr with none reads "0 works"
+(seen on the Fathers of Sinai and Raithu in Discover's saints). Show the
+count only when there is at least one work; the feast and Read stay where
+they are, the row's spacing whole either way."
+
+The foot of a card is one row: the feast, the count, Read. The count is
+drawn now only for a saint with a work. The row spreads its parts between
+its two ends, so with two parts the feast keeps the start and Read the end.
+
+Walked on the export at 390 wide with every card drawn, before (build 12)
+and after (build 13): 269 cards in the list; 124 said "0 works" and none
+does; the 145 with a work say the same count in the same place. On every
+one of the 269 the feast's left edge, Read's right edge, the row's height,
+the card's height and the row's place in the card are the same to 0.0px.
+Stills: `build-93/saints-card-0-works-before.png` and
+`saints-card-no-count-after.png`, the Fathers Slain at Sinai and Raithu.
+
+The same afternoon Fable voices gave nine saints a Life from Butler
+(`d38328c7`), the Fathers of Sinai and Raithu among them. On the branch as
+pushed 115 saints have no work, and that card says "1 work". The stills are
+of the two builds before it.
+
+`lib/saints/__tests__/cardWorks.test.ts`, 5 cases; the first fails on the
+card as it was.
+
+Seen and left: the reading room's search prints "0 works" over its own
+"nothing matches" line (`components/reading/ReadingSearch.tsx`). That is a
+count of what was found, not a saint's. Told to the arbiter.
+
+## 65. A list is windowed only where the browser anchors the screen
+
+`b906c8c3`. The arbiter, 14:00 UTC, on section 61's last finding: "Not
+left for the phone walk: a jump under the finger fails the gate, and Back
+now returns readers deep into that list, where the cards above have never
+been drawn. Window the cards only where the browser anchors the screen: wrap
+.cv-card's content-visibility in @supports (overflow-anchor: auto), so a
+browser without anchoring (Safari, as far as we know) draws every card and
+nothing above can change size. Measure that stand-in (anchoring off, no
+windowing) at 320 for the jump (it should be 0), the first paint and the
+memory of 269 cards, and the same @supports for any other list that windows
+the same way". It approved section 61's ten steps, which stay.
+
+**Three lists window their rows**, not two: the saints' cards and History's
+rows in the stylesheet, and Community's posts by a class on each post
+(`components/community/CommunityClient.tsx`). Each now asks the browser
+whether it anchors its scroll and draws only the rows near the screen on a
+yes. The room a row is given stays outside the question, where alone it
+does nothing. The built stylesheet carries all three questions.
+
+**The jump, with a real finger.** A reader is put three quarters of the way
+down the saints' list in one jump, as Back puts them, and drags the list
+13,000px up, 8px at a time (`Input.dispatchTouchEvent`), the finger held
+before it lifts so nothing is flung. After each move the card under the
+finger is read against where the finger has taken it. A jump is a step in
+that difference that is still there a move later.
+
+| the saints' list | 320 wide | 390 wide | 1024 wide |
+| --- | --- | --- | --- |
+| as built, the browser anchoring (Android) | 0 of 1,380 moves | 0 | 0 |
+| windowed and not anchored (an iPhone, before) | 33 moves, up to 53px, 776px in all | 31 moves, up to 46px, 634px in all | not run |
+| the stylesheet's other branch, not anchored (an iPhone, now) | 0 | 0 | 0 |
+
+The other branch is the stylesheet's own and not a rule laid over it: every
+stylesheet of the export is served with the question made unanswerable, so
+the rules inside it are not taken, as a browser reads it that does not know
+`overflow-anchor`. In it a card's `content-visibility` reads `visible` and
+none of the 269 is undrawn. No flag makes this Chromium forget the property
+(four were tried), so this is the nearest thing here to such a browser.
+
+**A correction to section 61.** It said that with anchoring on one step in
+500 still moved the screen. That was the probe: it scrolled by script, and
+the browser does not hold the screen through a script's scroll as it does
+through a finger's. The step was found: the first card to draw in above
+after the jump (St Alexander Nevsky, 280px given, 257px drawn) moved the
+screen 22.6px, once. With a finger it does not happen: 0 of 1,380 moves.
+
+**The saints' filters** hold at 0px under the finger with every card drawn
+and anchoring off (28 taps at 320, 390 and 1024), as they do as built (48
+taps at five sizes).
+
+**What drawing every row costs**, on Chromium here, the list opened by a
+tap from Today, three runs each, the median:
+
+| | windowed | every row drawn |
+| --- | --- | --- |
+| the saints' list on the screen, full speed, 390 wide | 194ms | 298ms |
+| the same, processor slowed four times, 390 wide | 747ms | 1,256ms |
+| the same, slowed four times, 320 wide | 839ms | 1,244ms |
+| the renderer's memory after it | 443 to 466 MB | 474 to 484 MB |
+| the saints' pictures loaded | 2 to 4 of 234 | 2 to 4 of 234 (all lazy) |
+| History's timeline on the screen, slowed four times | 590ms | 585ms |
+
+About a tenth of a second at full speed and half a second on a slow
+processor, and 15 to 30 MB, for the 269 saints; nothing for History's forty
+rows. The browsers that will pay it are iPhones. Community's feed was not
+timed: it is fetched from the main web and is as long as the day.
+
+**Walked on build 13** (cut 14:12 UTC from `3750c39d` with this work, as the
+gate cuts its own): the page-switch walk 50 of 50; the export walk's
+sections 9, 22, 42, 46, 60 and 76, 137 checks, all passed; the gate's tap
+walk on Saints, History and Community, 100 controls and 0 failed, as each
+reader; the guardrail walk with nothing failed on Saints and Community as
+each reader. History fails the guardrail walk on eight things that are its
+own and no part of this: four links under 44px wide (Arius, 1054, 1204,
+1453) and four era names ended by three dots in the row of eras. Told to
+the arbiter.
+
+`lib/ui/__tests__/windowedLists.test.ts`, 5 cases, reads every stylesheet,
+page and component for a row windowed without the question and names the
+three; four fail on the lists as they were. History's own test
+(`calmHistory.test.ts`) and the card room's follow the rules' new shape.
+
+**Found on the way, not this chat's.** History's 128px for a row not yet
+drawn is far from its rows: at 390 wide the timeline is 11,484px before its
+rows are drawn and 15,772px after, 4,288px short over thirty rows. Told to
+the arbiter.
+
+## 66. What is not proven (sections 64 and 65)
+
+- **Nothing here has been seen on a phone, and none of section 65 on an
+  iPhone.** There is no WebKit in this session. "A browser that does not
+  anchor" is Chromium with its anchoring turned off and the stylesheet's
+  question made unanswerable.
+- **Whether Safari answers no to the question** is from public trackers,
+  looked up 2026-11-11: caniuse's page for `overflow-anchor` and the
+  web-features explorer list scroll anchoring for Chrome, Edge and Firefox
+  and nothing shipped in Safari, and WebKit's bug 171099 ("Implement scroll
+  anchoring") is still being worked. A Safari that learns the property
+  before it holds the screen well would window again, and jump again. His
+  iPhone is what says; the phone-walk line asks.
+- **First paint and memory are this machine's Chromium**, slowed, not a
+  phone's.
+- **Community's feed with every post drawn** was not dragged: its class and
+  the built rule were read, and the gate's two walks passed on it as built.
+- **History with every row drawn** was timed, not dragged.
