@@ -407,3 +407,93 @@ work on his page and one book in the reading room
   already open with the owner (who owns the reader's checkMock faults).
 - **Stills**: `december-saints/09-kronstadt-writings.png`,
   `10-my-life-in-christ-part-i.png`.
+
+## Push 2b, as built: the icons (2026-11-11)
+
+The month's icons, placed with the house tool (`scripts/fetch-saint-icons.mjs`):
+each Commons file read on its own page, fetched once (one fetch a minute at
+most, the limit shared with Updates 2), cut at its own pixels to 315 by 420,
+never enlarged, and settled with a full rights row in
+`lib/saints/iconRights.ts`, written while looking at the cut. The slugs went
+to Updates 2 first.
+
+- **Placed: 35 saints.**
+  - **From Wikimedia Commons, 28.** St Philaret the Merciful and St Savva of
+    Storozhevsk (the centres of Russian life icons, 19th century and 1835);
+    St Barbara (Novgorod, 15th century); St Sabbas (a Novgorod fresco, 14th
+    century); St Nilus of Stolobny (an Old Believer icon, 19th century); St
+    Patapius (the wall painting in his cave at Loutraki); St Menas, St
+    Eleutherius, St Theodore the Branded and St Ambrose (the frescoes of 1547
+    at Dionysiou; St Theodore is the right-hand figure of his pair, as its
+    letters say); St Luke the New Stylite, St Theophano, St Zoticus and St
+    Melania (the Menologion of Basil II, about 985; St Luke's page is mirrored
+    on Commons, as its own page says, and is turned the right way round); St
+    Modestus (a Bulgarian icon of 1851, a CC0 photograph, the hook it hangs
+    from cut out); St Boniface (a Palekh icon by Dmitry Korin, 1887); St
+    Anastasia (a Hermitage icon of about 1400, call 30's quiet choice); and
+    eleven prints of the Russian Lives of the Saints of 1904, December volume:
+    Sts
+    Sosthenes, Cephas and Tychicus, St Lucy, Sts Philemon and Apollonius, St
+    Stephen of Surozh, St Chrysogonus and St Niphon (the six the arbiter
+    passed), St Juliana, St Eugenia and Sts Thyrsus, Leucius and Callinicus
+    (in place of pictures of their deaths) and St Marcellus (in place of a
+    page too small to use), the four the arbiter passed on the six's word,
+    and St Sebastian (call 30's quiet choice).
+  - **Cut from pictures the app already carries, 7.** The five prophets
+    (Nahum, Habakkuk, Zephaniah, Haggai, Daniel) from their read-aloud
+    covers, the Kirillo-Belozersky prophets row of 1497 (who each figure is
+    there is the Church's tradition, as that file's clergy review says); the
+    20,000 Martyrs of Nicomedia from History's Menologion miniature of the
+    Great Persecution; and St Nicholas from his page's large picture
+    (Kirillo-Belozersky, 1497), under a new name,
+    `nicholas-the-wonderworker.v2.jpg`, since his old file carried a painter's
+    mark and came off the app on the 10th. The shop's St Nicholas has his
+    picture again.
+- **Call 30, the violent scenes:** six held on the plate, shown to the owner in
+  `decisions/dec-violence.png`. His word, 2026-11-11 about 00:56 UTC: "rec
+  for all", which was "quiet or plate". St Sebastian wears his 1904 print (a
+  young soldier holding a small cross) and St Anastasia a Hermitage icon of
+  about 1400 (a woman holding a cross and a small jar); the scenes of their
+  deaths are not used.
+- **On the plate:** the Holy Innocents, St Eustratius and his companions, the
+  Ten Martyrs of Crete and St Anysia (call 30: every picture found shows
+  their deaths, and none quiet was found); St Elias of Murom (the one picture's date is in doubt and its
+  style looks modern); St Joasaph of Belgorod (the free picture is a
+  portrait, not an icon) and St John of Kronstadt (an 1890 photograph), both
+  to offer the owner as they are.
+- **The books:** 26 of the month's books wear their saint's icon now: St
+  Ambrose's five, the five prophets' books, the Martyrs of Nicomedia, St
+  Melania, Sts Sosthenes, Apollos, Cephas and Tychicus, and Butler's Lives of
+  St Anastasia, St Barbara, St Boniface, St Chrysogonus, St Eugenia, St
+  Juliana, St Lucy, St Marcellus, Sts Philemon and Apollonius, St Sabbas, St
+  Sebastian, St Theodore and Sts Thyrsus, Leucius and Callinicus. Three keep
+  the plate: St Anysia's, the Ten Martyrs', and My Life in Christ.
+- **White at the edges** (the owner's rule of 2026-10-17, read by
+  `scripts/check-picture-edges.mjs`): the check found it on ten of the prints,
+  St Menas and St Theodore the Branded, and on two of November's (Updates 2's
+  find). The prints are cut again inside their own frame lines, with none of
+  the page and no caption: the white set around them to make them 3:4 is gone,
+  and they keep their own shape. What is light at their edges now is the
+  print's own stippled ground, and the check's ACCEPTED list says so, file by
+  file. St Menas loses a light strip at his right edge. St Theodore the
+  Branded's white is his open scroll, and St Nektarios's (November) the white
+  studio backdrop of his photograph: both ACCEPTED. St Theodore the Studite
+  (November) is cut above the bare plaster at the mosaic's foot, under a new
+  name, `theodore-the-studite.v2.jpg`: his face, his name and the roundel
+  stay, his hand does not. The icons folder reads clean: 0 to fix, 24
+  accepted.
+- **The call 30 still** went up on its own first (80f15c246,
+  `decisions/dec-violence.png`): each held saint's own page from the export,
+  the picture found where his icon stands, and under it the quiet choice or
+  the page as it is now.
+- **The register:** `data/calendar/profiled-saints.json` rebuilt from it.
+- **Size:** 35 files, 1.36 MB; the icons folder is 7.17 MB of its 18 MB bound.
+  The Android export is 68.6 MB packed of 85.
+- **Walked** on the Android export: fifteen pages (St Ambrose, his writings,
+  the Prophet Daniel, St Luke, St Theodore the Branded, the Martyrs of
+  Nicomedia, St Barbara, St Juliana, St Nicholas, St Chrysogonus, Sts
+  Sosthenes, Apollos, Cephas and Tychicus, St Theodore the Studite, St
+  Sebastian, St Anastasia and the reading room), each icon drawn from its own
+  file and no errors; checkMock passed on the four held to it.
+- **Stills**: `december-saints/11-st-ambrose-icon-and-book.png`,
+  `12-st-chrysogonus-print.png`.

@@ -154,6 +154,35 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   "alexander-nevsky": bundled("alexander-nevsky.jpg", 34),
   "innocent-of-irkutsk": bundled("innocent-of-irkutsk.jpg", 31),
   "barlaam-and-josaphat": bundled("barlaam-and-josaphat.jpg", 35),
+  // Push 2b: the icons placed with the house tool (2026-11-10), on their
+  // books. The five prophets are cut from their read-aloud covers and the
+  // Martyrs of Nicomedia from History's miniature; the rest are from
+  // Wikimedia Commons. St Anastasia and St Sebastian wear the quiet pictures
+  // of call 30, the owner's word of 2026-11-11 ("rec for all"); St Anysia's
+  // and the Ten Martyrs of Crete's books keep the plate, the only pictures of
+  // them showing their deaths.
+  "prophet-nahum": bundled("prophet-nahum.jpg", 27),
+  "prophet-habakkuk": bundled("prophet-habakkuk.jpg", 22),
+  "prophet-zephaniah": bundled("prophet-zephaniah.jpg", 24),
+  "prophet-haggai": bundled("prophet-haggai.jpg", 20),
+  "prophet-daniel": bundled("prophet-daniel.jpg", 21),
+  "ambrose-of-milan": bundled("ambrose-of-milan.jpg", 30),
+  "martyrs-of-nicomedia": bundled("martyrs-of-nicomedia.jpg", 47),
+  "melania-the-younger": bundled("melania-the-younger.jpg", 27),
+  "sosthenes-apollos-cephas-and-tychicus": bundled("sosthenes-apollos-cephas-and-tychicus.jpg", 15),
+  "anastasia-the-pharmakolytria": bundled("anastasia-the-pharmakolytria.jpg", 20),
+  "barbara-the-great-martyr": bundled("barbara-the-great-martyr.jpg", 22),
+  "boniface-of-tarsus": bundled("boniface-of-tarsus.jpg", 16),
+  chrysogonus: bundled("chrysogonus.jpg", 25),
+  "eugenia-of-rome": bundled("eugenia-of-rome.jpg", 25),
+  "juliana-of-nicomedia": bundled("juliana-of-nicomedia.jpg", 24),
+  "lucia-of-syracuse": bundled("lucia-of-syracuse.jpg", 30),
+  "marcellus-of-the-unsleeping-ones": bundled("marcellus-of-the-unsleeping-ones.jpg", 28),
+  "philemon-apollonius-and-arrianus": bundled("philemon-apollonius-and-arrianus.jpg", 15),
+  "sabbas-the-sanctified": bundled("sabbas-the-sanctified.jpg", 25),
+  "sebastian-and-companions": bundled("sebastian-and-companions.jpg", 28),
+  "theodore-the-branded": bundled("theodore-the-branded.jpg", 25),
+  "thyrsus-leucius-and-callinicus": bundled("thyrsus-leucius-and-callinicus.jpg", 13),
 
   // 1.9, build 90 note 3: St Memnon, who hosted the Third Council, his face on
   // its page from Commons' unmarked copy of the fresco at Dionysiou (his

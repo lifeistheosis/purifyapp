@@ -146,43 +146,18 @@ describe("the covers' pictures", () => {
       "victorinus-of-pettau/on-the-creation-of-the-world",
       "zacchaeus-and-alphaeus/martyrdom-of-zacchaeus-and-alphaeus",
     ];
-    // December's saints (1.9, docs/1.9-build/notes/december-saints.md), the
-    // same way: these books' saints have no settled icon yet (their search is
-    // the month's second push). St. Peter of Moscow's and St. Stephen's wear
-    // theirs, and the Holy Innocents' wears St. Matthew's, its author's.
+    // December's saints (1.9, docs/1.9-build/notes/december-saints.md): the
+    // month's second push placed its icons (push 2b, 2026-11-11), and these
+    // books stay on the plate. St. Anysia's and the Ten Martyrs of Crete's
+    // only pictures show their deaths, and the owner's word on the violent
+    // scenes (call 30, 2026-11-11: "quiet or plate") leaves them the plate,
+    // while St. Anastasia and St. Sebastian wear the quiet pictures; St. John
+    // of Kronstadt's only free picture is an 1890 photograph, not an icon.
+    // St. Peter of Moscow's and St. Stephen's books wear theirs, and the Holy
+    // Innocents' wears St. Matthew's, its author's.
     const december = [
-      "ambrose-of-milan/ambrose-in-the-witnesses",
-      "ambrose-of-milan/concerning-repentance",
-      "ambrose-of-milan/on-the-duties-of-the-clergy",
-      "ambrose-of-milan/on-the-holy-spirit",
-      "ambrose-of-milan/on-the-mysteries",
-      "martyrs-of-nicomedia/the-martyrs-of-nicomedia",
-      "melania-the-younger/life-of-melania-the-younger",
-      "prophet-daniel/the-book-of-daniel",
-      "prophet-habakkuk/the-prophecy-of-habakkuk",
-      "prophet-haggai/the-prophecy-of-haggai",
-      "prophet-nahum/the-prophecy-of-nahum",
-      "prophet-zephaniah/the-prophecy-of-zephaniah",
-      "sosthenes-apollos-cephas-and-tychicus/their-names-in-scripture",
-      // Butler's fifteen Lives (2026-11-10): their saints' icons are the
-      // month's second push too.
-      "anastasia-the-pharmakolytria/martyrdom-of-anastasia",
       "anysia-of-thessaloniki/martyrdom-of-anysia",
-      "barbara-the-great-martyr/martyrdom-of-barbara",
-      "boniface-of-tarsus/martyrdom-of-boniface",
-      "chrysogonus/martyrdom-of-chrysogonus",
-      "eugenia-of-rome/martyrdom-of-eugenia",
-      "juliana-of-nicomedia/martyrdom-of-juliana",
-      "lucia-of-syracuse/martyrdom-of-lucia",
-      "marcellus-of-the-unsleeping-ones/life-of-marcellus",
-      "philemon-apollonius-and-arrianus/martyrdom-of-apollonius-and-philemon",
-      "sabbas-the-sanctified/life-of-sabbas",
-      "sebastian-and-companions/martyrdom-of-sebastian",
       "ten-martyrs-of-crete/the-ten-martyrs-of-crete",
-      "theodore-the-branded/life-of-theodore-the-branded",
-      "thyrsus-leucius-and-callinicus/martyrdom-of-thyrsus-leucius-and-callinicus",
-      // St. John of Kronstadt's My Life in Christ (2026-11-10): his icon is
-      // the month's second push too.
       "john-of-kronstadt/my-life-in-christ",
     ];
     const plate = buildRoom(false)

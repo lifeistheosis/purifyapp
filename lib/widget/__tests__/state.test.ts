@@ -7,6 +7,8 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import nextUpdate from "@/data/changelog/next-update.json";
+import { isUnverified } from "@/lib/saints/iconRights";
+import { SAINTS } from "@/lib/saints/saints";
 import type { StripDay } from "@/lib/streak/compute";
 
 import { WIDGET_KEYS } from "../bridge";
@@ -152,8 +154,9 @@ describe("the patron saint", () => {
       nameDay: "2026-12-06",
       nameDayAfter: "2027-12-06",
       daysToNameDay: 53,
-      // The rights to this icon are not settled.
-      icon: null,
+      // His icon's rights are settled: a cut of his page's large picture, the
+      // Kirillo-Belozersky board of 1497 (December push 2b, 2026-11-11).
+      icon: "public/saints/icons/nicholas-the-wonderworker.v2.jpg",
     });
   });
 
@@ -192,6 +195,10 @@ describe("the patron saint", () => {
     // The path is the file's place in the repository too, which is what the
     // bundle copies.
     expect(readFileSync(arsenius!.icon!).length).toBeGreaterThan(1000);
+    // A carried file whose rights are not settled is not handed over: the
+    // first saint whose icon is still in the debt, while there is one.
+    const unsettled = SAINTS.find((s) => s.iconUrl && isUnverified(s.iconUrl));
+    if (unsettled) expect(patronFacts({ kind: "saint", slug: unsettled.slug }, TODAY, "new")?.icon, unsettled.slug).toBeNull();
   });
 
   it("is undefined while unknown, and null with no saint to show", () => {
@@ -207,7 +214,7 @@ describe("the patron saint", () => {
       name: "St. Nicholas the Wonderworker",
       nameDay: "2026-12-06",
       nameDayAfter: "2027-12-06",
-      icon: null,
+      icon: "public/saints/icons/nicholas-the-wonderworker.v2.jpg",
     });
     expect(patronEntry(null)).toBeNull();
     expect(patronEntry(undefined)).toBeUndefined();

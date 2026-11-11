@@ -80,6 +80,24 @@ const ACCEPTED = {
   "saints/icons/ignatius-of-antioch.v2.jpg": "his white vestments with their red crosses, at the foot",
   "saints/icons/tarasius-of-constantinople.v2.jpg": "his white omophorion with its crosses, at the foot and in the lower corners",
   "saints/icons/sophronius-of-jerusalem.v2.jpg": "his white vestments with their black crosses, at the foot",
+  // Looked at on 2026-11-11, December's icons (docs/1.9-build/notes/december-saints.md,
+  // push 2b) and one of November's: the light is the work's own. The 1904 prints
+  // are cut inside their frame lines, so none of the page is left; what is light
+  // at their edges is the print's own ground, stippled in grey and pale where it
+  // is sky, and no cut inside it would keep the figure whole.
+  "saints/icons/chrysogonus.jpg": "a print of 1904: its own stippled ground, pale where it is sky",
+  "saints/icons/eugenia-of-rome.jpg": "a print of 1904: its own stippled ground, pale where it is sky",
+  "saints/icons/juliana-of-nicomedia.jpg": "a print of 1904: its own stippled ground, pale where it is sky",
+  "saints/icons/lucia-of-syracuse.jpg": "a print of 1904: its own stippled ground, pale where it is sky",
+  "saints/icons/marcellus-of-the-unsleeping-ones.jpg": "a print of 1904: its own stippled ground, pale where it is sky",
+  "saints/icons/philemon-apollonius-and-arrianus.jpg": "a print of 1904: its own stippled ground, pale where it is sky",
+  "saints/icons/sosthenes-apollos-cephas-and-tychicus.jpg": "a print of 1904: its own stippled ground, pale where it is sky",
+  "saints/icons/stephen-of-surozh.jpg": "a print of 1904: its own stippled ground, pale where it is sky",
+  "saints/icons/thyrsus-leucius-and-callinicus.jpg": "a print of 1904: its own stippled ground, pale where it is sky",
+  "saints/icons/sebastian-and-companions.jpg": "a print of 1904: its own stippled ground, pale where it is sky",
+  "saints/icons/niphon-of-cyprus.jpg": "a print of 1904: its own stippled ground, and its sky left white at the right",
+  "saints/icons/theodore-the-branded.jpg": "the open scroll in his hand, at the foot and the right",
+  "saints/icons/nektarios-of-aegina.v2.jpg": "a photograph: the white studio backdrop behind him, its own",
   // Looked at on 2026-10-31, the Fall of Constantinople's gallery (the owner's note 84): the light is the work's own.
   "history/media/fall-of-constantinople-zonaro-gun.v1.jpg": "Zonaro's painted sky: a white cloud over the banners, at the top left; a cut would lose the banners or the horsemen",
   // Kept on the website for the 1.7 apps, which ask for these by name; 1.7.1
