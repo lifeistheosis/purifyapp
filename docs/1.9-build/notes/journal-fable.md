@@ -179,14 +179,19 @@ The journal's own walk of the export, with a finger: stills held to
 moves under the finger, anything that opens off the screen, or a cursor taken
 from where the reader put it.
 
-**Two readers, two exports.** Plus is asked for only where the build can sell
+**Two readers, one export.** Plus is asked for only where the build can sell
 it (`lib/entitlements/entitlements.ts`). The export every other harness uses
 is cut with no store key, so it locks nothing: on it a reader has Plus's
 parts. A new reader, as he walks a test build, has no Plus and meets its
-locks. That needs an export cut with stand-in keys (words, not keys; nothing
-is bought and no store is reached), and the script's head says how. Facts 15
-and 16 were found only there. Most flows are walked as both readers; the few
-that need one are named and left on the other.
+locks. That needs the export `scripts/plus-order-walk.mjs` and
+`scripts/learn-walk.mjs` already ask for, built as the store's is
+(`NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1` and a stand-in key, a word and not a
+key; nothing is bought and no store is reached). With `SELLS_PLUS=1` the walk
+says it is the Android shell, as those two do, and the reader has no Plus;
+without it the same export locks nothing. So one export serves both readers
+and all three walks. Facts 15 and 16 were found only as a new reader. Most
+flows are walked as both; the few that need one are named and left on the
+other.
 
 ## Checked (commands, 2026-11-11 UTC)
 
@@ -218,6 +223,21 @@ Each mend has a case that fails on the code before it. Measured for the first
 sixteen cases of `writingSheet.test.ts`: fourteen fail on the old source and
 two are guards, true on both. The later cases read functions and a file that
 did not exist before (`highlightTarget`, `lib/ui/escape.ts`).
+
+As pushed, 05:30 UTC: `358dd91ad..24beb99dc`, the same code rebased over
+commits that touched none of its files. On that tip: `npm run typecheck` 0 and
+`npm run test:unit` 12,930 of 12,930 (05:29). And on one export of `24beb99dc`
+cut the house's way for Plus's locks (05:41):
+
+- the journal's walk, 22 of 22 as a reader for whom nothing is locked and 22
+  of 22 as a new reader with no Plus;
+- `scripts/learn-walk.mjs`, which presses Escape four times over its sheets,
+  all 55.
+
+On the export of `6a96a000a`: the release's own walk of the journal
+(`scripts/export-walk.mjs --sections 40`) 127 of 127, and
+`scripts/legal-sheet-walk.mjs` clean, 38 checks. Both use what this push
+changed: the writing sheet, More, and Escape over a sheet.
 
 One thing `checkMock` does not see: a name cut short. The four tiles that
 read "H...", "C...", "D..." and "C..." passed every measured rule. The walk

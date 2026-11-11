@@ -24,21 +24,25 @@
 // the stills' numbers ("01,03"); `folder` is where they are written, a
 // folder of its own name and never one in docs.
 //
-// TWO READERS, TWO EXPORTS. Plus is asked for only where the build can sell
-// it (lib/entitlements/entitlements.ts: the store's key in the build). An
-// export cut with no key locks nothing, so on it every reader has Plus's
-// parts; that is the export the other harnesses use, and here it stands for
-// a reader with Plus. A new reader, as the owner walks a test build, has no
-// Plus and meets its locks: that needs an export that sells Plus, cut with
-// stand-in keys, which are words and not keys:
+// TWO READERS, ONE EXPORT. Plus is asked for only where the build can sell it
+// (lib/entitlements/entitlements.ts: the store's key in the build). The
+// export the other harnesses use is cut with no key, so it locks nothing, and
+// on it every reader has Plus's parts. A new reader, as the owner walks a
+// test build, has no Plus and meets its locks. That needs the export
+// scripts/plus-order-walk.mjs and scripts/learn-walk.mjs ask for, built as
+// the store's is, with Plus enforced and a key to sell it by. The key is a
+// stand-in, a word and not a key; nothing is bought and no store is reached:
 //
-//   NEXT_PUBLIC_REVENUECAT_ANDROID_KEY=stand-in NEXT_PUBLIC_REVENUECAT_IOS_KEY=stand-in \
-//   NEXT_PUBLIC_PLUS_ENFORCED_IOS=true npm run build:android
-//   SELLS_PLUS=1 WALK=1 node scripts/mock-journal.mjs
+//   NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1 NEXT_PUBLIC_REVENUECAT_ANDROID_KEY=walk npm run build:android
+//   SELLS_PLUS=1 WALK=1 node scripts/mock-journal.mjs      a new reader with no Plus
+//   WALK=1 node scripts/mock-journal.mjs                   a reader for whom nothing is locked
 //
-// (Both stores, because a browser cannot say which phone it is, and the app
-// then asks for Plus only where both sell it.) Most flows are walked on
-// either; the few that need one reader are named and left on the other.
+// With SELLS_PLUS the page says it is the Android shell, as those two walks
+// do, since that is where the export sells Plus. Without it the same export
+// locks nothing: the app cannot tell which store it is in, and then asks for
+// Plus only where both sell it. So both readers are walked on the one export.
+// Most flows are walked as either reader; the few that need one are named
+// and left on the other.
 import fs from "node:fs";
 import path from "node:path";
 
@@ -110,11 +114,23 @@ const scrolled = (page) => page.evaluate(() => Math.round(document.querySelector
 const dialogs = (page) =>
   page.evaluate(() => [...document.querySelectorAll("[role=dialog], [role=alertdialog]")].map((d) => (d.getAttribute("aria-label") ?? d.querySelector("h1, h2")?.textContent ?? "").trim()));
 
+/** The Android shell, as far as the app's own check goes: Plus is sold there (scripts/plus-order-walk.mjs). */
+function android() {
+  window.androidBridge = { postMessage() {} };
+  window.Capacitor = { getPlatform: () => "android", isNativePlatform: () => true };
+}
+
 /** The journal, open on its page for the day. */
 async function journal({ scale = 1, set = {} } = {}) {
   const o = await openPhone({ scale, set });
+  if (SELLS_PLUS) await o.ctx.addInitScript(android);
   o.errors = [];
-  o.page.on("pageerror", (e) => o.errors.push(e.message));
+  o.page.on("pageerror", (e) => {
+    // The stand-in shell has no plugins, and the app's own Back listener says so
+    // (lib/platform/useAndroidBack.ts asks @capacitor/app). A phone has them. Nothing else is let by.
+    if (SELLS_PLUS && /^"\w+" plugin is not implemented on android$/.test(e.message)) return;
+    o.errors.push(e.message);
+  });
   await go(o.page, "/journal");
   await o.page.waitForSelector("[data-journal-today]", { timeout: 30000 });
   await wait(1200);
