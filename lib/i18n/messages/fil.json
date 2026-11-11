@@ -3189,6 +3189,7 @@
   "shop.tabs.orders": "Mga Order",
   "signin.pending": "Nagsa-sign in…",
   "signin.genericError": "Hindi ka na-sign in. Subukan muli.",
+  "auth.noSignal": "Walang signal. Tingnan ang iyong koneksyon at subukang muli.",
   "signin.newHerePrefix": "Bago ka rito?",
   "signin.invalidCredentials": "Hindi tumugma ang email o password. Kung nag-sign up ka noong wala pang password sa Purify (panahon ng magic link), gamitin ang Nakalimutan ang password? sa ibaba para magtakda ng isa.",
   "signin.emailNotConfirmed": "Kumpirmahin muna ang iyong email, tingnan ang iyong inbox.",

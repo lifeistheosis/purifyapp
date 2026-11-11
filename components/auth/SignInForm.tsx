@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PasswordInput } from "./PasswordInput";
 import { OAuthButtons } from "./OAuthButtons";
+import { connectionAware } from "@/lib/auth/friendlyError";
 
 type Translate = ReturnType<typeof useTranslate>["t"];
 
@@ -123,6 +124,7 @@ export function SignInForm({ next }: { next?: string }) {
 }
 
 function friendly(t: Translate, msg: string): string {
+  if (connectionAware(msg, t) !== msg) return connectionAware(msg, t);
   if (/invalid login credentials/i.test(msg)) {
     // Pre-v6.2 users signed up via magic-link with no password set.
     // The fix is the same as forgetting one: Forgot password → email

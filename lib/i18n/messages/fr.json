@@ -3194,6 +3194,7 @@
   "shop.tabs.orders": "Commandes",
   "signin.pending": "Connexion en cours…",
   "signin.genericError": "Connexion impossible. Réessayez.",
+  "auth.noSignal": "Pas de réseau. Vérifiez votre connexion et réessayez.",
   "signin.newHerePrefix": "Vous êtes nouveau ?",
   "signin.invalidCredentials": "L'e-mail ou le mot de passe ne correspond pas. Si vous vous êtes inscrit avant l'arrivée des mots de passe sur Purify (à l'époque des liens magiques), utilisez Mot de passe oublié ? ci-dessous pour en définir un.",
   "signin.emailNotConfirmed": "Veuillez d'abord confirmer votre adresse e-mail, vérifiez votre boîte de réception.",

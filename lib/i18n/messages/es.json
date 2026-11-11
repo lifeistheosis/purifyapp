@@ -3193,6 +3193,7 @@
   "shop.tabs.orders": "Pedidos",
   "signin.pending": "Iniciando sesión…",
   "signin.genericError": "No se pudo iniciar sesión. Inténtalo de nuevo.",
+  "auth.noSignal": "Sin señal. Revisa tu conexión e inténtalo de nuevo.",
   "signin.newHerePrefix": "¿Eres nuevo aquí?",
   "signin.invalidCredentials": "El correo o la contraseña no coinciden. Si te registraste antes de que Purify tuviera contraseñas (la época del enlace mágico), usa ¿Olvidaste tu contraseña? abajo para crear una.",
   "signin.emailNotConfirmed": "Confirma primero tu correo, revisa tu bandeja de entrada.",

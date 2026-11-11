@@ -18,6 +18,8 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { connectionAware } from "@/lib/auth/friendlyError";
+
 const read = (rel: string) => fs.readFileSync(path.join(process.cwd(), rel), "utf8");
 /** The code without its comments, so a note is not read as the page. */
 const code = (rel: string) =>
@@ -75,6 +77,22 @@ describe("the sign-in screens", () => {
     const src = code("components/auth/SignUpForm.tsx");
     expect(src).not.toContain('placeholder="Edgar"');
     expect(src).toContain('placeholder={t("campaigns.new.namePlaceholder")}');
+  });
+
+  it("say a lost connection in the reader's words, never the browser's (\"Failed to fetch\")", () => {
+    const t = (key: string) => key;
+    for (const words of ["Failed to fetch", "TypeError: Load failed", "NetworkError when attempting to fetch resource.", "fetch failed"]) {
+      expect(connectionAware(words, t), words).toBe("auth.noSignal");
+    }
+    expect(connectionAware("Invalid login credentials", t)).toBe("Invalid login credentials");
+    for (const file of ["SignInForm", "SignUpForm", "ForgotForm", "ResetForm", "SetPasswordForm", "OAuthButtons"]) {
+      expect(code(`components/auth/${file}.tsx`), file).toContain("connectionAware(");
+    }
+    for (const name of fs.readdirSync("lib/i18n/messages").filter((f) => f.endsWith(".json"))) {
+      const line = (JSON.parse(read(`lib/i18n/messages/${name}`)) as Record<string, string>)["auth.noSignal"];
+      expect(line, name).toBeTruthy();
+      expect(line, name).not.toContain("\u2014");
+    }
   });
 
   it("put each form's error under its button, and stand the form from the top on a phone, so nothing moves under the finger", () => {

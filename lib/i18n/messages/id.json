@@ -3187,6 +3187,7 @@
   "shop.tabs.orders": "Pesanan",
   "signin.pending": "Sedang masuk…",
   "signin.genericError": "Gagal masuk. Coba lagi.",
+  "auth.noSignal": "Tidak ada sinyal. Periksa koneksi Anda lalu coba lagi.",
   "signin.newHerePrefix": "Baru di sini?",
   "signin.invalidCredentials": "Email atau kata sandi tidak cocok. Jika Anda mendaftar sebelum Purify memakai kata sandi (era tautan ajaib), gunakan Lupa kata sandi? di bawah untuk menyetelnya.",
   "signin.emailNotConfirmed": "Harap konfirmasi email Anda terlebih dahulu, periksa kotak masuk Anda.",

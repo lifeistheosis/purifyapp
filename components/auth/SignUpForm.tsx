@@ -10,6 +10,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PasswordInput } from "./PasswordInput";
 import { OAuthButtons } from "./OAuthButtons";
 import { LegalLink } from "@/components/legal/LegalLink";
+import { connectionAware } from "@/lib/auth/friendlyError";
 
 /**
  * Email + password sign-up. The Supabase trigger creates the profiles
@@ -59,7 +60,7 @@ export function SignUpForm() {
       await recordAcceptance("signup", email.trim());
     } catch (e) {
       setError(
-        e instanceof Error ? e.message : t("signup.acceptanceFailed"),
+        e instanceof Error ? connectionAware(e.message, t) : t("signup.acceptanceFailed"),
       );
       setPending(false);
       return;
@@ -96,7 +97,7 @@ export function SignUpForm() {
       }
       setSentTo(email.trim());
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("signup.genericError"));
+      setError(e instanceof Error ? connectionAware(e.message, t) : t("signup.genericError"));
     } finally {
       setPending(false);
     }

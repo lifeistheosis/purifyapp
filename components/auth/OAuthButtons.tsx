@@ -11,6 +11,7 @@ import { isDesktopApp, openAuthInBrowser } from "@/lib/desktop/bridge";
 import { desktopAuthRedirect } from "@/lib/desktop/auth";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { LegalLink } from "@/components/legal/LegalLink";
+import { connectionAware } from "@/lib/auth/friendlyError";
 
 /**
  * Continue-with-Google and Sign-in-with-Apple buttons. Used by both
@@ -214,7 +215,7 @@ export function OAuthButtons({
       const label = provider === "google" ? "Google" : "Apple";
       setError(
         e instanceof Error
-          ? e.message
+          ? connectionAware(e.message, t)
           : t("signin.oauthStartFailed", { provider: label }),
       );
       setPending(null);

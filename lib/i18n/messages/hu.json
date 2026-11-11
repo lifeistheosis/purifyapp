@@ -3189,6 +3189,7 @@
   "shop.tabs.orders": "Rendelések",
   "signin.pending": "Bejelentkezés…",
   "signin.genericError": "A bejelentkezés nem sikerült. Próbáld újra.",
+  "auth.noSignal": "Nincs térerő. Ellenőrizd a kapcsolatot, és próbáld újra.",
   "signin.newHerePrefix": "Új vagy itt?",
   "signin.invalidCredentials": "Az e-mail-cím vagy a jelszó nem egyezik. Ha még azelőtt regisztráltál, hogy a Purify jelszavakat használt volna (a varázslinkek idején), állíts be egyet lentebb az Elfelejtetted a jelszavad? résznél.",
   "signin.emailNotConfirmed": "Először erősítsd meg az e-mail-címed, nézd meg a postaládád.",

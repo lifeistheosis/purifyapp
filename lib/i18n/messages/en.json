@@ -3198,6 +3198,7 @@
   "shop.tabs.orders": "Orders",
   "signin.pending": "Signing in…",
   "signin.genericError": "Couldn't sign you in. Try again.",
+  "auth.noSignal": "No signal. Check your connection and try again.",
   "signin.newHerePrefix": "New here?",
   "signin.invalidCredentials": "Email or password didn't match. If you signed up before passwords existed on Purify (magic-link era), use Forgot password? below to set one.",
   "signin.emailNotConfirmed": "Please confirm your email first, check your inbox.",

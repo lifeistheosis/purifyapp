@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PasswordInput } from "./PasswordInput";
+import { connectionAware } from "@/lib/auth/friendlyError";
 
 /**
  * Renders on `/reset` after the user clicks the recovery link from
@@ -46,7 +47,7 @@ export function ResetForm() {
       router.push("/account/profile");
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("ui.couldntSetPassword"));
+      setError(e instanceof Error ? connectionAware(e.message, t) : t("ui.couldntSetPassword"));
       setPending(false);
     }
   }

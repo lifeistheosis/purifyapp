@@ -3232,6 +3232,7 @@
   "shop.tabs.orders": "Comenzi",
   "signin.pending": "Se conectează…",
   "signin.genericError": "Conectarea nu a reușit. Încearcă din nou.",
+  "auth.noSignal": "Fără semnal. Verifică conexiunea și încearcă din nou.",
   "signin.newHerePrefix": "Prima dată aici?",
   "signin.invalidCredentials": "Emailul sau parola nu se potrivesc. Dacă ți-ai făcut cont înainte să existe parole pe Purify (perioada linkurilor magice), folosește Ai uitat parola? de mai jos ca să setezi una.",
   "signin.emailNotConfirmed": "Confirmă mai întâi adresa de email, verifică-ți inboxul.",

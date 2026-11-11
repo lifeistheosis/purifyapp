@@ -5,6 +5,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { authOrigin } from "@/lib/site";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { connectionAware } from "@/lib/auth/friendlyError";
 
 /**
  * Forgot-password form. Sends a Supabase reset link that lands on
@@ -36,7 +37,7 @@ export function ForgotForm() {
       if (err) throw err;
       setSent(true);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("forgot.sendFailed"));
+      setError(e instanceof Error ? connectionAware(e.message, t) : t("forgot.sendFailed"));
       setPending(false);
     }
   }

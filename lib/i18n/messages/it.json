@@ -3193,6 +3193,7 @@
   "shop.tabs.orders": "Ordini",
   "signin.pending": "Accesso in corso…",
   "signin.genericError": "Accesso non riuscito. Riprova.",
+  "auth.noSignal": "Nessun segnale. Controlla la connessione e riprova.",
   "signin.newHerePrefix": "Sei nuovo?",
   "signin.invalidCredentials": "Email o password non corrispondono. Se ti sei registrato prima che Purify avesse le password (epoca dei link magici), usa Password dimenticata? qui sotto per impostarne una.",
   "signin.emailNotConfirmed": "Conferma prima la tua email, controlla la posta in arrivo.",

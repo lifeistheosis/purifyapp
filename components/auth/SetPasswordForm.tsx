@@ -6,6 +6,7 @@ import { unlinkNative } from "@/lib/push/native";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PasswordInput } from "./PasswordInput";
+import { connectionAware } from "@/lib/auth/friendlyError";
 
 /**
  * Forced interstitial for existing magic-link users (or any signed-in
@@ -45,7 +46,7 @@ export function SetPasswordForm() {
       router.push("/account/profile");
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("ui.couldntSetPassword"));
+      setError(e instanceof Error ? connectionAware(e.message, t) : t("ui.couldntSetPassword"));
       setPending(false);
     }
   }

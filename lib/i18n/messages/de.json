@@ -3189,6 +3189,7 @@
   "shop.tabs.orders": "Bestellungen",
   "signin.pending": "Anmeldung läuft…",
   "signin.genericError": "Anmeldung nicht möglich. Bitte erneut versuchen.",
+  "auth.noSignal": "Kein Netz. Prüfe deine Verbindung und versuche es noch einmal.",
   "signin.newHerePrefix": "Neu hier?",
   "signin.invalidCredentials": "E-Mail oder Passwort stimmen nicht überein. Wenn du dich angemeldet hast, bevor es bei Purify Passwörter gab (zur Zeit der Magic Links), setze unten über Passwort vergessen? eines.",
   "signin.emailNotConfirmed": "Bitte bestätige zuerst deine E-Mail-Adresse, schau in deinem Posteingang nach.",

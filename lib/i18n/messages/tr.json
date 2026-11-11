@@ -3189,6 +3189,7 @@
   "shop.tabs.orders": "Siparişler",
   "signin.pending": "Giriş yapılıyor…",
   "signin.genericError": "Giriş yapılamadı. Tekrar deneyin.",
+  "auth.noSignal": "Sinyal yok. Bağlantınızı kontrol edip yeniden deneyin.",
   "signin.newHerePrefix": "Yeni misiniz?",
   "signin.invalidCredentials": "E-posta veya şifre eşleşmedi. Purify'da henüz şifre yokken (sihirli bağlantı döneminde) kaydolduysanız, şifre belirlemek için aşağıdaki Şifremi unuttum? bağlantısını kullanın.",
   "signin.emailNotConfirmed": "Lütfen önce e-posta adresinizi doğrulayın, gelen kutunuzu kontrol edin.",

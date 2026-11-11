@@ -3255,6 +3255,7 @@
   "shop.tabs.orders": "Zamówienia",
   "signin.pending": "Logowanie…",
   "signin.genericError": "Nie udało się zalogować. Spróbuj ponownie.",
+  "auth.noSignal": "Brak zasięgu. Sprawdź połączenie i spróbuj ponownie.",
   "signin.newHerePrefix": "Pierwszy raz tutaj?",
   "signin.invalidCredentials": "Adres e-mail lub hasło się nie zgadzają. Jeśli konto powstało, zanim w Purify istniały hasła (w czasach magicznych linków), użyj poniżej opcji Nie pamiętasz hasła?, aby je ustawić.",
   "signin.emailNotConfirmed": "Najpierw potwierdź swój adres e-mail, sprawdź skrzynkę odbiorczą.",
