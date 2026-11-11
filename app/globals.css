@@ -7447,6 +7447,15 @@ html[data-reading-mode="parchment"] .theology-row:is(:active, :focus-visible) .t
 html[data-reading-mode="parchment"] .doctrine-shadow {
  text-shadow: none;
 }
+/* A chant's name and credits stand on the icon's melted foot. On paper the
+   icon's dark tones under them left the name at 2.78 to 2.99:1 and its kind
+   at 4.44 (the gate's words over pictures, 2026-11-11): a soft halo of the
+   page's own colour lies under the words there, the paper the icon melts
+   into, as the dark palettes' shadow does in the dark. Its kind line is also
+   inked at 80% on paper (components/chants/ChantPage.tsx). */
+html[data-reading-mode="parchment"] [data-chant-control="name"] .doctrine-shadow {
+ text-shadow: 0 0 2px var(--color-night), 0 0 8px var(--color-night), 0 0 18px var(--color-night);
+}
 
 /* A Father's face (the Fathers the studies quote, the faces beside a
    study's parts): a face in a ring of the ground. A Father with no picture

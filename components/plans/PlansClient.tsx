@@ -131,12 +131,18 @@ export function PlansClient({ minutes }: { minutes: Record<string, number> }) {
                     data-plan-tile={plan.id}
                     className="tap-press relative flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-[18px] bg-night-soft p-3 ring-1 ring-inset ring-paper/10"
                   >
-                    <CoverArt
-                      src={cover.src}
-                      fallback={cover.fallback}
-                      size={240}
-                      className="plan-tile-picture absolute inset-0 h-full w-full"
-                    />
+                    {/* The picture fills the tile above its words and melts into the
+                        tile's ground just before them, so the words always stand on
+                        the ground: a long name rose into the picture and read 2.46:1
+                        on Light (the gate's words over pictures, 2026-11-11). */}
+                    <span aria-hidden className="relative -mx-3 -mt-3 mb-1 block min-h-0 flex-1" data-plan-tile-picture="">
+                      <CoverArt
+                        src={cover.src}
+                        fallback={cover.fallback}
+                        size={240}
+                        className="plan-tile-picture absolute inset-0 h-full w-full"
+                      />
+                    </span>
                     <span className="relative block font-sans text-ui font-semibold leading-tight text-paper">{t(`plans.${plan.id}.name`)}</span>
                     <span className="relative mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 font-sans text-caption text-paper/70">
                       {where}

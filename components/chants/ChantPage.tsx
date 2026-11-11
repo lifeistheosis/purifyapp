@@ -184,7 +184,7 @@ export function ChantPage({ chant, row, related }: { chant: Chant; row: ChantInd
               </p>
             ) : null}
             <p className="doctrine-shadow mt-[7px] line-clamp-2 font-sans text-[14px] font-semibold leading-[19px] text-paper/90">{sings}</p>
-            <p className="doctrine-shadow mt-1 truncate font-sans text-[13px] leading-[18px] text-paper/60">
+            <p className="doctrine-shadow mt-1 truncate font-sans text-[13px] leading-[18px] text-paper/60 [html[data-reading-mode=parchment]_&]:text-paper/80">
               <bdi lang={variant.language} dir={textDir(variant.language)}>{variant.label}</bdi>
               {what.map((w) => (
                 <span key={w}> · {w}</span>
