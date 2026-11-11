@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
+import { CARE_NOTE_SEND } from "@/lib/campaigns/careOn";
 import { CAMPAIGN_MOD_ACTIONS, isCampaignModAction, readOpenCampaignReports, readWaitingCampaigns, runCampaignModAction } from "@/lib/campaigns/moderation";
 import { campaignsCaller } from "@/lib/campaigns/opening";
 import { campaignPart } from "@/lib/campaigns/parts";
@@ -115,7 +116,8 @@ type Admin = ReturnType<typeof createAdminClient>;
 async function campaignQueue(req: Request, admin: Admin, team: boolean) {
   if (!(await campaignsCaller(req)).open) return null;
   const [waiting, reports] = await Promise.all([readWaitingCampaigns(admin), readOpenCampaignReports(admin)]);
-  const queue = { waiting: waiting.rows, reports: reports.rows, live: waiting.live && reports.live };
+  // `care`: said only while the care note can be sent (lib/campaigns/careOn.ts), so no screen offers a button the server would refuse.
+  const queue = { waiting: waiting.rows, reports: reports.rows, live: waiting.live && reports.live, ...(CARE_NOTE_SEND ? { care: true } : {}) };
   if (!team || !campaignPart("pictures") || new URL(req.url).searchParams.get("pictures") === "0") return queue;
   return { ...queue, pictures: (await readWaitingPictures(admin)).rows };
 }

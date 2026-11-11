@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { CareNoteButton } from "@/components/campaigns/CareNoteButton";
 import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Lock } from "@/components/ui/icons/Lock";
@@ -33,7 +34,9 @@ import { timeAgo } from "@/lib/community/types";
  *
  * Every campaign is read before it is public (his yes to item 117), so each
  * waits here once: Approve puts it on the board, Remove takes it down. One
- * that may mean its writer is in danger is first, and says so. A campaign
+ * that may mean its writer is in danger is first, and says so, and where
+ * the server says the care note can be sent its card carries the button for
+ * it (./CareNoteButton.tsx), above the decisions. A campaign
  * readers reported shows the reason they ticked; reports hide it again when
  * they add up, and then it waits here to be shown again or removed.
  *
@@ -131,6 +134,8 @@ export function CampaignModeration({
           removing={isBusy("remove_campaign", c.id)}
           onApprove={() => void act("approve_campaign", c.id)}
           onRemove={() => remove(c.id)}
+          care={queue.care === true}
+          onNotice={onNotice}
         />
       ))}
       {queue.reports.map((r) => (
@@ -178,12 +183,17 @@ function WaitingCard({
   removing,
   onApprove,
   onRemove,
+  care,
+  onNotice,
 }: {
   campaign: WaitingCampaign;
   approving: boolean;
   removing: boolean;
   onApprove: () => void;
   onRemove: () => void;
+  /** Whether the server says the care note can be sent. */
+  care: boolean;
+  onNotice: (message: string | null) => void;
 }) {
   const { t, tn, locale } = useTranslate();
   const why = heldWhy(c.held_reason);
@@ -234,6 +244,9 @@ function WaitingCard({
           </p>
         ) : null}
       </div>
+      {/* The care note, only on a campaign the safety line marked, and above the decisions: once it is
+          approved or removed its card is gone, and with it the chance to send one. */}
+      {care && why.includes("crisis") ? <CareNoteButton target="campaign" id={c.id} onNotice={onNotice} /> : null}
       <div className="mt-3 flex flex-wrap gap-2">
         <ActionButton primary label={t(why.includes("reports") ? "mod.restore" : "mod.approve")} busy={approving} onClick={onApprove} />
         <ActionButton label={t("mod.remove")} busy={removing} onClick={onRemove} />

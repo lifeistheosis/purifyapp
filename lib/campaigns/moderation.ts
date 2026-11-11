@@ -6,6 +6,7 @@ import { AUTO, logMod, type ModActor, type ModResult } from "@/lib/community/mod
 import { writeRemovalNotice, type RemovalReason } from "@/lib/community/removal";
 import { removeOwnedUpload } from "@/lib/security/uploadOwners";
 
+import { sendCareNote } from "./careSend";
 import { circleNames } from "./circles";
 import {
   CAMPAIGN_MOD_ACTIONS,
@@ -261,6 +262,13 @@ export async function runCampaignModAction(
     case "remove_picture":
       if (!campaignPart("pictures") || !actor.admin) return { ok: false, status: 404, error: "Not found." };
       return action === "approve_picture" ? approvePicture(admin, actor, id) : removePictureAsModerator(admin, actor, id, reason, code);
+    // The care note, to the writer of what this moderator read (./careSend.ts,
+    // which finds the writer itself and holds every rule of it). `id` is the
+    // campaign's, or the hold's. Not actions at all while it is switched off.
+    case "care_note_for_campaign":
+      return sendCareNote(admin, actor, { kind: "campaign", id });
+    case "care_note_for_hold":
+      return sendCareNote(admin, actor, { kind: "hold", id });
   }
 }
 

@@ -33,5 +33,6 @@ export function partInThisBuild(part: CampaignPart): boolean {
 export function queueInThisBuild(queue: CampaignQueue): CampaignQueue {
   if (!queue.pictures || partInThisBuild("pictures")) return queue;
   // Named, not spread: whatever else a later queue carries, a picture never comes through here.
-  return { waiting: queue.waiting, reports: queue.reports, live: queue.live };
+  // What else the queue says is named beside them, so it is not lost with the pictures: whether the care note can be sent.
+  return { waiting: queue.waiting, reports: queue.reports, live: queue.live, ...(queue.care === true ? { care: true } : {}) };
 }

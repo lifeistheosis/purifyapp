@@ -715,8 +715,21 @@ export const STARTED_A_DAY = 3;
 
 // ── Moderating ──────────────────────────────────────────────────────────────
 
-/** The decisions a moderator takes on campaigns, by name, as the queue's buttons send them (./moderation.ts runs them). */
-export const CAMPAIGN_MOD_ACTIONS = ["approve_campaign", "remove_campaign", "restore_campaign", "dismiss_campaign_report", "approve_picture", "remove_picture"] as const;
+/**
+ * The decisions a moderator takes on campaigns, by name, as the queue's buttons send them (./moderation.ts runs them).
+ * The last two send the care note (./careSend.ts): the first for a waiting campaign, by the campaign's id, the second
+ * for an update or a comment that waits, by its hold's id. Neither is an action while the note is switched off.
+ */
+export const CAMPAIGN_MOD_ACTIONS = [
+  "approve_campaign",
+  "remove_campaign",
+  "restore_campaign",
+  "dismiss_campaign_report",
+  "approve_picture",
+  "remove_picture",
+  "care_note_for_campaign",
+  "care_note_for_hold",
+] as const;
 export type CampaignModAction = (typeof CAMPAIGN_MOD_ACTIONS)[number];
 
 export function isCampaignModAction(v: unknown): v is CampaignModAction {
@@ -776,9 +789,11 @@ export type WaitingPicture = {
 /**
  * What the moderators' queue carries of campaigns, when they are open for
  * the moderator who asks. `pictures` is there only while the server has
- * pictures switched on, and only for the team (the notes, 3.4).
+ * pictures switched on, and only for the team (the notes, 3.4). `care` is
+ * there, and true, only while the care note can be sent (./careOn.ts): the
+ * screens draw its button by this answer and by nothing of their own.
  */
-export type CampaignQueue = { waiting: WaitingCampaign[]; reports: OpenCampaignReport[]; live: boolean; pictures?: WaitingPicture[] };
+export type CampaignQueue = { waiting: WaitingCampaign[]; reports: OpenCampaignReport[]; live: boolean; pictures?: WaitingPicture[]; care?: boolean };
 
 /**
  * Why a campaign waits, read from the server's few words into what a

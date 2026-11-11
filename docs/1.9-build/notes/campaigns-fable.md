@@ -4522,10 +4522,116 @@ from:
 | `prayers.diptychs.wallHeading` | From the prayer wall | For a week |
 | `prayers.wall.left` | Those from the prayer wall leave your prayers now. | The names you added for a week leave your prayers now. |
 
-English is in. They are new words, so they are on his page ("yes week
-lines"); the other way, put to him with them, is to let the names go at once
-when a reader updates and delete both lines. The twenty languages are
-written and wait for his answer. No other line a reader sees names the
-wall, in any of the 21 languages (checked by each language's own word for
-it); `lib/community/__tests__/prayAndTalk.test.ts` holds the English.
+They are in all 21 languages, on the arbiter's word (2026-11-11, 02:08
+UTC): keeping the promise about a real person's prayers is the right call,
+and two plain lines seen for a week at most need no call of his; he is told
+in one line, and other words change in a minute. The other way, to let the
+names go at once when a reader updates and delete both lines, was put beside
+it and not taken.
+
+No other line a reader sees names the wall, in any of the 21 languages.
+`lib/community/__tests__/prayAndTalk.test.ts` holds it: it reads every
+catalog for that language's own word for the wall and fails on any line that
+still has it.
+
+---
+
+## 38. The care note: a moderator's button, and what it writes (call 26)
+
+His yes of 2026-11-11: "the short private safety note, sent only after a
+moderator has read the words". The note itself is the admin chat's: its
+words in 21 languages, signed "Edgar, the Purify Team", the three places it
+names (988, 116 123, findahelpline.com), how the inbox draws it, and the SQL
+that lets the database take its kind (`lib/community/careNote.ts`,
+`docs/1.9-build/sql/care-note.sql`). What is here is the button a moderator
+taps and the one function that writes the row. No SQL of its own.
+
+### 38.1 What a moderator sees
+
+- On the card of a **waiting campaign the safety line marked**, and on the
+  card of a **held update or comment it marked**, a button above the
+  decisions: **"Send the care note"**. On no other card.
+- It asks first, since a note in a person's inbox cannot be taken back:
+  "A short private note from Purify goes to this writer's inbox, with where
+  to find help. It quotes nothing they wrote."
+- Sent, the button gives way to "Care note sent." The card's decisions stay:
+  the note decides nothing about the words.
+- It stands above Approve and Remove because a campaign carries its mark
+  only while it waits. Once it is approved or removed the card is gone, and
+  with it the chance to send one.
+
+### 38.2 What the server holds, whatever a screen sends
+
+`lib/campaigns/careSend.ts`:
+
+- **By hand, never by itself.** Nothing calls it but a moderator's action
+  (`care_note_for_campaign`, `care_note_for_hold`). No filter, no timer and
+  not the safety line.
+- **Never to a named account.** The request names what the moderator read,
+  by its own id. The writer is found on the server from that row. No account
+  id is taken from a screen, so the note cannot be aimed at anyone.
+- **Only for marked words.** Refused unless the thing carries the line's
+  mark: a campaign only while it still waits, a hold for as long as it is
+  kept.
+- **One a day for a writer**, however many moderators tap and whichever of
+  the writer's words they read. Looked for before anything is written, so a
+  second tap writes nothing at all. If two moderators tap in the same
+  moment, the row that was not first is taken back. That is as near to
+  never-twice as the table allows without a rule of its own.
+- **Never their words.** The row's excerpt is always empty, and the
+  moderators' log says a note was sent and nothing that was written.
+- **In the app only.** Straight into the inbox's table, never through
+  Community's writer, which also sends a push.
+- **Any moderator**, the team or a reader holding the badge, as for every
+  other decision here.
+
+### 38.3 The switch
+
+`lib/campaigns/careOn.ts`, `CARE_NOTE_SEND`, **false**. The inbox's table
+checks every row's kind, and "care" is not among them until his SQL has run.
+Off, the action is not a request at all, and nothing is read or written.
+
+The screens never read the switch. The server says in the moderators' queue
+whether the note can be sent, and the button is drawn by that answer alone,
+so no app can offer what the server would refuse. (The same lesson as the
+line to be told of an update: the app's cut-down copy of the queue names
+each thing it keeps, and this answer is named among them.)
+
+It is turned on by the admin chat in the same commit that moves the SQL into
+`supabase/migrations`, so the two ride one merge. A test refuses the switch
+on without that file there, and off with it (`careShips.test.ts`).
+
+In the admin's own panel the two lines that offer it are the admin chat's to
+add, in its files: one more action on a held note the line marked, and the
+two names in its route's list.
+
+### 38.4 What holds it
+
+`lib/campaigns/__tests__/careSend.test.ts` (30 cases, the switch on: the
+row, who it goes to, only marked words, one a day, two at once, never their
+words, never a push, the two actions, the screens) and `careShips.test.ts`
+(5 cases with the switch as committed). Twenty-five ways of breaking it were
+tried. Twenty-three failed a case at once. The other two showed two cases
+that were too loose (a second note was caught only by the second lock; a
+look that fails was hidden by a write that failed too); both cases were
+tightened, and then each break failed.
+
+The walk: three flows (not offered while the server does not say so; on the
+marked campaign and the marked comment and no other card, asking first and
+sent by the card's own id; one already sent that day said in the server's
+words). Stills: the card (44) and the question (45).
+
+### 38.5 Words (English; the twenty languages on the arbiter's word)
+
+Seen by moderators only.
+
+| Key | English |
+|---|---|
+| `mod.care.send` | Send the care note |
+| `mod.care.ask` | A short private note from Purify goes to this writer's inbox, with where to find help. It quotes nothing they wrote. |
+| `mod.care.sent` | Care note sent. |
+
+What the server answers a moderator is in English, as its other answers on
+that page are: "A care note was already sent to this writer today.", "A care
+note is only for words the safety line marked."
 

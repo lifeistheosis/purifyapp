@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { CampaignModeration, campaignsWaitingCount } from "@/components/campaigns/CampaignModeration";
+import { CareNoteButton } from "@/components/campaigns/CareNoteButton";
 import { TickLines } from "@/components/campaigns/TickLines";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -196,7 +197,7 @@ export function ModerationClient() {
               <CampaignModeration queue={queue.campaigns} onDone={load} onNotice={setNotice} />
               {/* A hold whose words may mean danger is read before the others (lib/campaigns/safety.ts). */}
               {dangerFirst(queue.holds).map((h) => (
-                <HoldCard key={h.id} hold={h} busy={busy} onAct={ask} />
+                <HoldCard key={h.id} hold={h} busy={busy} onAct={ask} care={queue.campaigns?.care === true} onNotice={setNotice} />
               ))}
               {queue.reports.map((r) => (
                 <ReportCard key={r.id} report={r} busy={busy} onAct={ask} />
@@ -319,10 +320,15 @@ function HoldCard({
   hold,
   busy,
   onAct,
+  care,
+  onNotice,
 }: {
   hold: ModHold;
   busy: string | null;
   onAct: (action: ModAction, id: string, label: string) => void;
+  /** Whether the server says the care note can be sent (the campaigns' part of the queue says so, lib/campaigns/careOn.ts). */
+  care: boolean;
+  onNotice: (message: string | null) => void;
 }) {
   const { t } = useTranslate();
   const target = hold.post ?? hold.reply;
@@ -365,6 +371,8 @@ function HoldCard({
           {shownText || t("mod.noText")}
         </p>
       )}
+      {/* The care note, only for words the safety line marked (components/campaigns/CareNoteButton.tsx), above the decisions. */}
+      {care && danger ? <CareNoteButton target="hold" id={hold.id} onNotice={onNotice} /> : null}
       <div className="mt-3 flex flex-wrap gap-2">
         <ActionButton
           primary

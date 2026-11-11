@@ -277,6 +277,23 @@ const MOD_QUEUE = {
   },
 };
 
+// A waiting campaign the safety line marked, as the queue hands it to a moderator: the sample of still 32,
+// read first. A SAMPLE, written here; nobody's words.
+const MOD_CRISIS = {
+  id: DANGER,
+  title: "Pray for me",
+  intention: "comfort",
+  for_whom: "living",
+  subject_name: "Anna",
+  details: "I do not want to live any more. Please pray for me.",
+  days: 7,
+  ends_on: day(6),
+  creator_name: "Anna",
+  creator_handle: "anna",
+  held_reason: "new; crisis",
+  created_at: new Date(Date.now() - 12 * 60_000).toISOString(),
+};
+
 // A campaign's updates and comments (phase 2), as its thread route hands them on.
 const ago = (minutes) => new Date(Date.now() - minutes * 60_000).toISOString();
 const note = (n, over) => ({
@@ -499,7 +516,11 @@ async function answer(ctx, opts = {}) {
     if (thread && req.method() === "DELETE") return json({ ok: true });
     if (p === "/api/community/report" && req.method() === "POST") return json({ ok: true });
     if (/^\/api\/campaigns\/[0-9a-f-]{36}$/.test(p) && (req.method() === "PATCH" || req.method() === "DELETE")) return json({ ok: true });
-    if (p === "/api/community/moderation" && req.method() === "POST") return json({ ok: true });
+    if (p === "/api/community/moderation" && req.method() === "POST") {
+      // The care note (lib/campaigns/careSend.ts): sent, or, with `careAlready`, refused as the server refuses a second in a day.
+      if (/^care_note_for_/.test(sent?.action ?? "") && opts.careAlready) return json({ error: "A care note was already sent to this writer today." }, 409);
+      return json({ ok: true });
+    }
     if (p === "/api/campaigns" && req.method() === "GET") return json({ campaigns: opts.board ?? BOARD });
     if (p === "/api/campaigns/mine") return json({ signedIn: true, started: [CAMPAIGNS[HELD], { ...CAMPAIGNS[NICHOLAS], mine: true }, CAMPAIGNS[ENDED]], carried: [] });
     if (p === "/api/campaigns/state") {
@@ -548,7 +569,15 @@ async function answer(ctx, opts = {}) {
       if (url.searchParams.get("summary")) return json({ waiting: 2 });
       // The team's queue carries pictures only while the server has them on, and never for a build that says it has none.
       const sendsPictures = parts.pictures && url.searchParams.get("pictures") !== "0";
-      return json(sendsPictures ? { ...MOD_QUEUE, campaigns: { ...MOD_QUEUE.campaigns, waiting: [], reports: [], pictures: MOD_PICTURES } } : { ...MOD_QUEUE, holds: opts.holds ?? MOD_QUEUE.holds });
+      if (sendsPictures) return json({ ...MOD_QUEUE, campaigns: { ...MOD_QUEUE.campaigns, waiting: [], reports: [], pictures: MOD_PICTURES } });
+      // `crisis`: a waiting campaign the safety line marked stands first in the queue. `care`: the server says the
+      // care note can be sent (lib/campaigns/careOn.ts), as it will once the database takes its kind.
+      const campaigns = {
+        ...MOD_QUEUE.campaigns,
+        ...(opts.crisis ? { waiting: [MOD_CRISIS, ...MOD_QUEUE.campaigns.waiting] } : {}),
+        ...(opts.care ? { care: true } : {}),
+      };
+      return json({ ...MOD_QUEUE, campaigns, holds: opts.holds ?? MOD_QUEUE.holds });
     }
     return json({ error: "Not found." }, 404);
   });
@@ -578,7 +607,7 @@ async function whole(page, min = 844) {
   await page.setViewportSize({ width: WIDTH, height: Math.max(min, h) });
 }
 
-async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true, inbox, circles = false, tellMe, profileCampaigns, late = false } = {}) {
+async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true, inbox, circles = false, tellMe, profileCampaigns, late = false, holds, crisis = false, care = false } = {}) {
   if (WALK) return;
   if (ONLY && !ONLY.has(name.slice(0, 2))) return;
   // What one still told the stand-in server is not the next still's.
@@ -595,7 +624,7 @@ async function shot(name, label, where, selector, { set = {}, prepare, signedIn 
   page.on("pageerror", (e) => errors.push(e.message));
   try {
     if (WIDTH !== 390) await page.setViewportSize({ width: WIDTH, height: 844 });
-    await answer(ctx, { mine, board, signedIn, parts, pictures, inbox, circles, tellMe, profileCampaigns, late });
+    await answer(ctx, { mine, board, signedIn, parts, pictures, inbox, circles, tellMe, profileCampaigns, late, holds, crisis, care });
     await go(page, where);
     await settle(page);
     if (prepare) await prepare(page);
@@ -1053,6 +1082,29 @@ await shot("35-campaign-place", "a campaign's page with its place beside who sta
   },
 });
 
+// 45 The care note's question: what a moderator is told before one is sent.
+await shot("45-care-note-ask", "the care note: what a moderator is asked before it is sent", "/community/moderate", "[role=alertdialog], [role=dialog]", {
+  crisis: true,
+  care: true,
+  prepare: async (page) => {
+    await page.waitForSelector("[data-mod-campaign] [data-mod-care] button", { timeout: 15000 });
+    await settle(page, 600);
+    await page.locator("[data-mod-campaign]", { hasText: "Pray for me" }).locator("[data-mod-care] button").click();
+    await page.waitForFunction(() => document.body.innerText.includes("It quotes nothing they wrote."), null, { timeout: 8000 });
+    await settle(page, 600);
+  },
+});
+
+// 44 The moderators' card for a waiting campaign the safety line marked, with the button for the care note above the decisions.
+await shot("44-care-note", "the moderators' card for a campaign whose words may mean danger, with the care note to send", "/community/moderate", "[data-mod-campaign]", {
+  crisis: true,
+  care: true,
+  prepare: async (page) => {
+    await page.waitForSelector("[data-mod-campaign] [data-mod-care] button", { timeout: 15000 });
+    await settle(page, 600);
+  },
+});
+
 // 43 A campaign a moderator read while its creator had the sheet open: Save keeps nothing, and the sheet says why.
 await shot("43-change-words-read", "a campaign a moderator has read in the meantime: its words stay, and the sheet says why", `/campaigns/detail?id=${HELD}`, "[role=dialog]:has([data-campaign-change])", {
   mine: [HELD],
@@ -1174,7 +1226,7 @@ async function pictureWalk(label, ...rest) {
   if (!FLOWS.length || FLOWS.some((f) => label.toLowerCase().includes(f))) console.log(`left  ${label}: needs an export cut with pictures (PICTURES_BUILD=1; see the header)`);
 }
 
-async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false, circles = false, holds, board, late = false, tellMe, tellFails = false, profileCampaigns } = {}) {
+async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false, circles = false, holds, board, late = false, tellMe, tellFails = false, profileCampaigns, crisis = false, care = false, careAlready = false } = {}) {
   if (FLOWS.length && !FLOWS.some((f) => label.toLowerCase().includes(f))) return;
   const seed = {
     "purify.prayers.campaigns": JSON.stringify(CARRIED),
@@ -1195,7 +1247,7 @@ async function walk(label, where, run, { set = {}, signedIn = true, mine, closed
     // With `holdOpen`, the website's answer to "are campaigns open for this reader" waits for the flow's own word.
     let letGo = () => {};
     const heldOpen = holdOpen ? { until: new Promise((done) => (letGo = done)) } : null;
-    await answer(ctx, { mine, closed, parts, pictures, heldOpen, circles, holds, board, late, tellMe, tellFails, profileCampaigns });
+    await answer(ctx, { mine, closed, parts, pictures, heldOpen, circles, holds, board, late, tellMe, tellFails, profileCampaigns, crisis, care, careAlready });
     await go(page, where);
     await settle(page, 1800);
     try {
@@ -1415,6 +1467,74 @@ if (WALK) {
     const [sent] = sentTo("POST", /^\/api\/community\/moderation$/);
     expectThat(sent && sent.body.action === "remove_hold" && sent.body.id === MOD_HOLDS[1].id && sent.body.reason_code === "private", `sent ${JSON.stringify(sent?.body)}`);
   }, { holds: MOD_HOLDS });
+
+  // The care note (his yes to call 26; the notes, section 38). The screens draw its button only where the server
+  // says it can be sent, which it does only once the database takes the note's kind (lib/campaigns/careOn.ts).
+  await walk("the care note: while the server does not say it can be sent, no card offers it", "/community/moderate", async (page) => {
+    await page.waitForSelector("[data-mod-campaigns]", { timeout: 15000 });
+    await page.waitForFunction(() => document.body.innerText.includes("do not want to live"), null, { timeout: 15000 });
+    await settle(page, 600);
+    expectThat((await page.locator("[data-mod-care]").count()) === 0, "a card offers the care note the server would refuse");
+    expectThat(!(await page.evaluate(() => document.body.innerText)).includes("Send the care note"), "the page names the care note");
+  }, { holds: MOD_HOLDS, crisis: true });
+
+  await walk("the care note: on the marked campaign and the marked comment and on no other card; it asks first, goes by the card's own id, and gives way to a line", "/community/moderate", async (page) => {
+    await page.waitForSelector("[data-mod-campaigns]", { timeout: 15000 });
+    await page.waitForFunction(() => document.body.innerText.includes("do not want to live"), null, { timeout: 15000 });
+    await settle(page, 600);
+    const campaign = page.locator("[data-mod-campaign]", { hasText: "Pray for me" });
+    const ordinary = page.locator("[data-mod-campaign]", { hasText: "For Elias on his journey" });
+    const comment = page.locator("article", { hasText: "do not want to live" }).filter({ hasNot: page.locator("[data-mod-campaign-place]") }).last();
+    const plainHold = page.locator("article", { hasText: "Praying for Maria tonight." });
+    // Only where the safety line marked the words: two cards of the four.
+    expectThat((await page.locator("[data-mod-care]").count()) === 2, `${await page.locator("[data-mod-care]").count()} cards offer the care note, not two`);
+    expectThat((await campaign.locator("[data-mod-care] button").count()) === 1, "the marked campaign does not offer it");
+    expectThat((await ordinary.locator("[data-mod-care]").count()) === 0, "an ordinary waiting campaign offers it");
+    expectThat((await plainHold.locator("[data-mod-care]").count()) === 0, "an ordinary held comment offers it");
+    // It stands above the decisions, and a finger can find it.
+    const button = campaign.locator("[data-mod-care] button");
+    const box = await button.boundingBox();
+    const approve = await campaign.locator("button", { hasText: "Approve" }).boundingBox();
+    expectThat(box && approve && box.y + box.height <= approve.y && box.height >= 44, `the button is ${JSON.stringify(box)}, Approve ${JSON.stringify(approve)}`);
+    // It asks first, and says what will be sent. Cancel sends nothing.
+    await button.click();
+    const ask = page.locator("[role=alertdialog], [role=dialog]").filter({ hasText: "It quotes nothing they wrote." });
+    await ask.waitFor({ timeout: 8000 });
+    expectThat((await ask.innerText()).includes("A short private note from Purify goes to this writer's inbox, with where to find help."), `the question reads "${(await ask.innerText()).replace(/\n/g, " / ")}"`);
+    await ask.locator("button", { hasText: "Cancel" }).click();
+    await ask.waitFor({ state: "detached", timeout: 8000 });
+    expectThat(sentTo("POST", /^\/api\/community\/moderation$/).length === 0, "the note was sent before the answer");
+    // Yes: sent by the campaign's own id, with no account named, and the button gives way to a line.
+    await button.click();
+    await ask.waitFor({ timeout: 8000 });
+    await ask.locator("button", { hasText: "Send the care note" }).click();
+    await campaign.locator('[data-mod-care="sent"]').waitFor({ timeout: 8000 });
+    const [first] = sentTo("POST", /^\/api\/community\/moderation$/);
+    expectThat(first && JSON.stringify(first.body) === JSON.stringify({ action: "care_note_for_campaign", id: DANGER, reason: null }), `sent ${JSON.stringify(first?.body)}`);
+    expectThat((await campaign.locator("[data-mod-care]").innerText()).trim() === "Care note sent.", `the card says "${await campaign.locator("[data-mod-care]").innerText()}"`);
+    expectThat((await campaign.locator("[data-mod-care] button").count()) === 0, "the button stays after the note is sent");
+    // Its decisions are still there: the note decides nothing about the campaign.
+    expectThat((await campaign.locator("button", { hasText: "Approve" }).count()) === 1, "Approve went with the note");
+    // The held comment: by its hold's id.
+    await comment.locator("[data-mod-care] button").click();
+    await ask.waitFor({ timeout: 8000 });
+    await ask.locator("button", { hasText: "Send the care note" }).click();
+    await comment.locator('[data-mod-care="sent"]').waitFor({ timeout: 8000 });
+    const second = sentTo("POST", /^\/api\/community\/moderation$/)[1];
+    expectThat(second && JSON.stringify(second.body) === JSON.stringify({ action: "care_note_for_hold", id: MOD_HOLDS[1].id, reason: null }), `sent ${JSON.stringify(second?.body)}`);
+  }, { holds: MOD_HOLDS, crisis: true, care: true });
+
+  await walk("the care note: one already sent that day is said in the server's words, and nothing claims another was sent", "/community/moderate", async (page) => {
+    await page.waitForSelector("[data-mod-campaigns]", { timeout: 15000 });
+    const campaign = page.locator("[data-mod-campaign]", { hasText: "Pray for me" });
+    await campaign.locator("[data-mod-care] button").click();
+    const ask = page.locator("[role=alertdialog], [role=dialog]").filter({ hasText: "It quotes nothing they wrote." });
+    await ask.waitFor({ timeout: 8000 });
+    await ask.locator("button", { hasText: "Send the care note" }).click();
+    await page.waitForFunction(() => document.body.innerText.includes("A care note was already sent to this writer today."), null, { timeout: 8000 });
+    expectThat((await campaign.locator('[data-mod-care="sent"]').count()) === 0, "the card says a note was sent when the server refused it");
+    expectThat((await campaign.locator("[data-mod-care] button").count()) === 1, "the button went although nothing was sent");
+  }, { crisis: true, care: true, careAlready: true });
 
   // A place (1.9; the notes, 2.9, 3.6, 4.6).
   /** The start screen, filled far enough to send: a title, a name, a kind, who it is for by the line given, and the two ticks. */
