@@ -135,7 +135,7 @@ export function NotificationsSheet({
             <Link
               href={`/signin?next=${pathname}`}
               onClick={onClose}
-              className="inline-flex min-h-11 items-center font-sans text-detail font-semibold text-paper"
+              className="inline-flex min-h-11 min-w-11 items-center font-sans text-detail font-semibold text-paper"
             >
               {t("common.signIn")}
             </Link>

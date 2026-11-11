@@ -446,8 +446,8 @@ function snapshot() {
 /**
  * The sheets, menus and dialogs on the screen: before the tap (`before`), each is marked
  * data-tapwalk-pre; after it, those not so marked are what the tap opened: the outermost of
- * each, marked data-tapwalk-sheet, with its role, its name, and what makes it the same sheet
- * wherever it opens. On the screen: drawn, not see-through, and some of it in the window.
+ * each, marked data-tapwalk-sheet with its number, which is returned. On the screen: drawn, not
+ * see-through, and some of it in the window.
  */
 function newSheets({ sheet, before }) {
   const shown = (el) => {
@@ -460,25 +460,33 @@ function newSheets({ sheet, before }) {
   }
   const open = [...document.querySelectorAll(sheet)].filter((el) => !el.hasAttribute("data-tapwalk-pre") && shown(el));
   const outer = open.filter((el) => !open.some((o) => o !== el && o.contains(el)));
-  const words = (el) => (el.getAttribute("aria-label") || el.innerText || el.textContent || "").replace(/\s+/g, " ").trim();
-  return outer.map((el, n) => {
-    el.setAttribute("data-tapwalk-sheet", String(n));
-    const by = (el.getAttribute("aria-labelledby") || "")
-      .split(/\s+/)
-      .map((id) => (id ? document.getElementById(id)?.innerText || "" : ""))
-      .join(" ")
-      .trim();
-    const heading = el.querySelector("h1, h2, h3, [role=heading]");
-    const name = (el.getAttribute("aria-label") || by || (heading ? words(heading) : "") || words(el)).replace(/\s+/g, " ").trim().slice(0, 40);
-    const role = el.getAttribute("role") || "dialog";
-    // Its frame: the first eight controls in it. What a sheet suggests below them changes with
-    // the screen it opened from (Search offers the prayer book's parts on Prayers and the day's
-    // readings on Settings), and that is still the one sheet.
-    const controls = [...el.querySelectorAll("button, a[href], [role=button], [role=link], [role=menuitem], [role=option], [role=tab], [role=radio], [role=checkbox], [role=switch], input, select, textarea")]
-      .slice(0, 8)
-      .map((x) => words(x).slice(0, 24));
-    return { n, role, name, controls, key: `${role}\u0000${name}\u0000${controls.join("|")}`.replace(/\d+/g, "#") };
-  });
+  outer.forEach((el, n) => el.setAttribute("data-tapwalk-sheet", String(n)));
+  return outer.map((_, n) => n);
+}
+
+/**
+ * A sheet the tap opened, once it has settled: its role, its name, and what makes it the same
+ * sheet wherever it opens.
+ */
+function describeSheet(n) {
+  const el = document.querySelector(`[data-tapwalk-sheet="${n}"]`);
+  if (!el) return null;
+  const words = (x) => (x.getAttribute("aria-label") || x.innerText || x.textContent || "").replace(/\s+/g, " ").trim();
+  const by = (el.getAttribute("aria-labelledby") || "")
+    .split(/\s+/)
+    .map((id) => (id ? document.getElementById(id)?.innerText || "" : ""))
+    .join(" ")
+    .trim();
+  const heading = el.querySelector("h1, h2, h3, [role=heading]");
+  const name = (el.getAttribute("aria-label") || by || (heading ? words(heading) : "") || words(el)).replace(/\s+/g, " ").trim().slice(0, 40);
+  const role = el.getAttribute("role") || "dialog";
+  // Its frame: the first eight controls in it. What a sheet suggests below them changes with
+  // the screen it opened from (Search offers the prayer book's parts on Prayers and the day's
+  // readings on Settings), and that is still the one sheet.
+  const controls = [...el.querySelectorAll("button, a[href], [role=button], [role=link], [role=menuitem], [role=option], [role=tab], [role=radio], [role=checkbox], [role=switch], input, select, textarea")]
+    .slice(0, 8)
+    .map((x) => words(x).slice(0, 24));
+  return { n, role, name, controls, key: `${role}\u0000${name}\u0000${controls.join("|")}`.replace(/\d+/g, "#") };
 }
 
 // ── In node ─────────────────────────────────────────────────────────────
@@ -612,13 +620,40 @@ async function reach(page, c) {
 
 /**
  * What the tap opened (a sheet, a menu, a dialog), held to checkMock's rules: each distinct one
- * once, where it first opens, its fails said on the row of the control that opened it. Its
- * entrance played out first (a sheet measured as it rises reads fainter than it ends), and the
- * page put back where it stood after, for the measures that follow.
+ * once, where it first opens, its fails said on the row of the control that opened it. Each is
+ * let settle first, and the page is put back where it stood after, for the measures that follow.
  */
 async function measureSheets(page, row, at, c) {
   const opened = await page.evaluate(newSheets, { sheet: SHEET, before: false }).catch(() => []);
-  for (const s of opened) {
+  for (const n of opened) {
+    // Settled first: a sheet that fetches what it shows (a reader's profile) is named and measured
+    // once it has it, not as it arrives (no change in it for 450ms, up to 4s), and its entrance
+    // played out (a sheet measured as it rises reads fainter than it ends).
+    await page
+      .evaluate(async (k) => {
+        const el = document.querySelector(`[data-tapwalk-sheet="${k}"]`);
+        if (!el) return;
+        let changes = 0;
+        const seen = new MutationObserver((list) => (changes += list.length));
+        seen.observe(el, { subtree: true, childList: true, attributes: true, characterData: true });
+        const t0 = performance.now();
+        let last = -1;
+        let quiet = 0;
+        while (performance.now() - t0 < 4000 && quiet < 3) {
+          await new Promise((r) => setTimeout(r, 150));
+          quiet = changes === last ? quiet + 1 : 0;
+          last = changes;
+        }
+        seen.disconnect();
+        const ends = el
+          .getAnimations({ subtree: true })
+          .filter((a) => a.effect?.getComputedTiming().iterations !== Infinity)
+          .map((a) => a.finished.catch(() => {}));
+        await Promise.race([Promise.all(ends), new Promise((r) => setTimeout(r, 2500))]);
+      }, n)
+      .catch(() => {});
+    const s = await page.evaluate(describeSheet, n).catch(() => null);
+    if (!s) continue;
     const said = `${s.role} "${s.name}"`;
     const first = SHEETS.get(s.key);
     if (first) {
@@ -627,13 +662,6 @@ async function measureSheets(page, row, at, c) {
     }
     const sheet = { at, opener: c.name, said, controls: s.controls, lines: [], unmeasured: [], allowed: [] };
     SHEETS.set(s.key, sheet);
-    await page
-      .evaluate(async (n) => {
-        const el = document.querySelector(`[data-tapwalk-sheet="${n}"]`);
-        const ends = (el?.getAnimations({ subtree: true }) ?? []).filter((a) => a.effect?.getComputedTiming().iterations !== Infinity).map((a) => a.finished.catch(() => {}));
-        await Promise.race([Promise.all(ends), new Promise((r) => setTimeout(r, 2500))]);
-      }, s.n)
-      .catch(() => {});
     const stood = await page.evaluate(() => [scrollX, scrollY]).catch(() => null);
     try {
       // The self-test's page wears no palette of its own, so it is held on Dark alone.
