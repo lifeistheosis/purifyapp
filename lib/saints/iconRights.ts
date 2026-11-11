@@ -2801,6 +2801,38 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%96%D0%B8%D1%82%D0%B8%D1%8F_%D0%A1%D0%B2%D1%8F%D1%82%D1%8B%D1%85_(1903-1911)_-_%D0%B8%D0%BA%D0%BE%D0%BD%D0%B0_05141_%D0%9F%D1%80%D0%B5%D0%BF%D0%BE%D0%B4%D0%BE%D0%B1%D0%BD%D1%8B%D0%B5_%D0%BE%D1%82%D1%86%D1%8B,_%D0%B2_%D0%A1%D0%B8%D0%BD%D0%B0%D0%B8_%D0%B8_%D0%A0%D0%B0%D0%B8%D1%84%D0%B5_%D0%B8%D0%B7%D0%B1%D0%B8%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5.png",
   },
+  // Two of Updates 2's search (build 93 note 12), from the woodcuts of the
+  // Nuremberg Chronicle (1493), as St Papias's: each the oldest picture of him
+  // found whose freedom can be shown, his name over him on the block, the
+  // whole woodcut cut inside its frame lines (Theodosius's a detail, so that
+  // his name, written over him by an early hand, stands whole). Why they are
+  // free: printed in 1493, and the Rijksmuseum, which holds these sheets and
+  // serves them itself, marks each Public Domain (Mark 1.0) on its own page.
+  // None was found older and free for St Adrian or for Theodosius. St Adrian
+  // is Pope Adrian I, whom the block names "Hadrianus primus"; the file his
+  // page once showed was not he (build 90).
+  "adrian-of-rome.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A woodcut of a pope in the triple tiara and a hooded cope, holding a tall cross with three crossbars, his name printed over him in black letter, on cream paper.",
+    work: "Hadrianus primus, a woodcut of the Nuremberg Chronicle (Hartmann Schedel's Liber chronicarum), the Rijksmuseum's sheet RP-P-2016-49-58-8",
+    artist: "Michael Wolgemut and Wilhelm Pleydenwurff",
+    workDate: "1493",
+    source: "Rijksmuseum, Amsterdam",
+    license: "Public domain",
+    evidenceUrl: "https://www.rijksmuseum.nl/en/collection/RP-P-2016-49-58-8",
+  },
+  "theodosius-the-great.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A woodcut of a bearded emperor in a crown, an orb with a cross in one hand and a long sceptre in the other, his name written over him by hand, on cream paper.",
+    work: "Theodosius, a woodcut of the Nuremberg Chronicle (Hartmann Schedel's Liber chronicarum), the Rijksmuseum's sheet RP-P-2016-49-46-4 (a detail: his head, his orb and his sceptre)",
+    artist: "Michael Wolgemut and Wilhelm Pleydenwurff",
+    workDate: "1493",
+    source: "Rijksmuseum, Amsterdam",
+    license: "Public domain",
+    evidenceUrl: "https://www.rijksmuseum.nl/en/collection/RP-P-2016-49-46-4",
+  },
 };
 
 /**

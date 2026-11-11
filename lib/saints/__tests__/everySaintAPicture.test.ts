@@ -40,8 +40,6 @@ const WAITING: Record<string, string> = {
   "mark-of-ephesus": "search: Updates 2 (the Illustrated Chronicle's miniature of 1568 to 1576 to be read; a permission if none passes)",
   "isidora-of-tabenna": "search: Updates 2",
   "alexander-of-alexandria": "search: Updates 2",
-  "theodosius-the-great": "search: Updates 2",
-  "adrian-of-rome": "search: Updates 2",
   "xenia-of-petersburg": "search: Updates 2",
   "victorinus-of-pettau": "permission: the Archdiocese of Maribor, for Ptuj, his see (no old picture of him found in any library searched)",
   // November's and December's saints are the November and December chat's

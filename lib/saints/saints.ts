@@ -2989,6 +2989,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "theodosius-the-great",
  byname: "The Great",
+ iconUrl: "/saints/icons/theodosius-the-great.jpg",
  name: "St. Theodosius the Great",
  epithet: "Emperor of the Romans · Convener of the Second Ecumenical Council · Defender of Nicaea",
  born: "January 11, 347 (Cauca, Hispania)",
@@ -3902,10 +3903,10 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "adrian-of-rome",
- // No icon (1.9, build 90 note 3, the arbiter's word of 2026-11-10): the file
- // this page showed was a young martyr with a cross, not Pope Adrian I, and it
- // is out of the app since the same day. The plate until a true picture of him
- // passes (lib/saints/iconRights.ts).
+ // The file this page showed until 2026-11-10 was a young martyr with a cross,
+ // not Pope Adrian I (build 90 note 3). Now the woodcut the Nuremberg Chronicle
+ // names "Hadrianus primus" (1493; lib/saints/iconRights.ts).
+ iconUrl: "/saints/icons/adrian-of-rome.v2.jpg",
  name: "St. Adrian of Rome",
  epithet: "Pope of Rome · Father of the Seventh Council",
  born: "Rome",
