@@ -70,6 +70,17 @@ describe("every text he named", () => {
     expect(article).toContain("cite={block.source ? `${block.source} (quoted in ${at.title})` : `Quoted in ${at.title}`}");
   });
 
+  it("arrives after the page without a boundary of its own, so no page switch is pictured twice", () => {
+    // Fable Theology's finding of 2026-11-11 (scripts/route-motion.mjs): a part fetched with next/dynamic and
+    // no server side is a Suspense boundary in the page's first draw, and its retry was pictured as a second switch.
+    const lazy = read("components/reading/SelectionToolsLazy.tsx");
+    expect(lazy).not.toMatch(/from "next\/dynamic"/);
+    expect(lazy).not.toMatch(/\bdynamic\(/);
+    expect(lazy).toContain('import("./SelectionTools")');
+    expect(lazy).toContain('import("./MarksLayer")');
+    expect(lazy).toContain("if (on) setPart(() => part);");
+  });
+
   it("the host needs no device, and the marks are painted without the words", () => {
     expect(read("components/reading/MarkHost.tsx")).not.toMatch(/^"use client";/);
     const layer = read("components/reading/MarksLayer.tsx");

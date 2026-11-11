@@ -34,6 +34,8 @@ function essayBlock(block: EssayBlock, sectionN: number, paragraphIdx: number, q
       // A quoted passage has its own place on an event's page (components/history/EventArticle.tsx) and is lit as it is read.
       return [{ kind: "quote", ...(quotesHavePlaces ? { at: { sectionN, paragraphIdx } } : {}), sentences: sentencesOf(block.text) }];
     case "list":
+      // On an event's page the list is one place, lit whole while its items are read.
+      if (quotesHavePlaces) return [{ kind: "item", at: { sectionN, paragraphIdx }, sentences: block.items.flatMap((item) => sentencesOf(item)) }];
       return block.items.map((item) => ({ kind: "item" as const, sentences: sentencesOf(item) }));
     default:
       return [{ kind: "para", at: { sectionN, paragraphIdx }, sentences: sentencesOf(block.text) }];

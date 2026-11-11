@@ -90,14 +90,24 @@ function Block({ block, at }: { block: EssayBlock; at?: BlockAt }) {
         </figure>
       );
     }
-    case "list":
-      return (
-        <ul className="list-disc space-y-2 ps-6 font-sans text-body leading-[1.7] text-paper/85">
+    case "list": {
+      const list = (
+        <ul data-mk-text={at ? "" : undefined} className="list-disc space-y-2 ps-6 font-sans text-body leading-[1.7] text-paper/85">
           {block.items.map((item, i) => (
-            <li key={i}><SaintNames text={item} /></li>
+            // A space ends each item, so the list's words read as words where it is marked or read aloud.
+            <li key={i}><SaintNames text={item} />{at ? " " : null}</li>
           ))}
         </ul>
       );
+      // A list of the account is lit as it is read and can be marked, as a paragraph is (1.9).
+      return at ? (
+        <MarkHost place={{ kind: "text", text: "history", slug: at.slug, doc: "-", sectionN: at.sectionN, paragraphIdx: at.paragraphIdx }} cite={`${at.title}, Purify`} link={`/history/${at.slug}`} name="Purify" work={at.title}>
+          {list}
+        </MarkHost>
+      ) : (
+        list
+      );
+    }
     default: {
       const words = <p data-mk-text={at ? "" : undefined} className="font-sans text-body leading-[1.75] text-paper/85"><SaintNames text={block.text} /></p>;
       // The account is Purify's own, and a copy or a picture of its words says so.
