@@ -135,6 +135,7 @@ const EXPECT = {
   "/sr-only/": { verdict: "pass", why: /^went to \/other\// },
   "/read-more/": { verdict: "pass" },
   "/here/": { verdict: "pass", why: /^names the page it stands on/ },
+  "/wrapped/": { verdict: "pass", why: /^went to \/other\// },
 };
 
 /** The self-test's page: one front door that draws a case by its address, as the shell answers every address with it. */
@@ -197,6 +198,15 @@ if (at === "/sticky/") {
   });
   more.setAttribute("aria-expanded", "false"); more.setAttribute("aria-controls", "more-words");
   m.append(block(600), words, more, block(1500));
+} else if (at === "/wrapped/") {
+  // A link that wraps across two lines in a sentence, its box's middle on the sentence's other words.
+  // In a face of one width, "Support" ends the first line (23 + 7 of 30) and "page" starts the second.
+  const p = document.createElement("p"); p.style.cssText = "margin:0 16px;width:30ch;font:18px/28px monospace";
+  p.append("aaaa aaaa aaaa aaaa aa ");
+  const a = document.createElement("a"); a.href = "/other/"; a.textContent = "Support page";
+  a.style.cssText = "display:inline;width:auto;min-height:0;margin:0;font:inherit;text-decoration:underline";
+  p.append(a, ". The rest of the sentence runs on here.");
+  m.append(block(300), p, block(1200));
 } else if (at === "/here/") {
   const tab = document.createElement("a"); tab.href = "/here/"; tab.textContent = "You";
   m.append(block(300), tab, block(1200));
@@ -463,6 +473,19 @@ async function walkScreen(ctx, at, kept) {
           result.controls.push(row);
           continue;
         }
+        // Where a finger goes: the middle of the control's largest piece. A link that wraps
+        // across two lines has a box whose middle lies on the sentence's other words (About's
+        // "Support page", 2026-11-11); a reader taps the link's own words.
+        const aim = await handle
+          .evaluate((el) => {
+            const pieces = [...el.getClientRects()].filter((r) => r.width >= 1 && r.height >= 1);
+            if (pieces.length < 2) return null;
+            const big = pieces.reduce((a, b) => (b.width * b.height > a.width * a.height ? b : a));
+            return { x: big.left + big.width / 2, y: big.top + big.height / 2 };
+          })
+          .catch(() => null);
+        const ax = aim ? aim.x : box.x + box.width / 2;
+        const ay = aim ? aim.y : box.y + box.height / 2;
         // What the finger meets at the control's middle: the control, or something laid over it
         // (build 93 note 8: a tap that meets something else first). Asked twice, a beat apart,
         // so a page still settling is not mistaken for a cover.
@@ -473,11 +496,13 @@ async function walkScreen(ctx, at, kept) {
               if (!el) return "redrawn";
               const hit = document.elementFromPoint(x, y);
               if (!hit) return "outside";
-              if (el === hit || el.contains(hit) || hit.contains(el)) return null;
+              // The control, or something inside it. What holds it (the sentence round a link)
+              // is not the control: a finger there is on other words.
+              if (el === hit || el.contains(hit)) return null;
               const words = (hit.getAttribute("aria-label") || hit.innerText || "").replace(/\s+/g, " ").trim().slice(0, 40);
               return `${hit.tagName.toLowerCase()}${words ? ` "${words}"` : ""}`;
             },
-            { i: c.i, x: box.x + box.width / 2, y: box.y + box.height / 2 },
+            { i: c.i, x: ax, y: ay },
           );
         let cover = await meets();
         if (cover) {
@@ -534,8 +559,8 @@ async function walkScreen(ctx, at, kept) {
           });
           window.__tapwalkObserver.observe(document.documentElement, { subtree: true, childList: true, attributes: true, characterData: true });
         });
-        const x = box.x + box.width / 2;
-        const y = box.y + box.height / 2;
+        const x = ax;
+        const y = ay;
         // Where the thing under the finger stands: its middle (so a press that shrinks it in
         // place is not a move), on the screen and on the page, and how long the page is.
         const where = () =>
