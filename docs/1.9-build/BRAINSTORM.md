@@ -2,6 +2,8 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
+**Build 93, note 8 (his word, 2026-11-11 about 01:28 UTC, a screenshot of the journal's page for the day):** "say 1,000. Refine the journal section because when I click title or anything, so just a quick explanation of how it works. Honestly, just buggy" (`notes/build-93.md`, note 8).
+
 **No sparkle star, anywhere (his word, 2026-11-11 about 01:27 UTC, build 93 note 7, a screenshot of Settings' What's new row):** "I made it very clear to not use this icon widget design of that like star, because that is a vibe coded AI slop detected design. So anywhere where it's used, replace it with a new design." A standing guardrail, in CLAUDE.md beside no light rays and no side stripes.
 
 **Build 93, note 6 (his word, 2026-11-11 about 01:25 UTC, a screenshot of Settings, Language, the list opened past the left edge):** "clear design flaw here" (`notes/build-93.md`, note 6).

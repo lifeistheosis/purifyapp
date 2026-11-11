@@ -104,3 +104,13 @@ Screenshot: `build-93/07-whats-new-sparkle.png`: Settings, "What's new", a four-
 Where it is (the arbiter, by search on the branch): the `Sparkle` icon (`components/ui/icons/Sparkle.tsx`, "Four-point spark for the verse highlight toggle") in `components/community/NotificationsInbox.tsx`, `components/community/profile/ProfileViewer.tsx`, `components/journal/PageBlocks.tsx`, `components/journal/TodayPage.tsx`, `components/saints/ParagraphRow.tsx`, `components/settings/SettingsClient.tsx`, `components/billing/plusTry/TryProfile.tsx`, `components/bible/VerseRow.tsx`, `components/shop/PrayerCornerSet.tsx`, `components/shop/CartSignals.tsx`; the ✦ glyph in `components/calendar/FeastPanel.tsx` and `components/calendar/Colophon.tsx`. Not sparkles: the five-point `Star` of bookmarks and ratings, and the eight-point `Octogram`. `lib/community/symbols.ts` names ✨ only to draw what readers type, which stays.
 
 A standing guardrail from now (CLAUDE.md, "No sparkle star"). Who has it: Admin (free until the note freeze): each place gets an icon from `components/ui/icons` that names what the row or control is, chosen per place and listed in the record; the `Sparkle` icon leaves the set; `lib/ui/__tests__/noSparkle.test.ts` fails on the icon and the glyphs in app/, components/ and lib/ (readers' own text excepted by name); `checkMock` gains a `sparkle` rule with its self-test. Stills of the changed rows with the push.
+
+### 8. The journal: a tap on Title brings an explanation, and it feels buggy (2026-11-11 about 01:28 UTC)
+
+His words: "say 1,000. Refine the journal section because when I click title or anything, so just a quick explanation of how it works. Honestly, just buggy"
+
+Screenshot: `build-93/08-journal-composer.png`: the day's page (Tuesday, November 10, Gospel Luke 12:42-48), Reflection, Prayer, Question, Title, Add to a notebook, the words, and the bar Verse, Quote, Highlight (its sparkle goes with note 7), More.
+
+What the code says (the arbiter): the 1.9 tour's first stop is "the journal's page for the day" (`1ad21aa9d`, Updates 2), so a tap on Title or the words most likely met the tour's explanation instead of the field.
+
+Who has it: Updates 2 (built the tour). The bar: the tour never takes a tap meant for the page (a tap on a field goes to the field, and the tour steps aside or ends); then walk the journal end to end as a new reader and as an updater, on the export, and mend whatever else is rough (focus, the keyboard, Done, the bar), under his standing rules. Stills before and after with the push.
