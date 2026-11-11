@@ -248,3 +248,27 @@ Greek law firm's note, Wikimedia Commons' guidance for Greece and Italy,
 the Italian code's articles, and reports of the three court cases; each
 statement above carries the page it came from. Where a text could not be
 opened, that is said.
+
+## His decision
+
+The owner, 2026-11-11, about 13:21 UTC, through the arbiter (call 35):
+"let's use all the photos".
+
+So all 31 pictures counted above stay as they are: the 25 wall paintings
+and mosaics and the three icons held in Greece, and the three in Italy.
+Two things go with his word, as the arbiter gave them:
+
+- **Never in advertisements or store pictures.** These pictures are shown
+  in the library, where a reader meets the saint. None is used in an
+  advertisement, a promotional video, a store listing or its screenshots,
+  which are the uses every enforcement found above was about.
+- **The monasteries' blessing is asked** in the letters Admin is writing
+  (docs/1.9-build/ICON-PERMISSIONS.md): Dionysiou, Stavronikita and the
+  Protaton's keepers for their frescoes.
+
+The rule this chat was given while the question was open, to prefer works
+held outside Greece and Italy for new pictures, is lifted by the same word:
+the best old public-domain picture is taken wherever it is held. The
+questions under "What cannot be settled without a lawyer" stay open; his
+decision is made knowing them.
+
