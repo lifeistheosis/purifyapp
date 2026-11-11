@@ -123,6 +123,7 @@
   "credits.title": "Bildnachweise",
   "credits.intro": "Die meisten Bilder in Purify sind alte Ikonen, Fresken und Gemälde, die gemeinfrei sind. Einige stammen aus Fotografien, die ihre Urheber unter einer Creative-Commons-Lizenz teilen, die verlangt, dass jeder genannt wird. Hier werden sie genannt, mit der Lizenz und der Seite jeder Fotografie. Wo die Lizenz CC BY-SA ist, teilt Purify seinen Ausschnitt unter derselben Lizenz.",
   "credits.by": "Foto: {name}",
+  "credits.iconBy": "Ikone gemalt von {name}",
   "credits.source": "Quelle",
   "credits.cropped": "Von Purify zugeschnitten und verkleinert",
   "credits.none": "Noch ist kein Bild in Purify aus einer Fotografie gemacht, die eine Nennung verlangt.",

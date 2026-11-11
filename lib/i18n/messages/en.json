@@ -123,6 +123,7 @@
   "credits.title": "Photo credits",
   "credits.intro": "Most pictures in Purify are old icons, frescoes and paintings in the public domain. A few are made from photographs that their makers share under a Creative Commons licence, which asks that each be named. They are named here, with the licence and the page of each photograph. Where the licence is CC BY-SA, Purify's crop is shared under the same licence.",
   "credits.by": "Photograph by {name}",
+  "credits.iconBy": "Icon by {name}",
   "credits.source": "Source",
   "credits.cropped": "Cropped and resized by Purify",
   "credits.none": "No picture in Purify is made from a photograph that asks to be credited yet.",

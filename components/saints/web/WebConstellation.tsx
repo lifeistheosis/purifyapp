@@ -88,6 +88,8 @@ import { WebAvatar } from "./WebAvatar";
 import { SHORT_CARD_H, WebCard, type CardMove, type CardState } from "./WebCard";
 import { WebKey } from "./WebKey";
 import { kindCounts, tagOf } from "./webWords";
+import { PictureCreditNote } from "@/components/saints/PictureCredit";
+import { creditWords } from "@/lib/credits/saintPictures";
 
 /** Legible over the lines and the icon's light, in the page's own ground. */
 const LABEL_SHADOW = "[text-shadow:0_1px_6px_var(--color-night),0_0_2px_var(--color-night)]";
@@ -1362,6 +1364,7 @@ export function WebConstellation({
               <span ref={middleNameRef} lang="en" dir="ltr" className={cn(MIDDLE_NAME_CLASS, LABEL_SHADOW)}>
                 {center.short}
               </span>
+              <PictureCreditNote src={center.icon} />
             </div>
 
             {nodes.map((node, i) => {
@@ -1378,7 +1381,8 @@ export function WebConstellation({
                   type="button"
                   data-web-node={i}
                   aria-pressed={on}
-                  aria-label={tag ? `${name}, ${tag}` : name}
+                  // A picture whose licence asks its maker be named says so after the name (2026-11-11).
+                  aria-label={`${tag ? `${name}, ${tag}` : name}${node.kind === "saint" ? creditWords(node.person.icon, t) : ""}`}
                   onClick={() => {
                     if (swallowClick.current) {
                       swallowClick.current = false;

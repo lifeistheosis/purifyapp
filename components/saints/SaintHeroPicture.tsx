@@ -7,6 +7,8 @@ import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { cn } from "@/lib/cn";
 import { avifFor } from "@/lib/media/streamed";
 
+import { PictureCredit } from "./PictureCredit";
+
 /**
  * The picture at the top of a saint's page (1.7, the owner's note 19).
  *
@@ -220,8 +222,12 @@ export function SaintHeroPicture({
   }
 
   if (!iconUrl) return null;
+  // A picture whose licence asks that its maker be named has the line under it
+  // that names them (PictureCredit; St Mark of Ephesus's icon, 2026-11-11).
+  // A saint with a wide picture never has one of these icons
+  // (lib/credits/__tests__/photos.test.ts), so only the plate needs it.
   return (
-    <div data-saint-hero="plate" className="saint-icon-in flex justify-center pt-6 md:block md:pt-0">
+    <figure data-saint-hero="plate" className="saint-icon-in flex flex-col items-center pt-6 md:block md:pt-0">
       {/* The app's own icon, as it is: whole or not yet at all (build 85, note 52). */}
       <ArrivingImage
         src={iconUrl}
@@ -235,6 +241,7 @@ export function SaintHeroPicture({
         data-carry-into={iconUrl}
         className="h-[260px] w-auto rounded-[12px] shadow-[0_24px_60px_-20px_rgba(0,0,0,0.7)] ring-1 ring-paper/10 md:h-[300px]"
       />
-    </div>
+      <PictureCredit src={iconUrl} />
+    </figure>
   );
 }

@@ -31,6 +31,7 @@ import { iconFace } from "@/lib/saints/iconFaces";
 import { DAY_ROW_PX } from "@/lib/search/day";
 import { hitParts, kindIn, pictureFor, type SearchRow } from "@/lib/search/engine";
 import { DOOR_KINDS, KIND_LABEL, doorOf, type DoorId, type KindId } from "@/lib/search/places";
+import { PictureCreditNote } from "@/components/saints/PictureCredit";
 
 /*
  * The one set of rows the search draws (1.8, the owner's pick of r3-12):
@@ -126,6 +127,7 @@ export function Eyebrow({ label, count, end, className }: { label: ReactNode; co
 export function Face({ src, name, size }: { src?: string; name: string; size: number }) {
   const initial = name.replace(/^(St\.?|Saint|Holy|Blessed)\s+/i, "").charAt(0).toUpperCase();
   return (
+    <>
     <span
       aria-hidden
       className="relative inline-grid shrink-0 place-items-center overflow-hidden rounded-full bg-night-soft"
@@ -145,6 +147,9 @@ export function Face({ src, name, size }: { src?: string; name: string; size: nu
       </span>
       <span className="pointer-events-none absolute inset-0 rounded-full shadow-[inset_0_0_0_1px_rgb(255_255_255/0.2)]" />
     </span>
+    {/* A picture whose licence asks its maker be named says so to a screen reader (2026-11-11). */}
+    <PictureCreditNote src={src} />
+    </>
   );
 }
 

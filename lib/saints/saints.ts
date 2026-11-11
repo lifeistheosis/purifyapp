@@ -3410,6 +3410,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "mark-of-ephesus",
  byname: "Mark Eugenikos",
+ iconUrl: "/saints/icons/mark-of-ephesus.jpg",
  name: "St. Mark of Ephesus",
  epithet: "Metropolitan of Ephesus · Pillar of Orthodoxy",
  born: "1392 (Constantinople)",

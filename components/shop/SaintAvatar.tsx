@@ -6,6 +6,7 @@ import { FacePlate } from "@/components/ui/CrossPlate";
 import { cn } from "@/lib/cn";
 import type { ShopSaint } from "@/lib/shop/bySaint";
 import { useArrivingImage } from "@/lib/ui/useArrivingImage";
+import { PictureCreditNote } from "@/components/saints/PictureCredit";
 
 /**
  * A saint's icon in a circle, for "Shop by saint" (lib/shop/bySaint.ts): the
@@ -39,6 +40,7 @@ export function SaintAvatar({
 }) {
   const { ref, onArrive } = useArrivingImage(saint.iconUrl ?? null);
   return (
+    <>
     <span
       aria-hidden
       className={cn(
@@ -64,5 +66,8 @@ export function SaintAvatar({
         </span>
       ) : null}
     </span>
+    {/* A picture whose licence asks its maker be named says so to a screen reader (2026-11-11). */}
+    <PictureCreditNote src={saint.iconUrl} />
+    </>
   );
 }

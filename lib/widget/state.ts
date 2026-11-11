@@ -3,6 +3,7 @@ import nextUpdate from "@/data/changelog/next-update.json";
 import { nextNameDay } from "@/lib/desktop/presenceModes";
 import type { HourRuleId } from "@/lib/prayers/ruleForHour";
 import { keyOf, type DayKey } from "@/lib/rhythm/dayKey";
+import { saintPictureCredit } from "@/lib/credits/saintPictures";
 import { ICONS_URL_PREFIX, iconRightsFor } from "@/lib/saints/iconRights";
 import type { SaintBrief } from "@/lib/saints/brief";
 import type { StripDay } from "@/lib/streak/compute";
@@ -147,10 +148,12 @@ const SAINTS = profiledSaints as SaintBrief[];
  * The icon a widget may draw: only a file whose rights are settled in
  * lib/saints/iconRights.ts, as the path the app's bundle carries it at
  * (Android reads its assets from public/). Otherwise null, and the widget
- * draws the saint's name alone.
+ * draws the saint's name alone. Never a picture whose licence asks that its
+ * maker be named (lib/credits/saintPictures.ts): a widget opens nothing and
+ * has no room to name them (the arbiter, 2026-11-11).
  */
 function iconOf(iconUrl: string | undefined): string | null {
-  if (!iconUrl?.startsWith(ICONS_URL_PREFIX) || !iconRightsFor(iconUrl)) return null;
+  if (!iconUrl?.startsWith(ICONS_URL_PREFIX) || !iconRightsFor(iconUrl) || saintPictureCredit(iconUrl)) return null;
   return `public${iconUrl}`;
 }
 

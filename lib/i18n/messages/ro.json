@@ -125,6 +125,7 @@
   "credits.title": "Credite foto",
   "credits.intro": "Cele mai multe imagini din Purify sunt icoane, fresce și picturi vechi, aflate în domeniul public. Câteva provin din fotografii pe care autorii lor le împărtășesc sub o licență Creative Commons, care cere ca fiecare să fie numit. Îi numim aici, cu licența și pagina fiecărei fotografii. Unde licența este CC BY-SA, decupajul făcut de Purify este împărtășit sub aceeași licență.",
   "credits.by": "Fotografie de {name}",
+  "credits.iconBy": "Autorul icoanei: {name}",
   "credits.source": "Sursa",
   "credits.cropped": "Decupată și redimensionată de Purify",
   "credits.none": "Încă nicio imagine din Purify nu provine dintr-o fotografie care cere numirea autorului.",

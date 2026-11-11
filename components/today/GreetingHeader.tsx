@@ -26,6 +26,7 @@ import {
   type HourVerses,
 } from "@/lib/today/greeting";
 import { useMounted } from "@/lib/useMounted";
+import { PictureCreditNote } from "@/components/saints/PictureCredit";
 
 /**
  * The top of Today under the bar, one design for each type of reader (1.8,
@@ -134,6 +135,7 @@ export function GreetingHeader({ verses }: { verses: HourVerses | null }) {
               />
             </span>
           ) : null}
+          <PictureCreditNote src={lead.iconUrl} />
           {/* h2, not h1: the bar above names the screen ("Today") and owns
               its one h1 (1.7). The calendar's names are English. */}
           <h2 lang="en" dir="ltr" className="title-in min-w-0 font-serif text-title-sm font-bold leading-[1.22] text-paper">

@@ -60,6 +60,7 @@ import { GREEK_COLOPHON } from "./Colophon";
 import { FAST_META } from "./fastMeta";
 import StyleToggleLink from "./StyleToggleLink";
 import { HOUSE_EASE, motionOn, useMonthSwipe } from "./useMonthSwipe";
+import { PictureCreditNote } from "@/components/saints/PictureCredit";
 
 type CalStyle = "new" | "old";
 
@@ -244,6 +245,7 @@ function CommemorationItem({ c, first }: { c: Commemoration; first: boolean }) {
           />
         </span>
       ) : null}
+      <PictureCreditNote src={saint?.iconUrl} />
       <span className="min-w-0 flex-1">
         {c.kind === "feast" ? (
           <span className="mb-0.5 flex items-center gap-1.5 font-sans text-caption text-paper/70">

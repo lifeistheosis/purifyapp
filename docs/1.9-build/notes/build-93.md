@@ -376,6 +376,27 @@ Begun (Updates 2, 2026-11-11, `a1b987d18`):
     permissions list (`docs/1.9-build/ICON-PERMISSIONS.md`). St Mark's entry
     also names the Eleon workshop's own icon of him, free from its painter
     under CC BY 2.0, for the owner's word.
+  - Later the same day, on the arbiter's rulings: St Victorinus wears
+    Giacomo Brollo's fresco of 1886 at Nova Cerkev (public domain; a
+    faithful photograph of a wall painting adds no rights, and its
+    photographer, Urharec, is credited all the same), and St Mark of Ephesus,
+    by the owner's word ("Yes to both", relayed at 14:54 UTC), wears the
+    Eleon workshop's icon, cut to him alone from the workshop's own file.
+    The workshop is named as its licence asks: in a line under his picture
+    on his page, with the licence's deed and the workshop's page; as "Icon
+    by" on the credits page; and to a screen reader on every small face of
+    him. The home-screen widget and the Discord picture show the plate for
+    him, a journal banner and a shared picture never show his icon, and the
+    website's search-engine picture names the workshop and the licence
+    (`lib/credits/saintPictures.ts`, held by its test). Both leave the
+    permissions list, and their letters are not needed. St Irene's row on
+    the Seventh Council stays the plate: her icon is not cleared (it is in
+    `UNVERIFIED_ICONS`), so the line offered for her was not added. On the
+    export with no signal, both lines stand under their pictures whole at
+    390 and 320, in English and in Arabic, the credits page names both, St
+    Mark's faces on the Council of Florence and the saints' list say the
+    credit to a screen reader inside the link to his page, and `checkMock`
+    passes on each. Still: `build-93/mark-victorinus-credit.jpg`.
   - On the export with no signal: the four pages and the two Fathers rows
     draw their pictures, the three on the list stand on the plate with no
     empty picture, `checkMock` passes on each, and no picture is asked for

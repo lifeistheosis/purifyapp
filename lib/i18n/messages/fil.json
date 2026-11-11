@@ -123,6 +123,7 @@
   "credits.title": "Kredito ng mga larawan",
   "credits.intro": "Karamihan sa mga larawan sa Purify ay mga lumang icon, fresco at painting na nasa pampublikong domain. Ilan ay mula sa mga litratong ibinabahagi ng gumawa nito sa ilalim ng lisensiyang Creative Commons, na humihiling na banggitin ang bawat isa. Binabanggit sila rito, kasama ang lisensiya at ang pahina ng bawat litrato. Kung CC BY-SA ang lisensiya, ibinabahagi ang pagkaka-crop ng Purify sa ilalim ng parehong lisensiya.",
   "credits.by": "Litrato ni {name}",
+  "credits.iconBy": "Ikonong ipininta ni {name}",
   "credits.source": "Pinagmulan",
   "credits.cropped": "Kinrop at binago ang laki ng Purify",
   "credits.none": "Wala pang larawan sa Purify na mula sa litratong kailangang banggitin ang gumawa.",

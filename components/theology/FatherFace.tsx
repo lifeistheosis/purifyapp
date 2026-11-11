@@ -7,6 +7,7 @@ import { COVER_FACES } from "@/lib/today/saintFaces";
 import { useMounted } from "@/lib/useMounted";
 
 import { fatherPicture } from "./fatherPicture";
+import { PictureCreditNote } from "@/components/saints/PictureCredit";
 
 /**
  * A Father's face in a small round frame (1.8, round 3 r3-13, B's images):
@@ -40,6 +41,7 @@ export function FatherFace({
   // A Father with a page has a picture, chosen once the page is on the device.
   const picture = onDevice && father?.slug ? fatherPicture({ saintSlug: father.slug, iconUrl: father.iconUrl }, native) : null;
   return (
+    <>
     <span
       aria-hidden
       dir="ltr"
@@ -51,5 +53,8 @@ export function FatherFace({
         <SaintFace key={picture.src} picture={picture} zoom={zoom} across={father?.slug ? COVER_FACES[father.slug]?.[0] : undefined} className="relative" />
       ) : null}
     </span>
+    {/* A picture whose licence asks its maker be named says so to a screen reader (2026-11-11). */}
+    <PictureCreditNote src={picture?.src} />
+    </>
   );
 }

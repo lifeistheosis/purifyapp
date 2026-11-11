@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { FacePlate } from "@/components/ui/CrossPlate";
 import { cn } from "@/lib/cn";
 import { authorIcon } from "@/lib/saints/icons";
+import { PictureCreditNote } from "@/components/saints/PictureCredit";
 
 // An author with no cleared picture, or whose picture cannot load, is the
 // house's plate and its lit cross (components/ui/CrossPlate.tsx), never his
@@ -47,6 +48,7 @@ export function SaintIcon({
   }, [src, failed]);
 
   return (
+    <>
     <span
       role="img"
       aria-label={author}
@@ -69,5 +71,8 @@ export function SaintIcon({
         />
       ) : null}
     </span>
+    {/* A picture whose licence asks its maker be named says so to a screen reader (2026-11-11). */}
+    <PictureCreditNote src={src} />
+    </>
   );
 }

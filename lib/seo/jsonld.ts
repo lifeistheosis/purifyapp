@@ -20,6 +20,7 @@
 import type { Saint } from "@/lib/saints/saints";
 import type { SectionVoice, WritingContent } from "@/lib/saints/load";
 import { SITE_URL } from "@/lib/site";
+import { saintPictureCredit } from "@/lib/credits/saintPictures";
 
 const PUBLISHER = {
   "@type": "Organization",
@@ -46,6 +47,29 @@ export type JsonLd = Record<string, unknown>;
  * because a wrong-shaped date is still the right fact, and the alternative
  * is omitting the only chronology we have.
  */
+/**
+ * A saint's picture for search engines: its address, or, for a picture whose
+ * licence asks that its maker be named (lib/credits/saintPictures.ts; the
+ * arbiter, 2026-11-11), an ImageObject that names them and the licence in
+ * schema.org's own fields, so a picture shown from the search carries its
+ * credit too.
+ */
+export function saintImage(iconUrl: string): string | JsonLd {
+  const url = `${SITE_URL}${iconUrl}`;
+  const credit = saintPictureCredit(iconUrl);
+  if (!credit) return url;
+  const what = credit.kind === "icon" ? "Icon by" : "Photograph by";
+  return {
+    "@type": "ImageObject",
+    contentUrl: url,
+    url,
+    creator: { "@type": "Organization", name: credit.name },
+    creditText: `${what} ${credit.name}, ${credit.licence}`,
+    license: credit.deed,
+    acquireLicensePage: credit.source,
+  };
+}
+
 export function saintJsonLd(saint: Saint, sameAs?: string[]): JsonLd {
   const person: JsonLd = {
     "@type": "Person",
@@ -57,7 +81,7 @@ export function saintJsonLd(saint: Saint, sameAs?: string[]): JsonLd {
     ...(saint.epithet ? { disambiguatingDescription: saint.epithet } : {}),
     ...(saint.born ? { birthDate: saint.born } : {}),
     ...(saint.reposed ? { deathDate: saint.reposed } : {}),
-    ...(saint.iconUrl ? { image: `${SITE_URL}${saint.iconUrl}` } : {}),
+    ...(saint.iconUrl ? { image: saintImage(saint.iconUrl) } : {}),
     ...(saint.see
       ? { affiliation: { "@type": "Organization", name: saint.see } }
       : {}),

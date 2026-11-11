@@ -28,6 +28,7 @@ import { PATRON_EVENT, TODAY_PATRON_KEY, type PatronChange } from "@/lib/profile
 import { todayKey } from "@/lib/rhythm/dayKey";
 import type { SaintBrief } from "@/lib/saints/brief";
 import { saintWordsFor } from "@/lib/today/saintWords";
+import { PictureCreditNote } from "@/components/saints/PictureCredit";
 
 type Kept = { day: string; who: string; slug: string | null };
 
@@ -147,6 +148,7 @@ export function NameDayCard({ className }: { className?: string }) {
             className="mt-0.5 block font-sans text-caption text-paper/60 underline-offset-4 hover:underline"
           >
             {saint.name}
+            <PictureCreditNote src={saint.iconUrl} />
           </Link>
         </div>
       </div>

@@ -21,8 +21,13 @@ import { ICON_RIGHTS, ICONS_URL_PREFIX } from "@/lib/saints/iconRights";
  * credited, beside the licence and the page it was read on; this lists every
  * one. The work photographed must itself be old enough to be free: a
  * photograph of a contemporary icon is never used, since the painter's
- * rights are not the photographer's to give. Under CC BY-SA, Purify's crop
- * is shared under the same licence, as the page says.
+ * rights are not the photographer's to give, unless the painter published
+ * it under such a licence themselves (St Mark of Ephesus's icon, by the
+ * owner's word of 2026-11-11: its row's `creditAs` is "icon", and the
+ * credit names the painter). Under CC BY-SA, Purify's crop is shared under
+ * the same licence, as the page says. A saint's picture among these also
+ * names its maker under it on his page, and in what every small face of it
+ * says to a screen reader (lib/credits/saintPictures.ts).
  * lib/credits/__tests__/photos.test.ts holds every such picture to a credit.
  */
 
@@ -46,15 +51,17 @@ export type PhotoCredit = {
   file: string;
   /** The work photographed, in the registry's words. */
   work: string;
-  /** The photographer, as the file's page asks to be credited. */
+  /** The photographer, as the file's page asks to be credited; for an icon its painter (`kind`). */
   photographer: string;
+  /** "icon": the icon's own painter, who published it under the licence; else a photograph of an old work. */
+  kind: "photograph" | "icon";
   licence: CcLicence;
-  /** The file's page on Wikimedia Commons. */
+  /** The picture's page: its maker's own where the licence was given there, else its page on Wikimedia Commons. */
   source: string;
 };
 
 /** A picture in one of the registries, as far as a credit needs it. */
-type Registered = { file: string; work: string; license: string; credit?: string; evidenceUrl: string };
+type Registered = { file: string; work: string; license: string; credit?: string; creditAs?: "icon"; creditPage?: string; evidenceUrl: string };
 
 function registered(): Registered[] {
   const out: Registered[] = [];
@@ -63,7 +70,7 @@ function registered(): Registered[] {
   }
   for (const figure of Object.values(FIGURES)) if (figure) out.push(figure);
   for (const [file, row] of Object.entries(ICON_RIGHTS)) {
-    if (row.status === "verified") out.push({ file: `${ICONS_URL_PREFIX}${file}`, work: row.work, license: row.license, credit: row.credit, evidenceUrl: row.evidenceUrl });
+    if (row.status === "verified") out.push({ file: `${ICONS_URL_PREFIX}${file}`, work: row.work, license: row.license, credit: row.credit, creditAs: row.creditAs, creditPage: row.creditPage, evidenceUrl: row.evidenceUrl });
   }
   return out;
 }
@@ -75,7 +82,7 @@ export function photoCredits(): PhotoCredit[] {
   for (const r of registered()) {
     if (!isCcLicence(r.license) || seen.has(r.file)) continue;
     seen.add(r.file);
-    out.push({ file: r.file, work: r.work, photographer: r.credit ?? "", licence: r.license, source: r.evidenceUrl });
+    out.push({ file: r.file, work: r.work, photographer: r.credit ?? "", kind: r.creditAs ?? "photograph", licence: r.license, source: r.creditPage ?? r.evidenceUrl });
   }
   return out;
 }

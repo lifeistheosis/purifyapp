@@ -8,6 +8,7 @@ import sharp from "sharp";
 import type { ArtParams } from "@/lib/desktop/artParams";
 import type { SeasonColor } from "@/lib/desktop/presenceModes";
 import { getSaint } from "@/lib/saints/saints";
+import { saintPictureCredit } from "@/lib/credits/saintPictures";
 
 // The pictures the desktop app shows on Discord, drawn to the approved
 // design (26 September 2026): a portrait, head and shoulders, with the
@@ -106,7 +107,11 @@ export async function renderArt(
   if (params.saint) {
     const saint = getSaint(params.saint);
     if (!saint) throw new UnknownSaintError(params.saint);
-    if (saint.iconUrl) iconRel = saint.iconUrl;
+    // Never a picture whose licence asks that its maker be named: the Discord
+    // picture has no room to name them (lib/credits/saintPictures.ts; the
+    // arbiter, 2026-11-11). The app's own mark stands instead, as for a saint
+    // with no picture.
+    if (saint.iconUrl && !saintPictureCredit(saint.iconUrl)) iconRel = saint.iconUrl;
   }
   const isPortrait = iconRel !== "/icon-512.png";
 

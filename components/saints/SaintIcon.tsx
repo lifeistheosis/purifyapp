@@ -5,6 +5,7 @@ import type { Saint } from "@/lib/saints/saints";
 import { FacePlate, type CrossPlateSize } from "@/components/ui/CrossPlate";
 import { cn } from "@/lib/cn";
 import { useArrivingImage } from "@/lib/ui/useArrivingImage";
+import { PictureCreditNote } from "./PictureCredit";
 
 // Renders a saint's icon as a small panel in the icons' own shape, three wide
 // by four tall.
@@ -50,6 +51,7 @@ export function SaintIcon({
  const { ref, onArrive } = useArrivingImage(saint.iconUrl ?? null);
 
  return (
+ <>
  <div
  className={cn(
  // A dark island, as the icon itself is, on every palette (the owner, 1.8).
@@ -85,5 +87,8 @@ export function SaintIcon({
  />
  )}
  </div>
+ {/* A picture whose licence asks its maker be named says so to a screen reader (2026-11-11). */}
+ <PictureCreditNote src={saint.iconUrl} />
+ </>
  );
 }

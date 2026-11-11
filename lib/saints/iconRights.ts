@@ -54,11 +54,21 @@ type RightsFields = {
   license: string;
   evidenceUrl: string;
   /**
-   * A CC BY or CC BY-SA photograph of an old work only: the photographer, as
-   * the file's page asks to be credited. The credits page names every one
-   * (lib/credits/photos.ts); a public-domain or CC0 picture carries none.
+   * A CC BY or CC BY-SA picture only: whom its page asks to be credited, the
+   * photographer of an old work, or (`creditAs: "icon"`) the painter who
+   * published the icon under that licence themselves. The credits page names
+   * every one (lib/credits/photos.ts), and so does a line under the picture
+   * on the saint's page; a public-domain or CC0 picture carries none.
    */
   credit?: string;
+  /** "icon" where `credit` is the icon's own painter (St Mark of Ephesus, 2026-11-11); else the photographer. */
+  creditAs?: "icon";
+  /**
+   * The maker's own page for the picture, where the licence was given, which
+   * the credit links to where it is not `evidenceUrl` (the workshop's Flickr
+   * page for St Mark of Ephesus's icon).
+   */
+  creditPage?: string;
 };
 
 /**
@@ -2906,6 +2916,38 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "CC BY-SA 3.0",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Victorinus.jpg",
     credit: "Urharec",
+  },
+  // St Mark of Ephesus: no clean picture of him whose freedom can be shown is
+  // older. The Illustrated Chronicle's two miniatures of the Council of
+  // Florence (1568 to 1576) show him small among other men, his face half
+  // behind another's; Commons' "Mark of Ephesus.jpg" is a signed
+  // 20th-century Greek icon wrongly tagged public domain; the Russian Lives
+  // of the Saints have no print of him on 19 January. So, by the owner's
+  // word of 2026-11-11 ("Yes to both", relayed by the arbiter at 14:54 UTC),
+  // the Eleon icon-painting workshop's icon of St Mark with St Macarius the
+  // Great, which the workshop photographed and published itself, on its own
+  // Flickr account, under CC BY 2.0
+  // (https://www.flickr.com/photos/107233269@N08/20781338902/; the licence
+  // read there by Commons' review bot on 2016-10-10, and still there on
+  // 2026-11-11). It is not public domain: the painter's own free licence
+  // stands in for a letter, and the workshop is named as that licence asks,
+  // under his picture on his page and on the credits page, with the licence
+  // and the photograph's page. Cut to St Mark alone, his name lettered
+  // beside his halo, from the workshop's own 955 by 1200 file; never on a
+  // journal banner or a shared picture, which cannot name the workshop.
+  "mark-of-ephesus.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A painted icon of a bishop with a long white beard in a black monastic veil, a red halo about his head, blessing with his right hand and holding a red Gospel book with a jewelled cover, in a green vestment over a white stole marked with dark crosses, his name lettered in red on the gold ground.",
+    work: "Sts Mark of Ephesus and Macarius the Great, an icon by the Eleon icon-painting workshop (a detail: St Mark alone, his head and body to the waist)",
+    artist: "Eleon icon-painting workshop (Иконописная мастерская Елеон)",
+    workDate: "Contemporary (photographed by the workshop in 2015)",
+    source: "The workshop's own Flickr account, by way of Wikimedia Commons",
+    license: "CC BY 2.0",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%9C%D0%B0%D1%80%D0%BA_%D0%B8_%D0%9C%D0%B0%D0%BA%D0%B0%D1%80%D0%B8%D0%B9_%28%D0%B8%D0%BA%D0%BE%D0%BD%D0%BE%D0%BF%D0%B8%D1%81%D0%BD%D0%B0%D1%8F_%D0%BC%D0%B0%D1%81%D1%82%D0%B5%D1%80%D1%81%D0%BA%D0%B0%D1%8F_%D0%95%D0%BB%D0%B5%D0%BE%D0%BD%29.jpg",
+    credit: "Eleon icon-painting workshop (Иконописная мастерская Елеон)",
+    creditAs: "icon",
+    creditPage: "https://www.flickr.com/photos/107233269@N08/20781338902/",
   },
 };
 

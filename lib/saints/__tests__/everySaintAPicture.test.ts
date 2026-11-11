@@ -37,7 +37,6 @@ const WAITING: Record<string, string> = {
   "dumitru-staniloae": "permission: the Romanian Patriarchate (the icon of 2024, Răzvan and Mihaela Bădescu)",
   // Updates 2's search (build 93 note 12), at Commons' pace.
   "symeon-the-new-theologian": "permission: the Monastery of the Virgin Mary the Consolatory, Brownsburg-Chatham, Quebec (no older picture of him is free)",
-  "mark-of-ephesus": "permission: Brian Whirledge, Goshen, Indiana, unless the owner takes the Eleon workshop's own CC BY icon (no clean free picture of him is older)",
   "xenia-of-petersburg": "permission: Holy Cross Monastery, Wayne, West Virginia (glorified in 1988; no picture of her is free)",
   // November's and December's saints are the November and December chat's
   // (docs/1.9-build/notes/november-saints.md, december-saints.md).

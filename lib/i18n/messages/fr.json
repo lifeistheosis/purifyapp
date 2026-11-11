@@ -123,6 +123,7 @@
   "credits.title": "Crédits photographiques",
   "credits.intro": "La plupart des images de Purify sont d'anciennes icônes, fresques et peintures du domaine public. Quelques-unes viennent de photographies que leurs auteurs partagent sous une licence Creative Commons, qui demande que chacun soit nommé. Ils sont nommés ici, avec la licence et la page de chaque photographie. Lorsque la licence est CC BY-SA, le recadrage de Purify est partagé sous la même licence.",
   "credits.by": "Photographie de {name}",
+  "credits.iconBy": "Icône peinte par {name}",
   "credits.source": "Source",
   "credits.cropped": "Recadrée et redimensionnée par Purify",
   "credits.none": "Aucune image de Purify ne vient encore d'une photographie qui demande de nommer son auteur.",

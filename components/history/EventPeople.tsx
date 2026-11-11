@@ -10,6 +10,7 @@ import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import type { EventPerson } from "@/lib/history/load";
 import { getSaint } from "@/lib/saints/saints";
+import { PictureCreditNote } from "@/components/saints/PictureCredit";
 
 export function EventPeople({ people }: { people: EventPerson[] }) {
   if (!people.length) return null;
@@ -33,6 +34,7 @@ export function EventPeople({ people }: { people: EventPerson[] }) {
                 />
               </span>
             ) : null}
+            <PictureCreditNote src={saint?.iconUrl} />
             <span className="min-w-0 flex-1">
               <span lang="en" dir="ltr" className="block font-sans text-ui font-semibold leading-snug text-paper rtl:text-right">{person.name}</span>
               <span lang="en" dir="ltr" className="mt-0.5 block font-sans text-detail leading-[1.5] text-paper/60">{person.role}</span>

@@ -25,6 +25,7 @@ import { nameColorClass } from "@/lib/profile/nameColor";
 import type { PublicProfile } from "@/lib/profile/publicProfile";
 import { networkName } from "@/lib/profile/socialLinks";
 import type { PictureWords } from "@/lib/share/verseCard";
+import { PictureCreditNote } from "@/components/saints/PictureCredit";
 
 // Words as a picture, loaded on the first Share: a profile carries no canvas
 // for a reader who never shares (components/today/VerseCardActions.tsx).
@@ -315,6 +316,7 @@ export function PatronCard({ patron, onNavigate }: { patron: { slug: string; nam
           </span>
         )}
       </span>
+      <PictureCreditNote src={facts?.icon} />
       <span className="min-w-0 flex-1">
         <span className={cn(EYEBROW, "block")}>{t("profile.patronSaint")}</span>
         <span className="mt-1 block font-serif text-[17px] font-semibold leading-snug text-paper">{patron.name}</span>

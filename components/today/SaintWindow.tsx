@@ -18,6 +18,7 @@ import { COVER_FACES, quoteFace, type SaintPicture } from "@/lib/today/saintFace
 import { quoted, readWhereFrom, saintByline, saintPictureInput, saintQuote, type SaintWords } from "@/lib/today/saintWords";
 
 import { SaintFace } from "./SaintFace";
+import { PictureCreditNote } from "@/components/saints/PictureCredit";
 
 type WindowSaint = Pick<SaintBrief, "slug" | "name" | "epithet"> & Partial<Pick<SaintBrief, "feastDays" | "iconUrl">>;
 
@@ -153,6 +154,7 @@ export function SaintWindowHead({
           <FacePlate size="disc" />
           {picture ? <SaintFace key={picture.src} picture={picture} zoom={1.4} across={COVER_FACES[saint.slug]?.[0]} className="relative" /> : null}
         </span>
+        <PictureCreditNote src={picture?.src} />
         <span className="min-w-0">
           <span className="block font-heading text-lede font-bold leading-tight text-paper">{saint.name}</span>
           {byline ? <span className="mt-0.5 block font-sans text-caption text-paper/55">{byline}</span> : null}

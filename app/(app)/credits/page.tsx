@@ -1,6 +1,7 @@
 import { T } from "@/components/i18n/T";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { CC_LICENCES, photoCredits } from "@/lib/credits/photos";
+import { isolatedName } from "@/lib/credits/saintPictures";
 
 export const metadata = {
   title: "Photo credits",
@@ -16,8 +17,9 @@ const LINK = "hit-44 underline underline-offset-2 decoration-paper/30 hover:text
  * photographs are now allowed, each photographer named on a credits page").
  * Every picture made from such a photograph is a row, read from the pictures'
  * own registries (lib/credits/photos.ts): the work photographed, the
- * photographer as the file's page names them, the licence with its deed, the
- * photograph's page, and what Purify changed. The
+ * photographer as the file's page names them (or, for an icon its painter
+ * published under such a licence, the painter: "Icon by"), the licence with
+ * its deed, the picture's page, and what Purify changed. The
  * page's own words follow the reader's language (components/i18n/T.tsx); a
  * row is in the words of the file's page. Static, with nothing read on the
  * server, so the apps carry it whole. The About page leads here once there is
@@ -48,7 +50,9 @@ export default function CreditsPage() {
                     {c.work}
                   </p>
                   <p className="mt-1.5 font-sans text-ui text-paper/80">
-                    <T k="credits.by" replacements={{ name: c.photographer }} />
+                    {/* A photograph of an old work names its photographer; an icon its painter
+                        (St Mark of Ephesus, 2026-11-11), whose own licence it is under. */}
+                    <T k={c.kind === "icon" ? "credits.iconBy" : "credits.by"} replacements={{ name: isolatedName(c.photographer) }} />
                   </p>
                   <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 font-sans text-detail text-paper/70">
                     <a href={CC_LICENCES[c.licence]} target="_blank" rel="noopener noreferrer license" className={LINK}>

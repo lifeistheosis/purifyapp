@@ -127,6 +127,7 @@
   "credits.title": "Autorzy zdjęć",
   "credits.intro": "Większość obrazów w Purify to dawne ikony, freski i malowidła w domenie publicznej. Kilka powstało ze zdjęć, które ich autorzy udostępniają na licencji Creative Commons, wymagającej podania nazwiska każdego z nich. Wymieniamy ich tutaj, wraz z licencją i stroną każdego zdjęcia. Tam, gdzie licencją jest CC BY-SA, kadr Purify jest udostępniany na tej samej licencji.",
   "credits.by": "Zdjęcie: {name}",
+  "credits.iconBy": "Autor ikony: {name}",
   "credits.source": "Źródło",
   "credits.cropped": "Wykadrowane i pomniejszone przez Purify",
   "credits.none": "Żaden obraz w Purify nie powstał jeszcze ze zdjęcia, które wymaga podania autora.",
