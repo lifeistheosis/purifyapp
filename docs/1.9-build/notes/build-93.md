@@ -180,3 +180,13 @@ Screenshot: `build-93/14-rule-complete.png`: the evening rule's end: the Dismiss
 Found on the way: "Those from the prayer wall leave your prayers now." (`prayers.wall.left`) names a page readers no longer have (the wall went to the Vault in 1.9, `88931feae`); it shows only to a reader who still holds names from it.
 
 Who has it: Updates, with note 2 (one owner for how the prayer page feels). What it asks: when the reader passes the rule's last prayer, the completion is felt: one considered moment in the house's motion with the click (for example the lampada brightening as a soft pool of light and "Glory to God" settling in), then the page at rest with what follows. His guardrails bind it: no light rays (light is a soft pool or nothing), no sparkle, no confetti or bursts, nothing that loops; reduced motion shows the same words still. The prayer wall's leftover line: with the campaigns chat (which removed the wall), let any leftover names go quietly once, or name them as readers now know them. A plan with one still first.
+
+### 15. What opens shows itself: the page moves with it (2026-11-11 about 01:39 UTC)
+
+His words: "Again, I want the screen to move with the bottom if it's too big."
+
+Screenshots: `build-93/15a-prayer-book-closed.png` and `15b-prayer-book-opened-under-tabs.png`: Prayers, The prayer book; "Before & after daily life" opened, and its rows run on under the tab bar while the page stays where it was.
+
+A standing rule from his "Again" (the language list was the same, build 90): anything that opens (a section of a list, a card, a menu) and ends below what the screen shows moves the page with it, so its end stands clear of the tab bar; it never moves the opened thing's top off the screen, and with reduced motion the page moves without the glide.
+
+Who has it: Fable Theology (built the page transitions and is mending Back's scroll, note 1): one helper the whole app uses for anything that opens, the prayer book first, every accordion and expanding part after, with a test that fails today.
