@@ -120,6 +120,7 @@ To put it on the phone, either:
 | 32 | Both phones. Open the Bible's list of books (the Bible tab, then the round button at the top left). Scroll down to a book far down the list and open it. Turn to the next chapter. Tap the round button at the top left once | The list comes back with that book's row where your thumb was, in one tap, moving as a page that returns. On an iPhone below iOS 26.2 it looks the same. Then open the Bible tab from Today and tap the round button: the whole list opens, as it always did |
 | 33 | Both phones. Prayers, down to Practices. Open Akathists, then tap Back | As the picture lands in its tile, its name and the line under it are already on it. The picture never sits bare with the words appearing after |
 | 34 | An iPhone on iOS 18.0 or 18.1, if one is at hand. In the reading room, open a book by its cover, then tap Back | The cover grows into the head of the book's page and comes back into its tile as one cover. Its title is never read twice, one over the other |
+| 35 | iPhone. On You, signed out, tap Sign in. Then tap the chevron at the top, before the Purify mark. Then open Sign in again, tap Forgot password, and tap the chevron there | Sign in has a chevron at its top left. The first tap returns you to You, where you were, with the page sliding away as any step back does. From Forgot password, one tap returns you to Sign in, not to Today |
 
 ## After
 

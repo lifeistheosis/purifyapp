@@ -1692,3 +1692,50 @@ the day and who saw it. Android stays at no: the same sentence says none has
 come there. The file now says its measure plainly: his word that a
 notification arrived, not a reminder watched at its own hour, which is the
 phone walk's stricter proof.
+
+## 14. The way back out of the sign-in pages, in the apps (2026-11-11)
+
+The arbiter's word of 12:21 UTC, on Fable Theology's finding: "The sign-in
+page has no Back in the apps (an iPhone can leave only by the Purify mark, to
+Today) ... it moves to you, the door of your account step. Give its own frame
+the house's chevron named Back (the existing key, mirrored in Arabic, 44px),
+returning the reader where they were with Today as the floor, the page switch
+as everywhere, a test that fails on today's code."
+
+**Why there was none.** Sign in, sign up, forgot, reset and set password are
+drawn by their own frame (`app/(auth)/layout.tsx`), outside the app's
+(`components/layout/AppFrame.tsx`), so the apps' back bar
+(`components/nav/NativeBackBar.tsx`) never stood over them. A browser has its
+own Back and an Android phone its button; an iPhone has neither. A reader who
+opened Sign in from You, or from the account step of the welcome questions,
+and thought better of it could only tap the Purify mark and land on Today.
+
+**As built** (`components/auth/AuthBack.tsx`, placed at the start of the
+frame's head, before the Purify mark):
+
+- The house's chevron (`ChevronLeft`, as every bar's), named by the existing
+  key `nav.back`, 44 pixels to a finger, mirrored where the page runs right to
+  left. Only in the apps (`NativeOnly`), as the back bar is.
+- It goes back the one way every bar does, `goBack(router, "/")`
+  (`lib/nav/goBack.ts`): to where the reader was; pictured as a step back is
+  everywhere (the page left sinks, the page behind arrives); and to Today, the
+  floor, when nothing of the app is behind the page, as a link from an email
+  leaves it.
+- Every page of the group has it, since each is drawn in that one frame.
+
+**Held by** `lib/nav/__tests__/authBack.test.ts` (fails on the code before
+it: there was no such control) and `scripts/auth-back-walk.mjs`, which walks
+it on the export with a finger's taps: from You into Sign in and back to You,
+pictured; Sign in to Forgot password and one step back; Sign in opened cold,
+Back to Today; sign up, forgot and reset; and in Arabic, the chevron at the
+page's right, pointing the other way, named in Arabic. Each still through
+`checkMock`. Stills: `docs/1.9-build/notes/build-93/signin-back/`.
+
+**Found on the way, and mended with it.** In a language that runs right to
+left, the word between the form and Continue with Google ("Or", `notFound.or`)
+was not on the screen: it was centred by a left offset, which in such a page
+starts from the right and carried it off the edge, leaving a bare line
+(Arabic and Urdu, on Sign in and on Sign up). It is centred by its row now,
+whichever way the page runs, and the walk holds it on the screen in Arabic.
+
+**Not run:** an iPhone. Row 35 of `docs/PHONE-WALK.md` is his walk for it.
