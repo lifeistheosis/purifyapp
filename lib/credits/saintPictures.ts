@@ -40,6 +40,20 @@ export const CREDITED_SAINT_PICTURES: Readonly<Record<string, SaintPictureCredit
     deed: "https://creativecommons.org/licenses/by-sa/3.0/",
     source: "https://commons.wikimedia.org/wiki/File:Victorinus.jpg",
   },
+  "/saints/icons/anatolius-of-constantinople.v2.jpg": {
+    name: "Branko Jovanović, BLAGO Fund",
+    kind: "photograph",
+    licence: "CC BY 4.0",
+    deed: "https://creativecommons.org/licenses/by/4.0/",
+    source: "https://www.blagofund.org/Archives/StaroNagorichane/Pictures/Interior/Nave/East_columns/SNAGORICANE_1_080A5498.html",
+  },
+  "/saints/icons/lazar-of-serbia.v2.jpg": {
+    name: "Branko Jovanović, BLAGO Fund",
+    kind: "photograph",
+    licence: "CC BY 4.0",
+    deed: "https://creativecommons.org/licenses/by/4.0/",
+    source: "https://www.blagofund.org/Archives/Ljubostinja/Pictures/Interior/Narthex/Portraits_of_rulers/LJUBOSTINJA_1_080A1394.html",
+  },
   "/saints/icons/mark-of-ephesus.jpg": {
     name: "Eleon icon-painting workshop (Иконописная мастерская Елеон)",
     kind: "icon",

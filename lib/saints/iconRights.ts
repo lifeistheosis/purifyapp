@@ -1738,6 +1738,7 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     source: "BLAGO Fund, the Ljubostinja archive",
     license: "CC BY 4.0",
     evidenceUrl: "https://www.blagofund.org/Archives/Ljubostinja/Pictures/Interior/Narthex/Portraits_of_rulers/LJUBOSTINJA_1_080A1394.html",
+    credit: "Branko Jovanović, BLAGO Fund",
   },
   "cosmas-of-aetolia.jpg": {
     status: "verified",
@@ -1760,6 +1761,7 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     source: "BLAGO Fund, the Staro Nagoričane archive",
     license: "CC BY 4.0",
     evidenceUrl: "https://www.blagofund.org/Archives/StaroNagorichane/Pictures/Interior/Nave/East_columns/SNAGORICANE_1_080A5498.html",
+    credit: "Branko Jovanović, BLAGO Fund",
   },
   "basil-of-ostrog.v2.jpg": {
     status: "verified",

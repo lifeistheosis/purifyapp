@@ -50,7 +50,9 @@ describe("the photo credits", () => {
       if (isCcLicence(p.license)) {
         expect(p.credit?.trim(), `${p.file} is ${p.license} and names no photographer`).toBeTruthy();
         expect(p.credit!.includes(EM_DASH), p.file).toBe(false);
-        expect(p.evidenceUrl, p.file).toMatch(/^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
+        // Where the licence is stated: the file's own page on Commons, or the picture's own page in the BLAGO
+        // Fund's archive, which states Creative Commons Attribution on each (the two Serbian wall paintings, 2026-11-11).
+        expect(p.evidenceUrl, p.file).toMatch(/^https:\/\/(commons\.wikimedia\.org\/wiki\/File:|www\.blagofund\.org\/Archives\/)/);
         expect(creditFor(p.file)?.photographer, p.file).toBe(p.credit);
       } else {
         expect(p.credit, `${p.file} needs no credit`).toBeUndefined();
