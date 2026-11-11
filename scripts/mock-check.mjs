@@ -136,6 +136,9 @@ const wear = (page, mode, look) =>
 
 export const CHECKS = ["contrast", "placeholder", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays", "sparkle", "picture", "dashed", "keys", "cut"];
 
+/** Why the Church's red, and white words on it, stay the same on every palette (the arbiter, 2026-11-11). */
+const CRIMSON = "the Church's red (--color-crimson), one red on every palette by design, and white words on it (5.8:1): not a colour typed in";
+
 /** What a measure cannot see. */
 export const BY_EYE = [
   "Built from the app's own component for the job, rendered from the export; only the proposed change is new.",
@@ -775,6 +778,10 @@ async function look(arg) {
       };
     });
 
+  // The Church's red (--color-crimson): one red on every palette by design (the strict fast,
+  // a removal, an error), so the palette rule does not read it, or white words on it, as typed.
+  const crimson = rgba(getComputedStyle(document.documentElement).getPropertyValue("--color-crimson").trim() || "transparent");
+  const isRed = (c) => Boolean(c) && crimson[3] > 0 && c.slice(0, 3).every((v, i) => Math.abs(v - crimson[i]) <= 2);
   const paints = all.map((e) => {
     if (!shown(e)) return null;
     const cs = getComputedStyle(e);
@@ -790,6 +797,16 @@ async function look(arg) {
       .map((s) => rgba(cs[`border${s}Color`]))
       .find((c) => c[3] >= 0.25);
     if (border) p.border = border;
+    p.red = { color: isRed(p.color), bg: isRed(p.bg), border: isRed(p.border) };
+    // White words on the red: the nearest ground under them that is not clear is the red.
+    if (p.color && p.color.slice(0, 3).every((v) => v >= 253)) {
+      for (let n = e; n && n !== document.documentElement; n = n.parentElement) {
+        const g = rgba(getComputedStyle(n).backgroundColor);
+        if (g[3] < 0.25) continue;
+        p.onRed = isRed(g);
+        break;
+      }
+    }
     return p;
   });
 
@@ -905,7 +922,10 @@ async function look(arg) {
   const pictures = [];
   const loading = (e) => Boolean(e.closest(".animate-pulse, [aria-busy='true']"));
   for (const img of root.querySelectorAll("img")) {
-    if (!shown(img) || loading(img)) continue;
+    // Only a picture a reader can see is judged: one held clear while it is still being asked for
+    // (a saint's wide picture, waiting, its carried icon in its place) is not an empty picture,
+    // and one that gave up leaves the page (Updates 2's find, 2026-11-11).
+    if (!shown(img) || loading(img) || opacityOf(img) < 0.05) continue;
     const r = img.getBoundingClientRect();
     if (r.width < 8 || r.height < 8) continue;
     const src = img.currentSrc || img.getAttribute("src") || "";
@@ -1313,6 +1333,7 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
       for (const part of ["color", "bg", "border"]) {
         if (!same(p[part], q[part])) continue;
         if (p.allowPalette) allow("palette", p.name, p.allowPalette);
+        else if (p.red?.[part] || (part === "color" && p.onRed)) allow("palette", p.name, CRIMSON);
         else fail("palette", null, p.name, `${part === "color" ? "its words stay" : part === "bg" ? "its ground stays" : "its border stays"} rgb(${p[part].slice(0, 3).join(", ")}) on Light: a colour typed in, not a token`);
       }
     });
@@ -1530,6 +1551,7 @@ const FIXTURES = `
   <div class="relative mt-3 h-24 overflow-hidden rounded-[18px] bg-night-soft"><img alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="absolute inset-0 h-full w-full object-cover"><p class="absolute inset-x-0 bottom-0 px-3 pb-2 pt-6 font-sans text-ui text-paper" style="background-image:linear-gradient(transparent,var(--color-night))">Words over a fade on a picture</p></div>
   <div class="relative mt-3 h-16 overflow-hidden rounded-[18px] bg-night-soft"><img alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="absolute inset-0 h-full w-full object-cover"><p class="relative px-3 pt-3 font-sans text-ui text-paper">Words over a picture, on plain colours</p></div>
   <div class="mt-3 flex items-center gap-3"><span class="relative block h-12 w-12 shrink-0 overflow-hidden rounded-[12px] bg-night-soft"><img alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="absolute inset-0 h-full w-full object-cover"></span><p class="font-sans text-ui text-paper">Words beside a picture</p></div>
+  <div style="height:60px"><img alt="" data-hero-picture="waiting" src="/__no-such-wide-picture.png" style="width:96px;height:54px;opacity:0"></div>
 </div>`;
 
 // An Arabic page's progress bar, as the app draws them (FirstLiturgyGuide,
@@ -1549,6 +1571,12 @@ const PIXELS = `<div data-mock-fixture="pixels" style="padding:16px">
   <div style="background-image:${PICTURE("101010")};padding:12px"><p style="margin:0;color:#ffffff;font:16px sans-serif">Light words on a dark picture</p></div>
   <div style="margin-top:12px;background-image:${PICTURE("777777")};padding:12px"><p style="margin:0;color:#8a8a8a;font:16px sans-serif">Grey words on a grey picture</p></div>
   <div style="position:fixed;inset-inline-start:2000px;top:120px;background-image:${PICTURE("101010")};padding:12px"><p style="margin:0;color:#ffffff;font:16px sans-serif">Words past the screen's edge</p></div>
+</div>`;
+
+/** The Church's red, by its token, beside a red typed in that is not it. */
+const RED = `<div data-mock-fixture="red" style="padding:16px;display:flex;gap:12px">
+  <button type="button" class="inline-flex min-h-11 items-center rounded-pill bg-crimson px-4 font-sans text-ui font-semibold text-white">Pray</button>
+  <button type="button" style="display:inline-flex;min-height:44px;align-items:center;border-radius:999px;background:#b22222;color:#ffffff;padding:0 16px;font:600 16px sans-serif">Take it down</button>
 </div>`;
 
 async function selfTest() {
@@ -1585,6 +1613,16 @@ async function selfTest() {
     const lookOnly = await checkMock(page, "[data-mock-fixture=pixels]", { palettes: [["Dark", null]] });
     const byPixels = await checkMock(page, "[data-mock-fixture=pixels]", { palettes: [["Dark", null]], pixels: true });
     printMockCheck(byPixels, "words on pictures, measured on their pixels");
+    // The Church's red and white on it are allowed by name; a red typed in that is not it still fails.
+    await page.evaluate((html) => document.body.insertAdjacentHTML("beforeend", html), RED);
+    await settle(page);
+    const red = await checkMock(page, "[data-mock-fixture=red]");
+    printMockCheck(red, "the Church's red, and a red typed in");
+    const redRight =
+      !red.failures.some((f) => f.check === "palette" && f.what === 'button "Pray"') &&
+      red.allowed.some((a) => a.startsWith(`palette on button "Pray": the Church's red`)) &&
+      red.failures.some((f) => f.check === "palette" && f.what === 'button "Take it down"' && f.detail.startsWith("its ground stays rgb(178, 34, 34)")) &&
+      red.failures.some((f) => f.check === "palette" && f.what === 'button "Take it down"' && f.detail.startsWith("its words stay rgb(255, 255, 255)"));
     const lookSaid = lookOnly.unmeasured.length === 3 && lookOnly.failures.length === 0;
     // The third stands past the screen's edge, where no pixel shows it: left "look", for a still and an eye.
     const pastEdge = byPixels.looks.find((l) => l.text === "Words past the screen's edge");
@@ -1617,11 +1655,11 @@ async function selfTest() {
       said("Words over a fade on a picture", "a picture is drawn across it (img)") &&
       said("Words over a picture, on plain colours", "a picture is drawn across it (img)") &&
       good.unmeasured.length === 3;
-    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead;
+    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight;
     console.log(
       ok
         ? "\nself-test: every mistake caught, and the house's own parts pass"
-        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}`,
+        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}`,
     );
     return ok;
   } finally {
