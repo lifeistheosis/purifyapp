@@ -46,6 +46,12 @@
 //   keys         no keyboard hint on a phone: Esc, Ctrl, Cmd, a chord with
 //                Alt or Shift, the Mac's key signs, or a key drawn as <kbd>,
 //                shown where the pointer is a finger (build 93 note 7's list)
+//   cut          no control's name cut short: the first words a control holds
+//                ended by an ellipsis, cut at a line, or clipped by the box
+//                they stand in, up to the control itself (the journal's walk
+//                with no Plus, 2026-11-11: More's tiles read "H..."); a
+//                preview's later words are not its name, and readers' own
+//                words, rightly cut in a list, say so on themselves
 // What no measure can see is printed after it, to be answered by eye.
 //
 // A piece meant to break one of these says so on itself, with its reason,
@@ -106,7 +112,7 @@ const wear = (page, mode, look) =>
     [mode ?? null, look ?? null],
   );
 
-export const CHECKS = ["contrast", "placeholder", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays", "sparkle", "picture", "dashed", "keys"];
+export const CHECKS = ["contrast", "placeholder", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays", "sparkle", "picture", "dashed", "keys", "cut"];
 
 /** What a measure cannot see. */
 export const BY_EYE = [
@@ -235,7 +241,7 @@ function look(arg) {
   }
 
   // The stripe measure alone, for the walk over every screen (stripesOn).
-  if (only === "stripe") return { words: [], placeholders: [], controls: [], paints: [], stripes, rays: [], sparkles: [], pictures: [], dashedBoxes: [], keyHints: [], emDash: false, dashes: [] };
+  if (only === "stripe") return { words: [], placeholders: [], controls: [], paints: [], stripes, rays: [], sparkles: [], pictures: [], dashedBoxes: [], keyHints: [], cuts: [], emDash: false, dashes: [] };
 
   const words = [];
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -491,7 +497,50 @@ function look(arg) {
     }
   }
 
-  return { words, placeholders, controls, paints, stripes, rays, sparkles, pictures, dashedBoxes, keyHints, emDash: labels.includes("\u2014") || dashes.some((d) => !d.allow), dashes: dashes.filter((d) => d.allow) };
+  // A name cut short (the journal's walk with no Plus, 2026-11-11: More's four
+  // tiles read "H...", "C...", "D...", "C..." as the Plus mark took their
+  // room, and every rule passed them). A control's name is the first words it
+  // holds that are drawn (a screen reader's own line, 1px across, is not
+  // drawn); it is cut when the box it stands in, up to the control itself,
+  // clips it: an ellipsis, a line clamp, or plain overflow. The words after
+  // the name (a preview's second line) may be cut on purpose and are not
+  // looked at, nor is a row of controls that scrolls. Readers' own words,
+  // rightly cut in a list, say so on themselves: data-mock-allow="cut".
+  const cuts = [];
+  const NAMED = "button, a[href], summary, [role=button], [role=link], [role=tab], [role=menuitem], [role=option], [role=radio], [role=checkbox], [role=switch]";
+  for (const c of root.querySelectorAll(NAMED)) {
+    if (!shown(c) || c.closest("svg")) continue;
+    const holder = [c, ...c.querySelectorAll("*")].find((n) => {
+      if (n.closest("svg") || ![...n.childNodes].some((t) => t.nodeType === 3 && t.textContent.trim())) return false;
+      const r = n.getBoundingClientRect();
+      return r.width > 2 && r.height > 2 && getComputedStyle(n).visibility !== "hidden";
+    });
+    if (!holder) continue;
+    const range = document.createRange();
+    range.selectNodeContents(holder);
+    const w = range.getBoundingClientRect();
+    for (let n = holder; n; n = n.parentElement) {
+      const cs = getComputedStyle(n);
+      if (cs.overflowX !== "visible" || cs.overflowY !== "visible") {
+        const b = n.getBoundingClientRect();
+        const over = Math.max(
+          w.right - (b.right - parseFloat(cs.borderRightWidth)),
+          b.left + parseFloat(cs.borderLeftWidth) - w.left,
+          w.bottom - (b.bottom - parseFloat(cs.borderBottomWidth)),
+          b.top + parseFloat(cs.borderTopWidth) - w.top,
+        );
+        if (over > 1) {
+          const clamp = cs.webkitLineClamp && cs.webkitLineClamp !== "none" ? cs.webkitLineClamp : null;
+          const how = cs.textOverflow === "ellipsis" ? "ended by an ellipsis" : clamp ? `cut at ${clamp} line${clamp === "1" ? "" : "s"}` : "clipped by the box it stands in";
+          cuts.push({ name: nameOf(c), how: `its name "${(holder.textContent || "").replace(/\s+/g, " ").trim().slice(0, 32)}" ${how}`, allow: allowance(holder, "cut") });
+          break;
+        }
+      }
+      if (n === c) break;
+    }
+  }
+
+  return { words, placeholders, controls, paints, stripes, rays, sparkles, pictures, dashedBoxes, keyHints, cuts, emDash: labels.includes("\u2014") || dashes.some((d) => !d.allow), dashes: dashes.filter((d) => d.allow) };
 }
 
 /**
@@ -706,6 +755,10 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
       if (k.allow) allow("keys", k.name, k.allow);
       else fail("keys", null, k.name, `${k.how}: a phone has no keyboard keys to press`);
     }
+    for (const k of dark.cuts) {
+      if (k.allow) allow("cut", k.name, k.allow);
+      else fail("cut", null, k.name, `${k.how}: a control's name is read whole; give it the room it needs, or, for a reader's own words in a list, say so (data-mock-allow="cut")`);
+    }
     if (dark.emDash) fail("emdash", null, "the words", "an em dash; use a comma, a colon or a full stop");
     for (const d of dark.dashes) allow("emdash", d.name, d.allow);
 
@@ -815,6 +868,7 @@ const FIXTURES = `
     <div style="width:120px;height:48px;border:1.5px dashed rgba(255,255,255,0.35);border-radius:12px"></div>
   </div>
   <p style="margin:8px 0 0;color:#e8e8ea;font-size:13px">Search <kbd>Ctrl</kbd> K, close with Esc</p>
+  <a href="/history/" style="margin-top:8px;display:flex;align-items:center;gap:6px;width:64px;height:48px;color:#e8e8ea;font-size:13px;text-decoration:none"><span style="min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">History</span><span style="flex:none;width:36px;height:16px;border-radius:999px;background:#2a2a2e"></span></a>
 </div>
 <div data-mock-fixture="good" class="bg-night px-4 pb-4" style="position:fixed;left:0;right:0;top:0;z-index:301">
   <div class="flex items-center gap-2">
@@ -849,6 +903,8 @@ const FIXTURES = `
   <span class="mt-3 block h-12 w-12 animate-pulse rounded-full bg-paper/10"></span>
   <span class="relative mt-3 block h-14 w-14 overflow-hidden rounded-[18px] bg-night-soft"><span aria-hidden="true" class="pointer-events-none absolute -end-6 -top-8 h-32 w-32 rounded-full bg-paper/15 blur-2xl"></span></span>
   <div style="content-visibility:auto;contain-intrinsic-size:auto 80px;margin-top:2400px"><span class="flex h-10 w-10 items-center justify-center rounded-full bg-night-soft font-sans text-detail font-semibold text-paper">M</span><button type="button" class="mt-1 min-h-11 font-sans text-detail text-paper">Reader M</button></div>
+  <a href="/prayers/" class="mt-3 flex min-h-11 flex-col justify-center font-sans"><span class="text-ui text-paper">The daily rule</span><span class="line-clamp-1 text-caption text-paper/70">Morning prayers, Midday prayers, Evening prayers, The Nicene Creed, the prayer for today, and more besides</span></a>
+  <button type="button" data-mock-allow="cut" data-mock-why="a reader's own title, rightly cut in a list" class="mt-1 block min-h-11 w-40 truncate text-start font-sans text-ui text-paper">A long title a reader wrote for the wall</button>
   <blockquote lang="en" data-mock-allow="emdash" data-mock-why="a Father's own words, as his edition prints them" class="mt-3 font-serif text-body italic leading-[1.6] text-paper/85">Chapter I.\u2014Introduction. Reason for writing</blockquote>
 </div>`;
 
@@ -867,14 +923,14 @@ async function selfTest() {
     const good = await checkMock(page, "[data-mock-fixture=good]");
     printMockCheck(good, "the same parts from the house's classes");
     const caught = new Set(bad.failures.map((f) => f.check));
-    const missed = ["contrast", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays", "sparkle", "picture", "dashed", "keys"].filter((c) => !caught.has(c));
-    // A Father's own words keep their edition's dash, by name; the allowance is said in the report.
-    const named = good.allowed.some((a) => a.startsWith("emdash on "));
+    const missed = ["contrast", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays", "sparkle", "picture", "dashed", "keys", "cut"].filter((c) => !caught.has(c));
+    // A Father's own words keep their edition's dash, and a reader's own title its cut, by name; each allowance is said in the report.
+    const named = good.allowed.some((a) => a.startsWith("emdash on ")) && good.allowed.some((a) => a.startsWith("cut on "));
     const ok = missed.length === 0 && good.failures.length === 0 && named;
     console.log(
       ok
         ? "\nself-test: every mistake caught, and the house's own parts pass"
-        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash allowed by name was not listed"}`,
+        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}`,
     );
     return ok;
   } finally {
