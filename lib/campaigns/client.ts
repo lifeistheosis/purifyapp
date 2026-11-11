@@ -354,6 +354,10 @@ export async function fetchThread(id: string): Promise<ThreadResult> {
         signedIn: json.signedIn === true,
         canUpdate: json.canUpdate === true,
         canComment: json.canComment === true,
+        // Whether this reader asked to be told of its updates: there only
+        // when the server said so, as a plain yes or no (lib/campaigns/
+        // thread.ts). Absent, the Updates door offers no line to tick.
+        ...(typeof json.tellMe === "boolean" ? { tellMe: json.tellMe } : {}),
       },
     };
   } catch {
