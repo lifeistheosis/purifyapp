@@ -22,7 +22,10 @@
 //                334 on 11 since). Words on a picture, or with a picture or
 //                another piece drawn across them, are not measured, and are
 //                said: a picture's own measure is by its pixels
-//                (scripts/words-on-pictures.mjs)
+//                (scripts/words-on-pictures.mjs). That holds for words on
+//                plain colours too, of pictures: a tile's words over its
+//                picture were summed on the tile's colours until 1.9, and
+//                are said now, with the picture's name
 //   placeholder  a field's placeholder, the same
 //   target       every control at least 44 by 44 (touchTargets.test.ts);
 //                links inside a sentence and hit-44 controls excepted
@@ -274,7 +277,8 @@ async function look(arg) {
     if (gradient) return { paint: { el, at, nodes: painted, base } };
     let g = [255, 255, 255];
     for (const c of layers.reverse()) g = g.map((v, i) => c[i] * c[3] + v * (1 - c[3]));
-    return { rgb: g };
+    // The sum stands unless a picture is drawn across the words (picturedOf, below).
+    return { rgb: g, job: { el, at, base } };
   };
   // What is seen of a line of words: its box, cut to every box that hides
   // what spills out of it (a clamped paragraph still reports the lines it
@@ -312,6 +316,28 @@ async function look(arg) {
   // shadow is not across the words; its shadow is, and is painted with them.
   let pieces = null;
   const PICTURED = new Set(["img", "video", "canvas", "svg", "iframe", "object", "embed"]);
+  // The part of the page that holds a thing and that the browser has not
+  // drawn yet (content-visibility: a card off the screen, a closed part), or
+  // null when the thing is drawn. Such a part is kept at a stand-in size, so
+  // what is in it lies, by its numbers, across the parts after it: where a
+  // thing in it stands can be told only against the rest of the same part.
+  const undrawn = new WeakMap();
+  const undrawnOf = (e) => {
+    if (undrawn.has(e)) return undrawn.get(e);
+    let held = null;
+    if (typeof e.checkVisibility === "function" && !e.checkVisibility({ contentVisibilityAuto: true })) {
+      for (let n = e; n && !held; n = n.parentElement) {
+        const cv = getComputedStyle(n).contentVisibility;
+        if (cv && cv !== "visible" && n !== e) held = n;
+      }
+      held ??= e;
+    }
+    undrawn.set(e, held);
+    return held;
+  };
+  // A name a mender can find the piece by: its tag and its own class, not a class that only places it.
+  const PLACING = /^(?:absolute|relative|fixed|sticky|static|block|inline(?:-block|-flex)?|flex|grid|hidden|contents|pointer-events-none|inset-.*|(?:h|w|min-h|min-w|max-h|max-w|size)-.*|object-.*|bg-(?:cover|center|contain|no-repeat)|scale-.*|blur(?:-.*)?|opacity-.*|z-.*|-?(?:top|left|right|bottom|start|end)-.*|shrink-.*|rounded.*|overflow-.*|transition.*|duration-.*|ease-.*|motion-.*)$/;
+  const classOf = (e) => (e.getAttribute("class") || "").trim().split(/\s+/).find((c) => c && !PLACING.test(c)) ?? "";
   // How far a box's shadows fall outside it, at most.
   const reachOf = (shadow) => {
     let reach = 0;
@@ -341,12 +367,18 @@ async function look(arg) {
       if (box.width < 1 || box.height < 1) continue;
       const blur = 2.5 * parseFloat(/blur\(([\d.]+)px\)/.exec(cs.filter)?.[1] ?? 0);
       const first = (e.getAttribute("class") || "").trim().split(/\s+/)[0];
+      // Which picture, for whoever goes to look: its file's name where it has one, and its own class.
+      const from = tag === "img" ? e.currentSrc || e.getAttribute("src") || "" : (/url\(["']?([^"')]+)/.exec(images.find((layer) => !GRADIENT.test(layer)) ?? "")?.[1] ?? "");
+      const file = /^(?:data|blob):/.test(from) ? "" : (from.split(/[?#]/)[0].split("/").pop() ?? "").slice(0, 48);
+      const own = tag === "img" ? "" : classOf(e) || (file ? "" : first);
+      const who = `${tag}${own ? `.${own}` : ""}${file ? `, ${file}` : ""}`;
       pieces.push({
         e,
         box,
         r: { left: box.left - blur, top: box.top - blur, right: box.right + blur, bottom: box.bottom + blur },
         paints,
-        what: picture ? `a picture is drawn across it (${tag})` : `another piece is drawn across it (${tag}${first ? `.${first}` : ""})`,
+        picture,
+        what: picture ? `a picture is drawn across it (${who})` : `another piece is drawn across it (${tag}${first ? `.${first}` : ""})`,
         shadow,
         reach: shadow ? reachOf(shadow) : 0,
         corners: cornersOf(cs),
@@ -414,6 +446,8 @@ async function look(arg) {
   // surely underneath it.
   const beside = (p, el, base) => {
     if (p.e === base || p.e.contains(el) || el.contains(p.e)) return false;
+    // Not drawn yet, one or the other: only what is held in the same part can be told to lie across it.
+    if (undrawnOf(p.e) !== undrawnOf(el)) return false;
     for (let n = p.e; n && !n.contains(el); n = n.parentElement) {
       if (/fixed|sticky/.test(getComputedStyle(n).position)) return false;
     }
@@ -452,6 +486,20 @@ async function look(arg) {
         // Placed by something this cannot read (auto): said, not guessed.
         if (![r.left, r.top, r.right, r.bottom].every(Number.isFinite) || overlaps(r, at)) return `${n.tagName.toLowerCase()} draws a piece of its own across it (${pseudo})`;
       }
+    }
+    return null;
+  };
+  // The same question for words on plain colours, of pictures alone (1.9).
+  // The sum of the parents' colours is no ground for words with a picture
+  // laid behind them by something that is not their parent (a tile's words
+  // over its picture, the numerals under a picture plate): it passed or
+  // failed them on colours that are not what is behind them, 116 words on
+  // 11 screens of the export. They are said, with the picture's name, and
+  // measured by their pixels (scripts/words-on-pictures.mjs). Only a
+  // picture: a plain piece across such words is left to the sum, as it was.
+  const picturedOf = ({ el, at, base }) => {
+    for (const p of piecesOf()) {
+      if (p.picture && overlaps(p.r, at) && beside(p, el, base) && overlaps(seenFrom(p, el), at)) return p.what;
     }
     return null;
   };
@@ -672,9 +720,15 @@ async function look(arg) {
       return { text: f.placeholder.slice(0, 48), fg, alpha: fg[3] * opacityOf(f), ground: groundOf(f, seenOf(f, inner.right - inner.left >= 1 && inner.bottom - inner.top >= 1 ? inner : b)), large: largeText(cs), allow: allowance(f, "placeholder") };
     });
 
-  // Words on a gradient: their ground is painted and read, one line at a time.
+  // Words on a gradient: their ground is painted and read, one line at a
+  // time. Words on plain colours keep their sum, unless a picture is drawn
+  // across them: then they are said.
   for (const w of [...words, ...placeholders]) {
     if (w.ground.paint) w.ground = await paintedGround(w.ground.paint, w.fg, w.alpha);
+    else if (w.ground.job) {
+      const pictured = picturedOf(w.ground.job);
+      w.ground = pictured ? { unknown: pictured } : { rgb: w.ground.rgb };
+    }
   }
 
   const CONTROL =
@@ -1385,6 +1439,8 @@ const FIXTURES = `
   <div class="mt-3" style="height:120px;background-image:linear-gradient(var(--color-night),var(--color-paper))"><p class="font-sans text-ui text-paper">Ink at the ground end</p></div>
   <div class="mt-3" style="background-image:url(data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==)"><p class="font-sans text-ui text-paper">Words on a picture</p></div>
   <div class="relative mt-3 h-24 overflow-hidden rounded-[18px] bg-night-soft"><img alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="absolute inset-0 h-full w-full object-cover"><p class="absolute inset-x-0 bottom-0 px-3 pb-2 pt-6 font-sans text-ui text-paper" style="background-image:linear-gradient(transparent,var(--color-night))">Words over a fade on a picture</p></div>
+  <div class="relative mt-3 h-16 overflow-hidden rounded-[18px] bg-night-soft"><img alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="absolute inset-0 h-full w-full object-cover"><p class="relative px-3 pt-3 font-sans text-ui text-paper">Words over a picture, on plain colours</p></div>
+  <div class="mt-3 flex items-center gap-3"><span class="relative block h-12 w-12 shrink-0 overflow-hidden rounded-[12px] bg-night-soft"><img alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="absolute inset-0 h-full w-full object-cover"></span><p class="font-sans text-ui text-paper">Words beside a picture</p></div>
 </div>`;
 
 // An Arabic page's progress bar, as the app draws them (FirstLiturgyGuide,
@@ -1433,12 +1489,18 @@ async function selfTest() {
     // Words on a gradient (1.9, T4). Caught where they fail: faint words on a tray, and ink at the ink end of a fade
     // from the page's ground to its ink. Passed where they pass, and measured, not skipped: a line on a house tray,
     // and the same ink at the ground end of the same fade, which no measure by the gradient's stops could pass.
-    // And still said, never vouched for: words on a picture, and words on a fade with a picture laid under it.
+    // And still said, never vouched for: words on a picture, words on a fade with a picture laid under it, and
+    // words on plain colours with a picture laid behind them by something that is not their parent. Words beside
+    // a picture are measured as ever: nothing else in the house's fixture is said.
     const onGradient = (what) => bad.failures.some((f) => f.check === "contrast" && f.what === `"${what}"` && f.detail.includes("on the gradient under it"));
     const fadesCaught = onGradient("Faint on a tray") && onGradient("Ink at the ink end");
     const fadesRead = ["A line on a tray", "And a quieter one under it", "Ink at the ground end"].every((t) => painted.includes(t));
     const said = (what, why) => good.unmeasured.includes(`"${what}": ${why}`);
-    const picturesSaid = said("Words on a picture", "div has a picture") && said("Words over a fade on a picture", "a picture is drawn across it (img)") && good.unmeasured.length === 2;
+    const picturesSaid =
+      said("Words on a picture", "div has a picture") &&
+      said("Words over a fade on a picture", "a picture is drawn across it (img)") &&
+      said("Words over a picture, on plain colours", "a picture is drawn across it (img)") &&
+      good.unmeasured.length === 3;
     const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && picturesSaid && arabic.failures.length === 0;
     console.log(
       ok

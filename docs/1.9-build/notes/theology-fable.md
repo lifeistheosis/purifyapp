@@ -908,7 +908,7 @@ across them, 29 with another piece across them (a rail's edge fade, a
 tile's sheen).
 
 The nine, none of them on a Theology screen, sent to the arbiter for
-their owners:
+their owners (and given back to this chat: "The nine, mended", below):
 
 | Screen | Words | At its least | Palettes |
 | --- | --- | --- | --- |
@@ -930,17 +930,100 @@ pixels and mended its two faint lines (`3702200b`: "1 of 9" on Light from
 4.26:1 to 4.83, "7 citations from the Fathers" on Monastery from 4.49 to
 4.79).
 
-### Named, and left
+### The nine, mended (the same day, on the arbiter's word)
 
-The sum of plain colours has the blind spot this painting was built not to
+The arbiter gave all nine to this chat: each to 4.5:1 on all five palettes
+with the least change to the look, the house's own inks, each file's last
+owner told before it was touched (Updates for the saint's web and Prayers,
+Themes for Settings and the faint text rules; both said yes). Each number
+below is the mock checker's on a new export, after the change. One
+correction to the table above: the "787" that failed on Light is the one
+in the sheet's line, with "Councils"; the year under a council's mark on
+the web itself passes (5.23).
+
+| What | It was | It is | Where |
+| --- | --- | --- | --- |
+| The key's counts ("4", "1") | The ink at 34: 3.06 on Dark, 2.90 on True black, 2.74 on Monastery, 2.34 on Candlelight | At 50: 5.37 on Dark, 5.32 on True black. At 52 on Monastery, Councils and Cappadocian: 4.98 on Monastery. At 56 on Candlelight: 4.70. Light's own 70 stood at 4.89 and stays | `.saint-web-key-count`, `app/globals.css` |
+| The key's words on Candlelight ("In the Lives", "Councils") | At 52: 4.22 | At Candlelight's own faint share, 60: 5.26. Monastery, Councils and Cappadocian take theirs, 55 (5.37 on Monastery), so a count stays a step under its word | `.saint-web-key-part` |
+| The sheet's line on Light ("787", "Councils") | At Light's 70: 4.41 and 4.47, the sheet being a step darker than a card | At 75, as faint words on a tray: 5.02 and 5.08 | A rule beside the faint text rules, Light alone |
+| The dot in that line | The ink at 30: 1.76 on Light, no more than 2.2 anywhere | The line's own ink: 5.08 on Light, 5.05 on Candlelight. Still `aria-hidden` | `components/saints/web/WebCard.tsx` |
+| Prayers, a row's time and arrow on Candlelight | At Candlelight's 60: 4.42 and 4.46 | At 66 on a graphite card: 5.01 and 5.06, and 4.67 at the card's lightest point | A rule beside the faint text rules, Candlelight alone |
+| Settings, the two letters of the size slider | The ink at 55: 3.39 and 3.41 on Light | The ink of the names under the slider (62; Light 72, Candlelight 64, a dark look its own): 5.65 and 5.60 on Light | `.set-slider-a1`, `.set-slider-a2` |
+
+Three things the measuring changed from what was first planned:
+
+- **The graphite card at 66, not 64.** The card (`components/ui/Graphite.tsx`)
+  is typed in, the same on every dark palette, and lit at one corner: 51 51
+  56 at its lightest. At 64 the row that was found passes (4.82) and a word
+  at the corner itself would not (4.49). At 66 the whole card holds (4.67).
+- **The counts at 50, not 48.** At 48 they passed on the five palettes and
+  read 4.42 to 4.48 on six of the dark looks (`mock-check.mjs --looks`).
+- **The slider's letters in all three of Settings' quiet lists, and 62
+  under them**, not only in Light's. By the arithmetic of
+  `faintText.test.ts` the letters at 55 were 4.29 to 4.34 on Monastery,
+  Councils and Cappadocian where the panel is lightest. On the dark
+  palettes the panel has a picture, so the checker says "look" there; by
+  their pixels (`wordsOnPicture`) the two letters now read 7.02 and 7.07 on
+  Dark, 7.27 on True black, 5.56 on Candlelight, 6.06 and 6.08 on
+  Monastery.
+
+Held by tests that fail on the stylesheet as it was:
+
+- `lib/saints/__tests__/webKeyInk.test.ts`, new, 16 cases: on each of the
+  seven palettes the key's words and counts are 4.5:1 or more where the key
+  is hardest to read on, a count is under its word, and the dot wears no
+  faint share. Seven fail on the old stylesheet, with its numbers (the
+  counts at 34 percent, 2.74 to 3.12; Candlelight's words, 4.19).
+- `lib/ui/__tests__/faintText.test.ts`: the graphite card's lightest point
+  on Candlelight, read from the component that draws the card; the saint
+  web's sheet at its darkest on Light; both rules in the faint text layer
+  under a second `:where()`, so a hover still wins and the reader of the
+  page's own shares is not misled; and the slider's two letters on the
+  panel with its names, on all seven.
+
+Checked on the export: the gate's walk of the six screens these rules can
+reach (Prayers, the saint's web, Settings, Today, Plans, What's new),
+nothing failed; the saint's web, Prayers and Settings on the five palettes
+and the seventeen looks, every rule ok.
+
+Named, not done: the same lit corner is 4.42:1 for Dark's faint share and
+4.36 for Monastery's, by the same arithmetic, at the corner's very middle.
+No word stands there today (the row that was found reads 4.68 on Dark),
+and the gate passes. One line each would hold them, as Candlelight's does.
+
+### Words on plain colours with a picture across them are said (the same day)
+
+The sum of plain colours had the blind spot the painting was built not to
 have: a word whose parents are all plain colours, with a picture laid
-behind it by something that is not its parent, is measured on its parents'
-colours. Counted with the same test on the same walk: 116 such words on 11
-screens (a tile's words over its picture on Today and on Plans, the
-numerals under Theology's picture plates, a saint's name over the drawing
-of his web).
-The Themes chat's sweep measured the worst of them by their pixels
-(`scripts/words-on-pictures.mjs`). Holding the plain sum to "said, not
-vouched for" as well would move those lines from "measured" to "look"; it
-is the gate's rule to change, so it is named to the arbiter and Admin and
-not done here.
+behind it by something that is not its parent (a tile's words over its
+picture, the numerals under a picture plate), was passed or failed on its
+parents' colours. The arbiter's word: measure them by their pixels if that
+is about ninety minutes' work, otherwise say them "look" and the Themes
+chat measures them once by pixels. It was two to three hours to do well, so
+they are said. Admin, whose gate it is, asked for the same.
+
+- Such a word is on the by-eye list, with the picture's name:
+  `a picture is drawn across it (img, bible.jpg)`. Only a picture (an
+  image, a drawing, a background picture): a plain piece across such words
+  is left to the sum, as it was.
+- A part of the page the browser has not drawn yet (a card off the screen
+  under `content-visibility`) is kept at a stand-in size, so by its numbers
+  what is in it lies across the parts after it. The walk of the history
+  page showed it: every event's words "over" the next event's picture. So
+  a thing in such a part is only held against the rest of the same part,
+  for the painting too.
+- The gate's walk prints the list by screen, each reason once with how
+  many words carry it and the first three (Admin's ask): it reads as one
+  line a picture, not one a word.
+
+The count I gave the arbiter first was 116 words on 11 screens. It was
+short: my tally stopped at the first piece found across a word, and where
+that was a plain piece the picture behind it was not counted. On the same
+export, old checker and new: **183 words on 16 screens** move from
+"measured" to "look" (Today, You, the Bible's head, a chant, the councils'
+bands, Discover's cards, Plans' tiles, Prayers, the Plus page, a saint's
+web, Settings' focus cards, Theology's plates and a study's head). The
+by-eye list is 517 lines on 22 screens; the findings are the same six,
+none of them contrast. The checker's self-test holds it both ways: words
+over a picture on plain colours are said, and words beside a picture are
+measured as ever.

@@ -170,6 +170,23 @@ for (const [check, list] of [...byCheck].sort((a, b) => b[1].length - a[1].lengt
     console.log(`    on ${where.length} screen(s): ${where.slice(0, 6).join(" ")}${where.length > 6 ? " ..." : ""}`);
   }
 }
+// What no measure vouched for (words on a picture, or with one drawn across them), said by screen: each
+// reason once, with how many words carry it and the first of them, so a hundred lines on eleven screens
+// read as eleven. It does not fail the walk: it is the list a picture's own measure works from
+// (scripts/words-on-pictures.mjs).
+const said = results.filter((r) => r.unmeasured.length);
+if (said.length) {
+  console.log(`\nnot measured, to be looked at: ${said.reduce((n, r) => n + r.unmeasured.length, 0)} line(s) on ${said.length} screen(s)`);
+  for (const r of said) {
+    const by = new Map();
+    for (const u of r.unmeasured) {
+      const m = /^"(.*)": (.*)$/s.exec(u);
+      by.set(m ? m[2] : u, [...(by.get(m ? m[2] : u) ?? []), m ? m[1] : ""]);
+    }
+    console.log(`  ${r.at}`);
+    for (const [why, words] of by) console.log(`    ${words.length} word(s), ${why}: ${words.slice(0, 3).map((w) => `"${w}"`).join(", ")}${words.length > 3 ? ", ..." : ""}`);
+  }
+}
 if (errors.length) {
   console.log(`\nnot measured (${errors.length}):`);
   for (const r of errors) console.log(`  ${r.at}: ${r.error}`);
