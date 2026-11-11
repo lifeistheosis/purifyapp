@@ -2293,6 +2293,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "144 marks and the dropped lines, read against the NPNF scans; six printer's slips asked of the owner. e0c4f7965. PLAN 13af."
+  },
+  {
+   "id": "e-touch-count-taught",
+   "section": "Design",
+   "kind": "bug",
+   "title": "The touch count reads twelve lines and each control by its own classes; 23 more controls to 44",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "Ceilings 26 to 12 and 2 (Admin's); the desktop action circles' spacing asked of the owner. 95b843b1b. PLAN 13ag."
   }
  ]
 }
