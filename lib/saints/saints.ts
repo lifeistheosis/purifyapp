@@ -4373,6 +4373,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "bede-the-venerable",
+    iconUrl: "/saints/icons/bede-the-venerable.jpg",
     name: "St. Bede",
     byname: "The Venerable",
     epithet: "Monk of Jarrow · Father of English history",
@@ -4392,6 +4393,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "hilary-of-poitiers",
+    iconUrl: "/saints/icons/hilary-of-poitiers.jpg",
     name: "St. Hilary of Poitiers",
     byname: "The Athanasius of the West",
     epithet: "Bishop of Poitiers · Confessor against Arianism",
@@ -4507,6 +4509,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "isidore-of-seville",
+    iconUrl: "/saints/icons/isidore-of-seville.jpg",
     name: "St. Isidore of Seville",
     epithet: "Bishop of Seville · The last of the ancient Fathers",
     born: "c. 560 (Cartagena)",
@@ -4525,6 +4528,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "peter-chrysologus",
+    iconUrl: "/saints/icons/peter-chrysologus.jpg",
     name: "St. Peter Chrysologus",
     byname: "The Golden-Worded",
     epithet: "Bishop of Ravenna · Preacher of short sermons",

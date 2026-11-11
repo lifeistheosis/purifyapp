@@ -43,11 +43,7 @@ const WAITING: Record<string, string> = {
   "theodosius-the-great": "search: Updates 2",
   "adrian-of-rome": "search: Updates 2",
   "xenia-of-petersburg": "search: Updates 2",
-  "bede-the-venerable": "search: Updates 2",
-  "hilary-of-poitiers": "search: Updates 2",
-  "victorinus-of-pettau": "search: Updates 2",
-  "isidore-of-seville": "search: Updates 2 (Murillo's painting of 1655, its original still refused by Commons)",
-  "peter-chrysologus": "search: Updates 2",
+  "victorinus-of-pettau": "permission: the Archdiocese of Maribor, for Ptuj, his see (no old picture of him found in any library searched)",
   // November's and December's saints are the November and December chat's
   // (docs/1.9-build/notes/november-saints.md, december-saints.md).
   "arsenius-of-prislop": "permission: the Diocese of Deva and Hunedoara (the Church's icon of 2025; its painter not named)",

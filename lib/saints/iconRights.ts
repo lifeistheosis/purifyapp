@@ -1631,6 +1631,54 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
   // in its row"); the cut made of it is kept in
   // docs/1.9-build/kept/paisius-velichkovsky/, and he wears a dated printing
   // instead (his row below).
+  // Four Western Fathers (1.9, build 93's gate, part 3): old printed books and
+  // a manuscript held outside Commons, each opened and read on its own leaf.
+  // The cuts were made by hand from the holders' scans, since
+  // scripts/fetch-saint-icons.mjs reads Commons alone.
+  "bede-the-venerable.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "An engraving of an old bearded monk in a skullcap, seen from the side, writing with a quill at a sloping desk.",
+    work: "Bede, le Venerable, the engraving of chapter 56 in André Thevet's Les vrais pourtraits et vies des hommes illustres (Paris, 1584), leaf 120, the Boston Public Library's copy",
+    artist: "Unknown engraver, for André Thevet",
+    workDate: "1584",
+    source: "Internet Archive (Boston Public Library)",
+    license: "Public domain",
+    evidenceUrl: "https://archive.org/details/lesvraispourtrai01thev/page/n278",
+  },
+  "hilary-of-poitiers.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "An engraving of a clean-shaven man in a cloak, seen from the side, a pen raised in one hand and the other resting on open books.",
+    work: "S. Hilaire, evesque de Poictiers, the engraving of chapter 51 in André Thevet's Les vrais pourtraits et vies des hommes illustres (Paris, 1584), leaf 110, the Boston Public Library's copy",
+    artist: "Unknown engraver, for André Thevet",
+    workDate: "1584",
+    source: "Internet Archive (Boston Public Library)",
+    license: "Public domain",
+    evidenceUrl: "https://archive.org/details/lesvraispourtrai01thev/page/n258",
+  },
+  "isidore-of-seville.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A bishop with a halo and a low mitre, seated at a writing desk with an open book, his hand raised, on green and blue grounds with his name lettered above him.",
+    work: "St Isidore, a detail of the opening picture of his Etymologies, where he and Bishop Braulio sit facing each other (Munich, Bavarian State Library, Clm 13031, leaf 1 recto, from Prüfening Abbey)",
+    artist: "Unknown illuminator of Prüfening Abbey",
+    workDate: "c. 1160 to 1165",
+    source: "Bavarian State Library, Munich (Münchener DigitalisierungsZentrum)",
+    license: "Public domain",
+    evidenceUrl: "https://www.digitale-sammlungen.de/en/view/bsb00072196?page=5",
+  },
+  "peter-chrysologus.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "An engraving of a bearded bishop with a halo, looking up, in a vestment worked with leaves, a small view of a town in the corner.",
+    work: "S. Petrus Chrisologus, the engraving on page 352 of Donald Lupton's The Glory of Their Times, or the Lives of the Primitive Fathers (London, 1640), the Pitts Theology Library's copy",
+    artist: "Unknown engraver, for Donald Lupton",
+    workDate: "1640",
+    source: "Pitts Theology Library, Emory University (Digital Image Archive)",
+    license: "Public domain",
+    evidenceUrl: "https://dia.pitts.emory.edu/image_details.cfm?ID=130281",
+  },
   "papias-of-hierapolis.v2.jpg": {
     status: "verified",
     inspectedOn: "2026-11-11",
