@@ -194,6 +194,8 @@ arbiter knows better who holds what.
   page's own heading.
 - Area: Updates.
 
+Done (Updates, 2026-11-11, `022e4f971`; after: `fresh-eyes/06b-reading-one-bar-after.png`). The reading page mounts its own bar, Back to Discover and "Reading", as Councils and Theology do, and the apps' back bar stands aside for it; the room drew the tab roots' header inside itself, and no longer does. `lib/nav/__tests__/tabHeader.test.ts` holds the tab's own bar to the five tab roots (it fails on the old code); export walk section 71 counts one bar.
+
 #### M4. Chants: choosing a filter moves the page 137px under the finger
 
 ![before](fresh-eyes/07a-chants-before.png) ![after](fresh-eyes/07b-chants-after-serbian.png)
@@ -238,6 +240,8 @@ arbiter knows better who holds what.
   languages. After: `fresh-eyes/M5-fasting-marked-after.png`,
   `M5-fasting-marked-after-light.png`, `M5-fasting-note-after-light.png`.
   Record: `notes/themes-fable.md`, section 46.
+
+The count that let them slip (Updates, 2026-11-11, `0258a5320`): their height was made of padding around a line of words, which the touch count could not read. It reads it now (`lib/ui/__tests__/touchTargets.test.ts`, paddedHeight), saw 90, and fell to 76 with the fourteen in Updates' areas (the reader's preference pills, Today's English switch, Search's tabs, the book switcher, the Bible sidebar and study rail, the chapter sheet's doors); the 76 left are listed by area in the test.
 
 #### M6. Sign in and Create account: a typed emoji and 19px links
 

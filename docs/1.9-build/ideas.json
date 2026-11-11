@@ -2433,6 +2433,34 @@
    "version": "1.9",
    "outcome": null,
    "note": "Before, each year stood twice, the map named nothing and nothing clicked. Ten pictures placed by their steps' dates (Florence 2, the Fall of Constantinople 8). 3de24512f. PLAN 13ap."
+  },
+  {
+   "id": "e-touch-count-padded",
+   "section": "Design",
+   "kind": "process",
+   "title": "The touch count reads a height made of padding and a line of words, which let the fasting tracker's 29px pills slip past it",
+   "from": "claude",
+   "asked": "2026-11-11",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "Saw 90; 14 in Updates' areas fixed at once; ceiling 76, may only fall, the rest listed by area for their chats. 0258a5320. PLAN 13aq."
+  },
+  {
+   "id": "e-fresh-eyes-m3-reading-one-bar",
+   "section": "Reading",
+   "kind": "bug",
+   "title": "The reading room has one bar in the apps, Back and its name, as every page under Discover has (fresh eyes M3)",
+   "from": "claude",
+   "asked": "2026-11-11",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The room drew the tab roots' header under the apps' back bar. A test holds the tab header to the five tab roots. 022e4f971. PLAN 13ar."
   }
  ]
 }
