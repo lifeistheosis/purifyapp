@@ -1,16 +1,21 @@
 -- The faith answers stay on the device: what an account carried of them is
 -- taken off. The welcome answers "how familiar are you with Orthodox
--- Christianity" (level), "after time away" (returning) and the reader's
--- background were written into every signed-in account's sign-in data
+-- Christianity" (level), "after time away" (returning), the reader's
+-- background, and the fast the reader keeps (fasting: strict, modified or
+-- hidden) were written into every signed-in account's sign-in data
 -- (auth.users, user_metadata.purify_space, lib/onboarding/accountSync.ts).
--- They are statements of the reader's faith, which the law treats as
--- sensitive. From 1.9 the app writes none of them (Fable onboarding's
--- accountSync.ts), and this takes off the copies already there. Every other
--- key in the sign-in data is left as it is.
+-- They are statements of the reader's faith and how it is kept, which the
+-- law treats as sensitive. From 1.9 the app writes none of them (Fable
+-- onboarding's accountSync.ts), and this takes off the copies already there.
+-- Every other key in the sign-in data is left as it is.
 --
 -- SIGNED 2026-11-11 about 13:24 UTC, his words "yes privacy and phone voice
--- in v1.9", answering call 32, which showed this SQL (sent to the arbiter at
--- 04:56 UTC and shown to him at 05:03).
+-- in v1.9", answering call 32, which showed this SQL for the first three
+-- (sent to the arbiter at 04:56 UTC and shown to him at 05:03).
+-- Fasting SIGNED 2026-11-11 about 14:24 UTC, his words "yes fasting" (in
+-- "rec voices and yes fasting"), to this SQL with fasting added, as the
+-- arbiter showed it to him: '{purify_space,fasting}' in the chain and
+-- 'fasting' in the list.
 --
 -- NOT A MIGRATION, ON PURPOSE: it touches the auth schema, which the
 -- integration's role may refuse, and the first migration that fails stops
@@ -19,15 +24,23 @@
 -- an older app that wrote the answers meanwhile (a task on the admin
 -- Calendar).
 --
--- Safe to run twice: it touches only rows that still hold one of the three,
+-- Safe to run twice: it touches only rows that still hold one of the four,
 -- so the second run says UPDATE 0 unless an older app wrote them again.
--- Run twice on a scratch PostgreSQL 16 on 2026-11-11 with eight kinds of row
--- (all three, background alone, level alone, returning alone, other answers
--- but none of these, no purify_space, no sign-in data, purify_space as a
--- plain string): the first run UPDATE 4, the four rows holding one of the
--- three, with every other key in them kept (a name, focus, intent, fasting,
--- a picture's address); the second run UPDATE 0.
+-- Run twice on a scratch PostgreSQL 16 on 2026-11-11 with nine kinds of row
+-- (all four, background alone, level alone, returning alone, fasting alone,
+-- other answers but none of these, no purify_space, no sign-in data,
+-- purify_space as the bare word "fasting"): the first run UPDATE 6, the five
+-- rows holding one of the four, with every other key in them kept (a name,
+-- focus, intent, intents, savedAt, a picture's address), and the bare word,
+-- which it counts and leaves as it was; the second run UPDATE 1, the bare
+-- word again, changing nothing. With a tenth kind, purify_space a list that
+-- holds "level", the statement stops with an error and changes nothing. The
+-- app has only ever written purify_space as an object, but a reader's own
+-- client can write any shape there. A guard for both (only an object is
+-- touched) was sent to the arbiter for his word on 2026-11-11; with it the
+-- same ten rows give UPDATE 5, then UPDATE 0. As signed, this file has no
+-- guard.
 
 update auth.users
-set raw_user_meta_data = raw_user_meta_data #- '{purify_space,level}' #- '{purify_space,returning}' #- '{purify_space,background}'
-where raw_user_meta_data -> 'purify_space' ?| array['level', 'returning', 'background'];
+set raw_user_meta_data = raw_user_meta_data #- '{purify_space,level}' #- '{purify_space,returning}' #- '{purify_space,background}' #- '{purify_space,fasting}'
+where raw_user_meta_data -> 'purify_space' ?| array['level', 'returning', 'background', 'fasting'];
