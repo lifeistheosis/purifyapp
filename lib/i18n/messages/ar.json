@@ -5777,5 +5777,6 @@
   "you.journalHint": "ما تكتبه، وملاحظاتك على الآيات",
   "study.florilegium.pages": "صفحاتك",
   "study.florilegium.writeHere": "اكتب في هذه المجموعة",
-  "study.florilegium.writePage": "اكتب صفحة"
+  "study.florilegium.writePage": "اكتب صفحة",
+  "campaigns.takeDownConfirmPlain": "إزالة هذه الحملة نهائيًا؟ لن يراها المصلّون بعد الآن. لا يمكن التراجع عن هذا."
 }

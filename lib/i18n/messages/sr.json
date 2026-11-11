@@ -5563,5 +5563,6 @@
   "you.journalHint": "Оно што пишете, и ваше белешке уз стихове",
   "study.florilegium.pages": "Ваше странице",
   "study.florilegium.writeHere": "Пишите у овој збирци",
-  "study.florilegium.writePage": "Напишите страницу"
+  "study.florilegium.writePage": "Напишите страницу",
+  "campaigns.takeDownConfirmPlain": "Да заувек уклонимо ову кампању? Они који се моле више је неће видети. Ово се не може опозвати."
 }

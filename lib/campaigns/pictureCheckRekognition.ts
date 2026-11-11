@@ -47,9 +47,9 @@ import type { PictureCheck, PictureVerdict } from "./pictureCheck";
 // written, so the tests answer as the documentation says the service does
 // (lib/campaigns/__tests__/pictureCheckRekognition.test.ts). The first real
 // picture, with his key, is the proof that the service reads the JPEGs this
-// server writes (they are progressive) and signs as tested. For 1.9 that is
-// on the main web, in his own campaign after the merge, while campaigns are
-// live for his account alone: he chose no test web on 2026-11-11
+// server writes (they are progressive) and signs as tested. That is for
+// 1.9.1, with pictures themselves (his word of 2026-11-11), and on the main
+// web, in his own campaign: he chose no test web the same day
 // (docs/1.9-build/OWNER-STEPS.md, P1 step 7 and P5).
 
 export type RekognitionConfig = { accessKeyId: string; secretAccessKey: string; region: string };

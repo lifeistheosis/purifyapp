@@ -5571,5 +5571,6 @@
   "you.journalHint": "Ce scrii, și notele tale la versete",
   "study.florilegium.pages": "Paginile tale",
   "study.florilegium.writeHere": "Scrie în această culegere",
-  "study.florilegium.writePage": "Scrie o pagină"
+  "study.florilegium.writePage": "Scrie o pagină",
+  "campaigns.takeDownConfirmPlain": "Retrageți definitiv această campanie? Cei care se roagă nu o vor mai vedea. Această acțiune nu poate fi anulată."
 }

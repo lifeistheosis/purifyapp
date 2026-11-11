@@ -5480,5 +5480,6 @@
   "you.journalHint": "რასაც წერთ, და თქვენი ჩანაწერები მუხლებზე",
   "study.florilegium.pages": "თქვენი გვერდები",
   "study.florilegium.writeHere": "წერა ამ კრებულში",
-  "study.florilegium.writePage": "გვერდის დაწერა"
+  "study.florilegium.writePage": "გვერდის დაწერა",
+  "campaigns.takeDownConfirmPlain": "სამუდამოდ მოვხსნათ ეს კამპანია? მლოცველები მას ვეღარ დაინახავენ. ამის დაბრუნება შეუძლებელია."
 }

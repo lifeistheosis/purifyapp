@@ -87,7 +87,10 @@
 // apps takes a new store build, which is reviewed. The website has no such
 // rule and follows the server. In the release commit it is true only if
 // pictures are on at submission (docs/plans/v1.9/RELEASE.md, section 6;
-// docs/1.9-build/OWNER-STEPS.md, R5d).
+// docs/1.9-build/OWNER-STEPS.md, R5d). For 1.9 that is settled: FALSE, by
+// his word of 2026-11-11 (campaigns launch in 1.9 without pictures; they
+// come in 1.9.1, ./parts.ts). No 1.9 store build has a picture or a way to
+// add one.
 //
 // WHERE IT IS NOT CLOSED, THE REWORK'S SQL MUST HAVE RUN: the four files he
 // signed (supabase/migrations, the four campaign files of 2026-11-10, the
@@ -155,11 +158,12 @@ export function julyCampaignRoutes(): boolean {
 
 /**
  * Whether a store build has campaign pictures at all (see the header, "the
- * same rule for pictures"). False since 2026-11-10, while pictures are off
- * on the server and his three steps are open; lib/campaigns/__tests__/
- * storePictures.test.ts holds it false for as long as the server's own
- * switch is off. Which build is asking is not known here: the app's side of
- * campaigns asks (./partsHere.ts).
+ * same rule for pictures"). False since 2026-11-10, and false for the whole
+ * of 1.9 by his word of 2026-11-11: pictures come in 1.9.1.
+ * lib/campaigns/__tests__/storePictures.test.ts holds it false for as long
+ * as the server's own switch is off, and noPicturesIn19.test.ts holds both
+ * off while the app's version is 1.9. Which build is asking is not known
+ * here: the app's side of campaigns asks (./partsHere.ts).
  */
 export const PICTURES_IN_STORE_BUILDS: boolean = false;
 

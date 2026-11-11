@@ -26,8 +26,8 @@ import { signRequest } from "@/lib/security/awsSigV4";
  * (lib/campaigns/pictureCheckRekognition.ts), against a stand-in that
  * answers as the service's documentation says the service does. No key
  * exists yet, so nothing here calls the service; the first real picture is
- * that proof, added on the main web after the merge (no test web for 1.9:
- * docs/1.9-build/OWNER-STEPS.md, P5).
+ * that proof, added on the main web with 1.9.1 (no test web, and no pictures
+ * in 1.9, by his words of 2026-11-11: docs/1.9-build/OWNER-STEPS.md, P5).
  *
  * What would go wrong if these broke: a picture of nudity or of violence
  * stored and put in front of a moderator, or of a reader; a picture passed
@@ -141,16 +141,16 @@ describe("the key", () => {
   // sent the key to the test web's service, and the first real picture with it.
   it("is put where this code reads it: his steps name the same three, on the main web's service, saved with a deploy", () => {
     const steps = readFileSync(join(process.cwd(), "docs/1.9-build/OWNER-STEPS.md"), "utf8");
-    const pictures = steps.slice(steps.indexOf("### Pictures. What campaigns need"), steps.indexOf("### 23. "));
-    const step7 = pictures.slice(pictures.indexOf("\n7. Render"), pictures.indexOf("**P2. "));
+    const pictures = steps.slice(steps.indexOf("### Pictures. For 1.9.1"), steps.indexOf("### 23. "));
+    const step7 = pictures.slice(pictures.indexOf("\n7. Render"), pictures.indexOf("**P2 (for 1.9.1). "));
     for (const name of Object.values(PICTURE_CHECK_ENV)) expect(step7, name).toContain(`\`${name}\``);
     expect(step7.replace(/\s+/g, " ")).toContain("the **purifyapp** web service (the main web, purifyapp.net)");
     // The key is read once after the server starts (pictureCheck), so a save with no deploy is not seen.
     expect(step7).toContain("**Save and deploy**");
     expect(readFileSync(join(process.cwd(), "lib/campaigns/pictureCheck.ts"), "utf8")).toContain("fromKey ??= { check: rekognitionCheckFromEnv() };");
-    // And the first real picture is added on the main web, after the merge.
-    const p5 = pictures.slice(pictures.indexOf("**P5. "));
-    expect(p5.startsWith("**P5. The first real picture, on the main web")).toBe(true);
+    // And the first real picture is added on the main web.
+    const p5 = pictures.slice(pictures.indexOf("**P5 (for 1.9.1). "));
+    expect(p5.startsWith("**P5 (for 1.9.1). The first real picture, on the main web.")).toBe(true);
     expect(p5).toContain("`CAMPAIGN_PARTS.pictures`");
     for (const part of [step7, p5]) expect(part).not.toMatch(/test web/i);
   });

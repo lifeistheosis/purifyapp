@@ -5485,5 +5485,6 @@
   "you.journalHint": "Ciò che scrivi, e le tue note sui versetti",
   "study.florilegium.pages": "Le tue pagine",
   "study.florilegium.writeHere": "Scrivi in questa raccolta",
-  "study.florilegium.writePage": "Scrivi una pagina"
+  "study.florilegium.writePage": "Scrivi una pagina",
+  "campaigns.takeDownConfirmPlain": "Rimuovere definitivamente questa campagna? Chi prega non la vedrà più. L’operazione non può essere annullata."
 }

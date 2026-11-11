@@ -5480,5 +5480,6 @@
   "you.journalHint": "Yazdıklarınız ve ayetlere düştüğünüz notlar",
   "study.florilegium.pages": "Sayfalarınız",
   "study.florilegium.writeHere": "Bu derlemeye yaz",
-  "study.florilegium.writePage": "Bir sayfa yaz"
+  "study.florilegium.writePage": "Bir sayfa yaz",
+  "campaigns.takeDownConfirmPlain": "Bu kampanya temelli kaldırılsın mı? Dua edenler kampanyayı artık göremez. Bu işlem geri alınamaz."
 }

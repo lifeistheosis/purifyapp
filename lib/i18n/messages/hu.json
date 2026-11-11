@@ -5480,5 +5480,6 @@
   "you.journalHint": "Amit írsz, és a versekhez írt jegyzeteid",
   "study.florilegium.pages": "Az oldalaid",
   "study.florilegium.writeHere": "Írás ebbe a gyűjteménybe",
-  "study.florilegium.writePage": "Oldal írása"
+  "study.florilegium.writePage": "Oldal írása",
+  "campaigns.takeDownConfirmPlain": "Végleg eltávolítja ezt a kampányt? Az érte imádkozók többé nem látják. Ez nem vonható vissza."
 }

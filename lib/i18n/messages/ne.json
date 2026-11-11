@@ -5480,5 +5480,6 @@
   "you.journalHint": "तपाईंले लेख्नुभएका कुरा, र पदहरूमा तपाईंका टिपोटहरू",
   "study.florilegium.pages": "तपाईंका पानाहरू",
   "study.florilegium.writeHere": "यस सङ्ग्रहमा लेख्नुहोस्",
-  "study.florilegium.writePage": "एउटा पाना लेख्नुहोस्"
+  "study.florilegium.writePage": "एउटा पाना लेख्नुहोस्",
+  "campaigns.takeDownConfirmPlain": "यो अभियान सधैंका लागि हटाउने हो? प्रार्थना गरिरहेकाहरूले यो अब देख्ने छैनन्। यसलाई पूर्ववत् गर्न सकिँदैन।"
 }

@@ -5639,5 +5639,6 @@
   "you.journalHint": "Те, що ви пишете, і ваші нотатки до віршів",
   "study.florilegium.pages": "Ваші сторінки",
   "study.florilegium.writeHere": "Написати в цьому зібранні",
-  "study.florilegium.writePage": "Написати сторінку"
+  "study.florilegium.writePage": "Написати сторінку",
+  "campaigns.takeDownConfirmPlain": "Видалити цю кампанію назавжди? Ті, хто молиться, більше її не побачать. Цю дію не можна скасувати."
 }

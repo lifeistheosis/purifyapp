@@ -157,6 +157,9 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
   // The first picture a moderator has cleared is the page's head. One that
   // still waits never is, so its creator sees the head every reader sees.
   const headPicture = pictures?.state === "ok" ? (pictures.pictures.pictures.find((p) => !p.held) ?? null) : null;
+  // Whether this campaign has a picture at all, its creator's own that wait
+  // among them. In 1.9 none has: pictures come in 1.9.1 (lib/campaigns/parts.ts).
+  const hasPictures = pictures?.state === "ok" && pictures.pictures.pictures.length > 0;
 
   const name = campaign.subject_name ?? campaign.title;
   const running = isRunning(campaign);
@@ -627,7 +630,10 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
       <ConfirmDialog
         open={confirm === "takeDown"}
         title={t("campaigns.takeDown")}
-        description={t("campaigns.takeDownConfirm")}
+        // A campaign with no picture is not told that one is deleted with it.
+        // Until 2026-11-11 July's line said "The picture is deleted with it"
+        // to every creator, and in 1.9 no campaign has a picture.
+        description={hasPictures ? t("campaigns.takeDownConfirm") : t("campaigns.takeDownConfirmPlain")}
         confirmLabel={t("campaigns.takeDownYes")}
         cancelLabel={t("campaigns.takeDownKeep")}
         destructive

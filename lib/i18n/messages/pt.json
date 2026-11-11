@@ -5485,5 +5485,6 @@
   "you.journalHint": "O que você escreve, e suas notas nos versículos",
   "study.florilegium.pages": "Suas páginas",
   "study.florilegium.writeHere": "Escrever nesta coletânea",
-  "study.florilegium.writePage": "Escrever uma página"
+  "study.florilegium.writePage": "Escrever uma página",
+  "campaigns.takeDownConfirmPlain": "Remover esta campanha definitivamente? Quem está orando deixará de vê-la. Isso não pode ser desfeito."
 }

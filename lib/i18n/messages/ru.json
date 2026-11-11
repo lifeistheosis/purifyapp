@@ -5640,5 +5640,6 @@
   "you.journalHint": "То, что вы пишете, и ваши заметки к стихам",
   "study.florilegium.pages": "Ваши страницы",
   "study.florilegium.writeHere": "Написать в этом собрании",
-  "study.florilegium.writePage": "Написать страницу"
+  "study.florilegium.writePage": "Написать страницу",
+  "campaigns.takeDownConfirmPlain": "Удалить эту просьбу навсегда? Молящиеся больше её не увидят. Это действие необратимо."
 }

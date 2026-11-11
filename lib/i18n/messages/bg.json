@@ -5480,5 +5480,6 @@
   "you.journalHint": "Каквото пишете и бележките ви към стиховете",
   "study.florilegium.pages": "Вашите страници",
   "study.florilegium.writeHere": "Пишете в тази сбирка",
-  "study.florilegium.writePage": "Напишете страница"
+  "study.florilegium.writePage": "Напишете страница",
+  "campaigns.takeDownConfirmPlain": "Да свалим ли тази кампания завинаги? Хората, които се молят, повече няма да я виждат. Това не може да бъде отменено."
 }

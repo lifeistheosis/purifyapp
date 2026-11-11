@@ -18,9 +18,18 @@ import type { CampaignPart } from "./model";
 //              ("On prayer, no figures at all") now carries the one
 //              exception, in his words, with the date.
 //   pictures   Pictures on a campaign (his item 121), each checked before
-//              it is shown. Off until his three steps are done: the account
-//              for the automatic check, the registration with NCMEC, and
-//              the Copyright Office's agent (docs/1.9-build/OWNER-STEPS.md).
+//              it is shown. OFF FOR THE WHOLE OF 1.9, by his word of
+//              2026-11-11: "We're gonna fully launch campaign in version
+//              1.9. In version 1.9.1, we'll include those extra legal
+//              additions." Campaigns open to every reader in 1.9 with no
+//              picture anywhere; pictures come in 1.9.1, with what they
+//              wait for: the account for the automatic check, the
+//              registration with NCMEC, PhotoDNA when Microsoft approves,
+//              and the first real picture as the check's proof
+//              (docs/1.9-build/OWNER-STEPS.md, P1, P2, P4, P5). Until that
+//              word it was "off until his three steps are done".
+//              lib/campaigns/__tests__/noPicturesIn19.test.ts holds it off
+//              while the app's version is 1.9.
 //
 // A CONSTANT IN VERSION CONTROL, as the campaigns' own switch is and for its
 // reasons (./flags.ts): it carries a date and a reason, and no dashboard can
@@ -36,7 +45,7 @@ import type { CampaignPart } from "./model";
 // and read nothing, so a request written by hand reaches nothing the screens
 // do not offer.
 
-/** The switches. Both were off when they were built, 2026-11-10; "Prayed by many" is on since that evening, by his word. */
+/** The switches. Both were off when they were built, 2026-11-10; "Prayed by many" is on since that evening, by his word; pictures stay off through 1.9, by his word of 2026-11-11. */
 export const CAMPAIGN_PARTS: Readonly<Record<CampaignPart, boolean>> = { many: true, pictures: false };
 
 let parts: Record<CampaignPart, boolean> = { ...CAMPAIGN_PARTS };

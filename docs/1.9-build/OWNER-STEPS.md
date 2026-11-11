@@ -392,22 +392,31 @@ Your word on the three, 2026-11-11: "yes these are all fine". They stand as list
 3. Authentication, Sign In / Providers, Email: "Secure email change" is on. It is what makes both addresses confirm, so an account cannot be taken by someone who only reaches the new inbox. Leave it on.
 
 
-### Pictures. What campaigns need before they carry pictures (P1 to P5)
+### Pictures. For 1.9.1: what campaigns need before they carry pictures (P1, P2, P4, P5). For now: P3
 
-Your word, "rec yes to all" (2026-11-10 about 16:45 UTC): pictures open
-once P1 to P3 are done, and PhotoDNA (P4) joins when Microsoft approves.
-For the apps to carry pictures in 1.9, P1 to P3 and P5 must be done before
-the store builds are cut (R5c says why: Apple's rule 2.5.19); otherwise
-pictures wait for a later build. Each fact below was read on the service's
-own page on 2026-11-10, unless it says otherwise.
+Your word, 2026-11-11 about 14:43 UTC: "So this is the plan. We're gonna
+fully launch campaign in version 1.9. In version 1.9.1, we'll include those
+extra legal additions."
 
-There is no test web for 1.9 (your word, 2026-11-11: "I won't make the test
-web just make it public"). So the key goes on the main web (P1, step 7),
-and the first real picture is added on purifyapp.net itself on release day,
-after the merge, while campaigns are live for your account alone (P5).
+So 1.9 opens prayer campaigns to every reader with no pictures: none on the
+website, none in the apps, and no way to add one. **Nothing in 1.9 waits on
+P1, P2, P4 or P5.** They are kept here, ready, for 1.9.1.
 
-**P1. Amazon's picture check: an account, and one key that can only check
-pictures (about 20 minutes).**
+**P3 is the one for now.** The copyright agent is not only for pictures: it
+is for everything readers post, their words too. The arbiter tells you
+when.
+
+For the record, your earlier word ("rec yes to all", 2026-11-10 about 16:45
+UTC) had pictures open once P1 to P3 were done, with PhotoDNA (P4) joining
+when Microsoft approved. Each fact below was read on the service's own page
+on 2026-11-10, unless it says otherwise.
+
+There is no test web (your word, 2026-11-11: "I won't make the test web
+just make it public"). So in 1.9.1 the key goes on the main web (P1, step
+7), and the first real picture is added on purifyapp.net itself (P5).
+
+**P1 (for 1.9.1). Amazon's picture check: an account, and one key that
+can only check pictures (about 20 minutes).**
 1. aws.amazon.com, **Create an AWS account**, with the company's email.
    When it asks for a plan, choose the **Paid plan**. AWS's page: on the
    Free plan "the account closes on its own 6 months after you open it or
@@ -438,12 +447,12 @@ pictures (about 20 minutes).**
    `PICTURE_CHECK_AWS_REGION` = `us-east-1`. **Save Changes**, then
    **Save and deploy**: the server reads the three once after it starts,
    so a save with no deploy is not seen. Never in a chat or a file.
-   Any day before release day. Nothing changes for readers when you do
-   it: pictures are switched off in the code until the merge that P5
-   follows, and while they are off the server never uses the key.
+   Any day before 1.9.1's release day. Nothing changes for readers when
+   you do it: pictures are switched off in the code, and while they are
+   off the server never uses the key.
 
-**P2. NCMEC's CyberTipline: register Purify as a provider (one email,
-about 10 minutes).** NCMEC's page: US law requires a US service that
+**P2 (for 1.9.1). NCMEC's CyberTipline: register Purify as a provider (one
+email, about 10 minutes).** NCMEC's page: US law requires a US service that
 becomes aware of apparent child sexual abuse material on its systems to
 report it to NCMEC's CyberTipline, and a provider who wants to register
 writes to espteam@ncmec.org.
@@ -455,9 +464,10 @@ writes to espteam@ncmec.org.
    or a password. The code's path for such a picture is not relied on
    until their guidance is written into it.
 
-**P3. The Copyright Office: name an agent for copyright notices (about 15
-minutes, $6).** The legal shelter for what readers post needs an agent
-registered with the Office and shown on the website.
+**P3 (now, when the arbiter says). The Copyright Office: name an agent for
+copyright notices (about 15 minutes, $6).** The legal shelter for what
+readers post, words as well as pictures, needs an agent registered with the
+Office and shown on the website.
 1. dmca.copyright.gov/osp/login.html: create an account, then designate an
    agent (the Office takes nothing on paper).
 2. The service provider: its full legal name, Purify Orthodox LLC, and its
@@ -475,31 +485,32 @@ registered with the Office and shown on the website.
    the website to show the same, so the Terms' section 8 gains them, and
    that wording comes to you to sign.
 
-**P4. PhotoDNA (Microsoft), when you can.** microsoft.com/photodna,
+**P4 (for 1.9.1). PhotoDNA (Microsoft), when you can.** microsoft.com/photodna,
 **Apply**, as the organisation. Microsoft's page (as the campaigns chat
 read it on 2026-11-10; it refused this chat's reader): "free for qualified
 customers", "subject to approval by third-party vetting service". The wait
 is Microsoft's, and pictures do not wait for it: it joins when they
 approve.
 
-**P5. The first real picture, on the main web (release day: after R2a,
-and before R4 and R5 if the apps are to carry pictures).** The check is
+**P5 (for 1.9.1). The first real picture, on the main web.** The check is
 written to Amazon's documentation and tested against a stand-in; this
 picture is the first proof that it works against Amazon itself. It is added
-on purifyapp.net, in a campaign of your own, while campaigns are live for
-your account alone: release day's first step in `lib/campaigns/flags.ts`,
-the merge, carries campaigns at "testers".
+on purifyapp.net, in a campaign of your own, before pictures open for any
+other reader.
 
-Before release day: P1 to P3 done and sent back. On your "P1 done", "P2
-sent" and "P3 done", and at the arbiter's word, a chat switches pictures on
-in the code the merge carries (one line, `CAMPAIGN_PARTS.pictures` in
-`lib/campaigns/parts.ts`).
-Without that line, or without the key on Render (P1, step 7), a campaign
-shows no way to add a picture, and P5 waits.
+By 1.9.1 campaigns are open to every reader. So pictures cannot be proved
+"while campaigns are live for your account alone", which is how this step
+was first written for 1.9. How pictures are switched on for your account
+alone first is built with 1.9.1: today that switch is for every reader or
+for none (`CAMPAIGN_PARTS.pictures` in `lib/campaigns/parts.ts`). The
+arbiter gives you the moment; what you do then is below.
 
-1. After R2a, in a browser, open purifyapp.net and sign in as yourself.
-   Not in the app: a store build has pictures only if it was cut with them,
-   and that is decided by this step.
+Before that day: P1 and P2 done and sent back. Without the key on Render
+(P1, step 7) a campaign shows no way to add a picture, and P5 waits.
+
+1. In a browser, open purifyapp.net and sign in as yourself. Not in the
+   app: a store build has pictures only if it was cut with them, and that
+   is decided by this step.
 2. Open a campaign of yours that is waiting for a moderator or running, or
    start one.
 3. On its page, under **Pictures**, tap the tile with the plus sign. In
@@ -515,17 +526,16 @@ shows no way to add a picture, and P5 waits.
    `[campaigns]` says why. Send the arbiter that line; it names what is
    wrong and never holds the key.
 6. If your campaign's page has no **Pictures** part at all, pictures are
-   not switched on in the merge. If it has one with no plus sign, the key
+   not switched on for you yet. If it has one with no plus sign, the key
    is not on the main web, or was saved with no deploy (P1, step 7). Tell
    the arbiter which.
 
-Tell the arbiter the result at once. The store builds (R4, R5) are cut
-with pictures only on "picture checked". On anything else they are cut
-without, pictures are switched off again by one line, and they come to the
-apps with a later build.
+Tell the arbiter the result at once. 1.9.1's store builds are cut with
+pictures only on "picture checked". On anything else pictures stay off for
+every reader, and the builds are cut without them.
 
-Send back: "P1 done", "P2 sent", "P3 done", "P4 applied", and for P5
-"picture checked" or what the screen said.
+Send back, now: "P3 done". With 1.9.1: "P1 done", "P2 sent", "P4 applied",
+and for P5 "picture checked" or what the screen said.
 
 ### 23. Do iPhone purchases reach your account? Done
 

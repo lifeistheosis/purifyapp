@@ -725,6 +725,19 @@ await shot("06-creator-menu", "the creator's menu", `/campaigns/detail?id=${NICH
   },
 });
 
+// 48 Taking one down: what its creator is asked. In 1.9 no campaign has a picture (pictures come in 1.9.1),
+// and until 2026-11-11 July's line told every creator "The picture is deleted with it".
+await shot("48-take-down", "taking a campaign down: what its creator is asked, with no picture named", `/campaigns/detail?id=${NICHOLAS}`, '[role=dialog][aria-labelledby="confirm-dialog-title"]', {
+  mine: [NICHOLAS],
+  prepare: async (page) => {
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    await page.evaluate(() => window.dispatchEvent(new Event("purify:campaign-menu-open")));
+    await page.locator("[role=dialog] button", { hasText: "Take this campaign down" }).click();
+    await page.locator("[role=dialog]", { hasText: "Yes, take it down" }).waitFor({ timeout: 8000 });
+    await settle(page, 700);
+  },
+});
+
 // 07 Reporting.
 await shot("07-report", "reporting a campaign", `/campaigns/detail?id=${MARIA}`, "[role=dialog]", {
   prepare: async (page) => {
@@ -2466,6 +2479,38 @@ if (WALK) {
     expectThat((await page.locator("#profile-tab-campaigns").count()) === 0, "a profile draws the Campaigns door for a reader campaigns are not open for");
     expectThat(!calls.some((c) => c.path === "/api/campaigns/by"), "a profile's campaigns were asked for while campaigns are closed for this reader");
   }, { closed: true, profileCampaigns: [CAMPAIGNS[MARIA]] });
+
+  // Taking one down. Before 2026-11-11 its creator was told "The picture is deleted with it" of a campaign
+  // that has no picture: in 1.9 none has (his word that day: campaigns in 1.9, pictures in 1.9.1).
+  await walk("taking one down: what its creator is asked names no picture; Keep it sends nothing, and Yes takes it down", `/campaigns/detail?id=${NICHOLAS}`, async (page) => {
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    const taken = () => sentTo("DELETE", /^\/api\/campaigns\/[0-9a-f-]{36}$/).length;
+    const ask = async () => {
+      await page.evaluate(() => window.dispatchEvent(new Event("purify:campaign-menu-open")));
+      await page.locator("[role=dialog] button", { hasText: "Take this campaign down" }).click();
+      const dialog = page.locator("[role=dialog]", { hasText: "Yes, take it down" });
+      await dialog.waitFor({ timeout: 8000 });
+      await settle(page, 500);
+      return dialog;
+    };
+    let dialog = await ask();
+    const words = (await dialog.innerText()).replace(/\s+/g, " ").trim();
+    expectThat(words.includes("Take this campaign down for good? The people praying will no longer see it. This cannot be undone."), `it asks "${words}"`);
+    expectThat(!/picture/i.test(words), `it speaks of a picture: "${words}"`);
+    // Each answer is a finger wide and high.
+    for (const b of await dialog.locator("button").evaluateAll((els) => els.map((el) => el.getBoundingClientRect().toJSON()))) {
+      expectThat(b.height >= 44 && b.width >= 44, `an answer is ${Math.round(b.width)} by ${Math.round(b.height)}`);
+    }
+    await dialog.locator("button", { hasText: "Keep it" }).click();
+    await settle(page, 600);
+    expectThat((await page.locator("[role=dialog]", { hasText: "Yes, take it down" }).count()) === 0, "Keep it left the question standing");
+    expectThat(taken() === 0, "Keep it took the campaign down");
+    dialog = await ask();
+    await dialog.locator("button", { hasText: "Yes, take it down" }).click();
+    await settle(page, 1200);
+    expectThat(taken() === 1, `Yes sent ${taken()} removals`);
+    expectThat(!calls.some((c) => c.path.endsWith("/pictures")), "the pictures' route was asked while pictures are off");
+  }, { mine: [NICHOLAS] });
 
   console.log("\n" + walked.map(([l, ok]) => `${ok ? "PASS" : "FAIL"}  ${l}`).join("\n"));
   process.exit(walked.every(([, ok]) => ok) ? 0 : 1);

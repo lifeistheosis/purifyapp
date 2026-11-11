@@ -5508,5 +5508,6 @@
   "you.journalHint": "Ce que vous écrivez, et vos notes sur les versets",
   "study.florilegium.pages": "Vos pages",
   "study.florilegium.writeHere": "Écrire dans ce recueil",
-  "study.florilegium.writePage": "Écrire une page"
+  "study.florilegium.writePage": "Écrire une page",
+  "campaigns.takeDownConfirmPlain": "Retirer définitivement cette campagne ? Les personnes qui prient ne la verront plus. Cette action est irréversible."
 }

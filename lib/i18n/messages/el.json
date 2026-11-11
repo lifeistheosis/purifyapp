@@ -5480,5 +5480,6 @@
   "you.journalHint": "Όσα γράφετε, και οι σημειώσεις σας στους στίχους",
   "study.florilegium.pages": "Οι σελίδες σας",
   "study.florilegium.writeHere": "Γράψτε σε αυτή τη συλλογή",
-  "study.florilegium.writePage": "Γράψτε μια σελίδα"
+  "study.florilegium.writePage": "Γράψτε μια σελίδα",
+  "campaigns.takeDownConfirmPlain": "Να αποσυρθεί οριστικά αυτό το αίτημα; Όσοι προσεύχονται δεν θα το βλέπουν πια. Η ενέργεια δεν αναιρείται."
 }
