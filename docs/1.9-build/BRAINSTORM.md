@@ -2,6 +2,8 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
+**All time on the admin charts (his word, 2026-11-11 about 18:01 UTC):** "real quick for the admin panel can you set up a all time option for the charts thanks". Routed to Admin: an "All time" choice on every admin chart's range picker that lacks one (the hero has it; Traffic's chart stops at 120 days), reusing the hero's "all" and daysSince(). Web only, outside the native gate; live on purifyapp.net with the 1.9 merge.
+
 **Item 93 kept, and finalize 1.9 (his word, 2026-11-11 about 17:56 UTC):** "Yes, keep item 93. And again, finalize version 1.9." To the arbiter's question: free readers share three journal pages a month, Plus without limit, as JOURNAL.md's standing recommendation (finalized 2026-11-08) and the build (SHARE_LIMIT_FREE = 3, lib/journal/share.ts) have it. So the note's line 18 stands, and "a month" may leave the drop's never list. "Finalize version 1.9" again: no new scope; the last nine fixes of words over pictures, the gift, the final run, then the test build.
 
 **The EIKON gift's Plus length (his word, 2026-11-11 about 17:42 UTC):** "1 month for every purchase", to the arbiter's question "How long should the gift Plus last?". Each paid, delivered EIKON order gives one month of Purify Plus; the arbiter's reading for the code is 30 days, passed to claim_order_gift(). As the signed SQL has it, an order pays out once, and a gift claimed while Plus is running waits.
