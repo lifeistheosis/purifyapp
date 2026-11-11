@@ -62,6 +62,7 @@ import { cn } from "@/lib/cn";
 import { PlusMark } from "@/components/billing/PlusMark";
 import { LanguagePicker } from "@/components/i18n/LanguagePicker";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { useThemeWorn } from "@/components/theme/useWornPalette";
 import { FONT_CLASSES, ReaderPrefsProvider, useReaderPrefs, type ReaderFont } from "@/components/reader/ReaderPrefs";
 import { useCandleSeason } from "@/components/reader/CandleSeasonSwitch";
 import { useVespers } from "@/components/reader/VespersSwitch";
@@ -581,9 +582,11 @@ function WidgetSection() {
 function Body() {
   const { t } = useTranslate();
   // The size is ReaderSizeRow's, which asks as the Bible does (BIBLE_START_SIZE).
-  const { font, setFont, theme } = useReaderPrefs();
-  // The palette the reader chose, named under the Reading mode row's head.
-  const mode = READING_THEMES.find((m) => m.id === theme);
+  const { font, setFont } = useReaderPrefs();
+  // The palette the app is in, named under the Reading mode row's head, read
+  // off the page (useThemeWorn), so the row never names one the app is not in.
+  const worn = useThemeWorn();
+  const mode = READING_THEMES.find((m) => m.id === worn);
   const modeName = mode ? (mode.labelKey ? t(mode.labelKey) : mode.label) : undefined;
   const { on: interlinearOn, toggle: toggleInterlinear } = useInterlinear();
   const [calStyle, pickCalStyle] = useCalendarStyleDefault();

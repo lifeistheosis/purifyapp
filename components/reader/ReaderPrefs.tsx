@@ -15,6 +15,7 @@ import {
 import { usePlusReadingModes } from "@/components/reader/usePlusReadingModes";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { BIBLE_START_SIZE, sizeShown, storedSize } from "@/lib/reader/textSize";
+import { passTonight } from "@/lib/reader/vespers";
 
 // The Bible's size for a reader who has never chosen one (1.8): Large. The
 // rule is lib/reader/textSize.ts's; the Bible's readers and its settings
@@ -270,10 +271,13 @@ export function useReaderPrefs(startSize?: ReaderSize): Ctx {
   const toggleFocus = useCallback(() => {
     write(FOCUS_KEY, readPrefs().focus ? "0" : "1");
   }, []);
-  const setTheme = useCallback(
-    (t: ReadingTheme) => write(READING_THEME_KEY, t),
-    [],
-  );
+  const setTheme = useCallback((t: ReadingTheme) => {
+    // A palette picked by a tap is worn at once, after sunset too: with
+    // Candlelight at Vespers on, the rest of this night is the reader's
+    // (lib/reader/vespers.ts). First, so the controller reads it with the palette.
+    passTonight();
+    write(READING_THEME_KEY, t);
+  }, []);
   /**
    * Step to the next palette. Pass `allows` from usePlusReadingModes to skip
    * the ones this reader is not entitled to, so an unentitled tap lands on a
@@ -290,6 +294,7 @@ export function useReaderPrefs(startSize?: ReaderSize): Ctx {
     if (ids.length === 0) return;
     const cur = readPrefs().theme;
     const at = ids.indexOf(cur);
+    passTonight();
     write(READING_THEME_KEY, ids[(at + 1) % ids.length]);
   }, []);
 

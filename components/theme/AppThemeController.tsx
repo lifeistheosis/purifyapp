@@ -27,8 +27,9 @@ import {
   READING_THEME_KEY,
   coerceReadingTheme,
   themeAttributes,
+  themeWorn,
 } from "@/lib/reader/readingModes";
-import { keepWindow, nightHolds, nightNow, readWindow, vespersOn, vespersTheme } from "@/lib/reader/vespers";
+import { clearPass, keepWindow, nightHolds, nightNow, passHolds, readWindow, vespersOn, vespersTheme } from "@/lib/reader/vespers";
 import { canMove } from "@/lib/ui/routeMotion";
 
 /** The longest the controller sleeps before it looks at the night again. */
@@ -45,6 +46,11 @@ export function AppThemeController() {
   // cannot consult entitlements (they are async, and it must run before
   // paint), so it optimistically applies a stored palette and this corrects
   // it a frame later if the reader is not entitled.
+  //
+  // The answer is the app's one answer, the same one every picker reads
+  // (lib/reader/plusModesGate.ts): this once kept its own, from the moment
+  // the app opened, and a reader who signed in afterwards tapped a look on a
+  // page that said yes while this still said no (build 93 note 3).
   const { allows } = usePlusReadingModes();
   // Candlelight at Vespers (1.9, lib/reader/vespers.ts): the night the
   // palette follows while the switch is on, and the clock to its next turn.
@@ -84,6 +90,8 @@ export function AppThemeController() {
     if (!on) {
       night.current = null;
       keepWindow(null);
+      // The switch off takes back a night given to the reader's own pick, so on again means Candlelight now.
+      clearPass();
     } else if (!nightHolds(night.current, now) && !reckoning.current) {
       reckoning.current = true;
       void nightNow()
@@ -97,8 +105,12 @@ export function AppThemeController() {
         });
     }
     const held = on && nightHolds(night.current, now) ? night.current : null;
-    const wanted = vespersTheme(stored, on, held);
-    const theme = allows(wanted) ? wanted : allows(stored) ? stored : "default";
+    // A palette picked after sunset is worn for the rest of that night
+    // (lib/reader/vespers.ts, passTonight); the clock below still runs on the
+    // night itself, so Candlelight is back at the next sunset.
+    const wanted = vespersTheme(stored, on, held && !passHolds(now) ? held : null);
+    // The reader's own where the gate lets them wear it, else Dark: the rule the pickers draw their check by.
+    const theme = allows(wanted) ? wanted : themeWorn(stored, allows);
     // A palette is its own mode; a look (1.9) is worn over Dark or over Light.
     const { mode, look } = themeAttributes(theme);
     const wear = () => {

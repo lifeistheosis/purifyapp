@@ -96,3 +96,53 @@ export function nightHolds(night: Night | null, now: number): night is Night {
   return night !== null && now < night.end && night.now === now >= night.start;
 }
 
+// ── The reader's own pick, for one night ────────────────────────────────
+//
+// With the switch on, after sunset the app wore Candlelight whatever a reader
+// picked: a tap on a palette moved the check and changed nothing until
+// morning. The arbiter's word, 2026-11-11, by the bar of build 93 note 3 (a
+// tap always visibly does something): "the reader's tap wins for that night
+// and Candlelight returns at the next sunset."
+//
+// So a pick made after sunset is given the rest of that night. What is kept
+// is the night's own sunrise: until then the reader's palette is worn, and
+// the next sunset is past it, so Candlelight comes back by itself with the
+// switch never touched. Only a tap gives it (components/reader/
+// ReaderPrefs.tsx, where a palette is picked); a palette arriving from the
+// reader's account does not. Turning the switch off takes it away, so the
+// switch turned on again that night means Candlelight now.
+
+/** The sunrise a reader's own pick is worn until, in milliseconds. */
+export const VESPERS_PASS_KEY = "purify.reader.vespers.pass";
+
+/** A reader has picked a palette: if the switch is on and it is night, the rest of this night is theirs. */
+export function passTonight(now: number = Date.now()): void {
+  try {
+    if (!vespersOn()) return;
+    const night = readWindow(now);
+    if (!night?.now) return;
+    window.localStorage.setItem(VESPERS_PASS_KEY, String(Math.round(night.end)));
+  } catch {
+    /* storage blocked: Candlelight holds the night, as it did */
+  }
+}
+
+/** Is this night the reader's own? True until the sunrise it was given for. */
+export function passHolds(now: number = Date.now()): boolean {
+  try {
+    const until = Number(window.localStorage.getItem(VESPERS_PASS_KEY));
+    return Number.isFinite(until) && now < until;
+  } catch {
+    return false;
+  }
+}
+
+/** Take the night back: the switch has been turned off, or the night it was given for is over. */
+export function clearPass(): void {
+  try {
+    window.localStorage.removeItem(VESPERS_PASS_KEY);
+  } catch {
+    /* storage blocked: nothing was kept */
+  }
+}
+

@@ -12,7 +12,9 @@ import { useReaderPrefs } from "@/components/reader/ReaderPrefs";
 import { useEarnedPalettes } from "@/components/reader/useEarnedPalettes";
 import { usePlusReadingModes } from "@/components/reader/usePlusReadingModes";
 import type { EarnedPalettes } from "@/lib/reader/earned";
+import { pickPalette } from "@/lib/reader/pickPalette";
 import { READING_THEMES, isCollectionTheme } from "@/lib/reader/readingModes";
+import { useThemeWorn } from "@/components/theme/useWornPalette";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
@@ -43,6 +45,8 @@ export function ReadingModeChips({
   const upgrade = useUpgradeModal();
   const { theme, setTheme } = useReaderPrefs();
   const { allows, locked } = usePlusReadingModes();
+  // What the app is in, read off the page: the lit chip is that one.
+  const worn = useThemeWorn();
   const earned = useEarnedPalettes();
   // The goal a reader tapped: how it is earned, said under the grid.
   const [goal, setGoal] = useState<keyof EarnedPalettes | null>(null);
@@ -100,7 +104,10 @@ export function ReadingModeChips({
             );
           }
           const themeAllowed = allows(mode.id);
-          const active = theme === mode.id && themeAllowed;
+          // Lit where the app is wearing it: a stored palette the gate does
+          // not let this reader wear leaves the app in Dark, and Dark is then
+          // the one lit (build 93 note 3).
+          const active = worn === mode.id;
           const showPaidBadge = locked && !themeAllowed;
           // The palette's name and its one line, in the reader's language. The
           // registry holds the catalog keys beside the English (see labelKey in
@@ -112,7 +119,6 @@ export function ReadingModeChips({
               key={mode.id}
               type="button"
               onClick={() => {
-                if (themeAllowed) setTheme(mode.id);
                 // Router push, never `window.location.href`. The Android
                 // export is trailingSlash:true, so the bundled file is
                 // /pricing/index.html; a raw assignment to the bare string
@@ -127,7 +133,8 @@ export function ReadingModeChips({
                 // provider is mounted above, and that fallback is a router push
                 // rather than a bare window.location.href for the reason the
                 // comment above records.
-                else if (locked) upgrade.open("palettes");
+                // The tap every picker shares (lib/reader/pickPalette.ts).
+                pickPalette(mode.id, { worn, allows, locked, setTheme, sell: () => upgrade.open("palettes") });
               }}
               title={showPaidBadge ? `${blurb}. Purify Plus.` : blurb}
               aria-pressed={active}

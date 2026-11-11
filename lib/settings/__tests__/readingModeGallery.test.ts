@@ -54,8 +54,8 @@ function decls(selector: string): Record<string, string> {
 
 const FREE_ONLY = (theme: ReadingTheme) => isFreeTheme(theme);
 const EVERY = () => true;
-const shelves = (props: { theme?: ReadingTheme; allows?: (theme: ReadingTheme) => boolean; locked?: boolean }, locale = "en") =>
-  draw(createElement(GalleryShelves, { theme: props.theme ?? "default", font: "serif", allows: props.allows ?? EVERY, locked: props.locked ?? false, onPick: () => {} }), locale);
+const shelves = (props: { theme?: ReadingTheme; worn?: ReadingTheme; allows?: (theme: ReadingTheme) => boolean; locked?: boolean }, locale = "en") =>
+  draw(createElement(GalleryShelves, { theme: props.theme ?? "default", worn: props.worn, font: "serif", allows: props.allows ?? EVERY, locked: props.locked ?? false, onPick: () => {} }), locale);
 
 /** Each section of the page: its heading, whether it says Purify Plus, and its tiles in order. */
 function sections(drawn: string) {
@@ -128,9 +128,17 @@ describe("the reading modes' own page", () => {
       expect(tiles.filter((t) => t.pressed).map((t) => t.palette), theme).toEqual([theme]);
       expect(tiles.filter((t) => t.checked).map((t) => t.palette), theme).toEqual([theme]);
     }
-    // A look held in storage by a reader the gate refuses is not shown as applied.
+    // A look held in storage by a reader the gate refuses is not shown as
+    // applied: the app is in Dark, and the check stands on what the app is
+    // wearing (build 93 note 3 was a check on a look the app was not in).
     const refused = sections(shelves({ theme: "athos", allows: FREE_ONLY, locked: true })).flatMap((s) => s.tiles);
-    expect(refused.filter((t) => t.pressed)).toEqual([]);
+    expect(refused.filter((t) => t.pressed).map((t) => t.palette)).toEqual(["default"]);
+    expect(refused.filter((t) => t.checked).map((t) => t.palette)).toEqual(["default"]);
+    // Where the page itself says what it is in (after sunset, Candlelight at
+    // Vespers over the reader's own Dawn), the check stands there and only there.
+    const night = sections(shelves({ theme: "dawn", worn: "candlelight" })).flatMap((s) => s.tiles);
+    expect(night.filter((t) => t.pressed).map((t) => t.palette)).toEqual(["candlelight"]);
+    expect(night.filter((t) => t.checked).map((t) => t.palette)).toEqual(["candlelight"]);
   });
 
   it("shows the two earned by reading as goals until they are earned", () => {

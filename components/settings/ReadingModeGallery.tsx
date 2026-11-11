@@ -28,7 +28,9 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ReaderPrefsProvider, useReaderPrefs, type ReaderFont } from "@/components/reader/ReaderPrefs";
 import { useEarnedPalettes } from "@/components/reader/useEarnedPalettes";
 import { usePlusReadingModes } from "@/components/reader/usePlusReadingModes";
+import { useThemeWorn } from "@/components/theme/useWornPalette";
 import type { EarnedPalettes } from "@/lib/reader/earned";
+import { pickPalette } from "@/lib/reader/pickPalette";
 import { FREE_THEMES, READING_THEMES, THEME_FAMILIES, isCollectionTheme, themesOfFamily, type ReadingTheme } from "@/lib/reader/readingModes";
 import { PREVIEW_CHAPTER } from "@/lib/settings/preview";
 
@@ -59,17 +61,17 @@ function Shelves() {
   const upgrade = useUpgradeModal();
   const { theme, setTheme, font } = useReaderPrefs();
   const { allows, locked } = usePlusReadingModes();
+  // What the app is in, read off the page: the check stands there.
+  const worn = useThemeWorn();
   return (
     <GalleryShelves
       theme={theme}
+      worn={worn}
       font={font}
       allows={allows}
       locked={locked}
-      onPick={(id) => {
-        if (allows(id)) setTheme(id);
-        // The sheet, not a navigation: the row's own reason (ReadingModePages).
-        else if (locked) upgrade.open("palettes");
-      }}
+      // The tap every picker shares (lib/reader/pickPalette.ts): worn at once, or the sheet.
+      onPick={(id) => pickPalette(id, { worn, allows, locked, setTheme, sell: () => upgrade.open("palettes") })}
     />
   );
 }
@@ -77,12 +79,15 @@ function Shelves() {
 /** The shelves themselves, from what they are handed (lib/settings/__tests__/readingModeGallery.test.ts draws them). */
 export function GalleryShelves({
   theme,
+  worn,
   font,
   allows,
   locked,
   onPick,
 }: {
   theme: ReadingTheme;
+  /** The palette the app is in, where the caller knows it (ModeTile says what it is for). */
+  worn?: ReadingTheme;
   font: ReaderFont;
   allows: (theme: ReadingTheme) => boolean;
   /** The gate has answered no: each Plus family says Purify Plus, once. */
@@ -95,7 +100,7 @@ export function GalleryShelves({
   const book = t("bible.books.john");
   const chapter = t("bible.chapterN", { n: PREVIEW_CHAPTER });
   const tile = (mode: (typeof READING_THEMES)[number]) => (
-    <ModeTile key={mode.id} mode={mode} theme={theme} font={font} allows={allows} locked={locked} book={book} chapter={chapter} onPick={onPick} mark={false} />
+    <ModeTile key={mode.id} mode={mode} theme={theme} worn={worn} font={font} allows={allows} locked={locked} book={book} chapter={chapter} onPick={onPick} mark={false} />
   );
   const free = READING_THEMES.filter((m) => FREE_THEMES.includes(m.id));
   const kept = READING_THEMES.filter((m) => isCollectionTheme(m.id));

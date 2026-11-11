@@ -357,6 +357,20 @@ export function isFreeTheme(theme: ReadingTheme): boolean {
   return FREE_THEMES.includes(theme);
 }
 
+/**
+ * The palette a reader WEARS, as against the one they have stored: their own
+ * where the Plus gate lets them wear it, and Dark where it does not.
+ *
+ * The part that dresses the app and every picker ask with this one rule
+ * (components/theme/AppThemeController.tsx, components/settings/
+ * ReadingModePages.tsx, components/reader/ReadingModeChips.tsx), so the check
+ * a picker draws stands on what the app is wearing. Build 93 note 3 was a
+ * check on a look the app was not wearing.
+ */
+export function themeWorn(stored: ReadingTheme, allows: (theme: ReadingTheme) => boolean): ReadingTheme {
+  return allows(stored) ? stored : "default";
+}
+
 const THEME_IDS = new Set<string>(READING_THEMES.map((t) => t.id));
 
 /**

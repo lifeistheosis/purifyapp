@@ -43,6 +43,8 @@ const KEY = "purify.reader.theme";
 /** Candlelight at Vespers (1.9), mirrored from lib/reader/vespers.ts: the switch, and the night's two moments. */
 const VESPERS = "purify.reader.vespers";
 const VESPERS_WINDOW = "purify.reader.vespers.window";
+/** The sunrise a reader's own pick is worn until (lib/reader/vespers.ts, passTonight): through it, their palette and not Candlelight. */
+const VESPERS_PASS = "purify.reader.vespers.pass";
 
 export const THEME_PREPAINT = [
   "(function(){try{",
@@ -53,7 +55,8 @@ export const THEME_PREPAINT = [
   // Candlelight, so the app opens after dark already in it.
   `if(localStorage.getItem('${VESPERS}')==='1'){`,
   `var w=(localStorage.getItem('${VESPERS_WINDOW}')||'').split(','),n=Date.now();`,
-  "if(w.length===2&&n>=+w[0]&&n<+w[1])t='candlelight';}",
+  // Not on a night the reader picked a palette of their own in: that pick is worn until its sunrise.
+  `if(w.length===2&&n>=+w[0]&&n<+w[1]&&!(n<+localStorage.getItem('${VESPERS_PASS}')))t='candlelight';}`,
   "var d=document.documentElement;",
   `if(t&&${JSON.stringify(PREPAINT_THEME_IDS)}.indexOf(t)>-1){`,
   "d.setAttribute('data-reading-mode',t);}",

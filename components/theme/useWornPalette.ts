@@ -20,6 +20,8 @@
 
 import { useSyncExternalStore } from "react";
 
+import { coerceReadingTheme, type ReadingTheme } from "@/lib/reader/readingModes";
+
 function subscribe(changed: () => void): () => void {
   const observer = new MutationObserver(changed);
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-reading-mode"] });
@@ -31,4 +33,24 @@ const candlelight = () => document.documentElement.getAttribute("data-reading-mo
 /** Is the page in Candlelight now? False on the server and until the device answers. */
 export function useCandlelightWorn(): boolean {
   return useSyncExternalStore(subscribe, candlelight, () => false);
+}
+
+function subscribeTheme(changed: () => void): () => void {
+  const observer = new MutationObserver(changed);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-reading-mode", "data-look"] });
+  return () => observer.disconnect();
+}
+
+// A look says itself in data-look, over Dark or over Light; a palette is its own mode; Dark is neither.
+const wornId = () => document.documentElement.getAttribute("data-look") ?? document.documentElement.getAttribute("data-reading-mode") ?? "default";
+
+/**
+ * The palette the app is in, by its id: what a picker draws its check on
+ * (build 93 note 3: "a check drawn only on what the app is wearing"). Read
+ * off the page itself, so it is true whatever decided it: the reader's own
+ * pick, the Plus gate, or Candlelight at Vespers. Dark on the server and
+ * until the device answers.
+ */
+export function useThemeWorn(): ReadingTheme {
+  return coerceReadingTheme(useSyncExternalStore(subscribeTheme, wornId, () => "default"));
 }

@@ -128,10 +128,18 @@ describe("the reading modes", () => {
       `${en["settings.paletteCandlelightHint"]}. Purify Plus.`,
       `${en["settings.paletteMonasteryHint"]}. Purify Plus.`,
     ]);
-    // While the gate is still asking, a paid palette that is applied is not lit.
+    // While the gate is still asking, a paid palette that is the reader's own
+    // is not lit: the app is in Dark until the answer comes, and the check
+    // stands on what the app is wearing (build 93 note 3).
     const asking = pages(draw(createElement(ModePages, { theme: "monastery", font: "serif", allows: FREE_ONLY, locked: false, onPick: () => {} })));
-    expect(asking.some((p) => p.pressed)).toBe(false);
+    expect(asking.filter((p) => p.pressed).map((p) => p.palette)).toEqual(["default"]);
+    expect(asking.filter((p) => p.checked).map((p) => p.palette)).toEqual(["default"]);
     expect(asking.some((p) => p.plus)).toBe(false);
+    // Where the page itself says what it is in (after sunset, Candlelight at
+    // Vespers over the reader's own Light), the check stands there.
+    const night = pages(draw(createElement(ModePages, { theme: "parchment", worn: "candlelight", font: "serif", allows: EVERY, locked: false, onPick: () => {} })));
+    expect(night.filter((p) => p.pressed).map((p) => p.palette)).toEqual(["candlelight"]);
+    expect(night.filter((p) => p.checked).map((p) => p.palette)).toEqual(["candlelight"]);
   });
 
   it("shows the two earned palettes on a row of their own under the five, as goals with how far the reader is until earned (1.9, rec 79)", () => {

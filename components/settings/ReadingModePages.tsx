@@ -28,10 +28,12 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { FONT_CLASSES, useReaderPrefs, type ReaderFont } from "@/components/reader/ReaderPrefs";
 import { useEarnedPalettes } from "@/components/reader/useEarnedPalettes";
 import { usePlusReadingModes } from "@/components/reader/usePlusReadingModes";
+import { useThemeWorn } from "@/components/theme/useWornPalette";
 import { Check } from "@/components/ui/icons/Check";
 import { cn } from "@/lib/cn";
 import type { EarnedPalettes } from "@/lib/reader/earned";
-import { READING_THEMES, isCollectionTheme, type ReadingTheme } from "@/lib/reader/readingModes";
+import { pickPalette } from "@/lib/reader/pickPalette";
+import { READING_THEMES, isCollectionTheme, themeWorn, type ReadingTheme } from "@/lib/reader/readingModes";
 import { JOHN_1_OPENING, PREVIEW_CHAPTER } from "@/lib/settings/preview";
 
 /** Wired to the reader's palette and the Plus gate. */
@@ -39,29 +41,31 @@ export function ReadingModePages() {
   const upgrade = useUpgradeModal();
   const { theme, setTheme, font } = useReaderPrefs();
   const { allows, locked } = usePlusReadingModes();
+  // What the app is in, read off the page: the check stands there.
+  const worn = useThemeWorn();
   return (
     <ModePages
       theme={theme}
+      worn={worn}
       font={font}
       allows={allows}
       locked={locked}
-      onPick={(id) => {
-        if (allows(id)) setTheme(id);
-        // The modal, not a navigation: the chips' reason (ReadingModeChips).
-        else if (locked) upgrade.open("palettes");
-      }}
+      onPick={(id) => pickPalette(id, { worn, allows, locked, setTheme, sell: () => upgrade.open("palettes") })}
     />
   );
 }
 
 export function ModePages({
   theme,
+  worn,
   font,
   allows,
   locked,
   onPick,
 }: {
   theme: ReadingTheme;
+  /** The palette the app is in, where the caller knows it (ModeTile says what it is for). */
+  worn?: ReadingTheme;
   font: ReaderFont;
   allows: (theme: ReadingTheme) => boolean;
   /** The gate has answered no: the paid pages say Purify Plus. */
@@ -80,7 +84,7 @@ export function ModePages({
   const book = t("bible.books.john");
   const chapter = t("bible.chapterN", { n: PREVIEW_CHAPTER });
   const palette = (mode: ReadingMode) => (
-    <ModeTile key={mode.id} mode={mode} theme={theme} font={font} allows={allows} locked={locked} book={book} chapter={chapter} onPick={onPick} />
+    <ModeTile key={mode.id} mode={mode} theme={theme} worn={worn} font={font} allows={allows} locked={locked} book={book} chapter={chapter} onPick={onPick} />
   );
   return (
     <>
@@ -127,6 +131,7 @@ export type ReadingMode = (typeof READING_THEMES)[number];
 export function ModeTile({
   mode,
   theme,
+  worn,
   font,
   allows,
   locked,
@@ -137,6 +142,14 @@ export function ModeTile({
 }: {
   mode: ReadingMode;
   theme: ReadingTheme;
+  /**
+   * The palette the app is in, read off the page (useThemeWorn): the check
+   * stands on it. Without it, what the reader's own palette and the gate
+   * make of it (themeWorn), which is all a drawing of this tile off the
+   * device can know; on the device the page itself also knows the night
+   * (Candlelight at Vespers).
+   */
+  worn?: ReadingTheme;
   font: ReaderFont;
   allows: (theme: ReadingTheme) => boolean;
   locked: boolean;
@@ -147,7 +160,10 @@ export function ModeTile({
 }) {
   const { t } = useTranslate();
   const allowed = allows(mode.id);
-  const on = theme === mode.id && allowed;
+  // The check stands on the palette the app is wearing: a stored palette the
+  // gate does not let this reader wear leaves the app in Dark, and Dark then
+  // carries the check.
+  const on = (worn ?? themeWorn(theme, allows)) === mode.id;
   const paid = locked && !allowed;
   const name = mode.labelKey ? t(mode.labelKey) : mode.label;
   const blurb = mode.blurbKey ? t(mode.blurbKey) : mode.blurb;
