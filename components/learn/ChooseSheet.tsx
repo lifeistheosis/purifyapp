@@ -144,10 +144,9 @@ function Row({
   return (
     <li
       className={cn(
-        "flex items-stretch rounded-[14px] motion-safe:transition-colors",
-        // The line between two rows; none over the first, nor against the one that is lit.
-        !first && !current && "border-t border-paper/[0.06]",
-        current && "bg-paper/[0.06]",
+        "flex items-stretch",
+        // The one that is lit is one rounded row; the others are parted by a straight line, with none over the first.
+        current ? "rounded-[14px] bg-paper/[0.06]" : !first && "border-t border-paper/[0.06]",
       )}
     >
       <button
@@ -167,7 +166,7 @@ function Row({
           </span>
           {under}
         </span>
-        {current ? <Check size={16} aria-hidden className="mt-0.5 shrink-0 text-paper/80" /> : null}
+        {current ? <Check size={16} aria-hidden className="shrink-0 self-center text-paper/80" /> : null}
       </button>
       {onRemove ? (
         <button
