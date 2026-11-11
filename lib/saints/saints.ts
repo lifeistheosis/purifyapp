@@ -1806,7 +1806,6 @@ export const SAINTS: Saint[] = [
  {
  slug: "paisios-the-athonite",
  byname: "Elder of the Holy Mountain",
- iconUrl: "/saints/icons/paisios-the-athonite.jpg",
  name: "St. Paisios the Athonite",
  epithet: "Hieromonk of Mount Athos · Elder of Panagouda",
  born: "July 25, 1924 (Farasa, Cappadocia)",
@@ -3969,7 +3968,6 @@ export const SAINTS: Saint[] = [
   {
     slug: "dumitru-staniloae",
     byname: "Editor of the Romanian Philokalia",
-    iconUrl: "/saints/icons/dumitru-staniloae.jpg",
     name: "St. Dumitru Stăniloae",
     epithet: "Priest and Theologian · Confessor",
     born: "November 16, 1903 (Vlădeni, Transylvania)",
@@ -3989,7 +3987,6 @@ export const SAINTS: Saint[] = [
   {
     slug: "cleopas-of-sihastria",
     byname: "Elder of Sihăstria",
-    iconUrl: "/saints/icons/cleopa-ilie.jpg",
     name: "St. Cleopas of Sihăstria",
     epithet: "Archimandrite · Spiritual Father of Romania",
     born: "April 10, 1912 (Sulița, Botoșani)",
@@ -4009,7 +4006,6 @@ export const SAINTS: Saint[] = [
   {
     slug: "sofian-of-antim",
     byname: "The Iconographer",
-    iconUrl: "/saints/icons/sofian-antim.jpg",
     name: "St. Sofian of Antim",
     epithet: "Archimandrite of Antim Monastery · Iconographer and Confessor",
     born: "October 7, 1912 (Cuconeștii Vechi, Bessarabia)",
@@ -4157,7 +4153,6 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "justin-popovic",
-    iconUrl: "/saints/icons/justin-popovic.jpg",
     byname: "of Ćelije",
     name: "St. Justin Popović",
     epithet: "Archimandrite of Ćelije · Confessor and Theologian",
@@ -4628,7 +4623,6 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "silouan-the-athonite",
-    iconUrl: "/saints/icons/silouan-the-athonite.jpg",
     name: "St. Silouan the Athonite",
     epithet: "Monk of Mount Athos · He who prayed for the whole world",
     born: "1866 (Tambov province, Russia)",
@@ -4669,7 +4663,6 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "porphyrios-of-kavsokalyvia",
-    iconUrl: "/saints/icons/st-porphyrios-of-kavsokalyvia-324.jpg",
     name: "St. Porphyrios of Kavsokalyvia",
     byname: "The Elder Porphyrios",
     epithet: "Elder of Athos and Athens · Seer of hearts",
