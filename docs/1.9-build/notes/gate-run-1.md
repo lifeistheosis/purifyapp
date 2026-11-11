@@ -106,3 +106,27 @@ Today it holds:
 - Part 3, no saint or work without a picture (Updates 2, the December chat).
 - Part 5, every walk note with its own test (each chat; the arbiter reads).
 - Part 6, the fresh-eyes Fable walk (his yes first).
+
+## Who has each (the arbiter, 2026-11-11 03:25 UTC)
+
+- **Updates 2**, with fresh eyes M6: the sign-in form's four links and /signup's
+  checkbox (SignInForm.tsx), "Show password" as an icon placed with end
+  (PasswordInput.tsx), and "Back to the Bible" (MultiVerseClient.tsx).
+- **Updates**: Your rule's dashed nodes and "add" discs, with build 93 note 16;
+  the nineteen council links on /reading/councils/, with fresh eyes M3.
+  Fasting's three buttons move from its list to Fable Themes.
+- **Fable Themes**, the lightest lane: ExportLibrary.tsx's two buttons;
+  CommunityClient.tsx (its touch sizes, the empty 38px frame by eye, readers'
+  words allowed by name on the post body, the house rules line's contrast);
+  FastingTrackerClient.tsx (the three buttons and the device note, with its
+  fresh-eyes look); PrayersTodayClient.tsx (Chants, the four links, the empty
+  51px frame by eye); the contrast of the Ancyra canons' source line, the
+  Start step numbers and ChantDoors' tabs on Light, mended at the source if
+  they share one class; the chants' icons placed with start and end; the
+  earned palettes drawn dashed (build 93 note 4, already its own).
+- **Fable Theology**: /theology/comma-johanneum/'s chapter link and the
+  contrast of "Doctrine" and "Part 1 of 4".
+- **Admin**: What's new's keyboard hints, with the old notes' clean-up.
+
+Each screen passes `scripts/guardrail-walk.mjs` again before its owner calls
+it done; the gate's second run is on the export the test build is cut from.
