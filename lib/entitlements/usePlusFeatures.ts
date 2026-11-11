@@ -27,11 +27,28 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 
 import { clientSurface, getClientEntitlements } from "@/lib/entitlements/client";
 import { plusEnforcedFor } from "@/lib/entitlements/entitlements";
-import { onEntitlementsChanged } from "@/lib/entitlements/refresh";
+import { emitEntitlementsChanged, onEntitlementsChanged } from "@/lib/entitlements/refresh";
+import { createClient } from "@/lib/supabase/client";
 
 const TTL_MS = 60_000;
 let shared: { at: number; answer: Promise<boolean | null> } | null = null;
 let listening = false;
+
+/**
+ * A sign-in or a sign-out changes who is asking, and nothing told the Plus
+ * gates (Fable Themes' finding with build 93 note 3, 2026-11-11): the signal
+ * to ask again was sent only on a purchase, so a reader who signed in with
+ * Plus met a lock for up to the minute the shared answer above lives. Now
+ * both send it, as a purchase does, and every gate that listens asks again,
+ * this one first. The callback only sets a timer: supabase-js runs it inside
+ * the auth lock, and an auth call made from in there never returns
+ * (lib/profile/myPicture.ts).
+ */
+export function followSignInForPlus(client: Pick<ReturnType<typeof createClient>, "auth"> = createClient()): void {
+  client.auth.onAuthStateChange((event) => {
+    if (event === "SIGNED_IN" || event === "SIGNED_OUT") window.setTimeout(() => emitEntitlementsChanged(), 0);
+  });
+}
 
 /** The Plus answer, shared by every caller on the page. */
 export function plusFeaturesNow(): Promise<boolean | null> {
@@ -40,6 +57,11 @@ export function plusFeaturesNow(): Promise<boolean | null> {
     onEntitlementsChanged(() => {
       shared = null;
     });
+    try {
+      followSignInForPlus();
+    } catch {
+      /* no client where there is no Supabase; the minute's answer stands */
+    }
   }
   if (!shared || Date.now() - shared.at > TTL_MS) {
     shared = {
