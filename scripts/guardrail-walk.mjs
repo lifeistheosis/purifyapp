@@ -31,6 +31,18 @@
 //
 //   npm run build:android, then:
 //   NODE_USE_ENV_PROXY=1 node scripts/guardrail-walk.mjs [out dir] [--only /path,/path] [--workers 3] [--json file] [--online] [--looks dir]
+//   node scripts/guardrail-walk.mjs --self-test    (the carried-picture check's own proof)
+//
+// And what is asked of the website (the arbiter, 2026-11-11 16:59 UTC): a
+// picture the app asks the website for while the export carries it, at the
+// same address or the same name in another format, is a picture a reader
+// with no signal never sees ("carried" in the report). Theology's council
+// marks asked for /history/media/<council>.v1.jpg while the apps carry the
+// .v1.avif (lib/media/carried.ts), and showed only their blurred preview with
+// no signal; the picture rule, which judges only a picture a reader can see,
+// could not name them. Every picture the screen asks for counts, the lazy
+// ones too. A picture the export does not carry is the website's by design
+// (lib/media/streamed.ts) and is not named.
 //
 // Words over a picture, or with one drawn across them, have no one colour under
 // them, so checkMock measures each on the pixels under its letters, on every
@@ -63,12 +75,71 @@ const JSON_OUT = flag("--json");
 const LOOKS = flag("--looks");
 const ONLINE = argv.includes("--online");
 if (ONLINE) argv.splice(argv.indexOf("--online"), 1);
+const SELF_TEST = argv.includes("--self-test");
+if (SELF_TEST) argv.splice(argv.indexOf("--self-test"), 1);
 const OUT = path.resolve(argv[0] ?? "out");
-checkSells(OUT);
+if (!SELF_TEST) checkSells(OUT);
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}: run npm run build:android first`);
 
-const list = ONLY ?? screens(OUT);
-console.log(`${list.length} screens on a phone, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}, ${readerWords()}`);
+const list = SELF_TEST ? [] : (ONLY ?? screens(OUT));
+if (!SELF_TEST) console.log(`${list.length} screens on a phone, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}, ${readerWords()}`);
+
+// The website, as the apps name it: purifyapp.net in the store builds, its Render address in an export
+// built without NEXT_PUBLIC_SITE_URL (lib/site.ts).
+const WEBSITES = ["https://purifyapp.net", "https://purifyapp.onrender.com"];
+const PICTURE_FORMATS = [".avif", ".webp", ".jpg", ".jpeg", ".png"];
+
+/** The export's own copy of a picture asked of the website: the same address, or the same name in another format. */
+function carriedCopy(pathname) {
+  const has = (p) => {
+    const file = path.join(OUT, p);
+    return file.startsWith(OUT + path.sep) && fs.existsSync(file) && fs.statSync(file).isFile();
+  };
+  if (has(pathname)) return pathname;
+  const m = /^(.*)\.(avif|webp|jpe?g|png)$/i.exec(pathname);
+  if (!m) return null;
+  return PICTURE_FORMATS.map((ext) => m[1] + ext).find((p) => p !== pathname && has(p)) ?? null;
+}
+
+/**
+ * Run `work` on the page, noting every picture the page asks of the website meanwhile; then ask for the
+ * lazy pictures too (a picture below the fold is asked for when a reader comes to it), and give them a
+ * moment to be asked for.
+ */
+async function picturesAsked(page, work) {
+  const asked = new Set();
+  const onRequest = (q) => {
+    if (q.resourceType() !== "image") return;
+    try {
+      const u = new URL(q.url());
+      if (WEBSITES.includes(u.origin)) asked.add(decodeURIComponent(u.pathname));
+    } catch {}
+  };
+  page.on("request", onRequest);
+  try {
+    const result = await work();
+    await page.evaluate(() => {
+      for (const img of document.querySelectorAll("img[loading='lazy']")) img.loading = "eager";
+    });
+    await page.waitForTimeout(800);
+    return { result, asked };
+  } finally {
+    page.off("request", onRequest);
+  }
+}
+
+/** What was asked of the website while the export carries it, as the walk's findings. */
+function carriedFailures(asked) {
+  return [...asked]
+    .map((p) => ({ p, copy: carriedCopy(p) }))
+    .filter(({ copy }) => copy)
+    .map(({ p, copy }) => ({
+      check: "carried",
+      palette: null,
+      what: `picture ${p}`,
+      detail: `asked of the website while the export carries ${copy === p ? "it" : copy}: a reader with no signal never sees it`,
+    }));
+}
 
 // The main web, read as a phone reads it: GET only, each address once.
 const fetched = new Map();
@@ -114,21 +185,24 @@ async function liveBrowser() {
 /** One screen's verdict: what failed, what could not be measured, what is allowed by name. */
 async function walkOne(page, at) {
   try {
-    await go(page, at, { timeout: 15000 });
-    await page.waitForTimeout(1500);
-    // Words over a picture are measured on the pixels under their letters, on every palette.
-    const r = await checkMock(page, "body", { pixels: true });
-    const left = r.looks.filter((l) => l.left);
-    if (LOOKS && left.length) {
-      fs.mkdirSync(LOOKS, { recursive: true });
-      for (const l of left) {
-        const file = path.join(LOOKS, `${at.replace(/^\/|\/$/g, "").replace(/\//g, "_") || "home"}-${l.at}.png`);
-        const el = page.locator(`[data-mock-look="${l.at}"]`).first();
-        await el.evaluate((n) => n.scrollIntoView({ block: "center", inline: "center", behavior: "instant" })).catch(() => {});
-        l.still = (await el.screenshot({ path: file }).then(() => path.basename(file)).catch(() => null)) ?? undefined;
+    const { result: r, asked } = await picturesAsked(page, async () => {
+      await go(page, at, { timeout: 15000 });
+      await page.waitForTimeout(1500);
+      // Words over a picture are measured on the pixels under their letters, on every palette.
+      const r = await checkMock(page, "body", { pixels: true });
+      const left = r.looks.filter((l) => l.left);
+      if (LOOKS && left.length) {
+        fs.mkdirSync(LOOKS, { recursive: true });
+        for (const l of left) {
+          const file = path.join(LOOKS, `${at.replace(/^\/|\/$/g, "").replace(/\//g, "_") || "home"}-${l.at}.png`);
+          const el = page.locator(`[data-mock-look="${l.at}"]`).first();
+          await el.evaluate((n) => n.scrollIntoView({ block: "center", inline: "center", behavior: "instant" })).catch(() => {});
+          l.still = (await el.screenshot({ path: file }).then(() => path.basename(file)).catch(() => null)) ?? undefined;
+        }
       }
-    }
-    return { at, failures: r.failures, unmeasured: r.unmeasured, allowed: r.allowed, looks: r.looks };
+      return r;
+    });
+    return { at, failures: [...r.failures, ...carriedFailures(asked)], unmeasured: r.unmeasured, allowed: r.allowed, looks: r.looks };
   } catch (e) {
     return { at, error: String(e).split("\n")[0].slice(0, 160), failures: [], unmeasured: [], allowed: [], looks: [] };
   }
@@ -161,6 +235,59 @@ async function phone() {
 // cannot be had is asked of a new phone (context), and of a browser started again if it went away;
 // a worker that still has none stops, and the screens it would have walked go to the others.
 const PAGE_LIFE = 12;
+
+/**
+ * The carried-picture check's own proof, on the export's front door: three of the councils' pictures the
+ * export carries as AVIF (lib/media/carried.ts). One asked of the website as a JPEG, as a component that
+ * misses its carried copy asks (Theology's council marks before Fable Theology's mend), is named; one
+ * offered as the carried AVIF first with the JPEG behind it, as the mend offers it, is not; one asked of
+ * the website below the fold, lazily, is named; and a picture the export does not carry, the website's by
+ * design, is not.
+ */
+async function selfTest() {
+  const carried = fs.existsSync(path.join(OUT, "history/media"))
+    ? fs.readdirSync(path.join(OUT, "history/media")).filter((f) => f.endsWith(".avif")).map((f) => f.replace(/\.avif$/, ""))
+    : [];
+  if (carried.length < 3) throw new Error(`the self-test needs three carried AVIFs in ${OUT}/history/media; found ${carried.length}`);
+  const [missed, offered, lazy] = carried;
+  const site = WEBSITES[1];
+  const ctx = await phone();
+  const page = await ctx.newPage();
+  try {
+    await go(page, "/", { timeout: 20000 });
+    await page.waitForTimeout(1500);
+    const html = `<div data-carried-self-test style="padding:16px">
+      <img alt="" width="96" height="64" src="${site}/history/media/${missed}.jpg">
+      <picture><source type="image/avif" srcset="/history/media/${offered}.avif"><img alt="" width="96" height="64" src="${site}/history/media/${offered}.jpg"></picture>
+      <img alt="" width="96" height="64" src="${site}/covers/authors/carried-self-test-not-carried.v1.jpg">
+      <div style="height:4000px"></div>
+      <img alt="" width="96" height="64" loading="lazy" src="${site}/history/media/${lazy}.jpg">
+    </div>`;
+    const { asked } = await picturesAsked(page, async () => {
+      await page.evaluate((h) => document.body.insertAdjacentHTML("beforeend", h), html);
+      await page.waitForTimeout(600);
+    });
+    const named = carriedFailures(asked).map((f) => f.what);
+    const cases = [
+      [`a picture asked of the website as a JPEG while the export carries ${missed}.avif is named`, named.includes(`picture /history/media/${missed}.jpg`)],
+      [`the carried AVIF offered first (${offered}) is not named`, !named.some((w) => w.includes(offered))],
+      [`a lazy picture below the fold (${lazy}) is asked for and named`, named.includes(`picture /history/media/${lazy}.jpg`)],
+      ["a picture the export does not carry (the website's by design) is not named", !named.some((w) => w.includes("carried-self-test-not-carried"))],
+      ["nothing else is named", named.length === 2],
+    ];
+    for (const [what, ok] of cases) console.log(`  ${ok ? "ok    " : "MISSED"} ${what}`);
+    const ok = cases.every(([, good]) => good);
+    console.log(ok ? "\nself-test: the carried-picture check names what it should and nothing else" : `\nself-test FAILED: named ${JSON.stringify(named)}`);
+    return ok;
+  } finally {
+    await ctx.close().catch(() => {});
+  }
+}
+if (SELF_TEST) {
+  const ok = await selfTest();
+  await browser.close().catch(() => {});
+  process.exit(ok ? 0 : 1);
+}
 async function worker() {
   let ctx = null;
   let page = null;

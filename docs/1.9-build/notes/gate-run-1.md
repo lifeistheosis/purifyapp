@@ -439,6 +439,24 @@ the light words read 19.03:1 on their dark picture and the grey 1.30:1 on
 theirs. The pass's first trial (125 of 125 look words answered) was taken on
 the measure before that change, so the final run's counts replace it.
 
+And a check of what is asked of the website (the arbiter's yes, 16:59 UTC).
+The picture rule judges only a picture a reader can see (the arbiter, 15:45),
+so it could not name Theology's council marks. With no signal they showed only
+their blurred preview, because they asked the website for
+/history/media/<council>.v1.jpg while the apps carry the .v1.avif
+(lib/media/carried.ts; Fable Theology's find, their mend to come). The
+guardrail walk now notes every picture a screen asks of the website, lazy ones
+included. It names any the export carries, at the same address or under the
+same name in another format, as "carried". A picture the export does not carry
+is the website's by design (lib/media/streamed.ts) and is not named. The
+check's self-test (`node scripts/guardrail-walk.mjs --self-test`) names a
+council asked for as a JPEG and a lazy one below the fold. It leaves alone
+one offered as the carried AVIF first, and a picture the export does not
+carry. With the check emptied, it fails on three of its five cases. On
+Theology's four screens of the export of 967849535 it names seven councils'
+JPEGs, on /theology/, /theology/creed/, /theology/path/christ/ and
+/heresies/apollinarianism/.
+
 **3. No saint or work without a picture:**
 `lib/saints/__tests__/everySaintAPicture.test.ts` passes: every saint has a
 picture or stands in its list, with what he waits for. The list had 31 at
