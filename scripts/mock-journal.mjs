@@ -190,6 +190,46 @@ async function pageOfEveryBlock(page) {
   return from;
 }
 
+// ── Push 3's readers: pages kept before, and a gathering kept from the app's own starter ──
+
+const ago = (days) => new Date(Date.now() - days * 864e5).toISOString();
+const OLDER = { id: "11111111-1111-4111-8111-111111111111", kind: "reflection", body: "# An older page\n\nWords kept last week.", createdAt: ago(6), updatedAt: ago(6) };
+const OTHER = { id: "44444444-4444-4444-8444-444444444444", kind: "prayer", body: "Another page, kept before.", createdAt: ago(8), updatedAt: ago(8) };
+const IN_A_NOTEBOOK = { id: "66666666-6666-4666-8666-666666666666", kind: "reflection", body: "[[notebook Advent 2026]]\n\nWhat I mean to keep through the fast.", createdAt: ago(9), updatedAt: ago(9) };
+const HALF_THOUGHT = "Half a thought I mean to finish.";
+/** Pages already in the journal. */
+const kept = (...list) => ({ "purify:journal": JSON.stringify(list) });
+const records = (page) => page.evaluate(() => JSON.parse(localStorage.getItem("purify:journal") ?? "[]"));
+const waiting = (page) => page.evaluate(() => JSON.parse(localStorage.getItem("purify:journal.draft") ?? "null"));
+const writeSays = async (page) => (await page.locator("[data-journal-write]").last().innerText()).trim();
+
+/**
+ * The app's own starter, read from the app's own file, and the gathering Keep
+ * makes of it (lib/florilegium/starters.ts, starterItems): its lines are the
+ * app's Scripture, never typed here. For a reader who cannot keep one through
+ * the app: one whose Plus has lapsed.
+ */
+const STARTER = JSON.parse(fs.readFileSync(new URL("../data/florilegium/starters.json", import.meta.url), "utf8")).starters.find((x) => x.id === "prologue");
+const STARTER_NAME = JSON.parse(fs.readFileSync(new URL("../lib/i18n/messages/en.json", import.meta.url), "utf8"))[STARTER.nameKey];
+const LAPSED_ID = "55555555-5555-4555-8555-555555555555";
+function lapsed({ pages = true } = {}) {
+  const at = Date.now() - 30 * 864e5;
+  const gathering = {
+    id: LAPSED_ID,
+    title: STARTER_NAME,
+    description: `John ${STARTER.chapter}:${STARTER.lines[0].verse}-${STARTER.lines.at(-1).verse}`,
+    createdAt: at,
+    updatedAt: at,
+    // First verse first, as the store leaves them once Keep has added the last verse first (each new line goes on top).
+    items: STARTER.lines.map((l, i) => ({ id: `line-${l.verse}`, addedAt: at + STARTER.lines.length - i, kind: "scripture", text: l.text, reference: `John ${STARTER.chapter}:${l.verse}`, book: STARTER.book, chapter: STARTER.chapter, verse: l.verse })),
+  };
+  const written = [
+    { id: "22222222-2222-4222-8222-222222222222", kind: "reflection", body: `# In the beginning\n\n[[notebook ${STARTER_NAME}]]\n\nRead before the Liturgy this morning, slowly.`, createdAt: ago(40), updatedAt: ago(40) },
+    { id: "33333333-3333-4333-8333-333333333333", kind: "question", body: `[[notebook ${STARTER_NAME}]]\n\nWhat do I notice when I read it aloud?`, createdAt: ago(43), updatedAt: ago(43) },
+  ];
+  return { "purify:florilegia": JSON.stringify([gathering]), "purify:journal": JSON.stringify(pages ? written : []) };
+}
+
 /** The writing sheet's own scroll. */
 const sheetScroll = (page) => page.locator("[data-journal-composer]").locator("xpath=ancestor::*[contains(@class,'overflow-y-auto')][1]");
 
@@ -353,6 +393,120 @@ await shot(
   },
   { at: "/settings", ready: "#journal a" },
 );
+
+// Push 3's shape (build 93 note 19): a gathering with its journal pages under its lines.
+/**
+ * One of the app's own starter gatherings, kept through the app, with two
+ * pages written in its notebook. Its lines are the app's; the pages' words
+ * are plain ones. Returns the gathering's address as the apps open it.
+ */
+async function gatheringWithPages(page) {
+  await go(page, "/florilegium/begin/prologue");
+  await page.waitForSelector("[data-starter-keep]", { timeout: 30000 });
+  await wait(900);
+  await tap(page, page.locator("[data-starter-keep]").first(), "Keep this gathering");
+  await page.waitForSelector("[data-starter-kept]", { timeout: 15000 });
+  const kept = await page.evaluate(() => {
+    const f = JSON.parse(localStorage.getItem("purify:florilegia") ?? "[]")[0];
+    return f ? { id: f.id, title: f.title } : null;
+  });
+  if (!kept) throw new Error("the starter was not kept");
+  const day = (ago) => new Date(Date.now() - ago * 864e5).toISOString();
+  const records = [
+    { id: "22222222-2222-4222-8222-222222222222", kind: "reflection", body: `# In the beginning\n\n[[notebook ${kept.title}]]\n\nRead before the Liturgy this morning, slowly.`, createdAt: day(0), updatedAt: day(0) },
+    { id: "33333333-3333-4333-8333-333333333333", kind: "question", body: `[[notebook ${kept.title}]]\n\nWhat do I notice when I read it aloud?`, createdAt: day(3), updatedAt: day(3) },
+  ];
+  await page.evaluate((list) => {
+    localStorage.setItem("purify:journal", JSON.stringify(list));
+    window.dispatchEvent(new Event("purify:journal"));
+  }, records);
+  await go(page, `/florilegium/gathering?g=${encodeURIComponent(kept.id)}`);
+  await page.waitForSelector("[data-gathering-pages]", { timeout: 30000 });
+  await wait(1200);
+  return kept;
+}
+
+await shot(
+  "16-gathering-pages",
+  "a gathering with its pages: under its lines, the journal's pages written in it, and the way to write one",
+  "[data-gathering-page]",
+  async (page) => {
+    await gatheringWithPages(page);
+    await page.locator("[data-gathering-pages]").evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await wait(700);
+  },
+  { at: "/florilegium", ready: "main h1, [data-route-content] h1" },
+);
+
+await shot(
+  "17-journal-gathering",
+  "the journal with a gathering's notebook chosen: its chip wears the flower, and one line over its pages leads to its lines",
+  "main",
+  async (page) => {
+    await gatheringWithPages(page);
+    await go(page, "/journal");
+    await page.waitForSelector("[data-journal-today]", { timeout: 30000 });
+    await wait(900);
+    const chip = page.locator('[data-journal-notebook="gathering"]').first();
+    await chip.evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await wait(500);
+    await tap(page, chip, "the gathering's chip");
+    await wait(700);
+    await page.locator("[data-journal-gathering]").evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await wait(600);
+  },
+  { at: "/florilegium", ready: "main h1, [data-route-content] h1" },
+);
+
+await shot(
+  "18-notebook-choice",
+  "a page's notebook: the reader's gatherings are offered first, each with the flower, then the other notebooks",
+  "[role=dialog]",
+  async (page) => {
+    await gatheringWithPages(page);
+    await page.evaluate((r) => {
+      localStorage.setItem("purify:journal", JSON.stringify([...JSON.parse(localStorage.getItem("purify:journal") ?? "[]"), r]));
+      window.dispatchEvent(new Event("purify:journal"));
+    }, IN_A_NOTEBOOK);
+    await go(page, "/journal");
+    await page.waitForSelector("[data-journal-today]", { timeout: 30000 });
+    await wait(900);
+    await write(page);
+    await tap(page, tools(page).nth(MORE), "More");
+    await wait(400);
+    await tap(page, page.locator("[data-page-more-props]"), "Add to a notebook");
+    await wait(600);
+  },
+  { at: "/florilegium", ready: "main h1, [data-route-content] h1" },
+);
+
+await shot(
+  "19-gathering-320",
+  "a gathering on a 320px phone: a line's three things to do go under its source, every name whole",
+  "[data-gathering-page]",
+  async (page) => {
+    await gatheringWithPages(page);
+    await page.setViewportSize({ width: 320, height: 700 });
+    await wait(700);
+    await page.locator("[data-gathered-line]").nth(1).evaluate((el) => el.scrollIntoView({ block: "start" }));
+    await wait(600);
+  },
+  { at: "/florilegium", ready: "main h1, [data-route-content] h1" },
+);
+
+// A reader whose Plus has lapsed (an export that sells Plus, SELLS_PLUS=1): what they wrote is theirs to open, and nothing new is begun.
+if (SELLS_PLUS) {
+  await shot(
+    "20-gathering-lapsed",
+    "a gathering for a reader whose Plus has lapsed: the pages they wrote are listed to open, with no way to write",
+    "[data-gathering-page]",
+    async (page) => {
+      await page.locator("[data-gathering-pages]").evaluate((el) => el.scrollIntoView({ block: "center" }));
+      await wait(700);
+    },
+    { set: lapsed(), at: `/florilegium/gathering?g=${LAPSED_ID}`, ready: "[data-gathering-pages]" },
+  );
+}
 
 // ── The walk ─────────────────────────────────────────────────────────────
 
@@ -960,6 +1114,425 @@ await flow("without Plus: nothing under Title opens the Plus sheet, and the note
   expectThat((await page.locator("[data-page-props-panel]").count()) === 0, "the notebook panel opened without Plus");
   expectThat((await dialogs(page)).length === 2, "the Plus sheet did not open");
 }, { reader: "free" });
+
+// ── Push 3: what waits is never lost (fact 17), and the Florilegium and the notebooks as one (note 19) ──
+
+const closeSheet = async (page) => {
+  await tap(page, page.locator("[role=dialog] button", { hasText: "Close" }).first(), "Close");
+  await wait(900);
+  expectThat((await page.locator("[data-journal-composer]").count()) === 0, "the sheet stayed open");
+};
+/** An entry in the list tapped, and its sheet at rest. */
+const openEntry = async (page, words) => {
+  const row = page.locator("[data-journal-entry]", { hasText: words }).first();
+  await row.evaluate((el) => el.scrollIntoView({ block: "center" }));
+  await wait(400);
+  await tap(page, row, `the entry "${words}"`);
+  await page.waitForSelector("[data-journal-title]", { state: "attached", timeout: 10000 });
+  await wait(1300);
+};
+const lastWords = (page) => page.locator("[data-page-text] textarea").last().inputValue();
+const byId = (list, id) => list.find((r) => r.id === id);
+
+// Before 2026-11-11: the entry opened took the half thought's place in the journal's one draft, and it was gone.
+await flow(
+  "what waits: half a thought is written and closed, an older entry is opened, and the half thought is kept as a page with nothing else changed",
+  async (page) => {
+    await write(page);
+    await page.keyboard.type(HALF_THOUGHT);
+    await wait(600);
+    await closeSheet(page);
+    expectThat((await writeSays(page)) === "Continue writing", `the button says "${await writeSays(page)}"`);
+    expectThat((await records(page)).length === 2, "Close kept a page no one asked to keep");
+    await openEntry(page, "Words kept last week.");
+    expectThat((await page.locator("[data-journal-title]").inputValue()) === "An older page", "the older entry did not open");
+    const list = await records(page);
+    expectThat(list.length === 3 && list[0].body === HALF_THOUGHT, `the half thought was not kept: ${JSON.stringify(list.map((r) => r.body))}`);
+    expectThat(byId(list, OLDER.id).updatedAt === OLDER.updatedAt && byId(list, OTHER.id).updatedAt === OTHER.updatedAt, "a page that was not touched took a new date");
+    await closeSheet(page);
+    // It is in the list, first under today, as Done would have kept it.
+    expectThat((await page.locator("[data-journal-entry]").first().innerText()).includes(HALF_THOUGHT), "the half thought is not in the list");
+    // The older entry was only read: it does not wait, and Write is Write.
+    expectThat((await writeSays(page)) === "Write" && (await waiting(page)) === null, `after reading an entry the button says "${await writeSays(page)}"`);
+    expectThat((await records(page)).length === 3, "reading an entry made a copy");
+  },
+  { set: kept(OLDER, OTHER) },
+);
+
+// Before 2026-11-11: an entry read and closed waited; Write said "Continue writing" and opened that entry again.
+await flow(
+  "what waits: an entry opened to be read and closed does not wait: Write begins a new page, and no copy or new date is made",
+  async (page) => {
+    const before = JSON.stringify(await records(page));
+    await openEntry(page, "Words kept last week.");
+    await closeSheet(page);
+    expectThat((await writeSays(page)) === "Write", `the button says "${await writeSays(page)}"`);
+    expectThat((await waiting(page)) === null, "a page that was only read waits");
+    expectThat(JSON.stringify(await records(page)) === before, "reading an entry changed the list");
+    await write(page);
+    expectThat((await page.locator("[data-journal-title]").inputValue()) === "" && (await lastWords(page)) === "", "Write opened the entry that was read");
+    // Nothing written: nothing waits, and nothing is kept.
+    await closeSheet(page);
+    expectThat((await writeSays(page)) === "Write" && (await waiting(page)) === null, "an empty page waits");
+    await openEntry(page, "Another page, kept before.");
+    await closeSheet(page);
+    expectThat(JSON.stringify(await records(page)) === before, "an empty page was kept, or a date changed");
+  },
+  { set: kept(OLDER, OTHER) },
+);
+
+await flow(
+  "what waits: an entry changed and closed goes on when it is opened again, and when another is opened it is changed once, in place",
+  async (page) => {
+    await openEntry(page, "Words kept last week.");
+    await page.keyboard.type(" And a line more.");
+    await wait(600);
+    await closeSheet(page);
+    expectThat((await writeSays(page)) === "Continue writing", `the button says "${await writeSays(page)}"`);
+    expectThat(byId(await records(page), OLDER.id).body === OLDER.body, "Close changed the kept entry");
+    // The same page: it goes on with what waits.
+    await openEntry(page, "Words kept last week.");
+    expectThat((await lastWords(page)) === "Words kept last week. And a line more.", `opened again it reads "${await lastWords(page)}"`);
+    expectThat(byId(await records(page), OLDER.id).body === OLDER.body, "opening the same page kept it early");
+    await closeSheet(page);
+    // Another page: what waits is kept first, as Done keeps it.
+    await openEntry(page, "Another page, kept before.");
+    const list = await records(page);
+    const older = byId(list, OLDER.id);
+    expectThat(list.length === 2, `${list.length} pages: a copy was made`);
+    expectThat(older.body === "# An older page\n\nWords kept last week. And a line more.", `kept as ${JSON.stringify(older.body)}`);
+    expectThat(older.createdAt === OLDER.createdAt && Date.parse(older.updatedAt) > Date.parse(OLDER.updatedAt), "its first date changed, or its change was not dated");
+    expectThat(byId(list, OTHER.id).updatedAt === OTHER.updatedAt, "the entry opened took a new date");
+    expectThat((await lastWords(page)) === "Another page, kept before.", "the entry asked for did not open");
+    await closeSheet(page);
+    expectThat((await writeSays(page)) === "Write", `after it the button says "${await writeSays(page)}"`);
+  },
+  { set: kept(OLDER, OTHER) },
+);
+
+// Before 2026-11-11: Continue writing then opened the removed entry, and Done put the words on it, where no one saw them again.
+await flow(
+  "what waits: an entry taken away takes its waiting changes with it; Write is Write again, and Undo brings back what was written",
+  async (page) => {
+    await openEntry(page, "Words kept last week.");
+    await page.keyboard.type(" And a line more.");
+    await wait(600);
+    await closeSheet(page);
+    expectThat((await writeSays(page)) === "Continue writing", `the button says "${await writeSays(page)}"`);
+    const row = page.locator("[data-journal-entry]", { hasText: "Words kept last week." }).first();
+    await row.evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await wait(400);
+    const box = await row.boundingBox();
+    await pull(page, box.x + box.width - 60, box.y + box.height / 2, -240, 0);
+    await page.waitForSelector("[data-undo-bar]", { timeout: 8000 });
+    await wait(500);
+    const gone = byId(await records(page), OLDER.id);
+    expectThat(!!gone.deletedAt, "the swipe did not take the entry away");
+    expectThat(gone.body.endsWith("And a line more."), "what was written was not kept on the entry before it went");
+    expectThat((await waiting(page)) === null, "a page that is gone still waits");
+    await tap(page, page.locator("[data-undo-bar] button").first(), "Undo");
+    await wait(900);
+    const back = byId(await records(page), OLDER.id);
+    expectThat(!back.deletedAt && back.body.endsWith("And a line more."), "Undo did not bring back what was written");
+    expectThat((await page.locator("[data-journal-entry]", { hasText: "And a line more." }).count()) === 1, "the entry is not in the list again");
+    // Undo's bar has gone; the button is the journal's own again, and it begins a new page.
+    await page.locator("[data-journal-write]").last().waitFor({ state: "visible", timeout: 15000 });
+    expectThat((await writeSays(page)) === "Write", `the button says "${await writeSays(page)}"`);
+  },
+  { set: kept(OLDER, OTHER) },
+);
+
+const onGathering = async (page) => {
+  await page.waitForFunction(() => location.pathname.replace(/\/$/, "") === "/florilegium/gathering", null, { timeout: 15000 });
+  await page.waitForSelector("[data-gathering-page]", { timeout: 15000 });
+  await wait(1000);
+};
+/** From a gathering to the journal, with the writing sheet at rest. */
+const sheetFromGathering = async (page) => {
+  await page.waitForFunction(() => location.pathname.replace(/\/$/, "") === "/journal", null, { timeout: 15000 });
+  await page.waitForSelector("[data-journal-title]", { state: "attached", timeout: 15000 });
+  await wait(1500);
+};
+const FLOR = { at: "/florilegium", ready: "main h1, [data-route-content] h1", reader: "plus" };
+
+await flow(
+  "a gathering: Write in this gathering begins a page there; kept, it stands in the journal and under the gathering's lines, and its row opens it again",
+  async (page) => {
+    const g = await gatheringWithPages(page);
+    const rowsBefore = await page.locator("[data-gathering-page-row]").count();
+    expectThat(rowsBefore === 2, `${rowsBefore} pages listed`);
+    expectThat((await page.locator("#gathering-pages").innerText()).trim() === "Your pages", "the part is not named");
+    const begin = page.locator("[data-gathering-write]");
+    await begin.evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await wait(500);
+    expectThat((await begin.innerText()).trim() === "Write in this gathering" && (await begin.boundingBox()).height >= 44, "the way to write is not there, or is under 44px");
+    await tap(page, begin, "Write in this gathering");
+    await sheetFromGathering(page);
+    expectThat((await page.locator("[data-page-props]").innerText()).trim() === g.title, `the page's notebook line says "${await page.locator("[data-page-props]").innerText()}"`);
+    expectThat((await cursor(page)) === "the words", `the cursor is in ${await cursor(page)}`);
+    await page.keyboard.type("Read again tonight.");
+    await wait(400);
+    await tap(page, page.locator("[data-journal-done]"), "Done");
+    await wait(900);
+    const first = page.locator("[data-journal-entry]").first();
+    expectThat((await first.innerText()).includes("Read again tonight.") && (await first.innerText()).includes(g.title), "the page is not in the journal's list under its notebook");
+    expectThat((await records(page))[0].body === `[[notebook ${g.title}]]\n\nRead again tonight.`, `kept as ${JSON.stringify((await records(page))[0].body)}`);
+    // Back, as a reader goes back: the gathering, where they were, with the new page first.
+    await page.goBack();
+    await onGathering(page);
+    const rows = page.locator("[data-gathering-page-row]");
+    expectThat((await rows.count()) === 3 && (await rows.first().innerText()).includes("Read again tonight."), "the new page is not first under the gathering's lines");
+    await rows.first().evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await wait(500);
+    await tap(page, rows.first(), "the page's row");
+    await sheetFromGathering(page);
+    expectThat((await lastWords(page)) === "Read again tonight.", "the row did not open its page");
+    await closeSheet(page);
+    expectThat((await writeSays(page)) === "Write", `a page that was only read waits: "${await writeSays(page)}"`);
+  },
+  FLOR,
+);
+
+await flow(
+  "a gathering: closed with nothing written, a page begun there is no page, and nothing waits",
+  async (page) => {
+    await gatheringWithPages(page);
+    const begin = page.locator("[data-gathering-write]");
+    await begin.evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await wait(500);
+    await tap(page, begin, "Write in this gathering");
+    await sheetFromGathering(page);
+    expectThat(await page.locator("[data-journal-done]").isDisabled(), "Done is lit on a page with nothing on it");
+    await closeSheet(page);
+    expectThat((await writeSays(page)) === "Write" && (await waiting(page)) === null, `an empty page waits: "${await writeSays(page)}"`);
+    expectThat((await records(page)).length === 2, "an empty page was kept");
+  },
+  FLOR,
+);
+
+await flow(
+  "a gathering: a line's Write a page lays that line as the page's card, once, and a second line joins it on the same page",
+  async (page) => {
+    const g = await gatheringWithPages(page);
+    const line = (n) => page.locator("[data-gathered-line]").nth(n);
+    const writeFrom = async (n) => {
+      await line(n).evaluate((el) => el.scrollIntoView({ block: "center" }));
+      await wait(500);
+      const where = (await line(n).locator("a").first().innerText()).trim();
+      await tap(page, line(n).locator("[data-gathered-write]"), "Write a page");
+      await sheetFromGathering(page);
+      return where;
+    };
+    const first = await writeFrom(0);
+    expectThat((await page.locator("[data-page-verse-place]").count()) === 1 && (await page.locator("[data-page-verse-place]").innerText()).trim() === first, `the card is not the line (${first})`);
+    expectThat((await page.locator("[data-page-props]").innerText()).trim() === g.title, "the page is not in the gathering");
+    expectThat((await cursor(page)) === "the words", `the cursor is in ${await cursor(page)}`);
+    // A card alone is something: the page waits.
+    await closeSheet(page);
+    expectThat((await writeSays(page)) === "Continue writing", `the button says "${await writeSays(page)}"`);
+    await page.goBack();
+    await onGathering(page);
+    // The same line again: the page goes on, with one card.
+    await writeFrom(0);
+    expectThat((await page.locator("[data-page-verse-place]").count()) === 1, `${await page.locator("[data-page-verse-place]").count()} cards for one line`);
+    await closeSheet(page);
+    await page.goBack();
+    await onGathering(page);
+    const second = await writeFrom(1);
+    const places = (await page.locator("[data-page-verse-place]").allInnerTexts()).map((x) => x.trim());
+    expectThat(places.length === 2 && places[0] === first && places[1] === second, `the page holds ${places.join(", ")}`);
+    expectThat((await records(page)).length === 2, "a page was kept before Done");
+  },
+  FLOR,
+);
+
+await flow(
+  "a gathering: a page that waits from elsewhere is kept before a page begins here, and the new page is the gathering's alone",
+  async (page) => {
+    const g = await gatheringWithPages(page);
+    const begin = page.locator("[data-gathering-write]");
+    await begin.evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await wait(500);
+    await tap(page, begin, "Write in this gathering");
+    await sheetFromGathering(page);
+    const list = await records(page);
+    expectThat(list.length === 3 && list[0].body === HALF_THOUGHT, `the page that waited was not kept: ${JSON.stringify(list.map((r) => r.body.slice(0, 30)))}`);
+    expectThat((await page.locator("[data-journal-title]").inputValue()) === "" && (await lastWords(page)) === "", "the new page carries the words that waited");
+    expectThat((await page.locator("[data-page-props]").innerText()).trim() === g.title, "the new page is not in the gathering");
+  },
+  { ...FLOR, set: draft(HALF_THOUGHT) },
+);
+
+await flow(
+  "the journal: a gathering's notebook wears the flower; chosen, one line says how many lines it keeps and opens it, and Back returns",
+  async (page) => {
+    const g = await gatheringWithPages(page);
+    await page.evaluate((r) => {
+      localStorage.setItem("purify:journal", JSON.stringify([...JSON.parse(localStorage.getItem("purify:journal") ?? "[]"), r]));
+      window.dispatchEvent(new Event("purify:journal"));
+    }, IN_A_NOTEBOOK);
+    await go(page, "/journal");
+    await page.waitForSelector("[data-journal-today]", { timeout: 30000 });
+    await wait(900);
+    const chips = await page.locator("[data-journal-notebook]").evaluateAll((els) => els.map((el) => `${el.getAttribute("data-journal-notebook")}: ${el.textContent.trim()}`));
+    expectThat(chips.join(" | ") === `notebook: Advent 2026 | gathering: ${g.title}`, `the notebooks are ${chips.join(" | ")}`);
+    // Each name on one line in its chip, however many chips the row scrolls (it stood on three lines until 2026-11-11).
+    const pills = await page.locator("button:has([data-journal-notebook])").evaluateAll((els) => els.map((el) => ({ name: el.textContent.trim(), h: el.getBoundingClientRect().height, w: el.getBoundingClientRect().width })));
+    expectThat(pills.every((c) => c.h <= 40 && c.w > 90), `a notebook's chip is squeezed: ${pills.map((c) => `${c.name} ${Math.round(c.w)} by ${Math.round(c.h)}`).join(", ")}`);
+    expectThat((await page.locator("[data-journal-gathering]").count()) === 0, "the line stands with no notebook chosen");
+    const chip = page.locator('[data-journal-notebook="gathering"]').first();
+    await chip.evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await wait(500);
+    await tap(page, chip, "the gathering's chip");
+    await wait(700);
+    const line = page.locator("[data-journal-gathering]");
+    expectThat((await line.count()) === 1, "the line to the gathering is not there");
+    expectThat((await line.innerText()).replace(/\s+/g, " ").trim() === `${g.title} · ${STARTER.lines.length} lines`, `the line says "${(await line.innerText()).replace(/\s+/g, " ").trim()}"`);
+    expectThat((await line.boundingBox()).height >= 44, "the line is under 44px");
+    expectThat((await page.locator("[data-journal-entry]").count()) === 2, `${await page.locator("[data-journal-entry]").count()} pages shown for the gathering`);
+    // An ordinary notebook has no such line.
+    await tap(page, page.locator('[data-journal-notebook="notebook"]').first(), "the notebook's chip");
+    await wait(600);
+    expectThat((await page.locator("[data-journal-gathering]").count()) === 0, "a notebook that is no gathering leads to one");
+    await tap(page, chip, "the gathering's chip");
+    await wait(600);
+    await line.evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await wait(400);
+    await tap(page, line, "the line to the gathering");
+    await onGathering(page);
+    expectThat((await page.evaluate(() => new URLSearchParams(location.search).get("g"))) === g.id, "it opened another gathering");
+    await page.goBack();
+    await page.waitForFunction(() => location.pathname.replace(/\/$/, "") === "/journal", null, { timeout: 15000 });
+    await page.waitForSelector("[data-journal-today]", { timeout: 15000 });
+  },
+  FLOR,
+);
+
+await flow(
+  "a page's notebook: the reader's gatherings are offered first, with the flower, and one tapped puts the page in it",
+  async (page) => {
+    const g = await gatheringWithPages(page);
+    await page.evaluate((r) => {
+      localStorage.setItem("purify:journal", JSON.stringify([...JSON.parse(localStorage.getItem("purify:journal") ?? "[]"), r]));
+      window.dispatchEvent(new Event("purify:journal"));
+    }, IN_A_NOTEBOOK);
+    await go(page, "/journal");
+    await page.waitForSelector("[data-journal-today]", { timeout: 30000 });
+    await wait(900);
+    await write(page);
+    await tap(page, tools(page).nth(MORE), "More");
+    await wait(400);
+    await tap(page, page.locator("[data-page-more-props]"), "Add to a notebook");
+    await wait(600);
+    const offered = await page.locator("[data-page-notebook-choice]").evaluateAll((els) =>
+      els.map((el) => ({ kind: el.getAttribute("data-page-notebook-choice"), name: el.textContent.trim(), h: el.getBoundingClientRect().height, icon: el.querySelectorAll("svg").length })),
+    );
+    expectThat(offered.map((o) => `${o.kind}: ${o.name}`).join(" | ") === `gathering: ${g.title} | notebook: Advent 2026`, `offered ${offered.map((o) => `${o.kind}: ${o.name}`).join(" | ")}`);
+    expectThat(offered.every((o) => o.h >= 44 && o.icon === 1), "a choice is under 44px or wears no mark");
+    await tap(page, page.locator('[data-page-notebook-choice="gathering"]').first(), "the gathering");
+    await wait(500);
+    expectThat((await page.locator("[data-page-props]").innerText()).trim() === g.title, `the page's notebook line says "${await page.locator("[data-page-props]").innerText()}"`);
+    // The one the page is in is no longer offered; the way out of it is.
+    const after = await page.locator("[data-page-notebook-choice]").allInnerTexts();
+    expectThat(after.map((x) => x.trim()).join(" | ") === "Advent 2026", `once chosen, offered ${after.join(" | ")}`);
+  },
+  FLOR,
+);
+
+// The arbiter's first check: at 320 the line's row keeps every name whole and 44px, wrapping if it must.
+await flow(
+  "a gathering at 320px: each line's row keeps every name whole and 44px, wraps under its source, and nothing runs off the screen",
+  async (page) => {
+    await gatheringWithPages(page);
+    await page.setViewportSize({ width: 320, height: 700 });
+    await wait(900);
+    const lines = await page.locator("[data-gathered-line]").evaluateAll((els) =>
+      els.map((el) => {
+        const source = el.querySelector("a").getBoundingClientRect();
+        const tools = [...el.querySelectorAll("[data-gathered-tools] button")].map((b) => {
+          const r = b.getBoundingClientRect();
+          return { name: b.textContent.trim(), w: r.width, h: r.height, x: r.x, right: r.right, y: r.y, cut: b.scrollWidth > b.clientWidth + 1 || b.scrollHeight > b.clientHeight + 1, lines: Math.round(r.height / 44) };
+        });
+        return { source: { bottom: source.bottom, h: source.height }, tools };
+      }),
+    );
+    expectThat(lines.length >= 3, `${lines.length} lines`);
+    for (const l of lines) {
+      expectThat(l.tools.map((t) => t.name).join(", ") === "Add note, Write a page, Remove", `a line offers ${l.tools.map((t) => t.name).join(", ")}`);
+      for (const t of l.tools) {
+        expectThat(t.h >= 44 && t.w >= 44, `${t.name} is ${Math.round(t.w)} by ${Math.round(t.h)}`);
+        expectThat(!t.cut, `${t.name} is cut`);
+        expectThat(t.x >= 0 && t.right <= 320.5, `${t.name} runs off the screen (${Math.round(t.x)} to ${Math.round(t.right)})`);
+      }
+      // One line of three, each name on one line.
+      expectThat(new Set(l.tools.map((t) => Math.round(t.y))).size === 1 && l.tools.every((t) => t.h < 60), "the three are not on one line, or a name is broken in two");
+      expectThat(l.source.h >= 44, "the source is under 44px");
+    }
+    expectThat((await page.evaluate(() => document.documentElement.scrollWidth)) <= 320, `the page is ${await page.evaluate(() => document.documentElement.scrollWidth)}px wide`);
+    // The pages' part too.
+    const part = await page.locator("[data-gathering-pages] button").evaluateAll((els) => els.map((b) => ({ h: b.getBoundingClientRect().height, right: b.getBoundingClientRect().right })));
+    expectThat(part.length === 3 && part.every((b) => b.h >= 44 && b.right <= 320.5), "a row of the pages' part is under 44px or off the screen");
+    // And every written rule of the mockup checker, at this width.
+    const check = await checkMock(page, "[data-gathering-page]");
+    expectThat(printMockCheck(check, "a gathering at 320px"), "the mockup checker fails it at 320px");
+  },
+  FLOR,
+);
+
+// The arbiter's second check: a reader who never had Plus sees the Florilegium as today.
+await flow(
+  "without Plus: the Florilegium is the Plus card as before, with no pages part and no way to write offered",
+  async (page) => {
+    expectThat((await page.locator("[data-plus-gate]").count()) === 1, "the Plus card is not there");
+    for (const absent of ["[data-gathering-pages]", "[data-gathering-write]", "[data-gathered-write]", "[data-florilegium-hub]", "[data-florilegium-read-only]"]) {
+      expectThat((await page.locator(absent).count()) === 0, `${absent} is shown to a reader with no Plus`);
+    }
+    // The journal's own door to notebooks is the one it had: More's row with the Plus mark. No gathering is offered, and no new words.
+    await go(page, "/journal");
+    await page.waitForSelector("[data-journal-today]", { timeout: 30000 });
+    await wait(900);
+    expectThat((await page.locator("[data-journal-notebook], [data-journal-gathering]").count()) === 0, "a notebook or a gathering is shown in an empty journal");
+    await write(page);
+    await tap(page, tools(page).nth(MORE), "More");
+    await wait(400);
+    await tap(page, page.locator("[data-page-more-props]"), "Add to a notebook");
+    await wait(900);
+    expectThat((await page.locator("[data-page-notebook-choice]").count()) === 0 && (await dialogs(page)).length === 2, "the notebook choice opened without Plus");
+  },
+  { at: "/florilegium", ready: "[data-plus-gate]", reader: "free" },
+);
+
+await flow(
+  "Plus lapsed: a kept gathering's pages are listed to open, with no way to write here; a row opens its page in the journal",
+  async (page) => {
+    expectThat((await page.locator("[data-florilegium-read-only] [data-gathering-page]").count()) === 1 && (await page.locator("[data-plus-gate]").count()) === 1, "the gathering to read and the Plus card are not both there");
+    expectThat((await page.locator("[data-gathering-page-row]").count()) === 2, `${await page.locator("[data-gathering-page-row]").count()} pages listed`);
+    for (const absent of ["[data-gathering-write]", "[data-gathered-write]", "[data-gathered-tools]", "[data-gathering-tools]"]) {
+      expectThat((await page.locator(absent).count()) === 0, `${absent} is offered to a reader whose Plus has lapsed`);
+    }
+    const row = page.locator("[data-gathering-page-row]").first();
+    await row.evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await wait(500);
+    expectThat((await row.boundingBox()).height >= 44, "a page's row is under 44px");
+    await tap(page, row, "the page's row");
+    await sheetFromGathering(page);
+    expectThat((await page.locator("[data-journal-title]").inputValue()) === "In the beginning", "the row did not open its page");
+    // What they wrote is theirs to read and change; its notebook line wears the Plus mark, as before.
+    expectThat((await page.locator("[data-page-props]").innerText()).replace(/\s+/g, " ").trim() === `${STARTER_NAME} Purify Plus`, `the notebook line says "${(await page.locator("[data-page-props]").innerText()).replace(/\s+/g, " ").trim()}"`);
+  },
+  { set: lapsed(), at: `/florilegium/gathering?g=${LAPSED_ID}`, ready: "[data-gathering-pages]", reader: "free" },
+);
+
+await flow(
+  "Plus lapsed, nothing written in the gathering: no pages part stands there at all",
+  async (page) => {
+    expectThat((await page.locator("[data-gathered-line]").count()) === STARTER.lines.length, "the gathering's lines are not all there to read");
+    for (const absent of ["[data-gathering-pages]", "[data-gathering-write]", "[data-gathered-write]"]) {
+      expectThat((await page.locator(absent).count()) === 0, `${absent} is shown with nothing written`);
+    }
+  },
+  { set: lapsed({ pages: false }), at: `/florilegium/gathering?g=${LAPSED_ID}`, ready: "[data-florilegium-read-only] [data-gathering-page]", reader: "free" },
+);
 
 if (WALK) {
   for (const l of left) console.log(`left  ${l}`);
