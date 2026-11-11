@@ -217,9 +217,19 @@ the texts cannot settle where (Exodus 36 to 38, Job 16 and 35, Jeremiah 25
 and 34, Ezekiel 7): left out rather than shown wrong. The Plus screen's
 Compare preview shows it beside the others at its Psalm 51:1.
 
-**Still open:** the GPL asks that its terms travel with the text. The source
-line names the licence; a link to its text (gnu.org/licenses/gpl) from the
-credits is not there yet, and is for him to decide with the credits page.
+**The licence travels with the text** (the arbiter's word of 2026-11-11:
+"compliance, not a choice for him"; `daf3db594`). The module names the GPL
+without a version ("DistributionLicense=GPL"), and the licence says that any
+version may then be chosen: Purify follows version 3. `/credits/gpl/` gives
+it in full, gnu.org's file byte for byte (`data/licenses/gpl-3.0.txt`, held
+to its hash by `lib/credits/__tests__/gpl.test.ts`), its lines joined into
+paragraphs for a phone and not a word changed, with a short line in the
+reader's language and where Purify's converted copy and the scripts that
+made it can be had (the public repository: `public/bibles/pt-almeida-1911`,
+`scripts/bibles`). The Almeida's line under each chapter links to it ("The
+licence in full", 44px). Static, so the apps carry it: walked on the export
+with no signal, in English and in Arabic, and `scripts/guardrail-walk.mjs`
+passes it. Still: `notes/build-93/gpl-almeida-offline-390.png`.
 
 ## What shipped (2026-11-11): the Hebrew beside the Old Testament
 
