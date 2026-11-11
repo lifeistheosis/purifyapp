@@ -53,6 +53,46 @@ Who has it:
   reader left it (here, the top of Nicaea's page), on every page with a way
   back, with a test.
 
+Done, St Alexander and the faces (Updates 2, 2026-11-11, `342ad7c38`):
+
+- **St Alexander is on the plate, the same everywhere.** No public-domain icon
+  of him was found: Commons holds an 1899 Hungarian book illustration of him
+  (an engraving, not an icon) and no fresco or panel; his feast (May 29) falls
+  outside the surviving volume of the Menologion of Basil II. His unsourced
+  icon is off his page, his calendar brief and the rights debt. His page shows
+  his name with no picture, and the plate is his face at Nicaea (the round and
+  the card), on his card in the saints' list and beside his words on the
+  Trinity's page. He is on note 12's list of plates to look at again.
+- **Never an empty circle, never a letter.** Every frame the app draws a
+  saint's face in now stands on the house's plate with its lit cross
+  (`FacePlate`, `components/ui/CrossPlate.tsx`), and his cleared picture,
+  where there is one, comes over it; with no signal, a picture that cannot
+  come leaves the plate. Where it had been an empty round or a letter: the
+  councils' Fathers, Today's saint window, Theology's rounds, its shelf of
+  Fathers and a passage card with no portrait (his initial), the saints' cards
+  and the calendar's icon panel (an empty halo over initials: St Thomas's "HA"
+  in note 12's screenshot), the Bible commentary's author chips (initials) and
+  the shop's saint rounds (initials). The icon panel stays a dark island on
+  every palette, as the icon itself is (the owner, 1.8). The initials helpers
+  and their styles are gone.
+- **Held by** `lib/ui/__tests__/facePlate.test.ts` (each face with no picture
+  is the plate, with no letter or halo; each with a picture has the plate
+  under it; every component that draws a framed face stands it on the plate or
+  says why it draws no frame; each picture paints over its plate) and
+  `lib/councils/__tests__/fatherPlate.test.ts` (St Alexander at the First
+  Council). Both fail on the old faces, 7 of 7 and 4 of 4.
+- **On the export with no signal:** his round and his card at Nicaea are the
+  plate and its cross, and no round in that row is empty (5 of 6 with a
+  picture); his page names him with no picture and no empty round; his card in
+  the saints' list is the plate with no halo or initials; on the Trinity's
+  page his round is the plate, and none of its 12 rounds is empty or a letter;
+  no saint's icon was asked for and missing. `checkMock` on Nicaea's row and
+  on his card: every check passes. Still: `build-93/01-after-alexander-plate-offline-390.png`.
+- **For a later pass, not changed:** St Hosius's round at Nicaea wears the
+  19th-century painting his books wear, while his page is on the plate (the
+  arbiter's rule for him: an old icon, fresco or mosaic, or the plate). The
+  pair is in the record of covers and pages that differ (`notes/build-90.md`).
+
 ### 2. Easy Scroll on the prayers still fights the finger (2026-11-11 about 01:19 UTC)
 
 His words: "The smooth scroll on the prayers is still buggy. Like it when I try and scroll down, it scrolls back up. When I try and scroll down, it just keeps on scrolling, so it's still buggy. And I guess it's just not refined for like UX experience"
@@ -162,6 +202,30 @@ His new word is the goal: no saint on the plate. Who has what:
 - The December chat: the four martyrs take a detail of their own icon that shows the saints and not the killing (both of his words kept: an icon for every saint, and no killing on a first picture).
 - Admin, from Updates 2's list: a short letter per painter or monastery asking written permission to show that icon in the app and on the website with their credit, for him to send himself; a fee, if asked, comes to him.
 - Until a permission arrives in writing, that saint keeps the plate (his rule of 2026-11-10 stands for modern icons).
+
+Begun (Updates 2, 2026-11-11, `a1b987d18`):
+
+- **Four saints off the plate,** St Thomas first, each cut from the picture his
+  books already wear (`lib/reading/authorCovers.ts`, its rights recorded
+  there), as the seventeen of 2026-11-10 were: the Apostle Thomas (Konstantinos
+  Tzanes's signed icon, 1670), St Gregory the Dialogist (a Cretan icon of the
+  later 17th century, Savvathiana monastery), St Meletius of Antioch (the
+  fresco at Staro Nagoričane, 1317) and St Jerome (El Greco, about 1610, by
+  the arbiter's rule for the Western Fathers: the oldest image first,
+  otherwise the painting his books wear). St Gregory's and St Jerome's also
+  stand beside their commentary in the Bible (1,180 and 851 notes). On the
+  export with no signal each card in the saints' list and each page wears its
+  icon over the plate. Still: `build-93/12-after-four-icons-offline-390.png`.
+- **Where it stands after December's push 2b:** 58 of the 248 saints' pages
+  have no picture. The November and December saints among them are the
+  November and December chat's; the rest (St Symeon the New Theologian, St
+  Mark of Ephesus, St Hosius, St Theodosius, St Alexander, St Papias, St
+  Isidora, St Theophylact, St Adrian, St Xenia, St Paisius Velichkovsky, the
+  Western Fathers St Bede, St Hilary, St Victorinus, St Isidore and St Peter
+  Chrysologus, and the modern saints) are looked at again by Updates 2 at
+  Commons' pace, and the list for Admin's letters follows.
+- The debt of unsourced icons is 28 (St John of Shanghai's came off with
+  call 14), and its ceiling follows it down.
 
 ### 13. In a Father's work, highlight and quote any words, not only the whole paragraph (2026-11-11 about 01:37 UTC)
 
