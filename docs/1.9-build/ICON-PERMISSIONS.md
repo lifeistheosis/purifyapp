@@ -252,15 +252,21 @@ each).
 - **Made by:** not named for any icon at Samtavro. Tamuna Gochiashvili is
   named as painting icons of two saints with the blessing of Patriarch Ilia
   II (https://orthochristian.com/131345.html); no address for her is given.
-- **To write to:** not found. Samtavro Convent has no site that was found,
-  monkgabriel.ge lists no contact, and the Georgian Patriarchate's site
-  answered with nothing. The letter waits on an address.
+- **To write to:** not confirmed. Samtavro Convent has no site that was
+  found and monkgabriel.ge lists no contact. The Georgian Patriarchate's own
+  site, patriarchate.ge, answered with empty pages on two tries (its home
+  and its contact page). A travel directory gives "King Erecle II sqw. #1,
+  Tbilisi" for the Patriarchate (https://gtp.gr/TDirectoryDetails.asp?id=25133),
+  with an old email address; another site gives a different street. Neither
+  is the Patriarchate's own word, so the letter waits on an address read
+  from it. He stays on the plate by the owner's word on modern saints; the
+  portrait below is not asked for.
 - **For the letter:** in Georgian, or Russian or English.
 - **Not an icon, and not asked for:** a painting of him in oils (Andrey
   Mironov, 2020) is on Commons under CC BY-SA 4.0 with a permission ticket
   (https://commons.wikimedia.org/wiki/File:Gabriel_(Urgebadze)._A._Mironov.jpg).
-  It is free to use with its credit, but it is a modern portrait, not an
-  icon of the Church; whether it may stand for him is the owner's call.
+  It is a modern portrait under a share-alike licence, not an icon of the
+  Church, and is not used (the arbiter, 2026-11-11).
 - **A photograph:** Commons has one of about the 1960s marked CC0, from
   monkgabriel.ge, whose own page states no licence and no photographer. Its
   freedom is not shown, so it is not used.
@@ -325,8 +331,9 @@ docs/1.9-build/notes/voices-fable.md.
 
 The mother of the Holy Unmercenaries Cosmas and Damian (November 1).
 
-- **The icon:** not found. No icon of her with a named maker; the day's
-  pages at oca.org and imoph.org show only her sons.
+- **The icon:** not found. No icon of her with a named maker; oca.org has
+  an entry for her with no icon (read again 2026-11-11), and imoph.org's day
+  shows only her sons.
 - **An old picture, not shown to be hers:** an 11th-century mural of "Saint
   Theodota (Αγία Θεοδότη)" in the Byzantine and Christian Museum of Athens,
   inv. no. BXM 1371, photographed by George E. Koronaios in 2023 under CC
@@ -360,13 +367,26 @@ The mother of the Holy Unmercenaries Cosmas and Damian (November 1).
 
 ## St Nicander and Hermas
 
-- **The icon:** an icon of St Nicander alone, half-length, a bishop holding
-  a Gospel, captioned "Ὁ Ἅγιος Ἱερομάρτυς Νίκανδρος, Ἐπίσκοπος Μύρων"
-  (https://www.imoph.org/pdfs/IconologicalSynaxarion/11-November/04nov.pdf).
-  The picture oca.org shows for the two is the same file it shows for St
-  Nicander of Gorodensk on the same day, so it is not asked for.
-- **Made by:** not named.
-- **To write to:** not found (imoph.org, above).
+- **The icon:** the icon oca.org shows for the two on their day, uncaptioned;
+  its file is named for them
+  (https://images.oca.org/icons/lg/november/1104.nicander.hermas.jpg, on
+  https://www.oca.org/saints/all-lives/2025/11/04). The same page sets the
+  same file beside St Nicander of Gorodensk, an entry with no account of its
+  own, so look at it before the letter: it must show the bishop of Myra and
+  his presbyter. A second, of St Nicander alone, half-length, a bishop
+  holding a Gospel, captioned "Ὁ Ἅγιος Ἱερομάρτυς Νίκανδρος, Ἐπίσκοπος
+  Μύρων", is at
+  https://www.imoph.org/pdfs/IconologicalSynaxarion/11-November/04nov.pdf.
+- **Made by:** not named on either.
+- **To write to:** the Orthodox Church in America, whose site shows it: PO Box 31409,
+  Alexandria, VA 22310, United States; office 516-922-0550. Its contact page
+  has a "Permissions" line ("To obtain permission for reproduction: send a
+  request to" an address the page shows only in a browser) and says its
+  photographs and other resources "may not be reproduced without the
+  permission of The Orthodox Church in America" (https://www.oca.org/contact).
+  One letter to it can ask for all four of its icons named here (St Marcian,
+  these two, St Irenarchus, St Elias of Murom).
+- **For the letter:** in English. Ask who painted it.
 - **Refused:** the fresco of their martyrdom at Dionysiou Monastery, Mount
   Athos (1547, public domain, on Commons) shows the killing itself, the nail
   at the bishop's head; no part of it stands apart from the act.
@@ -377,7 +397,7 @@ The mother of the Holy Unmercenaries Cosmas and Damian (November 1).
   raised and a small building beside him, captioned "Ὁ Ὅσιος καὶ
   Θαυματουργὸς Λάζαρος, ὁ ἐν τῷ Γαλλησίῳ Ὄρει ἀσκήσας"
   (https://www.imoph.org/pdfs/IconologicalSynaxarion/11-November/07nov.pdf,
-  its second page). His page at oca.org has no icon.
+  its second page). His page at oca.org has no icon (read again 2026-11-11).
 - **Made by:** not named.
 - **To write to:** not found (imoph.org, above).
 - **Refused:** the only old picture on Commons is a 17th-century icon of the
@@ -386,20 +406,34 @@ The mother of the Holy Unmercenaries Cosmas and Damian (November 1).
 
 ## St Onesiphorus and Porphyrius
 
-- **An old picture, held for the arbiter's word:** the mosaic of the two in
-  the Rotunda of St George at Thessaloniki, 5th century, both standing with
-  their hands raised in prayer before a palace front; public domain
-  (https://commons.wikimedia.org/wiki/File:ThessHagGeorgOnesiphPorphMos.jpg).
-  It is their own picture and shows no death, but the only free file is 400
-  pixels wide: cut to the two, the saints are small and soft beside a wide
-  loss in the mosaic (docs/1.9-build/notes/build-93/pictures-onesiphorus-candidate.jpg,
-  enlarged three times to be judged). A larger free photograph of the same
-  mosaic would settle it.
-- **The icon, if the mosaic is not used:** two half-length figures holding
-  crosses, captioned "Οἱ Ἅγιοι Μάρτυρες Πορφύριος καὶ Ὀνησιφόρος"
-  (https://www.imoph.org/pdfs/IconologicalSynaxarion/11-November/09nov.pdf).
-- **Made by:** not named.
-- **To write to:** not found (imoph.org, above).
+- **The picture:** the mosaic of the two in the Rotunda of St George at
+  Thessaloniki, 5th century, both standing with their hands raised in prayer
+  before a palace front. It is their own picture and shows no death. The
+  only free file is 400 pixels wide
+  (https://commons.wikimedia.org/wiki/File:ThessHagGeorgOnesiphPorphMos.jpg):
+  cut to the two, the saints are small and soft beside a wide loss in the
+  mosaic (docs/1.9-build/notes/build-93/pictures-onesiphorus-candidate.jpg,
+  enlarged three times to be judged), and the arbiter's word of 2026-11-11
+  is that it is not used. What is asked for is a full-size photograph of
+  the same mosaic.
+- **Made by:** the mosaic is of the 5th century, its makers unknown.
+- **To write to:** the Ephorate of Antiquities of Thessaloniki City
+  (Εφορεία Αρχαιοτήτων Πόλης Θεσσαλονίκης), the service of the Greek Ministry
+  of Culture that keeps the Rotunda (the arbiter, 2026-11-11). Its office
+  address and email: not found on a page that would open (the Ministry's
+  page for the service refused the request, and its page for the monument
+  did not answer). The Rotunda's own telephones, as the city's map of its
+  UNESCO monuments gives them, are +30 2310 204868 and 2310 209545
+  (https://thessaloniki.gr/wp-content/uploads/2019/11/Unesco-Monuments-Map-GR-EN.pdf),
+  read from a search result and to be confirmed before use.
+- **For the letter:** in Greek. Ask for a photograph of the mosaic of Sts
+  Onesiphorus and Porphyrius and leave to show it; Greek law has its own
+  rules for pictures of monuments (docs/1.9-build/notes/pictures-heritage-law.md).
+- **A modern icon, second:** two half-length figures holding crosses,
+  captioned "Οἱ Ἅγιοι Μάρτυρες Πορφύριος καὶ Ὀνησιφόρος"
+  (https://www.imoph.org/pdfs/IconologicalSynaxarion/11-November/09nov.pdf),
+  unsigned, and no address for that Metropolis was found. oca.org's entry
+  for the two has no icon.
 - **Refused:** the fresco of their martyrdom at Dionysiou Monastery (1547,
   on Commons) is the martyrdom itself.
 
@@ -407,7 +441,8 @@ The mother of the Holy Unmercenaries Cosmas and Damian (November 1).
 
 - **The icon:** not found. The one picture met with their names, on a blog,
   is a file named for St Romanus, and no page with a maker shows them;
-  oca.org's page has no icon and imoph.org's day does not list them.
+  oca.org's entry for the day has no icon (read again 2026-11-11) and
+  imoph.org's day does not list them.
 - **Made by:** nothing to name.
 - **To write to:** not found. There is no letter to write until an icon of
   them is found.
