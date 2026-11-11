@@ -148,3 +148,17 @@ His words: "Allow you to switch the learn the verse whenever you want. Also allo
 Screenshot: `build-93/11-learn-by-heart.png` (You: "A verse you kept", Isaiah 53:5, Learn by heart and Share; `components/you/KeptVerse.tsx`, `components/you/PractiseSheet.tsx`, `components/today/RememberCard.tsx`).
 
 Who has it: Fable Theology, after the Back fix (note 1), since it holds the Fathers' words to their editions. What it asks: the reader chooses what they learn and changes it whenever they like: a verse (any kept verse, or any verse), a quote (the Fathers' and the councils' words the app carries, each with its author, work and place), or their own words (a verse or a quote typed in, shown as theirs). The editorial line holds: a "popular quote" is offered as a Father's only when the app's own "Who said it" finds it in a text we carry (`lib/quotes/find.ts`), with the book's own words and place; a line it cannot find may still be learned, as the reader's own text, never under a saint's name by us. Under his standing rules (minimal, photos over words, no sparkle, 44px, the house's motion, checkMock). Plan and time to the arbiter first.
+
+### 12. Every saint has an icon (2026-11-11 about 01:35 UTC)
+
+His words: "Ensure every single saint has a icon photo."
+
+Screenshot: `build-93/12-thomas-on-the-plate.png`: the saints' list, the Holy Apostle Thomas on the plate ("HA").
+
+Where it stands: 30 saints have no sourced picture (`notes/build-90.md`, the icons record): St Thomas among the nine copied files taken off (2026-11-10); St Mark of Ephesus, St Symeon the New Theologian, St Hosius, St Theodosius with no old icon that passes; seven modern saints on the plate by his word of 2026-11-10, "modern saints on the plate until a painter or monastery gives written permission" (St Paisios, St Porphyrios, St Silouan, St Justin Popović, St Cleopas, St Sofian, St Dumitru Stăniloae); and December's four whose only icons show their deaths (call 30, quiet or plate).
+
+His new word is the goal: no saint on the plate. Who has what:
+- Updates 2: every saint with an old public-domain icon anywhere gets it, every plate looked at again, St Thomas first (an apostle, painted on every iconostasis), at Commons' pace; then the list of saints left with no public-domain icon, each with the best modern icon found, its painter or monastery, and where they can be written to.
+- The December chat: the four martyrs take a detail of their own icon that shows the saints and not the killing (both of his words kept: an icon for every saint, and no killing on a first picture).
+- Admin, from Updates 2's list: a short letter per painter or monastery asking written permission to show that icon in the app and on the website with their credit, for him to send himself; a fee, if asked, comes to him.
+- Until a permission arrives in writing, that saint keeps the plate (his rule of 2026-11-10 stands for modern icons).

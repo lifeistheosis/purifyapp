@@ -2,6 +2,8 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
+**Every saint has an icon (his word, 2026-11-11 about 01:35 UTC, build 93 note 12, a screenshot of St Thomas on the plate):** "Ensure every single saint has a icon photo." The goal is no saint on the plate; modern icons still need a painter's or monastery's written permission (his word of 2026-11-10), so those wait for letters he sends (`notes/build-93.md`, note 12).
+
 **The tithe on Support this work (his word, 2026-11-11 about 01:34 UTC, answering the arbiter's question):** "editing the settings. Well, you don't have to be too specific on the percentages. Just make it clear that, like, where the profits are going. A couple of minutes, it's going to" (the message ends there). No percentage, no named parish (`notes/build-93.md`, note 10).
 
 **Build 93, note 11 (his word, 2026-11-11 about 01:32 UTC, a screenshot of You's "A verse you kept"):** "Allow you to switch the learn the verse whenever you want. Also allow a learn the quote. And for this example, so it's not just scripture based, it could be realistically any of the quotes that are popular, or maybe they want to pick a custom quote, allow them to do that, or a custom verse." (`notes/build-93.md`, note 11).
