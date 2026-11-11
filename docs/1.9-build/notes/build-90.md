@@ -592,3 +592,32 @@ The arbiter's order of 2026-11-10: "(a) the rail's 518 Cyril notes to the verse 
 - **Left:** Book 11's Chapter I heading, which would stand alone on a page; the transcription's headers, the tables of chapters and "[Introduction]", which are not his words. Holy Week's reading still begins at the trial before Pilate (1017).
 - **Held by** `lib/saints/__tests__/cyrilJohnPlaces.test.ts`: every note whole in the section it links, every note on its passage or inside it, the Preface on 1:1, the openings, their numbers and the rail's copies; each check fails on the old rail or the old work. **On the export,** walk section 62: Book 1's Preface from its first words, Book 12 opening on John 18:24 with its first paragraphs, the Preface's four notes on 1:1 and none on 12:35, and the rail's copy of Book 6's opening carried from its first character; sections 1, 12 and 35 as before.
 - **Then, on the arbiter's word** ("they are his words restored, not new matter"), the four restored sections stand on the rail too (`16f2d4e64`): Book 2's opening on John 1:29, Book 3's Preface on 5:34, Book 4's on 6:38 and Book 12's on 18:24, each the whole section, ahead of its book's next note there. Walk section 62 reads Book 12's at 18:24, carried whole from its first character.
+
+## Beside his notes: the saints' icons, sourced from the house's own pictures (2026-11-10 and 11)
+
+The debt of carried icons with no source fell from 75 to 42 (`lib/saints/iconRights.ts`, `MAX_UNVERIFIED`), in the order the arbiter set: the Fathers first, then the rest, and Commons only at its pace. Of the 33, 26 came from no new fetch at all: those saints already wore a sourced picture on their books' covers, and each carried icon is now that picture trimmed to 315 by 420, so the saint wears one picture everywhere (`021234288`, `683b3fc6d`, `7a706033e`, and four of the ten below). Five came from Commons: St Gregory the Theologian's (a 16th-century Russian icon) and four of the ten. Two have the plate. Every file was opened and looked at; every page was walked on the export with no signal, with stills in `build-90/icons-*.png`.
+
+**The ten whose books wear a Western painting**, on the arbiter's word under the covers' rule (build-89.md note 1: the old Orthodox icon, fresco or mosaic first; an old Western painting only where the East has none):
+
+- St Simon the Zealot: a Russian icon of 1720, lettered with his name. A Cretan icon filed on Commons as St Simon's was set aside: its letters read as St Jude's, and its source is a page about him.
+- St James son of Alphaeus: a 19th-century icon from a Mstyora deesis row.
+- St Jude, St James son of Zebedee, St Matthias: no Orthodox icon on Commons passed (a Jerusalem icon photographed with flash glare, a 1910 academic painting, an undated "St James" vested as a bishop, which is how St James the Brother of the Lord is painted, and the 1903 to 1911 Lives' black-and-white prints, too small and grey for a page). So Simone Martini's gold-ground panels, the pictures their books wear.
+- St Augustine: the Lateran fresco of about 550 to 600, the oldest portrait of him.
+- St Leo the Great: a Greek fresco of the 14th or 15th century, lettered with his name and see. His icon is now mapped for his notes (`lib/saints/icons.ts`), as its comment asked once his rights were recorded.
+- St Florian: del Cossa's panel of 1473, the oldest on Commons and his books' own.
+- St Hosius of Cordova and St Theodosius the Great: no old icon, fresco or mosaic of them on Commons (the old pictures named Theodosios are St Theodosius the Cenobiarch's), so the plate; their files are gone.
+
+**Where a saint's carried icon and his books' cover now differ**, for a later pass (the arbiter: the covers stay as they are in 1.9):
+
+| Saint | Carried icon (his page, lists, no signal) | Books' cover |
+|---|---|---|
+| St Basil the Great | Mosaic, St Sophia, Kyiv (11th century) | Kirillo-Belozersky board (1497) |
+| St Gregory the Theologian | Russian icon (16th century) | Kirillo-Belozersky board (1497) |
+| St Simon the Zealot | Russian icon (1720) | Simone Martini (about 1315 to 1320) |
+| St James son of Alphaeus | Mstyora icon (19th century) | El Greco (about 1600) |
+| St Augustine | Lateran fresco (about 550 to 600) | Philippe de Champaigne (about 1645 to 1650) |
+| St Leo the Great | Greek fresco (14th to 15th century) | Francisco de Herrera the Younger (17th century) |
+| St Hosius of Cordova | The plate | Ángel María de Barcia (about 1879) |
+| St Theodosius the Great | The plate | Van Dyck (1619 to 1620) |
+
+**Found on the way, not changed:** `scripts/check-picture-edges.mjs` flags two of November's icons (`nektarios-of-aegina.v2.jpg`, white along three sides; `theodore-the-studite.jpg`, at the foot), told to the November chat. With no signal, a saint with a large page picture showed his stand-in icon under his name; mended on the arbiter's yes (`969fbe07d`).

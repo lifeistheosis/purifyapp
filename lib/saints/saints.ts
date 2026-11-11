@@ -1370,7 +1370,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "augustine-of-hippo",
  byname: "Doctor of Grace",
- iconUrl: "/saints/icons/augustine-of-hippo.jpg",
+ iconUrl: "/saints/icons/augustine-of-hippo.v2.jpg",
  name: "St. Augustine of Hippo",
  epithet: "Bishop of Hippo · Blessed Augustine",
  born: "November 13, 354 (Tagaste, North Africa)",
@@ -2254,7 +2254,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-james-zebedee",
  byname: "Son of Thunder",
- iconUrl: "/saints/icons/apostle-james-zebedee.jpg",
+ iconUrl: "/saints/icons/apostle-james-zebedee.v2.jpg",
  name: "Holy Apostle James, Son of Zebedee",
  epithet: "Brother of John the Theologian · First of the Twelve to Suffer",
  born: "1st century (Galilee)",
@@ -2381,7 +2381,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-james-alphaeus",
  byname: "Son of Alphaeus",
- iconUrl: "/saints/icons/apostle-james-alphaeus.jpg",
+ iconUrl: "/saints/icons/apostle-james-alphaeus.v2.jpg",
  name: "Holy Apostle James, Son of Alphaeus",
  epithet: "One of the Twelve · The Silent Apostle",
  born: "1st century (Galilee)",
@@ -2411,7 +2411,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-jude",
  byname: "Thaddaeus, the Brother of James",
- iconUrl: "/saints/icons/apostle-jude.jpg",
+ iconUrl: "/saints/icons/apostle-jude.v2.jpg",
  name: "Holy Apostle Jude",
  epithet: "Thaddaeus · Brother of James · Apostle to Armenia",
  born: "1st century (Galilee)",
@@ -2460,7 +2460,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-simon-zealot",
  byname: "The Zealot",
- iconUrl: "/saints/icons/apostle-simon-zealot.jpg",
+ iconUrl: "/saints/icons/apostle-simon-zealot.v2.jpg",
  name: "Holy Apostle Simon the Zealot",
  epithet: "The Canaanite · One of the Twelve",
  born: "1st century (Galilee)",
@@ -2490,7 +2490,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-matthias",
  byname: "Numbered with the Eleven",
- iconUrl: "/saints/icons/apostle-matthias.jpg",
+ iconUrl: "/saints/icons/apostle-matthias.v2.jpg",
  name: "Holy Apostle Matthias",
  epithet: "Successor to Judas Iscariot · One of the Seventy",
  born: "1st century (Bethlehem of Judaea, by tradition)",
@@ -2783,7 +2783,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "florian-of-lorch",
  byname: "Martyr of Noricum",
- iconUrl: "/saints/icons/florian-of-lorch.jpg",
+ iconUrl: "/saints/icons/florian-of-lorch.v2.jpg",
  name: "St. Florian of Lorch",
  epithet: "Roman Officer · Holy Martyr of Noricum · Patron of those in danger from fire",
  born: "c. 250 (Aelium Cetium, Roman Noricum)",
@@ -2898,7 +2898,6 @@ export const SAINTS: Saint[] = [
  {
  slug: "hosius-of-cordova",
  byname: "Confessor of the West",
- iconUrl: "/saints/icons/hosius-of-cordova.v2.jpg",
  name: "St. Hosius of Cordova",
  epithet: "Bishop of Cordova · Confessor · Elder of the West at Nicaea",
  born: "c. 256 (Cordova, Hispania)",
@@ -3007,7 +3006,6 @@ export const SAINTS: Saint[] = [
  {
  slug: "theodosius-the-great",
  byname: "The Great",
- iconUrl: "/saints/icons/theodosius-the-great.jpg",
  name: "St. Theodosius the Great",
  epithet: "Emperor of the Romans · Convener of the Second Ecumenical Council · Defender of Nicaea",
  born: "January 11, 347 (Cauca, Hispania)",
@@ -3550,7 +3548,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "leo-the-great",
  byname: "The Great",
- iconUrl: "/saints/icons/leo-the-great.jpg",
+ iconUrl: "/saints/icons/leo-the-great.v2.jpg",
  name: "St. Leo the Great",
  epithet: "Pope of Rome · Father of Chalcedon · Author of the Tome",
  born: "c. 400 (Tuscany)",

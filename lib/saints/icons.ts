@@ -13,9 +13,9 @@ export const AUTHOR_ICONS: Record<string, string> = {
   "St. Gregory of Nazianzus": "/saints/icons/gregory-theologian.v2.jpg",
 
   // Latin + Alexandrian + Gaulish on John.
-  "St. Augustine of Hippo": "/saints/icons/augustine-of-hippo.jpg",
-  "St. Augustine": "/saints/icons/augustine-of-hippo.jpg",
-  "Blessed Augustine of Hippo": "/saints/icons/augustine-of-hippo.jpg",
+  "St. Augustine of Hippo": "/saints/icons/augustine-of-hippo.v2.jpg",
+  "St. Augustine": "/saints/icons/augustine-of-hippo.v2.jpg",
+  "Blessed Augustine of Hippo": "/saints/icons/augustine-of-hippo.v2.jpg",
   "St. Cyril of Alexandria": "/saints/icons/cyril-of-alexandria.v2.jpg",
   "St. Cyril": "/saints/icons/cyril-of-alexandria.v2.jpg",
   "St. Irenaeus of Lyons": "/saints/icons/irenaeus-of-lyons.jpg",
@@ -59,35 +59,35 @@ export const AUTHOR_ICONS: Record<string, string> = {
   "Apostle Andrew": "/saints/icons/apostle-andrew.v2.jpg",
   "St. Andrew the First-Called": "/saints/icons/apostle-andrew.v2.jpg",
   "St. Andrew": "/saints/icons/apostle-andrew.v2.jpg",
-  "Holy Apostle James, Son of Zebedee": "/saints/icons/apostle-james-zebedee.jpg",
-  "St. James the Son of Zebedee": "/saints/icons/apostle-james-zebedee.jpg",
-  "St. James the Greater": "/saints/icons/apostle-james-zebedee.jpg",
+  "Holy Apostle James, Son of Zebedee": "/saints/icons/apostle-james-zebedee.v2.jpg",
+  "St. James the Son of Zebedee": "/saints/icons/apostle-james-zebedee.v2.jpg",
+  "St. James the Greater": "/saints/icons/apostle-james-zebedee.v2.jpg",
   "Holy Apostle Philip": "/saints/icons/apostle-philip.v2.jpg",
   "Apostle Philip": "/saints/icons/apostle-philip.v2.jpg",
   "St. Philip the Apostle": "/saints/icons/apostle-philip.v2.jpg",
   "St. Philip": "/saints/icons/apostle-philip.v2.jpg",
-  "Holy Apostle Jude": "/saints/icons/apostle-jude.jpg",
-  "Apostle Jude": "/saints/icons/apostle-jude.jpg",
-  "St. Jude Thaddaeus": "/saints/icons/apostle-jude.jpg",
-  "St. Jude": "/saints/icons/apostle-jude.jpg",
-  "St. Thaddaeus": "/saints/icons/apostle-jude.jpg",
-  "Holy Apostle Simon the Zealot": "/saints/icons/apostle-simon-zealot.jpg",
-  "Apostle Simon the Zealot": "/saints/icons/apostle-simon-zealot.jpg",
-  "St. Simon the Zealot": "/saints/icons/apostle-simon-zealot.jpg",
-  "Simon the Canaanite": "/saints/icons/apostle-simon-zealot.jpg",
-  "Holy Apostle Matthias": "/saints/icons/apostle-matthias.jpg",
-  "Apostle Matthias": "/saints/icons/apostle-matthias.jpg",
-  "St. Matthias the Apostle": "/saints/icons/apostle-matthias.jpg",
-  "St. Matthias": "/saints/icons/apostle-matthias.jpg",
+  "Holy Apostle Jude": "/saints/icons/apostle-jude.v2.jpg",
+  "Apostle Jude": "/saints/icons/apostle-jude.v2.jpg",
+  "St. Jude Thaddaeus": "/saints/icons/apostle-jude.v2.jpg",
+  "St. Jude": "/saints/icons/apostle-jude.v2.jpg",
+  "St. Thaddaeus": "/saints/icons/apostle-jude.v2.jpg",
+  "Holy Apostle Simon the Zealot": "/saints/icons/apostle-simon-zealot.v2.jpg",
+  "Apostle Simon the Zealot": "/saints/icons/apostle-simon-zealot.v2.jpg",
+  "St. Simon the Zealot": "/saints/icons/apostle-simon-zealot.v2.jpg",
+  "Simon the Canaanite": "/saints/icons/apostle-simon-zealot.v2.jpg",
+  "Holy Apostle Matthias": "/saints/icons/apostle-matthias.v2.jpg",
+  "Apostle Matthias": "/saints/icons/apostle-matthias.v2.jpg",
+  "St. Matthias the Apostle": "/saints/icons/apostle-matthias.v2.jpg",
+  "St. Matthias": "/saints/icons/apostle-matthias.v2.jpg",
   "Holy Apostle Bartholomew": "/saints/icons/apostle-bartholomew.v2.jpg",
   "Apostle Bartholomew": "/saints/icons/apostle-bartholomew.v2.jpg",
   "St. Bartholomew the Apostle": "/saints/icons/apostle-bartholomew.v2.jpg",
   "St. Bartholomew": "/saints/icons/apostle-bartholomew.v2.jpg",
   "St. Nathanael": "/saints/icons/apostle-bartholomew.v2.jpg",
-  "Holy Apostle James, Son of Alphaeus": "/saints/icons/apostle-james-alphaeus.jpg",
-  "St. James the Son of Alphaeus": "/saints/icons/apostle-james-alphaeus.jpg",
-  "St. James of Alphaeus": "/saints/icons/apostle-james-alphaeus.jpg",
-  "St. James the Less": "/saints/icons/apostle-james-alphaeus.jpg",
+  "Holy Apostle James, Son of Alphaeus": "/saints/icons/apostle-james-alphaeus.v2.jpg",
+  "St. James the Son of Alphaeus": "/saints/icons/apostle-james-alphaeus.v2.jpg",
+  "St. James of Alphaeus": "/saints/icons/apostle-james-alphaeus.v2.jpg",
+  "St. James the Less": "/saints/icons/apostle-james-alphaeus.v2.jpg",
   "St. Polycarp of Smyrna": "/saints/icons/polycarp-of-smyrna.v2.jpg",
   "St. Polycarp": "/saints/icons/polycarp-of-smyrna.v2.jpg",
   "St. Prochorus": "/saints/icons/prochorus-the-deacon.v2.jpg",
@@ -112,14 +112,17 @@ export const AUTHOR_ICONS: Record<string, string> = {
   "St. Cyprian of Carthage": "/saints/icons/cyprian-of-carthage.jpg",
   "St. Cyprian": "/saints/icons/cyprian-of-carthage.jpg",
 
-  // DELIBERATELY NOT MAPPED, though the files are on disk:
-  // leo-the-great.jpg and john-cassian.jpg. Both records in iconRights.ts read
-  // "No source, licence or attribution recorded ... Not yet opened and
-  // inspected." Two of the first four icons ever inspected turned out to be
-  // watermarked works by living iconographers, rendering in production, which
-  // is why that registry exists. Mapping an uninspected file would put it in
-  // front of every reader of a Leo or Cassian note. Map them in the commit that
-  // records their rights, not before.
+  // St Leo's icon is mapped now that its rights are recorded (2026-11-11: a
+  // Greek fresco, lib/saints/iconRights.ts), as the note that stood here asked:
+  // "Map them in the commit that records their rights, not before."
+  "St. Leo the Great": "/saints/icons/leo-the-great.v2.jpg",
+
+  // DELIBERATELY NOT MAPPED, though the file is on disk: john-cassian.jpg. Its
+  // record in iconRights.ts reads "No source, licence or attribution recorded".
+  // Two of the first four icons ever inspected turned out to be watermarked
+  // works by living iconographers, rendering in production, which is why that
+  // registry exists. Mapping an unsettled file would put it in front of every
+  // reader of a Cassian note. Map it in the commit that records its rights.
 };
 
 export function authorIcon(author: string): string | null {
