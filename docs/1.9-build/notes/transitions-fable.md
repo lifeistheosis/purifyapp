@@ -161,7 +161,11 @@ closed; the other two stand:
   (P1; "Your rule's tile", below).
 - **A saint with a wide picture at the head.** The same: another picture,
   with the name over its foot. A saint whose page opens on his icon (most of
-  them) does carry.
+  them) does carry. **Closed 2026-11-11** on the arbiter's call ("where the
+  saint's page shows his icon anywhere, the card's icon flies to it; where it
+  does not, the page's own switch stands, and name those saints in your
+  record"), built by the Fable onboarding chat (P2; "A saint with a wide
+  picture", below). None is left to name: all twelve show their icon.
 
 ### Your rule's tile (P1, 2026-11-11, the Fable onboarding chat)
 
@@ -226,6 +230,58 @@ will open on (morning or evening), so one picture travels."
   apart) and back (carried, the words pictured apart). `scripts/
   export-walk.mjs`, section 48, expects the Anastasis on the tile at 9:41.
   Stills: `docs/1.9-build/notes/build-93/p1-rule-tile/`.
+
+### A saint with a wide picture (P2, 2026-11-11, the Fable onboarding chat)
+
+The arbiter's call of 02:39 UTC: "where the saint's page shows his icon
+anywhere, the card's icon flies to it; where it does not, the page's own
+switch stands, and name those saints in your record."
+
+- **Counted: twelve** (`lib/saints/heroes.ts`): the Theotokos, St John
+  Chrysostom, St Basil the Great, St Gregory the Theologian, St Nicholas, the
+  Apostles Peter, Paul, John and Andrew, the Archangel Michael, St George and
+  St Peter of Moscow.
+- **Each of them shows his icon on the first screen**, at a phone's size, a
+  tablet's and a computer's: the icon the app carries stands in the wide
+  picture's box until that picture has come, and for good with no signal
+  (`.hero-stand-in`, `components/saints/SaintHeroPicture.tsx`; the box is the
+  head on a phone and the column beside the name on a tablet and a computer).
+  All twelve carry such an icon (`lib/saints/__tests__/heroPicture.test.ts`
+  reads each file). So **all twelve travel, and none is named** as left to
+  the page's own switch.
+- **What takes the card's icon is that icon**, never the wide picture
+  (`data-carry-into={iconUrl}` on it; the wide picture carries nothing).
+- **The trap in the brief, and what the film and the frames showed.** The
+  wide picture is streamed, and one the phone already holds arrives within a
+  frame. The icon in flight is drawn from the icon it is landing on, so the
+  moment the wide picture was shown and the icon under it put out, the
+  card's icon faded out half way there. Two tries before the one that holds:
+  1. Waiting on `data-carried-in`: it is given back as the page commits
+     (`endNav`), not when the flight ends, so the wait was a few milliseconds.
+  2. Waiting the flight's length (320ms) from the page's first drawing: the
+     flight sets out a few frames after that, so the wide picture came in two
+     frames before the icon landed (2 of 22, read frame by frame).
+  3. As built: after the flight's length the page looks each frame for a
+     picture still in flight (`::view-transition-group(carried)`) and shows
+     the wide picture when there is none, never later than 1.2s. Only on a
+     page an icon travelled to (`data-carried-in` or `data-landed` on the
+     icon); any other page shows the wide picture the moment it has come, as
+     before.
+- **With no signal** the icon is what stays, and it travels the same way.
+- **Going back**, the icon goes back into its card. Once the wide picture is
+  over it the icon is unseen, so it is seen leaving from the middle of the
+  wide picture as that sinks away; the film shows it, and it reads as the
+  card's own icon coming home.
+- **Held by**: `lib/saints/__tests__/heroPicture.test.ts` (each of the twelve
+  has his icon; the icon takes, the wide picture does not; one gate for both
+  ways a wide picture is found to have come; the wait held to the
+  stylesheet's flight), `lib/ui/__tests__/routeMotion.test.ts`, and four
+  walks more in `scripts/route-motion.mjs`: St John Chrysostom with signal
+  and St Basil with none, each forward and back, carried. The walk with
+  signal reads every frame of the change in real time and fails if the wide
+  picture is shown while the icon is in flight; the film cannot say that,
+  since it holds the flight still for seconds while the page lives on.
+  Stills: `docs/1.9-build/notes/build-93/p2-wide-picture/`.
 
 ### The check
 
