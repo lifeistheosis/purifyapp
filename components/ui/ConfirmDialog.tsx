@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { useEscape } from "@/lib/ui/escape";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { useReducedMotion } from "@/lib/ui/motion";
 import { useDraggableSheet } from "@/lib/ui/useDraggableSheet";
@@ -83,21 +84,23 @@ export function ConfirmDialog({
     if (open) cancelBtnRef.current?.focus({ preventScroll: true });
   }, [open, mounted]);
 
-  // Esc closes; Enter confirms (only when not pending).
+  // Esc closes; Enter confirms (only when not pending). Escape is answered by
+  // the overlay that rose last, so a press here does not also close a sheet
+  // this dialog stands over (lib/ui/escape.ts).
+  useEscape(open, (e) => {
+    e.preventDefault();
+    if (!pending) onCancel();
+  });
   useEffect(() => {
     if (!open) return;
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        if (!pending) onCancel();
-      } else if (e.key === "Enter") {
-        e.preventDefault();
-        if (!pending) onConfirm();
-      }
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      if (!pending) onConfirm();
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, pending, onCancel, onConfirm]);
+  }, [open, pending, onConfirm]);
 
   useAndroidBack(mounted, dismiss);
 

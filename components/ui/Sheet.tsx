@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
+import { useEscape } from "@/lib/ui/escape";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { Close } from "@/components/ui/icons/Close";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
@@ -145,14 +146,9 @@ export function Sheet({
     };
   }, [mounted]);
 
-  useEffect(() => {
-    if (!mounted) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [mounted, onClose]);
+  // Escape closes the sheet that rose last, and it alone: one press, one
+  // thing, as the phone's Back below (lib/ui/escape.ts).
+  useEscape(mounted, onClose);
 
   // Android hardware back closes the sheet rather than navigating away. The
   // sheet has no browser history of its own, so without this back feels stuck.
