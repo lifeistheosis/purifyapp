@@ -133,13 +133,23 @@ export async function wordsOnPicture(page, selector, { palettes = PALETTES, own 
         const range = document.createRange();
         // The element's words, or with `own` only the words that are its own: the checker tells a word by its
         // own text, and an element's children may wear other colours and are told apart.
+        // Lines from the words' text alone: a range over the element's contents also gives the box of every
+        // element inside it, and a mark with no words (a lit point, an icon) was read as a line with no
+        // letters, its own colour the ground (Updates' find, 2026-11-11: Prayers' lit Hours tile, "Now" at
+        // 1.00:1 on Light beside its ink dot, 8.35 with the dot hidden).
+        const textsOf = (el) => {
+          const out = [];
+          const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+          for (let t = walk.nextNode(); t; t = walk.nextNode()) if (t.textContent.trim()) out.push(t);
+          return out;
+        };
         const rects = [];
-        const said = [];
-        for (const part of own ? [...node.childNodes].filter((n) => n.nodeType === 3 && n.textContent.trim()) : [node]) {
+        const parts = own ? [...node.childNodes].filter((n) => n.nodeType === 3 && n.textContent.trim()) : textsOf(node);
+        for (const part of parts) {
           range.selectNodeContents(part);
           rects.push(...range.getClientRects());
-          said.push(part.textContent);
         }
+        const said = own ? parts.map((part) => part.textContent) : [node.textContent];
         // Each line, cut to the element's own box and to every box around it that clips: a clamped paragraph
         // still reports the lines it hides, and those lie over whatever is below it. The clamp may be the
         // element's own or a box it stands in.

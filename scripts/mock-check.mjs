@@ -1703,6 +1703,7 @@ const PICTURE = (hex) => `url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.
 const PIXELS = `<div data-mock-fixture="pixels" style="position:fixed;left:0;right:0;top:120px;z-index:400;padding:16px">
   <div style="background-image:${PICTURE("101010")};padding:12px"><p style="margin:0;color:#ffffff;font:16px sans-serif">Light words on a dark picture</p></div>
   <div style="margin-top:12px;background-image:${PICTURE("777777")};padding:12px"><p style="margin:0;color:#8a8a8a;font:16px sans-serif">Grey words on a grey picture</p></div>
+  <div style="margin-top:12px;background-image:${PICTURE("f4efe6")};padding:12px"><p style="margin:0;color:#2b2317;font:16px sans-serif"><span aria-hidden="true" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#2b2317;margin-inline-end:6px"></span>Dark words beside their own mark</p></div>
   <div style="position:fixed;inset-inline-start:2000px;top:120px;background-image:${PICTURE("101010")};padding:12px"><p style="margin:0;color:#ffffff;font:16px sans-serif">Words past the screen's edge</p></div>
 </div>`;
 
@@ -1797,11 +1798,16 @@ async function selfTest() {
       red.allowed.some((a) => a.startsWith(`palette on button "Pray": the Church's red`)) &&
       red.failures.some((f) => f.check === "palette" && f.what === 'button "Take it down"' && f.detail.startsWith("its ground stays rgb(178, 34, 34)")) &&
       red.failures.some((f) => f.check === "palette" && f.what === 'button "Take it down"' && f.detail.startsWith("its words stay rgb(255, 255, 255)"));
-    const lookSaid = lookOnly.unmeasured.length === 3 && lookOnly.failures.length === 0;
+    const lookSaid = lookOnly.unmeasured.length === 4 && lookOnly.failures.length === 0;
     // The third stands past the screen's edge, where no pixel shows it: left "look", for a still and an eye.
     const pastEdge = byPixels.looks.find((l) => l.text === "Words past the screen's edge");
+    // Dark words on a light picture beside their own dark mark (a lit point, Updates' find on Prayers' Hours
+    // tile): the mark is not the ground under them, so they pass; the measure once read its box as a line.
+    const markRead = byPixels.looks.find((l) => l.text === "Dark words beside their own mark");
     const pixelsRead =
-      byPixels.looks.length === 3 &&
+      byPixels.looks.length === 4 &&
+      markRead?.left === false &&
+      !byPixels.failures.some((f) => f.what === '"Dark words beside their own mark"') &&
       byPixels.failures.some((f) => f.check === "contrast" && f.what === '"Grey words on a grey picture"' && f.detail.includes("on the pixels under it")) &&
       !byPixels.failures.some((f) => f.what === '"Light words on a dark picture"') &&
       byPixels.looks.find((l) => l.text === "Light words on a dark picture")?.left === false &&
