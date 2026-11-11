@@ -412,10 +412,11 @@ St Theodosius came to wear old pictures, and St Symeon the New Theologian,
 St Mark of Ephesus and St Xenia of Petersburg went to the permissions list.
 26 wait on a permission (`docs/1.9-build/ICON-PERMISSIONS.md`), with a
 letter drafted for each in `docs/1.9-build/PERMISSION-LETTERS.md` for him to
-send (20 letters; St Mark's only if he does not take the Eleon workshop's
-own free icon), but three: St Gabriel of Georgia and St Lazarus of Mount
-Galesion have no address yet, and Sts Zacchaeus and Alphaeus no icon. One is
-still searched for a free picture: the Prophet Micaiah (the January chat).
+send (19 letters), but four: St Gabriel of Georgia and St Lazarus of Mount
+Galesion have no address yet, Sts Zacchaeus and Alphaeus no icon, and St
+Mark of Ephesus takes the Eleon workshop's own free icon by his word of
+about 14:54 UTC (Updates 2 places it, and he leaves the list). One is still
+searched for a free picture: the Prophet Micaiah (the January chat).
 Run again at 14:43 UTC on the pulled tree: passes. A work without a cover:
 held by `lib/reading/__tests__/coverArt.test.ts`, which passes.
 

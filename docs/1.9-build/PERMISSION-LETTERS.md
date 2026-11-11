@@ -806,6 +806,13 @@ Added to `docs/1.9-build/ICON-PERMISSIONS.md` after the first list, for
 saints who had none. Numbered on from part two, so no letter above changes
 its number.
 
+St Mark of Ephesus has no letter. A letter to Brian Whirledge for his icon
+was drafted here as 20, to go only if the owner did not take the Eleon
+workshop's own icon of St Mark, which the workshop published itself under a
+free licence (CC BY 2.0). His word at about 14:54 UTC on 2026-11-11, "Yes to
+both.", answering "yes St Mark": he takes the Eleon icon (Updates 2 places
+it), so that letter was taken out.
+
 ### 18. The Greek Orthodox Monastery of the Virgin Mary the Consolatory, Quebec: St Symeon the New Theologian
 
 - **To:** the contact form at https://www.monasterevmc.org/pages/contact-us,
@@ -876,37 +883,3 @@ its number.
 > Purify Orthodox LLC
 > legal@purifyapp.net
 
-### 20. Brian Whirledge, iconographer: St Mark of Ephesus
-
-- **Only if he does not take the Eleon icon.** The Eleon icon-painting
-  workshop published its own icon of St Mark with St Macarius under a free
-  licence (CC BY 2.0); whether that stands in for a letter is his word,
-  asked through the arbiter. If he takes it, this letter is not sent.
-- **To:** icons@brianwhirledge.com (on his contact page,
-  https://www.brianwhirledge.com/contact).
-- **In:** English.
-
-> Dear Mr Whirledge,
->
-> I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
-> Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
-> Each saint's life in Purify is shown with an icon of the saint, and the
-> lives and their icons are free for every reader. Purify also offers an
-> optional subscription for some reading tools; the lives of the saints and
-> their icons are never part of it.
->
-> For St Mark of Ephesus we have found no picture that we may show. May we
-> show your icon of him, "Saint Mark of Ephesus", beside his life? We would
-> name you beneath it as you wish, for example "Icon by Brian Whirledge",
-> with a link to your pages. We ask only to show it; nothing of it would be
-> printed or sold, and we know that Legacy Icons handles your prints.
->
-> We would show it only where a reader meets the saint, in the app and on our
-> website, and never in advertising, in store listings or in anything sold.
-> If you ever asked us to, we would take it down at once.
->
-> With thanks,
->
-> Edgar, the Purify Team
-> Purify Orthodox LLC
-> legal@purifyapp.net

@@ -16,6 +16,10 @@
 -- "rec voices and yes fasting"), to this SQL with fasting added, as the
 -- arbiter showed it to him: '{purify_space,fasting}' in the chain and
 -- 'fasting' in the list.
+-- The guard SIGNED 2026-11-11 about 14:54 UTC, his words "Yes to both.",
+-- answering "yes guard": only a purify_space that is an object is touched
+-- (jsonb_typeof(...) = 'object'), exactly as the Admin chat sent it to the
+-- arbiter at 14:50 and the arbiter showed it to him.
 --
 -- NOT A MIGRATION, ON PURPOSE: it touches the auth schema, which the
 -- integration's role may refuse, and the first migration that fails stops
@@ -24,23 +28,21 @@
 -- an older app that wrote the answers meanwhile (a task on the admin
 -- Calendar).
 --
--- Safe to run twice: it touches only rows that still hold one of the four,
--- so the second run says UPDATE 0 unless an older app wrote them again.
--- Run twice on a scratch PostgreSQL 16 on 2026-11-11 with nine kinds of row
--- (all four, background alone, level alone, returning alone, fasting alone,
--- other answers but none of these, no purify_space, no sign-in data,
--- purify_space as the bare word "fasting"): the first run UPDATE 6, the five
--- rows holding one of the four, with every other key in them kept (a name,
--- focus, intent, intents, savedAt, a picture's address), and the bare word,
--- which it counts and leaves as it was; the second run UPDATE 1, the bare
--- word again, changing nothing. With a tenth kind, purify_space a list that
--- holds "level", the statement stops with an error and changes nothing. The
--- app has only ever written purify_space as an object, but a reader's own
--- client can write any shape there. A guard for both (only an object is
--- touched) was sent to the arbiter for his word on 2026-11-11; with it the
--- same ten rows give UPDATE 5, then UPDATE 0. As signed, this file has no
--- guard.
+-- Safe to run twice: it touches only rows whose purify_space is an object
+-- that still holds one of the four, so the second run says UPDATE 0 unless
+-- an older app wrote them again. Run twice on a scratch PostgreSQL 16 on
+-- 2026-11-11 with ten kinds of row (all four, background alone, level
+-- alone, returning alone, fasting alone, other answers but none of these,
+-- no purify_space, no sign-in data, purify_space the bare word "fasting",
+-- purify_space a list holding "level" and "fasting"): the first run UPDATE
+-- 5, the five rows holding one of the four, with every other key in them
+-- kept (a name, focus, intent, intents, savedAt, a picture's address); the
+-- second run UPDATE 0; the word and the list left as they were. Without the
+-- guard, the list stopped the statement with an error and the word was
+-- counted on every run: the app only ever writes an object there, but a
+-- reader's own client can write any shape.
 
 update auth.users
 set raw_user_meta_data = raw_user_meta_data #- '{purify_space,level}' #- '{purify_space,returning}' #- '{purify_space,background}' #- '{purify_space,fasting}'
-where raw_user_meta_data -> 'purify_space' ?| array['level', 'returning', 'background', 'fasting'];
+where jsonb_typeof(raw_user_meta_data -> 'purify_space') = 'object'
+  and raw_user_meta_data -> 'purify_space' ?| array['level', 'returning', 'background', 'fasting'];
