@@ -2643,6 +2643,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "b8d715316's rule: served timing line for line with the shown words; the Canon draws its words' source alone. eef7fc147. PLAN 13be."
+  },
+  {
+   "id": "e-chant-page-sing-along",
+   "section": "Listening",
+   "kind": "bug",
+   "title": "A chant's own page: each sung line 44 tall, the lines not being sung legible on every palette",
+   "from": "claude",
+   "asked": "2026-11-11",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "Found playing the Anthem on its page with the recording standing in. Lines 44 with the 15px kept; steps per palette at 4.5:1. f55ad7a30, 0ee9d5274. PLAN 13bf."
   }
  ]
 }
