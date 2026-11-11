@@ -2323,6 +2323,48 @@
    "note": "A hold dimmed the verse and opened nothing (window md:hidden); the circles stood unseen (no hover) yet took their width. md:pointer-fine:flex for the toolbar, the windows shown whenever opened, the door md:pointer-fine:hidden; touch count ceiling 7 to 0. Walk section 64, 20 of 20. b53f1f243. PLAN 13ah."
   },
   {
+   "id": "e-qw16-cyril-luke-lines",
+   "section": "Saints",
+   "kind": "bug",
+   "title": "St Cyril on Luke: the short lines the import dropped (the Gospel's words, headings, notes of a fragment's source, a gap's stars) laid over the text, no mark moving",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "205 short lines in 181 places read again; 47 back as lines on 28 sections (22 Gospel, 13 notes, 9 headings, 3 stars), each before its paragraph; read against five copies of the 1859 printing, Sermon 21's heading and Luke 6:11's 'were' set right by the page. 0638f5f74. PLAN 13ai, F-49."
+  },
+  {
+   "id": "e-touch-count-size-n",
+   "section": "Design",
+   "kind": "bug",
+   "title": "The touch count reads size-N: 14 places it could not see, each read; four small ones at 44",
+   "from": "claude",
+   "asked": "2026-11-11",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "7 tall cards state min-h-11; .hit-44 on Community's close, the passage deck's arrows, the topic reader's step link, Now Playing's sound bar; the scroll rail's arrows a mouse's. Ceiling 1: the admin planner's checkbox (PlanBoard.tsx:367), Admin's. 857351b38. PLAN 13aj."
+  },
+  {
+   "id": "e-edition-dashes-allowed",
+   "section": "Design",
+   "kind": "bug",
+   "title": "A Father's words keep their edition's dashes and say so to checkMock, so their pages pass the pre-build gate",
+   "from": "claude",
+   "asked": "2026-11-11",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "1,845 work paragraphs and 208 rail notes; the works' reader (not editorial sections), the rail and its sheet. 623c9f56e. PLAN 13ak."
+  },
+  {
    "id": "n-admin-select-44",
    "section": "Design",
    "kind": "idea",

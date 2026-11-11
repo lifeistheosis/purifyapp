@@ -2049,12 +2049,30 @@ findings:
       near them"; 17:24, none before "Give ye to them"; 28:1, an opener
       before "spoil" never closed; 8:17, "in the face of Christ," closed with
       a single mark, as ours already stood.
-      STILL OPEN: beside the marks, small word differences from
-      the print (2 Cor 23:27 "For, what," for "For what,"; John 11:7 "was
-      made" for "was made,"; Acts 38:3 "not partial" for "not a partial"; 1
-      Cor 35:17 "[3]" for "[3.]"; John 70:1 and Hebrews 19:1 without the
-      print's "[1.]") and 2 Cor 18:24 and 18:25, one paragraph in the print
-      (joining them would move readers' marks); Cyril on John and the Morals read against the printed page, as
+      2026-11-11 (1.9, quick win 16): St Cyril on Luke's short lines are
+      laid over the text. The transcription read again: 205 lines of 40
+      characters or fewer in 181 places; 47 are back as `lines` on their
+      sections (lib/saints/load.ts, SectionLine), each before the paragraph
+      it stood over, never a paragraph, so no reader's mark moves: 22 lines
+      of the Gospel, 13 of the editor's notes of where a fragment comes
+      from, 9 headings, 3 gaps' stars. Left out: 117 bare sermon numbers and
+      two bare references that the titles give, 23 lines of page furniture,
+      11 translator's footnotes, four FROMs (three already restored in
+      October), and "PRAISE GOD.", which is not on the printed page. Read
+      against five archive.org copies of the 1859 printing; set right by
+      the page: Sermon 21's heading ("FROM SERMON XXI. Explanation of what
+      follows.") and Luke 6:11's "were" (the transcription has "ware").
+      lib/saints/__tests__/editionLines.test.ts holds it; the work's source
+      line says what is kept. 0638f5f74.
+      2026-11-11 (1.9): three of the small word differences beside the
+      marks follow the print (76f948b46): 2 Cor 23:27 "For what,", Acts 38:3
+      "not a partial", 1 Cor 35:17 "[3.]", each with its one copy on the
+      rail. John 70:1 and Hebrews 19:1's "[1.]" are not slips: neither work
+      carries a bracketed section number anywhere.
+      STILL OPEN: John 11:7, where the print's comma after "was made" could
+      not be placed among the paragraph's three without the page; 2 Cor
+      18:24 and 18:25, one paragraph in the print (joining them would move
+      readers' marks); Cyril on John and the Morals read against the printed page, as
       Cyril on Luke was (their words are their transcriptions', so what is
       left is fidelity to the page, not words given to the wrong hand); from
       Cyril on John's ingest, one more: its sections begin where it found a
