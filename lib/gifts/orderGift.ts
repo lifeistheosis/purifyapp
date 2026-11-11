@@ -11,16 +11,19 @@ import { deriveEntitlements, type EntitlementRow } from "@/lib/entitlements/enti
 /**
  * How many months of Plus an order comes with, by the day it was paid.
  *
- * The owner's words, 2026-11-06: "every order is packaged with like 3 months
- * of premium. Well, when we first start, but later on we're gonna switch to
- * 1 month." The switch is one more dated line here, e.g.
- * `{ from: "2027-03-01", months: 1 }`. An order keeps the months of the day
- * it was paid. The printed card names no number, so it never goes stale.
- * Orders paid before the first line came without a card and get no gift.
+ * The owner's word, 2026-11-11 (about 17:42 UTC, to the arbiter): "1 month
+ * for every purchase". One month for each paid, delivered EIKON order,
+ * whatever its date: the one line starts before the EIKON store opened, so no
+ * order is left out. (On 2026-11-06 it was 3 months at first, then 1.) A
+ * change later is one more dated line here; an order keeps the months of the
+ * day it was paid. The printed card names no number, so it never goes stale.
  */
 export const ORDER_GIFT_SCHEDULE: ReadonlyArray<{ from: string; months: number }> = [
-  { from: "2026-11-06", months: 3 },
+  { from: "2020-01-01", months: 1 },
 ];
+
+/** A gift month is 30 days, the same for every reader whatever the month. */
+export const ORDER_GIFT_DAYS_PER_MONTH = 30;
 
 /** The most days a single order gift may carry (claim_order_gift refuses more). */
 export const ORDER_GIFT_MAX_DAYS = 400;
@@ -50,30 +53,14 @@ export function orderGiftMonths(
 }
 
 /**
- * Days from `now` to the same day `months` calendar months later, so "3
- * months" from 6 November runs to 6 February, not 90 days. A day the target
- * month lacks lands on that month's last day (30 November + 3 months is the
- * end of February). Rounded up, never less than 1.
+ * Days of Plus for `months` gift months: 30 a month (the arbiter's reading of
+ * his "1 month", 2026-11-11: "one month of Purify Plus (30 days)"), so one
+ * month is 30 days from the claim whichever month it falls in. Never more
+ * than claim_order_gift allows.
  */
-export function giftDays(months: number, now: Date = new Date()): number {
+export function giftDays(months: number): number {
   const m = Math.max(0, Math.round(months));
-  if (m === 0) return 0;
-  const y = now.getUTCFullYear();
-  const mo = now.getUTCMonth() + m;
-  const lastDay = new Date(Date.UTC(y, mo + 1, 0)).getUTCDate();
-  const end = new Date(
-    Date.UTC(
-      y,
-      mo,
-      Math.min(now.getUTCDate(), lastDay),
-      now.getUTCHours(),
-      now.getUTCMinutes(),
-      now.getUTCSeconds(),
-      now.getUTCMilliseconds(),
-    ),
-  );
-  const days = Math.ceil((end.getTime() - now.getTime()) / 86_400_000);
-  return Math.min(ORDER_GIFT_MAX_DAYS, Math.max(1, days));
+  return Math.min(ORDER_GIFT_MAX_DAYS, m * ORDER_GIFT_DAYS_PER_MONTH);
 }
 
 /**

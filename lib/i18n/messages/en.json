@@ -5535,7 +5535,7 @@
   "orderGift.claimWithNumber": "Claim the gift",
   "orderGift.errAlready": "This order's gift has already been claimed.",
   "orderGift.errNotPaid": "This order is not paid, or was refunded.",
-  "orderGift.errNotEligible": "This order came before the gift began.",
+  "orderGift.errNotEligible": "This order does not come with a gift.",
   "orderGift.errNoOrder": "We could not find that order. Check the number and ZIP on the parcel's label.",
   "orderGift.errTooMany": "Too many tries. Please wait a little and try again.",
   "orderGift.errGeneric": "Something went wrong. Please try again.",

@@ -36,12 +36,15 @@
 -- functions "create or replace", and the grants and revokes repeat harmlessly.
 -- Replayed twice in a row on PGlite (PostgreSQL 18) with stub tables, then 21
 -- checks of the claim, 2026-11-11. Stamped 20261111172547 (it was 20261106000000
--- on feat/order-gift) so it runs after the 1.9 branch's own migrations. Waits
--- for the owner's sign-off, sent to him through the arbiter on 2026-11-11.
+-- on feat/order-gift) so it runs after the 1.9 branch's own migrations.
 --
--- HOW MANY MONTHS is decided in code (lib/gifts/orderGift.ts, a dated list,
--- by the day the order was paid) and passed in as days, so the switch from 3
--- months to 1 needs no SQL. The printed card names no number on purpose.
+-- SIGNED: the owner's word to the arbiter, 2026-11-11 about 17:36 UTC, on
+-- this SQL as sent to him that day: "yes gift sql".
+--
+-- HOW LONG: his word the same day, about 17:42 UTC: "1 month for every
+-- purchase". One month of Purify Plus, 30 days, for each paid, delivered
+-- EIKON order. It is decided in code (lib/gifts/orderGift.ts) and passed in
+-- as days, so it needed no change here. The printed card names no number.
 --
 -- A READER WHO ALREADY HAS PLUS OR PRO: the claim writes NOTHING and answers
 -- has_plus. The order's gift stays unclaimed and can be claimed once their

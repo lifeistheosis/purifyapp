@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  ORDER_GIFT_DAYS_PER_MONTH,
   ORDER_GIFT_SCHEDULE,
   autoClaimPick,
   giftDays,
@@ -21,14 +22,14 @@ const DAY = 86_400_000;
 const iso = (ms: number) => new Date(NOW.getTime() + ms).toISOString();
 
 describe("orderGiftMonths", () => {
-  it("starts at 3 months on 2026-11-06, the day the cards were made", () => {
-    expect(ORDER_GIFT_SCHEDULE[0]).toEqual({ from: "2026-11-06", months: 3 });
-    expect(orderGiftMonths("2026-11-06T00:00:01Z")).toBe(3);
-    expect(orderGiftMonths(NOW)).toBe(3);
+  it("is 1 month for every purchase, whatever its date (the owner, 2026-11-11)", () => {
+    expect(ORDER_GIFT_SCHEDULE).toEqual([{ from: "2020-01-01", months: 1 }]);
+    expect(orderGiftMonths(NOW)).toBe(1);
+    // An order from before the cards were made counts too.
+    expect(orderGiftMonths("2026-09-20T10:00:00Z")).toBe(1);
   });
 
-  it("gives nothing to orders from before the gift began, or with no date", () => {
-    expect(orderGiftMonths("2026-11-05T23:59:59Z")).toBe(0);
+  it("gives nothing to an order with no date", () => {
     expect(orderGiftMonths(null)).toBe(0);
     expect(orderGiftMonths("not a date")).toBe(0);
   });
@@ -46,24 +47,15 @@ describe("orderGiftMonths", () => {
 });
 
 describe("giftDays", () => {
-  it("runs to the same calendar day, so 3 months from 6 November ends 6 February", () => {
-    expect(giftDays(3, NOW)).toBe(92);
-    expect(new Date(NOW.getTime() + giftDays(3, NOW) * DAY).toISOString().slice(0, 10)).toBe("2027-02-06");
-  });
-
-  it("lands on the last day of a shorter month", () => {
-    // 30 November + 3 months: there is no 30 February, so the end of February.
-    const end = new Date(Date.UTC(2026, 10, 30, 12) + giftDays(3, new Date(Date.UTC(2026, 10, 30, 12))) * DAY);
-    expect(end.toISOString().slice(0, 10)).toBe("2027-02-28");
-  });
-
-  it("1 month is about a month, 0 is nothing", () => {
-    expect(giftDays(1, NOW)).toBe(30);
-    expect(giftDays(0, NOW)).toBe(0);
+  it("one month is 30 days, whichever month it falls in", () => {
+    expect(ORDER_GIFT_DAYS_PER_MONTH).toBe(30);
+    expect(giftDays(1)).toBe(30);
+    expect(new Date(NOW.getTime() + giftDays(1) * DAY).toISOString().slice(0, 10)).toBe("2026-12-06");
+    expect(giftDays(0)).toBe(0);
   });
 
   it("never asks the database for more than it accepts", () => {
-    expect(giftDays(24, NOW)).toBe(400);
+    expect(giftDays(24)).toBe(400);
   });
 });
 

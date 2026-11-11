@@ -134,7 +134,9 @@ async function handleGET(req: Request) {
         mine: by === user.id,
       };
     })
-    // Orders from before the gift began came without a card: not shown.
+    // An order with no gift is not shown. Since the owner's "1 month for
+    // every purchase" (2026-11-11) every order has one; the filter stays for
+    // a dated change to the schedule.
     .filter((o) => o.months > 0 || o.claimed);
 
   const state: OrderGiftState = {
