@@ -324,6 +324,38 @@ Begun (Updates 2, 2026-11-11, `a1b987d18`):
   icon "set in rays" was turned down in build 90, so it waits for his eye
   before it goes on: `build-93/12-theophylact-candidate.png` (the whole
   miniature, the cut at twice its size, and the round the saints' list draws).
+- **St Theophylact and St Paisius off the plate; St Isaac's and St Papias's
+  books in their own icons; the Florilegium's starters offline** (Updates 2,
+  2026-11-11, on the arbiter's words of 04:57):
+  - St Theophylact: his 17th-century miniature, cut about his head and
+    shoulders at its own pixels, 222 by 296 (the original is 341 by 600; St
+    John Cassian's is 250 wide). His row says why the gold inside his halo is
+    not the rays the owner forbids: it is part of the miniature, not a burst
+    behind him, and that rule is about our own design.
+  - St Paisius: the frontispiece of his Life as printed in Odessa in 1886
+    for the New Neamț monastery, a lithograph captioned with his repose (15
+    November 1794), from the Russian State Library's copy on the Internet
+    Archive. The 1847 first printing in the scan read has no portrait, and the
+    portrait in Optina's reprint of 2001 is the reprint's. File:Paisius.jpg,
+    which names no source, painter or date, stays out (kept in
+    `docs/1.9-build/kept/paisius-velichkovsky/`).
+  - St Isaac's book wears his settled icon, and St Papias's book his own
+    woodcut instead of the Apostle John's (`3a4929446`); the walk of St
+    Isaac's book found em dashes in the house's own notes, subtitle and
+    section titles, mended. Two more works carry em dashes in the house's
+    words, named to the arbiter and not changed here: St Ignatius's Life
+    (notes) and Photius's Bibliotheca (titles, framing, a note).
+  - F4: the Florilegium's starters wore read-aloud covers the apps asked the
+    website for, so three of the four were the plain plate with no signal.
+    St John's, St Matthew's and David's covers are carried now, as the JPEG
+    alone (+0.51 MB); the Magnificat's Theotokos was carried already.
+  - On the export with no signal: both saints' cards and pages wear their
+    pictures over the plate, every starter tile and each starter's page draws
+    its picture from the bundle, and `checkMock` passes on both saints'
+    pages, the Florilegium and St Isaac's book; no icon or cover asked for and
+    missing. The apps are 71.1 MB packed of the 85 MB ceiling. Stills:
+    `build-93/12-isaac-papias-books-offline-390.png`,
+    `build-93/12-theophylact-paisius-starters-offline-390.png`.
 
 ### 13. In a Father's work, highlight and quote any words, not only the whole paragraph (2026-11-11 about 01:37 UTC)
 
