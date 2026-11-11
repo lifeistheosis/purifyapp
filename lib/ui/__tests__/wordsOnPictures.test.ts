@@ -135,10 +135,49 @@ describe("the Plus pill where the bar stands over a picture", () => {
 });
 
 describe("the pixel walk", () => {
+  const tool = read("scripts/words-on-pictures.mjs");
+
   it("measures every place this file holds", () => {
-    const tool = read("scripts/words-on-pictures.mjs");
     for (const place of ["prayers", "you", "discover", "reading", '"pill-prayers"', '"pill-you"']) {
       expect(tool, place).toMatch(new RegExp(`\\n  ${place}: \\{ to: "/`));
     }
+  });
+
+  // From 1.9 the mock checker calls this measure for every word with a picture behind it, so the gate's
+  // guardrail walk stands on it. Three things it read that no reader sees, each found on the export
+  // (docs/1.9-build/notes/themes-fable.md, section 67): on the councils' page three bands' lines read 1.00:1
+  // on every palette, because the scroll that brings a word to the middle of the screen had scrolled the
+  // clamped box the line stands in.
+  it("puts back every box that clips its words after it has brought a word to the middle of the screen", () => {
+    // Remembered before the scroll, each box that hides what spills from it, by the side it hides.
+    expect(tool).toMatch(/if \(\/hidden\|clip\/\.test\(cs\.overflowY\) \|\| \/hidden\|clip\/\.test\(cs\.overflowX\)\) held\.push\(\[n, n\.scrollTop, n\.scrollLeft, /);
+    // The scroll, to the middle both ways (a sideways shelf fades at its edge), then each box as it was.
+    expect(tool).toMatch(/node\.scrollIntoView\(\{ block: "center", inline: "center", behavior: "instant" \}\);\s*for \(const \[n, top, left, y, x\] of held\) \{\s*if \(y\) n\.scrollTop = top;\s*if \(x\) n\.scrollLeft = left;/);
+    // Never the bare scroll again: it is what read a clamped line's hidden lines.
+    expect(tool).not.toMatch(/el\.evaluate\(\(node\) => node\.scrollIntoView\(/);
+  });
+
+  it("cuts each line to every box around it that clips, not only to the words' own", () => {
+    expect(tool).toMatch(/for \(let n = node\.parentElement; n && n !== document\.documentElement; n = n\.parentElement\) \{\s*const ps = getComputedStyle\(n\);\s*const b = n\.getBoundingClientRect\(\);\s*if \(ps\.overflowX !== "visible"\) \{/);
+    expect(tool).toMatch(/const top = Math\.max\(r\.top, seen\.top\);\s*const right = Math\.min\(r\.right, seen\.right\);\s*const bottom = Math\.min\(r\.bottom, seen\.bottom\);/);
+  });
+
+  it("gives no ratio to a word with no letters on the screen, or on a ground that will not hold still", () => {
+    // The same photograph twice, a moment apart, before it is trusted.
+    expect(tool).toMatch(/still = moved <= Math\.max\(2, n \* 0\.002\);\s*if \(still\) break;/);
+    // How many pixels changed when the words' fill was hidden: none is a word that is not drawn.
+    expect(tool).toContain("if (diff > 6) drawn += 1;");
+    expect(tool).toContain("if (worst && (every || (drawn >= 6 && still))) out.push({ palette, at: i, text: info.text,");
+    // The checker's pass leaves such a word to the eye by getting no line for it: it does not ask for every one.
+    expect(read("scripts/mock-check.mjs")).toMatch(/await wordsOnPicture\(page, "\[data-mock-look\]", \{ palettes: \[\[palette, mode\]\] \}\)/);
+  });
+
+  it("walks every screen for the words the checker hands over, and honours what the checker allows by name", () => {
+    expect(tool).toContain('process.argv.includes("--said")');
+    expect(tool).toContain(`const by = el.closest('[data-mock-allow~="contrast"]');`);
+    // On the gate's walk's own phone: the Android shell where the gate asks for a reader with no Plus.
+    expect(tool).toContain("if (SELLS_PLUS) await asAndroidShell(ctx);");
+    // The main web is read, never written.
+    expect(tool).toContain('if (req.method() !== "GET") return route.abort();');
   });
 });
