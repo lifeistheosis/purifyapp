@@ -202,9 +202,13 @@ describe("the page and its way in", () => {
   });
 
   it("moves nothing of its own: no keyframes, and its tiles' motion is Settings', which reduced motion stills", () => {
-    const from = read("app/globals.css").indexOf("The reading modes' own page (1.9)");
+    const css = read("app/globals.css");
+    const from = css.indexOf("The reading modes' own page (1.9)");
     expect(from).toBeGreaterThan(0);
-    const section = read("app/globals.css").slice(from);
+    // Its own block, to the next section's heading: the sections after it
+    // (the order gift's claim, for one) move in their own ways.
+    const next = css.indexOf("/* ── ", from + 1);
+    const section = css.slice(from, next > 0 ? next : undefined);
     expect(section).not.toMatch(/@keyframes|animation:/);
   });
 });
