@@ -40,7 +40,7 @@ import { CrossRefs } from "@/components/ui/icons/CrossRefs";
 import { Erase } from "@/components/ui/icons/Erase";
 import { LinkChain } from "@/components/ui/icons/LinkChain";
 import { Pen } from "@/components/ui/icons/Pen";
-import { Sparkle } from "@/components/ui/icons/Sparkle";
+import { Highlighter } from "@/components/ui/icons/Highlighter";
 import { Star } from "@/components/ui/icons/Star";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { textDir } from "@/lib/i18n/textDir";
@@ -1322,7 +1322,7 @@ export function VerseRow({
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper")
  }
  >
- <Sparkle size={16} filled={!!ann.highlighted} />
+ <Highlighter size={16} filled={!!ann.highlighted} />
  </button>
  {/* The colours (1.7.1): a caret beside the spark opens the same
  picker a phone's tools carry, the verse's colour checked, Remove and

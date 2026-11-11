@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Commemoration, FastingStatus } from "@/lib/calendar/orthodox";
 import type { SaintBrief } from "@/lib/saints/brief";
 import { SaintIcon } from "@/components/saints/SaintIcon";
+import { Cross } from "@/components/ui/icons/Cross";
 import { DropCap } from "./DropCap";
 import { T } from "@/components/i18n/T";
 import { fastNotAllowedKey } from "@/lib/calendar/fastFoods";
@@ -156,11 +157,8 @@ export function FeastPanel({
                 key={i}
                 className="flex items-baseline gap-2 font-sans text-detail text-paper/75 leading-[1.5]"
               >
-                <span
-                  aria-hidden
-                  className="shrink-0 translate-y-[2px] text-gold/55 text-eyebrow"
-                >
-                  ✦
+                <span aria-hidden className="inline-flex shrink-0 translate-y-[1px] text-gold/55">
+                  <Cross size={11} />
                 </span>
                 <span>
                   <span className="text-paper/90">{c.name}</span>

@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Check } from "@/components/ui/icons/Check";
 import { Plus } from "@/components/ui/icons/Plus";
-import { Sparkle } from "@/components/ui/icons/Sparkle";
+import { Tag } from "@/components/ui/icons/Tag";
 import { Truck } from "@/components/ui/icons/Truck";
 import { cn } from "@/lib/cn";
 import { useIsNative } from "@/lib/platform/native";
@@ -162,7 +162,7 @@ export function PrayerCornerSet({
             <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
               {offPercent > 0 ? (
                 <p className="inline-flex items-center gap-1.5 font-sans text-caption font-semibold text-emerald-300">
-                  <Sparkle size={15} aria-hidden />
+                  <Tag size={15} aria-hidden />
                   {t("shop.setSave", { percent: offPercent, amount: formatPrice(priced.savingsCents, currency) })}
                 </p>
               ) : null}

@@ -35,7 +35,7 @@ import { Info } from "@/components/ui/icons/Info";
 import { Minus } from "@/components/ui/icons/Minus";
 import { Heading } from "@/components/ui/icons/Heading";
 import { Plus } from "@/components/ui/icons/Plus";
-import { Sparkle } from "@/components/ui/icons/Sparkle";
+import { Highlighter } from "@/components/ui/icons/Highlighter";
 import { Star } from "@/components/ui/icons/Star";
 import { highlightVars } from "@/lib/bible/highlightPalette";
 import { localBookNames, searchBible } from "@/lib/bible/books";
@@ -629,7 +629,7 @@ export function PageToolbar({ editor, notebooks = [] }: { editor: PageEditor; no
           }}
         />
         <Tool
-          icon={<Sparkle size={18} />}
+          icon={<Highlighter size={18} />}
           label={t("journal.page.highlight")}
           pressed={panel === "color"}
           disabled={editor.colorTarget() === null}

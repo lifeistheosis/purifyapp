@@ -72,7 +72,7 @@ describe("the page's parts, from the house's own", () => {
     expect(blocks).toMatch(/tap-press flex h-14 min-w-0 flex-col items-center/);
     expect(blocks).toMatch(/absolute end-0\.5 top-0\.5 inline-flex h-11 w-11/);
     expect(blocks).toContain('tall ? "min-h-[30vh]" : "min-h-11"');
-    for (const icon of ["Book", "ChatBubble", "Close", "Sparkle"]) expect(blocks).toContain(`from "@/components/ui/icons/${icon}"`);
+    for (const icon of ["Book", "ChatBubble", "Close", "Highlighter"]) expect(blocks).toContain(`from "@/components/ui/icons/${icon}"`);
     expect(blocks).not.toMatch(/\b(?:ml|mr|pl|pr|left|right)-\d|\btext-(?:left|right)\b/);
   });
 

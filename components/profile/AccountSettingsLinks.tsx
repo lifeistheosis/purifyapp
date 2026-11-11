@@ -46,7 +46,7 @@ export function AccountSettingsLinks() {
       label: "Purify Plus",
       href: "/pricing",
       hint: t("ui.crossDeviceSyncNotesHighlights"),
-      icon: <Glyph kind="sparkle" />,
+      icon: <Glyph kind="quill" />,
     },
     // Mirrors the mobile "You" list: the Pro perk sits directly under the
     // tier it belongs to, and is hidden entirely for everyone else.

@@ -31,6 +31,12 @@
 //   rays         no burst of separate light rays (a repeating conic gradient,
 //                on a thing or its ::before or ::after): vibe-coded AI slop,
 //                the owner's word of 2026-11-08; light is a soft pool
+//   sparkle      no four-point sparkle star: the characters U+2726, U+2727
+//                and U+2728 in the words, a label or a ::before or ::after,
+//                or a star of four points drawn (the old Sparkle icon, or
+//                one like it): AI slop, the owner's word of 2026-11-11
+//                (CLAUDE.md, "No sparkle star"); an icon from
+//                components/ui/icons that names what the place is
 // What no measure can see is printed after it, to be answered by eye.
 //
 // A piece meant to break one of these says so on itself, with its reason,
@@ -91,7 +97,7 @@ const wear = (page, mode, look) =>
     [mode ?? null, look ?? null],
   );
 
-export const CHECKS = ["contrast", "placeholder", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays"];
+export const CHECKS = ["contrast", "placeholder", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays", "sparkle"];
 
 /** What a measure cannot see. */
 export const BY_EYE = [
@@ -214,7 +220,7 @@ function look(arg) {
   }
 
   // The stripe measure alone, for the walk over every screen (stripesOn).
-  if (only === "stripe") return { words: [], placeholders: [], controls: [], paints: [], stripes, rays: [], emDash: false, dashes: [] };
+  if (only === "stripe") return { words: [], placeholders: [], controls: [], paints: [], stripes, rays: [], sparkles: [], emDash: false, dashes: [] };
 
   const words = [];
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -318,7 +324,82 @@ function look(arg) {
     }
   }
 
-  return { words, placeholders, controls, paints, stripes, rays, emDash: labels.includes("\u2014") || dashes.some((d) => !d.allow), dashes: dashes.filter((d) => d.allow) };
+  // A sparkle (CLAUDE.md, "No sparkle star", the owner's word of 2026-11-11):
+  // the four-point star as a character in the words, a label or a ::before
+  // or ::after, or drawn as one outline with four points.
+  const SPARK = /[\u2726-\u2728]/;
+  const sparkles = [];
+  const sparkWords = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  for (let t = sparkWords.nextNode(); t; t = sparkWords.nextNode()) {
+    const el = t.parentElement;
+    if (!el || !SPARK.test(t.textContent) || el.getClientRects().length === 0) continue;
+    sparkles.push({ name: nameOf(el), how: "a sparkle character in the words", allow: allowance(el, "sparkle") });
+  }
+  for (const e of [root, ...root.querySelectorAll("[aria-label], [placeholder], [title], [alt]")]) {
+    if (["aria-label", "placeholder", "title", "alt"].some((a) => SPARK.test(e.getAttribute(a) || ""))) {
+      sparkles.push({ name: nameOf(e), how: "a sparkle character in a label", allow: allowance(e, "sparkle") });
+    }
+  }
+  for (const e of all) {
+    if (!shown(e)) continue;
+    for (const pseudo of ["::before", "::after"]) {
+      if (SPARK.test(getComputedStyle(e, pseudo).content || "")) {
+        sparkles.push({ name: `${nameOf(e)}${pseudo}`, how: "a sparkle character drawn by CSS", allow: allowance(e, "sparkle") });
+      }
+    }
+  }
+  // Drawn: one closed outline that goes once round its middle, with four
+  // tips and a deep waist between each two. A square, a diamond or a box has
+  // shallow ones, a five-point star five tips, a cross or a plus is lines.
+  const fourPoints = (g) => {
+    const tag = g.tagName.toLowerCase();
+    if (tag === "path") {
+      const d = (g.getAttribute("d") || "").trim();
+      if ((d.match(/[Mm]/g) || []).length !== 1 || !/[Zz]$/.test(d)) return false;
+    } else if (tag !== "polygon") return false;
+    let len = 0;
+    try {
+      len = g.getTotalLength();
+    } catch {
+      return false;
+    }
+    if (!(len > 0)) return false;
+    const N = 240;
+    const pts = Array.from({ length: N }, (_, i) => g.getPointAtLength((len * i) / N));
+    const mx = pts.reduce((sum, q) => sum + q.x, 0) / N;
+    const my = pts.reduce((sum, q) => sum + q.y, 0) / N;
+    const r = pts.map((q) => Math.hypot(q.x - mx, q.y - my));
+    const steps = pts.map((q, i) => {
+      const n = pts[(i + 1) % N];
+      let d = Math.atan2(n.y - my, n.x - mx) - Math.atan2(q.y - my, q.x - mx);
+      if (d > Math.PI) d -= 2 * Math.PI;
+      if (d < -Math.PI) d += 2 * Math.PI;
+      return d;
+    });
+    const turn = steps.reduce((sum, d) => sum + d, 0);
+    if (Math.abs(Math.abs(turn) - 2 * Math.PI) > 0.2 || steps.some((d) => d * Math.sign(turn) < -0.05)) return false;
+    const top = Math.max(...r);
+    const tips = [];
+    for (let i = 0; i < N; i++) {
+      if (r[i] > 0.75 * top && r[i] >= r[(i - 1 + N) % N] && r[i] > r[(i + 1) % N]) tips.push(i);
+    }
+    if (tips.length !== 4) return false;
+    for (let k = 0; k < 4; k++) {
+      const from = tips[k];
+      const to = tips[(k + 1) % 4];
+      let low = Infinity;
+      for (let i = from; i !== to; i = (i + 1) % N) low = Math.min(low, r[i]);
+      if (low > 0.55 * Math.min(r[from], r[to])) return false;
+    }
+    return true;
+  };
+  for (const g of root.querySelectorAll("path, polygon")) {
+    if (g.getClientRects().length === 0 || !fourPoints(g)) continue;
+    const icon = g.closest("svg") || g;
+    sparkles.push({ name: nameOf(icon), how: "a star of four points drawn", allow: allowance(icon, "sparkle") });
+  }
+
+  return { words, placeholders, controls, paints, stripes, rays, sparkles, emDash: labels.includes("\u2014") || dashes.some((d) => !d.allow), dashes: dashes.filter((d) => d.allow) };
 }
 
 /**
@@ -517,6 +598,10 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
       if (r.allow) allow("rays", r.name, r.allow);
       else fail("rays", null, r.name, "a burst of separate light rays (a repeating conic gradient): vibe-coded, the owner's word of 2026-11-08; light is a soft pool");
     }
+    for (const sp of dark.sparkles) {
+      if (sp.allow) allow("sparkle", sp.name, sp.allow);
+      else fail("sparkle", null, sp.name, `${sp.how}: the four-point sparkle is AI slop, the owner's word of 2026-11-11; an icon from components/ui/icons that names what the place is`);
+    }
     if (dark.emDash) fail("emdash", null, "the words", "an em dash; use a comma, a colon or a full stop");
     for (const d of dark.dashes) allow("emdash", d.name, d.allow);
 
@@ -614,6 +699,7 @@ const FIXTURES = `
   <p style="margin:12px 0 0;border-left:2px solid rgba(255,255,255,0.35);padding-left:14px;color:#e8e8ea;font-size:16px">A sample note</p>
   <p style="margin:8px 0 0;color:#d4af37;font-size:13px">Plus</p>
   <div style="margin-top:8px;width:120px;height:120px;background:repeating-conic-gradient(from 3deg, rgba(255,240,214,.4) 0deg 3.5deg, rgba(255,240,214,0) 3.5deg 13deg)"></div>
+  <p style="margin:8px 0 0;display:flex;align-items:center;gap:8px;color:#e8e8ea;font-size:13px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3.5c.7 4 2.5 5.8 6.5 6.5-4 .7-5.8 2.5-6.5 6.5-.7-4-2.5-5.8-6.5-6.5 4-.7 5.8-2.5 6.5-6.5z" /></svg>What's new \u2726</p>
 </div>
 <div data-mock-fixture="good" class="bg-night px-4 pb-4" style="position:fixed;left:0;right:0;top:0;z-index:301">
   <div class="flex items-center gap-2">
@@ -635,6 +721,13 @@ const FIXTURES = `
   <span class="relative mt-3 block h-[72px] w-[72px] overflow-hidden rounded-[18px] bg-night-soft">
     <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="absolute inset-0 h-full w-full object-cover" style="object-position:30% 40%;transform:scale(1.25);transform-origin:30% 40%">
   </span>
+  <span aria-hidden="true" class="mt-3 flex items-center gap-3 text-paper/70">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.8l2.5 5.1 5.6.8-4 3.9.9 5.6-5-2.6-5 2.6.9-5.6-4-3.9 5.6-.8L12 3.8z" /></svg>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15.9 3.9l4.2 4.2-8.5 8.5-2.9.6-2-2 .7-2.8z" /><line x1="14.3" y1="5.5" x2="18.5" y2="9.7" /><line x1="4" y1="20.5" x2="11" y2="20.5" /></svg>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.6 3.5H11l9.5 9.5-7.5 7.5L3.5 11V4.6c0-.6.5-1.1 1.1-1.1z" /><circle cx="7.6" cy="7.6" r="1.3" /></svg>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="12" y1="2.5" x2="12" y2="21.5" /><line x1="8.5" y1="6" x2="15.5" y2="6" /><line x1="5.5" y1="9.5" x2="18.5" y2="9.5" /><line x1="8" y1="14" x2="16" y2="16.5" /></svg>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="5" width="14" height="14" rx="1" /><path d="M12 2.5l9.5 9.5-9.5 9.5-9.5-9.5z" /></svg>
+  </span>
   <blockquote lang="en" data-mock-allow="emdash" data-mock-why="a Father's own words, as his edition prints them" class="mt-3 font-serif text-body italic leading-[1.6] text-paper/85">Chapter I.\u2014Introduction. Reason for writing</blockquote>
 </div>`;
 
@@ -651,7 +744,7 @@ async function selfTest() {
     const good = await checkMock(page, "[data-mock-fixture=good]");
     printMockCheck(good, "the same parts from the house's classes");
     const caught = new Set(bad.failures.map((f) => f.check));
-    const missed = ["contrast", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays"].filter((c) => !caught.has(c));
+    const missed = ["contrast", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays", "sparkle"].filter((c) => !caught.has(c));
     // A Father's own words keep their edition's dash, by name; the allowance is said in the report.
     const named = good.allowed.some((a) => a.startsWith("emdash on "));
     const ok = missed.length === 0 && good.failures.length === 0 && named;

@@ -4,7 +4,7 @@
 //
 // The daily hook dead-ends most of the year. Probed against commemorationsOn
 // and getSaint using the resolution in ChurchTodayRail, over 365 days of 2026
-// only 60 resolve to a profiled saint and 305 fall back to a name, a ✦ and a
+// only 60 resolve to a profiled saint and 305 fall back to a name, a mark and a
 // link to the calendar grid. Theophany, the Synaxis of the Forerunner, the
 // Circumcision and St Sava are all misses. Five days out of six, the front
 // door of the app has nothing to read.

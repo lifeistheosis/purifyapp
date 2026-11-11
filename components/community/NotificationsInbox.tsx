@@ -28,7 +28,7 @@ import { useEffect, useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Check } from "@/components/ui/icons/Check";
 import { Hands } from "@/components/ui/icons/Hands";
-import { Sparkle } from "@/components/ui/icons/Sparkle";
+import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/cn";
 import {
@@ -206,7 +206,7 @@ export function NoticeAppeal({ n }: { n: Pick<CommunityNotification, "kind"> }) 
 /** One line glyph per kind, so the list can be read down its left edge. */
 function KindGlyph({ kind }: { kind: string }) {
   if (kind === "prayed" || kind === "care") return <Hands size={18} />;
-  if (kind === "name_day") return <Sparkle size={17} />;
+  if (kind === "name_day") return <HaloedHead size={18} />;
   if (kind === "approved") return <Check size={17} />;
   if (kind === "removed") {
     return (

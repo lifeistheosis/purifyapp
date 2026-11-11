@@ -65,6 +65,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { FONT_CLASSES, ReaderPrefsProvider, useReaderPrefs, type ReaderFont } from "@/components/reader/ReaderPrefs";
 import { useCandleSeason } from "@/components/reader/CandleSeasonSwitch";
 import { useVespers } from "@/components/reader/VespersSwitch";
+import { ArrowUpLeft } from "@/components/ui/icons/ArrowUpLeft";
 import { Bell } from "@/components/ui/icons/Bell";
 import { Bolt } from "@/components/ui/icons/Bolt";
 import { Book } from "@/components/ui/icons/Book";
@@ -77,9 +78,10 @@ import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Info } from "@/components/ui/icons/Info";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Lock } from "@/components/ui/icons/Lock";
+import { Scroll } from "@/components/ui/icons/Scroll";
 import { Share } from "@/components/ui/icons/Share";
 import { Shield } from "@/components/ui/icons/Shield";
-import { Sparkle } from "@/components/ui/icons/Sparkle";
+import { Sliders } from "@/components/ui/icons/Sliders";
 import { Sun } from "@/components/ui/icons/Sun";
 import { User } from "@/components/ui/icons/User";
 import { Wheat } from "@/components/ui/icons/Wheat";
@@ -307,7 +309,7 @@ function AboutSection({ developer }: { developer: boolean }) {
       {/* No second line under these: each name says what it opens. */}
       <LinkRow href="/privacy" icon={<Shield size={17} />} label={t("footer.privacy")} />
       <LinkRow href="/support" icon={<Lampada size={18} />} label={t("nav.supportPurify")} />
-      <LinkRow href="/whats-new" icon={<Sparkle size={16} />} label={t("nav.whatsNew")} />
+      <LinkRow href="/whats-new" icon={<Scroll size={18} />} label={t("nav.whatsNew")} />
       <LinkRow href="/about" icon={<Info size={17} />} label={t("nav.about")} />
       {developer ? <LinkRow href="/account/developer" icon={<Bolt size={16} strokeWidth={1.7} />} label={t("ui.developer")} /> : null}
     </Section>
@@ -451,7 +453,7 @@ function TestersSection({ signedIn }: { signedIn: boolean }) {
       {/* 1.9: the version of a test to look at (lib/ab/device.ts, pickArm). A
           test shows an admin nothing by itself, and this is said to nobody. */}
       {AB_TESTS.map((test) => (
-        <Row key={test.id} icon={<Sparkle size={16} />} label={t("testers.version")} sub={test.asks}>
+        <Row key={test.id} icon={<Sliders size={17} />} label={t("testers.version")} sub={test.asks}>
           <Track
             value={picks[test.id] ?? null}
             options={test.arms.map((arm) => ({ value: arm, label: arm }))}
@@ -476,7 +478,7 @@ function TestersSection({ signedIn }: { signedIn: boolean }) {
         }}
       />
       <ButtonRow
-        icon={<Sparkle size={16} />}
+        icon={<ArrowUpLeft size={16} className="rtl:-scale-x-100" />}
         label={t("testers.firstOpen")}
         description={t("testers.firstOpenHint")}
         onClick={() => {

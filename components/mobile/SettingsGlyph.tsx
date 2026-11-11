@@ -16,7 +16,7 @@ export type SettingsGlyphKind =
   | "bolt"
   | "cross"
   | "signout"
-  | "sparkle"
+  | "quill"
   | "box"
   | "sliders";
 
@@ -96,10 +96,16 @@ export function SettingsGlyph({ kind }: { kind: SettingsGlyphKind }) {
           <path d="M21 12H9" />
         </svg>
       );
-    case "sparkle":
+    // Purify Plus: the quill of components/ui/icons/Quill.tsx. Plus keeps what
+    // a reader writes (the scribe St Prochorus leads its page); the row wore
+    // the four-point sparkle, which the owner named AI slop (CLAUDE.md, "No
+    // sparkle star").
+    case "quill":
       return (
         <svg {...props}>
-          <path d="M12 3c.4 4.5 2.5 6.6 7 7-4.5.4-6.6 2.5-7 7-.4-4.5-2.5-6.6-7-7 4.5-.4 6.6-2.5 7-7z" />
+          <path d="M18 4.5C11 5.5 7 10.5 6.4 17.4 13.2 16.9 17.4 11.5 18 4.5z" />
+          <path d="M16.6 6.4l-9.2 10" />
+          <path d="M9 20h7" />
         </svg>
       );
     // Settings: the two sliders of components/ui/icons/Settings.tsx, the mark

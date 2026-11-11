@@ -2,7 +2,8 @@ import type { SVGProps } from "react";
 
 /**
  * Bespoke three-bar Orthodox cross mark. Used as the brand glyph and as the
- * "feature" bullet in place of the generic ✦. Inherits `currentColor`.
+ * "feature" bullet in place of the generic four-point star. Inherits
+ * `currentColor`.
  */
 export function Cross({
   size = 20,

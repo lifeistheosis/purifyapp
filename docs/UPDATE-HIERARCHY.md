@@ -12,7 +12,7 @@ prose around it. If the two disagree, the code is what the test holds.
 | # | Category | Covers |
 |---|---|---|
 | 1 | 🐛 **Bugs and Maintenance** (Fixes) | 1.1 textual errors: typos, missing verse punctuation, translation alignment. 1.2 state retention: reading position, prayer rope counts, light and dark preference surviving a reload. 1.3 layout shifts across phone sizes and Safari and Android web views. 1.4 backend performance: caches, packages, fetch speed. |
-| 2 | ✨ **New Saint Additions** (Saints Packs) | 2.1 full, curated lives of new saints and martyrs. 2.2 hymnography sync: Troparia and Kontakia attached to their feasts. 2.3 icons styled for the app. |
+| 2 | 🕯️ **New Saint Additions** (Saints Packs) | 2.1 full, curated lives of new saints and martyrs. 2.2 hymnography sync: Troparia and Kontakia attached to their feasts. 2.3 icons styled for the app. |
 | 3 | 📖 **Library Experience** (UX Additions) | 3.1 ambient reading modes such as Candlelight and Monastery tones. 3.2 parallel and interlinear view controls. 3.3 focus typography for long devotional reading. |
 | 4 | 🛒 **Shop Additions** | 4.1 catalog drops: EIKON boxes, prints, new items. 4.2 checkout: cart, payment, shipping address verification. 4.3 storefront presentation. |
 | 5 | 💎 **Subscription Perks** (Tier Drops) | 5.1 Plus-only content: commentaries, anthologies, rare patristic bundles. 5.2 subscriber themes and fonts. 5.3 keeping a reader's tier correct on every platform. |

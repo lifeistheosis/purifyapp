@@ -112,7 +112,7 @@ export function diffActivity(
     out.push({
       id: id("signup"),
       kind: "signup",
-      badge: "✦",
+      badge: `+${signups}`,
       text: `${signups} new ${plural(signups, "account", "accounts")}`,
     });
   }

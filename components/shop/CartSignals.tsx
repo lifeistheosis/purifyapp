@@ -3,7 +3,7 @@
 import { Cart } from "@/components/ui/icons/Cart";
 import { Check } from "@/components/ui/icons/Check";
 import { PrayerRope } from "@/components/ui/icons/PrayerRope";
-import { Sparkle } from "@/components/ui/icons/Sparkle";
+import { Tag } from "@/components/ui/icons/Tag";
 import { Truck } from "@/components/ui/icons/Truck";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
@@ -56,7 +56,7 @@ export function CartDealTag({ deal, skewMs }: { deal: Deal; skewMs: number }) {
   if (left <= 0) return null;
   return (
     <div className="mt-2 inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 rounded-lg border border-emerald-400/25 bg-emerald-400/[0.07] px-2.5 py-1.5 font-sans text-caption">
-      <Sparkle size={13} className="text-emerald-300" aria-hidden />
+      <Tag size={13} className="text-emerald-300" aria-hidden />
       <span className="font-semibold text-emerald-300">{t("shop.cartDealUnlocked")}</span>
       <span className="font-semibold text-paper">{t("shop.cartDealOff", { percent: deal.percent })}</span>
       <span className="tabular-nums text-paper/60">{t("shop.cartDealEndsIn", { time: countdownLabel(left) })}</span>
@@ -93,7 +93,7 @@ export function OfferTag({
           {s.kind === "set_bundle" ? (
             <PrayerRope size={13} className="text-emerald-300" aria-hidden />
           ) : (
-            <Sparkle size={13} className="text-emerald-300" aria-hidden />
+            <Tag size={13} className="text-emerald-300" aria-hidden />
           )}
           <span className="font-semibold text-emerald-300">
             {s.kind === "set_bundle"
@@ -167,7 +167,7 @@ export function CartLadder({
     rows.push(
       <li key="multi" className="flex items-center justify-between gap-3">
         <p className="flex items-center gap-2 font-sans text-caption text-paper/75">
-          <Sparkle size={15} className="shrink-0 text-paper" aria-hidden />
+          <Tag size={15} className="shrink-0 text-paper" aria-hidden />
           {tn("shop.ladderMultiAway", multiBuy.need, { percent: multiBuy.percent })}
         </p>
         <span
@@ -188,7 +188,7 @@ export function CartLadder({
     rows.push(
       <DoneRow
         key="multi"
-        icon={<Sparkle size={15} aria-hidden />}
+        icon={<Tag size={15} aria-hidden />}
         text={tn("shop.ladderMultiOn", multiBuy.minItems, { percent: multiBuy.percent })}
       />,
     );

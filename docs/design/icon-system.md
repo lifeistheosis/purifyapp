@@ -29,7 +29,7 @@ A11y was already sound (labels, `aria-pressed`, roles verified in the principal 
 
 | Control | Was | Now | File | Verified |
 |---|---|---|---|---|
-| Verse highlight toggle | `✦` text | `Sparkle filled=highlighted` | components/bible/VerseRow.tsx | preview + suite |
+| Verse highlight toggle | `✦` text | `Highlighter filled=highlighted` (the Sparkle until 2026-11-11, gone at the owner's word: CLAUDE.md, "No sparkle star") | components/bible/VerseRow.tsx | preview + suite |
 | Clear word highlights | `⌫` | `Erase` | VerseRow.tsx | preview + suite |
 | Copy verse link / copied | `🔗`/`✓` | `LinkChain`/`Check` | VerseRow.tsx | preview + suite |
 | Bookmark verse | `★`/`☆` | `Star filled=bookmarked` | VerseRow.tsx | preview + suite |

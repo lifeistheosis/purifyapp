@@ -29,7 +29,7 @@ import { Check } from "@/components/ui/icons/Check";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { LinkChain } from "@/components/ui/icons/LinkChain";
 import { Pen } from "@/components/ui/icons/Pen";
-import { Sparkle } from "@/components/ui/icons/Sparkle";
+import { Highlighter } from "@/components/ui/icons/Highlighter";
 import { copyText } from "@/lib/ui/copyText";
 import { cn } from "@/lib/cn";
 import { shareLink } from "@/lib/site";
@@ -419,7 +419,7 @@ export function ParagraphRow({
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
  )}
  >
- <Sparkle size={16} filled={!!ann.highlighted} />
+ <Highlighter size={16} filled={!!ann.highlighted} />
  </button>
  {/* The colours, as on a verse: the picker under a caret. */}
  <div ref={swatchesRef} className="relative flex items-center">

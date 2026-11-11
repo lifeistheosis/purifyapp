@@ -23,7 +23,7 @@ import { SymbolText } from "@/components/community/SymbolText";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Close } from "@/components/ui/icons/Close";
-import { Sparkle } from "@/components/ui/icons/Sparkle";
+import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/cn";
 import { blockCommunityAuthor, muteCommunityAuthor, unmuteCommunityAuthor } from "@/lib/community/client";
@@ -580,7 +580,7 @@ export function ProfileViewer({
 
               {profile.nameDay ? (
                 <ProfileMoment
-                  icon={<Sparkle size={16} />}
+                  icon={<HaloedHead size={18} />}
                   title={t("profile.nameDayToday")}
                   detail={profile.nameDay.saint}
                   count={profile.nameDay.greetings > 0 ? tn("profile.greetingCount", profile.nameDay.greetings) : null}

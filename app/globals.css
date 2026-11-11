@@ -4593,7 +4593,7 @@ html[data-reading-mode="parchment"] .tour-mark {
 }
 
 /* Emoji and symbols in readers' own words (components/community/SymbolText),
-   drawn by fonts already on the device. Through the text faces, one ✨ or ●
+   drawn by fonts already on the device. Through the text faces, one emoji or ●
    in a post fetched the web fonts' "symbols" subsets while a profile was
    opening and laid out every line of the page again as each arrived
    (lib/community/symbols.ts). Nothing here is downloaded. */

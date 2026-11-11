@@ -21,7 +21,6 @@ import { CommunityAvatar } from "@/components/community/CommunityAvatar";
 import { ProfileAboutDoor, ProfileFace, ProfileTop, profileSurface, surfaceClass } from "@/components/community/profile/ProfileCard";
 import { ProfileEffect } from "@/components/community/profile/ProfileEffect";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { Sparkle } from "@/components/ui/icons/Sparkle";
 import { cn } from "@/lib/cn";
 import { fetchMyProfile } from "@/lib/profile/client";
 import { DECORATIONS, EFFECTS, SEASONAL_DECORATIONS, SEASONAL_EFFECTS, THEMES, inSeason, type Cosmetics } from "@/lib/profile/cosmetics";
@@ -139,7 +138,9 @@ export default function TryProfile({ row }: TryProps) {
         <TryStrip label={t("profile.effect")}>
           {effects.map((fx) => (
             <TryTile key={fx} on={effect === fx} onClick={() => setEffect(effect === fx ? null : fx)}>
-              <Sparkle size={22} />
+              <span aria-hidden className="relative block h-[34px] w-full overflow-hidden rounded-md bg-night">
+                <ProfileEffect effect={fx} />
+              </span>
               <span className="block font-sans text-[12px] font-semibold leading-[1.15]">{t(`profile.effectName.${fx}`)}</span>
             </TryTile>
           ))}

@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Book } from "@/components/ui/icons/Book";
 import { Pen } from "@/components/ui/icons/Pen";
-import { Sparkle } from "@/components/ui/icons/Sparkle";
+import { Highlighter } from "@/components/ui/icons/Highlighter";
 import { localBookNames } from "@/lib/bible/books";
 import { useChurchDay } from "@/lib/calendar/useChurchDay";
 import { dateLocale } from "@/lib/i18n/deviceDates";
@@ -125,7 +125,7 @@ export function TodayPage({ onWriteFrom }: { onWriteFrom: (source: JournalSource
 
 function HighlightRow({ first, label, verse, onWrite }: { first: boolean; label: string; verse: Highlighted; onWrite: (label: string) => void }) {
   const words = useVerseWords(verse.book, verse.chapter, verse.verse, true);
-  return <DayRow first={first} icon={<Sparkle size={20} />} label={label} quote={words.text ?? undefined} onClick={() => onWrite(label.split(" · ").pop() ?? label)} />;
+  return <DayRow first={first} icon={<Highlighter size={20} />} label={label} quote={words.text ?? undefined} onClick={() => onWrite(label.split(" · ").pop() ?? label)} />;
 }
 
 /** One thing of the day to write from: its mark, its name, its words if it has them, and the pen. */

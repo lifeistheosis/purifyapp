@@ -1,5 +1,6 @@
 import { OrnamentRule } from "./OrnamentRule";
 import { T } from "@/components/i18n/T";
+import { Cross } from "@/components/ui/icons/Cross";
 
 // Deliberate Greek verbatim in every locale (lang="grc" below). The phone's
 // foot (PhoneCalendar.tsx) sets the same line.
@@ -19,8 +20,8 @@ export function Colophon({ className = "" }: { className?: string }) {
       <p className="font-display-serif italic text-lede md:text-title-sm text-paper/85 leading-[1.5]">
         <T k="calendar.colophon.glory" />
       </p>
-      <p aria-hidden className="my-3 text-gold/70 text-ui">
-        ✦
+      <p aria-hidden className="my-3 flex justify-center text-gold/70">
+        <Cross size={15} />
       </p>
       <p className="font-display-serif italic text-body md:text-body text-paper/65 leading-[1.55]">
         <T k="calendar.colophon.prayers" />

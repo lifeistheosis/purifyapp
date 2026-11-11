@@ -96,7 +96,7 @@ const i18nRatchet =
               {
                 noStrings: true,
                 allowedStrings: [
-                  "·", "•", "|", "/", "(", ")", ":", "%", "©", "↗", "‹", "›", "→", "←", ".", "✦", "…", "+", "×", "▾", "★", "☆", "← →", "⌕", "⇤", "⇥", "↑", "“", "”.", "Orthodox Study Bible", "?", "✓", "✎", "†", "&rdquo;", "&ldquo;", "&rsquo;", "~", "–", "✕", "☩",
+                  "·", "•", "|", "/", "(", ")", ":", "%", "©", "↗", "‹", "›", "→", "←", ".", "…", "+", "×", "▾", "★", "☆", "← →", "⌕", "⇤", "⇥", "↑", "“", "”.", "Orthodox Study Bible", "?", "✓", "✎", "†", "&rdquo;", "&ldquo;", "&rsquo;", "~", "–", "✕", "☩",
                   // Brand names and social handles never translate.
                   "Purify", "Purify Pro", "Purify Plus", "A", "a", "@purifymylife", "@purify.app",
                 ],
