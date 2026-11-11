@@ -153,6 +153,13 @@ describe("a saint's page", () => {
     // The count is words, never the number on its own.
     expect(bump).not.toMatch(/>\s*\{total\}\s*</);
     expect(bump).not.toContain("saints.bump.signInToRequest");
+    // The pill's words whole, in every language and every state (the arbiter, 2026-11-11:
+    // Arabic's label was cut to an ellipsis at 320 on every saint's page): they wrap between
+    // words, never truncate, and the pill stays at least 44 tall.
+    expect(bump).not.toContain("truncate");
+    expect(bump).toContain('const LABEL = "min-w-0 text-center leading-tight text-balance break-words";');
+    expect(bump.match(/className=\{LABEL\}/g)).toHaveLength(3);
+    expect(bump).toMatch(/const PILL =\s*"[^"]*\bmin-h-11\b/);
     // The explainer: a drawn icon opening the same shared sheet, same words.
     expect(bump).toContain("data-saint-explainer");
     expect(bump).toContain("<Info ");

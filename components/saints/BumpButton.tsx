@@ -66,9 +66,19 @@ function Explain({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-/** The pill: one height and one type size, whatever it says. */
+/**
+ * The pill: one type size and at least 44 tall, whatever it says, and its
+ * words always whole (the arbiter, 2026-11-11: "the whole label, wrapping if
+ * it must, 44 tall at least"). A phone 320 wide leaves it about 144px for its
+ * words, and Arabic's "اطلب المزيد من الكتابات" was cut to an ellipsis there,
+ * on every saint's page; so the words (LABEL) wrap to a second line where a
+ * language needs it, and the pill grows to hold them.
+ */
 const PILL =
-  "tap-press inline-flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-pill px-4 font-sans text-ui font-semibold motion-safe:transition-colors";
+  "tap-press inline-flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-pill px-4 py-1.5 font-sans text-ui font-semibold motion-safe:transition-colors";
+
+/** The pill's words: whole, centred, wrapping between words, and inside a word only if one word is wider than the pill. */
+const LABEL = "min-w-0 text-center leading-tight text-balance break-words";
 
 /**
  * The saint's actions on one row (1.7, the owner's note 19): what asking
@@ -241,7 +251,7 @@ export function BumpButton({
         main={
           <p className={cn(PILL, "border border-paper/15 text-paper/80")}>
             <Check size={16} className="shrink-0" />
-            <span aria-hidden className="truncate">
+            <span aria-hidden className={LABEL}>
               {t("saints.bump.fullyPublished")}
             </span>
             <span className="sr-only">{t("saints.bump.fullyPublishedAria", { name: saintName })}</span>
@@ -263,7 +273,7 @@ export function BumpButton({
             aria-label={t("saints.ask.signInAria", { name: saintName })}
             className={cn(PILL, "border border-paper/25 text-paper hover:border-paper/50")}
           >
-            <span className="truncate">{t("saints.ask.label")}</span>
+            <span className={LABEL}>{t("saints.ask.label")}</span>
           </Link>
         }
         note={count}
@@ -317,7 +327,7 @@ export function BumpButton({
           )}
         >
           {bumped ? <Check size={16} className="shrink-0" /> : null}
-          <span className="truncate">{bumped ? t("saints.ask.asked") : t("saints.ask.label")}</span>
+          <span className={LABEL}>{bumped ? t("saints.ask.asked") : t("saints.ask.label")}</span>
         </button>
       }
       note={
