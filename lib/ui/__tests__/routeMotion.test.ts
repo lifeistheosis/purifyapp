@@ -789,8 +789,18 @@ describe("the wiring", () => {
     // (node_modules/next/dist/docs, the version 16 upgrade guide).
     const config = read("next.config.ts").replace(/\/\/.*$/gm, "");
     expect(config).not.toMatch(/viewTransition\s*:/);
-    const [major, minor] = (JSON.parse(read("node_modules/next/package.json")).version as string).split(".").map(Number);
-    expect(major > 16 || (major === 16 && minor >= 3), "a Next that pictures route changes without a flag").toBe(true);
+    // This reads the Next that is installed, not the one the branch asks for,
+    // so it is the one line here that can be red while every file is right:
+    // a checkout that pulled the move to 16.4.6 (2346e7cc) and did not install
+    // again still runs 16.2.6. It was reported as a broken page switch on
+    // 2026-11-11 for that reason, so the failure now says what to do.
+    const installed = JSON.parse(read("node_modules/next/package.json")).version as string;
+    const asked = (JSON.parse(read("package.json")).dependencies as Record<string, string>).next;
+    const [major, minor] = installed.split(".").map(Number);
+    expect(
+      major > 16 || (major === 16 && minor >= 3),
+      `Next ${installed} is installed here, and route changes are pictured without a flag only from 16.3. package.json asks for ${asked}: run npm ci, this checkout's packages are older than its lockfile`,
+    ).toBe(true);
   });
 
   it("one bridge at the root, after the two it depends on", () => {
