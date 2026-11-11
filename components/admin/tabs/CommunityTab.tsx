@@ -73,6 +73,8 @@ type CommunityData = {
   waitingCampaigns?: WaitingCampaign[];
   /** Their pictures that wait (1.9); absent while pictures are switched off. */
   waitingPictures?: WaitingPicture[];
+  /** True only while the care note can be sent (lib/campaigns/careOn.ts); the queue draws its button by this alone. */
+  care?: boolean;
 };
 
 export type CommunityPart = "waiting" | "announcements" | "shared" | "filter" | "kitchen" | "ambassadors";
@@ -115,6 +117,8 @@ export function CommunityPage({ part: first = "waiting" }: { part?: CommunityPar
   const [busy, setBusy] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [decided, setDecided] = useState<Record<string, string>>({});
+  // A note sent beside a row's decision (the care note), by row key: the row stays to be decided.
+  const [noted, setNoted] = useState<Record<string, string>>({});
 
   useEffect(() => {
     let alive = true;
@@ -171,6 +175,7 @@ export function CommunityPage({ part: first = "waiting" }: { part?: CommunityPar
     const err = await runCalls(action.calls);
     setBusy(null);
     if (err) setErrors((e) => ({ ...e, [row.key]: err }));
+    else if (action.note) setNoted((n) => ({ ...n, [row.key]: action.done }));
     else {
       setDecided((d) => ({ ...d, [row.key]: action.done }));
       reload();
@@ -196,6 +201,7 @@ export function CommunityPage({ part: first = "waiting" }: { part?: CommunityPar
         sharedPages: community.sharedPages ?? [],
         waitingCampaigns: community.waitingCampaigns ?? [],
         waitingPictures: community.waitingPictures ?? [],
+        care: community.care === true,
       })
     : [];
   const waitingNow = rows.filter((r) => !decided[r.key] && !removals.pending[r.key]).length;
@@ -257,6 +263,7 @@ export function CommunityPage({ part: first = "waiting" }: { part?: CommunityPar
                   busy={busy}
                   errors={errors}
                   decided={decided}
+                  noted={noted}
                   waiting={(key) => (removals.pending[key] ? removals.seconds(key) : null)}
                   onAction={(row, action) => void decide(row, action)}
                   onUndo={removals.undo}

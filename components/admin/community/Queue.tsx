@@ -29,6 +29,7 @@ export function QueueList({
   busy,
   errors,
   decided,
+  noted,
   waiting,
   onAction,
   onUndo,
@@ -37,6 +38,8 @@ export function QueueList({
   busy: string | null;
   errors: Record<string, string>;
   decided: Record<string, string>;
+  /** A note sent beside a row's decision (the care note), by row key. */
+  noted?: Record<string, string>;
   /** Seconds left on a removal held for Undo, by row key; null when none waits. */
   waiting: (key: string) => number | null;
   onAction: (row: QueueRow, action: QueueAction) => void;
@@ -53,6 +56,7 @@ export function QueueList({
           busy={busy}
           error={errors[row.key] ?? null}
           decided={decided[row.key] ?? null}
+          noted={noted?.[row.key] ?? null}
           seconds={waiting(row.key)}
           onAction={onAction}
           onUndo={onUndo}
@@ -68,6 +72,7 @@ function QueueItem({
   busy,
   error,
   decided,
+  noted,
   seconds,
   onAction,
   onUndo,
@@ -77,11 +82,14 @@ function QueueItem({
   busy: string | null;
   error: string | null;
   decided: string | null;
+  noted: string | null;
   seconds: number | null;
   onAction: (row: QueueRow, action: QueueAction) => void;
   onUndo: (key: string) => void;
 }) {
   const [written, setWritten] = useState(false);
+  // A note asks first, in the words of what will be sent: a note in a person's inbox cannot be taken back.
+  const [asking, setAsking] = useState<string | null>(null);
   // A row the safety line marked: no reason chosen in advance, and none that stands for none.
   const strict = row.actions.some((a) => a.needsReason);
   // Why, for the poster's notice, when a removal on this row tells them.
@@ -122,8 +130,10 @@ function QueueItem({
     );
   }
 
-  const primary = row.actions.filter((a) => a.tone === "primary");
-  const rest = row.actions.filter((a) => a.tone !== "primary");
+  const primary = row.actions.filter((a) => a.tone === "primary" && !a.note);
+  const rest = row.actions.filter((a) => a.tone !== "primary" && !a.note);
+  // Beside the decisions, never one of them (QueueAction.note): the care note.
+  const notes = row.actions.filter((a) => a.note);
   const tells = row.actions.some((a) => a.notifies);
   const act = (a: QueueAction) => {
     if (a.needsReason && !why) return;
@@ -199,6 +209,38 @@ function QueueItem({
                 <img src={row.picture} alt="Sent with it" className="aspect-[4/3] w-full object-cover" />
               </a>
             ) : null}
+            {notes.map((a) =>
+              noted ? (
+                <p key={a.id} role="status" className="mt-2 flex items-center gap-2 font-sans text-[12.5px]" style={ink2}>
+                  <StatusDot tone="good" />
+                  {noted}
+                </p>
+              ) : asking === a.id ? (
+                <div key={a.id} className="mt-2 rounded-[var(--adm-radius-sm)] px-3 py-2.5" style={{ background: "var(--adm-panel-2)" }}>
+                  <p className="font-sans text-[12.5px] leading-[1.5]" style={ink}>
+                    {a.asks}
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <ToolbarButton
+                      variant="primary"
+                      onClick={() => {
+                        setAsking(null);
+                        onAction(row, a);
+                      }}
+                    >
+                      {a.label}
+                    </ToolbarButton>
+                    <ToolbarButton onClick={() => setAsking(null)}>Cancel</ToolbarButton>
+                  </div>
+                </div>
+              ) : (
+                <div key={a.id} className="mt-2">
+                  <ToolbarButton loading={busy === row.key + a.id} onClick={() => setAsking(a.id)}>
+                    {a.label}
+                  </ToolbarButton>
+                </div>
+              ),
+            )}
             {error ? (
               <p role="alert" className="mt-2 font-sans text-[12px]" style={{ color: "var(--adm-critical)" }}>
                 {error}

@@ -7,6 +7,7 @@ import {
   UNDO_MS,
   besideDanger,
   buildQueue,
+  careAction,
   campaignKey,
   countWaiting,
   holdKey,
@@ -18,6 +19,7 @@ import {
   waitingKeys,
   withReason,
   type HoldIn,
+  type QueueRow,
   type QueueSources,
   type ReportIn,
 } from "../communityQueue";
@@ -411,5 +413,61 @@ describe("a waiting campaign's place (2026-11-11)", () => {
   it("says the country alone, or nothing", () => {
     expect(buildQueue({ ...EMPTY, waitingCampaigns: [waiting({ place_country: "GR", place_name: null })] })[0].note).toContain("Place: Greece");
     expect(buildQueue({ ...EMPTY, waitingCampaigns: [waiting({})] })[0].note ?? "").not.toContain("Place:");
+  });
+});
+
+describe("the care note, beside the decision (call 26, his yes of 2026-11-11)", () => {
+  // A comment on a campaign the safety line marked: held on its reply, as lib/campaigns/thread.ts holds it.
+  const marked = hold({ id: "44444444-4444-4444-8444-444444444444", reason: "spam", detail: "crisis: the writer may be in danger", original_body: null });
+  const campaign = (id: string, held_reason: string) => ({
+    id,
+    title: "For my brother",
+    intention: "healing",
+    for_whom: "living",
+    subject_name: null,
+    details: null,
+    days: 7,
+    ends_on: null,
+    creator_name: "Reader D",
+    creator_handle: "reader_d",
+    held_reason,
+    created_at: "2026-11-10T21:00:00Z",
+  });
+  const care = (row: QueueRow | undefined) => row?.actions.find((a) => a.id === "care");
+
+  it("stands on a marked comment while the route says it can be sent, and sends the campaigns' own action for its hold", () => {
+    const row = buildQueue({ ...EMPTY, holds: [marked], care: true })[0];
+    const action = care(row);
+    expect(action).toEqual(careAction("hold", marked.id));
+    expect(action).toMatchObject({ label: "Send the care note", note: true, removal: false, done: "Care note sent." });
+    expect(row.actions.find((a) => a.id === "care")?.calls).toEqual([{ url: "/api/admin/community", body: { action: "care_note_for_hold", id: marked.id } }]);
+    // It asks first, in the moderators' page's own words.
+    expect(row.actions.find((a) => a.id === "care")?.asks).toBe("A short private note from Purify goes to this writer's inbox, with where to find help. It quotes nothing they wrote.");
+  });
+
+  it("stands on a waiting campaign the line marked, and on no other", () => {
+    const rows = buildQueue({ ...EMPTY, waitingCampaigns: [campaign("c1", "new"), campaign("c2", "new; crisis")], care: true });
+    expect(care(rows.find((r) => r.key === campaignKey("c2", "c2")))?.calls).toEqual([{ url: "/api/admin/community", body: { action: "care_note_for_campaign", id: "c2" } }]);
+    expect(care(rows.find((r) => r.key === campaignKey("c1", "c1")))).toBeUndefined();
+  });
+
+  it("is drawn by the route's answer alone: nothing while it says nothing", () => {
+    expect(care(buildQueue({ ...EMPTY, holds: [marked] })[0])).toBeUndefined();
+    expect(care(buildQueue({ ...EMPTY, waitingCampaigns: [campaign("c2", "crisis")] })[0])).toBeUndefined();
+  });
+
+  it("never stands on words the line did not mark, nor on a held post, which its sender does not read", () => {
+    expect(care(buildQueue({ ...EMPTY, holds: [hold({ reason: "spam", detail: "a short link" })], care: true })[0])).toBeUndefined();
+    const onPost = hold({ reason: "spam", detail: "crisis: the writer may be in danger", post_id: POST, reply_id: null, reply: null, post: { id: POST, title: null, body: "A post.", author_name: "Reader B", author_handle: null, status: "held" } });
+    expect(care(buildQueue({ ...EMPTY, holds: [onPost], care: true })[0])).toBeUndefined();
+  });
+
+  it("is not a decision: the panel keeps the row to be decided once the note is sent, and asks before it goes", () => {
+    const tab = readFileSync(join(process.cwd(), "components/admin/tabs/CommunityTab.tsx"), "utf8");
+    expect(tab).toContain("else if (action.note) setNoted((n) => ({ ...n, [row.key]: action.done }));");
+    expect(tab).toContain("care: community.care === true,");
+    const queue = readFileSync(join(process.cwd(), "components/admin/community/Queue.tsx"), "utf8");
+    expect(queue).toContain("onClick={() => setAsking(a.id)}");
+    expect(queue).toContain('row.actions.filter((a) => a.tone !== "primary" && !a.note)');
   });
 });

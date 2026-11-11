@@ -120,6 +120,12 @@ export type QueueSources = {
    * are switched off (lib/campaigns/parts.ts).
    */
   waitingPictures?: WaitingPicture[];
+  /**
+   * Whether the care note can be sent (call 26; lib/campaigns/careOn.ts), as
+   * the route says it: the panel draws the note's button by this answer and
+   * by nothing of its own, as the moderators' page does.
+   */
+  care?: boolean;
 };
 
 // ── The keys: one per thing ──────────────────────────────────────────────
@@ -173,7 +179,36 @@ export type QueueAction = {
    * (lib/community/dangerHolds.ts).
    */
   needsReason?: boolean;
+  /**
+   * A note to the writer beside the decision, not a decision (the care note):
+   * it asks first in the words of what will be sent, goes at once when the
+   * moderator says so, and leaves the row to be decided.
+   */
+  note?: boolean;
+  /** What a note says will be sent, asked before it goes. */
+  asks?: string;
 };
+
+/**
+ * The care note (call 26, his yes of 2026-11-11): a short private note from
+ * Purify to a writer whose words the safety line marked, in their own inbox,
+ * with where to find help. The server finds the writer from the row's own id
+ * and holds every rule of it (lib/campaigns/careSend.ts): one a day for a
+ * writer, never their words, never a push. The words are the moderators'
+ * page's (mod.care.*), in the panel's English.
+ */
+export function careAction(target: "campaign" | "hold", id: string): QueueAction {
+  return {
+    id: "care",
+    label: "Send the care note",
+    tone: "default",
+    removal: false,
+    note: true,
+    asks: "A short private note from Purify goes to this writer's inbox, with where to find help. It quotes nothing they wrote.",
+    calls: [{ url: COMMUNITY, body: { action: target === "campaign" ? "care_note_for_campaign" : "care_note_for_hold", id } }],
+    done: "Care note sent.",
+  };
+}
 
 /**
  * What else held words the safety line marked, without the mark: "crisis;
@@ -284,7 +319,7 @@ const dismissAll = (action: string, ids: readonly string[]): QueueCall[] => ids.
 
 type Parts = { holds: HoldIn[]; reports: ReportIn[] };
 
-function conversationRow(key: string, part: Parts): QueueRow {
+function conversationRow(key: string, part: Parts, care: boolean): QueueRow {
   const hold = part.holds[0] ?? null;
   const reports = part.reports;
   const reportIds = reports.map((r) => r.id);
@@ -388,6 +423,9 @@ function conversationRow(key: string, part: Parts): QueueRow {
       calls: [{ url: FILTER, body: { action: "approve_hold", id: hold.id } }],
       done: words ? "Approved as written." : "Shown to readers again.",
     });
+    // The care note, for an update or a comment the line marked: the server's sender
+    // reads a hold on a reply and nothing else (lib/campaigns/careSend.ts).
+    if (care && danger && hold.reply_id) actions.push(careAction("hold", hold.id));
     return {
       key,
       what: danger
@@ -449,7 +487,7 @@ export function buildQueue(src: QueueSources): QueueRow[] {
   for (const h of src.holds) add(holdKey(h)).holds.push(h);
   for (const r of src.reports) add(reportKey(r, r.is_profile ? (r.profile?.handle ?? null) : null)).reports.push(r);
 
-  const rows: QueueRow[] = [...convo.entries()].map(([key, part]) => conversationRow(key, part));
+  const rows: QueueRow[] = [...convo.entries()].map(([key, part]) => conversationRow(key, part, src.care === true));
 
   for (const r of src.pendingRecipes) {
     rows.push({
@@ -574,6 +612,8 @@ export function buildQueue(src: QueueSources): QueueRow[] {
           calls: [{ url: COMMUNITY, body: { action: "remove_campaign", id: c.id } }],
           done: "Removed.",
         },
+        // Only while it waits: once it is approved or removed the row is gone, and the chance with it.
+        ...(src.care && urgent ? [careAction("campaign", c.id)] : []),
       ],
     });
   }

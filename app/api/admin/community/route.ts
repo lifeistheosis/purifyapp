@@ -5,6 +5,7 @@ import { getAdminUser } from "@/lib/admin/access";
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
+import { CARE_NOTE_SEND } from "@/lib/campaigns/careOn";
 import { campaignsInBuild } from "@/lib/campaigns/flags";
 import { CAMPAIGN_BUCKET, campaignImage } from "@/lib/campaigns/image";
 import { isCampaignModAction } from "@/lib/campaigns/model";
@@ -334,6 +335,10 @@ export async function GET(req: Request) {
       ...(campaignsInBuild() ? { waitingCampaigns: waitingCampaigns.rows } : {}),
       // Absent, not empty, while pictures are switched off.
       ...(picturesOn() ? { waitingPictures: waitingPictures.rows } : {}),
+      // Said only while the care note can be sent (lib/campaigns/careOn.ts),
+      // as the moderators' queue says it, so the panel never offers a button
+      // this route would refuse. The marked words are campaigns' alone.
+      ...(CARE_NOTE_SEND && campaignsInBuild() ? { care: true } : {}),
       recipeReports: recipeReports.data ?? [],
       conversationReports: reports,
       recentPosts: recentPosts.data ?? [],
@@ -404,6 +409,12 @@ const actionSchema = z.object({
     // all while pictures are switched off (lib/campaigns/moderation.ts).
     "approve_picture",
     "remove_picture",
+    // The care note (call 26): to the writer of a waiting campaign, or of an
+    // update or a comment that waits, whose words the safety line marked.
+    // Sent by the campaigns' own writer (lib/campaigns/careSend.ts), which
+    // holds every rule of it and refuses it while it is switched off.
+    "care_note_for_campaign",
+    "care_note_for_hold",
     "dismiss_recipe_report",
     // The Kitchen's reviews. Removing keeps the row, as with conversations,
     // and deletes its photos from the public bucket, as with campaigns.
@@ -496,7 +507,9 @@ export async function POST(req: Request) {
       }
       return NextResponse.json({ ok: true });
     }
-    if (action === "approve_campaign" || action === "restore_campaign") {
+    // Closed, only July's two are actions: anything newer would fall through to
+    // the switch below, which knows none of them, and answer as though done.
+    if (action !== "remove_campaign" && action !== "dismiss_campaign_report") {
       return NextResponse.json({ error: "Invalid action." }, { status: 400 });
     }
   }

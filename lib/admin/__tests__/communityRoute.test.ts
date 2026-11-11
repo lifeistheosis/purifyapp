@@ -232,6 +232,36 @@ describe("/api/admin/community, in a build that has the rework", () => {
     expect(state.campaignDecisions).toHaveLength(1);
   });
 
+  it("hands the care note to the campaigns' own moderation, for a campaign and for a hold; closed, it is no action", async () => {
+    const HOLD = "55555555-5555-4555-8555-555555555555";
+    expect((await act({ action: "care_note_for_campaign", id: CAMP_1 })).status).toBe(200);
+    expect((await act({ action: "care_note_for_hold", id: HOLD })).status).toBe(200);
+    expect(state.campaignDecisions).toEqual([
+      { actor: "owner@example.com", action: "care_note_for_campaign", id: CAMP_1, reason: null },
+      { actor: "owner@example.com", action: "care_note_for_hold", id: HOLD, reason: null },
+    ]);
+    // A refusal (already sent today, not marked) is said as the sender says it.
+    state.campaignAnswer = { ok: false, status: 409, error: "A care note was already sent to this writer today." };
+    const again = await act({ action: "care_note_for_campaign", id: CAMP_1 });
+    expect(again.status).toBe(409);
+    expect(((await again.json()) as { error: string }).error).toBe("A care note was already sent to this writer today.");
+    // Closed, nothing newer than July is an action: never answered as though done, never logged.
+    __setCampaignsOpening("closed");
+    const logged = state.logged.length;
+    for (const action of ["care_note_for_campaign", "care_note_for_hold", "approve_picture", "remove_picture"]) {
+      expect((await act({ action, id: CAMP_1 })).status, action).toBe(400);
+    }
+    expect(state.campaignDecisions).toHaveLength(3);
+    expect(state.logged).toHaveLength(logged);
+  });
+
+  it("says in the queue that the note can be sent, and nothing while campaigns are closed", async () => {
+    const read = async () => (await (await GET(new Request("https://purifyapp.net/api/admin/community"))).json()) as { care?: boolean };
+    expect((await read()).care).toBe(true);
+    __setCampaignsOpening("closed");
+    expect("care" in (await read())).toBe(false);
+  });
+
   it("answers as that moderation answers when it refuses", async () => {
     state.campaignAnswer = { ok: false, status: 404, error: "Not found." };
     const res = await act({ action: "remove_campaign", id: CAMP_1, reason: "Asks for money" });
