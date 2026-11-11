@@ -49,9 +49,20 @@
 //             Prayers back whole, its picture, verse and rule not brought in
 //             again (lib/ui/routeMotion.ts, quietEntrance), and where it was
 //             left
+//   slow      a page that is slow to come shows its outline, and the outline
+//             is pictured as the page arriving, in the same one transition;
+//             when the page is ready it takes its outline's place with no
+//             second transition, under a copy of the outline that fades
+//             (lib/ui/outlineLeave.ts), and it is not kept back: React keeps
+//             an outline it has shown for 300ms, and the page is in place
+//             within a quarter of a second of that or of its own script,
+//             whichever is later. Until the week 1.9 was finished this same
+//             tap was three transitions, none of which showed anything, and
+//             the page 0.6s late (components/nav/RouteTransition.tsx, "The
+//             mark asks only while the address is changing")
 //   each is over within 350ms
 //   the browser's own Back is not pictured (the platform's rule)
-//   with motion reduced, nothing is pictured at all
+//   with motion reduced, nothing is pictured at all, a slow page included
 //   and each walk ends on the page it set out for
 //
 // A film is the same walks with the transition stopped as it becomes ready
@@ -297,6 +308,98 @@ async function watchingBar(page, during) {
   });
   const result = await during();
   return { ...result, bar: await page.evaluate(() => window.__barSeen) };
+}
+
+/** How long an outline's copy takes to fade over its page (lib/ui/outlineLeave.ts, DISSOLVE_MS; a unit test holds the two together). */
+const DISSOLVE_MS = 180;
+/** How long React keeps an outline it has shown, whatever else is ready (react-dom, FALLBACK_THROTTLE_MS). */
+const REACT_KEEPS_MS = 300;
+/** How far past the moment it could first have come a page may arrive: the outline's own picture ending, and the page being drawn. */
+const KEPT_BACK_MS = 250;
+
+/**
+ * A page that is slow to come: `selector` is tapped, and every script the
+ * page asks for is kept back until `ms` after the tap, which is what makes a
+ * page slow in the apps (its words are on the phone; its script is what a
+ * slow phone is still reading). Says what was pictured, and on every frame
+ * whether the outline is in the page and whether a copy of it is.
+ */
+async function slowWalk(page, selector, ms) {
+  await forget(page);
+  const from = await pathOf(page);
+  const scripts = "**/_next/static/chunks/*.js";
+  let tapped = 0;
+  let held = 0;
+  const gate = async (route) => {
+    held += 1;
+    while (!tapped) await new Promise((done) => setTimeout(done, 5));
+    await new Promise((done) => setTimeout(done, Math.max(0, tapped + ms - Date.now())));
+    await route.fallback();
+  };
+  await page.route(scripts, gate);
+  try {
+    await page.evaluate(() => {
+      const seen = (window.__outlineSeen = { at: performance.now(), frames: [] });
+      const until = seen.at + 6000;
+      let last = "";
+      const look = () => {
+        const state = {
+          path: location.pathname,
+          outline: Boolean(document.querySelector("[data-route-loading]")),
+          copy: Boolean(document.querySelector("[data-outline-ghost]")),
+        };
+        const said = JSON.stringify(state);
+        if (said !== last) seen.frames.push({ ms: Math.round(performance.now() - seen.at), ...state });
+        last = said;
+        if (performance.now() < until) requestAnimationFrame(look);
+      };
+      requestAnimationFrame(look);
+    });
+    tapped = Date.now();
+    await page.locator(selector).first().click();
+    await page.waitForFunction((f) => location.pathname !== f, from, { timeout: 15000 }).catch(() => {});
+    // Past the page's own arrival, its outline's copy, and any transition a fault would start after them.
+    await sleep(page, Math.max(0, tapped + ms + 1700 - Date.now()));
+  } finally {
+    await page.unroute(scripts, gate);
+  }
+  return { from, to: await pathOf(page), pictured: await seen(page), frames: await page.evaluate(() => window.__outlineSeen.frames), held, ms };
+}
+
+/** What a slow page's walk must have been: `judge`, and what became of the outline. */
+function judgeSlow(result, expected) {
+  const faults = judge(result, expected);
+  const { frames, ms, held } = result;
+  const shown = frames.find((f) => f.outline);
+  if (!shown) {
+    faults.push(`no outline was shown (${held} of the page's scripts were kept back ${ms}ms), so the walk proves nothing`);
+    return faults;
+  }
+  const there = frames.find((f) => f.ms > shown.ms && !f.outline);
+  if (!there) {
+    faults.push("the page never took its outline's place");
+    return faults;
+  }
+  if (!there.copy) faults.push("the outline was cut away: nothing of it was left over the page as the page took its place");
+  else {
+    const cleared = frames.find((f) => f.ms > there.ms && !f.copy);
+    if (!cleared) faults.push("what was left of the outline was never taken away");
+    else if (cleared.ms - there.ms > DISSOLVE_MS + 200) faults.push(`what was left of the outline stood ${cleared.ms - there.ms}ms over the page; it fades in ${DISSOLVE_MS}`);
+  }
+  const free = Math.max(ms, shown.ms + REACT_KEEPS_MS);
+  if (there.ms - free > KEPT_BACK_MS) {
+    faults.push(
+      `the page was kept back ${there.ms - free}ms: its script was there ${ms}ms after the tap and its outline was shown at ${shown.ms}ms (React keeps one it has shown for ${REACT_KEEPS_MS}ms), so it could have come at ${free}ms, and it came at ${there.ms}ms`,
+    );
+  }
+  return faults;
+}
+
+/** A slow walk in a line: when the outline was shown, when the page took its place. */
+function saidSlow(result) {
+  const shown = result.frames.find((f) => f.outline);
+  const there = shown ? result.frames.find((f) => f.ms > shown.ms && !f.outline) : null;
+  return `${result.from} to ${result.to}: its script ${result.ms}ms after the tap, its outline at ${shown ? `${shown.ms}ms` : "no time"}, the page at ${there ? `${there.ms}ms` : "no time"}`;
 }
 
 /** A contact sheet of a walk's stills, for looking at. */
@@ -752,6 +855,31 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
     await ctx.close();
   }
 
+  // A page that is slow to come: first one that is ready while its outline
+  // is still arriving, which is the page a picture could keep back, then one
+  // that is ready well after. Each on a phone of its own, newly started: on
+  // one that has walked the app already the service worker holds every
+  // script, nothing is asked for, and no page is slow.
+  for (const [ms, when] of [
+    [450, "ready while its outline is still arriving"],
+    [1100, "ready well after its outline"],
+  ]) {
+    const fresh = await openPhone({ scale, browser });
+    await fresh.ctx.addInitScript(watchTransitions);
+    try {
+      await go(fresh.page, "/prayers/");
+      await sleep(fresh.page, 1200);
+      const slow = await slowWalk(fresh.page, '[data-tab-bar] a[href="/discover/"]', ms);
+      note(
+        `a page that is slow to come, ${when}: its outline arrives as the page, and the page takes its place under it, not kept back`,
+        judgeSlow(slow, { old: "route-leave", fresh: "route-arrive", to: "/discover" }),
+        saidSlow(slow),
+      );
+    } finally {
+      await fresh.ctx.close();
+    }
+  }
+
   // Motion reduced: the same tap, and nothing pictured.
   const still = await openPhone({ scale, set: { "purify.motion": "off" }, browser });
   await still.ctx.addInitScript(watchTransitions);
@@ -765,6 +893,20 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
     if (!sameAddress(r.to, "/prayers/hours")) faults.push(`ended on ${r.to}, not /prayers/hours`);
     if (r.pictured.length) faults.push(`pictured ${r.pictured.length} transition(s) with motion reduced`);
     note("with motion reduced, nothing is pictured", faults, `${r.from} to ${r.to}`);
+
+    // And a page that is slow to come: its outline and then the page, each
+    // simply there, with nothing left of the outline over the page.
+    await go(still.page, "/prayers/");
+    await sleep(still.page, 1200);
+    const slow = await slowWalk(still.page, '[data-tab-bar] a[href="/discover/"]', 700);
+    const quiet = [];
+    const shown = slow.frames.find((f) => f.outline);
+    if (!sameAddress(slow.to, "/discover")) quiet.push(`ended on ${slow.to}, not /discover`);
+    if (!shown) quiet.push(`no outline was shown (${slow.held} of the page's scripts were kept back), so the walk proves nothing`);
+    else if (!slow.frames.some((f) => f.ms > shown.ms && !f.outline)) quiet.push("the page never took its outline's place");
+    if (slow.pictured.length) quiet.push(`pictured ${slow.pictured.length} transition(s) with motion reduced`);
+    if (slow.frames.some((f) => f.copy)) quiet.push("a copy of the outline was left over the page with motion reduced");
+    note("with motion reduced, a page that is slow to come is simply there, and so is its outline before it", quiet, saidSlow(slow));
   } finally {
     await still.ctx.close();
     await browser.close();

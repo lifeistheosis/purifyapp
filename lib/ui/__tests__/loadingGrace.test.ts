@@ -4,7 +4,8 @@
 // What a reader would notice if this broke: grey boxes flashing between two
 // pages, the real page arriving a third of a second late behind them; or, the
 // other way, a page that is already on screen going blank because its outline
-// held off where nothing was on its way.
+// held off where nothing was on its way; or a page that was slow to come cut
+// in over its outline, and its outline cut in before it.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -100,17 +101,39 @@ describe("the wiring", () => {
     const src = read("components/ui/AfterAMoment.tsx");
     expect(src).toContain('if (typeof window !== "undefined" && onTheWay(pathname, window.location.pathname)) {');
     expect(src).toContain("use(momentFor(pathname));");
-    expect(src).toContain('<div data-route-loading="" className="contents">');
+    expect(src).toContain('<div ref={outline} data-route-loading="" className="contents">');
   });
 
-  it("an outline that did come first is not pictured as a page arriving", () => {
+  it("an outline that did come first is pictured as its page arriving: it is not cut in", () => {
+    // It was left out of the picture until the week 1.9 was finished, and so
+    // was put in place with no motion at all (the mark's own picture takes no
+    // time: the rule below). Whatever arrives is pictured now.
     const bridge = read("components/nav/RouteTransition.tsx");
     const effect = bridge.slice(bridge.indexOf("useIsoLayoutEffect(() => {"), bridge.indexOf("}, [pathname]);"));
-    const held = effect.indexOf('if (document.querySelector("[data-route-loading]")) return;');
-    expect(held).toBeGreaterThan(-1);
-    expect(held).toBeLessThan(effect.indexOf("beginNav(note);"));
-    // And the transition React started for it is over at once.
+    expect(effect).not.toContain("data-route-loading");
+    expect(effect).toMatch(/if \(note === "traverse" \|\| !canMove\(\)\) return;\s*(\/\/[^\n]*\n\s*)*beginNav\(note\);/);
     const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
     expect(css).toMatch(/::view-transition-group\(\.route-mark\),\s*::view-transition-old\(\.route-mark\),\s*::view-transition-new\(\.route-mark\) \{\s*animation-duration: 0s;\s*\}/);
+  });
+
+  it("picturing it keeps the page back by next to nothing: React keeps an outline it has shown for 300ms whatever we do", () => {
+    // The reason it was once left out of the picture: React holds its next
+    // change until a picture is over, and the page behind the outline would
+    // wait out the outline's 340ms. But React already keeps a shown outline
+    // for 300ms (an outline that flashed would be worse than none), so the
+    // picture costs the difference and no more. Read from the React that Next
+    // ships: if this number moves, measure again with scripts/route-motion.mjs.
+    const react = read("node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.production.js");
+    expect(react).toMatch(/globalMostRecentFallbackTime \+ 300 - now\(\)/);
+    const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
+    // The page arriving: 40ms held, 300ms settling.
+    expect(css).toMatch(/::view-transition-new\(root\.nav-forward\) \{\s*animation-name: route-settle;\s*animation-duration: 300ms;\s*\}/);
+  });
+
+  it("and it says when it is taken out, from its own cleanup, while it still stands in the page", () => {
+    const src = read("components/ui/AfterAMoment.tsx");
+    expect(src).toMatch(/useIsoLayoutEffect\(\(\) => \{\s*const el = outline\.current;\s*return \(\) => \{\s*if \(el\) outlineLeft\(el\);\s*\};\s*\}, \[\]\);/);
+    // A layout effect, not an effect: an effect's cleanup runs after React has taken the outline out.
+    expect(src).toContain('const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;');
   });
 });

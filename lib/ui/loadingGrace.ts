@@ -15,7 +15,12 @@
  * holds off for GRACE_MS (components/ui/AfterAMoment.tsx suspends on the
  * promise below, and a transition that is suspended keeps the page the reader
  * is on). A page that is ready inside the moment arrives as itself, and the
- * outline is never drawn. A page that is not gets its outline as before.
+ * outline is never drawn.
+ *
+ * A page that is not ready gets its outline, and from the week 1.9 was
+ * finished the outline arrives as a page does and the page then takes its
+ * place under a dissolve: components/nav/RouteTransition.tsx ("A page that
+ * is slow to come") and lib/ui/outlineLeave.ts. Both were cuts before.
  *
  * Only on the way to a page. An outline can also be asked for by a page that
  * is already on screen (something in it is being fetched), and that is not a

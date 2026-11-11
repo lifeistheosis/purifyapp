@@ -9048,6 +9048,37 @@ body[data-route-exit] [data-route-content] {
 .route-fade[data-carried="back"] .cascade > * {
  animation-delay: -1s;
 }
+/* Nor is an outline that came in a picture (a page that was slow to come,
+   components/nav/RouteTransition.tsx). An outline is the shape of its page
+   and nothing more, and the picture brings it in whole. With its rows held
+   back until "after the fade", as a page's are, what settled in for the
+   first quarter of a second was an empty page (seen in stills,
+   2026-11-11). */
+.route-fade[data-carried] [data-route-loading] .cascade > * {
+ animation-delay: -1s;
+}
+
+/* A page that was slow to come (1.9). Its outline arrives as a page does,
+   and when the page is ready the outline dissolves over it: a copy of the
+   outline as it stood is left over the page for a moment and fades
+   (lib/ui/outlineLeave.ts, which says why it is a copy and not a picture).
+   Nothing in the copy moves. Its rows' own entrance would begin again from
+   nothing in it; each stands as far in as it had come, and the copy fades as
+   one thing. */
+[data-outline-ghost],
+[data-outline-ghost] * {
+ animation: none !important;
+ transition: none !important;
+}
+
+/* And the page's rows come in as its outline goes. As a rule they wait for
+   the wrapper's own fade (above, "Sequence the two phases"). Here there is
+   no fade to wait for, and the wait would be a quarter of a second of an
+   emptied page between the outline and the words. The wrapper is told for as
+   long as the rows take to come in, and then untold. */
+.route-fade[data-after-outline] .cascade > * {
+ --cascade-start: 0ms;
+}
 
 /* Airbnb-style listing card. The surface rises a few px with a soft shadow
    on pointer hover (springs back on leave) and dips on tap, so a grid of

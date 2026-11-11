@@ -859,14 +859,51 @@ describe("the wiring", () => {
 
   it("React pictures a change of address, and nothing else a page does", () => {
     // A search answering or a list arriving inside a page is a React
-    // transition too, and must never be pictured as a page switch. React
-    // pictures a <ViewTransition> when something inside it changes, so the
-    // mark is alone in its own, carries the address and nothing else, and
-    // answers to no other kind of change (`default="none"`).
-    expect(bridge).toContain('<ViewTransition default="none" update={canMove() ? "route-mark" : "none"}>');
+    // transition too, and must never be pictured as a page switch. So the
+    // mark is alone in its <ViewTransition>, carries the address and nothing
+    // else, and answers to no other kind of change (`default="none"`).
     const inside = bridge.slice(bridge.indexOf("<ViewTransition default="), bridge.indexOf("</ViewTransition>"));
     expect(inside.match(/<[a-zA-Z]/g) ?? []).toHaveLength(2);
     expect(inside).toContain('<span aria-hidden data-route-mark={pathname} className="route-mark" />');
+  });
+
+  it("and the mark asks for a picture only while the address is changing", () => {
+    // Being alone in its <ViewTransition> was not enough. On every change
+    // React may picture, it names every <ViewTransition> standing beside
+    // what changed, in case it moved, and starts a transition to find out:
+    // one that shows nothing, runs its full length, and holds React's next
+    // change until it is over. Measured on the export on 2026-11-11, a page
+    // whose script was there 450ms after the tap: three transitions for the
+    // one tap, the page on screen 0.6s late. A mark that says "none" is
+    // passed over.
+    expect(bridge).toContain("const [settled, setSettled] = useState(pathname);");
+    expect(bridge).toContain("const changing = !samePage(settled, pathname);");
+    expect(bridge).toContain('<ViewTransition default="none" update={changing && canMove() ? "route-mark" : "none"}>');
+    // Said in the layout effect, first thing, whatever kind of change it
+    // was: React draws again at once for a layout effect, before any other
+    // change can commit, and leaves a plain effect until the picture is over.
+    const effect = bridge.slice(bridge.indexOf("useIsoLayoutEffect(() => {"), bridge.indexOf("}, [pathname]);"));
+    expect(effect.indexOf("setSettled(pathname);")).toBeGreaterThan(-1);
+    expect(effect.indexOf("setSettled(pathname);")).toBeLessThan(effect.indexOf("if (samePage(from, pathname)) return;"));
+    expect(bridge.match(/setSettled\(/g) ?? []).toHaveLength(1);
+  });
+
+  it("which is how React decides what to name (read from the React that Next ships)", () => {
+    // If this fails after an upgrade, React has changed how it finds the
+    // boundaries beside a change. Run `node scripts/route-motion.mjs` on the
+    // export: its walk "a part that arrives a beat late" says whether a
+    // second transition is back, and the mark is mended by what it shows.
+    const react = read("node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.production.js");
+    expect(react).toMatch(/function commitNestedViewTransitions\(\w+\) \{[\s\S]{0,400}getViewTransitionClassName\(props\.default, props\.update\);[\s\S]{0,120}"none" !== props &&\s+applyViewTransitionToHostInstances\(/);
+  });
+
+  it("a change of page takes every outline's copy with it, before anything is pictured", () => {
+    // An outline that leaves WITH its page is in the page switch's own
+    // picture; its copy must not be left over the next page (lib/ui/outlineLeave.ts).
+    const effect = bridge.slice(bridge.indexOf("useIsoLayoutEffect(() => {"), bridge.indexOf("}, [pathname]);"));
+    const order = ["if (samePage(from, pathname)) return;", "outlinesForgotten();", "takeNav(from, pathname)", "if (arrived())"].map((mark) => effect.indexOf(mark));
+    expect(order.every((at) => at > -1)).toBe(true);
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
   });
 
   it("the layout effect lifts the dim, lets a step back go on, and leaves the browser's own Back alone", () => {

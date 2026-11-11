@@ -111,9 +111,14 @@ outline was only ever a flash there.
 Now an outline holds off for 200ms while a reader is on their way to a page
 (`lib/ui/loadingGrace.ts`, `components/ui/AfterAMoment.tsx`, around each of
 the twelve `loading.tsx`). Measured again: the page arrives as itself at
-62ms and the outline is never drawn. A page that takes longer gets its
-outline as before, and that change is not pictured, so the page behind it is
-not held back.
+62ms and the outline is never drawn.
+
+(What this said next was wrong, and stood until 2026-11-11: "A page that
+takes longer gets its outline as before, and that change is not pictured, so
+the page behind it is not held back." The outline was cut in, the page
+behind it was held back, and by more than the outline. "A page that is slow
+to come, and the pictures of nothing", below, is the measurement and the
+mend.)
 
 ### A picture that leads to its own page
 
@@ -589,6 +594,171 @@ where they stood. Three unit tests, and three walks in
 work): four parts turned under a finger held in one place, the arrows within
 0px.
 
+## A page that is slow to come, and the pictures of nothing (2026-11-11)
+
+P4 of the list sent to the arbiter on 2026-11-10: "a page slow enough to
+show its outline is then put in place at once, with no motion." The owner's
+word of 2026-11-11 brought it into 1.9 (nothing found is deferred to a point
+release), and the arbiter's with it: measure, so the real page is not held
+back. It was written down as a missing fade. Measuring it found a fault
+under it that reached every page, and that one is mended first.
+
+### What was wrong
+
+**The bridge asked React for a picture on every change, not only on a change
+of page.** The mark React is asked to picture (one transparent pixel that
+carries the address, `components/nav/RouteTransition.tsx`) stood alone in
+its `<ViewTransition>`, on the reasoning that only the address is inside it,
+so only the address can set it off. That is not how React decides. On every
+change it may picture (a part of a page arriving a beat late, a filter that
+rewrites the address, a page taking its outline's place) React names every
+`<ViewTransition>` standing anywhere beside what changed, in case it moved,
+and starts a transition to find out (react-dom,
+`commitNestedViewTransitions`). Nothing was seen to move. But the transition
+was real: it ran its 420ms unseen, and React holds its next change until a
+picture is over.
+
+So every part of a page that came a beat after its page waited out a picture
+of nothing, and started another. This is the root of two things met earlier
+and worked around where they were found: the Florilegium's "nothing of a
+page's first draw may wait in a boundary of its own" (F2), and the double
+page switch Fable voices met on a saint's page.
+
+**And the outline was cut in, and the page cut in over it.** An outline was
+left out of the page switch's picture on purpose ("A page's outline waits a
+moment", above), on the fear that picturing it would hold the page back. So
+the page being left vanished, the outline stood, and then the page stood,
+with no motion between any of them, on exactly the pages a reader waits
+longest for.
+
+Measured on the export built before the mend, with the two new walks of the
+check run against it. Prayers, the Discover tab tapped, and every script the
+page asks for kept back for a time, which is what a slow page is in the apps
+(its words are on the phone; its script is what a slow phone is still
+reading):
+
+| The page's script there | Its outline shown | The page on screen | Transitions for the one tap |
+| --- | --- | --- | --- |
+| 450ms after the tap | 315ms | 1246ms | 3 |
+| 1100ms after the tap | 301ms | 1231ms | 3 |
+
+The first page could have been on screen at 615ms (React keeps an outline it
+has shown for 300ms, whatever else is ready). It was kept back 631ms more,
+by pictures of nothing.
+
+### What a reader sees now
+
+- **A page ready within a fifth of a second:** as before. It arrives as
+  itself and no outline is drawn.
+- **A page that is not:** at the end of that moment its outline arrives the
+  way its page would have, in the same motion (going forward it settles in
+  over the page being left; a tab for a tab, the two cross-fade). It arrives
+  whole: its rows are not held back and brought in one by one, which had
+  left an empty page settling in for the first quarter of a second.
+- **When the page is ready** it takes its outline's place, and the outline
+  dissolves over it in 180ms. The page's own rows come in as the outline
+  goes. Nothing is cut.
+- **With motion reduced** the outline and then the page are simply there.
+
+The same tap on the export with the mend:
+
+| The page's script there | Its outline shown | The page on screen | Transitions for the one tap |
+| --- | --- | --- | --- |
+| 450ms after the tap | 308ms | 645ms | 1 |
+| 1100ms after the tap | 321ms | 1135ms | 1 |
+
+### How
+
+- **The mark asks only while the address is changing.** `RouteTransition`
+  keeps the last address it has dealt with (`settled`), and the mark says
+  `route-mark` only while the address being drawn is another one; between
+  changes of address it says `none`, which React takes at its word and
+  passes over. The layout effect says a change is dealt with the moment it
+  has been pictured. It has to be the layout effect: React draws again at
+  once for it, before any other change can commit, and leaves a plain effect
+  until the picture is over, by which time the next change has already
+  started a picture of nothing.
+- **An outline is pictured as its page arriving.** The line that left it out
+  is gone; whatever arrives is named and dressed (`beginNav`).
+- **It arrives whole.** One rule in `app/globals.css`, beside the one for a
+  page that has returned: an outline that came in a picture is not assembled
+  row by row.
+- **It dissolves over its page.** `lib/ui/outlineLeave.ts`. An outline says
+  when React is taking it out, from its own cleanup, while it still stands
+  (`components/ui/AfterAMoment.tsx`). It is copied as it stands: where it is
+  on the screen, each row as far in as it had come, no brighter than it
+  showed through the wrappers around it. Once React has finished, the copy
+  is left over the page and fades. It is held to the screen and not to the
+  page, because a page may go to the reader's own place as it arrives (a
+  book left in the middle, a page come back to), and a copy that went with
+  the page would be off the screen in that same frame.
+- **Why a copy and not a second picture.** A picture has a price each time:
+  React holds its next change until one is over, and the browser keeps one
+  at a time, so a second picture started in the middle of a step back would
+  end the first and snap the page into place. A copy is an element with a
+  fade on it. It runs under any picture and holds nothing up.
+- **A change of page takes every copy with it** (`outlinesForgotten`, from
+  the bridge's layout effect): an outline that leaves with its page is in
+  the page switch's own picture.
+- **The page's rows do not wait.** A page's rows wait for the wrapper's own
+  fade as a rule. Behind an outline that is going there is no fade to wait
+  for, so the wrapper is told (`data-after-outline`) for as long as the rows
+  take, and then untold.
+
+### What it costs, measured
+
+React holds its next change until a picture it started is over, so the page
+does wait for its outline's picture when it is ready that soon. But React
+keeps an outline it has shown for 300ms in any case (an outline that flashed
+would be worse than none: react-dom, `FALLBACK_THROTTLE_MS`), and the
+picture is over in 340. In the table above the page came 337ms after its
+outline: 37ms more than React's own rule, and 601ms sooner than before the
+mend. A page that is ready later than that waits for nothing (1135ms, with
+its script there at 1100).
+
+The website's own build says the same (`npm run build`, served on this
+machine, at a computer's width; there it is the page's own request to the
+server that is kept back, as on a slow connection): its answer 450ms after
+the tap, the outline at 331ms, the page at 726ms; its answer at 1100ms, the
+page at 1153ms. One transition each.
+
+### What was tried and put back
+
+The outline's arrival was first pictured from `lib/ui/routeMotion.ts`, the
+way a step back is, so that React started nothing and waited for nothing. It
+worked, and on the dev server it put the page on screen about a tenth of a
+second sooner, for a page ready in that narrow window and no other. It was
+put back for the plain way: a second hand-started picture with a hold, a
+timeout and three races in it, on a path iOS's WebKit cannot be watched
+taking from here, to save a tenth of a second on a page that is slow
+already. The plain way is the path every page takes.
+
+### The check
+
+- `lib/ui/__tests__/outlineLeave.test.ts` (24 cases): the copy is made where
+  the outline stood on the screen, fades for 180ms on the house curve and is
+  gone; a row half in is copied half in; it begins no brighter than the
+  outline showed; an outline out of sight leaves none; React's own take-down
+  and put-back in development leaves none; a change of page takes it; with
+  motion reduced there is none; the route's wrapper is told and untold.
+- `lib/ui/__tests__/routeMotion.test.ts` and `loadingGrace.test.ts`: the
+  mark asks only while the address is changing, said in the layout effect
+  and nowhere else; an outline is pictured; a change of page forgets every
+  copy first. Two lines read the React that Next ships
+  (`commitNestedViewTransitions` passes over a mark that says `none`; an
+  outline shown is kept 300ms), so an upgrade that changes either is caught.
+- `node scripts/route-motion.mjs`, three new walks, each on a phone newly
+  started (on one that has walked the app the service worker holds every
+  script, and no page is slow): a page ready while its outline is still
+  arriving; a page ready well after; and the same with motion reduced. Each
+  must be one transition and no more, the outline pictured as the page
+  arriving, something of the outline left over the page as it takes its
+  place and gone again inside the fade, and the page in place within a
+  quarter of a second of when it first could be. Run against the export
+  built before the mend, the first two fail (three transitions, the outline
+  cut away, the page 631ms late). On the export with it: 34 of 34.
+- `node scripts/opened-walk.mjs`: 42 of 42, as before.
+
 ## What a phone still has to say
 
 Nothing here can run iOS's WebKit, and a film is not a hand. For the phone
@@ -613,13 +783,32 @@ walk (`docs/PHONE-WALK.md`):
 - A council's canons (Ephesus, Nicaea): the arrow at the foot of the page
   tapped several times without moving the finger. It turns a canon each
   time.
+- A page that is slow to come (2026-11-11). A phone reads its pages from
+  itself, so one is hard to make by hand there; the place to see it is the
+  website on a slow connection, or the first tap into a section after the
+  app is first opened on an old phone. The outline should arrive as a page
+  does, and the page come through it, with no cut at either. And on any
+  phone: the app should feel no slower than build 93 anywhere, and quicker
+  wherever part of a page used to arrive a beat late.
 
 ## What is not in this note
 
 - The browser's own Back and Forward buttons on the website are not pictured
   (the plan, above).
-- A page that takes more than a moment shows its outline, and the page then
-  replaces the outline at once, as it always did.
+- (Closed 2026-11-11: "A page that is slow to come, and the pictures of
+  nothing", above.) A page that took more than a moment showed its outline,
+  and the page then replaced the outline at once.
+- A page of the website opened from outside (a typed address, a link from a
+  search engine) is not a page switch, and is as it was. The server sends
+  such a page's outline first and its words after it, and the words take the
+  outline's place the moment they arrive, before React has woken on the page,
+  so nothing of this note is there to dissolve it. Seen on the website's
+  build on 2026-11-11: Discover, a council, the Calendar, a chapter of the
+  Bible and a saint's page each carry their outline in the first page sent.
+  On a quick connection the two arrive together and the outline is never
+  painted. Giving that moment a dissolve means a <ViewTransition> standing
+  in every page, which is the very thing "the pictures of nothing" took the
+  cost of; it is put to the arbiter as a thing found, not built here.
 - A top bar a page draws for itself travels with its page. The tab bar and
   the website's header stand still.
 - Coming back to a tile, its name is under the arriving picture until the
