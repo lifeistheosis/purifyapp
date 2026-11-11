@@ -1,0 +1,153 @@
+diff --git a/node_modules/@capgo/capacitor-media-session/android/src/main/java/com/capgo/mediasession/MediaSessionCallback.java b/node_modules/@capgo/capacitor-media-session/android/src/main/java/com/capgo/mediasession/MediaSessionCallback.java
+index 402bc6f..2353c7f 100644
+--- a/node_modules/@capgo/capacitor-media-session/android/src/main/java/com/capgo/mediasession/MediaSessionCallback.java
++++ b/node_modules/@capgo/capacitor-media-session/android/src/main/java/com/capgo/mediasession/MediaSessionCallback.java
+@@ -1,5 +1,6 @@
+ package com.capgo.mediasession;
+ 
++import android.os.Bundle;
+ import android.support.v4.media.session.MediaSessionCompat;
+ import com.getcapacitor.JSObject;
+ 
+@@ -52,4 +53,15 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback {
+     public void onStop() {
+         plugin.actionCallback("stop");
+     }
++
++    // Purify: the shade's back 15 and forward 15 (MediaSessionService), sent
++    // back as the seek handlers they stand for.
++    @Override
++    public void onCustomAction(String action, Bundle extras) {
++        if (MediaSessionService.CUSTOM_SEEK_BACKWARD.equals(action)) {
++            plugin.actionCallback("seekbackward");
++        } else if (MediaSessionService.CUSTOM_SEEK_FORWARD.equals(action)) {
++            plugin.actionCallback("seekforward");
++        }
++    }
+ }
+diff --git a/node_modules/@capgo/capacitor-media-session/android/src/main/java/com/capgo/mediasession/MediaSessionService.java b/node_modules/@capgo/capacitor-media-session/android/src/main/java/com/capgo/mediasession/MediaSessionService.java
+index 07a5f6d..7969d1b 100644
+--- a/node_modules/@capgo/capacitor-media-session/android/src/main/java/com/capgo/mediasession/MediaSessionService.java
++++ b/node_modules/@capgo/capacitor-media-session/android/src/main/java/com/capgo/mediasession/MediaSessionService.java
+@@ -30,6 +30,14 @@ public class MediaSessionService extends Service {
+     private static final String CHANNEL_ID = "playback";
+     private static final int NOTIFICATION_ID = 1;
+ 
++    // Purify (patches/@capgo+capacitor-media-session+8.1.0.patch): back 15 and
++    // forward 15 in the shade. Android 13 and later draw a session's media
++    // controls from its playback state, where rewind and fast-forward have no
++    // button and custom actions do, so each seek handler is also a custom
++    // action, sent back to the page as that handler (MediaSessionCallback).
++    static final String CUSTOM_SEEK_BACKWARD = "purify.seekbackward";
++    static final String CUSTOM_SEEK_FORWARD = "purify.seekforward";
++
+     private MediaSessionCompat mediaSession;
+     private PlaybackStateCompat.Builder playbackStateBuilder;
+     private MediaMetadataCompat.Builder mediaMetadataBuilder;
+@@ -160,16 +168,16 @@ public class MediaSessionService extends Service {
+         notificationActions.put(
+             "seekbackward",
+             new NotificationCompat.Action(
+-                R.drawable.ic_baseline_replay_30_24,
+-                "Seek backward",
++                R.drawable.ic_purify_back_15,
++                "Back 15 seconds",
+                 MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_REWIND)
+             )
+         );
+         notificationActions.put(
+             "seekforward",
+             new NotificationCompat.Action(
+-                R.drawable.ic_baseline_forward_30_24,
+-                "Seek forward",
++                R.drawable.ic_purify_forward_15,
++                "Forward 15 seconds",
+                 MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_FAST_FORWARD)
+             )
+         );
+@@ -318,7 +326,26 @@ public class MediaSessionService extends Service {
+             }
+ 
+             if (playbackStateBuilder != null) {
+-                playbackStateBuilder.setActions(activePlaybackStateActions);
++                // A fresh builder each time, so a custom action whose handler has gone goes with it.
++                playbackStateBuilder = new PlaybackStateCompat.Builder().setActions(activePlaybackStateActions);
++                if (plugin != null && plugin.hasActionHandler("seekbackward")) {
++                    playbackStateBuilder.addCustomAction(
++                        new PlaybackStateCompat.CustomAction.Builder(
++                            CUSTOM_SEEK_BACKWARD,
++                            "Back 15 seconds",
++                            R.drawable.ic_purify_back_15
++                        ).build()
++                    );
++                }
++                if (plugin != null && plugin.hasActionHandler("seekforward")) {
++                    playbackStateBuilder.addCustomAction(
++                        new PlaybackStateCompat.CustomAction.Builder(
++                            CUSTOM_SEEK_FORWARD,
++                            "Forward 15 seconds",
++                            R.drawable.ic_purify_forward_15
++                        ).build()
++                    );
++                }
+             }
+             if (notificationStyle != null) {
+                 if (compactNotificationActionIndicesIndex > 0) {
+diff --git a/node_modules/@capgo/capacitor-media-session/android/src/main/res/drawable/ic_purify_back_15.xml b/node_modules/@capgo/capacitor-media-session/android/src/main/res/drawable/ic_purify_back_15.xml
+new file mode 100644
+index 0000000..2f4029f
+--- /dev/null
++++ b/node_modules/@capgo/capacitor-media-session/android/src/main/res/drawable/ic_purify_back_15.xml
+@@ -0,0 +1,23 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- Purify: the player's own back 15 glyph (components/player/Transport.tsx, SkipGlyph), its "15" in DM Sans 700 as outlines. -->
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24">
++    <path
++        android:pathData="M4.5 12a7.5 7.5 0 1 0 2.4-5.5"
++        android:strokeColor="@android:color/white"
++        android:strokeWidth="1.7"
++        android:strokeLineCap="round"
++        android:strokeLineJoin="round" />
++    <path
++        android:pathData="M4.5 3.5v4h4"
++        android:strokeColor="@android:color/white"
++        android:strokeWidth="1.7"
++        android:strokeLineCap="round"
++        android:strokeLineJoin="round" />
++    <path
++        android:fillColor="@android:color/white"
++        android:pathData="M9.574 15.4V11.476L8.68 11.713V10.935L9.982 10.36H10.574V15.4ZM13.373 15.486Q12.817 15.486 12.42 15.293Q12.023 15.099 11.801 14.761Q11.579 14.422 11.539 13.993H12.488Q12.545 14.27 12.782 14.465Q13.02 14.66 13.376 14.66Q13.639 14.66 13.831 14.532Q14.024 14.405 14.134 14.182Q14.245 13.96 14.245 13.683Q14.245 13.391 14.131 13.18Q14.016 12.969 13.826 12.859Q13.635 12.748 13.385 12.748Q13.084 12.748 12.866 12.894Q12.648 13.041 12.55 13.245H11.608L12.026 10.36H14.859V11.211H12.747L12.542 12.332Q12.701 12.166 12.964 12.062Q13.227 11.958 13.555 11.958Q13.963 11.958 14.268 12.096Q14.573 12.234 14.774 12.476Q14.975 12.718 15.079 13.024Q15.183 13.331 15.183 13.671Q15.183 14.072 15.047 14.401Q14.912 14.73 14.674 14.974Q14.436 15.218 14.103 15.352Q13.771 15.486 13.373 15.486Z" />
++</vector>
+diff --git a/node_modules/@capgo/capacitor-media-session/android/src/main/res/drawable/ic_purify_forward_15.xml b/node_modules/@capgo/capacitor-media-session/android/src/main/res/drawable/ic_purify_forward_15.xml
+new file mode 100644
+index 0000000..364515f
+--- /dev/null
++++ b/node_modules/@capgo/capacitor-media-session/android/src/main/res/drawable/ic_purify_forward_15.xml
+@@ -0,0 +1,23 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- Purify: the player's own forward 15 glyph (components/player/Transport.tsx, SkipGlyph), its "15" in DM Sans 700 as outlines. -->
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24">
++    <path
++        android:pathData="M19.5 12a7.5 7.5 0 1 1-2.4-5.5"
++        android:strokeColor="@android:color/white"
++        android:strokeWidth="1.7"
++        android:strokeLineCap="round"
++        android:strokeLineJoin="round" />
++    <path
++        android:pathData="M19.5 3.5v4h-4"
++        android:strokeColor="@android:color/white"
++        android:strokeWidth="1.7"
++        android:strokeLineCap="round"
++        android:strokeLineJoin="round" />
++    <path
++        android:fillColor="@android:color/white"
++        android:pathData="M9.574 15.4V11.476L8.68 11.713V10.935L9.982 10.36H10.574V15.4ZM13.373 15.486Q12.817 15.486 12.42 15.293Q12.023 15.099 11.801 14.761Q11.579 14.422 11.539 13.993H12.488Q12.545 14.27 12.782 14.465Q13.02 14.66 13.376 14.66Q13.639 14.66 13.831 14.532Q14.024 14.405 14.134 14.182Q14.245 13.96 14.245 13.683Q14.245 13.391 14.131 13.18Q14.016 12.969 13.826 12.859Q13.635 12.748 13.385 12.748Q13.084 12.748 12.866 12.894Q12.648 13.041 12.55 13.245H11.608L12.026 10.36H14.859V11.211H12.747L12.542 12.332Q12.701 12.166 12.964 12.062Q13.227 11.958 13.555 11.958Q13.963 11.958 14.268 12.096Q14.573 12.234 14.774 12.476Q14.975 12.718 15.079 13.024Q15.183 13.331 15.183 13.671Q15.183 14.072 15.047 14.401Q14.912 14.73 14.674 14.974Q14.436 15.218 14.103 15.352Q13.771 15.486 13.373 15.486Z" />
++</vector>

@@ -2182,8 +2182,11 @@ findings:
       (navigator.mediaSession, as the plugin's own JavaScript does on iOS);
       the bridge drives the plugin on Android only. Two things the plugin
       cannot do, on the arbiter's word: 15 second buttons on Android 13 and
-      newer (custom actions) are on the roadmap for 1.9.1
-      (docs/1.9-build/ideas.json, n-shade-skip-buttons); and androidx's
+      newer (custom actions), set for 1.9.1 and then built for 1.9 on his
+      word of 2026-11-11 by patching the plugin's Java
+      (patches/@capgo+capacitor-media-session+8.1.0.patch, applied by
+      patch-package on every install; docs/1.9-build/ideas.json,
+      n-shade-skip-buttons; walk row 27); and androidx's
       MediaButtonReceiver, which started the plugin's service for a button
       pressed with no player behind it, so that Android would stop the app,
       is replaced by the app's own (android/app/src/main/java/net/purifyapp/
