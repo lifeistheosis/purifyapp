@@ -20,7 +20,7 @@ import { apiFetch } from "@/lib/api/client";
 import { getBook, localBookNames, referenceIn } from "@/lib/bible/books";
 import { cn } from "@/lib/cn";
 import { clergyLabelKey } from "@/lib/profile/clergy";
-import { isBannerMotion, normalizeHex, type Cosmetics } from "@/lib/profile/cosmetics";
+import { isBannerMotion, normalizeHex, readableThemeAccent, type Cosmetics } from "@/lib/profile/cosmetics";
 import { recordDate } from "@/lib/profile/dates";
 import { nameColorClass } from "@/lib/profile/nameColor";
 import type { PublicProfile } from "@/lib/profile/publicProfile";
@@ -64,7 +64,9 @@ const PictureSheet = dynamic(() => import("@/components/share/PictureSheet").the
  * app/globals.css). On Candlelight and Monastery it had worn their dimmer
  * ink, and on the house's gilded theme "Favorite verse" read 3.31:1 on
  * Candlelight and "Patron saint" 3.35:1. The themes keep their colours; the
- * words are set for the ground they stand on.
+ * words are set for the ground they stand on. A theme's foot is drawn no
+ * lighter than THEME_ACCENT_MAX_LUMINANCE, which deepens only a reader's own
+ * pale pick (lib/profile/cosmetics.ts).
  */
 
 /** The card's ground: a theme's two colours, or the house card; and whether it stays dark on every palette. */
@@ -72,11 +74,12 @@ export function profileSurface(c: Cosmetics): { themed: boolean; island: boolean
   const themed = Boolean(c.themePrimary && c.themeAccent);
   const island = themed || Boolean(c.bannerColor || c.bannerUrl || isBannerMotion(c.bannerMotion) || c.effect);
   if (!themed) return { themed, island, style: undefined };
+  const foot = readableThemeAccent(c.themeAccent) ?? c.themeAccent;
   return {
     themed,
     island,
     style: {
-      background: `linear-gradient(180deg, ${c.themePrimary} 0%, color-mix(in oklab, ${c.themePrimary} 55%, ${c.themeAccent}) 34%, ${c.themeAccent} 100%)`,
+      background: `linear-gradient(180deg, ${c.themePrimary} 0%, color-mix(in oklab, ${c.themePrimary} 55%, ${foot}) 34%, ${foot} 100%)`,
       ["--profile-surface" as string]: c.themePrimary,
     },
   };

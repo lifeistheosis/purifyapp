@@ -232,14 +232,37 @@ export const THEME_MAX_LUMINANCE = 0.18;
  * pale pick is deepened rather than refused. Null when it is not a colour.
  */
 export function readableThemeColor(v: unknown): string | null {
-  const hex = normalizeHex(v);
+  return deepenTo(normalizeHex(v), THEME_MAX_LUMINANCE);
+}
+
+/**
+ * A theme's foot (`accent`, the colour at the bottom of the card) may be no
+ * lighter than this. Most of a themed card's words stand on its lower half,
+ * where the theme deepens to its foot, and a themed card wears the dark
+ * palette's ink with its faint lines at 75 percent (app/globals.css,
+ * .theme-island): on a foot this dark they hold 4.5:1. On a foot at the top
+ * colour's limit they did not, measured on a reader's own pale pick (a red,
+ * a white, a yellow and a cyan, each deepened to 0.18): 2.87:1 to 4.29:1,
+ * the full ink on the card's panels among them. Every house theme's foot and
+ * every grey's is darker already (the lightest, the silver grey's, 0.0118),
+ * so this deepens only a reader's own pale pick, and only its foot: the top
+ * colour keeps THEME_MAX_LUMINANCE, and gilded and silver look as they did.
+ */
+export const THEME_ACCENT_MAX_LUMINANCE = 0.012;
+
+/** A theme's foot as it is drawn: the reader's own colour, deepened just enough, keeping its hue. Null when it is not a colour. */
+export function readableThemeAccent(v: unknown): string | null {
+  return deepenTo(normalizeHex(v), THEME_ACCENT_MAX_LUMINANCE);
+}
+
+/** A colour no lighter than `limit`: scaled toward black in small steps, a handful of which reaches any colour. */
+function deepenTo(hex: string | null, limit: number): string | null {
   if (!hex) return null;
-  if (luminance(hex) <= THEME_MAX_LUMINANCE) return hex;
+  if (luminance(hex) <= limit) return hex;
   const rgb = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
-  // Scale toward black in small steps; a handful of steps reaches any colour.
   for (let k = 0.95; k > 0; k -= 0.05) {
     const next = `#${rgb.map((c) => Math.round(c * k).toString(16).padStart(2, "0")).join("")}`;
-    if (luminance(next) <= THEME_MAX_LUMINANCE) return next;
+    if (luminance(next) <= limit) return next;
   }
   return "#000000";
 }

@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 
 import { profileSurface, surfaceClass } from "@/components/community/profile/ProfileCard";
 import { SectionMasthead } from "@/components/mobile/SectionMasthead";
-import { GREYS, THEMES, type Cosmetics } from "@/lib/profile/cosmetics";
+import { GREYS, THEMES, THEME_ACCENT_MAX_LUMINANCE, luminance, readableThemeAccent, readableThemeColor, type Cosmetics } from "@/lib/profile/cosmetics";
 
 /**
  * Words over pictures: the three finds of Fable Themes' sweep that fell to
@@ -229,7 +229,9 @@ describe("a reader's profile sheet", () => {
 // dimmer ink at the palette's own shares: on the house's gilded theme "Favorite verse" read 3.31:1 on
 // Candlelight, "Patron saint" 3.35:1 and "Parish" 4.30:1 (a reader's sheet with the theme painted by the
 // card's own code, measured by the mock checker's pixels pass). It wears the dark palette's ink on every
-// palette, as Parchment's islands did, with its faint lines at 75; the themes keep their colours.
+// palette, as Parchment's islands did, with its faint lines at 75; the themes keep their colours, and a
+// theme's foot is drawn no lighter than the house's own darkest feet, which deepens only a reader's own
+// pale pick.
 describe("a card painted in its reader's theme", () => {
   const gilded: Cosmetics = { bannerColor: null, bannerUrl: null, themePrimary: "#8f6f35", themeAccent: "#221a0f", decoration: null, effect: null };
   /** The declarations of the block whose selector list names `selector` on its own. */
@@ -303,5 +305,32 @@ describe("a card painted in its reader's theme", () => {
     // The least kind is the Favorite verse label in its panel's lit corner, on every one. What the card
     // drew it in before on Candlelight, that palette's ink at the label's own 66, is 3.2:1 on the gilded card.
     expect(onGround(paperOf('html[data-reading-mode="candlelight"]'), 0.66, GROUND.gilded)).toBeLessThan(4.5);
+  });
+
+  it("draws a theme's foot no lighter than the house's darkest feet, which keeps every house theme as it is", () => {
+    for (const t of [...THEMES, ...GREYS]) {
+      expect(luminance(t.accent), t.id).toBeLessThanOrEqual(THEME_ACCENT_MAX_LUMINANCE);
+      expect(readableThemeAccent(t.accent), t.id).toBe(t.accent);
+    }
+    // A reader's own pale pick, the same colour top and foot: its top as before, its foot deepened, its hue kept.
+    for (const pick of ["#ff0000", "#ffffff", "#ffff00", "#00ffff"]) {
+      const top = readableThemeColor(pick)!;
+      const foot = readableThemeAccent(top)!;
+      expect(luminance(foot), pick).toBeLessThanOrEqual(THEME_ACCENT_MAX_LUMINANCE);
+      const ground = String(profileSurface({ ...gilded, themePrimary: top, themeAccent: top }).style?.background);
+      expect(ground, pick).toContain(`${top} 0%`);
+      expect(ground, pick).toContain(`${foot} 100%`);
+    }
+    expect(readableThemeAccent("#ff0000")).toMatch(/^#[0-9a-f]{2}0000$/);
+    expect(readableThemeAccent("red")).toBeNull();
+    // And on it the faint lines hold: the ground under the least kind (the Favorite verse label again),
+    // measured on the export with each pick's foot so deepened. With the foot left at the top colour's
+    // limit, the same label read 2.87:1 on the white pick, and words at full ink on the panels 3.95:1.
+    const ink = (token(island, "--color-paper") ?? "#000000").replace("#", "");
+    const white = [0, 2, 4].map((i) => parseInt(ink.slice(i, i + 2), 16)) as Rgb;
+    const OWN: Record<string, Rgb> = { red: [139, 30, 30], white: [81, 81, 81], yellow: [85, 85, 30], cyan: [30, 91, 91] };
+    for (const [pick, ground] of Object.entries(OWN)) {
+      expect(onGround(white, share / 100, ground), `a reader's own ${pick}, at ${share} percent`).toBeGreaterThanOrEqual(4.5);
+    }
   });
 });
