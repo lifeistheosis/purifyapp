@@ -214,3 +214,13 @@ His words: "There's some works where the cover doesn't have photos."
 Screenshot: `build-93/18-works-without-covers.png`: the reading room by tradition; under Syriac, "The Life of St. Marcian" (St Marcian of Cyrrhus), "The Martyrdom of Sts. Gurias, Samonas and Habib" and St Isaac's work show a plain dark cover with only their titles. These are among the works added since build 89's covers (most by the November and December saints chat).
 
 With note 12 the goal is the same: every work wears a picture. Who has it: the December saints chat, after push 2b and the Shanghai life: list every work in the reading room with no picture on its cover; dress the ones it added from the icons it sourced, by build 89's covers rule (the author's or the subject's icon first, a council's own picture for its texts); hand the arbiter the rest by name, which go to Updates 2 with note 12. Held by a test that no work stands without a picture, with a named list for any that wait on a permission.
+
+### 19. The Florilegium: why only the Song of the Theotokos, a verse that opens only its book, and one with the notebooks (2026-11-11 about 01:44 UTC)
+
+His words: "I'm not sure why the Your Flor Gelium just is the song of the Theotokos. Also, when you click the verse in the Florigelium, it just takes you to the book. It doesn't take you to the actual verse. And also, I want the Florigelium and the notebook system like intertwined."
+
+Screenshots: `build-93/19a-florilegium-song.png` (the collection "The Song of the Theotokos", Luke 1:46-55, its lines with Add note and Remove) and `19b-today-your-florilegium.png` (Today: "Your Florilegium", The Song of the Theotokos, Luke 1:53). The Song of the Theotokos is one of the four starters every build knows (`lib/florilegium/starters.ts`), so Today may be calling a starter his.
+
+Who has what:
+- Fable Theology (built the Florilegium's redesign, build 89 notes 6 and 12), after the Back fix and the opening helper: a verse in the Florilegium opens the Bible at that verse, in view and lit, not at the book's start; and Today says "Your Florilegium" only of what the reader gathered (a starter is named as a starter, or Today shows what is truly theirs).
+- The prayer campaigns chat, with notes 8 and 9 (one design for the journal, its way in and the Florilegium): the Florilegium and the journal's notebooks intertwined, so a collection can hold notes and a notebook can hold kept verses and the Fathers' words, one place to gather and write; read `notes/florilegium-fable.md` first and tell Fable Theology before changing its files.

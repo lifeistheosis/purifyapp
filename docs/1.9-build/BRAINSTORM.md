@@ -2,6 +2,8 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
+**Build 93, note 19 (his word, 2026-11-11 about 01:44 UTC, screenshots of the Song of the Theotokos collection and of Today's Florilegium card):** "I'm not sure why the Your Flor Gelium just is the song of the Theotokos. Also, when you click the verse in the Florigelium, it just takes you to the book. It doesn't take you to the actual verse. And also, I want the Florigelium and the notebook system like intertwined." (`notes/build-93.md`, note 19).
+
 **Build 93, note 18 (his word, 2026-11-11 about 01:42 UTC, a screenshot of the reading room's Syriac shelf):** "There's some works where the cover doesn't have photos." (`notes/build-93.md`, note 18).
 
 **Build 93, note 17 (his word, 2026-11-11 about 01:41 UTC, screenshots of a note on a Chrysostom homily):** "Refine the works node system, and it should be very similar to the Bible's UI when you hold down a verse." (`notes/build-93.md`, note 17).
