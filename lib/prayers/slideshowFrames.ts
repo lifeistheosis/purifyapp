@@ -6,10 +6,10 @@
 // PrayerSlideshow.tsx) is drawn on no page at present.
 //
 // Extracted out of components/prayers/PrayerSlideshow.tsx so that
-// lib/saints/__tests__/iconRights.test.ts can read them. These four files live
-// in public/saints/icons/ alongside the saint icons but belong to no saint, so
+// lib/saints/__tests__/iconRights.test.ts can read them. These files live in
+// public/saints/icons/ alongside the saint icons but belong to no saint, so
 // the rights registry has to know about them or its completeness check would
-// report four files it cannot account for. A node-environment test cannot
+// report files it cannot account for. A node-environment test cannot
 // import a "use client" component, hence a plain data module.
 //
 // ALT TEXT IS CHECKED AGAINST THE IMAGE ITSELF, NOT AGAINST THE FILENAME.
