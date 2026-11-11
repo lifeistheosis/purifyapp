@@ -9142,7 +9142,7 @@ await section(62, async () => {
 
 // ---- 63. The Fathers' quotation marks as the printed page has them, and the
 // lines the import dropped (1.9, quick win 18, F-49). lib/saints/__tests__/
-// printedMarks.test.ts holds all 163 edits; this reads three where a reader
+// printedMarks.test.ts holds every edit; this reads three where a reader
 // meets them: a line of St John Chrysostom on Acts the import had dropped,
 // St Antony's address opening each paragraph and running on as the print
 // does, and an inner opening mark in 2 Timothy the library had lost.

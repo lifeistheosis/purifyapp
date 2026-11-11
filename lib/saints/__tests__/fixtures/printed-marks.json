@@ -1322,5 +1322,29 @@
   "group": "printersSlip",
   "now": "him the ‘spoil, refused",
   "not": "him the spoil, refused"
+ },
+ {
+  "work": "john-chrysostom/homilies-on-2-corinthians",
+  "n": 23,
+  "i": 27,
+  "group": "word",
+  "now": "‘For what, if even ye would give?’",
+  "not": "‘For, what, if even ye would give?’"
+ },
+ {
+  "work": "john-chrysostom/homilies-on-acts",
+  "n": 38,
+  "i": 3,
+  "group": "word",
+  "now": "is not a partial (work)",
+  "not": "is not partial (work)"
+ },
+ {
+  "work": "john-chrysostom/homilies-on-1-corinthians",
+  "n": 35,
+  "i": 17,
+  "group": "word",
+  "now": "understand not?” [3.] Ver. 7.",
+  "not": "understand not?” [3] Ver. 7."
  }
 ]

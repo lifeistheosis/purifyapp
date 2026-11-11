@@ -32,7 +32,10 @@
 // is itself inconsistent (a printer's slip) it is followed as printed, on
 // the owner's standing yes (F-49): John, Homily 21:2 and 2 Corinthians,
 // Homilies 3:19, 13:14, 17:24 and 28:1 (printersSlip); 2 Corinthians 8:17
-// already stood as printed.
+// already stood as printed. Three small word differences from the print,
+// read beside the marks, follow it too (word, 2026-11-11): 2 Corinthians,
+// Homily 23:27, "For what, if even ye would give?"; Acts, Homily 38:3, "not a
+// partial (work)"; 1 Corinthians, Homily 35:17, "[3.]".
 
 import fs from "node:fs";
 import path from "node:path";
@@ -57,7 +60,7 @@ function paragraph(work: string, n: number, i: number): string | undefined {
 
 describe("the Fathers' quotation marks, as the printed page has them", () => {
   it("holds every mark and every restored line read against the page", () => {
-    expect(EDITS.length).toBe(168);
+    expect(EDITS.length).toBe(171);
     const wrong: string[] = [];
     for (const e of EDITS) {
       const p = paragraph(e.work, e.n, e.i);
