@@ -233,6 +233,13 @@ Where it is today: on a phone the translation hides behind the reader's ••�
 
 Who has it: Updates 2 (the Bibles, their downloads, Almeida), after Almeida so the new translation is in it. The bar: the translation sits beside the chapter where the chapter is chosen, one tap from the reader on a phone as on a computer, opening the house's sheet with the translations the reader has and those to download, the current one checked; the switch keeps the reader's place (the same chapter and verse); a translation without the chapter (the deuterocanon in a Protestant Bible) says so plainly instead of failing; 44px, the house's motion, his standing rules. A still with the push.
 
+### 21. Campaigns are not in build 93, and the themes do not change (2026-11-11 about 01:48 UTC)
+
+His words: "and the themes doesn't change I'm not sure if I told you that already" and "and also the campaigns isn't even on its just flat out removed I wanted it in".
+
+- The themes: note 3. Fable Themes reproduced it (a sign-in after the app opened left the app's answer about Plus stale) and has the mend with its test; it reaches him in the next build.
+- Campaigns: in the build, and hidden by the server, as built (`lib/campaigns/flags.ts`). Build 93 carries the campaign pages (the switch has been at "testers" on the branch since 2026-11-10) but shows their doors only when the server says open; build 93 talks to the main web, which runs main, where the switch still says closed until the 1.9 merge, so the app is told no and shows nothing. The test web answers open to every account (`lib/campaigns/opening.ts`, `lib/testWeb/rules.ts`), so a test build on the test web shows campaigns as readers will meet them at release. That needs his test web (T1 to T10, `OWNER-STEPS.md`). At release the merge carries the switch, and campaigns open for every reader before the store builds (R5c, then R5d).
+
 ## The pre-build gate (his word, 2026-11-11 about 01:46 UTC)
 
 His words: "and as you can see I've noticed a lot of issues with this build ensure our next build doesn't have any similar issues or any other issues of this nature."

@@ -2,6 +2,8 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
+**Build 93, the themes and campaigns (his word, 2026-11-11 about 01:48 UTC):** "and the themes doesn't change I'm not sure if I told you that already" and "and also the campaigns isn't even on its just flat out removed I wanted it in". The themes are note 3 (mended on the branch); campaigns are in the build and hidden because build 93 talks to the main web, closed until the merge; a build on the test web shows them (`notes/build-93.md`, note 21).
+
 **The pre-build gate (his word, 2026-11-11 about 01:46 UTC, after twenty notes on build 93):** "and as you can see I've noticed a lot of issues with this build ensure our next build doesn't have any similar issues or any other issues of this nature." A standing rule in CLAUDE.md; the gate is in `notes/build-93.md`, "The pre-build gate".
 
 **Build 93, note 20 (his word, 2026-11-11 about 01:45 UTC):** "And also changing the bibles translation or the version of the Bible should be as easy as switching your chapter. So incorporate that." (`notes/build-93.md`, note 20).
