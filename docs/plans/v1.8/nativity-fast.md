@@ -4,16 +4,15 @@ His yes of 2026-11-10 ("ok to all", the sheet's 39): a post every three days thr
 Nativity Fast, 15 November to 24 December. Planned and drafted here; nothing is made or
 posted. He posts.
 
-## On hold (2026-11-11)
+## Remade (2026-11-11)
 
-Every picture below shows the star the app draws on Today's Nativity Fast card
-(`components/today/NativityStarCard.tsx`), and that star is a four-point sparkle, out by
-his word of 2026-11-11 (CLAUDE.md, "No sparkle star"). So none of the fourteen is posted
-as it is. A screen of the app is never painted over, so the fix is a new picture, and
-fourteen stills wait for his yes: each day framed on that day's reading in Toward the
-Nativity (`/reading/paths/nativity`), the page the card opens, which holds the Father's
-words the caption quotes and no star. The captions keep every word. When new pictures
-are made, these go to the Vault on the SSM board.
+The first pictures were Today on each day, and every one showed the star the app draws
+on Today's Nativity Fast card (`components/today/NativityStarCard.tsx`), a four-point
+sparkle, out by his word of 2026-11-11 (CLAUDE.md, "No sparkle star"). A screen of the
+app is never painted over, so at the arbiter's word the same day each post has a new
+picture, one each and no alternatives: that day's reading as the path opens it, with the
+Father's words the caption quotes in view. The captions keep every word. The first
+pictures are in the Vault on the SSM board, and whole in this folder at `f14414bcc`.
 
 ## What each post is
 
@@ -24,11 +23,16 @@ are made, these go to the Vault on the SSM board.
 - **No sentence with an exclamation mark or a dash** is quoted, so every caption keeps the
   drop's writing rules without changing a word of the Fathers: where a reading opens with
   one, another whole sentence of the same reading is quoted.
-- **One picture, the app itself**: Today on that day in the 1.8 build, its Nativity Fast
-  card at the top, the star a little higher each time, and the day's Verse of the Day
-  below it, as the app draws them (`components/today/NativityStarCard.tsx`). Taken on
-  10 November at his yes, with the clock on each day; nothing on the screen changed. One
-  still a post, 1080 by 1350, in `nativity-fast/` beside this file.
+- **One picture, the app itself**: that day's reading in the 1.8 build, as Toward the
+  Nativity opens it (the work's page at the day's section,
+  `components/saints/WritingReader.tsx`), framed on the Father's words the caption
+  quotes: from the title when the quote opens its section, else from the start of its
+  paragraph or its own first line. No side stripe, no sparkle and no line cut by an edge
+  in any frame, each measured on the page as it was taken (the stripe measure is
+  checkMock's). Taken on 11 November with the clock on each day; nothing on the screen
+  changed. One still a post, 1080 by 1350, in `nativity-fast/` beside this file. The
+  words around a quote are the app's, word for word, so a translator's dash in a
+  neighbouring sentence shows as the app shows it; no caption quotes one.
 - **Where**: Instagram and TikTok, as a picture post. No link, five hashtags, no emoji.
 - **New Calendar dates**, as the app keeps them by default. On the Old Calendar the same
   days fall thirteen days later, and the app moves its path with them.
