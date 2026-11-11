@@ -100,13 +100,13 @@ describe("the apps' check", () => {
 });
 
 describe("the room, once the pack is in place", () => {
-  const PLATE = "isaac-the-syrian/mystic-treatises";
+  const PLATE = "symeon-the-new-theologian/discourse-on-faith";
   const COUNCIL = "councils/first-nicaea/the-symbol-of-the-faith";
 
   it("draws the build's covers until the pack is placed, so the export and its first draw agree", () => {
     const room = buildRoom(false);
     expect(withPackedCovers(room, 0)).toBe(room);
-    setCoversPack({ schema: 1, books: { john: "plate" }, figures: {}, works: { [PLATE]: { file: "/covers/authors/isaac-the-syrian.v1.jpg", focusY: 30 } } });
+    setCoversPack({ schema: 1, books: { john: "plate" }, figures: {}, works: { [PLATE]: { file: "/covers/authors/symeon-the-new-theologian.v1.jpg", focusY: 30 } } });
     expect(withPackedCovers(room, 0)).toBe(room);
   });
 
@@ -117,17 +117,17 @@ describe("the room, once the pack is in place", () => {
       schema: 1,
       books: { john: "plate" },
       figures: {},
-      works: { [PLATE]: { file: "/covers/authors/isaac-the-syrian.v1.jpg", focusY: 31 }, [COUNCIL]: { file: "/covers/councils/x.v1.jpg", focusY: 30 } },
+      works: { [PLATE]: { file: "/covers/authors/symeon-the-new-theologian.v1.jpg", focusY: 31 }, [COUNCIL]: { file: "/covers/councils/x.v1.jpg", focusY: 30 } },
       feelings: { love: { file: "/covers/feelings/love.v2.jpg", focusY: 33 } },
     });
     const packed = withPackedCovers(room, 1);
-    expect(packed.cards.find((c) => c.key === PLATE)?.cover).toEqual({ src: "/covers/authors/isaac-the-syrian.v1.jpg", focusY: 31 });
+    expect(packed.cards.find((c) => c.key === PLATE)?.cover).toEqual({ src: "/covers/authors/symeon-the-new-theologian.v1.jpg", focusY: 31 });
     expect(packed.cards.find((c) => c.key === athanasius.key)).toBe(athanasius);
     expect(packed.feelings.find((d) => d.slug === "love")?.cover).toEqual({ src: "/covers/feelings/love.v2.jpg" });
     expect(packed.feelings.find((d) => d.slug === "anger")).toEqual(room.feelings.find((d) => d.slug === "anger"));
     // A book's own page takes the same picture.
     const bare: Pick<Card, "key" | "cover"> = { key: PLATE };
-    expect(packedCard(bare, 1).cover?.src).toBe("/covers/authors/isaac-the-syrian.v1.jpg");
+    expect(packedCard(bare, 1).cover?.src).toBe("/covers/authors/symeon-the-new-theologian.v1.jpg");
     // A council's document keeps its window onto its council's icon.
     const windowed = { key: COUNCIL, cover: { src: "/history/media/a.v1.jpg", focusY: 30, crop: { x: 0.5, y: 0.4, zoom: 2 } } };
     expect(packedCard(windowed, 1)).toBe(windowed);

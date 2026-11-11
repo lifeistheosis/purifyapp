@@ -140,12 +140,11 @@ describe("the covers' pictures", () => {
       "plato-and-romanus/martyrdom-of-romanus": "search: Updates 2, build 93 note 12",
       "zacchaeus-and-alphaeus/martyrdom-of-zacchaeus-and-alphaeus": "search: Updates 2, build 93 note 12",
       // Updates 2's, from before November: St Irenaeus's and St Irene's
-      // carried icons have no recorded source, St Symeon's no old icon passed,
-      // and St Isaac's new icon (isaac-the-syrian.v2.jpg) is not yet on his
-      // book.
+      // carried icons have no recorded source, and St Symeon's no old icon
+      // passed. St Isaac's book waited here for his settled icon until build
+      // 93 note 12 put it on (2026-11-11).
       "irenaeus-of-lyons/against-heresies-on-john": "search: Updates 2, build 93 note 12",
       "irene-the-empress/letters-for-the-seventh-council": "search: Updates 2, build 93 note 12",
-      "isaac-the-syrian/mystic-treatises": "cover: Updates 2, his settled icon onto his book",
       "symeon-the-new-theologian/discourse-on-faith": "search: Updates 2, build 93 note 12",
     };
     const plate = buildRoom(false)

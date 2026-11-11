@@ -201,6 +201,13 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   // answer of 2026-11-10; lib/saints/iconRights.ts). Carried, so it shows
   // with no signal; too small a picture for a streamed portrait.
   "memnon-of-ephesus": bundled("memnon-of-ephesus.v3.jpg", 37),
+  // Build 93 note 12 (Updates 2, 2026-11-11): two saints' settled page icons
+  // on their books, carried, so they show with no signal. St Isaac's
+  // miniature of 1802, kept whole with its painted border; St Papias's
+  // woodcut of 1493, in place of the Apostle John's icon, which his book wore
+  // while no picture of him had passed (WORK_ART).
+  "isaac-the-syrian": bundled("isaac-the-syrian.v2.jpg", 39),
+  "papias-of-hierapolis": bundled("papias-of-hierapolis.v2.jpg", 35),
   // From Wikimedia Commons for the covers (lib/reading/authorCovers.ts).
   ...AUTHOR_COVERS,
 };
@@ -222,7 +229,8 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
  *    all" to the research's four): the Apostle Philip for his daughter St
  *    Hermione, St Pachomius for St Isidora of his Tabenna, St John
  *    Chrysostom for St Olympias, his deaconess, and the Apostle John for St
- *    Papias, his hearer;
+ *    Papias, his hearer, until St Papias's own woodcut was settled (build 93
+ *    note 12, COVER_ART);
  *  - and a Desert Father of the book (the owner's "all recs", 2026-11-10):
  *    St Moses the Ethiopian, Desert Father of Scetis, for St John Cassian's
  *    Conferences, which open in Scetis with the two conferences of Abbot
@@ -235,8 +243,9 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
  *    at Dionysiou (until note 5 the Conferences wore the Anger door's
  *    Novgorod icon, a file the 1.8 website does not have, so a plate in
  *    build 90; the door keeps it). St John Cassian's own carried icon is
- *    unverified, so neither book wears it. St Symeon's, St Irenaeus's and St
- *    Isaac's books keep the plate: no picture passed for them.
+ *    unverified, so neither book wears it. St Symeon's and St Irenaeus's
+ *    books keep the plate: no picture passed for them (St Isaac's wears his
+ *    own icon since build 93 note 12).
  */
 export const WORK_ART: Readonly<Record<string, CoverArt>> = {
   ...WORK_COVERS,
@@ -247,7 +256,6 @@ export const WORK_ART: Readonly<Record<string, CoverArt>> = {
   "hermione-of-ephesus/life-of-hermione": COVER_ART["apostle-philip"],
   "isidora-of-tabenna/life-of-isidora": COVER_ART["pachomius-the-great"],
   "olympias-the-deaconess/life-of-olympias": COVER_ART["john-chrysostom"],
-  "papias-of-hierapolis/the-living-voice": COVER_ART["apostle-john"],
   "john-cassian/conferences": bundled("moses-the-black.v2.jpg", 27),
   "john-cassian/institutes": COVER_ART["pachomius-the-great"],
   // Build 93 note 18 ("every work wears a picture", 2026-11-11): November's
