@@ -92,7 +92,29 @@ export type Section = {
  * Each entry is one note (1-2 sentences). Optional.
  */
  notes?: string[];
+ /**
+ * The short lines an edition sets between paragraphs, laid over the text and
+ * never in it, so `paragraphs` keep their numbers (1.9, quick win 16, F-49).
+ * See SectionLine.
+ */
+ lines?: SectionLine[];
 };
+
+/**
+ * One short line an edition sets between paragraphs, which an import had
+ * dropped with every line of 40 characters or fewer (St Cyril on Luke,
+ * 2026-08-15): read again from the transcription and against the printed
+ * page, and stood before paragraph `before` (at the section's end when
+ * `before` is the number of paragraphs). It is not a paragraph: nothing can
+ * be highlighted, noted or cited on it, and no reader's mark moves for it.
+ *   lemma    the words of the Gospel a passage expounds ("4:3. And the devil
+ *            said unto him.")
+ *   heading  the edition's own heading ("THE SAME SUBJECT CONTINUED.")
+ *   label    the editor's note of where a fragment comes from ("[From
+ *            Aubert.]")
+ *   break    the stars that mark a gap in the text
+ */
+export type SectionLine = { before: number; kind: "lemma" | "heading" | "label" | "break"; text: string };
 
 export type WritingContent = {
  saint: string;

@@ -3,7 +3,7 @@
   "slug": "commentary-on-luke",
   "title": "Commentary on the Gospel of Luke",
   "subtitle": "The surviving sermons, translated from the Syriac",
-  "source": "St. Cyril of Alexandria, A Commentary upon the Gospel according to S. Luke, now first translated into English from an ancient Syriac version by R. Payne Smith, M.A. (Oxford, at the University Press, 1859), public domain, from Roger Pearse's transcription of it (2006 to 2008), which he placed in the public domain. The fragments on Luke 1 and Sermons 1 to 65 are Payne Smith's English, checked word for word against the archive.org scans of the 1859 printing: the printed page is followed, and its few misprints are kept and noted. Sermons 66 to the end are Roger Pearse's modernised English of Payne Smith's translation (2008), not the 1859 wording, checked word for word against his pages, with his typing of dashes and quotation marks set as a printed page sets them; where his scan misread a word, or his modernising missed one, it is set right by the 1859 printing, read on its page images. The translator's notes are left out, and so are the short lines of the Gospel set above some passages and a few headings, which the library does not repeat.",
+  "source": "St. Cyril of Alexandria, A Commentary upon the Gospel according to S. Luke, now first translated into English from an ancient Syriac version by R. Payne Smith, M.A. (Oxford, at the University Press, 1859), public domain, from Roger Pearse's transcription of it (2006 to 2008), which he placed in the public domain. The fragments on Luke 1 and Sermons 1 to 65 are Payne Smith's English, checked word for word against the archive.org scans of the 1859 printing: the printed page is followed, and its few misprints are kept and noted. Sermons 66 to the end are Roger Pearse's modernised English of Payne Smith's translation (2008), not the 1859 wording, checked word for word against his pages, with his typing of dashes and quotation marks set as a printed page sets them; where his scan misread a word, or his modernising missed one, it is set right by the 1859 printing, read on its page images. The translator's notes are left out. The short lines the edition sets between passages stand between the paragraphs as it sets them: the words of the Gospel a passage expounds, a few headings, the editor's notes of where a fragment comes from, and the stars that mark a gap in the text. A sermon's bare number is not repeated, since its title gives it.",
   "sections": [
     {
       "n": 0,
@@ -30,6 +30,13 @@
         "For those under the law, and dwelling in Judea, the Baptist was, as it were, a lamp, preceding Christ: and God so spake before of him; \"I have prepared a lamp for My Christ.\" And the law also typified him in the lamp, which in the first tabernacle it commanded should be ever kept alight. But the Jews, after being for a short time pleased with him, flocking to his baptism, and admiring his mode of life, quickly made him sleep in death, doing their best to quench the ever-burning lamp. For this reason the Saviour also spake concerning him; \"He was a burning and shining lamp, and ye were willing a little to rejoice for a season in his light.\"",
         "1:79. To guide our feet into the way of peace.",
         "For the world, indeed, was wandering in error, serving the creation in the place of the Creator, and was darkened over by the blackness of ignorance, and a night, as it were, that had fallen upon the minds of all, permitted them not to see Him, Who both by nature and truly is God. But the Lord of all rose for the Israelites, like a light and a sun."
+      ],
+      "lines": [
+        {
+          "before": 12,
+          "kind": "lemma",
+          "text": "1:72. To perform mercy."
+        }
       ]
     },
     {
@@ -50,6 +57,18 @@
         "Consider therefore that He is called the Firstborn in respect of the economy: for with respect to His divinity He is the Only-begotten. Again, He is the Only-begotten in respect of His being the Word of the Father, having no brethren by nature, nor being co-ordinate with any other being: for the Son of God, consubstantial with the Father, is One and Alone: but He becomes the Firstborn by descending to the level of created things. When therefore He is called the Only-begotten, He is so with no cause assigned by reason of which He is the Only-begotten, being \"the Only-begotten God into the bosom of the Father:\" but when the divine Scriptures call Him Firstborn, they immediately also add of whom He is the firstborn, and assign the cause of His bearing this title: for they say, \"Firstborn among many brethren:\" and \"Firstborn from the dead:\" the one, because He was made like unto us in all things except sin; and the other, because He first raised up His own flesh unto incorruption. Moreover, He has ever been the Only-begotten by nature, as being the Sole begotten of the Father, God of God, and Sole of Sole, having shone forth God of God, and Light of Light: but He is the Firstborn for our sakes, that by His being called the Firstborn of things created, whatever resembles Him may be saved through Him: for if He must of necessity be the Firstborn, assuredly those must also continue to exist of whom He is the Firstborn. But if, as Eunomius argues, He is called God's Firstborn, as born the first of many; and He is also the Virgin's Firstborn; then as regards her also, He must be the first as preceding another child: but if He is called Mary's Firstborn, as her only child, and not as preceding others, then is He also God's Firstborn, not as the first of many, but as the Only One born.",
         "Moreover if the first are confessedly the cause of the second, but God and the Son of God are first, then is the Son the cause of those who have the name of sons, inasmuch as it is through Him that they have obtained the appellation. He therefore who is the cause of the second sons may justly be called the Firstborn, not as being the first of them, but as the first cause of their receiving the title of sonship. And just as the Father being called the first—\"for I, He saith, am the first, and I am after these things\"—assuredly will not compel us to regard Him as similar in nature to those that are after Him; so also though the Son be called the first of creation, or the Firstborn before all creation, it by no means follows that He is one of the things made: but just as the Father said \"I am the first,\" to shew that He is the origin of all things, in the same sense the Son also is called the first of creation. \"For all things were made by Him,\" and He is the beginning of all created things, as being the Creator and Maker of the world.",
         "He found man reduced to the level of the beasts: therefore is He placed like fodder in a manger, that we, having left off our bestial life, might mount up to that degree of intelligence which befits man's nature; and whereas we were brutish in soul, by now approaching the manger, even His own table, we find no longer fodder, but the bread from heaven, which is the body of life."
+      ],
+      "lines": [
+        {
+          "before": 1,
+          "kind": "label",
+          "text": "From the Syriac, MS. 12,154."
+        },
+        {
+          "before": 13,
+          "kind": "lemma",
+          "text": "2:7. And she laid him in the manger."
+        }
       ]
     },
     {
@@ -66,6 +85,13 @@
         "And that what I say is true, the prophet Isaiah again assures us, saying, \"Behold the virgin shall conceive and bear a Son, and they shall call His name Emmanuel; butter and honey shall He eat: before He knoweth or chooseth the evil, He shall prefer the good: for before the Child distinguisheth good or evil, He is not obedient to evil in that He chooseth the good.\" And yet how is it not plain to all, that a new-born babe, as yet unable, from its youth and tenderness, to understand anything, is unequal to the task of distinguishing between good and evil? For he knows absolutely nothing. But in our Saviour Christ it was a great and extraordinary miracle: for He ate while yet a babe both butter and honey. And because He was God, ineffably made flesh, He knew only the good, and was exempt from that depravity which belongs to man. And this too is an attribute of the supreme Substance; for that which is good by nature, firmly and unchangeably, belongs specially to It, and It only; \"for there is none good, but one God,\" as the Saviour has Himself said.",
         "Wouldst thou see another virtue of the Child? Wouldst thou see that He is by nature God, Who in the flesh was of woman? Learn what the prophet Isaiah says of Him: \"And I drew near unto the prophetess, and she conceived, and bare a male; and the Lord said unto me, Call His name, Quick take captive, and spoil hastily. For before the Child shall know to call father or mother, He shall take the strength of Damascus.\" For contemporaneously with the birth of Christ the power of the devil was spoiled. For in Damascus he had been the object of religious service, and had had there very many worshippers; but when the holy Virgin brought forth, the power of his tyranny was broken; for the heathen were won unto the knowledge of the truth; and their firstfruits and leaders were the Magi, who came from the East to Jerusalem; whose teacher was the heaven, and their schoolmaster a star.",
         "Look not therefore upon Him Who was laid in the manger as a babe merely, but in our poverty see Him Who as God is rich, and in the measure of our humanity Him Who excels the inhabitants of heaven, and Who therefore is glorified even by the holy angels. And how noble was the hymn, \"Glory to God in the highest, and on earth peace, and among men good will!\" For the angels and archangels, thrones and lordships, and high above them the Seraphim, preserving their settled order, are at peace with God: for never in any way do they transgress His good pleasure, but are firmly established in righteousness and holiness. But we, wretched beings, by having set up our own lusts in opposition to the will of our Lord, had put ourselves into the position of enemies unto Him. But by Christ this has been done away: for He is our peace; for He has united us by Himself unto God the Father, having taken away from the middle the cause of the enmity, even sin, and so justifies us by faith, and makes us holy and without blame, and calls near unto Him those who were afar off: and besides this, He has created the two people into one new man, so making peace, and reconciling both in one body to the Father. For it pleased God the Father to form into one new whole all things in Him, and to bind together things below and things above, and to make those in heaven and those on earth into one flock. Christ therefore has been made for us both Peace and Goodwill; by Whom and with Whom to God the Father be glory and honour and might with the Holy Ghost, for ever and ever, Amen."
+      ],
+      "lines": [
+        {
+          "before": 1,
+          "kind": "label",
+          "text": "From the Syriac, MS. 12,165."
+        }
       ]
     },
     {
@@ -81,6 +107,13 @@
         "But after His circumcision, the rite was done away by the introduction of that which had been signified by it, even baptism: for which reason we are no longer circumcised. For circumcision seems to me to have effected three several ends: in the first place, it separated the posterity of Abraham by a sort of sign and seal, and distinguished them from all other nations. In the second, it prefigured in itself the grace and efficacy of Divine baptism; for as in old time he that was circumcised, was reckoned among the people of God by that seal, so also he that is baptized, having formed in himself Christ the seal, is enrolled into God's adopted family. And, thirdly, it is the symbol of the faithful when established in grace, who cut away and mortify the tumultuous risings of carnal pleasures and passions by the sharp surgery of faith, and by ascetic labours; not cutting the body, but purifying the heart, and being circumcised in the spirit, and not in the letter: whose praise, as the divine Paul testifies, needs not the sentence of any human tribunal, but depends upon the decree from above.",
         "After His circumcision, she next waits for the time of her purification: and when the days were fulfilled, and the fortieth was the full time, God the Word, Who sitteth by the Father's side, is carried up to Jerusalem, and brought into the Father's presence in human nature like unto us, and by the shadow of the law is numbered among the firstborn. For even before the Incarnation the firstborn were holy, and consecrated to God, being sacrificed to Him according to the law. O! how great and wonderful is the plan of salvation! \"O the depth of the riches both of the wisdom and knowledge of God!\" He Who is in the bosom of the Father, the Son Who shares His throne, and is coeternal with Him: by Whom all things are divinely brought into existence, submitted nevertheless to the measure of human nature, and even offered a sacrifice to His own Father, although adored by all, and glorified with Him. And what did He offer? As the firstborn and a male a pair of turtles, or two young doves, according to what the law prescribed. But what does the turtle signify? And what too the other, the dove? Come, then, and let us examine this. The one, then, is the most noisy of the birds of the field: but the other is a mild and gentle creature. And such did the Saviour of all become towards us, shewing the most perfect gentleness, and like a turtle moreover soothing the world, and filling His own vineyard, even us who believe in Him, with the sweet sound of His voice. For it is written in the Song of Songs, \"The voice of the turtle has been heard in our land.\" For Christ has spoken to us the divine message of the Gospel, which is for the salvation of the whole world.",
         "Turtles, therefore, and doves were offered, when He presented Himself unto the Lord, and there might one see simultaneously meeting together the truth and the types. And Christ offered Himself for a savour of a sweet smell, that He might offer us by and in Himself unto God the Father, and so do away with His enmity towards us by reason of Adam's transgression, and bring to nought sin that had tyrannized over us all. For we are they who long ago were crying, \"Look upon me, and pity me.\""
+      ],
+      "lines": [
+        {
+          "before": 0,
+          "kind": "label",
+          "text": "[From Aubert.]"
+        }
       ]
     },
     {
@@ -112,6 +145,13 @@
         "His mother certainly knew that He was not the child of Joseph, but she so speaks to avoid the suspicions of the Jews. And upon her saying, that \"Thy father and I have sought Thee sorrowing,\" the Saviour answers;",
         "2:49. Did ye not know that I must be at My Father's?",
         "Here then first He makes more open mention of Him Who is truly His Father, and lays bare His own divinity: for when the holy Virgin said, Child, why hast Thou so done unto us? then at once shewing Himself to transcend the measure of human things, and teaching her that she had been made the handmaid of the dispensation in giving birth to the flesh, but that He by nature and in truth was God, and the Son of the Father That is in heaven, He says, Did ye not know that I must be at My Father's? Here let the Valentinians, when they hear that the temple was God's, and that Christ was now at His own, Who long before also was so described in the law, and represented as in shadows and types, feel shame in affirming, that neither the Maker of the world, nor the God of the law, nor the God of the temple, was the Father of Christ."
+      ],
+      "lines": [
+        {
+          "before": 0,
+          "kind": "label",
+          "text": "[From Mai and Cramer]"
+        }
       ]
     },
     {
@@ -145,6 +185,18 @@
       "title": "Sermons 8 and 9, Luke 3:10-14",
       "paragraphs": [
         "THE blessed Luke has introduced three classes of men making inquiry of John,—the multitudes, the publicans, and, thirdly, the soldiers: and as a skilful physician applies to each malady a suitable and fitting remedy, so also the Baptist gave to each mode of life useful and becoming counsel, bidding the multitudes in their course towards repentance practise mutual kindness: for the publicans, he stops the way to unrestrained exactions: and very wisely tells the soldiers to oppress no one, but be content with their wages."
+      ],
+      "lines": [
+        {
+          "before": 0,
+          "kind": "heading",
+          "text": "SERMONS VIII AND IX."
+        },
+        {
+          "before": 0,
+          "kind": "lemma",
+          "text": "3:10-14. And the multitudes asked him."
+        }
       ]
     },
     {
@@ -161,6 +213,13 @@
         "Next, he says as well, that the Spirit also came down from heaven upon Him. Do they pretend that the Holy Ghost came down upon the Word of God while still abstract and incorporeal? and represent Him Who bestows the Spirit as made partaker of His own Spirit? Or rather is this their meaning, that having received the Spirit in His human nature, He in His divine nature baptizes in the Holy Ghost? For He is Himself singly, and alone, and verily the Son of God the Father, as the blessed Baptist, being taught of God, himself bare witness, saying, \"And I saw, and bare witness that This is the Son of God!\"",
         "Wouldst thou have also a third proof, in addition to what have already been given? \"His fan,\" he says, \"is in His hand, and He shall purge His floor, and gather His wheat into His stores, but the chaff He shall burn with fire unquenchable.\" For he compares those upon earth to ears of corn, or rather to the threshingfloor and the wheat upon it: for each one of us has grown like an ear of corn. And our Lord once, when speaking to the holy Apostles, made a similar comparison of our state: \"The harvest indeed is great: but the labourers are few: pray therefore the Lord of the harvest to send forth labourers into His harvest.\" We therefore, who are upon the earth, are called ears of corn and wheat, and the harvest. And this harvest belongs to God over all: for He is Lord of all. But behold! says the blessed Baptist, the threshing floor belongs to Christ as its owner; for as such He purges it, removing and separating the chaff from the wheat. For the wheat is the just, whose faith is established and assured: but the chaff signifies those whose mind is weak, and their heart easy to be ensnared, and unsafe and timorous, and blown about by every wind. The wheat, then, he says, is stored up in the granary: is deemed worthy, that is, of safety at God's hand, and mercy, and protection and love: but the chaff, as useless matter, is consumed in the fire.",
         "In every way, therefore, we may perceive that the Word of God, even when He was man, nevertheless continued to be one Son. For He performs those works that belong to Deity, possessing the majesty and glory of the Godhead inseparable from Him. If so we believe, He will crown us with His grace: by Whom and with Whom to God the Father be glory and dominion with the Holy Ghost, for ever and ever, Amen."
+      ],
+      "lines": [
+        {
+          "before": 1,
+          "kind": "label",
+          "text": "[From the Syriac MS. 12,165.]"
+        }
       ]
     },
     {
@@ -178,6 +237,13 @@
         "But how then, they object, was He baptized, and received also the Spirit? To which we reply, that He had no need of holy baptism, being wholly pure and spotless, and holy of the holy. Nor had He need of the Holy Ghost: for the Spirit That proceedeth from God the Father is of Him, and equal to Him in substance. We must now therefore at length hear what is the explanation of the economy. God in his love to man provided for us a way of salvation and of life. For believing in the Father, Son, and Holy Ghost, and making this confession before many witnesses, we wash away all the filth of sin, and are enriched by the communication of the Holy Spirit, and made partakers of the divine nature, and gain the grace of adoption. It was necessary therefore that the Word of the Father, when He humbled Himself unto emptiness, and deigned to assume our likeness, should become for our sakes the pattern and way of every good work. For it follows, that He Who in every thing is first, must in this also set the example. In order therefore that we may learn both the power itself of holy baptism, and how much we gain by approaching so great a grace, He commences the work Himself; and, having been baptized, prays that you, my beloved, may learn that never-ceasing prayer is a thing most fitting for those who have once been counted worthy of holy baptism.",
         "And the Evangelist says that the heavens were opened, as having long been closed. For Christ said, \"Forthwith shall ye see the heavens opened, and the angels of God ascending and descending upon the Son of man.\" For both the flock above and that below being now made one, and one chief Shepherd appointed for all, the heavens were opened, and man upon earth brought near to the holy angels. And the Spirit also again came down as at a second commencement of our race: and upon Christ first, Who received it not so much for His own sake as for ours: for by Him and in Him are we enriched with all things. Most suitably therefore to the economy of grace does He endure with us the things of man's estate: for where otherwise shall we see Him emptied, Whose in His divine nature is the fulness? How became He poor as we are, if He were not conformed to our poverty? How did He empty Himself, if He refused to endure the measure of human littleness?",
         "Having taken therefore Christ as our pattern, let us draw near to the grace of holy baptism, that so we may gain boldness to pray constantly, and lift up holy hands to God the Father, that He may open the heavens also unto us, and send down upon us too the Holy Ghost, to receive us as sons. For He spake unto Christ at the time of holy baptism, as though having by Him and in Him accepted man upon earth to the sonship, \"This is My beloved Son, in Whom I am well pleased.\" For He Who is the Son by nature and in truth, and the Only-begotten, when He became like unto us, is specially declared to be the Son of God, not as receiving this for Himself:—for He was and is, as I said, very Son:—but that He might ratify the glory unto us. For He has been made our firstfruits, and firstborn, and second Adam: for which reason it is said, that \"in Him all things have become new:\" for having put off the oldness that was in Adam, we have gained the newness that is in Christ: by Whom and with Whom, to God the Father, be glory and dominion with the Holy Ghost, for ever and ever, Amen."
+      ],
+      "lines": [
+        {
+          "before": 1,
+          "kind": "label",
+          "text": "[From the Syriac MS. 12,165.]"
+        }
       ]
     },
     {
@@ -267,6 +333,48 @@
       ],
       "notes": [
         "So the 1859 page prints it: a quotation mark opens before \"for the words\" and another before \"that I have spoken\", and one closes them both."
+      ],
+      "lines": [
+        {
+          "before": 1,
+          "kind": "label",
+          "text": "[From the Syriac, Ms. 14,727.]"
+        },
+        {
+          "before": 10,
+          "kind": "lemma",
+          "text": "4:3. And the devil said unto him."
+        },
+        {
+          "before": 47,
+          "kind": "lemma",
+          "text": "4:35. And Jesus rebuked him."
+        },
+        {
+          "before": 49,
+          "kind": "lemma",
+          "text": "4:38. He entered into Simon's house."
+        },
+        {
+          "before": 60,
+          "kind": "lemma",
+          "text": "5:8. And when Simon Peter saw it."
+        },
+        {
+          "before": 61,
+          "kind": "lemma",
+          "text": "5:12. And behold a man full of leprosy."
+        },
+        {
+          "before": 62,
+          "kind": "lemma",
+          "text": "5:14. And He charged him to tell no man."
+        },
+        {
+          "before": 79,
+          "kind": "lemma",
+          "text": "5:27. And He saw a publican named Levi."
+        }
       ]
     },
     {
@@ -288,6 +396,23 @@
         "For all things are good in their season. But what is the meaning of the bridegroom being taken away from them? It is His being taken up into heaven.",
         "5:36. And He spake also a parable unto them.",
         "But that the institutions of Christ cannot be received by those who live according to the law, nor admitted into the hearts of such as have not as yet received the renewing by the Holy Ghost, the Lord shews by saying, that \"a tattered patch cannot be put upon a new garment, nor can old skins hold new wine.\" For the first covenant has grown old, nor was it free from fault. Those therefore who adhere to it, and keep at heart the antiquated commandment, have no share in the new order of things in Christ: \"For in Him all things are become new:\" but their mind being decayed, they have no concord nor point of mutual agreement with the ministers of the new covenant. The God of all accordingly somewhere said of them by one of the holy prophets, that \"a new heart and a new spirit will I put into them.\" And David also sings, \"Create in me a clean heart, O God, and renew a right spirit within me.\" And we have been commanded also \"to put off the old man, and to put on the new man, renewed after the image of Him that created it.\" And Paul also gives counsel, saying, \"Be ye not conformed to this world, but be ye transformed by the renewing of your minds, that ye may prove what is the good and acceptable, and perfect will of God.\" Those therefore who have not as yet received the renewing of the spirit, are also unable to prove the good and acceptable, and perfect will of God."
+      ],
+      "lines": [
+        {
+          "before": 0,
+          "kind": "heading",
+          "text": "FROM SERMON XXI. Explanation of what follows."
+        },
+        {
+          "before": 0,
+          "kind": "label",
+          "text": "[From the Syriac MS.12,154.]"
+        },
+        {
+          "before": 3,
+          "kind": "label",
+          "text": "[From the Syriac, as above.]"
+        }
       ]
     },
     {
@@ -301,6 +426,13 @@
         "6:3. And Jesus answered and said unto them, Have ye not even read what David did ...?",
         "Now even though David thus acted contrary to what the law approves, yet he is rightly and justly esteemed by us as worthy of all admiration: for he was in truth a saint and prophet. Since, therefore, the law of Moses expressly commands, \"Judge just judgment, and regard not the person in judgment;\" how, saith He, condemn ye My disciples, while ye still admire as a saint and prophet the blessed David, although he did not keep Moses' command?",
         "But by the loaves (of the shewbread), there is clearly indicated to us the bread that cometh down from heaven to be set forth upon the holy tables of the churches: and all the furniture of the table, used for the performance of its mystical service, was a plain type of the divine treasures. But spiritually [the bread signifies] the twelve Apostles: of whom we shall speak in due order, when our discourse reaches the disciples themselves."
+      ],
+      "lines": [
+        {
+          "before": 1,
+          "kind": "label",
+          "text": "[From the Syriac, as before.]"
+        }
       ]
     },
     {
@@ -322,6 +454,18 @@
         "6:13. And when it was day, He called His disciples, and of them having chosen twelve.",
         "Our Lord Jesus Christ, having spent the night in prayer, and having conversed with His Father and God in heaven in a way ineffable and beyond our powers of understanding, and such as is known solely to Himself,—even therein making Himself an example unto us of that which is necessary for salvation; for He taught us in what way we too may rightly and blamelessly offer our prayers:—comes down from the mountain, and appoints those who were to be the world's teachers, according to the words He spake, \"Ye are the light of the world.\" And of this appointment of the holy Apostles, the blessed David also makes mention, addressing himself, as it were, to Christ: \"Thou shalt make them rulers over all the earth; they shall make mention of Thy name in every successive generation.\" For verily, while they were in the body, they made mention of the glory of Christ, telling His mystery both in cities and villages: and now that they have been called to the mansions that are above, none the less do they still even thus converse with us about Him, by the most wise history which they have written concerning Him. And those, indeed, who were appointed priests according to the law of Moses, even Aaron and his company, were made beautiful to the senses by vestments suitable to their priestly dignity; but the divine disciples, being adorned with spiritual gifts, had entrusted to them the ministry of the Gospel oracles. For it was said unto them, \"Heal the sick: cast out daemons: cleanse lepers: raise the dead.\" And being thus invested with Christ's power, they have filled the whole world with astonishment. But mark the extreme moderation of the Evangelist: for he does not simply say that the holy Apostles were appointed, but rather, by introducing the record of these chief ones each by name, takes care that no one should venture to enrol himself in the company of those that were chosen. For as Paul saith, \"No man taketh this honour upon himself, but he that is called by God.\" And though the holy Apostles were called by name to this great and splendid dignity, yet from time to time some men have gone to such a pitch of madness and audacity, as even to name themselves Apostles of Christ, and to usurp an honour not granted unto them. Of these the divine disciples have made mention; for they say, \"Such are false apostles, deceitful workers, transforming themselves into angels of righteousness. And no wonder: for Satan even transforms himself into an angel of light. It is no great thing, therefore, if his ministers also transform themselves into angels of righteousness.\" But we neither acknowledge nor will receive any one, except those only so named in the Evangelic writings, and him who was appointed after them, the most wise Paul: to whom also the Saviour Himself bore witness, saying, that \"he is a vessel of election for Me, to carry My name before all the heathen.\"",
         "The law indeed pointed them out before in type, and the prophets also proclaimed them. As, for instance, it is written in the Mosaic record, \"And ye shall take fine flour, and make it into twelve loaves: and he shall put them in two rows upon the pure table before the Lord. And ye shall put upon the row frankincense and salt: and they shall be for loaves, set before the Lord for a memorial.\" For the bread that came down from heaven, and giveth life to the world, Who else can it be but Christ the Saviour of the universe? And in imitation too of Him, the blessed disciples also are named loaves: for having been made partakers of Him Who nourishes us unto life eternal, they also nourish by their own writings those who hunger and thirst after righteousness. And as the Saviour Who is the true light called the disciples also light:—\"for ye are the light of the world:\"—so also being Himself the bread of life, He has bestowed upon His disciples to be ranked as loaves. And observe, I pray, the marvellous art of the law: \"for ye shall put, it says, upon the loaves frank-incense and salt.\" Now the frankincense is the symbol of a sweet odour; and the salt that of understanding and good sense: both of which existed in the highest degree in the holy Apostles. For their life was one of a sweet savour, as they also said, that \"we are a sweet savour of Christ unto God:\" and they were moreover also full of understanding, so that I hear the prophet David even singing of them in the Psalms: \"There is Benjamin in entrancement: the princes of Judah are their leaders: the princes of Zebulon, the princes of Nephthalim.\" For the blessed disciples were chosen out of almost every tribe of Israel, and were the bearers of light to the world, \"holding up the word of life.\" And the wonder indeed is this, that the sages of the Greeks possess a splendid copiousness of speech, and an admirable beauty of language: but the disciples of our Saviour were mere artificers, and boatmen, and fishers, having no boast of words, no fluency of picked phrases, and in expression indeed were simple men, but rich in knowledge: yet is the literature of the Greeks, with its sonorous phrases, silent; while the power of the Evangelic preaching has possession of the world. God also makes mention of them by the voice of Jeremiah, saying of the enemy of all, even Satan; \"Woe to him, who multiplieth for himself that which is not his, and maketh his collar thick and heavy: for suddenly shall they arise that shall bite him, and thy adversaries shall wake up, and thou shalt be their prey.\" For Satan had gathered unto him all the inhabitants of the earth, though they were not his, and had caused them to be his worshippers, making his collar heavy: but those who were to plunder his goods woke up: for the net of the apostolic teaching caught all those that were in error, and brought back unto God the whole world."
+      ],
+      "lines": [
+        {
+          "before": 1,
+          "kind": "label",
+          "text": "[From the Syriac, as before.]"
+        },
+        {
+          "before": 7,
+          "kind": "lemma",
+          "text": "6:11. And they were filled with madness."
+        }
       ]
     },
     {
@@ -389,6 +533,28 @@
         "Whoever therefore is guided by good sense, does not look at the sins of others, nor busies himself about the faults of his neighbour, but closely scans his own misdoings. Such was the blessed Psalmist, falling down before God, and saying on account of his own offences, \"If Thou, O Lord, O Lord, closely regardest iniquities, who can endure?\" And once again, putting forward the infirmity of human nature as an excuse, he supplicates for a not unreasonable pardon, saying, \"Remember that we are earth.\"",
         "This parable He added as a most necessary appendage to what had been said. The blessed disciples were about to be the initiators and teachers of the world: it was necessary for them therefore to prove themselves possessed of every thing requisite for piety: they must know the pathway of the evangelic mode of life, and be workmen ready for every good work, and able to bestow upon well-instructed hearers such correct and saving teaching as exactly represents the truth. This they must do, as having already first received their sight, and a mind illuminated with the divine light, lest they should be blind leaders of the blind. For it is not possible for men enveloped in the darkness of ignorance, to guide those who are afflicted in the same way into the knowledge of the truth: for should they attempt it, they will both roll into the ditch of licentiousness.",
         "Next, overthrowing the vaunting passion of boastfulness, to which most men give way, that they may not emulously strive to surpass their teachers in honour, He added; \"The disciple is not above his teacher;\" and even if some make such progress, as to attain to a virtue that rivals that of their teachers, they will range themselves no higher than their level, and be their imitators. And Paul shall again be our warrant, saying, \"Be ye imitators of me, as I also am of Christ.\" Since therefore the Teacher as yet judgeth not, why judgeth thou? For He came not to judge the world, but to shew pity. And according to the foregoing explanation, if I, He says, judge not, neither must you the disciple. But if thou art guilty of worse crimes than those for which thou judgest another, how canst thou keep thyself from shame when thou art convicted of it? And this the Lord made plain by another parable."
+      ],
+      "lines": [
+        {
+          "before": 1,
+          "kind": "label",
+          "text": "From the Syriac. MS.12,154."
+        },
+        {
+          "before": 3,
+          "kind": "lemma",
+          "text": "Love your enemies."
+        },
+        {
+          "before": 10,
+          "kind": "lemma",
+          "text": "6:36. Be ye therefore merciful."
+        },
+        {
+          "before": 14,
+          "kind": "lemma",
+          "text": "6:39. And he spake a parable unto them."
+        }
       ]
     },
     {
@@ -403,6 +569,13 @@
         "Wouldst thou see the truth of this again? Wouldst thou see who the wolves are that clothe themselves in the sheep's skin? Examine the writings of the holy Apostles: hear what they say of certain men: \"For they who are such are false Aposties: deceitful workers, transforming themselves into angels of righteousness: and no wonder, for Satan even transforms himself into an angel of light. It is no great thing, therefore, if his ministers also transform themselves into angels of righteousness.\" These one may well call thorns and briars: in such there is no particle of sweetness, but every thing that is bitter and of an evil nature: for the fig grows not on thorns; nor will one find any thing pleasant in them, for grapes are not produced on briars. We must decide, then, the character of the teacher, not by appearances, but by the acts of each one's life.",
         "This is also made clear by another declaration of our Lord: \"for the good man, He says, as out of a good treasure, poureth forth from the heart good things:\" but he who is differently disposed, and whose mind is the prey of fraud and wickedness, necessarily brings forth what is concealed deep within. For the things that are in the mind and heart boil over, and are vomited forth by the outflowing stream of speech. The virtuous man, therefore, speaks such things as become his character, while he who is worthless and wicked vomits forth his secret impurity.",
         "Every thing, therefore, that is to our benefit, Christ teaches us, and requires His disciples to be on their guard against deceit, and vigilant and careful. For this reason He shews them the straight way, and discloses the snares that lead down to wickedness, that thus escaping from offences, and being steadfast in mind beyond risk of sin, they may quickly reach the mansions that are above by Christ's blessing: by Whom and with Whom to God the Father be praise and dominion with the Holy Ghost for ever and ever, Amen."
+      ],
+      "lines": [
+        {
+          "before": 0,
+          "kind": "label",
+          "text": "From the Syriac. MS. 14,551"
+        }
       ]
     },
     {
@@ -988,6 +1161,13 @@
         "But do not imagine, that when those who depend upon His love are earnest in their supplications towards God, that they ask these things of Him for themselves alone: but know rather, that their purpose is to intercede for all the dwellers upon earth: for those who already have believed; and for those who have not as yet received the faith, nor acknowledged the truth. For for those who already have believed, they ask that their faith may be established, and that they may be able to practise the glories of the more excellent life: while for those who as yet are not believers, they ask that they may be called, and their eyes be opened; even in this following the footsteps of Christ, Who according to the words of John is \"the Advocate with the Father for our sins: and not for our's only, but for the whole world.\" He therefore Who is the Intercessor for the saints, and for the whole world, wills that His disciples be like Himself. When therefore men say to the Father, \"Hallowed be Your Name,\" bear in mind, that among those who have not as yet gained the light of truth, nor received the faith, the Name of God is despised. It does not as yet seem to them to be holy, honourable, and adorable. But no sooner has the light of truth risen upon them, and they have with effort awoke as from some night and darkness, then learning Who and how great He is, they acknowledge Him as Holy of the Holies, and have correspondent sentiments and belief.",
         "But that the phrase, that God is hallowed by us, is a confession of our regarding Him as Holy of Holies, and does not bestow on Him any additional holiness, you may understand hence. One of the holy prophets said, \"Hallow the Lord, and He shall be Your fear: and if you trust in Him, He shall be holiness unto you.\" Do we then make God holy? Is it the act of human nature to bestow ought on God? Does the thing made benefit the Maker? Does any man imagine that He, Who of his fulness richly distributes to the creature His gifts, will Himself receive ought of us, whose place it is to listen to the words of the blessed Paul; \"What have you that you have not received? When, therefore, the prophet said, \"Hallow the Lord, and He shall be your fear, and holiness to you;\" we affirm that what he teaches is, 'Believe that He is holy, for then you will fear Him; and so He will thus be to you the means of holiness.\" And it is written again of Christ the Saviour of us all; \"Hallow Him, Who despised Himself.\" For He did despise Himself, by deeming His life of no account, and laying it down for our sakes. But let Him be hallowed, it says, by you: that is, let Him be acknowledged as holy. For such He is by nature, as being true God, and the Son of God. For to be essentially holy suits not any one whatsoever of those things, which from nonexistence have been brought into being: but only that supreme nature which transcends all. By believing therefore that He is by nature holy;—for this is the meaning of our hallowing Him; — we further acknowledge Him to be true God.",
         "For ourselves therefore and not for God let us pray, saying, \"Hallowed be Your Name.\" For if we are thus disposed, and with free mind offer up prayers such as this, God the Father will accept us, and Christ with Him will bless us: by Whom and with Whom to God the Father be praise and dominion, with the Holy Ghost, for ever and ever, Amen."
+      ],
+      "lines": [
+        {
+          "before": 0,
+          "kind": "lemma",
+          "text": "11:2 Upon \"Hallowed be Your Name.\""
+        }
       ]
     },
     {
@@ -999,6 +1179,13 @@
         "Terrible, therefore, is that judgment seat; without respect of persons is the Judge; it is a time of pleading, or rather of trial, and of retribution. The fire is prepared for the wicked, and enduring punishment, and eternal torments:—and how can men pray to see that time? Observe, I pray again, the Saviour's skilfulness, and His admirable management in every particular. For He commanded them to ask in prayer that this dread time may come, to make them know that they must live, not carelessly, nor dissolutely, nor moreover as beguiled into laxity and the love of pleasure; but, on the contrary, as becomes saints, and according to God's will: that so that time may prove the bestower upon them of crowns, and not of fire and condemnation. For for the wicked and impure, in that they lead base and lascivious lives, guilty of every vice, it were in no way fit for them in their prayers to say, Your kingdom come. Rather let them know that in so saying they, as it were, charge God with blame, because the time of their punishment does not quickly arise and manifest itself. Of them one of the holy prophets said, \"Woe to those that desire the day of the Lord! What will the day of the Lord be to you? For it is darkness, and not light; and that thick darkness in which is no brightness.\"",
         "The saints, therefore, ask that the time of the Saviour's perfect reign may come, because they have laboured dutifully, and have a pure conscience, and look for the requital of what they have already wrought. For just as those who are expecting a festival and merriment about forthwith to come, and shortly to appear, thirst for its arrival, so also do they. For they trust that they shall stand glorious in the presence of the Judge, and hear Him say: \"Come, you blessed of My Father, inherit the kingdom prepared for you from the foundations of the world.\" They were wise and zealous stewards, when their Lord set them over His household, to give them their meat in its season. Well and wisely did they distribute to their fellow servants those things by the receiving of which they had themselves before been made rich; for they remembered Him Who said: \"Freely you have received, freely give.\" When they received of Him the talent, they did not bury it in the earth. They were not like that slothful, and indolent, and careless servant, who drew near, saying, \"Lord, I knew that You are a hard man; reaping where others sowed, and gathering where others scattered: and I was afraid, and hid the talent. Behold! You have Your own.\" They, on the contrary, traded: and so they brought it greatly multiplied, saying, \"Lord, Your pound has made ten pounds,\" and were admitted to yet further honours. They possessed an active, and right hearty, and courageous disposition; they had put on the panoply of God; the breastplate of righteousness; the helmet of salvation; had taken the Spirit's sword: It did not escape them that they had a war, not against blood and flesh, but against magistracies, against powers, against the world-rulers of this darkness, against the spirits of wickedness in the heavenly regions. For many wove for themselves crowns of martyrdom, and by enduring conflicts, even to life and blood, were made \"a spectacle to the world, and to angels, and to men,\" and were accounted worthy of all admiration. There were others who endured labours and persecutions, eagerly contending for His glory. \"Cruel wolves sprang in upon Christ's flocks, not sparing the flock,\" as the divine Paul declares. \"Deceitful workers; false apostles,\" vomiting forth the gall of the malice of the devil, and \"speaking perverse things,\" such as lead ignorant souls to destruction, and \"wound their weak conscience.\" These, by flattering the powers of this world, brought persecutions and distresses upon the champions of the truth. But they made no great account of what they suffered, for they looked to the hope which they had in Christ. For it was not unknown to them that \"by suffering for Him they would reign with Him.\" They knew that at the time of the resurrection, \"He will change the body of their humiliation into the likeness of His glorious body.\" They fully believed what He said about the consummation of the world, that when He shall appear to them again from heaven, \"they shall shine like the sun in the kingdom of their Father.\" Justly, therefore, in their prayers they say, \"Your kingdom come.\" For they feel confident that they shall receive a recompense for their bravery, and attain to the consummation of the hope set before them.",
         "May it be our lot also to be counted worthy of this great inheritance in Christ; by Whom and with Whom to God the Father be praise and dominion, with the Holy Ghost, for ever and ever, Amen."
+      ],
+      "lines": [
+        {
+          "before": 0,
+          "kind": "lemma",
+          "text": "11:2. Upon \"Your kingdom come.\""
+        }
       ]
     },
     {
@@ -1052,6 +1239,13 @@
         "There are however many kinds of temptation; of which two are of universal occurrence, and common and very general. And what these are, we must tell. There are in the world many heresies; false apostles, and false teachers, who gathering the wearisomeness of frigid inventions, and glorying in the arts of worldly wisdom, adulterate the language of the sacred proclamations, and multiply blasphemous words against their own pates: and as the Psalmist says, \"they set up their horn on high, speaking iniquity against God:\" yes, and against God the Word the Maker of all, Who, they say, is to be reckoned among those things that were made by Him; and is a servant, and not a son; and a creature, and not the Lord. These, resisting the champions of the truth, persecute those whose choice it is to hold sound doctrine, and who defend the divine glory, and endeavour to crown the only-fathered Word of God with incomparable praises. When therefore any temptation arrive on this account, be not you found one who throws away his shield, nor a soldier who runs from the battle, nor an athlete destitute alike of skill and courage. Wish not an unseasonable peace, the cause of future ruin; but remember that Christ the Saviour of all said, \"Think not that I am come to bring peace upon earth; I am not come to bring peace, but a sword.\" And if perchance it happen that the persecutors possess worldly power, fear not the harm they can do you, nor the danger even of blood, and the risk of life; but remember again the exhortation of the holy apostle, who says, \"Therefore let those also who suffer according to the will of God commend their souls to a faithful Creator.\" And again, For let no one of you suffer as a thief, or as an evil doer, or as one busy with other men's things; but if as a Christian, let him not be ashamed, but glorify God on this account.\"",
         "For it follows as a matter of course upon having to suffer, that we shall justly be accounted worthy of eternal honours. The struggle is not unrewarded; the labour is not in vain; for as Paul said, \"God is not unrighteous to forget your labour and your love, which you have shown in His Name.\" These then are the conflicts ordained for all who fear God, to give the proof of him who knows how to endure patiently. For the blessed martyrs are crowned, as \"having fought a good fight, and finished their running, and kept the faith.\"",
         "Furthermore, other kinds of temptations there are besides this, common, so to speak, to every one, but which happen to each one differently. For as one of the holy apostles said, \"Let no man say when he is tempted, I am tempted of God; for God does not tempt with evils: neither does He tempt any one. But every one is tempted, when he is drawn away and enticed of his own lust. And afterward lust, having conceived, brings forth sin: and sin when it is consummated brings forth death.\" A struggle therefore and great danger is laid upon every one, lest he fall into sin, and be led. away from that which is seemly, wandering into wrongful deeds. Violent is the force of passions, and there wars against the mind of every one a motley crowd and furious multitude of base pleasures. For some humble men into fleshly lust and filthy lewdnesses; while others lead them to the desire of gain, making their victims lovers of sordid hoards, and drawing them on to every blameful crime. Well therefore does it become us who are exposed to such serious evils, even though as yet we have not fallen into them, to pray, saying, \"Lead us not into temptation, but deliver us from evil.\" For it were good for a man to run his course apart from evil: but if temptation assail, then be brave and unconquerable; rebuke the flesh, put a bridle on the mind, ask aid of God, the safety vouchsafed by power from on high. Be established and confirmed, not feeble, not easy to be ensnared; rather be cautious, and a lover of God more than a lover of pleasure: for then He will aid you and grant you victory Who is Saviour and Lord of all: by Whom and with Whom, to God the Father be praise and dominion, with the Holy Ghost, for ever and ever, Amen."
+      ],
+      "lines": [
+        {
+          "before": 0,
+          "kind": "lemma",
+          "text": "11:4 And lead us not into temptation."
+        }
       ]
     },
     {
@@ -1121,6 +1315,18 @@
         "He said, however, the sign only of Jonah shall be given them, by which is meant the passion upon the cross, and the resurrection from the dead. \"For as Jonah,\" He says, \"was in the belly of the fish three days and three nights, so shall also the Son of Man be in the heart of the earth three days and three nights.\" But had it been possible for Jesus not to have willed to suffer death in the flesh upon the cross, neither would this sign have been given to the Jews: but inasmuch as the passion, wrought for the salvation of the world, was indispensable, it was given these unbelievers for their condemnation. For also in speaking to the Jews, He said, \"Destroy this temple, and in three days I will raise it up.\" But that the abolishing of death, and restoration of corruption by the resurrection from the dead, is a very great sign of the power and godlike authority of the Incarnate Word, will be sufficiently proved, as I imagine, in the judgment of serious men, by the soldiers of Pilate, who were appointed to guard the tomb, having been bribed with a large sum of money to say, that \"the disciples came by night, and stole Him.\" It was therefore no unavailing sign, but rather one sufficient to convince all the inhabitants of the whole earth, that Christ is God, that of His own choice He suffered death in the flesh, but rose again, having commanded the bonds of death to depart, and overthrown corruption. But the Jews did not believe even this: for which reason it was very justly said of them, that \"the queen of the south shall rise up in the judgment against this generation.\"",
         "[From Mai] This woman, though a barbarian, earnestly sought to hear Solomon, and for this purpose travelled so vast a distance, to listen to his wisdom upon the nature of things visible, and animals, and plants. But you, though already present, and listening to Wisdom Itself, Who came to you, discoursing upon things invisible and heavenly, and confirming what He said by deeds and miracles, turn away from the word, and pass by with indifference the wonderful nature of His oracles. How then is there not more than Solomon here, that is in Me? And again observe, I pray, the skilfulness of His language; for why does He say \"here,\" and not rather \"in Me?\" It is to persuade us to be humble, even though we be largely endowed with spiritual gifts. And besides, it is not at all unlikely, that had the Jews heard Him say, \"that there is more than Solomon in Me,\" they would have ventured to speak of Him in their usual way: 'See! He says, that He is superior even to the kings who have gloriously reigned over us.' The Saviour, therefore, for the economy's sake, uses moderate language, saying, \"here,\" instead of \"in Me.\"",
         "He says, moreover, that the Ninevites will appear for the condemnation of the Jews at the season of judgment: for they were rude and barbarous people, ignorant of Him Who by nature and in truth is God, who had never even heard of the predictions of Moses, and were without knowledge of the glorious tidings of prophecy: but even though this was their mental state, they repented, He says, at the preaching of Jonah. Far better therefore were they than the Israelites, and will condemn them. But listen to the very words: \"The men of Nineveh shall rise up in the judgment with this generation, and shall condemn it; for they repented at the preaching of Jonah, and behold! a greater than Jonah is here.\" \"No man, having lighted a lamp, puts it into a cellar, nor under the bushel, but upon the lampstand, that they who enter in may see the light.\" And what was the object of such words as these? He combats the Jews by an objection drawn from their own folly and ignorance: for they said that He wrought miracles, not that He might be more fully believed in, but that He might have numbers of followers, and catch the applause of those who saw his wondrous acts. And this calumny He refutes by taking as an example the use of a lamp. For a lamp, He says, is always elevated, and put upon a stand, to be of use to those who see. And let us consider the inference which follows from this. Before then the coming of our Saviour, the father of darkness, even Satan, had made the world dark, and blackened all things with an intellectual gloom; but in this state the Father gave us the Son, to be as it were a lamp to the world, to irradiate us with divine light, and rescue us from Satanic darkness. But, O Jew, if you blame the lamp, because it is not hidden, but on the contrary, being set on high on a stand, gives its light to those who see, then blame Christ for not wishing to be concealed, but on the contrary to be seen of all, illuminating those in darkness, and shedding on them the light of the true knowledge of God. He did not therefore fulfil His miracles so much in order to be wondered at, nor seek by them to become famous, as that we might rather believe, that whereas He is God by nature, yet He became man for our sakes, but without ceasing to be what He was. And upon the holy church as a lamp-stand, shining by the doctrine He proclaims, He gives light to the minds of all by filling them with divine knowledge."
+      ],
+      "lines": [
+        {
+          "before": 1,
+          "kind": "break",
+          "text": "* * * * * *"
+        },
+        {
+          "before": 5,
+          "kind": "break",
+          "text": "* * * * * *"
+        }
       ]
     },
     {
@@ -1358,6 +1564,18 @@
         "The comparison is an excellent one, and most fit to set before them what took place and happened at the divine and sacred preaching of the Gospel, to which He here gives the name of the kingdom of heaven; because it is through it that we gain the right of sharing Christ's kingdom. At first then it was addressed to few persons, and within a narrow range, but afterwards it widened its influence, and spread abroad unto all nations. For at first it was spoken in Judaea only, where also the blessed disciples were very few in number: but when Israel disobeyed, the commandment was given to the holy apostles, \"having gone to make disciples of all the nations, &c.\" As therefore a grain of mustard seed is far inferior in size to the seeds of other plants, but shoots up to a great height, far beyond what is usual among herbs, so as for it even to become the lodging of many sparrows, so also the kingdom of heaven, even the new and sacred preaching of salvation, by which we are guided into every good work, and learn Him Who both by nature and verily is God, being at first addressed to but few persons, and as it were small and limited, shot up afterwards into rapid growth, and became the refuge of those who fled to it for shelter, and who may be compared to sparrows, because human things are but of small measure in comparison with God.",
         "The law of Moses was given to the Israelites: but inasmuch as the inhabitants of earth could not be saved by the shadow which alone it contained and its material service, as a necessary consequence the saving preaching of the Gospel sprang up, and is spread abroad unto all under heaven.",
         "And this the letter of the Mosaic law has signified to us in an enigma: for it runs thus, \"And the Lord spoke unto Moses, saying, You shall make unto thyself two trumpets of beaten metal, of silver shall you make them, and they shall be unto you to call the synagogue together, and to move the camp.\" And soon afterwards, \"And the priests, the sons of Aaron, shall sound the trumpets, and it shall be a perpetual law for your generations.\" By this then you are intended to understand both the preparatory training of the law, and the perfectness attained to in Christ by the gospel mode of life, and the teaching which surpasses shadows and types. The law then is a trumpet, and equally so is the saving preaching of the Gospel; for by this name does the prophet Isaiah also make mention of it, saying, \"And it shall come to pass on that day that they shall sound with the great trumpet,\" For in very deed a great trumpet sounded forth by the voice of the holy apostles, not setting at nought the first [trumpet], but [Sermon 98 restarts here]"
+      ],
+      "lines": [
+        {
+          "before": 14,
+          "kind": "lemma",
+          "text": "All His adversaries were ashamed."
+        },
+        {
+          "before": 15,
+          "kind": "lemma",
+          "text": "It is like a grain of mustard seed."
+        }
       ]
     },
     {
@@ -1588,6 +1806,13 @@
         "But to this perhaps some one will object, that there are many kinds of well living; for virtue is diversified, so to speak, and manifold: why therefore, having omitted those other kinds, does He make mention only of love to the poor? To this we reply, that the act is better than any other kind of well doing: for it works in our souls a certain divine likeness which moulds us, so to speak, after God's image. For Christ also has said, \"Be you merciful, as your Father also in heaven is merciful,\" He who is quick to show mercy, and compassionate and kind, is ranked with the true worshippers; for it is written, that \"a pure and unpolluted sacrifice to God the Father is this, to visit orphans and widows in their poverty, and that a man keep himself unspotted from the world.\" And the wise Paul also has somewhere written, \"But alms and communication forget not: for with such sacrifices God is content.\" For He loves not the incense of the legal worship, but requires rather the pleasantness of the sweet spiritual savour. But the sweet spiritual savour unto God is to show pity unto men, and to maintain love towards them. This also Paul advises us, saying, \"Owe no man anything, but that you love one another:\" and the daughter of love is pity for poverty.",
         "Come therefore, you rich, cease from transitory pleasure: be earnest after the hope that is set before you: clothe yourselves with mercy and kindness: hold out the hand to them that are in need: comfort those who are in necessity: count as your own the sorrows of those who are in extreme distress.",
         ""
+      ],
+      "lines": [
+        {
+          "before": 0,
+          "kind": "heading",
+          "text": "The same subject continued."
+        }
       ]
     },
     {
@@ -1612,6 +1837,18 @@
         "No one pitied them when suffering this malady: but He Who had appeared on earth for this very reason, and had become man that He might show pity unto all, He was moved with compassion for them, and had mercy upon them.",
         "17:14. He said unto them, Go and show yourselves unto the priests.",
         "And why did He not rather say, \"I will, be you cleansed;\" as he did in the case of another leper: but commanded them rather to show themselves unto the priests? It was because the law gave directions to this effect to those who were delivered from leprosy: for it commanded them to show themselves to the priests, and to offer a sacrifice for their cleansing. He commanded them therefore to go, as being already healed, and, that they might, so to speak, bear witness to the priests, as the rulers of the Jews, and ever envious of His glory, that wonderfully, and beyond their hope, they had been delivered from their misfortune by Christ's willing that they should be healed. He did not heal them first, but sent them to the priests, because the priests knew the marks of leprosy, and of its being healed. He sent them to the priests, and with them He sent also the healing. What however was the law of leprosy, and what the rules for its purification, and what the meaning of each of the particulars commanded by the law, we have more fully described at the commencement of our Saviour's miracles as recorded by Luke, and referring thither such as are anxious for learning, let us now proceed to what follows. The nine then, as being Jews, falling into a thankless forgetfulness, did not return to give glory to God: by which He shows that Israel was hard of heart, and utterly unthankful: but the stranger,—for as being a Samaritan he was of foreign race, having been brought thither from Assyria: for the phrase is not without meaning, \"in the middle of Samaria and Galilee:\" —returned with a loud voice to glorify God. It shows therefore that the Samaritans were grateful, but that the Jews, even when benefited, were ungrateful."
+      ],
+      "lines": [
+        {
+          "before": 0,
+          "kind": "heading",
+          "text": "SERMONS CXIII-CXVI. (fragments)"
+        },
+        {
+          "before": 13,
+          "kind": "lemma",
+          "text": "17:12. Ten lepers met him."
+        }
       ]
     },
     {
@@ -1721,6 +1958,13 @@
         "Observe however, that He does not altogether cut away the hope of the rich, but reserves for them a place and way of salvation. For He did not say that it is impossible for a rich man to enter in, but that he does so with difficulty.",
         "When the blessed disciples heard these words, they objected, saying, \"And who can live?\" And their plea was for those who had wealth and possessions. For we know, they say, that no one will ever be persuaded to abandon his wealth and riches: \"Who then can be saved?\" But what does the Lord reply? \"The things that are impossible with men, are possible with God.\" He has reserved therefore for those who possess wealth the possibility of being counted worthy, if they will, of the kingdom of God: for even though they refuse entirely to abandon what they have, yet it is possible for them in another way to attain unto honour. And the Saviour has Himself showed us how and in what way this can happen, saying, \"Make to yourselves friends of the unrighteous mammon: that when it has failed, they may receive you into eternal tabernacles.\" For there is nothing to prevent the rich, if they will, from making the poor partakers and sharers of the abundance which they possess. What hinders him who has plentiful possessions from being affable of address, and ready to communicate to others, easily prevailed upon to give, and compassionate, and full of that generous pity which is well-pleasing to God. Not unrewarded, nor unprofitable shall we find carefulness in this respect; for \"mercy boasts over judgment,\" as it is written.",
         "By every argument therefore, and in every way does our common Saviour and Lord benefit us: by Whom and with Whom, to God the Father, be praise and dominion, with the Holy Spirit, for ever and ever. Amen."
+      ],
+      "lines": [
+        {
+          "before": 0,
+          "kind": "heading",
+          "text": "THE SAME SUBJECT CONTINUED."
+        }
       ]
     },
     {
@@ -1779,6 +2023,13 @@
         "Let not the Jewish multitudes therefore murmur when Christ saves sinners; but let them answer us this. Would they have physicians succeed in effecting cures when they visit the sick? Do they praise them when they are able to deliver men from cruel ulcers, or do they blame them, and praise those who are unskilful in their art? But, as I suppose, they will give the sentence of superiority in favour of those who are skilful in benefiting such as suffer from diseases. Why therefore do they blame Christ, if when Zacchaeus was, so to say, fallen and buried in spiritual maladies, He raised him from the pitfalls of destruction?",
         "And to teach them this He says, \"To-day there is salvation for this house, in that he also is a son of Abraham:\" for where Christ enters, there necessarily is also salvation. May He therefore also be in us: and He is in us when we believe: for He dwells in our hearts by faith, and we are His abode. It would have been better then for the Jews to have rejoiced because Zacchaeus was wonderfully saved, for he too was counted among the sons of Abraham, to whom God promised salvation in Christ by the holy prophets, saying, \"There shall come a Saviour from Zion, and He shall take away iniquities from Jacob, and this is my covenant with them, when I will bear their sins.\"",
         "Christ therefore arose, to deliver the inhabitants of the earth from their sins, and to seek them that were lost, and to save them that had perished. For this is His office, and, so to say, the fruit of His godlike gentleness. Of this will he also count all those worthy who have believed in Him: by Whom and with Whom to God the Father be praise and dominion, with the Holy Spirit for ever and ever, Amen."
+      ],
+      "lines": [
+        {
+          "before": 1,
+          "kind": "lemma",
+          "text": "19:2. Behold a man named Zacchaeus."
+        }
       ]
     },
     {
@@ -1808,6 +2059,13 @@
         "\"Take therefore, he says, from him the mina, and give it to him that has ten minas; for to him that has, there shall more be given: but from him that has not, even that which he seems to have shall be taken away from him.\" For that slothful servant was stripped even of the gift which had been bestowed upon him: but those who have advanced in the better course, and proved superior to indolence and sloth, will receive fresh blessings from above, and being filled with divine gifts, will mount up to a glorious and admirable lot.",
         "We have seen the honours of the saints: come and let us examine the torments of the wicked, who would not have that man of noble lineage to rule over them. \"But those, my enemies, He says, who would not that I should reign over them, bring hither, and slay them before Me.\" This was the fate of the Israelitish race: for having denied the kingdom of Christ, they fell into extreme miseries: being evil, they evilly perished. And the gangs too of wicked heretics deny the kingdom of Christ, and so also do all those, who, disregarding the duty of living uprightly, spend their lives in impurity and sin. And these also suffering a penalty like to that of those mentioned above shall go to perdition.",
         "But over us Christ rules as King, and we have a good hope, that we shall also be counted worthy of the portion of the saints, and twine around our heads the crown that becomes the steadfast; for this also is the gift of Christ our common Saviour; by Whom and with Whom to God the Father be praise and dominion, with the Holy Spirit, for ever and ever, Amen."
+      ],
+      "lines": [
+        {
+          "before": 0,
+          "kind": "heading",
+          "text": "THE SAME SUBJECT CONTINUED."
+        }
       ]
     },
     {
@@ -1874,6 +2132,13 @@
         "Why therefore do you murmur, O Pharisee, at seeing the divinely inspired Scripture fulfilled, and those things which had been spoken of old by the holy prophets attaining also their fulfilment?",
         "When then they asked, \"By what authority do You do these things?\" the Saviour replied, \"I also will ask you one word, and tell Me: the baptism of John, was it from heaven or of men? And they, it says, considered with themselves, saying, that if we shall say, From heaven, He will say, Why therefore did you not believe him? but if we say, Of men, all the people will stone us: for they are persuaded that John is a prophet. And they answered, that they knew not whence it was. And Jesus said to them, Neither tell I you by what authority I do these things.\" Observe the great malice of the Pharisees: they flee from the truth; they refuse the light; they feel no horror at committing sin. For God the Father sent the blessed Baptist as the forerunner of Christ, crying out and saying, \"Prepare you the way of the Lord: and make straight the pathways of our God.\" Of him too the wise evangelist John wrote; \"There was a man sent from God, whose name was John. He came for a testimony to bear witness of the light: he was not the light, but to bear witness of the light;\" even of Christ. And he bore witness by saying, that \"He That sent me to baptize in water. He said to me, that upon Whom you see the Spirit descend from heaven, and abide upon Him, He it is That baptizes with the Holy Spirit. And I saw and bore witness, that This is the Son of God.\" The blessed Baptist therefore, as being so great and admirable, is one worthy of our acceptance to move us to faith, and to be a witness concerning Christ. But because it was the custom of the Jews lightly to slander the saints, and to call them false speakers, and to say that they had not been sent of God, but falsely assumed a knowledge of prophecy of their own mind, Christ asked them, what opinion they entertained of the Baptist? was he one who came from above, from God; did they honour him, that is, as one who had been sent to baptize in accordance with the will of God? or according to their custom, did they, from human considerations and wishes, deny that he came for this purpose? And they were afraid indeed to speak the truth, lest they should be told, Why then did you not believe Him? but neither will they accuse the forerunner, not however from being afraid of God, but rather of the multitudes. And therefore they hide the truth, and say, \"We know not.\"",
         "As not being then worthy to learn the truth, and to see the pathway which leads directly to every good work, Christ answered them, \"And neither do I tell you by what authority I do these things.\" The Jews therefore knew not the truth: for they were not \"taught by God,\" that is, of Christ. But to us who have believed in Him, Christ Himself reveals it, so that we, receiving in mind and heart His divine and adorable mystery, or rather the knowledge of it, and being careful to fulfil those things which are well-pleasing to Him, shall reign with Him: by Whom and with Whom to God the Father be praise and dominion, with the Holy Spirit, for ever and ever, Amen."
+      ],
+      "lines": [
+        {
+          "before": 0,
+          "kind": "heading",
+          "text": "THE SAME SUBJECT CONTINUED."
+        }
       ]
     },
     {
@@ -2080,6 +2345,13 @@
         "Behold then, yes, see, the pattern for your conduct depicted for you in Christ the Saviour of us all: and let us also observe the manner of His prayer. \"Father, He says, if You are willing, remove this cup from Me.\" Do you see that Christ made His prayer against temptation with a reverence befitting man? \"For if You be willing, He says, remove it.\" And here too remember what the blessed Paul wrote concerning Him; \"He Who in the days of His flesh offered up prayers and supplications to Him Who was able to save Him from death, with strong crying and tears, and was heard because of His reverence, even though He was a Son, yet learned obedience by what He suffered, and being made perfect became the cause of eternal life to all them that obey Him.\" For as though one of us, He assigns to His Father's will the carrying out of whatever was about to be done. And if therefore it happen that we also at any time fall into unexpected troubles, and have to endure any mental conflict, let us beseech God not so much that it may end according to our will, but rather let us ask that whatever He knows to be fit and expedient for the benefit of our souls may be brought to pass. \"For we know not what to pray for as we ought:\" but He is a treasure house of every thing, and to those who love Him He gives whatever is suitable for them.",
         "Now what I have said is, I trust, useful for the benefit of you all; but if we must further contrive some other explanation for the prayer, we may also say, that it rebukes the wickedness of the Jews: and in what way let us now explain. You have heard Christ say, \"Father, if You will, remove this cup from Me.\" Was then His passion an involuntary act? and was the necessity for Him to suffer, or rather the violence of those who plotted against Him, stronger than His own will? Not so, we say. For His passion was not an involuntary act, though yet in another respect it was grievous, because it implied the rejection and destruction of the synagogue of the Jews. For it was not His will that Israel should be the murderer of its Lord, because by so doing it would be exposed to utter condemnation, and become reprobate, and rejected from having part in His gifts, and in the hope prepared for the saints, whereas once it had been His people, and His only one, and His elect, and adopted heir. For Moses said to them, \"Behold, the heavens and the earth are the Lord's your God: and you has the Lord chosen out of all nations to be His people.\" It was right therefore that we should clearly know, that through pity for Israel He would have put from Him the necessity to suffer: but as it was not possible for Him not to endure the passion, He submitted to it also, because God the Father so willed it with Him.",
         "But come and let us examine further this also. 'Did the decree of God the Father, and the will of the Son Himself, call Him as of necessity to His passion? And if so, and what I have said be true, was it not a matter of necessity for some one to be the traitor, and for the Israelites to proceed to such a pitch of daring as to reject Christ, and put Him to shame in manifold ways, and contrive for Him also the death upon the cross?' But if this were so, how would He be found saying, \"Woe to that man by whom the Son of man is betrayed: good had it been for him if he had not been born?\" And what just cause would there have been for Israel to perish, and be condemned to the miseries of war? For how could it oppose God's decree, and His irresistible purposes? God is not unjust, but weighs what we do with holy judgment. How therefore can He treat as voluntary that which was involuntary? For God the Father had pity upon the dwellers upon earth, who were in misery, caught in the snares of sin, and liable to death and corruption; bowed also beneath a tyrant's hand, and enslaved to herds of devils. He sent from heaven His Son to be a Saviour and Deliverer: Who also was made in form like to us. But even though He foreknew what He would suffer, and the shame of His passion was not the fruit of His own will, yet He consented to undergo it that He might save the earth, God the Father so willing it with Him, from His great kindness and love to mankind. \"For He so loved the world, that He gave even His Only-begotten Son, that whosoever believes in Him should not perish, but have everlasting life.\" As regards therefore the ignominy of His passion, He willed not to suffer: but as it was not possible for Him not to suffer, because of the cruelty of the Jews, and their disobedience, and unbridled violence, \"He endured the cross, despising the shame,\" \"and was obedient to the Father, even to death, and that the death of the cross. But God, it says, has greatly exalted Him, and given Him a name that is above every name; that at the name of Jesus Christ every knee should bow of things in heaven, and things in earth, and of things under the earth, and that every tongue should confess that Jesus Christ is Lord, to the glory of God the Father.\" Amen."
+      ],
+      "lines": [
+        {
+          "before": 0,
+          "kind": "heading",
+          "text": "UPON THE SAME SUBJECT."
+        }
       ]
     },
     {
@@ -2161,6 +2433,13 @@
         "And let us look at his most beautiful confession of faith. \"Jesus, he says, remember me when You come in Your kingdom.\" You see Him crucified, and call Him a king: Him Who was bearing scorn and suffering, you expect to come in godlike glory: you see Him surrounded by a multitude of the Jews, and the wicked gang of the Pharisees, and Pilate's band of soldiers,—all these were mocking Him, and no single one of them confessed ...",
         "",
         ""
+      ],
+      "lines": [
+        {
+          "before": 5,
+          "kind": "break",
+          "text": "* * * * * * * * *"
+        }
       ]
     },
     {
@@ -2197,6 +2476,18 @@
         "He says to them now that they had received the Spirit after the resurrection, \"Receive you the Holy Spirit,\" and adds, \"But tarry you at Jerusalem, and wait for the promise of the Father, which you have heard of Me. For John indeed baptized with water, but you shall be baptized with the Holy Spirit;\" in water no longer, for that they had received, but with the Holy Spirit: He does not add water to water, but completes that which was deficient by adding what was wanting to it.",
         "Having blessed them, and gone a little in advance, He was carried up to heaven, that He might share the Father's throne even with the flesh that was united to Him. And this new pathway the Word made for us when He appeared in human form: and hereafter in due time He will come again in the glory of His Father with the angels, and will take us up to be with Him.",
         "Let us glorify therefore Him Who being God the Word became man for our sakes: Who suffered willingly in the flesh, and arose from the dead, and abolished corruption: Who was taken up, and hereafter shall come with great glory to judge the living and the dead, and to give to every one according to his deeds: by Whom and with Whom to God the Father be glory and power with the Spirit for ever and ever. Amen."
+      ],
+      "lines": [
+        {
+          "before": 0,
+          "kind": "heading",
+          "text": "Fragments of sermons CLIV, CLV and CLVI."
+        },
+        {
+          "before": 17,
+          "kind": "lemma",
+          "text": "24:33. They rose up that same hour."
+        }
       ]
     }
   ]

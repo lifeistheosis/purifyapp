@@ -9447,6 +9447,93 @@ await section(65, async () => {
   }
 });
 
+// 66. St Cyril on Luke's short lines, laid over the text (1.9, quick win 16,
+// F-49), and the touch count's size-N finds measured. The lines the import
+// dropped (the Gospel's words a passage expounds, a few headings, the
+// editor's notes of where a fragment comes from, a gap's stars) stand before
+// the paragraph they stood over, and no paragraph's number moves:
+// lib/saints/__tests__/editionLines.test.ts holds the file. Then, on the
+// website with a finger at 820, Theology's passage deck's arrows and the
+// topic reader's step link are 44 to the touch and their boxes clear of each
+// other (lib/ui/__tests__/touchTargets.test.ts holds the source).
+await section(66, async () => {
+  console.log("\n66. St Cyril on Luke's short lines, and the deck's arrows at 44");
+  const luke = JSON.parse(fs.readFileSync(path.resolve("data/saints/cyril-of-alexandria/commentary-on-luke.json"), "utf8"));
+  const linesOf = (n) => (luke.sections.find((x) => x.n === n)?.lines ?? []).length;
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    const openSection = async (n, id) => {
+      await go(page, "/");
+      await page.waitForTimeout(300);
+      await go(page, `/saints/cyril-of-alexandria/commentary-on-luke/#s${n}`);
+      await page.waitForFunction((id) => !!document.getElementById(id), id, { timeout: 20000 }).catch(() => {});
+      await page.waitForTimeout(700);
+    };
+    const before = (id) =>
+      page.evaluate((id) => {
+        const row = document.getElementById(id);
+        const prev = row?.previousElementSibling;
+        return {
+          row: (row?.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 60),
+          kind: prev?.getAttribute("data-edition-line") ?? null,
+          text: (prev?.textContent ?? "").trim(),
+          count: document.querySelectorAll("[data-edition-line]").length,
+          lang: prev?.getAttribute("lang") ?? null,
+        };
+      }, id);
+    await openSection(12, "p-12-10");
+    let r = await before("p-12-10");
+    must(r.kind === "lemma" && r.text === "4:3. And the devil said unto him." && r.lang === "en", `Sermon 12: the Gospel's line stands over its paragraph ("${r.text}", ${r.kind})`);
+    must(/^Then the devil draweth near/.test(r.row), `Sermon 12: the paragraph keeps its number, p-12-10 ("${r.row}")`);
+    must(r.count === linesOf(12), `Sermon 12: every line of the section is drawn (${r.count} of ${linesOf(12)})`);
+    await openSection(123, "p-123-0");
+    r = await before("p-123-0");
+    must(r.kind === "heading" && r.text === "THE SAME SUBJECT CONTINUED.", `Sermon 123: the edition's heading opens it ("${r.text}")`);
+    await openSection(82, "p-82-1");
+    r = await before("p-82-1");
+    must(r.kind === "break" && /^\*( \*)+$/.test(r.text), `Sermon 82: the stars of a gap stand where the text breaks ("${r.text}")`);
+    await openSection(1, "p-1-1");
+    r = await before("p-1-1");
+    must(r.kind === "label" && r.text === "From the Syriac, MS. 12,154.", `Sermon 1: the editor's note of where it comes from ("${r.text}")`);
+    await page.screenshot({ path: path.join(SHOTS, "luke-lines-sermon-1.png") });
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+  {
+    const SAFARI_IPAD = "Mozilla/5.0 (iPad; CPU OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1";
+    const { ctx, page, errors } = await open({ width: 820, height: 1180, phone: true, userAgent: SAFARI_IPAD });
+    const boxes = (selector) =>
+      page.evaluate((selector) =>
+        [...document.querySelectorAll(selector)]
+          .filter((el) => el.getBoundingClientRect().width > 0)
+          .map((el) => {
+            const r = el.getBoundingClientRect();
+            const after = getComputedStyle(el, "::after");
+            const w = Math.max(parseFloat(after.width) || 0, parseFloat(after.minWidth) || 0);
+            const h = Math.max(parseFloat(after.height) || 0, parseFloat(after.minHeight) || 0);
+            const cx = r.left + r.width / 2;
+            return { w: Math.round(w * 10) / 10, h: Math.round(h * 10) / 10, left: cx - w / 2, right: cx + w / 2, drawn: Math.round(r.height * 10) / 10 };
+          }),
+      selector);
+    await go(page, "/theology/filioque/read/");
+    await page.waitForFunction(() => !!document.querySelector("[data-passage-deck]"), null, { timeout: 20000 }).catch(() => {});
+    // A study shows one part at a time, the part in the address (#part-2): open the one that holds the deck.
+    const part = await page.evaluate(() => document.querySelector("[data-passage-deck]")?.closest("[data-part]")?.getAttribute("data-part") ?? null);
+    if (part) await page.evaluate((n) => { window.location.hash = `#part-${n}`; }, part);
+    await page.waitForTimeout(900);
+    const arrows = await boxes("[data-passage-deck] button.hit-44.size-9");
+    must(arrows.length === 2 && arrows.every((a) => a.w >= 44 && a.h >= 44), `820: the passage deck's two arrows are 44 to the touch (${arrows.map((a) => `${a.w}x${a.h} over ${a.drawn}px`).join(", ")})`);
+    must(arrows.length === 2 && arrows[0].right <= arrows[1].left + 0.5, `820: their touch boxes do not overlap (${arrows.length === 2 ? `${Math.round((arrows[1].left - arrows[0].right) * 10) / 10}px apart` : "not found"})`);
+    await go(page, "/theology/filioque/");
+    await page.waitForTimeout(1500);
+    const step = await boxes("a[data-study-step].hit-44");
+    if (step.length) must(step.every((a) => a.h >= 44), `820: the topic reader's step link is 44 to the touch (${step.map((a) => `${a.w}x${a.h} over ${a.drawn}px`).join(", ")})`);
+    else console.log("  --  the Filioque's page has no step link to measure (it shows only on a topic with a path step)");
+    must(errors.length === 0, `820: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

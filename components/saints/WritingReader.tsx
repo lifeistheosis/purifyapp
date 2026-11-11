@@ -1,8 +1,8 @@
 "use client";
 
 import { SelectionToolsLazy } from "@/components/reading/SelectionToolsLazy";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import type { WritingContent, Section } from "@/lib/saints/load";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import type { WritingContent, Section, SectionLine } from "@/lib/saints/load";
 import type { Saint } from "@/lib/saints/saints";
 import {
   atOf,
@@ -279,6 +279,36 @@ function Pager({ prev, next, onGo }: { prev: SectionHead | null; next: SectionHe
  */
 type Cites = { divisions: WorkDivisions | null; author: string | null };
 
+/**
+ * A short line the edition sets between paragraphs (lib/saints/load.ts,
+ * SectionLine), laid over the text: the Gospel's words in the text's own
+ * type, as the lemmas that open a paragraph are; the edition's headings, the
+ * editor's notes of where a fragment comes from and a gap's stars in the
+ * quiet sans of the edition's headings, never as the author's words. Not a
+ * paragraph: nothing on it is highlighted, noted or cited.
+ */
+function EditionLine({ line }: { line: SectionLine }) {
+ if (line.kind === "lemma") {
+ return (
+ <p lang="en" dir="ltr" data-edition-line="lemma" className="py-0.5 text-paper/90 leading-[1.7]">
+ {line.text}
+ </p>
+ );
+ }
+ if (line.kind === "heading") {
+ return (
+ <p lang="en" dir="ltr" data-edition-line="heading" className="pt-4 first:pt-0 font-sans text-caption font-semibold text-paper/45">
+ {line.text}
+ </p>
+ );
+ }
+ return (
+ <p lang="en" dir="ltr" data-edition-line={line.kind} className={line.kind === "break" ? "font-sans text-caption text-paper/55 text-center" : "font-sans text-caption text-paper/55"}>
+ {line.text}
+ </p>
+ );
+}
+
 // Shared framing + citation + paragraph stack.
 function SectionParagraphs({
  saint,
@@ -312,6 +342,9 @@ function SectionParagraphs({
   * quotation in the app has (lib/citations/cite.ts): "St. Augustine of
   * Hippo, Confessions, Book I, Chapter 1, §1, tr. Pusey".
   */
+ // The edition's short lines, each before the paragraph it stood over.
+ const linesAt = new Map<number, SectionLine[]>();
+ for (const line of sec.lines ?? []) linesAt.set(line.before, [...(linesAt.get(line.before) ?? []), line]);
  function citeOf(place: ParagraphPlace | null): string | undefined {
  if (!divisions || !place) return undefined;
  const { place: where, mark } = placeWords(divisions, place.path, sec.title, placeOf);
@@ -347,6 +380,27 @@ function SectionParagraphs({
  register is legible at a glance and not only from the band. */}
  <div className={sec.voice === "editorial" ? "space-y-5 font-sans" : "space-y-5"}>
  {sec.paragraphs.map((p, i) => {
+ const lines = linesAt.get(i);
+ const body = paragraph(p, i);
+ if (!lines) return body;
+ return (
+ <Fragment key={`lines-${i}`}>
+ {lines.map((line, k) => (
+ <EditionLine key={k} line={line} />
+ ))}
+ {body}
+ </Fragment>
+ );
+ })}
+ {(linesAt.get(sec.paragraphs.length) ?? []).map((line, k) => (
+ <EditionLine key={`end-${k}`} line={line} />
+ ))}
+ </div>
+ <UndoBar entry={quick.entry} onUndo={quick.undo} />
+ </>
+ );
+
+ function paragraph(p: string, i: number) {
  // An empty paragraph is a slot kept where an edition's footnote had
  // been read in as the text: nothing to show, but the paragraphs after
  // it keep their numbers, which readers' highlights and notes are kept by.
@@ -401,9 +455,5 @@ function SectionParagraphs({
  {row}
  </div>
  );
- })}
- </div>
- <UndoBar entry={quick.entry} onUndo={quick.undo} />
- </>
- );
+ }
 }
