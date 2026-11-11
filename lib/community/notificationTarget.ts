@@ -38,8 +38,9 @@ type Row = Pick<CommunityNotification, "kind" | "post_id" | "reply_id" | "actor_
 const PERSON_KINDS: ReadonlySet<string> = new Set(["follow", "name_day", "gift"]);
 
 export function notificationTarget(n: Row): NotificationTarget {
-  // A removal notice is about something that is gone: nothing to open.
-  if (n.kind === "removed") return { kind: "none" };
+  // A removal notice is about something that is gone: nothing to open. The
+  // care note is its own words and the help in them (./careNote.ts).
+  if (n.kind === "removed" || n.kind === "care") return { kind: "none" };
   // A notice about a prayer campaign opens the campaign's own pages
   // (campaignNoticeHref below), never a post: its post is the campaign's
   // thread, which Community does not show.

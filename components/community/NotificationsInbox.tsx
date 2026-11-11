@@ -39,6 +39,7 @@ import {
   useInbox,
   type CommunityNotification,
 } from "@/lib/community/inbox";
+import { careParts } from "@/lib/community/careNote";
 import { campaignNoticeHref, notificationTarget } from "@/lib/community/notificationTarget";
 import { REMOVED_APPEAL_KEY, REMOVED_WHY_KEY, REMOVED_YOUR_KEY, isRemovalReason, isRemovalTarget } from "@/lib/community/removal";
 import { SUPPORT_EMAIL } from "@/lib/legal/entity";
@@ -155,6 +156,30 @@ export const KIND_KEYS: Record<string, string> = {
  */
 export function NoticeLine({ n }: { n: Pick<CommunityNotification, "kind" | "actor_name" | "target_kind" | "reason"> }) {
   const { t } = useTranslate();
+  // The care note (lib/community/careNote.ts): its words, the help in them
+  // as things a phone can open, and its signature on a line of its own.
+  if (n.kind === "care") {
+    return (
+      <>
+        {careParts(t("community.careNote")).map((part, i) =>
+          typeof part === "string" ? (
+            <span key={i}>{part}</span>
+          ) : (
+            <a
+              key={i}
+              href={part.href}
+              {...(part.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              className="font-semibold underline underline-offset-2"
+              dir="ltr"
+            >
+              {part.text}
+            </a>
+          ),
+        )}
+        <span className="mt-1 block">{t("community.careSign")}</span>
+      </>
+    );
+  }
   // About a prayer campaign (phase 4): what happened, without a name. Asked
   // before the kind's own line, which would say "replied to your post".
   if (n.target_kind === "campaign" && n.kind === "approved") return <>{t("community.campaignApproved")}</>;
@@ -180,7 +205,7 @@ export function NoticeAppeal({ n }: { n: Pick<CommunityNotification, "kind"> }) 
 
 /** One line glyph per kind, so the list can be read down its left edge. */
 function KindGlyph({ kind }: { kind: string }) {
-  if (kind === "prayed") return <Hands size={18} />;
+  if (kind === "prayed" || kind === "care") return <Hands size={18} />;
   if (kind === "name_day") return <Sparkle size={17} />;
   if (kind === "approved") return <Check size={17} />;
   if (kind === "removed") {

@@ -28,17 +28,23 @@ const COLS_WITH_HANDLE = `${COLS}, actor_handle`;
 // A removal notice's two fields arrive with supabase/migrations/20261110204814_removal_notices.sql.
 const COLS_WITH_REMOVAL = `${COLS_WITH_HANDLE}, target_kind, reason`;
 
-type Row = { read_at: string | null; target_kind?: string | null; post_id?: string | null; campaign_id?: string | null };
+type Row = { kind?: string; read_at: string | null; target_kind?: string | null; post_id?: string | null; campaign_id?: string | null };
 
 /**
- * A notice about a prayer campaign (phase 4, 2026-11-10: a moderator
- * approved yours, or one in your prayers has an update) is handed only to an
- * inbox that asks for it with "campaigns=1". An app built before it would
- * draw it as "replied to your post" and open a thread Community does not
- * show, so it never sees one, and its unread count leaves them out too.
+ * The notices 1.9 added are handed only to an inbox that asks for them with
+ * "inbox=2": a notice about a prayer campaign (a moderator approved yours, or
+ * one in your prayers has an update) and the care note (lib/community/
+ * careNote.ts). An app built before them would draw one as "replied to your
+ * post", and a campaign's would open a thread Community does not show, so it
+ * never sees one, and its unread count leaves them out too.
  */
-function asksForCampaigns(req: Request): boolean {
-  return new URL(req.url).searchParams.get("campaigns") === "1";
+function asksForNewNotices(req: Request): boolean {
+  return new URL(req.url).searchParams.get("inbox") === "2";
+}
+
+/** A notice an app built before 1.9 cannot draw. */
+function isNewNotice(r: Row): boolean {
+  return r.target_kind === "campaign" || r.kind === "care";
 }
 
 /**
@@ -99,9 +105,9 @@ async function handleGET(req: Request) {
     return NextResponse.json({ notifications: [], unread: 0 });
   }
 
-  const campaigns = asksForCampaigns(req);
+  const asksNew = asksForNewNotices(req);
   const rows = (data ?? []) as unknown as Row[];
-  const notifications = campaigns ? await withCampaignIds(rows) : rows.filter((r) => r.target_kind !== "campaign");
+  const notifications = asksNew ? await withCampaignIds(rows) : rows.filter((r) => !isNewNotice(r));
 
   // Count over the whole table, not over the fifty rows we just fetched.
   //
@@ -115,13 +121,13 @@ async function handleGET(req: Request) {
   // `head: true` sends no rows back, so this costs one index scan and no
   // payload. RLS still scopes it to the caller.
   const unreadQuery = () => supabase.from("community_notifications").select("id", { count: "exact", head: true }).is("read_at", null);
-  // An inbox that cannot draw a campaign notice is not told of an unread one.
-  // A null target_kind is every older kind, so it is kept by name.
-  let { count, error: countError } = campaigns
+  // An inbox that cannot draw a 1.9 notice is not told of an unread one. A
+  // null target_kind is every older kind, so it is kept by name.
+  let { count, error: countError } = asksNew
     ? await unreadQuery()
-    : await unreadQuery().or("target_kind.is.null,target_kind.neq.campaign");
-  // Before the removal notice's SQL there is no target_kind, and so no campaign notice to leave out.
-  if (countError && !campaigns && isColumnAbsent(countError)) ({ count, error: countError } = await unreadQuery());
+    : await unreadQuery().neq("kind", "care").or("target_kind.is.null,target_kind.neq.campaign");
+  // Before the removal notice's SQL there is no target_kind, and so no 1.9 notice to leave out.
+  if (countError && !asksNew && isColumnAbsent(countError)) ({ count, error: countError } = await unreadQuery());
 
   const unread = countError
     ? notifications.filter((n) => !n.read_at).length

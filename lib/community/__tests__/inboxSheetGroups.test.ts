@@ -168,9 +168,10 @@ describe("Community's bell: the same two groups", () => {
 });
 
 describe("the one rule", () => {
-  it("counts an approval and a removal as Purify's, and nothing a reader sends", () => {
+  it("counts an approval, a removal and the care note as Purify's, and nothing a reader sends", () => {
     expect(fromPurify({ kind: "approved" })).toBe(true);
     expect(fromPurify({ kind: "removed" })).toBe(true);
+    expect(fromPurify({ kind: "care" })).toBe(true);
     for (const kind of ["reply", "mention", "follow", "name_day", "prayed", "gift", "question", "answer"] as const) {
       expect(fromPurify({ kind })).toBe(false);
     }
@@ -216,6 +217,67 @@ describe("a notice about a prayer campaign, in both inboxes", () => {
         expect(typeof m[k] === "string" && m[k].trim().length > 0, `${code} ${k}`).toBe(true);
         expect(m[k], `${code} ${k}`).not.toMatch(/[\u2013\u2014]/);
       }
+    }
+  });
+});
+
+describe("the care note (call 26), in both inboxes", () => {
+  const SIGN = esc(en["community.careSign"]);
+  const care = () =>
+    notice("k1", "care", "", { excerpt: null, post_id: null, actor_name: "Purify", actor_handle: null, target_kind: null });
+
+  /** The help a finger can open, as React writes each link. */
+  const HELP = ['href="tel:988"', 'href="tel:116123"', 'href="https://findahelpline.com"'];
+
+  it("stands under From Purify in the bell's sheet, signed, with each piece of help a link", () => {
+    const { readers, purify } = draw([notice("r9", "reply", "A reader's reply"), care()]);
+    for (const h of HELP) {
+      expect(purify).toContain(h);
+      expect(readers).not.toContain(h);
+    }
+    expect(purify).toContain(SIGN);
+    expect(purify.indexOf(SIGN)).toBeLessThan(purify.indexOf(WHATS_NEW));
+    // Never "replied to your post", and the row itself is not a link around the help:
+    // from the row's start to the first number, the only link is that number's own.
+    expect(purify).not.toContain(esc(en["community.repliedToYou"]));
+    const at = purify.indexOf('href="tel:988"');
+    const row = purify.slice(purify.lastIndexOf("<li", at), at);
+    expect(row).toContain("<div");
+    expect(row.split("<a ").length - 1).toBe(1);
+  });
+
+  it("stands under From Purify in Community's bell, as a row that opens nothing but its help", () => {
+    inboxNow = { notifications: [notice("r8", "reply", "Another reply"), care()], unread: 2, loaded: true };
+    const html = renderToStaticMarkup(
+      createElement(
+        MessagesProvider,
+        { locale: "en", messages: getMessages("en") } as Parameters<typeof MessagesProvider>[0],
+        createElement(NotificationsInbox, { whole: true, onOpen: () => {} }),
+      ),
+    );
+    const purifyAt = html.indexOf(`>${PURIFY}<`);
+    expect(purifyAt).toBeGreaterThan(0);
+    for (const h of HELP) expect(html.indexOf(h)).toBeGreaterThan(purifyAt);
+    expect(html.slice(purifyAt)).toContain(SIGN);
+    // The help site opens outside the app; a number opens the phone's dialler.
+    expect(html).toMatch(/href="https:\/\/findahelpline\.com" target="_blank" rel="noopener noreferrer"/);
+    expect(html).not.toMatch(/href="tel:988" target=/);
+    // Nothing in the row is a button: the note is read, and its help is tapped.
+    expect(html.slice(purifyAt)).not.toContain("<button");
+  });
+
+  it("reads right to left in Arabic and Urdu with each number kept left to right", () => {
+    for (const locale of ["ar", "ur"] as const) {
+      inboxNow = { notifications: [care()], unread: 1, loaded: true };
+      const html = renderToStaticMarkup(
+        createElement(
+          MessagesProvider,
+          { locale, messages: getMessages(locale) } as Parameters<typeof MessagesProvider>[0],
+          createElement(NotificationsInbox, { whole: true, onOpen: () => {} }),
+        ),
+      );
+      expect(html, locale).toMatch(/href="tel:116123"[^>]*dir="ltr"/);
+      expect(html, locale).toContain(esc((getMessages(locale) as Record<string, string>)["community.careSign"]));
     }
   });
 });

@@ -26,7 +26,7 @@ import { apiFetch } from "@/lib/api/client";
 export type CommunityNotification = {
   id: string;
   /** A reply was the only kind until 20261002000000_community_social.sql. */
-  kind: "reply" | "mention" | "follow" | "name_day" | "prayed" | "gift" | "question" | "answer" | "approved" | "removed";
+  kind: "reply" | "mention" | "follow" | "name_day" | "prayed" | "gift" | "question" | "answer" | "approved" | "removed" | "care";
   post_id: string | null;
   reply_id: string | null;
   actor_name: string;
@@ -44,14 +44,14 @@ export type CommunityNotification = {
 
 /**
  * A notice Purify's moderators send: a post or reply approved (written as from
- * "Purify", lib/community/moderation.ts), or something taken down, with its
- * reason (lib/community/removal.ts). It stands under "From Purify", never
+ * "Purify", lib/community/moderation.ts), something taken down, with its
+ * reason (lib/community/removal.ts), or the care note (./careNote.ts). It stands under "From Purify", never
  * with what other readers sent: the tab bar's bell (components/nav/
  * NotificationsSheet.tsx) and Community's bell (components/community/
  * NotificationsInbox.tsx) both ask this one rule.
  */
 export function fromPurify(n: Pick<CommunityNotification, "kind">): boolean {
-  return n.kind === "approved" || n.kind === "removed";
+  return n.kind === "approved" || n.kind === "removed" || n.kind === "care";
 }
 
 export type Inbox = {
@@ -91,10 +91,11 @@ function set(next: Inbox): void {
 
 async function fetchInbox(): Promise<Inbox> {
   try {
-    // "campaigns=1": this inbox can draw a notice about a prayer campaign
-    // (lib/community/notificationTarget.ts, campaignNoticeHref). A build from
-    // before it asks without it and is never handed one it would misname.
-    const res = await apiFetch("/api/community/notifications?campaigns=1");
+    // "inbox=2": this inbox can draw the notices 1.9 added, a prayer
+    // campaign's (lib/community/notificationTarget.ts, campaignNoticeHref)
+    // and the care note (./careNote.ts). A build from before it asks
+    // without it and is never handed one it would misname.
+    const res = await apiFetch("/api/community/notifications?inbox=2");
     if (!res.ok) return { notifications: [], unread: 0, loaded: true };
     const json = (await res.json()) as {
       notifications?: CommunityNotification[];
