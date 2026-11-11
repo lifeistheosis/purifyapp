@@ -109,9 +109,12 @@ lock of 11, and 13 to 16. This file's next section.
 reading serif, a tap opens the passage. A Father's words from the library
 read as a quotation with its source and the way back. A quote of one's own
 reads as the writer's. More's four each look like what they are. On You, two
-rows always there, written in or not: Your journal and Florilegium; the same
-two in Settings; the shelf's journal cover goes, so there is one door and not
-two; both are found from search under Settings.
+rows always there, written in or not: Your journal and Your Florilegium; the
+same two in Settings; both are found from search under Settings. (The plan
+first took the shelf's journal cover off for one door. The arbiter's word,
+06:11 UTC: "Leave the shelf as he picked it, and add the two rows. He asked
+for the journal and the Florilegium to be there to choose, not for anything he
+chose to go.")
 
 **Push 3. The Florilegium and the notebooks as one** (note 19; fact 12). A
 page can be put in a gathering: the notebook choice offers his gatherings by
@@ -260,8 +263,101 @@ Before, from the export of `3c5e8809a`; after, from the export of
 | | `08j-after-highlight-none.png` | Highlight with nothing written. |
 | | `08k-after-highlight.png` | Highlight with words written, and its colours. |
 
-`08c-before-today.png` is today's page, which push 1 does not change; its
-pair comes with push 2.
+Push 2's, the before from the export of `24beb99dc` and the after from the
+export of `def6a1b53`:
+
+| Before | After | What it shows |
+| --- | --- | --- |
+| `08m-before-blocks.png` | `08m-after-blocks.png` | A page with a verse, a quote of one's own and a Father's words from the library (the paragraph and its name read off the work's own page in the app). Before: three boxes alike. After: each with its mark, set in from the writer's own words. |
+| | `08n-after-blocks-more.png` | The same page further down: marked words and Plus's four, as they were. |
+| `09c-before-you-rows.png` | `09c-after-you-rows.png` | You as it opens for a new reader with no Plus. After: Your journal and Your Florilegium lead the rows, the Florilegium's with the padlock. |
+| | `09d-after-settings.png` | Settings for the same reader: the two rows under the account, the Florilegium's with the mark. |
+
+`08c-before-today.png` is today's page, which neither push changes.
+
+## Push 2: what was built
+
+The arbiter's yes, 06:09 UTC, to the one new line, the two rows, the mark on
+the Florilegium's row without Plus, and the blocks each with its own mark and
+no box.
+
+**Each block a form of its own** (`components/journal/PageBlocks.tsx`). A
+verse, a quote of one's own and a quote from the library were three boxes
+alike. Now none is in a box and none stands beside a rule. Each wears the
+mark of what it is, the glyph of the tool that lays it, and has its own
+shape:
+
+- **Scripture**: the Book and its place as a heading that opens the passage
+  at the verse, then the words in the size the app reads at. With no signal
+  and nothing kept, "Open to read" under the heading (fact 9: the heading is
+  always there, and the words come once the phone has had them). Asked for a
+  second time it is lit for a moment, with no edge to light.
+- **A Father's words from the library**: the words, then the Quill and the
+  source as the one way back, and under it that it is quoted from the
+  library. The form a gathered line has in the Florilegium, so the two are
+  one family before push 3 makes them one.
+- **A quote of one's own**: the words in italic, then the speech mark and who
+  said it, typed by the writer. No link, and never the Quill.
+- **The marks hang.** Everything brought onto the page begins under its name,
+  past its mark, so the writer's own words alone stand at the margin: what is
+  set in is not mine. An indent, never a rule. (Looked at on the export
+  first: a Father's words in upright serif read as the writer's own until the
+  source under them.)
+- A block's remove sits level with the block's first line.
+- Highlight and Plus's four keep the forms they have.
+
+**The ways in** (note 9).
+
+- **On You** (`components/mobile/YouMobile.tsx`, `components/you/YouRows.tsx`):
+  Your journal and Your Florilegium lead the reader's own rows, above Your
+  rule, written in or not. The shelf stays as he picked it.
+- **In Settings** (`components/settings/SettingsClient.tsx`, `JournalSection`):
+  the same two rows under the account, with no heading over them.
+- **In the app-wide search** (`lib/search/buildCorpus.ts`): both are found
+  under Settings, as well as by their own names.
+- **Without Plus the Florilegium's row is marked**, since gathering is
+  Plus's: on You the padlock alone, as the verse card there wears it, because
+  the subscription is named once on that screen (his refinement 3 of r3-25);
+  in Settings the mark beside the name, as Candlelight at Vespers wears it.
+  The page it opens already shows that reader what is theirs.
+- One new line, `you.journalHint`: "What you write, and your notes on
+  verses", in English and the twenty languages. The Florilegium's row uses
+  words the catalog had: "Your Florilegium", "The lines you keep".
+
+**The tools' names are read whole.** `checkMock` gained a rule for a name cut
+short after push 1's finding (Admin, `93a87a885`), and its first catch was
+this sheet's own toolbar: at the tile's leading of 1 a tool's name stood in a
+box a pixel shorter than its letters. Each name has a line of its own height
+now.
+
+Tests, each failing on the code before it:
+`lib/journal/__tests__/blockForms.test.ts`,
+`lib/journal/__tests__/waysIn.test.ts`, and the changed cases of
+`lib/nav/__tests__/oneSettings.test.ts`. The release's export walk holds the
+rows in a built app (sections 28 and 46).
+
+### Checked, push 2 (2026-11-11 UTC)
+
+On `def6a1b53`, push 2's code rebased onto the branch as it stood at 06:36:
+
+- `npm run typecheck` 0. `npm run lint` 0 errors. `npm run test:unit` 13,066
+  of 13,066 (9 skipped).
+- `npm run build:android` 0 twice (the house's export for Plus's locks 06:42,
+  the plain one 06:48), `npm run build:ios` 0 (06:54), `npm run build` 0
+  (06:57).
+- The journal's walk on the one export, in one pass: **26 of 26 as a reader
+  for whom nothing is locked, 26 of 26 as a new reader with no Plus.** 29
+  flows in all; 23 are walked as both readers.
+- The release's own walk on the plain export,
+  `scripts/export-walk.mjs --sections 14,28,40,46` (search, Settings, the
+  journal, You): 202 checks, every one passed.
+- 15 stills as a reader for whom nothing is locked and 4 as a new reader, each
+  passing every `checkMock` rule on the five palettes, the cut rule among
+  them, and each looked at by eye.
+
+Two of the walk's own checks were wrong on its first run and were mended
+before the pass above: one read a clear colour only in one of the two ways a
+browser writes it, the other read a name and the mark beside it as one word.
 
 ## What a phone still has to say
 
@@ -275,11 +371,17 @@ The harness has no keyboard on the screen. On his phone:
   themselves and the tools stay on the screen.
 - Title tapped by a real finger while the sheet is still rising.
 
-## What is not in push 1, and where it goes
+## What is left, and where it goes
 
 - The verse finder's field (fact 8): Fable Themes', through the global
   `.search-field`, and done (`f7afab6f8`).
-- "Open to read" on a verse card with no signal (fact 9): push 2.
-- Each block a form of its own: push 2.
-- The two rows on You and in Settings (note 9): push 2.
-- The Florilegium and the notebooks as one (note 19): push 3.
+- A verse card's words with no signal (fact 9): the card has its heading and
+  the way to read. Its words still come from the website the first time and
+  are kept from then on; reading them out of the Bible the apps carry would
+  put a Bible's text in the app a second time (AGENTS.md, "A page carries
+  what it shows"), so it is not done here.
+- The Florilegium and the notebooks as one (note 19): push 3, after Fable
+  Theology's word on the Florilegium's files and the arbiter's on the still.
+- Seen while drawing You, not this chat's: scrolled a little, the tab's own
+  name in the bar and the reader's name on the picture pass over each other.
+  Named to the arbiter.

@@ -120,8 +120,8 @@ function android() {
   window.Capacitor = { getPlatform: () => "android", isNativePlatform: () => true };
 }
 
-/** The journal, open on its page for the day. */
-async function journal({ scale = 1, set = {} } = {}) {
+/** The app open at a place: the journal on its page for the day unless another is named. */
+async function journal({ scale = 1, set = {}, at = "/journal", ready = "[data-journal-today]" } = {}) {
   const o = await openPhone({ scale, set });
   if (SELLS_PLUS) await o.ctx.addInitScript(android);
   o.errors = [];
@@ -131,8 +131,8 @@ async function journal({ scale = 1, set = {} } = {}) {
     if (SELLS_PLUS && /^"\w+" plugin is not implemented on android$/.test(e.message)) return;
     o.errors.push(e.message);
   });
-  await go(o.page, "/journal");
-  await o.page.waitForSelector("[data-journal-today]", { timeout: 30000 });
+  await go(o.page, at);
+  await o.page.waitForSelector(ready, { timeout: 30000 });
   await wait(1200);
   return o;
 }
@@ -150,13 +150,56 @@ const VERSE = 0, QUOTE = 1, HIGHLIGHT = 2, MORE = 3;
 /** A page kept as a draft, as the journal keeps the one being written (lib/journal/entries.ts). */
 const draft = (body, more = {}) => ({ "purify:journal.draft": JSON.stringify({ kind: "reflection", body, ...more }) });
 
+/** A work the apps carry, for a quote from the library: its words are read off its own page, never typed here. */
+const WORK = "/saints/athanasius-the-great/on-the-incarnation/";
+
+/**
+ * A draft with every kind of block on it. The library quote is made as Quote
+ * in journal makes one (lib/journal/quoteInJournal.ts): a paragraph of the
+ * work as its page has it, the page's own name for itself, and the page as
+ * the way back.
+ */
+async function pageOfEveryBlock(page) {
+  await go(page, WORK);
+  await page.waitForFunction(() => [...document.querySelectorAll("main p")].some((p) => p.textContent.trim().length > 80), null, { timeout: 30000 });
+  await wait(600);
+  const from = await page.evaluate(() => {
+    const cite = document.querySelector("[data-cite]")?.getAttribute("data-cite") ?? document.querySelector("main h1")?.textContent ?? "";
+    const paragraphs = [...document.querySelectorAll("main p")].map((p) => p.textContent.replace(/\s+/g, " ").trim());
+    // The first paragraph of the work short enough to sit on a phone's screen with the rest.
+    return { cite: cite.replace(/\s+/g, " ").trim(), text: paragraphs.find((t) => t.length > 80 && t.length < 240 && !t.includes("§")) ?? "" };
+  });
+  if (!from.text || !from.cite) throw new Error(`the work's page gave no paragraph to quote (cite "${from.cite}")`);
+  const body = [
+    "# A day in November",
+    "What I read this morning, and what stayed with me.",
+    "[[verse john 3:16]]",
+    "> Begin again tomorrow.\n> ~ My grandmother",
+    `[[library ${WORK}]]\n> ${from.text}\n> ~ ${from.cite}`,
+    "==yellow== Lord Jesus Christ, Son of God, have mercy on me.",
+    "## For this week",
+    "- [x] Read the Gospel of the day\n- [ ] Call home",
+    "---",
+    "[[callout candle]]\n> Remember the departed on Saturday.",
+    "And the last words of the page.",
+  ].join("\n\n");
+  await page.evaluate((b) => localStorage.setItem("purify:journal.draft", JSON.stringify({ kind: "reflection", body: b })), body);
+  await go(page, "/journal");
+  await page.waitForSelector("[data-journal-today]", { timeout: 30000 });
+  await wait(900);
+  return from;
+}
+
+/** The writing sheet's own scroll. */
+const sheetScroll = (page) => page.locator("[data-journal-composer]").locator("xpath=ancestor::*[contains(@class,'overflow-y-auto')][1]");
+
 // ── The stills ───────────────────────────────────────────────────────────
 
 const results = [];
-async function shot(name, label, selector, prepare, { set = {}, first = false } = {}) {
+async function shot(name, label, selector, prepare, { set = {}, first = false, at, ready } = {}) {
   if (WALK) return;
   if (ONLY && !ONLY.has(name.slice(0, 2))) return;
-  const { browser, page, errors } = await journal({ scale: SCALE, set });
+  const { browser, page, errors } = await journal({ scale: SCALE, set, at, ready });
   try {
     if (prepare) await prepare(page);
     // `first`: the picture before the check, where what it shows lasts a moment (a card lit).
@@ -275,6 +318,42 @@ await shot("11-verse-finder", "Quote tapped twice, then Verse: one card, and the
   await wait(600);
 });
 
+// Each block in a form of its own (build 93 note 8, push 2), and the ways in (note 9).
+await shot("12-blocks", "a page with a verse, a quote of one's own and a Father's words: each with its mark, none in a box", "[role=dialog]", async (page) => {
+  await pageOfEveryBlock(page);
+  await write(page);
+});
+
+await shot("13-blocks-more", "the same page further down: marked words, and Plus's heading, checklist, divider and callout", "[role=dialog]", async (page) => {
+  await pageOfEveryBlock(page);
+  await write(page);
+  await sheetScroll(page).evaluate((el) => el.scrollTo(0, el.scrollHeight));
+  await wait(500);
+});
+
+await shot(
+  "14-you-rows",
+  "You, for a reader who has written and gathered nothing: Your journal and Your Florilegium lead the rows",
+  "[data-you-rows]",
+  async (page) => {
+    // The tab as it opens: for a reader who has kept nothing, the rows are on the first screen.
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await wait(900);
+  },
+  { at: "/account", ready: "[data-you-rows] li" },
+);
+
+await shot(
+  "15-settings",
+  "Settings: under the account, the journal and the Florilegium, there to be chosen",
+  "#journal",
+  async (page) => {
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await wait(500);
+  },
+  { at: "/settings", ready: "#journal a" },
+);
+
 // ── The walk ─────────────────────────────────────────────────────────────
 
 const walked = [];
@@ -286,7 +365,7 @@ const expectThat = (cond, what) => {
 /** Who is walking: a new reader with no Plus on an export that sells it, or a reader for whom nothing is locked. */
 const READER = SELLS_PLUS ? "free" : "plus";
 
-async function flow(label, run, { set = {}, reader = "any" } = {}) {
+async function flow(label, run, { set = {}, reader = "any", at, ready } = {}) {
   if (!WALK) return;
   if (FLOWS.length && !FLOWS.some((f) => label.toLowerCase().includes(f))) return;
   flowCount += 1;
@@ -295,7 +374,7 @@ async function flow(label, run, { set = {}, reader = "any" } = {}) {
     left.push(`${label}: ${reader === "free" ? "needs an export that sells Plus (SELLS_PLUS=1; see the header)" : "needs a reader with Plus's parts (an export that locks nothing)"}`);
     return;
   }
-  const { browser, page, errors } = await journal({ set });
+  const { browser, page, errors } = await journal({ set, at, ready });
   let ok = true;
   let why = "";
   try {
@@ -713,6 +792,157 @@ await flow("a page with a notebook, without Plus: its line wears the Plus mark a
   expectThat((await page.locator("[data-page-props-panel]").count()) === 0, "the notebook panel opened without Plus");
   expectThat((await dialogs(page)).length === 2, "the line did not open the Plus sheet");
 }, { set: draft("# A day in November\n\n[[notebook Advent 2026]]\n[[tags fasting, peace]]\n\nWhat I read this morning."), reader: "free" });
+
+// ── Push 2: each block its own, and the ways in ───────────────────────────
+
+await flow("the blocks: a verse, a quote of one's own and a Father's words are in no box, and each wears its own mark", async (page) => {
+  const from = await pageOfEveryBlock(page);
+  await write(page);
+  const looks = await page.evaluate(() =>
+    ["[data-page-verse]", "[data-page-quote]", "[data-page-library]"].map((sel) => {
+      const el = document.querySelector(sel);
+      const cs = getComputedStyle(el);
+      return {
+        sel,
+        border: ["Top", "Right", "Bottom", "Left"].map((side) => parseFloat(cs[`border${side}Width`])).reduce((a, b) => a + b, 0),
+        ground: cs.backgroundColor,
+        marks: el.querySelectorAll("svg[aria-hidden=true]").length,
+      };
+    }),
+  );
+  for (const l of looks) {
+    expectThat(l.border === 0, `${l.sel} has a border`);
+    // Clear: an alpha of nothing, however the browser writes the colour (rgba(0, 0, 0, 0), oklab(0 0 0 / 0)).
+    expectThat(/(,|\/) ?0\)$|^transparent$/.test(l.ground), `${l.sel} stands on a ground of its own (${l.ground})`);
+    expectThat(l.marks >= 2, `${l.sel} wears no mark`);
+  }
+  // Scripture: its place is its heading, over where its words go.
+  const place = page.locator("[data-page-verse-place]");
+  expectThat((await place.innerText()).trim() === "John 3:16", `the verse's heading says "${await place.innerText()}"`);
+  const placeBox = await place.boundingBox();
+  const under = await page.locator("[data-page-verse] > :nth-child(2)").boundingBox();
+  expectThat(placeBox.height >= 44 && under.y >= placeBox.y + placeBox.height - 12, "the verse's place is not its heading");
+  // A Father's words: the words, then the one way back, named as the page names itself.
+  const source = page.locator("[data-page-library-source]");
+  expectThat((await source.innerText()).trim() === from.cite, `the source says "${await source.innerText()}", the page "${from.cite}"`);
+  expectThat((await page.locator("[data-page-library] blockquote").innerText()).replace(/\s+/g, " ").trim() === from.text, "the library's words are not as its page has them");
+  expectThat((await page.locator("[data-page-library] a").count()) === 1 && (await source.getAttribute("href")).replace(/\/$/, "") === WORK.replace(/\/$/, ""), "the way back is not one link to the work");
+  expectThat((await source.boundingBox()).height >= 44, "the way back is under 44px");
+  expectThat((await page.locator("[data-page-library]").innerText()).includes("Quoted from Purify's library"), "it does not say it is quoted from the library");
+  // A quote of one's own: the writer's, with no way out of the page and no library's mark.
+  expectThat((await page.locator("[data-page-quote] a").count()) === 0, "a quote of one's own has a link");
+  expectThat((await page.locator("[data-page-quote] textarea").inputValue()) === "Begin again tomorrow." && (await page.locator("[data-page-quote] input").inputValue()) === "My grandmother", "the quote's words are not the writer's");
+  expectThat(await page.locator("[data-page-quote] textarea").evaluate((el) => getComputedStyle(el).fontStyle === "italic"), "the quote's words are not in italic");
+  // Every remove is a finger wide, on the screen's side of its block.
+  const removes = await page.locator("[data-page-block] button[aria-label=Remove]").evaluateAll((els) => els.map((el) => el.getBoundingClientRect().toJSON()));
+  expectThat(removes.length >= 3 && removes.every((r) => r.width >= 44 && r.height >= 44 && r.x + r.width <= 390.5), `a remove is ${removes.map((r) => `${Math.round(r.width)} by ${Math.round(r.height)}`).join(", ")}`);
+});
+
+await flow("a verse's heading opens the passage at the verse, Back returns to the journal, and the page is as it was left", async (page) => {
+  await write(page);
+  await tap(page, tools(page).nth(VERSE), "Verse");
+  await wait(400);
+  await page.keyboard.type("John 3:16");
+  await wait(500);
+  await tap(page, page.locator("[data-page-verse-finder] li button").first(), "the verse");
+  await wait(600);
+  await page.keyboard.type("What I read this morning.");
+  await wait(700);
+  // With no signal and nothing kept the heading still stands, and under it the way to read.
+  expectThat((await page.locator("[data-page-verse]").innerText()).replace(/\s+/g, " ").trim() === "John 3:16 Open to read", `the card says "${(await page.locator("[data-page-verse]").innerText()).replace(/\s+/g, " ").trim()}"`);
+  await tap(page, page.locator("[data-page-verse-place]"), "the verse's heading");
+  await page.waitForFunction(() => location.pathname.replace(/\/$/, "") === "/bible/john/3", null, { timeout: 15000 });
+  expectThat((await page.evaluate(() => location.hash)) === "#v16", `the passage opened at "${await page.evaluate(() => location.hash)}"`);
+  await wait(1500);
+  expectThat((await page.locator("[data-journal-composer]").count()) === 0, "the writing sheet came along to the Bible");
+  await page.goBack();
+  await page.waitForFunction(() => location.pathname.replace(/\/$/, "") === "/journal", null, { timeout: 15000 });
+  await page.waitForSelector("[data-journal-today]", { timeout: 15000 });
+  await wait(900);
+  // What was being written waits, and Write goes on with it.
+  expectThat((await page.locator("[data-journal-write]").last().innerText()).trim() === "Continue writing", `the button says "${(await page.locator("[data-journal-write]").last().innerText()).trim()}"`);
+  await write(page);
+  expectThat((await page.locator("[data-page-verse-place]").innerText()).trim() === "John 3:16", "the verse is not on the page any more");
+  expectThat((await page.locator("[data-page-text] textarea").last().inputValue()) === "What I read this morning.", "the words are not on the page any more");
+});
+
+/** You's rows, by address, name and line, and where each stands on the screen. */
+const youRows = (page) =>
+  page.locator("[data-you-rows] li").evaluateAll((els) =>
+    els.map((li) => ({
+      href: (li.querySelector("a")?.getAttribute("href") ?? "").replace(/\/$/, ""),
+      name: (li.querySelector("p")?.textContent ?? "").trim(),
+      line: (li.querySelectorAll("p")[1]?.textContent ?? "").trim(),
+      height: li.getBoundingClientRect().height,
+      lock: !!li.querySelector("[data-you-row-plus]"),
+    })),
+  );
+
+await flow(
+  "You: Your journal and Your Florilegium lead the rows for a reader who has written nothing, and each opens its page and comes back",
+  async (page) => {
+    const rows = await youRows(page);
+    expectThat(rows[0]?.href === "/journal" && rows[0].name === "Your journal" && rows[0].line === "What you write, and your notes on verses", `the first row is ${JSON.stringify(rows[0])}`);
+    expectThat(rows[1]?.href === "/florilegium" && rows[1].name === "Your Florilegium" && rows[1].line === "The lines you keep", `the second row is ${JSON.stringify(rows[1])}`);
+    expectThat(rows[2]?.href === "/prayers/personal" && rows.at(-1).href === "/settings", `after them: ${rows.slice(2).map((r) => r.href).join(", ")}`);
+    expectThat(rows.every((r) => r.height >= 44), `a row is ${rows.map((r) => Math.round(r.height)).join(", ")}px high`);
+    // The mark is the reader's: the padlock on the Florilegium alone without Plus, and none with Plus's parts.
+    expectThat(!rows[0].lock && rows[1].lock === (READER === "free"), `the locks are ${rows.map((r) => r.lock).join()}`);
+    // Nothing is written, so the shelf has no journal cover: the row is the journal's door.
+    expectThat((await page.locator('[data-you-kept] a[href^="/journal"]').count()) === 0, "a reader who has written nothing has a journal cover on the shelf");
+    for (const [n, path, there] of [
+      [0, "/journal", "[data-journal-today]"],
+      [1, "/florilegium", "main h1, [data-route-content] h1"],
+    ]) {
+      const row = page.locator("[data-you-rows] li a").nth(n);
+      await row.evaluate((el) => el.scrollIntoView({ block: "center" }));
+      await wait(500);
+      const before = await page.evaluate(() => Math.round(window.scrollY));
+      await tap(page, row, path);
+      await page.waitForFunction((p) => location.pathname.replace(/\/$/, "") === p, path, { timeout: 15000 });
+      await page.waitForSelector(there, { timeout: 15000 });
+      await wait(900);
+      await page.goBack();
+      await page.waitForFunction(() => location.pathname.replace(/\/$/, "") === "/account", null, { timeout: 15000 });
+      await page.waitForSelector("[data-you-rows] li", { timeout: 15000 });
+      await wait(1200);
+      const after = await page.evaluate(() => Math.round(window.scrollY));
+      expectThat(Math.abs(after - before) <= 4, `Back from ${path} landed ${after - before}px from where the reader was`);
+    }
+  },
+  { at: "/account", ready: "[data-you-rows] li" },
+);
+
+await flow(
+  "Settings: under the account, the journal and the Florilegium are there to choose, and each opens its page and comes back",
+  async (page) => {
+    const ids = await page.locator("section[id]").evaluateAll((els) => els.map((el) => el.id));
+    expectThat(ids[0] === "account" && ids[1] === "journal", `Settings opens with ${ids.slice(0, 3).join(", ")}`);
+    const rows = await page.locator("#journal a").evaluateAll((els) =>
+      // innerText, so two parts drawn apart (a name and the mark beside it) are read apart.
+      els.map((a) => ({ href: (a.getAttribute("href") ?? "").replace(/\/$/, ""), words: [...a.querySelectorAll("p")].map((p) => p.innerText.replace(/\s+/g, " ").trim()), height: a.getBoundingClientRect().height })),
+    );
+    expectThat(rows.length === 2 && rows[0].href === "/journal" && rows[1].href === "/florilegium", `the rows are ${rows.map((r) => r.href).join(", ")}`);
+    expectThat(rows[0].words.join(" | ") === "Your journal | What you write, and your notes on verses", `the journal's row says ${rows[0].words.join(" | ")}`);
+    expectThat(rows[1].words.join(" | ") === `Your Florilegium${READER === "free" ? " Purify Plus" : ""} | The lines you keep`, `the Florilegium's row says ${rows[1].words.join(" | ")}`);
+    expectThat(rows.every((r) => r.height >= 44), "a row is under 44px");
+    expectThat((await page.locator("#journal h2").count()) === 0, "a heading stands over the two");
+    for (const [n, path, there] of [
+      [0, "/journal", "[data-journal-today]"],
+      [1, "/florilegium", "main h1, [data-route-content] h1"],
+    ]) {
+      await tap(page, page.locator("#journal a").nth(n), path);
+      await page.waitForFunction((p) => location.pathname.replace(/\/$/, "") === p, path, { timeout: 15000 });
+      await page.waitForSelector(there, { timeout: 15000 });
+      await wait(900);
+      await page.goBack();
+      await page.waitForFunction(() => location.pathname.replace(/\/$/, "") === "/settings", null, { timeout: 15000 });
+      await page.waitForSelector("#journal a", { timeout: 15000 });
+      await wait(900);
+    }
+  },
+  { at: "/settings", ready: "#journal a" },
+);
 
 // A reader without Plus, on an export that sells it.
 await flow("without Plus: nothing under Title opens the Plus sheet, and the notebook's door in More does, named for the journal", async (page) => {
