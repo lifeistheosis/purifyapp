@@ -356,6 +356,30 @@ Begun (Updates 2, 2026-11-11, `a1b987d18`):
     missing. The apps are 71.1 MB packed of the 85 MB ceiling. Stills:
     `build-93/12-isaac-papias-books-offline-390.png`,
     `build-93/12-theophylact-paisius-starters-offline-390.png`.
+- **Updates 2's seven of the gate's twelve** (2026-11-11; the other five,
+  St Bede, St Hilary, St Isidore, St Peter Chrysologus and St Victorinus,
+  are Fable voices', `8c0a7b947`), each the oldest picture whose freedom
+  can be shown in its row, or the permissions list:
+  - St Adrian and the Emperor Theodosius: their woodcuts of the Nuremberg
+    Chronicle (1493), from the Rijksmuseum, which marks them public domain.
+  - St Isidora of Tabenna: her print in the Russian Lives of the Saints
+    (May volume, 1903 to 1911); the print has no ground, so her picture is
+    black on the page's white, accepted by name in check-picture-edges.
+  - St Alexander of Alexandria: an engraving of about 1899 from a Hungarian
+    Lives of the Saints (Budapest), cut inside its oval; its Commons page
+    tags the 2012 scan CC BY-SA 3.0, which a faithful scan of a flat
+    public-domain print cannot add to, and his row says so. His words on
+    Today wear his face now in place of the lit cross, and the councils'
+    Fathers rows show him at Nicaea and St Adrian at the Seventh Council,
+    as carried covers, so page and council show one picture (note 1).
+  - St Symeon the New Theologian, St Xenia and St Mark of Ephesus go to the
+    permissions list (`docs/1.9-build/ICON-PERMISSIONS.md`). St Mark's entry
+    also names the Eleon workshop's own icon of him, free from its painter
+    under CC BY 2.0, for the owner's word.
+  - On the export with no signal: the four pages and the two Fathers rows
+    draw their pictures, the three on the list stand on the plate with no
+    empty picture, `checkMock` passes on each, and no picture is asked for
+    and missing. Still: `build-93/updates2-seven-pictures.jpg`.
 
 ### 13. In a Father's work, highlight and quote any words, not only the whole paragraph (2026-11-11 about 01:37 UTC)
 
