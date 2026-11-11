@@ -57,6 +57,14 @@
 // --shots keeps a still of the screen at each fail, the control ringed, for the
 // one who mends it.
 //
+// The gate walks the export cut the house's way, which sells Plus on Android
+// (NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1 NEXT_PUBLIC_REVENUECAT_ANDROID_KEY=walk
+// npm run build:android, as scripts/plus-order-walk.mjs and learn-walk.mjs
+// ask), twice: with SELLS_PLUS=1 the page says it is the Android shell, where
+// that export sells Plus, so the walk is a new reader with no Plus, as he
+// walks; without it the same export locks nothing (the arbiter, 2026-11-11:
+// one build, two readers).
+//
 //   node scripts/tap-walk.mjs --self-test
 //
 // proves the measures on a page of its own that draws one case at each address:
@@ -76,6 +84,7 @@ import { chromium } from "playwright";
 
 import { screens } from "./lib/screens.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "./lib/shell-server.mjs";
+import { SELLS_PLUS as SELLS, asAndroidShell, checkSells, readerWords } from "./lib/sells-plus.mjs";
 
 const argv = process.argv.slice(2);
 const flag = (name) => {
@@ -94,6 +103,8 @@ const SELF_TEST = argv.includes("--self-test");
 if (SELF_TEST) argv.splice(argv.indexOf("--self-test"), 1);
 const OUT = SELF_TEST ? selfTestPage() : path.resolve(argv[0] ?? "out");
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}: run npm run build:android first`);
+const SELLS_PLUS = !SELF_TEST && SELLS;
+checkSells(OUT, SELLS_PLUS);
 
 /**
  * A fail allowed by name and reason, the arbiter's to grant: the screens, the control, the
@@ -171,7 +182,7 @@ if (at === "/sticky/") {
 }
 
 const list = SELF_TEST ? Object.keys(EXPECT) : (ONLY ?? screens(OUT));
-console.log(`${list.length} screens on a phone, up to ${MAX} controls each, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}`);
+console.log(`${list.length} screens on a phone, up to ${MAX} controls each, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}, ${readerWords(SELLS_PLUS)}`);
 
 const OWN = "/opt/pw-browsers/chromium";
 const browser = await chromium.launch(fs.existsSync(OWN) ? { executablePath: OWN } : {});
@@ -630,6 +641,7 @@ async function worker() {
       localStorage.setItem("purify:whatsNewSeen", "99");
     } catch {}
   });
+  if (SELLS_PLUS) await asAndroidShell(ctx);
   await serveLikeTheShell(ctx, OUT, {});
   if (ONLINE) for (const at of ["https://purifyapp.net/**", "https://purifyapp.onrender.com/**"]) await ctx.route(at, mainWeb);
   // What the device keeps once the app has first opened: every tap starts from it.

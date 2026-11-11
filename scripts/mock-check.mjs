@@ -519,17 +519,20 @@ function look(arg) {
     const range = document.createRange();
     range.selectNodeContents(holder);
     const w = range.getBoundingClientRect();
+    // A word's box is as tall as its face, often taller than a tight line, so
+    // a name stands a pixel or two past its box with nothing cut: across, a
+    // pixel counts; down, half a line (a clamp hides whole lines); and an
+    // ellipsis counts when the browser draws one.
+    const hcs = getComputedStyle(holder);
+    const line = parseFloat(hcs.lineHeight) || parseFloat(hcs.fontSize) * 1.25;
     for (let n = holder; n; n = n.parentElement) {
       const cs = getComputedStyle(n);
       if (cs.overflowX !== "visible" || cs.overflowY !== "visible") {
         const b = n.getBoundingClientRect();
-        const over = Math.max(
-          w.right - (b.right - parseFloat(cs.borderRightWidth)),
-          b.left + parseFloat(cs.borderLeftWidth) - w.left,
-          w.bottom - (b.bottom - parseFloat(cs.borderBottomWidth)),
-          b.top + parseFloat(cs.borderTopWidth) - w.top,
-        );
-        if (over > 1) {
+        const across = Math.max(w.right - (b.right - parseFloat(cs.borderRightWidth)), b.left + parseFloat(cs.borderLeftWidth) - w.left);
+        const down = Math.max(w.bottom - (b.bottom - parseFloat(cs.borderBottomWidth)), b.top + parseFloat(cs.borderTopWidth) - w.top);
+        const drawn = cs.textOverflow === "ellipsis" ? n.scrollWidth > n.clientWidth : across > 1;
+        if (drawn || down > line / 2) {
           const clamp = cs.webkitLineClamp && cs.webkitLineClamp !== "none" ? cs.webkitLineClamp : null;
           const how = cs.textOverflow === "ellipsis" ? "ended by an ellipsis" : clamp ? `cut at ${clamp} line${clamp === "1" ? "" : "s"}` : "clipped by the box it stands in";
           cuts.push({ name: nameOf(c), how: `its name "${(holder.textContent || "").replace(/\s+/g, " ").trim().slice(0, 32)}" ${how}`, allow: allowance(holder, "cut") });

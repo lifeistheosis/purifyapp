@@ -9,8 +9,14 @@
 // (scripts/mock-check.mjs): contrast and placeholders on all five palettes,
 // 44px to the touch, no glyph for an icon, colours that follow the palette,
 // no gold, no side stripe, mirrored in Arabic, no em dash, no rays, no
-// sparkle, and the three looks build 93 added: no empty picture, no dashed
-// placeholder box, no keyboard hint on a phone.
+// sparkle, the three looks build 93 added: no empty picture, no dashed
+// placeholder box, no keyboard hint on a phone, and no control's name cut
+// short.
+//
+// The gate walks the export cut the house's way, which sells Plus on
+// Android, twice (scripts/lib/sells-plus.mjs): SELLS_PLUS=1 makes the page
+// the Android shell, a new reader with no Plus, as he walks; without it the
+// same export locks nothing.
 //
 // A piece meant to break a rule says so on itself, with its reason
 // (data-mock-allow, data-mock-why), and is listed as allowed. Screens drawn
@@ -33,6 +39,7 @@ import { chromium } from "playwright";
 import { checkMock } from "./mock-check.mjs";
 import { screens } from "./lib/screens.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "./lib/shell-server.mjs";
+import { SELLS_PLUS, asAndroidShell, checkSells, readerWords } from "./lib/sells-plus.mjs";
 
 const argv = process.argv.slice(2);
 const flag = (name) => {
@@ -45,10 +52,11 @@ const JSON_OUT = flag("--json");
 const ONLINE = argv.includes("--online");
 if (ONLINE) argv.splice(argv.indexOf("--online"), 1);
 const OUT = path.resolve(argv[0] ?? "out");
+checkSells(OUT);
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}: run npm run build:android first`);
 
 const list = ONLY ?? screens(OUT);
-console.log(`${list.length} screens on a phone, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}`);
+console.log(`${list.length} screens on a phone, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}, ${readerWords()}`);
 
 // The main web, read as a phone reads it: GET only, each address once.
 const fetched = new Map();
@@ -101,6 +109,7 @@ async function worker() {
       localStorage.setItem("purify:whatsNewSeen", "99");
     } catch {}
   });
+  if (SELLS_PLUS) await asAndroidShell(ctx);
   await serveLikeTheShell(ctx, OUT, {});
   // Registered after the shell's, so it answers the main web's addresses first.
   // The store builds read purifyapp.net; a local export without
