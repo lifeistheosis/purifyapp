@@ -7919,6 +7919,414 @@ export const SAINTS: Saint[] = [
       },
     ],
   },
+
+  {
+    slug: "sylvester-of-rome",
+    name: "St. Sylvester of Rome",
+    byname: "Silvester",
+    epithet: "Pope of Rome",
+    reposed: "December 31, 335",
+    feastDays: ["January 2"],
+    see: "Rome",
+    pronoun: "his",
+    shortBio:
+      "Bishop of Rome after Miltiades, from January 31, 314, to his death on December 31, 335: the years in which the persecutions ceased, Constantine was converted and the Council of Nicaea met. Invited to that council in 325, he declined to go on account of his age and sent two presbyters, Vitus and Vincentius, in his place. He was buried in the cemetery of St. Priscilla.",
+    entrySource:
+      "A Dictionary of Christian Biography IV (1887), under Silvester (1); The Book of Saints (1921), under Silvester",
+    life: [],
+    works: [
+      {
+        slug: "sylvester-in-the-book-of-the-popes",
+        title: "St. Sylvester in the Book of the Popes",
+        subtitle: "The Liber Pontificalis on his pontificate",
+        year: "6th century",
+        blurb:
+          "The Book of the Popes on the Roman who held the see twenty-three years in the time of Constantine: its opening, with his exile and the emperor's baptism as the book tells them, and its close, with his ordinations and his burial on the Via Salaria. The thirty pages of churches and gifts between are left out. In the public-domain English of 1916.",
+        topics: ["Episcopate", "Baptism"],
+      },
+    ],
+  },
+
+  {
+    slug: "prophet-malachi",
+    name: "The Prophet Malachi",
+    byname: "Malachias",
+    epithet: "The last of the Twelve Minor Prophets",
+    reposed: "5th century BC",
+    feastDays: ["January 3"],
+    pronoun: "his",
+    shortBio:
+      "The last of the Twelve, a prophet after the return from the captivity, whose book is the burden of the word of the Lord to Israel: the priests who bring polluted bread to the altar, the messenger the Lord sends to survey the way before him, and Elias the Thesbite, sent before the great and glorious day of the Lord. The Book of Saints knows no particulars of his life; tradition makes him of Sapha, of the tribe of Zabulon.",
+    entrySource:
+      "The Book of Malachi, in Brenton's Septuagint (1851); The Book of Saints (1921), under Malachi",
+    life: [],
+    works: [
+      {
+        slug: "the-prophecy-of-malachi",
+        title: "The Prophecy of Malachi",
+        subtitle: "His prophecy, whole",
+        year: "Before Christ",
+        blurb:
+          "The whole of his prophecy, four chapters, as the Septuagint gives it in Brenton's English.",
+        topics: ["Scripture", "Prophecy", "Priesthood"],
+      },
+    ],
+  },
+
+  {
+    slug: "gordius-of-caesarea",
+    name: "St. Gordius",
+    byname: "Gordius of Caesarea",
+    epithet: "Martyr · Centurion of Caesarea in Cappadocia",
+    reposed: "Between 314 and 320 (Caesarea in Cappadocia)",
+    feastDays: ["January 3"],
+    pronoun: "his",
+    shortBio:
+      "A soldier of Caesarea in Cappadocia, a centurion, who left the army under the emperor Licinius, when Christians were removed from command, and withdrew into the desert. Coming back to the city on a feast of Mars, he proclaimed his faith before the crowd in the circus, and was seized, tortured and beheaded, in some year between 314 and 320. St. Basil preached a panegyric on him, reminding his hearers that some of them had seen him die.",
+    entrySource:
+      "The Book of Saints (1921), under Gordius; A Dictionary of Christian Biography II (1880), under Gordius (3)",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "prophet-micaiah",
+    name: "The Prophet Micaiah",
+    byname: "Micah the Elder",
+    epithet: "Son of Imlah · Prophet in the days of King Ahab",
+    reposed: "9th century BC",
+    feastDays: ["January 5"],
+    pronoun: "his",
+    shortBio:
+      "Michaias son of Jemblaa, as the Septuagint names him: a prophet of the Lord whom Achaab, king of Israel, hated, for he spoke not good of him, but only evil. When four hundred prophets told Achaab and Josaphat, king of Juda, to go up to Remmath Galaad, he said, “Whatsoever the Lord shall say to me, that will I speak,” and saw all Israel scattered as a flock without a shepherd. The king put him in prison.",
+    entrySource:
+      "1 Kings 22, in Brenton's Septuagint (1851); the Church's calendar, January 5",
+    life: [],
+    works: [
+      {
+        slug: "micaiah-before-ahab",
+        title: "Micaiah before Ahab",
+        subtitle: "In the First Book of Kings",
+        year: "Before Christ",
+        blurb:
+          "The chapter of the Kings in which he alone of the prophets will not promise the king the victory, and the word he spoke comes true at Remmath Galaad. As the Septuagint gives it, in Brenton's English (1851).",
+        topics: ["Scripture", "Prophecy", "Courage"],
+      },
+    ],
+  },
+
+  {
+    slug: "george-the-chozebite",
+    name: "St. George the Chozebite",
+    epithet: "Of the seventh century",
+    reposed: "7th century",
+    feastDays: ["January 8"],
+    pronoun: "his",
+    shortBio:
+      "St. George, called the Chozebite, who reposed in the seventh century, as the Church's calendar records. No account of his life in public-domain English has been found, so his page holds only what the calendar keeps.",
+    entrySource:
+      "The Church's calendar, January 8",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "domnica-of-constantinople",
+    name: "St. Domnica of Constantinople",
+    epithet: "Of the fifth century",
+    reposed: "About 474",
+    feastDays: ["January 8"],
+    pronoun: "her",
+    shortBio:
+      "St. Domnica of Constantinople, who reposed about 474, as the Church's calendar records. No account of her life in public-domain English has been found, so her page holds only what the calendar keeps.",
+    entrySource:
+      "The Church's calendar, January 8",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "polyeuctus-of-melitene",
+    name: "St. Polyeuctus of Melitene",
+    epithet: "Martyr · Centurion at Melitene",
+    reposed: "250 or 259 (Melitene)",
+    feastDays: ["January 9"],
+    pronoun: "his",
+    shortBio:
+      "A Roman officer at Melitene on the Euphrates, a centurion of the Legio Fulminata, who became a Christian and was beheaded for it, under Decius in 250 or under Valerian in 259; the calendar gives 259. His cult was kept at Melitene before 377, and Gregory of Tours knew him as venerated at Constantinople as the avenger of perjury. His Acts profess to be written by his friend Nearchus, who saw him die.",
+    entrySource:
+      "A Dictionary of Christian Biography IV (1887), under Polyeuctus; The Book of Saints (1921), under Polyeucte; the Church's calendar, January 9",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "philip-of-moscow",
+    name: "St. Philip, Metropolitan of Moscow",
+    byname: "Philip Kolicheff",
+    epithet: "Martyr · Once hegumen of Solovetsky",
+    reposed: "16th century (Tver)",
+    feastDays: ["January 9"],
+    see: "Moscow",
+    pronoun: "his",
+    shortBio:
+      "Philip, of the noble family of Kolicheff, a monk and some time superior of the Solovetsky monastery, whom the Tsar John the Terrible, who had known him from childhood, made Metropolitan of Moscow; Mouravieff dates it 1565. He rebuked the Tsar openly for the innocent blood being shed, was deposed by a council of bishops, and was strangled in his cell in the Otroch monastery at Tver. His relics lie in the cathedral of the Assumption in Moscow.",
+    entrySource:
+      "A. N. Mouravieff, A History of the Church of Russia, tr. R. W. Blackmore (1842), pp. 114 to 118 and 167",
+    life: [],
+    works: [
+      {
+        slug: "life-of-philip-of-moscow",
+        title: "St. Philip of Moscow in Mouravieff",
+        subtitle: "His rebuke of the Tsar, and his martyrdom",
+        year: "1838",
+        blurb:
+          "Mouravieff's pages on the hegumen of Solovetsky whom the Tsar John made Metropolitan of Moscow: his reproof from his chair on the day of his consecration, the Sunday he would not bless the Tsar in the cathedral, the sentence that deposed him, and his death in his cell at Tver. In the public-domain English of 1842.",
+        topics: ["Episcopate", "Martyrdom", "Courage"],
+      },
+    ],
+  },
+
+  {
+    slug: "dometian-of-melitene",
+    name: "St. Dometian of Melitene",
+    byname: "Domitian",
+    epithet: "Bishop of Melitene",
+    reposed: "601 (Constantinople)",
+    feastDays: ["January 10"],
+    see: "Melitene",
+    pronoun: "his",
+    shortBio:
+      "Bishop of Melitene and metropolitan of Roman Armenia, a kinsman of the emperor Maurice, who was soon left a widower and gave himself to the Church. When Chosroes, king of Persia, fled from a rebel and sought the emperor's help, Maurice sent Domitian to attend him, in 589 or 590, and Chosroes was restored. He died at Constantinople on January 10 or 11, and his relics were afterwards taken to his own see; the calendar gives his repose as 601.",
+    entrySource:
+      "A Dictionary of Christian Biography I (1877), under Domitianus (15); Baring-Gould, The Lives of the Saints I (1897), January 10; the Church's calendar, January 10",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "theodosius-the-cenobiarch",
+    name: "St. Theodosius the Cenobiarch",
+    epithet: "Abbot · Founder of a communal monastery near Jerusalem",
+    born: "About 423 (Marissus in Cappadocia)",
+    reposed: "January 11, 529",
+    feastDays: ["January 11"],
+    pronoun: "his",
+    shortBio:
+      "A Cappadocian, son of Proaeresius and Eulogia, born about 423, who went to Jerusalem in 451, lived in a cave nearby, and then built a great monastery near Jerusalem, from which he was called the Cenobiarch. When he denounced the teaching of Eutyches, the emperor Anastasius drove him into exile, and he was restored at the emperor's death in 518. He died on January 11, 529, aged 105.",
+    entrySource:
+      "A Dictionary of Christian Biography IV (1887), under Theodosius (22); The Book of Saints (1921), under Theodosius; Baring-Gould, The Lives of the Saints I (1897), January 11",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "tatiana-of-rome",
+    name: "St. Tatiana of Rome",
+    epithet: "Martyr · Deaconess",
+    reposed: "226 or 227 (Rome)",
+    feastDays: ["January 12"],
+    pronoun: "her",
+    shortBio:
+      "A Christian woman of Rome, cast to the wild beasts in the amphitheatre in the reign of the emperor Alexander Severus, preserved from them, and in the end beheaded, in 227 by The Book of Saints' reckoning; the calendar calls her a deaconess and gives 226.",
+    entrySource:
+      "The Book of Saints (1921), under Tatiana; the Church's calendar, January 12",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "hermylas-and-stratonicus",
+    name: "Sts. Hermylas and Stratonicus",
+    epithet: "Martyrs of Singidunum (Belgrade)",
+    reposed: "315 (the Danube at Singidunum)",
+    feastDays: ["January 13"],
+    pronoun: "their",
+    shortBio:
+      "Hermylas, a deacon of Singidunum, now Belgrade, denounced as a Christian under the emperor Licinius, and Stratonicus: his servant in The Book of Saints, and in Baring-Gould the jailer and secret disciple who confessed Christ at the sight of his friend's tortures. Both were tortured and drowned in the Danube in 315; three days later Christians recovered their bodies and buried them a little way from the city.",
+    entrySource:
+      "The Book of Saints (1921), under Hermylas and Stratonicus; Baring-Gould, The Lives of the Saints I (1897), January 13; A Dictionary of Christian Biography III (1882), under Hermylus",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "fathers-of-sinai-and-raithu",
+    name: "The Fathers Slain at Sinai and Raithu",
+    epithet: "Monks and martyrs of Mount Sinai and Raithu",
+    reposed: "273, about 373, or the 5th century, by differing accounts",
+    feastDays: ["January 14"],
+    pronoun: "their",
+    shortBio:
+      "Monks of Mount Sinai and of Raithu, near the Red Sea, slain in raids on their cells. The sources differ on when: The Book of Saints puts the massacre of forty monks on Sinai in 273; the Dictionary of Christian Biography puts the slaying of Paul, abbot of Raithu, with forty-three disciples about 373; Baring-Gould gives a raid on Sinai in the fifth century, told by St. Nilus, who saw it and whose son was carried off.",
+    entrySource:
+      "The Book of Saints (1921), under Isaias, Sabas and Others; A Dictionary of Christian Biography IV (1887), under Paulus (96) and (97); A Dictionary of Christian Biography I (1877), under Domnus (8); Baring-Gould, The Lives of the Saints I (1897), January 14",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "paul-of-thebes",
+    name: "St. Paul of Thebes",
+    byname: "Paul the First Hermit",
+    epithet: "Hermit of the Thebaid",
+    reposed: "341 or 342 (the desert of the Thebaid)",
+    feastDays: ["January 15"],
+    pronoun: "his",
+    shortBio:
+      "An Egyptian of the Lower Thebaid who at about fifteen fled from the persecution of Decius into the desert and lived there as a hermit, fed and clothed by a palm tree: the first hermit, by St. Jerome's account. In Jerome's Life he was a hundred and thirteen when St. Antony came to him, and Antony buried him. The Book of Saints gives his death as 342; Baring-Gould and the calendar, 341.",
+    entrySource:
+      "The Book of Saints (1921), under Paul, the First Hermit; A Dictionary of Christian Biography IV (1887), under Paulus (73); Baring-Gould, The Lives of the Saints I (1897), January 15",
+    life: [],
+    works: [
+      {
+        slug: "life-of-paulus-the-first-hermit",
+        title: "The Life of Paulus the First Hermit",
+        subtitle: "Written by St. Jerome",
+        year: "c. 375",
+        blurb:
+          "Jerome's answer to the question of who went into the desert first. He gives it to Paulus rather than to Antony, and tells of the raven that brought bread, the two lions that dug the grave, and the palm-leaf tunic Jerome says he would sooner have than the purple of kings. The same text as on St. Jerome's page, in the public-domain English of the Nicene and Post-Nicene Fathers (1893).",
+        topics: ["Monasticism", "Desert Fathers", "Asceticism", "Providence"],
+      },
+    ],
+  },
+
+  {
+    slug: "john-the-hut-dweller",
+    name: "St. John the Hut-Dweller",
+    byname: "John the Calybite",
+    epithet: "Of Constantinople · The beggar at his parents' gate",
+    reposed: "About 450",
+    feastDays: ["January 15"],
+    pronoun: "his",
+    shortBio:
+      "A son of rich parents of Constantinople, who as a boy left home secretly to become a monk among the Acoemetae, the Sleepless Ones. After six years he came home disguised as a beggar and, unknown to his parents, lived on their charity in a little hut by their gate, from which he is called the Calybite, the hut-dweller. Three years later, dying, he made himself known to his mother. He lived in the fifth century.",
+    entrySource:
+      "The Book of Saints (1921), under John Chalybita; A Dictionary of Christian Biography III (1882), under Joannes (494) Calybita; Baring-Gould, The Lives of the Saints I (1897), January 15",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "euthymius-the-great",
+    name: "St. Euthymius the Great",
+    epithet: "Abbot in Palestine",
+    born: "377 (Melitene in Armenia)",
+    reposed: "473",
+    feastDays: ["January 20"],
+    pronoun: "his",
+    shortBio:
+      "Born at Melitene in Armenia in 377, he was a presbyter there, in charge of all the monasteries of the district, when in his twenty-ninth year he went to Jerusalem. He lived as a hermit, then in a cave in the desert with his friend Theoctistus; disciples gathered, and in 420 he built a laura on the road from Jerusalem to Jericho. He turned the widowed empress from the teaching of Eutyches, and died in 473, aged ninety-seven.",
+    entrySource:
+      "A Dictionary of Christian Biography II (1880), under Euthymius (4); The Book of Saints (1921), under Euthymius",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "apostle-timothy",
+    name: "Holy Apostle Timothy",
+    byname: "Timotheus",
+    epithet: "Disciple of St. Paul · First bishop of Ephesus",
+    reposed: "About 97 (Ephesus)",
+    feastDays: ["January 22"],
+    see: "Ephesus",
+    pronoun: "his",
+    shortBio:
+      "A disciple at Lystra, son of a Jewess who believed and of a Greek father, whom St. Paul took with him on his journeys; Paul writes that his faith dwelt first in his grandmother Lois and his mother Eunice. Paul wrote him two of the Epistles, and he was, Eusebius records, the first bishop of Ephesus. There the worshippers of Diana stoned him to death, about 97 or perhaps earlier; the calendar gives 96.",
+    entrySource:
+      "Acts 16:1-3 and 2 Timothy 1:5 (King James Version); Eusebius, Church History III.4 (NPNF II 1, 1890); The Book of Saints (1921), under Timothy; Baring-Gould, The Lives of the Saints I (1897), January 24; the Church's calendar, January 22",
+    life: [],
+    works: [
+      {
+        slug: "timothy-in-scripture",
+        title: "St. Timothy in Scripture",
+        subtitle: "Every verse that names him, and Eusebius",
+        year: "1st century",
+        blurb:
+          "Every verse of the New Testament that names him, in the King James Version and in the order of the books, from his calling at Lystra to the letters St. Paul wrote him; and Eusebius on his being the first bishop of Ephesus. In public-domain English.",
+        topics: ["Scripture", "Discipleship", "Episcopate"],
+      },
+    ],
+  },
+
+  {
+    slug: "anastasius-the-persian",
+    name: "St. Anastasius the Persian",
+    byname: "Magundat",
+    epithet: "Monk · Martyr in Persia",
+    reposed: "628 (Barsaloe in Assyria)",
+    feastDays: ["January 22"],
+    pronoun: "his",
+    shortBio:
+      "A Persian named Magundat, son of a Magian, who left the Persian army and went to Jerusalem, where he was baptized Anastasius and became a monk near the city. After seven years he rebuked Persian soothsayers at Caesarea and was imprisoned; sent on to Chosroes, king of Persia, he was tortured and, in 628, strangled and beheaded at Barsaloe in Assyria, where some seventy other Christians died with him. His head was brought to Rome.",
+    entrySource:
+      "The Book of Saints (1921), under Anastasius (January 22); Baring-Gould, The Lives of the Saints I (1897), January 22",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "clement-of-ancyra",
+    name: "St. Clement of Ancyra",
+    epithet: "Hieromartyr · Bishop of Ancyra",
+    reposed: "303 or 312 (Ancyra)",
+    feastDays: ["January 23"],
+    see: "Ancyra in Galatia",
+    pronoun: "his",
+    shortBio:
+      "Bishop of Ancyra in Galatia, put to death under Diocletian and Maximian, with Agathangelus, a deacon of Ancyra, and many others. His Acts say he suffered persecution for twenty-eight years, but the Dictionary of Christian Biography judges the narrative very dubious. The sources differ on the year: 303 for him and about 309 for Agathangelus in The Book of Saints, 312 in the calendar. His relics went to Constantinople in the sixth century and west with the Crusaders.",
+    entrySource:
+      "The Book of Saints (1921), under Clement and under Agathangelus; A Dictionary of Christian Biography I (1877), under Clemens (2); Baring-Gould, The Lives of the Saints I (1897), January 23",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "xenia-of-rome",
+    name: "St. Xenia of Rome",
+    epithet: "Of the fifth century",
+    reposed: "5th century",
+    feastDays: ["January 24"],
+    pronoun: "her",
+    shortBio:
+      "St. Xenia of Rome, of the fifth century, as the Church's calendar records. On her day Baring-Gould and the Dictionary of Christian Biography keep St. Eusebia, a Roman virgin of the fifth century who, by her Life, died at Mylasa in Caria on the feast of St. Ephraim, a former bishop of that city; neither calls her Xenia. No fuller account in public-domain English has been found.",
+    entrySource:
+      "A Dictionary of Christian Biography II (1880), under Ephraim (5) and Eusebia (4); Baring-Gould, The Lives of the Saints I (1897), January 24; the Church's calendar, January 24",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "xenophon-and-mary",
+    name: "Sts. Xenophon and Mary",
+    byname: "Xenophon, Mary, Arcadius and John",
+    epithet: "With their sons Arcadius and John · Of Constantinople",
+    reposed: "5th or 6th century",
+    feastDays: ["January 26"],
+    pronoun: "their",
+    shortBio:
+      "Xenophon, a senator at Byzantium, and his wife Mary, whose sons John and Arcadius, sent by sea to study law at Berytus, were shipwrecked and came ashore apart, each thinking the other lost, and each became a monk. Three years later their parents, come to Jerusalem to seek them, found both alive, and themselves went into solitude. Baring-Gould heads the story fifth century but sets it at Constantine's court; the calendar gives the sixth.",
+    entrySource:
+      "Baring-Gould, The Lives of the Saints I (1897), January 26; the Church's calendar, January 26",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "cyrus-and-john",
+    name: "Sts. Cyrus and John",
+    epithet: "Unmercenaries · Martyrs of Alexandria",
+    reposed: "311 or 312 (Alexandria)",
+    feastDays: ["January 31"],
+    pronoun: "their",
+    shortBio:
+      "Cyrus, a physician of Alexandria, and John, who went to Canopus to console a woman, Athanasia, and her three daughters, tortured there for Christ; they were seized and tortured themselves, and beheaded. The Book of Saints calls John a Syrian and puts their death at Alexandria in 312, in the last stage of the persecution under Diocletian and his colleagues; Baring-Gould calls him an Arabian. The calendar calls them unmercenaries and gives 311.",
+    entrySource:
+      "The Book of Saints (1921), under Cyrus and John; Baring-Gould, The Lives of the Saints I (1897), January 31; the Church's calendar, January 31",
+    life: [],
+    works: [],
+  },
 ];
 
 export function getSaint(slug: string): Saint | null {

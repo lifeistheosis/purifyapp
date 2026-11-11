@@ -375,6 +375,28 @@ export const SAINT_GROUP_MEMBERSHIP: Record<string, SaintGroupId[]> = {
   "marcellus-of-the-unsleeping-ones": ["desert-monastics"],
   "anysia-of-thessaloniki": ["martyrs", "women"],
   "melania-the-younger": ["women", "desert-monastics"],
+
+  // January (1.9). The prophets have no group, as December's; St George the
+  // Chozebite has none either, since his page holds only the calendar's line.
+  "sylvester-of-rome": ["hierarchs"],
+  "gordius-of-caesarea": ["martyrs"],
+  "domnica-of-constantinople": ["women"],
+  "polyeuctus-of-melitene": ["martyrs"],
+  "philip-of-moscow": ["hierarchs", "martyrs"],
+  "dometian-of-melitene": ["hierarchs"],
+  "theodosius-the-cenobiarch": ["desert-monastics"],
+  "tatiana-of-rome": ["martyrs", "women"],
+  "hermylas-and-stratonicus": ["martyrs"],
+  "fathers-of-sinai-and-raithu": ["martyrs", "desert-monastics"],
+  "paul-of-thebes": ["desert-monastics"],
+  "john-the-hut-dweller": ["desert-monastics"],
+  "euthymius-the-great": ["desert-monastics"],
+  "apostle-timothy": ["apostles", "hierarchs", "martyrs"],
+  "anastasius-the-persian": ["martyrs", "desert-monastics"],
+  "clement-of-ancyra": ["hierarchs", "martyrs"],
+  "xenia-of-rome": ["women"],
+  "xenophon-and-mary": ["desert-monastics"],
+  "cyrus-and-john": ["martyrs", "wonderworkers"],
 };
 
 export function groupsForSlug(slug: string): SaintGroupId[] {

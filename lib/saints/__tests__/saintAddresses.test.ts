@@ -51,7 +51,10 @@ describe("a made-up address under /saints", () => {
 
   it("is answered 404 by the proxy, before anything renders", () => {
     expect(unknownSaintAddress("/saints/zzz-not-a-saint")).toBe(true);
-    expect(unknownSaintAddress("/saints/philip-of-moscow")).toBe(true);
+    // St Philip of Moscow stood here as a saint with no page until January's
+    // saints gave him one (1.9); an address a reader might type for him with
+    // the honorific in it is still no saint's.
+    expect(unknownSaintAddress("/saints/st-philip-of-moscow")).toBe(true);
     expect(unknownSaintAddress("/saints/zzz-not-a-saint/web")).toBe(true);
     expect(unknownSaintAddress("/saints/theotokos/not-a-work")).toBe(true);
     const proxy = read("proxy.ts");

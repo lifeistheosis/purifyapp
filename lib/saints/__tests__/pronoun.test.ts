@@ -20,7 +20,7 @@ const root = join(__dirname, "..", "..", "..");
 
 /** A page of two or more, by its name: "Sts." or "Saints", or a company named as one. */
 function namesMore(name: string): boolean {
-  return /^(Sts\.|Saints) /.test(name) || /\b(Martyrs|Sleepers|Innocents|Youths|Companions|Women)\b/.test(name);
+  return /^(Sts\.|Saints) /.test(name) || /\b(Martyrs|Sleepers|Innocents|Youths|Companions|Women|Fathers)\b/.test(name);
 }
 
 /** The lines that name a saint by pronoun, each in its three forms. */

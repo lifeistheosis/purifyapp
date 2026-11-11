@@ -256,19 +256,29 @@ export const AUTHOR_META: Readonly<Record<string, MetaRow>> = {
   "chrysogonus": { traditions: ["latin"], era: "early" },
   // St. John of Kronstadt's My Life in Christ, whole (2026-11-10, the owner's word).
   "john-of-kronstadt": { traditions: ["russian"], era: "afterByzantium" },
+
+  // January's saints (1.9): the saints of the month's Lives in the witnesses' words.
+  "prophet-malachi": { traditions: [] },
+  "prophet-micaiah": { traditions: [] },
+  "apostle-timothy": { traditions: [], era: "apostolic" },
+  // Was a subject with no page (SUBJECTS) until January gave him one.
+  "paul-of-thebes": { traditions: ["egypt", "desert"], era: "councils" },
+  "philip-of-moscow": { traditions: ["russian"], era: "afterByzantium" },
+  "sylvester-of-rome": { traditions: ["latin"], era: "councils" },
 };
 
 /**
- * Saints a Life is about who have no page of their own yet: St Jerome's three
- * Lives. Their names are the covers' and the search's; their days are the
- * Menaion's. St. Hilarion has had a page since 2026-10-30 (hilarion-the-great,
+ * Saints a Life is about who have no page of their own yet: St Jerome's Lives.
+ * Their names are the covers' and the search's; their days are the Menaion's.
+ * St. Paul of Thebes was one until January's saints gave him a page (1.9),
+ * where his Life is registered too, sameAs St Jerome's copy, so his key moved
+ * to AUTHOR_META. St. Hilarion has had a page since 2026-10-30 (hilarion-the-great,
  * where his Life is registered too, sameAs St Jerome's copy). He keeps this
  * key for the Life all the same, because his cover's file on the website, which
  * the apps already in readers' hands ask for, carries its name
  * (lib/reading/authorCovers.ts, hilarion.v1.jpg; lib/today/saintFaces.ts).
  */
 export const SUBJECTS: Readonly<Record<string, MetaRow & { name: string; feasts: readonly string[] }>> = {
-  "paul-of-thebes": { name: "St. Paul of Thebes", traditions: ["egypt", "desert"], era: "councils", feasts: ["January 15"] },
   hilarion: { name: "St. Hilarion the Great", traditions: ["desert"], era: "councils", feasts: ["October 21"] },
   malchus: { name: "St. Malchus", traditions: ["desert"], era: "councils", feasts: ["March 26"] },
 };
@@ -1324,6 +1334,23 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
   // Call 14 (the owner's "Yes to all", 2026-11-10): St. John of Shanghai's Life in our
   // own words, each part with its sources named under it.
   "john-of-shanghai/life-of-st-john": { by: null, about: "john-of-shanghai", form: "retelling", scope: "complete", themes: [], review: R },
+  // January's saints (1.9): each Life is its witnesses' own words
+  // (scripts/menologion/january-lives.mjs); St. Malachi's book is whole.
+  "prophet-malachi/the-prophecy-of-malachi": { by: "prophet-malachi", form: "scripture", scope: "complete", themes: [], review: R },
+  "prophet-micaiah/micaiah-before-ahab": { by: null, about: "prophet-micaiah", form: "scripture", scope: "selections", themes: [], review: R },
+  "apostle-timothy/timothy-in-scripture": { by: null, about: "apostle-timothy", form: "scripture", scope: "selections", themes: [], review: R },
+  // Registered under St. Paul as well, from the same text; shown once, as St Jerome's.
+  "paul-of-thebes/life-of-paulus-the-first-hermit": {
+    by: "jerome-of-stridon",
+    about: "paul-of-thebes",
+    sameAs: "jerome-of-stridon/life-of-paulus-the-first-hermit",
+    form: "life",
+    scope: "complete",
+    themes: [],
+    review: R,
+  },
+  "philip-of-moscow/life-of-philip-of-moscow": { by: null, about: "philip-of-moscow", form: "life", scope: "selections", themes: [], review: R },
+  "sylvester-of-rome/sylvester-in-the-book-of-the-popes": { by: null, about: "sylvester-of-rome", form: "life", scope: "selections", themes: [], review: R },
 };
 
 /**

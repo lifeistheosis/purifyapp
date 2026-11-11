@@ -232,5 +232,11 @@
   "holy-innocents/the-slaughter-of-the-innocents": {"words":190,"minutes":1,"sections":[[1,190]]},
   "marcellus-of-the-unsleeping-ones/life-of-marcellus": {"words":707,"minutes":4,"sections":[[1,707]]},
   "anysia-of-thessaloniki/martyrdom-of-anysia": {"words":286,"minutes":2,"sections":[[1,286]]},
-  "melania-the-younger/life-of-melania-the-younger": {"words":674,"minutes":4,"sections":[[1,674]]}
+  "melania-the-younger/life-of-melania-the-younger": {"words":674,"minutes":4,"sections":[[1,674]]},
+  "sylvester-of-rome/sylvester-in-the-book-of-the-popes": {"words":185,"minutes":1,"sections":[[1,131],[2,54]]},
+  "prophet-malachi/the-prophecy-of-malachi": {"words":1855,"minutes":10,"sections":[[1,510],[2,573],[3,589],[4,183]]},
+  "prophet-micaiah/micaiah-before-ahab": {"words":1156,"minutes":6,"sections":[[1,1156]]},
+  "philip-of-moscow/life-of-philip-of-moscow": {"words":1451,"minutes":8,"sections":[[1,1222],[2,229]]},
+  "paul-of-thebes/life-of-paulus-the-first-hermit": {"words":3836,"minutes":21,"sections":[[1,289],[2,126],[3,239],[4,155],[5,183],[6,144],[7,322],[8,374],[9,372],[10,169],[11,206],[12,229],[13,121],[14,143],[15,111],[16,410],[17,204],[18,39]]},
+  "apostle-timothy/timothy-in-scripture": {"words":991,"minutes":6,"sections":[[1,81],[2,50],[3,24],[4,24],[5,28],[6,13],[7,40],[8,51],[9,33],[10,31],[11,24],[12,73],[13,15],[14,38],[15,155],[16,20],[17,67],[18,26],[19,22],[20,115],[21,17],[22,20],[23,24]]}
 }

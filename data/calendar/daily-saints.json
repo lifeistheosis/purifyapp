@@ -18,16 +18,19 @@
     },
     {
       "name": "St. Sylvester, Pope of Rome",
+      "slug": "sylvester-of-rome",
       "note": "+335"
     }
   ],
   "01-03": [
     {
       "name": "Prophet Malachi",
+      "slug": "prophet-malachi",
       "note": "last of the Twelve"
     },
     {
       "name": "Martyr Gordius",
+      "slug": "gordius-of-caesarea",
       "note": "soldier of Caesarea, +ca. 320"
     }
   ],
@@ -43,7 +46,8 @@
       "kind": "feast"
     },
     {
-      "name": "Prophet Micah",
+      "name": "Prophet Micaiah",
+      "slug": "prophet-micaiah",
       "note": "the elder Micah, +9th c. BC"
     }
   ],
@@ -63,17 +67,25 @@
   "01-08": [
     {
       "name": "St. George the Chozebite",
+      "slug": "george-the-chozebite",
       "note": "+7th c."
     },
     {
       "name": "St. Domnica of Constantinople",
+      "slug": "domnica-of-constantinople",
       "note": "+ca. 474"
     }
   ],
   "01-09": [
     {
       "name": "Martyr Polyeuctus",
+      "slug": "polyeuctus-of-melitene",
       "note": "Roman soldier of Melitene, +259"
+    },
+    {
+      "name": "St. Philip, Metropolitan of Moscow",
+      "slug": "philip-of-moscow",
+      "note": "martyred under Ivan IV"
     }
   ],
   "01-10": [
@@ -84,44 +96,52 @@
     },
     {
       "name": "St. Dometian, Bishop of Melitene",
+      "slug": "dometian-of-melitene",
       "note": "+601"
     }
   ],
   "01-11": [
     {
       "name": "St. Theodosius the Cenobiarch",
+      "slug": "theodosius-the-cenobiarch",
       "note": "founder of the first communal monastery in Palestine, +529"
     }
   ],
   "01-12": [
     {
       "name": "Martyr Tatiana of Rome",
+      "slug": "tatiana-of-rome",
       "note": "deaconess and martyr, +226"
     }
   ],
   "01-13": [
     {
       "name": "Martyrs Hermylas and Stratonicus",
+      "slug": "hermylas-and-stratonicus",
       "note": "of Belgrade, +315"
     }
   ],
   "01-14": [
     {
-      "name": "St. Sava the Sanctified",
+      "name": "St. Sava of Serbia",
+      "slug": "sava-of-serbia",
       "note": "Serbian Equal-to-Apostles, +1235"
     },
     {
       "name": "Fathers Slain at Sinai and Raithu",
+      "slug": "fathers-of-sinai-and-raithu",
       "note": "early monastic martyrs"
     }
   ],
   "01-15": [
     {
       "name": "St. Paul of Thebes",
+      "slug": "paul-of-thebes",
       "note": "the first Christian hermit, +341"
     },
     {
       "name": "St. John the Hut-Dweller",
+      "slug": "john-the-hut-dweller",
       "note": "+5th c."
     }
   ],
@@ -166,6 +186,7 @@
   "01-20": [
     {
       "name": "St. Euthymius the Great",
+      "slug": "euthymius-the-great",
       "note": "Palestinian monastic father, +473"
     }
   ],
@@ -179,22 +200,26 @@
   "01-22": [
     {
       "name": "Apostle Timothy",
+      "slug": "apostle-timothy",
       "note": "first bishop of Ephesus, +96"
     },
     {
       "name": "St. Anastasius the Persian",
+      "slug": "anastasius-the-persian",
       "note": "+628"
     }
   ],
   "01-23": [
     {
       "name": "Hieromartyr Clement of Ancyra",
+      "slug": "clement-of-ancyra",
       "note": "and Agathangelus, +312"
     }
   ],
   "01-24": [
     {
       "name": "St. Xenia of Rome",
+      "slug": "xenia-of-rome",
       "note": "+5th c."
     }
   ],
@@ -208,6 +233,7 @@
   "01-26": [
     {
       "name": "St. Xenophon, his wife Mary, and sons Arcadius and John",
+      "slug": "xenophon-and-mary",
       "note": "monastic family of Constantinople, +6th c."
     }
   ],
@@ -242,6 +268,7 @@
   "01-31": [
     {
       "name": "Unmercenaries Cyrus and John",
+      "slug": "cyrus-and-john",
       "note": "physicians and martyrs of Alexandria, +311"
     }
   ],

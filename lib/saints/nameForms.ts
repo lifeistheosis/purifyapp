@@ -40,8 +40,11 @@ export const KNOWN_FORMS: Record<string, string[]> = {
   // theodosius-the-great is the emperor, Theodosius I (January 17, +395), and
   // has no form here. "Theodosius the Cenobiarch" once stood here and opened
   // the emperor's card: it names another saint, the founder of the common
-  // life in Palestine (January 11, +529), who has no card.
+  // life in Palestine (January 11, +529), whose own card came with January's
+  // saints (1.9) and is found by its registry name.
   "peter-of-moscow": ["Peter of Moscow"],
+  "philip-of-moscow": ["Philip of Moscow"],
+  "paul-of-thebes": ["Paul the First Hermit"],
   "titus-of-crete": ["Titus of Crete"],
   "sixtus-of-rome": ["Sixtus of Rome"],
   "pimen-the-great": ["Abba Poemen"],

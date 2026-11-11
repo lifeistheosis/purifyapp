@@ -34,11 +34,15 @@ const day = (y: number, m: number, d: number) => new Date(Date.UTC(y, m - 1, d, 
 describe("the room's cards", () => {
   it("are every work once, the twin registrations left out", () => {
     const works = SAINTS.reduce((n, s) => n + s.works.length, 0);
-    // Two Lives registered twice: Antony's under St Antony, and (since
-    // 2026-10-30) Hilarion's under St Hilarion. Each is shown once, as its author's.
-    expect(room.cards).toHaveLength(works - 2);
+    // Three Lives registered twice: Antony's under St Antony, (since
+    // 2026-10-30) Hilarion's under St Hilarion, and (since January's saints,
+    // 1.9) St Jerome's Life of Paulus under St Paul of Thebes. Each is shown
+    // once, as its author's.
+    expect(room.cards).toHaveLength(works - 3);
     expect(room.cards.some((c) => c.key === "anthony-the-great/life-of-antony")).toBe(false);
     expect(room.cards.some((c) => c.key === "hilarion-the-great/life-of-saint-hilarion")).toBe(false);
+    expect(room.cards.some((c) => c.key === "paul-of-thebes/life-of-paulus-the-first-hermit")).toBe(false);
+    expect(room.cards.some((c) => c.key === "jerome-of-stridon/life-of-paulus-the-first-hermit")).toBe(true);
     expect(new Set(room.cards.map((c) => c.key)).size).toBe(room.cards.length);
   });
 

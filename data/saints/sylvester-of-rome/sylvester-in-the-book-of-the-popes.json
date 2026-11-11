@@ -1,0 +1,34 @@
+{
+  "saint": "sylvester-of-rome",
+  "slug": "sylvester-in-the-book-of-the-popes",
+  "title": "St. Sylvester in the Book of the Popes",
+  "subtitle": "The Liber Pontificalis on his pontificate",
+  "source": "The Book of the Popes (Liber Pontificalis), XXXIV, Sylvester, pp. 41-42 and 71-72, tr. Louise Ropes Loomis (The Book of the Popes (Liber Pontificalis) I, New York: Columbia University Press, 1916), public domain. Typed from the page images of archive.org's scan of the printing, read line by line, and compared word for word with the scan's text. The editions' footnotes and their marks are left out, and italics are set plain; the paragraphs are as printed. The section titles name the place in each book. The entry's opening and its close; the thirty pages between, of the churches Constantine built and the gifts he gave them, are left out.",
+  "originalLanguage": "la",
+  "sections": [
+    {
+      "n": 1,
+      "title": "The Book of the Popes, XXXIV, pp. 41-42",
+      "voice": "witness",
+      "voiceAuthor": "The Book of the Popes",
+      "citation": "The Book of the Popes, XXXIV, Sylvester, pp. 41-42, tr. Louise Ropes Loomis (The Book of the Popes (Liber Pontificalis) I, New York: Columbia University Press, 1916)",
+      "paragraphs": [
+        "Sylvester, by nationality a Roman, son of Rufinus, occupied the see 23 years, 10 months and 11 days.",
+        "He was bishop in the time of Constantine and Volusianus, from February 1 until January 1 in the consulship of Constantius and Volusianus.",
+        "He was an exile on Mount Syraptin, driven by the persecution of Constantine, and afterward he returned and baptised with glory Constantine Augustus, whom the Lord cured through baptism of leprosy, from whose persecution he had fled when he was in exile. He built a church in the city of Rome, in the garden of one of his priests who was called Equitius, and he appointed it as a parish church of Rome, near the baths of Domitian, and even unto this day it is called the church of Equitius."
+      ]
+    },
+    {
+      "n": 2,
+      "title": "The Book of the Popes, XXXIV, pp. 71-72",
+      "voice": "witness",
+      "voiceAuthor": "The Book of the Popes",
+      "citation": "The Book of the Popes, XXXIV, Sylvester, pp. 71-72, tr. Louise Ropes Loomis (The Book of the Popes (Liber Pontificalis) I, New York: Columbia University Press, 1916)",
+      "paragraphs": [
+        "This Silvester held 6 ordinations in the month of December, 42 priests, 26 deacons, 65 bishops in divers places.",
+        "He was buried in the cemetery of Priscilla on the Via Salaria, three miles from the city of Rome, December 31. He verily died catholic and a confessor.",
+        "And the bishopric was empty 15 days."
+      ]
+    }
+  ]
+}

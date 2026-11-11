@@ -49,6 +49,7 @@ export type HeldLine = { day: string; name: string; reason: string };
 export const DONE_MONTHS: Readonly<Record<string, { month: number; held: readonly HeldLine[] }>> = {
   november: { month: 11, held: [] },
   december: { month: 12, held: [] },
+  january: { month: 1, held: [] },
 };
 
 export const MONTH_NAMES = [

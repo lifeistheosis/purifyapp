@@ -44,11 +44,15 @@ describe("the name table", () => {
     }
   });
 
-  it("opens no card for St Theodosius the Cenobiarch, who is not the emperor", () => {
+  it("opens St Theodosius the Cenobiarch's own card, never the emperor's", () => {
     // January 11, +529, the founder of the common life in Palestine; the
-    // emperor is January 17, +395. The Cenobiarch has no card of his own.
-    expect(SAINT_NAME_FORMS.filter(([form]) => /Cenobiarch/i.test(form))).toEqual([]);
-    expect(links("St. Theodosius the Cenobiarch founded the first communal monastery in Palestine.")).toEqual([]);
+    // emperor is January 17, +395. Until January's saints (1.9) the
+    // Cenobiarch had no card and his name opened none; now it opens his.
+    expect(SAINT_NAME_FORMS.filter(([form]) => /Cenobiarch/i.test(form))).toEqual([["Theodosius the Cenobiarch", "theodosius-the-cenobiarch"]]);
+    expect(links("St. Theodosius the Cenobiarch founded the first communal monastery in Palestine.")).toEqual([
+      ["St. Theodosius the Cenobiarch", "theodosius-the-cenobiarch"],
+    ]);
+    expect(SAINT_NAME_FORMS.some(([form, slug]) => slug === "theodosius-the-great" && /Theodosius the (Great|Cenobiarch)/.test(form))).toBe(false);
   });
 
   it("takes the honorific off a registry name", () => {

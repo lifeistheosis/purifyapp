@@ -146,6 +146,14 @@ describe("the covers' pictures", () => {
       "irenaeus-of-lyons/against-heresies-on-john": "search: Updates 2, build 93 note 12",
       "irene-the-empress/letters-for-the-seventh-council": "search: Updates 2, build 93 note 12",
       "symeon-the-new-theologian/discourse-on-faith": "search: Updates 2, build 93 note 12",
+      // January's saints (1.9): their pages came first, their icons follow in
+      // the next push (docs/1.9-build/notes/january-saints.md, push 2), each
+      // by the house tool and its rights settled, and these books wear them.
+      "prophet-malachi/the-prophecy-of-malachi": "search: January's icons, push 2",
+      "prophet-micaiah/micaiah-before-ahab": "search: January's icons, push 2",
+      "apostle-timothy/timothy-in-scripture": "search: January's icons, push 2",
+      "philip-of-moscow/life-of-philip-of-moscow": "search: January's icons, push 2",
+      "sylvester-of-rome/sylvester-in-the-book-of-the-popes": "search: January's icons, push 2",
     };
     const plate = buildRoom(false)
       .cards.filter((c) => !c.cover)
