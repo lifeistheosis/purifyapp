@@ -4446,7 +4446,8 @@ holds it and the thread's rows; both of its cases fail on the code before.
   own arithmetic for 45 (`lib/ui/__tests__/faintText.test.ts`).
 - **The pinned card on Saints now shows while a filter is on.** That is a
   change a reader can see, made so nothing moves; it is his to turn.
-- **"N replies"** is open, as section 52 says.
+- **"N replies"** is open, as section 52 says. (Closed the same day:
+  section 55.)
 - **None of the five small controls was opened**: a muted reply, the
   moderators' page and a profile that fails to load each need an account or
   a failure this chat's walk does not make. They rest on the classes and the
@@ -4467,3 +4468,227 @@ holds it and the thread's rows; both of its cases fail on the code before.
   export, "All 270" on the new): January's saints came onto the branch
   between the two builds. The filters and the card are what the stills are
   for.
+
+## 55. Community's threads end in sight ("N replies", closed)
+
+Section 52 left one item open: a thread whose replies came late ended under
+the tab bar, because the opening helper stopped watching before they
+arrived. Fable Theology added the rule in its own file (`5c300b36`,
+`lib/ui/showOpened.ts`): while what opened says `aria-busy`, the watch does
+not end on "still", and what arrives is followed as anything that opens is.
+With this chat's `b748d4da` (the thread waits with as many rows as the post
+has replies), walked on one export, reading the main web with GET only, at
+360, 390 and 820 wide, twelve threads:
+
+| a thread of | opens | ends | the page followed by | its end |
+| --- | --- | --- | --- | --- |
+| no replies | 16px | 16px | 0px | in sight |
+| one, the reply late (360) | 103px | 250px | 23px | 12px clear of the bar |
+| three, late (360) | 302px | 469px | 192px | 12px clear |
+| four, late (360) | 302px | 459px | 184px | 12px clear |
+| the other eight, the replies there at once | 150 to 449px | the same | 0 to 87px | in sight |
+
+None of the twelve ends under the bar; three did that morning (by 23 to
+167px). The gate's tap walk on `/community/`: forty controls, none failed,
+where it had failed two. No still: the feed is readers' own names and words.
+
+## 56. A saint's card says its first words whole
+
+The arbiter's words of 07:13, 07:23 and 11:54 UTC, 2026-11-11, on the gate's
+rule for a name cut short and then on a still of two ways (`ff901d0f`).
+
+**The gold line over the name** was cut at one line. It is the first thing
+a card says, and for a card of several saints it is their names ("Daniel,
+Ananias, Azarias and Mi..."). With every card drawn it was cut on 56 of 269
+cards at 360 wide, 29 at 390, 17 at 820 and 68 at 1024. It shows whole now,
+balanced, on two lines where it needs them. It is not held to two: three
+cards need three at 1024.
+
+**The grey line under the name** was every title the saint has, joined by
+dots and cut at one line: cut on 212 of 269 cards at 390 wide, and on 180 to
+229 at every width. (This record first called it "rank and years". It holds
+no years.) Two ways were drawn side by side from the app's own cards,
+`build-93/saints-grey-line-two-ways.png`, beside the cards as they stood,
+`saints-grey-line-as-it-is.png` (`963aee61`):
+
+| at 390 wide | still cut | cards with a second line | the mean card |
+| --- | --- | --- | --- |
+| as it was | 212 | 0 | 270px |
+| two lines allowed | 60 | 212 | 288px |
+| the first title only, whole | 0 | 36 (and 2 on three lines, 1 on five) | 276px |
+
+The arbiter took the second, this chat's pick: the line is the saint's first
+title, whole, which is what his own page already shows under his name
+(`lib/saints/page.ts`, `heroTitle`), so card and page say the same; no dot
+is left hanging at a line's start, and the card stops repeating what its
+gold line and its name already say. What is given up is the later titles on
+the card. The one card on five lines is the ten martyrs of Crete, whose
+first title is their ten names.
+
+**What it costs**, every card drawn, on the export as built, against the
+export before:
+
+| wide | columns | the median card | the mean card |
+| --- | --- | --- | --- |
+| 320 | 1 | 282 to 321px | 290 to 314px |
+| 360 | 1 | 282, unchanged | 276 to 287px |
+| 375 | 1 | 282, unchanged | 274 to 282px |
+| 390 | 1 | 282, unchanged | 270 to 276px |
+| 412 | 1 | 258, unchanged | 264 to 267px |
+| 430 | 1 | 258, unchanged | 259 to 261px |
+| 600 | 1 | 258, unchanged | 250, unchanged |
+| 768 | 2 | 282, unchanged | 279 to 290px |
+| 820 | 2 | 282, unchanged | 272 to 277px |
+| 912 | 2 | 258, unchanged | 262 to 264px |
+| 1024 | 3 | 282 to 302px | 288 to 310px |
+| 1080 | 3 | 282 to 302px | 285 to 301px |
+| 1180 | 3 | 282, unchanged | 278 to 286px |
+| 1280 and up | 3 | 282, unchanged | 270 to 274px |
+
+Nothing is cut on any card at 360, 390, 820 or 1024, and every row of the
+grid is one height at each (the grid stretches a row to its tallest card,
+and the card fills its cell). The saints' filters still measure 0px under
+the finger with the taller cards (thirty taps, section 51's walk).
+
+**The grid's 280px for a card not yet drawn** (`app/globals.css`,
+`.cv-card`) is left as it is. It was up to 30px from the mean card before
+(250px at 600 wide) and is up to 34px from it now (314px at 320 wide, 310px
+at 1024). The arbiter kept it for the gold line; the title's share of this
+was measured after its word and is told to it with this table. Making the
+lines under the name give the height back cannot be done in a stylesheet,
+and measuring 269 cards in script would undo what the 280 is for.
+
+**The reading room's "cut title"** in the same finding was not a title a
+reader sees: it was the cover link's screen-reader line, 1px and clipped,
+whose inner span the rule measured. Admin mended the rule (`9b0bbc73`); no
+change to the page.
+
+Still: `build-93/saints-cards-as-built.png`, the same four cards from the
+export as built. `lib/saints/__tests__/cardName.test.ts`; two of its five
+cases fail on the code before.
+
+## 57. No dashed box where no walk reaches
+
+His rule of build 93 note 4, which the gate's walk holds wherever it can
+open a screen. The arbiter gave this chat three that stand where it cannot
+(07:13 UTC); reading the source for them found two more (`617d37a7`).
+
+| where | who can see it | now |
+| --- | --- | --- |
+| the profile editor's two "no colour" swatches | a reader with an account | an empty ring in the house's quiet one, whole, 1.5px |
+| an order's row for a checkout not finished | a reader with such an order | a fine whole edge |
+| the Discord card with nothing playing | a computer's Settings; the Plus preview | a whole edge, the card darker than when something plays |
+| a muted reply's row in a thread | a reader who has muted someone | a whole edge (section 53, `b748d4da`) |
+| the shop's 12px mark for a checkout not finished | a reader with such an order | **stays dashed**, by the arbiter's word |
+
+The last is one of the marks the owner chose for an order's life (Orders B,
+r3-16): a sign with a meaning, not an empty box. It says so on itself for
+the gate's walk (`data-mock-allow="dashed"`, with its reason) and is the one
+name on the test's list.
+
+`lib/ui/__tests__/noDashedBoxes.test.ts` reads every page, every component
+and the house's stylesheets a reader meets (not the admin panel, whose own
+theme uses a dashed line for a warning). A dashed or dotted edge on a box
+fails there before a walk is run, unless it is named with its reason; a
+line on one side (the dotted line under a glossed word) is a line and
+passes, as in the walk. Three of its five cases fail on the code before.
+
+## 58. Two names never cross: the tab bar over You's and Prayers' pictures
+
+The arbiter's word of 07:25 UTC on a finding of the Prayer campaigns chat:
+on You, scrolled a little, the tab's name in the bar and the reader's name
+on the picture pass over each other (`08126129`).
+
+**Measured first**, on the export before the mend, the page scrolled a step
+at a time. The You tab's bar is clear over the Ladder and stayed clear until
+the picture's foot had gone up under it; the reader stands on that picture.
+Signed in, from 140px of scroll the reader's picture, name and "Your
+profile" stood inside the clear bar's band, over "You", and the picture's
+foot was not due for another 130px. On a short page, which cannot scroll the
+picture away, they were left crossed at the page's end.
+
+**Its twin**, found by measuring Prayers the same way: from 130px "Pray
+without ceasing." stood in the clear bar's band over "Prayers", then its
+source, then "Your rule" and its line, until the picture's foot had gone
+230px later. Twelve of eighteen steps crossed at 360 and 390 wide.
+
+**The mend.** The bar is solid again as soon as the words standing on the
+picture reach its foot, twelve pixels before they do, picture or no
+(`components/mobile/barOverPicture.ts`: the hook takes the words as well as
+the picture; one observer still, speaking at two edges, nothing done while
+scrolling). It turns as it always has: its own 200ms with Purify's motion
+on, at once with it off. So nothing new moves, and what follows the words up
+(You's prayer rope and week, Prayers' rule) meets a solid bar too. The
+arbiter had named two ways, the hero's words fading as they reach the bar or
+the bar's name waiting; it took this third in their place, since it holds
+with motion off and needs no fade tied to the scroll, which older iPhones
+would not run. Prayers' two lines went in with the arbiter's word and the
+yes of Updates, who last held that file.
+
+**Walked on the export as built**, a step at a time:
+
+| | steps with the hero's words in a clear bar |
+| --- | --- |
+| You, signed in, at 320, 360, 390 | 0 |
+| You, signed out, at 320, 360, 390 | 0 |
+| You, signed in, Purify's motion off | 0 |
+| You on a screen too tall for the page to scroll (390 by 1500) | 0, and the bar stays clear, as it should |
+| Prayers, at 320, 360, 390 | 0 |
+| the old look, the bar held clear on the same export: You | 10 |
+| the old look: Prayers | 12 |
+
+Back at the top the bar is clear again each time. At 820 the bar is solid
+from the start, as it was. Also run, at Updates' asking: the export walk's
+own section for the two bars (46, which learns the rule here: solid when
+the picture has passed or the words have reached the bar), every check
+passed; the page-transition walk, all 34 as they should be, Prayers left by
+its rule's link and come back to among them (36px down as it was left, the
+link 330px from the top as it was); and the words-on-pictures measure,
+which found the next thing.
+
+**Found by that measure, and mended** (`9a8b6489`): signed out, the line
+under "Sign in" is "Optional" since the sign-in lines were rewritten
+(`8aebf359`). It stands on a lighter part of the Ladder than the line it
+replaced, and at nine tenths of the ink it measured 4.40:1 on Candlelight,
+where 4.5:1 is needed. At the ink itself: Dark 6.60, Light 7.57, Black 7.60,
+Candlelight 4.99, Monastery 5.54. The line wears the ink now, signed out and
+signed in.
+
+Stills: `build-93/you-names-before-390.png`, the old export at 390 wide at
+the page's end, the reader's name pressed up under the clear bar's;
+`you-names-old-look-360.png` and `you-names-after-360.png`, the same place
+(360 wide, 170px down) with the bar held clear as it used to be and as it is
+now; `prayers-names-old-look-390.png` and `prayers-names-after-390.png`, the
+same for Prayers at 160px. `lib/you/__tests__/barNames.test.ts`; four of its
+five cases fail on the code before.
+
+## 59. What is not proven (sections 55 to 58), and what was found on the way
+
+- **Nothing here has been seen on a phone.** The next test build's walk has
+  the lines.
+- **There is no true "before" picture of the two names crossing.** The
+  crossing was measured on the old export; the build then replaced it. The
+  two "old look" stills are the new export with the bar held clear, which is
+  what the page was wherever the picture had not yet gone. They are labelled
+  so. `you-names-before-390.png` is the old export itself.
+- **The bar's 200ms turn under a fast fling** is not measured. Scrolled a
+  step at a time nothing crosses; a hard fling can carry the words under the
+  bar while it is still turning, as it could carry the picture's foot under
+  it before. With Purify's motion off the turn is at once.
+- **"Optional" at the ink** was measured on the export with the line's one
+  class changed in the page, not from a build with the change in it.
+- **None of the dashed boxes mended was opened.** Each needs an account with
+  a profile, an order, or a computer, which this chat's walk does not have.
+  They rest on the classes and the test.
+- **The 280px for an undrawn saint's card** is up to 34px from the mean card
+  now where it was up to 30px (section 56). Left, and told.
+- **`scripts/route-motion.mjs` cannot finish on an export cut with Plus
+  enforced**, which is how the gate cuts its own: the Florilegium is behind
+  Plus there, its starter never appears, the walk throws, and every other
+  walk's verdict is lost with it. It was run here from a copy that walks as
+  a reader with Plus. Told to Fable Theology, whose script it is.
+- **Chants' line under a tradition** was this chat's by the arbiter's word
+  for some minutes; Updates had already pushed it (`e378fedb`), so this
+  chat's copy was dropped unpushed. Read on the export as built: under
+  Greek, "Psalm 135, Greek · Psalm · 8:25"; no line under any tradition
+  names another.
