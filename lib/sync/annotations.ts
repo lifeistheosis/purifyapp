@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import { pageAllSettled } from "@/lib/supabase/pageAll";
 import { canSyncPlaces } from "@/lib/sync/gate";
 import { buried, canonicalKey, flushTombstones, tombstoneIndex } from "@/lib/sync/tombstones";
+import { cleanMarks, type Mark } from "@/lib/marks/anchor";
+import { TEXT_PREFIX, parseTextKey } from "@/lib/marks/textAnnotations";
 
 /**
  * Best-effort sync of verse and saint-paragraph annotations between
@@ -36,11 +38,13 @@ import { buried, canonicalKey, flushTombstones, tombstoneIndex } from "@/lib/syn
  *    that SQL runs a highlight's colour stays on the device that chose it.
  */
 
-type Kind = "bible-verse" | "saint-paragraph";
+type Kind = "bible-verse" | "saint-paragraph" | "text-paragraph";
 
 type LocalValue = {
   highlighted?: boolean;
   highlightedWords?: number[];
+  /** Marks on some of a paragraph's words (lib/marks/anchor.ts). */
+  marks?: Mark[];
   color?: string;
   note?: string;
   noteAt?: string;
@@ -55,6 +59,7 @@ type ServerRow = {
   highlighted_words?: number[] | null;
   note?: string | null;
   color?: string | null;
+  marks?: unknown;
   updated_at: string;
 };
 
@@ -84,12 +89,17 @@ function parseLocalKey(k: string): { kind: Kind; locator: Record<string, string 
       },
     };
   }
+  const text = parseTextKey(k);
+  if (text) return { kind: "text-paragraph", locator: { text: text.text, slug: text.slug, doc: text.doc, sectionN: text.sectionN, paragraphIdx: text.paragraphIdx } };
   return null;
 }
 
 function keyForRow(row: { kind: string; locator: Record<string, unknown> }) {
   if (row.kind === "bible-verse") {
     return `purify:bible:${row.locator.book}:${row.locator.chapter}:${row.locator.verse}`;
+  }
+  if (row.kind === "text-paragraph") {
+    return `${TEXT_PREFIX}${row.locator.text}:${row.locator.slug}:${row.locator.doc}:${row.locator.sectionN}:${row.locator.paragraphIdx}`;
   }
   return `purify:saint:${row.locator.saintSlug}:${row.locator.workSlug}:${row.locator.sectionN}:${row.locator.paragraphIdx}`;
 }
@@ -103,6 +113,9 @@ export function annotationKeyOf(detail: unknown): string | null {
   const d = detail as Record<string, unknown>;
   if (d.kind === "saint-paragraph" && d.saintSlug && d.workSlug && d.sectionN !== undefined && d.paragraphIdx !== undefined) {
     return `purify:saint:${d.saintSlug}:${d.workSlug}:${d.sectionN}:${d.paragraphIdx}`;
+  }
+  if (d.kind === "text-paragraph" && d.text && d.slug && d.doc && d.sectionN !== undefined && d.paragraphIdx !== undefined) {
+    return `${TEXT_PREFIX}${d.text}:${d.slug}:${d.doc}:${d.sectionN}:${d.paragraphIdx}`;
   }
   if (typeof d.book === "string" && d.chapter !== undefined && d.verse !== undefined) {
     return `purify:bible:${d.book}:${d.chapter}:${d.verse}`;
@@ -119,8 +132,24 @@ function readLocalValue(k: string): LocalValue | null {
   }
 }
 
-const hasContent = (v: LocalValue | null): v is LocalValue =>
+const hasMarks = (v: LocalValue | null): v is LocalValue => !!v && Array.isArray(v.marks) && v.marks.length > 0;
+
+/** Something the table has always been able to hold: a highlight, a note, a verse's marked words. */
+const hasOldContent = (v: LocalValue | null): v is LocalValue =>
   !!v && (!!v.highlighted || (typeof v.note === "string" && v.note.trim().length > 0) || (Array.isArray(v.highlightedWords) && v.highlightedWords.length > 0));
+
+const hasContent = (v: LocalValue | null): v is LocalValue => hasOldContent(v) || hasMarks(v);
+
+/**
+ * What can be sent now. Marks on words, and every paragraph of the texts
+ * beside the Fathers' works, need the owner's SQL
+ * (docs/1.9-build/sql/annotation-marks.sql: the marks column and the
+ * text-paragraph kind arrive together). Before it runs they stay on the
+ * device: a row of that kind would be refused, and a row holding only marks
+ * would arrive empty.
+ */
+const sendable = (kind: Kind, v: LocalValue | null, withMarks: boolean): v is LocalValue =>
+  withMarks ? hasContent(v) : kind !== "text-paragraph" && hasOldContent(v);
 
 // ── Whether the table has a colour column ────────────────────────────────
 
@@ -174,13 +203,62 @@ export function forgetColorProbe() {
   colorKnown = null;
 }
 
-function rowFields(v: LocalValue, withColor: boolean) {
+// ── Whether the table has a marks column ─────────────────────────────────
+
+const MARKS_KEY = "purify:sync:annotationMarks";
+let marksKnown: boolean | null = null;
+
+function rememberMarks(ok: boolean) {
+  marksKnown = ok;
+  try {
+    window.localStorage.setItem(MARKS_KEY, JSON.stringify({ ok, at: Date.now() }));
+  } catch {
+    /* storage shut: asked again next time */
+  }
+}
+
+/**
+ * Whether the server keeps marks on words yet, found the way the colour
+ * column is: asked once, a yes remembered for good, a no asked again after
+ * REPROBE_MS. Any other failure answers no for now and remembers nothing.
+ */
+export async function annotationMarksColumn(supabase: SupabaseClient): Promise<boolean> {
+  if (marksKnown !== null) return marksKnown;
+  try {
+    const saved = JSON.parse(window.localStorage.getItem(MARKS_KEY) ?? "null") as { ok: boolean; at: number } | null;
+    if (saved && (saved.ok || Date.now() - saved.at < REPROBE_MS)) {
+      marksKnown = saved.ok;
+      return saved.ok;
+    }
+  } catch {
+    /* ask */
+  }
+  try {
+    const { error } = await supabase.from("annotations").select("marks").limit(1);
+    if (!error) {
+      rememberMarks(true);
+      return true;
+    }
+    if (isMissingColumn(error)) rememberMarks(false);
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+/** For tests: forget what the probe found. */
+export function forgetMarksProbe() {
+  marksKnown = null;
+}
+
+function rowFields(v: LocalValue, withColor: boolean, withMarks: boolean) {
   return {
     highlighted: !!v.highlighted,
     highlighted_words: Array.isArray(v.highlightedWords) && v.highlightedWords.length > 0 ? v.highlightedWords : null,
     note: typeof v.note === "string" && v.note.trim().length > 0 ? v.note : null,
     updated_at: v.at ?? new Date().toISOString(),
     ...(withColor ? { color: v.color ?? null } : {}),
+    ...(withMarks ? { marks: cleanMarks(v.marks) ?? null } : {}),
   };
 }
 
@@ -202,8 +280,9 @@ async function writeOne(
   parsed: { kind: Kind; locator: Record<string, string | number> },
   v: LocalValue,
   withColor: boolean,
+  withMarks: boolean,
 ): Promise<void> {
-  let fields: Record<string, unknown> = rowFields(v, withColor);
+  let fields: Record<string, unknown> = rowFields(v, withColor, withMarks);
   let { data, error } = await supabase
     .from("annotations")
     .update(fields)
@@ -214,7 +293,7 @@ async function writeOne(
   if (error && withColor && isMissingColumn(error)) {
     // The column went away, or the probe was wrong: never fail the push on it.
     rememberColor(false);
-    fields = rowFields(v, false);
+    fields = rowFields(v, false, withMarks);
     ({ data, error } = await supabase
       .from("annotations")
       .update(fields)
@@ -241,11 +320,12 @@ export async function pushAnnotationKeys(keys: Iterable<string>) {
     const { supabase, userId } = session;
     await flushTombstones(supabase, "annotations", userId);
     const withColor = await annotationColorColumn(supabase);
+    const withMarks = await annotationMarksColumn(supabase);
     for (const k of new Set(keys)) {
       const parsed = parseLocalKey(k);
       const v = readLocalValue(k);
-      if (!parsed || !hasContent(v)) continue;
-      await writeOne(supabase, userId, parsed, v, withColor);
+      if (!parsed || !sendable(parsed.kind, v, withMarks)) continue;
+      await writeOne(supabase, userId, parsed, v, withColor, withMarks);
     }
   } catch {
     /* swallow */
@@ -278,7 +358,10 @@ export async function pushAllLocalAnnotations() {
     const { supabase, userId } = session;
     await flushTombstones(supabase, "annotations", userId);
     const withColor = await annotationColorColumn(supabase);
-    const rows = snapshotLocal().map((r) => ({ user_id: userId, kind: r.kind, locator: r.locator, ...rowFields(r.value, withColor) }));
+    const withMarks = await annotationMarksColumn(supabase);
+    const rows = snapshotLocal()
+      .filter((r) => sendable(r.kind, r.value, withMarks))
+      .map((r) => ({ user_id: userId, kind: r.kind, locator: r.locator, ...rowFields(r.value, withColor, withMarks) }));
     // Chunk into batches of 100 so a large local store doesn't bust a single
     // upsert payload.
     for (let i = 0; i < rows.length; i += 100) {
@@ -302,6 +385,7 @@ export async function pullServerAnnotations(): Promise<Map<string, string>> {
     if (!session) return seen;
     const { supabase } = session;
     const withColor = await annotationColorColumn(supabase);
+    const withMarks = await annotationMarksColumn(supabase);
     // Every note and highlight, in pages. This read named no limit, and one
     // request stops at 1,000 rows without an error: a reader with more than
     // that who signed in on a new phone would have found some of them there
@@ -309,15 +393,17 @@ export async function pullServerAnnotations(): Promise<Map<string, string>> {
     const { data, error } = await pageAllSettled<ServerRow>((from, to) =>
       supabase
         .from("annotations")
-        .select(`kind, locator, highlighted, highlighted_words, note, updated_at${withColor ? ", color" : ""}`)
+        .select(`kind, locator, highlighted, highlighted_words, note, updated_at${withColor ? ", color" : ""}${withMarks ? ", marks" : ""}`)
         .order("id")
         .range(from, to) as unknown as PromiseLike<{ data: ServerRow[] | null; error: { message: string } | null }>,
     );
     if (error || !data) return seen;
     const removed = tombstoneIndex("annotations");
     for (const row of data) {
-      if (row.kind !== "bible-verse" && row.kind !== "saint-paragraph") continue;
+      if (row.kind !== "bible-verse" && row.kind !== "saint-paragraph" && row.kind !== "text-paragraph") continue;
       const k = keyForRow(row);
+      // Only a place this app knows how to keep.
+      if (!parseLocalKey(k)) continue;
       seen.set(k, row.updated_at);
       if (buried(removed, canonicalKey(row.kind, row.locator ?? {}), row.updated_at)) continue;
       const local = readLocalValue(k);
@@ -334,6 +420,10 @@ export async function pullServerAnnotations(): Promise<Map<string, string>> {
         // own when it has one, else the day the server last saw it change.
         value.noteAt = local?.noteAt ?? row.updated_at;
       }
+      // Marks on words: the server's once it keeps them. Until then they are
+      // this device's alone, and a row from the server never takes them away.
+      const marks = withMarks ? cleanMarks(row.marks) : local?.marks;
+      if (marks?.length) value.marks = marks;
       if (Object.keys(value).length === 0) continue;
       // The server's colour when it keeps one; else the one this device chose.
       const color = (typeof row.color === "string" && row.color) || local?.color;
@@ -355,6 +445,12 @@ export async function pullServerAnnotations(): Promise<Map<string, string>> {
                 data: value,
                 source: FROM_SYNC,
               },
+            }),
+          );
+        } else if (parts[1] === "text") {
+          window.dispatchEvent(
+            new CustomEvent("purify:annotation", {
+              detail: { kind: "text-paragraph", text: parts[2], slug: parts[3], doc: parts[4], sectionN: Number(parts[5]), paragraphIdx: Number(parts[6]), data: value, source: FROM_SYNC },
             }),
           );
         } else if (parts[1] === "saint") {

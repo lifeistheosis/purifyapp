@@ -625,7 +625,11 @@ describe("a tablet in the apps", () => {
     expect(verse).toContain('className="verse-door md:pointer-fine:hidden native-md-inline-flex"');
     // Only a hold and the door open the window: no mouse path does.
     expect(verse.match(/setShowTools\(true\)/g)?.length).toBe(2);
-    expect(paragraph.match(/setShowTools\(true\)/g)?.length).toBe(1);
+    // A Father's paragraph has no window of its own since build 93 note 13:
+    // its hold selects the word under the finger at any width, and the
+    // selection's card carries the tools (components/reading/SelectionTools.tsx).
+    expect(paragraph).not.toContain("setShowTools");
+    expect(code("components/reading/SelectionTools.tsx")).toMatch(/document\.addEventListener\("touchstart", onTouchStart/);
   });
 
   it("gives its sheets a width of their own", () => {

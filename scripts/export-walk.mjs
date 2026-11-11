@@ -9203,7 +9203,8 @@ await section(64, async () => {
       return !!el && getComputedStyle(el).display !== "none" && el.getBoundingClientRect().height > 0;
     }, selector);
   const VERSE_WINDOW = "[data-verse-focus]";
-  const PARAGRAPH_WINDOW = 'div.fixed[role="dialog"][aria-modal="false"]';
+  // A paragraph's hold selects the word under the finger, and the selection's card is its window (build 93 note 13).
+  const PARAGRAPH_WINDOW = '[data-mk-ui] [role="dialog"][aria-modal="false"]';
   const TOOLBAR = 'div[class*="md:pointer-fine:flex"]';
   const openJohn = async (page) => {
     await go(page, "/bible/john/1/");
@@ -9260,7 +9261,7 @@ await section(64, async () => {
     const w = await page.evaluate((toolbar) => [...document.querySelectorAll(toolbar)].filter((b) => getComputedStyle(b).display !== "none").length, TOOLBAR);
     must(w === 0, `820: no paragraph's toolbar is laid out in a Father's work (${w})`);
     await hold(ctx, page, "#p-1-1 p");
-    must(await shown(page, PARAGRAPH_WINDOW), "820: a hold on a paragraph of St John Chrysostom opens its window");
+    must(await shown(page, PARAGRAPH_WINDOW), "820: a hold on a paragraph of St John Chrysostom selects a word and opens the selection's card");
     must(errors.length === 0, `820: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
