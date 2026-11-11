@@ -10,7 +10,9 @@ import {
  lastHighlightColor,
  rememberHighlightColor,
 } from "@/lib/bible/highlightColors";
-import { isSecondTap, isTap, type TapAt } from "@/lib/bible/verseGesture";
+import { isSecondTap, isTap, isTouchContextMenu, type TapAt } from "@/lib/bible/verseGesture";
+import { placeMarks } from "@/lib/marks/anchor";
+import { placeAttr } from "@/lib/marks/place";
 import { lastPageScrollAt, watchPageScroll } from "@/lib/ui/pageScroll";
 import { softTick } from "@/lib/ui/softTick";
 import type { UndoEntry } from "@/lib/ui/useUndo";
@@ -19,10 +21,6 @@ import {
  VerseContextMenu,
  type ContextMenuGroup,
 } from "@/components/bible/VerseContextMenu";
-import {
- MobileVerseToolbar,
- type MobileVerseAction,
-} from "@/components/bible/MobileVerseToolbar";
 import { HighlightPicker } from "@/components/bible/HighlightPicker";
 import { HighlightNamesSheet } from "@/components/bible/HighlightNamesSheet";
 import { Check } from "@/components/ui/icons/Check";
@@ -34,7 +32,7 @@ import { copyText } from "@/lib/ui/copyText";
 import { cn } from "@/lib/cn";
 import { shareLink } from "@/lib/site";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { SaintNames } from "@/components/saints/SaintNames";
+import { MarkedText } from "@/components/reading/MarkedText";
 
 /**
  * One paragraph inside a saint's writing. Mirrors the affordances of the
@@ -49,6 +47,14 @@ import { SaintNames } from "@/components/saints/SaintNames";
  * phone's tools, the computer's popover and menu): until then a paragraph
  * had one, a gold wash, and gold is one of the two colours the owner keeps
  * out of the app.
+ *
+ * Any of its words can be marked too (build 93 note 13): a hold on a word
+ * selects it, and the page's one selection tool
+ * (components/reading/SelectionTools.tsx) highlights, copies, keeps, pictures
+ * or notes the words chosen, with the whole paragraph one tap away. So the
+ * hold is no longer this row's: it says where its marks are kept (`data-mk`)
+ * and draws them (components/reading/MarkedText.tsx). The double tap, which
+ * highlights the whole paragraph, is still its own.
  */
 export function ParagraphRow({
  saintSlug,
@@ -97,6 +103,8 @@ export function ParagraphRow({
  paragraphIdx,
  );
  const hl = colorById(ann.color);
+ // The marks that carry a note and still stand in the text, in reading order.
+ const noted = placeMarks(text, ann.marks).filter((p) => p.mark.note);
  const [showSwatches, setShowSwatches] = useState(false);
  // The names of the colours, opened from the computer's popover or menu: the
  // colour it opens at, or undefined while shut.
@@ -140,35 +148,25 @@ export function ParagraphRow({
  );
  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
- // Mobile gesture state. A long-press opens the floating action toolbar;
- // a bare tap (or a tap that turns into a scroll) leaves the UI untouched.
- // Mirrors the Bible VerseRow so the two readers feel identical on touch.
- const [showTools, setShowTools] = useState(false);
- const pressTimerRef = useRef<number | null>(null);
+ // A finger on the paragraph: where it came down and when, to tell a tap
+ // from a hold (the selection tool's) and from a scroll.
  const pressOriginRef = useRef<{ x: number; y: number } | null>(null);
  const LONG_PRESS_MS = 400;
  const SCROLL_SLOP_PX = 8;
-
- function clearPressTimer() {
- if (pressTimerRef.current !== null) {
- window.clearTimeout(pressTimerRef.current);
- pressTimerRef.current = null;
- }
- }
  function cancelPress() {
- clearPressTimer();
  pressOriginRef.current = null;
  }
  // A double tap highlights the paragraph in the colour picked last, the
  // Bible's and the Fathers' one colour, and a second takes it off, felt in
  // the hand and offered back with Undo: the Bible's verse does the same
  // (build 90 note 10, his word: "when you double tap, it automatically
- // highlights the last color you picked"). A lone tap does nothing; the hold
- // below opens the tools. The same rules decide what a tap is
+ // highlights the last color you picked"). A lone tap does nothing; a hold
+ // selects the word under it. The same rules decide what a tap is
  // (lib/bible/verseGesture.ts): not the touch that stops a glide, not a
  // finger the page moved under, not a tap on the paragraph's own buttons.
  const lastTapRef = useRef<TapAt | null>(null);
  const touchStartRef = useRef<{ at: number; scrollY: number; lastScrollAt: number } | null>(null);
+ const touchedAtRef = useRef(0);
  useEffect(() => watchPageScroll(), []);
  function quickHighlight() {
  const before = readParagraphAnnotation(saintSlug, workSlug, sectionN, paragraphIdx);
@@ -186,8 +184,8 @@ export function ParagraphRow({
  });
  }
  function onTouchEnd(e: React.TouchEvent) {
- const quick = pressOriginRef.current !== null && pressTimerRef.current !== null;
  const start = touchStartRef.current;
+ const quick = pressOriginRef.current !== null && !!start && performance.now() - start.at < LONG_PRESS_MS;
  touchStartRef.current = null;
  cancelPress();
  const p = e.changedTouches[0];
@@ -200,7 +198,8 @@ export function ParagraphRow({
  lastScrollAt: start.lastScrollAt,
  startScrollY: start.scrollY,
  endScrollY: window.scrollY,
- onControl: !!(e.target as Element | null)?.closest("button, a, textarea"),
+ // A tap on words already marked opens that mark's tools.
+ onControl: !!(e.target as Element | null)?.closest("button, a, textarea, [data-mk-id]"),
  });
  if (!tapped || !p) {
  lastTapRef.current = null;
@@ -219,18 +218,9 @@ export function ParagraphRow({
  function onTouchStart(e: React.TouchEvent) {
  const t = e.touches[0];
  if (!t) return;
+ touchedAtRef.current = performance.now();
  touchStartRef.current = { at: performance.now(), scrollY: window.scrollY, lastScrollAt: lastPageScrollAt() };
  pressOriginRef.current = { x: t.clientX, y: t.clientY };
- clearPressTimer();
- pressTimerRef.current = window.setTimeout(() => {
- pressTimerRef.current = null;
- setShowTools(true);
- try {
- navigator.vibrate?.(15);
- } catch {
- /* no-op */
- }
- }, LONG_PRESS_MS);
  }
  function onTouchMove(e: React.TouchEvent) {
  const t = e.touches[0];
@@ -262,6 +252,17 @@ export function ParagraphRow({
  function reference() {
  return cite ?? `${saintName}, ${workTitle}, ${sectionTitle}`;
  }
+ // The paragraph's own address. A paragraph that begins one of the edition's
+ // divisions is linked by its number (#at-1.1.1), which outlives any change
+ // to the file's own layout; any other by its place in the file.
+ function paragraphPath() {
+ return at ? `/saints/${saintSlug}/${workSlug}#at-${at}` : `/saints/${saintSlug}/${workSlug}#p-${sectionN}-${paragraphIdx}`;
+ }
+ // The citation without the name it opens with: the line under the name on a picture.
+ function workLine() {
+ const whole = reference();
+ return whole.startsWith(`${saintName}, `) ? whole.slice(saintName.length + 2) : `${workTitle}, ${sectionTitle}`;
+ }
  function copyParagraphLink() {
  // shareLink(), never window.location.origin: the Capacitor shell serves
  // the export from https://localhost, so a copied link built from the
@@ -269,20 +270,10 @@ export function ParagraphRow({
  // A paragraph that begins one of the edition's divisions is linked by
  // its number (#at-1.1.1), which outlives any change to the file's own
  // layout; any other by its place in the file.
- return copyToClipboard(
- shareLink(
- at
- ? `/saints/${saintSlug}/${workSlug}#at-${at}`
- : `/saints/${saintSlug}/${workSlug}#p-${sectionN}-${paragraphIdx}`,
- ),
- );
+ return copyToClipboard(shareLink(paragraphPath()));
  }
  function copyParagraphText() {
  return copyToClipboard(text);
- }
- // The hold pill's Copy: the paragraph, and under it whose it is.
- function copyParagraphForPaste() {
- return copyToClipboard(`${text}\n${reference()}`);
  }
  function copyAsQuote() {
  return copyToClipboard(`"${text}", ${reference()}`);
@@ -292,6 +283,14 @@ export function ParagraphRow({
  }
 
  function openContextMenu(e: React.MouseEvent) {
+ // A hold on a phone sends a contextmenu too: that hold is the selection's,
+ // so the computer's menu stays shut and so does the system's (as on a verse).
+ const pointerType = (e.nativeEvent as Partial<PointerEvent>).pointerType;
+ const sinceTouch = touchedAtRef.current ? performance.now() - touchedAtRef.current : Infinity;
+ if (isTouchContextMenu(typeof pointerType === "string" && pointerType ? pointerType : undefined, sinceTouch)) {
+ e.preventDefault();
+ return;
+ }
  // Let the browser handle a right-click on a non-empty selection so the
  // native "Copy" works for selected text.
  const sel = window.getSelection();
@@ -350,11 +349,15 @@ export function ParagraphRow({
 				// Size and Font controls actually change the body text — mirrors the
 				// Bible VerseRow, which sets no font/size here either.
 				"text-paper/90 leading-[1.7] flex-1 min-w-0 transition-colors duration-150",
- showTools &&
- "bg-gold/[0.05] rounded-sm shadow-[inset_0_0_0_1px_rgba(183,176,163,0.35)]",
  )}
- // The app-wide hold-to-copy stands aside here: a paragraph has its own pill.
+ // The app-wide hold-to-copy stands aside here: a hold selects the word under it.
  data-own-press=""
+ // Where its marks are kept, and what a copy, a link and a picture of its words carry.
+ data-mk={placeAttr({ kind: "saint", saintSlug, workSlug, sectionN, paragraphIdx })}
+ data-mk-cite={reference()}
+ data-mk-link={paragraphPath()}
+ data-mk-name={saintName}
+ data-mk-work={workLine()}
  style={{ touchAction: "pan-y" }}
  onContextMenu={openContextMenu}
  onTouchStart={onTouchStart}
@@ -371,25 +374,24 @@ export function ParagraphRow({
  </sup>
  ) : null}
  <span
+ data-mk-text=""
  className={cn(
  ann.highlighted &&
  "box-decoration-clone rounded-[4px] px-[3px] -mx-[3px] py-[0.1em] bg-[var(--hl-verse)] motion-safe:transition-[background-color] motion-safe:duration-200",
  )}
  >
- <SaintNames text={text} skip={saintSlug} />
+ <MarkedText text={text} marks={ann.marks} skip={saintSlug} />
  </span>
  </p>
 
  {/* A computer's inline toolbar, hover-revealed at md+, for a mouse
- only (pointer-fine, 1.9). A finger at any width holds the paragraph
- for the MobileVerseToolbar popup (see below), so the text gets the
- full column width. Mirrors the Bible VerseRow, and like it is never
- laid out on a tablet in the apps (native-md-hidden, 1.7.1): unseen
- there, it still took its width beside every paragraph and held the
- words to the left of the column. A tablet uses the long-press, as a
- phone does, and from 1.9 a tablet's browser too, where a hold opened
- nothing (the popup was md:hidden) and no hover ever showed these
- circles. Each states a finger's 44 and a mouse's 28, as VerseRow's. */}
+ only (pointer-fine, 1.9). A finger at any width holds a word, and the
+ selection's card (components/reading/SelectionTools.tsx) carries the
+ same tools, so the text gets the full column width. Mirrors the Bible
+ VerseRow, and like it is never laid out on a tablet in the apps
+ (native-md-hidden, 1.7.1): unseen there, it still took its width
+ beside every paragraph and held the words to the left of the column.
+ Each states a finger's 44 and a mouse's 28, as VerseRow's. */}
  <div
  className={cn(
  "hidden md:pointer-fine:flex native-md-hidden items-center gap-1 shrink-0 transition-opacity duration-150",
@@ -503,6 +505,18 @@ export function ParagraphRow({
  </p>
  </div>
  )}
+
+ {/* The notes on some of its words, each under the words it is on. */}
+ {noted.map(({ mark }) => (
+ <div key={mark.id} className="mt-2 rounded-md border border-paper/15 bg-paper/[0.04] px-3 py-2">
+ <p lang="en" dir="ltr" className="font-serif text-caption italic text-paper/55 mb-1 line-clamp-2">
+ {mark.q}
+ </p>
+ <p className="font-sans text-detail text-paper/85 leading-[1.55] whitespace-pre-wrap">
+ {mark.note}
+ </p>
+ </div>
+ ))}
 
  {/* Note editor */}
  {editing && (
@@ -629,46 +643,8 @@ export function ParagraphRow({
 
  <HighlightNamesSheet open={naming !== undefined} focusId={naming ?? null} onClose={() => setNaming(undefined)} />
 
- {/* Mobile long-press action bar. Same floating component the Bible
- reader uses; bookmark maps to the section-level bookmark (paragraphs
- are too granular to save individually). No Florilegium button: a
- paragraph has no gathering wired, and the button did nothing. */}
- {showTools && (
- <MobileVerseToolbar
- reference={reference()}
- itemNoun="paragraph"
- bookmarkNoun="section"
- gather={false}
- highlight={{
- color: ann.highlighted ? hl.id : null,
- onPick: applyColor,
- onRemove: () => ann.clearHighlight(),
- }}
- state={{
- bookmarked: sectionBookmarked,
- hasNote: !!ann.note,
- copied,
- }}
- onAction={(a: MobileVerseAction) => {
- switch (a) {
- case "bookmark":
- toggleSectionBookmark();
- break;
- case "copyText":
- copyParagraphForPaste();
- break;
- case "copyLink":
- copyParagraphLink();
- break;
- case "note":
- setDraft(ann.note ?? "");
- setEditing(true);
- break;
- }
- }}
- onClose={() => setShowTools(false)}
- />
- )}
+ {/* A phone's tools are the selection's (components/reading/SelectionTools.tsx):
+ a hold on any word opens them, the whole paragraph one tap away. */}
  </div>
  );
 }

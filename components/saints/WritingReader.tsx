@@ -1,5 +1,6 @@
 "use client";
 
+import { SelectionToolsLazy } from "@/components/reading/SelectionToolsLazy";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { WritingContent, Section } from "@/lib/saints/load";
 import type { Saint } from "@/lib/saints/saints";
@@ -185,6 +186,8 @@ export function WritingReader({
  data-work-reader=""
  className={`pb-24 safe-pb-reader ${FONT_CLASSES[font]} ${SIZE_CLASSES[size]}`}
  >
+ {/* Any words of the work, selected and marked (build 93 note 13). */}
+ <SelectionToolsLazy />
  {/* One chapter, as its own page: keyed by its number, so the page opens
  again as the Bible's chapter does (globals.css, "The page"). */}
  <section key={sec.n} id={`s${sec.n}`} data-chapter={sec.n} className="mx-auto w-full max-w-[680px] scroll-mt-24">

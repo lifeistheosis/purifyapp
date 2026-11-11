@@ -3,6 +3,7 @@
 import { useCallback, useSyncExternalStore } from "react";
 
 import { lastHighlightColor } from "@/lib/bible/highlightColors";
+import type { Mark } from "@/lib/marks/anchor";
 import { addTombstone, dropTombstone } from "@/lib/sync/tombstones";
 
 import { fromBeforeSplit, seeSplit, sharedBefore } from "./sharedSections";
@@ -21,6 +22,11 @@ import { fromBeforeSplit, seeSplit, sharedBefore } from "./sharedSections";
  *                            the first colour. The sync carries it as it
  *                            carries a verse's.)
  *   note?:        string
+ *   marks?:       Mark[]    (1.9, build 93 note 13: highlights, kept words
+ *                            and notes on any words of the paragraph, each
+ *                            kept by its place in the text,
+ *                            lib/marks/anchor.ts. They ride in the same
+ *                            value, so one paragraph is still one row.)
  * Key: purify:saint:{saintSlug}:{workSlug}:{sectionN}:{paragraphIdx}
  */
 
@@ -28,6 +34,8 @@ export type ParagraphAnnotation = {
   highlighted?: boolean;
   color?: string;
   note?: string;
+  /** Marks on some of its words (lib/marks/anchor.ts). */
+  marks?: Mark[];
   /** When it last changed here (ISO, 1.7): the sync keeps the newer copy. */
   at?: string;
 };
@@ -42,6 +50,9 @@ function key(
 }
 
 const EMPTY: ParagraphAnnotation = {};
+
+/** Nothing on the paragraph: no highlight, no note, no mark on its words. */
+const bare = (v: ParagraphAnnotation) => !v.highlighted && !v.note && !v.marks?.length;
 
 /**
  * Where a paragraph's mark is read from: its own key, or, on a section that
@@ -138,7 +149,7 @@ export function writeParagraphAnnotation(
   paragraphIdx: number,
   next: ParagraphAnnotation,
 ): void {
-  const empty = !next.highlighted && !next.note;
+  const empty = bare(next);
   const { k, sectionN: n } = writePlace(saintSlug, workSlug, sectionN, paragraphIdx, empty);
   const locator = { saintSlug, workSlug, sectionN: n, paragraphIdx };
   try {
@@ -177,7 +188,7 @@ export function useParagraphAnnotation(
   const persist = useCallback(
     (next: ParagraphAnnotation) => {
       try {
-        const isEmpty = !next.highlighted && !next.note;
+        const isEmpty = bare(next);
         const { k, sectionN: n } = writePlace(saintSlug, workSlug, sectionN, paragraphIdx, isEmpty);
         // A cleared paragraph leaves a tombstone, so the sync deletes the
         // server's copy instead of pulling it back (lib/sync/tombstones.ts).
