@@ -240,6 +240,21 @@ His words: "and the themes doesn't change I'm not sure if I told you that alread
 - The themes: note 3. Fable Themes reproduced it (a sign-in after the app opened left the app's answer about Plus stale) and has the mend with its test; it reaches him in the next build.
 - Campaigns: in the build, and hidden by the server, as built (`lib/campaigns/flags.ts`). Build 93 carries the campaign pages (the switch has been at "testers" on the branch since 2026-11-10) but shows their doors only when the server says open; build 93 talks to the main web, which runs main, where the switch still says closed until the 1.9 merge, so the app is told no and shows nothing. The test web answers open to every account (`lib/campaigns/opening.ts`, `lib/testWeb/rules.ts`), so a test build on the test web shows campaigns as readers will meet them at release. That needs his test web (T1 to T10, `OWNER-STEPS.md`). At release the merge carries the switch, and campaigns open for every reader before the store builds (R5c, then R5d).
 
+## From the Discord, his forward (2026-11-11 about 01:53 UTC)
+
+His words: "some suggestions from the discord. some are old so some may have been fixed or implemented already." Eight posts in purify-suggestions (screenshots kept in his chat with the arbiter; readers' names are not copied here):
+
+| Post (date) | What it says | Where it stands | Who |
+|---|---|---|---|
+| Romanian translation (2026-09-21) | "Could you guys maybe add the romanian language?" | Done: Romanian is one of the app's 21 languages (`lib/i18n/messages/ro.json`). His to tell the reader. | |
+| Spanish translate (2026-11-03) | "Español" | Done: Spanish is one of the 21 (`es.json`), and the Spanish Bible is in 1.9. | |
+| Arabic lyrics, Prayer Rope chant (2026-10-24, bug) | The Arabic lyrics have wrong words and spellings; the reader offers to write the correct ones. | `data/chants/timing/prayer-rope-anthem/ar.json`. Holy words shown wrong are worse than none. | The December chat (texts): find where the Arabic came from; if it cannot be verified, hide the Arabic lines (the recording still plays) until corrected; draft a two-line reply for Edgar to post asking the reader for the correct words, which are then checked and laid on the timing. |
+| Bible verse switch (2026-10-24, bug) | In Genesis 1:1, tapping "Genesis" at the top to go to John does not switch. | Maybe mended since; to be checked on the export. | Updates 2, with note 20 (the same header): any book to any book from the top, held by a test. |
+| Unable to change email (2026-10-31, bug) | Account, Security, Change Email does not finish after the confirmation, tried several times. | Supabase Auth's email change (secure change asks both addresses to confirm). | Admin: reproduce on the live site with a test account, find which step fails (the template, the redirect, the double confirm), mend it in 1.9, and say what readers see. |
+| Metany help (2026-11-03, feature) | A guide in the Hours to when to bow and when to prostrate, following the Church year. | New. Rubrics need a named source (the Typikon's rules: none on Sundays or from Pascha to Pentecost, and so on). | 1.9.1, Admin's ideas list, with the reader's words. |
+| Listen to the lives of the saints (2026-11-08, feature) | To listen to the lives while making prayer ropes. | The voices plan: Listen on the lives (`notes/voices-fable.md`). | The Fable voices chat, with his voices call. |
+| Add Hebrew (2026-11-10, feature) | The Hebrew beside the Old Testament books, as the Greek is beside the New. | New. The Church's Old Testament is the Septuagint; a Hebrew text beside it is a study aid (the Westminster Leningrad Codex is public domain). | 1.9.1, Admin's ideas list, with the readers' words. |
+
 ## The pre-build gate (his word, 2026-11-11 about 01:46 UTC)
 
 His words: "and as you can see I've noticed a lot of issues with this build ensure our next build doesn't have any similar issues or any other issues of this nature."

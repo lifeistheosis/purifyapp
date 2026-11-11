@@ -2,6 +2,8 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
+**Discord suggestions (his forward, 2026-11-11 about 01:53 UTC):** "some suggestions from the discord. some are old so some may have been fixed or implemented already." Eight posts: Romanian and Spanish (both done), the Prayer Rope chant's Arabic lyrics (wrong), the Bible's book switch, changing an email, a metany guide, listening to the lives, Hebrew beside the Old Testament. Triage and owners in `notes/build-93.md`, "From the Discord".
+
 **Fresh eyes, no test web, 1.9 as soon as possible (his word, 2026-11-11 about 01:49 UTC):** "yes fresh eyes. let's finalize this v1.9 also I won't make the test web just make it public. im tryna get v1.9 out as soon as possible". A Fable chat walks the export as a new reader (Fable 5.2: Fresh eyes, session_01VuYTwZWi9PavvdWP18wAUy, review only, `notes/fresh-eyes.md`). No test web for 1.9: the release-day order in `lib/campaigns/flags.ts` stands in for it (the merge carries campaigns at "testers", live for his account alone on the main web; he tries them; then they open for every reader before the store builds).
 
 **Build 93, the themes and campaigns (his word, 2026-11-11 about 01:48 UTC):** "and the themes doesn't change I'm not sure if I told you that already" and "and also the campaigns isn't even on its just flat out removed I wanted it in". The themes are note 3 (mended on the branch); campaigns are in the build and hidden because build 93 talks to the main web, closed until the merge; a build on the test web shows them (`notes/build-93.md`, note 21).
