@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { heroTitle } from "@/lib/saints/page";
 import type { Saint } from "@/lib/saints/saints";
 import { SaintIcon } from "./SaintIcon";
 import { FeastDays } from "./FeastDays";
@@ -30,16 +31,30 @@ export function SaintCard({ saint }: { saint: Saint }) {
       <div className="flex grow gap-5">
         <SaintIcon saint={saint} size="md" />
         <div className="min-w-0 flex flex-col">
+          {/* The gold line shows whole, on as many lines as it needs. It was cut
+              at one, and it is the first thing a card says: for a card of several
+              saints it is their names ("Daniel, Ananias, Azarias and Mi..."), and
+              the gate's rule for a name cut short failed 29 cards at a phone's
+              width and 68 on a tablet (2026-11-11). A second line is 20px; what
+              that does to the grid is measured in notes/themes-fable.md, section
+              56. Balanced, so two lines are two of a length and not one word
+              left alone. */}
           {saint.byname && (
-            <p lang="en" dir="ltr" className="font-serif text-detail italic text-gold/90 mb-1 line-clamp-1 rtl:text-right">
+            <p lang="en" dir="ltr" className="font-serif text-detail italic text-gold/90 mb-1 text-balance rtl:text-right">
               &ldquo;{saint.byname}&rdquo;
             </p>
           )}
           <h3 lang="en" dir="ltr" className="font-sans text-lede font-semibold text-paper leading-tight rtl:text-right">
             {saint.name}
           </h3>
-          <p lang="en" dir="ltr" className="font-sans text-detail text-paper/55 mt-1.5 line-clamp-1 rtl:text-right">
-            {saint.epithet}
+          {/* The line under the name is the saint's first title, whole: his office or his
+              place, which is what his own page shows under his name (lib/saints/page.ts,
+              heroTitle). It was every title he has, joined by dots and cut at one line, and
+              it was cut on 212 of the 269 cards at a phone's width (2026-11-11; the arbiter's
+              word on a still of two ways, notes/build-93/saints-grey-line-two-ways.png). For
+              a card of several saints the first title is their names, and they are all said. */}
+          <p lang="en" dir="ltr" className="font-sans text-detail text-paper/55 mt-1.5 rtl:text-right">
+            {heroTitle(saint.epithet)}
           </p>
           <p lang="en" dir="ltr" className="mt-3 font-sans text-ui text-paper/70 leading-relaxed line-clamp-3">
             {saint.shortBio}
