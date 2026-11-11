@@ -95,7 +95,19 @@ import { creditWords } from "@/lib/credits/saintPictures";
 const LABEL_SHADOW = "[text-shadow:0_1px_6px_var(--color-night),0_0_2px_var(--color-night)]";
 /** A saint's name and its line under his circle, and the middle saint's ring and name: drawn the same for a saint who leaves in a glide. */
 const NAME_CLASS = "mt-1.5 line-clamp-2 font-sans text-[11.5px] font-semibold leading-[1.22]";
-const TAG_CLASS = "mt-0.5 max-w-full truncate font-sans text-[10.5px] text-paper/50";
+/**
+ * The line under a saint's name ("Nicaea, 787", "In the Lives") at 75 percent
+ * of the ink. It stands over the middle icon's light, and at 50 (55 and 60
+ * on the palettes that lift their faint words) it read 3.75:1 to 4.42:1 on
+ * the four dark palettes on its pixels (the gate's sweep of words over
+ * pictures, 2026-11-11, at St Adrian of Rome's web). The light is the middle
+ * saint's own icon, so a bright icon is a hard web: of the 114 webs with an
+ * icon, St Amphilochius of Iconium's is the brightest, and there 70 still
+ * left Candlelight, the dimmest ink, at 4.32 and Mosaic at 4.49. At 75 it is
+ * 4.5:1 or more on the five palettes and the seventeen looks at both webs;
+ * still a step under the name, which stands at 95.
+ */
+const TAG_CLASS = "mt-0.5 max-w-full truncate font-sans text-[10.5px] text-paper/75";
 const MIDDLE_RING_CLASS =
   "rounded-full shadow-[0_0_0_4px_var(--color-night),0_0_0_5.5px_color-mix(in_srgb,var(--color-paper)_55%,transparent),0_14px_40px_rgb(0_0_0/0.55)]";
 const MIDDLE_NAME_CLASS = "mt-2.5 line-clamp-2 text-center font-serif text-[16px] font-bold leading-[1.2] text-paper";
