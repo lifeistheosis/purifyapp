@@ -2306,7 +2306,7 @@
    "needsDesign": false,
    "version": "1.9",
    "outcome": null,
-   "note": "Ceilings 26 to 12 and 2 (Admin's); the desktop action circles' spacing asked of the owner. 95b843b1b. PLAN 13ag."
+   "note": "Ceilings 7 (the desktop action circles: 17px rows reverted, ce1e113dc, for taking 64px from the verse on the website; another way asked) and 0 (the admin panel's seven by Admin, 887452d45). 95b843b1b. PLAN 13ag."
   },
   {
    "id": "n-admin-select-44",
