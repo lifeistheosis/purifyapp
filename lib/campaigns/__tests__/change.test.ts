@@ -59,7 +59,9 @@ describe("the screens", () => {
 
   it("offer the change only where the server says the words can still be changed", () => {
     expect(page).toContain('{campaign.changeable ? <ButtonRow icon={<Pen size={17} />} label={t("campaigns.change")} onClick={() => setSheet("change")} /> : null}');
-    expect(page).toContain('{campaign.changeable ? <CampaignChangeSheet open={sheet === "change"} campaign={campaign} onClose={() => setSheet(null)} onDone={changed} /> : null}');
+    // The sheet itself is its creator's, mounted whether or not the words can still be changed: only the row above opens it.
+    expect(page).toContain('{mine ? <CampaignChangeSheet open={sheet === "change"} campaign={campaign} onClose={closeChange} onDone={changed} onLate={heardLate} /> : null}');
+    expect(page.match(/setSheet\("change"\)/g)).toHaveLength(1);
   });
 
   it("read the campaign again once it is saved, so the page shows what the server holds", () => {
@@ -70,12 +72,12 @@ describe("the screens", () => {
 
   it("begin from the campaign as it stands each time the sheet opens", () => {
     // The form is the sheet's child and keeps its own state: it is made anew when the sheet opens.
-    expect(sheet).toMatch(/<Sheet open=\{open\}[^>]*>\s*<ChangeForm campaign=\{campaign\} onDone=\{onDone\} \/>\s*<\/Sheet>/);
+    expect(sheet).toMatch(/<Sheet open=\{open\}[^>]*>\s*<ChangeForm campaign=\{campaign\} onDone=\{onDone\} onLate=\{onLate\} \/>\s*<\/Sheet>/);
     expect(sheet).toContain("const [title, setTitle] = useState(campaign.title);");
   });
 
   it("send nothing when nothing was changed, and nothing without a title and a name", () => {
-    expect(sheet).toContain("const ready = title.trim().length >= TITLE_MIN && name.trim().length > 0 && !same && !busy;");
+    expect(sheet).toContain("const ready = title.trim().length >= TITLE_MIN && name.trim().length > 0 && !same && !busy && !late;");
     expect(sheet).toContain("if (!ready) return;");
   });
 
@@ -83,6 +85,23 @@ describe("the screens", () => {
     expect(sheet).toMatch(/res\.code === "not_waiting"\) \{\s*setError\(t\("campaigns\.change\.late"\)\);/);
     expect(sheet).toMatch(/res\.code === "filtered"\) \{\s*setAskFiltered\(true\);/);
     expect(sheet).toContain("onConfirm={() => void save(true)}");
+  });
+
+  it("leave nothing to save once a moderator has read it: Save goes dim and the fields are only to read", () => {
+    // The refusal is what sets it, and nothing unsets it: the sheet begins anew the next time it opens.
+    expect(sheet).toMatch(/res\.code === "not_waiting"\) \{\s*setError\(t\("campaigns\.change\.late"\)\);\s*setLate\(true\);\s*onLate\(\);\s*\}/);
+    expect(sheet.match(/setLate\(/g)).toHaveLength(1);
+    expect(sheet).toContain("disabled={!ready}");
+    expect(sheet.match(/readOnly=\{late\}/g)).toHaveLength(3);
+  });
+
+  it("read the campaign again once that sheet is put away, and not while its line is being read", () => {
+    const heard = /function heardLate\(\) \{[\s\S]*?\n  \}/.exec(page)?.[0] ?? "";
+    expect(heard).toContain("readAgain.current = true;");
+    expect(heard).not.toMatch(/fetchCampaign|setCampaign|setSheet/);
+    const close = /function closeChange\(\) \{[\s\S]*?\n  \}/.exec(page)?.[0] ?? "";
+    expect(close).toMatch(/setSheet\(null\);\s*if \(!readAgain\.current\) return;\s*readAgain\.current = false;\s*void fetchCampaign\(campaign\.id\)\.then\(/);
+    expect(close).toContain('if (again.state === "ok") setCampaign(again.campaign);');
   });
 
   it("take the writer's own direction in each field, held to a campaign's own lengths", () => {

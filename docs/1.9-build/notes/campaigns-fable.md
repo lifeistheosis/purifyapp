@@ -4243,6 +4243,12 @@ The notes, 4.4: "Their words: edit them (read again by a moderator)."
   the change is refused and the sheet says why: "A moderator has read this
   campaign, so its words stay as they are." The rule is asked again inside
   the write itself, so there is no moment between the two.
+- **After that line, nothing more can be saved from the sheet.** Save goes
+  dim and the three fields are only to read, so what was typed can still be
+  copied into an update. When the sheet is put away the page reads the
+  campaign again: it no longer says it waits for a moderator, and its menu
+  no longer offers to change its words. The page reads it then and not
+  sooner, so the sheet is never taken from under the line that says why.
 - **Never while hidden on readers' reports.** The words that were reported
   are the words a moderator must read.
 - **Twenty changes an hour** for an account, which mends any slip and keeps
@@ -4280,8 +4286,10 @@ again with the words mended (section 31).
 waits" (11 cases: whose, when, what, the filters, danger, July's, the
 closed door) and `lib/campaigns/__tests__/change.test.ts` (12 cases: the
 rule's one function, the write that asks it again, and the screens).
-Fifteen ways of breaking it were tried and each failed a case. The walk:
-two flows. Stills: the sheet (39), and the sheet after Save on a campaign a
+Fifteen ways of breaking it were tried and each failed a case, and ten more
+for what happens after a moderator has read it in the meantime (14 cases in
+that file now). The walk: two flows, the second through to the page read
+again. Stills: the sheet (39), and the sheet after Save on a campaign a
 moderator read in the meantime, saying why its words stay (43). They are on
 his page with call 31 as `decisions/change-words.png` and
 `decisions/change-words-read.png`.

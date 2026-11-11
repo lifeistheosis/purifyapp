@@ -434,6 +434,8 @@ const seen = new Set();
 /** Every request a screen made of the server, for the walk to hold. */
 /** A waiting campaign's words as its creator last changed them, by id, for the page's read after a change. */
 const changedWords = new Map();
+/** The waiting campaigns a moderator has read since the page opened (a `late` answer said so): read again, each is up. */
+const readSince = new Set();
 /** Whether the reader asked to be told of updates, once they have ticked or unticked the line; null before. */
 let toldMe = null;
 let calls = [];
@@ -508,7 +510,10 @@ async function answer(ctx, opts = {}) {
     // moderator has read it in the meantime, and the server says so and changes nothing.
     const wordsOf = /^\/api\/campaigns\/([0-9a-f-]{36})\/words$/.exec(p);
     if (wordsOf && req.method() === "POST") {
-      if (opts.late) return json({ error: "A moderator has read this campaign, so its words stay as they are.", code: "not_waiting" }, 409);
+      if (opts.late) {
+        readSince.add(wordsOf[1]);
+        return json({ error: "A moderator has read this campaign, so its words stay as they are.", code: "not_waiting" }, 409);
+      }
       changedWords.set(wordsOf[1], { title: sent.title, subject_name: sent.name, details: sent.words ?? null });
       return json({ ok: true });
     }
@@ -518,8 +523,10 @@ async function answer(ctx, opts = {}) {
       if (c?.circle && !opts.circles) return json({ error: "Not found." }, 404);
       const mine = opts.mine?.includes(c?.id);
       // What the route tells its creator alone: its settings, and that a waiting campaign's words can still be changed.
-      const own = mine ? { mine: true, keep_after_end: false, listed: true, ...(c.status === "held" ? { changeable: true } : {}) } : {};
-      return c ? json({ campaign: { ...c, ...own, ...(changedWords.get(c.id) ?? {}) } }) : json({ error: "Not found." }, 404);
+      // One a moderator has read in the meantime is up, and its words are no longer its creator's to change.
+      const read = c && readSince.has(c.id) ? { status: "active" } : {};
+      const own = mine ? { mine: true, keep_after_end: false, listed: true, ...(c.status === "held" && !read.status ? { changeable: true } : {}) } : {};
+      return c ? json({ campaign: { ...c, ...read, ...own, ...(changedWords.get(c.id) ?? {}) } }) : json({ error: "Not found." }, 404);
     }
     // Talk together's feed: nothing said yet, so the conversations draw as they are and not as "opening soon".
     if (p === "/api/community/posts" && req.method() === "GET") return json({ posts: [] });
@@ -574,6 +581,9 @@ async function whole(page, min = 844) {
 async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true, inbox, circles = false, tellMe, profileCampaigns, late = false } = {}) {
   if (WALK) return;
   if (ONLY && !ONLY.has(name.slice(0, 2))) return;
+  // What one still told the stand-in server is not the next still's.
+  changedWords.clear();
+  readSince.clear();
   const seed = {
     "purify.prayers.campaigns": JSON.stringify(CARRIED),
     ...(signedIn ? { "purify.supabase.auth": JSON.stringify([{ name: "sb-placeholder-auth-token", value: JSON.stringify(SESSION) }]) } : {}),
@@ -1177,6 +1187,7 @@ async function walk(label, where, run, { set = {}, signedIn = true, mine, closed
   calls = [];
   asked = [];
   changedWords.clear();
+  readSince.clear();
   toldMe = null;
   let ok = true;
   let why = "";
@@ -1650,13 +1661,26 @@ if (WALK) {
     await page.locator("[role=dialog] button", { hasText: "Change the words" }).click();
     await page.waitForSelector("[data-campaign-change]", { timeout: 8000 });
     await page.fill("#campaign-change-title", "For Elias on his way home");
+    const reads = () => sentTo("GET", new RegExp(`^/api/campaigns/${HELD}$`)).length;
+    const before = reads();
     await page.locator("[data-campaign-change] button", { hasText: "Save" }).click();
     const said = page.locator("[data-campaign-change-error]");
     await said.waitFor({ timeout: 8000 });
     expectThat((await said.innerText()).includes("A moderator has read this campaign, so its words stay as they are."), `the sheet says "${await said.innerText()}"`);
+    // Nothing more can be saved from here: Save is dim, and the fields are only to read.
+    expectThat(await page.locator("[data-campaign-change] button", { hasText: "Save" }).isDisabled(), "Save is still lit after a moderator has read it");
+    expectThat((await page.getAttribute("#campaign-change-title", "readonly")) !== null && (await page.getAttribute("#campaign-change-words", "readonly")) !== null, "the fields can still be typed in");
+    // The sheet stays under its line until the reader puts it away; only then does the page read the campaign again.
+    await settle(page, 600);
+    expectThat(reads() === before, "the page read the campaign again while the line was being read");
     await page.keyboard.press("Escape");
-    await settle(page, 700);
+    await settle(page, 900);
+    expectThat(reads() === before + 1, `the page read the campaign ${reads() - before} times once the sheet was put away, not once`);
     expectThat((await page.locator("#campaign-title").innerText()).includes("For Elias on his journey"), "the page shows words that were not kept");
+    expectThat(!(await page.locator("[data-campaign-standing]").innerText().catch(() => "")).includes("Waiting for a moderator"), "the page still says it waits for a moderator");
+    await page.evaluate(() => window.dispatchEvent(new Event("purify:campaign-menu-open")));
+    await page.waitForSelector("[role=dialog] .set-panel", { timeout: 8000 });
+    expectThat((await page.locator("[role=dialog] button", { hasText: "Change the words" }).count()) === 0, "its words are still offered to change after a moderator has read it");
   }, { mine: [NICHOLAS, HELD], late: true });
 
   // A kind on the board (1.9; the notes, 2.10).

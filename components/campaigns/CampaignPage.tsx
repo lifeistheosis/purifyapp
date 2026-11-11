@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
 import { CAMPAIGN_DOORS, CampaignDoors, type CampaignDoor } from "@/components/campaigns/CampaignDoors";
 import { CampaignChangeSheet } from "@/components/campaigns/CampaignChangeSheet";
@@ -131,6 +131,8 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
   const carried = useCarried();
   const today = todayKey();
   const [sheet, setSheet] = useState<"join" | "menu" | "report" | "end" | "change" | null>(null);
+  // Set when the change sheet hears that a moderator has read the campaign; asked once, as that sheet is put away.
+  const readAgain = useRef(false);
   const [confirm, setConfirm] = useState<"takeDown" | "block" | null>(null);
   const [closing, setClosing] = useState<Closing>(first.for_whom === "departed" ? "memory_eternal" : "answered");
   const [busy, setBusy] = useState(false);
@@ -252,6 +254,27 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
   /** Its words were changed: said, and the page reads it again, as the server now holds it (a word the filter masked is shown masked). */
   function changed(message: string) {
     said(message);
+    void fetchCampaign(campaign.id).then((again) => {
+      if (again.state === "ok") setCampaign(again.campaign);
+    });
+  }
+
+  /** The change sheet heard that a moderator has read the campaign in the meantime: nothing was kept. */
+  function heardLate() {
+    readAgain.current = true;
+  }
+
+  /**
+   * The change sheet is put away. If it heard that a moderator has read the
+   * campaign, the page reads it again now, so that its standing and its menu
+   * are true: it no longer waits, and its words are no longer offered to
+   * change. Now and not sooner, so the sheet is never taken from under the
+   * line that says why.
+   */
+  function closeChange() {
+    setSheet(null);
+    if (!readAgain.current) return;
+    readAgain.current = false;
     void fetchCampaign(campaign.id).then((again) => {
       if (again.state === "ok") setCampaign(again.campaign);
     });
@@ -503,8 +526,10 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
 
       <CampaignJoinSheet open={sheet === "join"} pick={pick} onClose={() => setSheet(null)} onDone={said} />
       <CampaignReportSheet open={sheet === "report"} campaignId={campaign.id} onClose={() => setSheet(null)} onDone={said} />
-      {/* Its words, while no moderator has read them yet (the notes, section 33). */}
-      {campaign.changeable ? <CampaignChangeSheet open={sheet === "change"} campaign={campaign} onClose={() => setSheet(null)} onDone={changed} /> : null}
+      {/* Its words, while no moderator has read them yet (the notes, section 33). The sheet is its creator's
+          whether or not the words can still be changed, so reading the campaign again never takes it away
+          part way through closing; the menu's row below is what offers it, and only while they can. */}
+      {mine ? <CampaignChangeSheet open={sheet === "change"} campaign={campaign} onClose={closeChange} onDone={changed} onLate={heardLate} /> : null}
 
       {/* The menu at the top: what its creator can do, or Report and Block. */}
       <Sheet open={sheet === "menu"} onClose={() => setSheet(null)} title={campaign.title} desktop openFull>
