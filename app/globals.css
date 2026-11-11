@@ -1179,6 +1179,25 @@ html.reader-focus.has-reader-dock {
  height: calc(164px + var(--pill-lift, 12px));
  background: linear-gradient(to bottom, transparent, var(--color-night) 127px);
 }
+/* The running line over the pill ("v 7 of 38 · 3 min left", "Hymn I of 19 ·
+   13 min left") stands on the page's own colour, never across the words under
+   it (fresh eyes L2, 2026-11-11). The fade was 62% to 77% where the line
+   stands, and a verse showed on either side of its words. While the line is
+   open the fade is solid up to its top with 4px to spare, and the words above
+   it go quiet over the same 127px as before. The open line and the pill under
+   it: 11px at 1.35 and 0.25rem of padding, the 0.375rem gap, the pill's
+   3.5rem. A look with a picture at its foot lifts the foot instead
+   (--foot-raise, below). lib/bible/__tests__/runningLineGround.test.ts holds
+   the sum; scripts measure it on the export. */
+[data-screen-edge="bottom"]:has(> [data-running-line][data-open]) > .pill-fade {
+ height: calc(146px + 4.125rem + var(--pill-lift, 12px));
+}
+.pill-fade {
+ transition: height 300ms var(--ease-house);
+}
+:where([data-motion="reduce"]) .pill-fade {
+ transition: none;
+}
 
 /* What is lit on the page glows white, softly (the owner, 2026-10-28: "just
    use a glowly white"): Listen on the pill, a switch in the reader's sheets
@@ -11992,7 +12011,7 @@ html:is([data-look], [data-candle-season]) body > .bg-night.min-h-screen {
    The dock's own fade steps aside for it. Night sky has stars and no foot;
    Linen's sign is its rule. */
 html[data-look]:not([data-look="nightsky"], [data-look="linen"]) body::after {
- --foot-lift: env(safe-area-inset-bottom, 0px);
+ --foot-lift: calc(env(safe-area-inset-bottom, 0px) + var(--foot-raise, 0px));
  --foot-rise: calc(var(--foot-clear) - var(--foot-solid));
  content: "";
  position: fixed;
@@ -12005,6 +12024,27 @@ html[data-look]:not([data-look="nightsky"], [data-look="linen"]) body::after {
 }
 html[data-look]:not([data-look="nightsky"], [data-look="linen"]) .pill-fade {
  background-image: none;
+}
+/* So the running line over the reader's pill stands clear of the words under
+   it on a look too (fresh eyes L2): while it is open the whole foot rises,
+   solid up to the line's top with 4px to spare and its own fade above, as
+   the pill's fade does on Night sky. 31px is the 12px over the bars, the
+   line's 11px at 1.35 and the 4px; 4.125rem the line's padding, the gap
+   under it and the pill. The raise glides where a browser can animate it,
+   and with no @property it is simply 0 until the line opens. */
+@property --foot-raise {
+ syntax: "<length>";
+ inherits: false;
+ initial-value: 0px;
+}
+html[data-look]:not([data-look="nightsky"], [data-look="linen"]):has([data-running-line][data-open]) body::after {
+ --foot-raise: max(0px, calc(var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h, 0px) + 31px + 4.125rem - var(--foot-solid)));
+}
+html[data-look]:not([data-look="nightsky"], [data-look="linen"]) body::after {
+ transition: --foot-raise 300ms var(--ease-house);
+}
+html[data-look]:not([data-look="nightsky"], [data-look="linen"]):where([data-motion="reduce"]) body::after {
+ transition: none;
 }
 
 /* The page ends above its foot (1.9, found by the prayer page's walk of

@@ -234,6 +234,8 @@ function RunningLine({ head, words }: { head: SectionHead; words: readonly numbe
     <span
       aria-hidden
       data-running-line=""
+      // Open: the fade under the pill is solid up to it (fresh eyes L2, app/globals.css).
+      data-open={show && text ? "" : undefined}
       className={cn(
         "grid max-w-full motion-safe:transition-[grid-template-rows,opacity] motion-safe:duration-300 motion-safe:ease-house",
         show && text ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",

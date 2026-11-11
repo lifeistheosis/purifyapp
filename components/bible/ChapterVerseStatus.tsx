@@ -112,9 +112,13 @@ export function ChapterVerseStatus({
   // which holds its place at the foot, instead of jumping in. The words sit
   // on the page's own colour: the line floats over the verses, and with
   // nothing under it a screenshot of 2026-10-28 showed it written across one.
+  // While it is open the fade under the pill is solid up to it (fresh eyes L2,
+  // app/globals.css, the rule after .pill-fade): data-open says so.
   return (
     <span
       aria-hidden
+      data-running-line=""
+      data-open={show ? "" : undefined}
       className={cn(
         "grid max-w-full transition-[grid-template-rows,opacity] duration-300 ease-house motion-reduce:transition-none",
         show ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
