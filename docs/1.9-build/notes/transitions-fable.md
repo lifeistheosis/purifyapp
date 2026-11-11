@@ -759,6 +759,143 @@ already. The plain way is the path every page takes.
   cut away, the page 631ms late). On the export with it: 34 of 34.
 - `node scripts/opened-walk.mjs`: 42 of 42, as before.
 
+## What closes does not pull the page from under the finger (2026-11-11, the gate's first rule)
+
+The arbiter's word of 04:21 UTC, on Admin's finding and Admin's proposal:
+"When a reader closes a part near the foot of a page, the page shortens
+under them, and the browser pulls the row under the finger ... one mend
+beside lib/ui/showOpened.ts. While a part closes, the page keeps at least
+the height the reader is looking at, and gives it back as they scroll up.
+Reduced motion the same, at once."
+
+### What was wrong
+
+One fault, found three times. A browser does not let a page stand scrolled
+past its own end. When a page grows shorter than where the reader is
+looking, the browser takes the page back up to its new end, and everything
+on the screen goes down by that much, the thing under the finger included.
+
+- The owner's note 16 on build 93: Your rule, Evening tapped with the page
+  scrolled down, and the switch 133px away. Updates mended that page by
+  itself (`c1d1165c`).
+- The gate's tap walk (Admin, 2026-11-11): an old year's box on What's new
+  shut again, its own title pulled 204px.
+- A fresh reader's walk, M4: Chants, a tradition chosen under "All chants",
+  the row of filters 137px lower.
+
+It is wherever a page ends in something that can grow shorter. Measured on
+the export built without the mend, by `scripts/closing-walk.mjs`: each
+thing set down the screen, tapped with a real touch, and watched on every
+frame for 1.6 seconds. How far the thing under the finger moved:
+
+| The place | A small phone (360) | A phone (390) | A tablet (820) |
+| --- | --- | --- | --- |
+| What's new: the year's box shut at its own title | 233px | 296px | 464px |
+| What's new: the last month opened and shut again | 224px | 287px | 455px |
+| The FAQ: its last question opened and shut again | 192px | 207px | 121px |
+| Prayers: the prayer book's open chapter shut | 96px | 196px | 296px |
+| Chants: a tradition chosen under All chants | 112px | 129px | 129px |
+
+On the export with the mend every one of the fifteen is 0px (Chants reads
+0.6px, which is a half pixel of rounding), and so is What's new with
+Purify's motion off.
+
+### The rule
+
+After a reader's tap, the page keeps at least the length they are looking
+at. Whatever grew shorter below their finger has still grown shorter; what
+is left where it was is plain ground at the foot of the page, and the thing
+they touched has not moved. The ground is given back as they scroll up, a
+piece at a time and only the piece already below the screen, so giving it
+back is never seen either. It is let go at once when the page is long
+enough of itself again, and when the page changes. Nothing here moves in
+time, so it is the same with motion off.
+
+### How, and the two ways it was made first
+
+`lib/ui/keepLength.ts`, mounted with the opening helper
+(`components/nav/OpenedBridge.tsx`). It was made three times, and the first
+two are worth keeping the reasons for.
+
+1. **Watch the page, and put it back.** A ResizeObserver on the page's
+   holder; when the browser has pulled the page, lengthen the holder and
+   scroll back, inside one frame and before it is painted. No reader would
+   have seen the pull. But anything that read the page's layout in that
+   frame did, the walk above among them: it measured the title 233px down
+   for an instant on the build that had this. A fault nobody can see and
+   everything can measure is not a mend.
+2. **Keep the length before anything changes.** As a tap lands (a capturing
+   click, which runs before anything the tap does), the holder is told to
+   stay at least as long as reaches the foot of the screen. It is that long
+   already, so telling it changes nothing; but whatever the tap then does,
+   the page cannot end above the foot of the screen, and the browser has
+   nothing to pull. A moment later (1.4s) the tap is over, and a telling
+   that did nothing is taken away. This is the rule as it stands. It was
+   first written as a style on the holder, and that would have done harm of
+   another kind: it runs at every tap, and the gate's tap walk tells a
+   control that does nothing by the page not having changed after it (it
+   counts every change to the page's elements). A style written at every tap
+   would have made every dead control in the app look alive to the gate.
+3. **So the length is said in a rule of its own**, in a stylesheet made
+   once as the app starts, and a tap only changes what that rule says. A
+   rule's words are not part of the page's elements: they are seen by the
+   layout and by nothing else. Checked on the export: a tap on plain words
+   at the foot of a page leaves the holder with no style of its own, and
+   the page keeps its length all the same.
+
+What it leaves alone, each on purpose:
+
+- **A thing that rides the screen** (a bar of filters stuck under the top
+  bar, anything in a sheet). It will not move, and the list under it may end
+  sooner; kept long, the reader would be left looking at bare ground.
+- **A page that changed above the finger.** The thing tapped has moved in
+  the page, so keeping the page's length keeps nothing under the finger. It
+  is let go the moment that is seen (a ResizeObserver on the holder and on
+  what stands in it, for the moment after a tap), in the same frame, and
+  the page does what it would have. That is another fault with another
+  mend, and the prayer book makes its own.
+- The reader's own scroll, and a change of page.
+
+### The check
+
+- `lib/ui/__tests__/keepLength.test.ts` (40 cases): his kind of screen as
+  arithmetic, before and now; only as much as reaches the foot of the
+  screen; a fold over many frames; nothing written on the page at a tap, and
+  the walk's own counting read from the walk; what is left alone; the
+  giving back; the watching; the wiring.
+- `node scripts/closing-walk.mjs` (new): the five places above at three
+  sizes with a real touch, then the giving back, then motion off. 19 of 19
+  on the export with the mend; 18 of the same 19 fail on the export without
+  it.
+- The gate's own walk on the same screens (`node scripts/tap-walk.mjs out
+  --only /whats-new/,/faq/,/chants/,/prayers/`): What's new, the FAQ and
+  Chants with nothing failed, 98 controls tapped.
+- `node scripts/opened-walk.mjs`, `node scripts/route-motion.mjs` and the
+  export walk's sections 48 (the prayer book) and 68 (Your rule's switch,
+  which keeps its own page long enough, so this never acts there): as
+  before.
+
+### Two things the gate's walk says of Prayers that are not faults of the page
+
+Both seen while checking this, on the same export, and both measured:
+
+- **"I The daily rule: it moved 21px under the finger."** The title's top
+  does not move: 434.5px down the screen on every frame for 1.5s after the
+  tap. What changes is the title itself, which is 48px tall while its
+  chapter is open and 90px when it is shut, because a shut chapter shows a
+  line of what is in it. The walk measures a control's middle, and half of
+  42 is 21.
+- **"Back returned to 296px, the reader was at 437px"** (The Prayer of St.
+  Ephrem, and Morning prayers the same way). The link is back under the
+  thumb: 424px down the screen when it was tapped, 423px after Back. The
+  scroll number differs because the page does: "Pray now" puts the prayer
+  just opened first, so what stands above the link is 141px shorter than
+  when the reader left, and `lib/ui/returnPlace.ts` moved the page by
+  exactly that to put the link where it was. The walk compares the scroll
+  number, which is the measure `returnPlace` was written to replace.
+
+Both are told to Admin, whose walk it is, with the numbers.
+
 ## What a phone still has to say
 
 Nothing here can run iOS's WebKit, and a film is not a hand. For the phone
@@ -783,6 +920,10 @@ walk (`docs/PHONE-WALK.md`):
 - A council's canons (Ephesus, Nicaea): the arrow at the foot of the page
   tapped several times without moving the finger. It turns a canon each
   time.
+- What closes (2026-11-11): What's new, scrolled to the foot, the year's
+  box shut by its own title; and Chants, a tradition chosen under "All
+  chants" with the list's foot in sight. The thing under the finger stays
+  under it, and scrolling back up shows no gap opening or closing.
 - A page that is slow to come (2026-11-11). A phone reads its pages from
   itself, so one is hard to make by hand there; the place to see it is the
   website on a slow connection, or the first tap into a section after the
