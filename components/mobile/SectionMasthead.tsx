@@ -1,3 +1,4 @@
+import { cn } from "@/lib/cn";
 import { sectionMedia, type SectionKey } from "@/lib/media/sections";
 
 /**
@@ -29,7 +30,8 @@ import { sectionMedia, type SectionKey } from "@/lib/media/sections";
  *     darkest (the line the owner's build 80 note 1 found on Discover's
  *     bands). Faded before it is clipped, the picture shows nowhere more than
  *     the wash lets it, to the very edge.
- *   - The credit is inside the plate, at its foot.
+ *   - The credit is inside the plate, at its foot: since 1.9 below the
+ *     picture, on the ground alone (the wide plate, below).
  *
  * Two shapes, chosen by the picture (lib/media/sections.ts):
  *
@@ -67,9 +69,9 @@ export function SectionMasthead({
   const media = sectionMedia(section);
   if (!media) return null;
 
-  const credit = (
+  const credit = (where?: string) => (
     // The picture's credit is written as its record has it, in English (build 90 note 4).
-    <figcaption lang="en" dir="ltr" className="font-sans text-[10px] leading-snug text-paper/50">
+    <figcaption lang="en" dir="ltr" className={cn(where, "font-sans text-[10px] leading-snug text-paper/50")}>
       {media.work} · {media.artist} · {media.license}
     </figcaption>
   );
@@ -87,7 +89,7 @@ export function SectionMasthead({
               ) : null}
               {children}
             </div>
-            {credit}
+            {credit()}
           </div>
           {/* Plain <img>: the Android build sets images.unoptimized, so
               next/image would degrade to this anyway, and this keeps the
@@ -108,31 +110,45 @@ export function SectionMasthead({
 
   return (
     <figure className="relative mb-6 overflow-hidden rounded-[26px] shadow-[0_18px_40px_-20px_rgba(0,0,0,0.75)] ring-1 ring-inset ring-paper/10">
-      <div className="relative aspect-[16/9] w-full">
+      <div className="relative flex aspect-[16/9] w-full flex-col">
         {/* The wash's own colour, the page's ground, under the picture. A
             layer, not the plate's own background, so the plate's inset
             hairline stays under it as it stayed under the picture. */}
         <span aria-hidden className="absolute inset-0 bg-night" />
-        {/* Plain <img>, for the reason above. The wash: the ground shows
-            through the foot of the picture only, under the words, by the
-            mask .masthead-picture; the top half of the picture is left
-            exactly as it was painted. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={media.src}
-          alt={media.alt}
-          className="masthead-picture absolute inset-0 h-full w-full object-cover"
-          style={{ objectPosition: media.focus ?? "center" }}
-        />
-        <div className="absolute inset-x-4 bottom-3 space-y-1">
-          {eyebrow ? (
-            <p className="font-sans text-caption font-semibold text-gold/90">
-              {eyebrow}
-            </p>
+        {/* The picture stands above the credit, and the credit at the
+            plate's foot on the ground alone (the gate's sweep of words over
+            pictures, 2026-11-11). Over the foot of the picture, faded but
+            not gone, the credit read 3.58:1 at its least, and under 4.5 on
+            the four dark palettes and eight of the looks: the page of the
+            Codex is pale vellum. A deeper fade there would have to know how
+            many lines the credit takes (two on a phone under 375 wide);
+            with the picture standing above it, the plate's height and the
+            picture's own fade are kept, and the credit stands clear at any
+            width. */}
+        <div className="relative min-h-0 flex-1">
+          {/* Plain <img>, for the reason above. The wash: the ground shows
+              through the foot of the picture only, by the mask
+              .masthead-picture; the top half of the picture is left
+              exactly as it was painted. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={media.src}
+            alt={media.alt}
+            className="masthead-picture absolute inset-0 h-full w-full object-cover"
+            style={{ objectPosition: media.focus ?? "center" }}
+          />
+          {eyebrow || children ? (
+            <div className="absolute inset-x-4 bottom-3 space-y-1">
+              {eyebrow ? (
+                <p className="font-sans text-caption font-semibold text-gold/90">
+                  {eyebrow}
+                </p>
+              ) : null}
+              {children}
+            </div>
           ) : null}
-          {children}
-          {credit}
         </div>
+        {credit("relative px-4 pb-3")}
       </div>
     </figure>
   );
