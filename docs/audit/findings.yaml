@@ -2024,13 +2024,33 @@ findings:
       where the paragraphs now do; Book 11's Chapter I heading stays out.
       cyrilJohnPlaces.test.ts holds the links, the places, the Preface, the
       openings and their numbers.
-      STILL OPEN: the quotation marks still to settle (18 paragraphs where CCEL
-      itself differs, the 28 paragraph-opening marks of Antony's speeches and
-      4 in 2 Corinthians that CCEL never closes, 6 lost double marks at
-      paragraph starts in John, Hebrews and Acts, one in the Confessions, and
-      15 library paragraphs whose rail copies are now restored: Romans,
-      Galatians, Philippians, Colossians, 1 Thessalonians, 2 Timothy and the
-      Harmony); Cyril on John and the Morals read against the printed page, as
+      2026-11-11 (quick win 18, e0c4f7965): the quotation marks the October pass
+      left were read against the printed volumes themselves (the NPNF scans
+      on archive.org, every copy's own OCR, the page image where unclear).
+      CCEL's transcription has no single opening marks at all, so it could
+      never settle those. 144 marks changed: 7 double openers at paragraph
+      starts (Acts, John, Hebrews); 60 in both copies of the Life of Antony,
+      whose address (16 to 43) and reply to the philosophers (77 to 80) open
+      each paragraph and close only at the end as the print does (CCEL's 14
+      paragraph-end closers are not on the page); 29 single marks in 2
+      Corinthians; the 19 inner openers of the 15 rail-copy paragraphs, all on
+      the page; and 29 where CCEL's words differed, because the import had
+      dropped every CCEL line that began with a link marker ("[189] ..."):
+      32 lines of words (about 380) and 4 of closing punctuation are back,
+      each found on the page. Acts 28 paragraph 10, a leftover line of an
+      editor's footnote, is an empty slot. No reader's mark moved; 51 copies
+      on the rail and in the plans' sayings follow. Held by
+      lib/saints/__tests__/printedMarks.test.ts; walk section 63 (764175037).
+      The Confessions' one matches the print already.
+      STILL OPEN: six printer's slips (John 21:2; 2 Corinthians 3:19, 13:14,
+      17:24, 28:1 and 8:17, the last needing no edit), asked of the owner
+      with the recommendation to follow the page as printed, as for
+      Ephraim, Leo and Gregory; beside the marks, small word differences from
+      the print (2 Cor 23:27 "For, what," for "For what,"; John 11:7 "was
+      made" for "was made,"; Acts 38:3 "not partial" for "not a partial"; 1
+      Cor 35:17 "[3]" for "[3.]"; John 70:1 and Hebrews 19:1 without the
+      print's "[1.]") and 2 Cor 18:24 and 18:25, one paragraph in the print
+      (joining them would move readers' marks); Cyril on John and the Morals read against the printed page, as
       Cyril on Luke was (their words are their transcriptions', so what is
       left is fidelity to the page, not words given to the wrong hand); from
       Cyril on John's ingest, one more: its sections begin where it found a

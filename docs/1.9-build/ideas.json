@@ -2279,6 +2279,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "44 or .hit-44; the written-heights ceiling is 0. afe0c8b54. PLAN 13ae. The desktop reader settings' chips too, by .hit-44, named in the test: c992d0864."
+  },
+  {
+   "id": "e-qw18-printed-marks",
+   "section": "Saints",
+   "kind": "bug",
+   "title": "The Fathers' quotation marks as the printed page has them, and 32 lines the import dropped (F-49, quick win 18)",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "144 marks and the dropped lines, read against the NPNF scans; six printer's slips asked of the owner. e0c4f7965. PLAN 13af."
   }
  ]
 }
