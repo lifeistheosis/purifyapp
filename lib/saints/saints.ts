@@ -1510,7 +1510,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "irenaeus-of-lyons",
  byname: "Disciple of the Disciple",
- iconUrl: "/saints/icons/irenaeus-of-lyons.jpg",
+ iconUrl: "/saints/icons/irenaeus-of-lyons.v2.jpg",
  name: "St. Irenaeus of Lyons",
  epithet: "Bishop of Lugdunum · Disciple of Polycarp",
  born: "c. 130 (Smyrna)",
@@ -1650,7 +1650,6 @@ export const SAINTS: Saint[] = [
  slug: "hermione-of-ephesus",
  pronoun: "her",
  byname: "Daughter of the Apostle Philip",
- iconUrl: "/saints/icons/hermione-of-ephesus.jpg",
  name: "St. Hermione of Ephesus",
  epithet: "Virgin-Martyr · Daughter of the Apostle Philip",
  born: "1st century",
@@ -2507,7 +2506,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "anianus-of-alexandria",
  byname: "Successor of St. Mark",
- iconUrl: "/saints/icons/anianus-of-alexandria.jpg",
+ iconUrl: "/saints/icons/anianus-of-alexandria.v2.jpg",
  name: "St. Anianus of Alexandria",
  epithet: "Second Bishop of Alexandria · Cobbler of the See of St. Mark",
  born: "1st century (Alexandria)",
@@ -3482,7 +3481,7 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "cyril-and-methodius",
- iconUrl: "/saints/icons/cyril-and-methodius.jpg",
+ iconUrl: "/saints/icons/cyril-and-methodius.v2.jpg",
  name: "Saints Cyril and Methodius",
  pronoun: "their",
  byname: "Equals-to-the-Apostles",
@@ -3578,7 +3577,7 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "celestine-of-rome",
- iconUrl: "/saints/icons/celestine-of-rome.jpg",
+ iconUrl: "/saints/icons/celestine-of-rome.v2.jpg",
  name: "St. Celestine of Rome",
  epithet: "Pope of Rome · Father of Ephesus · Judge against Nestorius",
  born: "c. 370 (Campania)",
@@ -3629,7 +3628,7 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "juvenal-of-jerusalem",
- iconUrl: "/saints/icons/juvenal-of-jerusalem.jpg",
+ iconUrl: "/saints/icons/juvenal-of-jerusalem.v2.jpg",
  name: "St. Juvenal of Jerusalem",
  epithet: "Patriarch of Jerusalem · Father of Ephesus and Chalcedon",
  born: "Fourth century",
@@ -3649,7 +3648,7 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "anatolius-of-constantinople",
- iconUrl: "/saints/icons/anatolius-of-constantinople.jpg",
+ iconUrl: "/saints/icons/anatolius-of-constantinople.v2.jpg",
  name: "St. Anatolius of Constantinople",
  epithet: "Patriarch of Constantinople · Father of Chalcedon",
  born: "Alexandria",
@@ -3747,7 +3746,7 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "eutychius-of-constantinople",
- iconUrl: "/saints/icons/eutychius-of-constantinople.jpg",
+ iconUrl: "/saints/icons/eutychius-of-constantinople.v2.jpg",
  name: "St. Eutychius of Constantinople",
  epithet: "Patriarch of Constantinople · President of the Fifth Council · Confessor",
  born: "c. 512 (Phrygia)",
@@ -3876,7 +3875,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "irene-the-empress",
  byname: "The Right-believing Empress",
- iconUrl: "/saints/icons/irene-the-empress.jpg",
+ iconUrl: "/saints/icons/irene-the-empress.v2.jpg",
  name: "St. Irene the Empress",
  epithet: "Empress of the Romans · Convener of the Seventh Ecumenical Council",
  born: "c. 752 (Athens)",
@@ -4068,7 +4067,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "lazar-of-serbia",
-    iconUrl: "/saints/icons/lazar-of-serbia.jpg",
+    iconUrl: "/saints/icons/lazar-of-serbia.v2.jpg",
     byname: "the Great Martyr",
     name: "St. Lazar of Serbia",
     epithet: "Prince of the Serbs · Holy Great-Martyr of Kosovo",
@@ -4088,7 +4087,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "basil-of-ostrog",
-    iconUrl: "/saints/icons/basil-of-ostrog.jpg",
+    iconUrl: "/saints/icons/basil-of-ostrog.v2.jpg",
     byname: "the Wonderworker of Ostrog",
     name: "St. Basil of Ostrog",
     epithet: "Metropolitan of Zahumlje and the Coastlands · Wonderworker",
@@ -4739,7 +4738,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "cosmas-of-aetolia",
-    iconUrl: "/saints/icons/kosmos-aitolia.jpg",
+    iconUrl: "/saints/icons/cosmas-of-aetolia.jpg",
     name: "St. Cosmas of Aetolia",
     byname: "Equal-to-the-Apostles, the New Hieromartyr",
     epithet: "Preacher and teacher of the enslaved Greeks · Martyr",

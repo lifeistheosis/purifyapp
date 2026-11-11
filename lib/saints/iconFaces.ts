@@ -26,8 +26,6 @@ export const WEB_FACE_DEFAULT = 20;
 export const ICON_FACES: Readonly<Record<string, number>> = {
   // 152 by 420, standing: his halo at the top edge, his face a seventh down.
   "anthony-the-great.jpg": 2,
-  // 118 by 420, standing: the face a seventh down, under the halo.
-  "celestine-of-rome.jpg": 2,
 };
 
 /** Where to cut an icon for a round frame: its own point, or 20%. */

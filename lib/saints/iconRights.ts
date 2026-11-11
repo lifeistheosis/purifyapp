@@ -1695,6 +1695,127 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://dia.pitts.emory.edu/image_details.cfm?ID=130281",
   },
+  "irenaeus-of-lyons.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "An engraving of a bearded man with a high forehead and a halo, in a hooded cloak, within an oval frame.",
+    work: "S. Irenaeus Episcopus Lugdunensis, an engraved portrait in Gottlieb Spitzel's Vetus academia Jesu Christi (1671), the Pitts Theology Library's copy",
+    artist: "Unknown engraver, for Gottlieb Spitzel",
+    workDate: "1671",
+    source: "Pitts Theology Library, Emory University (Digital Image Archive)",
+    license: "Public domain",
+    evidenceUrl: "https://dia.pitts.emory.edu/image_details.cfm?ID=133339",
+  },
+  "irene-the-empress.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A gold coin with the bust of an empress facing, in a crown with a cross and strings of pearls and a jewelled robe, an orb and a sceptre in her hands, her name in Greek around her.",
+    work: "Solidus of the Empress Irene, struck at Constantinople in her sole reign and lettered Eirene Basilissa (the Art Institute of Chicago, 2014.9)",
+    artist: "The mint of Constantinople",
+    workDate: "797 to 802",
+    source: "The Art Institute of Chicago",
+    license: "CC0",
+    evidenceUrl: "https://www.artic.edu/artworks/221685/solidus-coin-of-empress-irene",
+  },
+  "juvenal-of-jerusalem.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A wall painting of a brown-bearded bishop with a gold halo, in a white robe chequered with dark red crosses, holding a Gospel book, on a deep blue ground with his name in Slavonic beside him.",
+    work: "St Juvenal, a wall painting in the Church of Christ Pantocrator, Visoki Dečani Monastery (a detail). The photograph is a faithful copy of a flat work of about 1350 and adds no rights; its photographer is not named where it was found",
+    artist: "Unknown painters of Dečani",
+    workDate: "c. 1350",
+    source: "Pravoslavie.ru, the Church calendar (photographer not named)",
+    license: "Public domain",
+    evidenceUrl: "https://days.pravoslavie.ru/images/ii1130_4358.html",
+  },
+  "lazar-of-serbia.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A worn wall painting of a prince with dark curling hair and beard, crowned and haloed in gold, in a red mantle over a jewelled robe, on a blue ground with a Slavonic inscription beside him.",
+    work: "Prince Lazar, the founders' portrait in the narthex of Ljubostinja Monastery (a detail), photographed by Branko Jovanović for the BLAGO Fund",
+    artist: "Unknown painter of Ljubostinja (the wall painting); Branko Jovanović (the photograph)",
+    workDate: "c. 1402 to 1405",
+    source: "BLAGO Fund, the Ljubostinja archive",
+    license: "CC BY 4.0",
+    evidenceUrl: "https://www.blagofund.org/Archives/Ljubostinja/Pictures/Interior/Narthex/Portraits_of_rulers/LJUBOSTINJA_1_080A1394.html",
+  },
+  "cosmas-of-aetolia.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A wall painting of a monk in a dark habit and hood with a long grey beard, his right hand raised in blessing and a staff and prayer rope in his left, on a pale ground with his name in Greek, Kosmas the hieromonk, beside him.",
+    work: "St Kosmas the hieromonk, the wall painting from over his tomb at the Monastery of St Kosmas, Kolkondas, Albania (a detail)",
+    artist: "Unknown painter",
+    workDate: "19th century, soon after the monastery was built in 1814 to 1815",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Fresco_of_Saint_Kosmas_Aitolos,_Kolikontasi,_Great_Mouzaki,_Northern_Epeiros.jpg",
+  },
+  "anatolius-of-constantinople.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A wall painting of a grey-bearded bishop with an orange-gold halo, in a white omophorion with dark crosses, on a dark blue ground with his name in Greek beside him.",
+    work: "St Anatolius, from the wall painting of Sts Anatolius and Gennadius on the south-east column of the Church of St George, Staro Nagoričane (a detail), photographed by Branko Jovanović for the BLAGO Fund",
+    artist: "Unknown painters of Staro Nagoričane, usually given to Michael Astrapas and Eutychios (the wall painting); Branko Jovanović (the photograph)",
+    workDate: "c. 1316 to 1318",
+    source: "BLAGO Fund, the Staro Nagoričane archive",
+    license: "CC BY 4.0",
+    evidenceUrl: "https://www.blagofund.org/Archives/StaroNagorichane/Pictures/Interior/Nave/East_columns/SNAGORICANE_1_080A5498.html",
+  },
+  "basil-of-ostrog.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A worn painted panel of a bishop with a long dark beard, in a jewelled crown and a gold halo, blessing and holding a Gospel book, in green and rose vestments on a red ground with his name in Slavonic.",
+    work: "St Basil of Ostrog, a painted panel kept at Ostrog Monastery, which the Orthodox Encyclopedia dates to the 18th century (a detail). The photograph is a faithful copy of a flat old work and adds no rights; its photographer is not named",
+    artist: "Unknown painter",
+    workDate: "18th century",
+    source: "The Orthodox Encyclopedia (pravenc.ru), its article on him",
+    license: "Public domain",
+    evidenceUrl: "https://www.pravenc.ru/text/149759.html",
+  },
+  "celestine-of-rome.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "An engraving of a tonsured old man with a halo, seen from the side, in a cope worked with scrolling leaves, a small papal shield behind him.",
+    work: "Celestinus I Papa Romanus, the engraved portrait on page 45 of Antonio Ciccarelli's Le vite de pontefici (Rome, 1588), the Getty Research Institute's copy",
+    artist: "Giovanni Battista de' Cavalieri",
+    workDate: "1588",
+    source: "Internet Archive (Getty Research Institute)",
+    license: "Public domain",
+    evidenceUrl: "https://archive.org/details/levitedepontefic00cicc/page/n104",
+  },
+  "eutychius-of-constantinople.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A worn icon of a dark-bearded bishop in a robe chequered black and white, his right hand raised in blessing and a red Gospel book in his left, on a rubbed gold ground with his name in Greek.",
+    work: "St Eutychius, an icon of Hilandar Monastery, Mount Athos, printed by the Orthodox Encyclopedia in its article on the Patriarch of Constantinople (a detail)",
+    artist: "Unknown painter",
+    workDate: "Late 16th or early 17th century",
+    source: "Wikimedia Commons; this copy from the Orthodox Encyclopedia (pravenc.ru)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Eutychius_of_Constantinople.jpg",
+  },
+  "anianus-of-alexandria.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A painting of a cobbler in a white turban seated at his bench, holding out his hurt hand to a dark-haired man in a blue mantle who bends to him, with turbaned men watching.",
+    work: "St Mark healing Anianus, the cobbler of Alexandria who became its bishop after him (the Gemäldegalerie, Berlin; a detail)",
+    artist: "Giovanni Battista Cima da Conegliano",
+    workDate: "c. 1497 to 1499",
+    source: "Wikimedia Commons (from the Web Gallery of Art)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Cima_da_conegliano,_guarigione_di_anania.jpg",
+  },
+  "cyril-and-methodius.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A wall painting of two grey-bearded monks with gold haloes, each holding a cross, with a scroll of the Slavonic alphabet between them and an eye in a burst of light above.",
+    work: "Sts Cyril and Methodius, a wall painting at Troyan Monastery, Bulgaria",
+    artist: "Zahari Zograf",
+    workDate: "1848",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Sv_Kiril_Metodij_Zahari_Zograf_Trojanski_mon_1848.jpg",
+  },
   "papias-of-hierapolis.v2.jpg": {
     status: "verified",
     inspectedOn: "2026-11-11",
@@ -3002,30 +3123,6 @@ export const ICON_QUESTIONS: Record<string, IconQuestion> = {
  * only way to add one is to add a rights-complete row.
  */
 export const UNVERIFIED_ICONS: Record<string, string> = {
-  "anatolius-of-constantinople.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for anatolius-of-constantinople. 382x420 JPG, 42 KB. Opened 2026-11-10 (build 90 note 3): a wall painting on a worn grey ground, a brown-bearded bishop with a yellow halo, a white omophorion with large black crosses and a Gospel book, his name in Greek beside him. Not found on Commons by search and picture hash (nearest 25 of 64 bits apart).",
-  "anianus-of-alexandria.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for anianus-of-alexandria and AUTHOR_ICONS. 400x400 JPG, 32 KB. Not yet opened and inspected.",
-  "basil-of-ostrog.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for basil-of-ostrog. 322x420 JPG, 36 KB. Not yet opened and inspected.",
-  "celestine-of-rome.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for celestine-of-rome. 118x420 JPG, 15 KB. Opened 2026-11-10 (build 90 note 3): a narrow cut of a wall painting of a standing grey-bearded bishop in a chequered sakkos with a Gospel book and a scroll, his name in Greek above him. Not found on Commons by search and picture hash (none of the files found has its shape).",
-  "cyril-and-methodius.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for cyril-and-methodius. 336x420 JPG, 33 KB. Not yet opened and inspected.",
-  "eutychius-of-constantinople.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for eutychius-of-constantinople. 314x420 JPG, 33 KB. Opened 2026-11-10 (build 90 note 3): a contemporary panel icon of a white-bearded bishop with a red Gospel book, his name in Greek on a gold ground, a painter's small inscription at its foot. Not found on Commons by search and picture hash (nearest 28 of 64 bits apart).",
-  "hermione-of-ephesus.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for hermione-of-ephesus. 322x420 JPG, 22 KB. Not yet opened and inspected.",
-  "irenaeus-of-lyons.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for irenaeus-of-lyons and AUTHOR_ICONS. 212x420 JPG, 23 KB. Not yet opened and inspected.",
-  "irene-the-empress.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for irene-the-empress. 300x420 JPG, 32 KB. Opened 2026-11-10 (build 90 note 3): a contemporary icon of a crowned empress in a jewelled robe holding a scroll, her name in Latin letters on a gold ground. Not found on Commons by search and picture hash (nearest 21 of 64 bits apart, a coin of hers).",
-  "juvenal-of-jerusalem.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for juvenal-of-jerusalem. 281x400 JPG, 27 KB. Opened 2026-11-10 (build 90 note 3): a contemporary panel icon, a dark-haired, grey-bearded bishop in a red and black chequered phelonion with a red Gospel book, his name in Greek on a gold ground. Not found on Commons by search and picture hash (three files found, none of its shape).",
-  "kosmos-aitolia.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for cosmas-of-aetolia. 297x420 JPG, 24 KB. Not yet opened and inspected.",
-  "lazar-of-serbia.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for lazar-of-serbia. 292x420 JPG, 32 KB. Not yet opened and inspected.",
   "marcian-the-emperor.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for marcian-the-emperor. 235x420 JPG, 21 KB. Opened 2026-11-10 (build 90 note 3): a contemporary icon of a standing emperor in a crown and red cloak under a painted arch, holding a scroll written in English, his name in Latin letters. Not found on Commons by search and picture hash (nearest 29 of 64 bits apart).",
   "marina-the-great-martyr.jpg":

@@ -539,3 +539,23 @@ https://pravoslavie.ru/100843.html); it is not an icon, and it is not used.
   25570-5403, USA. No email is published.
 - **For the letter:** ask whether the monastery or the monk who painted it
   holds the right to grant it, and for his name for the credit.
+
+## St Hermione of Ephesus
+
+- **The picture:** none that may be shown. Her page wore a contemporary
+  icon with her name in English letters, with no source, painter or leave
+  recorded, and it was taken down on 2026-11-11. The one old picture found
+  is the Menologion of Basil II's miniature for 4 September, which shows her
+  beheading with no figure of her standing apart, and whose only clean copy
+  carries the Vatican Library's mark; it is refused on both counts.
+- **Made by:** not known.
+- **To write to:** the Holy Metropolis of Chios, Psara and Oinousses
+  (imchiou.gr), for the Church of St Hermione at Thymiana on Chios, to ask
+  for a photograph of an old icon of hers there, with who painted it and
+  when, and written leave to show it. Its address is to be read from its
+  own site before the letter goes.
+- **For the letter:** in Greek. The app and the website only, never an
+  advertisement.
+- **Until then:** her page stands on the plate, and her Life wears the
+  Apostle Philip, her father's picture by the house's rule
+  (lib/reading/coverArt.ts).

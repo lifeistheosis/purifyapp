@@ -18,8 +18,8 @@ export const AUTHOR_ICONS: Record<string, string> = {
   "Blessed Augustine of Hippo": "/saints/icons/augustine-of-hippo.v2.jpg",
   "St. Cyril of Alexandria": "/saints/icons/cyril-of-alexandria.v2.jpg",
   "St. Cyril": "/saints/icons/cyril-of-alexandria.v2.jpg",
-  "St. Irenaeus of Lyons": "/saints/icons/irenaeus-of-lyons.jpg",
-  "St. Irenaeus": "/saints/icons/irenaeus-of-lyons.jpg",
+  "St. Irenaeus of Lyons": "/saints/icons/irenaeus-of-lyons.v2.jpg",
+  "St. Irenaeus": "/saints/icons/irenaeus-of-lyons.v2.jpg",
 
   // Damascene + apostolic + late Byzantine + Russian.
   "St. John of Damascus": "/saints/icons/john-of-damascus.v2.jpg",
@@ -87,9 +87,9 @@ export const AUTHOR_ICONS: Record<string, string> = {
   "St. Polycarp": "/saints/icons/polycarp-of-smyrna.v2.jpg",
   "St. Prochorus": "/saints/icons/prochorus-the-deacon.v2.jpg",
   "St. Prochorus the Deacon": "/saints/icons/prochorus-the-deacon.v2.jpg",
-  "St. Anianus of Alexandria": "/saints/icons/anianus-of-alexandria.jpg",
-  "St. Anianus": "/saints/icons/anianus-of-alexandria.jpg",
-  "St. Hananias of Alexandria": "/saints/icons/anianus-of-alexandria.jpg",
+  "St. Anianus of Alexandria": "/saints/icons/anianus-of-alexandria.v2.jpg",
+  "St. Anianus": "/saints/icons/anianus-of-alexandria.v2.jpg",
+  "St. Hananias of Alexandria": "/saints/icons/anianus-of-alexandria.v2.jpg",
   "St. Mary of Egypt": "/saints/icons/mary-of-egypt.v2.jpg",
   "St. Mary": "/saints/icons/mary-of-egypt.v2.jpg",
   "St. Mary Magdalene": "/saints/icons/mary-magdalene.v2.jpg",

@@ -53,6 +53,8 @@ const WAITING: Record<string, string> = {
   "arsenius-of-cappadocia": "permission: the Hesychasterion of St John the Theologian, Souroti",
   "zacchaeus-and-alphaeus": "permission: no icon of them found yet, so no one to write to",
   "irenarchus-and-the-seven-women": "permission: the Orthodox Church in America (the unsigned icon on its page for him)",
+  // The uncleared pictures of 2026-11-11 (the arbiter, 15:09): one whose saint has no old picture that is free.
+  "hermione-of-ephesus": "permission: the Holy Metropolis of Chios, for the Church of St Hermione at Thymiana (an old icon of theirs)",
   "elias-of-murom": "permission: the Orthodox Church in America (the unsigned icon on its page for him)",
   // January's saints (1.9): twenty took their pictures in the January chat's
   // pushes 2 and 3 (docs/1.9-build/notes/january-saints.md); these two have

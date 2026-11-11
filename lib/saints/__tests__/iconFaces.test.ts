@@ -67,7 +67,7 @@ describe("where the web cuts an icon", () => {
   it("keeps 20% for every other icon, and reads the file from any address", () => {
     expect(iconFace(undefined)).toBe(WEB_FACE_DEFAULT);
     expect(iconFace("/saints/icons/basil-the-great.jpg")).toBe(20);
-    expect(iconFace("/saints/icons/celestine-of-rome.jpg?v=2")).toBe(ICON_FACES["celestine-of-rome.jpg"]);
-    expect(iconFace("https://purifyapp.net/saints/icons/celestine-of-rome.jpg")).toBe(ICON_FACES["celestine-of-rome.jpg"]);
+    expect(iconFace("/saints/icons/anthony-the-great.jpg?v=2")).toBe(ICON_FACES["anthony-the-great.jpg"]);
+    expect(iconFace("https://purifyapp.net/saints/icons/anthony-the-great.jpg")).toBe(ICON_FACES["anthony-the-great.jpg"]);
   });
 });

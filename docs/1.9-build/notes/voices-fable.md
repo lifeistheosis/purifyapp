@@ -757,3 +757,58 @@ the section, its preview, its stills script and its twenty English words are
 parked in `docs/1.9-build/parked/phone-voice/`, where no build reads them. A
 test holds that nothing in `app/` or `components/` but the website's own
 route names any of it, and that the catalogue has no word of it.
+
+## Twelve uncleared pictures settled (2026-11-11, the arbiter's word of 15:09 UTC)
+
+`UNVERIFIED_ICONS` held 26 pictures shown in the app with no source, licence
+or painter recorded. Twelve were mine; the December chat took the other
+twelve. Each of mine was opened first: ten were plainly contemporary icons
+(English lettering, a painter's inscription, a flat bright gold ground), one
+a wall painting no search could place, one a photograph of a carved ivory.
+None was kept. Every old file is out of `public/` and its row out of the
+list; `MAX_UNVERIFIED` fell from 26 to 14.
+
+| Saint | Now wears | Rights |
+|---|---|---|
+| Anatolius of Constantinople | the wall painting of him at St George, Staro Nagoričane, c. 1316 to 1318 (BLAGO Fund, photograph Branko Jovanović) | CC BY 4.0 as its page states |
+| Anianus of Alexandria | Cima da Conegliano's St Mark healing Anianus, c. 1497 to 1499, Berlin (a detail: the cobbler and St Mark) | public domain |
+| Basil of Ostrog | a painted panel at Ostrog the Orthodox Encyclopedia dates to the 18th century | a flat old work; photographer not named |
+| Celestine of Rome | Cavalieri's engraved portrait in Ciccarelli's Le vite de pontefici, Rome 1588 (Getty Research Institute's copy) | public domain |
+| Cyril and Methodius | Zahari Zograf's wall painting at Troyan Monastery, 1848 | public domain |
+| Eutychius of Constantinople | an icon of Hilandar, late 16th or early 17th century | public domain |
+| Irenaeus of Lyons | the engraved portrait in Spitzel's Vetus academia Jesu Christi, 1671 (Pitts Theology Library) | public domain |
+| Irene the Empress | her own gold solidus, Constantinople 797 to 802, lettered Eirene Basilissa (Art Institute of Chicago) | CC0, the photograph too |
+| Juvenal of Jerusalem | the wall painting of him at Dečani, c. 1350 | a flat old work; photographer not named |
+| Cosmas of Aetolia | the wall painting from over his tomb at Kolkondas, 19th century | public domain |
+| Lazar of Serbia | the founders' portrait at Ljubostinja, c. 1402 to 1405 (BLAGO Fund, photograph Branko Jovanović) | CC BY 4.0 as its page states |
+| Hermione of Ephesus | the plate; a permission entry to the Holy Metropolis of Chios | none found that may be shown |
+
+**For the arbiter to rule on, each said plainly.**
+
+- **Three rest on "a faithful photograph of a flat old work adds no rights"**
+  (his ruling of 14:34 for St Victorinus) with no photographer named where
+  the picture was found: Juvenal and Basil of Ostrog (the Russian Church's
+  calendar and encyclopedia, whose pages carry their own copyright line) and
+  the larger copy of Eutychius. Basil's date is the encyclopedia's caption
+  and nothing else.
+- **BLAGO's pages disagree with each other.** Each picture's own page says
+  Creative Commons Attribution and links CC BY 4.0, which is what is
+  recorded. Its image-request page says Attribution-Noncommercial and its
+  terms ask for written permission for public use. Both pictures are flat
+  works of the 14th and 15th centuries, so they stand either way by the same
+  ruling, but a note to BLAGO would close it, and its photographer is
+  credited.
+- **Cyril and Methodius has rays in it.** Zograf painted an eye in a burst of
+  light between the two heads; it cannot be cut out without cutting the
+  haloes. It is his fresco of 1848, not a drawn effect, but the owner's rule
+  on light rays is his to apply. The other old pictures found were a 249
+  pixel icon and Matejko's Latin painting with the Polish eagle.
+- **Anianus is shown in a Western painting,** as the cobbler St Mark heals.
+  The ivory his page wore is the Grado panel of his baptism, in Milan, and
+  no free photograph of it was found (a carved thing, so the photograph has
+  rights of its own).
+- **Refused:** the Menologion's Hermione (her beheading, and the Vatican's
+  mark); the Dionysiou Anatolius (249 pixels wide); Commons' "Kosmas
+  Aitolos.jpg" and "Saint Irenaeus.jpg" (no source or date); three icons of
+  Basil of Ostrog that look contemporary whatever their captions say;
+  Bégule's glass of Irenaeus (he died in 1935).

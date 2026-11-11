@@ -72,7 +72,8 @@ const ACCEPTED = {
   "history/media/first-council-of-constantinople.v1.jpg": "the miniature's losses, bare parchment where the paint has flaked; a cut would lose the book at its foot",
   "history/media/ukrainian-autocephaly-signing.jpg": "a photograph: the white doors of the hall",
   "saints/icons/aemilian-of-cyzicus.jpg": "his white omophorion, at the foot",
-  "saints/icons/anatolius-of-constantinople.jpg": "his white omophorion, at the foot",
+  "saints/icons/anatolius-of-constantinople.v2.jpg": "his white omophorion, at the foot",
+  "saints/icons/juvenal-of-jerusalem.v2.jpg": "his white robe, at the foot",
   // Looked at on 2026-10-31, the owner's picks of round 3 sheet r3-23: the light is the work's own.
   "saints/icons/justinian-the-great.v2.jpg": "the white tesserae of the courtiers' robes beside him, at the left and the foot of the mosaic",
   "saints/icons/cyril-of-jerusalem.v2.jpg": "his white omophorion and the open scroll in his hands, at the foot and the right",
@@ -109,6 +110,8 @@ const ACCEPTED = {
   "saints/icons/martyrs-of-melitene.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
   "saints/icons/matrona-of-constantinople.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
   "saints/icons/erastus-olympas-rodion-sosipater-quartus-and-tertius.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/irenaeus-of-lyons.v2.jpg": "an engraving of 1671 (Spitzel): the white is the paper of its oval frame",
+  "saints/icons/celestine-of-rome.v2.jpg": "an engraving of 1588 (Cavalieri): the white is the paper between its cut lines",
   "saints/icons/peter-chrysologus.jpg": "an engraving of 1640 (Lupton's Lives of the Primitive Fathers): the white is the paper between its cut lines",
   "saints/icons/romanus-and-barulas.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
   "saints/icons/plato-and-romanus.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
