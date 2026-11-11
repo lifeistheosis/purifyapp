@@ -11253,21 +11253,34 @@ html[data-reading-mode="parchment"] [data-prayer-reader] [data-line][data-lit] {
  text-shadow: none;
 }
 
-/* Chant underneath (components/player/PrayWith.tsx): the chip that keeps
-   Pray with's chant at the foot of the screen rises in as it comes. In the
-   apps it stands over the tab bar, where .now-playing-lift puts it and takes
-   its padding away, so it keeps a little air of its own there. */
-html.is-native .pray-chip {
- margin-bottom: 0.75rem;
+/* The chant at hand (components/player/ChantInBar.tsx): a prayer page's
+   chant, in the page's bar beside search. It was a pill at the foot of the
+   screen until build 93, where it lay over the prayer's words (fresh eyes
+   L1), and no pill floats over a prayer now.
+
+   The button is always in the bar and only hidden, so its place is kept: its
+   coming moves nothing beside it. Hidden with `visibility`, it takes no tap
+   and no focus and is not read out. It comes and goes on the house's curve,
+   and visibility waits for the going to end; with motion off it is simply
+   there, or not. */
+.chant-in-bar {
+ visibility: hidden;
+ opacity: 0;
+ scale: 0.86;
+ transition:
+  opacity var(--duration-base) var(--ease-house),
+  scale var(--duration-base) var(--ease-house),
+  color 150ms var(--ease-house),
+  visibility 0s linear var(--duration-base);
 }
-@keyframes pray-chip-in {
- from { opacity: 0; transform: translateY(10px); }
+.chant-in-bar[data-on] {
+ visibility: visible;
+ opacity: 1;
+ scale: 1;
+ transition-delay: 0s;
 }
-.pray-chip-in {
- animation: pray-chip-in var(--duration-base) var(--ease-house) backwards;
-}
-:where([data-motion="reduce"]) .pray-chip-in {
- animation: none;
+:where([data-motion="reduce"]) .chant-in-bar {
+ transition: none;
 }
 
 /* Sung words (1.8): Now Playing's words and a chant's Sing along

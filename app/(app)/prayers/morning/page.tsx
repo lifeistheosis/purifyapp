@@ -1,4 +1,5 @@
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { ChantInBar } from "@/components/player/ChantInBar";
 import type { Rule } from "@/components/prayers/PrayerRuleReader";
 import { RecordPrayerOpened } from "@/components/prayers/RecordPrayerOpened";
 import morningRule from "@/data/prayers/rules/morning.json";
@@ -19,7 +20,7 @@ export const metadata = {
 export default async function MorningRulePage() {
   return (
     <>
-      <MobileTopBar titleKey="prayers.rule.morning.title" back backFallback="/prayers" revealTitleOn="prayer-title" />
+      <MobileTopBar titleKey="prayers.rule.morning.title" back backFallback="/prayers" revealTitleOn="prayer-title" beforeSearch={<ChantInBar />} />
       <section className="min-h-screen bg-night px-5 pb-16 pt-8 md:px-8 md:pt-14">
         <RecordPrayerOpened id="morning" titleKey="today.prayNow.morningFallback" href="/prayers/morning" />
         <RuleInReadersLanguage rule={morningRule as Rule} file="rules/morning.json" ruleHref="/prayers/morning" titleKey="prayers.rule.morning.title" />

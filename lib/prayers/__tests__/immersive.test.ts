@@ -187,24 +187,31 @@ describe("the line being prayed lit, the rest dim", () => {
 });
 
 describe("chant underneath", () => {
+  // His pick B keeps the chant one tap away while praying. It was a pill at
+  // the foot of the screen until build 93, where it lay over the prayer's
+  // words (fresh eyes L1); it is a button in the page's bar now, at the same
+  // moment. Where it stands and how it comes is lib/player/__tests__/
+  // chantAtHand.test.ts; what is held here is the moment and the picker.
   const prayWith = code(WITH);
+  const inBar = code("components/player/ChantInBar.tsx");
 
-  it("waits at the foot of the screen once Pray with has scrolled away and nothing sounds", () => {
+  it("is at hand once Pray with has scrolled away and nothing sounds", () => {
     expect(prayWith).toContain("new IntersectionObserver(");
     expect(prayWith).toContain("const silent = !audio.src && !ambience.playing && !ambience.loading;");
-    expect(prayWith).toContain("const underneath = scrolledPast && silent && !asking && !picker;");
-    // Where the mini player stands while a chant plays, above the apps' tab bar.
-    expect(prayWith).toMatch(/\{underneath \? \(\s*<div className="now-playing-lift /);
+    expect(prayWith).toContain("const atHand = scrolledPast && silent && !asking && !picker;");
+    expect(prayWith).toContain("return offerChantAtHand({ open: openPicker });");
   });
 
   it("is the same picker, in the app's own words", () => {
-    const chip = prayWith.slice(prayWith.indexOf("{underneath ?"));
-    expect(chip).toContain("onClick={openPicker}");
-    expect(chip).toContain('t("chant.button")');
+    // One picker, opened from Pray with's own half and from the bar alike.
+    expect(prayWith.match(/<ChantPicker\b/g)).toHaveLength(1);
+    expect(prayWith).toContain("onClick={openPicker}");
+    expect(inBar).toContain("openChantAtHand();");
+    expect(inBar).toContain('aria-label={t("chant.button")}');
   });
 
-  it("rises in with motion on, and is simply there with it off", () => {
-    expect(rule(css, ".pray-chip-in")).toContain("animation: pray-chip-in");
-    expect(rule(css, ':where([data-motion="reduce"]) .pray-chip-in')).toContain("animation: none;");
+  it("comes in with motion on, and is simply there with it off", () => {
+    expect(rule(css, ".chant-in-bar")).toContain("opacity var(--duration-base) var(--ease-house)");
+    expect(rule(css, ':where([data-motion="reduce"]) .chant-in-bar')).toContain("transition: none;");
   });
 });

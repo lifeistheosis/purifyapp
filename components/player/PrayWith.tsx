@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 import { PlusLock } from "@/components/billing/PlusMark";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
@@ -11,6 +11,7 @@ import { useAmbience } from "@/lib/ambience/player";
 import { openAmbience } from "@/lib/ambience/sheet";
 import { cn } from "@/lib/cn";
 import { useExpectedPlusFeatures, usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
+import { offerChantAtHand } from "@/lib/player/chantAtHand";
 import { usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 
 import { AskCard, ChantPicker, useChantAsk } from "./PrayWithChant";
@@ -29,11 +30,18 @@ import { AskCard, ChantPicker, useChantAsk } from "./PrayWithChant";
  * Whichever plays shows in the mini player, as it already does, and its half
  * of the control is lit while it plays.
  *
- * Chant underneath (1.8, the owner's pick B, Immersive, for while you pray):
+ * The chant at hand (1.8, the owner's pick B, Immersive, for while you pray):
  * once this control has scrolled up off the screen and nothing sounds, its
- * chant waits at the foot of the screen, where the mini player stands while
- * one plays, so it is one tap away from the line being prayed. It is the same
- * picker; the question's card takes the place while it is up.
+ * chant is one tap away from the line being prayed. It is the same picker,
+ * and it is not offered while the question's card is up.
+ *
+ * It waited at the foot of the screen until build 93, as a pill, and a fresh
+ * pair of eyes met it lying across a line of the Trisagion (docs/1.9-build/
+ * notes/fresh-eyes.md, L1): a floating pill over the prayer's own words,
+ * which his rule of 2026-11-10 keeps out ("Floating pills only where they
+ * belong", CLAUDE.md). So it comes at the same moment as a button in the
+ * page's bar, beside search (./ChantInBar.tsx, through lib/player/
+ * chantAtHand.ts), and nothing is drawn over the prayer here.
  */
 export function PrayWith({ className }: { className?: string }) {
   const { t } = useTranslate();
@@ -59,7 +67,7 @@ export function PrayWith({ className }: { className?: string }) {
     return () => io.disconnect();
   }, []);
   const silent = !audio.src && !ambience.playing && !ambience.loading;
-  const underneath = scrolledPast && silent && !asking && !picker;
+  const atHand = scrolledPast && silent && !asking && !picker;
 
   // Unknown is allowed (lib/entitlements/usePlusFeatures.ts): the sheet
   // carries its own lock, so a subscriber never meets one while it loads.
@@ -76,10 +84,16 @@ export function PrayWith({ className }: { className?: string }) {
   const chantOn = audio.playing;
   const soundOn = Boolean(ambience.playing);
 
-  const openPicker = () => {
+  const openPicker = useCallback(() => {
     dismiss();
     setPicker(true);
-  };
+  }, [dismiss]);
+  // Offered in the page's bar for as long as it is at hand, and taken back
+  // when it is not, or when the page leaves.
+  useEffect(() => {
+    if (!atHand) return;
+    return offerChantAtHand({ open: openPicker });
+  }, [atHand, openPicker]);
   const openSound = () => {
     if (locked) upgrade.open("ambience");
     else openAmbience();
@@ -124,19 +138,6 @@ export function PrayWith({ className }: { className?: string }) {
         </button>
       </span>
       {asking ? <AskCard onDismiss={dismiss} onChoose={openPicker} /> : null}
-      {underneath ? (
-        <div className="now-playing-lift pointer-events-none fixed inset-x-0 bottom-0 z-[55] flex justify-center px-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] md:pb-4">
-          <button
-            type="button"
-            aria-haspopup="dialog"
-            onClick={openPicker}
-            className="pray-chip pray-chip-in tap-press pointer-events-auto inline-flex min-h-11 items-center gap-2 rounded-pill bg-night-soft px-5 font-sans text-detail font-semibold text-paper shadow-[0_10px_28px_rgba(0,0,0,0.5)] ring-1 ring-inset ring-paper/12 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
-          >
-            <Note size={16} className="shrink-0" />
-            {t("chant.button")}
-          </button>
-        </div>
-      ) : null}
       <ChantPicker open={picker} onClose={() => setPicker(false)} />
     </div>
   );

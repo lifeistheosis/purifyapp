@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { ChantInBar } from "@/components/player/ChantInBar";
 import type { Rule } from "@/components/prayers/PrayerRuleReader";
 import { RuleInReadersLanguage } from "@/components/prayers/RuleInReadersLanguage";
 import { RecordPrayerOpened } from "@/components/prayers/RecordPrayerOpened";
@@ -53,7 +54,7 @@ export default async function PrayerRulePage({
 
   return (
     <>
-      <MobileTopBar titleKey={titleKey} back backFallback="/prayers" revealTitleOn="prayer-title" />
+      <MobileTopBar titleKey={titleKey} back backFallback="/prayers" revealTitleOn="prayer-title" beforeSearch={<ChantInBar />} />
       <section className="min-h-screen bg-night px-5 pb-16 pt-8 md:px-8 md:pt-14">
         <RecordPrayerOpened id={meta.id} titleKey={titleKey} href={meta.href} />
         <RuleInReadersLanguage rule={loaded.data} file={meta.file} ruleHref={meta.href} titleKey={titleKey} />

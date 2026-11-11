@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { ChantInBar } from "@/components/player/ChantInBar";
 import { MetanyLine } from "@/components/prayers/MetanyLine";
 import { PrayerRuleReader } from "@/components/prayers/PrayerRuleReader";
 import { RecordPrayerOpened } from "@/components/prayers/RecordPrayerOpened";
@@ -40,7 +41,7 @@ export default async function HourPage({
 
   return (
     <>
-      <MobileTopBar titleKey={titleKey} back backFallback="/prayers/hours" revealTitleOn="prayer-title" />
+      <MobileTopBar titleKey={titleKey} back backFallback="/prayers/hours" revealTitleOn="prayer-title" beforeSearch={<ChantInBar />} />
       <section className="min-h-screen bg-night px-5 pb-16 pt-8 md:px-8 md:pt-14">
         <RecordPrayerOpened id={id} titleKey={titleKey} href={href} />
         <PrayerRuleReader rule={hour} ruleHref={href} titleKey={titleKey} afterHead={<MetanyLine hour={id} />} />

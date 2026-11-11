@@ -60,6 +60,12 @@ import { textDir } from "@/lib/i18n/textDir";
  *   scrollAway.ts, globals.css "The page: the Bible reader with no bar").
  * - `searchPlace` (1.8, round 3 r3-13): the bar's search opens turned to
  *   this place (lib/search/open.ts), as Theology's screens ask it to.
+ * - `beforeSearch` (1.9, fresh eyes L1): a button that comes and goes while
+ *   the page is read, a prayer page's chant (components/player/
+ *   ChantInBar.tsx). It stands before search, on the title's side, and keeps
+ *   its own place whether it shows or not: search stays at the edge, where it
+ *   is on every other page, and the button's coming moves nothing. `trailing`
+ *   is for what a page always shows; this is for what it shows at times.
  *
  * No Support link rides in a phone bar (the owner, 2026-10-16: it "does
  * nothing useful there"). Giving is a row in Settings, and the computer's
@@ -82,6 +88,7 @@ export function MobileTopBar({
   center,
   plates = false,
   searchPlace,
+  beforeSearch,
 }: {
   title?: string;
   /**
@@ -116,6 +123,8 @@ export function MobileTopBar({
   plates?: boolean;
   /** The place the bar's search opens turned to (lib/search/open.ts). */
   searchPlace?: string;
+  /** A button that comes and goes, before search; it keeps its own place while hidden. Not drawn with `plates`. */
+  beforeSearch?: React.ReactNode;
 }) {
   const router = useRouter();
   const { t, locale } = useTranslate();
@@ -302,6 +311,7 @@ export function MobileTopBar({
           say) must not thereby lose the only way a phone has to open the
           palette. The menu closes the row on the web. */}
       <div className="flex shrink-0 items-center gap-0.5">
+        {beforeSearch}
         {searchPlace ? (
           <button
             type="button"

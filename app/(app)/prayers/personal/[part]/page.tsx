@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { ChantInBar } from "@/components/player/ChantInBar";
 import { MyRuleReader } from "@/components/prayers/mine/MyRuleReader";
 import { MY_RULE_PARTS, type MyRulePart } from "@/lib/prayers/myRule";
 
@@ -33,7 +34,7 @@ export default async function MyRulePartPage({ params }: { params: Params }) {
   const which = part as MyRulePart;
   return (
     <>
-      <MobileTopBar titleKey={TITLE_KEY[which]} back backFallback="/prayers/personal" revealTitleOn="prayer-title" />
+      <MobileTopBar titleKey={TITLE_KEY[which]} back backFallback="/prayers/personal" revealTitleOn="prayer-title" beforeSearch={<ChantInBar />} />
       <section className="min-h-screen bg-night px-5 pb-16 pt-8 md:px-8 md:pt-14">
         <MyRuleReader part={which} />
       </section>

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { ChantInBar } from "@/components/player/ChantInBar";
 import { PrayerRuleReader } from "@/components/prayers/PrayerRuleReader";
 import { RecordPrayerOpened } from "@/components/prayers/RecordPrayerOpened";
 import { akathistTitleKey, getAkathist, listAkathists } from "@/lib/prayers/akathists";
@@ -41,7 +42,7 @@ export default async function AkathistPage({
 
   return (
     <>
-      <MobileTopBar titleKey={titleKey} back backFallback="/prayers/akathists" revealTitleOn="prayer-title" />
+      <MobileTopBar titleKey={titleKey} back backFallback="/prayers/akathists" revealTitleOn="prayer-title" beforeSearch={<ChantInBar />} />
       <section className="min-h-screen bg-night px-5 pb-16 pt-8 md:px-8 md:pt-14">
         <RecordPrayerOpened id={akathist.id} titleKey={titleKey} href={href} />
         <PrayerRuleReader rule={akathist} ruleHref={href} titleKey={titleKey} />
