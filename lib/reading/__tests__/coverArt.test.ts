@@ -130,11 +130,8 @@ describe("the covers' pictures", () => {
     // build reaches him until it passes the pre-build gate", part 3). Each
     // leaves this list in the commit that gives it its picture.
     const WAITING: Record<string, string> = {
-      // A permission: a modern saint's icon is a living painter's work, on
-      // the plate until a painter or monastery gives written permission (his
-      // word of 2026-11-10). St John of Shanghai's carried icon was such a
-      // painting with no source, and came off (call 14).
-      "john-of-shanghai/life-of-st-john": "permission: a modern icon of St John of Shanghai, from its painter or monastery",
+      // St John of Shanghai's Life waited here on a permission until it took
+      // his photograph of 1939 (2026-11-11), free and shown so in its row.
       // Updates 2's search (build 93 note 12): no picture of these saints has
       // passed, and their texts name no saint who has one. Zurbaran's "St
       // Romanus" is a Benedictine monk of that name, not the martyr.

@@ -191,6 +191,10 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   // St John of Kronstadt's photograph of 1890, on his My Life in Christ (the
   // arbiter's word under build 93 note 12).
   "john-of-kronstadt": bundled("john-of-kronstadt.jpg", 25),
+  // St John of Shanghai's photograph, first printed in Tianjin in 1939, on
+  // his Life (the arbiter's word of 2026-11-11; its freedom is shown in its
+  // row in lib/saints/iconRights.ts).
+  "john-of-shanghai": bundled("john-of-shanghai.jpg", 30),
 
   // 1.9, build 90 note 3: St Memnon, who hosted the Third Council, his face on
   // its page from Commons' unmarked copy of the fresco at Dionysiou (his

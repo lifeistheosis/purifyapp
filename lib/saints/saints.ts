@@ -4617,6 +4617,7 @@ export const SAINTS: Saint[] = [
     name: "St. John of Shanghai and San Francisco",
     byname: "The Wonderworker",
     epithet: "Bishop of Shanghai and San Francisco · Wonderworker of the diaspora",
+    iconUrl: "/saints/icons/john-of-shanghai.jpg",
     born: "1896 (Kharkov province, Russia)",
     reposed: "July 2, 1966 (Seattle)",
     feastDays: ["July 2"],

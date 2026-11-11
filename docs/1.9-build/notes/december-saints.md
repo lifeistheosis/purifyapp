@@ -624,3 +624,40 @@ picture") both hold together.
   `lib/councils/__tests__/noPendingBox.test.ts` holds it (it fails on the old
   page).
 
+- **Stills** (with the next push): `december-saints/15-fresh-eyes-two.png`,
+  St Menas's facts with no "See" beside the Synod of Jerusalem's page with no
+  box.
+
+## St John of Shanghai's photograph, as built (2026-11-11)
+
+The arbiter's word: "St John of Shanghai, a reader's own ask, is now on the
+plate. Look for a photograph of him whose public-domain status you can show
+(its first publication and why it is free, recorded in its row); if none can
+be shown, send his best icon or photograph with its painter or source and
+contact to Updates 2."
+
+- **Searched:** Wikimedia Commons in English and Russian ("John
+  Maximovitch", "Иоанн Шанхайский"): 24 files read, each with its licence,
+  date, source and author. Most rest on "more than 60 years old" or a blog
+  repost, with no first publication: not shown. The icons are modern
+  paintings (CC BY-SA photographs of them), the painters' work. The Tubabao
+  photographs of 1949 (the Philippines) and the Shanghai clergy of 1949
+  (China) were still protected at home on 1 January 1996, so the United
+  States restored them: not free there.
+- **Taken:** a page of the Russian book «Бэйгуань» (Tianjin, 1939), pp. 72
+  and 73, headed "The vicar bishops of the Russian Ecclesiastical Mission in
+  China": his studio portrait, captioned "His Grace John, Bishop of
+  Shanghai", no photographer named. orthodox.cn cites the same book (Tianjin,
+  1939) for its photographs of the Mission. China protected a photograph for
+  fifty years from its first publication (the law of 1990, art. 21, for every
+  term that ended before the law of 2020 took effect), so it has been free
+  there since the end of 1989, was free on the United States' restoration
+  date for China (1 January 1996), and was not restored. The row says this
+  in `lib/saints/iconRights.ts` (`john-of-shanghai.jpg`), and its work line
+  says plainly "A photograph, not an icon".
+- **Placed** with the house tool (`scripts/fetch-saint-icons.mjs`, staged and
+  promoted), then cut to his portrait, the left of the two, inside its frame
+  line, 570 by 800, 179 KB. His page and his Life wear it (`COVER_ART`), so
+  his Life leaves the cover test's waiting list; that list now holds only
+  Updates 2's searches.
+- **Still:** `december-saints/16-st-john-of-shanghai-photograph.png`.

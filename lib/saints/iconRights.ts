@@ -1621,9 +1621,9 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
   // Sihăstria, St Sofian of Antim and St Dumitru Stăniloae. Their icons are
   // living painters' work and their photographs are recent, so none is in
   // the public domain. Their files are gone (2026-11-11). St John of Shanghai
-  // joins them the same day (call 14, the December chat): the icon his page
-  // carried had no source and is a modern painting, so his page and his Life
-  // have the plate until a painter or monastery gives written permission.
+  // joined them the same day (call 14, the December chat): the icon his page
+  // carried had no source and is a modern painting. He now wears a photograph
+  // whose freedom can be shown (john-of-shanghai.jpg, below with Kronstadt's).
   // Fathers from Commons (2026-11-11), the rule as above: an old icon, fresco
   // or mosaic, or the plate. St Isaac's is a miniature dated 1802, clear where
   // the older one of 1518 (Kirillo-Belozersky) is worn past his face; it is
@@ -2238,6 +2238,30 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     source: "Wikimedia Commons",
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Joasaph_of_Belgorod_(GIM).jpg",
+  },
+  // St John of Shanghai, a reader's own ask, on the arbiter's word of
+  // 2026-11-11: a photograph of him whose public domain status can be shown.
+  // First published: the Russian book «Бэйгуань» (Tianjin, 1939), pp. 72 and
+  // 73, a page headed "The vicar bishops of the Russian Ecclesiastical
+  // Mission in China", his portrait captioned "His Grace John, Bishop of
+  // Shanghai", no photographer named (orthodox.cn cites the same book, Tianjin
+  // 1939, for its photographs of the Mission). Why it is free: China protected
+  // a photograph for fifty years from its first publication (Copyright Law of
+  // 1990, art. 21, for every term that ended before the law of 2020 took
+  // effect in 2021), so this one has been free there since the end of 1989.
+  // It was therefore free on 1 January 1996, the date the United States
+  // restored works still protected in China (17 U.S.C. 104A), and was not
+  // restored: public domain in the United States too.
+  "john-of-shanghai.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-11",
+    alt: "A black-and-white photograph of a bishop with a dark beard and moustache, in a tall black klobuk and veil, wearing a panagia with the face of Christ and a jewelled pectoral cross on two chains, looking straight out, on a grey studio ground.",
+    work: "A photograph, not an icon: St John of Shanghai as Bishop of Shanghai, first printed in 1939 (a detail: his portrait, the left of the two on its page, cut inside its frame line)",
+    artist: "Photographer not named",
+    workDate: "1939 or before",
+    source: "«Бэйгуань» (Tianjin, 1939), pp. 72 and 73, its first printing; scanned on Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%98%D0%BE%D0%B0%D0%BD%D0%BD_(%D0%9C%D0%B0%D0%BA%D1%81%D0%B8%D0%BC%D0%BE%D0%B2%D0%B8%D1%87)_%D0%B8_%D0%AE%D0%B2%D0%B5%D0%BD%D0%B0%D0%BB%D0%B8%D0%B9_(%D0%9A%D0%B8%D0%BB%D0%B8%D0%BD)._1939.jpg",
   },
 };
 
