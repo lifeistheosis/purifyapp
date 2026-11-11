@@ -2517,6 +2517,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "Fable voices' checkMock on the names-in-Scripture books, the arbiter's word. Three fills keyed on direction; a test holds every fill from the left to its counterpart. 3135b665c. PLAN 13av."
+  },
+  {
+   "id": "e-history-gate-run-2",
+   "section": "Study",
+   "kind": "bug",
+   "title": "History on a phone: short place names 44 across, every era's name whole, the century slider 44 tall",
+   "from": "claude",
+   "asked": "2026-11-11",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The gate's second run, the arbiter's word. hit-44 on the place links; the pinned era names and the Eras list wrap whole; the slider's box 44. e682619c8. PLAN 13aw."
   }
  ]
 }
