@@ -3805,10 +3805,16 @@ await section(34, async () => {
   // website still ran an older build. Every version with a recording now
   // carries its timing in the export (app/chant-timing), line for line its
   // words (data/chants, the words the pages were built from) and word for
-  // word where it times words.
+  // word where it times words. Since build 93 (b8d715316, the arbiter's rule
+  // on the owner's "the lyrics on some of the chants is wrong") a line whose
+  // words could not be confirmed in the singing is hidden: off the page and
+  // out of the timing the app is given alike, so the two are line for line
+  // the words a page shows.
   const words = (s) => s.split(/\s+/).filter(Boolean);
   const timingProblems = [];
   let timedVersions = 0;
+  let hiddenLines = 0;
+  const noneShown = [];
   for (const c of library) {
     const data = JSON.parse(fs.readFileSync(path.resolve("data", "chants", `${c.slug}.json`), "utf8"));
     for (const v of c.variants) {
@@ -3827,7 +3833,10 @@ await section(34, async () => {
       try {
         t = JSON.parse(fs.readFileSync(file, "utf8"));
       } catch {}
-      const lines = data.variants.find((x) => x.id === v.id)?.lines ?? [];
+      const every = data.variants.find((x) => x.id === v.id)?.lines ?? [];
+      const lines = every.filter((l) => !l.hidden);
+      hiddenLines += every.length - lines.length;
+      if (every.length > 0 && lines.length === 0) noneShown.push(ref);
       if (!t || (t.v !== 1 && t.v !== 2) || !Array.isArray(t.lines)) timingProblems.push(`${ref}: ${v.timing} does not read`);
       else if (t.lines.length !== lines.length) timingProblems.push(`${ref}: ${t.lines.length} timed lines to ${lines.length} words`);
       else {
@@ -3837,7 +3846,7 @@ await section(34, async () => {
       }
     }
   }
-  must(timingProblems.length === 0, `every version with a recording has its timing in the export, line for line its words (${timedVersions} timed${timingProblems.length ? `; ${timingProblems.join("; ")}` : ""})`);
+  must(timingProblems.length === 0, `every version with a recording has its timing in the export, line for line the words it shows (${timedVersions} versions; ${hiddenLines} lines hidden from page and timing alike${noneShown.length ? `, every line in ${noneShown.join(", ")}` : ""}${timingProblems.length ? `; ${timingProblems.join("; ")}` : ""})`);
   await go(page, "/chants/");
   await page.waitForFunction(() => document.querySelector("[data-route-content] section[aria-labelledby=chants-featured] [data-cover]"), null, { timeout: 20000 }).catch(() => {});
   await page.waitForTimeout(1500);
@@ -4021,13 +4030,22 @@ await section(34, async () => {
   await go(page, "/chants/paschal-canon/");
   await page.waitForTimeout(2000);
   const canonFrames = await page.evaluate(() => window.__chantFrames ?? []);
-  const canon = await page.evaluate(() => ({
+  const canon = await page.evaluate((wordsLabel) => ({
     title: document.querySelector("[data-route-content] h1")?.textContent?.trim() ?? "",
     switch: Boolean(document.querySelector('[data-route-content] [data-chant-control="words-view"]')),
+    lines: document.querySelectorAll("[data-route-content] [data-sung-look=page] li[data-sung]").length,
     long: document.querySelectorAll("[data-route-content] [data-sung-look=page] li[data-sung-long]").length,
-  }));
+    // Where its words come from, said under the last line, or alone when no line is shown.
+    source: [...document.querySelectorAll("[data-route-content] #chant-panel-words dl dt")].some((dt) => dt.textContent?.trim() === wordsLabel),
+  }), en["chants.tab.words"]);
   must(canon.title === en["chants.item.paschalCanon.title"] && !canon.switch, `the Paschal Canon: named, and no switch for words it has only in English (${canon.title})`);
-  must(canon.long > 0, `its long hymns marked to light at their own size (${canon.long})`);
+  // Build 93 hid all 53 of its lines (Hapgood's English; the recording sings a
+  // modern translation in every hymn). A long hymn lights at its own size again
+  // once confirmed words bring its lines back.
+  const canonEvery = JSON.parse(fs.readFileSync(path.resolve("data", "chants", "paschal-canon.json"), "utf8")).variants.flatMap((v) => v.lines);
+  const canonShown = canonEvery.filter((l) => !l.hidden).length;
+  if (canonShown === 0) must(canon.lines === 0 && canon.source, `its ${canonEvery.length} lines all hidden, it draws no line and where its words come from alone (${canon.lines} lines drawn, that line ${canon.source ? "shown" : "missing"})`);
+  else must(canon.lines === canonShown && canon.long > 0, `its ${canonShown} shown lines drawn, its long hymns marked to light at their own size (${canon.lines} drawn, ${canon.long} long)`);
   if (canonFrames[0]) {
     const changed = moved(canonFrames[0], canonFrames.at(-1));
     must(changed.length === 0, `and nothing moves after its first frame (${changed.join("; ") || "held"})`);
