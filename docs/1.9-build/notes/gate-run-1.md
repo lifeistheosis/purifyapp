@@ -145,6 +145,88 @@ The second run walks every screen with the mended walk on a selling export
 (`NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1 NEXT_PUBLIC_REVENUECAT_ANDROID_KEY=walk
 npm run build:android`), as he walks: a new reader with no Plus.
 
+### The walk, mended again before the second run
+
+A selling export sells only inside the Android app, so a walk in a plain
+browser met nothing locked. The first full walk on it was stopped for that.
+`SELLS_PLUS=1` now makes both walks the app on a phone, as a reader with no
+Plus (`scripts/lib/sells-plus.mjs`); without it they walk as a reader for
+whom nothing is locked. Both refuse an export that does not sell.
+
+Seven more of the walk's own measures misread a phone, each found on a fail
+that was the walk's and not the app's, and each mended before the fail went
+to anyone:
+
+- **Nothing was ever dead.** The app answers a reader's first touch on a
+  screen (it lets the browser hold the reader's place, and loads what it
+  waited to load), so every tap the walk made changed something, and no
+  control could ever read as doing nothing. That is how the first run's 1,966
+  taps found no dead control (Fable Theology's find). The walk now touches
+  each screen once and lets it fall quiet before the tap it judges.
+- **That first touch must touch nothing.** On Sign up it fell 7px from the
+  agreement box's 44px reach, the browser's touch adjustment carried it onto
+  the box and ticked it, the "agree first" hint went, and the terms and
+  privacy links rose 26px from where the walk had aimed. It now lands only
+  48px clear of any control, label or field, and the aim is taken after it.
+- **A title that grows is not a jump.** The daily rule's title gains a line
+  as it opens, which moved the control's top 21px while its middle stayed
+  under the finger. A move is now the least of the top, the middle and the
+  bottom.
+- **What opens is judged from the thumb.** Community's "Read more" opens
+  where the reader's thumb already is, and is judged from there.
+- **A screen reader's link is not a finger's.** The reading room's featured
+  work has a link drawn only for a screen reader; it is no longer tapped.
+- **A finger meets a link on its words.** A link that wraps over two lines
+  (About's) is aimed at the middle of its larger piece, not at the middle of
+  its box, which can fall between the lines.
+- **The browser's own answers count.** A form that will not send without a
+  field (Sign in's) answers with the browser's message and the field taken
+  to; a box ticked is the tap's answer; the page's own tab, and a choice
+  already made, have nothing to do when tapped again, and are set aside.
+
+`node scripts/tap-walk.mjs --self-test` holds all of it on 19 pages of its
+own; each mend added one that fails on the walk before it.
+
+### Third reading: the selling export, every screen
+
+**The export:** `3e59ccfa6`, built to sell (above), walked as a reader with
+no Plus, every route once (126 screens), up to 40 controls on each.
+`SELLS_PLUS=1 NODE_USE_ENV_PROXY=1 node scripts/tap-walk.mjs --workers 3 --max
+40 --online`, 06:46 to 07:46 UTC.
+
+**Result:** 1,960 controls tapped, 85 failed; two of them were the walk's own
+(Sign up's terms and privacy links, above). Passed here after their owners'
+mends: "Continue with Google" (Updates 2's M6), the chants' filters, fasting
+and What's new. Passed here by the walk's own mends: the prayer book's daily
+rule (a title that grows) and Community's "Read more" (the thumb). The reading
+plan's and the reading path's days passed because the browser now held them:
+the app lets Chrome keep a reader's place only from their first touch on a
+screen (lib/ui/scrollReset.ts), and the walk now gives that touch. Fable
+Themes' mend that holds them without the browser, as an iPhone needs, came
+after this export (`dc3fe29d6`).
+
+- **The Bible** (/bible/): back from a book, the row tapped returns 67px
+  lower. 33. Fable Theology, mended in `549583085` (lib/ui/returnPlace.ts).
+- **The reading room** (/reading/): back from a work, the work tapped
+  returns as much as 567px from where it stood, once above the top of the
+  screen. 7. Fable Theology, mended in the same push.
+- **Community** (/community/): "3 replies" opens under the tab bar. 2. Fable
+  Theology, mended in `5c300b36b` (lib/ui/showOpened.ts).
+- **Plans and pricing** (/pricing/): back from "Sign in to continue", the
+  page stands at the top for 2.5 seconds, then lands 30px from where it was.
+  1. Fable Theology, in hand.
+- **Saints' filters** (/saints/): the chips move as much as 732px as the card
+  above them goes. 35. Fable Themes mended this in `dc3fe29d6`, after this
+  export.
+- **A saint's web** (/saints/adrian-of-rome/web/): five of the web's saints
+  and councils move 21px as their card rises. The web rides up with its card
+  by the owner's word (build 84, note 45); the allowance for it named only a
+  council, and the nodes are named otherwise now.
+
+### Fourth reading
+
+(Being walked.)
+
 ## Part 2: the guardrail walk
 
 ### Touch: under 44 to a finger
