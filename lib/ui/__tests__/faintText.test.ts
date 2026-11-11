@@ -176,6 +176,78 @@ describe("faint text on every palette", () => {
   });
 });
 
+// Two grounds the page's shares were not measured on (1.9, 2026-11-11). The
+// mock checker began to measure a word on a gradient that day
+// (scripts/mock-check.mjs), and two grounds that had been "not measured,
+// look" turned out to be harder to read on than the page, a card and a box:
+// the graphite card, lit at one corner, on Candlelight ("~5 min" on a row of
+// Prayers' card, 4.42:1), and the saint web's sheet on Light (the line under
+// a saint's name, 4.41:1). Each has a rule of its own, scoped by a second
+// :where() so the reader above takes the page's shares as the page's.
+describe("faint text on a graphite card and on the saint web's sheet", () => {
+  const WRITTEN = sharesWritten().filter((share) => share > 40 && share < 70);
+  /** The shares a palette draws otherwise on one ground, and the share it draws them at there. */
+  const scoped = (mode: string, scope: string): { shares: number[]; at: number } => {
+    const m = new RegExp(
+      `:where\\(html\\[data-reading-mode="${mode}"\\](?:[^()]|\\([^()]*\\))*\\) :where\\(${scope}\\) (?::is\\(([^)]*)\\)|\\.text-paper\\\\\\/(\\d+)) \\{\\s*color: color-mix\\(in oklab, var\\(--color-paper\\) (\\d+)%`,
+    ).exec(BARE);
+    if (!m) throw new Error(`no rule for faint text on ${scope} on ${mode}`);
+    const shares = m[1] ? [...m[1].matchAll(/\.text-paper\\\/(\d+)/g)].map((c) => Number(c[1])) : [Number(m[2])];
+    return { shares, at: Number(m[3]) };
+  };
+
+  // The graphite card where it is lightest: its first colour with the corner's white over it at its fullest.
+  const GRAPHITE = readFileSync(join(process.cwd(), "components", "ui", "Graphite.tsx"), "utf8");
+  const cardBg = /export const CARD_BG = \{[\s\S]*?\};/.exec(GRAPHITE)?.[0] ?? "";
+  const glow = Number(/rgba\(255,\s*255,\s*255,\s*(0?\.\d+)\)/.exec(cardBg)?.[1]);
+  const litCorner = mix([255, 255, 255], hex(cardBg), glow);
+
+  it("reads the graphite card from the component that draws it", () => {
+    expect(glow).toBeGreaterThan(0);
+    expect(glow).toBeLessThan(0.2);
+    // Lighter than a card of any dark palette: that is the whole of the trouble.
+    expect(lum(litCorner)).toBeGreaterThan(lum(colours("default").soft));
+  });
+
+  it("candlelight: every share the app writes above 40 and under 70 percent is 4.5:1 or more at a graphite card's lightest point", () => {
+    const { paper } = colours("candlelight");
+    const rule = scoped("candlelight", "\\.lm-card");
+    const short: string[] = [];
+    for (const share of WRITTEN) {
+      const at = (rule.shares.includes(share) ? rule.at : drawn("candlelight", share)) / 100;
+      const r = ratio(mix(paper, litCorner, at), litCorner);
+      if (r < 4.5) short.push(`text-paper/${share} drawn at ${Math.round(at * 100)}% on the lit corner: ${r.toFixed(2)}:1`);
+    }
+    expect(short, short.join("\n")).toEqual([]);
+    // The page's own share is what fell short there: without the rule this is the row that was found.
+    expect(ratio(mix(paper, litCorner, drawn("candlelight", 50) / 100), litCorner)).toBeLessThan(4.5);
+  });
+
+  it("light: the line under a saint's name is 4.5:1 or more on the web's sheet where it is darkest", () => {
+    const { soft, paper } = colours("parchment");
+    const sheet = /\.saint-web-card \{[^}]*linear-gradient\(180deg, color-mix\(in srgb, var\(--color-paper\) (\d+(?:\.\d+)?)%, var\(--color-night-soft\)\), color-mix\(in srgb, #000 (\d+(?:\.\d+)?)%, var\(--color-night-soft\)\)\)/.exec(BARE);
+    if (!sheet) throw new Error("no ground for .saint-web-card");
+    const stops: Rgb[] = [mix(paper, soft, Number(sheet[1]) / 100), mix([0, 0, 0], soft, Number(sheet[2]) / 100)];
+    const darkest = stops.reduce((a, b) => (lum(a) < lum(b) ? a : b));
+    const rule = scoped("parchment", "\\.saint-web-card");
+    expect(rule.shares).toContain(60);
+    expect(ratio(mix(paper, darkest, rule.at / 100), darkest)).toBeGreaterThanOrEqual(4.5);
+    // Light's own share for the page is what fell short on it.
+    expect(ratio(mix(paper, darkest, drawn("parchment", 60) / 100), darkest)).toBeLessThan(4.5);
+    // Light alone: a light look draws its faint text at a share of its own.
+    expect(BARE).toContain(':where(html[data-reading-mode="parchment"]:not([data-look])) :where(.saint-web-card) .text-paper\\/60');
+  });
+
+  it("each sits in the utilities layer with the page's rules, weighing what they weigh", () => {
+    const block = CSS.slice(CSS.indexOf("Faint text on every palette"));
+    const from = block.indexOf("@layer utilities {");
+    const layer = block.slice(from, block.indexOf("\n}\n", from));
+    expect(layer).toContain(':where(html[data-reading-mode="candlelight"]) :where(.lm-card) :is(');
+    expect(layer).toContain(':where(html[data-reading-mode="parchment"]:not([data-look])) :where(.saint-web-card) .text-paper\\/60');
+    expect(layer).not.toMatch(/!important/);
+  });
+});
+
 // The looks (1.9): seventeen Plus themes, each worn as data-look over Dark or
 // over Light (lib/reader/readingModes.ts, themeAttributes). Each draws its
 // faint text at a share of its own, and has two grounds the seven do not: its
@@ -442,9 +514,10 @@ describe("Settings' quiet words", () => {
     caption: share(ink("\\.set-well-ref"), ".set-well-ref"),
     numbers: share(ink("\\.set-well \\.set-vn"), ".set-well .set-vn"),
     slider: share(ink("\\.set-slider-names > span"), ".set-slider-names > span"),
+    letters: share(ink("\\.set-slider-a1,\\s*\\.set-slider-a2"), ".set-slider-a1, .set-slider-a2"),
   };
   const quiet = (mode: string) =>
-    new RegExp(`html\\[data-reading-mode="${mode}"\\] :is\\(\\.set-hint, \\.set-desc, \\.set-sub, \\.set-well-ref, \\.set-well \\.set-vn, \\.set-slider-names > span:not\\(\\[data-on\\]\\), \\.set-track > button\\[aria-checked="false"\\]:not\\(:hover\\)\\) \\{\\s*color: color-mix\\(in srgb, var\\(--color-paper\\) (\\d+)%`);
+    new RegExp(`html\\[data-reading-mode="${mode}"\\] :is\\(\\.set-hint, \\.set-desc, \\.set-sub, \\.set-well-ref, \\.set-well \\.set-vn, \\.set-slider-names > span:not\\(\\[data-on\\]\\), \\.set-slider-a1, \\.set-slider-a2, \\.set-track > button\\[aria-checked="false"\\]:not\\(:hover\\)\\) \\{\\s*color: color-mix\\(in srgb, var\\(--color-paper\\) (\\d+)%`);
   const OWN: Partial<Record<Mode, number>> = { parchment: share(quiet("parchment"), "Light"), candlelight: share(quiet("candlelight"), "Candlelight") };
   const TRIO = share(/:where\(html\[data-reading-mode="monastery"\], html\[data-reading-mode="councils"\], html\[data-reading-mode="cappadocian"\]\) \.set-desc \{\s*color: color-mix\(in srgb, var\(--color-paper\) (\d+)%/, "the trio's .set-desc");
   const lightPanel = hex(/html\[data-reading-mode="parchment"\] \.set-panel \{[^}]*linear-gradient\([^;]*?(#[0-9a-f]{6}) 100%\)/.exec(BARE)?.[1] ?? "");
@@ -464,6 +537,7 @@ describe("Settings' quiet words", () => {
         ["the size preview's caption", own ?? BASE.caption, night],
         ["the size preview's verse numbers", own ?? BASE.numbers, night],
         ["the size slider's names", own ?? BASE.slider, panel],
+        ["the size slider's two letters", own ?? BASE.letters, panel],
       ];
       const short = lines
         .map(([what, at, ground]) => ({ what, at, r: ratio(mix(paper, ground, at / 100), ground) }))
@@ -477,7 +551,7 @@ describe("Settings' quiet words", () => {
     expect(BARE).toMatch(/\.set-slider-names > span\[data-on\] \{[^}]*color: var\(--color-paper\);/);
     // Each of the three lists (Light, Candlelight, a dark look) names only the ones not chosen: a
     // list weighs more than the chosen name's own rule, and would dim it.
-    expect(BARE.match(/\.set-slider-names > span:not\(\[data-on\]\), \.set-track/g)).toHaveLength(3);
+    expect(BARE.match(/\.set-slider-names > span:not\(\[data-on\]\), \.set-slider-a1, \.set-slider-a2, \.set-track/g)).toHaveLength(3);
     expect(BARE).not.toMatch(/:is\([^{]*\.set-slider-names > span[,)]/);
     expect(BASE.slider).toBeGreaterThanOrEqual(62);
   });
@@ -487,7 +561,7 @@ describe("Settings' quiet words", () => {
   // unchanged. A dark look's panel is the app's own; a light look's is its
   // own paper, a gradient that ends on its page colour, where it is darkest.
   it("a dark look draws them at its own share, by one rule that reads it", () => {
-    expect(BARE).toMatch(/html\[data-look\]:not\(\[data-reading-mode\]\) :is\(\.set-hint, \.set-desc, \.set-sub, \.set-well-ref, \.set-well \.set-vn, \.set-slider-names > span:not\(\[data-on\]\), \.set-track > button\[aria-checked="false"\]:not\(:hover\)\) \{\s*color: color-mix\(in srgb, var\(--color-paper\) var\(--look-quiet\), transparent\);/);
+    expect(BARE).toMatch(/html\[data-look\]:not\(\[data-reading-mode\]\) :is\(\.set-hint, \.set-desc, \.set-sub, \.set-well-ref, \.set-well \.set-vn, \.set-slider-names > span:not\(\[data-on\]\), \.set-slider-a1, \.set-slider-a2, \.set-track > button\[aria-checked="false"\]:not\(:hover\)\) \{\s*color: color-mix\(in srgb, var\(--color-paper\) var\(--look-quiet\), transparent\);/);
     expect(BARE).toMatch(/html\[data-look\]\[data-reading-mode="parchment"\] \.set-panel \{[^}]*linear-gradient\(155deg, var\(--look-paper-high\) 0%, [^;]*var\(--color-night\) 100%\)/);
   });
 

@@ -388,7 +388,8 @@ export function WebCard({
             <span lang="en" dir="ltr" className="block truncate font-serif text-[16.5px] font-bold leading-[1.25] text-paper">{name}</span>
             <span className="mt-[5px] block truncate font-sans text-[12px] font-medium leading-4 text-paper/60">
               {years ? <span>{years}</span> : null}
-              {years && kinds.length ? <span aria-hidden className="mx-[7px] text-paper/30">·</span> : null}
+              {/* The dot takes the line's own ink: at 30 percent it read 1.76:1 on Light and no more than 2.2 anywhere. */}
+              {years && kinds.length ? <span aria-hidden className="mx-[7px]">·</span> : null}
               {kinds.map((k, i) => (
                 <span key={k} className={cn("whitespace-nowrap", i > 0 && "ms-[9px]")}>
                   <WebLineMark line={FILTER_LINE[k]} className="me-[5px] text-paper/70" />

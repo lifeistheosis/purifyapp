@@ -1611,9 +1611,36 @@ html.is-native .saint-web-putback {
  color: rgb(255 255 255 / 0.52);
  color: color-mix(in srgb, var(--color-paper) 52%, transparent);
 }
+/* The counts are a step under the words, and no fainter than can be read.
+   At 34 percent they read 3.06:1 on Dark, 2.90 on True black, 2.74 on
+   Monastery and 2.34 on Candlelight, and Candlelight's words, at 52, read
+   4.22 (checkMock on the export, 2026-11-11, the day it began to measure a
+   word on a gradient: the key's carved ground is one, and until then these
+   were "not measured, look"). Now, each measured again on the export: the
+   counts at 50 (5.37 on Dark, 5.32 on True black; at 48 six of the dark
+   looks were still 4.42 to 4.48). Monastery, Councils and Cappadocian take
+   their own faint share for the words, 55 (5.37 on Monastery), and the
+   counts at 52 (4.98): at 50 the counts were still 4.48 on Councils and
+   Cappadocian where the key is lightest
+   (lib/saints/__tests__/webKeyInk.test.ts). And on Candlelight, whose ink
+   is the dimmest, the words at its own faint share, 60 (5.26), and the
+   counts at 56 (4.70). Under :where(), so the chosen part's own rules
+   below still win. */
 .saint-web-key-count {
- color: rgb(255 255 255 / 0.34);
- color: color-mix(in srgb, var(--color-paper) 34%, transparent);
+ color: rgb(255 255 255 / 0.5);
+ color: color-mix(in srgb, var(--color-paper) 50%, transparent);
+}
+:where(html[data-reading-mode="monastery"], html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) .saint-web-key-part {
+ color: color-mix(in srgb, var(--color-paper) 55%, transparent);
+}
+:where(html[data-reading-mode="monastery"], html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) .saint-web-key-count {
+ color: color-mix(in srgb, var(--color-paper) 52%, transparent);
+}
+:where(html[data-reading-mode="candlelight"]) .saint-web-key-part {
+ color: color-mix(in srgb, var(--color-paper) 60%, transparent);
+}
+:where(html[data-reading-mode="candlelight"]) .saint-web-key-count {
+ color: color-mix(in srgb, var(--color-paper) 56%, transparent);
 }
 .saint-web-key-part[aria-pressed="true"] {
  color: var(--color-paper);
@@ -5445,6 +5472,30 @@ html[data-reading-mode="black"] .tile-sheen {
  :where(html[data-reading-mode="monastery"], html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52) {
  color: color-mix(in oklab, var(--color-paper) 55%, transparent);
  }
+ /* Two grounds the shares above were not measured on (1.9, the day the mock
+    checker began to measure a word on a gradient; both were "not measured,
+    look" until then). Each is scoped by a second :where(), so it weighs what
+    the rules above weigh, a hover:text-paper on the same element still wins,
+    and faintText.test.ts reads the shares above as the page's own.
+
+    The graphite card (.lm-card, components/ui/Graphite.tsx) is typed in, the
+    same on every dark palette, and lit at one corner: 51 51 56 at its
+    lightest, where a card is 29 29 32. Candlelight's ink is the dimmest of
+    the dark palettes, and at its 60 percent "~5 min" on a row of Prayers'
+    card read 4.42:1 and the row's arrow 4.46. On a graphite card Candlelight
+    draws its faint shares at 66: 4.67:1 at the card's lightest point, and
+    5.01 where that row's time stands (5.06 its arrow). */
+ :where(html[data-reading-mode="candlelight"]) :where(.lm-card) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65) {
+ color: color-mix(in oklab, var(--color-paper) 66%, transparent);
+ }
+ /* The saint web's sheet (.saint-web-card) is a step darker than Light's
+    card, as a tray is: the line under a saint's name, at Light's 70, read
+    4.41:1 ("787") and 4.47 ("Councils"). At 75, as faint words on a tray,
+    it is 5.02 and 5.08. Light alone: a light look draws its faint text at a
+    share of its own. */
+ :where(html[data-reading-mode="parchment"]:not([data-look])) :where(.saint-web-card) .text-paper\/60 {
+ color: color-mix(in oklab, var(--color-paper) 75%, transparent);
+ }
  /* Every field's placeholder (1.9, the placeholder sweep; it began with the
     writing sheet's): the 55 percent share, Light's and Candlelight's own as
     above. lib/ui/__tests__/placeholderContrast.test.ts holds every field in
@@ -6647,12 +6698,19 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
  position: relative;
  height: 28px;
 }
+/* The two letters at the slider's ends take the ink of the names under it:
+   62 here, and each palette's own quiet share in the lists below (Light 72,
+   Candlelight 64, a dark look its own). At 55 the small one read 3.39:1 on
+   Light and the large one 3.41 (checkMock on the export, 2026-11-11; at
+   22px it is not large text, so it is held to 4.5 as well), and by the
+   panel's lightest point Monastery, Councils and Cappadocian were 4.29 to
+   4.34 (lib/ui/__tests__/faintText.test.ts). */
 .set-slider-a1,
 .set-slider-a2 {
  position: absolute;
  font-family: var(--font-serif);
  line-height: 1;
- color: color-mix(in srgb, var(--color-paper) 55%, transparent);
+ color: color-mix(in srgb, var(--color-paper) 62%, transparent);
 }
 .set-slider-a1 {
  inset-inline-start: 2px;
@@ -6934,10 +6992,10 @@ html[data-reading-mode="parchment"] .set-track > button::before {
    size slider (the ones not chosen: the chosen one is the ink whole), which
    were the ink at 50 percent, 2.97:1 on Light.
    lib/ui/__tests__/faintText.test.ts does the arithmetic. */
-html[data-reading-mode="parchment"] :is(.set-hint, .set-desc, .set-sub, .set-well-ref, .set-well .set-vn, .set-slider-names > span:not([data-on]), .set-track > button[aria-checked="false"]:not(:hover)) {
+html[data-reading-mode="parchment"] :is(.set-hint, .set-desc, .set-sub, .set-well-ref, .set-well .set-vn, .set-slider-names > span:not([data-on]), .set-slider-a1, .set-slider-a2, .set-track > button[aria-checked="false"]:not(:hover)) {
  color: color-mix(in srgb, var(--color-paper) 72%, transparent);
 }
-html[data-reading-mode="candlelight"] :is(.set-hint, .set-desc, .set-sub, .set-well-ref, .set-well .set-vn, .set-slider-names > span:not([data-on]), .set-track > button[aria-checked="false"]:not(:hover)) {
+html[data-reading-mode="candlelight"] :is(.set-hint, .set-desc, .set-sub, .set-well-ref, .set-well .set-vn, .set-slider-names > span:not([data-on]), .set-slider-a1, .set-slider-a2, .set-track > button[aria-checked="false"]:not(:hover)) {
  color: color-mix(in srgb, var(--color-paper) 64%, transparent);
 }
 :where(html[data-reading-mode="monastery"], html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) .set-desc {
@@ -12256,7 +12314,7 @@ html[data-look][data-reading-mode="parchment"] .community-head-shade {
 /* Settings' quiet words (its hints, its lines, a track's unlit choices) on a
    dark look, at the share that holds 4.5:1 on its page and its panels, as
    Candlelight has its own. A light look takes Light's. */
-html[data-look]:not([data-reading-mode]) :is(.set-hint, .set-desc, .set-sub, .set-well-ref, .set-well .set-vn, .set-slider-names > span:not([data-on]), .set-track > button[aria-checked="false"]:not(:hover)) {
+html[data-look]:not([data-reading-mode]) :is(.set-hint, .set-desc, .set-sub, .set-well-ref, .set-well .set-vn, .set-slider-names > span:not([data-on]), .set-slider-a1, .set-slider-a2, .set-track > button[aria-checked="false"]:not(:hover)) {
  color: color-mix(in srgb, var(--color-paper) var(--look-quiet), transparent);
 }
 
