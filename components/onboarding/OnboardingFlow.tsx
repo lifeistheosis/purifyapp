@@ -232,6 +232,15 @@ export function OnboardingFlow({
   // Where the question stood as Allow landed, for the heading's glide.
   const reminderGlide = useRef<FlipSnapshot | null>(null);
   const stepRef = useRef<HTMLDivElement>(null);
+  // The questions' one scroller. Every step opens at its top: a reader who
+  // scrolled down a tall step to reach its button was left that far down the
+  // next one, its title and the Back and Skip buttons off the top of the
+  // screen (the fresh-eyes walk of 2026-11-11: "What are you looking for?"
+  // opened 114px down, after the calendar and the fast). Put back before the
+  // step is painted, forward and back alike; and the scroller keeps no
+  // scroll anchor (its class below), so the browser does not hold the old
+  // step's button in place while the new one is drawn.
+  const scroller = useRef<HTMLDivElement>(null);
   const [exiting, setExiting] = useState(false);
   // One answer, one advance: a second tap during the pause must not skip the
   // next question.
@@ -242,6 +251,10 @@ export function OnboardingFlow({
     [startAt, level, role, clergy.country, remindersOn, roads, hasAccount, clergyOpen, accountAtEnd],
   );
   const step = steps[Math.min(index, steps.length - 1)];
+  // Every step opens at its top (the scroller above says why).
+  useLayoutEffect(() => {
+    if (scroller.current) scroller.current.scrollTop = 0;
+  }, [step]);
   // The first step the handoff names and the website opens. With the roads
   // on it is the first day of the reader's week (lib/onboarding/week.ts), or
   // the Day 1 step when they have said nothing to choose a road by.
@@ -688,10 +701,11 @@ export function OnboardingFlow({
 
   return (
     <div
+      ref={scroller}
       role="dialog"
       aria-modal="true"
       aria-label={returning ? t("onboard.returning.title") : t("onboard.welcome.eyebrow")}
-      className={`lm-hero fixed inset-0 z-[100] flex flex-col overflow-y-auto text-paper safe-pb-edge ${exiting ? "ob-exit" : ""}`}
+      className={`lm-hero fixed inset-0 z-[100] flex flex-col overflow-y-auto [overflow-anchor:none] text-paper safe-pb-edge ${exiting ? "ob-exit" : ""}`}
       style={{
         background:
           "radial-gradient(120% 55% at 50% 0%, rgba(255,255,255,0.05) 0%, transparent 55%), #101013",
