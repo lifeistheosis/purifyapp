@@ -257,7 +257,7 @@ export function StudyRail({
 
  if (verses.length === 0) {
  return (
- <div className="px-2 py-6 text-center font-sans text-caption text-paper/40">
+ <div className="px-2 py-6 text-center font-sans text-caption text-paper/45">
  {t("bible.noCommentaryChapter")}
  </div>
  );

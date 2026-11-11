@@ -298,7 +298,7 @@ export function EikonBoxClient() {
                         {fields.state} {fields.postalCode}
                       </p>
                       {state.suggestedAddress && !state.savedAddress && (
-                        <p className="mt-1 font-sans text-[11px] text-paper/40">
+                        <p className="mt-1 font-sans text-[11px] text-paper/45">
                           From your last EIKON order
                         </p>
                       )}

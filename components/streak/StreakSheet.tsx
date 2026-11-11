@@ -85,7 +85,7 @@ function Step({ step, first }: { step: LadderStep; first: boolean }) {
         >
           {t(TIER_NAME[step.tier.id])}
         </p>
-        <p className={cn("mt-0.5 font-sans text-caption tabular-nums", lit || next ? "text-paper/55" : "text-paper/35")}>
+        <p className={cn("mt-0.5 font-sans text-caption tabular-nums", lit || next ? "text-paper/55" : "text-paper/45")}>
           {tn("streak.days", at)}
           {step.current ? ` · ${t("streak.tierNow")}` : null}
         </p>

@@ -112,7 +112,7 @@ export function Eyebrow({ label, count, end, className }: { label: ReactNode; co
   return (
     <div className={cn("flex items-baseline gap-2 font-sans text-[10.5px] font-bold uppercase tracking-[0.12em] text-paper/50", className)}>
       <span className="min-w-0 truncate">{label}</span>
-      {count !== undefined ? <span className="text-[11.5px] font-semibold normal-case tracking-normal tabular-nums text-paper/40">{count}</span> : null}
+      {count !== undefined ? <span className="text-[11.5px] font-semibold normal-case tracking-normal tabular-nums text-paper/45">{count}</span> : null}
       {end ? <span className="ms-auto shrink-0 normal-case tracking-normal">{end}</span> : null}
     </div>
   );

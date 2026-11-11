@@ -77,7 +77,7 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
             <span className="font-sans text-caption font-semibold text-paper/55">
               {t("ui.dangerZone")}
             </span>
-            <span className="font-sans text-caption text-paper/40">
+            <span className="font-sans text-caption text-paper/45">
               {t("ui.signOutClearLocalDelete")}
             </span>
           </span>

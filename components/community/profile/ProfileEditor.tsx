@@ -466,7 +466,7 @@ export function ProfileEditor() {
 
   const surface = profileSurface(cosmetics);
   const counter = (n: number, max: number) => (
-    <span className={cn("font-sans text-caption tabular-nums", n > max - 10 ? "text-paper/70" : "text-paper/40")}>
+    <span className={cn("font-sans text-caption tabular-nums", n > max - 10 ? "text-paper/70" : "text-paper/45")}>
       {t("profile.charsLeft", { count: max - n })}
     </span>
   );

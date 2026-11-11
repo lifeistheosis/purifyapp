@@ -149,7 +149,7 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
                   </p>
                   {grp.categories.map((c) => (
                     <div key={c.label} className="mb-1 last:mb-0">
-                      <p className="px-2 pt-1.5 pb-1 font-sans text-caption text-paper/35">
+                      <p className="px-2 pt-1.5 pb-1 font-sans text-caption text-paper/45">
                         {t(`bible.category.${c.label.toLowerCase().replace(/ /g, "-")}`)}
                       </p>
                       <ul>
@@ -173,7 +173,7 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
                                 <span
                                   className={cn(
                                     "font-sans text-eyebrow tracking-[0.5px] shrink-0",
-                                    isCurrent ? "text-paper/65" : "text-paper/35",
+                                    isCurrent ? "text-paper/65" : "text-paper/45",
                                   )}
                                 >
                                   {tn("bible.chAbbrevCount", b.chapters)}
@@ -190,7 +190,7 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
             )}
           </div>
 
-          <div className="border-t border-paper/10 px-3 py-2 flex items-center justify-between font-sans text-eyebrow text-paper/40">
+          <div className="border-t border-paper/10 px-3 py-2 flex items-center justify-between font-sans text-eyebrow text-paper/45">
             <span>{t("bible.enterToOpen")}</span>
             <span>{t("bible.escToClose")}</span>
           </div>

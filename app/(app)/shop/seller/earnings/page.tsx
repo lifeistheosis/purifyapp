@@ -155,7 +155,7 @@ export default async function SellerEarningsPage() {
                     className="flex items-center justify-between gap-4 rounded-lg border border-paper/10 bg-night-soft/60 px-4 py-3"
                   >
                     <p className="min-w-0 truncate font-sans text-ui text-paper">
-                      <span className="mr-3 font-display-serif text-paper/40">
+                      <span className="mr-3 font-display-serif text-paper/45">
                         {i + 1}
                       </span>
                       {t.title}

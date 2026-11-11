@@ -89,7 +89,7 @@ export function CategoryChips({
                   <span
                     className={cn(
                       "font-sans text-caption font-semibold tabular-nums",
-                      gold ? "text-night/60" : "text-paper/40",
+                      gold ? "text-night/60" : "text-paper/55",
                     )}
                   >
                     {count}

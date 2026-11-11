@@ -751,7 +751,7 @@ export function CommandPalette() {
         {phone ? null : (
           <div className="flex shrink-0 items-center gap-3 border-b border-paper/10 px-3 py-3">
             {field}
-            <kbd className="shrink-0 rounded-md border border-paper/15 px-1.5 py-0.5 font-sans text-caption text-paper/35">{t("search.escKey")}</kbd>
+            <kbd className="shrink-0 rounded-md border border-paper/15 px-1.5 py-0.5 font-sans text-caption text-paper/45">{t("search.escKey")}</kbd>
           </div>
         )}
         <div

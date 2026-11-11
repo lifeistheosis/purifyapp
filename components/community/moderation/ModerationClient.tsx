@@ -520,7 +520,7 @@ function LogList({ rows }: { rows: ModLogLine[] }) {
             <span className="font-semibold">{r.actor_name}</span> {said(r.action)}
           </p>
           {r.summary ? <p className="mt-0.5 line-clamp-2 font-sans text-caption text-paper/55">{r.summary}</p> : null}
-          <p className="mt-0.5 font-sans text-caption text-paper/40">{timeAgo(r.created_at)}</p>
+          <p className="mt-0.5 font-sans text-caption text-paper/45">{timeAgo(r.created_at)}</p>
         </li>
       ))}
     </ul>

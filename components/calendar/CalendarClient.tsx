@@ -613,7 +613,7 @@ export function CalendarClient() {
           <p className="mt-10 font-serif text-detail text-paper/55 leading-[1.7]">
             <T k="calendar.reckoningsNote" />
           </p>
-          <p className="mt-3 font-sans text-caption text-paper/40 leading-[1.6]">
+          <p className="mt-3 font-sans text-caption text-paper/45 leading-[1.6]">
             <T k="calendar.fastingDisclaimer" />
           </p>
         </div>

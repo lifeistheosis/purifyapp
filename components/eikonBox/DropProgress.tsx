@@ -68,7 +68,7 @@ export function DropProgress({
             <span
               className={cn(
                 "mt-1.5 block font-sans text-caption leading-tight",
-                i === reached ? "text-paper" : "text-paper/40",
+                i === reached ? "text-paper" : "text-paper/45",
               )}
             >
               {s}

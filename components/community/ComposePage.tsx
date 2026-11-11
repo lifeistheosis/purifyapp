@@ -570,7 +570,7 @@ export function ComposePage({
                         a reader looked for a line that was there and
                         concluded the app had lost it. */}
                     {gathered.length > GATHERED_SHOWN ? (
-                      <p className="px-1 pt-2 font-sans text-eyebrow text-paper/40">
+                      <p className="px-1 pt-2 font-sans text-eyebrow text-paper/45">
                         {t("community.moreInFlorilegium", { count: gathered.length - GATHERED_SHOWN })}
                       </p>
                     ) : null}

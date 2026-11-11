@@ -211,8 +211,8 @@ export function WorkContents({
               return (
                 <li key={e.key} className={line} data-omitted="">
                   <div className="flex min-h-[46px] w-full items-center justify-between gap-3 px-4 py-2.5">
-                    <span className="min-w-0 font-heading text-[16px] font-semibold leading-tight text-paper/35">{say(e.name)}</span>
-                    <span className="shrink-0 font-sans text-caption text-paper/35">{t("reading.part.notInEdition")}</span>
+                    <span className="min-w-0 font-heading text-[16px] font-semibold leading-tight text-paper/45">{say(e.name)}</span>
+                    <span className="shrink-0 font-sans text-caption text-paper/45">{t("reading.part.notInEdition")}</span>
                   </div>
                 </li>
               );

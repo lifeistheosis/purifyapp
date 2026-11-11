@@ -393,7 +393,7 @@ export function NotificationsInbox({
                 </span>
               ) : null}
             </span>
-            <span className="shrink-0 font-sans text-caption tabular-nums text-paper/40">
+            <span className="shrink-0 font-sans text-caption tabular-nums text-paper/45">
               {when(n.created_at)}
             </span>
             {opens ? (

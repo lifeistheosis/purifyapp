@@ -141,7 +141,7 @@ export function VerseContextMenu({
  </span>
  {it.checked ? <Check size={15} className="shrink-0 text-paper" /> : null}
  {it.hint && (
- <span className="shrink-0 font-sans text-eyebrow text-paper/40 tabular-nums">
+ <span className="shrink-0 font-sans text-eyebrow text-paper/45 tabular-nums">
  {it.hint}
  </span>
  )}

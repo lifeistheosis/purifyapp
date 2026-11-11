@@ -41,7 +41,7 @@ export default function GlobalError({
           {t("error.body")}
         </p>
         {error.digest && (
-          <p className="mt-4 font-sans text-eyebrow text-paper/35 tabular-nums">
+          <p className="mt-4 font-sans text-eyebrow text-paper/45 tabular-nums">
             {t("error.ref", { digest: error.digest })}
           </p>
         )}
