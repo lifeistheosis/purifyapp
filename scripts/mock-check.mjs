@@ -510,18 +510,23 @@ function look(arg) {
   const NAMED = "button, a[href], summary, [role=button], [role=link], [role=tab], [role=menuitem], [role=option], [role=radio], [role=checkbox], [role=switch]";
   for (const c of root.querySelectorAll(NAMED)) {
     if (!shown(c) || c.closest("svg")) continue;
-    const holders = [c, ...c.querySelectorAll("*")].filter((n) => {
+    // A screen reader's own line (a box kept 1px square and clipped, its words in a span of
+    // their own size inside) is not drawn: the reading room's cover reads whole to the eye
+    // (Fable Themes, 2026-11-11, "The Way of a Pilgrim").
+    const unseen = (n) => {
+      for (let q = n; q && q !== c.parentElement; q = q.parentElement) {
+        const qs = getComputedStyle(q);
+        const b = q.getBoundingClientRect();
+        if ((qs.clip && qs.clip !== "auto") || (qs.overflowX !== "visible" && (b.width < 8 || b.height < 8))) return true;
+      }
+      return false;
+    };
+    const holder = [c, ...c.querySelectorAll("*")].find((n) => {
       if (n.closest("svg") || ![...n.childNodes].some((t) => t.nodeType === 3 && t.textContent.trim())) return false;
       const r = n.getBoundingClientRect();
-      return r.width > 2 && r.height > 2 && getComputedStyle(n).visibility !== "hidden";
+      return r.width > 2 && r.height > 2 && getComputedStyle(n).visibility !== "hidden" && !unseen(n);
     });
-    if (!holders.length) continue;
-    // The name: a heading the control holds (a card's title), else its largest words, the first
-    // of equals. A saint's card sets a small byname and epithet round its title, each clamped
-    // to a line on purpose (Fable Themes, 2026-11-11: 29 read as cut by the first-words rule).
-    const heading = holders.find((n) => n.closest("h1, h2, h3, h4, h5, h6, [role=heading]"));
-    const size = (n) => parseFloat(getComputedStyle(n).fontSize) || 0;
-    const holder = heading ?? holders.reduce((a, b) => (size(b) > size(a) ? b : a));
+    if (!holder) continue;
     const range = document.createRange();
     range.selectNodeContents(holder);
     const w = range.getBoundingClientRect();
@@ -896,6 +901,7 @@ const FIXTURES = `
   </div>
   <p style="margin:8px 0 0;color:#e8e8ea;font-size:13px">Search <kbd>Ctrl</kbd> K, close with Esc</p>
   <a href="/history/" style="margin-top:8px;display:flex;align-items:center;gap:6px;width:64px;height:48px;color:#e8e8ea;font-size:13px;text-decoration:none"><span style="min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">History</span><span style="flex:none;width:36px;height:16px;border-radius:999px;background:#2a2a2e"></span></a>
+  <a href="/saints/john-chrysostom/" style="margin-top:8px;display:flex;flex-direction:column;width:140px;color:#e8e8ea;text-decoration:none"><span style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;overflow:hidden;font-size:13px;font-style:italic">&ldquo;Golden-mouthed, the preacher of Antioch&rdquo;</span><span style="font-size:19px;font-weight:600">John Chrysostom</span></a>
 </div>
 <div data-mock-fixture="good" class="bg-night px-4 pb-4" style="position:fixed;left:0;right:0;top:0;z-index:301">
   <div class="flex items-center gap-2">
@@ -931,7 +937,7 @@ const FIXTURES = `
   <span class="relative mt-3 block h-14 w-14 overflow-hidden rounded-[18px] bg-night-soft"><span aria-hidden="true" class="pointer-events-none absolute -end-6 -top-8 h-32 w-32 rounded-full bg-paper/15 blur-2xl"></span></span>
   <div style="content-visibility:auto;contain-intrinsic-size:auto 80px;margin-top:2400px"><span class="flex h-10 w-10 items-center justify-center rounded-full bg-night-soft font-sans text-detail font-semibold text-paper">M</span><button type="button" class="mt-1 min-h-11 font-sans text-detail text-paper">Reader M</button></div>
   <a href="/prayers/" class="mt-3 flex min-h-11 flex-col justify-center font-sans"><span class="text-ui text-paper">The daily rule</span><span class="line-clamp-1 text-caption text-paper/70">Morning prayers, Midday prayers, Evening prayers, The Nicene Creed, the prayer for today, and more besides</span></a>
-  <a href="/saints/john-chrysostom/" class="mt-1 flex min-h-11 flex-col font-sans"><span class="line-clamp-1 w-24 font-serif text-detail italic text-paper/70">&ldquo;Golden-mouthed, the preacher of Antioch&rdquo;</span><span class="font-sans text-lede font-semibold text-paper">John Chrysostom</span></a>
+  <a href="/reading/the-way-of-a-pilgrim/" class="mt-1 flex min-h-11 flex-col font-sans"><span class="sr-only"><span>The Way of a Pilgrim, Anonymous</span></span><span aria-hidden="true" class="text-ui text-paper">The Way of a Pilgrim</span></a>
   <button type="button" data-mock-allow="cut" data-mock-why="a reader's own title, rightly cut in a list" class="mt-1 block min-h-11 w-40 truncate text-start font-sans text-ui text-paper">A long title a reader wrote for the wall</button>
   <blockquote lang="en" data-mock-allow="emdash" data-mock-why="a Father's own words, as his edition prints them" class="mt-3 font-serif text-body italic leading-[1.6] text-paper/85">Chapter I.\u2014Introduction. Reason for writing</blockquote>
 </div>`;
@@ -954,11 +960,13 @@ async function selfTest() {
     const missed = ["contrast", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays", "sparkle", "picture", "dashed", "keys", "cut"].filter((c) => !caught.has(c));
     // A Father's own words keep their edition's dash, and a reader's own title its cut, by name; each allowance is said in the report.
     const named = good.allowed.some((a) => a.startsWith("emdash on ")) && good.allowed.some((a) => a.startsWith("cut on "));
-    const ok = missed.length === 0 && good.failures.length === 0 && named;
+    // Both names cut: the tile's, and the card's first line (the saints' byname, the arbiter's word of 2026-11-11).
+    const bothCut = bad.failures.filter((f) => f.check === "cut").length >= 2;
+    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut;
     console.log(
       ok
         ? "\nself-test: every mistake caught, and the house's own parts pass"
-        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}`,
+        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}`,
     );
     return ok;
   } finally {
