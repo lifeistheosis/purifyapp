@@ -33,7 +33,6 @@ Also:
 
 ## What may not be said
 
-- "a month": the sharing limit's wording (three shared pages a month for everyone, without limit in Purify Plus) waits on his item 93
 - "every work has a cover": the covers pack for the reading room is not in yet
 - "Find a parish": the parish directory is not built
 - "phone voice": nothing of the on-phone voice is in the 1.9 apps (his word "rec voices", 2026-11-11 about 14:24 UTC; parked for 2.0, cdaabd4c4): 1.9 listens in the recorded voice, as 1.8 did

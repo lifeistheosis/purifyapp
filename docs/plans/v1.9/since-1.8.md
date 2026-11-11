@@ -49,10 +49,10 @@ Each switch as it stands on the branch on 2026-11-11:
   V9). A recording made after a build is heard in it all the same
   (`lib/listen/recordings.ts`), so no release waits on them.
 
-### Open, for the arbiter
+### Settled
 
-- The drop's never list holds "a month", the sharing limit's wording, until
-  his item 93. The note's line 18 says "Three a month for everyone, without
-  limit in Purify Plus", and the code ships exactly that
-  (`SHARE_LIMIT_FREE = 3`, `lib/journal/share.ts`). The note is true to the
-  build. Whether the drop's pieces may say it waits on item 93.
+- The sharing limit (his item 93): three shared pages a month for everyone,
+  without limit in Purify Plus (his word, 2026-11-11 about 17:56 UTC: "Yes,
+  keep item 93"). Note line 18 says exactly that, the code ships it
+  (`SHARE_LIMIT_FREE = 3`, `lib/journal/share.ts`), and "a month" is off the
+  drop's never list. No piece of the drop names the limit.
