@@ -703,8 +703,13 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
     if (dark.emDash) fail("emdash", null, "the words", "an em dash; use a comma, a colon or a full stop");
     for (const d of dark.dashes) allow("emdash", d.name, d.allow);
 
-    // Arabic: everything is where it was, measured from the other side.
+    // Arabic: everything is where it was, measured from the other side. The
+    // page is measured from left to right whatever it was in, so a page
+    // already in Arabic or Urdu is compared with itself turned round, not
+    // with itself (2026-11-11: every row of the language sheet in Arabic
+    // "stayed put", having been measured twice the same way round).
     await wear(page, before.mode, before.look);
+    await page.evaluate(() => document.documentElement.setAttribute("dir", "ltr"));
     await settle(page);
     const ltr = await page.evaluate(boxes, selector);
     await page.evaluate(() => document.documentElement.setAttribute("dir", "rtl"));
