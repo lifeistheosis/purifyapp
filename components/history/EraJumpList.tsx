@@ -44,7 +44,8 @@ export function EraJumpList({
                   <TimelineNode />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className={cn("block truncate font-sans text-ui", active ? "font-semibold text-paper" : "text-paper/80")}>
+                  {/* The era's name whole, wrapping if it must. */}
+                  <span className={cn("block font-sans text-ui", active ? "font-semibold text-paper" : "text-paper/80")}>
                     {t(`study.history.era.${era.id}.label`)}
                   </span>
                   <span className="block font-sans text-caption text-paper/55 tabular-nums">

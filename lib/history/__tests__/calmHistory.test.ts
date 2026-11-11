@@ -111,6 +111,20 @@ describe("the timeline", () => {
     expect(eras).toContain("<CenturyScrubber");
   });
 
+  // The gate's second run (2026-11-11, /history/): "Imperial and conciliar
+  // Church", "Missionary and Byzantine expansion", "Estrangement of East and
+  // West" and "Ottoman and post-Byzantine period" ended by an ellipsis on a
+  // phone; and the century slider in the Eras sheet was 28 tall.
+  it("sets every era's name whole, wrapping if it must, and gives the century slider 44 to a finger", () => {
+    const head = code("components/history/EraHeader.tsx");
+    expect(head).toContain('<span className="min-w-0 text-balance">{label}</span>');
+    expect(head).not.toMatch(/\btruncate\b/);
+    expect(code("components/history/EraJumpList.tsx")).not.toMatch(/\btruncate\b/);
+    const css = read("app/globals.css");
+    const scrubber = css.slice(css.indexOf("\n.history-scrubber {"), css.indexOf("}", css.indexOf("\n.history-scrubber {")));
+    expect(scrubber).toContain(" height: 44px;");
+  });
+
   it("opens a row in a movable sheet on a phone, and every pop-up is the shared sheet", () => {
     const page = code("components/history/HistoryTimelinePage.tsx");
     expect(page).toContain("<EventPeekSheet");

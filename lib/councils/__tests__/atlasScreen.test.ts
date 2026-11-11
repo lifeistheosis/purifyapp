@@ -39,6 +39,14 @@ describe("the door on the page", () => {
     expect(DOOR).toContain('t("history.map.beyond")');
   });
 
+  // The gate's second run (2026-11-11, /history/): "Arius" 33.6, "1054" 29,
+  // "1204" 28.9 and "1453" 28.1 across, each 46.8 tall.
+  it("lets a finger take a short name too: each listed council or event 44 across, its year beside it unmoved", () => {
+    expect(DOOR).toContain(
+      'className="hit-44 inline-flex min-h-11 items-center font-serif text-ui text-paper/85 underline-offset-4 hover:underline pointer-fine:min-h-0"',
+    );
+  });
+
   it("loads the atlas only when it is first wanted", () => {
     expect(DOOR).toMatch(/dynamic\(\(\) => loadAtlas\(\)\.then\(\(m\) => m\.MapAtlas\), \{ ssr: false \}\)/);
   });

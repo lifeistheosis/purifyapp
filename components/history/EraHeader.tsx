@@ -37,7 +37,8 @@ export function EraHeader({
             aria-haspopup="dialog"
             className="tap-press flex min-h-12 w-full items-center gap-2.5 text-start focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
           >
-            <span className="min-w-0 truncate">{label}</span>
+            {/* The era's name whole, on two lines if it must (the gate's second run: four were cut). */}
+            <span className="min-w-0 text-balance">{label}</span>
             <span className="shrink-0 font-sans text-caption font-semibold text-paper/55 tabular-nums">
               {era.from}–{era.to}
             </span>

@@ -9434,12 +9434,14 @@ html[data-reading-mode="parchment"] .history-saved-lit {
 
 /* The century slider in the Eras sheet and the computer's side column: a
    styled native range input, draggable, steppable by arrow keys and
-   tappable on the track. The thumb firms in the page's ink while held. */
+   tappable on the track. The thumb firms in the page's ink while held. Its
+   box is 44 tall to a finger (it was 28); the track and the thumb are drawn
+   in its middle, as they were. */
 .history-scrubber {
  -webkit-appearance: none;
  appearance: none;
  width: 100%;
- height: 28px;
+ height: 44px;
  background: transparent;
  cursor: pointer;
 }

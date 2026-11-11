@@ -228,7 +228,11 @@ function PlaceItems({ items }: { items: MapItem[] }) {
     <ul className="mt-1 pointer-fine:space-y-0.5">
       {items.map((c) => (
         <li key={c.href}>
-          <Link href={c.href} lang="en" dir="ltr" className="inline-flex min-h-11 items-center font-serif text-ui text-paper/85 underline-offset-4 hover:underline pointer-fine:min-h-0">
+          {/* 44 across to a finger too: a short name ("Arius", "1054") was as
+              narrow as its word. hit-44 reaches out round the word without
+              moving it, so its year stays beside it and the list keeps its
+              measure; the rows stand 44 apart, so no two reaches meet. */}
+          <Link href={c.href} lang="en" dir="ltr" className="hit-44 inline-flex min-h-11 items-center font-serif text-ui text-paper/85 underline-offset-4 hover:underline pointer-fine:min-h-0">
             {c.name}
           </Link>{" "}
           <span className="font-sans text-caption text-paper/50">{c.year}</span>
