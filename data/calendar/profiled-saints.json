@@ -109,7 +109,7 @@
   {"slug":"sergius-of-radonezh","name":"St. Sergius of Radonezh","epithet":"Abbot of the Holy Trinity · Father of Russian monasticism","feastDays":["September 25","July 5"],"iconUrl":"/saints/icons/sergius-of-radonezh.jpg","readMinutes":3},
   {"slug":"nicholas-cabasilas","name":"St. Nicholas Cabasilas","epithet":"Theologian of the Mysteries · Lay teacher of Thessalonica","feastDays":["June 20"],"iconUrl":"/saints/icons/nicholas-of-cabasilas.jpg","readMinutes":2},
   {"slug":"silouan-the-athonite","name":"St. Silouan the Athonite","epithet":"Monk of Mount Athos · He who prayed for the whole world","feastDays":["September 24"],"readMinutes":3},
-  {"slug":"john-of-shanghai","name":"St. John of Shanghai and San Francisco","epithet":"Bishop of Shanghai and San Francisco · Wonderworker of the diaspora","feastDays":["July 2"],"iconUrl":"/saints/icons/john-the-wonderworker.jpg","readMinutes":3},
+  {"slug":"john-of-shanghai","name":"St. John of Shanghai and San Francisco","epithet":"Bishop of Shanghai and San Francisco · Wonderworker of the diaspora","feastDays":["July 2"],"readMinutes":3},
   {"slug":"porphyrios-of-kavsokalyvia","name":"St. Porphyrios of Kavsokalyvia","epithet":"Elder of Athos and Athens · Seer of hearts","feastDays":["December 2"],"readMinutes":2},
   {"slug":"iakovos-of-evia","name":"St. Iakovos of Evia","epithet":"Abbot of the Monastery of St. David · Shepherd of Evia","feastDays":["November 22"],"readMinutes":2},
   {"slug":"sophrony-of-essex","name":"St. Sophrony of Essex","epithet":"Disciple of St. Silouan · Founder of the monastery in Essex","feastDays":["July 11"],"readMinutes":2},

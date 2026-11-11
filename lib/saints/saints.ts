@@ -4642,7 +4642,6 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "john-of-shanghai",
-    iconUrl: "/saints/icons/john-the-wonderworker.jpg",
     name: "St. John of Shanghai and San Francisco",
     byname: "The Wonderworker",
     epithet: "Bishop of Shanghai and San Francisco · Wonderworker of the diaspora",

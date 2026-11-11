@@ -1620,7 +1620,10 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
   // Kavsokalyvia, St Silouan the Athonite, St Justin Popović, St Cleopas of
   // Sihăstria, St Sofian of Antim and St Dumitru Stăniloae. Their icons are
   // living painters' work and their photographs are recent, so none is in
-  // the public domain. Their files are gone (2026-11-11).
+  // the public domain. Their files are gone (2026-11-11). St John of Shanghai
+  // joins them the same day (call 14, the December chat): the icon his page
+  // carried had no source and is a modern painting, so his page and his Life
+  // have the plate until a painter or monastery gives written permission.
   // Fathers from Commons (2026-11-11), the rule as above: an old icon, fresco
   // or mosaic, or the plate. St Isaac's is a miniature dated 1802, clear where
   // the older one of 1518 (Kirillo-Belozersky) is worn past his face; it is
@@ -2139,8 +2142,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for irenaeus-of-lyons and AUTHOR_ICONS. 212x420 JPG, 23 KB. Not yet opened and inspected.",
   "irene-the-empress.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for irene-the-empress. 300x420 JPG, 32 KB. Opened 2026-11-10 (build 90 note 3): a contemporary icon of a crowned empress in a jewelled robe holding a scroll, her name in Latin letters on a gold ground. Not found on Commons by search and picture hash (nearest 21 of 64 bits apart, a coin of hers).",
-  "john-the-wonderworker.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for john-of-shanghai. 268x420 JPG, 23 KB. Not yet opened and inspected.",
   "juvenal-of-jerusalem.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for juvenal-of-jerusalem. 281x400 JPG, 27 KB. Opened 2026-11-10 (build 90 note 3): a contemporary panel icon, a dark-haired, grey-bearded bishop in a red and black chequered phelonion with a red Gospel book, his name in Greek on a gold ground. Not found on Commons by search and picture hash (three files found, none of its shape).",
   "kosmos-aitolia.jpg":

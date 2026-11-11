@@ -524,8 +524,11 @@ copyright, marked as the editorial's words like our other prose.
   opened at ten past ten at night on St Chariton's day, 11 October. Two
   facts the notes held and no source here confirmed are left out: a
   conference at Geneva in 1952 on the Western saints, and a decree of 1953.
-- **Its cover** is the plate: the icon his page carries has no recorded
-  source (UNVERIFIED_ICONS), and no free icon of him was found.
+- **His icon** comes off, with the modern saints' (the owner's word of
+  2026-11-10: "modern saints on the plate until a painter or monastery gives
+  written permission"; Updates 2 left his to this call): the file his page
+  carried had no source and is a modern painting. His page and his Life
+  have the plate, and the icons' debt falls from 30 to 29.
 - **No priest:** the owner's word for these Lives stands; the entry is
   `review: "pending-clergy"` like every entry, for a future review.
 - **Walked** on the Android and the iOS exports with push 2b: his page (the
@@ -535,3 +538,8 @@ copyright, marked as the editorial's words like our other prose.
   68.6 MB packed of 85.
 - **Still**: `december-saints/13-st-john-of-shanghai-sources.png`, the end of
   the first part with its sources under it.
+- **After the rebase** onto the branch (other chats' twelve commits), with
+  his icon off: typecheck 0, the full unit suite 12,176 passed, lint 0
+  errors, and both exports 68.4 MB packed of 85, the eighteen pages of push
+  2b and this call walked again on both, checkMock passing on the five held
+  to it.
