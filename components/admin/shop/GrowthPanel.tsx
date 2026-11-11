@@ -580,7 +580,7 @@ export function GrowthPanel() {
                       onClick={() =>
                         setForm({ ...form, multiBuy: { ...multi, steps: multi.steps.filter((_, k) => k !== i) } })
                       }
-                      className="h-10 rounded-[var(--adm-radius-sm)] border border-paper/15 px-3 font-sans text-caption text-paper/70"
+                      className="hit-44 h-10 rounded-[var(--adm-radius-sm)] border border-paper/15 px-3 font-sans text-caption text-paper/70"
                     >
                       Remove
                     </button>
@@ -605,7 +605,7 @@ export function GrowthPanel() {
                       };
                     setForm({ ...form, multiBuy: { ...multi, steps: [...multi.steps, next] } });
                   }}
-                  className="mt-3 h-10 rounded-[var(--adm-radius-sm)] border border-paper/15 px-3 font-sans text-caption text-paper/80"
+                  className="mt-3 h-11 rounded-[var(--adm-radius-sm)] border border-paper/15 px-3 font-sans text-caption text-paper/80"
                 >
                   Add a step
                 </button>

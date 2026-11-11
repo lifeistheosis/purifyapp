@@ -216,7 +216,15 @@ function countSmallTargets(): { total: number; byFile: Record<string, number>; w
 // spacing waits on the owner's word; and the admin panel's five (Admin's):
 // SupportConsole 496, GrowthPanel 578 and 597, MessagesTab 296,
 // TrafficViews 953.
-const MAX_SMALL_TARGETS = 12;
+// 12 -> 7 the same night (the arbiter's word): the admin panel's five are 44.
+// The support console's Put in tracking is min-h-11, and Put in the order
+// beside it too, which sat past the window; the messages' Shop threads
+// switch is min-h-11; the multi-buy's Add a step is h-11, and its Remove
+// keeps h-10 beside the two pickers it lines up with and carries .hit-44;
+// the traffic reader's scrim was never small, a full-screen button read by
+// the grab handle under it, and states its height (h-full) now. Left: the
+// seven circles above, which are the Updates chat's.
+const MAX_SMALL_TARGETS = 7;
 
 // Heights written out (WRITTEN_H above), counted on their own so the ceiling
 // above keeps its history and still only falls. The count learned to read
@@ -249,7 +257,12 @@ const MAX_SMALL_TARGETS = 12;
 // 772, min-h-[27px] and min-h-[28px]). Not new controls, newly seen, as the
 // 32 were when the count first read written heights; they are Admin's, and
 // this falls to 0 with them.
-const MAX_WRITTEN_SMALL_TARGETS = 2;
+// 2 -> 0 the same night: the country rows beside the map are min-h-11 to a
+// finger (46.75px measured), and under a mouse (pointer-fine) stand at 28px
+// by padding, where they were drawn at 27, above WCAG's 24px floor for a
+// pointer; the table's country name keeps its 28px and carries .hit-44,
+// whose 44px box fits inside its 45px row. None is left.
+const MAX_WRITTEN_SMALL_TARGETS = 0;
 
 describe("touch targets", () => {
   const { total, byFile, written, writtenByFile } = countSmallTargets();

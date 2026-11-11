@@ -497,7 +497,7 @@ export function SupportConsole({
                     type="button"
                     disabled={!order}
                     onClick={() => order && setSheet("tracking")}
-                    className="inline-flex min-h-9 items-center gap-1.5 disabled:opacity-45"
+                    className="inline-flex min-h-11 items-center gap-1.5 disabled:opacity-45"
                   >
                     <Icon name="track" size={14} />
                     Put in tracking
@@ -514,7 +514,7 @@ export function SupportConsole({
                         ),
                       );
                     }}
-                    className="inline-flex min-h-9 items-center gap-1.5 disabled:opacity-45"
+                    className="inline-flex min-h-11 items-center gap-1.5 disabled:opacity-45"
                   >
                     <Icon name="orders" size={14} />
                     Put in the order

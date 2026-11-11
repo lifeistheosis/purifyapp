@@ -288,7 +288,7 @@ function MapCard({
                           setZoom(p.key);
                         } else setChosen(p.key);
                       }}
-                      className="flex min-h-[27px] w-full items-center gap-2.5 text-left font-sans text-[12.5px]"
+                      className="flex min-h-11 w-full items-center gap-2.5 text-left font-sans text-[12.5px] pointer-fine:min-h-0 pointer-fine:py-1"
                       style={{ color: "var(--adm-ink-2)" }}
                       aria-label={`${p.name}, ${n(p.visits)} visits`}
                     >
@@ -777,7 +777,7 @@ export function TrafficMapTab() {
                       setZoom(r.key);
                     } else setChosen(r.key);
                   }}
-                  className="min-h-[28px] text-left underline decoration-[var(--adm-line-strong)] underline-offset-[3px] hover:decoration-[var(--adm-ink-2)]"
+                  className="hit-44 min-h-[28px] text-left underline decoration-[var(--adm-line-strong)] underline-offset-[3px] hover:decoration-[var(--adm-ink-2)]"
                 >
                   {r.name}
                 </button>
@@ -950,7 +950,7 @@ function ReaderCard({ s, now, onClose }: { s: Session; now: number; onClose: () 
   ];
   return (
     <>
-      <button type="button" aria-label="Close the reader" onClick={onClose} className="fixed inset-0 z-[69] cursor-default" style={{ background: "var(--adm-scrim)" }} />
+      <button type="button" aria-label="Close the reader" onClick={onClose} className="fixed inset-0 z-[69] h-full w-full cursor-default" style={{ background: "var(--adm-scrim)" }} />
       <div
         role="dialog"
         aria-label={`A reader in ${placeOf(s)}`}

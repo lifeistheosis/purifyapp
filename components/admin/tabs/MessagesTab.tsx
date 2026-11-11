@@ -296,7 +296,7 @@ export function MessagesTab() {
         <button
           type="button"
           onClick={() => setPanel(panel === "support" ? "shop" : "support")}
-          className="inline-flex min-h-9 items-center gap-1.5 font-sans text-[12.5px]"
+          className="inline-flex min-h-11 items-center gap-1.5 font-sans text-[12.5px]"
           style={{ color: "var(--adm-ink-3)" }}
         >
           {panel === "support" ? (
