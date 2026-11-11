@@ -2,6 +2,8 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
+**Build 93, note 3 (his word, 2026-11-11 about 01:20 UTC, a screenshot of Reading mode with Dawn checked and the screen still Dark):** "So this screen actually doesn't do anything. When I click on the stuff, it doesn't change anything." (`notes/build-93.md`, note 3).
+
 **Build 93, note 2 (his word, 2026-11-11 about 01:19 UTC):** "The smooth scroll on the prayers is still buggy. Like it when I try and scroll down, it scrolls back up. When I try and scroll down, it just keeps on scrolling, so it's still buggy. And I guess it's just not refined for like UX experience" (`notes/build-93.md`, note 2).
 
 **Build 93, his first note (his word, 2026-11-11 about 01:13 UTC, three screenshots in `notes/build-93/`):** "So, image 1 is the first council of Nicaea. Image 2 is me clicking on St. Alexander the Great, his profile photo. Also, you could clearly see that his photo isn't loaded. And when I go to image 3, right, when I click back to go back to the first council of Nicaea, it scrolls all the way down. Well, it actually doesn't scroll, it just randomly places you at the bottom of the first council of Nicaea, which is an issue because it should be placing you at the top of the page of first council of Nicaea." Before it: "im on build 93 im gonna tell you my critiques". The notes and who has each are in `notes/build-93.md`.
