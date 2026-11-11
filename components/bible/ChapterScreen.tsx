@@ -39,6 +39,8 @@ import { hebrewLine } from "@/lib/bible/psalmNumbers";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { cn } from "@/lib/cn";
 import { useScrollAway } from "@/lib/ui/scrollAway";
+import Link from "next/link";
+import { LICENCE_PAGES } from "@/lib/credits/licencePages";
 
 /** Where a mark in a book's introduction leads: its source, under the introduction. */
 const INTRO_SOURCE = "intro-source-";
@@ -438,6 +440,19 @@ export function ChapterScreen({
                 {!usingLicensed && (
                   <p className="mt-6 md:mt-3 font-sans text-eyebrow text-paper/55 leading-[1.6]">
                     <T k={downloaded ? `bible.downloads.source.${downloaded.bible.id}` : "bible.chapterSources"} />
+                    {/* The GPL asks that its terms travel with the text (the Almeida of 1911): its page, offline in the apps. */}
+                    {downloaded && LICENCE_PAGES[downloaded.bible.id] ? (
+                      <>
+                        {" "}
+                        <Link
+                          href={LICENCE_PAGES[downloaded.bible.id]}
+                          data-licence-link={downloaded.bible.id}
+                          className="inline-flex min-h-11 items-center underline underline-offset-2 decoration-paper/30 hover:text-paper"
+                        >
+                          <T k="credits.gpl.link" />
+                        </Link>
+                      </>
+                    ) : null}
                   </p>
                 )}
 
