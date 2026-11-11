@@ -774,5 +774,173 @@ components every study shares, so they are mended there.
 Held by `lib/theology/__tests__/studyGate.test.ts` (four cases) and by the
 touch test's own line for the link. On the export the mock check passes on
 the study's page on all five palettes: contrast, target and the rest. What
-it still cannot measure there is words on a tray's gradient, which is the
-checker's own item (T4).
+it still could not measure there was words on a tray's gradient, which was
+the checker's own item (T4). It measures them now: the next section.
+
+
+## Words on a gradient are measured (2026-11-11, T4)
+
+The mock checker (`scripts/mock-check.mjs`) measures a word against the
+colours of the boxes it sits in. Where one of those boxes had a gradient it
+said "not measured, look", as it does for a picture. A raised tray is a
+gradient, so every word on every tray in Theology was on that list, and
+with them the cards of Prayers and Plans, the atlas's doors, Settings'
+plates: on the gate's own walk of the export, 1,119 lines on 44 of 127
+screens. Nobody looks at 1,119 lines. I had measured Theology's trays by
+hand when I built them (above, "against every stop of the gradient"). This
+is the checker doing it, for every screen.
+
+### The first way, and why it is not what was built
+
+The item as I wrote it down was "against each of the gradient's stops". I
+surveyed the whole export before building it, and for anything but a
+near-flat tray that way is wrong in both directions.
+
+- A fade from clear to dark would hold words at its dark foot to its clear
+  head, and fail words that read well.
+- Grey words on a fade from black to white pass at both stops and cannot be
+  read in the middle.
+- 239 of the words stand on two or three gradients at once, each with a
+  size and a place of its own (a card's sheen is a pool 115% by 90% at 88%
+  8% over a slanted fall of three colours), and some on a hairline 1px
+  tall. Stops do not say where on a card a word is.
+
+### What it does
+
+The ground is **painted as the browser paints it, and read where the words
+are**. The words' parents, from the first opaque one up, are laid one over
+another as boxes with their own backgrounds, corners and shadows, each
+where it stands about the words, in an SVG that the browser itself paints
+into a canvas. So the gradient is the browser's own: its lines, its stops,
+its colour space. Of the pixels under the words the one least kind to them
+is what they are measured on, with the same sum as every other word, and a
+failure says so: `4.42:1 at its least on the gradient under it, needs
+4.5:1`.
+
+A word with no gradient among its parents is measured exactly as before,
+by the same lines of code: the gate's 14 findings before this are the same
+14 after it.
+
+### What it will not vouch for
+
+A painting of the words' parents is only the ground if nothing else is
+drawn there. So the checker says "not measured, look", with the reason,
+when:
+
+- a parent has a picture (`div has a picture`), as before;
+- **a picture or another piece is drawn across the words by something that
+  is not their parent** (`a picture is drawn across it (img)`). The reading
+  room's covers are the case: the title stands on a dark fade, and the
+  picture under the fade is the fade's neighbour, not its parent. Painted
+  from the parents alone those 384 words would have been measured on a
+  plate that is not there. A picture that has not arrived yet counts: it is
+  the ground once it comes. A blurred piece is taken as wide as its blur;
+- a parent draws a `::before` or `::after` of its own across the words;
+- the gradient is fixed to the screen, or fills the letters themselves.
+
+A piece outside the words' own ground (the first opaque parent they stand
+on) is hidden by that ground when it is painted before it, and may lie
+over the words when it is painted after. The checker works out which by
+the order CSS paints in (in the flow, or placed, and at which z), takes as
+"underneath" only what is surely underneath, and treats every doubt as
+"across". A row's fade at the edge of a rail of covers is the case that
+taught it: it lies over the last cover and its words.
+
+What it does not see, as the sum of plain colours never did: a parent
+faded as a whole (its opacity), and a filter or a blend laid on a parent.
+
+### Held to the screen
+
+A painting is a claim about the screen, so there is a proof that holds it
+to the screen: `scripts/painted-ground-check.mjs`. It photographs each
+page whole with its letters cleared, and sets every ground the checker
+painted beside the photograph's own pixels in the same box, its lightest
+and its darkest. More than two levels of 255 apart in any channel fails.
+
+On the export, every one of its 127 screens on all five palettes: **3,568
+painted grounds set beside the screen, none more than two levels apart.**
+305 more were painted and not photographed: words pinned to the screen (a
+photograph of a whole page shows a pinned bar once, where the first screen
+ended, so pinned pieces are taken out of it) and words scrolled out of
+their row (measured where they stand in the row; the photograph does not
+show them). Those rest on the same painting, unproven by a photograph.
+
+The proof is why the painting is what it is. Each of these was a
+difference it found, and each is in the painting now:
+
+| What the screen showed | What it was | In the painting |
+| --- | --- | --- |
+| A grey edge, up to 136 where the tray is 28 | A box that ends part way through a pixel is painted there half clear | The box that is read is whole pixels, inward |
+| Covers 21 levels lighter at the top of a title | A letter's box stands a pixel past its tight line, over the fade's neighbour | Where it overhangs the piece the words stand on by less than two pixels, it is cut to it |
+| On Light, a row 14 to 16 levels darker than painted | A picture plate throws its shadow across the words beside it | The shadows of pieces beside the words are painted over the ground, each cut to the boxes that hide it |
+| The same, from the card above | A card that is placed (`relative`) is painted after the tray below it, so its shadow lies on that tray | The order CSS paints in, as above |
+| The last cover of a rail, lit at one side | The rail's own fade at its edge lies over the cover | Said, not measured |
+| A field's placeholder, white at four corners | The field's rounded corners, read as its ground | A placeholder is read inside the field's edge and padding |
+
+### The checker's own proof
+
+`node scripts/mock-check.mjs --self-test` holds it both ways:
+
+- caught: faint words on a tray (2.73:1), and ink at the ink end of a fade
+  from the page's ground to its ink (1.06:1), each "on the gradient under
+  it";
+- passed, and measured rather than skipped: two lines on a house tray, and
+  the same ink at the ground end of the same fade, which no measure by the
+  gradient's stops could pass;
+- still said: words on a picture, and words on a fade with a picture laid
+  under it. Nothing else in the house's fixture is said.
+
+### What the gate says now
+
+The gate's walk of every screen, old checker and new on the same export
+(built from the branch at `037903bf` with the Back mend in it, selling
+Plus, walked as the no-Plus reader; the new checker gives the same 23
+where nothing is locked):
+
+| | Before | Now |
+| --- | --- | --- |
+| "Not measured, look" | 1,119 lines on 44 screens | 334 lines on 11 screens |
+| Findings | 14 | 23: the same 14, and 9 new, all contrast |
+| The walk | 1 min 44 s | 1 min 50 s |
+
+What is still said: 223 words on a picture, 82 with a picture drawn
+across them, 29 with another piece across them (a rail's edge fade, a
+tile's sheen).
+
+The nine, none of them on a Theology screen, sent to the arbiter for
+their owners:
+
+| Screen | Words | At its least | Palettes |
+| --- | --- | --- | --- |
+| Prayers, a row of a card's list | the time, "~5 min" | 4.42:1 | Candlelight |
+| | its arrow | 4.46:1 | Candlelight |
+| A saint's web, the key at its head | the counts beside the key's words, "4" and "1" | 2.34:1 | Dark, True black, Candlelight, Monastery |
+| | "In the Lives" | 4.22:1 | Candlelight |
+| A saint's web, the sheet at its foot | the dot between "787" and "Councils" | 1.76:1 | all five |
+| | "Councils" | 4.22:1 | Light, Candlelight |
+| A saint's web, a council's year under its mark | "787" | 4.41:1 | Light |
+| Settings, the text size slider | the small "A" at its start | 3.39:1 | Light |
+
+Theology's own trays, the reason for the item: on its twelve screens in
+the walk no word fails, and four are still said, all on the hub's first
+card ("1 of 9", "The Holy Trinity" twice, "7 citations from the Fathers"):
+the step's picture is laid behind that card as a blurred light, which is a
+picture drawn across them. The Themes chat measured that card by its
+pixels and mended its two faint lines (`3702200b`: "1 of 9" on Light from
+4.26:1 to 4.83, "7 citations from the Fathers" on Monastery from 4.49 to
+4.79).
+
+### Named, and left
+
+The sum of plain colours has the blind spot this painting was built not to
+have: a word whose parents are all plain colours, with a picture laid
+behind it by something that is not its parent, is measured on its parents'
+colours. Counted with the same test on the same walk: 116 such words on 11
+screens (a tile's words over its picture on Today and on Plans, the
+numerals under Theology's picture plates, a saint's name over the drawing
+of his web).
+The Themes chat's sweep measured the worst of them by their pixels
+(`scripts/words-on-pictures.mjs`). Holding the plain sum to "said, not
+vouched for" as well would move those lines from "measured" to "look"; it
+is the gate's rule to change, so it is named to the arbiter and Admin and
+not done here.

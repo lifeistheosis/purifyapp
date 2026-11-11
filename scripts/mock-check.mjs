@@ -12,7 +12,17 @@
 //
 // What it measures, in the part of the page a selector names:
 //   contrast     every word against the ground it sits on, on all five
-//                palettes (WCAG AA: 4.5:1, or 3:1 for large text)
+//                palettes (WCAG AA: 4.5:1, or 3:1 for large text). The ground
+//                is the words' parents' colours laid one over another. Where
+//                a gradient is among them (a raised tray, a card's sheen, a
+//                fade) it is painted as the browser paints it and read where
+//                the words are, at its least kind pixel (1.9; until then
+//                such words were "not measured, look": with those on
+//                pictures, 1,119 lines on 44 of the export's 127 screens,
+//                334 on 11 since). Words on a picture, or with a picture or
+//                another piece drawn across them, are not measured, and are
+//                said: a picture's own measure is by its pixels
+//                (scripts/words-on-pictures.mjs)
 //   placeholder  a field's placeholder, the same
 //   target       every control at least 44 by 44 (touchTargets.test.ts);
 //                links inside a sentence and hit-44 controls excepted
@@ -68,6 +78,9 @@
 //   node scripts/mock-check.mjs /journal/ main --looks
 // Its own proof, the first drawings' mistakes caught and a house piece passed:
 //   node scripts/mock-check.mjs --self-test
+// And the proof of the grounds it paints, each set beside the screen's own
+// pixels under the same words:
+//   node scripts/painted-ground-check.mjs
 
 import fs from "node:fs";
 import path from "node:path";
@@ -125,7 +138,7 @@ export const BY_EYE = [
 // ── In the page ─────────────────────────────────────────────────────────
 
 /** What the part of the page named by `selector` shows, on the palette it wears now. */
-function look(arg) {
+async function look(arg) {
   // A selector, or { selector, only: "stripe" } for the stripe measure alone.
   const { selector, only } = typeof arg === "string" ? { selector: arg, only: null } : arg;
   const root = document.querySelector(selector);
@@ -187,27 +200,404 @@ function look(arg) {
     }
     return null;
   };
+  // A list as CSS writes one, split at its commas (a comma inside a function
+  // or a quoted address is not one): a background's layers, and their sizes.
+  const commas = (value) => {
+    const out = [];
+    let depth = 0;
+    let quote = "";
+    let from = 0;
+    for (let i = 0; i < value.length; i++) {
+      const ch = value[i];
+      if (quote) {
+        if (ch === "\\") i++;
+        else if (ch === quote) quote = "";
+      } else if (ch === '"' || ch === "'") quote = ch;
+      else if (ch === "(") depth++;
+      else if (ch === ")") depth--;
+      else if (ch === "," && depth === 0) {
+        out.push(value.slice(from, i).trim());
+        from = i + 1;
+      }
+    }
+    out.push(value.slice(from).trim());
+    return out;
+  };
+  const GRADIENT = /^(?:repeating-)?(?:linear|radial|conic)-gradient\(/;
+  // A gradient that hides what is under it: every stop opaque, and laid over
+  // the whole box.
+  const covers = (cs, images) => {
+    const sizes = commas(cs.backgroundSize);
+    const repeats = commas(cs.backgroundRepeat);
+    return images.some((layer, i) => {
+      if (!GRADIENT.test(layer)) return false;
+      const stops = [...layer.matchAll(STOP)].map((m) => rgba(m[0]));
+      if (!stops.length || stops.some((s) => s[3] < 0.999)) return false;
+      return /^(?:auto|auto auto|cover|100% 100%)$/.test(sizes[i % sizes.length] ?? "auto") || /^(?:repeat|round)$/.test(repeats[i % repeats.length] ?? "repeat");
+    });
+  };
   // The ground a thing sits on: a face drawn behind its words, or its own
   // and its parents' backgrounds, laid one over another down to the first
-  // that is opaque.
-  const groundOf = (el) => {
+  // that is opaque. Plain colours are summed here. With a gradient among
+  // them (a raised tray, a card's sheen, a fade) no one colour is the
+  // ground, so the stack is painted and read where the words are
+  // (paintedGround, below). A picture has no colour to read: not measured,
+  // and said.
+  const groundOf = (el, at) => {
     const layers = [];
+    const painted = [];
+    let gradient = false;
+    let base = null;
     for (let n = el; n; n = n.parentElement) {
-      if (!layers.length) {
+      if (!painted.length) {
         const face = faceOf(n);
         if (face) return face;
       }
       const cs = getComputedStyle(n);
-      if (cs.backgroundImage && cs.backgroundImage !== "none") return { unknown: `${n.tagName.toLowerCase()} has a picture or a gradient` };
+      const tag = n.tagName.toLowerCase();
+      const images = cs.backgroundImage && cs.backgroundImage !== "none" ? commas(cs.backgroundImage) : [];
+      const drawn = images.filter((layer) => layer !== "none");
+      if (drawn.some((layer) => !GRADIENT.test(layer))) return { unknown: `${tag} has a picture` };
+      if (drawn.length) {
+        if (/text/.test(cs.backgroundClip)) return { unknown: `${tag}'s letters are filled with a gradient` };
+        if (/fixed/.test(cs.backgroundAttachment)) return { unknown: `${tag} has a gradient fixed to the screen` };
+        gradient = true;
+      }
       const c = rgba(cs.backgroundColor);
-      if (c[3] > 0) {
-        layers.push(c);
-        if (c[3] >= 0.999) break;
+      if (drawn.length || c[3] > 0) painted.push(n);
+      if (c[3] > 0) layers.push(c);
+      if (c[3] >= 0.999 || (drawn.length && covers(cs, images))) {
+        base = n;
+        break;
       }
     }
+    if (gradient) return { paint: { el, at, nodes: painted, base } };
     let g = [255, 255, 255];
     for (const c of layers.reverse()) g = g.map((v, i) => c[i] * c[3] + v * (1 - c[3]));
     return { rgb: g };
+  };
+  // What is seen of a line of words: its box, cut to every box that hides
+  // what spills out of it (a clamped paragraph still reports the lines it
+  // hides, and those lie over whatever is below it).
+  const seenOf = (el, r) => {
+    let { left, right, top, bottom } = r;
+    for (let p = el; p; p = p.parentElement) {
+      const cs = getComputedStyle(p);
+      if (cs.overflowX === "visible" && cs.overflowY === "visible") continue;
+      const q = p.getBoundingClientRect();
+      if (cs.overflowX !== "visible") {
+        left = Math.max(left, q.left);
+        right = Math.min(right, q.right);
+      }
+      if (cs.overflowY !== "visible") {
+        top = Math.max(top, q.top);
+        bottom = Math.min(bottom, q.bottom);
+      }
+    }
+    // Scrolled out of its row for now: measured where it stands in the row.
+    const out = right - left < 1 || bottom - top < 1;
+    if (out) ({ left, right, top, bottom } = r);
+    return { left, top, right, bottom, width: right - left, height: bottom - top, out };
+  };
+  // What else is drawn across a line of words, inside the ground they stand
+  // on, that is no parent of theirs: a picture laid behind them, a shade, a
+  // glow. The painting below lays the words' parents one over another and can
+  // not tell whether such a piece lies under the words or over them, so it
+  // does not vouch for words with one across them: they are said, to be
+  // looked at (a picture's own measure is scripts/words-on-pictures.mjs). A
+  // picture that has not arrived yet (an <img> still clear) counts: it is
+  // the ground once it comes. A blurred piece spreads past its box, and is
+  // taken as wide as its blur. A bar pinned to the screen only passes over
+  // what scrolls beneath it, and is no ground. A piece that only throws a
+  // shadow is not across the words; its shadow is, and is painted with them.
+  let pieces = null;
+  const PICTURED = new Set(["img", "video", "canvas", "svg", "iframe", "object", "embed"]);
+  // How far a box's shadows fall outside it, at most.
+  const reachOf = (shadow) => {
+    let reach = 0;
+    for (const one of commas(shadow)) {
+      if (/\binset\b/.test(one)) continue;
+      const [x = 0, y = 0, blur = 0, spread = 0] = (one.replace(STOP, "").match(/-?[\d.]+px/g) || []).map(parseFloat);
+      reach = Math.max(reach, Math.max(0, blur + spread) + Math.max(Math.abs(x), Math.abs(y)));
+    }
+    return reach;
+  };
+  const cornersOf = (cs) => ["top-left", "top-right", "bottom-right", "bottom-left"].map((c) => `border-${c}-radius:${cs.getPropertyValue(`border-${c}-radius`)}`).join(";");
+  const piecesOf = () => {
+    if (pieces) return pieces;
+    pieces = [];
+    for (const e of document.body.querySelectorAll("*")) {
+      const tag = e.tagName.toLowerCase();
+      if (e.closest("svg") && tag !== "svg") continue;
+      const cs = getComputedStyle(e);
+      if (cs.visibility === "hidden") continue;
+      const images = cs.backgroundImage && cs.backgroundImage !== "none" ? commas(cs.backgroundImage).filter((layer) => layer !== "none") : [];
+      const picture = PICTURED.has(tag) || images.some((layer) => !GRADIENT.test(layer));
+      const paints = picture || images.length > 0 || rgba(cs.backgroundColor)[3] > 0.02;
+      const shadow = cs.boxShadow && cs.boxShadow !== "none" ? cs.boxShadow : null;
+      if (!paints && !shadow) continue;
+      if (!picture && opacityOf(e) < 0.02) continue;
+      const box = e.getBoundingClientRect();
+      if (box.width < 1 || box.height < 1) continue;
+      const blur = 2.5 * parseFloat(/blur\(([\d.]+)px\)/.exec(cs.filter)?.[1] ?? 0);
+      const first = (e.getAttribute("class") || "").trim().split(/\s+/)[0];
+      pieces.push({
+        e,
+        box,
+        r: { left: box.left - blur, top: box.top - blur, right: box.right + blur, bottom: box.bottom + blur },
+        paints,
+        what: picture ? `a picture is drawn across it (${tag})` : `another piece is drawn across it (${tag}${first ? `.${first}` : ""})`,
+        shadow,
+        reach: shadow ? reachOf(shadow) : 0,
+        corners: cornersOf(cs),
+      });
+    }
+    return pieces;
+  };
+  // Two pixels: a letter's box stands a pixel past a tight line, and that is not across.
+  const overlaps = (r, at, by = 2) => Math.min(r.right, at.right) - Math.max(r.left, at.left) >= by && Math.min(r.bottom, at.bottom) - Math.max(r.top, at.top) >= by;
+  // Where a piece is painted among its neighbours (CSS 2.1, appendix E, and
+  // what has joined it since): in the flow, or placed, at a z of its own. A
+  // thing is surely lifted out of the flow by what always makes a layer
+  // (`lifted`), and may be by what only sometimes does (`mayLift`: a z given
+  // to a thing that may not take one, a will-change, a containment). A thing
+  // that only may be lifted is a doubt, and a doubt is never "underneath".
+  const none = (v) => !v || v === "none";
+  const lifted = (cs) =>
+    /fixed|sticky/.test(cs.position) ||
+    (cs.position !== "static" && cs.zIndex !== "auto") ||
+    Number(cs.opacity) < 1 ||
+    ![cs.transform, cs.translate, cs.rotate, cs.scale, cs.filter, cs.backdropFilter, cs.perspective, cs.clipPath, cs.maskImage, cs.webkitMaskImage, cs.viewTransitionName].every(none) ||
+    (cs.mixBlendMode && cs.mixBlendMode !== "normal") ||
+    cs.isolation === "isolate" ||
+    /layout|paint|strict|content/.test(cs.contain || "") ||
+    (cs.containerType && cs.containerType !== "normal");
+  const mayLift = (cs) => cs.zIndex !== "auto" || !none(cs.contain) || (cs.willChange && cs.willChange !== "auto") || (cs.contentVisibility && cs.contentVisibility !== "visible");
+  const layerOf = (x, top) => {
+    let z = null;
+    let placed = false;
+    let doubt = false;
+    for (let n = x; n && n !== top; n = n.parentElement) {
+      const cs = getComputedStyle(n);
+      // The outermost that makes a layer of its own carries all inside it.
+      if (lifted(cs)) z = cs.zIndex === "auto" ? 0 : Number(cs.zIndex);
+      else if (mayLift(cs)) doubt = true;
+      if (cs.position !== "static") placed = true;
+    }
+    return { placed: placed || z !== null, z: z ?? 0, doubt };
+  };
+  // A piece outside the words' ground (the first opaque parent they stand
+  // on) is hidden by that ground when it is painted before it. Only what is
+  // surely painted before it is left out; the rest may lie over the words.
+  const under = new Map();
+  const surelyUnder = (piece, base) => {
+    const seen = under.get(base) ?? under.set(base, new Map()).get(base);
+    if (seen.has(piece)) return seen.get(piece);
+    let top = piece.parentElement;
+    while (top && !top.contains(base)) top = top.parentElement;
+    let sure = false;
+    if (top) {
+      const [a, b] = [layerOf(piece, top), layerOf(base, top)];
+      const first = Boolean(piece.compareDocumentPosition(base) & Node.DOCUMENT_POSITION_FOLLOWING);
+      const cs = getComputedStyle(piece);
+      if (a.doubt || b.doubt) sure = false;
+      else if (!a.placed && !b.placed) sure = first && !/^inline/.test(cs.display) && cs.float === "none";
+      else if (!a.placed) sure = b.z >= 0;
+      else if (!b.placed) sure = a.z < 0;
+      else sure = a.z < b.z || (a.z === b.z && first);
+    }
+    seen.set(piece, sure);
+    return sure;
+  };
+  // A piece counts for a line of words when it is no parent or child of
+  // theirs, is not pinned apart from them, and is inside their ground or not
+  // surely underneath it.
+  const beside = (p, el, base) => {
+    if (p.e === base || p.e.contains(el) || el.contains(p.e)) return false;
+    for (let n = p.e; n && !n.contains(el); n = n.parentElement) {
+      if (/fixed|sticky/.test(getComputedStyle(n).position)) return false;
+    }
+    return !base || base.contains(p.e) || !surelyUnder(p.e, base);
+  };
+  // What is seen of a piece from where the words are: its box, cut to every
+  // box apart from the words that hides what spills out of it.
+  const seenFrom = (p, el) => {
+    let { left, top, right, bottom } = p.r;
+    for (let n = p.e.parentElement; n && !n.contains(el); n = n.parentElement) {
+      const cs = getComputedStyle(n);
+      if (cs.overflowX === "visible" && cs.overflowY === "visible") continue;
+      const q = n.getBoundingClientRect();
+      if (cs.overflowX !== "visible") [left, right] = [Math.max(left, q.left), Math.min(right, q.right)];
+      if (cs.overflowY !== "visible") [top, bottom] = [Math.max(top, q.top), Math.min(bottom, q.bottom)];
+    }
+    return { left, top, right, bottom };
+  };
+  const acrossOf = ({ el, at, base }) => {
+    for (const p of piecesOf()) {
+      if (p.paints && overlaps(p.r, at) && beside(p, el, base) && overlaps(seenFrom(p, el), at)) return p.what;
+    }
+    // A parent's own ::before or ::after laid across the words (a veil, a
+    // sheen): placed from the parent's box, as CSS places it. Every parent
+    // up to the ground, whether or not it paints a ground of its own.
+    for (let n = el; n; n = n === base ? null : n.parentElement) {
+      const b = n.getBoundingClientRect();
+      const cs = getComputedStyle(n);
+      for (const pseudo of ["::before", "::after"]) {
+        const p = getComputedStyle(n, pseudo);
+        if (!p.content || p.content === "none" || p.content === "normal" || p.position !== "absolute" || Number(p.opacity) < 0.02) continue;
+        if (!(rgba(p.backgroundColor)[3] > 0.02) && !(p.backgroundImage && p.backgroundImage !== "none")) continue;
+        const left = b.left + parseFloat(cs.borderLeftWidth) + parseFloat(p.left);
+        const top = b.top + parseFloat(cs.borderTopWidth) + parseFloat(p.top);
+        const r = { left, top, right: left + parseFloat(p.width), bottom: top + parseFloat(p.height) };
+        // Placed by something this cannot read (auto): said, not guessed.
+        if (![r.left, r.top, r.right, r.bottom].every(Number.isFinite) || overlaps(r, at)) return `${n.tagName.toLowerCase()} draws a piece of its own across it (${pseudo})`;
+      }
+    }
+    return null;
+  };
+  // The ground where a gradient is part of it, painted and read. The words'
+  // parents, from the first opaque one up, are laid one over another as
+  // boxes with their own backgrounds, corners and shadows, each where it
+  // stands about the words, and over them the shadows that pieces beside the
+  // words throw across them (a picture plate's on its tray, a raised card's
+  // on the card below it), in an SVG the browser paints into a canvas: the
+  // gradient is the browser's own, its lines, its stops and its colour space
+  // with it. What comes back is the ground under these words and nowhere
+  // else (a word at the dark foot of a fade is not held to its clear head).
+  // Of all its pixels three are kept: the least kind to these words, the
+  // lightest and the darkest. checkMock measures against them with the one
+  // sum (contrast, below); the sum here only chooses the pixel.
+  //
+  // Held to the screen: scripts/painted-ground-check.mjs photographs a page
+  // with its letters cleared and sets every painted ground beside the
+  // screen's own pixels under the same words.
+  //
+  // What it does not see, as the sum of plain colours never did: a parent
+  // faded as a whole (its opacity), a filter or a blend laid on a parent.
+  const PAINT = [512, 256];
+  const linear = (v) => (v / 255 <= 0.03928 ? v / 255 / 12.92 : ((v / 255 + 0.055) / 1.055) ** 2.4);
+  const paintedGround = async (job, fg, alpha) => {
+    const across = acrossOf(job);
+    if (across) return { unknown: across };
+    const { el, nodes, base } = job;
+    const isPage = (n) => n === document.body || n === document.documentElement;
+    // A letter's box stands a pixel past a tight line. Where it overhangs the
+    // piece the words stand on by less than two pixels, the ground is read to
+    // that piece's edge: past it lies what is beside the words, not under them.
+    const at = { ...job.at };
+    if (!isPage(nodes[0])) {
+      const on = nodes[0].getBoundingClientRect();
+      if (on.left > at.left && on.left - at.left < 2) at.left = on.left;
+      if (on.top > at.top && on.top - at.top < 2) at.top = on.top;
+      if (on.right < at.right && at.right - on.right < 2) at.right = on.right;
+      if (on.bottom < at.bottom && at.bottom - on.bottom < 2) at.bottom = on.bottom;
+    }
+    // Whole pixels, inward: a box that ends part way through a pixel is
+    // painted there half clear, and that edge is no ground.
+    let [left, top, right, bottom] = [Math.ceil(at.left), Math.ceil(at.top), Math.floor(at.right), Math.floor(at.bottom)];
+    if (right - left < 1) [left, right] = [Math.floor(at.left), Math.floor(at.left) + 1];
+    if (bottom - top < 1) [top, bottom] = [Math.floor(at.top), Math.floor(at.top) + 1];
+    const [W, H] = [right - left, bottom - top];
+    const [w, h] = [Math.min(PAINT[0], W), Math.min(PAINT[1], H)];
+    const read = { left, top, right, bottom };
+    const esc = (s) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const px = (v) => `${parseFloat(v) || 0}px`;
+    const place = (b) => `position:absolute;box-sizing:border-box;margin:0;left:${b.left - left}px;top:${b.top - top}px;width:${b.width}px;height:${b.height}px`;
+    // The words' parents, the farthest first: each one that paints a ground or throws a shadow.
+    const chain = [];
+    for (let n = el; n; n = n.parentElement) {
+      if (nodes.includes(n) || (!isPage(n) && getComputedStyle(n).boxShadow !== "none")) chain.push(n);
+      if (n === base) break;
+    }
+    let boxes = "";
+    for (const n of chain.reverse()) {
+      const cs = getComputedStyle(n);
+      // The page's own ground is painted over the whole of it, whatever box
+      // <body> has; a gradient of its own is placed by the page's box.
+      const b = !isPage(n) ? n.getBoundingClientRect() : cs.backgroundImage !== "none" ? document.documentElement.getBoundingClientRect() : { left, top, width: W, height: H };
+      const sides = (name, tail = "") => ["Top", "Right", "Bottom", "Left"].map((side) => px(cs[`${name}${side}${tail}`])).join(" ");
+      boxes += `<div style="${esc(
+        [
+          place(b),
+          "border-style:solid",
+          "border-color:transparent",
+          `border-width:${sides("border", "Width")}`,
+          `padding:${sides("padding")}`,
+          `background-color:${cs.backgroundColor}`,
+          `background-image:${cs.backgroundImage}`,
+          `background-size:${cs.backgroundSize}`,
+          `background-position:${cs.backgroundPosition}`,
+          `background-repeat:${cs.backgroundRepeat}`,
+          `background-origin:${cs.backgroundOrigin}`,
+          `background-clip:${cs.backgroundClip}`,
+          `background-blend-mode:${cs.backgroundBlendMode}`,
+          // The first opaque parent is the ground itself, to its corners: what is under those is not in this painting.
+          ...(isPage(n) ? [] : [...(n === base ? [] : [cornersOf(cs)]), `box-shadow:${cs.boxShadow}`]),
+        ].join(";"),
+      )}"></div>`;
+    }
+    // The shadows thrown across the words by pieces beside them, each cut to
+    // the boxes that hide what spills out of them. A shadow is laid over the
+    // whole ground: thrown from a later layer it lies over the words as well,
+    // and dims them with their ground, which this counts as ground alone.
+    for (const p of piecesOf()) {
+      if (!p.shadow || !p.reach) continue;
+      if (!overlaps({ left: p.box.left - p.reach, top: p.box.top - p.reach, right: p.box.right + p.reach, bottom: p.box.bottom + p.reach }, read, 1) || !beside(p, el, base)) continue;
+      const cut = { left: -1e6, top: -1e6, right: 1e6, bottom: 1e6 };
+      let opacity = 1;
+      for (let n = p.e; n && !isPage(n); n = n.parentElement) {
+        const cs = getComputedStyle(n);
+        if (!n.contains(el)) opacity *= Number(cs.opacity);
+        if (n === p.e || (cs.overflowX === "visible" && cs.overflowY === "visible")) continue;
+        const q = n.getBoundingClientRect();
+        if (cs.overflowX !== "visible") [cut.left, cut.right] = [Math.max(cut.left, q.left), Math.min(cut.right, q.right)];
+        if (cs.overflowY !== "visible") [cut.top, cut.bottom] = [Math.max(cut.top, q.top), Math.min(cut.bottom, q.bottom)];
+      }
+      if (cut.right - cut.left < 1 || cut.bottom - cut.top < 1) continue;
+      const frame = { left: cut.left, top: cut.top, width: cut.right - cut.left, height: cut.bottom - cut.top };
+      boxes += `<div style="${esc(`${place(frame)};overflow:hidden`)}"><div style="${esc(`position:absolute;box-sizing:border-box;left:${p.box.left - cut.left}px;top:${p.box.top - cut.top}px;width:${p.box.width}px;height:${p.box.height}px;${p.corners};box-shadow:${p.shadow};opacity:${opacity}`)}"></div></div>`;
+    }
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><foreignObject x="0" y="0" width="${W}" height="${H}"><div xmlns="http://www.w3.org/1999/xhtml" style="position:relative;width:${W}px;height:${H}px;overflow:hidden;background:#ffffff">${boxes}</div></foreignObject></svg>`;
+    let data;
+    try {
+      const picture = new Image();
+      picture.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      await picture.decode();
+      const paper = document.createElement("canvas");
+      paper.width = w;
+      paper.height = h;
+      const pen = paper.getContext("2d", { willReadFrequently: true });
+      pen.drawImage(picture, 0, 0, w, h);
+      data = pen.getImageData(0, 0, w, h).data;
+    } catch {
+      return { unknown: "the gradient behind it could not be painted to be read" };
+    }
+    const seen = new Map();
+    for (let i = 0; i < data.length; i += 4) {
+      // Painted through (the paper under every box is white): a pixel left part clear was not.
+      if (data[i + 3] < 255) continue;
+      const key = (data[i] << 16) | (data[i + 1] << 8) | data[i + 2];
+      if (!seen.has(key)) seen.set(key, [data[i], data[i + 1], data[i + 2]]);
+    }
+    if (!seen.size) return { unknown: "the gradient behind it could not be painted to be read" };
+    const light = (c) => 0.2126 * linear(c[0]) + 0.7152 * linear(c[1]) + 0.0722 * linear(c[2]);
+    let worst = null;
+    let lightest = null;
+    let darkest = null;
+    for (const g of seen.values()) {
+      const l = light(g);
+      const over = light(fg.slice(0, 3).map((v, i) => v * alpha + g[i] * (1 - alpha)));
+      const ratio = (Math.max(over, l) + 0.05) / (Math.min(over, l) + 0.05);
+      if (!worst || ratio < worst.ratio) worst = { g, ratio };
+      if (!lightest || l > lightest.l) lightest = { g, l };
+      if (!darkest || l < darkest.l) darkest = { g, l };
+    }
+    // Where it was read, on the page, and whether a photograph of the page
+    // would show it there (scripts/painted-ground-check.mjs): not when the
+    // words are scrolled out of their row, or pinned to the screen.
+    let pinned = false;
+    for (let n = el; n && !pinned; n = n.parentElement) pinned = /fixed|sticky/.test(getComputedStyle(n).position);
+    return { rgbs: [worst.g, lightest.g, darkest.g], painted: true, box: [left + scrollX, top + scrollY, W, H], apart: Boolean(job.at.out) || pinned };
   };
   const largeText = (cs) => {
     const size = parseFloat(cs.fontSize);
@@ -262,7 +652,7 @@ function look(arg) {
       text: text.slice(0, 48),
       fg,
       alpha: fg[3] * opacityOf(el),
-      ground: groundOf(el),
+      ground: groundOf(el, seenOf(el, r)),
       large: largeText(cs),
       // WCAG asks nothing of a control that cannot be used.
       disabled: Boolean(el.closest(":disabled, [aria-disabled='true']")),
@@ -274,8 +664,18 @@ function look(arg) {
     .filter((f) => f.placeholder && shown(f))
     .map((f) => {
       const fg = rgba(getComputedStyle(f, "::placeholder").color);
-      return { text: f.placeholder.slice(0, 48), fg, alpha: fg[3] * opacityOf(f), ground: groundOf(f), large: largeText(getComputedStyle(f)), allow: allowance(f, "placeholder") };
+      // A placeholder stands inside the field's edge and padding, not out to its corners.
+      const cs = getComputedStyle(f);
+      const b = f.getBoundingClientRect();
+      const inset = (side) => parseFloat(cs[`border${side}Width`]) + parseFloat(cs[`padding${side}`]);
+      const inner = { left: b.left + inset("Left"), top: b.top + inset("Top"), right: b.right - inset("Right"), bottom: b.bottom - inset("Bottom") };
+      return { text: f.placeholder.slice(0, 48), fg, alpha: fg[3] * opacityOf(f), ground: groundOf(f, seenOf(f, inner.right - inner.left >= 1 && inner.bottom - inner.top >= 1 ? inner : b)), large: largeText(cs), allow: allowance(f, "placeholder") };
     });
+
+  // Words on a gradient: their ground is painted and read, one line at a time.
+  for (const w of [...words, ...placeholders]) {
+    if (w.ground.paint) w.ground = await paintedGround(w.ground.paint, w.fg, w.alpha);
+  }
 
   const CONTROL =
     "button, a[href], [role=button], [role=link], [role=tab], [role=radio], [role=checkbox], [role=switch], [role=menuitem], [role=option], input:not([type=hidden]), select, textarea, summary";
@@ -558,6 +958,21 @@ function look(arg) {
 }
 
 /**
+ * Every ground the contrast measure painted to read it (words on a gradient),
+ * on the palette the page wears now: the words, the box that was read, in
+ * the page's own coordinates, and the lightest and the darkest of it. For
+ * the proof by the screen (scripts/painted-ground-check.mjs), which sets
+ * each beside a photograph of the same box.
+ */
+export async function paintedGrounds(page, selector = "body") {
+  const seen = await page.evaluate(look, selector);
+  if (!seen) return null;
+  return [...seen.words, ...seen.placeholders]
+    .filter((w) => w.ground.painted)
+    .map((w) => ({ text: w.text, box: w.ground.box, apart: w.ground.apart, lightest: w.ground.rgbs[1], darkest: w.ground.rgbs[2] }));
+}
+
+/**
  * The side stripes alone, in the part of the page a selector names, each with
  * its reason when it carries one (data-mock-allow="stripe" data-mock-why):
  * the measure checkMock's `stripe` uses, for the walk over every screen of
@@ -715,11 +1130,12 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
             continue;
           }
           const need = w.large ? 3 : 4.5;
-          // A face drawn as a gradient counts by its worst stop.
+          // A face drawn as a gradient counts by its worst stop, and a ground
+          // painted to be read by its least kind pixel under the words.
           const r = Math.min(...(w.ground.rgbs ?? [w.ground.rgb]).map((g) => contrast(w.fg, w.alpha, g)));
           if (r + 1e-9 >= need) continue;
           if (w.allow) allow(check, `"${w.text}"`, w.allow);
-          else fail(check, palette, `"${w.text}"`, `${r.toFixed(2)}:1, needs ${need}:1`);
+          else fail(check, palette, `"${w.text}"`, `${r.toFixed(2)}:1${w.ground.painted ? " at its least on the gradient under it" : ""}, needs ${need}:1`);
         }
       }
       if (!allowGold) {
@@ -925,6 +1341,8 @@ const FIXTURES = `
   <p style="margin:8px 0 0;color:#e8e8ea;font-size:13px">Search <kbd>Ctrl</kbd> K, close with Esc</p>
   <a href="/history/" style="margin-top:8px;display:flex;align-items:center;gap:6px;width:64px;height:48px;color:#e8e8ea;font-size:13px;text-decoration:none"><span style="min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">History</span><span style="flex:none;width:36px;height:16px;border-radius:999px;background:#2a2a2e"></span></a>
   <a href="/saints/john-chrysostom/" style="margin-top:8px;display:flex;flex-direction:column;width:140px;color:#e8e8ea;text-decoration:none"><span style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;overflow:hidden;font-size:13px;font-style:italic">&ldquo;Golden-mouthed, the preacher of Antioch&rdquo;</span><span style="font-size:19px;font-weight:600">John Chrysostom</span></a>
+  <div style="margin-top:8px;padding:10px 12px;border-radius:14px;background:linear-gradient(180deg,#1c1c1f,#151518)"><p style="margin:0;color:rgba(255,255,255,0.3);font-size:13px">Faint on a tray</p></div>
+  <div style="margin-top:8px;height:120px;display:flex;flex-direction:column;justify-content:flex-end;background-image:linear-gradient(var(--color-night),var(--color-paper))"><p class="text-paper" style="margin:0;font-size:13px">Ink at the ink end</p></div>
 </div>
 <div data-mock-fixture="good" class="bg-night px-4 pb-4" style="position:fixed;left:0;right:0;top:0;z-index:301">
   <div class="flex items-center gap-2">
@@ -963,6 +1381,10 @@ const FIXTURES = `
   <a href="/reading/the-way-of-a-pilgrim/" class="mt-1 flex min-h-11 flex-col font-sans"><span class="sr-only"><span>The Way of a Pilgrim, Anonymous</span></span><span aria-hidden="true" class="text-ui text-paper">The Way of a Pilgrim</span></a>
   <button type="button" data-mock-allow="cut" data-mock-why="a reader's own title, rightly cut in a list" class="mt-1 block min-h-11 w-40 truncate text-start font-sans text-ui text-paper">A long title a reader wrote for the wall</button>
   <blockquote lang="en" data-mock-allow="emdash" data-mock-why="a Father's own words, as his edition prints them" class="mt-3 font-serif text-body italic leading-[1.6] text-paper/85">Chapter I.\u2014Introduction. Reason for writing</blockquote>
+  <div class="theology-tray mt-3 rounded-[18px] px-4 py-3"><p class="font-sans text-ui text-paper">A line on a tray</p><p class="font-sans text-caption text-paper/70">And a quieter one under it</p></div>
+  <div class="mt-3" style="height:120px;background-image:linear-gradient(var(--color-night),var(--color-paper))"><p class="font-sans text-ui text-paper">Ink at the ground end</p></div>
+  <div class="mt-3" style="background-image:url(data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==)"><p class="font-sans text-ui text-paper">Words on a picture</p></div>
+  <div class="relative mt-3 h-24 overflow-hidden rounded-[18px] bg-night-soft"><img alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="absolute inset-0 h-full w-full object-cover"><p class="absolute inset-x-0 bottom-0 px-3 pb-2 pt-6 font-sans text-ui text-paper" style="background-image:linear-gradient(transparent,var(--color-night))">Words over a fade on a picture</p></div>
 </div>`;
 
 // An Arabic page's progress bar, as the app draws them (FirstLiturgyGuide,
@@ -990,6 +1412,8 @@ async function selfTest() {
     printMockCheck(bad, "the first drawings' mistakes");
     const good = await checkMock(page, "[data-mock-fixture=good]");
     printMockCheck(good, "the same parts from the house's classes");
+    // The words whose ground was painted to be read, on the palette the page wears.
+    const painted = (await paintedGrounds(page, "[data-mock-fixture=good]")).map((g) => g.text);
     // The page in Arabic, as the app sets it, and its bar.
     await page.evaluate((html) => {
       const h = document.documentElement;
@@ -1006,11 +1430,20 @@ async function selfTest() {
     const named = good.allowed.some((a) => a.startsWith("emdash on ")) && good.allowed.some((a) => a.startsWith("cut on "));
     // Both names cut: the tile's, and the card's first line (the saints' byname, the arbiter's word of 2026-11-11).
     const bothCut = bad.failures.filter((f) => f.check === "cut").length >= 2;
-    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut && arabic.failures.length === 0;
+    // Words on a gradient (1.9, T4). Caught where they fail: faint words on a tray, and ink at the ink end of a fade
+    // from the page's ground to its ink. Passed where they pass, and measured, not skipped: a line on a house tray,
+    // and the same ink at the ground end of the same fade, which no measure by the gradient's stops could pass.
+    // And still said, never vouched for: words on a picture, and words on a fade with a picture laid under it.
+    const onGradient = (what) => bad.failures.some((f) => f.check === "contrast" && f.what === `"${what}"` && f.detail.includes("on the gradient under it"));
+    const fadesCaught = onGradient("Faint on a tray") && onGradient("Ink at the ink end");
+    const fadesRead = ["A line on a tray", "And a quieter one under it", "Ink at the ground end"].every((t) => painted.includes(t));
+    const said = (what, why) => good.unmeasured.includes(`"${what}": ${why}`);
+    const picturesSaid = said("Words on a picture", "div has a picture") && said("Words over a fade on a picture", "a picture is drawn across it (img)") && good.unmeasured.length === 2;
+    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && picturesSaid && arabic.failures.length === 0;
     console.log(
       ok
         ? "\nself-test: every mistake caught, and the house's own parts pass"
-        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}`,
+        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}`,
     );
     return ok;
   } finally {
