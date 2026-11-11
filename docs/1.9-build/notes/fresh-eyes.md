@@ -304,6 +304,16 @@ The count that let them slip (Updates, 2026-11-11, `0258a5320`): their height wa
   a Father's work: "Hymn I of 19 · 13 min left"). `components/bible/ChapterVerseStatus.tsx:122`
   gives it a ground, but the page's fade behind it lets the verse show through.
   Area: Updates 2.
+  **Done** (Updates 2, 2026-11-11, `274df8a52`): while the line is open the
+  fade under the pill is solid up to it with 4px to spare, and the words above
+  it go quiet over the same 127px as before; on a look with a picture at its
+  foot the whole foot rises the same way (`--foot-raise`, 0 otherwise). Both
+  running lines say when they are open (`data-open`). Measured on the export
+  at 390, the page's pixels beside the line's words with the words shown and
+  hidden: up to 86 of 255 on Night sky and 150 on Dawn before, 0 after, on
+  Luke 12 and St Ephraim's Hymns on the Nativity alike. After:
+  `fresh-eyes/13b-bible-status-after.jpg` (Night sky, then Dawn).
+  `lib/bible/__tests__/runningLineGround.test.ts` fails on the old code.
 - **L3. Reading plans: marking a day read pushes the list down 41px** under the
   finger, because "1 day in a row" is added above it
   (`fresh-eyes/12a-plan-before.png`, `12b-plan-after-mark.png`). Bible, Reading
