@@ -31,7 +31,7 @@ const LINES = {
     "When a search finds nothing, we keep the words you searched, never who you are, for 90 days, so we can add what readers are looking for. Anything that looks like an email address or a phone number is removed before it is kept.",
   // His yes to 59 (2026-11-10), as the page writes its apostrophe.
   "What is kept while reading travels with Plus (59, supabase/migrations/20261110012059_user_kept.sql)":
-    "With Purify Plus, what you keep while reading travels too: your progress in each reading plan, Remember the verse&rsquo;s schedule (which verse is due when, not its words), your place in the Bible and in each long work, and your reading settings (palette, size, typeface, line spacing and Focus). Each is one small record that only your account can read or change, and it is deleted with your account.",
+    "With Purify Plus, what you keep while reading travels too: your progress in each reading plan, Remember the verse&rsquo;s schedule (which verse is due when, not its words), the quotes and your own words that you chose to learn by heart (kept with their words, since they cannot be fetched again the way a verse can), your place in the Bible and in each long work, and your reading settings (palette, size, typeface, line spacing and Focus). Each is one small record that only your account can read or change, and it is deleted with your account.",
   // Call 32, his yes of 2026-11-11 ("yes privacy and phone voice in v1.9"), the arbiter's words for it.
   "Signing in carries (call 32, P1)":
     "Purify works privately on this device with no account; signing in carries the days you have prayed and the names you pray for to every device, and with Purify Plus your highlights, notes and bookmarks too.",
@@ -60,7 +60,7 @@ const LINES_DE = {
   "Searches that found nothing, in German":
     "Wenn eine Suche nichts findet, behalten wir 90 Tage lang die Wörter, nach denen du gesucht hast, niemals aber, wer du bist, damit wir ergänzen können, wonach Leser suchen. Alles, was wie eine E-Mail-Adresse oder eine Telefonnummer aussieht, wird entfernt, bevor es behalten wird.",
   "What is kept while reading travels with Plus, in German":
-    "Mit Purify Plus wandert auch mit, was du beim Lesen behältst: dein Fortschritt in jedem Leseplan, der Plan von &bdquo;Den Vers auswendig lernen&ldquo; (welcher Vers wann dran ist, nicht sein Wortlaut), deine Stelle in der Bibel und in jedem langen Werk und deine Leseeinstellungen (Palette, Größe, Schriftart, Zeilenabstand und Fokus). Jedes davon ist ein kleiner Eintrag, den nur dein Konto lesen oder ändern kann und der mit deinem Konto gelöscht wird.",
+    "Mit Purify Plus wandert auch mit, was du beim Lesen behältst: dein Fortschritt in jedem Leseplan, der Plan von &bdquo;Den Vers auswendig lernen&ldquo; (welcher Vers wann dran ist, nicht sein Wortlaut), die Zitate und deine eigenen Worte, die du auswendig lernen willst (diese mit ihrem Wortlaut, weil sie sich nicht wie ein Vers neu laden lassen), deine Stelle in der Bibel und in jedem langen Werk und deine Leseeinstellungen (Palette, Größe, Schriftart, Zeilenabstand und Fokus). Jedes davon ist ein kleiner Eintrag, den nur dein Konto lesen oder ändern kann und der mit deinem Konto gelöscht wird.",
   "Signing in carries, in German":
     "Purify funktioniert privat auf diesem Gerät, ohne Konto; die Anmeldung bringt die Tage, an denen du gebetet hast, und die Namen, für die du betest, auf jedes Gerät, und mit Purify Plus auch deine Markierungen, Notizen und Lesezeichen.",
   "Every field an account keeps, in German":

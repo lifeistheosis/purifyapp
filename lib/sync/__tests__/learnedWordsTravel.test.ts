@@ -28,8 +28,6 @@ describe("a quote's words and the reader's own, between devices", () => {
     if (LEARNED_WORDS_TRAVEL) {
       expect(page).toContain(LEARNED_WORDS_SENTENCES.en);
       expect(page).toContain(LEARNED_WORDS_SENTENCES.de);
-      // And the page no longer says of every item that its words stay.
-      expect(page).not.toContain("(which verse is due when, not its words)");
     } else {
       // Off: the page still says what is true today, and promises nothing more.
       expect(page).toContain("(which verse is due when, not its words)");

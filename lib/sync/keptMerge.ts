@@ -164,20 +164,15 @@ export function mergeRemember(local: RememberSlice, remote: RememberSlice): Reme
 
 /**
  * Whether a quote's words and the reader's own leave the device (build 93
- * note 11). OFF until the privacy page says so: the page says of this row
- * "which verse is due when, not its words" (his yes to 59, 2026-11-10), and
- * a quote's words and a reader's own would be words. The sentence that makes
- * it true is with the owner; his yes turns this on in the same commit that
- * puts the sentence on the page, and
- * lib/sync/__tests__/learnedWordsTravel.test.ts refuses one without the
- * other.
+ * note 11). ON since his yes privacy (2026-11-11, call 32): the page carries
+ * the clause, and the test refuses one without the other.
  *
  * While it is off, what the page already says is what travels: each item's
  * schedule, which one is chosen, and a verse taken by its place (its place,
  * never its words). A quote and the reader's own words stay where they were
  * made.
  */
-export const LEARNED_WORDS_TRAVEL = false;
+export const LEARNED_WORDS_TRAVEL = true;
 
 /** The words the privacy page must carry before the switch is on, in each of the page's languages. */
 export const LEARNED_WORDS_SENTENCES = {

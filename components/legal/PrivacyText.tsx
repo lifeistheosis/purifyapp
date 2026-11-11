@@ -133,7 +133,10 @@ function PrivacyEn() {
  <p className="mt-3 font-serif text-[16px] leading-[1.65] text-paper/88">
  With Purify Plus, what you keep while reading travels too: your
  progress in each reading plan, Remember the verse&rsquo;s schedule
- (which verse is due when, not its words), your place in the Bible
+ (which verse is due when, not its words), the quotes and your own
+ words that you chose to learn by heart (kept with their words,
+ since they cannot be fetched again the way a verse can), your
+ place in the Bible
  and in each long work, and your reading settings (palette, size,
  typeface, line spacing and Focus). Each is one small record that
  only your account can read or change, and it is deleted with your
@@ -982,7 +985,10 @@ function PrivacyDe() {
  <p className="mt-3 font-serif text-[16px] leading-[1.65] text-paper/88">
  Mit Purify Plus wandert auch mit, was du beim Lesen behältst: dein
  Fortschritt in jedem Leseplan, der Plan von &bdquo;Den Vers auswendig
- lernen&ldquo; (welcher Vers wann dran ist, nicht sein Wortlaut),
+ lernen&ldquo; (welcher Vers wann dran ist, nicht sein Wortlaut), die
+ Zitate und deine eigenen Worte, die du auswendig lernen willst (diese
+ mit ihrem Wortlaut, weil sie sich nicht wie ein Vers neu laden
+ lassen),
  deine Stelle in der Bibel und in jedem langen Werk und deine
  Leseeinstellungen (Palette, Größe, Schriftart, Zeilenabstand und
  Fokus). Jedes davon ist ein kleiner Eintrag, den nur dein Konto lesen
