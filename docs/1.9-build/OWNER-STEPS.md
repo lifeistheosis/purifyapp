@@ -932,6 +932,42 @@ download until the engine has been timed on a real phone and you have walked
 it. The Plus voices you keep (V7) are added by the voices chat, on the
 website's side, behind the check for Plus; you upload none of them.
 
+
+### V9. Which of the Fathers' works to record first (5 minutes)
+
+Your word, 2026-11-11 ("rec voices"): 1.9 ships the recorded Heart voice, and
+your PC records the Fathers' most-read works after the release, each
+appearing as it is recorded with no store build. "Most read" is the count the
+website already keeps of pages opened, by address and day. It names no reader.
+
+1. In Supabase, SQL editor, run this. It only reads:
+
+   ```sql
+   select key, sum(views)::bigint as views
+   from public.analytics_daily_counts
+   where level = 'page'
+     and key like '/saints/%/%'
+     and key not like '%/web'
+     and day >= current_date - 90
+   group by key
+   order by views desc
+   limit 300;
+   ```
+
+2. Export the answer as JSON and save it as `views.json` (anywhere outside
+   the repository).
+3. In the repository's folder:
+
+   ```
+   node scripts/listen-first-works.mjs path/to/views.json 25
+   ```
+
+   It prints the 25 most opened works not yet recorded, each with the hours
+   it takes to hear and the hours of your PC, and the running total. Record
+   down the list as far as you choose, by V2 to V5.
+
+Send the arbiter: the lines it printed. Nothing is uploaded for this step.
+
 ---
 
 ## The test web: on Render's free size now, the $7 size at payday

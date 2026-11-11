@@ -27,6 +27,12 @@ export const dynamic = "force-dynamic";
  * and outside public/, so no address serves one without this check. Each is
  * about half a megabyte. No storage key is needed and none is held.
  *
+ * Why no private bucket (the arbiter, 2026-11-11). This repository is public
+ * and so are the voices themselves, on the engine's own page under
+ * Apache-2.0. Nothing here is a secret. What the check guards is the app's
+ * own path to a Plus voice: the one way the app fetches one is through this
+ * route, and this route asks the server who is asking.
+ *
  * A voice that is offered but whose file is not on the server yet answers
  * 404 not_ready: the picker shows no voice it cannot fetch.
  *

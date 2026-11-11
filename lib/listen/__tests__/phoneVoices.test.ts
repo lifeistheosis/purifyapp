@@ -147,3 +147,26 @@ describe("GET /api/listen/phone-voice", () => {
     expect(route).toContain("`${decision.voice}.bin`");
   });
 });
+
+describe("the works to record first (scripts/listen-first-works.mjs)", () => {
+  it("sizes each work not yet recorded, and orders them by the website's own count when given one", async () => {
+    const { firstWorks } = (await import("../../../scripts/listen-first-works.mjs")) as {
+      firstWorks: (root: string, views?: { key: string; views: number }[] | null) => { id: string; words: number; listenHours: number; pcHours: number; views: number }[];
+    };
+    const bySize = firstWorks(process.cwd());
+    expect(bySize.length).toBeGreaterThan(100);
+    expect(bySize[0].pcHours).toBeGreaterThanOrEqual(bySize[1].pcHours);
+    // His PC makes sound at 0.75 of real time: a work takes a third longer to record than to hear.
+    expect(bySize[0].pcHours / bySize[0].listenHours).toBeCloseTo(1 / 0.75, 5);
+
+    const id = bySize[bySize.length - 1].id;
+    const byViews = firstWorks(process.cwd(), [
+      { key: `/saints/${id}`, views: 40 },
+      { key: `/saints/${id}/`, views: 2 },
+      { key: `/saints/${id.split("/")[0]}/web`, views: 999 },
+      { key: "/bible/john/1", views: 5000 },
+    ]);
+    expect(byViews[0]).toMatchObject({ id, views: 42 });
+    expect(byViews[1].views).toBe(0);
+  });
+});

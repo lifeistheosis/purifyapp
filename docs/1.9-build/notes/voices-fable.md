@@ -672,3 +672,82 @@ my recommendation of the first. His decision.
 - The Voice section's first stills (scripts/mock-phone-voice.mjs) failed
   checkMock on Light (a filled button typed as paper on ink, 1.60:1); mended
   to the settings' own button. Not sent; the second pass waits on his choice.
+
+### His decision (2026-11-11, about 14:24 UTC): "rec voices"
+
+Quoted by the arbiter from his message "rec voices and yes fasting", to the
+choice put to him after the measure. 1.9 ships the recorded Heart voice. His
+PC records the Fathers' most-read works after the release, each appearing as
+it is recorded with no store build (the list the apps ask the website for,
+lib/listen/recordings.ts). A native engine in both apps is for 2.0.
+
+**Nothing of the engine ships.** kokoro-js, onnxruntime-web and
+@huggingface/transformers were installed only in the session's scratch
+folder and were never in package.json; the repository's own `sharp` is the
+build's image tool and was there before. What was built stays dark: the Plus
+voices' route answers no voice (none is offered), the download job is called
+by no screen, and the Voice section is drawn only in an export made with its
+preview switch, which a test holds no release sets. No private bucket is
+needed for Plus voices (the arbiter, 14:00): the voices are public on the
+engine's own page under Apache-2.0, so the server's check guards the app's
+path, not a secret.
+
+**Which works first.** `scripts/listen-first-works.mjs` sizes every work not
+yet recorded: 240 works, 564 hours to hear, 751 hours of his PC at 0.75. 173
+of them take under an hour of his PC each. Ordered by what readers open it
+needs the website's own count of pages opened (OWNER-STEPS V9: one read-only
+query, no reader named), which I cannot read from here. The eight longest
+are 368 of the 751 hours (St Gregory's Morals on Job alone is 95), so the
+order matters: by opens, not by length.
+
+### A native engine for 2.0: the plan, briefly
+
+**Why native.** The web view gave 0.07 to 0.08 of speaking speed on a
+stand-in for a mid-range phone, on one thread. The same model run natively on
+this server's four cores gave 0.71 while an export was running beside it. A
+phone's own runtime also has what a web view has not: every core, and the
+phone's neural accelerators (NNAPI or XNNPACK on Android, Core ML on iOS).
+Whether that reaches speaking speed on an ordinary phone is not known and is
+the first thing to measure.
+
+1. **Measure before building (2 days, one phone of each kind).** A bare test
+   app with ONNX Runtime Mobile and the same 92 MB model, timed on his Android
+   and an iPhone: speed, heat, memory, battery over ten minutes. Go only if an
+   ordinary Android makes speech at 1.5 times speaking speed or better, so a
+   sentence is always ready before it is needed. If not, try the smaller,
+   plainer engine (Piper, about 60 MB a voice, his 1.7 note: about 10 times
+   real time on a phone) and let him hear the difference before choosing.
+2. **One Capacitor plugin, two sides (about 2 weeks).** `speak(sentence,
+   voice)` answering a sound file on the phone, behind the seam already here
+   (lib/listen/phoneVoiceEngine.ts), so the app's one player, the lock screen,
+   the speed and the sleep timer are the ones a reader knows. Text to
+   phonemes is the hard part natively: kokoro-js uses espeak-ng compiled to
+   WebAssembly, and the plugin needs espeak-ng itself (GPL-3.0: a licence
+   question for him before a line is written) or a dictionary-based
+   phonemizer under a licence the apps can carry.
+3. **What is already built carries over.** The download job with its checked
+   list, Wi-Fi rule and Remove; the Plus rule and route; the Voice section.
+   Only the store changes (the apps' files, not the web view's cache).
+4. **The costs to name to him.** App size (the runtime is several MB in each
+   app, against the 85 MB budget of lib/build/exportSize.ts); new R8 keep
+   rules and so a release-APK walk on a phone (AGENTS.md, step 2a); an iOS
+   framework and a review; and the lighting of the sentence worked out on the
+   phone, sentence by sentence, never word by word.
+5. **What stays true.** Recorded Heart remains the voice of the Bible and of
+   every text his PC has read: exact, instant, the same on every phone. The
+   on-phone voice is for what has no recording yet.
+
+### Proved absent, and what is merely dark (2026-11-11, on both exports of 14:40)
+
+Searched in `out/` after the Android and the iOS export (73.7 MB packed
+each, the walk passed): `kokoro`, `onnxruntime`, `huggingface`, `jsdelivr`,
+`ort-wasm` and the manifest's address are in no file. None of the three
+packages is in `package.json` or `package-lock.json`.
+
+One thing is in the export and is not drawn: the Voice section's own code,
+about one small chunk, and its English words in the catalogue. The switch is
+read in another file, so the bundler keeps the code though no reader can
+reach it (Settings draws it only when `PHONE_VOICE_PREVIEW` is true, and no
+release sets it; `lib/listen/__tests__/phoneVoiceDownload.test.ts` holds
+both). It fetches nothing unless drawn and tapped. If he would rather it were
+not in the 1.9 apps at all, the mount is one line to take out.
