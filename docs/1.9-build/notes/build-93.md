@@ -312,6 +312,16 @@ Begun (Updates 2, 2026-11-11, `a1b987d18`):
   and is 269 pixels wide), St Hilary's miniature and St Xenia's icon (too
   small to show), St Theophylact's 17th-century icon (341 pixels wide), and
   St Bede (Wikidata's picture is not of him, by its own page).
+- **Asked of the arbiter, St Theophylact of Ohrid** (Updates 2, 2026-11-11):
+  his 17th-century Russian miniature (`File:Theophylact_the_Bulgarian.jpg`,
+  anonymous, public domain on its page, lettered with his name and see) came
+  through at last, and its original is 341 by 600, the whole figure. A cut at
+  its own pixels about his head and shoulders is 222 by 296, smaller than the
+  house's 315 by 420 (St John Cassian's is 250 wide). Its halo is painted with
+  fine lines, as Russian miniatures of that century draw them, and St Symeon's
+  icon "set in rays" was turned down in build 90, so it waits for his eye
+  before it goes on: `build-93/12-theophylact-candidate.png` (the whole
+  miniature, the cut at twice its size, and the round the saints' list draws).
 
 ### 13. In a Father's work, highlight and quote any words, not only the whole paragraph (2026-11-11 about 01:37 UTC)
 
