@@ -163,7 +163,7 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
                                 aria-selected={isCurrent}
                                 onClick={() => go(b)}
                                 className={cn(
-                                  "w-full flex items-center justify-between gap-3 rounded-md px-2.5 py-1.5 text-left font-sans text-detail transition-colors",
+                                  "w-full flex min-h-11 items-center justify-between gap-3 rounded-md px-2.5 py-1.5 text-left font-sans text-detail transition-colors",
                                   isCurrent
                                     ? "bg-paper/10 text-paper"
                                     : "text-paper/85 hover:bg-paper/[0.06] hover:text-paper",

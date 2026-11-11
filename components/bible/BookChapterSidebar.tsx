@@ -69,7 +69,7 @@ export function BookChapterSidebar({
               key={ch}
               href={`/bible/${book.slug}/${ch}`}
               className={cn(
-                "block text-center font-sans text-detail py-1.5 rounded-sm transition-colors",
+                "flex min-h-11 items-center justify-center font-sans text-detail py-1.5 rounded-sm transition-colors",
                 ch === current
                   ? "bg-accent/20 text-paper"
                   : "text-paper/65 hover:bg-paper/5 hover:text-paper",

@@ -258,7 +258,7 @@ function BooksDoors({ onClose }: { onClose: () => void }) {
     }));
   }, [today, style]);
   const door =
-    "flex min-w-0 flex-1 flex-col items-center gap-[5px] px-0.5 pb-1 pt-2 text-center font-sans text-caption font-semibold leading-[1.15] text-paper/80 transition-colors motion-reduce:transition-none active:text-paper";
+    "flex min-h-11 min-w-0 flex-1 flex-col items-center gap-[5px] px-0.5 pb-1 pt-2 text-center font-sans text-caption font-semibold leading-[1.15] text-paper/80 transition-colors motion-reduce:transition-none active:text-paper";
   const icon = "shrink-0 text-paper/85";
   return (
     <nav aria-label={t("plans.studyTools")} data-books-doors="" className="flex border-t border-paper/[0.08] bg-night px-2 pb-1.5 pt-1.5">

@@ -130,7 +130,7 @@ export function VerseOfDayView({
             <button
               type="button"
               onClick={() => setEnglish((open) => !open)}
-              className="-my-2 py-2 font-sans text-caption font-semibold text-paper/80 underline decoration-paper/30 underline-offset-4 hover:text-paper"
+              className="hit-44 -my-2 py-2 font-sans text-caption font-semibold text-paper/80 underline decoration-paper/30 underline-offset-4 hover:text-paper"
             >
               {english ? machine.showTranslation : machine.showOriginal}
             </button>

@@ -336,7 +336,7 @@ export function ReaderFontSizeButton() {
       onClick={cycleSize}
       title={`Text size: ${sizeLabel}. Click to change.`}
       aria-label={`Text size: ${sizeLabel}. Click to change.`}
-      className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-detail font-medium text-paper transition-colors"
+      className="hit-44 inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-detail font-medium text-paper transition-colors"
     >
       <span className="font-sans text-caption font-semibold text-paper/50">
         {t("ui.size")}
@@ -376,7 +376,7 @@ export function ReaderFontFamilyButton() {
       onClick={cycleFont}
       title={`Font: ${fontLabel}. Click to change.`}
       aria-label={`Font: ${fontLabel}. Click to change.`}
-      className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-detail font-medium text-paper transition-colors"
+      className="hit-44 inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-detail font-medium text-paper transition-colors"
     >
       <span className="font-sans text-caption font-semibold text-paper/50">
         {t("ui.font")}
@@ -407,7 +407,7 @@ export function ReaderLeadingButton() {
       onClick={cycleLeading}
       title={`Line spacing: ${leadingLabel}. Click to change.`}
       aria-label={`Line spacing: ${leadingLabel}. Click to change.`}
-      className="inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-detail font-medium text-paper transition-colors"
+      className="hit-44 inline-flex items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.04] hover:border-paper/30 hover:bg-paper/10 focus:outline-none focus:ring-2 focus:ring-paper/25 px-3 py-2 font-sans text-detail font-medium text-paper transition-colors"
     >
       <span className="font-sans text-caption font-semibold text-paper/50">
         {t("ui.spacing")}
@@ -738,7 +738,7 @@ export function ReaderThemeButton() {
       title={`Reading mode: ${paletteName}. Click to change.`}
       aria-label={`Reading mode: ${paletteName}. Click to change.`}
       className={cn(
-        "inline-flex items-center gap-2 rounded-pill border px-3 py-2 font-sans text-detail font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-paper/25",
+        "hit-44 inline-flex items-center gap-2 rounded-pill border px-3 py-2 font-sans text-detail font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-paper/25",
         theme !== "default" && allows(theme)
           ? "border-gold/55 bg-gold/15 text-paper"
           : "border-paper/15 bg-paper/[0.04] text-paper hover:border-paper/30 hover:bg-paper/10",

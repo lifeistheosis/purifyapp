@@ -42,6 +42,50 @@ const ROOT_PX = 17;
 // until 2026-11-11 (1.9, the Updates chat's finding).
 const SMALL_SIZE = /(?<![\w-])size-(?:[1-9]|10)\b(?!\S)/;
 
+// Heights made of padding around a line of words (`px-2.5 py-1 text-caption`,
+// 26.5px), which no reading above sees, since no height is stated at all:
+// the fasting tracker's thirty Kept, In part and Broke pills stood at 29px
+// that way until 2026-11-11 (fresh eyes M5; Fable Themes' 8a5c3cf7 took them
+// to 44 with .hit-44), and the admin panel's shared picker at 38px (Admin's
+// find). The height is the top and bottom padding and the line the words
+// stand on: the house's type is set in px (app/globals.css, --text-caption
+// and the rest), its line 1.5 of the size unless a leading says otherwise.
+// Read from the classes a phone wears (a breakpoint's own are set aside).
+const TYPE_PX: Record<string, number> = { eyebrow: 11, caption: 12, detail: 13, ui: 14, body: 17, lede: 19, "title-sm": 22, title: 28, heading: 32, xs: 0.75 * 17, sm: 0.875 * 17, base: 17, lg: 1.125 * 17 };
+const LEADING: Record<string, number> = { none: 1, tight: 1.25, snug: 1.375, normal: 1.5, relaxed: 1.625, loose: 2 };
+
+/** The height padding and one line of words give a control that states none, or null if it has no vertical padding or no size of type. */
+function paddedHeight(classes: string): number | null {
+  const space = (v: string) => (v.startsWith("[") ? (v.endsWith("px]") ? parseFloat(v.slice(1)) : parseFloat(v.slice(1)) * ROOT_PX) : Number(v) * 0.25 * ROOT_PX);
+  const tokens = classes
+    .replace(/["'`{}()?,]/g, " ")
+    .split(/\s+/)
+    // A class behind a variant (md:, hover:, pointer-fine:, a ternary's own colon) is not the phone's at rest.
+    .filter((t) => t && !t.includes(":"));
+  let top = 0;
+  let bottom = 0;
+  let padded = false;
+  let size: number | null = null;
+  let lead = 1.5;
+  let linePx: number | null = null;
+  for (const t of tokens) {
+    let m: RegExpExecArray | null;
+    if ((m = /^p[ytb]?-(\d+(?:\.\d+)?|\[[\d.]+(?:px|rem)\])$/.exec(t))) {
+      const v = space(m[1]);
+      if (t.startsWith("pt-")) top = v;
+      else if (t.startsWith("pb-")) bottom = v;
+      else top = bottom = v;
+      padded = true;
+    } else if ((m = /^text-(eyebrow|caption|detail|ui|body|lede|title-sm|title|heading|xs|sm|base|lg)$/.exec(t))) size = TYPE_PX[m[1]];
+    else if ((m = /^text-\[(\d+(?:\.\d+)?)px\]$/.exec(t))) size = Number(m[1]);
+    else if ((m = /^leading-(none|tight|snug|normal|relaxed|loose)$/.exec(t))) lead = LEADING[m[1]];
+    else if ((m = /^leading-\[(\d+(?:\.\d+)?)\]$/.exec(t))) lead = Number(m[1]);
+    else if ((m = /^leading-\[(\d+(?:\.\d+)?)px\]$/.exec(t))) linePx = Number(m[1]);
+  }
+  if (!padded || size === null) return null;
+  return top + bottom + (linePx ?? size * lead);
+}
+
 /** Whether a written-out height under 44px stands in these classes. */
 function writtenSmall(classes: string): boolean {
   for (const m of classes.matchAll(WRITTEN_H)) {
@@ -157,7 +201,11 @@ function countSmallTargets(): {
   writtenByFile: Record<string, number>;
   sized: number;
   sizedByFile: Record<string, number>;
+  padded: number;
+  paddedByFile: Record<string, number>;
 } {
+  const paddedByFile: Record<string, number> = {};
+  let padded = 0;
   const byFile: Record<string, number> = {};
   const writtenByFile: Record<string, number> = {};
   const sizedByFile: Record<string, number> = {};
@@ -172,6 +220,7 @@ function countSmallTargets(): {
       let n = 0;
       let w = 0;
       let z = 0;
+      let q = 0;
       for (let i = 0; i < lines.length; i++) {
         if (!INTERACTIVE.test(lines[i])) continue;
         // The className may sit on the same line or a few lines below.
@@ -191,6 +240,11 @@ function countSmallTargets(): {
         if (SMALL_H.test(read)) n++;
         else if (writtenSmall(read)) w++;
         else if (SMALL_SIZE.test(read)) z++;
+        else if (own !== null && !statesTall(own) && !/(?<![\w-])(?:min-)?(?:h|size)-/.test(own)) {
+          // No height stated anywhere it is read: padding and its line of words make it.
+          const h = paddedHeight(own);
+          if (h !== null && h < 44) q++;
+        }
       }
       const name = file.slice(ROOT.length + 1).replace(/\\/g, "/");
       if (n > 0) {
@@ -205,9 +259,13 @@ function countSmallTargets(): {
         sizedByFile[name] = z;
         sized += z;
       }
+      if (q > 0) {
+        paddedByFile[name] = q;
+        padded += q;
+      }
     }
   }
-  return { total, byFile, written, writtenByFile, sized, sizedByFile };
+  return { total, byFile, written, writtenByFile, sized, sizedByFile, padded, paddedByFile };
 }
 
 // The count as measured when this guard was written. IT MAY ONLY FALL.
@@ -340,8 +398,49 @@ const MAX_WRITTEN_SMALL_TARGETS = 0;
 // -> 0 the same night. None is left. IT MAY ONLY FALL.
 const MAX_SIZED_SMALL_TARGETS = 0;
 
+// Heights made of padding and a line of words (paddedHeight above), counted
+// on their own as the others were. The count learned to read them on
+// 2026-11-11 (1.9, the arbiter's word with fresh eyes M5: "teach the count
+// what let them slip"), when it saw 90. IT MAY ONLY FALL.
+// 90 -> 76 the same night (Updates): the reader's four preference pills,
+// Today's English switch, Search's tabs, and two pills no page shows now
+// (BookGrid, MobilePill) are 44 to the touch with their look kept (.hit-44);
+// the book switcher's rows, the Bible sidebar's chapter cells and the study
+// rail's Continue reading, which sit flush with their neighbours, are 44
+// tall (min-h-11); and the Bible chapter sheet's three doors, an icon over
+// their words and 52px drawn, state the min-h-11 they have. Left, by whose
+// files they are: the admin panel's 25; profile and account, 24; Community,
+// 5; the shop, 4, and the EIKON box, 4; the website's footer, 4, its nav, 3,
+// and Discover's two door pills, which a phone does not show; and one each
+// in the install prompt, the language switcher, the unsubscribe page, and
+// two shared controls (ShareButton, SearchSelect).
+const MAX_PADDED_SMALL_TARGETS = 76;
+
 describe("touch targets", () => {
-  const { total, byFile, written, writtenByFile, sized, sizedByFile } = countSmallTargets();
+  const { total, byFile, written, writtenByFile, sized, sizedByFile, padded, paddedByFile } = countSmallTargets();
+
+  it(`has no more than ${MAX_PADDED_SMALL_TARGETS} interactive elements made under 44px by their padding`, () => {
+    expect(
+      padded,
+      `Interactive elements whose padding and line of words make them under 44px (px-2.5 py-1 text-caption and the like) rose to ${padded}, ceiling ${MAX_PADDED_SMALL_TARGETS}.\n` +
+        Object.entries(paddedByFile).sort((a, b) => b[1] - a[1]).map(([f, c]) => `  ${c}  ${f}`).join("\n"),
+    ).toBeLessThanOrEqual(MAX_PADDED_SMALL_TARGETS);
+  });
+
+  it("reads a height made of padding and a line of words", () => {
+    // The fasting tracker's pill as it stood before 8a5c3cf7: 29px drawn, 26.5 by its classes.
+    expect(paddedHeight("rounded-pill px-2.5 py-1 text-caption font-semibold")).toBeCloseTo(26.5, 1);
+    // Discover's door pills: 42.25px, under by a hair.
+    expect(paddedHeight("rounded-pill px-5 py-2.5 font-sans text-ui")).toBeCloseTo(42.25, 1);
+    // A leading of its own, and padding written out.
+    expect(paddedHeight("py-[10px] text-detail leading-tight")).toBeCloseTo(36.25, 1);
+    expect(paddedHeight("pt-2 pb-3 text-ui leading-[20px]")).toBeCloseTo(41.25, 1);
+    // A breakpoint's padding is not a phone's.
+    expect(paddedHeight("py-1 md:py-4 text-caption")).toBeCloseTo(26.5, 1);
+    // No padding, or no size of type: nothing to read.
+    expect(paddedHeight("text-caption underline")).toBeNull();
+    expect(paddedHeight("px-3 py-2")).toBeNull();
+  });
 
   it(`has no more than ${MAX_SIZED_SMALL_TARGETS} interactive elements sized under 44px by size-N`, () => {
     const worst = Object.entries(sizedByFile)

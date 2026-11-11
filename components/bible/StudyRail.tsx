@@ -113,7 +113,7 @@ function CommentaryCard({
  onClick={() => setFull((v) => !v)}
  aria-expanded={full}
  aria-controls={wordsId}
- className="w-full rounded-md border border-paper/12 px-3 py-1.5 font-sans text-caption font-semibold text-paper/60 hover:border-paper/25 hover:text-paper/85 transition-colors"
+ className="min-h-11 w-full rounded-md border border-paper/12 px-3 py-1.5 font-sans text-caption font-semibold text-paper/60 hover:border-paper/25 hover:text-paper/85 transition-colors"
  >
  {full ? t("bible.showLess") : t("bible.continueReading")}
  </button>

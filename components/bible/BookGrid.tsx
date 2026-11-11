@@ -16,7 +16,7 @@ export function BookGrid({ books, label }: { books: BibleBook[]; label: string }
           <Link
             key={b.slug}
             href={`/bible/${b.slug}/1`}
-            className="block rounded-pill border border-paper/15 bg-paper/[0.04] px-3 py-2 font-sans text-caption font-medium text-paper text-center truncate hover:bg-paper/10 hover:border-paper/30 transition-colors duration-150"
+            className="hit-44 block rounded-pill border border-paper/15 bg-paper/[0.04] px-3 py-2 font-sans text-caption font-medium text-paper text-center truncate hover:bg-paper/10 hover:border-paper/30 transition-colors duration-150"
           >
             {t(`bible.books.${b.slug}`)}
           </Link>
