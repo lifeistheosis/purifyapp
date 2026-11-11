@@ -95,10 +95,16 @@ describe("the sheet", () => {
     expect(sheet).toContain("behavior: scrollBehavior()");
   });
 
-  it("draws a book's row in the index's look, and its chapters as a grid of seven", () => {
+  // The gate's third run (2026-11-11): seven columns made each chapter 41.5
+  // across at 390, under 44 to a finger, in every book. As many columns as
+  // keep each 44 or more: five at 320, six at 360 and 390, seven from about
+  // 408, whatever the sheet's own width. Section 27 of the export walk and
+  // checkMock measure it on the export.
+  it("draws a book's row in the index's look, and its chapters as a grid as wide as keeps each 44 across", () => {
     expect(sheet).toContain("<ul className={INDEX_LIST_LOOK}>");
     expect(sheet).toContain("aria-expanded={open}");
-    expect(sheet).toContain('<ul id={grid} className="grid grid-cols-7 gap-1.5 bg-paper/[0.05] px-3 pb-3.5 pt-1">');
+    expect(sheet).toContain('<ul id={grid} className="grid grid-cols-[repeat(auto-fill,minmax(44px,1fr))] gap-1.5 bg-paper/[0.05] px-3 pb-3.5 pt-1">');
+    expect(sheet).not.toMatch(/\bgrid-cols-\d+\b/);
     // Each a 44px box, named "Chapter 3" to a screen reader.
     expect(sheet).toMatch(/"h-11 w-full rounded-xl /);
     expect(sheet).toContain('aria-label={t("bible.chapterN", { n })}');

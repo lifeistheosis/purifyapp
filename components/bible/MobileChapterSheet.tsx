@@ -205,7 +205,11 @@ function BookRow({
         </span>
       </button>
       {open ? (
-        <ul id={grid} className="grid grid-cols-7 gap-1.5 bg-paper/[0.05] px-3 pb-3.5 pt-1">
+        // As many columns as keep every chapter 44 across to a finger (the
+        // gate's third run: seven made each 41.5 at 390, in every book): five
+        // at 320, six at 360 and 390, seven from about 408, whatever the
+        // sheet's own width. lib/bible/__tests__/booksSheet.test.ts.
+        <ul id={grid} className="grid grid-cols-[repeat(auto-fill,minmax(44px,1fr))] gap-1.5 bg-paper/[0.05] px-3 pb-3.5 pt-1">
           {Array.from({ length: book.chapters }, (_, i) => i + 1).map((n) => {
             const reading = n === current;
             return (
