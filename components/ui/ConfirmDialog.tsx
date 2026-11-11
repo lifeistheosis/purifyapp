@@ -25,6 +25,12 @@ import { useAndroidBack } from "@/lib/platform/useAndroidBack";
  * on a phone and a centred card above `md`, either way following the finger,
  * closing on a flick down, with the backdrop dimming and blurring in step.
  * While `pending` it cannot be dismissed: a drag springs back.
+ *
+ * Its two buttons are 44 to the touch (`min-h-11`). They stood at 39 until
+ * 2026-11-11, their height coming from their words and padding alone, which
+ * the touch count (lib/ui/__tests__/touchTargets.test.ts) cannot see; a
+ * drawing of the care note's question measured it.
+ * lib/ui/__tests__/confirmDialogTargets.test.ts holds them.
  */
 export function ConfirmDialog({
   open,
@@ -171,7 +177,7 @@ export function ConfirmDialog({
               type="button"
               onClick={onCancel}
               disabled={pending}
-              className="font-sans text-detail font-medium rounded-pill border border-paper/20 bg-paper/[0.04] text-paper/85 hover:bg-paper/10 hover:border-paper/40 px-5 py-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="min-h-11 font-sans text-detail font-medium rounded-pill border border-paper/20 bg-paper/[0.04] text-paper/85 hover:bg-paper/10 hover:border-paper/40 px-5 py-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {cancelLabel}
             </button>
@@ -180,7 +186,7 @@ export function ConfirmDialog({
               onClick={onConfirm}
               disabled={pending}
               className={
-                "font-sans text-detail font-semibold rounded-pill border px-5 py-2 disabled:opacity-60 disabled:cursor-wait transition-colors " +
+                "min-h-11 font-sans text-detail font-semibold rounded-pill border px-5 py-2 disabled:opacity-60 disabled:cursor-wait transition-colors " +
                 confirmAccent
               }
             >

@@ -19,6 +19,7 @@
 //   node scripts/mock-campaigns.mjs [scale] [only] [folder]   the stills
 //   WALK=1 node scripts/mock-campaigns.mjs                    the walk
 //   WALK=1 FLOWS="starting one" node scripts/mock-campaigns.mjs   only the flows whose names hold those words
+//   WALK=1 HALF=1/2 node scripts/mock-campaigns.mjs           every other flow, and HALF=2/2 the rest: the whole walk as two side by side
 //   EYE=parchment,black node scripts/mock-campaigns.mjs 1     and by eye, on other palettes
 //   ALL_LOOKS=1 node scripts/mock-campaigns.mjs 1             held on every look as well as the five palettes
 //   LOCALE=ro WIDTH=360 node scripts/mock-campaigns.mjs 2 19   a still in another language, on a narrower phone
@@ -56,6 +57,17 @@ const EYE = (process.env.EYE ?? "").split(",").filter(Boolean);
 const WALK = process.env.WALK === "1";
 /** Only the flows whose names hold one of these (comma separated). All of them when unset. */
 const FLOWS = (process.env.FLOWS ?? "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+/**
+ * Every other flow, so the whole walk can be two processes side by side (it is about thirty minutes as one,
+ * most of it waiting): "1/2" walks the first, third, fifth of the chosen flows, "2/2" the rest. Between them
+ * the two hold every flow once. Anything else written here stops the script.
+ */
+const HALF = process.env.HALF ?? null;
+if (HALF !== null && HALF !== "1/2" && HALF !== "2/2") {
+  console.error(`HALF is "1/2" or "2/2", not "${HALF}"`);
+  process.exit(2);
+}
+let flowNo = 0;
 /** Another language for the stills, as the app keeps a reader's choice on the phone. The walk reads English and is not run in one. */
 const LOCALE = process.env.LOCALE ?? null;
 /** The export was cut with pictures (see the header): their own stills and flows are run. Without it they are named and left. */
@@ -1251,6 +1263,8 @@ async function pictureWalk(label, ...rest) {
 
 async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false, circles = false, holds, board, late = false, tellMe, tellFails = false, profileCampaigns, crisis = false, care = false, careAlready = false, openFails = 0 } = {}) {
   if (FLOWS.length && !FLOWS.some((f) => label.toLowerCase().includes(f))) return;
+  // Counted after the names are chosen, so the two halves of one choice hold every flow between them, once.
+  if (HALF && flowNo++ % 2 !== (HALF === "1/2" ? 0 : 1)) return;
   const seed = {
     "purify.prayers.campaigns": JSON.stringify(CARRIED),
     ...(signedIn ? { "purify.supabase.auth": JSON.stringify([{ name: "sb-placeholder-auth-token", value: JSON.stringify(SESSION) }]) } : {}),

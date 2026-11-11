@@ -4629,7 +4629,18 @@ marked campaign and the marked comment and no other card, asking first and
 sent by the card's own id; one already sent that day said in the server's
 words). Stills: the card (44) and the question (45).
 
-### 38.5 Words (English; the twenty languages on the arbiter's word)
+**What the question's still found, in the house's own part.** The question
+is asked through the app's one confirm dialog
+(`components/ui/ConfirmDialog.tsx`), as eighteen screens ask theirs: ending
+a campaign, removing a post, signing out everywhere. Drawn and measured, its
+two buttons stood at 39px, under the 44 a finger is owed. Their height came
+from their words and padding with none written, which is the one thing the
+touch count cannot see, and no drawing had measured an open question before
+this one. Both are 44 now (`min-h-11`), in that one file, so every screen
+that asks has it; `lib/ui/__tests__/confirmDialogTargets.test.ts` holds
+them, and still 45 passes the checker.
+
+### 38.5 Words (in all 21 languages)
 
 Seen by moderators only.
 
@@ -4642,6 +4653,9 @@ Seen by moderators only.
 What the server answers a moderator is in English, as its other answers on
 that page are: "A care note was already sent to this writer today.", "A care
 note is only for words the safety line marked."
+
+The twenty languages went in on the arbiter's word (2026-11-11, 02:40 UTC),
+each with its own catalog's words for the inbox and for Purify.
 
 ---
 
@@ -4701,7 +4715,7 @@ the board. Stills: not open (46), no signal (47).
 
 One new line, `campaigns.notOpen`: "Prayer campaigns are not open yet." The
 other three it uses were in the catalog already (`campaigns.loadFailed`,
-`community.tryAgain`, `nav.community`). The twenty languages are written,
-each with its own catalog's name for prayer campaigns, and go in on the
-arbiter's word.
+`community.tryAgain`, `nav.community`). It is in all 21 languages, each
+with its own catalog's name for prayer campaigns, on the arbiter's word
+(2026-11-11, 02:40 UTC).
 
