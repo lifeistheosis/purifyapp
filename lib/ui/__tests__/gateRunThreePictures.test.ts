@@ -85,6 +85,31 @@ describe("a study's cover: the Father's words stand on the ground, not on the pi
   });
 });
 
+describe("a study's cover: his portrait lies whole over the subject's icon", () => {
+  // The cover's code without its notes, so a note about the old way is not read as the way.
+  const cover = read("components/theology/StudyCover.tsx")
+    .replace(/\{\s*\/\*[\s\S]*?\*\/\s*\}/g, "")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/^\s*\/\/.*$/gm, "");
+
+  it("one fade for the pair: the icon is behind the portrait, never seen through it", () => {
+    // Each layer used to carry the fade itself. Where a portrait is 60 percent there, the icon behind it showed
+    // through at a quarter of its strength: a second figure in the Father's robe (the stills of the gate's third
+    // run, 2026-11-11). One element fades now, and it holds them both.
+    expect(cover.match(/study-cover-picture/g)).toHaveLength(1);
+    expect(cover).toMatch(
+      /<span data-study-pictures="" className="study-cover-picture absolute inset-0 overflow-hidden">\s*<WholeIcon src=\{subject\.src\} eager className="absolute inset-0 h-full w-full" \/>\s*\{portrait\?\.kind === "cover" \? \(\s*<span className="absolute inset-0 overflow-hidden">\s*<SaintFace key=\{portrait\.src\} picture=\{\{ \.\.\.portrait, fallback: null \}\} \/>\s*<\/span>\s*\) : null\}\s*<\/span>/,
+    );
+  });
+
+  it("the portrait fills the frame it shares with the icon, so nothing of the icon stands beside it", () => {
+    const face = read("components/today/SaintFace.tsx");
+    expect(face).toContain('className={cn("img-arrive h-full w-full object-cover", className)}');
+    // And the icon is still all that shows when he has no portrait, or it cannot be had: it is not taken away.
+    expect(cover).toMatch(/<WholeIcon src=\{subject\.src\}/);
+  });
+});
+
 describe("a study's reader: the part's heading on the subject's light", () => {
   const reader = read("components/theology/StudyReader.tsx");
 

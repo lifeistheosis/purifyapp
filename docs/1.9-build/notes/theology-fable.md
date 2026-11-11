@@ -1236,3 +1236,37 @@ colour and looks more like the measure than like the screen.
 
 The councils' filmstrip that the same sweep measured (21 words, 2.05:1 at
 the least on Candlelight) is the film mended in 7c8c0a49, above.
+
+### A study's cover: his portrait whole over the subject's icon (the same evening)
+
+On the stills of the cover above, a faint second figure stood in the
+Father's robe. The arbiter's word of 18:40: check whether it is meant, and
+mend it with the least change if it is not. It is not. The cover's own note
+says the subject's icon is behind the portrait, "all that shows when he has
+no portrait", and the test of the revamp says "a Father's words over his
+portrait, the subject's icon whole behind them". Each of the two layers
+carried the fade itself, so where the portrait was 60 percent there the
+icon behind it showed through at a quarter of its strength. Bringing the
+fade up for the words that day had made it plainer.
+
+One element fades now, and it holds them both
+(`components/theology/StudyCover.tsx`, `data-study-pictures`): the portrait
+lies whole over the icon, and the two melt into the page as one picture.
+The icon is still all that shows when he has no portrait or it cannot be
+had. On the selling export, the study of the Filioque on Dark and on Light:
+one picture, no second figure; the words on three covers on five palettes,
+none short. `gateRunThreePictures.test.ts` holds it (one element carries the
+fade; it failed on the cover as it was).
+
+### The stylesheet's last block (found on the way)
+
+The export for that mend would not build: "Unclosed block" at line 13826 of
+`app/globals.css`. When the order gift's styles were brought onto the
+branch they were set inside the last block of the file, the base layer for
+long headings, and the brace that closed that layer was lost under them.
+Neither the website nor the apps could be built from the branch from then
+on, and no unit test said so, since none reads the stylesheet as a
+stylesheet. The layer closes where it closed before, ahead of the gift's
+section (da1ac512, pushed alone and at once), and
+`lib/ui/__tests__/stylesheetCloses.test.ts` reads the sheet as a parser
+does: every block closes.

@@ -51,12 +51,17 @@ export function StudyCover({ subject, passage, firstId }: { subject: { src: stri
   return (
     <>
       <div data-study-cover="" className="study-cover saint-icon-in under-topbar relative -mx-5 overflow-hidden md:mx-0 md:rounded-[18px]">
-        <WholeIcon src={subject.src} eager className="study-cover-picture absolute inset-0 h-full w-full" />
-        {portrait?.kind === "cover" ? (
-          <span className="study-cover-picture absolute inset-0 overflow-hidden">
-            <SaintFace key={portrait.src} picture={{ ...portrait, fallback: null }} />
-          </span>
-        ) : null}
+        {/* One fade for the pair: his portrait lies whole over the subject's icon, and the two melt into the page as
+            one picture. Each used to carry the fade itself, and where the portrait was half gone the icon behind it
+            showed through it, a second figure in his robe (seen on the stills of the gate's third run, 2026-11-11). */}
+        <span data-study-pictures="" className="study-cover-picture absolute inset-0 overflow-hidden">
+          <WholeIcon src={subject.src} eager className="absolute inset-0 h-full w-full" />
+          {portrait?.kind === "cover" ? (
+            <span className="absolute inset-0 overflow-hidden">
+              <SaintFace key={portrait.src} picture={{ ...portrait, fallback: null }} />
+            </span>
+          ) : null}
+        </span>
         {/* The clock and the bar's plates stay readable over the picture. */}
         <span aria-hidden className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-night/55 to-transparent md:hidden" />
       </div>
