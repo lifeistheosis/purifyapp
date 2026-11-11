@@ -342,8 +342,14 @@ function stars() {
 
 /**
  * Night sky's star over the horizon, as components/today/NativityStarCard.tsx
- * draws it: the same two star paths, the same halo and the same lit edge,
+ * draws it: the star of Bethlehem's eight points (the Octogram's two squares,
+ * components/ui/icons/Octogram.tsx), the same halo and the same lit edge,
  * laid along the short rule at the head of a chapter.
+ *
+ * Never the four-point sparkle (CLAUDE.md, "No sparkle star"). It stood here
+ * as two of them, one turned over the other, until build 93 note 7; the
+ * card's own star was redrawn the same day. The light round it is a soft
+ * pool, not rays.
  */
 function horizon() {
   return {
@@ -355,8 +361,8 @@ function horizon() {
       `<ellipse cx="210" cy="50" rx="86" ry="13" fill="url(#d)"/>` +
       `<path d="M0 54 Q 150 38 300 54" fill="none" stroke="url(#e)" stroke-width="1.1"/>` +
       `<circle cx="216" cy="24" r="24" fill="url(#h)"/>` +
-      `<g transform="translate(207 15) scale(0.75)"><path d="M12 1.5 L13.3 10.7 L22.5 12 L13.3 13.3 L12 22.5 L10.7 13.3 L1.5 12 L10.7 10.7 Z" fill="#fff"/>` +
-      `<path d="M12 6.5 L12.8 11.2 L17.5 12 L12.8 12.8 L12 17.5 L11.2 12.8 L6.5 12 L11.2 11.2 Z" fill="#fff" opacity="0.8" transform="rotate(45 12 12)"/></g></svg>`,
+      `<g transform="translate(207 15) scale(0.75)"><rect x="5.6" y="5.6" width="12.8" height="12.8" fill="#fff"/>` +
+      `<polygon points="12,2.5 21.5,12 12,21.5 2.5,12" fill="#fff"/></g></svg>`,
   };
 }
 

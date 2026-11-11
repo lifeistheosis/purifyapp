@@ -65,12 +65,13 @@ function walk(dir: string, out: string[] = [], kinds: RegExp = KINDS): string[] 
  * Nativity card's star, the gift's wax seal and the desktop's Discord Plus
  * mode were found this way (the SSM board's shape check,
  * scripts/lib/four-point-star.mjs, 8c891a552). The pictures in public/ are
- * read too. One waits on its owner, named here: it leaves this list when it
- * is redrawn, and the test below fails until it does.
+ * read too. A picture that waits on its owner is named here: it leaves this
+ * list when it is redrawn, and the test below fails until it does. None
+ * waits now: the Night sky mode's picture (public/themes/nightsky-horizon.svg,
+ * made by scripts/theme-pictures.mjs) was the last, and wears the star of
+ * Bethlehem's eight points since build 93 note 7.
  */
-const DRAWN_WAITING: Record<string, string> = {
-  "public/themes/nightsky-horizon.svg": "Fable Themes: the Night sky mode's picture, made by scripts/theme-pictures.mjs (build 93 note 7)",
-};
+const DRAWN_WAITING: Record<string, string> = {};
 
 const rel = (f: string) => path.relative(ROOT, f).replace(/\\/g, "/");
 
