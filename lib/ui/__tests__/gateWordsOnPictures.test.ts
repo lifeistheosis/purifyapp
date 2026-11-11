@@ -5,11 +5,13 @@ import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
+import { profileSurface } from "@/components/community/profile/ProfileCard";
 import { SectionMasthead } from "@/components/mobile/SectionMasthead";
 
 /**
  * Words over pictures: the three finds of Fable Themes' sweep that fell to
- * Updates 2 (the arbiter, 2026-11-11 17:54 UTC). The sweep ran on build 14,
+ * Updates 2 (the arbiter, 2026-11-11 17:54 UTC), and a fourth from Admin's
+ * open-reader walk (18:48 UTC, at the foot of this file). The sweep ran on build 14,
  * cut from c240515a by the gate's own recipe, 126 screens with the main web
  * read, and measured each word on the pixels under its letters
  * (scripts/words-on-pictures.mjs, the mock checker's pixels pass). Measured
@@ -178,5 +180,45 @@ describe("a saint's web, the line under each name", () => {
     // The name over it stands at 95.
     expect(web).toContain('"text-paper/95"');
     expect(share).toBeLessThan(95);
+  });
+});
+
+// The arbiter, 18:48 UTC, a fourth from Admin's open-reader walk (127 screens): readers' profile
+// sheets on /community/. Measured again on the export, 25 readers' sheets opened by their shared
+// links: the "Favorite verse" label under 4.5:1 on 7 (4.19 Monastery, 4.23 Candlelight, 4.46 Dark at
+// its least), and on one card painted in its reader's theme the line with the @handle at 3.50 on
+// Candlelight.
+describe("a reader's profile sheet", () => {
+  const card = code("components/community/profile/ProfileCard.tsx");
+  // The share each palette draws for a share written (app/globals.css, the faint text's lift).
+  const LIFT: Record<string, Record<number, number>> = {
+    Dark: { 42: 50, 45: 50 },
+    Candlelight: { 42: 60, 45: 60, 48: 60, 50: 60, 52: 60, 55: 60 },
+    Monastery: { 42: 55, 45: 55, 48: 55, 50: 55, 52: 55 },
+  };
+  const PAPER = { Dark: "@theme", Candlelight: 'html[data-reading-mode="candlelight"]', Monastery: 'html[data-reading-mode="monastery"]' } as const;
+  const drawn = (palette: keyof typeof PAPER, share: number) => (LIFT[palette][share] ?? share) / 100;
+
+  it("draws the Favorite verse label, in its panel's lit corner, 4.5:1 or more on every dark palette", () => {
+    const share = Number(/<p className=\{cn\(EYEBROW, "relative flex items-center gap-1\.5 text-paper\/(\d+)"\)\}>/.exec(card)?.[1] ?? 52);
+    // The ground under the label at its least kind, measured on the sheets it failed on.
+    const GROUND: Record<keyof typeof PAPER, Rgb> = { Dark: [56, 56, 59], Candlelight: [49, 49, 52], Monastery: [49, 56, 67] };
+    for (const palette of Object.keys(PAPER) as (keyof typeof PAPER)[]) {
+      expect(onGround(paperOf(PAPER[palette]), drawn(palette, share), GROUND[palette]), `${palette}, at ${share} percent`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it("draws the @handle line stronger on a card in its reader's theme, 4.5:1 or more on its colour", () => {
+    // On a theme the line stands on the theme's own colour; elsewhere on the card's own ground, as before.
+    expect(card).toMatch(/profileSurface\(profile\.cosmetics\)\.themed \? "text-paper\/(\d+)" : "text-paper\/60"/);
+    const share = Number(/profileSurface\(profile\.cosmetics\)\.themed \? "text-paper\/(\d+)"/.exec(card)?.[1] ?? 60);
+    const theme = { bannerColor: null, bannerUrl: null, themePrimary: "#55555c", themeAccent: "#18181b", decoration: null, effect: null };
+    expect(profileSurface(theme).themed).toBe(true);
+    expect(profileSurface({ ...theme, themePrimary: null, themeAccent: null }).themed).toBe(false);
+    // The ground under the line on the themed card where it failed (the same on every palette: the theme's own colour).
+    const ground: Rgb = [70, 67, 66];
+    for (const palette of Object.keys(PAPER) as (keyof typeof PAPER)[]) {
+      expect(onGround(paperOf(PAPER[palette]), drawn(palette, share), ground), `${palette}, at ${share} percent`).toBeGreaterThanOrEqual(4.5);
+    }
   });
 });

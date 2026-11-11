@@ -205,7 +205,16 @@ export function ProfileFace({
         {profile.clergy ? <ClergySeal mark={profile.clergy.rank ?? "clergy"} size={20} /> : null}
       </Name>
       {profile.handle || afterHandle ? (
-        <p className="mt-[7px] flex flex-wrap items-center justify-center gap-x-2 gap-y-1 font-sans text-[13.5px] text-paper/60">
+        // On a reader's theme the line stands on the theme's own colour, the
+        // card's lightest ground: at 60 percent of the ink it read 3.50:1 on
+        // Candlelight there (the gate's open-reader walk, 2026-11-11), and at
+        // 80 it is 4.5:1 or more on the five palettes and the seventeen looks.
+        <p
+          className={cn(
+            "mt-[7px] flex flex-wrap items-center justify-center gap-x-2 gap-y-1 font-sans text-[13.5px]",
+            profileSurface(profile.cosmetics).themed ? "text-paper/80" : "text-paper/60",
+          )}
+        >
           {/* No handle, no lone @: a reader not signed in, on the Plus page's try window. */}
           {profile.handle ? <span>@{profile.handle}</span> : null}
           {afterHandle}
@@ -412,7 +421,13 @@ export function VerseCard({
       className={cn(PANEL, "relative overflow-hidden px-4 pb-[13px] pt-[15px] text-start")}
     >
       <span aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_90%_at_0%_0%,rgb(255_255_255/0.07),rgb(255_255_255/0)_60%)]" />
-      <p className={cn(EYEBROW, "relative flex items-center gap-1.5")}>
+      {/* The label stands in the panel's lit corner, the light above drawn
+          under it, so it is drawn a step stronger than the card's other
+          labels to read as they do: at the label's 52 percent it read 4.19:1
+          on Monastery, 4.23 on Candlelight and 4.46 on Dark on its pixels
+          (the gate's open-reader walk, 2026-11-11), and at 66 it is 4.5:1
+          or more on the five palettes and the seventeen looks. */}
+      <p className={cn(EYEBROW, "relative flex items-center gap-1.5 text-paper/66")}>
         <Cross size={13} />
         {t("profile.favoriteVerse")}
       </p>
