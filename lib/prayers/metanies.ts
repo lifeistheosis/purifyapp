@@ -160,7 +160,7 @@ export type QuoteId = keyof typeof QUOTES;
 export const WORDS = {
   title: line("prayers.metany.title", "Bows and prostrations"),
   lead: line("prayers.metany.lead", "When the Church bows, and when she stands. Each rule here is given in the words of its source."),
-  /** Every day no rule here speaks to, and the foot of the guide. */
+  /** The foot of the guide. Under an Hour, a day no rule speaks to shows only the door (MetanyLine.tsx). */
   ask: line(
     "prayers.metany.ask",
     "When to bow and when to bow to the earth is given by the Typikon, and the custom differs between traditions and between parishes. Ask your priest.",

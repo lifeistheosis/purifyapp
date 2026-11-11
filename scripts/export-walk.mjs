@@ -9826,8 +9826,8 @@ await section(68, async () => {
 // 69. Bows and prostrations in the Hours (1.9, the owner's ask of 2026-11-11
 // through the arbiter: "in the Hours, when to bow and when to prostrate,
 // following the Church year", every rule under a public-domain quotation).
-// The line under each Hour's title on the days of its three rules and on a
-// day none speaks to, on both calendars; the door to the guide touched as a
+// The line under each Hour's title on the days of its three rules, and on a
+// day none speaks to only the door to the guide, on both calendars; the door to the guide touched as a
 // reader would, the guide's three rules and its quotations, Back to the
 // Hour; the line and the guide held to checkMock on the five palettes; and
 // Arabic. lib/prayers/__tests__/metanies.test.ts holds the dates and every
@@ -9857,6 +9857,7 @@ await section(69, async () => {
       return {
         rule: el.dataset.metany,
         says: el.querySelector("p")?.textContent ?? "",
+        door: el.querySelector("a")?.getAttribute("href")?.startsWith("/prayers/bows") ?? false,
         quotes: [...el.querySelectorAll("blockquote")].map((q) => q.textContent),
         cites: [...el.querySelectorAll("figcaption")].map((c) => c.textContent),
         underTitle: el.getBoundingClientRect().top > (document.getElementById("prayer-title")?.getBoundingClientRect().bottom ?? Infinity),
@@ -9887,8 +9888,8 @@ await section(69, async () => {
   for (const [name, when, href, set, rule, quote, cite] of days) {
     const { ctx, page, errors } = await at(when, href, set);
     const got = await line(page);
-    const right = got && got.rule === rule && (quote ? quote.test(got.quotes[0] ?? "") && got.cites[0] === cite : got.quotes.length === 0 && /Ask your priest\.$/.test(got.says));
-    must(Boolean(right), `${name}: ${rule === "ask" ? "the plain sentence, and no rule spoken" : `its rule, in its source's words, beside ${cite}`} (${got ? `${got.rule}: ${got.says.slice(0, 60)}` : "no line"})`);
+    const right = got && got.rule === rule && (quote ? quote.test(got.quotes[0] ?? "") && got.cites[0] === cite : got.quotes.length === 0 && got.says === "" && got.door);
+    must(Boolean(right), `${name}: ${rule === "ask" ? "no rule spoken and no sentence, only the door to the guide" : `its rule, in its source's words, beside ${cite}`} (${got ? `${got.rule}: ${got.says.slice(0, 60)}` : "no line"})`);
     if (got) must(got.underTitle && got.beforePrayers, `${name}: under the Hour's title and before its first prayer`);
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();

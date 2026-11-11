@@ -546,7 +546,7 @@ What ships, and it is exactly what a quotation could be put under:
 2. Pascha to Pentecost: the same. First Nicaea canon 20, St Basil 27.
 3. The weekdays of the Great Fast, Clean Monday to the Friday before Lazarus Saturday: the Prayer of St Ephraim with reverences to the earth, at the First, Third and Sixth Hours, each from its own page of Hapgood's Service Book of 1906 (pp. 41, 47, 52; p. xvi for the season). Each rubric was read on the page image of the scan (archive.org, cu31924029363128), not its machine reading, and is kept with its page and leaf in `data/prayers/metanies/hapgood-1906.json`.
 
-Every other day says only that the custom is given by the Typikon, differs between traditions and parishes, and to ask your priest.
+Every other day says only that the custom is given by the Typikon, differs between traditions and parishes, and to ask your priest. That sentence stands at the foot of the guide's page; under an Hour, a day no rule speaks to shows only the door to the guide (the arbiter, 2026-11-11: no clutter in a prayer).
 
 What does not ship, for want of a public-domain sentence, and the arbiter has told him so: the feasts; Saturdays of the Fast; Holy Week; the Fast's rubric at the Ninth Hour and at Compline (Hapgood prints it under the Interhour, and her Compline is the Grand one), which say only that more reverences are appointed in the Fast. The Annunciation on a weekday of the Forty Days, on the reader's own calendar, gets the plain sentence (the arbiter's mend). A Sunday in the Fast stands.
 

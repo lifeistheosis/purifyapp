@@ -18,7 +18,8 @@ const noop = () => () => {};
 /**
  * Under an Hour's title: what the Church's year says of bowing today, in the
  * words of its source and beside its citation (1.9, lib/prayers/metanies.ts).
- * On a day no rule there speaks to, the plain sentence. The day is the
+ * On a day no rule there speaks to, only the quiet door to the guide, where
+ * the plain sentence stands at the foot. The day is the
  * reader's own, so nothing is drawn until the page is on the device.
  */
 export function MetanyLine({ hour }: { hour: string }) {
@@ -32,7 +33,8 @@ export function MetanyLine({ hour }: { hour: string }) {
 
   return (
     <aside data-metany={today.rule ?? "ask"} aria-label={t(WORDS.title.key)} className="mx-auto mt-6 max-w-[52ch] text-center">
-      <p className="font-sans text-ui leading-[1.6] text-paper/80">{t(today.line.key)}</p>
+      {/* On a day no rule speaks to, only the door: the plain sentence is at the guide's foot (the arbiter, 2026-11-11: no clutter in a prayer). */}
+      {today.rule ? <p className="font-sans text-ui leading-[1.6] text-paper/80">{t(today.line.key)}</p> : null}
       {quotes.map((q) => (
         <figure key={q.text} className="mt-3">
           <blockquote lang="en" dir="ltr" className="font-serif text-ui italic leading-[1.65] text-paper/85">

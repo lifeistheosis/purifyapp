@@ -248,6 +248,8 @@ describe("the words", () => {
     expect(lineFile).toMatch(/metanyFor\(/);
     expect(lineFile).toMatch(/startOfDayLocal/);
     expect(lineFile).toMatch(/min-h-11/);
+    // A day no rule speaks to shows no sentence under the Hour, only the door; the sentence is at the guide's foot.
+    expect(lineFile).toMatch(/\{today\.rule \? <p [^>]*>\{t\(today\.line\.key\)\}<\/p> : null\}/);
     expect(read("app/(app)/prayers/hours/[id]/page.tsx")).toMatch(/afterHead=\{<MetanyLine hour=\{id\} \/>\}/);
     expect(fs.existsSync(path.join(ROOT, "app/(app)/prayers/bows/page.tsx"))).toBe(true);
     const guide = read("components/prayers/MetanyGuide.tsx");
