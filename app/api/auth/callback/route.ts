@@ -130,10 +130,21 @@ export async function GET(request: NextRequest) {
 
   // Preferred path: stateless OTP verification (cross-browser safe).
   if (tokenHash && type) {
-    const { error } = await supabase.auth.verifyOtp({
+    const { data, error } = await supabase.auth.verifyOtp({
       type,
       token_hash: tokenHash,
     });
+    // A change of email (Supabase's secure email change): a link goes to the
+    // old address and one to the new, and the change is made when both are
+    // opened. The first gives no session, the second does. Either way the
+    // reader is told where it stands on a page that needs no sign-in (the
+    // link may open in another browser), never the sign-in page's error
+    // (components/account/security/EmailChangeState.tsx; a reader's report,
+    // 2026-10-31: "does not finish after the confirmation").
+    if (type === "email_change") {
+      const state = error ? "expired" : data.session ? "done" : "half";
+      return NextResponse.redirect(new URL(`/email/change?state=${state}`, base));
+    }
     if (error) return fail(error.message);
     if (type === "signup" || type === "magiclink" || type === "invite") {
       await recordAcceptanceFor();

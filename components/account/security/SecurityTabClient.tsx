@@ -22,6 +22,8 @@ export function SecurityTabClient() {
   const { t } = useTranslate();
   const [data, setData] = useState<{
     email: string;
+    /** A change of email waiting for its links (the account's own new_email). */
+    pendingEmail?: string | null;
     hasPassword: boolean;
     // Loose shape to match OAuthConnectionsCard's structural Identity type;
     // JSON-cloned so we pass the full UserIdentity fields unlinkIdentity needs.
@@ -54,6 +56,15 @@ export function SecurityTabClient() {
         (await supabase.auth.getSession()).data.session?.user ??
         null;
       if (!user || cancelled) return;
+      // The session kept on this device carries the address it was given at
+      // sign-in, so a change of email finished from a link (in this browser
+      // or another) showed the old address here for up to an hour, and read
+      // as a change that never finished (a reader's report, 2026-10-31). The
+      // account's own record is read, and the session refreshed when it
+      // differs, so every screen has the new address.
+      const fresh = (await supabase.auth.getUser().catch(() => null))?.data.user ?? null;
+      const current = fresh ?? user;
+      if (fresh && fresh.email !== user.email) void supabase.auth.refreshSession().catch(() => undefined);
       const { data: profile } = await supabase
         .from("profiles")
         .select("has_password")
@@ -61,10 +72,11 @@ export function SecurityTabClient() {
         .maybeSingle();
       if (cancelled) return;
       setData({
-        email: user.email ?? "",
+        email: current.email ?? "",
+        pendingEmail: current.new_email ?? null,
         hasPassword: profile?.has_password === true,
         identities: JSON.parse(
-          JSON.stringify(user.identities ?? []),
+          JSON.stringify(current.identities ?? []),
         ) as Record<string, unknown>[],
       });
     })();
@@ -84,7 +96,7 @@ export function SecurityTabClient() {
   return (
     <div className="flex flex-col gap-5">
       <ChangePasswordCard email={data.email} hasPassword={data.hasPassword} />
-      <ChangeEmailCard currentEmail={data.email} />
+      <ChangeEmailCard currentEmail={data.email} pendingEmail={data.pendingEmail ?? null} />
       <OAuthConnectionsCard
         initialIdentities={data.identities}
         hasPassword={data.hasPassword}

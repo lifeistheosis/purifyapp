@@ -3,13 +3,18 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { authOrigin } from "@/lib/site";
 
 /**
- * Change-email card. Supabase sends a confirmation link to the NEW
- * address; until the user clicks it, the email on file stays the
- * old one. We surface that "check your new inbox" state plainly.
+ * Change-email card. Supabase's secure email change sends a link to the new
+ * address AND one to the current one, and makes the change only when both
+ * are opened. This card used to name the new one only, so the change waited
+ * for a link the reader was never told to open (a reader's report,
+ * 2026-10-31). It names both now, says when a change is waiting
+ * (`pendingEmail`, the account's own new_email), and every link lands on
+ * /email/change, which says where the change stands.
  */
-export function ChangeEmailCard({ currentEmail }: { currentEmail: string }) {
+export function ChangeEmailCard({ currentEmail, pendingEmail = null }: { currentEmail: string; pendingEmail?: string | null }) {
   const { t } = useTranslate();
   const [next, setNext] = useState("");
   const [pending, setPending] = useState(false);
@@ -29,7 +34,10 @@ export function ChangeEmailCard({ currentEmail }: { currentEmail: string }) {
     setPending(true);
     try {
       const supabase = createClient();
-      const { error: err } = await supabase.auth.updateUser({ email: target });
+      // Where Supabase's own page sends the reader after a link (its default
+      // template); the house's template goes through app/api/auth/callback,
+      // which lands on the same page.
+      const { error: err } = await supabase.auth.updateUser({ email: target }, { emailRedirectTo: `${authOrigin()}/email/change` });
       if (err) throw err;
       setSent(true);
     } catch (e) {
@@ -48,8 +56,14 @@ export function ChangeEmailCard({ currentEmail }: { currentEmail: string }) {
       </h2>
       <p className="font-sans text-detail text-paper/60 mb-5 leading-[1.55]">
         {t("ui.current")}{" "}
-        <span className="text-paper/85 font-medium">{currentEmail}</span>{t("ui.weLlSendAConfirmation")}
+        <span className="text-paper/85 font-medium">{currentEmail}</span>
+        <span className="mt-1 block">{t("emailChange.howItWorks")}</span>
       </p>
+      {pendingEmail && !sent ? (
+        <p role="status" className="font-sans text-detail text-paper/80 mb-5 leading-[1.55]">
+          {t("emailChange.pending", { next: pendingEmail })}
+        </p>
+      ) : null}
       <form onSubmit={submit} className="flex flex-col gap-3 max-w-[420px]">
         <div>
           <label
@@ -74,8 +88,8 @@ export function ChangeEmailCard({ currentEmail }: { currentEmail: string }) {
           <p className="font-sans text-detail text-crimson-soft">{error}</p>
         ) : null}
         {sent ? (
-          <p className="font-sans text-detail text-emerald-300">
-            {t("ui.sentOpenTheConfirmationIn")} <strong>{next.trim()}</strong> {t("ui.toFinishTheChange")}
+          <p role="status" className="font-sans text-detail text-emerald-300">
+            {t("emailChange.sent", { next: next.trim(), current: currentEmail })}
           </p>
         ) : null}
         <button
