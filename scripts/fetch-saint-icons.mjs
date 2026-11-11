@@ -32,6 +32,14 @@
 //       that file: the one chosen after looking at the candidates.
 //       Nothing enters public/saints/icons/.
 //
+//   node scripts/fetch-saint-icons.mjs --fetch <slug> "File:<title>" --detail
+//       The same, for a picture a detail will be cut from (one figure of a
+//       Menologion page, one saint of a pair): stages Commons' widest
+//       standard thumbnail up to 3840px, uncut, instead of 800px. Cut down
+//       from 800px, a figure came out 140 to 220px wide and soft at page size
+//       (the arbiter's note on St Anysia, 2026-11-11). Cut the detail, then
+//       promote as below.
+//
 //   node scripts/fetch-saint-icons.mjs --list
 //       What is staged and waiting to be looked at.
 //
@@ -165,7 +173,12 @@ function uploadUrl(name, width) {
  * is ample for every size the app draws an icon; the rights are read from the
  * file's page, as before.
  */
-const STANDARD_WIDTHS = { compare: [330, 250, 500, 960, 120], keep: [960, 500, 330, 250, 120] };
+const STANDARD_WIDTHS = {
+  compare: [330, 250, 500, 960, 120],
+  keep: [960, 500, 330, 250, 120],
+  // --detail: a picture a detail will be cut from, as large as Commons draws it.
+  detail: [3840, 1920, 1280, 960, 500, 330, 250, 120],
+};
 
 /**
  * A Commons picture at the first of `widths` it serves: for comparing with
@@ -287,12 +300,14 @@ async function doFetch(slug, query) {
       console.log(`  skip, licence "${p.license || "unknown"}": ${title}`);
       continue;
     }
-    const body = await picture(p.commonsTitle.replace(/^File:/, "").replace(/ /g, "_"), STANDARD_WIDTHS.keep, p.fileWidth ?? Infinity);
+    const detail = args.includes("--detail");
+    const body = await picture(p.commonsTitle.replace(/^File:/, "").replace(/ /g, "_"), detail ? STANDARD_WIDTHS.detail : STANDARD_WIDTHS.keep, p.fileWidth ?? Infinity);
     if (!body) continue;
 
+    const side = detail ? 3840 : 800;
     const jpg = await sharp(body)
-      // Smaller, never larger: a thumbnail under 800px is kept at its own size.
-      .resize({ width: 800, height: 800, fit: "inside", withoutEnlargement: true })
+      // Smaller, never larger: a thumbnail under 800px (3840px for a detail) is kept at its own size.
+      .resize({ width: side, height: side, fit: "inside", withoutEnlargement: true })
       .jpeg({ quality: 85, mozjpeg: true })
       .toBuffer();
     const meta = await sharp(jpg).metadata();

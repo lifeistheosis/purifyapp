@@ -105,6 +105,23 @@ const ACCEPTED = {
   "saints/icons/niphon-of-cyprus.jpg": "a print of 1904: its own stippled ground, and its sky left white at the right",
   "saints/icons/theodore-the-branded.jpg": "the open scroll in his hand, at the foot and the right",
   "saints/icons/nektarios-of-aegina.v2.jpg": "a photograph: the white studio backdrop behind him, its own",
+  // Looked at on 2026-11-11, January's icons (docs/1.9-build/notes/january-saints.md,
+  // push 2): the January volume's prints of the same Lives of the Saints as December's
+  // 1904 prints, cut inside their frame lines the same way, with none of the page and no
+  // caption. What is light at their edges is the print's own ground, white where it is
+  // sky, and no cut inside it would keep the figure whole.
+  "saints/icons/sylvester-of-rome.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/gordius-of-caesarea.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/prophet-malachi.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/polyeuctus-of-melitene.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/theodosius-the-cenobiarch.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/tatiana-of-rome.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/hermylas-and-stratonicus.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/euthymius-the-great.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/apostle-timothy.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/anastasius-the-persian.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/clement-of-ancyra.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
+  "saints/icons/xenia-of-rome.jpg": "a print of the Lives of the Saints (before 1911): its own ground, white where it is sky",
   // Looked at on 2026-10-31, the Fall of Constantinople's gallery (the owner's note 84): the light is the work's own.
   "history/media/fall-of-constantinople-zonaro-gun.v1.jpg": "Zonaro's painted sky: a white cloud over the banners, at the top left; a cut would lose the banners or the horsemen",
   // Kept on the website for the 1.7 apps, which ask for these by name; 1.7.1

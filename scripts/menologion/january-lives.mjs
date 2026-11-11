@@ -25,6 +25,13 @@ const ED = {
   mouravieff: "tr. R. W. Blackmore (Oxford, 1842)",
 };
 
+/**
+ * A section's title names its place in the book, short enough to stand whole
+ * on the reader's chapter button (checkMock's "cut" rule): the book itself is
+ * named in the work's title and in every section's citation.
+ */
+const TITLE_MAX = 26;
+
 /** The words every source line ends with, saying how the text was read. */
 const READ =
   "CCEL's transcription of each volume read word for word against archive.org's scans of the same printing; where they differ, the printed page is followed. The editions' footnotes, page numbers and running heads, and their marks in the text, are left out; the paragraphs and the numbers at their heads are as printed. The section titles name the place in each book.";
@@ -176,7 +183,7 @@ export const LIVES = [
       e("npnf201", "Chapter IV.--The First Successors of the Apostles.", {
         heading: 1,
         paras: [5, 5],
-        title: "Eusebius, Church History III.4.6",
+        title: "Church History III.4.6",
         author: "Eusebius of Caesarea",
         citation: `Eusebius, Church History III.4.6, ${ED.eusebius}`,
       }),
@@ -191,12 +198,12 @@ export const LIVES = [
     source: `A. N. Mouravieff, A History of the Church of Russia, ch. V, section XLII, pp. 114-117, and from section XLIII, pp. 117-118, ${ED.mouravieff}; public domain. ${READ_TYPED} Section XLII whole; then, from the next, the sentences on his death and his relics, from where its account of the Tsar's march turns to him to where it turns away.`,
     passages: [
       typed("mouravieff", PHILIP_PARAS, {
-        title: "A History of the Church of Russia, pp. 114-117",
+        title: "Section XLII, pp. 114-117",
         author: "A. N. Mouravieff",
         citation: `A. N. Mouravieff, A History of the Church of Russia, ch. V, section XLII, pp. 114-117, ${ED.mouravieff}`,
       }),
       typed("mouravieff", PHILIP_END, {
-        title: "A History of the Church of Russia, pp. 117-118",
+        title: "Section XLIII, pp. 117-118",
         author: "A. N. Mouravieff",
         citation: `A. N. Mouravieff, A History of the Church of Russia, ch. V, section XLIII, pp. 117-118, ${ED.mouravieff}`,
       }),
@@ -215,7 +222,7 @@ export const LIVES = [
         // translator's long notes between this line and the next, and the
         // comparison loses its place in them.
         ocr: [["he", "he was an exile"], ["was", "he was an exile"], ["an", "was an exile"], ["exile", "an exile on"], ["on", "exile on mount"], ["mount", "on mount syraptin"], ["syraptin", "mount syraptin driven"]],
-        title: "The Book of the Popes, XXXIV, pp. 41-42",
+        title: "XXXIV, pp. 41-42",
         author: "The Book of the Popes",
         citation: `The Book of the Popes, XXXIV, Sylvester, pp. 41-42, ${ED.loomis}`,
       }),
@@ -224,7 +231,7 @@ export const LIVES = [
         // comparison matched the like sentence of the pope before him (buried
         // "in the cemetery of Calistus on the Via Appia").
         ocr: [["priscilla", "cemetery of priscilla"], ["salaria", "via salaria three"]],
-        title: "The Book of the Popes, XXXIV, pp. 71-72",
+        title: "XXXIV, pp. 71-72",
         author: "The Book of the Popes",
         citation: `The Book of the Popes, XXXIV, Sylvester, pp. 71-72, ${ED.loomis}`,
       }),
@@ -250,10 +257,16 @@ export const LIVES = [
       e("npnf206", "1. It has been a subject of wide-spread and frequent discussion", {
         paras: [first, last],
         ...(PAULUS_OCR[i + 1] ? { ocr: PAULUS_OCR[i + 1] } : {}),
-        title: `The Life of Paulus the First Hermit, ${i + 1}`,
+        title: `Chapter ${i + 1}`,
         author: "St. Jerome",
         citation: `St. Jerome, The Life of Paulus the First Hermit, ${i + 1}, ${ED.jerome}`,
       }),
     ),
   },
 ];
+
+for (const life of LIVES) {
+  for (const p of life.passages) {
+    if ((p.title ?? "").length > TITLE_MAX) throw new Error(`${life.slug}: section title "${p.title}" runs past ${TITLE_MAX} characters`);
+  }
+}

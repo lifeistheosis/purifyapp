@@ -7288,7 +7288,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "eustratius-and-companions",
-    iconUrl: "/saints/icons/eustratius-and-companions.jpg",
+    iconUrl: "/saints/icons/eustratius-and-companions.v2.jpg",
     name: "Sts. Eustratius, Auxentius, Eugene, Mardarius and Orestes",
     epithet: "Martyrs of Sebaste in Armenia",
     reposed: "About 302, under Diocletian (Sebaste)",
@@ -7677,7 +7677,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "ten-martyrs-of-crete",
-    iconUrl: "/saints/icons/ten-martyrs-of-crete.jpg",
+    iconUrl: "/saints/icons/ten-martyrs-of-crete.v2.jpg",
     name: "The Ten Martyrs of Crete",
     epithet: "Theodulus, Saturninus, Euporus, Gelasius, Eunicianus, Zoticus, Cleomenes, Agathopodus, Basilides and Evaristus",
     reposed: "250, under Decius (Gortyna)",
@@ -7773,7 +7773,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "martyrs-of-nicomedia",
-    iconUrl: "/saints/icons/martyrs-of-nicomedia.v2.jpg",
+    iconUrl: "/saints/icons/martyrs-of-nicomedia.v3.jpg",
     name: "The Twenty Thousand Martyrs of Nicomedia",
     epithet: "Burned at Nicomedia under Diocletian",
     reposed: "Early 4th century, under Diocletian (Nicomedia)",
@@ -7799,7 +7799,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "holy-innocents",
-    iconUrl: "/saints/icons/holy-innocents.jpg",
+    iconUrl: "/saints/icons/holy-innocents.v2.jpg",
     name: "The Holy Innocents",
     byname: "The children of Bethlehem",
     epithet: "Slain by Herod in Bethlehem",
@@ -7853,7 +7853,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "anysia-of-thessaloniki",
-    iconUrl: "/saints/icons/anysia-of-thessaloniki.jpg",
+    iconUrl: "/saints/icons/anysia-of-thessaloniki.v2.jpg",
     name: "St. Anysia of Thessaloniki",
     epithet: "Martyr",
     reposed: "December 30, 304 (Thessalonica)",
@@ -7922,6 +7922,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "sylvester-of-rome",
+    iconUrl: "/saints/icons/sylvester-of-rome.jpg",
     name: "St. Sylvester of Rome",
     byname: "Silvester",
     epithet: "Pope of Rome",
@@ -7949,6 +7950,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "prophet-malachi",
+    iconUrl: "/saints/icons/prophet-malachi.jpg",
     name: "The Prophet Malachi",
     byname: "Malachias",
     epithet: "The last of the Twelve Minor Prophets",
@@ -7975,6 +7977,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "gordius-of-caesarea",
+    iconUrl: "/saints/icons/gordius-of-caesarea.jpg",
     name: "St. Gordius",
     byname: "Gordius of Caesarea",
     epithet: "Martyr · Centurion of Caesarea in Cappadocia",
@@ -8032,6 +8035,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "domnica-of-constantinople",
+    iconUrl: "/saints/icons/domnica-of-constantinople.jpg",
     name: "St. Domnica of Constantinople",
     epithet: "Of the fifth century",
     reposed: "About 474",
@@ -8047,6 +8051,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "polyeuctus-of-melitene",
+    iconUrl: "/saints/icons/polyeuctus-of-melitene.jpg",
     name: "St. Polyeuctus of Melitene",
     epithet: "Martyr · Centurion at Melitene",
     reposed: "250 or 259 (Melitene)",
@@ -8062,6 +8067,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "philip-of-moscow",
+    iconUrl: "/saints/icons/philip-of-moscow.jpg",
     name: "St. Philip, Metropolitan of Moscow",
     byname: "Philip Kolicheff",
     epithet: "Martyr · Once hegumen of Solovetsky",
@@ -8089,6 +8095,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "dometian-of-melitene",
+    iconUrl: "/saints/icons/dometian-of-melitene.jpg",
     name: "St. Dometian of Melitene",
     byname: "Domitian",
     epithet: "Bishop of Melitene",
@@ -8106,6 +8113,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "theodosius-the-cenobiarch",
+    iconUrl: "/saints/icons/theodosius-the-cenobiarch.jpg",
     name: "St. Theodosius the Cenobiarch",
     epithet: "Abbot · Founder of a communal monastery near Jerusalem",
     born: "About 423 (Marissus in Cappadocia)",
@@ -8122,6 +8130,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "tatiana-of-rome",
+    iconUrl: "/saints/icons/tatiana-of-rome.jpg",
     name: "St. Tatiana of Rome",
     epithet: "Martyr · Deaconess",
     reposed: "226 or 227 (Rome)",
@@ -8137,6 +8146,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "hermylas-and-stratonicus",
+    iconUrl: "/saints/icons/hermylas-and-stratonicus.jpg",
     name: "Sts. Hermylas and Stratonicus",
     epithet: "Martyrs of Singidunum (Belgrade)",
     reposed: "315 (the Danube at Singidunum)",
@@ -8167,6 +8177,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "paul-of-thebes",
+    iconUrl: "/saints/icons/paul-of-thebes.jpg",
     name: "St. Paul of Thebes",
     byname: "Paul the First Hermit",
     epithet: "Hermit of the Thebaid",
@@ -8193,6 +8204,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "john-the-hut-dweller",
+    iconUrl: "/saints/icons/john-the-hut-dweller.jpg",
     name: "St. John the Hut-Dweller",
     byname: "John the Calybite",
     epithet: "Of Constantinople · The beggar at his parents' gate",
@@ -8209,6 +8221,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "euthymius-the-great",
+    iconUrl: "/saints/icons/euthymius-the-great.jpg",
     name: "St. Euthymius the Great",
     epithet: "Abbot in Palestine",
     born: "377 (Melitene in Armenia)",
@@ -8225,6 +8238,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "apostle-timothy",
+    iconUrl: "/saints/icons/apostle-timothy.jpg",
     name: "Holy Apostle Timothy",
     byname: "Timotheus",
     epithet: "Disciple of St. Paul · First bishop of Ephesus",
@@ -8252,6 +8266,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "anastasius-the-persian",
+    iconUrl: "/saints/icons/anastasius-the-persian.jpg",
     name: "St. Anastasius the Persian",
     byname: "Magundat",
     epithet: "Monk · Martyr in Persia",
@@ -8268,6 +8283,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "clement-of-ancyra",
+    iconUrl: "/saints/icons/clement-of-ancyra.jpg",
     name: "St. Clement of Ancyra",
     epithet: "Hieromartyr · Bishop of Ancyra",
     reposed: "303 or 312 (Ancyra)",
@@ -8284,6 +8300,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "xenia-of-rome",
+    iconUrl: "/saints/icons/xenia-of-rome.jpg",
     name: "St. Xenia of Rome",
     epithet: "Of the fifth century",
     reposed: "5th century",
@@ -8299,6 +8316,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "xenophon-and-mary",
+    iconUrl: "/saints/icons/xenophon-and-mary.jpg",
     name: "Sts. Xenophon and Mary",
     byname: "Xenophon, Mary, Arcadius and John",
     epithet: "With their sons Arcadius and John · Of Constantinople",
@@ -8315,6 +8333,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "cyrus-and-john",
+    iconUrl: "/saints/icons/cyrus-and-john.jpg",
     name: "Sts. Cyrus and John",
     epithet: "Unmercenaries · Martyrs of Alexandria",
     reposed: "311 or 312 (Alexandria)",

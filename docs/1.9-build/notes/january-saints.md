@@ -283,3 +283,53 @@ Where I am unsure, said rather than guessed:
   a page of women alone fails until its form is written.
 - The names themselves stay English in every language, as before; only the
   words around them change.
+
+## Push 2, the icons, as built (2026-11-11)
+
+Every picture staged and looked at with scripts/fetch-saint-icons.mjs, a
+detail cut where the picture holds more than the saint, its rights row in
+lib/saints/iconRights.ts with what it shows. The list went to Updates 2
+before anything was fetched, and Commons was asked at most once a minute.
+
+- **Old icons and frescoes (7)**: St Paul of Thebes and St John the
+  Hut-Dweller, each his own half of the Athonite fresco that names them both
+  (the one St Jerome's Life wears in the reading room); St Domnica (at
+  prayer), St Dometian (at prayer beside his relics carried), Sts Xenophon and
+  Mary (St Xenophon with one of his sons, both whole) and Sts Cyrus and John
+  (the younger, standing apart), from the Menologion of Basil II in its large
+  unwatermarked copies; St Philip, Simon Ushakov's icon of 1653 (Kaluga Art
+  Museum).
+- **The icon printed for each day in the Russian Lives of the Saints after St
+  Dimitry of Rostov (Moscow, the January volume, before 1911) (12)**: St
+  Sylvester, St Gordius, the Prophet Malachi, St Polyeuctus, St Theodosius the
+  Cenobiarch, St Tatiana, Sts Hermylas and Stratonicus, St Euthymius, the
+  Apostle Timothy, St Anastasius, St Clement and St Xenia. Black-and-white
+  prints of standing figures, each named in Slavonic under it, cut inside the
+  print's frame lines; the series December used for St Sosthenes and St
+  Lucia. One Commons listing found the whole month's.
+- **Refused, and why**: the small Menologion copies on Commons for St
+  Sylvester, St Malachi, St Gordius, St Theodosius, the Sinai Fathers, St
+  Euthymius, St Clement and St Xenia are the Vatican Library's own, with its
+  "all rights reserved" watermark across the picture. The Menologion's pages
+  for St Polyeuctus, St Tatiana, Sts Hermylas and Stratonicus, St Timothy and
+  St Anastasius show only their deaths or their relics carried, with no figure
+  of the saint apart from it, so none is a first picture (call 30).
+- **On the plate, named (3)**: the Fathers slain at Sinai and Raithu (the one
+  old picture of them, the Lives' print for their day, shows them lying slain
+  below the monastery); the Prophet Micaiah (the Lives picture no one on his
+  day, and Commons' one old picture of him, Christoph Weigel's engraving of
+  1695, is Sedecias striking him on the cheek before the two kings, his only
+  figure mid-blow; it could stand if he wants a narrative print there); and St
+  George the Chozebite (the Lives picture him on no day, and Commons' one
+  picture of him is a recent photograph under CC BY-SA 4.0, which the house
+  tool's licence gate does not pass). The book Micaiah before Ahab waits with
+  him in the covers test.
+- **Five December details re-cut sharper**, on the arbiter's word that a soft
+  picture is a fault: St Anysia, the Holy Innocents, St Eustratius's St
+  Eugene, the Ten Martyrs and the martyrs of Nicomedia, each the same detail
+  from Commons' larger copy, found in it by matching the old cut, under a new
+  file name (.v2, .v3) with the old file retired. The house tool had shrunk
+  every staging to 800 px, so a figure cut from a wide page came out 140 to 250
+  px; its new opt-in --detail stages up to 3840 px. The Ten Martyrs and
+  Nicomedia gain most (1.6 times the pixels); the two Dionysiou frescoes gain
+  little, since Commons serves them at 960 px at most.

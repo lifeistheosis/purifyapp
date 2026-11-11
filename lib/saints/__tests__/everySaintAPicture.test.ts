@@ -77,30 +77,12 @@ const WAITING: Record<string, string> = {
   "paramonus-and-the-370": "search: the November and December chat",
   "frumentius-of-axum": "search: the November and December chat",
   "elias-of-murom": "search: the November and December chat",
-  // January's saints, new on 2026-11-11 (call 34, Butler's Lives for
-  // January): the January chat's.
-  "sylvester-of-rome": "search: the January chat",
-  "prophet-malachi": "search: the January chat",
-  "gordius-of-caesarea": "search: the January chat",
-  "prophet-micaiah": "search: the January chat",
-  "george-the-chozebite": "search: the January chat",
-  "domnica-of-constantinople": "search: the January chat",
-  "polyeuctus-of-melitene": "search: the January chat",
-  "philip-of-moscow": "search: the January chat",
-  "dometian-of-melitene": "search: the January chat",
-  "theodosius-the-cenobiarch": "search: the January chat",
-  "tatiana-of-rome": "search: the January chat",
-  "hermylas-and-stratonicus": "search: the January chat",
-  "fathers-of-sinai-and-raithu": "search: the January chat",
-  "paul-of-thebes": "search: the January chat",
-  "john-the-hut-dweller": "search: the January chat",
-  "euthymius-the-great": "search: the January chat",
-  "apostle-timothy": "search: the January chat",
-  "anastasius-the-persian": "search: the January chat",
-  "clement-of-ancyra": "search: the January chat",
-  "xenia-of-rome": "search: the January chat",
-  "xenophon-and-mary": "search: the January chat",
-  "cyrus-and-john": "search: the January chat",
+  // January's saints (1.9): nineteen took their pictures in the January
+  // chat's push 2 (docs/1.9-build/notes/january-saints.md); these three have
+  // none that passes.
+  "prophet-micaiah": "search: the January chat found none (Weigel's engraving of 1695 shows him struck)",
+  "george-the-chozebite": "search: the January chat found none (Commons' one photograph is CC BY-SA, refused)",
+  "fathers-of-sinai-and-raithu": "search: the January chat found none (their one old picture shows them slain, call 30)",
 };
 
 /** The saints whose pages have no picture: no entry of the saint names one (a saint may stand in the registry more than once). */

@@ -167,7 +167,7 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   "prophet-haggai": bundled("prophet-haggai.jpg", 20),
   "prophet-daniel": bundled("prophet-daniel.jpg", 21),
   "ambrose-of-milan": bundled("ambrose-of-milan.jpg", 30),
-  "martyrs-of-nicomedia": bundled("martyrs-of-nicomedia.v2.jpg", 45),
+  "martyrs-of-nicomedia": bundled("martyrs-of-nicomedia.v3.jpg", 45),
   "melania-the-younger": bundled("melania-the-younger.jpg", 27),
   "sosthenes-apollos-cephas-and-tychicus": bundled("sosthenes-apollos-cephas-and-tychicus.jpg", 15),
   "anastasia-the-pharmakolytria": bundled("anastasia-the-pharmakolytria.jpg", 20),
@@ -183,8 +183,8 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   "sebastian-and-companions": bundled("sebastian-and-companions.jpg", 28),
   "theodore-the-branded": bundled("theodore-the-branded.jpg", 25),
   "thyrsus-leucius-and-callinicus": bundled("thyrsus-leucius-and-callinicus.jpg", 13),
-  "anysia-of-thessaloniki": bundled("anysia-of-thessaloniki.jpg", 40),
-  "ten-martyrs-of-crete": bundled("ten-martyrs-of-crete.jpg", 25),
+  "anysia-of-thessaloniki": bundled("anysia-of-thessaloniki.v2.jpg", 30),
+  "ten-martyrs-of-crete": bundled("ten-martyrs-of-crete.v2.jpg", 25),
   // November's, dressed with build 93 note 18 (2026-11-11): the panel of the
   // three martyrs, whole.
   "gurias-samonas-and-habib": bundled("gurias-samonas-and-habib.jpg", 30),
@@ -208,6 +208,11 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   // while no picture of him had passed (WORK_ART).
   "isaac-the-syrian": bundled("isaac-the-syrian.v2.jpg", 39),
   "papias-of-hierapolis": bundled("papias-of-hierapolis.v2.jpg", 35),
+  // January's saints (1.9, push 2): their settled page icons on their books.
+  "philip-of-moscow": bundled("philip-of-moscow.jpg", 15),
+  "sylvester-of-rome": bundled("sylvester-of-rome.jpg", 18),
+  "prophet-malachi": bundled("prophet-malachi.jpg", 18),
+  "apostle-timothy": bundled("apostle-timothy.jpg", 18),
   // From Wikimedia Commons for the covers (lib/reading/authorCovers.ts).
   ...AUTHOR_COVERS,
 };
