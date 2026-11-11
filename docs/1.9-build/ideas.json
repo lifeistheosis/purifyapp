@@ -2685,6 +2685,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "The arbiter's word, Fable Theology's finds. The lit Hours tile's 1.00 was the measure (Admin mended it). d3e190b0b, c4d2e1f62, faf995ea7. PLAN 13bh."
+  },
+  {
+   "id": "e-atlas-wheel-and-mirror",
+   "section": "Design",
+   "kind": "bug",
+   "title": "The councils atlas reads beside its band and turns round whole in Arabic",
+   "from": "claude",
+   "asked": "2026-11-11",
+   "status": "built",
+   "decided": "2026-11-11",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "Admin's open-reader walk, the arbiter's word. The wheel's rows beside the band at 55%, an era's name as the row's name, none past them; the play mark centred and the year at the start in Arabic. 362557a21, 7aeffc44d, 770b5c40e. PLAN 13bi."
   }
  ]
 }
