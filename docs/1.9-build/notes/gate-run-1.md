@@ -365,11 +365,104 @@ Today it holds:
   welcome answers in the field list, and Buy Me a Coffee in the third
   parties), and the website's front page strip.
 
-## Not yet run
+## Where each part stands, after the second run (2026-11-11, 14:20 UTC)
 
-- Part 3, no saint or work without a picture (Updates 2, the December chat).
-- Part 5, every walk note with its own test (each chat; the arbiter reads).
-- Part 6, the fresh-eyes Fable walk (his yes first).
+The gate is `notes/build-93.md`, "The pre-build gate". Parts 1, 2 and 4 are
+Admin's; 3 is Updates 2's and the December and January chats'; 5 is each
+chat's, read by the arbiter; 6 waits on his yes.
+
+**1. The tap walk:** the fourth reading, every control on every screen of the
+export of `28b69b784`, as a reader with no Plus: 2,773 taps, one fail the
+app's (the reading room's Back after "The Paschal Homily", Fable Theology,
+in hand), the other nine the walk's own, mended (`9cbc9acbb`). Beside it,
+Fable Themes' page-switch walk (`SELLS_PLUS=1 node scripts/route-motion.mjs`,
+50 verdicts, every page switch a transition): 50 of 50 on Fable Themes' own
+selling export of `e6c2a49d`. Both run again on the export the test build is
+cut from.
+
+**2. The guardrail walk:** the same export, as both readers: 124 of 127
+screens pass every rule. Left: /history/'s atlas links and era names
+(Updates), a works' chapter button (Updates 2); the saints' first titles
+were mended after the export (Fable Themes, `ff901d0fe`).
+
+**3. No saint or work without a picture:**
+`lib/saints/__tests__/everySaintAPicture.test.ts` passes: every saint has a
+picture or stands in its list, with what he waits for. The list has 31: 23
+wait on a permission (`docs/1.9-build/ICON-PERMISSIONS.md`; the letters are
+drafted in `docs/1.9-build/PERMISSION-LETTERS.md`, for him to send) and 8
+are still searched for a free picture: St Symeon the New Theologian, St Mark
+of Ephesus, St Isidora of Tabenna, St Alexander of Alexandria, St Theodosius
+the Great, St Adrian of Rome and St Xenia of Petersburg (Updates 2), and the
+Prophet Micaiah (the January chat). A work without a cover: held by
+`lib/reading/__tests__/coverArt.test.ts`, which passes.
+
+**4. The words:** `lib/ui/__tests__/wordsTrue.test.ts` passes, and its
+waiting list is empty since `d86f2ec26`: the Privacy page's lines on signing
+in and Buy Me a Coffee were its last, and went with his yes to call 32. The
+same test holds `docs/1.9-build/free-and-plus.md` to the code: the Plus rows
+the paywall draws, and what is free.
+
+**5. Every note has its test:** build 93's twenty-one notes, with the tests
+and walks that name them (each chat's; whether each fails on the old code
+is for the arbiter's read):
+
+- **1** (St Alexander's picture on Nicaea's page; Back lands at the bottom):
+  lib/councils/__tests__/fatherPlate.test.ts, fatherShown.test.ts,
+  pages.test.ts; lib/ui/__tests__/arrivingImage.test.ts, facePlate.test.ts,
+  returnPlace.test.ts; lib/today/__tests__/saintFaces.test.ts.
+- **2** (Easy Scroll fights the finger): scripts/export-walk.mjs.
+- **3** (a reading look changes nothing): lib/entitlements/__tests__/
+  plusAfterSignIn.test.ts; lib/reader/__tests__/plusModesGate.test.ts,
+  vespersPass.test.ts; lib/settings/__tests__/litPanels.test.ts,
+  readingModeGallery.test.ts; scripts/tap-walk.mjs.
+- **4** (Reading mode refined): lib/reader/__tests__/earned.test.ts,
+  modeSwatches.test.ts; lib/ui/__tests__/noDashedBoxes.test.ts,
+  touchTargets.test.ts.
+- **5** (an event's timeline): lib/history/__tests__/calmHistory.test.ts,
+  thread.test.ts, threadDesign.test.ts; lib/premium/__tests__/plusTry.test.ts,
+  plusTryScreens.test.ts.
+- **6** (the language list off the screen): lib/i18n/__tests__/
+  languageSheet.test.ts.
+- **7** (the sparkle star): lib/ui/__tests__/noSparkle.test.ts; checkMock's
+  sparkle rule.
+- **8** (the journal's Title explanation): lib/bible/__tests__/
+  verseFocus.test.ts; lib/journal/__tests__/blockForms.test.ts,
+  pageEditor.test.ts, writingSheet.test.ts; lib/whatsNew/__tests__/
+  tourTaps.test.ts; scripts/tap-walk.mjs.
+- **9** (the journal and the Florilegium always there): lib/journal/__tests__/
+  waysIn.test.ts; lib/nav/__tests__/oneSettings.test.ts.
+- **10** (Support this work, where the money goes): lib/support/__tests__/
+  supportPage.test.ts (it does not name the note).
+- **11** (learn by heart: any verse, a quote, one's own words):
+  lib/quotes/__tests__/find.test.ts; lib/remember/__tests__/items.test.ts;
+  lib/sync/__tests__/kept.test.ts, learnedWordsTravel.test.ts;
+  lib/widget/__tests__/remember.test.ts, sync.test.ts; scripts/learn-walk.mjs.
+- **12** (every saint has an icon): lib/saints/__tests__/
+  everySaintAPicture.test.ts; lib/reading/__tests__/coverArt.test.ts.
+- **13** (highlight and quote any words of a Father): lib/bible/__tests__/
+  readerScreen.test.ts; lib/marks/__tests__/pages.test.ts, saved.test.ts;
+  lib/saints/__tests__/paragraphDoubleTap.test.ts; lib/sync/__tests__/
+  marks.test.ts.
+- **14** (the end of a rule): lib/community/__tests__/prayAndTalk.test.ts;
+  lib/prayers/__tests__/prayerPages.test.ts, ruleEnd.test.ts.
+- **15** (what opens shows itself): lib/prayers/__tests__/bookFollow.test.ts,
+  prayersHome.test.ts; lib/ui/__tests__/openedParts.test.ts,
+  showOpened.test.ts; scripts/opened-walk.mjs.
+- **16** (Your rule's switch jumps): lib/prayers/__tests__/
+  yourRulePage.test.ts; lib/ui/__tests__/underTheFinger.test.ts.
+- **17** (a Father's notes and highlights as the Bible's):
+  lib/marks/__tests__/pages.test.ts.
+- **18** (works without a cover): lib/reading/__tests__/coverArt.test.ts.
+- **19** (the Florilegium): lib/florilegium/__tests__/href.test.ts,
+  redesign.test.ts, todayLine.test.ts; scripts/florilegium-walk.mjs.
+- **20** (the Bible's translation as easy as the chapter): lib/bible/__tests__/
+  translationBeside.test.ts.
+- **21** (campaigns not in build 93; the themes do not change): the themes
+  are note 3's; campaigns were in the build and hidden by the server's
+  switch as built (lib/campaigns/flags.ts, held by lib/campaigns/__tests__/
+  doorStates.test.ts). No note names a test of its own for it.
+
+**6. Fresh eyes:** proposed to him, a Fable run; his yes first.
 
 ## Who has each (the arbiter, 2026-11-11 03:07 UTC)
 
