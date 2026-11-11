@@ -373,8 +373,12 @@ chat's, read by the arbiter; 6 waits on his yes.
 
 **1. The tap walk:** the fourth reading, every control on every screen of the
 export of `28b69b784`, as a reader with no Plus: 2,773 taps, one fail the
-app's (the reading room's Back after "The Paschal Homily", Fable Theology,
-in hand), the other nine the walk's own, mended (`9cbc9acbb`). Beside it,
+app's (the reading room's Back after "The Paschal Homily"), the other nine
+the walk's own, mended (`9cbc9acbb`). The Back is mended too (Fable
+Theology, `cbe99ec17`, 14:33 UTC): the room shelves that book four times,
+twice between the same two books, and a place now remembers which of those
+links it was. On Fable Theology's selling export with the mend, the same
+walk on /reading/, every control: 185 tapped, 0 failed. Beside it,
 Fable Themes' page-switch walk (`SELLS_PLUS=1 node scripts/route-motion.mjs`,
 50 verdicts, every page switch a transition): 50 of 50 on Fable Themes' own
 selling export of `e6c2a49d`. Both run again on the export the test build is
@@ -401,14 +405,19 @@ before the measure passed it, and the same sheet at 44 passes
 
 **3. No saint or work without a picture:**
 `lib/saints/__tests__/everySaintAPicture.test.ts` passes: every saint has a
-picture or stands in its list, with what he waits for. The list has 31: 23
-wait on a permission (`docs/1.9-build/ICON-PERMISSIONS.md`; the letters are
-drafted in `docs/1.9-build/PERMISSION-LETTERS.md`, for him to send) and 8
-are still searched for a free picture: St Symeon the New Theologian, St Mark
-of Ephesus, St Isidora of Tabenna, St Alexander of Alexandria, St Theodosius
-the Great, St Adrian of Rome and St Xenia of Petersburg (Updates 2), and the
-Prophet Micaiah (the January chat). A work without a cover: held by
-`lib/reading/__tests__/coverArt.test.ts`, which passes.
+picture or stands in its list, with what he waits for. The list had 31 at
+the second run; it has 27 since Updates 2's pushes of 14:00 to 14:35 UTC,
+in which St Alexander of Alexandria, St Isidora of Tabenna, St Adrian and
+St Theodosius came to wear old pictures, and St Symeon the New Theologian,
+St Mark of Ephesus and St Xenia of Petersburg went to the permissions list.
+26 wait on a permission (`docs/1.9-build/ICON-PERMISSIONS.md`), with a
+letter drafted for each in `docs/1.9-build/PERMISSION-LETTERS.md` for him to
+send (20 letters; St Mark's only if he does not take the Eleon workshop's
+own free icon), but three: St Gabriel of Georgia and St Lazarus of Mount
+Galesion have no address yet, and Sts Zacchaeus and Alphaeus no icon. One is
+still searched for a free picture: the Prophet Micaiah (the January chat).
+Run again at 14:43 UTC on the pulled tree: passes. A work without a cover:
+held by `lib/reading/__tests__/coverArt.test.ts`, which passes.
 
 **4. The words:** `lib/ui/__tests__/wordsTrue.test.ts` passes, and its
 waiting list is empty since `d86f2ec26`: the Privacy page's lines on signing

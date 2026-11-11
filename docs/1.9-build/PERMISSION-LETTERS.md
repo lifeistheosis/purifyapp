@@ -39,8 +39,6 @@ No letter yet, and why:
 - **St Lazarus of Mount Galesion:** the only icon is imoph.org's, and no
   address for it was found.
 - **Sts Zacchaeus and Alphaeus:** no icon found.
-- **St Mark of Ephesus and St Symeon the New Theologian:** still searched for
-  a free picture.
 
 ---
 
@@ -799,3 +797,116 @@ The Greek, in the same words:
   Αγίου Μαξίμου του Ομολογητού και του Οσίου Εφραίμ του Σύρου.
 - **Beside it:** as Hosios Loukas, a monument of the Ministry of Culture
   too.
+
+---
+
+## Part three: three more icons (Updates 2's rows of 2026-11-11, 14:33 UTC)
+
+Added to `docs/1.9-build/ICON-PERMISSIONS.md` after the first list, for
+saints who had none. Numbered on from part two, so no letter above changes
+its number.
+
+### 18. The Greek Orthodox Monastery of the Virgin Mary the Consolatory, Quebec: St Symeon the New Theologian
+
+- **To:** the contact form at https://www.monasterevmc.org/pages/contact-us,
+  or by post to 827, chemin de la Carrière, Brownsburg-Chatham, Quebec,
+  Canada. Telephone (450) 533-4313 or (450) 533-1170. No email is published.
+- **In:** English.
+- **Before sending:** by post, read the postal code from the monastery's own
+  page; it is not in the list.
+
+> Your blessing, Reverend Mother.
+>
+> I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
+> Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
+> Each saint's life in Purify is shown with an icon of the saint, and the
+> lives and their icons are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their icons are never part of it.
+>
+> For St Symeon the New Theologian we have found no picture that we may
+> show. Your holy monastery offers the sisters' icon of him as a print,
+> "Saint Symeon the New Theologian Orthodox Icon". We ask your written
+> permission to show that icon beside his life, and we would name it as you
+> wish, for example "Icon by the sisters of the Monastery of the Virgin Mary
+> the Consolatory".
+>
+> We would show it only where a reader meets the saint, in the app and on our
+> website, and never in advertising, in store listings or in anything sold.
+> If you ever asked us to, we would take it down at once.
+>
+> With thanks, and asking your prayers,
+>
+> Edgar, the Purify Team
+> Purify Orthodox LLC
+> legal@purifyapp.net
+
+### 19. Holy Cross Monastery, Wayne, West Virginia: St Xenia of St Petersburg
+
+- **To:** the contact form at https://www.holycross.org/pages/contact, or by
+  post to Holy Cross Monastery, 505 Holy Cross Road, Wayne, WV 25570-5403,
+  United States. Telephone (304) 849-2072 (the monastery) or (304) 849-4726
+  (the store). No email is published.
+- **In:** English.
+
+> Your blessing, Reverend Fathers.
+>
+> I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
+> Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
+> Each saint's life in Purify is shown with an icon of the saint, and the
+> lives and their icons are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their icons are never part of it.
+>
+> For St Xenia of St Petersburg we have found no picture that we may show.
+> Your holy monastery offers "Blessed Xenia", painted by a monk of the
+> Hermitage, as a print. We ask written permission to show that icon beside
+> her life. If the right to grant it is the painter's and not the
+> monastery's, may we ask you to pass this letter to him? And may we know
+> his name, so that we may name him beneath the icon with the monastery, as
+> you wish?
+>
+> We would show it only where a reader meets the saint, in the app and on our
+> website, and never in advertising, in store listings or in anything sold.
+> If you ever asked us to, we would take it down at once.
+>
+> With thanks, and asking your prayers,
+>
+> Edgar, the Purify Team
+> Purify Orthodox LLC
+> legal@purifyapp.net
+
+### 20. Brian Whirledge, iconographer: St Mark of Ephesus
+
+- **Only if he does not take the Eleon icon.** The Eleon icon-painting
+  workshop published its own icon of St Mark with St Macarius under a free
+  licence (CC BY 2.0); whether that stands in for a letter is his word,
+  asked through the arbiter. If he takes it, this letter is not sent.
+- **To:** icons@brianwhirledge.com (on his contact page,
+  https://www.brianwhirledge.com/contact).
+- **In:** English.
+
+> Dear Mr Whirledge,
+>
+> I write on behalf of Purify (purifyapp.net), an Orthodox app for prayer,
+> Holy Scripture and the lives of the saints, made by Purify Orthodox LLC.
+> Each saint's life in Purify is shown with an icon of the saint, and the
+> lives and their icons are free for every reader. Purify also offers an
+> optional subscription for some reading tools; the lives of the saints and
+> their icons are never part of it.
+>
+> For St Mark of Ephesus we have found no picture that we may show. May we
+> show your icon of him, "Saint Mark of Ephesus", beside his life? We would
+> name you beneath it as you wish, for example "Icon by Brian Whirledge",
+> with a link to your pages. We ask only to show it; nothing of it would be
+> printed or sold, and we know that Legacy Icons handles your prints.
+>
+> We would show it only where a reader meets the saint, in the app and on our
+> website, and never in advertising, in store listings or in anything sold.
+> If you ever asked us to, we would take it down at once.
+>
+> With thanks,
+>
+> Edgar, the Purify Team
+> Purify Orthodox LLC
+> legal@purifyapp.net
