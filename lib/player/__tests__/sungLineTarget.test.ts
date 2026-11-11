@@ -8,6 +8,8 @@
 //    reaches, so a slip does not take the neighbour;
 //  - in Arabic its top row stood by physical sides: Close and the save mark
 //    were 8 to 11px off their mirror. They stand by start and end now.
+// A chant's own page sings along the same way, and its lines are held the
+// same: 44 to a finger with the 15px between its words kept.
 // What a reader would notice if this broke: a line they tap to hear again
 // that the finger misses, or, in Arabic, Close and the save mark out of line
 // with the row they stand in.
@@ -38,6 +40,21 @@ describe("Now Playing's lines and its top row", () => {
     expect(oneLine).toBeCloseTo(33.6, 1);
     expect(oneLine + 2 * pad).toBeGreaterThanOrEqual(44);
     expect(between + 2 * pad).toBe(20);
+    expect(between).toBeGreaterThan(0);
+  });
+
+  it("gives every line on a chant's own page 44 or more to a finger, the 15px between its words kept", () => {
+    // Found 2026-11-11 with the recording standing in: once it plays, each line
+    // is a button, and a line of one row was 29.8px tall (21px at 1.42).
+    const line = rule('[data-sung-look="page"] li[data-sung]');
+    const inside = rule('[data-sung-look="page"] li[data-sung] > :is(button, div)');
+    const main = rule('[data-sung-look="page"] [data-sung-main]');
+    const between = px(line, "margin-bottom");
+    const pad = px(inside, "padding-block");
+    const oneLine = px(main, "font-size") * Number(/line-height: ([\d.]+);/.exec(main)?.[1]);
+    expect(oneLine).toBeCloseTo(29.8, 1);
+    expect(oneLine + 2 * pad).toBeGreaterThanOrEqual(44);
+    expect(between + 2 * pad).toBeCloseTo(15, 5);
     expect(between).toBeGreaterThan(0);
   });
 

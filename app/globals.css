@@ -11828,9 +11828,17 @@ html[data-reading-mode="cappadocian"] [data-sung-look="player"] {
    page sets them. Its English under it, the sans at 13.5px a step back
    (data-sung-gloss): under the line being sung only, and under every line
    while nothing is sung, so the words read whole on their own. Its sound
-   alone (Transliteration) in the sans. */
+   alone (Transliteration) in the sans.
+   Each line is 44 to a finger once its recording plays and it is a button
+   (the gate's rule; found 2026-11-11 with the recording standing in, a line
+   of one row was 29.8px): the 15px between one line's words and the next's
+   is kept, 14.2 of it inside the lines, 7.1 above a line's words and 7.1
+   below, and 0.8 between them, as Now Playing's lines are spaced. */
 [data-sung-look="page"] li[data-sung] {
- margin-bottom: 15px;
+ margin-bottom: 0.8px;
+}
+[data-sung-look="page"] li[data-sung] > :is(button, div) {
+ padding-block: 7.1px;
 }
 [data-sung-look="page"] [data-sung-main] {
  font-size: 21px;
