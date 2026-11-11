@@ -1113,3 +1113,82 @@ Held to itself and to the screen:
 - **The gate's walk** says what it said before the mend: 123 of 127
   screens with nothing found, the same six findings (pictures), 517 lines
   to be looked at on 22 screens, in 111 seconds.
+
+## The gate's third run: three of mine, and the corner (2026-11-11)
+
+His word at 17:00 UTC: "we kinda need this build finalized since we are on
+our last weekly limit until the next one". From then this chat did only its
+three gate fails. Each was proved on the selling export, the first with no
+signal and the other two on the real feed (read only, numbers only, no
+reader's words or name kept).
+
+### Six council pictures that did not come with no signal
+
+All six were History's pictures of the seven Ecumenical Councils on
+Theology's own screens: the hub, the Creed, the path on Christ and a
+heresy's page. The apps carry those as the AVIF alone and keep the website's
+JPEG behind them (`lib/media/carried.ts`). The councils' own pages offer the
+AVIF first. Three places in Theology asked for the JPEG alone, so with no
+signal a reader saw only the blurred preview: the hub's film of the seven
+(`TheologyLibrary.tsx`), a step's read on a path (`StepView.tsx`) and a
+council's mark beside its name (`CouncilMark.tsx`).
+
+`components/theology/CouncilPicture.tsx` is one small picture for the three:
+the AVIF first, the JPEG behind it for a phone that cannot draw an AVIF,
+arriving whole as every plain picture does. The hub's page and the path's
+steps hand it the AVIF.
+
+**What the pictures uncovered.** With them there, the film's words were
+measured on a picture for the first time, and 87 lines fell short on the
+five palettes: a numeral 2.07:1 on Candlelight, a name 3.30 on Light. A
+reader with a signal has been reading them that way all along; the gate,
+which walks with none, never saw the pictures. The film's fade was one even
+slope, 40 percent strong where the words begin. Its foot is now the
+palette's ground, nearly whole from where the words begin and whole at the
+end, the picture clear above it (`.council-film::after`).
+
+On the export with no signal: 17 council pictures on the four screens, every
+one drawn from the app's own file; the gate's walk of the four screens finds
+nothing; the film's words on their pixels, none under 4.5:1 on the five
+palettes and the seventeen looks. `lib/theology/__tests__/councilPictures.test.ts`
+holds the premise, the order, the fallback, the three places and the foot's
+strength where the words begin (0.40 before, 0.9 asked).
+
+### Community's "Read more": the place the thumb was comes to rest where it is sent
+
+The walk failed it by a pixel: the place came to rest 66px down, where the
+walk allows 65 and the helper sends it to 63. The helper did follow. It
+counted its own steps as it asked for them, and a screen sets a page on
+whole pixels, so each step of a glide lands a part of a pixel from where it
+was sent. Twenty steps on, the place stood a few pixels from where the
+helper believed it was, and the page stopped that far short: 62 to 64px on a
+quiet machine, 66 on the gate's.
+
+`lib/ui/showOpened.ts` now reads how far the page really went after each
+step and counts that. On the real feed, tapped as the gate taps (a finger
+down 60ms), the place comes to rest at 63px on every post with a fold, with
+the phone slowed six and twelve times as well. The test's screen drops the
+part of a pixel, the worst a screen does: the old code came to rest at 72.
+
+### A reader's own long dash on their profile
+
+The em dash was in a reader's own "About me". The feed has marked readers'
+words since the first run (`READERS_WORDS`), so the checker lists a long dash
+a reader typed and does not fail the screen; the profile sheet did not. The
+same mark, word for word (`components/community/readersWords.ts`, a test
+holds it equal to the feed's), is now on the paragraph that holds "About
+me", on the name a reader chose, on their parish and on where a cleric
+serves. Of the thirty profiles the feed's first screens lead to, two have a
+long dash, both in "About me": the checker lists each as a reader's own
+words and fails neither sheet.
+
+### The graphite card's lit corner on four more palettes
+
+The arbiter's yes of 15:36, written and tested before the word of 17:00 and
+sent as it stood. Candlelight was given a rule for the corner when the
+checker found "~5 min" there (above, "The nine, mended"). By the same
+arithmetic Dark's faint ink read 4.42:1 at the corner and Monastery's,
+Councils' and Cappadocian's 4.36, 4.27 and 4.26. On a graphite card Dark
+draws its faint shares at 52 percent (4.65) and the three at 60 (4.88, 4.77,
+4.76). True black draws the card flat. `faintText.test.ts` holds all five at
+the corner.
