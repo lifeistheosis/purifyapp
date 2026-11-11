@@ -1640,7 +1640,11 @@ if (WALK) {
     await sheet.waitFor({ state: "detached", timeout: 8000 });
     const [sent] = sentTo("POST", /^\/api\/campaigns\/[0-9a-f-]{36}\/words$/);
     expectThat(sent && sent.path.includes(HELD), "the change was not sent for this campaign");
-    expectThat(JSON.stringify(sent.body) === JSON.stringify({ title: "For Elias on his way home", name: "Elias", words: "He travels home on Saturday now." }), `sent ${JSON.stringify(sent.body)}`);
+    // The three it can change, and that its writer has not yet been asked about a masked word: nothing else of the campaign.
+    expectThat(
+      JSON.stringify(sent.body) === JSON.stringify({ title: "For Elias on his way home", name: "Elias", words: "He travels home on Saturday now.", confirmFiltered: false }),
+      `sent ${JSON.stringify(sent.body)}`,
+    );
     await settle(page, 900);
     expectThat((await page.locator("#campaign-title").innerText()).includes("For Elias on his way home"), `the page still says "${await page.locator("#campaign-title").innerText()}"`);
     expectThat((await page.locator("[data-campaign-page]").innerText()).includes("Saved. A moderator will read it as it is now."), "the page does not say it was saved");
@@ -2263,6 +2267,10 @@ if (WALK) {
     expectThat(ofCampaigns.every((p) => p === "/api/campaigns/open") && ofCampaigns.length === 1, `asked ${ofCampaigns.join(", ")}`);
     expectThat(!calls.some((c) => c.path === "/api/community/prayer-wall"), "the prayer wall was asked for");
     // And a profile, for this reader: no Campaigns door, and that reader's campaigns are asked of no one.
+    // The walk moves by the router's push, which fires no `hashchange` under a page that is already open
+    // (lib/community/notificationTarget.ts says the same of the inbox), so it leaves Community and comes
+    // back by the profile's address, as a link from anywhere else does.
+    await go(page, "/prayers");
     await go(page, `/community/#@${SAMPLE_READER.handle}`);
     await page.waitForFunction((h) => document.querySelector("[data-profile-card]")?.innerText.includes(`@${h}`) && !!document.querySelector("[data-profile-card] [data-profile-doors]"), SAMPLE_READER.handle, { timeout: 25000 });
     await settle(page, 1600);

@@ -4289,8 +4289,12 @@ rule's one function, the write that asks it again, and the screens).
 Fifteen ways of breaking it were tried and each failed a case, and ten more
 for what happens after a moderator has read it in the meantime (14 cases in
 that file now). The walk: two flows, the second through to the page read
-again. Stills: the sheet (39), and the sheet after Save on a campaign a
-moderator read in the meantime, saying why its words stay (43). They are on
+again. The first failed on its first run by the script's own fault: it
+expected three fields to be sent, and the app sends four, the fourth saying
+that the writer has not yet been asked about a masked word. The script was
+mended, not the app. Stills: the sheet (39), and the sheet after Save on a
+campaign a moderator read in the meantime, saying why its words stay, with
+Save gone dim (43). They are on
 his page with call 31 as `decisions/change-words.png` and
 `decisions/change-words-read.png`.
 
@@ -4452,5 +4456,9 @@ door, the viewer, the hook, the panel, the shareable page). Fifteen ways of
 breaking it were tried: thirteen failed a case, and the other two were each
 one of two locks on the same rule (which campaigns may be shown), where the
 second lock still held; with both off, a case fails. The walk: two flows,
-and the closed-door flow now opens a profile too. Still: a profile with the
-door open (42).
+and the closed-door flow now opens a profile too. That last step timed out
+on its first run by the script's own fault: it changed the address under an
+open page with the router's push, which fires no `hashchange`, so no profile
+opened to look at. It now leaves Community and comes back by the profile's
+address, as a link from anywhere else does. Still: a profile with the door
+open (42).
