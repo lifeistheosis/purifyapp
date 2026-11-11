@@ -10648,6 +10648,93 @@ await section(76, async () => {
   }
 });
 
+// 77. History's timeline is as long before its rows are drawn as after, and
+// Back into a deep row lands it where the reader left it (1.9, the arbiter's
+// word of 2026-11-11, 15:07 UTC, from Fable Themes' measure: "at 390 the
+// timeline is 11,484px before its rows draw and 15,772px after"). The
+// timeline draws only the rows near the screen and gives every other row a
+// height to stand in for it (app/globals.css, .history-cv). It was 128px at
+// every width, a row of 1.7 with no picture; with the pictures of 1.8 a row's
+// mean is 240 to 358px by the width. The height steps with the width now,
+// each step the mean row measured across its span, and
+// lib/history/__tests__/rowRoom.test.ts holds the steps to that measure. This
+// takes it again on this export, a phone of its own at each width, newly
+// opened. Then a reader far down the line opens an event and comes Back: the
+// row they tapped stands where it stood under their thumb, with the browser's
+// own anchoring and without it, as WebKit has none.
+await section(77, async () => {
+  for (const width of [320, 360, 390, 412, 600, 768, 1024, 1280]) {
+    const { ctx, page, errors } = await open({ width, height: 844, phone: true, set: { "purify.motion": "off" } });
+    await go(page, "/");
+    await go(page, "/history/");
+    await page.waitForSelector(".history-cv", { timeout: 20000, state: "attached" });
+    await page.waitForTimeout(900);
+    const line = () =>
+      page.evaluate(() => {
+        const rows = [...document.querySelectorAll(".history-cv")];
+        // A row whose contents the browser is not drawing stands at the height it was given.
+        const undrawn = rows.filter((r) => r.firstElementChild && !r.firstElementChild.checkVisibility({ contentVisibilityAuto: true })).length;
+        return { rows: rows.length, undrawn, sum: rows.reduce((a, r) => a + r.getBoundingClientRect().height, 0), given: getComputedStyle(rows.at(-1)).containIntrinsicSize };
+      });
+    const before = await line();
+    await page.addStyleTag({ content: ".history-cv { content-visibility: visible !important; }" });
+    await page.waitForTimeout(700);
+    const after = await line();
+    const off = before.sum - after.sum;
+    const part = Math.abs(off) / after.sum;
+    must(before.rows >= 30 && before.undrawn >= before.rows * 0.6 && after.undrawn === 0, `at ${width} wide the timeline is measured before its rows are drawn (${before.undrawn} of ${before.rows} not yet drawn) and again with every one drawn`);
+    must(
+      part <= 0.05,
+      `at ${width} wide History's timeline is as long before its rows are drawn as after, within 5%: ${Math.round(before.sum)}px and ${Math.round(after.sum)}px, ${off >= 0 ? "+" : ""}${Math.round(off)}px (${(part * 100).toFixed(1)}%), each row not yet drawn given ${before.given}`,
+    );
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // Back into a deep row: the reader scrolls down the line by hand to the
+  // eighth row from the end, opens it, reads, and comes Back.
+  for (const anchoring of [true, false]) {
+    const how = anchoring ? "with the browser's anchoring" : "with no anchoring, as WebKit";
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify.motion": "off" } });
+    await go(page, "/");
+    await go(page, "/history/");
+    await page.waitForSelector(".history-cv", { timeout: 20000, state: "attached" });
+    await page.waitForTimeout(900);
+    if (!anchoring) await page.addStyleTag({ content: "html { overflow-anchor: none !important; }" });
+    const slug = await page.evaluate(() => {
+      const rows = [...document.querySelectorAll(".history-cv")];
+      return rows[rows.length - 8]?.getAttribute("data-event-slug") ?? null;
+    });
+    // Down by hand, a screen at a time, until the row stands in the screen's middle.
+    for (let k = 0; k < 80; k++) {
+      const top = await page.evaluate((s) => document.getElementById(`event-${s}`)?.getBoundingClientRect().top ?? 0, slug);
+      if (top < 520) break;
+      await page.mouse.wheel(0, Math.min(600, top - 400));
+      await page.waitForTimeout(160);
+    }
+    await page.waitForTimeout(700);
+    const where = () => page.evaluate((s) => Math.round(document.getElementById(`event-${s}`)?.getBoundingClientRect().top ?? -9999), slug);
+    const left = await where();
+    await tap(page.locator(`#event-${slug} a`).first());
+    await page.waitForFunction((s) => !!document.querySelector(`[data-event-peek='${s}']`), slug, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    await tap(page.locator(`[data-event-peek='${slug}'] ${linkTo(`/history/${slug}`)}`));
+    await page.waitForFunction(() => !!document.querySelector("h1#event-title"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const away = await page.evaluate(() => location.pathname);
+    await page.goBack();
+    await page.waitForTimeout(2400);
+    const back = await page.evaluate(() => location.pathname);
+    const came = await where();
+    must(
+      !!slug && away === `/history/${slug}/` && back === "/history/" && left > 0 && left < 844 && Math.abs(came - left) <= 2,
+      `390 wide, ${how}: Back into a deep row (${slug}, the eighth from the end) puts it where it stood under the thumb (${left}px from the top when it was opened, ${came}px on coming back; ${away} then ${back})`,
+    );
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
