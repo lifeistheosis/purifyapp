@@ -120,6 +120,154 @@ function mouseOnly(classes: string): boolean {
   return /(?<![\w:-])hidden\b/.test(classes) && /(?:pointer-fine:|\[@media\(pointer:fine\)\]:)(?:inline-flex|flex|inline-grid|grid|inline-block|block|inline)\b/.test(classes);
 }
 
+// Class strings a control names rather than writes (`className={cn(PILL,
+// ...)}`), read from where they are written: the same file, or a module of
+// the app it imports. Until 2026-11-11 only the same file's were read, so
+// Graphite's PILL (min-h-11) was missed and profile's See all was counted
+// at 32px, and a small constant imported from elsewhere could slip by.
+const CONSTANT = /\b(?:export\s+)?const\s+([A-Za-z_]\w*)\s*=\s*(["'`])([^"'`\n]*)\2/g;
+const moduleConstants = new Map<string, Map<string, string>>();
+function constantsOf(base: string): Map<string, string> {
+  const known = moduleConstants.get(base);
+  if (known) return known;
+  const found = new Map<string, string>();
+  for (const file of [`${base}.ts`, `${base}.tsx`, join(base, "index.ts"), join(base, "index.tsx")]) {
+    let src: string;
+    try {
+      src = readFileSync(file, "utf8");
+    } catch {
+      continue;
+    }
+    for (const m of src.matchAll(CONSTANT)) found.set(m[1], m[3]);
+    break;
+  }
+  moduleConstants.set(base, found);
+  return found;
+}
+function fileConstants(src: string): Map<string, string> {
+  const named = new Map([...src.matchAll(CONSTANT)].map((m) => [m[1], m[3]] as [string, string]));
+  for (const m of src.matchAll(/import\s*\{([^}]*)\}\s*from\s*"@\/([^"]+)"/g)) {
+    const mod = constantsOf(join(ROOT, m[2]));
+    for (const part of m[1].split(",")) {
+      const [name, alias] = part.trim().split(/\s+as\s+/);
+      const local = (alias ?? name ?? "").trim();
+      const value = mod.get((name ?? "").trim());
+      if (value !== undefined && local && !named.has(local)) named.set(local, value);
+    }
+  }
+  return named;
+}
+
+// A height the house's own stylesheets give a class (`.adm-rail-view {
+// min-height: 28px }`), read from app/**/*.css: the largest such height
+// any rule for that class states, or NaN where its rules give it padding
+// and no height, so its height is its contents' and cannot be read here.
+function* cssFiles(dir: string): Generator<string> {
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    if (statSync(full).isDirectory()) yield* cssFiles(full);
+    else if (entry.endsWith(".css")) yield full;
+  }
+}
+const CSS_HEIGHT = new Map<string, number>();
+for (const css of cssFiles(join(ROOT, "app"))) {
+  const text = readFileSync(css, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  for (const m of text.matchAll(/(?:^|[}\s])\.([A-Za-z][\w-]*)\s*\{([^{}]*)\}/g)) {
+    const h = /(?:^|;)\s*(?:min-)?height\s*:\s*(\d+(?:\.\d+)?)px/.exec(m[2]);
+    if (h) CSS_HEIGHT.set(m[1], Math.max(Number.isNaN(CSS_HEIGHT.get(m[1])) ? 0 : CSS_HEIGHT.get(m[1]) ?? 0, Number(h[1])));
+    else if (/(?:^|;)\s*padding(?:-block|-top|-bottom)?\s*:/.test(m[2]) && !CSS_HEIGHT.has(m[1])) CSS_HEIGHT.set(m[1], NaN);
+  }
+}
+
+// Text links and buttons standing in a list (1.9, the arbiter's word of
+// 2026-11-11, "every control"): a control whose tag stands directly in an
+// <li>, with no height and no padding of its own and nothing inside it but
+// its words and an inline icon, is as tall as its line of words: the
+// website footer's column links stood at 21px that way, 12px apart, which no
+// reading above sees, since no height or padding is stated at all.
+
+/**
+ * Whether the control's tag stands directly in a list item: `<li ...>` before
+ * it on its line, or alone on a line above, with nothing between but a
+ * condition that opens around it (`{href ? (`, `{open && (`), as an event's
+ * Scripture links stand.
+ */
+function inListItem(lines: string[], i: number, tagAt: number): boolean {
+  const opener = /^\{[^{}]*(?:\?|&&)\s*\(?$|^\($/;
+  const li = /<li\b[^>]*>\s*(?:\{[^{}]*(?:\?|&&)\s*\(?\s*)?$/;
+  const before = lines[i].slice(0, tagAt).trim();
+  if (li.test(before)) return true;
+  if (before !== "" && !opener.test(before)) return false;
+  for (let k = i - 1; k >= 0 && k >= i - 4; k--) {
+    const t = lines[k].trim();
+    if (!t || t.startsWith("{/*") || t.startsWith("//") || t.startsWith("*") || opener.test(t)) continue;
+    return /^<li\b[^>]*>$/.test(t) || li.test(t);
+  }
+  return false;
+}
+
+/** The height of a control made of a line of words and any padding: the body's 17px at 1.5 where no size is said. */
+function listedHeight(classes: string): number {
+  const space = (v: string) => (v.startsWith("[") ? (v.endsWith("px]") ? parseFloat(v.slice(1)) : parseFloat(v.slice(1)) * ROOT_PX) : Number(v) * 0.25 * ROOT_PX);
+  let top = 0;
+  let bottom = 0;
+  let size = ROOT_PX;
+  let lead = 1.5;
+  let linePx: number | null = null;
+  for (const t of classes.replace(/["'`{}()?,]/g, " ").split(/\s+/).filter((t) => t && !t.includes(":"))) {
+    let m: RegExpExecArray | null;
+    if ((m = /^p[ytb]?-(\d+(?:\.\d+)?|\[[\d.]+(?:px|rem)\])$/.exec(t))) {
+      const v = space(m[1]);
+      if (t.startsWith("pt-")) top = v;
+      else if (t.startsWith("pb-")) bottom = v;
+      else top = bottom = v;
+    } else if ((m = /^text-(eyebrow|caption|detail|ui|body|lede|title-sm|title|heading|xs|sm|base|lg)$/.exec(t))) size = TYPE_PX[m[1]];
+    else if ((m = /^text-\[(\d+(?:\.\d+)?)px\]$/.exec(t))) size = Number(m[1]);
+    else if ((m = /^leading-(none|tight|snug|normal|relaxed|loose)$/.exec(t))) lead = LEADING[m[1]];
+    else if ((m = /^leading-\[(\d+(?:\.\d+)?)\]$/.exec(t))) lead = Number(m[1]);
+    else if ((m = /^leading-\[(\d+(?:\.\d+)?)px\]$/.exec(t))) linePx = Number(m[1]);
+  }
+  return top + bottom + (linePx ?? size * lead);
+}
+
+/** What stands inside the control, after its opening tag. */
+function childrenOf(markup: string): string {
+  let depth = 0;
+  let quote = "";
+  for (let k = 1; k < markup.length; k++) {
+    const c = markup[k];
+    if (quote) {
+      if (c === quote) quote = "";
+      continue;
+    }
+    if (c === '"' || c === "'" || c === "`") quote = c;
+    else if (c === "{") depth++;
+    else if (c === "}") depth--;
+    else if (c === ">" && depth === 0) return markup.slice(k + 1);
+  }
+  return "";
+}
+
+/**
+ * Only words and inline icons inside: no block, picture or other component of
+ * the app, and no markup the file built beforehand (`{inner}` where `const
+ * inner = (<div ...`), any of which would give the control its own height.
+ */
+function wordsOnly(children: string, icons: Set<string>, src = ""): boolean {
+  if (/<(?:div|img|Image|p|ul|ol|li|section|article|figure|h[1-6])\b/.test(children)) return false;
+  for (const m of children.matchAll(/<([A-Z]\w*)/g)) if (m[1] !== "T" && !icons.has(m[1])) return false;
+  for (const m of children.matchAll(/\{\s*([A-Za-z_]\w*)\s*\}/g)) if (new RegExp(`\\bconst\\s+${m[1]}\\s*=\\s*\\(?\\s*<`).test(src)) return false;
+  return !/className=[^>]*(?<![\w-])(?:block|flex|grid)\b/.test(children);
+}
+
+/** A name in the control's classes this count cannot read: a constant it was not given, or a function's answer (`item(on)`). */
+function unread(stated: string, constants: Map<string, string>): boolean {
+  // An arbitrary value's own CSS (`[transition-duration:var(--x)]`) is no name of the code's.
+  const code = stated.replace(/\[[^\]]*\]/g, "");
+  for (const m of code.matchAll(/\b[A-Z][A-Z0-9_]{2,}\b/g)) if (!constants.has(m[0])) return true;
+  return /\b(?!cn\(|clsx\(|cx\()[a-z]\w*\(/.test(code);
+}
+
 /** Lines that both open an interactive element and set a sub-44px height. */
 const INTERACTIVE = /<(?:button|a|Link)\b/;
 
@@ -203,9 +351,13 @@ function countSmallTargets(): {
   sizedByFile: Record<string, number>;
   padded: number;
   paddedByFile: Record<string, number>;
+  listed: number;
+  listedByFile: Record<string, number>;
 } {
   const paddedByFile: Record<string, number> = {};
   let padded = 0;
+  const listedByFile: Record<string, number> = {};
+  let listed = 0;
   const byFile: Record<string, number> = {};
   const writtenByFile: Record<string, number> = {};
   const sizedByFile: Record<string, number> = {};
@@ -216,11 +368,13 @@ function countSmallTargets(): {
     for (const file of walk(join(ROOT, dir))) {
       const src = readFileSync(file, "utf8");
       const lines = src.split("\n");
-      const constants = new Map([...src.matchAll(/\bconst\s+([A-Za-z_]\w*)\s*=\s*(["'])([^"'\n]*)\2/g)].map((m) => [m[1], m[3]] as [string, string]));
+      const constants = fileConstants(src);
+      const icons = new Set([...src.matchAll(/import\s*\{([^}]*)\}\s*from\s*"@\/components\/ui\/icons\/[^"]+"/g)].flatMap((m) => m[1].split(",").map((n) => (n.trim().split(/\s+as\s+/)[1] ?? n.trim()).trim())));
       let n = 0;
       let w = 0;
       let z = 0;
       let q = 0;
+      let l = 0;
       for (let i = 0; i < lines.length; i++) {
         if (!INTERACTIVE.test(lines[i])) continue;
         // The className may sit on the same line or a few lines below.
@@ -244,6 +398,15 @@ function countSmallTargets(): {
           // No height stated anywhere it is read: padding and its line of words make it.
           const h = paddedHeight(own);
           if (h !== null && h < 44) q++;
+          else if (h === null && stated !== null && !unread(stated, constants) && inListItem(lines, i, tagAt)) {
+            // A line of words in a list: as tall as its line, or as a class of the house's stylesheets makes it.
+            const markup = [lines[i].slice(tagAt), ...lines.slice(i + 1, i + 30)].join(" ");
+            const close = /<\/(?:a|Link|button)>/.exec(markup);
+            if (close && wordsOnly(childrenOf(markup.slice(0, close.index)), icons, src)) {
+              const fromCss = own.split(/\s+/).map((t) => CSS_HEIGHT.get(t)).filter((v): v is number => v !== undefined);
+              if (!fromCss.some((v) => Number.isNaN(v)) && Math.max(listedHeight(own), ...fromCss) < 44) l++;
+            }
+          }
         }
       }
       const name = file.slice(ROOT.length + 1).replace(/\\/g, "/");
@@ -263,9 +426,13 @@ function countSmallTargets(): {
         paddedByFile[name] = q;
         padded += q;
       }
+      if (l > 0) {
+        listedByFile[name] = l;
+        listed += l;
+      }
     }
   }
-  return { total, byFile, written, writtenByFile, sized, sizedByFile, padded, paddedByFile };
+  return { total, byFile, written, writtenByFile, sized, sizedByFile, padded, paddedByFile, listed, listedByFile };
 }
 
 // The count as measured when this guard was written. IT MAY ONLY FALL.
@@ -435,8 +602,35 @@ const MAX_SIZED_SMALL_TARGETS = 0;
 // FALL, and from here that means it stays at none.
 const MAX_PADDED_SMALL_TARGETS = 0;
 
+// Links and buttons standing in a list with nothing but a line of words to
+// make them tall (inListItem, wordsOnly and listedHeight above), counted on
+// their own from 2026-11-11 (1.9, the arbiter's word: "teach the touch count
+// to read text links in lists too, so it cannot slip again"), when it saw
+// 11. IT MAY ONLY FALL. The same day it learned to read a class string
+// imported from another module of the app (Graphite's PILL), a height the
+// house's stylesheets give a class, and markup built beforehand inside a
+// control, and no other reading moved.
+// 11 -> 3 the same day (Updates): the website footer's column links (21px,
+// 12px apart, from md up; a phone's footer was already its accordion's 44),
+// the council map's place names, an event's Scripture, its councils and
+// saints and its relations, and the collections seen through on You and on
+// profile are 44 to a finger and their old size to a mouse (inline-flex
+// min-h-11 ... pointer-fine:min-h-0, the admin panel's rule). Left: the
+// admin panel's 2 (the page list's names in AdminShell, the import panel's
+// link) and the chant page's sources (ChantAbout).
+const MAX_LISTED_SMALL_TARGETS = 3;
+
 describe("touch targets", () => {
-  const { total, byFile, written, writtenByFile, sized, sizedByFile, padded, paddedByFile } = countSmallTargets();
+  const { total, byFile, written, writtenByFile, sized, sizedByFile, padded, paddedByFile, listed, listedByFile } = countSmallTargets();
+
+  it(`has no more than ${MAX_LISTED_SMALL_TARGETS} links and buttons in lists made of a line of words`, () => {
+    expect(
+      listed,
+      `Links and buttons standing in a list with nothing but a line of words to make them tall rose to ${listed}, ceiling ${MAX_LISTED_SMALL_TARGETS}.\n` +
+        `Give each its 44 (inline-flex min-h-11 items-center, a mouse's own with pointer-fine:min-h-0), then lower the ceiling here:\n` +
+        Object.entries(listedByFile).sort((a, b) => b[1] - a[1]).map(([f, c]) => `  ${c}  ${f}`).join("\n"),
+    ).toBeLessThanOrEqual(MAX_LISTED_SMALL_TARGETS);
+  });
 
   it(`has no more than ${MAX_PADDED_SMALL_TARGETS} interactive elements made under 44px by their padding`, () => {
     expect(
@@ -444,6 +638,35 @@ describe("touch targets", () => {
       `Interactive elements whose padding and line of words make them under 44px (px-2.5 py-1 text-caption and the like) rose to ${padded}, ceiling ${MAX_PADDED_SMALL_TARGETS}.\n` +
         Object.entries(paddedByFile).sort((a, b) => b[1] - a[1]).map(([f, c]) => `  ${c}  ${f}`).join("\n"),
     ).toBeLessThanOrEqual(MAX_PADDED_SMALL_TARGETS);
+  });
+
+  it("reads a link standing in a list as tall as its line of words, and only that", () => {
+    // In a list: the tag alone under its <li>, or on the <li>'s own line; not under a paragraph.
+    expect(inListItem(["<ul>", "  <li key={l.href}>", "    <Link", "      href={l.href}"], 2, 4)).toBe(true);
+    expect(inListItem(['<li><Link href="/x" className="text-ui">x</Link></li>'], 0, 4)).toBe(true);
+    expect(inListItem(["<p>", "  <Link href=\"/x\">"], 1, 2)).toBe(false);
+    expect(inListItem(['<li key={ref} className="font-sans text-ui">', "  {href ? (", "    <Link href={href}"], 2, 4)).toBe(true);
+    // Its line: the footer's text-ui 21px; with no size of its own, the body's 25.5px.
+    expect(listedHeight("font-sans text-ui text-paper/75 hover:text-paper")).toBeCloseTo(21, 1);
+    expect(listedHeight("hover:text-paper transition-colors")).toBeCloseTo(25.5, 1);
+    // Words and an inline icon only; a cover, a block or a component of the app gives it its own height.
+    expect(wordsOnly(" {l.label} <ChevronRight size={14} /> ", new Set(["ChevronRight"]))).toBe(true);
+    expect(wordsOnly(" <WorkCover card={b} /> ", new Set())).toBe(false);
+    expect(wordsOnly(' <span className="block font-serif">x</span> ', new Set())).toBe(false);
+    expect(wordsOnly(" {inner} ", new Set(), "const inner = (\n  <div className=\"flex\">")).toBe(false);
+    expect(wordsOnly(" {s.title} ", new Set(), "const inner = (\n  <div>")).toBe(true);
+    // A name it cannot read is not taken for a line of words; an arbitrary value's CSS is no name.
+    expect(unread("FLOR_ROW", new Map())).toBe(true);
+    expect(unread("item(on)", new Map())).toBe(true);
+    expect(unread('cn(PILL, "px-4")', new Map([["PILL", "min-h-11"]]))).toBe(false);
+    expect(unread("hover:text-paper [transition-duration:var(--duration-fast)]", new Map())).toBe(false);
+  });
+
+  it("reads a class string imported from the app's own modules, and a height the house's stylesheets give a class", () => {
+    expect(fileConstants('import { CARD, PILL } from "@/components/ui/Graphite";').get("PILL")).toContain("min-h-11");
+    expect(fileConstants('import { FLOR_ROW } from "@/components/florilegium/florStyle";').get("FLOR_ROW")).toContain("min-h-[60px]");
+    // .rule-med is sized by its contents (padding and no height): read as unknown, never as a line of words.
+    expect(Number.isNaN(CSS_HEIGHT.get("rule-med"))).toBe(true);
   });
 
   it("reads a height made of padding and a line of words", () => {

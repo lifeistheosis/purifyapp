@@ -297,7 +297,7 @@ export function YouMobile() {
         <ul className={catechisms > 0 ? "mt-1 flex flex-col gap-0.5 px-1" : "mt-5 flex flex-col gap-0.5 px-1"}>
           {completed.map((c) => (
             <li key={c.slug} className="font-serif text-detail text-paper/60">
-              <Link href="/catechism/collections" className="hover:text-paper transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none">
+              <Link href="/catechism/collections" className="inline-flex min-h-11 items-center hover:text-paper transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none pointer-fine:min-h-0">
                 {t("catechism.collections.completedLine", { name: c.name })}
               </Link>
             </li>

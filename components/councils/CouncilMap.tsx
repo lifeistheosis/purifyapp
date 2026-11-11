@@ -225,10 +225,10 @@ export function CouncilMap({
 
 function PlaceItems({ items }: { items: MapItem[] }) {
   return (
-    <ul className="mt-1 space-y-0.5">
+    <ul className="mt-1 pointer-fine:space-y-0.5">
       {items.map((c) => (
         <li key={c.href}>
-          <Link href={c.href} lang="en" dir="ltr" className="font-serif text-ui text-paper/85 underline-offset-4 hover:underline">
+          <Link href={c.href} lang="en" dir="ltr" className="inline-flex min-h-11 items-center font-serif text-ui text-paper/85 underline-offset-4 hover:underline pointer-fine:min-h-0">
             {c.name}
           </Link>{" "}
           <span className="font-sans text-caption text-paper/50">{c.year}</span>

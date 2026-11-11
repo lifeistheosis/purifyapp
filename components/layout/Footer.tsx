@@ -126,14 +126,16 @@ export function Footer() {
        <h4 className="font-sans text-caption font-semibold text-paper/55 mb-5">
         {col.heading}
        </h4>
-       <ul className="flex flex-col gap-3">
+       {/* 44 to a finger, a tablet's (the arbiter's word of 2026-11-11:
+           every control); a mouse keeps the columns as they were. */}
+       <ul className="flex flex-col pointer-fine:gap-3">
         {col.links.map((l) => (
          <li key={l.href + l.label}>
           <Link
            href={l.href}
            target={l.external ? "_blank" : undefined}
            rel={l.external ? "noopener noreferrer" : undefined}
-           className="font-sans text-ui text-paper/75 hover:text-paper transition-colors duration-150"
+           className="inline-flex min-h-11 items-center font-sans text-ui text-paper/75 hover:text-paper transition-colors duration-150 pointer-fine:min-h-0"
           >
            {l.label}
            {l.external && (

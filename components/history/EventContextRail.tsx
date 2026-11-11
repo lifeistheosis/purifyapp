@@ -60,17 +60,17 @@ export function EventContextRail({ selected }: { selected?: string }) {
       {saints.length || councils.length ? (
         <div className="mt-5 border-t border-paper/10 pt-4">
           <p className="font-sans text-caption font-semibold text-paper/60">{t("study.connected")}</p>
-          <ul className="mt-2 space-y-1.5">
+          <ul className="mt-2 pointer-fine:space-y-1.5">
             {councils.map((c) => (
               <li key={c.slug}>
-                <Link href={`/councils/${c.slug}`} className="font-sans text-detail text-link underline-offset-4 hover:underline">
+                <Link href={`/councils/${c.slug}`} className="inline-flex min-h-11 items-center font-sans text-detail text-link underline-offset-4 hover:underline pointer-fine:min-h-0">
                   {c.name}
                 </Link>
               </li>
             ))}
             {saints.map((s) => (
               <li key={s.slug}>
-                <Link href={`/saints/${s.slug}`} className="font-sans text-detail text-link underline-offset-4 hover:underline">
+                <Link href={`/saints/${s.slug}`} className="inline-flex min-h-11 items-center font-sans text-detail text-link underline-offset-4 hover:underline pointer-fine:min-h-0">
                   {s.saint!.name}
                 </Link>
               </li>

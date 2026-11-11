@@ -118,12 +118,14 @@ export function EventRelations({ meta }: { meta: HistoryEventMeta }) {
                 <p className="font-sans text-caption font-semibold text-paper/60">
                   <T k={g.titleKey} />
                 </p>
-                <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1.5">
+                <ul className="mt-2 flex flex-wrap gap-x-5 pointer-fine:gap-y-1.5">
                   {g.links.map((l) => (
                     <li key={l.href}>
-                      <Link href={l.href} className="font-sans text-ui text-link underline-offset-4 hover:underline">
-                        {l.label}
-                        {l.sublabel ? <span className="text-paper/55"> · {l.sublabel}</span> : null}
+                      <Link href={l.href} className="inline-flex min-h-11 items-center font-sans text-ui text-link underline-offset-4 hover:underline pointer-fine:min-h-0">
+                        <span>
+                          {l.label}
+                          {l.sublabel ? <span className="text-paper/55"> · {l.sublabel}</span> : null}
+                        </span>
                       </Link>
                     </li>
                   ))}

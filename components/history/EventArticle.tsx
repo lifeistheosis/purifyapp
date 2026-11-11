@@ -202,13 +202,13 @@ function Scripture({ refs }: { refs: string[] }) {
       <h3 className="text-ui font-semibold text-paper/85">
         <T k="study.history.inScripture" />
       </h3>
-      <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+      <ul className="mt-3 flex flex-wrap gap-x-5 pointer-fine:gap-y-2">
         {refs.map((ref) => {
           const href = scriptureHref(ref);
           return (
             <li key={ref} className="font-sans text-ui">
               {href ? (
-                <Link href={href} lang="en" dir="ltr" className="text-link underline-offset-4 hover:underline">
+                <Link href={href} lang="en" dir="ltr" className="inline-flex min-h-11 items-center text-link underline-offset-4 hover:underline pointer-fine:min-h-0">
                   {ref}
                 </Link>
               ) : (
