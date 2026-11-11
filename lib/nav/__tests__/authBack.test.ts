@@ -68,4 +68,18 @@ describe("the way back out of the sign-in pages", () => {
     expect(back).toMatch(/<NativeOnly>\s*<Back \/>\s*<\/NativeOnly>/);
     expect(code("components/layout/AppFrame.tsx")).toMatch(/<NativeOnly>\s*<NativeBackBar \/>/);
   });
+
+  // Found on the way (2026-11-11): the word between the form and Continue with Google was centred by a left
+  // offset, which a page that runs right to left counts from its right, so in Arabic and Urdu it left the screen.
+  it("keeps the word between the two ways in on the screen, whichever way the page runs", () => {
+    for (const form of ["components/auth/SignInForm.tsx", "components/auth/SignUpForm.tsx"]) {
+      const src = code(form);
+      const at = src.indexOf('{t("notFound.or")}');
+      expect(at, form).toBeGreaterThan(0);
+      const row = src.slice(src.lastIndexOf("<div", at), at);
+      expect(row, form).toContain('data-or-line=""');
+      expect(row, form).toContain("flex justify-center");
+      expect(row, `${form}: centred by a side again`).not.toMatch(/\b(?:left|right)-1\/2\b|translate-x/);
+    }
+  });
 });

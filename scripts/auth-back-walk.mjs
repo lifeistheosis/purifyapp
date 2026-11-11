@@ -186,6 +186,23 @@ async function still(page, name) {
     say(seen.dir === "rtl" && seen.fromRight >= 0 && seen.fromRight < 40, `at the page's start, which is its right (${seen.fromRight}px from the right edge)`);
     say(seen.flipped, "the chevron points the other way");
     say(Boolean(seen.name) && seen.name !== "Back", `named in Arabic ("${seen.name}")`);
+    // The word between the form and Continue with Google is on the screen, in the middle of its line. It was
+    // centred by a left offset and, in a page that runs right to left, carried off the edge.
+    for (const p of ["/signin", "/signup"]) {
+      if (p !== "/signin") {
+        await go(page, `${p}/`);
+        await settle(page, 1500);
+      }
+      const or = await page.evaluate(() => {
+        const word = document.querySelector("[data-or-line] > span:last-child");
+        if (!word) return null;
+        const r = word.getBoundingClientRect();
+        return { text: word.textContent.trim(), left: Math.round(r.left), right: Math.round(r.right), screen: window.innerWidth, off: Math.round(Math.abs((r.left + r.right) / 2 - window.innerWidth / 2)) };
+      });
+      say(or && or.text.length > 0 && or.left >= 0 && or.right <= or.screen && or.off <= 2, `${p} in Arabic: the word between the two ways in is on the screen, in the middle of its line (${JSON.stringify(or)})`);
+    }
+    await go(page, "/signin/");
+    await settle(page, 1200);
     await still(page, "02-signin-back-arabic");
   }
   await ctx.close();

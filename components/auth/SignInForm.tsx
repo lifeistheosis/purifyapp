@@ -111,9 +111,12 @@ export function SignInForm({ next }: { next?: string }) {
         </Link>
       </div>
 
-      <div className="relative my-3">
+      {/* The word stands in the middle of its line whichever way the page runs. It was centred by a left offset, which
+          in a page that runs right to left starts from the right: in Arabic and Urdu it was carried off the screen and
+          only the line was left (seen on the export, 2026-11-11). */}
+      <div data-or-line="" className="relative my-3 flex justify-center">
         <span className="absolute inset-x-0 top-1/2 h-px bg-paper/12" />
-        <span className="relative bg-night px-3 text-caption text-paper/45 mx-auto inline-block left-1/2 -translate-x-1/2">
+        <span className="relative bg-night px-3 text-caption text-paper/45">
           {t("notFound.or")}
         </span>
       </div>
