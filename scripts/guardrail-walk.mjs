@@ -96,7 +96,20 @@ async function mainWeb(route) {
 
 // The cloud sessions carry their own Chromium (as openPhone in scripts/mock-check.mjs); elsewhere Playwright's.
 const OWN = "/opt/pw-browsers/chromium";
-const browser = await chromium.launch(fs.existsSync(OWN) ? { executablePath: OWN } : {});
+const launch = () => chromium.launch(fs.existsSync(OWN) ? { executablePath: OWN } : {});
+let browser = await launch();
+// A browser that went away is started again, once for every worker that finds it gone (Fable
+// Theology's walk of 2026-11-11 died at 120 of 127 with "Failed to open a new tab").
+let relaunching = null;
+async function liveBrowser() {
+  if (browser.isConnected()) return browser;
+  relaunching ??= launch().then((b) => {
+    browser = b;
+    relaunching = null;
+    return b;
+  });
+  return relaunching;
+}
 
 /** One screen's verdict: what failed, what could not be measured, what is allowed by name. */
 async function walkOne(page, at) {
@@ -124,8 +137,8 @@ async function walkOne(page, at) {
 const results = [];
 let done = 0;
 const queue = [...list];
-async function worker() {
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
+async function phone() {
+  const ctx = await (await liveBrowser()).newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
   await ctx.addInitScript(() => {
     try {
       localStorage.setItem("purify:onboarded", "99");
@@ -140,22 +153,47 @@ async function worker() {
   // With them, the public pictures the main web keeps in its storage (a reader's profile picture),
   // which a phone with a signal loads from there: read, never written.
   if (ONLINE) for (const at of ["https://purifyapp.net/**", "https://purifyapp.onrender.com/**", "https://*.supabase.co/storage/v1/object/public/**"]) await ctx.route(at, mainWeb);
-  let page = await ctx.newPage();
+  return ctx;
+}
+
+// A page lives for a dozen screens at most, so what the app keeps in memory as it is walked does not
+// grow without end. A screen that would not settle leaves the next one a fresh page. A page that
+// cannot be had is asked of a new phone (context), and of a browser started again if it went away;
+// a worker that still has none stops, and the screens it would have walked go to the others.
+const PAGE_LIFE = 12;
+async function worker() {
+  let ctx = null;
+  let page = null;
+  const fresh = async () => {
+    await page?.close().catch(() => {});
+    page = null;
+    for (let tries = 0; tries < 3 && !page; tries++) {
+      try {
+        ctx ??= await phone();
+        page = await ctx.newPage();
+      } catch {
+        await ctx?.close().catch(() => {});
+        ctx = null;
+      }
+    }
+    return Boolean(page);
+  };
+  if (!(await fresh())) return;
+  let walked = 0;
   for (let at = queue.shift(); at; at = queue.shift()) {
     const r = await walkOne(page, at);
     results.push(r);
     done += 1;
+    walked += 1;
     if (done % 20 === 0) console.log(`  ${done} of ${list.length}`);
-    // A screen that would not settle leaves the next one a fresh page.
-    if (r.error) {
-      await page.close().catch(() => {});
-      page = await ctx.newPage();
-    }
+    if ((r.error || walked % PAGE_LIFE === 0) && !(await fresh())) break;
   }
-  await ctx.close();
+  await ctx?.close().catch(() => {});
 }
 await Promise.all(Array.from({ length: WORKERS }, worker));
-await browser.close();
+await browser.close().catch(() => {});
+// Screens no worker could reach (every worker lost its page and could not have another).
+for (const at of queue.splice(0)) results.push({ at, error: "not walked: no page could be had for it", failures: [], unmeasured: [], allowed: [], looks: [] });
 
 results.sort((a, b) => a.at.localeCompare(b.at));
 
