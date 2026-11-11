@@ -582,3 +582,51 @@ Handed over by the November and December chat on the arbiter's word, for the pre
 
 How it was searched: Commons' API by the series' own list for the month and by each saint's names in English, Greek and Russian (it answered about half the requests; the limit is shared between chats), ordinary web search, and two research passes over the saints' own monasteries, dioceses and the Princeton index of medieval art, every contact then read again on its own page. Nothing in the permissions list is a guess: a gap says "not found".
 
+
+## The on-phone voice in 1.9 (his word, 2026-11-11, about 13:24 and 13:32)
+
+"phone voice in v1.9"; then, to the arbiter's two questions, "yes engine, yes
+free Heart". Section 2 above recommended against an engine on the phone; he
+chose it, by route B (in the web view), so this is the record of building it.
+
+**What is decided.** The download is the reader's choice, about 90 MB once.
+It is free to every reader with the Heart voice, which is how the Fathers'
+works are heard free. Every other on-phone voice is Plus, checked on the
+server. The files come from his own storage and from nowhere else.
+
+**Built so far, with no engine (2026-11-11):**
+
+- `lib/listen/phoneVoices.ts`: the list (Heart free and offered; the six
+  candidates of OWNER-STEPS V7 Plus and not offered until he keeps them by
+  ear) and `decidePhoneVoice`, the server's rule.
+- `app/api/listen/phone-voice`: a Plus voice's file after the entitlement is
+  read on the server. The files sit in `data/listen/phone-voices/`, outside
+  `public/`. No storage key is held. 17 tests (no session, no Plus, lapsed,
+  supporter, Plus, Pro, a voice not offered, a name that is not a voice).
+- `lib/listen/phoneVoiceDownload.ts`: the download as a job the app keeps.
+  One list (`manifest.json`) names each file with its size and SHA-256; a
+  file that does not match is not kept. Waits for Wi-Fi and for a signal as
+  a book's saving does; Remove frees every byte. 15 tests.
+- `lib/listen/phoneVoiceEngine.ts`: the seam the player will speak through.
+  A stub: `PHONE_VOICE_ENGINE_READY` is false, and a test holds that no
+  screen uses the download while it is.
+- `scripts/phone-voice-manifest.mjs` and OWNER-STEPS V8: his upload.
+
+**Not done, and why.**
+
+- **The engine itself, the speed number and the samples.** The session's
+  permission check refused `npm install kokoro-js` twice ("denied by the
+  Claude Code auto mode classifier. Reason: [Auto-Mode Bypass]"), the second
+  time after his yes came through the arbiter. It was not worked around. He
+  allows it in this window himself, or nothing here can be proved.
+- **Speed on a phone.** The app is not cross-origin isolated (COOP only in
+  next.config.ts; the apps' web view has neither header), so the engine runs
+  on one thread. Unmeasured. If it is slower than speech on an ordinary
+  Android, each paragraph is made ahead and kept, or the app is isolated:
+  one to two more days, said to the arbiter at 13:36.
+- **Where the files are kept on an iPhone.** The download keeps them in the
+  web view's cache storage. Whether that is there under `capacitor://` on
+  iOS is for the phone walk; the store is behind an interface so the apps'
+  file plugin can take its place.
+- **Whole files only.** A 92 MB file broken off begins again; a resume by
+  byte range is the mend if his walk shows it is needed.

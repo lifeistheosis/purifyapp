@@ -875,6 +875,56 @@ voices. In your tool, the voices are named `am_michael`, `am_fenrir`,
 and tell the arbiter which you keep (two to four) and what each is called to
 readers. Nothing is uploaded for this.
 
+### V8. The on-phone voice: put the engine in your storage (about 15 minutes, once)
+
+Your word, 2026-11-11: "phone voice in v1.9", and "yes engine, yes free
+Heart". The app fetches the engine only from your own storage
+(audio.purifyapp.net), so that no other company sees a reader. I have no key
+to it and want none, so the upload is yours. **Do not start this until the
+voices chat says the engine has been measured on a phone**: the file list
+below is the one I expect, and I confirm it, file by file, once the engine
+runs on my side.
+
+**What it is.** The free speech engine Kokoro 82M (open licence, Apache-2.0),
+about 93 MB in all, and the Heart voice, about half a megabyte. Nothing in it
+is a key or a password.
+
+1. On your PC, make an empty folder named `phone-voice`.
+2. Download these from the engine's own page,
+   https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX (Files tab),
+   keeping the same folder names inside `phone-voice`:
+   - `onnx/model_quantized.onnx` (about 92 MB)
+   - `config.json`, `tokenizer.json`, `tokenizer_config.json` (small)
+   - `voices/af_heart.bin` (about half a megabyte)
+
+   Only `af_heart.bin` from the voices. The other voices are Plus and are
+   never put in the public storage; the next step refuses them.
+3. In the repository's folder, run:
+
+   ```
+   node scripts/phone-voice-manifest.mjs path/to/phone-voice
+   ```
+
+   It writes `manifest.json` into the folder: the list of the files, each
+   with its size and its fingerprint. The app keeps a file only if it matches
+   this list, so a damaged or swapped file is never run on a reader's phone.
+4. Upload the folder's contents to the bucket, under `phone-voice/`, the way
+   you upload the Bible's sound (V4). When it is done this address answers
+   in a browser: https://audio.purifyapp.net/phone-voice/manifest.json
+5. The bucket's CORS (Cloudflare, R2, the bucket, Settings, CORS policy):
+   allowed origins `https://purifyapp.net`, `https://localhost` and
+   `capacitor://localhost`; allowed method `GET`; allowed header `Range`.
+   If the Bible's sound already plays in both apps the three origins are
+   there already, and there is nothing to change.
+
+Send the arbiter: the lines step 3 printed, and whether the address in step
+4 answers.
+
+**What this does not do.** It turns nothing on. No reader is offered the
+download until the engine has been timed on a real phone and you have walked
+it. The Plus voices you keep (V7) are added by the voices chat, on the
+website's side, behind the check for Plus; you upload none of them.
+
 ---
 
 ## The test web: on Render's free size now, the $7 size at payday
