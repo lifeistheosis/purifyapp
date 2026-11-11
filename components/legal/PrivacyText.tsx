@@ -408,7 +408,10 @@ function PrivacyEn() {
  ours, and the day, not the time. No session id, no account, no
  device id: &ldquo;a reader who answered Catholic finished&rdquo;
  is one more on a total, never you. Your answers themselves stay
- on your device and in your own account, for making Purify yours.
+ on your device, for making Purify yours. If you sign in, your
+ answer to what you came for is kept with your account too; your
+ answers about your faith, how familiar you are with Orthodox
+ Christianity and your background, are not kept with it.
 </p>
 <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  The screens are counted in the same table, so we can see where
@@ -799,6 +802,26 @@ function PrivacyEn() {
  </Link>{" "}
  letter. We won&rsquo;t change the posture quietly.
  </p>
+ {/* Call 32, his yes of 2026-11-11 ("yes privacy and phone voice in v1.9").
+     Held by lib/admin/__tests__/privacyLines.test.ts. */}
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
+ With 1.9:
+ </p>
+ <ul className="mt-3 list-disc space-y-2 ps-6 font-serif text-[16.5px] leading-[1.7] text-paper/88 marker:text-paper/40">
+ <li>
+ Buy Me a Coffee is no longer listed: the Support page asks for
+ no donation.
+ </li>
+ <li>
+ Your answers about your faith are no longer kept with your
+ account, and the copies kept before 1.9 are cleared.
+ </li>
+ <li>
+ The prayer requests written before 1.9, which no one has seen
+ since 1.9, are cleared with their words, the moderators&rsquo;
+ records of those words, and who prayed for them.
+ </li>
+ </ul>
 
  {/* Offline cache */}
  <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
@@ -1265,8 +1288,11 @@ function PrivacyDe() {
  Sitzungs-Kennung, kein Konto, keine Geräte-Kennung: &bdquo;ein
  Leser, der katholisch geantwortet hat, ist fertig geworden&ldquo;
  ist einer mehr in einer Summe, nie du. Deine Antworten selbst
- bleiben auf deinem Gerät und in deinem eigenen Konto, damit Purify
- zu deinem wird.
+ bleiben auf deinem Gerät, damit Purify zu deinem wird. Wenn du dich
+ anmeldest, wird deine Antwort darauf, wozu du gekommen bist, auch
+ mit deinem Konto bewahrt; deine Antworten über deinen Glauben, wie
+ vertraut du mit dem orthodoxen Christentum bist und deine Herkunft
+ im Glauben, werden nicht damit bewahrt.
  </p>
  <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Die Bildschirme werden in derselben Tabelle gezählt, damit wir
@@ -1668,6 +1694,26 @@ function PrivacyDe() {
  </Link>
  -Brief aufgeführt. Wir ändern die Haltung nicht im Stillen.
  </p>
+ {/* Call 32, his yes of 2026-11-11, in German. Held by lib/admin/__tests__/privacyLines.test.ts. */}
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
+ Mit 1.9:
+ </p>
+ <ul className="mt-3 list-disc space-y-2 ps-6 font-serif text-[16.5px] leading-[1.7] text-paper/88 marker:text-paper/40">
+ <li>
+ Buy Me a Coffee wird nicht mehr genannt: die Seite &bdquo;Dieses
+ Werk unterstützen&ldquo; bittet um keine Spende.
+ </li>
+ <li>
+ Deine Antworten über deinen Glauben werden nicht mehr mit deinem
+ Konto bewahrt, und die vor 1.9 bewahrten Kopien werden gelöscht.
+ </li>
+ <li>
+ Die vor 1.9 geschriebenen Gebetsbitten, die seit 1.9 niemand mehr
+ gesehen hat, werden gelöscht, mit ihrem Wortlaut, den Aufzeichnungen
+ der Moderatoren über diesen Wortlaut und den Angaben, wer für sie
+ gebetet hat.
+ </li>
+ </ul>
 
  {/* Offline cache */}
  <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
