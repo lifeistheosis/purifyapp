@@ -34,6 +34,12 @@ export type Saint = {
  born?: string;
  reposed?: string;
  feastDays: string[];
+ /**
+  * A bishop's see: the city of his throne ("Myra in Lycia"). Set only for a
+  * bishop (the Apostle Peter's Antioch and Rome by tradition), never a role,
+  * a monastery or a mission: the facts list draws it under "See" (build 93,
+  * the fresh-eyes walk; lib/saints/__tests__/see.test.ts).
+  */
  see?: string;
  shortBio: string;
  /**
@@ -151,7 +157,6 @@ export const SAINTS: Saint[] = [
  "October 1",
  "December 26",
  ],
- see: "Jerusalem",
  shortBio:
  "The Mother of God, more honorable than the Cherubim and beyond compare more glorious than the Seraphim: the Virgin who bore the uncontainable Word, and who stands first among all the saints.",
  titles: [
@@ -1120,7 +1125,6 @@ export const SAINTS: Saint[] = [
  born: "c. 675 (Damascus)",
  reposed: "December 4, 749",
  feastDays: ["December 4"],
- see: "Lavra of St. Sabbas, Palestine",
  shortBio:
  "The last great Father of the East, who under Muslim rule defended the veneration of holy icons against the iconoclast emperors and gave the Church its definitive systematic theology.",
  life: [
@@ -1177,7 +1181,6 @@ export const SAINTS: Saint[] = [
  born: "July 19, 1759 (Kursk)",
  reposed: "January 2, 1833",
  feastDays: ["January 2", "July 19"],
- see: "Sarov Hermitage, Russia",
  shortBio:
  "The Russian wonderworker who lived a thousand nights on a stone in the Sarov forest and taught that the whole aim of the Christian life is the acquisition of the Holy Spirit.",
  life: [
@@ -1324,7 +1327,6 @@ export const SAINTS: Saint[] = [
  born: "c. 580 (Constantinople)",
  reposed: "August 13, 662",
  feastDays: ["January 21", "August 13"],
- see: "Constantinople (lay)",
  shortBio:
  "The monk who almost alone defended the Orthodox confession that Christ has two natural wills, divine and human, against the imperial monothelite party, and was tortured and exiled for it; called 'the Confessor' for the witness of his maimed body.",
  life: [
@@ -1345,7 +1347,6 @@ export const SAINTS: Saint[] = [
  born: "949 (Galatia)",
  reposed: "March 12, 1022",
  feastDays: ["March 12", "October 12"],
- see: "Constantinople",
  shortBio:
  "One of only three saints surnamed 'the Theologian' in the Orthodox Church, who insisted, against the academic theology of his day, that the same gifts of the Holy Spirit given to the apostles are available to every Christian who seeks them.",
  life: [
@@ -1545,7 +1546,6 @@ export const SAINTS: Saint[] = [
  born: "c. AD 5 (Tarsus in Cilicia)",
  reposed: "c. AD 67 (Rome)",
  feastDays: ["June 29", "June 30"],
- see: "Apostle at large; preached from Damascus to Rome",
  shortBio:
  "The Pharisee from Tarsus who hunted the Church until the risen Christ stopped him on the road to Damascus, and who from that day to his beheading at Rome traveled the empire planting the Gospel.",
  life: [
@@ -1576,7 +1576,6 @@ export const SAINTS: Saint[] = [
  born: "c. 344 (Alexandria)",
  reposed: "c. 421 (the Trans-Jordanian desert)",
  feastDays: ["April 1", "Fifth Sunday of Great Lent"],
- see: "Hermitess beyond the Jordan",
  shortBio:
  "The Alexandrian who lived in dissolution for seventeen years, was halted at the doors of the Holy Sepulchre by an unseen hand, and spent forty-seven years alone in the desert weeping for her sins until the Theotokos sent the priest Zosimas to find her.",
  life: [
@@ -1657,7 +1656,6 @@ export const SAINTS: Saint[] = [
  born: "1st century",
  reposed: "c. 117 (Ephesus)",
  feastDays: ["September 4"],
- see: "Ephesus",
  shortBio:
  "One of the four prophesying daughters of the Apostle Philip, a healer of the sick at Ephesus who confessed Christ before two emperors and died a martyr.",
  life: [
@@ -1730,7 +1728,6 @@ export const SAINTS: Saint[] = [
  born: "c. 361 (Constantinople)",
  reposed: "c. 408 (Nicomedia)",
  feastDays: ["July 25"],
- see: "Constantinople",
  shortBio:
  "The noble widow of Constantinople who gave her vast fortune to the poor and the Church, served as deaconess of the Great Church, and stood by St. John Chrysostom in his exile.",
  life: [
@@ -1811,7 +1808,6 @@ export const SAINTS: Saint[] = [
  born: "July 25, 1924 (Farasa, Cappadocia)",
  reposed: "July 12, 1994 (Souroti, near Thessaloniki)",
  feastDays: ["July 12"],
- see: "Mount Athos (Panagouda, dependency of Koutloumousiou)",
  shortBio:
  "The Cappadocian-born monk of Mount Athos whose hermitage at Panagouda was for twenty-five years a place of pilgrimage for tens of thousands seeking counsel, and who, since his glorification in 2015, has been venerated as one of the great elders of the modern Orthodox world.",
  life: [
@@ -1961,7 +1957,6 @@ export const SAINTS: Saint[] = [
  born: "1st century (Galilee)",
  reposed: "1st century (tradition: Ethiopia)",
  feastDays: ["November 16", "June 30"],
- see: "Apostle at large; tradition sends him to Ethiopia and the East",
  shortBio:
  "The customs officer of Capernaum who left his ledger at a word of the Lord and afterwards wrote the first of the four Gospels, the Gospel of the Kingdom for the Hebrews.",
  life: [
@@ -2003,7 +1998,6 @@ export const SAINTS: Saint[] = [
  born: "1st century (Bethsaida of Galilee)",
  reposed: "c. AD 100 (Ephesus)",
  feastDays: ["May 8", "September 26"],
- see: "Ephesus",
  shortBio:
  "The fisherman of Galilee whom the Lord loved, who reclined on his breast at the Mystical Supper and stood beneath his Cross, and who afterwards wrote the Fourth Gospel, the three catholic epistles, and the Apocalypse, the only apostle to die in peace, having lived to a very great age at Ephesus.",
  life: [
@@ -2110,7 +2104,6 @@ export const SAINTS: Saint[] = [
  born: "1st century (Galilee)",
  reposed: "1st century (tradition: Mylapore in India)",
  feastDays: ["October 6", "June 30", "Antipascha (Thomas Sunday)"],
- see: "Apostle at large; tradition sends him to Parthia and India",
  shortBio:
  "The apostle whose honest doubt at the Resurrection drew from the Risen Lord the offer of his wounds, and whose confession 'My Lord and my God' is the highest the Gospels record from any human mouth; tradition sends him to India, where he founded the Church of the Malabar coast.",
  life: [
@@ -2161,7 +2154,6 @@ export const SAINTS: Saint[] = [
  born: "1st century (Magdala on the Sea of Galilee)",
  reposed: "1st century (tradition: Ephesus)",
  feastDays: ["July 22", "Third Sunday of Pascha"],
- see: "Disciple at large; tradition sends her with the Apostle John to Ephesus",
  shortBio:
  "The woman of Magdala from whom the Lord cast out seven demons and who afterwards followed him to the Cross, kept vigil at his tomb, and was the first to see and to announce the Resurrection.",
  life: [
@@ -2217,7 +2209,6 @@ export const SAINTS: Saint[] = [
  born: "1st century (Bethsaida of Galilee)",
  reposed: "1st century (Patras in Achaia)",
  feastDays: ["November 30", "June 30"],
- see: "Apostle at large; tradition founder of the see of Byzantium",
  shortBio:
  "The brother of Simon Peter, first of the disciples of John the Baptist to follow the Lord, and the apostle whose preaching opened the Gospel to the lands of the Black Sea and to the city that would become Constantinople.",
  life: [
@@ -2260,7 +2251,6 @@ export const SAINTS: Saint[] = [
  born: "1st century (Galilee)",
  reposed: "c. AD 44 (Jerusalem)",
  feastDays: ["April 30"],
- see: "Apostle at Jerusalem",
  shortBio:
  "The elder brother of John the Theologian and the first of the Twelve to die for the Name, beheaded at Jerusalem under King Herod Agrippa I around the year 44.",
  life: [
@@ -2299,7 +2289,6 @@ export const SAINTS: Saint[] = [
  born: "1st century (Bethsaida of Galilee)",
  reposed: "1st century (Hierapolis in Phrygia)",
  feastDays: ["November 14"],
- see: "Apostle at large; martyred at Hierapolis",
  shortBio:
  "The Galilean of Bethsaida who brought Nathanael to the Lord with the words 'Come and see,' asked at the Mystical Supper to be shown the Father, and preached the Gospel through Phrygia until he was crucified at Hierapolis.",
  life: [
@@ -2343,7 +2332,6 @@ export const SAINTS: Saint[] = [
  born: "1st century (Cana of Galilee)",
  reposed: "1st century (Albanopolis in Armenia)",
  feastDays: ["June 11", "August 25"],
- see: "Apostle at large; tradition sends him to India and Armenia",
  shortBio:
  "The Israelite in whom the Lord said there was no guile, called Nathanael in the Gospel of John and Bartholomew in the synoptics, whose long missions reached India and Armenia and who was flayed and beheaded for the Faith.",
  life: [
@@ -2387,7 +2375,6 @@ export const SAINTS: Saint[] = [
  born: "1st century (Galilee)",
  reposed: "1st century (tradition: Egypt)",
  feastDays: ["October 9", "June 30"],
- see: "Apostle at large",
  shortBio:
  "The second James named among the Twelve, distinguished in the apostolic lists from James the son of Zebedee and from James the Brother of God, who labored quietly through the apostolic age and died a martyr in Egypt.",
  life: [
@@ -2417,7 +2404,6 @@ export const SAINTS: Saint[] = [
  born: "1st century (Galilee)",
  reposed: "1st century (tradition: Ararat in Armenia)",
  feastDays: ["June 19"],
- see: "Apostle at large; co-founder with Bartholomew of the Armenian Church",
  shortBio:
  "The apostle whom Matthew and Mark call Thaddaeus and whom Luke calls Jude the brother of James, the writer of the brief catholic epistle that bears his name, careful through it all not to be confused with Judas Iscariot.",
  life: [
@@ -2466,7 +2452,6 @@ export const SAINTS: Saint[] = [
  born: "1st century (Galilee)",
  reposed: "1st century (tradition: Persia or the Caucasus)",
  feastDays: ["May 10"],
- see: "Apostle at large",
  shortBio:
  "The second Simon among the Twelve, distinguished by the byname Zealot from Simon Peter, an apostle whose missionary travels in the early tradition span Egypt, Britain, Persia, and the Caucasus, and who was martyred by being sawn asunder.",
  life: [
@@ -2496,7 +2481,6 @@ export const SAINTS: Saint[] = [
  born: "1st century (Bethlehem of Judaea, by tradition)",
  reposed: "1st century (tradition: Colchis or Jerusalem)",
  feastDays: ["August 9"],
- see: "Apostle at large",
  shortBio:
  "The disciple who had companied with the Twelve through the whole of the Lord's ministry and was chosen by lot in the upper room before Pentecost to fill the place vacated by Judas Iscariot, taking the apostolate the traitor had cast away.",
  life: [
@@ -2789,7 +2773,6 @@ export const SAINTS: Saint[] = [
  born: "c. 250 (Aelium Cetium, Roman Noricum)",
  reposed: "May 4, 304 (Lauriacum on the river Enns, drowned with a millstone)",
  feastDays: ["May 4"],
- see: "(lay martyr)",
  shortBio:
  "A Roman officer of the province of Noricum who, in the great persecution under Diocletian, refused to take part in the sacrifices, confessed himself a Christian, was scourged and drowned in the river Enns with a millstone tied around his neck. A pre-Schism Western saint received by the Eastern Orthodox Church alongside the other martyrs of the Undivided Church.",
  life: [
@@ -2827,7 +2810,6 @@ export const SAINTS: Saint[] = [
  born: "c. 272 (Naissus, Moesia Superior)",
  reposed: "May 22, 337 (near Nicomedia)",
  feastDays: ["May 21"],
- see: "Roman Emperor; baptized on his deathbed",
  shortBio:
  "The Emperor who saw the sign of the Cross in the sky before the battle of the Milvian Bridge, gave the Church her freedom by the Edict of Milan (313), summoned the First Ecumenical Council at Nicaea, and re-founded New Rome at Constantinople. Venerated together with his mother St. Helena, equal-to-the-apostles, who found the True Cross.",
  life: [
@@ -3010,7 +2992,6 @@ export const SAINTS: Saint[] = [
  born: "January 11, 347 (Cauca, Hispania)",
  reposed: "January 17, 395 (Milan)",
  feastDays: ["January 17"],
- see: "Roman Emperor",
  shortBio:
  "The first emperor since Constantine to confess the Nicene Faith without reservation, who took the throne in 379 in the wake of the disaster at Adrianople, made the Nicene Faith the public confession of the empire (380), convened the Second Ecumenical Council at Constantinople (381), and submitted to public penance under St. Ambrose of Milan after the massacre at Thessaloniki (390).",
  life: [
@@ -3283,7 +3264,6 @@ export const SAINTS: Saint[] = [
  born: "c. 306 (Nisibis)",
  reposed: "June 9, 373 (Edessa)",
  feastDays: ["January 28"],
- see: "Edessa (deacon)",
  shortBio:
  "The fourth-century Syriac father whose verse-homilies and hymns gave the Eastern Church one of its earliest and most enduring voices in praise of the Incarnation, the Cross, and the Resurrection.",
  life: [
@@ -3330,7 +3310,6 @@ export const SAINTS: Saint[] = [
  born: "c. 100 (Flavia Neapolis, Samaria)",
  reposed: "c. 165 (Rome)",
  feastDays: ["June 1"],
- see: "Rome (martyred)",
  shortBio:
  "The first great Christian philosopher, a convert who kept the philosopher's cloak and gave his life at Rome, leaving the earliest full defense of the faith and the oldest description we possess of Baptism and the Eucharist.",
  life: [
@@ -3504,7 +3483,7 @@ export const SAINTS: Saint[] = [
  born: "c. 815 (Methodius) and c. 827 (Cyril), Thessaloniki",
  reposed: "February 14, 869 (Cyril, Rome) and April 6, 885 (Methodius, Moravia)",
  feastDays: ["May 11", "February 14", "April 6"],
- see: "Moravia (mission); Methodius, Archbishop of Sirmium",
+ see: "Sirmium (St. Methodius)",
  shortBio:
  "The two brothers from Thessaloniki who carried the Gospel to the Slavs in their own tongue. To do it they devised the first Slavic alphabet and rendered the Scriptures and the services of the Church into Slavonic, becoming the fathers of an entire Christian civilisation and the patrons of all the Slavic peoples.",
  life: [
@@ -3532,7 +3511,6 @@ export const SAINTS: Saint[] = [
  born: "c. 930 (Pontus)",
  reposed: "c. 998 (Lacedaemon)",
  feastDays: ["November 26"],
- see: "Lacedaemon (Sparta)",
  shortBio:
  "The tenth-century wandering preacher whose single cry, Metanoeite, Repent, called whole regions back to Christ, from the mountains of Pontus to newly delivered Crete and the cities of the Peloponnese.",
  life: [
@@ -3691,7 +3669,6 @@ export const SAINTS: Saint[] = [
  born: "c. 392 (Thrace)",
  reposed: "January 27, 457 (Constantinople)",
  feastDays: ["February 17"],
- see: "Roman Emperor",
  shortBio:
  "Emperor of the East who, with the empress Pulcheria whom he took to wife, summoned the Fourth Ecumenical Council at Chalcedon in 451 to undo the violence of the Robber Council and to confess the faith of the two natures of Christ. A soldier raised to the purple late in life, remembered with Pulcheria as a defender of Orthodoxy.",
  life: [
@@ -3712,7 +3689,6 @@ export const SAINTS: Saint[] = [
  born: "January 19, 399 (Constantinople)",
  reposed: "July 453 (Constantinople)",
  feastDays: ["September 10"],
- see: "Roman Empress",
  shortBio:
  "Empress of the East, elder sister and guardian of Theodosius the Younger, who took a vow of virginity in her youth and governed with wisdom and piety for half a century. With her consort Marcian she summoned the Fourth Ecumenical Council at Chalcedon, and she is honoured as a defender of the faith of the Mother of God and of the two natures of Christ.",
  life: [
@@ -3734,7 +3710,6 @@ export const SAINTS: Saint[] = [
  born: "c. 482 (Tauresium, Illyria)",
  reposed: "November 14, 565 (Constantinople)",
  feastDays: ["November 14"],
- see: "Roman Emperor",
  shortBio:
  "Emperor of the East who reigned for nearly forty years, codified the Roman law, raised the great church of Hagia Sophia, and summoned the Fifth Ecumenical Council at Constantinople in 553 to confirm the faith of Chalcedon against the Three Chapters. The hymn Only-begotten Son, sung at every Liturgy, is ascribed by tradition to his hand.",
  life: [
@@ -3900,7 +3875,6 @@ export const SAINTS: Saint[] = [
  born: "c. 752 (Athens)",
  reposed: "August 803 (Lesbos)",
  feastDays: ["August 7"],
- see: "Roman Empress",
  shortBio:
  "Empress of the East, an Athenian raised to the throne by marriage, who as regent for her young son summoned the Seventh Ecumenical Council at Nicaea in 787 and restored the veneration of the holy icons after sixty years of iconoclasm. Honoured by the Church for the defence of the images of Christ and his saints.",
  life: [
@@ -3954,7 +3928,6 @@ export const SAINTS: Saint[] = [
     born: "December 21, 1722 (Poltava)",
     reposed: "November 15, 1794 (Neamț Monastery)",
     feastDays: ["November 15"],
-    see: "Neamț Monastery",
     shortBio:
       "The Ukrainian-born elder who, from the monasteries of Moldavia, revived the inward prayer of the heart and rendered the Philokalia into Slavonic, sending the hesychast tradition out across the whole Orthodox East.",
     life: [
@@ -3973,7 +3946,6 @@ export const SAINTS: Saint[] = [
     born: "November 16, 1903 (Vlădeni, Transylvania)",
     reposed: "October 5, 1993 (Bucharest)",
     feastDays: ["October 5"],
-    see: "Bucharest",
     shortBio:
       "The Transylvanian priest counted among the foremost Orthodox theologians of the twentieth century, who translated and annotated the Romanian Philokalia and suffered imprisonment under the communist regime.",
     life: [
@@ -3992,7 +3964,6 @@ export const SAINTS: Saint[] = [
     born: "April 10, 1912 (Sulița, Botoșani)",
     reposed: "December 2, 1998 (Sihăstria Monastery)",
     feastDays: ["December 2"],
-    see: "Sihăstria Monastery",
     shortBio:
       "The shepherd-turned-monk whose plain, fervent counsel and command of the Scriptures and Fathers made him the most sought-after spiritual father of twentieth-century Romanian monasticism.",
     life: [
@@ -4011,7 +3982,6 @@ export const SAINTS: Saint[] = [
     born: "October 7, 1912 (Cuconeștii Vechi, Bessarabia)",
     reposed: "September 14, 2002 (Bucharest)",
     feastDays: ["September 14"],
-    see: "Antim Monastery, Bucharest",
     shortBio:
       "The abbot and master iconographer of the Antim Monastery in Bucharest, a gentle confessor who endured years in the communist prisons and adorned the churches of Romania and beyond with his frescoes.",
     life: [
@@ -4030,7 +4000,6 @@ export const SAINTS: Saint[] = [
     born: "September 29, 1910 (Vața de Sus, Transylvania)",
     reposed: "November 28, 1989 (Sinaia)",
     feastDays: ["November 28"],
-    see: "Prislop Monastery",
     shortBio:
       "The Transylvanian hieromonk, iconographer, and preacher whose ministry at the monastery of Prislop drew vast crowds, and who suffered repeated imprisonment and surveillance under the communist regime.",
     life: [
@@ -4964,7 +4933,6 @@ export const SAINTS: Saint[] = [
     born: "unknown",
     reposed: "August 10, 258 (Rome)",
     feastDays: ["August 10"],
-    see: "(deacon of Rome)",
     pronoun: "his",
     shortBio:
       "Archdeacon of the church of Rome under Sixtus II, who held the alms of the city and knew by name everyone the Church was feeding. Ordered by the prefect to hand over the treasures of the Church, he gave everything away to the poor and then produced the poor themselves as the treasure. He was killed four days after his bishop, in August of 258, and buried on the Via Tiburtina, where Constantine built a basilica over the grave.",
@@ -5031,7 +4999,6 @@ export const SAINTS: Saint[] = [
       "Seven brothers, their mother Solomonia, and their teacher Eleazar · Martyrs under Antiochus Epiphanes",
     reposed: "c. 166 BC (Antioch, under Antiochus IV Epiphanes)",
     feastDays: ["August 1"],
-    see: "(martyrs of Israel)",
     pronoun: "their",
     shortBio:
       "Seven brothers tortured to death in a single day in front of their mother, who watched all seven and encouraged each of them, and died last; with them the aged scribe Eleazar, who refused even to pretend to eat what the Law forbade, on the ground that the young would learn the pretense. They are the only saints in the calendar who died before the Nativity, and they died confessing the resurrection of the body.",
@@ -5065,7 +5032,6 @@ export const SAINTS: Saint[] = [
     born: "c. 340 (Egypt)",
     reposed: "c. 450 (Terenuthis, Egypt)",
     feastDays: ["August 27"],
-    see: "(monk of Scetis)",
     pronoun: "his",
     shortBio:
       "An Egyptian monk who held no office, founded nothing, and wrote nothing, and who is nonetheless the most cited man in the whole literature of the desert: roughly a quarter of the alphabetical Sayings of the Desert Fathers are his. His name means shepherd. He is severe about judgment and gentle with the person judged, and he corrected the extremists of his own generation by telling monks to eat and to sleep.",
@@ -5099,7 +5065,6 @@ export const SAINTS: Saint[] = [
     born: "c. 1756 (Russia)",
     reposed: "December 13, 1836 or 1837 (Spruce Island, Alaska)",
     feastDays: ["August 9", "December 13"],
-    see: "(simple monk)",
     pronoun: "his",
     shortBio:
       "One of ten monks sent from Valaam across Siberia and the Pacific in 1794 to found the first Orthodox mission in North America. Within a decade the others were dead, recalled, or worn out, and he was the mission. He stayed forty three years, never took ordination, taught and fed the orphans of the epidemics, and spent four decades filing complaints against the Russian-American Company on behalf of the Aleut and Alutiiq people it was destroying.",
@@ -5164,7 +5129,6 @@ export const SAINTS: Saint[] = [
     epithet: "One of the Seventy · Apostle of Edessa and Mesopotamia",
     reposed: "c. 44 (Beirut, Phoenicia)",
     feastDays: ["August 21", "January 4"],
-    see: "Edessa",
     pronoun: "his",
     shortBio:
       "One of the Seventy, sent by the Apostle Thomas to Edessa on the eastern edge of the Roman world, where according to the documents Eusebius says he found in the city archive he healed King Abgar and brought the royal house to the faith. The Syriac churches call him Mar Addai and trace their foundation to him. He is not the Apostle Jude Thaddeus, one of the Twelve, whom the Menaion commemorates separately.",
@@ -5237,7 +5201,6 @@ export const SAINTS: Saint[] = [
     epithet: "Deacon of Catania · Martyr under Diocletian",
     reposed: "August 12, 304 (beheaded at Catania, Sicily)",
     feastDays: ["August 11"],
-    see: "(deacon of Catania)",
     pronoun: "his",
     shortBio:
       "A deacon of Catania in Sicily who, in a persecution whose first edict ordered the Scriptures handed over and burned, walked to the governor's council chamber carrying the book of the Gospels and called out that he was a Christian. His Acts are among the small group of martyr records that historians of every confession treat as essentially what was said in the room.",
@@ -5270,7 +5233,6 @@ export const SAINTS: Saint[] = [
       "Maximilian, Jamblichus, Martinian, John, Dionysius, Exacustodianus and Antoninus · Confessors under Decius",
     reposed: "sealed in the cave c. 250; the waking placed in the reign of Theodosius II, c. 446",
     feastDays: ["August 4", "October 22"],
-    see: "Ephesus",
     pronoun: "their",
     shortBio:
       "Seven young men of Ephesus who refused to sacrifice under Decius, hid in a cave above the city, and were sealed inside; and who, the tradition says, woke about two hundred years later in the reign of Theodosius the Second, at a moment when the Church was arguing over whether the body rises. The Church commemorates them as a sign rather than as a biography.",
@@ -5313,7 +5275,6 @@ export const SAINTS: Saint[] = [
     born: "c. 1468 (Yelokhovo, near Moscow)",
     reposed: "August 2, 1557 (Moscow)",
     feastDays: ["August 2"],
-    see: "(layman)",
     pronoun: "his",
     shortBio:
       "A shoemaker's apprentice who left the trade to walk the streets of Moscow naked in the winter for over sixty years, taking on the folly of Christ. He smashed goods in the market and was found to have been destroying spoiled food, wept at the doors of houses where people were feasting, and was the one man in Russia who could rebuke Ivan the Terrible to his face and be listened to.",
@@ -5334,7 +5295,6 @@ export const SAINTS: Saint[] = [
     epithet: "Founders of the Dalmatian monastery at Constantinople · Confessors",
     reposed: "Isaac c. 383; Dalmatus c. 440; Faustus 5th century",
     feastDays: ["August 3"],
-    see: "Constantinople",
     pronoun: "their",
     shortBio:
       "Three generations of one monastery. Isaac came out of the desert to stand in front of the Arian emperor Valens as he rode out to the Gothic war and tell him he would not come back, which he did not. Dalmatus, an officer of the imperial guard, gave up his commission to become his disciple and gave the house its name. Faustus was Dalmatus's son, who came with him.",
@@ -5356,7 +5316,6 @@ export const SAINTS: Saint[] = [
     born: "c. 1067 (Rome)",
     reposed: "August 3, 1147 (Novgorod)",
     feastDays: ["August 3"],
-    see: "(abbot)",
     pronoun: "his",
     shortBio:
       "A wealthy Roman who gave his goods away, lived on a rock at the edge of the sea, and, in the account Novgorod has told for nine centuries, was carried on that rock up the Neva to Novgorod in the year 1106. He founded the monastery of the Nativity of the Theotokos there and was its abbot for forty years.",
@@ -5378,7 +5337,6 @@ export const SAINTS: Saint[] = [
     born: "c. 252",
     reposed: "August 5, 362 (beheaded at Antioch)",
     feastDays: ["August 5"],
-    see: "(soldier)",
     pronoun: "his",
     shortBio:
       "A soldier who served sixty years in the Roman armies, who said he had seen the Cross in the sky over Constantine's camp with his own eyes, and who retired to Antioch and lived to a hundred and ten. When Julian the Apostate came through the city and began restoring the sacrifices, this very old man told him to his face what his own uncle had seen, and was beheaded for it.",
@@ -5398,7 +5356,6 @@ export const SAINTS: Saint[] = [
     epithet: "Convert from the Magi · Monk of Nisibis · Martyr under Julian",
     reposed: "c. 363 (stoned in a cave near Cyrrhus, Syria)",
     feastDays: ["August 7"],
-    see: "(monk)",
     pronoun: "his",
     shortBio:
       "A Persian raised in the religion of the Magi who became a Christian, fled his own country for Nisibis on the Roman frontier, and became a monk. He lived at last in a cave in the mountains near Cyrrhus, healing those who came, and was stoned to death there with two of his disciples on the order of Julian the Apostate.",
@@ -5419,7 +5376,6 @@ export const SAINTS: Saint[] = [
     epithet: "Desert Father of the Thebaid · Father of a thousand monks",
     reposed: "c. 390 (the Thebaid, Egypt)",
     feastDays: ["August 7"],
-    see: "(monk)",
     pronoun: "his",
     shortBio:
       "One of the great fathers of the Egyptian desert, described by Palladius and by the Historia Monachorum as an old man with a snow-white beard who governed about a thousand monks in the Thebaid and whose face, they say, was that of an angel. He had spent his first years alone in the deep desert eating herbs, and could not read until, the account says, he was given the Scriptures by heart.",
@@ -5482,7 +5438,6 @@ export const SAINTS: Saint[] = [
     epithet: "Monks of the Caves · Martyrs for a treasure that was not theirs",
     reposed: "1098 (Kiev)",
     feastDays: ["August 11"],
-    see: "(monks)",
     pronoun: "their",
     shortBio:
       "Two monks of the Kiev Caves, one a wealthy man who had given everything away and then found buried treasure in his own cell and was tormented by it, the other the friend who talked him into burying it again. A prince heard the story, wanted the money, and had them both tortured to death in a single night when they would not say where it was.",
@@ -5503,7 +5458,6 @@ export const SAINTS: Saint[] = [
     epithet: "Martyrs of Nicomedia under Diocletian",
     reposed: "c. 305 (Nicomedia)",
     feastDays: ["August 12"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "An uncle and his nephew. Anicetus was a magistrate of Nicomedia who, when Diocletian set up the instruments of torture in the public square and offered rewards for informers, walked out in front of the assembly and said he was a Christian. Photius, his nephew, came out of the crowd and embraced him, and the two were killed together after three years in prison.",
@@ -5524,7 +5478,6 @@ export const SAINTS: Saint[] = [
     epithet: "Physician of Tarsus · Unmercenary · Martyr under Diocletian",
     reposed: "c. 298 (Nicaea, Bithynia)",
     feastDays: ["August 16"],
-    see: "(physician)",
     pronoun: "his",
     shortBio:
       "A physician of Tarsus in Cilicia who treated bodies for nothing and used the visit to speak about Christ, and who baptized a great many of the people he had healed. He was arrested under Diocletian and died on the road before the sentence could be carried out, and the soldiers beheaded the body anyway.",
@@ -5545,7 +5498,6 @@ export const SAINTS: Saint[] = [
     epithet: "Presbyter of Achaia · Martyr under Decius",
     reposed: "c. 250",
     feastDays: ["August 17"],
-    see: "(presbyter)",
     pronoun: "his",
     shortBio:
       "A presbyter of a good and wealthy family, gentle by disposition, who was serving the liturgy on the feast of the Nativity when soldiers came into the church to take his congregation. He went out and stood between them, and the persecution turned on him instead.",
@@ -5565,7 +5517,6 @@ export const SAINTS: Saint[] = [
     epithet: "Twin brothers · Stonemasons · Martyrs of Illyricum",
     reposed: "2nd century (Ulpiana, Illyricum)",
     feastDays: ["August 18"],
-    see: "(laymen)",
     pronoun: "their",
     shortBio:
       "Twin brothers, stonemasons by trade, who were hired to build a pagan temple in Illyricum, spent their wages on the poor as they earned them, and when the building was finished set a cross in it, gathered the local Christians, and kept vigil in it all night. They were thrown alive into a dry well and covered over.",
@@ -5586,7 +5537,6 @@ export const SAINTS: Saint[] = [
     epithet: "Roman commander in Syria · Martyr with 2,593 soldiers",
     reposed: "c. 300 (the Taurus mountains, Cilicia)",
     feastDays: ["August 19"],
-    see: "(soldier)",
     pronoun: "his",
     shortBio:
       "A Roman officer in Syria under Maximian who, sent against a much larger Persian force with a small command, told his men that the gods of the empire were nothing and that they should call on Christ, and won. He and the soldiers who had called on Christ with him were baptized, dismissed the service, and were hunted down and killed in the Cilician mountains.",
@@ -5607,7 +5557,6 @@ export const SAINTS: Saint[] = [
     epithet: "Priest-monk of Smolensk · Preacher · Wonderworker",
     reposed: "c. 1221 (Smolensk)",
     feastDays: ["August 21"],
-    see: "(abbot)",
     pronoun: "his",
     shortBio:
       "A priest-monk of Smolensk who preached constantly, in a century when preaching in Rus was rare, and drew such crowds that the clergy of the city accused him of heresy and of leading the people astray. He was tried, forbidden to serve, and vindicated when a drought that had gripped the city broke on the day he was restored.",
@@ -5628,7 +5577,6 @@ export const SAINTS: Saint[] = [
     epithet: "Martyr under Maximian · Killed at Selymbria",
     reposed: "c. 305 (Selymbria, Thrace)",
     feastDays: ["August 22"],
-    see: "(martyr)",
     pronoun: "his",
     shortBio:
       "A man of noble family at Nicomedia who converted a number of pagans, including some of the imperial household, and was taken with several companions when the persecution reached them. They were marched west toward the capital and killed on the road at Selymbria in Thrace.",
@@ -5649,7 +5597,6 @@ export const SAINTS: Saint[] = [
     epithet: "Servant of St. Demetrius · Martyr under Maximian",
     reposed: "c. 306 (Thessaloniki)",
     feastDays: ["August 23"],
-    see: "(layman)",
     pronoun: "his",
     shortBio:
       "The servant of St. Demetrius of Thessaloniki, who was with him at the end. He dipped his master's ring and the hem of his garment in the blood, and the accounts say that everything he touched with them afterward was healed, until the authorities understood where it was coming from and took him too.",
@@ -5702,7 +5649,6 @@ export const SAINTS: Saint[] = [
     epithet: "Officer of the imperial court and his wife · Martyrs of Nicomedia",
     reposed: "c. 305 (Nicomedia)",
     feastDays: ["August 26"],
-    see: "(laity)",
     pronoun: "their",
     shortBio:
       "The head of the imperial court's judicial office at Nicomedia, twenty eight years old and a pagan, who watched twenty three Christians being tortured, asked them what they expected to get for it, and put his own name on the register. His wife Natalia, a secret Christian, spent the weeks that followed getting into the prison in disguise to keep him from weakening.",
@@ -5723,7 +5669,6 @@ export const SAINTS: Saint[] = [
     epithet: "Great-martyr · Made known by his icon at Rhodes",
     reposed: "date unknown",
     feastDays: ["August 27"],
-    see: "(martyr)",
     pronoun: "his",
     shortBio:
       "A martyr about whom nothing was known until his icon was dug out of a ruined church at Rhodes in the fifteenth century, with twelve scenes of his trial and death painted around him and his name written above. The Church accepted the icon as the record, and has venerated him ever since on the evidence of a painting.",
@@ -5745,7 +5690,6 @@ export const SAINTS: Saint[] = [
     born: "c. 1551 (Pokutia, Galicia)",
     reposed: "October 28, 1651 (Pochaev)",
     feastDays: ["August 28", "October 28"],
-    see: "(abbot)",
     pronoun: "his",
     shortBio:
       "Abbot of Pochaev in the century when the Union of Brest was being pressed on the Orthodox of the Polish-Lithuanian lands by law and by force. He held the monastery, ran its press, wrote against the Union, and defended the house through twenty years of litigation and armed raids. He lived past a hundred.",
@@ -5767,7 +5711,6 @@ export const SAINTS: Saint[] = [
     born: "June 15, 1448 (Mandera, on the Oyat)",
     reposed: "August 30, 1533 (the Svir monastery)",
     feastDays: ["August 30", "April 17"],
-    see: "(abbot)",
     pronoun: "his",
     shortBio:
       "A monk of Valaam who went off alone into the forest between Lakes Ladoga and Onega and lived there seven years without seeing anyone. He is the only saint of the Russian Church to whom the tradition ascribes an appearance of the Holy Trinity as three men, as to Abraham at Mamre, and the monastery he founded on the river Svir became one of the great houses of the Russian north.",
@@ -5809,7 +5752,6 @@ export const SAINTS: Saint[] = [
     epithet: "First of the Seven Deacons · First martyr of the Church · Archdeacon",
     reposed: "c. 34 (stoned outside Jerusalem)",
     feastDays: ["December 27", "August 2"],
-    see: "(deacon of Jerusalem)",
     pronoun: "his",
     shortBio:
       "The first of the seven men the apostles laid hands on to serve the tables of the Jerusalem church, and the first Christian to be killed for the Name. His defense before the Sanhedrin is the longest speech in the Book of Acts, and Saul of Tarsus was standing there holding the coats.",
@@ -5841,7 +5783,6 @@ export const SAINTS: Saint[] = [
     epithet: "One of the Twelve Minor Prophets · Contemporary of Isaiah",
     reposed: "8th century BC (Judah)",
     feastDays: ["August 14"],
-    see: "(prophet)",
     pronoun: "his",
     shortBio:
       "A prophet of the small town of Moresheth in the Judean lowlands, who prophesied under Jotham, Ahaz and Hezekiah, in the years the northern kingdom fell to Assyria. He named Bethlehem as the birthplace of the Ruler whose goings forth have been from of old, seven hundred years before the Magi were sent there on the strength of it.",
@@ -5862,7 +5803,6 @@ export const SAINTS: Saint[] = [
     epithet: "Last of the Judges · The prophet who anointed Saul and David",
     reposed: "11th century BC (Ramah)",
     feastDays: ["August 20"],
-    see: "(prophet and judge)",
     pronoun: "his",
     shortBio:
       "Asked of God by a barren woman and given back to Him, he grew up sleeping in the sanctuary at Shiloh and was called by name in the night while he was still a boy. He was the last of the judges of Israel, the prophet who anointed both its first king and its greatest, and the one who told Saul that obedience is better than sacrifice.",
@@ -5990,7 +5930,6 @@ export const SAINTS: Saint[] = [
     name: "Sts. Cosmas and Damian of Asia",
     epithet: "Unmercenary physicians · Sons of St. Theodota",
     feastDays: ["November 1"],
-    see: "(physicians)",
     pronoun: "their",
     shortBio:
       "Brothers and physicians who took no fees for their healing, the sons of Theodota. The Greek Church keeps three pairs of brothers of these names, each on its own day; these are the pair of November 1, and, unlike the other two, they are not numbered among the martyrs.",
@@ -6005,7 +5944,6 @@ export const SAINTS: Saint[] = [
     name: "St. Theodota",
     epithet: "Mother of the Unmercenaries Cosmas and Damian of Asia",
     feastDays: ["November 1"],
-    see: "(laywoman)",
     pronoun: "her",
     shortBio:
       "Named in the old sources only as the mother of Sts. Cosmas and Damian of Asia, the unmercenary physicians kept on the same day.",
@@ -6021,7 +5959,6 @@ export const SAINTS: Saint[] = [
     epithet: "Martyrs of Persia · Acindynus, Pegasius, Aphthonius, Elpidephorus and Anempodistus",
     reposed: "4th century, under Sapor II (Persia)",
     feastDays: ["November 2"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "Acindynus, Pegasius, Aphthonius, Elpidephorus and Anempodistus, Christians of Persia put to death under King Sapor II. Elpidephorus, a Persian of senatorial rank, was won to the faith by the constancy of Acindynus, Pegasius and Anempodistus, and was tortured and beheaded; the Greek account of their passion makes all or nearly all of them priests or clerics.",
@@ -6038,7 +5975,6 @@ export const SAINTS: Saint[] = [
     born: "Cyrrhus in Syria",
     reposed: "c. 387 (the desert of Chalcis, Syria)",
     feastDays: ["November 2"],
-    see: "(hermit)",
     pronoun: "his",
     shortBio:
       "A hermit of the desert of Chalcis in Syria, a native of Cyrrhus, who left the imperial court for the desert. He died about 387 and, as he had asked, was buried in secret; his tomb was found later and became a place of pilgrimage. Theodoret wrote of him.",
@@ -6064,7 +6000,6 @@ export const SAINTS: Saint[] = [
     epithet: "Martyrs of Persia under King Sapor",
     reposed: "4th century, in the persecution of Sapor II (Persia)",
     feastDays: ["November 3"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "Acepsimas, a bishop in Persia, who died under torture by the Magi rather than worship the sun, in the persecution of King Sapor; Sozomen tells of him and of the presbyter Aithalas, whose arms were torn from his shoulders. The Church keeps Joseph's memory with theirs.",
@@ -6092,7 +6027,6 @@ export const SAINTS: Saint[] = [
     born: "Bithynia",
     reposed: "846 (Mount Antides, Bithynia)",
     feastDays: ["November 4"],
-    see: "(hermit)",
     pronoun: "his",
     shortBio:
       "A native of Bithynia who served as a soldier, then became a hermit near Mount Olympus, and an opponent of the iconoclasts. In old age he shut himself in a cell of the monastery of Mount Antides, and he died in 846.",
@@ -6118,7 +6052,6 @@ export const SAINTS: Saint[] = [
     epithet: "Hieromartyrs of Myra in Lycia",
     reposed: "Date uncertain (Myra in Lycia)",
     feastDays: ["November 4"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "Nicander, a bishop, and Hermas, a priest, who were put to death for the faith at Myra in Lycia. Their date is uncertain.",
@@ -6134,7 +6067,6 @@ export const SAINTS: Saint[] = [
     epithet: "Apostles of the Seventy · Patrobas, Hermas, Linus, Gaius and Philologus",
     reposed: "1st century",
     feastDays: ["November 5"],
-    see: "(apostles of the Seventy)",
     pronoun: "their",
     shortBio:
       "Patrobas, Hermas, Linus, Gaius and Philologus, five of the Seventy, whom St. Paul greets by name in his Epistle to the Romans and his Second Epistle to Timothy; of Linus, St. Irenaeus writes that the apostles committed to him the episcopate of the Church at Rome.",
@@ -6160,7 +6092,6 @@ export const SAINTS: Saint[] = [
     epithet: "Martyrs of Emesa · Husband and wife",
     reposed: "3rd century (Emesa in Phoenicia)",
     feastDays: ["November 5"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "A husband and wife of Emesa in Phoenicia. Galaction baptized his wife Episteme; both entered monasteries, and both confessed the faith at Emesa and were martyred there, in the third century.",
@@ -6204,7 +6135,6 @@ export const SAINTS: Saint[] = [
     epithet: "Founder of the Khutyn monastery · Novgorod",
     reposed: "12th century (Khutyn, near Novgorod)",
     feastDays: ["November 6"],
-    see: "(monk of Novgorod)",
     pronoun: "his",
     shortBio:
       "Aleksa Mikhalevits, a monk of Novgorod under the name Varlaam, who in 1192 built the church of the Transfiguration of the Saviour at Khutyn, which Vladyka Gavrilo of Novgorod consecrated, and so founded the monastery there.",
@@ -6230,7 +6160,6 @@ export const SAINTS: Saint[] = [
     epithet: "Hiero, Hesychius, Nicander and their companions",
     reposed: "Early 4th century, under Diocletian (Melitene in Armenia)",
     feastDays: ["November 7"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "Thirty-three Christians of Armenia, Hiero, Hesychius and Nicander among them, who were martyred at Melitene in the persecution of Diocletian, in the first years of the fourth century.",
@@ -6246,7 +6175,6 @@ export const SAINTS: Saint[] = [
     epithet: "The Wonderworker",
     reposed: "1053",
     feastDays: ["November 7"],
-    see: "(monk)",
     pronoun: "his",
     shortBio:
       "A monk of Mount Galesion, called the Wonderworker, who reposed in 1053. The Church keeps his memory on November 7.",
@@ -6262,7 +6190,6 @@ export const SAINTS: Saint[] = [
     epithet: "Apostle of the Seventy, and martyr",
     reposed: "1st century",
     feastDays: ["November 9"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "Onesiphorus, of whom St. Paul wrote that he often refreshed him, was not ashamed of his chain, and sought him out diligently at Rome; and Porphyrius, whom the Church keeps with him.",
@@ -6289,7 +6216,6 @@ export const SAINTS: Saint[] = [
     born: "Perga in Pamphylia",
     reposed: "5th century, at the age of a hundred",
     feastDays: ["November 9"],
-    see: "(nun)",
     pronoun: "her",
     shortBio:
       "Born at Perga in Pamphylia, she married a nobleman named Domitian and moved with her household to Constantinople. She was received into the monastery of St. Bassianus under the name of Babylas, and after her husband's death she returned to Constantinople. She died in the fifth century, at the age of a hundred.",
@@ -6305,7 +6231,6 @@ export const SAINTS: Saint[] = [
     epithet: "Apostles of the Seventy · Erastus, Olympas, Rodion, Sosipater, Quartus and Tertius",
     reposed: "1st century",
     feastDays: ["November 10"],
-    see: "(apostles of the Seventy)",
     pronoun: "their",
     shortBio:
       "Six of the Seventy, helpers of St. Paul whom the Acts and his letters name: Erastus, whom he sent into Macedonia; Tertius, who wrote the Epistle to the Romans; and Olympas, Rodion, Sosipater and Quartus, whom he greets or sends greeting from.",
@@ -6332,7 +6257,6 @@ export const SAINTS: Saint[] = [
     born: "Pharasa in Cappadocia",
     reposed: "November 10, 1924 (Corfu)",
     feastDays: ["November 10"],
-    see: "(priest of Pharasa)",
     pronoun: "his",
     shortBio:
       "A priest of Pharasa in Cappadocia, who led his parish to Greece in the exchange of populations between Greece and Turkey and died on Corfu on November 10, 1924. The Patriarchate of Constantinople glorified him in 1986; his relics are at the monastery of Souroti, near Thessalonica.",
@@ -6349,7 +6273,6 @@ export const SAINTS: Saint[] = [
     epithet: "Great-martyr · Egyptian soldier",
     reposed: "Between 296 and 304 (Cotyaeum in Phrygia)",
     feastDays: ["November 11"],
-    see: "(soldier)",
     pronoun: "his",
     shortBio:
       "An Egyptian, an officer of the imperial army in Asia Minor, who declared himself a Christian at Cotyaeum in Phrygia and was put to death there. His body was buried in Egypt, and a church was built over his grave.",
@@ -6377,7 +6300,6 @@ export const SAINTS: Saint[] = [
     born: "759",
     reposed: "November 11, 826 (the peninsula of St. Tryphon, Bithynia)",
     feastDays: ["November 11"],
-    see: "(abbot)",
     pronoun: "his",
     shortBio:
       "Abbot of the Studion in Constantinople, from which he takes his name. Born in 759, he was trained at Saccudium under his uncle Plato and succeeded him as abbot there in 794. When the emperor Leo the Armenian moved against the holy icons, Theodore led the monks' resistance. He was exiled four times, and died in exile on November 11, 826.",
@@ -6394,7 +6316,6 @@ export const SAINTS: Saint[] = [
     epithet: "Fool for Christ",
     reposed: "1434 (Moscow)",
     feastDays: ["November 11"],
-    see: "(fool for Christ)",
     pronoun: "his",
     shortBio:
       "Blessed Maximus, fool for Christ at Moscow, who reposed in 1434. The Church keeps his memory on November 11.",
@@ -6440,7 +6361,6 @@ export const SAINTS: Saint[] = [
     epithet: "Ascetic of Sinai · Once prefect of Constantinople",
     reposed: "c. 430 or later",
     feastDays: ["November 12"],
-    see: "(monk)",
     pronoun: "his",
     shortBio:
       "An ascetic of Sinai, probably born in Galatia, who had been prefect of Constantinople. About 390 he left for Sinai with his son Theodulus. He died about 430 or later, and the emperor Justin II afterwards brought his body to Constantinople.",
@@ -6467,7 +6387,6 @@ export const SAINTS: Saint[] = [
     epithet: "Confessors of Edessa",
     reposed: "4th century (Edessa)",
     feastDays: ["November 15"],
-    see: "(martyrs of Edessa)",
     pronoun: "their",
     shortBio:
       "Shamuna and Guria of Edessa, and Habib, a deacon of that city, who would not sacrifice to the gods and were put to death at Edessa in the persecutions of the early fourth century; the Acts of their trials and deaths are kept in Syriac and in Greek.",
@@ -6558,7 +6477,6 @@ export const SAINTS: Saint[] = [
     epithet: "Hegumen of the Trinity Lavra · Disciple of St. Sergius",
     reposed: "1426",
     feastDays: ["November 17"],
-    see: "(abbot)",
     pronoun: "his",
     shortBio:
       "A disciple of St. Sergius of Radonezh, and hegumen of the Trinity Lavra after him. Building its stone church of the Holy Trinity after the invasion of Edigei, he found St. Sergius's relics and laid them in it. His feast was among those confirmed by the council of 1551.",
@@ -6574,7 +6492,6 @@ export const SAINTS: Saint[] = [
     epithet: "Martyrs",
     reposed: "Early 4th century, in the Great Persecution",
     feastDays: ["November 18"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "Romanus, a deacon and exorcist of Caesarea in Palestine, who rebuked those sacrificing to the idols at Antioch, had his tongue cut out, and was strangled in the stocks in the first year of the Great Persecution, as Eusebius records; and Plato, a martyr whom the Church keeps on the same day.",
@@ -6600,7 +6517,6 @@ export const SAINTS: Saint[] = [
     epithet: "Martyrs of Caesarea in Palestine",
     reposed: "303 (Caesarea in Palestine)",
     feastDays: ["November 18"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "The two whom Eusebius counts as crowned martyrs among all who suffered at Caesarea in the first months of the Great Persecution: after scourging, the rack and the stocks, they confessed one God and Christ Jesus as king, and were beheaded.",
@@ -6627,7 +6543,6 @@ export const SAINTS: Saint[] = [
     byname: "Abdias",
     epithet: "One of the Twelve Minor Prophets",
     feastDays: ["November 19"],
-    see: "(prophet)",
     pronoun: "his",
     shortBio:
       "One of the Twelve, whose short prophecy against Edom, for its violence against his brother Jacob, ends with the word that the kingdom shall be the Lord's.",
@@ -6653,7 +6568,6 @@ export const SAINTS: Saint[] = [
     name: "Sts. Barlaam and Josaphat of India",
     epithet: "Barlaam the monk · Josaphat (Ioasaph), son of King Abenner",
     feastDays: ["November 19"],
-    see: "(monks)",
     pronoun: "their",
     shortBio:
       "Barlaam, a monk and priest of the wilderness of Senaar, and Ioasaph, son of Abenner, a king of India who persecuted the Christians. In the Greek book Barlaam and Ioasaph, Barlaam comes to the prince disguised as a merchant and teaches him the faith; Abenner too becomes a Christian before his death, and Ioasaph gives the throne to Barachias and goes into the desert.",
@@ -6707,7 +6621,6 @@ export const SAINTS: Saint[] = [
     born: "Irenopolis, in the Decapolis of Isauria",
     reposed: "Soon after 820",
     feastDays: ["November 20"],
-    see: "(monk)",
     pronoun: "his",
     shortBio:
       "A confessor of the ninth century who suffered in the iconoclast persecution, named from his birthplace, Irenopolis, one of the cities of the Isaurian Decapolis. He died soon after 820, the year of the emperor Leo V's death, and his pupil Joseph the Hymnographer built a monastery to hold his body.",
@@ -6723,7 +6636,6 @@ export const SAINTS: Saint[] = [
     epithet: "Apostles of the Seventy",
     reposed: "1st century",
     feastDays: ["November 22"],
-    see: "(apostles of the Seventy)",
     pronoun: "their",
     shortBio:
       "Philemon, St. Paul's dearly beloved and fellowlabourer, to whom, with Apphia, Archippus and the church in his house, the Apostle wrote the letter asking him to receive Onesimus no longer as a servant, but as a brother beloved.",
@@ -6750,7 +6662,6 @@ export const SAINTS: Saint[] = [
     epithet: "Right-believing Prince · Martyr in the Horde",
     reposed: "1318, in the Horde (the Chronicle of Novgorod enters it under 1319)",
     feastDays: ["November 22"],
-    see: "(prince of Tver)",
     pronoun: "his",
     shortBio:
       "Prince of Tver and Grand Prince, put to death in the Horde through the intrigues of Yuri of Moscow; the Church, Mouravieff writes, added him to the number of the saints as a martyr.",
@@ -6803,7 +6714,6 @@ export const SAINTS: Saint[] = [
     epithet: "Right-believing Prince · Of Novgorod and Vladimir",
     reposed: "November 14, 1263 (Gorodets)",
     feastDays: ["November 23"],
-    see: "(prince)",
     pronoun: "his",
     shortBio:
       "Prince of Novgorod, who beat the Swedes on the Neva in 1240 and the Germans on the ice of Lake Chud in 1242, turned the papal legates away, and coming home from the Horde took the monastic habit and died the same night, November 14, 1263; he was buried at Vladimir on the day of St. Amphilochius.",
@@ -6902,7 +6812,6 @@ export const SAINTS: Saint[] = [
     epithet: "Great-martyr · Virgin of Alexandria",
     reposed: "c. 307 to 310 (Alexandria)",
     feastDays: ["November 25"],
-    see: "(virgin martyr)",
     pronoun: "her",
     shortBio:
       "A maiden of Alexandria, rich, noble and learned, who confessed Christ there under the emperor Maximinus and was put to death, by tradition in 310. In the eighth or ninth century her body was taken to the monastery on Mount Sinai, where it is venerated.",
@@ -6929,7 +6838,6 @@ export const SAINTS: Saint[] = [
     epithet: "Great-martyr · Soldier",
     reposed: "250 (Caesarea in Cappadocia)",
     feastDays: ["November 25"],
-    see: "(soldier)",
     pronoun: "his",
     shortBio:
       "An Armenian soldier who had risen to high rank in the imperial army, and who refused to take part in an idolatrous rite under the edict of Decius. He was tortured and beheaded in 250. Some of his relics are venerated in southern Italy.",
@@ -6974,7 +6882,6 @@ export const SAINTS: Saint[] = [
     epithet: "Great-martyr · The one cut in pieces",
     reposed: "November 27, 421 (Persia)",
     feastDays: ["November 27"],
-    see: "(nobleman)",
     pronoun: "his",
     shortBio:
       "A Persian nobleman who fell away from the faith under King Yezdegird, returned to it, and was martyred under King Varanes. He is called Intercisus, the one cut in pieces, because he was dismembered alive. He died on November 27, 421.",
@@ -7001,7 +6908,6 @@ export const SAINTS: Saint[] = [
     epithet: "Venerable-martyr · Confessor for the holy icons",
     reposed: "c. 764 (Constantinople)",
     feastDays: ["November 28"],
-    see: "(monk)",
     pronoun: "his",
     shortBio:
       "A monk who defended the holy icons under the emperor Constantine Copronymus, and was put to death after torture: a mob in Constantinople killed him with a club and tore his body apart, about 764.",
@@ -7027,7 +6933,6 @@ export const SAINTS: Saint[] = [
     epithet: "Martyrs of Sebaste",
     reposed: "c. 303 (Sebaste in Armenia)",
     feastDays: ["November 28"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "At Sebaste in Armenia, in the persecution of Diocletian, seven Christian women died rather than offer incense. Irenarchus, whose office was to torture the martyrs, was won to Christ by their patience; he confessed Christ and was put to death with the priest Acacius.",
@@ -7043,7 +6948,6 @@ export const SAINTS: Saint[] = [
     epithet: "Martyrs under Decius",
     reposed: "250, under Decius",
     feastDays: ["November 29"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "Paramonus and his companions, martyrs honored especially by the Greeks, who are said to have died on one day in the persecution of Decius, in 250. Baring-Gould counts them three hundred and seventy; the Book of Saints, three hundred and seventy-five.",
@@ -7060,7 +6964,6 @@ export const SAINTS: Saint[] = [
     epithet: "Monk of Sinai",
     reposed: "6th century (Sinai)",
     feastDays: ["November 29"],
-    see: "(monk)",
     pronoun: "his",
     shortBio:
       "A monk of Sinai in the sixth century. St. John Climacus tells of his obedience to his elder in The Ladder. The Church keeps his memory on November 29.",
@@ -7108,7 +7011,6 @@ export const SAINTS: Saint[] = [
     byname: "Naum",
     epithet: "One of the Twelve Minor Prophets",
     feastDays: ["December 1"],
-    see: "(prophet)",
     pronoun: "his",
     shortBio:
       "One of the Twelve, called in his book the Elkesite, whose prophecy is the burden of Nineveh: the Lord's vengeance on His adversaries, and the fall of the Assyrian city, at whose report all that hear shall clap their hands.",
@@ -7136,7 +7038,6 @@ export const SAINTS: Saint[] = [
     epithet: "Righteous",
     reposed: "792",
     feastDays: ["December 1"],
-    see: "(layman)",
     pronoun: "his",
     shortBio:
       "Philaret of Amnia, called the Merciful, whose repose the Church's calendar gives as 792. The Dictionary of Christian Biography, after the historian Zonaras, counts a St. Philaret in the family of Maria, whom the empress Irene chose in 788 as the bride of her son Constantine VI. No fuller account of him in public-domain English has been found.",
@@ -7153,7 +7054,6 @@ export const SAINTS: Saint[] = [
     byname: "Ambacum",
     epithet: "One of the Twelve Minor Prophets",
     feastDays: ["December 2"],
-    see: "(prophet)",
     pronoun: "his",
     shortBio:
       "One of the Twelve, who asks how long the Lord will not hearken while the ungodly prevail, hears that the Chaldeans are stirred up, and hears that “the just shall live by my faith”; his book ends with his prayer, with a song. In Bel and the Dragon an angel carries him to Babylon to bring Daniel his dinner in the lions' den.",
@@ -7180,7 +7080,6 @@ export const SAINTS: Saint[] = [
     byname: "Sophonias",
     epithet: "One of the Twelve Minor Prophets",
     feastDays: ["December 3"],
-    see: "(prophet)",
     pronoun: "his",
     shortBio:
       "One of the Twelve, the son of Chusi and of the line of Ezekias, to whom the word of the Lord came in the days of Josias, king of Juda. His prophecy is the great day of the Lord, a day of wrath on Juda and the nations, and the meek and lowly people the Lord will leave.",
@@ -7208,7 +7107,6 @@ export const SAINTS: Saint[] = [
     epithet: "Disciple of St. Sergius · Founder of the monastery of Zvenigorod",
     reposed: "1407",
     feastDays: ["December 3"],
-    see: "(abbot)",
     pronoun: "his",
     shortBio:
       "A disciple of St. Sergius of Radonezh, who laid the foundation of the monastery of Zvenigorod. Mouravieff, who calls him Sabba, records that his relics were found in the days of the Patriarch Joseph of Moscow, and that the Tsar, in thanksgiving, soon afterwards called a synod. The calendar gives his repose as 1407.",
@@ -7226,7 +7124,6 @@ export const SAINTS: Saint[] = [
     epithet: "Great-martyr · Virgin",
     reposed: "3rd or early 4th century",
     feastDays: ["December 4"],
-    see: "(martyr)",
     pronoun: "her",
     shortBio:
       "A virgin martyr of the third century, honoured in the East and the West, of whose life no reliable account survives. Some put her martyrdom at Nicomedia about 235, others at Heliopolis as late as 306, under Galerius. In her Acts her own father beheaded her, and a woman named Juliana suffered with her. All the Greek Menaea keep her.",
@@ -7255,7 +7152,6 @@ export const SAINTS: Saint[] = [
     born: "About 439 (near Caesarea in Cappadocia)",
     reposed: "December 5, 531 or 532 (his laura)",
     feastDays: ["December 5"],
-    see: "(abbot)",
     pronoun: "his",
     shortBio:
       "A Cappadocian, born near Caesarea about 439, who became one of the most famous monks of Palestine. At thirty he went into the desert as an anchorite and lived in a cave; others joined him, and he built his monastery, the Laura of St. Sabas, on a rock above the Kidron, where it still stands. He reformed the monks' discipline, and died at his laura on December 5, 531 or 532.",
@@ -7283,7 +7179,6 @@ export const SAINTS: Saint[] = [
     epithet: "Hermit of Seliger · Wonderworker",
     reposed: "1554",
     feastDays: ["December 7"],
-    see: "(hermit)",
     pronoun: "his",
     shortBio:
       "One of the celebrated hermits of Russia, who, as Mouravieff writes, worked out his salvation in the district of Tver. The calendar calls him the wonderworker of Seliger and gives his repose as 1554.",
@@ -7301,7 +7196,6 @@ export const SAINTS: Saint[] = [
     epithet: "Hermit at Constantinople",
     reposed: "Before the 8th century (Constantinople)",
     feastDays: ["December 8"],
-    see: "(hermit)",
     pronoun: "his",
     shortBio:
       "A native of Thebes in Egypt who passed his life as a hermit in the suburbs of Constantinople, and is much venerated in the East. He lived before the eighth century, and St. Andrew of Crete wrote three homilies on him.",
@@ -7318,7 +7212,6 @@ export const SAINTS: Saint[] = [
     epithet: "Apostles of the Seventy",
     reposed: "1st century",
     feastDays: ["December 8"],
-    see: "(apostles of the Seventy)",
     pronoun: "their",
     shortBio:
       "Four of the Seventy. Sosthenes, chief ruler of the synagogue at Corinth, was beaten before Gallio's judgment seat, and St. Paul names a brother Sosthenes with himself in First Corinthians. Apollos, a Jew of Alexandria mighty in the Scriptures, watered where Paul had planted. Tychicus of Asia, a beloved brother and faithful minister, Paul sent to Ephesus and Colossae. Cephas is one of the Seventy, not the apostle Peter.",
@@ -7345,7 +7238,6 @@ export const SAINTS: Saint[] = [
     epithet: "Martyrs of Alexandria",
     reposed: "Early 4th century (Alexandria)",
     feastDays: ["December 10"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "Martyrs at Alexandria, where all three were beheaded. The Book of Saints makes Menas an Athenian sent by Galerius to quell a revolt in Egypt, who with Eugraphus, his subordinate, made many converts, Hermogenes the imperial prefect among them; Baring-Gould makes Menas a senator of Alexandria and Eugraphus his servant. The Dictionary of Christian Biography puts their death under Maximin.",
@@ -7380,7 +7272,6 @@ export const SAINTS: Saint[] = [
     epithet: "Stylite of Chalcedon",
     reposed: "979",
     feastDays: ["December 11"],
-    see: "(stylite)",
     pronoun: "his",
     shortBio:
       "A stylite of Chalcedon who reposed in 979, as the Church's calendar records. No account of his life in public-domain English has been found, so his page holds only what the calendar keeps.",
@@ -7397,7 +7288,6 @@ export const SAINTS: Saint[] = [
     epithet: "Martyrs of Sebaste in Armenia",
     reposed: "About 302, under Diocletian (Sebaste)",
     feastDays: ["December 13"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "Five martyrs of Sebaste in Armenia, in the persecution of Diocletian, about 302; Eustratius was judged by the prefect Agricolaus. Eustratius was burned to death in a furnace and Orestes on a gridiron; the others were put to death in various ways. Their relics are venerated at Rome, in the church of St. Apollinaris.",
@@ -7415,7 +7305,6 @@ export const SAINTS: Saint[] = [
     epithet: "Virgin-martyr of Sicily",
     reposed: "304, under Diocletian (Syracuse)",
     feastDays: ["December 13"],
-    see: "(martyr)",
     pronoun: "her",
     shortBio:
       "A virgin of Syracuse, one of the most famous martyrs of the great persecution under Diocletian, in 304. Her Acts relate that she had vowed herself to God, refused the pagan suitor her mother Eutychia wished her to marry, and was denounced by him to the governor Paschasius. The sources differ on her death: by a sword through the throat, or in prison under later tortures.",
@@ -7442,7 +7331,6 @@ export const SAINTS: Saint[] = [
     epithet: "Martyrs of Bithynia",
     reposed: "About 250, under Decius (Bithynia)",
     feastDays: ["December 14"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "Martyrs of Bithynia in the reign of Decius, about 250, when Combritius, the governor, went round the province enforcing the edict against the Christians. Thyrsus, his arms and legs broken, died in prison; Leucius was hung up, torn with iron hooks and beheaded; Callinicus and others died by various deaths. The Greek Menaea keep them on December 14, the Roman calendar on January 28.",
@@ -7469,7 +7357,6 @@ export const SAINTS: Saint[] = [
     epithet: "Martyrs of Egypt",
     reposed: "About 303, under Diocletian (Alexandria)",
     feastDays: ["December 14"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "Christians of Egypt in the persecution of Diocletian. Apollonius, a deacon, converted Philemon, and the two were tortured together at Antinoe; their constancy converted Arrianus, the magistrate who tortured them, and the prefect at Alexandria had all three drowned, probably about 303. The Greeks keep them on December 14, the Latins on March 8.",
@@ -7531,7 +7418,6 @@ export const SAINTS: Saint[] = [
     byname: "Aggaeus",
     epithet: "One of the Twelve Minor Prophets",
     feastDays: ["December 16"],
-    see: "(prophet)",
     pronoun: "his",
     shortBio:
       "One of the Twelve, by whose hand the word of the Lord came in the second year of Darius the king to Zorobabel and to Jesus the high priest, while the people said the time was not come to build the house of the Lord. He called them to build it, and said its latter glory would be greater than the former.",
@@ -7558,7 +7444,6 @@ export const SAINTS: Saint[] = [
     epithet: "Empress · Wife of Leo VI the Wise",
     reposed: "Late 9th century (Constantinople)",
     feastDays: ["December 16"],
-    see: "(empress)",
     pronoun: "her",
     shortBio:
       "Daughter of Constantine Martiniake and Anna, and wife of the emperor Leo VI, the Wise; she was crowned by her father-in-law, Basil the Macedonian. She was charitable and devout, free of jealousy, and never remembered an injury. Miracles began a few days after her death, and Leo built a church in her honour. Dunbar gives her death as 882 or 892; the calendar, about 894.",
@@ -7575,7 +7460,6 @@ export const SAINTS: Saint[] = [
     byname: "Daniel, Ananias, Azarias and Misael",
     epithet: "Prophet at Babylon · The three in the furnace",
     feastDays: ["December 17"],
-    see: "(prophet)",
     pronoun: "their",
     shortBio:
       "Daniel, Ananias, Azarias and Misael, of the children of Juda, whom Nabuchodonosor carried to Babylon and had taught the learning of the Chaldeans. The three would not worship the king's golden image and were cast into the burning fiery furnace, where the angel of the Lord came down to them; Daniel, a governor under Darius the Mede, was cast into the den of lions and delivered.",
@@ -7603,7 +7487,6 @@ export const SAINTS: Saint[] = [
     epithet: "Martyrs of Rome under Diocletian",
     reposed: "Late 3rd century, under Diocletian (Rome)",
     feastDays: ["December 18"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "A soldier of Milan, where he commanded the first cohort, martyred at Rome under Diocletian. Shot with arrows and left for dead, he was found alive and healed by a pious woman, Irene; arrested again, he was beaten to death with clubs in the Hippodrome, and the matron Lucina buried him in the catacombs. Among his companions was Nicostratus, whom he converted, and who was martyred too.",
@@ -7647,7 +7530,6 @@ export const SAINTS: Saint[] = [
     epithet: "Martyr",
     reposed: "290 or 307 (Tarsus)",
     feastDays: ["December 19"],
-    see: "(martyr)",
     pronoun: "his",
     shortBio:
       "A Christian of Rome who went to Tarsus in Cilicia to recover the bodies of martyrs, and was himself tortured and beheaded there. His relics rest in the church dedicated to him on the Aventine in Rome, with those of St. Aglae, the woman joined to him before and after their conversion. The Greek Menaea keep him on December 19.",
@@ -7673,7 +7555,6 @@ export const SAINTS: Saint[] = [
     epithet: "Monk of the Kiev Caves",
     reposed: "1188",
     feastDays: ["December 19"],
-    see: "(monk)",
     pronoun: "his",
     shortBio:
       "A monk of the Kiev Caves, called in the calendar the warrior-monk, who reposed in 1188. No account of his life in public-domain English has been found, so his page holds only what the calendar keeps.",
@@ -7691,7 +7572,6 @@ export const SAINTS: Saint[] = [
     epithet: "Priest of Kronstadt · Wonderworker",
     reposed: "1908",
     feastDays: ["December 20"],
-    see: "(priest)",
     pronoun: "his",
     shortBio:
       "John Sergieff, a priest of Kronstadt, whose life, his translator wrote in 1897, was given to charity among the poor, the sick and the needy: great sums passed through his hands to the poor, and he stayed poor himself. He was with the emperor Alexander III at his last moments at Livadia. The Church's calendar names him wonderworker and pastor, and gives his repose as 1908.",
@@ -7718,7 +7598,6 @@ export const SAINTS: Saint[] = [
     epithet: "Virgin-martyr",
     reposed: "304 or 306 (Nicomedia)",
     feastDays: ["December 21"],
-    see: "(martyr)",
     pronoun: "her",
     shortBio:
       "A virgin martyred in the persecution of Diocletian, said to have been beheaded at Nicomedia with a hundred and thirty other Christians, under Galerius. A Christian maiden of heathen parents, she would not marry the prefect Eleusius, being resolved not to marry a heathen. In the sixth century her relics were taken to Puteoli, near Naples. The Greeks keep her on December 21, the Latin martyrologies on February 16.",
@@ -7746,7 +7625,6 @@ export const SAINTS: Saint[] = [
     epithet: "Great-martyr",
     reposed: "304, under Diocletian",
     feastDays: ["December 22"],
-    see: "(martyr)",
     pronoun: "her",
     shortBio:
       "A martyr under Diocletian in 304, called the Deliverer from Poisons. She followed St. Chrysogonus into Illyria when he was taken there a prisoner, and was herself seized, tortured and burned alive on an island off the Gulf of Gaeta. Her relics were brought from Sirmium to Constantinople, by Pulcheria before 450 in one account, under the patriarch Gennadius in another.",
@@ -7773,7 +7651,6 @@ export const SAINTS: Saint[] = [
     epithet: "Martyr · Teacher of St. Anastasia",
     reposed: "304, under Diocletian",
     feastDays: ["December 22"],
-    see: "(martyr)",
     pronoun: "his",
     shortBio:
       "A Roman priest, the spiritual guide of St. Anastasia in her care for the Christian prisoners, martyred in the persecution of Diocletian. The emperor had him brought before his own tribunal, at Nicomedia or, as others say, at Aquileia, and had him tortured and beheaded in 304. The Menology keeps him with St. Anastasia on December 22.",
@@ -7800,7 +7677,6 @@ export const SAINTS: Saint[] = [
     epithet: "Theodulus, Saturninus, Euporus, Gelasius, Eunicianus, Zoticus, Cleomenes, Agathopodus, Basilides and Evaristus",
     reposed: "250, under Decius (Gortyna)",
     feastDays: ["December 23"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "Theodulus, Saturninus, Euporus, Gelasius, Eunicianus, Zoticus, Cleomenes, Agathopodus, Basilides and Evaristus, called the Cretan Martyrs, who suffered in the persecution of Decius in 250 and were all beheaded at Gortyna. Basilides was a layman of Cydonia in Crete. Their relics were afterwards taken to Rome.",
@@ -7845,7 +7721,6 @@ export const SAINTS: Saint[] = [
     epithet: "Venerable-martyr",
     reposed: "3rd century",
     feastDays: ["December 24"],
-    see: "(martyr)",
     pronoun: "her",
     shortBio:
       "A martyr of the third century, of whom the sources tell two stories. In the Dictionary of Christian Biography she is the daughter of Philippus, whom Commodus made governor of Alexandria, and disguised herself as a man and entered a monastery until she was found out. In The Book of Saints she is a learned Roman maiden, converted by her slaves Protus and Hyacinth, and put to death in her prison at Rome under Valerian, on Christmas Day, 257.",
@@ -7872,7 +7747,6 @@ export const SAINTS: Saint[] = [
     epithet: "Confessor · Monk of St. Sabbas",
     reposed: "840 or 842 (in prison)",
     feastDays: ["December 27"],
-    see: "(monk)",
     pronoun: "his",
     shortBio:
       "A monk of the ninth century who, with his brother Theophanes, entered the monastery of St. Sabbas at Jerusalem. Under the iconoclast emperors of Constantinople the brothers stood for the faith and were imprisoned and banished again and again. Theodore died in prison; Theophanes survived the persecution and was made bishop of Nicaea.",
@@ -7899,7 +7773,6 @@ export const SAINTS: Saint[] = [
     epithet: "Burned at Nicomedia under Diocletian",
     reposed: "Early 4th century, under Diocletian (Nicomedia)",
     feastDays: ["December 28"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "Christians of Nicomedia, the imperial residence, put to death at the beginning of Diocletian's persecution: Anthimus their bishop and many of his flock, under suspicion of setting fire to the palace. The Greeks reckon some twenty thousand, and the Roman Martyrology tells of the faithful gathered in their church for the Nativity, shut in by the emperor's order and burned when they would not offer incense.",
@@ -7927,7 +7800,6 @@ export const SAINTS: Saint[] = [
     epithet: "Slain by Herod in Bethlehem",
     reposed: "At the birth of Christ (Bethlehem)",
     feastDays: ["December 29"],
-    see: "(martyrs)",
     pronoun: "their",
     shortBio:
       "The children of Bethlehem and all its coasts, from two years old and under, whom Herod slew when he saw that he was mocked of the wise men, after Joseph had been warned in a dream to take the young Child and His mother into Egypt.",
@@ -7955,7 +7827,6 @@ export const SAINTS: Saint[] = [
     epithet: "Abbot of the Acoemetae at Constantinople",
     reposed: "About 485 (Constantinople)",
     feastDays: ["December 29"],
-    see: "(abbot)",
     pronoun: "his",
     shortBio:
       "A native of Apamea in Syria, who gave his fortune to his younger brother and the poor and joined the Acoemetae, the Unsleeping Ones, monks named for singing the Office day and night without a break. He became their abbot at Constantinople, founded several other monasteries, and was one of nineteen Orthodox abbots who stood together against the heresy of Eutyches. He died about 485.",
@@ -7982,7 +7853,6 @@ export const SAINTS: Saint[] = [
     epithet: "Martyr",
     reposed: "December 30, 304 (Thessalonica)",
     feastDays: ["December 30"],
-    see: "(martyr)",
     pronoun: "her",
     shortBio:
       "A Christian woman of Thessalonica, of noble birth, put to death on December 30, 304, under Galerius, as she came into the city for the assembly of the faithful. The Book of Saints says she was arrested by order of Dulcitius, the governor; in Baring-Gould's account a heathen at the gate ran his sword into her side, and she bled to death on the spot, where the church of Thessalonica afterwards built an oratory.",
@@ -8009,7 +7879,6 @@ export const SAINTS: Saint[] = [
     epithet: "Priest · Servant of the poor",
     reposed: "4th century (Constantinople)",
     feastDays: ["December 30"],
-    see: "(priest)",
     pronoun: "his",
     shortBio:
       "A priest of the fourth century, a Roman by birth, who went to Constantinople when Constantine moved the capital there, and set up hospitals and refuges for the poor among the new buildings of the city. The calendar calls him the Orphanmaster, servant of the poor.",
@@ -8027,7 +7896,6 @@ export const SAINTS: Saint[] = [
     born: "About 383 (Rome)",
     reposed: "439 or 440",
     feastDays: ["December 31"],
-    see: "(nun)",
     pronoun: "her",
     shortBio:
       "Granddaughter of Melania the Elder, born at Rome about 383 and married at thirteen to Pinianus. When their two children died, the two sold all they had, gave it to the poor, and went to Palestine; at Bethlehem, with her mother Albina, she entered a convent and Pinianus became head of a monastery. She outlived him, and died on the last day of the year, in 439 or the year after.",

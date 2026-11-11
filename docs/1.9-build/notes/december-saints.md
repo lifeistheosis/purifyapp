@@ -608,3 +608,19 @@ picture") both hold together.
   reading room), checkMock passing on the five held to it.
 - **Still**: `december-saints/14-four-martyrs.png`, the four martyrs' pages as
   a reader first meets them.
+
+## The fresh-eyes walk's two, as built (2026-11-11)
+
+- **"See (soldier)"** (M2): a see is a bishop's city. The 99 roles in
+  brackets came out of `see`, with 39 more values that are no see (the
+  apostles' missions, emperors and empresses, monasteries, "(lay)",
+  "(deacon)", "(martyred)", the Theotokos's "Jerusalem"); Sts Cyril and
+  Methodius keep St Methodius's Sirmium. Sixty-six sees remain, every one a
+  bishop's, the Apostle Peter's Antioch and Rome by tradition. The field's
+  own comment says so, and `lib/saints/__tests__/see.test.ts` holds it (it
+  fails on the old data).
+- **The councils' dashed "Pending" box** (M1): the page draws no documents
+  still to come; they stay in `lib/councils/councils.ts` for the editors.
+  `lib/councils/__tests__/noPendingBox.test.ts` holds it (it fails on the old
+  page).
+

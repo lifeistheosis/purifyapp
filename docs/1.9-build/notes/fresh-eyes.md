@@ -154,6 +154,9 @@ arbiter knows better who holds what.
 - Smallest fix: do not draw pending documents for readers. If one must show,
   a plain quiet line with no box and no "shipped".
 - Area: Fable Theology (councils), or the December saints chat.
+- **Done** (the December saints chat, 2026-11-11): the page draws no pending
+  documents; they stay in `lib/councils/councils.ts` for the editors. Held by
+  `lib/councils/__tests__/noPendingBox.test.ts`, which fails on the old page.
 
 #### M2. Saints' facts print "See" over a bracketed role: "See (soldier)"
 
@@ -169,6 +172,13 @@ arbiter knows better who holds what.
   `components/saints/SaintStudyRail.tsx:20`.
 - Smallest fix: skip the See fact when the value begins with "(".
 - Area: the December saints chat.
+- **Done** (the December saints chat, 2026-11-11): the 99 bracketed roles are
+  out of `see`, and so are 39 other values that are no see (the apostles'
+  missions, the emperors and empresses, monasteries, "(lay)", "(deacon)",
+  "(martyred)", the Theotokos's "Jerusalem"); Sts Cyril and Methodius keep St
+  Methodius's Sirmium. A see now stands only on a bishop (the Apostle Peter
+  by name), held by `lib/saints/__tests__/see.test.ts`, which fails on the old
+  data.
 
 #### M3. The reading room has two top bars
 

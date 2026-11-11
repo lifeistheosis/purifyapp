@@ -214,25 +214,10 @@ export default async function CouncilProfilePage({
  </div>
  ) : null}
 
- {c.pendingDocuments && c.pendingDocuments.length > 0 && (
- <div className="mt-4 rounded-md border border-dashed border-paper/15 bg-paper/[0.015] px-5 py-4">
- <p className="font-sans text-caption font-semibold text-paper/45 mb-3">
- <T k="study.pending" />
- </p>
- <ul className="space-y-3">
- {c.pendingDocuments.map((p, i) => (
- <li key={i}>
- <p lang="en" dir="ltr" className="font-serif text-body text-paper/75">
- {p.title}
- </p>
- <p lang="en" dir="ltr" className="mt-1 font-serif text-ui text-paper/55 leading-[1.6]">
- {p.note}
- </p>
- </li>
- ))}
- </ul>
- </div>
- )}
+ {/* A council's documents still to come are kept in lib/councils/councils.ts
+     (pendingDocuments) for the editors, and shown to no reader: no dashed
+     placeholder box and no words for what is not there (the fresh-eyes walk
+     of build 93; lib/councils/__tests__/noPendingBox.test.ts). */}
 
  {/* The council in its own words, to share as a picture or read where it stands. */}
  {line && lineShown && lineSubject ? (
