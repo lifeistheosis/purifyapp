@@ -149,15 +149,26 @@ export function ChantPicker({ open, onClose }: { open: boolean; onClose: () => v
                         English and Arabic; Updates 2, walking the gate's third run,
                         2026-11-11). It is there from the first frame, so it moves nothing. */}
                     <span className="block font-sans text-ui font-semibold leading-snug text-paper text-balance break-words">{title}</span>
-                    {/* One line whatever happens: the version, then whether it
-                        plays now or why it cannot (1.7.1: a line that arrived
-                        late pushed the whole sheet down). */}
-                    <span className="mt-0.5 flex min-w-0 gap-1 font-sans text-caption text-paper/55">
-                      <span dir="auto" className="truncate">
-                        {v.label}
+                    {/* The version, then whether it plays now or why it cannot,
+                        whole, wrapping where a phone needs it (the arbiter,
+                        2026-11-11). Its room is kept from the first frame, so a
+                        word that arrives late moves nothing (1.7.1: a line that
+                        arrived late pushed the whole sheet down): under it,
+                        unseen in the same place, the line with each word that
+                        can follow the version, so the row stands as tall as the
+                        longest of them before any comes (three lines at 320 in
+                        eleven languages, two at 390). */}
+                    <span className="mt-0.5 grid font-sans text-caption leading-snug text-paper/55">
+                      {[t("chants.needsConnection"), t("chants.unavailable"), t("prayers.nowPlaying")].map((word, i) => (
+                        <span key={i} aria-hidden data-line-room="" className="invisible col-start-1 row-start-1 break-words">
+                          <span dir="auto">{v.label}</span> · {word}
+                        </span>
+                      ))}
+                      <span className="col-start-1 row-start-1 break-words">
+                        <span dir="auto">{v.label}</span>
+                        {now ? <> · {t("prayers.nowPlaying")}</> : null}
+                        {why ? <span className="text-paper/70"> · {t(why)}</span> : null}
                       </span>
-                      {now ? <span className="shrink-0">· {t("prayers.nowPlaying")}</span> : null}
-                      {why ? <span className="min-w-0 truncate text-paper/70">· {t(why)}</span> : null}
                     </span>
                   </span>
                   {/* The chosen one carries a check, drawn in as it is picked; the

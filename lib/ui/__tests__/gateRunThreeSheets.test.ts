@@ -53,6 +53,19 @@ describe("Pray with chant's switch", () => {
     expect(sheet).not.toMatch(/"absolute top-0\.5 h-5 w-5/);
   });
 
+  // The arbiter, 16:33 UTC: the small line under each name whole too, its room kept from the first
+  // frame so a word arriving late moves nothing (the 1.7.1 reason, met another way). Two lines are
+  // not room enough at 320, where eleven languages take three: so each word that can follow the
+  // version stands unseen in the line's own place, and the row is as tall as the longest from the start.
+  it("says the line under each chant's name whole, its room kept from the first frame", () => {
+    const sheet = code("components/player/PrayWithChant.tsx");
+    expect(sheet).toContain('{[t("chants.needsConnection"), t("chants.unavailable"), t("prayers.nowPlaying")].map((word, i) => (');
+    expect(sheet).toContain('<span key={i} aria-hidden data-line-room="" className="invisible col-start-1 row-start-1 break-words">');
+    expect(sheet).toContain('<span className="mt-0.5 grid font-sans text-caption leading-snug text-paper/55">');
+    expect(sheet).toContain('<span className="col-start-1 row-start-1 break-words">');
+    expect(sheet).not.toMatch(/\btruncate\b/);
+  });
+
   it("says each chant's name whole in its list, wrapping on a phone 320 wide rather than cut", () => {
     const sheet = code("components/player/PrayWithChant.tsx");
     expect(sheet).toContain('<span className="block font-sans text-ui font-semibold leading-snug text-paper text-balance break-words">{title}</span>');

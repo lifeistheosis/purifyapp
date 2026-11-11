@@ -349,11 +349,14 @@
   border-radius: 11px;
   background: transparent;
 }
+/* The knob from the start of its track and to the end when on, so it turns
+   in Arabic and Urdu (every switch in components/ is held to start and end,
+   lib/ui/__tests__/switchKnobs.test.ts). */
 .toggle::after {
   content: "";
   position: absolute;
   top: 2.5px;
-  left: 3px;
+  inset-inline-start: 3px;
   width: 13px;
   height: 13px;
   border-radius: 50%;
@@ -364,8 +367,8 @@
   background: var(--adm-ink);
 }
 .toggleOn::after {
-  left: auto;
-  right: 3px;
+  inset-inline-start: auto;
+  inset-inline-end: 3px;
   background: var(--adm-on-accent);
 }
 

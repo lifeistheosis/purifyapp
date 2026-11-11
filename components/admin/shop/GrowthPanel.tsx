@@ -175,12 +175,10 @@ function Switch({
           boxShadow: checked ? "none" : "inset 0 0 0 1px var(--adm-line-strong)",
         }}
       >
+        {/* From the start of its track to the end when on, in Arabic and Urdu too. */}
         <span
-          className="block h-5 w-5 rounded-full transition-transform duration-150"
-          style={{
-            transform: checked ? "translateX(16px)" : "none",
-            background: checked ? "var(--adm-on-accent)" : "var(--adm-ink-3)",
-          }}
+          className={`block h-5 w-5 rounded-full transition-transform duration-150 ${checked ? "translate-x-[16px] rtl:-translate-x-[16px]" : ""}`}
+          style={{ background: checked ? "var(--adm-on-accent)" : "var(--adm-ink-3)" }}
         />
       </span>
       <span style={{ color: checked ? "var(--adm-ink)" : "var(--adm-ink-3)" }}>{checked ? "On" : "Off"}</span>

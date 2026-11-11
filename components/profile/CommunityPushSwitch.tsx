@@ -80,8 +80,8 @@ export function CommunityPushSwitch({
       <span
         aria-hidden
         className={cn(
-          "absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-paper transition-[left] motion-reduce:transition-none",
-          state.on ? "left-[22px]" : "left-[3px]",
+          "absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-paper transition-[left,right] motion-reduce:transition-none",
+          state.on ? "start-[22px]" : "start-[3px]",
         )}
       />
     </button>

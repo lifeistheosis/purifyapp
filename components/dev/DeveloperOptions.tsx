@@ -120,8 +120,8 @@ function ToggleRow({
         }`}
       >
         <span
-          className={`absolute top-0.5 h-5 w-5 rounded-full bg-night motion-safe:transition-[left] ${
-            on ? "left-[1.375rem]" : "left-0.5"
+          className={`absolute top-0.5 h-5 w-5 rounded-full bg-night motion-safe:transition-[left,right] ${
+            on ? "start-[1.375rem]" : "start-0.5"
           }`}
         />
       </button>

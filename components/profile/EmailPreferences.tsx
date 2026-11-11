@@ -118,8 +118,8 @@ export function EmailPreferences() {
                   <span
                     aria-hidden
                     className={
-                      "absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-paper transition-[left] " +
-                      (on ? "left-[22px]" : "left-[3px]")
+                      "absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-paper transition-[left,right] " +
+                      (on ? "start-[22px]" : "start-[3px]")
                     }
                   />
                 </button>
