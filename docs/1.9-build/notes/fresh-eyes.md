@@ -211,6 +211,13 @@ Done (Updates, 2026-11-11, `022e4f971`; after: `fresh-eyes/06b-reading-one-bar-a
 - Area: Updates (with the other "moves under the finger" notes).
 - checkMock on this screen also says one icon is placed with left, not start
   (`mirror`: an svg at 71 to 89px that sits at 303 to 321px in Arabic).
+- **Done** (Fable Theology, 2026-11-11, `2fd048f3`: after any tap the page
+  keeps the length the reader is looking at, from one mount at the root, so
+  nothing is held in `ChantsHome.tsx`). Walked by Fable Themes on its own
+  export at 360, 390 and 820 with real touch: 0px for every tradition and
+  "All", with the browser's scroll anchoring on and off (64, 93 and 128px
+  before). Before and after: `fresh-eyes/M4-chants-filter-1-before-tap.png`,
+  `M4-chants-filter-2-old.png`, `M4-chants-filter-2-new.png`.
 
 #### M5. Fasting: thirty 29px buttons, a faint line, and a row that shifts
 
@@ -302,6 +309,16 @@ The count that let them slip (Updates, 2026-11-11, `0258a5320`): their height wa
   (`fresh-eyes/12a-plan-before.png`, `12b-plan-after-mark.png`). Bible, Reading
   plans, The Nativity Fast, tap day 1's circle. Keep the line's room from the
   start. Area: Updates.
+  **Done** (Fable Themes, 2026-11-11, `dc3fe29d`, on the arbiter's word): the
+  pressed circle is held where it is on the screen while the line and the
+  card over the days change (the page goes up by the line), and at the tap
+  the part over the days is told to stay as tall as it is. 60 of 60 taps at
+  0px: five days marked and taken back, the Nativity plan and the Gospel of
+  John, at 360, 390 and 820, with scroll anchoring on and off (41 to 48px
+  before). The line's room is not kept from the start, as first proposed
+  here: that set every plan's days 41px lower at rest. Before and after:
+  `fresh-eyes/L3-plan-1-before-tap.png`, `L3-plan-2-old.png`,
+  `L3-plan-2-new.png`.
 - **L4. What's new, the older notes.** Notes sit four boxes deep
   (`fresh-eyes/10-whats-new-sparkle.png`), and old notes speak to a computer:
   "Ctrl+K (Cmd+K on a Mac)", "Hover any paragraph", "a hard
@@ -324,6 +341,16 @@ The count that let them slip (Updates, 2026-11-11, `0258a5320`): their height wa
 - **L7. Saints: choosing a kind ("Apostles") removes the featured card above
   and re-scrolls the page** (762 to 27). The filters end up about 50px from
   where the finger was. Mild next to M4; the same fix would settle it.
+  **Done** (Fable Themes, 2026-11-11, `dc3fe29d`, on the arbiter's word):
+  nothing over the filters changes any more. The pinned card stays while a
+  filter is on, and "Clear" is always in its row, unseen until there is
+  something to clear. 0px over thirty taps (two kinds, All, a century and
+  Clear, with the kinds mid-screen and near its top, at 360, 390 and 820),
+  with scroll anchoring on and off; 436px at 820 with the card in sight,
+  and 792px at 360 on the way back to All, before. The pinned card showing
+  while a filter is on is a change a reader can see, and his to turn. Before
+  and after: `fresh-eyes/L7-saints-filter-1-before-tap.png`,
+  `L7-saints-filter-2-old.png`, `L7-saints-filter-2-new.png`.
 
 ## Seen again, already in his notes (not counted above)
 

@@ -4192,3 +4192,278 @@ the old stylesheet.
 - **The suite was red at the branch's head by one test** while this was
   gated (the 1.9 release email one word over its limit, from a copy change);
   its owner was told and it was green again by the last run here.
+
+## 50. The sixteen places: words at the two shares kept for marks
+
+The arbiter's word, 2026-11-11 05:00 UTC, on section 49's list: open each in
+the state that shows it, measure, and lift only the words that fail
+(`e8422db1`).
+
+**The measure.** On the export, as words on five palettes, on the page and on
+a card:
+
+| | Dark | Light | Black | Candlelight | Monastery |
+| --- | --- | --- | --- | --- | --- |
+| 40 percent | 3.82:1 | 2.31:1 | 3.66:1 | 2.86:1 | 3.39:1 |
+| 35 percent | 3.19:1 | 2.05:1 | 3.00:1 | 2.42:1 | 2.86:1 |
+| 45 percent | passes | passes | passes | passes | passes |
+
+So a line of words wearing either fails wherever it is drawn, and the
+question at each place was only whether it is words a reader reads.
+
+**Opened.** Today's streak sheet is the one of them a phone reaches without
+an account: its four later steps ("7 days", "40 days", "100 days", "365
+days") were 3.22:1 on Dark and 2.03:1 on Light, twenty findings on five
+palettes, and none after (`checkMock` on the open sheet). The calendar's foot
+and the search screen with something found were opened too and show nothing
+at either share on a phone: the calendar's disclaimer is on the wide
+calendar only, and the search's count is on a group a phone's results did
+not draw. The rest stand behind an account, a purchase, a computer's
+keyboard or an error, and were judged by the measure above and by reading
+what each is.
+
+**Lifted to 45**, twenty-one lines in eighteen files: the error page's
+reference; the Bible's book switcher (the groups' names, the other books'
+chapter counts, its two key hints); the study rail's "no commentary"; a verse
+menu's hint; the composer's "N more in your Florilegium"; the profile
+editor's letters left; the EIKON box's steps not yet reached and "From your
+last EIKON order"; the danger zone's summary; a part a work's edition leaves
+out (its name and its note); the search's group count and "esc"; the streak
+sheet's later steps; the calendar's fasting disclaimer; a notification's
+time and a moderator's log's time; the seller's earnings' row numbers; and
+the shop's category counts (55, on a chip's lighter ground). Fifteen are of
+the sixteen. Six more came from reading every use, not only those a first
+reading took for words.
+
+**Left, by name** (each in the test with its reason): a wrong answer already
+tried in a chapter's walk, the sixteenth (a disabled button); three send
+buttons while they cannot be pressed; three prices and amounts struck
+through beside the value that holds; one arrow and one step mark; a shell no
+page uses. And thirty-one icons, which are what the two shares are for.
+
+`lib/ui/__tests__/faintWords.test.ts` reads every screen's source: anything
+wearing 40 or 35 percent that holds more than an icon is named with its
+reason, or fails. On the code before this it names exactly these twenty-one.
+
+Still: `fresh-eyes/streak-sheet-later-steps-after.png`. There is no "before"
+still of it: the measure was taken before the lift and the picture was not.
+
+## 51. Nothing moves under the finger: a reading plan, Saints, a reading path, and Chants by the root's hold
+
+His note 16 kind ("a page that jumps under the finger"), which is the
+pre-build gate's first rule for a tap. Three came to this chat from Updates'
+list by the arbiter's word (fresh eyes M4, L3, L7; 2026-11-11 05:00 UTC), and
+a fourth from the gate's tap walk (a reading path, 05:30 UTC). Each was
+measured on the export with real touch at 360, 390 and 820 wide before it
+was touched, and after (`dc3fe29d`).
+
+| | before | after |
+| --- | --- | --- |
+| M4, Chants: a tradition chosen | 64px at 360, 93px at 390, 128px at 820 | 0px |
+| L7, Saints: a kind chosen, the pinned card in sight | 436px at 820 | 0px |
+| L7, Saints: "All" chosen again | 792px at 360, 732px at 390 | 0px |
+| L7, Saints: any choice ("Clear" coming into the row) | 3px | 0px |
+| L3, a plan: the first day marked | 41px | 0px |
+| L3, a plan: the card turning to the next day | up to 48px | 0px |
+| A reading path: "Mark as read" turning to "Read" | its middle 24px sideways (the pill 114px to 66px) | 0px (one width) |
+
+A page does this in two ways, and each has one answer in the app.
+
+**It gets shorter below the finger** (Chants; the list under Saints'
+filters; a plan's "Start over" going from its foot). This is Fable
+Theology's mend at the root, for every page at once: after any tap the page
+keeps the length the reader is looking at (`2fd048f3`,
+`lib/ui/keepLength.ts`). This chat had first made a hold of its own for the
+three pages (a least height on the list at the tap), measured at 0px and
+never pushed. It came out when the root's landed, so there is one hold in
+the app and `ChantsHome.tsx` is as it was. M4 is closed by Theology's mend;
+what is recorded here for it is this chat's own measure of it on its own
+export: 0px for every tradition and "All" at 360, 390 and 820, with the
+browser's scroll anchoring on and off (at 360 the page shortened from 1627px
+to 1557px and the scroll stayed where it was).
+
+**It changes above the finger** (a plan). The root's hold lets go of that
+case by design, the moment it sees the pressed thing has moved in the page.
+`lib/ui/useHeldPlace.ts` answers it:
+
+- `useHeldPlace`: the pressed circle's place on the screen is kept, and for
+  600ms after the tap, each time the page is drawn, the page is scrolled by
+  whatever the circle has moved, before it is seen. When the line of days in
+  a row comes in over the days, the page goes up by the line and the circle
+  stays where it is. The reader's next touch ends the hold at once, so a
+  scroll begun straight after a tap is theirs (walked: a 260px drag begun
+  60ms after the tap is kept).
+- `useNoShrink`: at the tap the part over the days is told to stay as tall
+  as it is, since scrolling cannot answer a part that shrinks at the very
+  top of a page. What it gains in the moment after, it gains by whole
+  pixels, which a scroll can answer exactly.
+- A day that has been in the window of days stays in it while the page is
+  open: marking a third day used to drop the first off the window's head,
+  and every row under it went up one.
+
+A page can always answer what grows over the finger, because it grows by as
+much as it must scroll, so long as it could scroll at all. A plan's page can
+scroll 137px or more at every size walked, and at 1024 by 1366 and 1366 by
+1024.
+
+**And where it can be, the page is made not to change.**
+
+- Saints. Nothing over the filters changes: the pinned card stays pinned
+  while a filter is on (a saint it shows is in the list below as well where
+  the filter is hers), and "Clear" is always in the label's row, unseen and
+  out of reach until there is something to clear, placed by end. Where the
+  row had stayed still before, only the browser's scroll anchoring held it;
+  now there is nothing to anchor. Walked again with anchoring switched off,
+  as a browser without it behaves: 0px over thirty taps, as
+  with it on.
+- A reading path. The gate's walk read "Mark as read" as moving 24px on
+  seventeen days. Measured, the page does not move: the pill was as wide as
+  its words, and its middle went sideways as it narrowed. In a language
+  whose first line is longer the finger was left off the pill for the tap
+  that takes the mark back. Both lines stand in the one cell now, the one
+  not in use unseen, so the pill is one width: 114.5px in both
+  states at all three sizes, thirty taps at 0px, and a second touch at the
+  same place takes the mark back.
+
+**Three tries at the part over a plan's days**, each found by a walk:
+
+1. Its room kept from the start, the line's too. It set every plan's days
+   41px lower at rest, and on the Gospel of John that put a day on the
+   screen's foot, half risen, which the guardrail walk read as 2.46:1.
+2. A least height written as the page was drawn, rounded up to a whole
+   pixel. Under a pixel, and enough to do the same to the next day down
+   (1.15:1). Admin has since taught the walk to measure a rising row as it
+   ends (`5a075e97`), so where a row falls no longer flips a screen.
+3. Nothing written until the part had grown. Then a part that got SHORTER at
+   the first tap, John's card turning to a shorter day, was held by nothing,
+   and the circle went up 6.9px at 390 and 820.
+
+So: nothing is written on the page at rest, and at the tap the part is told
+to stay as tall as it is. The plan's walk on the last export: 60 of 60
+taps at 0px, and 60 of 60 again with scroll anchoring switched off.
+
+The walks. Chants: every tradition and "All". Saints: two kinds, "All"
+again, a century and Clear, with the kinds mid-screen and near its top. A
+plan, as a reader with Plus (its days are Plus; the stand-in account server
+of section 44): five days marked one after another and taken back, the
+Nativity plan and the Gospel of John. A path: five days marked and taken
+back with a second touch at the same place. All at 360, 390 and 820 wide,
+with real touch.
+
+The gate's own tap walk on the last export (Admin's, as of `2f3a6397`),
+forty controls a screen. On the path, Saints and two plans
+(`/reading/paths/nativity/`, `/saints/`, `/plans/acts/`, `/plans/john/`):
+120 controls tapped, none failed. On Chants: 24 tapped, and two failed as "a
+tap that changed nothing", "All" while it is already chosen and a chant's
+"English" while it is already chosen. That is the walk's newest measure
+reading a choice already made as a dead control; neither is this work's, and
+Admin has been told.
+
+The guardrail walk on the fourteen screens this work touched or walked:
+twelve pass, `/plans/john/` among them, and the two that do not (Saints, the
+reading room) fail only on names cut short, a rule that came in today
+(section 54).
+
+Stills, at 390 wide: the moment before the tap, and the moment after it on
+the old export and on the new. `fresh-eyes/M4-chants-filter-1-before-tap.png`,
+`M4-chants-filter-2-old.png`, `M4-chants-filter-2-new.png`;
+`L3-plan-1-before-tap.png`, `L3-plan-2-old.png`, `L3-plan-2-new.png`;
+`L7-saints-filter-1-before-tap.png`, `L7-saints-filter-2-old.png`,
+`L7-saints-filter-2-new.png`; `path-pill-old.png` (the gate's own still of
+it, with the walk's ring round the pill) and `path-pill-new.png`.
+
+`lib/ui/__tests__/underTheFinger.test.ts` holds the arithmetic and each page
+to its mend, and fails a page of these that keeps a list of its own. With
+the helper in place and the pages as they were, six of its nine cases fail.
+
+## 52. The gate's tap walk on Community and the reading room: measured before touched
+
+The arbiter's 05:30 list gave this chat Community's "Read more" and "N
+replies" ("name what each opens") and the reading room's featured cover ("a
+finger meets the line drawn over it"). Each was walked on this chat's own
+export first, reading the main web with GET only.
+
+- **"Read more" was the walk's.** Both controls already named what they
+  open (`77d3f09e`, before the gate's run). The page does follow: 386px,
+  until the place the thumb was stands at the top bar. The walk judged the
+  control's own top, and this control sits under the words it opened, so it
+  read a pass as a fail. Admin mended the measure (`1c54edff`).
+- **The featured cover was the walk's.** A touch on the cover's middle meets
+  the cover's own link and opens the work. What the walk named is the
+  heading's link, which on a phone is there for a screen reader only: 1px,
+  clipped, where no finger reaches. Admin set such controls aside
+  (`1c54edff`). No change to the page.
+- **"N replies" is real, and not a naming fault.** The part opens with its
+  waiting rows, the opening helper stops watching once the part is still
+  (about 0.4s), and the replies arrive from the main web after that and end
+  under the tab bar (939px, the bar at 761px, on a thread of three). The
+  part already says it is busy while it waits (`aria-busy`). The mend is one
+  rule in the helper: what says it is busy is followed until it has arrived.
+  The helper is Fable Theology's, which is adding the rule itself; nothing
+  of it is in this push. **Open until Theology's rule is pushed and
+  Community's threads are walked online with it.**
+
+One thing found on the way is mended here (`b748d4da`): a thread waited
+with two grey rows whatever the post's count, so a thread with no replies
+opened 254px tall and folded back to 67px a moment later. It waits with as
+many rows as the post says it has replies, three at most: walked on
+twelve threads at three sizes. One with no replies opens 16px tall and stays
+so. One with three opens 302px tall and is 469px when the replies have come.
+Where the replies came late (the first three threads walked) the thread
+still ended under the bar, by 23 to 167px, which is the open item above;
+where they came at once (the other nine) the page followed and the thread's
+end stood clear.
+
+No still of Community is kept: the feed is readers' own names and words.
+
+## 53. Community's five small controls (the touch count's padded heights)
+
+The arbiter's 05:21 word: the touch count now reads a height made of padding
+and a line of words (Updates, `0258a5320`) and lists five in Community. Each
+looked at, in the same commit (`b748d4da`):
+
+| where | was | now |
+| --- | --- | --- |
+| a muted reply's folded row in a thread | 35px, a dashed edge on four sides, words placed by left | 44 tall, a fine whole edge, words placed by start |
+| the moderators' page: Try again | 38px | 44 tall |
+| the moderators' page: the way back | 38px | 44 tall |
+| the moderators' page: its two tabs | 32px inside their own pill | their look kept, 44 to the touch (`.hit-44`) |
+| a profile that did not load: Try again | 38px | 44 tall |
+
+Updates took its own share to 44 the same morning (`3e59ccfa`, 43 to 5) and
+left these five, so the ceiling is none now: 5 to 0. The dashed edge went
+with the first because the gate's own rule fails a dashed box as a
+placeholder (build 93 note 4) and no walk reaches this one: only a reader
+who has muted someone sees it. `lib/community/__tests__/threadOpens.test.ts`
+holds it and the thread's rows; both of its cases fail on the code before.
+
+## 54. What is not proven (sections 50 to 53)
+
+- **Nothing here has been seen on a phone.** A browser's touch is a real
+  touch event, not a thumb: the next test build's walk has the lines.
+- **Most of the twenty-one lines were not opened**, for the reasons in
+  section 50. They rest on the measure of the two shares and on the house's
+  own arithmetic for 45 (`lib/ui/__tests__/faintText.test.ts`).
+- **The pinned card on Saints now shows while a filter is on.** That is a
+  change a reader can see, made so nothing moves; it is his to turn.
+- **"N replies"** is open, as section 52 says.
+- **None of the five small controls was opened**: a muted reply, the
+  moderators' page and a profile that fails to load each need an account or
+  a failure this chat's walk does not make. They rest on the classes and the
+  count.
+- **Saints fails the guardrail walk on a rule that came in today** and is
+  not this work's: twenty-nine cards' epithets cut at one line (Admin's
+  `93a87a88`, "no control's name cut short"; `components/saints/SaintCard.tsx`),
+  and one cover's title on the reading room. Told to the arbiter.
+- **Other dashed edges a walk does not reach**, seen while reading for the
+  one above and left for their owners: the profile editor's two round
+  frames (`components/community/profile/ProfileEditor.tsx`), an order's row
+  in the shop (`components/shop/OrdersClient.tsx`).
+- **Found on the way, for their owners** (told to the arbiter): under
+  "Greek" on Chants, a chant sung in more than one tradition shows its first
+  version's line ("Psalm 135, Arabic") in the Greek list; and the tap walk's
+  newest measure fails a filter that is already chosen and tapped again.
+- **The two Saints stills show different counts** ("All 248" on the old
+  export, "All 270" on the new): January's saints came onto the branch
+  between the two builds. The filters and the card are what the stills are
+  for.
