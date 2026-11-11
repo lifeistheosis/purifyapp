@@ -1,5 +1,9 @@
-// The four icons of prayer that crossfade behind the contemplative panel on
-// /prayers.
+// The icons of prayer that crossfade behind the contemplative panel on
+// /prayers. Two since 2026-11-11 (the arbiter's word): the Agony in the
+// Garden and the monk prostrate in his cave were contemporary icons whose
+// painters were never recorded, so they could not be shown free to use, and
+// they left, files and all. The slideshow (components/prayers/
+// PrayerSlideshow.tsx) is drawn on no page at present.
 //
 // Extracted out of components/prayers/PrayerSlideshow.tsx so that
 // lib/saints/__tests__/iconRights.test.ts can read them. These four files live
@@ -17,14 +21,6 @@
 export type SlideshowFrame = { src: string; alt: string };
 
 export const SLIDESHOW_FRAMES: SlideshowFrame[] = [
-  {
-    src: "/saints/icons/praying2.v2.jpg",
-    alt: "The Agony in the Garden, Christ kneeling at the rock in Gethsemane.",
-  },
-  {
-    src: "/saints/icons/praying.jpg",
-    alt: "An Orthodox monk in prostration before the icon of Christ in his cave.",
-  },
   {
     src: "/saints/icons/praying3.jpg",
     alt: "The father running to receive the Prodigal Son, with the fatted calf and the music of the feast.",
