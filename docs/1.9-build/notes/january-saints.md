@@ -231,7 +231,7 @@ prayed to in the masculine singular where the language tells them apart.
 | Filipino | Banal na ... ipanalangin mo | the same (no gender) | Mga banal na ... ipanalangin ninyo |
 | French | Saint ... priez | Sainte ... priez | Saints ... priez |
 | Hungarian | Szent ... könyörögj | the same (no gender) | Szent ... könyörögjetek |
-| Indonesian | Santo ... doakanlah | Santa ... doakanlah | Para Santo ... doakanlah |
+| Indonesian | Santo ... doakanlah | Santa ... doakanlah | Para kudus ... doakanlah |
 | Italian | Santo ... prega | Santa ... prega | Santi ... pregate |
 | Georgian | წმიდაო ... ევედრე | the same (no gender) | წმიდანო ... ევედრეთ |
 | Nepali | पवित्र ... गर्नुहोस् | the same | the same (the honorific is said to one and to more) |
@@ -242,19 +242,41 @@ prayed to in the masculine singular where the language tells them apart.
 | Serbian | Свети ... моли | Света ... моли | Свети ... молите |
 | Turkish | Kutsal ... dua et | the same (no gender) | Kutsal ... dua edin |
 | Ukrainian | Святий ... моли | Свята ... моли | Святі ... моліть |
-| Urdu | مقدس ... کریں | the same | the same (the honorific is said to one and to more) |
+| Urdu | مقدس ... کریں | مقدسہ ... کریں | as to a man (the honorific is said to one and to more) |
 
 Where I am unsure, said rather than guessed:
-- **Indonesian, to two or more**: "Para Santo" is the plural I am least sure
-  of; Indonesian litanies often set "Santo" before each name instead. A native
-  reader should confirm it.
-- **Portuguese**: "Santo" is kept before every man's name, as the catalog had
-  it ("Santo(a)" before); Brazilian use says "São" before a name that begins
-  with a consonant. The names are English in every catalog, so the choice
-  cannot follow the name; a native reader may prefer "São".
-- **Nepali and Urdu**: the honorific imperative serves one and many alike, so
-  the three forms are one; a native reader may prefer a plural word for a
-  company.
+- **Indonesian, to two or more** (looked at again by Fable voices,
+  2026-11-11, who has these files from here): now "Para kudus", where it was
+  "Para Santo". An Indonesian text of the Litany of the Saints sets "Santo"
+  or "Santa" before each name, which one line with the names in one place
+  cannot do, and gives "Omnes Sancti et Sanctae Dei" as "Para kudus Allah":
+  "para kudus" is its word for holy men and women together, where "Santo" is
+  a man's title and read wrong over a husband and wife (Sts. Adrian and
+  Natalia). The text read is an online encyclopedia's
+  (p2k.stekom.ac.id/ensiklopedia/Litani_orang_kudus), not the bishops'
+  printed book, so this is still not settled from print: a native reader
+  should confirm it.
+- **Portuguese** (the same look): left as it is, and the rule is now known.
+  Brazilian litany texts read "São Pedro e São Paulo, rogai por nós" and
+  "Santo André" (a script of the Diocese of Santo André; Portal Kairos has
+  "rogai a Deus por nós"): "São" directly before a name that begins with a
+  consonant, "Santo" before a vowel, and "Santo" before a title ("Santo
+  Apóstolo"). The names are English in every catalog and many begin with a
+  title (Apostle, Prophet), so one line cannot follow the name; "Santo" is
+  right before a title and a vowel and wrong before a consonant-initial name
+  ("Santo Basil the Great"). It can be mended only by choosing the word from
+  the name, which is worth doing when the names themselves are in Portuguese.
+  The same holds for Italian (San, Sant', Santo) and Spanish (San, but Santo
+  Tomás and Santo Domingo), which had not been named here.
+- **Urdu, to a woman** (the same look): now "مقدسہ", where it repeated the
+  masculine "مقدس". Urdu's adjectives from Arabic take the feminine, and the
+  Urdu Hail Mary addresses her as "مقدسہ مریم". That is from memory of the
+  prayer: no text of it could be opened on the day, so it is said here
+  rather than claimed as checked. The verb is the honorific and does not
+  change.
+- **Nepali, and Urdu to two or more**: the honorific imperative serves one
+  and many alike, so those forms are one; a native reader may prefer a plural
+  word for a company (Urdu has "مقدسین").
 - **A company of women alone** would need a feminine plural (Santas,
   Sfintelor) that no catalog has: every page of more than one today has a man
   among them, and the test names the four in the Holy Women that are mixed, so

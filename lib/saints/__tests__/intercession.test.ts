@@ -49,7 +49,6 @@ const HER_ALIKE: Record<string, string> = {
   ka: "no gender: წმიდაო and ევედრე are the same",
   ne: "no gender: पवित्र and the honorific गर्नुहोस् are the same",
   tr: "no gender: Kutsal and dua et are the same",
-  ur: "no gender: مقدس and the honorific کریں are the same",
 };
 
 /** Languages whose petition to two or more reads as to one, and why. */
@@ -129,6 +128,11 @@ describe("a saint page's closing petition", () => {
     const el = catalog("el");
     expect([el[HER], el[THEIR]]).toEqual(["Αγία {name}, πρέσβευε τω Θεώ υπέρ ημών.", "Άγιοι {name}, πρεσβεύσατε τω Θεώ υπέρ ημών."]);
     expect(catalog("ar")[PAIR]).toBe("أيها القدّيسان {name}، اطلبا إلى الله من أجلنا.");
+    // Urdu's adjective takes the feminine (مقدسہ, as "مقدسہ مریم"); its honorific verb does not change.
+    const ur = catalog("ur");
+    expect([ur[HIS], ur[HER]]).toEqual(["مقدس {name}، ہمارے لیے خدا سے دعا کریں۔", "مقدسہ {name}، ہمارے لیے خدا سے دعا کریں۔"]);
+    // Indonesian's company is "para kudus", the litany's word for holy men and women together: "Santo" is a man's title.
+    expect(catalog("id")[THEIR]).toBe("Para kudus {name}, doakanlah kami kepada Allah.");
   });
 
   it("knows each page's gender and number from its data", () => {
