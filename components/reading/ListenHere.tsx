@@ -123,7 +123,7 @@ function ListenFollow({ id }: { id: string }) {
       const now = m ? readingAt(m, currentTimeNow()) : null;
       const block = now && m ? m.blocks[now.block] : null;
       // Words read between two paragraphs (a heading, a quoted passage) light nothing; the last paragraph steps back with the rest.
-      const here = block?.at && now ? sentenceOnPage(ref, block.at, now.sentence) : null;
+      const here = block?.at && now ? sentenceOnPage(ref, block.at, now.sentence, block.s.length) : null;
       const key = here && now ? `${now.block}:${now.sentence}:${window.innerWidth}` : "";
       light(here?.host ?? null);
       if (key !== at) {

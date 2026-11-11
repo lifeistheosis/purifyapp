@@ -4,6 +4,7 @@ import { COUNCILS } from "@/lib/councils/councils";
 import { loadCouncilDocument } from "@/lib/councils/load";
 import { publishedEvents } from "@/lib/history/events";
 import { loadEventBody } from "@/lib/history/load";
+import { loadWriting } from "@/lib/saints/load";
 import { SAINTS } from "@/lib/saints/saints";
 import { loadTopicBody, type EssayBlock } from "@/lib/theology/load";
 import { studyPassages } from "@/lib/theology/passages";
@@ -20,7 +21,8 @@ import { batchOf, listenId, sentencesOf, type BatchBlock, type ListenBatch } fro
  * read. lib/listen/__tests__/batches.test.ts holds the two together.
  *
  * In the order his PC records them (his word of 2026-11-11, through the
- * arbiter): the lives, the councils, theology, history.
+ * arbiter): the lives, the councils, theology, history, then the Lives that
+ * are a witness's own words.
  */
 
 /** An essay's block as the voice reads it; a paragraph keeps its place in its part. */
@@ -132,12 +134,61 @@ export async function historyBatches(): Promise<ListenBatch[]> {
   return out;
 }
 
+/** A work's name that says it is a Life, a martyrdom or the acts of a saint. */
+const A_LIFE = /(^|-)(life|lives|martyrdom|passion|death-of)(-|$)|^acts-of-|life-by-/;
+/** Works with "life" in their name that are a saint's own writing, not a Life of him. */
+const NOT_A_LIFE = new Set(["my-life-in-christ"]);
+
+/**
+ * Whether a work in the reading room is a saint's Life in a witness's own
+ * words: most of its sections are declared a witness's (lib/saints/load.ts,
+ * SectionVoice), or its name says so. Only for choosing what his PC records
+ * first; nothing a reader sees is decided by it.
+ */
+export function isLifeWork(workSlug: string, sections: readonly { voice?: string }[]): boolean {
+  if (NOT_A_LIFE.has(workSlug)) return false;
+  const witness = sections.filter((s) => s.voice === "witness").length;
+  return witness * 2 >= sections.length && witness > 0 ? true : A_LIFE.test(workSlug);
+}
+
+/**
+ * The Lives that are a witness's own words (the Life of Antony by St
+ * Athanasius, the Martyrdom of Polycarp): works in the reading room, one
+ * recording a section, read in the works reader. His word named the saints'
+ * lives first, so his PC records these before the Old Testament (the
+ * arbiter, 2026-11-11). A Life that stands under two saints is recorded for
+ * each page it stands on.
+ */
+export async function lifeWorkBatches(): Promise<ListenBatch[]> {
+  const out: ListenBatch[] = [];
+  for (const saint of SAINTS) {
+    for (const work of saint.works ?? []) {
+      const content = await loadWriting(saint.slug, work.slug);
+      if (!content || !Array.isArray(content.sections) || !isLifeWork(work.slug, content.sections)) continue;
+      for (const s of content.sections) {
+        if (!Array.isArray(s.paragraphs)) continue;
+        const head = s.title && s.title !== content.title ? `${content.title}. ${s.title}` : content.title;
+        // Whose words: the witness the section names, else the saint whose page it is. The editor's note above is not read.
+        const batch = batchOf(listenId("work", saint.slug, work.slug, s.n), head, s.voiceAuthor ?? saint.name, [
+          title(head),
+          ...s.paragraphs.map((p, i) => ({ kind: "para" as const, at: { sectionN: s.n, paragraphIdx: i }, sentences: sentencesOf(p) })),
+        ]);
+        if (batch) out.push(batch);
+      }
+    }
+  }
+  return out;
+}
+
+export type BatchGroup = "lives" | "councils" | "theology" | "history" | "lives-in-their-witnesses";
+
 /** Every batch, in the order his PC records them. */
-export async function allBatches(): Promise<{ group: "lives" | "councils" | "theology" | "history"; batches: ListenBatch[] }[]> {
+export async function allBatches(): Promise<{ group: BatchGroup; batches: ListenBatch[] }[]> {
   return [
     { group: "lives", batches: await lifeBatches() },
     { group: "councils", batches: await councilBatches() },
     { group: "theology", batches: await theologyBatches() },
     { group: "history", batches: await historyBatches() },
+    { group: "lives-in-their-witnesses", batches: await lifeWorkBatches() },
   ];
 }

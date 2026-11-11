@@ -11,7 +11,7 @@ import { describe, expect, it } from "vitest";
 import { COUNCILS } from "@/lib/councils/councils";
 import { SAINTS } from "@/lib/saints/saints";
 
-import { councilBatches, historyBatches, lifeBatches, theologyBatches } from "../batches";
+import { allBatches, councilBatches, historyBatches, isLifeWork, lifeBatches, lifeWorkBatches, theologyBatches } from "../batches";
 import { batchOf, hostKeyOf, listenHref, listenId, parseListenId, sentencesOf, timingsFit, type ListenBatch, type ListenTimings } from "../texts";
 
 const places = (b: ListenBatch) => b.blocks.filter((x) => x.at).map((x) => `${x.at!.sectionN}:${x.at!.paragraphIdx}`);
@@ -30,7 +30,7 @@ describe("a recording's name", () => {
   });
 
   it("is refused when it is not one", () => {
-    for (const bad of ["", "life", "life/Not A Slug", "council/first-nicaea/the-canons", "theology/papacy/two", "work/a/b/1", "life/a/b"]) expect(parseListenId(bad), bad).toBeNull();
+    for (const bad of ["", "life", "life/Not A Slug", "council/first-nicaea/the-canons", "theology/papacy/two", "sermon/a/b/1", "work/a/b", "life/a/b"]) expect(parseListenId(bad), bad).toBeNull();
   });
 });
 
@@ -100,6 +100,37 @@ describe("theology and history", () => {
       expect(new Set(places(b)).size, `${b.id}: a place named twice`).toBe(places(b).length);
       expect(b.title.includes(EM_DASH), b.id).toBe(false);
     }
+  });
+});
+
+describe("the Lives that are a witness's own words", () => {
+  it("are told from a saint's own writings", () => {
+    expect(isLifeWork("life-of-antony", [{ voice: "witness" }, { voice: "witness" }])).toBe(true);
+    expect(isLifeWork("the-martyrdom-of-polycarp", [{}])).toBe(true);
+    expect(isLifeWork("acts-of-gurias-samonas-and-habib", [{}])).toBe(true);
+    // His own diary, with "life" in its name.
+    expect(isLifeWork("my-life-in-christ", [{}, {}])).toBe(false);
+    expect(isLifeWork("homilies-on-matthew", [{}, {}])).toBe(false);
+    expect(isLifeWork("on-the-incarnation", [{ voice: "saint" }])).toBe(false);
+  });
+
+  it("are one recording a section, each paragraph in its place in the works reader", async () => {
+    const batches = await lifeWorkBatches();
+    expect(batches.length).toBeGreaterThan(200);
+    const raw = JSON.parse(fs.readFileSync(path.join(process.cwd(), "data/saints/athanasius-the-great/life-of-antony.json"), "utf8")) as { sections: { n: number; paragraphs: string[] }[] };
+    for (const s of raw.sections.slice(0, 4)) {
+      const b = batches.find((x) => x.id === `work/athanasius-the-great/life-of-antony/${s.n}`)!;
+      expect(b, `section ${s.n}`).toBeTruthy();
+      expect(b.href).toBe(`/saints/athanasius-the-great/life-of-antony#s${s.n}`);
+      // An empty slot in the file is not read, and the paragraphs after it keep their own numbers.
+      expect(places(b)).toEqual(s.paragraphs.map((p, i) => (p.trim() ? `${s.n}:${i}` : null)).filter(Boolean));
+    }
+    expect(hostKeyOf(parseListenId("work/athanasius-the-great/life-of-antony/2")!, { sectionN: 2, paragraphIdx: 3 })).toBe("saint|athanasius-the-great|life-of-antony|2|3");
+    expect(batches.some((b) => b.id.includes("/my-life-in-christ/"))).toBe(false);
+  });
+
+  it("are recorded after the four and before the Old Testament, the lives first", async () => {
+    expect((await allBatches()).map((g) => g.group)).toEqual(["lives", "councils", "theology", "history", "lives-in-their-witnesses"]);
   });
 });
 

@@ -1,6 +1,8 @@
 "use client";
 
+import { ListenHere } from "@/components/reading/ListenHere";
 import { SelectionToolsLazy } from "@/components/reading/SelectionToolsLazy";
+import { listenId } from "@/lib/listen/texts";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import type { WritingContent, Section, SectionLine } from "@/lib/saints/load";
 import type { Saint } from "@/lib/saints/saints";
@@ -352,6 +354,15 @@ function SectionParagraphs({
  }
  return (
  <>
+ {/* The section read aloud, where it has a recording (1.9, lib/listen/recordings.ts):
+ first the Lives that are a witness's own words. Whose words: the witness the
+ section names, else the saint whose page it is. */}
+ <ListenHere
+ id={listenId("work", saint.slug, content.slug, sec.n)}
+ title={sec.title && sec.title !== content.title ? `${content.title}. ${sec.title}` : content.title}
+ by={sec.voiceAuthor ?? saint.name}
+ className="mb-6"
+ />
  {sec.framing && (
  <div className="mb-8">
  <p className="font-sans text-caption font-semibold text-paper/45 mb-2">

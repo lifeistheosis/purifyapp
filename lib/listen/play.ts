@@ -20,12 +20,21 @@ import { hostKeyOf, parseListenId, type ListenRef, type ListenTimings } from "./
 const placeKey = (id: string) => `listen:${id}`;
 
 /** A sentence of a paragraph on the page, as the paragraph's text has it. */
-export function sentenceOnPage(ref: ListenRef, at: { sectionN: number; paragraphIdx: number }, sentence: number): { host: HTMLElement; textEl: HTMLElement; span: { s: number; e: number } | null } | null {
+export function sentenceOnPage(
+  ref: ListenRef,
+  at: { sectionN: number; paragraphIdx: number },
+  sentence: number,
+  /** How many sentences the recording read in this paragraph. */
+  read: number,
+): { host: HTMLElement; textEl: HTMLElement; span: { s: number; e: number } | null } | null {
   const host = document.querySelector<HTMLElement>(`[data-mk="${hostKeyOf(ref, at)}"]`);
   const textEl = host?.querySelector<HTMLElement>("[data-mk-text]");
   if (!host || !textEl) return null;
   const spans = sentenceSpans(textEl.textContent ?? "");
-  return { host, textEl, span: spans[sentence] ?? null };
+  // The page cuts the paragraph into the sentences that were read: the one
+  // being read is washed. Where it does not (the page shows the words a little
+  // differently), the paragraph is lit and no sentence is guessed at.
+  return { host, textEl, span: spans.length === read ? (spans[sentence] ?? null) : null };
 }
 
 /**

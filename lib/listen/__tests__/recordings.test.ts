@@ -20,7 +20,8 @@ describe("a recording's address", () => {
     expect(src).toBe("https://audio.purifyapp.net/listen/council/first-nicaea/the-twenty-canons/7.mp3");
     expect(listenOfSrc(src)?.id).toBe("council/first-nicaea/the-twenty-canons/7");
     expect(listenOfSrc("https://audio.purifyapp.net/read/john/1.mp3")).toBeNull();
-    expect(listenOfSrc("https://audio.purifyapp.net/listen/work/x/y/1.mp3")).toBeNull();
+    expect(listenOfSrc("https://audio.purifyapp.net/listen/work/athanasius-the-great/life-of-antony/1.mp3")?.ref).toEqual({ kind: "work", slug: "athanasius-the-great", doc: "life-of-antony", n: 1 });
+    expect(listenOfSrc("https://audio.purifyapp.net/listen/sermon/x/1.mp3")).toBeNull();
     expect(listenOfSrc(null)).toBeNull();
   });
 
@@ -58,6 +59,7 @@ describe("Listen on the pages", () => {
     expect(read("components/councils/CouncilSections.tsx")).toContain('id={listenId("council", council.slug, content.slug, s.n)}');
     expect(read("components/theology/StudyPartText.tsx")).toContain('<ListenHere id={listenId("theology", study.slug, undefined, part)}');
     expect(read("components/history/EventArticle.tsx")).toContain('<ListenHere id={listenId("history", meta.slug)}');
+    expect(read("components/saints/WritingReader.tsx")).toContain('id={listenId("work", saint.slug, content.slug, sec.n)}');
   });
 
   it("stands only where the text has a recording: no button that plays nothing", () => {

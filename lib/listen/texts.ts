@@ -13,6 +13,11 @@ import type { TextKind } from "@/lib/marks/placeAttr";
  *   council/<council>/<document>/<n>   one section of a council's document
  *   theology/<study>/<n>               one part of a study
  *   history/<event>                    an event's account, whole
+ *   work/<saint>/<work>/<n>            one section of a work in the reading
+ *                                      room: first the Lives that are a
+ *                                      witness's own words (the Life of
+ *                                      Antony), which his PC records
+ *                                      (lib/listen/batches.ts)
  *
  * It is made ahead, as the Bible's chapters are (lib/readAloud/chapters.ts):
  * a batch says what is read, sentence by sentence (ListenBatch, written by
@@ -27,7 +32,7 @@ import type { TextKind } from "@/lib/marks/placeAttr";
  * read. Pure: no file and no browser here.
  */
 
-export type ListenKind = TextKind;
+export type ListenKind = TextKind | "work";
 
 /** One block of a recording: a paragraph a reader can see lit (it has a place), or words read between them (it has none). */
 export type BatchBlock = {
@@ -63,7 +68,7 @@ export type ListenTimings = {
 const SLUG = /^[a-z0-9][a-z0-9-]*$/;
 
 export function listenId(kind: ListenKind, slug: string, doc?: string, n?: number): string {
-  if (kind === "council") return `council/${slug}/${doc}/${n}`;
+  if (kind === "council" || kind === "work") return `${kind}/${slug}/${doc}/${n}`;
   if (kind === "theology") return `theology/${slug}/${n}`;
   return `${kind}/${slug}`;
 }
@@ -72,7 +77,8 @@ export type ListenRef =
   | { kind: "life"; slug: string }
   | { kind: "history"; slug: string }
   | { kind: "theology"; slug: string; n: number }
-  | { kind: "council"; slug: string; doc: string; n: number };
+  | { kind: "council"; slug: string; doc: string; n: number }
+  | { kind: "work"; slug: string; doc: string; n: number };
 
 /** What a recording's name says it is, or null when it is no recording's name. */
 export function parseListenId(id: string): ListenRef | null {
@@ -85,7 +91,7 @@ export function parseListenId(id: string): ListenRef | null {
     const n = int(parts[2]);
     return n === null ? null : { kind, slug, n };
   }
-  if (kind === "council" && parts.length === 4 && SLUG.test(parts[2])) {
+  if ((kind === "council" || kind === "work") && parts.length === 4 && SLUG.test(parts[2])) {
     const n = int(parts[3]);
     return n === null ? null : { kind, slug, doc: parts[2], n };
   }
@@ -103,11 +109,15 @@ export function listenHref(ref: ListenRef): string {
       return `/theology/${ref.slug}/read`;
     case "council":
       return `/councils/${ref.slug}/${ref.doc}#s${ref.n}`;
+    case "work":
+      return `/saints/${ref.slug}/${ref.doc}#s${ref.n}`;
   }
 }
 
 /** The key a paragraph is marked by on its page, from a recording's block (lib/marks/placeAttr.ts). */
 export function hostKeyOf(ref: ListenRef, at: { sectionN: number; paragraphIdx: number }): string {
+  // A work's paragraphs are kept as a Father's are (lib/saints/annotations.ts).
+  if (ref.kind === "work") return `saint|${ref.slug}|${ref.doc}|${at.sectionN}|${at.paragraphIdx}`;
   const doc = ref.kind === "council" ? ref.doc : "-";
   return `text|${ref.kind}|${ref.slug}|${doc}|${at.sectionN}|${at.paragraphIdx}`;
 }

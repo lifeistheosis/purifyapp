@@ -11024,8 +11024,15 @@ html[data-read-aloud] [data-verse]:not([data-read-now]) {
 [data-mk-layer] {
  transition: opacity 520ms var(--ease-house);
 }
-html[data-read-aloud] [data-mk-layer]:not([data-read-now]) {
+html[data-read-aloud] [data-mk-layer]:not([data-read-now]),
+html[data-read-aloud] [data-work-reader] [data-mk]:not([data-read-now]) {
  opacity: 0.4;
+}
+[data-work-reader] [data-mk] {
+ transition: opacity 520ms var(--ease-house);
+}
+:where([data-motion="reduce"]) [data-work-reader] [data-mk] {
+ transition: none;
 }
 :where([data-motion="reduce"]) [data-mk-layer] {
  transition: none;

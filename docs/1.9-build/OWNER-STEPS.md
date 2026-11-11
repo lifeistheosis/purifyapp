@@ -755,16 +755,18 @@ the Bible's own pace, your PC at three quarters of real time):
 | 2. The councils | 646 | 11.1 hours | about 15 hours |
 | 3. Theology | 60 | 2.3 hours | about 3 hours |
 | 4. History | 40 | 3.2 hours | about 4 hours |
-| 5. The Old Testament in Heart | about 1,070 chapters | about 70 hours | about 93 hours |
+| 5. The Lives in their witnesses' own words (the Life of Antony and its like) | 406 | 23.2 hours | about 31 hours |
+| 6. The Old Testament in Heart | about 1,070 chapters | about 70 hours | about 93 hours |
 
-Batches 1 to 4 are about 28 hours of your PC together. Each can run on its
-own night. Batch 5 is your own tool as it is today (the New Testament was
-made with it); nothing in it changes.
+Batches 1 to 5 are about 59 hours of your PC together. Each can run on its
+own night. The lives come first because you named them first. Batch 6 is
+your own tool as it is today (the New Testament was made with it); nothing
+in it changes.
 
-### V1. One change to your render tool, once (batches 1 to 4)
+### V1. One change to your render tool, once (batches 1 to 5)
 
 Your tool, `Homebase/tools/tts-bakeoff/read_bible.py`, reads a chapter verse
-by verse. Batches 1 to 4 are not verses: each recording is a file that says
+by verse. Batches 1 to 5 are not verses: each recording is a file that says
 what to read, sentence by sentence. The tool needs a second way in that reads
 one of these files. I cannot see Homebase from here, so this is the exact
 description for you, or for a chat that can see it.
@@ -815,17 +817,18 @@ handed.
 
 1. Open a terminal in the Purify repository on your PC, on the branch.
 2. `npm run listen:batches`
-3. It prints five lines, one for each batch and a total, and writes the folder
+3. It prints six lines, one for each batch and a total, and writes the folder
    `listen-batches/` (one file a recording, and `order.json`, the list).
 
 Run it fresh each time: it is written from the texts as they stand that day.
 To write only one batch: `npm run listen:batches -- --only lives` (or
-`councils`, `theology`, `history`).
+`councils`, `theology`, `history`, `lives-in-their-witnesses`).
 
 ### V3. Record one batch
 
 1. Point your tool at one folder of `listen-batches/`: `life` first, then
-   `council`, `theology`, `history`.
+   `council`, `theology`, `history`, then `work` (the Lives in their
+   witnesses' own words).
 2. Let it run. Your PC can do other things; it will be slow while it runs.
 3. It leaves, for each recording, an `.mp3` and a `.json` with the same name
    and folders as the file it read.

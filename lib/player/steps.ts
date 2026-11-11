@@ -37,7 +37,7 @@ export type Playing = { kind: "chapter"; book: string; chapter: number } | { kin
 const CHANT_RECORDING = /(?:\/audio\/chants|\/\/audio\.purifyapp\.net\/chants)\/([a-z0-9-]+)\/[^/?#]+\.mp3(?:$|[?#])/;
 
 /** Where another text's recording is kept: Purify's bucket, audio.purifyapp.net/listen/<its name>.mp3 (lib/listen/recordings.ts). */
-const TEXT_RECORDING = /\/listen\/((?:life|history|theology|council)\/[a-z0-9/-]+)\.mp3(?:$|[?#])/;
+const TEXT_RECORDING = /\/listen\/((?:life|history|theology|council|work)\/[a-z0-9/-]+)\.mp3(?:$|[?#])/;
 
 /** A chant's row as the player needs it: its slug and its versions' recordings, in order. */
 export type ChantRowLike<V extends ChantVersionLike = ChantVersionLike> = { slug: string; variants: readonly V[] };

@@ -36,7 +36,7 @@ export function listenRecording(id: string): string {
 
 /** The recording a player address is, or null when it is no text's. */
 export function listenOfSrc(src: string | null): { id: string; ref: ListenRef } | null {
-  const m = src ? /\/listen\/((?:life|history|theology|council)\/[a-z0-9/-]+)\.mp3(?:$|\?)/.exec(src) : null;
+  const m = src ? /\/listen\/((?:life|history|theology|council|work)\/[a-z0-9/-]+)\.mp3(?:$|\?)/.exec(src) : null;
   const ref = m ? parseListenId(m[1]) : null;
   return m && ref ? { id: m[1], ref } : null;
 }
