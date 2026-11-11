@@ -26,6 +26,7 @@
 // that does not say it, a link that opens the wrong page, a line our own
 // summary wrote shown as a Father's words.
 
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -570,7 +571,8 @@ describe("a Father, or a council, in a study of Theology or Apologetics", () => 
     };
     expect(kinds("theology")).toEqual({ work: 63, council: 9, untraced: 42, page: 64 });
     // 9 to 15 in the library on 2026-11-10: the three passages each on deism and on sola scriptura (call 19).
-    expect(kinds("apologetics")).toEqual({ work: 15, page: 5 });
+    // 5 to 7 from an edition's page on 2026-11-11: St Irenaeus and St Vincent of Lerins, works the library does not carry (call 25).
+    expect(kinds("apologetics")).toEqual({ work: 15, page: 7 });
     for (const { where, q } of entries("theology")) if (q.cite?.kind === "untraced") expect(q.cite.searched.length, where).toBeGreaterThan(40);
   });
 
@@ -737,7 +739,7 @@ describe("the Fathers on deism and on sola scriptura", () => {
   // (docs/editorial-standards.md).
   type Passage = { author: string; saintSlug?: string; text: string; gloss?: string; source?: string; cite?: WorkCite };
   const passages = (slug: string) => readJson<{ florilegium: Passage[] }>("data", "apologetics", `${slug}.json`).florilegium;
-  const places = (list: Passage[]) => list.map((q) => `${q.cite?.saint}/${q.cite?.work} s${q.cite?.section} p${q.cite?.paragraph}`);
+  const places = (list: Passage[]) => list.filter((q) => q.cite).map((q) => `${q.cite?.saint}/${q.cite?.work} s${q.cite?.section} p${q.cite?.paragraph}`);
 
   it("are the passages he approved, each in the library, in the answer's own order", () => {
     expect(places(passages("deism"))).toEqual([
@@ -745,17 +747,42 @@ describe("the Fathers on deism and on sola scriptura", () => {
       "john-of-damascus/exact-exposition-of-the-orthodox-faith s43 p0",
       "athanasius-the-great/on-the-incarnation s1 p22",
     ]);
-    // St Irenaeus and St Vincent of Lerins, read from their editions' pages, wait on his word (call 25) and are not here yet.
     expect(places(passages("sola-scriptura"))).toEqual([
       "basil-the-great/on-the-holy-spirit s27 p1",
       "john-chrysostom/homilies-on-2-thessalonians s4 p16",
       "john-of-damascus/exact-exposition-of-the-orthodox-faith s88 p4",
     ]);
+    // Deism's are all in the library; sola scriptura has two more, after these, from works it does not carry.
+    expect(passages("deism").every((q) => q.cite)).toBe(true);
+    expect(passages("sola-scriptura").map((q) => Boolean(q.cite))).toEqual([true, true, true, false, false]);
+  });
+
+  it("and two from their editions' own pages, where the library does not carry the work: his word to call 25", () => {
+    // St Irenaeus's Against Heresies III and St Vincent's Commonitory are not
+    // in the library, so no paragraph of ours can hold their words. They were
+    // read on the public-domain edition's own page (the page saved, the words
+    // lifted from it by a script, never typed), shown to the owner word for
+    // word, and are held here to exactly those words: a changed letter fails.
+    const fromPages = passages("sola-scriptura").filter((q) => !q.cite) as (Passage & { work: string; reference: string })[];
+    expect(fromPages.map((q) => [q.author, q.work, q.reference, q.source])).toEqual([
+      ["St Irenaeus of Lyons", "Against Heresies", "Book III, Chapter 4.1, ANF vol. 1", "https://ccel.org/ccel/schaff/anf01/anf01.ix.iv.v.html"],
+      ["St Vincent of Lerins", "The Commonitory", "Chapter 2.5-6, NPNF2 vol. 11", "https://ccel.org/ccel/schaff/npnf211/npnf211.iii.iii.html"],
+    ]);
+    expect(fromPages.map((q) => crypto.createHash("sha256").update(q.text, "utf8").digest("hex"))).toEqual([
+      "0d6e130814b9689e5793eef28b034cae9d39acd4e2799bfaaba0ff168ba55540",
+      "1f190a3a631718584991904a05c94d126bb524ebca3bf45943a8d5d1316d1e4b",
+    ]);
+    for (const q of fromPages) {
+      expect(q.gloss, q.author).toBeUndefined();
+      expect(q.text, q.author).not.toContain("\u2014");
+    }
+    // St Irenaeus has a page in the app, so his face stands by his words; St Vincent has none yet.
+    expect(fromPages.map((q) => q.saintSlug)).toEqual(["irenaeus-of-lyons", undefined]);
   });
 
   it("stand as the Father, his words and the line: no line of ours, and every word in the paragraph named", () => {
     for (const slug of ["deism", "sola-scriptura"]) {
-      for (const q of passages(slug)) {
+      for (const q of passages(slug).filter((x) => x.cite)) {
         const where = `${slug}: ${q.author}`;
         expect(q.gloss, where).toBeUndefined();
         expect(q.source, where).toBeUndefined();

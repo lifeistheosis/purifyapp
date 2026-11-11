@@ -639,8 +639,8 @@ Discord server, in dogma-exegesis: ...".
   library does not carry Against Heresies III or the Commonitory, so one
   passage of each was read from the public-domain edition's own page
   (ccel.org, ANF 1 and NPNF II 11), the page saved and the words lifted from
-  it by a script, never typed. They are call 25 on his page and go in on
-  his word, as entries that name the edition's page.
+  it by a script, never typed. They were call 25 on his page, and went in
+  on his word the next day ("His word to call 25", below).
 - **Three slips in the text as the library holds it** stand inside the
   passages (a missing space in A1, "unchangableness" in A2, "un originated"
   in B1). They are shown as held; the chat that has the Fathers' works knows
@@ -703,4 +703,49 @@ not from this work:
 
 Not run on this tree: `npm run build:ios` (no platform code changed), and a
 hand on a phone.
+
+## His word to call 25: St Irenaeus and St Vincent (2026-11-11)
+
+His word, about 00:56 UTC, to his decisions page: "rec for all and finalize
+this build" (`docs/1.9-build/BRAINSTORM.md`). Call 25 there was the two
+passages as the card showed them, to stand on On sola scriptura after St
+Basil, St John Chrysostom and St John of Damascus.
+
+- **St Irenaeus of Lyons, Against Heresies, Book III, chapter 4, 1** (ANF
+  1): "For how should it be if the apostles themselves had not left us
+  writings? ..." to "... commit the Churches?", 42 words. The words in
+  square brackets are the edition's own.
+- **St Vincent of Lerins, The Commonitory, chapter 2, 5 to 6** (NPNF II
+  11): "Therefore, it is very necessary ..." to "... believed everywhere,
+  always, by all.", 65 words: two sentences that stand one after the other
+  on the edition's page with only its section number between them, which is
+  left to the caption, as a card's number is left to its line.
+
+Neither work is in the library, so no paragraph of ours can hold the words.
+They are in `data/apologetics/sola-scriptura.json` as the other answers'
+passages from outside the library are: the Father, the work and its place,
+his words, and a Source link to the edition's own page. The address is in
+the house's form (`ccel.org/ccel/schaff/anf01/anf01.ix.iv.v.html`,
+`.../npnf211/npnf211.iii.iii.html`); the pages were first read at the short
+form of the same address, and the long form was fetched and compared before
+it was written down: the same words, with V1 and V2 together and only "[6.]"
+between. No line of ours stands with either. St Irenaeus has a page in the
+app, so his face stands by his words; St Vincent has none yet.
+
+What holds them: `lib/citations/__tests__/quotes.test.ts` holds each to the
+exact words by their hash, with the author, the work, the place and the
+page's address, so a changed letter fails. It also holds that the three from
+the library still come first.
+
+Checked, on the tree as committed: `npm run typecheck` 0 errors;
+`npm run test:unit` 946 files and 11,942 tests passing; `npm run lint` 0
+errors; `npm run build:android` green (67.2 MB packed of the 85 allowed);
+`npm run build` green. On the Android export the answer was read from the
+page card by card (five passages in order, the three from the library with
+their lines, St Irenaeus's and St Vincent's with the work, its place and the
+edition's page, each ending where the passage he was shown ends, the
+edition's brackets kept and its section number left to the caption, no line
+of ours), and the mock check passes on it on all five palettes, all ten
+checks. `node scripts/mock-leaf-pages.mjs` passes. By eye, on a still: the
+two cards.
 

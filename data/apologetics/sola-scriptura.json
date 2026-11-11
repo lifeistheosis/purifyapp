@@ -6,7 +6,7 @@
   "summary": "The claim that Scripture alone, apart from the Tradition and the Church, is the rule of faith is answered from Scripture itself, from history, and from the Fathers: the Church received, discerned, and canonized the Scriptures, and the same apostolic Tradition that gave us the Bible interprets it. The Bible is the Church's book, not a book above her.",
   "curatedBy": "Purify Team",
   "curatedOn": "2026-06-11",
-  "origin": "Opened in v9.9 as a foundation entry. The Fathers' passages were added on 2026-11-10 from the library's own files (St Basil, On the Holy Spirit 27; St John Chrysostom on 2 Thessalonians, Homily 4; St John of Damascus, Exact Exposition IV.16), on the owner's yes to call 19; each is held to its paragraph by test. St Irenaeus (Against Heresies III.4.1) and St Vincent of Lerins (Commonitory 2) were read from their editions' pages and wait on his word.",
+  "origin": "Opened in v9.9 as a foundation entry. The Fathers' passages were added on 2026-11-10 from the library's own files (St Basil, On the Holy Spirit 27; St John Chrysostom on 2 Thessalonians, Homily 4; St John of Damascus, Exact Exposition IV.16), on the owner's yes to call 19; each is held to its paragraph by test. St Irenaeus (Against Heresies III.4.1) and St Vincent of Lerins (Commonitory 2.5 to 2.6) were added on 2026-11-11 from their editions' own pages (ANF 1, NPNF II 11), read word for word and lifted by a script, on his word to call 25.",
   "essay": [
     { "kind": "para", "text": "Sola scriptura, Scripture alone, is the principle that the Bible by itself, apart from the Tradition and the authority of the Church, is the sole rule of Christian faith and practice. It arose in the sixteenth-century West as a protest against real abuses, and it remains the foundation of much of Protestantism. The Orthodox Church holds the Scriptures in the highest honor, reads them at every service, and confesses them to be the inspired word of God; but she does not accept that they stand alone, above the Church and apart from her life. The question is not whether Scripture is authoritative, but how, and within what, it is rightly read." },
     { "kind": "heading", "text": "The Church is older than the New Testament" },
@@ -39,6 +39,21 @@
       "reference": "Book IV, Chapter 16, NPNF2 vol. 9",
       "text": "Moreover that the Apostles handed down much that was unwritten, Paul, the Apostle of the Gentiles, tells us in these words: Therefore, brethren, stand fast and hold the traditions which ye have been taught of us, whether by word or by epistle. And to the Corinthians he writes, Now I praise you, brethren, that ye remember me in all things, and keep the traditions as I have delivered them to you.",
       "cite": { "kind": "work", "saint": "john-of-damascus", "work": "exact-exposition-of-the-orthodox-faith", "section": 88, "paragraph": 4 }
+    },
+    {
+      "author": "St Irenaeus of Lyons",
+      "saintSlug": "irenaeus-of-lyons",
+      "work": "Against Heresies",
+      "reference": "Book III, Chapter 4.1, ANF vol. 1",
+      "text": "For how should it be if the apostles themselves had not left us writings? Would it not be necessary, [in that case,] to follow the course of the tradition which they handed down to those to whom they did commit the Churches?",
+      "source": "https://ccel.org/ccel/schaff/anf01/anf01.ix.iv.v.html"
+    },
+    {
+      "author": "St Vincent of Lerins",
+      "work": "The Commonitory",
+      "reference": "Chapter 2.5-6, NPNF2 vol. 11",
+      "text": "Therefore, it is very necessary, on account of so great intricacies of such various error, that the rule for the right understanding of the prophets and apostles should be framed in accordance with the standard of Ecclesiastical and Catholic interpretation. Moreover, in the Catholic Church itself, all possible care must be taken, that we hold that faith which has been believed everywhere, always, by all.",
+      "source": "https://ccel.org/ccel/schaff/npnf211/npnf211.iii.iii.html"
     }
   ],
   "scripture": [
