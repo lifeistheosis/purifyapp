@@ -115,7 +115,7 @@ export default async function TheologyHubPage() {
         year: c.year,
         byname: c.byname,
         picture: picture
-          ? { src: picture.src, ...(picture.preview ? { preview: picture.preview } : {}), focus: councilFocus(c.slug), credit: picture.credit }
+          ? { src: picture.src, ...(picture.avif ? { avif: picture.avif } : {}), ...(picture.preview ? { preview: picture.preview } : {}), focus: councilFocus(c.slug), credit: picture.credit }
           : null,
       };
     });

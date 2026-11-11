@@ -93,8 +93,8 @@ const DRAWN = [
   "components/theology/PathMedal.tsx",
   "components/theology/TopicReader.tsx",
   "components/theology/TheologyHub.tsx",
-  "components/theology/StepView.tsx",
-  "components/theology/TheologyLibrary.tsx",
+  // A council's own picture, the app's own AVIF first: the hub's film, a step's read and a council's mark draw it here (1.9).
+  "components/theology/CouncilPicture.tsx",
   "components/theology/WholeIcon.tsx",
   "components/prayers/ArtPlate.tsx",
   // Prayers' Practices in their icons and the prayer book's plates (1.8, note 72).

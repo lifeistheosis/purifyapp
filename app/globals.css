@@ -8016,13 +8016,22 @@ html[data-reading-mode="parchment"] .path-node[data-state="next"] {
  box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.45), 0 1px 0 rgb(var(--panel-sheen) / 0.04);
 }
 
-/* A council's own picture on the filmstrip, its year and name on its foot. */
+/* A council's own picture on the filmstrip, its year and name on its foot.
+   The foot is the palette's ground, nearly whole from where the words begin
+   (a name of two lines begins 55px above the foot of a tile 150px tall, 63
+   percent down) and whole at the end, so the words stand on the ground and
+   the picture is clear above them. It was one even fade from 35 percent
+   down, 40 percent strong where the words begin, and the words stood on the
+   picture: measured on their pixels once the pictures came with no signal
+   (the gate's third run, 2026-11-11), a numeral read 2.07:1 on Candlelight
+   and a name 3.30 on Light. Now nothing on the film is under 4.5:1 on the
+   five palettes or the seventeen looks. */
 .council-film::after {
  content: "";
  position: absolute;
  inset: 0;
- background: linear-gradient(180deg, transparent 35%, rgb(16 16 19 / 0.92) 100%);
- background: linear-gradient(180deg, transparent 35%, color-mix(in srgb, var(--color-night) 92%, transparent) 100%);
+ background: linear-gradient(180deg, transparent 30%, rgb(16 16 19 / 0.62) 52%, rgb(16 16 19 / 0.94) 64%, rgb(16 16 19) 100%);
+ background: linear-gradient(180deg, transparent 30%, color-mix(in srgb, var(--color-night) 62%, transparent) 52%, color-mix(in srgb, var(--color-night) 94%, transparent) 64%, var(--color-night) 100%);
  pointer-events: none;
 }
 

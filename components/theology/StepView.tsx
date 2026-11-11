@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { Check } from "@/components/ui/icons/Check";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import {
@@ -19,6 +18,7 @@ import {
 } from "@/lib/theology/path";
 import { updatePathProgress, usePathProgress } from "@/lib/theology/usePathProgress";
 
+import { CouncilPicture } from "./CouncilPicture";
 import { FatherFace } from "./FatherFace";
 import { KindIcon, ReadMeta, noteOpened } from "./PathRead";
 import { WholeIcon } from "./WholeIcon";
@@ -216,8 +216,8 @@ function ReadMark({ read }: { read: PathRead }) {
         {read.picture.preview ? (
           <span className="absolute inset-0 scale-110 bg-cover bg-center blur-sm" style={{ backgroundImage: `url(${read.picture.preview})` }} />
         ) : null}
-        {/* The website's picture, whole over its preview (build 85, note 52). */}
-        <ArrivingImage src={read.picture.src} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: read.picture.focus }} />
+        {/* The council's picture, whole over its preview (build 85, note 52): the app's own file first (./CouncilPicture.tsx). */}
+        <CouncilPicture src={read.picture.src} avif={read.picture.avif} focus={read.picture.focus} className="absolute inset-0 h-full w-full object-cover" />
       </span>
     );
   }

@@ -71,7 +71,7 @@ export async function pathSteps(native: boolean): Promise<PathStep[]> {
           href: `/councils/${slug}`,
           title: c.byname,
           year: c.year,
-          ...(picture ? { picture: { src: picture.src, ...(picture.preview ? { preview: picture.preview } : {}), focus: councilFocus(slug) } } : {}),
+          ...(picture ? { picture: { src: picture.src, ...(picture.avif ? { avif: picture.avif } : {}), ...(picture.preview ? { preview: picture.preview } : {}), focus: councilFocus(slug) } } : {}),
         });
       }
 

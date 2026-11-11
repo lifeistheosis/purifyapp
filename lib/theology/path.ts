@@ -59,7 +59,7 @@ export type PathRead = {
   era?: string;
   /** A council: its year, and its own picture (History's). */
   year?: number;
-  picture?: { src: string; preview?: string; focus?: string };
+  picture?: { src: string; avif?: string; preview?: string; focus?: string };
 };
 
 /** One step of the path: a subject of the faith and its reads. */

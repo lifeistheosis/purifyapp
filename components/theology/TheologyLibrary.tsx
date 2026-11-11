@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { ComponentType, SVGProps } from "react";
 
 import { T } from "@/components/i18n/T";
-import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { Book } from "@/components/ui/icons/Book";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Codex } from "@/components/ui/icons/Codex";
@@ -10,6 +9,8 @@ import { Cross } from "@/components/ui/icons/Cross";
 import { Scroll } from "@/components/ui/icons/Scroll";
 import { Shield } from "@/components/ui/icons/Shield";
 import { NUMERALS } from "@/lib/councils/page";
+
+import { CouncilPicture } from "./CouncilPicture";
 
 /**
  * The library after the path (1.8, round 3 r3-13): the parts of Theology's
@@ -133,7 +134,7 @@ export type FilmCouncil = {
   ordinal: number;
   year: number;
   byname: string;
-  picture: { src: string; preview?: string; focus: string; credit?: string } | null;
+  picture: { src: string; avif?: string; preview?: string; focus: string; credit?: string } | null;
 };
 
 /**
@@ -166,15 +167,8 @@ export function CouncilFilm({ councils }: { councils: FilmCouncil[] }) {
                 <span aria-hidden className="absolute inset-0 scale-110 bg-cover bg-center blur-md" style={{ backgroundImage: `url(${c.picture.preview})` }} />
               ) : null}
               {c.picture ? (
-                // The website's picture, whole over its preview (build 85, note 52).
-                <ArrivingImage
-                  src={c.picture.src}
-                  title={c.picture.credit}
-                  loading="lazy"
-                  decoding="async"
-                  className="absolute inset-0 h-full w-full object-cover"
-                  style={{ objectPosition: c.picture.focus }}
-                />
+                // The council's picture, whole over its preview (build 85, note 52): the app's own file first (./CouncilPicture.tsx).
+                <CouncilPicture src={c.picture.src} avif={c.picture.avif} credit={c.picture.credit} focus={c.picture.focus} className="absolute inset-0 h-full w-full object-cover" />
               ) : null}
               <span className="absolute inset-x-[9px] bottom-2 z-[1]">
                 <span className="block font-serif text-[14.5px] font-bold leading-tight text-paper">

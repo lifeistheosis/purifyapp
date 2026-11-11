@@ -1,7 +1,8 @@
-import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { Church } from "@/components/ui/icons/Church";
 import { councilFocus, councilPicture } from "@/lib/councils/page";
 import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
+
+import { CouncilPicture } from "./CouncilPicture";
 
 /**
  * What a council wears at the start of a row: its own picture in a small
@@ -23,7 +24,7 @@ export function CouncilMark({ slug }: { /** The council's slug in the registry; 
   return (
     <span aria-hidden className="relative block size-[34px] shrink-0 overflow-hidden rounded-[10px] bg-night-soft ring-1 ring-inset ring-paper/15">
       {picture.preview ? <span className="absolute inset-0 scale-110 bg-cover bg-center blur-sm" style={{ backgroundImage: `url(${picture.preview})` }} /> : null}
-      <ArrivingImage src={picture.src} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: councilFocus(slug) }} />
+      <CouncilPicture src={picture.src} avif={picture.avif} focus={councilFocus(slug)} className="absolute inset-0 h-full w-full object-cover" />
     </span>
   );
 }
