@@ -139,6 +139,7 @@ const EXPECT = {
   "/toggle-dead/": { verdict: "fail", why: /^nothing:/ },
   "/no-snap/": { verdict: "pass" },
   "/aim-after/": { verdict: "pass" },
+  "/far-below/": { verdict: "pass" },
   "/wrapped/": { verdict: "pass", why: /^went to \/other\// },
   "/required/": { verdict: "pass" },
 };
@@ -233,6 +234,21 @@ if (at === "/sticky/") {
   const line = document.createElement("p"); line.style.margin = "0 16px"; line.append("I agree to the ", a, ".");
   sheet.append(block(900), block(40, "hint"), line);
   m.append(sheet);
+} else if (at === "/far-below/") {
+  // As Community's feed: rows drawn only as they come into sight, each standing at a guessed
+  // height until then (content-visibility), under a bar that stays at the top; the place is held
+  // by the browser only from the reader's first touch, as the app holds it.
+  document.documentElement.style.overflowAnchor = "none";
+  addEventListener("touchstart", () => document.documentElement.style.removeProperty("overflow-anchor"), { once: true, passive: true });
+  const bar = document.createElement("div"); bar.className = "bar"; bar.style.height = "52px"; bar.style.zIndex = "30";
+  m.append(bar);
+  for (let n = 0; n < 60; n++) {
+    // Its own height comes from what is in it, so the guess stands until it is drawn.
+    const row = document.createElement("div"); row.style.contentVisibility = "auto"; row.style.containIntrinsicSize = "auto 600px";
+    row.append(block(150));
+    if (n === 50) row.append(button("Post options", () => document.body.append(Object.assign(document.createElement("div"), { role: "dialog", textContent: "Options" }))));
+    m.append(row);
+  }
 } else if (at === "/chosen/") {
   // A row of chips where one is chosen: the chosen one, tapped again, has nothing to do.
   const row = document.createElement("div"); row.setAttribute("role", "group");
@@ -531,10 +547,14 @@ async function walkScreen(ctx, at, kept) {
           result.controls.push(row);
           continue;
         }
-        const reached = await reach(page, c);
-        // The page's first touch, before the control is measured or aimed at: it can move the page
-        // (on Sign up the walk's old aim, taken before it, fell on the sentence round a link).
+        // The page's first touch, before the control is reached, measured or aimed at, as a reader's
+        // finger is on the screen before it scrolls anywhere. It can move the page (on Sign up the
+        // walk's old aim, taken before it, fell on the sentence round a link), and the app keeps
+        // the browser from holding a reader's place until it comes (lib/ui/scrollReset.ts): reached
+        // before it, a control far down Community's feed rose under the top bar as the posts on
+        // the way drew at their own height, which no reader scrolling there meets.
         await firstTouch(page, cdp);
+        const reached = await reach(page, c);
         if (reached === "redrawn") {
           row.verdict = "skipped";
           row.why.push("the screen kept drawing it again as it was reached");
