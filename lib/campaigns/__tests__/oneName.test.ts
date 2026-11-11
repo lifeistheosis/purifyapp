@@ -17,8 +17,10 @@ import { PREMIUM_PLAN_DE } from "@/lib/premium/plans";
  * arbiter's word that day: "one word for campaigns everywhere, the one the
  * campaign pages themselves use".
  *
- * The Privacy page's German is not held here. It says "Gebetskampagne", it
- * is a text the owner signed, and changing it is his to say.
+ * The Privacy page's German said "Gebetskampagne" and "Kampagne" too, 14
+ * times in its campaigns paragraphs. That noun was changed the same day, at
+ * the arbiter's word (about 15:55 UTC): a translation's word and no change of
+ * meaning. The English, which is the text the owner signed, was not touched.
  */
 
 const words = de as Record<string, string>;
@@ -37,6 +39,23 @@ describe("German has one name for a prayer campaign", () => {
     expect(words["community.campaignApproved"]).toBe("Purify hat deine Gebetsaktion freigegeben");
     expect(words["community.campaignUpdate"]).toBe("Eine Gebetsaktion, für die du betest, hat Neuigkeiten");
     expect(words["community.removedYour.campaign"]).toBe("Wir haben deine Gebetsaktion entfernt: {reason}.");
+  });
+
+  it("the Privacy page's German says the same, and its English is as he signed it", () => {
+    const page = readFileSync(join(process.cwd(), "components/legal/PrivacyText.tsx"), "utf8");
+    const at = page.indexOf("function PrivacyDe() {");
+    expect(at).toBeGreaterThan(0);
+    const german = page.slice(at);
+    expect(german).not.toMatch(/kampagne/i);
+    expect(german).toContain('<strong className="font-semibold text-paper">Gebetsaktionen.</strong>');
+    expect(german.match(/Gebetsaktion/g)).toHaveLength(14);
+    // The English names it as it did: fourteen times in its own five paragraphs, from "Prayer campaigns." on.
+    const english = page.slice(0, at);
+    const from = english.indexOf('<strong className="font-semibold text-paper">Prayer campaigns.</strong>');
+    const to = english.indexOf('<strong className="font-semibold text-paper">Community.</strong>');
+    expect(from).toBeGreaterThan(0);
+    expect(to).toBeGreaterThan(from);
+    expect(english.slice(from, to).match(/campaign/gi)).toHaveLength(14);
   });
 
   it("the plans page, which keeps its own German, says the same", () => {

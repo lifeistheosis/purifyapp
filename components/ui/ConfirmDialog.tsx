@@ -42,12 +42,18 @@ import { useAndroidBack } from "@/lib/platform/useAndroidBack";
  */
 /**
  * The card's ground: the palette's own night, soft above and deep below, laid
- * over `bg-night-soft/95`. The same two stops that were typed here until
+ * over a solid `bg-night-soft`. The same two stops that were typed here until
  * 2026-11-11 (rgba(29,29,32,0.65) and rgba(16,16,19,0.95), which are Dark's
  * --color-night-soft and --color-night), now by name, and mixed in sRGB as
  * they were: on Dark the card is the same to within one level in 255 (a
  * drawing before and after was compared pixel by pixel), and every other
  * palette gets its own night.
+ *
+ * Solid: nothing of the page shows through. The surface under the gradient
+ * was `bg-night-soft/95` until 2026-11-11. On a phone the backdrop's blur
+ * stops at the card's top (lib/ui/useDraggableSheet.ts), so what stood under
+ * the card was the page itself, sharp, and its largest words showed through
+ * the question at about 4 levels in 255, on every palette.
  */
 const CARD_GROUND =
   "linear-gradient(180deg in srgb, color-mix(in srgb, var(--color-night-soft) 65%, transparent) 0%, color-mix(in srgb, var(--color-night) 95%, transparent) 100%)";
@@ -152,13 +158,13 @@ export function ConfirmDialog({
         }}
       />
 
-      {/* Card: a thin hairline and a surface of the palette's own night
-          (CARD_GROUND). A sheet with a handle on a phone, a floating card
-          above md. */}
+      {/* Card: a thin hairline and a solid surface of the palette's own
+          night (CARD_GROUND). A sheet with a handle on a phone, a floating
+          card above md. */}
       <div
         ref={panelRef}
         data-confirm-card=""
-        className="relative w-full rounded-t-3xl border-t border-paper/15 bg-night-soft/95 shadow-2xl will-change-transform md:max-w-[420px] md:rounded-lg md:border"
+        className="relative w-full rounded-t-3xl border-t border-paper/15 bg-night-soft shadow-2xl will-change-transform md:max-w-[420px] md:rounded-lg md:border"
         style={{
           paddingBottom: "env(safe-area-inset-bottom, 0px)",
           backgroundImage: CARD_GROUND,

@@ -17,6 +17,13 @@ import { LegalContents } from "./LegalContents";
 // paragraphs; the approved lines of A2, A5, A10 and A11 stand word for word
 // (lib/admin/__tests__/privacyLines.test.ts). Only English and German have a
 // text of their own; every other language is shown the English.
+//
+// 2026-11-11: the German calls a prayer campaign "Gebetsaktion", the name the
+// app's own pages give it. Its campaigns paragraphs said "Gebetskampagne" and
+// "Kampagne" (14 times), a second name for one thing. Only that noun changed,
+// at the arbiter's word (about 15:55 UTC): a translation's word and no change
+// of meaning. The English, which is the text the owner signed, is untouched.
+// lib/campaigns/__tests__/oneName.test.ts holds it.
 
 /** The policy in `lang`: German for a German reader, English for every other. */
 export function PrivacyText({ lang }: { lang: "en" | "de" }) {
@@ -1031,15 +1038,15 @@ function PrivacyDe() {
  geteilt hast, mit ihren Meldungen.
  </p>
  <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
- <strong className="font-semibold text-paper">Gebetskampagnen.</strong>{" "}
- Eine Gebetskampagne ist öffentlich, es sei denn, du beschränkst sie
+ <strong className="font-semibold text-paper">Gebetsaktionen.</strong>{" "}
+ Eine Gebetsaktion ist öffentlich, es sei denn, du beschränkst sie
  auf einen Kreis: ihr Titel, der Vorname des Menschen, für den gebetet
  wird, dein Text, ihre Bilder, ihr Ort, falls du einen angibst, deine
  Neuigkeiten sowie der Name und das Bild deines Profils. Auch die
  Kommentare anderer sind öffentlich. Gib nur an, was das Gebet
  braucht: Ein Vorname genügt, und schreibe nichts über die Gesundheit
  oder das Leben eines anderen Menschen, dem er nicht zugestimmt hat.
- Bevor eine Kampagne für jemand anderen angelegt wird, bestätigst du,
+ Bevor eine Gebetsaktion für jemand anderen angelegt wird, bestätigst du,
  dass dieser Mensch oder seine Familie den Segen dazu gegeben hat, und
  wir speichern den Tag, an dem du das bestätigt hast.
  </p>
@@ -1051,33 +1058,33 @@ function PrivacyDe() {
  selbst eintippst; die App fragt nie, wo du bist.
  </p>
  <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
- Wer eine Kampagne in seine Gebete aufgenommen hat, wird niemandem
+ Wer eine Gebetsaktion in seine Gebete aufgenommen hat, wird niemandem
  gezeigt, auch nicht dem, der sie angelegt hat, und keine Zahl davon
- wird gezeigt. Bist du angemeldet, werden die Kampagnen, die du
+ wird gezeigt. Bist du angemeldet, werden die Gebetsaktionen, die du
  mitträgst, bei deinem Konto gespeichert, damit sie dir auf deine
  anderen Geräte folgen; bist du es nicht, bleiben sie allein auf
- deinem Gerät. Der Name und der Titel der Kampagne liegen auf deinem
+ deinem Gerät. Der Name und der Titel der Gebetsaktion liegen auf deinem
  Gerät, solange du sie mitträgst, und verschwinden, wenn sie endet.
  </p>
  <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
- Du kannst eine Kampagne jederzeit beenden, ein Bild entfernen, ihre
- Kommentare schließen oder die ganze Kampagne löschen. Beim Löschen
+ Du kannst eine Gebetsaktion jederzeit beenden, ein Bild entfernen, ihre
+ Kommentare schließen oder die ganze Gebetsaktion löschen. Beim Löschen
  wird sie mit ihren Bildern, Neuigkeiten und Kommentaren von unseren
  Servern entfernt, und sie verschwindet aus den Gebeten anderer,
- sobald deren App das nächste Mal online ist. Eine Kampagne für einen
+ sobald deren App das nächste Mal online ist. Eine Gebetsaktion für einen
  lebenden Menschen wird dreißig Tage nach ihrem letzten Tag gelöscht,
  wenn du sie nicht erneuerst. Wenn du dein Konto löschst, werden auch
- deine Kampagnen gelöscht. Auch wir dürfen eine Kampagne, ein Bild
+ deine Gebetsaktionen gelöscht. Auch wir dürfen eine Gebetsaktion, ein Bild
  oder einen Kommentar entfernen, der gegen unsere Bedingungen
  verstößt; was wir deshalb entfernen, bewahren wir dreißig Tage lang
  unsichtbar auf, für einen Einspruch oder eine rechtmäßige Anfrage,
- und löschen es dann. Wenn du eine Kampagne meldest, speichern wir die
+ und löschen es dann. Wenn du eine Gebetsaktion meldest, speichern wir die
  Meldung, ihren Grund und das Konto, von dem sie kam, damit ein
- Moderator sie prüfen kann; sie wird mit der Kampagne gelöscht, und
+ Moderator sie prüfen kann; sie wird mit der Gebetsaktion gelöscht, und
  wenn du vorher dein Konto löschst, bleibt sie ohne deinen Namen.
  </p>
  <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
- Nennt eine Kampagne dich oder einen Menschen in deiner Obhut, ohne
+ Nennt eine Gebetsaktion dich oder einen Menschen in deiner Obhut, ohne
  dass du zugestimmt hast, melde sie auf ihrer Seite oder schreib an{" "}
  <a href={`mailto:${SUPPORT_EMAIL}`} className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">{SUPPORT_EMAIL}</a>, und wir nehmen sie herunter. Gehört dir ein Bild darin,
  das ohne deine Erlaubnis verwendet wurde, schreib an{" "}

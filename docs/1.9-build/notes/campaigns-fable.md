@@ -5065,3 +5065,65 @@ the start: July's own route for a campaign's picture
 **Checked (UTC).** Typecheck 0, lint 0 and the whole unit suite 13,703 of
 13,703 at 15:53. No export was cut for this push: the German lines are each
 one letter shorter than they were, and nothing else a reader sees changed.
+
+## 44. The Privacy page's German name, and the dialog's solid card (the arbiter, 2026-11-11 about 15:55 UTC)
+
+**The Privacy page's German.** The arbiter, to what 43 left open: change
+those lines to "Gebetsaktion" so German has one name; "it is a
+translation's word, not a change of meaning, and the English he signed is
+untouched".
+
+Read before a word of it was touched. The page has no version and no date
+drawn from its words (only the Terms have one, set by hand), so a change
+here asks no reader to agree again. Its German campaigns paragraphs were a
+chat's translation, of 2026-11-10, of the English he approved.
+`lib/admin/__tests__/privacyLines.test.ts`, which holds his approved lines
+word for word, holds none of these. The Terms have no German of their own.
+
+Changed: the noun alone, 14 times on 13 lines ("Gebetskampagne" and
+"Kampagne", singular and plural, to "Gebetsaktion"), each line read
+afterwards; both nouns are feminine, so every article and ending stands.
+The English half is untouched: the diff has no line of it, and it still
+says "campaign" 14 times in those paragraphs, as the German now says
+"Gebetsaktion" 14 times. The page's own header records the change, its day
+and its reason. `lib/campaigns/__tests__/oneName.test.ts` holds it (4
+cases).
+
+**The dialog's card is solid.** To what 42 left ("the page's largest words
+show through the card at about 4 levels in 255"), the arbiter: yes, make
+the card fully solid, provided nothing else of its look moves; same test.
+The card's surface was `bg-night-soft/95` and is `bg-night-soft`.
+
+Proven on an export, the solid card against the 95% one, the same still on
+all five palettes, pixel for pixel. Above the card nothing moved (0 or 1
+level in 255). In the card the greatest change is 4 levels on Dark, Black
+and Monastery and 3 on Light and Candlelight, and every pixel that moved by
+more than 2 lies where the page's large words had stood. The four contrast
+figures are the same to within 0.13 (Light: 11.68, 5.09, 7.67, 5.15). By
+eye, on Light and on Dark: no words behind the question.
+`confirmDialogPalette.test.ts` has a case for it (11 cases; that case
+fails on the card as it was pushed), and its arithmetic stands on the
+solid surface.
+
+One thing 42 had wrong, corrected here and to Admin: the checker's "not
+measured, look" for this dialog is not because its card was thin. It says
+the same of the solid card ("another piece is drawn across it"). So the
+arithmetic test is still what holds its contrast.
+
+Pictures, now of the final look: `decisions/confirm-light-after.png` and
+`decisions/take-down-ask.png` are drawn again with the solid card;
+`decisions/confirm-light-before.png` is the fault as it was.
+
+**Checked (UTC).** Typecheck 0, lint 0 and the whole unit suite 13,765 of
+13,765 at 16:05, on `df8e11846` with both changes. Android export of this
+work on `1c2c48658`: 0 at 16:04. On it: stills 48 and 45 pass every rule of
+the checker, and the walk of the flows that ask through the dialog (the
+care note's three, ending a campaign early, a comment deleted and one
+taken off, taking one down), 7 of 7.
+
+A run of the whole suite at 16:02, on `1c2c48658`, had two failures in the
+picture credits' tests. They were another chat's, of a commit that came in
+with the rebase before this chat's 15:54 push, and that chat had mended
+them (`3f6b631ee`) before this one took the branch in again. The 15:54 push
+had run only its own folders after that rebase, as the quick pass does, so
+it did not see them.

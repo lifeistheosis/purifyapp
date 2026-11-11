@@ -25,6 +25,12 @@ import { describe, expect, it } from "vitest";
  * component, the palettes from app/globals.css, and each of the dialog's
  * words is held to WCAG's 4.5:1 at the top of the card and at its foot, on
  * all five palettes.
+ *
+ * The card is solid as well, from the same day. Its surface was
+ * `bg-night-soft/95`, and on a phone the backdrop's blur stops at the card's
+ * top (lib/ui/useDraggableSheet.ts), so the page itself stood under the
+ * card, sharp: its largest words showed through the question at about 4
+ * levels in 255, on every palette.
  */
 
 const code = readFileSync(join(process.cwd(), "components/ui/ConfirmDialog.tsx"), "utf8");
@@ -103,10 +109,10 @@ function stops(gradient: string, tokens: Tokens): [Paint, Paint] {
  * top of the card and at its foot. Between the two the ground moves in a
  * straight line, so the least contrast is at one end or the other.
  */
-function words(gradient: string, tokens: Tokens): { name: string; least: number }[] {
+function words(gradient: string, tokens: Tokens, solid = 1): { name: string; least: number }[] {
   const { night, paper, crimson, gold } = tokens;
-  // The page behind, then the card's own `bg-night-soft/95`, then the gradient's stop.
-  const base = over({ rgb: tokens["night-soft"], a: 0.95 }, night);
+  // The page behind, then the card's own surface (solid now; 95% until 2026-11-11), then the gradient's stop.
+  const base = over({ rgb: tokens["night-soft"], a: solid }, night);
   const ends = stops(gradient, tokens).map((s) => over(s, base));
   const on = (ink: Paint, wash?: Paint) =>
     Math.min(
@@ -135,7 +141,14 @@ describe("the confirm dialog's card follows the reader's palette (found on a cam
     expect(ground).toContain("var(--color-night)");
     expect(ground).not.toMatch(/rgba?\(|#[0-9a-f]{3,8}\b/i);
     // And the card is given that ground, over the palette's own surface.
-    expect(code).toMatch(/className="[^"]*\bbg-night-soft\/95\b[^"]*"\s*style=\{\{[^}]*backgroundImage: CARD_GROUND,/);
+    expect(code).toMatch(/className="[^"]*\bbg-night-soft(?![\w/-])[^"]*"\s*style=\{\{[^}]*backgroundImage: CARD_GROUND,/);
+  });
+
+  it("the card is solid: nothing of the page under it shows through the question", () => {
+    const card = /data-confirm-card=""\s*className="([^"]+)"/.exec(code)?.[1] ?? "";
+    expect(card.split(/\s+/)).toContain("bg-night-soft");
+    // No surface at less than its whole, and nothing that thins the card itself.
+    expect(card).not.toMatch(/\bbg-[\w-]+\/|\bopacity-|\bbackdrop-/);
   });
 
   it("on Dark it is the ground it always was: the same two stops, mixed in sRGB as they were", () => {
@@ -165,14 +178,14 @@ describe("the confirm dialog's card follows the reader's palette (found on a cam
   }
 
   it("as it was typed, it failed on Light and nowhere else, as the drawing measured", () => {
-    const light = words(TYPED, PALETTES[1][1]);
+    const light = words(TYPED, PALETTES[1][1], 0.95);
     // Every line of it, the red answer included.
     for (const word of light.filter((w) => w.name !== "the act, any other")) {
       expect(word.least, `${word.name}: ${word.least.toFixed(2)}:1`).toBeLessThan(2.1);
     }
     expect(light.find((w) => w.name === "Cancel")?.least).toBeLessThan(1.2);
     for (const [palette, tokens] of PALETTES.filter(([name]) => name !== "Light")) {
-      for (const word of words(TYPED, tokens)) {
+      for (const word of words(TYPED, tokens, 0.95)) {
         expect(word.least, `${word.name} on ${palette}: ${word.least.toFixed(2)}:1`).toBeGreaterThanOrEqual(4.5);
       }
     }
