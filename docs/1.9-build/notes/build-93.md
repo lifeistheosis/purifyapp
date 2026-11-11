@@ -98,7 +98,11 @@ Done, St Alexander and the faces (Updates 2, 2026-11-11, `342ad7c38`):
   Córdoba, public domain), cut from the same file to 315 by 420, with its
   date and painter in its row (`lib/saints/iconRights.ts`). His pair leaves
   the record of covers and pages that differ (`notes/build-90.md`), and
-  `lib/today/__tests__/saintFaces.test.ts` holds the one picture.
+  `lib/today/__tests__/saintFaces.test.ts` holds the one picture (Updates 2,
+  `be15ee7b2`). On the export with no signal his page wears the painting
+  from the app itself, and his round at Nicaea the same painting as his
+  books' cover, which the apps carry; `checkMock` on his page: every check
+  passes. Still: `build-93/01-hosius-one-picture-offline-390.png`.
 
 ### 2. Easy Scroll on the prayers still fights the finger (2026-11-11 about 01:19 UTC)
 
@@ -146,6 +150,11 @@ Already mended after build 93: `209c3ad64` (Updates 2, 2026-11-10 22:31, "The la
 
 Who has it: Updates 2 (LocaleMenu). On the arbiter's word under his standing rules: the language opens the house's own sheet from the foot of the screen, every language by its own name with its English name beside it, the reader's own language checked and in view when it opens, Arabic and Urdu mirrored, 44px rows, the house's motion, never a floating panel. A still with the push.
 
+Done (Updates 2, 2026-11-11, `2a1137316`): on a phone, and in the apps at every width, the language opens the house's sheet from the foot of the screen, in Settings and in the website's footer alike; only a computer's window keeps the dropdown. Every language is a row by its own name, its English name beside it and what it covers under it in its own words; the reader's own stands in the house's fill with its check, never in gold, and in the middle of what the sheet shows as it opens; every row is 44px or more. Each line is placed by the page's direction, so in Arabic and Urdu every row stands at the right while its words keep their own (the first walk in Arabic showed "UkrainianУкраїнська", the English name's margin falling on its far side; the two names are now spaced by their line). A tap on a row is never taken for a tap outside the picker.
+- On the export, with real taps, at 390 and 320 in English, Arabic, Urdu and Portuguese: the sheet from the foot of the screen and across it, no floating list, 21 rows, the reader's own checked and in view, each row's name and the line under it on the page's side; Back closes it with the page where it was; a tap on Español switches the app in place and closes the sheet, the picker staying in sight (9px lower, the words above it reflowing into Spanish). `checkMock` on the sheet in English and in Arabic: every check passes.
+- `checkMock` itself (`3bc220864`): its mirror rule measured a page already in Arabic against itself and failed everything not centred; it now measures from left to right whatever the page is in. `--self-test` passes.
+- `lib/i18n/__tests__/languageSheet.test.ts` holds it, and fails 4 of 6 on the old picker. Still: `build-93/06-language-sheet-390.png` (English and Arabic).
+
 ### 7. The sparkle star is AI slop: replace it everywhere (2026-11-11 about 01:27 UTC)
 
 His words: "I made it very clear to not use this icon widget design of that like star, because that is a vibe coded AI slop detected design. So anywhere where it's used, replace it with a new design."
@@ -184,6 +193,10 @@ His second message, a minute later, with `build-93/08b-journal-blocks.png` (two 
 Who has it:
 - Updates 2 (built the 1.9 tour): the tour never takes a tap meant for the page; a tap on a field goes to the field, and the tour steps aside or ends. Small, first.
 - The prayer campaigns chat (Fable), once campaigns are done for 1.9: the journal's page refined whole. Walk every block (Verse, Quote, Highlight, More and what it holds) as a new reader and as an updater on the export, mend every rough edge (a tap that brings an explanation, a block added twice, focus, the keyboard, Done), and give each block a form of its own that fits what it holds and how it is used (a verse looks and reads as Scripture with its place, a Father's words as a quotation with its source, a highlight as the marked text), under his standing rules (minimal, photos over words, no sparkle, no side stripes, pills only where they belong, no box around a tapped field, 44px, the house's motion, checkMock on five palettes). The journal was built by the previous arbiter chat and last touched by Updates (stop sharing), whose lines stay as they are. Stills before and after.
+
+Done, the tour's part (Updates 2, 2026-11-11, `cabb98e72`): on a stop nothing of the tour stands over the page. A tap reaches what it was meant for, as any tap would, and the tour ends there, as Skip does (`lib/whatsNew/tourDom.ts`, `tapEndsTour`); only the close keeps its blockers, under its night. The focus the tour gives back as it goes is given only from its own words or from nothing, so a field the reader tapped keeps it and the keyboard with it. On the journal's stop his Title stood outside the light, under one of the blockers, which is why it met the tour's words.
+- On the export, with real taps on all six stops: nothing of the tour where the finger came down, the tour gone, and the page answering each: the journal's Gospel opened the page to write on, and Title then took the tap and kept it; John 1:1's commentary mark opened its sheet, the translation its sheet, and a plan, the Creed and the first great event their pages.
+- `lib/whatsNew/__tests__/tourTaps.test.ts` holds it, and fails 5 of 5 on the old tour. Still: `build-93/08-tour-tap-goes-to-title-390.png` (the stop as the tour lights it, and the page to write on after the tap). The journal's page refined whole stays with the prayer campaigns chat, as above.
 
 ### 9. The journal and the Florilegium, always there to choose (2026-11-11 about 01:30 UTC)
 
