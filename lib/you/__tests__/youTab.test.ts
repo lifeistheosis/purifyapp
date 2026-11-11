@@ -47,7 +47,8 @@ describe("the head of You: the Ladder, and the reader on it", () => {
     for (const gone of ["<SectionMasthead", "<StreakCard", "eyebrow="]) expect(page, gone).not.toContain(gone);
     const hero = code(HERO);
     expect(hero).toContain('sectionMedia("you")');
-    expect(hero).toMatch(/const picture = useRef<HTMLDivElement>\(null\);\s*useBarOverPicture\(picture\);/);
+    // The bar watches the picture, and since 1.9 the reader's own words on it (./barNames.test.ts).
+    expect(hero).toMatch(/const picture = useRef<HTMLDivElement>\(null\);\s*const words = useRef<HTMLDivElement>\(null\);\s*useBarOverPicture\(picture, words\);/);
     expect(hero).toContain('className="you-hero-img h-full w-full object-cover object-right-top"');
     expect(hero).toContain("<YouIdentity who={who} />");
     // The tab bar names the tab: no second h1.

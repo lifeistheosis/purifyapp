@@ -77,7 +77,9 @@ describe("the head of Prayers", () => {
     expect(code(PAGE)).toContain('header={<MobileHeader titleKey="nav.prayers" />}');
     // The observer is shared with the Ladder at the top of You since note 71
     // (components/mobile/barOverPicture.ts), and watches this picture.
-    expect(code(HERO)).toMatch(/const picture = useRef<HTMLDivElement>\(null\);\s*useBarOverPicture\(picture\);/);
+    // And since 1.9 the verse standing on it, so the tab's name and the verse never cross
+    // (lib/you/__tests__/barNames.test.ts).
+    expect(code(HERO)).toMatch(/const picture = useRef<HTMLDivElement>\(null\);\s*const words = useRef<HTMLQuoteElement>\(null\);\s*useBarOverPicture\(picture, words\);/);
     expect(code(HERO)).toMatch(/<div\s+ref=\{picture\}\s+className="prayers-hero-picture /);
     const hero = code("components/mobile/barOverPicture.ts");
     expect(hero).toContain("new IntersectionObserver(");

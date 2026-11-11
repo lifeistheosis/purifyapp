@@ -1780,8 +1780,9 @@ html[data-reading-mode="parchment"] .words-halo {
 }
 
 /* The bar over the picture: clear, its round buttons on plates, until the
-   picture has gone up under it, when the page's hero sets data-bar-solid on
-   <html> (components/mobile/barOverPicture.ts). Decided by html:has(), as
+   picture has gone up under it, or the words standing on it have reached it
+   (You's reader, 1.9: two names crossing), when the page's hero sets
+   data-bar-solid on <html> (components/mobile/barOverPicture.ts). Decided by html:has(), as
    the one bar on a phone is above, so the bar is clear from the first paint;
    a WebView without :has() keeps the solid bar. The plates are the page
    bar's above. The pill keeps its own silver while it sells, laid over the

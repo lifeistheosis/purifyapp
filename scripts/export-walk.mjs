@@ -2868,6 +2868,12 @@ await section(46, async () => {
         // How far the page can scroll at all.
         room: Math.max(0, Math.round(document.scrollingElement.scrollHeight - innerHeight)),
         passed: !!bar && !!picture && picture.getBoundingClientRect().bottom <= bar.getBoundingClientRect().bottom + 0.5,
+        // Since 1.9 the bar is solid again as soon as the words standing on the picture reach it
+        // (the reader's name on You, the verse on Prayers), so two names never cross.
+        reached: (() => {
+          const words = document.querySelector("[data-you-words], [data-prayers-words]");
+          return !!bar && !!words && words.getBoundingClientRect().top < bar.getBoundingClientRect().bottom;
+        })(),
         solid: document.documentElement.hasAttribute("data-bar-solid"),
         clear: ground === "rgba(0, 0, 0, 0)",
         ground,
@@ -2911,10 +2917,12 @@ await section(46, async () => {
     // goes up under the bar, and the bar is right to stay clear over it. On a
     // page that does go past the picture the bar turns solid (signed in,
     // below, and Prayers).
+    // Since 1.9 it is solid again too once the words on the picture have reached it, on a
+    // page that scrolls that far and no further.
     const down = await scrollOn(page);
     must(
-      down.passed ? down.solid && !down.clear : !down.solid && down.clear,
-      `${down.passed ? "scrolled past the picture, the bar is solid again" : "the tab is one screen, so the bar stays clear over the picture"} (scrolled ${down.y} of ${down.room}; ${down.ground})`,
+      down.passed || down.reached ? down.solid && !down.clear : !down.solid && down.clear,
+      `${down.passed ? "scrolled past the picture, the bar is solid again" : down.reached ? "the words on the picture have reached the bar, so it is solid again" : "the tab is one screen, so the bar stays clear over the picture"} (scrolled ${down.y} of ${down.room}; ${down.ground})`,
     );
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();

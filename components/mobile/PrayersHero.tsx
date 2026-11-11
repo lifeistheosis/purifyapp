@@ -35,7 +35,10 @@ export function PrayersHero({ children }: { children?: ReactNode }) {
   const { t } = useTranslate();
   const media = sectionMedia("prayers");
   const picture = useRef<HTMLDivElement>(null);
-  useBarOverPicture(picture);
+  // The verse stands on the picture: the bar is solid again as its first line reaches it, so the
+  // tab's name and the verse never cross (1.9; ./barOverPicture, and You's reader the same).
+  const words = useRef<HTMLQuoteElement>(null);
+  useBarOverPicture(picture, words);
 
   return (
     <section className="prayers-hero relative md:mx-auto md:mt-6 md:w-full md:max-w-[760px] lg:max-w-[880px]">
@@ -67,7 +70,8 @@ export function PrayersHero({ children }: { children?: ReactNode }) {
       </div>
 
       <figure className="prayers-hero-verse prayers-hero-in relative px-5">
-        <blockquote>
+        {/* What the bar watches: 12px of room over the first line, taken up and given back. */}
+        <blockquote ref={words} data-prayers-words="" className="-mt-3 pt-3">
           <p className="words-halo font-heading text-title font-bold leading-[1.1] tracking-[-0.01em] text-paper text-balance">
             {t("ui.prayWithoutCeasing")}
           </p>

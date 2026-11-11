@@ -14,9 +14,10 @@ import { sectionMedia } from "@/lib/media/sections";
  * The Ladder of Divine Ascent fills the top of the screen from its very top,
  * under the clear tab bar, and fades into the page, as Prayers' Pantocrator
  * does (components/mobile/PrayersHero.tsx, the model): the bar is clear over
- * it until it has gone up under the bar (./barOverPicture), and the picture
- * is pulled up by the bar's height (app/globals.css, the Prayers block, which
- * holds both). The reader stands on it (YouIdentity): their picture, their
+ * it until the reader's own words on it reach the bar, or the picture has
+ * gone up under it (components/mobile/barOverPicture.ts), so the tab's name
+ * and the reader's never cross; and the picture is pulled up by the bar's
+ * height (app/globals.css, the Prayers block, which holds both). The reader stands on it (YouIdentity): their picture, their
  * name, the way to their profile and their badges, or Sign in. At its foot
  * `children`: the prayer rope and the week's line. The picture and the reader
  * fade in as the tab arrives, and with motion off they are simply there.
@@ -31,7 +32,8 @@ import { sectionMedia } from "@/lib/media/sections";
 export function YouHero({ who, children }: { who: YouWho; children?: ReactNode }) {
   const media = sectionMedia("you");
   const picture = useRef<HTMLDivElement>(null);
-  useBarOverPicture(picture);
+  const words = useRef<HTMLDivElement>(null);
+  useBarOverPicture(picture, words);
 
   return (
     <section data-you-hero="" className="you-hero relative md:mx-auto md:mt-6 md:w-full md:max-w-[760px] lg:max-w-[880px]">
@@ -56,7 +58,11 @@ export function YouHero({ who, children }: { who: YouWho; children?: ReactNode }
       </div>
 
       <div data-you-who-place={who.state === "in" ? "in" : "out"} className="you-hero-who you-hero-in relative px-5">
-        <YouIdentity who={who} />
+        {/* What the bar watches. Its box starts 12px over its first line (taken up and given
+            back, so nothing moves), and the bar has closed by the time the words arrive. */}
+        <div ref={words} data-you-words="" className="-mt-3 pt-3">
+          <YouIdentity who={who} />
+        </div>
       </div>
 
       {children ? <div className="you-hero-in you-hero-foot relative mt-4 px-5">{children}</div> : null}
