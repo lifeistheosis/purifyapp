@@ -64,12 +64,29 @@ function CheckControl({
 }) {
   const { t } = useTranslate();
   const order: CheckinStatus[] = ["kept", "partial", "broken"];
+  // A mark that is on wears the palette's own soft tone for its word and its
+  // edge: the green the calendar keeps for a fish day, the red it keeps for a
+  // strict fast. Each palette sets its soft tones to be read on it, so the
+  // word turns with the palette a reader is in.
+  //
+  // Kept was a fixed emerald, the one colour on the page that followed no
+  // palette (fresh eyes M5, 2026-11-11). And walked with marks on, which the
+  // gate's walk at rest cannot see: Broke's word, the red itself at 80
+  // percent, was 2.3:1 on Dark and 3.2:1 on Light, and Kept's green on Light
+  // was 4.25:1 over its own 15 percent fill. So the words are the soft tones
+  // whole, and Kept has an edge and no fill: on Light its green is 4.58:1 on
+  // a card with nothing under it, 4.45:1 over a fill of even 5 percent.
   const active: Record<CheckinStatus, string> = {
-    kept: "border-emerald-400/60 bg-emerald-400/15 text-emerald-200",
+    kept: "border-sage-soft/50 bg-transparent text-sage-soft",
     partial: "border-gold/60 bg-gold/15 text-gold-pale",
-    broken: "border-crimson/50 bg-crimson/10 text-crimson/80",
+    broken: "border-crimson-soft/50 bg-crimson-soft/10 text-crimson-soft",
   };
   const pad = size === "lg" ? "px-4 py-2.5 text-ui" : "px-2.5 py-1 text-caption";
+  // hit-44 (app/globals.css): each pill takes a finger over 44px, and is
+  // drawn as it was. The small ones stood 29px tall, thirty of them down the
+  // recent days (the pre-build gate's first run, gate-run-1.md); drawn 44px
+  // tall they would have made every day's row a wall of buttons. The rows
+  // stand 74px apart, so one day's reach never lies over the next day's.
   return (
     <div className="flex gap-2">
       {order.map((s) => {
@@ -80,7 +97,7 @@ function CheckControl({
             type="button"
             onClick={() => onSet(s)}
             aria-pressed={on}
-            className={`rounded-pill border font-sans font-semibold transition-colors ${pad} ${
+            className={`hit-44 rounded-pill border font-sans font-semibold transition-colors ${pad} ${
               on
                 ? active[s]
                 : "border-paper/15 bg-paper/[0.03] text-paper/55 hover:bg-paper/[0.07]"
@@ -118,6 +135,8 @@ export function FastingTrackerClient() {
   );
   const kindOf = useCallback((d: Date) => ruleFor(d, style).kind, [style]);
   const { byDay, streak, summary, mark, clear } = useFastCheckins(kindOf, today);
+  // Every day kept, whole or in part: the number on the second card, and what its line is counted by.
+  const keptInAll = summary.kept + summary.partial;
 
   const todayKey = dayKey(today);
   const todayFast = ruleFor(today, style);
@@ -175,20 +194,35 @@ export function FastingTrackerClient() {
             <p className="font-display-serif text-display-sm leading-none text-gold-pale">
               {streak}
             </p>
-            <p className="mt-2 font-sans text-caption text-paper/60">
-              {streak === 0
-                ? t("fasting.streakNone")
-                : tn("fasting.streakKept", streak)}
+            {/* Both lines stand in the one place and only one is seen, so the
+                card keeps the taller one's height. The line changes when a
+                day is marked, and a card that changed height with it moved
+                Kept, In part and Broke 19px under the finger (fresh eyes
+                M5). */}
+            <p className="mt-2 grid font-sans text-caption text-paper/60">
+              <span aria-hidden={streak !== 0} className={`col-start-1 row-start-1 ${streak === 0 ? "" : "invisible"}`}>
+                {t("fasting.streakNone")}
+              </span>
+              <span aria-hidden={streak === 0} className={`col-start-1 row-start-1 ${streak === 0 ? "invisible" : ""}`}>
+                {tn("fasting.streakKept", Math.max(streak, 1))}
+              </span>
             </p>
           </div>
           <div className="flex-1 rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
             <p className="font-display-serif text-title leading-none text-paper">
-              {summary.kept + summary.partial}
+              {keptInAll}
             </p>
-            <p className="mt-2 font-sans text-caption text-paper/60">
-              {summary.partial
-                ? t("fasting.keptInAllPartial", { partial: summary.partial })
-                : t("fasting.keptInAll")}
+            {/* The same: "in part" joins this line when a day is marked so.
+                The line is counted with the number over it (tn): it read "1
+                days kept in all." with one day marked, in every language
+                (the gate's tap walk, 2026-11-11). */}
+            <p className="mt-2 grid font-sans text-caption text-paper/60">
+              <span aria-hidden={Boolean(summary.partial)} className={`col-start-1 row-start-1 ${summary.partial ? "invisible" : ""}`}>
+                {tn("fasting.keptInAll", keptInAll)}
+              </span>
+              <span aria-hidden={!summary.partial} className={`col-start-1 row-start-1 ${summary.partial ? "" : "invisible"}`}>
+                {tn("fasting.keptInAllPartial", keptInAll, { partial: Math.max(summary.partial, 1) })}
+              </span>
             </p>
           </div>
         </div>
@@ -261,8 +295,11 @@ export function FastingTrackerClient() {
           })}
         </ul>
 
+        {/* 45, a share the faint-text rules draw at each palette's own safe
+            strength (app/globals.css): at 40 this line was 2.31:1 on Light
+            and 2.86:1 on Candlelight (fresh eyes M5). */}
         <p
-          className="reveal-rise mt-8 font-sans text-caption leading-[1.6] text-paper/40"
+          className="reveal-rise mt-8 font-sans text-caption leading-[1.6] text-paper/45"
           style={{ animationDelay: "340ms" }}
         >
           {t("fasting.deviceNote")}{" "}
