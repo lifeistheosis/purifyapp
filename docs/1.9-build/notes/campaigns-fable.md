@@ -4719,3 +4719,68 @@ other three it uses were in the catalog already (`campaigns.loadFailed`,
 with its own catalog's name for prayer campaigns, on the arbiter's word
 (2026-11-11, 02:40 UTC).
 
+---
+
+## 40. Done for 1.9 (2026-11-11)
+
+His word of the night was "rec for all and finalize this build", and his
+rule of the same night is that a release ships finished. Sections 36 to 39
+are what his answers put in. This is what closed it.
+
+### 40.1 What went in last
+
+- His answers in words: thirteen lines in twenty languages, the truer line
+  under a campaign's prayer list, and the wall's two leftover lines (36, 37).
+- The campaigns' two notices, on (34).
+- The care note: a moderator's button and its one writer, on with its signed
+  SQL (38).
+- A campaign's address when campaigns are not this reader's to open, or the
+  server was not reached (39).
+- The house's confirm dialog: its two buttons at 44 (38.4). Found by the
+  care note's still, mended in the one component every screen asks through.
+- The words test's waiting list (`lib/ui/__tests__/wordsTrue.test.ts`, the
+  pre-build gate's part 4): the wall's two lines came off it with their
+  mend, as that test asks.
+
+### 40.2 How it was held
+
+- **Gates:** typecheck 0, lint 0 and the whole unit suite 0 (12,620 tests
+  at 03:41 UTC), run again after each rebase before the push. The Android
+  export, the iOS export and the website build 0 on the tip as it stood at
+  03:03 UTC, before those rebases; what came after it of ours was a test's
+  list, four pictures, one line of the harness and this section.
+- **The walk:** fifty-four flows on the final Android export, each with what
+  it sends checked, and the pictures' own six on a scratch build cut with
+  pictures. Sixty of sixty. The fifty-four were walked as two halves side by
+  side (`HALF=1/2`, `HALF=2/2`), which took nineteen minutes where one
+  process takes about thirty.
+- **Stills:** forty-seven drawn, each passing `checkMock` on the five
+  palettes and each looked at by eye against what its caption says. The page
+  for him shows forty-six: the rules page stands in two of the forty-seven,
+  and is shown once.
+  One step of the harness itself timed out once while four browsers ran at
+  once (still 11, a tap sent while a sheet was still arriving); alone it
+  passed, and the step now waits for the sheet to rest.
+- **One page for him:** the stills, in the order a reader meets them, with
+  what waits on him at its foot.
+
+### 40.3 What waits on him
+
+- The merge of 1.9. It carries the campaigns' signed SQL, and brings
+  campaigns to the main web for his account alone
+  (`lib/campaigns/flags.ts`).
+- Opening them for every reader, once he has tried them there. The store
+  builds follow.
+- Pictures: his steps P1 to P5 (`OWNER-STEPS.md`).
+
+### 40.4 What is dark at release, and says so nowhere
+
+- Pictures, in the store builds (`PICTURES_IN_STORE_BUILDS`): no picture
+  control is drawn and nothing is asked for.
+- Campaigns, for every reader but him, until he opens them. A reader who
+  follows a campaign's address before then is told "Prayer campaigns are not
+  open yet." (39).
+
+The release's patch note should name prayer campaigns only once they are
+open for every reader, and should not name pictures while they are off
+(`AGENTS.md`, the release ritual, step 4). That note is the arbiter's.
