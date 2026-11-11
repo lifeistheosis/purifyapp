@@ -143,7 +143,7 @@ const hasContent = (v: LocalValue | null): v is LocalValue => hasOldContent(v) |
 /**
  * What can be sent now. Marks on words, and every paragraph of the texts
  * beside the Fathers' works, need the owner's SQL
- * (docs/1.9-build/sql/annotation-marks.sql: the marks column and the
+ * (supabase/migrations/20261111024250_annotation_marks.sql: the marks column and the
  * text-paragraph kind arrive together). Before it runs they stay on the
  * device: a row of that kind would be refused, and a row holding only marks
  * would arrive empty.

@@ -408,7 +408,7 @@ copy or a picture of their words is signed Purify with the page's title, never
 with a saint's or a council's name. A Father's words and a council's are signed
 with theirs.
 
-**Sync.** `docs/1.9-build/sql/annotation-marks.sql` waits for his sign-off: one new
+**Sync.** `supabase/migrations/20261111024250_annotation_marks.sql` was signed by him on 2026-11-11 ("yes these are all fine") and runs on the merge: one new
 column (marks), one new kind (text-paragraph) and its three keys in the unique
 index. Dry-run twice on a scratch PostgreSQL 16 standing on the folder's 105
 files. Until it runs, marks stay on the phone: the sync asks whether the column is

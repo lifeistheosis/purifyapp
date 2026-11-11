@@ -1,6 +1,6 @@
 // Marks on any words of a paragraph (build 93 note 13), across devices.
 //
-// They need the owner's SQL (docs/1.9-build/sql/annotation-marks.sql): a
+// They need the owner's SQL (supabase/migrations/20261111024250_annotation_marks.sql): a
 // marks column, and the text-paragraph kind for the texts beside the Fathers'
 // works. Until it has run they must stay safe on the device that made them:
 // never sent to a table that cannot hold them, and never taken away by a row

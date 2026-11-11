@@ -1,10 +1,15 @@
 -- Highlights on any words, and on the texts beside the Fathers' works.
 --
--- NOT SIGNED YET. It waits here, outside supabase/migrations/, for the
--- owner's sign-off on the SQL. Signed, it moves unchanged below a header that
--- records the sign-off, as supabase/migrations/<14 digits>_annotation_marks.sql,
--- the digits from `date -u +%Y%m%d%H%M%S` on that day so that it sorts last.
--- The integration then runs it on the merge of 1.9 to main.
+-- SIGNED 2026-11-11, AND RUNS WITH THE MERGE. His words, about 02:21 UTC,
+-- to the arbiter's message that showed this file and asked "yes marks SQL":
+-- "yes these are all fine". Every statement is unchanged from the draft he
+-- read, which was kept in docs/1.9-build/sql/annotation-marks.sql until then
+-- and moved here below this header. Not applied by hand: the integration runs
+-- this file on the merge of 1.9 to main.
+--
+-- STILL OWED BEFORE THE MERGE: his read-only look below, which the arbiter is
+-- tracking. If "kinds_outside" names any kind, this file is not merged as it
+-- stands: a new file names that kind first.
 --
 -- WHY. His words of 2026-11-11 (build 93 note 13): "allow you to quote
 -- sentences and highlight whichever section or whichever word you want in the
@@ -36,7 +41,7 @@
 -- about to make. Run twice on a scratch PostgreSQL 16 standing on the
 -- folder's 105 files, 2026-11-11: the second run changed nothing.
 --
--- THE READ-ONLY LOOK to run before signing (it changes nothing and returns
+-- THE READ-ONLY LOOK to run before the merge (it changes nothing and returns
 -- no reader's data): the kind check as production has it, and any kind in
 -- use that this file's list would refuse.
 --
