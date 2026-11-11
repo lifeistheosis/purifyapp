@@ -1011,7 +1011,7 @@ export function VerseRow({
  <span className="inline-flex items-baseline ms-1.5 align-super">
  <a
  href={`#rail-v${verse.n}`}
- className="hidden lg:inline-flex native-md-hidden text-comment hover:text-comment-hover transition-colors"
+ className="hit-44 hidden lg:inline-flex native-md-hidden text-comment hover:text-comment-hover transition-colors"
  aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
  title={t("bible.openCommentary")}
  >

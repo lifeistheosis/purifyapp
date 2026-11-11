@@ -316,7 +316,7 @@ function IconRow({ href, name, line, art, lit = false }: { href: string; name: s
         href={href}
         data-lit={lit || undefined}
         className={cn(
-          "my-0.5 flex items-center gap-3 rounded-[14px] py-2 ps-2.5 pe-3 transition-colors duration-150 motion-reduce:transition-none",
+          "my-0.5 flex min-h-11 items-center gap-3 rounded-[14px] py-2 ps-2.5 pe-3 transition-colors duration-150 motion-reduce:transition-none",
           lit ? "book-lit" : "hover:bg-paper/[0.04] active:bg-paper/[0.06]",
         )}
       >

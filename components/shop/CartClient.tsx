@@ -279,7 +279,7 @@ export function CartClient() {
                           type="button"
                           aria-label={t("shop.reduceQuantityOf", { title: item.title })}
                           onClick={() => setCartQuantity(item.slug, item.quantity - 1)}
-                          className="tap-press flex h-9 w-9 items-center justify-center rounded-l-pill text-paper/70 hover:text-paper"
+                          className="tap-press hit-44 flex h-9 w-9 items-center justify-center rounded-l-pill text-paper/70 hover:text-paper"
                         >
                           <Minus size={16} />
                         </button>
@@ -290,7 +290,7 @@ export function CartClient() {
                           type="button"
                           aria-label={t("shop.increaseQuantityOf", { title: item.title })}
                           onClick={() => setCartQuantity(item.slug, item.quantity + 1)}
-                          className="tap-press flex h-9 w-9 items-center justify-center rounded-r-pill text-paper/70 hover:text-paper"
+                          className="tap-press hit-44 flex h-9 w-9 items-center justify-center rounded-r-pill text-paper/70 hover:text-paper"
                         >
                           <Plus size={16} />
                         </button>

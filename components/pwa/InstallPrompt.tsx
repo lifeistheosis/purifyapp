@@ -214,7 +214,7 @@ export function InstallPrompt() {
             type="button"
             onClick={dismiss}
             aria-label={t("translationDisclaimer.dismiss")}
-            className="h-8 w-8 rounded-pill text-paper/60 hover:text-paper inline-flex items-center justify-center"
+            className="hit-44 h-8 w-8 rounded-pill text-paper/60 hover:text-paper inline-flex items-center justify-center"
           >
             ✕
           </button>

@@ -78,7 +78,7 @@ export function NotDownloadedNotice({
         <button
           type="button"
           onClick={onDownload}
-          className="tap-press mt-4 inline-flex h-10 items-center rounded-pill border border-paper/20 bg-paper/[0.04] px-5 font-sans text-ui font-medium text-paper hover:border-paper/40"
+          className="tap-press hit-44 mt-4 inline-flex h-10 items-center rounded-pill border border-paper/20 bg-paper/[0.04] px-5 font-sans text-ui font-medium text-paper hover:border-paper/40"
         >
           Download
         </button>

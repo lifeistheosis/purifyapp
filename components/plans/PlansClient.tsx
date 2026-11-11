@@ -182,7 +182,7 @@ function ContinueCard({
     <section aria-labelledby="plans-continue" data-plans-continue="" className="rounded-[22px] bg-night-soft p-5 ring-1 ring-inset ring-paper/10">
       <p className="font-sans text-caption font-semibold text-paper/55">{t("plans.dayOf", { day: next + 1, total })}</p>
       <h2 id="plans-continue" className="mt-1 font-serif text-title-sm font-semibold leading-snug text-paper">
-        <Link href={`/plans/${plan.id}`} className="hover:underline">
+        <Link href={`/plans/${plan.id}`} className="hit-44 hover:underline">
           {t(`plans.${plan.id}.name`)}
         </Link>
       </h2>

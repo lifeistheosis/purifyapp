@@ -115,7 +115,7 @@ function ToggleRow({
         aria-label={label}
         disabled={disabled}
         onClick={() => onChange(!on)}
-        className={`relative h-6 w-11 shrink-0 rounded-full motion-safe:transition-colors disabled:opacity-40 ${
+        className={`hit-44 relative h-6 w-11 shrink-0 rounded-full motion-safe:transition-colors disabled:opacity-40 ${
           on ? "bg-paper" : "bg-paper/20"
         }`}
       >

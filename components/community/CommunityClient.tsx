@@ -1802,7 +1802,7 @@ function PostCardInner({
               // line up two things of different heights when one of them is a bare
               // text button: the optical baseline lands wherever the shorter one's
               // box happens to put it.
-              className="ms-auto inline-flex h-9 items-center gap-1 ps-1 font-sans text-[13px] font-semibold text-paper/60 hover:text-paper"
+              className="hit-44 ms-auto inline-flex h-9 items-center gap-1 ps-1 font-sans text-[13px] font-semibold text-paper/60 hover:text-paper"
             >
               {tn("community.replyCount", shownCount)}
               <ChevronDown size={14} className={cn("motion-safe:transition-transform", open && "rotate-180")} />

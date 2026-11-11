@@ -62,9 +62,63 @@ function* walk(dir: string): Generator<string> {
 }
 
 /**
- * Count sub-44px interactive elements. An element counts when its opening tag
- * and its className land within a short window of each other, which is how
- * these are written throughout the codebase.
+ * The control's own classes: the first className after its tag, unless a
+ * child's tag comes first (then it has none here). A string, or a {...}
+ * expression read to its closing brace, with the class strings of any
+ * same-file constant it names (`const arrow = "h-11 w-11 ..."`), which the
+ * window alone could not see.
+ */
+function ownClasses(window: string, constants: Map<string, string>): string | null {
+  const at = window.indexOf("className=");
+  if (at < 0 || /<[A-Za-z]/.test(window.slice(1, at))) return null;
+  const rest = window.slice(at + "className=".length);
+  let own = "";
+  if (rest[0] === '"' || rest[0] === "'") {
+    const end = rest.indexOf(rest[0], 1);
+    own = rest.slice(1, end < 0 ? undefined : end);
+  } else if (rest[0] === "{") {
+    let depth = 0;
+    let quote = "";
+    for (let k = 0; k < rest.length; k++) {
+      const c = rest[k];
+      if (quote) {
+        if (c === quote) quote = "";
+        continue;
+      }
+      if (c === '"' || c === "'") quote = c;
+      else if (c === "{") depth++;
+      else if (c === "}" && --depth === 0) {
+        own = rest.slice(1, k);
+        break;
+      }
+    }
+    if (!own) own = rest;
+  }
+  for (const name of own.match(/\b[A-Za-z_]\w*\b/g) ?? []) {
+    const value = constants.get(name);
+    if (value) own += ` ${value}`;
+  }
+  return own;
+}
+
+/** A height of 44px or more that the control states for itself. */
+function statesTall(classes: string): boolean {
+  if (/(?<![\w-])(?:min-)?h-(?:1[1-9]|[2-9]\d|\d{3}|full|screen|svh|dvh)\b/.test(classes)) return true;
+  if (/(?<![\w-])size-(?:1[1-9]|[2-9]\d|\d{3})\b/.test(classes)) return true;
+  for (const m of classes.matchAll(/(?<![\w-])(?:min-)?(?:h|size)-\[(\d+(?:\.\d+)?)(px|rem)\]/g)) {
+    if ((m[2] === "px" ? Number(m[1]) : Number(m[1]) * ROOT_PX) >= 44) return true;
+  }
+  return false;
+}
+
+/**
+ * Count sub-44px interactive elements. Each control is read by its own
+ * classes first (a height it states for itself, small or 44 and over), and
+ * by the classes inside it only when it states none, since then a child's
+ * height is its height (an icon button is the size of its icon). Read twelve
+ * lines from the tag (1.9: eight missed the Ambience row and the reader
+ * settings' chips, whose classes sit further down), and a .hit-44 control
+ * has a 44px touch box whatever height it paints at.
  */
 function countSmallTargets(): { total: number; byFile: Record<string, number>; written: number; writtenByFile: Record<string, number> } {
   const byFile: Record<string, number> = {};
@@ -75,20 +129,24 @@ function countSmallTargets(): { total: number; byFile: Record<string, number>; w
     for (const file of walk(join(ROOT, dir))) {
       const src = readFileSync(file, "utf8");
       const lines = src.split("\n");
+      const constants = new Map([...src.matchAll(/\bconst\s+([A-Za-z_]\w*)\s*=\s*(["'])([^"'\n]*)\2/g)].map((m) => [m[1], m[3]] as [string, string]));
       let n = 0;
       let w = 0;
       for (let i = 0; i < lines.length; i++) {
         if (!INTERACTIVE.test(lines[i])) continue;
         // The className may sit on the same line or a few lines below.
-        const window = lines.slice(i, i + 8).join(" ");
+        const tagAt = lines[i].search(INTERACTIVE);
+        const window = [lines[i].slice(tagAt), ...lines.slice(i + 1, i + 12)].join(" ");
         const upToNextTag = window.split(/<(?:button|a|Link)\b/).slice(0, 2).join(" ");
         if (!/className=/.test(upToNextTag)) continue;
+        const own = ownClasses(upToNextTag, constants);
+        const read = own === null || (!SMALL_H.test(own) && !writtenSmall(own) && !statesTall(own)) ? upToNextTag : own;
         // A control carrying .hit-44 has a 44px touch box regardless of the
         // height it paints at, so it is not a defect even though the small
         // height class is still there.
-        if (/\bhit-44\b/.test(upToNextTag)) continue;
-        if (SMALL_H.test(upToNextTag)) n++;
-        else if (writtenSmall(upToNextTag)) w++;
+        if (/\bhit-44\b/.test(read) || (own !== null && /\bhit-44\b/.test(own))) continue;
+        if (SMALL_H.test(read)) n++;
+        else if (writtenSmall(read)) w++;
       }
       const name = file.slice(ROOT.length + 1).replace(/\\/g, "/");
       if (n > 0) {
@@ -147,7 +205,18 @@ function countSmallTargets(): { total: number; byFile: Record<string, number>; w
 // cannot see, and are .hit-44 with them (held below).
 // 28 -> 26 on 2026-11-10 (1.9): the tree stood at 26, two fixed since
 // without the ceiling following.
-const MAX_SMALL_TARGETS = 26;
+// 1.9 (2026-11-11, the arbiter's word): the count reads twelve lines from
+// the tag, and each control by its own classes first, so a child's height
+// counts only where the control states none of its own (an icon button is
+// the size of its icon). So taught it saw 30. The same night 23 went to 44,
+// their look kept (.hit-44, or the row's own min-h-11 where it was 57px
+// already). Left: the Bible's and a Father's work's desktop action circles
+// (VerseRow 1303, 1326, 1359, 1380; ParagraphRow 423, 455, 471), 28px and
+// 4px apart, so a 44px touch box would reach into the next one: their
+// spacing waits on the owner's word; and the admin panel's five (Admin's):
+// SupportConsole 496, GrowthPanel 578 and 597, MessagesTab 296,
+// TrafficViews 953.
+const MAX_SMALL_TARGETS = 12;
 
 // Heights written out (WRITTEN_H above), counted on their own so the ceiling
 // above keeps its history and still only falls. The count learned to read
@@ -175,7 +244,12 @@ const MAX_SMALL_TARGETS = 26;
 // child's height read as the control's (Today's icon tile in a 54px row,
 // Now Playing's loop number in a 44px option), which keep their look by
 // size-[38px] and by style. None is left.
-const MAX_WRITTEN_SMALL_TARGETS = 0;
+// The count taught on 2026-11-11 (above) sees two more that the eight-line
+// window could not: the admin panel's traffic rows (TrafficViews 283 and
+// 772, min-h-[27px] and min-h-[28px]). Not new controls, newly seen, as the
+// 32 were when the count first read written heights; they are Admin's, and
+// this falls to 0 with them.
+const MAX_WRITTEN_SMALL_TARGETS = 2;
 
 describe("touch targets", () => {
   const { total, byFile, written, writtenByFile } = countSmallTargets();
@@ -206,6 +280,20 @@ describe("touch targets", () => {
     expect(menu).toContain('touch ? "min-h-11 text-detail" : "hit-44 min-h-9 text-caption"');
     expect(chips.split('touch ? "min-h-11 text-detail" : "hit-44 text-caption"').length - 1).toBe(2);
     expect(chips).toContain('touch ? "gap-y-1.5" : "gap-y-2"');
+  });
+
+  it("reads a control by its own classes, and a child's height only where the control states none", () => {
+    const none = new Map<string, string>();
+    // Its own classes, not a child's.
+    expect(ownClasses('<button type="button" className="min-h-11 px-2"><span className="h-3 w-3" />', none)).toBe("min-h-11 px-2");
+    expect(ownClasses('<button className={cn("h-9 w-9", on && "x")}>', none)).toContain("h-9 w-9");
+    // A child's class before any of its own: none here.
+    expect(ownClasses('<button type="button"><span className="h-6" />', none)).toBeNull();
+    // A same-file constant is read through (MobileWorkPill's arrows).
+    expect(ownClasses("<button className={cn(arrow, next ? \"a\" : \"b\")}>", new Map([["arrow", "h-11 w-11"]]))).toContain("h-11 w-11");
+    // 44 and over, stated: a child's height is then the child's.
+    for (const tall of ["min-h-11", "h-12", "size-11", "h-[50px]", "min-h-[104px]", "h-full"]) expect(statesTall(tall), tall).toBe(true);
+    for (const small of ["h-9", "min-h-9", "h-[40px]", "size-10", "px-4"]) expect(statesTall(small), small).toBe(false);
   });
 
   it("reads a height written out as well as the scale's", () => {

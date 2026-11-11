@@ -105,7 +105,7 @@ export function PostSignInBridge() {
         type="button"
         onClick={dismiss}
         aria-label={t("translationDisclaimer.dismiss")}
-        className="shrink-0 h-9 w-9 inline-flex items-center justify-center rounded-pill text-paper/65 hover:text-paper"
+        className="hit-44 shrink-0 h-9 w-9 inline-flex items-center justify-center rounded-pill text-paper/65 hover:text-paper"
       >
         ✕
       </button>

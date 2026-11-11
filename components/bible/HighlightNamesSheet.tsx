@@ -199,7 +199,7 @@ function NamesSheet({ open, onClose, focusId = null }: Props) {
                 type="button"
                 onPointerDown={(e) => e.preventDefault()}
                 onClick={() => takeIdea(idea)}
-                className="tap-press inline-flex min-h-9 shrink-0 items-center rounded-pill border border-paper/15 px-4 font-sans text-detail font-semibold text-paper/75 hover:border-paper/35 hover:text-paper active:bg-paper/10"
+                className="tap-press hit-44 inline-flex min-h-9 shrink-0 items-center rounded-pill border border-paper/15 px-4 font-sans text-detail font-semibold text-paper/75 hover:border-paper/35 hover:text-paper active:bg-paper/10"
               >
                 {idea}
               </button>

@@ -88,7 +88,7 @@ export function AppNav() {
             // (lib/ui/routeMotion.ts, 1.9).
             onClick={() => returnBy(() => router.back())}
             style={{ animationDelay: "0ms" }}
-            className="appnav-in inline-flex items-center justify-center h-9 w-9 rounded-pill border border-paper/20 text-paper/70 hover:text-paper hover:border-paper/40 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
+            className="appnav-in hit-44 inline-flex items-center justify-center h-9 w-9 rounded-pill border border-paper/20 text-paper/70 hover:text-paper hover:border-paper/40 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
           >
             <svg
               width={18}

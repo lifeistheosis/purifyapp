@@ -186,7 +186,7 @@ export function NowPlayingBar() {
             type="button"
             onClick={toggle}
             aria-label={toggleLabel}
-            className="tap-press grid h-10 w-10 shrink-0 place-items-center rounded-full text-paper hover:bg-paper/10"
+            className="tap-press hit-44 grid h-10 w-10 shrink-0 place-items-center rounded-full text-paper hover:bg-paper/10"
           >
             {playing ? <Pause size={22} /> : <Play size={22} className="translate-x-[1px]" />}
           </button>
@@ -195,7 +195,7 @@ export function NowPlayingBar() {
             type="button"
             onClick={() => unload()}
             aria-label={t("prayers.dismissPlayer")}
-            className="tap-press grid h-8 w-8 shrink-0 place-items-center rounded-full text-paper/55 hover:bg-paper/10 hover:text-paper"
+            className="tap-press hit-44 grid h-8 w-8 shrink-0 place-items-center rounded-full text-paper/55 hover:bg-paper/10 hover:text-paper"
           >
             <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <path d="M18 6 6 18M6 6l12 12" />

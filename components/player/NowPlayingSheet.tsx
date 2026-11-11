@@ -387,7 +387,7 @@ export function NowPlayingSheet() {
                 aria-label={`${t("player.speed")}: ${speed}`}
                 className={optionClass(audio.rate !== 1)}
               >
-                <span aria-hidden className="grid h-[21px] place-items-center text-[15px] font-bold leading-none text-paper">
+                <span aria-hidden className="grid place-items-center text-[15px] font-bold leading-none text-paper" style={{ height: 21 }}>
                   {speed}
                 </span>
                 <OptionWord>{t("player.option.speed")}</OptionWord>

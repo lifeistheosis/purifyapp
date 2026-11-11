@@ -333,7 +333,7 @@ export function ReaderDock({
             aria-haspopup="dialog"
             onClick={onPick}
             aria-label={pickLabel}
-            className="reader-dock-title tap-press pointer-events-auto flex h-10 min-w-0 items-center gap-1.5 rounded-pill px-3.5 font-sans text-[15px] font-semibold"
+            className="reader-dock-title tap-press hit-44 pointer-events-auto flex h-10 min-w-0 items-center gap-1.5 rounded-pill px-3.5 font-sans text-[15px] font-semibold"
           >
             <span className="truncate">{bookName}</span>
             <span className="shrink-0 tabular-nums">{chapter}</span>

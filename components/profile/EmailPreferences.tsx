@@ -111,7 +111,7 @@ export function EmailPreferences() {
                   disabled={saving}
                   onClick={() => void toggle(row.key)}
                   className={
-                    "relative h-6 w-11 shrink-0 rounded-full border transition-colors disabled:opacity-60 " +
+                    "hit-44 relative h-6 w-11 shrink-0 rounded-full border transition-colors disabled:opacity-60 " +
                     (on ? "border-gold/50 bg-gold/40" : "border-paper/20 bg-paper/10")
                   }
                 >
