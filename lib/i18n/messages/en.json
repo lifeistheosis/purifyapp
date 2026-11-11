@@ -5482,5 +5482,6 @@
   "account.publicEmail": "− Requires a working email.",
   "profile.signInLink": "Sign in →",
   "profile.signInKeeps": "Signing in removes nothing from this device.",
-  "profile.bridgeBody": "Your highlights, notes and bookmarks from this device are going to your account now, and will be on every device you sign in on."
+  "profile.bridgeBody": "Your highlights, notes and bookmarks from this device are going to your account now, and will be on every device you sign in on.",
+  "journal.page.highlightNone": "Highlight marks your own words. Write a few first."
 }

@@ -111,12 +111,15 @@ describe("notebooks and tags (Plus, step 2b)", () => {
   const client = read("components/journal/JournalClient.tsx");
   const feed = read("components/journal/JournalFeed.tsx");
 
-  it("one line under the title, the Plus mark and the upgrade sheet without Plus", () => {
-    const line = blocks.slice(blocks.indexOf("data-page-props"), blocks.indexOf("data-page-props") + 900);
+  it("one line under the title once the page has them, the Plus mark and the upgrade sheet without Plus", () => {
+    // The line stands only on a page that has a notebook or tags; the way to
+    // give it one is in More (writingSheet.test.ts, "no door to Plus under
+    // Title": build 93 note 8).
+    const line = blocks.slice(blocks.indexOf('data-page-props=""'), blocks.indexOf('data-page-props=""') + 900);
     expect(line).toMatch(/if \(locked\) upgrade\.open\("journal"\);\s*else editor\.setPanel/);
-    expect(line).toContain('t("journal.page.addToNotebook")');
     expect(line).toContain("{locked ? <PlusMark");
     expect(line).toContain("min-h-11");
+    expect(blocks).toContain('label={editor.page.notebook || t("journal.page.addToNotebook")}');
   });
 
   it("a notebook is the pages that name it: gathered from the pages, offered again, and a chip in the list", () => {

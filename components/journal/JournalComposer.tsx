@@ -115,10 +115,23 @@ export function JournalComposer({
   }, [open]);
 
   // The words, ready to write, once the sheet is up: a note's field, or the
-  // page's last words.
+  // page's last words. A finger comes first. A reader who has put one down
+  // since the sheet opened (on Title, on a kind, on a tool) keeps what they
+  // chose, and nothing is moved. Until 2026-11-11 this ran whatever the
+  // reader had done: Title tapped in the first third of a second took the
+  // cursor, and lost it to the words when the timer came (build 93 note 8;
+  // measured on the export at 140ms and at 240ms after the sheet's parts
+  // stood).
   useEffect(() => {
     if (!open) return;
+    let touched = false;
+    const onDown = () => {
+      touched = true;
+    };
+    document.addEventListener("pointerdown", onDown, true);
     const id = window.setTimeout(() => {
+      document.removeEventListener("pointerdown", onDown, true);
+      if (touched) return;
       const fields = document.querySelectorAll<HTMLTextAreaElement>("[data-journal-composer] [data-page-text] textarea");
       const el = isNote ? area.current : (fields[fields.length - 1] ?? null);
       if (!el) return;
@@ -132,7 +145,10 @@ export function JournalComposer({
         if (block !== undefined) setCursor({ index: Number(block), start: el.value.length, end: el.value.length });
       }
     }, 320);
-    return () => window.clearTimeout(id);
+    return () => {
+      window.clearTimeout(id);
+      document.removeEventListener("pointerdown", onDown, true);
+    };
   }, [open, isNote, setCursor]);
 
   const today = (() => {
@@ -179,22 +195,38 @@ export function JournalComposer({
       panelClassName="md:max-w-[720px]"
       bodyClassName="pb-10"
     >
-      <div data-journal-composer="">
+      {/* data-sheet-nodrag: a finger put down on the page (a field, a card, the
+          room to write) never drags the sheet. It did: a pull of 60px that
+          began on Title moved the whole sheet 42px (lib/ui/useDraggableSheet,
+          the body's pull from its top). The sheet is still pulled down by its
+          head, the handle and the row of Close and Done. */}
+      <div data-journal-composer="" data-sheet-nodrag="">
         {shareable ? <SharedPageLine share={share} /> : null}
         {draft.source || draft.prompt ? <SourceCard source={draft.source} prompt={draft.prompt?.text} sourceLabel={sourceLabel} openLink={openLink} /> : null}
 
         {isNote ? null : (
-          <div role="radiogroup" aria-label={t("journal.kindLabel")} className="mt-4 flex flex-wrap gap-2">
+          // The house's segmented switch (components/ui/SegmentedSwitch.tsx:
+          // one rounded row, the chosen part filled, no word cut), as a group
+          // of radios, which is what a kind is. They were three outlined
+          // pills. A tap on one holds the cursor where it is, as a tool does:
+          // the keyboard stays up and the words keep their place.
+          <div
+            role="radiogroup"
+            aria-label={t("journal.kindLabel")}
+            data-journal-kinds=""
+            className="no-scrollbar mt-4 grid grid-flow-col auto-cols-[minmax(max-content,1fr)] gap-1 overflow-x-auto rounded-pill border border-paper/10 bg-paper/[0.03] p-1"
+          >
             {JOURNAL_KINDS.map((k) => (
               <button
                 key={k}
                 type="button"
                 role="radio"
                 aria-checked={draft.kind === k}
+                onPointerDown={(e) => e.preventDefault()}
                 onClick={() => onChange({ ...draft, kind: k })}
                 className={cn(
-                  "tap-press hit-44 inline-flex min-h-9 items-center rounded-pill border px-4 font-sans text-detail font-semibold motion-safe:transition-colors",
-                  draft.kind === k ? "border-paper bg-paper text-night" : "border-paper/15 text-paper/70 hover:border-paper/35 hover:text-paper",
+                  "tap-press min-h-11 min-w-11 whitespace-nowrap rounded-pill px-1 font-sans text-detail font-semibold motion-safe:transition-colors",
+                  draft.kind === k ? "bg-paper text-night" : "text-paper/65 hover:text-paper",
                 )}
               >
                 {t(KIND_KEY[k])}

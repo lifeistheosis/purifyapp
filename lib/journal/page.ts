@@ -438,6 +438,38 @@ export function insertAt(blocks: readonly PageBlock[], at: { index: number; star
   return { blocks: tidyBlocks(list), inserted };
 }
 
+/**
+ * The text block a highlight goes on: the one the cursor is in when it has
+ * words (or already wears a colour, so the colour can come off), else the last
+ * with words. None while nothing is written: there is nothing to mark. Until
+ * 2026-11-11 an empty line under the cursor took the colour, which a reader
+ * saw as a tap that did nothing.
+ */
+export function highlightTarget(blocks: readonly PageBlock[], cursorIndex: number | undefined): number | null {
+  const here = cursorIndex !== undefined ? blocks[cursorIndex] : undefined;
+  if (cursorIndex !== undefined && here?.type === "text" && (here.text.trim() || here.color)) return cursorIndex;
+  for (let i = blocks.length - 1; i >= 0; i--) {
+    const b = blocks[i];
+    if (b.type === "text" && b.text.trim()) return i;
+  }
+  return null;
+}
+
+/**
+ * Where the page already holds an empty quote of one's own, or -1. Quote goes
+ * to it and lays no second one: an empty card is a question still open, and
+ * two of them are a mistake (build 93 note 8, his second screenshot).
+ */
+export function emptyQuoteAt(blocks: readonly PageBlock[]): number {
+  return blocks.findIndex((b) => b.type === "quote" && !b.text.trim() && !b.by.trim());
+}
+
+/** Where the page already holds this verse card, the same verses of the same chapter, or -1. A verse is laid once. */
+export function verseAt(blocks: readonly PageBlock[], verse: PageBlock): number {
+  if (verse.type !== "verse") return -1;
+  return blocks.findIndex((b) => b.type === "verse" && b.book === verse.book && b.chapter === verse.chapter && b.from === verse.from && b.to === verse.to);
+}
+
 /** Take a card away, joining the words either side of it again. */
 export function removeAt(blocks: readonly PageBlock[], index: number): PageBlock[] {
   return tidyBlocks(blocks.filter((_, i) => i !== index));

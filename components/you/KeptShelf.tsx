@@ -14,16 +14,16 @@
 // writings of the Fathers, saints, prayers, readings and icons. The journal
 // closes the shelf, with the reader's newest words on it.
 //
-// Without Plus the journal carries the Plus mark and opens the upgrade sheet
-// named for the journal, as its Write button does: the journal is a Plus
-// tool, shown and never hidden. The notes themselves stay on their verses,
-// free. The counts are allowed: the rule of no figures is for prayer.
+// The journal's cover opens the journal for every reader: writing in it is
+// free from 1.9 (docs/1.9-build/free-and-plus.md, plus.journal.keep), and
+// what Plus adds keeps its own locks inside it. Until 2026-11-11 this cover
+// still wore the Plus lock and opened the upgrade sheet, from the days when
+// the whole journal was Plus's (build 93 note 9, the arbiter's fact 11). The
+// counts are allowed: the rule of no figures is for prayer.
 
 import Link from "next/link";
-import { useMemo, type MouseEvent, type ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 
-import { PlusLock } from "@/components/billing/PlusMark";
-import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CoverArt } from "@/components/player/CoverArt";
 import { savedSource, savedTitle } from "@/components/saved/kinds";
@@ -31,7 +31,6 @@ import { verseOf } from "@/components/saved/SavedRow";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { Star } from "@/components/ui/icons/Star";
 import { ScrollRail } from "@/components/ui/ScrollRail";
-import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import type { JournalItem } from "@/lib/journal/feed";
 import type { SavedItem } from "@/lib/saved/feed";
 import { saintNameOf } from "@/lib/saved/passages";
@@ -63,8 +62,6 @@ export function KeptShelf({
 }) {
   useCoversVersion();
   const { t } = useTranslate();
-  const locked = usePlusFeatures() === false;
-  const upgrade = useUpgradeModal();
   const rows = useMemo(() => keptRows(feed), [feed]);
   const newestNote = journal[0] ?? null;
   const total = feed.length;
@@ -139,20 +136,10 @@ export function KeptShelf({
         {newestNote ? (
           <Tile
             href="/journal"
-            onClick={(e) => {
-              if (!locked) return;
-              e.preventDefault();
-              upgrade.open("journal");
-            }}
             name={t("journal.title")}
             // The newest words written, in the reading serif, as the journal sets them.
             detail={<span className="font-serif">{newestNote.body.replace(/\s+/g, " ").trim()}</span>}
-            count={
-              <>
-                {locked ? <PlusLock size={11} /> : null}
-                {journal.length}
-              </>
-            }
+            count={journal.length}
             cover={null}
             data="journal"
           />
@@ -165,7 +152,6 @@ export function KeptShelf({
 /** One cover on the shelf: the picture, its count in the corner, its name and its newest thing at the foot. */
 function Tile({
   href,
-  onClick,
   name,
   detail,
   count,
@@ -173,7 +159,6 @@ function Tile({
   data,
 }: {
   href: string;
-  onClick?: (e: MouseEvent<HTMLAnchorElement>) => void;
   name: string;
   detail: ReactNode;
   count: ReactNode;
@@ -184,7 +169,6 @@ function Tile({
     <li className="w-[calc((100%_-_18px)/3)] md:w-[168px]">
       <Link
         href={href}
-        onClick={onClick}
         data-kept={data}
         className="you-tile dark-island tap-press relative block h-[130px] overflow-hidden rounded-2xl bg-night-soft"
       >

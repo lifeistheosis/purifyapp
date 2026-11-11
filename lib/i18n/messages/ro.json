@@ -5556,5 +5556,6 @@
   "account.publicEmail": "− Cere un e-mail care funcționează.",
   "profile.signInLink": "Autentificare →",
   "profile.signInKeeps": "Autentificarea nu scoate nimic de pe acest dispozitiv.",
-  "profile.bridgeBody": "Evidențierile, notițele și semnele tale de carte de pe acest dispozitiv merg acum în contul tău și vor fi pe fiecare dispozitiv pe care te autentifici."
+  "profile.bridgeBody": "Evidențierile, notițele și semnele tale de carte de pe acest dispozitiv merg acum în contul tău și vor fi pe fiecare dispozitiv pe care te autentifici.",
+  "journal.page.highlightNone": "Evidențierea marchează cuvintele tale. Scrie mai întâi câteva."
 }

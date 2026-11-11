@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { MAX_BODY } from "@/lib/journal/entries";
-import { cleanStyle, insertAt, parsePage, removeAt, serializePage, tidyBlocks, type Page, type PageBlock, type PageStyle } from "@/lib/journal/page";
+import { cleanStyle, highlightTarget, insertAt, parsePage, removeAt, serializePage, tidyBlocks, type Page, type PageBlock, type PageStyle } from "@/lib/journal/page";
 
 /** Where the cursor is: a text block's index and the selection in it. */
 export type Cursor = { index: number; start: number; end: number };
@@ -33,10 +33,14 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
   // opens it (React's way to follow a prop), not in an effect after it.
   const [wasOpen, setWasOpen] = useState(open);
   const [panel, setPanel] = useState<PagePanel>(null);
+  // A card the writer was just taken back to, lit for a moment so the eye
+  // finds it: the verse already on the page, when it is asked for again.
+  const [noticed, setNoticed] = useState<number | null>(null);
   if (open !== wasOpen) {
     setWasOpen(open);
     if (open) setPage(fresh(body));
     setPanel(null);
+    setNoticed(null);
   }
 
   // Where the cursor is, as state: the tools read it to know which paragraph
@@ -47,6 +51,11 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
   }, []);
   const focusAsk = useRef<FocusAsk | null>(null);
   const [focusTick, setFocusTick] = useState(0);
+  useEffect(() => {
+    if (noticed === null) return;
+    const id = window.setTimeout(() => setNoticed(null), 1400);
+    return () => window.clearTimeout(id);
+  }, [noticed]);
 
   const commit = useCallback(
     (next: Page, focus?: FocusAsk) => {
@@ -103,6 +112,19 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
     if (commit({ ...page, blocks }, focus)) setCursor(own ? null : { index: inserted + 1, start: 0, end: 0 });
   };
 
+  /** Give the cursor to a block already on the page: the empty quote, when Quote is tapped again. */
+  const focusBlock = (index: number, field?: "input") => {
+    focusAsk.current = { index, at: "end", field };
+    setFocusTick((n) => n + 1);
+    setCursor(null);
+  };
+
+  /** Bring a card already on the page into view and light it for a moment: the verse asked for a second time. */
+  const show = (index: number) => {
+    setNoticed(index);
+    document.querySelector(`[data-journal-composer] [data-page-block="${index}"]`)?.scrollIntoView({ block: "nearest" });
+  };
+
   const remove = (index: number) => {
     const blocks = removeAt(page.blocks, index);
     const focusAt = Math.min(Math.max(0, index - 1), blocks.length - 1);
@@ -110,16 +132,8 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
     setCursor(null);
   };
 
-  /** The text block a colour goes on: the one the cursor is in, else the last with words. */
-  const colorTarget = (): number | null => {
-    const at = cursor?.index;
-    if (at !== undefined && page.blocks[at]?.type === "text") return at;
-    for (let i = page.blocks.length - 1; i >= 0; i--) {
-      const b = page.blocks[i];
-      if (b.type === "text" && b.text.trim()) return i;
-    }
-    return null;
-  };
+  /** The text block a colour goes on, or none while nothing is written (lib/journal/page.ts). */
+  const colorTarget = (): number | null => highlightTarget(page.blocks, cursor?.index);
 
   const setColor = (index: number, color: string | null) => {
     const b = page.blocks[index];
@@ -131,7 +145,7 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
     commit({ ...page, blocks });
   };
 
-  return { page, setCursor, setTitle, setNotebook, setTags, setStyle, setCover, setBlock, insert, remove, colorTarget, setColor, panel, setPanel };
+  return { page, setCursor, setTitle, setNotebook, setTags, setStyle, setCover, setBlock, insert, remove, focusBlock, show, noticed, colorTarget, setColor, panel, setPanel };
 }
 
 export type PageEditor = ReturnType<typeof usePage>;

@@ -15,7 +15,7 @@
 // libraryPlaces.ts). Nothing here grants or checks Plus.
 
 import { clearDraft, MAX_BODY, readDraft, writeDraft, type JournalDraft } from "./entries";
-import { parsePage, serializePage, tidyBlocks, type PageBlock } from "./page";
+import { parsePage, serializePage, tidyBlocks, type Page, type PageBlock } from "./page";
 
 /** Set as a quote is laid, read and cleared by the journal as it opens: open the page being written. */
 export const JOURNAL_OPEN_KEY = "purify:journal.open";
@@ -23,10 +23,13 @@ export const JOURNAL_OPEN_KEY = "purify:journal.open";
 /** The draft with `block` at the end of its page, or a new page holding it. Null when the page would grow past the server's limit. */
 export function draftWithQuote(kept: JournalDraft | null, block: PageBlock): JournalDraft | null {
   const usable = kept && !kept.editing?.startsWith("note:") ? kept : null;
-  const page = usable ? parsePage(usable.body) : { title: "", blocks: [] };
+  const page: Page = usable ? parsePage(usable.body) : { title: "", blocks: [] };
   // The quote after the words, and a line after it to write on.
   const blocks = tidyBlocks([...page.blocks.filter((b) => b.type !== "text" || b.text.trim()), block]);
-  const body = serializePage({ title: page.title, blocks });
+  // The whole page goes back with its quote: its notebook, its tags, its style
+  // and its cover are the writer's own choices, and were dropped here until
+  // 2026-11-11 (the page was written back as a title and blocks alone).
+  const body = serializePage({ ...page, blocks });
   if (body.length > MAX_BODY) return null;
   return usable ? { ...usable, body } : { kind: "reflection", body };
 }

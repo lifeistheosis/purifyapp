@@ -5465,5 +5465,6 @@
   "account.publicEmail": "− Çalışan bir e-posta gerekir.",
   "profile.signInLink": "Giriş yap →",
   "profile.signInKeeps": "Giriş yapmak bu cihazdan hiçbir şeyi kaldırmaz.",
-  "profile.bridgeBody": "Bu cihazdaki vurgularınız, notlarınız ve yer imleriniz şimdi hesabınıza gidiyor ve giriş yaptığınız her cihazda olacak."
+  "profile.bridgeBody": "Bu cihazdaki vurgularınız, notlarınız ve yer imleriniz şimdi hesabınıza gidiyor ve giriş yaptığınız her cihazda olacak.",
+  "journal.page.highlightNone": "Vurgulama kendi sözlerinizi işaretler. Önce birkaç söz yazın."
 }

@@ -5493,5 +5493,6 @@
   "account.publicEmail": "− Nécessite une adresse e-mail valide.",
   "profile.signInLink": "Se connecter →",
   "profile.signInKeeps": "Se connecter ne retire rien de cet appareil.",
-  "profile.bridgeBody": "Vos surlignages, notes et signets de cet appareil vont maintenant dans votre compte, et seront sur chaque appareil où vous vous connectez."
+  "profile.bridgeBody": "Vos surlignages, notes et signets de cet appareil vont maintenant dans votre compte, et seront sur chaque appareil où vous vous connectez.",
+  "journal.page.highlightNone": "Le surlignage marque vos propres mots. Écrivez-en d’abord quelques-uns."
 }

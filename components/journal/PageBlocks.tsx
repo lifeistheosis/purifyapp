@@ -52,10 +52,12 @@ import {
   TAG_MAX,
   TAGS_MAX,
   DIVIDER_STYLES,
+  emptyQuoteAt,
   HEADING_MAX,
   ITEM_MAX,
   TITLE_MAX,
   VERSE_CARD_MAX,
+  verseAt,
   verseBlock,
   type CalloutIcon,
   type CheckItem,
@@ -78,7 +80,6 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
   const { t } = useTranslate();
   const label = useVerseCardLabel();
   const { page } = editor;
-  const onlyWords = !page.title && page.blocks.length === 1;
   const locked = usePlusFeatures() === false;
   const upgrade = useUpgradeModal();
   // Plus: the page's style, from the house's own (lib/journal/page.ts): the
@@ -88,6 +89,7 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
   const align = page.style?.align === "center" ? "text-center" : "text-start";
 
   const cover = coverById(page.cover);
+  const hasProps = !!page.notebook || (page.tags?.length ?? 0) > 0;
   return (
     <div className="mt-5">
       {/* Plus: the page's cover, edge to edge, credited under it (lib/journal/covers.ts). */}
@@ -117,25 +119,29 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
         />
       </label>
 
-      {/* Plus: the page's notebook and tags, one line under the title; a tap
-          opens them at the sheet's foot. Without Plus the line wears the Plus
-          mark and opens the upgrade sheet named for the journal. */}
-      <button
-        type="button"
-        data-page-props=""
-        onPointerDown={(e) => e.preventDefault()}
-        onClick={() => {
-          if (locked) upgrade.open("journal");
-          else editor.setPanel(editor.panel === "props" ? null : "props");
-        }}
-        className="tap-press flex min-h-11 w-full min-w-0 items-center gap-2 text-start font-sans text-caption text-paper/70 hover:text-paper"
-      >
-        <ClosedBook size={16} className="shrink-0" />
-        <span className="min-w-0 truncate">
-          {[page.notebook || t("journal.page.addToNotebook"), ...(page.tags ?? []).map((tag) => `#${tag}`)].join(" · ")}
-        </span>
-        {locked ? <PlusMark className="ms-auto shrink-0" /> : null}
-      </button>
+      {/* Plus: the page's notebook and tags, one quiet line under the title
+          once the page has them; a tap opens them at the sheet's foot. With
+          none, nothing stands here. Until 2026-11-11 "Add to a notebook" stood
+          under every title, touching it: a door to Plus in the first place a
+          thumb goes, which a reader without Plus met when they meant Title
+          (build 93 note 8). The door is in More now, with Plus's other
+          choices (PageToolbar). */}
+      {hasProps ? (
+        <button
+          type="button"
+          data-page-props=""
+          onPointerDown={(e) => e.preventDefault()}
+          onClick={() => {
+            if (locked) upgrade.open("journal");
+            else editor.setPanel(editor.panel === "props" ? null : "props");
+          }}
+          className="tap-press flex min-h-11 w-full min-w-0 items-center gap-2 text-start font-sans text-caption text-paper/70 hover:text-paper"
+        >
+          <ClosedBook size={16} className="shrink-0" />
+          <span className="min-w-0 truncate">{[page.notebook, ...(page.tags ?? []).map((tag) => `#${tag}`)].filter(Boolean).join(" · ")}</span>
+          {locked ? <PlusMark className="ms-auto shrink-0" /> : null}
+        </button>
+      ) : null}
 
       <div className="mt-2 space-y-4">
         {page.blocks.map((b, i) => {
@@ -148,13 +154,16 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
                 block={b}
                 look={cn(font, align)}
                 tall={last}
-                placeholder={onlyWords ? placeholder : undefined}
+                // The place to write always says so. Until 2026-11-11 it said so
+                // only on a page with nothing else: once a card was laid, the
+                // words after it were an empty field with no word in it.
+                placeholder={last ? placeholder : undefined}
                 onText={(text) => editor.setBlock(i, { text })}
                 onCursor={(start, end) => editor.setCursor({ index: i, start, end })}
               />
             );
           }
-          if (b.type === "verse") return <VerseCard key={`${i}-verse`} index={i} block={b} label={label(b)} onRemove={() => editor.remove(i)} />;
+          if (b.type === "verse") return <VerseCard key={`${i}-verse`} index={i} block={b} label={label(b)} noticed={editor.noticed === i} onRemove={() => editor.remove(i)} />;
           if (b.type === "library") return <LibraryCard key={`${i}-library`} index={i} block={b} onRemove={() => editor.remove(i)} />;
           if (b.type === "heading")
             return <HeadingBlock key={`${i}-heading`} index={i} text={b.text} look={cn(font, align)} onText={(text) => editor.setBlock(i, { text })} onRemove={() => editor.remove(i)} />;
@@ -244,11 +253,18 @@ function TextBlock({
 }
 
 /** Scripture as a card: the words from the app's own Bible, verbatim, and where they are. Never edited here. */
-function VerseCard({ index, block, label, onRemove }: { index: number; block: VerseCardBlock; label: string; onRemove: () => void }) {
+function VerseCard({ index, block, label, noticed, onRemove }: { index: number; block: VerseCardBlock; label: string; noticed: boolean; onRemove: () => void }) {
   const { t } = useTranslate();
   const verses = Array.from({ length: block.to - block.from + 1 }, (_, k) => block.from + k);
   return (
-    <figure data-page-block={index} data-page-verse="" className="relative rounded-2xl border border-paper/10 bg-paper/[0.04] py-3 pe-12 ps-4">
+    <figure
+      data-page-block={index}
+      data-page-verse=""
+      data-page-noticed={noticed ? "" : undefined}
+      // Asked for a second time, the verse is not laid again: its card is
+      // brought into view and its edge lit for a moment (usePage, show).
+      className={cn("relative rounded-2xl border bg-paper/[0.04] py-3 pe-12 ps-4 motion-safe:transition-colors motion-safe:duration-500", noticed ? "border-paper/50" : "border-paper/10")}
+    >
       <VerseCardWords block={block} verses={verses} />
       <figcaption className="mt-1.5 font-sans text-caption text-paper/70">{label}</figcaption>
       <RemoveButton onClick={onRemove} label={t("common.remove")} />
@@ -561,8 +577,9 @@ function RemoveButton({ onClick, label }: { onClick: () => void; label: string }
 /**
  * The row under the page, above the keyboard: Verse finds a verse and lays
  * its card where the cursor is; Quote opens a quote of one's own there;
- * Highlight colours the paragraph the cursor is in. Verse and Highlight open
- * their panel over the row and close it again.
+ * Highlight colours the paragraph the cursor is in, and with nothing written
+ * says so. Verse and Highlight open their panel over the row and close it
+ * again. No tool is ever dim: each one tapped does or says something.
  */
 export function PageToolbar({ editor, notebooks = [] }: { editor: PageEditor; notebooks?: readonly string[] }) {
   const { t } = useTranslate();
@@ -586,7 +603,10 @@ export function PageToolbar({ editor, notebooks = [] }: { editor: PageEditor; no
       {panel === "verse" ? (
         <VerseFinder
           onPick={(b) => {
-            editor.insert(b);
+            // A verse is laid once: asked for again, its card is shown.
+            const at = verseAt(editor.page.blocks, b);
+            if (at >= 0) editor.show(at);
+            else editor.insert(b);
             setPanel(null);
           }}
         />
@@ -607,6 +627,14 @@ export function PageToolbar({ editor, notebooks = [] }: { editor: PageEditor; no
           onNames={(id) => setNaming(id)}
         />
       ) : null}
+      {panel === "color" && target === null ? (
+        // Nothing written to mark yet. The tool is lit all the same, and says
+        // so where its colours would open; until 2026-11-11 it went dim with no
+        // word of why. Once there are words the colours take this line's place.
+        <p data-page-highlight-none="" aria-live="polite" className="flex min-h-11 items-center px-5 pt-1 font-sans text-caption font-semibold text-paper/85">
+          {t("journal.page.highlightNone")}
+        </p>
+      ) : null}
       {panel === "props" ? <PropsPanel editor={editor} notebooks={notebooks} onDone={() => setPanel(null)} /> : null}
       {panel === "more" ? (
         <div data-page-more="" className="grid grid-cols-2 gap-2 px-3 pt-2">
@@ -614,6 +642,20 @@ export function PageToolbar({ editor, notebooks = [] }: { editor: PageEditor; no
           <MoreChoice icon={<Check size={18} />} label={t("journal.page.checklist")} locked={locked} onClick={() => addPlus({ type: "check", items: [{ text: "", done: false }] })} />
           <MoreChoice icon={<Minus size={18} />} label={t("journal.page.divider")} locked={locked} onClick={() => addPlus({ type: "divider", style: "line" })} />
           <MoreChoice icon={<Candle size={18} />} label={t("journal.page.callout")} locked={locked} onClick={() => addPlus({ type: "callout", icon: "candle", text: "" })} />
+          {/* The page's own: its notebook, its tags, its look. Across both columns, under the blocks. */}
+          <MoreChoice
+            wide
+            page
+            icon={<ClosedBook size={18} />}
+            label={editor.page.notebook || t("journal.page.addToNotebook")}
+            locked={locked}
+            onClick={() => {
+              if (locked) {
+                setPanel(null);
+                upgrade.open("journal");
+              } else setPanel("props");
+            }}
+          />
         </div>
       ) : null}
       {/* Four tiles, each a quarter of the row, the icon over its name: the row
@@ -625,14 +667,16 @@ export function PageToolbar({ editor, notebooks = [] }: { editor: PageEditor; no
           label={t("journal.page.addQuote")}
           onClick={() => {
             setPanel(null);
-            editor.insert({ type: "quote", text: "", by: "" });
+            // One empty quote at a time: a second tap goes to the one waiting.
+            const at = emptyQuoteAt(editor.page.blocks);
+            if (at >= 0) editor.focusBlock(at);
+            else editor.insert({ type: "quote", text: "", by: "" });
           }}
         />
         <Tool
           icon={<Highlighter size={18} />}
           label={t("journal.page.highlight")}
           pressed={panel === "color"}
-          disabled={editor.colorTarget() === null}
           onClick={() => setPanel(panel === "color" ? null : "color")}
         />
         <Tool icon={<Plus size={18} />} label={t("journal.page.more")} pressed={panel === "more"} onClick={() => setPanel(panel === "more" ? null : "more")} />
@@ -803,13 +847,17 @@ function StyleRows({ editor }: { editor: PageEditor }) {
 }
 
 /** One of Plus's blocks in the More panel: its icon, its name, and the Plus mark without Plus. */
-function MoreChoice({ icon, label, locked, onClick }: { icon: ReactNode; label: string; locked: boolean; onClick: () => void }) {
+function MoreChoice({ icon, label, locked, wide = false, page = false, onClick }: { icon: ReactNode; label: string; locked: boolean; wide?: boolean; page?: boolean; onClick: () => void }) {
   return (
     <button
       type="button"
       onClick={onClick}
       onPointerDown={(e) => e.preventDefault()}
-      className="tap-press flex min-h-12 min-w-0 items-center gap-2.5 rounded-2xl border border-paper/12 px-3 text-start font-sans text-detail font-semibold text-paper/90 hover:border-paper/30"
+      data-page-more-props={page ? "" : undefined}
+      className={cn(
+        "tap-press flex min-h-12 min-w-0 items-center gap-2.5 rounded-2xl border border-paper/12 px-3 text-start font-sans text-detail font-semibold text-paper/90 hover:border-paper/30",
+        wide && "col-span-2",
+      )}
     >
       <span className="shrink-0 text-paper/80">{icon}</span>
       <span className="min-w-0 flex-1 truncate">{label}</span>
@@ -818,17 +866,16 @@ function MoreChoice({ icon, label, locked, onClick }: { icon: ReactNode; label: 
   );
 }
 
-function Tool({ icon, label, pressed, disabled, onClick }: { icon: ReactNode; label: string; pressed?: boolean; disabled?: boolean; onClick: () => void }) {
+function Tool({ icon, label, pressed, onClick }: { icon: ReactNode; label: string; pressed?: boolean; onClick: () => void }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      disabled={disabled}
       aria-pressed={pressed}
       // The keyboard stays up: a tool takes no focus from the words.
       onPointerDown={(e) => e.preventDefault()}
       className={cn(
-        "tap-press flex h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 font-sans text-[12px] font-semibold leading-none motion-safe:transition-colors disabled:opacity-40",
+        "tap-press flex h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 font-sans text-[12px] font-semibold leading-none motion-safe:transition-colors",
         pressed ? "bg-paper text-night" : "text-paper/85 hover:bg-paper/[0.06] hover:text-paper",
       )}
     >

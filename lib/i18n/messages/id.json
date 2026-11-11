@@ -5462,5 +5462,6 @@
   "account.publicEmail": "− Memerlukan email yang aktif.",
   "profile.signInLink": "Masuk →",
   "profile.signInKeeps": "Masuk tidak menghapus apa pun dari perangkat ini.",
-  "profile.bridgeBody": "Sorotan, catatan, dan penanda Anda dari perangkat ini sedang dipindahkan ke akun Anda, dan akan ada di setiap perangkat tempat Anda masuk."
+  "profile.bridgeBody": "Sorotan, catatan, dan penanda Anda dari perangkat ini sedang dipindahkan ke akun Anda, dan akan ada di setiap perangkat tempat Anda masuk.",
+  "journal.page.highlightNone": "Sorotan menandai kata-kata Anda sendiri. Tulis beberapa dahulu."
 }
