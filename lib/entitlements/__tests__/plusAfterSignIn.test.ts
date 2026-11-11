@@ -64,7 +64,9 @@ beforeEach(() => {
 });
 
 describe("the Plus answer after a sign-in or a sign-out", () => {
-  it("a sign-in with Plus is asked again at once, not after the minute", async () => {
+  // Build 93 note 21, "the themes doesn't change": the looks a Plus reader chose stayed locked after
+  // signing in, for this same stale answer (note 3).
+  it("a sign-in with Plus is asked again at once, not after the minute, so the themes change (build 93 note 21)", async () => {
     const { plusFeaturesNow } = await import("@/lib/entitlements/usePlusFeatures");
     const { getClientEntitlements } = await import("@/lib/entitlements/client");
     expect(await plusFeaturesNow()).toBe(false);

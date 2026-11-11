@@ -104,7 +104,7 @@ describe("the server's answer, as a campaign's own page reads it", () => {
     page.stop();
   });
 
-  it("the server's no: closed, and not asked again", async () => {
+  it("the server's no: closed, and not asked again (build 93 note 21: the campaigns are in the build, hidden by the server's no)", async () => {
     server.answers = [{ status: 404, body: { error: "Not found." } }];
     const page = await open();
     expect(campaignsDoorNow()).toBe("closed");

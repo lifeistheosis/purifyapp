@@ -58,7 +58,7 @@ describe("Support this work", () => {
     expect(en["support.goesChurch.body"]).toMatch(/Purify's own giving/);
   });
 
-  it("says where it goes and the two ways, and that the core stays free", () => {
+  it("says where the money goes and the two ways, and that the core stays free (build 93 note 10)", () => {
     const en = words("en");
     expect(en["support.lead"]).toMatch(/free, and they stay free/);
     expect(en["support.lead"]).toMatch(/Purify Plus and from the EIKON shop/);

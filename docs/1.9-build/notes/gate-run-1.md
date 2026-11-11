@@ -432,7 +432,7 @@ is for the arbiter's read):
 - **9** (the journal and the Florilegium always there): lib/journal/__tests__/
   waysIn.test.ts; lib/nav/__tests__/oneSettings.test.ts.
 - **10** (Support this work, where the money goes): lib/support/__tests__/
-  supportPage.test.ts (it does not name the note).
+  supportPage.test.ts, its case on where the money goes named for the note.
 - **11** (learn by heart: any verse, a quote, one's own words):
   lib/quotes/__tests__/find.test.ts; lib/remember/__tests__/items.test.ts;
   lib/sync/__tests__/kept.test.ts, learnedWordsTravel.test.ts;
@@ -457,10 +457,11 @@ is for the arbiter's read):
   redesign.test.ts, todayLine.test.ts; scripts/florilegium-walk.mjs.
 - **20** (the Bible's translation as easy as the chapter): lib/bible/__tests__/
   translationBeside.test.ts.
-- **21** (campaigns not in build 93; the themes do not change): the themes
-  are note 3's; campaigns were in the build and hidden by the server's
-  switch as built (lib/campaigns/flags.ts, held by lib/campaigns/__tests__/
-  doorStates.test.ts). No note names a test of its own for it.
+- **21** (campaigns not in build 93; the themes do not change): two named
+  cases. The themes: lib/entitlements/__tests__/plusAfterSignIn.test.ts, a
+  sign-in with Plus asked again at once, so the looks change (note 3's
+  cause). The campaigns, in the build and hidden by the server's no as built
+  (lib/campaigns/flags.ts): lib/campaigns/__tests__/doorStates.test.ts.
 
 **6. Fresh eyes:** proposed to him, a Fable run; his yes first.
 
