@@ -224,3 +224,11 @@ Screenshots: `build-93/19a-florilegium-song.png` (the collection "The Song of th
 Who has what:
 - Fable Theology (built the Florilegium's redesign, build 89 notes 6 and 12), after the Back fix and the opening helper: a verse in the Florilegium opens the Bible at that verse, in view and lit, not at the book's start; and Today says "Your Florilegium" only of what the reader gathered (a starter is named as a starter, or Today shows what is truly theirs).
 - The prayer campaigns chat, with notes 8 and 9 (one design for the journal, its way in and the Florilegium): the Florilegium and the journal's notebooks intertwined, so a collection can hold notes and a notebook can hold kept verses and the Fathers' words, one place to gather and write; read `notes/florilegium-fable.md` first and tell Fable Theology before changing its files.
+
+### 20. Changing the Bible's translation as easily as the chapter (2026-11-11 about 01:45 UTC)
+
+His words: "And also changing the bibles translation or the version of the Bible should be as easy as switching your chapter. So incorporate that."
+
+Where it is today: on a phone the translation hides behind the reader's ••• menu; on a computer it is a pill (the 1.9 tour's third stop says so). The chapter is one tap under the book's name ("Chapter 2 ⌄").
+
+Who has it: Updates 2 (the Bibles, their downloads, Almeida), after Almeida so the new translation is in it. The bar: the translation sits beside the chapter where the chapter is chosen, one tap from the reader on a phone as on a computer, opening the house's sheet with the translations the reader has and those to download, the current one checked; the switch keeps the reader's place (the same chapter and verse); a translation without the chapter (the deuterocanon in a Protestant Bible) says so plainly instead of failing; 44px, the house's motion, his standing rules. A still with the push.
