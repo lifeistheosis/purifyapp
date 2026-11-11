@@ -9518,6 +9518,137 @@ await section(66, async () => {
   }
 });
 
+// 66. Listen on the texts beside the Bible (1.9, his word of 2026-11-10:
+// "make sure the Bible section, the saints' lives ... the ecumenical councils,
+// the theology section ... Even the history section, allow that to be read
+// out"). His PC records them, so this walk has no recording to play: it
+// stands a silent file and timings made from the page's own paragraphs in
+// the website's place, for this section's browser only, and walks what the
+// app does with them. No speech is made. lib/listen/__tests__ holds the
+// source; a real recording is proved by his steps V1 to V6
+// (docs/1.9-build/OWNER-STEPS.md).
+await section(66, async () => {
+  console.log("\n66. Listen on the texts beside the Bible");
+  const { sentenceSpans } = await import("../lib/marks/anchor.ts");
+  // Seconds of silence, as a WAV a browser plays: 8 kHz, one channel, 8 bits.
+  const silence = (seconds) => {
+    const n = Math.ceil(seconds * 8000);
+    const b = Buffer.alloc(44 + n, 128);
+    b.write("RIFF", 0); b.writeUInt32LE(36 + n, 4); b.write("WAVEfmt ", 8); b.writeUInt32LE(16, 16); b.writeUInt16LE(1, 20); b.writeUInt16LE(1, 22);
+    b.writeUInt32LE(8000, 24); b.writeUInt32LE(8000, 28); b.writeUInt16LE(1, 32); b.writeUInt16LE(8, 34); b.write("data", 36); b.writeUInt32LE(n, 40);
+    return b;
+  };
+  // Timings for the paragraphs a page shows, in order: a title, then every sentence its own short time.
+  const timingsFor = (paragraphs, each = 0.5) => {
+    let t = 0.4;
+    const blocks = [{ s: [[0, 0.3]] }];
+    for (const p of paragraphs) {
+      const s = sentenceSpans(p.text).map(() => { const at = [Math.round(t * 100) / 100, Math.round((t + each * 0.8) * 100) / 100]; t += each; return at; });
+      if (s.length) blocks.push({ at: { sectionN: p.sectionN, paragraphIdx: p.paragraphIdx }, s });
+    }
+    return { voice: "stand-in", seconds: Math.round((t + 0.3) * 100) / 100, title: "Stand-in", by: "Purify", blocks };
+  };
+  const paragraphsOn = (page, prefix) =>
+    page.evaluate((pre) => [...document.querySelectorAll(`[data-mk^="${pre}"]`)].map((h) => { const k = h.dataset.mk.split("|"); return { sectionN: Number(k[4]), paragraphIdx: Number(k[5]), text: h.querySelector("[data-mk-text]")?.textContent ?? "" }; }), prefix);
+  const stand = async (ctx, recordings) => {
+    const cors = { "access-control-allow-origin": "*" };
+    await ctx.route(/\/audio\/listen\/index\.json/, (route) => route.fulfill({ status: 200, contentType: "application/json", headers: cors, body: JSON.stringify(Object.keys(recordings)) }));
+    for (const [id, timings] of Object.entries(recordings)) {
+      await ctx.route(new RegExp(`/audio/listen/${id}\\.json`), (route) => route.fulfill({ status: 200, contentType: "application/json", headers: cors, body: JSON.stringify(timings) }));
+      await ctx.route(new RegExp(`audio\\.purifyapp\\.net/listen/${id}\\.mp3`), (route) => route.fulfill({ status: 200, contentType: "audio/wav", headers: { ...cors, "accept-ranges": "bytes" }, body: silence(timings.seconds) }));
+    }
+  };
+  const state = (page) =>
+    page.evaluate(() => {
+      const lit = document.querySelector("[data-read-now]");
+      const other = [...document.querySelectorAll("[data-mk]")].find((h) => h !== lit && h.offsetParent && !h.hasAttribute("data-read-now"));
+      return { lit: lit?.dataset.mk ?? null, aloud: document.documentElement.hasAttribute("data-read-aloud"), dim: other ? getComputedStyle(other).opacity : null, wash: document.querySelectorAll("body > div > .verse-ghost").length };
+    });
+
+  // No recording, no Listen: the list a build carries is empty until his PC has recorded.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await stand(ctx, {});
+    let buttons = 0;
+    for (const href of ["/history/pentecost/", "/saints/anthony-the-great/", "/councils/first-nicaea/the-twenty-canons/", "/theology/papacy/read/", "/saints/athanasius-the-great/life-of-antony/"]) {
+      await go(page, href);
+      await page.waitForSelector("[data-mk]", { timeout: 20000 }).catch(() => {});
+      await page.waitForTimeout(900);
+      buttons += await page.locator("[data-listen-here]").count();
+    }
+    must(buttons === 0, `a text with no recording offers no Listen, on any of the five kinds of page (${buttons} found)`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // An event's account with a recording: Listen, the paragraph lit, the others stepped back, the sentence washed.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await stand(ctx, {});
+    await go(page, "/history/pentecost/");
+    await page.waitForSelector("[data-mk]", { timeout: 20000 });
+    const paragraphs = await paragraphsOn(page, "text|history|pentecost|");
+    await ctx.unrouteAll({ behavior: "ignoreErrors" }).catch(() => {});
+    await ctx.close();
+    const second = await open({ width: 390, height: 844, phone: true });
+    await stand(second.ctx, { "history/pentecost": timingsFor(paragraphs, 0.9) });
+    await go(second.page, "/history/pentecost/");
+    await second.page.waitForSelector("[data-listen-here]", { timeout: 20000 }).catch(() => {});
+    must((await second.page.locator('[data-listen-here="history/pentecost"]').count()) === 1, "an event's account with a recording offers Listen");
+    await second.page.locator("[data-listen-here]").first().tap();
+    await second.page.waitForTimeout(1600);
+    const first = await state(second.page);
+    must(first.lit === "text|history|pentecost|-|1|0" && first.aloud, `the first paragraph is lit as it is read (${first.lit})`);
+    must(first.dim === "0.4", `the other paragraphs step back (opacity ${first.dim})`);
+    must(first.wash >= 1, `the sentence being read is washed, line by line (${first.wash} lines)`);
+    const label = await second.page.locator("[data-listen-here]").first().innerText();
+    must(/Pause/.test(label), `the button says Pause while it plays (${label.trim()})`);
+    await second.page.screenshot({ path: path.join(SHOTS, "listen-history.png") });
+    const lits = new Set([first.lit]);
+    for (let i = 0; i < 8; i++) {
+      await second.page.waitForTimeout(900);
+      const now = await state(second.page);
+      if (now.lit) lits.add(now.lit);
+    }
+    must(lits.size >= 2, `the light moves on with the reading (${[...lits].map((k) => k.split("|").slice(-2).join(":")).join(", ")})`);
+    await second.page.locator("[data-listen-here]").first().tap();
+    await second.page.waitForTimeout(700);
+    const paused = await state(second.page);
+    must(!paused.lit && !paused.aloud, "Pause puts the light out and every paragraph back");
+    must(second.errors.length === 0, `no page errors${second.errors.length ? ": " + second.errors.slice(0, 2).join(" | ") : ""}`);
+    must(errors.length === 0, "no page errors on the first look");
+    await second.ctx.close();
+  }
+
+  // A council's document: one section ends and the next goes on, the page opening it.
+  {
+    const probe = await open({ width: 390, height: 844, phone: true });
+    await stand(probe.ctx, {});
+    await go(probe.page, "/councils/first-nicaea/the-twenty-canons/");
+    await probe.page.waitForSelector("[data-mk]", { timeout: 20000 });
+    const all = await paragraphsOn(probe.page, "text|council|first-nicaea|the-twenty-canons|");
+    await probe.ctx.close();
+    const of = (n) => all.filter((p) => p.sectionN === n);
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await stand(ctx, { "council/first-nicaea/the-twenty-canons/2": timingsFor(of(2), 0.5), "council/first-nicaea/the-twenty-canons/3": timingsFor(of(3), 0.9) });
+    await go(page, "/councils/first-nicaea/the-twenty-canons/#s2");
+    await page.waitForSelector("[data-listen-here]", { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const shown = await page.evaluate(() => [...document.querySelectorAll("[data-listen-here]")].filter((b) => b.offsetParent).map((b) => b.dataset.listenHere));
+    must(shown.length === 1 && shown[0] === "council/first-nicaea/the-twenty-canons/2", `Canon I, open on the page, offers its own Listen and no other's (${shown.join(", ")})`);
+    await page.locator("[data-listen-here]:visible").first().tap();
+    let rolled = null;
+    for (let i = 0; i < 14 && !rolled; i++) {
+      await page.waitForTimeout(700);
+      const now = await page.evaluate(() => ({ hash: location.hash, lit: document.querySelector("[data-read-now]")?.dataset.mk ?? null }));
+      if (now.hash === "#s3" && now.lit?.endsWith("|3|0")) rolled = now;
+    }
+    must(!!rolled, `Canon I ends and Canon II goes on, the page opening it and lighting its paragraph (${rolled ? rolled.hash + ", " + rolled.lit : "it did not roll on"})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

@@ -64,6 +64,12 @@ describe("every text he named", () => {
     }
   });
 
+  it("a passage an event's account quotes is signed with its own source", () => {
+    const article = read("components/history/EventArticle.tsx");
+    expect(article).toContain("name={block.source ?? at.title}");
+    expect(article).toContain("cite={block.source ? `${block.source} (quoted in ${at.title})` : `Quoted in ${at.title}`}");
+  });
+
   it("the host needs no device, and the marks are painted without the words", () => {
     expect(read("components/reading/MarkHost.tsx")).not.toMatch(/^"use client";/);
     const layer = read("components/reading/MarksLayer.tsx");

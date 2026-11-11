@@ -26,12 +26,13 @@ import { batchOf, listenId, sentencesOf, type BatchBlock, type ListenBatch } fro
  */
 
 /** An essay's block as the voice reads it; a paragraph keeps its place in its part. */
-function essayBlock(block: EssayBlock, sectionN: number, paragraphIdx: number): BatchBlock[] {
+function essayBlock(block: EssayBlock, sectionN: number, paragraphIdx: number, quotesHavePlaces = false): BatchBlock[] {
   switch (block.kind) {
     case "heading":
       return [{ kind: "heading", sentences: sentencesOf(block.text) }];
     case "blockquote":
-      return [{ kind: "quote", sentences: sentencesOf(block.text) }];
+      // A quoted passage has its own place on an event's page (components/history/EventArticle.tsx) and is lit as it is read.
+      return [{ kind: "quote", ...(quotesHavePlaces ? { at: { sectionN, paragraphIdx } } : {}), sentences: sentencesOf(block.text) }];
     case "list":
       return block.items.map((item) => ({ kind: "item" as const, sentences: sentencesOf(item) }));
     default:
@@ -127,7 +128,7 @@ export async function historyBatches(): Promise<ListenBatch[]> {
       [4, body.consequences],
     ];
     const blocks: BatchBlock[] = [title(event.title)];
-    for (const [sectionN, run] of runs) (run ?? []).forEach((b, i) => blocks.push(...essayBlock(b, sectionN, i)));
+    for (const [sectionN, run] of runs) (run ?? []).forEach((b, i) => blocks.push(...essayBlock(b, sectionN, i, true)));
     const batch = batchOf(listenId("history", event.slug), event.title, OURS, blocks);
     if (batch) out.push(batch);
   }

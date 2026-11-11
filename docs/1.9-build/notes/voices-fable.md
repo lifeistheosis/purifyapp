@@ -442,3 +442,92 @@ history, life and study pages.
 - On the four server-drawn pages a highlight is painted from the words' boxes, so
   it is measured again when the type size or the width changes; between the change
   and the next frame it can sit a line off.
+
+## Phase 2, part 2: Listen on every text, recorded on his PC (built 2026-11-11)
+
+His call of 2026-11-11, through the arbiter: "no I'm not renting a computer",
+"just do it on our PC". The on-phone voice he then asked about is decided
+apart (the arbiter's recommendation to him is 2.0); this part is what every
+reader hears in Heart, with nothing on the phone but the app.
+
+**What a reader gets.** Listen, the Bible's own pill, on a saint's short life,
+each section of a council's document, each part of a study, an event's account,
+and each section of a Life that is a witness's own words (the Life of Antony
+and its like) in the works reader. Through the one player: the reader's speed,
+the mini player, Now Playing, the sleep timer, the lock screen. It begins where
+the reader stopped in that text. The paragraph being read stays bright and the
+others step back; the sentence being read is washed line by line. Previous and
+next step to the section or part before and after, never out of the document;
+a recording that ends rolls on into the next, and the page opens that part. A
+document is saved for offline as a book of the Bible is, with the same mark,
+the same Wi-Fi rule, the same row under Storage, and Plus asked first.
+
+**No Listen that plays nothing.** A text shows Listen only when the list names
+its recording. A build carries the list as it stood (`data/listen/index.json`,
+empty today) and asks the website for it, so a text recorded after an app was
+built is heard in it and no store build waits on his PC.
+
+**What his PC records, measured from the batches** (`npm run listen:batches`,
+`lib/listen/batches.ts`), at the Bible's pace, his PC at 0.75x:
+
+| Group | Recordings | Words | Sound | His PC |
+|---|---:|---:|---:|---:|
+| The saints' lives | 162 | 49,213 | 4.4 h | 5.9 h |
+| The councils | 646 | 122,438 | 11.1 h | 14.8 h |
+| Theology (the studies with their Fathers' passages) | 60 | 25,899 | 2.3 h | 3.1 h |
+| History | 40 | 35,605 | 3.2 h | 4.3 h |
+| The Lives in their witnesses' own words | 406 | 257,063 | 23.2 h | 31 h |
+| **The five** | **1,314** | **490,218** | **44.3 h** | **59.1 h** |
+| The Old Testament in Heart (his tool as it is) | about 1,070 | about 770,000 | about 70 h | about 93 h |
+
+Phase 1's "short texts, 48 hours" was an upper bound that also counted source
+lists, people and chronologies, which are not read aloud. These are the real
+batches.
+
+**What is read.** The title, then the text in the page's order: paragraphs,
+headings, the passages it quotes, its lists, and in a study the Fathers'
+passages at a part's end, each named before it is read. An editor's note above
+a council's or a work's text is ours and is not read, nor a source line, nor a
+footnote. Each paragraph is named by the place its page gives it, which is
+what lets the reader light it; tests hold the batches to the pages.
+
+**How a recording comes back.** His render tool is handed one file a recording
+and hands back the sound and its timings: one row a block, a start and an end
+for each sentence, no words (`lib/listen/texts.ts`; his steps are
+`docs/1.9-build/OWNER-STEPS.md`, "Voices on your PC", V1 to V7). The sound goes
+to the bucket under `listen/`; the timings come into `public/audio/listen/`;
+`npm run listen:index` lists a text only when its timings answer what was read,
+block for block and sentence for sentence. A text edited after it was recorded
+falls off the list until it is recorded again.
+
+**Checked.** Typecheck 0, lint 0 errors, the unit suite green but for one test
+that is another chat's (`screens.test.ts`, the change-of-email page). Walked in
+a phone-sized browser with silent stand-in files and made-up timings built
+from the real batches and served to the test browser only (no speech was
+made): Listen stood on the text that had a recording and on no other; the
+paragraphs lit in order; nothing was lit while a quoted passage was read;
+Canon I of Nicaea ended, the page moved to Canon II and lit it. The exports'
+results are in the commit that adds this section.
+
+**Not provable here, named for his walk.**
+
+- A real recording through his tool: V1 to V6. One test file through early
+  costs an hour if the timings are not what the app reads; a night of
+  rendering if found late.
+- Saving a text for offline on a real phone. The names, the routing and the
+  player's recognition of a saved file are held by tests; the phone's file
+  system is not something this container has.
+- The lock screen showing a text's title: the same player code as a chapter's.
+
+**Known edges, said plainly.**
+
+- A quoted passage and a list are read but not lit: only paragraphs are.
+- The size beside the save mark is known for recordings that existed when the
+  app was built; one recorded after shows no size until the next build, and
+  still saves.
+- A Life that stands under two saints (the Life of Antony, the Life of
+  Hilarion) is recorded once for each page: about two and a half more hours of
+  his PC, for a much simpler app.
+- A council's document read in another language than English shows no Listen:
+  the recording is the English.
+

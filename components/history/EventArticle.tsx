@@ -64,7 +64,21 @@ function Block({ block, at }: { block: EssayBlock; at?: BlockAt }) {
       return (
         <figure className="ps-4 md:ps-6">
           <blockquote className="font-serif text-body italic leading-[1.7] text-paper/90">
-            <p><SaintNames text={block.text} /></p>
+            {at ? (
+              // A passage the account quotes can be marked and is lit as it is read (1.9). It is signed
+              // with its own source, never Purify: these are another's words.
+              <MarkHost
+                place={{ kind: "text", text: "history", slug: at.slug, doc: "-", sectionN: at.sectionN, paragraphIdx: at.paragraphIdx }}
+                cite={block.source ? `${block.source} (quoted in ${at.title})` : `Quoted in ${at.title}`}
+                link={`/history/${at.slug}`}
+                name={block.source ?? at.title}
+                work={block.source ? `Quoted in ${at.title}` : undefined}
+              >
+                <p data-mk-text=""><SaintNames text={block.text} /></p>
+              </MarkHost>
+            ) : (
+              <p><SaintNames text={block.text} /></p>
+            )}
           </blockquote>
           {cite ? (
             <figcaption className="mt-2 not-italic">
