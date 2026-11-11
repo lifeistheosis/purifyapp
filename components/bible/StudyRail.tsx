@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { ChapterCommentary } from "@/lib/bible/load";
 import { SaintIcon } from "./SaintIcon";
 import { GlossedText } from "./GlossedText";
@@ -39,6 +39,9 @@ function CommentaryCard({
  const { t } = useTranslate();
  const [open, setOpen] = useState(false);
  const [full, setFull] = useState(false);
+ // What each of the card's two controls opens, named for it (lib/ui/showOpened.ts).
+ const noteId = useId();
+ const wordsId = useId();
 
  const paragraphs = paragraphsOf(text);
  const minutes = readingMinutes(text);
@@ -51,6 +54,7 @@ function CommentaryCard({
  type="button"
  onClick={() => setOpen((v) => !v)}
  aria-expanded={open}
+ aria-controls={noteId}
  className="w-full flex items-center gap-2 px-2.5 py-2 text-left hover:bg-paper/[0.05] transition-colors"
  >
  {iconAuthor && <SaintIcon author={iconAuthor} size="sm" />}
@@ -80,7 +84,7 @@ function CommentaryCard({
  </span>
  </button>
  {open && (
- <div className="px-3 pb-3 pt-2 border-t border-paper/8 space-y-2.5">
+ <div id={noteId} className="px-3 pb-3 pt-2 border-t border-paper/8 space-y-2.5">
  {/* Editorial digest, when one has been written. A summary ABOUT the
      passage, never a paraphrase wearing the Father's quotation marks.
      Absent on most notes, and absent renders nothing at all. */}
@@ -94,7 +98,7 @@ function CommentaryCard({
  </p>
  )}
  {/* The edition's dashes stay in his words (checkMock allows them here by name; never in the app's own). */}
- <div lang="en" dir="ltr" data-mock-allow="emdash" data-mock-why="a Father's own words, as his edition prints them" className="space-y-2.5">
+ <div id={wordsId} lang="en" dir="ltr" data-mock-allow="emdash" data-mock-why="a Father's own words, as his edition prints them" className="space-y-2.5">
  {paras.map((para, i) => (
  <GlossedText
  key={i}
@@ -108,6 +112,7 @@ function CommentaryCard({
  type="button"
  onClick={() => setFull((v) => !v)}
  aria-expanded={full}
+ aria-controls={wordsId}
  className="w-full rounded-md border border-paper/12 px-3 py-1.5 font-sans text-caption font-semibold text-paper/60 hover:border-paper/25 hover:text-paper/85 transition-colors"
  >
  {full ? t("bible.showLess") : t("bible.continueReading")}
@@ -176,6 +181,7 @@ function VerseSection({
 }) {
   const { t } = useTranslate();
  const [open, setOpen] = useState(true);
+ const notesId = useId();
  return (
  <section
  {...(anchorIds ? { id: `rail-v${verse}` } : {})}
@@ -186,6 +192,7 @@ function VerseSection({
  type="button"
  onClick={() => setOpen((v) => !v)}
  aria-expanded={open}
+ aria-controls={notesId}
  className="group/vs flex flex-1 items-center gap-2 font-sans text-caption font-semibold text-paper/55 hover:text-paper transition-colors"
  >
  <span
@@ -211,7 +218,7 @@ function VerseSection({
  </a>
  </div>
  {open && (
- <div className="mt-2.5 space-y-2">
+ <div id={notesId} className="mt-2.5 space-y-2">
  {groupByAuthor(notes).map((g, i) =>
  g.items.length === 1 ? (
  <CommentaryCard

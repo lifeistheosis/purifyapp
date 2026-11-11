@@ -34,6 +34,7 @@ import { PressToCopy } from "@/components/native/PressToCopy";
 import { SavingBridge } from "@/components/native/SavingBridge";
 import { ShortcutListener } from "@/components/native/ShortcutListener";
 import { WidgetBridgeSync } from "@/components/native/WidgetBridgeSync";
+import { OpenedBridge } from "@/components/nav/OpenedBridge";
 import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
 import { RouteTransition } from "@/components/nav/RouteTransition";
 import { ScrollResetBridge } from "@/components/nav/ScrollResetBridge";
@@ -88,6 +89,10 @@ export function RootFrame({
             while it arrives (lib/ui/scrollReset.ts). Here for the reason
             above. Renders nothing. */}
         <ScrollResetBridge />
+        {/* What opens shows itself: the page moves with it
+            (lib/ui/showOpened.ts, 1.9). Here for the reason above. Renders
+            nothing. */}
+        <OpenedBridge />
         {/* Every page switch moves (lib/ui/routeMotion.ts, 1.9). Here for the
             reason above, and after the two above on purpose: it pictures the
             page once they have set it right. Renders one transparent pixel. */}

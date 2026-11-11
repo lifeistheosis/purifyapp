@@ -19,7 +19,7 @@
 // The marks are the offline mark of the player (SaveOfflineMark): the owner's
 // pick for a download, so the app has one.
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SaveOfflineMark } from "@/components/player/SaveOffline";
@@ -50,6 +50,8 @@ export function BibleRow({
   const progress = downloads[bible.id] ?? null;
   const downloading = progress?.state === "downloading";
   const [managing, setManaging] = useState(false);
+  // What the row's mark opens, named for the mark (lib/ui/showOpened.ts).
+  const manageId = useId();
   // The reader is still here, waiting for the Bible they asked for.
   const waiting = useRef(false);
   useEffect(
@@ -112,6 +114,7 @@ export function BibleRow({
           <button
             type="button"
             aria-expanded={managing}
+            aria-controls={manageId}
             aria-label={t("bible.downloads.manageAria", { name: bible.title })}
             onClick={() => setManaging((m) => !m)}
             className="tap-press me-1 grid h-11 w-11 shrink-0 place-items-center rounded-full text-paper/70 hover:bg-paper/[0.06] hover:text-paper"
@@ -127,7 +130,7 @@ export function BibleRow({
         )}
       </div>
       {native && onPhone && managing ? (
-        <div className="flex items-center justify-between gap-3 border-t border-paper/[0.08] px-3 py-2">
+        <div id={manageId} className="flex items-center justify-between gap-3 border-t border-paper/[0.08] px-3 py-2">
           <span className="font-sans text-caption text-paper/60">{t("bible.downloads.onPhone", { size })}</span>
           <button
             type="button"

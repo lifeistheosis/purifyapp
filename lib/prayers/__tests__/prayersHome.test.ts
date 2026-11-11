@@ -379,8 +379,9 @@ describe("the prayer book (note 72, r3-26 C: one prayer book)", () => {
     expect(src).toContain("if (next.snap !== null && card) card.style.minHeight = `${card.offsetHeight}px`;");
     // Let go once the new page has opened into the room, and at once with Purify's motion off.
     expect(src).toMatch(/if \(card\?\.style\.minHeight\) \{\s*window\.clearTimeout\(letGo\.current\);[\s\S]*?card\.style\.minHeight = "";[\s\S]*?if \(prefersReducedMotion\(\)\) release\(\);\s*else letGo\.current = window\.setTimeout\(release, FOLD_HOLD_MS\);/);
-    // Let go, and the glide that follows a page opening (1.9, build 89 note 8) stopped, when the book goes.
-    expect(src).toMatch(/useEffect\(\s*\(\) => \(\) => \{\s*window\.clearTimeout\(letGo\.current\);\s*follow\.current\(\);\s*\},\s*\[\],\s*\);/);
+    // Let go when the book goes. (What follows a page as it opens is no longer the book's own:
+    // lib/ui/showOpened.ts, build 93 note 15; lib/prayers/__tests__/bookFollow.test.ts.)
+    expect(src).toMatch(/useEffect\(\s*\(\) => \(\) => \{\s*window\.clearTimeout\(letGo\.current\);\s*\},\s*\[\],\s*\);/);
     // The hold outlasts the fold it waits for, and the two are the same 240 ms.
     expect(read(BOOK)).toContain("const FOLD_MS = 240;");
     const hold = /const FOLD_HOLD_MS = FOLD_MS \+ (\d+);/.exec(read(BOOK));

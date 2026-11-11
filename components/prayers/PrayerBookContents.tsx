@@ -13,8 +13,6 @@ import type { HourSlug } from "@/lib/prayers/hourNow";
 import { cropStyle, plateCrop } from "@/lib/prayers/iconCrops";
 import type { RuleMeta } from "@/lib/prayers/rules";
 import { serviceArt } from "@/lib/prayers/serviceArt";
-import { glidePageBy } from "@/lib/ui/glideScroll";
-import { visibleBand } from "@/lib/ui/readingPlace";
 import { prefersReducedMotion } from "@/lib/ui/motion";
 
 /**
@@ -51,35 +49,27 @@ import { prefersReducedMotion } from "@/lib/ui/motion";
  * under the finger, so the chapter can always be put back; the hold lets go
  * once the fold has run, and at once with Purify's motion off.
  *
- * And the screen follows the page as it opens (1.9, build 89 note 8, his
- * words: "I don't like how it doesn't move the screen also down in a smooth
- * way"). Put back under the finger, a chapter opened near the foot of the
- * screen unfolded under the tab bar, out of sight. Now, when its page would
- * end out of sight, the screen glides with the fold, on the same curve and in
- * the same time, carrying the chapter's title up towards the top (never under
- * the header), so its first prayers are in sight when the fold ends. A page
- * that opens in sight is not moved; with Purify's motion off it opens in
- * place, at once, as before.
+ * And the screen goes with the book as a chapter opens (1.9, build 89 note
+ * 8, his words: "I don't like how it doesn't move the screen also down in a
+ * smooth way"; and build 93 note 15, with every chapter shut and the second
+ * opened: "Again, I want the screen to move with the bottom if it's too
+ * big"). The first mend followed the opened chapter's own page, and on his
+ * screen that page ended 24px over the tab bar, so the screen stayed and the
+ * two chapters after it went under the bar. The book is one thing: the
+ * chapters say so (`data-shown-whole`), and the page now goes until the
+ * book's end is in sight, never carrying the tapped title under the header.
+ * Nothing here moves it: the house's one helper does, for anything that
+ * opens (lib/ui/showOpened.ts, from the mount at the root), finding this
+ * chapter's page by the title's `aria-controls`. It follows the fold as it
+ * runs, so it ends with it; with Purify's motion off the page is there at
+ * once. The whole is the chapters, inside the card, and not the card: the
+ * card's held length (above) is not the book's.
  */
 
 /** How long a page takes to open (.book-fold in app/globals.css). */
 const FOLD_MS = 240;
 /** And a frame or two over, for the hold. */
 const FOLD_HOLD_MS = FOLD_MS + 80;
-/** The room kept between the opened page and the bars, top and foot. */
-const CLEAR_PX = 12;
-
-/**
- * How far the screen should go for a chapter opening: enough for its page to
- * end above the lowest bar (the tab bar, the mini player), but never so far
- * that its title goes under the header. Zero when it opens in sight. Pure, for
- * its test: heights from the top of the screen.
- */
-export function followBy({ titleTop, pageBottom, roof, floor }: { titleTop: number; pageBottom: number; roof: number; floor: number }): number {
-  const hidden = pageBottom - (floor - CLEAR_PX);
-  if (hidden <= 0) return 0;
-  return Math.max(0, Math.min(hidden, titleTop - (roof + CLEAR_PX)));
-}
 
 
 const BOOK_BG = {
@@ -103,11 +93,7 @@ export function PrayerBookContents({ hourNow }: { hourNow: HourSlug | null }) {
   /** When the card lets go of the length it held. */
   const letGo = useRef<number | undefined>(undefined);
 
-  /** The glide under way, to stop when another chapter is tapped. */
-  const follow = useRef<() => void>(() => {});
-
   function toggle(at: number, head: HTMLElement) {
-    follow.current();
     tapped.current = { at, top: head.getBoundingClientRect().top };
     // The page shutting above the one opening shuts at once, and the card
     // holds its length until the new page has opened into it.
@@ -123,18 +109,11 @@ export function PrayerBookContents({ hourNow }: { hourNow: HourSlug | null }) {
     const card = book.current;
     const head = was ? card?.querySelector<HTMLElement>(`[data-chapter-at="${was.at}"]`) : null;
     if (was && head) {
+      // Back under the finger, before the screen is painted. What follows the
+      // page as it opens is the house's helper, which hears the title turn to
+      // open once this has run (lib/ui/showOpened.ts).
       const off = head.getBoundingClientRect().top - was.top;
       if (Math.abs(off) > 1) window.scrollBy({ top: off, left: 0, behavior: "instant" as ScrollBehavior });
-      // Opened: follow its page as it folds open, when it would end out of sight.
-      const page = open.at === was.at ? document.getElementById(head.getAttribute("aria-controls") ?? "")?.firstElementChild : null;
-      if (page instanceof HTMLElement && !prefersReducedMotion()) {
-        const title = head.getBoundingClientRect();
-        // The part of the screen the page is seen through: clear of the
-        // header, the tab bar, the mini player and the phone's own edges.
-        const band = visibleBand();
-        const by = followBy({ titleTop: title.top, pageBottom: title.bottom + page.scrollHeight, roof: band.top, floor: band.bottom });
-        if (by > 0) follow.current = glidePageBy(by, { ms: FOLD_MS });
-      }
     }
     if (card?.style.minHeight) {
       window.clearTimeout(letGo.current);
@@ -149,7 +128,6 @@ export function PrayerBookContents({ hourNow }: { hourNow: HourSlug | null }) {
   useEffect(
     () => () => {
       window.clearTimeout(letGo.current);
-      follow.current();
     },
     [],
   );
@@ -178,48 +156,53 @@ export function PrayerBookContents({ hourNow }: { hourNow: HourSlug | null }) {
       className="prayer-book lm-card relative overflow-hidden rounded-[28px] py-1.5 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/10"
       style={BOOK_BG}
     >
-      {chapters.map((chapter, i) => (
-        <Chapter
-          key={chapter.category}
-          chapter={chapter}
-          at={i}
-          pageId={`${id}-${i}`}
-          isOpen={open.at === i}
-          snap={open.snap === i}
-          onToggle={toggle}
-          preview={chapter.lines.map(name).join(", ")}
-        >
-          <ul>
-            {chapter.lines.map((line) =>
-              line.kind === "prayer" ? (
-                <Leader key={line.rule.id} href={line.rule.href} title={name(line)} length={line.rule.estimatedMinutes ? tn("prayers.approxMin", line.rule.estimatedMinutes) : null} />
-              ) : line.kind === "today" ? (
-                <Leader key="today" href={line.href} title={name(line)} length={null} />
-              ) : line.kind === "hours" ? (
-                <IconRow
-                  key="hours"
-                  href={line.href}
-                  name={name(line)}
-                  // The Hour the clock is in, named; until the page knows the
-                  // hour, the Hours' own line, so the row reads as it will.
-                  line={hourNow ? `${t(`prayers.rule.${hourNow}.title`)} · ${t("prayers.hoursIndex.nowMark")}` : t("ui.sanctifyTheDay")}
-                  art={hourNow}
-                  lit={hourNow !== null}
-                />
-              ) : (
-                <IconRow key="akathists" href={line.href} name={name(line)} line={t(AKATHIST_KEY)} art="akathist-theotokos" />
-              ),
-            )}
-          </ul>
-          {chapter.planned.length > 0 ? (
-            <p className="px-3 pb-2 pt-2 font-sans text-caption leading-[1.55] text-paper/45">
-              <span className="font-semibold text-paper/55">{t("study.planned")}</span>
-              {" · "}
-              {chapter.planned.map(title).join(", ")}
-            </p>
-          ) : null}
-        </Chapter>
-      ))}
+      {/* The book's chapters, as one thing: the page goes until their end is
+          in sight when one opens. Inside the card, whose held length is not
+          theirs. */}
+      <div data-shown-whole="">
+        {chapters.map((chapter, i) => (
+          <Chapter
+            key={chapter.category}
+            chapter={chapter}
+            at={i}
+            pageId={`${id}-${i}`}
+            isOpen={open.at === i}
+            snap={open.snap === i}
+            onToggle={toggle}
+            preview={chapter.lines.map(name).join(", ")}
+          >
+            <ul>
+              {chapter.lines.map((line) =>
+                line.kind === "prayer" ? (
+                  <Leader key={line.rule.id} href={line.rule.href} title={name(line)} length={line.rule.estimatedMinutes ? tn("prayers.approxMin", line.rule.estimatedMinutes) : null} />
+                ) : line.kind === "today" ? (
+                  <Leader key="today" href={line.href} title={name(line)} length={null} />
+                ) : line.kind === "hours" ? (
+                  <IconRow
+                    key="hours"
+                    href={line.href}
+                    name={name(line)}
+                    // The Hour the clock is in, named; until the page knows the
+                    // hour, the Hours' own line, so the row reads as it will.
+                    line={hourNow ? `${t(`prayers.rule.${hourNow}.title`)} · ${t("prayers.hoursIndex.nowMark")}` : t("ui.sanctifyTheDay")}
+                    art={hourNow}
+                    lit={hourNow !== null}
+                  />
+                ) : (
+                  <IconRow key="akathists" href={line.href} name={name(line)} line={t(AKATHIST_KEY)} art="akathist-theotokos" />
+                ),
+              )}
+            </ul>
+            {chapter.planned.length > 0 ? (
+              <p className="px-3 pb-2 pt-2 font-sans text-caption leading-[1.55] text-paper/45">
+                <span className="font-semibold text-paper/55">{t("study.planned")}</span>
+                {" · "}
+                {chapter.planned.map(title).join(", ")}
+              </p>
+            ) : null}
+          </Chapter>
+        ))}
+      </div>
     </div>
   );
 }

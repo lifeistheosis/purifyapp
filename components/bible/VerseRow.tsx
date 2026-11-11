@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useId, useRef, useState } from "react";
 import { getBook } from "@/lib/bible/books";
 import { verseBlock } from "@/lib/journal/page";
 import { quoteInJournal } from "@/lib/journal/quoteInJournal";
@@ -169,6 +169,8 @@ export function VerseRow({
  const marked = !!ann.highlighted || (ann.highlightedWords?.length ?? 0) > 0;
  const hl = colorById(ann.color);
  const [showSwatches, setShowSwatches] = useState(false);
+ // The colours' picker, named for its caret (lib/ui/showOpened.ts).
+ const swatchesId = useId();
  // The names of the colours, opened from the computer's popover or menu
  // (a phone opens them from its own tools): the colour it opens at, or
  // undefined while shut.
@@ -1333,6 +1335,7 @@ export function VerseRow({
  onClick={() => setShowSwatches((v) => !v)}
  aria-label={t("bible.chooseHighlightColor")}
  aria-expanded={showSwatches}
+ aria-controls={swatchesId}
  aria-haspopup="true"
  title={t("bible.chooseHighlightColor")}
  className="h-11 w-11 pointer-fine:h-7 pointer-fine:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center transition-colors duration-150"
@@ -1340,7 +1343,7 @@ export function VerseRow({
  <ChevronDown size={14} className={cn("motion-safe:transition-transform", showSwatches && "rotate-180")} />
  </button>
  {showSwatches && (
- <div className="absolute top-full right-0 mt-1.5 z-20 w-[18.5rem] rounded-2xl border border-paper/15 bg-night/95 backdrop-blur p-1.5 shadow-pop">
+ <div id={swatchesId} className="absolute top-full right-0 mt-1.5 z-20 w-[18.5rem] rounded-2xl border border-paper/15 bg-night/95 backdrop-blur p-1.5 shadow-pop">
  <HighlightPicker
  active={marked ? hl.id : null}
  onPick={(id) => {

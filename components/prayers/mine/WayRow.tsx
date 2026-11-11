@@ -22,6 +22,7 @@ export function WayRow({
   onClick,
   opensSheet = false,
   expanded,
+  controls,
   oneLine = false,
   data,
 }: {
@@ -34,6 +35,8 @@ export function WayRow({
   opensSheet?: boolean;
   /** The row opens something in place under it (the nameday's choice): whether it is open. */
   expanded?: boolean;
+  /** With `expanded`: the id of what it opens, so the page goes with it as it opens (lib/ui/showOpened.ts). */
+  controls?: string;
   /** Keep the line to one line, cut with an ellipsis (a list of names that can run long). */
   oneLine?: boolean;
   /** A marker for the export walk and the tests, as `{ "data-remembered-in": "" }`. */
@@ -45,6 +48,7 @@ export function WayRow({
       onClick={onClick}
       aria-haspopup={opensSheet ? "dialog" : undefined}
       aria-expanded={expanded}
+      aria-controls={controls}
       className="set-link rule-way flex w-full items-center gap-3 text-start"
       {...data}
     >

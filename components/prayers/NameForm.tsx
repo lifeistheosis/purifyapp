@@ -183,6 +183,7 @@ export function NameForm({
 function NamedayChoice({ value, onChange }: { value: string; onChange: (mmdd: string) => void }) {
   const { t } = useTranslate();
   const [open, setOpen] = useState(false);
+  const choiceId = useId();
   const [month, setMonth] = useState<string | null>(/^\d{2}-\d{2}$/.test(value) ? value.slice(0, 2) : null);
   const day = /^\d{2}-\d{2}$/.test(value) && value.slice(0, 2) === month ? value.slice(3) : null;
   const months = MONTH_ABBR_KEYS.map((k, i) => ({ value: two(i + 1), label: t(k) }));
@@ -201,11 +202,12 @@ function NamedayChoice({ value, onChange }: { value: string; onChange: (mmdd: st
           desc={/^\d{2}-\d{2}$/.test(value) ? formatMmDd(value, t) : t("prayers.diptychs.namedayNotSet")}
           onClick={() => setOpen((o) => !o)}
           expanded={open}
+          controls={choiceId}
           data={{ "data-nameday-row": "" }}
         />
       </div>
       {open ? (
-        <div data-nameday-choice="" className="mt-1">
+        <div id={choiceId} data-nameday-choice="" className="mt-1">
           <Track value={month} options={months} onChange={setMonth} label={t("prayers.diptychs.namedayMonth")} cols={4} />
           {month ? (
             <Track value={day} options={days} onChange={(d) => onChange(`${month}-${d}`)} label={t("prayers.diptychs.namedayDay")} cols={7} />

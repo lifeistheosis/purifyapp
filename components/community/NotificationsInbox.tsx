@@ -353,8 +353,8 @@ export function NotificationsInbox({
   const shown = all || whole ? readers : readers.slice(0, PREVIEW);
   const hidden = whole ? 0 : readers.length - PREVIEW;
 
-  const listOf = (rows: CommunityNotification[], className?: string) => (
-    <ul className={cn("divide-y divide-paper/8 overflow-hidden rounded-2xl border border-paper/12 bg-paper/[0.02]", className)}>
+  const listOf = (rows: CommunityNotification[], className?: string, id?: string) => (
+    <ul id={id} className={cn("divide-y divide-paper/8 overflow-hidden rounded-2xl border border-paper/12 bg-paper/[0.02]", className)}>
       {rows.map((n) => {
         const isNew = fresh.has(n.id);
         // A notice about a prayer campaign opens the campaign's own pages.
@@ -480,12 +480,13 @@ export function NotificationsInbox({
               </span>
             ) : null}
           </div>
-          {listOf(shown, "mt-3")}
+          {listOf(shown, "mt-3", "inbox-readers")}
           {hidden > 0 ? (
             <button
               type="button"
               onClick={() => setAll((v) => !v)}
               aria-expanded={all}
+              aria-controls="inbox-readers"
               className="hit-44 mt-2.5 px-1 font-sans text-detail font-semibold text-paper/65 transition-colors hover:text-paper"
             >
               {all ? t("community.showLess") : `${t("common.seeAll")} (${readers.length})`}

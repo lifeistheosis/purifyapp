@@ -12,7 +12,7 @@
 // floating over it. A popover would land under the thumb on a phone, and this
 // text is read on phones.
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { segment, type GlossaryEntry } from "@/lib/bible/glossary";
 
 export function GlossedText({
@@ -23,6 +23,9 @@ export function GlossedText({
   className?: string;
 }) {
   const [open, setOpen] = useState<number | null>(null);
+  // The note a word opens stands under the paragraph, which may be a screen
+  // away from the word: named, so the page goes to it (lib/ui/showOpened.ts).
+  const glossId = useId();
   const parts = segment(text);
 
   // Fast path: nothing marked in this paragraph, which is most of them.
@@ -46,6 +49,7 @@ export function GlossedText({
               type="button"
               onClick={() => setOpen((v) => (v === i ? null : i))}
               aria-expanded={open === i}
+              aria-controls={glossId}
               // Inherit everything: this must read as a word in a sentence,
               // not as a control that happens to sit in one.
               className={
@@ -64,7 +68,7 @@ export function GlossedText({
         // A quiet panel, using the app's panel idiom (full hairline border,
         // faint fill) rather than a coloured left edge. A thick accent tab on
         // one side of a tinted card is a house style Purify does not have.
-        <p className="mt-1 mb-1 rounded-md border border-paper/12 bg-paper/[0.03] px-3 py-2 font-sans text-caption leading-[1.6] text-paper/70">
+        <p id={glossId} className="mt-1 mb-1 rounded-md border border-paper/12 bg-paper/[0.03] px-3 py-2 font-sans text-caption leading-[1.6] text-paper/70">
           <span className="font-semibold text-paper/85">{openEntry.word}</span>
           {": "}
           {openEntry.gloss}

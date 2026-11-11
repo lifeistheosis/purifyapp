@@ -177,11 +177,11 @@ function OrderPage({
           <OrderStory order={order} now={new Date(now)} />
 
           <div className={cn("mt-3.5 grid gap-2.5", canAsk ? "grid-cols-3" : "grid-cols-2")}>
-            <Tile icon={<ChatBubble size={20} />} pressed={panel === "message"} onClick={() => toggle("message")}>
+            <Tile icon={<ChatBubble size={20} />} pressed={panel === "message"} controls="order-panel-message" onClick={() => toggle("message")}>
               {t("shop.message")} {storeName}
             </Tile>
             {canAsk ? (
-              <Tile icon={<HelpGlyph size={20} />} pressed={panel === "refund"} onClick={() => toggle("refund")}>
+              <Tile icon={<HelpGlyph size={20} />} pressed={panel === "refund"} controls="order-panel-refund" onClick={() => toggle("refund")}>
                 {t("shop.somethingWrong")}
               </Tile>
             ) : null}
@@ -195,7 +195,7 @@ function OrderPage({
           </div>
 
           {panel === "message" ? (
-            <div className="mt-3">
+            <div id="order-panel-message" className="mt-3">
               <BuyerMessageButton
                 orderId={order.id}
                 storeName={storeName}
@@ -206,7 +206,7 @@ function OrderPage({
             </div>
           ) : null}
           {panel === "refund" && canAsk ? (
-            <div className="mt-3">
+            <div id="order-panel-refund" className="mt-3">
               <BuyerRefundSection
                 orderId={order.id}
                 eligible
@@ -271,11 +271,14 @@ function OrderPage({
 function Tile({
   icon,
   pressed,
+  controls,
   onClick,
   children,
 }: {
   icon: ReactNode;
   pressed: boolean;
+  /** The id of the form it opens under the row, so the page goes with it (lib/ui/showOpened.ts). */
+  controls: string;
   onClick: () => void;
   children: ReactNode;
 }) {
@@ -283,6 +286,7 @@ function Tile({
     <button
       type="button"
       aria-expanded={pressed}
+      aria-controls={controls}
       onClick={onClick}
       className={cn(
         "shop-raise tap-press flex min-h-[74px] flex-col items-center justify-center gap-[7px] rounded-2xl px-1.5 text-center font-sans text-[12.5px] font-semibold leading-tight",

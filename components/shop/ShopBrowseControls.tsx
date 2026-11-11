@@ -100,6 +100,7 @@ export function ShopBrowseControls({
             }
           }}
           aria-expanded={panelOpen || sheetOpen}
+          aria-controls="shop-facets"
           className={cn(
             "tap-press inline-flex min-h-[48px] shrink-0 items-center gap-2 rounded-pill border px-4 font-sans text-ui font-semibold transition-colors",
             count > 0
@@ -149,7 +150,7 @@ export function ShopBrowseControls({
 
       {/* Desktop inline facet panel. */}
       {panelOpen ? (
-        <div className="mt-4 hidden rounded-2xl border border-paper/10 bg-night-soft/60 p-5 md:block">
+        <div id="shop-facets" className="mt-4 hidden rounded-2xl border border-paper/10 bg-night-soft/60 p-5 md:block">
           {editor}
         </div>
       ) : null}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Close } from "@/components/ui/icons/Close";
 import type { ChapterCommentary, CommentaryNote } from "@/lib/bible/load";
@@ -14,6 +14,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 import { useReducedMotion } from "@/lib/ui/motion";
+import { showOpened } from "@/lib/ui/showOpened";
 import { useDraggableSheet } from "@/lib/ui/useDraggableSheet";
 
 /** Group a verse's notes by author, preserving first-appearance order. */
@@ -72,6 +73,8 @@ function NoteCard({
   const [clipped, setClipped] = useState(true);
   const cardRef = useRef<HTMLElement | null>(null);
   const textRef = useRef<HTMLDivElement | null>(null);
+  // The words the button opens, named for it (lib/ui/showOpened.ts).
+  const textId = useId();
   const fromHeight = useRef<number | null>(null);
   // Whether the budget itself overflows the teaser; when it does not, the
   // first tap can go straight to the whole note.
@@ -116,9 +119,12 @@ function NoteCard({
   }, [depth, reduced]);
 
   const deeper = depth === 0 ? clipped : depth === 1 && hidden > 0;
-  const toggle = () => {
+  const toggle = (button: HTMLElement) => {
     fromHeight.current = textRef.current?.offsetHeight ?? null;
     if (deeper) {
+      // The sheet goes with the words as they open, both steps of them: the
+      // second turns nothing to open, so nothing else would hear it.
+      if (textRef.current) showOpened(textRef.current, { head: button, tapped: button.getBoundingClientRect().top });
       setDepth(depth === 0 && overflows.current ? 1 : 2);
       onGrow();
     } else {
@@ -153,6 +159,7 @@ function NoteCard({
       {/* The Father's words, in their English (build 90 note 4: left to right under Arabic and Urdu). */}
       <div
         ref={textRef}
+        id={textId}
         lang="en"
         dir="ltr"
         // The edition's dashes stay in his words (checkMock allows them here by name; never in the app's own).
@@ -172,8 +179,9 @@ function NoteCard({
       {clipped || depth > 0 ? (
         <button
           type="button"
-          onClick={toggle}
+          onClick={(e) => toggle(e.currentTarget)}
           aria-expanded={depth > 0}
+          aria-controls={textId}
           className="-ml-1 mt-1 inline-flex min-h-11 items-center gap-1.5 rounded-pill px-1 font-sans text-caption font-semibold text-premium-ink transition-opacity hover:opacity-80"
         >
           {deeper ? t("bible.continueReading") : t("bible.showLess")}

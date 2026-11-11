@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { readParagraphAnnotation, useParagraphAnnotation, writeParagraphAnnotation } from "@/lib/saints/annotations";
 import {
  HIGHLIGHT_COLORS,
@@ -111,6 +111,8 @@ export function ParagraphRow({
  // The marks that carry a note and still stand in the text, in reading order.
  const noted = placeMarks(text, ann.marks).filter((p) => p.mark.note);
  const [showSwatches, setShowSwatches] = useState(false);
+ // The colours' picker, named for its caret (lib/ui/showOpened.ts).
+ const swatchesId = useId();
  // The names of the colours, opened from the computer's popover or menu: the
  // colour it opens at, or undefined while shut.
  const [naming, setNaming] = useState<string | null | undefined>(undefined);
@@ -417,6 +419,7 @@ export function ParagraphRow({
  onClick={() => setShowSwatches((v) => !v)}
  aria-label={t("bible.chooseHighlightColor")}
  aria-expanded={showSwatches}
+ aria-controls={swatchesId}
  aria-haspopup="true"
  title={t("bible.chooseHighlightColor")}
  className="h-11 w-11 pointer-fine:h-7 pointer-fine:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center transition-colors duration-150"
@@ -424,7 +427,7 @@ export function ParagraphRow({
  <ChevronDown size={14} className={cn("motion-safe:transition-transform", showSwatches && "rotate-180")} />
  </button>
  {showSwatches && (
- <div className="absolute top-full right-0 mt-1.5 z-20 w-[18.5rem] rounded-2xl border border-paper/15 bg-night/95 backdrop-blur p-1.5 shadow-pop">
+ <div id={swatchesId} className="absolute top-full right-0 mt-1.5 z-20 w-[18.5rem] rounded-2xl border border-paper/15 bg-night/95 backdrop-blur p-1.5 shadow-pop">
  <HighlightPicker
  active={ann.highlighted ? hl.id : null}
  onPick={(id) => {

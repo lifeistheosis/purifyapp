@@ -183,6 +183,7 @@ export function LibrarySheet({
                       <button
                         type="button"
                         aria-expanded={expanded}
+                        aria-controls={`library-rule-${r.id}`}
                         onClick={() => setOpenRule(expanded ? null : r.id)}
                         className="tap-press flex min-h-12 w-full items-center gap-3 py-2 text-start"
                       >
@@ -195,7 +196,7 @@ export function LibrarySheet({
                         <ChevronDown size={15} className={cn("shrink-0 text-paper/50 motion-safe:transition-transform", expanded && "rotate-180")} />
                       </button>
                       {expanded ? (
-                        <div className="pb-3 ps-3">
+                        <div id={`library-rule-${r.id}`} className="pb-3 ps-3">
                           <button
                             type="button"
                             disabled={all}

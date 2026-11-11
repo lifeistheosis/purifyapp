@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { createContext, Fragment, memo, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { createContext, Fragment, memo, useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { flushSync } from "react-dom";
 
 import { ActionMenu, type ActionMenuItem } from "@/components/community/ActionMenu";
@@ -1258,6 +1258,9 @@ function PostCardInner({
   // Long posts fold to a few lines. The pinned 1.4 announcement ran to
   // several screens, so a reader met one post before the conversation.
   const [unfolded, setUnfolded] = useState(false);
+  // What "Read more" and the replies' count open, named for them, so the page
+  // goes with each as it opens (lib/ui/showOpened.ts).
+  const partsId = useId();
   // A shared line being made into a picture (PictureSheet).
   const [making, setMaking] = useState(false);
   const mine = myPostIds.has(post.id);
@@ -1707,6 +1710,7 @@ function PostCardInner({
               <blockquote>
                 <p
                   ref={quoteFold}
+                  id={`${partsId}-quote`}
                   className={cn(
                     "whitespace-pre-line font-serif text-[17px] font-medium leading-[1.5] text-paper",
                     longQuote && folded && "post-fold",
@@ -1749,6 +1753,7 @@ function PostCardInner({
           {post.body ? (
             <p
               ref={bodyFold}
+              id={`${partsId}-words`}
               dir="auto"
               className={cn(
                 "mt-2 whitespace-pre-wrap break-words font-sans text-[15px] leading-[22px] text-paper/85",
@@ -1767,6 +1772,7 @@ function PostCardInner({
               type="button"
               onClick={() => setUnfolded((v) => !v)}
               aria-expanded={unfolded}
+              aria-controls={`${partsId}-quote ${partsId}-words`}
               className="hit-44 mt-1.5 inline-flex items-center gap-1 font-sans text-[13.5px] font-semibold text-paper/90 hover:text-paper"
             >
               {unfolded ? t("community.showLess") : t("community.readMore")}
@@ -1798,6 +1804,7 @@ function PostCardInner({
               type="button"
               onClick={() => void toggleReplies()}
               aria-expanded={open}
+              aria-controls={`${partsId}-replies`}
               // h-9 to match the reactions exactly. items-center alone cannot
               // line up two things of different heights when one of them is a bare
               // text button: the optical baseline lands wherever the shorter one's
@@ -1816,7 +1823,7 @@ function PostCardInner({
           ) : null}
 
           {open ? (
-            <div className="mt-3 space-y-3.5 border-t border-paper/[0.06] pt-3.5">
+            <div id={`${partsId}-replies`} className="mt-3 space-y-3.5 border-t border-paper/[0.06] pt-3.5">
               {question ? (
                 <p className="font-sans text-caption leading-relaxed text-paper/50">{t("community.askThreadNote")}</p>
               ) : null}

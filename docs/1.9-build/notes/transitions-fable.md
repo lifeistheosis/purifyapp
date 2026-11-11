@@ -439,19 +439,155 @@ pixel. A long list still comes back to the card that was tapped, as before.
   the pixel they were left at. Another 14 could not be tried, because the
   link the sweep picked could not be tapped from where the page stood.
 
-### What is left
+### What was left, and is mended too (the same day, on the arbiter's word)
 
-- The council's row begins again at St Athanasius when the reader comes
-  back, so the card no longer shows the Father he had opened. The page is
-  where he left it; the row has forgotten his choice. Remembering it is a
-  change to `components/councils/CouncilFathers.tsx`, and was not asked
-  for.
-- Prayers plays its rule's entrance again when the page comes back. The
-  house's rule is that a returning page is not assembled again
-  (`.route-fade[data-carried="back"]` in `app/globals.css`), and that rule
-  reaches only the pages that use the shared entrance (`.cascade`).
-  Prayers has an entrance of its own (`.prayers-hero-in`). It no longer
-  moves the page; it is still seen.
+Both were named here as left, and the arbiter's answer was that nothing found
+is deferred.
+
+- **The council's row is on the Father he opened when he comes back.** The
+  row had begun again at St Athanasius, so the card no longer showed the
+  Father whose page he had just left. The choice is kept by the page's
+  address for the visit (`lib/councils/fatherShown.ts`) and given back only
+  to a reader who has come back by a step through history
+  (`lib/ui/scrollReset.ts`, `cameBack`); a visit that goes forward to the
+  page begins at its first Father, as it begins at its top, and lets go of
+  what an earlier visit chose. Kept by the Father's name, not his number, in
+  memory, not on the device: it is a place on a page, not a setting. Seven
+  unit tests (`lib/councils/__tests__/fatherShown.test.ts`), and the two
+  council walks now hold the card as well as the place: "the row still on
+  the Father he opened and the page where it was left".
+- **A page that returns is not brought in again, whatever its entrance.**
+  The stylesheet said so for the rows' cascade alone. Prayers' picture, verse
+  and rule each have an entrance of their own and played it on every return;
+  so did You's, a saint's icon and a reading page's title. Now a page that
+  has returned has every entrance it has begun taken to its end before it is
+  pictured (`lib/ui/routeMotion.ts`, `quietEntrance`): each animation in it
+  that runs once and is over within 2.5 seconds. One that never ends, or runs
+  longer (a ring that fills as a book is saved), is not an entrance and is
+  left. No line of `app/globals.css` changed. Three unit tests, and the
+  Prayers walk now fails if any of its three parts is still being brought in
+  as the page comes back.
+
+## What opens shows itself: the page moves with it (2026-11-11, build 93 note 15)
+
+His words, on the prayer book with every chapter shut and "Before & after
+daily life" opened: "Again, I want the screen to move with the bottom if it's
+too big." It was the third time: build 89 note 8 on the same book ("I don't
+like how it doesn't move the screen also down in a smooth way"), and the
+language list in build 90.
+
+### What was wrong
+
+The mend of build 89 followed the opened chapter's own page, and only in the
+prayer book. On his screen that page ended 24px over the tab bar, so by that
+rule the screen rightly stayed, and the two chapters after it went under the
+bar. And every other part of the app that opens had no such care at all. The
+fresh-eyes walk of the release build found the same on the FAQ's answers
+(ending 70 to 200px under the bar), the Terms' and the Privacy Policy's
+Contents (280 to 530px under), and What's new's months and its 1.9 note.
+
+### The rule
+
+Anything that opens (a section of a list, a card, a menu, words that go on)
+and ends below what the screen shows moves the page with it, so its end
+stands clear of the tab bar. It never takes the top of what was opened off
+the screen. With Purify's motion off the page moves at once, with no glide.
+Only an opening the reader has just asked for is followed: nothing a page
+opens on its own moves it under their finger.
+
+### How it is made
+
+- **One helper** (`lib/ui/showOpened.ts`), for the whole app. What has to be
+  in sight is what opened, the control that opened it, and the thing it is
+  part of when that thing says so (`data-shown-whole`: the prayer book's
+  chapters are one book). The page goes as far as the lowest of those needs
+  and no further than the control's top may go, 12px under the bar at the
+  top. It follows, it does not jump ahead: each frame it closes a share of
+  the distance, so behind a fold it runs with the fold and settles as the
+  fold does, and behind something drawn at once it is a short glide that
+  eases out. A part inside a sheet moves the sheet's own scroll. A part in
+  something fixed to the screen is left alone. The reader's hand ends it at
+  once.
+- **One mount** (`components/nav/OpenedBridge.tsx`, at the root beside the
+  scroll bridge). It hears a tap on anything that says it opens something
+  (`aria-expanded`, a `<summary>`), and when that control turns to open it
+  follows what the control names (`aria-controls`, or the `<details>`
+  itself). So no part has to remember the helper; it has only to say what
+  it opens, which a screen reader needs of it anyway.
+- **A test that holds every control to that**
+  (`lib/ui/__tests__/openedParts.test.ts`): each `aria-expanded` in `app/`
+  and `components/` names its part, opens a sheet (`aria-haspopup="dialog"`),
+  or is listed there by file with the reason. 17 controls in 14 files named
+  nothing and now do (the Bible's rows, glossed words, the commentary sheet,
+  the study rail, the colours' pickers on a verse and a paragraph, a post's
+  "Read more" and its replies, the inbox's "See all", a rule's row in the
+  library sheet, the nameday's choice, an order's two tiles, the shop's
+  filters). Six are kept in place by name: the website's two menus and its
+  Discover menu (in its header, fixed to the screen), the two language lists
+  (`components/i18n/LocaleMenu.tsx` already keeps itself whole on the
+  screen), and the player's saved line (inside the player).
+- **The prayer book** has no code of its own for this any more
+  (`components/prayers/PrayerBookContents.tsx`, with Updates' yes): its
+  put-back under the finger and its held length are as they were, its
+  chapters say they are one whole, and the helper does the rest. The page
+  glide that only it used is gone from `lib/ui/glideScroll.ts`.
+
+### The check
+
+- `lib/ui/__tests__/showOpened.test.ts`, 31 cases: his screen as numbers
+  (followed alone, the chapter's page moves the screen 6px and leaves the
+  book under the bar; followed as one book, 206px and its end is clear), a
+  fold followed and never run ahead of, the glide's shape, motion off, the
+  top that may not leave, words that carry their own control down the page,
+  a sheet's own scroll, a fixed part left alone, the reader's hand, and that
+  only a tap the reader has just made is answered.
+- `scripts/opened-walk.mjs`, on the export, each control tapped with a real
+  touch. Before the mend 9 of its 11 named walks failed. After it:
+  - His screen: the page moves 188px and the book ends 749px down, the tab
+    bar at 761. It had stayed, the book's end under the bar.
+  - The prayer book's last chapter opened at the foot of the screen, a
+    chapter open above the one tapped (its title stays under the finger
+    while the one above shuts, then the page goes with it), and with
+    Purify's motion off (there a tenth of a second after the finger).
+  - An answer that opens in sight leaves the page where it was.
+  - The FAQ's first and last answers, the Terms' and the Privacy Policy's
+    Contents, What's new's first and last parts. The Terms' Contents and
+    What's new's 1.9 note are taller than the screen: their control rises to
+    the bar and stops there, as the rule says.
+  - A sweep: 28 controls over 8 pages, every one that opens in the page set
+    low on the screen, tapped and judged.
+  42 of 42.
+- The big export walk's section 48 (the prayer book, Updates' checks of
+  build 87 and 89) passes unchanged: "the tapped chapter never jumps", its
+  largest move in a frame now 31px where the fold's own first frame is 77.
+
+### What it is not
+
+- A part taller than the screen can show ends under the tab bar, with its
+  control at the top. That is the rule's second half, not a miss.
+- Nothing is followed that opens later than two seconds after the tap, or
+  after the reader has moved the page themselves.
+- A field the reader types in is not followed (the browser minds the
+  caret), and neither is anything marked `data-opens-in-place`.
+
+## A work's pill keeps one width as its parts turn (2026-11-11)
+
+The fresh-eyes walk: "a council document's Next bar shifts 47px when
+tapped". The pill at the foot of a work hugs its name in the middle of the
+screen, so a name longer or shorter than the last moved both arrows sideways
+as the part turned, out from under the finger turning the parts. Measured on
+the export: 27 of the 38 council documents moved their arrows 15 to 55px
+("On the Eight Canons" to "Canon I" is the walk's 47px; Nicaea's canons 55).
+A second tap in the same place missed the arrow. The Fathers' works, whose
+parts are numbered, moved 2px.
+
+The pill now takes every part of the work and lays the work's widest names,
+unseen, under the one shown (`components/saints/MobileWorkPill.tsx`,
+`widestNames`), so it is one width for the whole work and the arrows stand
+where they stood. Three unit tests, and three walks in
+`scripts/opened-walk.mjs` (Ephesus' canons, Nicaea's canons, a Father's
+work): four parts turned under a finger held in one place, the arrows within
+0px.
 
 ## What a phone still has to say
 
@@ -469,7 +605,14 @@ walk (`docs/PHONE-WALK.md`):
 - Build 93 note 1, on the build after 93: First Nicaea, St Alexander chosen
   in the Holy Fathers row and opened by the card, then Back by the arrow
   and again by the phone's own button. The council's page is where it was
-  left both times.
+  left both times, and the row is still on St Alexander.
+- Build 93 note 15, the same build: Prayers, every chapter of the prayer
+  book shut, "Before & after daily life" opened. The page moves with it and
+  the book's last chapter is still in sight over the tab bar. Then an answer
+  near the foot of the FAQ, and the Contents on the Terms.
+- A council's canons (Ephesus, Nicaea): the arrow at the foot of the page
+  tapped several times without moving the finger. It turns a canon each
+  time.
 
 ## What is not in this note
 
