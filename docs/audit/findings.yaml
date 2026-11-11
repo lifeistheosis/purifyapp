@@ -2069,16 +2069,40 @@ findings:
       "not a partial", 1 Cor 35:17 "[3.]", each with its one copy on the
       rail. John 70:1 and Hebrews 19:1's "[1.]" are not slips: neither work
       carries a bracketed section number anywhere.
-      STILL OPEN: John 11:7, where the print's comma after "was made" could
-      not be placed among the paragraph's three without the page; 2 Cor
-      18:24 and 18:25, one paragraph in the print (joining them would move
-      readers' marks); Cyril on John and the Morals read against the printed page, as
-      Cyril on Luke was (their words are their transcriptions', so what is
-      left is fidelity to the page, not words given to the wrong hand); from
-      Cyril on John's ingest, one more: its sections begin where it found a
-      quotation, often mid-sentence (moving their bounds would move readers'
-      marks); and a test that holds each library section to its volume,
-      which needs the volumes kept offline.
+      2026-11-11 (1.9, the arbiter's order of 05:06 UTC), the three places
+      above read again, and two of them found already as the page has them:
+      John 11:7's comma after the first "was made" has stood since quick
+      win 18 (e0c4f7965, held by printed-marks.json): the page image settles
+      it (NPNF I 14, p. 39, archive.org aselectlibrary14unknuoft: 'the
+      expres- sion, " was made," only that you should not sup- pose';
+      docs/1.9-build/notes/f49/), three copies' OCR agree, and the
+      paragraph's other two "was made" and the three of 11:6 are as printed.
+      John 70:1 and Hebrews 19:1's "[1.]" are in the works: each ends
+      paragraph 0, as the works set every number (John 148 of 150 at a
+      paragraph's end, Hebrews all 60); the earlier note that neither work
+      carries a bracketed number anywhere was wrong. Nothing in the text
+      changed; printedMarks.test.ts holds the three places. 2 Cor 18:24 and
+      18:25 stay two paragraphs, closed by the arbiter's decision: "The
+      words are the print's, only the break differs, and no reader's mark
+      moves."
+      Counted, nothing changed (the arbiter: numbers only): Cyril on John's
+      sections that begin mid-sentence, where the ingest cut at a quotation.
+      614 of its 1,070 sections begin inside a sentence the section before
+      left open (358 of them with a small letter); 403 of the 1,071 Cyril
+      notes on John's rail open with a small letter ("mete out heaven with
+      the span, and to suffer"). The open sentences come to 16,328 words
+      (median 20, largest 158). Carrying each forward into the next
+      section's first paragraph moves no paragraph mark (no paragraph is
+      added or taken away; 86 last paragraphs that are only the open
+      sentence would stay as empty slots); a word mark inside the carried
+      words would not be drawn there (Saved keeps its words), and word marks
+      are new in 1.9, so none exists in a released build. About 8 hours.
+      STILL OPEN, planned for the release after 1.9 (PLAN, "Planned for
+      the next release"): Cyril on John and the Morals read against the
+      printed page, as Cyril on Luke was (their words are their
+      transcriptions', so what is left is fidelity to the page, not words
+      given to the wrong hand); and a test that holds each library section
+      to its volume. Waiting on a call: the mid-sentence sections above.
     evidence: data/saints/*/*.json (sections and their voice); data/bible/commentary; lib/reading/entries.ts; lib/saints/saints.ts; data/reading/quoted-sources.json; lib/reading/__tests__/quotedWords.test.ts; CCEL transcriptions of ANF 1, 5, 6 and NPNF I 6 to 14, II 1 to 14; Schaff, Creeds of Christendom II; Hapgood, Service Book (1906)
     action: "Done with the owner's yes of 2026-10-23 for what is listed above. Left (the apolytikia and the Palamas texts settled 2026-10-26, queue item 23; Ignatius's recensions settled 2026-11-09; the large non-CCEL works measured, and our prose's quotations corrected and held by a test, 2026-11-10, queue item 28; Cyril on John's rail and the seven books' openings, 2026-11-10, the arbiter's order): the STILL OPEN list above, none of it words given to the wrong hand."
     safe_to_automate: false

@@ -97,3 +97,25 @@ describe("the Fathers' quotation marks, as the printed page has them", () => {
     }
   });
 });
+
+// F-49 named three places as open after quick win 18; read again against the
+// page (2026-11-11), all three were already as printed, and nothing in the
+// text changed. Held here so the record and the text cannot drift apart again.
+describe("the places F-49 last named, as the page has them", () => {
+  it("John, Homily 11:7: a comma after the first \"was made\" (NPNF I 14, p. 39), the other two as printed", () => {
+    const p = paragraph("john-chrysostom/homilies-on-john", 11, 7) ?? "";
+    expect(p).toContain('the expression, "was made," only that you should not suppose');
+    expect(p).toContain("from the word ‘was made’; I spoke not");
+    expect(p).toContain("for It was made, so as He knoweth.");
+  });
+
+  it("John, Homily 70 and Hebrews, Homily 19: the print's [1.] ends paragraph 0, where both works set every number", () => {
+    for (const [work, n, opens] of [
+      ["john-chrysostom/homilies-on-john", 70, "“Be ye imitators of me,”"],
+      ["john-chrysostom/homilies-on-hebrews", 19, "“Having therefore, brethren, boldness"],
+    ] as const) {
+      expect(paragraph(work, n, 0)?.trimEnd().endsWith("[1.]"), `${work} ${n}:0`).toBe(true);
+      expect(paragraph(work, n, 1)?.startsWith(opens), `${work} ${n}:1`).toBe(true);
+    }
+  });
+});
