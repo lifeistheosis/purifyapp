@@ -134,7 +134,8 @@ describe("the note's sheet", () => {
   it("draws no square frame round its field: the sheet is the field, and its caret shows where typing goes", () => {
     // The page's title and a quote's giver are fields too (1.9, a page): none draws the frame.
     expect(CSS).toMatch(/\[data-journal-composer\] :is\(textarea, input\):focus-visible,\s*\[data-page-props-panel\] input:focus-visible \{\s*outline: none;\s*\}/);
-    expect(read("components/journal/JournalComposer.tsx")).toContain('<div data-journal-composer="">');
+    // The same root says a finger put down in the page never drags the sheet (build 93 note 8).
+    expect(read("components/journal/JournalComposer.tsx")).toContain('<div data-journal-composer="" data-sheet-nodrag="">');
   });
 
   it("asks for a note in a note's form, its placeholder legible, its Open 44px wide", () => {
