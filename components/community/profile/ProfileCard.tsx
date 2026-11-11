@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNod
 import { ClergySeal } from "@/components/community/ClergySeal";
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
 import { SocialLinkIcon } from "@/components/community/profile/SocialLinkIcon";
+import { READERS_WORDS } from "@/components/community/readersWords";
 import { SymbolText } from "@/components/community/SymbolText";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ArrivingImage } from "@/components/ui/ArrivingImage";
@@ -200,7 +201,7 @@ export function ProfileFace({
         style={{ fontWeight: 600 }}
         {...(nameAs === "p" ? { role: "heading", "aria-level": 2 } : {})}
       >
-        <span className={nameColorClass(profile.cosmetics.nameColor)}>{profile.name}</span>
+        <span {...READERS_WORDS} className={nameColorClass(profile.cosmetics.nameColor)}>{profile.name}</span>
         {profile.clergy ? <ClergySeal mark={profile.clergy.rank ?? "clergy"} size={20} /> : null}
       </Name>
       {profile.handle || afterHandle ? (
@@ -514,7 +515,7 @@ export function ProfileAboutDoor({
           </span>
           <span className="min-w-0 font-sans text-detail leading-snug">
             <span className="block font-semibold text-paper">{t(clergyLabelKey(clergy.rank ?? "clergy"))}</span>
-            {clergyWhere ? <span className="block text-paper/65">{clergyWhere}</span> : null}
+            {clergyWhere ? <span {...READERS_WORDS} className="block text-paper/65">{clergyWhere}</span> : null}
           </span>
         </div>
       ) : null}
@@ -525,7 +526,8 @@ export function ProfileAboutDoor({
           <p role="heading" aria-level={3} className={label}>
             {t("profile.aboutMe")}
           </p>
-          <p dir="auto" className="mt-1 whitespace-pre-wrap break-words font-sans text-[15px] leading-[1.45] text-paper/86">
+          {/* Theirs, and said so for the check (../readersWords.ts): a long dash a reader typed is not the app's. */}
+          <p dir="auto" {...READERS_WORDS} className="mt-1 whitespace-pre-wrap break-words font-sans text-[15px] leading-[1.45] text-paper/86">
             <SymbolText text={profile.bio} />
           </p>
         </div>
@@ -554,7 +556,7 @@ export function ProfileAboutDoor({
               <dt className={label}>{t("profile.parish")}</dt>
               <dd className="mt-1 flex items-start gap-1.5 break-words font-sans text-detail text-paper/85">
                 <Church size={15} className="mt-px shrink-0 text-paper/55" />
-                <span className="min-w-0">{profile.parish}</span>
+                <span {...READERS_WORDS} className="min-w-0">{profile.parish}</span>
               </dd>
             </div>
           ) : null}
