@@ -184,6 +184,41 @@ describe("the prayer wall is gone, with everything that drew it", () => {
     expect(en["community.wallAddNote"]).toMatch(/for a week, or until you have prayed for them/);
   });
 
+  it("nor does any other language: each by its own word for the wall", () => {
+    // What each catalog called it while it stood (the two lines above said it in every language).
+    const walls: Record<string, RegExp> = {
+      ar: /لوحة الصلا/,
+      bg: /молитвена\S* стена/i,
+      de: /Gebetswand/i,
+      el: /τοίχο\S* προσευχής/i,
+      es: /muro de oraci/i,
+      fil: /pader ng panalangin/i,
+      fr: /mur de pri/i,
+      hu: /imafal/i,
+      id: /dinding doa/i,
+      it: /bacheca di preghier/i,
+      ka: /ლოცვის კედ/,
+      ne: /प्रार्थना भित्ता/,
+      pl: /ścian\S* modlitw/i,
+      pt: /mural de ora/i,
+      ro: /peretel\S* de rugăciun/i,
+      ru: /молитвенн\S+ стен/i,
+      sr: /молитвен\S+ зид/i,
+      tr: /dua duvar/i,
+      uk: /молитовн\S+ стін/i,
+      ur: /دعا کی دیوار/,
+    };
+    expect(Object.keys(walls)).toHaveLength(20);
+    for (const [locale, wall] of Object.entries(walls)) {
+      const lines = getMessages(locale) as Record<string, string>;
+      const naming = Object.entries(lines).filter(([, line]) => typeof line === "string" && wall.test(line));
+      expect(naming.map(([key]) => key), locale).toEqual([]);
+      // Its own words for the two, not the English left standing in their place.
+      expect(lines["prayers.diptychs.wallHeading"], locale).not.toBe("For a week");
+      expect(lines["prayers.wall.left"], locale).not.toBe("The names you added for a week leave your prayers now.");
+    }
+  });
+
   it("its two screens are not in the app, and nothing imports them", () => {
     expect(existsSync(join(root, "components/community/PrayerWall.tsx"))).toBe(false);
     expect(existsSync(join(root, "components/community/AskPrayersSheet.tsx"))).toBe(false);
