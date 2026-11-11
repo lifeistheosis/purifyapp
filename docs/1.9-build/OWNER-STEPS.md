@@ -348,8 +348,10 @@ Android. Though web notification pops up for me, but not the Android app
 itself." The server's side reads right end to end (what it sends, the
 channel, the permission, the Firebase file in every build), so the next
 step is to see your own phone's row. The panel's test sends to your own
-account and nobody else's, and says what Google answered. It goes live on
-the website with your "push 77"; until then it is only on the branch.
+account and nobody else's, and says what Google answered. It is live on
+purifyapp.net (`a63d37c7a` on `main`), and build 93 carries the mend to the
+check that kept a blocked phone's reminders on (`a905b83b0`), so this can be
+done now, with build 93 on the phone.
 
 On your Android phone:
 1. Open Purify, signed in as the same account you use for the panel.
