@@ -9140,6 +9140,34 @@ await section(62, async () => {
   await ctx.close();
 });
 
+// ---- 63. The Fathers' quotation marks as the printed page has them, and the
+// lines the import dropped (1.9, quick win 18, F-49). lib/saints/__tests__/
+// printedMarks.test.ts holds all 163 edits; this reads three where a reader
+// meets them: a line of St John Chrysostom on Acts the import had dropped,
+// St Antony's address opening each paragraph and running on as the print
+// does, and an inner opening mark in 2 Timothy the library had lost.
+await section(63, async () => {
+  console.log("\n63. The Fathers' quotation marks as printed, and the dropped lines (F-49)");
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+  const words = async (href, id) => {
+    await go(page, "/");
+    await page.waitForTimeout(300);
+    await go(page, href);
+    await page.waitForFunction((id) => !!document.getElementById(id), id, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    return page.evaluate((id) => (document.getElementById(id)?.textContent ?? "").replace(/\s+/g, " "), id);
+  };
+  const acts = await words("/saints/john-chrysostom/homilies-on-acts/#s7", "p-7-1");
+  must(/and besides, because the Apostles had deigned to call them by this title\. And, say they/.test(acts), `Acts, Homily 7 has its dropped line again ("${acts.slice(acts.indexOf("and besides"), acts.indexOf("and besides") + 90)}")`);
+  const antony = await words("/saints/athanasius-the-great/life-of-antony/#s2", "s2");
+  must(/17\. \u2018Wherefore, children, let us not faint/.test(antony), "St Antony's address opens §17 with its mark");
+  must(/the demons prove false\. 32\. \u2018So, too,/.test(antony.replace(/\s*32\./, " 32.")), "§31 runs on into §32 with no closer, as the print has it");
+  const tim = await words("/saints/john-chrysostom/homilies-on-2-timothy/#s1", "p-1-9");
+  must(/\u2018I thank God,\u2019 he says/.test(tim), "2 Timothy, Homily 1 has its inner opening mark again");
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+});
+
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
