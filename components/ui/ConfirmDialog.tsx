@@ -15,7 +15,7 @@ import { useAndroidBack } from "@/lib/platform/useAndroidBack";
  * not part of the app's visual world).
  *
  * Design register matches the rest of the app:
- *   - Dark night surface with thin gold hairline border.
+ *   - A surface of the palette's own night with a thin hairline border.
  *   - Rubric-red treatment on the destructive button (matches the
  *     existing Unlink and SignOutEverywhere pill colors).
  *   - Backdrop tap, Escape, Android back, and Cancel all dismiss.
@@ -32,7 +32,26 @@ import { useAndroidBack } from "@/lib/platform/useAndroidBack";
  * the touch count (lib/ui/__tests__/touchTargets.test.ts) cannot see; a
  * drawing of the care note's question measured it.
  * lib/ui/__tests__/confirmDialogTargets.test.ts holds them.
+ *
+ * Its card follows the reader's palette (CARD_GROUND below). Until 2026-11-11
+ * the card's gradient was Dark's two night colours typed out, so on Light the
+ * card stayed near-black under words that had turned dark: the question stood
+ * at 1.42:1 and Cancel at 1.07:1, measured on a drawing of a campaign's
+ * take-down question (scripts/mock-campaigns.mjs, still 48).
+ * lib/ui/__tests__/confirmDialogPalette.test.ts holds it on all five palettes.
  */
+/**
+ * The card's ground: the palette's own night, soft above and deep below, laid
+ * over `bg-night-soft/95`. The same two stops that were typed here until
+ * 2026-11-11 (rgba(29,29,32,0.65) and rgba(16,16,19,0.95), which are Dark's
+ * --color-night-soft and --color-night), now by name, and mixed in sRGB as
+ * they were: on Dark the card is the same to within one level in 255 (a
+ * drawing before and after was compared pixel by pixel), and every other
+ * palette gets its own night.
+ */
+const CARD_GROUND =
+  "linear-gradient(180deg in srgb, color-mix(in srgb, var(--color-night-soft) 65%, transparent) 0%, color-mix(in srgb, var(--color-night) 95%, transparent) 100%)";
+
 export function ConfirmDialog({
   open,
   title,
@@ -133,15 +152,16 @@ export function ConfirmDialog({
         }}
       />
 
-      {/* Card: thin gold hairline, parchment-tinted surface. A sheet with a
-          handle on a phone, a floating card above md. */}
+      {/* Card: a thin hairline and a surface of the palette's own night
+          (CARD_GROUND). A sheet with a handle on a phone, a floating card
+          above md. */}
       <div
         ref={panelRef}
+        data-confirm-card=""
         className="relative w-full rounded-t-3xl border-t border-paper/15 bg-night-soft/95 shadow-2xl will-change-transform md:max-w-[420px] md:rounded-lg md:border"
         style={{
           paddingBottom: "env(safe-area-inset-bottom, 0px)",
-          backgroundImage:
-            "linear-gradient(180deg, rgba(29,29,32,0.65) 0%, rgba(16,16,19,0.95) 100%)",
+          backgroundImage: CARD_GROUND,
         }}
       >
         {/* Gold rule top accent so the dialog reads as a piece of the
@@ -188,6 +208,11 @@ export function ConfirmDialog({
               type="button"
               onClick={onConfirm}
               disabled={pending}
+              // The edge of a removal is the house's one alert red on every
+              // palette (--color-crimson, app/globals.css); its words follow
+              // the palette (--color-crimson-soft).
+              data-mock-allow={destructive ? "palette" : undefined}
+              data-mock-why={destructive ? "the alert red is one red on every palette (--color-crimson)" : undefined}
               className={
                 "min-h-11 font-sans text-detail font-semibold rounded-pill border px-5 py-2 disabled:opacity-60 disabled:cursor-wait transition-colors " +
                 confirmAccent

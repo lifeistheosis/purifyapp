@@ -4934,3 +4934,90 @@ store build; on the website they appear when campaigns open.
   been Dark's two night colours typed out since 2026-06-14, in the one
   component every screen asks through, and `main` has the same lines.
   Its mend follows in section 42, in the next push.
+
+## 42. The house's confirm dialog on Light (found by still 48, 2026-11-11)
+
+**What was wrong.** The app asks "are you sure" through one component,
+`components/ui/ConfirmDialog.tsx`; seventeen files use it (removing a post,
+a note or a gathering, signing out everywhere, ending a campaign or taking
+one down, sending the care note). Its card stood on `bg-night-soft/95`, the
+palette's own surface, under a gradient that was Dark's two night colours
+typed out: `rgba(29,29,32,0.65)` above and `rgba(16,16,19,0.95)` below. Its
+words are the palette's (`text-paper`). So on Light, where paper is dark
+ink, the card stayed near-black under words that had turned dark. A reader
+on Light was asked a question they could not read, with the safe answer
+invisible beside the red one.
+
+**Why nothing had caught it.** The mock checker does not measure words on a
+card that lets a little of the page through; it says "not measured, look".
+The care note's question (still 45, section 38.4) was looked at on Dark
+alone, which was this chat's miss. The gradient was typed on 2026-06-14,
+and `main` has the same lines.
+
+**The mend, in that one file.** The card's ground is the same two stops by
+name: `--color-night-soft` at 65% above and `--color-night` at 95% below,
+mixed in sRGB as they were (stops made by `color-mix` are mixed in Oklab
+unless the gradient is told otherwise). On Dark the card is the same to
+within one level in 255: the stills before and after, compared pixel by
+pixel, differ by 1 at the most, in 3% of the card's pixels. Every other
+palette gets its own night: parchment on Light, and on Black, Candlelight
+and Monastery the palette's own surface in place of Dark's (on Black the
+card is up to 18 levels darker than it was, which is Black's own).
+
+A removal's red edge is the house's one alert red on every palette
+(`--color-crimson`; its words, `--color-crimson-soft`, follow the palette).
+The checker reads a colour that is the same on Dark and on Light as one
+typed in, so the edge is allowed by name on that button, with its reason,
+and only on a removal.
+
+**Held by** `lib/ui/__tests__/confirmDialogPalette.test.ts` (10 cases). It
+does the arithmetic, in the idiom of `litPalette.test.ts`: the ground is
+read from the component and the palettes from `app/globals.css`, and the
+title, the question and both answers are held to 4.5:1 at the top of the
+card and at its foot, on all five palettes. On the old code four cases
+fail; Light's title computes to 1.12:1 at the card's foot. One case keeps
+the old ground as it was typed and shows that it failed on Light and
+nowhere else, as the drawing measured.
+
+**Measured on the export**, in the stills' own pixels (the take-down
+question, each word against the ground beside it):
+
+| Palette | | Title | The question | Keep it | Yes, take it down |
+|---|---|---|---|---|---|
+| Dark | before | 17.36 | 9.33 | 12.39 | 11.78 |
+| Dark | after | 17.36 | 9.33 | 12.39 | 11.78 |
+| **Light** | **before** | **2.01** | **1.42** | **1.07** | **1.82** |
+| **Light** | **after** | **11.79** | **5.20** | **7.68** | **5.17** |
+| Black | before | 17.73 | 9.31 | 12.53 | 11.90 |
+| Black | after | 18.88 | 9.80 | 13.84 | 13.15 |
+| Candlelight | before | 11.88 | 6.60 | 8.70 | 11.90 |
+| Candlelight | after | 12.45 | 6.86 | 9.27 | 12.78 |
+| Monastery | before | 14.54 | 7.93 | 10.55 | 11.88 |
+| Monastery | after | 14.44 | 7.87 | 10.57 | 11.93 |
+
+Pictures: `decisions/confirm-light-before.png` and
+`decisions/confirm-light-after.png` (the card on Light, cut from the two
+stills).
+
+**Checked (UTC).** Typecheck 0, lint 0 and the whole unit suite 13,647 of
+13,647 at 15:26, with this mend in the tree. Android export of this work
+on `a5c0078d6`: 0 at 15:28. On it: the walk of the flows that ask through
+the dialog (the care note's, ending a campaign early, a comment deleted and
+one taken off, taking one down) and twelve that stand beside them, 17 of
+17, with six left that need an export cut with pictures; still 48 passes every
+rule of the checker, the red edge allowed by name, and still 45 (the care
+note's question, the dialog's other colour) passes as before. Both were
+looked at on Light.
+
+**Seen and left, said to the arbiter.** The page's largest words show
+through the card at about 4 levels in 255, on every palette, before and
+after: the backdrop's blur stops at the card's top by design
+(`lib/ui/useDraggableSheet.ts`), and the card is 98 to 99.7 percent solid.
+The backdrop's vignette and the hairline at the card's top are typed
+colours too; neither is under words.
+
+**Not done.** The seventeen looks were not drawn: each sets the same two
+tokens, so the card follows them as it follows the palettes, by the code
+and not by a picture. The other sixteen files that ask through the dialog
+were not each opened: it is one component, and what changed is its card's
+ground.
