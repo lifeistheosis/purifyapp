@@ -13,7 +13,7 @@ No drop day set yet. `node scripts/drop.mjs days` lists the next ones on the Chu
 
 - 📓 **Your journal, by the Church's day.** Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.
 - 📖 **Every verse, opened.** Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
-- 🌍 **Six more Bibles.** The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida, all three Protestant and labelled so.
+- 🌍 **Six more Bibles.** The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
 - 🔎 **Study a verse, in Purify Plus.** Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.
 - 🗓️ **New reading plans, in Purify Plus.** John in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day.
 - ☦️ **The Creed by council.** The Symbol of Faith article by article, with the words the Council of Constantinople added lit.
@@ -99,7 +99,7 @@ The Scriptures, the saints, the prayers and the calendar stay free.
 
 ### What's New in This Version, for the App Store
 
-`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 2452 of 4000 characters
+`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 2441 of 4000 characters
 
 > Plus has been sold on iPhone since 1.8 (the App Store lists its four subscriptions; OWNER-STEPS 87, found 2026-11-10), so this text marks what is in Purify Plus, as the Play text does: the study, the plans, the Florilegium and the Thread, Candlelight and ambience, and listening offline.
 
@@ -115,7 +115,7 @@ EVERY VERSE, OPENED
 Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
 
 SIX MORE BIBLES
-The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida, all three Protestant and labelled so.
+The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
 
 STUDY A VERSE
 Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps. In Purify Plus.
@@ -188,7 +188,7 @@ The full note is below.
 
 ### The announcement
 
-`discord-announcement` · Discord · Discord, #announcements · Ready · 1958 of 2000 characters
+`discord-announcement` · Discord · Discord, #announcements · Ready · 1947 of 2000 characters
 
 ~~~text
 Purify 1.9 is here 🕯️
@@ -197,7 +197,7 @@ Purify 1.9 keeps a journal with you by the Church's day, free for everyone, open
 
 📓 Your journal, by the Church's day. Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.
 📖 Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
-🌍 Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida, all three Protestant and labelled so.
+🌍 Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
 🔎 Study a verse, in Purify Plus. Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.
 🗓️ New reading plans, in Purify Plus. John in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day.
 ☦️ The Creed by council. The Symbol of Faith article by article, with the words the Council of Constantinople added lit.
@@ -223,7 +223,7 @@ Purify 1.9 is live on the web: a journal by the Church's day, every verse opened
 
 ### Purify's own post in Community
 
-`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 1825 of 4000 characters
+`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 1814 of 4000 characters
 
 ~~~text
 Purify 1.9 is here
@@ -232,7 +232,7 @@ Purify 1.9 keeps a journal with you by the Church's day, free for everyone, open
 
 📓 Your journal, by the Church's day. Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.
 📖 Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
-🌍 Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida, all three Protestant and labelled so.
+🌍 Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
 🔎 Study a verse, in Purify Plus. Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.
 🗓️ New reading plans, in Purify Plus. John in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day.
 ☦️ The Creed by council. The Symbol of Faith article by article, with the words the Council of Constantinople added lit.
@@ -303,7 +303,7 @@ Purify 1.9 is out, on purifyapp.net and in the stores. It keeps a journal with y
 What is new, briefly:
 - Your journal, by the Church's day. Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.
 - Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
-- Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida, all three Protestant and labelled so.
+- Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
 - Study a verse, in Purify Plus. Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.
 
 The Scriptures, the saints, the prayers and the calendar stay free.
@@ -354,14 +354,14 @@ Keep a journal by the Church's day, hold any verse to see its Greek, and read si
 
 ### Try this first
 
-`discord-try` · Discord · Discord, a thread under the announcement · Ready · 624 of 2000 characters
+`discord-try` · Discord · Discord, a thread under the announcement · Ready · 613 of 2000 characters
 
 ~~~text
 Three things to try in 1.9:
 
 1. Your journal, by the Church's day. Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.
 2. Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
-3. Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida, all three Protestant and labelled so.
+3. Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
 
 Tell us what you find, and what breaks. We read everything.
 ~~~
