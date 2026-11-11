@@ -34,6 +34,19 @@
 //              risen as far as it may (to the top bar), or the page is at its
 //              end; a page that follows what opened is not a jump, one that
 //              carries the control under the top bar is
+//   sheet      a sheet, a menu or a dialog the tap opened breaks one of the
+//              rules checkMock keeps (scripts/mock-check.mjs: contrast and
+//              placeholders on the five palettes, 44px to the touch, glyphs,
+//              colours that follow the palette, gold, side stripes, mirroring,
+//              em dashes, rays, sparkles, empty pictures, dashed boxes, keys,
+//              names cut short). What a tap opens is a screen a reader sees,
+//              and the guardrail walk, which measures each screen as it loads,
+//              never sees it: so each distinct one (its role, its name and the
+//              names of the controls in it) is held to the rules once, where
+//              it first opens, and what fails is said under the screen and the
+//              control that opened it. The gate's part 2 reaches it from its
+//              third run (the arbiter, 2026-11-11). A tap that goes to another
+//              page is not asked: that page is a screen of its own.
 // and lists, to be looked at by eye, a choice whose check moved while
 // nothing else in the page did (note 3's look that changed nothing): many
 // a setting is kept and shown nowhere else, so this is a "look" and not a
@@ -48,7 +61,8 @@
 // in the order) is found again, so neither is mistaken for a cover.
 //
 // Never a write anywhere: with no network the shell answers nothing outside
-// the bundle; with --online the main web is read (GET) and nothing is sent.
+// the bundle; with --online the main web, and the public pictures it keeps in
+// its storage (a reader's profile picture), are read (GET) and nothing is sent.
 // A link out of the app (another site, mail, a download) is not followed.
 //
 //   npm run build:android, then:
@@ -73,8 +87,12 @@
 // anchoring holds it (passes, listed as held), the same with no anchoring (a
 // jump), a page grown too short at its end (pulled), Back to a page that adds a
 // shelf above the reader once it is back (passes) and Back to a page that loses
-// the reader's place (fails), and a control the page draws again as it is
-// reached (found again, and passes).
+// the reader's place (fails), a control the page draws again as it is
+// reached (found again, and passes), and a sheet that hides a button 24px
+// square (fails, where the walk before the sheet measure passed it) beside the
+// same sheet with its buttons at 44 (passes). Its page wears no palette of its
+// own, so its sheets are held on Dark alone; a screen of the export is held on
+// all five.
 
 import fs from "node:fs";
 import os from "node:os";
@@ -82,6 +100,7 @@ import path from "node:path";
 
 import { chromium } from "playwright";
 
+import { checkMock } from "./mock-check.mjs";
 import { screens } from "./lib/screens.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "./lib/shell-server.mjs";
 import { SELLS_PLUS as SELLS, asAndroidShell, checkSells, readerWords } from "./lib/sells-plus.mjs";
@@ -120,6 +139,19 @@ const ALLOWED = [
   ...(SELF_TEST ? [{ screens: /^\/allowed\/$/, control: /^button "Add a note"$/, verdict: "moved", why: "the self-test's own allowance" }] : []),
 ];
 
+/** The lines that say why a control fails. */
+const FAILS = /^(nothing|moved|back|under|covered|sheet):/;
+
+/** A sheet, a menu or a dialog: what a tap opens over the screen it stands on. */
+const SHEET = "[role=dialog], [role=alertdialog], [aria-modal='true'], dialog[open], [role=menu], [role=listbox]";
+
+/**
+ * Each distinct sheet the taps opened, by its role, its name and the names of the controls in
+ * it (numbers read alike, so a count in a name is the same sheet): where it first opened, by
+ * which control, and what checkMock said of it. Shared by the workers, so each is measured once.
+ */
+const SHEETS = new Map();
+
 /** What each of the self-test's cases must come to. */
 const EXPECT = {
   "/sticky/": { verdict: "pass", why: /^took the page/ },
@@ -142,6 +174,8 @@ const EXPECT = {
   "/far-below/": { verdict: "pass" },
   "/wrapped/": { verdict: "pass", why: /^went to \/other\// },
   "/required/": { verdict: "pass" },
+  "/sheet-small/": { verdict: "fail", why: /^sheet: dialog "Share": target: button "Close": 24 by 24px/ },
+  "/sheet-fine/": { verdict: "pass", why: /^opened dialog "Keep", held to checkMock's rules: nothing failed/ },
 };
 
 /** The self-test's page: one front door that draws a case by its address, as the shell answers every address with it. */
@@ -274,6 +308,21 @@ if (at === "/sticky/") {
   a.style.cssText = "display:inline;width:auto;min-height:0;margin:0;font:inherit;text-decoration:underline";
   p.append(a, ". The rest of the sentence runs on here.");
   m.append(block(300), p, block(1200));
+} else if (at === "/sheet-small/" || at === "/sheet-fine/") {
+  // A sheet that rises from the foot over the screen, as Share and the post menus do: on
+  // /sheet-small/ its Close is 24px square, which no finger is sure of; on /sheet-fine/ it is 44.
+  const small = at === "/sheet-small/";
+  const open = button(small ? "Share" : "Keep", () => {
+    const sheet = document.createElement("div");
+    sheet.setAttribute("role", "dialog"); sheet.setAttribute("aria-modal", "true"); sheet.setAttribute("aria-label", small ? "Share" : "Keep");
+    sheet.style.cssText = "position:fixed;left:0;right:0;bottom:0;padding:16px 0;background:#fff;color:#000";
+    const close = document.createElement("button"); close.type = "button"; close.setAttribute("aria-label", "Close");
+    close.style.cssText = small ? "width:24px;height:24px;min-height:0;margin:0 16px;padding:0" : "width:44px;height:44px;margin:0 16px;padding:0";
+    close.onclick = () => sheet.remove();
+    sheet.append(close, button(small ? "Copy the link" : "Keep it", () => sheet.remove()));
+    document.body.append(sheet);
+  });
+  m.append(block(300), open, block(1200));
 } else if (at === "/here/") {
   const tab = document.createElement("a"); tab.href = "/here/"; tab.textContent = "You";
   m.append(block(300), tab, block(1200));
@@ -392,6 +441,44 @@ function snapshot() {
     textLength: (document.body.innerText || "").length,
     nodes: document.getElementsByTagName("*").length,
   };
+}
+
+/**
+ * The sheets, menus and dialogs on the screen: before the tap (`before`), each is marked
+ * data-tapwalk-pre; after it, those not so marked are what the tap opened: the outermost of
+ * each, marked data-tapwalk-sheet, with its role, its name, and what makes it the same sheet
+ * wherever it opens. On the screen: drawn, not see-through, and some of it in the window.
+ */
+function newSheets({ sheet, before }) {
+  const shown = (el) => {
+    const r = el.getBoundingClientRect();
+    return r.width >= 8 && r.height >= 8 && r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth && el.checkVisibility({ opacityProperty: true, visibilityProperty: true });
+  };
+  if (before) {
+    for (const el of document.querySelectorAll(sheet)) if (shown(el)) el.setAttribute("data-tapwalk-pre", "");
+    return [];
+  }
+  const open = [...document.querySelectorAll(sheet)].filter((el) => !el.hasAttribute("data-tapwalk-pre") && shown(el));
+  const outer = open.filter((el) => !open.some((o) => o !== el && o.contains(el)));
+  const words = (el) => (el.getAttribute("aria-label") || el.innerText || el.textContent || "").replace(/\s+/g, " ").trim();
+  return outer.map((el, n) => {
+    el.setAttribute("data-tapwalk-sheet", String(n));
+    const by = (el.getAttribute("aria-labelledby") || "")
+      .split(/\s+/)
+      .map((id) => (id ? document.getElementById(id)?.innerText || "" : ""))
+      .join(" ")
+      .trim();
+    const heading = el.querySelector("h1, h2, h3, [role=heading]");
+    const name = (el.getAttribute("aria-label") || by || (heading ? words(heading) : "") || words(el)).replace(/\s+/g, " ").trim().slice(0, 40);
+    const role = el.getAttribute("role") || "dialog";
+    // Its frame: the first eight controls in it. What a sheet suggests below them changes with
+    // the screen it opened from (Search offers the prayer book's parts on Prayers and the day's
+    // readings on Settings), and that is still the one sheet.
+    const controls = [...el.querySelectorAll("button, a[href], [role=button], [role=link], [role=menuitem], [role=option], [role=tab], [role=radio], [role=checkbox], [role=switch], input, select, textarea")]
+      .slice(0, 8)
+      .map((x) => words(x).slice(0, 24));
+    return { n, role, name, controls, key: `${role}\u0000${name}\u0000${controls.join("|")}`.replace(/\d+/g, "#") };
+  });
 }
 
 // ── In node ─────────────────────────────────────────────────────────────
@@ -521,6 +608,60 @@ async function reach(page, c) {
     await page.waitForTimeout(100);
   }
   return (await page.$(`[data-tapwalk="${c.i}"]`)) ? "moving" : "redrawn";
+}
+
+/**
+ * What the tap opened (a sheet, a menu, a dialog), held to checkMock's rules: each distinct one
+ * once, where it first opens, its fails said on the row of the control that opened it. Its
+ * entrance played out first (a sheet measured as it rises reads fainter than it ends), and the
+ * page put back where it stood after, for the measures that follow.
+ */
+async function measureSheets(page, row, at, c) {
+  const opened = await page.evaluate(newSheets, { sheet: SHEET, before: false }).catch(() => []);
+  for (const s of opened) {
+    const said = `${s.role} "${s.name}"`;
+    const first = SHEETS.get(s.key);
+    if (first) {
+      row.why.push(`opened ${said}, held to checkMock's rules where it first opened (${first.at} ${first.opener})`);
+      continue;
+    }
+    const sheet = { at, opener: c.name, said, controls: s.controls, lines: [], unmeasured: [], allowed: [] };
+    SHEETS.set(s.key, sheet);
+    await page
+      .evaluate(async (n) => {
+        const el = document.querySelector(`[data-tapwalk-sheet="${n}"]`);
+        const ends = (el?.getAnimations({ subtree: true }) ?? []).filter((a) => a.effect?.getComputedTiming().iterations !== Infinity).map((a) => a.finished.catch(() => {}));
+        await Promise.race([Promise.all(ends), new Promise((r) => setTimeout(r, 2500))]);
+      }, s.n)
+      .catch(() => {});
+    const stood = await page.evaluate(() => [scrollX, scrollY]).catch(() => null);
+    try {
+      // The self-test's page wears no palette of its own, so it is held on Dark alone.
+      const r = await checkMock(page, `[data-tapwalk-sheet="${s.n}"]`, SELF_TEST ? { palettes: [["Dark", null]] } : {});
+      // One line per piece and rule: contrast with its palettes together, at its worst.
+      const ratio = (d) => Number(/^([\d.]+):1/.exec(d)?.[1] ?? Infinity);
+      const lines = new Map();
+      for (const f of r.failures) {
+        const measured = f.check === "contrast" || f.check === "placeholder";
+        const key = `${f.check}\u0000${f.what}\u0000${measured ? "" : f.detail}`;
+        const line = lines.get(key) ?? { ...f, palettes: [] };
+        if (measured && ratio(f.detail) < ratio(line.detail)) line.detail = f.detail;
+        if (f.palette && !line.palettes.includes(f.palette)) line.palettes.push(f.palette);
+        lines.set(key, line);
+      }
+      sheet.lines = [...lines.values()].map((f) => `${f.check}${f.palettes.length ? ` [${f.palettes.join(", ")}]` : ""}: ${f.what}: ${f.detail}`);
+      sheet.unmeasured = r.unmeasured;
+      sheet.allowed = r.allowed;
+    } catch (e) {
+      sheet.unmeasured.push(`not measured: ${String(e).split("\n")[0].slice(0, 120)}`);
+    }
+    if (stood) await page.evaluate(([x, y]) => scrollTo(x, y), stood).catch(() => {});
+    if (sheet.lines.length) {
+      row.verdict = "fail";
+      for (const l of sheet.lines) row.why.push(`sheet: ${said}: ${l}`);
+    } else if (sheet.unmeasured.some((u) => u.startsWith("not measured:"))) row.why.push(`opened ${said}, which could not be held to checkMock's rules (${sheet.unmeasured[0]})`);
+    else row.why.push(`opened ${said}, held to checkMock's rules: nothing failed`);
+  }
 }
 
 async function walkScreen(ctx, at, kept) {
@@ -656,6 +797,8 @@ async function walkScreen(ctx, at, kept) {
         const step = () => page.evaluate(() => window.navigation?.currentEntry?.index ?? -1).catch(() => -1);
         const stood = await step();
         const wasOpen = await handle.evaluate((el) => el.getAttribute("aria-expanded") === "true" || Boolean(el.closest("details")?.open && el.tagName === "SUMMARY"));
+        // The sheets already on the screen, so what the tap opens is told from them.
+        await page.evaluate(newSheets, { sheet: SHEET, before: true });
         // Count every change the page makes after the finger lifts.
         await page.evaluate(() => {
           window.__tapwalkChanges = 0;
@@ -748,12 +891,18 @@ async function walkScreen(ctx, at, kept) {
         }
         const navigated = after.href !== before.href;
         const stands = navigated ? await step() : stood;
+        // A sheet the address carries (the same page, a new query or mark) is the tap's to say;
+        // a tap that went to another page, or back, opened a screen of its own.
+        const samePage = new URL(after.href).pathname === new URL(before.href).pathname;
         if (navigated && stood >= 0 && stands !== stood + 1) {
           // A step back (the app's own Back), or the address changed in place: Back leaves the
           // screen as it should, so it is not held to returning to it.
           row.why.push(`${stands < stood ? "went back" : "changed the address in place"} to ${new URL(after.href).pathname}${new URL(after.href).search}`);
+          if (samePage && stands >= stood) await measureSheets(page, row, at, c);
         } else if (navigated) {
           row.why.push(`went to ${new URL(after.href).pathname}`);
+          // Measured before Back, which shuts what the address opened.
+          if (samePage) await measureSheets(page, row, at, c);
           // Back, as a reader takes it, returns to where they were.
           await page.evaluate(() => history.back());
           await page.waitForFunction((h) => location.href === h, before.href, { timeout: 8000 }).catch(() => {});
@@ -866,6 +1015,9 @@ async function walkScreen(ctx, at, kept) {
             }, c.i);
             if (/radio|checkbox|switch/.test(role)) row.look = "its check moved and little else changed: look that the choice took";
           }
+          // Last, once every measure of the tap is taken: checkMock wears each palette and turns
+          // the page round for Arabic before it puts the page back.
+          await measureSheets(page, row, at, c);
         }
       } catch (e) {
         row.verdict = "skipped";
@@ -873,7 +1025,7 @@ async function walkScreen(ctx, at, kept) {
       }
       // A fail allowed by name and reason: every fail line it carries is the allowed kind.
       if (row.verdict === "fail") {
-        const fails = row.why.filter((w) => /^(nothing|moved|back|under|covered):/.test(w));
+        const fails = row.why.filter((w) => FAILS.test(w));
         const grant = ALLOWED.find((a) => a.screens.test(at) && a.control.test(c.name) && fails.every((w) => w.startsWith(`${a.verdict}:`)));
         if (grant) {
           row.verdict = "allowed";
@@ -903,7 +1055,9 @@ async function worker() {
   });
   if (SELLS_PLUS) await asAndroidShell(ctx);
   await serveLikeTheShell(ctx, OUT, {});
-  if (ONLINE) for (const at of ["https://purifyapp.net/**", "https://purifyapp.onrender.com/**"]) await ctx.route(at, mainWeb);
+  // The main web, and the public pictures it keeps in its storage (a reader's profile picture),
+  // as a phone with a signal loads them: read, never written.
+  if (ONLINE) for (const at of ["https://purifyapp.net/**", "https://purifyapp.onrender.com/**", "https://*.supabase.co/storage/v1/object/public/**"]) await ctx.route(at, mainWeb);
   // What the device keeps once the app has first opened: every tap starts from it.
   const first = await ctx.newPage();
   await go(first, "/", { timeout: 30000 });
@@ -914,7 +1068,7 @@ async function worker() {
     const r = await walkScreen(ctx, at, kept);
     results.push(r);
     // Each screen's fails as it ends, so an owner can have them before the walk is over.
-    for (const c of r.controls.filter((x) => x.verdict === "fail")) console.log(`  FAIL ${at} ${c.name}: ${c.why.filter((w) => /^(nothing|moved|back|under|covered):/.test(w)).join("; ")}`);
+    for (const c of r.controls.filter((x) => x.verdict === "fail")) console.log(`  FAIL ${at} ${c.name}: ${c.why.filter((w) => FAILS.test(w)).join("; ")}`);
     done += 1;
     if (done % 5 === 0) console.log(`  ${done} of ${list.length}`);
   }
@@ -949,11 +1103,11 @@ for (const r of results) {
   if (r.error) console.log(`\n${r.at}: not walked (${r.error})`);
   if (fails.length) {
     console.log(`\n${r.at}: ${fails.length} of ${r.controls.length} failed`);
-    for (const c of fails) console.log(`  ${c.name}: ${c.why.filter((w) => /^(nothing|moved|back|under|covered):/.test(w)).join("; ")}${c.still ? ` [${c.still}]` : ""}`);
+    for (const c of fails) console.log(`  ${c.name}: ${c.why.filter((w) => FAILS.test(w)).join("; ")}${c.still ? ` [${c.still}]` : ""}`);
   }
   for (const c of r.controls) if (c.look) looks.push(`${r.at} ${c.name}: ${c.look}`);
   for (const c of r.controls) if (c.held) helds.push(`${r.at} ${c.name}: ${c.held}px`);
-  for (const c of r.controls) if (c.allowed) allowed.push(`${r.at} ${c.name}: ${c.why.filter((w) => /^(moved|back|under|covered|nothing):/.test(w)).join("; ")}; allowed: ${c.allowed}`);
+  for (const c of r.controls) if (c.allowed) allowed.push(`${r.at} ${c.name}: ${c.why.filter((w) => FAILS.test(w)).join("; ")}; allowed: ${c.allowed}`);
 }
 console.log(`\n${results.length} screens, ${tapped} controls tapped, ${failed} failed`);
 const capped = results.filter((r) => r.found > r.controls.length);
@@ -970,8 +1124,22 @@ if (helds.length) {
   console.log(`\nheld under the finger by the browser's scroll anchoring alone (${helds.length}): Chrome and the Android app hold these; a browser that does not anchor would let them jump`);
   for (const l of helds) console.log(`  ${l}`);
 }
+// What the taps opened, each held once to checkMock's rules (its fails are said above, under
+// the screen and the control that opened it).
+const sheets = [...SHEETS.values()].sort((a, b) => a.at.localeCompare(b.at));
+const sheetsFailed = sheets.filter((s) => s.lines.length);
+console.log(`\nsheets, menus and dialogs the taps opened: ${sheets.length} distinct, each held to checkMock's rules once; ${sheetsFailed.length} failed`);
+for (const s of sheetsFailed) console.log(`  ${s.at} ${s.opener} opened ${s.said}: ${s.lines.length} fail(s)`);
+// A sheet the measure could not hold (it shut as it was measured): named, to look at by eye. The
+// words checkMock could not read the ground of are in the record (--json), as the guardrail
+// walk keeps them.
+const sheetsUnmeasured = sheets.filter((s) => s.unmeasured.some((u) => u.startsWith("not measured:")));
+if (sheetsUnmeasured.length) {
+  console.log(`\nnot measured, to look at by eye (${sheetsUnmeasured.length}):`);
+  for (const s of sheetsUnmeasured) console.log(`  ${s.at} ${s.opener} opened ${s.said}: ${s.unmeasured.find((u) => u.startsWith("not measured:"))}`);
+}
 if (JSON_OUT) {
-  fs.writeFileSync(JSON_OUT, JSON.stringify({ screens: results.length, tapped, failed, results }, null, 1));
+  fs.writeFileSync(JSON_OUT, JSON.stringify({ screens: results.length, tapped, failed, sheets, results }, null, 1));
   console.log(`\nwritten: ${JSON_OUT}`);
 }
 process.exit(failed || results.some((r) => r.error) ? 1 : 0);

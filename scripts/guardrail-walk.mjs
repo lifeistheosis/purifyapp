@@ -24,9 +24,10 @@
 // (scripts/tap-walk.mjs), not here.
 //
 // --online lets the app read the main web as a reader's phone does (GET
-// only, the main web alone, never a write): the pictures it streams rather
-// than carries (lib/media/streamed.ts) then arrive, as they do for a reader
-// with a signal. Without it the walk is the app with no network.
+// only, the main web and the public pictures it keeps in its storage, never
+// a write): the pictures it streams rather than carries (lib/media/streamed.ts)
+// and a reader's profile picture then arrive, as they do for a reader with a
+// signal. Without it the walk is the app with no network.
 //
 //   npm run build:android, then:
 //   NODE_USE_ENV_PROXY=1 node scripts/guardrail-walk.mjs [out dir] [--only /path,/path] [--workers 3] [--json file] [--online]
@@ -114,7 +115,9 @@ async function worker() {
   // Registered after the shell's, so it answers the main web's addresses first.
   // The store builds read purifyapp.net; a local export without
   // NEXT_PUBLIC_SITE_URL reads the same service at its Render address.
-  if (ONLINE) for (const at of ["https://purifyapp.net/**", "https://purifyapp.onrender.com/**"]) await ctx.route(at, mainWeb);
+  // With them, the public pictures the main web keeps in its storage (a reader's profile picture),
+  // which a phone with a signal loads from there: read, never written.
+  if (ONLINE) for (const at of ["https://purifyapp.net/**", "https://purifyapp.onrender.com/**", "https://*.supabase.co/storage/v1/object/public/**"]) await ctx.route(at, mainWeb);
   let page = await ctx.newPage();
   for (let at = queue.shift(); at; at = queue.shift()) {
     const r = await walkOne(page, at);

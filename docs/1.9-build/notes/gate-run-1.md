@@ -385,6 +385,20 @@ screens pass every rule. Left: /history/'s atlas links and era names
 (Updates), a works' chapter button (Updates 2); the saints' first titles
 were mended after the export (Fable Themes, `ff901d0fe`).
 
+*Part 2's reach, from the third run on (the arbiter, 2026-11-11 14:24 UTC):
+what a tap opens.* A sheet, a menu or a dialog is a screen a reader sees,
+and the guardrail walk, which measures each screen as it loads, never sees
+one. From the third run the tap walk holds each distinct one it opens to
+every checkMock rule, once, where it first opens (its role, its name and the
+names of the controls in it make it distinct; a count in a name reads alike),
+on both readers, and says what fails under the screen and the control that
+opened it (`sheet:` lines, with the rest of that screen's fails); its summary
+counts the distinct sheets and lists any it could not measure. A tap that goes
+to another page is not asked, as that page is a screen of its own. The walk's
+self-test proves it: a sheet whose Close is 24px square fails, where the walk
+before the measure passed it, and the same sheet at 44 passes
+(`node scripts/tap-walk.mjs --self-test`, 22 of 22).
+
 **3. No saint or work without a picture:**
 `lib/saints/__tests__/everySaintAPicture.test.ts` passes: every saint has a
 picture or stands in its list, with what he waits for. The list has 31: 23
