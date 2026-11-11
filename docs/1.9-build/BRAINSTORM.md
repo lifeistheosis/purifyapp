@@ -2,6 +2,8 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
+**Build 93, note 17 (his word, 2026-11-11 about 01:41 UTC, screenshots of a note on a Chrysostom homily):** "Refine the works node system, and it should be very similar to the Bible's UI when you hold down a verse." (`notes/build-93.md`, note 17).
+
 **Build 93, note 16 (his word, 2026-11-11 about 01:40 UTC, screenshots of Your rule on Evening and on Morning):** "Switching from evening to morning is buggy in this situation." (`notes/build-93.md`, note 16).
 
 **Build 93, note 15 (his word, 2026-11-11 about 01:39 UTC, screenshots of the prayer book opened under the tab bar):** "Again, I want the screen to move with the bottom if it's too big." A standing rule: what opens shows itself (`notes/build-93.md`, note 15).

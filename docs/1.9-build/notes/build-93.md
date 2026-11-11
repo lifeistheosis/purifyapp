@@ -198,3 +198,11 @@ His words: "Switching from evening to morning is buggy in this situation."
 Screenshots: `build-93/16a-rule-evening.png` (Evening: Pray my rule, about 8 min, nine prayers) and `16b-rule-morning.png` (Morning: no rule yet, so the Pray my rule row is gone, the Morning and Evening switch has jumped up under the finger, the picture above has swapped at once, and "Nothing here yet" stands beside a dashed circle) (`components/prayers/mine/RuleHead.tsx`, `components/prayers/RuleToday.tsx`; built by the previous arbiter chat).
 
 Who has it: Updates, with the prayer page's other notes. The bar: the switch never moves under the finger (it keeps its place whatever the chosen half holds); the change moves in the house's motion (the picture crossfades, the list follows); an empty half offers its start in place, with no dashed placeholder (his note 4); reproduced on the export first, held by a test. Order for Updates from here: the red test, Easy Scroll (note 2), this, the completion (note 14), the history timeline (note 5); quick win 16 only if time remains before November 17, else 1.9.1.
+
+### 17. A Father's work: notes and highlights as the Bible does them (2026-11-11 about 01:41 UTC)
+
+His words: "Refine the works node system, and it should be very similar to the Bible's UI when you hold down a verse." ("node" is "note".)
+
+Screenshots: `build-93/17a-works-note-box.png` and `17b-works-note-and-sheet.png` (St John Chrysostom, Homily 7 on 1 Thessalonians): the pen opens "Add a note for this paragraph..." inline, in a boxed field with a resize grip, "Esc to close" (a keyboard hint on a phone), Cancel and Save; the tapped paragraph drawn in a thin box; and the "Highlight paragraph" sheet laid over the note's own buttons.
+
+Who has it: the Fable voices chat, with note 13 (the same reader, the same selection). The bar: holding words in a Father's work, a life, a council, theology or history opens the same tools the Bible opens when a verse is held (`components/bible/MobileVerseToolbar.tsx`, `VerseFocus.tsx`), in the same place and the same look: highlight, note, keep, copy, share; the note written in the house's own sheet, not a boxed field in the text; no keyboard hints on a phone; nothing laid over another control; no box around the tapped words or the field (his rule of 2026-11-10). One component for both readers where it can be.
