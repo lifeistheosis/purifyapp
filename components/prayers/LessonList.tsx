@@ -72,7 +72,7 @@ export function LessonList({ lessons, lang }: { lessons: LessonRow[]; lang: stri
         const done = read.has(l.id);
         return (
           <li key={l.id}>
-            <Link href={`/prayers/learning/${l.id}`} className="press-card flex items-start gap-4 py-4">
+            <Link href={`/prayers/learning/${l.id}`} className="press-card flex min-h-11 items-start gap-4 py-4">
               <span
                 aria-hidden
                 className={cn(

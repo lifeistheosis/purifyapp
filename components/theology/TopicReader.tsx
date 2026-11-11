@@ -94,7 +94,7 @@ export function TopicReader({
               href={`/theology/path/${subject.id}`}
               id={epigraph ? undefined : DOCTRINE_FIRST_WORDS}
               data-study-step=""
-              className="tap-press inline-flex max-w-full items-center gap-[9px] font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/55 hover:text-paper"
+              className="tap-press hit-44 inline-flex max-w-full items-center gap-[9px] font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/55 hover:text-paper"
             >
               <span aria-hidden className="block size-6 shrink-0 overflow-hidden rounded-full bg-paper/[0.05] ring-1 ring-paper/20">
                 {/* Whole or not yet at all (build 85, note 52). */}

@@ -37,6 +37,11 @@ const SMALL_H = /\bh-(?:[1-9]|10)\b(?!\S)/;
 const WRITTEN_H = /(?<![\w-])(?:min-)?h-\[(\d+(?:\.\d+)?)(px|rem)\]/g;
 const ROOT_PX = 17;
 
+// Sizes by the scale's size-N (width and height at once), which neither
+// reading above saw: fourteen places stood at size-4 to size-10 that way
+// until 2026-11-11 (1.9, the Updates chat's finding).
+const SMALL_SIZE = /(?<![\w-])size-(?:[1-9]|10)\b(?!\S)/;
+
 /** Whether a written-out height under 44px stands in these classes. */
 function writtenSmall(classes: string): boolean {
   for (const m of classes.matchAll(WRITTEN_H)) {
@@ -58,8 +63,17 @@ function writtenSmall(classes: string): boolean {
 function fingerClasses(classes: string): string {
   return classes
     .split(/\s+/)
-    .filter((token) => !token.includes("pointer-fine:"))
+    .filter((token) => !token.includes("pointer-fine:") && !token.includes("(pointer:fine)"))
     .join(" ");
+}
+
+/**
+ * A control drawn only for a fine pointer: hidden, and shown by a
+ * pointer-fine display (`hidden [@media(pointer:fine)]:inline-flex`, the
+ * scroll rail's arrows). A finger never meets it, so its size is a mouse's.
+ */
+function mouseOnly(classes: string): boolean {
+  return /(?<![\w:-])hidden\b/.test(classes) && /(?:pointer-fine:|\[@media\(pointer:fine\)\]:)(?:inline-flex|flex|inline-grid|grid|inline-block|block|inline)\b/.test(classes);
 }
 
 /** Lines that both open an interactive element and set a sub-44px height. */
@@ -136,11 +150,20 @@ function statesTall(classes: string): boolean {
  * settings' chips, whose classes sit further down), and a .hit-44 control
  * has a 44px touch box whatever height it paints at.
  */
-function countSmallTargets(): { total: number; byFile: Record<string, number>; written: number; writtenByFile: Record<string, number> } {
+function countSmallTargets(): {
+  total: number;
+  byFile: Record<string, number>;
+  written: number;
+  writtenByFile: Record<string, number>;
+  sized: number;
+  sizedByFile: Record<string, number>;
+} {
   const byFile: Record<string, number> = {};
   const writtenByFile: Record<string, number> = {};
+  const sizedByFile: Record<string, number> = {};
   let total = 0;
   let written = 0;
+  let sized = 0;
   for (const dir of SCAN_DIRS) {
     for (const file of walk(join(ROOT, dir))) {
       const src = readFileSync(file, "utf8");
@@ -148,6 +171,7 @@ function countSmallTargets(): { total: number; byFile: Record<string, number>; w
       const constants = new Map([...src.matchAll(/\bconst\s+([A-Za-z_]\w*)\s*=\s*(["'])([^"'\n]*)\2/g)].map((m) => [m[1], m[3]] as [string, string]));
       let n = 0;
       let w = 0;
+      let z = 0;
       for (let i = 0; i < lines.length; i++) {
         if (!INTERACTIVE.test(lines[i])) continue;
         // The className may sit on the same line or a few lines below.
@@ -156,14 +180,17 @@ function countSmallTargets(): { total: number; byFile: Record<string, number>; w
         const upToNextTag = window.split(/<(?:button|a|Link)\b/).slice(0, 2).join(" ");
         if (!/className=/.test(upToNextTag)) continue;
         const stated = ownClasses(upToNextTag, constants);
+        // Drawn only for a fine pointer: a mouse's, whatever its size.
+        if (stated !== null && mouseOnly(stated)) continue;
         const own = stated === null ? null : fingerClasses(stated);
-        const read = own === null || (!SMALL_H.test(own) && !writtenSmall(own) && !statesTall(own)) ? fingerClasses(upToNextTag) : own;
+        const read = own === null || (!SMALL_H.test(own) && !writtenSmall(own) && !SMALL_SIZE.test(own) && !statesTall(own)) ? fingerClasses(upToNextTag) : own;
         // A control carrying .hit-44 has a 44px touch box regardless of the
         // height it paints at, so it is not a defect even though the small
         // height class is still there.
         if (/\bhit-44\b/.test(read) || (own !== null && /\bhit-44\b/.test(own))) continue;
         if (SMALL_H.test(read)) n++;
         else if (writtenSmall(read)) w++;
+        else if (SMALL_SIZE.test(read)) z++;
       }
       const name = file.slice(ROOT.length + 1).replace(/\\/g, "/");
       if (n > 0) {
@@ -174,9 +201,13 @@ function countSmallTargets(): { total: number; byFile: Record<string, number>; w
         writtenByFile[name] = w;
         written += w;
       }
+      if (z > 0) {
+        sizedByFile[name] = z;
+        sized += z;
+      }
     }
   }
-  return { total, byFile, written, writtenByFile };
+  return { total, byFile, written, writtenByFile, sized, sizedByFile };
 }
 
 // The count as measured when this guard was written. IT MAY ONLY FALL.
@@ -291,8 +322,55 @@ const MAX_SMALL_TARGETS = 0;
 // whose 44px box fits inside its 45px row. None is left.
 const MAX_WRITTEN_SMALL_TARGETS = 0;
 
+// Sizes by size-N (SMALL_SIZE above), counted on their own, as the written
+// heights were, so the two ceilings above keep their histories and still
+// only fall. The count learned to read them on 2026-11-11 (1.9), when it saw
+// 14. Seven were cards and rows already 60px and more whose icon tile was
+// read as their height (apologetics and topics cards, the lessons list, the
+// shop's new request, the path's plates, the Theology hub's two rows): each
+// states the min-h-11 it has. Four were small and are 44 to the touch with
+// their look kept (.hit-44): Community's close on a linked post (38px),
+// Theology's passage deck's two arrows (38px, which a tablet's browser shows
+// at md; 6px apart now so the touch boxes do not overlap) and the topic
+// reader's step link (25px); and Now Playing's sound bar, 42.5px tall from
+// its disc, too. The scroll rail's arrows are drawn only for a fine pointer,
+// a mouse's (mouseOnly above). Left: the admin planner's 16px checkbox
+// (components/admin/planner/PlanBoard.tsx), Admin's. IT MAY ONLY FALL.
+const MAX_SIZED_SMALL_TARGETS = 1;
+
 describe("touch targets", () => {
-  const { total, byFile, written, writtenByFile } = countSmallTargets();
+  const { total, byFile, written, writtenByFile, sized, sizedByFile } = countSmallTargets();
+
+  it(`has no more than ${MAX_SIZED_SMALL_TARGETS} interactive elements sized under 44px by size-N`, () => {
+    const worst = Object.entries(sizedByFile)
+      .sort((a, b) => b[1] - a[1])
+      .map(([f, n]) => `  ${n}  ${f}`)
+      .join("\n");
+    expect(
+      sized,
+      `Interactive elements sized under 44px (size-9 and the like) rose to ${sized}, ceiling ${MAX_SIZED_SMALL_TARGETS}.\n` +
+        `Give the control real padding or .hit-44, or state the height a tall card has (min-h-11), then lower the ceiling here:\n${worst}`,
+    ).toBeLessThanOrEqual(MAX_SIZED_SMALL_TARGETS);
+  });
+
+  it("reads a size by size-N, and a control drawn only for a mouse as a mouse's", () => {
+    expect(SMALL_SIZE.test("inline-flex size-9 items-center")).toBe(true);
+    expect(SMALL_SIZE.test("size-11 rounded-full")).toBe(false);
+    expect(SMALL_SIZE.test("text-size-9")).toBe(false);
+    expect(SMALL_SIZE.test('<Book size={19} />')).toBe(false);
+    expect(mouseOnly("hidden size-9 items-center [@media(pointer:fine)]:inline-flex")).toBe(true);
+    expect(mouseOnly("hidden md:pointer-fine:flex items-center")).toBe(true);
+    expect(mouseOnly("hidden size-9 md:grid")).toBe(false);
+    expect(mouseOnly("md:hidden pointer-fine:flex")).toBe(false);
+    expect(fingerClasses("size-11 [@media(pointer:fine)]:size-7")).toBe("size-11");
+    // The four small ones, 44 to the touch.
+    const has = (file: string, text: string) => expect(readFileSync(join(ROOT, file), "utf8"), file).toContain(text);
+    has("components/community/CommunityClient.tsx", 'className="hit-44 absolute -right-2 top-1 inline-flex size-9 items-center');
+    has("components/theology/TopicReader.tsx", 'className="tap-press hit-44 inline-flex max-w-full items-center gap-[9px]');
+    has("components/prayers/NowPlayingBar.tsx", 'className="tap-press hit-44 flex min-w-0 flex-1 items-center gap-3 text-start"');
+    const deck = readFileSync(join(ROOT, "components/theology/PassageDeck.tsx"), "utf8");
+    expect((deck.match(/className="tap-press hit-44 (?:ms-2|ms-0\.5) hidden size-9 /g) ?? []).length).toBe(2);
+  });
 
   it(`has no more than ${MAX_WRITTEN_SMALL_TARGETS} interactive elements with a written-out height under 44px`, () => {
     const worst = Object.entries(writtenByFile)

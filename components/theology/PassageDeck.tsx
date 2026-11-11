@@ -96,7 +96,7 @@ export function PassageDeck({ passages }: { passages: DeckPassage[] }) {
             aria-label={t("common.previous")}
             disabled={at <= 0}
             onClick={() => go(at - 1)}
-            className="tap-press ms-2 hidden size-9 place-items-center rounded-full border border-paper/15 text-paper/75 hover:text-paper disabled:opacity-30 md:grid"
+            className="tap-press hit-44 ms-2 hidden size-9 place-items-center rounded-full border border-paper/15 text-paper/75 hover:text-paper disabled:opacity-30 md:grid"
           >
             <ChevronLeft size={16} className="rtl:-scale-x-100" />
           </button>
@@ -105,7 +105,7 @@ export function PassageDeck({ passages }: { passages: DeckPassage[] }) {
             aria-label={t("common.next")}
             disabled={at >= passages.length - 1}
             onClick={() => go(at + 1)}
-            className="tap-press hidden size-9 place-items-center rounded-full border border-paper/15 text-paper/75 hover:text-paper disabled:opacity-30 md:grid"
+            className="tap-press hit-44 ms-0.5 hidden size-9 place-items-center rounded-full border border-paper/15 text-paper/75 hover:text-paper disabled:opacity-30 md:grid"
           >
             <ChevronRight size={16} className="rtl:-scale-x-100" />
           </button>

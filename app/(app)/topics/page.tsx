@@ -72,7 +72,7 @@ export default async function TopicsIndexPage() {
           <ul data-topic-cards="" className="mt-7 space-y-3">
             {cards.map((card, at) => (
               <li key={card.slug}>
-                <Link href={`/topics/${card.slug}`} data-topic-card={card.slug} className="theology-tray press-card flex items-start gap-3.5 rounded-[20px] p-3">
+                <Link href={`/topics/${card.slug}`} data-topic-card={card.slug} className="theology-tray press-card flex min-h-11 items-start gap-3.5 rounded-[20px] p-3">
                   {card.picture ? (
                     <span aria-hidden data-row-picture="" data-carry={`topic:${card.slug}`} className="path-plate w-[78px] shrink-0">
                       <WholeIcon src={card.picture} eager={at < 4} className="aspect-[4/5] w-full rounded-[3px]" />

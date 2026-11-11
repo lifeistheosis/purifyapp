@@ -58,7 +58,7 @@ export default async function ApologeticsIndexPage() {
             <ul className="mt-3 space-y-3">
               {answers.map((answer) => (
                 <li key={answer.slug}>
-                  <Link href={`/apologetics/${answer.slug}`} data-answer-card={answer.slug} className="theology-tray press-card block rounded-[20px] p-3.5">
+                  <Link href={`/apologetics/${answer.slug}`} data-answer-card={answer.slug} className="theology-tray press-card block min-h-11 rounded-[20px] p-3.5">
                     <div className="flex items-center gap-3">
                       <span aria-hidden data-carry={`answer:${answer.slug}`} className="theology-plate grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
                         <Shield size={17} />

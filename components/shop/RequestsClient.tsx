@@ -100,7 +100,7 @@ export function RequestsClient() {
       </header>
       <div className="lg:mt-6 lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start lg:gap-5">
         <div>
-          <Link href="/shop/request" className="shop-raise press-card mb-[18px] mt-4 flex items-center gap-3 rounded-[18px] px-3.5 py-3 lg:hidden">
+          <Link href="/shop/request" className="shop-raise press-card mb-[18px] mt-4 flex min-h-11 items-center gap-3 rounded-[18px] px-3.5 py-3 lg:hidden">
             <span aria-hidden className="shop-well grid size-9 shrink-0 place-items-center rounded-full text-paper">
               <Plus size={18} />
             </span>

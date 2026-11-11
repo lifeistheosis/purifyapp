@@ -113,7 +113,7 @@ export function NowPlayingBar() {
               onClick={() => openAmbience()}
               aria-haspopup="dialog"
               aria-label={label}
-              className="tap-press flex min-w-0 flex-1 items-center gap-3 text-start"
+              className="tap-press hit-44 flex min-w-0 flex-1 items-center gap-3 text-start"
             >
               <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-paper/10 text-paper">
                 <AmbienceIcon icon={sound.icon} size={22} />

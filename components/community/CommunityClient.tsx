@@ -870,7 +870,7 @@ function CommunityScreen({
                     setLinked(null);
                     setFocus(null);
                   }}
-                  className="absolute -right-2 top-1 inline-flex size-9 items-center justify-center rounded-full border border-paper/15 bg-night text-paper/70 shadow-pop transition-colors hover:text-paper"
+                  className="hit-44 absolute -right-2 top-1 inline-flex size-9 items-center justify-center rounded-full border border-paper/15 bg-night text-paper/70 shadow-pop transition-colors hover:text-paper"
                 >
                   <Close size={15} />
                 </button>

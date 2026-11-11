@@ -34,7 +34,7 @@ export function PathPlates({
             <Link
               href={`/theology/path/${s.id}`}
               aria-current={state === "current" ? "step" : undefined}
-              className="press-card block rounded-[8px]"
+              className="press-card block min-h-11 rounded-[8px]"
             >
               <span data-state={state} className="path-plate">
                 <WholeIcon src={s.picture.src} eager={i < 6} className="aspect-[4/5] w-full rounded-[3px]" />

@@ -244,7 +244,7 @@ function WhereYouLeftOff({ steps, states, progress }: { steps: PathStep[]; state
 function NextRow({ step, steps, progress, short = false }: { step: PathStep; steps: PathStep[]; progress: PathProgress; short?: boolean }) {
   const { t } = useTranslate();
   const at = nextReadIndex(step.reads, progress);
-  const ROW = "path-lit relative mt-3.5 flex items-start gap-3 rounded-[14px] px-2.5 py-[9px]";
+  const ROW = "path-lit relative mt-3.5 flex min-h-11 items-start gap-3 rounded-[14px] px-2.5 py-[9px]";
   if (at >= 0) {
     const read = step.reads[at];
     return (
