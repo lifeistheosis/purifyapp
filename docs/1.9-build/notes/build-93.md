@@ -206,3 +206,11 @@ His words: "Refine the works node system, and it should be very similar to the B
 Screenshots: `build-93/17a-works-note-box.png` and `17b-works-note-and-sheet.png` (St John Chrysostom, Homily 7 on 1 Thessalonians): the pen opens "Add a note for this paragraph..." inline, in a boxed field with a resize grip, "Esc to close" (a keyboard hint on a phone), Cancel and Save; the tapped paragraph drawn in a thin box; and the "Highlight paragraph" sheet laid over the note's own buttons.
 
 Who has it: the Fable voices chat, with note 13 (the same reader, the same selection). The bar: holding words in a Father's work, a life, a council, theology or history opens the same tools the Bible opens when a verse is held (`components/bible/MobileVerseToolbar.tsx`, `VerseFocus.tsx`), in the same place and the same look: highlight, note, keep, copy, share; the note written in the house's own sheet, not a boxed field in the text; no keyboard hints on a phone; nothing laid over another control; no box around the tapped words or the field (his rule of 2026-11-10). One component for both readers where it can be.
+
+### 18. Some works have no picture on their cover (2026-11-11 about 01:42 UTC)
+
+His words: "There's some works where the cover doesn't have photos."
+
+Screenshot: `build-93/18-works-without-covers.png`: the reading room by tradition; under Syriac, "The Life of St. Marcian" (St Marcian of Cyrrhus), "The Martyrdom of Sts. Gurias, Samonas and Habib" and St Isaac's work show a plain dark cover with only their titles. These are among the works added since build 89's covers (most by the November and December saints chat).
+
+With note 12 the goal is the same: every work wears a picture. Who has it: the December saints chat, after push 2b and the Shanghai life: list every work in the reading room with no picture on its cover; dress the ones it added from the icons it sourced, by build 89's covers rule (the author's or the subject's icon first, a council's own picture for its texts); hand the arbiter the rest by name, which go to Updates 2 with note 12. Held by a test that no work stands without a picture, with a named list for any that wait on a permission.
