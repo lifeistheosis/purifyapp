@@ -189,15 +189,18 @@ export function FlorilegiaHub({ readOnly = false }: { readOnly?: boolean } = {})
                   <span data-carry={picture.src} className="absolute inset-0 overflow-hidden rounded-[inherit]">
                     <CoverArt src={picture.src} fallback={picture.fallback} size={240} className="plan-tile-picture absolute inset-0 h-full w-full" />
                   </span>
-                  <h3 className="relative font-serif text-[16px] font-semibold leading-[1.15] text-paper">{t(s.nameKey)}</h3>
+                  {/* The name and the line under it stand on the picture, and
+                      are pictured apart from it while it travels
+                      (data-carry-over, lib/ui/routeMotion.ts). */}
+                  <h3 data-carry-over="" className="relative font-serif text-[16px] font-semibold leading-[1.15] text-paper">{t(s.nameKey)}</h3>
                   {kept ? (
                     // In words: the tick alone said nothing a reader could read (build 89 note 6).
-                    <p className="relative mt-1 flex items-start gap-1.5 font-sans text-caption leading-[1.35] text-paper/85" data-starter-kept="">
+                    <p data-carry-over="" className="relative mt-1 flex items-start gap-1.5 font-sans text-caption leading-[1.35] text-paper/85" data-starter-kept="">
                       <Check size={13} aria-hidden className="mt-0.5 shrink-0" />
                       <span>{t("study.florilegium.inYours")}</span>
                     </p>
                   ) : (
-                    <p className="relative mt-1 font-sans text-caption leading-[1.35] text-paper/70">{reference}</p>
+                    <p data-carry-over="" className="relative mt-1 font-sans text-caption leading-[1.35] text-paper/70">{reference}</p>
                   )}
                 </Link>
               </li>

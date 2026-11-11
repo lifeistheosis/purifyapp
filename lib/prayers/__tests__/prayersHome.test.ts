@@ -358,7 +358,9 @@ describe("Practices (note 72, r3-26 A: the icon tiles)", () => {
     expect(css).toMatch(/html\[data-reading-mode="parchment"\] \.tile-dot \{\s*box-shadow: none;/);
     const tiles = code(TILES);
     expect(tiles).toContain('lit && "tile-lit"');
-    expect(tiles).toContain('<span aria-hidden className="tile-shade absolute inset-0" />');
+    // Cut to the tile's corners itself, and said to stand on the picture: it is pictured apart from the
+    // picture while that travels to its page and back (1.9, lib/ui/routeMotion.ts, data-carry-over).
+    expect(tiles).toContain('<span aria-hidden data-carry-over="" className="tile-shade absolute inset-0 rounded-[inherit]" />');
     // The picture arrives whole, over the tile's own ground.
     expect(tiles).toMatch(/<ArrivingImage\s+src=\{picture\}/);
   });
@@ -485,7 +487,7 @@ describe("Practices and the book as they are drawn", () => {
     expect(tile).not.toContain("<img");
     expect(tile).not.toContain("data-lit");
     expect(tile).not.toContain("tile-lit");
-    expect(tile).toMatch(/<h3 class="tile-name [^"]*">The Hours<\/h3><p class="tile-line [^"]*text-paper\/80">Sanctify the day<\/p>/);
+    expect(tile).toMatch(/<h3 data-carry-over="" class="tile-name [^"]*">The Hours<\/h3><p data-carry-over="" class="tile-line [^"]*text-paper\/80">Sanctify the day<\/p>/);
     const book = draw(h(PrayerBookContents, { hourNow: null }));
     expect(book.match(/data-chapter="/g)).toHaveLength(4);
     expect(book.match(/aria-expanded="true"/g)).toHaveLength(1);
@@ -506,7 +508,7 @@ describe("Practices and the book as they are drawn", () => {
     for (const part of ['src="/icons/prayer/pentecost.jpg"', 'loading="lazy"', 'class="img-arrive absolute inset-0 h-full w-full object-cover"', 'style="object-position:50% 30%;transform:scale(1.22);transform-origin:50% 30%"']) {
       expect(img, part).toContain(part);
     }
-    expect(tile).toContain('<p class="tile-line relative mt-1 font-sans text-caption leading-[1.35] text-paper">');
+    expect(tile).toContain('<p data-carry-over="" class="tile-line relative mt-1 font-sans text-caption leading-[1.35] text-paper">');
     const book = draw(h(PrayerBookContents, { hourNow: "third-hour" }));
     /** A row of the book by its address: its opening tag and what it holds, up to the next row. */
     const row = (href: string) => {

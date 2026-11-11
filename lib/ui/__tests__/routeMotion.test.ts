@@ -18,6 +18,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   CARRIED,
+  CARRIED_COVER,
+  OVER,
+  OVER_ATTR,
   ENTRANCE_MS,
   NOTE_MS,
   RETURN_HOLD_MS,
@@ -467,7 +470,8 @@ function stage(nodes: Fake[], options: { motion?: string } = {}) {
   return base;
 }
 
-const wears = (el: Fake) => el.names.get("view-transition-name") === CARRIED;
+/** Wears a travelling picture's name: the one every picture wears, or a cover's own. */
+const wears = (el: Fake) => [CARRIED, CARRIED_COVER].includes(el.names.get("view-transition-name") ?? "");
 
 describe("a picture that leads to its own page", () => {
   beforeEach(() => {
@@ -703,6 +707,108 @@ describe("a picture that leads to its own page", () => {
     expect(wears(head)).toBe(false);
   });
 
+  // What stands on a picture in its card (1.9, P6). A tile's shade, name and
+  // line are drawn over its picture, and the travelling picture is drawn over
+  // the page: the Akathists tile's picture came back bare, with no shade and
+  // no name on it, and the words stood on it again only when the change was
+  // over, all at once (the film, 2026-11-11).
+  function tile() {
+    const picture = fake("span", { "data-carry": "/prayers/icons/akathist.jpg" });
+    const shade = fake("span", { [OVER_ATTR]: "" });
+    const name = fake("h3", { [OVER_ATTR]: "" });
+    const line = fake("p", { [OVER_ATTR]: "" });
+    const ring = fake("span");
+    const card = fake("a", { href: "/prayers/akathists/" }, [picture, shade, name, line, ring]);
+    return { picture, shade, name, line, ring, card };
+  }
+  const named = (el: Fake) => el.names.get("view-transition-name") ?? null;
+
+  it("what stands on the picture in its card is pictured apart while the picture is lifted, in the order it stands", () => {
+    const t = tile();
+    stage([t.card]);
+    liftFrom(t.name as unknown as EventTarget);
+    expect(wears(t.picture)).toBe(true);
+    expect([named(t.shade), named(t.name), named(t.line)]).toEqual([...OVER]);
+    // Only what says it stands on the picture: the tile's ring stays in the page's picture.
+    expect(named(t.ring)).toBeNull();
+    // And whatever wears the name says so in a mark of its own.
+    expect(t.picture.dataset.carrying).toBe("");
+    expect("carrying" in t.shade.dataset).toBe(false);
+    // All of it is given back with the picture's name.
+    setDown();
+    expect([named(t.picture), named(t.shade), named(t.name), named(t.line)]).toEqual([null, null, null, null]);
+    expect("carrying" in t.picture.dataset).toBe(false);
+  });
+
+  it("and again when the picture comes back into its card, which is where it was missed", async () => {
+    const t = tile();
+    stage([t.card]);
+    liftFrom(t.picture as unknown as EventTarget);
+    const head = fake("img", { "data-carry-into": "/prayers/icons/akathist.jpg" });
+    stage([head]);
+    carryIn("/prayers/akathists/");
+    endNav();
+    expect([named(t.shade), named(t.name), named(t.line)]).toEqual([null, null, null]);
+
+    const { started } = stage([head]);
+    (globalThis as { window?: unknown }).window = { location: { pathname: "/prayers/akathists/" } };
+    returnBy(() => {});
+    void started[0].update();
+    stage([t.card]);
+    expect(arrived()).toBe(true);
+    // The page behind is in place, and is about to be pictured: the picture wears the name, and its words theirs.
+    expect(wears(t.picture)).toBe(true);
+    expect([named(t.shade), named(t.name), named(t.line)]).toEqual([...OVER]);
+    started[0].finish();
+    await vi.runAllTimersAsync();
+    expect([named(t.picture), named(t.shade), named(t.name), named(t.line)]).toEqual([null, null, null, null]);
+  });
+
+  it("a tile with only a name gives out one name, and nothing wears a fourth", () => {
+    const picture = fake("span", { "data-carry": "/covers/john.v1.jpg" });
+    const name = fake("h3", { [OVER_ATTR]: "" });
+    stage([fake("a", { href: "/florilegium/begin/prologue/" }, [picture, name])]);
+    liftFrom(picture as unknown as EventTarget);
+    expect(named(name)).toBe(OVER[0]);
+    setDown();
+
+    const many = [0, 1, 2, 3, 4].map(() => fake("span", { [OVER_ATTR]: "" }));
+    const other = fake("span", { "data-carry": "/x.jpg" });
+    stage([fake("a", { href: "/x/" }, [other, ...many])]);
+    liftFrom(other as unknown as EventTarget);
+    expect(many.map(named)).toEqual([...OVER, null, null]);
+    expect(new Set(OVER).size).toBe(OVER.length);
+  });
+
+  it("the tiles say what stands on their pictures, and the stylesheet brings it in as the picture lands", () => {
+    const tiles = read("components/mobile/SoftTiles.tsx");
+    const pictureTile = tiles.slice(tiles.indexOf("export function PictureTile("), tiles.indexOf("export function FeatureBand("));
+    // The shade, the name and the line: three, which is as many names as there are.
+    expect(pictureTile.match(/data-carry-over=""/g) ?? []).toHaveLength(OVER.length);
+    expect(pictureTile).toContain('<span aria-hidden data-carry-over="" className="tile-shade absolute inset-0 rounded-[inherit]" />');
+    expect(pictureTile).toMatch(/<Heading data-carry-over="" className="tile-name /);
+    expect(pictureTile).toMatch(/<p data-carry-over="" className=\{cn\("tile-line /);
+    // Beside the picture, in the same card: that is where the helper looks.
+    expect(pictureTile.indexOf("data-carry={picture}")).toBeLessThan(pictureTile.indexOf('data-carry-over=""'));
+    // A starter's tile on the Florilegium: its name, and whichever line stands under it.
+    const hub = read("components/florilegium/FlorilegiaHub.tsx");
+    expect(hub).toMatch(/<h3 data-carry-over="" className="relative font-serif/);
+    expect(hub.match(/<p data-carry-over="" className="relative mt-1/g) ?? []).toHaveLength(2);
+
+    const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
+    const each = (side: string) => OVER.map((name) => `::view-transition-${side}(${name}):only-child`).join(",\n");
+    const out = css.indexOf(`${each("old")} {`);
+    const back = css.indexOf(`${each("new")} {`);
+    expect(out).toBeGreaterThan(-1);
+    expect(back).toBeGreaterThan(out);
+    // Going out, gone as the picture lifts; coming back, whole as it lands, in the second half of its way.
+    expect(css.slice(out, css.indexOf("}", out))).toContain("animation: route-leave 110ms var(--ease-house) both;");
+    const lands = /animation: route-arrive (\d+)ms var\(--ease-house\) (\d+)ms both;/.exec(css.slice(back, css.indexOf("}", back)))!;
+    const travels = Number(/::view-transition-group\(carried\) \{\s*animation-duration: (\d+)ms;/.exec(css)![1]);
+    expect(Number(lands[2])).toBeGreaterThanOrEqual(travels * 0.4);
+    expect(Number(lands[1]) + Number(lands[2])).toBe(travels);
+  });
+
   it("setDown gives every name back", () => {
     const picture = fake("span", { "data-carry": "x" });
     stage([fake("a", { href: "/saints/x/" }, [picture])]);
@@ -729,16 +835,21 @@ describe("a picture that leads to its own page", () => {
     stage([tile, card]);
     liftFrom(icon as unknown as EventTarget);
     expect(icon.names.has("view-transition-class")).toBe(false);
+    // A cover says it is one by a name of its own, and by no class (P7, 1.9):
+    // an iPhone on iOS 18.0 or 18.1 has the transitions and not the class, so
+    // a rule that told a cover by its class did not match there, the two
+    // covers passed into each other, and the title was read twice.
     liftFrom(cover as unknown as EventTarget);
-    expect(wears(cover)).toBe(true);
-    expect(cover.names.get("view-transition-class")).toBe("carried-cover");
+    expect(cover.names.get("view-transition-name")).toBe(CARRIED_COVER);
+    expect(cover.names.has("view-transition-class")).toBe(false);
+    expect(CARRIED_COVER).not.toBe(CARRIED);
 
     // The cover at the head of the book's page takes it, and says the same.
     const head = fake("div", { "data-carry-into": "cover:Confessions" });
     stage([head]);
     carryIn("/saints/augustine-of-hippo/confessions/");
-    expect(wears(head)).toBe(true);
-    expect(head.names.get("view-transition-class")).toBe("carried-cover");
+    expect(head.names.get("view-transition-name")).toBe(CARRIED_COVER);
+    expect(head.names.has("view-transition-class")).toBe(false);
     expect("carriedIn" in head.dataset).toBe(true);
 
     // And both are given back with the name.
@@ -750,6 +861,13 @@ describe("a picture that leads to its own page", () => {
     expect("carriedIn" in head.dataset).toBe(false);
     expect(head.dataset.landed).toBe("");
     expect("landed" in cover.dataset).toBe(false);
+
+    // Any other kind wears the name every picture wears, with its kind beside it.
+    const plate = fake("span", { "data-carry": "way:creed" });
+    stage([fake("a", { href: "/theology/creed/" }, [plate])]);
+    liftFrom(plate as unknown as EventTarget);
+    expect(plate.names.get("view-transition-name")).toBe(CARRIED);
+    expect(plate.names.get("view-transition-class")).toBe("carried-way");
   });
 
   it("the pictures say so themselves: the attributes are on the shared components", () => {
@@ -807,15 +925,21 @@ describe("a picture that leads to its own page", () => {
     const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
     // The one being left is not drawn while both are there; the one arriving is, from the first frame.
     expect(css).toMatch(/@keyframes carried-unseen \{\s*from \{ opacity: 0; \}\s*to \{ opacity: 0; \}\s*\}/);
-    expect(css).toMatch(/::view-transition-old\(carried\.carried-cover\) \{\s*animation: carried-unseen 320ms both;\s*\}/);
-    expect(css).toMatch(/::view-transition-new\(carried\.carried-cover\) \{\s*animation: none;\s*\}/);
-    // For as long as the picture travels.
+    expect(css).toMatch(/::view-transition-old\(carried-cover\) \{\s*animation: carried-unseen 320ms both;\s*\}/);
+    expect(css).toMatch(/::view-transition-new\(carried-cover\) \{\s*animation: none;\s*\}/);
+    // For as long as the picture travels: a cover's own name is given the travel every picture has.
     const travels = /::view-transition-group\(carried\) \{\s*animation-duration: (\d+)ms;/.exec(css)![1];
     expect(travels).toBe("320");
+    expect(css).toMatch(new RegExp(`::view-transition-group\\(carried-cover\\) \\{\\s*animation-duration: ${travels}ms;\\s*animation-timing-function: var\\(--ease-house\\);\\s*\\}`));
+    // Cut to its frame as it changes shape, as every travelling picture is, and to a poster's corners.
+    expect(css).toMatch(/::view-transition-old\(carried-cover\),\s*::view-transition-new\(carried-cover\) \{\s*block-size: 100%;\s*object-fit: cover;\s*overflow: clip;\s*border-radius: 6px;\s*mix-blend-mode: normal;\s*\}/);
+    // P7 (1.9): told by its name alone. No rule tells a cover by a class, which iOS 18.0 and 18.1 do not have.
+    expect(css).not.toMatch(/carried\.carried-cover/);
+    expect(read("lib/ui/routeMotion.ts")).toContain('el.style.setProperty("view-transition-name", kind === "cover" ? CARRIED_COVER : CARRIED);');
     // Alone, it leaves or arrives with its page, said after so it holds.
-    const both = css.indexOf("::view-transition-new(carried.carried-cover) {");
-    const leaves = css.indexOf("::view-transition-old(carried.carried-cover):only-child {");
-    const arrives = css.indexOf("::view-transition-new(carried.carried-cover):only-child {");
+    const both = css.indexOf("::view-transition-new(carried-cover) {");
+    const leaves = css.indexOf("::view-transition-old(carried-cover):only-child {");
+    const arrives = css.indexOf("::view-transition-new(carried-cover):only-child {");
     expect(leaves).toBeGreaterThan(both);
     expect(arrives).toBeGreaterThan(leaves);
     expect(css.slice(leaves, css.indexOf("}", leaves))).toContain("animation: route-leave var(--duration-route-exit) var(--ease-house) both;");

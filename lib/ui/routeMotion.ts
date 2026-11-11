@@ -89,6 +89,18 @@ let settledAt = 0;
  */
 export const CARRIED = "carried";
 
+/**
+ * The name a cover wears as it travels, in place of CARRIED (1.9). A cover is
+ * one poster at both ends with its words on it, and has to be moved in its
+ * own way (app/globals.css, "A cover is one poster"). That was said by a
+ * class beside the name (`view-transition-class`), which an iPhone on iOS
+ * 18.0 or 18.1 does not have although it has the transitions: there the rule
+ * did not match, the two covers passed into each other, and the title was
+ * read twice for a few frames. A name of its own needs nothing those phones
+ * lack.
+ */
+export const CARRIED_COVER = "carried-cover";
+
 /** How a picture went into a page, kept so that it can come back out the same way. */
 type Way = { href: string; key: string; nth: number };
 
@@ -398,23 +410,62 @@ export function kindOf(key: string): string | null {
 }
 
 /**
+ * On what stands on a picture in its card: a tile's shade, its name, its
+ * line. While the picture travels each is pictured apart from it, over it.
+ */
+export const OVER_ATTR = "data-carry-over";
+
+/** The names they wear, in the order they stand in the card. Three is what a tile has; a fourth would stay in the page's picture. */
+export const OVER = ["carried-over-1", "carried-over-2", "carried-over-3"] as const;
+
+/**
  * `landing`: the picture the travelling one becomes. It is marked while it
  * wears the name, and the stylesheet shows what is in it at once: a picture
  * that fades in as it loads would fade in under the one arriving on it.
  *
  * A picture of a kind wears its kind too, as a class beside the name
- * (`view-transition-class: carried-cover`), so the stylesheet can move one
- * kind in its own way. A cover has to be: it is the same poster at both ends
- * with its title and author on it, and passed into each other as two
- * pictures are, the words stood twice for the first frames (seen in the
- * film, 2026-11-10; app/globals.css, "A cover is one poster").
+ * (`view-transition-class: carried-way`), so the stylesheet can move one
+ * kind in its own way. A cover has to be moved in its own way: it is the
+ * same poster at both ends with its title and author on it, and passed into
+ * each other as two pictures are, the words stood twice for the first
+ * frames (seen in the film, 2026-11-10; app/globals.css, "A cover is one
+ * poster"). So a cover wears a name of its own, CARRIED_COVER, which is told
+ * where a class is not (above).
+ *
+ * Whatever wears the name says so in a mark of its own as well
+ * (`data-carrying`), lifting or landing, for a rule that has to know a
+ * picture is in flight without reading its style.
+ *
+ * And what stands on the picture in its card travels with neither page
+ * (1.9). A tile's shade, name and line are drawn over its picture, and the
+ * travelling picture is drawn over the page: so on the way back the picture
+ * arrived bare, bright where the shade should be, with no name on it, and
+ * the words stood on it again only when the change was over, all at once
+ * (seen in the film, 2026-11-11: the Akathists tile, back from its page);
+ * on the way out they were gone under their own picture in the first frame.
+ * Each thing marked `data-carry-over` beside the picture wears a name of its
+ * own while the picture wears its name, so the browser draws it over the
+ * picture, and the stylesheet brings it in as the picture lands and takes
+ * it away as the picture lifts (app/globals.css, "What stands on a
+ * travelling picture").
  */
 function wear(el: HTMLElement, key: string, landing = false): void {
-  el.style.setProperty("view-transition-name", CARRIED);
   const kind = kindOf(key);
-  if (kind) el.style.setProperty("view-transition-class", `carried-${kind}`);
+  // A cover by its own name; any other kind by the name all pictures share,
+  // with its kind beside it for a rule that wants to tell it.
+  el.style.setProperty("view-transition-name", kind === "cover" ? CARRIED_COVER : CARRIED);
+  if (kind && kind !== "cover") el.style.setProperty("view-transition-class", `carried-${kind}`);
   if (landing) el.dataset.carriedIn = "";
+  el.dataset.carrying = "";
   wearing.push(el);
+  let n = 0;
+  for (const beside of Array.from(el.parentElement?.children ?? []) as HTMLElement[]) {
+    if (n >= OVER.length) break;
+    if (beside === el || beside.getAttribute(OVER_ATTR) === null) continue;
+    beside.style.setProperty("view-transition-name", OVER[n]);
+    n += 1;
+    wearing.push(beside);
+  }
 }
 
 /**
@@ -434,6 +485,7 @@ export function setDown(): void {
     el.style.removeProperty("view-transition-class");
     if ("carriedIn" in el.dataset) el.dataset.landed = "";
     delete el.dataset.carriedIn;
+    delete el.dataset.carrying;
   }
   wearing = [];
   for (const el of shown) el.style.removeProperty("content-visibility");

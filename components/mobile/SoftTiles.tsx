@@ -226,15 +226,21 @@ export function PictureTile({
           />
         </span>
       ) : null}
-      <span aria-hidden className="tile-shade absolute inset-0" />
+      {/* The shade, the name and the line stand on the picture, and are
+          pictured apart from it while it travels (data-carry-over,
+          lib/ui/routeMotion.ts): a picture that came back bare had its words
+          appear on it all at once when the change was over (1.9). The shade
+          is cut to the tile's corners itself, since a thing pictured apart is
+          not cut by the tile around it. */}
+      <span aria-hidden data-carry-over="" className="tile-shade absolute inset-0 rounded-[inherit]" />
       {/* A long one-word name breaks at a hyphen rather than running out of
           the tile ("Walkthroughs" did on a 375 px phone, 1.8), as the
           calendar's cells do. */}
-      <Heading className="tile-name relative text-[21px] leading-[1.12] text-paper [overflow-wrap:anywhere] hyphens-auto">
+      <Heading data-carry-over="" className="tile-name relative text-[21px] leading-[1.12] text-paper [overflow-wrap:anywhere] hyphens-auto">
         {label}
       </Heading>
       {sub ? (
-        <p className={cn("tile-line relative mt-1 font-sans text-caption leading-[1.35]", lit ? "text-paper" : "text-paper/80")}>{sub}</p>
+        <p data-carry-over="" className={cn("tile-line relative mt-1 font-sans text-caption leading-[1.35]", lit ? "text-paper" : "text-paper/80")}>{sub}</p>
       ) : null}
     </Tag>
   );

@@ -60,6 +60,13 @@
 //             tap was three transitions, none of which showed anything, and
 //             the page 0.6s late (components/nav/RouteTransition.tsx, "The
 //             mark asks only while the address is changing")
+//   a chapter's round button, a chevron named Back, is a step back for a
+//             reader who came from somewhere (one step, pictured as a
+//             return, however many chapters they turned) and the door to the
+//             whole list for one with nothing behind them
+//   what stands on a travelling picture in its card (a tile's shade, name
+//             and line) is pictured apart from it, over it: gone as the
+//             picture lifts, and whole on it as it lands
 //   each is over within 350ms
 //   the browser's own Back is not pictured (the platform's rule)
 //   with motion reduced, nothing is pictured at all, a slow page included
@@ -90,7 +97,7 @@ function watchTransitions() {
   const start = Document.prototype.startViewTransition;
   if (!start) return;
   Document.prototype.startViewTransition = function (arg) {
-    const entry = { from: location.pathname, at: performance.now(), parts: [], tabBar: false, carried: [], travelled: false, leaving: null, apart: [], ready: false, done: false };
+    const entry = { from: location.pathname, at: performance.now(), parts: [], tabBar: false, carried: [], over: [], travelled: false, leaving: null, apart: [], ready: false, done: false };
     log.seen.push(entry);
     const transition = start.call(this, arg);
     const held = transition.ready.then(
@@ -110,13 +117,23 @@ function watchTransitions() {
           // where each is drawn fading. (A cover draws only the one it is
           // becoming, which does not fade: app/globals.css, "A cover is one
           // poster".)
-          if (part === "::view-transition-old(carried)" && !entry.carried.includes("old")) entry.carried.push("old");
+          // By the pictures' name, or by a cover's own (lib/ui/routeMotion.ts, CARRIED_COVER).
+          const travelling = /^::view-transition-(old|new|group)\((carried|carried-cover)\)$/.exec(part);
+          const side = travelling?.[1];
+          if (side === "old" && !entry.carried.includes("old")) entry.carried.push("old");
           // How the side being left is drawn: a cover's is kept unseen.
-          if (part === "::view-transition-old(carried)") entry.leaving = a.animationName ?? "";
-          if (part === "::view-transition-new(carried)" && !entry.carried.includes("new")) entry.carried.push("new");
+          if (side === "old") entry.leaving = a.animationName ?? "";
+          if (side === "new" && !entry.carried.includes("new")) entry.carried.push("new");
           // And whether it travelled: the browser moves the frame the two
           // share only when there is one on each side of the change.
-          if (part === "::view-transition-group(carried)") entry.travelled = true;
+          if (side === "group") entry.travelled = true;
+          // A cover is told by its name, which needs nothing an older iPhone lacks.
+          if (travelling?.[2] === "carried-cover") entry.cover = true;
+          // What stands on the travelling picture in its card (a tile's shade,
+          // its name, its line), pictured apart from it: which side of the
+          // change it is on, how it moves, and when it starts and ends.
+          const over = /^::view-transition-(old|new)\((carried-over-\d)\)$/.exec(part);
+          if (over && !/^-ua-/.test(a.animationName ?? "")) entry.over.push({ side: over[1], name: over[2], moves: a.animationName ?? "", from: Number(timing.delay), to: Number(timing.delay) + Number(timing.duration) });
           if (part === "::view-transition-old(root)" || part === "::view-transition-new(root)") {
             entry.parts.push({ part: part.includes("old") ? "old" : "new", name: a.animationName ?? "", ms: Number(timing.duration) + Number(timing.delay) });
           }
@@ -253,7 +270,7 @@ async function walk(page, name, act, { film } = {}) {
 }
 
 /** What a pictured walk must have been. */
-function judge(result, { old, fresh, tabBar = true, to, carried = false }) {
+function judge(result, { old, fresh, tabBar = true, to, carried = false, over = null }) {
   const faults = [];
   const { pictured } = result;
   if (to && !sameAddress(result.to, to)) faults.push(`ended on ${result.to}, not ${to}`);
@@ -274,6 +291,23 @@ function judge(result, { old, fresh, tabBar = true, to, carried = false }) {
   }
   if (carried === "alone" && one.leaving !== "carried-unseen") {
     faults.push(`a cover was drawn twice as it travelled: the one being left moves as "${one.leaving ?? "nothing"}", not carried-unseen`);
+  }
+  if (carried === "alone" && !one.cover) faults.push("the cover travelled under the pictures' name, not its own: it is told by a class, which iOS 18.0 and 18.1 do not have");
+  // What stands on the picture in its card: `over` is how many things (a
+  // tile's shade, name and line: 3; a starter's name and line: 2) and which
+  // way. Going out they are on the side being left and gone as the picture
+  // lifts; coming back they are on the side arriving, and come in over the
+  // picture in the second half of its way, whole as it lands.
+  if (over) {
+    const side = over.way === "out" ? "old" : "new";
+    const mine = (one.over ?? []).filter((p) => p.side === side);
+    const names = new Set(mine.map((p) => p.name));
+    if (names.size !== over.things) faults.push(`${names.size} of the ${over.things} things that stand on the picture are pictured apart from it on the side ${over.way === "out" ? "being left" : "arriving"}`);
+    if ((one.over ?? []).some((p) => p.side !== side)) faults.push("what stands on the picture is pictured on the wrong side of the change");
+    for (const p of mine) {
+      if (over.way === "out" && (p.moves !== "route-leave" || p.to > 160)) faults.push(`${p.name} leaves as "${p.moves}" and is gone at ${p.to}ms; it should be gone as the picture lifts`);
+      if (over.way === "back" && (p.moves !== "route-arrive" || p.from < 120 || p.to > 330)) faults.push(`${p.name} arrives as "${p.moves}" from ${p.from}ms to ${p.to}ms; it should come in as the picture lands`);
+    }
   }
   return faults;
 }
@@ -593,6 +627,27 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
     await page.evaluate(() => window.scrollTo(0, 0));
     await sleep(page, 300);
 
+    // A picture tile (Practices' Akathists): its shade, its name and its
+    // line stand on its picture. Until 1.9 they were under the picture as it
+    // travelled: gone in the first frame on the way out, and on the way back
+    // the picture arrived bare and the words stood on it only when the
+    // change was over, all at once (the film, 2026-11-11). They are pictured
+    // apart from it now, over it (lib/ui/routeMotion.ts, wear).
+    const practice = 'a.lm-card[href^="/prayers/akathists"]';
+    if (!(await page.locator(practice).count())) note("a picture tile: its words leave as its picture lifts", ["Prayers has no Akathists tile to tap"], "/prayers/");
+    else {
+      await page.locator(practice).first().scrollIntoViewIfNeeded();
+      await sleep(page, 700);
+      r = await walk(page, "tile", () => page.locator(practice).first().click(), { film });
+      note("a picture tile: its picture travels to its page, and its words are gone as it lifts", judge(r, { old: "route-leave", fresh: "route-settle", to: "/prayers/akathists", carried: true, over: { way: "out", things: 3 } }), `${r.from} to ${r.to}`);
+      if (film) await sheet(ctx, film, "tile", r.stills);
+      r = await walk(page, "tile-back", () => page.locator(chevron).first().click(), { film });
+      note("a picture tile: back, its words standing on the picture as it lands", judge(r, { old: "route-sink", fresh: "route-arrive", to: "/prayers", carried: true, over: { way: "back", things: 3 } }), `${r.from} to ${r.to}`);
+      if (film) await sheet(ctx, film, "tile-back", r.stills);
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await sleep(page, 300);
+    }
+
     // Across: a tab for a tab.
     r = await walk(page, "tab", () => page.locator('[data-tab-bar] a[href^="/discover"]').first().click(), { film });
     note("across: a tab for a tab", judge(r, { old: "route-leave", fresh: "route-arrive", to: "/discover" }), `${r.from} to ${r.to}`);
@@ -900,12 +955,12 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
     r = await walk(page, "starter", () => page.locator('a[data-starter="magnificat"]').first().click(), { film });
     note(
       "a starter: its tile's picture travelling to the head of its page",
-      judge(r, { old: "route-leave", fresh: "route-settle", to: "/florilegium/begin/magnificat", carried: true }),
+      judge(r, { old: "route-leave", fresh: "route-settle", to: "/florilegium/begin/magnificat", carried: true, over: { way: "out", things: 2 } }),
       `${r.from} to ${r.to}`,
     );
     if (film) await sheet(ctx, film, "starter", r.stills);
     r = await walk(page, "starter-back", () => page.locator(chevron).first().click(), { film });
-    note("a starter: back, the picture back in its tile", judge(r, { old: "route-sink", fresh: "route-arrive", to: "/florilegium", carried: true }), `${r.from} to ${r.to}`);
+    note("a starter: back, the picture back in its tile with its name on it as it lands", judge(r, { old: "route-sink", fresh: "route-arrive", to: "/florilegium", carried: true, over: { way: "back", things: 2 } }), `${r.from} to ${r.to}`);
     if (film) await sheet(ctx, film, "starter-back", r.stills);
 
     // A gathering: in the apps, one page for all of them, which one named in
@@ -993,6 +1048,48 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
     await sleep(page, 1200);
     r = await walk(page, "creed", () => page.locator('[data-theology-creed] a[href^="/theology/creed"]').first().click());
     note("the Creed: its row's book travelling to the head of its page", judge(r, { old: "route-leave", fresh: "route-settle", to: "/theology/creed", carried: true }), `${r.from} to ${r.to}`);
+
+    // A chapter's round button, a chevron named Back (1.9, the gate: "Back
+    // that does not return to where the reader was"). It was a door to the
+    // whole list of books, whoever tapped it. For a reader who came from a
+    // row of the list it is a step back to the list now, pictured as any
+    // step back, in one tap however many chapters they turned; for one the
+    // Bible tab brought, with nothing behind them, it is the door still
+    // (lib/nav/readerWay.ts). Where the row comes back to is the Back walk's
+    // (scripts/back-walk.mjs); this holds how the two move.
+    await go(page, "/bible/");
+    await page.waitForSelector('a[href="/bible/1-kings/1/"]', { timeout: 20000, state: "attached" });
+    await sleep(page, 1200);
+    const bookRow = 'a[href="/bible/1-kings/1/"]:visible';
+    if (!(await page.locator(bookRow).count())) note("a chapter's Back, from a row of the list", ["the list has no row for 1 Kings to tap"], "/bible/");
+    else {
+      await page.locator(bookRow).first().scrollIntoViewIfNeeded();
+      await sleep(page, 600);
+      r = await walk(page, "bible-row", () => page.locator(bookRow).first().click());
+      const leaving = judge(r, { old: "route-leave", fresh: "route-settle", to: "/bible/1-kings/1" });
+      // A chapter turned inside the reader: not a step.
+      const turned = await page.evaluate(() => {
+        const a = [...document.links].find((x) => x.getAttribute("href") === "/bible/1-kings/2/");
+        if (a) a.click();
+        return Boolean(a);
+      });
+      if (!turned) leaving.push("the chapter has no link to the next one to turn by, so the walk does not prove that one tap leaves the reader");
+      await page.waitForFunction(() => location.pathname === "/bible/1-kings/2/", null, { timeout: 10000 }).catch(() => {});
+      await sleep(page, 1200);
+      r = await walk(page, "bible-leave", () => page.locator(chevron).first().click(), { film });
+      leaving.push(...judge(r, { old: "route-sink", fresh: "route-arrive", to: "/bible" }));
+      note("a chapter's Back, from a row of the list with a chapter turned since: one step back to the list, pictured as a return", leaving, `${r.from} to ${r.to}`);
+      if (film) await sheet(ctx, film, "bible-leave", r.stills);
+    }
+    // By the Bible tab: the tabs stand side by side, and nothing is behind the chapter.
+    await go(page, "/");
+    await sleep(page, 900);
+    r = await walk(page, "bible-tab", () => page.locator('[data-tab-bar] a[href^="/bible"]').first().click());
+    if (!/^\/bible\/[^/]+\/\d+\/?$/.test(r.to)) note("a chapter's Back, from the Bible tab", [`the Bible tab opened ${r.to}, not a chapter, so the walk proves nothing`], `${r.from} to ${r.to}`);
+    else {
+      r = await walk(page, "bible-door", () => page.locator(chevron).first().click());
+      note("a chapter's Back, from the Bible tab: the door to the whole list, as it was", judge(r, { old: "route-leave", fresh: "route-settle", to: "/bible" }), `${r.from} to ${r.to}`);
+    }
 
     // The browser's own Back: the page changes, and nothing is pictured.
     await go(page, "/prayers/");

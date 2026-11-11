@@ -9017,6 +9017,30 @@ body[data-route-exit] [data-route-content] {
  animation: route-arrive var(--duration-route-enter) var(--ease-house) 40ms both;
 }
 
+/* What stands on a travelling picture (1.9): a tile's shade, its name, its
+   line. Each is pictured apart from the picture while it travels
+   (lib/ui/routeMotion.ts, wear: `data-carry-over`), so the browser draws it
+   over the picture and not under it. It was under it: back from a tile's
+   page the picture arrived bare, bright where its shade should be, and its
+   name stood on it only when the change was over, all at once (seen in the
+   film, 2026-11-11).
+
+   Coming back, they come in over the picture as it lands: in the second
+   half of its way, by which time it is all but in its place, and they are
+   whole as it arrives. Going out, they are gone as the picture lifts from
+   under them. Each is on one side of the change only, so it is the
+   :only-child that is said. */
+::view-transition-old(carried-over-1):only-child,
+::view-transition-old(carried-over-2):only-child,
+::view-transition-old(carried-over-3):only-child {
+ animation: route-leave 110ms var(--ease-house) both;
+}
+::view-transition-new(carried-over-1):only-child,
+::view-transition-new(carried-over-2):only-child,
+::view-transition-new(carried-over-3):only-child {
+ animation: route-arrive 170ms var(--ease-house) 150ms both;
+}
+
 /* What a travelling picture becomes is there at once. A cover's picture
    fades in over its plate as it loads (components/covers/WorkCover.tsx), and
    under a picture arriving on it that fade is the picture going out and
@@ -9043,28 +9067,40 @@ body[data-route-exit] [data-route-content] {
 
    Alone on its side of the change, a cover leaves or arrives with its page
    as any picture does; said again here, after, so it holds whatever the two
-   selectors weigh. Where the browser has the transitions and not yet the
-   class (iOS 18.0 and 18.1) none of this matches, and the covers pass into
-   each other as before. */
+   selectors weigh. */
 @keyframes carried-unseen {
  from { opacity: 0; }
  to { opacity: 0; }
 }
-::view-transition-old(carried.carried-cover),
-::view-transition-new(carried.carried-cover) {
+/* A cover wears a name of its own as it travels, carried-cover, and not the
+   pictures' name with a class beside it (lib/ui/routeMotion.ts,
+   CARRIED_COVER). An iPhone on iOS 18.0 or 18.1 has the transitions and not
+   the class: the rules below were written for carried.carried-cover, did not
+   match there, and the two covers passed into each other with the title
+   read twice. So what every travelling picture is given above is said again
+   here for a cover, and then what is a cover's alone. */
+::view-transition-group(carried-cover) {
+ animation-duration: 320ms;
+ animation-timing-function: var(--ease-house);
+}
+::view-transition-old(carried-cover),
+::view-transition-new(carried-cover) {
+ block-size: 100%;
+ object-fit: cover;
+ overflow: clip;
  border-radius: 6px;
  mix-blend-mode: normal;
 }
-::view-transition-old(carried.carried-cover) {
+::view-transition-old(carried-cover) {
  animation: carried-unseen 320ms both;
 }
-::view-transition-new(carried.carried-cover) {
+::view-transition-new(carried-cover) {
  animation: none;
 }
-::view-transition-old(carried.carried-cover):only-child {
+::view-transition-old(carried-cover):only-child {
  animation: route-leave var(--duration-route-exit) var(--ease-house) both;
 }
-::view-transition-new(carried.carried-cover):only-child {
+::view-transition-new(carried-cover):only-child {
  animation: route-arrive var(--duration-route-enter) var(--ease-house) 40ms both;
 }
 [data-carried-in][data-cover],
