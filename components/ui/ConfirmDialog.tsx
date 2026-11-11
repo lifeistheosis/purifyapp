@@ -214,11 +214,6 @@ export function ConfirmDialog({
               type="button"
               onClick={onConfirm}
               disabled={pending}
-              // The edge of a removal is the house's one alert red on every
-              // palette (--color-crimson, app/globals.css); its words follow
-              // the palette (--color-crimson-soft).
-              data-mock-allow={destructive ? "palette" : undefined}
-              data-mock-why={destructive ? "the alert red is one red on every palette (--color-crimson)" : undefined}
               className={
                 "min-h-11 font-sans text-detail font-semibold rounded-pill border px-5 py-2 disabled:opacity-60 disabled:cursor-wait transition-colors " +
                 confirmAccent

@@ -5114,6 +5114,15 @@ Pictures, now of the final look: `decisions/confirm-light-after.png` and
 `decisions/take-down-ask.png` are drawn again with the solid card;
 `decisions/confirm-light-before.png` is the fault as it was.
 
+**One reason in one place.** Section 42 gave the dialog's removal button
+an allowance of its own for the checker's palette rule. Half an hour later
+Admin's checker came to allow the Church's red by name, a border included
+(`09749ef87`). Shown on the export of 15:01, whose dialog never had an
+allowance: still 48 passes, "allowed ... the Church's red". So the
+button's own allowance is taken out again (a second push, after this
+section's first), and the test's last case holds that the reason lives in
+the checker.
+
 **Checked (UTC).** Typecheck 0, lint 0 and the whole unit suite 13,765 of
 13,765 at 16:05, on `df8e11846` with both changes. Android export of this
 work on `1c2c48658`: 0 at 16:04. On it: stills 48 and 45 pass every rule of

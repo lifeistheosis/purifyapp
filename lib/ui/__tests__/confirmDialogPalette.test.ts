@@ -191,13 +191,14 @@ describe("the confirm dialog's card follows the reader's palette (found on a cam
     }
   });
 
-  it("a removal's red edge is allowed by name: one alert red on every palette, and only on a removal", () => {
-    // The checker reads a colour that is the same on Dark and on Light as one typed in.
-    // --color-crimson is the same on both by the house's own choice; the words beside it follow the palette.
+  it("a removal's red edge is the Church's red, which the checker knows by name: the dialog asks no leave of its own", () => {
+    // --color-crimson is one red on every palette by the house's own choice; the words beside it follow the palette.
     expect(DARK.crimson).toEqual(PALETTES[1][1].crimson);
     expect(DARK["crimson-soft"]).not.toEqual(PALETTES[1][1]["crimson-soft"]);
-    expect(code).toContain('data-mock-allow={destructive ? "palette" : undefined}');
-    expect(code).toMatch(/data-mock-why=\{destructive \? "[^"]+--color-crimson[^"]*" : undefined\}/);
-    expect(code.match(/data-mock-allow/g)).toHaveLength(1);
+    // The palette rule reads a colour that is the same on Dark and on Light as one typed in. For half an hour on
+    // 2026-11-11 this button carried its own allowance; the checker has allowed that red by name since (09749ef87),
+    // a border included, so there is one reason in one place.
+    expect(readFileSync(join(process.cwd(), "scripts/mock-check.mjs"), "utf8")).toContain("the Church's red (--color-crimson), one red on every palette by design");
+    expect(code).not.toContain("data-mock-allow");
   });
 });
