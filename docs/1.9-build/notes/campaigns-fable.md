@@ -4281,7 +4281,10 @@ waits" (11 cases: whose, when, what, the filters, danger, July's, the
 closed door) and `lib/campaigns/__tests__/change.test.ts` (12 cases: the
 rule's one function, the write that asks it again, and the screens).
 Fifteen ways of breaking it were tried and each failed a case. The walk:
-two flows. Still: the sheet (39).
+two flows. Stills: the sheet (39), and the sheet after Save on a campaign a
+moderator read in the meantime, saying why its words stay (43). They are on
+his page with call 31 as `decisions/change-words.png` and
+`decisions/change-words-read.png`.
 
 ### 33.4 Words for his OK (English; the twenty languages after)
 
@@ -4362,6 +4365,17 @@ One fault of mine was caught by a guard that was already there
 (`lib/supabase/__tests__/rowCap.test.ts`): I read the readers to tell in one
 request, which the API cuts at a thousand rows without saying so. They are
 read a thousand at a time now, and a case with 2,300 readers holds it.
+
+A second fault of mine was caught by the still, and by nothing else. The
+server said whether a reader had asked to be told, and the app dropped the
+answer on the way: `fetchThread` (`lib/campaigns/client.ts`) names each
+field it keeps of a thread, and the new one was not named. The routes' tests
+passed, since they never ran the app's side, and the line could not have
+been drawn on the day the switch went on. The app keeps the answer now, when
+it is a plain yes or no, and `threadClient.test.ts` (4 cases) runs the app's
+side against what a server can answer; broken four ways, it fails four
+times. It was harmless as it stood, the notices being off. The lesson is the
+house's own: a screen nobody has looked at in a browser is not done.
 
 The walk: four flows (the line is not drawn as campaigns ship; ticking and
 unticking; a tick the account could not keep; never for its creator).

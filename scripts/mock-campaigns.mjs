@@ -123,6 +123,11 @@ const CAMPAIGNS = {
     subject_name: "Nicholas",
     details: "Our father fell asleep in the Lord on Sunday. Please remember him with us for his forty days.",
     days: 40,
+    // It began three days ago, so the updates in its thread (THREADS) were written after it started and not before.
+    starts_on: day(-3),
+    ends_on: day(36),
+    ends_at: ends(day(36)),
+    created_at: new Date(Date.now() - 3 * DAY).toISOString(),
   }),
   [MARIA]: campaign(MARIA, {
     title: "For Maria before her operation",
