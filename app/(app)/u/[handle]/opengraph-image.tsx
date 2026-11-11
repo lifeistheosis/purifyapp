@@ -3,6 +3,7 @@ import { join } from "node:path";
 
 import { ImageResponse } from "next/og";
 
+import { readableThemeAccent } from "@/lib/profile/cosmetics";
 import { sharedProfile } from "@/lib/profile/shared";
 
 // The preview card a shared profile link shows in a message: the reader's
@@ -24,7 +25,10 @@ export default async function Image({ params }: { params: Promise<{ handle: stri
   const name = profile?.name ?? "Purify";
   const at = profile ? `@${profile.handle}` : "purifyapp.net";
   const band = profile?.cosmetics.themePrimary ?? profile?.cosmetics.bannerColor ?? "#2a2a30";
-  const base = profile?.cosmetics.themeAccent ?? "#101013";
+  // The theme's foot, no lighter than the card draws it (readableThemeAccent):
+  // the words stand on the lower half, and a reader's own pale pick left as
+  // saved could fall under them (lib/profile/cosmetics.ts).
+  const base = readableThemeAccent(profile?.cosmetics.themeAccent) ?? "#101013";
   const initial = (name[0] ?? "P").toUpperCase();
   const line = profile && !profile.private ? (profile.bio ?? profile.status ?? "") : "";
 
