@@ -338,6 +338,9 @@ export function Select<V extends string>({
   }
 
   const pad = size === "sm" ? "px-2.5 py-1.5 text-[12.5px]" : "px-3 py-2 text-[13px]";
+  // 44 tall to a finger, as every control the panel draws (lib/ui/__tests__/touchTargets.test.ts);
+  // a mouse keeps the compact row it was drawn at.
+  const reach = "min-h-11 pointer-fine:min-h-0";
   const shape = pill ? "rounded-[var(--adm-radius-pill)]" : "rounded-[var(--adm-radius-sm)]";
 
   const menuStyle: CSSProperties | undefined = place
@@ -372,7 +375,7 @@ export function Select<V extends string>({
         data-empty={selected ? undefined : ""}
         className={
           `adm-select inline-flex min-w-0 items-center gap-2 border text-left font-sans outline-none ` +
-          `disabled:cursor-not-allowed disabled:opacity-50 ${shape} ${pad} ` +
+          `disabled:cursor-not-allowed disabled:opacity-50 ${shape} ${pad} ${reach} ` +
           (className || (size === "sm" ? "w-auto" : "w-full"))
         }
       >
@@ -406,7 +409,7 @@ export function Select<V extends string>({
                     aria-label="Filter options"
                     aria-controls={listId}
                     aria-activedescendant={active >= 0 ? optionId(active) : undefined}
-                    className="w-full rounded-[8px] border px-2.5 py-1.5 text-[12.5px] outline-none"
+                    className="min-h-11 w-full rounded-[8px] border px-2.5 py-1.5 text-[12.5px] outline-none pointer-fine:min-h-0"
                     style={{
                       borderColor: "var(--adm-line-strong)",
                       background: "var(--adm-control)",
@@ -496,7 +499,7 @@ function SelectRow<V extends string>({
         onPointerMove={onHover}
         onClick={onPick}
         className={
-          "adm-select-row flex cursor-pointer select-none items-center gap-2.5 rounded-[8px] px-2.5 py-2 text-[13px] leading-snug " +
+          "adm-select-row flex min-h-11 cursor-pointer select-none items-center gap-2.5 rounded-[8px] px-2.5 py-2 text-[13px] leading-snug pointer-fine:min-h-0 " +
           (option.disabled ? "cursor-not-allowed opacity-45" : "")
         }
         style={{
