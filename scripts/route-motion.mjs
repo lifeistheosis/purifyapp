@@ -662,8 +662,28 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
         continue;
       }
       await sleep(page, 800);
+      // Every frame of the change, as a reader's phone draws it: is the icon still in flight, and has the wide
+      // picture been shown? The film cannot say: it holds the flight still for seconds while the page lives on.
+      await page.evaluate(() => {
+        const frames = (window.__wideFrames = []);
+        const until = performance.now() + 2500;
+        const look = () => {
+          const flying = document.getAnimations().some((a) => a.effect?.pseudoElement === "::view-transition-group(carried)" && a.playState === "running");
+          const wide = document.querySelector("[data-hero-picture]");
+          frames.push({ flying, shown: wide?.getAttribute("data-hero-picture") === "shown" });
+          if (performance.now() < until) requestAnimationFrame(look);
+        };
+        requestAnimationFrame(look);
+      });
       r = await walk(page, `wide-${slug}`, () => page.locator("[data-walk-target]").first().click(), { film });
       const into = judge(r, { old: "route-leave", fresh: "route-settle", to: href, carried: true });
+      if (!film) {
+        const frames = await page.evaluate(() => window.__wideFrames ?? []);
+        const flown = frames.filter((f) => f.flying).length;
+        const early = frames.filter((f) => f.flying && f.shown).length;
+        if (!flown) into.push("no frame of the icon in flight was seen, so the walk cannot say when the wide picture came");
+        if (early) into.push(`the wide picture was shown while the icon was still in flight, for ${early} of its ${flown} frames`);
+      }
       // Long enough for the wide picture to have come, or to have failed twice and been given up (2.5s between).
       await sleep(page, signal === "with signal" ? 1800 : 4200);
       const head = await page.evaluate(() => {

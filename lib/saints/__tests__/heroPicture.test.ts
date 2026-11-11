@@ -58,6 +58,11 @@ describe("a saint with a wide picture, opened from his card", () => {
     // Only on a page an icon travelled to; any other shows it the moment it has come.
     expect(picture).toContain('const travelledTo = Boolean(icon && ("carriedIn" in icon.dataset || "landed" in icon.dataset));');
     expect(picture).toContain("const wait = travelledTo ? opened.current + FLIGHT_MS - performance.now() : 0;");
+    // And after the flight's length, for as long as the picture is still seen in flight (it sets out a few
+    // frames after the page is drawn), but never for good.
+    expect(picture).toContain('(a.effect as KeyframeEffect | null)?.pseudoElement === "::view-transition-group(carried)"');
+    expect(picture).toContain("if (inFlight() && performance.now() < until) landing.current = setTimeout(landed, 16);");
+    expect(picture).toMatch(/const HELD_AT_MOST_MS = \d{3,4};/);
   });
 
   it("for as long as a picture travels, and a frame more", () => {

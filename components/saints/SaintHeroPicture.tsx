@@ -61,6 +61,16 @@ import { avifFor } from "@/lib/media/streamed";
  * two together.
  */
 export const FLIGHT_MS = 340;
+/** The longest the wide picture is ever held back, should a flight never be seen to end. */
+const HELD_AT_MOST_MS = 1200;
+
+/** Whether a picture is in flight this frame: the browser is moving the frame the card's picture and the page's share. */
+function inFlight(): boolean {
+  if (typeof document === "undefined" || typeof document.getAnimations !== "function") return false;
+  return document
+    .getAnimations()
+    .some((a) => a.playState === "running" && (a.effect as KeyframeEffect | null)?.pseudoElement === "::view-transition-group(carried)");
+}
 export function SaintHeroPicture({
   name,
   iconUrl,
@@ -99,11 +109,20 @@ export function SaintHeroPicture({
     const travelledTo = Boolean(icon && ("carriedIn" in icon.dataset || "landed" in icon.dataset));
     const wait = travelledTo ? opened.current + FLIGHT_MS - performance.now() : 0;
     if (landing.current) clearTimeout(landing.current);
-    if (wait <= 0) {
+    if (wait <= 0 && !(travelledTo && inFlight())) {
       setShown(true);
       return;
     }
-    landing.current = setTimeout(() => setShown(true), wait);
+    // The flight sets out a few frames after the page is drawn (the browser
+    // pictures the page first), so its length alone ended two frames early
+    // (measured on the export, frame by frame). After it, the picture is
+    // looked for each frame until it is no longer in flight.
+    const until = opened.current + HELD_AT_MOST_MS;
+    const landed = () => {
+      if (inFlight() && performance.now() < until) landing.current = setTimeout(landed, 16);
+      else setShown(true);
+    };
+    landing.current = setTimeout(landed, Math.max(0, wait));
   };
 
   const fail = () => {
