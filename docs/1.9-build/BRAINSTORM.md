@@ -2,6 +2,8 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
+**Archive the chats not needed (his word, 2026-11-11 about 20:03 UTC):** "archive whatever chats aren't newded". Archived: Fable Theology (its list empty, everything pushed, 354626d2). Kept for the finish: Admin (the final run), Updates and Updates 2 (their last items, then any finding of the final run), the SSM board (the release's posts). The Product images chat on his PC is his own and he said "keep it" earlier, so it was left; his other PC chats (not 1.9) were not touched.
+
 **All time on the admin charts (his word, 2026-11-11 about 18:01 UTC):** "real quick for the admin panel can you set up a all time option for the charts thanks". Routed to Admin: an "All time" choice on every admin chart's range picker that lacks one (the hero has it; Traffic's chart stops at 120 days), reusing the hero's "all" and daysSince(). Web only, outside the native gate; live on purifyapp.net with the 1.9 merge.
 
 **Item 93 kept, and finalize 1.9 (his word, 2026-11-11 about 17:56 UTC):** "Yes, keep item 93. And again, finalize version 1.9." To the arbiter's question: free readers share three journal pages a month, Plus without limit, as JOURNAL.md's standing recommendation (finalized 2026-11-08) and the build (SHARE_LIMIT_FREE = 3, lib/journal/share.ts) have it. So the note's line 18 stands, and "a month" may leave the drop's never list. "Finalize version 1.9" again: no new scope; the last nine fixes of words over pictures, the gift, the final run, then the test build.
