@@ -734,6 +734,146 @@ to you, send the bounce's first lines (they hold no key).
 
 ---
 
+## Voices on your PC
+
+Your call of 2026-11-11: "just do it on our PC." Your PC records, as it
+recorded Heart's New Testament. No rented computer, no paid service. This
+section is what your PC does and in what order.
+
+**What the app does by itself.** Listen is built for every text. A text
+shows Listen only once its recording is uploaded and listed, so nothing here
+holds a store build, and no reader ever taps a Listen that plays nothing. The
+apps ask the website for the list, so a text you record after the release is
+heard in apps people already have.
+
+**The order, and your PC's hours** (measured from the texts on 2026-11-11, at
+the Bible's own pace, your PC at three quarters of real time):
+
+| Batch | Recordings | Sound | Your PC |
+|---|---:|---:|---:|
+| 1. The saints' lives | 162 | 4.4 hours | about 6 hours |
+| 2. The councils | 646 | 11.1 hours | about 15 hours |
+| 3. Theology | 60 | 2.3 hours | about 3 hours |
+| 4. History | 40 | 3.2 hours | about 4 hours |
+| 5. The Old Testament in Heart | about 1,070 chapters | about 70 hours | about 93 hours |
+
+Batches 1 to 4 are about 28 hours of your PC together. Each can run on its
+own night. Batch 5 is your own tool as it is today (the New Testament was
+made with it); nothing in it changes.
+
+### V1. One change to your render tool, once (batches 1 to 4)
+
+Your tool, `Homebase/tools/tts-bakeoff/read_bible.py`, reads a chapter verse
+by verse. Batches 1 to 4 are not verses: each recording is a file that says
+what to read, sentence by sentence. The tool needs a second way in that reads
+one of these files. I cannot see Homebase from here, so this is the exact
+description for you, or for a chat that can see it.
+
+**What it is handed**, one file a recording, for example
+`listen-batches/history/pentecost.json`:
+
+```
+{ "id": "history/pentecost",
+  "title": "Pentecost: the Descent of the Holy Spirit",
+  "blocks": [
+    { "kind": "title", "sentences": ["Pentecost: the Descent of the Holy Spirit."] },
+    { "kind": "para", "at": { "sectionN": 1, "paragraphIdx": 0 },
+      "sentences": ["After His Resurrection Christ showed Himself ...", "When He had been taken up ..."] },
+    { "kind": "quote", "sentences": ["And when the day of Pentecost was fully come ..."] }
+  ] }
+```
+
+**What it does with it:** speak every sentence of every block, in order, in
+the same voice and at the same settings as the Bible (Kokoro, `af_heart`,
+the same speed, the same loudness), with the pause the Bible has between two
+verses after each sentence, and about twice that after each block.
+
+**What it hands back**, two files named by the `id`:
+
+- the sound, `history/pentecost.mp3`, encoded as the Bible's chapters are
+  (about 40 kbit/s, mono);
+- the timings, `history/pentecost.json`:
+
+```
+{ "voice": "af_heart", "seconds": 412.6,
+  "blocks": [
+    { "s": [[0.0, 2.9]] },
+    { "at": { "sectionN": 1, "paragraphIdx": 0 }, "s": [[3.6, 9.8], [10.2, 17.4]] },
+    { "s": [[18.3, 31.0]] }
+  ] }
+```
+
+One row for each block, in the same order. `at` is copied from the block when
+it has one. `s` is one pair for each sentence: the second it starts and the
+second it ends. No words in it.
+
+Done looks like: one test file in, an mp3 that reads it through, and a
+timings file with the same number of blocks and sentences as the file it was
+handed.
+
+### V2. Write the batches (2 minutes, each time before a batch)
+
+1. Open a terminal in the Purify repository on your PC, on the branch.
+2. `npm run listen:batches`
+3. It prints five lines, one for each batch and a total, and writes the folder
+   `listen-batches/` (one file a recording, and `order.json`, the list).
+
+Run it fresh each time: it is written from the texts as they stand that day.
+To write only one batch: `npm run listen:batches -- --only lives` (or
+`councils`, `theology`, `history`).
+
+### V3. Record one batch
+
+1. Point your tool at one folder of `listen-batches/`: `life` first, then
+   `council`, `theology`, `history`.
+2. Let it run. Your PC can do other things; it will be slow while it runs.
+3. It leaves, for each recording, an `.mp3` and a `.json` with the same name
+   and folders as the file it read.
+
+### V4. Upload the sound (as you upload the Bible's)
+
+1. The mp3 files go to the bucket under `listen/`, keeping their folders:
+   `listen/history/pentecost.mp3`. Your upload tool
+   (`Homebase/tools/r2/upload.mjs`) does this as it does for `read/`; try it
+   with `--dry` first.
+2. The key stays where it is on your PC. It is never typed into a chat or put
+   in the repository.
+
+Done looks like: this address plays in a browser:
+`https://audio.purifyapp.net/listen/history/pentecost.mp3`
+
+### V5. Hand the timings to the repository
+
+1. Copy the `.json` timings files (not the mp3s) into the repository under
+   `public/audio/listen/`, keeping their folders:
+   `public/audio/listen/history/pentecost.json`.
+2. `npm run listen:index`
+3. It prints how many texts have a recording. If it also prints "timings were
+   not taken", send those lines to the arbiter: the text was edited after it
+   was recorded, or the file is not what V1 describes. Those texts simply show
+   no Listen until they are recorded again.
+4. Commit and push the branch (or send the arbiter the files and it will).
+
+### V6. How to tell it worked
+
+After the website next deploys: open one of the texts you recorded on
+purifyapp.net. **Listen** stands above it. Tap it: the voice reads, the
+paragraph being read stays bright while the others dim, and the sentence
+being read is washed. A text you have not recorded shows no Listen.
+
+Send the arbiter: the line `npm run listen:index` printed, and a yes or a no
+for V6.
+
+### V7. The six voice samples (3 minutes)
+
+To choose the Plus voices by ear: the same 20 seconds (John 1:1 to 5) in six
+voices. In your tool, the voices are named `am_michael`, `am_fenrir`,
+`af_bella`, `bm_george`, `bm_fable` and `bf_emma`. Make the six clips, listen,
+and tell the arbiter which you keep (two to four) and what each is called to
+readers. Nothing is uploaded for this.
+
+---
+
 ## The test web: on Render's free size now, the $7 size at payday
 
 Your word, 2026-11-10 ("rec yes to all"): yes to the test web, at payday, or
