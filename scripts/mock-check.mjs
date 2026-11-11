@@ -668,6 +668,18 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
     still.setAttribute("data-mock-check", "");
     still.textContent = "*, *::before, *::after { transition: none !important; }";
     document.head.appendChild(still);
+    // So do entrances driven by the scroll (animation-timeline: view(), a
+    // reading plan's rows rising in): a row resting at the screen's foot is
+    // part way in, and its words read fainter than they end. Fable Themes'
+    // find, 2026-11-11: /plans/john/ passed or failed by where a row fell.
+    // Each such entrance ends at the element's own style, so it is measured
+    // there, and put back after.
+    for (const el of document.querySelectorAll("*")) {
+      const t = getComputedStyle(el).animationTimeline;
+      if (!t || t === "auto" || t === "none") continue;
+      el.setAttribute("data-mock-was-animation", el.style.getPropertyValue("animation"));
+      el.style.setProperty("animation", "none", "important");
+    }
     return { mode: h.getAttribute("data-reading-mode"), look: h.getAttribute("data-look"), dir: h.getAttribute("dir") };
   });
   const shots = {};
@@ -801,6 +813,12 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
       if (b.dir) h.setAttribute("dir", b.dir);
       else h.removeAttribute("dir");
       document.querySelector("style[data-mock-check]")?.remove();
+      for (const el of document.querySelectorAll("[data-mock-was-animation]")) {
+        const was = el.getAttribute("data-mock-was-animation");
+        if (was) el.style.setProperty("animation", was);
+        else el.style.removeProperty("animation");
+        el.removeAttribute("data-mock-was-animation");
+      }
     }, before);
     await settle(page);
   }
