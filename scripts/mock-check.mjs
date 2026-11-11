@@ -431,6 +431,8 @@ function look(arg) {
     if (Math.abs(r.width - r.height) > Math.min(r.width, r.height) * 0.1) continue;
     const cs = getComputedStyle(e);
     if (parseFloat(cs.borderTopLeftRadius) < Math.min(r.width, r.height) * 0.4) continue;
+    // A blurred disc is a glow (a card's sheen, a soft pool of light), not a frame.
+    if (/blur\(/.test(cs.filter)) continue;
     const ground = rgba(cs.backgroundColor)[3] >= 0.05;
     const edge = ["Top", "Right", "Bottom", "Left"].some((side) => cs[`border${side}Style`] !== "none" && parseFloat(cs[`border${side}Width`]) > 0);
     if (!ground && !edge) continue;
@@ -834,6 +836,7 @@ const FIXTURES = `
     <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="h-full w-full object-cover">
   </span>
   <span class="mt-3 block h-12 w-12 animate-pulse rounded-full bg-paper/10"></span>
+  <span class="relative mt-3 block h-14 w-14 overflow-hidden rounded-[18px] bg-night-soft"><span aria-hidden="true" class="pointer-events-none absolute -end-6 -top-8 h-32 w-32 rounded-full bg-paper/15 blur-2xl"></span></span>
   <blockquote lang="en" data-mock-allow="emdash" data-mock-why="a Father's own words, as his edition prints them" class="mt-3 font-serif text-body italic leading-[1.6] text-paper/85">Chapter I.\u2014Introduction. Reason for writing</blockquote>
 </div>`;
 

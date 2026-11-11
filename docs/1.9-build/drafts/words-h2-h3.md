@@ -239,6 +239,46 @@ h. **/account's description for search engines** (English, in the page),
    Or keep everything local on this device. Your choice." Proposed: "Keep
    everything on this device, or make an account. Your choice."
 
+i. **The website's front page** (components/marketing/MadeOfStrip.tsx, on a
+   computer), now "Your notes stay on your device. Sign in to sync. No ad
+   trackers, no profiles." Proposed: "Your notes stay on your device, and
+   with Purify Plus they reach every device you sign in on. No ad trackers,
+   no profiles."
+
+j. **The Privacy page, "On this device vs signed in"**, English and German
+   (found by the words test, lib/ui/__tests__/wordsTrue.test.ts). It says
+   signing in syncs highlights, notes and bookmarks; since Plus is enforced
+   it carries the prayer-rule check-offs and the names, and the rest only
+   with Plus. Its own 1.9 paragraph on what travels with Plus (his yes to
+   59) already says so for the kept places. Proposed:
+   - "signing in exists to keep your reading synchronized across devices"
+     becomes "signing in carries the days you have prayed and the names you
+     carry to every device, and with Purify Plus your highlights, notes and
+     bookmarks too".
+   - The card's heading "Signed in (synchronized)" becomes "Signed in".
+   - "The same items go to our Supabase Postgres database so they sync
+     across every device you sign in on." becomes "What you keep with your
+     account goes to our Supabase Postgres database, so it reaches every
+     device you sign in on." and "Highlights, notes, bookmarks, and
+     prayer-rule check-offs travel as their own rows." becomes "Prayer-rule
+     check-offs travel as their own rows, and with Purify Plus so do
+     highlights, notes and bookmarks."
+   - "If you start on this device and later sign in, your existing
+     highlights, notes, and bookmarks are pushed to your account on first
+     sign-in" becomes "If you start on this device and later sign in with
+     Purify Plus, your existing highlights, notes and bookmarks go to your
+     account the first time".
+   - "If you sign in to sync your highlights and bookmarks, Supabase stores
+     ... (highlights, notes, prayer-rule check-offs, bookmarks)" becomes "If
+     you sign in, Supabase stores ... (prayer-rule check-offs, and with
+     Purify Plus highlights, notes and bookmarks)".
+   - The list of third parties names "Buy Me a Coffee, only on /support
+     when you choose to donate". /support offers no donation since 1.9, so
+     the entry goes, and "Changes to this page" gains: "Buy Me a Coffee is
+     no longer listed: the Support page asks for no donation."
+   (The admin's monthly read of the Buy Me a Coffee total is the owner's
+   own view and touches no reader.)
+
 ## Then
 
 On the arbiter's yes: the English as approved, the 21 languages (new keys

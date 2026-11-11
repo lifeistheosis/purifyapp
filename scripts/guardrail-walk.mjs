@@ -17,8 +17,13 @@
 // only after a tap (a sheet, a menu) are reached by the tap walk
 // (scripts/tap-walk.mjs), not here.
 //
+// --online lets the app read the main web as a reader's phone does (GET
+// only, the main web alone, never a write): the pictures it streams rather
+// than carries (lib/media/streamed.ts) then arrive, as they do for a reader
+// with a signal. Without it the walk is the app with no network.
+//
 //   npm run build:android, then:
-//   node scripts/guardrail-walk.mjs [out dir] [--only /path,/path] [--workers 3] [--json file]
+//   NODE_USE_ENV_PROXY=1 node scripts/guardrail-walk.mjs [out dir] [--only /path,/path] [--workers 3] [--json file] [--online]
 
 import fs from "node:fs";
 import path from "node:path";
@@ -37,11 +42,37 @@ const flag = (name) => {
 const ONLY = flag("--only")?.split(",") ?? null;
 const WORKERS = Math.max(1, Number(flag("--workers") ?? 3));
 const JSON_OUT = flag("--json");
+const ONLINE = argv.includes("--online");
+if (ONLINE) argv.splice(argv.indexOf("--online"), 1);
 const OUT = path.resolve(argv[0] ?? "out");
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}: run npm run build:android first`);
 
 const list = ONLY ?? screens(OUT);
-console.log(`${list.length} screens on a phone, ${WORKERS} at a time`);
+console.log(`${list.length} screens on a phone, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}`);
+
+// The main web, read as a phone reads it: GET only, each address once.
+const fetched = new Map();
+async function mainWeb(route) {
+  const req = route.request();
+  if (req.method() !== "GET") return route.abort();
+  const url = req.url();
+  try {
+    if (!fetched.has(url)) {
+      fetched.set(
+        url,
+        (async () => {
+          const headers = Object.fromEntries(Object.entries(req.headers()).filter(([k]) => !["host", "connection"].includes(k.toLowerCase())));
+          const r = await fetch(url, { headers });
+          const kept = Object.fromEntries([...r.headers].filter(([k]) => !["content-encoding", "content-length", "transfer-encoding"].includes(k.toLowerCase())));
+          return { status: r.status, headers: kept, body: Buffer.from(await r.arrayBuffer()) };
+        })(),
+      );
+    }
+    return route.fulfill(await fetched.get(url));
+  } catch {
+    return route.abort();
+  }
+}
 
 // The cloud sessions carry their own Chromium (as openPhone in scripts/mock-check.mjs); elsewhere Playwright's.
 const OWN = "/opt/pw-browsers/chromium";
@@ -71,6 +102,10 @@ async function worker() {
     } catch {}
   });
   await serveLikeTheShell(ctx, OUT, {});
+  // Registered after the shell's, so it answers the main web's addresses first.
+  // The store builds read purifyapp.net; a local export without
+  // NEXT_PUBLIC_SITE_URL reads the same service at its Render address.
+  if (ONLINE) for (const at of ["https://purifyapp.net/**", "https://purifyapp.onrender.com/**"]) await ctx.route(at, mainWeb);
   let page = await ctx.newPage();
   for (let at = queue.shift(); at; at = queue.shift()) {
     const r = await walkOne(page, at);
@@ -92,11 +127,17 @@ results.sort((a, b) => a.at.localeCompare(b.at));
 
 // The same thing failing in the same way on many screens is one finding (a
 // shared bar, a shared card): said once, with the screens it was seen on.
+// Contrast is one finding per piece: its palettes together, at its worst.
 const findings = new Map();
 for (const r of results) {
   for (const f of r.failures) {
-    const key = `${f.check}\u0000${f.what}\u0000${f.detail}`;
+    const measured = f.check === "contrast" || f.check === "placeholder";
+    const key = `${f.check}\u0000${f.what}\u0000${measured ? "" : f.detail}`;
     const entry = findings.get(key) ?? { check: f.check, what: f.what, detail: f.detail, palettes: new Set(), screens: new Set() };
+    if (measured) {
+      const ratio = (d) => Number(/^([\d.]+):1/.exec(d)?.[1] ?? Infinity);
+      if (ratio(f.detail) < ratio(entry.detail)) entry.detail = f.detail;
+    }
     if (f.palette) entry.palettes.add(f.palette);
     entry.screens.add(r.at);
     findings.set(key, entry);
