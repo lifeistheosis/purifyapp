@@ -66,7 +66,7 @@ describe("none of the three is in a box, and none stands beside a rule", () => {
   });
 });
 
-describe("each wears the mark of what it is: its tool's own glyph", () => {
+describe("each wears the mark of what it is: its tool's own glyph (build 93 note 8)", () => {
   const toolbar = code(blocks.slice(blocks.indexOf('role="toolbar"'), blocks.indexOf("<HighlightNamesSheet")));
 
   it("Scripture wears the Book, as the Verse tool does", () => {

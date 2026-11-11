@@ -28,7 +28,7 @@ const code = (rel: string) =>
     .replace(/^\s*\/\/.*$/gm, "");
 const en = JSON.parse(read("lib/i18n/messages/en.json")) as Record<string, string>;
 
-describe("on You: two rows, always there", () => {
+describe("on You: two rows, always there (build 93 note 9)", () => {
   const you = code("components/mobile/YouMobile.tsx");
   const list = you.slice(you.indexOf("const settings: YouRow[] = [];"), you.indexOf("const hero ="));
   const rows = list.slice(list.indexOf('href: "/journal"') - 200, list.indexOf('href: "/prayers/personal"'));
@@ -90,7 +90,7 @@ describe("on You: two rows, always there", () => {
   });
 });
 
-describe("in Settings: the same two rows, under the account", () => {
+describe("in Settings: the same two rows, under the account (build 93 note 9)", () => {
   const settings = code("components/settings/SettingsClient.tsx");
   const section = settings.slice(settings.indexOf("function JournalSection("), settings.indexOf("function DataSection("));
 

@@ -114,7 +114,7 @@ describe("the place to write always says so", () => {
   });
 });
 
-describe("a finger comes first", () => {
+describe("a finger comes first (build 93 note 8)", () => {
   it("the sheet's own timer does nothing once a finger has been put down", () => {
     const effect = composer.slice(composer.indexOf("let touched = false;"), composer.indexOf("}, [open, isNote, setCursor]);"));
     expect(effect).toMatch(/const onDown = \(\) => \{\s*touched = true;\s*\};\s*document\.addEventListener\("pointerdown", onDown, true\);/);
@@ -157,7 +157,7 @@ describe("the page is not a handle", () => {
   });
 });
 
-describe("no door to Plus under Title", () => {
+describe("no door to Plus under Title (build 93 note 8)", () => {
   it("the line under the title stands only once the page has a notebook or tags", () => {
     expect(blocks).toContain("const hasProps = !!page.notebook || (page.tags?.length ?? 0) > 0;");
     expect(code(blocks)).toMatch(/\{hasProps \? \(\s*<button\s+type="button"\s+data-page-props=""/);

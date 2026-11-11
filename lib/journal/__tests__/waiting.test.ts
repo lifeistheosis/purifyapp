@@ -141,7 +141,7 @@ describe("the same page", () => {
   });
 });
 
-describe("the journal is asked to open a page while another waits", () => {
+describe("the journal is asked to open a page while another waits (found mending build 93 note 8)", () => {
   const all = kept([older, other], { "john:3:16": "My note on the verse." });
 
   it("FACT 17: half a thought waits and an older entry is opened: the half thought is kept as an entry first", () => {

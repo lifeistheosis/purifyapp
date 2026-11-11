@@ -37,7 +37,7 @@ describe("a gathering's notebook is the one that bears its name", () => {
   });
 });
 
-describe("a gathering's pages", () => {
+describe("a gathering's pages (build 93 note 19)", () => {
   const records = [
     record("a", "# The first\n\n[[notebook Advent 2026]]\n\nWords of the first.", "2026-11-01T08:00:00.000Z"),
     record("b", "[[notebook advent 2026]]\n\nNo title, only words.\n\n[[verse john 1:1]]", "2026-11-09T08:00:00.000Z", { kind: "prayer" }),
@@ -82,7 +82,7 @@ describe("a gathered line as a card on a page", () => {
   });
 });
 
-describe("the page a reader writes in a gathering", () => {
+describe("the page a reader writes in a gathering (build 93 note 19)", () => {
   const MAX = 20_000;
 
   it("with nothing being written, a new page in the gathering's notebook", () => {

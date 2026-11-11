@@ -31,7 +31,7 @@ const client = read("components/journal/JournalClient.tsx");
 const blocks = read("components/journal/PageBlocks.tsx");
 const store = read("lib/florilegium/florilegium.ts");
 
-describe("a gathering's page shows its journal pages, and begins one", () => {
+describe("a gathering's page shows its journal pages, and begins one (build 93 note 19)", () => {
   it("under its lines and over what is done with the whole of it, and not in the booklet", () => {
     const at = detail.indexOf("<GatheringPages title={f.title} readOnly={readOnly} />");
     expect(at).toBeGreaterThan(detail.indexOf("data-gathering-lines"));
@@ -98,7 +98,7 @@ describe("a gathered line begins a page", () => {
   });
 });
 
-describe("the journal knows a gathering's notebook", () => {
+describe("the journal knows a gathering's notebook (build 93 note 19)", () => {
   it("a page's notebook choice offers the reader's gatherings first, each with the flower", () => {
     const panel = blocks.slice(blocks.indexOf("function PropsPanel"), blocks.indexOf("function CoverRow"));
     expect(panel).toContain("const { florilegia } = useFlorilegia();");
