@@ -223,9 +223,37 @@ after this export (`dc3fe29d6`).
   by the owner's word (build 84, note 45); the allowance for it named only a
   council, and the nodes are named otherwise now.
 
-### Fourth reading
+### Fourth reading: every control, on the export of 28b69b784
 
-(Being walked.)
+**The export:** `28b69b784`, built to sell, walked as a reader with no Plus,
+every route once (127 screens) and, for the first time, every control on each
+(`--max 1000`): `SELLS_PLUS=1 NODE_USE_ENV_PROXY=1 node scripts/tap-walk.mjs
+--workers 3 --max 1000 --online`, 12:18 to 13:47 UTC.
+
+**Result:** 2,773 controls tapped, 10 failed. Nine were the walk's own:
+
+- **The first touch came after the scroll.** The walk scrolled to a control
+  before its first touch, while the app still kept the browser from holding
+  the reader's place. Jumping 10,000px down Community's feed, the posts on the
+  way were drawn at their own height instead of the one guessed for them, and
+  eight controls rose under the top bar ("covered"); the same jump put a
+  saint's row deep in Saints astray for Back. A reader's finger is on the
+  screen before it scrolls, so the first touch now comes first (`9cbc9acbb`;
+  the self-test's /far-below/, which the walk before it cannot reach).
+  Re-walked with the mend: Community's controls 114 to 124, 0 failed; Saints'
+  control 202 passes.
+
+One was the app's:
+
+- **The reading room** (/reading/): back from "The Paschal Homily", the work
+  returns 553px lower, the height of the two new shelves. Re-walked with the
+  mend, it still fails. Fable Theology, mending it in lib/ui/returnPlace.ts.
+
+The saint web's council, lifted with its card, is the one allowance used; the
+five nodes that moved 21px in the third reading no longer move.
+
+The next full walk runs with the mend, on the export the test build is cut
+from.
 
 ## Part 2: the guardrail walk
 
@@ -294,6 +322,31 @@ after this export (`dc3fe29d6`).
   walk cannot tell them from the app's, so the community's post body should
   carry `data-mock-allow="sparkle emdash" data-mock-why="a reader's own
   words"`, as the noSparkle test's own exception does in code.
+
+### Second run, on the export of 28b69b784 (2026-11-11, 13:50 to 13:57 UTC)
+
+The same export as the fourth reading, walked twice: as a reader with no
+Plus (`SELLS_PLUS=1`) and as one for whom nothing is locked. Both read the
+same: **124 of 127 screens pass every rule.** The checker carries the cut
+rule (a control's name cut short) and, since `75ef54f77`, measures an Arabic
+page left to right in English, so a bar that fills from the start in Arabic
+is no longer read as placed with left or right.
+
+- **/history/:** four of the atlas's links are narrower than a finger ("Arius"
+  33.6px, "1054" 29, "1204" 28.9, "1453" 28.1, each 46.8 high;
+  components/councils/CouncilMap.tsx as /history/ draws it), and four eras'
+  names end in an ellipsis ("Imperial and conciliar Church", "Missionary and
+  Byzantine expansion", "Estrangement of East and West", "Ottoman and
+  post-Byzantine period"; components/history/EraJumpList.tsx). To the
+  arbiter for an owner.
+- **/saints/:** 29 saints' first titles cut at one line, mended after this
+  export by Fable Themes (`ff901d0fe`).
+- **A work's chapter button** (/saints/acepsimas-joseph-and-aithalas/
+  life-of-acepsimas/): its title cut by an ellipsis, the December chat's find;
+  the fix goes in the button.
+
+Contrast on the five palettes, 44px elsewhere, rays, stripes, the sparkle,
+pictures, dashed boxes, keys and mirroring: nothing on any screen.
 
 ## Part 4: the words
 
