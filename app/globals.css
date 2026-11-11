@@ -10086,11 +10086,12 @@ html[data-reading-mode="parchment"] .history-saved-lit {
  font-style: normal;
  color: rgb(255 255 255 / 0.3);
 }
+/* An era's name beside a row is inked as the row's own name, so it holds 4.5:1 at the row's light (lib/councils/atlas.ts, wheelLight). */
 .atlas-row-era {
  flex: none;
  font-size: 10.5px;
  font-weight: 600;
- color: rgb(255 255 255 / 0.55);
+ color: rgb(255 255 255 / 0.9);
 }
 
 /* ── Gift box ───────────────────────────────────────────────────────────────

@@ -49,6 +49,7 @@ import {
   threadCurve,
   toMap,
   toScreen,
+  wheelLight,
   zoomsFor,
   type Box,
   type Cam,
@@ -1322,8 +1323,9 @@ export class AtlasEngine {
 
   private drawWheel(): void {
     const pos = this.pos;
-    const lo = Math.max(0, Math.floor(pos) - 3);
-    const hi = Math.min(this.n - 1, Math.ceil(pos) + 3);
+    // Only the band's row and its neighbours are drawn (wheelLight).
+    const lo = Math.max(0, Math.floor(pos) - 1);
+    const hi = Math.min(this.n - 1, Math.ceil(pos) + 1);
     this.rows.forEach((r, i) => {
       if (i < lo || i > hi) {
         if (r.shown) {
@@ -1336,7 +1338,7 @@ export class AtlasEngine {
       const d = i - pos;
       const ad = Math.abs(d);
       const near = c01(1 - ad);
-      const op = ad < 1 ? 0.5 + 0.5 * near : Math.max(0, 0.5 - (ad - 1) * 0.17);
+      const op = wheelLight(ad);
       const y = BAND_TOP + d * ROW;
       const yearPx = 15 + 6 * near;
       const namePx = 15 + 2.5 * near;

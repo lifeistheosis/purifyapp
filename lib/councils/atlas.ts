@@ -447,6 +447,26 @@ export function stillView(pts: Pt[], map: [number, number], aspect: number, marg
 /** A wheel row's height, as drawn. */
 export const ROW = 50;
 
+/**
+ * The light of the rows beside the band: the least that holds their words,
+ * and an era's name beside them, at 4.5:1 on the five palettes and the
+ * seventeen looks (checkMock { pixels: true } on the export, 2026-11-11). At
+ * 50% a council's name read 4.47:1, and the rows further off (33% and 16%)
+ * read 1.5 to 3:1, though the wheel's own fade hid them from the reader.
+ */
+export const WHEEL_BESIDE = 0.55;
+
+/**
+ * How strongly a wheel row is drawn, by its distance from the band in rows:
+ * the band's own row whole, the rows beside it a step back, and none past
+ * them, fading out on the way between (a row two away stood in the wheel's
+ * fade at its edge, where it could not be read, or past it, where it could
+ * not be seen at all).
+ */
+export function wheelLight(ad: number): number {
+  return ad < 1 ? WHEEL_BESIDE + (1 - WHEEL_BESIDE) * c01(1 - ad) : Math.max(0, WHEEL_BESIDE * (2 - ad));
+}
+
 /** Past either end the wheel gives a little, and no more. */
 export function rubber(pos: number, n: number): number {
   const max = Math.max(0, n - 1);
