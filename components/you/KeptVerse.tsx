@@ -37,7 +37,7 @@
 import Link from "next/link";
 import { useMemo, useState, type ReactNode } from "react";
 
-import { PlusLock, PlusMark } from "@/components/billing/PlusMark";
+import { PlusLock } from "@/components/billing/PlusMark";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useLearnSheets, useLearnText } from "@/components/learn/LearnSheets";
 import { Cross } from "@/components/ui/icons/Cross";
@@ -125,10 +125,9 @@ export function KeptVerse({ verse, className }: { verse: KeptVerseRef | null; cl
               <span aria-hidden className="verse-cross-lit inline-flex text-paper">
                 <Cross size={24} />
               </span>
-              <p id="you-verse-title" className="mt-2 flex items-center justify-center gap-2 font-sans text-[12.5px] font-semibold leading-snug text-paper/60">
-                {t("you.verse.learn")}
-                {locked ? <PlusMark /> : null}
-              </p>
+              {/* Quiet (the arbiter, 2026-11-11): no badge and no new colour. Choosing is open to every reader; the
+                  practise sheet it leads to wears the Plus mark, as Remember the verse always has. */}
+              <p id="you-verse-title" className="mt-2 font-sans text-[12.5px] font-semibold leading-snug text-paper/60">{t("you.verse.learn")}</p>
             </div>
             {/* The one way in, as the bar at the card's foot. */}
             <div className="you-verse-foot mt-3.5 flex border-t border-paper/[0.08]">
