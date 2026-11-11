@@ -137,6 +137,8 @@ const EXPECT = {
   "/here/": { verdict: "pass", why: /^names the page it stands on/ },
   "/chosen/": { verdict: "pass", why: /a choice already made/ },
   "/toggle-dead/": { verdict: "fail", why: /^nothing:/ },
+  "/no-snap/": { verdict: "pass" },
+  "/aim-after/": { verdict: "pass" },
   "/wrapped/": { verdict: "pass", why: /^went to \/other\// },
   "/required/": { verdict: "pass" },
 };
@@ -201,6 +203,36 @@ if (at === "/sticky/") {
   });
   more.setAttribute("aria-expanded", "false"); more.setAttribute("aria-controls", "more-words");
   m.append(block(600), words, more, block(1500));
+} else if (at === "/no-snap/") {
+  // As on Sign up: an agreement box with a 44px reach round it (a span inside its label, drawn
+  // out past the box by a negative margin) that ends 7px in from the screen's edge, halfway
+  // down. A touch at that edge is carried onto the reach by the browser's touch adjustment and
+  // ticks the box; the reminder above it then has nothing left to remind.
+  const y = Math.round(innerHeight * 0.5);
+  const remind = button("Remind me", () => { if (!document.getElementById("agree").checked) document.body.append(Object.assign(document.createElement("div"), { role: "dialog", textContent: "Tick the box to agree" })); });
+  const row = document.createElement("label");
+  row.style.cssText = "position:absolute;left:23px;top:" + (y - 25) + "px;width:346px;height:21px;display:flex;align-items:flex-start;gap:10px";
+  const reach = document.createElement("span");
+  reach.style.cssText = "margin:-13px;display:inline-flex;width:44px;height:44px;flex-shrink:0;align-items:center;justify-content:center";
+  const box = document.createElement("input"); box.type = "checkbox"; box.id = "agree"; box.style.cssText = "width:18px;height:18px;margin:0";
+  reach.append(box);
+  row.append(reach, Object.assign(document.createElement("span"), { textContent: "I agree" }));
+  m.append(block(120), remind, block(1800));
+  document.body.append(row);
+} else if (at === "/aim-after/") {
+  // As on Sign up: a link near the foot of a page whose height does not change, under a line
+  // the page takes away at the reader's first touch (Sign up's "agree first" hint), with scroll
+  // anchoring held off until that touch, as the app holds it. Aimed before the first touch,
+  // the tap falls where the link was, 40px under where it is.
+  document.documentElement.style.overflowAnchor = "none";
+  addEventListener("touchstart", () => { document.getElementById("hint")?.remove(); document.documentElement.style.removeProperty("overflow-anchor"); }, { once: true, passive: true });
+  const sheet = document.createElement("div"); sheet.style.height = "1100px";
+  // The link opens its page in a sheet, as Sign up's legal links do.
+  const a = document.createElement("a"); a.href = "/terms/"; a.textContent = "terms of service"; a.style.cssText = "display:inline;width:auto;min-height:0;margin:0;font:16px sans-serif";
+  a.onclick = (e) => { e.preventDefault(); document.body.append(Object.assign(document.createElement("div"), { role: "dialog", textContent: "The terms" })); };
+  const line = document.createElement("p"); line.style.margin = "0 16px"; line.append("I agree to the ", a, ".");
+  sheet.append(block(900), block(40, "hint"), line);
+  m.append(sheet);
 } else if (at === "/chosen/") {
   // A row of chips where one is chosen: the chosen one, tapped again, has nothing to do.
   const row = document.createElement("div"); row.setAttribute("role", "group");
@@ -390,18 +422,40 @@ async function still(page, at, i) {
   }
 }
 
-/** A first touch where no control stands (an edge of the page's own ground), then quiet: no change for 450ms, up to 3s. */
+/**
+ * A first touch, then quiet: no change for 450ms, up to 3s. The touch goes where no control,
+ * label or field stands within 48px: a browser carries a touch beside a control onto it (its
+ * touch adjustment), and the first walk's edge touch ticked Sign up's agreement box that way.
+ * Where no such place is on the screen, the page is told of a touch without one (the events a
+ * first touch sends), which is all its first-touch work listens for.
+ */
 async function firstTouch(page, cdp) {
   const spot = await page.evaluate((controls) => {
-    const tries = [[3, 0.5], [387, 0.5], [3, 0.3], [387, 0.3], [3, 0.7], [387, 0.7], [195, 0.5]];
-    for (const [x, f] of tries) {
-      const y = Math.round(innerHeight * f);
-      const hit = document.elementFromPoint(x, y);
-      if (hit && !hit.closest(controls) && !hit.closest("input, textarea, select, [contenteditable], [role=dialog], [data-screen-edge]")) return { x, y };
+    const near = [...document.querySelectorAll(controls)]
+      .map((el) => el.getBoundingClientRect())
+      .filter((r) => r.width > 0 && r.height > 0 && r.bottom > -48 && r.top < innerHeight + 48);
+    const clear = (x, y) => near.every((r) => x < r.left - 48 || x > r.right + 48 || y < r.top - 48 || y > r.bottom + 48);
+    for (const f of [0.5, 0.4, 0.6, 0.3, 0.7, 0.2, 0.8]) {
+      for (const x of [3, innerWidth - 3, Math.round(innerWidth / 2)]) {
+        const y = Math.round(innerHeight * f);
+        const hit = document.elementFromPoint(x, y);
+        if (hit && !hit.closest(controls) && !hit.closest("[role=dialog], [data-screen-edge]") && clear(x, y)) return { x, y };
+      }
     }
     return null;
-  }, "button, a[href], summary, label, [role=button], [role=link], [role=tab], [role=radio], [role=checkbox], [role=switch], [role=menuitem], [role=option], [tabindex]:not([tabindex='-1'])");
+  }, "button, a[href], summary, label, input, textarea, select, [contenteditable], [role=button], [role=link], [role=tab], [role=radio], [role=checkbox], [role=switch], [role=menuitem], [role=option], [tabindex]:not([tabindex='-1'])");
   if (spot) await tapAt(cdp, spot.x, spot.y);
+  else {
+    await page.evaluate(() => {
+      const at = document.body;
+      for (const type of ["pointerdown", "pointerup"]) at.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerType: "touch", isPrimary: true }));
+      try {
+        const t = new Touch({ identifier: 1, target: at, clientX: 1, clientY: 1 });
+        at.dispatchEvent(new TouchEvent("touchstart", { bubbles: true, touches: [t], changedTouches: [t] }));
+        at.dispatchEvent(new TouchEvent("touchend", { bubbles: true, touches: [], changedTouches: [t] }));
+      } catch {}
+    });
+  }
   await page.evaluate(async () => {
     let n = 0;
     const seen = new MutationObserver((list) => (n += list.length));
@@ -478,6 +532,9 @@ async function walkScreen(ctx, at, kept) {
           continue;
         }
         const reached = await reach(page, c);
+        // The page's first touch, before the control is measured or aimed at: it can move the page
+        // (on Sign up the walk's old aim, taken before it, fell on the sentence round a link).
+        await firstTouch(page, cdp);
         if (reached === "redrawn") {
           row.verdict = "skipped";
           row.why.push("the screen kept drawing it again as it was reached");
@@ -549,7 +606,6 @@ async function walkScreen(ctx, at, kept) {
         // could ever change nothing, which is how the first run's 1,966 taps found no dead
         // control (Fable Theology's find, 2026-11-11). So the page is touched once where no
         // control stands, and let fall quiet, before the tap that is judged.
-        await firstTouch(page, cdp);
         const before = await page.evaluate(snapshot);
         // The tab or link for the page it stands on (aria-current, or its own address), read
         // before the tap: a reader at the top of that page taps it and nothing happens, as it should.
@@ -591,6 +647,8 @@ async function walkScreen(ctx, at, kept) {
             document.addEventListener("invalid", () => (window.__tapwalkInvalid += 1), true);
           }
           window.__tapwalkFocusBefore = document.activeElement;
+          // A box or a choice ticked by the tap changes its own state, not the page's elements.
+          window.__tapwalkCheckedBefore = [...document.querySelectorAll("input[type=checkbox], input[type=radio]")].map((i) => i.checked).join("");
           window.__tapwalkObserver?.disconnect();
           window.__tapwalkObserver = new MutationObserver((list) => {
             window.__tapwalkChanges += list.length;
@@ -658,7 +716,9 @@ async function walkScreen(ctx, at, kept) {
             const el = document.querySelector(`[data-tapwalk="${i}"]`);
             const now = document.activeElement;
             const moved = now && now !== document.body && now !== document.documentElement && now !== window.__tapwalkFocusBefore && !(el && (el === now || el.contains(now)));
-            return Boolean(moved) || (window.__tapwalkInvalid ?? 0) > 0;
+            // Read only on the page the tap began on: a page the tap loaded anew has no "before".
+            const ticked = window.__tapwalkCheckedBefore !== undefined && [...document.querySelectorAll("input[type=checkbox], input[type=radio]")].map((i) => i.checked).join("") !== window.__tapwalkCheckedBefore;
+            return Boolean(moved) || ticked || (window.__tapwalkInvalid ?? 0) > 0;
           }, c.i)
           .catch(() => false);
         if (!after) {
