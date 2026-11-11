@@ -178,8 +178,10 @@ async function still(page, name) {
     const seen = await back.evaluate((el) => {
       const r = el.getBoundingClientRect();
       const svg = el.querySelector("svg");
-      const m = new DOMMatrixReadOnly(getComputedStyle(svg).transform);
-      return { dir: document.documentElement.dir, fromRight: Math.round(window.innerWidth - r.right), name: el.getAttribute("aria-label"), flipped: m.a < 0 };
+      // The house mirrors an icon by the `scale` property (rtl:-scale-x-100); an older build did it by a transform.
+      const style = getComputedStyle(svg);
+      const turned = style.transform && style.transform !== "none" ? new DOMMatrixReadOnly(style.transform).a < 0 : false;
+      return { dir: document.documentElement.dir, fromRight: Math.round(window.innerWidth - r.right), name: el.getAttribute("aria-label"), flipped: turned || /^-1\b/.test(style.scale ?? "") };
     });
     say(seen.dir === "rtl" && seen.fromRight >= 0 && seen.fromRight < 40, `at the page's start, which is its right (${seen.fromRight}px from the right edge)`);
     say(seen.flipped, "the chevron points the other way");
