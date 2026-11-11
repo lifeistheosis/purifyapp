@@ -188,13 +188,21 @@ will open on (morning or evening), so one picture travels."
   the same painting in its wide cut, another file. `PictureTile` takes the
   name as an optional `carry`; every other tile travels under its picture's
   address as before.
-- **The page knows its half at its first drawing.** It learned it in a
-  layout effect, one drawing after it committed, and the bridge looks for
-  what takes the picture as the page commits (`carryIn`): it found nothing,
-  and route-motion said "its sides drawn: old". The half is now read once on
-  the device at the first drawing of a page reached inside the app (the idiom
-  of `lib/useMounted.ts`). A page loaded whole is still drawn once with
-  neither part lit, as before. Nothing in `lib/ui/routeMotion.ts` changed.
+- **The head's box wears the tile's name from the page's first drawing.**
+  The page learns its half in a layout effect, one drawing after it commits,
+  and the bridge looks for what takes the picture as the page commits
+  (`carryIn`): it found nothing, and route-motion said "its sides drawn:
+  old". So the half the tile wore (the same rule, with no half named in the
+  address) is read once on the device at the page's first drawing (the idiom
+  of `lib/useMounted.ts`), only for the name on the box; the icons are in
+  the box by the time it is pictured. Nothing in `lib/ui/routeMotion.ts`
+  changed.
+  **A wrong turn, caught before it was pushed**: the first build decided the
+  part itself at that first drawing. At a first drawing the address is still
+  the page being left, so a half named in it was missed, and "#morning"
+  opened on the evening half. The export walk's section 68 (build 93 note 16,
+  which Updates asked to be run with 39 and 48) failed on it. The part is
+  decided in the layout effect, as it always was.
 - **What the film showed, and the three mends** (all in the Your rule block of
   `app/globals.css`, none in the page-switch rules):
   1. The picture covered the name, its line and Pray my rule until it landed.
@@ -282,6 +290,15 @@ switch stands, and name those saints in your record."
   picture is shown while the icon is in flight; the film cannot say that,
   since it holds the flight still for seconds while the page lives on.
   Stills: `docs/1.9-build/notes/build-93/p2-wide-picture/`.
+- **At a tablet's size and a computer's** (820 and 1366 pixels wide, on the
+  export): the card's icon travels to his icon there too, 17 and 16 frames in
+  flight with the wide picture shown in none of them, his icon whole on the
+  first screen (152 to 344 pixels of 1180; 156 to 366 of 900), then the wide
+  picture. `wide-tablet.jpg` and `wide-computer.jpg` are the pages at rest.
+- **A note on the film's sheet with signal**: its later frames show the wide
+  picture already in. The film holds the flight still for seconds while the
+  page lives on, so the wide picture's wait runs out in the meantime. The
+  verdict is the plain walk's, which reads every frame as a phone draws it.
 
 ### The check
 
