@@ -39,7 +39,8 @@ import { CARRIED_COVERS, JPEG_ONLY_COVERS, isCarried } from "@/lib/media/carried
 import { isStreamedMedia, streamedUrl } from "@/lib/media/streamed";
 import { AUTHOR_COVERS, COUNCIL_COVERS, FEELING_COVERS, WORK_COVERS } from "@/lib/reading/authorCovers";
 import { WORK_ART, coverArtFor, coverSrc } from "@/lib/reading/coverArt";
-import { FIGURES, type FigureId } from "@/lib/readAloud/covers";
+import { STARTERS } from "@/lib/florilegium/starters";
+import { BOOK_COVERS, FIGURES, type FigureId } from "@/lib/readAloud/covers";
 import { ICON_RIGHTS } from "@/lib/saints/iconRights";
 import { SITE_URL } from "@/lib/site";
 
@@ -54,6 +55,21 @@ const NEW_PORTRAITS = [AUTHOR_COVERS["arsenius-the-great"], AUTHOR_COVERS["taras
 
 /** The read-aloud covers note 3 added for 1.9 (David and Solomon from Lagoudera, Ezra with the archangel Uriel, Obadiah, Zechariah). */
 const NEW_READ_COVERS: FigureId[] = ["davidLagoudera", "ezraUriel", "obadiah", "solomonLagoudera", "zechariah"];
+
+/**
+ * The read-aloud covers the Florilegium's starters wear (lib/florilegium/
+ * starters.ts, starterPicture): every starter but the Magnificat, whose
+ * picture is the Theotokos's icon, carried already. The arbiter's word of
+ * 2026-11-11 (F4): with no signal three of the four showed the plain plate.
+ */
+function starterCovers(): string[] {
+  return STARTERS.filter((s) => s.picture !== "theotokos").map((s) => {
+    const id = BOOK_COVERS[s.picture];
+    const file = id && id !== "plate" ? FIGURES[id]?.file : undefined;
+    expect(file, s.id).toBeDefined();
+    return file!;
+  });
+}
 
 /**
  * Every portrait on the website that the seven Ecumenical Councils' Fathers'
@@ -114,9 +130,21 @@ describe("the covers the apps carry", () => {
     }
   });
 
+  it("hold the Florilegium's starters' pictures, so no starter is a plain plate with no signal", () => {
+    const covers = starterCovers();
+    // The Prologue, the Beatitudes and Psalm 50; the Magnificat wears the Theotokos's carried icon.
+    expect(covers.sort()).toEqual(["/covers/david.v1.jpg", "/covers/john.v1.jpg", "/covers/matthew.v1.jpg"]);
+    for (const file of covers) expect(isCarried(file), file).toBe(true);
+  });
+
   it("carry the read-aloud covers as the JPEG alone, which is all the player draws", () => {
-    // The arbiter's yes of 2026-11-10 ("Five Bible covers JPEG-only: yes"): 0.52 MB lighter.
-    expect([...JPEG_ONLY_COVERS].sort()).toEqual(NEW_READ_COVERS.map((id) => FIGURES[id]!.file).sort());
+    // The arbiter's yes of 2026-11-10 ("Five Bible covers JPEG-only: yes"): 0.52 MB lighter. The starters' three (F4) are drawn by the same CoverArt.
+    expect([...JPEG_ONLY_COVERS].sort()).toEqual([...NEW_READ_COVERS.map((id) => FIGURES[id]!.file), ...starterCovers()].sort());
+    for (const file of ["components/florilegium/FlorilegiaHub.tsx", "components/florilegium/StarterPage.tsx", "components/florilegium/GatheringRow.tsx", "components/florilegium/FlorilegiumDetail.tsx"]) {
+      const src = fs.readFileSync(path.join(ROOT, file), "utf8");
+      expect(src, file).toContain("<CoverArt src={picture.src}");
+      expect(src, file).not.toMatch(/avif/i);
+    }
     // The player's cover is a plain <img> of the JPEG, and no picture that offers an AVIF first reads these covers.
     expect(fs.readFileSync(path.join(ROOT, "components/player/CoverArt.tsx"), "utf8")).not.toMatch(/avif/i);
     for (const file of ["components/you/KeptShelf.tsx", "components/you/PickUpCard.tsx", "lib/you/covers.ts"]) {
@@ -133,7 +161,7 @@ describe("the covers the apps carry", () => {
       ...Object.values(FEELING_COVERS).map((art) => art.file),
       ...NEW_PORTRAITS.map((art) => art.file),
     ];
-    const meant = new Set([...note3, ...councilPortraits(), ...NEW_READ_COVERS.map((id) => FIGURES[id]!.file)]);
+    const meant = new Set([...note3, ...councilPortraits(), ...NEW_READ_COVERS.map((id) => FIGURES[id]!.file), ...starterCovers()]);
     expect([...meant].sort()).toEqual([...CARRIED_COVERS].sort());
   });
 

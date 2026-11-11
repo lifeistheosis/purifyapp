@@ -23,6 +23,15 @@ import CARRIED from "./carriedCovers.json";
  * signal, and the five read-aloud covers new in 1.9 (David and Solomon from
  * Lagoudera, Ezra, Obadiah, Zechariah), which the 1.8 website does not have.
  *
+ * And the Florilegium's starters (the arbiter's word of 2026-11-11, F4):
+ * three of its four starters wear a read-aloud cover (the Prologue St
+ * John's, the Beatitudes St Matthew's, Psalm 50 David's) and showed the plain
+ * plate with no signal; the fourth, the Magnificat, wears the Theotokos's
+ * icon, which the apps carry already. Their three covers are carried as the
+ * JPEG alone, as the player draws them (components/player/CoverArt.tsx),
+ * +0.51 MB; John's Gospel, Matthew's and the Psalms read aloud show their
+ * covers with no signal too.
+ *
  * The list is carriedCovers.json, read here and by the native build, which
  * copies each JPEG and the AVIF beside it into the export
  * (scripts/native-build.mjs, carryCovers). The five read-aloud covers are

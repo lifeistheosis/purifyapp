@@ -4049,9 +4049,10 @@ await section(34, async () => {
 //
 // From 1.9 the apps carry a short list of covers as well as the website
 // (lib/media/carriedCovers.json, lib/media/__tests__/carried.test.ts): note
-// 3's pictures, the seven councils' portraits and the five read-aloud covers
-// new in 1.9 (his yes of 2026-11-10). Exactly that list ships, each JPEG with
-// its AVIF, the five read-aloud covers as the JPEG alone (the player offers
+// 3's pictures, the seven councils' portraits, the five read-aloud covers
+// new in 1.9 (his yes of 2026-11-10) and the three read-aloud covers the
+// Florilegium's starters wear (F4, 2026-11-11). Exactly that list ships, each JPEG with
+// its AVIF, the read-aloud covers as the JPEG alone (the player offers
 // no AVIF), and nothing else under /covers/; every other cover is still the
 // website's.
 //

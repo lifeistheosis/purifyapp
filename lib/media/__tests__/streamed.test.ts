@@ -20,8 +20,9 @@ const config = fs.readFileSync("next.config.ts", "utf8");
 
 describe("a streamed file's address", () => {
   it("is the page's own on the website and the website's in the apps", () => {
-    expect(streamedUrl("/covers/john.v1.jpg", false)).toBe("/covers/john.v1.jpg");
-    expect(streamedUrl("/covers/john.v1.jpg", true)).toBe(`${SITE_URL}/covers/john.v1.jpg`);
+    // St Luke's cover: one the apps do not carry (St John's is carried since F4, lib/media/carried.ts).
+    expect(streamedUrl("/covers/luke.v1.jpg", false)).toBe("/covers/luke.v1.jpg");
+    expect(streamedUrl("/covers/luke.v1.jpg", true)).toBe(`${SITE_URL}/covers/luke.v1.jpg`);
     expect(streamedUrl("/audio/chants/x/a.mp3", true)).toBe(`${SITE_URL}/audio/chants/x/a.mp3`);
   });
 
