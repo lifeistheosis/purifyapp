@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Diptychs } from "@/components/prayers/Diptychs";
@@ -36,6 +36,15 @@ import { ReorderList, type ReorderRow } from "./ReorderList";
 
 /** How long "Removed ... Undo" stays. */
 const UNDO_MS = 5000;
+
+/** A store that never changes: what it holds is read once, on the device. */
+const never = () => () => {};
+
+/** `make`, asked once: the half a page opened on does not change under the reader because the hour or the rule did. */
+function once<T>(make: () => T): () => T {
+  let made: { value: T } | null = null;
+  return () => (made ??= { value: make() }).value;
+}
 
 /** The part an address names (#evening), as the page's switch keeps it; null for none. */
 function partInAddress(hash: string): MyRulePart | null {
@@ -95,7 +104,24 @@ export function MyRuleBuilder() {
   const lookup = useMemo(() => (id: string) => libraryRule(id, locale), [locale]);
   // The part shown: null until the device has said which (the address, the
   // hour and the rule are all the device's), and the head's icon waits for it.
-  const [part, setPart] = useState<MyRulePart | null>(null);
+  //
+  // The half the page opens on is read once, on the device, by the rule the
+  // tile on Prayers reads too (lib/prayers/myRule.ts, openingPart), so the
+  // tile's picture is this head's. A server render of it would bake the
+  // build's hour into the Android export, so the server says null. Read this
+  // way (the idiom of lib/useMounted.ts), a page reached inside the app has
+  // its half at its very first drawing, not one drawing later as a layout
+  // effect gave it: the head's picture is there when the page switch looks
+  // for what takes the tile's picture, which it does as the page commits
+  // (components/nav/RouteTransition.tsx, carryIn; 1.9, P1). Only a page
+  // loaded whole is drawn once with neither part lit and no list, as before.
+  const [readOpening] = useState(() =>
+    once(() => openingPart(readMyRule(), ruleIdForHour(new Date().getHours()), partInAddress(window.location.hash))),
+  );
+  const opening = useSyncExternalStore<MyRulePart | null>(never, readOpening, () => null);
+  // A reader's own choice on the switch, from then on.
+  const [chosen, setChosen] = useState<MyRulePart | null>(null);
+  const part = chosen ?? opening;
   // False until the first part has stood on the screen for a frame: until
   // then the switch is set without its cross-fade and the list arrives with
   // the page's own fade (build 89 note 9: opening on Morning and crossing to
@@ -118,20 +144,6 @@ export function MyRuleBuilder() {
   // where a short page simply ends on its own ground.
   const switchRef = useRef<HTMLDivElement>(null);
   const [room, setRoom] = useState(0);
-
-  /* eslint-disable react-hooks/set-state-in-effect -- one-time hydration
-     gate: the address, the clock and the kept rule are the device's, and a
-     server render of them bakes the build's into the Android export. A
-     layout effect, so a page reached inside the app is first painted on the
-     right part; only a page loaded whole paints before it, with neither part
-     lit and no list drawn. */
-  useLayoutEffect(() => {
-    const kept = readMyRule();
-    const hour = ruleIdForHour(new Date().getHours());
-    // The rule the tile on Prayers reads too, so its picture is this head's (lib/prayers/myRule.ts, openingPart).
-    setPart(openingPart(kept, hour, partInAddress(window.location.hash)));
-  }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (part === null || arrived) return;
@@ -193,7 +205,7 @@ export function MyRuleBuilder() {
 
   /** Show a part; kept in the address, so coming back from praying it opens it again. */
   function select(next: MyRulePart) {
-    setPart(next);
+    setChosen(next);
     // replaceState, never push: back leaves the page, it does not walk the parts.
     window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}#${next}`);
   }

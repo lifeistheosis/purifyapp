@@ -249,8 +249,13 @@ describe("the page as the owner picked it, r3-27 A", () => {
   });
 
   it("opens on the part the device names, never Morning crossing to Evening (build 89 note 9)", () => {
-    // Decided before the first paint of a page reached inside the app.
-    expect(builder).toMatch(/useLayoutEffect\(\(\) => \{\s*const kept = readMyRule\(\);/);
+    // Decided at the first drawing of a page reached inside the app, read once on the device (1.9, P1: the head's
+    // picture is there when the page switch looks for what takes the tile's). A layout effect gave it one drawing
+    // later, after the switch had looked.
+    expect(builder).toContain("once(() => openingPart(readMyRule(), ruleIdForHour(new Date().getHours()), partInAddress(window.location.hash)))");
+    expect(builder).toContain("const opening = useSyncExternalStore<MyRulePart | null>(never, readOpening, () => null);");
+    expect(builder).toContain("const part = chosen ?? opening;");
+    expect(builder).not.toContain("useLayoutEffect");
     // Until then neither part is lit, nothing about a part is said, and the
     // morning list holds its room unseen.
     expect(track).toContain("value: MyRulePart | null;");
