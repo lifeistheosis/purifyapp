@@ -22,11 +22,15 @@ const COMPOSER = code("components/journal/JournalComposer.tsx");
 const CSS = read("app/globals.css");
 
 describe("the verse's focus", () => {
-  it("is a dialog over everything, portaled to the page, named for the verse, for phones and the apps' tablets", () => {
+  it("is a dialog over everything, portaled to the page, named for the verse, for a finger at any width", () => {
     expect(FOCUS).toContain("createPortal(");
     expect(FOCUS).toContain("document.body");
     expect(FOCUS).toMatch(/role="dialog"\s+aria-modal="true"\s+aria-label=\{t\("bible\.verseActionsFor", \{ reference \}\)\}/);
-    expect(FOCUS).toMatch(/className="verse-focus md:hidden native-md-block fixed inset-0 z-\[60\]"/);
+    // Shown whenever it is opened, and only a finger's hold or the verse's
+    // door opens it. It was md:hidden (the apps' tablets let in by
+    // native-md-block), so on a tablet's browser a hold dimmed the verse and
+    // showed nothing (1.9, measured on the export at 820 with touch).
+    expect(FOCUS).toMatch(/className="verse-focus fixed inset-0 z-\[60\]"/);
   });
 
   it("holds the colours above the card and Copy, Share, Image, Note and Study below it, in that order", () => {

@@ -593,14 +593,39 @@ describe("a tablet in the apps", () => {
     // filled only the left of the column, 90px left of the screen's middle.
     // Section 43 of scripts/export-walk.mjs measures the words on every iPad.
     const verse = code("components/bible/VerseRow.tsx");
-    expect(verse).toContain('"hidden md:flex native-md-hidden items-center gap-1 shrink-0');
-    expect(verse).not.toMatch(/"hidden md:flex(?! native-md-hidden)/);
+    expect(verse).toContain('"hidden md:pointer-fine:flex native-md-hidden items-center gap-1 shrink-0');
+    expect(verse).not.toMatch(/"hidden md:(?:pointer-fine:)?flex(?! native-md-hidden)/);
     // A Father's work, whose paragraphs mirror the verses, the same way.
     const paragraph = code("components/saints/ParagraphRow.tsx");
-    expect(paragraph).toContain('"hidden md:flex native-md-hidden items-center gap-1 shrink-0');
-    expect(paragraph).not.toMatch(/"hidden md:flex(?! native-md-hidden)/);
-    // A tablet in the apps has the long-press toolbar instead, as a phone does.
-    expect(code("components/bible/MobileVerseToolbar.tsx")).toMatch(/"md:hidden native-md-block fixed inset-0/);
+    expect(paragraph).toContain('"hidden md:pointer-fine:flex native-md-hidden items-center gap-1 shrink-0');
+    expect(paragraph).not.toMatch(/"hidden md:(?:pointer-fine:)?flex(?! native-md-hidden)/);
+    // A tablet in the apps has the long-press toolbar instead, as a phone
+    // does: the popup is shown whenever a hold opens it.
+    expect(code("components/bible/MobileVerseToolbar.tsx")).toMatch(/<div className="fixed inset-0 z-\[55\]" role="dialog"/);
+  });
+
+  it("is a tablet's browser's too: the toolbar a mouse's, the hold a finger's at any width (1.9)", () => {
+    // Measured on the export at 820, served as the website with touch: a
+    // tablet's browser has no hover, so the toolbar's circles stood unseen
+    // (Tailwind's group-hover holds only where a hover is) beside every
+    // verse, and a hold dimmed the verse and opened nothing, the window being
+    // md:hidden. Opening the circles to 44 with room between cost the words
+    // 64px on the website and was reverted (456400e86). Now the toolbar
+    // shows only to a fine pointer, and the two windows whenever a hold
+    // opens them, which a mouse never does. Section 64 of
+    // scripts/export-walk.mjs walks it at 820 with a finger and at 1280 with
+    // a mouse.
+    const verse = code("components/bible/VerseRow.tsx");
+    const paragraph = code("components/saints/ParagraphRow.tsx");
+    for (const row of [verse, paragraph]) expect(row).toMatch(/"hidden md:pointer-fine:flex native-md-hidden /);
+    expect(code("components/bible/VerseFocus.tsx")).toContain('className="verse-focus fixed inset-0 z-[60]"');
+    expect(code("components/bible/VerseFocus.tsx")).not.toMatch(/verse-focus[^"]*md:hidden/);
+    expect(code("components/bible/MobileVerseToolbar.tsx")).not.toMatch(/"md:hidden native-md-block fixed inset-0/);
+    // The verse's door stands wherever the hold is the way in.
+    expect(verse).toContain('className="verse-door md:pointer-fine:hidden native-md-inline-flex"');
+    // Only a hold and the door open the window: no mouse path does.
+    expect(verse.match(/setShowTools\(true\)/g)?.length).toBe(2);
+    expect(paragraph.match(/setShowTools\(true\)/g)?.length).toBe(1);
   });
 
   it("gives its sheets a width of their own", () => {

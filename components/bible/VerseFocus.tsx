@@ -190,7 +190,7 @@ export function VerseFocus({
           role="dialog"
           aria-modal="true"
           aria-label={t("bible.verseActionsFor", { reference })}
-          className="verse-focus md:hidden native-md-block fixed inset-0 z-[60]"
+          className="verse-focus fixed inset-0 z-[60]"
         >
           <button type="button" tabIndex={-1} aria-label={t("common.close")} onClick={close} className="verse-focus-scrim absolute inset-0 bg-night/85" />
           <div className="pointer-events-none absolute inset-x-4 bottom-4 top-[calc(env(safe-area-inset-top,0px)+1rem)] flex flex-col justify-center gap-3 overflow-y-auto">

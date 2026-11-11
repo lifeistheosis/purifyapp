@@ -135,7 +135,7 @@ describe("the verse's gestures (build 90 note 10)", () => {
   });
 
   it("gives a screen reader and a keyboard one action to the window, out of sight until a keyboard lands on it", () => {
-    expect(src).toMatch(/<button\s+type="button"\s+data-verse-door=""\s+className="verse-door md:hidden native-md-inline-flex"\s+onClick=\{\(\) => setShowTools\(true\)\}\s+data-mock-allow="target"\s+data-mock-why="[^"]+"\s*>\s*\{t\("bible\.verseActionsFor", \{ reference: reference\(\) \}\)\}/);
+    expect(src).toMatch(/<button\s+type="button"\s+data-verse-door=""\s+className="verse-door md:pointer-fine:hidden native-md-inline-flex"\s+onClick=\{\(\) => setShowTools\(true\)\}\s+data-mock-allow="target"\s+data-mock-why="[^"]+"\s*>\s*\{t\("bible\.verseActionsFor", \{ reference: reference\(\) \}\)\}/);
     const css = fs.readFileSync(path.resolve(__dirname, "../../../app/globals.css"), "utf8");
     const door = css.slice(css.indexOf(".verse-door {"), css.indexOf("}", css.indexOf(".verse-door:focus-visible {")) + 1);
     // Always out of the page's flow, so landing on it moves nothing.

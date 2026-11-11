@@ -1280,16 +1280,21 @@ export function VerseRow({
  <HighlightNamesSheet open={naming !== undefined} focusId={naming ?? null} onClose={() => setNaming(undefined)} />
  </div>
 
- {/* Desktop-only inline toolbar, hover-revealed at md+. On mobile
- the same actions are presented in the MobileVerseToolbar popup
- triggered by long-press; see below. Never on a tablet in the apps
- (native-md-hidden, 1.7.1): there is no hover there, and the toolbar,
- unseen at opacity 0, still took about 170px beside every verse, so
- the words filled only the left of the centred column on the owner's
- iPad. A tablet uses the long-press, as a phone does. */}
+ {/* A computer's inline toolbar, hover-revealed at md+, for a mouse
+ only (pointer-fine, 1.9). A finger at any width holds the verse for
+ its window (VerseFocus, below), as on a phone. Never on a tablet in
+ the apps (native-md-hidden, 1.7.1): there is no hover there, and the
+ toolbar, unseen at opacity 0, still took about 170px beside every
+ verse, so the words filled only the left of the centred column on the
+ owner's iPad. A tablet uses the long-press, as a phone does, and from
+ 1.9 a tablet's browser too: there a hold dimmed the verse and opened
+ nothing (the window was md:hidden) while the circles stood unseen,
+ since a hover never comes. Each circle states a finger's 44 (h-11)
+ and a mouse's 28 (pointer-fine:h-7), as the admin panel's rows do;
+ only the mouse's is drawn. */}
  <div
  className={
- "hidden md:flex native-md-hidden items-center gap-1 shrink-0 -mt-1 transition-opacity duration-150 " +
+ "hidden md:pointer-fine:flex native-md-hidden items-center gap-1 shrink-0 -mt-1 transition-opacity duration-150 " +
  (ann.highlighted ||
  ann.note ||
  noteOpen ||
@@ -1311,7 +1316,7 @@ export function VerseRow({
  ann.highlighted ? t("bible.removeHighlight") : t("bible.highlightVerse")
  }
  className={
- "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150 " +
+ "h-11 w-11 pointer-fine:h-7 pointer-fine:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150 " +
  (ann.highlighted
  ? "border-[var(--hl-swatch)] bg-[var(--hl-verse)] text-[var(--hl-swatch)]"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper")
@@ -1330,7 +1335,7 @@ export function VerseRow({
  aria-expanded={showSwatches}
  aria-haspopup="true"
  title={t("bible.chooseHighlightColor")}
- className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center transition-colors duration-150"
+ className="h-11 w-11 pointer-fine:h-7 pointer-fine:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center transition-colors duration-150"
  >
  <ChevronDown size={14} className={cn("motion-safe:transition-transform", showSwatches && "rotate-180")} />
  </button>
@@ -1361,7 +1366,7 @@ export function VerseRow({
  onClick={ann.clearWords}
  aria-label={t("bible.clearWordHighlights")}
  title={t("bible.clearWordHighlights")}
- className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-ui md:text-caption transition-colors duration-150"
+ className="h-11 w-11 pointer-fine:h-7 pointer-fine:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-ui md:text-caption transition-colors duration-150"
  >
  <Erase size={16} />
  </button>
@@ -1372,7 +1377,7 @@ export function VerseRow({
  onClick={onOpenCrossRefs}
  aria-label={t("bible.crossRefs")}
  title={t("bible.crossRefs")}
- className="hit-44 h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-ui md:text-caption transition-colors duration-150"
+ className="hit-44 h-11 w-11 pointer-fine:h-7 pointer-fine:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-ui md:text-caption transition-colors duration-150"
  >
  <CrossRefs size={16} />
  </button>
@@ -1385,7 +1390,7 @@ export function VerseRow({
  }
  title={copied ? t("common.copied") : t("bible.copyVerseLink")}
  className={cn(
- "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
+ "h-11 w-11 pointer-fine:h-7 pointer-fine:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  copied
  ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-300"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
@@ -1408,7 +1413,7 @@ export function VerseRow({
  : t("bible.bookmarkVerse")
  }
  className={cn(
- "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
+ "h-11 w-11 pointer-fine:h-7 pointer-fine:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  isVerseBookmarked
  ? "bg-gold/25 border-gold/55 text-gold"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
@@ -1425,7 +1430,7 @@ export function VerseRow({
  // A 44px touch box round the 28px pen (a tablet's browser touches this
  // row too); the row's gap leaves the star beside it its own (1.9).
  className={
- "hit-44 ms-1 h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150 " +
+ "hit-44 ms-1 h-11 w-11 pointer-fine:h-7 pointer-fine:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150 " +
  (ann.note
  ? "bg-paper/15 border-paper/30 text-paper"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper")
@@ -1453,12 +1458,13 @@ export function VerseRow({
    10): a lone tap opens nothing now, and the hold that opens the window
    is a finger's. One action for them, out of sight, a small pill under
    the verse when a keyboard lands on it (app/globals.css, .verse-door).
-   Phones and the apps' tablets: a computer's hover tools take the
-   keyboard there. */}
+   Wherever the hold is the way in: phones, tablets (the apps', and from
+   1.9 a browser's), any screen without a mouse. Where a mouse is, the
+   computer's hover tools take the keyboard. */}
  <button
  type="button"
  data-verse-door=""
- className="verse-door md:hidden native-md-inline-flex"
+ className="verse-door md:pointer-fine:hidden native-md-inline-flex"
  onClick={() => setShowTools(true)}
  data-mock-allow="target"
  data-mock-why="out of sight until a keyboard lands on it, then a pill 44px tall"

@@ -46,6 +46,22 @@ function writtenSmall(classes: string): boolean {
   return false;
 }
 
+/**
+ * The classes a finger meets: a class that holds only under a fine pointer
+ * (`pointer-fine:h-7`, `md:pointer-fine:min-h-0`) is a mouse's, and is set
+ * aside before a height is read. WCAG's floor for a pointer is 24px (2.5.8);
+ * the 44 this count holds is a finger's (2.5.5). So a control that states
+ * a finger's 44 and a mouse's 28 (the admin panel's rows, the reader's
+ * desktop circles) is 44 here, and one that is small for a finger is still
+ * counted whatever a mouse gets.
+ */
+function fingerClasses(classes: string): string {
+  return classes
+    .split(/\s+/)
+    .filter((token) => !token.includes("pointer-fine:"))
+    .join(" ");
+}
+
 /** Lines that both open an interactive element and set a sub-44px height. */
 const INTERACTIVE = /<(?:button|a|Link)\b/;
 
@@ -139,8 +155,9 @@ function countSmallTargets(): { total: number; byFile: Record<string, number>; w
         const window = [lines[i].slice(tagAt), ...lines.slice(i + 1, i + 12)].join(" ");
         const upToNextTag = window.split(/<(?:button|a|Link)\b/).slice(0, 2).join(" ");
         if (!/className=/.test(upToNextTag)) continue;
-        const own = ownClasses(upToNextTag, constants);
-        const read = own === null || (!SMALL_H.test(own) && !writtenSmall(own) && !statesTall(own)) ? upToNextTag : own;
+        const stated = ownClasses(upToNextTag, constants);
+        const own = stated === null ? null : fingerClasses(stated);
+        const read = own === null || (!SMALL_H.test(own) && !writtenSmall(own) && !statesTall(own)) ? fingerClasses(upToNextTag) : own;
         // A control carrying .hit-44 has a 44px touch box regardless of the
         // height it paints at, so it is not a defect even though the small
         // height class is still there.
@@ -224,7 +241,17 @@ function countSmallTargets(): { total: number; byFile: Record<string, number>; w
 // the traffic reader's scrim was never small, a full-screen button read by
 // the grab handle under it, and states its height (h-full) now. Left: the
 // seven circles above, which are the Updates chat's.
-const MAX_SMALL_TARGETS = 7;
+// 7 -> 0 on 2026-11-11 (1.9): the circles are a mouse's. Opened to 44 with
+// .hit-44 and 17px between them, they took 64px from the verse's words on
+// the website (reverted, 456400e86), and measuring them showed a finger
+// never had them: a tablet's browser has no hover, so they stood unseen,
+// and a hold there dimmed the verse and opened nothing, its window being
+// md:hidden. So the toolbar shows only to a fine pointer at md and wider
+// (md:pointer-fine:flex), a finger at any width holds the verse or the
+// paragraph for its window, as on a phone and in the apps' tablets (1.7.1),
+// and each circle states a finger's 44 and a mouse's 28, which this count
+// reads by fingerClasses above. None is left.
+const MAX_SMALL_TARGETS = 0;
 
 // Heights written out (WRITTEN_H above), counted on their own so the ceiling
 // above keeps its history and still only falls. The count learned to read
@@ -307,6 +334,26 @@ describe("touch targets", () => {
     // 44 and over, stated: a child's height is then the child's.
     for (const tall of ["min-h-11", "h-12", "size-11", "h-[50px]", "min-h-[104px]", "h-full"]) expect(statesTall(tall), tall).toBe(true);
     for (const small of ["h-9", "min-h-9", "h-[40px]", "size-10", "px-4"]) expect(statesTall(small), small).toBe(false);
+  });
+
+  it("reads a finger's height, and sets a mouse's aside", () => {
+    // A finger's 44 and a mouse's 28: 44 here.
+    const circle = fingerClasses("h-11 w-11 pointer-fine:h-7 pointer-fine:w-7 rounded-full");
+    expect(SMALL_H.test(circle)).toBe(false);
+    expect(statesTall(circle)).toBe(true);
+    // Small for a finger whatever a mouse gets: counted.
+    expect(SMALL_H.test(fingerClasses("h-9 md:pointer-fine:h-11"))).toBe(true);
+    expect(writtenSmall(fingerClasses("min-h-[40px] pointer-fine:min-h-[44px]"))).toBe(true);
+    // A mouse's height, small or tall, is never a finger's.
+    expect(statesTall(fingerClasses("pointer-fine:h-12"))).toBe(false);
+    expect(fingerClasses('"min-h-11 w-full pointer-fine:min-h-0 pointer-fine:py-1"')).toBe('"min-h-11 w-full');
+    // The reader's desktop circles: shown only to a fine pointer, each a finger's 44 and a mouse's 28.
+    for (const file of ["components/bible/VerseRow.tsx", "components/saints/ParagraphRow.tsx"]) {
+      const src = readFileSync(join(ROOT, file), "utf8");
+      expect(src, file).toContain('"hidden md:pointer-fine:flex native-md-hidden items-center gap-1 shrink-0');
+      expect(src, file).not.toMatch(/md:h-7|h-9 w-9 md:/);
+      expect((src.match(/h-11 w-11 pointer-fine:h-7 pointer-fine:w-7 rounded-full/g) ?? []).length, file).toBe(file.includes("VerseRow") ? 7 : 4);
+    }
   });
 
   it("reads a height written out as well as the scale's", () => {

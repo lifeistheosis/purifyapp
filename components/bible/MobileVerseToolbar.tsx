@@ -184,7 +184,7 @@ export function MobileVerseToolbar({
   }
 
   return (
-    <div className="md:hidden native-md-block fixed inset-0 z-[55]" role="dialog" aria-modal="false" aria-label={t(itemKeys.actions, { reference })}>
+    <div className="fixed inset-0 z-[55]" role="dialog" aria-modal="false" aria-label={t(itemKeys.actions, { reference })}>
       {/* Transparent backdrop to capture outside taps. */}
       <button
         type="button"

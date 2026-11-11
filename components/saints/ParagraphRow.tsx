@@ -380,16 +380,19 @@ export function ParagraphRow({
  </span>
  </p>
 
- {/* Desktop-only inline toolbar, hover-revealed at md+. On mobile the
- same actions live in the MobileVerseToolbar popup opened by a
- long-press (see below), so the text gets the full column width.
- Mirrors the Bible VerseRow, and like it is never laid out on a
- tablet in the apps (native-md-hidden, 1.7.1): unseen there, it still
- took its width beside every paragraph and held the words to the left
- of the column. A tablet uses the long-press, as a phone does. */}
+ {/* A computer's inline toolbar, hover-revealed at md+, for a mouse
+ only (pointer-fine, 1.9). A finger at any width holds the paragraph
+ for the MobileVerseToolbar popup (see below), so the text gets the
+ full column width. Mirrors the Bible VerseRow, and like it is never
+ laid out on a tablet in the apps (native-md-hidden, 1.7.1): unseen
+ there, it still took its width beside every paragraph and held the
+ words to the left of the column. A tablet uses the long-press, as a
+ phone does, and from 1.9 a tablet's browser too, where a hold opened
+ nothing (the popup was md:hidden) and no hover ever showed these
+ circles. Each states a finger's 44 and a mouse's 28, as VerseRow's. */}
  <div
  className={cn(
- "hidden md:flex native-md-hidden items-center gap-1 shrink-0 transition-opacity duration-150",
+ "hidden md:pointer-fine:flex native-md-hidden items-center gap-1 shrink-0 transition-opacity duration-150",
  ann.highlighted || ann.note || editing || showSwatches
  ? "md:opacity-100"
  : "md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100",
@@ -410,7 +413,7 @@ export function ParagraphRow({
  : t("saints.highlightParagraph")
  }
  className={cn(
- "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
+ "h-11 w-11 pointer-fine:h-7 pointer-fine:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  ann.highlighted
  ? "border-[var(--hl-swatch)] bg-[var(--hl-verse)] text-[var(--hl-swatch)]"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
@@ -427,7 +430,7 @@ export function ParagraphRow({
  aria-expanded={showSwatches}
  aria-haspopup="true"
  title={t("bible.chooseHighlightColor")}
- className="h-9 w-9 md:h-7 md:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center transition-colors duration-150"
+ className="h-11 w-11 pointer-fine:h-7 pointer-fine:w-7 rounded-full border border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper flex items-center justify-center transition-colors duration-150"
  >
  <ChevronDown size={14} className={cn("motion-safe:transition-transform", showSwatches && "rotate-180")} />
  </button>
@@ -460,7 +463,7 @@ export function ParagraphRow({
  }
  title={copied ? t("common.copied") : t("saints.copyParagraphLink")}
  className={cn(
- "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
+ "h-11 w-11 pointer-fine:h-7 pointer-fine:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  copied
  ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-300"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",
@@ -478,7 +481,7 @@ export function ParagraphRow({
  aria-pressed={editing}
  title={ann.note ? t("bible.editNote") : t("bible.addNote")}
  className={cn(
- "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
+ "h-11 w-11 pointer-fine:h-7 pointer-fine:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150",
  ann.note
  ? "bg-paper/15 border-paper/30 text-paper"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper",

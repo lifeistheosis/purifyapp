@@ -9168,6 +9168,137 @@ await section(63, async () => {
   await ctx.close();
 });
 
+// 64. The verse's tools on the website (1.9): the toolbar beside each verse
+// and each paragraph of a Father's work is a mouse's (md:pointer-fine:flex),
+// and a finger at any width holds the verse or the paragraph for its window,
+// as on a phone and in the apps' tablets. Before it, a tablet's browser had
+// no way in: a hold dimmed the verse and opened nothing (the window was
+// md:hidden), and the circles stood unseen beside every verse, since a
+// hover never comes there. Served as the website, not the apps: an iPad's
+// Safari with a finger at 820, a computer with a mouse at 1280, a phone at
+// 390. lib/bible/__tests__/readerScreen.test.ts and
+// lib/ui/__tests__/touchTargets.test.ts hold the source.
+await section(64, async () => {
+  console.log("\n64. The verse's tools on the website: a mouse's toolbar, a finger's hold");
+  const SAFARI_IPAD = "Mozilla/5.0 (iPad; CPU OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1";
+  const SAFARI_PHONE = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1";
+  const hold = async (ctx, page, selector) => {
+    const target = page.locator(selector).first();
+    await target.scrollIntoViewIfNeeded().catch(() => {});
+    await page.waitForTimeout(400);
+    const box = await target.boundingBox();
+    if (!box) return false;
+    const cdp = await ctx.newCDPSession(page);
+    const x = box.x + Math.min(40, box.width / 2);
+    const y = box.y + Math.min(box.height / 2, 30);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
+    await page.waitForTimeout(700);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await page.waitForTimeout(700);
+    return true;
+  };
+  const shown = (page, selector) =>
+    page.evaluate((sel) => {
+      const el = document.querySelector(sel);
+      return !!el && getComputedStyle(el).display !== "none" && el.getBoundingClientRect().height > 0;
+    }, selector);
+  const VERSE_WINDOW = "[data-verse-focus]";
+  const PARAGRAPH_WINDOW = 'div.fixed[role="dialog"][aria-modal="false"]';
+  const TOOLBAR = 'div[class*="md:pointer-fine:flex"]';
+  const openJohn = async (page) => {
+    await go(page, "/bible/john/1/");
+    await page.waitForFunction(() => document.querySelectorAll("[data-verse] p [data-word-idx]").length > 100, null, { timeout: 20000 }).catch(() => {});
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(900);
+  };
+  const openWork = async (page) => {
+    await go(page, "/saints/john-chrysostom/homilies-on-john/#s1");
+    await page.waitForFunction(() => (document.querySelector("#p-1-1 p")?.textContent ?? "").length > 40, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(900);
+  };
+  // What the toolbars and the verses' words measure.
+  const rows = (page) =>
+    page.evaluate((toolbar) => {
+      const box = (n) => n.getBoundingClientRect();
+      const bars = [...document.querySelectorAll(toolbar)];
+      const laid = bars.filter((b) => getComputedStyle(b).display !== "none" && box(b).width > 0);
+      const v3 = document.querySelector("#v3");
+      const words = v3 ? [...v3.querySelectorAll("p [data-word-idx]")].filter((w) => box(w).width > 0) : [];
+      const text = words.length ? Math.round(Math.max(...words.map((w) => box(w).right)) - Math.min(...words.map((w) => box(w).left))) : 0;
+      const row = v3 ? Math.round(box(v3).width) : 0;
+      const bar = v3?.querySelector(toolbar);
+      const circles = bar ? [...bar.querySelectorAll("button")].filter((b) => box(b).width > 0 && b.className.includes("rounded-full")) : [];
+      const door = v3?.querySelector("[data-verse-door]");
+      return {
+        bars: bars.length,
+        laid: laid.length,
+        text,
+        row,
+        bar: bar && getComputedStyle(bar).display !== "none" ? Math.round(box(bar).width) : 0,
+        opacity: bar ? getComputedStyle(bar).opacity : null,
+        circles: circles.map((c) => Math.round(box(c).height * 10) / 10),
+        door: door ? getComputedStyle(door).display : null,
+        fine: matchMedia("(pointer: fine)").matches,
+        hover: matchMedia("(hover: hover)").matches,
+        native: document.documentElement.classList.contains("is-native"),
+      };
+    }, TOOLBAR);
+
+  // A tablet's browser, a finger: no toolbar laid out, the words their whole row, and a hold opens the window.
+  {
+    const { ctx, page, errors } = await open({ width: 820, height: 1180, phone: true, userAgent: SAFARI_IPAD });
+    await openJohn(page);
+    const r = await rows(page);
+    must(!r.native && !r.fine && !r.hover, `820, a tablet's browser: the website with a finger (native ${r.native}, pointer fine ${r.fine}, hover ${r.hover})`);
+    must(r.bars > 20 && r.laid === 0, `820: no verse's toolbar is laid out beside it (${r.laid} of ${r.bars})`);
+    must(r.text >= r.row - 48, `820: John 1:3's words take their row, ${r.text}px of ${r.row}`);
+    must(r.door !== null && r.door !== "none", `820: the verse's door is there for a keyboard (display ${r.door})`);
+    await hold(ctx, page, "#v3 p");
+    must(await shown(page, VERSE_WINDOW), "820: a hold on John 1:3 opens the verse's window");
+    await page.screenshot({ path: path.join(SHOTS, "website-hold-820.png") });
+    await openWork(page);
+    const w = await page.evaluate((toolbar) => [...document.querySelectorAll(toolbar)].filter((b) => getComputedStyle(b).display !== "none").length, TOOLBAR);
+    must(w === 0, `820: no paragraph's toolbar is laid out in a Father's work (${w})`);
+    await hold(ctx, page, "#p-1-1 p");
+    must(await shown(page, PARAGRAPH_WINDOW), "820: a hold on a paragraph of St John Chrysostom opens its window");
+    must(errors.length === 0, `820: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A computer, a mouse: the toolbar beside each verse, unseen until a hover, its circles a mouse's 28.
+  {
+    const { ctx, page, errors } = await open({ width: 1280, height: 900 });
+    await openJohn(page);
+    const before = await rows(page);
+    must(!before.native && before.fine && before.hover, `1280, a computer: the website with a mouse (native ${before.native}, pointer fine ${before.fine}, hover ${before.hover})`);
+    must(before.bars > 20 && before.laid === before.bars, `1280: every verse's toolbar is laid out beside it (${before.laid} of ${before.bars})`);
+    must(before.opacity === "0", `1280: unseen until a hover (opacity ${before.opacity})`);
+    must(before.door === "none", `1280: the verse's door stands aside for the toolbar (display ${before.door})`);
+    await page.locator("#v3 p").first().hover();
+    await page.waitForTimeout(400);
+    const after = await rows(page);
+    must(after.opacity === "1", `1280: a hover on John 1:3 shows its toolbar (opacity ${after.opacity})`);
+    must(after.circles.length >= 6 && after.circles.every((h) => h >= 24 && h <= 31), `1280: its circles are a mouse's, 24 to 31px, WCAG's pointer floor kept (${after.circles.join(", ")})`);
+    must(after.bar > 0 && after.bar <= 260, `1280: the toolbar keeps its narrow row, ${after.bar}px, and the words their ${after.text}px of ${after.row}`);
+    await page.screenshot({ path: path.join(SHOTS, "website-toolbar-1280.png") });
+    await openWork(page);
+    const w = await page.evaluate((toolbar) => [...document.querySelectorAll(toolbar)].filter((b) => getComputedStyle(b).display !== "none").length, TOOLBAR);
+    must(w > 0, `1280: a Father's work keeps its toolbar for a mouse (${w} laid out)`);
+    must(errors.length === 0, `1280: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A phone's browser: as before, the hold opens the window.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, userAgent: SAFARI_PHONE });
+    await openJohn(page);
+    await hold(ctx, page, "#v3 p");
+    must(await shown(page, VERSE_WINDOW), "390, a phone's browser: a hold on John 1:3 opens the verse's window");
+    must(errors.length === 0, `390: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
