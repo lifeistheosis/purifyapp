@@ -41,6 +41,15 @@
 //             once the page has arrived; back from there, with the cover far
 //             up the page, nothing is flown in from off the screen; a
 //             council's document, the same from its council's shelf
+//   a page   left by a link that is not on it when the reader comes back
+//             (a council's card for the Father chosen in its row, which
+//             begins again at the first) comes back where it was left, by
+//             the chevron and by the phone's Back alike: another link to the
+//             same place, deep in the page, is never taken for the one that
+//             was tapped (lib/ui/returnPlace.ts; build 93 note 1)
+//             and a page is not moved to meet a link that is still being
+//             brought in as it comes back (Prayers' rule, which rises into
+//             place again): it is where it was left once the rule has landed
 //   each is over within 350ms
 //   the browser's own Back is not pictured (the platform's rule)
 //   with motion reduced, nothing is pictured at all
@@ -373,6 +382,37 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
     note("back: the page's own chevron", judge(r, { old: "route-sink", fresh: "route-arrive", to: "/prayers" }), `${r.from} to ${r.to}`);
     if (film) await sheet(ctx, film, "back", r.stills);
 
+    // A part of a page that is brought in again as the page comes back is
+    // not chased (lib/ui/returnPlace.ts). Prayers' rule rises 8px into place
+    // half a second after the page is there, and does so again on the way
+    // back: the page was moved 8px to meet its link while it was still held
+    // low, and was left 8px from where the reader had it once the rule rose.
+    await page.evaluate(() => window.scrollTo(0, 36));
+    await sleep(page, 500);
+    const rule = await page.evaluate(() => {
+      const a = [...document.links].filter((x) => x.getAttribute("href") === "/prayers/personal/" && x.getClientRects().length)[0];
+      return a ? { down: Math.round(window.scrollY), top: Math.round(a.getBoundingClientRect().top), enters: Boolean(a.closest(".prayers-hero-in")) } : null;
+    });
+    if (!rule) note("Prayers, left by its rule's link: back where it was left", ["the page has no link to the reader's own rule to leave by"], "/prayers/");
+    else {
+      r = await walk(page, "prayers-rule", () => page.evaluate(() => [...document.links].filter((x) => x.getAttribute("href") === "/prayers/personal/" && x.getClientRects().length)[0].click()));
+      const there = judge(r, { old: "route-leave", fresh: "route-settle", to: "/prayers/personal" });
+      r = await walk(page, "prayers-rule-back", () => page.locator(chevron).first().click());
+      const home = [...there, ...judge(r, { old: "route-sink", fresh: "route-arrive", to: "/prayers" })];
+      // Past the rule's own entrance (460ms held, 600ms rising) and the whole of the watch.
+      await sleep(page, 2800);
+      const now = await page.evaluate(() => {
+        const a = [...document.links].filter((x) => x.getAttribute("href") === "/prayers/personal/" && x.getClientRects().length)[0];
+        return { down: Math.round(window.scrollY), top: a ? Math.round(a.getBoundingClientRect().top) : null };
+      });
+      if (!rule.enters) home.push("the link is not in the part of the page that is brought in, so the walk proves nothing");
+      if (Math.abs(now.down - rule.down) > 2) home.push(`the page came back ${now.down}px down, and was left ${rule.down}px down`);
+      if (now.top === null || Math.abs(now.top - rule.top) > 2) home.push(`the link came back ${now.top}px from the top, and was left ${rule.top}px from it`);
+      note("Prayers, left by its rule's link, which is brought in again as the page comes back: where it was left", home, `${r.from} to ${r.to}, ${now.down}px down (was ${rule.down}px), the link ${now.top}px from the top (was ${rule.top}px)`);
+    }
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await sleep(page, 300);
+
     // Across: a tab for a tab.
     r = await walk(page, "tab", () => page.locator('[data-tab-bar] a[href^="/discover"]').first().click(), { film });
     note("across: a tab for a tab", judge(r, { old: "route-leave", fresh: "route-arrive", to: "/discover" }), `${r.from} to ${r.to}`);
@@ -540,6 +580,45 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
       if (film) await sheet(ctx, film, "council-book", r.stills);
       r = await walk(page, "council-book-back", () => page.locator(chevron).first().click());
       note("a council's document: back to the shelf, the cover back in its place", judge(r, { old: "route-sink", fresh: "route-arrive", to: "/reading/councils/first-nicaea", carried: "alone" }), `${r.from} to ${r.to}`);
+    }
+
+    // A page comes back where the reader left it, even when the link he left
+    // by is no longer on it (build 93 note 1, the owner on his phone: "when I
+    // click back to go back to the first council of Nicaea ... it just
+    // randomly places you at the bottom"). St Alexander chosen in the Holy
+    // Fathers row and opened by the card; back, the row begins again at St
+    // Athanasius, so the card that was tapped is gone, and the page names St
+    // Alexander once more, as a link, deep in its account. That link was
+    // taken for the card, and the page came back 3,424px down. A little way
+    // down the page when it is left, so "where it was" and "the top" are not
+    // one answer; by the page's own chevron, and by the phone's Back (the
+    // browser's own here, which is not pictured).
+    for (const how of ["the page's own chevron", "the phone's Back"]) {
+      await go(page, "/councils/first-nicaea/");
+      await page.waitForSelector("[data-council-fathers] button", { timeout: 20000 });
+      await sleep(page, 1200);
+      await page.evaluate(() => window.scrollTo(0, 260));
+      await sleep(page, 400);
+      await page.locator('[data-council-fathers] button[aria-label="St. Alexander of Alexandria"]').click();
+      await sleep(page, 400);
+      const left = await page.evaluate(() => ({
+        down: Math.round(window.scrollY),
+        card: document.querySelector("[data-council-fathers] a")?.getAttribute("href") ?? null,
+        // How many links on the page lead where the card does: the card is not the only one.
+        same: [...document.links].filter((a) => a.getAttribute("href") === document.querySelector("[data-council-fathers] a")?.getAttribute("href")).length,
+      }));
+      r = await walk(page, "council-father", () => page.locator("[data-council-fathers] a").first().click());
+      const out = judge(r, { old: "route-leave", fresh: "route-settle", to: "/saints/alexander-of-alexandria" });
+      if (left.same < 2) out.push(`the page has ${left.same} link to St Alexander, so the walk proves nothing: it needs the card and the one in the account`);
+      note("a council: the Father chosen in its row, opened by the card", out, `${r.from} to ${r.to}`);
+      r = await walk(page, "council-father-back", () => (how === "the phone's Back" ? page.goBack() : page.locator(chevron).first().click()));
+      const back = how === "the phone's Back" ? (r.pictured.length ? [`pictured ${r.pictured.length} transition(s); the browser's own Back is left alone`] : []) : judge(r, { old: "route-sink", fresh: "route-arrive", to: "/councils/first-nicaea" });
+      if (!sameAddress(r.to, "/councils/first-nicaea")) back.push(`ended on ${r.to}, not the council's page`);
+      // Through the whole of the watch a page is kept under as it comes back (lib/ui/returnPlace.ts, WATCH_FRAMES).
+      await sleep(page, 2800);
+      const now = await page.evaluate(() => ({ down: Math.round(window.scrollY), card: document.querySelector("[data-council-fathers] a")?.getAttribute("href") ?? null }));
+      if (Math.abs(now.down - left.down) > 4) back.push(`the page came back ${now.down}px down, and was left ${left.down}px down`);
+      note(`a council, left by a card that is gone when the reader comes back: by ${how}, where it was left`, back, `${r.from} to ${r.to}, ${now.down}px down (was ${left.down}px; the card led to ${left.card} and now to ${now.card})`);
     }
 
     // The Florilegium (build 89 notes 6 and 12). A starter's tile carries its

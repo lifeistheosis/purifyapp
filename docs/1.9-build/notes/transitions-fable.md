@@ -367,6 +367,92 @@ there to answer" in `lib/reading/__tests__/openingCover.test.ts`.
   held back 300ms (`withScriptsHeld`), and a page that needs a boundary
   early (it reads the query) can be walked the same way.
 
+## Back puts a page where it was left (2026-11-11, build 93 note 1)
+
+His words, on build 93 on his phone: "when I click back to go back to the
+first council of Nicaea, it scrolls all the way down. Well, it actually
+doesn't scroll, it just randomly places you at the bottom of the first
+council of Nicaea, which is an issue because it should be placing you at
+the top of the page of first council of Nicaea."
+
+### What was wrong
+
+The page switch was not at fault, and neither was the step back. The fault
+was in the part that puts a reader back where their thumb was
+(`lib/ui/returnPlace.ts`, mounted by `components/nav/ScrollResetBridge.tsx`).
+It remembers the link that was tapped and how far from the top of the
+screen it sat, and coming back it moves the page until that link sits there
+again, because a long list is not the height it was when the reader left.
+It found the link by its address alone. Two things followed.
+
+1. **Another link was taken for the one he tapped.** A council's page shows
+   one of its Fathers on a card that opens his page, and the row above the
+   card chooses which Father. The same Father is named again, as a link,
+   deep in the council's account. He chose St Alexander in the row and
+   opened him by the card. When he came back the row had begun again at St
+   Athanasius, so the card he had tapped now led to St Athanasius, and the
+   only link left to St Alexander was the one in the account. It was taken
+   for the card, and the page was moved until it sat where the card had
+   been. Measured on the export at a phone's size, by the bar's arrow and by
+   the phone's Back alike, four times of four: the page left at the top came
+   back 3,424px down, and left 260px down it came back 3,684px down. At the
+   tap the page had two links to St Alexander; on the way back, one.
+2. **A link was measured before it had arrived.** Found by the sweep after
+   the first mend, 8px: Prayers brings its rule in as the page opens (it
+   rises 8px into place, after waiting about half a second), and brings it
+   in again when the page comes back. The page was moved 8px to meet the
+   rule's link while it was still held low, the watch let go, and the rule
+   then rose 8px past the reader's thumb.
+
+### What a reader sees now
+
+Back, by the arrow or by the phone's button, leaves First Nicaea where he
+left it: at the top if he left from the top. Prayers comes back to the
+pixel. A long list still comes back to the card that was tapped, as before.
+
+### The rule
+
+- The link has to be **the one that was tapped**. A place remembers how
+  many links on the page led where the tapped one did, and which of them it
+  was. Coming back, the link is found only while the page has that many
+  again and that same one is drawn. Never another link to the same place in
+  its stead: a page that has lost one, or gained one, cannot say which is
+  which, and it is left where the browser put it, at the reader's own
+  number. On a page like the council's that number is right, because
+  nothing above the reader has changed height.
+- The link has to **have arrived**. Nothing is measured while the link, or
+  anything that holds it, has an entrance under way that will end. When it
+  has landed the page is put right if it needs to be. A motion that never
+  ends (a light that breathes) is not an entrance and is not waited for.
+
+### The check
+
+- `lib/ui/__tests__/returnPlace.test.ts`: seven new cases. Five fail on the
+  code as it was, the first with his own 3,424px.
+- `scripts/route-motion.mjs`, on the export: a council left by a card that
+  is gone when the reader comes back, by the page's own arrow and by the
+  phone's Back, and Prayers left by its rule's link. Each was seen to fail
+  before its mend. The walk is 31 of 31.
+- A sweep kept out of the repo (it is slow, and the walks above hold the
+  two faults): 65 returns over 26 pages, every council's Fathers among
+  them, each left by a link of its own and come back to. 65 came back to
+  the pixel they were left at. Another 14 could not be tried, because the
+  link the sweep picked could not be tapped from where the page stood.
+
+### What is left
+
+- The council's row begins again at St Athanasius when the reader comes
+  back, so the card no longer shows the Father he had opened. The page is
+  where he left it; the row has forgotten his choice. Remembering it is a
+  change to `components/councils/CouncilFathers.tsx`, and was not asked
+  for.
+- Prayers plays its rule's entrance again when the page comes back. The
+  house's rule is that a returning page is not assembled again
+  (`.route-fade[data-carried="back"]` in `app/globals.css`), and that rule
+  reaches only the pages that use the shared entrance (`.cascade`).
+  Prayers has an entrance of its own (`.prayers-hero-in`). It no longer
+  moves the page; it is still seen.
+
 ## What a phone still has to say
 
 Nothing here can run iOS's WebKit, and a film is not a hand. For the phone
@@ -380,6 +466,10 @@ walk (`docs/PHONE-WALK.md`):
   closes and the page stays), and on Today (nothing happens, as before).
 - Whether 340ms feels right in the hand. One number changes it:
   `--duration-route-enter`, and the 300ms of `route-settle`.
+- Build 93 note 1, on the build after 93: First Nicaea, St Alexander chosen
+  in the Holy Fathers row and opened by the card, then Back by the arrow
+  and again by the phone's own button. The council's page is where it was
+  left both times.
 
 ## What is not in this note
 

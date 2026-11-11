@@ -22,10 +22,38 @@
  * cards' heights turn out to be, and on a list that is fetched after the page
  * arrives (Community), where no pixel count could.
  *
+ * The link has to be the one that was tapped, and not another that leads to
+ * the same place (1.9, build 93 note 1; the owner on his phone: "when I click
+ * back to go back to the first council of Nicaea ... it just randomly places
+ * you at the bottom"). A council's page shows one of its Fathers on a card
+ * that opens his page, and names him again, as a link, deep in its account.
+ * He chose St Alexander in the row, opened him by the card and came back; the
+ * row had begun again at St Athanasius, so the card he had tapped was gone,
+ * and the only link left to St Alexander was the one in the account. It was
+ * taken for the card, and the page was moved 3,424px down to put it where
+ * his thumb had been. So a place also remembers how many links on the page
+ * led where the tapped one did, and which of them it was; coming back, the
+ * link is found only while the page has that many again and that one is
+ * drawn. A page that has lost one, or gained one, cannot say which is which,
+ * and is left where the browser put it: at the reader's own number, which on
+ * a page like that one is right.
+ *
+ * And the link has to have arrived. A page may bring a part of itself in as
+ * it opens (Prayers' rule rises 8px into place, held low for half a second
+ * first), and a page that comes back may bring it in again. While that
+ * lasts, where the link is on the screen is not yet its place: measured on
+ * the 1.9 export, the page was moved 8px to meet a row that was still on its
+ * way, the watch let go, and the row then rose 8px past the reader's thumb.
+ * So nothing is measured while the link, or anything that holds it, has an
+ * entrance that has not finished; when it has landed, the page is put right
+ * if it needs to be, which there it does not.
+ *
  * Left alone:
  *   - A link that is not part of the page: one in a bar, a sheet or a menu
  *     (anything fixed or sticky). It will not be there, or it will be exactly
  *     where it was, and neither says anything about the page behind it.
+ *   - A page that no longer has the link, or cannot tell it from another to
+ *     the same place (above).
  *   - A page left some other way (the tab bar, a button). The browser's
  *     number is all there is, and the placeholders are now sized close to
  *     the real cards so that it lands near (`.cv-card` in app/globals.css).
@@ -35,8 +63,8 @@
  * components/nav/ScrollResetBridge.tsx.
  */
 
-/** The tapped link: which one, and where on the screen it was. */
-export type Place = { href: string; nth: number; top: number };
+/** The tapped link: which one of how many to the same place, and where on the screen it was. */
+export type Place = { href: string; nth: number; of: number; top: number };
 
 /** A tap older than this did not cause the navigation that follows it. */
 export const TAP_MS = 15000;
@@ -89,11 +117,36 @@ function linksTo(href: string): HTMLAnchorElement[] {
   return out;
 }
 
-/** The link the place names, if the page has drawn it. */
+/**
+ * The link the place names, if the page has drawn it and it can be told from
+ * every other: the page has as many links to that place as it had when the
+ * reader tapped one, and the same one of them is drawn. Never another link
+ * to the same place in its stead; until 1.9 the first one drawn was taken
+ * when the tapped one was not there, which is how a council's page came back
+ * at a line of its account.
+ */
 function find(place: Place): HTMLAnchorElement | null {
   const same = linksTo(place.href);
-  const drawn = (a: HTMLAnchorElement | undefined) => (a && a.getClientRects().length > 0 ? a : null);
-  return drawn(same[place.nth]) ?? same.find((a) => a.getClientRects().length > 0) ?? null;
+  if (same.length !== place.of) return null;
+  const link = same[place.nth];
+  return link && link.getClientRects().length > 0 ? link : null;
+}
+
+/**
+ * Whether the link is still being brought in: it, or something that holds
+ * it, has an animation under way that will end. One that never ends (a light
+ * that breathes) is no entrance, and cannot be waited for.
+ */
+function arriving(link: Element): boolean {
+  for (let node: Element | null = link; node && node !== document.body; node = node.parentElement) {
+    if (typeof node.getAnimations !== "function") continue;
+    for (const animation of node.getAnimations()) {
+      if (animation.playState !== "running") continue;
+      const ends = animation.effect?.getComputedTiming().endTime;
+      if (typeof ends === "number" && Number.isFinite(ends)) return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -112,8 +165,9 @@ export function noteLinkTap(event: { target: EventTarget | null }): void {
     lastTap = null;
     return;
   }
+  const same = linksTo(href);
   lastTap = {
-    place: { href, nth: Math.max(0, linksTo(href).indexOf(link)), top: link.getBoundingClientRect().top },
+    place: { href, nth: Math.max(0, same.indexOf(link)), of: same.length, top: link.getBoundingClientRect().top },
     from: address(),
     at: now(),
   };
@@ -180,7 +234,10 @@ export function returnToPlace(): boolean {
     if (done) return;
     frames += 1;
     const link = find(place!);
-    if (link) {
+    if (link && arriving(link)) {
+      // Not where it will be yet: nothing is measured, and nothing counts as still.
+      steady = 0;
+    } else if (link) {
       const off = link.getBoundingClientRect().top - place!.top;
       if (Math.abs(off) > 1) {
         // At once, whatever the page's own scroll behaviour says: this is a

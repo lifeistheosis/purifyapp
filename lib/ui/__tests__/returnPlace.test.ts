@@ -19,6 +19,9 @@ import {
 
 type Listener = () => void;
 
+/** An animation on something that holds a link: whether it is under way, and when it ends (Infinity: never). */
+type FakeAnimation = { playState: string; effect: { getComputedTiming: () => { endTime: number } } };
+
 type FakeLink = {
   href: string;
   /** Distance from the top of the PAGE. The screen's top is `top - scrollY`. */
@@ -26,6 +29,7 @@ type FakeLink = {
   drawn: boolean;
   position: string;
   parentElement: FakeLink | null;
+  getAnimations?: () => FakeAnimation[];
   getAttribute: (name: string) => string | null;
   closest: (selector: string) => FakeLink | null;
   getBoundingClientRect: () => { top: number };
@@ -65,13 +69,31 @@ function stubBrowser(pathname = "/saints/", search = "") {
   (globalThis as { window?: unknown }).window = win;
   (globalThis as { document?: unknown }).document = doc;
 
-  function link(href: string, top: number, { position = "static", drawn = true } = {}): FakeLink {
+  /** Something of the page that holds links: a part that may be brought in with an entrance of its own. */
+  function part(): FakeLink & { animations: FakeAnimation[] } {
+    const el = {
+      href: "",
+      top: 0,
+      drawn: true,
+      position: "static",
+      parentElement: body,
+      animations: [] as FakeAnimation[],
+      getAttribute: () => null,
+      closest: () => null,
+      getBoundingClientRect: () => ({ top: 0 }),
+      getClientRects: () => [{}],
+      getAnimations: () => el.animations,
+    };
+    return el as unknown as FakeLink & { animations: FakeAnimation[] };
+  }
+
+  function link(href: string, top: number, { position = "static", drawn = true, within = body }: { position?: string; drawn?: boolean; within?: FakeLink } = {}): FakeLink {
     const el: FakeLink = {
       href,
       top,
       drawn,
       position,
-      parentElement: body,
+      parentElement: within,
       getAttribute: (name) => (name === "href" ? el.href : null),
       closest: () => el,
       getBoundingClientRect: () => ({ top: el.top - state.scrollY }),
@@ -86,6 +108,7 @@ function stubBrowser(pathname = "/saints/", search = "") {
     state,
     links,
     link,
+    part,
     /** Runs one frame. False when nothing was waiting. */
     frame: () => {
       const fn = frames.shift();
@@ -334,6 +357,172 @@ describe("going back returns the reader to the link they tapped", () => {
     returnToPlace();
     expect(inList.getBoundingClientRect().top).toBe(300);
     expect(featured.getBoundingClientRect().top).not.toBe(300);
+  });
+
+  // The link has to be the one that was tapped, never another that leads to
+  // the same place (1.9, build 93 note 1). The owner's walk: on the First
+  // Council of Nicaea's page he chose St Alexander in the Holy Fathers row,
+  // opened him by the card, and came back. The row had begun again at St
+  // Athanasius, so the card was gone; the page names St Alexander once more,
+  // as a link deep in its account, and that link was taken for the card. The
+  // page came back 3,424px down ("it just randomly places you at the
+  // bottom"). These numbers are the ones measured on the export.
+  it("does not take another link to the same place for the one that was tapped", () => {
+    const b = stubBrowser("/councils/first-nicaea/");
+    const card = b.link("/saints/alexander-of-alexandria/", 394);
+    const inAccount = b.link("/saints/alexander-of-alexandria/", 3818);
+    noteLinkTap({ target: card as unknown as EventTarget });
+    b.goTo("/saints/alexander-of-alexandria/");
+    keepPlace();
+    // Back. The browser has put the page where it was, at its top, and the
+    // card now opens the Father the row begins on.
+    b.goTo("/councils/first-nicaea/");
+    card.href = "/saints/athanasius-the-great/";
+    b.state.scrollY = 0;
+    expect(returnToPlace()).toBe(true);
+    b.run();
+    // The page is not moved at all: it is where the reader left it.
+    expect(b.state.scrolls).toEqual([]);
+    expect(b.state.scrollY).toBe(0);
+    expect(inAccount.getBoundingClientRect().top).toBe(3818);
+    // And it is let go once the watch is over.
+    expect(isReturning()).toBe(false);
+  });
+
+  it("nor a link the page has gained since, to the same place", () => {
+    // A shelf of what was last opened: the book tapped in the list now stands on it too, above the list.
+    const b = stubBrowser("/reading/");
+    b.state.scrollY = 2000;
+    const inList = b.link("/saints/john-chrysostom/paschal-homily/", 2300);
+    noteLinkTap({ target: inList as unknown as EventTarget });
+    b.goTo("/saints/john-chrysostom/paschal-homily/");
+    keepPlace();
+    b.goTo("/reading/");
+    const onShelf = b.link("/saints/john-chrysostom/paschal-homily/", 240);
+    // The shelf's link comes first in the page.
+    b.links.unshift(b.links.pop()!);
+    expect(b.links[0]).toBe(onShelf);
+    returnToPlace();
+    b.run();
+    // Two links to the book where there was one: which was tapped cannot be said, so the page stays at the reader's own number.
+    expect(b.state.scrolls).toEqual([]);
+    expect(b.state.scrollY).toBe(2000);
+  });
+
+  it("waits while a page that is still arriving has fewer links to that place, and takes the tapped one when all are there", () => {
+    const b = stubBrowser("/community/");
+    b.state.scrollY = 1000;
+    const pinnedPost = b.link("/community/post/abc/", 200);
+    const inFeed = b.link("/community/post/abc/", 1300);
+    noteLinkTap({ target: inFeed as unknown as EventTarget });
+    b.goTo("/community/post/abc/");
+    keepPlace();
+    // Back: the top of the page is there at once, the feed is fetched.
+    b.goTo("/community/");
+    b.links.length = 0;
+    b.links.push(pinnedPost);
+    returnToPlace();
+    for (let i = 0; i < 5; i += 1) b.frame();
+    // The one link that is there is not the one that was tapped, and is not treated as it.
+    expect(b.state.scrolls).toEqual([]);
+    // The feed arrives, taller above the post than it was.
+    inFeed.top = 1750;
+    b.links.push(inFeed);
+    b.run();
+    expect(inFeed.getBoundingClientRect().top).toBe(300);
+  });
+
+  it("still finds the tapped one when the page is as it was, the other link to the same place and all", () => {
+    const b = stubBrowser("/councils/first-nicaea/");
+    const card = b.link("/saints/alexander-of-alexandria/", 394);
+    const inAccount = b.link("/saints/alexander-of-alexandria/", 3818);
+    noteLinkTap({ target: card as unknown as EventTarget });
+    b.goTo("/saints/alexander-of-alexandria/");
+    keepPlace();
+    // Back to a page that still shows him on the card, a little further down than it was.
+    b.goTo("/councils/first-nicaea/");
+    card.top += 60;
+    inAccount.top += 60;
+    returnToPlace();
+    b.run();
+    expect(card.getBoundingClientRect().top).toBe(394);
+    expect(b.state.scrollY).toBe(60);
+  });
+
+  // The link has to have arrived (1.9, the sweep after build 93 note 1).
+  // Prayers brings its rule in as the page opens: it rises 8px into place
+  // over 600ms, held low for 460ms first, and it does so again when the page
+  // comes back. Measured on the export: the reader left with the page 36px
+  // down and the rule's link 330px from the top; back, the link stood at 338,
+  // the page was moved 8px to meet it, the watch let go, and the rule then
+  // rose to 322. The page was 8px from where it had been left.
+  const entrance = (endTime: number, playState = "running"): FakeAnimation => ({ playState, effect: { getComputedTiming: () => ({ endTime }) } });
+
+  it("does not move the page to meet a link that is still being brought in", () => {
+    const b = stubBrowser("/prayers/");
+    const rule = b.part();
+    b.state.scrollY = 36;
+    const link = b.link("/prayers/personal/", 366, { within: rule });
+    noteLinkTap({ target: link as unknown as EventTarget });
+    b.goTo("/prayers/personal/");
+    keepPlace();
+    // Back: the browser puts the page where it was, and the rule is held 8px low before it rises.
+    b.goTo("/prayers/");
+    link.top = 374;
+    rule.animations = [entrance(1060)];
+    expect(returnToPlace()).toBe(true);
+    for (let i = 0; i < 60; i += 1) b.frame();
+    expect(b.state.scrolls).toEqual([]);
+    // It is still watched: it has not been still, it has been on its way.
+    expect(isReturning()).toBe(true);
+    // The rule lands, where it was when the reader left.
+    link.top = 366;
+    rule.animations = [];
+    b.run();
+    expect(b.state.scrolls).toEqual([]);
+    expect(b.state.scrollY).toBe(36);
+    expect(link.getBoundingClientRect().top).toBe(330);
+    expect(isReturning()).toBe(false);
+  });
+
+  it("puts the page right once the link has landed, if it has landed somewhere else", () => {
+    const b = stubBrowser("/prayers/");
+    const rule = b.part();
+    b.state.scrollY = 36;
+    const link = b.link("/prayers/personal/", 366, { within: rule });
+    noteLinkTap({ target: link as unknown as EventTarget });
+    b.goTo("/prayers/personal/");
+    keepPlace();
+    b.goTo("/prayers/");
+    link.top = 374;
+    rule.animations = [entrance(1060)];
+    returnToPlace();
+    for (let i = 0; i < 40; i += 1) b.frame();
+    expect(b.state.scrolls).toEqual([]);
+    // It lands 120px lower than it was: something above it is taller now.
+    link.top = 486;
+    rule.animations = [];
+    b.run();
+    expect(b.state.scrolls).toEqual([120]);
+    expect(link.getBoundingClientRect().top).toBe(330);
+  });
+
+  it("does not wait for a motion that never ends, nor for one that is over", () => {
+    const b = stubBrowser("/saints/");
+    const list = b.part();
+    b.state.scrollY = 5000;
+    const saint = b.link("/saints/papias-of-hierapolis/", 5300, { within: list });
+    noteLinkTap({ target: saint as unknown as EventTarget });
+    b.goTo("/saints/papias-of-hierapolis/");
+    keepPlace();
+    b.goTo("/saints/");
+    saint.top -= 900;
+    // A light that breathes for ever, and an entrance set into its past (a returned page's rows).
+    list.animations = [entrance(Infinity), entrance(600, "finished")];
+    returnToPlace();
+    // At once, before the page is painted.
+    expect(b.state.scrolls).toEqual([-900]);
+    expect(saint.getBoundingClientRect().top).toBe(300);
   });
 
   it("does nothing where there is no window", () => {
