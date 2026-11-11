@@ -221,7 +221,10 @@ describe("nobody is told that we removed what we did not", () => {
     expect(await dismissCampaignReport(db(), MOD, "r1")).toEqual({ ok: true });
     Object.assign(campaign(), { status: "removed" });
     expect(await restoreCampaign(db(), MOD, CAMPAIGN, NOW)).toEqual({ ok: true });
-    expect(notices()).toEqual([]);
+    // Its creator was told one thing, at the first read: that it is up (lib/campaigns/notices.ts, on since
+    // 2026-11-11). Nothing of a removal, and nothing for the report set aside or the putting back.
+    expect(notices().map((n) => n.kind)).toEqual(["approved"]);
+    expect(notices().some((n) => n.kind === "removed")).toBe(false);
   });
 
   it("not when a campaign's days are over and the upkeep deletes it thirty days on", async () => {

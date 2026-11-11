@@ -4,9 +4,9 @@ import { client, world, type Row, type World } from "@/lib/security/__tests__/fa
 
 /**
  * A reader asks to be told of a campaign's updates (1.9, phase 4), with the
- * campaigns' notices ON, as they will run once the inbox can say them
- * (lib/campaigns/noticesOn.ts; that they ship off is held by notices.test.ts
- * and by routes.test.ts, "the notices, as they ship").
+ * campaigns' notices ON, as they run now that the inbox can say them
+ * (lib/campaigns/noticesOn.ts; what ships is held with the real switch by
+ * routes.test.ts and thread.test.ts, "the notices, as they ship").
  *
  * What this file holds, through the routes themselves:
  *

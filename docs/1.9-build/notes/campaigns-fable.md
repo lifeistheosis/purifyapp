@@ -4309,7 +4309,7 @@ his page with call 31 as `decisions/change-words.png` and
 
 ---
 
-## 34. The two notices: built, and switched off until the inbox says them (2026-11-11)
+## 34. The two notices: built, and on since 2026-11-11
 
 The notes, 2.7 ("Nobody is told by default") and phase 4. No SQL: the
 inbox's table already allows the kinds and the target these use
@@ -4349,19 +4349,29 @@ no words of its own for one, so these rows never go through that writer
 
 ### 34.3 The switch
 
-`lib/campaigns/noticesOn.ts`, `CAMPAIGN_NOTICES`, **false**. While it is
-off no row is written, the line to tick is not drawn, and the route that
-keeps the tick is not a request at all. It is off because a row must be
-said in its own words before it is written: drawn by its kind alone, the
-first would read "approved your post" and the second "replied to your
+`lib/campaigns/noticesOn.ts`, `CAMPAIGN_NOTICES`, **true since 2026-11-11**.
+Off, no row is written, the line to tick is not drawn, and the route that
+keeps the tick is not a request at all. It was built off because a row must
+be said in its own words before it is written: drawn by its kind alone, the
+first would have read "approved your post" and the second "replied to your
 post".
 
-Admin has built the inbox's side (aec6ad665, 2a204f3e8): the two lines in
-21 languages, where each opens, and a rule that hands these rows only to an
-app new enough to say them, so an installed 1.8 never gets a dot for a row
-it cannot draw. The two English lines are on his page with call 29. **It is
-turned on when he says yes to those lines**, by one line in that file, and
-the first real rows are read on the test web.
+What turned it on, in order:
+
+1. Admin built the inbox's side (aec6ad665, 2a204f3e8, d0ca4573c): the two
+   lines in 21 languages, where each opens, and a rule that hands these rows
+   only to an app new enough to say them (it asks with `inbox=2`), so an
+   installed 1.8 never gets a dot for a row it cannot draw.
+2. His yes to the lines (call 29, "rec for all", 2026-11-11 00:56 UTC).
+3. Admin read the writers as pushed (c50c53d2b, cef0cdab0) and answered
+   "Yes, flip it" (02:07 UTC): the rows match the inbox, neither is a push,
+   and each is written only at the moment the notes say.
+
+The four cases that held the shipped state as off now hold it as on, with
+the real switch (`routes.test.ts` and `thread.test.ts`, "the notices, as
+they ship"). He chose no test web for 1.9, so the first real rows are read
+on the main web after the merge, for his account, before campaigns open
+for every reader.
 
 ### 34.4 What holds it
 

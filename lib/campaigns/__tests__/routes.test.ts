@@ -638,25 +638,35 @@ describe("a reader's profile: the Campaigns door", () => {
   });
 });
 
-describe("the notices, as they ship: off until the inbox can say them", () => {
+describe("the notices, as they ship: on, in the app's inbox", () => {
   // lib/campaigns/noticesOn.ts is read here as it is committed. What the
-  // writers do once it is on is notices.test.ts and tellMe.test.ts.
-  it("an approval tells nobody yet", async () => {
+  // writers do case by case is notices.test.ts and tellMe.test.ts.
+  it("an approval tells its creator once, in the inbox, with its own title and nothing else", async () => {
     w.tables.community_notifications = [];
     const id = ((await (await start()).json()) as { id: string }).id;
     expect((await approveCampaign(state.admin as never, MOD, id)).ok).toBe(true);
     expect(byId(id).status).toBe("active");
-    expect(w.tables.community_notifications).toEqual([]);
+    expect(w.tables.community_notifications).toHaveLength(1);
+    expect(w.tables.community_notifications![0]).toMatchObject({
+      user_id: ANNA,
+      kind: "approved",
+      target_kind: "campaign",
+      post_id: null,
+      reply_id: null,
+      actor_name: "Purify",
+      excerpt: "Forty days for Nicholas",
+    });
   });
 
-  it("asking to be told of updates is not a request at all, and no row is touched", async () => {
+  it("asking to be told of updates is kept on the reader's own row, and carrying a campaign alone asks for nothing", async () => {
     const id = running(ANNA);
     signIn(BEN);
     expect((await join(new Request(`${SITE}/api/campaigns/${id}/join`, json({ places: ["evening"] })), params(id))).status).toBe(200);
-    const before = structuredClone(w.tables.prayer_campaign_prayers);
+    const mine = () => w.tables.prayer_campaign_prayers!.find((r) => r.campaign_id === id && r.user_id === BEN) as Row;
+    expect(mine().notify_updates ?? false).toBe(false);
     const res = await tell(new Request(`${SITE}/api/campaigns/${id}/join`, json({ tellMe: true }, "PATCH")), params(id));
-    expect(res.status).toBe(404);
-    expect(w.tables.prayer_campaign_prayers).toEqual(before);
+    expect(res.status).toBe(200);
+    expect(mine().notify_updates).toBe(true);
   });
 });
 

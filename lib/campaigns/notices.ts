@@ -28,14 +28,15 @@ import { CAMPAIGN_NOTICES } from "./noticesOn";
 // second carries the campaign's thread and the update, from which the inbox's
 // route reads the campaign.
 //
-// THE SWITCH. The inbox must say these in their own words before a row is
-// written: drawn by the kind alone, the first would read "approved your
-// post" and the second "replied to your post", which is false twice. So the
-// writers are off (CAMPAIGN_NOTICES) until the inbox's two components ask
-// `target_kind === "campaign"` first; turning it on is that change's last
-// line. While it is off nothing is written, the reader's choice to be told
-// is still kept (it is theirs, and costs nothing), and the screens that
-// offer the choice are not drawn (lib/campaigns/noticesOn.ts).
+// THE SWITCH (CAMPAIGN_NOTICES, lib/campaigns/noticesOn.ts): on since
+// 2026-11-11. The inbox had to say these in their own words before a row
+// was written: drawn by the kind alone, the first would have read "approved
+// your post" and the second "replied to your post", which is false twice.
+// The inbox's two components now ask `target_kind === "campaign"` first, the
+// owner approved the two lines they say (call 29), and the admin chat read
+// these writers before the switch was turned. Off, nothing is written and
+// the screens that offer the choice are not drawn; what a reader already
+// chose stays on their own row.
 //
 // IN THE APP ONLY. These rows are written straight into the inbox's table,
 // never through Community's own writer (lib/community/notify.ts), which

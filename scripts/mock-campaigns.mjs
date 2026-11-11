@@ -315,7 +315,7 @@ function threadFor(id, { mine = false, signedIn = true, commentsOpen = true, tel
   const running = CAMPAIGNS[id]?.status === "active";
   // Its creator's updates are their own words, as the route says of them.
   const updates = mine ? t.updates.map((u) => ({ ...u, mine: true })) : t.updates;
-  // `tellMe`: what the route says only to a reader whose account carries the campaign, once the campaigns'
+  // `tellMe`: what the route says only to a reader whose account carries the campaign, while the campaigns'
   // notices are on (lib/campaigns/thread.ts): whether they asked to be told of its updates.
   return { ...t, updates, commentsOpen, signedIn, canUpdate: running && mine, canComment: running && signedIn && commentsOpen, ...(tellMe === undefined || mine ? {} : { tellMe }) };
 }
@@ -1083,7 +1083,7 @@ await shot("42-profile-campaigns", "a reader's profile: the Campaigns door, and 
   },
 });
 
-// 41 The Updates door for a reader whose account carries the campaign, once the notices are on: the line to tick.
+// 41 The Updates door for a reader whose account carries the campaign: the line to tick.
 await shot("41-tell-me", "a campaign's updates, with the line a reader ticks to be told of one", `/campaigns/detail?id=${NICHOLAS}#updates`, "[data-campaign-page]", {
   tellMe: false,
   prepare: async (page) => {
@@ -1580,11 +1580,12 @@ if (WALK) {
   });
 
   // The notices (1.9; the notes, section 34). The screen draws the line only where the server says it is this
-  // reader's to have, which it does only once the campaigns' notices are on (lib/campaigns/noticesOn.ts).
-  await walk("a notice of an update: as campaigns ship, the Updates door offers no line to ask on", `/campaigns/detail?id=${NICHOLAS}#updates`, async (page) => {
+  // reader's to have: to one whose account carries the campaign, and never to its creator or with the
+  // campaigns' notices off (lib/campaigns/noticesOn.ts).
+  await walk("a notice of an update: where the server names no choice for this reader, the Updates door offers no line to ask on", `/campaigns/detail?id=${NICHOLAS}#updates`, async (page) => {
     await page.waitForSelector("[data-campaign-updates]", { timeout: 15000 });
     await settle(page, 900);
-    expectThat((await page.locator("[data-campaign-tell]").count()) === 0, "a line to ask on is drawn with the notices off");
+    expectThat((await page.locator("[data-campaign-tell]").count()) === 0, "a line to ask on is drawn where the server named no choice");
     expectThat(sentTo("PATCH", /\/join$/).length === 0, "something was asked of the account");
   });
 

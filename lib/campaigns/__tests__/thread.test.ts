@@ -595,22 +595,28 @@ describe("nothing is counted under a campaign", () => {
   });
 });
 
-describe("the notices, as they ship: off until the inbox can say them", () => {
+describe("the notices, as they ship: on, in the app's inbox", () => {
   // lib/campaigns/noticesOn.ts is read here as it is committed (tellMe.test.ts
-  // runs the same routes with it on).
-  it("the Updates door is offered no line to ask on, even for a reader whose account carries the campaign", async () => {
+  // and notices.test.ts hold the rest, case by case).
+  it("the Updates door offers the line to a reader whose account carries the campaign, and says what they asked", async () => {
     const id = running();
     w.tables.prayer_campaign_prayers = [{ campaign_id: id, user_id: BEN, places: ["evening"], until_on: null, notify_updates: true }];
+    expect(((await thread(id)) as unknown as Record<string, unknown>).tellMe).toBe(true);
+    // And never to a reader whose account does not carry it.
+    signIn(CARA);
     expect("tellMe" in ((await thread(id)) as unknown as Record<string, unknown>)).toBe(false);
   });
 
-  it("an update tells nobody, whoever asked", async () => {
+  it("an update tells the reader who asked and nobody else, with no word of it", async () => {
     const id = running();
     w.tables.community_notifications = [];
-    w.tables.prayer_campaign_prayers = [{ campaign_id: id, user_id: BEN, places: ["evening"], until_on: null, notify_updates: true }];
+    w.tables.prayer_campaign_prayers = [
+      { campaign_id: id, user_id: BEN, places: ["evening"], until_on: null, notify_updates: true },
+      { campaign_id: id, user_id: CARA, places: ["morning"], until_on: null, notify_updates: false },
+    ];
     signIn(ANNA);
     const res = await write(new Request(`${SITE}/api/campaigns/${id}/thread`, json({ kind: "update", body: "She came through the operation, thank God." })), params(id));
     expect(res.status).toBe(200);
-    expect(w.tables.community_notifications).toEqual([]);
+    expect(w.tables.community_notifications!.map((n) => [n.user_id, n.kind, n.target_kind, n.actor_name, n.excerpt])).toEqual([[BEN, "reply", "campaign", "Purify", null]]);
   });
 });
