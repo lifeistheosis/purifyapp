@@ -3115,6 +3115,15 @@ on the test web, with his key, is the proof that the service reads the
 JPEGs this server writes and accepts the signature. Named to Admin with the
 steps.
 
+*2026-11-11:* he chose no test web for 1.9 ("I won't make the test web just
+make it public"). The key goes on the main web's Render service and the
+first real picture is added there, in his own campaign, after the merge,
+while campaigns are live for his account alone
+(`docs/1.9-build/OWNER-STEPS.md`, P1 step 7 and P5, rewritten the same day).
+The code reads the three names from the server's environment once after it
+starts (`rekognitionConfig`, `pictureCheck`), so they are saved with a
+deploy.
+
 **Held by** `lib/campaigns/__tests__/pictureCheckRekognition.test.ts` (25
 cases), `lib/security/__tests__/awsSigV4.test.ts` (8) and
 `lib/campaigns/__tests__/pictures.test.ts` (57: five for everyone and for a

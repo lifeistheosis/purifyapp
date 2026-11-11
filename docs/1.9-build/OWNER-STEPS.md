@@ -399,6 +399,11 @@ the store builds are cut (R5c says why: Apple's rule 2.5.19); otherwise
 pictures wait for a later build. Each fact below was read on the service's
 own page on 2026-11-10, unless it says otherwise.
 
+There is no test web for 1.9 (your word, 2026-11-11: "I won't make the test
+web just make it public"). So the key goes on the main web (P1, step 7),
+and the first real picture is added on purifyapp.net itself on release day,
+after the merge, while campaigns are live for your account alone (P5).
+
 **P1. Amazon's picture check: an account, and one key that can only check
 pictures (about 20 minutes).**
 1. aws.amazon.com, **Create an AWS account**, with the company's email.
@@ -423,10 +428,17 @@ pictures (about 20 minutes).**
 6. On that user: **Security credentials**, **Create access key**,
    **Application running outside AWS**. It shows two values once: the
    access key ID and the secret access key.
-7. Render, the **test web** service, **Environment**, add three:
-   `PICTURE_CHECK_AWS_ACCESS_KEY_ID`, `PICTURE_CHECK_AWS_SECRET_ACCESS_KEY`
-   and `PICTURE_CHECK_AWS_REGION` = `us-east-1`. **Save**. Never in a chat
-   or a file. The main web gets the same three only after P5.
+7. Render: open dashboard.render.com and click the **purifyapp** web
+   service (the main web, purifyapp.net). **Environment**, then
+   **+ Add Environment Variable** three times:
+   `PICTURE_CHECK_AWS_ACCESS_KEY_ID` (the access key ID),
+   `PICTURE_CHECK_AWS_SECRET_ACCESS_KEY` (the secret access key) and
+   `PICTURE_CHECK_AWS_REGION` = `us-east-1`. **Save Changes**, then
+   **Save and deploy**: the server reads the three once after it starts,
+   so a save with no deploy is not seen. Never in a chat or a file.
+   Any day before release day. Nothing changes for readers when you do
+   it: pictures are switched off in the code until the merge that P5
+   follows, and while they are off the server never uses the key.
 
 **P2. NCMEC's CyberTipline: register Purify as a provider (one email,
 about 10 minutes).** NCMEC's page: US law requires a US service that
@@ -468,11 +480,47 @@ customers", "subject to approval by third-party vetting service". The wait
 is Microsoft's, and pictures do not wait for it: it joins when they
 approve.
 
-**P5. The first real picture, on the test web (after P1).** On the test
-web, add one picture to a campaign of yours. The check is written to
-Amazon's documentation and tested against a stand-in; this picture is the
-first proof that it works. If it fails, nothing is stored and the server's
-log says why.
+**P5. The first real picture, on the main web (release day: after R2a,
+and before R4 and R5 if the apps are to carry pictures).** The check is
+written to Amazon's documentation and tested against a stand-in; this
+picture is the first proof that it works against Amazon itself. It is added
+on purifyapp.net, in a campaign of your own, while campaigns are live for
+your account alone: release day's first step in `lib/campaigns/flags.ts`,
+the merge, carries campaigns at "testers".
+
+Before release day: P1 to P3 done and sent back. On your "P1 done", "P2
+sent" and "P3 done", and at the arbiter's word, a chat switches pictures on
+in the code the merge carries (one line, `CAMPAIGN_PARTS.pictures` in
+`lib/campaigns/parts.ts`).
+Without that line, or without the key on Render (P1, step 7), a campaign
+shows no way to add a picture, and P5 waits.
+
+1. After R2a, in a browser, open purifyapp.net and sign in as yourself.
+   Not in the app: a store build has pictures only if it was cut with them,
+   and that is decided by this step.
+2. Open a campaign of yours that is waiting for a moderator or running, or
+   start one.
+3. On its page, under **Pictures**, tap the tile with the plus sign. In
+   the sheet **Add a picture**, choose a picture of your own (an icon, a
+   candle, a place), tick the two lines, then **Add a picture**.
+4. It should say **"Your picture is waiting for a moderator."** That line
+   means Amazon's check answered and passed it. (**"That picture can't be
+   used here."** means the check answered and refused that picture: the
+   check works; add a plainer one.)
+5. If it says **"We could not add the picture. Please try again."**, the
+   picture was not added and nothing is stored; most likely the check
+   could not answer. Render, **purifyapp**, **Logs**: a line that starts
+   `[campaigns]` says why. Send the arbiter that line; it names what is
+   wrong and never holds the key.
+6. If your campaign's page has no **Pictures** part at all, pictures are
+   not switched on in the merge. If it has one with no plus sign, the key
+   is not on the main web, or was saved with no deploy (P1, step 7). Tell
+   the arbiter which.
+
+Tell the arbiter the result at once. The store builds (R4, R5) are cut
+with pictures only on "picture checked". On anything else they are cut
+without, pictures are switched off again by one line, and they come to the
+apps with a later build.
 
 Send back: "P1 done", "P2 sent", "P3 done", "P4 applied", and for P5
 "picture checked" or what the screen said.
