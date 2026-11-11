@@ -315,11 +315,48 @@ export function endNav(): void {
  * taking the word off would start the fade then). A page that RETURNS is
  * not assembled again row by row either: the reader has seen it, and it is
  * simply there (app/globals.css, `.route-fade[data-carried]`).
+ *
+ * The stylesheet says that for the rows' cascade alone. A page with an
+ * entrance of its own said nothing, and played it again on every return:
+ * Prayers' picture, verse and rule (the rule rising 8px, half a second after
+ * the page was back, which is how it was found: build 93 note 1's sweep), the
+ * same on You, a saint's icon, a reading page's title. So a page that has
+ * returned has every entrance it has begun taken to its end, here, before
+ * it is pictured: it comes back whole, as the reader left it.
  */
 export function quietEntrance(kind: NavKind): void {
   if (typeof document === "undefined") return;
   for (const el of document.querySelectorAll<HTMLElement>(".route-fade")) {
     el.dataset.carried = kind;
+    if (kind === "back") settleWithin(el);
+  }
+}
+
+/**
+ * How long an entrance may be, its wait included. What runs longer is not a
+ * page arriving but something the page is doing (a ring that fills as a book
+ * is saved, a minute counted), and is left to do it.
+ */
+export const ENTRANCE_MS = 2500;
+
+/** Takes to its end every animation in `el` that runs once and is soon over. Never takes one away. */
+function settleWithin(el: HTMLElement): void {
+  if (typeof el.getAnimations !== "function") return;
+  let all: Animation[];
+  try {
+    all = el.getAnimations({ subtree: true });
+  } catch {
+    return;
+  }
+  for (const animation of all) {
+    const timing = animation.effect?.getComputedTiming();
+    const ends = timing?.endTime;
+    if (!timing || timing.iterations === Infinity || typeof ends !== "number" || !Number.isFinite(ends) || ends > ENTRANCE_MS) continue;
+    try {
+      animation.finish();
+    } catch {
+      // One that cannot be finished is left running.
+    }
   }
 }
 

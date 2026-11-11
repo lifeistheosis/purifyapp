@@ -41,15 +41,14 @@
 //             once the page has arrived; back from there, with the cover far
 //             up the page, nothing is flown in from off the screen; a
 //             council's document, the same from its council's shelf
-//   a page   left by a link that is not on it when the reader comes back
-//             (a council's card for the Father chosen in its row, which
-//             begins again at the first) comes back where it was left, by
-//             the chevron and by the phone's Back alike: another link to the
-//             same place, deep in the page, is never taken for the one that
-//             was tapped (lib/ui/returnPlace.ts; build 93 note 1)
-//             and a page is not moved to meet a link that is still being
-//             brought in as it comes back (Prayers' rule, which rises into
-//             place again): it is where it was left once the rule has landed
+//   a page   comes back as the reader left it (build 93 note 1): a
+//             council's page where it was left, its row still on the Father
+//             he opened (lib/councils/fatherShown.ts), by the chevron and by
+//             the phone's Back alike, and never moved to another link that
+//             leads where the tapped one did (lib/ui/returnPlace.ts);
+//             Prayers back whole, its picture, verse and rule not brought in
+//             again (lib/ui/routeMotion.ts, quietEntrance), and where it was
+//             left
 //   each is over within 350ms
 //   the browser's own Back is not pictured (the platform's rule)
 //   with motion reduced, nothing is pictured at all
@@ -382,11 +381,14 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
     note("back: the page's own chevron", judge(r, { old: "route-sink", fresh: "route-arrive", to: "/prayers" }), `${r.from} to ${r.to}`);
     if (film) await sheet(ctx, film, "back", r.stills);
 
-    // A part of a page that is brought in again as the page comes back is
-    // not chased (lib/ui/returnPlace.ts). Prayers' rule rises 8px into place
-    // half a second after the page is there, and does so again on the way
-    // back: the page was moved 8px to meet its link while it was still held
-    // low, and was left 8px from where the reader had it once the rule rose.
+    // A page that returns is not brought in again (lib/ui/routeMotion.ts,
+    // quietEntrance). Prayers' rule rises 8px into place half a second after
+    // the page is there, and until 1.9 it did so again on the way back: the
+    // page was moved 8px to meet its link while it was still held low, and
+    // was left 8px from where the reader had it once the rule rose. So: the
+    // picture, the verse and the rule are whole as the page comes back, and
+    // the page is where it was left (a part still on its way is not chased
+    // either, lib/ui/returnPlace.ts).
     await page.evaluate(() => window.scrollTo(0, 36));
     await sleep(page, 500);
     const rule = await page.evaluate(() => {
@@ -399,6 +401,14 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
       const there = judge(r, { old: "route-leave", fresh: "route-settle", to: "/prayers/personal" });
       r = await walk(page, "prayers-rule-back", () => page.locator(chevron).first().click());
       const home = [...there, ...judge(r, { old: "route-sink", fresh: "route-arrive", to: "/prayers" })];
+      // The page is back, and its rule's entrance would be a second from over had it begun again.
+      const entering = await page.evaluate(() => {
+        const parts = [...document.querySelectorAll(".prayers-hero-img, .prayers-hero-in")];
+        const playing = parts.flatMap((el) => el.getAnimations().filter((a) => a.playState === "running" && Number.isFinite(a.effect?.getComputedTiming().endTime)).map((a) => a.animationName ?? "an animation"));
+        return { parts: parts.length, playing };
+      });
+      if (entering.parts < 3) home.push(`the page has ${entering.parts} of its three parts that are brought in, so the walk proves nothing`);
+      if (entering.playing.length) home.push(`brought in again on the way back: ${entering.playing.join(", ")}`);
       // Past the rule's own entrance (460ms held, 600ms rising) and the whole of the watch.
       await sleep(page, 2800);
       const now = await page.evaluate(() => {
@@ -408,7 +418,7 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
       if (!rule.enters) home.push("the link is not in the part of the page that is brought in, so the walk proves nothing");
       if (Math.abs(now.down - rule.down) > 2) home.push(`the page came back ${now.down}px down, and was left ${rule.down}px down`);
       if (now.top === null || Math.abs(now.top - rule.top) > 2) home.push(`the link came back ${now.top}px from the top, and was left ${rule.top}px from it`);
-      note("Prayers, left by its rule's link, which is brought in again as the page comes back: where it was left", home, `${r.from} to ${r.to}, ${now.down}px down (was ${rule.down}px), the link ${now.top}px from the top (was ${rule.top}px)`);
+      note("Prayers, left by its rule's link: back whole, not brought in again, and where it was left", home, `${r.from} to ${r.to}, ${now.down}px down (was ${rule.down}px), the link ${now.top}px from the top (was ${rule.top}px)`);
     }
     await page.evaluate(() => window.scrollTo(0, 0));
     await sleep(page, 300);
@@ -582,17 +592,20 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
       note("a council's document: back to the shelf, the cover back in its place", judge(r, { old: "route-sink", fresh: "route-arrive", to: "/reading/councils/first-nicaea", carried: "alone" }), `${r.from} to ${r.to}`);
     }
 
-    // A page comes back where the reader left it, even when the link he left
-    // by is no longer on it (build 93 note 1, the owner on his phone: "when I
-    // click back to go back to the first council of Nicaea ... it just
-    // randomly places you at the bottom"). St Alexander chosen in the Holy
-    // Fathers row and opened by the card; back, the row begins again at St
-    // Athanasius, so the card that was tapped is gone, and the page names St
-    // Alexander once more, as a link, deep in its account. That link was
-    // taken for the card, and the page came back 3,424px down. A little way
-    // down the page when it is left, so "where it was" and "the top" are not
-    // one answer; by the page's own chevron, and by the phone's Back (the
-    // browser's own here, which is not pictured).
+    // A page comes back as the reader left it (build 93 note 1, the owner on
+    // his phone: "when I click back to go back to the first council of Nicaea
+    // ... it just randomly places you at the bottom"). St Alexander chosen in
+    // the Holy Fathers row and opened by the card. Until 1.9 the row began
+    // again at St Athanasius on the way back, so the card that was tapped was
+    // gone; the page names St Alexander once more, as a link, deep in its
+    // account, that link was taken for the card, and the page came back
+    // 3,424px down. Two mends, and both are held here: the row is on the
+    // Father he opened when he comes back (lib/councils/fatherShown.ts), and
+    // the page is where he left it (lib/ui/returnPlace.ts, which no longer
+    // takes one link for another: its own test holds the card that is gone).
+    // A little way down the page when it is left, so "where it was" and "the
+    // top" are not one answer; by the page's own chevron, and by the phone's
+    // Back (the browser's own here, which is not pictured).
     for (const how of ["the page's own chevron", "the phone's Back"]) {
       await go(page, "/councils/first-nicaea/");
       await page.waitForSelector("[data-council-fathers] button", { timeout: 20000 });
@@ -618,7 +631,8 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
       await sleep(page, 2800);
       const now = await page.evaluate(() => ({ down: Math.round(window.scrollY), card: document.querySelector("[data-council-fathers] a")?.getAttribute("href") ?? null }));
       if (Math.abs(now.down - left.down) > 4) back.push(`the page came back ${now.down}px down, and was left ${left.down}px down`);
-      note(`a council, left by a card that is gone when the reader comes back: by ${how}, where it was left`, back, `${r.from} to ${r.to}, ${now.down}px down (was ${left.down}px; the card led to ${left.card} and now to ${now.card})`);
+      if (now.card !== left.card) back.push(`the row came back on another Father: the card led to ${left.card} and now leads to ${now.card}`);
+      note(`a council: back by ${how}, the row still on the Father he opened and the page where it was left`, back, `${r.from} to ${r.to}, ${now.down}px down (was ${left.down}px), the card to ${now.card}`);
     }
 
     // The Florilegium (build 89 notes 6 and 12). A starter's tile carries its

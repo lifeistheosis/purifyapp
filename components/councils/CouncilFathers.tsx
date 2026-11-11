@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SaintFace } from "@/components/today/SaintFace";
 import { FacePlate } from "@/components/ui/CrossPlate";
 import { cn } from "@/lib/cn";
 import { faceLabelSize } from "@/lib/councils/faceLabel";
+import { forgetFather, keepFather, useFatherKept } from "@/lib/councils/fatherShown";
+import { cameBack } from "@/lib/ui/scrollReset";
 import type { CouncilFace } from "@/lib/councils/fathers";
 import { avifFor } from "@/lib/media/streamed";
 import type { SaintPicture } from "@/lib/today/saintFaces";
@@ -26,12 +29,26 @@ import type { SaintPicture } from "@/lib/today/saintFaces";
  * never another saint's face (1.9, build 90 note 3) and never an empty
  * round (build 93 note 1). A council with one
  * Father has no row to choose from.
+ *
+ * The Father chosen is kept for the reader who opens his page and comes
+ * back (build 93 note 1; lib/councils/fatherShown.ts): the row does not
+ * begin again at its first Father under them. A fresh visit does.
  */
 export function CouncilFathers({ fathers }: { fathers: CouncilFace[] }) {
   const { t } = useTranslate();
-  const [shown, setShown] = useState(0);
+  const pathname = usePathname() ?? "";
+  // What the reader has tapped on this visit; before that, the Father they
+  // had chosen when they left, if they have come back.
+  const [picked, setPicked] = useState<number | null>(null);
+  const keptName = useFatherKept(pathname);
+  const keptAt = keptName ? fathers.findIndex((x) => x.name === keptName) : -1;
+  const shown = Math.min(picked ?? Math.max(keptAt, 0), Math.max(fathers.length - 1, 0));
+  // A visit that went forward to the page begins the row again, and says so.
+  useEffect(() => {
+    if (!cameBack()) forgetFather(pathname);
+  }, [pathname]);
   if (!fathers.length) return null;
-  const f = fathers[Math.min(shown, fathers.length - 1)];
+  const f = fathers[shown];
 
   const inner = (
     // Keyed by the Father, so a new one arrives as the page's own entrance does.
@@ -75,7 +92,10 @@ export function CouncilFathers({ fathers }: { fathers: CouncilFace[] }) {
                   lang="en"
                   dir="ltr"
                   aria-label={x.name}
-                  onClick={() => setShown(i)}
+                  onClick={() => {
+                    setPicked(i);
+                    keepFather(pathname, x.name);
+                  }}
                   data-father-face={on ? "shown" : ""}
                   className="tap-press flex w-full flex-col items-center gap-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
                 >

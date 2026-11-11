@@ -18,6 +18,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   CARRIED,
+  ENTRANCE_MS,
   NOTE_MS,
   RETURN_HOLD_MS,
   SETTLE_MS,
@@ -338,6 +339,50 @@ describe("what the page is told while it changes", () => {
     expect(fades.map((f) => f.dataset.carried)).toEqual(["back", "back"]);
     quietEntrance("forward");
     expect(fades.map((f) => f.dataset.carried)).toEqual(["forward", "forward"]);
+  });
+
+  it("a page that has returned has its own entrances taken to their end, and only those", () => {
+    // Prayers, back: its picture (1.1s), its verse (0.8s after 0.28s) and its
+    // rule (0.6s after 0.46s) had each begun again. Beside them, a light that
+    // breathes without end and a ring that fills for a minute, which are not
+    // the page arriving.
+    const { fades } = stubDocument({ motion: "full" });
+    const finished: string[] = [];
+    const one = (name: string, endTime: number, iterations = 1) => ({
+      effect: { getComputedTiming: () => ({ endTime, iterations }) },
+      finish: () => void finished.push(name),
+    });
+    const asked: unknown[] = [];
+    const page = fades[0] as unknown as { getAnimations: (o: unknown) => unknown[] };
+    page.getAnimations = (options) => {
+      asked.push(options);
+      return [one("picture", 1100), one("verse", 1080), one("rule", 1060), one("breathes", Infinity, Infinity), one("a minute", 60000), one("just in time", ENTRANCE_MS)];
+    };
+    quietEntrance("back");
+    expect(finished).toEqual(["picture", "verse", "rule", "just in time"]);
+    // Everything in the page, not the wrapper alone.
+    expect(asked).toEqual([{ subtree: true }]);
+  });
+
+  it("a page that arrived by going forward keeps its entrances: they are how it arrives", () => {
+    const { fades } = stubDocument({ motion: "full" });
+    const finished: string[] = [];
+    (fades[0] as unknown as { getAnimations: () => unknown[] }).getAnimations = () => [
+      { effect: { getComputedTiming: () => ({ endTime: 600, iterations: 1 }) }, finish: () => void finished.push("rule") },
+    ];
+    quietEntrance("forward");
+    quietEntrance("swap");
+    expect(finished).toEqual([]);
+  });
+
+  it("an entrance that will not be finished is left, and the page is still told it returned", () => {
+    const { fades } = stubDocument({ motion: "full" });
+    (fades[0] as unknown as { getAnimations: () => unknown[] }).getAnimations = () => [
+      { effect: { getComputedTiming: () => ({ endTime: 600, iterations: 1 }) }, finish: () => { throw new Error("no end"); } },
+    ];
+    (fades[1] as unknown as { getAnimations: () => unknown[] }).getAnimations = () => { throw new Error("not here"); };
+    expect(() => quietEntrance("back")).not.toThrow();
+    expect(fades.map((f) => f.dataset.carried)).toEqual(["back", "back"]);
   });
 });
 
