@@ -9344,7 +9344,8 @@ html[data-history-whole] .history-cv {
 }
 
 /* The same windowed-rendering idea for long card lists elsewhere (the
-   saints index is ~140 image cards): off-screen cards skip layout/paint,
+   saints index was ~140 image cards then, and is 269): off-screen cards skip
+   layout/paint,
    which is most of what "smooth scrolling" costs on mid-range phones.
 
    The placeholder is the height an undrawn card is given, and it has to be
@@ -9356,11 +9357,41 @@ html[data-history-whole] .history-cv {
    list it restores it into has not been scrolled yet, so it is all
    placeholders. lib/ui/returnPlace.ts now returns a reader to the link they
    tapped whatever this number is; this keeps the page the right length for
-   every other way of coming back, and the scrollbar honest. */
+   every other way of coming back, and the scrollbar honest.
+
+   The height follows the width (1.9, the arbiter's word of 2026-11-11: "let
+   the undrawn card's height follow the width at the two ends (about 310), so
+   a card that draws in never moves the page"). One number cannot be the
+   card's: a card is as tall as its lines, and its lines wrap by how wide it
+   is. With the saint's saying and first title shown whole (1.9), the list of
+   269 measured on the export, every card drawn, a row's mean height runs
+   from 314px at 320 wide to 249px at 767, and steps up again wherever the
+   grid gains a column and its cards narrow (289px at 768, 310px at 1024).
+   At 280 everywhere the undrawn list was 8,984px short of itself at 320 wide,
+   ten screens, 7,870px long at 600, and 2,586px short at 1024.
+
+   So each step below is the mean row measured across its span, and the
+   undrawn list is within 3% of its drawn length at every width from 320 to
+   1440 (it was up to 11% out). The steps at 768 and 1024 are the grid's own
+   (components/saints/SaintsBrowser.tsx, md and lg). The numbers are the
+   names' and the cards' of 2026-11-11, in English: a card redrawn, or a
+   hundred saints more, and they are measured again. The export walk's
+   section 76 measures them on every export and fails past 5%;
+   lib/saints/__tests__/cardRoom.test.ts holds the steps to the measure. */
 .cv-card {
  content-visibility: auto;
- contain-intrinsic-size: auto 280px;
+ contain-intrinsic-size: auto 310px;
 }
+@media (min-width: 335px) { .cv-card { contain-intrinsic-size: auto 293px; } }
+@media (min-width: 355px) { .cv-card { contain-intrinsic-size: auto 280px; } }
+@media (min-width: 400px) { .cv-card { contain-intrinsic-size: auto 266px; } }
+@media (min-width: 450px) { .cv-card { contain-intrinsic-size: auto 252px; } }
+@media (min-width: 768px) { .cv-card { contain-intrinsic-size: auto 284px; } }
+@media (min-width: 810px) { .cv-card { contain-intrinsic-size: auto 272px; } }
+@media (min-width: 880px) { .cv-card { contain-intrinsic-size: auto 261px; } }
+@media (min-width: 1024px) { .cv-card { contain-intrinsic-size: auto 303px; } }
+@media (min-width: 1120px) { .cv-card { contain-intrinsic-size: auto 289px; } }
+@media (min-width: 1220px) { .cv-card { contain-intrinsic-size: auto 276px; } }
 
 /* The mark on the line. A ring in the page's ink; the events that define
    their age carry a point at the centre and a firmer ink; the row the

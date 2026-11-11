@@ -10604,6 +10604,50 @@ await section(75, async () => {
   }
 });
 
+// 76. The saints' list is as long before its cards are drawn as after (1.9,
+// the arbiter's word of 2026-11-11: "let the undrawn card's height follow the
+// width at the two ends (about 310), so a card that draws in never moves the
+// page"). The list draws only the cards near the screen and gives every other
+// card a height to stand in for it (app/globals.css, .cv-card). One height at
+// every width was up to 34px a card from the cards' own: before its cards
+// were drawn the list was 8,984px short of itself at 320 wide, ten screens,
+// and 7,870px long at 600. The height steps with the width now, each step the
+// mean row measured across its span. lib/saints/__tests__/cardRoom.test.ts
+// holds the steps to that measure. This takes the measure again, on this
+// export, because the numbers are the cards' of the day they were taken: a
+// card redrawn, or a hundred saints more, and this is what says so. A phone
+// of its own at each width, newly opened, so no card has been drawn before
+// the list is measured; then every card is drawn, and it is measured again.
+await section(76, async () => {
+  for (const width of [320, 360, 412, 600, 768, 1024, 1280]) {
+    const { ctx, page, errors } = await open({ width, height: 844, phone: true, set: { "purify.motion": "off" } });
+    await go(page, "/");
+    await go(page, "/saints/");
+    await page.waitForSelector(".cv-card a", { timeout: 20000, state: "attached" });
+    await page.waitForTimeout(900);
+    const list = () =>
+      page.evaluate(() => {
+        const cards = [...document.querySelectorAll(".cv-card")];
+        // A card whose contents the browser is not drawing: its own box is there, at the height it was given.
+        const undrawn = cards.filter((c) => c.firstElementChild && !c.firstElementChild.checkVisibility({ contentVisibilityAuto: true })).length;
+        return { cards: cards.length, undrawn, height: cards[0].parentElement.getBoundingClientRect().height, given: getComputedStyle(cards.at(-1)).containIntrinsicSize };
+      });
+    const before = await list();
+    await page.addStyleTag({ content: ".cv-card { content-visibility: visible !important; }" });
+    await page.waitForTimeout(700);
+    const after = await list();
+    const off = before.height - after.height;
+    const part = Math.abs(off) / after.height;
+    must(before.cards > 100 && before.undrawn >= before.cards * 0.8 && after.undrawn === 0, `at ${width} wide the list is measured before its cards are drawn (${before.undrawn} of ${before.cards} not yet drawn) and again with every one drawn`);
+    must(
+      part <= 0.05,
+      `at ${width} wide the saints' list is as long before its cards are drawn as after, within 5%: ${Math.round(before.height)}px and ${Math.round(after.height)}px, ${off >= 0 ? "+" : ""}${Math.round(off)}px (${(part * 100).toFixed(1)}%), each card not yet drawn given ${before.given}`,
+    );
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
