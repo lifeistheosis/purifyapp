@@ -92,7 +92,7 @@ export function ExportLibrary() {
             ))}
           </dl>
         ) : (
-          <p className="mt-7 font-sans text-ui text-paper/40">{t("ui.gathering")}</p>
+          <p className="mt-7 font-sans text-ui text-paper/45">{t("ui.gathering")}</p>
         )}
 
         {empty ? (
@@ -101,6 +101,10 @@ export function ExportLibrary() {
           </p>
         ) : null}
 
+        {/* One under the other on a phone, side by side on a wider screen.
+            Each shares the row only there (sm:flex-1): shared down a column
+            it gave up its own height, and the two stood 22 and 24px tall
+            (the pre-build gate's first run, gate-run-1.md). */}
         <div className="mt-7 flex flex-col gap-3 sm:flex-row">
           <button
             type="button"
@@ -109,7 +113,7 @@ export function ExportLibrary() {
               data &&
               takeAway(`purify-library-${stamp}.md`, toMarkdown(data), "text/markdown")
             }
-            className="tap-press inline-flex h-12 flex-1 items-center justify-center rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night motion-safe:transition-colors hover:bg-paper/90 disabled:opacity-40"
+            className="tap-press inline-flex h-12 sm:flex-1 items-center justify-center rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night motion-safe:transition-colors hover:bg-paper/90 disabled:opacity-40"
           >
             {t("ui.downloadMarkdown")}
           </button>
@@ -120,7 +124,7 @@ export function ExportLibrary() {
               data &&
               takeAway(`purify-library-${stamp}.json`, toJson(data), "application/json")
             }
-            className="tap-press inline-flex h-12 flex-1 items-center justify-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper/85 motion-safe:transition-colors hover:border-paper/45 disabled:opacity-40"
+            className="tap-press inline-flex h-12 sm:flex-1 items-center justify-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper/85 motion-safe:transition-colors hover:border-paper/45 disabled:opacity-40"
           >
             {t("ui.downloadBackupJson")}
           </button>

@@ -128,7 +128,10 @@ export default async function CouncilDocumentPage({
  </CouncilReaderHere>
 
  <footer id="source" className="mx-auto max-w-[680px] scroll-mt-24 pt-8 border-t border-paper/8">
- <p className="font-sans text-caption text-paper/40">
+ {/* 45, as the same line under a Father's work (components/saints/
+     WritingReader.tsx): at 40 it was 2.31:1 on Light and under 4.5:1 on
+     every palette (the pre-build gate's first run, gate-run-1.md). */}
+ <p className="font-sans text-caption text-paper/45">
  <T k="prayers.reader.sourceLabel" /> <CouncilSourceHere docKey={`${c.slug}/${docRef.slug}`} english={content.source} />
  </p>
  <p className="mt-6">

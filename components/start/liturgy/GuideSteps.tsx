@@ -123,7 +123,10 @@ export function StepIntro({ headingRef, onAnswer }: { headingRef: HeadingRef; on
       <ol className="mt-6 space-y-2.5">
         {outline.map((key, i) => (
           <li key={key} className="flex items-baseline gap-3 font-sans text-ui text-paper/80">
-            <span aria-hidden className="w-4 shrink-0 text-end font-semibold tabular-nums text-paper/35">
+            {/* 50, a share the faint-text rules draw at each palette's own safe
+                strength (app/globals.css): at 35 the numbers were 2.05:1 on
+                every palette (the pre-build gate's first run, gate-run-1.md). */}
+            <span aria-hidden className="w-4 shrink-0 text-end font-semibold tabular-nums text-paper/50">
               {i + 1}
             </span>
             {t(key)}

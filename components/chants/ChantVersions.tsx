@@ -189,7 +189,8 @@ function VersionRow({
           blocked && !playing && "disabled:opacity-25",
         )}
       >
-        {playing ? <Pause size={18} /> : <Play size={18} className="translate-x-[1px]" />}
+        {/* Centred on its own box, with no nudge to a side (components/ui/icons/Play.tsx). */}
+        {playing ? <Pause size={18} /> : <Play size={18} centered />}
       </button>
     </li>
   );

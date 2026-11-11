@@ -2,6 +2,7 @@
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Slider } from "@/components/ui/Slider";
+import { Play } from "@/components/ui/icons/Play";
 import { cn } from "@/lib/cn";
 
 /**
@@ -127,9 +128,12 @@ export function Transport({
             <rect x="13.9" y="4" width="4.6" height="16" rx="1.3" />
           </svg>
         ) : (
-          <svg width={28} height={28} viewBox="0 0 24 24" fill="currentColor" className="translate-x-[2px]" aria-hidden>
-            <path d="M7 4.5v15l12.5-7.5L7 4.5z" />
-          </svg>
+          // The house's Play, centred on its own box: the same triangle, its
+          // weight on the button's centre. It was drawn here with a nudge of
+          // 2px to the right, which stayed on the right in Arabic, where
+          // everything else in the row turns round (gate-run-1.md, the
+          // chants' icons). A play mark points right in every language.
+          <Play size={28} centered />
         )}
       </button>
       <button

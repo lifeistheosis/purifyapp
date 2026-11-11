@@ -8359,11 +8359,14 @@ html[data-reading-mode="parchment"] .part-segment[data-state="current"] {
  transition: none;
 }
 
-/* The open word over Talk together's feed: white, a lit rule under it. */
+/* The open word over Talk together's feed: white, a lit rule under it. The
+   rule is ::before: ::after is .hit-44's, which gives a short word ("All",
+   18px wide) its 44px to a finger (the pre-build gate's first run,
+   docs/1.9-build/notes/gate-run-1.md). */
 .community-tab[aria-selected="true"] {
  text-shadow: 0 0 12px rgb(255 255 255 / 0.45);
 }
-.community-tab[aria-selected="true"]::after {
+.community-tab[aria-selected="true"]::before {
  content: "";
  position: absolute;
  inset-inline: 0;
@@ -8610,7 +8613,7 @@ html[data-reading-mode="parchment"] :is(.community-half[aria-selected="true"], .
 html[data-reading-mode="parchment"] :is(.community-half[aria-selected="true"] svg, .community-lit svg, .clergy-seal, .community-quote-mark) {
  filter: none;
 }
-html[data-reading-mode="parchment"] .community-tab[aria-selected="true"]::after {
+html[data-reading-mode="parchment"] .community-tab[aria-selected="true"]::before {
  box-shadow: none;
 }
 html[data-reading-mode="parchment"] .community-well {
@@ -11636,6 +11639,14 @@ html[data-reading-mode="parchment"] .chant-doors {
 }
 html[data-reading-mode="parchment"] .chant-doors > button::before {
  box-shadow: 0 2px 5px rgb(70 52 20 / 0.35);
+}
+/* On Light a closed door's word wears the palette's own faint share, 70
+   percent: at the strip's 62 it was 3.92:1 on the strip's deeper ground
+   (the pre-build gate's first run, docs/1.9-build/notes/gate-run-1.md), and
+   at 70 it is 4.95:1. Under :where(), so it weighs what the plain rule
+   weighs and only follows it: the open door's ink and a hover still win. */
+:where(html[data-reading-mode="parchment"]) .chant-doors > button {
+ color: color-mix(in srgb, var(--color-paper) 70%, transparent);
 }
 /* A door opened by the reader: what is below it fades in where it stands. */
 @keyframes chant-door-in {

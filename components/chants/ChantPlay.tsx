@@ -128,7 +128,10 @@ export function PlayPill({
         className,
       )}
     >
-      {playing ? <Pause size={size === "lg" ? 18 : 15} /> : <Play size={size === "lg" ? 18 : 15} className="translate-x-[1px]" />}
+      {/* Centred on its own box (the house's Play, `centered`): a play mark
+          points right in every language, and a nudge to the right stayed
+          on the right in Arabic (gate-run-1.md, the chants' icons). */}
+      {playing ? <Pause size={size === "lg" ? 18 : 15} /> : <Play size={size === "lg" ? 18 : 15} centered />}
       {playing ? t("prayers.pause") : t("prayers.play")}
     </button>
   );

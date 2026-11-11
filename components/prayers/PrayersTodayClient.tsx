@@ -23,6 +23,9 @@ import { TodayPersonalRail } from "@/components/prayers/TodayPersonalRail";
 const QUIET_LINK =
   "rounded-sm font-sans text-detail text-paper/60 underline decoration-paper/25 underline-offset-4 transition-colors duration-200 hover:text-paper hover:decoration-paper/60 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-4";
 
+/** A quiet link on a line of its own: 44px tall to a finger, its words in the middle. */
+const TALL = "inline-flex min-h-11 items-center";
+
 /**
  * The body of /prayers/today.
  *
@@ -135,8 +138,10 @@ export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
                 {t("prayers.timeline.title")}
               </TodayHeading>
               <DayTimeline variant="day" className="mt-5" />
-              {/* Chants (1.7): the library, where the Anthem's row was. */}
-              <Link href="/chants" className={`mt-6 inline-flex min-h-11 items-center ${QUIET_LINK}`}>
+              {/* Chants (1.7): the library, where the Anthem's row was. min-w-11:
+                  the word alone was 43px wide, a pixel short of a finger's 44
+                  (the pre-build gate's first run, gate-run-1.md). */}
+              <Link href="/chants" className={`mt-6 inline-flex min-h-11 min-w-11 items-center ${QUIET_LINK}`}>
                 {t("chants.title")}
               </Link>
             </section>
@@ -196,17 +201,20 @@ export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
             {t("prayers.today.jesusPrayerBlurb")}
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-x-7 gap-y-3">
-            <Link href="/prayers/learning/jesus-prayer" className={QUIET_LINK}>
+          {/* Four ways on, each 44px tall to a finger: they were bare lines
+              of 20px (gate-run-1.md). The row's own gaps gave way to the
+              links' height, so the words stand where they stood. */}
+          <div className="mt-5 flex flex-wrap gap-x-7">
+            <Link href="/prayers/learning/jesus-prayer" className={`${TALL} ${QUIET_LINK}`}>
               {t("prayers.today.learnHow")}
             </Link>
-            <Link href="/bible/psalms/1" className={QUIET_LINK}>
+            <Link href="/bible/psalms/1" className={`${TALL} ${QUIET_LINK}`}>
               {t("prayers.today.psalter")}
             </Link>
-            <Link href="/saints" className={QUIET_LINK}>
+            <Link href="/saints" className={`${TALL} ${QUIET_LINK}`}>
               {t("prayers.today.browseSaints")}
             </Link>
-            <Link href="/prayers/learning" className={QUIET_LINK}>
+            <Link href="/prayers/learning" className={`${TALL} ${QUIET_LINK}`}>
               {t("prayers.today.learnLink")}
             </Link>
           </div>

@@ -180,6 +180,15 @@ const LIT_MS = 2800;
  */
 const BODY_LEAD = 22 / 15;
 
+/**
+ * A reader's own words (a post, its title, a reply, the name they chose) are
+ * theirs: a star or a long dash a reader typed is not the app's. checkMock
+ * cannot tell them from the app's words, so each place that draws them says
+ * so on itself, as lib/ui/__tests__/noSparkle.test.ts excepts them by name in
+ * the code (the pre-build gate's first run, docs/1.9-build/notes/gate-run-1.md).
+ */
+const READERS_WORDS = { "data-mock-allow": "sparkle emdash", "data-mock-why": "a reader's own words" } as const;
+
 /** The parish group whose thread the URL is asking for, if any. */
 function groupFromHash(hash: string): string | null {
   if (!hash.startsWith("#group-")) return null;
@@ -807,7 +816,7 @@ function CommunityScreen({
                   </p>
                   <Link
                     href="/signin?next=/community"
-                    className="mt-3 inline-flex items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
+                    className="mt-3 inline-flex min-h-11 items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
                   >
                     {t("community.signIn")}
                   </Link>
@@ -900,7 +909,7 @@ function CommunityScreen({
                   <button
                     type="button"
                     onClick={reload}
-                    className="mt-4 inline-flex items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
+                    className="mt-4 inline-flex min-h-11 items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
                   >
                     {t("community.tryAgain")}
                   </button>
@@ -947,9 +956,11 @@ function CommunityScreen({
               )}
             </div>
 
-            {/* Beside the feed on a wide screen, under it otherwise. */}
+            {/* Beside the feed on a wide screen, under it otherwise. At 45,
+                as beside the feed: at 40 it was 3.82:1 on Dark and 2.31:1 on
+                Light (fresh eyes L5). */}
             {result !== undefined ? (
-              <p className="mt-8 text-center font-sans text-caption text-paper/40 lg:hidden">
+              <p className="mt-8 text-center font-sans text-caption text-paper/45 lg:hidden">
                 {t("community.houseRules")}
               </p>
             ) : null}
@@ -1620,7 +1631,10 @@ function PostCardInner({
         {/* The rail: the writer's picture, and while the post has replies a
             line running down from it, as a thread hangs from what was said. */}
         <div className="flex flex-col items-center">
-          <AuthorButton seed={seed} decorative className="shrink-0 rounded-full">
+          {/* The picture is the 44px way to the writer's profile, as on a
+              reply: 38px drawn, and its reach fits the gap beside it. The
+              name under 44px is named below. */}
+          <AuthorButton seed={seed} decorative className="hit-44 shrink-0 rounded-full">
             <Avatar name={post.author_name} url={post.author_avatar} size={38} decoration={post.author_decoration} />
           </AuthorButton>
           {threadHangs ? <span aria-hidden className="community-rail mb-1.5 mt-2 w-[1.5px] flex-1 rounded-full" /> : null}
@@ -1630,8 +1644,13 @@ function PostCardInner({
           <div className="flex items-start gap-1">
             {/* The name opens the author's profile; when and what, after it. */}
             <p className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-1.5 pt-0.5 leading-tight">
-              <AuthorButton seed={seed} className="inline-flex min-w-0 max-w-full items-center gap-1 font-sans text-[14.5px] font-semibold text-paper">
+              <AuthorButton
+                seed={seed}
+                smallBecause="a 44px reach here would cover the post's first line and the menu beside the name; the picture beside it and the menu's View profile are the 44px ways to the profile"
+                className="inline-flex min-w-0 max-w-full items-center gap-1 font-sans text-[14.5px] font-semibold text-paper"
+              >
                 <span
+                  {...READERS_WORDS}
                   className={cn(
                     "truncate",
                     nameColorClass(post.author_name_color),
@@ -1694,7 +1713,7 @@ function PostCardInner({
           </div>
 
           {post.title ? (
-            <h3 dir="auto" className="mt-1.5 text-[19px] leading-[1.28] tracking-[-0.005em] text-paper">
+            <h3 dir="auto" {...READERS_WORDS} className="mt-1.5 text-[19px] leading-[1.28] tracking-[-0.005em] text-paper">
               <SymbolText text={post.title} />
             </h3>
           ) : null}
@@ -1755,6 +1774,7 @@ function PostCardInner({
               ref={bodyFold}
               id={`${partsId}-words`}
               dir="auto"
+              {...READERS_WORDS}
               className={cn(
                 "mt-2 whitespace-pre-wrap break-words font-sans text-[15px] leading-[22px] text-paper/85",
                 longBody && folded && "post-fold",
@@ -1782,7 +1802,7 @@ function PostCardInner({
           {feast && post.feast_slug ? (
             <Link
               href={`/saints/${post.feast_slug}`}
-              className="mt-2 inline-flex font-sans text-detail font-semibold text-premium-ink hover:text-paper"
+              className="hit-44 mt-2 inline-flex font-sans text-detail font-semibold text-premium-ink hover:text-paper"
             >
               {t("community.feastReadLife")}
             </Link>
@@ -1839,7 +1859,7 @@ function PostCardInner({
                   <button
                     type="button"
                     onClick={() => void loadReplies()}
-                    className="mt-2 font-sans text-detail font-semibold text-gold-pale hover:text-paper"
+                    className="hit-44 mt-2 font-sans text-detail font-semibold text-gold-pale hover:text-paper"
                   >
                     {t("community.tryAgain")}
                   </button>
@@ -1902,17 +1922,17 @@ function PostCardInner({
                                   nameColorClass(r.author_name_color),
                                 )}
                               >
-                                {r.author_name}
+                                <span {...READERS_WORDS}>{r.author_name}</span>
                               </AuthorButton>
                             ) : (
-                              <span className={cn("font-semibold text-paper/85", nameColorClass(r.author_name_color))}>{r.author_name}</span>
+                              <span {...READERS_WORDS} className={cn("font-semibold text-paper/85", nameColorClass(r.author_name_color))}>{r.author_name}</span>
                             )}
                             <ClergySeal mark={r.author_clergy} size={14} />
                             {r.author_verified ? <VerifiedBadge size={14} /> : null}
                             <SupporterMarkButton tier={r.author_mark} size={14} />
                             <span>· {timeAgo(r.created_at)}</span>
                           </p>
-                          <p dir="auto" className="mt-0.5 whitespace-pre-wrap break-words font-sans text-[13.5px] leading-[1.48] text-paper/85">
+                          <p dir="auto" {...READERS_WORDS} className="mt-0.5 whitespace-pre-wrap break-words font-sans text-[13.5px] leading-[1.48] text-paper/85">
                             <MentionText text={r.body} />
                           </p>
                           {/*
@@ -1976,6 +1996,7 @@ function PostCardInner({
                     </p>
                     <p
                       dir="auto"
+                      {...READERS_WORDS}
                       className={
                         "whitespace-pre-wrap font-sans text-detail leading-relaxed " +
                         (p.status === "failed" ? "text-paper/50" : "text-paper/60")
@@ -1989,14 +2010,14 @@ function PostCardInner({
                           type="button"
                           onClick={() => void sendReply(p.body, p.tempId)}
                           disabled={busy}
-                          className="font-sans text-caption font-semibold text-gold-pale hover:text-paper disabled:opacity-50"
+                          className="hit-44 font-sans text-caption font-semibold text-gold-pale hover:text-paper disabled:opacity-50"
                         >
                           {t("community.tryAgain")}
                         </button>
                         <button
                           type="button"
                           onClick={() => discardPending(p.tempId)}
-                          className="font-sans text-caption font-semibold text-paper/45 hover:text-paper/80"
+                          className="hit-44 font-sans text-caption font-semibold text-paper/45 hover:text-paper/80"
                         >
                           {t("community.discard")}
                         </button>
@@ -2173,6 +2194,12 @@ function MentionText({ text }: { text: string }) {
             type="button"
             onClick={() => opener.open(p.handle)}
             onPointerDown={() => prefetchProfile(p.handle)}
+            // In a line of a reader's words, as a link in a sentence is: a
+            // 44px reach would lie over the words above and below it (WCAG
+            // 2.5.8 leaves a target in a sentence out). checkMock excepts a
+            // link in a line by itself; this is a button, so it is named.
+            data-mock-allow="target"
+            data-mock-why="a name inside a sentence of a reader's own words, as a link in a line of text is"
             className="font-semibold text-link-soft hover:underline"
           >
             {p.text}

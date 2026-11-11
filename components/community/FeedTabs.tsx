@@ -66,7 +66,10 @@ export function FeedTabs({
               onClick={() => onFilter(id)}
               onKeyDown={onKeyDown}
               className={cn(
-                "community-tab relative min-h-11 whitespace-nowrap pb-[11px] pt-2 font-sans text-[15px] font-semibold transition-colors",
+                // hit-44: a short word ("All") is 18px wide, and takes a
+                // finger over 44; the 24px between the words keeps one
+                // word's reach off the next (gate-run-1.md).
+                "community-tab hit-44 relative min-h-11 whitespace-nowrap pb-[11px] pt-2 font-sans text-[15px] font-semibold transition-colors",
                 on ? "text-paper" : "text-paper/50 hover:text-paper/80",
               )}
             >

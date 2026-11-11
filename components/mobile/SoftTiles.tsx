@@ -269,8 +269,14 @@ export function FeatureBand({
       <div className="relative flex items-start gap-4">
         {/* White and silver, the app's own ink: no gold or yellow in the UI
             (the owner, 2026-10-10). */}
+        {/* The card's sign on its disc: a small mark on a round ground, which
+            checkMock would take for a frame still waiting for its picture
+            (the pre-build gate's first run, gate-run-1.md, Prayers' 51px
+            frame). It is whole as it is, and says so on itself. */}
         <span
           aria-hidden
+          data-mock-allow="picture"
+          data-mock-why="the card's own sign (a play mark) on its disc, not a frame waiting for a picture"
           className="shrink-0 inline-flex h-12 w-12 items-center justify-center rounded-full bg-paper text-night shadow-[0_6px_16px_-6px_rgba(0,0,0,0.6)]"
         >
           {icon ?? <Play size={15} centered />}

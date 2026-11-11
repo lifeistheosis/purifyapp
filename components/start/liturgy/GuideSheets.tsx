@@ -111,7 +111,8 @@ export function PartsSheet({
                 aria-current={here ? "step" : undefined}
                 className="tap-press flex min-h-12 w-full items-center gap-3 py-2.5 text-start"
               >
-                <span aria-hidden className="w-5 shrink-0 text-end font-sans text-caption font-semibold tabular-nums text-paper/40">
+                {/* 50, as the guide's own numbered list: 40 is kept for marks, not for a number a reader reads. */}
+                <span aria-hidden className="w-5 shrink-0 text-end font-sans text-caption font-semibold tabular-nums text-paper/50">
                   {i + 1}
                 </span>
                 <span className={cn("min-w-0 flex-1 font-sans text-ui", here ? "font-semibold text-paper" : "text-paper/80")}>

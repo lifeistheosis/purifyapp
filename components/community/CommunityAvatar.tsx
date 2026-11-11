@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { AvatarFrame } from "@/components/community/profile/AvatarFrame";
 import { avatarSrc } from "@/lib/community/avatarSrc";
+import { discInitial } from "@/lib/community/discInitial";
 import { cn } from "@/lib/cn";
 import { useArrivingImage } from "@/lib/ui/useArrivingImage";
 
@@ -24,6 +25,13 @@ import { useArrivingImage } from "@/lib/ui/useArrivingImage";
  *
  * `ring` paints a border in the surface colour around the picture, the way
  * a profile card lifts its avatar off the banner.
+ *
+ * The disc is never empty: it holds the picture, or the first letter of the
+ * name (lib/community/discInitial.ts). It says so on itself for checkMock,
+ * which reads a frame's words as the screen shows them and so reads none in
+ * a post the feed has not drawn yet (content-visibility), where a disc with
+ * its letter was taken for an empty frame (the pre-build gate's first run,
+ * docs/1.9-build/notes/gate-run-1.md).
  */
 export function CommunityAvatar({
   name,
@@ -49,6 +57,8 @@ export function CommunityAvatar({
     <span className={cn("relative inline-flex shrink-0", className)} style={{ width: size, height: size }}>
       <span
         data-community-avatar=""
+        data-mock-allow="picture"
+        data-mock-why="a reader's face: their picture, or the first letter of their name where they have none, never empty"
         className={cn(
           "relative inline-flex h-full w-full items-center justify-center overflow-hidden rounded-full font-sans font-semibold text-paper/70",
           // Over a banner the picture needs a solid ground; in a list the
@@ -83,7 +93,7 @@ export function CommunityAvatar({
         {/* The initial: the placeholder while the picture comes, and the
             avatar when there is none. */}
         <span aria-hidden={picture ? true : undefined} className="img-arrive-under">
-          {(name[0] ?? "R").toUpperCase()}
+          {discInitial(name)}
         </span>
       </span>
       <AvatarFrame decoration={decoration} size={size} />

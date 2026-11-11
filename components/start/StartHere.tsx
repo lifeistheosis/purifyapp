@@ -72,9 +72,12 @@ export function StartHere() {
                 href={step.href}
                 className="tap-press group flex min-h-[72px] items-center gap-4 py-4 active:bg-paper/[0.04]"
               >
+                {/* 50, a share the faint-text rules draw at each palette's own
+                    safe strength: at 35 the numbers were 2.05:1 on Light,
+                    where type this large needs 3:1 (fresh eyes L5). */}
                 <span
                   aria-hidden
-                  className="w-8 shrink-0 text-center font-serif text-title font-semibold leading-none text-paper/35 motion-safe:transition-colors group-hover:text-paper/60"
+                  className="w-8 shrink-0 text-center font-serif text-title font-semibold leading-none text-paper/50 motion-safe:transition-colors group-hover:text-paper/60"
                 >
                   {i + 1}
                 </span>

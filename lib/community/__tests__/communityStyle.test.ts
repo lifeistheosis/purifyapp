@@ -75,7 +75,8 @@ describe("the lights", () => {
       /html\[data-reading-mode="parchment"\] :is\(\.community-half\[aria-selected="true"\], \.community-tab\[aria-selected="true"\], \.community-lit, \.community-on-picture \.community-head-title\)\s*\{\s*text-shadow:\s*none;/,
     );
     expect(css).toMatch(/html\[data-reading-mode="parchment"\] :is\([^)]*\.community-lit svg[^)]*\)\s*\{\s*filter:\s*none;/);
-    expect(bodies('html[data-reading-mode="parchment"] .community-tab[aria-selected="true"]::after')).toMatch(/box-shadow:\s*none;/);
+    // The open word's rule is ::before (::after is .hit-44's, the word's 44px to a finger).
+    expect(bodies('html[data-reading-mode="parchment"] .community-tab[aria-selected="true"]::before')).toMatch(/box-shadow:\s*none;/);
   });
 
   it("each colour mix has a plain value before it, for a WebView without color-mix", () => {
