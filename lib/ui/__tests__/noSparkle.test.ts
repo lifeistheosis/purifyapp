@@ -103,6 +103,18 @@ describe("no sparkle star in the app", () => {
     expect(found, "a sparkle character; give the place an icon from components/ui/icons that names what it is").toEqual([]);
   });
 
+  it("no sparkle character in the notes a reader reads (data/changelog: What's new, the board, the release letter's sources)", () => {
+    // The arbiter's word with the fresh-eyes items (2026-11-11): the old notes
+    // are held to the same rule as the app that shows them.
+    const notes = walk(path.join(ROOT, "data", "changelog"));
+    expect(notes.length).toBeGreaterThan(3);
+    const found = notes.flatMap((f) => {
+      const src = readFileSync(f, "utf8");
+      return GLYPH.test(src) || ESCAPED.test(src) ? [rel(f)] : [];
+    });
+    expect(found, "a sparkle character in a release note; say it in words, or with an icon the app draws").toEqual([]);
+  });
+
   it("draws no star of four points, in the code or in public/'s pictures", () => {
     const pictures = walk(path.join(ROOT, "public"), [], /\.(svg|html)$/);
     const found = [...files, ...pictures].flatMap((f) => {
