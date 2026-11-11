@@ -40,7 +40,7 @@ export const dynamic = "force-dynamic";
  *
  * The months come from lib/gifts/orderGift.ts by the day the order was paid.
  * The claim, the one-per-order rule and "write nothing while Plus or Pro is
- * running" are all in claim_order_gift (20261106000000_order_gifts.sql), in
+ * running" are all in claim_order_gift (20261111172547_order_gifts.sql), in
  * one transaction, with the SERVICE ROLE. The reader's identity comes from
  * their own token, never from the body.
  */

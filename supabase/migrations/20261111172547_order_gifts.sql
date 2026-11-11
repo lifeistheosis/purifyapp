@@ -32,6 +32,13 @@
 --                             Plus behind it (the gap /api/gifts/claim has to
 --                             log around).
 --
+-- SAFE TO RUN TWICE: the column and the index are "if not exists", both
+-- functions "create or replace", and the grants and revokes repeat harmlessly.
+-- Replayed twice in a row on PGlite (PostgreSQL 18) with stub tables, then 21
+-- checks of the claim, 2026-11-11. Stamped 20261111172547 (it was 20261106000000
+-- on feat/order-gift) so it runs after the 1.9 branch's own migrations. Waits
+-- for the owner's sign-off, sent to him through the arbiter on 2026-11-11.
+--
 -- HOW MANY MONTHS is decided in code (lib/gifts/orderGift.ts, a dated list,
 -- by the day the order was paid) and passed in as days, so the switch from 3
 -- months to 1 needs no SQL. The printed card names no number on purpose.

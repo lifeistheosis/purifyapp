@@ -13801,9 +13801,10 @@ a.set-lab.set-link {
    the claim is answered (the front card held up to the light, the glow
    rising), "reveal" for the one pass of the moment, then "lit", the look it
    rests in and the look a reader who comes back finds. In the reveal the card
-   rises into a burst of light with slow rays turning in it and settles, the
-   gift box's own language (.gift-flood and .gift-rays above), an icon's
-   glory, not a strobe; then the check draws itself (check-draw, no overshoot:
+   rises into a soft pool of light from behind it and settles, the gift box's
+   own flood (.gift-flood above); no rays, by his rule of 2026-11-08 (CLAUDE.md,
+   "No light rays"), which took the turning rays this reveal was first drawn
+   with. Then the check draws itself (check-draw, no overshoot:
    the app confirms), the title takes the light, the date rises onto the
    stub, the way on follows, and each row of what Plus opens gains its arrow.
    From the reveal, in ms: 0 the light, 600 the check, 760 the date, 820 its
@@ -13812,14 +13813,14 @@ a.set-lab.set-link {
    Transform and opacity only, as the gift box, and no backdrop-filter. Under
    data-motion="reduce" nothing travels: the lit look arrives as a plain
    cross-fade. On Parchment nothing glows: the light is a shade of ink, and
-   the rays and the burst are not drawn. */
+   the burst is not drawn. */
 .gift-stage {
  position: relative;
  height: 372px;
  overflow: hidden;
 }
-/* All the stage's light, faded out before its lower edge: the lit glow and
-   the rays reach past it, and the stage's clip drew a hard line there. */
+/* All the stage's light, faded out before its lower edge: the lit glow
+   reaches past it, and the stage's clip drew a hard line there. */
 .gift-lights {
  position: absolute;
  inset: 0;
@@ -13829,8 +13830,7 @@ a.set-lab.set-link {
 }
 .gift-light,
 .gift-glow,
-.gift-burst,
-.gift-glory {
+.gift-burst {
  position: absolute;
  left: 50%;
  pointer-events: none;
@@ -13864,29 +13864,17 @@ html[data-reading-mode="parchment"] .gift-light {
 html[data-reading-mode="parchment"] .gift-glow {
  background: radial-gradient(closest-side, rgb(0 0 0 / 0.045), rgb(0 0 0 / 0));
 }
-/* The light from behind the card, centred on the front card. */
-.gift-burst,
-.gift-glory {
- top: 244px;
- border-radius: 50%;
- opacity: 0;
-}
+/* The light from behind the card, a soft pool centred on the front card. */
 .gift-burst {
+ top: 244px;
  width: 320px;
  height: 320px;
  margin: -160px 0 0 -174px;
+ border-radius: 50%;
  background: radial-gradient(closest-side, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.16) 48%, rgb(255 255 255 / 0));
+ opacity: 0;
 }
-.gift-glory {
- width: 460px;
- height: 460px;
- margin: -230px 0 0 -244px;
- background: repeating-conic-gradient(from 4deg, rgb(255 255 255 / 0.2) 0deg 2deg, rgb(255 255 255 / 0) 2deg 15deg);
- -webkit-mask-image: radial-gradient(closest-side, #000 12%, rgb(0 0 0 / 0.5) 45%, transparent 80%);
- mask-image: radial-gradient(closest-side, #000 12%, rgb(0 0 0 / 0.5) 45%, transparent 80%);
-}
-html[data-reading-mode="parchment"] .gift-burst,
-html[data-reading-mode="parchment"] .gift-glory {
+html[data-reading-mode="parchment"] .gift-burst {
  display: none;
 }
 .gift-card {
@@ -14031,11 +14019,6 @@ html[data-reading-mode="parchment"] .gift-check {
  36% { opacity: 1; scale: 1.05; }
  100% { opacity: 0; scale: 1.65; }
 }
-@keyframes gift-glory-turn {
- 0% { opacity: 0; scale: 0.45; rotate: 0deg; }
- 35% { opacity: 1; }
- 100% { opacity: 0; scale: 1.35; rotate: 22deg; }
-}
 @keyframes gift-card-rise {
  0% { translate: 0 -14px; rotate: 1.5deg; scale: 1.03; }
  34% { translate: 0 -24px; rotate: 0deg; scale: 1.06; }
@@ -14069,9 +14052,6 @@ html[data-reading-mode="parchment"] .gift-check {
 /* The reveal. */
 :where([data-motion="full"]) [data-gift="reveal"] .gift-burst {
  animation: gift-burst-out 1200ms var(--ease-house) 120ms both;
-}
-:where([data-motion="full"]) [data-gift="reveal"] .gift-glory {
- animation: gift-glory-turn 1450ms var(--ease-house) 120ms both;
 }
 :where([data-motion="full"]) [data-gift="reveal"] .gift-card-front {
  animation: gift-card-rise 1150ms var(--ease-house) both;
@@ -14108,7 +14088,9 @@ html[data-reading-mode="parchment"] .gift-check {
  animation: gift-fade-in 220ms ease both;
 }
 
-/* The label's two answers, carved in as Settings carves its choices. */
+/* The label's two answers, carved in as Settings carves its choices. A tapped
+   one shows the house's fine edge and a keyboard its ring (html[data-input],
+   above): no ring of its own (CLAUDE.md, "No box around a tapped field"). */
 .gift-field {
  display: block;
  width: 100%;
@@ -14124,13 +14106,7 @@ html[data-reading-mode="parchment"] .gift-check {
   inset 0 2px 5px rgb(0 0 0 / 0.75),
   inset 0 0 0 1px rgb(0 0 0 / 0.5),
   0 1px 0 color-mix(in srgb, var(--color-paper) 7%, transparent);
- outline: none;
 }
 .gift-field::placeholder {
  color: color-mix(in srgb, var(--color-paper) 30%, transparent);
-}
-.gift-field:focus-visible {
- box-shadow:
-  inset 0 2px 5px rgb(0 0 0 / 0.75),
-  0 0 0 2px color-mix(in srgb, var(--color-paper) 45%, transparent);
 }

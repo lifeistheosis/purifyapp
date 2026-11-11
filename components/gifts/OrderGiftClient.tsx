@@ -419,13 +419,12 @@ export function OrderGiftClient() {
   return (
     <section data-gift={look} className="gift-page min-h-[calc(100dvh-72px)] bg-night pb-32">
       {/* The card from the parcel, in the light. The real print files. The
-          glow stays on once the gift is theirs; the rays (glory) and the
-          burst are the reveal's light from behind the card. */}
+          glow stays on once the gift is theirs; the burst is the reveal's
+          soft pool of light from behind the card (no rays: CLAUDE.md). */}
       <div className="gift-stage under-topbar" aria-hidden>
         <div className="gift-lights">
           <div className="gift-light" />
           <div className="gift-glow" />
-          <div className="gift-glory" />
           <div className="gift-burst" />
         </div>
         {/* eslint-disable-next-line @next/next/no-img-element -- a static export: next/image has no loader there */}

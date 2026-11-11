@@ -3,7 +3,7 @@
 //
 // Pure rules, testable without a database. The claim itself, and the "write
 // nothing while Plus or Pro is running" rule, live in SQL
-// (supabase/migrations/20261106000000_order_gifts.sql, claim_order_gift),
+// (supabase/migrations/20261111172547_order_gifts.sql, claim_order_gift),
 // so a double tap or two devices cannot pay an order out twice.
 
 import { deriveEntitlements, type EntitlementRow } from "@/lib/entitlements/entitlements";
