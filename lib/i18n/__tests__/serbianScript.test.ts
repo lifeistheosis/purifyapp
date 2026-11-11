@@ -55,6 +55,8 @@ const PHRASES: Array<[string, string]> = [
   ["Orthodox Media Network", "a source"],
   ["Open Scriptures", "a source"],
   ["Copenhagen Alliance", "a source"],
+  ["manuscript4u", "the transcribers of the Almeida of 1911, by the name they give themselves"],
+  ["GNU GPL", "a licence"],
   ["Nicene Fathers", "a series' title (Schaff and Wace)"],
   ["Amazon Associates", "a programme's name"],
   ["App Store", "a store"],

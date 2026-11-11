@@ -169,6 +169,58 @@ Numbers 13 and Jonah 2): left out rather than shown wrong.
   the change from the 1868 Ijekavian adds protectable work (item 4 above) is
   still a question for him.
 
+## What shipped (2026-11-11): the Portuguese
+
+His yes to call 23 under his "rec for all and finalize this build": "Almeida
+1911, as the card said: verbatim in its 1911 spelling, labelled like the
+Spanish ("A Protestant translation. Its Old Testament is from the Hebrew,
+without the deuterocanonical books. Public domain."), the transcription's
+makers and licence named in the credits."
+
+| Bible | Books | On the phone | To download (gzip) |
+|---|---|---|---|
+| Almeida (1911) | 66 | 4.2 MB | about 1.4 MB |
+
+**Source:** CrossWire's module `PorAlmeida1911`, version 0.2.1 (2022; first
+released 2017-08-17 as "OCRd and proofread text"): in its own words, the 1911
+reprint of an edition of 1900 of João Ferreira de Almeida's translation, made
+in the 17th century. Its text source is the transcribers' site,
+manuscript4u (sites.google.com/site/manuscript4u). The translation is public
+domain by its age; the module is distributed under the GNU GPL ("for
+distribution for any purpose"), so the source line under each chapter names
+the transcribers and the licence: "Almeida's translation (1911). Public
+domain. Transcribed by manuscript4u (2017); text from the CrossWire Bible
+Society, under the GNU GPL." in each of the 21 languages. Read through
+`scripts/bibles/sword-extract.py` (pysword 0.2.8), as the Synodal is, and
+built by `scripts/bibles/build.mjs --pt`.
+
+**As printed, and what the transcription has:**
+
+- Every verse is the module's, in the 1911 spelling ("No principio creou Deus
+  os céus e a terra."); markup is taken out and spaces evened, and nothing
+  else. The module holds no escaped markup, so nothing was mended.
+- It numbers as the King James Bible does: Joel in three chapters, Malachi in
+  four, the Psalms as the Hebrew numbers them (Psalm 51 is "Tem misericordia
+  de mim, ó Deus"). The blessing at the end of 2 Corinthians is its 13:13, as
+  Portuguese Bibles number it; the English count's 13:14, empty in the
+  module, is left out (the build counts it, 1, and fails on any other count).
+- The transcription has no psalm titles, though the printed edition has them,
+  so its psalms begin at verse 1.
+- Psalm 151 and Daniel 13 and 14 are not in it: their pages show the English
+  and say so, as for the other Bibles of the Hebrew canon.
+
+**Compare** places 95.6% of the app's verses in it (the Serbian 95.0%, the
+Arabic 96.2%, the Spanish 95.0%). Not placed: Esther (the app's is the
+Septuagint's, with its additions), Daniel 13 and 14, Psalm 151, and the
+chapters where the numbering turns otherwise than the English standard and
+the texts cannot settle where (Exodus 36 to 38, Job 16 and 35, Jeremiah 25
+and 34, Ezekiel 7): left out rather than shown wrong. The Plus screen's
+Compare preview shows it beside the others at its Psalm 51:1.
+
+**Still open:** the GPL asks that its terms travel with the text. The source
+line names the licence; a link to its text (gnu.org/licenses/gpl) from the
+credits is not there yet, and is for him to decide with the credits page.
+
 ## How it fits the app
 
 - Every Bible needs the verse-number map (item 22): texts numbered as the

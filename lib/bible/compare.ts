@@ -69,6 +69,7 @@ const MAPS: Record<BibleId, () => Promise<{ default: unknown }>> = {
   "sr-danicic-karadzic": () => import("@/data/bibles/maps/sr-danicic-karadzic.json"),
   "ar-van-dyck": () => import("@/data/bibles/maps/ar-van-dyck.json"),
   "es-reina-valera-1909": () => import("@/data/bibles/maps/es-reina-valera-1909.json"),
+  "pt-almeida-1911": () => import("@/data/bibles/maps/pt-almeida-1911.json"),
 };
 
 const loaded = new Map<BibleId, Promise<CompareMap | null>>();

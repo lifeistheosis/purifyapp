@@ -26,7 +26,10 @@ const GRC = "grc-lxx-patriarchal";
 const SR = "sr-danicic-karadzic";
 const AR = "ar-van-dyck";
 const ES = "es-reina-valera-1909";
-const HEBREW_CANON = [SR, AR, ES];
+const PT = "pt-almeida-1911";
+const HEBREW_CANON = [SR, AR, ES, PT];
+/** The Bibles of the Hebrew canon whose files print the psalms' titles: the Almeida's transcription has none. */
+const TITLED = [SR, AR, ES];
 
 describe("the list the apps carry", () => {
   it("is the website's own list of each Bible, version, size and books", () => {
@@ -66,7 +69,7 @@ describe("the list the apps carry", () => {
       expect(b.psalms, b.id).toBe(HEBREW_CANON.includes(b.id) ? "hebrew" : "septuagint");
       // "Have mercy upon me, O God" is the Septuagint's Psalm 50 and the Hebrew's 51, verse 1 or past the title.
       const fifty = book(b.id, "psalms").chapters[b.psalms === "hebrew" ? 50 : 49].map(([, t]) => t).join(" ");
-      expect(fifty, b.id).toMatch(/Помилуй меня, Боже|Ἐλέησον με|Смилуј се на ме|اِرْحَمْنِي يَا ٱللهُ|TEN piedad de mí/);
+      expect(fifty, b.id).toMatch(/Помилуй меня, Боже|Ἐλέησον με|Смилуј се на ме|اِرْحَمْنِي يَا ٱللهُ|TEN piedad de mí|Tem misericordia de mim, ó Deus/);
     }
   });
 
@@ -187,7 +190,7 @@ describe("the Greek: Brenton's Septuagint (1851) and the Patriarchal New Testame
   });
 });
 
-describe("the Bibles of the Hebrew canon: the Serbian (1868), the Arabic (1865) and the Spanish (1909), from eBible.org", () => {
+describe("the Bibles of the Hebrew canon: the Serbian (1868), the Arabic (1865) and the Spanish (1909), from eBible.org, and the Portuguese (1911), from CrossWire", () => {
   it("are their words, in their own numbering", () => {
     expect(verse(SR, "genesis", 1, 1)).toBe("У почетку створи Бог небо и земљу.");
     expect(verse(SR, "john", 1, 1)).toBe("У почетку беше Реч, и Реч беше у Бога, и Бог беше Реч.");
@@ -202,7 +205,7 @@ describe("the Bibles of the Hebrew canon: the Serbian (1868), the Arabic (1865) 
   });
 
   it("print a psalm's title before its verse 1, unnumbered, as the editions do", () => {
-    for (const id of HEBREW_CANON) {
+    for (const id of TITLED) {
       const psalm = book(id, "psalms").chapters[50];
       expect(psalm[0][0], id).toBe("");
       expect(psalm[1][0], id).toBe(1);
@@ -235,6 +238,18 @@ describe("the Bibles of the Hebrew canon: the Serbian (1868), the Arabic (1865) 
     // "(to verse 73)" over Nehemiah 7 is a reader's pointer, not words of the book.
     expect(book(AR, "nehemiah").chapters[6][0][0]).toBe(1);
     expect(JSON.stringify(book(AR, "nehemiah").chapters)).not.toContain("عدد73");
+  });
+
+  it("keep the Almeida as it was printed in 1911, word for word and in its spelling, with no psalm titles in its transcription", () => {
+    // Call 23, the owner's yes of 2026-11-11: "verbatim in its 1911 spelling".
+    expect(verse(PT, "genesis", 1, 1)).toBe("No principio creou Deus os céus e a terra.");
+    expect(verse(PT, "john", 1, 1)).toBe("No principio era o Verbo, e o Verbo estava com Deus, e o Verbo era Deus.");
+    // The psalms numbered as the Hebrew numbers them, as every Bible of the Hebrew canon here.
+    expect(verse(PT, "psalms", 51, 1)).toMatch(/^Tem misericordia de mim, ó Deus/);
+    expect(book(PT, "psalms").chapters[50][0][0]).toBe(1);
+    // The blessing is its 2 Corinthians 13:13, as Portuguese Bibles number it; the
+    // English count's 13:14, which the module keeps empty, is left out.
+    expect(book(PT, "2-corinthians").chapters[12].at(-1)).toEqual([13, "A graça do Senhor Jesus Christo, e o amor de Deus, e a communhão do Espirito Sancto seja com vós todos. Amen."]);
   });
 
   it("leave out the Spanish file's empty verse numbers and the notes after Paul's letters", () => {

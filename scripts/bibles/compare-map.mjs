@@ -452,12 +452,15 @@ const CREDIT =
 // Bibles of the Hebrew canon in eBible's files, numbered as the English
 // Bibles are, with their own turns where the edition has them (the Spanish's
 // Numbers 13:1 is the English's 12:16): the English standard, then the texts.
+// The Almeida of 1911 is one too, in CrossWire's file, numbered as the King
+// James Bible is (its 2 Corinthians 13 ends at 13).
 const BIBLES = [
   { id: "ru-synodal", target: "rso", sameEdition: false },
   { id: "grc-lxx-patriarchal", target: "lxx", sameEdition: true },
   { id: "sr-danicic-karadzic", target: "eng", sameEdition: false },
   { id: "ar-van-dyck", target: "eng", sameEdition: false },
   { id: "es-reina-valera-1909", target: "eng", sameEdition: false },
+  { id: "pt-almeida-1911", target: "eng", sameEdition: false },
 ];
 
 export { expected, appBook, bibleBook, placeBible, BIBLES };

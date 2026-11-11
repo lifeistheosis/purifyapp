@@ -4,7 +4,8 @@
 //
 //   node scripts/bibles/build.mjs \
 //     --ru <russynodal.json> --grc-ot <grcbrent usfm folder> --grc-nt <grcbyz usfm folder> \
-//     --sr <srp1868 usfm folder> --ar <arb-vd usfm folder> --es <spaRV1909 usfm folder>
+//     --sr <srp1868 usfm folder> --ar <arb-vd usfm folder> --es <spaRV1909 usfm folder> \
+//     --pt <poralmeida1911.json>
 //
 // Each Bible is built from its source when it is given, and kept as it was
 // built when it is not (its files and its entry in the catalog untouched), so
@@ -92,9 +93,9 @@ const args = Object.fromEntries(
     .slice(2)
     .reduce((pairs, a, i, all) => (a.startsWith("--") ? [...pairs, [a.slice(2), all[i + 1]]] : pairs), []),
 );
-if (!args.ru && !(args["grc-ot"] && args["grc-nt"]) && !args.sr && !args.ar && !args.es) {
+if (!args.ru && !(args["grc-ot"] && args["grc-nt"]) && !args.sr && !args.ar && !args.es && !args.pt) {
   console.error(
-    "usage: node scripts/bibles/build.mjs [--ru <russynodal.json>] [--grc-ot <grcbrent usfm> --grc-nt <grcbyz usfm>] [--sr <srp1868 usfm>] [--ar <arb-vd usfm>] [--es <spaRV1909 usfm>]",
+    "usage: node scripts/bibles/build.mjs [--ru <russynodal.json>] [--grc-ot <grcbrent usfm> --grc-nt <grcbyz usfm>] [--sr <srp1868 usfm>] [--ar <arb-vd usfm>] [--es <spaRV1909 usfm>] [--pt <poralmeida1911.json>]",
   );
   process.exit(1);
 }
@@ -134,6 +135,35 @@ function russian(file) {
     if (!slug) throw new Error(`no app book for ${b.osis}`);
     books.set(slug, b.chapters.map((ch) => ch.map(([n, t]) => [n, even(t)])));
   }
+  return books;
+}
+
+// ---- The Portuguese -------------------------------------------------------
+
+/**
+ * João Ferreira de Almeida's translation in its edition of 1911 (1.9, call 23,
+ * the owner's yes of 2026-11-11: "verbatim in its 1911 spelling"): CrossWire's
+ * PorAlmeida1911, 0.2.1, made from a transcription of a 1911 printing, read by
+ * OCR and proofread (2017; the module's TextSource), and read here through
+ * scripts/bibles/sword-extract.py as the Russian is. A Protestant translation:
+ * its Old Testament is from the Hebrew, in the Hebrew canon's 39 books, so it
+ * has no Psalm 151, Susanna or Bel. The module numbers as the King James Bible
+ * does, and every verse is the edition's, its spelling as printed ("No
+ * principio creou Deus os céus e a terra").
+ */
+function portuguese(file) {
+  const bible = "pt-almeida-1911";
+  const src = JSON.parse(fs.readFileSync(file, "utf8"));
+  if (src.module !== "PorAlmeida1911" || src.version !== "0.2.1") throw new Error(`not PorAlmeida1911 0.2.1: ${src.module} ${src.version}`);
+  if (src.empty !== EMPTY_NUMBERS[bible]) throw new Error(`${bible}: ${src.empty} verse numbers with no words, not ${EMPTY_NUMBERS[bible]}`);
+  if (src.mended.length) throw new Error(`${bible}: markup mended in ${src.mended.join(", ")}, where none was expected`);
+  const books = new Map();
+  for (const b of src.books) {
+    const slug = OSIS[b.osis];
+    if (!slug) throw new Error(`${bible}: no app book for ${b.osis}`);
+    books.set(slug, b.chapters.map((ch) => ch.map(([n, t]) => [n, even(t)])));
+  }
+  if (books.size !== 66) throw new Error(`${bible}: ${books.size} books, not the 66 of the Hebrew canon and the New Testament`);
   return books;
 }
 
@@ -321,7 +351,12 @@ const NOTES = {
  * 39:1-3, and Acts 19:41 is the end of its 19:40). Left out, so the page
  * numbers as the edition does; how many, so a new source that differs fails.
  */
-const EMPTY_NUMBERS = { "es-reina-valera-1909": 18 };
+const EMPTY_NUMBERS = {
+  "es-reina-valera-1909": 18,
+  // The Almeida's blessing at the end of 2 Corinthians is its 13:13, as
+  // Portuguese Bibles number it; the English count's 13:14 stands empty.
+  "pt-almeida-1911": 1,
+};
 
 /**
  * The note printed after each of Paul's letters in the Reina-Valera of 1909,
@@ -442,6 +477,7 @@ const FEWER = {
   "sr-danicic-karadzic": HEBREW_ENDS,
   "ar-van-dyck": HEBREW_ENDS,
   "es-reina-valera-1909": HEBREW_ENDS,
+  "pt-almeida-1911": HEBREW_ENDS,
 };
 
 /** Checks a Bible against the app's books, and writes its files. */
@@ -499,6 +535,7 @@ const SOURCES = {
   "sr-danicic-karadzic": () => (args.sr ? hebrewCanon(args.sr, "sr-danicic-karadzic") : null),
   "ar-van-dyck": () => (args.ar ? hebrewCanon(args.ar, "ar-van-dyck") : null),
   "es-reina-valera-1909": () => (args.es ? hebrewCanon(args.es, "es-reina-valera-1909") : null),
+  "pt-almeida-1911": () => (args.pt ? portuguese(args.pt) : null),
 };
 const built = fs.existsSync(CATALOG) ? JSON.parse(fs.readFileSync(CATALOG, "utf8")) : {};
 const catalog = {};

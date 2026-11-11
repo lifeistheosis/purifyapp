@@ -3,7 +3,9 @@ Reads a SWORD Bible module (CrossWire's format) and writes its text as plain
 JSON, for scripts/bibles/build.mjs to make the readers' files from.
 
 Used for the Russian Synodal of 1876 (CrossWire's RusSynodal, 1.9.1, public
-domain, 78 books with the deuterocanon; docs/1.9-build/BIBLES.md). The text is
+domain, 78 books with the deuterocanon; docs/1.9-build/BIBLES.md), and for
+Almeida's Portuguese of 1911 (PorAlmeida1911, 0.2.1, 66 books; it has no
+escaped markup, and one empty verse, 2 Corinthians 13:14). The text is
 taken as the module holds it, in the module's own numbering (its conf names
 the versification, Synodal), with its markup removed by pysword's own cleaner:
 no word is changed. A verse the module leaves empty is left out and counted.

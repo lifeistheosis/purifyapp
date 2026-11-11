@@ -18,7 +18,7 @@
 import STATS from "@/data/bibles/catalog.json";
 import type { LocaleCode } from "@/lib/i18n/locales";
 
-export type BibleId = "ru-synodal" | "grc-lxx-patriarchal" | "sr-danicic-karadzic" | "ar-van-dyck" | "es-reina-valera-1909";
+export type BibleId = "ru-synodal" | "grc-lxx-patriarchal" | "sr-danicic-karadzic" | "ar-van-dyck" | "es-reina-valera-1909" | "pt-almeida-1911";
 
 export type DownloadableBible = {
   id: BibleId;
@@ -48,8 +48,9 @@ const stats = STATS as Stats;
 /**
  * In the order the list shows them: the owner's order of 2026-11-06 for the
  * first six (Romanian, Russian, Greek, Serbian, Arabic, Spanish), of the five
- * ready. The Serbian, Arabic and Spanish are Bibles of the Hebrew canon, as
- * their publishers made them, and the line under each name says so
+ * ready, and the Portuguese after them (call 23, 2026-11-11). The Serbian,
+ * Arabic, Spanish and Portuguese are Bibles of the Hebrew canon, as their
+ * publishers made them, and the line under each name says so
  * (bible.translationNote.<id>).
  */
 export const DOWNLOADABLE_BIBLES: readonly DownloadableBible[] = [
@@ -102,6 +103,18 @@ export const DOWNLOADABLE_BIBLES: readonly DownloadableBible[] = [
     title: "Reina-Valera (1909)",
     shortLabel: "Reina-Valera",
     ...stats["es-reina-valera-1909"],
+  },
+  {
+    // 1.9, call 23 (the owner's yes of 2026-11-11): Almeida's translation as
+    // printed in 1911, verbatim in its spelling, labelled as the Spanish is.
+    id: "pt-almeida-1911",
+    language: "pt",
+    textLang: "pt",
+    dir: "ltr",
+    psalms: "hebrew",
+    title: "Almeida (1911)",
+    shortLabel: "Almeida",
+    ...stats["pt-almeida-1911"],
   },
 ];
 

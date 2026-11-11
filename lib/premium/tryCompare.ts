@@ -29,4 +29,5 @@ export const TRY_COMPARE_BIBLES: readonly { bible: BibleId; at: string; words: s
   { bible: "sr-danicic-karadzic", at: "51:1", words: "Смилуј се на ме, Боже, по милости својој, и по великој доброти својој очисти безакоње моје." },
   { bible: "ar-van-dyck", at: "51:1", words: "اِرْحَمْنِي يَا ٱللهُ حَسَبَ رَحْمَتِكَ. حَسَبَ كَثْرَةِ رَأْفَتِكَ ٱمْحُ مَعَاصِيَّ." },
   { bible: "es-reina-valera-1909", at: "51:1", words: "TEN piedad de mí, oh Dios, conforme á tu misericordia: conforme á la multitud de tus piedades borra mis rebeliones." },
+  { bible: "pt-almeida-1911", at: "51:1", words: "Tem misericordia de mim, ó Deus, segundo a tua benignidade; apaga as minhas transgressões, segundo a multidão das tuas misericordias." },
 ];
