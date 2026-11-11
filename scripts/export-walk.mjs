@@ -10072,6 +10072,27 @@ await section(70, async () => {
   }
 });
 
+await section(71, async () => {
+  console.log("\n71. The reading room has one bar, as every page under Discover has (fresh eyes M3)");
+  // It wore a tab's bar ("Reading", Plus, search, the bell) under the apps'
+  // back bar: two bars. Its page's own bar now, Back and its name.
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+  await go(page, "/");
+  await go(page, "/discover/");
+  await go(page, "/reading/");
+  await page.waitForTimeout(1500);
+  const bars = await page.evaluate(() => ({
+    own: document.querySelectorAll("[data-mobile-topbar]").length,
+    back: !!document.querySelector("div.topbar-safe:not([data-mobile-topbar]) > button[aria-label]"),
+    title: document.querySelector("[data-mobile-topbar]")?.textContent?.replace(/\s+/g, " ").trim() ?? "",
+    backButton: !!document.querySelector("[data-mobile-topbar] button[aria-label], [data-mobile-topbar] a[aria-label]"),
+  }));
+  must(bars.own === 1 && !bars.back, `one bar, the page's own, and no second bar under it (${bars.own} own, ${bars.back ? "and the back bar" : "no back bar"})`);
+  must(/Reading/.test(bars.title) && bars.backButton, `the bar says the room's name and carries the way back ("${bars.title}")`);
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+});
+
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

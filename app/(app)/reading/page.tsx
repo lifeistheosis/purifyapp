@@ -1,3 +1,4 @@
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { ReadingRoom, type LibraryLink } from "@/components/reading/ReadingRoom";
 import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { buildRoom } from "@/lib/reading/cards";
@@ -36,5 +37,12 @@ export default function ReadingPage() {
       blurbKey: "reading.surface.collectionsBlurb",
     });
   }
-  return <ReadingRoom room={buildRoom(IS_STATIC_EXPORT)} library={library} />;
+  // One bar, Back and the room's name, as every page under Discover has
+  // (fresh eyes M3: a tab's bar stood under the apps' back bar, two bars).
+  return (
+    <>
+      <MobileTopBar titleKey="nav.reading" back backFallback="/discover" />
+      <ReadingRoom room={buildRoom(IS_STATIC_EXPORT)} library={library} />
+    </>
+  );
 }

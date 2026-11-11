@@ -113,6 +113,8 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   /^\/plans\/[^/]+$/,
   // A Purify collection (1.7.1): a reading page with its own bar, back to the
   // reading room.
+  // The reading room (fresh eyes M3, 1.9): its own bar, Back to Discover.
+  /^\/reading$/,
   /^\/reading\/collections\/[^/]+$/,
   // Orthodox History (1.7, the owner's note 20): the timeline and each
   // event are phone pages with their own bar, so the apps show one bar and

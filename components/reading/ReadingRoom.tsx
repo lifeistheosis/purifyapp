@@ -6,7 +6,6 @@ import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, use
 import { preload } from "react-dom";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { MobileHeader } from "@/components/mobile/MobileHeader";
 import { SearchField } from "@/components/search/SearchField";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { cn } from "@/lib/cn";
@@ -294,12 +293,9 @@ export function ReadingRoom({ room: built, library }: { room: Room; library: Lib
 
   return (
     <div className="bg-night">
-      {/* The tab bar's name and buttons, on a phone and in the apps. Not
-          pinned: in the apps the back bar above it already is. */}
-      <div className="md:hidden native-md-block">
-        <MobileHeader titleKey="nav.reading" sticky={false} />
-      </div>
-
+      {/* The room's one bar is the page's own (app/(app)/reading/page.tsx):
+          Back and its name, as every page under Discover has. It wore a tab's
+          bar here, under the apps' back bar, two bars (fresh eyes M3). */}
       <section className="px-5 pb-16 pt-4 md:px-8 md:pt-12">
         <div className="mx-auto w-full max-w-[1100px]">
           <h1 className="hidden text-heading font-semibold leading-tight tracking-[-0.01em] text-paper md:block native-md-hidden">

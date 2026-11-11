@@ -59,8 +59,10 @@ describe("the reading room", () => {
     for (const gone of ["components/mobile/ReadingMobile.tsx", "components/reading/ContinueReading.tsx", "components/reading/NextRead.tsx"]) {
       expect(existsSync(join(root, gone)), gone).toBe(false);
     }
-    // Reading sits under the apps' back bar, which is pinned already.
-    expect(code("components/reading/ReadingRoom.tsx")).toContain('<MobileHeader titleKey="nav.reading" sticky={false} />');
+    // One bar, the page's own, Back to Discover (fresh eyes M3: a tab's bar
+    // stood under the apps' back bar, two bars).
+    expect(code("components/reading/ReadingRoom.tsx")).not.toContain("MobileHeader");
+    expect(page).toContain('<MobileTopBar titleKey="nav.reading" back backFallback="/discover" />');
   });
 
   it("keeps its search in the address without asking the server for the page again", () => {

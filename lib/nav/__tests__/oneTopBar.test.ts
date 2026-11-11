@@ -89,8 +89,9 @@ describe("the phone's tab bar", () => {
     // the bar has to carry one: the (app) frame's <main>, and Today's wrapper.
     expect(read("components/layout/AppFrame.tsx")).toContain('<main data-route-content className="flex-1 safe-pt safe-pb">');
     expect(read("app/page.tsx")).toContain('<div data-route-content className="flex-1 safe-pt safe-pb">');
-    // Reading sits under the apps' back bar, which is pinned already.
-    expect(code("components/reading/ReadingRoom.tsx")).toContain('<MobileHeader titleKey="nav.reading" sticky={false} />');
+    // Reading wore this bar under the apps' back bar, two bars (fresh eyes
+    // M3); it has its page's own now, Back and its name (lib/nav/__tests__/tabHeader.test.ts).
+    expect(code("components/reading/ReadingRoom.tsx")).not.toContain("MobileHeader");
   });
 
   it("has no copy to keep in step on the launch cover", () => {
