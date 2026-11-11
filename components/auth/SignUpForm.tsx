@@ -133,7 +133,7 @@ export function SignUpForm() {
           autoComplete="name"
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
-          placeholder="Edgar"
+          placeholder={t("campaigns.new.namePlaceholder")}
           maxLength={64}
           className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/55 transition-colors"
         />
@@ -171,12 +171,18 @@ export function SignUpForm() {
         autoComplete="new-password"
       />
       <label className="flex cursor-pointer items-start gap-2.5">
-        <input
-          type="checkbox"
-          checked={agreed}
-          onChange={(e) => setAgreed(e.target.checked)}
-          className="mt-0.5 h-4 w-4 shrink-0 accent-gold"
-        />
+        {/* A 44 by 44 reach round the box, inside its label, so a tap anywhere in
+            it ticks the box; the negative margin keeps the box where it was drawn. */}
+        <span className="-m-[13px] inline-flex h-11 w-11 shrink-0 items-center justify-center">
+          <input
+            type="checkbox"
+            checked={agreed}
+            onChange={(e) => setAgreed(e.target.checked)}
+            data-mock-allow="target"
+            data-mock-why="its reach is the 44 by 44 square round it, inside its label: a tap anywhere there ticks it"
+            className="h-[18px] w-[18px] accent-gold"
+          />
+        </span>
         <span className="font-sans text-caption leading-[1.5] text-paper/70">
           {t("ui.iAgreeToThe")}{" "}
           <LegalLink doc="terms" className="text-paper underline underline-offset-2">
@@ -189,9 +195,6 @@ export function SignUpForm() {
           .
         </span>
       </label>
-      {error ? (
-        <p className="font-sans text-detail text-crimson-soft">{error}</p>
-      ) : null}
       <button
         type="submit"
         disabled={pending || !agreed}
@@ -199,6 +202,10 @@ export function SignUpForm() {
       >
         {pending ? t("signup.pending") : t("signup.submit")}
       </button>
+      {/* Under the button, so nothing moves under the finger that pressed it (fresh eyes M6). */}
+      {error ? (
+        <p role="alert" className="font-sans text-detail text-crimson-soft">{error}</p>
+      ) : null}
 
       <p className="text-center font-sans text-caption text-paper/55">
         {t("signup.alreadyHaveOnePrefix")}{" "}

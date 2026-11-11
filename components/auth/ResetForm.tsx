@@ -66,9 +66,6 @@ export function ResetForm() {
         onChange={setConfirm}
         autoComplete="new-password"
       />
-      {error ? (
-        <p className="font-sans text-detail text-crimson-soft">{error}</p>
-      ) : null}
       <button
         type="submit"
         disabled={pending}
@@ -76,6 +73,10 @@ export function ResetForm() {
       >
         {pending ? t("shop.storeSaving") : t("ui.setNewPassword")}
       </button>
+      {/* Under the button, so nothing moves under the finger that pressed it (fresh eyes M6). */}
+      {error ? (
+        <p role="alert" className="font-sans text-detail text-crimson-soft">{error}</p>
+      ) : null}
     </form>
   );
 }

@@ -74,9 +74,6 @@ export function SetPasswordForm() {
         onChange={setConfirm}
         autoComplete="new-password"
       />
-      {error ? (
-        <p className="font-sans text-detail text-crimson-soft">{error}</p>
-      ) : null}
       <button
         type="submit"
         disabled={pending}
@@ -84,10 +81,14 @@ export function SetPasswordForm() {
       >
         {pending ? t("shop.storeSaving") : t("ui.setPasswordAndContinue")}
       </button>
+      {/* Under the button, so nothing moves under the finger that pressed it (fresh eyes M6). */}
+      {error ? (
+        <p role="alert" className="font-sans text-detail text-crimson-soft">{error}</p>
+      ) : null}
       <button
         type="button"
         onClick={signOut}
-        className="text-center font-sans text-caption text-paper/55 hover:text-paper"
+        className="mx-auto inline-flex min-h-11 items-center justify-center px-3 text-center font-sans text-caption text-paper/55 hover:text-paper"
       >
         {t("ui.signOutInstead")}
       </button>

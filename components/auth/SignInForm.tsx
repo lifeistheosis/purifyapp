@@ -82,9 +82,6 @@ export function SignInForm({ next }: { next?: string }) {
         onChange={setPassword}
         autoComplete="current-password"
       />
-      {error ? (
-        <p className="font-sans text-detail text-crimson-soft">{error}</p>
-      ) : null}
       <button
         type="submit"
         disabled={pending}
@@ -92,17 +89,21 @@ export function SignInForm({ next }: { next?: string }) {
       >
         {pending ? t("signin.pending") : t("signin.submit")}
       </button>
+      {/* Under the button, so nothing moves under the finger that pressed it (fresh eyes M6). */}
+      {error ? (
+        <p role="alert" className="font-sans text-detail text-crimson-soft">{error}</p>
+      ) : null}
 
       <div className="flex items-center justify-between text-caption font-sans">
         <Link
           href="/forgot"
-          className="text-paper/65 hover:text-paper underline underline-offset-2 decoration-paper/25"
+          className="inline-flex min-h-11 items-center text-paper/65 hover:text-paper underline underline-offset-2 decoration-paper/25"
         >
           {t("signin.forgotPassword")}
         </Link>
         <Link
           href="/signup"
-          className="text-paper/65 hover:text-paper"
+          className="inline-flex min-h-11 items-center gap-1 text-end text-paper/65 hover:text-paper"
         >
           {t("signin.newHerePrefix")}{" "}
           <span className="text-paper">{t("ui.createAnAccountX")}</span>

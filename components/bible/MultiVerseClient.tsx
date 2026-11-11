@@ -8,6 +8,7 @@ import { apiFetch } from "@/lib/api/client";
 import { localBookNames } from "@/lib/bible/books";
 import { parseReferencesVerbose, type ParsedSegment } from "@/lib/bible/parseReferences";
 import { T } from "@/components/i18n/T";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
@@ -112,9 +113,10 @@ export function MultiVerseClient() {
         </p>
         <Link
           href="/bible"
-          className="mt-5 inline-flex font-sans text-detail font-medium text-paper/60 hover:text-paper"
+          className="mt-5 inline-flex min-h-11 items-center gap-1 font-sans text-detail font-medium text-paper/60 hover:text-paper"
         >
-          <T k="bible.multiBackToBible" /> →
+          <T k="bible.multiBackToBible" />
+          <ChevronRight size={14} className="rtl:-scale-x-100" />
         </Link>
       </Shell>
     );
@@ -172,9 +174,10 @@ export function MultiVerseClient() {
                 </h2>
                 <Link
                   href={`/bible/${h.book.slug}/${h.chapter}${verseAnchor}`}
-                  className="font-sans text-detail font-medium text-paper/55 hover:text-paper transition-colors"
+                  className="inline-flex min-h-11 items-center gap-1 font-sans text-detail font-medium text-paper/55 hover:text-paper transition-colors"
                 >
-                  <T k="bible.openInChapter" /> →
+                  <T k="bible.openInChapter" />
+                  <ChevronRight size={14} className="rtl:-scale-x-100" />
                 </Link>
               </header>
               {/* The verses are the app's English, left to right under Arabic and Urdu (build 90 note 4). */}

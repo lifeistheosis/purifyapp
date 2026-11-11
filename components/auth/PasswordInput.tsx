@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Eye, EyeClosed } from "@/components/ui/icons/Eye";
 
 /**
  * Password field with show/hide toggle and an optional inline strength
@@ -54,15 +55,15 @@ export function PasswordInput({
           placeholder={placeholder}
           minLength={minLength}
           required
-          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill pl-4 pr-12 py-3 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/55 transition-colors"
+          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill ps-4 pe-12 py-3 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/55 transition-colors"
         />
         <button
           type="button"
           aria-label={shown ? t("common.hidePassword") : t("common.showPassword")}
           onClick={() => setShown((v) => !v)}
-          className="hit-44 absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 inline-flex items-center justify-center rounded-pill text-paper/55 hover:text-paper"
+          className="hit-44 absolute end-2 top-1/2 -translate-y-1/2 h-9 w-9 inline-flex items-center justify-center rounded-pill text-paper/55 hover:text-paper"
         >
-          {shown ? "🙈" : "👁"}
+          {shown ? <EyeClosed size={20} /> : <Eye size={20} />}
         </button>
       </div>
       {showStrength ? <StrengthMeter score={strength} value={value} /> : null}

@@ -75,9 +75,6 @@ export function ForgotForm() {
           className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/55 transition-colors"
         />
       </div>
-      {error ? (
-        <p className="font-sans text-detail text-crimson-soft">{error}</p>
-      ) : null}
       <button
         type="submit"
         disabled={pending}
@@ -85,8 +82,12 @@ export function ForgotForm() {
       >
         {pending ? t("forgot.pending") : t("forgot.submit")}
       </button>
+      {/* Under the button, so nothing moves under the finger that pressed it (fresh eyes M6). */}
+      {error ? (
+        <p role="alert" className="font-sans text-detail text-crimson-soft">{error}</p>
+      ) : null}
       <p className="text-center font-sans text-caption text-paper/55">
-        <Link href="/signin" className="hover:text-paper">
+        <Link href="/signin" className="inline-flex min-h-11 items-center px-3 hover:text-paper">
           {t("ui.backToSignIn")}
         </Link>
       </p>
