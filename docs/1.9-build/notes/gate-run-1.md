@@ -435,7 +435,12 @@ icon, with no source, came down (d328d1b6a). A letter is drafted for each in
 `docs/1.9-build/PERMISSION-LETTERS.md` for him to send (19 letters; 12 and 20
 taken out, with why, and 21 for St Hermione, in Greek), but three: St
 Gabriel of Georgia and St Lazarus of Mount Galesion have no address yet, and
-Sts Zacchaeus and Alphaeus no icon.
+Sts Zacchaeus and Alphaeus no icon. The file holds a twentieth since 15:56
+UTC, letter 22, which asks no leave for a saint on the list: a note to the
+BLAGO Fund, whose archive gives three wall paintings shown now as CC BY 4.0
+while its image-request page says non-commercial, asking which holds (the
+voices chat, `e79434407`); an answer of non-commercial, or that their leave
+is needed, comes to the arbiter the same day.
 Run again at 14:43 UTC on the pulled tree: passes. A work without a cover:
 held by `lib/reading/__tests__/coverArt.test.ts`, which passes.
 

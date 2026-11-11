@@ -77,7 +77,10 @@ export function MobileWorkActions() {
             </span>
             <ChevronRight size={14} className="shrink-0 text-paper/55 rtl:-scale-x-100" />
           </button>
-          {locator && now ? <ToggleRow on={saved} touch label={t("reading.part.bookmark", { part: now.label })} onClick={toggleSaved} /> : null}
+          {/* The sheet's title names the section, so the row says what it does in the words the
+              paragraph's menu uses for the same bookmark (a writing-section); with the section's name
+              in it, a long title was cut short (the gate's third run, 2026-11-11). */}
+          {locator && now ? <ToggleRow on={saved} touch label={t("saints.bookmarkThisSection")} onClick={toggleSaved} /> : null}
           <button
             type="button"
             aria-haspopup="dialog"
