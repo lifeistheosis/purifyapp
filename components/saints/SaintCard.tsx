@@ -65,9 +65,15 @@ export function SaintCard({ saint }: { saint: Saint }) {
         <span className="font-sans font-semibold text-paper/45">
           <T k="saints.feastLabel" /> <FeastDays days={saint.feastDays.slice(0, 1)} brief />
         </span>
-        <span className="font-sans text-paper/55 tabular-nums">
-          <T k="saints.workCount" count={saint.works.length} />
-        </span>
+        {/* Said only when there is one. A saint who left no writing, a martyr most often,
+            was given "0 works": 124 of the 270 cards (the arbiter's word of 2026-11-11, on
+            the Fathers of Sinai and Raithu). The row spreads its parts between its two
+            ends, so the feast keeps its start and Read its end with the count gone. */}
+        {saint.works.length > 0 && (
+          <span className="font-sans text-paper/55 tabular-nums">
+            <T k="saints.workCount" count={saint.works.length} />
+          </span>
+        )}
         <span className="font-sans text-paper/45 group-hover:text-paper transition-colors duration-150">
           <T k="saints.read" /> →
         </span>
