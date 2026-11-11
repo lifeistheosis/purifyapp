@@ -235,8 +235,17 @@
   "melania-the-younger/life-of-melania-the-younger": {"words":674,"minutes":4,"sections":[[1,674]]},
   "sylvester-of-rome/sylvester-in-the-book-of-the-popes": {"words":185,"minutes":1,"sections":[[1,131],[2,54]]},
   "prophet-malachi/the-prophecy-of-malachi": {"words":1855,"minutes":10,"sections":[[1,510],[2,573],[3,589],[4,183]]},
+  "gordius-of-caesarea/martyrdom-of-gordius": {"words":156,"minutes":1,"sections":[[1,156]]},
   "prophet-micaiah/micaiah-before-ahab": {"words":1156,"minutes":6,"sections":[[1,1156]]},
+  "polyeuctus-of-melitene/martyrdom-of-polyeuctus": {"words":480,"minutes":3,"sections":[[1,480]]},
   "philip-of-moscow/life-of-philip-of-moscow": {"words":1451,"minutes":8,"sections":[[1,1222],[2,229]]},
+  "theodosius-the-cenobiarch/life-of-theodosius": {"words":2327,"minutes":13,"sections":[[1,2327]]},
+  "fathers-of-sinai-and-raithu/the-fathers-of-sinai-and-raithu": {"words":393,"minutes":2,"sections":[[1,393]]},
   "paul-of-thebes/life-of-paulus-the-first-hermit": {"words":3836,"minutes":21,"sections":[[1,289],[2,126],[3,239],[4,155],[5,183],[6,144],[7,322],[8,374],[9,372],[10,169],[11,206],[12,229],[13,121],[14,143],[15,111],[16,410],[17,204],[18,39]]},
-  "apostle-timothy/timothy-in-scripture": {"words":991,"minutes":6,"sections":[[1,81],[2,50],[3,24],[4,24],[5,28],[6,13],[7,40],[8,51],[9,33],[10,31],[11,24],[12,73],[13,15],[14,38],[15,155],[16,20],[17,67],[18,26],[19,22],[20,115],[21,17],[22,20],[23,24]]}
+  "john-the-hut-dweller/life-of-john-the-hut-dweller": {"words":397,"minutes":2,"sections":[[1,397]]},
+  "euthymius-the-great/life-of-euthymius": {"words":1194,"minutes":7,"sections":[[1,1194]]},
+  "apostle-timothy/timothy-in-scripture": {"words":991,"minutes":6,"sections":[[1,81],[2,50],[3,24],[4,24],[5,28],[6,13],[7,40],[8,51],[9,33],[10,31],[11,24],[12,73],[13,15],[14,38],[15,155],[16,20],[17,67],[18,26],[19,22],[20,115],[21,17],[22,20],[23,24]]},
+  "anastasius-the-persian/martyrdom-of-anastasius": {"words":2248,"minutes":12,"sections":[[1,2248]]},
+  "clement-of-ancyra/martyrdom-of-clement-of-ancyra": {"words":130,"minutes":1,"sections":[[1,130]]},
+  "cyrus-and-john/martyrdom-of-cyrus-and-john": {"words":145,"minutes":1,"sections":[[1,145]]}
 }

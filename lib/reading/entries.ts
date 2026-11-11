@@ -265,6 +265,17 @@ export const AUTHOR_META: Readonly<Record<string, MetaRow>> = {
   "paul-of-thebes": { traditions: ["egypt", "desert"], era: "councils" },
   "philip-of-moscow": { traditions: ["russian"], era: "afterByzantium" },
   "sylvester-of-rome": { traditions: ["latin"], era: "councils" },
+  // January's Lives in Alban Butler's words (published 2026-11-11 on the owner's
+  // word, call 34, no priest's check, as November's and December's were).
+  "gordius-of-caesarea": { traditions: ["greek"], era: "early" },
+  "theodosius-the-cenobiarch": { traditions: ["greek", "desert"], era: "councils" },
+  "fathers-of-sinai-and-raithu": { traditions: ["desert"], era: "early" },
+  "john-the-hut-dweller": { traditions: ["greek"], era: "councils" },
+  "euthymius-the-great": { traditions: ["greek", "desert"], era: "councils" },
+  "anastasius-the-persian": { traditions: ["greek"], era: "councils" },
+  "clement-of-ancyra": { traditions: ["greek"], era: "early" },
+  "cyrus-and-john": { traditions: ["egypt"], era: "early" },
+  "polyeuctus-of-melitene": { traditions: ["greek"], era: "early" },
 };
 
 /**
@@ -1351,6 +1362,16 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
   },
   "philip-of-moscow/life-of-philip-of-moscow": { by: null, about: "philip-of-moscow", form: "life", scope: "selections", themes: [], review: R },
   "sylvester-of-rome/sylvester-in-the-book-of-the-popes": { by: null, about: "sylvester-of-rome", form: "life", scope: "selections", themes: [], review: R },
+  // January's Lives in Alban Butler's words (2026-11-11).
+  "gordius-of-caesarea/martyrdom-of-gordius": { by: null, about: "gordius-of-caesarea", form: "life", scope: "complete", themes: [], review: R },
+  "theodosius-the-cenobiarch/life-of-theodosius": { by: null, about: "theodosius-the-cenobiarch", form: "life", scope: "complete", themes: [], review: R },
+  "fathers-of-sinai-and-raithu/the-fathers-of-sinai-and-raithu": { by: null, about: "fathers-of-sinai-and-raithu", form: "life", scope: "complete", themes: [], review: R },
+  "john-the-hut-dweller/life-of-john-the-hut-dweller": { by: null, about: "john-the-hut-dweller", form: "life", scope: "complete", themes: [], review: R },
+  "euthymius-the-great/life-of-euthymius": { by: null, about: "euthymius-the-great", form: "life", scope: "complete", themes: [], review: R },
+  "anastasius-the-persian/martyrdom-of-anastasius": { by: null, about: "anastasius-the-persian", form: "life", scope: "complete", themes: [], review: R },
+  "clement-of-ancyra/martyrdom-of-clement-of-ancyra": { by: null, about: "clement-of-ancyra", form: "life", scope: "complete", themes: [], review: R },
+  "cyrus-and-john/martyrdom-of-cyrus-and-john": { by: null, about: "cyrus-and-john", form: "life", scope: "complete", themes: [], review: R },
+  "polyeuctus-of-melitene/martyrdom-of-polyeuctus": { by: null, about: "polyeuctus-of-melitene", form: "life", scope: "complete", themes: [], review: R },
 };
 
 /**

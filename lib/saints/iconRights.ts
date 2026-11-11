@@ -2790,11 +2790,16 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%96%D0%B8%D1%82%D0%B8%D1%8F_%D0%A1%D0%B2%D1%8F%D1%82%D1%8B%D1%85_(1903-1911)_-_%D0%B8%D0%BA%D0%BE%D0%BD%D0%B0_05241_%D0%9A%D1%81%D0%B5%D0%BD%D0%B8%D1%8F.png",
   },
-  "fathers-of-sinai-and-raithu.jpg": {
+  // The second picture (the arbiter's word of 2026-11-11, 13:39 UTC, on a
+  // still of the two at 390, notes/january-saints/04-sinai-fathers-two-ways.png):
+  // the whole print, cut inside its frame and above its Slavonic caption, in
+  // place of the first cut's close detail of three faces, which showed the
+  // scan's grain.
+  "fathers-of-sinai-and-raithu.v2.jpg": {
     status: "verified",
     inspectedOn: "2026-11-11",
-    alt: "A black-and-white print of three monks lying one above another, each inside the outline of a halo, with long hair and beards and their eyes closed, in heavy robes on rough ground.",
-    work: "The icon printed for the day in the Russian Lives of the Saints after St Dimitry of Rostov (Moscow, Synodal Press, the January volume), no. 05141: a detail, three of the Fathers lying at rest, their faces and haloes",
+    alt: "A black-and-white print of a domed church with its buildings on a hilltop, and on the rocky slope below it a row of monks with haloes lying at rest, one beside another, their eyes closed, in heavy robes.",
+    work: "The icon printed for the day in the Russian Lives of the Saints after St Dimitry of Rostov (Moscow, Synodal Press, the January volume), no. 05141: the whole print inside its frame, above its Slavonic caption, the Fathers lying at rest on the slope below their monastery",
     artist: "Not named",
     workDate: "Before 1911",
     source: "Wikimedia Commons (from the volume's scan)",

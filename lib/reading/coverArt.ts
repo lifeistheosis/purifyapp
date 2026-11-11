@@ -229,6 +229,17 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   // Alexander's letter keeps the First Council's icon as its own (WORK_ART).
   "alexander-of-alexandria": bundled("alexander-of-alexandria.jpg", 36),
   "adrian-of-rome": bundled("adrian-of-rome.v2.jpg", 33),
+  // January's Lives in Butler's words (2026-11-11): their saints' own pictures,
+  // placed in the January chat's pushes 2 and 3, at the focus each was cut to.
+  "gordius-of-caesarea": bundled("gordius-of-caesarea.jpg", 18),
+  "theodosius-the-cenobiarch": bundled("theodosius-the-cenobiarch.jpg", 18),
+  "fathers-of-sinai-and-raithu": bundled("fathers-of-sinai-and-raithu.v2.jpg", 62),
+  "john-the-hut-dweller": bundled("john-the-hut-dweller.jpg", 30),
+  "euthymius-the-great": bundled("euthymius-the-great.jpg", 18),
+  "anastasius-the-persian": bundled("anastasius-the-persian.jpg", 18),
+  "clement-of-ancyra": bundled("clement-of-ancyra.jpg", 18),
+  "cyrus-and-john": bundled("cyrus-and-john.jpg", 20),
+  "polyeuctus-of-melitene": bundled("polyeuctus-of-melitene.jpg", 18),
   // From Wikimedia Commons for the covers (lib/reading/authorCovers.ts).
   ...AUTHOR_COVERS,
 };

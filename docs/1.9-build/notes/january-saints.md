@@ -393,3 +393,79 @@ killing). Still: `january-saints/03-micaiah-and-the-sinai-fathers.png`.
   photographer and the monastery, whom no address reached, and his row in
   everySaintAPicture.test.ts names it. Fable voices, who is putting the one
   letter to the OCA together, has his name.
+
+## Push 4, as built: Butler's Lives for nine (2026-11-11)
+
+On the owner's word ("yes Butler January", call 34, about 13:32 UTC; the
+arbiter's HANDOFF of 13:33): Alban Butler's Lives for the nine of the month's
+saints whose one Life in English is his, published with no priest's check, as
+November's and December's were, word for word with his name on each. In
+`scripts/menologion/january-lives.mjs` with the month's other Lives; the
+check of every word against three more scans is
+`docs/editorial/ingest-review/january-lives.md`.
+
+- **The nine**, each a work on its saint's page ("As Alban Butler tells it")
+  and a book in the reading room wearing its saint's own picture: St Gordius
+  (January 3), St Theodosius the Cenobiarch (11), the Fathers of Sinai and
+  Raithu (14), St John the Hut-Dweller, Butler's St John Calybite (15), St
+  Euthymius (20), St Anastasius the Persian (22), St Clement of Ancyra (23)
+  and Sts Cyrus and John (31) from vol. I (1812); St Polyeuctus from vol. II
+  (1815), on Butler's own day, February 13. About 7,500 words.
+- **How**: drafted from the page text of two scans of the London stereotype
+  edition (Princeton Theological Seminary's copy and the Digital Library of
+  India's, the same plates), then typed from Princeton's page images, line by
+  line, every page read. The tools are November's
+  (`scripts/menologion/scan-draft/`, settings `january-butler.json`);
+  `extract.py` gained one thing, a heading's place named in the settings for
+  a heading it cannot find alone (set at the very top of its page, or long
+  enough to reach the margin: St John Calybite's, St Clement's, St
+  Theodosius's), its words still checked. The ingest's check then found every
+  paragraph in the other scans; its sixteen single-scan doubts are each a
+  scan's misreading of a word read on the page ("Eutrophis", "slie",
+  "Cliosroes").
+- **What the page put right**: a footnote of the page before run into Sts
+  Cyrus and John's Life, splitting "encourage"; a line dropped at the foot of
+  a page, which opens St Theodosius's last years ("Our saint survived his
+  return eleven years"); Butler's source notes and the dates under the
+  headings taken as text, and left out as in November and December.
+- **Nothing cut**: no passage of Roman doctrine against the Orthodox Church
+  and no sentence that demeans a people in the nine. Butler's "Leo the
+  Isarian" (for the Isaurian), the second "Hist. Mon d’Orient" without its
+  stop, and "comply" with no stop before the saint's words are kept as
+  printed and named in each source. One phrase is the arbiter's to weigh, not
+  cut: the Fathers of Sinai were "massacred the same year by the Blemmyans, a
+  savage infidel nation of Ethiopia". It names the raiders who killed them, as
+  the Church's own synaxaria call them barbarians; St Catherine's sentence,
+  cut in November, likened peoples to apes.
+- **Two headings set at the head of their sentences**: Butler's "St.
+  Gordius," and "SS. Isaias, Sabbas," are the subjects of the sentences
+  printed under them ("Martyred at Cesarea ... was a centurion"; "And
+  thirty-eight other holy solitaries ... were massacred"). Left out as the
+  other headings are, the first sentence would have no subject and the
+  Fathers of Sinai would lose two of their names, so each heading stands at
+  the head of its sentence and the source says so, word for word: "is set at
+  its head, before “martyred”".
+- **Section titles** keep the spec's 26-character rule: the day and the
+  pages ("January 11, pp. 135-141"), the book itself in each citation.
+- **The reading room**: nine books with their saints' pictures. The desert
+  row's sixteen places now fill with whole Lives before St Isidora's excerpts
+  are reached, as the Egypt row's did in December, and on the Egypt row Sts
+  Cyrus and John's martyrdom takes the place St Pachomius's Life had;
+  `apart.test.ts` says so.
+- **The Fathers of Sinai and Raithu wear the whole print** (the arbiter's
+  word of 13:39 UTC, "whole", on still 04): their print in the Lives (no.
+  05141), cut inside its frame and above its Slavonic caption, the Fathers
+  lying at rest on the slope below their monastery. It is
+  `fathers-of-sinai-and-raithu.v2.jpg`, a new name so no copy of the close
+  detail is kept in a reader's cache; the detail's file is retired. Its book's
+  cover is set on the Fathers (focus 62), and the edge check accepts its white
+  sky by name, as December's prints.
+- **The apps**: about 50 KB of text more; both exports are 73.7 MB packed
+  of 85. Walked on each, the app's way: every one of the nine saints' pages
+  lists its Life under Writings, every Life shows its title, its first words,
+  Butler named and its last words at the foot, the reading room finds each
+  book by its title wearing its saint's own picture, the Fathers' page draws
+  the whole print and never the retired detail, and their calendar day opens
+  their page; 29 of 29 on Android and on iOS, checkMock clean on every page.
+- **Still**: `january-saints/05-butler-st-theodosius.png` (St Theodosius's
+  Writings, his Life, and the Fathers of Sinai in their whole print).

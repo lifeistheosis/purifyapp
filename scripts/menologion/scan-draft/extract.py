@@ -223,15 +223,35 @@ def tokens(lines):
     return out
 
 
+def heading_at(pages, at, want):
+    """A heading the finder passes over, where the settings say it stands
+    ([page, line] in that scan): one set at the very top of its page, under
+    the running head, or one so long that it reaches the margin (January's
+    St. John Calybite, St. Clement of Ancyra, St. Theodosius). Its words are
+    still checked."""
+    n, i = at
+    line = pages[n]["lines"][i]
+    joined = "".join(t for t in (norm(w["t"]) for w in line["words"]) if t)
+    target = "".join(want)
+    if SequenceMatcher(a=joined[: len(target)], b=target, autojunk=False).ratio() < 0.8:
+        raise SystemExit(f"heading {want} is not at page {n}, line {i}: {joined!r}")
+    return n, i
+
+
 def main():
     cfg = C.settings(sys.argv[1])
     key = sys.argv[2]
-    vol, want = cfg["lives"][key]
+    # [volume, heading words] or [volume, heading words, {"P": [page, line], "D": [page, line]}]
+    vol, want, *at = cfg["lives"][key]
     p_item, d_item = cfg["volumes"][vol]
     P = pages_of(p_item)
     D = pages_of(d_item)
-    ps, pl = find_start(P, want)
-    ds, dl = find_start(D, want)
+    if at:
+        ps, pl = heading_at(P, at[0]["P"], want)
+        ds, dl = heading_at(D, at[0]["D"], want)
+    else:
+        ps, pl = find_start(P, want)
+        ds, dl = find_start(D, want)
     plines = cut(P, ps, pl)
     dlines = cut(D, ds, dl)
     pt = [t for t in tokens(plines) if t["n"]]

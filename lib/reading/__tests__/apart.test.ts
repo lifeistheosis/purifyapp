@@ -141,11 +141,15 @@ for (const native of [false, true]) {
         const life = keys.indexOf("pachomius-the-great/life-of-pachomius");
         const isidora = keys.indexOf("isidora-of-tabenna/life-of-isidora");
         // December's saints (1.9) brought whole Lives of Egypt that rank above
-        // St. Isidora's excerpts, and the Egypt row shows sixteen of its books:
-        // hers is not reached there, so the parting is not in question on it.
-        if (id === "egypt" && isidora < 0) {
+        // St. Isidora's excerpts, and January's Butler Lives (2026-11-11) whole
+        // Lives of the desert (St. Theodosius, St. Euthymius, the Fathers of
+        // Sinai): each row shows sixteen of its books, and hers is reached on
+        // neither, so the parting is not in question there. The desert row
+        // still ends on St. Pachomius's Life; on the Egypt row, Sts. Cyrus and
+        // John's martyrdom now takes its sixteenth place.
+        if (isidora < 0) {
           expect(row.length, id).toBe(16);
-          expect(life, id).toBeGreaterThanOrEqual(0);
+          if (id === "desert") expect(life, id).toBeGreaterThanOrEqual(0);
           continue;
         }
         expect(life, id).toBeGreaterThanOrEqual(0);

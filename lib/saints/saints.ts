@@ -8009,7 +8009,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under Gordius; A Dictionary of Christian Biography II (1880), under Gordius (3)",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-gordius",
+        title: "The Martyrdom of St. Gordius",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's short notice of the centurion of Caesarea in Cappadocia who came down from the desert to confess Christ before the crowd at the games of Mars, and of St. Basil's sermon on his feast. In public-domain English.",
+        topics: ["Martyrdom", "Courage"],
+      },
+    ],
   },
 
   {
@@ -8082,7 +8092,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "A Dictionary of Christian Biography IV (1887), under Polyeuctus; The Book of Saints (1921), under Polyeucte; the Church's calendar, January 9",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-polyeuctus",
+        title: "The Martyrdom of St. Polyeuctus",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's short notice of the Roman officer of Melitene, won to Christ by his friend Nearchus, whom his wife's tears could not move, and of the churches and oaths kept in his name. In public-domain English.",
+        topics: ["Martyrdom", "Persecution"],
+      },
+    ],
   },
 
   {
@@ -8145,7 +8165,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "A Dictionary of Christian Biography IV (1887), under Theodosius (22); The Book of Saints (1921), under Theodosius; Baring-Gould, The Lives of the Saints I (1897), January 11",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "life-of-theodosius",
+        title: "The Life of St. Theodosius",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's Life of the Cappadocian born in 423 who founded the great community near Bethlehem with its houses for the sick, was set over the monks of Palestine beside St. Sabbas, and stood for the four councils against the emperor Anastasius. In public-domain English.",
+        topics: ["Monasticism", "Desert", "Councils"],
+      },
+    ],
   },
 
   {
@@ -8182,7 +8212,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "fathers-of-sinai-and-raithu",
-    iconUrl: "/saints/icons/fathers-of-sinai-and-raithu.jpg",
+    iconUrl: "/saints/icons/fathers-of-sinai-and-raithu.v2.jpg",
     name: "The Fathers Slain at Sinai and Raithu",
     epithet: "Monks and martyrs of Mount Sinai and Raithu",
     reposed: "273, about 373, or the 5th century, by differing accounts",
@@ -8193,7 +8223,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under Isaias, Sabas and Others; A Dictionary of Christian Biography IV (1887), under Paulus (96) and (97); A Dictionary of Christian Biography I (1877), under Domnus (8); Baring-Gould, The Lives of the Saints I (1897), January 14",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "the-fathers-of-sinai-and-raithu",
+        title: "The Fathers of Sinai and Raithu",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's short notice of the hermits slain at Sinai and Raithu, the first in 273, the second by Saracens in the fifth century, with the boy who asked to die clothed, as St. Nilus told it. In public-domain English.",
+        topics: ["Martyrdom", "Desert"],
+      },
+    ],
   },
 
   {
@@ -8237,7 +8277,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under John Chalybita; A Dictionary of Christian Biography III (1882), under Joannes (494) Calybita; Baring-Gould, The Lives of the Saints I (1897), January 15",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "life-of-john-the-hut-dweller",
+        title: "The Life of St. John the Hut-Dweller",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's short notice of the rich man's son of Constantinople who came home from the monastery as a beggar and lived unknown in a hut by his parents' house until his death, and of where his relics went. In public-domain English.",
+        topics: ["Humility", "Monasticism"],
+      },
+    ],
   },
 
   {
@@ -8254,7 +8304,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "A Dictionary of Christian Biography II (1880), under Euthymius (4); The Book of Saints (1921), under Euthymius",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "life-of-euthymius",
+        title: "The Life of St. Euthymius",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's Life of the priest of Melitene who founded his laura in the desert of Palestine, healed the son of an Arab chief and saw his people baptized, and turned the empress Eudocia back to the council of Chalcedon. In public-domain English.",
+        topics: ["Monasticism", "Desert", "Prayer"],
+      },
+    ],
   },
 
   {
@@ -8299,7 +8359,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under Anastasius (January 22); Baring-Gould, The Lives of the Saints I (1897), January 22",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-anastasius",
+        title: "The Martyrdom of St. Anastasius",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's account of the Persian soldier, a Magian's son, who was baptized at Jerusalem, became a monk and was strangled at Barsaloe in 628 for confessing Christ before the officers of Chosroes. In public-domain English.",
+        topics: ["Martyrdom", "Conversion"],
+      },
+    ],
   },
 
   {
@@ -8316,7 +8386,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under Clement and under Agathangelus; A Dictionary of Christian Biography I (1877), under Clemens (2); Baring-Gould, The Lives of the Saints I (1897), January 23",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-clement-of-ancyra",
+        title: "The Martyrdom of St. Clement of Ancyra",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's short notice of the great martyr of Ancyra under Diocletian, of the two churches at Constantinople named for him, and of where his relics went. In public-domain English.",
+        topics: ["Martyrdom"],
+      },
+    ],
   },
 
   {
@@ -8365,7 +8445,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under Cyrus and John; Baring-Gould, The Lives of the Saints I (1897), January 31; the Church's calendar, January 31",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-cyrus-and-john",
+        title: "The Martyrdom of Sts. Cyrus and John",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's short notice of the physician of Alexandria and the Arabian who went to strengthen Athanasia and her three daughters in their torments, and were beheaded after them. In public-domain English.",
+        topics: ["Martyrdom", "Courage"],
+      },
+    ],
   },
 ];
 
