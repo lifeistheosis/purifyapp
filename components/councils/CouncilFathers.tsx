@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import { PLATE_LIGHT } from "@/components/covers/WorkCover";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SaintFace } from "@/components/today/SaintFace";
+import { FacePlate } from "@/components/ui/CrossPlate";
 import { cn } from "@/lib/cn";
 import { faceLabelSize } from "@/lib/councils/faceLabel";
 import type { CouncilFace } from "@/lib/councils/fathers";
@@ -22,8 +22,9 @@ import type { SaintPicture } from "@/lib/today/saintFaces";
  * soft white glow, never gold.
  *
  * A Father with no settled picture (lib/councils/fathers.ts) stands on the
- * plate a book with no cover wears, his name beside it, never a letter and
- * never another saint's face (1.9, build 90 note 3). A council with one
+ * house's plate with its lit cross, his name beside it, never a letter,
+ * never another saint's face (1.9, build 90 note 3) and never an empty
+ * round (build 93 note 1). A council with one
  * Father has no row to choose from.
  */
 export function CouncilFathers({ fathers }: { fathers: CouncilFace[] }) {
@@ -113,16 +114,18 @@ export function CouncilFathers({ fathers }: { fathers: CouncilFace[] }) {
  * A Father's face, as a portrait for the card or a round to tap (1.9, build
  * 90 note 3; his words: "the profile pictures of the Holy Fathers principally
  * associated either don't show, or they do show and it's not framed
- * correctly"). It stands on the plate a book with no cover wears (the
- * reading room's own light, PLATE_LIGHT), and his settled picture comes over
- * it as it arrives, drawn by the house's one framed face
+ * correctly"). It stands on the house's plate in a picture's place, the lit
+ * cross at its middle (components/ui/CrossPlate.tsx; build 93 note 1: the
+ * plate without it read as a picture that failed to load), and his settled
+ * picture comes over it as it arrives, drawn by the house's one framed face
  * (components/today/SaintFace.tsx): cut about his face where his picture has
  * him to one side (`across`, lib/today/saintFaces.ts faceShift), and never
  * mirrored in Arabic, as a picture is not. With no signal a portrait the
  * website streams gives way to the icon the app carries of him, where its
  * rights are settled (lib/councils/fathers.ts, `fallback`); when nothing can
- * be had, or he has no settled picture, the plate is what is seen, his name
- * beside it. Never a letter, never another saint's face (the owner's yes).
+ * be had, or he has no settled picture, the plate and its cross are what is
+ * seen, his name beside it. Never a letter, never another saint's face, never
+ * an empty round (the owner's word).
  * Either way a dark island, as a cover is, on every palette.
  */
 export function FatherFace({ face, shape }: { face: Pick<CouncilFace, "picture">; shape: "portrait" | "round" }) {
@@ -140,7 +143,10 @@ export function FatherFace({ face, shape }: { face: Pick<CouncilFace, "picture">
         box,
       )}
     >
-      <span data-father-plate="" className="absolute inset-0 rounded-[inherit]" style={{ backgroundImage: PLATE_LIGHT }} />
+      {/* The house's plate in a picture's place, its lit cross at the middle,
+          so a Father with no picture never shows an empty round (build 93
+          note 1); his picture, when it comes, covers it. */}
+      <FacePlate size={shape === "round" ? "disc" : "thumb"} />
       {picture ? (
         <SaintFace key={picture.src} picture={picture} zoom={shape === "round" ? 1.9 : 1.4} across={p?.across} className="absolute inset-0" />
       ) : null}

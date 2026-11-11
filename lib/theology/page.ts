@@ -101,13 +101,6 @@ export function medallionName(name: string): string {
   return name.replace(/^(?:Saints?|Sts?\.?|Ss\.)\s+/, "").trim();
 }
 
-/** The letter a face with no picture shows in its ring: the first of the short name's words that is not "The". */
-export function medallionInitial(name: string): string {
-  const words = medallionName(name).split(/\s+/).filter(Boolean);
-  const word = words.find((w) => !/^the$/i.test(w)) ?? words[0] ?? "";
-  return word.charAt(0).toUpperCase();
-}
-
 /**
  * A passage's card in the reading's deck: its words at 15.5px, on lines 1.5
  * of that apart, and never more than CARD_LINES of them. A longer passage

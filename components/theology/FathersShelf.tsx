@@ -4,8 +4,9 @@ import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SaintFace } from "@/components/today/SaintFace";
+import { FacePlate } from "@/components/ui/CrossPlate";
 import { isNativeClient } from "@/lib/platform/native";
-import { medallionInitial, medallionName } from "@/lib/theology/page";
+import { medallionName } from "@/lib/theology/page";
 import { COVER_FACES } from "@/lib/today/saintFaces";
 import { useMounted } from "@/lib/useMounted";
 
@@ -32,15 +33,14 @@ export function FathersShelf({ fathers }: { fathers: { slug: string; name: strin
           return (
             <li key={f.slug} className="shrink-0">
               <Link href={`/saints/${f.slug}`} prefetch={false} className="tap-press flex w-[76px] flex-col items-center gap-1.5">
-                {/* Cut about his face, as FatherFace cuts it (1.9); a picture is not mirrored. */}
+                {/* Cut about his face, as FatherFace cuts it (1.9); a picture is not mirrored.
+                    Over the house's plate, so a Father with no cleared picture, or whose
+                    picture cannot come, is the plate, never a letter (build 93 note 1). */}
                 <span dir="ltr" className="theology-face relative size-[52px] overflow-hidden rounded-full bg-night-soft">
+                  <FacePlate size="disc" />
                   {picture ? (
-                    <SaintFace key={picture.src} picture={picture} zoom={1.4} across={COVER_FACES[f.slug]?.[0]} />
-                  ) : !onDevice ? null : (
-                    <span aria-hidden className="theology-all grid size-full place-items-center rounded-full font-serif text-[17px] font-bold text-paper/85">
-                      {medallionInitial(f.name)}
-                    </span>
-                  )}
+                    <SaintFace key={picture.src} picture={picture} zoom={1.4} across={COVER_FACES[f.slug]?.[0]} className="relative" />
+                  ) : null}
                 </span>
                 <span lang="en" dir="ltr" className="line-clamp-2 max-w-full text-center font-sans text-[10.5px] font-semibold leading-tight text-paper/70">
                   {medallionName(f.name)}

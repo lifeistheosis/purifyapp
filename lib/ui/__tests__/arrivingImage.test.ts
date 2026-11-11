@@ -300,7 +300,8 @@ describe("an avatar as the server draws it", () => {
         imageClassName: "transition-transform group-hover:scale-[1.06]",
       }),
     );
-    expect(html).toMatch(/^<span aria-hidden="true" class="relative block shrink-0 overflow-hidden rounded-full bg-night-soft ring-1 ring-inset ring-paper\/\[0\.08\] size-16"><span class="absolute inset-0 block transition-transform group-hover:scale-\[1\.06\]"><img /);
+    // The house's plate first, under the picture's frame (build 93 note 1).
+    expect(html).toMatch(/^<span aria-hidden="true" class="relative block shrink-0 overflow-hidden rounded-full bg-night-soft ring-1 ring-inset ring-paper\/\[0\.08\] size-16"><span data-face-plate="".*?<\/span><\/span><span class="absolute inset-0 block transition-transform group-hover:scale-\[1\.06\]"><img /);
     expect(html).toMatch(/<img [^>]*class="img-arrive object-cover object-\[50%_20%\]"/);
     expect(html).not.toContain("data-arrived");
     // ShopBySaint's zoom is on that frame, so the arrival keeps its own fade.

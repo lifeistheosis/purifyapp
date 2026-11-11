@@ -17,7 +17,6 @@ import {
   epigraphIndex,
   fatherGroups,
   fatherKey,
-  medallionInitial,
   medallionName,
   subjectOfStudy,
 } from "@/lib/theology/page";
@@ -81,8 +80,6 @@ describe("a study's Fathers", () => {
     expect(medallionName("St. Basil the Great")).toBe("Basil the Great");
     expect(medallionName("Sts. Cyril and Methodius")).toBe("Cyril and Methodius");
     expect(medallionName("The Divine Liturgy of St John Chrysostom")).toBe("The Divine Liturgy of St John Chrysostom");
-    expect(medallionInitial("St. John of Damascus")).toBe("J");
-    expect(medallionInitial("The Council of Laodicea")).toBe("C");
   });
 });
 

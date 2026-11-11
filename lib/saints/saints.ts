@@ -2858,7 +2858,6 @@ export const SAINTS: Saint[] = [
  {
  slug: "alexander-of-alexandria",
  byname: "The Confessor",
- iconUrl: "/saints/icons/alexander-of-alexandria.jpg",
  name: "St. Alexander of Alexandria",
  epithet: "Patriarch of Alexandria · Father of Nicaea · Bishop of St. Athanasius",
  born: "c. 250",

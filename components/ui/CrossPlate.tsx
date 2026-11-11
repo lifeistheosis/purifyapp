@@ -69,3 +69,22 @@ export function CrossPlate({
     </span>
   );
 }
+
+/**
+ * The plate under a face (1.9, build 93 note 1): it fills the face's frame,
+ * rounded as the frame is, and the face's picture comes over it as it
+ * arrives. So a saint with no cleared picture, or one whose picture cannot
+ * come (no signal), is this plate and its lit cross: never an empty round,
+ * never a letter, never another saint's face. The owner's words, of St
+ * Alexander's empty circle on the First Council's page: "you could clearly
+ * see that his photo isn't loaded."
+ *
+ * The frame is the caller's: positioned, with its own size and rounding.
+ */
+export function FacePlate({ size }: { size: CrossPlateSize }) {
+  return (
+    <span data-face-plate="" className="absolute inset-0 overflow-hidden rounded-[inherit]">
+      <CrossPlate size={size} className="size-full rounded-[inherit]" />
+    </span>
+  );
+}

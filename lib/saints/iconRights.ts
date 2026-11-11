@@ -2122,8 +2122,6 @@ export const ICON_QUESTIONS: Record<string, IconQuestion> = {
  * only way to add one is to add a rights-complete row.
  */
 export const UNVERIFIED_ICONS: Record<string, string> = {
-  "alexander-of-alexandria.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for alexander-of-alexandria. 336x420 JPG, 32 KB. Opened 2026-11-10 (build 90 note 3): a contemporary painted icon, a grey-bearded bishop in a purple phelonion and white omophorion with a red Gospel book, his name in Latin letters on a gold ground. Not found on Commons by search and picture hash (nearest 22 of 64 bits apart; the Commons pictures of him are other works).",
   "anatolius-of-constantinople.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for anatolius-of-constantinople. 382x420 JPG, 42 KB. Opened 2026-11-10 (build 90 note 3): a wall painting on a worn grey ground, a brown-bearded bishop with a yellow halo, a white omophorion with large black crosses and a Gospel book, his name in Greek beside him. Not found on Commons by search and picture hash (nearest 25 of 64 bits apart).",
   "anianus-of-alexandria.jpg":

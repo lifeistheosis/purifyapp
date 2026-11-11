@@ -1,22 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { FacePlate } from "@/components/ui/CrossPlate";
 import { cn } from "@/lib/cn";
 import { authorIcon } from "@/lib/saints/icons";
-import { saintInitials } from "@/lib/saints/initials";
 
-
-// One dignified monochrome treatment for every initials fallback. A
-// per-author rotating tint read as a "generated avatar" and undercut the
-// iconography; a single quiet paper-on-dark chip sits closer to a framed
-// icon placeholder than a social-app avatar.
-const FALLBACK_TINT = "bg-paper/[0.06] text-paper/70";
+// An author with no cleared picture, or whose picture cannot load, is the
+// house's plate and its lit cross (components/ui/CrossPlate.tsx), never his
+// initials and never an empty round (1.9, build 93 note 1). The initials
+// chip it replaced was itself a step away from a per-author rotating tint,
+// which read as a "generated avatar"; the plate is the house's own.
 
 type Size = "sm" | "md";
 
 const SIZE_CLASSES: Record<Size, string> = {
-  sm: "h-7 w-7 text-eyebrow",
-  md: "h-10 w-10 text-detail",
+  sm: "h-7 w-7",
+  md: "h-10 w-10",
 };
 
 export function SaintIcon({
@@ -35,7 +34,7 @@ export function SaintIcon({
 
   // Some servers return 404 with HTML body. Chromium reports the img as
   // "complete" with naturalWidth 0 and may fire neither onload nor onerror.
-  // Check explicitly after mount; if the img is broken, swap to initials.
+  // Check explicitly after mount; if the img is broken, the plate stays.
   useEffect(() => {
     if (!src || failed) return;
     const id = window.setTimeout(() => {
@@ -47,39 +46,28 @@ export function SaintIcon({
     return () => window.clearTimeout(id);
   }, [src, failed]);
 
-  if (src && !failed) {
-    return (
-      /* eslint-disable-next-line @next/next/no-img-element */
-      <img
-        ref={imgRef}
-        src={src}
-        alt={author}
-        onError={() => setFailed(true)}
-        onLoad={(e) => {
-          if (e.currentTarget.naturalWidth === 0) setFailed(true);
-        }}
-        className={cn(
-          "rounded-full object-cover object-top bg-paper/5 ring-1 ring-paper/15 shrink-0",
-          sizeCls,
-          className,
-        )}
-      />
-    );
-  }
-
   return (
     <span
       role="img"
       aria-label={author}
       title={author}
-      className={cn(
-        "rounded-full flex items-center justify-center shrink-0 font-sans font-semibold tracking-[0.5px] ring-1 ring-paper/15",
-        FALLBACK_TINT,
-        sizeCls,
-        className,
-      )}
+      className={cn("relative block shrink-0 overflow-hidden rounded-full ring-1 ring-paper/15", sizeCls, className)}
     >
-      {saintInitials(author)}
+      {/* The plate stands at once; his picture, where there is one, comes over it. */}
+      <FacePlate size="disc" />
+      {src && !failed ? (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          ref={imgRef}
+          src={src}
+          alt=""
+          onError={() => setFailed(true)}
+          onLoad={(e) => {
+            if (e.currentTarget.naturalWidth === 0) setFailed(true);
+          }}
+          className="absolute inset-0 size-full object-cover object-top"
+        />
+      ) : null}
     </span>
   );
 }

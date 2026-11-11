@@ -319,7 +319,7 @@ describe("the faces for the saints' words", () => {
     expect(face?.fallback).toEqual({ src: "/saints/icons/john-chrysostom.v2.jpg", point: [0.53, 0.39], looks: "ahead" });
   });
 
-  it("keeps the lit cross for St Alexander of Alexandria, whose own icon has no recorded rights", () => {
+  it("keeps the lit cross for St Alexander of Alexandria, who has no cleared picture (build 93 note 1)", () => {
     expect(quoteFace(brief("alexander-of-alexandria"), false)).toBeNull();
   });
 });

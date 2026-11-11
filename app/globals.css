@@ -7301,17 +7301,11 @@ html[data-reading-mode="parchment"] .doctrine-shadow {
 
 /* A Father's face (the Fathers the studies quote, the faces beside a
    study's parts): a face in a ring of the ground. A Father with no picture
-   is a dark coin with his initial. */
+   is the house's plate and its lit cross (FacePlate, build 93 note 1). */
 .theology-face {
  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.2);
  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 20%, transparent);
  transition: box-shadow var(--duration-fast) var(--ease-house);
-}
-.theology-all {
- background: radial-gradient(circle at 35% 28%, rgb(44 44 49), rgb(23 23 26) 72%);
- background: radial-gradient(circle at 35% 28%, color-mix(in srgb, var(--color-paper) 11%, var(--color-night)), color-mix(in srgb, var(--color-paper) 3%, var(--color-night)) 72%);
- box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16);
- box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 16%, transparent);
 }
 :where([data-motion="reduce"]) .theology-face {
  transition: none;
@@ -7645,19 +7639,6 @@ html[data-reading-mode="parchment"] .whole-icon-light {
  width: 100%;
  height: 100%;
  object-fit: contain;
-}
-
-/* A saint's icon waiting for its picture (components/saints/SaintIcon.tsx)
-   is a dark icon board on every palette, as the icon itself is (the owner,
-   1.8: the house greys, as dark as it was). Its initials are the palette's
-   own light ink on that board: the paper on a dark palette, and on Light,
-   where the paper is the dark ink, the page's ground. They were a cream typed
-   in, the same on every palette (checkMock, 2026-11-10). */
-.saint-icon-initials {
- color: var(--color-paper);
-}
-html[data-reading-mode="parchment"] .saint-icon-initials {
- color: var(--color-night);
 }
 
 /* The nine as plates (components/theology/PathPlates.tsx): each icon framed

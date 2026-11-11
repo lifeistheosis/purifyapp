@@ -8,6 +8,7 @@ import { SourceLine } from "@/components/citations/SourceLine";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Book } from "@/components/ui/icons/Book";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+import { FacePlate } from "@/components/ui/CrossPlate";
 import { Close } from "@/components/ui/icons/Close";
 import { Sheet } from "@/components/ui/Sheet";
 import { isNativeClient } from "@/lib/platform/native";
@@ -145,8 +146,12 @@ export function SaintWindowHead({
   return (
     <div className="flex items-center gap-2 px-4 pb-1 pt-1.5">
       <Link href={`/saints/${saint.slug}`} onClick={onClose} className="tap-press flex min-w-0 flex-1 items-center gap-3 ps-1.5">
+        {/* His face over the house's plate: a saint with no cleared picture,
+            or whose picture cannot come, is the plate, never an empty round
+            (build 93 note 1). */}
         <span className="relative size-[52px] shrink-0 overflow-hidden rounded-full border border-paper/20 bg-night-soft">
-          {picture ? <SaintFace key={picture.src} picture={picture} zoom={1.4} across={COVER_FACES[saint.slug]?.[0]} /> : null}
+          <FacePlate size="disc" />
+          {picture ? <SaintFace key={picture.src} picture={picture} zoom={1.4} across={COVER_FACES[saint.slug]?.[0]} className="relative" /> : null}
         </span>
         <span className="min-w-0">
           <span className="block font-heading text-lede font-bold leading-tight text-paper">{saint.name}</span>

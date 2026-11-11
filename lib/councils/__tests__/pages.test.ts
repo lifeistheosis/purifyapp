@@ -102,12 +102,13 @@ describe("a council's page (C, at a glance)", () => {
 
   it("stands every Father on the plate, his picture over it cut about his face, never a letter, and the one shown lit in the page's ink, never gold", () => {
     const fathers = code("components/councils/CouncilFathers.tsx");
-    // Build 90 note 3: the plate a book with no cover wears, under every face;
-    // his settled picture over it through the house's one framed face, cut
-    // about his face, with the settled icon the app carries behind a streamed
-    // portrait for no signal (build 83's walk of the apps); never mirrored.
-    expect(fathers).toContain('<span data-father-plate="" className="absolute inset-0 rounded-[inherit]" style={{ backgroundImage: PLATE_LIGHT }} />');
-    expect(fathers).toContain('import { PLATE_LIGHT } from "@/components/covers/WorkCover";');
+    // Build 90 note 3, and build 93 note 1: the house's plate with its lit
+    // cross under every face, so a Father with no picture is never an empty
+    // round; his settled picture over it through the house's one framed face,
+    // cut about his face, with the settled icon the app carries behind a
+    // streamed portrait for no signal (build 83's walk of the apps); never mirrored.
+    expect(fathers).toContain('<FacePlate size={shape === "round" ? "disc" : "thumb"} />');
+    expect(fathers).not.toContain("PLATE_LIGHT");
     expect(fathers).toContain("fallback: p.fallback?.src ?? null");
     expect(fathers).toMatch(/<SaintFace key=\{picture\.src\} picture=\{picture\} zoom=\{shape === "round" \? 1\.9 : 1\.4\} across=\{p\?\.across\}/);
     expect(fathers).toMatch(/aria-hidden\s+dir="ltr"/);

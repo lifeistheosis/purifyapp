@@ -6,13 +6,14 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProp
 import { AddToFlorilegium } from "@/components/florilegium/AddToFlorilegium";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SaintFace } from "@/components/today/SaintFace";
+import { FacePlate } from "@/components/ui/CrossPlate";
 import { Book } from "@/components/ui/icons/Book";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Share } from "@/components/ui/icons/Share";
 import { cn } from "@/lib/cn";
 import { isNativeClient } from "@/lib/platform/native";
-import { CARD_LINES, CARD_TEXT, medallionInitial, type DeckPassage } from "@/lib/theology/page";
+import { CARD_LINES, CARD_TEXT, type DeckPassage } from "@/lib/theology/page";
 import { scrollBehavior } from "@/lib/ui/motion";
 import { useMounted } from "@/lib/useMounted";
 
@@ -128,9 +129,10 @@ export function PassageDeck({ passages }: { passages: DeckPassage[] }) {
                       <SaintFace key={picture.src} picture={picture} />
                     </span>
                   ) : coming ? null : (
+                    // A Father with no cleared picture: the house's plate in its ring, never a letter (build 93 note 1).
                     <span aria-hidden className="absolute inset-0 grid place-items-center">
-                      <span className="theology-ring grid size-16 place-items-center rounded-full font-serif text-[26px] font-bold text-paper/85">
-                        {medallionInitial(p.name)}
+                      <span className="theology-ring relative block size-16 overflow-hidden rounded-full">
+                        <FacePlate size="disc" />
                       </span>
                     </span>
                   )}

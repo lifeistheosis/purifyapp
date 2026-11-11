@@ -57,7 +57,6 @@ const SAFE: Record<string, string> = {
   "app/apple-icon.tsx": "the generated home screen icon, an image",
   "app/(app)/u/[handle]/opengraph-image.tsx": "a shared profile's link preview card, an image",
   "app/(app)/p/[id]/opengraph-image.tsx": "a shared journal page's link preview card, an image",
-  "components/saints/SaintIcon.tsx": "an icon stand-in: a dark grey panel on every palette, its letters the palette's own light ink (.saint-icon-initials)",
   "components/prayers/PrayerIcon.tsx": "the frame behind an icon image, with nothing written on it",
   "components/prayers/PrayerSlideshow.tsx": "the frame behind an icon image, with nothing written on it",
   "components/profile/ImageCropSheet.tsx": "the stage behind a photo being cropped, with nothing written on it",
