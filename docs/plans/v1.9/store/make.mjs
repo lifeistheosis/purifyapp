@@ -170,13 +170,17 @@ const SHOTS = [
  * the device's own screen in CSS pixels (for the Android phone, the part of
  * a 412 by 915 screen the app draws in, under the status bar and above the
  * gesture bar), `type` the caption's size and `round` the screen's corners.
+ * `device` says whether a screen that stands "side" may be shown as a device:
+ * Play's page says to avoid "Device imagery (as this can become obsolete
+ * quickly or alienate some users)", and his word on 2026-11-12 was to follow
+ * it, so on Play that screen stands upright before the side's field instead.
  */
 const DEVICES = [
-  { id: "play-phone", store: "Google Play", name: "Phone", canvas: [1080, 1920], viewport: [412, 846], type: 66, round: 0.07 },
-  { id: "play-tablet-7", store: "Google Play", name: "7-inch tablet", canvas: [1440, 2560], viewport: [600, 960], type: 80, round: 0.03 },
-  { id: "play-tablet-10", store: "Google Play", name: "10-inch tablet", canvas: [1800, 3200], viewport: [800, 1280], type: 96, round: 0.025 },
-  { id: "appstore-iphone-6.9", store: "App Store", name: "iPhone 6.9-inch", canvas: [1320, 2868], viewport: [440, 956], type: 82, round: 0.09 },
-  { id: "appstore-ipad-13", store: "App Store", name: "iPad 13-inch", canvas: [2064, 2752], viewport: [1032, 1376], type: 100, round: 0.022 },
+  { id: "play-phone", device: false, store: "Google Play", name: "Phone", canvas: [1080, 1920], viewport: [412, 846], type: 66, round: 0.07 },
+  { id: "play-tablet-7", device: false, store: "Google Play", name: "7-inch tablet", canvas: [1440, 2560], viewport: [600, 960], type: 80, round: 0.03 },
+  { id: "play-tablet-10", device: false, store: "Google Play", name: "10-inch tablet", canvas: [1800, 3200], viewport: [800, 1280], type: 96, round: 0.025 },
+  { id: "appstore-iphone-6.9", device: true, store: "App Store", name: "iPhone 6.9-inch", canvas: [1320, 2868], viewport: [440, 956], type: 82, round: 0.09 },
+  { id: "appstore-ipad-13", device: true, store: "App Store", name: "iPad 13-inch", canvas: [2064, 2752], viewport: [1032, 1376], type: 100, round: 0.022 },
 ];
 
 const FEATURE = {
@@ -217,7 +221,10 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
 //          low hill and the line of its crest, fainter lines rising over it
 //   side   the phone as a plain slab with real thickness, turned to one
 //          side, before rolling lines that gather toward a horizon
-// No hardware is drawn in either (variants/README.md says what each store
+//   field  what a "side" screen becomes on a device list with `device: false`
+//          (Google Play): the screen upright and whole as in front, before
+//          the side's rolling lines. No device is shown on Play at all.
+// No hardware is drawn in any (variants/README.md says what each store
 // asks). Every colour is a palette token, the light is one soft pool, and
 // each drawing starts under the words. To change how a screen stands, change
 // its `stand`; to change a look, change the numbers here. Nothing else in
@@ -230,6 +237,8 @@ const ink = (pct) => `color-mix(in srgb, var(--color-paper) ${pct}%, transparent
 const accent = (pct) => `color-mix(in srgb, var(--color-gold) ${pct}%, transparent)`;
 /** A plane a step off the ground. */
 const plane = (pct) => `color-mix(in srgb, var(--color-paper) ${pct}%, var(--color-night))`;
+/** The night as ink, for a light ground: the palette's night token at a strength. */
+const dark = (pct) => `color-mix(in srgb, var(--color-night) ${pct}%, transparent)`;
 /** A tablet's screen is wide for its height; a phone's is not. */
 const isTablet = (device) => device.viewport[0] >= 600;
 
@@ -239,7 +248,7 @@ function layout(device, shot) {
   const [vw, vh] = device.viewport;
   const tablet = isTablet(device);
   const captionH = r(H * 0.165); // the words take about a sixth, under Play's fifth
-  if (shot.stand === "side") {
+  if (shot.stand === "side" && device.device !== false) {
     const room = H - captionH - r(H * 0.085);
     const w = r(Math.min(W * (tablet ? 0.78 : 0.7), ((room * vw) / vh) * 0.93));
     const h = Math.floor((w * vh) / vw);
@@ -250,7 +259,7 @@ function layout(device, shot) {
   const widest = r(W * (tablet ? 0.8 : 0.74));
   if (w > widest) w = widest;
   h = Math.floor((w * vh) / vw);
-  return { stand: "front", W, H, captionH, w, h, scale: w / vw };
+  return { stand: shot.stand === "side" ? "field" : "front", W, H, captionH, w, h, scale: w / vw };
 }
 
 const captionCss = (device, L) => `[data-store-caption] { position: absolute; top: 0; inset-inline: 0; box-sizing: border-box; height: ${L.captionH}px; margin: 0; padding: ${r(L.captionH * 0.1)}px ${r(L.W * 0.07)}px 0; display: flex; align-items: center; justify-content: center; text-align: center; text-wrap: balance; font-family: var(--font-heading); font-weight: 600; font-size: ${device.type}px; line-height: 1.16; letter-spacing: -0.01em; color: var(--color-paper); }`;
@@ -260,6 +269,30 @@ const pictureCss = (L) => `[data-store-picture] { position: relative; box-sizing
   [data-back] svg { position: absolute; top: ${L.captionH}px; inset-inline: 0; width: 100%; height: ${L.H - L.captionH}px; }
   :root[dir="rtl"] [data-back] svg { transform: scaleX(-1); }`;
 const drawing = (L, inner) => `<svg viewBox="0 ${L.captionH} ${L.W} ${L.H - L.captionH}" preserveAspectRatio="none">${inner}</svg>`;
+
+/** The field: rolling lines that draw closer toward a horizon, a soft light where they meet the sky. Each line a slow roll, level at the horizon and wider toward the eye. Lines run across; none fans out. */
+function field(L) {
+  const { W, H } = L;
+  const u = W / 1080; // the phone picture's own measures, carried to any size
+  const edge = Math.max(2, r(W / 540));
+  const horizon = H * 0.43;
+  const rows = [];
+  for (let k = 0; k <= 20; k++) {
+    const t = k / 20;
+    const y = horizon + (H - horizon + 90 * u) * Math.pow(t, 1.85);
+    const amp = (9 + 78 * Math.pow(t, 1.25)) * u;
+    const pts = [];
+    for (let i = 0; i <= 90; i++) {
+      const x = -20 * u + ((W + 40 * u) * i) / 90;
+      pts.push(`${x.toFixed(1)},${(y + amp * Math.sin((x / W) * Math.PI * (2.6 - 1.2 * t) + 0.4 + t * 3.1)).toFixed(1)}`);
+    }
+    rows.push(`<path d="M ${pts.join(" L ")}" style="fill:none;stroke:${k === 0 ? accent(70) : ink((6 + 16 * t).toFixed(1))};stroke-width:${edge}"/>`);
+  }
+  return {
+    css: `[data-back] { background-image: radial-gradient(ellipse ${r(W * 0.9)}px ${r(H * 0.11)}px at 50% ${r(horizon)}px, ${ink(20)}, transparent 72%); }`,
+    svg: `<rect x="${-10 * u}" y="${r(horizon)}" width="${W + 20 * u}" height="${r(H - horizon + 10)}" style="fill:${plane(4)}"/>${rows.join("")}`,
+  };
+}
 
 /** Front: the screen upright before a low hill. The crest is one wide circle's arc; the fainter lines are the same arc, higher. */
 function frontPage(device, shot, L) {
@@ -275,18 +308,23 @@ function frontPage(device, shot, L) {
   const rim = r(W * 0.011);
   const radius = r(w * device.round);
   const lifts = [0.2, 0.135, 0.08, 0.035];
-  return `${head(
-    W,
-    H,
-    `
-  ${pictureCss(L)}
-  [data-back] { background-image: radial-gradient(ellipse ${r(W * 0.78)}px ${r(H * 0.2)}px at 50% ${crest}px, ${ink(17)}, transparent 72%); }
+  const hill = {
+    css: `[data-back] { background-image: radial-gradient(ellipse ${r(W * 0.78)}px ${r(H * 0.2)}px at 50% ${crest}px, ${ink(17)}, transparent 72%); }
   [data-hill] { fill: ${plane(6.5)}; stroke: none; }
   [data-line] { fill: none; stroke: ${ink(40)}; stroke-width: ${edge}; }
   [data-line="1"] { stroke: ${ink(16)}; }
   [data-line="2"] { stroke: ${ink(11)}; }
   [data-line="3"] { stroke: ${ink(8)}; }
-  [data-line="4"] { stroke: ${ink(5)}; }
+  [data-line="4"] { stroke: ${ink(5)}; }`,
+    svg: `${lifts.map((lift, i) => `<path data-line="${4 - i}" d="${arc(-H * lift)}"/>`).join("")}<path data-hill d="${arc(0)} L ${W * 1.1} ${H * 1.1} L ${-W * 0.1} ${H * 1.1} Z"/><path data-line="0" d="${arc(0)}"/>`,
+  };
+  const back = L.stand === "field" ? field(L) : hill;
+  return `${head(
+    W,
+    H,
+    `
+  ${pictureCss(L)}
+  ${back.css}
   ${captionCss(device, L)}
   [data-store-screen] { position: absolute; box-sizing: border-box; margin: 0; top: ${captionH - rim}px; inset-inline-start: ${left - rim}px; width: ${w + 2 * rim}px; height: ${h + 2 * rim}px; padding: ${rim}px; border-radius: ${radius + rim}px; background-color: var(--color-night-deep); outline: ${edge}px solid ${ink(22)}; box-shadow: 0 ${r(W * 0.04)}px ${r(W * 0.09)}px color-mix(in srgb, var(--color-night-deep) 94%, transparent); }
   [data-store-screen] img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: ${radius}px; }
@@ -294,7 +332,7 @@ function frontPage(device, shot, L) {
   )}
 <body>
 <main data-store-picture>
-  <div data-back aria-hidden="true">${drawing(L, `${lifts.map((lift, i) => `<path data-line="${4 - i}" d="${arc(-H * lift)}"/>`).join("")}<path data-hill d="${arc(0)} L ${W * 1.1} ${H * 1.1} L ${-W * 0.1} ${H * 1.1} Z"/><path data-line="0" d="${arc(0)}"/>`)}</div>
+  <div data-back aria-hidden="true">${drawing(L, back.svg)}</div>
   <h1 data-store-caption>${shot.caption}</h1>
   <figure data-store-screen><img alt="${shot.alt}" src="/__store/screen.png"></figure>
 </main>
@@ -324,26 +362,13 @@ function sidePage(device, shot, L) {
     const tone = k <= 2 ? 34 : 19 - 12 * t;
     leaves.push(`<div data-leaf style="transform:translateZ(${(-k * step).toFixed(1)}px);background-color:${plane(tone.toFixed(1))}"></div>`);
   }
-  // The field: each line a slow roll, level at the horizon and wider toward the eye. Lines run across; none fans out.
-  const horizon = H * 0.43;
-  const rows = [];
-  for (let k = 0; k <= 20; k++) {
-    const t = k / 20;
-    const y = horizon + (H - horizon + 90 * u) * Math.pow(t, 1.85);
-    const amp = (9 + 78 * Math.pow(t, 1.25)) * u;
-    const pts = [];
-    for (let i = 0; i <= 90; i++) {
-      const x = -20 * u + ((W + 40 * u) * i) / 90;
-      pts.push(`${x.toFixed(1)},${(y + amp * Math.sin((x / W) * Math.PI * (2.6 - 1.2 * t) + 0.4 + t * 3.1)).toFixed(1)}`);
-    }
-    rows.push(`<path d="M ${pts.join(" L ")}" style="fill:none;stroke:${k === 0 ? accent(70) : ink((6 + 16 * t).toFixed(1))};stroke-width:${edge}"/>`);
-  }
+  const back = field(L);
   return `${head(
     W,
     H,
     `
   ${pictureCss(L)}
-  [data-back] { background-image: radial-gradient(ellipse ${r(W * 0.9)}px ${r(H * 0.11)}px at 50% ${r(horizon)}px, ${ink(20)}, transparent 72%); }
+  ${back.css}
   ${captionCss(device, L)}
   [data-stage] { position: absolute; top: ${top}px; inset-inline-start: ${left}px; width: ${bw}px; height: ${bh}px; perspective: ${r(W * 3.2)}px; perspective-origin: 50% 42%; }
   [data-body] { position: absolute; inset: 0; transform: ${turn}; transform-style: preserve-3d; }
@@ -358,7 +383,7 @@ function sidePage(device, shot, L) {
   )}
 <body>
 <main data-store-picture>
-  <div data-back aria-hidden="true">${drawing(L, `<rect x="${-10 * u}" y="${r(horizon)}" width="${W + 20 * u}" height="${r(H - horizon + 10)}" style="fill:${plane(4)}"/>${rows.join("")}`)}</div>
+  <div data-back aria-hidden="true">${drawing(L, back.svg)}</div>
   <h1 data-store-caption>${shot.caption}</h1>
   <div data-stage><div data-body><div data-cast aria-hidden="true"></div>${leaves.join("")}<figure data-store-screen><img alt="${shot.alt}" src="/__store/screen.png"></figure></div></div>
 </main>
@@ -369,7 +394,15 @@ function sidePage(device, shot, L) {
 /** A screen under its line, standing as its `stand` says. */
 const picturePage = (device, shot, L) => (L.stand === "side" ? sidePage(device, shot, L) : frontPage(device, shot, L));
 
-/** The feature graphic: the app's cross (as a mask, so it takes the palette's ink), its wordmark as the app sets it, and the listing's line, over the front design's hill. */
+/**
+ * The feature graphic: the app's cross (as a mask, so it takes the palette's
+ * ink), its wordmark as the app sets it, and the listing's line, over the
+ * front design's hill. Its ground is light, the night as ink upon it: Play's
+ * page says "Avoid using pure white, black, or dark gray as these colors can
+ * easily blend in with Google Play's background", and his word on 2026-11-12
+ * was to follow it. So the sky is a silver between the two, lighter where the
+ * light pools over the crest, and the hill keeps the house's night.
+ */
 function featurePage() {
   const [W, H] = FEATURE.canvas;
   const crest = 392;
@@ -383,20 +416,22 @@ function featurePage() {
     W,
     H,
     `
-  [data-store-picture] { position: relative; box-sizing: border-box; width: ${W}px; height: ${H}px; overflow: hidden; background-color: var(--color-night); color: var(--color-paper); }
-  [data-back] { position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(ellipse 460px 200px at 50% ${crest}px, ${ink(17)}, transparent 72%); }
+  html, body { background-color: ${plane(70)}; }
+  [data-store-picture] { position: relative; box-sizing: border-box; width: ${W}px; height: ${H}px; overflow: hidden; background-color: ${plane(70)}; color: var(--color-night); }
+  /* One soft pool of light over the crest, and the sky a little deeper toward the head. */
+  [data-back] { position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(ellipse 600px 250px at 50% ${crest}px, ${ink(52)}, transparent 72%), linear-gradient(to bottom, ${dark(13)}, transparent 55%); }
   [data-back] svg { position: absolute; top: ${from}px; inset-inline: 0; width: 100%; height: ${H - from}px; }
   :root[dir="rtl"] [data-back] svg { transform: scaleX(-1); }
-  [data-hill] { fill: ${plane(6.5)}; }
-  [data-line] { fill: none; stroke: ${ink(40)}; stroke-width: 2; }
-  [data-line="1"] { stroke: ${ink(16)}; }
-  [data-line="2"] { stroke: ${ink(11)}; }
-  [data-line="3"] { stroke: ${ink(8)}; }
-  [data-line="4"] { stroke: ${ink(5)}; }
+  [data-hill] { fill: var(--color-night); }
+  [data-line] { fill: none; stroke: ${dark(34)}; stroke-width: 2; }
+  [data-line="1"] { stroke: ${dark(24)}; }
+  [data-line="2"] { stroke: ${dark(17)}; }
+  [data-line="3"] { stroke: ${dark(12)}; }
+  [data-line="4"] { stroke: ${dark(8)}; }
   [data-words] { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding-top: 34px; }
-  [data-cross] { display: block; height: 84px; width: 48px; background-color: var(--color-paper); -webkit-mask: url(/purify-cross-mark.png) center / contain no-repeat; mask: url(/purify-cross-mark.png) center / contain no-repeat; }
-  [data-store-wordmark] { margin: 20px 0 0; font-family: var(--font-sans); font-weight: 700; font-size: 58px; line-height: 1; letter-spacing: -0.01em; color: var(--color-paper); }
-  [data-store-line] { margin: 16px 0 0; max-width: 600px; text-align: center; text-wrap: balance; font-family: var(--font-serif); font-size: 21px; line-height: 1.36; color: ${ink(84)}; }
+  [data-cross] { display: block; height: 84px; width: 48px; background-color: var(--color-night); -webkit-mask: url(/purify-cross-mark.png) center / contain no-repeat; mask: url(/purify-cross-mark.png) center / contain no-repeat; }
+  [data-store-wordmark] { margin: 20px 0 0; font-family: var(--font-sans); font-weight: 700; font-size: 58px; line-height: 1; letter-spacing: -0.01em; color: var(--color-night); }
+  [data-store-line] { margin: 16px 0 0; max-width: 600px; text-align: center; text-wrap: balance; font-family: var(--font-serif); font-size: 21px; line-height: 1.36; color: var(--color-night); }
 `,
   )}
 <body>
@@ -597,7 +632,7 @@ async function takeShot(device, shot) {
   if (record.campaignNamed) problems.push("a campaign is named in view");
   if (!record.picture.pass) problems.push(`checkMock on the picture: ${record.picture.failures.join(" | ")}`);
   console.log(`${problems.length ? "NO  " : "ok  "} ${file}  ${device.canvas.join(" by ")}  ${(bytes / 1024).toFixed(0)} KB${problems.length ? `\n      ${problems.join("\n      ")}` : ""}${record.app.failures.length ? `\n      said of the app's own screen: ${record.app.failures.join(" | ")}` : ""}`);
-  return { file, device: device.id, shot: shot.id, stand: shot.stand, caption: shot.caption, route: shot.route, state: shot.state, alt: shot.alt, size: device.canvas, screen: { viewport: device.viewport, scale: Number(L.scale.toFixed(4)) }, bytes, problems, ...record };
+  return { file, device: device.id, shot: shot.id, stand: L.stand, caption: shot.caption, route: shot.route, state: shot.state, alt: shot.alt, size: device.canvas, screen: { viewport: device.viewport, scale: Number(L.scale.toFixed(4)) }, bytes, problems, ...record };
 }
 
 async function takeFeature() {
@@ -642,7 +677,8 @@ const all = order.map((file) => made.find((m) => m.file === file) ?? before.find
 // writes the README again takes nothing, so it keeps what the record holds (Updates' note, 2026-11-12: it used to
 // write HEAD and today, which a later run would have made wrong).
 const headCommit = () => require("node:child_process").execSync("git rev-parse --short HEAD", { cwd: ROOT }).toString().trim();
-const commit = readmeOnly && record?.export ? record.export : headCommit();
+// The export's own commit. When pictures are made again from an export cut earlier (no file of the app changed since), STORE_EXPORT names it.
+const commit = process.env.STORE_EXPORT || (readmeOnly && record?.export ? record.export : headCommit());
 const madeOn = readmeOnly && record?.made ? record.made : new Date().toISOString().slice(0, 10);
 fs.writeFileSync(resultsFile, `${JSON.stringify({ made: madeOn, day: DAY, export: commit, checks: CHECKS, byEye: BY_EYE, pictures: all }, null, 2)}\n`);
 
@@ -684,7 +720,7 @@ function readme(pictures, exportCommit, madeOn) {
     "",
     "| # | The line on the picture | The screen | Stands | Shot from | The screen's state |",
     "|---|---|---|---|---|---|",
-    ...SHOTS.map((s) => `| ${s.n} | ${s.caption} | ${s.id} | ${s.stand} | \`${s.route}\` | ${s.state} |`),
+    ...SHOTS.map((s) => `| ${s.n} | ${s.caption} | ${s.id} | ${s.stand === "side" ? "side (upright before the field on Play)" : s.stand} | \`${s.route}\` | ${s.state} |`),
     "",
     `The feature graphic carries the app's cross, its wordmark as the app sets it, and one line over the front design's hill, the Play listing's own short description: "${FEATURE.line}"`,
     "",

@@ -37,7 +37,7 @@
         1024,
         500
       ],
-      "bytes": 31497,
+      "bytes": 40151,
       "problems": [],
       "picturesInView": [
         "/purify-cross-mark.png"
@@ -180,7 +180,7 @@
       "file": "play-phone-02-greek.png",
       "device": "play-phone",
       "shot": "greek",
-      "stand": "side",
+      "stand": "field",
       "caption": "The Greek beside the verse",
       "route": "/bible/john/1",
       "state": "John 1 with Interlinear Greek switched on (More actions, Interlinear Greek); free for every reader.",
@@ -194,9 +194,9 @@
           412,
           846
         ],
-        "scale": 1.9782
+        "scale": 1.6675
       },
-      "bytes": 209288,
+      "bytes": 119458,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -967,7 +967,7 @@
       "file": "play-phone-04-journal.png",
       "device": "play-phone",
       "shot": "journal",
-      "stand": "side",
+      "stand": "field",
       "caption": "A journal kept by the Church's day",
       "route": "/journal",
       "state": "The journal as a new reader opens it: the day's page, its saint, its fast and its readings, each with a pen.",
@@ -981,9 +981,9 @@
           412,
           846
         ],
-        "scale": 1.9782
+        "scale": 1.6675
       },
-      "bytes": 187924,
+      "bytes": 99913,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -1156,7 +1156,7 @@
       "file": "play-phone-06-saint.png",
       "device": "play-phone",
       "shot": "saint",
-      "stand": "side",
+      "stand": "field",
       "caption": "The lives of the saints",
       "route": "/saints/basil-the-great",
       "state": "St Basil the Great's page, on Life.",
@@ -1170,9 +1170,9 @@
           412,
           846
         ],
-        "scale": 1.9782
+        "scale": 1.6675
       },
-      "bytes": 290639,
+      "bytes": 290977,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -1332,7 +1332,7 @@
       "file": "play-phone-08-reading.png",
       "device": "play-phone",
       "shot": "reading",
-      "stand": "side",
+      "stand": "field",
       "caption": "The Fathers, read in full",
       "route": "/saints/athanasius-the-great/on-the-incarnation",
       "state": "St Athanasius the Great, On the Incarnation, opened from the reading room.",
@@ -1346,13 +1346,13 @@
           412,
           846
         ],
-        "scale": 1.9782
+        "scale": 1.6675
       },
-      "bytes": 208622,
+      "bytes": 169330,
       "problems": [],
       "reader": {
         "plus": "0",
-        "tier": null
+        "tier": "free"
       },
       "errors": [],
       "picturesInView": [
@@ -1535,7 +1535,7 @@
       "file": "play-tablet-7-02-greek.png",
       "device": "play-tablet-7",
       "shot": "greek",
-      "stand": "side",
+      "stand": "field",
       "caption": "The Greek beside the verse",
       "route": "/bible/john/1",
       "state": "John 1 with Interlinear Greek switched on (More actions, Interlinear Greek); free for every reader.",
@@ -1549,13 +1549,13 @@
           600,
           960
         ],
-        "scale": 2.325
+        "scale": 1.92
       },
-      "bytes": 309889,
+      "bytes": 174852,
       "problems": [],
       "reader": {
         "plus": "0",
-        "tier": null
+        "tier": "free"
       },
       "errors": [],
       "picturesInView": [],
@@ -2322,7 +2322,7 @@
       "file": "play-tablet-7-04-journal.png",
       "device": "play-tablet-7",
       "shot": "journal",
-      "stand": "side",
+      "stand": "field",
       "caption": "A journal kept by the Church's day",
       "route": "/journal",
       "state": "The journal as a new reader opens it: the day's page, its saint, its fast and its readings, each with a pen.",
@@ -2336,9 +2336,9 @@
           600,
           960
         ],
-        "scale": 2.325
+        "scale": 1.92
       },
-      "bytes": 209398,
+      "bytes": 113129,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -2511,7 +2511,7 @@
       "file": "play-tablet-7-06-saint.png",
       "device": "play-tablet-7",
       "shot": "saint",
-      "stand": "side",
+      "stand": "field",
       "caption": "The lives of the saints",
       "route": "/saints/basil-the-great",
       "state": "St Basil the Great's page, on Life.",
@@ -2525,13 +2525,13 @@
           600,
           960
         ],
-        "scale": 2.325
+        "scale": 1.92
       },
-      "bytes": 591359,
+      "bytes": 606233,
       "problems": [],
       "reader": {
         "plus": "0",
-        "tier": "free"
+        "tier": null
       },
       "errors": [],
       "picturesInView": [
@@ -2687,7 +2687,7 @@
       "file": "play-tablet-7-08-reading.png",
       "device": "play-tablet-7",
       "shot": "reading",
-      "stand": "side",
+      "stand": "field",
       "caption": "The Fathers, read in full",
       "route": "/saints/athanasius-the-great/on-the-incarnation",
       "state": "St Athanasius the Great, On the Incarnation, opened from the reading room.",
@@ -2701,9 +2701,9 @@
           600,
           960
         ],
-        "scale": 2.325
+        "scale": 1.92
       },
-      "bytes": 337917,
+      "bytes": 244687,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -2889,7 +2889,7 @@
       "file": "play-tablet-10-02-greek.png",
       "device": "play-tablet-10",
       "shot": "greek",
-      "stand": "side",
+      "stand": "field",
       "caption": "The Greek beside the verse",
       "route": "/bible/john/1",
       "state": "John 1 with Interlinear Greek switched on (More actions, Interlinear Greek); free for every reader.",
@@ -2903,9 +2903,9 @@
           800,
           1280
         ],
-        "scale": 2.1797
+        "scale": 1.8
       },
-      "bytes": 461775,
+      "bytes": 246474,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -3676,7 +3676,7 @@
       "file": "play-tablet-10-04-journal.png",
       "device": "play-tablet-10",
       "shot": "journal",
-      "stand": "side",
+      "stand": "field",
       "caption": "A journal kept by the Church's day",
       "route": "/journal",
       "state": "The journal as a new reader opens it: the day's page, its saint, its fast and its readings, each with a pen.",
@@ -3690,9 +3690,9 @@
           800,
           1280
         ],
-        "scale": 2.1797
+        "scale": 1.8
       },
-      "bytes": 239819,
+      "bytes": 124974,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -3862,7 +3862,7 @@
       "file": "play-tablet-10-06-saint.png",
       "device": "play-tablet-10",
       "shot": "saint",
-      "stand": "side",
+      "stand": "field",
       "caption": "The lives of the saints",
       "route": "/saints/basil-the-great",
       "state": "St Basil the Great's page, on Life.",
@@ -3876,9 +3876,9 @@
           800,
           1280
         ],
-        "scale": 2.1797
+        "scale": 1.8
       },
-      "bytes": 490542,
+      "bytes": 334172,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -4046,7 +4046,7 @@
       "file": "play-tablet-10-08-reading.png",
       "device": "play-tablet-10",
       "shot": "reading",
-      "stand": "side",
+      "stand": "field",
       "caption": "The Fathers, read in full",
       "route": "/saints/athanasius-the-great/on-the-incarnation",
       "state": "St Athanasius the Great, On the Incarnation, opened from the reading room.",
@@ -4060,9 +4060,9 @@
           800,
           1280
         ],
-        "scale": 2.1797
+        "scale": 1.8
       },
-      "bytes": 516774,
+      "bytes": 319186,
       "problems": [],
       "reader": {
         "plus": "0",

@@ -8,7 +8,7 @@
 - **The day.** Every screen is taken on Sunday 6 December 2026, 9:30 in New York: St Nicholas the Wonderworker, in the Nativity Fast.
 - **The look.** The night palette (the app's Dark), reduced motion on so each still is at rest.
 - **The network.** The export is answered the way the phones' shells answer it (`scripts/lib/shell-server.mjs`). The only thing let out is a picture the app itself asks of purifyapp.net (some covers are not in the bundle), as on a phone with signal.
-- **The picture.** Each screen stands in one of two ways, turn about through the eight (see "The design" below): upright and whole before a low hill, or as a plain slab turned to one side before a field of rolling lines. Over it is one line in the house's heading face. The page wears the app's own stylesheet: the night ground from its token, lines in its ink, one soft pool of light. No hardware is drawn, and there are no rays, no side stripe, no sparkle, no pills and no gloss.
+- **The picture.** Each screen stands in one of two ways, turn about through the eight (see "The design" below): upright and whole before a low hill, or as a plain slab turned to one side before a field of rolling lines (on Google Play, where no device is shown, that screen stands upright before the same field). Over it is one line in the house's heading face. The page wears the app's own stylesheet: the night ground from its token, lines in its ink, one soft pool of light. No hardware is drawn, and there are no rays, no side stripe, no sparkle, no pills and no gloss.
 
 To make them again: `npm ci`, the build above, then `node docs/plans/v1.9/store/make.mjs` (about 25 minutes). One device or one screen: `node docs/plans/v1.9/store/make.mjs play-phone`, `node docs/plans/v1.9/store/make.mjs fathers`.
 
@@ -28,7 +28,7 @@ To make them again: `npm ci`, the build above, then `node docs/plans/v1.9/store/
 - `.jpeg`, `.jpg` or `.png`, no alpha, one to ten for each device size.
 - Apple's page is long and its size tables were read through a summary of the page, so treat these as read once and not twice. They are the sizes App Store Connect names, and it refuses a file of the wrong size at upload, so a mistake cannot ship.
 
-How this set meets them: every file is a 24-bit PNG with no alpha at the exact size in its heading; eight for each device (Play's most; Apple takes up to ten); all portrait; the line takes about a sixth of each picture; no line names a price, a rank or a call to action. No hardware is drawn. Four of the eight show the screen as a plain slab turned to the side, which is device-like: that goes against Play's advice on device imagery and breaks no requirement of either store (`variants/README.md` has what each asks, and `variants/phone-3d/README.md` why a plain slab is allowed by Apple).
+How this set meets them: every file is a 24-bit PNG with no alpha at the exact size in its heading; eight for each device (Play's most; Apple takes up to ten); all portrait; the line takes about a sixth of each picture; no line names a price, a rank or a call to action. No hardware is drawn. On the App Store, four of the eight show the screen as a plain slab turned to the side (`variants/phone-3d/README.md` has why Apple allows a plain slab). On Google Play no device is shown at all: see "Play's two pieces of advice, followed" below.
 
 ## Choices made for him
 
@@ -45,7 +45,7 @@ Each is the plan's default where the plan has one. Any of them can be changed an
 9. **The tablet sizes** are 1440 by 2560 (the app at 600 by 960) and 1800 by 3200 (the app at 800 by 1280), both 9:16.
 10. **The iPhone and iPad pictures come from the same export** at Apple's sizes (440 by 956 and 1032 by 1376). The screens are the same web layer in both apps and none of the eight names a store. One export was the spend asked for.
 11. **Today's one-question card is dismissed** with its own Dismiss button, as a reader would, so the day's saint, the Nativity star and the verse stand together.
-12. **The feature graphic keeps the plan's night ground**, with the app's cross, the wordmark as the app sets it (the sans, bold) and the Play listing's short description, word for word, over the front design's hill and its lines. Play's page advises against a ground of pure black or dark grey, because it can sit flat against the store's own dark theme; the hill and its light give the ground a shape. If he would rather follow Play's advice further, this is the one picture to change.
+12. **The feature graphic stands on a light ground**, the night as ink upon it: the app's cross, the wordmark as the app sets it (the sans, bold) and the Play listing's short description, word for word, over the front design's hill and its lines. The sky is a silver between white and the night, lighter where the light pools over the crest, and the hill keeps the house's night. It was first made on the night ground; it changed by his word, to follow Play's advice ("Play's two pieces of advice, followed", below).
 13. **No line says "free".** The journal is free for everyone in 1.9, but Play asks for no price words on a picture. The listing's text says it.
 14. **PNG throughout**, {{size}} in all.
 
@@ -58,9 +58,20 @@ So this set has two ways a screen stands, and they go turn about so the row in a
 | Stands | Screens | What it is |
 |---|---|---|
 | **Front** | 01 Today, 03 the Fathers, 05 prayers, 07 the calendar | The screen upright and whole with a thin dark rim, before a low hill and the line of its crest, fainter lines rising over it, a soft light behind. |
-| **Side** | 02 the Greek, 04 the journal, 06 a saint, 08 a Father's work | The phone as a plain slab with real thickness, turned to one side, before rolling lines that gather toward a horizon, a soft light where they meet the sky. |
+| **Side** | 02 the Greek, 04 the journal, 06 a saint, 08 a Father's work | On the App Store: the phone as a plain slab with real thickness, turned to one side, before rolling lines that gather toward a horizon, a soft light where they meet the sky. On Google Play: the screen upright and whole, as in Front, before that same field (the record calls this `field`). |
 
 The screens with the finest print (the Fathers' words, the calendar's days) stand front, where nothing is drawn in perspective.
+
+### Play's two pieces of advice, followed
+
+The first whole set went against two things Play's page puts under "Highly recommended" (Play Console Help, "Add preview assets to showcase your app", read 2026-11-12). Both were named to him as advice and not rules, and his word was: "Apply the change to 1 and 2."
+
+1. **No device on Play.** The page, for the feature graphic and for screenshots alike: "Avoid inappropriate or repetitive image elements, such as: Device imagery (as this can become obsolete quickly or alienate some users)." So on Play's three device lists the four Side screens are not shown as a slab. They stand upright and whole before the field, which keeps the row's turn-about of two backs. The App Store's pictures keep the slab. In `make.mjs` this is one word on a device (`device: false`).
+2. **No dark grey ground on the feature graphic.** The page: "Avoid using pure white, black, or dark gray as these colors can easily blend in with Google Play's background." So the graphic's ground is a silver between the two, with the night as its ink (choice 12).
+
+What the page says of its own weight: "Requirements listed on this page are mandatory; failure to meet requirements may result in removal or suspension from Google Play", and of the rest, "Failure to comply with these guidelines will not impact your store listing page, but may result in changes to how your preview assets appear on Google Play or limit promotional opportunities." So neither was a rule; following both keeps the pictures open to Play's larger formats.
+
+One thing left as it was, named to him: an upright screen keeps its round corners and a thin dark rim, as every Front picture has had from the first set. It is the screen's own outline, with no body and no hardware.
 
 Kept for 2.0, by his word: the eclipse and stars designs (`variants/eclipse/`, eight compositions on the thirds), the lifted piece of the real screen (`variants/round-2/`), and the rest of `variants/`.
 
@@ -73,7 +84,7 @@ Each screen names how it stands in `make.mjs` (`stand: "front"` or `"side"` in S
 - **The heritage list.** `make.mjs` holds every picture in view on every screen (images, backgrounds, masks, posters) against `lib/marketing/heritagePictures.ts` by file name, and fails on one. None is in view in any of the 41. By eye as well, every picture in view was looked up in the rights rows: St Nicholas on Today and the calendar (the Kirillo-Belozersky row, Russia), St Basil (St Sophia, Kyiv), St Athanasius (Sozopol, now Sofia), the Prayers pictures (the Sinai Pantocrator, in Egypt, and icons held in Moscow, Sergiev Posad and Novgorod). None is held in Greece or Italy. `results.json` lists the pictures in view for each file, and any listed picture lower on the same page, out of the picture.
 - **No other reader.** No Community, no profile, no reader's words or picture. St Basil's page shows a count of readers who asked for more of his writings, a number and no name.
 - **The lines.** Short, in the house voice, sentence case, no em dash. Each reuses words the app or the listing already says: "the day's saint, fast, and appointed readings" and "every feast, every fast" (the listing), "Read with the Fathers" and "the Greek beside it" (the app), "by the Church's day" (the 1.9 note).
-- **The look.** Black and white. One soft pool of light in each picture and nothing else that glows. The hill's lines are arcs of one wide circle, side by side; the field's lines run across and only draw closer toward the horizon. Nothing fans out from a point. checkMock's `rays`, `stripe`, `sparkle`, `gold` and `palette` pass on every picture.
+- **The look.** Black and white (the feature graphic the same two, the other way up: night ink on a silver ground). One soft pool of light in each picture and nothing else that glows. The hill's lines are arcs of one wide circle, side by side; the field's lines run across and only draw closer toward the horizon. Nothing fans out from a point. checkMock's `rays`, `stripe`, `sparkle`, `gold` and `palette` pass on every picture.
 - **checkMock.** `node scripts/mock-check.mjs --self-test` passed on this export first ("every mistake caught, and the house's own parts pass"). Then every final picture was checked as the page it is rendered from, on all five palettes, all fifteen rules. The result for each is in the tables above.
 - **Its by-eye list.**
   - *Built from the app's own component, rendered from the export; only the proposed change is new.* Yes: each screen is the export itself, untouched. The only new things are the line above it and what stands round and behind it.
