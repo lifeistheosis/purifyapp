@@ -242,6 +242,22 @@ the company's bank account.
 
 Send back: "C3 done" (and "Stripe asked to verify again" if it did).
 
+**Which name and number go on each W-9** (the Company guide, 2026-11-12, from the IRS's W-9 instructions):
+- If the LLC has one owner and keeps its default tax status, the owner's own name and SSN (or the owner's own EIN) go on line 1, with the LLC's name on line 2. The LLC's EIN does not go there.
+- If it has two or more owners, or has chosen to be taxed as a corporation, the LLC's name and its EIN go on the form.
+Tell the Company guide which case applies before you fill in any W-9.
+
+**Apple takes no trade name.** The App Store shows the LLC's legal name as the seller.
+
+### C3b. Florida: trade names and sales tax (before Stripe shows EIKON)
+
+From the Company guide, 2026-11-12, citing the Florida Statutes:
+
+1. **Register each trade name.** Under F.S. 865.09(3), the company may trade only under its exact legal name until another name is registered. That covers EIKON, and also Purify wherever a checkout, a receipt or a card statement shows "Purify" alone. The steps: advertise the name once in a newspaper in Miami-Dade, then register it at sunbiz.org ($50, for 5 years). Do this before Stripe's statement descriptor says EIKON.
+2. **Florida sales tax for the EIKON shop.** Register with the Florida Department of Revenue before the first taxable sale (F.S. 212.18(3)). If sales were already made without a registration, ask the Company guide how to catch up before doing anything else. Purify Plus needs no step here: Apple and Google collect that tax as the sellers of record.
+
+Send back: "C3b done", or what is unclear.
+
 ### C4. Re-check afterwards
 
 1. RevenueCat (app.revenuecat.com): open the Play Store app and the App

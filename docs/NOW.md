@@ -16,6 +16,7 @@ Updated 2026-11-12, 21:31 UTC.
 
 - Walk the test build once it is cut. Then: accept the 1.9 note in Admin, set the drop day, and submit both builds after the phone walks. On release day: the Purify profile's status, and opening campaigns.
 - The company: C0 (the address on the D-U-N-S record) and C0b (the papers). Send the company's exact name as the EIN letter has it. All in OWNER-STEPS.md.
+- The Company guide waits on two facts: how many owners the LLC has, and how it is taxed. Also: is the EIKON shop registered for Florida sales tax (C3b)? Register the EIKON trade name before Stripe shows it.
 - Also: the 22 permission letters, and the Android notifications test.
 - Later: the release's social cards (Fable), the promo videos (from his reference), and the EIKON boxes once the next paycheck comes (likely Wednesday 18 November).
 
