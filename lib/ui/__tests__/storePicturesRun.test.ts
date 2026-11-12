@@ -28,6 +28,10 @@ import { describe, expect, it } from "vitest";
  *     mirror.
  *  d. The journal's prompt under "Nothing written yet", one line on a tablet
  *     and 28.5px tall: 44 to the touch.
+ *  f. The saints' century timeline, where it fits a wide screen (from 1024):
+ *     its 21 marks stood 41.8px across at an iPad's 1032 (Admin's walk at
+ *     tablet widths, the arbiter's word of 17:00 UTC). Each keeps 44px there,
+ *     and the 4px between them goes.
  *  e. Prayers' banner on a tablet cut the Pantocrator from the brow up: the
  *     picture spans the column there and stood 17.375rem tall, his face under
  *     the fade. Taller there by 9rem, the verse lower by as much, and cut about
@@ -174,5 +178,17 @@ describe("e. Prayers' banner on a tablet", () => {
     expect(read("components/mobile/PrayersHero.tsx")).toContain('className="prayers-hero-img h-full w-full object-cover object-[50%_20%] md:object-[50%_52%]"');
     const css = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
     expect(css).toMatch(/@media \(min-width: 768px\) \{\s*\.prayers-hero-picture \{\s*height: 26\.375rem;\s*\}\s*\.prayers-hero-verse \{\s*padding-top: 15\.5rem;\s*\}\s*\}/);
+  });
+});
+
+describe("f. the saints' century timeline where it fits", () => {
+  it("keeps each of its marks 44px across from 1024 wide, the gap between them gone", () => {
+    const timeline = read("components/saints/CenturyTimeline.tsx");
+    expect(timeline).toContain('className="flex w-max min-w-full items-stretch gap-1 lg:w-auto lg:min-w-0 lg:gap-0"');
+    const mark = /"group flex ([^"]*)",\s*"focus-visible/.exec(timeline)?.[1] ?? "";
+    expect(mark.split(/\s+/)).toContain("lg:min-w-[44px]");
+    expect(mark.split(/\s+/)).not.toContain("lg:min-w-0");
+    // 21 marks of 44px fit the row where it no longer scrolls: about 963px at 1032, 955 at 1024.
+    expect(21 * 44).toBeLessThan(955);
   });
 });
