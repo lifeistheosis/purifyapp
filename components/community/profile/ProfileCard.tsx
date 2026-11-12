@@ -20,7 +20,7 @@ import { apiFetch } from "@/lib/api/client";
 import { getBook, localBookNames, referenceIn } from "@/lib/bible/books";
 import { cn } from "@/lib/cn";
 import { clergyLabelKey } from "@/lib/profile/clergy";
-import { isBannerMotion, normalizeHex, readableThemeAccent, type Cosmetics } from "@/lib/profile/cosmetics";
+import { isBannerMotion, isEffect, normalizeHex, readableThemeAccent, type Cosmetics } from "@/lib/profile/cosmetics";
 import { recordDate } from "@/lib/profile/dates";
 import { nameColorClass } from "@/lib/profile/nameColor";
 import type { PublicProfile } from "@/lib/profile/publicProfile";
@@ -191,6 +191,13 @@ export function ProfileFace({
   const { t } = useTranslate();
   const Name = nameAs;
   const [open, close] = quoteMarks(t);
+  // A profile effect's specks drift behind the face (ProfileEffect, quiet: whole over the
+  // picture and the name), so one can stand right under the @handle or the status: "@purify"
+  // read 2.84:1 on Black with a speck under it (the gate's final run, 2026-11-12), the
+  // status 4.01:1. On a card with an effect the two lines stand in the house's soft edge of
+  // the card's own ground (.words-halo), which holds them at 10.5:1 with a speck held under
+  // them; a card without one draws them as before.
+  const halo = isEffect(profile.cosmetics.effect) && "words-halo";
   return (
     <div className="relative flex flex-col items-center text-center">
       <CommunityAvatar
@@ -225,6 +232,7 @@ export function ProfileFace({
           className={cn(
             "mt-[7px] flex flex-wrap items-center justify-center gap-x-2 gap-y-1 font-sans text-[13.5px]",
             profileSurface(profile.cosmetics).themed ? "text-paper/80" : "text-paper/60",
+            halo,
           )}
         >
           {/* No handle, no lone @: a reader not signed in, on the Plus page's try window. */}
@@ -237,6 +245,7 @@ export function ProfileFace({
           className={cn(
             compact ? "text-detail" : "text-[15.5px]",
             "mt-[9px] max-w-[30rem] break-words px-3.5 font-serif italic leading-[1.35] text-paper/80",
+            halo,
           )}
         >
           <span className="sr-only">{t("profile.statusAria", { status: profile.status })}</span>

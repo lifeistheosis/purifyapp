@@ -1,7 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+
+import { ProfileFace } from "@/components/community/profile/ProfileCard";
+import type { Cosmetics } from "@/lib/profile/cosmetics";
 
 /**
  * The gate's final run 1 (Admin, 2026-11-12; the arbiter's 02:08 UTC), the
@@ -84,5 +89,42 @@ describe("the florilegium's starter tiles", () => {
     for (const [name, selector, ground] of GROUND) {
       expect(onGround(paperOf(selector), share / 100, ground), `${name}, at ${share} percent`).toBeGreaterThanOrEqual(4.5);
     }
+  });
+});
+
+const NONE: Cosmetics = { bannerColor: null, bannerUrl: null, themePrimary: null, themeAccent: null, decoration: null, effect: null, nameColor: null, bannerMotion: null };
+
+describe("a profile's face over its effect's drifting specks", () => {
+  /** The class lists of the face's @handle line and its status line. */
+  function lines(effect: string | null): { handle: string; status: string } {
+    const html = renderToStaticMarkup(
+      createElement(ProfileFace, {
+        profile: { name: "Herman", handle: "herman", avatar: null, status: "Keeping the Nativity Fast", cosmetics: { ...NONE, themePrimary: "#232327", themeAccent: "#0d0d10", effect } },
+        nameAs: "p",
+      }),
+    );
+    const classOf = (marker: string) => {
+      const at = html.indexOf(marker);
+      const open = html.lastIndexOf("<p ", at);
+      return /class="([^"]*)"/.exec(html.slice(open, html.indexOf(">", open) + 1))?.[1] ?? "";
+    };
+    return { handle: classOf("@herman"), status: classOf("Keeping the Nativity Fast") };
+  }
+
+  it("stands the @handle and the status in the house's soft edge wherever a speck can drift under them", () => {
+    for (const effect of ["gold-dust", "snowfall", "theophany-drops", "paschal-embers", "incense", "candlelight"]) {
+      const { handle, status } = lines(effect);
+      expect(handle.split(" "), `${effect}: the @handle`).toContain("words-halo");
+      expect(status.split(" "), `${effect}: the status`).toContain("words-halo");
+    }
+    // A card without an effect draws them as before.
+    expect(lines(null).handle.split(" ")).not.toContain("words-halo");
+    expect(lines(null).status.split(" ")).not.toContain("words-halo");
+    // What the walk measured on the Purify sheet with a gold speck held under "@purify" (the
+    // line at 80 of a themed card's white): 3.07:1 on the speck as it was; with the soft edge,
+    // the ground under its letters is the card's own.
+    const white: Rgb = [255, 255, 255];
+    expect(onGround(white, 0.8, [142, 129, 100])).toBeLessThan(4.5);
+    expect(onGround(white, 0.8, [37, 34, 31])).toBeGreaterThanOrEqual(4.5);
   });
 });
