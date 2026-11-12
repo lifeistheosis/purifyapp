@@ -66,16 +66,16 @@ Each is the plan's default where the plan has one. Any of them can be changed an
 
 ## For the arbiter: what checkMock says of the app's own screens
 
-Each screen was also checked as the app's own page (`body`), though this folder may not change the app and a still has nothing to tap. Today, prayers, the saint's page and the Father's work pass every rule on every device. The journal and the calendar pass on both phones and the 7-inch tablet. What checkMock names on the rest is the app's and not the pictures':
+Each screen was also checked as the app's own page (`body`), though this folder may not change the app and a still has nothing to tap. What checkMock names on them now:
 
 {{said}}
 
-What they are:
+What it named on the first run, at `ae750022`, and how each was mended in the app on 2026-11-12 (`docs/1.9-build/PLAN.md`, 13bm; each held there at 390, 800 and 1032 wide, for a new reader and an open one, on the five palettes and the seventeen looks and in Arabic):
 
-- **Words in a line (greek, fathers).** The interlinear's Greek words (`components/bible/VerseRow.tsx`, "Look up ...") and the glossed old words in a Father's text (`components/bible/GlossedText.tsx`, here "let") are buttons set inside a line of text, about 32 px and 24 px tall. checkMock excepts a link inside a sentence from the 44 px rule and not a button inside one, so it names every word on the page.
-- **The arrow beside "Continue reading" (fathers).** checkMock says it does not mirror in Arabic.
-- **The wide calendar (calendar, 10-inch tablet and iPad).** From 800 px wide the calendar opens in a wider layout than the phones'. In it checkMock names the dot between New and Old (2.8:1 on Dark, under 4.5:1 on every palette), the fast's names on Light (3.8 to 4.2:1), the links New, Old, Prev, Today and Next (19 to 23 px tall), the two reading rows (43 px tall), and words set left or right that stay put in Arabic.
-- **The wide journal (journal, 10-inch tablet and iPad).** The prompt under "Nothing written yet" is a button 28.5 px tall at those widths.
-- **By eye, Prayers on the 10-inch tablet and the iPad.** The banner at the head of Prayers is cut so that the Pantocrator shows from the brow up, without his face (`play-tablet-10-05-prayers.png`, `appstore-ipad-13-05-prayers.png`).
+- **Words in a line (greek, fathers).** The interlinear's Greek words (`components/bible/VerseRow.tsx`, "Look up ...") and the glossed old words in a Father's text (`components/bible/GlossedText.tsx`, here "let") are buttons set inside a line of text, about 32 px and 24 px tall. They keep the size of the words they are, and each names the 44 px rule's own exception for a word in a sentence, with its reason.
+- **The arrow beside "Continue reading" (fathers).** It did not mirror in Arabic: its button was pulled left, not to the start. It is pulled to the start now.
+- **The wide calendar (calendar, 10-inch tablet and iPad).** The dots between New and Old, Prev, Today and Next are inked as the links are; the links are 44 to the touch, and the day's reading rows 44 tall; words set left or right are set at the start and the end. Held on the seventeen looks too, a fast's name is drawn toward the page's own ink on Light and the light looks, and three more lines are deeper there.
+- **The wide journal (journal, 10-inch tablet and iPad).** The prompt under "Nothing written yet" is 44 to the touch.
+- **By eye, Prayers on the 10-inch tablet and the iPad.** The banner showed the Pantocrator from the brow up, without his face. Across a tablet's column it is taller now and cut about his face, the verse over its lower part as on the phone (`play-tablet-10-05-prayers.png`, `appstore-ipad-13-05-prayers.png`).
 
-None of these shows as a fault in a still, and the pictures show the app as it is. If a wide layout changes before release, `node docs/plans/v1.9/store/make.mjs calendar journal prayers` makes those pictures again. Whether the checker should except words in a line, or the reader should change, is not this folder's to decide.
+The pictures show the app as it is. If a wide layout changes before release, `node docs/plans/v1.9/store/make.mjs calendar journal prayers` makes those pictures again.

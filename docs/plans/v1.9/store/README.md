@@ -36,8 +36,8 @@ The screen is the app at 412 by 846 CSS pixels, shown whole.
 | File | The line | Shot from | checkMock on the picture | checkMock on the app's own screen | Pictures in view |
 |---|---|---|---|---|---|
 | `play-phone-01-today.png` | The day's saint, fast and readings | `/` | pass, all 15 | pass, all 15; 16 said for the eye | nicholas-the-wonderworker.v2.jpg |
-| `play-phone-02-greek.png` | The Greek beside the verse | `/bible/john/1` | pass, all 15 | 1 kind of note on the app, see "For the arbiter" | none |
-| `play-phone-03-fathers.png` | The Fathers on the verse you are reading | `/bible/genesis/1` | pass, all 15 | 3 kinds of note on the app, see "For the arbiter" | basil-the-great.jpg |
+| `play-phone-02-greek.png` | The Greek beside the verse | `/bible/john/1` | pass, all 15 | pass, all 15 | none |
+| `play-phone-03-fathers.png` | The Fathers on the verse you are reading | `/bible/genesis/1` | pass, all 15 | pass, all 15 | basil-the-great.jpg |
 | `play-phone-04-journal.png` | A journal kept by the Church's day | `/journal` | pass, all 15 | pass, all 15 | none |
 | `play-phone-05-prayers.png` | The daily prayers, morning and evening | `/prayers` | pass, all 15 | pass, all 15; 18 said for the eye | prayers.v4.jpg, anastasis.jpg, christ-pantocrator.v2.jpg, pentecost.jpg, theotokos-of-vladimir.jpg |
 | `play-phone-06-saint.png` | The lives of the saints | `/saints/basil-the-great` | pass, all 15 | pass, all 15; 6 said for the eye | basil-the-great.jpg, basil-the-great.v1.avif |
@@ -51,8 +51,8 @@ The screen is the app at 600 by 960 CSS pixels, shown whole.
 | File | The line | Shot from | checkMock on the picture | checkMock on the app's own screen | Pictures in view |
 |---|---|---|---|---|---|
 | `play-tablet-7-01-today.png` | The day's saint, fast and readings | `/` | pass, all 15 | pass, all 15; 15 said for the eye | nicholas-the-wonderworker.v2.jpg, prayers.v4.jpg |
-| `play-tablet-7-02-greek.png` | The Greek beside the verse | `/bible/john/1` | pass, all 15 | 1 kind of note on the app, see "For the arbiter" | none |
-| `play-tablet-7-03-fathers.png` | The Fathers on the verse you are reading | `/bible/genesis/1` | pass, all 15 | 3 kinds of note on the app, see "For the arbiter" | basil-the-great.jpg |
+| `play-tablet-7-02-greek.png` | The Greek beside the verse | `/bible/john/1` | pass, all 15 | pass, all 15 | none |
+| `play-tablet-7-03-fathers.png` | The Fathers on the verse you are reading | `/bible/genesis/1` | pass, all 15 | pass, all 15 | basil-the-great.jpg |
 | `play-tablet-7-04-journal.png` | A journal kept by the Church's day | `/journal` | pass, all 15 | pass, all 15 | none |
 | `play-tablet-7-05-prayers.png` | The daily prayers, morning and evening | `/prayers` | pass, all 15 | pass, all 15; 17 said for the eye | prayers.v4.jpg, anastasis.jpg, christ-pantocrator.v2.jpg, pentecost.jpg, theotokos-of-vladimir.jpg, three-hierarchs.v2.jpg |
 | `play-tablet-7-06-saint.png` | The lives of the saints | `/saints/basil-the-great` | pass, all 15 | pass, all 15; 6 said for the eye | basil-the-great.jpg, basil-the-great.v1.avif |
@@ -66,12 +66,12 @@ The screen is the app at 800 by 1280 CSS pixels, shown whole.
 | File | The line | Shot from | checkMock on the picture | checkMock on the app's own screen | Pictures in view |
 |---|---|---|---|---|---|
 | `play-tablet-10-01-today.png` | The day's saint, fast and readings | `/` | pass, all 15 | pass, all 15; 14 said for the eye | nicholas-the-wonderworker.v2.jpg, prayers.v4.jpg |
-| `play-tablet-10-02-greek.png` | The Greek beside the verse | `/bible/john/1` | pass, all 15 | 1 kind of note on the app, see "For the arbiter" | none |
-| `play-tablet-10-03-fathers.png` | The Fathers on the verse you are reading | `/bible/genesis/1` | pass, all 15 | 3 kinds of note on the app, see "For the arbiter" | basil-the-great.jpg |
-| `play-tablet-10-04-journal.png` | A journal kept by the Church's day | `/journal` | pass, all 15 | 1 kind of note on the app, see "For the arbiter" | none |
+| `play-tablet-10-02-greek.png` | The Greek beside the verse | `/bible/john/1` | pass, all 15 | pass, all 15 | none |
+| `play-tablet-10-03-fathers.png` | The Fathers on the verse you are reading | `/bible/genesis/1` | pass, all 15 | pass, all 15 | basil-the-great.jpg |
+| `play-tablet-10-04-journal.png` | A journal kept by the Church's day | `/journal` | pass, all 15 | pass, all 15 | none |
 | `play-tablet-10-05-prayers.png` | The daily prayers, morning and evening | `/prayers` | pass, all 15 | pass, all 15; 14 said for the eye | prayers.v4.jpg, anastasis.jpg, christ-pantocrator.v2.jpg, pentecost.jpg, theotokos-of-vladimir.jpg, three-hierarchs.v2.jpg |
 | `play-tablet-10-06-saint.png` | The lives of the saints | `/saints/basil-the-great` | pass, all 15 | pass, all 15 | basil-the-great.jpg, basil-the-great.v1.avif |
-| `play-tablet-10-07-calendar.png` | Every feast and every fast | `/calendar` | pass, all 15 | 38 kinds of note on the app, see "For the arbiter"; 9 said for the eye | nicholas-the-wonderworker.v2.jpg |
+| `play-tablet-10-07-calendar.png` | Every feast and every fast | `/calendar` | pass, all 15 | pass, all 15; 9 said for the eye | nicholas-the-wonderworker.v2.jpg |
 | `play-tablet-10-08-reading.png` | The Fathers, read in full | `/saints/athanasius-the-great/on-the-incarnation` | pass, all 15 | pass, all 15; 2 said for the eye | athanasius-the-great.v1.avif |
 
 ### App Store, iPhone 6.9-inch (1320 by 2868)
@@ -81,8 +81,8 @@ The screen is the app at 440 by 956 CSS pixels, shown whole.
 | File | The line | Shot from | checkMock on the picture | checkMock on the app's own screen | Pictures in view |
 |---|---|---|---|---|---|
 | `appstore-iphone-6.9-01-today.png` | The day's saint, fast and readings | `/` | pass, all 15 | pass, all 15; 15 said for the eye | nicholas-the-wonderworker.v2.jpg, prayers.v4.jpg |
-| `appstore-iphone-6.9-02-greek.png` | The Greek beside the verse | `/bible/john/1` | pass, all 15 | 1 kind of note on the app, see "For the arbiter" | none |
-| `appstore-iphone-6.9-03-fathers.png` | The Fathers on the verse you are reading | `/bible/genesis/1` | pass, all 15 | 3 kinds of note on the app, see "For the arbiter" | basil-the-great.jpg |
+| `appstore-iphone-6.9-02-greek.png` | The Greek beside the verse | `/bible/john/1` | pass, all 15 | pass, all 15 | none |
+| `appstore-iphone-6.9-03-fathers.png` | The Fathers on the verse you are reading | `/bible/genesis/1` | pass, all 15 | pass, all 15 | basil-the-great.jpg |
 | `appstore-iphone-6.9-04-journal.png` | A journal kept by the Church's day | `/journal` | pass, all 15 | pass, all 15 | none |
 | `appstore-iphone-6.9-05-prayers.png` | The daily prayers, morning and evening | `/prayers` | pass, all 15 | pass, all 15; 17 said for the eye | prayers.v4.jpg, anastasis.jpg, christ-pantocrator.v2.jpg, pentecost.jpg, theotokos-of-vladimir.jpg |
 | `appstore-iphone-6.9-06-saint.png` | The lives of the saints | `/saints/basil-the-great` | pass, all 15 | pass, all 15; 6 said for the eye | basil-the-great.jpg, basil-the-great.v1.avif |
@@ -96,12 +96,12 @@ The screen is the app at 1032 by 1376 CSS pixels, shown whole.
 | File | The line | Shot from | checkMock on the picture | checkMock on the app's own screen | Pictures in view |
 |---|---|---|---|---|---|
 | `appstore-ipad-13-01-today.png` | The day's saint, fast and readings | `/` | pass, all 15 | pass, all 15; 14 said for the eye | nicholas-the-wonderworker.v2.jpg, prayers.v4.jpg, nicholas-the-wonderworker.v1.avif |
-| `appstore-ipad-13-02-greek.png` | The Greek beside the verse | `/bible/john/1` | pass, all 15 | 1 kind of note on the app, see "For the arbiter" | none |
-| `appstore-ipad-13-03-fathers.png` | The Fathers on the verse you are reading | `/bible/genesis/1` | pass, all 15 | 3 kinds of note on the app, see "For the arbiter" | basil-the-great.jpg |
-| `appstore-ipad-13-04-journal.png` | A journal kept by the Church's day | `/journal` | pass, all 15 | 1 kind of note on the app, see "For the arbiter" | none |
+| `appstore-ipad-13-02-greek.png` | The Greek beside the verse | `/bible/john/1` | pass, all 15 | pass, all 15 | none |
+| `appstore-ipad-13-03-fathers.png` | The Fathers on the verse you are reading | `/bible/genesis/1` | pass, all 15 | pass, all 15 | basil-the-great.jpg |
+| `appstore-ipad-13-04-journal.png` | A journal kept by the Church's day | `/journal` | pass, all 15 | pass, all 15 | none |
 | `appstore-ipad-13-05-prayers.png` | The daily prayers, morning and evening | `/prayers` | pass, all 15 | pass, all 15; 14 said for the eye | prayers.v4.jpg, anastasis.jpg, christ-pantocrator.v2.jpg, pentecost.jpg, theotokos-of-vladimir.jpg, three-hierarchs.v2.jpg |
 | `appstore-ipad-13-06-saint.png` | The lives of the saints | `/saints/basil-the-great` | pass, all 15 | pass, all 15 | basil-the-great.jpg, basil-the-great.v1.avif |
-| `appstore-ipad-13-07-calendar.png` | Every feast and every fast | `/calendar` | pass, all 15 | 38 kinds of note on the app, see "For the arbiter"; 9 said for the eye | nicholas-the-wonderworker.v2.jpg |
+| `appstore-ipad-13-07-calendar.png` | Every feast and every fast | `/calendar` | pass, all 15 | pass, all 15; 9 said for the eye | nicholas-the-wonderworker.v2.jpg |
 | `appstore-ipad-13-08-reading.png` | The Fathers, read in full | `/saints/athanasius-the-great/on-the-incarnation` | pass, all 15 | pass, all 15; 2 said for the eye | athanasius-the-great.v1.avif |
 
 ## How the set was made
@@ -109,6 +109,7 @@ The screen is the app at 1032 by 1376 CSS pixels, shown whole.
 `make.mjs` in this folder made every picture and wrote this file and `results.json` (the measured record of each picture). Nothing was drawn by hand and no file outside this folder was changed.
 
 - **The app.** Branch `ccr-07896cf2-bo0afd` at `ae750022`, one export for all five devices: `NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1 NEXT_PUBLIC_REVENUECAT_ANDROID_KEY=walk npm run build:android`, with the public settings the release workflow passes (`.github/workflows/android-apk.yml`): the website's public database address and public key, read from the live site's own script as `docs/1.9-build/notes/theology-fable.md` records and kept out of git, the site address, and the shop and community switches. The key named `walk` is a stand-in, a word and not a key, as `scripts/mock-journal.mjs` explains. It makes the export lock Plus the way the store builds do, so every screen is the one a new reader meets.
+- **Made again.** On 2026-11-12, once the app's own notes above ("For the arbiter") were mended in the app, the five screens they named (greek, fathers, journal, prayers, calendar) were made again on every device at `000cb6d99`: `node docs/plans/v1.9/store/make.mjs calendar journal prayers greek fathers`, from an export cut the same way, Plus locked, except that the database's address and key were stand-ins (`placeholder.invalid`): none of the five screens asks anything of the database, and the run lets nothing out but pictures. The other three screens and the feature graphic are as `ae750022` made them.
 - **The reader.** A new reader with no account and no Plus (`purify:plusFeatures` reads `0` on every screen). `purify:onboarded` and `purify:whatsNewSeen` are set to skip the welcome. The page is told it is the Android shell, where this export sells Plus. Each screen is reached the way the app goes there, and what is tapped is tapped as a finger taps it. Nothing is written into the app's page.
 - **The day.** Every screen is taken on Sunday 6 December 2026, 9:30 in New York: St Nicholas the Wonderworker, in the Nativity Fast.
 - **The look.** The night palette (the app's Dark), reduced motion on so each still is at rest.
@@ -152,7 +153,7 @@ Each is the plan's default where the plan has one. Any of them can be changed an
 11. **Today's one-question card is dismissed** with its own Dismiss button, as a reader would, so the day's saint, the Nativity star and the verse stand together.
 12. **The feature graphic keeps the plan's night ground**, with the app's cross, the wordmark as the app sets it (the sans, bold) and the Play listing's short description, word for word. Play's page advises against a ground of pure black or dark grey, because it can sit flat against the store's own dark theme. The plan's default was kept, with a soft pool of light behind the mark. If he would rather follow Play's advice, this is the one picture to change.
 13. **No line says "free".** The journal is free for everyone in 1.9, but Play asks for no price words on a picture. The listing's text says it.
-14. **PNG throughout**, 12.0 MB in all.
+14. **PNG throughout**, 12.3 MB in all.
 
 ## The house's rules, answered
 
@@ -171,25 +172,19 @@ Each is the plan's default where the plan has one. Any of them can be changed an
 
 ## For the arbiter: what checkMock says of the app's own screens
 
-Each screen was also checked as the app's own page (`body`), though this folder may not change the app and a still has nothing to tap. Today, prayers, the saint's page and the Father's work pass every rule on every device. The journal and the calendar pass on both phones and the 7-inch tablet. What checkMock names on the rest is the app's and not the pictures':
+Each screen was also checked as the app's own page (`body`), though this folder may not change the app and a still has nothing to tap. What checkMock names on them now:
 
-- **greek, target** (every device; 1 kind), for example: `target: button "Look up Ἐν": 24.7 by 32.3px, needs 44 by 44` and `target: button "Look up Ἐν": 28.6 by 37.3px, needs 44 by 44`
-- **fathers, target** (every device; 2 kinds), for example: `target: button "Look up ΕΝ": 27.9 by 32.3px, needs 44 by 44` and `target: button "let": 16.7 by 23.7px, needs 44 by 44`
-- **fathers, mirror** (every device; 1 kind), for example: `mirror: svg: at 140.3 to 153px, and in Arabic at 254.7 to 267.5px of 412: placed with left or right, not start or end` and `mirror: svg: at 140.3 to 153px, and in Arabic at 442.7 to 455.5px of 600: placed with left or right, not start or end`
-- **journal, target** (10-inch tablet, iPad 13-inch; 1 kind), for example: `target: button "What from today's Gospel would y": 569.9 by 28.5px, needs 44 by 44`
-- **calendar, contrast** (10-inch tablet, iPad 13-inch; 14 kinds), for example: `contrast (Dark): "·": 2.82:1, needs 4.5:1` and `contrast (Light): "·": 1.75:1, needs 4.5:1`
-- **calendar, target** (10-inch tablet, iPad 13-inch; 7 kinds), for example: `target: a "New": 26.6 by 22.6px, needs 44 by 44` and `target: a "Old": 21 by 18.6px, needs 44 by 44`
-- **calendar, mirror** (10-inch tablet, iPad 13-inch; 17 kinds), for example: `mirror: p "Sunday · December 6, 2026": its text is set left, not start or end, so it stays left in Arabic` and `mirror: span "S": its text is set left, not start or end, so it stays left in Arabic`
+Nothing: every app screen passed every rule.
 
-What they are:
+What it named on the first run, at `ae750022`, and how each was mended in the app on 2026-11-12 (`docs/1.9-build/PLAN.md`, 13bm; each held there at 390, 800 and 1032 wide, for a new reader and an open one, on the five palettes and the seventeen looks and in Arabic):
 
-- **Words in a line (greek, fathers).** The interlinear's Greek words (`components/bible/VerseRow.tsx`, "Look up ...") and the glossed old words in a Father's text (`components/bible/GlossedText.tsx`, here "let") are buttons set inside a line of text, about 32 px and 24 px tall. checkMock excepts a link inside a sentence from the 44 px rule and not a button inside one, so it names every word on the page.
-- **The arrow beside "Continue reading" (fathers).** checkMock says it does not mirror in Arabic.
-- **The wide calendar (calendar, 10-inch tablet and iPad).** From 800 px wide the calendar opens in a wider layout than the phones'. In it checkMock names the dot between New and Old (2.8:1 on Dark, under 4.5:1 on every palette), the fast's names on Light (3.8 to 4.2:1), the links New, Old, Prev, Today and Next (19 to 23 px tall), the two reading rows (43 px tall), and words set left or right that stay put in Arabic.
-- **The wide journal (journal, 10-inch tablet and iPad).** The prompt under "Nothing written yet" is a button 28.5 px tall at those widths.
-- **By eye, Prayers on the 10-inch tablet and the iPad.** The banner at the head of Prayers is cut so that the Pantocrator shows from the brow up, without his face (`play-tablet-10-05-prayers.png`, `appstore-ipad-13-05-prayers.png`).
+- **Words in a line (greek, fathers).** The interlinear's Greek words (`components/bible/VerseRow.tsx`, "Look up ...") and the glossed old words in a Father's text (`components/bible/GlossedText.tsx`, here "let") are buttons set inside a line of text, about 32 px and 24 px tall. They keep the size of the words they are, and each names the 44 px rule's own exception for a word in a sentence, with its reason.
+- **The arrow beside "Continue reading" (fathers).** It did not mirror in Arabic: its button was pulled left, not to the start. It is pulled to the start now.
+- **The wide calendar (calendar, 10-inch tablet and iPad).** The dots between New and Old, Prev, Today and Next are inked as the links are; the links are 44 to the touch, and the day's reading rows 44 tall; words set left or right are set at the start and the end. Held on the seventeen looks too, a fast's name is drawn toward the page's own ink on Light and the light looks, and three more lines are deeper there.
+- **The wide journal (journal, 10-inch tablet and iPad).** The prompt under "Nothing written yet" is 44 to the touch.
+- **By eye, Prayers on the 10-inch tablet and the iPad.** The banner showed the Pantocrator from the brow up, without his face. Across a tablet's column it is taller now and cut about his face, the verse over its lower part as on the phone (`play-tablet-10-05-prayers.png`, `appstore-ipad-13-05-prayers.png`).
 
-None of these shows as a fault in a still, and the pictures show the app as it is. If a wide layout changes before release, `node docs/plans/v1.9/store/make.mjs calendar journal prayers` makes those pictures again. Whether the checker should except words in a line, or the reader should change, is not this folder's to decide.
+The pictures show the app as it is. If a wide layout changes before release, `node docs/plans/v1.9/store/make.mjs calendar journal prayers` makes those pictures again.
 
 ## Words for the stores' alt text
 
