@@ -1108,6 +1108,10 @@ export function VerseRow({
  {clickable ? (
  <button
  type="button"
+ // A word in the verse's own line, as a link in a sentence is: the
+ // 44px rule's own exception, named (the store pictures' run, 2026-11-12).
+ data-mock-allow="target"
+ data-mock-why="a word in the verse's own line"
  onClick={(e) => openPopover(i, e.currentTarget)}
  onMouseEnter={() =>
  setHoverStrong(

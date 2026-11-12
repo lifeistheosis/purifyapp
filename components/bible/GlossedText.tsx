@@ -50,6 +50,10 @@ export function GlossedText({
               onClick={() => setOpen((v) => (v === i ? null : i))}
               aria-expanded={open === i}
               aria-controls={glossId}
+              // A word in its own line, as a link in a sentence is: the 44px
+              // rule's own exception, named (the store pictures' run, 2026-11-12).
+              data-mock-allow="target"
+              data-mock-why="a word in its own line of the text"
               // Inherit everything: this must read as a word in a sentence,
               // not as a control that happens to sit in one.
               className={
