@@ -345,8 +345,9 @@ describe("the floating pill, with Listen", () => {
     // Bound again when the chapter is shown in a downloaded Bible (1.9), whose verses are its own.
     expect(pill).toMatch(/<ChapterVerseStatus chapterKey=\{textKey \? `\$\{slug\}\/\$\{chapter\}\/\$\{textKey\}` : `\$\{slug\}\/\$\{chapter\}`\} totalVerses=\{totalVerses\} \/>\s*<div\s+className=\{cn\(\s*"flex h-14 /);
     expect(pill).toContain("flex flex-col items-center gap-1.5 px-4");
-    // The name gives way before the number does, and the pill never runs past the screen.
-    expect(pill).toMatch(/<span className="truncate">\{bookName\}<\/span>\s*<span className="ms-1 shrink-0 tabular-nums">\{chapter\}<\/span>/);
+    // The pill never runs past the screen, and the name is shown whole (lib/bible/__tests__/dockNamesWhole.test.ts):
+    // the chapter's number stands after it whatever room it takes.
+    expect(pill).toMatch(/\{bookName\}\s*<\/span>\s*<span className="ms-1 shrink-0 tabular-nums">\{chapter\}<\/span>/);
     expect(pill).toContain("min-w-0 max-w-full");
     expect(code(SCREEN)).toMatch(/<MobileChapterPill\s+slug=\{slug\}\s+chapter=\{chapter\}\s+totalVerses=\{verses\}\s+listen=\{!downloaded\}/);
   });
@@ -354,7 +355,8 @@ describe("the floating pill, with Listen", () => {
   it("ends in Listen, after the sound button, only where the chapter has a reading", () => {
     // Listen reads the English aloud: a chapter shown in a downloaded Bible has none (1.9).
     expect(pill).toContain("const reads = useHasReadAloud(slug, chapter) && listen;");
-    expect(pill).toMatch(/<AmbienceButton variant="pill" \/>\s*\{reads \? <ReadAloudPillButton book=\{slug\} chapter=\{chapter\} title=\{`\$\{bookName\} \$\{chapter\}`\} \/> : null\}\s*<\/div>/);
+    // Its word gives way where the name needs the room (lib/bible/__tests__/dockNamesWhole.test.ts).
+    expect(pill).toMatch(/<AmbienceButton variant="pill" \/>\s*\{reads \? <ReadAloudPillButton book=\{slug\} chapter=\{chapter\} title=\{`\$\{bookName\} \$\{chapter\}`\} wordGivesWay=\{fit === 1\} \/> : null\}\s*<\/span>/);
     const read = code("components/bible/ReadAloud.tsx");
     const button = read.slice(read.indexOf("export function ReadAloudPillButton"), read.indexOf("export function ReadAloudFollow"));
     // No reading, no button: never a dead one.
@@ -365,9 +367,9 @@ describe("the floating pill, with Listen", () => {
     expect(button).toMatch(/if \(playing\) pause\(\);\s*else play\(\);/);
     expect(button).toContain('const word = playing ? t("readAloud.pause") : t("readAloud.listen");');
     expect(button).toContain("aria-label={word}");
-    // White, softly lit, its word giving way on the narrowest phones.
+    // White, softly lit, its word giving way on the narrowest phones, and wherever the name needs the room.
     expect(button).toMatch(/className="reader-lit [^"]*\bbg-paper\b[^"]*\btext-night\b/);
-    expect(button).toMatch(/<span aria-hidden className="max-\[390px\]:hidden">\s*\{word\}/);
+    expect(button).toMatch(/<span aria-hidden className=\{cn\("max-\[390px\]:hidden", wordGivesWay && "hidden"\)\}>\s*\{word\}/);
     // The verse being read is lit by the follower the screen already mounts.
     expect(code(SCREEN)).toContain("<ReadAloudFollow book={slug} chapter={chapter} />");
     // On the computer Listen joins the toolbar, as the reader's own pill.

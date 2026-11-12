@@ -102,10 +102,11 @@ export function ListenButton({ book, chapter, bookName }: { book: string; chapte
  * any other the pill is its arrows, its name and the sound button, and no
  * button stands there that does nothing. On the narrowest phones the word
  * gives its room to the chapter's name and the mark stands alone; its name
- * is still the word. A little shorter than the pill it ends, with a 44px
- * touch box.
+ * is still the word. So it does on any phone where the name needs the room
+ * to be shown whole (`wordGivesWay`, measured by the pill). A little shorter
+ * than the pill it ends, with a 44px touch box.
  */
-export function ReadAloudPillButton({ book, chapter, title }: { book: string; chapter: number; title: string }) {
+export function ReadAloudPillButton({ book, chapter, title, wordGivesWay = false }: { book: string; chapter: number; title: string; wordGivesWay?: boolean }) {
   const { t } = useTranslate();
   const { loaded, playing } = useThisChapter(book, chapter);
   const [busy, setBusy] = useState(false);
@@ -139,7 +140,7 @@ export function ReadAloudPillButton({ book, chapter, title }: { book: string; ch
       ) : (
         <Play size={14} className={cn("shrink-0", busy && "motion-safe:animate-pulse")} />
       )}
-      <span aria-hidden className="max-[390px]:hidden">
+      <span aria-hidden className={cn("max-[390px]:hidden", wordGivesWay && "hidden")}>
         {word}
       </span>
     </button>

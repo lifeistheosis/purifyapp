@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { BOOKS_OPEN_EVENT } from "@/lib/bible/booksSheet";
 import { nextChapter, prevChapter, getBook } from "@/lib/bible/books";
@@ -110,8 +110,13 @@ function Arrow({
  * very place, and the search screen and the sheets cover it (1.7.1, the
  * owner: "pill buttons colliding here"). It comes back as they go.
  *
- * It never runs past the screen: the name gives way first, down to a few
- * letters and the chapter's number, which never goes.
+ * It never runs past the screen, and a book's name is shown whole (the
+ * gate's confirm run, 2026-11-12: "1 Corinthians" and eleven more ended in
+ * an ellipsis at 390, and 60 of the 78 books in Polish at 320). Where the
+ * name does not fit beside the controls, Listen's word gives its room first,
+ * as it always has on the narrowest phones, and the name may take two lines;
+ * where it still does not fit, the sound button and Listen go to a row of
+ * their own under it, and the reader's foot keeps room for the taller pill.
  *
  * While anything is loaded in the app's one player it is the reader's dock
  * instead (1.9, the owner's pick for Listening: components/bible/ReaderDock.tsx),
@@ -150,6 +155,40 @@ export function MobileChapterPill({
   useOwnPlayer(dockShows ? HOSTS_EVERYTHING : NOTHING);
   const { src } = usePersistentAudio();
   const docked = dockShows && Boolean(src);
+  // How the name fits (the doc above): 0 as drawn, 1 with Listen's word given
+  // way and the name on up to two lines, 2 with the controls on a row of their
+  // own. Measured before the pill is painted, again for each name, chapter and
+  // width, starting from the pill as drawn.
+  const pillRef = useRef<HTMLDivElement>(null);
+  const nameRef = useRef<HTMLSpanElement>(null);
+  const [frameWidth, setFrameWidth] = useState(0);
+  const fitKey = `${bookName}|${chapter}|${reads ? 1 : 0}|${frameWidth}`;
+  const [fitFor, setFitFor] = useState<{ key: string; fit: 1 | 2 } | null>(null);
+  const fit = fitFor?.key === fitKey ? fitFor.fit : 0;
+  useLayoutEffect(() => {
+    const frame = pillRef.current?.parentElement;
+    if (!frame || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => setFrameWidth(Math.round(frame.clientWidth)));
+    observer.observe(frame);
+    return () => observer.disconnect();
+  }, [docked]);
+  useLayoutEffect(() => {
+    const name = nameRef.current;
+    if (!name || fit === 2) return;
+    const lines = name.getBoundingClientRect().height / (parseFloat(getComputedStyle(name).lineHeight) || 19);
+    if (name.scrollWidth > name.clientWidth + 1 || lines > 2.05) setFitFor({ key: fitKey, fit: fit === 0 ? 1 : 2 });
+  }, [fitKey, fit, docked]);
+  // The pill with its controls under the name is taller than the 56px the
+  // reader's foot keeps room for (globals.css, .safe-pb-reader): the rest too.
+  useLayoutEffect(() => {
+    const pill = pillRef.current;
+    if (fit !== 2 || !pill) return;
+    const root = document.documentElement;
+    root.style.setProperty("--reader-pill-extra", `${Math.max(0, Math.ceil(pill.getBoundingClientRect().height - 56))}px`);
+    return () => {
+      root.style.removeProperty("--reader-pill-extra");
+    };
+  }, [fit, fitKey]);
   // The chapter's title asks for the same sheet (ChapterScreen).
   useEffect(() => {
     const open = () => setSheetOpen(true);
@@ -225,26 +264,34 @@ export function MobileChapterPill({
           <ChapterVerseStatus chapterKey={textKey ? `${slug}/${chapter}/${textKey}` : `${slug}/${chapter}`} totalVerses={totalVerses} />
           <div
             className={cn(
-              "flex h-14 min-w-0 max-w-full items-center gap-0.5 rounded-pill border border-paper/10 bg-night-soft px-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.55)]",
+              "flex h-14 min-w-0 max-w-full items-center gap-0.5 border border-paper/10 bg-night-soft px-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.55)]",
+              fit === 2 ? "h-auto flex-col rounded-[28px] py-1" : "rounded-pill",
               covered ? "pointer-events-none" : "pointer-events-auto",
             )}
+            ref={pillRef}
           >
-            <Arrow target={prev} label={prevLabel} dir="‹" />
-            <button
-              type="button"
-              aria-haspopup="dialog"
-              onClick={() => setSheetOpen(true)}
-              aria-label={pickLabel}
-              className="flex h-11 min-w-0 items-center px-2 font-sans text-[15px] font-semibold leading-tight text-paper"
-            >
-              {/* A long name gives way before the chapter's number does. */}
-              <span className="truncate">{bookName}</span>
-              <span className="ms-1 shrink-0 tabular-nums">{chapter}</span>
-            </button>
-            <Arrow target={next} label={nextLabel} dir="›" />
-            <span aria-hidden className="mx-1.5 h-6 w-px shrink-0 bg-paper/15" />
-            <AmbienceButton variant="pill" />
-            {reads ? <ReadAloudPillButton book={slug} chapter={chapter} title={`${bookName} ${chapter}`} /> : null}
+            <span className="flex min-w-0 max-w-full items-center gap-0.5">
+              <Arrow target={prev} label={prevLabel} dir="‹" />
+              <button
+                type="button"
+                aria-haspopup="dialog"
+                onClick={() => setSheetOpen(true)}
+                aria-label={pickLabel}
+                className="flex h-11 min-w-0 items-center px-2 font-sans text-[15px] font-semibold leading-tight text-paper"
+              >
+                {/* Whole: at 1 it may take two lines, broken between words; at 2, the row its own, anywhere. */}
+                <span ref={nameRef} className={fit === 0 ? "truncate" : cn("min-w-0", fit === 2 && "[overflow-wrap:anywhere]")}>
+                  {bookName}
+                </span>
+                <span className="ms-1 shrink-0 tabular-nums">{chapter}</span>
+              </button>
+              <Arrow target={next} label={nextLabel} dir="›" />
+            </span>
+            {fit === 2 ? null : <span aria-hidden className="mx-1.5 h-6 w-px shrink-0 bg-paper/15" />}
+            <span className="flex shrink-0 items-center gap-0.5">
+              <AmbienceButton variant="pill" />
+              {reads ? <ReadAloudPillButton book={slug} chapter={chapter} title={`${bookName} ${chapter}`} wordGivesWay={fit === 1} /> : null}
+            </span>
           </div>
         </div>
       )}

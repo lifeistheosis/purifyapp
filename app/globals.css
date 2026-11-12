@@ -396,7 +396,7 @@ html.is-native .safe-pb {
  padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h));
 }
 html.is-native .safe-pb-reader {
- padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + var(--reader-dock-room, 0px) + 68px);
+ padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + var(--reader-dock-room, 0px) + var(--reader-pill-extra, 0px) + 68px);
 }
 /* A full-screen layer that covers the tab bar (the welcome questions) makes
    room for the screen's own edge only. It had .safe-pb, which kept the tab
@@ -12460,7 +12460,7 @@ html[data-look]:not([data-look="nightsky"], [data-look="linen"]):where([data-mot
   padding-bottom: max(calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h)), calc(var(--inset-bottom) + var(--foot-clear)));
  }
  html.is-native[data-look]:not([data-look="nightsky"], [data-look="linen"]) .safe-pb-reader {
-  padding-bottom: max(calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + var(--reader-dock-room, 0px) + 68px), calc(var(--inset-bottom) + var(--foot-clear)));
+  padding-bottom: max(calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + var(--reader-dock-room, 0px) + var(--reader-pill-extra, 0px) + 68px), calc(var(--inset-bottom) + var(--foot-clear)));
  }
  html[data-look]:not([data-look="nightsky"], [data-look="linen"]) body > .min-h-screen:not(:has(.safe-pb)) {
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--foot-clear));
