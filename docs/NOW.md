@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state; the log is the release's HANDOFF.md. How the chats run: `docs/OPERATIONS.md`.
 
-Updated 2026-11-12, 22:12 UTC.
+Updated 2026-11-12, 22:17 UTC.
 
 ## 1.9: in flight
 
@@ -15,7 +15,6 @@ Updated 2026-11-12, 22:12 UTC.
 
 ## Waiting on him
 
-- Pull request #24 ("AD 1: the gold edit on the 808 sound", 2026-10-09) is still open against main. Merging it would deploy; his call to close it or keep it.
 - His four answers on the owner's desk plan (`docs/plans/owner-desk.md`, last section): the data-built emails sending themselves unless held, the brief's hour, a shop and sourcing chat, and who builds the design kit.
 - Walk the test build once it is cut. Then: accept the 1.9 note in Admin, set the drop day, and submit both builds after the phone walks. On release day: the Purify profile's status, and opening campaigns.
 - The company: C0 (the address on the D-U-N-S record) and C0b (the papers). Send the company's exact name as the EIN letter has it. All in OWNER-STEPS.md.
@@ -25,6 +24,7 @@ Updated 2026-11-12, 22:12 UTC.
 
 ## After 1.9 ships
 
+- SSM board, in its next message: put the AD 1 TikTok edit's source in the Vault (branch `claude/magical-carson-qissmz`; pull request #24 closed at his word on 2026-11-12, not merged).
 - The owner's desk and the Purify look (`docs/plans/owner-desk.md`): the quiet board first (Admin panel 2, with the money chart), then the design kit, the owner's brief, the recurring sends and the reader emails' second edition.
 - Every chat rotates (OPERATIONS section 2), the arbiter included.
 - The store accounts move to the LLC: Apple and Google (OWNER-STEPS C1 and C2), then C3 to C5.
