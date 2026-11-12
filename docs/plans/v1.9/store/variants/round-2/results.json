@@ -1,0 +1,107 @@
+{
+  "made": "2026-11-12",
+  "day": "2026-12-06T09:30:00-05:00",
+  "checks": [
+    "contrast",
+    "placeholder",
+    "target",
+    "glyph",
+    "palette",
+    "gold",
+    "stripe",
+    "mirror",
+    "emdash",
+    "rays",
+    "sparkle",
+    "picture",
+    "dashed",
+    "keys",
+    "cut"
+  ],
+  "pictures": [
+    {
+      "id": "N1",
+      "file": "N1-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 241026,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "Lifted card",
+      "idea": "A piece of the real screen, the Nativity star card, lifted off the glass toward the eye, with its own shadow. On Dawn.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    },
+    {
+      "id": "N2",
+      "file": "N2-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 244992,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "Two screens",
+      "idea": "A second phone behind the first, open on the journal, so one picture shows two places in the app. On Arch.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    },
+    {
+      "id": "N3",
+      "file": "N3-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 226392,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "Holy Mountain",
+      "idea": "The app's own art of Athos over the sea at dusk as the back: colour, and something only this app has.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    },
+    {
+      "id": "N4",
+      "file": "N4-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 229441,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "The sign",
+      "idea": "The app's cross and name set small over the line, so every picture carries the mark. On Orbit.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    }
+  ]
+}
