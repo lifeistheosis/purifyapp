@@ -23,7 +23,7 @@ export function DropCap({
  <>
  <span
  aria-hidden
- className="text-gold mr-[2px]"
+ className="text-gold me-[2px]"
  style={{
  fontSize: "1.25em",
  lineHeight: 0.95,

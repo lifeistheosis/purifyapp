@@ -382,7 +382,7 @@ export function CalendarClient() {
                 href={`/calendar?${newQS.toString()}`}
                 style="new"
                 current={style === "new"}
-                className={`font-sans text-caption tracking-[0.5px] transition-colors ${
+                className={`hit-44 font-sans text-caption tracking-[0.5px] transition-colors ${
                   style === "new"
                     ? "kalendrium-active"
                     : "text-paper/55 hover:text-paper"
@@ -390,14 +390,14 @@ export function CalendarClient() {
               >
                 <T k="calendar.styleNew" />
               </StyleToggleLink>
-              <span aria-hidden className="text-gold/35 text-caption">
+              <span aria-hidden className="text-paper/55 text-caption">
                 ·
               </span>
               <StyleToggleLink
                 href={`/calendar?${oldQS.toString()}`}
                 style="old"
                 current={style === "old"}
-                className={`font-sans text-caption tracking-[0.5px] transition-colors ${
+                className={`hit-44 font-sans text-caption tracking-[0.5px] transition-colors ${
                   style === "old"
                     ? "kalendrium-active"
                     : "text-paper/55 hover:text-paper"
@@ -419,7 +419,7 @@ export function CalendarClient() {
           />
 
           {style === "old" && (
-            <p className="mt-4 font-serif italic text-caption text-paper/55 text-right max-w-[1280px]">
+            <p className="mt-4 font-serif italic text-caption text-paper/55 text-end max-w-[1280px]">
               <T k="calendar.julianNote" />
             </p>
           )}
@@ -515,26 +515,26 @@ export function CalendarClient() {
             <nav className="flex items-baseline gap-4">
               <Link
                 href={prevMonthHref(year, month)}
-                className="inline-flex items-center gap-1 font-sans text-caption tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
+                className="hit-44 inline-flex items-center gap-1 font-sans text-caption tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
               >
                 <ChevronLeft size={14} className="rtl:-scale-x-100" />
                 <T k="calendar.prevMonth" />
               </Link>
-              <span aria-hidden className="text-gold/35 text-caption">
+              <span aria-hidden className="text-paper/55 text-caption">
                 ·
               </span>
               <Link
                 href="/calendar"
-                className="font-sans text-caption tracking-[0.5px] text-paper/85 hover:text-paper transition-colors"
+                className="hit-44 font-sans text-caption tracking-[0.5px] text-paper/85 hover:text-paper transition-colors"
               >
                 <T k="calendar.todayLink" />
               </Link>
-              <span aria-hidden className="text-gold/35 text-caption">
+              <span aria-hidden className="text-paper/55 text-caption">
                 ·
               </span>
               <Link
                 href={nextMonthHref(year, month)}
-                className="inline-flex items-center gap-1 font-sans text-caption tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
+                className="hit-44 inline-flex items-center gap-1 font-sans text-caption tracking-[0.5px] text-paper/65 hover:text-paper transition-colors"
               >
                 <T k="calendar.nextMonth" />
                 <ChevronLeft size={14} className="-scale-x-100 rtl:scale-x-100" />
@@ -580,12 +580,12 @@ export function CalendarClient() {
                           <li key={i}>
                             <Link
                               href={`/bible/${r.book}/${r.chapter}#v${r.from}`}
-                              className="group flex items-baseline justify-between gap-3 py-2.5"
+                              className="group flex min-h-[44px] items-baseline justify-between gap-3 py-2.5"
                             >
                               <span className="font-sans text-caption text-gold font-semibold">
                                 <T k={kindKey} />
                               </span>
-                              <span className="font-display-serif text-ui text-paper group-hover:text-gold transition-colors text-right">
+                              <span className="font-display-serif text-ui text-paper group-hover:text-gold transition-colors text-end">
                                 <Reference>{referenceIn(r.label, r.book, books)}</Reference>
                                 {under ? (
                                   <span className="block font-sans text-caption text-paper/55">

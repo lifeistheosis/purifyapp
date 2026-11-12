@@ -65,7 +65,7 @@ export function FeastPanel({
         )}
 
         {/* Text column */}
-        <div className={hasIcon ? "min-w-0 text-center md:text-left" : "min-w-0"}>
+        <div className={hasIcon ? "min-w-0 text-center md:text-start" : "min-w-0"}>
           {/* Date, quiet small-caps line. */}
           <p className="font-sans text-caption text-gold font-semibold">
             {dateLabel}
@@ -94,7 +94,7 @@ export function FeastPanel({
                 </h1>
               )}
               {headline.note && (
-                <p className="mt-3 font-serif italic text-body md:text-body text-paper/75 leading-[1.6] clear-left">
+                <p className="mt-3 font-serif italic text-body md:text-body text-paper/75 leading-[1.6] clear-start">
                   {headline.note}
                 </p>
               )}
@@ -113,7 +113,7 @@ export function FeastPanel({
 
           {/* Inline fast + Pascha, quiet two-column with a single hairline
               above each, no decorative ornament. */}
-          <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-5 clear-left">
+          <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-5 clear-start">
             <div className="border-t border-paper/10 pt-3">
               <p className="font-sans text-caption text-gold/70 font-semibold">
                 <T k="today.fastEyebrow" />
@@ -148,7 +148,7 @@ export function FeastPanel({
 
       {others.length > 0 && (
         <div className="px-6 md:px-10 pb-7 pt-4 border-t border-paper/10">
-          <p className="font-sans text-caption text-gold/70 font-semibold mb-3.5 text-center md:text-left">
+          <p className="font-sans text-caption text-gold/70 font-semibold mb-3.5 text-center md:text-start">
             <T k="calendar.alsoCommemorated" />
           </p>
           <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-1.5">
