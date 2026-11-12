@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state; the log is the release's HANDOFF.md. How the chats run: `docs/OPERATIONS.md`.
 
-Updated 2026-11-12, 22:39 UTC.
+Updated 2026-11-12, 22:55 UTC.
 
 ## 1.9: in flight
 
@@ -44,6 +44,6 @@ Updated 2026-11-12, 22:39 UTC.
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |
 | Product images (his PC) | session_01VuYTwaLq6ij9iFi8D4Kt8a | the EIKON gift, done for 1.9 |
 | Tooling: the pre-push guard | session_01VuYTwZxEJPq6tx6VUBChCT | the guard on every push (no app or package files during the freeze) |
-| Admin panel 2 | session_01VuYTwdGHpocsLjegCEAape | the admin panel: all money on Money's chart is done and held locally (c066bc5b: the shop blue, Plus green, the EIKON Box magenta, refunds grey, anything unnamed white); next, the quiet board (`docs/plans/owner-desk.md` section 1) |
+| Admin panel 2 | session_01VuYTwdGHpocsLjegCEAape | the admin panel: all money on Money's chart (the shop blue, Plus green, the EIKON Box magenta, refunds grey, anything unnamed white) and the quiet board (`docs/plans/owner-desk.md` section 1) are done and pushing now (admin code is not in the export under check). Then "Ready to send" for the team's pieces on their day, the Revenue tab matched, its baton, and it stops (past 400,000 tokens). |
 
 Admin and Updates were past 700,000 tokens at the last look, so both rotate first after 1.9.
