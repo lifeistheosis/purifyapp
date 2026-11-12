@@ -176,7 +176,8 @@ export function MobileChapterPill({
     const name = nameRef.current;
     if (!name || fit === 2) return;
     const lines = name.getBoundingClientRect().height / (parseFloat(getComputedStyle(name).lineHeight) || 19);
-    if (name.scrollWidth > name.clientWidth + 1 || lines > 2.05) setFitFor({ key: fitKey, fit: fit === 0 ? 1 : 2 });
+    // Strict, as the browser's ellipsis is: "Jonasz" in Polish at 320 overflowed by one pixel (50 in 49).
+    if (name.scrollWidth > name.clientWidth || lines > 2.05) setFitFor({ key: fitKey, fit: fit === 0 ? 1 : 2 });
   }, [fitKey, fit, docked]);
   // The pill with its controls under the name is taller than the pill of one
   // row (h-14, 3.5rem) the reader's foot keeps room for (globals.css,

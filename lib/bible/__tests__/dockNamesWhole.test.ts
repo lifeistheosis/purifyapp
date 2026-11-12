@@ -62,7 +62,8 @@ describe("the reader's dock, a book's name", () => {
 describe("the reader's pill, a book's name", () => {
   it("is never left cut: a cut name steps the pill on, before it is painted", () => {
     expect(PILL).toContain('<span ref={nameRef} className={fit === 0 ? "truncate" : cn("min-w-0", fit === 2 && "[overflow-wrap:anywhere]")}>');
-    expect(PILL).toContain("if (name.scrollWidth > name.clientWidth + 1 || lines > 2.05) setFitFor({ key: fitKey, fit: fit === 0 ? 1 : 2 });");
+    // Strict: a name one pixel over its room is drawn with an ellipsis.
+    expect(PILL).toContain("if (name.scrollWidth > name.clientWidth || lines > 2.05) setFitFor({ key: fitKey, fit: fit === 0 ? 1 : 2 });");
     // Measured again for each name, chapter and width, from the pill as drawn.
     expect(PILL).toContain("const fitKey = `${bookName}|${chapter}|${reads ? 1 : 0}|${frameWidth}`;");
     expect(PILL).toContain("const fit = fitFor?.key === fitKey ? fitFor.fit : 0;");
