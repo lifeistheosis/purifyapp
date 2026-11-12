@@ -74,6 +74,21 @@ describe("the councils' pictures in the reading room, with no signal", () => {
     expect(avifFor("https://example.org/history/media/first-council-of-nicaea.v1.jpg")).toBeNull();
   });
 
+  it("draws a council page's documents fan with the AVIF before its JPEG", () => {
+    // The fan on /councils/<council>/ (components/councils/DocumentsDoor.tsx) drew the JPEG alone, so
+    // with no signal it showed its plate while the apps carry the picture (the arbiter's word of 05:05 UTC).
+    const door = read("components/councils/DocumentsDoor.tsx");
+    expect(door).toContain("const avif = avifFor(book.src);");
+    expect(door).toMatch(/<picture className="contents">\s*\{avif \? <source type="image\/avif" srcSet=\{avif\} \/> : null\}\s*<ArrivingImage/);
+    // And the fan's own books, each council's first three, offer the bundle's AVIF where they are a council's picture.
+    for (const c of COUNCILS) {
+      for (const b of councilBooks(c, true).slice(0, 3)) {
+        if (!b.cover?.src?.includes("/history/")) continue;
+        expect(isCarried(avifFor(b.cover.src) ?? ""), `${c.slug}: ${b.cover.src}`).toBe(true);
+      }
+    }
+  });
+
   it("draws a shelf's backdrop with the AVIF before its JPEG", () => {
     const shelf = read("components/councils/CouncilShelf.tsx");
     expect(shelf).toContain("const avif = avifFor(src);");

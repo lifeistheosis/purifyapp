@@ -6,6 +6,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { readingTime } from "@/components/reading/CoverRow";
 import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { cn } from "@/lib/cn";
+import { avifFor } from "@/lib/media/streamed";
 import { windowStyle, type CoverWindow } from "@/lib/reading/coverWindow";
 
 /** A book in the door's fan: its window onto the council's icon, its own cover's face, or none (a local council's plate). */
@@ -71,6 +72,10 @@ export function DocumentsDoor({ href, books, minutes, fan }: { href: string; boo
  * room's plate, black with a pool of light, for a book with no picture.
  */
 function MiniCover({ book, width }: { book: FanBook; width: number }) {
+  // A council's own picture is carried in the apps as AVIF though its JPEG is
+  // the website's: offered first, so the fan has it with no signal too
+  // (lib/media/streamed.ts, avifFor; the gate's final run of 2026-11-12).
+  const avif = avifFor(book.src);
   return (
     <span
       className="dark-island relative block overflow-hidden rounded-[4px] bg-night shadow-[0_8px_14px_-6px_rgba(0,0,0,0.85)]"
@@ -84,16 +89,19 @@ function MiniCover({ book, width }: { book: FanBook; width: number }) {
     >
       {book.src ? (
         // The council's icon, a window onto it, coming in whole (build 85, note 52).
-        <ArrivingImage
-          src={book.src}
-          loading="lazy"
-          decoding="async"
-          onError={(e) => {
-            e.currentTarget.style.display = "none";
-          }}
-          className="absolute inset-0 h-full w-full object-cover"
-          style={book.crop ? windowStyle(book.crop) : { objectPosition: `50% ${book.focusY ?? 22}%` }}
-        />
+        <picture className="contents">
+          {avif ? <source type="image/avif" srcSet={avif} /> : null}
+          <ArrivingImage
+            src={book.src}
+            loading="lazy"
+            decoding="async"
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+            }}
+            className="absolute inset-0 h-full w-full object-cover"
+            style={book.crop ? windowStyle(book.crop) : { objectPosition: `50% ${book.focusY ?? 22}%` }}
+          />
+        </picture>
       ) : null}
       <span aria-hidden className="absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-b from-transparent to-black/75" />
     </span>
