@@ -1,0 +1,232 @@
+{
+  "made": "2026-11-12",
+  "day": "2026-12-06T09:30:00-05:00",
+  "checks": [
+    "contrast",
+    "placeholder",
+    "target",
+    "glyph",
+    "palette",
+    "gold",
+    "stripe",
+    "mirror",
+    "emdash",
+    "rays",
+    "sparkle",
+    "picture",
+    "dashed",
+    "keys",
+    "cut"
+  ],
+  "pictures": [
+    {
+      "id": "01-today",
+      "file": "eclipse-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 250468,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "n": "01",
+      "shot": "today",
+      "design": "Totality",
+      "idea": "One great disc behind the phone, a bright rim, a single ring.",
+      "caption": "The day's saint, fast and readings",
+      "route": "/",
+      "lifted": "the Nativity star card",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    },
+    {
+      "id": "02-greek",
+      "file": "eclipse-play-phone-02-greek.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 209251,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "n": "02",
+      "shot": "greek",
+      "design": "Crescent",
+      "idea": "A lit disc with a dark one across it, so a crescent of light is left.",
+      "caption": "The Greek beside the verse",
+      "route": "/bible/john/1",
+      "lifted": "the first verse, English and Greek",
+      "picturesInView": []
+    },
+    {
+      "id": "03-fathers",
+      "file": "eclipse-play-phone-03-fathers.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 199772,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "n": "03",
+      "shot": "fathers",
+      "design": "Orbits",
+      "idea": "A small bright disc at the phone's shoulder and the rings round it, crossing the whole picture.",
+      "caption": "The Fathers on the verse you are reading",
+      "route": "/bible/genesis/1",
+      "lifted": "the Father's name and his work",
+      "picturesInView": [
+        "/saints/icons/basil-the-great.jpg"
+      ]
+    },
+    {
+      "id": "04-journal",
+      "file": "eclipse-play-phone-04-journal.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 183231,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "n": "04",
+      "shot": "journal",
+      "design": "Moonrise",
+      "idea": "A disc half risen over a level floor, its rim bright.",
+      "caption": "A journal kept by the Church's day",
+      "route": "/journal",
+      "lifted": "the day's page",
+      "picturesInView": []
+    },
+    {
+      "id": "05-prayers",
+      "file": "eclipse-play-phone-05-prayers.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 343506,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "n": "05",
+      "shot": "prayers",
+      "design": "Two lights",
+      "idea": "A great disc at one side and a small bright one at the other, one fine line between them.",
+      "caption": "The daily prayers, morning and evening",
+      "route": "/prayers",
+      "lifted": "the morning prayers",
+      "picturesInView": [
+        "/sections/prayers.v4.jpg",
+        "/icons/prayer/anastasis.jpg",
+        "/icons/prayer/christ-pantocrator.v2.jpg",
+        "/icons/prayer/pentecost.jpg",
+        "/icons/prayer/theotokos-of-vladimir.jpg"
+      ]
+    },
+    {
+      "id": "06-saint",
+      "file": "eclipse-play-phone-06-saint.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 296809,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "n": "06",
+      "shot": "saint",
+      "design": "Limb",
+      "idea": "The edge of a disc far larger than the picture, rising from one corner.",
+      "caption": "The lives of the saints",
+      "route": "/saints/basil-the-great",
+      "lifted": "Life, Writings and Web",
+      "picturesInView": [
+        "/saints/icons/basil-the-great.jpg",
+        "https://purifyapp.net/covers/saints/basil-the-great.v1.avif"
+      ]
+    },
+    {
+      "id": "07-calendar",
+      "file": "eclipse-play-phone-07-calendar.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 178426,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "n": "07",
+      "shot": "calendar",
+      "design": "Phases",
+      "idea": "The moon's phases in a row along the foot, and one faint ring behind the phone.",
+      "caption": "Every feast and every fast",
+      "route": "/calendar",
+      "lifted": "the day's fast",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    },
+    {
+      "id": "08-reading",
+      "file": "eclipse-play-phone-08-reading.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 250157,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "n": "08",
+      "shot": "reading",
+      "design": "Ring",
+      "idea": "A ring of light, dark within, and a finer ring outside it.",
+      "caption": "The Fathers, read in full",
+      "route": "/saints/athanasius-the-great/on-the-incarnation",
+      "lifted": "the book's cover",
+      "picturesInView": [
+        "/covers/authors/athanasius-the-great.v1.avif"
+      ]
+    }
+  ]
+}
