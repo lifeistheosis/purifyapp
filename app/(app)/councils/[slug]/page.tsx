@@ -137,14 +137,19 @@ export default async function CouncilProfilePage({
  {/* The head: the icon, and the name over its foot. */}
  {picture ? <CouncilHero picture={picture} focus={councilFocus(c.slug)} /> : null}
  <header className={cn("saint-head-in", picture ? "relative -mt-24 md:mt-6" : "pt-8 md:pt-0")}>
- <p id="council-ordinal" className="font-sans text-caption font-semibold text-paper/80">
+ {/* Over the icon's foot the kicker wears the house's soft edge of the
+     page's ground, in the full ink, and the line under the name takes 80 on
+     the light looks: at 80 the kicker read 2.46 to 3.57:1 over the seven
+     icons, and at 70 the line 4.43 to 4.49 on two light looks (the gate's
+     confirm run, 2026-11-12). A council with no picture keeps its ink. */}
+ <p id="council-ordinal" className={cn("font-sans text-caption font-semibold", picture ? "words-halo text-paper" : "text-paper/80")}>
  <T k={ordinalKey(c)} />
  </p>
  {/* The council's name, facts and accounts are English; its labels the reader's (build 90 note 4). */}
  <h1 id="council-name" lang="en" dir="ltr" className="mt-1.5 font-serif text-[26px] font-bold leading-[1.1] tracking-[-0.01em] text-balance text-paper md:text-display-sm">
  {c.byname}
  </h1>
- <p lang="en" dir="ltr" className="mt-1.5 font-sans text-detail text-paper/70">
+ <p lang="en" dir="ltr" className={cn("mt-1.5 font-sans text-detail text-paper/70", picture && "[html[data-reading-mode=parchment][data-look]_&]:text-paper/80")}>
  {c.year} &middot; {placeOf(c.location)}
  </p>
  </header>

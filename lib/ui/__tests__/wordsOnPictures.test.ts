@@ -92,6 +92,9 @@ describe("the words that wear it, at the ink they were measured at", () => {
     // council's icon and the light from above it: 3.07 to 3.92:1 at 70 and 55, and at 90 and 80 still 4.14
     // and 4.31 under the brightest of the seven icons (the final run, 2026-11-12).
     { file: "components/councils/CouncilShelf.tsx", what: ["the council's ordinal and year", "its books and time"], at: [100, 90] },
+    // A council's page, over its icon's foot: "First Ecumenical Council" to "Seventh" read 2.46 to 3.57:1 at 80
+    // on three to five palettes each (the gate's confirm run, 2026-11-12).
+    { file: "app/(app)/councils/[slug]/page.tsx", what: ["the council's kicker"], at: [100] },
   ];
 
   for (const { file, what, at } of WORN) {

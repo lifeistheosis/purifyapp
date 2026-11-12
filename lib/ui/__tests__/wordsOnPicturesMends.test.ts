@@ -76,6 +76,15 @@ describe("words over pictures, mended", () => {
     );
   });
 
+  it("A council's head over its icon: the kicker in the halo at the full ink, the line under the name at 80% on the light looks", () => {
+    // On the seven Ecumenical Councils' pages "First Ecumenical Council" to "Seventh" read 2.46 to 3.57:1 at 80% over
+    // the icon's foot, on three to five palettes each, and "325 · Nicaea in Bithynia" 4.43 to 4.49 at 70% on two light
+    // looks (the gate's confirm run of 2026-11-12). A council with no picture (Ancyra) keeps its ink.
+    const page = read("app/(app)/councils/[slug]/page.tsx");
+    expect(page).toContain('<p id="council-ordinal" className={cn("font-sans text-caption font-semibold", picture ? "words-halo text-paper" : "text-paper/80")}>');
+    expect(page).toContain('className={cn("mt-1.5 font-sans text-detail text-paper/70", picture && "[html[data-reading-mode=parchment][data-look]_&]:text-paper/80")}');
+  });
+
   it("A chant's head: a halo of the page's own colour under its words on paper, and its kind inked at 80% there", () => {
     const page = read("components/chants/ChantPage.tsx");
     expect(page).toContain(`className="doctrine-shadow mt-1 truncate font-sans text-[13px] leading-[18px] text-paper/60 ${PAPER_80}"`);
