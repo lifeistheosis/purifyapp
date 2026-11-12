@@ -29,7 +29,11 @@ describe("an event on the timeline's list", () => {
   });
 
   it("leaves no empty frame when there is no picture or it cannot arrive", () => {
-    expect(THUMB).toContain("if (!picture || gone) return null;");
+    // A picture that cannot arrive keeps its frame only with its own preview
+    // blurred in it, so its row keeps its height (2026-11-12); with no preview,
+    // no frame (lib/history/__tests__/rowRoom.test.ts).
+    expect(THUMB).toContain("if (!picture || (gone && !picture.preview)) return null;");
+    expect(THUMB).toContain('backgroundImage: `url("${picture.preview}")`');
     expect(THUMB).toContain("const broken = () => (src !== picture.src ? setJpegOnly(true) : setGone(true));");
     expect(THUMB).toContain("const picture = eventPicture(event, native);");
     expect(THUMB).toContain("<ArrivingImage");
