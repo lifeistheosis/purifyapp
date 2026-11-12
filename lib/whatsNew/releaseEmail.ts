@@ -69,7 +69,7 @@ export const RELEASE_EMAIL: ReleaseEmail = {
     {
       emoji: "📓",
       name: "Your journal, by the Church's day",
-      text: "Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.",
+      text: "Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.",
     },
     {
       emoji: "📖",

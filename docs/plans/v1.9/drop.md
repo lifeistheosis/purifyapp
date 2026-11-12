@@ -11,7 +11,7 @@ No drop day set yet. `node scripts/drop.mjs days` lists the next ones on the Chu
 
 ## What the release is
 
-- 📓 **Your journal, by the Church's day.** Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.
+- 📓 **Your journal, by the Church's day.** Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.
 - 📖 **Every verse, opened.** Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
 - 🌍 **Six more Bibles.** The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
 - 🔎 **Study a verse, in Purify Plus.** Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.
@@ -103,7 +103,7 @@ The Scriptures, the saints, the prayers and the calendar stay free.
 
 ### What's New in This Version, for the App Store
 
-`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 2600 of 4000 characters
+`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 2605 of 4000 characters
 
 > Plus has been sold on iPhone since 1.8 (the App Store lists its four subscriptions; OWNER-STEPS 87, found 2026-11-10), so this text marks what is in Purify Plus, as the Play text does: the study, the plans, the Florilegium and the Thread, Candlelight and ambience, and listening offline.
 
@@ -113,7 +113,7 @@ Purify 1.9: Keep a journal by the Church's day, and go deeper into every verse.
 Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.
 
 YOUR JOURNAL, BY THE CHURCH'S DAY
-Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.
+Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.
 
 EVERY VERSE, OPENED
 Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
@@ -176,31 +176,16 @@ Android build 0 in Play Console, iOS build 0 in App Store Connect, each once it 
 
 *The day you tell people, once the note is showing on the website.*
 
-### The board message above the notes
-
-`board` · The weekly board · Admin, Patch notes, the board message · Ready · 461 of 900 characters
-
-> Eyebrow: This week at Purify. The first line is the headline, the rest is the body. It names only what is free, so it reads true on every device.
-
-~~~text
-1.9 is here
-
-Keep a journal by the Church's day: today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Free for everyone.
-Hold any verse to see its Greek, and download six more Bibles, in Russian, Greek, Serbian, Arabic, Spanish and Portuguese.
-The Creed by council sets the Symbol of Faith out article by article, and on the days an event of Orthodox History fell, it is on Today under the saint of the day.
-The full note is below.
-~~~
-
 ### The announcement
 
-`discord-announcement` · Discord · Discord, #announcements · Ready · 1947 of 2000 characters
+`discord-announcement` · Discord · Discord, #announcements · Ready · 1952 of 2000 characters
 
 ~~~text
 Purify 1.9 is here 🕯️
 
 Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.
 
-📓 Your journal, by the Church's day. Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.
+📓 Your journal, by the Church's day. Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.
 📖 Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
 🌍 Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
 🔎 Study a verse, in Purify Plus. Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.
@@ -228,14 +213,14 @@ Purify 1.9 is live on the web: a journal by the Church's day, every verse opened
 
 ### Purify's own post in Community
 
-`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 2265 of 4000 characters
+`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 2270 of 4000 characters
 
 ~~~text
 Purify 1.9 is here
 
 Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.
 
-📓 Your journal, by the Church's day. Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.
+📓 Your journal, by the Church's day. Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.
 🔗 Share a journal page as a copy at a link of its own: three a month for everyone, without limit in Purify Plus, and Stop sharing takes the copy down at once.
 📖 Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
 🌍 Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
@@ -285,6 +270,21 @@ Campaigns are at testers from the merge, your account alone. Only at R5c, in the
 When a store shows 1.9: its number goes into lib/appUpdate/release.ts (Android 0, iOS 0), committed and pushed on the owner's word. Each store on its own day, and never before the store is serving the build.
 ~~~
 
+### The board message above the notes
+
+`board` · The weekly board · Admin, Patch notes, the board message · Ready · 461 of 900 characters
+
+> Eyebrow: This week at Purify. The first line is the headline, the rest is the body. It names only what is free, so it reads true on every device. Publish it in Admin the day a store first serves 1.9, and not before: the 1.8 apps show the newest board message, so a reader on 1.8 would otherwise read "1.9 is here" before they can have it (the arbiter, 2026-11-12).
+
+~~~text
+1.9 is here
+
+Keep a journal by the Church's day: today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Free for everyone.
+Hold any verse to see its Greek, and download six more Bibles, in Russian, Greek, Serbian, Arabic, Spanish and Portuguese.
+The Creed by council sets the Symbol of Faith out article by article, and on the days an event of Orthodox History fell, it is on Today under the saint of the day.
+The full note is below.
+~~~
+
 ### In the stores
 
 `discord-stores` · Discord · Discord, #announcements · Ready · 685 of 2000 characters
@@ -330,7 +330,7 @@ Purify 1.9 is out
 Purify 1.9 is out, on purifyapp.net and in the stores. It keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.
 
 What is new, briefly:
-- Your journal, by the Church's day. Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.
+- Your journal, by the Church's day. Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.
 - Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
 - Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
 - Study a verse, in Purify Plus. Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.
@@ -384,12 +384,12 @@ Keep a journal by the Church's day, hold any verse to see its Greek, and read si
 
 ### Try this first
 
-`discord-try` · Discord · Discord, a thread under the announcement · Ready · 613 of 2000 characters
+`discord-try` · Discord · Discord, a thread under the announcement · Ready · 618 of 2000 characters
 
 ~~~text
 Three things to try in 1.9:
 
-1. Your journal, by the Church's day. Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.
+1. Your journal, by the Church's day. Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.
 2. Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
 3. Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
 
