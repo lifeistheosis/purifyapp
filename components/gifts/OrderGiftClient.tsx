@@ -61,6 +61,7 @@ import { Truck } from "@/components/ui/icons/Truck";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import {
   autoClaimPick,
+  giftFocus,
   orderGiftMonths,
   type OrderGiftOrder,
   type OrderGiftResult,
@@ -276,13 +277,7 @@ export function OrderGiftClient() {
   const plus = state && state.signedIn ? state.plus : null;
   const byDate = [...orders].sort((a, b) => (b.paidAt ?? "").localeCompare(a.paidAt ?? ""));
   const autoId = autoClaimPick(state);
-  const focus: OrderGiftOrder | null = claimed?.orderId
-    ? (orders.find((o) => o.id === claimed.orderId) ?? null)
-    : (orders.find((o) => o.id === autoId) ??
-      byDate.find((o) => !o.claimed && !o.delivered) ??
-      byDate.find((o) => !o.claimed) ??
-      byDate.find((o) => o.mine) ??
-      null);
+  const focus: OrderGiftOrder | null = giftFocus(orders, autoId, claimed?.orderId);
   const others = byDate.filter((o) => o.id !== focus?.id);
 
   // Back after claiming: Plus is running because of this gift, and the page
@@ -478,6 +473,8 @@ export function OrderGiftClient() {
                         void load();
                       }}
                       className="set-btn shrink-0"
+                      // 44 to a finger: .set-btn is 36 tall, and is written after the utilities' layer, so a min-h class would lose to it.
+                      style={{ minHeight: 44 }}
                     >
                       {t("orderGift.retry")}
                     </button>

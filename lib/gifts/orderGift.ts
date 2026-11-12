@@ -177,6 +177,33 @@ export function autoClaimPick(state: OrderGiftState | null | undefined): string 
   return ready[0]?.id ?? null;
 }
 
+/**
+ * The order the page's ticket is about: the one just claimed; else the one
+ * being claimed on arrival; else the newest still on its way, the newest
+ * whose gift nobody has claimed, or the newest this reader claimed; else,
+ * when every gift was claimed by someone else (a parcel's recipient, with
+ * its label), the newest order, so the ticket says its gift was claimed
+ * (the gate's final run of 2026-11-12: it said "We could not find an EIKON
+ * order on this account" over the buyer's own orders). Null only for a
+ * reader with no order at all.
+ */
+export function giftFocus(
+  orders: readonly OrderGiftOrder[],
+  autoId: string | null,
+  claimedId?: string | null,
+): OrderGiftOrder | null {
+  if (claimedId) return orders.find((o) => o.id === claimedId) ?? null;
+  const byDate = [...orders].sort((a, b) => (b.paidAt ?? "").localeCompare(a.paidAt ?? ""));
+  return (
+    orders.find((o) => o.id === autoId) ??
+    byDate.find((o) => !o.claimed && !o.delivered) ??
+    byDate.find((o) => !o.claimed) ??
+    byDate.find((o) => o.mine) ??
+    byDate[0] ??
+    null
+  );
+}
+
 /** GET /api/gifts/order. */
 export type OrderGiftState =
   | { signedIn: false }
