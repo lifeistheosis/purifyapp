@@ -61,3 +61,28 @@ describe("the pricing hero's eyebrow, over the scribe", () => {
     }
   });
 });
+
+describe("the florilegium's starter tiles", () => {
+  it("draw the reference under a starter's name 4.5:1 or more on Light and on every light look", () => {
+    const share = Number(
+      /<p data-carry-over="" className="relative mt-1 font-sans text-caption leading-\[1\.35\] text-paper\/(\d+)">\{reference\}<\/p>/.exec(code("components/florilegium/FlorilegiaHub.tsx"))?.[1] ?? 0,
+    );
+    // Under "Psalms 50:1-19", the least kind of the four, on the picture's melted foot. Light lifts
+    // shares to 66 and the light looks to 68, so the share is drawn as written on all of them.
+    const GROUND: [string, string, Rgb][] = [
+      ["Light", 'html[data-reading-mode="parchment"]', [209, 199, 174]],
+      ["Desert", 'html[data-look="desert"]', [212, 196, 185]],
+      ["Jordan", 'html[data-look="jordan"]', [194, 208, 204]],
+      ["Patmos", 'html[data-look="patmos"]', [213, 214, 216]],
+      ["Blush", 'html[data-look="blush"]', [217, 196, 199]],
+      ["Roses", 'html[data-look="rose"]', [210, 202, 186]],
+      ["Lavender", 'html[data-look="lavender"]', [204, 196, 213]],
+      ["Olive", 'html[data-look="olive"]', [200, 199, 181]],
+      ["Stone", 'html[data-look="stone"]', [195, 192, 183]],
+      ["Linen", 'html[data-look="linen"]', [213, 210, 203]],
+    ];
+    for (const [name, selector, ground] of GROUND) {
+      expect(onGround(paperOf(selector), share / 100, ground), `${name}, at ${share} percent`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+});

@@ -200,7 +200,10 @@ export function FlorilegiaHub({ readOnly = false }: { readOnly?: boolean } = {})
                       <span>{t("study.florilegium.inYours")}</span>
                     </p>
                   ) : (
-                    <p data-carry-over="" className="relative mt-1 font-sans text-caption leading-[1.35] text-paper/70">{reference}</p>
+                    // On the picture's melted foot: at 70 percent of the ink the reference read
+                    // 4.26:1 to 4.49:1 on Light and on seven light looks (the gate's final run,
+                    // 2026-11-12); at 75 it is 4.83:1 at its least on all twenty-two.
+                    <p data-carry-over="" className="relative mt-1 font-sans text-caption leading-[1.35] text-paper/75">{reference}</p>
                   )}
                 </Link>
               </li>
