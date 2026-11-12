@@ -148,6 +148,9 @@ export function PrayerStep({
             : {})}
           className="mt-5 whitespace-pre-line"
           style={leading}
+          // The prayer's own words keep their edition's dashes, and say so (lib/ui/__tests__/editionDashes.test.ts).
+          data-mock-allow="emdash"
+          data-mock-why="the prayer's own words, as its edition prints them"
         >
           {stanzas.map((stanza, s) => (
             <div key={s} className={s > 0 ? "mt-[1.1em]" : undefined}>

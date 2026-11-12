@@ -35,8 +35,28 @@ describe("a Father's words keep their edition's dashes, and say so", () => {
     expect(sheet.slice(at, sheet.indexOf("</div>", at))).toContain("<GlossedText");
   });
 
+  it("in a council's document, its paragraphs and its edition's notes, but never in the editor's note", () => {
+    // Every dash in the council documents and the prayers was read against its edition on 2026-11-12 (the
+    // gate's confirm run): NPNF II 14, ANF 5 and 6 at the Christian Classics Ethereal Library, Robertson's
+    // 1899 Synod of Jerusalem and Hapgood's 1906 Service Book at archive.org; all 91 stand in their edition.
+    const sections = read("components/councils/CouncilSections.tsx");
+    const paragraphs = sections.indexOf('className="space-y-5 text-paper/90" data-mock-allow="emdash"');
+    expect(paragraphs).toBeGreaterThan(0);
+    expect(sections.slice(paragraphs, sections.indexOf("</div>", paragraphs))).toContain("s.paragraphs.map");
+    expect(sections).toContain('<ul className="space-y-4" data-mock-allow="emdash" data-mock-why="the edition\'s own notes, as it prints them">');
+    const framing = sections.slice(sections.indexOf("{s.framing && ("), sections.indexOf("{s.citation && ("));
+    expect(framing).not.toContain("data-mock-allow");
+  });
+
+  it("in a prayer's own words", () => {
+    const step = read("components/prayers/service/PrayerStep.tsx");
+    const at = step.indexOf('data-mock-allow="emdash"');
+    expect(at).toBeGreaterThan(0);
+    expect(step.slice(at, step.indexOf("</div>", at))).toContain("{stanzas.map(");
+  });
+
   it("names its reason wherever it is allowed", () => {
-    for (const file of ["components/saints/WritingReader.tsx", "components/bible/StudyRail.tsx", "components/bible/MobileCommentarySheet.tsx"]) {
+    for (const file of ["components/saints/WritingReader.tsx", "components/bible/StudyRail.tsx", "components/bible/MobileCommentarySheet.tsx", "components/councils/CouncilSections.tsx", "components/prayers/service/PrayerStep.tsx"]) {
       const src = read(file);
       const allows = src.split("data-mock-allow").length - 1;
       expect(src.split("data-mock-why").length - 1, file).toBeGreaterThanOrEqual(allows);

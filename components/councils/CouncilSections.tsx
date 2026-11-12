@@ -63,7 +63,8 @@ export function CouncilSections({ content, lang, council }: { content: CouncilDo
               className="mb-5"
             />
           ) : null}
-          <div lang={text} dir={textDir(text)} className="space-y-5 text-paper/90">
+          {/* The document's own words keep their edition's dashes, and say so (lib/ui/__tests__/editionDashes.test.ts); the editor's note above is the house's and never does. */}
+          <div lang={text} dir={textDir(text)} className="space-y-5 text-paper/90" data-mock-allow="emdash" data-mock-why="the document's own words, as its edition prints them">
             {s.paragraphs.map((p, i) => (
               // Each paragraph a place the reader's place is kept by (lib/saints/paragraphInView.ts).
               // Any of its words can be marked (1.9, components/reading/MarkHost.tsx).
@@ -86,7 +87,7 @@ export function CouncilSections({ content, lang, council }: { content: CouncilDo
               <p className="font-sans text-caption font-semibold text-paper/45 mb-4">
                 <T k="saints.notes" />
               </p>
-              <ul className="space-y-4">
+              <ul className="space-y-4" data-mock-allow="emdash" data-mock-why="the edition's own notes, as it prints them">
                 {s.notes.map((n, i) => (
                   <li key={i} lang={text} dir={textDir(text)} className="font-sans text-ui text-paper/70 leading-[1.55]">
                     {n}
