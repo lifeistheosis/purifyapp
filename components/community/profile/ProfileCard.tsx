@@ -20,7 +20,7 @@ import { apiFetch } from "@/lib/api/client";
 import { getBook, localBookNames, referenceIn } from "@/lib/bible/books";
 import { cn } from "@/lib/cn";
 import { clergyLabelKey } from "@/lib/profile/clergy";
-import { isBannerMotion, isEffect, normalizeHex, readableThemeAccent, type Cosmetics } from "@/lib/profile/cosmetics";
+import { isBannerMotion, isDecoration, isEffect, normalizeHex, readableThemeAccent, type Cosmetics } from "@/lib/profile/cosmetics";
 import { recordDate } from "@/lib/profile/dates";
 import { nameColorClass } from "@/lib/profile/nameColor";
 import type { PublicProfile } from "@/lib/profile/publicProfile";
@@ -67,12 +67,19 @@ const PictureSheet = dynamic(() => import("@/components/share/PictureSheet").the
  * words are set for the ground they stand on. A theme's foot is drawn no
  * lighter than THEME_ACCENT_MAX_LUMINANCE, which deepens only a reader's own
  * pale pick (lib/profile/cosmetics.ts).
+ *
+ * A frame (AvatarFrame.tsx) is drawn for a dark card too: a lampada's white
+ * flame, a pearl's glint, the dove, the lilies, the stars. So a card with a
+ * frame is a dark island as well (2026-11-12). The sheet opens on the seed
+ * from the feed, which carries the frame but not the banner, and on Light it
+ * stood as a light card with the frame's white on it until the profile
+ * arrived and the card turned dark; it is dark from its first frame now.
  */
 
 /** The card's ground: a theme's two colours, or the house card; and whether it stays dark on every palette. */
 export function profileSurface(c: Cosmetics): { themed: boolean; island: boolean; style: CSSProperties | undefined } {
   const themed = Boolean(c.themePrimary && c.themeAccent);
-  const island = themed || Boolean(c.bannerColor || c.bannerUrl || isBannerMotion(c.bannerMotion) || c.effect);
+  const island = themed || Boolean(c.bannerColor || c.bannerUrl || isBannerMotion(c.bannerMotion) || c.effect) || isDecoration(c.decoration);
   if (!themed) return { themed, island, style: undefined };
   const foot = readableThemeAccent(c.themeAccent) ?? c.themeAccent;
   return {

@@ -5,8 +5,8 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { ProfileFace } from "@/components/community/profile/ProfileCard";
-import type { Cosmetics } from "@/lib/profile/cosmetics";
+import { ProfileFace, profileSurface, surfaceClass } from "@/components/community/profile/ProfileCard";
+import { DECORATIONS, SEASONAL_DECORATIONS, type Cosmetics } from "@/lib/profile/cosmetics";
 
 /**
  * The gate's final run 1 (Admin, 2026-11-12; the arbiter's 02:08 UTC), the
@@ -126,5 +126,20 @@ describe("a profile's face over its effect's drifting specks", () => {
     const white: Rgb = [255, 255, 255];
     expect(onGround(white, 0.8, [142, 129, 100])).toBeLessThan(4.5);
     expect(onGround(white, 0.8, [37, 34, 31])).toBeGreaterThanOrEqual(4.5);
+  });
+});
+
+describe("a profile card with a frame", () => {
+  it("is a dark island, from the seed the sheet opens on to the profile it loads", () => {
+    // Every frame the catalog draws: each has white in it (a flame, a glint, a dove, lilies, stars) or gold for a dark card.
+    for (const decoration of [...DECORATIONS, ...SEASONAL_DECORATIONS]) {
+      expect(profileSurface({ ...NONE, decoration }).island, decoration).toBe(true);
+      expect(surfaceClass(profileSurface({ ...NONE, decoration })), decoration).toBe("dark-island bg-night-soft");
+    }
+    // An id the catalog does not draw makes nothing dark; nor does a card with nothing on it.
+    expect(profileSurface({ ...NONE, decoration: "neon" }).island).toBe(false);
+    expect(profileSurface(NONE).island).toBe(false);
+    // The seed from the feed carries the frame (and not the banner), so the card is dark from its first frame.
+    expect(code("components/community/profile/ProfileViewer.tsx")).toContain("cosmetics: { ...NO_COSMETICS, decoration: seed.decoration ?? null, nameColor: seed.nameColor ?? null }");
   });
 });
