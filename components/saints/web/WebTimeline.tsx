@@ -150,10 +150,11 @@ function Chip({ node }: { node: WebNode }) {
     <Link
       href={href}
       prefetch={false}
-      className="tap-press hit-44 inline-flex h-8 max-w-full items-center gap-[7px] rounded-pill border border-paper/10 bg-paper/[0.07] pe-3 ps-1 font-sans text-[12.5px] font-medium text-paper/90 hover:border-paper/25"
+      // Its name whole (the gate's confirm run, 2026-11-12): a long one takes a second line in the chip.
+      className="tap-press hit-44 inline-flex min-h-8 max-w-full items-center gap-[7px] rounded-[16px] border border-paper/10 bg-paper/[0.07] py-1 pe-3 ps-1 font-sans text-[12.5px] font-medium text-paper/90 hover:border-paper/25"
     >
       <WebAvatar node={node} size={24} />
-      <span className="truncate">{name}</span>
+      <span className="min-w-0 leading-[1.2]">{name}</span>
     </Link>
   );
 }

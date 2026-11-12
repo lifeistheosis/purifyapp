@@ -7,10 +7,13 @@
  * a button, instead of merging the two screens").
  *
  * The web itself is built from the app's own data by lib/saints/web.ts, on
- * the server. This file imports nothing but a type, so the screen, a client
+ * the server. This file imports a type and the posters' measure of words
+ * (lib/reading/coverText.ts, which imports nothing), so the screen, a client
  * file, can read it without carrying the saints' registry into the app's script
  * (lib/saints/__tests__/brief.test.ts).
  */
+
+import { emWidth } from "@/lib/reading/coverText";
 
 import type { Pronoun } from "./pronoun";
 
@@ -167,6 +170,68 @@ export const CENTER_BOX = [
   { left: 105, right: 285, top: 58, bottom: 100 },
 ] as const;
 
+/*
+ * A name is shown whole (the gate's confirm run, 2026-11-12: on 43 webs a
+ * long name was cut at its second line, "Holy Apostle and Evangelist John",
+ * "Eustratius, Auxentius, Eugene, Mardarius and Orestes"). A box holds two
+ * lines of name; a longer name makes its box as much taller, and the saints
+ * past it, from the middle out, stand that much further out where they would
+ * meet it. A web whose names take two lines or fewer is laid out as before.
+ *
+ * The lines are counted as the phone draws them, on the narrowest phone the
+ * app is held to (320 wide, whose web is 277.5 across inside the page's
+ * edges, a saint's label 25.6 percent of that), with the posters' measure of
+ * the app's own letters, a step narrower than the label for the semibold the
+ * web sets them in: so no wider phone breaks a name into more lines than its
+ * box holds. The middle saint's name stands in the share of the web its box
+ * is drawn at (180 of 390), so it never reaches the saints beside him.
+ */
+
+/** A line of a saint's name under his circle (11.5px at 1.22, WebConstellation's NAME_CLASS). */
+export const NAME_LINE = 14.03;
+/** A line of the middle saint's name (16px at 1.2, MIDDLE_NAME_CLASS). */
+export const MIDDLE_LINE = 19.2;
+/** The lines of name a box holds as drawn above (BOX, CENTER_BOX). */
+export const BOX_LINES = 2;
+/** The web's width on the narrowest phone it is held to (320, less the page's edges), and the share of it a saint's label takes. */
+const NARROWEST = 277.5;
+export const LABEL_SHARE = 0.256;
+/** The share of the web the middle saint's name stands in (WebConstellation, data-web-middle): CENTER_BOX[1]'s 180 of 390. */
+export const MIDDLE_SHARE = (CENTER_BOX[1].right - CENTER_BOX[1].left) / WEB_WIDTH;
+/** How much of a line the measure fills, for the weight the web sets names in over the one it sums. */
+const NAME_FILL = 0.95;
+
+/** How many lines `text` takes at `size` px in a column `width` px wide, broken where the browser breaks it: at a space, or after a hyphen ("Trophy-bearer"). */
+export function linesOf(text: string, width: number, size: number, face: "serif" | "sans"): number {
+  const measure = (width / size) * NAME_FILL;
+  const space = emWidth(" ", face);
+  let lines = 1;
+  let run = 0;
+  for (const word of text.split(/\s+/).filter(Boolean)) {
+    for (const [k, part] of word.split(/(?<=-)/).entries()) {
+      const w = emWidth(part, face);
+      const gap = k === 0 ? space : 0;
+      if (run > 0 && run + gap + w > measure) {
+        lines += 1;
+        run = w;
+      } else {
+        run = run > 0 ? run + gap + w : w;
+      }
+    }
+  }
+  return lines;
+}
+
+/** The lines a saint's name takes under his circle, on the narrowest phone. */
+export function nameLines(name: string): number {
+  return linesOf(name, NARROWEST * LABEL_SHARE, 11.5, "sans");
+}
+
+/** The lines the middle saint's name takes under his circle. */
+export function middleLines(name: string): number {
+  return linesOf(name, NARROWEST * MIDDLE_SHARE, 16, "serif");
+}
+
 const PLACES: readonly (readonly [number, number])[] = [
   [336, 0],
   [54, 0],
@@ -209,23 +274,70 @@ export type WebLayout = {
   center: { x: number; y: number };
   /** Each node's centre, in the canvas, in the order given. */
   places: { x: number; y: number }[];
+  /** How far each node's box reaches below its centre: BOX.down, and more for a name of more than two lines. */
+  down: number[];
+  /** How far the middle saint's name reaches below his centre: CENTER_BOX[1].bottom, and more for a long name. */
+  middleDown: number;
 };
 
+/** What the names take: each node's lines of name, in the order given, and the middle saint's. */
+export type WebNames = { names?: readonly number[]; middle?: number };
+
+/** The room the places leave between a box and the circle under it, row to row: what a longer name keeps from the next. */
+const ROW_GAP = 13;
+
 /** Where `count` saints sit around the middle one, and how tall the canvas is. */
-export function webLayout(count: number): WebLayout {
-  const raw = Array.from({ length: Math.max(0, count) }, (_, i) => webPlace(i));
+export function webLayout(count: number, lines: WebNames = {}): WebLayout {
+  const n = Math.max(0, count);
+  const raw = Array.from({ length: n }, (_, i) => webPlace(i));
+  // In whole pixels, rounded up, so the places stay whole as the places above are.
+  const down = raw.map((_, i) => BOX.down + Math.ceil(Math.max(0, (lines.names?.[i] ?? BOX_LINES) - BOX_LINES) * NAME_LINE));
+  const middleDown = CENTER_BOX[1].bottom + Math.ceil(Math.max(0, (lines.middle ?? BOX_LINES) - BOX_LINES) * MIDDLE_LINE);
+
+  // From the middle out, each saint where his place puts him, moved further out, up or down, only
+  // where a box already standing over him (or under him, above the middle) has grown into the room
+  // his place left: he keeps that room, or a row's gap where it was wider. Two lines of name grow
+  // nothing, so nothing moves.
+  type Rect = { left: number; right: number; top: number; bottom: number; was: { top: number; bottom: number } };
+  const standing: Rect[] = [
+    { ...CENTER_BOX[0], was: { top: CENTER_BOX[0].top, bottom: CENTER_BOX[0].bottom } },
+    { left: CENTER_BOX[1].left, right: CENTER_BOX[1].right, top: CENTER_BOX[1].top, bottom: middleDown, was: { top: CENTER_BOX[1].top, bottom: CENTER_BOX[1].bottom } },
+  ];
+  const ys = raw.map((p) => p.y);
+  const order = raw.map((_, i) => i).sort((a, b) => Math.abs(raw[a].y) - Math.abs(raw[b].y) || a - b);
+  for (const i of order) {
+    const left = raw[i].x - BOX.half;
+    const right = raw[i].x + BOX.half;
+    const was = { top: raw[i].y - BOX.up, bottom: raw[i].y + BOX.down };
+    for (const r of standing) {
+      if (!(r.left < right && left < r.right)) continue;
+      if (raw[i].y >= 0 && r.was.bottom <= was.top) {
+        // Over him: his top stays clear of its foot by the room his place left, at most a row's gap.
+        const keep = Math.min(was.top - r.was.bottom, ROW_GAP);
+        ys[i] = Math.max(ys[i], r.bottom + keep + BOX.up);
+      } else if (raw[i].y < 0 && r.was.top >= was.bottom) {
+        // Under him, above the middle: his foot stays clear of its top the same way.
+        const keep = Math.min(r.was.top - was.bottom, ROW_GAP);
+        ys[i] = Math.min(ys[i], r.top - keep - down[i]);
+      }
+    }
+    standing.push({ left, right, top: ys[i] - BOX.up, bottom: ys[i] + down[i], was });
+  }
+
   const PAD = 14;
   let top: number = CENTER_BOX[0].top;
-  let bottom: number = CENTER_BOX[1].bottom;
-  for (const p of raw) {
-    top = Math.min(top, p.y - BOX.up);
-    bottom = Math.max(bottom, p.y + BOX.down);
+  let bottom: number = middleDown;
+  for (const [i, y] of ys.entries()) {
+    top = Math.min(top, y - BOX.up);
+    bottom = Math.max(bottom, y + down[i]);
   }
   const cy = PAD - top;
   return {
     height: Math.round(bottom - top + PAD * 2),
     center: { x: WEB_WIDTH / 2, y: cy },
-    places: raw.map((p) => ({ x: p.x, y: p.y + cy })),
+    places: raw.map((p, i) => ({ x: p.x, y: ys[i] + cy })),
+    down,
+    middleDown,
   };
 }
 

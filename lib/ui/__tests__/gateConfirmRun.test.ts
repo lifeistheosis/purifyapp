@@ -3,6 +3,10 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { SHORT_CARD_H, cardNameSize } from "@/components/saints/web/WebCard";
+import { saintWeb, webSlugs } from "@/lib/saints/web";
+import { BOX, BOX_LINES, CENTER_BOX, MIDDLE_SHARE, NAME_LINE, linesOf, middleLines, nameLines, webLayout, type WebNode } from "@/lib/saints/webLayout";
+
 /**
  * The gate's confirm run (Admin, 2026-11-12, 05:40 to 09:27 UTC, export
  * 872724aa3) and Admin's sweep of the pages the walks never reach: the fails
@@ -60,3 +64,75 @@ describe("a chant's words switch (fail 9, Psalm 117)", () => {
   });
 });
 
+describe("the saints' webs (fail 4, the 118 webs)", () => {
+  type Rect = { left: number; right: number; top: number; bottom: number };
+  const overlap = (a: Rect, b: Rect) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+  const webs = webSlugs().map((slug) => saintWeb(slug)!);
+  const nameOf = (n: WebNode) => (n.kind === "saint" ? n.person.short : n.name);
+
+  it("give every name the lines it takes, and keep every box clear of every other", () => {
+    // 43 webs cut a long name at its second line ("Holy Apostle and Evangelist John", "Eustratius, Auxentius,
+    // Eugene, Mardarius and Orestes"); the box held two. Each box now holds the lines its name takes on the
+    // narrowest phone, the middle saint's name in its share of the web, and nothing meets.
+    expect(webs.length).toBe(118);
+    let long = 0;
+    for (const web of webs) {
+      const lines = web.nodes.map((n) => nameLines(nameOf(n)));
+      long += lines.filter((l) => l > BOX_LINES).length;
+      const layout = webLayout(web.nodes.length, { names: lines, middle: middleLines(web.center.short) });
+      const middle: Rect[] = [
+        { ...CENTER_BOX[0], top: layout.center.y + CENTER_BOX[0].top, bottom: layout.center.y + CENTER_BOX[0].bottom },
+        { ...CENTER_BOX[1], top: layout.center.y + CENTER_BOX[1].top, bottom: layout.center.y + layout.middleDown },
+      ];
+      const boxes: Rect[] = layout.places.map((p, i) => ({ left: p.x - BOX.half, right: p.x + BOX.half, top: p.y - BOX.up, bottom: p.y + BOX.down + Math.max(0, lines[i] - BOX_LINES) * NAME_LINE }));
+      for (const [i, b] of boxes.entries()) {
+        expect(b.top, `${web.center.slug} #${i}`).toBeGreaterThanOrEqual(0);
+        expect(b.bottom, `${web.center.slug} #${i}`).toBeLessThanOrEqual(layout.height);
+        for (const m of middle) expect(overlap(b, m), `${web.center.slug}: ${nameOf(web.nodes[i])} on the middle saint`).toBe(false);
+        for (let j = i + 1; j < boxes.length; j++) expect(overlap(b, boxes[j]), `${web.center.slug}: ${nameOf(web.nodes[i])} and ${nameOf(web.nodes[j])}`).toBe(false);
+      }
+    }
+    expect(long).toBeGreaterThan(20);
+  });
+
+  it("draw the names unclamped, and the middle saint's name in its share of the web", () => {
+    const web = fs.readFileSync(path.join(ROOT, "components/saints/web/WebConstellation.tsx"), "utf8");
+    expect(web).not.toContain("line-clamp-2");
+    expect(web).not.toContain("w-[180px]");
+    expect(web.match(/w-\[46\.15%\]/g)?.length).toBe(3);
+    expect(Math.round(MIDDLE_SHARE * 10000) / 100).toBe(46.15);
+    expect(web).toContain("webLayout(nodes.length, { names: nodes.map((n) => nameLines(n.kind === \"saint\" ? n.person.short : n.name)), middle: middleLines(center.short) })");
+  });
+
+  it("name every kind on the key whole, the track swiping where the parts do not fit", () => {
+    const key = fs.readFileSync(path.join(ROOT, "components/saints/web/WebKey.tsx"), "utf8");
+    expect(key).not.toContain("truncate");
+    expect(key).toContain("overflow-x-auto");
+    expect(key).toContain("flex-[1_0_auto]");
+  });
+
+  it("show the card's name whole in its short face, for every saint on every web", () => {
+    const card = fs.readFileSync(path.join(ROOT, "components/saints/web/WebCard.tsx"), "utf8");
+    expect(card).toContain('style={{ fontSize: cardNameSize(name) }}');
+    expect(card).not.toMatch(/truncate[^"]*text-\[16\.5px\]/);
+    for (const web of webs) {
+      for (const n of web.nodes) {
+        const name = n.kind === "saint" ? n.person.name : n.name;
+        const size = cardNameSize(name);
+        const lines = linesOf(name, 165, size, "serif");
+        // The face: its top padding, the name's lines at 1.25, the 5px gap and the line under it.
+        expect(4 + lines * size * 1.25 + 5 + 16, `${web.center.slug}: ${name} at ${size}px, ${lines} lines`).toBeLessThanOrEqual(SHORT_CARD_H);
+      }
+    }
+  });
+
+  it("stand the card and its handle over a look's foot, its line read over the brightest icon", () => {
+    const card = fs.readFileSync(path.join(ROOT, "components/saints/web/WebCard.tsx"), "utf8");
+    // The foot is body::after at 35 (globals.css); the card and the handle were at 20, under it.
+    expect(CSS).toMatch(/body::after \{[^}]*z-index: 35;/);
+    expect(card).toContain("saint-web-sheet saint-web-card fixed inset-x-3 z-40");
+    expect(card).toContain("saint-web-handle saint-web-pull fixed left-1/2 z-40");
+    expect(card).toContain("text-[12px] font-medium leading-4 text-paper/75");
+    expect(/\.saint-web-card-light \{[^}]*opacity: 0\.2;/.test(CSS)).toBe(true);
+  });
+});

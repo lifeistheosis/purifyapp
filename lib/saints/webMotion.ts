@@ -41,12 +41,24 @@ export type Room = { hx: number; hy: number; off: number };
 /** A saint's circle and the name under it (webLayout.ts, BOX). */
 export const NODE_ROOM: Room = { hx: BOX.half, hy: (BOX.up + BOX.down) / 2, off: (BOX.down - BOX.up) / 2 };
 
+/** A saint's room with a name that reaches `down` below his centre (webLayout.ts, WebLayout.down). */
+export function nodeRoom(down: number): Room {
+  return down === BOX.down ? NODE_ROOM : { hx: BOX.half, hy: (BOX.up + down) / 2, off: (down - BOX.up) / 2 };
+}
+
 /** The saint in the middle: his circle and his name under it, as one box (webLayout.ts, CENTER_BOX). */
 export const MIDDLE_ROOM: Room = {
   hx: (CENTER_BOX[1].right - CENTER_BOX[1].left) / 2,
   hy: (CENTER_BOX[1].bottom - CENTER_BOX[0].top) / 2,
   off: (CENTER_BOX[1].bottom + CENTER_BOX[0].top) / 2,
 };
+
+/** The middle saint's room with a name that reaches `down` below his centre. */
+export function middleRoom(down: number): Room {
+  return down === CENTER_BOX[1].bottom
+    ? MIDDLE_ROOM
+    : { hx: MIDDLE_ROOM.hx, hy: (down - CENTER_BOX[0].top) / 2, off: (down + CENTER_BOX[0].top) / 2 };
+}
 
 /** Spring constants, per unit of mass (1/s²), and damping as a share of critical. */
 export const MOTION = {
@@ -124,7 +136,7 @@ export function webMotion(layout: WebLayout, parents: readonly number[]): WebMot
   return {
     home,
     parent,
-    room: home.map((_, i) => (i === 0 ? MIDDLE_ROOM : NODE_ROOM)),
+    room: home.map((_, i) => (i === 0 ? middleRoom(layout.middleDown) : nodeRoom(layout.down[i - 1] ?? BOX.down))),
     p: home.map(copy),
     v: home.map(() => ({ x: 0, y: 0 })),
     anchor: home.map(copy),
@@ -140,7 +152,7 @@ export function webMotion(layout: WebLayout, parents: readonly number[]): WebMot
       x0: BOX.half - 4,
       x1: WEB_WIDTH - BOX.half + 4,
       y0: BOX.up + 2,
-      y1: Math.max(BOX.up + 2, layout.height - BOX.down - 4),
+      y1: Math.max(BOX.up + 2, layout.height - Math.max(BOX.down, ...layout.down) - 4),
     },
     still: true,
   };
@@ -495,10 +507,10 @@ export const KEEP_IN_SIGHT = 56;
  */
 export function webBox(layout: WebLayout): { middle: number; top: number; bottom: number } {
   let top: number = layout.center.y + CENTER_BOX[0].top;
-  let bottom: number = layout.center.y + CENTER_BOX[1].bottom;
-  for (const p of layout.places) {
+  let bottom: number = layout.center.y + layout.middleDown;
+  for (const [i, p] of layout.places.entries()) {
     top = Math.min(top, p.y - BOX.up);
-    bottom = Math.max(bottom, p.y + BOX.down);
+    bottom = Math.max(bottom, p.y + (layout.down[i] ?? BOX.down));
   }
   return { middle: layout.center.y, top, bottom };
 }

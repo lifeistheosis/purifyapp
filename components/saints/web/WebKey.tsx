@@ -15,6 +15,11 @@ import { FILTER_LABEL, FILTER_LINE } from "./webWords";
  * The chosen part lifts and lights; every saint and line not in it falls to a
  * fifth, as the pills did. Only the kinds this web has are offered, and none
  * when it has one kind (webFilters in lib/saints/webLayout.ts).
+ *
+ * Every kind is named whole. Where the parts fill the track they share it out
+ * as before; where they do not (St. Athanasius's five on a phone read "A.",
+ * "Disci...", "Coun...", "Hist...", "In the Li...", the gate's confirm run,
+ * 2026-11-12), the track swipes sideways, as the search's kinds do on a phone.
  */
 export function WebKey({
   filters,
@@ -29,18 +34,18 @@ export function WebKey({
 }) {
   const { t } = useTranslate();
   return (
-    <div className="saint-web-key -mx-1 flex h-[53px] gap-1 rounded-[17px] p-1 md:mx-auto md:max-w-[560px]">
+    <div className="saint-web-key no-scrollbar -mx-1 flex h-[53px] gap-1 overflow-x-auto rounded-[17px] p-1 md:mx-auto md:max-w-[560px]">
       {(["all", ...filters] as const).map((f) => (
         <button
           key={f}
           type="button"
           aria-pressed={filter === f}
           onClick={() => onPick(f)}
-          className="saint-web-key-part tap-press flex min-w-0 flex-[1_1_auto] flex-col items-center justify-center gap-[5px] rounded-[13px] px-2"
+          className="saint-web-key-part tap-press flex flex-[1_0_auto] flex-col items-center justify-center gap-[5px] rounded-[13px] px-2"
         >
           {f === "all" ? <Graph size={14} strokeWidth={2} /> : <WebLineMark line={FILTER_LINE[f]} width={18} />}
-          <span className="flex max-w-full items-baseline gap-1 font-sans text-[12.5px] font-semibold leading-none">
-            <span className="saint-web-key-word truncate">{t(FILTER_LABEL[f])}</span>
+          <span className="flex items-baseline gap-1 whitespace-nowrap font-sans text-[12.5px] font-semibold leading-none">
+            <span className="saint-web-key-word">{t(FILTER_LABEL[f])}</span>
             <span className="saint-web-key-count shrink-0 font-medium">{counts[f]}</span>
           </span>
         </button>

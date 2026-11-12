@@ -17,7 +17,7 @@ import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { cn } from "@/lib/cn";
 import { byPronoun } from "@/lib/saints/pronoun";
-import { lineStyle, type WebNode } from "@/lib/saints/webLayout";
+import { lineStyle, linesOf, type WebNode } from "@/lib/saints/webLayout";
 import {
   advanceGlide,
   afterPull,
@@ -40,6 +40,20 @@ export type CardState = "short" | "tall" | "tucked";
 
 /** The short card, as the design draws it: all of St John's web stays in view above it. */
 export const SHORT_CARD_H = 78;
+
+/** The room the short face gives the name on the narrowest phone the web is held to (320 wide). */
+const CARD_NAME_PX = 165;
+
+/**
+ * The name on the card's short face, whole (the gate's confirm run, 2026-11-12: "Holy Apostle and Evangelist
+ * John" ended in an ellipsis there). The face is SHORT_CARD_H tall: the name in two lines at its own size with
+ * the line under it fits, or in three a step smaller, or smaller still. Counted as the browser breaks it, on the
+ * narrowest phone (lib/saints/webLayout.ts, linesOf), so no wider phone needs more.
+ */
+export function cardNameSize(name: string): number {
+  if (linesOf(name, CARD_NAME_PX, 16.5, "serif") <= 2) return 16.5;
+  return linesOf(name, CARD_NAME_PX, 14, "serif") <= 3 ? 14 : 12.5;
+}
 
 /**
  * Where the card is, as it moves: its height, how far it has dropped below
@@ -363,7 +377,9 @@ export function WebCard({
         data-away={away ? "" : undefined}
         inert={away}
         aria-label={name}
-        className="saint-web-sheet saint-web-card fixed inset-x-3 z-20 mx-auto max-w-[560px] overflow-hidden"
+        // Over a look's foot (globals.css, body::after at 35), as the reader's dock and the chapter pill are:
+        // under it the card's foot was the look's scene, and its line read 1.5:1 (the gate's confirm run, 2026-11-12).
+        className="saint-web-sheet saint-web-card fixed inset-x-3 z-40 mx-auto max-w-[560px] overflow-hidden"
         style={{ height: SHORT_CARD_H }}
       >
         {icon ? <span aria-hidden className="saint-web-card-light" style={{ backgroundImage: `url(${icon})` }} /> : null}
@@ -385,8 +401,11 @@ export function WebCard({
         >
           <WebAvatar node={node} size={46} className="saint-web-card-face" />
           <span className="min-w-0 flex-1">
-            <span lang="en" dir="ltr" className="block truncate font-serif text-[16.5px] font-bold leading-[1.25] text-paper">{name}</span>
-            <span className="mt-[5px] block truncate font-sans text-[12px] font-medium leading-4 text-paper/60">
+            <span lang="en" dir="ltr" className="block font-serif font-bold leading-[1.25] text-paper" style={{ fontSize: cardNameSize(name) }}>
+              {name}
+            </span>
+            {/* At 75, a step under the name as the web's own lines under a name are: at 60 it read 3.45:1 on Candlelight over a bright icon's light. */}
+            <span className="mt-[5px] block truncate font-sans text-[12px] font-medium leading-4 text-paper/75">
               {years ? <span>{years}</span> : null}
               {/* The dot takes the line's own ink: at 30 percent it read 1.76:1 on Light and no more than 2.2 anywhere. */}
               {years && kinds.length ? <span aria-hidden className="mx-[7px]">·</span> : null}
@@ -534,11 +553,12 @@ export function WebCard({
         onPointerMove={pullMove}
         onPointerUp={pullEnd}
         onPointerCancel={pullEnd}
-        className="saint-web-handle saint-web-pull fixed left-1/2 z-20 flex h-11 max-w-[calc(100vw-24px)] items-center gap-2 rounded-t-[14px] pb-3 pe-3 ps-[7px] pt-1.5"
+        // Over a look's foot as the card is; its name whole, on a second line where it needs one (it grows up).
+        className="saint-web-handle saint-web-pull fixed left-1/2 z-40 flex min-h-11 max-w-[calc(100vw-24px)] items-center gap-2 rounded-t-[14px] pb-3 pe-3 ps-[7px] pt-1.5"
       >
         <span aria-hidden className="saint-web-grab saint-web-grab-small" />
         <WebAvatar node={node} size={18} className="saint-web-handle-face" />
-        <span lang="en" dir="ltr" className="min-w-0 truncate font-sans text-[12.5px] font-semibold text-paper">{short}</span>
+        <span lang="en" dir="ltr" className="min-w-0 font-sans text-[12.5px] font-semibold leading-[1.2] text-paper">{short}</span>
         <ChevronDown size={14} className="shrink-0 rotate-180 text-paper/50" />
       </button>
     </>

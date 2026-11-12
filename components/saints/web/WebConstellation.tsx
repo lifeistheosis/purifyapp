@@ -28,18 +28,20 @@ import {
   type GlideWeb,
 } from "@/lib/saints/webGlide";
 import {
+  across,
   BOX,
   CENTER_SIZE,
-  NODE_SIZE,
-  WEB_WIDTH,
-  across,
   filtersOf,
   lineStyle,
+  middleLines,
+  nameLines,
+  NODE_SIZE,
   primaryTie,
+  type SaintWebData,
+  WEB_WIDTH,
+  type WebFilter,
   webFilters,
   webLayout,
-  type SaintWebData,
-  type WebFilter,
   type WebNode,
 } from "@/lib/saints/webLayout";
 import {
@@ -94,7 +96,7 @@ import { creditWords } from "@/lib/credits/saintPictures";
 /** Legible over the lines and the icon's light, in the page's own ground. */
 const LABEL_SHADOW = "[text-shadow:0_1px_6px_var(--color-night),0_0_2px_var(--color-night)]";
 /** A saint's name and its line under his circle, and the middle saint's ring and name: drawn the same for a saint who leaves in a glide. */
-const NAME_CLASS = "mt-1.5 line-clamp-2 font-sans text-[11.5px] font-semibold leading-[1.22]";
+const NAME_CLASS = "mt-1.5 font-sans text-[11.5px] font-semibold leading-[1.22]";
 /**
  * The line under a saint's name ("Nicaea, 787", "In the Lives") at 75 percent
  * of the ink. It stands over the middle icon's light, and at 50 (55 and 60
@@ -110,7 +112,7 @@ const NAME_CLASS = "mt-1.5 line-clamp-2 font-sans text-[11.5px] font-semibold le
 const TAG_CLASS = "mt-0.5 max-w-full truncate font-sans text-[10.5px] text-paper/75";
 const MIDDLE_RING_CLASS =
   "rounded-full shadow-[0_0_0_4px_var(--color-night),0_0_0_5.5px_color-mix(in_srgb,var(--color-paper)_55%,transparent),0_14px_40px_rgb(0_0_0/0.55)]";
-const MIDDLE_NAME_CLASS = "mt-2.5 line-clamp-2 text-center font-serif text-[16px] font-bold leading-[1.2] text-paper";
+const MIDDLE_NAME_CLASS = "mt-2.5 text-center font-serif text-[16px] font-bold leading-[1.2] text-paper";
 
 /** How far a finger moves before it is moving something, not tapping it. */
 const DRAG_SLOP = 6;
@@ -347,7 +349,12 @@ export function WebConstellation({
 }) {
   const { t } = useTranslate();
   const { center, nodes } = data;
-  const layout = useMemo(() => webLayout(nodes.length), [nodes.length]);
+  // Every name whole (the gate's confirm run, 2026-11-12): a name of more than two lines makes its box
+  // taller, and the saints past it stand further out (lib/saints/webLayout.ts, nameLines).
+  const layout = useMemo(
+    () => webLayout(nodes.length, { names: nodes.map((n) => nameLines(n.kind === "saint" ? n.person.short : n.name)), middle: middleLines(center.short) }),
+    [nodes, center.short],
+  );
   const box = useMemo(() => webBox(layout), [layout]);
   const filters = useMemo(() => webFilters(nodes), [nodes]);
   const counts = useMemo(() => kindCounts(nodes), [nodes]);
@@ -542,9 +549,9 @@ export function WebConstellation({
       handleTop: g.handleTop,
       web: { middle: g.slotTop + box.middle, top: g.slotTop + box.top, bottom: g.slotTop + box.bottom },
       floor: g.floor,
-      chosen: { top: top + a.y - BOX.up, bottom: top + a.y + BOX.down },
+      chosen: { top: top + a.y - BOX.up, bottom: top + a.y + (i >= 0 ? (layout.down[i] ?? BOX.down) : layout.middleDown) },
     };
-  }, [nodes, box]);
+  }, [nodes, box, layout]);
 
   /**
    * Aim the web at its place for the card, the reader's move and the screen.
@@ -1295,7 +1302,7 @@ export function WebConstellation({
                     left: across(p.x),
                     top: p.y - BOX.up - HIT.up,
                     width: `calc(25.6% + ${HIT.side * 2}px)`,
-                    height: BOX.up + BOX.down + HIT.up + HIT.down,
+                    height: BOX.up + (layout.down[i] ?? BOX.down) + HIT.up + HIT.down,
                   }}
                 />
               );
@@ -1367,7 +1374,7 @@ export function WebConstellation({
             <div
               ref={centerRef}
               data-web-middle
-              className="absolute flex w-[180px] -translate-x-1/2 flex-col items-center"
+              className="absolute flex w-[46.15%] -translate-x-1/2 flex-col items-center"
               style={{ left: "50%", top: layout.center.y - CENTER_SIZE / 2 }}
             >
               <span ref={middleRingRef} className={MIDDLE_RING_CLASS}>
@@ -1519,7 +1526,7 @@ function GlideGhosts({
             <div
               key="middle"
               ref={(el) => onLeaver(k, el)}
-              className="absolute left-0 top-0 flex w-[180px] flex-col items-center"
+              className="absolute left-0 top-0 flex w-[46.15%] flex-col items-center"
               style={{ opacity: 0, transformOrigin: `50% ${CENTER_SIZE / 2}px` }}
             >
               <span className={MIDDLE_RING_CLASS}>
@@ -1570,7 +1577,7 @@ function GlideGhosts({
             className={cn(MIDDLE_RING_CLASS, "absolute left-0 top-0")}
             style={{ width: CENTER_SIZE, height: CENTER_SIZE, opacity: 0 }}
           />
-          <div ref={(el) => onOld("shrinkName", el)} className="absolute left-0 top-0 flex w-[180px] flex-col items-center" style={{ opacity: 0 }}>
+          <div ref={(el) => onOld("shrinkName", el)} className="absolute left-0 top-0 flex w-[46.15%] flex-col items-center" style={{ opacity: 0 }}>
             <span lang="en" dir="ltr" className={cn(MIDDLE_NAME_CLASS, LABEL_SHADOW)}>{old.center.short}</span>
           </div>
         </>

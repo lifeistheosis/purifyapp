@@ -18,7 +18,7 @@ import { MessagesProvider } from "@/components/i18n/MessagesProvider";
 import { WebConstellation } from "@/components/saints/web/WebConstellation";
 import { getMessages } from "@/lib/i18n";
 import { saintWeb, webSlugs } from "@/lib/saints/web";
-import { webFilters } from "@/lib/saints/webLayout";
+import { BOX, middleLines, nameLines, webFilters, webLayout } from "@/lib/saints/webLayout";
 
 type ProviderProps = Parameters<typeof MessagesProvider>[0];
 const en = getMessages("en");
@@ -129,9 +129,13 @@ describe("St John Chrysostom's web, as it arrives", () => {
     const hits = [...canvas.matchAll(/<span[^>]*data-web-hit="(\d+)"[^>]*style="([^"]*)"[^>]*>/g)];
     expect(hits.map((m) => Number(m[1]))).toEqual(john.nodes.map((_, i) => i));
     const tops = [...canvas.matchAll(/<button[^>]*data-web-node="\d+"[^>]*style="[^"]*top:(-?[\d.]+)px/g)].map((m) => Number(m[1]));
+    // A name of more than two lines makes its box, and so his hit area, that much taller (the gate's
+    // confirm run, 2026-11-12: names whole); the rest are 121px, as ever.
+    const layout = webLayout(john.nodes.length, { names: john.nodes.map((n) => nameLines(n.kind === "saint" ? n.person.short : n.name)), middle: middleLines(john.center.short) });
+    expect(layout.down.filter((d) => d === BOX.down).length).toBeGreaterThan(0);
     hits.forEach(([, , style], i) => {
       expect(style).toContain("width:calc(25.6% + 20px)");
-      expect(style).toContain("height:121px");
+      expect(style).toContain(`height:${121 + layout.down[i] - BOX.down}px`);
       // 20px over the top of his circle, so 44px over its centre.
       expect(style).toContain(`top:${tops[i] - 20}px`);
     });
