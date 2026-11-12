@@ -852,4 +852,40 @@ describe("touch targets", () => {
     expect(css).toMatch(/\.hit-44::after\s*\{/);
     expect(css).toMatch(/min-height:\s*44px/);
   });
+
+  it("leaves .hit-44 its ::after: nothing else draws on the ::after of a control that wears it", () => {
+    // .hit-44 gives a control its 44px to a finger on ::after. A rule that draws on the ::after
+    // of a class the control also wears draws that 44px box: the Search sheet's chosen kind
+    // ("All") wore a white square over its name from 0258a5320 (2026-11-11) to the gate's
+    // confirm run (2026-11-12), as Talk together's open word had before the gate's first run.
+    // Such a rule is ::before.
+    const afters: string[] = [];
+    for (const file of cssFiles(join(ROOT, "app"))) {
+      const text = readFileSync(file, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+      for (const m of text.matchAll(/([^{}]+)\{[^{}]*\}/g)) {
+        for (const selector of m[1].split(",").map((s) => s.trim())) {
+          if (/::?after\b/.test(selector) && !/\.hit-44\b/.test(selector)) afters.push(selector);
+        }
+      }
+    }
+    const beside = new Set<string>();
+    for (const dir of SCAN_DIRS) {
+      for (const file of walk(join(ROOT, dir))) {
+        for (const m of readFileSync(file, "utf8").matchAll(/["'`]([^"'`]*\bhit-44\b[^"'`]*)["'`]/g)) {
+          for (const c of m[1].split(/\s+/)) if (c && !c.startsWith("hit-44")) beside.add(c);
+        }
+      }
+    }
+    const drawsOn = (c: string, selector: string) =>
+      new RegExp(`\\.${c.replace(/[.*+?^${}()|[\]\\/:]/g, "\\$&")}(?![\\w-])[^\\s>+~]*::?after\\b`).test(selector);
+    const drawn = [...beside].flatMap((c) => [
+      ...(/(^|:)after:/.test(c) ? [`${c}, beside hit-44`] : []),
+      ...afters.filter((s) => drawsOn(c, s)).map((s) => `.${c}: ${s}`),
+    ]);
+    expect(beside.size).toBeGreaterThan(100);
+    expect(drawn).toEqual([]);
+    // It reads such a rule: the chosen kind's, as it stood.
+    expect(drawsOn("search-tab", 'html[data-reading-mode="parchment"] .search-tab[aria-selected="true"]::after')).toBe(true);
+    expect(drawsOn("search-tab", ".search-tab .child::after")).toBe(false);
+  });
 });

@@ -573,7 +573,7 @@ export function KindStrip({
       className="search-tab hit-44 relative shrink-0 pb-[11px] font-sans text-ui font-semibold text-paper/50"
     >
       {label}
-      <span className={cn("ms-[5px] font-medium tabular-nums", on ? "text-paper/60" : "text-paper/34")}>{n}</span>
+      <span className={cn("ms-[5px] font-medium tabular-nums", on ? "text-paper/60" : "text-paper/50")}>{n}</span>
     </button>
   );
   return (

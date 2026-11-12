@@ -242,6 +242,19 @@ describe("the screen holds still as it opens (build 87, the owner's note 83)", (
     expect(screen).toContain('className="search-in flex min-h-0 flex-1 flex-col overflow-y-auto');
   });
 
+  it("draws a kind's count at its name's share or more", () => {
+    // The counts stood at 34 of the ink: 3.10:1 on Dark and 2.01:1 on Light where the strip
+    // stands, under the 4.5:1 words need (checkMock on the Search sheet from Saints, the gate's
+    // confirm run, 2026-11-12). The name's own share reads on every palette and look.
+    const rows = code("components/search/SearchRows.tsx");
+    const strip = rows.slice(rows.indexOf("export function KindStrip"));
+    const name = Number(/className="search-tab [^"]*text-paper\/(\d+)"/.exec(strip)?.[1]);
+    const count = /on \? "text-paper\/(\d+)" : "text-paper\/(\d+)"\)\}>\{n\}/.exec(strip);
+    expect(name).toBe(50);
+    expect(Number(count?.[1])).toBeGreaterThanOrEqual(name);
+    expect(Number(count?.[2])).toBeGreaterThanOrEqual(name);
+  });
+
   it("keeps the strip's place while the lists arrive, at the strip's own height", () => {
     expect(screen).toContain("const stripComing = corpus === null && (DOOR_KINDS[turn.door]?.length ?? 0) > 0;");
     expect(empty).toContain('stripComing ? <div aria-hidden className="mt-3 h-[44px]" /> : null');

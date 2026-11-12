@@ -7784,12 +7784,15 @@ html[data-reading-mode="parchment"] .search-door-tile[aria-pressed="true"] .sear
  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.18);
  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-paper) 18%, transparent);
 }
-/* B's strip: a place's kinds, the chosen one underlined in light. */
+/* B's strip: a place's kinds, the chosen one underlined in light. The rule
+   is ::before: ::after is .hit-44's, the tab's 44px to a finger, and a rule
+   drawn there is that 44px box (the chosen kind wore a white square over its
+   name from 0258a5320 to the gate's confirm run, 2026-11-12). */
 .search-tab[aria-selected="true"] {
  color: var(--color-paper);
  text-shadow: 0 0 12px rgb(255 255 255 / 0.35);
 }
-.search-tab[aria-selected="true"]::after {
+.search-tab[aria-selected="true"]::before {
  content: "";
  position: absolute;
  inset-inline: -2px;
@@ -7800,7 +7803,7 @@ html[data-reading-mode="parchment"] .search-door-tile[aria-pressed="true"] .sear
  box-shadow: 0 0 10px rgb(255 255 255 / 0.85);
 }
 html[data-reading-mode="parchment"] .search-tab[aria-selected="true"],
-html[data-reading-mode="parchment"] .search-tab[aria-selected="true"]::after {
+html[data-reading-mode="parchment"] .search-tab[aria-selected="true"]::before {
  text-shadow: none;
  box-shadow: none;
 }
