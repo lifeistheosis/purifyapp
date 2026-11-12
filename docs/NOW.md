@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state; the log is the release's HANDOFF.md. How the chats run: `docs/OPERATIONS.md`.
 
-Updated 2026-11-12, 21:57 UTC.
+Updated 2026-11-12, 22:03 UTC.
 
 ## 1.9: in flight
 
@@ -10,7 +10,7 @@ Updated 2026-11-12, 21:57 UTC.
 - **Updates 2:** verifies /reading/ on the same export, and prepares two fixes from the check's early sightings (the councils' Fathers moving under the finger; the community thread opening under the tab bar). Held locally until the report.
 - **The report** is now near 01:15 UTC: Admin's container restarted at 21:30, and the check resumed at 21:37.
 - **Freeze:** no app code lands during the final check.
-- **Tooling:** the pre-push guard is being built now (a fresh chat). After the final check, Admin writes the nightly gate's runner, and the arbiter schedules it.
+- **Tooling:** the pre-push guard is live (376076bcd): main refused, docs at once, the checks on everything else. Chats started before it set `git config core.hooksPath .githooks` before their next push; the arbiter says so in each one's next message. Tooling is fixing CI's typecheck for a fresh checkout (`next typegen` first). After the final check, Admin writes the nightly gate's runner, and the arbiter schedules it.
 - **Done for 1.9:** the drop kit (SSM board); the store pictures, 41 of them (Fable, e2aa433d); the EIKON gift (Product images chat; one month of Plus for every order).
 
 ## Waiting on him

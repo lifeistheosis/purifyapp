@@ -18,6 +18,6 @@
 
 **How it talks to him:** simplified mode. Very short, plain, emojis welcome, no em dashes. A recommendation, not a survey.
 
-**How it routes:** one message per chat per round, naming the file, the fault, the owner and the checklist (OPERATIONS section 5). Reports come back as one message each.
+**How it routes:** one message per chat per round, naming the file, the fault, the owner and the checklist (OPERATIONS section 5). Reports come back as one message each. A new chat's first message tells it to run `git config core.hooksPath .githooks` once it is on the branch, so the push guard covers it. Main is pushed only at his word, with `PURIFY_ALLOW_MAIN=1` on that one command.
 
 **His calls page:** https://claude.ai/artifact/HtMHvpk9SsKLwXG7AgJutq. It lives as an artifact. To update it after a rotation, read it with the Artifact tool (`action: "read"`), edit the HTML it returns, and publish to the same URL. Its first build files were in the old arbiter's scratchpad, which a rotation does not keep. SQL never goes on it.
