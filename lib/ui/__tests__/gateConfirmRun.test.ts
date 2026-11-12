@@ -178,6 +178,16 @@ describe("the saints' webs (fail 4, the 118 webs)", () => {
     expect(nameLines("Amphilochius of Iconium")).toBe(3);
   });
 
+  it("ink the web's faint words a step stronger on paper, where the light looks' foot comes over them", () => {
+    // At 75 a "Disciple" tag going quiet into the foot read 4.33:1 to 4.46:1 on seven light looks (St John's web, the
+    // hold of 2026-11-12); at 85 on paper it passes on all. The tags and the names of saints on a plate share it.
+    const web = fs.readFileSync(path.join(ROOT, "components/saints/web/WebConstellation.tsx"), "utf8");
+    expect(web).toContain('const FAINT = "text-paper/75 [html[data-reading-mode=parchment]_&]:text-paper/85";');
+    expect(web).toContain("const TAG_CLASS = `mt-0.5 max-w-full truncate font-sans text-[10.5px] ${FAINT}`;");
+    expect(web).not.toMatch(/"text-paper\/75" : "text-paper\/95"/);
+    expect(web.match(/\? FAINT : "text-paper\/95"/g)?.length).toBe(2);
+  });
+
   it("name every kind on the key whole, the track swiping where the parts do not fit", () => {
     const key = fs.readFileSync(path.join(ROOT, "components/saints/web/WebKey.tsx"), "utf8");
     expect(key).not.toContain("truncate");

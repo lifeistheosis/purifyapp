@@ -108,9 +108,13 @@ const NAME_CLASS = "mt-1.5 font-sans text-[11.5px] font-semibold leading-[1.22]"
  * icon, St Amphilochius of Iconium's is the brightest, and there 70 still
  * left Candlelight, the dimmest ink, at 4.32 and Mosaic at 4.49. At 75 it is
  * 4.5:1 or more on the five palettes and the seventeen looks at both webs;
- * still a step under the name, which stands at 95.
+ * still a step under the name, which stands at 95. On paper it takes 85
+ * (FAINT): the light looks draw their foot over the screen's last lines,
+ * and a tag going quiet into it read 4.33:1 to 4.46:1 at 75 on seven of
+ * them (St John's web, the hold of 2026-11-12); at 85 it passes on all.
  */
-const TAG_CLASS = "mt-0.5 max-w-full truncate font-sans text-[10.5px] text-paper/75";
+const FAINT = "text-paper/75 [html[data-reading-mode=parchment]_&]:text-paper/85";
+const TAG_CLASS = `mt-0.5 max-w-full truncate font-sans text-[10.5px] ${FAINT}`;
 const MIDDLE_RING_CLASS =
   "rounded-full shadow-[0_0_0_4px_var(--color-night),0_0_0_5.5px_color-mix(in_srgb,var(--color-paper)_55%,transparent),0_14px_40px_rgb(0_0_0/0.55)]";
 const MIDDLE_NAME_CLASS = "mt-2.5 text-center font-serif text-[16px] font-bold leading-[1.2] text-paper";
@@ -1442,7 +1446,7 @@ export function WebConstellation({
                     aria-hidden
                     lang="en"
                     dir="ltr"
-                    className={cn(NAME_CLASS, node.kind === "saint" && !node.person.icon ? "text-paper/75" : "text-paper/95", LABEL_SHADOW)}
+                    className={cn(NAME_CLASS, node.kind === "saint" && !node.person.icon ? FAINT : "text-paper/95", LABEL_SHADOW)}
                   >
                     <WebName name={name} />
                   </span>
@@ -1528,7 +1532,7 @@ function GlideGhosts({
   const chosen = old.nodes.find((n) => n.id === `saint:${data.center.slug}`);
   const oldMiddleStays = data.nodes.some((n) => n.id === `saint:${old.center.slug}`);
   const nameOf = (node: WebNode) => (node.kind === "saint" ? node.person.short : node.name);
-  const tone = (node: WebNode) => (node.kind === "saint" && !node.person.icon ? "text-paper/75" : "text-paper/95");
+  const tone = (node: WebNode) => (node.kind === "saint" && !node.person.icon ? FAINT : "text-paper/95");
 
   return (
     <div aria-hidden className="saint-web-ghost pointer-events-none">
