@@ -130,10 +130,10 @@ export function CalendarGrid({
           {LEGEND.map(({ kind, Icon, labelKey }) => (
             <span
               key={kind}
-              className="inline-flex items-center gap-1.5"
-              style={{ color: `rgb(${FAST_META[kind].rgb})` }}
+              className="fast-words inline-flex items-center gap-1.5"
+              style={{ "--fast-tone": FAST_META[kind].rgb } as React.CSSProperties}
             >
-              <Icon size={14} />
+              <Icon size={14} style={{ color: `rgb(${FAST_META[kind].rgb})` }} />
               {t(labelKey)}
             </span>
           ))}

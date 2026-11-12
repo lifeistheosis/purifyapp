@@ -19,8 +19,13 @@ import { describe, expect, it } from "vitest";
  *     between New and Old, Prev, Today and Next at 2.2 to 2.8:1 (the links'
  *     own ink now); New, Old, Prev, Today and Next 19 to 23px tall (44 to the
  *     touch now); the day's readings 42.9px (44); the feast panel and the
- *     readings set left or right, not start or end; and the fast's names on
- *     Light at 3.80 to 4.18:1, their tones now a shade deeper there.
+ *     readings set left or right, not start or end. Held on the seventeen
+ *     looks as well, which the store run did not measure, the light looks'
+ *     darker grounds took more below 4.5:1: a fast's name in its tone (drawn
+ *     now toward the page's own ink there, a share for each light palette),
+ *     the fast badge's rule lines, the day's weekday and the month's feast
+ *     names; and the drop capital's letter for a screen reader stood off its
+ *     mirror.
  *  d. The journal's prompt under "Nothing written yet", one line on a tablet
  *     and 28.5px tall: 44 to the touch.
  *  e. Prayers' banner on a tablet cut the Pantocrator from the brow up: the
@@ -88,33 +93,73 @@ describe("c. the wide calendar", () => {
     expect(cap).toContain('className="text-gold me-[2px]"');
   });
 
-  it("inks the fast's names on Light and the light looks at 4.5:1 at the least, on the page, the legend and a fast's own badge", () => {
+  it("draws a fast's name toward the page's ink on Light and the light looks, 4.5:1 on every ground it stands on there", () => {
+    // The badge and the legend name the fast in its words; the icon keeps the pure tone.
+    const badge = read("components/calendar/FastBadge.tsx");
+    const grid = read("components/calendar/CalendarGrid.tsx");
+    expect(badge).toContain('className="fast-words font-sans text-ui font-semibold leading-tight"');
+    expect(badge).toContain('style={{ "--fast-tone": meta.rgb } as React.CSSProperties}');
+    expect(grid).toContain('className="fast-words inline-flex items-center gap-1.5"');
+    expect(grid).toContain("<Icon size={14} style={{ color: `rgb(${FAST_META[kind].rgb})` }} />");
+
     const block = (sel: string) => CSS.slice(CSS.indexOf(`${sel} {`), CSS.indexOf("}", CSS.indexOf(`${sel} {`)));
     const hex = (b: string, name: string) => {
       const v = b.match(new RegExp(`--${name}:\\s*(#[0-9a-f]{6});`, "i"))?.[1] ?? "";
       return [1, 3, 5].map((i) => parseInt(v.slice(i, i + 2), 16));
     };
     const triple = (b: string, name: string) => (b.match(new RegExp(`--${name}: (\\d+) (\\d+) (\\d+);`))?.slice(1) ?? []).map(Number);
+    // sRGB, linear light and OKLab, as color-mix(in oklab, ...) mixes.
+    const toLin = (c: number) => (c / 255 <= 0.04045 ? c / 255 / 12.92 : ((c / 255 + 0.055) / 1.055) ** 2.4);
+    const toSrgb = (c: number) => 255 * (Math.min(1, Math.max(0, c)) <= 0.0031308 ? 12.92 * Math.max(0, c) : 1.055 * Math.min(1, c) ** (1 / 2.4) - 0.055);
+    const oklab = (rgb: number[]) => {
+      const [r, g, b] = rgb.map(toLin);
+      const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+      const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+      const sx = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+      return [0.2104542553 * l + 0.793617785 * m - 0.0040720468 * sx, 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * sx, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * sx];
+    };
+    const fromOklab = ([L, a, b]: number[]) => {
+      const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
+      const m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
+      const sx = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
+      return [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * sx, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * sx, -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * sx].map(toSrgb);
+    };
+    const mixOk = (a: number[], b: number[], share: number) => fromOklab(oklab(a).map((v, i) => v * share + oklab(b)[i] * (1 - share)));
     const lin = (c: number) => (c / 255 <= 0.03928 ? c / 255 / 12.92 : ((c / 255 + 0.055) / 1.055) ** 2.4);
     const lum = ([r, g, b]: number[]) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
     const ratio = (a: number[], b: number[]) => (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05);
-    const over = (fg: number[], alpha: number, bg: number[]) => fg.map((c, i) => Math.round(c * alpha + bg[i] * (1 - alpha)));
+    const over = (fg: number[], alpha: number, bg: number[]) => fg.map((c, i) => c * alpha + bg[i] * (1 - alpha));
 
     const light = block('html[data-reading-mode="parchment"]');
-    const grounds = [light, ...["desert", "jordan", "blush", "rose", "lavender", "olive", "stone"].map((l) => block(`html[data-look="${l}"]`))].map((b) => ({
-      night: hex(b, "color-night"),
-      paper: hex(b, "color-paper"),
-    }));
-    for (const g of grounds) expect(g.night).toHaveLength(3);
+    const shareOf = (look: string | null) =>
+      Number((look ? CSS.match(new RegExp(`html\\[data-reading-mode="parchment"\\]\\[data-look="${look}"\\] \\{ --fast-words-share: (\\d+)%; \\}`))?.[1] : CSS.match(/var\(--fast-words-share, (\d+)%\)/)?.[1]) ?? NaN) / 100;
+    const palettes = [null, "desert", "jordan", "blush", "rose", "lavender", "olive", "stone", "linen"].map((look) => {
+      const b = look ? block(`html[data-look="${look}"]`) : light;
+      return { look, share: shareOf(look), night: hex(b, "color-night"), soft: hex(b, "color-night-soft"), deep: hex(b, "color-night-deep"), paper: hex(b, "color-paper") };
+    });
     for (const tone of ["fast-strict", "fast-wine-oil", "fast-fish", "fast-fast", "fast-free", "fast-normal"]) {
       const fg = triple(light, tone);
       expect(fg, tone).toHaveLength(3);
-      for (const { night, paper } of grounds) {
-        for (const ground of [night, over(paper, 0.03, night), over(fg, 0.08, night)]) {
-          expect(ratio(fg, ground), `${tone} on ${ground}`).toBeGreaterThanOrEqual(4.5);
+      for (const p of palettes) {
+        expect(p.share, `${p.look}'s share`).toBeGreaterThan(0);
+        const words = mixOk(fg, p.paper, p.share);
+        for (const ground of [p.night, p.soft, p.deep]) {
+          const card = over(p.paper, 0.03, ground);
+          for (const under of [ground, card, over(fg, 0.08, card)]) {
+            expect(ratio(words, under), `${tone} on ${p.look ?? "Light"}`).toBeGreaterThanOrEqual(4.5);
+          }
         }
       }
     }
+  });
+
+  it("deepens on the light looks what their darker grounds took below 4.5:1: the badge's rule, the day's weekday, the month's feast names", () => {
+    const badge = read("components/calendar/FastBadge.tsx");
+    expect(badge.match(/text-paper\/70 leading-\[1\.5\] \[html\[data-reading-mode=parchment\]\[data-look\]_&\]:text-paper\/80/g)).toHaveLength(2);
+    expect(read("components/calendar/DayScroll.tsx")).toContain('className="font-sans text-caption font-semibold text-gold/70 [html[data-reading-mode=parchment][data-look]_&]:text-gold"');
+    expect(read("components/calendar/CalendarCell.tsx")).toContain('cell.hasFeast ? "rubric opacity-90 [html[data-reading-mode=parchment][data-look]_&]:opacity-100" : "text-paper/60"');
+    // The drop capital's letter for a screen reader, placed from the start so it mirrors.
+    expect(read("components/calendar/DropCap.tsx")).toContain('className="sr-only start-0"');
   });
 });
 

@@ -4025,6 +4025,28 @@ html.is-native ::-webkit-scrollbar {
  color: rgb(var(--ink-rubric));
 }
 
+/* A fast's name in its own tone (FastBadge, the month's legend). On Light and
+   the light looks the tone is drawn a share toward the page's own ink, the
+   least that keeps every fast's name at 4.5:1 on each ground it stands on
+   there: the page, the deep ground under the month, a card, and a fast's own
+   tinted badge (the store pictures' run, 2026-11-12: "Nativity Fast, fish
+   allowed" read 3.63:1 on Stone's badge, the legend 3.99). The icon beside a
+   name keeps the pure tone, and the tones themselves are unchanged. */
+.fast-words {
+ color: rgb(var(--fast-tone));
+}
+html[data-reading-mode="parchment"] .fast-words {
+ color: color-mix(in oklab, rgb(var(--fast-tone)) var(--fast-words-share, 66%), var(--color-paper));
+}
+html[data-reading-mode="parchment"][data-look="desert"] { --fast-words-share: 57%; }
+html[data-reading-mode="parchment"][data-look="jordan"] { --fast-words-share: 62%; }
+html[data-reading-mode="parchment"][data-look="blush"] { --fast-words-share: 62%; }
+html[data-reading-mode="parchment"][data-look="rose"] { --fast-words-share: 64%; }
+html[data-reading-mode="parchment"][data-look="lavender"] { --fast-words-share: 58%; }
+html[data-reading-mode="parchment"][data-look="olive"] { --fast-words-share: 60%; }
+html[data-reading-mode="parchment"][data-look="stone"] { --fast-words-share: 54%; }
+html[data-reading-mode="parchment"][data-look="linen"] { --fast-words-share: 71%; }
+
 /* Kalendrium toggle, typographic header with a gold-underlined active
  state, used in the Old/New calendar style switcher. */
 .kalendrium-active {
@@ -5181,15 +5203,10 @@ html[data-reading-mode="parchment"] {
 
  --fast-strict: 168 40 40;
  --fast-wine-oil: 112 64 160;
- /* Fish, fast, fast-free and no fast a shade deeper (2026-11-12, the store
-    pictures' run): the wide calendar sets the fast's name in its own tone,
-    and at 30 110 104, 98 98 104, 22 118 82 and 122 112 92 they read 4.13,
-    4.18, 3.86 and 3.40:1 at their least on Light and the light looks (the
-    page, the legend's ground, a fast's own tinted badge); now 4.6 or more. */
- --fast-fish: 28 101 96;
- --fast-fast: 91 91 97;
- --fast-free: 19 103 71;
- --fast-normal: 98 90 74;
+ --fast-fish: 30 110 104;
+ --fast-fast: 98 98 104;
+ --fast-free: 22 118 82;
+ --fast-normal: 122 112 92;
 }
 
 /* Candlelight and Monastery only need the well, since everything else on

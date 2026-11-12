@@ -32,7 +32,7 @@ export function DropCap({
  >
  {first}
  </span>
- <span aria-hidden="false" className="sr-only">
+ <span aria-hidden="false" className="sr-only start-0">
  {first}
  </span>
  {rest}

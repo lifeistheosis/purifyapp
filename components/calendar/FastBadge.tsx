@@ -42,20 +42,20 @@ export function FastBadge({
           </span>
         ) : null}
         <p
-          className="font-sans text-ui font-semibold leading-tight"
-          style={{ color: `rgb(${meta.rgb})` }}
+          className="fast-words font-sans text-ui font-semibold leading-tight"
+          style={{ "--fast-tone": meta.rgb } as React.CSSProperties}
         >
           {t(`calendar.fast.${fast.ruleId}.label`)}
         </p>
       </div>
       {showRule && (
-        <p className="mt-1.5 font-sans text-caption text-paper/70 leading-[1.5]">
+        <p className="mt-1.5 font-sans text-caption text-paper/70 leading-[1.5] [html[data-reading-mode=parchment][data-look]_&]:text-paper/80">
           {t(`calendar.fast.${fast.ruleId}.rule`)}
         </p>
       )}
       {/* What the day keeps from, beside what it allows (1.7). */}
       {showRule && fastNotAllowedKey(fast.kind) && (
-        <p className="mt-0.5 font-sans text-caption text-paper/70 leading-[1.5]">
+        <p className="mt-0.5 font-sans text-caption text-paper/70 leading-[1.5] [html[data-reading-mode=parchment][data-look]_&]:text-paper/80">
           {t(fastNotAllowedKey(fast.kind)!)}
         </p>
       )}
