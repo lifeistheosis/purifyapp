@@ -1,0 +1,4218 @@
+{
+  "made": "2026-11-12",
+  "day": "2026-12-06T09:30:00-05:00",
+  "export": "ae750022",
+  "checks": [
+    "contrast",
+    "placeholder",
+    "target",
+    "glyph",
+    "palette",
+    "gold",
+    "stripe",
+    "mirror",
+    "emdash",
+    "rays",
+    "sparkle",
+    "picture",
+    "dashed",
+    "keys",
+    "cut"
+  ],
+  "byEye": [
+    "Built from the app's own component for the job, rendered from the export; only the proposed change is new.",
+    "Icons from components/ui/icons. Plus shown with its mark, and never promised to every reader.",
+    "Sample words plain: no reading of Scripture or of a Father written for the picture.",
+    "Existing words (i18n keys) first; a new line in the house voice (docs/brand/voice.md)."
+  ],
+  "pictures": [
+    {
+      "file": "play-feature-graphic.png",
+      "device": "play-feature-graphic",
+      "shot": "feature",
+      "caption": "The Orthodox prayer book, Bible, saints, and calendar, in one quiet app.",
+      "route": null,
+      "state": "The app's cross (purify-cross-mark.png), its wordmark as the app sets it, and the Play listing's short description.",
+      "size": [
+        1024,
+        500
+      ],
+      "bytes": 45887,
+      "problems": [],
+      "picturesInView": [
+        "/purify-cross-mark.png"
+      ],
+      "heritageInView": {},
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-phone-01-today.png",
+      "device": "play-phone",
+      "shot": "today",
+      "caption": "The day's saint, fast and readings",
+      "route": "/",
+      "state": "Today on 6 December 2026, the new reader's one-question card dismissed with its own Dismiss button.",
+      "alt": "Today: St Nicholas the Wonderworker, the Nativity Fast with fish allowed, and the day's verse.",
+      "size": [
+        1080,
+        1920
+      ],
+      "screen": {
+        "viewport": [
+          412,
+          846
+        ],
+        "scale": 1.8252
+      },
+      "bytes": 158239,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": "free"
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"Nativity Fast · day 22 of 40\": a picture is drawn across it (svg.absolute)",
+          "\"The star rises a little each day\": a picture is drawn across it (svg.absolute)",
+          "\"Today:\": a picture is drawn across it (svg.absolute)",
+          "\"Hymns on the Nativity\": a picture is drawn across it (svg.absolute)",
+          "\"· St. Ephraim the Syrian\": a picture is drawn across it (svg.absolute)",
+          "\"Morning prayers\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Begin the day with God, the Sign of the Cross th\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Today's Readings\": a picture is drawn across it (img, bible.jpg)",
+          "\"Ephesians\": a picture is drawn across it (img, bible.jpg)",
+          "\"6:10-17\": a picture is drawn across it (img, bible.jpg)",
+          "\"Luke\": a picture is drawn across it (img, bible.jpg)",
+          "\"17:12-19\": a picture is drawn across it (img, bible.jpg)",
+          "\"For today's saints\": a picture is drawn across it (img, bible.jpg)",
+          "\"·\": a picture is drawn across it (img, bible.jpg)",
+          "\"2 more\": a picture is drawn across it (img, bible.jpg)",
+          "\"Listen\": a picture is drawn across it (img, bible.jpg)"
+        ],
+        "allowed": [
+          "palette on a \"Nativity Fast · day 22 of 40 The\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span: a dark island, dark on every palette (app/globals.css)",
+          "palette on svg: a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"The star rises a little each day\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"Today: Hymns on the Nativity · S\": a dark island, dark on every palette (app/globals.css)",
+          "palette on b \"Hymns on the Nativity\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"· St. Ephraim the Syrian\": a dark island, dark on every palette (app/globals.css)",
+          "mirror on svg: a play mark points right in every language, as media controls do; its pixel centres it by eye"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-phone-02-greek.png",
+      "device": "play-phone",
+      "shot": "greek",
+      "caption": "The Greek beside the verse",
+      "route": "/bible/john/1",
+      "state": "John 1 with Interlinear Greek switched on (More actions, Interlinear Greek); free for every reader.",
+      "alt": "The Gospel of John, chapter 1, in English with the Greek beside each verse.",
+      "size": [
+        1080,
+        1920
+      ],
+      "screen": {
+        "viewport": [
+          412,
+          846
+        ],
+        "scale": 1.8252
+      },
+      "bytes": 113754,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": false,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [
+          "828 like: target: button \"Look up Ἐν\": 24.7 by 32.3px, needs 44 by 44"
+        ],
+        "notMeasured": [],
+        "allowed": [
+          "target on button \"Verse actions, John 1:1\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:2\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:3\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:4\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:5\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:6\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:7\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:8\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:9\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:10\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:11\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:12\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:13\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:14\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:15\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:16\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:17\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:18\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:19\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:20\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:21\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:22\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:23\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:24\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:25\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:26\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:27\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:28\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:29\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:30\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:31\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:32\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:33\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:34\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:35\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:36\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:37\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:38\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:39\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:40\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:41\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:42\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:43\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:44\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:45\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:46\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:47\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:48\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:49\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:50\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:51\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "palette on span: the commentary mark stays red on every palette: his pick, keep red (2026-11-09, the photo page's 11)"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-phone-03-fathers.png",
+      "device": "play-phone",
+      "shot": "fathers",
+      "caption": "The Fathers on the verse you are reading",
+      "route": "/bible/genesis/1",
+      "state": "Genesis 1, the commentary opened on verse 1: St Basil the Great, Hexaemeron, Homily 1, his own words as NPNF prints them.",
+      "alt": "Patristic commentary on Genesis 1:1: St Basil the Great, Hexaemeron, Homily 1.",
+      "size": [
+        1080,
+        1920
+      ],
+      "screen": {
+        "viewport": [
+          412,
+          846
+        ],
+        "scale": 1.8252
+      },
+      "bytes": 106760,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": "free"
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/basil-the-great.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": false,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [
+          "673 like: target: button \"Look up ΕΝ\": 27.9 by 32.3px, needs 44 by 44",
+          "2 like: target: button \"let\": 16.7 by 23.7px, needs 44 by 44",
+          "mirror: svg: at 140.3 to 153px, and in Arabic at 254.7 to 267.5px of 412: placed with left or right, not start or end"
+        ],
+        "notMeasured": [],
+        "allowed": [
+          "target on button \"Verse actions, Genesis 1:1\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:2\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:3\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:4\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:5\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:6\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:7\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:8\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:9\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:10\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:11\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:12\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:13\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:14\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:15\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:16\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:17\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:18\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:19\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:20\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:21\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:22\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:23\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:24\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:25\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:26\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:27\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:28\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:29\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:30\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:31\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "palette on span: the commentary mark stays red on every palette: his pick, keep red (2026-11-09, the photo page's 11)"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-phone-04-journal.png",
+      "device": "play-phone",
+      "shot": "journal",
+      "caption": "A journal kept by the Church's day",
+      "route": "/journal",
+      "state": "The journal as a new reader opens it: the day's page, its saint, its fast and its readings, each with a pen.",
+      "alt": "The journal's page for Sunday: the day's saint, the fast, and the Epistle and Gospel, each with a pen.",
+      "size": [
+        1080,
+        1920
+      ],
+      "screen": {
+        "viewport": [
+          412,
+          846
+        ],
+        "scale": 1.8252
+      },
+      "bytes": 92506,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-phone-05-prayers.png",
+      "device": "play-phone",
+      "shot": "prayers",
+      "caption": "The daily prayers, morning and evening",
+      "route": "/prayers",
+      "state": "Prayers as it opens.",
+      "alt": "Prayers: your rule, and the morning prayers, the evening prayers and the Hours.",
+      "size": [
+        1080,
+        1920
+      ],
+      "screen": {
+        "viewport": [
+          412,
+          846
+        ],
+        "scale": 1.8252
+      },
+      "bytes": 386861,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": "free"
+      },
+      "errors": [],
+      "picturesInView": [
+        "/sections/prayers.v4.jpg",
+        "/icons/prayer/anastasis.jpg",
+        "/icons/prayer/christ-pantocrator.v2.jpg",
+        "/icons/prayer/pentecost.jpg",
+        "/icons/prayer/theotokos-of-vladimir.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"Prayers\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Plus\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Pray without ceasing.\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"1 Thessalonians 5:17\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Your rule\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Choose prayers from the prayer book, set them in\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Chants\": another piece is drawn across it (span.tile-sheen)",
+          "\"Hymns to listen to and pray with, the words lit \": another piece is drawn across it (span.tile-sheen)",
+          "\"The Hours\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"Now\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"·\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"The Third Hour\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"Akathists\": a picture is drawn across it (img, theotokos-of-vladimir.jpg)",
+          "\"Hymns of praise\": a picture is drawn across it (img, theotokos-of-vladimir.jpg)",
+          "\"Learn to pray\": a picture is drawn across it (img, three-hierarchs.v2.jpg)",
+          "\"A beginner's path\": a picture is drawn across it (img, three-hierarchs.v2.jpg)",
+          "\"Your rule\": a picture is drawn across it (img, anastasis.jpg)",
+          "\"Your own prayers, and the names you carry\": a picture is drawn across it (img, anastasis.jpg)"
+        ],
+        "allowed": [
+          "picture on span: the card's own sign (a play mark) on its disc, not a frame waiting for a picture"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-phone-06-saint.png",
+      "device": "play-phone",
+      "shot": "saint",
+      "caption": "The lives of the saints",
+      "route": "/saints/basil-the-great",
+      "state": "St Basil the Great's page, on Life.",
+      "alt": "St Basil the Great: his icon, his feast, and his life.",
+      "size": [
+        1080,
+        1920
+      ],
+      "screen": {
+        "viewport": [
+          412,
+          846
+        ],
+        "scale": 1.8252
+      },
+      "bytes": 320976,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/basil-the-great.jpg",
+        "purifyapp.net/covers/saints/basil-the-great.v1.avif"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [
+        "/covers/saints/basil-the-great.v1.avif"
+      ],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"St. Basil the Great\": a picture is drawn across it (img, basil-the-great.v1.avif)",
+          "\"Archbishop of Caesarea\": a picture is drawn across it (img, basil-the-great.v1.avif)",
+          "\"·\": a picture is drawn across it (img, basil-the-great.v1.avif)",
+          "\"Feast\": a picture is drawn across it (img, basil-the-great.v1.avif)",
+          "\"January 1\": a picture is drawn across it (img, basil-the-great.v1.avif)",
+          "\"Ask for more writings\": a picture is drawn across it (img, basil-the-great.v1.avif)"
+        ],
+        "allowed": []
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-phone-07-calendar.png",
+      "device": "play-phone",
+      "shot": "calendar",
+      "caption": "Every feast and every fast",
+      "route": "/calendar",
+      "state": "The Church calendar on December 2026, the New reckoning, the day's fast under it.",
+      "alt": "The Church calendar for December 2026, each day marked with its feast or its fast.",
+      "size": [
+        1080,
+        1920
+      ],
+      "screen": {
+        "viewport": [
+          412,
+          846
+        ],
+        "scale": 1.8252
+      },
+      "bytes": 91677,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-phone-08-reading.png",
+      "device": "play-phone",
+      "shot": "reading",
+      "caption": "The Fathers, read in full",
+      "route": "/saints/athanasius-the-great/on-the-incarnation",
+      "state": "St Athanasius the Great, On the Incarnation, opened from the reading room.",
+      "alt": "On the Incarnation of the Word, by St Athanasius the Great, opened at chapter 1.",
+      "size": [
+        1080,
+        1920
+      ],
+      "screen": {
+        "viewport": [
+          412,
+          846
+        ],
+        "scale": 1.8252
+      },
+      "bytes": 172732,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "/covers/authors/athanasius-the-great.v1.avif"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"On the Incarnation\": a picture is drawn across it (img, athanasius-the-great.v1.avif)",
+          "\"St. Athanasius the Great\": a picture is drawn across it (img, athanasius-the-great.v1.avif)"
+        ],
+        "allowed": [
+          "palette on div \"On the Incarnation St. Athanasiu\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"On the Incarnation\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"St. Athanasius the Great\": a dark island, dark on every palette (app/globals.css)",
+          "emdash on span \"For He was not, as might be imag\": the work's own words, as its edition prints them",
+          "emdash on span \"And thus much in reply to those \": the work's own words, as its edition prints them",
+          "emdash on span \"So the Jews are trifling, and th\": the work's own words, as its edition prints them",
+          "emdash on span \"Many before this Man have been k\": the work's own words, as its edition prints them"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-tablet-7-01-today.png",
+      "device": "play-tablet-7",
+      "shot": "today",
+      "caption": "The day's saint, fast and readings",
+      "route": "/",
+      "state": "Today on 6 December 2026, the new reader's one-question card dismissed with its own Dismiss button.",
+      "alt": "Today: St Nicholas the Wonderworker, the Nativity Fast with fish allowed, and the day's verse.",
+      "size": [
+        1440,
+        2560
+      ],
+      "screen": {
+        "viewport": [
+          600,
+          960
+        ],
+        "scale": 2.1117
+      },
+      "bytes": 216376,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": "free"
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg",
+        "/sections/prayers.v4.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"Nativity Fast · day 22 of 40\": a picture is drawn across it (svg.absolute)",
+          "\"The star rises a little each day\": a picture is drawn across it (svg.absolute)",
+          "\"Today:\": a picture is drawn across it (svg.absolute)",
+          "\"Hymns on the Nativity\": a picture is drawn across it (svg.absolute)",
+          "\"· St. Ephraim the Syrian\": a picture is drawn across it (svg.absolute)",
+          "\"St. Nicholas the Wonderworker\": a picture is drawn across it (img, nicholas-the-wonderworker.v1.avif)",
+          "\"Today's Readings\": a picture is drawn across it (img, bible.jpg)",
+          "\"Ephesians\": a picture is drawn across it (img, bible.jpg)",
+          "\"6:10-17\": a picture is drawn across it (img, bible.jpg)",
+          "\"Luke\": a picture is drawn across it (img, bible.jpg)",
+          "\"17:12-19\": a picture is drawn across it (img, bible.jpg)",
+          "\"For today's saints\": a picture is drawn across it (img, bible.jpg)",
+          "\"·\": a picture is drawn across it (img, bible.jpg)",
+          "\"2 more\": a picture is drawn across it (img, bible.jpg)",
+          "\"Listen\": a picture is drawn across it (img, bible.jpg)"
+        ],
+        "allowed": [
+          "palette on a \"Nativity Fast · day 22 of 40 The\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span: a dark island, dark on every palette (app/globals.css)",
+          "palette on svg: a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"The star rises a little each day\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"Today: Hymns on the Nativity · S\": a dark island, dark on every palette (app/globals.css)",
+          "palette on b \"Hymns on the Nativity\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"· St. Ephraim the Syrian\": a dark island, dark on every palette (app/globals.css)",
+          "mirror on svg: a play mark points right in every language, as media controls do; its pixel centres it by eye"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-tablet-7-02-greek.png",
+      "device": "play-tablet-7",
+      "shot": "greek",
+      "caption": "The Greek beside the verse",
+      "route": "/bible/john/1",
+      "state": "John 1 with Interlinear Greek switched on (More actions, Interlinear Greek); free for every reader.",
+      "alt": "The Gospel of John, chapter 1, in English with the Greek beside each verse.",
+      "size": [
+        1440,
+        2560
+      ],
+      "screen": {
+        "viewport": [
+          600,
+          960
+        ],
+        "scale": 2.1117
+      },
+      "bytes": 188373,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": "free"
+      },
+      "errors": [],
+      "picturesInView": [],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": false,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [
+          "828 like: target: button \"Look up Ἐν\": 24.7 by 32.3px, needs 44 by 44"
+        ],
+        "notMeasured": [],
+        "allowed": [
+          "target on button \"Verse actions, John 1:1\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:2\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:3\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:4\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:5\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:6\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:7\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:8\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:9\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:10\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:11\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:12\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:13\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:14\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:15\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:16\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:17\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:18\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:19\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:20\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:21\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:22\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:23\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:24\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:25\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:26\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:27\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:28\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:29\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:30\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:31\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:32\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:33\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:34\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:35\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:36\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:37\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:38\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:39\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:40\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:41\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:42\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:43\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:44\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:45\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:46\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:47\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:48\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:49\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:50\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:51\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "palette on span: the commentary mark stays red on every palette: his pick, keep red (2026-11-09, the photo page's 11)"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-tablet-7-03-fathers.png",
+      "device": "play-tablet-7",
+      "shot": "fathers",
+      "caption": "The Fathers on the verse you are reading",
+      "route": "/bible/genesis/1",
+      "state": "Genesis 1, the commentary opened on verse 1: St Basil the Great, Hexaemeron, Homily 1, his own words as NPNF prints them.",
+      "alt": "Patristic commentary on Genesis 1:1: St Basil the Great, Hexaemeron, Homily 1.",
+      "size": [
+        1440,
+        2560
+      ],
+      "screen": {
+        "viewport": [
+          600,
+          960
+        ],
+        "scale": 2.1117
+      },
+      "bytes": 167827,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/basil-the-great.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": false,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [
+          "673 like: target: button \"Look up ΕΝ\": 27.9 by 32.3px, needs 44 by 44",
+          "2 like: target: button \"let\": 16.7 by 23.7px, needs 44 by 44",
+          "mirror: svg: at 140.3 to 153px, and in Arabic at 442.7 to 455.5px of 600: placed with left or right, not start or end"
+        ],
+        "notMeasured": [],
+        "allowed": [
+          "target on button \"Verse actions, Genesis 1:1\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:2\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:3\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:4\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:5\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:6\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:7\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:8\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:9\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:10\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:11\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:12\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:13\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:14\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:15\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:16\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:17\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:18\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:19\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:20\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:21\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:22\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:23\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:24\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:25\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:26\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:27\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:28\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:29\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:30\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:31\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "palette on span: the commentary mark stays red on every palette: his pick, keep red (2026-11-09, the photo page's 11)"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-tablet-7-04-journal.png",
+      "device": "play-tablet-7",
+      "shot": "journal",
+      "caption": "A journal kept by the Church's day",
+      "route": "/journal",
+      "state": "The journal as a new reader opens it: the day's page, its saint, its fast and its readings, each with a pen.",
+      "alt": "The journal's page for Sunday: the day's saint, the fast, and the Epistle and Gospel, each with a pen.",
+      "size": [
+        1440,
+        2560
+      ],
+      "screen": {
+        "viewport": [
+          600,
+          960
+        ],
+        "scale": 2.1117
+      },
+      "bytes": 116428,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-tablet-7-05-prayers.png",
+      "device": "play-tablet-7",
+      "shot": "prayers",
+      "caption": "The daily prayers, morning and evening",
+      "route": "/prayers",
+      "state": "Prayers as it opens.",
+      "alt": "Prayers: your rule, and the morning prayers, the evening prayers and the Hours.",
+      "size": [
+        1440,
+        2560
+      ],
+      "screen": {
+        "viewport": [
+          600,
+          960
+        ],
+        "scale": 2.1117
+      },
+      "bytes": 675825,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": "free"
+      },
+      "errors": [],
+      "picturesInView": [
+        "/sections/prayers.v4.jpg",
+        "/icons/prayer/anastasis.jpg",
+        "/icons/prayer/christ-pantocrator.v2.jpg",
+        "/icons/prayer/pentecost.jpg",
+        "/icons/prayer/theotokos-of-vladimir.jpg",
+        "/icons/prayer/three-hierarchs.v2.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"Prayers\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Plus\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Pray without ceasing.\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"1 Thessalonians 5:17\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Your rule\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Choose prayers from the prayer book, set them in\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Hymns to listen to and pray with, the words lit \": another piece is drawn across it (span.tile-sheen)",
+          "\"The Hours\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"Now\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"·\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"The Third Hour\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"Akathists\": a picture is drawn across it (img, theotokos-of-vladimir.jpg)",
+          "\"Hymns of praise\": a picture is drawn across it (img, theotokos-of-vladimir.jpg)",
+          "\"Learn to pray\": a picture is drawn across it (img, three-hierarchs.v2.jpg)",
+          "\"A beginner's path\": a picture is drawn across it (img, three-hierarchs.v2.jpg)",
+          "\"Your rule\": a picture is drawn across it (img, anastasis.jpg)",
+          "\"Your own prayers, and the names you carry\": a picture is drawn across it (img, anastasis.jpg)"
+        ],
+        "allowed": [
+          "picture on span: the card's own sign (a play mark) on its disc, not a frame waiting for a picture"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-tablet-7-06-saint.png",
+      "device": "play-tablet-7",
+      "shot": "saint",
+      "caption": "The lives of the saints",
+      "route": "/saints/basil-the-great",
+      "state": "St Basil the Great's page, on Life.",
+      "alt": "St Basil the Great: his icon, his feast, and his life.",
+      "size": [
+        1440,
+        2560
+      ],
+      "screen": {
+        "viewport": [
+          600,
+          960
+        ],
+        "scale": 2.1117
+      },
+      "bytes": 690382,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/basil-the-great.jpg",
+        "purifyapp.net/covers/saints/basil-the-great.v1.avif"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [
+        "/covers/saints/basil-the-great.v1.avif"
+      ],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"St. Basil the Great\": a picture is drawn across it (img, basil-the-great.v1.avif)",
+          "\"Archbishop of Caesarea\": a picture is drawn across it (img, basil-the-great.v1.avif)",
+          "\"·\": a picture is drawn across it (img, basil-the-great.v1.avif)",
+          "\"Feast\": a picture is drawn across it (img, basil-the-great.v1.avif)",
+          "\"January 1\": a picture is drawn across it (img, basil-the-great.v1.avif)",
+          "\"Ask for more writings\": a picture is drawn across it (img, basil-the-great.v1.avif)"
+        ],
+        "allowed": []
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-tablet-7-07-calendar.png",
+      "device": "play-tablet-7",
+      "shot": "calendar",
+      "caption": "Every feast and every fast",
+      "route": "/calendar",
+      "state": "The Church calendar on December 2026, the New reckoning, the day's fast under it.",
+      "alt": "The Church calendar for December 2026, each day marked with its feast or its fast.",
+      "size": [
+        1440,
+        2560
+      ],
+      "screen": {
+        "viewport": [
+          600,
+          960
+        ],
+        "scale": 2.1117
+      },
+      "bytes": 138540,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-tablet-7-08-reading.png",
+      "device": "play-tablet-7",
+      "shot": "reading",
+      "caption": "The Fathers, read in full",
+      "route": "/saints/athanasius-the-great/on-the-incarnation",
+      "state": "St Athanasius the Great, On the Incarnation, opened from the reading room.",
+      "alt": "On the Incarnation of the Word, by St Athanasius the Great, opened at chapter 1.",
+      "size": [
+        1440,
+        2560
+      ],
+      "screen": {
+        "viewport": [
+          600,
+          960
+        ],
+        "scale": 2.1117
+      },
+      "bytes": 269494,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "/covers/authors/athanasius-the-great.v1.avif"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"On the Incarnation\": a picture is drawn across it (img, athanasius-the-great.v1.avif)",
+          "\"St. Athanasius the Great\": a picture is drawn across it (img, athanasius-the-great.v1.avif)"
+        ],
+        "allowed": [
+          "palette on div \"On the Incarnation St. Athanasiu\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"On the Incarnation\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"St. Athanasius the Great\": a dark island, dark on every palette (app/globals.css)",
+          "emdash on span \"For He was not, as might be imag\": the work's own words, as its edition prints them",
+          "emdash on span \"And thus much in reply to those \": the work's own words, as its edition prints them",
+          "emdash on span \"So the Jews are trifling, and th\": the work's own words, as its edition prints them",
+          "emdash on span \"Many before this Man have been k\": the work's own words, as its edition prints them"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-tablet-10-01-today.png",
+      "device": "play-tablet-10",
+      "shot": "today",
+      "caption": "The day's saint, fast and readings",
+      "route": "/",
+      "state": "Today on 6 December 2026, the new reader's one-question card dismissed with its own Dismiss button.",
+      "alt": "Today: St Nicholas the Wonderworker, the Nativity Fast with fish allowed, and the day's verse.",
+      "size": [
+        1800,
+        3200
+      ],
+      "screen": {
+        "viewport": [
+          800,
+          1280
+        ],
+        "scale": 1.98
+      },
+      "bytes": 300697,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": "free"
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg",
+        "/sections/prayers.v4.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"Nativity Fast · day 22 of 40\": a picture is drawn across it (svg.absolute)",
+          "\"The star rises a little each day\": a picture is drawn across it (svg.absolute)",
+          "\"Today:\": a picture is drawn across it (svg.absolute)",
+          "\"Hymns on the Nativity\": a picture is drawn across it (svg.absolute)",
+          "\"· St. Ephraim the Syrian\": a picture is drawn across it (svg.absolute)",
+          "\"Today's Readings\": a picture is drawn across it (img, bible.jpg)",
+          "\"Ephesians\": a picture is drawn across it (img, bible.jpg)",
+          "\"6:10-17\": a picture is drawn across it (img, bible.jpg)",
+          "\"Luke\": a picture is drawn across it (img, bible.jpg)",
+          "\"17:12-19\": a picture is drawn across it (img, bible.jpg)",
+          "\"For today's saints\": a picture is drawn across it (img, bible.jpg)",
+          "\"·\": a picture is drawn across it (img, bible.jpg)",
+          "\"2 more\": a picture is drawn across it (img, bible.jpg)",
+          "\"Listen\": a picture is drawn across it (img, bible.jpg)"
+        ],
+        "allowed": [
+          "palette on a \"Nativity Fast · day 22 of 40 The\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span: a dark island, dark on every palette (app/globals.css)",
+          "palette on svg: a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"The star rises a little each day\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"Today: Hymns on the Nativity · S\": a dark island, dark on every palette (app/globals.css)",
+          "palette on b \"Hymns on the Nativity\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"· St. Ephraim the Syrian\": a dark island, dark on every palette (app/globals.css)",
+          "mirror on svg: a play mark points right in every language, as media controls do; its pixel centres it by eye"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-tablet-10-02-greek.png",
+      "device": "play-tablet-10",
+      "shot": "greek",
+      "caption": "The Greek beside the verse",
+      "route": "/bible/john/1",
+      "state": "John 1 with Interlinear Greek switched on (More actions, Interlinear Greek); free for every reader.",
+      "alt": "The Gospel of John, chapter 1, in English with the Greek beside each verse.",
+      "size": [
+        1800,
+        3200
+      ],
+      "screen": {
+        "viewport": [
+          800,
+          1280
+        ],
+        "scale": 1.98
+      },
+      "bytes": 274652,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": "free"
+      },
+      "errors": [],
+      "picturesInView": [],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": false,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [
+          "828 like: target: button \"Look up Ἐν\": 28.6 by 37.3px, needs 44 by 44"
+        ],
+        "notMeasured": [],
+        "allowed": [
+          "target on button \"Verse actions, John 1:1\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:2\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:3\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:4\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:5\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:6\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:7\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:8\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:9\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:10\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:11\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:12\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:13\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:14\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:15\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:16\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:17\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:18\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:19\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:20\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:21\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:22\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:23\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:24\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:25\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:26\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:27\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:28\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:29\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:30\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:31\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:32\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:33\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:34\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:35\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:36\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:37\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:38\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:39\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:40\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:41\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:42\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:43\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:44\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:45\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:46\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:47\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:48\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:49\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:50\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:51\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "palette on span: the commentary mark stays red on every palette: his pick, keep red (2026-11-09, the photo page's 11)"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-tablet-10-03-fathers.png",
+      "device": "play-tablet-10",
+      "shot": "fathers",
+      "caption": "The Fathers on the verse you are reading",
+      "route": "/bible/genesis/1",
+      "state": "Genesis 1, the commentary opened on verse 1: St Basil the Great, Hexaemeron, Homily 1, his own words as NPNF prints them.",
+      "alt": "Patristic commentary on Genesis 1:1: St Basil the Great, Hexaemeron, Homily 1.",
+      "size": [
+        1800,
+        3200
+      ],
+      "screen": {
+        "viewport": [
+          800,
+          1280
+        ],
+        "scale": 1.98
+      },
+      "bytes": 254043,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": "free"
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/basil-the-great.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": false,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [
+          "673 like: target: button \"Look up ΕΝ\": 32.4 by 37.3px, needs 44 by 44",
+          "2 like: target: button \"let\": 16.7 by 23.7px, needs 44 by 44",
+          "mirror: svg: at 201.3 to 214px, and in Arabic at 581.7 to 594.5px of 800: placed with left or right, not start or end"
+        ],
+        "notMeasured": [],
+        "allowed": [
+          "target on button \"Verse actions, Genesis 1:1\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:2\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:3\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:4\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:5\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:6\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:7\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:8\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:9\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:10\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:11\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:12\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:13\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:14\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:15\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:16\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:17\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:18\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:19\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:20\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:21\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:22\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:23\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:24\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:25\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:26\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:27\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:28\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:29\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:30\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:31\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "palette on span: the commentary mark stays red on every palette: his pick, keep red (2026-11-09, the photo page's 11)"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-tablet-10-04-journal.png",
+      "device": "play-tablet-10",
+      "shot": "journal",
+      "caption": "A journal kept by the Church's day",
+      "route": "/journal",
+      "state": "The journal as a new reader opens it: the day's page, its saint, its fast and its readings, each with a pen.",
+      "alt": "The journal's page for Sunday: the day's saint, the fast, and the Epistle and Gospel, each with a pen.",
+      "size": [
+        1800,
+        3200
+      ],
+      "screen": {
+        "viewport": [
+          800,
+          1280
+        ],
+        "scale": 1.98
+      },
+      "bytes": 131855,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": false,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [
+          "target: button \"What from today's Gospel would y\": 569.9 by 28.5px, needs 44 by 44"
+        ],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-tablet-10-05-prayers.png",
+      "device": "play-tablet-10",
+      "shot": "prayers",
+      "caption": "The daily prayers, morning and evening",
+      "route": "/prayers",
+      "state": "Prayers as it opens.",
+      "alt": "Prayers: your rule, and the morning prayers, the evening prayers and the Hours.",
+      "size": [
+        1800,
+        3200
+      ],
+      "screen": {
+        "viewport": [
+          800,
+          1280
+        ],
+        "scale": 1.98
+      },
+      "bytes": 724373,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": "free"
+      },
+      "errors": [],
+      "picturesInView": [
+        "/sections/prayers.v4.jpg",
+        "/icons/prayer/anastasis.jpg",
+        "/icons/prayer/christ-pantocrator.v2.jpg",
+        "/icons/prayer/pentecost.jpg",
+        "/icons/prayer/theotokos-of-vladimir.jpg",
+        "/icons/prayer/three-hierarchs.v2.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"Pray without ceasing.\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"1 Thessalonians 5:17\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Your rule\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Choose prayers from the prayer book, set them in\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"The Hours\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"Now\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"·\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"The Third Hour\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"Akathists\": a picture is drawn across it (img, theotokos-of-vladimir.jpg)",
+          "\"Hymns of praise\": a picture is drawn across it (img, theotokos-of-vladimir.jpg)",
+          "\"Learn to pray\": a picture is drawn across it (img, three-hierarchs.v2.jpg)",
+          "\"A beginner's path\": a picture is drawn across it (img, three-hierarchs.v2.jpg)",
+          "\"Your rule\": a picture is drawn across it (img, anastasis.jpg)",
+          "\"Your own prayers, and the names you carry\": a picture is drawn across it (img, anastasis.jpg)"
+        ],
+        "allowed": [
+          "picture on span: the card's own sign (a play mark) on its disc, not a frame waiting for a picture"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-tablet-10-06-saint.png",
+      "device": "play-tablet-10",
+      "shot": "saint",
+      "caption": "The lives of the saints",
+      "route": "/saints/basil-the-great",
+      "state": "St Basil the Great's page, on Life.",
+      "alt": "St Basil the Great: his icon, his feast, and his life.",
+      "size": [
+        1800,
+        3200
+      ],
+      "screen": {
+        "viewport": [
+          800,
+          1280
+        ],
+        "scale": 1.98
+      },
+      "bytes": 374906,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/basil-the-great.jpg",
+        "purifyapp.net/covers/saints/basil-the-great.v1.avif"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [
+        "/covers/saints/basil-the-great.v1.avif"
+      ],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-tablet-10-07-calendar.png",
+      "device": "play-tablet-10",
+      "shot": "calendar",
+      "caption": "Every feast and every fast",
+      "route": "/calendar",
+      "state": "The Church calendar on December 2026, the New reckoning, the day's fast under it.",
+      "alt": "The Church calendar for December 2026, each day marked with its feast or its fast.",
+      "size": [
+        1800,
+        3200
+      ],
+      "screen": {
+        "viewport": [
+          800,
+          1280
+        ],
+        "scale": 1.98
+      },
+      "bytes": 591923,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "data:image/svg+xml;utf8,%3Csvg x...",
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": false,
+        "ok": [
+          "placeholder",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [
+          "contrast (Dark): \"·\": 2.82:1, needs 4.5:1",
+          "contrast (Dark): \"·\": 2.82:1, needs 4.5:1",
+          "contrast (Light): \"·\": 1.75:1, needs 4.5:1",
+          "contrast (Light): \"·\": 1.75:1, needs 4.5:1",
+          "contrast (Light): \"Fish allowed\": 4.18:1, needs 4.5:1",
+          "contrast (Light): \"Fast-free\": 3.88:1, needs 4.5:1",
+          "contrast (Light): \"Nativity Fast, fish allowed\": 3.80:1, needs 4.5:1",
+          "contrast (Black): \"·\": 2.69:1, needs 4.5:1",
+          "contrast (Black): \"·\": 2.69:1, needs 4.5:1",
+          "contrast (Black): \"·\": 2.69:1, needs 4.5:1",
+          "contrast (Candlelight): \"·\": 2.60:1, needs 4.5:1",
+          "contrast (Candlelight): \"·\": 2.60:1, needs 4.5:1",
+          "contrast (Monastery): \"·\": 2.19:1, needs 4.5:1",
+          "contrast (Monastery): \"·\": 2.19:1, needs 4.5:1",
+          "target: a \"New\": 26.6 by 22.6px, needs 44 by 44",
+          "target: a \"Old\": 21 by 18.6px, needs 44 by 44",
+          "target: a \"Prev\": 44.3 by 18.6px, needs 44 by 44",
+          "target: a \"Today\": 35.8 by 18.6px, needs 44 by 44",
+          "target: a \"Next\": 45.8 by 18.6px, needs 44 by 44",
+          "target: a \"Epistle Ephesians 6:10-17\": 670.5 by 42.9px, needs 44 by 44",
+          "target: a \"Gospel Luke 17:12-19\": 670.5 by 42.9px, needs 44 by 44",
+          "mirror: p \"Sunday · December 6, 2026\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: span \"S\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: span \"S\": at 309.9 to 310.9px, and in Arabic at 107.4 to 108.4px of 800: placed with left or right, not start or end",
+          "mirror: p \"† ca. 345\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: p \"The Fast\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: p \"Nativity Fast, fish allowed\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: p \"Saturday or Sunday of the Nativi\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: p \"No meat, dairy, or eggs.\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: p \"Pascha\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: p \"147 days\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: p \"Until May 2, 2027\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: span \"Ephesians 6:10-17\": its text is set right, not start or end, so it stays right in Arabic",
+          "mirror: span \"Luke 17:12-19\": its text is set right, not start or end, so it stays right in Arabic",
+          "mirror: span \"Hebrews 13:17-21 For the day's s\": its text is set right, not start or end, so it stays right in Arabic",
+          "mirror: span \"For the day's saints and feasts\": its text is set right, not start or end, so it stays right in Arabic",
+          "mirror: span \"Luke 6:17-23 For the day's saint\": its text is set right, not start or end, so it stays right in Arabic",
+          "mirror: span \"For the day's saints and feasts\": its text is set right, not start or end, so it stays right in Arabic"
+        ],
+        "notMeasured": [
+          "\"Orthodox Calendar · Today\": div has a picture",
+          "\"New\": div has a picture",
+          "\"·\": div has a picture",
+          "\"Old\": div has a picture",
+          "\"Glory to God for all things.\": div has a picture",
+          "\"Through the prayers of our holy fathers, Lord Je\": div has a picture",
+          "\"Δι’ εὐχῶν τῶν ἁγίων πατέρων ἡμῶν, Κύριε Ἰησοῦ Χρ\": div has a picture",
+          "\"Two reckonings are available via the toggle abov\": div has a picture",
+          "\"Fasting rules are a simplified reading of common\": div has a picture"
+        ],
+        "allowed": [
+          "palette on span: a dark island, dark on every palette (app/globals.css)",
+          "palette on svg: a dark island, dark on every palette (app/globals.css)",
+          "stripe on div \"1 Nahum 2 Cleopas of Sihăstria 3\": the month grid's lines"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "play-tablet-10-08-reading.png",
+      "device": "play-tablet-10",
+      "shot": "reading",
+      "caption": "The Fathers, read in full",
+      "route": "/saints/athanasius-the-great/on-the-incarnation",
+      "state": "St Athanasius the Great, On the Incarnation, opened from the reading room.",
+      "alt": "On the Incarnation of the Word, by St Athanasius the Great, opened at chapter 1.",
+      "size": [
+        1800,
+        3200
+      ],
+      "screen": {
+        "viewport": [
+          800,
+          1280
+        ],
+        "scale": 1.98
+      },
+      "bytes": 354143,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "/covers/authors/athanasius-the-great.v1.avif"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"On the Incarnation\": a picture is drawn across it (img, athanasius-the-great.v1.avif)",
+          "\"St. Athanasius the Great\": a picture is drawn across it (img, athanasius-the-great.v1.avif)"
+        ],
+        "allowed": [
+          "palette on div \"On the Incarnation St. Athanasiu\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"On the Incarnation\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"St. Athanasius the Great\": a dark island, dark on every palette (app/globals.css)",
+          "emdash on span \"For He was not, as might be imag\": the work's own words, as its edition prints them",
+          "emdash on span \"And thus much in reply to those \": the work's own words, as its edition prints them",
+          "emdash on span \"So the Jews are trifling, and th\": the work's own words, as its edition prints them",
+          "emdash on span \"Many before this Man have been k\": the work's own words, as its edition prints them"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "appstore-iphone-6.9-01-today.png",
+      "device": "appstore-iphone-6.9",
+      "shot": "today",
+      "caption": "The day's saint, fast and readings",
+      "route": "/",
+      "state": "Today on 6 December 2026, the new reader's one-question card dismissed with its own Dismiss button.",
+      "alt": "Today: St Nicholas the Wonderworker, the Nativity Fast with fish allowed, and the day's verse.",
+      "size": [
+        1320,
+        2868
+      ],
+      "screen": {
+        "viewport": [
+          440,
+          956
+        ],
+        "scale": 2.4159
+      },
+      "bytes": 236872,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": "free"
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg",
+        "/sections/prayers.v4.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"Nativity Fast · day 22 of 40\": a picture is drawn across it (svg.absolute)",
+          "\"The star rises a little each day\": a picture is drawn across it (svg.absolute)",
+          "\"Today:\": a picture is drawn across it (svg.absolute)",
+          "\"Hymns on the Nativity\": a picture is drawn across it (svg.absolute)",
+          "\"· St. Ephraim the Syrian\": a picture is drawn across it (svg.absolute)",
+          "\"Morning prayers\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Today's Readings\": a picture is drawn across it (img, bible.jpg)",
+          "\"Ephesians\": a picture is drawn across it (img, bible.jpg)",
+          "\"6:10-17\": a picture is drawn across it (img, bible.jpg)",
+          "\"Luke\": a picture is drawn across it (img, bible.jpg)",
+          "\"17:12-19\": a picture is drawn across it (img, bible.jpg)",
+          "\"For today's saints\": a picture is drawn across it (img, bible.jpg)",
+          "\"·\": a picture is drawn across it (img, bible.jpg)",
+          "\"2 more\": a picture is drawn across it (img, bible.jpg)",
+          "\"Listen\": a picture is drawn across it (img, bible.jpg)"
+        ],
+        "allowed": [
+          "palette on a \"Nativity Fast · day 22 of 40 The\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span: a dark island, dark on every palette (app/globals.css)",
+          "palette on svg: a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"The star rises a little each day\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"Today: Hymns on the Nativity · S\": a dark island, dark on every palette (app/globals.css)",
+          "palette on b \"Hymns on the Nativity\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"· St. Ephraim the Syrian\": a dark island, dark on every palette (app/globals.css)",
+          "mirror on svg: a play mark points right in every language, as media controls do; its pixel centres it by eye"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "appstore-iphone-6.9-02-greek.png",
+      "device": "appstore-iphone-6.9",
+      "shot": "greek",
+      "caption": "The Greek beside the verse",
+      "route": "/bible/john/1",
+      "state": "John 1 with Interlinear Greek switched on (More actions, Interlinear Greek); free for every reader.",
+      "alt": "The Gospel of John, chapter 1, in English with the Greek beside each verse.",
+      "size": [
+        1320,
+        2868
+      ],
+      "screen": {
+        "viewport": [
+          440,
+          956
+        ],
+        "scale": 2.4159
+      },
+      "bytes": 185098,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": "free"
+      },
+      "errors": [],
+      "picturesInView": [],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": false,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [
+          "828 like: target: button \"Look up Ἐν\": 24.7 by 32.3px, needs 44 by 44"
+        ],
+        "notMeasured": [],
+        "allowed": [
+          "target on button \"Verse actions, John 1:1\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:2\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:3\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:4\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:5\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:6\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:7\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:8\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:9\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:10\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:11\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:12\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:13\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:14\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:15\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:16\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:17\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:18\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:19\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:20\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:21\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:22\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:23\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:24\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:25\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:26\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:27\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:28\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:29\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:30\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:31\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:32\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:33\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:34\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:35\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:36\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:37\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:38\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:39\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:40\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:41\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:42\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:43\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:44\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:45\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:46\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:47\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:48\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:49\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:50\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:51\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "palette on span: the commentary mark stays red on every palette: his pick, keep red (2026-11-09, the photo page's 11)"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "appstore-iphone-6.9-03-fathers.png",
+      "device": "appstore-iphone-6.9",
+      "shot": "fathers",
+      "caption": "The Fathers on the verse you are reading",
+      "route": "/bible/genesis/1",
+      "state": "Genesis 1, the commentary opened on verse 1: St Basil the Great, Hexaemeron, Homily 1, his own words as NPNF prints them.",
+      "alt": "Patristic commentary on Genesis 1:1: St Basil the Great, Hexaemeron, Homily 1.",
+      "size": [
+        1320,
+        2868
+      ],
+      "screen": {
+        "viewport": [
+          440,
+          956
+        ],
+        "scale": 2.4159
+      },
+      "bytes": 172535,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/basil-the-great.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": false,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [
+          "673 like: target: button \"Look up ΕΝ\": 27.9 by 32.3px, needs 44 by 44",
+          "2 like: target: button \"let\": 16.7 by 23.7px, needs 44 by 44",
+          "mirror: svg: at 140.3 to 153px, and in Arabic at 282.7 to 295.5px of 440: placed with left or right, not start or end"
+        ],
+        "notMeasured": [],
+        "allowed": [
+          "target on button \"Verse actions, Genesis 1:1\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:2\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:3\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:4\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:5\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:6\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:7\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:8\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:9\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:10\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:11\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:12\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:13\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:14\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:15\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:16\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:17\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:18\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:19\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:20\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:21\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:22\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:23\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:24\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:25\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:26\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:27\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:28\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:29\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:30\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:31\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "palette on span: the commentary mark stays red on every palette: his pick, keep red (2026-11-09, the photo page's 11)"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "appstore-iphone-6.9-04-journal.png",
+      "device": "appstore-iphone-6.9",
+      "shot": "journal",
+      "caption": "A journal kept by the Church's day",
+      "route": "/journal",
+      "state": "The journal as a new reader opens it: the day's page, its saint, its fast and its readings, each with a pen.",
+      "alt": "The journal's page for Sunday: the day's saint, the fast, and the Epistle and Gospel, each with a pen.",
+      "size": [
+        1320,
+        2868
+      ],
+      "screen": {
+        "viewport": [
+          440,
+          956
+        ],
+        "scale": 2.4159
+      },
+      "bytes": 131329,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "appstore-iphone-6.9-05-prayers.png",
+      "device": "appstore-iphone-6.9",
+      "shot": "prayers",
+      "caption": "The daily prayers, morning and evening",
+      "route": "/prayers",
+      "state": "Prayers as it opens.",
+      "alt": "Prayers: your rule, and the morning prayers, the evening prayers and the Hours.",
+      "size": [
+        1320,
+        2868
+      ],
+      "screen": {
+        "viewport": [
+          440,
+          956
+        ],
+        "scale": 2.4159
+      },
+      "bytes": 656851,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": "free"
+      },
+      "errors": [],
+      "picturesInView": [
+        "/sections/prayers.v4.jpg",
+        "/icons/prayer/anastasis.jpg",
+        "/icons/prayer/christ-pantocrator.v2.jpg",
+        "/icons/prayer/pentecost.jpg",
+        "/icons/prayer/theotokos-of-vladimir.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"Prayers\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Plus\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Pray without ceasing.\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"1 Thessalonians 5:17\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Your rule\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Choose prayers from the prayer book, set them in\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Hymns to listen to and pray with, the words lit \": another piece is drawn across it (span.tile-sheen)",
+          "\"The Hours\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"Now\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"·\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"The Third Hour\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"Akathists\": a picture is drawn across it (img, theotokos-of-vladimir.jpg)",
+          "\"Hymns of praise\": a picture is drawn across it (img, theotokos-of-vladimir.jpg)",
+          "\"Learn to pray\": a picture is drawn across it (img, three-hierarchs.v2.jpg)",
+          "\"A beginner's path\": a picture is drawn across it (img, three-hierarchs.v2.jpg)",
+          "\"Your rule\": a picture is drawn across it (img, anastasis.jpg)",
+          "\"Your own prayers, and the names you carry\": a picture is drawn across it (img, anastasis.jpg)"
+        ],
+        "allowed": [
+          "picture on span: the card's own sign (a play mark) on its disc, not a frame waiting for a picture"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "appstore-iphone-6.9-06-saint.png",
+      "device": "appstore-iphone-6.9",
+      "shot": "saint",
+      "caption": "The lives of the saints",
+      "route": "/saints/basil-the-great",
+      "state": "St Basil the Great's page, on Life.",
+      "alt": "St Basil the Great: his icon, his feast, and his life.",
+      "size": [
+        1320,
+        2868
+      ],
+      "screen": {
+        "viewport": [
+          440,
+          956
+        ],
+        "scale": 2.4159
+      },
+      "bytes": 536519,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/basil-the-great.jpg",
+        "purifyapp.net/covers/saints/basil-the-great.v1.avif"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [
+        "/covers/saints/basil-the-great.v1.avif"
+      ],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"St. Basil the Great\": a picture is drawn across it (img, basil-the-great.v1.avif)",
+          "\"Archbishop of Caesarea\": a picture is drawn across it (img, basil-the-great.v1.avif)",
+          "\"·\": a picture is drawn across it (img, basil-the-great.v1.avif)",
+          "\"Feast\": a picture is drawn across it (img, basil-the-great.v1.avif)",
+          "\"January 1\": a picture is drawn across it (img, basil-the-great.v1.avif)",
+          "\"Ask for more writings\": a picture is drawn across it (img, basil-the-great.v1.avif)"
+        ],
+        "allowed": []
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "appstore-iphone-6.9-07-calendar.png",
+      "device": "appstore-iphone-6.9",
+      "shot": "calendar",
+      "caption": "Every feast and every fast",
+      "route": "/calendar",
+      "state": "The Church calendar on December 2026, the New reckoning, the day's fast under it.",
+      "alt": "The Church calendar for December 2026, each day marked with its feast or its fast.",
+      "size": [
+        1320,
+        2868
+      ],
+      "screen": {
+        "viewport": [
+          440,
+          956
+        ],
+        "scale": 2.4159
+      },
+      "bytes": 149837,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "appstore-iphone-6.9-08-reading.png",
+      "device": "appstore-iphone-6.9",
+      "shot": "reading",
+      "caption": "The Fathers, read in full",
+      "route": "/saints/athanasius-the-great/on-the-incarnation",
+      "state": "St Athanasius the Great, On the Incarnation, opened from the reading room.",
+      "alt": "On the Incarnation of the Word, by St Athanasius the Great, opened at chapter 1.",
+      "size": [
+        1320,
+        2868
+      ],
+      "screen": {
+        "viewport": [
+          440,
+          956
+        ],
+        "scale": 2.4159
+      },
+      "bytes": 292006,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "/covers/authors/athanasius-the-great.v1.avif"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"On the Incarnation\": a picture is drawn across it (img, athanasius-the-great.v1.avif)",
+          "\"St. Athanasius the Great\": a picture is drawn across it (img, athanasius-the-great.v1.avif)"
+        ],
+        "allowed": [
+          "palette on div \"On the Incarnation St. Athanasiu\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"On the Incarnation\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"St. Athanasius the Great\": a dark island, dark on every palette (app/globals.css)",
+          "emdash on span \"For He was not, as might be imag\": the work's own words, as its edition prints them",
+          "emdash on span \"And thus much in reply to those \": the work's own words, as its edition prints them",
+          "emdash on span \"So the Jews are trifling, and th\": the work's own words, as its edition prints them",
+          "emdash on span \"Many before this Man have been k\": the work's own words, as its edition prints them"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "appstore-ipad-13-01-today.png",
+      "device": "appstore-ipad-13",
+      "shot": "today",
+      "caption": "The day's saint, fast and readings",
+      "route": "/",
+      "state": "Today on 6 December 2026, the new reader's one-question card dismissed with its own Dismiss button.",
+      "alt": "Today: St Nicholas the Wonderworker, the Nativity Fast with fish allowed, and the day's verse.",
+      "size": [
+        2064,
+        2752
+      ],
+      "screen": {
+        "viewport": [
+          1032,
+          1376
+        ],
+        "scale": 1.6095
+      },
+      "bytes": 287427,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": "free"
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg",
+        "/sections/prayers.v4.jpg",
+        "/covers/authors/nicholas-the-wonderworker.v1.avif"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"Nativity Fast · day 22 of 40\": a picture is drawn across it (svg.absolute)",
+          "\"The star rises a little each day\": a picture is drawn across it (svg.absolute)",
+          "\"Today:\": a picture is drawn across it (svg.absolute)",
+          "\"Hymns on the Nativity\": a picture is drawn across it (svg.absolute)",
+          "\"· St. Ephraim the Syrian\": a picture is drawn across it (svg.absolute)",
+          "\"Today's Readings\": a picture is drawn across it (img, bible.jpg)",
+          "\"Ephesians\": a picture is drawn across it (img, bible.jpg)",
+          "\"6:10-17\": a picture is drawn across it (img, bible.jpg)",
+          "\"Luke\": a picture is drawn across it (img, bible.jpg)",
+          "\"17:12-19\": a picture is drawn across it (img, bible.jpg)",
+          "\"For today's saints\": a picture is drawn across it (img, bible.jpg)",
+          "\"·\": a picture is drawn across it (img, bible.jpg)",
+          "\"2 more\": a picture is drawn across it (img, bible.jpg)",
+          "\"Listen\": a picture is drawn across it (img, bible.jpg)"
+        ],
+        "allowed": [
+          "palette on a \"Nativity Fast · day 22 of 40 The\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span: a dark island, dark on every palette (app/globals.css)",
+          "palette on svg: a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"The star rises a little each day\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"Today: Hymns on the Nativity · S\": a dark island, dark on every palette (app/globals.css)",
+          "palette on b \"Hymns on the Nativity\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"· St. Ephraim the Syrian\": a dark island, dark on every palette (app/globals.css)",
+          "mirror on svg: a play mark points right in every language, as media controls do; its pixel centres it by eye"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "appstore-ipad-13-02-greek.png",
+      "device": "appstore-ipad-13",
+      "shot": "greek",
+      "caption": "The Greek beside the verse",
+      "route": "/bible/john/1",
+      "state": "John 1 with Interlinear Greek switched on (More actions, Interlinear Greek); free for every reader.",
+      "alt": "The Gospel of John, chapter 1, in English with the Greek beside each verse.",
+      "size": [
+        2064,
+        2752
+      ],
+      "screen": {
+        "viewport": [
+          1032,
+          1376
+        ],
+        "scale": 1.6095
+      },
+      "bytes": 251535,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": "free"
+      },
+      "errors": [],
+      "picturesInView": [],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": false,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [
+          "828 like: target: button \"Look up Ἐν\": 28.6 by 37.3px, needs 44 by 44"
+        ],
+        "notMeasured": [],
+        "allowed": [
+          "target on button \"Verse actions, John 1:1\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:2\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:3\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:4\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:5\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:6\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:7\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:8\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:9\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:10\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:11\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:12\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:13\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:14\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:15\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:16\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:17\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:18\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:19\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:20\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:21\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:22\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:23\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:24\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:25\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:26\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:27\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:28\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:29\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:30\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:31\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:32\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:33\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:34\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:35\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:36\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:37\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:38\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:39\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:40\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:41\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:42\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:43\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:44\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:45\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:46\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:47\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:48\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:49\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:50\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, John 1:51\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "palette on span: the commentary mark stays red on every palette: his pick, keep red (2026-11-09, the photo page's 11)"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "appstore-ipad-13-03-fathers.png",
+      "device": "appstore-ipad-13",
+      "shot": "fathers",
+      "caption": "The Fathers on the verse you are reading",
+      "route": "/bible/genesis/1",
+      "state": "Genesis 1, the commentary opened on verse 1: St Basil the Great, Hexaemeron, Homily 1, his own words as NPNF prints them.",
+      "alt": "Patristic commentary on Genesis 1:1: St Basil the Great, Hexaemeron, Homily 1.",
+      "size": [
+        2064,
+        2752
+      ],
+      "screen": {
+        "viewport": [
+          1032,
+          1376
+        ],
+        "scale": 1.6095
+      },
+      "bytes": 240900,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/basil-the-great.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": false,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [
+          "673 like: target: button \"Look up ΕΝ\": 32.4 by 37.3px, needs 44 by 44",
+          "2 like: target: button \"let\": 16.7 by 23.7px, needs 44 by 44",
+          "mirror: svg: at 317.3 to 330px, and in Arabic at 697.7 to 710.5px of 1032: placed with left or right, not start or end"
+        ],
+        "notMeasured": [],
+        "allowed": [
+          "target on button \"Verse actions, Genesis 1:1\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:2\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:3\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:4\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:5\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:6\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:7\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:8\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:9\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:10\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:11\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:12\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:13\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:14\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:15\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:16\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:17\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:18\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:19\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:20\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:21\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:22\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:23\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:24\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:25\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:26\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:27\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:28\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:29\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:30\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "target on button \"Verse actions, Genesis 1:31\": out of sight until a keyboard lands on it, then a pill 44px tall",
+          "palette on span: the commentary mark stays red on every palette: his pick, keep red (2026-11-09, the photo page's 11)"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "appstore-ipad-13-04-journal.png",
+      "device": "appstore-ipad-13",
+      "shot": "journal",
+      "caption": "A journal kept by the Church's day",
+      "route": "/journal",
+      "state": "The journal as a new reader opens it: the day's page, its saint, its fast and its readings, each with a pen.",
+      "alt": "The journal's page for Sunday: the day's saint, the fast, and the Epistle and Gospel, each with a pen.",
+      "size": [
+        2064,
+        2752
+      ],
+      "screen": {
+        "viewport": [
+          1032,
+          1376
+        ],
+        "scale": 1.6095
+      },
+      "bytes": 125037,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": false,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [
+          "target: button \"What from today's Gospel would y\": 569.9 by 28.5px, needs 44 by 44"
+        ],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "appstore-ipad-13-05-prayers.png",
+      "device": "appstore-ipad-13",
+      "shot": "prayers",
+      "caption": "The daily prayers, morning and evening",
+      "route": "/prayers",
+      "state": "Prayers as it opens.",
+      "alt": "Prayers: your rule, and the morning prayers, the evening prayers and the Hours.",
+      "size": [
+        2064,
+        2752
+      ],
+      "screen": {
+        "viewport": [
+          1032,
+          1376
+        ],
+        "scale": 1.6095
+      },
+      "bytes": 603556,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": "free"
+      },
+      "errors": [],
+      "picturesInView": [
+        "/sections/prayers.v4.jpg",
+        "/icons/prayer/anastasis.jpg",
+        "/icons/prayer/christ-pantocrator.v2.jpg",
+        "/icons/prayer/pentecost.jpg",
+        "/icons/prayer/theotokos-of-vladimir.jpg",
+        "/icons/prayer/three-hierarchs.v2.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"Pray without ceasing.\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"1 Thessalonians 5:17\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Your rule\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"Choose prayers from the prayer book, set them in\": a picture is drawn across it (img, prayers.v4.jpg)",
+          "\"The Hours\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"Now\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"·\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"The Third Hour\": a picture is drawn across it (img, pentecost.jpg)",
+          "\"Akathists\": a picture is drawn across it (img, theotokos-of-vladimir.jpg)",
+          "\"Hymns of praise\": a picture is drawn across it (img, theotokos-of-vladimir.jpg)",
+          "\"Learn to pray\": a picture is drawn across it (img, three-hierarchs.v2.jpg)",
+          "\"A beginner's path\": a picture is drawn across it (img, three-hierarchs.v2.jpg)",
+          "\"Your rule\": a picture is drawn across it (img, anastasis.jpg)",
+          "\"Your own prayers, and the names you carry\": a picture is drawn across it (img, anastasis.jpg)"
+        ],
+        "allowed": [
+          "picture on span: the card's own sign (a play mark) on its disc, not a frame waiting for a picture"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "appstore-ipad-13-06-saint.png",
+      "device": "appstore-ipad-13",
+      "shot": "saint",
+      "caption": "The lives of the saints",
+      "route": "/saints/basil-the-great",
+      "state": "St Basil the Great's page, on Life.",
+      "alt": "St Basil the Great: his icon, his feast, and his life.",
+      "size": [
+        2064,
+        2752
+      ],
+      "screen": {
+        "viewport": [
+          1032,
+          1376
+        ],
+        "scale": 1.6095
+      },
+      "bytes": 345715,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "/saints/icons/basil-the-great.jpg",
+        "purifyapp.net/covers/saints/basil-the-great.v1.avif"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [
+        "/covers/saints/basil-the-great.v1.avif"
+      ],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "appstore-ipad-13-07-calendar.png",
+      "device": "appstore-ipad-13",
+      "shot": "calendar",
+      "caption": "Every feast and every fast",
+      "route": "/calendar",
+      "state": "The Church calendar on December 2026, the New reckoning, the day's fast under it.",
+      "alt": "The Church calendar for December 2026, each day marked with its feast or its fast.",
+      "size": [
+        2064,
+        2752
+      ],
+      "screen": {
+        "viewport": [
+          1032,
+          1376
+        ],
+        "scale": 1.6095
+      },
+      "bytes": 481373,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "data:image/svg+xml;utf8,%3Csvg x...",
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": false,
+        "ok": [
+          "placeholder",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [
+          "contrast (Dark): \"·\": 2.82:1, needs 4.5:1",
+          "contrast (Dark): \"·\": 2.82:1, needs 4.5:1",
+          "contrast (Light): \"·\": 1.75:1, needs 4.5:1",
+          "contrast (Light): \"·\": 1.75:1, needs 4.5:1",
+          "contrast (Light): \"Fish allowed\": 4.18:1, needs 4.5:1",
+          "contrast (Light): \"Fast-free\": 3.88:1, needs 4.5:1",
+          "contrast (Light): \"Nativity Fast, fish allowed\": 3.80:1, needs 4.5:1",
+          "contrast (Black): \"·\": 2.69:1, needs 4.5:1",
+          "contrast (Black): \"·\": 2.69:1, needs 4.5:1",
+          "contrast (Black): \"·\": 2.69:1, needs 4.5:1",
+          "contrast (Candlelight): \"·\": 2.60:1, needs 4.5:1",
+          "contrast (Candlelight): \"·\": 2.60:1, needs 4.5:1",
+          "contrast (Monastery): \"·\": 2.19:1, needs 4.5:1",
+          "contrast (Monastery): \"·\": 2.19:1, needs 4.5:1",
+          "target: a \"New\": 26.6 by 22.6px, needs 44 by 44",
+          "target: a \"Old\": 21 by 18.6px, needs 44 by 44",
+          "target: a \"Prev\": 44.3 by 18.6px, needs 44 by 44",
+          "target: a \"Today\": 35.8 by 18.6px, needs 44 by 44",
+          "target: a \"Next\": 45.8 by 18.6px, needs 44 by 44",
+          "target: a \"Epistle Ephesians 6:10-17\": 307.1 by 42.9px, needs 44 by 44",
+          "target: a \"Gospel Luke 17:12-19\": 307.1 by 42.9px, needs 44 by 44",
+          "mirror: p \"Sunday · December 6, 2026\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: span \"S\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: span \"S\": at 309.9 to 310.9px, and in Arabic at 107.4 to 108.4px of 1032: placed with left or right, not start or end",
+          "mirror: p \"† ca. 345\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: p \"The Fast\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: p \"Nativity Fast, fish allowed\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: p \"Saturday or Sunday of the Nativi\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: p \"No meat, dairy, or eggs.\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: p \"Pascha\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: p \"147 days\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: p \"Until May 2, 2027\": its text is set left, not start or end, so it stays left in Arabic",
+          "mirror: span \"Ephesians 6:10-17\": its text is set right, not start or end, so it stays right in Arabic",
+          "mirror: span \"Luke 17:12-19\": its text is set right, not start or end, so it stays right in Arabic",
+          "mirror: span \"Hebrews 13:17-21 For the day's s\": its text is set right, not start or end, so it stays right in Arabic",
+          "mirror: span \"For the day's saints and feasts\": its text is set right, not start or end, so it stays right in Arabic",
+          "mirror: span \"Luke 6:17-23 For the day's saint\": its text is set right, not start or end, so it stays right in Arabic",
+          "mirror: span \"For the day's saints and feasts\": its text is set right, not start or end, so it stays right in Arabic"
+        ],
+        "notMeasured": [
+          "\"Orthodox Calendar · Today\": div has a picture",
+          "\"New\": div has a picture",
+          "\"·\": div has a picture",
+          "\"Old\": div has a picture",
+          "\"Glory to God for all things.\": div has a picture",
+          "\"Through the prayers of our holy fathers, Lord Je\": div has a picture",
+          "\"Δι’ εὐχῶν τῶν ἁγίων πατέρων ἡμῶν, Κύριε Ἰησοῦ Χρ\": div has a picture",
+          "\"Two reckonings are available via the toggle abov\": div has a picture",
+          "\"Fasting rules are a simplified reading of common\": div has a picture"
+        ],
+        "allowed": [
+          "palette on span: a dark island, dark on every palette (app/globals.css)",
+          "palette on svg: a dark island, dark on every palette (app/globals.css)",
+          "stripe on div \"1 Nahum 2 Cleopas of Sihăstria 3\": the month grid's lines"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "file": "appstore-ipad-13-08-reading.png",
+      "device": "appstore-ipad-13",
+      "shot": "reading",
+      "caption": "The Fathers, read in full",
+      "route": "/saints/athanasius-the-great/on-the-incarnation",
+      "state": "St Athanasius the Great, On the Incarnation, opened from the reading room.",
+      "alt": "On the Incarnation of the Word, by St Athanasius the Great, opened at chapter 1.",
+      "size": [
+        2064,
+        2752
+      ],
+      "screen": {
+        "viewport": [
+          1032,
+          1376
+        ],
+        "scale": 1.6095
+      },
+      "bytes": 308822,
+      "problems": [],
+      "reader": {
+        "plus": "0",
+        "tier": null
+      },
+      "errors": [],
+      "picturesInView": [
+        "/covers/authors/athanasius-the-great.v1.avif"
+      ],
+      "heritageInView": {},
+      "heritageElsewhereOnThePage": {},
+      "emptyPicturesInView": [],
+      "campaignNamed": false,
+      "emDashInView": false,
+      "askedOfTheWebsite": [],
+      "app": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [
+          "\"On the Incarnation\": a picture is drawn across it (img, athanasius-the-great.v1.avif)",
+          "\"St. Athanasius the Great\": a picture is drawn across it (img, athanasius-the-great.v1.avif)"
+        ],
+        "allowed": [
+          "palette on div \"On the Incarnation St. Athanasiu\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"On the Incarnation\": a dark island, dark on every palette (app/globals.css)",
+          "palette on span \"St. Athanasius the Great\": a dark island, dark on every palette (app/globals.css)",
+          "emdash on span \"For He was not, as might be imag\": the work's own words, as its edition prints them",
+          "emdash on span \"And thus much in reply to those \": the work's own words, as its edition prints them",
+          "emdash on span \"So the Jews are trifling, and th\": the work's own words, as its edition prints them",
+          "emdash on span \"Many before this Man have been k\": the work's own words, as its edition prints them"
+        ]
+      },
+      "picture": {
+        "pass": true,
+        "ok": [
+          "contrast",
+          "placeholder",
+          "target",
+          "glyph",
+          "palette",
+          "gold",
+          "stripe",
+          "mirror",
+          "emdash",
+          "rays",
+          "sparkle",
+          "picture",
+          "dashed",
+          "keys",
+          "cut"
+        ],
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    }
+  ]
+}
