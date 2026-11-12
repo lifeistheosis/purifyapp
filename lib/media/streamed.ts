@@ -56,10 +56,18 @@ export function isStreamedMedia(path: string): boolean {
  * which a cover offers first in a <picture> with the JPEG behind it. Given the
  * address a cover would load, the website's or the page's own; null for any
  * other picture, another site's above all.
+ *
+ * And a council's picture that the apps carry as AVIF (the seven Ecumenical
+ * Councils', lib/media/carried.ts): the bundle's own AVIF, though the JPEG
+ * is the website's, so a reader with no signal still sees it where it stands
+ * as a book's cover (the gate's final run of 2026-11-12: on
+ * /reading/councils/ the seven were asked of the website as JPEGs alone).
  */
 export function avifFor(src: string | null | undefined): string | null {
   if (!src || !src.endsWith(".jpg")) return null;
   const path = src.startsWith(SITE_URL) ? src.slice(SITE_URL.length) : src;
+  const carried = path.replace(/\.jpg$/, ".avif");
+  if (path.startsWith("/history/") && isCarried(carried)) return carried;
   if (!path.startsWith("/covers/")) return null;
   return src.replace(/\.jpg$/, ".avif");
 }

@@ -7,6 +7,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CoverRow, CoverTile, cardMeta, readingTime } from "@/components/reading/CoverRow";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import type { CouncilBook, ShelfCouncil } from "@/lib/councils/books";
+import { avifFor } from "@/lib/media/streamed";
 import { useArrivingImage } from "@/lib/ui/useArrivingImage";
 
 /**
@@ -115,21 +116,26 @@ export function CouncilShelf({ council, books, others }: { council: ShelfCouncil
  */
 function Backdrop({ src, focus }: { src: string; focus: string }) {
   const { ref, onArrive } = useArrivingImage(src);
+  // The AVIF the apps carry, offered first, so the room has its icon with no signal (lib/media/streamed.ts, avifFor).
+  const avif = avifFor(src);
   return (
     <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[372px] overflow-hidden md:h-[460px]">
-      {/* eslint-disable-next-line @next/next/no-img-element -- the council's icon, as History carries it. */}
-      <img
-        ref={ref}
-        src={src}
-        alt=""
-        decoding="async"
-        onLoad={onArrive}
-        onError={(e) => {
-          e.currentTarget.style.display = "none";
-        }}
-        className="img-arrive absolute inset-0 h-full w-full object-cover opacity-30 grayscale-[0.85] [-webkit-mask-image:linear-gradient(to_bottom,#000_40%,transparent_92%)] [mask-image:linear-gradient(to_bottom,#000_40%,transparent_92%)]"
-        style={{ objectPosition: focus }}
-      />
+      <picture className="contents">
+        {avif ? <source type="image/avif" srcSet={avif} /> : null}
+        {/* The council's icon, as History carries it. */}
+        <img
+          ref={ref}
+          src={src}
+          alt=""
+          decoding="async"
+          onLoad={onArrive}
+          onError={(e) => {
+            e.currentTarget.style.display = "none";
+          }}
+          className="img-arrive absolute inset-0 h-full w-full object-cover opacity-30 grayscale-[0.85] [-webkit-mask-image:linear-gradient(to_bottom,#000_40%,transparent_92%)] [mask-image:linear-gradient(to_bottom,#000_40%,transparent_92%)]"
+          style={{ objectPosition: focus }}
+        />
+      </picture>
       <div className="absolute inset-0 bg-[radial-gradient(90%_60%_at_50%_0%,rgb(255_255_255/0.14),rgb(255_255_255/0)_70%)]" />
     </div>
   );
