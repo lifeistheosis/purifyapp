@@ -123,3 +123,11 @@ describe("d. the wide journal", () => {
     expect(read("components/journal/JournalClient.tsx")).toContain('className="tap-press hit-44 mt-2 block text-start font-serif text-lede leading-[1.5] text-paper"');
   });
 });
+
+describe("e. Prayers' banner on a tablet", () => {
+  it("is taller across the column, the verse lower by as much, and the icon cut about his face", () => {
+    expect(read("components/mobile/PrayersHero.tsx")).toContain('className="prayers-hero-img h-full w-full object-cover object-[50%_20%] md:object-[50%_52%]"');
+    const css = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
+    expect(css).toMatch(/@media \(min-width: 768px\) \{\s*\.prayers-hero-picture \{\s*height: 26\.375rem;\s*\}\s*\.prayers-hero-verse \{\s*padding-top: 15\.5rem;\s*\}\s*\}/);
+  });
+});

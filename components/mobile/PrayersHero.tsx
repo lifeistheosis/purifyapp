@@ -57,7 +57,8 @@ export function PrayersHero({ children }: { children?: ReactNode }) {
             height={media.height}
             fetchPriority="high"
             decoding="async"
-            className="prayers-hero-img h-full w-full object-cover object-[50%_20%]"
+            // Cut about his face at every width: 20% from the top on a phone, 52% across a tablet's column (globals.css).
+            className="prayers-hero-img h-full w-full object-cover object-[50%_20%] md:object-[50%_52%]"
           />
         ) : null}
         {/* Under the bar, so its name and buttons read on the picture. */}
