@@ -22,7 +22,10 @@ const BARE = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
 function tokens(selector: string): Record<string, string> {
   const out: Record<string, string> = {};
   for (const m of BARE.matchAll(/([^{}]*)\{([^{}]*)\}/g)) {
-    if ((m[1].split(";").pop() ?? "").trim() !== selector) continue;
+    // A block may name several selectors (Parchment's dark island and a themed
+    // profile card's .theme-island share one); each is its own.
+    const names = (m[1].split(";").pop() ?? "").split(",").map((s) => s.trim());
+    if (!names.includes(selector)) continue;
     for (const d of m[2].matchAll(/(--[a-z0-9-]+)\s*:\s*([^;]+);/gi)) out[d[1]] = d[2].trim();
   }
   return out;
