@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# The pre-push guard: docs/OPERATIONS.md, section 5. The logic is
+# scripts/push-guard.mjs. This file only hands it what git gives a pre-push
+# hook: the remote's name and address as arguments, the refs on stdin.
+# Every Claude session on this repository turns it on at its start
+# (.claude/settings.json runs: git config core.hooksPath .githooks).
+root="$(git rev-parse --show-toplevel)" || exit 1
+if ! command -v node >/dev/null 2>&1; then
+  echo "push guard: refused. Node was not found, so nothing could be checked." >&2
+  echo "Install Node 22.5 or later (AGENTS.md), then push again." >&2
+  exit 1
+fi
+if [ ! -f "$root/scripts/push-guard.mjs" ]; then
+  echo "push guard: refused. scripts/push-guard.mjs is missing from this checkout." >&2
+  exit 1
+fi
+exec node "$root/scripts/push-guard.mjs" --hook "$@"
