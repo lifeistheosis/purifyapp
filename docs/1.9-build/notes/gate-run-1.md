@@ -684,11 +684,24 @@ plan are held under the finger by the browser's scroll anchoring.
 **Parts 3 to 5:** 62 files, 932 tests, all pass. **The web build:** passes,
 6,525 pages.
 
+**The seven light looks on all 128 screens** (02:09 to 02:36 UTC, the open
+reader, pixels, the same export, three shards): 128 measured, 120 clean,
+none left unmeasured; /reading/ clean, its 328 words over pictures each read
+by its pixels. No new fault. Every fail is one of the eleven: fail 9 on Today
+and on /signout/ (the same card), fail 7 on the florilegium's two screens,
+fail 10 on /history/alaska-mission/, and, not of the looks, fail 3 on
+/reading/councils/ancyra-314/ as well as /reading/councils/ (the same
+lib/councils/books.ts), with fail 4 as before. Words over a picture: 798, of
+which 691 read by their pixels and 107 left for the eye on the four screens
+answered above. Patmos and Linen, the two light looks that passed on the
+sixteen screens, were not worn, by the arbiter's word.
+
 **The confirm run** (the arbiter, 02:08 UTC), when Updates and Updates 2
 report: a new selling export in the same positions; the guardrail walk on
 all 128 screens, both readers, five palettes, pixels; the tap walk on every
 screen the mends touch, both readers (the history row brought to the middle,
-the atlases, /reading/councils/ with no signal, /gift/ in all eight states
-with the claim by a recipient, /prayers/, /pricing/, /florilegium/,
-Community's sheets, Today, /history/alaska-mission/); the light looks on
-those screens; parts 3 to 5; the web build last; one report.
+the atlases, /reading/councils/ and /reading/councils/ancyra-314/ with no
+signal, /gift/ in all eight states with the claim by a recipient, /prayers/,
+/pricing/, /florilegium/, Community's sheets, Today and /signout/,
+/history/alaska-mission/); the light looks on those screens; parts 3 to 5;
+the web build last; one report.
