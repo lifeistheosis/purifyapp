@@ -1,0 +1,107 @@
+{
+  "made": "2026-11-12",
+  "day": "2026-12-06T09:30:00-05:00",
+  "checks": [
+    "contrast",
+    "placeholder",
+    "target",
+    "glyph",
+    "palette",
+    "gold",
+    "stripe",
+    "mirror",
+    "emdash",
+    "rays",
+    "sparkle",
+    "picture",
+    "dashed",
+    "keys",
+    "cut"
+  ],
+  "pictures": [
+    {
+      "id": "P1",
+      "file": "P1-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 282538,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "Studio",
+      "idea": "A wall with one strong pool of light behind the phone, a floor it stands over, and its shadow on the floor.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    },
+    {
+      "id": "P2",
+      "file": "P2-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 252851,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "Nimbus",
+      "idea": "One great disc behind the phone with a bright rim and a single ring round it, and a few plain dots of stars.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    },
+    {
+      "id": "P3",
+      "file": "P3-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 244989,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "Sweep",
+      "idea": "Two great arcs crossing the whole picture in two tones, the nearer one edged in light.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    },
+    {
+      "id": "P4",
+      "file": "P4-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 274240,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "Mosaic",
+      "idea": "A field of tesserae in greys rising from the floor and thinning into the dark, as on a church wall.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    }
+  ]
+}
