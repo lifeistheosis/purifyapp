@@ -2741,6 +2741,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "The arbiter's word of 09:31 UTC. 9da09ccb4, f3bce4250, 89aad6c2c, bc733a899, 5a5d9e147, cb95173bf, 7482c1254, 164e7527a, 1d25c1a1d. PLAN 13bl."
+  },
+  {
+   "id": "e-store-pictures-updates",
+   "section": "Design",
+   "kind": "bug",
+   "title": "The store pictures' run, Updates' six: the interlinear's and glossed words named, the commentary sheet's arrow in Arabic, the wide calendar, the wide journal's prompt, Prayers' banner on a tablet, the saints' century timeline at 1032; and the five screens made again",
+   "from": "claude",
+   "asked": "2026-11-12",
+   "status": "built",
+   "decided": "2026-11-12",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The arbiter's word of 16:01 and 17:00 UTC. 13e85f3ff, a3f1635b6, 4c295d3e2, 89f06742e, fab58b658, a73edbb83, 4794aa35b, 000cb6d99, 603d8def7. PLAN 13bm."
   }
  ]
 }
