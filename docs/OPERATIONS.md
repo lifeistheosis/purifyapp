@@ -104,6 +104,8 @@ During a final check, no app code lands. Any code change after it means a new ex
 
 **Every chat that pushes** runs the fix checklist first, a bridge chat on his PC included, and never pushes main.
 
+**The guard runs on every push.** git runs `scripts/push-guard.mjs` before each push from a clone whose `core.hooksPath` is `.githooks`. Every Claude session sets that at its start; a chat that checks out this branch after it started runs `git config core.hooksPath .githooks` itself. The guard refuses a push to main. Docs alone (under `docs/` or `.claude/`, or a Markdown file at the root, unless code imports it) go at once. Anything else runs the two stylesheet tests, `npm run typecheck`, eslint on the changed files and `vitest related` on them, stopping at the first failure; that takes a few minutes, so give the `git push` a ten-minute timeout. `PURIFY_ALLOW_MAIN=1` lets one command push main, at his word only. `PURIFY_SKIP_GUARD=1` skips the checks but never the refusal of main, at the arbiter's word only. Never `git push --no-verify`, and never push through the GitHub API tools, which the guard cannot see. The guard is a floor under the fix checklist, not a replacement for it.
+
 **Two strikes.** A fault that survives two fixes, or two wrong claims in one area, goes to a fresh chat with a clean brief.
 
 ## 6. Cadence

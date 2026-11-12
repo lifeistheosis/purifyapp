@@ -26,3 +26,4 @@
   - `/compact` only at a natural break, and only once.
   - One message per chat per round.
   - The fix checklist and the release checklist there define done.
+  - A guard checks every push (`scripts/push-guard.mjs`, OPERATIONS section 5). `PURIFY_ALLOW_MAIN=1` only at his word, `PURIFY_SKIP_GUARD=1` only at the arbiter's word, and never `git push --no-verify`.
