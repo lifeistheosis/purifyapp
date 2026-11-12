@@ -4,8 +4,25 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { SHORT_CARD_H, cardNameSize } from "@/components/saints/web/WebCard";
+import { emWidth } from "@/lib/reading/coverText";
 import { saintWeb, webSlugs } from "@/lib/saints/web";
-import { BOX, BOX_LINES, CENTER_BOX, MIDDLE_SHARE, NAME_LINE, linesOf, middleLines, nameLines, webLayout, type WebNode } from "@/lib/saints/webLayout";
+import {
+  BOX,
+  BOX_LINES,
+  CENTER_BOX,
+  LABEL_SHARE,
+  MIDDLE_SHARE,
+  NAME_LINE,
+  NARROWEST,
+  SOFT,
+  WORD_FIT,
+  linesOf,
+  middleLines,
+  nameLines,
+  nameRuns,
+  webLayout,
+  type WebNode,
+} from "@/lib/saints/webLayout";
 
 /**
  * The gate's confirm run (Admin, 2026-11-12, 05:40 to 09:27 UTC, export
@@ -102,6 +119,46 @@ describe("the saints' webs (fail 4, the 118 webs)", () => {
     expect(web.match(/w-\[46\.15%\]/g)?.length).toBe(3);
     expect(Math.round(MIDDLE_SHARE * 10000) / 100).toBe(46.15);
     expect(web).toContain("webLayout(nodes.length, { names: nodes.map((n) => nameLines(n.kind === \"saint\" ? n.person.short : n.name)), middle: middleLines(center.short) })");
+  });
+
+  it("break a word too wide for a saint's label on the narrowest phone at its syllable, and keep it whole wherever it fits", () => {
+    // At 320 a label is 71px and "Constantinople" 85.5 at the name's 11.5px: unclamped, it ran past its label
+    // into the middle saint's name on nine webs (export d1b3255d5: St Agatho's, St Maximus's and seven more).
+    const label = NARROWEST * LABEL_SHARE;
+    const wide = new Set<string>();
+    for (const web of webs) {
+      for (const n of web.nodes) {
+        const name = nameOf(n);
+        const runs = nameRuns(name);
+        expect(runs.map((r) => r.text).join("").replaceAll(SOFT, ""), name).toBe(name);
+        // A word, or the part of one before or after its hyphen, where the browser may break ("Trophy-bearer").
+        for (const word of name.split(/\s+/).flatMap((w) => w.split(/(?<=-)/))) {
+          if (emWidth(word, "sans") * 11.5 <= label * WORD_FIT) continue;
+          wide.add(word);
+          const run = runs.find((r) => r.wide && r.text.replaceAll(SOFT, "") === word);
+          expect(run, `${web.center.slug}: "${word}" in ${name} has no break`).toBeDefined();
+          const pieces = run!.text.split(SOFT);
+          expect(pieces.length, word).toBe(2);
+          // Each piece fits the label, the first with the hyphen the break draws.
+          for (const [i, piece] of pieces.entries()) expect(emWidth(i === 0 ? `${piece}-` : piece, "sans") * 11.5, piece).toBeLessThanOrEqual(label * WORD_FIT);
+        }
+      }
+      // The middle saint's words stand whole in his share of the web, and a card's name in its face.
+      const words = (text: string) => text.split(/\s+/).flatMap((w) => w.split(/(?<=-)/));
+      for (const word of words(web.center.short)) expect(emWidth(word, "serif") * 16, word).toBeLessThanOrEqual(NARROWEST * MIDDLE_SHARE * WORD_FIT);
+      for (const n of web.nodes) {
+        const name = n.kind === "saint" ? n.person.name : n.name;
+        for (const word of words(name)) expect(emWidth(word, "serif") * cardNameSize(name), word).toBeLessThanOrEqual(165 * WORD_FIT);
+      }
+    }
+    expect([...wide].sort()).toEqual(["Amphilochius", "Bartholomew", "Chrysogonus", "Constantinople", "Velichkovsky", "Wonderworker"]);
+    // Drawn as a block of its own (WebName), on the web and in the copies that glide when the web changes.
+    const web = fs.readFileSync(path.join(ROOT, "components/saints/web/WebConstellation.tsx"), "utf8");
+    expect(web).toContain('run.wide ? <span key={i} className="inline-block">{run.text}</span> : run.text');
+    expect(web.match(/<WebName name=\{/g)?.length).toBe(3);
+    // Its lines are counted as drawn: "Second Council of Constantinople" takes four at 320.
+    expect(nameLines("Second Council of Constantinople")).toBe(4);
+    expect(nameLines("Amphilochius of Iconium")).toBe(3);
   });
 
   it("name every kind on the key whole, the track swiping where the parts do not fit", () => {

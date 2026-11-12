@@ -35,6 +35,7 @@ import {
   lineStyle,
   middleLines,
   nameLines,
+  nameRuns,
   NODE_SIZE,
   primaryTie,
   type SaintWebData,
@@ -113,6 +114,17 @@ const TAG_CLASS = "mt-0.5 max-w-full truncate font-sans text-[10.5px] text-paper
 const MIDDLE_RING_CLASS =
   "rounded-full shadow-[0_0_0_4px_var(--color-night),0_0_0_5.5px_color-mix(in_srgb,var(--color-paper)_55%,transparent),0_14px_40px_rgb(0_0_0/0.55)]";
 const MIDDLE_NAME_CLASS = "mt-2.5 text-center font-serif text-[16px] font-bold leading-[1.2] text-paper";
+
+/**
+ * A saint's name under his circle. A word too wide for the label on a narrow
+ * phone ("Constantinople" at 320) stands as a block of its own: whole on any
+ * phone it fits, broken at its syllable where it does not, and the words
+ * after it on the next line, as nameLines counts it (lib/saints/webLayout.ts,
+ * nameRuns).
+ */
+function WebName({ name }: { name: string }) {
+  return <>{nameRuns(name).map((run, i) => (run.wide ? <span key={i} className="inline-block">{run.text}</span> : run.text))}</>;
+}
 
 /** How far a finger moves before it is moving something, not tapping it. */
 const DRAG_SLOP = 6;
@@ -1432,7 +1444,7 @@ export function WebConstellation({
                     dir="ltr"
                     className={cn(NAME_CLASS, node.kind === "saint" && !node.person.icon ? "text-paper/75" : "text-paper/95", LABEL_SHADOW)}
                   >
-                    {name}
+                    <WebName name={name} />
                   </span>
                   {tag ? (
                     <span
@@ -1548,7 +1560,9 @@ function GlideGhosts({
             <span className={cn("saint-web-ring rounded-full", node.kind === "council" && "rounded-[13px]")}>
               <WebAvatar node={node} size={NODE_SIZE} />
             </span>
-            <span lang="en" dir="ltr" className={cn(NAME_CLASS, tone(node), LABEL_SHADOW)}>{nameOf(node)}</span>
+            <span lang="en" dir="ltr" className={cn(NAME_CLASS, tone(node), LABEL_SHADOW)}>
+              <WebName name={nameOf(node)} />
+            </span>
             {tag ? <span className={cn(TAG_CLASS, LABEL_SHADOW)}>{tag}</span> : null}
           </div>
         );
@@ -1566,7 +1580,9 @@ function GlideGhosts({
           className="absolute left-0 top-0 flex w-[25.6%] flex-col items-center text-center"
           style={{ opacity: 0 }}
         >
-          <span lang="en" dir="ltr" className={cn(NAME_CLASS, tone(chosen), LABEL_SHADOW)}>{nameOf(chosen)}</span>
+          <span lang="en" dir="ltr" className={cn(NAME_CLASS, tone(chosen), LABEL_SHADOW)}>
+            <WebName name={nameOf(chosen)} />
+          </span>
           {tagOf(chosen, t) ? <span className={cn(TAG_CLASS, LABEL_SHADOW)}>{tagOf(chosen, t)}</span> : null}
         </div>
       ) : null}

@@ -194,20 +194,80 @@ export const MIDDLE_LINE = 19.2;
 /** The lines of name a box holds as drawn above (BOX, CENTER_BOX). */
 export const BOX_LINES = 2;
 /** The web's width on the narrowest phone it is held to (320, less the page's edges), and the share of it a saint's label takes. */
-const NARROWEST = 277.5;
+export const NARROWEST = 277.5;
 export const LABEL_SHARE = 0.256;
 /** The share of the web the middle saint's name stands in (WebConstellation, data-web-middle): CENTER_BOX[1]'s 180 of 390. */
 export const MIDDLE_SHARE = (CENTER_BOX[1].right - CENTER_BOX[1].left) / WEB_WIDTH;
 /** How much of a line the measure fills, for the weight the web sets names in over the one it sums. */
 const NAME_FILL = 0.95;
 
-/** How many lines `text` takes at `size` px in a column `width` px wide, broken where the browser breaks it: at a space, or after a hyphen ("Trophy-bearer"). */
+/** The soft hyphen: where a word may break, drawn as a hyphen only where it does. */
+export const SOFT = "\u00AD";
+
+/**
+ * The web's words too wide for a saint's label on the narrowest phone, each
+ * with the one syllable it breaks at, as a printer sets it in a narrow column
+ * ("Constan-tinople", "Wonder-worker"). The label is 71px there and
+ * "Constantinople" 85.5 at the name's 11.5px semibold: with the names no
+ * longer clamped it ran past its label into the middle saint's name on nine
+ * webs (St Agatho's, St Maximus's, the councils of Constantinople). WebName
+ * draws each as a block of its own, so the word stays whole on any phone it
+ * fits and breaks only where it does not; nameLines counts the block's lines.
+ */
+const WIDE_WORDS = ["Constan|tinople", "Wonder|worker", "Amphi|lochius", "Barthol|omew", "Chryso|gonus", "Velich|kovsky"] as const;
+const BREAKS = new Map<string, string>(WIDE_WORDS.map((w) => [w.replace("|", ""), w.replace("|", SOFT)]));
+
+/**
+ * A word whose sum is over this share of a line may not fit it: the posters'
+ * measure runs up to 3.1 percent under the browser for the web's long words
+ * (every word of every web's names, measured at 320 on the export of
+ * 2026-11-12). Every such word in a saint's name has its break above
+ * (lib/ui/__tests__/gateConfirmRun.test.ts).
+ */
+export const WORD_FIT = 0.97;
+
+/** A part of a name as WebName draws it: a word too wide for the label, with its break, or the words around it as they stand. */
+export type NameRun = { text: string; wide: boolean };
+
+/** A saint's name in its runs, each word too wide for the label (with what clings to it, a comma) set apart with its break. */
+export function nameRuns(name: string): NameRun[] {
+  const runs: NameRun[] = [];
+  let plain = "";
+  for (const piece of name.split(/(\s+)/)) {
+    const core = /\p{L}+/u.exec(piece);
+    const broken = core ? BREAKS.get(core[0]) : undefined;
+    if (!core || !broken) {
+      plain += piece;
+      continue;
+    }
+    if (plain) runs.push({ text: plain, wide: false });
+    plain = "";
+    runs.push({ text: piece.slice(0, core.index) + broken + piece.slice(core.index + core[0].length), wide: true });
+  }
+  if (plain) runs.push({ text: plain, wide: false });
+  return runs;
+}
+
+/**
+ * How many lines `text` takes at `size` px in a column `width` px wide, broken
+ * where the browser breaks it: at a space, or after a hyphen ("Trophy-bearer").
+ * A word with a soft hyphen (nameRuns) that is too wide for the line is drawn
+ * as a block of its own (WebName): a line for each piece, and no other word
+ * on them.
+ */
 export function linesOf(text: string, width: number, size: number, face: "serif" | "sans"): number {
   const measure = (width / size) * NAME_FILL;
   const space = emWidth(" ", face);
   let lines = 1;
   let run = 0;
-  for (const word of text.split(/\s+/).filter(Boolean)) {
+  for (const token of text.split(/\s+/).filter(Boolean)) {
+    const pieces = token.split(SOFT);
+    if (pieces.length > 1 && emWidth(pieces.join(""), face) > measure) {
+      lines += (run > 0 ? 1 : 0) + pieces.length - 1;
+      run = measure;
+      continue;
+    }
+    const word = pieces.join("");
     for (const [k, part] of word.split(/(?<=-)/).entries()) {
       const w = emWidth(part, face);
       const gap = k === 0 ? space : 0;
@@ -222,9 +282,9 @@ export function linesOf(text: string, width: number, size: number, face: "serif"
   return lines;
 }
 
-/** The lines a saint's name takes under his circle, on the narrowest phone. */
+/** The lines a saint's name takes under his circle, on the narrowest phone, as WebName draws it. */
 export function nameLines(name: string): number {
-  return linesOf(name, NARROWEST * LABEL_SHARE, 11.5, "sans");
+  return linesOf(nameRuns(name).map((r) => r.text).join(""), NARROWEST * LABEL_SHARE, 11.5, "sans");
 }
 
 /** The lines the middle saint's name takes under his circle. */
