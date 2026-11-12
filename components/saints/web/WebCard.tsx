@@ -283,12 +283,37 @@ export function WebCard({
     settleTo(height);
   }, [tall, tallHeight, away, draw, settleTo, stop]);
 
-  // A keyboard that opened or closed the card keeps its place on the control that closes or opens it.
+  // The last place the focus stood outside the tall face, to go back to when the card lowers.
+  const focusBack = useRef<HTMLElement | null>(null);
+  const wasTall = useRef(false);
+  useEffect(() => {
+    const keep = (e: FocusEvent) => {
+      if (e.target instanceof HTMLElement && !tallRef.current?.contains(e.target)) focusBack.current = e.target;
+    };
+    document.addEventListener("focusin", keep);
+    return () => document.removeEventListener("focusin", keep);
+  }, []);
+
+  // A keyboard that opened or closed the card keeps its place on the control that closes or opens it. And while the
+  // card stands tall the web behind it is inert (WebConstellation), so the focus stands in the card, whatever raised
+  // it, and goes back where it was when the card lowers (the arbiter's word, 2026-11-12).
   useEffect(() => {
     const want = focusNext.current;
     focusNext.current = null;
-    if (want === "tall" && tall) lessRef.current?.focus();
-    if (want === "short" && !tall && !away) shortRef.current?.focus();
+    const lowered = wasTall.current && !tall;
+    wasTall.current = tall;
+    if (tall) {
+      if (!tallRef.current?.contains(document.activeElement)) lessRef.current?.focus({ preventScroll: true });
+      return;
+    }
+    if (want === "short" && !away) {
+      shortRef.current?.focus();
+      return;
+    }
+    if (!lowered) return;
+    const at = document.activeElement;
+    const back = focusBack.current;
+    if ((!at || at === document.body || tallRef.current?.contains(at)) && back?.isConnected && !back.closest("[inert]")) back.focus({ preventScroll: true });
   }, [tall, away]);
 
   function pullStart(from: Pull["from"], e: ReactPointerEvent<HTMLElement>) {

@@ -1282,6 +1282,11 @@ export function WebConstellation({
             // time and no order a reader follows across it.
             data-mock-allow="mirror"
             data-mock-why="the constellation's places are pairs round the middle saint, in no reading order"
+            // Behind a tall card the web is faded and inert: no saint, name or tag under the card can be tapped
+            // or focused, and a tap on it lands on the empty web, which lowers the card as a backdrop does
+            // (the room's click below). The card keeps the focus meanwhile (WebCard). The arbiter's word,
+            // 2026-11-12, on the gate's confirm run.
+            inert={tall}
             className="saint-web-canvas absolute inset-0"
           >
             {/* The icon's own light behind him, a grey from its lightness, never its hue. */}
