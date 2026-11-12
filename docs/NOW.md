@@ -7,7 +7,8 @@ Updated 2026-11-12, 21:31 UTC.
 ## 1.9: in flight
 
 - **The final check** (Admin): export cut at 20:42 UTC from 3e65f51ff, whose code is 05aee81e1. Report near 01:00 UTC. If it passes, the test build is cut at once: Android with local-first on, the main web, publish off; then iOS. He walks it as a new reader would.
-- **Updates 2:** verifies /reading/ on the same export. It pushes no app code.
+- **Updates 2:** verifies /reading/ on the same export, and prepares two fixes from the check's early sightings (the councils' Fathers moving under the finger; the community thread opening under the tab bar). Held locally until the report.
+- **The report** is now near 01:15 UTC: Admin's container restarted at 21:30, and the check resumed at 21:37.
 - **Freeze:** no app code lands during the final check.
 - **Tooling:** the pre-push guard is being built now (a fresh chat). After the final check, Admin writes the nightly gate's runner, and the arbiter schedules it.
 - **Done for 1.9:** the drop kit (SSM board); the store pictures, 41 of them (Fable, e2aa433d); the EIKON gift (Product images chat; one month of Plus for every order).
@@ -39,5 +40,6 @@ Updated 2026-11-12, 21:31 UTC.
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |
 | Product images (his PC) | session_01VuYTwaLq6ij9iFi8D4Kt8a | the EIKON gift, done for 1.9 |
 | Tooling: the pre-push guard | session_01VuYTwZxEJPq6tx6VUBChCT | the guard on every push (no app or package files during the freeze) |
+| Admin panel 2 | session_01VuYTwdGHpocsLjegCEAape | the admin panel (first job: all money on the chart, by colour); held locally until the check ends |
 
 Admin and Updates were past 700,000 tokens at the last look, so both rotate first after 1.9.
