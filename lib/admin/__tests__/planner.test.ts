@@ -44,15 +44,15 @@ describe("plannedTasks", () => {
   const week = plannedTasks(MON, SUN);
   const keys = week.map((t) => t.ruleKey);
 
-  it("puts the week's four rhythms on their own days", () => {
+  // Two, from 2026-11-12: shipping the update and writing its note are steps
+  // of a release now (docs/RELEASE.md; his word that day, docs/plans/owner-desk.md
+  // section 1), so they left the week.
+  it("puts the week's two rhythms on their own days", () => {
     expect(keys).toContain("board:2026-W38");
-    expect(keys).toContain("notes:2026-W38");
-    expect(keys).toContain("update:2026-W38");
     expect(keys).toContain("email-weekly:2026-W38");
+    expect(keys.some((k) => k.startsWith("notes:") || k.startsWith("update:"))).toBe(false);
     const byKey = Object.fromEntries(week.map((t) => [t.ruleKey, t.dueOn]));
     expect(byKey["board:2026-W38"]).toBe(MON);
-    expect(byKey["notes:2026-W38"]).toBe("2026-09-17");
-    expect(byKey["update:2026-W38"]).toBe("2026-09-18");
     expect(byKey["email-weekly:2026-W38"]).toBe(SUN);
   });
 
@@ -106,10 +106,10 @@ describe("mergeBoard", () => {
   ];
 
   it("ticks a generated task when the work itself is there", () => {
-    const board = mergeBoard({ planned, stored: [], evidence: new Set(["update:2026-W38"]) });
-    const update = board.find((t) => t.ruleKey === "update:2026-W38")!;
-    expect(update.status).toBe("done");
-    expect(update.byItself).toBe(true);
+    const board = mergeBoard({ planned, stored: [], evidence: new Set(["board:2026-W38"]) });
+    const posted = board.find((t) => t.ruleKey === "board:2026-W38")!;
+    expect(posted.status).toBe("done");
+    expect(posted.byItself).toBe(true);
   });
 
   it("keeps a task somebody added beside the generated ones", () => {
@@ -123,37 +123,54 @@ describe("mergeBoard", () => {
     const skipped: StoredTask[] = [
       {
         id: "row-1",
-        title: "Ship this week's update",
+        title: "Send the Sunday calendar email",
         notes: null,
-        category: "update",
-        due_on: "2026-09-18",
+        category: "email",
+        due_on: SUN,
         status: "skipped",
-        rule_key: "update:2026-W38",
+        rule_key: "email-weekly:2026-W38",
         auto: true,
       },
     ];
     const board = mergeBoard({ planned, stored: skipped, evidence: new Set() });
-    const rows = board.filter((t) => t.ruleKey === "update:2026-W38");
+    const rows = board.filter((t) => t.ruleKey === "email-weekly:2026-W38");
     expect(rows).toHaveLength(1);
     expect(rows[0].status).toBe("skipped");
     expect(rows[0].id).toBe("row-1");
+  });
+
+  it("takes a stored row's day over the rule's: a task given a later day is due on it", () => {
+    const later: StoredTask[] = [
+      {
+        id: "row-3",
+        title: "Post this week's board message",
+        notes: null,
+        category: "board",
+        due_on: "2026-09-30",
+        status: "open",
+        rule_key: "board:2026-W38",
+        auto: true,
+      },
+    ];
+    const board = mergeBoard({ planned, stored: later, evidence: new Set() });
+    expect(board.find((t) => t.ruleKey === "board:2026-W38")!.dueOn).toBe("2026-09-30");
   });
 
   it("still ticks a stored task left open once the work appears", () => {
     const open: StoredTask[] = [
       {
         id: "row-2",
-        title: "Ship this week's update",
+        title: "Post this week's board message",
         notes: null,
-        category: "update",
-        due_on: "2026-09-18",
+        category: "board",
+        due_on: MON,
         status: "open",
-        rule_key: "update:2026-W38",
+        rule_key: "board:2026-W38",
         auto: true,
       },
     ];
-    const board = mergeBoard({ planned, stored: open, evidence: new Set(["update:2026-W38"]) });
-    expect(board.find((t) => t.ruleKey === "update:2026-W38")!.status).toBe("done");
+    const board = mergeBoard({ planned, stored: open, evidence: new Set(["board:2026-W38"]) });
+    expect(board.find((t) => t.ruleKey === "board:2026-W38")!.status).toBe("done");
   });
 });
 
@@ -162,17 +179,14 @@ describe("dueSummary", () => {
     const board = mergeBoard({
       planned: plannedTasks(MON, SUN),
       stored: [],
-      evidence: new Set(["board:2026-W38"]),
+      evidence: new Set(["eikon-create:2026-10"]),
     });
-    const s = dueSummary(board, "2026-09-17");
-    expect(s.done.map((t) => t.ruleKey)).toEqual(["board:2026-W38"]);
-    expect(s.overdue).toHaveLength(0);
-    expect(s.today.map((t) => t.ruleKey)).toEqual(["notes:2026-W38"]);
-    // The 20th is this week's Sunday, so next month's drop lands here too.
-    expect(s.later.map((t) => t.ruleKey)).toEqual([
-      "update:2026-W38",
-      "eikon-create:2026-10",
-      "email-weekly:2026-W38",
-    ]);
+    // The 20th is this week's Sunday, so next month's drop lands on it too.
+    const s = dueSummary(board, SUN);
+    expect(s.done.map((t) => t.ruleKey)).toEqual(["eikon-create:2026-10"]);
+    expect(s.overdue.map((t) => t.ruleKey)).toEqual(["board:2026-W38"]);
+    expect(s.today.map((t) => t.ruleKey)).toEqual(["email-weekly:2026-W38"]);
+    expect(s.later).toHaveLength(0);
+    expect(dueSummary(board, "2026-09-17").later.map((t) => t.ruleKey)).toEqual(["email-weekly:2026-W38"]);
   });
 });

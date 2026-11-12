@@ -17,9 +17,12 @@ import {
   addDays,
   CATEGORY,
   dueSummary,
+  notBeforeChoices,
+  runsOf,
   weekDays,
   weekStart,
   type BoardTask,
+  type Run,
   type TaskCategory,
 } from "@/lib/admin/planner";
 import { useToday } from "@/lib/calendar/useToday";
@@ -91,6 +94,9 @@ export function PlanBoard() {
   const lateBefore = cursor
     ? summary.overdue.filter((t) => t.dueOn < week[0])
     : [];
+  // A missed run is one line ("The Sunday email: not sent for 3 weeks"), not
+  // one a week (his word, 2026-11-12, docs/plans/owner-desk.md section 1).
+  const lateRuns = runsOf(lateBefore);
   const coming = cursor
     ? summary.later.filter((t) => t.dueOn > week[6]).slice(0, 8)
     : [];
@@ -114,6 +120,23 @@ export function PlanBoard() {
       setError(data?.error ?? `That did not save (${res.status}).`);
     }
     setOpen(null);
+    await load();
+  }
+
+  // A whole missed run, skipped in one tap: each of its weeks marked skipped,
+  // never done, since none of them happened.
+  async function skipAll(run: Run) {
+    setError(null);
+    let failed = 0;
+    for (const t of run.tasks) {
+      const res = await fetch("/api/admin/planner", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(t.id ? { id: t.id, status: "skipped" } : { ruleKey: t.ruleKey, status: "skipped" }),
+      });
+      if (!res.ok) failed += 1;
+    }
+    if (failed > 0) setError(`${failed} of ${run.tasks.length} did not save.`);
     await load();
   }
 
@@ -203,20 +226,28 @@ export function PlanBoard() {
               Late from earlier weeks
             </p>
             <ul className="mt-1.5 flex flex-wrap gap-1.5">
-              {lateBefore.slice(0, 8).map((t) => (
-                <li key={t.ruleKey ?? t.id}>
-                  <Chip
-                    task={t}
-                    today={today}
-                    onOpen={() => setOpen(t)}
-                    onToggle={() => change(t, { status: "done" })}
-                  />
+              {lateRuns.slice(0, 8).map((run) => (
+                <li key={run.key}>
+                  {run.tasks.length === 1 ? (
+                    <Chip
+                      task={run.tasks[0]}
+                      today={today}
+                      onOpen={() => setOpen(run.tasks[0])}
+                      onToggle={() => change(run.tasks[0], { status: "done" })}
+                    />
+                  ) : (
+                    <RunChip
+                      run={run}
+                      onOpen={() => setOpen(run.tasks[run.tasks.length - 1])}
+                      onSkip={() => skipAll(run)}
+                    />
+                  )}
                 </li>
               ))}
             </ul>
-            {lateBefore.length > 8 && (
+            {lateRuns.length > 8 && (
               <p className="mt-1.5 font-sans text-[11.5px]" style={ink3}>
-                and {lateBefore.length - 8} more in earlier weeks
+                and {lateRuns.length - 8} more in earlier weeks
               </p>
             )}
           </div>
@@ -319,6 +350,7 @@ export function PlanBoard() {
       {open && (
         <TaskModal
           task={open}
+          today={today}
           onClose={() => setOpen(null)}
           onChange={(patch) => change(open, patch)}
           onDelete={() => remove(open)}
@@ -405,18 +437,46 @@ function Chip({
   );
 }
 
+/**
+ * A missed run as one line, "The Sunday email: not sent for 3 weeks": the
+ * words open the newest of them, and Skip these marks every one skipped.
+ */
+function RunChip({ run, onOpen, onSkip }: { run: Run; onOpen: () => void; onSkip: () => void }) {
+  const newest = run.tasks[run.tasks.length - 1];
+  return (
+    <span
+      className="inline-flex max-w-full flex-wrap items-center gap-1.5 rounded-[var(--adm-radius-sm)] border px-1.5 py-1"
+      style={{
+        borderColor: "color-mix(in oklab, var(--adm-critical), transparent 55%)",
+        background: "var(--adm-panel)",
+      }}
+    >
+      <button type="button" onClick={onOpen} className="min-w-0 text-left">
+        <span className="font-sans text-[12px] leading-snug" style={{ color: "var(--adm-critical)" }}>
+          <Mark>{CATEGORY[newest.category].emoji}</Mark> {run.line}
+        </span>
+      </button>
+      <ToolbarButton onClick={onSkip}>Skip these</ToolbarButton>
+    </span>
+  );
+}
+
 function TaskModal({
   task,
+  today,
   onClose,
   onChange,
   onDelete,
 }: {
   task: BoardTask;
+  today: string | null;
   onClose: () => void;
   onChange: (patch: Record<string, unknown>) => void;
   onDelete: () => void;
 }) {
   const [due, setDue] = useState(task.dueOn);
+  // Not before, in one tap (his word, 2026-11-12): a day after the one it has.
+  const choices = today ? notBeforeChoices(today).filter((c) => c.day > task.dueOn) : [];
   return (
     <Modal
       title={task.title}
@@ -440,31 +500,37 @@ function TaskModal({
           </p>
         )}
 
-        <label
-          className="flex items-center gap-2 font-sans text-[12.5px]"
-          style={ink3}
-        >
-          <span>Move to</span>
-          <input
-            type="date"
-            value={due}
-            onChange={(e) => setDue(e.target.value)}
-            className="rounded-[var(--adm-radius-sm)] border px-2 py-1 font-sans text-[12.5px]"
-            style={{
-              borderColor: "var(--adm-line-strong)",
-              background: "var(--adm-control)",
-              color: "var(--adm-ink)",
-            }}
-          />
-          {due !== task.dueOn && (
-            <ToolbarButton
-              variant="primary"
-              onClick={() => onChange({ dueOn: due })}
-            >
-              Move it
-            </ToolbarButton>
-          )}
-        </label>
+        <div className="space-y-2">
+          <p className="font-sans text-[12.5px]" style={ink3}>
+            Not before: quiet until that day, in your morning email and here.
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            {choices.map((c) => (
+              <ToolbarButton key={c.label} onClick={() => onChange({ dueOn: c.day })}>
+                {c.label}
+              </ToolbarButton>
+            ))}
+            <label className="flex items-center gap-2 font-sans text-[12.5px]" style={ink3}>
+              <span className="sr-only">Not before a day of your own</span>
+              <input
+                type="date"
+                value={due}
+                onChange={(e) => setDue(e.target.value)}
+                className="rounded-[var(--adm-radius-sm)] border px-2 py-1 font-sans text-[12.5px]"
+                style={{
+                  borderColor: "var(--adm-line-strong)",
+                  background: "var(--adm-control)",
+                  color: "var(--adm-ink)",
+                }}
+              />
+            </label>
+            {due !== task.dueOn && (
+              <ToolbarButton variant="primary" onClick={() => onChange({ dueOn: due })}>
+                Set it
+              </ToolbarButton>
+            )}
+          </div>
+        </div>
 
         <div className="flex flex-wrap justify-between gap-2">
           <div className="flex flex-wrap gap-2">

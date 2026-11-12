@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
-import { addDays, CATEGORY, mergeBoard, plannedTasks, type StoredTask } from "@/lib/admin/planner";
+import { addDays, CATEGORY, mergeBoard, plannedTasks } from "@/lib/admin/planner";
 import { plannerEvidence } from "@/lib/admin/plannerEvidence";
+import { readStoredTasks, TASK_COLUMNS } from "@/lib/admin/plannerRead";
 import { listProducts } from "@/lib/shop/catalog";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -23,7 +24,7 @@ export const dynamic = "force-dynamic";
  */
 
 const TABLE = "admin_tasks";
-const COLUMNS = "id, title, notes, category, due_on, status, rule_key, auto";
+const COLUMNS = TASK_COLUMNS;
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 
 function notReady(e: { message: string }) {
@@ -46,27 +47,23 @@ export async function GET(req: Request) {
 
   const admin = createAdminClient();
   // The catalogue decides which great feasts get a shop email (lib/shop/feasts.ts).
-  const [stored, evidence, products] = await Promise.all([
-    admin.from(TABLE).select(COLUMNS).gte("due_on", from).lte("due_on", to).limit(500),
+  const products = await listProducts({ limit: 60 });
+  const planned = plannedTasks(from, to, products);
+  // The span's rows, and each planned task's row wherever its day is now, so a
+  // task given a later day ("not before") is not drawn late on its old one.
+  const [stored, evidence] = await Promise.all([
+    readStoredTasks(admin, { from, to }, planned.map((t) => t.ruleKey)),
     plannerEvidence(admin, { from, to }).catch(() => new Set<string>()),
-    listProducts({ limit: 60 }),
   ]);
   if (stored.error) {
     return NextResponse.json({
-      tasks: mergeBoard({ planned: plannedTasks(from, to, products), stored: [], evidence }),
+      tasks: mergeBoard({ planned, stored: [], evidence }),
       ready: false,
-      error: stored.error.message,
+      error: stored.error,
     });
   }
 
-  return NextResponse.json({
-    tasks: mergeBoard({
-      planned: plannedTasks(from, to, products),
-      stored: (stored.data ?? []) as StoredTask[],
-      evidence,
-    }),
-    ready: true,
-  });
+  return NextResponse.json({ tasks: mergeBoard({ planned, stored: stored.rows, evidence }), ready: true });
 }
 
 const New = z.object({

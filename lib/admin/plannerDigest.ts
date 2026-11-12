@@ -10,96 +10,88 @@ import { sendEmailOnce } from "@/lib/email/ledger";
 import { listProducts } from "@/lib/shop/catalog";
 import { SITE_URL } from "@/lib/site";
 
-import { addDays, CATEGORY, dueSummary, mergeBoard, plannedTasks, type BoardTask, type StoredTask } from "./planner";
+import { addDays, mergeBoard, morningMail, plannedTasks, waitsOnHim } from "./planner";
 import { plannerEvidence } from "./plannerEvidence";
+import { readStoredTasks } from "./plannerRead";
 
 /**
- * One email a morning, to the owner, when the board has something on it.
+ * One email a morning, to the owner, when something on the board needs him.
  *
  * The board only reminds someone who opens the panel. This is the part that
- * reaches out: what is late and what is due today, at the start of the day,
- * and nothing at all on a day with neither. Keyed `planner_digest:<day>`, so
- * the heartbeat calling twice sends once.
+ * reaches out, and since 2026-11-12 it says only what needs his hand or his
+ * word (his word that day, docs/plans/owner-desk.md section 1: "If it doesn't
+ * have anything to do with my input ... So you can automate that process,
+ * right?"). It used to list every planned task of the last six weeks with no
+ * sign of being done, about thirty "late" lines on a morning in a long build,
+ * most of them the team's or things he already knew.
  *
- * It goes to ADMIN_EMAILS, never to a reader, and it counts against the
- * reserve rather than the bulk budget: it is one email and it is the point of
- * the reserve.
+ * So, with the rules in lib/admin/planner.ts (morningMail):
+ *   - only his: the EIKON Box, a drop's steps, a task a person added. What
+ *     the team prepares (the board message, the Sunday email, the monthly
+ *     note, the feast shop email) is never late here;
+ *   - a task he has given a day ("not before", in the Calendar) is quiet until
+ *     that day, however far off (lib/admin/plannerRead.ts keeps its row);
+ *   - a missed run is one line: "The EIKON Box drop: not opened for 2 months";
+ *   - the subject names what needs him, never a count of what is late;
+ *   - a morning with nothing for him sends nothing.
+ *
+ * Keyed `planner_digest:<day>`, so the heartbeat calling twice sends once. It
+ * goes to ADMIN_EMAILS, never to a reader, and counts against the reserve
+ * rather than the bulk budget.
  */
 
-const list = (title: string, tasks: BoardTask[]): string => {
-  if (tasks.length === 0) return "";
-  const items = tasks
-    .map(
-      (t) =>
-        `<li style="margin:0 0 6px"><strong>${escapeHtml(CATEGORY[t.category].label)}</strong> ${escapeHtml(
-          t.title,
-        )} <span style="opacity:.7">(${escapeHtml(t.dueOn)})</span></li>`,
-    )
-    .join("");
-  return `<p style="margin:18px 0 6px;font-weight:600">${escapeHtml(title)}</p><ul style="margin:0;padding-left:18px">${items}</ul>`;
-};
-
+/** `overdue` and `today` count his tasks only: the team's are never late here. */
 export type DigestReport = { sent: boolean; overdue: number; today: number; reason?: string };
 
 export async function sendPlannerDigest(admin: SupabaseClient, now: Date = new Date()): Promise<DigestReport> {
   const today = now.toISOString().slice(0, 10);
   const from = addDays(today, -42);
-  const to = addDays(today, 7);
 
-  const [stored, evidence, products] = await Promise.all([
-    admin
-      .from("admin_tasks")
-      .select("id, title, notes, category, due_on, status, rule_key, auto")
-      .gte("due_on", from)
-      .lte("due_on", to)
-      .limit(500),
-    plannerEvidence(admin, { from, to }).catch(() => new Set<string>()),
-    listProducts({ limit: 60 }),
+  const products = await listProducts({ limit: 60 });
+  const planned = plannedTasks(from, today, products);
+  const [stored, evidence] = await Promise.all([
+    readStoredTasks(admin, { from, to: today }, planned.map((t) => t.ruleKey)),
+    plannerEvidence(admin, { from, to: today }).catch(() => new Set<string>()),
   ]);
 
-  const tasks = mergeBoard({
-    planned: plannedTasks(from, to, products),
-    stored: (stored.data ?? []) as StoredTask[],
-    evidence,
-  });
-  const due = dueSummary(tasks, today);
-  if (due.overdue.length === 0 && due.today.length === 0) {
-    return { sent: false, overdue: 0, today: 0, reason: "nothing due" };
-  }
+  const tasks = mergeBoard({ planned, stored: stored.rows, evidence });
+  const mine = tasks.filter((t) => t.status === "open" && t.dueOn <= today && waitsOnHim(t));
+  const overdue = mine.filter((t) => t.dueOn < today).length;
+  const dueToday = mine.length - overdue;
 
-  const to_ = adminEmails()[0];
-  if (!to_) return { sent: false, overdue: due.overdue.length, today: due.today.length, reason: "ADMIN_EMAILS unset" };
+  const mail = morningMail(tasks, today);
+  if (!mail) return { sent: false, overdue: 0, today: 0, reason: "nothing needs him" };
 
-  const soon = due.later.filter((t) => t.dueOn <= addDays(today, 3));
+  const to = adminEmails()[0];
+  if (!to) return { sent: false, overdue, today: dueToday, reason: "ADMIN_EMAILS unset" };
+
+  const items = mail.lines
+    .map(
+      (l) =>
+        `<li style="margin:0 0 6px">${escapeHtml(l.text)}${
+          l.when ? ` <span style="opacity:.7">(${escapeHtml(l.when)})</span>` : ""
+        }</li>`,
+    )
+    .join("");
   const body =
-    para(
-      due.overdue.length > 0
-        ? `${due.overdue.length} thing${due.overdue.length === 1 ? " is" : "s are"} past its day, and ${due.today.length} ${
-            due.today.length === 1 ? "is" : "are"
-          } due today.`
-        : `${due.today.length} thing${due.today.length === 1 ? " is" : "s are"} due today.`,
-    ) +
-    list("Late", due.overdue) +
-    list("Today", due.today) +
-    list("In the next few days", soon) +
-    `<p style="margin:18px 0 0"><a href="${SITE_URL}/admin?tab=calendar">Open the board</a></p>`;
+    para("These need your hand or your word. The rest of the board is the team's.") +
+    `<ul style="margin:0;padding-left:18px">${items}</ul>` +
+    `<p style="margin:18px 0 0"><a href="${SITE_URL}/admin?tab=calendar">Open the board</a></p>` +
+    para("A task you give a day stays out of this email until then: open it in the Calendar and choose Not before.", "margin-top:18px;font-size:14px");
 
   const result = await sendEmailOnce(admin, {
     dedupeKey: `planner_digest:${today}`,
     kind: "planner_digest",
     userId: null,
-    to: to_,
-    subject:
-      due.overdue.length > 0
-        ? `${due.overdue.length} late, ${due.today.length} due today`
-        : `${due.today.length} due today`,
+    to,
+    subject: mail.subject,
     html: emailLayout({
-      heading: "The board this morning",
+      heading: "What needs you",
       bodyHtml: body,
       eyebrow: "Purify",
       footer: "You are getting this because your address is in ADMIN_EMAILS.",
     }),
   });
 
-  return { sent: result.status === "sent", overdue: due.overdue.length, today: due.today.length, reason: result.status };
+  return { sent: result.status === "sent", overdue, today: dueToday, reason: result.status };
 }

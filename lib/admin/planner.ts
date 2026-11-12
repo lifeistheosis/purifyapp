@@ -8,21 +8,24 @@ import { isoWeekOf } from "@/lib/whatsNew/boardShape";
  * ── Why this exists ─────────────────────────────────────────────────────
  *
  * The things that must happen every week happen on their own days: the board
- * message on Monday, the note written by Thursday, the update shipped before
- * the week ends, the Sunday calendar email on Sunday. Every month adds the
+ * message on Monday, the Sunday calendar email on Sunday. Every month adds the
  * monthly note and the EIKON Box drop, and twice a year a feast window opens
- * the shop's one seasonal email. None of that was written down anywhere, so
- * "ship before the end of the week" only existed as a memory.
+ * the shop's one seasonal email. None of that was written down anywhere.
+ *
+ * Shipping the update and writing its patch note were weekly tasks here until
+ * 2026-11-12. They are steps of a release now (docs/RELEASE.md), so they left
+ * the week (his word that day, docs/plans/owner-desk.md section 1: a quiet
+ * board), and a row kept from them no longer comes back (RETIRED_RULES).
  *
  * These rules produce that list for any span of days. Nothing here reads a
  * database or a clock it was not given: rules in, dated tasks out, so the
  * board, the reminder strip and the daily digest all say the same thing.
  *
  * A generated task carries a `ruleKey` that is stable for its period
- * ("update:2026-W38"), which is what lets the owner mark one done, and what
- * lets the app notice it is already done: lib/admin/plannerEvidence.ts looks
- * for the work itself (a published note, a sent campaign, an open drop) and
- * ticks the task without anybody pressing anything.
+ * ("email-weekly:2026-W38"), which is what lets the owner mark one done, and
+ * what lets the app notice it is already done: lib/admin/plannerEvidence.ts
+ * looks for the work itself (a published board message, a sent campaign, an
+ * open drop) and ticks the task without anybody pressing anything.
  */
 
 export type TaskCategory = "update" | "notes" | "board" | "email" | "shop" | "eikon" | "task";
@@ -168,20 +171,6 @@ export function plannedTasks(
         dueOn: on(0),
       },
       {
-        ruleKey: `notes:${week}`,
-        title: "Write this week's patch note",
-        notes: "Draft it before the update ships, so the note is what the work was for and not a memory of it.",
-        category: "notes",
-        dueOn: on(3),
-      },
-      {
-        ruleKey: `update:${week}`,
-        title: "Ship this week's update",
-        notes: "Before the week ends. A published patch note is what marks this done.",
-        category: "update",
-        dueOn: on(4),
-      },
-      {
         ruleKey: `email-weekly:${week}`,
         title: "Send the Sunday calendar email",
         notes: "The week ahead, to the readers who asked for the library list.",
@@ -265,7 +254,9 @@ export function mergeBoard(opts: {
   stored: readonly StoredTask[];
   evidence: ReadonlySet<string>;
 }): BoardTask[] {
-  const byRule = new Map(opts.stored.flatMap((s) => (s.rule_key ? [[s.rule_key, s] as const] : [])));
+  // A row kept from a step that left the plan (RETIRED_RULES) is not on the board.
+  const stored = opts.stored.filter((s) => !RETIRED_RULES.has(ruleFamily(s.rule_key) ?? ""));
+  const byRule = new Map(stored.flatMap((s) => (s.rule_key ? [[s.rule_key, s] as const] : [])));
   const merged = new Set<string>();
   const out: BoardTask[] = [];
 
@@ -290,7 +281,7 @@ export function mergeBoard(opts: {
 
   // Tasks somebody added, and stored rows whose rule falls outside this span
   // (a deadline moved into the week from somewhere else).
-  for (const s of opts.stored) {
+  for (const s of stored) {
     if (s.rule_key && merged.has(s.rule_key)) continue;
     out.push({
       id: s.id,
@@ -306,6 +297,127 @@ export function mergeBoard(opts: {
   }
 
   return out.sort((a, b) => (a.dueOn < b.dueOn ? -1 : a.dueOn > b.dueOn ? 1 : a.title < b.title ? -1 : 1));
+}
+
+// ── A quiet board ─────────────────────────────────────────────────────────
+//
+// His word, 2026-11-12 about 21:51 UTC (docs/plans/owner-desk.md, section 1):
+// "I always get email that I'm late on a bunch of stuff ... If it doesn't have
+// anything to do with my input, in example, the icon box, right? The icon box,
+// I need to source the items, and I'm already aware of that. And I give you a
+// response on when I'm gonna reply to that ... So you can automate that
+// process, right?" So the board tells the team's work from his, a task he has
+// given a day ("not before") keeps quiet until it, and a run of missed weeks
+// is said once.
+
+/** The family a rule belongs to: "email-weekly" for "email-weekly:2026-W46". Null for a task a person added. */
+export const ruleFamily = (ruleKey: string | null): string | null => (ruleKey ? ruleKey.split(":")[0] : null);
+
+/** Steps that left the weekly plan for the release's own checklist (docs/RELEASE.md). */
+export const RETIRED_RULES: ReadonlySet<string> = new Set(["notes", "update"]);
+
+/**
+ * What the team prepares: the board message, the Sunday email, the monthly
+ * note and the feast shop email. Never late in his email; it reaches him ready
+ * (the plan's section 2). Everything else on the board waits on him: the
+ * EIKON Box, which he sources and opens, a drop's steps (lib/drop/live.ts),
+ * and any task a person put there.
+ */
+export const TEAM_RULES: ReadonlySet<string> = new Set(["board", "email-weekly", "email-monthly", "shop-feast"]);
+
+/** Whether a task needs his hand or his word. */
+export function waitsOnHim(t: Pick<BoardTask, "ruleKey">): boolean {
+  const family = ruleFamily(t.ruleKey);
+  return family === null || !TEAM_RULES.has(family);
+}
+
+/** How a run of one rhythm is said when more than one of it was missed. */
+const RUN_WORDS: Record<string, { name: string; missed: string; unit: [string, string] }> = {
+  board: { name: "The board message", missed: "not posted", unit: ["week", "weeks"] },
+  "email-weekly": { name: "The Sunday email", missed: "not sent", unit: ["week", "weeks"] },
+  "email-monthly": { name: "The monthly note", missed: "not sent", unit: ["month", "months"] },
+  "eikon-open": { name: "The EIKON Box drop", missed: "not opened", unit: ["month", "months"] },
+  "eikon-create": { name: "The next EIKON Box drop", missed: "not created", unit: ["month", "months"] },
+  "shop-feast": { name: "The feast shop email", missed: "not sent", unit: ["feast", "feasts"] },
+};
+
+export type Run = {
+  /** The rhythm's family, or the one task's own key when it is no run. */
+  key: string;
+  /** The open tasks it holds, oldest first. */
+  tasks: BoardTask[];
+  /** "The Sunday email: not sent for 3 weeks", or the one task's own title. */
+  line: string;
+  /** The day of the oldest. */
+  since: string;
+};
+
+/**
+ * Open tasks as lines: every open task of one rhythm in a single line that
+ * says how long ("The Sunday email: not sent for 3 weeks"), never one line a
+ * week; a task of no rhythm, or the only one of its rhythm, as itself. Oldest
+ * first.
+ */
+export function runsOf(tasks: readonly BoardTask[]): Run[] {
+  const groups = new Map<string, BoardTask[]>();
+  for (const t of tasks) {
+    if (t.status !== "open") continue;
+    const family = ruleFamily(t.ruleKey);
+    const key = family && RUN_WORDS[family] ? family : `task:${t.id ?? t.ruleKey ?? t.title}:${t.dueOn}`;
+    groups.set(key, [...(groups.get(key) ?? []), t]);
+  }
+  const runs = [...groups.entries()].map(([key, list]): Run => {
+    const sorted = [...list].sort((a, b) => (a.dueOn < b.dueOn ? -1 : a.dueOn > b.dueOn ? 1 : 0));
+    const words = RUN_WORDS[key];
+    const line =
+      words && sorted.length > 1
+        ? `${words.name}: ${words.missed} for ${sorted.length} ${words.unit[1]}`
+        : sorted[0].title;
+    return { key, tasks: sorted, line, since: sorted[0].dueOn };
+  });
+  return runs.sort((a, b) => (a.since < b.since ? -1 : a.since > b.since ? 1 : a.line < b.line ? -1 : 1));
+}
+
+/**
+ * The days "not before" can be set to in one tap, from `today`: tomorrow, the
+ * next Monday and the first of next month. A task given one of them is due on
+ * it, so it keeps quiet until then; a day of his own is the field beside them.
+ */
+export function notBeforeChoices(today: string): { label: string; day: string }[] {
+  return [
+    { label: "Tomorrow", day: addDays(today, 1) },
+    { label: "Next week", day: addDays(weekStart(today), 7) },
+    { label: "Next month", day: `${nextMonth(today.slice(0, 7))}-01` },
+  ];
+}
+
+const NUMBER_WORDS = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+
+/**
+ * The morning email, as words: the lines that need him today and the subject
+ * that names them, or null when nothing does (and then nothing is sent). Only
+ * open tasks due today or before, only his (waitsOnHim), and a run said once.
+ * The subject never counts what is late: it names the first line and says how
+ * many more there are.
+ */
+export function morningMail(
+  tasks: readonly BoardTask[],
+  today: string,
+): { subject: string; lines: { text: string; when: string | null; run: boolean }[] } | null {
+  const mine = tasks.filter((t) => t.status === "open" && t.dueOn <= today && waitsOnHim(t));
+  if (mine.length === 0) return null;
+  const day = (iso: string) =>
+    new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+  const lines = runsOf(mine).map((r) => ({
+    text: r.line,
+    run: r.tasks.length > 1,
+    when: r.tasks.length > 1 ? null : r.since === today ? "today" : `since ${day(r.since)}`,
+  }));
+  const first = lines[0].text.replace(": ", ", ");
+  const lead = /^[A-Z][a-z]/.test(first) ? first.charAt(0).toLowerCase() + first.slice(1) : first;
+  const more = lines.length - 1;
+  const rest = more === 0 ? "" : `, and ${NUMBER_WORDS[more] ?? String(more)} more`;
+  return { subject: `Needs you: ${lead}${rest}`, lines };
 }
 
 /** What the strip and the digest say: what is late, and what is due today. */
