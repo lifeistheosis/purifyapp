@@ -213,6 +213,43 @@ describe("the morning email", () => {
   });
 });
 
+// The arbiter's close of the one risk the quiet board left (2026-11-12): with
+// the team's pieces gone from his email, nothing told anyone they were due.
+// So on its own day, and only then, each is a line under "Ready to send" with
+// the link that sends it.
+describe("Ready to send", () => {
+  // Sunday 15 November 2026: this week's Sunday email is due today, and last
+  // week's Sunday email and this Monday's board message were missed.
+  const SUNDAY = new Date("2026-11-15T08:30:00Z");
+  const HIS_DONE = ["eikon-open:2026-10", "eikon-open:2026-11", "eikon-create:2026-11", "eikon-create:2026-12"];
+
+  it("names the team's piece on its own day, with the link that sends it, and sends for it alone", async () => {
+    vi.setSystemTime(SUNDAY);
+    state.evidence = new Set(HIS_DONE);
+    await sendPlannerDigest(fakeAdmin() as never, SUNDAY);
+    expect(state.sent).toHaveLength(1);
+    const { subject, html } = state.sent[0];
+    expect(subject).toBe("Ready to send: the Sunday email");
+    expect(html).toContain("Ready to send");
+    expect(html).toContain('/admin#tab=email">send it</a>');
+    // Never as late, never again on a later day: the missed ones are not in it.
+    expect(html).not.toContain("board message");
+    expect(html.match(/The Sunday email/g)).toHaveLength(1);
+    expect(html).not.toMatch(/late|not sent for/i);
+    // The board opens on the board: the panel reads #tab=, never ?tab=.
+    expect(html).toContain('/admin#tab=calendar"');
+  });
+
+  it("puts what needs him first, and the ready piece under it", async () => {
+    vi.setSystemTime(SUNDAY);
+    await sendPlannerDigest(fakeAdmin() as never, SUNDAY);
+    const { subject, html } = state.sent[0];
+    expect(subject).toMatch(/^Needs you: /);
+    expect(html.indexOf("The EIKON Box drop")).toBeLessThan(html.indexOf("Ready to send"));
+    expect(html).toContain("The Sunday email");
+  });
+});
+
 describe("the strip's \"Still waiting on you\" (points 2 and 3)", () => {
   it("counts only what needs him, and nothing he has given a later day", async () => {
     state.rows = [row({ rule_key: "eikon-create:2026-11", due_on: "2026-12-20" })];

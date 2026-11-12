@@ -32,8 +32,11 @@ import { readStoredTasks } from "./plannerRead";
  *   - a task he has given a day ("not before", in the Calendar) is quiet until
  *     that day, however far off (lib/admin/plannerRead.ts keeps its row);
  *   - a missed run is one line: "The EIKON Box drop: not opened for 2 months";
+ *   - a team piece shows on its own day only, under "Ready to send" with the
+ *     link that sends it (never as late, never on a later day), and a
+ *     morning whose only item is one still sends;
  *   - the subject names what needs him, never a count of what is late;
- *   - a morning with nothing for him sends nothing.
+ *   - a morning with nothing for him and nothing ready sends nothing.
  *
  * Keyed `planner_digest:<day>`, so the heartbeat calling twice sends once. It
  * goes to ADMIN_EMAILS, never to a reader, and counts against the reserve
@@ -65,19 +68,28 @@ export async function sendPlannerDigest(admin: SupabaseClient, now: Date = new D
   const to = adminEmails()[0];
   if (!to) return { sent: false, overdue, today: dueToday, reason: "ADMIN_EMAILS unset" };
 
-  const items = mail.lines
-    .map(
-      (l) =>
-        `<li style="margin:0 0 6px">${escapeHtml(l.text)}${
-          l.when ? ` <span style="opacity:.7">(${escapeHtml(l.when)})</span>` : ""
-        }</li>`,
-    )
-    .join("");
+  // `#tab=`, never `?tab=`: the panel reads the fragment, so the old link,
+  // /admin?tab=calendar, opened Home instead of the board.
+  const viewLink = `${SITE_URL.replace(/\/$/, "")}/admin#tab=`;
+  const list = (items: string[]) => `<ul style="margin:0;padding-left:18px">${items.join("")}</ul>`;
+  const needs = mail.lines.map(
+    (l) =>
+      `<li style="margin:0 0 6px">${escapeHtml(l.text)}${l.when ? ` <span style="opacity:.7">(${escapeHtml(l.when)})</span>` : ""}</li>`,
+  );
+  const ready = mail.ready.map(
+    (r) => `<li style="margin:0 0 6px">${escapeHtml(r.text)}: <a href="${viewLink}${r.tab}">send it</a></li>`,
+  );
   const body =
-    para("These need your hand or your word. The rest of the board is the team's.") +
-    `<ul style="margin:0;padding-left:18px">${items}</ul>` +
-    `<p style="margin:18px 0 0"><a href="${SITE_URL}/admin?tab=calendar">Open the board</a></p>` +
-    para("A task you give a day stays out of this email until then: open it in the Calendar and choose Not before.", "margin-top:18px;font-size:14px");
+    (needs.length > 0 ? para("These need your hand or your word. The rest of the board is the team's.") + list(needs) : "") +
+    (ready.length > 0
+      ? `<p style="margin:${needs.length > 0 ? "18px" : "0"} 0 6px;font-weight:600">Ready to send</p>` +
+        para("Ready for today, each sent from its own page.", "margin-bottom:8px") +
+        list(ready)
+      : "") +
+    `<p style="margin:18px 0 0"><a href="${viewLink}calendar">Open the board</a></p>` +
+    (needs.length > 0
+      ? para("A task you give a day stays out of this email until then: open it in the Calendar and choose Not before.", "margin-top:18px;font-size:14px")
+      : "");
 
   const result = await sendEmailOnce(admin, {
     dedupeKey: `planner_digest:${today}`,
@@ -86,7 +98,7 @@ export async function sendPlannerDigest(admin: SupabaseClient, now: Date = new D
     to,
     subject: mail.subject,
     html: emailLayout({
-      heading: "What needs you",
+      heading: mail.lines.length > 0 ? "What needs you" : "Ready to send today",
       bodyHtml: body,
       eyebrow: "Purify",
       footer: "You are getting this because your address is in ADMIN_EMAILS.",

@@ -394,18 +394,50 @@ export function notBeforeChoices(today: string): { label: string; day: string }[
 const NUMBER_WORDS = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 
 /**
- * The morning email, as words: the lines that need him today and the subject
- * that names them, or null when nothing does (and then nothing is sent). Only
- * open tasks due today or before, only his (waitsOnHim), and a run said once.
- * The subject never counts what is late: it names the first line and says how
- * many more there are.
+ * The team's pieces as his morning email names them, and the admin view each
+ * is sent from (a `#tab=` link: the panel reads the fragment, never a query).
+ */
+export const READY_PIECES: Readonly<Record<string, { name: string; tab: string }>> = {
+  board: { name: "The board message", tab: "patch-notes" },
+  "email-weekly": { name: "The Sunday email", tab: "email" },
+  "email-monthly": { name: "The monthly note", tab: "email" },
+  "shop-feast": { name: "The feast shop email", tab: "email" },
+};
+
+/**
+ * The morning email, as words, or null when there is nothing to say (and
+ * then nothing is sent):
+ *
+ *   lines  what needs him (waitsOnHim): open and due today or before, a run
+ *          said once.
+ *   ready  the team's pieces due TODAY, on their day only (the arbiter's
+ *          close of the risk in the quiet board, 2026-11-12): never as late,
+ *          never again on a later day, each with the view that sends it. A
+ *          morning whose only item is a ready piece still sends. When the
+ *          plan's section 2 sends them by themselves, this becomes "goes out
+ *          at <hour> unless you hold it".
+ *
+ * The subject never counts what is late: it names what needs him first, or
+ * else what is ready, and says how many more of that kind there are.
  */
 export function morningMail(
   tasks: readonly BoardTask[],
   today: string,
-): { subject: string; lines: { text: string; when: string | null; run: boolean }[] } | null {
+): {
+  subject: string;
+  lines: { text: string; when: string | null; run: boolean }[];
+  ready: { text: string; tab: string }[];
+} | null {
   const mine = tasks.filter((t) => t.status === "open" && t.dueOn <= today && waitsOnHim(t));
-  if (mine.length === 0) return null;
+  const ready = [
+    ...new Map(
+      tasks.flatMap((t) => {
+        const piece = READY_PIECES[ruleFamily(t.ruleKey) ?? ""];
+        return t.status === "open" && t.dueOn === today && piece ? [[piece.name, { text: piece.name, tab: piece.tab }] as const] : [];
+      }),
+    ).values(),
+  ];
+  if (mine.length === 0 && ready.length === 0) return null;
   const day = (iso: string) =>
     new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
   const lines = runsOf(mine).map((r) => ({
@@ -413,11 +445,12 @@ export function morningMail(
     run: r.tasks.length > 1,
     when: r.tasks.length > 1 ? null : r.since === today ? "today" : `since ${day(r.since)}`,
   }));
-  const first = lines[0].text.replace(": ", ", ");
+  const named = lines.length > 0 ? lines.map((l) => l.text) : ready.map((r) => r.text);
+  const first = named[0].replace(": ", ", ");
   const lead = /^[A-Z][a-z]/.test(first) ? first.charAt(0).toLowerCase() + first.slice(1) : first;
-  const more = lines.length - 1;
+  const more = named.length - 1;
   const rest = more === 0 ? "" : `, and ${NUMBER_WORDS[more] ?? String(more)} more`;
-  return { subject: `Needs you: ${lead}${rest}`, lines };
+  return { subject: `${lines.length > 0 ? "Needs you" : "Ready to send"}: ${lead}${rest}`, lines, ready };
 }
 
 /** What the strip and the digest say: what is late, and what is due today. */
