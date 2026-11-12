@@ -11,6 +11,7 @@ import { cn } from "@/lib/cn";
 import { faceLabelSize } from "@/lib/councils/faceLabel";
 import { forgetFather, keepFather, useFatherKept } from "@/lib/councils/fatherShown";
 import { cameBack } from "@/lib/ui/scrollReset";
+import { useHeldPlace, useNoShrink } from "@/lib/ui/useHeldPlace";
 import type { CouncilFace } from "@/lib/councils/fathers";
 import { avifFor } from "@/lib/media/streamed";
 import type { SaintPicture } from "@/lib/today/saintFaces";
@@ -43,6 +44,13 @@ export function CouncilFathers({ fathers }: { fathers: CouncilFace[] }) {
   const keptName = useFatherKept(pathname);
   const keptAt = keptName ? fathers.findIndex((x) => x.name === keptName) : -1;
   const shown = Math.min(picked ?? Math.max(keptAt, 0), Math.max(fathers.length - 1, 0));
+  // The face tapped stays under the finger whatever the card over the row turns to (the gate's tap walk,
+  // 2026-11-12: each Father's name, byname and part make the card taller or shorter, and the face moved 14
+  // to 106px under the finger, St Meletius and St Cyril of Jerusalem the most). The card cannot get shorter
+  // at the tap (keepCard), and what it gains is answered by the page (hold), as a reading plan's day is
+  // (lib/ui/useHeldPlace.ts).
+  const hold = useHeldPlace();
+  const { ref: cardPlace, keep: keepCard } = useNoShrink<HTMLDivElement>();
   // A visit that went forward to the page begins the row again, and says so.
   useEffect(() => {
     if (!cameBack()) forgetFather(pathname);
@@ -70,7 +78,7 @@ export function CouncilFathers({ fathers }: { fathers: CouncilFace[] }) {
       <h2 id="council-fathers" className="text-[18px] font-semibold leading-tight tracking-[-0.01em] text-paper">
         {t("study.councils.fathersAssociated")}
       </h2>
-      <div className="mt-3" aria-live="polite">
+      <div ref={cardPlace} className="mt-3" aria-live="polite">
         {f.href ? (
           <Link href={f.href} prefetch={false} className={cn("press-card", card)}>
             {inner}
@@ -92,7 +100,9 @@ export function CouncilFathers({ fathers }: { fathers: CouncilFace[] }) {
                   lang="en"
                   dir="ltr"
                   aria-label={x.name}
-                  onClick={() => {
+                  onClick={(e) => {
+                    hold(e.currentTarget);
+                    keepCard();
                     setPicked(i);
                     keepFather(pathname, x.name);
                   }}

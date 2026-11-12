@@ -140,6 +140,19 @@ describe("a page that changes above the finger", () => {
     expect(page.indexOf("<div ref={head}>")).toBeLessThan(page.indexOf("<PlanPath "));
   });
 
+  it("holds a council's Father under the finger that chooses him", () => {
+    // The card over the row of faces turns to the Father tapped, taller or shorter by his name, byname and part:
+    // the face moved 14 to 106px under the finger on three councils (the gate's tap walk, 2026-11-12).
+    const fathers = code("components/councils/CouncilFathers.tsx");
+    expect(fathers).toContain("const hold = useHeldPlace();");
+    expect(fathers).toContain("const { ref: cardPlace, keep: keepCard } = useNoShrink<HTMLDivElement>();");
+    // The card's place is the part that never shrinks, and it stands over the row.
+    expect(fathers).toContain('<div ref={cardPlace} className="mt-3" aria-live="polite">');
+    expect(fathers.indexOf("<div ref={cardPlace}")).toBeLessThan(fathers.indexOf("<ul "));
+    // The face hands itself up, and is held before the Father is chosen.
+    expect(fathers).toMatch(/onClick=\{\(e\) => \{\s*hold\(e\.currentTarget\);\s*keepCard\(\);\s*setPicked\(i\);/);
+  });
+
   it("lets the line of days in a row come and go inside the part that never shrinks", () => {
     const page = code("components/plans/PlanClient.tsx");
     // The line is over the days and inside the head, so its going leaves its room and its coming is answered by the hold.
