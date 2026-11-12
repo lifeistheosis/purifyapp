@@ -24,6 +24,7 @@ No drop day set yet. `node scripts/drop.mjs days` lists the next ones on the Chu
 
 Also:
 
+- Share a journal page as a copy at a link of its own: three a month for everyone, without limit in Purify Plus, and Stop sharing takes the copy down at once.
 - Listening offline, in Purify Plus: each book's size shown before you save it, and saving that waits for Wi-Fi and picks up after a lost signal.
 - Psalms 113 to 115 are divided as the Septuagint divides them, and your notes, highlights and saved verses move with their verses.
 - The plans page keeps your place and puts the season's plan at the top.
@@ -38,7 +39,7 @@ Also:
 - "Find a parish": the parish directory is not built
 - "phone voice": nothing of the on-phone voice is in the 1.9 apps (his word "rec voices", 2026-11-11 about 14:24 UTC; parked for 2.0, cdaabd4c4): 1.9 listens in the recorded voice, as 1.8 did
 - "phone's voice": the same: no on-phone voice in 1.9
-- "prayer campaign": campaigns open for every reader only at R5c (OWNER-STEPS); until the step below brings their line into the 1.9 note, no piece names them (the arbiter, 2026-11-11)
+- "campaign": prayer campaigns are at testers from the merge, his account alone (lib/campaigns/flags.ts), and open for every reader only at R5c (OWNER-STEPS); until the step below brings their line into the 1.9 note, no piece names them (the arbiter, 2026-11-11 and 2026-11-12)
 
 ## The notes
 
@@ -102,7 +103,7 @@ The Scriptures, the saints, the prayers and the calendar stay free.
 
 ### What's New in This Version, for the App Store
 
-`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 2441 of 4000 characters
+`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 2600 of 4000 characters
 
 > Plus has been sold on iPhone since 1.8 (the App Store lists its four subscriptions; OWNER-STEPS 87, found 2026-11-10), so this text marks what is in Purify Plus, as the Play text does: the study, the plans, the Florilegium and the Thread, Candlelight and ambience, and listening offline.
 
@@ -142,6 +143,7 @@ REMEMBER THE VERSE ON YOUR HOME SCREEN
 A widget keeps your verse on your home screen, the same for every reader.
 
 ALSO
+• Share a journal page as a copy at a link of its own: three a month for everyone, without limit in Purify Plus, and Stop sharing takes the copy down at once.
 • Listening offline, in Purify Plus: each book's size shown before you save it, and saving that waits for Wi-Fi and picks up after a lost signal.
 • Psalms 113 to 115 are divided as the Septuagint divides them, and your notes, highlights and saved verses move with their verses.
 • The plans page keeps your place and puts the season's plan at the top.
@@ -226,7 +228,7 @@ Purify 1.9 is live on the web: a journal by the Church's day, every verse opened
 
 ### Purify's own post in Community
 
-`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 2023 of 4000 characters
+`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 2265 of 4000 characters
 
 ~~~text
 Purify 1.9 is here
@@ -234,6 +236,7 @@ Purify 1.9 is here
 Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.
 
 📓 Your journal, by the Church's day. Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.
+🔗 Share a journal page as a copy at a link of its own: three a month for everyone, without limit in Purify Plus, and Stop sharing takes the copy down at once.
 📖 Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
 🌍 Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
 🔎 Study a verse, in Purify Plus. Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.
@@ -242,10 +245,12 @@ Purify 1.9 keeps a journal with you by the Church's day, free for everyone, open
 📜 Church history on Today. On the days an event of Orthodox History fell, it is on Today under the saint of the day.
 🌿 The Florilegium and the Thread. In Purify Plus, your gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps.
 🕯️ Candlelight and ambience. In Purify Plus, Candlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once.
-📱 Remember the verse on your home screen. A widget keeps your verse on your home screen, the same for every reader.
 🎁 Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends.
 
 The Scriptures, the saints, the prayers and the calendar stay free.
+
+The iPhone, iPad and Android apps get 1.9 once the stores approve the new builds.
+📱 Remember the verse on your home screen. A widget keeps your verse on your home screen, the same for every reader.
 
 Tell us what you find, and what breaks. We read everything.
 ~~~
@@ -255,15 +260,17 @@ Tell us what you find, and what breaks. We read everything.
 `step-profile-status` · A step · Yours · To do
 
 ~~~text
-The Purify account's profile status still announces 1.8, and it is the first line a reader sees on that profile. It is live, in no file of the repository, so no build changes it. With the Community post, signed in as Purify: Edit profile, Status, and put a 1.9 line in your own words, or clear it.
+The Purify account's profile status still announces 1.8, and it is the first line a reader sees on that profile. It is live, in no file of the repository, so no build changes it. With the Community post, signed in as Purify: Edit profile, Status (60 characters at most), and put a 1.9 line in your own words, or clear it. If you want one ready, 41 of its 60: "Purify 1.9: a journal by the Church's day".
 ~~~
 
 ### Prayer campaigns join the note only when they open for every reader
 
-`step-campaigns-line` · A step · Ours, on your word · To do
+`step-campaigns-line` · A step · Ours, on your word · Waits
+
+Waits on: R5c: your word "open campaigns", after your walk (OWNER-STEPS)
 
 ~~~text
-Only at R5c, in the push that opens campaigns for every reader, and not before: add this line to the 1.9 note, in data/changelog/entries.json and docs/plans/v1.9/patch-note-1.9.json, under the library: "Prayer campaigns: ask others to pray with you for someone, living or reposed, for the days you choose, up to forty. Those who join carry the name in their prayers, with a psalm if the campaign names one. Every campaign is read before it is public." It names no pictures while those are off in the store builds. Then Admin, Releases, Patch notes: Put them in the queue, and Accept. Then take "prayer campaign" off this drop's never list; from then the board, the letter and the cards may name them.
+Campaigns are at testers from the merge, your account alone. Only at R5c, in the push that opens them for every reader, and not before: add this line to the 1.9 note, in data/changelog/entries.json and docs/plans/v1.9/patch-note-1.9.json, under the library: "Prayer campaigns: ask others to pray with you for someone, living or reposed, for the days you choose, up to forty. Those who join carry the name in their prayers, with a psalm if the campaign names one. Every campaign is read before it is public." It names no pictures while those are off in the store builds. Then Admin, Releases, Patch notes: Put them in the queue, and Accept. Then take "campaign" off this drop's never list; from then the board, the letter and the cards may name them.
 ~~~
 
 ## The day a store has it
@@ -341,7 +348,7 @@ purifyapp.net
 
 `cards` · The cards · Instagram and TikTok, from the files · Waits
 
-Waits on: the card set has not been made yet (purify-ads, the social team)
+Waits on: the release cards, which a Fable chat makes by his word of 2026-11-12
 
 ### The caption for the cards, on Instagram
 

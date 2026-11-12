@@ -59,8 +59,8 @@
       "why": "the same: no on-phone voice in 1.9"
     },
     {
-      "word": "prayer campaign",
-      "why": "campaigns open for every reader only at R5c (OWNER-STEPS); until the step below brings their line into the 1.9 note, no piece names them (the arbiter, 2026-11-11)"
+      "word": "campaign",
+      "why": "prayer campaigns are at testers from the merge, his account alone (lib/campaigns/flags.ts), and open for every reader only at R5c (OWNER-STEPS); until the step below brings their line into the 1.9 note, no piece names them (the arbiter, 2026-11-11 and 2026-11-12)"
     }
   ],
   "figures": [
@@ -81,8 +81,8 @@
       "source": "the Thread's events, the note's line"
     },
     {
-      "figure": "Five",
-      "source": "the five Bibles to download, the note's line"
+      "figure": "Six",
+      "source": "the six Bibles to download, the note's line"
     }
   ],
   "points": [
@@ -259,6 +259,13 @@
   ],
   "also": [
     {
+      "text": "Share a journal page as a copy at a link of its own: three a month for everyone, without limit in Purify Plus, and Stop sharing takes the copy down at once.",
+      "from": {
+        "version": "1.9",
+        "has": "Three a month for everyone, without limit in Purify Plus, and Stop sharing takes the copy down at once."
+      }
+    },
+    {
       "text": "Listening offline, in Purify Plus: each book's size shown before you save it, and saving that waits for Wi-Fi and picks up after a lost signal.",
       "from": {
         "version": "1.9",
@@ -344,7 +351,7 @@
       "channel": "appstore",
       "moment": "submit",
       "title": "What's New in This Version, for the App Store",
-      "text": "Purify 1.9: Keep a journal by the Church's day, and go deeper into every verse.\n\nPurify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.\n\nYOUR JOURNAL, BY THE CHURCH'S DAY\nToday's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.\n\nEVERY VERSE, OPENED\nHold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.\n\nSIX MORE BIBLES\nThe Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.\n\nSTUDY A VERSE\nCross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps. In Purify Plus.\n\nNEW READING PLANS\nJohn in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day. In Purify Plus.\n\nTHE CREED BY COUNCIL\nThe Symbol of Faith article by article, with the words the Council of Constantinople added lit.\n\nCHURCH HISTORY ON TODAY\nOn the days an event of Orthodox History fell, it is on Today under the saint of the day.\n\nTHE FLORILEGIUM AND THE THREAD\nYour gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps. In Purify Plus.\n\nCANDLELIGHT AND AMBIENCE\nCandlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once. In Purify Plus.\n\nREMEMBER THE VERSE ON YOUR HOME SCREEN\nA widget keeps your verse on your home screen, the same for every reader.\n\nALSO\n• Listening offline, in Purify Plus: each book's size shown before you save it, and saving that waits for Wi-Fi and picks up after a lost signal.\n• Psalms 113 to 115 are divided as the Septuagint divides them, and your notes, highlights and saved verses move with their verses.\n• The plans page keeps your place and puts the season's plan at the top.\n• Orthodox History shows its great events as large cards, and every picture for every reader.\n• Listening: one card at rest and a small pill as you scroll, and your place kept in every book.\n• The day's prayer hours no longer fade, and every field's hint is easier to read.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.",
+      "text": "Purify 1.9: Keep a journal by the Church's day, and go deeper into every verse.\n\nPurify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.\n\nYOUR JOURNAL, BY THE CHURCH'S DAY\nToday's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.\n\nEVERY VERSE, OPENED\nHold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.\n\nSIX MORE BIBLES\nThe Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.\n\nSTUDY A VERSE\nCross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps. In Purify Plus.\n\nNEW READING PLANS\nJohn in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day. In Purify Plus.\n\nTHE CREED BY COUNCIL\nThe Symbol of Faith article by article, with the words the Council of Constantinople added lit.\n\nCHURCH HISTORY ON TODAY\nOn the days an event of Orthodox History fell, it is on Today under the saint of the day.\n\nTHE FLORILEGIUM AND THE THREAD\nYour gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps. In Purify Plus.\n\nCANDLELIGHT AND AMBIENCE\nCandlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once. In Purify Plus.\n\nREMEMBER THE VERSE ON YOUR HOME SCREEN\nA widget keeps your verse on your home screen, the same for every reader.\n\nALSO\n• Share a journal page as a copy at a link of its own: three a month for everyone, without limit in Purify Plus, and Stop sharing takes the copy down at once.\n• Listening offline, in Purify Plus: each book's size shown before you save it, and saving that waits for Wi-Fi and picks up after a lost signal.\n• Psalms 113 to 115 are divided as the Septuagint divides them, and your notes, highlights and saved verses move with their verses.\n• The plans page keeps your place and puts the season's plan at the top.\n• Orthodox History shows its great events as large cards, and every picture for every reader.\n• Listening: one card at rest and a small pill as you scroll, and your place kept in every book.\n• The day's prayer hours no longer fade, and every field's hint is easier to read.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.",
       "tuned": true,
       "note": "Plus has been sold on iPhone since 1.8 (the App Store lists its four subscriptions; OWNER-STEPS 87, found 2026-11-10), so this text marks what is in Purify Plus, as the Play text does: the study, the plans, the Florilegium and the Thread, Candlelight and ambience, and listening offline."
     },
@@ -400,7 +407,7 @@
       "moment": "web",
       "title": "Purify's own post in Community",
       "subject": "Purify 1.9 is here",
-      "text": "Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.\n\n📓 Your journal, by the Church's day. Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.\n📖 Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.\n🌍 Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.\n🔎 Study a verse, in Purify Plus. Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.\n🗓️ New reading plans, in Purify Plus. John in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day.\n☦️ The Creed by council. The Symbol of Faith article by article, with the words the Council of Constantinople added lit.\n📜 Church history on Today. On the days an event of Orthodox History fell, it is on Today under the saint of the day.\n🌿 The Florilegium and the Thread. In Purify Plus, your gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps.\n🕯️ Candlelight and ambience. In Purify Plus, Candlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once.\n📱 Remember the verse on your home screen. A widget keeps your verse on your home screen, the same for every reader.\n🎁 Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.\n\nTell us what you find, and what breaks. We read everything."
+      "text": "Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.\n\n📓 Your journal, by the Church's day. Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.\n🔗 Share a journal page as a copy at a link of its own: three a month for everyone, without limit in Purify Plus, and Stop sharing takes the copy down at once.\n📖 Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.\n🌍 Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.\n🔎 Study a verse, in Purify Plus. Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.\n🗓️ New reading plans, in Purify Plus. John in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day.\n☦️ The Creed by council. The Symbol of Faith article by article, with the words the Council of Constantinople added lit.\n📜 Church history on Today. On the days an event of Orthodox History fell, it is on Today under the saint of the day.\n🌿 The Florilegium and the Thread. In Purify Plus, your gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps.\n🕯️ Candlelight and ambience. In Purify Plus, Candlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once.\n🎁 Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.\n\nThe iPhone, iPad and Android apps get 1.9 once the stores approve the new builds.\n📱 Remember the verse on your home screen. A widget keeps your verse on your home screen, the same for every reader.\n\nTell us what you find, and what breaks. We read everything."
     },
     {
       "id": "step-profile-status",
@@ -408,7 +415,7 @@
       "moment": "web",
       "title": "Change the Purify account's own status",
       "who": "owner",
-      "text": "The Purify account's profile status still announces 1.8, and it is the first line a reader sees on that profile. It is live, in no file of the repository, so no build changes it. With the Community post, signed in as Purify: Edit profile, Status, and put a 1.9 line in your own words, or clear it."
+      "text": "The Purify account's profile status still announces 1.8, and it is the first line a reader sees on that profile. It is live, in no file of the repository, so no build changes it. With the Community post, signed in as Purify: Edit profile, Status (60 characters at most), and put a 1.9 line in your own words, or clear it. If you want one ready, 41 of its 60: \"Purify 1.9: a journal by the Church's day\"."
     },
     {
       "id": "step-campaigns-line",
@@ -416,7 +423,8 @@
       "moment": "web",
       "title": "Prayer campaigns join the note only when they open for every reader",
       "who": "us",
-      "text": "Only at R5c, in the push that opens campaigns for every reader, and not before: add this line to the 1.9 note, in data/changelog/entries.json and docs/plans/v1.9/patch-note-1.9.json, under the library: \"Prayer campaigns: ask others to pray with you for someone, living or reposed, for the days you choose, up to forty. Those who join carry the name in their prayers, with a psalm if the campaign names one. Every campaign is read before it is public.\" It names no pictures while those are off in the store builds. Then Admin, Releases, Patch notes: Put them in the queue, and Accept. Then take \"prayer campaign\" off this drop's never list; from then the board, the letter and the cards may name them."
+      "text": "Campaigns are at testers from the merge, your account alone. Only at R5c, in the push that opens them for every reader, and not before: add this line to the 1.9 note, in data/changelog/entries.json and docs/plans/v1.9/patch-note-1.9.json, under the library: \"Prayer campaigns: ask others to pray with you for someone, living or reposed, for the days you choose, up to forty. Those who join carry the name in their prayers, with a psalm if the campaign names one. Every campaign is read before it is public.\" It names no pictures while those are off in the store builds. Then Admin, Releases, Patch notes: Put them in the queue, and Accept. Then take \"campaign\" off this drop's never list; from then the board, the letter and the cards may name them.",
+      "waits": "R5c: your word \"open campaigns\", after your walk (OWNER-STEPS)"
     },
     {
       "id": "step-update-prompt",
@@ -456,7 +464,7 @@
       "channel": "cards",
       "moment": "stores",
       "title": "The release cards",
-      "waits": "the card set has not been made yet (purify-ads, the social team)"
+      "waits": "the release cards, which a Fable chat makes by his word of 2026-11-12"
     },
     {
       "id": "instagram-caption",
