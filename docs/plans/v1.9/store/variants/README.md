@@ -1,5 +1,16 @@
 # Store pictures: three designs for the back and the screen
 
+**In the Vault, kept for 2.0.** His word, 2026-11-12 about 19:00 UTC: "So in
+version 2.0, we're gonna work on those variants. But I guess just stick with
+this for now, where it's like front face, and then some of them are like face
+to the side." Everything in this folder is a round he did not use for 1.9:
+the three designs A, B and C below, A1 to A6 (`a-family/`), the 3D phone
+(`phone-3d/`), rounds 2 and 3 (`round-2/`, `round-3/`, `backgrounds/`: the
+backgrounds, the lifted card, the app's own Athos art) and the eclipse and
+stars set of eight (`eclipse/`), each its own composition on the thirds.
+Nothing here is deleted. The set he kept is `docs/plans/v1.9/store/`
+(80b1c743d), and the Vault on the SSM board lists these with the day and why.
+
 His word, 2026-11-12 about 17:07 UTC, on the first set (`ee8ba86b`): "Control the screenshots in themselves, they look good. I kind of want a better design for the back though. Better design for the phone ... like more like graphic design touch to it, so like lines, curving ... make a nice new design, minimalistic design. Maybe add like, you know, depth. It just overall, it just looks too plain. Right? Maybe you can make 3 variant designs".
 
 So the screens stay exactly as they are, and three designs, A, B and C, are shown for what is behind a screen and how it stands. He picks one, and the whole set of 41 is then made once with it.
