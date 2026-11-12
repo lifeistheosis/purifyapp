@@ -76,8 +76,14 @@ const SHOTS = [
     state: "Today on 6 December 2026, the new reader's one-question card dismissed with its own Dismiss button.",
     alt: "Today: St Nicholas the Wonderworker, the Nativity Fast with fish allowed, and the day's verse.",
     async prepare(page) {
-      await tap(page, 'button[aria-label="Dismiss"]');
-      await wait(600);
+      // Tapped again if the page moved under the finger (seen once in the variants: the card stayed).
+      const dismiss = page.locator('button[aria-label="Dismiss"]').first();
+      for (let tries = 0; tries < 4 && (await dismiss.isVisible()); tries++) {
+        await wait(500);
+        await tap(page, 'button[aria-label="Dismiss"]');
+        await dismiss.waitFor({ state: "hidden", timeout: 2500 }).catch(() => {});
+      }
+      if (await dismiss.isVisible()) throw new Error("Today: the one-question card is still there");
       await page.evaluate(() => window.scrollTo(0, 0));
     },
   },

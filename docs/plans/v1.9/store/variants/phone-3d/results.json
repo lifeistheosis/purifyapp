@@ -1,0 +1,44 @@
+{
+  "made": "2026-11-12",
+  "day": "2026-12-06T09:30:00-05:00",
+  "checks": [
+    "contrast",
+    "placeholder",
+    "target",
+    "glyph",
+    "palette",
+    "gold",
+    "stripe",
+    "mirror",
+    "emdash",
+    "rays",
+    "sparkle",
+    "picture",
+    "dashed",
+    "keys",
+    "cut"
+  ],
+  "pictures": [
+    {
+      "id": "3D",
+      "file": "phone-3d-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 218963,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "The phone in 3D",
+      "idea": "A solid slab with real thickness, turned in perspective, on A1's hills. No hardware is drawn.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    }
+  ]
+}
