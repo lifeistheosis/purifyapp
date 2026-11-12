@@ -176,6 +176,27 @@ export async function wordsOnPicture(page, selector, { palettes = PALETTES, own 
             return { x: Math.floor(left), y: Math.floor(top), w: Math.ceil(right - left), h: Math.ceil(bottom - top) };
           })
           .filter((r) => r.w > 2 && r.h > 6);
+        // One line, one pair of photographs. Chrome gives the hyphen it draws where a word breaks at a soft hyphen
+        // a box of its own beside the line's letters ("Chryso-" over "gonus", a saint's name on the saints' webs
+        // at 320). Its eleven pixels of letter were under the twelve a line is read by, so that box was read by
+        // every pixel in it, and its corner, clear of the hyphen and its halo, read St. Plato and Romanus's
+        // "Chrysogonus" at 4.07:1 where the hyphen's own pixels stand on 7:1 (the gate's confirm run,
+        // 2026-11-12). So the pieces of one line that touch are photographed as one, and a piece's letters are
+        // read with its line's. A piece still counts unless it is under a hundredth of its line's letters.
+        const joined = [];
+        for (const r of lines.sort((a, b) => a.y - b.y || a.x - b.x)) {
+          const line = joined.find((m) => Math.min(m.y + m.h, r.y + r.h) - Math.max(m.y, r.y) >= Math.min(m.h, r.h) / 2 && r.x <= m.x + m.w + 2 && m.x <= r.x + r.w + 2);
+          if (!line) {
+            joined.push({ ...r });
+            continue;
+          }
+          const x = Math.min(line.x, r.x);
+          const y = Math.min(line.y, r.y);
+          line.w = Math.max(line.x + line.w, r.x + r.w) - x;
+          line.h = Math.max(line.y + line.h, r.y + r.h) - y;
+          line.x = x;
+          line.y = y;
+        }
         const size = parseFloat(cs.fontSize);
         const weight = Number(cs.fontWeight) || 400;
         return {
@@ -184,7 +205,7 @@ export async function wordsOnPicture(page, selector, { palettes = PALETTES, own 
           fg: [d[0], d[1], d[2]],
           alpha: (d[3] / 255) * opacity,
           large: size >= 24 || (size >= 18.66 && weight >= 700),
-          lines,
+          lines: joined,
         };
       }, own);
       let worst = null;

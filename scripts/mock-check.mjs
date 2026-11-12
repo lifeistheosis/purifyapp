@@ -1719,6 +1719,18 @@ const MOTION = `<div data-mock-fixture="motion" style="position:fixed;left:0;rig
   <div style="position:relative;background-image:${PICTURE("101010")};padding:12px"><span aria-hidden="true" style="position:absolute;left:12px;top:28px;width:6px;height:4px;border-radius:2px;background:#ffffff;animation:mock-dot 300ms linear infinite alternate"></span><p style="position:relative;margin:0;color:#ffffff;font:16px/22px sans-serif">Words in the room</p></div>
 </div>`;
 
+/**
+ * Words broken at a soft hyphen over a picture (the gate's confirm run, 2026-11-12: "Chryso-gonus" on the saints'
+ * webs at 320 read 4.07:1 where its letters stand on 7:1). Chrome gives the hyphen it draws a box of its own, and
+ * with fewer than twelve pixels of letter that box was read by all its pixels: its corners, past the halo, are the
+ * bare picture. The first word wears a close halo and is read on it, the hyphen with its line, and passes; the
+ * second has none and fails on the grey, broken or not.
+ */
+const HYPHEN = `<div data-mock-fixture="hyphen" style="position:fixed;left:0;right:0;top:120px;z-index:400;padding:16px">
+  <div style="background-image:${PICTURE("8c8c8c")};padding:12px"><p style="margin:0;width:64px;color:#ffffff;font:600 11.5px/14px sans-serif;text-shadow:0 0 1px #101010,0 0 2px #101010,0 0 2px #101010">Wonder&shy;worker</p></div>
+  <div style="margin-top:12px;background-image:${PICTURE("8c8c8c")};padding:12px"><p style="margin:0;width:64px;color:#ffffff;font:600 11.5px/14px sans-serif">Thauma&shy;turgist</p></div>
+</div>`;
+
 /** The Church's red, by its token, beside a red typed in that is not it. */
 const RED = `<div data-mock-fixture="red" style="padding:16px;display:flex;gap:12px">
   <button type="button" class="inline-flex min-h-11 items-center rounded-pill bg-crimson px-4 font-sans text-ui font-semibold text-white">Pray</button>
@@ -1788,6 +1800,29 @@ async function selfTest() {
     const motionLook = moving.looks.find((l) => l.text === "Words in the room");
     const motionRead = moving.failures.length === 0 && motionLook?.left === false && (motionLook?.ratios?.Dark ?? 0) >= 4.5;
     await page.evaluate(() => document.querySelector("[data-mock-fixture=motion]")?.remove());
+    // Words broken at a soft hyphen: each line read whole, the hyphen with its letters. The words must break, or
+    // this proves nothing: the hyphen's own box is the third a range gives of each.
+    await page.evaluate((html) => document.body.insertAdjacentHTML("beforeend", html), HYPHEN);
+    await settle(page);
+    const brokenAt = await page.evaluate(() =>
+      [...document.querySelectorAll("[data-mock-fixture=hyphen] p")].map((p) => {
+        const range = document.createRange();
+        range.selectNodeContents(p.firstChild);
+        return range.getClientRects().length;
+      }),
+    );
+    const hyphens = await checkMock(page, "[data-mock-fixture=hyphen]", { palettes: [["Dark", null]], pixels: true });
+    printMockCheck(hyphens, "words broken at a soft hyphen, over a picture");
+    const plain = (s) => s.replace(/­/g, "");
+    const haloed = hyphens.looks.find((l) => plain(l.text) === "Wonderworker");
+    const hyphenRead =
+      brokenAt.length === 2 &&
+      brokenAt.every((n) => n >= 3) &&
+      haloed?.left === false &&
+      (haloed?.ratios?.Dark ?? 0) >= 4.5 &&
+      !hyphens.failures.some((f) => plain(f.what) === '"Wonderworker"') &&
+      hyphens.failures.some((f) => f.check === "contrast" && plain(f.what) === '"Thaumaturgist"' && f.detail.includes("on the pixels under it"));
+    await page.evaluate(() => document.querySelector("[data-mock-fixture=hyphen]")?.remove());
     // The Church's red and white on it are allowed by name; a red typed in that is not it still fails.
     await page.evaluate((html) => document.body.insertAdjacentHTML("beforeend", html), RED);
     await settle(page);
@@ -1866,11 +1901,11 @@ async function selfTest() {
       said("Words over a fade on a picture", "a picture is drawn across it (img)") &&
       said("Words over a picture, on plain colours", "a picture is drawn across it (img)") &&
       good.unmeasured.length === 3;
-    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && rowsRead && rowsCaught && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight && motionRead;
+    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && rowsRead && rowsCaught && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight && motionRead && hyphenRead;
     console.log(
       ok
         ? "\nself-test: every mistake caught, and the house's own parts pass"
-        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${rowsRead && rowsCaught ? "" : " words scrolled out of their row were not read on the ground behind the row"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}${motionRead ? "" : " words over light that moves forever were not measured on a held frame and passed"}`,
+        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${rowsRead && rowsCaught ? "" : " words scrolled out of their row were not read on the ground behind the row"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}${motionRead ? "" : " words over light that moves forever were not measured on a held frame and passed"}${hyphenRead ? "" : " words broken at a soft hyphen were not read a line at a time, or the faint ones passed"}`,
     );
     return ok;
   } finally {
