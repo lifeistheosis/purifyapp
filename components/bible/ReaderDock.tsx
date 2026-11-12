@@ -360,7 +360,9 @@ export function ReaderDock({
         className="md:hidden native-md-flex pointer-events-none fixed inset-x-0 top-0 z-30 flex justify-center"
         style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
       >
-        <div className="flex h-[52px] min-w-0 max-w-[calc(100%-8rem)] items-center">
+        {/* Centred in the bar, and where a long name takes a third line (Russian at 320: "1-е
+            Фессалоникийцам" and four more) the title hangs down from the bar's top, never up past it. */}
+        <div className="flex h-[52px] min-w-0 max-w-[calc(100%-8rem)] items-center-safe">
           <button
             type="button"
             aria-haspopup="dialog"

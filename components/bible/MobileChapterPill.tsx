@@ -279,9 +279,9 @@ export function MobileChapterPill({
                 aria-haspopup="dialog"
                 onClick={() => setSheetOpen(true)}
                 aria-label={pickLabel}
-                className="flex h-11 min-w-0 items-center px-2 font-sans text-[15px] font-semibold leading-tight text-paper"
+                className={cn("flex h-11 min-w-0 items-center px-2 font-sans text-[15px] font-semibold leading-tight text-paper", fit === 2 && "h-auto min-h-11 py-1")}
               >
-                {/* Whole: at 1 it may take two lines, broken between words; at 2, the row its own, anywhere. */}
+                {/* Whole: at 1 it may take two lines, broken between words; at 2, the row its own, as many lines as it needs. */}
                 <span ref={nameRef} className={fit === 0 ? "truncate" : cn("min-w-0", fit === 2 && "[overflow-wrap:anywhere]")}>
                   {bookName}
                 </span>

@@ -40,6 +40,8 @@ describe("the reader's dock, a book's name", () => {
   it("is never cut short in either picker", () => {
     expect(DOCK).not.toMatch(/<span className="[^"]*\btruncate\b[^"]*">\{bookName\}<\/span>/);
     expect(DOCK.match(/<span className="min-w-0 \[overflow-wrap:anywhere\]">\{bookName\}<\/span>/g)).toHaveLength(2);
+    // A title of three lines hangs down from the bar's top, never up past it into the status bar.
+    expect(DOCK).toContain('<div className="flex h-[52px] min-w-0 max-w-[calc(100%-8rem)] items-center-safe">');
   });
 
   it("sends the chapter's controls down a line when it needs the room, the controls as one group", () => {
@@ -74,6 +76,8 @@ describe("the reader's pill, a book's name", () => {
 
   it("sends the sound button and Listen to a row of their own last, and keeps the reader's foot clear of the taller pill", () => {
     expect(PILL).toContain('fit === 2 ? "h-auto flex-col rounded-[28px] py-1" : "rounded-pill",');
+    // On its own row the name takes as many lines as it needs, its button growing with it.
+    expect(PILL).toContain('fit === 2 && "h-auto min-h-11 py-1"');
     expect(PILL).toContain('{fit === 2 ? null : <span aria-hidden className="mx-1.5 h-6 w-px shrink-0 bg-paper/15" />}');
     expect(PILL).toContain('root.style.setProperty("--reader-pill-extra"');
     expect(PILL).toContain("const oneRow = 3.5 * (parseFloat(getComputedStyle(root).fontSize) || 16);");
