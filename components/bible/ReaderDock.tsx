@@ -117,14 +117,18 @@ export function ReaderDock({
   }, []);
 
   // The card's height: its two rows at rest (CARD_PX), and as much again as
-  // the chapter's row grows when a long name sends its controls down a line.
-  // On the root, since the page keeps the card's room at its foot
-  // (globals.css, --reader-dock-room).
+  // the chapter's row grows past its one line (its own min-height, which is
+  // in rem and follows the app's type size: 34px at 17) when a long name
+  // sends its controls down a line. On the root, since the page keeps the
+  // card's room at its foot (globals.css, --reader-dock-room).
   useLayoutEffect(() => {
     const row = chapterRowRef.current;
     if (!row) return;
     const root = document.documentElement;
-    const measure = () => root.style.setProperty("--reader-dock-card-h", `${Math.ceil(CARD_PX + Math.max(0, row.getBoundingClientRect().height - CHAPTER_ROW_PX))}px`);
+    const measure = () => {
+      const oneLine = parseFloat(getComputedStyle(row).minHeight) || CHAPTER_ROW_PX;
+      root.style.setProperty("--reader-dock-card-h", `${Math.ceil(CARD_PX + Math.max(0, row.getBoundingClientRect().height - oneLine - 0.5))}px`);
+    };
     measure();
     if (typeof ResizeObserver === "undefined") return () => root.style.removeProperty("--reader-dock-card-h");
     const observer = new ResizeObserver(measure);

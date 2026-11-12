@@ -178,13 +178,15 @@ export function MobileChapterPill({
     const lines = name.getBoundingClientRect().height / (parseFloat(getComputedStyle(name).lineHeight) || 19);
     if (name.scrollWidth > name.clientWidth + 1 || lines > 2.05) setFitFor({ key: fitKey, fit: fit === 0 ? 1 : 2 });
   }, [fitKey, fit, docked]);
-  // The pill with its controls under the name is taller than the 56px the
-  // reader's foot keeps room for (globals.css, .safe-pb-reader): the rest too.
+  // The pill with its controls under the name is taller than the pill of one
+  // row (h-14, 3.5rem) the reader's foot keeps room for (globals.css,
+  // .safe-pb-reader): the rest is kept too.
   useLayoutEffect(() => {
     const pill = pillRef.current;
     if (fit !== 2 || !pill) return;
     const root = document.documentElement;
-    root.style.setProperty("--reader-pill-extra", `${Math.max(0, Math.ceil(pill.getBoundingClientRect().height - 56))}px`);
+    const oneRow = 3.5 * (parseFloat(getComputedStyle(root).fontSize) || 16);
+    root.style.setProperty("--reader-pill-extra", `${Math.max(0, Math.ceil(pill.getBoundingClientRect().height - oneRow))}px`);
     return () => {
       root.style.removeProperty("--reader-pill-extra");
     };

@@ -49,6 +49,8 @@ describe("the reader's dock, a book's name", () => {
 
   it("grows the card with its row, and the page's room at its foot with the card", () => {
     expect(DOCK).toContain('root.style.setProperty("--reader-dock-card-h"');
+    // Past the row's own one line, in rem as the app's type size makes it (34px at 17, where 32 grew every card by 2).
+    expect(DOCK).toContain("const oneLine = parseFloat(getComputedStyle(row).minHeight) || CHAPTER_ROW_PX;");
     expect(CSS.match(/\n\.reader-dock \{([^}]*)\}/)?.[1]).toContain("height: var(--reader-dock-card-h, 112px);");
     expect(CSS).toContain("--reader-dock-room: calc(var(--reader-dock-card-h, 112px) - 56px);");
     expect(CSS).not.toMatch(/\.reader-dock[^{]*\{[^}]*height: 112px;/);
@@ -74,6 +76,7 @@ describe("the reader's pill, a book's name", () => {
     expect(PILL).toContain('fit === 2 ? "h-auto flex-col rounded-[28px] py-1" : "rounded-pill",');
     expect(PILL).toContain('{fit === 2 ? null : <span aria-hidden className="mx-1.5 h-6 w-px shrink-0 bg-paper/15" />}');
     expect(PILL).toContain('root.style.setProperty("--reader-pill-extra"');
+    expect(PILL).toContain("const oneRow = 3.5 * (parseFloat(getComputedStyle(root).fontSize) || 16);");
     const room = CSS.match(/--reader-pill-extra, 0px\) \+ 68px/g) ?? [];
     expect(room).toHaveLength(2);
   });
