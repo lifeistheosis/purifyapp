@@ -253,7 +253,10 @@ Tell the Company guide which case applies before you fill in any W-9.
 
 From the Company guide, 2026-11-12, citing the Florida Statutes:
 
-1. **Register each trade name.** Under F.S. 865.09(3), the company may trade only under its exact legal name until another name is registered. That covers EIKON, and also Purify wherever a checkout, a receipt or a card statement shows "Purify" alone. The steps: advertise the name once in a newspaper in Miami-Dade, then register it at sunbiz.org ($50, for 5 years). Do this before Stripe's statement descriptor says EIKON.
+1. **Register each trade name.** Under F.S. 865.09(3), the company may trade only under its exact legal name until another name is registered. For each name: advertise it once in a newspaper in Miami-Dade (the paper sets the price), then register it at sunbiz.org ($50, for 5 years; renewal $50).
+   - **Recommended: register both "Purify" and "EIKON".** The shop then needs no change, and EIKON can grow as a brand of its own.
+   - **One filing ("Purify") is enough only if** EIKON never appears as the seller's own name: not on the shop's header, not on receipts, not alone on the card statement, and not on social accounts of its own that sell. With one filing, the shop would show "Purify" as the seller with "Purify Orthodox LLC" in its footer, and the card statement would be Stripe's prefix PURIFY with the suffix EIKON ("PURIFY* EIKON"). The statute does not speak to product-line names, so this route rests on the guide's reading; an attorney can confirm it.
+   - File before the county and city business tax receipt applications, which ask for it (F.S. 205.023), and before Stripe's statement descriptor says EIKON.
 2. **Florida sales tax for the EIKON shop.** Register with the Florida Department of Revenue before the first taxable sale (F.S. 212.18(3)). If sales were already made without a registration, ask the Company guide how to catch up before doing anything else. Purify Plus needs no step here: Apple and Google collect that tax as the sellers of record.
 
 Send back: "C3b done", or what is unclear.
