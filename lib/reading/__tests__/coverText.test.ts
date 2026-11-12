@@ -8,6 +8,7 @@
 
 import { describe, expect, it } from "vitest";
 
+import { allShelves } from "@/lib/councils/books";
 import { buildRoom } from "@/lib/reading/cards";
 import { GEOMETRY, SIZES, coverWords, emWidth, type CoverSize } from "@/lib/reading/coverText";
 
@@ -28,6 +29,28 @@ const every = () =>
   );
 
 describe("the posters' words", () => {
+  it("fit every book on a council's shelf, on the shelf and held up on its own page, whole", () => {
+    // A council's books are drawn by its shelf (components/councils/CouncilShelf.tsx, the grid) and
+    // each held up on its own page (CouncilBookHeader.tsx, the hero), in the website and in the apps.
+    // St. Agatho's Letter, with the letter of his synod, was cut at its fourth line on its shelf (the
+    // gate's confirm run, 2026-11-12, /reading/councils/third-constantinople/).
+    const books = [false, true].flatMap((native) => allShelves(native, () => "").flatMap(({ books }) => books));
+    expect(books.length).toBeGreaterThan(20);
+    const cut = books.flatMap((b) =>
+      (["grid", "hero"] as CoverSize[])
+        .filter((size) => coverWords({ title: b.title, author: b.author ?? "Anonymous", size, picture: Boolean(b.cover) }).clamp !== null)
+        .map((size) => `${size}: ${b.title}`),
+    );
+    expect(cut).toEqual([]);
+    // Whole, and set no smaller than it must be: the steps under the room's own are its alone.
+    const agatho = books.find((b) => b.title.startsWith("The Letter of St. Agatho"));
+    expect(agatho).toBeTruthy();
+    const w = coverWords({ title: agatho!.title, author: agatho!.author, size: "grid", picture: Boolean(agatho!.cover) });
+    expect(w.titleLines.join(" ").split(NBSP).join(" ").replace(/- /g, "-")).toBe(agatho!.title);
+    expect(w.titleFit).toBeGreaterThanOrEqual(0.58);
+    for (const { w: other } of every()) expect(other.titleFit).toBeGreaterThanOrEqual(0.7);
+  });
+
   it("fit every book in the room at every size, whole, with no line cut", () => {
     const cut = every()
       .filter(({ w }) => w.clamp !== null)

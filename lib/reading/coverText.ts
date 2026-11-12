@@ -123,6 +123,13 @@ export const SIZES: Record<CoverSize, { scale: CoverScale; min: number }> = {
 };
 
 const TITLE_STEPS = [1, 0.94, 0.88, 0.82, 0.76, 0.7] as const;
+/**
+ * Past the last step, only for a title nothing above fits: smaller still, so it
+ * is whole. St. Agatho's Letter, with the letter of his synod, on its council's
+ * shelf (the grid, its author on three lines) was cut at its fourth line (the
+ * gate's confirm run, 2026-11-12); every other title fits as it did.
+ */
+const LAST_STEPS = [0.64, 0.58] as const;
 const AUTHOR_STEPS = [1, 0.93, 0.86] as const;
 /** The most lines the browser balances (Chromium balances six at most). */
 const MAX_LINES = 6;
@@ -407,12 +414,27 @@ export function coverWords({ title, author, size, picture = true }: { title: str
     }
   }
   if (!best) {
-    // Nothing fits: the smallest steps, the author on his fewest lines, and
-    // the title's lines that the room left holds.
-    const tf = TITLE_STEPS[TITLE_STEPS.length - 1];
+    // Nothing fits at the steps above: the author on his fewest lines, and the
+    // title a step smaller still, whole. Only past those, the title's lines
+    // that the room left holds.
+    const a = [...authorTries].sort((x, y) => x.height - y.height)[0] ?? null;
+    for (const tf of LAST_STEPS) {
+      const px = titleFull * tf;
+      const t = lay(title, measurePx / px, "serif");
+      if (t.overflow || t.lines.length > MAX_LINES || t.lines.length * g.titleLead * px + (a?.height ?? 0) > room) continue;
+      return {
+        title: t.text,
+        author: a?.laid ? a.laid.text : null,
+        titleFit: tf,
+        authorFit: a?.f ?? 1,
+        titleLines: t.lines,
+        authorLines: a?.laid ? a.laid.lines : [],
+        clamp: null,
+      };
+    }
+    const tf = LAST_STEPS[LAST_STEPS.length - 1];
     const px = titleFull * tf;
     const t = lay(title, measurePx / px, "serif");
-    const a = [...authorTries].sort((x, y) => x.height - y.height)[0] ?? null;
     const clamp = Math.max(1, Math.floor((room - (a?.height ?? 0)) / (g.titleLead * px)));
     return {
       title: t.text,
