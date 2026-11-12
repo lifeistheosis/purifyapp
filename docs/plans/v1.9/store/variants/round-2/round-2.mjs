@@ -141,28 +141,6 @@ function arch() {
   };
 }
 
-function field() {
-  const horizon = H * 0.43;
-  const N = 20;
-  const rows = [];
-  for (let k = 0; k <= N; k++) {
-    const t = k / N;
-    const y = horizon + (H - horizon + 90) * Math.pow(t, 1.85);
-    const amp = 9 + 78 * Math.pow(t, 1.25);
-    const pts = [];
-    for (let i = 0; i <= 90; i++) {
-      const x = -20 + ((W + 40) * i) / 90;
-      pts.push(`${x.toFixed(1)},${(y + amp * Math.sin((x / W) * Math.PI * (2.6 - 1.2 * t) + 0.4 + t * 3.1)).toFixed(1)}`);
-    }
-    const stroke = k === 0 ? accent(70) : ink((6 + 16 * t).toFixed(1));
-    rows.push(line(`M ${pts.join(" L ")}`, stroke));
-  }
-  return {
-    css: `[data-back] { background-image: radial-gradient(ellipse ${r(W * 0.9)}px ${r(H * 0.11)}px at 50% ${r(horizon)}px, ${ink(20)}, transparent 72%); }`,
-    html: svg(`<rect x="-10" y="${r(horizon)}" width="${W + 20}" height="${r(H - horizon + 10)}" style="fill:${plane(4)}"/>${rows.join("")}`),
-  };
-}
-
 function athos() {
   // The app's own picture for its Holy Mountain look, 390 by 300: the peak at 322 across and 90 down, the sea's line at about 195.
   // Set so the peak stands clear of the phone's shoulder and the sea's line runs behind it. The frame starts under the words.
