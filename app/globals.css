@@ -1454,10 +1454,12 @@ html.is-native .saint-web-sheet {
  opacity: 0;
  pointer-events: none;
 }
-/* The saint's own icon, as a soft grey light at the card's start: at a fifth,
-   so the line under the name reads over the brightest icon (St.
-   Amphilochius's) on every palette and look; at a quarter it read 3.84:1 on
-   Candlelight (the gate's confirm run, 2026-11-12). */
+/* The chosen saint's own icon, as a soft grey light at the card's start. Any
+   saint on any web can be chosen, so it is held for a white icon: at 0.16 the
+   line under the name, at 75 percent, reads 4.53:1 on Candlelight (the
+   dimmest ink) and more on every other palette and look the light is drawn
+   on. At a quarter it read 3.84:1 (the gate's confirm run, 2026-11-12); at a
+   fifth, 4.49:1 over St Augustine's on St Ambrose's web (the hold after it). */
 .saint-web-card-light {
  position: absolute;
  inset-inline-start: -46px;
@@ -1467,7 +1469,7 @@ html.is-native .saint-web-sheet {
  background-size: cover;
  background-position: 50% 22%;
  filter: blur(24px) grayscale(1) brightness(1.25);
- opacity: 0.2;
+ opacity: 0.16;
  pointer-events: none;
 }
 html[data-reading-mode="parchment"] .saint-web-card-light {

@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import { SHORT_CARD_H, cardNameSize } from "@/components/saints/web/WebCard";
 import { emWidth } from "@/lib/reading/coverText";
+import { READING_THEMES, themeAttributes } from "@/lib/reader/readingModes";
 import { saintWeb, webSlugs } from "@/lib/saints/web";
 import {
   BOX,
@@ -190,6 +191,49 @@ describe("the saints' webs (fail 4, the 118 webs)", () => {
     expect(card).toContain("saint-web-sheet saint-web-card fixed inset-x-3 z-40");
     expect(card).toContain("saint-web-handle saint-web-pull fixed left-1/2 z-40");
     expect(card).toContain("text-[12px] font-medium leading-4 text-paper/75");
-    expect(/\.saint-web-card-light \{[^}]*opacity: 0\.2;/.test(CSS)).toBe(true);
+  });
+
+  it("draw the card's light so the line under its name reads over any saint's icon, a white one too", () => {
+    // The light is the chosen saint's own icon (WebCard), and any saint can be chosen: at 0.2 the line read 4.49:1
+    // over St Augustine's on St Ambrose's web, on Candlelight (the hold of 2026-11-12, export 20ef5bb3c).
+    const card = fs.readFileSync(path.join(ROOT, "components/saints/web/WebCard.tsx"), "utf8");
+    const opacity = Number(/\.saint-web-card-light \{[^}]*opacity: ([\d.]+);/.exec(CSS)?.[1]);
+    const share = Number(/text-\[12px\] font-medium leading-4 text-paper\/(\d+)/.exec(card)?.[1]) / 100;
+    expect(opacity > 0 && share > 0).toBe(true);
+    // Over parchment it is not drawn.
+    expect(CSS).toMatch(/html\[data-reading-mode="parchment"\] \.saint-web-card-light \{\s*display: none;/);
+    // A palette's token as the cascade gives it: the base, its mode's block, then its look's.
+    const tokenOf = (name: string, mode: string | null, look: string | null): Rgb | null => {
+      let found: Rgb | null = null;
+      for (const sel of ["@theme", ":root", mode && `html[data-reading-mode="${mode}"]`, look && `html[data-look="${look}"]`]) {
+        if (!sel) continue;
+        for (const m of CSS.matchAll(/([^{}]*)\{([^{}]*)\}/g)) {
+          if (!m[1].split(",").some((s) => (s.split(";").pop() ?? "").trim() === sel)) continue;
+          const hex = new RegExp(`--color-${name}\\s*:\\s*#([0-9a-f]{6})\\b`, "i").exec(m[2])?.[1];
+          if (hex) found = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16)) as Rgb;
+        }
+      }
+      return found;
+    };
+    const mix = (a: Rgb, b: Rgb, t: number) => a.map((v, i) => v * t + b[i] * (1 - t)) as Rgb;
+    const drawn: [string, string | null, string | null][] = [
+      ["Dark", null, null],
+      ["Black", "black", null],
+      ["Candlelight", "candlelight", null],
+      ["Monastery", "monastery", null],
+      ...READING_THEMES.filter((t) => t.look).map((t): [string, string | null, string | null] => {
+        const { mode, look } = themeAttributes(t.id);
+        return [t.label, mode, look];
+      }),
+    ].filter(([, mode]) => mode !== "parchment");
+    expect(drawn.length).toBe(12);
+    for (const [label, mode, look] of drawn) {
+      const paper = tokenOf("paper", mode, look);
+      const soft = tokenOf("night-soft", mode, look);
+      expect(paper && soft, label).toBeTruthy();
+      // The card's ground at its top, its brightest, under the light at its brightest: a white icon.
+      const ground = mix([255, 255, 255], mix(paper!, soft!, 0.04), opacity);
+      expect(onGround(paper!, share, ground), `${label}: the line at ${share * 100} over a white light at ${opacity}`).toBeGreaterThanOrEqual(4.5);
+    }
   });
 });
