@@ -1,0 +1,107 @@
+{
+  "made": "2026-11-12",
+  "day": "2026-12-06T09:30:00-05:00",
+  "checks": [
+    "contrast",
+    "placeholder",
+    "target",
+    "glyph",
+    "palette",
+    "gold",
+    "stripe",
+    "mirror",
+    "emdash",
+    "rays",
+    "sparkle",
+    "picture",
+    "dashed",
+    "keys",
+    "cut"
+  ],
+  "pictures": [
+    {
+      "id": "BG1",
+      "file": "BG1-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 226253,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "Dawn",
+      "idea": "Five hills in layered planes, a low light behind the nearest, and plain dots of stars above.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    },
+    {
+      "id": "BG2",
+      "file": "BG2-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 228818,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "Orbit",
+      "idea": "Wide rings round a centre off the picture, sweeping behind the phone, and a disc at its shoulder.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    },
+    {
+      "id": "BG3",
+      "file": "BG3-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 223469,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "Arch",
+      "idea": "A wall and a floor. An arch stands in the wall behind the phone, and a low light lies on the floor.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    },
+    {
+      "id": "BG4",
+      "file": "BG4-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 247819,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "Field",
+      "idea": "Rolling lines that gather toward a horizon, as the furrows of a field do, with a light where they meet the sky.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    }
+  ]
+}
