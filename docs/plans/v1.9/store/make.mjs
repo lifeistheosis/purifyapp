@@ -71,6 +71,7 @@ const SHOTS = [
   {
     n: "01",
     id: "today",
+    stand: "front",
     caption: "The day's saint, fast and readings",
     route: "/",
     state: "Today on 6 December 2026, the new reader's one-question card dismissed with its own Dismiss button.",
@@ -90,6 +91,7 @@ const SHOTS = [
   {
     n: "02",
     id: "greek",
+    stand: "side",
     caption: "The Greek beside the verse",
     route: "/bible/john/1",
     state: "John 1 with Interlinear Greek switched on (More actions, Interlinear Greek); free for every reader.",
@@ -102,6 +104,7 @@ const SHOTS = [
   {
     n: "03",
     id: "fathers",
+    stand: "front",
     caption: "The Fathers on the verse you are reading",
     route: "/bible/genesis/1",
     state: "Genesis 1, the commentary opened on verse 1: St Basil the Great, Hexaemeron, Homily 1, his own words as NPNF prints them.",
@@ -115,6 +118,7 @@ const SHOTS = [
   {
     n: "04",
     id: "journal",
+    stand: "side",
     caption: "A journal kept by the Church's day",
     route: "/journal",
     state: "The journal as a new reader opens it: the day's page, its saint, its fast and its readings, each with a pen.",
@@ -126,6 +130,7 @@ const SHOTS = [
   {
     n: "05",
     id: "prayers",
+    stand: "front",
     caption: "The daily prayers, morning and evening",
     route: "/prayers",
     state: "Prayers as it opens.",
@@ -134,6 +139,7 @@ const SHOTS = [
   {
     n: "06",
     id: "saint",
+    stand: "side",
     caption: "The lives of the saints",
     route: "/saints/basil-the-great",
     state: "St Basil the Great's page, on Life.",
@@ -142,6 +148,7 @@ const SHOTS = [
   {
     n: "07",
     id: "calendar",
+    stand: "front",
     caption: "Every feast and every fast",
     route: "/calendar",
     state: "The Church calendar on December 2026, the New reckoning, the day's fast under it.",
@@ -150,6 +157,7 @@ const SHOTS = [
   {
     n: "08",
     id: "reading",
+    stand: "side",
     caption: "The Fathers, read in full",
     route: "/saints/athanasius-the-great/on-the-incarnation",
     state: "St Athanasius the Great, On the Incarnation, opened from the reading room.",
@@ -178,19 +186,6 @@ const FEATURE = {
   line: "The Orthodox prayer book, Bible, saints, and calendar, in one quiet app.",
 };
 
-/** Where the screen sits on the canvas: the caption above (under a fifth of the picture), the whole screen under it. */
-function layout({ canvas: [W, H], viewport: [vw, vh] }) {
-  const captionH = Math.round(H * 0.165);
-  const bottom = Math.round(H * 0.03);
-  let cardH = H - captionH - bottom;
-  let cardW = Math.round((cardH * vw) / vh);
-  const widest = Math.round(W * 0.88);
-  if (cardW > widest) cardW = widest;
-  const scale = cardW / vw;
-  cardH = Math.floor(vh * scale);
-  return { W, H, captionH, bottom, cardW, cardH, scale };
-}
-
 // ── The app's own document, for the pages the pictures are set on ────────
 
 const frontDoor = fs.readFileSync(path.join(OUT, "index.html"), "utf8");
@@ -212,65 +207,202 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
 </style>
 </head>`;
 
-/** A screen under its caption. Every colour is one of the app's palette tokens; the light is one soft pool from above. */
-function picturePage(device, shot, L) {
-  const { W, H, captionH, cardW, cardH } = L;
-  const radius = Math.round(cardW * device.round);
+// ── The design ───────────────────────────────────────────────────────────
+//
+// His word, 2026-11-12, after the rounds in variants/: "stick with this for
+// now, where it's like front face, and then some of them are like face to
+// the side" (the eclipse designs wait for 2.0). So there are two ways a
+// screen stands, and each screen names its own in SHOTS (`stand`):
+//   front  the screen upright and whole, a thin dark rim round it, before a
+//          low hill and the line of its crest, fainter lines rising over it
+//   side   the phone as a plain slab with real thickness, turned to one
+//          side, before rolling lines that gather toward a horizon
+// No hardware is drawn in either (variants/README.md says what each store
+// asks). Every colour is a palette token, the light is one soft pool, and
+// each drawing starts under the words. To change how a screen stands, change
+// its `stand`; to change a look, change the numbers here. Nothing else in
+// this file needs touching to make a screen again.
+
+const r = Math.round;
+/** Ink at a strength: the palette's paper token, so it follows every palette. */
+const ink = (pct) => `color-mix(in srgb, var(--color-paper) ${pct}%, transparent)`;
+/** The house's accent token at a strength (a near-white grey; the app has no yellow gold). */
+const accent = (pct) => `color-mix(in srgb, var(--color-gold) ${pct}%, transparent)`;
+/** A plane a step off the ground. */
+const plane = (pct) => `color-mix(in srgb, var(--color-paper) ${pct}%, var(--color-night))`;
+/** A tablet's screen is wide for its height; a phone's is not. */
+const isTablet = (device) => device.viewport[0] >= 600;
+
+/** Where the screen stands on the picture, and how sharp it must be taken. */
+function layout(device, shot) {
+  const [W, H] = device.canvas;
+  const [vw, vh] = device.viewport;
+  const tablet = isTablet(device);
+  const captionH = r(H * 0.165); // the words take about a sixth, under Play's fifth
+  if (shot.stand === "side") {
+    const room = H - captionH - r(H * 0.085);
+    const w = r(Math.min(W * (tablet ? 0.78 : 0.7), ((room * vw) / vh) * 0.93));
+    const h = Math.floor((w * vh) / vw);
+    return { stand: "side", W, H, captionH, w, h, scale: (w / vw) * 1.25 }; // taken sharper, since the turn draws it again
+  }
+  let h = H - captionH - r(H * (tablet ? 0.075 : 0.1));
+  let w = r((h * vw) / vh);
+  const widest = r(W * (tablet ? 0.8 : 0.74));
+  if (w > widest) w = widest;
+  h = Math.floor((w * vh) / vw);
+  return { stand: "front", W, H, captionH, w, h, scale: w / vw };
+}
+
+const captionCss = (device, L) => `[data-store-caption] { position: absolute; top: 0; inset-inline: 0; box-sizing: border-box; height: ${L.captionH}px; margin: 0; padding: ${r(L.captionH * 0.1)}px ${r(L.W * 0.07)}px 0; display: flex; align-items: center; justify-content: center; text-align: center; text-wrap: balance; font-family: var(--font-heading); font-weight: 600; font-size: ${device.type}px; line-height: 1.16; letter-spacing: -0.01em; color: var(--color-paper); }`;
+const pictureCss = (L) => `[data-store-picture] { position: relative; box-sizing: border-box; width: ${L.W}px; height: ${L.H}px; overflow: hidden; background-color: var(--color-night); color: var(--color-paper); }
+  [data-back] { position: absolute; inset: 0; pointer-events: none; }
+  /* A drawing starts under the words, never across them, so checkMock can measure the words on their ground. */
+  [data-back] svg { position: absolute; top: ${L.captionH}px; inset-inline: 0; width: 100%; height: ${L.H - L.captionH}px; }
+  :root[dir="rtl"] [data-back] svg { transform: scaleX(-1); }`;
+const drawing = (L, inner) => `<svg viewBox="0 ${L.captionH} ${L.W} ${L.H - L.captionH}" preserveAspectRatio="none">${inner}</svg>`;
+
+/** Front: the screen upright before a low hill. The crest is one wide circle's arc; the fainter lines are the same arc, higher. */
+function frontPage(device, shot, L) {
+  const { W, H, captionH, w, h } = L;
+  const left = r((W - w) / 2);
+  const crest = r(captionH + h * 0.6);
+  const rise = W * 0.13;
+  const half = W / 2;
+  const R = (half * half + rise * rise) / (2 * rise);
+  const fall = R - Math.sqrt(R * R - (half * 1.2) ** 2);
+  const arc = (lift) => `M ${-W * 0.1} ${crest + lift + fall} A ${R} ${R} 0 0 1 ${W * 1.1} ${crest + lift + fall}`;
+  const edge = Math.max(2, r(W / 540));
+  const rim = r(W * 0.011);
+  const radius = r(w * device.round);
+  const lifts = [0.2, 0.135, 0.08, 0.035];
   return `${head(
     W,
     H,
     `
-  [data-store-picture] {
-    box-sizing: border-box; width: ${W}px; height: ${H}px; display: flex; flex-direction: column; align-items: center;
-    background-color: var(--color-night);
-    background-image: radial-gradient(ellipse 90% ${Math.round(captionH * 1.9)}px at 50% 0%, color-mix(in srgb, var(--color-paper) 9%, transparent), transparent 72%);
-  }
-  [data-store-caption] {
-    box-sizing: border-box; height: ${captionH}px; width: 100%; margin: 0; padding: ${Math.round(captionH * 0.1)}px ${Math.round(W * 0.07)}px 0;
-    display: flex; align-items: center; justify-content: center; text-align: center; text-wrap: balance;
-    font-family: var(--font-heading); font-weight: 600; font-size: ${device.type}px; line-height: 1.16; letter-spacing: -0.01em;
-    color: var(--color-paper);
-  }
-  [data-store-screen] {
-    box-sizing: content-box; display: block; margin: 0; width: ${cardW}px; height: ${cardH}px; overflow: hidden;
-    border-radius: ${radius}px;
-    outline: ${Math.max(2, Math.round(W / 540))}px solid color-mix(in srgb, var(--color-paper) 14%, transparent);
-    background-color: var(--color-night-soft);
-  }
-  [data-store-screen] img { display: block; width: ${cardW}px; height: ${cardH}px; object-fit: cover; object-position: top; }
+  ${pictureCss(L)}
+  [data-back] { background-image: radial-gradient(ellipse ${r(W * 0.78)}px ${r(H * 0.2)}px at 50% ${crest}px, ${ink(17)}, transparent 72%); }
+  [data-hill] { fill: ${plane(6.5)}; stroke: none; }
+  [data-line] { fill: none; stroke: ${ink(40)}; stroke-width: ${edge}; }
+  [data-line="1"] { stroke: ${ink(16)}; }
+  [data-line="2"] { stroke: ${ink(11)}; }
+  [data-line="3"] { stroke: ${ink(8)}; }
+  [data-line="4"] { stroke: ${ink(5)}; }
+  ${captionCss(device, L)}
+  [data-store-screen] { position: absolute; box-sizing: border-box; margin: 0; top: ${captionH - rim}px; inset-inline-start: ${left - rim}px; width: ${w + 2 * rim}px; height: ${h + 2 * rim}px; padding: ${rim}px; border-radius: ${radius + rim}px; background-color: var(--color-night-deep); outline: ${edge}px solid ${ink(22)}; box-shadow: 0 ${r(W * 0.04)}px ${r(W * 0.09)}px color-mix(in srgb, var(--color-night-deep) 94%, transparent); }
+  [data-store-screen] img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: ${radius}px; }
 `,
   )}
 <body>
 <main data-store-picture>
+  <div data-back aria-hidden="true">${drawing(L, `${lifts.map((lift, i) => `<path data-line="${4 - i}" d="${arc(-H * lift)}"/>`).join("")}<path data-hill d="${arc(0)} L ${W * 1.1} ${H * 1.1} L ${-W * 0.1} ${H * 1.1} Z"/><path data-line="0" d="${arc(0)}"/>`)}</div>
   <h1 data-store-caption>${shot.caption}</h1>
-  <figure data-store-screen><img alt="${shot.alt}" src="/__store/screen.png" width="${cardW}" height="${cardH}"></figure>
+  <figure data-store-screen><img alt="${shot.alt}" src="/__store/screen.png"></figure>
 </main>
 </body>
 </html>`;
 }
 
-/** The feature graphic: the app's cross, its wordmark as the app sets it (the sans, bold), and the listing's line. */
-function featurePage() {
-  const [W, H] = FEATURE.canvas;
+/** Side: the phone as a plain slab, turned, before a field of rolling lines that draw closer toward the horizon. */
+function sidePage(device, shot, L) {
+  const { W, H, captionH, w, h } = L;
+  const tablet = isTablet(device);
+  const u = W / 1080; // the phone picture's own measures, carried to any size
+  const edge = Math.max(2, r(W / 540));
+  const rim = r(w * (tablet ? 0.016 : 0.022)); // the body round the screen
+  const [bw, bh] = [w + 2 * rim, h + 2 * rim];
+  const radius = r(w * device.round * 1.07);
+  const deep = r(bw * (tablet ? 0.04 : 0.105)); // how thick the body is, about the device's own proportion
+  const step = 1.5 * u;
+  const turn = tablet ? "rotateY(-16deg) rotateX(5deg) rotateZ(0.8deg)" : "rotateY(-25deg) rotateX(7deg) rotateZ(1.2deg)";
+  const top = r(captionH + (H - captionH - bh) / 2 - H * 0.012);
+  const left = r((W - bw) / 2 - W * 0.012);
+  // The side: thin leaves behind the face, lit near the front and darker toward the back.
+  const leaves = [];
+  const count = Math.round(deep / step);
+  for (let k = count; k >= 1; k--) {
+    const t = k / count;
+    const tone = k <= 2 ? 34 : 19 - 12 * t;
+    leaves.push(`<div data-leaf style="transform:translateZ(${(-k * step).toFixed(1)}px);background-color:${plane(tone.toFixed(1))}"></div>`);
+  }
+  // The field: each line a slow roll, level at the horizon and wider toward the eye. Lines run across; none fans out.
+  const horizon = H * 0.43;
+  const rows = [];
+  for (let k = 0; k <= 20; k++) {
+    const t = k / 20;
+    const y = horizon + (H - horizon + 90 * u) * Math.pow(t, 1.85);
+    const amp = (9 + 78 * Math.pow(t, 1.25)) * u;
+    const pts = [];
+    for (let i = 0; i <= 90; i++) {
+      const x = -20 * u + ((W + 40 * u) * i) / 90;
+      pts.push(`${x.toFixed(1)},${(y + amp * Math.sin((x / W) * Math.PI * (2.6 - 1.2 * t) + 0.4 + t * 3.1)).toFixed(1)}`);
+    }
+    rows.push(`<path d="M ${pts.join(" L ")}" style="fill:none;stroke:${k === 0 ? accent(70) : ink((6 + 16 * t).toFixed(1))};stroke-width:${edge}"/>`);
+  }
   return `${head(
     W,
     H,
     `
-  [data-store-picture] {
-    box-sizing: border-box; width: ${W}px; height: ${H}px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    background-color: var(--color-night);
-    background-image: radial-gradient(ellipse 62% 78% at 50% 34%, color-mix(in srgb, var(--color-paper) 11%, transparent), transparent 74%);
-  }
-  [data-store-mark] { display: block; height: 124px; width: auto; }
-  [data-store-wordmark] { margin: 26px 0 0; font-family: var(--font-sans); font-weight: 700; font-size: 76px; line-height: 1; letter-spacing: -0.01em; color: var(--color-paper); }
-  [data-store-line] { margin: 22px 0 0; max-width: 640px; text-align: center; text-wrap: balance; font-family: var(--font-serif); font-size: 25px; line-height: 1.36; color: color-mix(in srgb, var(--color-paper) 82%, transparent); }
+  ${pictureCss(L)}
+  [data-back] { background-image: radial-gradient(ellipse ${r(W * 0.9)}px ${r(H * 0.11)}px at 50% ${r(horizon)}px, ${ink(20)}, transparent 72%); }
+  ${captionCss(device, L)}
+  [data-stage] { position: absolute; top: ${top}px; inset-inline-start: ${left}px; width: ${bw}px; height: ${bh}px; perspective: ${r(W * 3.2)}px; perspective-origin: 50% 42%; }
+  [data-body] { position: absolute; inset: 0; transform: ${turn}; transform-style: preserve-3d; }
+  /* In a right-to-left page the phone and its screen turn over together, as one picture. */
+  :root[dir="rtl"] [data-stage] { transform: scaleX(-1); }
+  [data-leaf], [data-cast] { position: absolute; inset: 0; border-radius: ${radius + rim}px; }
+  /* The shadow the body casts on the field behind it. */
+  [data-cast] { transform: translateZ(${-deep - 2}px); box-shadow: ${r(W * 0.05)}px ${r(W * 0.07)}px ${r(W * 0.11)}px ${r(W * 0.01)}px color-mix(in srgb, var(--color-night-deep) 96%, transparent); }
+  [data-store-screen] { position: absolute; inset: 0; box-sizing: border-box; margin: 0; padding: ${rim}px; border-radius: ${radius + rim}px; background-color: var(--color-night-deep); outline: ${edge}px solid ${ink(34)}; outline-offset: -${edge}px; }
+  [data-store-screen] img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: ${radius}px; }
 `,
   )}
 <body>
 <main data-store-picture>
-  <img data-store-mark alt="" src="/purify-cross-mark.png">
-  <p data-store-wordmark>Purify</p>
-  <p data-store-line>${FEATURE.line}</p>
+  <div data-back aria-hidden="true">${drawing(L, `<rect x="${-10 * u}" y="${r(horizon)}" width="${W + 20 * u}" height="${r(H - horizon + 10)}" style="fill:${plane(4)}"/>${rows.join("")}`)}</div>
+  <h1 data-store-caption>${shot.caption}</h1>
+  <div data-stage><div data-body><div data-cast aria-hidden="true"></div>${leaves.join("")}<figure data-store-screen><img alt="${shot.alt}" src="/__store/screen.png"></figure></div></div>
+</main>
+</body>
+</html>`;
+}
+
+/** A screen under its line, standing as its `stand` says. */
+const picturePage = (device, shot, L) => (L.stand === "side" ? sidePage(device, shot, L) : frontPage(device, shot, L));
+
+/** The feature graphic: the app's cross (as a mask, so it takes the palette's ink), its wordmark as the app sets it, and the listing's line, over the front design's hill. */
+function featurePage() {
+  const [W, H] = FEATURE.canvas;
+  const crest = 392;
+  const rise = 58;
+  const half = W / 2;
+  const R = (half * half + rise * rise) / (2 * rise);
+  const fall = R - Math.sqrt(R * R - (half * 1.2) ** 2);
+  const arc = (lift) => `M ${-W * 0.1} ${crest + lift + fall} A ${R} ${R} 0 0 1 ${W * 1.1} ${crest + lift + fall}`;
+  const from = 272; // the drawing starts under the words
+  return `${head(
+    W,
+    H,
+    `
+  [data-store-picture] { position: relative; box-sizing: border-box; width: ${W}px; height: ${H}px; overflow: hidden; background-color: var(--color-night); color: var(--color-paper); }
+  [data-back] { position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(ellipse 460px 200px at 50% ${crest}px, ${ink(17)}, transparent 72%); }
+  [data-back] svg { position: absolute; top: ${from}px; inset-inline: 0; width: 100%; height: ${H - from}px; }
+  :root[dir="rtl"] [data-back] svg { transform: scaleX(-1); }
+  [data-hill] { fill: ${plane(6.5)}; }
+  [data-line] { fill: none; stroke: ${ink(40)}; stroke-width: 2; }
+  [data-line="1"] { stroke: ${ink(16)}; }
+  [data-line="2"] { stroke: ${ink(11)}; }
+  [data-line="3"] { stroke: ${ink(8)}; }
+  [data-line="4"] { stroke: ${ink(5)}; }
+  [data-words] { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding-top: 34px; }
+  [data-cross] { display: block; height: 84px; width: 48px; background-color: var(--color-paper); -webkit-mask: url(/purify-cross-mark.png) center / contain no-repeat; mask: url(/purify-cross-mark.png) center / contain no-repeat; }
+  [data-store-wordmark] { margin: 20px 0 0; font-family: var(--font-sans); font-weight: 700; font-size: 58px; line-height: 1; letter-spacing: -0.01em; color: var(--color-paper); }
+  [data-store-line] { margin: 16px 0 0; max-width: 600px; text-align: center; text-wrap: balance; font-family: var(--font-serif); font-size: 21px; line-height: 1.36; color: ${ink(84)}; }
+`,
+  )}
+<body>
+<main data-store-picture>
+  <div data-back aria-hidden="true"><svg viewBox="0 ${from} ${W} ${H - from}" preserveAspectRatio="none">${[0.2, 0.135, 0.08, 0.035].map((lift, i) => `<path data-line="${4 - i}" d="${arc(-H * lift)}"/>`).join("")}<path data-hill d="${arc(0)} L ${W * 1.1} ${H * 1.2} L ${-W * 0.1} ${H * 1.2} Z"/><path data-line="0" d="${arc(0)}"/></svg></div>
+  <div data-words><span data-cross aria-hidden="true"></span><p data-store-wordmark>Purify</p><p data-store-line>${FEATURE.line}</p></div>
 </main>
 </body>
 </html>`;
@@ -379,7 +511,7 @@ async function setPage([W, H], html, files = {}) {
 }
 
 async function takeShot(device, shot) {
-  const L = layout(device);
+  const L = layout(device, shot);
   const [vw, vh] = device.viewport;
   const ctx = await browser.newContext({
     viewport: { width: vw, height: vh },
@@ -465,7 +597,7 @@ async function takeShot(device, shot) {
   if (record.campaignNamed) problems.push("a campaign is named in view");
   if (!record.picture.pass) problems.push(`checkMock on the picture: ${record.picture.failures.join(" | ")}`);
   console.log(`${problems.length ? "NO  " : "ok  "} ${file}  ${device.canvas.join(" by ")}  ${(bytes / 1024).toFixed(0)} KB${problems.length ? `\n      ${problems.join("\n      ")}` : ""}${record.app.failures.length ? `\n      said of the app's own screen: ${record.app.failures.join(" | ")}` : ""}`);
-  return { file, device: device.id, shot: shot.id, caption: shot.caption, route: shot.route, state: shot.state, alt: shot.alt, size: device.canvas, screen: { viewport: device.viewport, scale: Number(L.scale.toFixed(4)) }, bytes, problems, ...record };
+  return { file, device: device.id, shot: shot.id, stand: shot.stand, caption: shot.caption, route: shot.route, state: shot.state, alt: shot.alt, size: device.canvas, screen: { viewport: device.viewport, scale: Number(L.scale.toFixed(4)) }, bytes, problems, ...record };
 }
 
 async function takeFeature() {
@@ -544,17 +676,17 @@ function readme(pictures, exportCommit, madeOn) {
   say(
     "# Purify 1.9: the store pictures",
     "",
-    `One finished set, made on ${madeOn} from the 1.9 app itself. Nothing here is drawn by hand: every screen is the app's own, taken from the native export, and set under one short line.`,
+    `One finished set, made on ${madeOn} from the 1.9 app itself. No interface here is drawn by hand: every screen is the app's own, taken from the native export, and set under one short line in the design he chose (\"The design\", below). The rounds that led to it, and the designs kept for 2.0, are in \`variants/\`.`,
     "",
     `**${pictures.length} pictures.** ${DEVICES.map((d) => `${d.store} ${d.name}: ${of(d.id).length}`).join(". ")}. Google Play feature graphic: ${of(FEATURE.id).length}.`,
     "",
     "## The story, in the order every device tells it",
     "",
-    "| # | The line on the picture | The screen | Shot from | How it stands |",
-    "|---|---|---|---|---|",
-    ...SHOTS.map((s) => `| ${s.n} | ${s.caption} | ${s.id} | \`${s.route}\` | ${s.state} |`),
+    "| # | The line on the picture | The screen | Stands | Shot from | The screen's state |",
+    "|---|---|---|---|---|---|",
+    ...SHOTS.map((s) => `| ${s.n} | ${s.caption} | ${s.id} | ${s.stand} | \`${s.route}\` | ${s.state} |`),
     "",
-    `The feature graphic carries the app's cross, its wordmark as the app sets it, and one line, the Play listing's own short description: "${FEATURE.line}"`,
+    `The feature graphic carries the app's cross, its wordmark as the app sets it, and one line over the front design's hill, the Play listing's own short description: "${FEATURE.line}"`,
     "",
     "## The files",
     "",

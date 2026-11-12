@@ -1,7 +1,7 @@
 {
   "made": "2026-11-12",
   "day": "2026-12-06T09:30:00-05:00",
-  "export": "000cb6d99",
+  "export": "6633b789",
   "checks": [
     "contrast",
     "placeholder",
@@ -37,7 +37,7 @@
         1024,
         500
       ],
-      "bytes": 45887,
+      "bytes": 31497,
       "problems": [],
       "picturesInView": [
         "/purify-cross-mark.png"
@@ -71,6 +71,7 @@
       "file": "play-phone-01-today.png",
       "device": "play-phone",
       "shot": "today",
+      "stand": "front",
       "caption": "The day's saint, fast and readings",
       "route": "/",
       "state": "Today on 6 December 2026, the new reader's one-question card dismissed with its own Dismiss button.",
@@ -84,9 +85,9 @@
           412,
           846
         ],
-        "scale": 1.8252
+        "scale": 1.6675
       },
-      "bytes": 158239,
+      "bytes": 153312,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -179,6 +180,7 @@
       "file": "play-phone-02-greek.png",
       "device": "play-phone",
       "shot": "greek",
+      "stand": "side",
       "caption": "The Greek beside the verse",
       "route": "/bible/john/1",
       "state": "John 1 with Interlinear Greek switched on (More actions, Interlinear Greek); free for every reader.",
@@ -192,9 +194,9 @@
           412,
           846
         ],
-        "scale": 1.8252
+        "scale": 1.9782
       },
-      "bytes": 113754,
+      "bytes": 209288,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -680,6 +682,7 @@
       "file": "play-phone-03-fathers.png",
       "device": "play-phone",
       "shot": "fathers",
+      "stand": "front",
       "caption": "The Fathers on the verse you are reading",
       "route": "/bible/genesis/1",
       "state": "Genesis 1, the commentary opened on verse 1: St Basil the Great, Hexaemeron, Homily 1, his own words as NPNF prints them.",
@@ -693,13 +696,13 @@
           412,
           846
         ],
-        "scale": 1.8252
+        "scale": 1.6675
       },
-      "bytes": 106760,
+      "bytes": 109717,
       "problems": [],
       "reader": {
         "plus": "0",
-        "tier": null
+        "tier": "free"
       },
       "errors": [],
       "picturesInView": [
@@ -964,6 +967,7 @@
       "file": "play-phone-04-journal.png",
       "device": "play-phone",
       "shot": "journal",
+      "stand": "side",
       "caption": "A journal kept by the Church's day",
       "route": "/journal",
       "state": "The journal as a new reader opens it: the day's page, its saint, its fast and its readings, each with a pen.",
@@ -977,9 +981,9 @@
           412,
           846
         ],
-        "scale": 1.8252
+        "scale": 1.9782
       },
-      "bytes": 92506,
+      "bytes": 187924,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -1044,6 +1048,7 @@
       "file": "play-phone-05-prayers.png",
       "device": "play-phone",
       "shot": "prayers",
+      "stand": "front",
       "caption": "The daily prayers, morning and evening",
       "route": "/prayers",
       "state": "Prayers as it opens.",
@@ -1057,9 +1062,9 @@
           412,
           846
         ],
-        "scale": 1.8252
+        "scale": 1.6675
       },
-      "bytes": 386861,
+      "bytes": 349963,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -1151,6 +1156,7 @@
       "file": "play-phone-06-saint.png",
       "device": "play-phone",
       "shot": "saint",
+      "stand": "side",
       "caption": "The lives of the saints",
       "route": "/saints/basil-the-great",
       "state": "St Basil the Great's page, on Life.",
@@ -1164,9 +1170,9 @@
           412,
           846
         ],
-        "scale": 1.8252
+        "scale": 1.9782
       },
-      "bytes": 320976,
+      "bytes": 290639,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -1243,6 +1249,7 @@
       "file": "play-phone-07-calendar.png",
       "device": "play-phone",
       "shot": "calendar",
+      "stand": "front",
       "caption": "Every feast and every fast",
       "route": "/calendar",
       "state": "The Church calendar on December 2026, the New reckoning, the day's fast under it.",
@@ -1256,9 +1263,9 @@
           412,
           846
         ],
-        "scale": 1.8252
+        "scale": 1.6675
       },
-      "bytes": 91677,
+      "bytes": 97380,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -1325,6 +1332,7 @@
       "file": "play-phone-08-reading.png",
       "device": "play-phone",
       "shot": "reading",
+      "stand": "side",
       "caption": "The Fathers, read in full",
       "route": "/saints/athanasius-the-great/on-the-incarnation",
       "state": "St Athanasius the Great, On the Incarnation, opened from the reading room.",
@@ -1338,9 +1346,9 @@
           412,
           846
         ],
-        "scale": 1.8252
+        "scale": 1.9782
       },
-      "bytes": 172732,
+      "bytes": 208622,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -1418,6 +1426,7 @@
       "file": "play-tablet-7-01-today.png",
       "device": "play-tablet-7",
       "shot": "today",
+      "stand": "front",
       "caption": "The day's saint, fast and readings",
       "route": "/",
       "state": "Today on 6 December 2026, the new reader's one-question card dismissed with its own Dismiss button.",
@@ -1431,9 +1440,9 @@
           600,
           960
         ],
-        "scale": 2.1117
+        "scale": 1.92
       },
-      "bytes": 216376,
+      "bytes": 194583,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -1526,6 +1535,7 @@
       "file": "play-tablet-7-02-greek.png",
       "device": "play-tablet-7",
       "shot": "greek",
+      "stand": "side",
       "caption": "The Greek beside the verse",
       "route": "/bible/john/1",
       "state": "John 1 with Interlinear Greek switched on (More actions, Interlinear Greek); free for every reader.",
@@ -1539,9 +1549,9 @@
           600,
           960
         ],
-        "scale": 2.1117
+        "scale": 2.325
       },
-      "bytes": 188373,
+      "bytes": 309889,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -2027,6 +2037,7 @@
       "file": "play-tablet-7-03-fathers.png",
       "device": "play-tablet-7",
       "shot": "fathers",
+      "stand": "front",
       "caption": "The Fathers on the verse you are reading",
       "route": "/bible/genesis/1",
       "state": "Genesis 1, the commentary opened on verse 1: St Basil the Great, Hexaemeron, Homily 1, his own words as NPNF prints them.",
@@ -2040,13 +2051,13 @@
           600,
           960
         ],
-        "scale": 2.1117
+        "scale": 1.92
       },
-      "bytes": 167827,
+      "bytes": 157300,
       "problems": [],
       "reader": {
         "plus": "0",
-        "tier": null
+        "tier": "free"
       },
       "errors": [],
       "picturesInView": [
@@ -2311,6 +2322,7 @@
       "file": "play-tablet-7-04-journal.png",
       "device": "play-tablet-7",
       "shot": "journal",
+      "stand": "side",
       "caption": "A journal kept by the Church's day",
       "route": "/journal",
       "state": "The journal as a new reader opens it: the day's page, its saint, its fast and its readings, each with a pen.",
@@ -2324,9 +2336,9 @@
           600,
           960
         ],
-        "scale": 2.1117
+        "scale": 2.325
       },
-      "bytes": 116428,
+      "bytes": 209398,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -2391,6 +2403,7 @@
       "file": "play-tablet-7-05-prayers.png",
       "device": "play-tablet-7",
       "shot": "prayers",
+      "stand": "front",
       "caption": "The daily prayers, morning and evening",
       "route": "/prayers",
       "state": "Prayers as it opens.",
@@ -2404,9 +2417,9 @@
           600,
           960
         ],
-        "scale": 2.1117
+        "scale": 1.92
       },
-      "bytes": 675825,
+      "bytes": 600209,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -2498,6 +2511,7 @@
       "file": "play-tablet-7-06-saint.png",
       "device": "play-tablet-7",
       "shot": "saint",
+      "stand": "side",
       "caption": "The lives of the saints",
       "route": "/saints/basil-the-great",
       "state": "St Basil the Great's page, on Life.",
@@ -2511,13 +2525,13 @@
           600,
           960
         ],
-        "scale": 2.1117
+        "scale": 2.325
       },
-      "bytes": 690382,
+      "bytes": 591359,
       "problems": [],
       "reader": {
         "plus": "0",
-        "tier": null
+        "tier": "free"
       },
       "errors": [],
       "picturesInView": [
@@ -2590,6 +2604,7 @@
       "file": "play-tablet-7-07-calendar.png",
       "device": "play-tablet-7",
       "shot": "calendar",
+      "stand": "front",
       "caption": "Every feast and every fast",
       "route": "/calendar",
       "state": "The Church calendar on December 2026, the New reckoning, the day's fast under it.",
@@ -2603,13 +2618,13 @@
           600,
           960
         ],
-        "scale": 2.1117
+        "scale": 1.92
       },
-      "bytes": 138540,
+      "bytes": 128021,
       "problems": [],
       "reader": {
         "plus": "0",
-        "tier": null
+        "tier": "free"
       },
       "errors": [],
       "picturesInView": [
@@ -2672,6 +2687,7 @@
       "file": "play-tablet-7-08-reading.png",
       "device": "play-tablet-7",
       "shot": "reading",
+      "stand": "side",
       "caption": "The Fathers, read in full",
       "route": "/saints/athanasius-the-great/on-the-incarnation",
       "state": "St Athanasius the Great, On the Incarnation, opened from the reading room.",
@@ -2685,9 +2701,9 @@
           600,
           960
         ],
-        "scale": 2.1117
+        "scale": 2.325
       },
-      "bytes": 269494,
+      "bytes": 337917,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -2765,6 +2781,7 @@
       "file": "play-tablet-10-01-today.png",
       "device": "play-tablet-10",
       "shot": "today",
+      "stand": "front",
       "caption": "The day's saint, fast and readings",
       "route": "/",
       "state": "Today on 6 December 2026, the new reader's one-question card dismissed with its own Dismiss button.",
@@ -2778,9 +2795,9 @@
           800,
           1280
         ],
-        "scale": 1.98
+        "scale": 1.8
       },
-      "bytes": 300697,
+      "bytes": 268825,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -2872,6 +2889,7 @@
       "file": "play-tablet-10-02-greek.png",
       "device": "play-tablet-10",
       "shot": "greek",
+      "stand": "side",
       "caption": "The Greek beside the verse",
       "route": "/bible/john/1",
       "state": "John 1 with Interlinear Greek switched on (More actions, Interlinear Greek); free for every reader.",
@@ -2885,9 +2903,9 @@
           800,
           1280
         ],
-        "scale": 1.98
+        "scale": 2.1797
       },
-      "bytes": 274652,
+      "bytes": 461775,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -3373,6 +3391,7 @@
       "file": "play-tablet-10-03-fathers.png",
       "device": "play-tablet-10",
       "shot": "fathers",
+      "stand": "front",
       "caption": "The Fathers on the verse you are reading",
       "route": "/bible/genesis/1",
       "state": "Genesis 1, the commentary opened on verse 1: St Basil the Great, Hexaemeron, Homily 1, his own words as NPNF prints them.",
@@ -3386,9 +3405,9 @@
           800,
           1280
         ],
-        "scale": 1.98
+        "scale": 1.8
       },
-      "bytes": 254043,
+      "bytes": 231644,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -3657,6 +3676,7 @@
       "file": "play-tablet-10-04-journal.png",
       "device": "play-tablet-10",
       "shot": "journal",
+      "stand": "side",
       "caption": "A journal kept by the Church's day",
       "route": "/journal",
       "state": "The journal as a new reader opens it: the day's page, its saint, its fast and its readings, each with a pen.",
@@ -3670,9 +3690,9 @@
           800,
           1280
         ],
-        "scale": 1.98
+        "scale": 2.1797
       },
-      "bytes": 131855,
+      "bytes": 239819,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -3737,6 +3757,7 @@
       "file": "play-tablet-10-05-prayers.png",
       "device": "play-tablet-10",
       "shot": "prayers",
+      "stand": "front",
       "caption": "The daily prayers, morning and evening",
       "route": "/prayers",
       "state": "Prayers as it opens.",
@@ -3750,9 +3771,9 @@
           800,
           1280
         ],
-        "scale": 1.98
+        "scale": 1.8
       },
-      "bytes": 918673,
+      "bytes": 797243,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -3841,6 +3862,7 @@
       "file": "play-tablet-10-06-saint.png",
       "device": "play-tablet-10",
       "shot": "saint",
+      "stand": "side",
       "caption": "The lives of the saints",
       "route": "/saints/basil-the-great",
       "state": "St Basil the Great's page, on Life.",
@@ -3854,9 +3876,9 @@
           800,
           1280
         ],
-        "scale": 1.98
+        "scale": 2.1797
       },
-      "bytes": 374906,
+      "bytes": 490542,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -3926,6 +3948,7 @@
       "file": "play-tablet-10-07-calendar.png",
       "device": "play-tablet-10",
       "shot": "calendar",
+      "stand": "front",
       "caption": "Every feast and every fast",
       "route": "/calendar",
       "state": "The Church calendar on December 2026, the New reckoning, the day's fast under it.",
@@ -3939,9 +3962,9 @@
           800,
           1280
         ],
-        "scale": 1.98
+        "scale": 1.8
       },
-      "bytes": 587160,
+      "bytes": 528780,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -4023,6 +4046,7 @@
       "file": "play-tablet-10-08-reading.png",
       "device": "play-tablet-10",
       "shot": "reading",
+      "stand": "side",
       "caption": "The Fathers, read in full",
       "route": "/saints/athanasius-the-great/on-the-incarnation",
       "state": "St Athanasius the Great, On the Incarnation, opened from the reading room.",
@@ -4036,9 +4060,9 @@
           800,
           1280
         ],
-        "scale": 1.98
+        "scale": 2.1797
       },
-      "bytes": 354143,
+      "bytes": 516774,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -4116,6 +4140,7 @@
       "file": "appstore-iphone-6.9-01-today.png",
       "device": "appstore-iphone-6.9",
       "shot": "today",
+      "stand": "front",
       "caption": "The day's saint, fast and readings",
       "route": "/",
       "state": "Today on 6 December 2026, the new reader's one-question card dismissed with its own Dismiss button.",
@@ -4129,9 +4154,9 @@
           440,
           956
         ],
-        "scale": 2.4159
+        "scale": 2.2045
       },
-      "bytes": 236872,
+      "bytes": 217815,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -4224,6 +4249,7 @@
       "file": "appstore-iphone-6.9-02-greek.png",
       "device": "appstore-iphone-6.9",
       "shot": "greek",
+      "stand": "side",
       "caption": "The Greek beside the verse",
       "route": "/bible/john/1",
       "state": "John 1 with Interlinear Greek switched on (More actions, Interlinear Greek); free for every reader.",
@@ -4237,13 +4263,13 @@
           440,
           956
         ],
-        "scale": 2.4159
+        "scale": 2.6165
       },
-      "bytes": 185098,
+      "bytes": 340729,
       "problems": [],
       "reader": {
         "plus": "0",
-        "tier": null
+        "tier": "free"
       },
       "errors": [],
       "picturesInView": [],
@@ -4725,6 +4751,7 @@
       "file": "appstore-iphone-6.9-03-fathers.png",
       "device": "appstore-iphone-6.9",
       "shot": "fathers",
+      "stand": "front",
       "caption": "The Fathers on the verse you are reading",
       "route": "/bible/genesis/1",
       "state": "Genesis 1, the commentary opened on verse 1: St Basil the Great, Hexaemeron, Homily 1, his own words as NPNF prints them.",
@@ -4738,9 +4765,9 @@
           440,
           956
         ],
-        "scale": 2.4159
+        "scale": 2.2045
       },
-      "bytes": 172535,
+      "bytes": 163079,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -5009,6 +5036,7 @@
       "file": "appstore-iphone-6.9-04-journal.png",
       "device": "appstore-iphone-6.9",
       "shot": "journal",
+      "stand": "side",
       "caption": "A journal kept by the Church's day",
       "route": "/journal",
       "state": "The journal as a new reader opens it: the day's page, its saint, its fast and its readings, each with a pen.",
@@ -5022,9 +5050,9 @@
           440,
           956
         ],
-        "scale": 2.4159
+        "scale": 2.6165
       },
-      "bytes": 131329,
+      "bytes": 270415,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -5089,6 +5117,7 @@
       "file": "appstore-iphone-6.9-05-prayers.png",
       "device": "appstore-iphone-6.9",
       "shot": "prayers",
+      "stand": "front",
       "caption": "The daily prayers, morning and evening",
       "route": "/prayers",
       "state": "Prayers as it opens.",
@@ -5102,9 +5131,9 @@
           440,
           956
         ],
-        "scale": 2.4159
+        "scale": 2.2045
       },
-      "bytes": 656851,
+      "bytes": 593267,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -5195,6 +5224,7 @@
       "file": "appstore-iphone-6.9-06-saint.png",
       "device": "appstore-iphone-6.9",
       "shot": "saint",
+      "stand": "side",
       "caption": "The lives of the saints",
       "route": "/saints/basil-the-great",
       "state": "St Basil the Great's page, on Life.",
@@ -5208,9 +5238,9 @@
           440,
           956
         ],
-        "scale": 2.4159
+        "scale": 2.6165
       },
-      "bytes": 536519,
+      "bytes": 480678,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -5287,6 +5317,7 @@
       "file": "appstore-iphone-6.9-07-calendar.png",
       "device": "appstore-iphone-6.9",
       "shot": "calendar",
+      "stand": "front",
       "caption": "Every feast and every fast",
       "route": "/calendar",
       "state": "The Church calendar on December 2026, the New reckoning, the day's fast under it.",
@@ -5300,9 +5331,9 @@
           440,
           956
         ],
-        "scale": 2.4159
+        "scale": 2.2045
       },
-      "bytes": 149837,
+      "bytes": 142867,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -5369,6 +5400,7 @@
       "file": "appstore-iphone-6.9-08-reading.png",
       "device": "appstore-iphone-6.9",
       "shot": "reading",
+      "stand": "side",
       "caption": "The Fathers, read in full",
       "route": "/saints/athanasius-the-great/on-the-incarnation",
       "state": "St Athanasius the Great, On the Incarnation, opened from the reading room.",
@@ -5382,9 +5414,9 @@
           440,
           956
         ],
-        "scale": 2.4159
+        "scale": 2.6165
       },
-      "bytes": 292006,
+      "bytes": 356823,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -5462,6 +5494,7 @@
       "file": "appstore-ipad-13-01-today.png",
       "device": "appstore-ipad-13",
       "shot": "today",
+      "stand": "front",
       "caption": "The day's saint, fast and readings",
       "route": "/",
       "state": "Today on 6 December 2026, the new reader's one-question card dismissed with its own Dismiss button.",
@@ -5475,9 +5508,9 @@
           1032,
           1376
         ],
-        "scale": 1.6095
+        "scale": 1.5203
       },
-      "bytes": 287427,
+      "bytes": 276691,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -5570,6 +5603,7 @@
       "file": "appstore-ipad-13-02-greek.png",
       "device": "appstore-ipad-13",
       "shot": "greek",
+      "stand": "side",
       "caption": "The Greek beside the verse",
       "route": "/bible/john/1",
       "state": "John 1 with Interlinear Greek switched on (More actions, Interlinear Greek); free for every reader.",
@@ -5583,13 +5617,13 @@
           1032,
           1376
         ],
-        "scale": 1.6095
+        "scale": 1.7442
       },
-      "bytes": 251535,
+      "bytes": 417137,
       "problems": [],
       "reader": {
         "plus": "0",
-        "tier": null
+        "tier": "free"
       },
       "errors": [],
       "picturesInView": [],
@@ -6071,6 +6105,7 @@
       "file": "appstore-ipad-13-03-fathers.png",
       "device": "appstore-ipad-13",
       "shot": "fathers",
+      "stand": "front",
       "caption": "The Fathers on the verse you are reading",
       "route": "/bible/genesis/1",
       "state": "Genesis 1, the commentary opened on verse 1: St Basil the Great, Hexaemeron, Homily 1, his own words as NPNF prints them.",
@@ -6084,9 +6119,9 @@
           1032,
           1376
         ],
-        "scale": 1.6095
+        "scale": 1.5203
       },
-      "bytes": 240900,
+      "bytes": 238503,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -6355,6 +6390,7 @@
       "file": "appstore-ipad-13-04-journal.png",
       "device": "appstore-ipad-13",
       "shot": "journal",
+      "stand": "side",
       "caption": "A journal kept by the Church's day",
       "route": "/journal",
       "state": "The journal as a new reader opens it: the day's page, its saint, its fast and its readings, each with a pen.",
@@ -6368,9 +6404,9 @@
           1032,
           1376
         ],
-        "scale": 1.6095
+        "scale": 1.7442
       },
-      "bytes": 125037,
+      "bytes": 233397,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -6435,6 +6471,7 @@
       "file": "appstore-ipad-13-05-prayers.png",
       "device": "appstore-ipad-13",
       "shot": "prayers",
+      "stand": "front",
       "caption": "The daily prayers, morning and evening",
       "route": "/prayers",
       "state": "Prayers as it opens.",
@@ -6448,9 +6485,9 @@
           1032,
           1376
         ],
-        "scale": 1.6095
+        "scale": 1.5203
       },
-      "bytes": 752932,
+      "bytes": 706123,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -6539,6 +6576,7 @@
       "file": "appstore-ipad-13-06-saint.png",
       "device": "appstore-ipad-13",
       "shot": "saint",
+      "stand": "side",
       "caption": "The lives of the saints",
       "route": "/saints/basil-the-great",
       "state": "St Basil the Great's page, on Life.",
@@ -6552,9 +6590,9 @@
           1032,
           1376
         ],
-        "scale": 1.6095
+        "scale": 1.7442
       },
-      "bytes": 345715,
+      "bytes": 466776,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -6624,6 +6662,7 @@
       "file": "appstore-ipad-13-07-calendar.png",
       "device": "appstore-ipad-13",
       "shot": "calendar",
+      "stand": "front",
       "caption": "Every feast and every fast",
       "route": "/calendar",
       "state": "The Church calendar on December 2026, the New reckoning, the day's fast under it.",
@@ -6637,9 +6676,9 @@
           1032,
           1376
         ],
-        "scale": 1.6095
+        "scale": 1.5203
       },
-      "bytes": 480118,
+      "bytes": 448324,
       "problems": [],
       "reader": {
         "plus": "0",
@@ -6721,6 +6760,7 @@
       "file": "appstore-ipad-13-08-reading.png",
       "device": "appstore-ipad-13",
       "shot": "reading",
+      "stand": "side",
       "caption": "The Fathers, read in full",
       "route": "/saints/athanasius-the-great/on-the-incarnation",
       "state": "St Athanasius the Great, On the Incarnation, opened from the reading room.",
@@ -6734,9 +6774,9 @@
           1032,
           1376
         ],
-        "scale": 1.6095
+        "scale": 1.7442
       },
-      "bytes": 308822,
+      "bytes": 463272,
       "problems": [],
       "reader": {
         "plus": "0",
