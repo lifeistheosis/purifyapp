@@ -1,0 +1,149 @@
+{
+  "made": "2026-11-12",
+  "day": "2026-12-06T09:30:00-05:00",
+  "checks": [
+    "contrast",
+    "placeholder",
+    "target",
+    "glyph",
+    "palette",
+    "gold",
+    "stripe",
+    "mirror",
+    "emdash",
+    "rays",
+    "sparkle",
+    "picture",
+    "dashed",
+    "keys",
+    "cut"
+  ],
+  "pictures": [
+    {
+      "id": "A1",
+      "file": "A1-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 130636,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "Dawn",
+      "idea": "Three hills in layered planes, each a step lighter as it comes nearer, the nearest crest lit and a low light behind it.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    },
+    {
+      "id": "A2",
+      "file": "A2-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 128081,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "One line",
+      "idea": "A single sweeping curve in a fine line, and its faint echo. Nothing else.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    },
+    {
+      "id": "A3",
+      "file": "A3-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 143614,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "Contours",
+      "idea": "The lines of a hill as a map draws them, every third a little stronger, the summit off to one side.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    },
+    {
+      "id": "A4",
+      "file": "A4-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 153096,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "Vesica",
+      "idea": "Two wide circles crossing. The almond between them is a plane the screen stands in, with their wider arcs outside it.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    },
+    {
+      "id": "A5",
+      "file": "A5-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 130326,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "Frame",
+      "idea": "A hairline frame round the whole picture whose head bends into an arch, a second line inside it.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    },
+    {
+      "id": "A6",
+      "file": "A6-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 135241,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      },
+      "name": "Low glow",
+      "idea": "One level line, a low light resting on it, and a few plain dots of stars above.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ]
+    }
+  ]
+}
