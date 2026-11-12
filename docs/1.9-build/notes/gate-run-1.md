@@ -578,3 +578,117 @@ is for the arbiter's read):
 
 Each screen passes `scripts/guardrail-walk.mjs` again before its owner calls
 it done; the gate's second run is on the export the test build is cut from.
+
+## Final run 1 (2026-11-11 20:27 to 2026-11-12 02:06 UTC): not a pass
+
+The arbiter's call (20:25 UTC): one selling export, built as the release
+would be; both walks, both readers, with the pixels pass; the gift's claim
+screens; parts 3 to 5; the web build last; one report. The arbiter closed it
+at 02:08 UTC as "final run 1, not a pass". Its eleven fails are routed below,
+and a confirm run follows on the head that mends them.
+
+**The export:** `npm run build:android` of `f4679fb49` (it holds
+`0e442bfcc`), selling: `NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1`, and the new
+reader walked with `SELLS_PLUS=1`. The switches stood in their release-day
+order (lib/campaigns/flags.ts): CAMPAIGNS_OPENING "testers",
+PICTURES_IN_STORE_BUILDS false, CAMPAIGN_NOTICES true, JULY_GROUPS_GO true,
+CARE_NOTE_SEND true. Parts 3 to 5 and the web build ran on `6d51bf716`, the
+export's head with one website-only file (a profile's share picture).
+
+**Part 1, the tap walk:** every control on every screen and every sheet, at
+phone size with touch, reading the main web.
+- New reader, no Plus: 128 screens, 2,881 controls, 2 failed; 110 distinct
+  sheets, 1 failed.
+- Open reader: 128 screens, 2,873 controls, 4 failed; 109 sheets, 3 failed.
+- /gift/ in the eight states no walk reaches, since a walk has no order:
+  signed out; ready, claimed on arrival; on its way; Plus running; Pro;
+  claimed before by this reader; claimed by someone else; no orders. A
+  stand-in answered for /api/gifts/order and its claim. Every control was
+  tapped and checkMock with pixels held each state: all eight pass, and
+  their words fail in one (fail 11).
+
+**Part 2, checkMock with pixels on every screen, five palettes:** the new
+reader 125 of 128 screens clean, the open reader 122 of 128. The walks wore
+the five palettes only. The seventeen looks, worn by the open reader on
+sixteen main screens: 15 measured, 12 clean, and the three fails were all on
+light looks; /reading/ was cut by the run's own time limit. On the arbiter's
+word (02:08 UTC) the seven light looks (Desert, Jordan, Blush, Roses,
+Lavender, Olive, Stone) are measured on all 128 screens, because the dark
+looks read like the dark palettes, which passed.
+
+**The fails, by owner (the arbiter's routing, 02:08 UTC).**
+
+Updates:
+1. /history/, both readers: the row after 451 jumps 333px when it is brought
+   to the middle, and rests under the tab bar (three tries of three). The two
+   rows above it hold 270px while undrawn and draw at 361px
+   (app/globals.css, .history-cv).
+2. The atlases, Where they met and Where it happened: the dot between a date
+   and a place reads 2.65:1 on every palette (.atlas-row-line i, at 0.3
+   white).
+3. /reading/councils/, both readers: seven council pictures asked of the
+   website as JPEG while the export carries each as AVIF, so a reader with no
+   signal sees none (lib/councils/books.ts).
+4. /gift/, both readers: "Try again" is 85 by 36 (OrderGiftClient.tsx).
+5. /prayers/: "The Hours" reads 2.99:1 on Candlelight against its need of
+   3:1, its picture following the hour (SoftTiles.tsx).
+9. Today, on the light looks: the hour card's line reads 4.28:1 over its
+   picture (PrayNowCard.tsx).
+10. /history/alaska-mission/, on the light looks: "Kodiak" reads 4.44:1 on
+    the map door (CouncilMap.tsx).
+11. /gift/, a line that is not true: a buyer whose parcel's recipient claimed
+    the month with the label is told no order was found, over that same order
+    listed as already claimed (OrderGiftClient.tsx, the ticket's none line
+    and "Your other orders").
+
+Updates 2:
+6. /pricing/, both readers: "Purify Plus" reads 4.47:1 on Candlelight
+   (KeptPaywall.tsx).
+7. /florilegium/ and its gathering: the references read 4.41 to 4.49:1 on
+   Light, and 4.26 to 4.33:1 on the light looks (GatheringRow.tsx,
+   GatheringPages.tsx).
+8. /community/, the Purify profile sheet: "@purify" read 2.84:1 on Black in
+   one walk and 10.14:1 in the other, by where the drifting specks stood
+   (ProfileCard.tsx).
+
+For Updates 2 to judge: a reader's profile sheet, once, held an svg white on
+Light outside any dark island. Four tries afterwards found nothing (0.1, 0.3,
+1.5 and 5 seconds after the tap, transitions stilled as checkMock stills
+them); the sheet turns into a dark island when that reader's banner arrives,
+so it was most likely measured across that change (ProfileViewer.tsx).
+
+**No look stands unanswered.** Words over a picture: 863 and 872 in the two
+guardrail walks, of which 756 and 765 were answered by their pixels; 947 and
+946 in the sheets, of which 827 and 828. The rest were answered by eye from
+stills on Dark and Light:
+- the guardrail walks' 107 each, on four screens: Community (a reader's letter
+  under their picture, shown only when there is no picture), Reading mode (the
+  verse digits inside the small page pictures, allowed by name), and the
+  walkthroughs and Job's ("Walking with Job" stands beside or under its
+  picture). All read.
+- the sheets' 120 and 118: the atlas years on the map (112 and 110), right at
+  rest though one still caught a year mid-roll, and the Eras sheet (8),
+  clear.
+- the open walk's one control for the eye: Settings' Serif choice takes; the
+  preview and a saint's work move between DM Sans and Lora.
+
+**Allowances:** two new since the third run, each with its reason: the atlas
+year's digit columns ("a year's digits keep their order in Arabic",
+MapAtlas.tsx) and a reader's own words in the profile ("a reader's own
+words", readersWords.ts). None stands without a reason.
+
+**Not fails:** a saint's web lifts the chosen council above its sheet (the
+arbiter's allowance of 2026-11-11), and five "Mark day as read" buttons on a
+plan are held under the finger by the browser's scroll anchoring.
+
+**Parts 3 to 5:** 62 files, 932 tests, all pass. **The web build:** passes,
+6,525 pages.
+
+**The confirm run** (the arbiter, 02:08 UTC), when Updates and Updates 2
+report: a new selling export in the same positions; the guardrail walk on
+all 128 screens, both readers, five palettes, pixels; the tap walk on every
+screen the mends touch, both readers (the history row brought to the middle,
+the atlases, /reading/councils/ with no signal, /gift/ in all eight states
+with the claim by a recipient, /prayers/, /pricing/, /florilegium/,
+Community's sheets, Today, /history/alaska-mission/); the light looks on
+those screens; parts 3 to 5; the web build last; one report.
