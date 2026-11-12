@@ -113,8 +113,9 @@ const NAME_CLASS = "mt-1.5 font-sans text-[11.5px] font-semibold leading-[1.22]"
  * and a tag going quiet into it read 4.33:1 to 4.46:1 at 75 on seven of
  * them (St John's web, the hold of 2026-11-12); at 85 it passes on all.
  */
+const TAG_CLASS = "mt-0.5 max-w-full truncate font-sans text-[10.5px] text-paper/75 [html[data-reading-mode=parchment]_&]:text-paper/85";
+/** The name of a saint shown on a plate, a step fainter than the others, and inked as the line under it is. */
 const FAINT = "text-paper/75 [html[data-reading-mode=parchment]_&]:text-paper/85";
-const TAG_CLASS = `mt-0.5 max-w-full truncate font-sans text-[10.5px] ${FAINT}`;
 const MIDDLE_RING_CLASS =
   "rounded-full shadow-[0_0_0_4px_var(--color-night),0_0_0_5.5px_color-mix(in_srgb,var(--color-paper)_55%,transparent),0_14px_40px_rgb(0_0_0/0.55)]";
 const MIDDLE_NAME_CLASS = "mt-2.5 text-center font-serif text-[16px] font-bold leading-[1.2] text-paper";

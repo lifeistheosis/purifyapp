@@ -183,7 +183,7 @@ describe("the saints' webs (fail 4, the 118 webs)", () => {
     // hold of 2026-11-12); at 85 on paper it passes on all. The tags and the names of saints on a plate share it.
     const web = fs.readFileSync(path.join(ROOT, "components/saints/web/WebConstellation.tsx"), "utf8");
     expect(web).toContain('const FAINT = "text-paper/75 [html[data-reading-mode=parchment]_&]:text-paper/85";');
-    expect(web).toContain("const TAG_CLASS = `mt-0.5 max-w-full truncate font-sans text-[10.5px] ${FAINT}`;");
+    expect(web).toContain('const TAG_CLASS = "mt-0.5 max-w-full truncate font-sans text-[10.5px] text-paper/75 [html[data-reading-mode=parchment]_&]:text-paper/85";');
     expect(web).not.toMatch(/"text-paper\/75" : "text-paper\/95"/);
     expect(web.match(/\? FAINT : "text-paper\/95"/g)?.length).toBe(2);
   });
