@@ -9,6 +9,9 @@
 // It cannot watch a real fold (vitest runs with no browser here). The check
 // that does is scripts/opened-walk.mjs, on the export.
 
+import fs from "node:fs";
+import path from "node:path";
+
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../motion", () => ({ prefersReducedMotion: () => motionOff }));
@@ -758,5 +761,18 @@ describe("only an opening the reader has just asked for", () => {
     opened(b, book);
     expect(followIfOpened(book.title as unknown as Element)).toBe(false);
     expect(b.state.scrolls).toEqual([]);
+  });
+});
+
+describe("the gate's walk judges what opened as the page has followed it", () => {
+  // scripts/tap-walk.mjs waits, before it judges a part that has opened, for as long as this waits
+  // for a part that says it is still filling, and then for the page to come to rest. With a flat 4s
+  // it read Community's "4 replies", which came from the website after 4s on a loaded machine, half
+  // way through the glide that brings their control to the top (2026-11-12): a fail no reader sees.
+  it("waits for a filling part as long as the page follows one, and judges once the page is at rest", () => {
+    const walk = fs.readFileSync(path.join(process.cwd(), "scripts", "tap-walk.mjs"), "utf8");
+    expect(walk).toContain(`const BUSY_MS = ${BUSY_WATCH_MS};`);
+    expect(walk).toMatch(/\{ i: c\.i, busyMs: BUSY_MS, restMs: REST_MS \}/);
+    expect(walk).toMatch(/timeout: BUSY_MS \+ REST_MS \+ \d+/);
   });
 });

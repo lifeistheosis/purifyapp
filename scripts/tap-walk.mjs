@@ -146,6 +146,11 @@ const OUT = SELF_TEST ? selfTestPage() : path.resolve(argv[0] ?? "out");
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}: run npm run build:android first`);
 const SELLS_PLUS = !SELF_TEST && SELLS;
 checkSells(OUT, SELLS_PLUS);
+// How long a part that says it is still filling (aria-busy) is waited for before it is judged: as
+// long as lib/ui/showOpened.ts follows one (BUSY_WATCH_MS, held equal by its test), and then up to
+// REST_MS for the page to come to rest with what has come.
+const BUSY_MS = 12000;
+const REST_MS = 4000;
 
 /**
  * A fail allowed by name and reason, the arbiter's to grant: the screens, the control, the
@@ -200,6 +205,7 @@ const EXPECT = {
   "/sheet-fine/": { verdict: "pass", why: /^opened dialog "Keep", held to checkMock's rules: nothing failed/ },
   "/sheet-plays/": { verdict: "pass", why: /^dialog "Atlas" plays itself: paused by its own Pause/ },
   "/late-follow/": { verdict: "pass" },
+  "/slow-reply/": { verdict: "pass" },
   "/not-followed/": { verdict: "fail", why: /^under: what it opened ends at/ },
 };
 
@@ -360,12 +366,14 @@ if (at === "/sticky/") {
     sheet.append(year, button("Pause", () => clearInterval(run)));
     document.body.append(sheet);
   }), block(1200));
-} else if (at === "/late-follow/" || at === "/not-followed/") {
+} else if (at === "/late-follow/" || at === "/slow-reply/" || at === "/not-followed/") {
   // As Community's "1 reply": the thread opens on a row that waits (aria-busy), the reply lands
   // over a second later and takes the thread's end far under the bar at the foot, and the page
   // follows it a little each frame until the end stands 12px clear of the bar, as
   // lib/ui/showOpened.ts does with a long reply (a walk that judges at a fixed moment reads it half
-  // way); or, in the other case, it does not follow at all.
+  // way); or, in the other case, it does not follow at all. The slow reply lands nearly five seconds
+  // on, as one from the website did on a loaded machine, and is followed as the late one is: the
+  // walk's 1.4 to 3s of looks after the tap and a flat 4s wait read it half way through its glide.
   const bar = document.createElement("div"); bar.setAttribute("data-screen-edge", "bottom");
   bar.style.cssText = "position:fixed;left:0;right:0;bottom:0;height:84px;background:#eee";
   document.body.append(bar);
@@ -377,7 +385,7 @@ if (at === "/sticky/") {
     thread.replaceChildren(wait);
     setTimeout(() => {
       thread.replaceChildren(block(700));
-      if (at !== "/late-follow/") return;
+      if (at === "/not-followed/") return;
       const step = () => {
         const owed = thread.getBoundingClientRect().bottom - (bar.getBoundingClientRect().top - 12);
         if (owed <= 0.5) return;
@@ -385,7 +393,7 @@ if (at === "/sticky/") {
         requestAnimationFrame(step);
       };
       requestAnimationFrame(step);
-    }, 1300);
+    }, at === "/slow-reply/" ? 4800 : 1300);
   });
   open.setAttribute("aria-expanded", "false"); open.setAttribute("aria-controls", "thread");
   m.append(block(300), open, thread, block(1500));
@@ -1069,25 +1077,39 @@ async function walkScreen(ctx, at, kept) {
           // not judged half way: lib/ui/showOpened.ts follows what lands late, a reply from the
           // website a second after the tap, in a glide of about a fifth of a second. Read at a fixed
           // moment, Community's "1 reply" was caught at 752px, a frame of the glide that ends at
-          // 748 with the bar at 761, and failed (the gate's final check, 2026-11-12). Up to 4s.
-          await page.evaluate(() => { window.__tapwalkRest = null; }).catch(() => {});
+          // 748 with the bar at 761, and failed (the gate's final check, 2026-11-12). A filling part
+          // is waited for as long as the page follows one (BUSY_MS), then up to REST_MS for rest: a
+          // flat 4s read "4 replies", which came from the website after 4s on a loaded machine, at
+          // 1377px, a frame of the glide that brings its control to 63px (2026-11-12, 23:24 UTC;
+          // the replies held back 4.2s show the same frame at 1380).
+          await page
+            .evaluate(() => {
+              const now = performance.now();
+              window.__tapwalkRest = { at: null, n: 0, start: now, since: now };
+            })
+            .catch(() => {});
           await page
             .waitForFunction(
-              (i) => {
+              ({ i, busyMs, restMs }) => {
+                const rest = window.__tapwalkRest;
                 const el = document.querySelector(`[data-tapwalk="${i}"]`);
-                if (!el) return true;
+                if (!el || !rest) return true;
+                const now = performance.now();
                 const parts = el.tagName === "SUMMARY" ? [el.closest("details")].filter(Boolean) : (el.getAttribute("aria-controls") || "").split(/\s+/).map((id) => document.getElementById(id)).filter(Boolean);
                 if (parts.some((p) => p.matches('[aria-busy="true"]') || p.querySelector('[aria-busy="true"]'))) {
-                  window.__tapwalkRest = null;
-                  return false;
+                  rest.at = null;
+                  rest.n = 0;
+                  rest.since = now;
+                  // The page stops following it then, and the walk judges what that leaves.
+                  return now - rest.start >= busyMs;
                 }
                 const at = `${Math.round(scrollY)} ${parts.map((p) => Math.round(p.getBoundingClientRect().bottom)).join(" ")}`;
-                const last = window.__tapwalkRest;
-                window.__tapwalkRest = { at, n: last && last.at === at ? last.n + 1 : 0 };
-                return window.__tapwalkRest.n >= 3;
+                rest.n = rest.at === at ? rest.n + 1 : 0;
+                rest.at = at;
+                return rest.n >= 3 || now - rest.since >= restMs;
               },
-              c.i,
-              { polling: 60, timeout: 4000 },
+              { i: c.i, busyMs: BUSY_MS, restMs: REST_MS },
+              { polling: 60, timeout: BUSY_MS + REST_MS + 1000 },
             )
             .catch(() => {});
           const opened = await page
