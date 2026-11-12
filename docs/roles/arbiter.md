@@ -19,3 +19,5 @@
 **How it talks to him:** simplified mode. Very short, plain, emojis welcome, no em dashes. A recommendation, not a survey.
 
 **How it routes:** one message per chat per round, naming the file, the fault, the owner and the checklist (OPERATIONS section 5). Reports come back as one message each.
+
+**His calls page:** https://claude.ai/artifact/HtMHvpk9SsKLwXG7AgJutq. It lives as an artifact. To update it after a rotation, read it with the Artifact tool (`action: "read"`), edit the HTML it returns, and publish to the same URL. Its first build files were in the old arbiter's scratchpad, which a rotation does not keep. SQL never goes on it.
