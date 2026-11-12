@@ -1471,6 +1471,14 @@ html.is-native .saint-web-sheet {
  filter: blur(24px) grayscale(1) brightness(1.25);
  opacity: 0.16;
  pointer-events: none;
+ transition: opacity var(--duration-base) var(--ease-house);
+}
+/* Standing tall, the card's light goes out: the tall face's fainter lines (a
+   saint's years, a tie's heading, at 60 percent) read 4.86:1 or more on the
+   card's own ground on every palette and look, and under the light they did
+   not (3.75:1 over St Augustine's on St Ambrose's web, Candlelight). */
+.saint-web-card[data-state="tall"] .saint-web-card-light {
+ opacity: 0;
 }
 html[data-reading-mode="parchment"] .saint-web-card-light {
  display: none;

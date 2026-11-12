@@ -200,8 +200,13 @@ describe("the saints' webs (fail 4, the 118 webs)", () => {
     const opacity = Number(/\.saint-web-card-light \{[^}]*opacity: ([\d.]+);/.exec(CSS)?.[1]);
     const share = Number(/text-\[12px\] font-medium leading-4 text-paper\/(\d+)/.exec(card)?.[1]) / 100;
     expect(opacity > 0 && share > 0).toBe(true);
-    // Over parchment it is not drawn.
+    // Over parchment it is not drawn, and it goes out when the card stands tall: there, at 0.16, a year at 60 read
+    // 3.75:1 over St Augustine's on Candlelight.
     expect(CSS).toMatch(/html\[data-reading-mode="parchment"\] \.saint-web-card-light \{\s*display: none;/);
+    expect(CSS).toMatch(/\.saint-web-card\[data-state="tall"\] \.saint-web-card-light \{\s*opacity: 0;/);
+    // The tall face's fainter lines: a saint's years and a tie's heading.
+    const tallShares = [...card.matchAll(/text-\[12\.5px\] font-(?:medium|semibold)(?: leading-4)? text-paper\/(\d+)/g)].map((m) => Number(m[1]) / 100);
+    expect(tallShares.length).toBeGreaterThanOrEqual(2);
     // A palette's token as the cascade gives it: the base, its mode's block, then its look's.
     const tokenOf = (name: string, mode: string | null, look: string | null): Rgb | null => {
       let found: Rgb | null = null;
@@ -232,8 +237,11 @@ describe("the saints' webs (fail 4, the 118 webs)", () => {
       const soft = tokenOf("night-soft", mode, look);
       expect(paper && soft, label).toBeTruthy();
       // The card's ground at its top, its brightest, under the light at its brightest: a white icon.
-      const ground = mix([255, 255, 255], mix(paper!, soft!, 0.04), opacity);
+      const top = mix(paper!, soft!, 0.04);
+      const ground = mix([255, 255, 255], top, opacity);
       expect(onGround(paper!, share, ground), `${label}: the line at ${share * 100} over a white light at ${opacity}`).toBeGreaterThanOrEqual(4.5);
+      // Standing tall, the light is out, and the tall face's fainter lines stand on the card's own ground.
+      for (const faint of tallShares) expect(onGround(paper!, faint, top), `${label}: the tall face at ${faint * 100}`).toBeGreaterThanOrEqual(4.5);
     }
   });
 });
