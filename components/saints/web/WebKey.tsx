@@ -20,6 +20,8 @@ import { FILTER_LABEL, FILTER_LINE } from "./webWords";
  * as before; where they do not (St. Athanasius's five on a phone read "A.",
  * "Disci...", "Coun...", "Hist...", "In the Li...", the gate's confirm run,
  * 2026-11-12), the track swipes sideways, as the search's kinds do on a phone.
+ * A part sized to its words is still a finger's width (44): All with its
+ * count was 43 on a 320 phone at St. Eustathius's web.
  */
 export function WebKey({
   filters,
@@ -41,7 +43,7 @@ export function WebKey({
           type="button"
           aria-pressed={filter === f}
           onClick={() => onPick(f)}
-          className="saint-web-key-part tap-press flex flex-[1_0_auto] flex-col items-center justify-center gap-[5px] rounded-[13px] px-2"
+          className="saint-web-key-part tap-press flex min-w-11 flex-[1_0_auto] flex-col items-center justify-center gap-[5px] rounded-[13px] px-2"
         >
           {f === "all" ? <Graph size={14} strokeWidth={2} /> : <WebLineMark line={FILTER_LINE[f]} width={18} />}
           <span className="flex items-baseline gap-1 whitespace-nowrap font-sans text-[12.5px] font-semibold leading-none">

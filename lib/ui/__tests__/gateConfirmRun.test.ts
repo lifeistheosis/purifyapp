@@ -193,6 +193,9 @@ describe("the saints' webs (fail 4, the 118 webs)", () => {
     expect(key).not.toContain("truncate");
     expect(key).toContain("overflow-x-auto");
     expect(key).toContain("flex-[1_0_auto]");
+    // A part sized to its words is still a finger's width: "All 7" was 43px at 320 (St Eustathius's web, the hold of
+    // 2026-11-12, export 7f250fd40).
+    expect(key).toContain("saint-web-key-part tap-press flex min-w-11 flex-[1_0_auto]");
   });
 
   it("show the card's name whole in its short face, for every saint on every web", () => {
