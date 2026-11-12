@@ -53,3 +53,12 @@ describe("a. words in their own line", () => {
     expect(glossed).toContain('data-mock-why="a word in its own line of the text"');
   });
 });
+
+describe("b. the commentary sheet in Arabic", () => {
+  it("pulls Continue reading and the verse's count to the start and end, never left or right", () => {
+    const sheet = read("components/bible/MobileCommentarySheet.tsx");
+    expect(sheet).toContain('className="-ms-1 mt-1 inline-flex min-h-11 items-center gap-1.5');
+    expect(sheet).toContain('<span className="ms-2 rounded-full bg-paper/10');
+    expect(sheet).not.toMatch(/className="[^"]*(?:^|\s)-?m[lr]-[\d[]/m);
+  });
+});

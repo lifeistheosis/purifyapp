@@ -182,7 +182,8 @@ function NoteCard({
           onClick={(e) => toggle(e.currentTarget)}
           aria-expanded={depth > 0}
           aria-controls={textId}
-          className="-ml-1 mt-1 inline-flex min-h-11 items-center gap-1.5 rounded-pill px-1 font-sans text-caption font-semibold text-premium-ink transition-opacity hover:opacity-80"
+          // Pulled to the words' start (-ms-1), so in Arabic it sits under their right edge and its arrow mirrors.
+          className="-ms-1 mt-1 inline-flex min-h-11 items-center gap-1.5 rounded-pill px-1 font-sans text-caption font-semibold text-premium-ink transition-opacity hover:opacity-80"
         >
           {deeper ? t("bible.continueReading") : t("bible.showLess")}
           <svg
@@ -348,7 +349,7 @@ export function MobileCommentarySheet({
               <p id={titleId} className="mt-0.5 truncate font-serif text-body text-paper">
                 {bookName} {chapter}:{shownVerse}
                 {notes.length > 0 ? (
-                  <span className="ml-2 rounded-full bg-paper/10 px-1.5 py-0.5 align-middle font-sans text-eyebrow font-semibold tabular-nums text-paper/55">
+                  <span className="ms-2 rounded-full bg-paper/10 px-1.5 py-0.5 align-middle font-sans text-eyebrow font-semibold tabular-nums text-paper/55">
                     {notes.length}
                   </span>
                 ) : null}
