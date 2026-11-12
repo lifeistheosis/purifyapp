@@ -2,19 +2,20 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state; the log is the release's HANDOFF.md. How the chats run: `docs/OPERATIONS.md`.
 
-Updated 2026-11-12, 22:03 UTC.
+Updated 2026-11-12, 22:12 UTC.
 
 ## 1.9: in flight
 
 - **The final check** (Admin): export cut at 20:42 UTC from 3e65f51ff, whose code is 05aee81e1. Report near 01:00 UTC. If it passes, the test build is cut at once: Android with local-first on, the main web, publish off; then iOS. He walks it as a new reader would.
-- **Updates 2:** verifies /reading/ on the same export, and prepares two fixes from the check's early sightings (the councils' Fathers moving under the finger; the community thread opening under the tab bar). Held locally until the report.
+- **Updates 2:** /reading/ passes on the same export (0 fails at 390, 800 and 1032). Held locally until the report: the councils' fix (e011e8c8f; a Father's card no longer moves under the finger), and a mend to the walk (db29a0470): the community thread was the measure, not the screen, since the page settles 12px above the tab bar once the reply has landed.
 - **The report** is now near 01:15 UTC: Admin's container restarted at 21:30, and the check resumed at 21:37.
 - **Freeze:** no app code lands during the final check.
-- **Tooling:** the pre-push guard is live (376076bcd): main refused, docs at once, the checks on everything else. Chats started before it set `git config core.hooksPath .githooks` before their next push; the arbiter says so in each one's next message. Tooling is fixing CI's typecheck for a fresh checkout (`next typegen` first). After the final check, Admin writes the nightly gate's runner, and the arbiter schedules it.
+- **Tooling:** the pre-push guard is live (376076bcd): main refused, docs at once, the checks on everything else. Chats started before it set `git config core.hooksPath .githooks` before their next push; the arbiter says so in each one's next message. CI's typecheck now passes in a fresh checkout (3ad6cdd56). Tooling is done. After the final check, Admin writes the nightly gate's runner, and the arbiter schedules it.
 - **Done for 1.9:** the drop kit (SSM board); the store pictures, 41 of them (Fable, e2aa433d); the EIKON gift (Product images chat; one month of Plus for every order).
 
 ## Waiting on him
 
+- Pull request #24 ("AD 1: the gold edit on the 808 sound", 2026-10-09) is still open against main. Merging it would deploy; his call to close it or keep it.
 - His four answers on the owner's desk plan (`docs/plans/owner-desk.md`, last section): the data-built emails sending themselves unless held, the brief's hour, a shop and sourcing chat, and who builds the design kit.
 - Walk the test build once it is cut. Then: accept the 1.9 note in Admin, set the drop day, and submit both builds after the phone walks. On release day: the Purify profile's status, and opening campaigns.
 - The company: C0 (the address on the D-U-N-S record) and C0b (the papers). Send the company's exact name as the EIN letter has it. All in OWNER-STEPS.md.

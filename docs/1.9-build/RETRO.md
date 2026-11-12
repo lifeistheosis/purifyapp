@@ -39,7 +39,7 @@ Written by the arbiter on 2026-11-12, at his word: "look at all the things we di
 1. Pushing main runs every new migration against production. Before the merge, list them all, and confirm each is signed by him and safe to run twice. After the merge, read the Supabase check.
 2. `node scripts/release.mjs back` records the way back, before the push.
 3. Push main only at his word, then run `node scripts/release.mjs live`. The push guard refuses main, so that one command carries `PURIFY_ALLOW_MAIN=1` (never `--no-verify`).
-4. If the merge goes through a pull request, CI's typecheck needs `npx next typegen` first: a fresh checkout has no `next-env.d.ts`, so the drop cards' `.webp` imports fail (found by the Tooling chat, 2026-11-12). The fix to `.github/workflows/ci.yml` is in hand.
+4. If the merge goes through a pull request, CI's typecheck needs `npx next typegen` first: a fresh checkout has no `next-env.d.ts`, so the drop cards' `.webp` imports fail (found by the Tooling chat, 2026-11-12). Fixed at 3ad6cdd56: CI runs `npx next typegen` between lint and typecheck, proved in a fresh shallow clone (9 errors without it, 0 with it).
 5. The store builds come from main after the merge. Set androidVersionCode and iosBuildNumber only once each store serves the build.
 
 ## Tools for 2.0, to add after 1.9 ships, at his word
