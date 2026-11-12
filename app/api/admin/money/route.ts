@@ -10,12 +10,12 @@ import {
   moneyWindow,
   plusAfterCut,
   plusMonths,
-  shopBuckets,
   shopNet,
   storeShareOf,
   type MoneyOrder,
   type MoneyPeriod,
 } from "@/lib/admin/money";
+import { moneyChart } from "@/lib/admin/moneyChart";
 import { getRevenueBetween } from "@/lib/billing/revenuecatMetrics";
 import { covers, readPlusFacts } from "@/lib/admin/plusEvents.server";
 import { tally } from "@/lib/admin/plusHistory";
@@ -42,7 +42,9 @@ export const dynamic = "force-dynamic";
  * part that does not answer is null and named in `unread`; nothing is
  * written. Plus is RevenueCat's revenue for the period when RevenueCat
  * answers (`plusSource` says which), and a partial refund comes off its
- * order. Read when the view opens or the period changes, never on a timer,
+ * order. The chart under the figures draws all of it by day or month, each
+ * source its own series and the refunds apart (lib/admin/moneyChart.ts).
+ * Read when the view opens or the period changes, never on a timer,
  * because Stripe's ledger is a call to Stripe.
  *
  * Admin only: 403 to anyone else.
@@ -146,13 +148,18 @@ export async function GET(req: NextRequest) {
   let plusSource: "revenuecat" | "events" | "estimate" | null = null;
   const share = subs ? storeShareOf(subs.bySource) : 1;
   const real = await getRevenueBetween(w.since.slice(0, 10), now.toISOString().slice(0, 10));
-  const kept = real ? null : await readPlusFacts(admin, w.since);
+  // The kept events are read whichever source Came in uses, because the chart
+  // draws every kept payment by day (lib/admin/moneyChart.ts), the period
+  // before's included, so they are read from its start. Came in counts only
+  // the period's own.
+  const kept = await readPlusFacts(admin, w.beforeSince);
   if (real) {
     plusGrossCents = Math.round(real.value * 100);
     plusCents = afterStoreCut(plusGrossCents, share);
     plusSource = "revenuecat";
-  } else if (kept && covers(kept, w.since)) {
-    const t = tally(kept.facts);
+  } else if (covers(kept, w.since)) {
+    const since = Date.parse(w.since);
+    const t = tally(kept.facts.filter((f) => Date.parse(f.event_at) >= since));
     plusGrossCents = t.grossCents;
     plusCents = t.afterStoreCents;
     plusSource = "events";
@@ -215,6 +222,7 @@ export async function GET(req: NextRequest) {
       label: w.label,
       beforeLabel: w.beforeLabel,
       since: w.since,
+      beforeSince: w.beforeSince,
       months: w.months,
       buckets: w.buckets,
       cameIn: {
@@ -247,7 +255,11 @@ export async function GET(req: NextRequest) {
         thisMonthCents: monthRow?.total_cents ?? null,
         goalCents: typeof monthRow?.goal_cents === "number" ? monthRow.goal_cents : SUPPORT.monthlyGoalUsd * 100,
       },
-      chart: all ? shopBuckets(all, w, now, refunds) : null,
+      // Every source by day (or month), each its own series, refunds apart
+      // (his word, 2026-11-12: "show everything related to money on the
+      // timeline"). Null only when the orders could not be read: a chart of
+      // the subscriptions alone would read as a shop that sold nothing.
+      chart: all ? moneyChart({ orders: all, refunds, plus: kept, w, now }) : null,
       recent,
       lines: {
         revenue: {

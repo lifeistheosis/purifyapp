@@ -303,10 +303,57 @@ export function moneyFigures(p: MoneyParts): MoneyFigures {
   };
 }
 
+/** How many buckets the chart has: the period's, and the period before's. */
+export type BucketCounts = { current: number; before: number };
+
 /**
- * The shop's net in buckets for the chart: the period's days (or months),
- * and the period before's, oldest first. A bucket with nothing in it is a
- * real zero: the orders were read.
+ * The period's days so far (or its months), and the period before's. A bucket
+ * a month holds twelve for 12 months and as many as All time holds, with no
+ * months before when there is no period before (All time).
+ */
+export function bucketCounts(w: MoneyWindow, now: Date): BucketCounts {
+  const since = Date.parse(w.since);
+  const beforeSince = Date.parse(w.beforeSince);
+  if (w.buckets === "month") return { current: w.months, before: beforeSince < since ? w.months : 0 };
+  const today = utcMidnight(now.getTime());
+  return {
+    current: Math.max(1, Math.round((today - since) / DAY_MS) + 1),
+    before: Math.max(1, Math.round((since - beforeSince) / DAY_MS)),
+  };
+}
+
+const monthKey = (t: number) => {
+  const d = new Date(t);
+  return d.getUTCFullYear() * 12 + d.getUTCMonth();
+};
+
+/**
+ * The bucket a moment falls in, by its UTC day or month: one of the period's,
+ * one of the period before's, or none (before both, or after today). One rule
+ * for everything the chart draws, so the shop and the subscriptions of a day
+ * land in the same column.
+ */
+export function bucketOf(t: number, w: MoneyWindow, n: BucketCounts): { before: boolean; i: number } | null {
+  if (!Number.isFinite(t)) return null;
+  const since = Date.parse(w.since);
+  const beforeSince = Date.parse(w.beforeSince);
+  const index = (from: number) => (w.buckets === "month" ? monthKey(t) - monthKey(from) : Math.round((utcMidnight(t) - from) / DAY_MS));
+  if (t >= since) {
+    const i = index(since);
+    return i >= 0 && i < n.current ? { before: false, i } : null;
+  }
+  if (t >= beforeSince) {
+    const i = index(beforeSince);
+    return i >= 0 && i < n.before ? { before: true, i } : null;
+  }
+  return null;
+}
+
+/**
+ * The shop's net in buckets: the period's days (or months), and the period
+ * before's, oldest first. A bucket with nothing in it is a real zero: the
+ * orders were read. Money's chart draws every source now
+ * (lib/admin/moneyChart.ts); this is the shop's part alone.
  */
 export function shopBuckets(
   orders: readonly MoneyOrder[],
@@ -314,45 +361,12 @@ export function shopBuckets(
   now: Date,
   refunds?: RefundsByOrder | null,
 ): { current: number[]; before: number[] } {
-  const since = Date.parse(w.since);
-  const beforeSince = Date.parse(w.beforeSince);
-  const net = (o: MoneyOrder) => keptCents(o, refunds);
-  if (w.buckets === "month") {
-    const key = (t: number) => {
-      const d = new Date(t);
-      return d.getUTCFullYear() * 12 + d.getUTCMonth();
-    };
-    // A bucket a month: twelve for 12 months, as many as All time holds, and no
-    // months before when there is no period before (All time).
-    const first = key(since);
-    const firstBefore = key(beforeSince);
-    const current = new Array<number>(w.months).fill(0);
-    const before = new Array<number>(beforeSince < since ? w.months : 0).fill(0);
-    for (const o of orders) {
-      const t = Date.parse(landedAt(o));
-      if (!Number.isFinite(t)) continue;
-      const k = key(t);
-      if (t >= since && k - first < current.length) current[k - first] += net(o);
-      else if (t >= beforeSince && t < since && k - firstBefore < before.length) before[k - firstBefore] += net(o);
-    }
-    return { current, before };
-  }
-  const today = utcMidnight(now.getTime());
-  const days = Math.round((today - since) / DAY_MS) + 1;
-  const beforeDays = Math.round((since - beforeSince) / DAY_MS);
-  const current = new Array<number>(Math.max(1, days)).fill(0);
-  const before = new Array<number>(Math.max(1, beforeDays)).fill(0);
+  const n = bucketCounts(w, now);
+  const current = new Array<number>(n.current).fill(0);
+  const before = new Array<number>(n.before).fill(0);
   for (const o of orders) {
-    const t = Date.parse(landedAt(o));
-    if (!Number.isFinite(t)) continue;
-    const day = utcMidnight(t);
-    if (t >= since) {
-      const i = Math.round((day - since) / DAY_MS);
-      if (i >= 0 && i < current.length) current[i] += net(o);
-    } else if (t >= beforeSince) {
-      const i = Math.round((day - beforeSince) / DAY_MS);
-      if (i >= 0 && i < before.length) before[i] += net(o);
-    }
+    const at = bucketOf(Date.parse(landedAt(o)), w, n);
+    if (at) (at.before ? before : current)[at.i] += keptCents(o, refunds);
   }
   return { current, before };
 }

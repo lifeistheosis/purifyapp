@@ -160,8 +160,15 @@ describe("admin theme contrast", () => {
   // countries. Held to green, so it can never drift to the yellow or gold he
   // ruled out.
   const LIVE_HUE = new Set(["--adm-live", "--adm-live-ring"]);
+  // Three more, on Money's chart alone, by his word of 2026-11-12 about 21:42
+  // UTC: "And if you can make it a different color, right, if that helps. But
+  // like, if you apply a distinction, of course. If there's no distinction,
+  // then it just shows up all white. all together on the chart." Each source
+  // the chart tells apart has a hue (the shop blue, Plus green, the EIKON Box
+  // magenta); refunds and anything it cannot tell apart stay grey and ink.
+  const MONEY_HUE = ["--adm-money-shop", "--adm-money-plus", "--adm-money-box"];
 
-  it("has no hue in either palette but the live green", () => {
+  it("has no hue in either palette but the live green and Money's three", () => {
     for (const [theme, tokens] of THEMES) {
       for (const [name, raw] of Object.entries(tokens)) {
         const c = parseColor(raw);
@@ -170,10 +177,42 @@ describe("admin theme contrast", () => {
           expect(c.g > c.r * 1.5 && c.g > c.b * 1.5, `${theme}: ${name} is ${raw}, which is not the live green`).toBe(true);
           continue;
         }
+        if (MONEY_HUE.includes(name)) continue;
         expect(
           c.r === c.g && c.g === c.b,
           `${theme}: ${name} is ${raw}, which is not a grey`,
         ).toBe(true);
+      }
+    }
+  });
+
+  // Held in both palettes: each is a real hue (a grey would stop telling its
+  // source apart), none is the yellow, gold or amber he ruled out in 1.7.1
+  // (no hue from orange to yellow-green, 20 to 80 degrees), the three sit far
+  // apart round the wheel, and each clears 3:1 on the card, as a mark must.
+  it("gives Money's sources three hues apart, never yellow or gold, each readable on the card", () => {
+    const hue = ({ r, g, b }: Rgb) => {
+      const [R, G, B] = [r / 255, g / 255, b / 255];
+      const max = Math.max(R, G, B);
+      const d = max - Math.min(R, G, B);
+      if (d === 0) return { h: 0, s: 0 };
+      const h = max === R ? ((G - B) / d) % 6 : max === G ? (B - R) / d + 2 : (R - G) / d + 4;
+      return { h: (h * 60 + 360) % 360, s: d / max };
+    };
+    for (const [theme, tokens] of THEMES) {
+      const hues = MONEY_HUE.map((name) => {
+        const c = color(tokens, name);
+        const { h, s } = hue(c);
+        expect(s, `${theme}: ${name} is ${tokens[name]}, which reads as grey`).toBeGreaterThan(0.4);
+        expect(h >= 20 && h <= 80, `${theme}: ${name} is ${tokens[name]}, in the yellow and gold he ruled out`).toBe(false);
+        expect(Number(contrast(c, color(tokens, "--adm-panel")).toFixed(2)), `${theme}: ${name} on --adm-panel`).toBeGreaterThanOrEqual(GRAPHIC_MIN);
+        return h;
+      });
+      for (let i = 0; i < hues.length; i++) {
+        for (let j = i + 1; j < hues.length; j++) {
+          const apart = Math.min(Math.abs(hues[i] - hues[j]), 360 - Math.abs(hues[i] - hues[j]));
+          expect(apart, `${theme}: ${MONEY_HUE[i]} and ${MONEY_HUE[j]} are too close a hue`).toBeGreaterThanOrEqual(60);
+        }
       }
     }
   });

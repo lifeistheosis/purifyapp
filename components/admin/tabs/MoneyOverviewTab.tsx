@@ -8,10 +8,12 @@
  * and Plus after the stores' cut), what went out (the cost lines, the goods
  * sold at their cost, and Stripe's fees) and what was kept. An estimate wears
  * a dashed line and the word est. Donations, typed in by hand, stand apart
- * and are in no total, as lib/admin/profit.ts rules. Then the shop's days
- * against the period before, the newest paid orders, and Revenue,
- * Subscriptions and Costs as one line each with its headline; each line
- * opens its view, which keeps its detail.
+ * and are in no total, as lib/admin/profit.ts rules. Then all the money by
+ * day against the period before (his word, 2026-11-12: "show everything
+ * related to money on the timeline"): the shop, Plus and the EIKON Box each
+ * in its own colour, refunds under the line, lib/admin/moneyChart.ts. Then
+ * the newest paid orders, and Revenue, Subscriptions and Costs as one line
+ * each with its headline; each line opens its view, which keeps its detail.
  *
  * His log is why: Money is a ten second look, and came in, went out, kept is
  * the whole answer. Every figure comes from /api/admin/money, and a part that
@@ -22,10 +24,11 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { adminJson } from "@/lib/admin/fetchJson";
 import { MONEY_PERIODS, type MoneyPeriod } from "@/lib/admin/money";
+import type { MoneyChart } from "@/lib/admin/moneyChart";
 import { SENSITIVE } from "@/lib/admin/streamer";
 import { formatPrice } from "@/lib/shop/format";
 
-import { Est, Figure, GoLabel, Panel, PanelLink, Quiet, Segmented, TrendLine } from "../daily/parts";
+import { Est, Figure, GoLabel, Panel, PanelLink, Quiet, Segmented, StackedColumns, type StackSeries } from "../daily/parts";
 import { Email } from "../primitives";
 
 type Payload = {
@@ -33,6 +36,8 @@ type Payload = {
   label: string;
   beforeLabel: string;
   since: string;
+  /** Where the period before starts; `since` itself for All time, which has none. */
+  beforeSince: string;
   months: number;
   buckets: "day" | "month";
   cameIn: {
@@ -56,7 +61,8 @@ type Payload = {
   };
   kept: { cents: number | null; estimated: boolean; pctOfCameIn: number | null };
   donations: { cents: number | null; recorded: boolean; thisMonthCents: number | null; goalCents: number };
-  chart: { current: number[]; before: number[] } | null;
+  /** Every source by day or month (lib/admin/moneyChart.ts); null when the orders could not be read. */
+  chart: MoneyChart | null;
   recent: { email: string | null; totalCents: number; at: string }[];
   lines: {
     revenue: {
@@ -127,6 +133,59 @@ function BigCard({ label, figure, children }: { label: string; figure: ReactNode
       {children}
     </section>
   );
+}
+
+/**
+ * The chart's series, from the line up, then what went back under it. Each
+ * source the chart can tell apart has its own colour; a subscription it
+ * cannot (its product names no plan) stays in the chart's own ink, his "all
+ * white" (2026-11-12). lib/admin/moneyChart.ts says what each one holds.
+ */
+const SHOP: StackSeries = { key: "shop", label: "Shop", color: "var(--adm-money-shop)" };
+const SUBSCRIPTIONS: StackSeries[] = [
+  { key: "plus", label: "Plus", color: "var(--adm-money-plus)" },
+  { key: "box", label: "EIKON Box (Pro)", color: "var(--adm-money-box)" },
+  { key: "unnamed", label: "Plan not named", color: "var(--adm-money-all)", optional: true },
+];
+const REFUNDS: StackSeries = { key: "refunds", label: "Refunds", color: "var(--adm-money-back)", below: true, optional: true };
+
+const shortDay = (day: string) => new Date(`${day}T00:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+
+/** One label a bucket, for the pick and the table: "Nov 3", "Nov 2026"; the last is still running. */
+function bucketLabels(p: Payload, length: number): string[] {
+  const since = new Date(p.since);
+  return Array.from({ length }, (_, k) => {
+    const s =
+      p.buckets === "month"
+        ? new Date(Date.UTC(since.getUTCFullYear(), since.getUTCMonth() + k, 1)).toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "UTC" })
+        : new Date(since.getTime() + k * 86_400_000).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+    return k === length - 1 ? `${s}, so far` : s;
+  });
+}
+
+/**
+ * What the chart says under itself: its net and the one amount it is drawn
+ * in, then whatever it does not hold and why, so a missing source never reads
+ * as no money.
+ */
+function chartNotes(p: Payload, c: MoneyChart): string[] {
+  const notes = [`${usd(c.totals.net)} net: what came in less refunds, after the stores' cut and before Stripe's fees.`];
+  if (c.subs === "absent") notes.push("Plus and the EIKON Box are not on it: this server does not keep subscription payments yet.");
+  else if (c.subs === "unavailable") notes.push("Plus and the EIKON Box are not on it: their payments could not be read just now.");
+  else if (c.subsFrom === null) notes.push("No subscription payment has been kept yet. Plus and the EIKON Box join the chart with the first.");
+  else {
+    if (c.subsFromIndex !== null && c.subsFromIndex > 0) {
+      notes.push(`Plus and the EIKON Box are drawn from ${shortDay(c.subsFrom)}, when the first payment was kept; the shaded part before it holds the shop alone.`);
+    } else if (p.beforeLabel && c.subsFrom > p.beforeSince.slice(0, 10)) {
+      notes.push(`The dashed ${p.beforeLabel} holds Plus and the EIKON Box only from ${shortDay(c.subsFrom)}, when the first payment was kept.`);
+    }
+    if (p.cameIn.plusSource === "revenuecat") {
+      notes.push("Came in takes Plus and the EIKON Box from RevenueCat's own total for the period, which has no days; the chart draws each payment kept, so the two can differ a little.");
+    } else if (p.cameIn.plusSource === "estimate") {
+      notes.push("Came in estimates Plus and the EIKON Box for the whole period; the chart draws only the payments kept.");
+    }
+  }
+  return notes;
 }
 
 /** The marks under the chart: the period's first bucket, its middle, and today. */
@@ -251,10 +310,10 @@ export function MoneyOverviewTab() {
           <Row
             label={
               p?.cameIn.plusSource === "revenuecat"
-                ? "Plus, paid (RevenueCat), after the stores' cut"
+                ? "Plus and the EIKON Box, paid (RevenueCat), after the stores' cut"
                 : p?.cameIn.plusSource === "events"
-                  ? "Plus, paid (kept events), after the stores' cut"
-                  : "Plus, after the stores' cut"
+                  ? "Plus and the EIKON Box, paid (kept events), after the stores' cut"
+                  : "Plus and the EIKON Box, after the stores' cut"
             }
             cents={p?.cameIn.plusCents ?? null}
             est={p?.cameIn.plusSource === "estimate"}
@@ -288,7 +347,7 @@ export function MoneyOverviewTab() {
             k: "in",
             name: "Came in",
             sub: p
-              ? `shop ${p.cameIn.shopCents !== null ? usd(p.cameIn.shopCents) : "not read"}, Plus ${
+              ? `shop ${p.cameIn.shopCents !== null ? usd(p.cameIn.shopCents) : "not read"}, subscriptions ${
                   p.cameIn.plusCents !== null
                     ? `${usd(p.cameIn.plusCents)}${p.cameIn.plusSource === "estimate" ? " est." : ""}`
                     : "not read"
@@ -330,10 +389,8 @@ export function MoneyOverviewTab() {
         <Panel
           title={
             p
-              ? p.buckets === "month"
-                ? `The shop, net by month: ${p.label}${p.beforeLabel ? `, with ${p.beforeLabel} dashed` : ""}`
-                : `The shop, net by day: ${p.label}${p.beforeLabel ? `, with ${p.beforeLabel} dashed` : ""}`
-              : "The shop, net by day"
+              ? `All the money, by ${p.buckets === "month" ? "month" : "day"}: ${p.label}${p.beforeLabel ? `, with ${p.beforeLabel} dashed` : ""}`
+              : "All the money, by day"
           }
           pad="px-4 pt-3.5 pb-3"
         >
@@ -342,15 +399,32 @@ export function MoneyOverviewTab() {
           ) : !p.chart ? (
             <Quiet className="py-6">The orders could not be read just now.</Quiet>
           ) : (
-            <div className={SENSITIVE}>
-              <TrendLine
-                height={132}
-                label={`The shop's net ${p.buckets === "month" ? "by month" : "by day"}, ${p.label}: ${p.chart.current.map((c) => usd(c)).join(", ")}`}
-                values={p.chart.current}
-                before={p.chart.before}
-                marks={marksFor(p, p.chart.current.length)}
-              />
-            </div>
+            (() => {
+              const c = p.chart;
+              const series = c.subs === "kept" ? [SHOP, ...SUBSCRIPTIONS, REFUNDS] : [SHOP, REFUNDS];
+              return (
+                <div className={SENSITIVE}>
+                  <StackedColumns
+                    height={150}
+                    label={`All the money ${p.buckets === "month" ? "by month" : "by day"}, ${p.label}: ${usd(c.totals.net)} net`}
+                    series={series}
+                    values={c.current.map((col) => series.map((s) => col[s.key as keyof typeof col]))}
+                    before={c.before}
+                    days={bucketLabels(p, c.current.length)}
+                    valueText={(v) => (v < 0 ? `−${usd(-v)}` : usd(v))}
+                    marks={marksFor(p, c.current.length)}
+                    drawKey={p.period}
+                    from={c.subs === "kept" ? c.subsFromIndex : null}
+                    unit={p.buckets}
+                  />
+                  <div className="mt-2 space-y-1">
+                    {chartNotes(p, c).map((note) => (
+                      <Quiet key={note}>{note}</Quiet>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()
           )}
         </Panel>
         <Panel title="Recent paid orders" action={<PanelLink onClick={() => open("orders")}>Orders</PanelLink>} pad="px-4 pt-3.5 pb-1.5">

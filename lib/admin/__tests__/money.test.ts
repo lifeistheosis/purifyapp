@@ -359,6 +359,59 @@ describe("/api/admin/money", () => {
     expect(body.cameIn.estimated).toBe(false);
   });
 
+  // His word, 2026-11-12 about 21:42 UTC: "I don't want you to just do, like
+  // to just show the shop data on the chart. I want you to show everything
+  // related to money on the timeline". The chart was the shop's net alone.
+  describe("the chart draws all the money", () => {
+    const events = () => [
+      // Kept since September, so October is covered; this one moves no money.
+      { type: "CANCELLATION", user_id: "u1", store: "PLAY_STORE", product_id: "purify_plus:monthly", environment: "PRODUCTION", period_type: "NORMAL", price_usd: null, takehome: null, trial_conversion: null, reason: "UNSUBSCRIBE", event_at: "2026-09-20T08:00:00+00:00", expires_at: null },
+      { type: "RENEWAL", user_id: "u1", store: "PLAY_STORE", product_id: "purify_plus:monthly", environment: "PRODUCTION", period_type: "NORMAL", price_usd: 9.99, takehome: 0.85, trial_conversion: null, reason: null, event_at: "2026-10-10T10:00:00+00:00", expires_at: null },
+      { type: "INITIAL_PURCHASE", user_id: "u2", store: "APP_STORE", product_id: "purify_pro:monthly", environment: "PRODUCTION", period_type: "NORMAL", price_usd: 19.99, takehome: null, trial_conversion: null, reason: null, event_at: "2026-10-29T10:00:00+00:00", expires_at: null },
+    ];
+
+    it("puts the shop, Plus, the EIKON Box and the refunds on their days, and adds up to Came in", async () => {
+      state.tables.plus_events = { data: events(), error: null };
+      const body = (await (await GET(new NextRequest("http://x/api/admin/money?period=month"))).json()) as Record<string, Record<string, unknown>>;
+      expect(body.cameIn.plusSource).toBe("events");
+      const chart = body.chart as unknown as {
+        current: Record<string, number>[];
+        before: number[];
+        totals: Record<string, number>;
+        subs: string;
+        subsFrom: string | null;
+        subsFromIndex: number | null;
+      };
+      expect(chart.current).toHaveLength(30);
+      expect(chart.current[9]).toEqual({ shop: 0, plus: 849, box: 0, unnamed: 0, refunds: 0 });
+      // The 29th: the refunded order as paid and all of it back, and a Pro month on the App Store.
+      expect(chart.current[28]).toEqual({ shop: 1600, plus: 0, box: 1699, unnamed: 0, refunds: 1600 });
+      expect(chart.current[29]).toEqual({ shop: 4200, plus: 0, box: 0, unnamed: 0, refunds: 0 });
+      // September, one total a day.
+      expect(chart.before).toHaveLength(30);
+      expect(chart.before[11]).toBe(900);
+      expect(chart).toMatchObject({ subs: "kept", subsFrom: "2026-09-20", subsFromIndex: 0 });
+      // The total stays right: the chart's net is Came in.
+      expect(chart.totals).toEqual({ shop: 5800, plus: 849, box: 1699, unnamed: 0, refunds: 1600, net: 6748 });
+      expect(chart.totals.net).toBe(body.cameIn.cents);
+    });
+
+    it("still draws the kept payments when RevenueCat's total is what Came in counts", async () => {
+      state.tables.plus_events = { data: events(), error: null };
+      state.rc = { value: 29.98, currency: "USD", startDate: "2026-10-01", endDate: "2026-10-30" };
+      const body = (await (await GET(new NextRequest("http://x/api/admin/money?period=month"))).json()) as Record<string, Record<string, unknown>>;
+      expect(body.cameIn.plusSource).toBe("revenuecat");
+      expect(body.chart).toMatchObject({ subs: "kept", totals: { plus: 849, box: 1699 } });
+    });
+
+    it("draws the shop alone, and says why, while this server keeps no subscription events", async () => {
+      state.tables.plus_events = { data: null, error: { code: "PGRST205", message: "Could not find the table 'public.plus_events' in the schema cache" } as { message: string } };
+      const body = (await (await GET(new NextRequest("http://x/api/admin/money?period=month"))).json()) as Record<string, Record<string, unknown>>;
+      expect(body.chart).toMatchObject({ subs: "absent", subsFrom: null, totals: { shop: 5800, plus: 0, box: 0, refunds: 1600, net: 4200 } });
+      expect(body.cameIn.shopCents).toBe(4200);
+    });
+  });
+
   it("keeps the estimate while the kept events start inside the period", async () => {
     state.tables.plus_events = {
       data: [{ type: "RENEWAL", user_id: "u1", store: "PLAY_STORE", environment: "PRODUCTION", period_type: "NORMAL", price_usd: 4.99, takehome: 0.7, trial_conversion: null, reason: null, event_at: "2026-10-10T10:00:00+00:00", expires_at: null }],

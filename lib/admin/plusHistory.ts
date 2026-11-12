@@ -38,6 +38,8 @@ export type PlusFact = {
   type: string;
   user_id: string | null;
   store: string | null;
+  /** The store's product, read so Money's chart can tell Plus from the EIKON Box membership (planOf). */
+  product_id?: string | null;
   environment: string | null;
   period_type: string | null;
   price_usd: number | null;
@@ -50,7 +52,7 @@ export type PlusFact = {
 
 /** The columns to read for it. */
 export const PLUS_FACT_COLUMNS =
-  "type, user_id, store, environment, period_type, price_usd, takehome, trial_conversion, reason, event_at, expires_at";
+  "type, user_id, store, product_id, environment, period_type, price_usd, takehome, trial_conversion, reason, event_at, expires_at";
 
 const DAY_MS = 86_400_000;
 
@@ -66,6 +68,25 @@ export const counts = (f: PlusFact) => !isTestMoney(f) && !isGrant(f);
 /** Bought on the website, whose fees Stripe's ledger holds. */
 const WEB_STORES = new Set(["STRIPE", "RC_BILLING"]);
 export const isWebStore = (store: string | null) => store !== null && WEB_STORES.has(store);
+
+/**
+ * Which plan a subscription paid for, read from the store's own product name:
+ * "box" for Pro, the EIKON Box membership, "plus" for Plus, or null when the
+ * name does not say. The webhook's event names its entitlement, but
+ * plus_events has no column for it, so the kept product is the one record of
+ * the plan. Its name is read word by word: a word that is exactly "pro" or
+ * "plus" ("purify_pro:monthly" on Google Play,
+ * "net.purifyapp.purify.pro.monthly", "Plus Annual"), never a word that only
+ * contains one ("product", "promo"). A name with both words, or neither, is no
+ * plan: Money's chart keeps that money apart, in its own ink, rather than
+ * guess it into one.
+ */
+export function planOf(productId: string | null | undefined): "plus" | "box" | null {
+  const words = new Set((productId ?? "").toLowerCase().split(/[^a-z]+/));
+  const pro = words.has("pro");
+  const plus = words.has("plus");
+  return pro === plus ? null : pro ? "box" : "plus";
+}
 
 const MONEY_IN = new Set(["INITIAL_PURCHASE", "RENEWAL", "NON_RENEWING_PURCHASE"]);
 

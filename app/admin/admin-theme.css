@@ -205,6 +205,30 @@
   --chart-hover: rgb(242 242 242 / 0.28);
   --chart-empty: rgb(242 242 242 / 0.08);
 
+  /* ── Money's sources: the one chart with hues ─────────────────────────
+     His word, 2026-11-12 about 21:42 UTC, on Money's chart: "I want the
+     subscriptions also on the shop. And if you can make it a different
+     color, right, if that helps. But like, if you apply a distinction, of
+     course. If there's no distinction, then it just shows up all white. all
+     together on the chart." So each source the chart tells apart has a hue
+     of its own, and what it cannot tell apart stays in the chart's own ink
+     (lib/admin/moneyChart.ts, MoneyColumns in components/admin/daily/parts.tsx).
+
+     Three hues, not four. No four hues without yellow and orange stay apart
+     when any two can touch, and here any two can: a source at zero lets the
+     ones either side of it meet. So refunds go below the line in the third
+     grey, which the line and their word already set apart. No gold and no
+     yellow, as since 1.7.1. The values are the data-viz skill's validated
+     palette, checked with its validator on this ground, every pair against
+     every other (--pairs all): worst colour-blind dE 13.0, worst normal
+     dE 26.5, each over 3:1 on the card. lib/admin/__tests__/adminTheme.test.ts
+     holds the contrast and the hues. */
+  --adm-money-shop: #3987e5;
+  --adm-money-plus: #008300;
+  --adm-money-box: #d55181;
+  --adm-money-back: var(--adm-ink-3);
+  --adm-money-all: var(--adm-ink);
+
   /* Skeleton highlight. */
   --adm-skeleton-hi: #262626;
 
@@ -793,6 +817,14 @@
   --chart-hover: rgb(10 10 10 / 0.3);
   --chart-empty: rgb(10 10 10 / 0.06);
 
+  /* Money's three on white: the same hues, the shop's blue at the palette's
+     light step, one deeper. Worst colour-blind dE 13.0, worst normal dE 27.0,
+     every pair, each over 3:1. Refunds and the undivided rest follow the ink
+     tokens above, so they turn over with them. */
+  --adm-money-shop: #2a78d6;
+  --adm-money-plus: #008300;
+  --adm-money-box: #d55181;
+
   --adm-skeleton-hi: #e3e3e3;
   /* The dialog overlay carries no backdrop-blur (see
      components/admin/primitives.tsx), so the scrim does the separating by
@@ -1130,6 +1162,20 @@
 }
 .adm-trend-arrive {
   animation: adm-trend-arrive 380ms 620ms var(--adm-ease) backwards;
+}
+
+/* Money's columns grow from the line (StackedColumns in
+ * components/admin/daily/parts.tsx), those above it up and those below it
+ * down, by the transform-origin the component sets. `from` only, as above:
+ * one that never runs leaves the columns whole. Left off with the panel's
+ * Motion switch by the component, for the reason recorded above. */
+@keyframes adm-cols-grow {
+  from {
+    transform: scaleY(0);
+  }
+}
+.adm-cols-grow {
+  animation: adm-cols-grow 620ms var(--adm-ease);
 }
 
 /* The tick numbers change VALUE across a zoom, so they cross-fade rather than

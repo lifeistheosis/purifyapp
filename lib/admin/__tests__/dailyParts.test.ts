@@ -5,7 +5,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { Bars, Est, FigureCard, Segmented, Spark, TrendLine } from "@/components/admin/daily/parts";
+import { Bars, Est, FigureCard, Segmented, Spark, StackedColumns, TrendLine } from "@/components/admin/daily/parts";
 
 // The parts the Daily pages are built from (sheet r3-15), and the promise of
 // the sheet's sixth part: "The picks in Light" are the same structure with
@@ -138,5 +138,58 @@ describe("the parts", () => {
     expect(picks).toContain('aria-valuetext="Oct 3, so far, 2 visitors"');
     // A phone can still scroll the page over it; only a sideways drag picks.
     expect(picks).toContain("touch-action:pan-y");
+  });
+
+  // His word, 2026-11-12 about 21:42 UTC: everything to do with money on the
+  // chart, "a different color" where it tells its sources apart and "all
+  // white" where it does not. Money's chart drew the shop's net alone.
+  it("stack each source in its own colour, refunds under the line, and say each in the key and a table", () => {
+    const html = renderToStaticMarkup(
+      createElement(StackedColumns, {
+        series: [
+          { key: "shop", label: "Shop", color: "var(--adm-money-shop)" },
+          { key: "plus", label: "Plus", color: "var(--adm-money-plus)" },
+          { key: "unnamed", label: "Plan not named", color: "var(--adm-money-all)", optional: true },
+          { key: "refunds", label: "Refunds", color: "var(--adm-money-back)", below: true, optional: true },
+        ],
+        values: [
+          [4000, 849, 0, 0],
+          [1500, 0, 0, 1500],
+          [0, 0, 0, 0],
+        ],
+        before: [900, 0, 100],
+        days: ["Nov 1", "Nov 2", "Nov 3, so far"],
+        valueText: (v: number) => (v < 0 ? `−$${-v / 100}` : `$${v / 100}`),
+        marks: ["Nov 1", "Nov 2", "today"],
+        label: "All the money by day",
+        from: 1,
+      }),
+    );
+    for (const token of ["--adm-money-shop", "--adm-money-plus", "--adm-money-back"]) expect(html).toContain(`background:var(${token})`);
+    // Nothing unnamed this period, so its ink is not drawn and the key leaves it out.
+    expect(html).not.toContain("background:var(--adm-money-all)");
+    expect(html).not.toMatch(/Plan not named<\/span><span/);
+    // The key: each source with its total, refunds as money back.
+    expect(html).toMatch(/Shop<\/span><span[^>]*>\$55</);
+    expect(html).toMatch(/Refunds<\/span><span[^>]*>−\$15</);
+    // Picked by a mouse, a finger or the keys; at rest it says the newest day.
+    expect(html).toContain('role="slider"');
+    expect(html).toContain('aria-valuetext="Nov 3, so far, $0 net"');
+    expect(html).toContain("touch-action:pan-y");
+    // The period before, dashed; the days before a source was known, washed.
+    expect(html).toContain('stroke-dasharray="4 4"');
+    expect(html).toMatch(/width:33\.33\d*%;background:var\(--chart-empty\)/);
+    // Every bucket, for a screen reader.
+    expect(html).toContain("<caption>All the money by day</caption>");
+    expect(html).toContain('<th scope="row">Nov 2</th>');
+  });
+
+  it("are what Money's chart is drawn with: all its sources, in their tokens", () => {
+    const tab = read("components/admin/tabs/MoneyOverviewTab.tsx");
+    expect(tab).toContain("<StackedColumns");
+    for (const token of ["--adm-money-shop", "--adm-money-plus", "--adm-money-box", "--adm-money-all", "--adm-money-back"]) {
+      expect(tab).toContain(`var(${token})`);
+    }
+    expect(tab).not.toContain("The shop, net by day");
   });
 });

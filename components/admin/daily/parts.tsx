@@ -582,6 +582,302 @@ export function TrendLine({
   );
 }
 
+/** One series of a StackedColumns chart. */
+export type StackSeries = {
+  key: string;
+  /** Its word in the key, the pick and the table: "Shop", "Refunds". */
+  label: string;
+  /** Its mark's colour, always a token: "var(--adm-money-shop)". */
+  color: string;
+  /** Drawn under the line: what went back. */
+  below?: boolean;
+  /** In the key only when it holds something in the period. */
+  optional?: boolean;
+};
+
+/** A gap of the card's own ground between two marks that touch (the data-viz rule: a gap, never a border). */
+const STACK_GAP = 2;
+
+/**
+ * Columns, one a day or a month, each stacked from the line up by series, a
+ * colour each, with a `below` series hung under the line (his word,
+ * 2026-11-12: everything to do with money on one chart, "a different color"
+ * where the chart tells its sources apart and "all white" where it does not).
+ * The period before is one dashed line over them, a total a bucket, the same
+ * days side by side. `from` washes the buckets before a series began to be
+ * known, so one of them does not read as a bucket that held none of it.
+ *
+ * Any column can be picked, as on TrendLine: a mouse over it, a tap or a
+ * drag on a phone, or the arrow keys; the label then gives the day, its net
+ * and every series in it. Under the key, each series with its total for the
+ * period; for a screen reader, a table of every bucket. The columns grow from
+ * the line when the chart opens and when `drawKey` changes, and stand still
+ * with the panel's Motion switch off (useReducedMotion).
+ *
+ * Built in HTML so a column keeps its rounded end and its width at any size;
+ * only the dashed line is drawn in SVG, stretched with the card.
+ */
+export function StackedColumns({
+  series,
+  values,
+  before,
+  days,
+  valueText,
+  marks,
+  height = 150,
+  label,
+  drawKey = "",
+  from = null,
+  unit = "day",
+}: {
+  series: readonly StackSeries[];
+  /** values[i][k]: bucket i, series k, never below zero. A `below` series is drawn under the line. */
+  values: readonly (readonly number[])[];
+  /** The period before, one net figure a bucket, dashed over the columns. */
+  before?: readonly number[];
+  /** One label a bucket ("Nov 3"), for the pick and the table. */
+  days: readonly string[];
+  /** A value as the chart says it. A `below` series is handed its amount as a negative. */
+  valueText: (v: number) => string;
+  marks: [string, string, string];
+  height?: number;
+  label: string;
+  drawKey?: string;
+  /** The first bucket a later series is known in; the buckets before it are washed. */
+  from?: number | null;
+  /** What one bucket is, for the pick and the table's head. */
+  unit?: "day" | "month";
+}) {
+  const reduced = useReducedMotion();
+  const [pick, setPick] = useState<{ i: number; of: number } | null>(null);
+  const n = values.length;
+  if (n === 0) return <Quiet className="py-6">Nothing to draw yet.</Quiet>;
+
+  const amount = (col: readonly number[], k: number) => Math.max(0, col[k] ?? 0);
+  const up = values.map((col) => series.reduce((a, s, k) => (s.below ? a : a + amount(col, k)), 0));
+  const down = values.map((col) => series.reduce((a, s, k) => (s.below ? a + amount(col, k) : a), 0));
+  const net = up.map((u, i) => u - down[i]);
+  const shownBefore = (before ?? []).slice(0, n);
+  const top = Math.max(1, ...up, ...shownBefore) * 1.12;
+  const bottom = Math.max(0, ...down, ...shownBefore.map((v) => -v)) * 1.08;
+  // The columns under the line hang a gap below it, so it stays a clean line.
+  const reserve = bottom > 0 ? STACK_GAP + 1 : 0;
+  const px = (height - reserve) / (top + bottom);
+  const zero = top * px;
+  const totals = series.map((_, k) => values.reduce((a, col) => a + amount(col, k), 0));
+  // Money back is said as a minus, and nothing back as a plain zero, never "-$0".
+  const said = (v: number, s: StackSeries) => valueText(s.below && v > 0 ? -v : v);
+
+  // Gridlines at round figures, the highest one carrying its figure, so the
+  // chart has a scale; none over a period with nothing in it.
+  const step = (() => {
+    const raw = top / 1.12 / 3;
+    const mag = Math.pow(10, Math.floor(Math.log10(Math.max(1, raw))));
+    return ([1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw) ?? 10 * mag) || 1;
+  })();
+  const ticks = Math.max(0, ...up, ...shownBefore) > 0 ? [1, 2, 3].map((k) => k * step).filter((v) => v < top) : [];
+
+  const last = n - 1;
+  const picked = pick && pick.of === n ? pick.i : null;
+  const pickAt = (e: PointerEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const f = Math.min(0.9999, Math.max(0, (e.clientX - r.left) / Math.max(1, r.width)));
+    setPick({ i: Math.floor(f * n), of: n });
+  };
+  const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Escape") return setPick(null);
+    const at = picked ?? last;
+    const to = e.key === "ArrowLeft" ? at - 1 : e.key === "ArrowRight" ? at + 1 : e.key === "Home" ? 0 : e.key === "End" ? last : null;
+    if (to === null) return;
+    e.preventDefault();
+    setPick({ i: Math.min(last, Math.max(0, to)), of: n });
+  };
+  const sayBucket = (i: number) =>
+    [
+      days[i] ?? "",
+      `${valueText(net[i])} net`,
+      ...series.flatMap((s, k) => (amount(values[i], k) > 0 ? [`${s.label} ${said(amount(values[i], k), s)}`] : [])),
+    ]
+      .filter(Boolean)
+      .join(", ");
+
+  // One column's marks, from the line outwards: a gap between two that touch,
+  // the far end of the outermost rounded, the end at the line square.
+  const stack = (col: readonly number[], below: boolean) => {
+    const ks = series.flatMap((s, k) => (Boolean(s.below) === below && amount(col, k) > 0 ? [k] : []));
+    let used = 0;
+    return ks.map((k, j) => {
+      const h = amount(col, k) * px;
+      const gap = j === 0 ? 0 : STACK_GAP;
+      const style: CSSProperties = {
+        [below ? "top" : "bottom"]: used + gap,
+        height: Math.max(1, h - gap),
+        background: series[k].color,
+      };
+      if (j === ks.length - 1) {
+        if (below) style.borderRadius = "0 0 4px 4px";
+        else style.borderRadius = "4px 4px 0 0";
+      }
+      used += h;
+      return <span key={series[k].key} className="absolute inset-x-0" style={style} />;
+    });
+  };
+
+  const W = 600;
+  const cx = (i: number) => ((i + 0.5) * W) / n;
+  const beforePath =
+    shownBefore.length > 1
+      ? shownBefore.map((v, i) => `${i ? "L" : "M"}${cx(i).toFixed(1)},${(zero - v * px).toFixed(1)}`).join("")
+      : null;
+  const at = picked === null ? 0 : ((picked + 0.5) / n) * 100;
+  const fromAt = from != null && from > 0 && from < n ? (from / n) * 100 : null;
+
+  return (
+    <div>
+      <div
+        className="relative"
+        role="slider"
+        tabIndex={0}
+        aria-label={`Pick a ${unit}`}
+        aria-valuemin={0}
+        aria-valuemax={last}
+        aria-valuenow={picked ?? last}
+        aria-valuetext={sayBucket(picked ?? last)}
+        onPointerDown={pickAt}
+        onPointerMove={pickAt}
+        onPointerLeave={(e) => {
+          if (e.pointerType === "mouse") setPick(null);
+        }}
+        onKeyDown={onKey}
+        style={{ height, touchAction: "pan-y", cursor: "crosshair" }}
+      >
+        {fromAt !== null ? (
+          // The buckets before `from`, washed: what began to be known later is not known there.
+          <span aria-hidden className="absolute inset-y-0 left-0" style={{ width: `${fromAt}%`, background: "var(--chart-empty)" }} />
+        ) : null}
+        {ticks.map((v) => (
+          <span key={v} aria-hidden className="absolute inset-x-0 h-px" style={{ top: zero - v * px, background: "var(--chart-grid)" }} />
+        ))}
+        {ticks.length > 0 ? (
+          <span
+            aria-hidden
+            className="absolute left-0 -translate-y-full rounded-[4px] px-1 pb-0.5 font-mono text-[10.5px]"
+            // Its own ground, except over the wash, where a chip of the card's ground would stand out.
+            style={{ top: zero - ticks[ticks.length - 1] * px, color: "var(--adm-ink-3)", background: fromAt === null ? "var(--adm-panel)" : "transparent" }}
+          >
+            {valueText(ticks[ticks.length - 1])}
+          </span>
+        ) : null}
+        <div key={`draw:${drawKey}`} aria-hidden className="absolute inset-0 flex">
+          {values.map((col, i) => (
+            <div key={i} className="relative h-full min-w-0 flex-1" style={{ opacity: picked === null || picked === i ? 1 : 0.42 }}>
+              {up[i] > 0 ? (
+                <div
+                  className={`absolute inset-x-0 mx-auto${reduced ? "" : " adm-cols-grow"}`}
+                  style={{ width: "clamp(2px, 62%, 24px)", top: zero - up[i] * px, height: up[i] * px, transformOrigin: "bottom" }}
+                >
+                  {stack(col, false)}
+                </div>
+              ) : null}
+              {down[i] > 0 ? (
+                <div
+                  className={`absolute inset-x-0 mx-auto${reduced ? "" : " adm-cols-grow"}`}
+                  style={{ width: "clamp(2px, 62%, 24px)", top: zero + reserve, height: down[i] * px, transformOrigin: "top" }}
+                >
+                  {stack(col, true)}
+                </div>
+              ) : null}
+            </div>
+          ))}
+        </div>
+        <span aria-hidden className="absolute inset-x-0 h-px" style={{ top: zero, background: "var(--adm-line-strong)" }} />
+        {beforePath ? (
+          <svg aria-hidden width="100%" height={height} viewBox={`0 0 ${W} ${height}`} preserveAspectRatio="none" className="pointer-events-none absolute inset-0 block overflow-visible">
+            <path d={beforePath} fill="none" stroke="var(--adm-ink-3)" strokeWidth={1.3} strokeDasharray="4 4" vectorEffect="non-scaling-stroke" />
+          </svg>
+        ) : null}
+        {picked !== null ? (
+          <span
+            aria-hidden
+            className="pointer-events-none absolute top-1 z-[1] whitespace-nowrap rounded-[var(--adm-radius-sm)] border px-2 py-1 font-sans text-eyebrow tabular-nums"
+            style={{
+              left: `${at}%`,
+              // The label stays inside the card at either end.
+              transform: `translateX(${at < 15 ? "0" : at > 85 ? "-100%" : "-50%"})`,
+              background: "var(--adm-panel)",
+              borderColor: "var(--adm-line-strong)",
+              color: "var(--adm-ink)",
+              boxShadow: "var(--adm-shadow-pop)",
+            }}
+          >
+            <span className="block">
+              {days[picked]}
+              <span style={{ color: "var(--adm-ink-3)" }}> · </span>
+              {valueText(net[picked])}
+              <span style={{ color: "var(--adm-ink-3)" }}> net</span>
+            </span>
+            {series.map((s, k) =>
+              amount(values[picked], k) > 0 ? (
+                <span key={s.key} className="mt-0.5 flex items-center gap-1.5">
+                  <span className="inline-block h-[2px] w-2.5 shrink-0 rounded-full" style={{ background: s.color }} />
+                  {said(amount(values[picked], k), s)}
+                  <span style={{ color: "var(--adm-ink-3)" }}>{s.label}</span>
+                </span>
+              ) : null,
+            )}
+          </span>
+        ) : null}
+      </div>
+      <div aria-hidden className="mt-1.5 flex justify-between font-mono text-[10.5px]" style={{ color: "var(--adm-ink-3)" }}>
+        {marks.map((m, i) => (
+          <span key={i}>{m}</span>
+        ))}
+      </div>
+      <ul className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1.5 font-sans text-[12px]" aria-label="Key">
+        {series.map((s, k) =>
+          s.optional && totals[k] === 0 ? null : (
+            <li key={s.key} className="flex items-center gap-1.5">
+              <span aria-hidden className="inline-block h-2.5 w-2.5 shrink-0 rounded-[2px]" style={{ background: s.color }} />
+              <span style={{ color: "var(--adm-ink-2)" }}>{s.label}</span>
+              <span className="font-mono text-[11.5px]" style={{ color: "var(--adm-ink)" }}>
+                {said(totals[k], s)}
+              </span>
+            </li>
+          ),
+        )}
+      </ul>
+      {/* In a block: a table set sr-only itself still lays out at full width and widens a phone's page. */}
+      <div className="sr-only">
+        <table>
+          <caption>{label}</caption>
+          <thead>
+            <tr>
+              <th scope="col">{unit === "month" ? "Month" : "Day"}</th>
+              {series.map((s) => (
+                <th key={s.key} scope="col">
+                  {s.label}
+                </th>
+              ))}
+              <th scope="col">Net</th>
+            </tr>
+          </thead>
+          <tbody>
+            {values.map((col, i) => (
+              <tr key={i}>
+                <th scope="row">{days[i]}</th>
+                {series.map((s, k) => (
+                  <td key={s.key}>{said(amount(col, k), s)}</td>
+                ))}
+                <td>{valueText(net[i])}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 /** A quiet line of words, for a panel that has nothing to draw yet or could not read. */
 export function Quiet({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
