@@ -82,6 +82,22 @@ describe("a chant's words switch (fail 9, Psalm 117)", () => {
   });
 });
 
+describe("a chant's name on its icon (the hold of the chants, 2026-11-12)", () => {
+  it("lies on the house's close halo of the page's ground in the dark, under the soft shadow, at any width", () => {
+    // At 320 the Prayer Rope Anthem's name stood above the icon's melt and read 2.48:1 on Candlelight under the soft
+    // shadow alone (export b1eafa1af). On paper the name keeps its own halo of the paper.
+    const rule = /(?:^|\})\s*\[data-chant-control="name"\] \.doctrine-shadow \{([^}]*)\}/.exec(CSS)?.[1] ?? "";
+    const last = rule.split("text-shadow:").pop() ?? "";
+    for (const layer of ["0 0 1px color-mix(in srgb, var(--color-night) 95%", "0 0 3px color-mix(in srgb, var(--color-night) 90%", "0 0 6px color-mix(in srgb, var(--color-night) 80%", "0 2px 18px rgb(0 0 0 / 0.7)"]) {
+      expect(last, layer).toContain(layer);
+    }
+    expect(CSS).toMatch(/html\[data-reading-mode="parchment"\] \[data-chant-control="name"\] \.doctrine-shadow \{\s*text-shadow: 0 0 2px var\(--color-night\)/);
+    const page = fs.readFileSync(path.join(ROOT, "components/chants/ChantPage.tsx"), "utf8");
+    expect(page).toContain('data-chant-control="name"');
+    expect(page).toContain('className="doctrine-shadow font-serif text-[30px]');
+  });
+});
+
 describe("the saints' webs (fail 4, the 118 webs)", () => {
   type Rect = { left: number; right: number; top: number; bottom: number };
   const overlap = (a: Rect, b: Rect) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;

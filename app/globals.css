@@ -7498,6 +7498,21 @@ html[data-reading-mode="parchment"] .doctrine-shadow {
 html[data-reading-mode="parchment"] [data-chant-control="name"] .doctrine-shadow {
  text-shadow: 0 0 2px var(--color-night), 0 0 8px var(--color-night), 0 0 18px var(--color-night);
 }
+/* In the dark, the soft shadow alone was not enough on a narrow phone: the
+   icon is shorter there, the name stands higher on it, above the melt, and
+   at 320 the Prayer Rope Anthem's read 2.48:1 on Candlelight (the dimmest
+   ink) and 2.97:1 on Monastery (the hold of 2026-11-12). The house's close
+   halo of the page's own ground (.words-halo) lies under the soft shadow, so
+   the words stand on the dark at their letters, at any width. The plain
+   values first are for a WebView without color-mix. */
+[data-chant-control="name"] .doctrine-shadow {
+ text-shadow: 0 0 1px rgb(16 16 19 / 0.95), 0 0 3px rgb(16 16 19 / 0.9), 0 0 6px rgb(16 16 19 / 0.8), 0 2px 18px rgb(0 0 0 / 0.7);
+ text-shadow:
+  0 0 1px color-mix(in srgb, var(--color-night) 95%, transparent),
+  0 0 3px color-mix(in srgb, var(--color-night) 90%, transparent),
+  0 0 6px color-mix(in srgb, var(--color-night) 80%, transparent),
+  0 2px 18px rgb(0 0 0 / 0.7);
+}
 
 /* A Father's face (the Fathers the studies quote, the faces beside a
    study's parts): a face in a ring of the ground. A Father with no picture
