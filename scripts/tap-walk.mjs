@@ -199,6 +199,8 @@ const EXPECT = {
   "/sheet-small/": { verdict: "fail", why: /^sheet: dialog "Share": target: button "Close": 24 by 24px/ },
   "/sheet-fine/": { verdict: "pass", why: /^opened dialog "Keep", held to checkMock's rules: nothing failed/ },
   "/sheet-plays/": { verdict: "pass", why: /^dialog "Atlas" plays itself: paused by its own Pause/ },
+  "/late-follow/": { verdict: "pass" },
+  "/not-followed/": { verdict: "fail", why: /^under: what it opened ends at/ },
 };
 
 /** The self-test's page: one front door that draws a case by its address, as the shell answers every address with it. */
@@ -358,6 +360,35 @@ if (at === "/sticky/") {
     sheet.append(year, button("Pause", () => clearInterval(run)));
     document.body.append(sheet);
   }), block(1200));
+} else if (at === "/late-follow/" || at === "/not-followed/") {
+  // As Community's "1 reply": the thread opens on a row that waits (aria-busy), the reply lands
+  // over a second later and takes the thread's end far under the bar at the foot, and the page
+  // follows it a little each frame until the end stands 12px clear of the bar, as
+  // lib/ui/showOpened.ts does with a long reply (a walk that judges at a fixed moment reads it half
+  // way); or, in the other case, it does not follow at all.
+  const bar = document.createElement("div"); bar.setAttribute("data-screen-edge", "bottom");
+  bar.style.cssText = "position:fixed;left:0;right:0;bottom:0;height:84px;background:#eee";
+  document.body.append(bar);
+  const thread = document.createElement("div"); thread.id = "thread";
+  const open = button("1 reply", (b) => {
+    if (b.getAttribute("aria-expanded") === "true") { b.setAttribute("aria-expanded", "false"); thread.replaceChildren(); return; }
+    b.setAttribute("aria-expanded", "true");
+    const wait = document.createElement("div"); wait.setAttribute("aria-busy", "true"); wait.style.height = "60px";
+    thread.replaceChildren(wait);
+    setTimeout(() => {
+      thread.replaceChildren(block(700));
+      if (at !== "/late-follow/") return;
+      const step = () => {
+        const owed = thread.getBoundingClientRect().bottom - (bar.getBoundingClientRect().top - 12);
+        if (owed <= 0.5) return;
+        scrollBy(0, Math.min(owed, 3));
+        requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }, 1300);
+  });
+  open.setAttribute("aria-expanded", "false"); open.setAttribute("aria-controls", "thread");
+  m.append(block(300), open, thread, block(1500));
 } else if (at === "/here/") {
   const tab = document.createElement("a"); tab.href = "/here/"; tab.textContent = "You";
   m.append(block(300), tab, block(1200));
@@ -1033,6 +1064,32 @@ async function walkScreen(ctx, at, kept) {
             row.why.push(`back: Back returned to ${back.y}px, the reader was at ${before.y}px`);
           }
         } else {
+          // What opened is judged once it has arrived and the page has come to rest with it. A part
+          // still filling (aria-busy) is waited for, and a page still gliding after what opened is
+          // not judged half way: lib/ui/showOpened.ts follows what lands late, a reply from the
+          // website a second after the tap, in a glide of about a fifth of a second. Read at a fixed
+          // moment, Community's "1 reply" was caught at 752px, a frame of the glide that ends at
+          // 748 with the bar at 761, and failed (the gate's final check, 2026-11-12). Up to 4s.
+          await page.evaluate(() => { window.__tapwalkRest = null; }).catch(() => {});
+          await page
+            .waitForFunction(
+              (i) => {
+                const el = document.querySelector(`[data-tapwalk="${i}"]`);
+                if (!el) return true;
+                const parts = el.tagName === "SUMMARY" ? [el.closest("details")].filter(Boolean) : (el.getAttribute("aria-controls") || "").split(/\s+/).map((id) => document.getElementById(id)).filter(Boolean);
+                if (parts.some((p) => p.matches('[aria-busy="true"]') || p.querySelector('[aria-busy="true"]'))) {
+                  window.__tapwalkRest = null;
+                  return false;
+                }
+                const at = `${Math.round(scrollY)} ${parts.map((p) => Math.round(p.getBoundingClientRect().bottom)).join(" ")}`;
+                const last = window.__tapwalkRest;
+                window.__tapwalkRest = { at, n: last && last.at === at ? last.n + 1 : 0 };
+                return window.__tapwalkRest.n >= 3;
+              },
+              c.i,
+              { polling: 60, timeout: 4000 },
+            )
+            .catch(() => {});
           const opened = await page
             .evaluate((i) => {
               const el = document.querySelector(`[data-tapwalk="${i}"]`);
