@@ -23,6 +23,7 @@ const DAILY_FILES = [
   "components/admin/tabs/HomeTab.tsx",
   "components/admin/tabs/TrafficViews.tsx",
   "components/admin/tabs/MoneyOverviewTab.tsx",
+  "components/admin/money/MoneyColumnsChart.tsx",
   "components/admin/tabs/ReadersTab.tsx",
   "components/admin/tabs/ReaderCard.tsx",
   "components/admin/tabs/CartsTab.tsx",
@@ -185,11 +186,24 @@ describe("the parts", () => {
   });
 
   it("are what Money's chart is drawn with: all its sources, in their tokens", () => {
-    const tab = read("components/admin/tabs/MoneyOverviewTab.tsx");
-    expect(tab).toContain("<StackedColumns");
+    const chart = read("components/admin/money/MoneyColumnsChart.tsx");
+    expect(chart).toContain("<StackedColumns");
     for (const token of ["--adm-money-shop", "--adm-money-plus", "--adm-money-box", "--adm-money-all", "--adm-money-back"]) {
-      expect(tab).toContain(`var(${token})`);
+      expect(chart).toContain(`var(${token})`);
     }
+    const tab = read("components/admin/tabs/MoneyOverviewTab.tsx");
+    expect(tab).toContain("<MoneyColumnsChart");
     expect(tab).not.toContain("The shop, net by day");
+  });
+
+  // The arbiter, 2026-11-12, on his word that the charts show all the money:
+  // Revenue's by-month chart was the shop's net alone, or Stripe's ledger,
+  // which holds no Plus bought through a store.
+  it("draw Revenue's by-month chart as Money's, all the money for all time", () => {
+    const revenue = read("components/admin/tabs/RevenueTab.tsx");
+    expect(revenue).toContain("<MoneyColumnsChart");
+    expect(revenue).toContain("/api/admin/money?period=all");
+    expect(revenue).not.toContain("Shop net revenue · by month");
+    expect(revenue).not.toMatch(/<AreaChart/);
   });
 });

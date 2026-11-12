@@ -5,13 +5,16 @@
 // subscription run-rate, with a monthly trend, a revenue-by-source donut,
 // and top products. A sub-tab holds the existing costs/sustainability UI.
 
+import { adminJson } from "@/lib/admin/fetchJson";
 import { useLiveData } from "@/lib/admin/useLiveData";
 import { Freshness } from "../Freshness";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { AbandonmentStats, AovSplit } from "@/lib/shop/commerceMetrics";
 import { Card, StatCard, ChartFrame, Sensitive, ToolbarButton } from "../primitives";
-import { AreaChart, BarChart, Donut, SERIES_COLORS, chartColors } from "../charts";
+import { BarChart, Donut, SERIES_COLORS, chartColors } from "../charts";
+import { Quiet } from "../daily/parts";
+import { MoneyColumnsChart, type MoneyChartPayload } from "../money/MoneyColumnsChart";
 import { formatPrice } from "@/lib/shop/format";
 import { ReconcileCard } from "../ReconcileCard";
 import { ShopGrowthCards } from "../shop/ShopGrowthCards";
@@ -152,12 +155,20 @@ function RevenuePanel() {
     60_000,
   );
 
-  // Stripe's ledger by month when Stripe is the realized source (it already
-  // arrives oldest first); the shop's own ledger otherwise.
-  const fromStripe = data?.realized.source === "stripe" && data.realized.stripeMonthly != null;
-  const monthly = fromStripe
-    ? (data?.realized.stripeMonthly ?? [])
-    : (data?.shop.monthly ?? []).slice().reverse(); // oldest → newest
+  // All the money by month, the same chart as Money's, for All time (his word,
+  // 2026-11-12: "show everything related to money on the timeline"). This was
+  // the shop's net alone, or Stripe's ledger, which holds no Plus bought
+  // through a store. Read once: the money route asks Stripe and RevenueCat.
+  const [allMoney, setAllMoney] = useState<MoneyChartPayload | null | undefined>(undefined);
+  useEffect(() => {
+    let alive = true;
+    void adminJson<MoneyChartPayload>("/api/admin/money?period=all").then((d) => {
+      if (alive) setAllMoney(d);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
   const donutSegments = (data?.bySource ?? [])
     .filter((s) => s.value > 0)
     .map((s, i) => ({
@@ -287,22 +298,13 @@ function RevenuePanel() {
       <ReconcileCard />
 
       <ChartFrame
-        title={fromStripe ? "Revenue · by month" : "Shop net revenue · by month"}
-        subtitle={fromStripe ? "From Stripe's ledger: charges net of fees, minus refunds." : "Paid orders minus refunds."}
+        title="All the money · by month"
+        subtitle="The shop, Plus and the EIKON Box, each in its own colour, refunds under the line: the chart Money draws, for all time."
         sensitive
-        isEmpty={monthly.length === 0}
-        empty={fromStripe ? "Stripe has recorded no charges yet." : "No shop revenue yet."}
+        isEmpty={allMoney === null}
+        empty="The money could not be read just now."
       >
-        <AreaChart
-          labels={monthly.map((m) => m.month.slice(2))}
-          series={[
-            {
-              name: "Net",
-              color: SERIES_COLORS[0],
-              data: monthly.map((m) => Math.round(m.netCents / 100)),
-            },
-          ]}
-        />
+        {allMoney ? <MoneyColumnsChart p={allMoney} /> : <Quiet className="py-6">Reading.</Quiet>}
       </ChartFrame>
 
       <div className="grid gap-6 md:grid-cols-2">
