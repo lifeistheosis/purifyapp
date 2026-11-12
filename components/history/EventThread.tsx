@@ -224,9 +224,10 @@ function ThreadMap({ steps, home, current }: { steps: ThreadStep[]; home: Thread
           <circle cx={here.x} cy={here.y} r={6.5 / k} className={own ? "fill-paper" : "fill-paper/45"} />
         </g>
       </svg>
-      {/* The event's own city, in the corner, while the map stands at it for a step that names no place. */}
+      {/* The event's own city, in the corner, while the map stands at it for a step that names no place.
+          At 80% on the light looks, whose paper is tinted ("Kodiak" read 4.44:1 at 70% on five, the gate's final run of 2026-11-12). */}
       {home && !own ? (
-        <p aria-hidden data-thread-map-home="" className="thread-map-name absolute start-3 top-2.5 font-sans text-caption font-medium text-paper/70">
+        <p aria-hidden data-thread-map-home="" className="thread-map-name absolute start-3 top-2.5 font-sans text-caption font-medium text-paper/70 [html[data-reading-mode=parchment][data-look]_&]:text-paper/80">
           {home.name}
         </p>
       ) : null}

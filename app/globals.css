@@ -2371,6 +2371,12 @@ html[data-reading-mode="black"] .rule-med-disc:not([data-add]) {
  background: linear-gradient(180deg, transparent 26%, rgb(16 16 19 / 0.82) 100%);
  background: linear-gradient(180deg, transparent 26%, color-mix(in srgb, var(--color-night) 82%, transparent) 100%);
 }
+/* On Candlelight the shade is a little deeper at the foot: over the Compline
+   icon (the Hours tile after nine at night) the name read 2.99:1 at 82%, and
+   large words need 3:1 (the gate's final run of 2026-11-12). */
+html[data-reading-mode="candlelight"] .tile-shade {
+ background: linear-gradient(180deg, transparent 26%, color-mix(in srgb, var(--color-night) 85%, transparent) 100%);
+}
 html[data-reading-mode="parchment"] .tile-shade {
  background: linear-gradient(180deg, transparent 30%, color-mix(in srgb, var(--color-night) 70%, transparent) 62%, color-mix(in srgb, var(--color-night) 92%, transparent) 100%);
 }

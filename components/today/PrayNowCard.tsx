@@ -121,8 +121,11 @@ export function PrayRail({ className }: { className?: string }) {
               <h3 className="mt-1 font-heading text-title font-bold leading-[1.1] text-paper">{t(hour.titleKey)}</h3>
               {/* On paper the picture at the card's side lies under this line's
                   end: its ink is stronger there (the gate's words over pictures,
-                  2026-11-11: 3.96:1 on Light, 4.20 to 4.47 on six light looks). */}
-              <p className="mt-1.5 max-w-[12.5rem] font-sans text-detail leading-snug text-paper/60 [html[data-reading-mode=parchment]_&]:text-paper/80">{t(hour.lineKey)}</p>
+                  2026-11-11: 3.96:1 on Light, 4.20 to 4.47 on six light looks),
+                  and stronger again on the light looks, whose paper is tinted
+                  (the morning line read 4.28 to 4.50 on seven at 80%, the gate's
+                  final run of 2026-11-12). */}
+              <p className="mt-1.5 max-w-[12.5rem] font-sans text-detail leading-snug text-paper/60 [html[data-reading-mode=parchment]_&]:text-paper/80 [html[data-reading-mode=parchment][data-look]_&]:text-paper/90">{t(hour.lineKey)}</p>
               <span className="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-pill bg-paper px-[18px] font-sans text-ui font-semibold text-night">
                 {t("today.prayNow.begin")}
                 <ArrowRight />

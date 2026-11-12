@@ -33,6 +33,8 @@ import { describe, expect, it } from "vitest";
 const ROOT = process.cwd();
 const read = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8").replace(/\r\n/g, "\n");
 const PAPER_80 = "[html[data-reading-mode=parchment]_&]:text-paper/80";
+/** On the light looks alone: worn over Light, with their tinted paper (scripts/mock-check.mjs, LOOKS). */
+const LOOKS_AT = (n: number) => `[html[data-reading-mode=parchment][data-look]_&]:text-paper/${n}`;
 
 describe("words over pictures, mended", () => {
   it("Prayers' chants door: its kicker inked at 80% on Candlelight, the line under its name at 80% on paper", () => {
@@ -53,9 +55,25 @@ describe("words over pictures, mended", () => {
     expect(src.match(/className="plan-tile-picture /g)).toHaveLength(1);
   });
 
-  it("Today's hour card: the line under the hour's name is inked at 80% on paper", () => {
+  it("Today's hour card: the line under the hour's name is inked at 80% on paper, 90% on the light looks", () => {
+    // The morning line ("Begin the day with God...") runs furthest under the card's picture:
+    // 4.28 to 4.50:1 on seven light looks at 80% (the gate's final run of 2026-11-12).
     const src = read("components/today/PrayNowCard.tsx");
-    expect(src).toContain(`className="mt-1.5 max-w-[12.5rem] font-sans text-detail leading-snug text-paper/60 ${PAPER_80}">{t(hour.lineKey)}</p>`);
+    expect(src).toContain(`className="mt-1.5 max-w-[12.5rem] font-sans text-detail leading-snug text-paper/60 ${PAPER_80} ${LOOKS_AT(90)}">{t(hour.lineKey)}</p>`);
+  });
+
+  it("An event's Thread map: its home city in the corner at 80% on the light looks", () => {
+    // "Kodiak" on /history/alaska-mission/ read 4.44 to 4.50:1 at 70% on five light looks (the final run of 2026-11-12).
+    const src = read("components/history/EventThread.tsx");
+    expect(src).toContain(`className="thread-map-name absolute start-3 top-2.5 font-sans text-caption font-medium text-paper/70 ${LOOKS_AT(80)}">`);
+  });
+
+  it("A picture tile on Candlelight: its shade at 85% at the foot, so the Hours tile's name holds over the Compline icon", () => {
+    // "The Hours" read 2.99:1 at 82% after nine at night (the final run of 2026-11-12); large words need 3:1.
+    const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
+    expect(css).toContain(
+      'html[data-reading-mode="candlelight"] .tile-shade {\n background: linear-gradient(180deg, transparent 26%, color-mix(in srgb, var(--color-night) 85%, transparent) 100%);\n}',
+    );
   });
 
   it("A chant's head: a halo of the page's own colour under its words on paper, and its kind inked at 80% there", () => {
