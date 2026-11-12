@@ -85,6 +85,17 @@ describe("words over pictures, mended", () => {
     expect(page).toContain('className={cn("mt-1.5 font-sans text-detail text-paper/70", picture && "[html[data-reading-mode=parchment][data-look]_&]:text-paper/80")}');
   });
 
+  it("A council's shelf: the minutes under each book at 75% on Light, where the backdrop's foot lies under the first row", () => {
+    // At Light's own 70 (its lift of every share under 68) they read 4.17 to 4.49:1 on all seven shelves (the gate's
+    // confirm run of 2026-11-12); at 75 every shelf passed on the five palettes and the seventeen looks. The light
+    // looks lift the share to 76 to 80 on their own, so the rule is Light's alone.
+    const shelf = read("components/councils/CouncilShelf.tsx");
+    expect(shelf).toContain('<span className="mt-2 block text-center font-sans text-caption text-paper/55 [html[data-reading-mode=parchment]:not([data-look])_&]:text-paper/75">');
+    const css = read("app/globals.css");
+    const lift = (look: string) => Number(css.match(new RegExp(`:where\\(html\\[data-look="${look}"\\]\\) :is\\([^)]*\\.text-paper\\\\/55[^)]*\\) \\{\\n\\s*color: color-mix\\(in oklab, var\\(--color-paper\\) (\\d+)%`))?.[1]);
+    for (const look of ["desert", "jordan", "blush", "rose", "lavender", "olive", "stone"]) expect(lift(look)).toBeGreaterThanOrEqual(75);
+  });
+
   it("A chant's head: a halo of the page's own colour under its words on paper, and its kind inked at 80% there", () => {
     const page = read("components/chants/ChantPage.tsx");
     expect(page).toContain(`className="doctrine-shadow mt-1 truncate font-sans text-[13px] leading-[18px] text-paper/60 ${PAPER_80}"`);

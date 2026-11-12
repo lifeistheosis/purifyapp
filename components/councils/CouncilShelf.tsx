@@ -83,7 +83,11 @@ export function CouncilShelf({ council, books, others }: { council: ShelfCouncil
                   eager
                   hold="self"
                 />
-                <span className="mt-2 block text-center font-sans text-caption text-paper/55">{cardMeta(b, t)}</span>
+                {/* At 75 on Light, where the backdrop's foot is under the first row: at Light's 70 the minutes read
+                    4.17 to 4.49:1 there (the gate's confirm run, 2026-11-12). The looks lift it further on their own. */}
+                <span className="mt-2 block text-center font-sans text-caption text-paper/55 [html[data-reading-mode=parchment]:not([data-look])_&]:text-paper/75">
+                  {cardMeta(b, t)}
+                </span>
               </Link>
             </li>
           ))}
