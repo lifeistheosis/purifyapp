@@ -2,12 +2,12 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state; the log is the release's HANDOFF.md. How the chats run: `docs/OPERATIONS.md`.
 
-Updated 2026-11-12, 22:33 UTC.
+Updated 2026-11-12, 22:39 UTC.
 
 ## 1.9: in flight
 
 - **The final check** (Admin): export cut at 20:42 UTC from 3e65f51ff, whose code is 05aee81e1. Report near 01:00 UTC. If it passes, the test build is cut at once: Android with local-first on, the main web, publish off; then iOS. He walks it as a new reader would.
-- **Updates 2:** /reading/ passes on the same export (0 fails at 390, 800 and 1032). Held locally until the report: the councils' fix (e011e8c8f; a Father's card no longer moves under the finger), and a mend to the walk (db29a0470): the community thread was the measure, not the screen, since the page settles 12px above the tab bar once the reply has landed.
+- **Updates 2:** /reading/ passes on the same export (0 fails at 390, 800 and 1032). Held locally until the report: the councils' fix (e011e8c8f; walked on a fresh export, 186 taps at three widths, a face now moves at most 1px where it moved up to 103.7px); a mend to the walk (db29a0470: the community thread was the measure, not the screen, since the page settles 12px above the tab bar once the reply has landed); and, being prepared, the Search sheet's esc key hint at 800 and 1032 wide (a keyboard hint on a touch screen; it predates today).
 - **The report** is now near 01:15 UTC: Admin's container restarted at 21:30, and the check resumed at 21:37.
 - **Freeze:** no app code lands during the final check.
 - **Tooling:** the pre-push guard is live (376076bcd): main refused, docs at once, the checks on everything else. Chats started before it set `git config core.hooksPath .githooks` before their next push; the arbiter says so in each one's next message. CI's typecheck now passes in a fresh checkout (3ad6cdd56). Tooling is done. After the final check, Admin writes the nightly gate's runner, and the arbiter schedules it.
