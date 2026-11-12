@@ -10041,10 +10041,10 @@ html[data-reading-mode="parchment"] .history-saved-lit {
  white-space: nowrap;
  text-overflow: ellipsis;
 }
+/* The dot between a date and a place is in the line's own ink (at 30% it read 2.65:1, the gate's final run of 2026-11-12). */
 .atlas-row-line i {
  margin-inline: 5px;
  font-style: normal;
- color: rgb(255 255 255 / 0.3);
 }
 /* An era's name beside a row is inked as the row's own name, so it holds 4.5:1 at the row's light (lib/councils/atlas.ts, wheelLight). */
 .atlas-row-era {

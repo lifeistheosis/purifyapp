@@ -57,6 +57,15 @@ describe("the atlas wheel's rows off the band", () => {
     expect(engine).toContain("const hi = Math.min(this.n - 1, Math.ceil(pos) + 1);");
   });
 
+  it("draws the dot between a date and a place in the band's line in the line's own ink", () => {
+    // At 30% the dot in "Summer 325 · Nicaea in Bithynia" read 2.65:1 on every palette (the gate's final run of 2026-11-12).
+    const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
+    const dot = css.match(/\n\.atlas-row-line i \{([^}]*)\}/)?.[1] ?? null;
+    expect(dot).not.toBeNull();
+    expect(dot).not.toMatch(/\bcolor:/);
+    expect(css.match(/\n\.atlas-row-line \{[^}]*\n color: ([^;]+);/)?.[1]).toBe("rgb(255 255 255 / 0.55)");
+  });
+
   it("inks an era's name beside a row as the row's own name", () => {
     const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
     const ink = (sel: string) => css.match(new RegExp(`\\n${sel.replace(/\./g, "\\.")} \\{[^}]*?\\n color: ([^;]+);`))?.[1];
