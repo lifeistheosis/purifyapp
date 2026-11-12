@@ -2713,6 +2713,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "Admin's final run 1, the arbiter's word. A council shelf's head over its icon, found on the way, mended too. 14fd327fa, 1e21ded5b, 563682f06, 570e6b02f, 455225ad7, a52e68b78, 18c37520e. PLAN 13bj."
+  },
+  {
+   "id": "e-fan-avif-gift-present-form",
+   "section": "Design",
+   "kind": "bug",
+   "title": "A council page's documents fan offers the bundle's AVIF; the gift's present form for readers with orders too",
+   "from": "claude",
+   "asked": "2026-11-12",
+   "status": "built",
+   "decided": "2026-11-12",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The arbiter's word, two faults named in 13bj. c7781e055, a8610c746. PLAN 13bk."
   }
  ]
 }
