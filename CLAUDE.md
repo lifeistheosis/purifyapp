@@ -20,3 +20,9 @@
 - **One branch** (the owner's word, 2026-11-07). Until 1.9 merges into main, all Purify work happens on `ccr-07896cf2-bo0afd`: the code, the 1.9 record in `docs/1.9-build/` (which main does not have), and the newest rules in this file. A session that starts anywhere else runs `git fetch origin ccr-07896cf2-bo0afd && git checkout ccr-07896cf2-bo0afd` first, and works and pushes there, whatever branch it was handed; this is his standing permission to push to it. Never start a second line of work. Main is the website: a push to it deploys, so it waits for his word.
 - The owner usually authorizes pushes per-session; when in doubt, commit locally and ask — a push deploys the website.
 - Current audit state, open findings, and the continuation ledger live in `docs/audit/`. Read `findings.yaml` before touching billing, webhook, cancel, or CI code.
+- **How the chats run** (the owner's word, 2026-11-12): "let's have the most optimal system in which we can optimize our token usage and our usage in general and our spending ... I want clear guardrails that optimize our system and that enhances our performance." `docs/OPERATIONS.md` binds every chat, and these are its rules:
+  - A fresh chat reads only its role card (`docs/roles/`), `docs/NOW.md` and its baton.
+  - A chat rotates when a release ships, when it passes 400,000 tokens or has compacted once, when it takes a new kind of job, or when it shows strain. Never in the middle of a check.
+  - `/compact` only at a natural break, and only once.
+  - One message per chat per round.
+  - The fix checklist and the release checklist there define done.
