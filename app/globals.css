@@ -12038,6 +12038,14 @@ html[data-reading-mode="parchment"] [data-sung-look="page"] [data-sung-under] sp
 html[data-reading-mode="parchment"] .words-view > button[aria-checked="true"] {
  text-shadow: none;
 }
+/* On Light and the light looks the parts not chosen take the share those
+   palettes lift faint words to: at 55 percent they read 3.39:1 on Light and
+   3.30:1 on Blush, Jordan and Lavender, and at 66 still 4.46:1 on Jordan and
+   Roses (the gate's confirm run, 2026-11-12, Psalm 117); at 68 they are 4.5:1
+   or more on all of them. The dark palettes keep 55, where it reads. */
+html[data-reading-mode="parchment"] .words-view > button[aria-checked="false"] {
+ color: color-mix(in srgb, var(--color-paper) 68%, transparent);
+}
 html[data-reading-mode="parchment"] .words-view > button::before {
  box-shadow: none;
 }
