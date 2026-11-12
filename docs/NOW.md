@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state; the log is the release's HANDOFF.md. How the chats run: `docs/OPERATIONS.md`.
 
-Updated 2026-11-12, 22:55 UTC.
+Updated 2026-11-12, 23:13 UTC.
 
 ## 1.9: in flight
 
@@ -24,9 +24,11 @@ Updated 2026-11-12, 22:55 UTC.
 
 ## After 1.9 ships
 
-- Money: subscription days fill the chart from the merge on (`plus_events` is 1.9's table). History from before needs a RevenueCat key with the charts permission, which he would make: offer it with the owner's brief. The Revenue tab's by-month chart still shows the shop alone; Admin panel 2 matches it to Money's chart after the quiet board, by his word that the charts show all the money.
+- **Before the merge (web only, a 1.9 fault):** `lib/billing/applyLifecycle.ts` links the admin to `/admin?tab=subscriptions`, but the panel reads only `#tab=`, so it opens Home. Goes to the next free fixer after the final check; billing is audited, so `docs/audit/findings.yaml` is read first.
+- **The owner's desk, sections 2 and 3** (the sends and the owner's brief): a fresh admin chat from the baton, once he answers the four questions.
+- Money: subscription days fill the charts from the merge on (`plus_events` is 1.9's table). History from before needs a RevenueCat key with the charts permission, which he would make: offer it with the owner's brief.
 - SSM board, in its next message: put the AD 1 TikTok edit's source in the Vault (branch `claude/magical-carson-qissmz`; pull request #24 closed at his word on 2026-11-12, not merged).
-- The owner's desk and the Purify look (`docs/plans/owner-desk.md`): the quiet board first (Admin panel 2, with the money chart), then the design kit, the owner's brief, the recurring sends and the reader emails' second edition.
+- The owner's desk and the Purify look (`docs/plans/owner-desk.md`): the quiet board is done; next the design kit, the owner's brief, the recurring sends and the reader emails' second edition.
 - Every chat rotates (OPERATIONS section 2), the arbiter included.
 - The store accounts move to the LLC: Apple and Google (OWNER-STEPS C1 and C2), then C3 to C5.
 - 1.9.1: campaign pictures and their legal steps.
@@ -44,6 +46,6 @@ Updated 2026-11-12, 22:55 UTC.
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |
 | Product images (his PC) | session_01VuYTwaLq6ij9iFi8D4Kt8a | the EIKON gift, done for 1.9 |
 | Tooling: the pre-push guard | session_01VuYTwZxEJPq6tx6VUBChCT | the guard on every push (no app or package files during the freeze) |
-| Admin panel 2 | session_01VuYTwdGHpocsLjegCEAape | the admin panel: all money on Money's chart (the shop blue, Plus green, the EIKON Box magenta, refunds grey, anything unnamed white) and the quiet board (`docs/plans/owner-desk.md` section 1) are done and pushing now (admin code is not in the export under check). Then "Ready to send" for the team's pieces on their day, the Revenue tab matched, its baton, and it stops (past 400,000 tokens). |
+| Admin panel 2 | session_01VuYTwdGHpocsLjegCEAape | done and stopped (baton: `docs/handoffs/admin-panel.md`). Pushed: all the money on Money's chart (3721c0b1d), the quiet board (41bf07c60), "Ready to send" (2377317c6), Revenue's chart matched (4e9e2b252). |
 
 Admin and Updates were past 700,000 tokens at the last look, so both rotate first after 1.9.
