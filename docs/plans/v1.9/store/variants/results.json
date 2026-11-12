@@ -1,0 +1,271 @@
+{
+  "made": "2026-11-12",
+  "day": "2026-12-06T09:30:00-05:00",
+  "checks": [
+    "contrast",
+    "placeholder",
+    "target",
+    "glyph",
+    "palette",
+    "gold",
+    "stripe",
+    "mirror",
+    "emdash",
+    "rays",
+    "sparkle",
+    "picture",
+    "dashed",
+    "keys",
+    "cut"
+  ],
+  "variants": {
+    "A": {
+      "name": "Horizon",
+      "idea": "Night. A low hill and the line of its crest, as on Today's own star card; the screen stands upright before it with a soft light rising behind.",
+      "mode": null
+    },
+    "B": {
+      "name": "Planes",
+      "idea": "Night. A disc and a ring behind, and the screen turned a little with two leaves under it, so the depth is in the layers.",
+      "mode": null
+    },
+    "C": {
+      "name": "Arch",
+      "idea": "Parchment, the app's own Light palette. The screen stands in an arch, the shape of a church door and of a Gospel book's canon table.",
+      "mode": "parchment"
+    }
+  },
+  "pictures": [
+    {
+      "variant": "A",
+      "caption": "The Greek beside the verse",
+      "route": "/bible/john/1",
+      "picturesInView": [],
+      "file": "A-appstore-ipad-13-02-greek.png",
+      "size": [
+        2064,
+        2752
+      ],
+      "bytes": 292949,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "variant": "A",
+      "caption": "The Orthodox prayer book, Bible, saints, and calendar, in one quiet app.",
+      "route": null,
+      "file": "A-play-feature-graphic.png",
+      "size": [
+        1024,
+        500
+      ],
+      "bytes": 31497,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "variant": "A",
+      "caption": "The day's saint, fast and readings",
+      "route": "/",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ],
+      "file": "A-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 159829,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "variant": "A",
+      "caption": "A journal kept by the Church's day",
+      "route": "/journal",
+      "picturesInView": [],
+      "file": "A-play-phone-04-journal.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 107732,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "variant": "B",
+      "caption": "The Greek beside the verse",
+      "route": "/bible/john/1",
+      "picturesInView": [],
+      "file": "B-appstore-ipad-13-02-greek.png",
+      "size": [
+        2064,
+        2752
+      ],
+      "bytes": 353341,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "variant": "B",
+      "caption": "The Orthodox prayer book, Bible, saints, and calendar, in one quiet app.",
+      "route": null,
+      "file": "B-play-feature-graphic.png",
+      "size": [
+        1024,
+        500
+      ],
+      "bytes": 15612,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "variant": "B",
+      "caption": "The day's saint, fast and readings",
+      "route": "/",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ],
+      "file": "B-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 192958,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "variant": "B",
+      "caption": "A journal kept by the Church's day",
+      "route": "/journal",
+      "picturesInView": [],
+      "file": "B-play-phone-04-journal.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 136455,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "variant": "C",
+      "caption": "The Greek beside the verse",
+      "route": "/bible/john/1",
+      "picturesInView": [],
+      "file": "C-appstore-ipad-13-02-greek.png",
+      "size": [
+        2064,
+        2752
+      ],
+      "bytes": 252308,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "variant": "C",
+      "caption": "The Orthodox prayer book, Bible, saints, and calendar, in one quiet app.",
+      "route": null,
+      "file": "C-play-feature-graphic.png",
+      "size": [
+        1024,
+        500
+      ],
+      "bytes": 15215,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "variant": "C",
+      "caption": "The day's saint, fast and readings",
+      "route": "/",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ],
+      "file": "C-play-phone-01-today.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 133986,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    },
+    {
+      "variant": "C",
+      "caption": "A journal kept by the Church's day",
+      "route": "/journal",
+      "picturesInView": [],
+      "file": "C-play-phone-04-journal.png",
+      "size": [
+        1080,
+        1920
+      ],
+      "bytes": 88259,
+      "problems": [],
+      "check": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": [],
+        "allowed": []
+      }
+    }
+  ]
+}

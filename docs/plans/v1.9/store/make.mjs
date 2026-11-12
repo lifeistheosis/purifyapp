@@ -200,6 +200,8 @@ const head = (W, H, css) => `<!doctype html>
 ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
 <style>
   html, body { margin: 0; width: ${W}px; height: ${H}px; overflow: hidden; background-color: var(--color-night); }
+  /* The app keeps a scrollbar's room on <html>; a picture has no scrollbar, and the room showed as a strip without the light. */
+  html { scrollbar-gutter: auto; }
   ${css}
 </style>
 </head>`;
