@@ -62,10 +62,12 @@ describe("words over pictures, mended", () => {
     expect(src).toContain(`className="mt-1.5 max-w-[12.5rem] font-sans text-detail leading-snug text-paper/60 ${PAPER_80} ${LOOKS_AT(90)}">{t(hour.lineKey)}</p>`);
   });
 
-  it("An event's Thread map: its home city in the corner at 80% on the light looks", () => {
-    // "Kodiak" on /history/alaska-mission/ read 4.44 to 4.50:1 at 70% on five light looks (the final run of 2026-11-12).
+  it("An event's Thread map: its home city in the corner at 80% on every palette", () => {
+    // "Kodiak" on /history/alaska-mission/ read 4.44 to 4.50:1 at 70% on five light looks (the final run of 2026-11-12),
+    // and "Antioch" on /history/missions-of-apostle-paul/ 3.89 on Light, 4.40 on Candlelight and 4.26 on Mosaic (the
+    // confirm run). At 80 the corner's name passed on all 34 events that show it, on the five palettes and the seventeen looks.
     const src = read("components/history/EventThread.tsx");
-    expect(src).toContain(`className="thread-map-name absolute start-3 top-2.5 font-sans text-caption font-medium text-paper/70 ${LOOKS_AT(80)}">`);
+    expect(src).toContain('className="thread-map-name absolute start-3 top-2.5 font-sans text-caption font-medium text-paper/80">');
   });
 
   it("A picture tile on Candlelight: its shade at 85% at the foot, so the Hours tile's name holds over the Compline icon", () => {
