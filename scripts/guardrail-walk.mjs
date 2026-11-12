@@ -31,6 +31,7 @@
 //
 //   npm run build:android, then:
 //   NODE_USE_ENV_PROXY=1 node scripts/guardrail-walk.mjs [out dir] [--only /path,/path] [--workers 3] [--json file] [--online] [--looks dir]
+//   (add --size 800x1280 or --size 1032x1376 to walk at a tablet's size; a phone, 390 by 844, unless named)
 //   node scripts/guardrail-walk.mjs --self-test    (the carried-picture check's own proof)
 //
 // And what is asked of the website (the arbiter, 2026-11-11 16:59 UTC): a
@@ -73,6 +74,14 @@ const JSON_OUT = flag("--json");
 // Where to keep a still of each word over a picture that had no pixels to read (the gate's rule
 // that no "look" stands unanswered: these are answered by eye).
 const LOOKS = flag("--looks");
+// The screen's size (the arbiter, 2026-11-12 16:02 UTC): a phone unless --size names another, as a
+// 10-inch Android tablet (800x1280) or the largest iPad (1032x1376) are, held to the same rules and
+// walked as a phone is (touch, a mobile viewport). The store pictures chat found faults at tablet
+// widths that a walk at phone size never sees.
+const SIZE = (flag("--size") ?? "390x844").split("x").map(Number);
+if (SIZE.length !== 2 || SIZE.some((n) => !Number.isInteger(n) || n < 300 || n > 3000)) throw new Error("--size takes a width and a height, as 800x1280");
+const [WIDTH, HEIGHT] = SIZE;
+const ON = WIDTH === 390 && HEIGHT === 844 ? "on a phone" : `at ${WIDTH} by ${HEIGHT}`;
 const ONLINE = argv.includes("--online");
 if (ONLINE) argv.splice(argv.indexOf("--online"), 1);
 const SELF_TEST = argv.includes("--self-test");
@@ -82,7 +91,7 @@ if (!SELF_TEST) checkSells(OUT);
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}: run npm run build:android first`);
 
 const list = SELF_TEST ? [] : (ONLY ?? screens(OUT));
-if (!SELF_TEST) console.log(`${list.length} screens on a phone, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}, ${readerWords()}`);
+if (!SELF_TEST) console.log(`${list.length} screens ${ON}, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}, ${readerWords()}`);
 
 // The website, as the apps name it: purifyapp.net in the store builds, its Render address in an export
 // built without NEXT_PUBLIC_SITE_URL (lib/site.ts).
@@ -212,7 +221,7 @@ const results = [];
 let done = 0;
 const queue = [...list];
 async function phone() {
-  const ctx = await (await liveBrowser()).newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
+  const ctx = await (await liveBrowser()).newContext({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
   await ctx.addInitScript(() => {
     try {
       localStorage.setItem("purify:onboarded", "99");
