@@ -67,6 +67,26 @@ describe("the order the gift page's ticket is about", () => {
   });
 });
 
+describe("the present's form, for a parcel someone else sent", () => {
+  // A buyer may be sent a parcel too: since the ticket takes a reader's own order (giftFocus), the form had
+  // gone from every reader with an order (the arbiter's word of 05:05 UTC). It stands below their own
+  // orders for every signed-in reader, but not while a plan runs, when a claim writes nothing ("has_plus").
+  const page = read("components/gifts/OrderGiftClient.tsx");
+
+  it("stands for every signed-in reader with no plan running, orders of their own or none", () => {
+    expect(page).toContain("const showForm = state?.signedIn === true && !plus?.running && !lit;");
+    expect(page).not.toMatch(/const showForm = [^;]*focus/);
+  });
+
+  it("stands below the reader's own orders, in the house's own section, in the words it had", () => {
+    const orders = page.indexOf("{others.length > 0 ? (");
+    const form = page.indexOf("{showForm ? (");
+    expect(orders).toBeGreaterThan(0);
+    expect(form).toBeGreaterThan(orders);
+    expect(page).toMatch(/\{showForm \? \(\s*<form onSubmit=\{claimByNumber\} className="mt-6">\s*<p className="set-h">\{t\("orderGift\.otherTitle"\)\}<\/p>\s*<p className="set-hint">\{t\("orderGift\.otherBody"\)\}<\/p>/);
+  });
+});
+
 describe("the gift page's Try again", () => {
   it("is 44 tall to a finger", () => {
     const page = read("components/gifts/OrderGiftClient.tsx");

@@ -408,7 +408,11 @@ export function OrderGiftClient() {
     );
   }
 
-  const showForm = state?.signedIn === true && !plus?.running && !lit && !focus;
+  // The present's form, for a parcel someone else sent, below the reader's own
+  // orders: a buyer may be sent one too (the gate's final run of 2026-11-12,
+  // the arbiter's word). Not while a plan runs: a claim then writes nothing
+  // (claim_order_gift, "has_plus").
+  const showForm = state?.signedIn === true && !plus?.running && !lit;
   const look = revealing ? "reveal" : lit ? "lit" : opening ? "opening" : undefined;
 
   return (
