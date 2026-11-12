@@ -50,6 +50,14 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # A fresh checkout has no next-env.d.ts: Next writes it and .next/types,
+      # and git ignores both. Without them every image import fails typecheck
+      # (TS2307 on the admin panel's drop cards, found 2026-11-12). This makes
+      # them in about a second and touches no tracked file. Lint does not
+      # need them.
+      - name: Generate Next's types
+        run: npx next typegen
+
       - name: Typecheck
         run: npm run typecheck
 
