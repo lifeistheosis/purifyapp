@@ -493,7 +493,8 @@ const shotArgs = args.filter((a) => SHOTS.some((s) => s.id === a));
 const wanted = (id) => !readmeOnly && (!args.length || (id === "feature" ? args.includes("feature") : deviceArgs.includes(id) || (!deviceArgs.length && shotArgs.length > 0)));
 const shotWanted = (id) => !shotArgs.length || shotArgs.includes(id);
 const resultsFile = path.join(HERE, "results.json");
-const before = fs.existsSync(resultsFile) ? JSON.parse(fs.readFileSync(resultsFile, "utf8")).pictures : [];
+const record = fs.existsSync(resultsFile) ? JSON.parse(fs.readFileSync(resultsFile, "utf8")) : null;
+const before = record?.pictures ?? [];
 const made = [];
 if (wanted("feature")) made.push(await takeFeature());
 for (const device of DEVICES) {
@@ -505,10 +506,15 @@ await browser.close();
 // Keep what an earlier run made for the devices this run did not make.
 const order = [FEATURE.file, ...DEVICES.flatMap((d) => SHOTS.map((s) => `${d.id}-${s.n}-${s.id}.png`))];
 const all = order.map((file) => made.find((m) => m.file === file) ?? before.find((m) => m.file === file)).filter(Boolean);
-const commit = require("node:child_process").execSync("git rev-parse --short HEAD", { cwd: ROOT }).toString().trim();
-fs.writeFileSync(resultsFile, `${JSON.stringify({ made: new Date().toISOString().slice(0, 10), day: DAY, export: commit, checks: CHECKS, byEye: BY_EYE, pictures: all }, null, 2)}\n`);
+// The export's commit and the day the pictures were made are written when pictures are taken. A run that only
+// writes the README again takes nothing, so it keeps what the record holds (Updates' note, 2026-11-12: it used to
+// write HEAD and today, which a later run would have made wrong).
+const headCommit = () => require("node:child_process").execSync("git rev-parse --short HEAD", { cwd: ROOT }).toString().trim();
+const commit = readmeOnly && record?.export ? record.export : headCommit();
+const madeOn = readmeOnly && record?.made ? record.made : new Date().toISOString().slice(0, 10);
+fs.writeFileSync(resultsFile, `${JSON.stringify({ made: madeOn, day: DAY, export: commit, checks: CHECKS, byEye: BY_EYE, pictures: all }, null, 2)}\n`);
 
-fs.writeFileSync(path.join(HERE, "README.md"), readme(all, commit));
+fs.writeFileSync(path.join(HERE, "README.md"), readme(all, commit, madeOn));
 
 const failed = all.filter((p) => p.problems.length);
 console.log(`\n${all.length} pictures, ${failed.length} with a problem. results.json and README.md written.`);
@@ -517,7 +523,7 @@ process.exitCode = failed.length ? 1 : 0;
 // ── The record ───────────────────────────────────────────────────────────
 
 /** README.md, written from what was made and measured. */
-function readme(pictures, exportCommit) {
+function readme(pictures, exportCommit, madeOn) {
   const of = (deviceId) => pictures.filter((p) => p.device === deviceId);
   const result = (p) => {
     if (p.problems.length) return `NO: ${p.problems.join("; ")}`;
@@ -538,7 +544,7 @@ function readme(pictures, exportCommit) {
   say(
     "# Purify 1.9: the store pictures",
     "",
-    `One finished set, made on ${new Date().toISOString().slice(0, 10)} from the 1.9 app itself. Nothing here is drawn by hand: every screen is the app's own, taken from the native export, and set under one short line.`,
+    `One finished set, made on ${madeOn} from the 1.9 app itself. Nothing here is drawn by hand: every screen is the app's own, taken from the native export, and set under one short line.`,
     "",
     `**${pictures.length} pictures.** ${DEVICES.map((d) => `${d.store} ${d.name}: ${of(d.id).length}`).join(". ")}. Google Play feature graphic: ${of(FEATURE.id).length}.`,
     "",
