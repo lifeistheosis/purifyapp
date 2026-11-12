@@ -69,6 +69,9 @@ const RADIUS = r(SW * 0.075);
 const DEEP = r(BW * 0.105); // how thick the body is, about a phone's own proportion
 const STEP = 1.5;
 const EDGE = 2;
+// The thirds of the picture, from its own size: every composition is set on these four lines and their crossings.
+const [X1, X2] = [r(W / 3), r((2 * W) / 3)];
+const [Y1, Y2] = [r(H / 3), r((2 * H) / 3)];
 const K = SW / VIEW[0]; // picture pixels to one of the app's
 
 // ── The eight screens ────────────────────────────────────────────────────
@@ -94,7 +97,7 @@ const SHOTS = [
     n: "01",
     id: "today",
     design: "Totality",
-    idea: "The phone turned to one side before one great disc with a bright rim.",
+    idea: "The phone on the right third, turned in, covering a bright disc at the upper left crossing.",
     caption: "The day's saint, fast and readings",
     alt: "Today: St Nicholas the Wonderworker, the Nativity Fast with fish allowed, and the day's verse.",
     route: "/",
@@ -112,13 +115,13 @@ const SHOTS = [
     },
     lift: `document.querySelector("[data-nativity-star]")`,
     pad: 0,
-    layout: { cap: "top", align: "center", s: 1, cx: 0.486, cy: 0.553, turn: "rotateY(-25deg) rotateX(7deg) rotateZ(1.2deg)", lift: { dx: -0.13, dy: -0.02, dz: 0.15, k: 1 } },
+    layout: { cap: "top", align: "center", s: 0.9, px: X2, py: Y2 - 40, turn: "rotateY(-25deg) rotateX(7deg) rotateZ(1.2deg)", lift: { dx: -0.17, dy: -0.02, dz: 0.15, k: 1 } },
   },
   {
     n: "02",
     id: "greek",
     design: "Crescent",
-    idea: "The phone face-on and large, running off the foot, a crescent moon over its shoulder, the line set to the side.",
+    idea: "The phone on the left third, almost face-on, and a crescent moon at the upper right crossing; the line set to the side.",
     caption: "The Greek beside the verse",
     alt: "The Gospel of John, chapter 1, in English with the Greek beside each verse.",
     route: "/bible/john/1",
@@ -129,13 +132,13 @@ const SHOTS = [
     },
     lift: `climb(document.querySelector('button[aria-label="Open commentary on verse 1"]'), (e) => e.querySelector('button[aria-label^="Look up"]'))`,
     pad: 10,
-    layout: { cap: "top", align: "start", s: 1.17, cx: 0.5, cy: 0.71, turn: "rotateY(7deg) rotateX(3deg)", lift: { dx: 0.035, dy: -0.012, dz: 0.1, k: 1.07 } },
+    layout: { cap: "top", align: "start", s: 0.9, px: X1, py: Y2 - 40, turn: "rotateY(9deg) rotateX(3deg)", lift: { dx: 0.035, dy: -0.012, dz: 0.1, k: 1.07 } },
   },
   {
     n: "03",
     id: "fathers",
     design: "Orbits",
-    idea: "The phone turned the other way, and rings round a small bright disc crossing the whole sky.",
+    idea: "The phone high on the right third, seen from a little below, with orbits round a small disc at the lower left crossing; the line at the foot.",
     caption: "The Fathers on the verse you are reading",
     alt: "Patristic commentary on Genesis 1:1: St Basil the Great, Hexaemeron, Homily 1.",
     route: "/bible/genesis/1",
@@ -147,13 +150,13 @@ const SHOTS = [
     },
     lift: `climb(document.querySelector('[role="dialog"] img'), (e) => e.getBoundingClientRect().width > 220)`,
     pad: 10,
-    layout: { cap: "top", align: "center", s: 1, cx: 0.52, cy: 0.553, turn: "rotateY(25deg) rotateX(7deg) rotateZ(-1.2deg)", lift: { dx: 0.15, dy: -0.02, dz: 0.15, k: 1 } },
+    layout: { cap: "bottom", align: "center", s: 0.9, px: X2, py: Y1 + 75, turn: "rotateY(-22deg) rotateX(-6deg) rotateZ(-1.5deg)", lift: { dx: -0.22, dy: -0.02, dz: 0.15, k: 1 } },
   },
   {
     n: "04",
     id: "journal",
     design: "Moonrise",
-    idea: "The phone lying on the floor, the day's page standing up off it, and the moon half risen at the horizon.",
+    idea: "The phone lying on the floor at the lower right crossing, the horizon on the upper third, the moon half risen at the left third.",
     caption: "A journal kept by the Church's day",
     alt: "The journal's page for Sunday: the day's saint, the fast, and the Epistle and Gospel, each with a pen.",
     route: "/journal",
@@ -163,59 +166,59 @@ const SHOTS = [
     },
     lift: `climb(document.querySelector("[data-journal-today]"), (e) => parseFloat(getComputedStyle(e).borderTopLeftRadius) > 8)`,
     pad: 0,
-    layout: { cap: "top", align: "center", s: 1.04, cx: 0.5, cy: 0.7, turn: "rotateX(55deg) rotateZ(-18deg)", lift: { dx: 0, dy: 0, dz: 0.2, k: 1 } },
+    layout: { cap: "top", align: "center", s: 1.0, px: X2 - 60, py: Y2 + 40, turn: "rotateX(55deg) rotateZ(-18deg)", lift: { dx: 0, dy: 0, dz: 0.2, k: 1 } },
   },
   {
     n: "05",
     id: "prayers",
     design: "Northern Cross",
-    idea: "The phone small and high to one side, the stars of the Northern Cross joined beside it, the line at the foot.",
+    idea: "The phone high on the left third, turned in, and the Northern Cross running down the right third; the line at the foot.",
     caption: "The daily prayers, morning and evening",
     alt: "Prayers: your rule, and the morning prayers, the evening prayers and the Hours.",
     route: "/prayers",
     lifted: "the row of prayers",
     lift: `climb([...document.querySelectorAll("a")].find((a) => a.textContent.includes("Morning prayers") && a.querySelector("img")), (e) => e.getBoundingClientRect().width > 380)`,
     pad: 8,
-    layout: { cap: "bottom", align: "center", s: 0.9, cx: 0.36, cy: 0.435, turn: "rotateY(-15deg) rotateX(5deg)", lift: { dx: 0.3, dy: 0.02, dz: 0.16, k: 1 } },
+    layout: { cap: "bottom", align: "center", s: 0.84, px: X1, py: Y1 + 40, turn: "rotateY(17deg) rotateX(5deg)", lift: { dx: 0.36, dy: 0.02, dz: 0.16, k: 1 } },
   },
   {
     n: "06",
     id: "saint",
     design: "Limb",
-    idea: "The phone close and large, and a great disc filling the head of the picture with the line set upon it.",
+    idea: "The phone close and large, rising from the lower left, under a great disc whose edge comes down to the upper right crossing.",
     caption: "The lives of the saints",
     alt: "St Basil the Great: his icon, his feast, and his life.",
     route: "/saints/basil-the-great",
     lifted: "Life, Writings and Web",
     lift: `[...document.querySelectorAll("button, a, [role=tab]")].find((e) => e.textContent.trim() === "Life")?.parentElement`,
     pad: 10,
-    layout: { cap: "top", align: "center", s: 1.28, cx: 0.4, cy: 0.748, turn: "rotateY(-21deg) rotateX(6deg) rotateZ(2deg)", lift: { dx: 0.2, dy: 0, dz: 0.17, k: 1 } },
+    layout: { cap: "top", align: "center", s: 1.28, px: X1, py: Y2 + 220, turn: "rotateY(19deg) rotateX(6deg) rotateZ(-2.5deg)", lift: { dx: 0.24, dy: 0, dz: 0.17, k: 1 } },
   },
   {
     n: "07",
     id: "calendar",
     design: "Phases",
-    idea: "The phone face-on and small, crowned by the moon's phases in an arc.",
+    idea: "The phone hanging from the head of the picture on the right third, and the moon's phases along the lower third; the line at the foot.",
     caption: "Every feast and every fast",
     alt: "The Church calendar for December 2026, each day marked with its feast or its fast.",
     route: "/calendar",
     lifted: "the day's fast",
     lift: `climb([...document.querySelectorAll("p, div, span")].find((e) => e.childElementCount === 0 && e.textContent.trim() === "Nativity Fast, fish allowed" && e.getBoundingClientRect().top > 300), (e) => e.querySelector("svg") && e.getBoundingClientRect().width > 300)`,
     pad: 10,
-    layout: { cap: "top", align: "center", s: 0.8, cx: 0.5, cy: 0.635, turn: "rotateY(-7deg) rotateX(3deg)", lift: { dx: 0.02, dy: 0.04, dz: 0.2, k: 1 } },
+    layout: { cap: "bottom", align: "center", s: 1.0, px: X2, py: Y1 - 140, turn: "rotateY(-10deg) rotateX(4deg)", lift: { dx: -0.3, dy: 0.02, dz: 0.18, k: 1 } },
   },
   {
     n: "08",
     id: "reading",
     design: "Ring",
-    idea: "The phone turned and set high, the book's cover drawn out large inside a ring of light, the line at the foot.",
+    idea: "The phone coming in from the right edge, the book's cover drawn out large into a ring of light at the upper left crossing.",
     caption: "The Fathers, read in full",
     alt: "On the Incarnation of the Word, by St Athanasius the Great, opened at chapter 1.",
     route: "/saints/athanasius-the-great/on-the-incarnation",
     lifted: "the book's cover",
     lift: `climb([...document.querySelectorAll("img")].find((i) => /athanasius/.test(i.currentSrc || i.src) && i.getBoundingClientRect().width > 100), (e) => parseFloat(getComputedStyle(e).borderTopLeftRadius) > 0)`,
     pad: 0,
-    layout: { cap: "bottom", align: "center", s: 0.95, cx: 0.63, cy: 0.43, turn: "rotateY(23deg) rotateX(6deg) rotateZ(-1deg)", lift: { dx: -0.62, dy: 0.02, dz: 0.2, k: 1.45 } },
+    layout: { cap: "top", align: "center", s: 1.1, px: X2 + 140, py: Y2 - 100, turn: "rotateY(-28deg) rotateX(6deg) rotateZ(1.5deg)", lift: { dx: -0.78, dy: 0.05, dz: 0.2, k: 1.45 } },
   },
 ];
 
@@ -249,68 +252,73 @@ const disc = (cx, cy, R, fill, stroke, width = EDGE) => `<circle cx="${r(cx)}" c
 const ring = (cx, cy, R, stroke, width = EDGE) => disc(cx, cy, R, "none", stroke, width);
 const NIGHT = "var(--color-night)";
 
-/** Each sky is given the drawing's area: `top` and `bottom`, clear of the words. */
+/**
+ * Each sky is given the drawing's area: `top` and `bottom`, clear of the words.
+ * Its focal point stands on the thirds grid (X1, X2, Y1, Y2), across from the phone.
+ */
 const BACKS = {
-  // Totality: one great disc, a bright rim, a ring outside and a fine one within.
+  // Totality: a disc at the upper left crossing, which the phone at the right half covers, as the moon the sun. A bright rim, a ring.
   today(area) {
-    const [cx, cy, R] = [W * 0.5, H * 0.565, W * 0.585];
-    return { css: "", html: `${dots(30, area.top + 20, H * 0.33, 7)}${ring(cx, cy, R + W * 0.075, ink(13))}${disc(cx, cy, R, plane(10), accent(82), 3)}${ring(cx, cy, R - W * 0.07, ink(10))}` };
+    const [cx, cy, R] = [X1, Y1, W * 0.25];
+    return {
+      css: `[data-back] { background-image: radial-gradient(circle ${r(W * 0.5)}px at ${cx}px ${cy}px, ${ink(12)}, transparent 72%); }`,
+      html: `${dots(40, area.top + 20, H * 0.98, 7)}${ring(cx, cy, R + W * 0.045, ink(13))}${disc(cx, cy, R, plane(13), accent(86), 3)}${ring(cx, cy, R - W * 0.05, ink(10))}`,
+    };
   },
-  // Crescent: a lit disc over the phone's shoulder, then a dark one across it; what is left is the crescent.
+  // Crescent: at the upper right crossing, a lit disc with a dark one across it; what is left is the crescent.
   greek(area) {
-    const [cx, cy, R] = [W * 0.75, H * 0.338, W * 0.285];
+    const [cx, cy, R] = [X2 + W * 0.04, Y1 - H * 0.05, W * 0.2];
     return {
-      css: `[data-back] { background-image: radial-gradient(circle ${r(W * 0.5)}px at ${r(cx - W * 0.1)}px ${r(cy)}px, ${ink(11)}, transparent 72%); }`,
-      html: `${dots(38, area.top + 20, H * 0.62, 19)}${disc(cx, cy, R, plane(26), accent(88), 3)}${disc(cx + W * 0.115, cy - H * 0.02, R * 0.93, NIGHT, "none", 0)}${ring(cx, cy, R + W * 0.05, ink(11))}`,
+      css: `[data-back] { background-image: radial-gradient(circle ${r(W * 0.42)}px at ${r(cx)}px ${r(cy)}px, ${ink(11)}, transparent 72%); }`,
+      html: `${dots(44, area.top + 20, H * 0.98, 19)}${disc(cx, cy, R, plane(28), accent(88), 3)}${disc(cx + W * 0.085, cy - H * 0.014, R * 0.93, NIGHT, "none", 0)}${ring(cx, cy, R + W * 0.04, ink(11))}`,
     };
   },
-  // Orbits: a small bright disc in the far corner and rings round it that cross the picture. One carries a small dot.
+  // Orbits: a small bright disc at the lower left crossing and rings round it that cross the picture. One carries a small dot.
   fathers(area) {
-    const [cx, cy] = [W * 0.1, H * 0.235];
-    const radii = [0.19, 0.33, 0.5, 0.7, 0.93, 1.19, 1.48, 1.8];
-    const a = 0.62; // where the small dot rides its ring
+    const [cx, cy] = [X1, Y2];
+    const radii = [0.17, 0.3, 0.46, 0.65, 0.87, 1.12, 1.4, 1.72];
+    const a = -0.5; // where the small dot rides its ring
     return {
-      css: `[data-back] { background-image: radial-gradient(circle ${r(W * 0.3)}px at ${r(cx)}px ${r(cy)}px, ${ink(15)}, transparent 72%); }`,
-      html: `${dots(54, area.top + 20, H * 0.98, 31)}${radii.map((k, i) => ring(cx, cy, W * k, i === 4 ? accent(60) : ink(i % 2 ? 9 : 15))).join("")}${disc(cx + W * 0.93 * Math.cos(a), cy + W * 0.93 * Math.sin(a), 11, "var(--color-gold)", "none", 0)}${disc(cx, cy, W * 0.095, plane(22), accent(88), 3)}`,
+      css: `[data-back] { background-image: radial-gradient(circle ${r(W * 0.3)}px at ${cx}px ${cy}px, ${ink(15)}, transparent 72%); }`,
+      html: `${dots(54, area.top + 20, area.bottom - 20, 31)}${radii.map((k, i) => ring(cx, cy, W * k, i === 2 ? accent(60) : ink(i % 2 ? 9 : 15))).join("")}${disc(cx + W * 0.46 * Math.cos(a), cy + W * 0.46 * Math.sin(a), 11, "var(--color-gold)", "none", 0)}${disc(cx, cy, W * 0.085, plane(24), accent(88), 3)}`,
     };
   },
-  // Moonrise: the floor runs to a horizon; the moon is half over it. The floor is drawn after the moon, so only what has risen shows.
+  // Moonrise: the horizon lies on the upper third; the moon is half over it at the left third. The floor is drawn after the moon.
   journal(area) {
-    const horizon = r(H * 0.47);
-    const [cx, R] = [W * 0.5, W * 0.3];
+    const horizon = Y1;
+    const [cx, R] = [X1, W * 0.22];
     return {
-      css: `[data-back] { background-image: radial-gradient(ellipse ${r(W * 0.95)}px ${r(H * 0.085)}px at 50% ${horizon}px, ${ink(22)}, transparent 72%); }`,
-      html: `${dots(48, area.top + 20, horizon - 20, 43)}${ring(cx, horizon, R + W * 0.06, ink(12))}${disc(cx, horizon, R, plane(24), accent(88), 3)}<rect x="-10" y="${horizon}" width="${W + 20}" height="${H - horizon + 10}" style="fill:${plane(6)}"/>${line(`M -10 ${horizon} L ${W + 10} ${horizon}`, ink(30))}`,
+      css: `[data-back] { background-image: radial-gradient(ellipse ${r(W * 0.8)}px ${r(H * 0.08)}px at ${cx}px ${horizon}px, ${ink(22)}, transparent 72%); }`,
+      html: `${dots(48, area.top + 20, horizon - 20, 43)}${ring(cx, horizon, R + W * 0.05, ink(12))}${disc(cx, horizon, R, plane(26), accent(88), 3)}<rect x="-10" y="${horizon}" width="${W + 20}" height="${H - horizon + 10}" style="fill:${plane(6)}"/>${line(`M -10 ${horizon} L ${W + 10} ${horizon}`, ink(30))}`,
     };
   },
-  // Northern Cross: the stars of Cygnus, joined as the asterism is drawn, among fainter ones.
+  // Northern Cross: the stars of Cygnus joined as the asterism is drawn; its long line runs down the right third to the lower crossing.
   prayers(area) {
-    const stars = { deneb: [0.83, 0.075, 10], sadr: [0.8, 0.235, 8], albireo: [0.73, 0.585, 7], gienah: [0.965, 0.33, 6], delta: [0.615, 0.17, 6] };
-    const at = (k) => `${r(W * stars[k][0])} ${r(H * stars[k][1])}`;
+    const stars = { deneb: [X2 + 86, 150, 10], sadr: [X2 + 44, Y1 - 60, 8], albireo: [X2, Y2, 7], gienah: [X2 + 300, Y1 + 80, 6], delta: [X2 - 150, Y1 - 240, 6] };
+    const at = (k) => `${r(stars[k][0])} ${r(stars[k][1])}`;
     return {
-      css: `[data-back] { background-image: radial-gradient(circle ${r(W * 0.36)}px at ${r(W * 0.8)}px ${r(H * 0.235)}px, ${ink(11)}, transparent 72%); }`,
-      html: `${dots(70, area.top + 20, area.bottom - 20, 57)}${line(`M ${at("deneb")} L ${at("sadr")} L ${at("albireo")}`, ink(30))}${line(`M ${at("gienah")} L ${at("sadr")} L ${at("delta")}`, ink(30))}${Object.values(stars).map(([x, y, size]) => disc(W * x, H * y, size, "var(--color-gold)", "none", 0)).join("")}`,
+      css: `[data-back] { background-image: radial-gradient(circle ${r(W * 0.36)}px at ${r(stars.sadr[0])}px ${r(stars.sadr[1])}px, ${ink(11)}, transparent 72%); }`,
+      html: `${dots(70, area.top + 20, area.bottom - 20, 57)}${line(`M ${at("deneb")} L ${at("sadr")} L ${at("albireo")}`, ink(30))}${line(`M ${at("gienah")} L ${at("sadr")} L ${at("delta")}`, ink(30))}${Object.values(stars).map(([x, y, size]) => disc(x, y, size, "var(--color-gold)", "none", 0)).join("")}`,
     };
   },
-  // Limb: a disc far larger than the picture fills its head, behind the words; its edge sweeps over the phone. Drawn as a box, not across the words.
+  // Limb: a disc far larger than the picture fills its head, behind the words; its lowest point is the upper right crossing. Drawn as a box, not across the words.
   saint() {
     const D = r(W * 2.5);
     return {
-      css: `[data-limb] { position: absolute; width: ${D}px; height: ${D}px; inset-inline-start: ${r(W * 0.56 - D / 2)}px; top: ${r(H * 0.415 - D)}px; border-radius: 50%; background-color: ${plane(9)}; outline: 3px solid ${accent(84)}; }
-  [data-limb="2"] { width: ${D + r(W * 0.16)}px; height: ${D + r(W * 0.16)}px; inset-inline-start: ${r(W * 0.56 - D / 2 - W * 0.08)}px; top: ${r(H * 0.415 - D - W * 0.08)}px; background-color: transparent; outline: ${EDGE}px solid ${ink(12)}; }`,
+      css: `[data-limb] { position: absolute; width: ${D}px; height: ${D}px; inset-inline-start: ${r(X2 - D / 2)}px; top: ${r(Y1 - D)}px; border-radius: 50%; background-color: ${plane(9)}; outline: 3px solid ${accent(84)}; }
+  [data-limb="2"] { width: ${D + r(W * 0.16)}px; height: ${D + r(W * 0.16)}px; inset-inline-start: ${r(X2 - D / 2 - W * 0.08)}px; top: ${r(Y1 - D - W * 0.08)}px; background-color: transparent; outline: ${EDGE}px solid ${ink(12)}; }`,
       before: `<div data-limb="2"></div><div data-limb="1"></div>`,
-      html: dots(46, H * 0.44, H * 0.98, 71),
+      html: dots(46, Y1 + 60, H * 0.98, 71),
     };
   },
-  // Phases: seven moons in an arc over the phone, new to full to new, each a lit disc with a dark one across it.
+  // Phases: seven moons along the lower third, new to full to new, each a lit disc with a dark one across it, on one fine line.
   calendar(area) {
-    const [cx, cy, A] = [W * 0.5, H * 0.635, W * 0.585];
-    const R = 41;
+    const R = 46;
     const defs = [];
     const moons = [];
     for (let i = 0; i < 7; i++) {
-      const t = ((222 + (i * 96) / 6) * Math.PI) / 180;
-      const [x, y] = [cx + A * Math.cos(t), cy + A * Math.sin(t)];
+      const x = W * 0.5 + (i - 3) * W * 0.136;
+      const y = Y2 + 70 - 70 * ((i - 3) / 3) ** 2;
       const shift = [0.3, 0.85, 1.4, null, -1.4, -0.85, -0.3][i]; // how far the dark disc stands off, in radii; none at the full
       moons.push(disc(x, y, R, plane(i === 3 ? 36 : 25), "none", 0));
       if (shift !== null) {
@@ -319,14 +327,15 @@ const BACKS = {
       }
       moons.push(ring(x, y, R, i === 3 ? accent(88) : ink(30)));
     }
-    return { css: "", html: `<defs>${defs.join("")}</defs>${dots(50, area.top + 20, H * 0.98, 83)}${ring(cx, cy, A, ink(9))}${moons.join("")}` };
+    const path = Array.from({ length: 41 }, (_, k) => { const u = (k / 40) * 6 - 3; return `${r(W * 0.5 + u * W * 0.136)} ${r(Y2 + 70 - 70 * (u / 3) ** 2)}`; }).join(" L ");
+    return { css: "", html: `<defs>${defs.join("")}</defs>${dots(60, area.top + 20, area.bottom - 20, 83)}${line(`M ${path}`, ink(12))}${moons.join("")}` };
   },
-  // Ring: a broad ring of light where the book's cover is drawn out to, dark within, a fine ring outside.
+  // Ring: a broad ring of light at the upper left crossing, where the book's cover is drawn out to; a fine ring outside.
   reading(area) {
-    const [cx, cy, R] = [W * 0.245, H * 0.265, W * 0.26];
+    const [cx, cy, R] = [X1, Y1 + 40, W * 0.235];
     return {
-      css: `[data-back] { background-image: radial-gradient(circle ${r(W * 0.5)}px at ${r(cx)}px ${r(cy)}px, ${ink(10)}, transparent 72%); }`,
-      html: `${dots(56, area.top + 20, area.bottom - 20, 97)}${ring(cx, cy, R + W * 0.07, ink(11))}${ring(cx, cy, R, plane(22), r(W * 0.038))}${ring(cx, cy, R + W * 0.019, accent(82), 3)}`,
+      css: `[data-back] { background-image: radial-gradient(circle ${r(W * 0.5)}px at ${cx}px ${cy}px, ${ink(10)}, transparent 72%); }`,
+      html: `${dots(56, area.top + 20, area.bottom - 20, 97)}${ring(cx, cy, R + W * 0.06, ink(11))}${ring(cx, cy, R, plane(22), r(W * 0.036))}${ring(cx, cy, R + W * 0.018, accent(82), 3)}`,
     };
   },
 };
@@ -359,7 +368,7 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
   [data-back] svg { position: absolute; top: ${area.top}px; inset-inline: 0; width: 100%; height: ${area.bottom - area.top}px; }
   :root[dir="rtl"] [data-back] svg { transform: scaleX(-1); }
   [data-store-caption] { position: absolute; ${L.cap === "top" ? "top: 0" : "bottom: 0"}; inset-inline: 0; box-sizing: border-box; height: ${CAP}px; margin: 0; padding: ${L.cap === "top" ? `${r(CAP * 0.1)}px ${r(W * 0.075)}px 0` : `0 ${r(W * 0.075)}px ${r(CAP * 0.12)}px`}; display: flex; align-items: center; justify-content: ${flex}; text-align: ${L.align}; text-wrap: balance; font-family: var(--font-heading); font-weight: 600; font-size: 66px; line-height: 1.16; letter-spacing: -0.01em; color: var(--color-paper); }
-  [data-stage] { position: absolute; top: ${r(H * L.cy - BH / 2)}px; inset-inline-start: ${r(W * L.cx - BW / 2)}px; width: ${BW}px; height: ${BH}px; perspective: ${r(W * 3.2)}px; perspective-origin: 50% 42%; }
+  [data-stage] { position: absolute; top: ${r(L.py - BH / 2)}px; inset-inline-start: ${r(L.px - BW / 2)}px; width: ${BW}px; height: ${BH}px; perspective: ${r(W * 3.2)}px; perspective-origin: 50% 42%; }
   [data-body] { position: absolute; inset: 0; transform: ${L.turn} scale3d(${L.s}, ${L.s}, ${L.s}); transform-style: preserve-3d; }
   /* In a right-to-left page the phone, its screen and its lifted piece turn over together, as one picture. */
   :root[dir="rtl"] [data-stage] { transform: scaleX(-1); }
@@ -505,6 +514,21 @@ for (const shot of shots) {
 await browser.close();
 const all = [...before.filter((b) => !made.some((m) => m.file === b.file)), ...made].sort((a, b) => a.file.localeCompare(b.file));
 fs.writeFileSync(resultsFile, `${JSON.stringify({ made: new Date().toISOString().slice(0, 10), day: DAY, checks: CHECKS, pictures: all }, null, 2)}\n`);
+// The proof of the thirds: the eight side by side with the grid laid over each.
+if (all.length === SHOTS.length) {
+  const [cw, gap, head] = [540, 20, 64];
+  const ch = Math.round((cw * H) / W);
+  const grid = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${cw}" height="${ch}"><g stroke="#ff5a4f" stroke-width="2" opacity="0.85"><line x1="${cw / 3}" y1="0" x2="${cw / 3}" y2="${ch}"/><line x1="${(2 * cw) / 3}" y1="0" x2="${(2 * cw) / 3}" y2="${ch}"/><line x1="0" y1="${ch / 3}" x2="${cw}" y2="${ch / 3}"/><line x1="0" y1="${(2 * ch) / 3}" x2="${cw}" y2="${(2 * ch) / 3}"/></g></svg>`);
+  const layers = [];
+  for (const [i, shot] of SHOTS.entries()) {
+    const left = gap + (i % 4) * (cw + gap);
+    const top = Math.floor(i / 4) * (head + ch + gap);
+    layers.push({ input: await sharp(path.join(HERE, `eclipse-play-phone-${shot.n}-${shot.id}.png`)).resize({ width: cw }).png().toBuffer(), left, top: top + head });
+    layers.push({ input: grid, left, top: top + head });
+    layers.push({ input: Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${cw}" height="${head}"><text x="0" y="42" font-family="DejaVu Sans, Arial, sans-serif" font-size="30" font-weight="700" fill="#ffffff">${shot.n} ${shot.design}</text></svg>`), left, top });
+  }
+  await sharp({ create: { width: gap + 4 * (cw + gap), height: 2 * (head + ch + gap), channels: 3, background: "#2a2a2e" } }).composite(layers).png({ compressionLevel: 9 }).toFile(path.join(HERE, "thirds-proof.png"));
+}
 const failed = all.filter((x) => x.problems.length);
 console.log(`\n${all.length} pictures, ${failed.length} with a problem.`);
 process.exitCode = failed.length ? 1 : 0;

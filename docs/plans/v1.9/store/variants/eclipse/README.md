@@ -4,18 +4,28 @@ His word to the store pictures chat, 2026-11-12, of the third round's Nimbus: "g
 
 Then, of the first eight made here, which shared one layout: "I need each section to be entirely different though".
 
-Settled by his word before this: **black and white**, **the phone in 3D**, and **a piece of the real screen lifted off the glass** ("cool widget implementation and visual hook"). This folder is the eight screens on that foundation at Play's phone size (1080 by 1920). Each picture is a composition of its own: the phone's pose and size, where the line stands, the idea in the night sky and how the piece is lifted all change.
+And then: "do a different phone position for all photos. ensure you use the rule of 3rds (or whatever is based off the res x)".
 
-| # | Screen | The line, and where | The phone | The sky | What is lifted | File |
-|---|---|---|---|---|---|---|
-| 01 | Today | The day's saint, fast and readings. Head, centred. | Turned to the left, whole. | **Totality.** One great disc behind the phone, a bright rim, a ring. | the Nativity star card, drawn out to the side | `eclipse-play-phone-01-today.png` |
-| 02 | The Greek | The Greek beside the verse. Head, set to the side. | Face-on and large, running off the foot. | **Crescent.** A crescent moon over the phone's shoulder. | the first verse, English and Greek, raised over its own place | `eclipse-play-phone-02-greek.png` |
-| 03 | The Fathers | The Fathers on the verse you are reading. Head, centred. | Turned to the right, whole. | **Orbits.** Rings round a small bright disc in the far corner, one carrying a small dot. | the Father's name and his work | `eclipse-play-phone-03-fathers.png` |
-| 04 | The journal | A journal kept by the Church's day. Head, centred. | Lying on the floor, seen from above. | **Moonrise.** The moon half risen at the horizon. | the day's page, standing up off the screen | `eclipse-play-phone-04-journal.png` |
-| 05 | Prayers | The daily prayers, morning and evening. Foot. | Small, high and to one side. | **Northern Cross.** The stars of the Northern Cross joined, among fainter ones. | the row of prayers, drawn out to the side | `eclipse-play-phone-05-prayers.png` |
-| 06 | A saint | The lives of the saints. Head, upon the disc. | Close and large, running off two sides. | **Limb.** A disc far larger than the picture fills its head. | Life, Writings and Web | `eclipse-play-phone-06-saint.png` |
-| 07 | The calendar | Every feast and every fast. Head, centred. | Face-on and small. | **Phases.** The moon's phases in an arc crowning the phone. | the day's fast | `eclipse-play-phone-07-calendar.png` |
-| 08 | A Father's work | The Fathers, read in full. Foot. | Turned to the right, set high. | **Ring.** A ring of light, dark within. | the book's cover, drawn out large into the ring | `eclipse-play-phone-08-reading.png` |
+Settled by his word before this: **black and white**, **the phone in 3D**, and **a piece of the real screen lifted off the glass** ("cool widget implementation and visual hook"). This folder is the eight screens on that foundation at Play's phone size (1080 by 1920).
+
+## The thirds
+
+The grid is taken from the picture's own size. At 1080 by 1920 its lines stand at 360 and 720 across and at 640 and 1280 down, and they cross at four points. On any other size the same thirds of that size are used; the script works them out from the width and the height.
+
+In every picture the phone's centre stands on a third, and what the sky is about stands across from it on another: a crossing, or a whole line where the sky has a horizon. `thirds-proof.png` shows all eight with the grid laid over them.
+
+| # | Screen | Where the phone stands | Its pose | The sky, and where it stands | The line | What is lifted | File |
+|---|---|---|---|---|---|---|---|
+| 01 | Today | Right third, just above the lower crossing | Turned in to the left | **Totality.** A bright-rimmed disc at the upper left crossing, which the phone half covers. | Head | the Nativity star card, drawn out to the left | `eclipse-play-phone-01-today.png` |
+| 02 | The Greek | Left third, just above the lower crossing | Almost face-on | **Crescent.** A crescent moon by the upper right crossing. | Head, set to the side | the first verse, raised over its own place | `eclipse-play-phone-02-greek.png` |
+| 03 | The Fathers | Right third, just under the upper crossing | Turned in, seen from a little below | **Orbits.** A small bright disc at the lower left crossing and the rings round it. | Foot | the Father's name and his work, drawn out to the left | `eclipse-play-phone-03-fathers.png` |
+| 04 | The journal | Lying by the lower right crossing | Flat on the floor, seen from above | **Moonrise.** The horizon on the upper third, the moon half risen at the left third. | Head | the day's page, standing up off the screen | `eclipse-play-phone-04-journal.png` |
+| 05 | Prayers | Left third, just under the upper crossing, small | Turned in to the right | **Northern Cross.** Its long line runs down the right third to the lower crossing. | Foot | the row of prayers, drawn out to the right | `eclipse-play-phone-05-prayers.png` |
+| 06 | A saint | Left third, low, close and large, off two sides | Turned in to the right | **Limb.** A great disc fills the head; its edge comes down to the upper right crossing. | Head, on the disc | Life, Writings and Web | `eclipse-play-phone-06-saint.png` |
+| 07 | The calendar | Right third, hanging from the head of the picture | Barely turned | **Phases.** The moon's phases along the lower third. | Foot | the day's fast, drawn out to the left | `eclipse-play-phone-07-calendar.png` |
+| 08 | A Father's work | Coming in from the right edge, large | Turned in sharply | **Ring.** A ring of light at the upper left crossing. | Head | the book's cover, drawn out large into the ring | `eclipse-play-phone-08-reading.png` |
+
+No two phones stand in the same place or at the same turn: two sit low, two sit high, one lies down, one rises from a corner, one hangs from the head and one comes in from the side.
 
 ## What is real
 
@@ -37,6 +47,7 @@ The phone is a plain slab with real thickness and no hardware (`../phone-3d/READ
 - **The other four devices and the feature graphic.** This is the design pass on one size. The whole set of 41 is made once, with this design if he keeps it, after the tablet fixes land (the calendar, the journal's prompt and the Prayers banner on tablets).
 - **The Fathers picture** still has the blurred page above its sheet, as in the first set: that is how the app shows a commentary.
 - **A lifted piece shows twice where it is drawn out to the side** (the prayers' row, the journal's page): once in its place on the screen and once lifted. That is what lifting is; where it read as a fault (the Greek) the piece is raised over its own place instead.
-- **Where the line stands at the foot** (05 and 08) and where the phone runs off the picture (02 and 06) are choices of this design. Both stores allow them; Play only asks that the words take no more than a fifth of the picture, and they take about a sixth.
+- **The calendar's head is off the picture** in 07, since that phone hangs from the top: the month, its days and the day's fast are all in view, and the screen's own title is not.
+- **Where the line stands at the foot** (03, 05 and 07) and where the phone runs off the picture (06, 07 and 08) are choices of this design. Both stores allow them; Play only asks that the words take no more than a fifth of the picture, and they take about a sixth.
 
 `eclipse.mjs` made them and wrote `results.json`. `node docs/plans/v1.9/store/variants/eclipse/eclipse.mjs` makes all eight again, and `... eclipse.mjs journal` one.
