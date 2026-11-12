@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state; the log is the release's HANDOFF.md. How the chats run: `docs/OPERATIONS.md`.
 
-Updated 2026-11-12, 22:17 UTC.
+Updated 2026-11-12, 22:33 UTC.
 
 ## 1.9: in flight
 
@@ -24,6 +24,7 @@ Updated 2026-11-12, 22:17 UTC.
 
 ## After 1.9 ships
 
+- Money: subscription days fill the chart from the merge on (`plus_events` is 1.9's table). History from before needs a RevenueCat key with the charts permission, which he would make: offer it with the owner's brief. The Revenue tab's by-month chart still shows the shop alone; Admin panel 2 matches it to Money's chart after the quiet board, by his word that the charts show all the money.
 - SSM board, in its next message: put the AD 1 TikTok edit's source in the Vault (branch `claude/magical-carson-qissmz`; pull request #24 closed at his word on 2026-11-12, not merged).
 - The owner's desk and the Purify look (`docs/plans/owner-desk.md`): the quiet board first (Admin panel 2, with the money chart), then the design kit, the owner's brief, the recurring sends and the reader emails' second edition.
 - Every chat rotates (OPERATIONS section 2), the arbiter included.
@@ -43,6 +44,6 @@ Updated 2026-11-12, 22:17 UTC.
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |
 | Product images (his PC) | session_01VuYTwaLq6ij9iFi8D4Kt8a | the EIKON gift, done for 1.9 |
 | Tooling: the pre-push guard | session_01VuYTwZxEJPq6tx6VUBChCT | the guard on every push (no app or package files during the freeze) |
-| Admin panel 2 | session_01VuYTwdGHpocsLjegCEAape | the admin panel (first job: all money on the chart, by colour); held locally until the check ends |
+| Admin panel 2 | session_01VuYTwdGHpocsLjegCEAape | the admin panel: all money on Money's chart is done and held locally (c066bc5b: the shop blue, Plus green, the EIKON Box magenta, refunds grey, anything unnamed white); next, the quiet board (`docs/plans/owner-desk.md` section 1) |
 
 Admin and Updates were past 700,000 tokens at the last look, so both rotate first after 1.9.
