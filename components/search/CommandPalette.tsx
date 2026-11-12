@@ -751,7 +751,10 @@ export function CommandPalette() {
         {phone ? null : (
           <div className="flex shrink-0 items-center gap-3 border-b border-paper/10 px-3 py-3">
             {field}
-            <kbd className="shrink-0 rounded-md border border-paper/15 px-1.5 py-0.5 font-sans text-caption text-paper/45">{t("search.escKey")}</kbd>
+            {/* A key to press, said only where there is one: a fine pointer, a desktop's mouse with its keyboard.
+                On a touch screen it is hidden (the gate's tap walk, 2026-11-12: drawn on a tablet at 800 and 1032,
+                where a reader has no Esc to press). */}
+            <kbd className="hidden shrink-0 rounded-md border border-paper/15 px-1.5 py-0.5 font-sans text-caption text-paper/45 pointer-fine:block">{t("search.escKey")}</kbd>
           </div>
         )}
         <div
