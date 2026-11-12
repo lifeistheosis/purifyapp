@@ -34,7 +34,15 @@ export function CouncilShelf({ council, books, others }: { council: ShelfCouncil
 
       <div className="relative mx-auto w-full max-w-[1100px] px-5 pt-5 md:px-8 md:pt-14">
         <header className="text-center">
-          <p className="font-sans text-caption font-semibold text-paper/70">
+          {/* The two small lines stand on the council's icon and the light from
+              above it, in the house's soft edge of the page's ground
+              (globals.css, Words on a picture) and at the least ink that holds 4.5:1 there over
+              each of the seven councils' icons, on the five palettes and the
+              seventeen looks: at 70 and 55 they read 3.07 to 3.92:1 once the
+              icon was drawn with no signal too, and at 90 and 80 still 4.14
+              under the First of Constantinople and 4.31 under the Second of
+              Nicaea (the gate's final run of 2026-11-12). */}
+          <p className="words-halo font-sans text-caption font-semibold text-paper">
             {t(council.ordinalKey)} · {council.year}
           </p>
           <h1
@@ -45,7 +53,7 @@ export function CouncilShelf({ council, books, others }: { council: ShelfCouncil
           >
             {council.byname}
           </h1>
-          <p className="mt-1.5 font-sans text-caption text-paper/55">
+          <p className="words-halo mt-1.5 font-sans text-caption text-paper/90">
             {tn("councils.books", books.length)} · {readingTime(minutes, t)}
           </p>
         </header>

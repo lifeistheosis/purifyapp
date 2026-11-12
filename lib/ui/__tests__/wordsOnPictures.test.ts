@@ -88,6 +88,10 @@ describe("the words that wear it, at the ink they were measured at", () => {
     // signed out since the sign-in lines were rewritten, measured 4.40:1 on Candlelight at 90 and 4.99:1 at 100.
     { file: "components/you/YouIdentity.tsx", what: ["the name", "the line under it", "where things are kept"], at: [100, 100, 100] },
     { file: "components/ui/GalleryBand.tsx", what: ["a card's line"], at: [80] },
+    // A council's shelf in the reading room: its ordinal and year, and its books and time, over the
+    // council's icon and the light from above it: 3.07 to 3.92:1 at 70 and 55, and at 90 and 80 still 4.14
+    // and 4.31 under the brightest of the seven icons (the final run, 2026-11-12).
+    { file: "components/councils/CouncilShelf.tsx", what: ["the council's ordinal and year", "its books and time"], at: [100, 90] },
   ];
 
   for (const { file, what, at } of WORN) {
