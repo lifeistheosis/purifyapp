@@ -117,3 +117,9 @@ describe("c. the wide calendar", () => {
     }
   });
 });
+
+describe("d. the wide journal", () => {
+  it("gives the prompt under Nothing written yet 44px to the touch", () => {
+    expect(read("components/journal/JournalClient.tsx")).toContain('className="tap-press hit-44 mt-2 block text-start font-serif text-lede leading-[1.5] text-paper"');
+  });
+});

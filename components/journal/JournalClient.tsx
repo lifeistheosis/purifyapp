@@ -340,7 +340,8 @@ export function JournalClient() {
                   <button
                     type="button"
                     onClick={() => begin({ kind: "reflection", body: "", prompt: { text: t(emptyPromptKey(now)) } })}
-                    className="tap-press mt-2 block text-start font-serif text-lede leading-[1.5] text-paper"
+                    // 44 to the touch where it stands on one line (a tablet: 28.5px tall, the store pictures' run of 2026-11-12).
+                    className="tap-press hit-44 mt-2 block text-start font-serif text-lede leading-[1.5] text-paper"
                   >
                     {t(emptyPromptKey(now))}
                   </button>
