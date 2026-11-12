@@ -26,7 +26,7 @@
         1080,
         1920
       ],
-      "bytes": 250468,
+      "bytes": 252563,
       "problems": [],
       "check": {
         "pass": true,
@@ -37,7 +37,7 @@
       "n": "01",
       "shot": "today",
       "design": "Totality",
-      "idea": "One great disc behind the phone, a bright rim, a single ring.",
+      "idea": "The phone turned to one side before one great disc with a bright rim.",
       "caption": "The day's saint, fast and readings",
       "route": "/",
       "lifted": "the Nativity star card",
@@ -52,7 +52,7 @@
         1080,
         1920
       ],
-      "bytes": 209251,
+      "bytes": 171677,
       "problems": [],
       "check": {
         "pass": true,
@@ -63,7 +63,7 @@
       "n": "02",
       "shot": "greek",
       "design": "Crescent",
-      "idea": "A lit disc with a dark one across it, so a crescent of light is left.",
+      "idea": "The phone face-on and large, running off the foot, a crescent moon over its shoulder, the line set to the side.",
       "caption": "The Greek beside the verse",
       "route": "/bible/john/1",
       "lifted": "the first verse, English and Greek",
@@ -76,7 +76,7 @@
         1080,
         1920
       ],
-      "bytes": 199772,
+      "bytes": 198556,
       "problems": [],
       "check": {
         "pass": true,
@@ -87,7 +87,7 @@
       "n": "03",
       "shot": "fathers",
       "design": "Orbits",
-      "idea": "A small bright disc at the phone's shoulder and the rings round it, crossing the whole picture.",
+      "idea": "The phone turned the other way, and rings round a small bright disc crossing the whole sky.",
       "caption": "The Fathers on the verse you are reading",
       "route": "/bible/genesis/1",
       "lifted": "the Father's name and his work",
@@ -102,7 +102,7 @@
         1080,
         1920
       ],
-      "bytes": 183231,
+      "bytes": 157717,
       "problems": [],
       "check": {
         "pass": true,
@@ -113,7 +113,7 @@
       "n": "04",
       "shot": "journal",
       "design": "Moonrise",
-      "idea": "A disc half risen over a level floor, its rim bright.",
+      "idea": "The phone lying on the floor, the day's page standing up off it, and the moon half risen at the horizon.",
       "caption": "A journal kept by the Church's day",
       "route": "/journal",
       "lifted": "the day's page",
@@ -126,7 +126,7 @@
         1080,
         1920
       ],
-      "bytes": 343506,
+      "bytes": 318523,
       "problems": [],
       "check": {
         "pass": true,
@@ -136,11 +136,11 @@
       },
       "n": "05",
       "shot": "prayers",
-      "design": "Two lights",
-      "idea": "A great disc at one side and a small bright one at the other, one fine line between them.",
+      "design": "Northern Cross",
+      "idea": "The phone small and high to one side, the stars of the Northern Cross joined beside it, the line at the foot.",
       "caption": "The daily prayers, morning and evening",
       "route": "/prayers",
-      "lifted": "the morning prayers",
+      "lifted": "the row of prayers",
       "picturesInView": [
         "/sections/prayers.v4.jpg",
         "/icons/prayer/anastasis.jpg",
@@ -156,7 +156,7 @@
         1080,
         1920
       ],
-      "bytes": 296809,
+      "bytes": 366267,
       "problems": [],
       "check": {
         "pass": true,
@@ -167,7 +167,7 @@
       "n": "06",
       "shot": "saint",
       "design": "Limb",
-      "idea": "The edge of a disc far larger than the picture, rising from one corner.",
+      "idea": "The phone close and large, and a great disc filling the head of the picture with the line set upon it.",
       "caption": "The lives of the saints",
       "route": "/saints/basil-the-great",
       "lifted": "Life, Writings and Web",
@@ -183,7 +183,7 @@
         1080,
         1920
       ],
-      "bytes": 178426,
+      "bytes": 108971,
       "problems": [],
       "check": {
         "pass": true,
@@ -194,7 +194,7 @@
       "n": "07",
       "shot": "calendar",
       "design": "Phases",
-      "idea": "The moon's phases in a row along the foot, and one faint ring behind the phone.",
+      "idea": "The phone face-on and small, crowned by the moon's phases in an arc.",
       "caption": "Every feast and every fast",
       "route": "/calendar",
       "lifted": "the day's fast",
@@ -209,7 +209,7 @@
         1080,
         1920
       ],
-      "bytes": 250157,
+      "bytes": 307576,
       "problems": [],
       "check": {
         "pass": true,
@@ -220,7 +220,7 @@
       "n": "08",
       "shot": "reading",
       "design": "Ring",
-      "idea": "A ring of light, dark within, and a finer ring outside it.",
+      "idea": "The phone turned and set high, the book's cover drawn out large inside a ring of light, the line at the foot.",
       "caption": "The Fathers, read in full",
       "route": "/saints/athanasius-the-great/on-the-incarnation",
       "lifted": "the book's cover",
