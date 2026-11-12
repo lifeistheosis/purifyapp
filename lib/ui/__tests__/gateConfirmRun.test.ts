@@ -221,16 +221,18 @@ describe("the saints' webs (fail 4, the 118 webs)", () => {
       return found;
     };
     const mix = (a: Rgb, b: Rgb, t: number) => a.map((v, i) => v * t + b[i] * (1 - t)) as Rgb;
-    const drawn: [string, string | null, string | null][] = [
+    type Worn = [string, string | null, string | null];
+    const worn: Worn[] = [
       ["Dark", null, null],
       ["Black", "black", null],
       ["Candlelight", "candlelight", null],
       ["Monastery", "monastery", null],
-      ...READING_THEMES.filter((t) => t.look).map((t): [string, string | null, string | null] => {
+      ...READING_THEMES.filter((t) => t.look).map((t): Worn => {
         const { mode, look } = themeAttributes(t.id);
         return [t.label, mode, look];
       }),
-    ].filter(([, mode]) => mode !== "parchment");
+    ];
+    const drawn = worn.filter(([, mode]) => mode !== "parchment");
     expect(drawn.length).toBe(12);
     for (const [label, mode, look] of drawn) {
       const paper = tokenOf("paper", mode, look);
