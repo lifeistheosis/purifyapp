@@ -2,13 +2,14 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state; the log is the release's HANDOFF.md. How the chats run: `docs/OPERATIONS.md`.
 
-Updated 2026-11-12, 21:16 UTC.
+Updated 2026-11-12, 21:31 UTC.
 
 ## 1.9: in flight
 
 - **The final check** (Admin): export cut at 20:42 UTC from 3e65f51ff, whose code is 05aee81e1. Report near 01:00 UTC. If it passes, the test build is cut at once: Android with local-first on, the main web, publish off; then iOS. He walks it as a new reader would.
 - **Updates 2:** verifies /reading/ on the same export. It pushes no app code.
 - **Freeze:** no app code lands during the final check.
+- **Tooling:** the pre-push guard is being built now (a fresh chat). After the final check, Admin writes the nightly gate's runner, and the arbiter schedules it.
 - **Done for 1.9:** the drop kit (SSM board); the store pictures, 41 of them (Fable, e2aa433d); the EIKON gift (Product images chat; one month of Plus for every order).
 
 ## Waiting on him
@@ -36,5 +37,6 @@ Updated 2026-11-12, 21:16 UTC.
 | Fable 5.2: 1.9 store pictures | session_01VuYTwbUEsUgbUwM7K7xYG1 | design and adverts, by his word |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |
 | Product images (his PC) | session_01VuYTwaLq6ij9iFi8D4Kt8a | the EIKON gift, done for 1.9 |
+| Tooling: the pre-push guard | session_01VuYTwZxEJPq6tx6VUBChCT | the guard on every push (no app or package files during the freeze) |
 
 Admin and Updates were past 700,000 tokens at the last look, so both rotate first after 1.9.
