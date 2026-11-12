@@ -203,7 +203,7 @@ function PlanCard({
     <div
       id={id}
       className={cn(
-        "dark-island relative flex scroll-mt-24 flex-col overflow-hidden rounded-[28px] p-6 ring-1 ring-inset shadow-[0_24px_60px_-24px_rgba(0,0,0,0.6)] md:p-7",
+        "premium-plan-card dark-island relative flex scroll-mt-24 flex-col overflow-hidden rounded-[28px] p-6 ring-1 ring-inset shadow-[0_24px_60px_-24px_rgba(0,0,0,0.6)] md:p-7",
         tone === "pro" ? "ring-paper/25" : "ring-paper/[0.12]",
       )}
       style={premiumCardBg(tone === "pro" ? "full" : "soft")}

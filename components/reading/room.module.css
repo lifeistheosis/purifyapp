@@ -91,6 +91,30 @@
     );
 }
 
+/* On a tablet the words stand beside the poster, on the stage's picture and
+   its pool of light, not under it in the page's dark: the line of facts read
+   3.31:1 there on Dark, Light, Candlelight and Monastery, and on Candlelight
+   the author 4.32 and the blurb 4.33 (Admin's run at 800 and 1032,
+   2026-11-12). There they lie on the house's close halo of the page's
+   ground (.words-halo in app/globals.css, its plain values first for a
+   WebView without color-mix). */
+@media (min-width: 768px) {
+  .heroWords :is(h2, p) {
+    text-shadow: 0 0 1px rgb(16 16 19 / 0.95), 0 0 3px rgb(16 16 19 / 0.9), 0 0 6px rgb(16 16 19 / 0.8);
+    text-shadow:
+      0 0 1px color-mix(in srgb, var(--color-night) 95%, transparent),
+      0 0 3px color-mix(in srgb, var(--color-night) 90%, transparent),
+      0 0 6px color-mix(in srgb, var(--color-night) 80%, transparent);
+  }
+  html[data-reading-mode="parchment"] .heroWords :is(h2, p) {
+    text-shadow: 0 0 1px rgb(241 232 212 / 0.95), 0 0 3px rgb(241 232 212 / 0.9), 0 0 6px rgb(241 232 212 / 0.8);
+    text-shadow:
+      0 0 1px color-mix(in srgb, var(--color-night) 95%, transparent),
+      0 0 3px color-mix(in srgb, var(--color-night) 90%, transparent),
+      0 0 6px color-mix(in srgb, var(--color-night) 80%, transparent);
+  }
+}
+
 /* The poster stands on the stage in a deep shadow. On Light it is the
    house's warm shade, softer: black at nine tenths fell on the line under
    the poster on a phone and held it to 3.66:1 by the pixels (the Themes

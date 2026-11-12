@@ -191,8 +191,13 @@ export function FlorilegiaHub({ readOnly = false }: { readOnly?: boolean } = {})
                   </span>
                   {/* The name and the line under it stand on the picture, and
                       are pictured apart from it while it travels
-                      (data-carry-over, lib/ui/routeMotion.ts). */}
-                  <h3 data-carry-over="" className="relative font-serif text-[16px] font-semibold leading-[1.15] text-paper">{t(s.nameKey)}</h3>
+                      (data-carry-over, lib/ui/routeMotion.ts). The name lies on
+                      the house's close halo of the page's ground (.words-halo):
+                      on a tablet's four across, a name of two lines climbs into
+                      the picture above its melt, and "The Song of the Theotokos"
+                      read 3.58:1 on Candlelight, "The Prologue of John" 3.93 on
+                      Stone (Admin's run at 800 and 1032, 2026-11-12). */}
+                  <h3 data-carry-over="" className="relative font-serif text-[16px] font-semibold leading-[1.15] text-paper words-halo">{t(s.nameKey)}</h3>
                   {kept ? (
                     // In words: the tick alone said nothing a reader could read (build 89 note 6).
                     <p data-carry-over="" className="relative mt-1 flex items-start gap-1.5 font-sans text-caption leading-[1.35] text-paper/85" data-starter-kept="">

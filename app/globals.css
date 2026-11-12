@@ -5565,6 +5565,16 @@ html[data-reading-mode="black"] .tile-sheen {
  :where(html[data-reading-mode="candlelight"]) :where(.lm-card) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65) {
  color: color-mix(in oklab, var(--color-paper) 66%, transparent);
  }
+ /* The Plus page's plan cards (app/(app)/premium/page.tsx, PlanCard) are
+    typed in too, and Pro's is lit more at its head than a graphite card:
+    59 59 62 at its lightest. On a tablet, where the cards stand side by
+    side, its price line "or $199 / year" read 4.31:1 there on Candlelight
+    and its rows 4.35 and 4.42 (Admin's run at 1032, 2026-11-12). On a plan
+    card Candlelight draws its faint shares at 70, those up to 68 with them:
+    4.59:1 at Pro's lightest point. */
+ :where(html[data-reading-mode="candlelight"]) :where(.premium-plan-card) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68) {
+ color: color-mix(in oklab, var(--color-paper) 70%, transparent);
+ }
  /* The saint web's sheet (.saint-web-card) is a step darker than Light's
     card, as a tray is: the line under a saint's name, at Light's 70, read
     4.41:1 ("787") and 4.47 ("Councils"). At 75, as faint words on a tray,

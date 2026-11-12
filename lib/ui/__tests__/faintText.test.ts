@@ -238,11 +238,39 @@ describe("faint text on a graphite card and on the saint web's sheet", () => {
     expect(BARE).toContain(':where(html[data-reading-mode="parchment"]:not([data-look])) :where(.saint-web-card) .text-paper\\/60');
   });
 
+  // The Plus page's plan cards (app/(app)/premium/page.tsx), typed in too: Pro's is lit at its head by a glow and at
+  // its corner by a second, over its first colour. On a tablet its price line read 4.31:1 there on Candlelight (Admin's
+  // run at 1032, 2026-11-12).
+  it("candlelight: every share the app writes above 40 and under 70 percent is 4.5:1 or more at a plan card's lightest point", () => {
+    const UI = readFileSync(join(process.cwd(), "components", "premium", "PremiumUI.tsx"), "utf8");
+    const bg = /export function premiumCardBg[\s\S]*?\n\}/.exec(UI)?.[0] ?? "";
+    const head = Number(/strength === "full"\s*\?\s*"radial-gradient\([^"]*rgba\(255,255,255,(0?\.\d+)\)/.exec(bg)?.[1]);
+    const corner = Number(/radial-gradient\(115% 90% at 88% 8%, rgba\(255,255,255,(0?\.\d+)\)/.exec(bg)?.[1]);
+    const first = /linear-gradient\(155deg, (#[0-9a-f]{6})/i.exec(bg)?.[1] ?? "";
+    expect(head > 0 && corner > 0 && first).toBeTruthy();
+    // Both lights at their fullest over the first colour: the lightest any of its words can stand on.
+    const lit = mix([255, 255, 255], mix([255, 255, 255], hex(first), corner), head);
+    const { paper } = colours("candlelight");
+    const rule = scoped("candlelight", "\\.premium-plan-card");
+    const short: string[] = [];
+    for (const share of WRITTEN) {
+      const at = (rule.shares.includes(share) ? rule.at : drawn("candlelight", share)) / 100;
+      const r = ratio(mix(paper, lit, at), lit);
+      if (r < 4.5) short.push(`text-paper/${share} drawn at ${Math.round(at * 100)}% on Pro's lit head: ${r.toFixed(2)}:1`);
+    }
+    expect(short, short.join("\n")).toEqual([]);
+    // A graphite card's own share falls short there: Pro's head is lighter than its corner.
+    expect(ratio(mix(paper, lit, scoped("candlelight", "\\.lm-card").at / 100), lit)).toBeLessThan(4.5);
+    const page = readFileSync(join(process.cwd(), "app", "(app)", "premium", "page.tsx"), "utf8");
+    expect(page).toContain('"premium-plan-card dark-island relative flex');
+  });
+
   it("each sits in the utilities layer with the page's rules, weighing what they weigh", () => {
     const block = CSS.slice(CSS.indexOf("Faint text on every palette"));
     const from = block.indexOf("@layer utilities {");
     const layer = block.slice(from, block.indexOf("\n}\n", from));
     expect(layer).toContain(':where(html[data-reading-mode="candlelight"]) :where(.lm-card) :is(');
+    expect(layer).toContain(':where(html[data-reading-mode="candlelight"]) :where(.premium-plan-card) :is(');
     expect(layer).toContain(':where(html[data-reading-mode="parchment"]:not([data-look])) :where(.saint-web-card) .text-paper\\/60');
     expect(layer).not.toMatch(/!important/);
   });
