@@ -67,6 +67,8 @@
 //
 //   npm run build:android, then:
 //   NODE_USE_ENV_PROXY=1 node scripts/tap-walk.mjs [out dir] [--only /path,/path] [--workers 3] [--max 30] [--json file] [--shots dir] [--online]
+//   [--size 800x1280] [--store key=value ...] [--lang ar]: a screen of another size, and what the
+//   reader has chosen before the walk (a key the app keeps, the reader's language).
 //
 // --shots keeps a still of the screen at each fail, the control ringed, for the
 // one who mends it.
@@ -115,6 +117,26 @@ const WORKERS = Math.max(1, Number(flag("--workers") ?? 3));
 const MAX = Math.max(1, Number(flag("--max") ?? 30));
 const JSON_OUT = flag("--json");
 const SHOTS = flag("--shots");
+// The screen's size (the arbiter, 2026-11-12): a phone unless --size names another, as a small phone
+// (320 wide), a 10-inch Android tablet (800x1280) or the largest iPad (1032x1376); walked as a phone
+// is (touch, a mobile viewport).
+const SIZE = (flag("--size") ?? "390x844").split("x").map(Number);
+if (SIZE.length !== 2 || SIZE.some((n) => !Number.isInteger(n) || n < 300 || n > 3000)) throw new Error("--size takes a width and a height, as 800x1280");
+const [WIDTH, HEIGHT] = SIZE;
+const ON = WIDTH === 390 && HEIGHT === 844 ? "on a phone" : `at ${WIDTH} by ${HEIGHT}`;
+// What the reader has chosen before the walk (the arbiter, 2026-11-12 20:20 UTC: John 1 with the
+// interlinear on, Genesis 1's commentary in Arabic). --store key=value sets a key the app keeps, as
+// many as named; --lang sets the reader's language as the language row does in the apps: the
+// purify_locale cookie, and Capacitor Preferences under the same name, which keeps it in
+// localStorage on the web (lib/i18n/switchLocale.ts).
+const STORE = [];
+for (let at = argv.indexOf("--store"); at >= 0; at = argv.indexOf("--store")) {
+  const [k, ...v] = (argv.splice(at, 2)[1] ?? "").split("=");
+  if (!k || !v.length) throw new Error("--store takes key=value");
+  STORE.push([k, v.join("=")]);
+}
+const LANG = flag("--lang");
+if (LANG) STORE.push(["CapacitorStorage.purify_locale", LANG]);
 if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 const ONLINE = argv.includes("--online");
 if (ONLINE) argv.splice(argv.indexOf("--online"), 1);
@@ -357,7 +379,7 @@ if (at === "/sticky/") {
 }
 
 const list = SELF_TEST ? Object.keys(EXPECT) : (ONLY ?? screens(OUT));
-console.log(`${list.length} screens on a phone, up to ${MAX} controls each, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}, ${readerWords(SELLS_PLUS)}`);
+console.log(`${list.length} screens ${ON}, up to ${MAX} controls each, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}, ${readerWords(SELLS_PLUS)}${STORE.length ? `, the reader having chosen ${STORE.map(([k, v]) => `${k}=${v}`).join(", ")}` : ""}`);
 
 const OWN = "/opt/pw-browsers/chromium";
 const browser = await chromium.launch(fs.existsSync(OWN) ? { executablePath: OWN } : {});
@@ -498,7 +520,10 @@ function describeSheet(n) {
   // readings on Settings), and that is still the one sheet.
   const controls = [...el.querySelectorAll("button, a[href], [role=button], [role=link], [role=menuitem], [role=option], [role=tab], [role=radio], [role=checkbox], [role=switch], input, select, textarea")]
     .slice(0, 8)
-    .map((x) => words(x).slice(0, 24));
+    // Which of them is chosen, too: the Search sheet opened from Saints, with Saints chosen and the
+    // kinds counted, draws itself otherwise than the one from a page that searches everything (the
+    // arbiter, 2026-11-12), and was measured only as that one.
+    .map((x) => words(x).slice(0, 24) + (["aria-pressed", "aria-selected", "aria-checked"].some((a) => x.getAttribute(a) === "true") || (x.getAttribute("aria-current") ?? "false") !== "false" ? "*" : ""));
   return { n, role, name, controls, key: `${role}\u0000${name}\u0000${controls.join("|")}`.replace(/\d+/g, "#") };
 }
 
@@ -1116,13 +1141,15 @@ const results = [];
 let done = 0;
 const queue = [...list];
 async function worker() {
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
-  await ctx.addInitScript(() => {
+  const ctx = await browser.newContext({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
+  await ctx.addInitScript((store) => {
     try {
       localStorage.setItem("purify:onboarded", "99");
       localStorage.setItem("purify:whatsNewSeen", "99");
+      for (const [k, v] of store) localStorage.setItem(k, v);
     } catch {}
-  });
+  }, STORE);
+  if (LANG) await ctx.addCookies([{ name: "purify_locale", value: LANG, url: "https://localhost" }]);
   if (SELLS_PLUS) await asAndroidShell(ctx);
   await serveLikeTheShell(ctx, OUT, {});
   // The main web, and the public pictures it keeps in its storage (a reader's profile picture),
