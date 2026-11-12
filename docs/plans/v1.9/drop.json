@@ -403,6 +403,14 @@
       "text": "Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.\n\n📓 Your journal, by the Church's day. Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.\n📖 Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.\n🌍 Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.\n🔎 Study a verse, in Purify Plus. Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.\n🗓️ New reading plans, in Purify Plus. John in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day.\n☦️ The Creed by council. The Symbol of Faith article by article, with the words the Council of Constantinople added lit.\n📜 Church history on Today. On the days an event of Orthodox History fell, it is on Today under the saint of the day.\n🌿 The Florilegium and the Thread. In Purify Plus, your gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps.\n🕯️ Candlelight and ambience. In Purify Plus, Candlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once.\n📱 Remember the verse on your home screen. A widget keeps your verse on your home screen, the same for every reader.\n🎁 Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.\n\nTell us what you find, and what breaks. We read everything."
     },
     {
+      "id": "step-profile-status",
+      "channel": "step",
+      "moment": "web",
+      "title": "Change the Purify account's own status",
+      "who": "owner",
+      "text": "The Purify account's profile status still announces 1.8, and it is the first line a reader sees on that profile. It is live, in no file of the repository, so no build changes it. With the Community post, signed in as Purify: Edit profile, Status, and put a 1.9 line in your own words, or clear it."
+    },
+    {
       "id": "step-campaigns-line",
       "channel": "step",
       "moment": "web",

@@ -705,3 +705,111 @@ signal, /gift/ in all eight states with the claim by a recipient, /prayers/,
 /pricing/, /florilegium/, Community's sheets, Today and /signout/,
 /history/alaska-mission/); the light looks on those screens; parts 3 to 5;
 the web build last; one report.
+
+## Confirm run (2026-11-12 05:39 to 09:27 UTC): not a pass
+
+The arbiter's call (05:37 UTC): the full gate on the export the test build
+would be cut from, run in parallel shards. The arbiter closed it at 09:31 UTC
+as "confirm run, not a pass". Three fails in the gate's reach and seven
+groups beyond it are routed below, and a final check follows on the head that
+mends them.
+
+**The export:** `npm run build:android` of `872724aa3` (it holds
+`059cbc794`), selling: `NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1`, and the new
+reader walked with `SELLS_PLUS=1`. The switches stood in their release-day
+order, read at that head: CAMPAIGNS_OPENING "testers",
+PICTURES_IN_STORE_BUILDS false, CAMPAIGN_NOTICES true, JULY_GROUPS_GO true,
+CARE_NOTE_SEND true. Parts 3 to 5 and the web build ran on the same head.
+Every walk skipped a new reader's welcome before measuring.
+
+**Part 1, the tap walk,** both readers at once:
+- New reader, no Plus: 128 screens, 2,860 controls, 1 failed; 112 distinct
+  sheets, 1 failed (the same one).
+- Open reader: 128 screens, 2,875 controls, 2 failed; 111 sheets, 2 failed
+  (the same two).
+- The four choices left for the eye were each tapped and the page loaded
+  again: Interlinear by default (a chapter then opens with its Greek), Clicks
+  as you scroll, the calendar's New, and This week's readings (the new reader
+  is shown the Plus sheet instead). Each is kept.
+- /gift/ in thirteen states: final run 1's eight, the four with orders the
+  arbiter named (on its way; on its way with one claimed by its recipient;
+  every gift claimed; one claimed), and every gift claimed with no plan
+  running. All thirteen pass, and an order on the account is never called
+  not found. The present's form stands below the orders for every signed-in
+  reader with no plan running, and is absent while a plan runs, as
+  a8610c746 meant.
+- The row after 451 on /history/ stays where it is brought: final run 1's
+  fail 1 holds mended.
+
+**Part 2, checkMock with pixels on all 128 screens, five palettes:** both
+readers 128 of 128 clean. **The seven light looks on all 128 screens:** 128 of
+128 clean. The words left for the eye are the ones answered in final run 1.
+
+**No signal:** /reading/councils/, /reading/councils/ancyra-314/, the seven
+ecumenical councils' pages and /history/, each scrolled to its end: every
+picture drawn from the app, none asked of the website. checkMock with no
+signal: three of the ten clean; the seven councils' pages fail (fail 3).
+
+**Beyond the 128.** The walks take one page for each route, so a page that
+shares its route with the sampled one is never measured, and the export has
+2,409 pages. Admin measured 998 more with checkMock and pixels, the open
+reader on the five palettes: every page except the Bible's chapters after
+each book's first (1,283). That sweep found most of this run's fails, and on
+the arbiter's word (09:31 UTC) it stays in the gate from now on.
+
+**The fails, by owner (the arbiter's routing, 09:31 UTC).**
+
+In the gate's reach:
+1. The Search sheet, both readers: the day's saint, "St. John the Merciful,
+   Patriarch", ended in an ellipsis (SearchRows.tsx). Updates 2, mended in
+   f2919bec1 and 2b723abaf after this export.
+2. Community, the Purify profile sheet, open reader: its status read 4.47:1
+   on Monastery (ProfileCard.tsx). Updates 2.
+3. The seven ecumenical councils' pages, with signal and without: the kicker
+   ("First Ecumenical Council" to "Seventh") read 2.46 to 3.57:1 over the
+   council's picture (app/(app)/councils/[slug]/page.tsx). Ancyra, the page
+   the 128 take for that route, has no picture there. Updates.
+
+Beyond the 128:
+4. Saints' webs, 87 of the 117 the 128 do not reach: long names cut on the
+   web and on their cards, five kinds cut in St Athanasius's row, and the
+   kinds, years, dots and eras under 4.5:1 over the web's lines, mostly on
+   Candlelight and Monastery (components/saints/web/). Updates 2.
+5. The Bible's chapter picker in thirteen books of the New Testament: the
+   book's name cut (ReaderDock.tsx). Updates.
+6. The seven ecumenical councils' shelves in the reading room: the minutes
+   read 4.17 to 4.49:1 on Light (CouncilShelf.tsx). Updates.
+7. Third Constantinople's shelf: St Agatho's letter's title cut at its fourth
+   line (WorkCover.tsx). Updates 2.
+8. St Paul's missions: "Antioch" on the map read 3.89:1 on Light and
+   Candlelight (EventThread.tsx). Updates.
+9. Psalm 117's chant: the words view's "Transliteration" and "Both" read
+   3.39:1 on Light (ChantWords.tsx). Updates 2.
+10. An edition's em dashes with no allowance by name: the pre-communion
+    prayers and five councils' documents (lib/ui/__tests__/editionDashes.test.ts
+    says how the works and the Bible's rail carry theirs). Updates.
+11. Measured under load and not again: two of St Cyril's works on Dark, which
+    passed when measured alone. Left as measured.
+
+**Allowances:** none new since final run 1.
+
+**Parts 3 to 5:** 72 files, 993 tests, all pass. **The web build:** passes,
+6,525 pages.
+
+**For the drop, not the build** (the arbiter, 09:31 UTC): the Purify
+account's own profile status in production still says "v1.8 is finally
+here!". It is live data, not in the repo, so a release-day step asks the
+owner to change it.
+
+**The final check** (the arbiter, 09:31 UTC), when Updates and Updates 2
+report, on the new head: a new selling export; part 2 on all 128 screens,
+both readers; the sweep on all 998 pages with pixels, five palettes, in
+shards; the seven light looks on every family the mends touch; a tap walk on
+every screen they touch, both readers (the Search sheet from Saints and from
+Everything, the Purify sheet, the seven council pages, the chapter picker in
+the thirteen books, the shelves, Third Constantinople's reading room, St
+Paul's missions, Psalm 117's chant, the pre-communion prayers, the council
+documents, and the webs of St Athanasius, the Twenty Thousand Martyrs and St
+John the Apostle); parts 3 to 5; the web build last. Part 1 is not repeated
+whole: it passed on 872724aa3 but for the Search row, and this round changes
+no control.

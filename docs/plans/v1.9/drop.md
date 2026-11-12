@@ -250,6 +250,14 @@ The Scriptures, the saints, the prayers and the calendar stay free.
 Tell us what you find, and what breaks. We read everything.
 ~~~
 
+### Change the Purify account's own status
+
+`step-profile-status` · A step · Yours · To do
+
+~~~text
+The Purify account's profile status still announces 1.8, and it is the first line a reader sees on that profile. It is live, in no file of the repository, so no build changes it. With the Community post, signed in as Purify: Edit profile, Status, and put a 1.9 line in your own words, or clear it.
+~~~
+
 ### Prayer campaigns join the note only when they open for every reader
 
 `step-campaigns-line` · A step · Ours, on your word · To do
