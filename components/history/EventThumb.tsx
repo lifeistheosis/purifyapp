@@ -45,22 +45,38 @@ export function EventThumb({
   const picture = eventPicture(event, native);
   const [jpegOnly, setJpegOnly] = useState(false);
   const [gone, setGone] = useState(false);
-  if (!picture || gone) return null;
+  // A picture that cannot be had (with no signal: the apps ask the website for
+  // it) keeps its frame, its own tiny preview blurred in it, so the row keeps
+  // its height and nothing round it moves. It took its frame away, and a row a
+  // reader had been brought to rose 237px as the rows above it lost theirs
+  // (the gate's final run of 2026-11-12). One with no preview leaves.
+  if (!picture || (gone && !picture.preview)) return null;
 
   const src = picture.avif && !jpegOnly ? picture.avif : picture.src;
   const broken = () => (src !== picture.src ? setJpegOnly(true) : setGone(true));
   return (
     <span aria-hidden className={cn("relative block overflow-hidden bg-night-soft ring-1 ring-inset ring-paper/10", frameClassName)}>
-      <ArrivingImage
-        src={src}
-        sizes={sizes}
-        loading="lazy"
-        decoding="async"
-        onBroken={broken}
-        onError={broken}
-        style={{ objectPosition: picture.shape === "wide" && picture.focus ? picture.focus : WHOLE_FOCUS[frame] }}
-        className="absolute inset-0 h-full w-full object-cover"
-      />
+      {gone ? (
+        <span
+          data-thumb-preview=""
+          className="absolute inset-0 scale-110 bg-cover blur-md"
+          style={{
+            backgroundImage: `url("${picture.preview}")`,
+            backgroundPosition: picture.shape === "wide" && picture.focus ? picture.focus : WHOLE_FOCUS[frame],
+          }}
+        />
+      ) : (
+        <ArrivingImage
+          src={src}
+          sizes={sizes}
+          loading="lazy"
+          decoding="async"
+          onBroken={broken}
+          onError={broken}
+          style={{ objectPosition: picture.shape === "wide" && picture.focus ? picture.focus : WHOLE_FOCUS[frame] }}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      )}
     </span>
   );
 }

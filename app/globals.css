@@ -9410,66 +9410,20 @@ html.is-native .event-thread {
  background-color: var(--color-night);
 }
 
-/* Windowed rendering without a virtualization dependency: off-screen rows
-   skip layout and paint but keep their DOM (anchors, find-in-page and the
-   scroll restore keep working). The placeholder is the height an undrawn
-   row is given, and it follows the width (1.9, the arbiter's word of
-   2026-11-11: "set the room to the measured rows by width"). It was 128px,
-   a row of 1.7: a date line, a title and a two-line preview. Since 1.8 most
-   rows carry their event's picture, which grows with the column, and the
-   room stands in only for rows not yet drawn: a row drawn once keeps its own
-   size (`auto`), so what it must match is the rows still undrawn when the
-   timeline opens, every row below the first screen. Measured on the export,
-   40 events in English, a phone 844px tall newly opened at thirty-two widths,
-   those rows average 266 to 271px on a phone up to 390 wide, rise with the
-   column to 458px at 1023, and fall back where the page sets a column beside
-   the line (1024, the filters' rail; 1280, the eras). The first rows, drawn
-   on opening, are shorter (about 150px, the early events having fewer
-   pictures), which is why the mean of all forty, 240px, left the timeline 8%
-   short. At 128 it was 43 to 59% short. Each step is the undrawn rows' mean
-   across its span, within 3.6% everywhere measured;
-   lib/history/__tests__/rowRoom.test.ts holds them to it, and the export
-   walk's section 77 takes the measure again on every export.
-
-   Windowed only where the browser holds the screen (1.9, the arbiter's word
-   of 2026-11-11; the saints' list below says why, `.cv-card`). Elsewhere all
-   forty rows are drawn, which measured no slower to open, and the room given
-   an undrawn row does nothing. */
+/* Every row of the timeline is drawn at its own height (1.9, the gate's
+   final run of 2026-11-12). The rows were windowed (content-visibility:
+   auto), each undrawn row standing in at one height for its width; but a
+   row's height is one of four (at 390, a row of words 123 or 149px, a row
+   under its era's large picture 335 or 361px), so when a reader was taken to
+   a row the rows round it drew at their own heights and moved it: the tap
+   walk brought "The Estrangement of the Non-Chalcedonian Churches" to the
+   middle and watched it come to rest 333px lower, under the tab bar. Forty
+   rows drawn whole measured no slower to open, and the iPhone, where the
+   window was never on (it waited on scroll anchoring, which Safari lacks),
+   always drew them so. lib/history/__tests__/rowRoom.test.ts holds it. */
 .history-cv {
- contain-intrinsic-size: auto 270px;
  /* A jump to a row lands it under the pinned era name (about 3.1rem). */
  scroll-margin-top: calc(var(--history-sticky-top) + 3.25rem);
-}
-@media (min-width: 405px) { .history-cv { contain-intrinsic-size: auto 285px; } }
-@media (min-width: 460px) { .history-cv { contain-intrinsic-size: auto 299px; } }
-@media (min-width: 520px) { .history-cv { contain-intrinsic-size: auto 315px; } }
-@media (min-width: 580px) { .history-cv { contain-intrinsic-size: auto 333px; } }
-@media (min-width: 640px) { .history-cv { contain-intrinsic-size: auto 350px; } }
-@media (min-width: 700px) { .history-cv { contain-intrinsic-size: auto 366px; } }
-@media (min-width: 768px) { .history-cv { contain-intrinsic-size: auto 390px; } }
-@media (min-width: 860px) { .history-cv { contain-intrinsic-size: auto 414px; } }
-@media (min-width: 940px) { .history-cv { contain-intrinsic-size: auto 434px; } }
-@media (min-width: 990px) { .history-cv { contain-intrinsic-size: auto 451px; } }
-@media (min-width: 1024px) { .history-cv { contain-intrinsic-size: auto 345px; } }
-@media (min-width: 1070px) { .history-cv { contain-intrinsic-size: auto 362px; } }
-@media (min-width: 1140px) { .history-cv { contain-intrinsic-size: auto 380px; } }
-@media (min-width: 1220px) { .history-cv { contain-intrinsic-size: auto 400px; } }
-@media (min-width: 1280px) { .history-cv { contain-intrinsic-size: auto 342px; } }
-@media (min-width: 1340px) { .history-cv { contain-intrinsic-size: auto 362px; } }
-@media (min-width: 1410px) { .history-cv { contain-intrinsic-size: auto 370px; } }
-@supports (overflow-anchor: auto) {
- .history-cv {
-  content-visibility: auto;
- }
-}
-/* Back to the timeline (lib/history/scroll.ts, restorePosition): every row
-   is drawn at its real height while the reader's place is put back, so the
-   place is measured on the page as it will be painted, and each row keeps
-   that height as its placeholder once it is let go (`auto` above). Measured
-   on the 128px guesses, Back painted the row 145px low for a frame and then
-   jumped (the owner's note 66 of build 80). */
-html[data-history-whole] .history-cv {
- content-visibility: visible;
 }
 /* A jump to an era lands its name where it pins. */
 .history-era {

@@ -173,8 +173,10 @@ export const RESTORE_SETTLE_FRAMES = 12;
 const RESTORE_STOP_EVENTS = ["touchstart", "wheel", "keydown", "pointerdown"] as const;
 
 /**
- * Set on the page while a place is put back: every row is drawn at its real
- * height (globals.css, History, `html[data-history-whole]`).
+ * Set on the page while a place is put back. It drew every row at its real
+ * height while the rows were windowed; since 2026-11-12 every row is drawn
+ * whole at all times (globals.css, `.history-cv`), and the mark changes
+ * nothing on the page.
  */
 export const WHOLE_ATTR = "data-history-whole";
 let wholeBy: object | null = null;
@@ -187,14 +189,12 @@ let wholeBy: object | null = null;
  * end it early (an unmount). The same watch as lib/ui/returnPlace.ts, for a
  * row instead of a link.
  *
- * The rows are drawn whole while it works. A row off the screen is a 128px
- * guess until it is drawn (`content-visibility`, globals.css .history-cv), so
- * the place was measured on guesses, and the rows around it then took their
- * real heights in the first painted frame: filmed on the export, Back showed
- * the row 145px low for a frame and then jumped to it. Drawn whole, the place
- * is measured on the page as it will be painted, and each row keeps its real
- * height as its placeholder after (`contain-intrinsic-size: auto`), so
- * nothing moves when the rows are let go two frames after the watch.
+ * The rows are drawn whole (since 2026-11-12 at all times; before, by the
+ * mark above while it worked). When a row off the screen was a guess until it
+ * was drawn, the place was measured on guesses and the rows around it took
+ * their real heights in the first painted frame: filmed on the export, Back
+ * showed the row 145px low for a frame and then jumped to it. Drawn whole,
+ * the place is measured on the page as it will be painted.
  */
 export function restorePosition(saved: TimelinePosition): () => void {
   if (!hasWindow()) return () => {};

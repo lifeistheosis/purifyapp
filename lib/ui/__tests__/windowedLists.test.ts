@@ -13,9 +13,10 @@ import { describe, expect, it } from "vitest";
  * every card and nothing above can change size ... and the same @supports
  * for any other list that windows the same way").
  *
- * Three lists draw only the rows near the screen (`content-visibility:
+ * Two lists draw only the rows near the screen (`content-visibility:
  * auto`) and give every other row a height to stand in for it: the saints'
- * cards, History's rows, Community's posts. A row is seldom the height it is
+ * cards and Community's posts (History's rows were a third, drawn whole
+ * since 2026-11-12). A row is seldom the height it is
  * given. A reader whom Back has returned deep into the list has every row
  * above still undrawn, and each one that draws in as they scroll up changes
  * by its own difference. A browser that anchors its scroll moves the page by
@@ -104,10 +105,12 @@ function windowed(): Found[] {
 describe("a list that draws only the rows near the screen", () => {
   const found = windowed();
 
-  it("is one of three, each named: a fourth is thought about before it is added here", () => {
+  it("is one of two, each named: a third is thought about before it is added here", () => {
+    // History's timeline was a third until 2026-11-12: its rows are of four
+    // heights, so no one room stood in for them, and a row a reader was taken
+    // to moved as the rows round it drew (lib/history/__tests__/rowRoom.test.ts).
     expect(found.map((f) => `${f.file} ${f.what}`).sort()).toEqual([
       "app/globals.css .cv-card",
-      "app/globals.css .history-cv",
       "components/community/CommunityClient.tsx supports-[overflow-anchor:auto]:[content-visibility:auto]",
     ]);
   });
@@ -130,20 +133,18 @@ describe("a list that draws only the rows near the screen", () => {
     expect(each).toEqual([false, true, false]);
     // And it read the house's stylesheet and its pages: there are hundreds of them.
     expect(files("components", [".tsx"]).length).toBeGreaterThan(500);
-    expect(asked(cssCode(read("app/globals.css")))).toHaveLength(2);
+    expect(asked(cssCode(read("app/globals.css")))).toHaveLength(1);
   });
 
   it("keeps the room it gives a row outside the question, where it does nothing alone", () => {
     const css = read("app/globals.css");
     expect(css).toMatch(/\n\.cv-card \{\n contain-intrinsic-size: auto \d+px;\n\}\n@supports \(overflow-anchor: auto\) \{\n \.cv-card \{\n  content-visibility: auto;\n \}\n\}\n/);
-    // Whatever the room is: its number is History's to set (lib/history/__tests__/calmHistory.test.ts).
-    expect(css).toMatch(/\n\.history-cv \{\n contain-intrinsic-size: auto \d+px;\n/);
     expect(read("components/community/CommunityClient.tsx")).toContain("[contain-intrinsic-size:auto_320px] supports-[overflow-anchor:auto]:[content-visibility:auto]");
   });
 
   it("leaves what draws a row for a moment working either way", () => {
-    // History draws every row while it puts a reader back, whichever browser it is.
-    expect(read("app/globals.css")).toMatch(/\nhtml\[data-history-whole\] \.history-cv \{\n content-visibility: visible;\n\}/);
+    // History draws every row at all times since 2026-11-12, so Back puts a reader back on the page as painted.
+    expect(read("app/globals.css")).not.toMatch(/\.history-cv[^{}]*\{[^}]*content-visibility/);
     // A card that takes a picture back is drawn for the change only if the list had left it undrawn.
     expect(read("lib/ui/routeMotion.ts")).toContain('if (getComputedStyle(node).contentVisibility !== "auto") continue;');
   });
