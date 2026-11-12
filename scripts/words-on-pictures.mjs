@@ -199,6 +199,16 @@ export async function wordsOnPicture(page, selector, { palettes = PALETTES, own 
         return { data, n: meta.width * meta.height };
       };
       try {
+        // What moves forever never holds still for two photographs: a profile's falling specks and its
+        // banner's breathing light read "@purify" at 2.55:1 to 4.47:1 by the pixels a speck crossed between
+        // them, where every held frame of the same sheet reads 6.96:1 or more (the gate's confirm run,
+        // 2026-11-12). So what loops forever is held where it stands while a line is photographed, and goes
+        // on after: a held frame is a real one, so a light that is too bright at its height is still caught.
+        // An entrance (an animation with an end) is left to end, as ever.
+        await page.evaluate(() => {
+          window.__wordsHeld = document.getAnimations().filter((a) => a.playState === "running" && a.effect?.getComputedTiming().iterations === Infinity);
+          for (const a of window.__wordsHeld) a.pause();
+        });
         const clips = info.lines.map((line) => ({ x: line.x, y: line.y, width: Math.max(1, line.w), height: Math.max(1, line.h) }));
         // The same photograph twice, a moment apart, must be the same before it is trusted: up to two seconds for
         // a picture to finish arriving.
@@ -261,6 +271,8 @@ export async function wordsOnPicture(page, selector, { palettes = PALETTES, own 
             else e.setAttribute("style", style);
           }
           window.__wordsBack = null;
+          for (const a of window.__wordsHeld ?? []) a.play();
+          window.__wordsHeld = null;
         });
       }
       // `at`: the element's place among the selector's matches, so a caller can tell whose line it is

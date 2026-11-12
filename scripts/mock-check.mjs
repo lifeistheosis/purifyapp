@@ -1707,6 +1707,18 @@ const PIXELS = `<div data-mock-fixture="pixels" style="position:fixed;left:0;rig
   <div style="position:fixed;inset-inline-start:2000px;top:120px;background-image:${PICTURE("101010")};padding:12px"><p style="margin:0;color:#ffffff;font:16px sans-serif">Words past the screen's edge</p></div>
 </div>`;
 
+/**
+ * Words over light that moves forever (the gate's confirm run, 2026-11-12: a profile's falling specks and its
+ * banner's breathing light read "@purify" at 2.55:1 by the pixels a speck crossed between the measure's two
+ * photographs). The dot loops under the line, below the letters, which have no descender: on a held frame the
+ * words are read on their own dark picture and pass; a measure that photographs it moving never holds still and
+ * leaves them to the eye.
+ */
+const MOTION = `<div data-mock-fixture="motion" style="position:fixed;left:0;right:0;top:120px;z-index:400;padding:16px">
+  <style>@keyframes mock-dot { from { transform: translateX(0); } to { transform: translateX(200px); } }</style>
+  <div style="position:relative;background-image:${PICTURE("101010")};padding:12px"><span aria-hidden="true" style="position:absolute;left:12px;top:28px;width:6px;height:4px;border-radius:2px;background:#ffffff;animation:mock-dot 300ms linear infinite alternate"></span><p style="position:relative;margin:0;color:#ffffff;font:16px/22px sans-serif">Words in the room</p></div>
+</div>`;
+
 /** The Church's red, by its token, beside a red typed in that is not it. */
 const RED = `<div data-mock-fixture="red" style="padding:16px;display:flex;gap:12px">
   <button type="button" class="inline-flex min-h-11 items-center rounded-pill bg-crimson px-4 font-sans text-ui font-semibold text-white">Pray</button>
@@ -1764,6 +1776,18 @@ async function selfTest() {
     const lookOnly = await checkMock(page, "[data-mock-fixture=pixels]", { palettes: [["Dark", null]] });
     const byPixels = await checkMock(page, "[data-mock-fixture=pixels]", { palettes: [["Dark", null]], pixels: true });
     printMockCheck(byPixels, "words on pictures, measured on their pixels");
+    // Words over light that moves forever: measured on a held frame, and passed.
+    await page.evaluate((html) => {
+      for (const f of document.querySelectorAll("[data-mock-fixture]")) f.style.display = "none";
+      document.body.insertAdjacentHTML("beforeend", html);
+    }, MOTION);
+    await settle(page);
+    const moving = await checkMock(page, "[data-mock-fixture=motion]", { palettes: [["Dark", null]], pixels: true });
+    printMockCheck(moving, "words over light that moves forever");
+    // (The dot itself moves while the mirror is measured, and is said for that: the pass's own business, not this one.)
+    const motionLook = moving.looks.find((l) => l.text === "Words in the room");
+    const motionRead = moving.failures.length === 0 && motionLook?.left === false && (motionLook?.ratios?.Dark ?? 0) >= 4.5;
+    await page.evaluate(() => document.querySelector("[data-mock-fixture=motion]")?.remove());
     // The Church's red and white on it are allowed by name; a red typed in that is not it still fails.
     await page.evaluate((html) => document.body.insertAdjacentHTML("beforeend", html), RED);
     await settle(page);
@@ -1842,11 +1866,11 @@ async function selfTest() {
       said("Words over a fade on a picture", "a picture is drawn across it (img)") &&
       said("Words over a picture, on plain colours", "a picture is drawn across it (img)") &&
       good.unmeasured.length === 3;
-    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && rowsRead && rowsCaught && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight;
+    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && rowsRead && rowsCaught && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight && motionRead;
     console.log(
       ok
         ? "\nself-test: every mistake caught, and the house's own parts pass"
-        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${rowsRead && rowsCaught ? "" : " words scrolled out of their row were not read on the ground behind the row"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}`,
+        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${rowsRead && rowsCaught ? "" : " words scrolled out of their row were not read on the ground behind the row"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}${motionRead ? "" : " words over light that moves forever were not measured on a held frame and passed"}`,
     );
     return ok;
   } finally {
