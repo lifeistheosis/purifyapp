@@ -59,6 +59,9 @@ type Target = { slug: string; chapter: number } | null;
 
 /** The class on <html> while the dock stands at the reader's foot (app/globals.css). */
 export const DOCK_CLASS = "has-reader-dock";
+/** The card at rest, its two rows (globals.css, .reader-dock), and its chapter's row on one line. */
+const CARD_PX = 112;
+const CHAPTER_ROW_PX = 32;
 
 export function ReaderDock({
   slug,
@@ -96,6 +99,7 @@ export function ReaderDock({
   const [busy, setBusy] = useState(false);
   const surfaceRef = useRef<HTMLDivElement>(null);
   const pillRef = useRef<HTMLDivElement>(null);
+  const chapterRowRef = useRef<HTMLDivElement>(null);
 
   // The page makes room for the card at its foot, the way out of focus
   // stands over the pill, and the reader's plates stay while it plays
@@ -109,6 +113,25 @@ export function ReaderDock({
     return () => {
       root.classList.remove(DOCK_CLASS);
       noteFootMoved();
+    };
+  }, []);
+
+  // The card's height: its two rows at rest (CARD_PX), and as much again as
+  // the chapter's row grows when a long name sends its controls down a line.
+  // On the root, since the page keeps the card's room at its foot
+  // (globals.css, --reader-dock-room).
+  useLayoutEffect(() => {
+    const row = chapterRowRef.current;
+    if (!row) return;
+    const root = document.documentElement;
+    const measure = () => root.style.setProperty("--reader-dock-card-h", `${Math.ceil(CARD_PX + Math.max(0, row.getBoundingClientRect().height - CHAPTER_ROW_PX))}px`);
+    measure();
+    if (typeof ResizeObserver === "undefined") return () => root.style.removeProperty("--reader-dock-card-h");
+    const observer = new ResizeObserver(measure);
+    observer.observe(row);
+    return () => {
+      observer.disconnect();
+      root.style.removeProperty("--reader-dock-card-h");
     };
   }, []);
 
@@ -226,22 +249,27 @@ export function ReaderDock({
               <span aria-hidden className="-mx-3.5 mt-2.5 h-px shrink-0 bg-paper/[0.08]" />
               {/* The chapter: its arrows and its name, then Speed or Listen,
                   then the sleep timer. */}
-              <div className="mt-1.5 flex h-8 shrink-0 items-center justify-between gap-2 font-sans text-[14px]">
-                <span className="flex min-w-0 items-center">
+              {/* A book's name is shown whole (the gate's confirm run,
+                  2026-11-12: "1 Corinthians" and twelve more ended in an
+                  ellipsis beside Listen). When it and the controls do not
+                  fit on one line, the controls go down a line and the card
+                  grows with it (--reader-dock-card-h, measured below). */}
+              <div ref={chapterRowRef} className="mt-1.5 flex min-h-8 shrink-0 flex-wrap items-center justify-between gap-x-2 font-sans text-[14px]">
+                <span className="flex min-w-0 max-w-full items-center">
                   <DockArrow target={prev} label={prevLabel} back />
                   <button
                     type="button"
                     aria-haspopup="dialog"
                     onClick={onPick}
                     aria-label={pickLabel}
-                    className="tap-press hit-44 flex h-8 min-w-0 items-center px-1 font-semibold text-paper"
+                    className="tap-press hit-44 flex min-h-8 min-w-0 items-center px-1 text-start font-semibold leading-tight text-paper"
                   >
-                    {/* A long name gives way before the chapter's number does. */}
-                    <span className="truncate">{bookName}</span>
+                    <span className="min-w-0 [overflow-wrap:anywhere]">{bookName}</span>
                     <span className="ms-1 shrink-0 tabular-nums">{chapter}</span>
                   </button>
                   <DockArrow target={next} label={nextLabel} back={false} />
                 </span>
+                <span className="ms-auto flex shrink-0 items-center gap-2">
                 {listenHere ? (
                   <button
                     type="button"
@@ -285,6 +313,7 @@ export function ReaderDock({
                     </span>
                   ) : null}
                 </button>
+                </span>
               </div>
             </div>
 
@@ -333,9 +362,10 @@ export function ReaderDock({
             aria-haspopup="dialog"
             onClick={onPick}
             aria-label={pickLabel}
-            className="reader-dock-title tap-press hit-44 pointer-events-auto flex h-10 min-w-0 items-center gap-1.5 rounded-pill px-3.5 font-sans text-[15px] font-semibold"
+            className="reader-dock-title tap-press hit-44 pointer-events-auto flex min-h-10 min-w-0 items-center gap-1.5 rounded-pill px-3.5 py-1 text-center font-sans text-[15px] font-semibold leading-tight"
           >
-            <span className="truncate">{bookName}</span>
+            {/* Shown whole: a long name takes a second line (the gate's confirm run, 2026-11-12). */}
+            <span className="min-w-0 [overflow-wrap:anywhere]">{bookName}</span>
             <span className="shrink-0 tabular-nums">{chapter}</span>
             <ChevronDown size={14} className="shrink-0 text-paper/60" />
           </button>

@@ -102,8 +102,8 @@ describe("the dock", () => {
 });
 
 describe("the dock's drawing (app/globals.css)", () => {
-  it("is a card of 112px at rest, which draws in to a pill of 52px while the reader reads on and in focus mode", () => {
-    expect(rule(".reader-dock")).toContain("height: 112px;");
+  it("is a card of 112px at rest (taller when a long name sends the chapter's controls down a line), which draws in to a pill of 52px while the reader reads on and in focus mode", () => {
+    expect(rule(".reader-dock")).toContain("height: var(--reader-dock-card-h, 112px);");
     const drawn = rule("body[data-reader-away] .reader-dock,\nhtml.reader-focus .reader-dock");
     expect(drawn).toContain("width: var(--reader-dock-pill-w, 10rem);");
     expect(drawn).toContain("height: 52px;");
@@ -118,9 +118,9 @@ describe("the dock's drawing (app/globals.css)", () => {
     expect(rule("body[data-reader-away] [data-dock-title]")).toContain("visibility: visible;");
   });
 
-  it("keeps the card's room at the reader's foot: the card's 112px less the pill's 56px", () => {
+  it("keeps the card's room at the reader's foot: the card's height (112px at rest) less the pill's 56px", () => {
     expect(PILL).toContain('"flex h-14 min-w-0');
-    expect(rule("html.has-reader-dock")).toContain("--reader-dock-room: 56px;");
+    expect(rule("html.has-reader-dock")).toContain("--reader-dock-room: calc(var(--reader-dock-card-h, 112px) - 56px);");
     expect(rule("html.is-native .safe-pb-reader")).toContain("var(--reader-dock-room, 0px)");
   });
 
