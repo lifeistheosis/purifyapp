@@ -2727,6 +2727,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "The arbiter's word, two faults named in 13bj. c7781e055, a8610c746. PLAN 13bk."
+  },
+  {
+   "id": "e-confirm-run-updates",
+   "section": "Design",
+   "kind": "bug",
+   "title": "The confirm run, Updates' five families: the councils' kickers, the Bible's chapter picker (dock and pill), the shelves' minutes, the Thread map's corner names, an edition's dashes",
+   "from": "claude",
+   "asked": "2026-11-12",
+   "status": "built",
+   "decided": "2026-11-12",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The arbiter's word of 09:31 UTC. 9da09ccb4, f3bce4250, 89aad6c2c, bc733a899, 5a5d9e147, cb95173bf, 7482c1254, 164e7527a, 1d25c1a1d. PLAN 13bl."
   }
  ]
 }
