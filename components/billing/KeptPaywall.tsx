@@ -109,7 +109,10 @@ export function KeptHero({
       <ScribePicture className={sheet ? "h-[196px]" : "h-[min(36svh,288px)]"} />
       <div className={cn("relative -mt-[88px] px-5", !sheet && "mx-auto max-w-[520px] sm:px-6")}>
         {eyebrow ? (
-          <p className="paywall-in font-sans text-caption font-semibold text-paper/70 [text-shadow:0_1px_8px_rgba(0,0,0,0.6)]" style={{ animationDelay: "80ms" }}>
+          // Over the scribe's foot: at 70 percent of the ink "Purify Plus" read 4.47:1 on
+          // Candlelight there (the gate's final run, 2026-11-12); at 75 it is 4.85:1 at its least
+          // on the five palettes and the seventeen looks.
+          <p className="paywall-in font-sans text-caption font-semibold text-paper/75 [text-shadow:0_1px_8px_rgba(0,0,0,0.6)]" style={{ animationDelay: "80ms" }}>
             {eyebrow}
           </p>
         ) : null}
