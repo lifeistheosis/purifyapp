@@ -6589,7 +6589,12 @@ await section(44, async () => {
     const top = Number((first?.title ?? "").split(",")[1]);
     must(Number.isFinite(top) && top <= 80, `${label}: "Search" stands at the top of the screen, not over the field (${Number.isFinite(top) ? `${top}px down` : "no title"})`);
     must(up.length > 0 && Math.abs(foot(up.at(-1)) - up.at(-1).visible) <= 1 && frames.at(-1)?.visible === TALL, `${label}: the keyboard came up after the screen did, the field on it, and went (${up.length ? `field ends at ${foot(up.at(-1))} on a keyboard from ${up.at(-1).visible}` : "never came"}; ${frames.at(-1)?.visible ?? "?"} at the end)`);
-    const moved = frames.flatMap((f) => PARTS.filter((k) => f[k] !== first[k]).map((k) => `${k} ${first[k]} to ${f[k]} at +${f.t - first.t}ms`));
+    // The day's room may grow at its foot as its rows come in: a name is shown whole, and one of more
+    // than one line makes its row taller (components/search/SearchRows.tsx, DayLine; the gate's
+    // confirm run, 2026-11-12). It is the last thing on the screen, so nothing moves for it; where it
+    // stands, and how wide, holds.
+    const held = (k, f) => (k === "day" ? (f[k] ?? "").split(",").slice(0, 3).join(",") : f[k]);
+    const moved = frames.flatMap((f) => PARTS.filter((k) => held(k, f) !== held(k, first)).map((k) => `${k} ${first[k]} to ${f[k]} at +${f.t - first.t}ms`));
     must(moved.length === 0, `${label}: and nothing on it moves from its first frame while the keyboard comes and goes (${moved.slice(0, 3).join("; ") || `${frames.length} frames, every box held`})`);
   };
   // The place's own day (r3-31 B): under its own line, with rows that hold

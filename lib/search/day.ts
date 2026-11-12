@@ -16,8 +16,10 @@
 // searched nothing yet (his note 83 of build 86, sheet r3-31). The day comes
 // with the calendar on the search's first opening, a moment after the
 // screen, so each place holds the room its rows will take from the first
-// frame: a row is one line high and a place shows no more than its slots,
-// and nothing on the screen moves as the day arrives.
+// frame: a row of one line of name, and a place shows no more than its
+// slots, and nothing on the screen moves as the day arrives. A name is shown
+// whole (2026-11-12): a longer one makes its row and the room taller at
+// their foot, the last thing on the screen, so nothing moves for it.
 //
 // Pure: the screen reads the day (components/search/SearchDay.tsx) and this
 // chooses what each place shows of it. lib/search/__tests__/day.test.ts.
@@ -26,7 +28,7 @@ import type { Commemoration, ReadingRef } from "@/lib/calendar/orthodox";
 
 import type { DoorId } from "./places";
 
-/** A row of the day, one line of name and one of what it is, at a fixed height. */
+/** A row of the day with one line of name and one of what it is; a longer name makes its row taller. */
 export const DAY_ROW_PX = 58;
 
 /** How many rows each place holds room for: the most it ever shows. */

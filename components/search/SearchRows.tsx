@@ -302,8 +302,15 @@ export function WordRow({
 
 /**
  * A row of the day (1.8, r3-31 B): what the place offers today, by its face
- * or its glyph, its name and what it is, one line each, at one height
- * (DAY_ROW_PX), so the room its place holds is the room it takes.
+ * or its glyph, its name and what it is, at one height (DAY_ROW_PX) for a
+ * name of one line, so the room its place holds is the room it takes.
+ *
+ * A name is shown whole (the gate's confirm run, 2026-11-12: "St. John the
+ * Merciful, Patriarch of Alexandria" ended in an ellipsis on the Search
+ * sheet). The name takes the lines it needs and its row grows with it; of
+ * every name the day shows on any day of the calendar, the most lines is
+ * four, November 2's Martyrs Acindynus and those with him at 320 wide. The
+ * line under it, what it is, stays one line.
  */
 export function DayLine({
   glyph,
@@ -324,12 +331,12 @@ export function DayLine({
       type="button"
       onClick={onOpen}
       data-search-day-row=""
-      className="search-row flex w-full items-center gap-3 rounded-[14px] px-1.5 text-start"
-      style={{ height: DAY_ROW_PX }}
+      className="search-row flex w-full items-center gap-3 rounded-[14px] px-1.5 py-[7px] text-start"
+      style={{ minHeight: DAY_ROW_PX }}
     >
       {face ? <Face src={face.src} name={face.name} size={30} /> : <Plate glyph={glyph} />}
       <span className="min-w-0 flex-1">
-        <span className="block truncate font-serif text-[15px] font-semibold leading-[1.25] text-paper/92">{title}</span>
+        <span className="block break-words font-serif text-[15px] font-semibold leading-[1.25] text-paper/92">{title}</span>
         {sub ? <span className="mt-[3px] block truncate font-sans text-caption leading-[1.4] text-paper/52">{sub}</span> : null}
       </span>
       <ChevronRight size={13} className="shrink-0 text-paper/30 rtl:-scale-x-100" />
@@ -350,7 +357,8 @@ export function DayBlock({ eyebrow, slots, children }: { eyebrow: string; slots:
     <div data-search-day="" className="px-5 pt-[22px]">
       <div className={shown ? "search-in" : "invisible"} aria-hidden={shown ? undefined : true}>
         <Eyebrow label={eyebrow} className="mb-1" />
-        <div style={{ height: slots * DAY_ROW_PX }}>{children}</div>
+        {/* At least the room of its rows at one line each; a name of more than one line makes it taller (the block is the last thing on the screen, so nothing under it moves). */}
+        <div style={{ minHeight: slots * DAY_ROW_PX }}>{children}</div>
       </div>
     </div>
   );

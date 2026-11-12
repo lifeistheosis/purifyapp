@@ -58,14 +58,19 @@ describe("the room each place holds", () => {
     }
   });
 
-  it("is the room the rows take: one height per row, the block as tall as its slots", () => {
+  it("is the room the rows take: a row at least one height, the block at least as tall as its slots, a name whole", () => {
     const rows = code("components/search/SearchRows.tsx");
     const line = rows.slice(rows.indexOf("export function DayLine"), rows.indexOf("export function DayBlock"));
-    expect(line).toContain("style={{ height: DAY_ROW_PX }}");
-    // One line of name and one of what it is, never wrapping into a taller row.
-    expect(line.match(/block truncate/g)).toHaveLength(2);
+    expect(line).toContain("style={{ minHeight: DAY_ROW_PX }}");
+    // A name is shown whole: it takes the lines it needs and its row grows (the gate's confirm run,
+    // 2026-11-12: "St. John the Merciful, Patriarch of Alexandria" ended in an ellipsis). What it is
+    // stays one line.
+    const title = /<span className="([^"]*)">\{title\}<\/span>/.exec(line)?.[1] ?? "";
+    expect(title).toContain("break-words");
+    expect(title).not.toContain("truncate");
+    expect(line.match(/block truncate/g)).toHaveLength(1);
     const block = rows.slice(rows.indexOf("export function DayBlock"), rows.indexOf("export function EmptyLine"));
-    expect(block).toContain("style={{ height: slots * DAY_ROW_PX }}");
+    expect(block).toContain("style={{ minHeight: slots * DAY_ROW_PX }}");
     // Before the day is here the block keeps its size, unseen.
     expect(block).toContain('className={shown ? "search-in" : "invisible"}');
     expect(DAY_ROW_PX).toBe(58);
