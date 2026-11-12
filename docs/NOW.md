@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state; the log is the release's HANDOFF.md. How the chats run: `docs/OPERATIONS.md`.
 
-Updated 2026-11-12, 21:31 UTC.
+Updated 2026-11-12, 21:57 UTC.
 
 ## 1.9: in flight
 
@@ -15,6 +15,7 @@ Updated 2026-11-12, 21:31 UTC.
 
 ## Waiting on him
 
+- His four answers on the owner's desk plan (`docs/plans/owner-desk.md`, last section): the data-built emails sending themselves unless held, the brief's hour, a shop and sourcing chat, and who builds the design kit.
 - Walk the test build once it is cut. Then: accept the 1.9 note in Admin, set the drop day, and submit both builds after the phone walks. On release day: the Purify profile's status, and opening campaigns.
 - The company: C0 (the address on the D-U-N-S record) and C0b (the papers). Send the company's exact name as the EIN letter has it. All in OWNER-STEPS.md.
 - The Company guide waits on two facts: how many owners the LLC has, and how it is taxed. Also: is the EIKON shop registered for Florida sales tax (C3b)? Register the EIKON trade name before Stripe shows it.
@@ -23,6 +24,7 @@ Updated 2026-11-12, 21:31 UTC.
 
 ## After 1.9 ships
 
+- The owner's desk and the Purify look (`docs/plans/owner-desk.md`): the quiet board first (Admin panel 2, with the money chart), then the design kit, the owner's brief, the recurring sends and the reader emails' second edition.
 - Every chat rotates (OPERATIONS section 2), the arbiter included.
 - The store accounts move to the LLC: Apple and Google (OWNER-STEPS C1 and C2), then C3 to C5.
 - 1.9.1: campaign pictures and their legal steps.
