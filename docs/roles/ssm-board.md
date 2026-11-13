@@ -12,3 +12,5 @@
 - The drop day, and every send: those are his.
 - Designs, cards and adverts: Fable's, by his word of 2026-11-12.
 - App code and store builds.
+
+**Design:** anything made for people to look at (a page, a report, a brief, an email, a chart) starts from the Purify design kit: `docs/brand/design-kit.md`.

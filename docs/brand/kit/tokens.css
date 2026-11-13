@@ -1,0 +1,168 @@
+/* The Purify design kit: tokens.
+ *
+ * Taken from the app, nothing invented. Every value names the line of the
+ * app's source it comes from (line numbers as of fe399ca23). When the app
+ * changes a value, change it here and run `node docs/brand/kit/check.mjs`.
+ *
+ * The five palettes are the app's own (scripts/mock-check.mjs PALETTES):
+ *   Dark         no attribute          app/globals.css 81-82, 90, 106-107, and the ink of :root
+ *   Light        data-reading-mode="parchment"   app/globals.css 5164-5180
+ *   Black        data-reading-mode="black"       app/globals.css 5147-5154
+ *   Candlelight  data-reading-mode="candlelight" app/globals.css 5029-5037, 5217
+ *   Monastery    data-reading-mode="monastery"   app/globals.css 5107-5112, 5220
+ *
+ * A page that is not inside the app (an artifact, a report) follows the
+ * reader's system: Dark by default, Light when the system is light, and
+ * data-theme="light" or "dark" on <html> when someone chooses.
+ *
+ * Names: the app calls the ground "night" and the ink "paper" because they
+ * flip on Light. The kit names them by their job (ground, ink) so nobody
+ * has to remember the flip.
+ */
+
+:root {
+  /* ── Dark (the app's default) ─────────────────────────────────────── */
+  --k-ground: #101013;      /* --color-night, globals.css 81 */
+  --k-card: #1d1d20;        /* --color-night-soft, globals.css 82 */
+  --k-well: #0b0b0e;        /* --color-night-deep, globals.css 90 */
+  --k-ink-base: #ffffff;    /* --color-paper, globals.css 71 (the ink on dark) */
+  --k-accent: #eaeaec;      /* --color-gold, globals.css 106: a glowing white, never gold (lib/ui/goldTone.ts) */
+  --k-accent-soft: #cfcfd3; /* --color-gold-soft, globals.css 107 */
+  /* The ink's shares, as the app writes them (text-paper/NN) and as each
+     palette lifts its faint share to pass 4.5:1 (globals.css 5539-5553). */
+  --k-ink-2-share: 75%;     /* text-paper/75, 186 uses in app/ and components/ */
+  --k-ink-3-share: 55%;     /* text-paper/55, the most used share (720 uses) */
+
+  /* ── Type (globals.css 161-191; app/layout.tsx 31-48) ─────────────── */
+  --k-font-sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;      /* --font-sans, 161 */
+  --k-font-serif: "Lora", Georgia, serif;                                             /* --font-serif and --font-heading, 165 and 175 */
+  --k-font-display: "DM Serif Display", Georgia, serif;                               /* --font-display-serif, 169 */
+  --k-text-eyebrow: 11px;   /* 180 */
+  --k-text-caption: 12px;   /* 181 */
+  --k-text-detail: 13px;    /* 182 */
+  --k-text-ui: 14px;        /* 183 */
+  --k-text-body: 17px;      /* 184 */
+  --k-text-lede: 19px;      /* 185 */
+  --k-text-title-sm: 22px;  /* 186 */
+  --k-text-title: 28px;     /* 187 */
+  --k-text-heading: 32px;   /* 188 */
+  --k-text-display: 48px;   /* 190 */
+  --k-eyebrow-tracking: 0.14em; /* the app's eyebrow: uppercase, bold, tracking-[0.14em] (components/, 4 uses) */
+
+  /* ── Shape and space (globals.css 193-198; Tailwind's 4px step) ──── */
+  --k-radius-sm: 8px;       /* 193 */
+  --k-radius-md: 12px;      /* 194 */
+  --k-radius-lg: 20px;      /* 195: a card, rounded-lg (26 uses with border-paper/10 bg-night-soft) */
+  --k-radius-card: 28px;    /* 196 */
+  --k-radius-pill: 999px;   /* 198: buttons only, never a list of places (CLAUDE.md, floating pills) */
+  --k-space-1: 4px;
+  --k-space-2: 8px;
+  --k-space-3: 12px;
+  --k-space-4: 16px;        /* the phone gutter */
+  --k-space-5: 24px;
+  --k-space-6: 32px;
+  --k-space-7: 48px;
+  --k-space-8: 64px;
+  --k-target: 44px;         /* every control, lib/ui/__tests__/touchTargets.test.ts */
+  --k-measure: 68ch;        /* a reading line */
+
+  /* ── Motion (globals.css 235-241) ─────────────────────────────────── */
+  --k-ease-house: cubic-bezier(0.22, 1, 0.36, 1); /* the house curve, 235 */
+  --k-duration-fast: 200ms; /* 239 */
+  --k-duration-base: 320ms; /* 240 */
+  --k-duration-slow: 480ms; /* 241 */
+  --k-rise: 8px;            /* --rise-card, 271 */
+  --k-press: 0.98;          /* --press-scale-card, 277 */
+
+  /* ── Fixed on every palette ───────────────────────────────────────── */
+  --k-crimson: #c1272d;     /* --color-crimson, 113: the Church's red (the strict fast, a removal, an error), one red everywhere */
+
+  /* ── Money: the one chart with hues (app/admin/admin-theme.css 226-228 dark, 824-826 light) ── */
+  --k-money-shop: #3987e5;
+  --k-money-plus: #008300;
+  --k-money-box: #d55181;
+
+  color-scheme: dark;
+}
+
+/* ── Light (Parchment) ─────────────────────────────────────────────── */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]):not([data-reading-mode]) {
+    --k-ground: #f1e8d4;      /* globals.css 5164 */
+    --k-card: #e7dcc1;        /* 5165 */
+    --k-well: #e6dcc4;        /* 5178 */
+    --k-ink-base: #2b2317;    /* 5166 */
+    --k-accent: #45454b;      /* 5170: ink greys, never brown or yellow */
+    --k-accent-soft: #55555b; /* 5171 */
+    --k-ink-2-share: 85%;     /* text-paper/85 */
+    --k-ink-3-share: 70%;     /* Light's faint share, globals.css 5543 */
+    --k-money-shop: #2a78d6;  /* admin-theme.css 824 */
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"],
+:root[data-reading-mode="parchment"] {
+  --k-ground: #f1e8d4;
+  --k-card: #e7dcc1;
+  --k-well: #e6dcc4;
+  --k-ink-base: #2b2317;
+  --k-accent: #45454b;
+  --k-accent-soft: #55555b;
+  --k-ink-2-share: 85%;
+  --k-ink-3-share: 70%;
+  --k-money-shop: #2a78d6;
+  color-scheme: light;
+}
+
+/* ── Black (True black, globals.css 5147-5154; faint share 5500) ──── */
+:root[data-reading-mode="black"] {
+  --k-ground: #000000;
+  --k-card: #161616;
+  --k-well: #000000;
+  --k-ink-base: #ffffff;
+  --k-accent: #eaeaec;
+  --k-accent-soft: #cfcfd3;
+  --k-ink-2-share: 75%;
+  --k-ink-3-share: 55%;
+  color-scheme: dark;
+}
+
+/* ── Candlelight (globals.css 5029-5037, well 5217; faint share 5546) ── */
+:root[data-reading-mode="candlelight"] {
+  --k-ground: #050505;
+  --k-card: #18181b;
+  --k-well: #000000;
+  --k-ink-base: #d4d4d8;
+  --k-accent: #e4e4e7;
+  --k-accent-soft: #a1a1aa;
+  --k-ink-2-share: 80%;
+  --k-ink-3-share: 60%;
+  color-scheme: dark;
+}
+
+/* ── Monastery (globals.css 5107-5112, well 5220; faint share 5549) ── */
+:root[data-reading-mode="monastery"] {
+  --k-ground: #0d1119;
+  --k-card: #171e2b;
+  --k-well: #080b11;
+  --k-ink-base: #e6ebf4;
+  --k-accent: #aebedd;
+  --k-accent-soft: #8fa2c4;
+  --k-ink-2-share: 75%;
+  --k-ink-3-share: 55%;
+  color-scheme: dark;
+}
+
+/* Derived on every palette, the way the app derives them: the ink at a
+   share (text-paper/NN) and the hairlines in the ink (border-paper/10 for a
+   card, 249 uses; border-paper/20 for a control, 102 uses). */
+:root,
+:root[data-theme],
+:root[data-reading-mode] {
+  --k-ink: var(--k-ink-base);
+  --k-ink-2: color-mix(in oklab, var(--k-ink-base) var(--k-ink-2-share), transparent);
+  --k-ink-3: color-mix(in oklab, var(--k-ink-base) var(--k-ink-3-share), transparent);
+  --k-line: color-mix(in oklab, var(--k-ink-base) 10%, transparent);
+  --k-line-strong: color-mix(in oklab, var(--k-ink-base) 20%, transparent);
+  --k-grid: color-mix(in oklab, var(--k-ink-base) 8%, transparent);  /* --chart-grid, globals.css 150 */
+}

@@ -12,3 +12,5 @@
 - Invents a rule or a figure.
 
 **Tells the arbiter:** anything that touches the release, the store accounts, Stripe or the money flows.
+
+**Design:** anything made for people to look at (a page, a report, a brief, an email, a chart) starts from the Purify design kit: `docs/brand/design-kit.md`.

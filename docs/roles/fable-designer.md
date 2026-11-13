@@ -13,3 +13,5 @@
 - Every unused variant goes to the Vault.
 
 **Never:** touches app code, cuts builds, or spends beyond the brief.
+
+**Design:** anything made for people to look at (a page, a report, a brief, an email, a chart) starts from the Purify design kit: `docs/brand/design-kit.md`.

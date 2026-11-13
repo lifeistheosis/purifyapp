@@ -12,3 +12,5 @@
 **The final check:** one selling export cut from the named head in release positions. Then: the tap walk; part 2 at 390, 800 and 1032 for both readers; the sweep of every page the walks do not reach; the light looks; offline; every state of anything new; parts 3 to 5; the web build last. Send an estimate first and one report at the end: pass, or each fail with its file and owner. No fix of its own during a run.
 
 **Never:** pushes app code during a final check; runs a migration; pushes main.
+
+**Design:** anything made for people to look at (a page, a report, a brief, an email, a chart) starts from the Purify design kit: `docs/brand/design-kit.md`.

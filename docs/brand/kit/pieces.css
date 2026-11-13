@@ -1,0 +1,299 @@
+/* The Purify design kit: pieces for documents.
+ *
+ * Built only from tokens.css, the way the app builds its own screens. The
+ * guardrails of CLAUDE.md hold: no light rays, no side stripes (a note
+ * stands on its own type), no sparkle star, pills only for buttons, every
+ * control 44px, contrast on all five palettes, logical sides (start and
+ * end) so Arabic mirrors, and no em dashes in the words.
+ */
+
+/* ── The page ──────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background-color: var(--k-ground);
+  color: var(--k-ink);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-text-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.k-page {
+  max-width: 760px;
+  margin-inline: auto;
+  padding: var(--k-space-7) var(--k-space-4) var(--k-space-8);
+}
+
+.k-page p { margin-block: 0 var(--k-space-4); max-width: var(--k-measure); }
+
+.k-page a { color: var(--k-ink); text-decoration-color: var(--k-ink-3); text-underline-offset: 3px; }
+
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--k-ink) 70%, transparent); /* globals.css 3337: the ring in the page's own ink, never red */
+  outline-offset: 2px;
+}
+
+/* ── Title ─────────────────────────────────────────────────────────── */
+.k-title { margin-block-end: var(--k-space-7); }
+
+.k-mark { display: block; color: var(--k-accent); margin-block-end: var(--k-space-5); }
+
+.k-eyebrow {
+  display: block;
+  margin: 0 0 var(--k-space-2);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-text-eyebrow);
+  font-weight: 700;
+  letter-spacing: var(--k-eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--k-ink-3);
+}
+
+.k-title h1 {
+  margin: 0 0 var(--k-space-3);
+  font-family: var(--k-font-serif);
+  font-weight: 700;
+  font-size: clamp(var(--k-text-heading), 6vw, var(--k-text-display));
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  color: var(--k-ink);
+  text-wrap: balance;
+}
+
+.k-lede {
+  margin: 0;
+  font-size: var(--k-text-lede);
+  line-height: 1.5;
+  color: var(--k-ink-2);
+  max-width: var(--k-measure);
+}
+
+.k-meta { margin-block-start: var(--k-space-4); font-size: var(--k-text-detail); color: var(--k-ink-3); }
+
+/* ── Section ───────────────────────────────────────────────────────── */
+.k-section { margin-block: var(--k-space-7); }
+
+.k-section > h2 {
+  margin: 0 0 var(--k-space-4);
+  font-family: var(--k-font-serif);
+  font-weight: 700;
+  font-size: var(--k-text-title);
+  line-height: 1.2;
+  color: var(--k-ink);
+}
+
+.k-section h3 {
+  margin: var(--k-space-6) 0 var(--k-space-3);
+  font-family: var(--k-font-serif);
+  font-weight: 700;
+  font-size: var(--k-text-title-sm);
+  line-height: 1.25;
+  color: var(--k-ink);
+}
+
+/* A divider between sections: a full-width hairline, top only, never down an edge. */
+.k-rule { height: 0; margin-block: var(--k-space-7); border: 0; border-block-start: 1px solid var(--k-line); }
+
+/* ── Figures (a headline number, not a chart) ──────────────────────── */
+.k-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--k-space-3);
+  margin-block: var(--k-space-5);
+}
+
+.k-stat {
+  padding: var(--k-space-4);
+  border-radius: var(--k-radius-lg);
+  background-color: var(--k-card);
+  border: 1px solid var(--k-line);
+}
+
+.k-stat-value {
+  display: block;
+  font-family: var(--k-font-serif);
+  font-weight: 700;
+  font-size: var(--k-text-title);
+  line-height: 1.1;
+  color: var(--k-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.k-stat-label { display: block; margin-block-start: var(--k-space-1); font-size: var(--k-text-detail); color: var(--k-ink-3); }
+
+.k-stat-change { display: block; margin-block-start: var(--k-space-2); font-size: var(--k-text-caption); color: var(--k-ink-2); }
+
+/* ── Table ─────────────────────────────────────────────────────────── */
+.k-table-wrap { overflow-x: auto; margin-block: var(--k-space-5); }
+
+.k-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--k-text-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.k-table caption {
+  caption-side: top;
+  text-align: start;
+  padding-block-end: var(--k-space-3);
+  font-size: var(--k-text-detail);
+  color: var(--k-ink-3);
+}
+
+.k-table th {
+  text-align: start;
+  padding: var(--k-space-2) var(--k-space-3);
+  font-size: var(--k-text-eyebrow);
+  font-weight: 700;
+  letter-spacing: var(--k-eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--k-ink-3);
+  border-block-end: 1px solid var(--k-line-strong);
+}
+
+.k-table td {
+  padding: var(--k-space-3);
+  color: var(--k-ink);
+  border-block-end: 1px solid var(--k-line);
+}
+
+.k-table td.k-num,
+.k-table th.k-num { text-align: end; }
+
+.k-table td.k-quiet { color: var(--k-ink-2); }
+
+/* ── Chart ─────────────────────────────────────────────────────────── */
+/* The app's own method (components/admin/charts.tsx): one ink, a recessive
+   grid, the period before as a dashed line, a legend for two series or
+   more, a table of the figures beside it. Hues only for money's sources. */
+.k-chart { margin: var(--k-space-5) 0; }
+
+.k-chart svg { display: block; width: 100%; max-width: 560px; height: auto; overflow: visible; color: var(--k-ink); }
+
+.k-chart .k-grid { stroke: var(--k-grid); stroke-width: 1; }
+
+.k-chart .k-axis { fill: var(--k-ink-3); font-family: var(--k-font-sans); font-size: 14px; }
+
+.k-chart .k-bar { fill: var(--k-ink); }
+
+.k-chart .k-bar-quiet { fill: var(--k-ink-3); }
+
+.k-chart .k-before { fill: none; stroke: var(--k-ink-3); stroke-width: 2; stroke-dasharray: 7 4.5; stroke-linecap: round; } /* SERIES_DASH[1], charts.tsx 83 */
+
+.k-chart .k-label { fill: var(--k-ink); font-family: var(--k-font-sans); font-size: 14px; font-weight: 600; }
+
+.k-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-space-2) var(--k-space-5);
+  margin: 0 0 var(--k-space-3);
+  padding: 0;
+  list-style: none;
+  font-size: var(--k-text-detail);
+  color: var(--k-ink-2);
+}
+
+.k-legend li { display: inline-flex; align-items: center; gap: var(--k-space-2); }
+
+.k-key { display: inline-block; width: 12px; height: 12px; border-radius: 3px; background-color: var(--k-ink); }
+.k-key-line { width: 18px; height: 0; border-radius: 0; background: none; border-block-start: 2px dashed var(--k-ink-3); }
+.k-key-shop { background-color: var(--k-money-shop); }
+.k-key-plus { background-color: var(--k-money-plus); }
+.k-key-box { background-color: var(--k-money-box); }
+
+.k-chart .k-shop { fill: var(--k-money-shop); }
+.k-chart .k-plus { fill: var(--k-money-plus); }
+.k-chart .k-box { fill: var(--k-money-box); }
+
+/* ── Figure ────────────────────────────────────────────────────────── */
+.k-figure { margin: var(--k-space-6) 0; }
+
+.k-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--k-radius-lg);
+  background-color: var(--k-well);
+}
+
+.k-figure figcaption { margin-block-start: var(--k-space-3); font-size: var(--k-text-detail); color: var(--k-ink-3); max-width: var(--k-measure); }
+
+/* ── Note ──────────────────────────────────────────────────────────── */
+/* It stands on its own type: a label and the serif, set in from the
+   reading line. No rule beside it, no stripe, no box (CLAUDE.md). */
+.k-note { margin: var(--k-space-6) 0; padding-inline: var(--k-space-5); max-width: var(--k-measure); }
+
+.k-note p {
+  margin: 0;
+  font-family: var(--k-font-serif);
+  font-style: italic;
+  font-size: var(--k-text-lede);
+  line-height: 1.5;
+  color: var(--k-ink-2);
+}
+
+.k-note cite { display: block; margin-block-start: var(--k-space-2); font-style: normal; font-size: var(--k-text-detail); color: var(--k-ink-3); }
+
+/* ── Card ──────────────────────────────────────────────────────────── */
+/* The app's card: rounded-lg, border-paper/10, bg-night-soft. */
+.k-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--k-space-3); margin-block: var(--k-space-5); }
+
+.k-card {
+  padding: var(--k-space-5);
+  border-radius: var(--k-radius-lg);
+  background-color: var(--k-card);
+  border: 1px solid var(--k-line);
+}
+
+.k-card h3 { margin: 0 0 var(--k-space-2); font-family: var(--k-font-serif); font-weight: 700; font-size: var(--k-text-title-sm); line-height: 1.25; color: var(--k-ink); }
+
+.k-card p { margin: 0; font-size: var(--k-text-ui); line-height: 1.55; color: var(--k-ink-2); }
+
+/* ── Button ────────────────────────────────────────────────────────── */
+/* The app's primary: rounded-pill bg-paper text-night text-ui font-semibold
+   (82 uses). The secondary: the ink on the ground, inside a control's hairline. */
+.k-actions { display: flex; flex-wrap: wrap; gap: var(--k-space-3); margin-block: var(--k-space-5); }
+
+.k-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--k-target);
+  min-width: var(--k-target);
+  padding: 0 var(--k-space-6);
+  border-radius: var(--k-radius-pill);
+  border: 1px solid transparent;
+  background-color: var(--k-ink);
+  color: var(--k-ground);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-text-ui);
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--k-duration-fast) var(--k-ease-house), transform var(--k-duration-fast) var(--k-ease-house);
+}
+
+.k-page a.k-button { color: var(--k-ground); }
+
+.k-button:active { transform: scale(var(--k-press)); }
+
+.k-button-quiet { background-color: transparent; color: var(--k-ink); border-color: var(--k-line-strong); }
+
+.k-page a.k-button-quiet { color: var(--k-ink); }
+
+/* ── Arriving: the house's rise, still with reduced motion ─────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .k-rise { animation: k-rise var(--k-duration-base) var(--k-ease-house) both; }
+  @keyframes k-rise { from { opacity: 0; transform: translateY(var(--k-rise)); } }
+}
+
+/* ── The footer ────────────────────────────────────────────────────── */
+.k-foot { margin-block-start: var(--k-space-8); padding-block-start: var(--k-space-5); border-block-start: 1px solid var(--k-line); font-size: var(--k-text-detail); color: var(--k-ink-3); }

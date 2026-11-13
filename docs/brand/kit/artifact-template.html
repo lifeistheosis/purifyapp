@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Purify artifact page</title>
+<meta name="description" content="The Purify design kit's page template: every piece a report or an artifact is made of, in the app's own look.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* kit:begin. Written by `node docs/brand/kit/check.mjs --write` from tokens.css and pieces.css; edit those, not this. */
+/* The Purify design kit: tokens.
+ *
+ * Taken from the app, nothing invented. Every value names the line of the
+ * app's source it comes from (line numbers as of fe399ca23). When the app
+ * changes a value, change it here and run `node docs/brand/kit/check.mjs`.
+ *
+ * The five palettes are the app's own (scripts/mock-check.mjs PALETTES):
+ *   Dark         no attribute          app/globals.css 81-82, 90, 106-107, and the ink of :root
+ *   Light        data-reading-mode="parchment"   app/globals.css 5164-5180
+ *   Black        data-reading-mode="black"       app/globals.css 5147-5154
+ *   Candlelight  data-reading-mode="candlelight" app/globals.css 5029-5037, 5217
+ *   Monastery    data-reading-mode="monastery"   app/globals.css 5107-5112, 5220
+ *
+ * A page that is not inside the app (an artifact, a report) follows the
+ * reader's system: Dark by default, Light when the system is light, and
+ * data-theme="light" or "dark" on <html> when someone chooses.
+ *
+ * Names: the app calls the ground "night" and the ink "paper" because they
+ * flip on Light. The kit names them by their job (ground, ink) so nobody
+ * has to remember the flip.
+ */
+
+:root {
+  /* ── Dark (the app's default) ─────────────────────────────────────── */
+  --k-ground: #101013;      /* --color-night, globals.css 81 */
+  --k-card: #1d1d20;        /* --color-night-soft, globals.css 82 */
+  --k-well: #0b0b0e;        /* --color-night-deep, globals.css 90 */
+  --k-ink-base: #ffffff;    /* --color-paper, globals.css 71 (the ink on dark) */
+  --k-accent: #eaeaec;      /* --color-gold, globals.css 106: a glowing white, never gold (lib/ui/goldTone.ts) */
+  --k-accent-soft: #cfcfd3; /* --color-gold-soft, globals.css 107 */
+  /* The ink's shares, as the app writes them (text-paper/NN) and as each
+     palette lifts its faint share to pass 4.5:1 (globals.css 5539-5553). */
+  --k-ink-2-share: 75%;     /* text-paper/75, 186 uses in app/ and components/ */
+  --k-ink-3-share: 55%;     /* text-paper/55, the most used share (720 uses) */
+
+  /* ── Type (globals.css 161-191; app/layout.tsx 31-48) ─────────────── */
+  --k-font-sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;      /* --font-sans, 161 */
+  --k-font-serif: "Lora", Georgia, serif;                                             /* --font-serif and --font-heading, 165 and 175 */
+  --k-font-display: "DM Serif Display", Georgia, serif;                               /* --font-display-serif, 169 */
+  --k-text-eyebrow: 11px;   /* 180 */
+  --k-text-caption: 12px;   /* 181 */
+  --k-text-detail: 13px;    /* 182 */
+  --k-text-ui: 14px;        /* 183 */
+  --k-text-body: 17px;      /* 184 */
+  --k-text-lede: 19px;      /* 185 */
+  --k-text-title-sm: 22px;  /* 186 */
+  --k-text-title: 28px;     /* 187 */
+  --k-text-heading: 32px;   /* 188 */
+  --k-text-display: 48px;   /* 190 */
+  --k-eyebrow-tracking: 0.14em; /* the app's eyebrow: uppercase, bold, tracking-[0.14em] (components/, 4 uses) */
+
+  /* ── Shape and space (globals.css 193-198; Tailwind's 4px step) ──── */
+  --k-radius-sm: 8px;       /* 193 */
+  --k-radius-md: 12px;      /* 194 */
+  --k-radius-lg: 20px;      /* 195: a card, rounded-lg (26 uses with border-paper/10 bg-night-soft) */
+  --k-radius-card: 28px;    /* 196 */
+  --k-radius-pill: 999px;   /* 198: buttons only, never a list of places (CLAUDE.md, floating pills) */
+  --k-space-1: 4px;
+  --k-space-2: 8px;
+  --k-space-3: 12px;
+  --k-space-4: 16px;        /* the phone gutter */
+  --k-space-5: 24px;
+  --k-space-6: 32px;
+  --k-space-7: 48px;
+  --k-space-8: 64px;
+  --k-target: 44px;         /* every control, lib/ui/__tests__/touchTargets.test.ts */
+  --k-measure: 68ch;        /* a reading line */
+
+  /* ── Motion (globals.css 235-241) ─────────────────────────────────── */
+  --k-ease-house: cubic-bezier(0.22, 1, 0.36, 1); /* the house curve, 235 */
+  --k-duration-fast: 200ms; /* 239 */
+  --k-duration-base: 320ms; /* 240 */
+  --k-duration-slow: 480ms; /* 241 */
+  --k-rise: 8px;            /* --rise-card, 271 */
+  --k-press: 0.98;          /* --press-scale-card, 277 */
+
+  /* ── Fixed on every palette ───────────────────────────────────────── */
+  --k-crimson: #c1272d;     /* --color-crimson, 113: the Church's red (the strict fast, a removal, an error), one red everywhere */
+
+  /* ── Money: the one chart with hues (app/admin/admin-theme.css 226-228 dark, 824-826 light) ── */
+  --k-money-shop: #3987e5;
+  --k-money-plus: #008300;
+  --k-money-box: #d55181;
+
+  color-scheme: dark;
+}
+
+/* ── Light (Parchment) ─────────────────────────────────────────────── */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]):not([data-reading-mode]) {
+    --k-ground: #f1e8d4;      /* globals.css 5164 */
+    --k-card: #e7dcc1;        /* 5165 */
+    --k-well: #e6dcc4;        /* 5178 */
+    --k-ink-base: #2b2317;    /* 5166 */
+    --k-accent: #45454b;      /* 5170: ink greys, never brown or yellow */
+    --k-accent-soft: #55555b; /* 5171 */
+    --k-ink-2-share: 85%;     /* text-paper/85 */
+    --k-ink-3-share: 70%;     /* Light's faint share, globals.css 5543 */
+    --k-money-shop: #2a78d6;  /* admin-theme.css 824 */
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"],
+:root[data-reading-mode="parchment"] {
+  --k-ground: #f1e8d4;
+  --k-card: #e7dcc1;
+  --k-well: #e6dcc4;
+  --k-ink-base: #2b2317;
+  --k-accent: #45454b;
+  --k-accent-soft: #55555b;
+  --k-ink-2-share: 85%;
+  --k-ink-3-share: 70%;
+  --k-money-shop: #2a78d6;
+  color-scheme: light;
+}
+
+/* ── Black (True black, globals.css 5147-5154; faint share 5500) ──── */
+:root[data-reading-mode="black"] {
+  --k-ground: #000000;
+  --k-card: #161616;
+  --k-well: #000000;
+  --k-ink-base: #ffffff;
+  --k-accent: #eaeaec;
+  --k-accent-soft: #cfcfd3;
+  --k-ink-2-share: 75%;
+  --k-ink-3-share: 55%;
+  color-scheme: dark;
+}
+
+/* ── Candlelight (globals.css 5029-5037, well 5217; faint share 5546) ── */
+:root[data-reading-mode="candlelight"] {
+  --k-ground: #050505;
+  --k-card: #18181b;
+  --k-well: #000000;
+  --k-ink-base: #d4d4d8;
+  --k-accent: #e4e4e7;
+  --k-accent-soft: #a1a1aa;
+  --k-ink-2-share: 80%;
+  --k-ink-3-share: 60%;
+  color-scheme: dark;
+}
+
+/* ── Monastery (globals.css 5107-5112, well 5220; faint share 5549) ── */
+:root[data-reading-mode="monastery"] {
+  --k-ground: #0d1119;
+  --k-card: #171e2b;
+  --k-well: #080b11;
+  --k-ink-base: #e6ebf4;
+  --k-accent: #aebedd;
+  --k-accent-soft: #8fa2c4;
+  --k-ink-2-share: 75%;
+  --k-ink-3-share: 55%;
+  color-scheme: dark;
+}
+
+/* Derived on every palette, the way the app derives them: the ink at a
+   share (text-paper/NN) and the hairlines in the ink (border-paper/10 for a
+   card, 249 uses; border-paper/20 for a control, 102 uses). */
+:root,
+:root[data-theme],
+:root[data-reading-mode] {
+  --k-ink: var(--k-ink-base);
+  --k-ink-2: color-mix(in oklab, var(--k-ink-base) var(--k-ink-2-share), transparent);
+  --k-ink-3: color-mix(in oklab, var(--k-ink-base) var(--k-ink-3-share), transparent);
+  --k-line: color-mix(in oklab, var(--k-ink-base) 10%, transparent);
+  --k-line-strong: color-mix(in oklab, var(--k-ink-base) 20%, transparent);
+  --k-grid: color-mix(in oklab, var(--k-ink-base) 8%, transparent);  /* --chart-grid, globals.css 150 */
+}
+
+/* The Purify design kit: pieces for documents.
+ *
+ * Built only from tokens.css, the way the app builds its own screens. The
+ * guardrails of CLAUDE.md hold: no light rays, no side stripes (a note
+ * stands on its own type), no sparkle star, pills only for buttons, every
+ * control 44px, contrast on all five palettes, logical sides (start and
+ * end) so Arabic mirrors, and no em dashes in the words.
+ */
+
+/* ── The page ──────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background-color: var(--k-ground);
+  color: var(--k-ink);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-text-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.k-page {
+  max-width: 760px;
+  margin-inline: auto;
+  padding: var(--k-space-7) var(--k-space-4) var(--k-space-8);
+}
+
+.k-page p { margin-block: 0 var(--k-space-4); max-width: var(--k-measure); }
+
+.k-page a { color: var(--k-ink); text-decoration-color: var(--k-ink-3); text-underline-offset: 3px; }
+
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--k-ink) 70%, transparent); /* globals.css 3337: the ring in the page's own ink, never red */
+  outline-offset: 2px;
+}
+
+/* ── Title ─────────────────────────────────────────────────────────── */
+.k-title { margin-block-end: var(--k-space-7); }
+
+.k-mark { display: block; color: var(--k-accent); margin-block-end: var(--k-space-5); }
+
+.k-eyebrow {
+  display: block;
+  margin: 0 0 var(--k-space-2);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-text-eyebrow);
+  font-weight: 700;
+  letter-spacing: var(--k-eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--k-ink-3);
+}
+
+.k-title h1 {
+  margin: 0 0 var(--k-space-3);
+  font-family: var(--k-font-serif);
+  font-weight: 700;
+  font-size: clamp(var(--k-text-heading), 6vw, var(--k-text-display));
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  color: var(--k-ink);
+  text-wrap: balance;
+}
+
+.k-lede {
+  margin: 0;
+  font-size: var(--k-text-lede);
+  line-height: 1.5;
+  color: var(--k-ink-2);
+  max-width: var(--k-measure);
+}
+
+.k-meta { margin-block-start: var(--k-space-4); font-size: var(--k-text-detail); color: var(--k-ink-3); }
+
+/* ── Section ───────────────────────────────────────────────────────── */
+.k-section { margin-block: var(--k-space-7); }
+
+.k-section > h2 {
+  margin: 0 0 var(--k-space-4);
+  font-family: var(--k-font-serif);
+  font-weight: 700;
+  font-size: var(--k-text-title);
+  line-height: 1.2;
+  color: var(--k-ink);
+}
+
+.k-section h3 {
+  margin: var(--k-space-6) 0 var(--k-space-3);
+  font-family: var(--k-font-serif);
+  font-weight: 700;
+  font-size: var(--k-text-title-sm);
+  line-height: 1.25;
+  color: var(--k-ink);
+}
+
+/* A divider between sections: a full-width hairline, top only, never down an edge. */
+.k-rule { height: 0; margin-block: var(--k-space-7); border: 0; border-block-start: 1px solid var(--k-line); }
+
+/* ── Figures (a headline number, not a chart) ──────────────────────── */
+.k-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--k-space-3);
+  margin-block: var(--k-space-5);
+}
+
+.k-stat {
+  padding: var(--k-space-4);
+  border-radius: var(--k-radius-lg);
+  background-color: var(--k-card);
+  border: 1px solid var(--k-line);
+}
+
+.k-stat-value {
+  display: block;
+  font-family: var(--k-font-serif);
+  font-weight: 700;
+  font-size: var(--k-text-title);
+  line-height: 1.1;
+  color: var(--k-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.k-stat-label { display: block; margin-block-start: var(--k-space-1); font-size: var(--k-text-detail); color: var(--k-ink-3); }
+
+.k-stat-change { display: block; margin-block-start: var(--k-space-2); font-size: var(--k-text-caption); color: var(--k-ink-2); }
+
+/* ── Table ─────────────────────────────────────────────────────────── */
+.k-table-wrap { overflow-x: auto; margin-block: var(--k-space-5); }
+
+.k-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--k-text-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.k-table caption {
+  caption-side: top;
+  text-align: start;
+  padding-block-end: var(--k-space-3);
+  font-size: var(--k-text-detail);
+  color: var(--k-ink-3);
+}
+
+.k-table th {
+  text-align: start;
+  padding: var(--k-space-2) var(--k-space-3);
+  font-size: var(--k-text-eyebrow);
+  font-weight: 700;
+  letter-spacing: var(--k-eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--k-ink-3);
+  border-block-end: 1px solid var(--k-line-strong);
+}
+
+.k-table td {
+  padding: var(--k-space-3);
+  color: var(--k-ink);
+  border-block-end: 1px solid var(--k-line);
+}
+
+.k-table td.k-num,
+.k-table th.k-num { text-align: end; }
+
+.k-table td.k-quiet { color: var(--k-ink-2); }
+
+/* ── Chart ─────────────────────────────────────────────────────────── */
+/* The app's own method (components/admin/charts.tsx): one ink, a recessive
+   grid, the period before as a dashed line, a legend for two series or
+   more, a table of the figures beside it. Hues only for money's sources. */
+.k-chart { margin: var(--k-space-5) 0; }
+
+.k-chart svg { display: block; width: 100%; max-width: 560px; height: auto; overflow: visible; color: var(--k-ink); }
+
+.k-chart .k-grid { stroke: var(--k-grid); stroke-width: 1; }
+
+.k-chart .k-axis { fill: var(--k-ink-3); font-family: var(--k-font-sans); font-size: 14px; }
+
+.k-chart .k-bar { fill: var(--k-ink); }
+
+.k-chart .k-bar-quiet { fill: var(--k-ink-3); }
+
+.k-chart .k-before { fill: none; stroke: var(--k-ink-3); stroke-width: 2; stroke-dasharray: 7 4.5; stroke-linecap: round; } /* SERIES_DASH[1], charts.tsx 83 */
+
+.k-chart .k-label { fill: var(--k-ink); font-family: var(--k-font-sans); font-size: 14px; font-weight: 600; }
+
+.k-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-space-2) var(--k-space-5);
+  margin: 0 0 var(--k-space-3);
+  padding: 0;
+  list-style: none;
+  font-size: var(--k-text-detail);
+  color: var(--k-ink-2);
+}
+
+.k-legend li { display: inline-flex; align-items: center; gap: var(--k-space-2); }
+
+.k-key { display: inline-block; width: 12px; height: 12px; border-radius: 3px; background-color: var(--k-ink); }
+.k-key-line { width: 18px; height: 0; border-radius: 0; background: none; border-block-start: 2px dashed var(--k-ink-3); }
+.k-key-shop { background-color: var(--k-money-shop); }
+.k-key-plus { background-color: var(--k-money-plus); }
+.k-key-box { background-color: var(--k-money-box); }
+
+.k-chart .k-shop { fill: var(--k-money-shop); }
+.k-chart .k-plus { fill: var(--k-money-plus); }
+.k-chart .k-box { fill: var(--k-money-box); }
+
+/* ── Figure ────────────────────────────────────────────────────────── */
+.k-figure { margin: var(--k-space-6) 0; }
+
+.k-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--k-radius-lg);
+  background-color: var(--k-well);
+}
+
+.k-figure figcaption { margin-block-start: var(--k-space-3); font-size: var(--k-text-detail); color: var(--k-ink-3); max-width: var(--k-measure); }
+
+/* ── Note ──────────────────────────────────────────────────────────── */
+/* It stands on its own type: a label and the serif, set in from the
+   reading line. No rule beside it, no stripe, no box (CLAUDE.md). */
+.k-note { margin: var(--k-space-6) 0; padding-inline: var(--k-space-5); max-width: var(--k-measure); }
+
+.k-note p {
+  margin: 0;
+  font-family: var(--k-font-serif);
+  font-style: italic;
+  font-size: var(--k-text-lede);
+  line-height: 1.5;
+  color: var(--k-ink-2);
+}
+
+.k-note cite { display: block; margin-block-start: var(--k-space-2); font-style: normal; font-size: var(--k-text-detail); color: var(--k-ink-3); }
+
+/* ── Card ──────────────────────────────────────────────────────────── */
+/* The app's card: rounded-lg, border-paper/10, bg-night-soft. */
+.k-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--k-space-3); margin-block: var(--k-space-5); }
+
+.k-card {
+  padding: var(--k-space-5);
+  border-radius: var(--k-radius-lg);
+  background-color: var(--k-card);
+  border: 1px solid var(--k-line);
+}
+
+.k-card h3 { margin: 0 0 var(--k-space-2); font-family: var(--k-font-serif); font-weight: 700; font-size: var(--k-text-title-sm); line-height: 1.25; color: var(--k-ink); }
+
+.k-card p { margin: 0; font-size: var(--k-text-ui); line-height: 1.55; color: var(--k-ink-2); }
+
+/* ── Button ────────────────────────────────────────────────────────── */
+/* The app's primary: rounded-pill bg-paper text-night text-ui font-semibold
+   (82 uses). The secondary: the ink on the ground, inside a control's hairline. */
+.k-actions { display: flex; flex-wrap: wrap; gap: var(--k-space-3); margin-block: var(--k-space-5); }
+
+.k-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--k-target);
+  min-width: var(--k-target);
+  padding: 0 var(--k-space-6);
+  border-radius: var(--k-radius-pill);
+  border: 1px solid transparent;
+  background-color: var(--k-ink);
+  color: var(--k-ground);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-text-ui);
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--k-duration-fast) var(--k-ease-house), transform var(--k-duration-fast) var(--k-ease-house);
+}
+
+.k-page a.k-button { color: var(--k-ground); }
+
+.k-button:active { transform: scale(var(--k-press)); }
+
+.k-button-quiet { background-color: transparent; color: var(--k-ink); border-color: var(--k-line-strong); }
+
+.k-page a.k-button-quiet { color: var(--k-ink); }
+
+/* ── Arriving: the house's rise, still with reduced motion ─────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .k-rise { animation: k-rise var(--k-duration-base) var(--k-ease-house) both; }
+  @keyframes k-rise { from { opacity: 0; transform: translateY(var(--k-rise)); } }
+}
+
+/* ── The footer ────────────────────────────────────────────────────── */
+.k-foot { margin-block-start: var(--k-space-8); padding-block-start: var(--k-space-5); border-block-start: 1px solid var(--k-line); font-size: var(--k-text-detail); color: var(--k-ink-3); }
+/* kit:end */
+</style>
+</head>
+<body>
+<main class="k-page">
+
+  <!-- Title: the mark, an eyebrow, the title, one lede, the date. -->
+  <header class="k-title k-rise">
+    <svg class="k-mark" width="18" height="32" viewBox="0 0 100 176" fill="currentColor" aria-hidden="true">
+      <rect x="41" y="2" width="18" height="172" rx="1"/>
+      <rect x="22" y="20" width="56" height="15" rx="1"/>
+      <rect x="0" y="55" width="100" height="16" rx="1"/>
+      <rect x="22" y="131" width="56" height="15" rx="1" transform="rotate(18 50 138)"/>
+    </svg>
+    <span class="k-eyebrow">Purify, the weekly brief</span>
+    <h1>The week of 9 November</h1>
+    <p class="k-lede">One page for the owner: what readers did, what came in, and the three things worth his attention.</p>
+    <p class="k-meta">Sample figures, for the layout only. Made 13 November 2026.</p>
+  </header>
+
+  <!-- Figures: headline numbers stand alone; a chart is not needed for one number. -->
+  <section class="k-section" aria-labelledby="s-week">
+    <h2 id="s-week">The week at a glance</h2>
+    <div class="k-stats">
+      <div class="k-stat"><span class="k-stat-value">3,272</span><span class="k-stat-label">Readers</span><span class="k-stat-change">Up 9% on the week before</span></div>
+      <div class="k-stat"><span class="k-stat-value">41</span><span class="k-stat-label">New accounts</span><span class="k-stat-change">Up 6</span></div>
+      <div class="k-stat"><span class="k-stat-value">$475</span><span class="k-stat-label">Money in</span><span class="k-stat-change">Not read for the App Store</span></div>
+    </div>
+  </section>
+
+  <!-- Chart: one ink, the week before dashed, a legend for two series, the figures in a table below. -->
+  <section class="k-section" aria-labelledby="s-readers">
+    <h2 id="s-readers">Readers a day</h2>
+    <p>Saturday and Sunday led, as most weeks do.</p>
+    <figure class="k-chart">
+      <ul class="k-legend">
+        <li><span class="k-key" aria-hidden="true"></span>This week</li>
+        <li><span class="k-key k-key-line" aria-hidden="true"></span>The week before</li>
+      </ul>
+      <svg viewBox="0 0 480 226" role="img" aria-labelledby="c1t">
+      <title id="c1t">Readers a day: this week as columns, the week before as a dashed line</title>
+      <line class="k-grid" x1="46" x2="476" y1="196" y2="196"/><text class="k-axis" x="38" y="200" text-anchor="end">0</text>
+      <line class="k-grid" x1="46" x2="476" y1="136" y2="136"/><text class="k-axis" x="38" y="140" text-anchor="end">200</text>
+      <line class="k-grid" x1="46" x2="476" y1="76" y2="76"/><text class="k-axis" x="38" y="80" text-anchor="end">400</text>
+      <line class="k-grid" x1="46" x2="476" y1="16" y2="16"/><text class="k-axis" x="38" y="20" text-anchor="end">600</text>
+      <path class="k-bar" d="M61.7 196V76.4a4 4 0 0 1 4 -4h22a4 4 0 0 1 4 4V196Z"><title>Mon: 412 readers, 380 the week before</title></path>
+      <text class="k-axis" x="76.7" y="218" text-anchor="middle">Mon</text>
+      <path class="k-bar" d="M123.1 196V80.6a4 4 0 0 1 4 -4h22a4 4 0 0 1 4 4V196Z"><title>Tue: 398 readers, 371 the week before</title></path>
+      <text class="k-axis" x="138.1" y="218" text-anchor="middle">Tue</text>
+      <path class="k-bar" d="M184.6 196V63.5a4 4 0 0 1 4 -4h22a4 4 0 0 1 4 4V196Z"><title>Wed: 455 readers, 402 the week before</title></path>
+      <text class="k-axis" x="199.6" y="218" text-anchor="middle">Wed</text>
+      <path class="k-bar" d="M246 196V71.0a4 4 0 0 1 4 -4h22a4 4 0 0 1 4 4V196Z"><title>Thu: 430 readers, 415 the week before</title></path>
+      <text class="k-axis" x="261.0" y="218" text-anchor="middle">Thu</text>
+      <path class="k-bar" d="M307.4 196V58.7a4 4 0 0 1 4 -4h22a4 4 0 0 1 4 4V196Z"><title>Fri: 471 readers, 433 the week before</title></path>
+      <text class="k-axis" x="322.4" y="218" text-anchor="middle">Fri</text>
+      <path class="k-bar" d="M368.9 196V44.0a4 4 0 0 1 4 -4h22a4 4 0 0 1 4 4V196Z"><title>Sat: 520 readers, 470 the week before</title></path>
+      <text class="k-axis" x="383.9" y="218" text-anchor="middle">Sat</text>
+      <path class="k-bar" d="M430.3 196V24.2a4 4 0 0 1 4 -4h22a4 4 0 0 1 4 4V196Z"><title>Sun: 586 readers, 512 the week before</title></path>
+      <text class="k-axis" x="445.3" y="218" text-anchor="middle">Sun</text>
+      <polyline class="k-before" points="76.7,82 138.1,84.7 199.6,75.4 261.0,71.5 322.4,66.1 383.9,55 445.3,42.4"/>
+      <text class="k-label" x="445.3" y="10.2" text-anchor="middle">586</text>
+      </svg>
+    </figure>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <caption>Readers a day, this week and the week before</caption>
+        <thead><tr><th scope="col">Day</th><th scope="col" class="k-num">This week</th><th scope="col" class="k-num">Before</th></tr></thead>
+        <tbody>
+          <tr><td>Monday</td><td class="k-num">412</td><td class="k-num k-quiet">380</td></tr>
+          <tr><td>Tuesday</td><td class="k-num">398</td><td class="k-num k-quiet">371</td></tr>
+          <tr><td>Wednesday</td><td class="k-num">455</td><td class="k-num k-quiet">402</td></tr>
+          <tr><td>Thursday</td><td class="k-num">430</td><td class="k-num k-quiet">415</td></tr>
+          <tr><td>Friday</td><td class="k-num">471</td><td class="k-num k-quiet">433</td></tr>
+          <tr><td>Saturday</td><td class="k-num">520</td><td class="k-num k-quiet">470</td></tr>
+          <tr><td>Sunday</td><td class="k-num">586</td><td class="k-num k-quiet">512</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Money: the one chart with hues, one for each source it can tell apart. -->
+  <section class="k-section" aria-labelledby="s-money">
+    <h2 id="s-money">Money in, by source</h2>
+    <figure class="k-chart">
+      <ul class="k-legend">
+        <li><span class="k-key k-key-shop" aria-hidden="true"></span>The shop, $970</li>
+        <li><span class="k-key k-key-plus" aria-hidden="true" data-mock-allow="palette" data-mock-why="the hue of one of money&#39;s sources, the same on both themes as app/admin/admin-theme.css sets it (227-228, 825-826)"></span>Purify Plus, $605</li>
+        <li><span class="k-key k-key-box" aria-hidden="true" data-mock-allow="palette" data-mock-why="the hue of one of money&#39;s sources, the same on both themes as app/admin/admin-theme.css sets it (227-228, 825-826)"></span>The EIKON Box, $130</li>
+      </ul>
+      <svg viewBox="0 0 480 226" role="img" aria-labelledby="c2t">
+      <title id="c2t">Money in a week by source: the shop, Purify Plus and the EIKON Box</title>
+      <line class="k-grid" x1="46" x2="476" y1="196" y2="196"/><text class="k-axis" x="38" y="200" text-anchor="end">$0</text>
+      <line class="k-grid" x1="46" x2="476" y1="136" y2="136"/><text class="k-axis" x="38" y="140" text-anchor="end">$200</text>
+      <line class="k-grid" x1="46" x2="476" y1="76" y2="76"/><text class="k-axis" x="38" y="80" text-anchor="end">$400</text>
+      <line class="k-grid" x1="46" x2="476" y1="16" y2="16"/><text class="k-axis" x="38" y="20" text-anchor="end">$600</text>
+      <path class="k-shop" d="M71.8 196V130h56V196Z"><title>Oct 19, the shop: $220</title></path>
+      <path class="k-plus" d="M71.8 128V92.0a4 4 0 0 1 4 -4h48a4 4 0 0 1 4 4V128Z"><title>Oct 19, Purify Plus: $140</title></path>
+      <text class="k-axis" x="99.8" y="218" text-anchor="middle">Oct 19</text>
+      <path class="k-shop" d="M179.3 196V142h56V196Z"><title>Oct 26, the shop: $180</title></path>
+      <path class="k-plus" d="M179.3 140V97h56V140Z"><title>Oct 26, Purify Plus: $150</title></path>
+      <path class="k-box" d="M179.3 95V74.0a4 4 0 0 1 4 -4h48a4 4 0 0 1 4 4V95Z"><title>Oct 26, the EIKON Box: $90</title></path>
+      <text class="k-axis" x="207.3" y="218" text-anchor="middle">Oct 26</text>
+      <path class="k-shop" d="M286.8 196V118h56V196Z"><title>Nov 2, the shop: $260</title></path>
+      <path class="k-plus" d="M286.8 116V73h56V116Z"><title>Nov 2, Purify Plus: $150</title></path>
+      <path class="k-box" d="M286.8 71V65.0a4 4 0 0 1 4 -4h48a4 4 0 0 1 4 4V71Z"><title>Nov 2, the EIKON Box: $40</title></path>
+      <text class="k-axis" x="314.8" y="218" text-anchor="middle">Nov 2</text>
+      <path class="k-shop" d="M394.3 196V103h56V196Z"><title>Nov 9, the shop: $310</title></path>
+      <path class="k-plus" d="M394.3 101V57.5a4 4 0 0 1 4 -4h48a4 4 0 0 1 4 4V101Z"><title>Nov 9, Purify Plus: $165</title></path>
+      <text class="k-axis" x="422.3" y="218" text-anchor="middle">Nov 9</text>
+      </svg>
+    </figure>
+  </section>
+
+  <!-- Note: stands on its own type. No rule beside it, no box. -->
+  <section class="k-section" aria-labelledby="s-needs">
+    <h2 id="s-needs">What needs you</h2>
+    <div class="k-note">
+      <span class="k-eyebrow">Note</span>
+      <p>Two permission letters came back this week. Both pictures can go into the app once you say so.</p>
+    </div>
+
+    <!-- Cards: a few things side by side, each with a title and a line. -->
+    <div class="k-cards">
+      <article class="k-card"><h3>The Sunday email</h3><p>Built from the week's feast and ready for your word.</p></article>
+      <article class="k-card"><h3>The board message</h3><p>A draft from the week waits for your tap.</p></article>
+      <article class="k-card"><h3>The shop</h3><p>Two prints are low. Nothing has run out.</p></article>
+    </div>
+
+    <!-- Buttons: one primary at most, and a quiet one beside it. -->
+    <div class="k-actions">
+      <a class="k-button" href="https://purifyapp.net/admin">Open the admin</a>
+      <a class="k-button k-button-quiet" href="https://purifyapp.net">Open Purify</a>
+    </div>
+  </section>
+
+  <!-- Figure: a picture from the app, with its caption. -->
+  <section class="k-section" aria-labelledby="s-figure">
+    <h2 id="s-figure">A figure</h2>
+    <figure class="k-figure">
+      <img src="data:image/jpeg;base64,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" width="575" height="575" alt="The Purify mark, white on black" style="max-width: 280px">
+      <figcaption>The Purify mark, as the app's icon shows it (public/purify-logo.jpg).</figcaption>
+    </figure>
+  </section>
+
+  <footer class="k-foot">Edgar, the Purify Team. purifyapp.net</footer>
+</main>
+</body>
+</html>

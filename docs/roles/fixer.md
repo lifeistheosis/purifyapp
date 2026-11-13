@@ -13,3 +13,5 @@
 - Pushes during a final check.
 - Touches another chat's files without saying so.
 - Draws interface by hand, or uses rays, side stripes, sparkles or decorative floating pills (CLAUDE.md).
+
+**Design:** anything made for people to look at (a page, a report, a brief, an email, a chart) starts from the Purify design kit: `docs/brand/design-kit.md`.
