@@ -114,8 +114,12 @@ export function ShopHomeClient() {
   // Nothing is picked until the catalogue has answered, so the featured icon
   // is never swapped for another under the reader's eye, and New in and the
   // collection, which leave it out, wait for it too. When it cannot be read,
-  // the home's own pieces stand in.
-  const catalogue = pool ?? (poolError ? collection : null);
+  // the home's own pieces stand in, once the home has answered: until then
+  // there is nothing to pick from, and settling on nothing dropped Shop by
+  // saint and the featured icon's column under a page that had arrived, New in
+  // rising 153px after them (Gate 2.0 cause 3, the shop from Discover). When
+  // the home cannot be read either, the shop says so and nothing waits.
+  const catalogue = pool ?? (poolError && (data || error) ? collection : null);
   const settled = catalogue !== null;
   const featured = useMemo(() => (catalogue ? featuredIcon(catalogue) : null), [catalogue]);
   const saints = useMemo(() => (catalogue ? shopSaints(catalogue) : []), [catalogue]);

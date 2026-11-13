@@ -56,9 +56,14 @@ describe("the running line over the reader's pill", () => {
   it("stands where the fade is solid, 4px under its top, the words above going quiet over the same ramp", () => {
     const line = openLine();
     expect(RAMP).toBe(127);
-    const m = /\[data-screen-edge="bottom"\]:has\(> \[data-running-line\]\[data-open\]\) > \.pill-fade \{\s*height: calc\((\d+(?:\.\d+)?)px \+ (\d+(?:\.\d+)?)rem \+ var\(--pill-lift, 12px\)\);/.exec(CSS);
-    expect(m, "the open line's rule for the fade").not.toBeNull();
+    // Laid out at the open line's height at all times, and shifted down while the line is closed, so its top
+    // stands 164px over the pill's foot then (Gate 2.0: the height eased on the page's thread came at once).
+    const m = /\.pill-fade \{\s*bottom: calc\(-1 \* var\(--pill-lift, 12px\)\);\s*\/\*[\s\S]*?\*\/\s*height: calc\((\d+(?:\.\d+)?)px \+ (\d+(?:\.\d+)?)rem \+ var\(--pill-lift, 12px\)\);\s*transform: translateY\(calc\((\d+(?:\.\d+)?)rem - (\d+(?:\.\d+)?)px\)\);/.exec(CSS);
+    expect(m, "the fade laid out at the open line's height").not.toBeNull();
     const [px, rem] = [Number(m![1]), Number(m![2])];
+    expect(Number(m![3])).toBe(rem);
+    expect(px + Number(m![4])).toBe(164);
+    expect(CSS).toMatch(/\[data-screen-edge="bottom"\]:has\(> \[data-running-line\]\[data-open\]\) > \.pill-fade \{\s*transform: none;\s*\}/);
     // The same rems as the line and the pill, so it holds at any root size.
     expect(rem).toBe(line.rem);
     // The fade's solid part starts RAMP under its top: at the line's top, 4px to spare.
@@ -82,7 +87,7 @@ describe("the running line over the reader's pill", () => {
   });
 
   it("moves on the house curve, and stays still on the reader's own motion switch", () => {
-    expect(CSS).toMatch(/\.pill-fade \{\s*transition: height 300ms var\(--ease-house\);\s*\}\s*:where\(\[data-motion="reduce"\]\) \.pill-fade \{\s*transition: none;\s*\}/);
+    expect(CSS).toMatch(/\.pill-fade \{\s*transition: transform 300ms var\(--ease-house\);\s*\}\s*:where\(\[data-motion="reduce"\]\) \.pill-fade \{\s*transition: none;\s*\}/);
     expect(CSS).toMatch(
       /html\[data-look\]:not\(\[data-look="nightsky"\], \[data-look="linen"\]\) body::after \{\s*transition: --foot-raise 300ms var\(--ease-house\);\s*\}\s*html\[data-look\]:not\(\[data-look="nightsky"\], \[data-look="linen"\]\):where\(\[data-motion="reduce"\]\) body::after \{\s*transition: none;\s*\}/,
     );

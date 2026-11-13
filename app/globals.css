@@ -1237,7 +1237,16 @@ html.reader-focus.has-reader-dock {
    the words go quiet over the same 127px as before. */
 .pill-fade {
  bottom: calc(-1 * var(--pill-lift, 12px));
- height: calc(164px + var(--pill-lift, 12px));
+ /* Laid out at the open line's height (the rule below) at all times, and
+    drawn 164px over the pill's foot while the line is closed by a shift
+    down, the rest of it past the foot of the screen. The line opening moves
+    it on a transform, which a busy page cannot land in one frame, and lays
+    nothing out again: its height eased on the page's own thread and came
+    48 to 52px at once as a chapter arrived with its line open (Gate 2.0,
+    2026-11-13, the span under the pill). The same look at rest, open or
+    closed. */
+ height: calc(146px + 4.125rem + var(--pill-lift, 12px));
+ transform: translateY(calc(4.125rem - 18px));
  background: linear-gradient(to bottom, transparent, var(--color-night) 127px);
 }
 /* The running line over the pill ("v 7 of 38 · 3 min left", "Hymn I of 19 ·
@@ -1251,10 +1260,10 @@ html.reader-focus.has-reader-dock {
    (--foot-raise, below). lib/bible/__tests__/runningLineGround.test.ts holds
    the sum; scripts measure it on the export. */
 [data-screen-edge="bottom"]:has(> [data-running-line][data-open]) > .pill-fade {
- height: calc(146px + 4.125rem + var(--pill-lift, 12px));
+ transform: none;
 }
 .pill-fade {
- transition: height 300ms var(--ease-house);
+ transition: transform 300ms var(--ease-house);
 }
 :where([data-motion="reduce"]) .pill-fade {
  transition: none;

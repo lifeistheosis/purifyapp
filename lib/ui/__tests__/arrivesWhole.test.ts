@@ -113,3 +113,31 @@ describe("late parts measured or read on the device (Updates 18)", () => {
     expect(src).toMatch(/onDevice \? readEmailChangeState\(query, hashFor\(pathname\)\) : null/);
   });
 });
+
+describe("cause 3's rest: parts that settled after the page arrived (Updates 20)", () => {
+  it("the gift's ticket is signed out from its first frame on a device with no session, and a failed read leaves it standing", () => {
+    // The walk got the load error (the main web before the merge has no /api/gifts/order): the
+    // skeleton's ticket gave way to "Try again", 45 to 52px shorter, under a page that had arrived.
+    const src = code("components/gifts/OrderGiftClient.tsx");
+    expect(src).toMatch(/const SIGNED_OUT: OrderGiftState = \{ signedIn: false \};/);
+    expect(src).toMatch(/const onDevice = useSyncExternalStore\(noSubscribe, \(\) => true, \(\) => false\);/);
+    expect(src).toMatch(/const state: OrderGiftState \| null = read \?\? \(onDevice && !readLocalSessionUser\(\) \? SIGNED_OUT : null\);/);
+    expect(src).toMatch(/const loadError = readFailed && !state;/);
+    expect(src).not.toMatch(/const \[state, setState\] = useState/);
+  });
+
+  it("the shop waits for something to pick from before it settles", () => {
+    // The catalogue's read failed while the home's was loading: the page settled on nothing, Shop by
+    // saint and the featured icon's column dropped, and New in rose 153px (from Discover).
+    const src = code("components/shop/ShopHomeClient.tsx");
+    expect(src).toMatch(/const catalogue = pool \?\? \(poolError && \(data \|\| error\) \? collection : null\);/);
+  });
+
+  it("a category's chips hold their row until the counts are known", () => {
+    // Every kind was drawn until the home answered, then the empty ones dropped out: 170px sideways.
+    const page = code("components/shop/CategoryClient.tsx");
+    expect(page).toMatch(/const \{ data: home, loading: homeLoading \} = useAsyncData\(fetchShopHome, \[\], peekShopHome\);/);
+    expect(page).toMatch(/waiting=\{homeLoading && !home\}/);
+    expect(code("components/shop/CategoryChips.tsx")).toMatch(/className=\{cn\(waiting && "invisible", className\)\}/);
+  });
+});

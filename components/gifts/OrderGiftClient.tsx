@@ -37,7 +37,7 @@
 // Ships into the native bundle: everything is fetched at runtime through
 // apiFetch, which carries the Bearer token inside the app.
 
-import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api/client";
 import { emitEntitlementsChanged } from "@/lib/entitlements/refresh";
@@ -45,6 +45,7 @@ import { STORE_LINKS } from "@/lib/marketing/storeRatings";
 import { useMobileStore } from "@/lib/platform/mobileWeb";
 import { isNativeClient } from "@/lib/platform/native";
 import { createClient } from "@/lib/supabase/client";
+import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { prefersReducedMotion, scrollBehavior } from "@/lib/ui/motion";
 import { softTick } from "@/lib/ui/softTick";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -96,11 +97,27 @@ const REVEAL_MS = 2400;
 
 type Claimed = { orderId: string | null; until: string | null };
 
+/** A reader with no session on the device: the same answer the route gives (app/api/gifts/order/route.ts). */
+const SIGNED_OUT: OrderGiftState = { signedIn: false };
+const noSubscribe = () => () => {};
+
 export function OrderGiftClient() {
   const { t, locale } = useTranslate();
   const store = useMobileStore();
-  const [state, setState] = useState<OrderGiftState | null>(null);
-  const [loadError, setLoadError] = useState(false);
+  const [read, setState] = useState<OrderGiftState | null>(null);
+  const [readFailed, setLoadError] = useState(false);
+  // On the device with no session kept on it, the reader is signed out, and the
+  // ticket says so from its first frame, in the page's own picture: a signed-out
+  // reader's answer is this same ticket, and a read that fails (no signal, or
+  // the main web before this route reached it) leaves it standing instead of
+  // giving way to "Try again" under the reader's eyes (Gate 2.0 cause 3: the
+  // ticket's height changed by 45 to 52px after the page had arrived). Known in
+  // the render, never set from an effect (docs/handoffs/updates-18.md). The read
+  // still runs, and its answer stands once it comes; a session that arrives
+  // (the listener below) reads the gift again.
+  const onDevice = useSyncExternalStore(noSubscribe, () => true, () => false);
+  const state: OrderGiftState | null = read ?? (onDevice && !readLocalSessionUser() ? SIGNED_OUT : null);
+  const loadError = readFailed && !state;
   const [busy, setBusy] = useState<string | null>(null);
   const [claimed, setClaimed] = useState<Claimed | null>(null);
   const [revealing, setRevealing] = useState(false);

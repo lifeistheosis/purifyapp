@@ -388,7 +388,10 @@ describe("the floating pill, with Listen", () => {
     // From 164px over the pill's foot to the foot of the screen, behind the
     // tab bar too: on a tablet the bar is a pill of its own and the last
     // lines showed on either side of it (1.9). The ramp keeps its 127px.
-    expect(rules()).toMatch(/\.pill-fade \{\s*bottom: calc\(-1 \* var\(--pill-lift, 12px\)\);\s*height: calc\(164px \+ var\(--pill-lift, 12px\)\);\s*background: linear-gradient\(to bottom, transparent, var\(--color-night\) 127px\);/);
+    // Laid out at the open running line's height and shifted down by the
+    // difference while the line is closed: its top 164px over the pill's foot
+    // (146px + 18px), the rest past the foot of the screen (Gate 2.0, 2026-11-13).
+    expect(rules()).toMatch(/\.pill-fade \{\s*bottom: calc\(-1 \* var\(--pill-lift, 12px\)\);\s*height: calc\(146px \+ 4\.125rem \+ var\(--pill-lift, 12px\)\);\s*transform: translateY\(calc\(4\.125rem - 18px\)\);\s*background: linear-gradient\(to bottom, transparent, var\(--color-night\) 127px\);/);
     for (const file of ["components/bible/MobileChapterPill.tsx", "components/bible/ReaderDock.tsx", "components/saints/MobileWorkPill.tsx"]) {
       const src = code(file);
       expect(src, file).toMatch(/\["--pill-lift" as string\]:\s*"calc\(var\(--tab-bar-h\)/);

@@ -33,6 +33,7 @@ export function CategoryChips({
   current,
   lead = false,
   all = true,
+  waiting = false,
   className,
 }: {
   /** The kinds to offer, in order. */
@@ -48,6 +49,11 @@ export function CategoryChips({
   lead?: boolean;
   /** Offer the "Everything" chip. Off on a store's page, which is not the whole shop. */
   all?: boolean;
+  /**
+   * The counts are still being read: the row holds its place with its chips
+   * unseen, and is drawn once, with the kinds that have something in them.
+   */
+  waiting?: boolean;
   className?: string;
 }) {
   const { t } = useTranslate();
@@ -67,7 +73,7 @@ export function CategoryChips({
   ];
 
   return (
-    <nav aria-label={t("shop.browseByCategory")} className={className}>
+    <nav aria-label={t("shop.browseByCategory")} className={cn(waiting && "invisible", className)}>
       <ScrollRail as="ul" current={current ?? null} trackClassName="gap-2 px-5 md:px-0" className="-mx-5 md:mx-0">
         {chips.map(({ slug, label, count }) => {
           const active = slug === current;

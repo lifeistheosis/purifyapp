@@ -80,8 +80,11 @@ export function CategoryClient({ category }: { category: string }) {
 
   // Only kinds with something in them, as on the shop home, whose payload
   // carries the counts (and is usually already cached from the visit there).
-  // Until it answers, or from an API too old to say, every chip shows.
-  const { data: home } = useAsyncData(fetchShopHome, [], peekShopHome);
+  // From an API too old to say, every chip shows. Until it answers, the row
+  // keeps its place with nothing in it, so the kinds with nothing in them do
+  // not drop out of it, moving the rest 170px sideways, under a page that has
+  // already arrived (Gate 2.0 cause 3, a category's chips).
+  const { data: home, loading: homeLoading } = useAsyncData(fetchShopHome, [], peekShopHome);
   const counts = home?.categories;
   const categories = (Object.keys(CATEGORY_LABELS) as ShopCategory[]).filter(
     (c) => c === category || !counts || (counts[c] ?? 0) > 0,
@@ -124,7 +127,7 @@ export function CategoryClient({ category }: { category: string }) {
 
       {/* Category switcher: the shop's row of kinds, opened on the one the
           reader is in. */}
-      <CategoryChips categories={categories} counts={counts} current={category} className="mt-5" />
+      <CategoryChips categories={categories} counts={counts} current={category} waiting={homeLoading && !home} className="mt-5" />
 
       <div className="mt-4">
         <ShopBrowseControls
