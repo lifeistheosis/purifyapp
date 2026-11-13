@@ -23,6 +23,10 @@ His word, 2026-11-13: "and also stop using parchment for designs. (important bec
 - `tokens.css` still lists Parchment, marked "app only, never a design ground", for mockups of the app's own Light palette. No piece reads it, and in the kit the app's Light attribute draws the clean neutral.
 - `check.mjs` fails a design with a parchment, cream or sepia ground, however it is worn (as it opens, light, a light system, each palette), and proves that measure with its own self-test first.
 
+## Rule three: every design is justified
+
+His word, 2026-11-13: "you must justify your designs". Each design delivered to him carries a short reason for each choice: what it is, why, and what it does for the reader. He answers yes or no, and nothing designed ships without his yes. The kit's own reasons are under "Why the kit looks as it does" below, and the emails' are in `email/README.md`.
+
 ## What is in `docs/brand/kit/`
 
 One system: a page and an email are the same look, made of the same pieces.
@@ -63,6 +67,25 @@ The kit is also a claude.ai design system, so decks and designs start from Purif
 - **Quiet things sit on the page itself,** as rows with hairlines between. A thing is raised only when it is a thing to act on, and then it is the app's own tray.
 - **Every value is whole.** A chart says each number over its mark, since a phone has no hover. The eight-point star stands over the best day, once, in a soft pool of light.
 - **Labels are sentence case** (`docs/brand/voice.md`), never capitals spaced out.
+
+## Why the kit looks as it does
+
+Each choice, its reason, and what it does for whoever reads the page.
+
+| The choice | Why | What it does for the reader |
+|---|---|---|
+| The page opens like a chapter in the app: mark, small line, title, italic line, short rule | It is the app's own opening, so a page reads as Purify before a word is read. No other product opens this way. | He knows at once what the page is and for which week. |
+| DM Serif Display for the title and the lead figure, Lora for words, DM Sans for labels and numbers | They are the app's three faces, each in the job the app gives it. | Names and sentences read like the library; figures scan like an instrument. |
+| One figure leads, on the app's Night sky | A page of equal boxes says nothing is more important than anything else. The night is the app's own look and the Nativity card's, so the lead is unmistakably Purify. | The one number that matters is read first, in one glance, on a phone. |
+| Thin columns, every value over its column, the week before as a dashed line | A phone has no hover, so a bar with no number is a guess. The dashed line is the app's own way to show the period before. | Every day's figure is read without a tap, and the week is set against the last one in the same picture. |
+| The eight-point star over the best day, in a soft pool of light | It is the Nativity card's own star, used once and for a reason: it marks something true. Never the four-point sparkle, never rays. | The week's best day is found without reading seven numbers. |
+| Quiet figures as rows, never tiles | His phone showed three tiles of unequal height with one left alone. Rows cannot orphan and are always the same height. | The name, what changed and the number sit on one line each, in the order the eye wants them. |
+| Money as one bar by its parts, each part named with its amount | Money's hues are the admin chart's own, so the page and the panel agree. A name and an amount beside each means no part is told by colour alone. | Where the money came from is read as words and numbers, with the bar for proportion. |
+| Things to act on are rows in the app's tray, with one card and one button | Three bordered cards and a loose white pill were the generic part. The tray, the chevron and the full-width button are the app's own. One button means one next step. | What needs him is a short list he can tap down, with the most important thing as the one button. |
+| Sentence-case labels | The house voice asks for it, and capitals spaced out are the mark of a template. | Labels read as words. |
+| Dark first, and a clean white light with the app's ink | His words: the dark palettes lead, and no parchment. | It looks like the app he knows, and stays readable where a screen is light. |
+| Phone first: one column, 17px words, 44px targets | He reads on his phone, and so do most readers. | Nothing has to be pinched, and nothing is missed by a thumb. |
+| Fast: one file under 100KB, no library, three faces with real fallbacks | A page that waits on a library is slower than the brief deserves. | It opens at once, and reads in Georgia and the system's sans if the faces do not load. |
 
 ## The pieces, in one line each
 

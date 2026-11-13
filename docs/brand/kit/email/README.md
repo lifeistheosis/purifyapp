@@ -55,6 +55,24 @@ Nothing in it is new to Purify. Each piece is the app's own, set for a letter.
 
 A release's picture and each point's screenshot are the release's own, and each is checked against the heritage list before it goes in.
 
+## Why the emails look as they do
+
+His word, 2026-11-13: "you must justify your designs". Each choice, its reason, and what it does for the reader. He answers yes or no to each design.
+
+| The choice | Why | What it does for the reader |
+|---|---|---|
+| No card on a canvas: the page is the letter | A white or grey card centred on a canvas is every product's email. The app's reading page has no card either. | It reads as a page of Purify, not as a notice from a service. |
+| It opens like a chapter: title, a line in italics, the short rule | The app's own opening. One look for every letter Purify sends. | The reader knows what this is and for when before reading a row. |
+| The week as a leaf of the calendar, the day in the margin | The Sunday email is a calendar, and a reader scans it for one day. Service books set the day in the margin. | A day is found by its number in one pass of the eye. |
+| A feast said in words, set heavier, red only on a light page | The rubric is the Church's own way to mark a feast, and the app keeps it white in the dark. Never by colour alone. | Feasts stand out at a glance and still read for anyone who sees no colour. |
+| The week's saint on the app's card, with the one button | It is Today's card. One button is one invitation. | The one thing to do next is plain, and 48px tall under a thumb. |
+| In the fast: the night of the Nativity card, the star higher each Sunday | The owner chose that card for the fast in the app. Carrying it into the email makes the season one thing across both. | Six Sundays show the fast moving toward the feast without a word of urging. |
+| In the fast: each day says its fast | "What may I eat this week" is the question a fast raises, and the calendar already answers it. | The email is useful on Wednesday, not only on Sunday. |
+| The brief: what needs him first, then three figures, then three small charts | A brief is read in a minute on a phone. What needs a decision comes before what is only interesting. | He can stop reading after the first screen and have missed nothing urgent. |
+| Charts drawn with table cells, every number also in words | A mail client runs no script and Gmail shows no SVG. | The charts appear in every client, and nothing depends on them. |
+| Dark written inline, a clean white where the screen is light | Dark leads and is what Purify sends today; a client that darkens by force cannot spoil it. No parchment. | It looks like the app, in every client. |
+| Georgia and Arial where Lora and DM Sans are not on the device | No font is fetched, by the house's rule, so the look must stand on what every device has. | It opens fast and never flashes from one face to another. |
+
 ## The Nativity Fast
 
 The season is the same email with four things changed, each from the app.
