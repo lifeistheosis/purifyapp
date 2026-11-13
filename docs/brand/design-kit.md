@@ -14,6 +14,10 @@ So everything a chat makes for people to look at starts from this kit, never fro
 | `email-template.html` | The email: tables, inline styles, no scripts, no SVG. Light in the app's Light palette, dark in its Dark palette. Start every email from a copy of it. |
 | `check.mjs` | Renders both templates at phone size and holds them to checkMock on the five palettes. `--write` refreshes the artifact template from the two CSS files. |
 
+## On claude.ai
+
+The kit is also a claude.ai design system, so decks and designs start from Purify's look: https://claude.ai/artifact/PJnQQWqgVybxZKzy2H3tt5 (the five palettes as its themes, the type, space and radius, the brand book with the guardrails, and the pieces with live previews). It is the owner's and private until he shares it. When `tokens.css` changes, change the design system's `tokens.json` to match.
+
 ## When to use it
 
 - **Always**, for anything made for the owner, a reader or the public to look at: an artifact, a report, a brief, a drop kit page, a release email, a chart.
