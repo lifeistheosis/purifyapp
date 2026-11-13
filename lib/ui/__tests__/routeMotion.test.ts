@@ -907,7 +907,8 @@ describe("a picture that leads to its own page", () => {
 
   it("the bridge lifts on a capturing tap and carries in once the page is named", () => {
     const bridge = read("components/nav/RouteTransition.tsx");
-    expect(bridge).toContain("const onTap = (event: MouseEvent) => liftFrom(event.target);");
+    // Lifted first, before anything else the tap does (the address it opens is noted after it: lib/nav/addressOpening.ts).
+    expect(bridge).toMatch(/const onTap = \(event: MouseEvent\) => \{\s*liftFrom\(event\.target\);/);
     expect(bridge).toContain('document.addEventListener("click", onTap, true);');
     const effect = bridge.slice(bridge.indexOf("useIsoLayoutEffect(() => {"), bridge.indexOf("}, [pathname]);"));
     expect(effect.indexOf("carryIn(pathname);")).toBeGreaterThan(effect.indexOf("beginNav(note);"));

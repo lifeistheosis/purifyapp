@@ -109,7 +109,7 @@ describe("the chapter a book was opened on", () => {
     // The address and the kept place: the same store the reader turns its chapters by.
     expect(hook).toContain("useSyncExternalStore(");
     expect(hook).toContain("subscribeHash,");
-    expect(hook).toContain("() => onOpeningNow(owner, slug, first),");
+    expect(hook).toContain("() => onOpeningNow(owner, slug, first, pathname),");
     // On the server, and while the page wakes, it is the opening: the cover is in the page as written.
     expect(hook).toContain("() => true,");
     expect(place).toContain("if (!openedOn.has(key)) openedOn.set(key, chapter);");

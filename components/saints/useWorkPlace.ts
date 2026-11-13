@@ -1,7 +1,9 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 
+import { hashFor } from "@/lib/nav/addressOpening";
 import { arrivalPlace, clearPosition, loadPosition, placeOfHash, savePosition, type WorkPlace } from "@/lib/reader/position";
 import { recordProgress } from "@/lib/reading/progress";
 import type { SectionHead } from "@/lib/saints/parts";
@@ -37,9 +39,15 @@ function subscribeHash(cb: () => void): () => void {
   return () => window.removeEventListener("hashchange", cb);
 }
 
-function targetNow(owner: string, slug: string): string {
+/**
+ * The place asked for, read from the address of the page at `pathname`
+ * (lib/nav/addressOpening.ts): while the page is rendered before the router
+ * has written its address, the address the tap opened, never the address of
+ * the page being left. Exported for its test.
+ */
+export function targetNow(owner: string, slug: string, pathname: string): string {
   const key = `${owner}/${slug}`;
-  const hash = window.location.hash;
+  const hash = hashFor(pathname);
   if (PLACE_HASH.test(hash)) {
     lastAddress.set(key, hash);
     return hash;
@@ -55,7 +63,8 @@ function targetNow(owner: string, slug: string): string {
 
 /** The place the page is asked for: an address ("#s12"), the kept place ("kept:12:3"), or "first". */
 export function useChapterTarget(owner: string, slug: string): string {
-  const target = useSyncExternalStore(subscribeHash, () => targetNow(owner, slug), () => "first");
+  const pathname = usePathname() ?? "";
+  const target = useSyncExternalStore(subscribeHash, () => targetNow(owner, slug, pathname), () => "first");
   const key = `${owner}/${slug}`;
   // The text opened on, read afresh the next time it opens.
   useEffect(
@@ -84,9 +93,10 @@ export function chapterNamed(target: string, first: number): string {
 
 const openedOn = new Map<string, string>();
 
-function onOpeningNow(owner: string, slug: string, first: number): boolean {
+/** Exported for its test. */
+export function onOpeningNow(owner: string, slug: string, first: number, pathname: string): boolean {
   const key = `${owner}/${slug}`;
-  const chapter = chapterNamed(targetNow(owner, slug), first);
+  const chapter = chapterNamed(targetNow(owner, slug, pathname), first);
   if (!openedOn.has(key)) openedOn.set(key, chapter);
   return openedOn.get(key) === chapter;
 }
@@ -106,9 +116,10 @@ function onOpeningNow(owner: string, slug: string, first: number): boolean {
  * first chapter, which the page knows.
  */
 export function useOnOpening(owner: string, slug: string, first: number): boolean {
+  const pathname = usePathname() ?? "";
   const here = useSyncExternalStore(
     subscribeHash,
-    () => onOpeningNow(owner, slug, first),
+    () => onOpeningNow(owner, slug, first, pathname),
     () => true,
   );
   const key = `${owner}/${slug}`;

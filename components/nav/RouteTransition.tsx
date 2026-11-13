@@ -3,6 +3,7 @@
 import { ViewTransition, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
+import { noteOpening, openingWritten } from "@/lib/nav/addressOpening";
 import { noteWayRoute, noteWayTap } from "@/lib/nav/readerWay";
 import { isNativeClient } from "@/lib/platform/native";
 import { overlayOwnsBack } from "@/lib/platform/useAndroidBack";
@@ -102,7 +103,13 @@ export function RouteTransition() {
     // A tap on a card whose picture leads to its own page: the picture is
     // lifted now, to travel (routeMotion, "A picture that leads to its own
     // page"). Capturing, so it is lifted before anything the tap does.
-    const onTap = (event: MouseEvent) => liftFrom(event.target);
+    // And the address a tapped link opens, for the page arriving to read its
+    // place from before the router writes it (lib/nav/addressOpening.ts).
+    const onTap = (event: MouseEvent) => {
+      liftFrom(event.target);
+      const link = event.target instanceof Element ? event.target.closest("a[href]") : null;
+      if (link instanceof HTMLAnchorElement) noteOpening(link.href);
+    };
     // And where the page stood at every tap, for a reader who is leaving it
     // for a room they will come back out of (lib/nav/readerWay.ts). Once now
     // too, so the page the visit began on is known.
@@ -154,6 +161,8 @@ export function RouteTransition() {
   useIsoLayoutEffect(() => {
     const from = here.current;
     here.current = pathname;
+    // The router has written the address with this commit: the window says it now.
+    openingWritten();
     // This change of address is dealt with: the mark asks for nothing more
     // until the next one. Said here and not in the effect below, because
     // React draws again at once for a layout effect, before any other change
