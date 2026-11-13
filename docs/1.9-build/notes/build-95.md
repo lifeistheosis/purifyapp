@@ -83,3 +83,15 @@ What the two show: the chosen badge's card at the foot changes height, two lines
 His word, 2026-11-13 07:44 UTC, on build 96, with a screenshot of a reader's profile sheet (About, Badges and Posts as three boxed tabs; About me; Member since): "make the profile system even smoother"
 
 With note 12, in the same sheet. Switching tabs moves in the house's motion, the old content handing to the new with no jump. The sheet's height follows its content smoothly, never snapping. Dragging the sheet down follows the finger and lets go cleanly. Pictures and words arrive without a flash. Reduced motion stays still. Any change to how the sheet looks (the tabs' form, for one) comes to him as stills with reasons, for his yes, before it ships.
+
+## Note 14: coming back to the app, the screen moves
+
+His word, 2026-11-13 about 07:46 UTC, on build 96: "whenever I ran out of purify and tab back in there's always a UI moving issue. for example. when my keyboard is open on another app and I switch into purify the UI shows up weird then it fixes itself"
+
+Every return to Purify from another app shows the page out of place for a moment before it settles; "always", so the keyboard is his example and not the only case. With the keyboard up in another app, the screen Purify shows on return is laid out wrong, then corrects itself.
+
+Done is: a return shows the page exactly as it was left, with nothing moving after the first frame, on Android and iPhone, with and without another app's keyboard, on every main screen and with a sheet open. Purify's own keyboard, opened by one of Purify's fields, still moves what it should.
+
+Leads to read, not conclusions: the handlers that run on every return (`components/native/statusBar.ts`, lookSoon; `components/theme/AppThemeController.tsx`, apply; `components/native/NativeBridge.tsx`, refreshNativeIfMoved), the keyboard frame in `lib/ui/viewport.ts`, and how the Android activity takes another app's keyboard (no `windowSoftInputMode` in the manifest, no Keyboard settings in `capacitor.config.ts`). The walks run Chromium, so the test stands in for the return (the page hidden while its window shrinks, then shown at full size) and the report names what only a phone can prove.
+
+With Updates 7.
