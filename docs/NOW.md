@@ -18,6 +18,7 @@ Updated 2026-11-13 01:24 UTC.
 - **Rotations, done between checks:** Admin and Updates 2 wrote batons and were archived. Admin 2 runs the targeted re-check; Updates 3 takes fails 4 and 5. Updates finished 1 and 6 and was archived.
 - **Also landing before the re-check:** St. Xenia's refined profile, **landed** (2ebc48166; the quotation ruling in docs/editorial-standards.md, d2aed289d): 17 paragraphs from public-domain sources (Opatovich 1873, Bulgakovsky 1890, Sambikin 1896, the Russian Biographical Dictionary 1903, the Britannica 1911), with the disputes said, a Sources list under her life, and one quotation ("Blood, blood, blood!", our English of Bulgakovsky's Russian, labelled). No hymn, web link or picture is free; her picture stays on Holy Cross Monastery's permission.
 - **The walk is mended** (5f56967b): every web node allowed when it glides and ends in sight; a "held" control re-tapped with anchoring off.
+- **The re-check is cutting now** (Admin 2, from 3b17a0aca, about 04:35 UTC): all six fails are addressed there (WordPopover's Close 0d9cc2400, the webs' tags 74210d49c, the admin links 3b17a0aca). Report expected about 07:30 to 08:00 UTC.
 - **Then:** every fix pushed; the re-check on one export from that head; if it passes, the test build is cut (Android with local-first on, the main web, publish off; then iOS).
 - **Before the merge (web only):** the admin link in `lib/billing/applyLifecycle.ts` (`?tab=` where the panel reads `#tab=`), with Updates 3.
 
@@ -49,6 +50,7 @@ Updated 2026-11-13 01:24 UTC.
 | Arbiter | session_01VuYTwdsjYL2mmq2C2JSt2A | his words, NOW.md, routing |
 | Admin 2 | session_01VuYTweFNHsJxnX7YJmTvEN | the gate: first the lifted-saints ruling into the tap walk, then the targeted re-check on the arbiter's word (baton `docs/handoffs/admin.md`); the admin panel when the owner's desk resumes |
 | Updates 3 | session_01VuYTwcy3Fbt9LcW3Qic77o | fixer: fails 4 (WordPopover's Close in Arabic) and 5 (the webs' place and date cut), from `docs/handoffs/updates-2.md`; then the admin link in `lib/billing/applyLifecycle.ts` |
+| Release prep | session_01VuYTwakSfEsUhtPvSDP3Qa | merge day made mechanical: the readiness check, the 19 migrations (signed, safe to run twice), `docs/1.9-build/MERGE-DAY.md`; docs only |
 | SSM board | session_01VuYTwcSQmKLThRirvSeWa5 | the drop's words, the Vault |
 | Fable 5.2: 1.9 store pictures | session_01VuYTwbUEsUgbUwM7K7xYG1 | design and adverts, by his word |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |
