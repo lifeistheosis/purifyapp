@@ -11,15 +11,18 @@ import {
   isAutoPiece,
   isWeeklyBrief,
   localClock,
+  lookWaits,
   readAnnouncement,
   readDeskSettings,
   readHolds,
+  readLookSeen,
   sendTimeAfter,
   withHold,
   withoutHold,
   type Announcement,
   type DeskSettings,
 } from "../ownerDesk";
+import { LOOK_ALREADY_SEEN, READER_EMAIL_LOOK } from "@/lib/email/look";
 
 /**
  * The owner's desk (docs/plans/owner-desk.md, sections 2 and 3), on his two
@@ -134,6 +137,19 @@ describe("what can send itself", () => {
       ],
     });
     expect(a?.pieces).toEqual([{ ruleKey: "email-weekly:2026-W46", kind: "weekly", periodKey: "2026-W46" }]);
+  });
+});
+
+describe("the reader emails' look he has seen", () => {
+  it("is the look readers already have until he clears another, and waits only on a look he has not seen", () => {
+    expect(readLookSeen(undefined, LOOK_ALREADY_SEEN)).toEqual({ seen: LOOK_ALREADY_SEEN, at: null, by: null });
+    expect(readLookSeen({ seen: "2", at: "2026-11-20T15:00:00Z", by: "him" }, "1")).toEqual({ seen: "2", at: "2026-11-20T15:00:00Z", by: "him" });
+    expect(readLookSeen({ seen: "<script>" }, "1").seen).toBe("1");
+    // Today the reader emails wear the look readers have had since September: nothing waits.
+    expect(lookWaits(READER_EMAIL_LOOK, readLookSeen(undefined, LOOK_ALREADY_SEEN))).toBe(false);
+    // The day the kit's look goes in (READER_EMAIL_LOOK "2"), the sends wait for his look until he clears it.
+    expect(lookWaits("2", readLookSeen(undefined, LOOK_ALREADY_SEEN))).toBe(true);
+    expect(lookWaits("2", readLookSeen({ seen: "2" }, LOOK_ALREADY_SEEN))).toBe(false);
   });
 });
 

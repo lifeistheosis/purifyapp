@@ -7,11 +7,14 @@ import {
   readAnnouncement,
   readDeskSettings,
   readHolds,
+  readLookSeen,
   type Announcement,
   type DeskSettings,
   type Holds,
+  type LookSeen,
 } from "./ownerDesk";
 import { isTableAbsent } from "./tableAbsent";
+import { LOOK_ALREADY_SEEN } from "@/lib/email/look";
 
 /**
  * The owner's desk, kept in site_settings (lib/admin/ownerDesk.ts says what it
@@ -20,14 +23,18 @@ import { isTableAbsent } from "./tableAbsent";
  * 20261110155643_production_baseline.sql; docs/1.9-build/MERGE-DAY.md, row
  * 12), a named row per setting, service role only (RLS on, no policies).
  *
- * Three rows:
+ * Four rows:
  *   owner_desk            his settings: the switch, the sends' hour, the
  *                         brief's hour, the weekly day;
  *   owner_desk_holds      the pieces he held, by board rule key;
  *   owner_desk_announced  what the day's brief named as going out by itself,
  *                         and when it went. Written only after the brief was
  *                         sent, so a brief that failed names nothing and
- *                         nothing goes.
+ *                         nothing goes;
+ *   owner_desk_look       the reader emails' look he has seen in his own
+ *                         inbox (lib/email/look.ts, the first-send guard).
+ *                         Its own row, so saving the brief's hour never
+ *                         clears it.
  *
  * A READ THAT FAILS SENDS NOTHING. `ok` is false when the rows could not be
  * read, and then no piece goes out by itself (a hold that could not be read
@@ -39,6 +46,7 @@ export const DESK_KEYS = {
   settings: "owner_desk",
   holds: "owner_desk_holds",
   announced: "owner_desk_announced",
+  look: "owner_desk_look",
 } as const;
 
 export type DeskKey = (typeof DESK_KEYS)[keyof typeof DESK_KEYS];
@@ -53,6 +61,8 @@ export type DeskState = {
   saved: { at: string; by: string | null } | null;
   holds: Holds;
   announcement: Announcement | null;
+  /** The reader emails' look he has seen in his inbox (lib/email/look.ts). */
+  look: LookSeen;
 };
 
 const UNREAD: Omit<DeskState, "present" | "ok"> = {
@@ -60,6 +70,7 @@ const UNREAD: Omit<DeskState, "present" | "ok"> = {
   saved: null,
   holds: {},
   announcement: null,
+  look: { seen: LOOK_ALREADY_SEEN, at: null, by: null },
 };
 
 type Row = { key: string; value: unknown; updated_at: string | null; updated_by_email: string | null };
@@ -80,6 +91,7 @@ export async function readDesk(admin: SupabaseClient): Promise<DeskState> {
       saved: settingsRow ? { at: settingsRow.updated_at ?? "", by: settingsRow.updated_by_email ?? null } : null,
       holds: readHolds(rows.get(DESK_KEYS.holds)?.value),
       announcement: readAnnouncement(rows.get(DESK_KEYS.announced)?.value),
+      look: readLookSeen(rows.get(DESK_KEYS.look)?.value, LOOK_ALREADY_SEEN),
     };
   } catch {
     return { ...UNREAD, present: false, ok: false };

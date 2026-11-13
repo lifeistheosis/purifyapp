@@ -74,7 +74,9 @@ export async function boardDraft(admin: SupabaseClient, now: Date): Promise<Boar
   }
   if (paragraphs.length === 0) return { text: null, week, sources };
 
-  const headline = feasts[0] ? `The week of ${feasts[0].name}` : "This week at Purify";
+  // A feast's own name, after "the": "The week of the Entrance of the Most Holy Theotokos into the Temple".
+  const feastName = feasts[0] ? (/^the\s/i.test(feasts[0].name) ? feasts[0].name : `the ${feasts[0].name}`) : null;
+  const headline = feastName ? `The week of ${feastName}` : "This week at Purify";
   const parsed = BoardInput.safeParse({ week, date: day, headline, body: paragraphs });
   if (!parsed.success || boardEmDashField(parsed.data)) return { text: paragraphs.join(" "), week, sources };
   return { text: `${headline}. ${paragraphs.join(" ")}`, week, sources, input: parsed.data };

@@ -5,7 +5,9 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { draftCampaign } from "@/lib/email/campaignDrafts";
 import { findCampaign, type CampaignKind } from "@/lib/email/campaigns";
 import { jobForMailing } from "@/lib/email/jobs";
+import { READER_EMAIL_LOOK } from "@/lib/email/look";
 
+import { firstLookKey } from "./autoSends";
 import { readBoard } from "./boardRead";
 import { boardDraft, type BoardDraft } from "./boardDraft";
 import {
@@ -13,12 +15,13 @@ import {
   clockLabel,
   clockOf,
   localClock,
+  lookWaits,
   parseClock,
   sendTimeAfter,
   type AnnouncedPiece,
   type DeskSettings,
 } from "./ownerDesk";
-import type { DeskState } from "./ownerDeskStore";
+import { briefSent, type DeskState } from "./ownerDeskStore";
 import { morningMail, ruleFamily, type BoardTask } from "./planner";
 
 /**
@@ -40,7 +43,11 @@ export type PieceState =
   /** Nothing honest to send today (`reason`, the draft's own words). */
   | "nothing"
   /** It already went, or is going out. */
-  | "gone";
+  | "gone"
+  /** The first-send guard (lib/email/look.ts): at `at` it goes to him alone, in the reader emails' new look, and not to readers. */
+  | "first look"
+  /** The first-send guard, after his copy went: readers wait until he clears the look on the desk. */
+  | "waits for your look";
 
 export type PieceView = {
   ruleKey: string;
@@ -99,6 +106,13 @@ export async function readToday(
   const announce: AnnouncedPiece[] = [];
   const pieces: PieceView[] = [];
   const briefNamed = desk.announcement && desk.announcement.day === clock.day ? desk.announcement : null;
+  // What "goes by itself" means today: to readers, or, while the reader emails
+  // wear a look he has not cleared, to him alone first (lib/email/look.ts).
+  const going: PieceState = lookWaits(READER_EMAIL_LOOK, desk.look)
+    ? (await briefSent(admin, firstLookKey()))?.sent
+      ? "waits for your look"
+      : "first look"
+    : "goes";
 
   for (const t of tasks) {
     const family = ruleFamily(t.ruleKey);
@@ -150,7 +164,7 @@ export async function readToday(
         continue;
       }
       announce.push({ ruleKey: t.ruleKey, kind: auto.kind, periodKey: draft.periodKey });
-      pieces.push({ ...view, state: "goes", at: clockLabel(clockOf(at)), why: null });
+      pieces.push({ ...view, state: going, at: clockLabel(clockOf(at)), why: null });
       continue;
     }
 
@@ -159,7 +173,7 @@ export async function readToday(
     if (named && briefNamed) {
       const at = sendTimeAfter(new Date(briefNamed.at), desk.settings);
       if (at === null) byHand("the brief came too late in the day for it to go by itself");
-      else pieces.push({ ...view, state: "goes", at: clockLabel(clockOf(at)), why: null });
+      else pieces.push({ ...view, state: going, at: clockLabel(clockOf(at)), why: null });
       continue;
     }
     if (briefNamed) {
@@ -168,7 +182,7 @@ export async function readToday(
     }
     const at = plannedSend(desk.settings);
     if (clock.minutes >= at) byHand("this morning's brief has not gone, so it waits for you");
-    else pieces.push({ ...view, state: "goes", at: clockLabel(clockOf(at)), why: null });
+    else pieces.push({ ...view, state: going, at: clockLabel(clockOf(at)), why: null });
   }
 
   const boardTask = tasks.find((t) => ruleFamily(t.ruleKey) === "board" && due(t));

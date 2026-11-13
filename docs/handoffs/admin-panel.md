@@ -13,6 +13,10 @@ The admin panel, web only: `app/admin`, `components/admin`, `lib/admin` and thei
   - **The sends**: the Sunday email, the monthly note and the feast shop email go out by themselves, the switch on by his word. A piece goes only when that day's brief named it at least two hours before, he has not held it, the board still has it due, at the sends' hour (12 noon) and before 6 PM. The start is the panel's own Send, now shared (`lib/email/campaignStart.ts`).
   - **The board message**: on its day the brief saves a draft from the week as that week's draft row if the week has none. Never publishes.
   - **A fault fixed on the way**: the monthly note sent on the 1st ticked the previous month's task (`monthlyRuleOf`, `lib/admin/plannerEvidence.ts`).
+- The arbiter's second round (the commit after this baton line, see `git log`):
+  - **The first-send guard**: `lib/email/look.ts` holds the reader emails' look (`READER_EMAIL_LOOK`, "1" today). When it differs from the look he cleared (`site_settings`, `owner_desk_look`), the first automatic send goes to him alone (`first_look:<look>`, the readers' exact email) and nothing goes to readers by itself until he taps "I have seen it in my inbox" on the desk.
+  - **The Sunday email's names**: a feast is said by its own name, never by the saint it honours (`lib/email/weekly.ts`); the week's saint card keeps the saint's name.
+  - **Three owner alerts** open their tabs (`#tab=orders`, `#tab=shop` for low stock, `#tab=goals`); `lib/admin/__tests__/adminLinks.test.ts` holds every admin link in app, lib and components to `#tab=<a live view>`.
 
 ## Open
 
@@ -20,8 +24,8 @@ The admin panel, web only: `app/admin`, `components/admin`, `lib/admin` and thei
 |---|---|---|
 | The brief in Gmail, Apple Mail and Outlook, light and dark | him, with the first real brief after the merge | Drawn in Chromium at 390 and 800 and held by tests; real clients need his inbox or a testing service on his OK. |
 | His yes to the brief's look, before the merge | him, through the arbiter | The code wears today's email shell (`emailLayout`). The kit's brief (`docs/brand/kit/email/brief.html`, Fable) waits for his yes too, with the kit's look being redone. On his yes to the kit's, swap `briefShell` in `lib/admin/ownerBriefSend.ts`; every part is drawn on `lib/email/theme.ts` tokens. The reasons for this look are in `docs/plans/owner-desk.md` section 3. |
+| The kit's new look in the reader emails and the brief | whoever the arbiter sends, on his yes | From `docs/brand/kit/email/` (reader.html, its Nativity Fast, brief.html, build.mjs): the pictures a home on the main web, each day's fast in the Sunday email (`fastingStatus`), a saint's picture left out when it is on the heritage list, never parchment. Bump `READER_EMAIL_LOOK` in the same commit, so the first send in it goes to him alone. Not built: his yes is not given. |
 | Directional questions in the brief | the arbiter, if he wants a channel of their own | For now a task added to the Calendar reaches him under "Needs you". |
-| `lib/billing/applyLifecycle.ts` links `?tab=` | Updates 3 (NOW.md) | Unchanged. |
 | Subscription history before the merge | his choice | A RevenueCat key with `charts_metrics:charts:read`. Offer it with the brief. |
 | The strip's words for his items | if he asks | `lib/admin/attention.ts`. |
 
@@ -32,7 +36,8 @@ The admin panel, web only: `app/admin`, `components/admin`, `lib/admin` and thei
 - The Hold link opens the desk (`#tab=calendar`). Never make an email link that acts by itself: link checkers press links.
 - `site_settings` is on production (the baseline found it), so there is no migration. Without it the writes answer 409 and nothing sends itself.
 - Plus, searches not found and errors read "not kept yet" until 1.9's migrations run.
-- The walk: `next dev` with dummy `NEXT_PUBLIC_SUPABASE_*` values, `/admin/shell-preview`, set `location.hash` after load, answer `/api/admin/desk` with sample JSON in the route's shape.
+- The walk: `next dev` with dummy `NEXT_PUBLIC_SUPABASE_*` values, `/admin/shell-preview`, set `location.hash` after load, answer `/api/admin/desk` with sample JSON in the route's shape. After it, `rm -rf .next && npx next typegen`, or typecheck trips on stale types under `.next/dev/types`.
+- The native export cannot run in a container without the main web's public Supabase key: `/shop/[store]` builds its pages from the live database and stops with no stores. Reading that key was his permission to Admin 2 for the re-check only.
 - The old senders (`plannerDigest.ts`, `sendWeeklyLetter`) stay, off the clock. Putting one back on the heartbeat means two emails a morning.
 - The test helper `lib/admin/__tests__/fakeDb.ts` honours eq, in, gte, lt and lte, and pages by range.
 

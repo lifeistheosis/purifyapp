@@ -290,7 +290,7 @@ export async function GET(req: NextRequest) {
       await notifyOwner({
         title: decision.title,
         body: decision.body,
-        url: "/admin#goals",
+        url: "/admin#tab=goals",
         kind: `hourly-${decision.kind}`,
       });
       sent.push({ metric: g.metric, kind: decision.kind });

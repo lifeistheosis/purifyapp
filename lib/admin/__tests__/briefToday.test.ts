@@ -7,6 +7,7 @@ const state = vi.hoisted(() => ({
   boardError: null as string | null,
   drafts: {} as Record<string, { periodKey: string; body: { subject: string } | null; reason: string | null }>,
   jobs: new Set<string>(),
+  firstSent: false,
 }));
 
 vi.mock("@/lib/admin/boardRead", () => ({ readBoard: async () => ({ tasks: state.tasks, error: state.boardError }) }));
@@ -15,6 +16,8 @@ vi.mock("@/lib/email/campaignDrafts", () => ({
 }));
 vi.mock("@/lib/email/jobs", () => ({ jobForMailing: async (_a: unknown, key: string) => (state.jobs.has(key) ? { status: "running" } : null) }));
 vi.mock("@/lib/email/campaigns", () => ({ findCampaign: async () => null }));
+vi.mock("@/lib/admin/ownerDeskStore", () => ({ briefSent: async () => ({ sent: state.firstSent, at: null }) }));
+vi.mock("@/lib/admin/autoSends", () => ({ firstLookKey: () => "first_look:1" }));
 vi.mock("@/lib/admin/boardDraft", () => ({ boardDraft: async () => ({ text: "This week: the Entry on Saturday.", week: "2026-W47", sources: ["calendar"] }) }));
 
 import { readToday } from "../briefToday";
@@ -47,6 +50,7 @@ const desk = (over: Partial<DeskState> = {}): DeskState => ({
   saved: null,
   holds: {},
   announcement: null,
+  look: { seen: "1", at: null, by: null },
   ...over,
 });
 
@@ -55,6 +59,7 @@ beforeEach(() => {
   state.boardError = null;
   state.drafts = { weekly: { periodKey: "2026-W47", body: { subject: "The week ahead" }, reason: null } };
   state.jobs = new Set();
+  state.firstSent = false;
 });
 
 describe("the brief's today", () => {
@@ -138,5 +143,21 @@ describe("the panel's today", () => {
   it("before the brief, says when the piece will go once the brief names it", async () => {
     const t = await readToday({} as never, new Date("2026-11-22T11:00:00Z"), desk(), "panel"); // 6 AM
     expect(t.pieces[0]).toMatchObject({ state: "goes", at: "12 noon" });
+  });
+});
+
+describe("the first-send guard in today", () => {
+  const unseen = () => desk({ look: { seen: "0", at: null, by: null } });
+
+  it("says a piece in a new look goes to him alone first, and still names it, so it goes to him at the hour", async () => {
+    const t = await readToday({} as never, SUNDAY_0730, unseen(), "brief");
+    expect(t.pieces[0]).toMatchObject({ state: "first look", at: "12 noon" });
+    expect(t.announce).toHaveLength(1);
+  });
+
+  it("says it waits for his look once his copy has gone", async () => {
+    state.firstSent = true;
+    const t = await readToday({} as never, SUNDAY_0730, unseen(), "brief");
+    expect(t.pieces[0].state).toBe("waits for your look");
   });
 });

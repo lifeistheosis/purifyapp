@@ -60,6 +60,25 @@ describe("the week ahead", () => {
     expect(body.action?.href).toMatch(/\/saints\/john-chrysostom$/);
     passes(body);
   });
+
+  // Found by the Fable designer on 2026-11-13 (docs/brand/kit/email/README.md,
+  // "For the build", 4) and routed by the arbiter: a feast that honours a
+  // saint was said by the saint's name, so 20 and 21 November 2026 both read
+  // "The Most Holy Theotokos". The Sunday email now goes out by itself.
+  it("says a feast by its own name, never by the saint it honours, on the real calendar", () => {
+    const week = weekAhead(new Date("2026-11-16T09:00:00Z"));
+    const byDay = new Map(week.lines.map((l) => [l.day, l]));
+    expect(byDay.get("Friday, November 20")).toMatchObject({ name: "Forefeast of the Entrance of the Theotokos", kind: "feast" });
+    expect(byDay.get("Saturday, November 21")).toMatchObject({ name: "Entrance of the Most Holy Theotokos into the Temple", kind: "feast" });
+    expect(week.lines.filter((l) => l.name === "The Most Holy Theotokos")).toEqual([]);
+  });
+
+  it("keeps the saint's own name for the week's saint card, which links to the saint", () => {
+    const honoured = { name: "Entry of the Saint into the Temple", kind: "feast", slug: "theotokos", saint: { name: "The Most Holy Theotokos", slug: "theotokos" } } as unknown as Commemoration;
+    const week = weekAhead(MONDAY, (d) => (d.getUTCDate() === 16 ? [honoured] : []));
+    expect(week.lines).toMatchObject([{ name: "Entry of the Saint into the Temple", kind: "feast", slug: "theotokos" }]);
+    expect(week.saint).toEqual({ name: "The Most Holy Theotokos", slug: "theotokos" });
+  });
 });
 
 describe("the monthly note", () => {

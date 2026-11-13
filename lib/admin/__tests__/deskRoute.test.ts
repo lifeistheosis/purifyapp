@@ -17,7 +17,7 @@ vi.mock("@/lib/security/ratelimit", () => ({ rateLimited: async () => false }));
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient: () => ({}) }));
 vi.mock("@/lib/admin/activityLog", () => ({ logActivity: async (e: { action: string }) => void state.logged.push(e) }));
 vi.mock("@/lib/admin/ownerDeskStore", () => ({
-  DESK_KEYS: { settings: "owner_desk", holds: "owner_desk_holds", announced: "owner_desk_announced" },
+  DESK_KEYS: { settings: "owner_desk", holds: "owner_desk_holds", announced: "owner_desk_announced", look: "owner_desk_look" },
   readDesk: async () => state.desk,
   briefSent: async () => ({ sent: false, at: null }),
   writeDesk: async (_a: unknown, key: string, value: Record<string, unknown>, by: string | null) => {
@@ -28,6 +28,7 @@ vi.mock("@/lib/admin/ownerDeskStore", () => ({
 vi.mock("@/lib/admin/briefToday", () => ({
   readToday: async () => ({ day: "2026-11-22", needs: [], pieces: [], board: null, boardError: null, announce: [] }),
 }));
+vi.mock("@/lib/admin/autoSends", () => ({ firstLookKey: () => "first_look:1" }));
 vi.mock("@/lib/admin/ownerBriefSend", () => ({
   briefKey: (d: string) => `owner_brief:${d}`,
   composeBrief: async (_a: unknown, _n: Date, mode: string) => {
@@ -48,7 +49,7 @@ const post = (body: unknown) => POST(new Request("https://purifyapp.net/api/admi
 
 beforeEach(() => {
   state.user = { id: "u1", email: "owner@example.org" };
-  state.desk = { present: true, ok: true, settings: DESK_DEFAULTS, saved: null, holds: {}, announcement: null };
+  state.desk = { present: true, ok: true, settings: DESK_DEFAULTS, saved: null, holds: {}, announcement: null, look: { seen: "1", at: null, by: null } };
   state.writes = [];
   state.writeResult = { ok: true };
   state.composed = [];
@@ -115,6 +116,15 @@ describe("the desk's route", () => {
     expect(r.status).toBe(200);
     expect(await r.json()).toEqual({ subject: "Your day", html: "<html>brief</html>" });
     expect(state.composed).toEqual(["preview"]);
+  });
+
+  it("clears the reader emails' look when he has seen it, in a row of its own, and logs what it replaced", async () => {
+    state.desk = { ...state.desk, look: { seen: "0", at: null, by: null } };
+    const r = await post({ action: "look-seen" });
+    expect(r.status).toBe(200);
+    expect(state.writes).toHaveLength(1);
+    expect(state.writes[0]).toMatchObject({ key: "owner_desk_look", value: { seen: "1", by: "owner@example.org" } });
+    expect(state.logged[0]).toMatchObject({ action: "desk.look_seen", detail: { prior: { seen: "0" }, next: "1" } });
   });
 
   it("refuses what it does not know", async () => {

@@ -236,6 +236,27 @@ function pruneHolds(holds: Holds, now: Date): Holds {
   return Object.fromEntries(Object.entries(holds).filter(([, h]) => Date.parse(h.at) >= cut));
 }
 
+/**
+ * The reader emails' look he has seen in his own inbox (lib/email/look.ts).
+ * Kept in a row of its own, so saving the brief's hour never touches it.
+ * Unset, it is the look readers already have.
+ */
+export type LookSeen = { seen: string; at: string | null; by: string | null };
+
+export function readLookSeen(value: unknown, alreadySeen: string): LookSeen {
+  const v = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
+  return {
+    seen: typeof v.seen === "string" && /^[0-9a-z.-]{1,16}$/.test(v.seen) ? v.seen : alreadySeen,
+    at: typeof v.at === "string" ? v.at : null,
+    by: typeof v.by === "string" ? v.by : null,
+  };
+}
+
+/** Whether the automatic sends to readers wait for his look: the reader emails wear a look he has not cleared. */
+export function lookWaits(current: string, seen: LookSeen): boolean {
+  return current !== seen.seen;
+}
+
 /** One piece a brief named as going out by itself. */
 export type AnnouncedPiece = { ruleKey: string; kind: CampaignKind; periodKey: string };
 

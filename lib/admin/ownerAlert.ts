@@ -158,7 +158,7 @@ export function saleAlert(totalCents: number, currency: string): OwnerAlert {
   return {
     title: "Purify: a sale",
     body: `${money(totalCents, currency)} just came in.`,
-    url: "/admin#orders",
+    url: "/admin#tab=orders",
     kind: "owner-sale",
   };
 }

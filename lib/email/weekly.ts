@@ -24,10 +24,13 @@ export type WeekLine = {
   date: Date;
   /** "Monday, September 21" */
   day: string;
+  /** The day's name: a feast by its own name, a saint's day by the saint. */
   name: string;
   kind: "feast" | "saint";
   /** A registry saint the library has a page for. */
   slug: string | null;
+  /** That saint's own name, for the week's saint card; null or absent when the day names no registry saint. */
+  saintName?: string | null;
 };
 
 const DAY = 86_400_000;
@@ -51,12 +54,18 @@ export function weekAhead(
     const all = lookup(date);
     const headline = all.find((c) => c.kind === "feast") ?? all[0];
     if (!headline) continue;
+    const feast = headline.kind === "feast";
     days.push({
       date,
       day: dayLabel(date),
-      name: headline.saint?.name ?? headline.name,
-      kind: headline.kind === "feast" ? "feast" : "saint",
+      // A feast is said by its own name, never by the saint it honours: the
+      // Forefeast and the Entrance of the Theotokos, 20 and 21 November 2026,
+      // both read "The Most Holy Theotokos" before this (found 2026-11-13,
+      // docs/brand/kit/email/README.md, "For the build", 4).
+      name: feast ? headline.name : (headline.saint?.name ?? headline.name),
+      kind: feast ? "feast" : "saint",
       slug: headline.saint ? headline.saint.slug : null,
+      saintName: headline.saint?.name ?? null,
     });
   }
 
@@ -65,6 +74,8 @@ export function weekAhead(
     .slice(0, 5)
     .sort((a, b) => a.date.getTime() - b.date.getTime());
 
+  // The week's saint card names the saint, whose page it opens, even on a
+  // feast in the saint's honour.
   const withPage = lines.find((l) => l.slug);
-  return { lines, saint: withPage ? { name: withPage.name, slug: withPage.slug! } : null };
+  return { lines, saint: withPage ? { name: withPage.saintName ?? withPage.name, slug: withPage.slug! } : null };
 }

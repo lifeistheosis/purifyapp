@@ -11,13 +11,16 @@ import {
   deskSettingsProblem,
   isAutoPiece,
   isWeeklyBrief,
+  lookWaits,
   localClock,
   withHold,
   withoutHold,
   type DeskSettings,
 } from "@/lib/admin/ownerDesk";
 import { briefSent, DESK_KEYS, readDesk, writeDesk, type DeskState } from "@/lib/admin/ownerDeskStore";
+import { firstLookKey } from "@/lib/admin/autoSends";
 import { briefKey, composeBrief } from "@/lib/admin/ownerBriefSend";
+import { READER_EMAIL_LOOK } from "@/lib/email/look";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -48,9 +51,11 @@ type Admin = ReturnType<typeof createAdminClient>;
 
 async function view(admin: Admin, desk: DeskState, now: Date) {
   const { day } = localClock(now);
-  const [today, log] = await Promise.all([
+  const waits = lookWaits(READER_EMAIL_LOOK, desk.look);
+  const [today, log, first] = await Promise.all([
     readToday(admin, now, desk, "panel"),
     briefSent(admin, briefKey(day)),
+    waits ? briefSent(admin, firstLookKey()) : Promise.resolve(null),
   ]);
   return {
     present: desk.present,
@@ -60,6 +65,7 @@ async function view(admin: Admin, desk: DeskState, now: Date) {
     limits: { brief: BRIEF_HOURS, send: SEND_HOURS, holdMinutes: HOLD_WINDOW_MINUTES },
     brief: { sent: log ? log.sent : null, at: log?.at ?? null, weekly: isWeeklyBrief(now, desk.settings) },
     today: { day: today.day, needs: today.needs, pieces: today.pieces, board: today.board, boardError: today.boardError },
+    look: { current: READER_EMAIL_LOOK, seen: desk.look.seen, at: desk.look.at, firstSent: first },
   };
 }
 
@@ -90,6 +96,7 @@ const Body = z.discriminatedUnion("action", [
   z.object({ action: z.literal("hold"), ruleKey: z.string().min(3).max(80) }),
   z.object({ action: z.literal("release"), ruleKey: z.string().min(3).max(80) }),
   z.object({ action: z.literal("preview") }),
+  z.object({ action: z.literal("look-seen") }),
 ]);
 
 const NOT_THERE =
@@ -134,6 +141,21 @@ export async function POST(req: Request) {
       entityId: DESK_KEYS.settings,
       // The prior values are the undo: the row holds only the new ones.
       detail: { prior: desk.settings, next },
+    });
+    return NextResponse.json(await view(admin, await readDesk(admin), now));
+  }
+
+  if (input.action === "look-seen") {
+    // He has seen the reader emails' current look in his own inbox: the
+    // automatic sends to readers may go again (lib/email/look.ts).
+    const w = await writeDesk(admin, DESK_KEYS.look, { seen: READER_EMAIL_LOOK, at: now.toISOString(), by }, by);
+    if (!w.ok) return NextResponse.json({ error: w.absent ? NOT_THERE : w.error }, { status: w.absent ? 409 : 500 });
+    void logActivity({
+      actorEmail: by,
+      action: "desk.look_seen",
+      entityType: "site_settings",
+      entityId: DESK_KEYS.look,
+      detail: { prior: desk.look, next: READER_EMAIL_LOOK },
     });
     return NextResponse.json(await view(admin, await readDesk(admin), now));
   }

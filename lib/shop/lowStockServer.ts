@@ -132,7 +132,7 @@ export async function alertLowStockAfterSale(admin: SupabaseClient, orderId: str
       await notifyOwner({
         title: after === 0 ? "Purify: sold out" : "Purify: running low",
         body: after === 0 ? `${p.title} just sold its last one.` : `${p.title}: ${after} left. Time to reorder.`,
-        url: "/admin#fulfillment",
+        url: "/admin#tab=shop",
         kind: "owner-low-stock",
       });
     }

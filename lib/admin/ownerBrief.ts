@@ -340,6 +340,8 @@ export function briefSubject(f: BriefFigures, today: TodayPart): string {
   }
   const goes = today.pieces.find((p) => p.state === "goes");
   if (goes) return `${goes.name} goes out at ${goes.at} · ${figures}`;
+  const first = today.pieces.find((p) => p.state === "first look");
+  if (first) return `${first.name} comes to you first at ${first.at} · ${figures}`;
   return figures;
 }
 
@@ -420,6 +422,16 @@ function pieceHtml(p: PieceView, links: BriefLinks): string {
       return `${name}: nothing to send today. ${esc(p.why ?? "")}`;
     case "gone":
       return `${name}${subject}: gone out.`;
+    case "first look":
+      return `${name}${subject} goes to you alone at ${esc(p.at ?? "")} New York time, in the reader emails' new look, so your inbox is the first to see it. Readers get none by itself until you say you have seen it.<br>${link(
+        `${links.admin}#tab=calendar`,
+        "Hold it, or clear the look",
+      )}`;
+    case "waits for your look":
+      return `${name}${subject}: waits for your look. The first email in the new look is in your inbox; once you have seen it, clear it on the desk and the emails go to readers again.<br>${link(
+        `${links.admin}#tab=calendar`,
+        "Clear the look",
+      )}`;
   }
 }
 

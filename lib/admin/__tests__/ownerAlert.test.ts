@@ -42,7 +42,7 @@ describe("saleAlert", () => {
   });
 
   it("links into the panel's orders view", () => {
-    expect(saleAlert(100, "usd").url).toBe("/admin#orders");
+    expect(saleAlert(100, "usd").url).toBe("/admin#tab=orders");
   });
 
   it("is tagged so a run of sales groups instead of stacking", () => {

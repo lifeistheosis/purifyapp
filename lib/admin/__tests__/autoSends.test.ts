@@ -12,6 +12,8 @@ const state = vi.hoisted(() => ({
   starts: [] as { kind: string; periodKey: string; createdByEmail: string | null }[],
   result: { ok: true } as Record<string, unknown>,
   logged: [] as { action: string }[],
+  firstLooks: [] as { dedupeKey: string; kind: string; to: string; subject: string; userId: string | null }[],
+  firstLookResult: { status: "sent" } as Record<string, unknown>,
 }));
 
 vi.mock("@/lib/admin/ownerDeskStore", () => ({ readDesk: async () => state.desk }));
@@ -21,7 +23,22 @@ vi.mock("@/lib/admin/boardRead", () => ({
     return { tasks: state.tasks, error: state.boardError };
   },
 }));
+vi.mock("@/lib/email/campaignDrafts", () => ({
+  draftCampaign: async () => ({ kind: "weekly", list: "product_updates", periodKey: "2026-W47", body: { subject: "The week ahead" }, reason: null, details: {} }),
+}));
+vi.mock("@/lib/email/marketing", () => ({
+  postalAddress: () => "PO Box 1, Somewhere",
+  renderMarketing: (body: { subject: string }) => ({ subject: body.subject, html: `<p>${body.subject}</p>`, text: body.subject, headers: {} }),
+}));
+vi.mock("@/lib/email/ledger", () => ({
+  sendEmailOnce: async (_a: unknown, msg: { dedupeKey: string; kind: string; to: string; subject: string; userId: string | null }) => {
+    state.firstLooks.push(msg);
+    return state.firstLookResult;
+  },
+}));
+vi.mock("@/lib/admin/access", () => ({ adminEmails: () => ["owner@example.org"] }));
 vi.mock("@/lib/email/campaignStart", () => ({
+  campaignCopyViolations: () => [],
   startCampaign: async (_a: unknown, opts: { kind: string; periodKey: string; createdByEmail: string | null }) => {
     state.starts.push({ kind: opts.kind, periodKey: opts.periodKey, createdByEmail: opts.createdByEmail });
     return state.result;
@@ -44,13 +61,15 @@ const due: BoardTask = { id: null, ruleKey: RULE, title: "Send the Sunday calend
 
 beforeEach(() => {
   forgetAutoSends();
-  state.desk = { present: true, ok: true, settings: DESK_DEFAULTS, saved: null, holds: {}, announcement: named };
+  state.desk = { present: true, ok: true, settings: DESK_DEFAULTS, saved: null, holds: {}, announcement: named, look: { seen: "1", at: null, by: null } };
   state.tasks = [due];
   state.boardError = null;
   state.boardReads = 0;
   state.starts = [];
   state.result = { ok: true, mailingKey: "weekly:2026-W47", periodKey: "2026-W47", jobId: "j", run: { counts: { sent: 40 }, owed: 0, note: null } };
   state.logged = [];
+  state.firstLooks = [];
+  state.firstLookResult = { status: "sent" };
 });
 
 describe("a send by itself", () => {
@@ -125,5 +144,41 @@ describe("a send by itself", () => {
     expect((await runAutoSends({} as never, NOON)).lines[0].outcome).toBe("failed");
     await runAutoSends({} as never, new Date(NOON.getTime() + 10 * 60_000));
     expect(state.starts).toHaveLength(2);
+  });
+
+  describe("the first-send guard", () => {
+    // A look he has not cleared: the reader emails wear look "1" (lib/email/look.ts), he cleared "0".
+    const unseen = () => ({ ...state.desk, look: { seen: "0", at: null, by: null } });
+
+    it("sends the first one in a new look to him alone, exactly as readers would get it, and nothing to readers", async () => {
+      state.desk = unseen();
+      const r = await runAutoSends({} as never, NOON);
+      expect(state.starts).toEqual([]);
+      expect(state.firstLooks).toEqual([
+        expect.objectContaining({ dedupeKey: "first_look:1", kind: "first_look", to: "owner@example.org", userId: null, subject: "The week ahead" }),
+      ]);
+      expect(r.lines).toEqual([{ ruleKey: RULE, outcome: "to you first" }]);
+      expect(state.logged.map((l) => l.action)).toEqual(["email.first_look"]);
+    });
+
+    it("keeps readers waiting once his copy has gone, until he clears the look", async () => {
+      state.desk = unseen();
+      state.firstLookResult = { status: "duplicate" };
+      expect((await runAutoSends({} as never, NOON)).lines).toEqual([{ ruleKey: RULE, outcome: "waiting for your look" }]);
+      expect(state.starts).toEqual([]);
+    });
+
+    it("lets the sends go to readers again once he has seen the look", async () => {
+      state.desk = { ...unseen(), look: { seen: "1", at: "2026-11-21T15:00:00Z", by: "him" } };
+      await runAutoSends({} as never, NOON);
+      expect(state.starts).toHaveLength(1);
+      expect(state.firstLooks).toEqual([]);
+    });
+
+    it("still holds what he held, and sends him no copy of it", async () => {
+      state.desk = { ...unseen(), holds: { [RULE]: { at: "2026-11-22T13:00:00Z", by: "him" } } };
+      expect((await runAutoSends({} as never, NOON)).lines).toEqual([{ ruleKey: RULE, outcome: "held" }]);
+      expect(state.firstLooks).toEqual([]);
+    });
   });
 });

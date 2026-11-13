@@ -31,6 +31,8 @@ export type DeskView = {
   limits: { brief: [string, string]; send: [string, string]; holdMinutes: number };
   brief: { sent: boolean | null; at: string | null; weekly: boolean };
   today: TodayPart;
+  /** The first-send guard (lib/email/look.ts): the reader emails' look, the one he cleared, and his copy of the first in a new look. */
+  look: { current: string; seen: string; at: string | null; firstSent: { sent: boolean; at: string | null } | null };
   error?: string;
 };
 
@@ -57,6 +59,10 @@ function pieceLine(p: PieceView): string {
       return `Nothing to send today. ${p.why ?? ""}`.trim();
     case "gone":
       return "Gone out, or going out now.";
+    case "first look":
+      return `Goes to you alone at ${p.at} New York time, in the reader emails' new look. Readers get none by itself until you clear the look below.`;
+    case "waits for your look":
+      return "Waits for your look: the first email in the new look is in your inbox. Clear the look below and the emails go to readers again.";
   }
 }
 
@@ -154,6 +160,26 @@ export function OwnerDesk() {
           </p>
         )}
 
+        {view.look.current !== view.look.seen ? (
+          <section aria-labelledby="desk-look">
+            <h3 id="desk-look" className="font-sans text-[13px] font-semibold" style={{ color: "var(--adm-ink)" }}>
+              The reader emails have a new look
+            </h3>
+            <p className="mt-1 text-sm" style={ink2}>
+              {view.look.firstSent?.sent
+                ? `The first one in it went to you alone${view.look.firstSent.at ? ` at ${new Date(view.look.firstSent.at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: OWNER_ZONE })} New York time` : ""}. Look at it in your own inbox: once you have, the emails go to readers by themselves again.`
+                : "The next email due to go out by itself goes to you alone first, so your inbox is the first to see the new look. Readers get none by itself until you have seen it."}
+            </p>
+            {writable ? (
+              <div className="mt-3">
+                <ToolbarButton loading={busy === "look"} onClick={() => void act("look", { action: "look-seen" })}>
+                  I have seen it in my inbox
+                </ToolbarButton>
+              </div>
+            ) : null}
+          </section>
+        ) : null}
+
         <section aria-labelledby="desk-today">
           <h3 id="desk-today" className="font-sans text-[13px] font-semibold" style={{ color: "var(--adm-ink)" }}>
             Today&apos;s emails
@@ -175,7 +201,7 @@ export function OwnerDesk() {
                       {pieceLine(p)}
                     </p>
                   </div>
-                  {p.state === "goes" && writable ? (
+                  {(p.state === "goes" || p.state === "first look") && writable ? (
                     <ToolbarButton loading={busy === `hold:${p.ruleKey}`} onClick={() => void act(`hold:${p.ruleKey}`, { action: "hold", ruleKey: p.ruleKey })}>
                       Hold
                     </ToolbarButton>

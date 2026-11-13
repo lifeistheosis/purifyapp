@@ -17,7 +17,7 @@ const state = vi.hoisted(() => ({
 
 vi.mock("@/lib/admin/access", () => ({ adminEmails: () => ["owner@example.org"] }));
 vi.mock("@/lib/admin/ownerDeskStore", () => ({
-  DESK_KEYS: { settings: "owner_desk", holds: "owner_desk_holds", announced: "owner_desk_announced" },
+  DESK_KEYS: { settings: "owner_desk", holds: "owner_desk_holds", announced: "owner_desk_announced", look: "owner_desk_look" },
   readDesk: async () => state.desk,
   briefSent: async () => state.logged,
   writeDesk: async (_a: unknown, key: string, value: Record<string, unknown>) => {
@@ -78,7 +78,7 @@ const SUNDAY = (h: number, m = 0) => new Date(Date.UTC(2026, 10, 22, h + 5, m));
 
 beforeEach(() => {
   forgetBriefRuns();
-  state.desk = { present: true, ok: true, settings: DESK_DEFAULTS, saved: null, holds: {}, announcement: null };
+  state.desk = { present: true, ok: true, settings: DESK_DEFAULTS, saved: null, holds: {}, announcement: null, look: { seen: "1", at: null, by: null } };
   state.logged = { sent: false, at: null };
   state.sends = [];
   state.sendResult = { status: "sent" };

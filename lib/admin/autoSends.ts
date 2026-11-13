@@ -2,11 +2,16 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { startCampaign } from "@/lib/email/campaignStart";
+import { draftCampaign } from "@/lib/email/campaignDrafts";
+import { campaignCopyViolations, startCampaign } from "@/lib/email/campaignStart";
+import { sendEmailOnce } from "@/lib/email/ledger";
+import { READER_EMAIL_LOOK } from "@/lib/email/look";
+import { postalAddress, renderMarketing } from "@/lib/email/marketing";
 
+import { adminEmails } from "./access";
 import { logActivity } from "./activityLog";
 import { readBoard } from "./boardRead";
-import { autoSendDecision, localClock, parseClock, type AutoDecision } from "./ownerDesk";
+import { autoSendDecision, localClock, lookWaits, parseClock, type AnnouncedPiece, type AutoDecision } from "./ownerDesk";
 import { readDesk } from "./ownerDeskStore";
 
 /**
@@ -28,12 +33,66 @@ import { readDesk } from "./ownerDeskStore";
  * nothing to send, the postal address) is written to the activity log once
  * and not retried that day; a failure of the database or the draft is tried
  * again on the next heartbeat.
+ *
+ * THE FIRST-SEND GUARD (lib/email/look.ts). While the reader emails wear a
+ * look he has not cleared on the desk, a piece that would go to readers goes
+ * to him alone instead, once for that look, exactly as a reader would get it;
+ * then nothing goes to readers by itself until he says he has seen it in his
+ * own inbox. The brief is not held by it.
  */
+
+/** The send-once key of the one copy a new look sends him: one per look. */
+export const firstLookKey = (look: string = READER_EMAIL_LOOK) => `first_look:${look}`;
+
+type FirstLook = { outcome: "to you first" | "waiting for your look" | "refused" | "failed"; detail?: string };
+
+/** The piece's email, as a reader would get it, to him alone: once for each new look. */
+async function sendFirstLook(admin: SupabaseClient, piece: AnnouncedPiece, now: Date): Promise<FirstLook> {
+  const to = adminEmails()[0];
+  if (!to) return { outcome: "failed", detail: "ADMIN_EMAILS unset" };
+  const address = postalAddress();
+  if (!address) return { outcome: "refused", detail: "EMAIL_POSTAL_ADDRESS unset, so no list email can go" };
+  const draft = await draftCampaign(admin, piece.kind, now).catch((e: Error) => e);
+  if (draft instanceof Error) return { outcome: "failed", detail: draft.message };
+  if (draft.periodKey !== piece.periodKey) return { outcome: "refused", detail: `the draft is now for ${draft.periodKey}` };
+  if (!draft.body) return { outcome: "refused", detail: draft.reason ?? "nothing to send" };
+  if (campaignCopyViolations(piece.kind, draft.body).length) return { outcome: "refused", detail: "the words do not pass the email doctrine" };
+  // An empty token: his copy's unsubscribe button leads to the page itself, as a list email to no reader does.
+  const email = renderMarketing(draft.body, draft.list, "", address);
+  const result = await sendEmailOnce(admin, {
+    dedupeKey: firstLookKey(),
+    kind: "first_look",
+    userId: null,
+    to,
+    subject: email.subject,
+    html: email.html,
+    text: email.text,
+    headers: email.headers,
+  });
+  if (result.status === "duplicate") return { outcome: "waiting for your look" };
+  if (result.status !== "sent") return { outcome: "failed", detail: result.status === "failed" || result.status === "unavailable" ? result.error : result.status };
+  void logActivity({
+    actorEmail: null,
+    action: "email.first_look",
+    entityType: "email_campaign",
+    entityId: `${piece.kind}:${piece.periodKey}`,
+    detail: { look: READER_EMAIL_LOOK, ruleKey: piece.ruleKey },
+  });
+  return { outcome: "to you first" };
+}
 
 export type AutoSendLine = {
   ruleKey: string;
   /** What happened: a reason it did not go, or the send's outcome. */
-  outcome: Exclude<AutoDecision, { go: true }>["why"] | "started" | "already" | "refused" | "failed";
+  outcome:
+    | Exclude<AutoDecision, { go: true }>["why"]
+    | "started"
+    | "already"
+    | "refused"
+    | "failed"
+    /** The first-send guard: this one went to him alone, or readers wait for his look. */
+    | "to you first"
+    | "waiting for your look";
   detail?: string;
 };
 
@@ -77,6 +136,14 @@ export async function runAutoSends(admin: SupabaseClient, now: Date = new Date()
     });
     if (!decision.go) {
       lines.push({ ruleKey: piece.ruleKey, outcome: decision.why });
+      continue;
+    }
+
+    // The first-send guard: a look he has not seen goes to him alone, never to readers.
+    if (lookWaits(READER_EMAIL_LOOK, desk.look)) {
+      const first = await sendFirstLook(admin, piece, now);
+      if (first.outcome !== "failed") finished.set(piece.ruleKey, clock.day);
+      lines.push({ ruleKey: piece.ruleKey, outcome: first.outcome, ...(first.detail ? { detail: first.detail } : {}) });
       continue;
     }
 
