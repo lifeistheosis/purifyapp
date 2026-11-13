@@ -34,8 +34,10 @@
 // with Clicks as you scroll off. The page that is on is in sight when the
 // screen opens, and a page tapped at the edge comes whole into view; the row
 // alone moves, never the screen. On a computer all of them fit on the row.
+// Back finds the row where the reader left it (lib/ui/sweepKept.ts).
 
-import { Fragment, useLayoutEffect, useRef, useState, type RefObject } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
+import { usePathname } from "next/navigation";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { FONT_CLASSES, useReaderPrefs, type ReaderFont } from "@/components/reader/ReaderPrefs";
@@ -50,6 +52,7 @@ import { READING_THEMES, isCollectionTheme, themeWorn, type ReadingTheme } from 
 import { inSightBy } from "@/lib/settings/modeRow";
 import { JOHN_1_OPENING, PREVIEW_CHAPTER } from "@/lib/settings/preview";
 import { useScrollTicks } from "@/lib/ui/scrollTicks";
+import { forgetSweep, keepSweep, sweepKept } from "@/lib/ui/sweepKept";
 
 /** Wired to the reader's palette and the Plus gate. */
 export function ReadingModePages() {
@@ -88,7 +91,7 @@ export function ModePages({
   const modes = READING_THEMES.filter((m) => !m.look || m.id === theme);
   const row = useRef<HTMLDivElement>(null);
   useScrollTicks(row);
-  useOnInSight(row, worn ?? themeWorn(theme, allows));
+  useOnInSight(row, worn ?? themeWorn(theme, allows), `${usePathname()} modes`);
   const book = t("bible.books.john");
   const chapter = t("bible.chapterN", { n: PREVIEW_CHAPTER });
   return (
@@ -131,14 +134,32 @@ export function ModePages({
  * stands with a neighbour on each side. Still until the screen is up (a
  * choice read from the device after the first draw must not glide in as the
  * screen opens) and under reduced motion; a glide otherwise.
+ *
+ * A reader who comes back by Back finds the row where they left it, not
+ * where it opens (the pre-build gate's rule; lib/ui/sweepKept.ts): the sweep
+ * kept as the row moved is given back at once in place of the move, and it
+ * holds until their hand is on the row, so what the screen reads from the
+ * device after it opens (the palette, the Plus answer) cannot move it away.
  */
-function useOnInSight(row: RefObject<HTMLDivElement | null>, on: string): void {
+function useOnInSight(row: RefObject<HTMLDivElement | null>, on: string, where: string): void {
+  // The sweep given back on Back, until the reader's hand is on the row:
+  // undefined until asked, once, as the row opens; null on a fresh visit.
+  const back = useRef<number | null | undefined>(undefined);
   useLayoutEffect(() => {
     const box = row.current;
     if (!box) return;
+    if (back.current === undefined) {
+      back.current = sweepKept(where);
+      // A visit that went forward here: what an earlier visit left goes.
+      if (back.current === null) forgetSweep(where);
+    }
     /** False until the row is laid out. */
     const place = (): boolean => {
       if (!box.clientWidth) return false;
+      if (back.current != null) {
+        box.scrollTo({ left: back.current, behavior: "instant" });
+        return true;
+      }
       const pages = [...box.querySelectorAll<HTMLElement>(":scope > .set-mode")];
       const at = pages.findIndex((page) => page.getAttribute("aria-pressed") === "true");
       if (at < 0) return true;
@@ -162,8 +183,35 @@ function useOnInSight(row: RefObject<HTMLDivElement | null>, on: string): void {
     });
     watch.observe(box);
     return () => watch.disconnect();
-  }, [row, on]);
+  }, [row, on, where]);
+  // The sweep is kept as the row moves (once a frame), by the reader or by
+  // the move above; the reader's hand on the row lets a given-back sweep go.
+  useEffect(() => {
+    const box = row.current;
+    if (!box) return;
+    let frame = 0;
+    const keep = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        keepSweep(where, box.scrollLeft);
+      });
+    };
+    const hand = () => {
+      back.current = null;
+    };
+    box.addEventListener("scroll", keep, { passive: true });
+    for (const type of HAND) box.addEventListener(type, hand, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      box.removeEventListener("scroll", keep);
+      for (const type of HAND) box.removeEventListener(type, hand);
+    };
+  }, [row, where]);
 }
+
+/** The first signs of a reader's own hand on the row (lib/ui/scrollReset.ts listens for the same). */
+const HAND = ["touchstart", "wheel", "keydown", "pointerdown"] as const;
 
 export type ReadingMode = (typeof READING_THEMES)[number];
 
