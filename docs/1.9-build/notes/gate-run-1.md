@@ -813,3 +813,134 @@ documents, and the webs of St Athanasius, the Twenty Thousand Martyrs and St
 John the Apostle); parts 3 to 5; the web build last. Part 1 is not repeated
 whole: it passed on 872724aa3 but for the Search row, and this round changes
 no control.
+
+## Final check (2026-11-12 20:42 to 2026-11-13 02:12 UTC): not a pass
+
+The arbiter's call (20:20 UTC, cut at its word of 20:43 from `05aee81e1`): a
+new selling export; part 2 on all 128 screens, both readers, at 390, 800x1280
+and 1032x1376; the sweep of the 996 pages the walks do not reach, with pixels,
+five palettes, in shards; the seven light looks on every family the mends
+touched; offline on the councils, Ancyra 314 and /history/; a tap walk on every
+screen whose controls changed since `872724aa3`, both readers, at 390 and at 320,
+800 and 1032 where named; /gift/ in its thirteen states; the four tall-card
+webs with the faded web tapped; parts 3 to 5; the web build last. The arbiter
+closed it at 02:14 UTC as "not a pass".
+
+**The export:** `npm run build:android` of `3e65f51ff` (its code is
+`05aee81e1`), selling: `NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1` with
+`NEXT_PUBLIC_REVENUECAT_ANDROID_KEY=walk`, and the new reader walked with
+`SELLS_PLUS=1`. The switches stood in their release-day order: CAMPAIGNS_OPENING
+"testers", PICTURES_IN_STORE_BUILDS false, CAMPAIGN_NOTICES true,
+JULY_GROUPS_GO true, CARE_NOTE_SEND true. The container restarted at about
+21:30 UTC and stopped the run; it resumed on the same export, keeping what had
+finished (part 2 at 390 for the new reader, and the open reader's first shard).
+Parts 3 to 5 and the web build ran on `b6b97b2e5`: since `05aee81e1` only the
+admin panel (web only), docs, CI, the push guard and its test, and the walk's
+mend below. No app code.
+
+**Part 2, checkMock with pixels, five palettes:** at 390 both readers 128 of
+128 clean; at 800 and at 1032 both readers 127 of 128 (fail 1). The words left
+for the eye are the ones answered before, and on the wide calendar the dot
+between New and Old, which wears the Old link's own ink (5.14 to 6.06:1) and is
+hidden from a screen reader.
+
+**The sweep:** 996 pages, open reader, 995 clean. St Ephrem's On the
+Transfiguration failed under load ("Editorial summary" 4.24:1 on Dark) and
+passes measured again alone. **The seven light looks:** 363 pages in the
+touched families, all clean; the Search sheet from Saints and from a page that
+searches everything, and the Purify profile sheet, clean on the five palettes
+and the seven looks.
+
+**No signal:** /reading/councils/, Ancyra 314, the seven ecumenical councils'
+pages and /history/, each scrolled to its end: every picture drawn from the
+app, none asked of the website. checkMock with no signal, ten of ten: the
+confirm run's council kicker is mended.
+
+**Part 1, the tap walk,** both readers at once, touch:
+- 390, 83 screens: 2,225 and 2,219 controls, 30 failed each, the same lines
+  in both (the councils' Fathers, fail 2; five webs' lifted saints, allowed
+  since by the arbiter; John the Apostle's tucked card, the walk's own). 190
+  distinct sheets each, none failed.
+- 320 (the nineteen books' first chapters and St Chrysogonus's web): 374 and
+  373 controls, one failed each (St Chrysogonus's tucked card, the walk's
+  own). checkMock at 320 on the same twenty: clean for both readers.
+- 800 (calendar, journal, prayers) and 1032 (those and /saints/): the Search
+  sheet's key hint (fail 3); for the new reader at 1032, fail 6. The century
+  timeline passes at 1032.
+- John 1 with the interlinear on, both readers, in English and in Arabic.
+  Every Greek word is a control that opens its own sheet, 847 controls on the
+  page, about three hours a walk. Stopped at 01:41 UTC and walked as a sample:
+  the ten controls before the words and the first thirty words, each language,
+  each reader. Every word's sheet fails one rule (fail 4).
+- Genesis 1 in Arabic: fifteen controls and four sheets each, none failed. Its
+  commentary sheet, which the walk does not reach (each verse's mark is drawn
+  11 to 15 by 5 pixels with its 44 reach round it, and the walk passes over
+  anything under 8): walked by hand, both readers, in English and in Arabic.
+  Each of the nine marks opens its verse's sheet, every sheet clean on the five
+  palettes and the first on the seven looks, and each control in it changes
+  the sheet.
+- /gift/ in thirteen states: all pass. /history/'s row brought to the middle
+  stays at 371px from 0 to 1000 ms.
+- The four tall-card webs (Irenaeus, Ambrose, John the Apostle, Anthony), both
+  readers: every control of the faded web in reach was tapped, the card stood
+  tall again before each. Each tap lowered the card, as `05aee81e1` says a tap
+  on the empty web does, and nothing under it answered. On Anthony's web one
+  faded saint stands inside the Web and Timeline switch's own reach, so a
+  finger there is the switch's and it was left out.
+
+**Mended in the walk during the run** (`b6b97b2e5`): `--lang` sets the phone's
+language too. The Android shell's stand-in has no Capacitor Preferences, so the
+app opened in the device's language and the new reader's Arabic walks were in
+English. Every Arabic walk above ran after the mend.
+
+**The fails, by owner (the arbiter, 02:14 UTC):**
+1. /calendar/ at 800 and 1032, both readers, on Light: today's date in the
+   day's tone, 3.58:1 (components/calendar/CalendarCell.tsx). Updates.
+2. The seven ecumenical councils' pages at 390, both readers: the Fathers move
+   14 to 106px under the finger as the card above the row takes the chosen
+   Father's height (components/councils/CouncilFathers.tsx). Updates 2.
+3. The Search sheet at 800 and 1032, both readers: an "esc" key drawn on a
+   touch screen (components/search/CommandPalette.tsx). Updates 2.
+4. John 1 with the interlinear on: every word's sheet keeps its Close 8.6px
+   off its place in Arabic, set with "-mr-2" where "-me-2" mirrors
+   (components/bible/WordPopover.tsx). Updates 2.
+5. Saints' webs: the place and date under a node cut with an ellipsis, on 17
+   webs at 390 ("Constantinople, 381" loses its year) and on 44 at 320
+   ("Great Persecution" on 14). checkMock's cut rule reads only controls'
+   names, so it was measured line by line
+   (components/saints/web/WebConstellation.tsx). Updates 2.
+6. /prayers/ at 1032, the new reader: the prayer book's chapters II and III
+   stay under the finger only by the browser's scroll anchoring (296px), seen
+   twice. By the arbiter's ruling of 2026-11-11 a mend must not lean on
+   Safari's anchoring, and the iPad runs WebKit
+   (components/prayers/PrayerBookContents.tsx with lib/ui/showOpened.ts).
+   Updates.
+
+**The arbiter's rulings (02:14 UTC):**
+- The webs' lifted saints: the allowance of 2026-11-11 extends to every node,
+  by name and reason: a tapped node kept in sight above the card it opened. It
+  must move in the house glide and end fully in view. The walk still fails a
+  node that ends hidden, or that moves with an instant cut outside reduced
+  motion.
+- Community's thread under the tab bar, seen once in the first start: the
+  measure, not the screen (Updates 2's `db29a0470` is accepted).
+- The walk's reach: for 1.9, Genesis 1's hand walk of the commentary marks
+  stands as the sample, and the arbiter names it to the owner. Counting a
+  control by its drawn reach (hit-44) goes into 2.0's nightly gate.
+
+**Not fails:** John the Apostle's web at 390 and St Chrysogonus's at 320. The
+walk's first touch on the empty web tucks the card away, as a reader's would,
+and the card's button it then aims at is inert and unseen behind the tab bar.
+
+**Allowances new since the confirm run,** by name and reason: "target" on a
+word in its own line (GlossedText.tsx and VerseRow.tsx, `13e85f3ff`); "emdash"
+on the councils' documents and their notes as their editions print them
+(CouncilSections.tsx) and on the prayer's own words (PrayerStep.tsx), as the
+arbiter ruled for the confirm run's fail 10. None in the walks or checkMock.
+
+**Parts 3 to 5:** 91 files, 1,300 tests, all pass. **The web build:** passes,
+6,525 pages.
+
+**What follows** (the arbiter, 02:14 UTC): a targeted re-check by a fresh
+Admin chat (`docs/handoffs/admin.md`), cut only on the arbiter's word once
+every fix has landed.

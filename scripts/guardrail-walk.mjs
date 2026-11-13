@@ -58,7 +58,7 @@ import path from "node:path";
 
 import { chromium } from "playwright";
 
-import { checkMock } from "./mock-check.mjs";
+import { checkMock, LOOKS as THEMES } from "./mock-check.mjs";
 import { screens } from "./lib/screens.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "./lib/shell-server.mjs";
 import { SELLS_PLUS, asAndroidShell, checkSells, readerWords } from "./lib/sells-plus.mjs";
@@ -84,6 +84,13 @@ const [WIDTH, HEIGHT] = SIZE;
 const ON = WIDTH === 390 && HEIGHT === 844 ? "on a phone" : `at ${WIDTH} by ${HEIGHT}`;
 const ONLINE = argv.includes("--online");
 if (ONLINE) argv.splice(argv.indexOf("--online"), 1);
+// The seven light looks in place of the five palettes (the arbiter, 2026-11-12 02:08 UTC: Desert, Jordan,
+// Blush, Roses, Lavender, Olive and Stone; the dark looks read like the dark palettes). --light.
+const LIGHT = argv.includes("--light");
+if (LIGHT) argv.splice(argv.indexOf("--light"), 1);
+const SEVEN = ["Desert", "Jordan", "Blush", "Roses", "Lavender", "Olive", "Stone"];
+const LIGHT_LOOKS = THEMES.filter(([label]) => SEVEN.includes(label));
+if (LIGHT && LIGHT_LOOKS.length !== SEVEN.length) throw new Error(`--light: mock-check's looks lack ${SEVEN.filter((l) => !LIGHT_LOOKS.some(([x]) => x === l)).join(", ")}`);
 const SELF_TEST = argv.includes("--self-test");
 if (SELF_TEST) argv.splice(argv.indexOf("--self-test"), 1);
 const OUT = path.resolve(argv[0] ?? "out");
@@ -91,7 +98,7 @@ if (!SELF_TEST) checkSells(OUT);
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}: run npm run build:android first`);
 
 const list = SELF_TEST ? [] : (ONLY ?? screens(OUT));
-if (!SELF_TEST) console.log(`${list.length} screens ${ON}, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}, ${readerWords()}`);
+if (!SELF_TEST) console.log(`${list.length} screens ${ON}${LIGHT ? ", on the seven light looks" : ""}, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}, ${readerWords()}`);
 
 // The website, as the apps name it: purifyapp.net in the store builds, its Render address in an export
 // built without NEXT_PUBLIC_SITE_URL (lib/site.ts).
@@ -198,7 +205,7 @@ async function walkOne(page, at) {
       await go(page, at, { timeout: 15000 });
       await page.waitForTimeout(1500);
       // Words over a picture are measured on the pixels under their letters, on every palette.
-      const r = await checkMock(page, "body", { pixels: true });
+      const r = await checkMock(page, "body", { pixels: true, ...(LIGHT ? { palettes: LIGHT_LOOKS } : {}) });
       const left = r.looks.filter((l) => l.left);
       if (LOOKS && left.length) {
         fs.mkdirSync(LOOKS, { recursive: true });
