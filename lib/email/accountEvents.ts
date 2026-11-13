@@ -6,6 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 import { sendEmailOnce } from "./ledger";
 import { isNewAccount } from "./newAccount";
+import { firstWeekAskLink } from "./retention/firstWeekAsk";
 import { accountDeletedEmail, welcomeEmail, type EmailContent } from "./templates/account";
 
 /**
@@ -49,7 +50,9 @@ function sendContent(
 export function scheduleWelcome(user: { id: string; email?: string | null; created_at?: string | null }) {
   if (!user.email || !isNewAccount(user.created_at)) return;
   const to = user.email;
-  schedule("welcome", () => sendContent(`welcome:${user.id}`, "welcome", user.id, to, welcomeEmail()));
+  // The first-week guide's asking line, only while the guide reaches readers (lib/email/retention/firstWeekAsk.ts).
+  const firstWeek = firstWeekAskLink(user.id);
+  schedule("welcome", () => sendContent(`welcome:${user.id}`, "welcome", user.id, to, welcomeEmail({ firstWeek })));
 }
 
 /**

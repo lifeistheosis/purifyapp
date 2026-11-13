@@ -1,6 +1,6 @@
 import { SITE_URL } from "@/lib/site";
 
-import { bigValue, button, dayRow, microLabel, p, picture, pointRows, signOff, table } from "../blocks";
+import { bigValue, button, dayRow, link, microLabel, p, pHtml, picture, pointRows, signOff, table } from "../blocks";
 import { emailLayout } from "../layout";
 import { escapeHtml } from "../send";
 import { T } from "../theme";
@@ -76,6 +76,12 @@ export function buildEmail(opts: {
   /** A short list after the paragraphs, each line with a mark and a name of its own, and maybe a screenshot. */
   points?: EmailPoint[];
   action?: { label: string; href: string };
+  /**
+   * One line after the button that asks the reader something, its last words
+   * the link that answers it: the welcome email's first-week guide
+   * (lib/email/retention/firstWeekAsk.ts). Escaped.
+   */
+  ask?: { line: string; label: string; href: string };
   /** A labelled value shown large, like a tracking number. Escaped. */
   highlight?: { label: string; value: string };
   footer: string;
@@ -117,6 +123,7 @@ export function buildEmail(opts: {
     points +
     (opts.after ?? []).map((t) => p(t)).join("") +
     (opts.action ? button(opts.action) : "") +
+    (opts.ask ? pHtml(`${escapeHtml(opts.ask.line)} ${link(opts.ask.href, escapeHtml(opts.ask.label))}.`, "margin-top:22px") : "") +
     signOff(SIGN_OFF);
 
   const links = opts.footerLinks ?? [];
@@ -130,6 +137,7 @@ export function buildEmail(opts: {
     ...(opts.points ?? []).map(pointLine),
     ...(opts.after ?? []),
     ...(opts.action ? [`${opts.action.label}: ${opts.action.href}`] : []),
+    ...(opts.ask ? [`${opts.ask.line} ${opts.ask.label}: ${opts.ask.href}`] : []),
     SIGN_OFF,
     "--",
     opts.footer,

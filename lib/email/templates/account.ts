@@ -1,4 +1,5 @@
 import { buildEmail, longDate, siteUrl as url, type EmailContent } from "./build";
+import { FIRST_WEEK_ASK } from "../retention/firstWeekWords";
 
 export { longDate, type EmailContent };
 
@@ -138,7 +139,13 @@ export function claimClosingEmail(opts: { dropTitle: string; closesAt: Date }): 
   });
 }
 
-export function welcomeEmail(): EmailContent {
+/**
+ * The welcome. With `firstWeek`, this reader's own link to the first-week
+ * guide, it ends on one line that asks whether to send it, the answer the
+ * reader's own tap (lib/email/retention/firstWeekAsk.ts, which gives the link
+ * only while the guide reaches readers). Without it, it asks nothing.
+ */
+export function welcomeEmail(opts: { firstWeek?: string | null } = {}): EmailContent {
   return build({
     subject: "Welcome to Purify",
     heading: "Welcome to Purify",
@@ -148,6 +155,7 @@ export function welcomeEmail(): EmailContent {
       "If anything is ever wrong, or missing, reply to this email. It reaches me.",
     ],
     action: { label: "Open Purify", href: url("/") },
+    ...(opts.firstWeek ? { ask: { ...FIRST_WEEK_ASK, href: opts.firstWeek } } : {}),
   });
 }
 

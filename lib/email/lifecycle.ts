@@ -27,6 +27,7 @@ import {
   WELCOME_SENDS_PER_RUN,
 } from "./lifecyclePlan";
 import { WELCOME_WINDOW_MS } from "./newAccount";
+import { firstWeekAskLink } from "./retention/firstWeekAsk";
 import { careGuideEmail, orderAddressEmail, reviewAskEmail } from "./templates/orders";
 import type { SendOnceResult } from "./sendOnce";
 import {
@@ -90,7 +91,8 @@ function contentFor(p: PlannedEmail): EmailContent {
     case "claim_closing":
       return claimClosingEmail({ dropTitle: p.dropTitle, closesAt: p.closesAt });
     case "welcome":
-      return welcomeEmail();
+      // With the first-week guide's asking line only while the guide reaches readers.
+      return welcomeEmail({ firstWeek: firstWeekAskLink(p.userId) });
     case "order_address":
       return orderAddressEmail({ orderNumber: orderConfirmationNumber(p.orderId), reminder: p.reminder });
     case "care_guide":

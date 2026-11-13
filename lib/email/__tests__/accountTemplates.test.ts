@@ -26,6 +26,8 @@ const EVERY: [string, EmailContent][] = [
   ["pro ended", plusEndedEmail({ pro: true })],
   ["claim closing", claimClosingEmail({ dropTitle: "St Nicholas", closesAt: new Date("2026-12-04T00:00:00Z") })],
   ["welcome", welcomeEmail()],
+  // With the first-week guide's asking line (lib/email/retention/firstWeekAsk.ts).
+  ["welcome, asking about the first-week guide", welcomeEmail({ firstWeek: "https://purifyapp.net/email/first-week?u=00000000-0000-4000-8000-000000000000&s=x" })],
   ["account deleted", accountDeletedEmail()],
   ["terms changed", termsChangedEmail({ effective: new Date("2026-08-14T00:00:00Z") })],
 ];
