@@ -212,7 +212,7 @@ index c0f9a2a51..da38d0296 100644
 +  const modes = READING_THEMES.filter((m) => !m.look || m.id === theme);
 +  const row = useRef<HTMLDivElement>(null);
 +  useScrollTicks(row);
-+  useOnInSight(row, `${worn ?? ""}:${theme}`);
++  useOnInSight(row, worn ?? themeWorn(theme, allows));
    const book = t("bible.books.john");
    const chapter = t("bible.chapterN", { n: PREVIEW_CHAPTER });
 -  const palette = (mode: ReadingMode) => (
