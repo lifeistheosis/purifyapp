@@ -1,0 +1,43 @@
+diff --git a/node_modules/@capacitor-community/safe-area/android/src/main/java/com/getcapacitor/community/safearea/SafeAreaPlugin.java b/node_modules/@capacitor-community/safe-area/android/src/main/java/com/getcapacitor/community/safearea/SafeAreaPlugin.java
+index 7e5d064..2941c97 100644
+--- a/node_modules/@capacitor-community/safe-area/android/src/main/java/com/getcapacitor/community/safearea/SafeAreaPlugin.java
++++ b/node_modules/@capacitor-community/safe-area/android/src/main/java/com/getcapacitor/community/safearea/SafeAreaPlugin.java
+@@ -7,6 +7,7 @@ import android.graphics.Color;
+ import android.util.Log;
+ import android.view.View;
+ import android.view.Window;
++import android.webkit.WebView;
+ 
+ import androidx.annotation.NonNull;
+ import androidx.annotation.Nullable;
+@@ -121,7 +122,9 @@ public class SafeAreaPlugin extends Plugin {
+ 
+             Insets systemBarsInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+             Insets imeInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
+-            boolean keyboardVisible = windowInsets.isVisible(WindowInsetsCompat.Type.ime());
++            // Purify (patches/@capacitor-community+safe-area+8.0.1.patch): room is made
++            // only for a keyboard that a field in the page asked for (keyboardIsTheApps).
++            boolean keyboardVisible = windowInsets.isVisible(WindowInsetsCompat.Type.ime()) && keyboardIsTheApps();
+ 
+             if (shouldPassthroughInsets) {
+                 // We need to correct for a possible shown IME
+@@ -151,6 +154,19 @@ public class SafeAreaPlugin extends Plugin {
+         });
+     }
+ 
++    /**
++     * Purify: whether the keyboard on the screen is the app's own, opened by a field
++     * in the page. Coming back to the app while another app's keyboard is still up,
++     * Android reports that keyboard to this window as well until it has put it away,
++     * and making room for it drew every screen short for a moment, then tall again
++     * (build 95 note 14). The web view answers for its page: it is a text editor only
++     * while one of the page's fields has the focus.
++     */
++    private boolean keyboardIsTheApps() {
++        WebView webView = getBridge() == null ? null : getBridge().getWebView();
++        return webView != null && webView.hasFocus() && webView.onCheckIsTextEditor();
++    }
++
+     private int getBottomInset(Insets systemBarsInsets, boolean keyboardVisible) {
+         if (webViewMajorVersion < WEBVIEW_VERSION_WITH_SAFE_AREA_KEYBOARD_FIX) {
+             // This is a workaround for webview versions that have a bug
