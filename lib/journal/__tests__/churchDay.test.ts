@@ -87,7 +87,7 @@ describe("the journal is headed by the Church's day", () => {
   const composer = read("components/journal/JournalComposer.tsx");
 
   it("today's page: the weekday in Lora, the day's line, the readings and today's highlights", () => {
-    expect(today).toContain("useChurchDay()");
+    expect(today).toContain("useChurchDayAtOnce()");
     expect(today).toMatch(/font-serif text-\[32px\][^"]*text-paper"/);
     // Write is the journal's one button, always in reach: not drawn here twice.
     expect(today).not.toContain('t("journal.write")');

@@ -3437,6 +3437,17 @@ html[data-input="pointer"] *:focus-visible:not(input, textarea, select, [content
 [data-journal-composer] input[data-page-heading]:not([type="checkbox"]):not([type="radio"]) {
  font-size: 20px;
 }
+/* A page's own words stay at the reading size on a phone too (build 95 note
+   4). The rule above pinned them to 16px, and the wash behind a highlighted
+   paragraph (components/journal/PageBlocks.tsx) is the same words laid at
+   the reading size, 17px: so the wash broke its lines in other places than
+   the words, and each line of it fell 1.7px further under its own (17px
+   after ten lines). The reading size is over 16px, so nothing zooms. Every
+   field of the sheet that asks for it is held to it: the words, a quote, a
+   callout, a checklist's lines and a verse's note. */
+[data-journal-composer] :is(textarea, input:not([type="checkbox"]):not([type="radio"])).text-body {
+ font-size: var(--text-body);
+}
 
 /* Highlight colours (1.7.1, lib/bible/highlightPalette.ts). An element that
    wears one sets data-hl-color and carries both themes' values inline

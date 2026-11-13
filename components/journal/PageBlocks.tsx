@@ -229,7 +229,14 @@ function TextBlock({
         // The wash, behind the words: the same text, laid out the same way,
         // its letters clear, so only the colour shows under the field's own.
         <div aria-hidden dir="auto" data-hl-color={block.color} style={highlightVars(block.color)} className={cn(words, "pointer-events-none absolute inset-0 text-transparent")}>
-          <span className="box-decoration-clone rounded-[4px] bg-[var(--hl-verse)] px-[3px] -mx-[3px] py-[0.1em]">{block.text}</span>
+          {/* The wash reaches 3px past the words at each end of a line, and
+              takes no room to do it (a shadow, never padding). Until build
+              95 it was padding, on each line by box-decoration-clone, so the
+              wash had 6px less of every line than the words over it: a line
+              whose last word fell in those 6px broke a word sooner in the
+              wash than in the field, and the wash under "me." ran on under
+              nothing (note 4; measured at 390: the words 30px, the wash 59). */}
+          <span data-page-wash="" className="box-decoration-clone rounded-[4px] bg-[var(--hl-verse)] py-[0.1em] shadow-[3px_0_0_var(--hl-verse),-3px_0_0_var(--hl-verse)]">{block.text}</span>
           {"​"}
         </div>
       ) : null}

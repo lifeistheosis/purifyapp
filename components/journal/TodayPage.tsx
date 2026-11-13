@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Book } from "@/components/ui/icons/Book";
 import { Pen } from "@/components/ui/icons/Pen";
 import { Highlighter } from "@/components/ui/icons/Highlighter";
 import { localBookNames } from "@/lib/bible/books";
-import { useChurchDay } from "@/lib/calendar/useChurchDay";
+import { useChurchDayAtOnce } from "@/lib/calendar/useChurchDay";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import { READING_KIND_KEY, verseSpan } from "@/lib/journal/churchDay";
 import type { JournalSource } from "@/lib/journal/entries";
@@ -49,21 +49,27 @@ function highlightedToday(today: Date): Highlighted[] {
  */
 export function TodayPage({ onWriteFrom }: { onWriteFrom: (source: JournalSource) => void }) {
   const { t, locale } = useTranslate();
-  const day = useChurchDay();
+  // The day is known in the first frame (lib/calendar/useChurchDay.ts,
+  // useChurchDayAtOnce): the journal draws this page only on the device,
+  // once it is mounted (JournalClient), so nothing stands in for it. Until
+  // build 95 an empty 200px did, for a frame, and the page that took its
+  // place is 268px with two readings: the filters, the search and every
+  // entry dropped 68px as a reader arrived (note 4, "some visual and ux
+  // bugs"; measured on the walk, the filters from 417 to 485).
+  const day = useChurchDayAtOnce();
   const books = useMemo(() => localBookNames(t), [t]);
   const bookName = (slug: string) => books[slug] ?? t(`bible.books.${slug}`);
-  const [highlights, setHighlights] = useState<Highlighted[]>([]);
   const todayKey = day ? localDayKey(day.today.toISOString()) : null;
-  useEffect(() => {
-    if (!day) return;
-    // The device's own highlights, read after the page has painted.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setHighlights(highlightedToday(day.today));
-    // todayKey is the day; day changes object on every render of its hook.
+  // The device's own highlights of the day, read with the day and not a
+  // frame after it, so their rows are in the page as it first stands.
+  const highlights = useMemo<Highlighted[]>(
+    () => (day ? highlightedToday(day.today) : []),
+    // todayKey is the day; `day` is a new object whenever its hook's memo runs.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [todayKey]);
+    [todayKey],
+  );
 
-  if (!day) return <div className="mt-6 min-h-[200px]" aria-hidden />;
+  if (!day) return null;
 
   const fmt = (o: Intl.DateTimeFormatOptions) => {
     try {

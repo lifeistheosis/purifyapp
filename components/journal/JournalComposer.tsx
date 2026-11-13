@@ -33,6 +33,7 @@ import { cn } from "@/lib/cn";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import { JOURNAL_KINDS, MAX_BODY, type JournalDraft, type JournalKind, type JournalSource } from "@/lib/journal/entries";
 import { pageIsEmpty } from "@/lib/journal/page";
+import { scrollForWritingLine } from "@/lib/journal/writingLine";
 import { useVerseWords } from "@/lib/saved/verseWords";
 
 /** Each kind's name. A closed map, so every key is a literal the key test reads. */
@@ -41,6 +42,28 @@ export const KIND_KEY: Record<JournalKind, string> = {
   prayer: "journal.kind.prayer",
   question: "journal.kind.question",
 };
+
+/**
+ * How tall a field's words are, at the field's own width and type: measured
+ * on a twin of it with no height of its own, laid over nothing and gone in
+ * the same breath. The field itself is as tall as it was made (30 percent of
+ * the screen for a page's last), which says nothing of where its words end.
+ */
+function wordsHeightOf(el: HTMLTextAreaElement): number {
+  const parent = el.parentElement;
+  if (!parent) return el.offsetHeight;
+  const twin = el.cloneNode() as HTMLTextAreaElement;
+  twin.value = el.value;
+  twin.rows = 1;
+  twin.tabIndex = -1;
+  twin.setAttribute("aria-hidden", "true");
+  twin.removeAttribute("placeholder");
+  Object.assign(twin.style, { position: "absolute", top: "0", insetInlineStart: "0", width: `${el.clientWidth}px`, height: "0px", minHeight: "0px", visibility: "hidden", pointerEvents: "none" });
+  parent.appendChild(twin);
+  const height = twin.scrollHeight;
+  twin.remove();
+  return height;
+}
 
 export function JournalComposer({
   open,
@@ -100,7 +123,11 @@ export function JournalComposer({
       if (!scroller) return;
       const atEnd = el.selectionEnd >= el.value.length - 1;
       if (!atEnd) return;
-      const below = el.getBoundingClientRect().bottom - scroller.getBoundingClientRect().bottom + 24;
+      // The line is where the words end, not where a tall field does
+      // (lib/journal/writingLine.ts): a page with nothing written keeps its
+      // kinds and its title in sight when the keyboard comes up.
+      const box = el.getBoundingClientRect();
+      const below = scrollForWritingLine({ fieldTop: box.top, fieldBottom: box.bottom, wordsHeight: wordsHeightOf(el), scrollerBottom: scroller.getBoundingClientRect().bottom });
       if (below > 0) scroller.scrollTop += below;
     };
     const vv = window.visualViewport;

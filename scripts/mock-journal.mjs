@@ -1534,6 +1534,75 @@ await flow(
   { set: lapsed({ pages: false }), at: `/florilegium/gathering?g=${LAPSED_ID}`, ready: "[data-florilegium-read-only] [data-gathering-page]", reader: "free" },
 );
 
+// ── Build 95, note 4 (the owner on 2026-11-13: "notebook is not really optimized + some visual and ux bugs") ──
+
+await flow(
+  "build 95: the journal arrives whole: nothing under today's page moves as it comes",
+  async (page) => {
+    // The measure is the browser's own: what moved, with no finger down, and by how much of the screen.
+    await page.evaluate(() => {
+      window.__moved = [];
+      new PerformanceObserver((l) => {
+        for (const e of l.getEntries()) if (!e.hadRecentInput) window.__moved.push(e.value);
+      }).observe({ type: "layout-shift" });
+    });
+    await go(page, "/journal");
+    await page.waitForSelector("[data-journal-today]", { timeout: 30000 });
+    await wait(1500);
+    const moved = await page.evaluate(() => window.__moved);
+    // The old page: an empty 200px, then 268px, and the filters dropped 68px (0.037 of the screen).
+    expectThat(Math.max(0, ...moved) < 0.01, `the page moved as it arrived (${moved.map((v) => v.toFixed(3)).join(", ")})`);
+    expectThat((await page.locator("[data-journal-entry]").count()) > 0, "the pages kept before are not listed");
+  },
+  { set: kept(OLDER, OTHER), at: "/bible", ready: "main" },
+);
+
+await flow("build 95: the keyboard comes up on a page with nothing written, and the kinds stay where they were", async (page) => {
+  await write(page);
+  const before = await page.locator("[data-journal-kinds]").boundingBox();
+  // An Android app's window grows short by its keyboard (lib/ui/viewport.ts): 320px of an 844px phone.
+  await page.setViewportSize({ width: 390, height: 844 - 320 });
+  await wait(700);
+  const after = await page.locator("[data-journal-kinds]").boundingBox();
+  const top = await sheetScroll(page).evaluate((el) => ({ scrolled: el.scrollTop, head: el.getBoundingClientRect().top }));
+  expectThat(top.scrolled === 0, `the sheet scrolled ${top.scrolled}px with nothing written`);
+  expectThat(!!after && !!before && Math.abs(after.y - before.y) < 1 && after.y >= top.head, `the kinds went from ${before?.y} to ${after?.y}, the sheet's head ending at ${top.head}`);
+  // And the line being written is still kept in view once the words pass the foot.
+  await page.keyboard.type("One.\nTwo.\nThree.\nFour.\nFive.\nSix.\nSeven.\nEight.\nNine.\nTen.\nEleven.");
+  await wait(300);
+  const line = await sheetScroll(page).evaluate((el) => ({ field: document.activeElement.getBoundingClientRect().bottom, foot: el.getBoundingClientRect().bottom }));
+  expectThat(line.field <= line.foot, `the last line written is ${Math.round(line.field - line.foot)}px under the sheet's foot`);
+});
+
+await flow(
+  "build 95: a highlight's wash is laid as its words are: the same size, the same lines",
+  async (page) => {
+    await write(page);
+    const laid = await page.evaluate(() => {
+      const block = document.querySelector("[data-page-text]:has([data-page-wash])");
+      const field = block.querySelector("textarea");
+      const wash = block.querySelector("[data-page-wash]");
+      const lines = (rects) => new Set([...rects].map((r) => Math.round(r.top))).size;
+      const words = document.createRange();
+      words.selectNodeContents(wash.firstChild);
+      const line = parseFloat(getComputedStyle(field).lineHeight);
+      const own = getComputedStyle(wash);
+      return {
+        fieldSize: getComputedStyle(field).fontSize,
+        washSize: getComputedStyle(wash.parentElement).fontSize,
+        fieldLines: Math.round(field.scrollHeight / line),
+        washLines: lines(words.getClientRects()),
+        room: parseFloat(own.paddingInlineStart) + parseFloat(own.paddingInlineEnd) + Math.abs(parseFloat(own.marginInlineStart)) + Math.abs(parseFloat(own.marginInlineEnd)),
+      };
+    });
+    expectThat(laid.fieldSize === laid.washSize, `the words are written at ${laid.fieldSize} and their wash laid at ${laid.washSize}`);
+    expectThat(laid.room === 0, `the wash takes ${laid.room}px of each line that the words do not`);
+    expectThat(laid.fieldLines === laid.washLines && laid.washLines >= 6, `the words stand on ${laid.fieldLines} lines and their wash on ${laid.washLines}`);
+  },
+  // Long enough to break many times at 390: one word sooner on any line shows in the count by the end.
+  { set: draft(`==yellow== ${"Lord Jesus Christ, Son of God, have mercy on me. ".repeat(7).trim()}`) },
+);
+
 if (WALK) {
   for (const l of left) console.log(`left  ${l}`);
   console.log("\n" + walked.map(([l, ok]) => `${ok ? "PASS" : "FAIL"}  ${l}`).join("\n"));

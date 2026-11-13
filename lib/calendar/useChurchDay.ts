@@ -33,6 +33,7 @@ import {
   dayReadings,
   readingsOptionsFor,
   shiftForStyle,
+  type CalStyle,
   type Commemoration,
   type FastingStatus,
   type PaschaInfo,
@@ -40,7 +41,7 @@ import {
 } from "@/lib/calendar/orthodox";
 import type { SaintBrief } from "@/lib/saints/brief";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
-import { useToday } from "@/lib/calendar/useToday";
+import { useToday, useTodayAtOnce } from "@/lib/calendar/useToday";
 
 export type ChurchDay = {
   /** The reader's local civil day. */
@@ -70,6 +71,31 @@ export type ChurchDay = {
   pascha: PaschaInfo;
 };
 
+/** The Church's day for a civil day, in the reader's reckoning. */
+function churchDayOf(today: Date, style: CalStyle): ChurchDay {
+  const lookup = shiftForStyle(today, style);
+  // On the civil day, as before: both calendars reckon Pascha alike, so
+  // shifting the readings would move the Paschal cycle twice. The official
+  // list is a New Calendar one and is kept from an Old Calendar reader.
+  const appointed = dayReadings(today, readingsOptionsFor(style));
+  const commemorations = commemorationsOn(lookup);
+  const headline =
+    commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
+  return {
+    today,
+    headline,
+    // commemorationsOn has already resolved every slug that names a profile.
+    headlineSaint: headline?.saint ?? null,
+    commemorations,
+    // The civil day and the style: the rule moves only its fixed dates.
+    fast: fastingStatus(today, style),
+    readings: appointed.readings,
+    ordinaryReadings: appointed.ordinary,
+    commemorationReadings: appointed.commemoration,
+    pascha: paschaInfo(today),
+  };
+}
+
 /**
  * Null for the one frame before hydration, because `useToday()` is null
  * until mounted. Callers must render a placeholder for that frame rather
@@ -78,29 +104,21 @@ export type ChurchDay = {
 export function useChurchDay(): ChurchDay | null {
   const today = useToday();
   const [style] = useCalendarStyleDefault();
+  return useMemo(() => (today ? churchDayOf(today, style) : null), [today, style]);
+}
 
-  return useMemo(() => {
-    if (!today) return null;
-    const lookup = shiftForStyle(today, style);
-    // On the civil day, as before: both calendars reckon Pascha alike, so
-    // shifting the readings would move the Paschal cycle twice. The official
-    // list is a New Calendar one and is kept from an Old Calendar reader.
-    const appointed = dayReadings(today, readingsOptionsFor(style));
-    const commemorations = commemorationsOn(lookup);
-    const headline =
-      commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
-    return {
-      today,
-      headline,
-      // commemorationsOn has already resolved every slug that names a profile.
-      headlineSaint: headline?.saint ?? null,
-      commemorations,
-      // The civil day and the style: the rule moves only its fixed dates.
-      fast: fastingStatus(today, style),
-      readings: appointed.readings,
-      ordinaryReadings: appointed.ordinary,
-      commemorationReadings: appointed.commemoration,
-      pascha: paschaInfo(today),
-    };
-  }, [today, style]);
+/**
+ * The same day, known in the first frame wherever a page is drawn on the
+ * device (lib/calendar/useToday.ts, useTodayAtOnce): for a part that is only
+ * ever drawn there, so nothing stands in for it and nothing under it moves
+ * when it arrives. The journal's page for the day is the first to use it
+ * (build 95 note 4): with useChurchDay it stood as an empty 200px for a
+ * frame and then as itself, 268px with two readings, and the whole list
+ * under it dropped 68px as a reader arrived. Null on the server, as
+ * useChurchDay is, so no date is baked into the export.
+ */
+export function useChurchDayAtOnce(): ChurchDay | null {
+  const today = useTodayAtOnce();
+  const [style] = useCalendarStyleDefault();
+  return useMemo(() => (today ? churchDayOf(today, style) : null), [today, style]);
 }
