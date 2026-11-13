@@ -1081,3 +1081,5 @@ Claude's proposal, for his word:
 
 **A full desktop revamp (his word, 2026-11-13, about 15:32 UTC):** "a full desktop revamp. the desktop is really outdated and unoptimized in alot of sections." Build 95 note 28. The arbiter asked whether it goes in 1.9 by his rule (recommended: folded into the fifteen screens, with the computer's frame first) and whether Fable designs it.
 
+**"well we are fine but yes optimize of course" (his word, 2026-11-13, about 15:38 UTC)**, with a screenshot of his usage: the arbiter's context at 647,100 of 1,000,000 tokens; the week's limit for all models 25% used and for Fable 13%, both resetting Friday at 2:59 AM his time; no usage credits. To the arbiter's two recommendations: hand the arbiter to a fresh chat, and slow to fewer chats (faults first, designs only as he says yes, the desktop revamp held until the fifteen screens' designs land). The arbiter handed over the same hour (docs/handoffs/arbiter.md).
+
