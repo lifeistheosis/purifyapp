@@ -11,8 +11,8 @@ Updated 2026-11-13 01:24 UTC.
   1. /calendar/'s date on Light at 800 and 1032: **fixed** (ed9464995, Updates). The fault was wider than Light: today's date now takes the page's ink on a day with no feast, held at 4.5:1 on all 22 palettes and looks.
   2. The councils' Fathers moving under the finger: **fixed** (e0319e71c).
   3. The Search sheet's esc key hint at 800 and 1032: **fixed** (cb114387b).
-  4. John 1 interlinear: the "Word details" sheet's Close not mirrored in Arabic (WordPopover.tsx:407; Updates 2's successor).
-  5. The saints' webs: a node's place and date cut with an ellipsis at 390 and 320 (WebConstellation.tsx:116; Updates 2's successor).
+  4. John 1 interlinear: the "Word details" sheet's Close not mirrored in Arabic: **fixed** (05815c9a; and the tablet's word card now drawn over the page, 0d9cc240).
+  5. The saints' webs: a node's place and date cut with an ellipsis: **fixed** (74210d49; all 118 webs probed at 390, 360 and 320, nothing cut).
   6. /prayers/ at 1032: **the measure, not the screen** (f68410abb). The book scrolls itself back before paint, the same with anchoring off. Admin 2's walk now re-taps a "held" control with anchoring off before listing it.
 - **The arbiter's rulings:** the webs' lifted saints are allowed for every node (kept in sight above the card it opened, in the house glide); the community thread was the measure; for 1.9 the commentary marks are sampled by Genesis 1's hand walk, and counting by drawn reach goes into 2.0's nightly gate (named to him).
 - **Rotations, done between checks:** Admin and Updates 2 wrote batons and were archived. Admin 2 runs the targeted re-check; Updates 3 takes fails 4 and 5. Updates finished 1 and 6 and was archived.
@@ -22,7 +22,8 @@ Updated 2026-11-13 01:24 UTC.
 - **Then:** every fix pushed; the re-check on one export from that head; if it passes, the test build is cut (Android with local-first on, the main web, publish off; then iOS).
 - **Merge day is written down:** `docs/1.9-build/MERGE-DAY.md`. Ready: all six version identifiers, the checklist, the note, the board message, the release email (7 points), the drop (23 pieces), and the push to main is a fast-forward from a63d37c7a. Still to do on merge day: file the note in his queue, set the drop day, the phone walks, the release email's picture and preview, the cards (Fable), and the campaigns line (his word).
 - **The 19 migrations: signed** ("yes to the 19", 2026-11-13 about 04:49 UTC); all safe to run twice. Two clear readers' data by design and cannot be undone (17 and 18, signed 2026-11-11). The headers of 12 (production_baseline) and 2 (the psalms move) now carry his words; the psalms move and shared_pages are pasted by hand before the push (R1).
-- **Before the merge (web only):** the admin link in `lib/billing/applyLifecycle.ts` (`?tab=` where the panel reads `#tab=`), with Updates 3.
+- **Before the merge (web only):** the admin link in `lib/billing/applyLifecycle.ts` is fixed (328a47a6). Three more owner alerts with a bare hash (orders, fulfillment, goals) go to Admin panel 3.
+- **Rulings of 05:20 UTC:** a web card's short line may end in an ellipsis (a preview: the years stand whole, the kinds are whole on the tall face); a tap on a card's short face growing it is an opening, allowed by name in Admin 2's walk, provided keyboard focus lands in the tall card.
 
 ## Waiting on him
 
@@ -53,7 +54,7 @@ Updated 2026-11-13 01:24 UTC.
 |---|---|---|
 | Arbiter | session_01VuYTwdsjYL2mmq2C2JSt2A | his words, NOW.md, routing |
 | Admin 2 | session_01VuYTweFNHsJxnX7YJmTvEN | the gate: first the lifted-saints ruling into the tap walk, then the targeted re-check on the arbiter's word (baton `docs/handoffs/admin.md`); the admin panel when the owner's desk resumes |
-| Updates 3 | session_01VuYTwcy3Fbt9LcW3Qic77o | fixer: fails 4 (WordPopover's Close in Arabic) and 5 (the webs' place and date cut), from `docs/handoffs/updates-2.md`; then the admin link in `lib/billing/applyLifecycle.ts` |
+| Updates 3 | session_01VuYTwcy3Fbt9LcW3Qic77o | fails 4 and 5 and the billing link done and pushed; stays open as the owner of anything the re-check finds in its files |
 | Admin panel 3 | session_01VuYTwdp6mhe99XWbxc6bLH | the owner's desk, sections 2 and 3 (the sends on, with a Hold, by his word; the owner's brief at 7:30 his time, Monday's weekly); web only |
 | Fable 5.2: email designs | session_01VuYTwd6RkVo5JByCRXYJFG | the emails landed (5b4554e4: the reader email, its Nativity Fast season, the owner's brief; https://claude.ai/artifact/AGYSKjN65WgQA3eccBqos9). Now owns the whole kit's look, at his word "you can definitely make a way better design than this" |
 | Retention emails | session_01VuYTwcNqhaVtjecwr5fvPv | the first-week guide, "pick up where you left off" and the fasting companions: the sending, privacy first, each behind a switch until his yes to its design (Fable designs, with justification) |
