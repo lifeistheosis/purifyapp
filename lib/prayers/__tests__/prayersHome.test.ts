@@ -67,7 +67,8 @@ describe("the head of Prayers", () => {
     const css = read(CSS);
     expect(css).toMatch(/\.prayers-hero-img \{\s*animation: prayers-picture-in [^;]*var\(--ease-house\) backwards;/);
     expect(css).toMatch(/\.prayers-hero-verse\.prayers-hero-in \{\s*animation: prayers-hero-in [^;]*backwards;/);
-    expect(css).toMatch(/:where\(\[data-motion="reduce"\]\) \.prayers-hero-img,\s*:where\(\[data-motion="reduce"\]\) \.prayers-hero-in \{\s*animation: none;/);
+    // Naming each entrance as it is named, so the still rule weighs what it stills (lib/ui/__tests__/stillMeansStill.test.ts).
+    expect(css).toMatch(/:where\(\[data-motion="reduce"\]\) \.prayers-hero-img,\s*:where\(\[data-motion="reduce"\]\) \.prayers-hero-in,\s*:where\(\[data-motion="reduce"\]\) \.prayers-hero-verse\.prayers-hero-in,\s*:where\(\[data-motion="reduce"\]\) \.prayers-hero-rule\.prayers-hero-in \{\s*animation: none;/);
     expect(code(HERO)).toMatch(/className="prayers-hero-img /);
     expect(code(HERO)).toMatch(/className="prayers-hero-verse prayers-hero-in /);
   });

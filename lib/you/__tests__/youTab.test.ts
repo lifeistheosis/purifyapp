@@ -89,7 +89,8 @@ describe("the head of You: the Ladder, and the reader on it", () => {
     const css = read(CSS);
     expect(css).toMatch(/\.you-hero-img \{\s*animation: prayers-picture-in 1100ms var\(--ease-house\) backwards;/);
     expect(css).toMatch(/\.you-hero-who\.you-hero-in \{\s*animation: prayers-hero-in [^;]*var\(--ease-house\)[^;]*backwards;/);
-    expect(css).toMatch(/:where\(\[data-motion="reduce"\]\) \.you-hero-img,\s*:where\(\[data-motion="reduce"\]\) \.you-hero-in \{\s*animation: none;/);
+    // Naming each entrance as it is named, so the still rule weighs what it stills (lib/ui/__tests__/stillMeansStill.test.ts).
+    expect(css).toMatch(/:where\(\[data-motion="reduce"\]\) \.you-hero-img,\s*:where\(\[data-motion="reduce"\]\) \.you-hero-in,\s*:where\(\[data-motion="reduce"\]\) \.you-hero-who\.you-hero-in,\s*:where\(\[data-motion="reduce"\]\) \.you-hero-foot\.you-hero-in \{\s*animation: none;/);
     expect(css).toMatch(/@keyframes prayers-picture-in \{/);
   });
 });
