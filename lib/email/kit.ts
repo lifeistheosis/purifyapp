@@ -392,7 +392,12 @@ export function bars(p: Pen, list: readonly { name: string; count: number }[]): 
   return `<tr><td><table ${TABLE} width="100%">${list.map(row).join("\n")}</table></td></tr>`;
 }
 
-/** Plain rows with a hairline between: words at the start, a value at the end. */
+/**
+ * Plain rows with a hairline between: words at the start, a value at the end.
+ * The value is set to the end of its column, so a short one lines up under a
+ * long one ("right" for a mail app that knows no "end", then "end", which
+ * mirrors in a right-to-left language).
+ */
 export function pairs(p: Pen, list: readonly { words: string; value: string; quiet?: boolean }[]): string {
   const { c } = p;
   return `<tr><td style="padding:4px 0 0"><table ${TABLE} width="100%">${list
@@ -400,7 +405,7 @@ export function pairs(p: Pen, list: readonly { words: string; value: string; qui
       const edge = i === list.length - 1 ? "" : "border-bottom-width:1px;border-bottom-style:solid;";
       return `<tr>
       <td width="100%"${c({ fg: "body", bd: "line" }, `padding:11px 0;font-family:${SERIF};font-size:17px;line-height:24px;${edge}`)}>${esc(x.words)}</td>
-      <td${c({ fg: x.quiet ? "quiet" : "ink", bd: "line" }, `padding:11px 0;white-space:nowrap;font-family:${SANS};font-size:16px;line-height:24px;font-weight:600;${edge}`)}>${esc(x.value)}</td>
+      <td${c({ fg: x.quiet ? "quiet" : "ink", bd: "line" }, `padding:11px 0;white-space:nowrap;text-align:right;text-align:end;font-family:${SANS};font-size:16px;line-height:24px;font-weight:600;${edge}`)}>${esc(x.value)}</td>
     </tr>`;
     })
     .join("\n")}</table></td></tr>`;
