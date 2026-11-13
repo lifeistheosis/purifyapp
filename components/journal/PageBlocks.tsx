@@ -43,6 +43,7 @@ import { highlightVars } from "@/lib/bible/highlightPalette";
 import { localBookNames, searchBible } from "@/lib/bible/books";
 import { cn } from "@/lib/cn";
 import { COVERS, coverById } from "@/lib/journal/covers";
+import { isWriting } from "@/lib/journal/writing";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { useFlorilegia } from "@/lib/florilegium/florilegium";
 import { verseSpan } from "@/lib/journal/churchDay";
@@ -981,8 +982,12 @@ function VerseFinder({ onPick }: { onPick: (block: PageBlock) => void }) {
   const books = useMemo(() => localBookNames(t), [t]);
   const [q, setQ] = useState("");
   const input = useRef<HTMLInputElement | null>(null);
+  // The finder takes the cursor from a reader who is writing, and the
+  // keyboard stays as it is. From one who is not, it takes nothing: the
+  // field stands ready, and a tap on it brings the keyboard (build 95 note 6,
+  // lib/journal/writing.ts).
   useLayoutEffect(() => {
-    input.current?.focus({ preventScroll: true });
+    if (isWriting()) input.current?.focus({ preventScroll: true });
   }, []);
 
   const found = useMemo(() => {

@@ -93,7 +93,6 @@ export function JournalComposer({
   const area = useRef<HTMLTextAreaElement | null>(null);
   const isNote = draft.editing?.startsWith("note:") ?? false;
   const editor = usePage(open, draft.body, (body) => onChange({ ...draft, body }));
-  const { setCursor } = editor;
   const empty = isNote ? draft.body.trim().length === 0 : pageIsEmpty(editor.page);
   // A saved page may be shared (step 3), and its sharing stopped; a verse's note and a page not yet kept may not.
   const shareable = open && !!draft.editing && !isNote && !empty;
@@ -141,42 +140,14 @@ export function JournalComposer({
     };
   }, [open]);
 
-  // The words, ready to write, once the sheet is up: a note's field, or the
-  // page's last words. A finger comes first. A reader who has put one down
-  // since the sheet opened (on Title, on a kind, on a tool) keeps what they
-  // chose, and nothing is moved. Until 2026-11-11 this ran whatever the
-  // reader had done: Title tapped in the first third of a second took the
-  // cursor, and lost it to the words when the timer came (build 93 note 8;
-  // measured on the export at 140ms and at 240ms after the sheet's parts
-  // stood).
-  useEffect(() => {
-    if (!open) return;
-    let touched = false;
-    const onDown = () => {
-      touched = true;
-    };
-    document.addEventListener("pointerdown", onDown, true);
-    const id = window.setTimeout(() => {
-      document.removeEventListener("pointerdown", onDown, true);
-      if (touched) return;
-      const fields = document.querySelectorAll<HTMLTextAreaElement>("[data-journal-composer] [data-page-text] textarea");
-      const el = isNote ? area.current : (fields[fields.length - 1] ?? null);
-      if (!el) return;
-      el.focus({ preventScroll: true });
-      el.setSelectionRange(el.value.length, el.value.length);
-      // The editor hears where the caret was put, so a card laid next goes
-      // there, after the words, and not at the top (a caret moved by code
-      // tells no one; found by the walk, reopening a kept page).
-      if (!isNote) {
-        const block = el.closest<HTMLElement>("[data-page-block]")?.dataset.pageBlock;
-        if (block !== undefined) setCursor({ index: Number(block), start: el.value.length, end: el.value.length });
-      }
-    }, 320);
-    return () => {
-      window.clearTimeout(id);
-      document.removeEventListener("pointerdown", onDown, true);
-    };
-  }, [open, isNote, setCursor]);
+  // The sheet opens with no cursor in it, and the keyboard down (build 95
+  // note 6, the owner: "the typing pad pops up automatically and it's buggy
+  // when it pops up"; lib/journal/writing.ts). Until then the sheet gave the
+  // cursor to the page's last words a third of a second after it opened: the
+  // keyboard came up by itself, while the sheet was still arriving, for a
+  // reader who had opened a page only to read it. The keyboard comes from
+  // the reader's own tap where they write, and the page's last field is
+  // tall, so there is room to tap.
 
   const today = (() => {
     try {

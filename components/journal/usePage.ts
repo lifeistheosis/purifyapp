@@ -3,12 +3,13 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { MAX_BODY } from "@/lib/journal/entries";
+import { isWriting } from "@/lib/journal/writing";
 import { cleanStyle, highlightTarget, insertAt, parsePage, removeAt, serializePage, tidyBlocks, type Page, type PageBlock, type PageStyle } from "@/lib/journal/page";
 
 /** Where the cursor is: a text block's index and the selection in it. */
 export type Cursor = { index: number; start: number; end: number };
 /** Which field of a block takes the cursor: its words (a textarea), or its line (an input: a heading, a checklist's line). */
-type FocusAsk = { index: number; at: "start" | "end"; field?: "input" };
+type FocusAsk = { index: number; at: "start" | "end"; field?: "input"; /** False: the block is brought into view and no cursor is given. */ cursor?: boolean };
 
 function fresh(body: string): Page {
   const page = parsePage(body);
@@ -46,6 +47,14 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
   // Where the cursor is, as state: the tools read it to know which paragraph
   // a colour goes on, while the page is drawn.
   const [cursor, setCursorState] = useState<Cursor | null>(null);
+  // A page opens with no cursor (lib/journal/writing.ts): what was left from
+  // the page open before it is forgotten, so a card laid before any tap goes
+  // at the page's end, and not where another page's cursor was.
+  const [cursorFor, setCursorFor] = useState(open);
+  if (open !== cursorFor) {
+    setCursorFor(open);
+    if (open) setCursorState(null);
+  }
   const setCursor = useCallback((c: Cursor | null) => {
     setCursorState((was) => (was && c && was.index === c.index && was.start === c.start && was.end === c.end ? was : c));
   }, []);
@@ -64,7 +73,10 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
       setPage(next);
       onBody(text);
       if (focus) {
-        focusAsk.current = focus;
+        // The cursor goes on to the new place only for a reader who has one
+        // (lib/journal/writing.ts). With none, the block is brought into
+        // view and the keyboard stays down until they tap where they write.
+        focusAsk.current = { ...focus, cursor: isWriting() };
         setFocusTick((n) => n + 1);
       }
       return true;
@@ -81,9 +93,11 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
     const root = document.querySelector(`[data-journal-composer] [data-page-block="${ask.index}"]`);
     const field = root?.querySelector<HTMLTextAreaElement | HTMLInputElement>(ask.field === "input" ? "input" : "textarea");
     if (!field) return;
-    field.focus({ preventScroll: true });
-    const at = ask.at === "start" ? 0 : field.value.length;
-    field.setSelectionRange(at, at);
+    if (ask.cursor !== false) {
+      field.focus({ preventScroll: true });
+      const at = ask.at === "start" ? 0 : field.value.length;
+      field.setSelectionRange(at, at);
+    }
     field.scrollIntoView({ block: "nearest" });
   }, [focusTick]);
 
@@ -114,7 +128,7 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
 
   /** Give the cursor to a block already on the page: the empty quote, when Quote is tapped again. */
   const focusBlock = (index: number, field?: "input") => {
-    focusAsk.current = { index, at: "end", field };
+    focusAsk.current = { index, at: "end", field, cursor: isWriting() };
     setFocusTick((n) => n + 1);
     setCursor(null);
   };

@@ -74,7 +74,8 @@ describe("one empty quote at a time", () => {
     const tool = code(blocks).slice(code(blocks).indexOf('label={t("journal.page.addQuote")}'));
     expect(tool).toMatch(/const at = emptyQuoteAt\(editor\.page\.blocks\);\s*if \(at >= 0\) editor\.focusBlock\(at\);\s*else editor\.insert\(\{ type: "quote", text: "", by: "" \}\);/);
     // And the editor can hand the cursor to a block already on the page.
-    expect(hook).toMatch(/const focusBlock = \(index: number, field\?: "input"\) => \{\s*focusAsk\.current = \{ index, at: "end", field \};/);
+    // (For a reader who is writing: build 95 note 6, lib/journal/writing.ts.)
+    expect(hook).toMatch(/const focusBlock = \(index: number, field\?: "input"\) => \{\s*focusAsk\.current = \{ index, at: "end", field, cursor: isWriting\(\) \};/);
   });
 });
 
@@ -115,15 +116,13 @@ describe("the place to write always says so", () => {
 });
 
 describe("a finger comes first (build 93 note 8)", () => {
-  it("the sheet's own timer does nothing once a finger has been put down", () => {
-    const effect = composer.slice(composer.indexOf("let touched = false;"), composer.indexOf("}, [open, isNote, setCursor]);"));
-    expect(effect).toMatch(/const onDown = \(\) => \{\s*touched = true;\s*\};\s*document\.addEventListener\("pointerdown", onDown, true\);/);
-    // Asked before anything is moved.
-    expect(effect.indexOf("if (touched) return;")).toBeGreaterThan(-1);
-    expect(effect.indexOf("if (touched) return;")).toBeLessThan(effect.indexOf("el.focus({ preventScroll: true });"));
-    // And nothing is left listening: when the timer comes, and when the sheet goes first.
-    expect(effect.match(/document\.removeEventListener\("pointerdown", onDown, true\);/g)).toHaveLength(2);
-    expect(effect).toMatch(/return \(\) => \{\s*window\.clearTimeout\(id\);\s*document\.removeEventListener\("pointerdown", onDown, true\);\s*\};/);
+  it("the sheet has no timer of its own left to overrule a finger: it gives the cursor to no field", () => {
+    // Build 93's mend was a timer that gave way to a finger. Build 95 note 6 took the timer away: the
+    // sheet opens with the keyboard down, and the cursor comes from the reader's tap (lib/journal/writing.ts).
+    const sheet = code(composer);
+    expect(sheet).not.toMatch(/\.focus\(/);
+    expect(sheet).not.toMatch(/window\.setTimeout\(/);
+    expect(sheet).not.toMatch(/setSelectionRange\(/);
   });
 
   it("a kind holds the cursor where it is, as a tool does", () => {

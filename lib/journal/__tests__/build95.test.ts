@@ -6,6 +6,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import { useChurchDayAtOnce } from "@/lib/calendar/useChurchDay";
+import { isWriting } from "@/lib/journal/writing";
 import { scrollForWritingLine } from "@/lib/journal/writingLine";
 
 /**
@@ -120,5 +121,63 @@ describe("a highlight's wash lies under its words", () => {
       if (/font-serif|words,/.test(field) && !/text-\[\d+px\]/.test(field)) expect(field).toMatch(/text-body|words,/);
     }
     expect(blocks).toMatch(/const words = cn\("[^"]*\btext-body\b/);
+  });
+});
+
+/**
+ * Note 6, the owner's own words for the journal's bugs (2026-11-13): "whenever
+ * you click on a different section in the journal UI the typing pad pops up
+ * automatically and it's buggy when it pops up". The sections are the sheet's
+ * own: Write and an entry opened (the sheet gave the cursor to the words a
+ * third of a second on), Verse (its finder took it), Quote and More's blocks
+ * (the new card took it). The keyboard comes only from a tap where they write.
+ */
+describe("the keyboard comes only from the reader's tap where they write", () => {
+  const field = (tagName: string, inside: string | null, type?: string) => ({
+    activeElement: { tagName, type, closest: (selector: string) => (inside && selector.includes(inside) ? {} : null) },
+  });
+
+  it("a reader with no cursor is not writing", () => {
+    expect(isWriting({ activeElement: null })).toBe(false);
+    // The page itself, as when the sheet has just opened, or a tool tapped with the keyboard down.
+    expect(isWriting(field("BODY", null))).toBe(false);
+    expect(isWriting(field("BUTTON", "[data-journal-composer]"))).toBe(false);
+    // A checklist's box is in the sheet and is no place to write.
+    expect(isWriting(field("INPUT", "[data-journal-composer]", "checkbox"))).toBe(false);
+    // A field of another part of the app is not the journal's.
+    expect(isWriting(field("INPUT", null, "search"))).toBe(false);
+  });
+
+  it("a reader with the cursor in the page, or in a tool's own field, is", () => {
+    expect(isWriting(field("TEXTAREA", "[data-journal-composer]"))).toBe(true);
+    expect(isWriting(field("INPUT", "[data-journal-composer]", "text"))).toBe(true);
+    // Verse's finder and the notebook's field stand in the tools at the sheet's foot.
+    expect(isWriting(field("INPUT", "[data-page-toolbar]", "search"))).toBe(true);
+  });
+
+  it("the sheet gives the cursor to no field as it opens", () => {
+    const composer = code(read("components/journal/JournalComposer.tsx"));
+    expect(composer).not.toMatch(/\.focus\(/);
+    expect(composer).not.toMatch(/window\.setTimeout\(/);
+  });
+
+  it("a card laid, a card taken away and a card gone back to move a cursor only for a reader who has one", () => {
+    const hook = code(read("components/journal/usePage.ts"));
+    // The one place a field is given the cursor, and it asks first.
+    expect(hook.match(/\.focus\(/g)).toHaveLength(1);
+    expect(hook).toMatch(/if \(ask\.cursor !== false\) \{\s*field\.focus\(\{ preventScroll: true \}\);/);
+    expect(hook).toContain("focusAsk.current = { ...focus, cursor: isWriting() };");
+    expect(hook).toContain('focusAsk.current = { index, at: "end", field, cursor: isWriting() };');
+    // With no cursor given, the new block is still brought into view.
+    expect(hook).toMatch(/\}\s*field\.scrollIntoView\(\{ block: "nearest" \}\);/);
+    // And a page opens with no cursor left over from the page before it.
+    expect(hook).toMatch(/if \(open\) setCursorState\(null\);/);
+  });
+
+  it("Verse's finder takes the cursor only from a reader who is writing", () => {
+    const blocks = code(read("components/journal/PageBlocks.tsx"));
+    const finder = blocks.slice(blocks.indexOf("function VerseFinder"));
+    expect(finder).toMatch(/if \(isWriting\(\)\) input\.current\?\.focus\(\{ preventScroll: true \}\);/);
+    expect(finder.match(/\.focus\(/g)).toHaveLength(1);
   });
 });

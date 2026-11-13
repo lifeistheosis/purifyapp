@@ -9,6 +9,8 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { insertAt, type PageBlock } from "@/lib/journal/page";
+
 const read = (path: string) => readFileSync(join(process.cwd(), path), "utf8");
 const composer = read("components/journal/JournalComposer.tsx");
 const blocks = read("components/journal/PageBlocks.tsx");
@@ -186,8 +188,15 @@ describe("the journal on a computer (step 2e)", () => {
   });
 });
 
-describe("a reopened page knows where its caret is", () => {
-  it("the caret put at the end on opening is told to the editor, so a card goes after the words", () => {
-    expect(composer).toContain("if (block !== undefined) setCursor({ index: Number(block), start: el.value.length, end: el.value.length });");
+describe("a reopened page lays a card after its words", () => {
+  it("opens with no cursor, and a card laid with none goes at the page's end", () => {
+    // Until build 95 the sheet put the caret at the end as it opened and told the editor; it gives no
+    // field the cursor now (note 6), so the editor forgets the page before, and no cursor means the end.
+    expect(hook).toMatch(/if \(open\) setCursorState\(null\);/);
+    const kept: PageBlock[] = [{ type: "text", text: "Words kept before." }];
+    const laid = insertAt(kept, null, { type: "quote", text: "", by: "" });
+    expect(laid.blocks[0]).toEqual({ type: "text", text: "Words kept before." });
+    expect(laid.blocks[laid.inserted]?.type).toBe("quote");
+    expect(laid.inserted).toBe(1);
   });
 });

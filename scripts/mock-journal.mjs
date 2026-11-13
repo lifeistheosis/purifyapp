@@ -137,11 +137,28 @@ async function journal({ scale = 1, set = {}, at = "/journal", ready = "[data-jo
   return o;
 }
 
-/** Write tapped; `rest` waits for the sheet to stand still. */
-async function write(page, rest = true) {
+/**
+ * Write tapped; `rest` waits for the sheet to stand still; and then, as a
+ * reader does, a finger put down where they write (`begin`), which is what
+ * brings the cursor and the keyboard: the sheet gives neither by itself
+ * (build 95 note 6).
+ */
+async function write(page, rest = true, begin = rest) {
   await tap(page, page.locator("[data-journal-write]").last(), "Write");
   await page.waitForSelector("[data-journal-title]", { state: "attached", timeout: 10000 });
   if (rest) await wait(1300);
+  if (begin) await tapToWrite(page);
+}
+
+/** A finger put down at the foot of the page's last words: the cursor goes to their end, as a tap under the last line does. */
+async function tapToWrite(page) {
+  const field = page.locator("[data-journal-composer] [data-page-text] textarea, [data-journal-composer] > label textarea").last();
+  await field.scrollIntoViewIfNeeded();
+  const box = await field.boundingBox();
+  if (!box) throw new Error("the place to write is not on the screen");
+  const foot = await sheetScroll(page).evaluate((el) => el.getBoundingClientRect().bottom);
+  await page.touchscreen.tap(box.x + box.width - 12, Math.min(box.y + box.height, foot) - 8);
+  await wait(200);
 }
 
 const tools = (page) => page.locator("[data-page-toolbar] [role=toolbar] button");
@@ -573,10 +590,12 @@ for (const delay of [60, 140, 240, 400, 800]) {
   });
 }
 
-await flow("title: with no finger put down, the words are ready to write once the sheet is up", async (page) => {
-  await write(page);
-  expectThat((await cursor(page)) === "the words", `the cursor is in ${await cursor(page)}`);
+await flow("title: with no finger put down, no field has the cursor once the sheet is up, and a tap where they write gives it", async (page) => {
+  await write(page, true, false);
+  expectThat((await cursor(page)) !== "the words" && (await cursor(page)) !== "Title", `the cursor is in ${await cursor(page)} with no finger put down`);
   expectThat((await scrolled(page)) === 0, `the page moved ${await scrolled(page)}px`);
+  await tapToWrite(page);
+  expectThat((await cursor(page)) === "the words", `after a tap where they write the cursor is in ${await cursor(page)}`);
 });
 
 await flow("nothing between Title and the words: no door stands under Title on a page with no notebook", async (page) => {
@@ -1602,6 +1621,55 @@ await flow(
   // Long enough to break many times at 390: one word sooner on any line shows in the count by the end.
   { set: draft(`==yellow== ${"Lord Jesus Christ, Son of God, have mercy on me. ".repeat(7).trim()}`) },
 );
+
+// ── Build 95, note 6 (the owner, 2026-11-13: "whenever you click on a different section in the journal UI the typing pad pops up automatically and it's buggy when it pops up") ──
+
+/** Whether a place to write has the cursor: what brings the keyboard up on a phone. */
+const hasCursor = (page) => page.evaluate(() => ["TEXTAREA", "INPUT"].includes(document.activeElement?.tagName ?? "") && !["checkbox", "radio"].includes(document.activeElement.type));
+
+await flow(
+  "build 95: no section opens the keyboard by itself: Write, an entry opened, Verse, Quote, Highlight, More and each of its blocks",
+  async (page) => {
+    await write(page, true, false);
+    expectThat(!(await hasCursor(page)), "Write gave a field the cursor");
+    for (const [name, at] of [["Verse", VERSE], ["Quote", QUOTE], ["Highlight", HIGHLIGHT], ["More", MORE]]) {
+      await tap(page, tools(page).nth(at), name);
+      await wait(450);
+      expectThat(!(await hasCursor(page)), `${name} gave a field the cursor`);
+      // Whatever it opened is shut again, as a second tap does (Quote opens nothing).
+      if (name !== "Quote") await tap(page, tools(page).nth(at), name);
+      await wait(250);
+    }
+    expectThat((await page.locator("[data-page-quote]").count()) === 1, "Quote laid no card with the keyboard down");
+    // Close keeps the page; opened again from the foot, it stands with no cursor.
+    await tap(page, page.locator("[data-journal-composer]").locator("xpath=ancestor::*[@role='dialog'][1]").getByRole("button", { name: "Close" }), "Close");
+    await wait(900);
+    await write(page, true, false);
+    expectThat(!(await hasCursor(page)), "the page opened again gave a field the cursor");
+  },
+);
+
+await flow(
+  "build 95: an entry opened from the list is read with the keyboard down",
+  async (page) => {
+    await tap(page, page.locator("[data-journal-entry]").first(), "the entry");
+    await page.waitForSelector("[data-journal-title]", { state: "attached", timeout: 10000 });
+    await wait(1300);
+    expectThat(!(await hasCursor(page)), "an entry opened gave a field the cursor");
+  },
+  { set: kept(OLDER, OTHER) },
+);
+
+await flow("build 95: a reader who is writing keeps the cursor: Quote goes on in the quote, and Verse in its finder", async (page) => {
+  await write(page);
+  await page.keyboard.type("Words of my own.");
+  await tap(page, tools(page).nth(QUOTE), "Quote");
+  await wait(350);
+  expectThat(await page.evaluate(() => document.activeElement?.closest("[data-page-quote]") !== null), "Quote, tapped while writing, did not take the cursor into the quote");
+  await tap(page, tools(page).nth(VERSE), "Verse");
+  await wait(350);
+  expectThat(await page.evaluate(() => document.activeElement?.closest("[data-page-verse-finder]") !== null), "Verse, tapped while writing, did not take the cursor into its finder");
+});
 
 if (WALK) {
   for (const l of left) console.log(`left  ${l}`);
