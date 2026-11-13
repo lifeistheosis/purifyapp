@@ -5085,3 +5085,209 @@ pixels pass answers these words in the final run):
   lost.
 - **Not done:** a mend measured for any of the ten, and the sweep's count
   laid beside the pass's.
+
+## 65. The land looks at the foot: Holy Mountain and Forest reworked, Desert and Jordan with no picture (build 95 note 16)
+
+His words, 2026-11-13. About 07:52 UTC: "remove the sea theme from the app
+and the mountain either needs a rework or it gets removed" (Galilee and
+Patmos go, with Updates 9; for the mountain he chose "Fable reworks it").
+About 07:57 UTC, on the whole family: "also honest in. the land and sea all
+the colors are nice it's just the designs at the bottom that dont look good
+and darker colors usually fits purify well (but the flowers fit the light
+themes)". So the job became the foot pictures of the four land looks that
+stay, one answer each (a reworked picture or none), every look's colours
+left exactly as they were. Held locally until his yes or no on each. The
+page he answers from: https://claude.ai/artifact/QqnzGPTD41qdsX9EPnFMZr (its
+source and stills are `build-95/land-looks/`).
+
+**The measure: what the Garden's flowers do right.** They are real pictures
+from old plates, not shapes drawn by code. They are small. They stand at the
+two corners over the tab bar, so nothing lies behind a line being read.
+
+**What was wrong with each foot as it stood**, judged on the export at 390:
+
+- Holy Mountain: a flat triangle with nothing in it, half hidden by the
+  dock, a bright line (the horizon) across the screen above the bars; on
+  Today a stray mark behind the verse; in the picker a dark page with a
+  bump; and it stood on the sea.
+- Forest: a row of cut-out triangles that reads as clip art, the whole
+  width behind the last lines, standing through the verse on Today.
+- Desert: three soft blobs, the stock hills of a landing page.
+- Jordan: a target of rings behind the last lines, nearer a signal icon
+  than water.
+
+**The four answers.**
+
+| Look | Answer | What stands at the foot now |
+| --- | --- | --- |
+| Holy Mountain | Reworked | The monastery of St Paul under the mountain, from the wood engraving in Athelstan Riley's *Athos, or the Mountain of the Monks* (London, 1887). `public/themes/athos.webp`, 18 KB |
+| Forest | Reworked | A bough of silver fir at one corner and its cone at the other, from plate 54 of Köhler's Medizinal-Pflanzen, volume 1, in the look's own greens. `public/themes/forest.webp`, 69 KB |
+| Jordan | No picture | The page's own colour to the foot. Recommended to stay, as the one cool light page |
+| Desert | No picture | The page's own colour to the foot. Recommended to come out: without its dunes it is one step from Blush (#efe2d9 beside #efe8e8) |
+
+Both plates are public domain and recorded in
+`docs/licensing/THEME_PICTURES.md`, with each plate kept in
+`docs/licensing/plates/`. Both pictures are made by
+`node scripts/theme-pictures.mjs --engraved`. Every id, name, family, Plus
+and place in the picker is as it was, so a stored choice stays chosen and
+nothing is retired.
+
+**The Holy Mountain's picture, and what was dropped on the way.**
+
+1. The engraving whole, as light on the dark ground: a grain behind the
+   words (the hatching), which the looks' first rule forbids. Dropped.
+2. The same, softened all over with the monastery kept sharp: a blurred
+   photograph with a smudge of light in it. Dropped.
+3. A slate ground in place of the navy. Dropped at his word that the colours
+   are good: the navy is as it was.
+4. Kept: three things only. The plate's own skyline, found column by column
+   (the first place a column turns darker than its own sky and stays so,
+   then a median over 25 columns), with one soft light drawn low behind it;
+   the land's tones, softened until no line is left, darkest at the heights
+   so the ridge is a clean shape; and the monastery's walls alone, as the
+   engraver cut them (only pixels the plate leaves white take the light,
+   inside an oval round the house). Baked on the look's ground, so it needs
+   no transparency: 18 KB where the same with transparency was 118.
+
+Its foot: `--foot-solid` rose from 104px to 152px and `--foot-clear` from
+240px to 256px. The monastery's roofs stand 146px from the screen's foot at
+390, so the foot is solid over them and no word is drawn across the lit
+walls (on Today the Verse of the day's last line tangled with them at 104).
+In a reader the dock stands there. The cost: a page's last lines go quiet
+16px sooner.
+
+**Forest's picture.** Two pieces of the plate, each cut by its outline (the
+bough, the plate's A, and the cone on its twig, B; the numbered details, the
+lettering and the plate's number are left on the plate). Each piece's paper
+is taken out pixel by pixel, and it is redrawn in the look's two greens, so
+the cone's brown and the pollen's yellow are not in it. Both end 173px above
+the screen's foot at 390, under the place where words are still read whole.
+The foot's lengths did not change.
+
+**Desert and Jordan.** `--room` is the page's own colour and nothing else;
+the foot stays, so a page's last lines go quiet into the page's colour as
+they do under the dock. A plate each in the Garden's way (a date palm, a
+reed) would have been the rework; no good public-domain plate of either
+could be reached in this session (Wikimedia refused every download as too
+many requests, and the first volume of Köhler has neither), and a plain page
+is better than a weak plate.
+
+**The words**, in all 21 catalogs; no name changed, so "from Candlelight to
+the Holy Mountain" still holds:
+
+| Key | Was | Is |
+| --- | --- | --- |
+| `settings.paletteHolyMountainHint` | The peak of Athos over the sea at dusk | A monastery under the mountain, from an engraving of 1887 |
+| `settings.paletteForestHint` | The firs of the north, mist between them | A bough of silver fir and its cone, from an old botanical plate |
+| `settings.paletteDesertHint` | The dunes of the Fathers in the last light | Warm sand, in the last light |
+| `settings.paletteJordanHint` | Still water, and the rings going out over it | Still water, pale and clear |
+
+**Measured, on the export of this work** (`npm run build:android`, the main
+web's public key read into that one command):
+
+| What | How | Result |
+| --- | --- | --- |
+| The pictures under words | `node scripts/scene-check.mjs athos,forest,desert,jordan` | Faintest text at its worst: Holy Mountain 5.89:1, Forest 6.87:1, Desert 6.92:1, Jordan 6.39:1 (4.5 needed). Full ink 12.12:1 or more. A prayer's line stepped back 4.74:1 or more |
+| The stills' screens | `checkMock` with `pixels` on On the Incarnation, John 1, Today and the picker, in each of the four looks, and on the five palettes | Nothing failed on any of the sixteen |
+| The room | `node scripts/room-walk.mjs --look athos,forest` | 128 screens in each, the picture shows on every one, nothing cut out |
+| A page's last words | `node scripts/last-words-walk.mjs --look athos,forest,desert,jordan` | 127 of 128 in each. `/saints/` fails in all four ("Cyrus, a physician of Alexandria, and John," 207px inside the foot), as it did on Mosaic, Patmos and Olive before this work |
+| The page for him | `checkMock` at 360, 390, 412 and 1032 on five palettes, no sideways scroll | Passed |
+| Typecheck, unit tests, lint | `npm run typecheck`, `test:unit`, `lint` | 0; 14,380 passed; 0 errors |
+
+**Kept.** The first pictures are in `docs/1.9-build/kept/athos-look/` and
+`docs/1.9-build/kept/land-looks/` (each drawing, the rules and the words in
+21 languages as they stood, one still each), for the Vault. The drawings are
+still in the script and `--kept` draws them again there.
+
+**Not proven, and found on the way.**
+
+- Nothing here has been seen on a real phone, and the stills are Chromium:
+  an iPhone is first seen by him.
+- `/saints/`'s last words rest inside the foot on every look with a foot.
+  Not from this work; told to the arbiter.
+- The family is still named "Land and sea", and with no picture Jordan (and
+  Desert, if it stays) is a colour more than a place: the family's name and
+  where they sit are for the chats that hold the picker.
+- `scripts/room-walk.mjs` asks every look for a picture under the page;
+  Desert and Jordan now have a colour there, so the walk is run on the two
+  that have one.
+- In the picker the "before" stills of each card were made on the new
+  export with that one look's old rules and old drawing put back, so only
+  the one card differs between the two stills.
+- `build:ios` was not run: the change is stylesheet blocks, two pictures and
+  catalog words, the same in both exports. It is run in the fix checklist
+  before the push, after his answers.
+- From 768 wide a look's picture stands down, as before.
+
+## 66. Earning a look by reading: the card, the way in, the moment (build 95 note 27)
+
+His word, 2026-11-13 about 08:21 UTC: "make the read to unlock themes
+cooler". One version, for his yes; held locally, and its code is not in any
+commit until then (it is kept whole as
+`build-95/earned-looks/prototype.patch`). The page he answers from is named
+in `build-95.md`, note 27; its source, stills and clip are
+`build-95/earned-looks/`.
+
+**What it was.** The two looks earned by reading (`lib/reader/earned.ts`:
+Councils, every council's page read to its end, 19; Cappadocian, one work by
+each of the three Cappadocian Fathers) stood as dimmed cards over "0 of 19"
+and "0 of 3"; a tap opened one long line under the row; and nothing marked
+the moment a look was earned.
+
+**The card** (`components/reader/EarnMarks.tsx`, drawn by `GoalTile`). The
+look itself, lit as it will be, and the progress as what it is: nineteen
+marks that fill, one for a council; three faces that light, each Father's
+own icon the apps carry (`CAPPADOCIAN_FACES`; none of the three is on the
+heritage list). A screen reader still hears the count, off the marks.
+`earnedSoFar` in `lib/reader/earned.ts` says which are read.
+
+**The way in** (`components/reader/EarnSheet.tsx`). A tap opens the house
+sheet: one line of how it is earned, the same marks at a size to count, and
+every council or Father as a row. What is still to read is a door to it;
+what is read keeps its place with a check. The councils' names are asked of
+`lib/councils/councils.ts` only once that sheet is open. Plus is said there
+to a reader without it, in the app's own line. The three places a goal is
+shown (Settings' row, the reading modes' page, the reader's own shelf) open
+the same sheet, in place of the line each had.
+
+**The moment** (`components/reader/EarnedMoment.tsx`), at the foot of the
+last page read: after a council's page's last words, and after a work's last
+chapter and its source. The look's own small page rises into a soft pool of
+light and rests in a mandorla, six embers go up and are gone: the gift's
+language, no rays, sparkle or confetti. From the moment, in ms: 0 the pool,
+120 the page, 420 the embers, 700 the phone's soft tick (`softTick`), 760
+the words. One button, "Wear it now", which is the app's one palette tap
+(`usePalettePick`, so a reader without Plus meets the app's own Plus sheet
+and its line is said under the button); once worn it reads "You are wearing
+it". Shown once for a look on a device (`purify.earned.shown`), on the page
+that earned it. Under reduced motion nothing travels and the embers are not
+drawn. On Light and the light looks the light is a shade of ink.
+
+**Words.** Thirteen new lines, `earn.*`, in English only until his yes;
+the other twenty catalogs fall to English for them. Settings' own words for
+the two looks are Updates 11's (note 19).
+
+**Measured, on the export of this work:**
+
+| What | How | Result |
+| --- | --- | --- |
+| The six screens | `checkMock` with `pixels`, the five palettes and the two looks: the picker's cards, Settings' row, both sheets, both moments | Nothing failed. The first run failed the moments on `mirror` (the light was placed with left and right); it is centred by its margins now |
+| The doors | The Councils sheet's rows on the export | 19, each a link to its council |
+| The moment | The 19th council's page and the third Father's last chapter, each scrolled to its end on the export; then one tap on "Wear it now" | Shown on both; the page wears the look after the tap on both |
+| The page for him | `checkMock` at 360, 390, 412 and 1032 on five palettes, no sideways scroll | Passed |
+| Typecheck, lint, tests | `npm run typecheck`; eslint on the six files; `vitest run lib/reader lib/settings lib/i18n` | 0; 0; 452 passed (six tests that held the dimmed card and its line were rewritten to hold the new card and the sheet) |
+
+The whole unit suite was not run on the prototype: one build and the nearby
+tests were the budget for a design. It is run in the fix checklist on his yes.
+
+**Not proven, and for others.**
+
+- Nothing seen on a real phone; the haptic is not felt in Chromium.
+- Updates 11 is making the picker one sideways row (note 18). The card here
+  is drawn in today's rows; its parts (`EarnMarks`, the sheet) go into that
+  row as they are. The spec went to the arbiter.
+- In the reader's own shelf the sheet opens over the reader's settings
+  sheet. It works; it was not walked.
+- The twenty other catalogs.
+- A reader who earned a look before this is shown the moment at the next
+  council's page or work's end they reach, once.

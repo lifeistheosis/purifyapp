@@ -209,6 +209,8 @@ His word on the whole family, 2026-11-13 about 07:57 UTC, sent with note 17: "al
 
 So the fault in the Land and sea family is the picture at the foot of the screen (the scenes in `public/themes/`), not the colours, which he likes. The Fable chat's job became the foot pictures of the four land looks that stay (Holy Mountain, Forest, Desert, Jordan): for each, one reworked picture or none, with the reason, and an honest word on whether the two light ones (Desert, Jordan) belong, since in his words the darker colours suit Purify and the flowers suit the light looks. His yes or no for each. Galilee and Patmos still come out, as he answered.
 
+**The four land looks' feet (Fable, 2026-11-13): made, held locally for his yes or no on each.** Every look's colours as they were. Holy Mountain: reworked, the monastery of St Paul under the mountain from a wood engraving of 1887. Forest: reworked, a bough of silver fir and its cone from a plate of Köhler's atlas, at the foot's two corners as the Garden's flowers stand. Jordan and Desert: no picture; Fable would keep Jordan as the one cool light page and take Desert out (one step from Blush). Before beside after, with a reason for each choice: https://claude.ai/artifact/QqnzGPTD41qdsX9EPnFMZr. The whole of it is `themes-fable.md`, section 65; the first pictures are kept in `docs/1.9-build/kept/athos-look/` and `kept/land-looks/`.
+
 ## Note 17 (asked): the patron saint chooser, reworked
 
 His word, 2026-11-13 about 07:57 UTC, with a screenshot of Settings, The calendar, Patron saint, open: "patron saint chooser design needs a rework"
@@ -331,6 +333,8 @@ His word, 2026-11-13 about 08:21 UTC: "make the read to unlock themes cooler"
 The two looks earned by reading (`lib/reader/earned.ts`): Councils, every council's page read to its end (19), and Cappadocian, one work by each of the three Cappadocian Fathers read to its end. Today they are dimmed cards with "0 of 19" and "0 of 3" in the chooser and one long line in Settings, and nothing marks the moment a look is earned.
 
 Done is, one version, for his yes before it ships: the locked card shows the look itself and the progress as what it is (the councils as marks that fill, the three Fathers lighting as each is read), not a bare count; a tap on it opens what is left to read, each a door to it; the moment it is earned, at the foot of the last page, the new look is revealed in the house's own reveal language (the soft flood of light, embers and mandorla of the gift; never rays, sparkle or confetti), with a haptic and one tap to wear it; still and clear under reduced motion. With the Fable chat on the looks; the cards in the chooser built by Updates 11 from its spec.
+
+**Designed (Fable, 2026-11-13), held locally for his yes.** The card shows the look lit, with nineteen marks that fill and three faces that light; a tap opens what is left to read, each a door; the moment at the foot of the last page read is the gift's soft light, one tick and one tap to wear it. Stills, a clip and reasons: https://claude.ai/artifact/JvH8j4Pzs5doo957UuS46j. The whole of it is `themes-fable.md`, section 66.
 
 ## Found with notes 15 and 24 (Updates 8, 2026-11-13 about 08:51 UTC)
 

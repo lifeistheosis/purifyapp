@@ -1,0 +1,981 @@
+diff --git a/app/(app)/councils/[slug]/page.tsx b/app/(app)/councils/[slug]/page.tsx
+index 33b4f5010..81ced4484 100644
+--- a/app/(app)/councils/[slug]/page.tsx
++++ b/app/(app)/councils/[slug]/page.tsx
+@@ -22,6 +22,7 @@ import { fatherFaces } from "@/lib/councils/fathers";
+ import { councilQuote, lineOfCouncil } from "@/lib/councils/lines";
+ import { councilFocus, councilPicture, ordinalKey, placeOf } from "@/lib/councils/page";
+ import { cn } from "@/lib/cn";
++import { EarnedMoment } from "@/components/reader/EarnedMoment";
+ import { ReadToEndMark } from "@/components/reading/ReadToEndMark";
+ 
+ /** Where a mark in a council's account leads: its source, under the history. */
+@@ -353,6 +354,8 @@ export default async function CouncilProfilePage({
+  {/* The page's foot: read to its end once it comes into view, towards
+      the Councils palette (1.9, rec 79, lib/reader/earned.ts). */}
+  <ReadToEndMark kind="council" id={c.slug} />
++ {/* The moment the Councils palette is earned, here on the last page read (build 95 note 27). */}
++ <EarnedMoment palette="councils" />
+  </article>
+  </section>
+  </>
+diff --git a/app/globals.css b/app/globals.css
+index de1e46587..0e8a16af1 100644
+--- a/app/globals.css
++++ b/app/globals.css
+@@ -6739,15 +6739,350 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
+    not yet lit says "not yet" without one. */
+ .set-mode-goal .set-mode-page {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-paper) 9%, transparent);
+- opacity: 0.5;
+ }
+-.set-mode-goal .set-mode-page::after {
+- content: none;
++
++/* Earned by reading (build 95 note 27, his "make the read to unlock themes
++   cooler"). The card shows the look itself, lit as it will be, and how far
++   the reader is as what it is: nineteen marks that fill for the councils,
++   three faces that light for the Cappadocian Fathers
++   (components/reader/EarnMarks.tsx). It was a dimmed page over "0 of 19". */
++.earn-marks,
++.earn-faces {
++ display: flex;
++ align-items: center;
++ width: 100%;
++ margin-top: 5px;
++}
++.earn-marks {
++ gap: 1px;
++ height: 8px;
++}
++.earn-marks > i {
++ flex: 1 1 0;
++ min-width: 1px;
++ height: 100%;
++ border-radius: 1px;
++ background-color: color-mix(in srgb, var(--color-paper) 22%, transparent);
++}
++.earn-marks > i[data-on] {
++ background-color: var(--color-paper);
++}
++.earn-faces {
++ justify-content: center;
++ gap: 3px;
++}
++.earn-faces > img {
++ flex: 0 1 22px;
++ min-width: 0;
++ aspect-ratio: 1;
++ border-radius: 999px;
++ object-fit: cover;
++ object-position: 50% 18%;
++ filter: grayscale(1);
++ opacity: 0.4;
++ box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-paper) 16%, transparent);
++}
++.earn-faces > img[data-on] {
++ filter: none;
++ opacity: 1;
++ box-shadow: 0 0 0 1.5px var(--color-paper);
++}
++.set-root[data-live] .earn-marks > i {
++ transition: background-color 320ms var(--ease-house);
++}
++:where([data-motion="reduce"]) .set-root[data-live] .earn-marks > i {
++ transition: none;
++}
++.set-root[data-live] .earn-faces > img {
++ transition: opacity 320ms var(--ease-house), filter 320ms var(--ease-house), box-shadow 320ms var(--ease-house);
++}
++:where([data-motion="reduce"]) .set-root[data-live] .earn-faces > img {
++ transition: none;
++}
++
++/* What is left to read (components/reader/EarnSheet.tsx): the house sheet,
++   one line of how it is earned, the same marks at a size to count, and each
++   thing still to read as a door. What is read keeps its place, with a check. */
++.earn-sheet-head {
++ padding: 2px 20px 14px;
++}
++.earn-sheet-line {
++ margin: 0;
++ font-family: var(--font-serif), Georgia, serif;
++ font-size: 16px;
++ line-height: 1.5;
++ color: color-mix(in srgb, var(--color-paper) 82%, transparent);
++}
++.earn-sheet-marks {
++ display: flex;
++ align-items: center;
++ gap: 14px;
++ margin-top: 14px;
++}
++.earn-sheet-marks .earn-marks {
++ flex: 1 1 auto;
++ width: auto;
++ gap: 3px;
++ height: 14px;
++ margin-top: 0;
++}
++.earn-sheet-marks .earn-faces {
++ flex: 0 0 auto;
++ width: auto;
++ gap: 8px;
++ margin-top: 0;
++}
++.earn-sheet-marks .earn-faces > img {
++ flex: 0 0 36px;
++ width: 36px;
++}
++.earn-sheet-count {
++ flex: none;
++ font-family: var(--font-sans), system-ui, sans-serif;
++ font-size: 13px;
++ font-weight: 600;
++ font-variant-numeric: tabular-nums;
++ color: color-mix(in srgb, var(--color-paper) 74%, transparent);
++}
++.earn-doors {
++ margin: 0;
++ padding: 0 8px 12px;
++ list-style: none;
++}
++.earn-doors > li + li {
++ border-block-start: 1px solid color-mix(in srgb, var(--color-paper) 9%, transparent);
++}
++.earn-door {
++ display: flex;
++ align-items: center;
++ gap: 12px;
++ min-height: 56px;
++ padding: 8px 12px;
++ border-radius: 12px;
++ color: var(--color-paper);
++ text-decoration: none;
++}
++.earn-door-face {
++ flex: none;
++ width: 44px;
++ height: 44px;
++ border-radius: 999px;
++ object-fit: cover;
++ object-position: 50% 18%;
++}
++.earn-door-words {
++ display: flex;
++ flex: 1 1 auto;
++ flex-direction: column;
++ min-width: 0;
++}
++.earn-door-name {
++ font-family: var(--font-serif), Georgia, serif;
++ font-size: 17px;
++ line-height: 1.3;
++ text-align: start;
++}
++.earn-door-line {
++ margin-top: 1px;
++ font-family: var(--font-sans), system-ui, sans-serif;
++ font-size: 13px;
++ line-height: 1.35;
++ font-variant-numeric: tabular-nums;
++ color: color-mix(in srgb, var(--color-paper) 72%, transparent);
+ }
+-/* Tapped, it comes forward while the line under the row says how it is earned. */
+-.set-mode-goal[aria-expanded="true"] .set-mode-page {
++.earn-door-mark {
++ flex: none;
++ color: color-mix(in srgb, var(--color-paper) 72%, transparent);
++}
++.earn-door[data-read] .earn-door-name {
++ color: color-mix(in srgb, var(--color-paper) 74%, transparent);
++}
++.earn-sheet-plus {
++ margin: 0;
++ padding: 4px 20px 16px;
++ font-family: var(--font-sans), system-ui, sans-serif;
++ font-size: 13px;
++ line-height: 1.45;
++ color: color-mix(in srgb, var(--color-paper) 72%, transparent);
++}
++
++/* The moment it is earned (components/reader/EarnedMoment.tsx): at the foot
++   of the last page read, the look's own page rises into a soft pool of light
++   and rests in a mandorla, a few embers go up and are gone. The gift's own
++   language (.gift-flood, .gift-ember, .gift-mandorla above), and no rays by
++   his rule of 2026-11-08. Transform and opacity only. From the moment, in
++   ms: 0 the pool, 120 the page, 420 the embers, 700 the phone's soft tick
++   (LANDS_MS), 760 the words, all still by 1900. Under data-motion="reduce"
++   nothing travels: it is whole at once. */
++.earned-moment {
++ margin: 56px auto 8px;
++ max-width: 420px;
++ text-align: center;
++}
++.earned-stage {
++ position: relative;
++ display: flex;
++ align-items: center;
++ justify-content: center;
++ height: 232px;
++ --mp-k: 0.56;
++}
++.earned-pool,
++.earned-mandorla,
++.earned-ember {
++ position: absolute;
++ pointer-events: none;
++}
++/* Centred by its own margins, so it stands in the middle in Arabic too. */
++.earned-pool {
++ inset-inline: 0;
++ top: 50%;
++ width: 300px;
++ height: 300px;
++ margin: -150px auto 0;
++ border-radius: 999px;
++ background: radial-gradient(closest-side, color-mix(in srgb, var(--color-gold-pale) 22%, transparent) 0%, color-mix(in srgb, var(--color-gold-pale) 9%, transparent) 46%, transparent 100%);
++ animation: earned-pool 1500ms var(--ease-house) both;
++}
++.earned-mandorla {
++ inset-inline: 0;
++ top: 50%;
++ width: 150px;
++ height: 216px;
++ margin: -108px auto 0;
++ border-radius: 50%;
++ box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-gold-pale) 22%, transparent), 0 0 28px color-mix(in srgb, var(--color-gold-pale) 12%, transparent);
++ animation: earned-mandorla 1100ms var(--ease-house) 200ms both;
++}
++.earned-ember {
++ inset-inline-start: 50%;
++ top: 62%;
++ width: 3px;
++ height: 3px;
++ border-radius: 999px;
++ background-color: var(--color-gold-pale);
++ opacity: 0;
++ animation: earned-ember 1300ms cubic-bezier(0.3, 0.8, 0.4, 1) both;
++}
++.earned-page {
++ position: relative;
++ display: block;
++ animation: earned-page 900ms var(--ease-house) 120ms both;
++}
++.earned-eyebrow,
++.earned-title,
++.earned-line,
++.earned-wear,
++.earned-wearing,
++.earned-plus {
++ animation: earned-words 520ms var(--ease-house) 760ms both;
++}
++.earned-eyebrow {
++ margin: 14px 0 0;
++ font-family: var(--font-sans), system-ui, sans-serif;
++ font-size: 13px;
++ font-weight: 600;
++ color: color-mix(in srgb, var(--color-paper) 72%, transparent);
++}
++.earned-title {
++ margin: 6px 0 0;
++ font-family: var(--font-display-serif), var(--font-serif), Georgia, serif;
++ font-size: 30px;
++ line-height: 1.15;
++ color: var(--color-paper);
++ text-wrap: balance;
++}
++.earned-line {
++ margin: 8px auto 0;
++ max-width: 30ch;
++ font-family: var(--font-serif), Georgia, serif;
++ font-size: 17px;
++ line-height: 1.5;
++ color: color-mix(in srgb, var(--color-paper) 82%, transparent);
++ text-wrap: balance;
++}
++.earned-wear {
++ display: inline-flex;
++ align-items: center;
++ justify-content: center;
++ min-height: 48px;
++ margin-top: 20px;
++ padding: 0 28px;
++ border: 0;
++ border-radius: 999px;
++ background-color: var(--color-paper);
++ color: var(--color-night);
++ font-family: var(--font-sans), system-ui, sans-serif;
++ font-size: 16px;
++ font-weight: 600;
++}
++.earned-wearing {
++ display: inline-flex;
++ align-items: center;
++ gap: 8px;
++ min-height: 48px;
++ margin: 20px 0 0;
++ font-family: var(--font-sans), system-ui, sans-serif;
++ font-size: 16px;
++ font-weight: 600;
++ color: var(--color-paper);
++}
++.earned-plus {
++ margin: 10px 0 0;
++ font-family: var(--font-sans), system-ui, sans-serif;
++ font-size: 13px;
++ color: color-mix(in srgb, var(--color-paper) 72%, transparent);
++}
++@keyframes earned-pool {
++ 0% { transform: scale(0.5); opacity: 0; }
++ 45% { opacity: 1; }
++ 100% { transform: scale(1); opacity: 0.8; }
++}
++@keyframes earned-mandorla {
++ 0% { transform: scale(0.82); opacity: 0; }
++ 100% { transform: scale(1); opacity: 1; }
++}
++@keyframes earned-page {
++ 0% { transform: translateY(26px) scale(0.94); opacity: 0; }
++ 100% { transform: none; opacity: 1; }
++}
++@keyframes earned-ember {
++ 0% { transform: translate(var(--ember-x, 0), 0); opacity: 0; }
++ 18% { opacity: 0.9; }
++ 100% { transform: translate(calc(var(--ember-x, 0) * 1.25), -128px); opacity: 0; }
++}
++@keyframes earned-words {
++ 0% { transform: translateY(8px); opacity: 0; }
++ 100% { transform: none; opacity: 1; }
++}
++:where([data-motion="reduce"]) .earned-pool,
++:where([data-motion="reduce"]) .earned-mandorla,
++:where([data-motion="reduce"]) .earned-page,
++:where([data-motion="reduce"]) .earned-eyebrow,
++:where([data-motion="reduce"]) .earned-title,
++:where([data-motion="reduce"]) .earned-line,
++:where([data-motion="reduce"]) .earned-wear,
++:where([data-motion="reduce"]) .earned-wearing,
++:where([data-motion="reduce"]) .earned-plus {
++ animation: none;
++}
++:where([data-motion="reduce"]) .earned-pool {
+  opacity: 0.8;
+ }
++:where([data-motion="reduce"]) .earned-ember {
++ animation: none;
++ opacity: 0;
++}
++/* On Light and the light looks nothing glows: the light is a shade of ink, as the gift's is. */
++html[data-reading-mode="parchment"] .earned-pool {
++ background: radial-gradient(closest-side, color-mix(in srgb, var(--color-paper) 9%, transparent) 0%, color-mix(in srgb, var(--color-paper) 4%, transparent) 46%, transparent 100%);
++}
++html[data-reading-mode="parchment"] .earned-mandorla {
++ box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-paper) 20%, transparent);
++}
++html[data-reading-mode="parchment"] .earned-ember {
++ display: none;
++}
+ .set-mode-progress {
+  margin-top: 1px;
+  font-size: 9px;
+@@ -7049,9 +7384,6 @@ html[data-reading-mode="parchment"] .set-focus-wash {
+ .set-root[data-live] .set-mode-page {
+  transition: translate 320ms var(--ease-house), box-shadow 320ms var(--ease-house);
+ }
+-.set-root[data-live] .set-mode-goal .set-mode-page {
+- transition: opacity 240ms var(--ease-house);
+-}
+ .set-root[data-live] .set-slider-fill {
+  transition: width 260ms var(--ease-house);
+ }
+@@ -7067,7 +7399,6 @@ html[data-reading-mode="parchment"] .set-focus-wash {
+ :where([data-motion="reduce"]) .set-root[data-live] .set-switch,
+ :where([data-motion="reduce"]) .set-root[data-live] .set-switch-knob,
+ :where([data-motion="reduce"]) .set-root[data-live] .set-mode-page,
+-:where([data-motion="reduce"]) .set-root[data-live] .set-mode-goal .set-mode-page,
+ :where([data-motion="reduce"]) .set-root[data-live] .set-slider-fill,
+ :where([data-motion="reduce"]) .set-root[data-live] .set-slider-thumb,
+ :where([data-motion="reduce"]) .set-root[data-live] .set-slider-stop,
+diff --git a/components/reader/EarnMarks.tsx b/components/reader/EarnMarks.tsx
+new file mode 100644
+index 000000000..0a02c4029
+--- /dev/null
++++ b/components/reader/EarnMarks.tsx
+@@ -0,0 +1,34 @@
++"use client";
++
++// How far a reader is towards a palette earned by reading, shown as what it
++// is (build 95 note 27, the owner's "make the read to unlock themes cooler"):
++// the councils as nineteen marks that fill, the three Cappadocian Fathers as
++// three faces that light as a work of each is read. Until then it was a bare
++// count, "0 of 19". The count is still what a screen reader hears.
++
++import { useTranslate } from "@/components/i18n/MessagesProvider";
++import { useEarnedSoFar } from "@/components/reader/useEarnedPalettes";
++import { CAPPADOCIANS, CAPPADOCIAN_FACES, COUNCIL_PAGES, type EarnedPalettes } from "@/lib/reader/earned";
++
++export function EarnMarks({ goal, progress }: { goal: keyof EarnedPalettes; progress: { read: number; of: number } }) {
++  const { t } = useTranslate();
++  const sofar = useEarnedSoFar();
++  const label = t("settings.paletteProgress", { count: progress.read, total: progress.of });
++  if (goal === "councils") {
++    return (
++      <span role="img" aria-label={label} className="earn-marks">
++        {COUNCIL_PAGES.map((slug) => (
++          <i key={slug} data-on={sofar.councils.includes(slug) ? "" : undefined} />
++        ))}
++      </span>
++    );
++  }
++  return (
++    <span role="img" aria-label={label} className="earn-faces">
++      {CAPPADOCIANS.map((saint) => (
++        // eslint-disable-next-line @next/next/no-img-element -- a 24px face the apps carry; nothing to size or fetch late
++        <img key={saint} src={CAPPADOCIAN_FACES[saint]} alt="" decoding="async" data-on={sofar.fathers.includes(saint) ? "" : undefined} />
++      ))}
++    </span>
++  );
++}
+diff --git a/components/reader/EarnSheet.tsx b/components/reader/EarnSheet.tsx
+new file mode 100644
+index 000000000..7996a13c0
+--- /dev/null
++++ b/components/reader/EarnSheet.tsx
+@@ -0,0 +1,101 @@
++"use client";
++
++// What is left to read for a palette earned by reading (build 95 note 27):
++// a tap on its card opens this, and each thing still to read is a door to it.
++// Until then the card opened one long line under its row.
++//
++// The house sheet. The councils' names come with the sheet, not with every
++// screen that shows the card: lib/councils/councils.ts is asked for only once
++// the Councils sheet is open.
++
++import Link from "next/link";
++import { useEffect, useState } from "react";
++
++import { useTranslate } from "@/components/i18n/MessagesProvider";
++import { EarnMarks } from "@/components/reader/EarnMarks";
++import { useEarnedPalettes, useEarnedSoFar } from "@/components/reader/useEarnedPalettes";
++import { Check } from "@/components/ui/icons/Check";
++import { ChevronRight } from "@/components/ui/icons/ChevronRight";
++import { Sheet } from "@/components/ui/Sheet";
++import { CAPPADOCIANS, CAPPADOCIAN_FACES, COUNCIL_PAGES, type EarnedPalettes } from "@/lib/reader/earned";
++
++type CouncilName = { slug: string; byname: string; year: number };
++
++const FATHER_NAMES: Record<(typeof CAPPADOCIANS)[number], string> = {
++  "basil-the-great": "earn.basil",
++  "gregory-theologian": "earn.gregoryTheologian",
++  "gregory-of-nyssa": "earn.gregoryOfNyssa",
++};
++
++export function EarnSheet({ goal, locked, onClose }: { goal: keyof EarnedPalettes | null; locked: boolean; onClose: () => void }) {
++  const { t } = useTranslate();
++  const earned = useEarnedPalettes();
++  const sofar = useEarnedSoFar();
++  const [councils, setCouncils] = useState<readonly CouncilName[] | null>(null);
++  const wanted = goal === "councils" && !councils;
++  useEffect(() => {
++    if (!wanted) return;
++    let live = true;
++    void import("@/lib/councils/councils").then(({ COUNCILS }) => {
++      if (!live) return;
++      const by = new Map(COUNCILS.map((c) => [c.slug, c]));
++      setCouncils(COUNCIL_PAGES.flatMap((slug) => (by.get(slug) ? [{ slug, byname: by.get(slug)!.byname, year: by.get(slug)!.year }] : [])));
++    });
++    return () => {
++      live = false;
++    };
++  }, [wanted]);
++
++  if (!goal) return null;
++  const progress = earned[goal];
++  const title = t(goal === "councils" ? "settings.paletteCouncils" : "settings.paletteCappadocian");
++  return (
++    <Sheet open onClose={onClose} title={title} desktop bodyClassName="earn-sheet">
++      <div className="earn-sheet-head">
++        <p className="earn-sheet-line">{t(goal === "councils" ? "earn.councilsLine" : "earn.cappadocianLine")}</p>
++        <div className="earn-sheet-marks" data-goal={goal}>
++          <EarnMarks goal={goal} progress={progress} />
++          <span className="earn-sheet-count">{t("earn.readCount", { count: progress.read, total: progress.of })}</span>
++        </div>
++      </div>
++      <ul className="earn-doors" data-earn-doors={goal}>
++        {goal === "councils"
++          ? (councils ?? []).map((c) => {
++              const read = sofar.councils.includes(c.slug);
++              // "Read", or the year, unless the council's name already says it ("Council of Antioch (268)").
++              const year = String(c.year);
++              const line = read ? t("earn.read") : c.byname.includes(year) ? null : year;
++              return (
++                <li key={c.slug}>
++                  <Link href={`/councils/${c.slug}/`} onClick={onClose} className="earn-door" data-read={read ? "" : undefined}>
++                    <span className="earn-door-words">
++                      <span lang="en" dir="ltr" className="earn-door-name">{c.byname}</span>
++                      {line ? <span className="earn-door-line">{line}</span> : null}
++                    </span>
++                    {read ? <Check size={18} className="earn-door-mark" /> : <ChevronRight size={18} className="earn-door-mark rtl:-scale-x-100" />}
++                  </Link>
++                </li>
++              );
++            })
++          : CAPPADOCIANS.map((saint) => {
++              const read = sofar.fathers.includes(saint);
++              return (
++                <li key={saint}>
++                  <Link href={`/saints/${saint}/`} onClick={onClose} className="earn-door" data-read={read ? "" : undefined}>
++                    {/* eslint-disable-next-line @next/next/no-img-element -- a 44px face the apps carry */}
++                    <img src={CAPPADOCIAN_FACES[saint]} alt="" decoding="async" className="earn-door-face" />
++                    <span className="earn-door-words">
++                      <span className="earn-door-name">{t(FATHER_NAMES[saint])}</span>
++                      <span className="earn-door-line">{read ? t("earn.read") : t("earn.oneWork")}</span>
++                    </span>
++                    {read ? <Check size={18} className="earn-door-mark" /> : <ChevronRight size={18} className="earn-door-mark rtl:-scale-x-100" />}
++                  </Link>
++                </li>
++              );
++            })}
++      </ul>
++      {/* Plus is never promised to every reader: a reader without it is told before they read for it. */}
++      {locked ? <p className="earn-sheet-plus">{t("settings.palettePlusNote")}</p> : null}
++    </Sheet>
++  );
++}
+diff --git a/components/reader/EarnedMoment.tsx b/components/reader/EarnedMoment.tsx
+new file mode 100644
+index 000000000..96ecf4577
+--- /dev/null
++++ b/components/reader/EarnedMoment.tsx
+@@ -0,0 +1,97 @@
++"use client";
++
++// The moment a palette is earned by reading (build 95 note 27, the owner's
++// "make the read to unlock themes cooler"): at the foot of the last page
++// read, the new look is shown in the house's own reveal (the gift's: a soft
++// pool of light it rises into, a few embers, the mandorla it rests in; never
++// rays, a sparkle or confetti), the phone gives its one soft tick, and one
++// tap wears it. Until then nothing marked the moment at all: the card in
++// Settings simply stopped being dim.
++//
++// It stands in the page, under its last words, and not over it: the reader
++// has just finished reading and nothing takes the page from them. It is
++// shown once for each palette on a device (KEY), and only on the page whose
++// end earned it. Under reduced motion it is still and whole at once.
++
++import { useEffect, useState } from "react";
++
++import { useTranslate } from "@/components/i18n/MessagesProvider";
++import { useReaderPrefs } from "@/components/reader/ReaderPrefs";
++import { useEarnedPalettes } from "@/components/reader/useEarnedPalettes";
++import { usePalettePick } from "@/components/reader/usePalettePick";
++import { ModePage } from "@/components/settings/ReadingModePages";
++import { Check } from "@/components/ui/icons/Check";
++import type { EarnedPalettes } from "@/lib/reader/earned";
++import { PREVIEW_CHAPTER } from "@/lib/settings/preview";
++import { softTick } from "@/lib/ui/softTick";
++
++const KEY = "purify.earned.shown";
++/** When the page has settled in its light: the phone's tick lands with it. */
++const LANDS_MS = 700;
++const EMBERS = [-64, -38, -14, 12, 34, 58] as const;
++
++function shown(): string[] {
++  try {
++    const raw = JSON.parse(localStorage.getItem(KEY) ?? "[]");
++    return Array.isArray(raw) ? raw.filter((x) => typeof x === "string") : [];
++  } catch {
++    return [];
++  }
++}
++
++export function EarnedMoment({ palette }: { palette: keyof EarnedPalettes }) {
++  const { t } = useTranslate();
++  const { font } = useReaderPrefs();
++  const earned = useEarnedPalettes()[palette].earned;
++  const { pick, worn, locked } = usePalettePick();
++  const [open, setOpen] = useState(false);
++
++  // Earned while this page is open, and not shown before: this is the page
++  // that earned it. Decided as the page is drawn (nothing is earned in the
++  // first draw, so the export and the device agree), and kept once it shows.
++  if (earned && !open && !shown().includes(palette)) setOpen(true);
++  useEffect(() => {
++    if (!open) return;
++    try {
++      const seen = shown();
++      if (!seen.includes(palette)) localStorage.setItem(KEY, JSON.stringify([...seen, palette]));
++    } catch {
++      // A device that keeps nothing shows it again next time: better twice than never.
++    }
++    const tick = window.setTimeout(softTick, LANDS_MS);
++    return () => window.clearTimeout(tick);
++  }, [open, palette]);
++
++  if (!open) return null;
++  const name = t(palette === "councils" ? "settings.paletteCouncils" : "settings.paletteCappadocian");
++  const wearing = worn === palette;
++  return (
++    <section className="earned-moment" data-earned={palette} aria-live="polite">
++      <div className="earned-stage" aria-hidden>
++        <span className="earned-pool" />
++        <span className="earned-mandorla" />
++        {EMBERS.map((x, i) => (
++          <span key={x} className="earned-ember" style={{ ["--ember-x" as string]: `${x}px`, animationDelay: `${420 + i * 90}ms` }} />
++        ))}
++        <span className="earned-page">
++          <ModePage palette={palette} font={font} book={t("bible.books.john")} chapter={t("bible.chapterN", { n: PREVIEW_CHAPTER })} />
++        </span>
++      </div>
++      <p className="earned-eyebrow">{t("settings.paletteEarnedRow")}</p>
++      <h2 className="earned-title">{t("earn.yours", { name })}</h2>
++      <p className="earned-line">{t(palette === "councils" ? "earn.councilsDone" : "earn.cappadocianDone")}</p>
++      {wearing ? (
++        <p className="earned-wearing">
++          <Check size={16} strokeWidth={2.4} />
++          {t("earn.wearing")}
++        </p>
++      ) : (
++        <button type="button" onClick={() => pick(palette)} className="earned-wear tap-press">
++          {t("earn.wear")}
++        </button>
++      )}
++      {/* Plus is never promised to every reader. */}
++      {locked && !wearing ? <p className="earned-plus">{t("settings.palettePlusNote")}</p> : null}
++    </section>
++  );
++}
+diff --git a/components/reader/ReadingModeChips.tsx b/components/reader/ReadingModeChips.tsx
+index 1634c5e3f..fbba885ed 100644
+--- a/components/reader/ReadingModeChips.tsx
++++ b/components/reader/ReadingModeChips.tsx
+@@ -37,6 +37,7 @@ import { useEffect, useRef, useState } from "react";
+ 
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+ import { useReaderPrefs } from "@/components/reader/ReaderPrefs";
++import { EarnSheet } from "@/components/reader/EarnSheet";
+ import { useEarnedPalettes } from "@/components/reader/useEarnedPalettes";
+ import { usePalettePick } from "@/components/reader/usePalettePick";
+ import { GoalTile, ModeTile } from "@/components/settings/ReadingModePages";
+@@ -162,13 +163,8 @@ export function ReadingModeChips({
+           );
+         })}
+       </div>
+-      {goal ? (
+-        <p id="set-palette-goal" role="status" className="set-mode-goal-line" data-palette-goal-line="">
+-          {t(goal === "councils" ? "settings.paletteEarnCouncils" : "settings.paletteEarnCappadocian", { count: earned[goal].read, total: earned[goal].of })}
+-          {/* Plus is never promised to every reader: a reader without it is told before they read for it. */}
+-          {locked ? ` ${t("settings.palettePlusNote")}` : null}
+-        </p>
+-      ) : null}
++      {/* What is left to read, each a door to it (build 95 note 27). */}
++      <EarnSheet goal={goal} locked={locked} onClose={() => setGoal(null)} />
+     </div>
+   );
+ }
+diff --git a/components/reader/useEarnedPalettes.ts b/components/reader/useEarnedPalettes.ts
+index 210b13261..78aa05a62 100644
+--- a/components/reader/useEarnedPalettes.ts
++++ b/components/reader/useEarnedPalettes.ts
+@@ -2,7 +2,7 @@
+ 
+ import { useMemo } from "react";
+ 
+-import { earnedPalettes, type EarnedPalettes } from "@/lib/reader/earned";
++import { earnedPalettes, earnedSoFar, type EarnedPalettes } from "@/lib/reader/earned";
+ import { useReadingProgress } from "@/lib/reading/progress";
+ import { useReadToEnd } from "@/lib/reading/readToEnd";
+ 
+@@ -16,3 +16,10 @@ export function useEarnedPalettes(): EarnedPalettes {
+   const progress = useReadingProgress();
+   return useMemo(() => earnedPalettes(ends, progress), [ends, progress]);
+ }
++
++/** Which councils and which of the three Fathers this reader has read to the end (lib/reader/earned.ts, earnedSoFar). */
++export function useEarnedSoFar(): { councils: readonly string[]; fathers: readonly string[] } {
++  const ends = useReadToEnd();
++  const progress = useReadingProgress();
++  return useMemo(() => earnedSoFar(ends, progress), [ends, progress]);
++}
+diff --git a/components/saints/WritingReader.tsx b/components/saints/WritingReader.tsx
+index 22ea7033b..6d41e9d26 100644
+--- a/components/saints/WritingReader.tsx
++++ b/components/saints/WritingReader.tsx
+@@ -41,6 +41,7 @@ import { useScrollAway } from "@/lib/ui/scrollAway";
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+ import { unitFor } from "@/lib/desktop/presenceModes";
+ import type { TileCard } from "@/lib/reading/select";
++import { EarnedMoment } from "@/components/reader/EarnedMoment";
+ import { ReadToEndMark } from "@/components/reading/ReadToEndMark";
+ import { UndoBar } from "@/components/ui/UndoBar";
+ import { useUndo } from "@/lib/ui/useUndo";
+@@ -227,6 +228,10 @@ export function WritingReader({
+  </p>
+  </footer>
+ 
++ {/* The moment the Cappadocian palette is earned: after the work's last
++     words and their source, the last thing on the page (build 95 note 27). */}
++ {next ? null : <EarnedMoment palette="cappadocian" />}
++
+  <MobileWorkPill head={head} prev={prev} next={next} heads={heads} onGo={go} words={words} />
+  <WorkContents
+  open={sheet === "contents"}
+diff --git a/components/settings/ReadingModeGallery.tsx b/components/settings/ReadingModeGallery.tsx
+index 8d81778a5..7935826c7 100644
+--- a/components/settings/ReadingModeGallery.tsx
++++ b/components/settings/ReadingModeGallery.tsx
+@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
+ 
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+ import { ReaderPrefsProvider, useReaderPrefs, type ReaderFont } from "@/components/reader/ReaderPrefs";
++import { EarnSheet } from "@/components/reader/EarnSheet";
+ import { useEarnedPalettes } from "@/components/reader/useEarnedPalettes";
+ import { usePalettePick } from "@/components/reader/usePalettePick";
+ import type { EarnedPalettes } from "@/lib/reader/earned";
+@@ -122,13 +123,8 @@ export function GalleryShelves({
+             return <GoalTile key={mode.id} mode={mode} progress={progress} open={goal === id} font={font} book={book} chapter={chapter} onToggle={() => setGoal(goal === id ? null : id)} />;
+           })}
+         </div>
+-        {goal ? (
+-          <p id="set-palette-goal" role="status" className="set-mode-goal-line" data-palette-goal-line="">
+-            {t(goal === "councils" ? "settings.paletteEarnCouncils" : "settings.paletteEarnCappadocian", { count: earned[goal].read, total: earned[goal].of })}
+-            {/* Plus is never promised to every reader: a reader without it is told before they read for it. */}
+-            {locked ? ` ${t("settings.palettePlusNote")}` : null}
+-          </p>
+-        ) : null}
++        {/* What is left to read, each a door to it (build 95 note 27). */}
++        <EarnSheet goal={goal} locked={locked} onClose={() => setGoal(null)} />
+       </section>
+     </>
+   );
+diff --git a/components/settings/ReadingModePages.tsx b/components/settings/ReadingModePages.tsx
+index 153d83ae5..c12633bfc 100644
+--- a/components/settings/ReadingModePages.tsx
++++ b/components/settings/ReadingModePages.tsx
+@@ -25,6 +25,8 @@ import { Fragment, useState } from "react";
+ 
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+ import { FONT_CLASSES, useReaderPrefs, type ReaderFont } from "@/components/reader/ReaderPrefs";
++import { EarnMarks } from "@/components/reader/EarnMarks";
++import { EarnSheet } from "@/components/reader/EarnSheet";
+ import { useEarnedPalettes } from "@/components/reader/useEarnedPalettes";
+ import { usePalettePick } from "@/components/reader/usePalettePick";
+ import { Check } from "@/components/ui/icons/Check";
+@@ -96,13 +98,8 @@ export function ModePages({
+           );
+         })}
+       </div>
+-      {goal ? (
+-        <p id="set-palette-goal" role="status" className="set-mode-goal-line" data-palette-goal-line="">
+-          {t(goal === "councils" ? "settings.paletteEarnCouncils" : "settings.paletteEarnCappadocian", { count: earned[goal].read, total: earned[goal].of })}
+-          {/* Plus is never promised to every reader: a reader without it is told before they read for it. */}
+-          {locked ? ` ${t("settings.palettePlusNote")}` : null}
+-        </p>
+-      ) : null}
++      {/* What is left to read, each a door to it (build 95 note 27). */}
++      <EarnSheet goal={goal} locked={locked} onClose={() => setGoal(null)} />
+     </>
+   );
+ }
+@@ -168,7 +165,13 @@ export function ModeTile({
+   );
+ }
+ 
+-/** A palette still to be earned by reading (lib/reader/earned.ts): its page drawn whole but unlit, and how far the reader is. No dashed edge (build 93 note 4). */
++/**
++ * A palette still to be earned by reading (lib/reader/earned.ts): the look
++ * itself, lit as it will be, and how far the reader is shown as what it is
++ * (./EarnMarks: the councils as marks that fill, the three Fathers as faces
++ * that light), build 95 note 27. A tap opens what is left to read
++ * (components/reader/EarnSheet.tsx). No dashed edge (build 93 note 4).
++ */
+ export function GoalTile({
+   mode,
+   progress,
+@@ -188,10 +191,10 @@ export function GoalTile({
+ }) {
+   const { t } = useTranslate();
+   return (
+-    <button type="button" data-palette-goal={mode.id} aria-expanded={open} aria-controls="set-palette-goal" onClick={onToggle} className="set-mode set-mode-goal">
++    <button type="button" data-palette-goal={mode.id} aria-haspopup="dialog" aria-expanded={open} onClick={onToggle} className="set-mode set-mode-goal">
+       <ModePage palette={mode.id} font={font} book={book} chapter={chapter} />
+       <span className="set-mode-name">{mode.labelKey ? t(mode.labelKey) : mode.label}</span>
+-      <span className="set-mode-progress">{t("settings.paletteProgress", { count: progress.read, total: progress.of })}</span>
++      <EarnMarks goal={mode.id as keyof EarnedPalettes} progress={progress} />
+     </button>
+   );
+ }
+diff --git a/lib/i18n/messages/en.json b/lib/i18n/messages/en.json
+index 6af6cda82..a354e2a80 100644
+--- a/lib/i18n/messages/en.json
++++ b/lib/i18n/messages/en.json
+@@ -3659,6 +3659,19 @@
+   "settings.paletteEarnCappadocian": "Read one work by each of the three Cappadocian Fathers to the end (St Basil the Great, St Gregory the Theologian, St Gregory of Nyssa) to earn Cappadocian: {count} of {total} so far.",
+   "settings.palettePlusNote": "It is a Purify Plus palette.",
+   "settings.paletteEarnedRow": "Earned by reading",
++  "earn.councilsLine": "Read each council's page to its end, and Councils is yours.",
++  "earn.cappadocianLine": "Read one work by each of the three Cappadocian Fathers to its end, and Cappadocian is yours.",
++  "earn.readCount": "{count} of {total} read",
++  "earn.read": "Read",
++  "earn.oneWork": "One of his works, to its end",
++  "earn.basil": "St Basil the Great",
++  "earn.gregoryTheologian": "St Gregory the Theologian",
++  "earn.gregoryOfNyssa": "St Gregory of Nyssa",
++  "earn.yours": "{name} is yours",
++  "earn.councilsDone": "You have read every council's page to its end.",
++  "earn.cappadocianDone": "You have read a work by each of the three Cappadocian Fathers.",
++  "earn.wear": "Wear it now",
++  "earn.wearing": "You are wearing it",
+   "settings.familyNight": "Night",
+   "settings.familyNightLine": "The hours of the dark, and what lights them",
+   "settings.familyLand": "Land and sea",
+diff --git a/lib/reader/__tests__/earned.test.ts b/lib/reader/__tests__/earned.test.ts
+index 960db7502..ddbf6a41b 100644
+--- a/lib/reader/__tests__/earned.test.ts
++++ b/lib/reader/__tests__/earned.test.ts
+@@ -88,10 +88,14 @@ describe("the marks and the palettes", () => {
+   it("stand at the foot of a council's page and of a work's last chapter", () => {
+     const council = fs.readFileSync("app/(app)/councils/[slug]/page.tsx", "utf8");
+     const foot = council.slice(council.lastIndexOf("<ReadToEndMark"));
+-    expect(foot).toMatch(/^<ReadToEndMark kind="council" id=\{c\.slug\} \/>\s*<\/article>/);
++    // The mark, then the moment it is earned (build 95 note 27), then the page ends.
++    expect(foot).toMatch(/^<ReadToEndMark kind="council" id=\{c\.slug\} \/>[\s\S]*<EarnedMoment palette="councils" \/>\s*<\/article>/);
+     const reader = fs.readFileSync("components/saints/WritingReader.tsx", "utf8");
+     expect(reader).toContain('{next ? null : <ReadToEndMark kind="work" id={key} />}');
+     expect(reader).toContain("const key = `${saint.slug}/${content.slug}`;");
++    // The moment stands after the work's last words and their source, the last thing on the page.
++    expect(reader).toContain('{next ? null : <EarnedMoment palette="cappadocian" />}');
++    expect(reader.lastIndexOf('<EarnedMoment palette="cappadocian" />')).toBeGreaterThan(reader.indexOf("</footer>"));
+   });
+ 
+   it("say Councils as it has looked since 1.8, deep navy, cream and silver, with no gold in any language", () => {
+@@ -139,10 +143,13 @@ describe("the marks and the palettes", () => {
+     for (const id of ["councils", "cappadocian"]) {
+       expect(READING_THEMES.find((t) => t.id === id)).toMatchObject({ labelKey: expect.any(String), blurbKey: expect.any(String), collection: true });
+     }
+-    for (const file of ["components/reader/ReadingModeChips.tsx", "components/settings/ReadingModePages.tsx"]) {
++    // Every place a goal is shown opens the same sheet, and that sheet is where
++    // Plus is said to a reader without it (build 95 note 27; it was a line under the row).
++    for (const file of ["components/reader/ReadingModeChips.tsx", "components/settings/ReadingModePages.tsx", "components/settings/ReadingModeGallery.tsx"]) {
+       const src = fs.readFileSync(file, "utf8");
+-      expect(src, file).toContain("{locked ? ` ${t(\"settings.palettePlusNote\")}` : null}");
++      expect(src, file).toContain("<EarnSheet goal={goal} locked={locked} onClose={() => setGoal(null)} />");
+     }
++    expect(fs.readFileSync("components/reader/EarnSheet.tsx", "utf8")).toContain('{locked ? <p className="earn-sheet-plus">{t("settings.palettePlusNote")}</p> : null}');
+     // One tile for a goal, drawn by Settings and, since build 93 note 4, by the reader's own shelf.
+     expect(fs.readFileSync("components/settings/ReadingModePages.tsx", "utf8")).toContain("data-palette-goal={mode.id}");
+     expect(fs.readFileSync("components/reader/ReadingModeChips.tsx", "utf8")).toContain("<GoalTile");
+diff --git a/lib/reader/__tests__/readerShelf.test.ts b/lib/reader/__tests__/readerShelf.test.ts
+index 5d9b41a88..b45f36832 100644
+--- a/lib/reader/__tests__/readerShelf.test.ts
++++ b/lib/reader/__tests__/readerShelf.test.ts
+@@ -52,16 +52,19 @@ describe("the reader's Reading mode section", () => {
+   it("draws no dashed box, here or on the earned palettes' tile anywhere", () => {
+     expect(CODE).not.toMatch(/dashed/);
+     expect(read("components/settings/ReadingModePages.tsx").replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, "")).not.toMatch(/dashed/);
+-    // The tile's own rules: unlit until earned, and no outline of any kind.
++    // The tile's own rules: no outline of any kind. From build 95 note 27 the
++    // look is shown lit as it will be, and what is unfilled is the progress itself.
+     const goal = decls(".set-mode-goal .set-mode-page");
+     expect(goal.outline).toBeUndefined();
+-    expect(Number(goal.opacity)).toBeLessThan(1);
++    expect(goal.opacity).toBeUndefined();
+     expect(JSON.stringify(goal)).not.toContain("dashed");
+     for (const block of [...CSS.matchAll(/\.set-mode-goal[^{]*\{([^}]*)\}/g)]) expect(block[1]).not.toContain("dashed");
+-    // Tapped, it comes forward, and the move is the house's and stops for a reader who asked for stillness.
+-    expect(Number(decls('.set-mode-goal[aria-expanded="true"] .set-mode-page').opacity)).toBeGreaterThan(Number(goal.opacity));
+-    expect(decls(".set-root[data-live] .set-mode-goal .set-mode-page").transition).toBe("opacity 240ms var(--ease-house)");
+-    expect(CSS).toContain(':where([data-motion="reduce"]) .set-root[data-live] .set-mode-goal .set-mode-page,');
++    // The marks that fill and the faces that light: the move is the house's and stops for a reader who asked for stillness.
++    expect(decls(".earn-marks > i[data-on]")["background-color"]).toBe("var(--color-paper)");
++    expect(decls(".earn-faces > img[data-on]").filter).toBe("none");
++    expect(decls(".set-root[data-live] .earn-marks > i").transition).toContain("var(--ease-house)");
++    expect(decls(".set-root[data-live] .earn-faces > img").transition).toContain("var(--ease-house)");
++    expect(CSS).toContain(':where([data-motion="reduce"]) .set-root[data-live] .earn-marks > i {');
+   });
+ 
+   it("is one shelf: swept sideways in the phone's sheet, with the sheet's own pull kept off it", () => {
+@@ -139,11 +142,16 @@ describe("the reader's Reading mode section", () => {
+     expect(CODE).toContain("onPick={pick}");
+   });
+ 
+-  it("says how a palette is earned under the shelf, and never promises Plus to every reader", () => {
+-    expect(CODE).toContain('t(goal === "councils" ? "settings.paletteEarnCouncils" : "settings.paletteEarnCappadocian", { count: earned[goal].read, total: earned[goal].of })');
+-    expect(SHELF).toContain('{locked ? ` ${t("settings.palettePlusNote")}` : null}');
+-    // The line the tile points a screen reader to.
+-    expect(CODE).toContain('id="set-palette-goal"');
+-    expect(read("components/settings/ReadingModePages.tsx")).toContain('aria-controls="set-palette-goal"');
++  it("opens what is left to read, and never promises Plus to every reader", () => {
++    // A tap on a goal opens the sheet of what is still to read, each thing a
++    // door to it (build 95 note 27); it was one long line under the shelf.
++    expect(CODE).toContain("<EarnSheet goal={goal} locked={locked} onClose={() => setGoal(null)} />");
++    expect(CODE).not.toContain('id="set-palette-goal"');
++    const sheet = read("components/reader/EarnSheet.tsx");
++    expect(sheet).toContain('<p className="earn-sheet-plus">{t("settings.palettePlusNote")}</p>');
++    expect(sheet).toContain('data-earn-doors={goal}');
++    // The card says it opens one, and the count is what a screen reader hears off the marks.
++    expect(read("components/settings/ReadingModePages.tsx")).toContain('aria-haspopup="dialog"');
++    expect(read("components/reader/EarnMarks.tsx")).toContain('t("settings.paletteProgress", { count: progress.read, total: progress.of })');
+   });
+ });
+diff --git a/lib/reader/earned.ts b/lib/reader/earned.ts
+index c466184d8..83b11b3d8 100644
+--- a/lib/reader/earned.ts
++++ b/lib/reader/earned.ts
+@@ -53,6 +53,17 @@ export const COUNCIL_PAGES = [
+ /** The three Cappadocian Fathers, by their saints' pages. */
+ export const CAPPADOCIANS = ["basil-the-great", "gregory-theologian", "gregory-of-nyssa"] as const;
+ 
++/**
++ * Each of the three, by the icon the apps carry for him (lib/saints/saints.ts,
++ * iconUrl, which the test holds this to): the earned palette's card lights a
++ * face as his work is read, without carrying the saints' whole registry.
++ */
++export const CAPPADOCIAN_FACES: Readonly<Record<(typeof CAPPADOCIANS)[number], string>> = {
++  "basil-the-great": "/saints/icons/basil-the-great.jpg",
++  "gregory-theologian": "/saints/icons/gregory-theologian.v2.jpg",
++  "gregory-of-nyssa": "/saints/icons/gregory-of-nyssa.v3.jpg",
++};
++
+ export type EarnedGoal = { read: number; of: number; earned: boolean };
+ export type EarnedPalettes = { councils: EarnedGoal; cappadocian: EarnedGoal };
+ 
+@@ -73,3 +84,16 @@ export function earnedPalettes(ends: ReadToEnd, progress: ProgressStore, council
+     cappadocian: { read: fathersRead, of: CAPPADOCIANS.length, earned: fathersRead === CAPPADOCIANS.length },
+   };
+ }
++
++/**
++ * Which of them are read, by name: the councils whose page was read to its
++ * end, and the Cappadocians one of whose works was. What the card's marks and
++ * faces light by, and what the sheet's doors leave out (build 95 note 27).
++ */
++export function earnedSoFar(ends: ReadToEnd, progress: ProgressStore, councils: readonly string[] = COUNCIL_PAGES): { councils: readonly string[]; fathers: readonly string[] } {
++  const keys = [...new Set([...ends.works, ...Object.keys(progress)])];
++  return {
++    councils: councils.filter((slug) => ends.councils.includes(slug)),
++    fathers: CAPPADOCIANS.filter((saint) => keys.some((key) => key.startsWith(`${saint}/`) && workRead(key, ends, progress))),
++  };
++}
+diff --git a/lib/settings/__tests__/litPanels.test.ts b/lib/settings/__tests__/litPanels.test.ts
+index f5cb41113..063d6d61e 100644
+--- a/lib/settings/__tests__/litPanels.test.ts
++++ b/lib/settings/__tests__/litPanels.test.ts
+@@ -151,8 +151,13 @@ describe("the reading modes", () => {
+     expect(drawn).toMatch(/class="set-modes set-modes-earned" data-count="2"/);
+     // Nothing is earned in the first draw (the device's reading is read after it): both are goals.
+     expect(drawn.match(/data-palette-goal="(councils|cappadocian)"/g)).toHaveLength(2);
+-    expect(drawn).toContain('<span class="set-mode-progress">0 of 19</span>');
+-    expect(drawn).toContain('<span class="set-mode-progress">0 of 3</span>');
++    // How far the reader is, as what it is (build 95 note 27): nineteen marks
++    // for the councils, three faces for the Fathers, and the count for a screen reader.
++    expect(drawn).toContain('<span role="img" aria-label="0 of 19" class="earn-marks">');
++    expect(drawn.match(/class="earn-marks">([\s\S]*?)<\/span>/)?.[1].match(/<i/g)).toHaveLength(19);
++    expect(drawn).toContain('<span role="img" aria-label="0 of 3" class="earn-faces">');
++    expect(drawn.match(/class="earn-faces">([\s\S]*?)<\/span>/)?.[1].match(/<img/g)).toHaveLength(3);
++    expect(drawn).not.toContain("set-mode-progress");
+     // One already applied is a palette, not a goal, so it can be put down again.
+     const applied = draw(createElement(ModePages, { theme: "councils", font: "serif", allows: EVERY, locked: false, onPick: () => {} }));
+     expect(applied.match(/data-palette-goal="(councils|cappadocian)"/g)).toEqual(['data-palette-goal="cappadocian"']);
