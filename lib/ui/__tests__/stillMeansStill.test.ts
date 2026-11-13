@@ -108,7 +108,7 @@ function stylesheet() {
   const moves: Said[] = [];
   let order = 0;
   postcss.parse(css, { from: "app/globals.css" }).walkRules((rule) => {
-    for (let p = rule.parent; p; p = p.parent) if (p.type === "atrule" && /keyframes/.test((p as postcss.AtRule).name)) return;
+    for (let p: postcss.Node | undefined = rule.parent; p; p = p.parent) if (p.type === "atrule" && /keyframes/.test((p as postcss.AtRule).name)) return;
     const at = order++;
     const line = rule.source?.start?.line ?? 0;
     for (const selector of splitTop(rule.selector)) {
