@@ -202,7 +202,8 @@ export function fastDays(days: readonly Date[], style: CalStyle): LetterDay[] {
   });
 }
 
-function firstWeekLetter(step: FirstWeekStep): RetentionLetter {
+/** A first-week step's letter. Exported for the look's strip, which names each step by its own heading (look.ts). */
+export function firstWeekLetter(step: FirstWeekStep): RetentionLetter {
   const about: LetterAbout = { kind: "first_week", step };
   if (step === "morning") {
     const morning = rule("morning");

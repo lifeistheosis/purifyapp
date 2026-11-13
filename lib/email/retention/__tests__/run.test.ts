@@ -100,6 +100,8 @@ describe("with every switch off", () => {
 
 describe("at owner", () => {
   it("sends nothing until the approved look has dropped in: the stand-in is never sent", async () => {
+    // The look has dropped in since his yes of 2026-11-13; an email without one is the case held here.
+    __setLook("first_week", null);
     __setRetention("first_week", { position: "owner", design: YES });
     const { client } = watched({ email_sends: [] });
     const { d, sent } = deps();

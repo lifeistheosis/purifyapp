@@ -614,16 +614,18 @@ function pruneEmailPictures(dir) {
     }
   }
   // The list letters' pictures (1.9, the design kit's look): the masthead's
-  // cross and the forty nights of the Nativity Fast, in public/email/. Only an
-  // email draws them, from the website's address (lib/email/kitLetters.ts),
-  // so they leave the export too: those files by name and nothing else, so
-  // the pages under /email/ (unsubscribe, change) stay.
+  // cross, the forty nights of the Nativity Fast, and from build 95 the
+  // retention look's night-card pictures (hero-*.jpg), the calendar's fast
+  // marks, the feast's cross and the button's arrow, in public/email/. Only an
+  // email draws them, from the website's address (lib/email/kitLetters.ts,
+  // lib/email/retention/look.ts), so they leave the export too: those files by
+  // name and nothing else, so the pages under /email/ (unsubscribe, change) stay.
   const letters = path.join(dir, "email");
   const drawn = path.join(ROOT, "public", "email");
   if (fs.existsSync(letters) && fs.existsSync(drawn)) {
     for (const name of fs.readdirSync(drawn)) {
       const p = path.join(letters, name);
-      if (!/\.png$/i.test(name) || !fs.existsSync(p) || !fs.statSync(p).isFile()) continue;
+      if (!/\.(?:png|jpe?g)$/i.test(name) || !fs.existsSync(p) || !fs.statSync(p).isFile()) continue;
       bytes += fs.statSync(p).size;
       fs.rmSync(p);
       files += 1;

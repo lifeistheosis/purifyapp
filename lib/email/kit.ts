@@ -1,4 +1,4 @@
-import { KIT_DARK, KIT_LIGHT, KIT_NIGHT, KIT_SLOTS, SANS, SERIF, type KitSlot, type KitWears } from "./theme";
+import { KIT_DARK, KIT_NIGHT, SANS, SERIF, type KitSlot, type KitWears } from "./theme";
 
 /**
  * The design kit's email look, for the emails Purify sends (his yes,
@@ -14,9 +14,9 @@ import { KIT_DARK, KIT_LIGHT, KIT_NIGHT, KIT_SLOTS, SANS, SERIF, type KitSlot, t
  * THE LOOK, in the kit's words: the page is the letter (no card on a
  * canvas); it opens as a chapter opens in the app; one column at phone width,
  * let out to 600; running text 17px; every link a line of its own, 44 tall;
- * dark written inline, and one style block turns it to the clean light where
- * a reader's screen is light, never parchment; a feast said in words and set
- * heavier; labels in sentence case.
+ * Dark, the app's default palette, written inline and turned by nothing (his
+ * word, 2026-11-13: "keep all the emails default Purify colors"), never
+ * parchment; a feast said in words and set heavier; labels in sentence case.
  *
  * Colours come from the email theme only (lib/email/theme.ts, KIT_*):
  * lib/email/__tests__/theme.test.ts fails on a colour written here.
@@ -37,7 +37,7 @@ export type Pen = {
   dark: KitWears;
 };
 
-/** The pen a letter is drawn with: `dark` inline (Dark, or Night sky in the fast), the clean light in the head. */
+/** The pen a letter is drawn with: Dark, the app's default, inline. */
 export function pen(dark: KitWears = KIT_DARK): Pen {
   const c = (slots: Slots, style = "") => {
     const cls: string[] = [];
@@ -61,20 +61,9 @@ export function pen(dark: KitWears = KIT_DARK): Pen {
   return { c, bgcolor, dark };
 }
 
-const rules = (wears: KitWears, important: boolean) => {
-  const bang = important ? " !important" : "";
-  return KIT_SLOTS.map((s) => `.g-${s}{background-color:${wears[s]}${bang}}.t-${s}{color:${wears[s]}${bang}}.b-${s}{border-color:${wears[s]}${bang}}`).join("\n");
-};
-
-/** The head's style block: a wide screen lets the title and the figures out; a light screen wears the clean light. */
+/** The head's style block: a wide screen lets the title and the figures out. No colour is set here, and nothing turns on the reader's scheme. */
 function sheet(): string {
-  const phone = `@media (min-width:600px){.e-title{font-size:34px !important;line-height:42px !important}.e-fig{font-size:30px !important;line-height:36px !important}}`;
-  return `${phone}
-@media (prefers-color-scheme: light){
-${rules(KIT_LIGHT, true)}
-.only-dark{display:none !important}
-.only-light{display:block !important}
-}`;
+  return `@media (min-width:600px){.e-title{font-size:34px !important;line-height:42px !important}.e-fig{font-size:30px !important;line-height:36px !important}}`;
 }
 
 /** A gap between two cells. A cell, not a padding, so the row mirrors in a right-to-left language. */
@@ -82,7 +71,7 @@ export const gap = (w: number) => `<td width="${w}" style="width:${w}px;min-widt
 export const TABLE = `role="presentation" cellpadding="0" cellspacing="0" border="0"`;
 
 /** Where the letters' pictures live: the main web (public/email/), or `img/` beside the kit's own files. */
-export type Assets = { cross: string; crossInk: string };
+export type Assets = { cross: string };
 
 /** The shell: the page, the letter's column, the masthead, and the foot. */
 export function shell(
@@ -90,20 +79,17 @@ export function shell(
   opts: { title: string; preheader: string; kind: string; rows: string[]; foot: string; assets: Assets },
 ): string {
   const { c, bgcolor } = p;
-  // The cross is the app's own mark, and the same mark in the page's ink
-  // where the page is light. The wordmark beside it is live text, so a letter
-  // with every picture blocked still says Purify.
-  const cross =
-    `<img class="only-dark" src="${esc(opts.assets.cross)}" width="15" height="26" alt="" style="display:block;border:0;outline:none">` +
-    `<img class="only-light" src="${esc(opts.assets.crossInk)}" width="15" height="26" alt="" style="display:none;mso-hide:all;border:0;outline:none">`;
+  // The cross is the app's own mark. The wordmark beside it is live text, so
+  // a letter with every picture blocked still says Purify.
+  const cross = `<img class="only-dark" src="${esc(opts.assets.cross)}" width="15" height="26" alt="" style="display:block;border:0;outline:none">`;
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="x-apple-disable-message-reformatting">
-<meta name="color-scheme" content="dark light">
-<meta name="supported-color-schemes" content="dark light">
+<meta name="color-scheme" content="dark">
+<meta name="supported-color-schemes" content="dark">
 <title>${esc(opts.title)}</title>
 <style>
 ${sheet()}

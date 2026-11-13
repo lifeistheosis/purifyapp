@@ -29,6 +29,8 @@ import { UNSUBSCRIBE_SLOT } from "./unsubscribe";
  * one shell every email is built in, so no template can leave it out. A list
  * email passes the reader's own link. Anything else leaves the slot, and the
  * sender fills it for the reader it is going to (lib/email/unsubscribe.ts).
+ * It is 44px tall, the house's least for a thing to tap (it was 35px until
+ * build 95, found by checkMock when the shell was brought to Dark).
  */
 export function emailLayout(opts: {
   heading: string;
@@ -68,7 +70,7 @@ export function emailLayout(opts: {
     <tr><td align="center" style="padding:24px 18px 0;font-family:${SANS};font-size:12px;line-height:1.6;color:${T.muted}">
       ${footer}
       <table role="presentation" align="center" cellpadding="0" cellspacing="0" style="margin:16px auto 14px"><tr><td style="border:1px solid ${T.line};border-radius:999px">
-        <a href="${escapeHtml(opts.unsubscribeHref ?? UNSUBSCRIBE_SLOT)}" style="display:inline-block;padding:8px 20px;font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:0.2px;color:${T.muted};text-decoration:none;border-radius:999px">Unsubscribe</a>
+        <a href="${escapeHtml(opts.unsubscribeHref ?? UNSUBSCRIBE_SLOT)}" style="display:inline-block;padding:14px 20px;font-family:${SANS};font-size:12px;line-height:16px;font-weight:600;letter-spacing:0.2px;color:${T.muted};text-decoration:none;border-radius:999px">Unsubscribe</a>
       </td></tr></table>
       <a href="${site}" style="color:${T.muted};text-decoration:none">purifyapp.net</a>
     </td></tr>

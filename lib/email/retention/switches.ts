@@ -44,18 +44,27 @@ export type RetentionPosition = "off" | "owner" | "readers";
 /** His words, as he gave them, with the date and roughly the time (UTC). */
 export type HisWord = { on: string; words: string };
 
-/** The switches. All off: no design has his yes yet (2026-11-13). */
+/** The switches. All off (the arbiter's brief of 2026-11-13): the designs have his yes, and the first send waits on his word. */
 export const RETENTION_SWITCHES: Record<RetentionKind, RetentionPosition> = {
   first_week: "off",
   pick_up: "off",
   fasting_companion: "off",
 };
 
-/** His yes to each email's design, once Fable has drawn it on the kit with its reasons. */
+/**
+ * His yes to each email's design, once Fable has drawn it on the kit with its
+ * reasons. All three on 2026-11-13: "yes to all", his answer to the arbiter's
+ * message of 20:41 UTC that set out the eleven design pages, among them the
+ * emails' round 3 (every email Dark, the fast's calendar drawn again), which
+ * drew the first week, where you left off and the companion in the kit's look
+ * (docs/1.9-build/BRAINSTORM.md). The look is look.ts; the switches above stay
+ * off (the arbiter's brief), so the first send, to him alone, waits on his word.
+ */
+const ALL_DESIGNS: HisWord = { on: "2026-11-13 about 20:47 UTC", words: "yes to all" };
 export const DESIGN_YES: Record<RetentionKind, HisWord | null> = {
-  first_week: null,
-  pick_up: null,
-  fasting_companion: null,
+  first_week: ALL_DESIGNS,
+  pick_up: ALL_DESIGNS,
+  fasting_companion: ALL_DESIGNS,
 };
 
 /** His word, after the first send reached him alone, that readers may have it. */

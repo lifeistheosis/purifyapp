@@ -31,10 +31,11 @@ afterEach(() => {
 });
 
 describe("the switches as they are committed", () => {
-  it("are all off, with no yes recorded and no look approved", () => {
+  it("are all off: his yes to the designs recorded, word for word and dated, and no word yet for readers", () => {
     for (const kind of RETENTION_KINDS) {
       expect(RETENTION_SWITCHES[kind], kind).toBe("off");
-      expect(DESIGN_YES[kind], kind).toBeNull();
+      // "yes to all" (2026-11-13 about 20:47 UTC): the emails' round 3 page, the three emails in the kit's look.
+      expect(DESIGN_YES[kind], kind).toEqual({ on: "2026-11-13 about 20:47 UTC", words: "yes to all" });
       expect(READERS_YES[kind], kind).toBeNull();
       expect(retentionPosition(kind), kind).toBe("off");
     }
@@ -69,7 +70,8 @@ describe("the switches as they are committed", () => {
 
 describe("where a switch stands, as the sender obeys it", () => {
   it("is off without his yes to the design, whatever the constant says", () => {
-    __setRetention("first_week", { position: "readers", readers: YES, pageKnows: true });
+    // His yes is recorded since 2026-11-13; an email without one is the case held here.
+    __setRetention("first_week", { position: "readers", readers: YES, pageKnows: true, design: null });
     expect(retentionPosition("first_week")).toBe("off");
     __setRetention("first_week", { position: "owner" });
     expect(retentionPosition("first_week")).toBe("off");

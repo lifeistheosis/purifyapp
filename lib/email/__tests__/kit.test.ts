@@ -24,7 +24,7 @@ import {
   signOff,
   type KitDay,
 } from "../kit";
-import { KIT_DARK, KIT_LIGHT, KIT_NIGHT_SKY } from "../theme";
+import { KIT_DARK, KIT_NIGHT } from "../theme";
 
 /**
  * The letter sent is the letter he said yes to (2026-11-13, "yes look").
@@ -38,26 +38,45 @@ import { KIT_DARK, KIT_LIGHT, KIT_NIGHT_SKY } from "../theme";
 
 const build = kitBuild as {
   PALETTES: Record<string, { wears: Record<string, string> }>;
-  NIGHT_SKY: Record<string, string>;
+  SENT: Record<string, string>;
+  NIGHT: Record<string, string>;
   reader: (how: string) => string;
   brief: (how: string) => string;
 };
 
-const KIT_ASSETS = { cross: "img/cross.png", crossInk: "img/cross-ink.png" };
+const KIT_ASSETS = { cross: "img/cross.png" };
 
-describe("the kit's palettes", () => {
-  it("are the builder's own: Dark, the clean light and Night sky", () => {
-    expect(KIT_DARK).toEqual(build.PALETTES.Dark.wears);
-    expect(KIT_LIGHT).toEqual(build.PALETTES.Light.wears);
-    expect(KIT_NIGHT_SKY).toEqual(build.NIGHT_SKY);
+describe("the kit's palette", () => {
+  it("is the builder's own, and it is Dark: the one palette an email is sent in", () => {
+    expect(KIT_DARK).toEqual(build.SENT);
+    expect(build.SENT).toBe(build.PALETTES.Dark.wears);
+    for (const [slot, colour] of Object.entries(KIT_NIGHT)) expect(colour, slot).toBe(build.NIGHT[slot]);
   });
 
-  it("never wear parchment", () => {
-    for (const w of [KIT_DARK, KIT_LIGHT, KIT_NIGHT_SKY]) {
-      for (const paper of ["#f1e8d4", "#e7dcc1", "#e6dcc4"]) {
-        expect(w.ground).not.toBe(paper);
-        expect(w.raised).not.toBe(paper);
-      }
+  // His word, 2026-11-13: "keep all the emails default Purify colors". The
+  // app's default palette is Dark (app/globals.css: --color-night #101013,
+  // --color-night-soft #1d1d20, --color-night-deep #0b0b0e, --color-paper
+  // #ffffff, --color-gold #eaeaec). It failed while the fast's Sunday email
+  // wore Night sky (#05070d, #0f1420) and every letter carried a light scheme
+  // (#ffffff ground, #49424e ink).
+  it("stands on the app's default ground, card, well, ink and accent", () => {
+    expect(KIT_DARK.ground).toBe("#101013");
+    expect(KIT_DARK.raised).toBe("#1d1d20");
+    expect(KIT_NIGHT.ground).toBe("#0b0b0e");
+    expect(KIT_DARK.ink).toBe("#ffffff");
+    expect(KIT_DARK.festal).toBe("#eaeaec");
+  });
+
+  it("is the only one: the email theme holds no Night sky and no light scheme for the kit's letters", async () => {
+    const theme = (await import("../theme")) as Record<string, unknown>;
+    expect(theme.KIT_NIGHT_SKY).toBeUndefined();
+    expect(theme.KIT_LIGHT).toBeUndefined();
+  });
+
+  it("never wears parchment", () => {
+    for (const paper of ["#f1e8d4", "#e7dcc1", "#e6dcc4"]) {
+      expect(KIT_DARK.ground).not.toBe(paper);
+      expect(KIT_DARK.raised).not.toBe(paper);
     }
   });
 });

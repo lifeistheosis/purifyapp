@@ -12,7 +12,7 @@ import { KIT_ASSETS, NIGHTS_DRAWN } from "../kitLetters";
 import { renderMarketing } from "../marketing";
 import { saintCardOf } from "../saintCard";
 import { monthlyBody, nativityFastDay, weekRange, weeklyBody } from "../templates/contentBodies";
-import { KIT_DARK, KIT_NIGHT_SKY } from "../theme";
+import { KIT_DARK, KIT_NIGHT } from "../theme";
 import { weekAhead } from "../weekly";
 
 /**
@@ -31,12 +31,15 @@ const sunday = (iso: string) => {
 };
 
 describe("the Sunday email in the kit's look", () => {
-  it("in the Nativity Fast wears Night sky, the night of its day, and says each day's fast in the calendar's words", () => {
+  it("in the Nativity Fast keeps the default colours, shows the night of its day, and says each day's fast in the calendar's words", () => {
     const body = sunday("2026-11-22T12:00:00Z");
     expect(nativityFastDay(new Date("2026-11-22T12:00:00Z"))).toBe(8);
     expect(body.season).toEqual({ kind: "nativity-fast", day: 8 });
     const html = renderMarketing(body, "product_updates", TOKEN, ADDRESS).html;
-    expect(html).toContain(`background-color:${KIT_NIGHT_SKY.ground};`);
+    // Dark, as every email (his word, 2026-11-13: "keep all the emails default Purify colors"); it wore Night sky's #05070d.
+    expect(html).toContain(`<body class="g-ground" style="margin:0;padding:0;background-color:${KIT_DARK.ground};">`);
+    expect(html.toLowerCase()).not.toContain("#05070d");
+    expect(html.toLowerCase()).not.toContain("#0f1420");
     expect(html).toContain(`${SITE_URL.replace(/\/$/, "")}/email/nativity-night-08.png`);
     expect(html).toContain("Nativity Fast · day 8 of 40");
     const fasted = (body.lines ?? []).filter((l) => l.fast);
@@ -99,7 +102,7 @@ describe("the nights of the Nativity Fast", () => {
   });
 
   it("and the masthead's cross are the website's alone: the apps' export drops them by name", () => {
-    for (const src of [KIT_ASSETS.cross, KIT_ASSETS.crossInk]) expect(fs.existsSync(path.join(ROOT, "public", new URL(src).pathname))).toBe(true);
+    expect(fs.existsSync(path.join(ROOT, "public", new URL(KIT_ASSETS.cross).pathname))).toBe(true);
     const build = fs.readFileSync(path.join(ROOT, "scripts", "native-build.mjs"), "utf8");
     expect(build).toContain('const drawn = path.join(ROOT, "public", "email");');
     expect(build).toContain('pruneEmailPictures(path.join(ROOT, "out"));');
@@ -147,7 +150,12 @@ describe("every letter in the kit's look", () => {
   it("is drawn for mail clients, small enough that Gmail never clips it, and never on parchment", () => {
     for (const l of letters) {
       expect(l.html).not.toMatch(/<script|<svg|display:\s*(flex|grid)|conic-gradient/i);
-      expect(l.html).toContain("@media (prefers-color-scheme: light)");
+      // The app's default colours and no others (his word, 2026-11-13): every colour written in a
+      // letter is Dark's or the night card's, and nothing in it turns on the reader's scheme.
+      expect(l.html).not.toContain("prefers-color-scheme");
+      expect(l.html).toContain('<meta name="color-scheme" content="dark">');
+      const allowed = new Set<string>([...Object.values(KIT_DARK), ...Object.values(KIT_NIGHT)]);
+      for (const hex of new Set([...l.html.matchAll(/#[0-9a-f]{6}\b/gi)].map((m) => m[0].toLowerCase()))) expect(allowed.has(hex), hex).toBe(true);
       expect(Buffer.byteLength(l.html, "utf8")).toBeLessThan(100_000);
       for (const paper of ["#f1e8d4", "#e7dcc1", "#e6dcc4"]) expect(l.html.toLowerCase()).not.toContain(paper);
       expect(l.html).not.toContain("—");

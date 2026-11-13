@@ -1,6 +1,7 @@
 // The page that shows the email look (index.html, written by build.mjs).
-// Its own colours are the app's Dark and the emails' clean light, handed over by build.mjs as
-// it read them from app/globals.css; its faces are named, never fetched.
+// Its own colours are the kit's Dark and its clean light, handed over by build.mjs as
+// it read them from the kit's tokens; its faces are named, never fetched. The emails it
+// shows are Dark on every screen (round 3).
 
 const tokens = (w) => `--ground:${w.ground};--raised:${w.raised};--ink:${w.ink};--body:${w.body};--quiet:${w.quiet};--line:${w.line};--rule:${w.rule}`;
 
@@ -12,7 +13,7 @@ const CONTENT = `
 <header>
   <p class="small">docs/brand/kit/email &middot; 13 November 2026</p>
   <h1>The Purify email look</h1>
-  <p class="lede">One look for every email Purify sends, drawn from the app itself and made for a phone first, with its first season: the Nativity Fast, which begins on 15 November. Dark leads. No parchment.</p>
+  <p class="lede">One look for every email Purify sends, drawn from the app itself and made for a phone first, with its first season: the Nativity Fast, which begins on 15 November. Every email is in the app's default colours, on every screen. No parchment.</p>
   <span class="rule"></span>
 </header>
 
@@ -20,17 +21,15 @@ const CONTENT = `
   <h2>The reader email</h2>
   <p>The Sunday email is the sample. The same pieces carry the monthly note and a release letter. It opens the way a chapter opens in the app: a centred title, a line under it, the short rule. The week is set as a leaf of the calendar, the day in the margin and the name beside it. The week's saint stands as Today's card stands, with the app's own button. It is one column at a phone's width, and every button and link is 44 tall.</p>
   <div class="row">
-    ${shot("reader.dark.png", "Dark, the app's own default", "The reader email on a dark screen: the masthead, the title The week ahead, five days of the calendar, and the week's saint on a raised card with one button.")}
-    ${shot("reader.light.png", "Light, where the reader's screen is light", "The same email on a light screen: a clean white in the app's ink, with each feast marked in the rubric's red.")}
+    ${shot("reader.dark.png", "Dark, the app's own default, on every screen", "The reader email: the masthead, the title The week ahead, five days of the calendar, and the week's saint on a raised card with one button.")}
   </div>
 </section>
 
 <section>
   <h2>In the Nativity Fast</h2>
-  <p>From 15 November to 24 December the same email wears the app's Night sky, and opens on the night of the app's own Nativity card. The star stands a little higher each day of the fast, so each of the six Sunday emails shows it higher than the last. Each day says its fast in the calendar's own words, and one line opens the path for the fast. The night stays a night on a light screen, as the card does in the app.</p>
+  <p>From 15 November to 24 December the same email, in the same default colours, opens on the night of the app's own Nativity card. The star stands a little higher each day of the fast, so each of the six Sunday emails shows it higher than the last. Each day says its fast in the calendar's own words, and one line opens the path for the fast.</p>
   <div class="row">
-    ${shot("reader-nativity-fast.dark.png", "Dark, in the Night sky look", "The season's email on a dark screen: a night sky with a star just above the horizon, the line Nativity Fast, day 1 of 40, and each day of the week with its fast.")}
-    ${shot("reader-nativity-fast.light.png", "Light", "The season's email on a light screen: the night stays dark at the head of a clean white page.")}
+    ${shot("reader-nativity-fast.dark.png", "In the fast, the same default colours", "The season's email: a night sky with a star just above the horizon, the line Nativity Fast, day 1 of 40, and each day of the week with its fast.")}
     ${shot("reader-nativity-fast.no-pictures.png", "With every picture blocked", "The season's email with no pictures shown: the wordmark, the words that say what the star does, and every line of the email are still there.")}
   </div>
 </section>
@@ -39,8 +38,7 @@ const CONTENT = `
   <h2>The owner's brief</h2>
   <p>The same look, for the one reader it is made for. What needs him comes first. Three figures, then three small charts drawn in the email itself with table cells: seven days of visitors, money in by source in the money chart's own colours, and what was opened most. A mail client runs no script, so every number a chart needs is also said in words. A figure that could not be read says so. Every figure shown here is a sample, made up for the drawing.</p>
   <div class="row">
-    ${shot("brief.dark.png", "Dark", "The owner's brief on a dark screen: what needs him, three figures, a chart of seven days, money in by source, what was opened most, and what goes out today.")}
-    ${shot("brief.light.png", "Light", "The owner's brief on a light screen.")}
+    ${shot("brief.dark.png", "Dark", "The owner's brief: what needs him, three figures, a chart of seven days, money in by source, what was opened most, and what goes out today.")}
   </div>
 </section>
 
@@ -56,8 +54,8 @@ const CONTENT = `
     <thead><tr><th>In the email</th><th>Where the app has it</th></tr></thead>
     <tbody>
       <tr><td>Every colour</td><td>The design kit's tokens (docs/brand/kit/tokens.css), and the app's stylesheet for what the kit does not carry. Read when the emails are built. None is typed in.</td></tr>
-      <tr><td>Dark, and the light</td><td>Dark is the app's default and leads. On a light screen the email is a clean white in the app's own ink for a white page. Never parchment.</td></tr>
-      <tr><td>The cross and the wordmark</td><td>public/purify-cross-mark.png, and the same mark in the light page's ink.</td></tr>
+      <tr><td>One palette</td><td>Dark, the app's default, on a dark screen and on a light one, in a fast and out of it. Never parchment.</td></tr>
+      <tr><td>The cross and the wordmark</td><td>public/purify-cross-mark.png.</td></tr>
       <tr><td>The opening: title, line, short rule</td><td>A chapter's head in the reader (the page-open pieces).</td></tr>
       <tr><td>The saint's card and its button</td><td>Today's card, and the saint's own picture from the library.</td></tr>
       <tr><td>The night and its star</td><td>The Nativity card on Today, by its own numbers (lib/reading/nativityStar.ts).</td></tr>
@@ -74,27 +72,27 @@ const CONTENT = `
   <div class="scroll"><table>
     <thead><tr><th>What was held</th><th>Result</th></tr></thead>
     <tbody>
-      <tr><td>checkMock, all fifteen rules, on each of the three emails at 360, 390, 412 and 1032 wide, on Dark, Black, Candlelight, Monastery and the email's clean light, and in Arabic's direction. The season's email on Night sky as well.</td><td>Passed, twelve runs of twelve.</td></tr>
+      <tr><td>checkMock, all fifteen rules, on each of the three emails at 360, 390, 412 and 1032 wide, with its pieces on each of the five palettes, and in Arabic's direction.</td><td>Passed, twelve runs of twelve.</td></tr>
       <tr><td>At each width nothing runs past the screen's edge and no word is cut by its box.</td><td>Passed.</td></tr>
-      <tr><td>The file a mail client gets wears the same colours as the checked drawing, piece by piece, on a dark screen and on a light one.</td><td>Passed: 115, 135 and 250 pieces.</td></tr>
+      <tr><td>The file a mail client gets wears Dark piece by piece, on a dark screen and on a light one, and no colour is written in it that is not Dark's own.</td><td>Passed.</td></tr>
       <tr><td>No script, no handler, no stylesheet or font fetched. Every picture has its words.</td><td>Passed.</td></tr>
       <tr><td>No parchment: no email and no page here holds the app's Light paper.</td><td>Passed.</td></tr>
-      <tr><td>Each email under 100KB of HTML, so Gmail never clips it, and each picture under 100KB.</td><td>Passed: 14, 17 and 27KB.</td></tr>
+      <tr><td>Each email under 100KB of HTML, so Gmail never clips it, and each picture under 100KB.</td><td>Passed: 12, 14 and 24KB.</td></tr>
       <tr><td>No picture on the heritage list.</td><td>Passed: none of four.</td></tr>
     </tbody>
   </table></div>
   <p>Named allowances: the night is a dark island on every palette, as the card is in the app, and two of the money chart's colours are one on both of the panel's themes.</p>
-  <p>Not done here, and still to do before any send: a look in real Gmail, Apple Mail and Outlook, light and dark. These pictures are drawn by a browser, which honours more than Outlook does. In Outlook on Windows the corners will be square and the faces Georgia and Arial; nothing depends on either.</p>
+  <p>Not done here, and still to do before any send: a look in real Gmail, Apple Mail and Outlook, with the phone set light and set dark. These pictures are drawn by a browser, which honours more than Outlook does. A mail app that lightens a dark email by force has not been met; that look would show it. In Outlook on Windows the corners will be square and the faces Georgia and Arial; nothing depends on either.</p>
 </section>
 
 <section>
   <h2>For the build</h2>
   <ul>
-    <li>The pictures need a home on the main web before a send (the night, the mark in ink). In these files they sit in img/ beside the email.</li>
+    <li>The pictures need a home on the main web before a send. In these files they sit in img/ beside the email.</li>
     <li>The night is one picture for each day of the fast. The build script draws any day; only day 1 is drawn so far.</li>
     <li>Each day's fast comes from the calendar the app already has. The Sunday email does not carry it yet.</li>
     <li>The Sunday email now names 20 and 21 November by the saint alone, so both read &ldquo;The Most Holy Theotokos&rdquo;. The sample uses the commemoration's own name. The arbiter has this as a finding.</li>
-    <li>Dark is the scheme written inline, and the email turns light only where a client says the screen is light. The kit's first email template, which was light first, gave way to these files, so the kit holds one email look.</li>
+    <li>Dark is written inline and nothing turns it: the head tells a mail client the email is dark already. The kit's first email template, which was light first, gave way to these files, so the kit holds one email look.</li>
   </ul>
 </section>
 </main>
@@ -141,7 +139,7 @@ li{margin-top:8px}
 const RETENTION = `
 <main>
 <header>
-  <p class="small">Round 2 &middot; 13 November 2026</p>
+  <p class="small">Round 3 &middot; 13 November 2026</p>
   <h1>Three emails that bring a reader back</h1>
   <p class="lede">The first week, where you left off, and the fasting companion, designed again at your word. One version of each, in the very words the sending will send. Yes or no to each is yours.</p>
   <span class="rule"></span>
@@ -153,7 +151,8 @@ const RETENTION = `
     <li><strong>Each email has a face.</strong> It opens on one night card, as the app's own cards stand on Today: the step's picture from the app, the step as the title at its foot, and the one button.</li>
     <li><strong>Type that holds in a mail app.</strong> Designed in Georgia and each phone's own sans. No web font is waited on, so nothing falls back to Times.</li>
     <li><strong>The app's own button.</strong> A white pill with its arrow, as wide as its words. Unsubscribe is a plain link.</li>
-    <li><strong>Nothing said twice.</strong> The first week's steps are one short strip. The fast's week is seven days across with the calendar's own marks, and a short key.</li>
+    <li><strong>Nothing said twice.</strong> The first week's steps are one short strip. The fast's week stands as the app's own calendar does: the days across with their marks, what each fast allows, and the feasts on the calendar's card.</li>
+    <li><strong>The app's default colours, everywhere.</strong> Round 3, at your word: Dark in every email, on every screen. No Night sky, no light scheme.</li>
     <li><strong>One button in every email.</strong> The fasting companion had two; it keeps one, its reading plan.</li>
     <li><strong>Only true words.</strong> Every word is the sending's own letter, which claims nothing the server cannot know: not that you have not prayed, not that you have been away, not which day of a fast you joined on, not which calendar you keep.</li>
   </ul>
@@ -163,8 +162,7 @@ const RETENTION = `
   <h2>The first week</h2>
   <p>Three emails for a reader who turned the guide on. Morning prayers opens on the icon of the Resurrection, the picture the app sets on morning prayers. The calendar opens on the app's own calendar, a real screen of 1.9. Bookmarking a verse opens on the icon the app sets behind a shared verse. Under each, the three steps as one strip, this email's under a heavier rule. It names no day, because a step already done is never sent.</p>
   <div class="row">
-    ${shot("first-week-1.dark.png", "Morning prayers, dark", "The first email of the first week: a night card that opens on the icon of the Resurrection, with the title Morning prayers and the button Open the morning prayers, then the three steps as a strip.")}
-    ${shot("first-week-1.light.png", "Morning prayers, where the screen is light", "The same email on a light screen: a clean white page, and the night card still a night.")}
+    ${shot("first-week-1.dark.png", "Morning prayers", "The first email of the first week: a night card that opens on the icon of the Resurrection, with the title Morning prayers and the button Open the morning prayers, then the three steps as a strip.")}
     ${shot("first-week-3.dark.png", "The calendar", "The second email: the app's calendar for December 2026 with New and Old above it, the title The calendar and the button Open Settings.")}
     ${shot("first-week-7.dark.png", "Bookmark a verse", "The third email: the icon of Christ, the title Bookmark a verse, how to do it, and the button Open the Bible.")}
   </div>
@@ -174,17 +172,15 @@ const RETENTION = `
   <h2>Pick up where you left off</h2>
   <p>The reader's own place is the title, with one small line over it. Its picture is the cover of the book they were reading. One button back to it. It does not say how long they have been away, because the server does not know that, and it is still the shortest email Purify sends.</p>
   <div class="row">
-    ${shot("pick-up.dark.png", "Dark", "Pick up where you left off: a night card that opens on the icon of St Paul, with the small line Where you were reading, the title Romans 8 and the button Open Romans 8.")}
-    ${shot("pick-up.light.png", "Where the screen is light", "The same email on a light screen.")}
+    ${shot("pick-up.dark.png", "Where you were reading", "Pick up where you left off: a night card that opens on the icon of St Paul, with the small line Where you were reading, the title Romans 8 and the button Open Romans 8.")}
   </div>
 </section>
 
 <section>
   <h2>The fasting companion</h2>
-  <p>For the Nativity Fast first. It keeps the night of the app's Nativity card, the star at the reader's own day of the fast, and now the title stands under the hill in the same card. The week's fast is one leaf of the calendar: the days across, each with the calendar's own mark, a key that says each rule once in the calendar's own sentence, and the week's feasts by name. One button, the fast's reading plan. It gives no counsel, and closes on the calendar's own word that a priest's direction comes first.</p>
+  <p>For the Nativity Fast first. It keeps the night of the app's Nativity card, the star at the reader's own day of the fast, and now the title stands under the hill in the same card. The week stands as the app's own calendar does on a phone: the days across, each with the calendar's mark for its fast and the cross on a feast; then what each fast allows, its mark in a disc of its own colour and each rule in the calendar's own sentence under the days that keep it; then the week's feasts on the calendar's card. One button, the fast's reading plan. It gives no counsel, and closes on the calendar's own word that a priest's direction comes first.</p>
   <div class="row">
-    ${shot("fast-opening.dark.png", "The opening, dark", "The fasting companion's opening email: the night sky with the star just above the hill, the title The Nativity Fast, its dates, the button Open the reading plan, and the week's seven days each with a fish or a stalk of wheat, the rules and the feasts.")}
-    ${shot("fast-opening.light.png", "The opening, where the screen is light", "The same email on a light screen: the night card stays dark on a clean white page.")}
+    ${shot("fast-opening.dark.png", "The opening", "The fasting companion's opening email: the night sky with the star just above the hill, the title The Nativity Fast, its dates, the button Open the reading plan, and the week's seven days each with a fish or a stalk of wheat, what each fast allows and the feasts.")}
     ${shot("fast-week.dark.png", "A week in", "The weekly email: the star a little higher, the title The Nativity Fast, week 2, and that week's fast.")}
     ${shot("fast-opening.no-pictures.png", "With every picture blocked", "The opening email with no pictures shown: the picture's words stand in a band of the night, and the title, the button, the week and its key are all there.")}
   </div>
@@ -207,8 +203,8 @@ const RETENTION = `
 
 <section>
   <h2>The check</h2>
-  <p>Run with <code>node docs/brand/kit/check.mjs</code> on 13 November 2026. It passed: all six emails at 360, 390, 412 and 1032 wide, on the four dark palettes and the clean light, in Arabic's direction, the fast's two on Night sky as well. Each email is 9 to 27KB of HTML and no picture is over 60KB. No script, no font fetched, no parchment. No picture, and no file a picture is cut from, is on the heritage list.</p>
-  <p>These stills are drawn by a browser in Georgia's open twin and in Roboto, the faces a phone's mail app has. Not done here, and still to do before any send: a look in real Gmail, Apple Mail and Outlook, light and dark. In Outlook on Windows the card's corners will be square; the button is drawn there as its own rounded shape. Gmail keeps a dark email dark, so its forced darkening has nothing to turn.</p>
+  <p>Run with <code>node docs/brand/kit/check.mjs</code> on 13 November 2026. It passed: all six emails at 360, 390, 412 and 1032 wide, their pieces on each of the five palettes, in Arabic's direction, and each file a reader gets in Dark's own colours and no others. Each email is 6.5 to 26KB of HTML and no picture is over 64KB. No script, no font fetched, no parchment. No picture, and no file a picture is cut from, is on the heritage list.</p>
+  <p>These stills are drawn by a browser in Georgia's open twin and in Roboto, the faces a phone's mail app has. Not done here, and still to do before any send: a look in real Gmail, Apple Mail and Outlook, with the phone set light and set dark. In Outlook on Windows the card's corners will be square; the button is drawn there as its own rounded shape. Gmail keeps a dark email dark, so its forced darkening has nothing to turn.</p>
 </section>
 </main>
 `;

@@ -3,7 +3,7 @@ import { SITE_URL } from "@/lib/site";
 import { button, days, esc, link, linkRow, night, opening, para, pen, quietButton, saintCard, shell, signOff, wide, type Assets, type KitDay } from "./kit";
 import type { EmailDay } from "./templates/build";
 import type { MarketingBody } from "./templates/marketingBodies";
-import { KIT_DARK, KIT_NIGHT_SKY } from "./theme";
+import { KIT_DARK } from "./theme";
 
 /**
  * A list email in the design kit's look (his yes, 2026-11-13: "yes look"):
@@ -14,9 +14,10 @@ import { KIT_DARK, KIT_NIGHT_SKY } from "./theme";
  *
  *   The Sunday email  "The week ahead", the week's dates; the week as a leaf
  *                     of the calendar; the week's saint on its card.
- *   In the Nativity   Night sky, the night of the Nativity card for the day
- *   Fast              where it is drawn, "Nativity Fast · day N of 40", each
- *                     day's fast, and the path for the fast.
+ *   In the Nativity   the same default colours (round 3), the night of the
+ *   Fast              Nativity card for the day where it is drawn, "Nativity
+ *                     Fast · day N of 40", each day's fast, and the path for
+ *                     the fast.
  *   The monthly note  the month; its paragraphs; the one button.
  *   A release letter  the release's name and its own name under it; its
  *                     picture; its points as paragraphs with the name set
@@ -29,7 +30,7 @@ import { KIT_DARK, KIT_NIGHT_SKY } from "./theme";
 const site = (path: string) => `${SITE_URL.replace(/\/$/, "")}${path}`;
 
 /** The letters' pictures, on the main web (public/email/). */
-export const KIT_ASSETS: Assets = { cross: site("/email/cross.png"), crossInk: site("/email/cross-ink.png") };
+export const KIT_ASSETS: Assets = { cross: site("/email/cross.png") };
 
 /**
  * The days of the Nativity Fast whose night is drawn (public/email/nativity-night-NN.png):
@@ -96,7 +97,8 @@ export function kitLetter(
   },
 ): string {
   const season = body.season?.kind === "nativity-fast" ? body.season : null;
-  const p = pen(season ? KIT_NIGHT_SKY : KIT_DARK);
+  // Dark in a fast and out of it: every email keeps the app's default colours (his word, 2026-11-13).
+  const p = pen(KIT_DARK);
   const rows: string[] = [];
 
   if (season && NIGHTS_DRAWN.has(season.day)) {

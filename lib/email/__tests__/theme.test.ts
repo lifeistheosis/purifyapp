@@ -7,7 +7,7 @@ import { emailLayout } from "../layout";
 import { buildEmail } from "../templates/build";
 import { weeklyBody } from "../templates/contentBodies";
 import { renderMarketing } from "../marketing";
-import { EMAIL_THEMES, T } from "../theme";
+import { EMAIL_THEMES, KIT_DARK, KIT_NIGHT, T } from "../theme";
 
 /**
  * One look, held in one file.
@@ -39,6 +39,8 @@ const EMAIL_FILES = [
   // The design kit's look (2026-11-13, his "yes look"): its colours are the theme's KIT_* only.
   "lib/email/kit.ts",
   "lib/email/kitLetters.ts",
+  // The retention emails' look (his yes, 2026-11-13 about 20:47 UTC): the kit's, on the theme's KIT_* only.
+  "lib/email/retention/look.ts",
 ];
 
 const WEEK = [
@@ -69,6 +71,44 @@ describe("the email theme", () => {
       expect(mode.accent, `${name}.accent`).not.toBe(mode.card);
       expect(mode.link, `${name}.link`).not.toBe(mode.body);
     }
+  });
+});
+
+describe("the account and order emails' shell wears Dark (build 95; his word, 2026-11-13 about 18:53 UTC)", () => {
+  // "Dark for everyone": the shell every account, order, shop and support
+  // email is built in takes the same slots as the kit's letters, so one email
+  // and the next are one palette. Until then its inks were near Dark and not
+  // it (a purple grey for quiet words, a page that was the app's well).
+  const night = EMAIL_THEMES.night;
+
+  it("takes each colour from Dark's own slots", () => {
+    expect(night.canvas).toBe(KIT_DARK.ground);
+    expect(night.card).toBe(KIT_DARK.raised);
+    expect(night.heading).toBe(KIT_DARK.ink);
+    expect(night.body).toBe(KIT_DARK.body);
+    expect(night.muted).toBe(KIT_DARK.quiet);
+    expect(night.label).toBe(KIT_DARK.quiet);
+    expect(night.line).toBe(KIT_DARK.line);
+    expect(night.accent).toBe(KIT_DARK.button);
+    expect(night.onAccent).toBe(KIT_DARK.onButton);
+    expect(night.mark).toBe(KIT_DARK.ink);
+    expect(night.link).toBe(KIT_DARK.ink);
+    expect(night.well).toBe(KIT_NIGHT.ground);
+  });
+
+  it("draws Unsubscribe 44px tall, the house's least for a thing to tap (it was 35px)", () => {
+    const html = emailLayout({ heading: "x", bodyHtml: "" });
+    const style = /<a href="[^"]*" style="([^"]*)">Unsubscribe<\/a>/.exec(html)?.[1] ?? "";
+    const px = (re: RegExp) => Number(re.exec(style)?.[1] ?? 0);
+    // Its line and the padding above and below it, inside the pill's 1px edge.
+    expect(px(/line-height:(\d+)px/) + 2 * px(/padding:(\d+)px/)).toBeGreaterThanOrEqual(44);
+  });
+
+  it("is the mode every email is sent in, and writes no colour that Dark does not have", () => {
+    expect(T).toBe(night);
+    const dark = new Set([...Object.values(KIT_DARK), KIT_NIGHT.ground]);
+    const html = emailLayout({ heading: "On its way", bodyHtml: "<p>Body</p>", eyebrow: "Purify Shop" });
+    for (const hex of html.match(/#[0-9a-f]{6}\b/gi) ?? []) expect(dark.has(hex.toLowerCase()), hex).toBe(true);
   });
 });
 

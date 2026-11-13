@@ -19,7 +19,7 @@ His word, 2026-11-13: "the design must be optimized for mobile." Everything is d
 His word, 2026-11-13: "and also stop using parchment for designs. (important because you always do this)". No design stands on the parchment ground (`#f1e8d4`, the app's Light palette) or on any aged-paper, cream or sepia look.
 
 - A design opens on the app's dark ground.
-- Its light, when one is needed (the email's light mode, `data-theme="light"`), is a clean neutral: white (`--color-paper`) carrying the app's ink (`--color-ink`, `#49424e`), with the admin panel's neutral grey for a card.
+- Its light, when one is asked for (`data-theme="light"` on a page), is a clean neutral: white (`--color-paper`) carrying the app's ink (`--color-ink`, `#49424e`), with the admin panel's neutral grey for a card. An email has no light: it is sent in the app's default colours, Dark, on every screen (his word, 2026-11-13: "keep all the emails default Purify colors").
 - `tokens.css` still lists Parchment, marked "app only, never a design ground", for mockups of the app's own Light palette. No piece reads it, and in the kit the app's Light attribute draws the clean neutral.
 - `check.mjs` fails a design with a parchment, cream or sepia ground, however it is worn (as it opens, light, a light system, each palette), and proves that measure with its own self-test first.
 
@@ -137,5 +137,5 @@ When the app changes a token (a palette, the type, the curve), change `tokens.cs
 
 ## Emails, in particular
 
-Email clients run no scripts, many draw no SVG and Outlook reads no transparency, so an email does layout with tables and colour with inline styles in plain colours, written by `email/build.mjs` from the kit's tokens. Dark leads: the dark scheme is the one written inline, and a style block turns it to the clean neutral light where a client says the reader's screen is light. It is never parchment. An email's pictures each have their words, and nothing is fetched but pictures. Before a send, see it in Gmail, Apple Mail and Outlook, light and dark (`docs/plans/owner-desk.md`, section 3). The whole of it is in `email/README.md`.
+Email clients run no scripts, many draw no SVG and Outlook reads no transparency, so an email does layout with tables and colour with inline styles in plain colours, written by `email/build.mjs` from the kit's tokens. Every email is Dark, the app's default palette, written inline and turned by nothing: not by a light screen, and not by a season (his word, 2026-11-13: "keep all the emails default Purify colors"). It is never parchment. An email's pictures each have their words, and nothing is fetched but pictures. Before a send, see it in Gmail, Apple Mail and Outlook, with the phone set light and set dark (`docs/plans/owner-desk.md`, section 3). The whole of it is in `email/README.md`.
 

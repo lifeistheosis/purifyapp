@@ -60,21 +60,28 @@ export type EmailTheme = {
 };
 
 export const EMAIL_THEMES: Record<EmailMode, EmailTheme> = {
+  // Dark, the app's default, as the kit's letters wear it (his word,
+  // 2026-11-13 about 16:44 UTC, "keep all the emails default Purify colors",
+  // and at 18:53 UTC the account and order emails with them). Each value is
+  // one of KIT_DARK's slots below, named beside it, or Dark's own well
+  // (KIT_NIGHT.ground); lib/email/__tests__/theme.test.ts holds them there.
+  // Until then the inks were near Dark and not it: a heading #f4f4f5, body
+  // #d6d6da, a purple grey #a39ea8 for quiet words, the page the well #0b0b0e.
   night: {
-    canvas: "#0b0b0e",
-    card: "#1d1d20",
-    heading: "#f4f4f5",
-    body: "#d6d6da",
-    muted: "#a39ea8",
-    line: "#2e2e33",
-    accent: "#eaeaec",
-    onAccent: "#101013",
-    label: "#bdbdc3",
+    canvas: "#101013", // ground: the app's page
+    card: "#1d1d20", // raised: the app's card
+    heading: "#ffffff", // ink
+    body: "#c3c3c4", // body
+    muted: "#939395", // quiet
+    line: "#28282b", // line
+    accent: "#ffffff", // button
+    onAccent: "#101013", // onButton
+    label: "#939395", // quiet: the small line above the heading, as the kit's letters set it
     // White, as the app's own Dark palette marks a feast since 1.8; it was
     // the gold #d4af37 (refinement 2: no gold or yellow in Purify).
-    mark: "#ffffff",
-    link: "#ffffff",
-    well: "#141417",
+    mark: "#ffffff", // ink
+    link: "#ffffff", // ink
+    well: "#0b0b0e", // KIT_NIGHT.ground, Dark's own well
     cardRadius: 16,
     buttonRadius: 999,
     scheme: "dark",
@@ -163,13 +170,21 @@ export const SANS = "'DM Sans',Arial,Helvetica,sans-serif";
 //
 // The kit's emails (docs/brand/kit/email/, the Fable designer's) draw with
 // named slots: the page, a raised card, the ink and its shares, hairlines, a
-// chart's quiet marks, the button, a feast's rubric, the calendar's fasting
-// registers and money's three hues. Dark is written inline; one style block
-// turns a letter to the clean light where a reader's screen is light, never
-// parchment. The values are the kit's own, computed by its builder from
-// docs/brand/kit/tokens.css and app/globals.css (build.mjs PALETTES and
-// NIGHT_SKY); lib/email/__tests__/kit.test.ts holds these to that builder, so
-// a change in the kit shows here as a failing test, not as a drift.
+// chart's quiet marks, the button, a feast's rubric and its cross, the
+// calendar's fasting registers with the disc each mark stands in, and money's
+// three hues.
+//
+// ONE PALETTE (his word, 2026-11-13 about 16:44 UTC: "keep all the emails
+// default Purify colors"): Dark, the app's default, written inline in every
+// letter, on a dark screen and on a light one, in a fast and out of it. Until
+// round 3 the Sunday email wore Night sky in the Nativity Fast and every
+// letter turned to a clean light where a reader's screen was light; both are
+// gone, and no letter holds a colour that is not here.
+//
+// The values are the kit's own, computed by its builder from
+// docs/brand/kit/tokens.css and app/globals.css (build.mjs SENT);
+// lib/email/__tests__/kit.test.ts holds these to that builder, so a change in
+// the kit shows here as a failing test, not as a drift.
 
 export const KIT_SLOTS = [
   "ground",
@@ -187,6 +202,13 @@ export const KIT_SLOTS = [
   "fastFish",
   "fastWineOil",
   "fastFree",
+  "fastFast",
+  "fastStrictTint",
+  "fastFishTint",
+  "fastWineOilTint",
+  "fastFreeTint",
+  "fastFastTint",
+  "festal",
   "shop",
   "plus",
   "box",
@@ -195,7 +217,7 @@ export const KIT_SLOTS = [
 export type KitSlot = (typeof KIT_SLOTS)[number];
 export type KitWears = Record<KitSlot, string>;
 
-/** Dark, the app's default: written inline in every letter. */
+/** Dark, the app's default: the one palette a letter is sent in, written inline. */
 export const KIT_DARK: KitWears = {
   ground: "#101013",
   raised: "#1d1d20",
@@ -212,54 +234,18 @@ export const KIT_DARK: KitWears = {
   fastFish: "#60b8ac",
   fastWineOil: "#b28ee2",
   fastFree: "#28c88c",
+  fastFast: "#aaaab0",
+  fastStrictTint: "#2b191c",
+  fastFishTint: "#1a2627",
+  fastWineOilTint: "#25202e",
+  fastFreeTint: "#132823",
+  fastFastTint: "#242427",
+  festal: "#eaeaec",
   shop: "#3987e5",
   plus: "#008300",
   box: "#d55181",
 };
 
-/** The clean light: white carrying the app's ink, where a client says the screen is light. Never parchment. */
-export const KIT_LIGHT: KitWears = {
-  ground: "#ffffff",
-  raised: "#f3f3f3",
-  ink: "#49424e",
-  body: "#5b5560",
-  quiet: "#6d6871",
-  line: "#edeced",
-  rule: "#dbd9dc",
-  mark: "#8b868e",
-  button: "#49424e",
-  onButton: "#ffffff",
-  rubric: "#962820",
-  fastStrict: "#a82828",
-  fastFish: "#1e6e68",
-  fastWineOil: "#7040a0",
-  fastFree: "#167652",
-  shop: "#2a78d6",
-  plus: "#008300",
-  box: "#d55181",
-};
-
-/** Night sky, one of the app's looks: the Sunday email's dark in the Nativity Fast. */
-export const KIT_NIGHT_SKY: KitWears = {
-  ground: "#05070d",
-  raised: "#0f1420",
-  ink: "#edf0f6",
-  body: "#b3b6bc",
-  quiet: "#85878d",
-  line: "#1c1e24",
-  rule: "#33363c",
-  mark: "#62646a",
-  button: "#edf0f6",
-  onButton: "#05070d",
-  rubric: "#e2e2e5",
-  fastStrict: "#e05656",
-  fastFish: "#60b8ac",
-  fastWineOil: "#b28ee2",
-  fastFree: "#28c88c",
-  shop: "#3987e5",
-  plus: "#008300",
-  box: "#d55181",
-};
-
-/** The Nativity card's night, dark on every palette as the card is (`dark-island`). */
-export const KIT_NIGHT = { ground: "#0b0b0e", line: "#28282b", words: "#c2c2c3" } as const;
+/** The Nativity card's night: Dark's own well and its ink's shares, as the card is in the app (`dark-island`). */
+/** With its ink and its quiet words (the retention look's night card, lib/email/retention/look.ts): the builder's NIGHT, held to it by kit.test.ts. */
+export const KIT_NIGHT = { ground: "#0b0b0e", line: "#28282b", words: "#c2c2c3", ink: "#ffffff", quiet: "#9d9d9f" } as const;

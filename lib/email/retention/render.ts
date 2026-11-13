@@ -5,6 +5,7 @@ import { unsubscribeUrl } from "../unsubscribe";
 
 import { RETENTION_LABEL, type RetentionKind } from "./kinds";
 import type { RetentionLetter } from "./letters";
+import { retentionLook } from "./look";
 
 /**
  * Drawing a retention letter for one reader: its look, its foot, its own
@@ -18,9 +19,11 @@ import type { RetentionLetter } from "./letters";
  *                 Nothing that sends imports it; a test holds that.
  *   LOOKS         each email's approved look, one entry per email, added in
  *                 the same commit as his yes to its design
- *                 (switches.ts DESIGN_YES). Empty today. The sender draws a
- *                 letter only through here, so with no approved look there is
- *                 nothing it can send, whatever a switch says.
+ *                 (switches.ts DESIGN_YES). The sender draws a letter only
+ *                 through here, so with no approved look there is nothing it
+ *                 can send, whatever a switch says. From his "yes to all" of
+ *                 2026-11-13 (about 20:47 UTC) all three wear the kit's look
+ *                 (look.ts); every switch stays off, so nothing is sent yet.
  *
  * A look takes the same letter and the same frame, so an approved design
  * drops in as one function and nothing about who gets what changes.
@@ -47,8 +50,12 @@ export function standInEmail(letter: RetentionLetter, frame: Frame): EmailConten
   });
 }
 
-/** Each approved look, by email. Empty until his yes to a design. */
-export const LOOKS: Partial<Record<RetentionKind, Look>> = {};
+/** Each approved look, by email: the kit's, his yes of 2026-11-13 (switches.ts DESIGN_YES). */
+export const LOOKS: Partial<Record<RetentionKind, Look>> = {
+  first_week: retentionLook,
+  pick_up: retentionLook,
+  fasting_companion: retentionLook,
+};
 
 let looks: Partial<Record<RetentionKind, Look>> = { ...LOOKS };
 

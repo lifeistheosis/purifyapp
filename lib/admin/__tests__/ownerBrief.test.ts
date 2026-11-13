@@ -30,7 +30,7 @@ import { lastWeek } from "../weekly";
  */
 
 const LINKS = { admin: "https://purifyapp.net/admin" };
-const ASSETS = { cross: "https://purifyapp.net/email/cross.png", crossInk: "https://purifyapp.net/email/cross-ink.png" };
+const ASSETS = { cross: "https://purifyapp.net/email/cross.png" };
 const TUESDAY = new Date("2026-11-17T12:30:00Z"); // 7:30 AM in New York
 const MONDAY = new Date("2026-11-16T12:30:00Z");
 
