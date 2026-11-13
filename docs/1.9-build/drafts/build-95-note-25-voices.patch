@@ -1,0 +1,2105 @@
+From f0052db0c795846aad5caa0367861d5e4fdc9113 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 13 Nov 2026 15:33:57 +0000
+Subject: [PATCH] Voices, what a reader sees: the Voice row and sheet, and
+ Listen on every text (held for his yes)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Build 95 note 25, his "all recs" of 2026-11-13: the phone's own voices, free
+for every reader, reading the whole Bible, the lives, the councils, history,
+theology and the Fathers' works; never the prayers. Held as a patch for his yes
+on the stills (docs/handoffs/updates-17.md); applied on his word.
+
+- The Voice row in the player's ••• (between Sleep timer and Ambience), its
+  value the voice reading; a new mark, components/ui/icons/Voice.tsx.
+- The Voice sheet (components/player/VoiceSheet.tsx), from the player's own
+  parts, mounted once in the root frame: Heart first where the text has its
+  recording, then the phone's voices for the text's language, each its name
+  over its language, with Hear it (the first words of the verse being read, in
+  that voice); choosing reads on in it at the verse being read. A chosen voice
+  gone is said; a language with no voice and no recording says where a voice
+  is added.
+- Listen on every chapter where the device can speak (the Old Testament, a
+  downloaded Bible's page in its own language and words), the verse lit where
+  it stands, rolling on into the next chapter, previous and next opening the
+  chapter's page; never over a licensed translation. ListenHere reads the
+  page's paragraphs from its part on, in the page's language, the paragraph
+  lit and its sentence washed. Never on a prayer's page.
+- Ten strings in all 21 catalogs.
+
+Tests that fail on the old code: lib/listen/speech/__tests__/voiceSheet.test.ts
+(8); eight source-reading tests moved to the new rules.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01VuYTwZshCrYvNwoUyAX6F4
+---
+ components/bible/ChapterReader.tsx            |   8 +
+ components/bible/ChapterScreen.tsx            |  19 +-
+ components/bible/DownloadedChapter.tsx        |  25 +-
+ components/bible/MobileChapterPill.tsx        |  19 +-
+ components/bible/ReadAloud.tsx                | 150 +++++++----
+ components/bible/ReaderDock.tsx               |  25 +-
+ components/layout/RootFrame.tsx               |   5 +
+ components/player/NowPlayingSheet.tsx         |  20 +-
+ components/player/PlayerMore.tsx              |  27 ++
+ components/player/PlayerSteps.tsx             |  19 ++
+ components/player/VoiceSheet.tsx              | 246 ++++++++++++++++++
+ components/reading/ListenHere.tsx             | 166 +++++++++++-
+ components/ui/icons/Voice.tsx                 |  33 +++
+ lib/bible/__tests__/readerDock.test.ts        |  11 +-
+ lib/bible/__tests__/readerScreen.test.ts      |  17 +-
+ lib/i18n/messages/ar.json                     |  10 +
+ lib/i18n/messages/bg.json                     |  10 +
+ lib/i18n/messages/de.json                     |  10 +
+ lib/i18n/messages/el.json                     |  10 +
+ lib/i18n/messages/en.json                     |  10 +
+ lib/i18n/messages/es.json                     |  10 +
+ lib/i18n/messages/fil.json                    |  10 +
+ lib/i18n/messages/fr.json                     |  10 +
+ lib/i18n/messages/hu.json                     |  10 +
+ lib/i18n/messages/id.json                     |  10 +
+ lib/i18n/messages/it.json                     |  10 +
+ lib/i18n/messages/ka.json                     |  10 +
+ lib/i18n/messages/ne.json                     |  10 +
+ lib/i18n/messages/pl.json                     |  10 +
+ lib/i18n/messages/pt.json                     |  10 +
+ lib/i18n/messages/ro.json                     |  10 +
+ lib/i18n/messages/ru.json                     |  10 +
+ lib/i18n/messages/sr.json                     |  10 +
+ lib/i18n/messages/tr.json                     |  10 +
+ lib/i18n/messages/uk.json                     |  10 +
+ lib/i18n/messages/ur.json                     |  10 +
+ lib/listen/__tests__/recordings.test.ts       |   7 +-
+ .../speech/__tests__/voiceSheet.test.ts       | 198 ++++++++++++++
+ lib/player/__tests__/steps.test.ts            |   9 +-
+ lib/player/__tests__/views.test.ts            |   4 +-
+ .../__tests__/savedWhilePlaying.test.ts       |   3 +-
+ 41 files changed, 1122 insertions(+), 99 deletions(-)
+ create mode 100644 components/player/VoiceSheet.tsx
+ create mode 100644 components/ui/icons/Voice.tsx
+ create mode 100644 lib/listen/speech/__tests__/voiceSheet.test.ts
+
+diff --git a/components/bible/ChapterReader.tsx b/components/bible/ChapterReader.tsx
+index f82ba4c7..fda41e5b 100644
+--- a/components/bible/ChapterReader.tsx
++++ b/components/bible/ChapterReader.tsx
+@@ -35,6 +35,7 @@ import { useCandlelightWorn } from "@/components/theme/useWornPalette";
+ import { cn } from "@/lib/cn";
+ import { reportNowReading } from "@/lib/profile/client";
+ import { useUndo } from "@/lib/ui/useUndo";
++import { chapterKey, setPageVerses } from "@/lib/listen/speech/pageText";
+ import { UndoBar } from "@/components/ui/UndoBar";
+ 
+ /** What was read for one chapter, tagged with the chapter it belongs to. */
+@@ -99,6 +100,13 @@ export function ChapterReader({
+   useEffect(() => {
+     reportNowReading(`${book}/${chapter}`);
+   }, [book, chapter]);
++  // The words Listen reads in the phone's voice (1.9, build 95 note 25): the
++  // page's own, each verse where it stands (lib/listen/speech/pageText.ts).
++  useEffect(() => {
++    const at = chapterKey(book, chapter);
++    setPageVerses(at, verses.map((v) => ({ text: v.text, n: v.n, anchor: `v${v.n}` })));
++    return () => setPageVerses(at, null);
++  }, [book, chapter, verses]);
+   // A verse marked or unmarked by a double tap is offered back for a moment (1.8).
+   const quick = useUndo();
+   const has = useMemo(() => new Set(commentaryVerses ?? []), [commentaryVerses]);
+diff --git a/components/bible/ChapterScreen.tsx b/components/bible/ChapterScreen.tsx
+index 0a4633d8..0af1eeba 100644
+--- a/components/bible/ChapterScreen.tsx
++++ b/components/bible/ChapterScreen.tsx
+@@ -167,6 +167,9 @@ export function ChapterScreen({
+   const psalmLine = slug === "psalms" && downloaded?.bible.psalms !== "hebrew" ? hebrewLine(chapter) : null;
+   const unopened = shown && text?.state === "failed" ? shown : null;
+   const verses = downloaded?.text.state === "ready" && downloaded.text.page.last ? downloaded.text.page.last : totalVerses;
++  // Listen, wherever the page shows words a voice may read (1.9): not a
++  // licensed translation, nor a downloaded page that only says where its verses stand.
++  const listens = !usingLicensed && !(downloaded?.text.state === "ready" && downloaded.text.page.elsewhere);
+   // The round buttons over the page, the pill at its foot and the app's tab
+   // bar step away while the reader reads on, and come back on a scroll up.
+   useScrollAway();
+@@ -182,17 +185,21 @@ export function ChapterScreen({
+         {/* A reading plan's day, chapter by chapter (1.7). Only one of the two
+             is ever under way (lib/plans/session.ts). */}
+         <PlanFlowBar book={slug} chapter={chapter} />
+-        {/* The verse being read aloud, lit and kept in view (1.7). */}
+-        <ReadAloudFollow book={slug} chapter={chapter} />
++        {/* The verse being read aloud, lit and kept in view (1.7), in the
++            Bible the page shows it in (1.9). */}
++        <ReadAloudFollow book={slug} chapter={chapter} bible={downloaded?.bible ?? null} />
+         <ReadingProgressBar slug={slug} bookName={book.name} chapter={chapter} totalVerses={verses} />
+         <MobileChapterPill
+           slug={slug}
+           chapter={chapter}
+           totalVerses={verses}
+-          // Listen reads the English aloud: not over a downloaded Bible, nor
+-          // over a licensed translation, whose words it would not read (as the
++          // Listen reads the words the page shows (1.9, build 95 note 25): the
++          // English, or a downloaded Bible's in the phone's voice. Not over a
++          // licensed translation, whose words are not ours to have read aloud,
++          // nor a page whose verses stand in another chapter (as the
+           // computer's toolbar has it).
+-          listen={!downloaded && !usingLicensed}
++          listen={listens}
++          bible={downloaded?.bible ?? null}
+           textKey={downloaded ? `${downloaded.bible.id}:${downloaded.text.state}` : undefined}
+         />
+         {/* "Use Purify in Русский?", once, as a Bible in another language is picked (1.9). */}
+@@ -224,7 +231,7 @@ export function ChapterScreen({
+                   {/* Read aloud, where the chapter has a reading (1.7). It
+                       stood at the end of the title's line until the title
+                       became the page's opening (1.8). */}
+-                  {!usingLicensed && !downloaded ? <ListenButton book={slug} chapter={chapter} bookName={book.name} /> : null}
++                  {listens ? <ListenButton book={slug} chapter={chapter} bookName={book.name} bible={downloaded?.bible ?? null} /> : null}
+                   {/* Ambience, lit while a sound plays (1.7, the owner's
+                       note 25): the computer's place for the phone's sound
+                       button on the chapter's pill. */}
+diff --git a/components/bible/DownloadedChapter.tsx b/components/bible/DownloadedChapter.tsx
+index 31babace..ba6b4e7d 100644
+--- a/components/bible/DownloadedChapter.tsx
++++ b/components/bible/DownloadedChapter.tsx
+@@ -25,7 +25,7 @@
+ // the start of each line, on the right), in the Naskh the serif stack carries.
+ 
+ import Link from "next/link";
+-import { Fragment } from "react";
++import { Fragment, useEffect } from "react";
+ 
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+ import { BIBLE_START_SIZE, FONT_CLASSES, SIZE_CLASSES, useReaderPrefs } from "@/components/reader/ReaderPrefs";
+@@ -38,6 +38,7 @@ import { useCandlelightWorn } from "@/components/theme/useWornPalette";
+ import { cn } from "@/lib/cn";
+ import { textDir } from "@/lib/i18n/textDir";
+ import { useReadingLine } from "@/lib/reader/useReadingLine";
++import { chapterKey, setPageVerses } from "@/lib/listen/speech/pageText";
+ 
+ export function DownloadedChapter({
+   bible,
+@@ -58,6 +59,26 @@ export function DownloadedChapter({
+   const candle = useCandlelightWorn();
+   useReadingLine(candle);
+   const greek = bible.textLang === "grc";
++  // The words Listen reads in the phone's voice (1.9, build 95 note 25): this
++  // Bible's own, in its own numbering, each verse where it stands on the page.
++  const page = text.state === "ready" ? text.page : null;
++  useEffect(() => {
++    if (!page || page.elsewhere) return;
++    const at = chapterKey(book, chapter, bible.id);
++    setPageVerses(
++      at,
++      page.sections.flatMap((section) =>
++        section.verses
++          .filter(([, words]) => words.trim())
++          .map(([label, words]) => ({
++            text: words,
++            ...(section.chapter === chapter && typeof label === "number" ? { n: label } : {}),
++            anchor: verseAnchor(section.chapter, chapter, label),
++          })),
++      ),
++    );
++    return () => setPageVerses(at, null);
++  }, [page, book, chapter, bible.id]);
+ 
+   if (text.state === "loading") {
+     return (
+@@ -67,7 +88,7 @@ export function DownloadedChapter({
+     );
+   }
+ 
+-  const { page } = text;
++  if (!page) return null;
+   if (page.elsewhere) {
+     return (
+       <div className="rounded-[18px] border border-paper/10 bg-paper/[0.03] px-5 py-5" data-bible-elsewhere="">
+diff --git a/components/bible/MobileChapterPill.tsx b/components/bible/MobileChapterPill.tsx
+index 48dd000e..333cc18e 100644
+--- a/components/bible/MobileChapterPill.tsx
++++ b/components/bible/MobileChapterPill.tsx
+@@ -12,6 +12,8 @@ import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
+ import { AmbienceButton } from "@/components/player/AmbienceButton";
+ import { cn } from "@/lib/cn";
+ import { useHasReadAloud } from "@/lib/readAloud/chapters";
++import type { DownloadableBible } from "@/lib/bible/downloads/catalog";
++import { useCanSpeak } from "@/lib/listen/speech/voices";
+ import { useOverlayOpen } from "@/lib/ui/overlay";
+ import { EVERYTHING, useOwnPlayer } from "@/lib/player/pagePlayer";
+ import { usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
+@@ -131,13 +133,16 @@ export function MobileChapterPill({
+   chapter,
+   totalVerses,
+   listen = true,
++  bible = null,
+   textKey,
+ }: {
+   slug: string;
+   chapter: number;
+   totalVerses: number;
+-  /** Listen reads the English aloud: a chapter shown in a downloaded Bible, or in a licensed translation, has none (1.9). The pill and the dock both keep it. */
++  /** Whether Listen may read this page: not a licensed translation's (1.9). The pill and the dock both keep it. */
+   listen?: boolean;
++  /** The downloaded Bible the page shows the chapter in, read by the phone's voice (1.9), or null for the English. */
++  bible?: DownloadableBible | null;
+   /** What the chapter is shown in, when not the English: the running line looks at the verses again when it changes. */
+   textKey?: string;
+ }) {
+@@ -148,8 +153,11 @@ export function MobileChapterPill({
+   const next = nextChapter(slug, chapter);
+   const [sheetOpen, setSheetOpen] = useState(false);
+   const covered = useOverlayOpen();
+-  // Only a chapter that has a reading carries Listen.
+-  const reads = useHasReadAloud(slug, chapter) && listen;
++  // Listen: the English where it has its recording, and every chapter, in the
++  // English or a downloaded Bible, where the device can speak (1.9, build 95 note 25).
++  const recorded = useHasReadAloud(slug, chapter);
++  const speaks = useCanSpeak();
++  const reads = listen && (bible ? speaks : recorded || speaks);
+   // The dock: the player and the chapter in one card while anything is loaded.
+   const dockShows = useDockShows();
+   useOwnPlayer(dockShows ? HOSTS_EVERYTHING : NOTHING);
+@@ -224,7 +232,8 @@ export function MobileChapterPill({
+           slug={slug}
+           chapter={chapter}
+           bookName={bookName}
+-          listen={listen}
++          listen={reads}
++          bible={bible}
+           prev={prev}
+           next={next}
+           prevLabel={prevLabel}
+@@ -294,7 +303,7 @@ export function MobileChapterPill({
+             {fit === 2 ? null : <span aria-hidden className="mx-1.5 h-6 w-px shrink-0 bg-paper/15" />}
+             <span className="flex shrink-0 items-center gap-0.5">
+               <AmbienceButton variant="pill" />
+-              {reads ? <ReadAloudPillButton book={slug} chapter={chapter} title={`${bookName} ${chapter}`} wordGivesWay={fit === 1} /> : null}
++              {reads ? <ReadAloudPillButton book={slug} chapter={chapter} title={`${bookName} ${chapter}`} wordGivesWay={fit === 1} bible={bible} /> : null}
+             </span>
+           </div>
+         </div>
+diff --git a/components/bible/ReadAloud.tsx b/components/bible/ReadAloud.tsx
+index 6046cb38..3b9dee39 100644
+--- a/components/bible/ReadAloud.tsx
++++ b/components/bible/ReadAloud.tsx
+@@ -21,9 +21,16 @@ import { Headphones } from "@/components/ui/icons/Headphones";
+ import { Pause } from "@/components/ui/icons/Pause";
+ import { Play } from "@/components/ui/icons/Play";
+ import { nextChapter } from "@/lib/bible/books";
+-import { hasReadAloud, readAloudManifest, readAloudSrc, readingOfSrc, useHasReadAloud, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
+-import { startReading } from "@/lib/readAloud/play";
+-import { currentTimeNow, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
++import type { DownloadableBible } from "@/lib/bible/downloads/catalog";
++import { anchorsOf } from "@/lib/listen/speech/pageText";
++import { onSpokenEnd } from "@/lib/listen/speech/speak";
++import { spokenBibleSrc, spokenOf } from "@/lib/listen/speech/spoken";
++import { useCanSpeak } from "@/lib/listen/speech/voices";
++import { captionLines, lineAt } from "@/lib/player/captions";
++import { hasReadAloud, readAloudManifest, readingOfSrc, useHasReadAloud, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
++import { listenToChapter } from "@/lib/readAloud/play";
++import { askToListenAt, takeListenAsk } from "@/lib/readAloud/rollOn";
++import { currentTimeNow, getAudioSnapshot, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
+ import { cn } from "@/lib/cn";
+ import { goToReadingPlace, inReadingZone, visibleBand } from "@/lib/ui/readingPlace";
+ 
+@@ -31,20 +38,36 @@ import { ReaderPill } from "./ReaderPill";
+ 
+ /** After the reader scrolls, the reading lets them look for this long. */
+ const HANDS_OFF_MS = 4000;
+-/** The chapter a reading that just ended rolls on into. */
+-const NEXT_KEY = "purify:readAloud.next";
+ 
+-function useThisChapter(book: string, chapter: number) {
++/**
++ * Whether the player holds this chapter, in the Bible the page shows it in.
++ * The recording (the English) by the chapter it reads, not by its address
++ * (1.9): the address changes when the chapter is saved to the phone while it
++ * plays (the week's readings can save today's on opening,
++ * lib/readAloud/week.ts), and by address the page then lost it, Listen
++ * offered again, the verse no longer following the voice, and no rolling on
++ * into the next chapter. The phone's voice (1.9, build 95 note 25) by its
++ * spoken address, which names the Bible too (lib/listen/speech/spoken.ts).
++ */
++function useThisChapter(book: string, chapter: number, bible: string | null = null) {
+   const audio = usePersistentAudio();
+-  const src = readAloudSrc(book, chapter);
+-  // By the chapter the loaded recording reads, not by its address (1.9): the
+-  // address changes when the chapter is saved to the phone while it plays
+-  // (the week's readings can save today's on opening, lib/readAloud/week.ts),
+-  // and by address the page then lost it, Listen offered again, the verse
+-  // no longer following the voice, and no rolling on into the next chapter.
+   const reading = readingOfSrc(audio.src);
+-  const loaded = reading?.book === book && reading.chapter === chapter;
+-  return { audio, src, loaded, playing: loaded && audio.playing };
++  const said = spokenOf(audio.src);
++  const spoken = said?.kind === "bible" && said.book === book && said.chapter === chapter && said.bible === bible;
++  const loaded = spoken || (!bible && reading?.book === book && reading.chapter === chapter);
++  return { audio, loaded, spoken, playing: loaded && audio.playing };
++}
++
++/**
++ * Whether a chapter can be listened to (1.9, build 95 note 25): the English
++ * where it has its recording, and every chapter, in the English or a Bible the
++ * reader downloaded, where the device can speak (the phone's voices, free for
++ * every reader, his "all recs" of 2026-11-13).
++ */
++function useListens(book: string, chapter: number, bible: DownloadableBible | null): boolean {
++  const recorded = useHasReadAloud(book, chapter);
++  const speaks = useCanSpeak();
++  return bible ? speaks : recorded || speaks;
+ }
+ 
+ /**
+@@ -56,11 +79,11 @@ function useThisChapter(book: string, chapter: number) {
+  * so it stands at the height of the toolbar's others: headphones and Listen,
+  * the pause bars and Pause while it plays, and a play mark once it is paused.
+  */
+-export function ListenButton({ book, chapter, bookName }: { book: string; chapter: number; bookName: string }) {
++export function ListenButton({ book, chapter, bookName, bible = null }: { book: string; chapter: number; bookName: string; bible?: DownloadableBible | null }) {
+   const { t } = useTranslate();
+-  const { loaded, playing } = useThisChapter(book, chapter);
++  const { loaded, playing } = useThisChapter(book, chapter, bible?.id ?? null);
+   const [busy, setBusy] = useState(false);
+-  const available = useHasReadAloud(book, chapter);
++  const available = useListens(book, chapter, bible);
+   if (!available) return null;
+ 
+   const start = async () => {
+@@ -70,7 +93,7 @@ export function ListenButton({ book, chapter, bookName }: { book: string; chapte
+       return;
+     }
+     setBusy(true);
+-    await startReading(book, chapter, `${t(`bible.books.${book}`) || bookName} ${chapter}`, t);
++    await listenToChapter({ book, chapter, title: `${t(`bible.books.${book}`) || bookName} ${chapter}`, t, bible });
+     setBusy(false);
+   };
+ 
+@@ -106,11 +129,24 @@ export function ListenButton({ book, chapter, bookName }: { book: string; chapte
+  * to be shown whole (`wordGivesWay`, measured by the pill). A little shorter
+  * than the pill it ends, with a 44px touch box.
+  */
+-export function ReadAloudPillButton({ book, chapter, title, wordGivesWay = false }: { book: string; chapter: number; title: string; wordGivesWay?: boolean }) {
++export function ReadAloudPillButton({
++  book,
++  chapter,
++  title,
++  wordGivesWay = false,
++  bible = null,
++}: {
++  book: string;
++  chapter: number;
++  title: string;
++  wordGivesWay?: boolean;
++  /** The downloaded Bible the page shows the chapter in: the phone's voice reads it (1.9). */
++  bible?: DownloadableBible | null;
++}) {
+   const { t } = useTranslate();
+-  const { loaded, playing } = useThisChapter(book, chapter);
++  const { loaded, playing } = useThisChapter(book, chapter, bible?.id ?? null);
+   const [busy, setBusy] = useState(false);
+-  const available = useHasReadAloud(book, chapter);
++  const available = useListens(book, chapter, bible);
+   if (!available) return null;
+ 
+   const toggle = async () => {
+@@ -120,7 +156,7 @@ export function ReadAloudPillButton({ book, chapter, title, wordGivesWay = false
+       return;
+     }
+     setBusy(true);
+-    await startReading(book, chapter, title, t);
++    await listenToChapter({ book, chapter, title, t, bible });
+     setBusy(false);
+   };
+ 
+@@ -161,45 +197,48 @@ export function ReadAloudPillButton({ book, chapter, title, wordGivesWay = false
+  * leaves the band's middle, and left alone for a while after the reader
+  * scrolls.
+  */
+-export function ReadAloudFollow({ book, chapter }: { book: string; chapter: number }) {
++export function ReadAloudFollow({ book, chapter, bible = null }: { book: string; chapter: number; bible?: DownloadableBible | null }) {
+   const { t } = useTranslate();
+   const router = useRouter();
+-  const { audio, loaded, playing } = useThisChapter(book, chapter);
++  const bibleId = bible?.id ?? null;
++  const { audio, loaded, spoken, playing } = useThisChapter(book, chapter, bibleId);
+   const manifest = useRef<ReadAloudManifest | null>(null);
+   const lastHand = useRef(0);
+   // The website's list can name this chapter after the screen opened (in the apps): the effects below run again then.
+-  const available = useHasReadAloud(book, chapter);
++  const available = useListens(book, chapter, bible);
++  const recorded = useHasReadAloud(book, chapter) && !bible;
+ 
+-  // Arriving from a reading that ended: this chapter's reading goes on.
++  // Arriving from a reading that ended, or the player's next or previous: this chapter's reading goes on, read as it is read here.
+   useEffect(() => {
+-    let waiting: string | null = null;
+-    try {
+-      waiting = window.sessionStorage.getItem(NEXT_KEY);
+-      if (waiting === `${book}/${chapter}`) window.sessionStorage.removeItem(NEXT_KEY);
+-    } catch {
+-      return;
+-    }
+-    if (waiting === `${book}/${chapter}` && available) {
+-      void startReading(book, chapter, `${t(`bible.books.${book}`)} ${chapter}`, t);
+-    }
+-  }, [book, chapter, t, available]);
++    if (!available || !takeListenAsk(book, chapter)) return;
++    void listenToChapter({ book, chapter, title: `${t(`bible.books.${book}`)} ${chapter}`, t, bible });
++  }, [book, chapter, t, available, bible]);
+ 
+-  // The reading ended at its last verse: on into the next chapter, if it has one.
+-  const ended = loaded && !audio.playing && audio.duration > 0 && audio.currentTime >= audio.duration - 0.3;
++  // The reading ended at its last verse: on into the next chapter, if it has
++  // one. A recording, where the next has one; the phone's voice, always, read
++  // in the Bible the reader reads (told by the voice's own end, since its clock
++  // does not stop exactly at its length).
++  const ended = loaded && !spoken && !audio.playing && audio.duration > 0 && audio.currentTime >= audio.duration - 0.3;
+   useEffect(() => {
+     if (!ended) return;
+     const next = nextChapter(book, chapter);
+     if (!next || !hasReadAloud(next.slug, next.chapter)) return;
+-    try {
+-      window.sessionStorage.setItem(NEXT_KEY, `${next.slug}/${next.chapter}`);
+-    } catch {
+-      return;
+-    }
++    if (!askToListenAt(next.slug, next.chapter)) return;
+     router.push(`/bible/${next.slug}/${next.chapter}`);
+   }, [ended, book, chapter, router]);
++  useEffect(
++    () =>
++      onSpokenEnd((src) => {
++        if (src !== spokenBibleSrc(book, chapter, bibleId)) return;
++        const next = nextChapter(book, chapter);
++        if (!next || !askToListenAt(next.slug, next.chapter)) return;
++        router.push(`/bible/${next.slug}/${next.chapter}`);
++      }),
++    [book, chapter, bibleId, router],
++  );
+ 
+   useEffect(() => {
+-    if (!available) return;
++    if (!recorded) return;
+     let alive = true;
+     void readAloudManifest(book, chapter).then((m) => {
+       if (alive) manifest.current = m;
+@@ -214,7 +253,7 @@ export function ReadAloudFollow({ book, chapter }: { book: string; chapter: numb
+       window.removeEventListener("wheel", hand);
+       window.removeEventListener("touchmove", hand);
+     };
+-  }, [book, chapter, available]);
++  }, [book, chapter, recorded]);
+ 
+   useEffect(() => {
+     if (!playing) return;
+@@ -241,10 +280,19 @@ export function ReadAloudFollow({ book, chapter }: { book: string; chapter: numb
+       }
+     };
+     const loop = () => {
+-      const m = manifest.current;
+-      if (m) {
+-        const n = verseAt(m, currentTimeNow());
+-        light(n ? document.getElementById(`v${n}`) : null);
++      if (spoken) {
++        // The phone's voice: the verse it is on, by the player's own lines,
++        // lit where it stands on the page (a downloaded Bible's places are its own).
++        const s = getAudioSnapshot();
++        const at = s.captions?.length ? lineAt(captionLines(s.captions, s.duration), currentTimeNow()) : -1;
++        const place = at >= 0 ? (anchorsOf(s.src)?.[at] ?? (typeof s.captions?.[at]?.n === "number" ? `v${s.captions[at].n}` : undefined)) : undefined;
++        light(place ? document.getElementById(place) : null);
++      } else {
++        const m = manifest.current;
++        if (m) {
++          const n = verseAt(m, currentTimeNow());
++          light(n ? document.getElementById(`v${n}`) : null);
++        }
+       }
+       raf = requestAnimationFrame(loop);
+     };
+@@ -253,7 +301,7 @@ export function ReadAloudFollow({ book, chapter }: { book: string; chapter: numb
+       cancelAnimationFrame(raf);
+       light(null);
+     };
+-  }, [playing]);
++  }, [playing, spoken]);
+ 
+   return null;
+ }
+diff --git a/components/bible/ReaderDock.tsx b/components/bible/ReaderDock.tsx
+index 8bb83c1c..0e7ce800 100644
+--- a/components/bible/ReaderDock.tsx
++++ b/components/bible/ReaderDock.tsx
+@@ -51,8 +51,10 @@ import { minutesLeft, useSleepTimer } from "@/lib/player/sleep";
+ import { nextSpeed, saveSpeed, speedText } from "@/lib/player/speed";
+ import { playingOf } from "@/lib/player/steps";
+ import { pause, play, setRate, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
+-import { readingOfSrc, useHasReadAloud } from "@/lib/readAloud/chapters";
+-import { startReading } from "@/lib/readAloud/play";
++import type { DownloadableBible } from "@/lib/bible/downloads/catalog";
++import { spokenOf } from "@/lib/listen/speech/spoken";
++import { readingOfSrc } from "@/lib/readAloud/chapters";
++import { listenToChapter } from "@/lib/readAloud/play";
+ import { noteFootMoved } from "@/lib/ui/scrollAway";
+ 
+ type Target = { slug: string; chapter: number } | null;
+@@ -68,6 +70,7 @@ export function ReaderDock({
+   chapter,
+   bookName,
+   listen = true,
++  bible = null,
+   prev,
+   next,
+   prevLabel,
+@@ -81,11 +84,13 @@ export function ReaderDock({
+   /** The book's name in the reader's language. */
+   bookName: string;
+   /**
+-   * Whether Listen may read this page: the English recording reads the English
+-   * alone, so not over a downloaded Bible's page (a Russian page read in
+-   * English) nor a licensed translation's (the pill's own rule, MobileChapterPill).
++   * Whether Listen may read this page: the pill's own rule (MobileChapterPill),
++   * the English where it has its recording, every chapter where the device can
++   * speak, never a licensed translation's.
+    */
+   listen?: boolean;
++  /** The downloaded Bible the page shows the chapter in: Listen reads it in the phone's voice, never the English over it (1.9). */
++  bible?: DownloadableBible | null;
+   prev: Target;
+   next: Target;
+   prevLabel: string;
+@@ -101,7 +106,6 @@ export function ReaderDock({
+   const audio = usePersistentAudio();
+   const ambience = useAmbience();
+   const sleep = useSleepTimer();
+-  const reads = useHasReadAloud(slug, chapter);
+   const [sleepOpen, setSleepOpen] = useState(false);
+   const [busy, setBusy] = useState(false);
+   const surfaceRef = useRef<HTMLDivElement>(null);
+@@ -170,8 +174,11 @@ export function ReaderDock({
+   // week's readings can save today's on opening, lib/readAloud/week.ts), and
+   // the dock then offered Listen for the chapter already playing.
+   const loaded = readingOfSrc(audio.src);
+-  const hereLoaded = loaded?.book === slug && loaded.chapter === chapter;
+-  const listenHere = reads && listen && !hereLoaded;
++  const said = spokenOf(audio.src);
++  const hereLoaded =
++    (!bible && loaded?.book === slug && loaded.chapter === chapter) ||
++    (said?.kind === "bible" && said.book === slug && said.chapter === chapter && said.bible === (bible?.id ?? null));
++  const listenHere = listen && !hereLoaded;
+   // Speed is a chapter read aloud's alone, as in Now Playing (lib/player/speed.ts).
+   const speedShown = playingOf(audio.src)?.kind === "chapter";
+   const speed = speedText(audio.rate, locale);
+@@ -186,7 +193,7 @@ export function ReaderDock({
+ 
+   const listenNow = async () => {
+     setBusy(true);
+-    await startReading(slug, chapter, `${bookName} ${chapter}`, t);
++    await listenToChapter({ book: slug, chapter, title: `${bookName} ${chapter}`, t, bible });
+     setBusy(false);
+   };
+ 
+diff --git a/components/layout/RootFrame.tsx b/components/layout/RootFrame.tsx
+index 73d713a1..0440cc7c 100644
+--- a/components/layout/RootFrame.tsx
++++ b/components/layout/RootFrame.tsx
+@@ -42,6 +42,7 @@ import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
+ import { TestersMark } from "@/components/onboarding/TestersMark";
+ import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
+ import { AmbienceSheet } from "@/components/player/AmbienceSheet";
++import { VoiceSheet } from "@/components/player/VoiceSheet";
+ import { NowPlayingSheet } from "@/components/player/NowPlayingSheet";
+ import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
+ import { ProfilePrefsBridge } from "@/components/profile/ProfilePrefsBridge";
+@@ -151,6 +152,10 @@ export function RootFrame({
+             every screen, Today included, and the bar that shows it opens
+             this. Renders nothing until it is opened. */}
+         <AmbienceSheet />
++        {/* The Voice sheet (1.9, build 95 note 25): opened from the player's
++            ••• over the player, and from a page's Listen where the phone has
++            no voice for the text's language. Here for the same reason. */}
++        <VoiceSheet />
+         {/* "It's okay. We got you this time.": the one moment a hidden streak
+             save shows itself, on whatever page Purify opens to. Here for the
+             reason above. Renders nothing until a save has held a day. */}
+diff --git a/components/player/NowPlayingSheet.tsx b/components/player/NowPlayingSheet.tsx
+index 3fef63ed..c72deb91 100644
+--- a/components/player/NowPlayingSheet.tsx
++++ b/components/player/NowPlayingSheet.tsx
+@@ -11,6 +11,8 @@ import { Book } from "@/components/ui/icons/Book";
+ import { More } from "@/components/ui/icons/More";
+ import { Timer } from "@/components/ui/icons/Timer";
+ import { useAmbienceSheet } from "@/lib/ambience/sheet";
++import { openVoiceSheet, useVoiceSheet } from "@/lib/listen/speech/sheet";
++import { goneShown, useVoiceShown } from "@/lib/listen/speech/speak";
+ import { cn } from "@/lib/cn";
+ import { verseOf } from "@/lib/player/captions";
+ import { useSungLines } from "@/lib/player/clock";
+@@ -25,6 +27,7 @@ import { AmbienceButton } from "./AmbienceButton";
+ import { CoverArt } from "./CoverArt";
+ import { LiveCaptions } from "./LiveCaptions";
+ import { PlayerMoreSheet } from "./PlayerMore";
++import { useVoiceRowValue } from "./VoiceSheet";
+ import { PlayerTransport } from "./PlayerSteps";
+ import { SleepTimerSheet } from "./SleepTimerSheet";
+ import { SaveOffline, SaveOfflineNote } from "./SaveOffline";
+@@ -94,8 +97,16 @@ export function NowPlayingSheet() {
+   const [moreMenu, setMoreMenu] = useState(false);
+   const sleep = useSleepTimer();
+   const ambienceSheet = useAmbienceSheet();
++  const voiceSheet = useVoiceSheet();
+   // A sheet stands over the player: Escape is that sheet's.
+-  const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer);
++  const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer) || (voiceSheet.open && voiceSheet.overPlayer);
++  // The voice reading, for the ••• sheet's Voice row (1.9, build 95 note 25).
++  const voiceName = useVoiceRowValue(audio.src, open);
++  // A voice the reader chose had gone and another reads: said here once, while the player is open.
++  const { gone } = useVoiceShown();
++  useEffect(() => {
++    if (!open && gone) goneShown();
++  }, [open, gone]);
+   const hasWords = Boolean(audio.captions && audio.captions.length > 0);
+   // The one clock that lights the words and counts the verses
+   // (lib/player/clock.ts), running while the player is open.
+@@ -346,6 +357,11 @@ export function NowPlayingSheet() {
+ 
+           {/* One block for both views: nothing here moves when they switch. */}
+           <SaveOfflineNote src={audio.src} className="mt-2" />
++          {gone && voiceName ? (
++            <p role="status" className="mt-2 font-sans text-detail leading-[1.45] text-paper/75">
++              {t("player.voice.gone", { name: voiceName })}
++            </p>
++          ) : null}
+           <PositionBar current={audio.currentTime} duration={audio.duration} onSeek={(at) => seek(at)} className="mt-2" />
+           <PlayerTransport audio={audio} className="mt-3" />
+ 
+@@ -427,6 +443,8 @@ export function NowPlayingSheet() {
+             src={audio.src}
+             share={shareHref(playing)}
+             onSleep={() => setSleepMenu(true)}
++            voice={voiceName}
++            onVoice={() => openVoiceSheet({ overPlayer: true })}
+           />
+ 
+           {/* The sleep timer, as a sheet over the player: the one timer for
+diff --git a/components/player/PlayerMore.tsx b/components/player/PlayerMore.tsx
+index 56725cce..34ac2202 100644
+--- a/components/player/PlayerMore.tsx
++++ b/components/player/PlayerMore.tsx
+@@ -8,6 +8,7 @@ import { Check } from "@/components/ui/icons/Check";
+ import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+ import { Sound } from "@/components/ui/icons/Sound";
+ import { Timer } from "@/components/ui/icons/Timer";
++import { Voice } from "@/components/ui/icons/Voice";
+ import { getAmbienceTrack } from "@/lib/ambience/ambience";
+ import { useAmbience } from "@/lib/ambience/player";
+ import { openAmbience } from "@/lib/ambience/sheet";
+@@ -26,6 +27,10 @@ import { SaveOfflineRow } from "./SaveOffline";
+  * corner, each in words: Save for offline (a chapter of the Bible, in the
+  * apps), the sleep timer and Ambience, each opening its own sheet as it does
+  * from the row under the controls, and Share, the page of what is playing.
++ * From 1.9 (build 95 note 25), Voice, between the sleep timer and Ambience:
++ * the voice reading, opening the Voice sheet (components/player/VoiceSheet.tsx),
++ * a row here and not a sixth mark under the controls, whose five were
++ * measured in 21 languages (lib/player/__tests__/optionWords.test.ts).
+  * Nothing moved here: every control under the controls is still there.
+  *
+  * Like the reader's ••• sheet, it goes first when a row opens another sheet,
+@@ -38,6 +43,8 @@ export function PlayerMoreSheet({
+   src,
+   share,
+   onSleep,
++  voice = null,
++  onVoice,
+ }: {
+   open: boolean;
+   onClose: () => void;
+@@ -48,6 +55,14 @@ export function PlayerMoreSheet({
+   share: string | null;
+   /** Open the sleep timer's own sheet. */
+   onSleep: () => void;
++  /**
++   * The voice reading what is playing, for the Voice row (1.9, build 95 note
++   * 25): its name, or null where no voice reads it (a chant, a prayer, today's
++   * readings one after another), and no row is drawn.
++   */
++  voice?: string | null;
++  /** Open the Voice sheet. */
++  onVoice?: () => void;
+ }) {
+   const { t } = useTranslate();
+   const sleep = useSleepTimer();
+@@ -87,6 +102,18 @@ export function PlayerMoreSheet({
+             onSleep();
+           }}
+         />
++        {voice !== null && onVoice ? (
++          <Row
++            icon={<Voice size={16} />}
++            label={t("player.voice")}
++            value={voice}
++            on
++            onClick={() => {
++              onClose();
++              onVoice();
++            }}
++          />
++        ) : null}
+         <Row
+           icon={<Sound size={16} />}
+           label={t("ambience.title")}
+diff --git a/components/player/PlayerSteps.tsx b/components/player/PlayerSteps.tsx
+index b71e0eb0..3e945636 100644
+--- a/components/player/PlayerSteps.tsx
++++ b/components/player/PlayerSteps.tsx
+@@ -1,5 +1,6 @@
+ "use client";
+ 
++import { useRouter } from "next/navigation";
+ import { useEffect, useState, useSyncExternalStore } from "react";
+ 
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+@@ -10,11 +11,13 @@ import type { ChantIndexRow, ChantIndexVariant } from "@/lib/chants/types";
+ import { useWordsPrefs } from "@/lib/chants/wordsPrefs";
+ import { startListening } from "@/lib/listen/play";
+ import { stepsOf } from "@/lib/listen/recordings";
++import { spokenOf } from "@/lib/listen/speech/spoken";
+ import { loadChantIndex } from "@/lib/player/chants";
+ import { chapterSteps, chantVersionOf, playingOf, versionSteps, type ChapterRef } from "@/lib/player/steps";
+ import { skipBy, toggle, type AudioSnapshot } from "@/lib/prayers/persistentAudioStore";
+ import { hasReadAloud } from "@/lib/readAloud/chapters";
+ import { startReading } from "@/lib/readAloud/play";
++import { askToListenAt } from "@/lib/readAloud/rollOn";
+ import { listeningPlace, stepListening, subscribeListening } from "@/lib/readings/listen";
+ 
+ import { Transport, type Step } from "./Transport";
+@@ -58,6 +61,7 @@ function useSteps(audio: AudioSnapshot): { previous: Step; next: Step } {
+   }, [isChant, index]);
+   const availabilityFor = useChantAvailability(isChant);
+   const prefs = useWordsPrefs();
++  const router = useRouter();
+ 
+   // Today's readings: step through them, never out of them into the chapters.
+   if (place && audio.src === place.src) {
+@@ -68,6 +72,21 @@ function useSteps(audio: AudioSnapshot): { previous: Step; next: Step } {
+   }
+ 
+   const playing = playingOf(audio.src, index);
++  // A chapter the phone's voice reads (1.9, build 95 note 25): every chapter
++  // either side, read the same way, in the Bible the reader reads. Its words
++  // are that chapter's page's, so the step opens the page, which begins it.
++  const said = spokenOf(audio.src);
++  if (playing?.kind === "chapter" && said?.kind === "bible") {
++    const { previous, next } = chapterSteps(playing.book, playing.chapter, () => true);
++    const name = (to: ChapterRef) => t(`bible.books.${to.book}`);
++    const go = (to: ChapterRef) => () => {
++      if (askToListenAt(to.book, to.chapter)) router.push(`/bible/${to.book}/${to.chapter}`);
++    };
++    return {
++      previous: previous ? { label: t("bible.previousTargetAria", { book: name(previous), chapter: previous.chapter }), go: go(previous) } : null,
++      next: next ? { label: t("bible.nextTargetAria", { book: name(next), chapter: next.chapter }), go: go(next) } : null,
++    };
++  }
+   if (playing?.kind === "chapter") {
+     const { previous, next } = chapterSteps(playing.book, playing.chapter, hasReadAloud);
+     const name = (to: ChapterRef) => t(`bible.books.${to.book}`);
+diff --git a/components/player/VoiceSheet.tsx b/components/player/VoiceSheet.tsx
+new file mode 100644
+index 00000000..398588f8
+--- /dev/null
++++ b/components/player/VoiceSheet.tsx
+@@ -0,0 +1,246 @@
++"use client";
++
++import { usePathname } from "next/navigation";
++import { useEffect, useRef, useState, useSyncExternalStore } from "react";
++
++import { useTranslate } from "@/components/i18n/MessagesProvider";
++import { Sheet } from "@/components/ui/Sheet";
++import { Check } from "@/components/ui/icons/Check";
++import { Play } from "@/components/ui/icons/Play";
++import { cn } from "@/lib/cn";
++import { voiceContextOf, pieceNow, readAgainIn, type VoiceContext } from "@/lib/listen/speech/context";
++import { speechEngine } from "@/lib/listen/speech/engine";
++import { closeVoiceSheet, useVoiceSheet } from "@/lib/listen/speech/sheet";
++import { useVoiceShown } from "@/lib/listen/speech/speak";
++import { HEART, chooseVoice, useChosenVoice, voiceToUse } from "@/lib/listen/speech/voiceChoice";
++import { askAgain, useDeviceVoices, voiceRows, type VoiceRow } from "@/lib/listen/speech/voices";
++import { sentencesOf } from "@/lib/listen/texts";
++import { readSpeed } from "@/lib/player/speed";
++import { listeningPlace, subscribeListening } from "@/lib/readings/listen";
++import { getAudioSnapshot, isSpoken, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
++
++/**
++ * The Voice sheet (1.9, build 95 note 25, his "all recs" of 2026-11-13: the
++ * phone's own voices, free for every reader, reading the Bible, the lives,
++ * the councils, history, theology and the works, never the prayers). Opened
++ * from the Voice row of the player's •••, over the player, from the player's
++ * own parts: the sheet, its rows as the sleep timer's are, the mark of the one
++ * chosen.
++ *
++ *  - Heart first, where the text has its recording; then the phone's own
++ *    voices for the text's language, each with Hear it, which speaks the first
++ *    words of the verse or paragraph being read in that voice.
++ *  - Choosing one reads what is playing again in it, at the verse or
++ *    paragraph being read, and keeps the choice for the language.
++ *  - A voice the reader chose that the phone no longer has: said here, with
++ *    the voice that reads instead.
++ *  - No voice for the language and no recording (opened from a page's
++ *    Listen): said, and where a voice is added.
++ *
++ * Mounted once in the root frame, as the ambience sheet is.
++ */
++export function VoiceSheet() {
++  const { t } = useTranslate();
++  const sheet = useVoiceSheet();
++
++  // A link out of the app's screens leaves it behind, as the ambience sheet does.
++  const pathname = usePathname();
++  const firstPath = useRef(pathname);
++  useEffect(() => {
++    if (pathname === firstPath.current) return;
++    firstPath.current = pathname;
++    closeVoiceSheet();
++  }, [pathname]);
++
++  return (
++    <Sheet open={sheet.open} onClose={closeVoiceSheet} title={t("player.voice")} desktop layer={sheet.overPlayer ? "over-player" : undefined} bodyClassName="pt-1">
++      <VoiceSheetContent open={sheet.open} none={sheet.none} />
++    </Sheet>
++  );
++}
++
++function VoiceSheetContent({ open, none }: { open: boolean; none: { lang: string } | null }) {
++  const { t, locale } = useTranslate();
++  const audio = usePersistentAudio();
++  const about: VoiceContext | null = none ? null : voiceContextOf(audio.src);
++  const lang = none?.lang ?? about?.lang ?? "en";
++  const recorded = Boolean(about?.recorded);
++  const voices = useDeviceVoices(open);
++  const choice = useChosenVoice(lang);
++  const { reading } = useVoiceShown();
++  // What was playing as the sheet opened: a voice heard meanwhile pauses it, and it goes on after.
++  const wasPlaying = useRef(false);
++  const heardSome = useRef(false);
++  const [busy, setBusy] = useState<string | null>(null);
++
++  // Asked again as it opens and as the reader comes back to the app: a voice added in the phone's settings meanwhile is listed.
++  useEffect(() => {
++    if (!open) return;
++    wasPlaying.current = getAudioSnapshot().playing;
++    heardSome.current = false;
++    void askAgain();
++    const back = () => {
++      if (document.visibilityState === "visible") void askAgain();
++    };
++    document.addEventListener("visibilitychange", back);
++    return () => {
++      document.removeEventListener("visibilitychange", back);
++      // Closed without a choice after hearing a voice: the reading goes on as it was.
++      if (heardSome.current && wasPlaying.current && !getAudioSnapshot().playing) play();
++    };
++  }, [open]);
++
++  const rows = voices ? voiceRows(voices, lang, locale, (n) => t("player.voice.numbered", { n }), choice) : [];
++  // The voice reading now: the phone's, or Heart while the recording plays.
++  const now: string | null =
++    about && isSpoken() && reading?.src === audio.src ? reading.voice.id : about && recorded && !isSpoken() ? HEART : null;
++  const resolved = voices ? voiceToUse(choice, voices, lang, recorded) : null;
++  const checked = now ?? (resolved?.kind === "heart" ? HEART : resolved?.kind === "phone" ? resolved.voice.id : null);
++  const gone = resolved && resolved.kind !== "none" ? resolved.gone : undefined;
++  const nameOf = (id: string | null) => (id === HEART ? t("player.voice.heart") : (rows.find((r) => r.voice.id === id)?.name ?? ""));
++  const languageName = (() => {
++    try {
++      return new Intl.DisplayNames([locale], { type: "language" }).of(lang) ?? lang;
++    } catch {
++      return lang;
++    }
++  })();
++
++  const choose = async (id: string) => {
++    chooseVoice(lang, id);
++    if (!about || id === now) {
++      closeVoiceSheet();
++      return;
++    }
++    const to = id === HEART ? HEART : rows.find((r) => r.voice.id === id)?.voice;
++    if (!to) return;
++    setBusy(id);
++    const goOn = wasPlaying.current;
++    heardSome.current = false;
++    await readAgainIn(to, about, t, goOn);
++    setBusy(null);
++    closeVoiceSheet();
++  };
++
++  const hear = async (row: VoiceRow) => {
++    const engine = await speechEngine();
++    if (!engine) return;
++    if (getAudioSnapshot().playing) pause();
++    heardSome.current = true;
++    const s = getAudioSnapshot();
++    const words = s.captions?.[pieceNow()]?.text ?? "";
++    const first = sentencesOf(words)[0] ?? words;
++    const line = (first || s.title || "").slice(0, 160);
++    if (!line) return;
++    void engine.preview({ text: line, lang: row.voice.lang, voice: row.voice.id, rate: readSpeed() }).catch(() => {});
++  };
++
++  const none_ = !recorded && voices !== null && rows.length === 0;
++
++  return (
++    <div>
++      {gone && checked ? (
++        <p role="status" className="mb-3 font-sans text-detail leading-[1.5] text-paper/80">
++          {t("player.voice.gone", { name: nameOf(checked) })}
++        </p>
++      ) : null}
++
++      {none_ ? (
++        <div role="status" className="pb-1">
++          <p className="font-sans text-ui leading-[1.5] text-paper/90">{t("player.voice.none", { language: languageName })}</p>
++          <p className="mt-2 font-sans text-detail leading-[1.5] text-paper/65">{t("player.voice.noneHow")}</p>
++        </div>
++      ) : (
++        <div role="radiogroup" aria-label={t("player.voice")} className="divide-y divide-paper/10">
++          {recorded ? (
++            <VoiceChoiceRow
++              name={t("player.voice.heart")}
++              about={t("player.voice.heartAbout")}
++              on={checked === HEART}
++              busy={busy === HEART}
++              onChoose={() => void choose(HEART)}
++            />
++          ) : null}
++          {rows.map((row) => (
++            <VoiceChoiceRow
++              key={row.voice.id}
++              name={row.name}
++              about={row.language}
++              on={checked === row.voice.id}
++              busy={busy === row.voice.id}
++              onChoose={() => void choose(row.voice.id)}
++              hear={{ label: t("player.voice.hearName", { name: row.name }), word: t("player.voice.hear"), go: () => void hear(row) }}
++            />
++          ))}
++        </div>
++      )}
++
++      {rows.length > 0 ? <p className="mt-3 font-sans text-caption leading-[1.5] text-paper/60">{t("player.voice.phoneNote")}</p> : null}
++    </div>
++  );
++}
++
++/** One voice: its name over its language, the mark when it is the one reading, and Hear it for a phone's voice. */
++function VoiceChoiceRow({
++  name,
++  about,
++  on,
++  busy,
++  onChoose,
++  hear,
++}: {
++  name: string;
++  about: string;
++  on: boolean;
++  busy: boolean;
++  onChoose: () => void;
++  hear?: { label: string; word: string; go: () => void };
++}) {
++  return (
++    <div className="flex min-h-14 items-center gap-2">
++      <button
++        type="button"
++        role="radio"
++        aria-checked={on}
++        onClick={onChoose}
++        className="flex min-h-14 min-w-0 flex-1 items-center justify-between gap-3 py-1.5 text-start"
++      >
++        <span className="min-w-0">
++          <span className={cn("block truncate font-sans text-ui", on ? "font-semibold text-paper" : "text-paper/85", busy && "motion-safe:animate-pulse")}>{name}</span>
++          <span className="block truncate font-sans text-caption text-paper/60">{about}</span>
++        </span>
++        {on ? <Check size={18} className="shrink-0 text-paper" /> : null}
++      </button>
++      {hear ? (
++        <button
++          type="button"
++          onClick={hear.go}
++          aria-label={hear.label}
++          className="tap-press hit-44 inline-flex h-9 shrink-0 items-center gap-1.5 rounded-pill border border-paper/15 bg-paper/[0.04] px-3 font-sans text-detail font-medium text-paper/85 hover:border-paper/30 hover:bg-paper/10"
++        >
++          <Play size={12} className="shrink-0" />
++          <span aria-hidden>{hear.word}</span>
++        </button>
++      ) : null}
++    </div>
++  );
++}
++
++/**
++ * What the player's Voice row says (components/player/PlayerMore.tsx): the
++ * voice reading what is playing, Heart while its recording plays; null where
++ * no voice reads it (a chant, a prayer) and where today's readings are heard
++ * one after another, which step through their own recordings.
++ */
++export function useVoiceRowValue(src: string | null, ask: boolean): string | null {
++  const { t, locale } = useTranslate();
++  const place = useSyncExternalStore(subscribeListening, listeningPlace, () => null);
++  const about = voiceContextOf(src);
++  const { reading } = useVoiceShown();
++  const spokenHere = Boolean(about) && isSpoken() && reading?.src === src;
++  const voices = useDeviceVoices(ask && spokenHere);
++  if (!about || (place && place.src === src)) return null;
++  if (!spokenHere || !reading) return about.recorded ? t("player.voice.heart") : null;
++  const rows = voiceRows(voices ?? [reading.voice], about.lang, locale, (n) => t("player.voice.numbered", { n }), reading.voice.id);
++  return rows.find((r) => r.voice.id === reading.voice.id)?.name ?? reading.voice.name;
++}
+diff --git a/components/reading/ListenHere.tsx b/components/reading/ListenHere.tsx
+index df904a50..4b8094a9 100644
+--- a/components/reading/ListenHere.tsx
++++ b/components/reading/ListenHere.tsx
+@@ -11,9 +11,17 @@ import { Pause } from "@/components/ui/icons/Pause";
+ import { Play } from "@/components/ui/icons/Play";
+ import { sentenceOnPage, startListening } from "@/lib/listen/play";
+ import { listenOfSrc, listenTimings, readingAt, stepsOf, useHasListen } from "@/lib/listen/recordings";
+-import { listenHref, parseListenId, type ListenTimings } from "@/lib/listen/texts";
++import { anchorsOf, rememberAnchors } from "@/lib/listen/speech/pageText";
++import { openVoiceSheet } from "@/lib/listen/speech/sheet";
++import { speakText, voiceFor } from "@/lib/listen/speech/speak";
++import { spokenOf, spokenTextSrc, voiceLang } from "@/lib/listen/speech/spoken";
++import { wordStarts } from "@/lib/listen/speech/timeline";
++import { useCanSpeak } from "@/lib/listen/speech/voices";
++import { hostKeyOf, listenHref, parseListenId, type ListenRef, type ListenTimings } from "@/lib/listen/texts";
++import { sentenceSpans } from "@/lib/marks/anchor";
+ import { lineBoxes, type Box } from "@/lib/marks/dom";
+-import { currentTimeNow, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
++import { captionLines, lineAt } from "@/lib/player/captions";
++import { currentTimeNow, getAudioSnapshot, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
+ import { goToReadingPlace, inReadingZone, visibleBand } from "@/lib/ui/readingPlace";
+ 
+ /** After the reader scrolls, the reading lets them look for this long (the Bible's own, components/bible/ReadAloud.tsx). */
+@@ -35,12 +43,24 @@ const HANDS_OFF_MS = 4000;
+  * step back, as a chapter's verses do, and the sentence being read is washed
+  * the way a held verse is, line by line. The page's own words are used: the
+  * recording's timings carry none.
++ *
++ * From 1.9 (build 95 note 25, his "all recs" of 2026-11-13): where there is
++ * no recording, the phone's own voice reads it, free for every reader, in the
++ * language the page shows it in, from this part to the end of what the page
++ * shows; and where the reader chose a phone's voice, it reads even a text
++ * that has its recording. Where the phone has no voice for the language, the
++ * Voice sheet says so and where one is added. Never on the prayers: no prayer
++ * page draws it.
+  */
+ export function ListenHere({ id, title, by, art, className }: { id: string; title: string; by: string; art?: string | null; className?: string }) {
+   const { t } = useTranslate();
+-  const available = useHasListen(id);
++  const recorded = useHasListen(id);
++  const speaks = useCanSpeak();
++  const available = recorded || speaks;
+   const audio = usePersistentAudio();
+-  const loaded = listenOfSrc(audio.src)?.id === id;
++  const said = spokenOf(audio.src);
++  const spokenHere = said?.kind === "text" && said.id === id;
++  const loaded = listenOfSrc(audio.src)?.id === id || spokenHere;
+   const playing = loaded && audio.playing;
+   const [busy, setBusy] = useState(false);
+   const router = useRouter();
+@@ -49,7 +69,7 @@ export function ListenHere({ id, title, by, art, className }: { id: string; titl
+   // part, if it has a recording, as a chapter rolls on into the next
+   // (components/bible/ReadAloud.tsx). The page opens that part, so the reader
+   // sees what is read.
+-  const ended = loaded && !audio.playing && audio.duration > 0 && audio.currentTime >= audio.duration - 0.3;
++  const ended = loaded && !spokenHere && !audio.playing && audio.duration > 0 && audio.currentTime >= audio.duration - 0.3;
+   useEffect(() => {
+     if (!ended) return;
+     const { next } = stepsOf(id);
+@@ -69,7 +89,17 @@ export function ListenHere({ id, title, by, art, className }: { id: string; titl
+       return;
+     }
+     setBusy(true);
+-    await startListening(id, { title, by, art });
++    const ref = parseListenId(id);
++    const page = ref ? textOnPage(ref) : null;
++    const lang = page?.lang ?? "en";
++    const use = await voiceFor(voiceLang(lang), recorded);
++    if (use.kind === "heart") await startListening(id, { title, by, art });
++    else if (use.kind === "none") openVoiceSheet({ none: { lang: voiceLang(lang) } });
++    else if (page?.pieces.length) {
++      const src = spokenTextSrc(id, lang);
++      const ok = await speakText({ src, pieces: page.pieces.map((p) => ({ text: p.text })), lang: voiceLang(lang), voice: use.voice, title, artist: by, art: art ?? undefined });
++      if (ok) rememberAnchors(src, page.pieces.map((p) => p.anchor));
++    }
+     setBusy(false);
+   };
+ 
+@@ -85,11 +115,133 @@ export function ListenHere({ id, title, by, art, className }: { id: string; titl
+         {mark}
+         <span className={busy ? "motion-safe:animate-pulse" : undefined}>{playing ? t("readAloud.pause") : t("readAloud.listen")}</span>
+       </ReaderPill>
+-      {playing ? <ListenFollow id={id} /> : null}
++      {playing ? spokenHere ? <SpokenFollow src={audio.src} /> : <ListenFollow id={id} /> : null}
+     </>
+   );
+ }
+ 
++/**
++ * The text a page shows from a part on, paragraph by paragraph, for the
++ * phone's voice: each paragraph's words and where it stands (its mark,
++ * components/reading/MarkHost.tsx), in the page's order, from the part Listen
++ * stands over to the end of what the page shows; and the language the page
++ * shows it in.
++ */
++function textOnPage(ref: ListenRef): { pieces: { text: string; anchor: string }[]; lang: string } | null {
++  if (typeof document === "undefined") return null;
++  const prefix = hostKeyOf(ref, { sectionN: 0, paragraphIdx: 0 }).replace(/\|0\|0$/, "|");
++  const from = "n" in ref ? ref.n : 0;
++  const pieces: { text: string; anchor: string }[] = [];
++  let lang: string | null = null;
++  for (const host of document.querySelectorAll<HTMLElement>("[data-mk]")) {
++    const key = host.dataset.mk ?? "";
++    if (!key.startsWith(prefix)) continue;
++    const section = Number(key.slice(prefix.length).split("|")[0]);
++    if (!(section >= from)) continue;
++    const words = host.querySelector<HTMLElement>("[data-mk-text]");
++    const text = (words?.textContent ?? "").replace(/\s+/g, " ").trim();
++    if (!text || !/[\p{L}\p{N}]/u.test(text)) continue;
++    lang ??= words?.closest<HTMLElement>("[lang]")?.getAttribute("lang") ?? null;
++    pieces.push({ text, anchor: key });
++  }
++  if (!pieces.length) return null;
++  return { pieces, lang: lang || document.documentElement.lang || "en" };
++}
++
++/**
++ * Lights the paragraph the phone's voice is reading, washes its sentence, and
++ * keeps it at the reading place, as ListenFollow does for a recording: the
++ * paragraph by the player's own lines, the sentence by the word the phone
++ * reports, else by where the clock stands in the paragraph.
++ */
++function SpokenFollow({ src }: { src: string | null }) {
++  const lastHand = useRef(0);
++  const [wash, setWash] = useState<Box[]>([]);
++
++  useEffect(() => {
++    const hand = () => {
++      lastHand.current = performance.now();
++    };
++    window.addEventListener("wheel", hand, { passive: true });
++    window.addEventListener("touchmove", hand, { passive: true });
++    return () => {
++      window.removeEventListener("wheel", hand);
++      window.removeEventListener("touchmove", hand);
++    };
++  }, []);
++
++  useEffect(() => {
++    let raf = 0;
++    let lit: HTMLElement | null = null;
++    let at = "";
++    const root = document.documentElement;
++    const light = (el: HTMLElement | null) => {
++      if (lit === el) return;
++      if (lit) delete lit.dataset.readNow;
++      lit = el;
++      if (!el) {
++        delete root.dataset.readAloud;
++        return;
++      }
++      el.dataset.readNow = "";
++      root.dataset.readAloud = "";
++      if (performance.now() - lastHand.current > HANDS_OFF_MS) {
++        const band = visibleBand();
++        if (!inReadingZone(band, el.getBoundingClientRect())) goToReadingPlace(el, { band });
++      }
++    };
++    const loop = () => {
++      const s = getAudioSnapshot();
++      const lines = s.captions?.length ? captionLines(s.captions, s.duration) : [];
++      const now = currentTimeNow();
++      const i = lines.length ? lineAt(lines, now) : -1;
++      const anchor = i >= 0 ? anchorsOf(src)?.[i] : undefined;
++      const host = anchor ? document.querySelector<HTMLElement>(`[data-mk="${CSS.escape(anchor)}"]`) : null;
++      const textEl = host?.querySelector<HTMLElement>("[data-mk-text]") ?? null;
++      light(host);
++      // The sentence: the word being said, where the phone reports words, else the clock's share of the paragraph.
++      let span: { s: number; e: number } | null = null;
++      if (textEl && i >= 0) {
++        const text = textEl.textContent ?? "";
++        const line = s.captions![i];
++        const times = line.wordTimes;
++        let char = 0;
++        if (times?.length) {
++          let w = 0;
++          for (let k = 0; k < times.length; k++) if (times[k][0] <= now) w = k;
++          char = wordStarts(line.text)[w] ?? 0;
++        } else {
++          const share = (now - lines[i].at) / Math.max(0.1, lines[i].end - lines[i].at);
++          char = Math.floor(Math.max(0, Math.min(1, share)) * line.text.length);
++        }
++        const spans = sentenceSpans(text);
++        span = spans.find((x) => char >= x.s && char < x.e) ?? null;
++      }
++      const key = span && i >= 0 ? `${i}:${span.s}:${window.innerWidth}` : "";
++      if (key !== at) {
++        at = key;
++        setWash(span && textEl ? lineBoxes(textEl, span) : []);
++      }
++      raf = requestAnimationFrame(loop);
++    };
++    raf = requestAnimationFrame(loop);
++    return () => {
++      cancelAnimationFrame(raf);
++      light(null);
++    };
++  }, [src]);
++
++  if (typeof document === "undefined" || !wash.length) return null;
++  return createPortal(
++    <div aria-hidden className="pointer-events-none absolute left-0 top-0 z-[5] h-0 w-0">
++      {wash.map((b, i) => (
++        <div key={i} className="verse-ghost absolute rounded-[5px]" style={{ left: b.left - 3, top: b.top, width: b.right - b.left + 6, height: b.bottom - b.top }} />
++      ))}
++    </div>,
++    document.body,
++  );
++}
++
+ /** Lights the paragraph being read, washes its sentence, and keeps it at the reading place. */
+ function ListenFollow({ id }: { id: string }) {
+   const timings = useRef<ListenTimings | null>(null);
+diff --git a/components/ui/icons/Voice.tsx b/components/ui/icons/Voice.tsx
+new file mode 100644
+index 00000000..61b2d3c5
+--- /dev/null
++++ b/components/ui/icons/Voice.tsx
+@@ -0,0 +1,33 @@
++import type { SVGProps } from "react";
++
++/**
++ * A voice: a head and shoulders with the sound of speaking before it, for the
++ * player's Voice row and sheet (1.9, build 95 note 25, the phone's own
++ * voices). Drawn in the stroke of the rest of the set, beside the Sound and
++ * Timer marks of the same sheet, and like them it does not turn in a
++ * right-to-left language. Inherits `currentColor`.
++ */
++export function Voice({
++  size = 20,
++  ...props
++}: SVGProps<SVGSVGElement> & { size?: number }) {
++  return (
++    <svg
++      width={size}
++      height={size}
++      viewBox="0 0 24 24"
++      fill="none"
++      stroke="currentColor"
++      strokeWidth={1.8}
++      strokeLinecap="round"
++      strokeLinejoin="round"
++      aria-hidden="true"
++      {...props}
++    >
++      <circle cx="9" cy="8.2" r="3.4" />
++      <path d="M3 20.2c0-3.4 2.7-5.8 6-5.8s6 2.4 6 5.8" />
++      <path d="M15.6 6a3.6 3.6 0 0 1 0 4.6" />
++      <path d="M18.4 3.6a7.2 7.2 0 0 1 0 9.4" />
++    </svg>
++  );
++}
+diff --git a/lib/bible/__tests__/readerDock.test.ts b/lib/bible/__tests__/readerDock.test.ts
+index 4b5f15a9..faa7327d 100644
+--- a/lib/bible/__tests__/readerDock.test.ts
++++ b/lib/bible/__tests__/readerDock.test.ts
+@@ -85,12 +85,14 @@ describe("the dock", () => {
+   });
+ 
+   it("offers Listen in Speed's place where this chapter has a reading that is not the one loaded", () => {
+-    expect(DOCK).toContain("const listenHere = reads && listen && !hereLoaded;");
++    // The pill's own rule (its reads): the English with its recording, every chapter where the device can speak.
++    expect(DOCK).toContain("const listenHere = listen && !hereLoaded;");
+     // Known by the chapter the loaded recording reads, whichever address it
+     // has: streamed, or saved to the phone while it played.
+     expect(DOCK).toContain("const loaded = readingOfSrc(audio.src);");
+-    expect(DOCK).toContain("const hereLoaded = loaded?.book === slug && loaded.chapter === chapter;");
+-    expect(DOCK).toContain("await startReading(slug, chapter, `${bookName} ${chapter}`, t);");
++    expect(DOCK).toMatch(/const hereLoaded =\s*\(!bible && loaded\?\.book === slug && loaded\.chapter === chapter\) \|\|/);
++    // Read in the reader's voice for the chapter, in the Bible the page shows it in (1.9, build 95 note 25).
++    expect(DOCK).toContain("await listenToChapter({ book: slug, chapter, title: `${bookName} ${chapter}`, t, bible });");
+   });
+ 
+   // Updates 15's finding (2026-11-13): with something playing, the dock offered
+@@ -99,7 +101,8 @@ describe("the dock", () => {
+   // stands in for offers none. What a reader would notice: Listen on a Russian
+   // page starting an English voice.
+   it("keeps the pill's rule for Listen: none over a page the English reading does not read", () => {
+-    expect(PILL).toMatch(/<ReaderDock\s+slug=\{slug\}\s+chapter=\{chapter\}\s+bookName=\{bookName\}\s+listen=\{listen\}/);
++    // From the voices (1.9, build 95 note 25): a downloaded Bible's page is read in the phone's voice, never the English over it.
++    expect(PILL).toMatch(/<ReaderDock\s+slug=\{slug\}\s+chapter=\{chapter\}\s+bookName=\{bookName\}\s+listen=\{reads\}\s+bible=\{bible\}/);
+     expect(DOCK).toMatch(/export function ReaderDock\(\{\s*slug,\s*chapter,\s*bookName,\s*listen = true,/);
+     expect(DOCK).toMatch(/\{listenHere \? \(\s*<button/);
+   });
+diff --git a/lib/bible/__tests__/readerScreen.test.ts b/lib/bible/__tests__/readerScreen.test.ts
+index eac34825..c19e0727 100644
+--- a/lib/bible/__tests__/readerScreen.test.ts
++++ b/lib/bible/__tests__/readerScreen.test.ts
+@@ -353,21 +353,22 @@ describe("the floating pill, with Listen", () => {
+     expect(pill).toContain("min-w-0 max-w-full");
+     // Not over a downloaded Bible, nor over a licensed translation on the website, as the toolbar has it
+     // (Updates 15's finding: the pill offered the English reading over the NIV's words at a phone's width).
+-    expect(code(SCREEN)).toMatch(/<MobileChapterPill\s+slug=\{slug\}\s+chapter=\{chapter\}\s+totalVerses=\{verses\}\s+listen=\{!downloaded && !usingLicensed\}/);
++    expect(code(SCREEN)).toMatch(/<MobileChapterPill\s+slug=\{slug\}\s+chapter=\{chapter\}\s+totalVerses=\{verses\}\s+listen=\{listens\}\s+bible=\{downloaded\?\.bible \?\? null\}/);
++    expect(code(SCREEN)).toContain("const listens = !usingLicensed && !(downloaded?.text.state === \"ready\" && downloaded.text.page.elsewhere);");
+   });
+ 
+   it("ends in Listen, after the sound button, only where the chapter has a reading", () => {
+-    // Listen reads the English aloud: a chapter shown in a downloaded Bible has none (1.9).
+-    expect(pill).toContain("const reads = useHasReadAloud(slug, chapter) && listen;");
++    // The English where it has its recording, and every chapter, the English or a downloaded Bible, where the device can speak (1.9, build 95 note 25).
++    expect(pill).toContain("const reads = listen && (bible ? speaks : recorded || speaks);");
+     // Its word gives way where the name needs the room (lib/bible/__tests__/dockNamesWhole.test.ts).
+-    expect(pill).toMatch(/<AmbienceButton variant="pill" \/>\s*\{reads \? <ReadAloudPillButton book=\{slug\} chapter=\{chapter\} title=\{`\$\{bookName\} \$\{chapter\}`\} wordGivesWay=\{fit === 1\} \/> : null\}\s*<\/span>/);
++    expect(pill).toMatch(/<AmbienceButton variant="pill" \/>\s*\{reads \? <ReadAloudPillButton book=\{slug\} chapter=\{chapter\} title=\{`\$\{bookName\} \$\{chapter\}`\} wordGivesWay=\{fit === 1\} bible=\{bible\} \/> : null\}\s*<\/span>/);
+     const read = code("components/bible/ReadAloud.tsx");
+     const button = read.slice(read.indexOf("export function ReadAloudPillButton"), read.indexOf("export function ReadAloudFollow"));
+     // No reading, no button: never a dead one.
+-    expect(button).toContain("const available = useHasReadAloud(book, chapter);");
++    expect(button).toContain("const available = useListens(book, chapter, bible);");
+     expect(button).toContain("if (!available) return null;");
+     // The same reading as the toolbar's Listen, played and paused through the one player.
+-    expect(button).toContain("await startReading(book, chapter, title, t);");
++    expect(button).toContain("await listenToChapter({ book, chapter, title, t, bible });");
+     expect(button).toMatch(/if \(playing\) pause\(\);\s*else play\(\);/);
+     expect(button).toContain('const word = playing ? t("readAloud.pause") : t("readAloud.listen");');
+     expect(button).toContain("aria-label={word}");
+@@ -375,11 +376,11 @@ describe("the floating pill, with Listen", () => {
+     expect(button).toMatch(/className="reader-lit [^"]*\bbg-paper\b[^"]*\btext-night\b/);
+     expect(button).toMatch(/<span aria-hidden className=\{cn\("max-\[390px\]:hidden", wordGivesWay && "hidden"\)\}>\s*\{word\}/);
+     // The verse being read is lit by the follower the screen already mounts.
+-    expect(code(SCREEN)).toContain("<ReadAloudFollow book={slug} chapter={chapter} />");
++    expect(code(SCREEN)).toContain("<ReadAloudFollow book={slug} chapter={chapter} bible={downloaded?.bible ?? null} />");
+     // On the computer Listen joins the toolbar, as the reader's own pill.
+     const toolbar = code(SCREEN).slice(code(SCREEN).indexOf('cn("hidden md:block native-md-hidden"'), code(SCREEN).indexOf("<RestoreTranslation"));
+     // Not over a chapter shown in a downloaded Bible, which has no reading (1.9).
+-    expect(toolbar).toMatch(/\{!usingLicensed && !downloaded \? <ListenButton book=\{slug\} chapter=\{chapter\} bookName=\{book\.name\} \/> : null\}\s*<AmbienceButton variant="toolbar" \/>/);
++    expect(toolbar).toMatch(/\{listens \? <ListenButton book=\{slug\} chapter=\{chapter\} bookName=\{book\.name\} bible=\{downloaded\?\.bible \?\? null\} \/> : null\}\s*<AmbienceButton variant="toolbar" \/>/);
+     expect(read).toMatch(/<ReaderPill onClick=\{start\}/);
+   });
+ 
+diff --git a/lib/i18n/messages/ar.json b/lib/i18n/messages/ar.json
+index eb458ebb..5732f806 100644
+--- a/lib/i18n/messages/ar.json
++++ b/lib/i18n/messages/ar.json
+@@ -5239,6 +5239,16 @@
+   "player.option.sleep": "مؤقّت الإيقاف",
+   "player.option.read": "اقرأ",
+   "player.read": "اقرأ",
++  "player.voice": "الصوت",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "صوت القراءة في Purify",
++  "player.voice.numbered": "الصوت {n}",
++  "player.voice.hear": "استمع",
++  "player.voice.hearName": "استمع إلى {name}",
++  "player.voice.gone": "الصوت الذي اخترته لم يعد على هذا الهاتف، لذلك يقرأ {name}.",
++  "player.voice.none": "لا يوجد على هذا الهاتف صوت للغة {language} بعد.",
++  "player.voice.noneHow": "يمكن إضافة صوت من إعدادات النطق في الهاتف.",
++  "player.voice.phoneNote": "أصوات هاتفك نفسه تقرأ بلا اتصال.",
+   "chant.button": "الصلاة مع الترتيل",
+   "chant.ask.title": "هل تصلّي مع الترتيل؟",
+   "chant.ask.body": "يُعزف بهدوء أثناء صلاتك.",
+diff --git a/lib/i18n/messages/bg.json b/lib/i18n/messages/bg.json
+index c615d6d7..56fd699b 100644
+--- a/lib/i18n/messages/bg.json
++++ b/lib/i18n/messages/bg.json
+@@ -4950,6 +4950,16 @@
+   "player.option.sleep": "Таймер",
+   "player.option.read": "Чети",
+   "player.read": "Чети",
++  "player.voice": "Глас",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "Гласът за четене на Purify",
++  "player.voice.numbered": "Глас {n}",
++  "player.voice.hear": "Чуйте",
++  "player.voice.hearName": "Чуйте {name}",
++  "player.voice.gone": "Избраният глас вече не е на този телефон, затова чете {name}.",
++  "player.voice.none": "Този телефон още няма глас за {language}.",
++  "player.voice.noneHow": "Глас може да се добави в настройките за реч на телефона.",
++  "player.voice.phoneNote": "Гласовете на самия телефон четат без връзка.",
+   "chant.button": "Молитва с песнопение",
+   "chant.ask.title": "Молитва с песнопение?",
+   "chant.ask.body": "Звучи тихо, докато се молите.",
+diff --git a/lib/i18n/messages/de.json b/lib/i18n/messages/de.json
+index 70836afe..e21460f6 100644
+--- a/lib/i18n/messages/de.json
++++ b/lib/i18n/messages/de.json
+@@ -4950,6 +4950,16 @@
+   "player.option.sleep": "Timer",
+   "player.option.read": "Lesen",
+   "player.read": "Lesen",
++  "player.voice": "Stimme",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "Die Vorlesestimme von Purify",
++  "player.voice.numbered": "Stimme {n}",
++  "player.voice.hear": "Anhören",
++  "player.voice.hearName": "{name} anhören",
++  "player.voice.gone": "Die gewählte Stimme ist nicht mehr auf diesem Telefon, daher liest {name}.",
++  "player.voice.none": "Dieses Telefon hat noch keine Stimme für {language}.",
++  "player.voice.noneHow": "Eine Stimme lässt sich in den Spracheinstellungen des Telefons hinzufügen.",
++  "player.voice.phoneNote": "Die eigenen Stimmen des Telefons lesen ohne Verbindung.",
+   "chant.button": "Mit Gesang beten",
+   "chant.ask.title": "Mit Gesang beten?",
+   "chant.ask.body": "Leise im Hintergrund, während Sie beten.",
+diff --git a/lib/i18n/messages/el.json b/lib/i18n/messages/el.json
+index bf490ce6..d825e62a 100644
+--- a/lib/i18n/messages/el.json
++++ b/lib/i18n/messages/el.json
+@@ -4950,6 +4950,16 @@
+   "player.option.sleep": "Ύπνος",
+   "player.option.read": "Ανάγνωση",
+   "player.read": "Ανάγνωση",
++  "player.voice": "Φωνή",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "Η φωνή ανάγνωσης του Purify",
++  "player.voice.numbered": "Φωνή {n}",
++  "player.voice.hear": "Ακρόαση",
++  "player.voice.hearName": "Ακρόαση: {name}",
++  "player.voice.gone": "Η φωνή που επιλέξατε δεν υπάρχει πια σε αυτό το τηλέφωνο, οπότε διαβάζει η {name}.",
++  "player.voice.none": "Αυτό το τηλέφωνο δεν έχει ακόμη φωνή για τη γλώσσα: {language}.",
++  "player.voice.noneHow": "Μπορείτε να προσθέσετε φωνή στις ρυθμίσεις ομιλίας του τηλεφώνου.",
++  "player.voice.phoneNote": "Οι φωνές του ίδιου του τηλεφώνου διαβάζουν χωρίς σύνδεση.",
+   "chant.button": "Προσευχή με ψαλμωδία",
+   "chant.ask.title": "Προσευχή με ψαλμωδία;",
+   "chant.ask.body": "Ακούγεται απαλά όσο προσεύχεστε.",
+diff --git a/lib/i18n/messages/en.json b/lib/i18n/messages/en.json
+index 332ab7bd..3436b2bb 100644
+--- a/lib/i18n/messages/en.json
++++ b/lib/i18n/messages/en.json
+@@ -4978,6 +4978,16 @@
+   "player.option.sleep": "Sleep timer",
+   "player.option.read": "Read",
+   "player.read": "Read",
++  "player.voice": "Voice",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "Purify's reading voice",
++  "player.voice.numbered": "Voice {n}",
++  "player.voice.hear": "Hear it",
++  "player.voice.hearName": "Hear {name}",
++  "player.voice.gone": "The voice you chose is no longer on this phone, so {name} reads.",
++  "player.voice.none": "This phone has no voice for {language} yet.",
++  "player.voice.noneHow": "One can be added in the phone's speech settings.",
++  "player.voice.phoneNote": "Your phone's own voices read without a connection.",
+   "dictionary.eyebrow": "Words of the Church",
+   "dictionary.title": "Orthodox dictionary",
+   "dictionary.intro": "The words you will meet in church and in Purify, each said plainly in a sentence or two.",
+diff --git a/lib/i18n/messages/es.json b/lib/i18n/messages/es.json
+index 1c1969c5..bcc58884 100644
+--- a/lib/i18n/messages/es.json
++++ b/lib/i18n/messages/es.json
+@@ -4960,6 +4960,16 @@
+   "player.option.sleep": "Dormir",
+   "player.option.read": "Leer",
+   "player.read": "Leer",
++  "player.voice": "Voz",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "La voz de lectura de Purify",
++  "player.voice.numbered": "Voz {n}",
++  "player.voice.hear": "Escuchar",
++  "player.voice.hearName": "Escuchar {name}",
++  "player.voice.gone": "La voz elegida ya no está en este teléfono, así que lee {name}.",
++  "player.voice.none": "Este teléfono aún no tiene una voz en {language}.",
++  "player.voice.noneHow": "Se puede añadir una en los ajustes de voz del teléfono.",
++  "player.voice.phoneNote": "Las voces del propio teléfono leen sin conexión.",
+   "chant.button": "Orar con canto",
+   "chant.ask.title": "¿Orar con canto?",
+   "chant.ask.body": "Suena suave mientras oras.",
+diff --git a/lib/i18n/messages/fil.json b/lib/i18n/messages/fil.json
+index c995072a..180c0531 100644
+--- a/lib/i18n/messages/fil.json
++++ b/lib/i18n/messages/fil.json
+@@ -4950,6 +4950,16 @@
+   "player.option.sleep": "Sleep timer",
+   "player.option.read": "Basahin",
+   "player.read": "Basahin",
++  "player.voice": "Boses",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "Ang boses na pambasa ng Purify",
++  "player.voice.numbered": "Boses {n}",
++  "player.voice.hear": "Pakinggan",
++  "player.voice.hearName": "Pakinggan ang {name}",
++  "player.voice.gone": "Wala na sa teleponong ito ang boses na pinili mo, kaya {name} ang nagbabasa.",
++  "player.voice.none": "Wala pang boses para sa {language} ang teleponong ito.",
++  "player.voice.noneHow": "Maaari itong idagdag sa mga setting ng pananalita ng telepono.",
++  "player.voice.phoneNote": "Nagbabasa ang sariling mga boses ng telepono kahit walang koneksyon.",
+   "chant.button": "Manalangin nang may awit",
+   "chant.ask.title": "Manalangin nang may awit?",
+   "chant.ask.body": "Mahinang tumutugtog habang nananalangin ka.",
+diff --git a/lib/i18n/messages/fr.json b/lib/i18n/messages/fr.json
+index 5060bcc2..30cfd41a 100644
+--- a/lib/i18n/messages/fr.json
++++ b/lib/i18n/messages/fr.json
+@@ -4978,6 +4978,16 @@
+   "player.option.sleep": "Minuterie de veille",
+   "player.option.read": "Lire",
+   "player.read": "Lire",
++  "player.voice": "Voix",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "La voix de lecture de Purify",
++  "player.voice.numbered": "Voix {n}",
++  "player.voice.hear": "Écouter",
++  "player.voice.hearName": "Écouter {name}",
++  "player.voice.gone": "La voix choisie n'est plus sur ce téléphone : c'est {name} qui lit.",
++  "player.voice.none": "Ce téléphone n'a pas encore de voix en {language}.",
++  "player.voice.noneHow": "Une voix peut être ajoutée dans les réglages de synthèse vocale du téléphone.",
++  "player.voice.phoneNote": "Les voix du téléphone lisent sans connexion.",
+   "chant.button": "Prier avec le chant",
+   "chant.ask.title": "Prier avec le chant ?",
+   "chant.ask.body": "En douceur, pendant que vous priez.",
+diff --git a/lib/i18n/messages/hu.json b/lib/i18n/messages/hu.json
+index 9bcb68f2..a47f9e4e 100644
+--- a/lib/i18n/messages/hu.json
++++ b/lib/i18n/messages/hu.json
+@@ -4950,6 +4950,16 @@
+   "player.option.sleep": "Elalvási időzítő",
+   "player.option.read": "Olvasás",
+   "player.read": "Olvasás",
++  "player.voice": "Hang",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "A Purify felolvasó hangja",
++  "player.voice.numbered": "{n}. hang",
++  "player.voice.hear": "Meghallgatás",
++  "player.voice.hearName": "{name} meghallgatása",
++  "player.voice.gone": "A választott hang már nincs ezen a telefonon, ezért {name} olvas.",
++  "player.voice.none": "Ezen a telefonon még nincs hang ehhez a nyelvhez: {language}.",
++  "player.voice.noneHow": "Hangot a telefon beszédbeállításaiban lehet hozzáadni.",
++  "player.voice.phoneNote": "A telefon saját hangjai kapcsolat nélkül is olvasnak.",
+   "chant.button": "Imádság énekkel",
+   "chant.ask.title": "Imádság énekkel?",
+   "chant.ask.body": "Halkan szól, amíg imádkozik.",
+diff --git a/lib/i18n/messages/id.json b/lib/i18n/messages/id.json
+index a442c5db..8a327461 100644
+--- a/lib/i18n/messages/id.json
++++ b/lib/i18n/messages/id.json
+@@ -4947,6 +4947,16 @@
+   "player.option.sleep": "Pengatur waktu tidur",
+   "player.option.read": "Baca",
+   "player.read": "Baca",
++  "player.voice": "Suara",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "Suara pembaca Purify",
++  "player.voice.numbered": "Suara {n}",
++  "player.voice.hear": "Dengarkan",
++  "player.voice.hearName": "Dengarkan {name}",
++  "player.voice.gone": "Suara yang Anda pilih sudah tidak ada di ponsel ini, jadi {name} yang membaca.",
++  "player.voice.none": "Ponsel ini belum memiliki suara untuk {language}.",
++  "player.voice.noneHow": "Suara dapat ditambahkan di pengaturan ucapan ponsel.",
++  "player.voice.phoneNote": "Suara bawaan ponsel membaca tanpa koneksi.",
+   "chant.button": "Berdoa dengan kidung",
+   "chant.ask.title": "Berdoa dengan kidung?",
+   "chant.ask.body": "Diputar lembut selama Anda berdoa.",
+diff --git a/lib/i18n/messages/it.json b/lib/i18n/messages/it.json
+index e4a11cab..3b0de4c3 100644
+--- a/lib/i18n/messages/it.json
++++ b/lib/i18n/messages/it.json
+@@ -4955,6 +4955,16 @@
+   "player.option.sleep": "Timer",
+   "player.option.read": "Leggi",
+   "player.read": "Leggi",
++  "player.voice": "Voce",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "La voce di lettura di Purify",
++  "player.voice.numbered": "Voce {n}",
++  "player.voice.hear": "Ascolta",
++  "player.voice.hearName": "Ascolta {name}",
++  "player.voice.gone": "La voce scelta non è più su questo telefono, quindi legge {name}.",
++  "player.voice.none": "Su questo telefono non c'è ancora una voce in {language}.",
++  "player.voice.noneHow": "Si può aggiungere nelle impostazioni della sintesi vocale del telefono.",
++  "player.voice.phoneNote": "Le voci del telefono leggono senza connessione.",
+   "chant.button": "Pregare con il canto",
+   "chant.ask.title": "Pregare con il canto?",
+   "chant.ask.body": "Suona piano mentre preghi.",
+diff --git a/lib/i18n/messages/ka.json b/lib/i18n/messages/ka.json
+index b93fa563..20e616aa 100644
+--- a/lib/i18n/messages/ka.json
++++ b/lib/i18n/messages/ka.json
+@@ -4950,6 +4950,16 @@
+   "player.option.sleep": "ძილის ტაიმერი",
+   "player.option.read": "წაკითხვა",
+   "player.read": "წაკითხვა",
++  "player.voice": "ხმა",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "Purify-ის კითხვის ხმა",
++  "player.voice.numbered": "ხმა {n}",
++  "player.voice.hear": "მოსმენა",
++  "player.voice.hearName": "მოსმენა: {name}",
++  "player.voice.gone": "თქვენ მიერ არჩეული ხმა ამ ტელეფონზე აღარ არის, ამიტომ კითხულობს {name}.",
++  "player.voice.none": "ამ ტელეფონს ჯერ არ აქვს ხმა ამ ენისთვის: {language}.",
++  "player.voice.noneHow": "ხმის დამატება შესაძლებელია ტელეფონის მეტყველების პარამეტრებში.",
++  "player.voice.phoneNote": "ტელეფონის საკუთარი ხმები კავშირის გარეშეც კითხულობს.",
+   "chant.button": "ლოცვა გალობით",
+   "chant.ask.title": "ლოცვა გალობით?",
+   "chant.ask.body": "ჩუმად ჟღერს, სანამ ლოცულობთ.",
+diff --git a/lib/i18n/messages/ne.json b/lib/i18n/messages/ne.json
+index 9c5d5496..52d81276 100644
+--- a/lib/i18n/messages/ne.json
++++ b/lib/i18n/messages/ne.json
+@@ -4950,6 +4950,16 @@
+   "player.option.sleep": "निद्रा टाइमर",
+   "player.option.read": "पढ्नुहोस्",
+   "player.read": "पढ्नुहोस्",
++  "player.voice": "आवाज",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "Purify को पढ्ने आवाज",
++  "player.voice.numbered": "आवाज {n}",
++  "player.voice.hear": "सुन्नुहोस्",
++  "player.voice.hearName": "{name} सुन्नुहोस्",
++  "player.voice.gone": "तपाईंले छान्नुभएको आवाज अब यो फोनमा छैन, त्यसैले {name} ले पढ्छ।",
++  "player.voice.none": "यो फोनमा अझै {language} को आवाज छैन।",
++  "player.voice.noneHow": "फोनको बोली सेटिङमा आवाज थप्न सकिन्छ।",
++  "player.voice.phoneNote": "फोनका आफ्नै आवाजहरूले इन्टरनेट बिना पढ्छन्।",
+   "chant.button": "भजनसहित प्रार्थना",
+   "chant.ask.title": "भजनसहित प्रार्थना?",
+   "chant.ask.body": "तपाईं प्रार्थना गर्दा यो बिस्तारै बज्छ।",
+diff --git a/lib/i18n/messages/pl.json b/lib/i18n/messages/pl.json
+index e9a1536e..ac894915 100644
+--- a/lib/i18n/messages/pl.json
++++ b/lib/i18n/messages/pl.json
+@@ -5108,6 +5108,16 @@
+   "player.option.sleep": "Wyłącznik czasowy",
+   "player.option.read": "Czytaj",
+   "player.read": "Czytaj",
++  "player.voice": "Głos",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "Głos lektora Purify",
++  "player.voice.numbered": "Głos {n}",
++  "player.voice.hear": "Posłuchaj",
++  "player.voice.hearName": "Posłuchaj: {name}",
++  "player.voice.gone": "Wybranego głosu nie ma już na tym telefonie, więc czyta {name}.",
++  "player.voice.none": "Ten telefon nie ma jeszcze głosu dla języka: {language}.",
++  "player.voice.noneHow": "Głos można dodać w ustawieniach mowy telefonu.",
++  "player.voice.phoneNote": "Własne głosy telefonu czytają bez połączenia.",
+   "chant.button": "Modlitwa ze śpiewem",
+   "chant.ask.title": "Modlić się ze śpiewem?",
+   "chant.ask.body": "Gra cicho, gdy się modlisz.",
+diff --git a/lib/i18n/messages/pt.json b/lib/i18n/messages/pt.json
+index 54568032..584b6ba9 100644
+--- a/lib/i18n/messages/pt.json
++++ b/lib/i18n/messages/pt.json
+@@ -4955,6 +4955,16 @@
+   "player.option.sleep": "Dormir",
+   "player.option.read": "Ler",
+   "player.read": "Ler",
++  "player.voice": "Voz",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "A voz de leitura do Purify",
++  "player.voice.numbered": "Voz {n}",
++  "player.voice.hear": "Ouvir",
++  "player.voice.hearName": "Ouvir {name}",
++  "player.voice.gone": "A voz escolhida não está mais neste telefone, então quem lê é {name}.",
++  "player.voice.none": "Este telefone ainda não tem uma voz em {language}.",
++  "player.voice.noneHow": "É possível adicionar uma nas configurações de voz do telefone.",
++  "player.voice.phoneNote": "As vozes do próprio telefone leem sem conexão.",
+   "chant.button": "Orar com cântico",
+   "chant.ask.title": "Orar com cântico?",
+   "chant.ask.body": "Toca baixinho enquanto você ora.",
+diff --git a/lib/i18n/messages/ro.json b/lib/i18n/messages/ro.json
+index 15ee0213..bcb84f0a 100644
+--- a/lib/i18n/messages/ro.json
++++ b/lib/i18n/messages/ro.json
+@@ -5039,6 +5039,16 @@
+   "player.option.sleep": "Somn",
+   "player.option.read": "Citește",
+   "player.read": "Citește",
++  "player.voice": "Voce",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "Vocea de lectură Purify",
++  "player.voice.numbered": "Vocea {n}",
++  "player.voice.hear": "Ascultă",
++  "player.voice.hearName": "Ascultă {name}",
++  "player.voice.gone": "Vocea aleasă nu mai este pe acest telefon, așa că citește {name}.",
++  "player.voice.none": "Acest telefon nu are încă o voce pentru limba: {language}.",
++  "player.voice.noneHow": "O voce se poate adăuga din setările de vorbire ale telefonului.",
++  "player.voice.phoneNote": "Vocile proprii ale telefonului citesc fără conexiune.",
+   "chant.button": "Rugăciune cu cântare",
+   "chant.ask.title": "Rugăciune cu cântare?",
+   "chant.ask.body": "Se aude încet cât vă rugați.",
+diff --git a/lib/i18n/messages/ru.json b/lib/i18n/messages/ru.json
+index 7365ebdd..2885a0c2 100644
+--- a/lib/i18n/messages/ru.json
++++ b/lib/i18n/messages/ru.json
+@@ -5106,6 +5106,16 @@
+   "player.option.sleep": "Таймер сна",
+   "player.option.read": "Читать",
+   "player.read": "Читать",
++  "player.voice": "Голос",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "Голос чтения Purify",
++  "player.voice.numbered": "Голос {n}",
++  "player.voice.hear": "Послушать",
++  "player.voice.hearName": "Послушать: {name}",
++  "player.voice.gone": "Выбранного голоса больше нет на этом телефоне, поэтому читает {name}.",
++  "player.voice.none": "На этом телефоне пока нет голоса для языка: {language}.",
++  "player.voice.noneHow": "Голос можно добавить в настройках синтеза речи телефона.",
++  "player.voice.phoneNote": "Голоса самого телефона читают без подключения к сети.",
+   "chant.button": "Молитва с пением",
+   "chant.ask.title": "Молиться с пением?",
+   "chant.ask.body": "Звучит тихо, пока вы молитесь.",
+diff --git a/lib/i18n/messages/sr.json b/lib/i18n/messages/sr.json
+index 788a8663..44c72b8c 100644
+--- a/lib/i18n/messages/sr.json
++++ b/lib/i18n/messages/sr.json
+@@ -5031,6 +5031,16 @@
+   "player.option.sleep": "Тајмер за спавање",
+   "player.option.read": "Читај",
+   "player.read": "Читај",
++  "player.voice": "Глас",
++  "player.voice.heart": "Харт",
++  "player.voice.heartAbout": "Purify глас за читање",
++  "player.voice.numbered": "Глас {n}",
++  "player.voice.hear": "Послушај",
++  "player.voice.hearName": "Послушај: {name}",
++  "player.voice.gone": "Глас који сте изабрали више није на овом телефону, па чита {name}.",
++  "player.voice.none": "Овај телефон још нема глас за језик: {language}.",
++  "player.voice.noneHow": "Глас се може додати у подешавањима говора на телефону.",
++  "player.voice.phoneNote": "Гласови самог телефона читају без везе.",
+   "chant.button": "Молитва уз појање",
+   "chant.ask.title": "Молитва уз појање?",
+   "chant.ask.body": "Тихо звучи док се молите.",
+diff --git a/lib/i18n/messages/tr.json b/lib/i18n/messages/tr.json
+index 2977203a..1a104a89 100644
+--- a/lib/i18n/messages/tr.json
++++ b/lib/i18n/messages/tr.json
+@@ -4950,6 +4950,16 @@
+   "player.option.sleep": "Uyku",
+   "player.option.read": "Oku",
+   "player.read": "Oku",
++  "player.voice": "Ses",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "Purify okuma sesi",
++  "player.voice.numbered": "Ses {n}",
++  "player.voice.hear": "Dinle",
++  "player.voice.hearName": "Dinle: {name}",
++  "player.voice.gone": "Seçtiğiniz ses artık bu telefonda yok, bu yüzden {name} okuyor.",
++  "player.voice.none": "Bu telefonda henüz şu dil için ses yok: {language}.",
++  "player.voice.noneHow": "Telefonun konuşma ayarlarından ses eklenebilir.",
++  "player.voice.phoneNote": "Telefonun kendi sesleri bağlantı olmadan okur.",
+   "chant.button": "İlahiyle dua",
+   "chant.ask.title": "İlahiyle dua etmek ister misiniz?",
+   "chant.ask.body": "Siz dua ederken usulca çalar.",
+diff --git a/lib/i18n/messages/uk.json b/lib/i18n/messages/uk.json
+index a6114409..fa297f6e 100644
+--- a/lib/i18n/messages/uk.json
++++ b/lib/i18n/messages/uk.json
+@@ -5105,6 +5105,16 @@
+   "player.option.sleep": "Таймер сну",
+   "player.option.read": "Читати",
+   "player.read": "Читати",
++  "player.voice": "Голос",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "Голос читання Purify",
++  "player.voice.numbered": "Голос {n}",
++  "player.voice.hear": "Послухати",
++  "player.voice.hearName": "Послухати: {name}",
++  "player.voice.gone": "Обраного голосу більше немає на цьому телефоні, тож читає {name}.",
++  "player.voice.none": "На цьому телефоні ще немає голосу для мови: {language}.",
++  "player.voice.noneHow": "Голос можна додати в налаштуваннях синтезу мовлення телефону.",
++  "player.voice.phoneNote": "Голоси самого телефону читають без підключення.",
+   "chant.button": "Молитва зі співом",
+   "chant.ask.title": "Молитися зі співом?",
+   "chant.ask.body": "Звучить тихо, поки ви молитеся.",
+diff --git a/lib/i18n/messages/ur.json b/lib/i18n/messages/ur.json
+index baad7593..90625425 100644
+--- a/lib/i18n/messages/ur.json
++++ b/lib/i18n/messages/ur.json
+@@ -4950,6 +4950,16 @@
+   "player.option.sleep": "سلیپ ٹائمر",
+   "player.option.read": "پڑھیں",
+   "player.read": "پڑھیں",
++  "player.voice": "آواز",
++  "player.voice.heart": "Heart",
++  "player.voice.heartAbout": "Purify کی پڑھنے والی آواز",
++  "player.voice.numbered": "آواز {n}",
++  "player.voice.hear": "سنیں",
++  "player.voice.hearName": "{name} سنیں",
++  "player.voice.gone": "آپ کی چنی ہوئی آواز اب اس فون پر نہیں ہے، اس لیے {name} پڑھتی ہے۔",
++  "player.voice.none": "اس فون پر ابھی {language} کے لیے کوئی آواز نہیں ہے۔",
++  "player.voice.noneHow": "فون کی اسپیچ سیٹنگز میں آواز شامل کی جا سکتی ہے۔",
++  "player.voice.phoneNote": "فون کی اپنی آوازیں انٹرنیٹ کے بغیر پڑھتی ہیں۔",
+   "chant.button": "ترتیل کے ساتھ دعا",
+   "chant.ask.title": "ترتیل کے ساتھ دعا؟",
+   "chant.ask.body": "آپ کی دعا کے دوران یہ آہستہ بجتا ہے۔",
+diff --git a/lib/listen/__tests__/recordings.test.ts b/lib/listen/__tests__/recordings.test.ts
+index 0d516d76..054f89fb 100644
+--- a/lib/listen/__tests__/recordings.test.ts
++++ b/lib/listen/__tests__/recordings.test.ts
+@@ -63,10 +63,13 @@ describe("Listen on the pages", () => {
+     expect(read("components/saints/WritingReader.tsx")).toContain('id={listenId("work", saint.slug, content.slug, sec.n)}');
+   });
+ 
+-  it("stands only where the text has a recording: no button that plays nothing", () => {
++  it("stands where the text has a recording or the device can speak it (1.9, build 95 note 25): no button that plays nothing", () => {
+     const here = read("components/reading/ListenHere.tsx");
+-    expect(here).toContain("const available = useHasListen(id);");
++    expect(here).toContain("const recorded = useHasListen(id);");
++    expect(here).toContain("const available = recorded || speaks;");
+     expect(here).toMatch(/if \(!available\) return null;/);
++    // With no voice for the page's language and no recording, a tap says so, and where a voice is added.
++    expect(here).toContain('else if (use.kind === "none") openVoiceSheet({ none: { lang: voiceLang(lang) } });');
+     // The list a build carries starts empty and grows only from checked timings.
+     expect(read("scripts/listen-index.mjs")).toContain("why = timingsFit(batch,");
+     const carried = JSON.parse(read("data/listen/index.json")) as string[];
+diff --git a/lib/listen/speech/__tests__/voiceSheet.test.ts b/lib/listen/speech/__tests__/voiceSheet.test.ts
+new file mode 100644
+index 00000000..4a8f84db
+--- /dev/null
++++ b/lib/listen/speech/__tests__/voiceSheet.test.ts
+@@ -0,0 +1,198 @@
++// The choice of voices, as the reader meets it (1.9, build 95 note 25, his
++// "all recs" of 2026-11-13): a Voice row in the player's •••, beside the sleep
++// timer and Ambience, opening a sheet from the player's own parts; Heart
++// first where the text has its recording, then the phone's voices for the
++// text's language, each with Hear it; choosing one reads what is playing again
++// in it at the verse being read; Listen on every text a voice can read, never
++// the prayers. What a reader would notice if this broke: no way to choose a
++// voice, a sixth mark crowding the player's row in German, the reading
++// starting the chapter again after a change of voice, a Listen on a prayer.
++
++import fs from "node:fs";
++import path from "node:path";
++
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++
++import type { SpeakAsk, SpeechEngine, SpeechEvent } from "@/lib/listen/speech/engine";
++
++const read = (rel: string) => fs.readFileSync(path.resolve(__dirname, "../../../..", rel), "utf8");
++
++describe("the Voice row and sheet", () => {
++  it("stand in the player's •••, between the sleep timer and Ambience, never as a sixth mark under the controls", () => {
++    const more = read("components/player/PlayerMore.tsx");
++    const order = ['t("player.sleep")', 't("player.voice")', 't("ambience.title")'].map((m) => more.indexOf(m));
++    expect(order.every((at) => at > -1)).toBe(true);
++    expect([...order].sort((a, b) => a - b)).toEqual(order);
++    expect(more).toMatch(/icon=\{<Voice size=\{16\} \/>\}\s*label=\{t\("player\.voice"\)\}/);
++    expect(more).toMatch(/onClose\(\);\s*onVoice\(\);/);
++    const player = read("components/player/NowPlayingSheet.tsx");
++    expect(player).toContain("voice={voiceName}");
++    expect(player).toContain("onVoice={() => openVoiceSheet({ overPlayer: true })}");
++    // The five marks under the controls stay five.
++    expect(player).not.toContain('t("player.option.voice")');
++  });
++
++  it("is a sheet over the player, from its own parts, mounted once in the root frame", () => {
++    const sheet = read("components/player/VoiceSheet.tsx");
++    expect(sheet).toContain('layer={sheet.overPlayer ? "over-player" : undefined}');
++    expect(sheet).toContain('import { Check } from "@/components/ui/icons/Check";');
++    expect(sheet).toContain('role="radiogroup"');
++    expect(read("components/layout/RootFrame.tsx")).toContain("<VoiceSheet />");
++    expect(fs.existsSync(path.resolve(__dirname, "../../../../components/ui/icons/Voice.tsx"))).toBe(true);
++  });
++
++  it("lists Heart first, only where the text has its recording, then the phone's voices for its language, each with Hear it", () => {
++    const sheet = read("components/player/VoiceSheet.tsx");
++    const heart = sheet.indexOf("{recorded ? (");
++    const phone = sheet.indexOf("{rows.map((row) => (");
++    expect(heart).toBeGreaterThan(-1);
++    expect(phone).toBeGreaterThan(heart);
++    expect(sheet).toContain("voiceRows(voices, lang, locale,");
++    expect(sheet).toContain("hear={{ label: t(\"player.voice.hearName\", { name: row.name }), word: t(\"player.voice.hear\"), go: () => void hear(row) }}");
++    // Choosing reads what is playing again in that voice; Hear it first pauses the reading.
++    expect(sheet).toContain("await readAgainIn(to, about, t, goOn);");
++    expect(sheet).toMatch(/if \(getAudioSnapshot\(\)\.playing\) pause\(\);/);
++  });
++
++  it("says a chosen voice has gone, and where a voice is added when the phone has none for the language", () => {
++    const sheet = read("components/player/VoiceSheet.tsx");
++    expect(sheet).toContain('t("player.voice.gone", { name: nameOf(checked) })');
++    expect(sheet).toContain('t("player.voice.none", { language: languageName })');
++    expect(sheet).toContain('t("player.voice.noneHow")');
++  });
++
++  it("has its words in all 21 languages, with no em dash", () => {
++    const keys = ["player.voice", "player.voice.heart", "player.voice.heartAbout", "player.voice.numbered", "player.voice.hear", "player.voice.hearName", "player.voice.gone", "player.voice.none", "player.voice.noneHow", "player.voice.phoneNote"];
++    const dir = path.resolve(__dirname, "../../../i18n/messages");
++    const catalogs = fs.readdirSync(dir).filter((f) => f.endsWith(".json"));
++    expect(catalogs).toHaveLength(21);
++    for (const file of catalogs) {
++      const words = JSON.parse(fs.readFileSync(path.join(dir, file), "utf8")) as Record<string, string>;
++      for (const k of keys) {
++        expect(words[k], `${file} ${k}`).toBeTruthy();
++        expect(words[k], `${file} ${k}`).not.toContain("—");
++      }
++      for (const k of ["player.voice.numbered", "player.voice.hearName", "player.voice.gone", "player.voice.none"]) {
++        const want = { "player.voice.numbered": "{n}", "player.voice.hearName": "{name}", "player.voice.gone": "{name}", "player.voice.none": "{language}" }[k]!;
++        expect(words[k], `${file} ${k}`).toContain(want);
++      }
++    }
++  });
++});
++
++describe("Listen on every text a voice can read, never the prayers", () => {
++  it("is drawn on the Old Testament and a downloaded Bible's page where the device can speak", () => {
++    const page = read("components/bible/ReadAloud.tsx");
++    expect(page).toContain("return bible ? speaks : recorded || speaks;");
++    expect(page).toContain("await listenToChapter({ book, chapter, title, t, bible });");
++  });
++
++  it("is never on a prayer's page", () => {
++    const prayers = [path.resolve(__dirname, "../../../../app/(app)/prayers"), path.resolve(__dirname, "../../../../components/prayers")];
++    const files: string[] = [];
++    const walk = (dir: string) => {
++      if (!fs.existsSync(dir)) return;
++      for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
++        const p = path.join(dir, e.name);
++        if (e.isDirectory()) walk(p);
++        else if (/\.tsx?$/.test(e.name)) files.push(p);
++      }
++    };
++    prayers.forEach(walk);
++    expect(files.length).toBeGreaterThan(5);
++    for (const f of files) {
++      const src = fs.readFileSync(f, "utf8");
++      expect(src, f).not.toMatch(/<ListenHere\b|<ListenButton\b|<ReadAloudPillButton\b|speakText\(|listenToChapter\(/);
++    }
++  });
++});
++
++class FakeAudio {
++  src = "";
++  error = null;
++  paused = true;
++  currentTime = 0;
++  duration = NaN;
++  loop = false;
++  volume = 1;
++  preload = "";
++  playbackRate = 1;
++  defaultPlaybackRate = 1;
++  addEventListener() {}
++  removeAttribute(name: string) {
++    if (name === "src") this.src = "";
++  }
++  load() {}
++  play() {
++    this.paused = false;
++    return Promise.resolve();
++  }
++  pause() {
++    this.paused = true;
++  }
++}
++
++describe("choosing another voice while a chapter is read", () => {
++  const asks: SpeakAsk[] = [];
++  const listeners = new Set<(e: SpeechEvent) => void>();
++  const engine: SpeechEngine = {
++    side: "android",
++    voices: async () => [
++      { id: "en-gb-x-gba-local", name: "en-gb-x-gba-local", lang: "en-GB", default: true },
++      { id: "en-us-x-sfg-local", name: "en-us-x-sfg-local", lang: "en-US" },
++    ],
++    speak: async (ask) => {
++      asks.push(ask);
++    },
++    stop: async () => {},
++    preview: async () => {},
++    nowPlaying: async () => {},
++    onEvent: (l) => {
++      listeners.add(l);
++      return () => listeners.delete(l);
++    },
++  };
++
++  beforeEach(() => {
++    asks.length = 0;
++    listeners.clear();
++    vi.useFakeTimers();
++    vi.resetModules();
++    const store = new Map<string, string>();
++    vi.stubGlobal("window", { localStorage: { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v), removeItem: (k: string) => void store.delete(k) } });
++    vi.stubGlobal("navigator", {});
++    vi.stubGlobal("Audio", FakeAudio);
++    vi.doMock("@/lib/listen/speech/engine", async (orig) => ({ ...(await orig<typeof import("@/lib/listen/speech/engine")>()), speechEngine: async () => engine }));
++  });
++  afterEach(() => {
++    vi.useRealTimers();
++    vi.unstubAllGlobals();
++    vi.doUnmock("@/lib/listen/speech/engine");
++  });
++
++  it("reads it again in the new voice from the verse being read, not from the chapter's start", async () => {
++    const { speakText } = await import("@/lib/listen/speech/speak");
++    const { readAgainIn, voiceContextOf } = await import("@/lib/listen/speech/context");
++    const { spokenBibleSrc } = await import("@/lib/listen/speech/spoken");
++    const store = await import("@/lib/prayers/persistentAudioStore");
++    const pieces = [
++      { text: "In the beginning God created the heaven and the earth.", n: 1 },
++      { text: "And the earth was without form, and void.", n: 2 },
++      { text: "And God said, Let there be light: and there was light.", n: 3 },
++    ];
++    const [a, b] = await engine.voices();
++    await speakText({ src: spokenBibleSrc("genesis", 1), pieces, lang: "en", voice: a, title: "Genesis 1" });
++    const first = asks[asks.length - 1];
++    expect(first.voice).toBe(a.id);
++    // The phone begins verse 3.
++    for (const l of listeners) l({ type: "start", token: first.token, index: 2 });
++    const about = voiceContextOf(store.getAudioSnapshot().src)!;
++    expect(about).toMatchObject({ kind: "chapter", book: "genesis", chapter: 1, lang: "en" });
++    await readAgainIn(b, about, (k) => k, true);
++    const again = asks[asks.length - 1];
++    expect(again.voice).toBe(b.id);
++    expect(again.from).toBe(2);
++    expect(again.pieces).toEqual(pieces.map((p) => p.text));
++    expect(store.getAudioSnapshot().playing).toBe(true);
++  });
++});
+diff --git a/lib/player/__tests__/steps.test.ts b/lib/player/__tests__/steps.test.ts
+index b23a88cc..7aa4f1da 100644
+--- a/lib/player/__tests__/steps.test.ts
++++ b/lib/player/__tests__/steps.test.ts
+@@ -69,8 +69,13 @@ describe("previous and next, for the Bible read aloud", () => {
+     expect(steps).toContain("chapterSteps(playing.book, playing.chapter, hasReadAloud)");
+     expect(steps).toContain("void startReading(to.book, to.chapter,");
+     expect(read("lib/readAloud/play.ts")).toContain("rate: readSpeed(),");
+-    // Listen and the reading that rolls on use the same one.
+-    expect(read("components/bible/ReadAloud.tsx")).toContain('import { startReading } from "@/lib/readAloud/play";');
++    // Listen and the reading that rolls on use the same one: the reader's
++    // voice for the chapter, Heart through startReading (1.9, build 95 note 25).
++    expect(read("components/bible/ReadAloud.tsx")).toContain('import { listenToChapter } from "@/lib/readAloud/play";');
++    expect(read("lib/readAloud/play.ts")).toMatch(/if \(use\.kind === "heart"\) \{\s*await startReading\(o\.book, o\.chapter, o\.title, o\.t\);/);
++    // A chapter the phone's voice reads steps to every chapter either side, by opening its page, which begins it.
++    expect(steps).toContain("chapterSteps(playing.book, playing.chapter, () => true)");
++    expect(steps).toContain("if (askToListenAt(to.book, to.chapter)) router.push(`/bible/${to.book}/${to.chapter}`);");
+   });
+ });
+ 
+diff --git a/lib/player/__tests__/views.test.ts b/lib/player/__tests__/views.test.ts
+index a1d8f656..c6e8afac 100644
+--- a/lib/player/__tests__/views.test.ts
++++ b/lib/player/__tests__/views.test.ts
+@@ -72,7 +72,9 @@ describe("Now Playing: the cover and the words, never merged", () => {
+     expect(top).toContain("<More size={20} />");
+     expect(top).not.toContain('<span className="h-11 w-11 shrink-0" aria-hidden />');
+     // A sheet over the player: Escape and the back button are its own.
+-    expect(src).toContain("const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer);");
++    expect(src).toContain(
++      "const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer) || (voiceSheet.open && voiceSheet.overPlayer);",
++    );
+   });
+ 
+   it("holds in ••• what the player does that has no button in that corner, and Share", () => {
+diff --git a/lib/readAloud/__tests__/savedWhilePlaying.test.ts b/lib/readAloud/__tests__/savedWhilePlaying.test.ts
+index efddf724..09b83fc8 100644
+--- a/lib/readAloud/__tests__/savedWhilePlaying.test.ts
++++ b/lib/readAloud/__tests__/savedWhilePlaying.test.ts
+@@ -28,7 +28,8 @@ describe("the chapter playing", () => {
+     const page = read("components/bible/ReadAloud.tsx");
+     const hook = page.slice(page.indexOf("function useThisChapter("), page.indexOf("export function ListenButton"));
+     expect(hook).toContain("const reading = readingOfSrc(audio.src);");
+-    expect(hook).toContain("const loaded = reading?.book === book && reading.chapter === chapter;");
++    // Or the phone's voice reading it, in the Bible the page shows (1.9, build 95 note 25).
++    expect(hook).toContain("const loaded = spoken || (!bible && reading?.book === book && reading.chapter === chapter);");
+     expect(hook).not.toMatch(/audio\.src\.endsWith/);
+ 
+     const dock = read("components/bible/ReaderDock.tsx");
+-- 
+2.43.0
+

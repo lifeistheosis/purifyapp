@@ -1,0 +1,1748 @@
+From 5442c02d0cc40650a4fd35182676c383802290cc Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 13 Nov 2026 15:13:17 +0000
+Subject: [PATCH 1/3] Voices: a phone call, Siri or another app taking the
+ sound pauses the voice at its word
+
+Build 95 note 25, the arbiter's brief for Updates 17, item 4. Nothing a reader
+sees yet (no screen speaks with the phone's voice until the picker is his yes),
+but the engine now behaves as the recordings already do.
+
+- Android (PurifySpeechPlugin.java): while a text is read the app holds the
+  audio focus for media speech, as a player does. A moment's loss (a call, the
+  assistant, an alarm) stops the voice and says so; the focus coming back says
+  the reading may go on. A loss for good (another app keeps the sound) lets the
+  focus go and leaves the reading paused for the reader. Not over a call: a
+  reading asked for during one waits, paused. The focus is let go when the
+  reader stops it and when the reading ends. A sound that only asks the others
+  to go quieter (a notification, a navigation prompt) is left to the phone. The
+  ambience is the web view's Web Audio, which holds no focus, so it goes on
+  under the voice as before.
+- iPhone (PurifySpeechPlugin.swift): the audio session's interruption stops a
+  reading at its word and says so; its end says whether the phone lets the
+  reading go on (shouldResume, a call or Siri over).
+- The session (lib/listen/speech/session.ts) pauses the player at the word on
+  "interruption", without asking the phone to stop again, and takes it up there
+  when the phone gives the sound back and says it may; otherwise it waits for
+  Play. A reader's own Pause during the call wins, and lets the claim go.
+
+Tests that fail on the old code: 3 of 5 new in session.test.ts; the plugin
+contract in nativeSpeech.test.ts now holds both halves to it (it held Android to
+asking no focus, which is what let the voice talk on through a call). The Java
+was compiled here against stand-ins for the Android and Capacitor classes; the
+Swift is proved by the iOS build, and both by the phone walk.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01VuYTwZshCrYvNwoUyAX6F4
+---
+ .../purify/speech/PurifySpeechPlugin.java     | 157 +++++++++++++++++-
+ ios/App/App/PurifySpeechPlugin.swift          |  45 +++++
+ .../speech/__tests__/nativeSpeech.test.ts     |  38 ++++-
+ lib/listen/speech/__tests__/session.test.ts   |  69 ++++++++
+ lib/listen/speech/engine.ts                   |  10 +-
+ lib/listen/speech/session.ts                  |  36 +++-
+ 6 files changed, 342 insertions(+), 13 deletions(-)
+
+diff --git a/android/app/src/main/java/net/purifyapp/purify/speech/PurifySpeechPlugin.java b/android/app/src/main/java/net/purifyapp/purify/speech/PurifySpeechPlugin.java
+index 44d89dbc..7ee573cc 100644
+--- a/android/app/src/main/java/net/purifyapp/purify/speech/PurifySpeechPlugin.java
++++ b/android/app/src/main/java/net/purifyapp/purify/speech/PurifySpeechPlugin.java
+@@ -1,6 +1,10 @@
+ package net.purifyapp.purify.speech;
+ 
++import android.content.Context;
+ import android.media.AudioAttributes;
++import android.media.AudioFocusRequest;
++import android.media.AudioManager;
++import android.os.Build;
+ import android.os.Bundle;
+ import android.speech.tts.TextToSpeech;
+ import android.speech.tts.UtteranceProgressListener;
+@@ -33,8 +37,16 @@ import java.util.Set;
+  * answers (token) and the piece (index), and a word's letters are counted in
+  * the piece as it was given, so the player lights the very word said.
+  *
+- * The phone's speech service is the engine's own process; this asks for no
+- * audio focus, so the ambience the web view plays goes on under the voice
++ * The phone's speech service is the engine's own process. While a text is
++ * read the app holds the phone's audio focus for media speech, as a player
++ * does, so a phone call, the assistant, an alarm or another app taking the
++ * sound stops the voice at its word and says so ("interruption"), and the
++ * player shows it paused there; when a call or the assistant is over the
++ * phone gives the sound back and the reading goes on, as a recording does in
++ * the web view. Another app that keeps the sound leaves the reading paused for
++ * the reader. A sound that only asks the others to go quieter for a moment (a
++ * notification, a navigation prompt) is left to the phone. The ambience is the
++ * web view's own Web Audio, which holds no focus, so it goes on under the voice
+  * and the player's balance lowers it, as it does under a recording.
+  */
+ @CapacitorPlugin(name = "PurifySpeech")
+@@ -45,6 +57,22 @@ public class PurifySpeechPlugin extends Plugin {
+     private boolean failed = false;
+     private final List<Runnable> waiting = new ArrayList<>();
+ 
++    /** How the voice sounds to the phone: media, and speech. */
++    private static final AudioAttributes SPEECH = new AudioAttributes.Builder()
++            .setUsage(AudioAttributes.USAGE_MEDIA)
++            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
++            .build();
++    /** A text is being read: its pieces are queued and the last is not done. */
++    private boolean reading = false;
++    /** The ask being read (its token), so a report from one stopped a moment ago lets nothing go. */
++    private int current = -1;
++    /** The app holds the phone's audio focus. */
++    private volatile boolean focused = false;
++    /** The phone took the sound for a moment (a call, the assistant) while a text was read: say when it gives it back. */
++    private boolean lostForAMoment = false;
++    private AudioFocusRequest focusRequest;
++    private final AudioManager.OnAudioFocusChangeListener onFocus = this::focusChanged;
++
+     /** Run once the phone's speech is ready; a phone with none rejects. */
+     private synchronized void withSpeech(PluginCall call, Runnable action) {
+         if (failed) {
+@@ -66,10 +94,7 @@ public class PurifySpeechPlugin extends Plugin {
+                     ready = status == TextToSpeech.SUCCESS;
+                     failed = !ready;
+                     if (ready) {
+-                        tts.setAudioAttributes(new AudioAttributes.Builder()
+-                                .setUsage(AudioAttributes.USAGE_MEDIA)
+-                                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+-                                .build());
++                        tts.setAudioAttributes(SPEECH);
+                         tts.setOnUtteranceProgressListener(progress);
+                     }
+                     now = new ArrayList<>(waiting);
+@@ -102,13 +127,18 @@ public class PurifySpeechPlugin extends Plugin {
+             String[] p = parts(id);
+             if (p == null || !"1".equals(p[4])) return;
+             send("done", p, -1, -1);
+-            if (Integer.parseInt(p[1]) == Integer.parseInt(p[5]) - 1) send("end", p, -1, -1);
++            if (Integer.parseInt(p[1]) == Integer.parseInt(p[5]) - 1) {
++                send("end", p, -1, -1);
++                finishedReading(Integer.parseInt(p[0]));
++            }
+         }
+ 
+         @Override
+         public void onError(String id) {
+             String[] p = parts(id);
+-            if (p != null) send("error", p, -1, -1);
++            if (p == null) return;
++            send("error", p, -1, -1);
++            finishedReading(Integer.parseInt(p[0]));
+         }
+ 
+         @Override
+@@ -140,6 +170,96 @@ public class PurifySpeechPlugin extends Plugin {
+         notifyListeners("speech", e);
+     }
+ 
++    /** The phone took the sound, or gave it back. Called on the main thread. */
++    private void focusChanged(int change) {
++        if (change == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
++            // A call, the assistant, an alarm: stop at the word, and keep the claim to hear when it is over.
++            synchronized (this) {
++                if (!reading) return;
++                reading = false;
++                lostForAMoment = true;
++                if (tts != null && ready) tts.stop();
++            }
++            interruption(true, false);
++        } else if (change == AudioManager.AUDIOFOCUS_LOSS) {
++            // Another app has the sound for good: the reading waits for the reader.
++            boolean was;
++            synchronized (this) {
++                was = reading || lostForAMoment;
++                if (reading && tts != null && ready) tts.stop();
++                reading = false;
++            }
++            dropFocus();
++            if (was) interruption(true, false);
++        } else if (change == AudioManager.AUDIOFOCUS_GAIN) {
++            boolean back;
++            synchronized (this) {
++                back = lostForAMoment;
++                lostForAMoment = false;
++            }
++            if (back) interruption(false, true);
++        }
++        // AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK (a notification, a navigation prompt): left to the phone.
++    }
++
++    private void interruption(boolean began, boolean resume) {
++        JSObject e = new JSObject();
++        e.put("type", "interruption");
++        e.put("began", began);
++        if (!began) e.put("resume", resume);
++        notifyListeners("speech", e);
++    }
++
++    private AudioManager audio() {
++        return (AudioManager) getContext().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
++    }
++
++    /** Ask the phone for the sound, as a player does. False while it will not give it (a call under way). */
++    @SuppressWarnings("deprecation")
++    private synchronized boolean takeFocus() {
++        if (focused) return true;
++        AudioManager manager = audio();
++        if (manager == null) return true;
++        int result;
++        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
++            if (focusRequest == null) {
++                focusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
++                        .setAudioAttributes(SPEECH)
++                        .setOnAudioFocusChangeListener(onFocus)
++                        .build();
++            }
++            result = manager.requestAudioFocus(focusRequest);
++        } else {
++            result = manager.requestAudioFocus(onFocus, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
++        }
++        focused = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
++        return focused;
++    }
++
++    /** Let the phone's sound go: the reading stopped, ended, or another app has it. */
++    @SuppressWarnings("deprecation")
++    private synchronized void dropFocus() {
++        lostForAMoment = false;
++        if (!focused) return;
++        focused = false;
++        AudioManager manager = audio();
++        if (manager == null) return;
++        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
++            if (focusRequest != null) manager.abandonAudioFocusRequest(focusRequest);
++        } else {
++            manager.abandonAudioFocus(onFocus);
++        }
++    }
++
++    /** The last piece of the reading now is done, or it failed: the sound is let go. */
++    private void finishedReading(int token) {
++        synchronized (this) {
++            if (token != current) return;
++            reading = false;
++        }
++        dropFocus();
++    }
++
+     private boolean onDevice(Voice v) {
+         Set<String> features = v.getFeatures();
+         boolean missing = features != null && features.contains(TextToSpeech.Engine.KEY_FEATURE_NOT_INSTALLED);
+@@ -202,6 +322,17 @@ public class PurifySpeechPlugin extends Plugin {
+                 float volume = call.getFloat("volume", 1f);
+                 int count = pieces.length();
+                 tts.stop();
++                synchronized (this) {
++                    reading = false;
++                    lostForAMoment = false;
++                    current = token;
++                }
++                // Not over a call: the reading waits, paused at its place, for the reader.
++                if (!takeFocus()) {
++                    interruption(true, false);
++                    call.resolve();
++                    return;
++                }
+                 useVoice(voice, lang);
+                 tts.setSpeechRate(Math.max(0.25f, Math.min(4f, rate)));
+                 int max = Math.max(200, TextToSpeech.getMaxSpeechInputLength() - 100);
+@@ -217,6 +348,10 @@ public class PurifySpeechPlugin extends Plugin {
+                         tts.speak(piece.substring(span[0], span[1]), TextToSpeech.QUEUE_ADD, params, id);
+                     }
+                 }
++                synchronized (this) {
++                    reading = from < count;
++                }
++                if (from >= count) dropFocus();
+                 call.resolve();
+             } catch (Exception e) {
+                 call.reject("Could not speak: " + e.getMessage());
+@@ -243,7 +378,11 @@ public class PurifySpeechPlugin extends Plugin {
+ 
+     @PluginMethod
+     public void stop(PluginCall call) {
++        synchronized (this) {
++            reading = false;
++        }
+         if (tts != null && ready) tts.stop();
++        dropFocus();
+         call.resolve();
+     }
+ 
+@@ -266,6 +405,8 @@ public class PurifySpeechPlugin extends Plugin {
+ 
+     @Override
+     protected void handleOnDestroy() {
++        reading = false;
++        dropFocus();
+         if (tts != null) {
+             tts.stop();
+             tts.shutdown();
+diff --git a/ios/App/App/PurifySpeechPlugin.swift b/ios/App/App/PurifySpeechPlugin.swift
+index 0f2d5510..6c144152 100644
+--- a/ios/App/App/PurifySpeechPlugin.swift
++++ b/ios/App/App/PurifySpeechPlugin.swift
+@@ -23,6 +23,13 @@ import MediaPlayer
+ /// back to the player (the web view draws the lock screen only for what it
+ /// plays itself). Novelty voices (bells, bubbles and the like) are never
+ /// listed: this is Scripture and the Fathers.
++///
++/// A phone call, Siri, an alarm or another app taking the sound interrupts
++/// the audio session: the voice stops at its word and says so
++/// ("interruption"), and the player shows it paused there. When the phone
++/// ends the interruption and says the reading may go on (a call or Siri
++/// over), the player takes it up at that word, as a recording goes on after a
++/// call; otherwise it waits for the reader.
+ @objc(PurifySpeechPlugin)
+ public class PurifySpeechPlugin: CAPPlugin, CAPBridgedPlugin {
+     public let identifier = "PurifySpeechPlugin"
+@@ -41,9 +48,44 @@ public class PurifySpeechPlugin: CAPPlugin, CAPBridgedPlugin {
+     /// What each utterance is: the ask, the piece, where its letters begin, and the pieces in all.
+     private var spoken: [ObjectIdentifier: (token: Int, index: Int, shift: Int, count: Int)] = [:]
+     private var remoteTargets: [(MPRemoteCommand, Any)] = []
++    /// The audio session was interrupted while a text was read: say when it is over.
++    private var interruptedWhileReading = false
+ 
+     override public func load() {
+         synth.delegate = relay
++        NotificationCenter.default.addObserver(
++            self,
++            selector: #selector(audioInterrupted(_:)),
++            name: AVAudioSession.interruptionNotification,
++            object: AVAudioSession.sharedInstance()
++        )
++    }
++
++    /// A call, Siri, an alarm or another app took the sound, or gave it back.
++    @objc private func audioInterrupted(_ note: Notification) {
++        guard let raw = note.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
++              let type = AVAudioSession.InterruptionType(rawValue: raw) else { return }
++        var resume = false
++        if let options = note.userInfo?[AVAudioSessionInterruptionOptionKey] as? UInt {
++            resume = AVAudioSession.InterruptionOptions(rawValue: options).contains(.shouldResume)
++        }
++        DispatchQueue.main.async {
++            switch type {
++            case .began:
++                // A reading, not a voice's "Hear it": stopped at its word.
++                guard !self.spoken.isEmpty else { return }
++                self.synth.stopSpeaking(at: .immediate)
++                self.spoken.removeAll()
++                self.interruptedWhileReading = true
++                self.send(["type": "interruption", "began": true])
++            case .ended:
++                guard self.interruptedWhileReading else { return }
++                self.interruptedWhileReading = false
++                self.send(["type": "interruption", "began": false, "resume": resume])
++            @unknown default:
++                break
++            }
++        }
+     }
+ 
+     private func send(_ payload: [String: Any]) {
+@@ -107,6 +149,7 @@ public class PurifySpeechPlugin: CAPPlugin, CAPBridgedPlugin {
+         DispatchQueue.main.async {
+             self.synth.stopSpeaking(at: .immediate)
+             self.spoken.removeAll()
++            self.interruptedWhileReading = false
+             self.playbackSession()
+             let chosen = self.voice(id, lang)
+             for i in from..<max(from, pieces.count) {
+@@ -129,6 +172,8 @@ public class PurifySpeechPlugin: CAPPlugin, CAPBridgedPlugin {
+         DispatchQueue.main.async {
+             self.synth.stopSpeaking(at: .immediate)
+             self.spoken.removeAll()
++            // The reader's own pause or a new reading: an interruption ending takes nothing up.
++            self.interruptedWhileReading = false
+             call.resolve()
+         }
+     }
+diff --git a/lib/listen/speech/__tests__/nativeSpeech.test.ts b/lib/listen/speech/__tests__/nativeSpeech.test.ts
+index 5c00ee97..f91a65ca 100644
+--- a/lib/listen/speech/__tests__/nativeSpeech.test.ts
++++ b/lib/listen/speech/__tests__/nativeSpeech.test.ts
+@@ -70,10 +70,44 @@ describe("the speech plugin's two halves", () => {
+     expect(SWIFT).toContain("weak var owner: PurifySpeechPlugin?");
+   });
+ 
+-  it("on Android, take the app's context, let the phone go when the app does, and ask for no audio focus (the ambience plays on under the voice)", () => {
++  it("on Android, take the app's context and let the phone go when the app does", () => {
+     expect(JAVA).toContain("new TextToSpeech(getContext().getApplicationContext()");
+     expect(JAVA).toContain("tts.shutdown()");
+-    expect(JAVA).not.toMatch(/requestAudioFocus|AudioFocusRequest/);
++  });
++
++  // Updates 17, item 4 (the arbiter's brief): a phone call, Siri or the
++  // assistant, or another app taking the sound during a reading pauses the
++  // voice at its word, as a recording pauses for a call. Until then the voice
++  // talked on through a call on Android (no audio focus was asked), and on an
++  // iPhone the player said it was playing while the phone was silent.
++  it("on Android, hold the audio focus for media speech while reading: a call stops the voice and gives it back, another app keeping the sound leaves it paused", () => {
++    expect(JAVA).toMatch(/new AudioFocusRequest\.Builder\(AudioManager\.AUDIOFOCUS_GAIN\)\s*\.setAudioAttributes\(SPEECH\)/);
++    expect(JAVA).toContain(".setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)");
++    // Taken before the pieces are queued; not over a call.
++    expect(JAVA.indexOf("if (!takeFocus())")).toBeGreaterThan(-1);
++    expect(JAVA.indexOf("if (!takeFocus())")).toBeLessThan(JAVA.indexOf("TextToSpeech.QUEUE_ADD"));
++    // A moment's loss stops and keeps the claim; the gain after it says the reading may go on.
++    expect(JAVA).toMatch(/AUDIOFOCUS_LOSS_TRANSIENT\) \{[\s\S]*?lostForAMoment = true;[\s\S]*?tts\.stop\(\);[\s\S]*?interruption\(true, false\);/);
++    expect(JAVA).toMatch(/AUDIOFOCUS_GAIN\) \{[\s\S]*?if \(back\) interruption\(false, true\);/);
++    // A loss for good lets the claim go and says nothing more.
++    expect(JAVA).toMatch(/AUDIOFOCUS_LOSS\) \{[\s\S]*?dropFocus\(\);[\s\S]*?interruption\(true, false\);/);
++    // Let go when the reader stops it and when the reading ends, never left held.
++    expect(JAVA).toMatch(/public void stop\(PluginCall call\) \{[\s\S]*?dropFocus\(\);/);
++    expect(JAVA).toMatch(/send\("end", p, -1, -1\);\s*finishedReading\(/);
++    expect(JAVA).toContain('e.put("type", "interruption")');
++  });
++
++  it("on the iPhone, stop at the word when the audio session is interrupted, and say whether the phone lets the reading go on", () => {
++    expect(SWIFT).toContain("name: AVAudioSession.interruptionNotification");
++    expect(SWIFT).toMatch(/case \.began:[\s\S]*?guard !self\.spoken\.isEmpty else \{ return \}[\s\S]*?self\.synth\.stopSpeaking\(at: \.immediate\)[\s\S]*?"type": "interruption", "began": true/);
++    expect(SWIFT).toContain(".contains(.shouldResume)");
++    expect(SWIFT).toMatch(/case \.ended:[\s\S]*?guard self\.interruptedWhileReading else \{ return \}[\s\S]*?"type": "interruption", "began": false, "resume": resume/);
++    // The reader's own pause during a call: nothing is taken up after it.
++    expect(SWIFT).toMatch(/@objc func stop\(_ call: CAPPluginCall\) \{[\s\S]*?self\.interruptedWhileReading = false/);
++  });
++
++  it("the player reads both halves' interruptions as one report", () => {
++    expect(ENGINE).toContain('type: "interruption"; began: boolean; resume?: boolean');
+   });
+ 
+   it("are registered in both apps, and the iPhone's file is built into the app, not the widgets", () => {
+diff --git a/lib/listen/speech/__tests__/session.test.ts b/lib/listen/speech/__tests__/session.test.ts
+index 3903e695..69a1f7aa 100644
+--- a/lib/listen/speech/__tests__/session.test.ts
++++ b/lib/listen/speech/__tests__/session.test.ts
+@@ -309,6 +309,75 @@ describe("a text spoken by the phone's voice, in the one player", () => {
+   });
+ });
+ 
++// A phone call, Siri or another app taking the sound during a reading (the
++// arbiter's brief for Updates 17, item 4): the voice pauses at its word, as a
++// recording pauses for a call, and is ready to take up there. What a reader
++// would notice if this broke: the player saying it plays through a call while
++// the phone is silent, the reading starting its verse again after the call,
++// or a reading the reader paused during the call starting again by itself.
++describe("a call, Siri or another app taking the sound during a reading", () => {
++  async function onAWord() {
++    const p = phone();
++    await load(p);
++    store.play();
++    const token = p.last().token;
++    p.say({ type: "start", token, index: 1 });
++    const word = wordStarts(VERSES[1].text)[4];
++    p.say({ type: "word", token, index: 1, start: word, end: word + 3 });
++    return { p, word };
++  }
++
++  it("pauses the player at the word, without asking the phone to stop again (it has stopped, and keeps its claim on the sound)", async () => {
++    const { p } = await onAWord();
++    const stops = p.stops();
++    p.say({ type: "interruption", began: true });
++    expect(store.getAudioSnapshot().playing).toBe(false);
++    expect(p.stops()).toBe(stops);
++  });
++
++  it("goes on at the same word when the phone gives the sound back and says it may (a call or Siri over)", async () => {
++    const { p, word } = await onAWord();
++    const asked = p.asks.length;
++    p.say({ type: "interruption", began: true });
++    p.say({ type: "interruption", began: false, resume: true });
++    expect(p.asks).toHaveLength(asked + 1);
++    expect(p.last()).toMatchObject({ from: 1, offset: word });
++    expect(store.getAudioSnapshot().playing).toBe(true);
++  });
++
++  it("waits for the reader when the phone gives the sound back without saying it may, or another app keeps it; Play takes it up at the word", async () => {
++    const { p, word } = await onAWord();
++    const asked = p.asks.length;
++    p.say({ type: "interruption", began: true });
++    p.say({ type: "interruption", began: false, resume: false });
++    expect(p.asks).toHaveLength(asked);
++    expect(store.getAudioSnapshot().playing).toBe(false);
++    store.play();
++    expect(p.last()).toMatchObject({ from: 1, offset: word });
++  });
++
++  it("does not start again by itself when the reader paused it during the call, and lets the phone's claim on the sound go", async () => {
++    const { p } = await onAWord();
++    const asked = p.asks.length;
++    p.say({ type: "interruption", began: true });
++    const stops = p.stops();
++    store.pause();
++    expect(p.stops()).toBe(stops + 1);
++    p.say({ type: "interruption", began: false, resume: true });
++    expect(p.asks).toHaveLength(asked);
++    expect(store.getAudioSnapshot().playing).toBe(false);
++  });
++
++  it("is nothing to a reading that was not speaking", async () => {
++    const p = phone();
++    await load(p);
++    p.say({ type: "interruption", began: true });
++    p.say({ type: "interruption", began: false, resume: true });
++    expect(p.asks).toHaveLength(0);
++    expect(store.getAudioSnapshot().playing).toBe(false);
++  });
++});
++
+ function pieceOf(t: ReturnType<typeof speechTimeline>, time: number): number {
+   let at = 0;
+   for (let i = 0; i < t.starts.length; i++) if (t.starts[i] <= time) at = i;
+diff --git a/lib/listen/speech/engine.ts b/lib/listen/speech/engine.ts
+index 63fdbc22..82080356 100644
+--- a/lib/listen/speech/engine.ts
++++ b/lib/listen/speech/engine.ts
+@@ -46,7 +46,15 @@ export type SpeechEvent =
+   | { type: "end"; token: number }
+   | { type: "error"; token: number; index: number; message?: string }
+   /** The lock screen's controls (the iPhone's; Android's come through the player's own). */
+-  | { type: "remote"; action: "play" | "pause" | "toggle" | "skip"; seconds?: number };
++  | { type: "remote"; action: "play" | "pause" | "toggle" | "skip"; seconds?: number }
++  /**
++   * The phone took the sound (a call, Siri or the assistant, an alarm, another
++   * app playing) and has stopped the voice (`began`), or gave the sound back
++   * (`began: false`), with `resume` where the phone says the reading may go on:
++   * a call or Siri over, as a recording goes on after one. Android's audio
++   * focus, the iPhone's audio session interruption.
++   */
++  | { type: "interruption"; began: boolean; resume?: boolean };
+ 
+ export type SpeakAsk = {
+   token: number;
+diff --git a/lib/listen/speech/session.ts b/lib/listen/speech/session.ts
+index ccedb084..0abe64b4 100644
+--- a/lib/listen/speech/session.ts
++++ b/lib/listen/speech/session.ts
+@@ -19,6 +19,13 @@ import { learnPace, pieceAt, speechTimeline, timeAtChar, timeWhileSpeaking, type
+  * reading up at that word. A seek, and 15 seconds back or forward, go to the
+  * start of the verse or paragraph the moment falls in. A new speed is taken
+  * at the word being spoken.
++ *
++ * A phone call, Siri or the assistant, or another app taking the sound pauses
++ * the reading the same way, at its word (the plugin's "interruption"): the
++ * player shows it paused, and Play takes it up there. Where the phone gives
++ * the sound back and says the reading may go on (a call or Siri over), it goes
++ * on by itself, as a recording does after a call; where another app keeps the
++ * sound, it waits for the reader. A reader's own Pause in the meantime wins.
+  */
+ 
+ export type SpokenState = { playing?: boolean; currentTime?: number; duration?: number; captions?: CaptionSource; failed?: boolean };
+@@ -86,6 +93,8 @@ export function createSpeechSession(o: SpeechSessionOptions): SpeechSession {
+   let ticker: ReturnType<typeof setInterval> | null = null;
+   /** The piece the phone has just finished, before it begins the next. */
+   let finished = -1;
++  /** The phone took the sound while this was speaking, and may give it back. */
++  let interrupted = false;
+ 
+   const pieces = o.pieces.map((p) => p.text);
+ 
+@@ -101,6 +110,7 @@ export function createSpeechSession(o: SpeechSessionOptions): SpeechSession {
+   }
+ 
+   function speak(): void {
++    interrupted = false;
+     token += 1;
+     speaking = true;
+     since = clock();
+@@ -125,7 +135,8 @@ export function createSpeechSession(o: SpeechSessionOptions): SpeechSession {
+       .catch(() => fail());
+   }
+ 
+-  function halt(): void {
++  /** Stop where it stands. `quiet`: the phone has already stopped itself (an interruption), so it is not asked again, and keeps its claim on the sound to say when it is given back. */
++  function halt(quiet = false): void {
+     if (!speaking) return;
+     // Where it stands now is where Play takes it up: the next piece when the
+     // phone was between two, else the word being spoken.
+@@ -142,7 +153,7 @@ export function createSpeechSession(o: SpeechSessionOptions): SpeechSession {
+     token += 1;
+     speaking = false;
+     tick(false);
+-    void o.engine.stop();
++    if (!quiet) void o.engine.stop();
+   }
+ 
+   function fail(): void {
+@@ -156,6 +167,21 @@ export function createSpeechSession(o: SpeechSessionOptions): SpeechSession {
+       o.host.remote?.(e.action, e.seconds);
+       return;
+     }
++    if (e.type === "interruption") {
++      if (e.began) {
++        // Paused at its word, as a reader's Pause leaves it.
++        if (!speaking) return;
++        halt(true);
++        interrupted = true;
++        o.host.state({ playing: false, currentTime: now() });
++        void o.engine.nowPlaying({ title: o.title ?? "", artist: o.artist ?? "", duration: timeline.duration, elapsed: now(), playing: false });
++        return;
++      }
++      const again = interrupted && e.resume === true && !speaking;
++      interrupted = false;
++      if (again) speak();
++      return;
++    }
+     if (e.token !== token || !speaking) return;
+     if (e.type === "start") {
+       if (e.index !== index) {
+@@ -220,6 +246,10 @@ export function createSpeechSession(o: SpeechSessionOptions): SpeechSession {
+       speak();
+     },
+     pause() {
++      // The reader's own Pause: a call ending does not take the reading up,
++      // and the phone's claim on the sound is let go.
++      if (interrupted && !speaking) void o.engine.stop();
++      interrupted = false;
+       if (!speaking) return;
+       halt();
+       o.host.state({ playing: false, currentTime: now() });
+@@ -251,6 +281,8 @@ export function createSpeechSession(o: SpeechSessionOptions): SpeechSession {
+     },
+     stop() {
+       if (stopped) return;
++      if (interrupted && !speaking) void o.engine.stop();
++      interrupted = false;
+       halt();
+       stopped = true;
+       off();
+-- 
+2.43.0
+
+
+From 53a2bf949217b2135ec478a20558739fc9ec7a9d Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 13 Nov 2026 15:13:17 +0000
+Subject: [PATCH 2/3] Listen: no English reading over a page it does not read,
+ on the dock and the website's pill
+
+Two faults Updates 15 found (docs/handoffs/updates-15.md):
+
+- The reader's dock (while anything plays) offered Listen over a chapter shown
+  in a downloaded Bible: a Russian page, read in the English voice. The pill it
+  stands in for already offered none there. The pill now hands its rule to the
+  dock (ReaderDock's listen).
+- On the website at a phone's width, the pill offered the English reading over
+  a licensed translation (the NIV, the NKJV, the NLT), whose words it does not
+  read; the computer's toolbar already hid it there. ChapterScreen now gives
+  the pill the toolbar's rule: not over a downloaded Bible, nor a licensed one.
+
+Tests that fail on the old code: readerDock.test.ts (2) and readerScreen.test.ts (1).
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01VuYTwZshCrYvNwoUyAX6F4
+---
+ components/bible/ChapterScreen.tsx       |  5 ++++-
+ components/bible/MobileChapterPill.tsx   |  3 ++-
+ components/bible/ReaderDock.tsx          | 13 ++++++++++---
+ lib/bible/__tests__/readerDock.test.ts   | 13 ++++++++++++-
+ lib/bible/__tests__/readerScreen.test.ts |  4 +++-
+ 5 files changed, 31 insertions(+), 7 deletions(-)
+
+diff --git a/components/bible/ChapterScreen.tsx b/components/bible/ChapterScreen.tsx
+index 80a76b45..0a4633d8 100644
+--- a/components/bible/ChapterScreen.tsx
++++ b/components/bible/ChapterScreen.tsx
+@@ -189,7 +189,10 @@ export function ChapterScreen({
+           slug={slug}
+           chapter={chapter}
+           totalVerses={verses}
+-          listen={!downloaded}
++          // Listen reads the English aloud: not over a downloaded Bible, nor
++          // over a licensed translation, whose words it would not read (as the
++          // computer's toolbar has it).
++          listen={!downloaded && !usingLicensed}
+           textKey={downloaded ? `${downloaded.bible.id}:${downloaded.text.state}` : undefined}
+         />
+         {/* "Use Purify in Русский?", once, as a Bible in another language is picked (1.9). */}
+diff --git a/components/bible/MobileChapterPill.tsx b/components/bible/MobileChapterPill.tsx
+index 3dbbfc78..48dd000e 100644
+--- a/components/bible/MobileChapterPill.tsx
++++ b/components/bible/MobileChapterPill.tsx
+@@ -136,7 +136,7 @@ export function MobileChapterPill({
+   slug: string;
+   chapter: number;
+   totalVerses: number;
+-  /** Listen reads the English aloud: a chapter shown in a downloaded Bible has none (1.9). */
++  /** Listen reads the English aloud: a chapter shown in a downloaded Bible, or in a licensed translation, has none (1.9). The pill and the dock both keep it. */
+   listen?: boolean;
+   /** What the chapter is shown in, when not the English: the running line looks at the verses again when it changes. */
+   textKey?: string;
+@@ -224,6 +224,7 @@ export function MobileChapterPill({
+           slug={slug}
+           chapter={chapter}
+           bookName={bookName}
++          listen={listen}
+           prev={prev}
+           next={next}
+           prevLabel={prevLabel}
+diff --git a/components/bible/ReaderDock.tsx b/components/bible/ReaderDock.tsx
+index 4ac68105..8bb83c1c 100644
+--- a/components/bible/ReaderDock.tsx
++++ b/components/bible/ReaderDock.tsx
+@@ -67,6 +67,7 @@ export function ReaderDock({
+   slug,
+   chapter,
+   bookName,
++  listen = true,
+   prev,
+   next,
+   prevLabel,
+@@ -79,6 +80,12 @@ export function ReaderDock({
+   chapter: number;
+   /** The book's name in the reader's language. */
+   bookName: string;
++  /**
++   * Whether Listen may read this page: the English recording reads the English
++   * alone, so not over a downloaded Bible's page (a Russian page read in
++   * English) nor a licensed translation's (the pill's own rule, MobileChapterPill).
++   */
++  listen?: boolean;
+   prev: Target;
+   next: Target;
+   prevLabel: string;
+@@ -164,7 +171,7 @@ export function ReaderDock({
+   // the dock then offered Listen for the chapter already playing.
+   const loaded = readingOfSrc(audio.src);
+   const hereLoaded = loaded?.book === slug && loaded.chapter === chapter;
+-  const listenHere = reads && !hereLoaded;
++  const listenHere = reads && listen && !hereLoaded;
+   // Speed is a chapter read aloud's alone, as in Now Playing (lib/player/speed.ts).
+   const speedShown = playingOf(audio.src)?.kind === "chapter";
+   const speed = speedText(audio.rate, locale);
+@@ -177,7 +184,7 @@ export function ReaderDock({
+         ? `${t("player.sleep")}: ${t("player.sleepEnd")}`
+         : t("player.sleep");
+ 
+-  const listen = async () => {
++  const listenNow = async () => {
+     setBusy(true);
+     await startReading(slug, chapter, `${bookName} ${chapter}`, t);
+     setBusy(false);
+@@ -277,7 +284,7 @@ export function ReaderDock({
+                 {listenHere ? (
+                   <button
+                     type="button"
+-                    onClick={listen}
++                    onClick={listenNow}
+                     className="tap-press hit-44 flex h-8 shrink-0 items-center gap-1.5 rounded-pill px-2 font-semibold text-paper"
+                   >
+                     <Headphones size={16} className={cn("shrink-0", busy && "motion-safe:animate-pulse")} />
+diff --git a/lib/bible/__tests__/readerDock.test.ts b/lib/bible/__tests__/readerDock.test.ts
+index a09929da..4b5f15a9 100644
+--- a/lib/bible/__tests__/readerDock.test.ts
++++ b/lib/bible/__tests__/readerDock.test.ts
+@@ -85,7 +85,7 @@ describe("the dock", () => {
+   });
+ 
+   it("offers Listen in Speed's place where this chapter has a reading that is not the one loaded", () => {
+-    expect(DOCK).toContain("const listenHere = reads && !hereLoaded;");
++    expect(DOCK).toContain("const listenHere = reads && listen && !hereLoaded;");
+     // Known by the chapter the loaded recording reads, whichever address it
+     // has: streamed, or saved to the phone while it played.
+     expect(DOCK).toContain("const loaded = readingOfSrc(audio.src);");
+@@ -93,6 +93,17 @@ describe("the dock", () => {
+     expect(DOCK).toContain("await startReading(slug, chapter, `${bookName} ${chapter}`, t);");
+   });
+ 
++  // Updates 15's finding (2026-11-13): with something playing, the dock offered
++  // the English reading over a chapter shown in a downloaded Bible (a Russian
++  // page, read in English) and over a licensed translation, where the pill it
++  // stands in for offers none. What a reader would notice: Listen on a Russian
++  // page starting an English voice.
++  it("keeps the pill's rule for Listen: none over a page the English reading does not read", () => {
++    expect(PILL).toMatch(/<ReaderDock\s+slug=\{slug\}\s+chapter=\{chapter\}\s+bookName=\{bookName\}\s+listen=\{listen\}/);
++    expect(DOCK).toMatch(/export function ReaderDock\(\{\s*slug,\s*chapter,\s*bookName,\s*listen = true,/);
++    expect(DOCK).toMatch(/\{listenHere \? \(\s*<button/);
++  });
++
+   it("opens the one sleep timer, the sheet Now Playing opens", () => {
+     expect(DOCK).toContain("<SleepTimerSheet open={sleepOpen} onClose={() => setSleepOpen(false)} />");
+     expect(read("components/player/NowPlayingSheet.tsx")).toContain(
+diff --git a/lib/bible/__tests__/readerScreen.test.ts b/lib/bible/__tests__/readerScreen.test.ts
+index 102b4c94..eac34825 100644
+--- a/lib/bible/__tests__/readerScreen.test.ts
++++ b/lib/bible/__tests__/readerScreen.test.ts
+@@ -351,7 +351,9 @@ describe("the floating pill, with Listen", () => {
+     // the chapter's number stands after it whatever room it takes.
+     expect(pill).toMatch(/\{bookName\}\s*<\/span>\s*<span className="ms-1 shrink-0 tabular-nums">\{chapter\}<\/span>/);
+     expect(pill).toContain("min-w-0 max-w-full");
+-    expect(code(SCREEN)).toMatch(/<MobileChapterPill\s+slug=\{slug\}\s+chapter=\{chapter\}\s+totalVerses=\{verses\}\s+listen=\{!downloaded\}/);
++    // Not over a downloaded Bible, nor over a licensed translation on the website, as the toolbar has it
++    // (Updates 15's finding: the pill offered the English reading over the NIV's words at a phone's width).
++    expect(code(SCREEN)).toMatch(/<MobileChapterPill\s+slug=\{slug\}\s+chapter=\{chapter\}\s+totalVerses=\{verses\}\s+listen=\{!downloaded && !usingLicensed\}/);
+   });
+ 
+   it("ends in Listen, after the sound button, only where the chapter has a reading", () => {
+-- 
+2.43.0
+
+
+From e45f77b4be89c92bd24a377501c28db33083247d Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 13 Nov 2026 15:32:32 +0000
+Subject: [PATCH 3/3] Voices: what a reading in the phone's voice is, for the
+ player and the pages (no screen yet)
+
+Build 95 note 25, his "all recs" of 2026-11-13. The parts the picker and
+Listen on every text stand on; no screen calls them until his yes on the
+stills (the screens are held as docs/1.9-build/drafts/build-95-note-25-voices.patch).
+
+- lib/listen/speech/spoken.ts: a spoken text's address in the one player
+  (speech:bible/<book>/<chapter>[?in=<bible>], speech:<listen id>?lang=), and
+  the language a voice is asked for (the Septuagint's Greek read in the Greek
+  of today). playingOf (lib/player/steps.ts) knows a spoken chapter as a
+  chapter (Speed, Read at the verse, Share) and a spoken text as a text.
+- lib/listen/speech/voices.ts: the phone's voices, asked once and again when
+  the sheet opens; their names as a reader can read them (Android's ids by a
+  number in their language, a twin listed once); whether the device speaks.
+- lib/listen/speech/speak.ts: which voice reads a text (Heart with no engine
+  woken where the text has its recording and nothing else is chosen; a gone
+  voice said once); a text loaded and read; each voice's pace kept on the
+  device (the baton's item 3); a spoken track's end told, for rolling on.
+- lib/listen/speech/context.ts: what is playing as the Voice sheet needs it,
+  and reading it again in another voice at the verse being read, from the
+  player's own words (no fetch).
+- lib/readAloud/play.ts listenToChapter and rollOn.ts: Listen on a chapter in
+  the reader's voice, the English or a downloaded Bible, the page's own words.
+- pageText.ts and sheet.ts: the page's verses handed to Listen; the sheet's state.
+
+Tests that fail on the old code: lib/listen/speech/__tests__/spoken.test.ts (13).
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01VuYTwZshCrYvNwoUyAX6F4
+---
+ lib/listen/speech/__tests__/spoken.test.ts | 118 +++++++++++++
+ lib/listen/speech/context.ts               | 105 ++++++++++++
+ lib/listen/speech/engine.ts                |  12 ++
+ lib/listen/speech/pageText.ts              |  61 +++++++
+ lib/listen/speech/sheet.ts                 |  42 +++++
+ lib/listen/speech/speak.ts                 | 188 +++++++++++++++++++++
+ lib/listen/speech/spoken.ts                |  54 ++++++
+ lib/listen/speech/voices.ts                | 136 +++++++++++++++
+ lib/player/steps.ts                        |   8 +
+ lib/readAloud/play.ts                      |  59 ++++++-
+ lib/readAloud/rollOn.ts                    |  31 ++++
+ 11 files changed, 813 insertions(+), 1 deletion(-)
+ create mode 100644 lib/listen/speech/__tests__/spoken.test.ts
+ create mode 100644 lib/listen/speech/context.ts
+ create mode 100644 lib/listen/speech/pageText.ts
+ create mode 100644 lib/listen/speech/sheet.ts
+ create mode 100644 lib/listen/speech/speak.ts
+ create mode 100644 lib/listen/speech/spoken.ts
+ create mode 100644 lib/listen/speech/voices.ts
+ create mode 100644 lib/readAloud/rollOn.ts
+
+diff --git a/lib/listen/speech/__tests__/spoken.test.ts b/lib/listen/speech/__tests__/spoken.test.ts
+new file mode 100644
+index 00000000..a2e7c77b
+--- /dev/null
++++ b/lib/listen/speech/__tests__/spoken.test.ts
+@@ -0,0 +1,118 @@
++// A text read by the phone's voice, as the one player knows it (1.9, build 95
++// note 25, Updates 17): its address says what it is, so the player's Speed,
++// Read (at the verse), Share and the page's lit verse know a spoken chapter
++// as they know a recorded one; the phone's voices are named as a reader can
++// read them; each voice's pace is kept for its next reading. What a reader
++// would notice if this broke: no Speed or Read for a chapter the phone reads,
++// Read opening the wrong page, a Greek Bible with no voice at all, voices
++// listed as "en-gb-x-gba-local", or the seek bar's length wrong every time.
++
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++
++import type { PhoneVoice } from "@/lib/listen/speech/engine";
++import { spokenBibleSrc, spokenOf, spokenTextSrc, voiceLang } from "@/lib/listen/speech/spoken";
++import { voiceRows } from "@/lib/listen/speech/voices";
++import { playingOf, readHref, shareHref } from "@/lib/player/steps";
++
++describe("a spoken text's address", () => {
++  it("names a chapter of the English Bible, and of a downloaded one", () => {
++    expect(spokenOf(spokenBibleSrc("genesis", 1))).toEqual({ kind: "bible", book: "genesis", chapter: 1, bible: null });
++    expect(spokenOf(spokenBibleSrc("psalms", 50, "ru-synodal"))).toEqual({ kind: "bible", book: "psalms", chapter: 50, bible: "ru-synodal" });
++  });
++
++  it("names a life, a council's section, a study's part, an event and a work's section, with the language read", () => {
++    expect(spokenOf(spokenTextSrc("life/xenia-of-petersburg", "ru"))).toEqual({ kind: "text", id: "life/xenia-of-petersburg", lang: "ru" });
++    expect(spokenOf(spokenTextSrc("council/nicaea-i/creed/2", "en"))).toEqual({ kind: "text", id: "council/nicaea-i/creed/2", lang: "en" });
++    expect(spokenOf(spokenTextSrc("work/antony-the-great/life-of-antony/3", "en"))?.kind).toBe("text");
++  });
++
++  it("is nothing for a recording's address or a name that is no text's", () => {
++    expect(spokenOf("https://audio.purifyapp.net/read/john/1.mp3")).toBeNull();
++    expect(spokenOf("speech:genesis/1")).toBeNull();
++    expect(spokenOf("speech:bible/genesis/x")).toBeNull();
++    expect(spokenOf(null)).toBeNull();
++  });
++
++  it("is a chapter to the player: Speed, Read at the verse being read, and Share", () => {
++    const playing = playingOf(spokenBibleSrc("genesis", 1));
++    expect(playing).toEqual({ kind: "chapter", book: "genesis", chapter: 1 });
++    expect(readHref(playing, 7)).toBe("/bible/genesis/1#v7");
++    expect(shareHref(playing)).toBe("/bible/genesis/1");
++    expect(playingOf(spokenBibleSrc("john", 3, "ar-van-dyck"))).toEqual({ kind: "chapter", book: "john", chapter: 3 });
++  });
++
++  it("is a text to the player, opened at its part", () => {
++    expect(playingOf(spokenTextSrc("council/nicaea-i/creed/2", "en"))).toEqual({ kind: "text", id: "council/nicaea-i/creed/2", href: "/councils/nicaea-i/creed#s2" });
++    expect(playingOf(spokenTextSrc("life/xenia-of-petersburg", "ru"))).toEqual({ kind: "text", id: "life/xenia-of-petersburg", href: "/saints/xenia-of-petersburg" });
++  });
++
++  it("asks a voice for the text's language, the Greek of the Septuagint read in the Greek of today", () => {
++    expect(voiceLang("grc")).toBe("el");
++    expect(voiceLang("ru")).toBe("ru");
++    expect(voiceLang("en-GB")).toBe("en");
++  });
++});
++
++describe("the phone's voices, as the Voice sheet lists them", () => {
++  const numbered = (n: number) => `Voice ${n}`;
++  const voice = (id: string, lang: string, more: Partial<PhoneVoice> = {}): PhoneVoice => ({ id, name: id, lang, ...more });
++
++  it("names Android's ids by a number in their language, an iPhone's voices by their own names, a browser's without the language after a dash", () => {
++    const rows = voiceRows(
++      [
++        voice("en-gb-x-gba-local", "en-GB", { default: true }),
++        voice("en-gb-x-rjs-local", "en-GB"),
++        voice("com.apple.voice.compact.en-GB.Daniel", "en-GB", { name: "Daniel" }),
++        voice("Microsoft David - English (United States)", "en-US", { name: "Microsoft David - English (United States)" }),
++        voice("ru-ru-x-ruf-local", "ru-RU"),
++      ],
++      "en",
++      "en",
++      numbered,
++    );
++    // The phone's own first, then by name (voicesFor).
++    expect(rows.map((r) => r.name)).toEqual(["Voice 1", "Daniel", "Voice 2", "Microsoft David"]);
++    expect(rows[0].language).toBe("British English");
++    expect(rows[3].language).toBe("American English");
++  });
++
++  it("lists a voice the phone has twice under one name once: the better, or the one chosen", () => {
++    const compact = voice("com.apple.voice.compact.en-GB.Daniel", "en-GB", { name: "Daniel", quality: 1 });
++    const enhanced = voice("com.apple.voice.enhanced.en-GB.Daniel", "en-GB", { name: "Daniel", quality: 2 });
++    expect(voiceRows([compact, enhanced], "en", "en", numbered).map((r) => r.voice.id)).toEqual([enhanced.id]);
++    expect(voiceRows([compact, enhanced], "en", "en", numbered, compact.id).map((r) => r.voice.id)).toEqual([compact.id]);
++  });
++
++  it("lists none for a language the phone does not speak", () => {
++    expect(voiceRows([voice("en-us-x-sfg-local", "en-US")], "ka", "en", numbered)).toEqual([]);
++  });
++});
++
++describe("each voice's pace, kept on the device", () => {
++  beforeEach(() => {
++    const store = new Map<string, string>();
++    vi.stubGlobal("window", {
++      localStorage: { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v), removeItem: (k: string) => void store.delete(k) },
++    });
++  });
++  afterEach(() => vi.unstubAllGlobals());
++
++  it("is an ordinary pace before the voice has read, then what it learned, voice by voice", async () => {
++    const { paceOf, keepPace } = await import("@/lib/listen/speech/speak");
++    const { DEFAULT_PACE } = await import("@/lib/listen/speech/timeline");
++    expect(paceOf("en-gb-x-gba-local")).toBe(DEFAULT_PACE);
++    keepPace("en-gb-x-gba-local", 16.234);
++    keepPace("Daniel", 12);
++    expect(paceOf("en-gb-x-gba-local")).toBe(16.23);
++    expect(paceOf("Daniel")).toBe(12);
++  });
++
++  it("asks nothing of the phone for a text with its recording and no other voice chosen: Heart reads", async () => {
++    vi.resetModules();
++    const engine = await import("@/lib/listen/speech/engine");
++    const asked = vi.spyOn(engine, "speechEngine");
++    const { voiceFor } = await import("@/lib/listen/speech/speak");
++    expect(await voiceFor("en", true)).toEqual({ kind: "heart" });
++    expect(asked).not.toHaveBeenCalled();
++  });
++});
+diff --git a/lib/listen/speech/context.ts b/lib/listen/speech/context.ts
+new file mode 100644
+index 00000000..e6995035
+--- /dev/null
++++ b/lib/listen/speech/context.ts
+@@ -0,0 +1,105 @@
++"use client";
++
++import { downloadableBible } from "@/lib/bible/downloads/catalog";
++import { startListening } from "@/lib/listen/play";
++import { hasListen, listenOfSrc } from "@/lib/listen/recordings";
++import { captionLines, lineAt } from "@/lib/player/captions";
++import { currentTimeNow, getAudioSnapshot, pause, seek } from "@/lib/prayers/persistentAudioStore";
++import { hasReadAloud, readAloudManifest, readingOfSrc } from "@/lib/readAloud/chapters";
++import { startReading } from "@/lib/readAloud/play";
++
++import type { PhoneVoice } from "./engine";
++import { anchorsOf, rememberAnchors } from "./pageText";
++import { speakText } from "./speak";
++import { spokenBibleSrc, spokenOf, spokenTextSrc, voiceLang } from "./spoken";
++import { HEART } from "./voiceChoice";
++
++/**
++ * What the player is reading, as the Voice sheet needs it (1.9, build 95 note
++ * 25): the language a voice is asked for, whether the text has its recording
++ * (Heart), and what it is, to read it again in another voice at the verse or
++ * paragraph being read. Null for what no voice reads: a chant, a prayer.
++ */
++export type VoiceContext =
++  | { kind: "chapter"; book: string; chapter: number; bible: string | null; lang: string; recorded: boolean }
++  | { kind: "text"; id: string; lang: string; textLang: string; recorded: boolean };
++
++export function voiceContextOf(src: string | null): VoiceContext | null {
++  const reading = readingOfSrc(src);
++  if (reading) return { kind: "chapter", ...reading, bible: null, lang: "en", recorded: true };
++  const spoken = spokenOf(src);
++  if (spoken?.kind === "bible") {
++    const bible = downloadableBible(spoken.bible);
++    return {
++      kind: "chapter",
++      book: spoken.book,
++      chapter: spoken.chapter,
++      bible: bible?.id ?? null,
++      lang: bible ? voiceLang(bible.textLang) : "en",
++      recorded: !bible && hasReadAloud(spoken.book, spoken.chapter),
++    };
++  }
++  if (spoken?.kind === "text") return { kind: "text", id: spoken.id, lang: voiceLang(spoken.lang), textLang: spoken.lang, recorded: hasListen(spoken.id) };
++  // A text's recording is Purify's own telling, in English.
++  const text = listenOfSrc(src);
++  if (text) return { kind: "text", id: text.id, lang: "en", textLang: "en", recorded: true };
++  return null;
++}
++
++/** The piece being read now: the verse or paragraph, by the player's own clock. */
++export function pieceNow(): number {
++  const s = getAudioSnapshot();
++  if (!s.captions?.length) return 0;
++  return Math.max(0, lineAt(captionLines(s.captions, s.duration), currentTimeNow(), 0));
++}
++
++/**
++ * Read what is playing again in another voice, at the verse or paragraph being
++ * read: Heart (its recording) or one of the phone's voices. The words are the
++ * player's own (a recording's captions carry each verse's words), so nothing
++ * is fetched to change to a phone's voice. `autoplay`: go on reading, as it
++ * was; else it waits there.
++ */
++export async function readAgainIn(
++  to: typeof HEART | PhoneVoice,
++  about: VoiceContext,
++  t: (key: string, values?: Record<string, string | number>) => string,
++  autoplay: boolean,
++): Promise<boolean> {
++  const s = getAudioSnapshot();
++  const at = pieceNow();
++  const lines = s.captions ?? [];
++  if (to === HEART) {
++    if (!about.recorded) return false;
++    if (about.kind === "chapter") {
++      const verse = lines[at]?.n;
++      await startReading(about.book, about.chapter, s.title ?? `${t(`bible.books.${about.book}`)} ${about.chapter}`, t);
++      const manifest = await readAloudManifest(about.book, about.chapter);
++      const found = manifest?.verses.find((v) => v.n === verse);
++      if (found) seek(found.at);
++    } else {
++      await startListening(about.id, { title: s.title ?? "", by: s.artist ?? "", art: s.art });
++    }
++    if (!autoplay) pause();
++    return true;
++  }
++  if (!lines.length || lines.some((l) => !l.text)) return false;
++  const src = about.kind === "chapter" ? spokenBibleSrc(about.book, about.chapter, about.bible) : spokenTextSrc(about.id, about.textLang);
++  // The page's places stay with the words: a recording's verses by their numbers.
++  const places = anchorsOf(s.src) ?? lines.map((l) => (typeof l.n === "number" ? `v${l.n}` : undefined));
++  const ok = await speakText({
++    src,
++    pieces: lines.map((l) => ({ text: l.text, ...(typeof l.n === "number" ? { n: l.n } : {}) })),
++    lang: about.lang,
++    voice: to,
++    title: s.title ?? "",
++    artist: s.artist ?? undefined,
++    art: s.art ?? undefined,
++    artFallback: s.artFallback ?? undefined,
++    rtl: s.rtl,
++    from: at,
++    autoplay,
++  });
++  if (ok) rememberAnchors(src, places);
++  return ok;
++}
+diff --git a/lib/listen/speech/engine.ts b/lib/listen/speech/engine.ts
+index 82080356..2f01319d 100644
+--- a/lib/listen/speech/engine.ts
++++ b/lib/listen/speech/engine.ts
+@@ -233,6 +233,18 @@ function fromBrowser(): SpeechEngine | null {
+   };
+ }
+ 
++/**
++ * Whether this device can speak at all, known at once (for drawing Listen
++ * before any voice is asked for): in the apps, the shell has the plugin (a
++ * shell built before 1.9 has none); in a browser, it has speech.
++ */
++export function canSpeak(): boolean {
++  if (typeof window === "undefined") return false;
++  const cap = (window as { Capacitor?: { isNativePlatform?: () => boolean; isPluginAvailable?: (name: string) => boolean } }).Capacitor;
++  if (cap?.isNativePlatform?.()) return Boolean(cap.isPluginAvailable?.("PurifySpeech"));
++  return "speechSynthesis" in window && typeof SpeechSynthesisUtterance !== "undefined";
++}
++
+ let browser: SpeechEngine | null | undefined;
+ 
+ /**
+diff --git a/lib/listen/speech/pageText.ts b/lib/listen/speech/pageText.ts
+new file mode 100644
+index 00000000..eb12c2ea
+--- /dev/null
++++ b/lib/listen/speech/pageText.ts
+@@ -0,0 +1,61 @@
++"use client";
++
++/**
++ * The words a page shows, for the phone's voice to read (1.9, build 95 note
++ * 25). A chapter's verses are the page's own (components/bible/ChapterReader,
++ * DownloadedChapter); they are handed over here as the page opens, so Listen
++ * reads exactly what the reader sees, in the Bible they read it in. Each verse
++ * keeps the place it stands on the page (its anchor), so the verse being read
++ * is lit there. Not reactive: Listen reads it when tapped.
++ */
++
++export type PageVerse = { text: string; n?: number; anchor?: string };
++
++const pages = new Map<string, PageVerse[]>();
++const waiting = new Map<string, Set<() => void>>();
++
++/** The key of a chapter's page: the Bible it is shown in (null for the English) and the app's book and chapter. */
++export function chapterKey(book: string, chapter: number, bible: string | null = null): string {
++  return `${bible ?? "en"}:${book}/${chapter}`;
++}
++
++export function setPageVerses(key: string, verses: PageVerse[] | null): void {
++  if (verses?.length) {
++    pages.set(key, verses);
++    const told = waiting.get(key);
++    waiting.delete(key);
++    for (const t of told ?? []) t();
++  } else pages.delete(key);
++}
++
++export function pageVerses(key: string): PageVerse[] | null {
++  return pages.get(key) ?? null;
++}
++
++/** The page's verses once it has handed them over (a page opening as a reading rolls on into it), or null after `ms`. */
++export function whenPageVerses(key: string, ms = 4000): Promise<PageVerse[] | null> {
++  const now = pages.get(key);
++  if (now) return Promise.resolve(now);
++  return new Promise((resolve) => {
++    const told = waiting.get(key) ?? new Set<() => void>();
++    const done = () => {
++      clearTimeout(timer);
++      told.delete(done);
++      resolve(pages.get(key) ?? null);
++    };
++    const timer = setTimeout(done, ms);
++    told.add(done);
++    waiting.set(key, told);
++  });
++}
++
++/** Where each piece of a spoken track stands on its page, by the track's address: the verse or paragraph to light. */
++const anchors = new Map<string, (string | undefined)[]>();
++
++export function rememberAnchors(src: string, list: (string | undefined)[]): void {
++  anchors.set(src, list);
++}
++
++export function anchorsOf(src: string | null): (string | undefined)[] | null {
++  return src ? (anchors.get(src) ?? null) : null;
++}
+diff --git a/lib/listen/speech/sheet.ts b/lib/listen/speech/sheet.ts
+new file mode 100644
+index 00000000..2c2202b6
+--- /dev/null
++++ b/lib/listen/speech/sheet.ts
+@@ -0,0 +1,42 @@
++"use client";
++
++import { useSyncExternalStore } from "react";
++
++/**
++ * The Voice sheet's state (1.9, build 95 note 25): opened from the player's
++ * ••• (over the player), or from a page's Listen when the phone has no voice
++ * for the text's language and the text has no recording (`none`), to say so
++ * and where a voice is added. Mounted once in the root frame, as the ambience
++ * sheet is (components/player/VoiceSheet.tsx).
++ */
++
++export type VoiceSheetState = { open: boolean; overPlayer: boolean; none: { lang: string } | null };
++
++let state: VoiceSheetState = { open: false, overPlayer: false, none: null };
++const listeners = new Set<() => void>();
++
++function set(next: VoiceSheetState): void {
++  state = next;
++  for (const l of listeners) l();
++}
++
++export function openVoiceSheet(o: { overPlayer?: boolean; none?: { lang: string } } = {}): void {
++  set({ open: true, overPlayer: Boolean(o.overPlayer), none: o.none ?? null });
++}
++
++export function closeVoiceSheet(): void {
++  if (state.open) set({ ...state, open: false });
++}
++
++export function useVoiceSheet(): VoiceSheetState {
++  return useSyncExternalStore(
++    (l) => {
++      listeners.add(l);
++      return () => {
++        listeners.delete(l);
++      };
++    },
++    () => state,
++    () => state,
++  );
++}
+diff --git a/lib/listen/speech/speak.ts b/lib/listen/speech/speak.ts
+new file mode 100644
+index 00000000..d023e193
+--- /dev/null
++++ b/lib/listen/speech/speak.ts
+@@ -0,0 +1,188 @@
++"use client";
++
++import { useSyncExternalStore } from "react";
++
++import { readSpeed } from "@/lib/player/speed";
++import { getAudioSnapshot, play, seek, setLoopMode, setSpokenTrack } from "@/lib/prayers/persistentAudioStore";
++
++import { speechEngine, type PhoneVoice } from "./engine";
++import { createSpeechSession } from "./session";
++import { DEFAULT_PACE, speechTimeline, type SpeechPiece } from "./timeline";
++import { HEART, chosenVoice, goneSaid, markGoneSaid, voiceToUse, type VoiceToUse } from "./voiceChoice";
++import { deviceVoices } from "./voices";
++
++/**
++ * A text read by the phone's voice, through the one player (1.9, build 95
++ * note 25): which voice reads it, as the reader chose; the reading loaded and
++ * begun; each voice's pace kept for next time; and what the player shows
++ * about the voice (its name on the Voice row, the line said once when a
++ * chosen voice has gone).
++ */
++
++const PACE_KEY = "purify:listen.pace";
++
++function paces(): Record<string, number> {
++  try {
++    const kept = JSON.parse(window.localStorage.getItem(PACE_KEY) ?? "{}");
++    return kept && typeof kept === "object" ? (kept as Record<string, number>) : {};
++  } catch {
++    return {};
++  }
++}
++
++/** A voice's pace as learned from its last reading (letters a second at speed 1), or an ordinary one. */
++export function paceOf(voiceId: string): number {
++  const p = paces()[voiceId];
++  return typeof p === "number" && Number.isFinite(p) && p > 0 ? p : DEFAULT_PACE;
++}
++
++/** Keep a voice's pace on the device (the session reports it as it learns it), for the next reading's timeline. */
++export function keepPace(voiceId: string, pace: number): void {
++  if (!(pace > 0)) return;
++  try {
++    const all = paces();
++    // A few dozen voices at most: the newest kept.
++    const ids = Object.keys(all).filter((id) => id !== voiceId).slice(-39);
++    const next: Record<string, number> = {};
++    for (const id of ids) next[id] = all[id];
++    next[voiceId] = Math.round(pace * 100) / 100;
++    window.localStorage.setItem(PACE_KEY, JSON.stringify(next));
++  } catch {
++    /* a full or private store: learned again next time */
++  }
++}
++
++type Shown = {
++  /** The spoken track and the voice reading it. */
++  reading: { src: string; voice: PhoneVoice } | null;
++  /** A chosen voice had gone and another reads: said once, by the player. */
++  gone: { lang: string; instead: "heart" | PhoneVoice } | null;
++};
++
++/** Told when a spoken track has been read to its end and stops there (not a Loop's new round): a chapter rolls on into the next. */
++const endListeners = new Set<(src: string) => void>();
++
++export function onSpokenEnd(listener: (src: string) => void): () => void {
++  endListeners.add(listener);
++  return () => {
++    endListeners.delete(listener);
++  };
++}
++
++let shown: Shown = { reading: null, gone: null };
++const listeners = new Set<() => void>();
++
++function set(patch: Partial<Shown>): void {
++  shown = { ...shown, ...patch };
++  for (const l of listeners) l();
++}
++
++/** What the player shows of the voice: the one reading, and a line said once. */
++export function useVoiceShown(): Shown {
++  return useSyncExternalStore(
++    (l) => {
++      listeners.add(l);
++      return () => {
++        listeners.delete(l);
++      };
++    },
++    () => shown,
++    () => shown,
++  );
++}
++
++/** The line about a gone voice has been shown: it is not shown again. */
++export function goneShown(): void {
++  if (shown.gone) set({ gone: null });
++}
++
++/**
++ * Which voice reads a text in `lang` (a voice's language, lib/listen/speech/
++ * spoken.ts voiceLang): the reader's choice where the phone still has it, else
++ * Heart where the text has its recording, else the phone's own voice for the
++ * language; none where the phone has no voice for it and there is no
++ * recording. A text with its recording, and no other voice chosen for its
++ * language, is Heart without waking the phone's speech at all.
++ */
++export async function voiceFor(lang: string, recorded: boolean): Promise<VoiceToUse> {
++  const choice = chosenVoice(lang);
++  if (recorded && (!choice || choice === HEART)) return { kind: "heart" };
++  const use = voiceToUse(choice, await deviceVoices(), lang, recorded);
++  if (use.kind !== "none" && use.gone && !goneSaid(use.gone)) {
++    markGoneSaid(use.gone);
++    set({ gone: { lang, instead: use.kind === "heart" ? "heart" : use.voice } });
++  }
++  return use;
++}
++
++export type SpeakText = {
++  /** Its address in the player (lib/listen/speech/spoken.ts). */
++  src: string;
++  pieces: SpeechPiece[];
++  /** The voice's language. */
++  lang: string;
++  voice: PhoneVoice;
++  title: string;
++  artist?: string;
++  art?: string;
++  artFallback?: string;
++  artSize?: string;
++  rtl?: boolean;
++  /** The piece to begin at: the verse being read when the voice is changed. */
++  from?: number;
++  /** Begin speaking at once (the default), or load it paused there. */
++  autoplay?: boolean;
++};
++
++/**
++ * Load a text for the phone's voice into the one player and read it. False
++ * where the device has no speech after all.
++ */
++export async function speakText(o: SpeakText): Promise<boolean> {
++  const engine = await speechEngine();
++  if (!engine || !o.pieces.length) return false;
++  const pace = paceOf(o.voice.id);
++  const rate = readSpeed();
++  const t = speechTimeline(o.pieces, pace);
++  setSpokenTrack(
++    o.src,
++    (host) =>
++      createSpeechSession({
++        engine,
++        pieces: o.pieces,
++        lang: o.voice.lang || o.lang,
++        voice: o.voice.id,
++        rate,
++        volume: getAudioSnapshot().volume,
++        pace,
++        onPace: (p) => keepPace(o.voice.id, p),
++        title: o.title,
++        artist: o.artist,
++        host: {
++          ...host,
++          ended: (restart) => {
++            host.ended(restart);
++            // Stopped at its end, not begun again by a Loop or a repeat.
++            if (!getAudioSnapshot().playing && getAudioSnapshot().src === o.src) for (const l of [...endListeners]) l(o.src);
++          },
++        },
++      }),
++    {
++      title: o.title,
++      artist: o.artist,
++      art: o.art,
++      artFallback: o.artFallback,
++      artSize: o.artSize,
++      captions: t.captions,
++      duration: t.duration,
++      rtl: o.rtl,
++      rate,
++    },
++  );
++  set({ reading: { src: o.src, voice: o.voice } });
++  const from = Math.max(0, Math.min(o.from ?? 0, t.starts.length - 1));
++  if (from > 0) seek(t.starts[from]);
++  setLoopMode("off");
++  if (o.autoplay !== false) play();
++  return true;
++}
+diff --git a/lib/listen/speech/spoken.ts b/lib/listen/speech/spoken.ts
+new file mode 100644
+index 00000000..db723c13
+--- /dev/null
++++ b/lib/listen/speech/spoken.ts
+@@ -0,0 +1,54 @@
++import { parseListenId } from "@/lib/listen/texts";
++
++/**
++ * What the one player is speaking with the phone's voice, by its address
++ * (1.9, build 95 note 25). A recording has an address the player plays; a
++ * text the phone speaks has none, so it is given one, which says what it is,
++ * so the player's Speed, Read, Share and the page's lit verse know it as they
++ * know a recording:
++ *
++ *   speech:bible/<book>/<chapter>              a chapter of the English Bible
++ *   speech:bible/<book>/<chapter>?in=<bible>   a chapter of a downloaded Bible
++ *   speech:<listen id>?lang=<lang>             a life, a council's section, a
++ *                                              study's part, an event, a work's
++ *                                              section (lib/listen/texts.ts)
++ *
++ * Pure: no window here.
++ */
++
++export const SPOKEN = "speech:";
++
++export type Spoken =
++  | { kind: "bible"; book: string; chapter: number; bible: string | null }
++  | { kind: "text"; id: string; lang: string };
++
++export function spokenBibleSrc(book: string, chapter: number, bible: string | null = null): string {
++  return `${SPOKEN}bible/${book}/${chapter}${bible ? `?in=${encodeURIComponent(bible)}` : ""}`;
++}
++
++export function spokenTextSrc(id: string, lang: string): string {
++  return `${SPOKEN}${id}?lang=${encodeURIComponent(lang)}`;
++}
++
++/** What a player address speaks, or null when it is no spoken text's. */
++export function spokenOf(src: string | null | undefined): Spoken | null {
++  if (!src?.startsWith(SPOKEN)) return null;
++  const rest = src.slice(SPOKEN.length);
++  const cut = rest.indexOf("?");
++  const path = cut < 0 ? rest : rest.slice(0, cut);
++  const query = new URLSearchParams(cut < 0 ? "" : rest.slice(cut + 1));
++  const bible = /^bible\/([a-z0-9-]+)\/(\d{1,3})$/.exec(path);
++  if (bible) return { kind: "bible", book: bible[1], chapter: Number(bible[2]), bible: query.get("in") || null };
++  if (parseListenId(path)) return { kind: "text", id: path, lang: query.get("lang") || "en" };
++  return null;
++}
++
++/**
++ * The language a voice is asked for, from the language of the text's words.
++ * Koine Greek ("grc", the downloaded Septuagint and Patriarchal text) is read
++ * in the Greek of today, as the Church reads it aloud; any other is its own.
++ */
++export function voiceLang(textLang: string): string {
++  const base = textLang.toLowerCase().split(/[-_]/)[0] || "en";
++  return base === "grc" ? "el" : base;
++}
+diff --git a/lib/listen/speech/voices.ts b/lib/listen/speech/voices.ts
+new file mode 100644
+index 00000000..0f250634
+--- /dev/null
++++ b/lib/listen/speech/voices.ts
+@@ -0,0 +1,136 @@
++"use client";
++
++import { useEffect, useSyncExternalStore } from "react";
++
++import { canSpeak, speechEngine, type PhoneVoice } from "./engine";
++import { voicesFor } from "./voiceChoice";
++
++/**
++ * The voices this phone has, asked once and kept for the life of the page
++ * (1.9, build 95 note 25). Asking wakes the phone's speech engine, so it is
++ * asked when the player or a Listen needs it, never as the app opens. Asked
++ * again when the Voice sheet opens and when the reader comes back to the app
++ * (a voice added in the phone's settings meanwhile); the list known stands
++ * until the new one comes.
++ */
++
++let known: PhoneVoice[] | null = null;
++let asking: Promise<PhoneVoice[]> | null = null;
++const listeners = new Set<() => void>();
++
++function tell(): void {
++  for (const l of listeners) l();
++}
++
++/** The phone's voices: those known, or asked for now. Empty where the device has no speech. */
++export function deviceVoices(): Promise<PhoneVoice[]> {
++  if (known) return Promise.resolve(known);
++  return askAgain();
++}
++
++/** Ask the phone again, keeping the list known until it answers. */
++export function askAgain(): Promise<PhoneVoice[]> {
++  asking ??= speechEngine()
++    .then((engine) => (engine ? engine.voices() : []))
++    .catch(() => [] as PhoneVoice[])
++    .then((voices) => {
++      asking = null;
++      known = voices;
++      tell();
++      return voices;
++    });
++  return asking;
++}
++
++/** The phone's voices for a component: null until first known. `ask` wakes the phone's speech to know them. */
++export function useDeviceVoices(ask = true): PhoneVoice[] | null {
++  const voices = useSyncExternalStore(
++    (l) => {
++      listeners.add(l);
++      return () => {
++        listeners.delete(l);
++      };
++    },
++    () => known,
++    () => null,
++  );
++  useEffect(() => {
++    if (ask) void deviceVoices();
++  }, [ask]);
++  return voices;
++}
++
++const never = () => () => {};
++
++/**
++ * Whether Listen can be offered on a text with no recording: the device can
++ * speak. Drawn as true on the server, so a page drawn there does not move when
++ * it wakes; a browser with no speech takes it away.
++ */
++export function useCanSpeak(): boolean {
++  return useSyncExternalStore(never, canSpeak, () => true);
++}
++
++/** For tests. */
++export function forgetDeviceVoices(): void {
++  known = null;
++  asking = null;
++}
++
++/** A phone's own name for a voice that is an id, not a name: Android's "en-gb-x-gba-local". */
++function isAnId(voice: PhoneVoice): boolean {
++  return voice.name === voice.id && !/\s/.test(voice.name) && /[-_#.]/.test(voice.name);
++}
++
++export type VoiceRow = { voice: PhoneVoice; name: string; language: string };
++
++/**
++ * The phone's voices for a language as the Voice sheet lists them, each with
++ * the name a reader sees and its language in the reader's own words: an
++ * iPhone's own names (Daniel, Samantha); a browser's, without the language it
++ * adds after a dash ("Microsoft David - English (United States)"); Android's
++ * ids, by their language and a number ("Voice 2"). A voice listed twice under
++ * one name (an iPhone's compact and enhanced Daniel) is listed once, the
++ * better, or the one the reader chose.
++ */
++export function voiceRows(voices: readonly PhoneVoice[], lang: string, locale: string, numbered: (n: number) => string, chosen: string | null = null): VoiceRow[] {
++  let names: Intl.DisplayNames | null = null;
++  try {
++    names = new Intl.DisplayNames([locale], { type: "language" });
++  } catch {
++    names = null;
++  }
++  const languageOf = (tag: string) => {
++    try {
++      return names?.of(tag.replace("_", "-")) ?? tag;
++    } catch {
++      return tag;
++    }
++  };
++  const counts = new Map<string, number>();
++  const rows: VoiceRow[] = [];
++  const seen = new Map<string, number>();
++  for (const voice of voicesFor(voices, lang)) {
++    const tag = voice.lang.toLowerCase().replace("_", "-");
++    let name: string;
++    if (isAnId(voice)) {
++      const n = (counts.get(tag) ?? 0) + 1;
++      counts.set(tag, n);
++      name = numbered(n);
++    } else {
++      name = voice.name.split(" - ")[0].trim() || voice.name;
++    }
++    const row = { voice, name, language: languageOf(voice.lang) };
++    const twin = `${tag}|${name}`;
++    const at = seen.get(twin);
++    if (at === undefined) {
++      seen.set(twin, rows.length);
++      rows.push(row);
++      continue;
++    }
++    // The twin listed already: keep the reader's choice, else the better.
++    const before = rows[at].voice;
++    if (before.id !== chosen && (voice.id === chosen || (voice.quality ?? 0) > (before.quality ?? 0))) rows[at] = row;
++  }
++  return rows;
++}
+diff --git a/lib/player/steps.ts b/lib/player/steps.ts
+index bebab5d2..67fe363e 100644
+--- a/lib/player/steps.ts
++++ b/lib/player/steps.ts
+@@ -1,6 +1,7 @@
+ import { nextChapter, prevChapter } from "@/lib/bible/books";
+ import { sameRecording } from "@/lib/chants/media";
+ import { idOfSavedSrc } from "@/lib/listen/shelf";
++import { spokenOf } from "@/lib/listen/speech/spoken";
+ import { listenHref, parseListenId } from "@/lib/listen/texts";
+ import { readingOfSrc } from "@/lib/readAloud/chapters";
+ 
+@@ -73,6 +74,13 @@ export function playingOf(src: string | null, chants: readonly ChantRowLike[] |
+   if (!src) return null;
+   const reading = readingOfSrc(src);
+   if (reading) return { kind: "chapter", ...reading };
++  // Read by the phone's voice (1.9, lib/listen/speech/spoken.ts): a chapter, in
++  // the English or a downloaded Bible, is a chapter as a recording's is (Speed,
++  // Read at the verse, Share); a life, a council's section and the rest, a text.
++  const spoken = spokenOf(src);
++  if (spoken?.kind === "bible") return { kind: "chapter", book: spoken.book, chapter: spoken.chapter };
++  const spokenRef = spoken?.kind === "text" ? parseListenId(spoken.id) : null;
++  if (spoken?.kind === "text" && spokenRef) return { kind: "text", id: spoken.id, href: listenHref(spokenRef) };
+   // Another text: the bucket's recording, or its copy saved on the phone.
+   const text = TEXT_RECORDING.exec(src)?.[1] ?? idOfSavedSrc(src);
+   const ref = text ? parseListenId(text) : null;
+diff --git a/lib/readAloud/play.ts b/lib/readAloud/play.ts
+index 8f0f7ebc..85acdd57 100644
+--- a/lib/readAloud/play.ts
++++ b/lib/readAloud/play.ts
+@@ -1,9 +1,14 @@
+ "use client";
+ 
++import type { DownloadableBible } from "@/lib/bible/downloads/catalog";
++import { chapterKey, rememberAnchors, whenPageVerses } from "@/lib/listen/speech/pageText";
++import { openVoiceSheet } from "@/lib/listen/speech/sheet";
++import { speakText, voiceFor } from "@/lib/listen/speech/speak";
++import { spokenBibleSrc, voiceLang } from "@/lib/listen/speech/spoken";
+ import { play, seek, setLoopMode, setTrack } from "@/lib/prayers/persistentAudioStore";
+ import { readSpeed } from "@/lib/player/speed";
+ 
+-import { readAloudManifest, readAloudSrc, verseCaptions } from "./chapters";
++import { hasReadAloud, readAloudManifest, readAloudSrc, verseCaptions } from "./chapters";
+ import { coverName, readAloudCover } from "./covers";
+ import { startOf, watchPlaces } from "./resume";
+ 
+@@ -49,3 +54,55 @@ export async function startReading(book: string, chapter: number, title: string,
+   setLoopMode("off");
+   play();
+ }
++
++/**
++ * Listen on a chapter (1.9, build 95 note 25, his "all recs" of 2026-11-13:
++ * the phone's voices read the whole Bible, free for every reader). The voice
++ * the reader chose for the chapter's language reads it: Heart, its recording,
++ * where the English has one and no other voice is chosen; else the phone's
++ * voice, reading the very words on the page, in the English or the Bible the
++ * reader downloaded, the Old Testament too. Where the phone has no voice for
++ * the language and there is no recording, the Voice sheet says so and where
++ * one is added. What it did: "heart", "phone", "none", or "failed" (the page's
++ * words were not at hand, or the device cannot speak after all).
++ */
++export async function listenToChapter(o: {
++  book: string;
++  chapter: number;
++  title: string;
++  t: (key: string) => string;
++  /** The downloaded Bible the page shows the chapter in, or null for the English. */
++  bible: DownloadableBible | null;
++}): Promise<"heart" | "phone" | "none" | "failed"> {
++  const recorded = !o.bible && hasReadAloud(o.book, o.chapter);
++  const lang = o.bible ? voiceLang(o.bible.textLang) : "en";
++  const use = await voiceFor(lang, recorded);
++  if (use.kind === "heart") {
++    await startReading(o.book, o.chapter, o.title, o.t);
++    return "heart";
++  }
++  if (use.kind === "none") {
++    openVoiceSheet({ none: { lang } });
++    return "none";
++  }
++  // The page's own words: a page opening as a reading rolls on into it hands them over a moment later.
++  const verses = await whenPageVerses(chapterKey(o.book, o.chapter, o.bible?.id ?? null), 8000);
++  if (!verses?.length) return "failed";
++  const cover = readAloudCover(o.book);
++  const src = spokenBibleSrc(o.book, o.chapter, o.bible?.id ?? null);
++  const ok = await speakText({
++    src,
++    pieces: verses.map((v) => ({ text: v.text, ...(typeof v.n === "number" ? { n: v.n } : {}) })),
++    lang,
++    voice: use.voice,
++    title: o.title,
++    artist: coverName(cover, o.t) ?? o.t("readAloud.by"),
++    art: cover.src,
++    artFallback: cover.fallback,
++    artSize: cover.size ?? undefined,
++    rtl: o.bible?.dir === "rtl",
++  });
++  if (!ok) return "failed";
++  rememberAnchors(src, verses.map((v) => v.anchor));
++  return "phone";
++}
+diff --git a/lib/readAloud/rollOn.ts b/lib/readAloud/rollOn.ts
+new file mode 100644
+index 00000000..a715c722
+--- /dev/null
++++ b/lib/readAloud/rollOn.ts
+@@ -0,0 +1,31 @@
++"use client";
++
++/**
++ * A chapter's reading asked for on the page about to open (1.7, 1.9): a
++ * reading that ended rolls on into the next chapter, and the player's previous
++ * and next step to a chapter the phone's voice reads, which needs that page's
++ * own words. The page reads the ask as it opens (components/bible/ReadAloud.tsx,
++ * ReadAloudFollow) and begins.
++ */
++const NEXT_KEY = "purify:readAloud.next";
++
++export function askToListenAt(book: string, chapter: number): boolean {
++  try {
++    window.sessionStorage.setItem(NEXT_KEY, `${book}/${chapter}`);
++    return true;
++  } catch {
++    return false;
++  }
++}
++
++/** Whether this chapter's reading was asked for as it opened; the ask is taken. */
++export function takeListenAsk(book: string, chapter: number): boolean {
++  try {
++    const waiting = window.sessionStorage.getItem(NEXT_KEY);
++    if (waiting !== `${book}/${chapter}`) return false;
++    window.sessionStorage.removeItem(NEXT_KEY);
++    return true;
++  } catch {
++    return false;
++  }
++}
+-- 
+2.43.0
+
