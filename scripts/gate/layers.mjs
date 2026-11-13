@@ -88,6 +88,17 @@ const CASES = [
     { scroll: 600 },
   ],
   [
+    "a fixed backdrop behind the page, hidden from assistive technology, its picture under the top bar (the theology path's step room)",
+    `<div data-room aria-hidden="true" style="position:fixed;left:0;right:0;top:0;height:70%;z-index:0;background:linear-gradient(#3a2a1a,#101013)"><span style="position:absolute;left:24px;top:14px;font:600 20px serif;color:#eee">I The Holy Trinity</span></div><div data-top style="position:fixed;left:0;right:0;top:0;height:51px;z-index:5;display:flex;align-items:center;padding:0 9px"><button style="width:44px;height:44px;border-radius:22px;border:0;background:rgba(0,0,0,0.45);color:#fff">&lt;</button></div><div style="position:relative;z-index:1;padding-top:62%">${WORDS}</div>`,
+    false,
+  ],
+  [
+    "the same box raised in front of the page, under the same top bar",
+    `<div data-room aria-hidden="true" style="position:fixed;left:0;right:0;top:0;height:70%;z-index:4;background:linear-gradient(#3a2a1a,#101013)"><span style="position:absolute;left:24px;top:14px;font:600 20px serif;color:#eee">I The Holy Trinity</span></div><div data-top style="position:fixed;left:0;right:0;top:0;height:51px;z-index:5;display:flex;align-items:center;padding:0 9px"><button style="width:44px;height:44px;border-radius:22px;border:0;background:rgba(0,0,0,0.45);color:#fff">&lt;</button></div><div style="position:relative;z-index:1;padding-top:62%">${WORDS}</div>`,
+    true,
+    ["data-top", "data-room"],
+  ],
+  [
     "a menu placed over the tab bar",
     WORDS + TABS + `<div style="position:relative;margin:16px"><div data-menu role="menu" style="position:absolute;left:0;top:0;width:200px;height:120px;background:#2a2a2e;color:#fff">Copy</div></div>`,
     true,

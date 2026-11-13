@@ -489,8 +489,14 @@ export async function judgeFrames(rec, { motion = "on" } = {}) {
       fails.push({ kind: "misplaced", detail: `${m.name} drawn first at ${m.from.join(",")}${m.corner ? ", the corner," : ""} then at ${m.to.join(",")} with nothing moving it there, ${Math.round(m.t - rec.tapped)}ms after the tap`, frames: nearest(frames, m.t) });
     }
     let worst = null;
+    // A shift in a page switch's own swap, under the picture of the page being left, is the switch
+    // itself and no reader sees it (scripts/gate/inpage.mjs, "A page switch's own swap"): the route's
+    // box under the back bar the page being left had, five chants and the Bible (Gate 2.0's run,
+    // 2026-11-13). A swap whose picture never came is counted for 600ms at the most.
+    const swaps = inPage.swaps ?? [];
+    const pictured = (t) => swaps.some((w) => t >= w.start - 1 && t <= (w.ready ?? w.start + 600) + 1);
     for (const s of inPage.shifts) {
-      if (s.t < rec.tapped) continue;
+      if (s.t < rec.tapped || pictured(s.t)) continue;
       for (const src of s.sources) {
         const far = Math.max(Math.abs(src.to[0] - src.from[0]), Math.abs(src.to[1] - src.from[1]));
         // A box that had no size before came into being: that is not a shift.
@@ -687,8 +693,44 @@ function plant(kind) {
       S.style.transition = `transform 320ms ${curve}`;
       await frame();
       S.style.transform = "translateY(0)";
+    } else if (kind === "swap" || kind === "swapjump") {
+      // A page switch in a View Transition: the page being left has a bar over the route's box,
+      // the page arriving has none, so what the route's box holds stands 51px higher in the new
+      // page (Gate 2.0's chants: the shift reported in the swap, between its update and `ready`).
+      const bar = document.getElementById("bar");
+      const t = document.startViewTransition(() => {
+        bar.remove();
+        A.querySelector("h1").textContent = "Saints";
+      });
+      if (kind === "swapjump") {
+        // Then, in the live picture of the new page, something above its rows grows at once.
+        await t.ready.catch(() => {});
+        await frame();
+        const grow = document.createElement("div");
+        grow.style.cssText = "height:140px;background:#333";
+        A.insertBefore(grow, A.children[1]);
+      }
+      await t.finished.catch(() => {});
     }
   })();
+}
+
+/** What a planted change needs standing before the recording: the swap's bar and the route's box. */
+function prepare(kind) {
+  if (kind !== "swap" && kind !== "swapjump") return;
+  const A = document.getElementById("a");
+  const B = document.getElementById("b");
+  const bar = document.createElement("div");
+  bar.id = "bar";
+  bar.style.cssText = "height:51px;background:#1c1c20";
+  const route = document.createElement("div");
+  route.id = "route";
+  // In the flow under the bar, as a page stands under the back bar.
+  A.style.position = "relative";
+  B.style.position = "relative";
+  A.before(bar);
+  bar.after(route);
+  route.append(A, B);
 }
 
 const CASES = [
@@ -705,6 +747,8 @@ const CASES = [
   ["a sheet that rises on the house curve", "sheet", "on", []],
   ["the house's page switch from a page heavy with words to a light one (the old page nearly gone in a frame)", "house", "on", []],
   ["a page whose picture comes with it and whose words follow half a second later (not empty)", "staged", "on", []],
+  ["a page switch in a View Transition whose route box stands 51px higher in the page arriving (the switch itself, under its picture)", "swap", "on", []],
+  ["the same switch, then something in the live picture of the new page grows 140px at once", "swapjump", "on", ["jump"]],
   ["with motion reduced, an instant change", "cut", "reduce", []],
   ["no change at all", "none", "on", []],
 ];
@@ -725,6 +769,7 @@ async function selfTest() {
         const cdp = await ctx.newCDPSession(page);
         await page.setContent(PAGE);
         await ensureGate(page);
+        await page.evaluate(prepare, kind);
         await page.waitForTimeout(300);
         const rec = await recordFrames(page, cdp, () => page.evaluate(plant, kind), { moves: motion === "reduce", minMs: 700 });
         const v = await judgeFrames(rec, { motion });

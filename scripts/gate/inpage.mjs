@@ -19,6 +19,35 @@
 export function gateInPage() {
   if (window.__gate) return;
 
+  // ── A page switch's own swap ─────────────────────────────────────────
+  //
+  // A View Transition takes a picture of the screen as it is, then the page changes under that
+  // picture (its update), then a picture of the new page is taken, and only then does anything
+  // move on the screen (`ready`). A box that stands elsewhere in the new page than it stood in the
+  // old one (the route's own box, under a back bar the page being left had and the page arriving
+  // has not) is reported by the browser as a layout shift in that swap, but no reader sees it: the
+  // screen shows the old page's picture, then the new one's. Each swap's window, from its update to
+  // its `ready`, is kept here for the transitions check (scripts/gate/frames.mjs, "jump"). A shift
+  // after `ready` is in the live picture of the new page, and still a jump.
+  window.__gateSwaps = [];
+  if (typeof document.startViewTransition === "function" && !document.startViewTransition.__gate) {
+    const own = document.startViewTransition;
+    const wrapped = function (arg) {
+      const swap = { start: performance.timeOrigin + performance.now(), ready: Infinity };
+      window.__gateSwaps.push(swap);
+      const transition = own.call(this, arg);
+      const settle = () => {
+        if (swap.ready === Infinity) swap.ready = performance.timeOrigin + performance.now();
+      };
+      transition.ready.then(settle, settle);
+      // A transition skipped before its picture is taken has changed the page at once.
+      transition.finished.then(settle, settle);
+      return transition;
+    };
+    wrapped.__gate = true;
+    document.startViewTransition = wrapped;
+  }
+
   // ── Boxes as the screen draws them ───────────────────────────────────
 
   /** A colour's alpha, from any form the browser computes (rgb, rgba, color(), oklch with a slash). */
@@ -272,10 +301,16 @@ export function gateInPage() {
     const GROUND = o.ground ?? 0.85;
     const roots = [];
     const isRoot = new Map();
+    // The page's own backdrop: a fixed box set behind the page (z-index 0 or below) and hidden
+    // from assistive technology, a picture the page's words stand over, as the theology path's
+    // step room is (app/(app)/theology/path/[subject]/page.tsx, .step-room in app/globals.css).
+    // It is the page's ground, not a layer floating over it, and a bar over its picture is the
+    // house's bar over a picture, as on a saint's page (the arbiter's ruling, 2026-11-13).
+    const backdrop = (el, cs) => Boolean(el.closest("[aria-hidden='true']")) && cs.zIndex !== "auto" && Number(cs.zIndex) <= 0;
     for (const el of document.body.getElementsByTagName("*")) {
       const cs = getComputedStyle(el);
       let kind = null;
-      if (cs.position === "fixed") kind = "fixed";
+      if (cs.position === "fixed") kind = backdrop(el, cs) ? null : "fixed";
       else if (cs.position === "sticky" && stuck(el, cs, H)) kind = "sticky";
       else if (el.matches(":popover-open, dialog:modal")) kind = "top";
       else if (cs.position === "absolute" && el.matches(POPOVER)) kind = "popover";
@@ -722,7 +757,8 @@ export function gateInPage() {
     } catch {}
     s.mo.disconnect();
     window.__gateSample = null;
-    return { frames: s.frames, shifts: s.shifts, misplaced: s.misplaced, vtNames: [...s.vtNames] };
+    const swaps = (window.__gateSwaps || []).map((w) => ({ start: w.start, ready: w.ready === Infinity ? null : w.ready }));
+    return { frames: s.frames, shifts: s.shifts, misplaced: s.misplaced, vtNames: [...s.vtNames], swaps };
   }
 
   window.__gate = { layers, edge, sample, stop, nameOf };
