@@ -92,6 +92,18 @@ export function LaunchFrame() {
             className="launch-cross absolute left-1/2 top-1/2 max-w-none"
             style={{ width: CROSS_W, height: LAUNCH_CROSS_PX, marginLeft: -CROSS_W / 2, marginTop: -LAUNCH_CROSS_PX / 2 }}
           />
+          {/* Its light: the same cross with its glow, over the bare one in the
+              same place, blooming by opacity alone (app/globals.css,
+              .launch-glow; build 95 note 8: the glow itself animated
+              stuttered on a busy start). */}
+          {/* eslint-disable-next-line @next/next/no-img-element -- as above */}
+          <img
+            src={CROSS}
+            alt=""
+            decoding="sync"
+            className="launch-glow absolute left-1/2 top-1/2 max-w-none"
+            style={{ width: CROSS_W, height: LAUNCH_CROSS_PX, marginLeft: -CROSS_W / 2, marginTop: -LAUNCH_CROSS_PX / 2 }}
+          />
         </div>
       </div>
       {/* After the cover, so it is in the document before this runs. No

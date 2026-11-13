@@ -453,7 +453,8 @@ describe("where it is written, and how it goes", () => {
     return at < 0 ? "" : css.slice(at, css.indexOf("}", at));
   };
   // The intro's four moving parts, and the latest moment any star comes out.
-  const PARTS = [".launch-stars > i", ".launch-horizon", ".launch-level", ".launch-cross"];
+  // The cross's light is its own layer since build 95 note 8 (.launch-glow, blooming by opacity over the bare cross).
+  const PARTS = [".launch-stars > i", ".launch-horizon", ".launch-level", ".launch-glow"];
   const latestStar = Math.max(...[...cover.matchAll(/--star-at:(\d+)ms/g)].map((m) => Number(m[1])));
   /** A part's [length, delay] in ms at a pace, as the stylesheet times it. */
   const timing = (part: string, pace: "slow" | "quick"): [number, number] => {
@@ -494,10 +495,12 @@ describe("where it is written, and how it goes", () => {
   });
 
   it("goes in 600 ms on the first open of the day, and in 360 ms on every later one", () => {
-    expect(body("[data-launch-frame]")).toMatch(/transition: opacity 580ms [^;]* 20ms, visibility 0s linear 600ms;/);
-    expect(body("[data-launch-stage]").match(/ 600ms /g)).toHaveLength(3);
-    expect(body('html[data-intro-pace="quick"] [data-launch-frame]')).toMatch(/transition-duration: 340ms, 0s;\s*transition-delay: 20ms, 360ms;/);
-    expect(body('html[data-intro-pace="quick"] [data-launch-stage]')).toMatch(/transition-duration: 360ms;/);
+    // The cross, the stars and the horizon first, and the night once they are
+    // all but gone (build 95 note 8; launchHandOff.test.ts models the overlap).
+    expect(body("[data-launch-frame]")).toMatch(/transition: opacity 460ms [^;]* 140ms, visibility 0s linear 600ms;/);
+    expect(body("[data-launch-stage]").match(/ 360ms var\(--ease-house\)/g)).toHaveLength(2);
+    expect(body('html[data-intro-pace="quick"] [data-launch-frame]')).toMatch(/transition-duration: 280ms, 0s;\s*transition-delay: 80ms, 360ms;/);
+    expect(body('html[data-intro-pace="quick"] [data-launch-stage]')).toMatch(/transition-duration: 200ms;/);
   });
 
   it("with motion off it is the finished picture, and goes at once, on either pace", () => {
@@ -507,7 +510,7 @@ describe("where it is written, and how it goes", () => {
     // class. A part whose line weighs more (more than one class, or an
     // element as well) would outweigh it and still move, as the stars did
     // until 2026-10-28, so the line names that part too.
-    expect(css.indexOf(':where([data-motion="reduce"]) [data-launch-frame] *')).toBeGreaterThan(css.indexOf("\n.launch-cross {"));
+    expect(css.indexOf(':where([data-motion="reduce"]) [data-launch-frame] *')).toBeGreaterThan(css.indexOf("\n.launch-glow {"));
     for (const part of PARTS) {
       if (!/^\.[a-z-]+$/.test(part)) expect(css, part).toContain(`:where([data-motion="reduce"]) ${part}`);
     }

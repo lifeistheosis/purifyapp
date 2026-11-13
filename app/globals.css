@@ -11394,23 +11394,33 @@ html.is-native :is(input, textarea, select, [contenteditable]:not([contenteditab
    It covers the page until <html> carries both data-launch="ready" (NativeBridge,
    when the app's first screen is drawn) and data-intro="played" (the
    document's own lines, a whole build after the logo screen was asked to go).
-   Then the cross, the stars and the horizon lift away with a short blur, as
-   the cards' words leave, and the night fades over the screen that has
-   arrived under it. The taps go through from that instant, not from the end
+   Then the cross, the stars and the horizon lift away, and once they are all
+   but gone the night fades over the screen that has arrived under it. The taps go through from that instant, not from the end
    of the fade, and visibility takes it out of the page once the fade is over.
    Nothing here matches on the website: the cover is only in the apps'
    document. */
 /* The night fades in and out evenly, as in the clip the owner picked from:
    the house ease, quick at the start, showed Today before the cross had
-   begun to rise. */
+   begun to rise.
+
+   It leaves in two steps, as a page does ("Every page switch moves"): the
+   cross, the stars and the horizon lift away first, on the house ease, and
+   the night opens onto the screen that has arrived under it only once they
+   are all but gone, in the same 600ms. Build 95 note 8, his word of
+   2026-11-13: "the animation is buggy". Filmed on the export, the stage went
+   on an ease-in (slow at the start) while the night faded evenly, so for a
+   third of a second the bright cross stood over Today's cards and the
+   horizon's rim ran through the verse of the day, smearing as the whole
+   stage was blurred to 6px. A blur, or any filter, animated frame by frame
+   is the costliest thing a phone draws, and his was on a battery saver: the
+   stage now moves by opacity and a 14px rise alone. */
 [data-launch-frame] {
- transition: opacity 580ms cubic-bezier(0.4, 0, 0.6, 1) 20ms, visibility 0s linear 600ms;
+ transition: opacity 460ms cubic-bezier(0.4, 0, 0.6, 1) 140ms, visibility 0s linear 600ms;
 }
 [data-launch-stage] {
  transition:
-  opacity 600ms cubic-bezier(0.5, 0, 0.9, 0.5),
-  transform 600ms cubic-bezier(0.5, 0, 0.9, 0.5),
-  filter 600ms cubic-bezier(0.5, 0, 0.9, 0.5);
+  opacity 360ms var(--ease-house),
+  transform 360ms var(--ease-house);
 }
 html[data-launch="ready"][data-intro="played"] [data-launch-frame] {
  opacity: 0;
@@ -11420,7 +11430,6 @@ html[data-launch="ready"][data-intro="played"] [data-launch-frame] {
 html[data-launch="ready"][data-intro="played"] [data-launch-stage] {
  opacity: 0;
  transform: translateY(-14px);
- filter: blur(6px);
 }
 /* The release's title page continues the intro on the first open of an
    update (the owner's pick B of r3-14, "the intro the reader has just
@@ -11435,7 +11444,6 @@ html[data-intro-hold="on"][data-launch] [data-launch-stage] {
  visibility: visible;
  pointer-events: auto;
  transform: none;
- filter: none;
 }
 html[data-intro-hold="taken"][data-launch] [data-launch-frame] {
  transition: none;
@@ -11471,14 +11479,18 @@ html[data-intro-hold="taken"][data-launch] [data-launch-frame] {
   opacity: 0.2;
  }
 }
-/* Light, not depth: the cards' glow-lit, blooming from the cross. */
-.launch-cross {
+/* Light, not depth: the cards' glow-lit, blooming from the cross. The glow
+   is the cross drawn again with its light, over the bare one (.launch-cross,
+   the logo screen's), and it blooms by opacity: until build 95 note 8 the
+   glow itself was animated, two drop-shadows growing frame by frame, which
+   a busy start or a battery saver makes stutter. Its light is the same. */
+.launch-glow {
  filter: drop-shadow(0 0 10px rgb(255 255 255 / 0.7)) drop-shadow(0 0 26px rgb(255 255 255 / 0.25));
  animation: launch-lit 1200ms ease-out 600ms both;
 }
 @keyframes launch-lit {
  from {
-  filter: drop-shadow(0 0 0 rgb(255 255 255 / 0)) drop-shadow(0 0 0 rgb(255 255 255 / 0));
+  opacity: 0;
  }
 }
 /* The quick pace, every cold start after the first of the reader's day: the
@@ -11486,11 +11498,11 @@ html[data-intro-hold="taken"][data-launch] [data-launch-frame] {
    900 ms (INTRO_QUICK_BUILD_MS), each star at half its moment, and gone in
    360 ms. Lengths and delays only. */
 html[data-intro-pace="quick"] [data-launch-frame] {
- transition-duration: 340ms, 0s;
- transition-delay: 20ms, 360ms;
+ transition-duration: 280ms, 0s;
+ transition-delay: 80ms, 360ms;
 }
 html[data-intro-pace="quick"] [data-launch-stage] {
- transition-duration: 360ms;
+ transition-duration: 200ms;
 }
 html[data-intro-pace="quick"] .launch-stars > i {
  animation-duration: 420ms;
@@ -11503,7 +11515,7 @@ html[data-intro-pace="quick"] .launch-level {
  animation-duration: 760ms;
  animation-delay: 140ms;
 }
-html[data-intro-pace="quick"] .launch-cross {
+html[data-intro-pace="quick"] .launch-glow {
  animation-duration: 600ms;
  animation-delay: 300ms;
 }
