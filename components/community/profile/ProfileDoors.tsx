@@ -23,6 +23,12 @@ import { tabForKey } from "@/lib/ui/sectionTabs";
  * unmounted on a switch changed the card's height, and the card, pinned to
  * the foot of a phone and centred on a computer, jumped with it (the owner,
  * 2026-10-02). With one door there is no row, only its panel.
+ *
+ * With motion on, a door hands its panel over as the house's pieces do (the
+ * mini player's card and pill, app/globals.css): the old panel fades, the new
+ * one follows it in the same cell, so nothing moves and nothing cuts (build 95
+ * note 13, "make the profile system even smoother": the panels used to swap
+ * in one frame). With motion off they change at once.
  */
 
 /** A person, as the sheet's About door draws one: the head lit inside its ring. */
@@ -126,7 +132,12 @@ export function ProfileDoors({
             aria-labelledby={`profile-tab-${door}`}
             aria-hidden={door !== open}
             inert={door !== open}
-            className={cn("col-start-1 row-start-1 min-w-0", door !== open && "invisible")}
+            className={cn(
+              "col-start-1 row-start-1 min-w-0",
+              door === open
+                ? "visible opacity-100 motion-safe:[transition:opacity_var(--duration-fast)_var(--ease-house)_120ms,visibility_0s]"
+                : "invisible opacity-0 motion-safe:[transition:opacity_var(--duration-fast)_var(--ease-house),visibility_0s_linear_var(--duration-fast)]",
+            )}
           >
             {panels[door]}
           </div>

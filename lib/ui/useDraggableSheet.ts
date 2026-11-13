@@ -65,6 +65,27 @@ const MIN_HALF_GAIN = 64;
 /** Movement before the body hands a gesture to the sheet. */
 const SLOP_PX = 6;
 
+/** A release faster than this (px per ms) is a flick: the sheet leaves at the
+ *  finger's own speed rather than starting again from a stop. */
+const FLICK_PX_MS = 0.5;
+/** A flicked sheet leaves in this long at least (a very fast flick) and at
+ *  most CLOSE_MS. */
+const THROW_MIN_MS = 120;
+/** A thrown sheet starts one frame along its way. A transition's first frame
+ *  is where it starts from, so a flick let go stood still for that frame under
+ *  the lifted finger; begun a frame in, it carries on in the very next one. */
+const THROW_HEAD_START_MS = 16;
+
+/**
+ * How long a sheet let go at `v` px per ms (down) takes to travel `distance`
+ * px off the screen at that speed, or null for a release that is no flick,
+ * which closes on the ordinary curve from a stop.
+ */
+export function throwMs(distance: number, v: number): number | null {
+  if (!(v > FLICK_PX_MS) || !(distance > 0)) return null;
+  return Math.round(Math.min(CLOSE_MS, Math.max(THROW_MIN_MS, distance / v)));
+}
+
 export type DraggableSheet = {
   /** Keep rendering until the close animation has finished. */
   mounted: boolean;
@@ -88,6 +109,7 @@ export function useDraggableSheet({
   reduced,
   half = 0.6,
   locked = false,
+  smoothHeight = false,
 }: {
   open: boolean;
   onClose: () => void;
@@ -98,6 +120,13 @@ export function useDraggableSheet({
   /** While true a drag cannot close the sheet: it springs back instead (a
    *  confirmation that is already working). */
   locked?: boolean;
+  /** When what the sheet holds grows or shrinks while it rests open, its
+   *  height follows in the house's motion instead of snapping (build 95
+   *  note 13, the profile: "make the profile system even smoother"). A sheet
+   *  pinned to the foot of a phone moves its top edge by the whole change, so
+   *  a profile arriving under its loading lines lifted the card 432px in one
+   *  frame. With motion off it changes at once, as before. */
+  smoothHeight?: boolean;
 }): DraggableSheet {
   const panelRef = useRef<HTMLDivElement | null>(null);
   const scrimRef = useRef<HTMLButtonElement | null>(null);
@@ -122,13 +151,19 @@ export function useDraggableSheet({
   /** When the running open or settle transition ends (performance.now()). */
   const busyUntil = useRef(0);
   const drag = useRef<{ startY: number; startOffset: number; samples: { t: number; y: number }[] } | null>(null);
+  /** The finger's speed down (px per ms) when a drag let the sheet go, until it has left. */
+  const flick = useRef(0);
 
   const onCloseRef = useRef(onClose);
   const lockedRef = useRef(locked);
+  const reducedRef = useRef(reduced);
+  const smoothRef = useRef(smoothHeight);
   useEffect(() => {
     onCloseRef.current = onClose;
     lockedRef.current = locked;
-  }, [onClose, locked]);
+    reducedRef.current = reduced;
+    smoothRef.current = smoothHeight;
+  }, [onClose, locked, reduced, smoothHeight]);
 
   /** Where the sheet rests lowest while open: half if it has one. */
   const restAt = useCallback(() => halfAt.current ?? 0, []);
@@ -198,8 +233,17 @@ export function useDraggableSheet({
     }
   }, [restAt]);
 
+  /**
+   * "resize" hands the sheet's height over (smoothHeight), on the snap's time
+   * and the house curve. "throw" is a flicked sheet leaving: linear, so it
+   * goes on at the finger's own speed, in `thrownMs` (throwMs, above). A close from a stop (a
+   * tap on the scrim, Close, Back) starts slow and speeds away (EASE_OUT); after
+   * a flick that curve stood the sheet still for a frame or two and then
+   * pulled it away again (build 95 note 13, measured on the export: 395, 399,
+   * 408px after a release at 2.4px a millisecond).
+   */
   const transitions = useCallback(
-    (kind: "none" | "open" | "close" | "snap") => {
+    (kind: "none" | "open" | "close" | "snap" | "resize" | "throw", thrownMs: number = CLOSE_MS) => {
       const panel = panelRef.current;
       const scrim = scrimRef.current;
       if (!panel || !scrim) return;
@@ -209,11 +253,16 @@ export function useDraggableSheet({
         scrim.style.transition = "none";
         return;
       }
-      const ms = kind === "open" ? OPEN_MS : kind === "close" ? CLOSE_MS : SNAP_MS;
-      const ease = kind === "close" ? EASE_OUT : EASE;
+      const ms = kind === "open" ? OPEN_MS : kind === "close" ? CLOSE_MS : kind === "throw" ? thrownMs : SNAP_MS;
+      const ease = kind === "close" ? EASE_OUT : kind === "throw" ? "linear" : EASE;
       motion.current = { ms, ease };
       busyUntil.current = performance.now() + ms;
-      panel.style.transition = `transform ${ms}ms ${ease}`;
+      panel.style.transition =
+        kind === "resize"
+          ? `height ${ms}ms ${ease}`
+          : kind === "throw"
+            ? `transform ${ms}ms ${ease} -${THROW_HEAD_START_MS}ms`
+            : `transform ${ms}ms ${ease}`;
       // A full-width sheet's scrim also follows its edge (paint sets that).
       scrim.style.transition = `opacity ${ms}ms ${ease}`;
     },
@@ -246,8 +295,12 @@ export function useDraggableSheet({
     if (snap.current === "half" && !closing.current) settle(0);
   }, [settle]);
 
+  // A layout effect, so a close begins in the frame it was asked for: as a
+  // passive effect it began after the next frame was drawn, and a flicked
+  // sheet stood still for that frame under the lifted finger (build 95 note 13,
+  // measured on the export: 0, then 40px a frame, every time).
   /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (open) {
       closing.current = false;
       setMounted(true);
@@ -266,10 +319,14 @@ export function useDraggableSheet({
         panel.style.opacity = "0";
         scrim.style.opacity = "0";
       } else {
-        transitions("close");
+        // Flicked away: on at the finger's speed, as far as the screen's edge.
+        const thrown = throwMs(goneAt() - offset.current, flick.current);
+        if (thrown !== null) transitions("throw", thrown);
+        else transitions("close");
         paint(goneAt());
       }
     }
+    flick.current = 0;
     const t = setTimeout(() => setMounted(false), reduced ? DISSOLVE_MS : CLOSE_MS);
     return () => clearTimeout(t);
   }, [open, mounted, goneAt, paint, reduced, transitions]);
@@ -286,6 +343,7 @@ export function useDraggableSheet({
     transitions("none");
     offset.current = 0;
     panel.style.transform = "none";
+    panel.style.height = "";
     measure();
     const rest = restAt();
     if (reduced) {
@@ -322,6 +380,11 @@ export function useDraggableSheet({
   }, [open, mounted]);
 
   // Content or screen size changed: keep the sheet where it was resting.
+  // With smoothHeight, the height is handed over: the panel is held at the
+  // height on the screen, then eased to its new one while the scrim follows
+  // its edge; the hold is let go once it has arrived (the reflow after it).
+  // Nothing is measured while a hand-over runs: a held height read mid-way
+  // would cut the transition short.
   useEffect(() => {
     if (!mounted) return;
     const panel = panelRef.current;
@@ -331,15 +394,42 @@ export function useDraggableSheet({
       if (drag.current || closing.current) return;
       const wait = busyUntil.current - performance.now();
       if (wait > 0) {
+        // Still rising or settling: what it holds changing now is held at the
+        // height its motion began with (this runs before the frame is drawn,
+        // so the jump is never seen) and handed over once the motion ends.
+        if (smoothRef.current && !reducedRef.current && !panel.style.height && height.current > 0 && panel.offsetHeight !== height.current && !(snap.current === "half" && halfAt.current !== null)) {
+          panel.style.height = `${height.current}px`;
+        }
         clearTimeout(later);
         later = setTimeout(reflow, wait + 16);
         return;
       }
+      // What is on the screen now, and its own height with any hold let go.
+      // This runs after the new layout and before it is drawn: with no hold,
+      // the screen still shows the height last measured, not offsetHeight.
+      const held = panel.style.height !== "";
+      const shown = held ? panel.offsetHeight : height.current;
+      if (held) {
+        panel.style.transition = "none";
+        panel.style.height = "";
+      }
       const was = { h: height.current, half: halfAt.current };
       measure();
-      if (height.current === was.h && halfAt.current === was.half) return;
+      if (!held && height.current === was.h && halfAt.current === was.half) return;
+      const atHalf = snap.current === "half" && halfAt.current !== null;
+      if (smoothRef.current && !reducedRef.current && !atHalf && Math.abs(height.current - shown) >= 1) {
+        panel.style.height = `${shown}px`;
+        void panel.offsetHeight;
+        transitions("resize");
+        panel.style.height = `${height.current}px`;
+        setSnap("full");
+        paint(0);
+        clearTimeout(later);
+        later = setTimeout(reflow, SNAP_MS + 32);
+        return;
+      }
       transitions("none");
-      if (snap.current === "half" && halfAt.current !== null) paint(halfAt.current);
+      if (atHalf) paint(halfAt.current as number);
       else {
         setSnap("full");
         paint(0);
@@ -360,7 +450,11 @@ export function useDraggableSheet({
     (y: number) => {
       if (closing.current) return;
       drag.current = { startY: y, startOffset: offset.current, samples: [{ t: performance.now(), y }] };
+      flick.current = 0;
       transitions("none");
+      // A height being handed over goes to its new height under the finger.
+      const panel = panelRef.current;
+      if (panel?.style.height) panel.style.height = "";
     },
     [transitions],
   );
@@ -392,6 +486,7 @@ export function useDraggableSheet({
     const projected = y + v * 180;
     const closeLine = low + Math.min(140, (height.current - low) * 0.4);
     if (!lockedRef.current && (projected > closeLine || (v > 1 && y > low - 8))) {
+      flick.current = Math.max(0, v);
       onCloseRef.current();
       return;
     }

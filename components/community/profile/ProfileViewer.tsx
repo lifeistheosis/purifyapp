@@ -9,6 +9,7 @@ import { ActionMenu, type ActionMenuItem } from "@/components/community/ActionMe
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
 import { MedalCase } from "@/components/community/profile/ProfileBadges";
 import {
+  ARRIVE,
   ProfileAboutDoor,
   ProfileFace,
   ProfileMoment,
@@ -169,7 +170,9 @@ export function ProfileViewer({
   const picture = useRef({ up: false, downAt: 0 });
   const closeRef = useRef<HTMLButtonElement | null>(null);
 
-  const { mounted, panelRef, scrimRef, bodyRef, grab } = useDraggableSheet({ open, onClose, reduced, half: 1 });
+  // smoothHeight: the card's height follows the profile as it arrives, its
+  // doors and a verse's words after it, instead of snapping (build 95 note 13).
+  const { mounted, panelRef, scrimRef, bodyRef, grab } = useDraggableSheet({ open, onClose, reduced, half: 1, smoothHeight: true });
 
   // The Campaigns door (1.9; lib/campaigns/useProfileCampaigns.ts): this
   // reader's campaigns as anyone may see them, asked for once the profile
@@ -559,7 +562,10 @@ export function ProfileViewer({
           <ProfileTop cosmetics={ready ? cosmetics : NO_COSMETICS} />
 
           {profile ? (
-            <div className="relative mx-auto w-full max-w-[560px] px-4 pb-8 pt-[50px] md:px-6">
+            // With no seed from the feed the whole profile arrives at once, after
+            // its loading lines: it fades in (filling backwards, so it keeps no
+            // stacking context once it is there), as its doors do below.
+            <div className={cn("relative mx-auto w-full max-w-[560px] px-4 pb-8 pt-[50px] md:px-6", !seed && ARRIVE)}>
               <ProfileFace
                 profile={profile}
                 actions={actions}
@@ -599,17 +605,20 @@ export function ProfileViewer({
                   <SkeletonList rows={2} />
                 </div>
               ) : (
-                <ProfileDoors
-                  key={profile.handle}
-                  doors={doors}
-                  label={t("profile.sections")}
-                  panels={{
-                    about: <ProfileAboutDoor profile={profile} onNavigate={onClose} onPicture={onPicture} inCommon={inCommon} />,
-                    badges: <MedalCase badges={profile.badges} />,
-                    posts: postList,
-                    campaigns: campaigns.length > 0 ? <ProfileCampaigns campaigns={campaigns} onOpen={onClose} /> : undefined,
-                  }}
-                />
+                // The doors take the loading lines' place: they fade in while the
+                // card's height follows them (useDraggableSheet, smoothHeight).
+                <div key={profile.handle} className={ARRIVE}>
+                  <ProfileDoors
+                    doors={doors}
+                    label={t("profile.sections")}
+                    panels={{
+                      about: <ProfileAboutDoor profile={profile} onNavigate={onClose} onPicture={onPicture} inCommon={inCommon} />,
+                      badges: <MedalCase badges={profile.badges} />,
+                      posts: postList,
+                      campaigns: campaigns.length > 0 ? <ProfileCampaigns campaigns={campaigns} onOpen={onClose} /> : undefined,
+                    }}
+                  />
+                </div>
               )}
             </div>
           ) : (

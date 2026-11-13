@@ -312,6 +312,16 @@ const PANEL =
   "rounded-[20px] border border-paper/[0.085] bg-gradient-to-b from-paper/[0.07] to-paper/[0.025] shadow-[inset_0_1px_0_rgb(255_255_255/0.07),0_18px_30px_-20px_rgb(0_0_0/0.95)]";
 const EYEBROW = "font-sans text-eyebrow font-bold uppercase tracking-[0.11em] text-paper/52";
 
+/**
+ * What arrives after its loading lines (a profile, its doors, a verse's
+ * words) fades in on the house curve instead of appearing in one frame
+ * (build 95 note 13: "Pictures and words arrive without a flash"). Opacity
+ * only, filling backwards, so it keeps no transform and no stacking context
+ * once it is there (app/globals.css, page-open-fade, which says why). With
+ * motion off it is simply there.
+ */
+export const ARRIVE = "motion-safe:animate-[page-open-fade_var(--duration-base)_var(--ease-house)_backwards]";
+
 /** The patron saint's icon and his name day, from the library in brief; null until it is read. */
 function usePatron(slug: string, locale: string): { icon: string | null; nameDay: string | null } | null {
   const [got, setGot] = useState<{ key: string; icon: string | null; nameDay: string | null } | null>(null);
@@ -461,7 +471,7 @@ export function VerseCard({
       </p>
       {words === null || words.text ? (
         words?.text ? (
-          <p className="relative mt-2 font-serif text-[17.5px] leading-[1.42] tracking-[-0.05px] text-paper">{words.text}</p>
+          <p className={cn("relative mt-2 font-serif text-[17.5px] leading-[1.42] tracking-[-0.05px] text-paper", ARRIVE)}>{words.text}</p>
         ) : (
           // The words are on their way: two lines held for them.
           <span aria-hidden className="relative mt-3 block space-y-2.5">

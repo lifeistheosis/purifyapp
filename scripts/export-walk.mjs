@@ -8197,6 +8197,101 @@ await section(50, async () => {
     await ctx.close();
   }
 
+  // ── Smoother (build 95 note 13, "make the profile system even smoother"),
+  // with motion on, every frame read. Before: the card slid up holding its
+  // loading lines and its top jumped 432px in one frame when the profile came;
+  // a door's panel swapped in one frame; flicked away, the card stood almost
+  // still for two frames and was then pulled off. Now the height follows what
+  // the card holds (the profile answering late here, as a phone's network
+  // does), a door hands its panel over, and a flick leaves at its own speed.
+  {
+    const { ctx, page, errors } = await opened();
+    await ctx.route(/\/api\/community\/profile\?/, async (route) => {
+      await new Promise((r) => setTimeout(r, 700));
+      return route.fallback();
+    });
+    await go(page, "/community/");
+    await page.waitForTimeout(1200);
+    await page.evaluate(() => {
+      window.__frames = [];
+      let watched = null;
+      let seen = 0;
+      const read = () => {
+        const card = document.querySelector("[data-profile-card]");
+        const r = card?.getBoundingClientRect();
+        const badges = document.querySelector("#profile-panel-badges");
+        window.__frames.push({
+          t: performance.now(),
+          top: r ? Math.round(r.top) : null,
+          loading: !!card?.querySelector("[aria-busy]"),
+          badges: badges ? Number(getComputedStyle(badges).opacity) : null,
+        });
+        // What is drawn, not what a frame callback sees first: a frame callback
+        // runs before layout, and the sheet holds its height in its own
+        // ResizeObserver, after layout and before the frame is drawn. This one
+        // is made after the sheet's (it waits three frames), so it is called
+        // after it and reads the height the frame shows.
+        if (card && card !== watched && ++seen > 3) {
+          watched = card;
+          new ResizeObserver(() => {
+            const last = window.__frames[window.__frames.length - 1];
+            if (last) last.top = Math.round(card.getBoundingClientRect().top);
+          }).observe(card);
+        }
+        if (window.__frames.length < 2000) requestAnimationFrame(read);
+      };
+      requestAnimationFrame(read);
+    });
+    const frames = () => page.evaluate(() => window.__frames.splice(0));
+    await page.evaluate((h) => { location.hash = `@${h}`; }, FREE.handle);
+    await page.waitForTimeout(2600);
+    const opening = (await frames()).filter((f) => f.top !== null);
+    const came = opening.findIndex((f, i) => i > 0 && opening[i - 1].loading && !f.loading);
+    const after = came > 0 ? opening.slice(came - 1) : [];
+    const steps = after.slice(1).map((f, i) => Math.abs(f.top - after[i].top));
+    const total = after.length ? Math.abs(after[after.length - 1].top - after[0].top) : 0;
+    const biggest = Math.max(0, ...steps);
+    const moving = steps.filter((s) => s > 0).length;
+    must(
+      came > 0 && total > 40 && biggest <= total * 0.4 && moving >= 6,
+      `the card's height follows the profile as it comes, over ${moving} frames, never more than ${biggest}px in one (${total}px in all)`,
+    );
+
+    await tap(page.locator("[data-profile-card]").getByRole("tab", { name: en["profile.tabBadges"] }));
+    await page.waitForTimeout(700);
+    const door = await frames();
+    const between = door.filter((f) => f.badges !== null && f.badges > 0.05 && f.badges < 0.95).length;
+    const tops = [...new Set(door.map((f) => f.top))];
+    must(between >= 3 && tops.length === 1, `a door hands its panel over in ${between} frames, and the card holds still (tops ${tops.join(", ")})`);
+
+    const cdp = await ctx.newCDPSession(page);
+    const touch = (type, y) => cdp.send("Input.dispatchTouchEvent", { type, touchPoints: type === "touchEnd" ? [] : [{ x: 195, y }] });
+    const strip = await page.evaluate(() => {
+      window.__lift = null;
+      window.addEventListener("pointerup", () => { window.__lift = performance.now(); }, { capture: true, once: true });
+      return Math.round(document.querySelector("[data-profile-card]").getBoundingClientRect().top + 14);
+    });
+    await touch("touchStart", strip);
+    for (let i = 1; i <= 8; i++) {
+      await touch("touchMove", strip + i * 40);
+      await page.waitForTimeout(8);
+    }
+    await touch("touchEnd", strip + 320);
+    await page.waitForTimeout(700);
+    // From the frame the finger lifted in: the very next frames go on at speed.
+    const lift = await page.evaluate(() => window.__lift);
+    const all = (await frames()).filter((f) => f.top !== null);
+    const from = [all.filter((f) => f.t <= lift).pop(), ...all.filter((f) => f.t > lift)].filter(Boolean);
+    const leaving = from.slice(1, 4).map((f, i) => f.top - from[i].top);
+    const gone = await page.evaluate(() => !document.querySelector("[data-profile-card]"));
+    must(
+      lift !== null && gone && leaving.length === 3 && Math.min(...leaving) >= 15,
+      `flicked away, the card goes on at the finger's speed from the frame it is let go, and leaves (${leaving.join(", ")}px in its first frames)`,
+    );
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
   // ── The other four palettes, and the motion switch: no gold for the free
   // reader, the words legible, a Plus card dark on every ground.
   for (const theme of ["parchment", "black", "candlelight", "monastery"]) {
@@ -8213,10 +8308,14 @@ await section(50, async () => {
       flame: getComputedStyle(document.querySelector('[data-frame="candle"] .af-flame') ?? document.body).animationName,
       dust: [...document.querySelectorAll(".pfx .pfx-p")].map((s) => getComputedStyle(s).animationName),
       rays: getComputedStyle(document.querySelector(".banner-motion") ?? document.body, "::before").animationName,
+      // Build 95 note 13: the doors hand over and what arrives fades in only with motion on.
+      doors: [...document.querySelectorAll("[data-profile-card] [role=tabpanel]")].map((p) => getComputedStyle(p).transitionDuration),
+      arrive: getComputedStyle(document.querySelector("[data-profile-doors]")?.parentElement?.parentElement ?? document.body).animationName,
     }));
     must(p.island && Array.isArray(plus) && plus.some(gold), `${theme}: a Plus card stays dark, its gold its own (${p.island ? "dark" : "follows the palette"}, ${plus ? plus.filter(gold).length : 0} gold)`);
     if (theme === "parchment") {
       must(still.flame === "none" && still.dust.length === 10 && still.dust.every((n) => n === "none") && still.rays === "none", `with motion off the flame, the dust and the light hold still (${still.flame}; ${[...new Set(still.dust)].join(",")}; ${still.rays})`);
+      must(still.doors.length >= 2 && still.doors.every((d) => d === "0s") && still.arrive === "none", `and the doors change at once, nothing fading in (${[...new Set(still.doors)].join(",")}; ${still.arrive})`);
       await page.screenshot({ path: path.join(SHOTS, "profile-plus-parchment.png") });
     }
     must(errors.length === 0, `${theme}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
