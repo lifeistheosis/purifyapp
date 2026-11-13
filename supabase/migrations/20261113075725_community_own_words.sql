@@ -1,7 +1,8 @@
 -- Community: a reader edits and deletes their own posts and replies.
 --
--- NOT SIGNED. It waits for the owner's word, relayed by the arbiter, on this
--- file's statements shown to him whole, and it does not merge without it.
+-- SIGNED: the owner's word to the arbiter, 2026-11-13 about 14:29 UTC, "all
+-- recs", to the recommendation to sign this file's statements, shown to him
+-- whole in chat at about 09:26 UTC.
 -- Merging this to main runs it on production (AGENTS.md). Until it runs, the
 -- website steps back: an edit answers "Editing isn't available yet", and a
 -- delete deletes outright, as before 1.9 (lib/community/ownWords.ts). If he

@@ -33,7 +33,7 @@ Numbers never go into these files or into a chat: no keys, EIN, D-U-N-S, address
 **When to rotate.** Rotate a chat when any one of these is true:
 
 1. A release has shipped.
-2. Its context has passed 400,000 tokens, or it has auto-compacted once. The arbiter reads this with get_session (`context_usage.used_tokens`) each time it routes work.
+2. Its context has passed 200,000 tokens, or it has auto-compacted once (his "all recs", 2026-11-13; it was 400,000). A long history is re-read at every step, so the end of a long chat is its dearest part: on 2026-11-13 the chats that ran to 600,000 cost $30 to $60 each, and the one that handed over at its limit about $13 for like work. The arbiter reads this with get_session (`context_usage.used_tokens`) each time it routes work, and asks the chat itself before giving it more, since that figure can lag far behind (it read 109,000 for a chat at 696,000).
 3. It is given a different kind of job.
 4. It shows strain: two failed corrections on one thing, a missed message, or a claim the record contradicts.
 

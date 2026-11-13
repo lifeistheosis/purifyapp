@@ -24,7 +24,7 @@
 - Current audit state, open findings, and the continuation ledger live in `docs/audit/`. Read `findings.yaml` before touching billing, webhook, cancel, or CI code.
 - **How the chats run** (the owner's word, 2026-11-12): "let's have the most optimal system in which we can optimize our token usage and our usage in general and our spending ... I want clear guardrails that optimize our system and that enhances our performance." `docs/OPERATIONS.md` binds every chat, and these are its rules:
   - A fresh chat reads only its role card (`docs/roles/`), `docs/NOW.md` and its baton.
-  - A chat rotates when a release ships, when it passes 400,000 tokens or has compacted once, when it takes a new kind of job, or when it shows strain. Never in the middle of a check.
+  - A chat rotates when a release ships, when it passes 200,000 tokens (his "all recs", 2026-11-13, to the arbiter's recommendation from the day's costs; it was 400,000) or has compacted once, when it takes a new kind of job, or when it shows strain. Never in the middle of a check.
   - `/compact` only at a natural break, and only once.
   - One message per chat per round.
   - The arbiter archives a chat once its job is done and pushed, without asking (his word, 2026-11-13).
