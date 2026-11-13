@@ -170,7 +170,10 @@ function SourceList({ labelKey, sources }: { labelKey: string; sources: SourceCi
       <h3 className="text-ui font-semibold text-paper/85">
         <T k={labelKey} />
       </h3>
-      <ul className="mt-3 space-y-4">
+      {/* A long word breaks where it must (Gate 2.0, 2026-11-13): a note that
+          gives a bare address (a Wikisource page, 60 characters and more) ran
+          846px past a phone's edge on the Philokalia's page. */}
+      <ul className="mt-3 space-y-4 [overflow-wrap:anywhere]">
         {sources.map((s, i) => (
           <li key={i}>
             <p lang="en" dir="ltr" className="font-sans text-ui leading-[1.6] text-paper/85">
