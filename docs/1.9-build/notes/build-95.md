@@ -159,3 +159,15 @@ His word, 2026-11-13 about 08:05 UTC, with a screenshot of the Translation sheet
 
 Two faults found in it, with Updates 4: the sheet tells a reader to check their connection when the server simply has no such file (the words must say what is true: offline, or not available right now); and the World English Bible stands greyed as "Coming soon" in a release that ships finished, which waits on his word (hide the row until it is real, recommended).
 
+
+## Notes 22, 23 and 24 (asked): the ambience with photographs; downloads in the notification bar and the app's notifications; Share opens the phone's share sheet
+
+His word, 2026-11-13 about 08:08 UTC, with three screenshots: the Ambience sheet (six tiles with icons: Rain, Morning birds, Bell and stillness "Playing", Cathedral bells, The sea, Wind; "Tap a second sound to play the two together."; Volume; Sleep timer Off, 15, 30, 60 min); the player on Luke 2 (Ambience among Loop, Speed, Sleep timer, Read); and the player's sheet for Luke 2 ("Luke is saved to listen offline", Remove; Sleep timer; Ambience, Bell and stillness) with Android's own clipboard preview at its foot showing "https://purifyapp.net/bible/luke/2", that is, Share copied the link instead of opening the share sheet:
+
+"can you ravmp the ambience design? I want each button to have a photo off the corresponding aesthetic of the sound l. (ensure the photos are fitting. and also whenever you are downloading something it should show up on your notification bar and also show up on your notifications in the app (its status and when it finishes). and the share should open the share system not just a copy link button."
+
+Note 22, done is: each sound's tile carries a real photograph that fits it and the Church's setting (the bells an Orthodox belfry, and so on), public domain or CC0 first, CC BY with its credit where needed, the licence of each recorded with the app's picture credits, never AI-made; small enough to ship inside the apps with the sounds; the name readable over it on every palette; the playing state plain to see. Stills with reasons for his yes. With Updates 5, after the sounds play (note 11).
+
+Note 23, done is: every download in the app (a Bible version, a book saved to listen offline, and any other) shows in the phone's notification bar while it runs and when it ends, and in the app's own notifications with its state and its end. On iPhone, where the bar shows no progress, a notification when it finishes. Nothing that needs a Play or App Store declaration without his word first. Stills of both for his yes. With Updates 4, after its notes 5, 7 and 8, beside note 21's honest words.
+
+Note 24, done is: every Share in the app opens the phone's own share sheet, on Android and iPhone (the Android web view has no Web Share, so today every share there copies the link); copying stays only where no share sheet exists, and says so. One way to share for the whole app. With Updates 8, before its Share row is built.
