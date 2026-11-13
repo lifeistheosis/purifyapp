@@ -54,6 +54,7 @@ Updated 2026-11-13 01:24 UTC.
 | Discover: hold to reorder | session_01VuYTwe3JWEDBwUnXwaSpRo | build 95 note 9 (asked): hold a Discover section to move it, with haptics, a non-drag way to move, the order kept on the device; a clip with reasons for his yes before it ships |
 | Community: edit and remove | session_01VuYTwbqWHrZ9heVSJNUBQ6 | build 95 note 10 (a reader's ask he sent): edit and remove your own posts and replies; any migration's SQL to him for his sign-off |
 | Updates 5 | session_01VuYTwdNzf5zBa9w5N5uqjW | build 95 note 11 (a reader's report): the ambient sounds fail to start; cause and mend on Android, iPhone and the web |
+| Updates 6 | session_01VuYTwZbHxrarLxPRuQyg2j | build 95 note 12: the badges move when one is chosen, and a grey pill with no readable words; later notes as they come |
 | Gate 2.0 | session_01VuYTwcBsPfuad62m3fX53p | new checks that would have caught notes 5 and 7 (motion on, floating layers meeting, the page edge, transitions frame by frame); proved on the old code; a run over the 128 screens; findings only |
 | Fable 5.2: fresh eyes | session_01VuYTwbsb3zRWGHWuECdRip | every screen judged against the approved look, ranked, with stills, for his decision; no changes |
 | SSM board | session_01VuYTwcSQmKLThRirvSeWa5 | the drop's words, the Vault |
