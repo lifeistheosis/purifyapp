@@ -1,0 +1,897 @@
+Build 95 notes 18 and 19, held for the owner's yes (Updates 11, 2026-11-13).
+The reading mode row in Settings as one swept row with clicks, and the English
+words of docs/1.9-build/notes/settings-words.md. His page:
+https://claude.ai/artifact/8FLKFQDUhaVExnP59vzjL3
+After his yes: git apply docs/1.9-build/drafts/build-95-notes-18-19.patch, then
+every language, the tests that hold the old words, and the fix checklist.
+
+diff --git a/app/(app)/settings/page.tsx b/app/(app)/settings/page.tsx
+index 2150af626..3ca9a46f8 100644
+--- a/app/(app)/settings/page.tsx
++++ b/app/(app)/settings/page.tsx
+@@ -5,7 +5,7 @@ import { T } from "@/components/i18n/T";
+ export const metadata = {
+   title: "Settings",
+   description:
+-    "Reading palette, font and size, the interlinear default, the calendar reckoning, and the language Purify speaks to you in.",
++    "Your account, reading mode, font and text size, the calendar you follow, and the language Purify speaks to you in.",
+ };
+ 
+ /**
+@@ -33,9 +33,6 @@ export default function SettingsPage() {
+             <h1 className="font-display-serif text-heading text-paper leading-[1.05]">
+               <T k="settings.title" />
+             </h1>
+-            <p className="mt-3 font-serif italic text-ui text-paper/70 leading-[1.6]">
+-              <T k="settings.subtitle" />
+-            </p>
+           </header>
+           {/* Its own box, so the first group is the first child of something
+               and sits at the top on a phone, where the header is not drawn. */}
+diff --git a/app/globals.css b/app/globals.css
+index 9df2a0060..0a5587bb1 100644
+--- a/app/globals.css
++++ b/app/globals.css
+@@ -6505,37 +6505,76 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
+    --color-gold of that palette's block above ("Premium Reading Modes", and
+    :root for Dark). lib/settings/__tests__/litPanels.test.ts holds the two
+    together. */
++/* The row the Plus preview draws its small pages on (.set-modes.plus-try-modes
++   sets their scale). Settings' own row was this until build 95 note 18: two
++   rows, the five and the two earned under them; it is now one row swept
++   sideways, .set-mode-row below. */
+ .set-modes {
+  --mp-k: 0.3333;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+ }
+-.set-modes[data-count="6"] {
+- --mp-k: 0.2857;
++/* The reading modes in Settings, one row (build 95 note 18, the owner: "a
++   clean scroller with haptic feedback rather than stacks"). The five, a look
++   while it is the one applied, and the two earned by reading
++   (components/settings/ReadingModePages.tsx, ModePages), on one row that runs
++   to the panel's edges and is swept sideways. It comes to rest on a page,
++   never between two: each page's start is where the row rests, its own
++   padding in from the edge, and the gap between two pages is that padding,
++   so the page before the one at rest ends exactly at the edge and no sliver
++   of it stands there. The pages are larger than the five that once shared
++   the panel's width, 81px on a phone and 89px from 400px wide, sizes chosen
++   so that at every common phone width (360 to 430) the next page is cut off
++   at the edge, between a quarter and three quarters shown, and a reader sees
++   there is more (lib/settings/__tests__/modeRow.test.ts does the sums). The
++   room above and below is for the lift and the light of the page that is on.
++   On a computer, where nothing is swept, all eight fit at a smaller scale. */
++.set-mode-row {
++ --mp-k: 0.4821;
++ display: flex;
++ gap: 16px;
++ margin-inline: -16px;
++ padding-block: 16px 8px;
++ padding-inline: 16px 0;
++ overflow-x: auto;
++ overscroll-behavior-x: contain;
++ scroll-snap-type: x mandatory;
++ scroll-padding-inline: 16px;
++ scrollbar-width: none;
+ }
+-/* The two palettes earned by reading (1.9, rec 79, lib/reader/earned.ts) on a
+-   row of their own under the five: five columns of the five's own width,
+-   spread as the five are, so each page stands under one above it. */
+-.set-modes-earned {
+- display: grid;
+- grid-template-columns: repeat(5, calc(168px * var(--mp-k)));
+- justify-content: space-between;
++.set-mode-row::-webkit-scrollbar {
++ display: none;
+ }
+-@media (max-width: 359px) {
+- .set-modes {
+-  --mp-k: 0.2857;
+- }
+- .set-modes[data-count="6"] {
+-  --mp-k: 0.25;
++/* The room after the last page: the gap before this, its start's 16px. */
++.set-mode-row::after {
++ content: "";
++ flex: none;
++ width: 0;
++}
++.set-mode-row > .set-mode {
++ flex: none;
++ scroll-snap-align: start;
++}
++/* A name may run a little past its page, into the gap, before it turns to a
++   second line; a word stays whole. A little larger than the five's, as the
++   pages are, and so are Purify Plus and how far the reader is. */
++.set-mode-row .set-mode-name {
++ max-width: calc(168px * var(--mp-k) + 8px);
++ font-size: 11.5px;
++}
++.set-mode-row .set-mode-plus,
++.set-mode-row .set-mode-progress {
++ font-size: 10px;
++}
++@media (min-width: 400px) {
++ .set-mode-row {
++  --mp-k: 0.5298;
+  }
+ }
+ @media (min-width: 768px) {
+- .set-modes,
+- .set-modes[data-count="6"] {
+-  --mp-k: 0.5;
+-  justify-content: flex-start;
+-  gap: 22px;
++ .set-mode-row {
++  --mp-k: 0.41;
+  }
+ }
+ .set-mode {
+diff --git a/components/settings/ReaderSize.tsx b/components/settings/ReaderSize.tsx
+index c80b0f467..5062c46fa 100644
+--- a/components/settings/ReaderSize.tsx
++++ b/components/settings/ReaderSize.tsx
+@@ -44,7 +44,7 @@ export function ReaderSizeRow() {
+   const { t } = useTranslate();
+   const { size, setSize, font, leadingValue } = useReaderPrefs(BIBLE_START_SIZE);
+   return (
+-    <Row icon={<SizesGlyph />} label={t("ui.readerSize")} description={t("settings.sizeHint")}>
++    <Row icon={<SizesGlyph />} label={t("ui.readerSize")}>
+       <ReaderSizeControl size={size} font={font} leading={leadingValue} onChange={setSize} />
+     </Row>
+   );
+diff --git a/components/settings/ReadingModeGallery.tsx b/components/settings/ReadingModeGallery.tsx
+index 8d81778a5..223a1a890 100644
+--- a/components/settings/ReadingModeGallery.tsx
++++ b/components/settings/ReadingModeGallery.tsx
+@@ -93,7 +93,6 @@ export function GalleryShelves({
+   return (
+     <>
+       <section className="set-fam mt-7 scroll-mt-24 first:mt-0">
+-        <p className="set-hint">{t("settings.readingHint")}</p>
+         <div role="group" aria-label={t("ui.readingMode")} className="set-shelf">
+           {free.map(tile)}
+         </div>
+diff --git a/components/settings/ReadingModePages.tsx b/components/settings/ReadingModePages.tsx
+index c0f9a2a51..da38d0296 100644
+--- a/components/settings/ReadingModePages.tsx
++++ b/components/settings/ReadingModePages.tsx
+@@ -20,8 +20,22 @@
+ // palette does, so it can be seen and put down from Settings too. The page
+ // and the tile are exported for that gallery, which draws every palette with
+ // them.
++//
++// One row, swept sideways (build 95 note 18, the owner: "reading mode chooser
++// here should be a clean scroller with haptic feedback rather than stacks").
++// The five, a look while it is the one applied, and the two earned by reading
++// stand on one row in that order, each with its state (Purify Plus under a
++// paid one where the gate has said no, how far the reader is under a goal).
++// On a phone the row runs to the panel's edges and the next page is cut off
++// at the edge, so a reader sees there is more; it comes to rest on a page,
++// never between two (app/globals.css, "The reading modes in Settings, one
++// row"). A light click in the hand as each page passes the row's middle, the
++// chapter strip's own (lib/ui/scrollTicks.ts): the phone apps only, never
++// with Clicks as you scroll off. The page that is on is in sight when the
++// screen opens, and a page tapped at the edge comes whole into view; the row
++// alone moves, never the screen. On a computer all of them fit on the row.
+ 
+-import { Fragment, useState } from "react";
++import { Fragment, useLayoutEffect, useRef, useState, type RefObject } from "react";
+ 
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+ import { FONT_CLASSES, useReaderPrefs, type ReaderFont } from "@/components/reader/ReaderPrefs";
+@@ -31,7 +45,9 @@ import { Check } from "@/components/ui/icons/Check";
+ import { cn } from "@/lib/cn";
+ import type { EarnedPalettes } from "@/lib/reader/earned";
+ import { READING_THEMES, isCollectionTheme, themeWorn, type ReadingTheme } from "@/lib/reader/readingModes";
++import { inSightBy } from "@/lib/settings/modeRow";
+ import { JOHN_1_OPENING, PREVIEW_CHAPTER } from "@/lib/settings/preview";
++import { useScrollTicks } from "@/lib/ui/scrollTicks";
+ 
+ /** Wired to the reader's palette and the Plus gate. */
+ export function ReadingModePages() {
+@@ -60,40 +76,41 @@ export function ModePages({
+   onPick: (theme: ReadingTheme) => void;
+ }) {
+   const { t } = useTranslate();
+-  // The five palettes, as ever, and under them the two earned by reading (1.9,
+-  // rec 79, lib/reader/earned.ts): until earned they stand as goals, with how
+-  // far the reader is, and say how under their row once tapped.
++  // The two earned by reading (1.9, rec 79, lib/reader/earned.ts): until
++  // earned they stand as goals, with how far the reader is, and say how under
++  // the row once tapped.
+   const earned = useEarnedPalettes();
+   const [goal, setGoal] = useState<keyof EarnedPalettes | null>(null);
+-  // The five, and a look only while it is the one applied (1.9): the rest are on their own page.
+-  const modes = READING_THEMES.filter((m) => !isCollectionTheme(m.id) && (!m.look || m.id === theme));
+-  const kept = READING_THEMES.filter((m) => isCollectionTheme(m.id));
++  // The five, a look only while it is the one applied (1.9: the rest are on
++  // their own page), and the two earned by reading, in the registry's order.
++  const modes = READING_THEMES.filter((m) => !m.look || m.id === theme);
++  const row = useRef<HTMLDivElement>(null);
++  useScrollTicks(row);
++  useOnInSight(row, `${worn ?? ""}:${theme}`);
+   const book = t("bible.books.john");
+   const chapter = t("bible.chapterN", { n: PREVIEW_CHAPTER });
+-  const palette = (mode: ReadingMode) => (
+-    <ModeTile key={mode.id} mode={mode} theme={theme} worn={worn} font={font} allows={allows} locked={locked} book={book} chapter={chapter} onPick={onPick} />
+-  );
+   return (
+     <>
+       <div
++        ref={row}
+         role="group"
+         aria-label={t("ui.readingMode")}
+-        className="set-modes"
++        className="set-mode-row"
+         data-count={modes.length}
+         // What the release's tour lights for Settings (lib/whatsNew/tour.ts).
+         data-tour="settings-panels"
+       >
+-        {modes.map(palette)}
+-      </div>
+-      <div role="group" aria-label={t("settings.paletteEarnedRow")} className="set-modes set-modes-earned" data-count={kept.length}>
+-        {kept.map((mode) => {
+-          const id = mode.id as keyof EarnedPalettes;
+-          const progress = earned[id];
+-          // Earned, or already applied (so it can be put down again): a palette like the rest.
+-          if (!progress || progress.earned || theme === mode.id) return palette(mode);
+-          return (
+-            <GoalTile key={mode.id} mode={mode} progress={progress} open={goal === id} font={font} book={book} chapter={chapter} onToggle={() => setGoal(goal === id ? null : id)} />
+-          );
++        {modes.map((mode) => {
++          const progress = isCollectionTheme(mode.id) ? earned[mode.id as keyof EarnedPalettes] : null;
++          // Still to be earned, and not the one applied: a goal. Earned, or
++          // already applied (so it can be put down again): a palette like the rest.
++          if (progress && !progress.earned && theme !== mode.id) {
++            const id = mode.id as keyof EarnedPalettes;
++            return (
++              <GoalTile key={mode.id} mode={mode} progress={progress} open={goal === id} font={font} book={book} chapter={chapter} onToggle={() => setGoal(goal === id ? null : id)} />
++            );
++          }
++          return <ModeTile key={mode.id} mode={mode} theme={theme} worn={worn} font={font} allows={allows} locked={locked} book={book} chapter={chapter} onPick={onPick} />;
+         })}
+       </div>
+       {goal ? (
+@@ -107,6 +124,50 @@ export function ModePages({
+   );
+ }
+ 
++/**
++ * The page that is on, in sight on the row (build 95 note 18). When the
++ * screen opens it is already there: a look or Monastery would otherwise
++ * stand past the edge, and a reader could not see what is on. A page tapped
++ * where the edge cuts it comes whole into view. The row alone moves, never
++ * the screen, and to a place it rests at (a page's own start, where the row
++ * comes to rest): the page before the one that is on leads the row, so it
++ * stands with a neighbour on each side. Still until the screen is up (a
++ * choice read from the device after the first draw must not glide in as the
++ * screen opens) and under reduced motion; a glide otherwise.
++ */
++function useOnInSight(row: RefObject<HTMLDivElement | null>, on: string): void {
++  useLayoutEffect(() => {
++    const box = row.current;
++    if (!box) return;
++    /** False until the row is laid out. */
++    const place = (): boolean => {
++      if (!box.clientWidth) return false;
++      const pages = [...box.querySelectorAll<HTMLElement>(":scope > .set-mode")];
++      const at = pages.findIndex((page) => page.getAttribute("aria-pressed") === "true");
++      if (at < 0) return true;
++      const style = getComputedStyle(box);
++      const by = inSightBy({
++        row: box.getBoundingClientRect(),
++        page: pages[at].getBoundingClientRect(),
++        lead: pages[Math.max(0, at - 1)].getBoundingClientRect(),
++        // Where a page rests: the row's own padding in from its start.
++        room: parseFloat(style.scrollPaddingInlineStart) || 0,
++        rtl: style.direction === "rtl",
++      });
++      if (by === null) return true;
++      const still = !box.closest(".set-root")?.hasAttribute("data-live") || document.documentElement.dataset.motion === "reduce";
++      box.scrollBy({ left: by, behavior: still ? "auto" : "smooth" });
++      return true;
++    };
++    if (place() || typeof ResizeObserver === "undefined") return;
++    const watch = new ResizeObserver(() => {
++      if (place()) watch.disconnect();
++    });
++    watch.observe(box);
++    return () => watch.disconnect();
++  }, [row, on]);
++}
++
+ export type ReadingMode = (typeof READING_THEMES)[number];
+ 
+ /**
+diff --git a/components/settings/SettingsClient.tsx b/components/settings/SettingsClient.tsx
+index 9b955c61e..1ef2577d5 100644
+--- a/components/settings/SettingsClient.tsx
++++ b/components/settings/SettingsClient.tsx
+@@ -186,12 +186,7 @@ function AccountSection({ reader }: { reader: Reader }) {
+   if (reader.email === null) {
+     return (
+       <Section id="account" title={t("settings.account")}>
+-        <LinkRow
+-          href="/signin?next=/settings"
+-          icon={<User size={18} strokeWidth={1.7} />}
+-          label={t("common.signIn")}
+-          description={t("common.optional")}
+-        />
++        <LinkRow href="/signin?next=/settings" icon={<User size={18} strokeWidth={1.7} />} label={t("common.signIn")} />
+       </Section>
+     );
+   }
+@@ -398,12 +393,7 @@ function SpaceSection() {
+           label={t("settings.level")}
+         />
+       </Row>
+-      <Row
+-        icon={<Wheat size={22} strokeWidth={1.35} />}
+-        label={t("settings.fasting")}
+-        description={t("settings.fastingHint")}
+-        sub={t(`onboard.fasting.${fasting}Sub`)}
+-      >
++      <Row icon={<Wheat size={22} strokeWidth={1.35} />} label={t("settings.fasting")} sub={t(`onboard.fasting.${fasting}Sub`)}>
+         <Track
+           value={fasting}
+           options={FASTING_RULES.map((f) => ({ value: f, label: t(`onboard.fasting.${f}`) }))}
+@@ -515,7 +505,6 @@ function TestersSection({ signedIn }: { signedIn: boolean }) {
+       <ButtonRow
+         icon={<ArrowUpLeft size={16} className="rtl:-scale-x-100" />}
+         label={t("testers.firstOpen")}
+-        description={t("testers.firstOpenHint")}
+         onClick={() => {
+           testFirstOpen();
+           router.push("/");
+@@ -524,7 +513,6 @@ function TestersSection({ signedIn }: { signedIn: boolean }) {
+       <ButtonRow
+         icon={<User size={18} strokeWidth={1.7} />}
+         label={t("testers.back")}
+-        description={t("testers.backHint")}
+         onClick={() => backToMyOwn()}
+         disabled={!testing}
+       />
+@@ -555,11 +543,10 @@ function MotionSection() {
+ 
+   if (!visible) return null;
+   return (
+-    <Section title={t("settings.motion")} hint={t("settings.motionHint")}>
++    <Section title={t("settings.motion")}>
+       <Row
+         icon={<Wind size={18} />}
+         label={t("settings.animations")}
+-        description={t("settings.animationsHint")}
+         control={<Switch on={!reduced} onChange={(on) => setMotionPreference(on ? "on" : "off")} label={t("settings.animations")} />}
+       />
+     </Section>
+@@ -665,11 +652,7 @@ function Body() {
+ 
+       <TestersSection signedIn={signedIn} />
+ 
+-      <Section
+-        id="reading"
+-        title={t("settings.reading")}
+-        hint={t("settings.readingHint")}
+-      >
++      <Section id="reading" title={t("settings.reading")}>
+         {/* Its head is the way to every palette, the seventeen looks among
+             them (1.9, ./ReadingModeGallery.tsx), and says which one is on. */}
+         <Row icon={<Book size={18} />} label={t("ui.readingMode")} description={modeName} href="/settings/reading-mode/">
+@@ -677,7 +660,7 @@ function Body() {
+         </Row>
+         <VespersRow />
+         <CandleSeasonRow />
+-        <Row icon={<FacesGlyph />} label={t("ui.readerFont")} description={t("settings.fontHint")}>
++        <Row icon={<FacesGlyph />} label={t("ui.readerFont")}>
+           <Track
+             faces
+             value={font}
+@@ -718,7 +701,7 @@ function Body() {
+         <ClicksRow />
+       </Section>
+ 
+-      <Section id="calendar" title={t("settings.calendar")} hint={t("settings.calendarHint")}>
++      <Section id="calendar" title={t("settings.calendar")}>
+         <Row icon={<Calendar size={18} />} label={t("ui.calendarReckoning")}>
+           <Track
+             value={calStyle}
+diff --git a/lib/i18n/messages/en.json b/lib/i18n/messages/en.json
+index d933b3f19..cd970b16a 100644
+--- a/lib/i18n/messages/en.json
++++ b/lib/i18n/messages/en.json
+@@ -768,10 +768,10 @@
+   "bible.readerSettings": "Reader settings",
+   "bible.night.title": "Night reading",
+   "bible.night.hint": "Candlelight, Focus, larger text and {sound}",
+-  "bible.vespers.title": "Candlelight at Vespers",
+-  "bible.vespers.hint": "On by itself at sunset, when the Church's day begins, and off in the morning",
+-  "bible.season.title": "Candlelight keeps the season",
+-  "bible.season.hint": "Its soft light takes the colour of the Church's long fasts, violet or deep blue",
++  "bible.vespers.title": "Candlelight at night",
++  "bible.vespers.hint": "On at sunset, off in the morning.",
++  "bible.season.title": "Candlelight in the fasts",
++  "bible.season.hint": "Violet in Great Lent, blue in the Nativity and Dormition fasts.",
+   "bible.moreActions": "More actions",
+   "bible.reader": "Reader",
+   "bible.clearWordHighlights": "Clear word highlights",
+@@ -1690,10 +1690,10 @@
+   "ui.removeName": "Remove name",
+   "ui.clearLocalDataOnThis": "Clear local data on this device",
+   "ui.editDisplayName": "Edit display name",
+-  "ui.readerFont": "Reader font",
+-  "ui.readerSize": "Reader size",
++  "ui.readerFont": "Font",
++  "ui.readerSize": "Text size",
+   "ui.interlinearByDefault": "Interlinear by default",
+-  "ui.calendarReckoning": "Calendar reckoning",
++  "ui.calendarReckoning": "Calendar you follow",
+   "ui.accountSections": "Account sections",
+   "ui.florilegia": "Florilegia",
+   "ui.gatheredLines": "Gathered lines",
+@@ -2575,22 +2575,22 @@
+   "settings.eyebrow": "Purify",
+   "settings.subtitle": "How the app reads, reckons the day, and speaks to you. Everything here is kept on this device.",
+   "settings.space": "Your space",
+-  "settings.spaceHint": "What you told us when you arrived. Purify shapes Today around it, and you can change it any time.",
+-  "settings.level": "Familiarity",
++  "settings.spaceHint": "These shape what Today shows you.",
++  "settings.level": "Familiarity with the faith",
+   "settings.fasting": "Fasting on Today",
+   "settings.fastingHint": "The full rule, a plain line on fast days, or nothing at all.",
+-  "settings.focus": "First focus",
++  "settings.focus": "Main interest",
+   "testers.title": "Testers mode",
+-  "testers.hint": "For admins. See Purify as another reader does. Nothing here is counted, and your account keeps your own answers.",
+-  "testers.from": "Where they come from",
+-  "testers.firstOpen": "First open",
++  "testers.hint": "See Purify as another reader does, with nothing counted.",
++  "testers.from": "Faith background",
++  "testers.firstOpen": "See the welcome questions",
+   "testers.firstOpenHint": "The welcome questions again, as a new reader meets them.",
+-  "testers.back": "Back to my own",
++  "testers.back": "Back to my own answers",
+   "testers.backHint": "Your own answers, put back exactly as they were.",
+   "testers.signedOut": "Preview as signed out",
+-  "testers.signedOutHint": "See the welcome questions and Today as a reader with no account meets them. You stay signed in.",
+-  "testers.signedOutOn": "On. You are still signed in. Tap to turn it off.",
+-  "testers.version": "A test's version to look at",
++  "testers.signedOutHint": "You stay signed in.",
++  "testers.signedOutOn": "On. Tap to turn it off.",
++  "testers.version": "Test version",
+   "testers.reminders.phone": "Testers: the phone's own code did not answer in time.",
+   "testers.reminders.no-address": "Testers: Google or Apple gave this phone no address to send to.",
+   "testers.reminders.offline": "Testers: the website could not be reached, or did not answer in time.",
+@@ -2673,16 +2673,16 @@
+   "settings.readingHint": "These apply everywhere, not only in the Bible and the Fathers.",
+   "settings.fontHint": "The face of the body text.",
+   "settings.sizeHint": "How large the body text appears at default zoom.",
+-  "settings.interlinearHint": "Show the original language beside the English when a chapter has it.",
+-  "settings.clicks": "Clicks as you scroll",
+-  "settings.clicksHint": "A light click in your hand as each prayer, chapter or event passes, and when a rule is complete. Off keeps the phone still.",
++  "settings.interlinearHint": "The Greek beside the English, where a chapter has it.",
++  "settings.clicks": "Haptic feedback",
++  "settings.clicksHint": "A light click as you scroll, and when you finish a prayer rule.",
+   "settings.calendar": "The calendar",
+   "settings.calendarHint": "Which reckoning the saint of the day, the fast, and the readings follow.",
+   "settings.language": "Language",
+   "settings.account": "Your account",
+   "settings.accountHint": "These need an account, so they live with it rather than being repeated here.",
+   "settings.notifications": "Notifications",
+-  "settings.notificationsHint": "Prayer reminders and email, both off by default.",
++  "settings.notificationsHint": "Prayer reminders and email.",
+   "email.prefs.title": "Email",
+   "email.prefs.hint": "Two optional lists. Both stay off until you turn them on, and every one of those emails has a one-click unsubscribe. Email about your orders, your membership and your support messages is not affected.",
+   "email.prefs.productUpdates": "The Sunday note",
+@@ -2705,7 +2705,7 @@
+   "settings.accountSecurity": "Account and security",
+   "settings.accountSecurityHint": "Profile, password, sessions.",
+   "settings.showSupporterMark": "Show my supporter mark",
+-  "settings.showSupporterMarkHint": "A small cross beside your name in the community while your Plus or Pro subscription is active. It tells other readers which you hold; turn it off to keep that to yourself.",
++  "settings.showSupporterMarkHint": "A small cross by your name in Community while you have Plus or Pro.",
+   "prayers.play": "Play",
+   "prayers.pause": "Pause",
+   "prayers.stop": "Stop",
+@@ -3649,9 +3649,9 @@
+   "settings.paletteDamaskHint": "Wine-red cloth, its own weave a step lighter",
+   "settings.paletteLinenHint": "White cloth, embroidered in red",
+   "settings.paletteProgress": "{count} of {total}",
+-  "settings.paletteEarnCouncils": "Read every council's page to the end to earn Councils: {count} of {total} so far.",
+-  "settings.paletteEarnCappadocian": "Read one work by each of the three Cappadocian Fathers to the end (St Basil the Great, St Gregory the Theologian, St Gregory of Nyssa) to earn Cappadocian: {count} of {total} so far.",
+-  "settings.palettePlusNote": "It is a Purify Plus palette.",
++  "settings.paletteEarnCouncils": "Read every council's page to the end to earn it.",
++  "settings.paletteEarnCappadocian": "Read one work each by St Basil the Great, St Gregory the Theologian and St Gregory of Nyssa to the end to earn it.",
++  "settings.palettePlusNote": "It needs Purify Plus.",
+   "settings.paletteEarnedRow": "Earned by reading",
+   "settings.familyNight": "Night",
+   "settings.familyNightLine": "The hours of the dark, and what lights them",
+@@ -3664,7 +3664,7 @@
+   "settings.interlinearHintGreek": "Show the Greek alongside the English on New Testament chapters as soon as you open them.",
+   "settings.calendarReckoningHint": "The default style used by /calendar when no ?style= query is set. New (Revised Julian) for the Ecumenical Patriarchate and the majority; Old (Julian) for the Russian, Serbian, Athonite, and Jerusalem traditions.",
+   "settings.discord": "Discord status",
+-  "settings.discordHint": "Desktop app only. Lets the Discord app on this computer show your friends that you are in Purify. Nothing is sent to Purify, and it stays off until you choose.",
++  "settings.discordHint": "Show your friends on Discord that you are in Purify.",
+   "settings.discordConnected": "Showing on Discord now.",
+   "settings.discordWaiting": "Open Discord on this computer and your status will appear there.",
+   "settings.discordUnavailable": "Discord status is not set up in this build yet.",
+@@ -3694,7 +3694,7 @@
+   "settings.discordPatronSignedOut": "Sign in to choose a patron saint.",
+   "settings.discordPatronChoose": "Choose",
+   "settings.discordPatronChange": "Change",
+-  "settings.discordNameDayHint": "On the day itself, friends see “Name day today”. The date follows your calendar, New or Old.",
++  "settings.discordNameDayHint": "On the day, friends see “Name day today”.",
+   "settings.discordFavoriteLabel": "Your favorite saint",
+   "settings.discordFavoritePick": "Choose a saint",
+   "settings.discordFavoriteSearch": "Search the saints",
+@@ -3706,8 +3706,8 @@
+   "settings.discordShowPlaceOn": "Friends see where you are, such as chapter 3 of 21.",
+   "settings.discordShowPlaceOff": "Off. Friends see only the book or the work.",
+   "settings.discordLiveBar": "Live progress bar",
+-  "settings.discordLiveBarHint": "Moves as you read. A bar and a percent, never a clock.",
+-  "settings.discordReadingNote": "Works for Scripture and for the saints' writings. The picture is the portrait of whoever wrote it. Prayer only ever shows as “At prayer”, and your account, messages and the shop are never shown.",
++  "settings.discordLiveBarHint": "Moves as you read, never a clock.",
++  "settings.discordReadingNote": "Prayer shows only as “At prayer”, and your account, messages and the shop are never shown.",
+   "settings.discordDressUp": "Dress up",
+   "settings.discordFollowSeason": "Follow the church year",
+   "settings.discordSeasonToday": "Today: {color} ({reason})",
+@@ -5272,11 +5272,11 @@
+   "bible.languageOffer.never": "Never ask again",
+   "bible.downloads.failedSave": "Could not save it on this device. Try again.",
+   "settings.storage": "On this device",
+-  "settings.storageHint": "What is kept here to read and listen to without a signal.",
+-  "settings.storageTotal": "{size} kept here, to read and listen to without a signal.",
+-  "settings.storageEmpty": "Nothing is kept here yet. Download a Bible from the reader's translations, or save a book to listen offline from the player.",
++  "settings.storageHint": "Saved here for reading and listening offline.",
++  "settings.storageTotal": "{size} saved here for reading and listening offline.",
++  "settings.storageEmpty": "Nothing saved yet: download a Bible in the reader or save a book in the player.",
+   "settings.storageWeek": "This week's readings",
+-  "settings.storageWeekHint": "The coming week's, kept by themselves on Wi-Fi and removed when their day has passed",
++  "settings.storageWeekHint": "Saved on Wi-Fi and removed after their day",
+   "settings.storageBible": "Bible",
+   "settings.storageListening": "To listen offline",
+   "settings.storageRemoveBook": "Remove {book} from this device",
+diff --git a/lib/search/buildCorpus.ts b/lib/search/buildCorpus.ts
+index 9df7ad676..8d23b2cde 100644
+--- a/lib/search/buildCorpus.ts
++++ b/lib/search/buildCorpus.ts
+@@ -115,12 +115,12 @@ const IN_ACCOUNT = say("settings.account", "Your account");
+ const SETTINGS: SearchItem[] = [
+   { id: "setting-all", label: IN_SETTINGS, labelKey: "nav.settings", href: "/settings", group: "Settings", keywords: "preferences options" },
+   { id: "setting-reading-mode", ...said("ui.readingMode", "Reading mode"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#reading", group: "Settings", keywords: "theme dark mode light mode true black night candlelight monastery parchment appearance colours colors" },
+-  { id: "setting-reader-font", ...said("ui.readerFont", "Reader font"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#reading", group: "Settings", keywords: "typeface serif sans letters" },
+-  { id: "setting-reader-size", ...said("ui.readerSize", "Reader size"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#reading", group: "Settings", keywords: "text size font size bigger smaller larger large" },
++  { id: "setting-reader-font", ...said("ui.readerFont", "Font"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#reading", group: "Settings", keywords: "reader font typeface serif sans letters" },
++  { id: "setting-reader-size", ...said("ui.readerSize", "Text size"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#reading", group: "Settings", keywords: "reader size font size bigger smaller larger large" },
+   { id: "setting-interlinear", ...said("ui.interlinearByDefault", "Interlinear by default"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#reading", group: "Settings", keywords: "greek hebrew original language word study" },
+-  { id: "setting-calendar", ...said("ui.calendarReckoning", "Calendar reckoning"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#calendar", group: "Settings", keywords: "old calendar new calendar julian revised gregorian" },
++  { id: "setting-calendar", ...said("ui.calendarReckoning", "Calendar you follow"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#calendar", group: "Settings", keywords: "calendar reckoning old calendar new calendar julian revised gregorian" },
+   { id: "setting-fasting", ...said("settings.fasting", "Fasting on Today"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#space", group: "Settings", keywords: "fast rule hide strict" },
+-  { id: "setting-space", ...said("settings.space", "Your space"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#space", group: "Settings", keywords: "familiarity first focus beginner new to the faith" },
++  { id: "setting-space", ...said("settings.space", "Your space"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#space", group: "Settings", keywords: "familiarity main interest first focus beginner new to the faith" },
+   { id: "setting-language", ...said("settings.language", "Language"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#language", group: "Settings", keywords: "translate translation greek romanian filipino russian spanish idioma langue sprache" },
+   // The account is the first group of the one Settings from 1.6, and its
+   // screens are that group's rows: each result opens the screen its row does.
+diff --git a/lib/settings/__tests__/litPanels.test.ts b/lib/settings/__tests__/litPanels.test.ts
+index 3927a2796..9aa461a20 100644
+--- a/lib/settings/__tests__/litPanels.test.ts
++++ b/lib/settings/__tests__/litPanels.test.ts
+@@ -142,13 +142,14 @@ describe("the reading modes", () => {
+     expect(night.filter((p) => p.checked).map((p) => p.palette)).toEqual(["candlelight"]);
+   });
+ 
+-  it("shows the two earned palettes on a row of their own under the five, as goals with how far the reader is until earned (1.9, rec 79)", () => {
++  it("stands the two earned palettes on the same row, after the five, as goals with how far the reader is until earned (1.9, rec 79; build 95 note 18)", () => {
+     const drawn = draw(createElement(ModePages, { theme: "default", font: "serif", allows: EVERY, locked: false, onPick: () => {} }));
+-    // The five as ever (pages() reads the buttons that apply a palette), then the two.
++    // The five as ever (pages() reads the buttons that apply a palette), then the two, on ONE row.
+     expect(pages(drawn).map((p) => p.palette)).toEqual(["default", "parchment", "black", "candlelight", "monastery"]);
+-    expect(drawn).toContain('data-count="5"');
++    expect(drawn.match(/role="group"/g)).toHaveLength(1);
++    expect(drawn).toMatch(/class="set-mode-row" data-count="7"/);
+     expect([...drawn.matchAll(/class="set-mode-page" data-palette="([^"]+)"/g)].map((m) => m[1])).toEqual(["default", "parchment", "black", "candlelight", "monastery", "councils", "cappadocian"]);
+-    expect(drawn).toMatch(/class="set-modes set-modes-earned" data-count="2"/);
++    expect(drawn).not.toContain("set-modes-earned");
+     // Nothing is earned in the first draw (the device's reading is read after it): both are goals.
+     expect(drawn.match(/data-palette-goal="(councils|cappadocian)"/g)).toHaveLength(2);
+     expect(drawn).toContain('<span class="set-mode-progress">0 of 19</span>');
+@@ -160,7 +161,7 @@ describe("the reading modes", () => {
+   });
+ 
+   it("keeps the looks on their own page, and stands the one applied here as a sixth (1.9)", () => {
+-    // The row is still the five: eighteen more would not be a row.
++    // The row is still the five and the two earned: eighteen more would not be a row.
+     const five = pages(draw(createElement(ModePages, { theme: "default", font: "serif", allows: EVERY, locked: false, onPick: () => {} })));
+     expect(five).toHaveLength(5);
+     const worn = draw(createElement(ModePages, { theme: "athos", font: "serif", allows: EVERY, locked: false, onPick: () => {} }));
+@@ -168,7 +169,7 @@ describe("the reading modes", () => {
+     expect(got.map((p) => p.palette)).toEqual(["default", "parchment", "black", "candlelight", "monastery", "athos"]);
+     expect(got.filter((p) => p.pressed).map((p) => p.palette)).toEqual(["athos"]);
+     expect(got[5].name).toBe("Holy Mountain");
+-    expect(worn).toContain('data-count="6"');
++    expect(worn).toContain('class="set-mode-row" data-count="8"');
+     // And its small page has rules of its own, with its picture behind its words.
+     expect(decls('.set-mode-page[data-palette="athos"]')["--mp-back"]).toContain("var(--scene-athos)");
+     expect(decls(".set-mode-page").background).toBe("var(--mp-back, var(--mp-ground))");
+diff --git a/lib/settings/__tests__/modeRow.test.ts b/lib/settings/__tests__/modeRow.test.ts
+new file mode 100644
+index 000000000..6ad9a1063
+--- /dev/null
++++ b/lib/settings/__tests__/modeRow.test.ts
+@@ -0,0 +1,228 @@
++// The reading modes in Settings as one row swept sideways (build 95 note 18).
++// His word, 2026-11-13 about 07:59 UTC, with a screenshot of the modes wrapped
++// in rows (Dark, Light, True black, Candlelight, Monastery, Holy Mountain, then
++// Councils "0 of 19" and Cappadocian "0 of 3" under them): "reading mode
++// chooser here should be a clean scroller with haptic feedback rather than
++// stacks".
++//
++// What this holds, each of which the two rows before it failed:
++//   - one row, the five, a look while it is applied and the two earned on it;
++//   - swept sideways, coming to rest on a page, running to the panel's edges;
++//   - the chapter strip's click as each page passes (lib/ui/scrollTicks.ts,
++//     whose own test holds the click: the phone apps only, never with Clicks
++//     as you scroll off);
++//   - the page that is on moved into sight by the row alone, never the
++//     screen, still under reduced motion, mirrored in Arabic;
++//   - pages a finger can take at every width, and the next one cut off at the
++//     edge at every common phone width, so a reader sees there is more;
++//   - all of them on the row on a computer, where nothing is swept.
++// Where the pages are drawn and how they look is litPanels.test.ts.
++
++import fs from "node:fs";
++import path from "node:path";
++
++import { describe, expect, it } from "vitest";
++
++import { inSightBy } from "../modeRow";
++
++const ROOT = process.cwd();
++const read = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8").replace(/\r\n/g, "\n");
++/** A file's code without its notes. */
++const code = (rel: string) =>
++  read(rel)
++    .replace(/\{\s*\/\*[\s\S]*?\*\/\s*\}/g, "")
++    .replace(/\/\*[\s\S]*?\*\//g, "")
++    .replace(/^\s*\/\/.*$/gm, "");
++
++const PAGES = code("components/settings/ReadingModePages.tsx");
++const CSS = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
++
++/** The rules of the stylesheet as [selector, body, the media query it is inside or ""]. */
++const RULES: [string, string, string][] = (() => {
++  const out: [string, string, string][] = [];
++  let media = "";
++  let depth = 0;
++  let mediaDepth = -1;
++  let at = 0;
++  let head = "";
++  for (let i = 0; i < CSS.length; i += 1) {
++    const ch = CSS[i];
++    if (ch === "{") {
++      head = CSS.slice(at, i).trim();
++      if (head.startsWith("@media")) {
++        media = head;
++        mediaDepth = depth;
++        depth += 1;
++        at = i + 1;
++        continue;
++      }
++      const close = CSS.indexOf("}", i);
++      out.push([head, CSS.slice(i + 1, close), media]);
++      i = close;
++      at = i + 1;
++      continue;
++    }
++    if (ch === "}") {
++      depth -= 1;
++      if (depth === mediaDepth) {
++        media = "";
++        mediaDepth = -1;
++      }
++      at = i + 1;
++    }
++  }
++  return out;
++})();
++
++/** One selector's declarations, outside any media query or inside the one named. */
++function decls(selector: string, media = ""): Record<string, string> {
++  const out: Record<string, string> = {};
++  for (const [sel, body, m] of RULES) {
++    if (m !== media) continue;
++    if (!sel.split(",").some((s) => s.trim() === selector)) continue;
++    for (const d of body.split(";")) {
++      const colon = d.indexOf(":");
++      if (colon > 0) out[d.slice(0, colon).trim()] = d.slice(colon + 1).trim();
++    }
++  }
++  return out;
++}
++
++const px = (v: string | undefined) => Number(/^(-?[\d.]+)px$/.exec(v ?? "")?.[1]);
++
++describe("the reading modes in Settings, one row", () => {
++  it("draws one row, not the five over a row of the two earned", () => {
++    expect(PAGES).toContain('className="set-mode-row"');
++    expect(PAGES).not.toContain("set-modes-earned");
++    expect(PAGES.match(/role="group"/g)).toHaveLength(1);
++    // The five, a look while it is the one applied, and the two earned, in the registry's order.
++    expect(PAGES).toContain("READING_THEMES.filter((m) => !m.look || m.id === theme)");
++  });
++
++  it("is swept sideways and comes to rest on a page, running to the panel's edges", () => {
++    const row = decls(".set-mode-row");
++    expect(row["overflow-x"]).toBe("auto");
++    expect(row["scroll-snap-type"]).toBe("x mandatory");
++    expect(row.display).toBe("flex");
++    // The panel's row is padded 16px at each side (.set-row): the row runs past that to the panel's edges.
++    expect(px(decls(".set-row").padding?.split(/\s+/)[1])).toBe(16);
++    expect(row["margin-inline"]).toBe("-16px");
++    // A page rests where its start meets the row's own padding.
++    expect(row["padding-inline"]).toBe("16px 0");
++    expect(row["scroll-padding-inline"]).toBe("16px");
++    const page = decls(".set-mode-row > .set-mode");
++    expect(page["scroll-snap-align"]).toBe("start");
++    expect(page.flex).toBe("none");
++    // Nothing glides by itself: a reader who asked for less motion is moved only by their own finger.
++    expect(row["scroll-behavior"]).toBeUndefined();
++  });
++
++  it("gives the click as each page passes, with the chapter strip's own hand (lib/ui/scrollTicks.ts)", () => {
++    expect(PAGES).toContain('import { useScrollTicks } from "@/lib/ui/scrollTicks";');
++    expect(PAGES).toContain("useScrollTicks(row);");
++    // On the row itself.
++    expect(PAGES).toMatch(/ref=\{row\}\s+role="group"\s+aria-label=\{t\("ui\.readingMode"\)\}\s+className="set-mode-row"/);
++  });
++
++  it("brings the page that is on into sight by moving the row alone, still under reduced motion", () => {
++    expect(PAGES).toContain("useOnInSight(row,");
++    expect(PAGES).toContain("box.scrollBy({ left: by, behavior: still ? \"auto\" : \"smooth\" })");
++    expect(PAGES).toContain('document.documentElement.dataset.motion === "reduce"');
++    // Never the screen: no scrollIntoView, no window scrolled.
++    expect(PAGES).not.toMatch(/scrollIntoView|window\.scroll/);
++  });
++
++  it("mirrors in Arabic: every room and edge is the row's start and end, never left or right", () => {
++    for (const sel of [".set-mode-row", ".set-mode-row > .set-mode", ".set-mode-row::after", ".set-mode-row .set-mode-name"]) {
++      const props = Object.keys(decls(sel));
++      expect(props.length, `${sel} has rules`).toBeGreaterThan(0);
++      expect(props.filter((p) => /(^|-)(left|right)$/.test(p)), sel).toEqual([]);
++    }
++  });
++
++  /** The page's width at a scale (.set-mode: calc(168px * var(--mp-k))). */
++  const width = (k: number) => 168 * k;
++  const scaleAt = (w: number) => {
++    const at = (media: string) => {
++      const k = Number(decls(".set-mode-row", media)["--mp-k"]);
++      expect(Number.isFinite(k) && k > 0, `--mp-k ${media || "outside a media query"}`).toBe(true);
++      return k;
++    };
++    if (w >= 768) return at("@media (min-width: 768px)");
++    if (w >= 400) return at("@media (min-width: 400px)");
++    return at("");
++  };
++  const GAP = () => px(decls(".set-mode-row").gap);
++
++  it("takes a finger on every page at every width (44px and more)", () => {
++    expect(decls(".set-mode").width).toBe("calc(168px * var(--mp-k))");
++    for (const w of [320, 360, 390, 412, 430, 600, 768, 1032]) {
++      expect(width(scaleAt(w)), `${w}px wide`).toBeGreaterThanOrEqual(44);
++      // The page is 228px tall at the same scale.
++      expect(228 * scaleAt(w), `${w}px wide`).toBeGreaterThanOrEqual(44);
++    }
++  });
++
++  it("cuts the next page off at the edge at every common phone width, so a reader sees there is more", () => {
++    // The screen pads Settings 16px at each side, and the row runs to the
++    // panel's edges: the row is the screen less 32px, and its first page
++    // rests 16px in from its start.
++    const shown = (w: number) => {
++      const k = scaleAt(w);
++      const step = width(k) + GAP();
++      const room = w - 32 - 16;
++      const part = room % step;
++      return part >= width(k) ? 0 : part / width(k);
++    };
++    const short = [360, 375, 390, 393, 412, 414, 430]
++      .map((w) => ({ w, part: shown(w) }))
++      .filter(({ part }) => part < 0.2 || part > 0.8)
++      .map(({ w, part }) => `${w}px wide: the page at the edge is ${Math.round(part * 100)}% shown`);
++    expect(short, short.join("\n")).toEqual([]);
++  });
++
++  it("stands all eight on the row on a computer, where nothing is swept", () => {
++    // From 768px wide the screen pads Settings 32px at each side, up to 720px.
++    for (const w of [768, 1032, 1440]) {
++      const row = Math.min(720, w - 64);
++      const eight = 16 + 8 * width(scaleAt(w)) + 7 * GAP();
++      expect(eight, `${w}px wide`).toBeLessThanOrEqual(row);
++    }
++  });
++});
++
++describe("where the row moves to (inSightBy)", () => {
++  // A row 328px wide from x 16 (a 360px phone), padded 16px at its start.
++  const row = { left: 16, right: 344 };
++  const room = 16;
++
++  it("leaves a page already in sight where it is", () => {
++    expect(inSightBy({ row, page: { left: 120, right: 204 }, lead: { left: 24, right: 108 }, room, rtl: false })).toBeNull();
++  });
++
++  it("brings a page past the end into sight, with the page before it at the start", () => {
++    // The sixth page, past the edge; the fifth leads.
++    const page = { left: 512, right: 596 };
++    const lead = { left: 416, right: 500 };
++    expect(inSightBy({ row, page, lead, room, rtl: false })).toBe(416 - (16 + 16));
++  });
++
++  it("brings a page cut at the end whole into sight, the check beside its corner included", () => {
++    expect(inSightBy({ row, page: { left: 270, right: 340 }, lead: { left: 176, right: 260 }, room, rtl: false })).toBe(176 - 32);
++  });
++
++  it("mirrors in Arabic, where the start is the right edge", () => {
++    // In sight.
++    expect(inSightBy({ row, page: { left: 156, right: 240 }, lead: { left: 252, right: 336 }, room, rtl: true })).toBeNull();
++    // Past the end, on the left: the row moves the other way.
++    const by = inSightBy({ row, page: { left: -236, right: -152 }, lead: { left: -140, right: -56 }, room, rtl: true });
++    expect(by).toBe(-56 - (344 - 16));
++    expect(by).toBeLessThan(0);
++  });
++
++  it("leads with the page itself when it is the first", () => {
++    // Scrolled away from the start, the first page is behind it.
++    const first = { left: -150, right: -66 };
++    expect(inSightBy({ row, page: first, lead: first, room, rtl: false })).toBe(-150 - 32);
++  });
++});
+diff --git a/lib/settings/modeRow.ts b/lib/settings/modeRow.ts
+new file mode 100644
+index 000000000..262e1c358
+--- /dev/null
++++ b/lib/settings/modeRow.ts
+@@ -0,0 +1,41 @@
++// The reading modes' row in Settings (build 95 note 18, the owner: "a clean
++// scroller with haptic feedback rather than stacks"): where the row moves so
++// the page that is on is in sight. The row itself is
++// components/settings/ReadingModePages.tsx (ModePages); this is its
++// arithmetic, pure, so it is tested directly
++// (lib/settings/__tests__/modeRow.test.ts), left to right and in Arabic.
++
++/** A box along the row, as the browser reports it (getBoundingClientRect). */
++export type Span = { left: number; right: number };
++
++/**
++ * How far to move the row (scrollBy's `left`) so the page that is on stands
++ * whole in sight, or null when it already does.
++ *
++ * `room` is the row's own padding at its start, where a page rests; at its
++ * end a page needs `end`, for the check that stands a little outside its
++ * corner. When it must move, the page before the one that is on (`lead`, the
++ * page itself when it is the first) goes to where a page rests, so the one
++ * that is on stands with a neighbour on each side. In a right-to-left row the
++ * start is the right edge, and the same move is mirrored.
++ */
++export function inSightBy({
++  row,
++  page,
++  lead,
++  room,
++  rtl,
++  end = 8,
++}: {
++  row: Span;
++  page: Span;
++  lead: Span;
++  room: number;
++  rtl: boolean;
++  end?: number;
++}): number | null {
++  const before = rtl ? row.right - page.right : page.left - row.left;
++  const after = rtl ? page.left - row.left : row.right - page.right;
++  if (before >= room - 1 && after >= end) return null;
++  return rtl ? lead.right - (row.right - room) : lead.left - (row.left + room);
++}
