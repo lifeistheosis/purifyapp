@@ -29,7 +29,9 @@
 //            either side of it agree; at the corner when it is in one.
 //   misplaced  a new box drawn in its first frame far from where it stands two
 //            frames later, with nothing animating it there (a box drawn at the
-//            corner before it is placed).
+//            corner before it is placed). Read on the page, not the screen: a
+//            box the page carries as it glides stands where it was drawn; one
+//            moved against the glide, or left behind by it, does not.
 //   jump     a layout shift of 24px or more in one frame: something on the
 //            screen moved because something else changed size.
 //   moves    with the app's motion reduced, anything that moves (an animation
@@ -486,7 +488,7 @@ export async function judgeFrames(rec, { motion = "on" } = {}) {
   if (inPage) {
     for (const m of inPage.misplaced) {
       if (m.t < rec.tapped - 50) continue;
-      fails.push({ kind: "misplaced", detail: `${m.name} drawn first at ${m.from.join(",")}${m.corner ? ", the corner," : ""} then at ${m.to.join(",")} with nothing moving it there, ${Math.round(m.t - rec.tapped)}ms after the tap`, frames: nearest(frames, m.t) });
+      fails.push({ kind: "misplaced", detail: `${m.name} drawn first at ${m.from.join(",")}${m.corner ? ", the corner," : ""} then at ${m.to.join(",")}${m.glided && (m.glided[0] || m.glided[1]) ? ` on the screen as the page scrolled ${m.glided.join(",")}` : ""} with nothing moving it there, ${Math.round(m.t - rec.tapped)}ms after the tap`, frames: nearest(frames, m.t) });
     }
     let worst = null;
     // A shift in a page switch's own swap, under the picture of the page being left, is the switch
@@ -683,6 +685,21 @@ function plant(kind) {
       await frame();
       box.style.left = "120px";
       box.style.top = "420px";
+    } else if (kind.startsWith("glide")) {
+      // A label drawn as the page glides 35px a frame (an in-page move's scroll): carried by the page
+      // (glidewith), moved against it (glideagainst), held where the screen had it as the page moves
+      // on (glidebehind), or in a layer fixed to the screen (glidefixed), which the page never carries.
+      const label = document.createElement("p");
+      label.textContent = "Kodiak";
+      label.style.cssText = `position:${kind === "glidefixed" ? "fixed" : "absolute"};left:40px;top:420px;margin:0;padding:6px 10px;background:#f0f0f0;color:#000;border-radius:8px`;
+      document.body.appendChild(label);
+      for (let n = 1; n <= 10; n++) {
+        await frame();
+        window.scrollBy(0, 35);
+        // By a transform, so no layout shift is reported: the misplaced rule alone must catch it.
+        if (kind === "glideagainst") label.style.transform = `translateY(${70 * n}px)`;
+        if (kind === "glidebehind") label.style.top = `${420 + 35 * n}px`;
+      }
     } else if (kind === "jump") {
       const grow = document.createElement("div");
       grow.style.cssText = "height:0;background:#333";
@@ -717,6 +734,8 @@ function plant(kind) {
 
 /** What a planted change needs standing before the recording: the swap's bar and the route's box. */
 function prepare(kind) {
+  // A page tall enough to glide.
+  if (kind.startsWith("glide")) document.getElementById("spacer").style.height = "3000px";
   if (kind !== "swap" && kind !== "swapjump") return;
   const A = document.getElementById("a");
   const B = document.getElementById("b");
@@ -749,6 +768,10 @@ const CASES = [
   ["a page whose picture comes with it and whose words follow half a second later (not empty)", "staged", "on", []],
   ["a page switch in a View Transition whose route box stands 51px higher in the page arriving (the switch itself, under its picture)", "swap", "on", []],
   ["the same switch, then something in the live picture of the new page grows 140px at once", "swapjump", "on", ["jump"]],
+  ["a label drawn as the page glides, carried by the page (Alaska's map label in an in-page move)", "glidewith", "on", []],
+  ["a label drawn as the page glides, moving against it", "glideagainst", "on", ["misplaced"]],
+  ["a label drawn as the page glides, left behind where the screen had it", "glidebehind", "on", ["misplaced"]],
+  ["a bar fixed to the screen, drawn as the page glides under it", "glidefixed", "on", []],
   ["with motion reduced, an instant change", "cut", "reduce", []],
   ["no change at all", "none", "on", []],
 ];

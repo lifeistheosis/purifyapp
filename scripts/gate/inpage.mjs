@@ -632,6 +632,35 @@ export function gateInPage() {
   const MOVES = /^(transform|translate|scale|rotate|top|left|right|bottom|inset.*|width|height|margin.*|offset.*)$/i;
 
   /**
+   * What carries a box when something scrolls: every scrolled box it stands in, and the page itself
+   * unless the box stands in a layer fixed to the screen (a bar, a sheet), which the page's scroll
+   * does not move. In a sticky row it may be either (carried until the row sticks): `loose`.
+   */
+  function carriersOf(el) {
+    const list = [];
+    let loose = false;
+    for (let p = el; p && p !== document.body && p !== document.documentElement; p = p.parentElement) {
+      const cs = getComputedStyle(p);
+      if (cs.position === "fixed") return { list, loose };
+      if (cs.position === "sticky") loose = true;
+      if (p !== el && (p.scrollHeight > p.clientHeight || p.scrollWidth > p.clientWidth) && /auto|scroll|hidden/.test(`${cs.overflowX} ${cs.overflowY}`)) list.push(p);
+    }
+    list.push(document.scrollingElement || document.documentElement);
+    return { list, loose };
+  }
+
+  /** How far those carriers have scrolled, together. */
+  function scrolledBy(carriers) {
+    let x = 0;
+    let y = 0;
+    for (const c of carriers.list) {
+      x += c.scrollLeft;
+      y += c.scrollTop;
+    }
+    return { x, y };
+  }
+
+  /**
    * From now on, every frame, until stop(): the time (on the epoch's clock, as the screencast's
    * frames), the address, the app's motion, how many animations run and how many of them are a
    * page switch's (the View Transition's own), and with `moves` what moves while it runs (an
@@ -709,11 +738,17 @@ export function gateInPage() {
           moving.push(`${pseudo ? `${pseudo} of ` : ""}${nameOf(target)}: ${props.join(", ")} over ${Math.round(Number(d) || 0)}ms`);
         }
       }
-      // New boxes: where each is drawn in its first frame, then in the next three.
+      // New boxes: where each is drawn in its first frame, then in the next three. Where it stands
+      // is read on the page, not on the screen: a box the page carries while the page glides (an
+      // in-page move's scroll, lib/ui/inPageMove.ts) is where it was drawn, and one that moves
+      // against the page, or is left behind by it, is not (the arbiter, 2026-11-13).
       for (const n of s.fresh.splice(0)) {
         for (const el of [n, ...[...n.getElementsByTagName("*")].slice(0, 30)]) {
           const r = el.getBoundingClientRect();
-          if (r.width >= 8 && r.height >= 8 && !s.watch.has(el)) s.watch.set(el, { first: { x: r.left, y: r.top, w: r.width, h: r.height }, frames: 0 });
+          if (r.width >= 8 && r.height >= 8 && !s.watch.has(el)) {
+            const carriers = carriersOf(el);
+            s.watch.set(el, { first: { x: r.left, y: r.top, w: r.width, h: r.height }, carriers, scrolled: scrolledBy(carriers), frames: 0 });
+          }
         }
       }
       // A box a reader could see: on the screen where it was first drawn, or where it stands now.
@@ -724,9 +759,12 @@ export function gateInPage() {
         w.frames++;
         if (w.frames === 1) continue;
         const r = el.getBoundingClientRect();
-        const far = Math.max(Math.abs(r.left - w.first.x), Math.abs(r.top - w.first.y));
+        const now = scrolledBy(w.carriers);
+        const onPage = Math.max(Math.abs(r.left + now.x - (w.first.x + w.scrolled.x)), Math.abs(r.top + now.y - (w.first.y + w.scrolled.y)));
+        const onScreenOnly = Math.max(Math.abs(r.left - w.first.x), Math.abs(r.top - w.first.y));
+        const far = w.carriers.loose ? Math.min(onPage, onScreenOnly) : onPage;
         if (far > 40 && w.frames <= 3 && el.isConnected && opacityOf(el) >= 0.05 && !animated(el)) {
-          if (onScreen(w.first.x, w.first.y, w.first.w, w.first.h) || onScreen(r.left, r.top, r.width, r.height)) moved.push({ el, w, r });
+          if (onScreen(w.first.x, w.first.y, w.first.w, w.first.h) || onScreen(r.left, r.top, r.width, r.height)) moved.push({ el, w, r, glided: [now.x - w.scrolled.x, now.y - w.scrolled.y] });
           s.watch.delete(el);
         } else if (w.frames > 3) s.watch.delete(el);
       }
@@ -734,7 +772,7 @@ export function gateInPage() {
       for (const m of moved) {
         if (moved.some((o) => o !== m && o.el.contains(m.el))) continue;
         const corner = Math.abs(m.w.first.x) <= 2 && Math.abs(m.w.first.y) <= 2;
-        s.misplaced.push({ t: performance.timeOrigin + t, name: nameOf(m.el), cls: classesOf(m.el), from: [Math.round(m.w.first.x), Math.round(m.w.first.y)], to: [Math.round(m.r.left), Math.round(m.r.top)], corner });
+        s.misplaced.push({ t: performance.timeOrigin + t, name: nameOf(m.el), cls: classesOf(m.el), from: [Math.round(m.w.first.x), Math.round(m.w.first.y)], to: [Math.round(m.r.left), Math.round(m.r.top)], glided: m.glided.map(Math.round), corner });
       }
       const scroller = document.scrollingElement || document.documentElement;
       for (const el of s.styled) if (s.wasStyled.has(el)) move++;
