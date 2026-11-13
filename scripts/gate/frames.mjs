@@ -488,7 +488,8 @@ export async function judgeFrames(rec, { motion = "on" } = {}) {
   if (inPage) {
     for (const m of inPage.misplaced) {
       if (m.t < rec.tapped - 50) continue;
-      fails.push({ kind: "misplaced", detail: `${m.name} drawn first at ${m.from.join(",")}${m.corner ? ", the corner," : ""} then at ${m.to.join(",")}${m.glided && (m.glided[0] || m.glided[1]) ? ` on the screen as the page scrolled ${m.glided.join(",")}` : ""} with nothing moving it there, ${Math.round(m.t - rec.tapped)}ms after the tap`, frames: nearest(frames, m.t) });
+      const held = m.held ? ` while ${m.held.name}, the sticky box that holds it, moved ${m.held.moved.join(",")} on the screen` : "";
+      fails.push({ kind: "misplaced", detail: `${m.name} drawn first at ${m.from.join(",")}${m.corner ? ", the corner," : ""} then at ${m.to.join(",")}${m.glided && (m.glided[0] || m.glided[1]) ? ` on the screen as the page scrolled ${m.glided.join(",")}` : ""}${held} with nothing moving it there, ${Math.round(m.t - rec.tapped)}ms after the tap`, frames: nearest(frames, m.t) });
     }
     let worst = null;
     // A shift in a page switch's own swap, under the picture of the page being left, is the switch
@@ -700,6 +701,25 @@ function plant(kind) {
         if (kind === "glideagainst") label.style.transform = `translateY(${70 * n}px)`;
         if (kind === "glidebehind") label.style.top = `${420 + 35 * n}px`;
       }
+    } else if (kind.startsWith("sticky")) {
+      // A label drawn in a sticky map as the page glides 90px a frame: the map rides the page 71px
+      // and sticks (Alaska's People, EventThread's map). The label rides with its map (stickywith),
+      // goes on with the page as though the map had not stuck (stickypage), or stays where the
+      // screen had it while the map rode (stickyscreen). By a transform, so no shift is reported.
+      const map = document.getElementById("map");
+      const label = document.createElement("p");
+      label.textContent = "Kodiak";
+      label.style.cssText = "position:absolute;left:40px;top:40px;margin:0;padding:6px 10px;background:#f0f0f0;color:#000;border-radius:8px";
+      map.appendChild(label);
+      const first = label.getBoundingClientRect().top;
+      const from = window.scrollY;
+      for (let n = 1; n <= 10; n++) {
+        await frame();
+        window.scrollBy(0, n <= 3 ? 90 : 30);
+        const natural = map.getBoundingClientRect().top + 40;
+        if (kind === "stickypage") label.style.transform = `translateY(${first - (window.scrollY - from) - natural}px)`;
+        if (kind === "stickyscreen") label.style.transform = `translateY(${first - natural}px)`;
+      }
     } else if (kind === "jump") {
       const grow = document.createElement("div");
       grow.style.cssText = "height:0;background:#333";
@@ -736,6 +756,13 @@ function plant(kind) {
 function prepare(kind) {
   // A page tall enough to glide.
   if (kind.startsWith("glide")) document.getElementById("spacer").style.height = "3000px";
+  if (kind.startsWith("sticky")) {
+    // A sticky map 131px down the page, sticking 60px from the top: it rides the page 71px.
+    const track = document.createElement("div");
+    track.style.cssText = "height:2600px;padding-top:131px";
+    track.innerHTML = '<div id="map" style="position:sticky;top:60px;height:240px;background:#203040"></div>';
+    document.getElementById("spacer").before(track);
+  }
   if (kind !== "swap" && kind !== "swapjump") return;
   const A = document.getElementById("a");
   const B = document.getElementById("b");
@@ -772,6 +799,9 @@ const CASES = [
   ["a label drawn as the page glides, moving against it", "glideagainst", "on", ["misplaced"]],
   ["a label drawn as the page glides, left behind where the screen had it", "glidebehind", "on", ["misplaced"]],
   ["a bar fixed to the screen, drawn as the page glides under it", "glidefixed", "on", []],
+  ["a label drawn in a sticky map as the page glides, riding with its map until the map sticks (Alaska's People)", "stickywith", "on", []],
+  ["a label drawn in a sticky map as the page glides, going on with the page after its map stuck", "stickypage", "on", ["misplaced"]],
+  ["a label drawn in a sticky map as the page glides, held where the screen had it while its map rode", "stickyscreen", "on", ["misplaced"]],
   ["with motion reduced, an instant change", "cut", "reduce", []],
   ["no change at all", "none", "on", []],
 ];

@@ -634,16 +634,21 @@ export function gateInPage() {
   /**
    * What carries a box when something scrolls: every scrolled box it stands in, and the page itself
    * unless the box stands in a layer fixed to the screen (a bar, a sheet), which the page's scroll
-   * does not move. In a sticky row it may be either (carried until the row sticks): `loose`.
+   * does not move. A box in a sticky box is carried by that box (`held`, the innermost): a sticky
+   * row rides the page part of the way and then sticks, and what stands in it must move exactly as
+   * it moves, frame by frame, measured against it, never by any amount between none and all (the
+   * arbiter, 2026-11-13: Alaska's map label, which rode its sticky map 71px of the page's 165). Only
+   * the scrolled boxes between the two carry it then. A sticky box itself may be either, carried or
+   * stuck: `loose`.
    */
   function carriersOf(el) {
     const list = [];
-    let loose = false;
+    const loose = getComputedStyle(el).position === "sticky";
     for (let p = el; p && p !== document.body && p !== document.documentElement; p = p.parentElement) {
       const cs = getComputedStyle(p);
       if (cs.position === "fixed") return { list, loose };
-      if (cs.position === "sticky") loose = true;
       if (p !== el && (p.scrollHeight > p.clientHeight || p.scrollWidth > p.clientWidth) && /auto|scroll|hidden/.test(`${cs.overflowX} ${cs.overflowY}`)) list.push(p);
+      if (p !== el && !loose && cs.position === "sticky") return { list, loose, held: p };
     }
     list.push(document.scrollingElement || document.documentElement);
     return { list, loose };
@@ -660,6 +665,13 @@ export function gateInPage() {
     return { x, y };
   }
 
+  /** Where a box drawn at `r` stands: on the page (its carriers' scroll added back), or in the sticky box that holds it. */
+  function placeOf(r, carriers) {
+    const by = scrolledBy(carriers);
+    const at = carriers.held ? carriers.held.getBoundingClientRect() : { left: 0, top: 0 };
+    return { x: r.left - at.left + by.x, y: r.top - at.top + by.y };
+  }
+
   /**
    * From now on, every frame, until stop(): the time (on the epoch's clock, as the screencast's
    * frames), the address, the app's motion, how many animations run and how many of them are a
@@ -669,7 +681,7 @@ export function gateInPage() {
    * next ones with nothing moving it there (a box drawn at the corner before it is placed).
    */
   function sample(o = {}) {
-    const s = { frames: [], shifts: [], misplaced: [], running: true, fresh: [], watch: new Map(), raf: 0, vtNames: new Set() };
+    const s = { frames: [], shifts: [], misplaced: [], held: [], running: true, fresh: [], watch: new Map(), raf: 0, vtNames: new Set() };
     window.__gateSample = s;
     try {
       s.po = new PerformanceObserver((list) => {
@@ -741,13 +753,15 @@ export function gateInPage() {
       // New boxes: where each is drawn in its first frame, then in the next three. Where it stands
       // is read on the page, not on the screen: a box the page carries while the page glides (an
       // in-page move's scroll, lib/ui/inPageMove.ts) is where it was drawn, and one that moves
-      // against the page, or is left behind by it, is not (the arbiter, 2026-11-13).
+      // against the page, or is left behind by it, is not (the arbiter, 2026-11-13). A box in a
+      // sticky box is read in that box (`placeOf`).
       for (const n of s.fresh.splice(0)) {
         for (const el of [n, ...[...n.getElementsByTagName("*")].slice(0, 30)]) {
           const r = el.getBoundingClientRect();
           if (r.width >= 8 && r.height >= 8 && !s.watch.has(el)) {
             const carriers = carriersOf(el);
-            s.watch.set(el, { first: { x: r.left, y: r.top, w: r.width, h: r.height }, carriers, scrolled: scrolledBy(carriers), frames: 0 });
+            const held = carriers.held ? carriers.held.getBoundingClientRect() : null;
+            s.watch.set(el, { first: { x: r.left, y: r.top, w: r.width, h: r.height }, carriers, scrolled: scrolledBy(carriers), place: placeOf(r, carriers), held: held && { x: held.left, y: held.top }, frames: 0 });
           }
         }
       }
@@ -760,19 +774,35 @@ export function gateInPage() {
         if (w.frames === 1) continue;
         const r = el.getBoundingClientRect();
         const now = scrolledBy(w.carriers);
-        const onPage = Math.max(Math.abs(r.left + now.x - (w.first.x + w.scrolled.x)), Math.abs(r.top + now.y - (w.first.y + w.scrolled.y)));
+        const place = placeOf(r, w.carriers);
+        const onPage = Math.max(Math.abs(place.x - w.place.x), Math.abs(place.y - w.place.y));
         const onScreenOnly = Math.max(Math.abs(r.left - w.first.x), Math.abs(r.top - w.first.y));
         const far = w.carriers.loose ? Math.min(onPage, onScreenOnly) : onPage;
+        if (w.held && w.frames <= 3) {
+          const h = w.carriers.held.getBoundingClientRect();
+          w.boxMoved = Math.max(w.boxMoved ?? 0, Math.abs(h.left - w.held.x), Math.abs(h.top - w.held.y));
+          w.inBox = Math.max(w.inBox ?? 0, far);
+        }
         if (far > 40 && w.frames <= 3 && el.isConnected && opacityOf(el) >= 0.05 && !animated(el)) {
-          if (onScreen(w.first.x, w.first.y, w.first.w, w.first.h) || onScreen(r.left, r.top, r.width, r.height)) moved.push({ el, w, r, glided: [now.x - w.scrolled.x, now.y - w.scrolled.y] });
+          if (onScreen(w.first.x, w.first.y, w.first.w, w.first.h) || onScreen(r.left, r.top, r.width, r.height)) {
+            // What the page did, and in a sticky box, what that box did on the screen meanwhile.
+            const page = document.scrollingElement || document.documentElement;
+            const h = w.held && w.carriers.held.getBoundingClientRect();
+            moved.push({ el, w, r, glided: w.held ? [0, 0] : [now.x - w.scrolled.x, now.y - w.scrolled.y], held: h ? { name: nameOf(w.carriers.held), moved: [h.left - w.held.x, h.top - w.held.y], page: [page.scrollLeft, page.scrollTop] } : null });
+          }
           s.watch.delete(el);
-        } else if (w.frames > 3) s.watch.delete(el);
+        } else if (w.frames > 3) {
+          // A box read in its sticky box while that box moved on the screen, and that stood still in
+          // it: kept for the walk's account of why it passed.
+          if (w.held && w.boxMoved > 2 && s.held.length < 20) s.held.push({ t: performance.timeOrigin + t, name: nameOf(el), in: nameOf(w.carriers.held), boxMoved: Math.round(w.boxMoved), inBox: Math.round(w.inBox) });
+          s.watch.delete(el);
+        }
       }
       // The outermost of what moved together: the boxes inside it moved with it.
       for (const m of moved) {
         if (moved.some((o) => o !== m && o.el.contains(m.el))) continue;
         const corner = Math.abs(m.w.first.x) <= 2 && Math.abs(m.w.first.y) <= 2;
-        s.misplaced.push({ t: performance.timeOrigin + t, name: nameOf(m.el), cls: classesOf(m.el), from: [Math.round(m.w.first.x), Math.round(m.w.first.y)], to: [Math.round(m.r.left), Math.round(m.r.top)], glided: m.glided.map(Math.round), corner });
+        s.misplaced.push({ t: performance.timeOrigin + t, name: nameOf(m.el), cls: classesOf(m.el), from: [Math.round(m.w.first.x), Math.round(m.w.first.y)], to: [Math.round(m.r.left), Math.round(m.r.top)], glided: m.glided.map(Math.round), corner, held: m.held && { name: m.held.name, moved: m.held.moved.map(Math.round) } });
       }
       const scroller = document.scrollingElement || document.documentElement;
       for (const el of s.styled) if (s.wasStyled.has(el)) move++;
@@ -796,7 +826,7 @@ export function gateInPage() {
     s.mo.disconnect();
     window.__gateSample = null;
     const swaps = (window.__gateSwaps || []).map((w) => ({ start: w.start, ready: w.ready === Infinity ? null : w.ready }));
-    return { frames: s.frames, shifts: s.shifts, misplaced: s.misplaced, vtNames: [...s.vtNames], swaps };
+    return { frames: s.frames, shifts: s.shifts, misplaced: s.misplaced, held: s.held, vtNames: [...s.vtNames], swaps };
   }
 
   window.__gate = { layers, edge, sample, stop, nameOf };
