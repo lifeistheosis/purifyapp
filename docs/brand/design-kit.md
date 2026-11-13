@@ -99,6 +99,7 @@ Each choice, its reason, and what it does for whoever reads the page.
 - **Bars** (`.k-bars`): what was most: a name, its count, a thin bar to the longest.
 - **Table** (`.k-table`): figures side by side: the words in the serif, the numbers to the end in tabular figures, sentence-case headings, hairlines, a caption under it.
 - **Figure** (`.k-figure`): a picture from the app, rounded as the app's cards are, with a caption that names where it comes from. A still of a screen at a phone's width wears `.k-phone` too: it takes the column on a phone and stands at 390 in the middle of a wide one.
+- **Pair** (`.k-pair`): before and after, two stills of one thing side by side at every width, each with its word under it. For a change that is seen and not read (a colour, a shape); a change to be read goes one under the other. Not shown in the template, since it needs two stills.
 - **Note** (`.k-note`): a small line and the serif in italics, set in from the line. It stands on its own type: no rule beside it, no box.
 - **Tray** (`.k-tray`): the app's raised card (`.theology-tray`): a step of the card's colour down its height, a fine edge, a sheen along its top, a soft shade under it.
 - **List** (`.k-list`, `.k-row`): things to act on, as rows in one tray, each a way in with the app's chevron. Never three cards side by side.
@@ -126,6 +127,7 @@ The accent the app calls "gold" (`--color-gold`) is a glowing white on the dark 
 node docs/brand/kit/check.mjs                # the page and the emails, five palettes, 360 390 412 1032
 node docs/brand/kit/check.mjs --write        # after a change to tokens.css or pieces.css
 node docs/brand/kit/check.mjs --shots <dir>  # and a still of the page on each palette at 390
+node docs/brand/kit/check.mjs --page <file>  # a page made from the kit, held to the same measures
 node docs/brand/kit/email/check.mjs          # the emails alone
 ```
 

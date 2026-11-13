@@ -588,6 +588,14 @@ body {
 .k-figure.k-phone img,
 .k-figure.k-phone figcaption { max-width: 390px; margin-inline: auto; }
 
+/* Before and after (.k-pair): two stills of one thing side by side at every
+   width, each with its word under it. For a change that is seen and not
+   read, a colour or a shape, where the two are set against each other. A
+   change that has to be read goes one under the other, as two figures. */
+.k-pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--k-space-3); margin: var(--k-space-5) 0; max-width: 560px; }
+.k-pair .k-figure { margin: 0; min-width: 0; }
+.k-pair .k-figure img { border-radius: 14px; }
+
 /* ── Note ──────────────────────────────────────────────────────────── */
 /* It stands on its own type: a small line and the serif in italics, set in
    from the reading line. No rule beside it, no stripe, no box (CLAUDE.md). */

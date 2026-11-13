@@ -6,6 +6,8 @@
 //                                            artifact template, then check
 //   node docs/brand/kit/check.mjs --shots <dir>   also save a still of the
 //                                            page on each palette there, at 390
+//   node docs/brand/kit/check.mjs --page <file>   hold a page made from the kit
+//                                            to the same measures, and nothing else
 //
 // One system: the emails (docs/brand/kit/email/) are the same look, and this
 // check ends by running theirs (email/check.mjs), so one command holds the
@@ -96,6 +98,8 @@ const KIT = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(KIT, "../../..");
 const args = process.argv.slice(2);
 const shotsAt = args.includes("--shots") ? path.resolve(args[args.indexOf("--shots") + 1]) : null;
+/** A page made from the kit, checked in place of the template: the same widths, palettes and measures. */
+const pageAt = args.includes("--page") ? path.resolve(args[args.indexOf("--page") + 1]) : null;
 
 const WIDTHS = [360, 390, 412, 1032];
 const ARTIFACT = path.join(KIT, "artifact-template.html");
@@ -151,7 +155,7 @@ function artifactInStep() {
 async function main() {
   if (args.includes("--write")) writeArtifact();
   let ok = true;
-  if (!artifactInStep()) {
+  if (!pageAt && !artifactInStep()) {
     console.log("NO   the artifact template does not hold tokens.css and pieces.css as written: run with --write");
     ok = false;
   }
@@ -161,7 +165,7 @@ async function main() {
   const browser = await chromium.launch(fs.existsSync(own) ? { executablePath: own } : {});
   try {
     ok = (await parchmentSelfTest(browser)) && ok;
-    for (const [name, file] of [["the artifact template", ARTIFACT]]) for (const width of WIDTHS) {
+    for (const [name, file] of [pageAt ? [path.basename(pageAt), pageAt] : ["the artifact template", ARTIFACT]]) for (const width of WIDTHS) {
       const phone = width < 600;
       const ctx = await browser.newContext({ viewport: { width, height: phone ? 844 : 900 }, colorScheme: "dark", isMobile: phone, hasTouch: phone });
       const page = await ctx.newPage();
@@ -198,6 +202,10 @@ async function main() {
     }
   } finally {
     await browser.close();
+  }
+  if (pageAt) {
+    console.log(ok ? `\nkit check: ${path.basename(pageAt)} passes on the five palettes at 360, 390, 412 and 1032` : "\nkit check: FAILED");
+    return ok;
   }
   // The emails are the same look: their own check, on the same widths and palettes.
   const { spawnSync } = await import("node:child_process");
