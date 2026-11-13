@@ -47,3 +47,9 @@ His word, same message: "the journal bugs you were asking is that whenever you c
 His word, 2026-11-13 07:29 UTC, on build 96, with a screenshot of John 1:5 in the reader just after highlighting a verse: "ui overlalping"
 
 The "Highlighted / Undo" toast stands over the tab bar, and a second floating bar shows behind it: its rounded edge and a white button peek out above the toast, under the verse. Two floating layers drawn on top of each other. One must give way: either the other bar steps aside while the toast shows, or the two stack with their own space. Reproduce at 390 with touch and motion on, mend it, and give it a test that fails on the old code.
+
+## Note 8: the opening animation is buggy
+
+His word, 2026-11-13 07:34 UTC, on build 96, with a screenshot of the app's opening (the starry night, the glowing cross, the bright rim of the horizon): "the animation is buggy"
+
+To reproduce on a phone-sized export with motion on, recorded frame by frame from launch until the first screen is in place. Find the fault (a stutter, a jump, a flash, a broken hand-off to the first screen) and mend it. Animate only what a phone draws cheaply (transform and opacity, not filters or shadows), keep reduced motion still, and add a test that fails on the old code. His phone was at 3% battery when he saw it, which can mean a battery saver. The animation must hold there too.
