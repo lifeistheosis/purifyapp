@@ -11,6 +11,8 @@ import { Book } from "@/components/ui/icons/Book";
 import { More } from "@/components/ui/icons/More";
 import { Timer } from "@/components/ui/icons/Timer";
 import { useAmbienceSheet } from "@/lib/ambience/sheet";
+import { openVoiceSheet, useVoiceSheet } from "@/lib/listen/speech/sheet";
+import { playerOpenForGone, useVoiceShown } from "@/lib/listen/speech/speak";
 import { cn } from "@/lib/cn";
 import { verseOf } from "@/lib/player/captions";
 import { useSungLines } from "@/lib/player/clock";
@@ -25,6 +27,7 @@ import { AmbienceButton } from "./AmbienceButton";
 import { CoverArt } from "./CoverArt";
 import { LiveCaptions } from "./LiveCaptions";
 import { PlayerMoreSheet } from "./PlayerMore";
+import { useVoiceRowValue } from "./VoiceSheet";
 import { PlayerTransport } from "./PlayerSteps";
 import { SleepTimerSheet } from "./SleepTimerSheet";
 import { SaveOffline, SaveOfflineNote } from "./SaveOffline";
@@ -94,8 +97,17 @@ export function NowPlayingSheet() {
   const [moreMenu, setMoreMenu] = useState(false);
   const sleep = useSleepTimer();
   const ambienceSheet = useAmbienceSheet();
+  const voiceSheet = useVoiceSheet();
   // A sheet stands over the player: Escape is that sheet's.
-  const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer);
+  const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer) || (voiceSheet.open && voiceSheet.overPlayer);
+  // The voice reading, for the ••• sheet's Voice row (1.9, build 95 note 25).
+  const voiceName = useVoiceRowValue(audio.src, open);
+  // A voice the reader chose had gone and another reads: said here once, the
+  // next time the player is open, and let go when it closes after.
+  const { gone } = useVoiceShown();
+  useEffect(() => {
+    playerOpenForGone(open);
+  }, [open, gone]);
   const hasWords = Boolean(audio.captions && audio.captions.length > 0);
   // The one clock that lights the words and counts the verses
   // (lib/player/clock.ts), running while the player is open.
@@ -346,6 +358,11 @@ export function NowPlayingSheet() {
 
           {/* One block for both views: nothing here moves when they switch. */}
           <SaveOfflineNote src={audio.src} className="mt-2" />
+          {gone && voiceName ? (
+            <p role="status" className="mt-2 font-sans text-detail leading-[1.45] text-paper/75">
+              {t("player.voice.gone", { name: voiceName })}
+            </p>
+          ) : null}
           <PositionBar current={audio.currentTime} duration={audio.duration} onSeek={(at) => seek(at)} className="mt-2" />
           <PlayerTransport audio={audio} className="mt-3" />
 
@@ -427,6 +444,8 @@ export function NowPlayingSheet() {
             src={audio.src}
             share={shareHref(playing)}
             onSleep={() => setSleepMenu(true)}
+            voice={voiceName}
+            onVoice={() => openVoiceSheet({ overPlayer: true })}
           />
 
           {/* The sleep timer, as a sheet over the player: the one timer for

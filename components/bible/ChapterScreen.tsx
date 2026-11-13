@@ -167,6 +167,9 @@ export function ChapterScreen({
   const psalmLine = slug === "psalms" && downloaded?.bible.psalms !== "hebrew" ? hebrewLine(chapter) : null;
   const unopened = shown && text?.state === "failed" ? shown : null;
   const verses = downloaded?.text.state === "ready" && downloaded.text.page.last ? downloaded.text.page.last : totalVerses;
+  // Listen, wherever the page shows words a voice may read (1.9): not a
+  // licensed translation, nor a downloaded page that only says where its verses stand.
+  const listens = !usingLicensed && !(downloaded?.text.state === "ready" && downloaded.text.page.elsewhere);
   // The round buttons over the page, the pill at its foot and the app's tab
   // bar step away while the reader reads on, and come back on a scroll up.
   useScrollAway();
@@ -182,17 +185,21 @@ export function ChapterScreen({
         {/* A reading plan's day, chapter by chapter (1.7). Only one of the two
             is ever under way (lib/plans/session.ts). */}
         <PlanFlowBar book={slug} chapter={chapter} />
-        {/* The verse being read aloud, lit and kept in view (1.7). */}
-        <ReadAloudFollow book={slug} chapter={chapter} />
+        {/* The verse being read aloud, lit and kept in view (1.7), in the
+            Bible the page shows it in (1.9). */}
+        <ReadAloudFollow book={slug} chapter={chapter} bible={downloaded?.bible ?? null} />
         <ReadingProgressBar slug={slug} bookName={book.name} chapter={chapter} totalVerses={verses} />
         <MobileChapterPill
           slug={slug}
           chapter={chapter}
           totalVerses={verses}
-          // Listen reads the English aloud: not over a downloaded Bible, nor
-          // over a licensed translation, whose words it would not read (as the
+          // Listen reads the words the page shows (1.9, build 95 note 25): the
+          // English, or a downloaded Bible's in the phone's voice. Not over a
+          // licensed translation, whose words are not ours to have read aloud,
+          // nor a page whose verses stand in another chapter (as the
           // computer's toolbar has it).
-          listen={!downloaded && !usingLicensed}
+          listen={listens}
+          bible={downloaded?.bible ?? null}
           textKey={downloaded ? `${downloaded.bible.id}:${downloaded.text.state}` : undefined}
         />
         {/* "Use Purify in Русский?", once, as a Bible in another language is picked (1.9). */}
@@ -224,7 +231,7 @@ export function ChapterScreen({
                   {/* Read aloud, where the chapter has a reading (1.7). It
                       stood at the end of the title's line until the title
                       became the page's opening (1.8). */}
-                  {!usingLicensed && !downloaded ? <ListenButton book={slug} chapter={chapter} bookName={book.name} /> : null}
+                  {listens ? <ListenButton book={slug} chapter={chapter} bookName={book.name} bible={downloaded?.bible ?? null} /> : null}
                   {/* Ambience, lit while a sound plays (1.7, the owner's
                       note 25): the computer's place for the phone's sound
                       button on the chapter's pill. */}

@@ -78,6 +78,10 @@ function set(patch: Partial<Shown>): void {
 }
 
 /** What the player shows of the voice: the one reading, and a line said once. */
+export function voiceShown(): Shown {
+  return shown;
+}
+
 export function useVoiceShown(): Shown {
   return useSyncExternalStore(
     (l) => {
@@ -86,14 +90,31 @@ export function useVoiceShown(): Shown {
         listeners.delete(l);
       };
     },
-    () => shown,
-    () => shown,
+    voiceShown,
+    voiceShown,
   );
 }
 
-/** The line about a gone voice has been shown: it is not shown again. */
-export function goneShown(): void {
-  if (shown.gone) set({ gone: null });
+/** Now Playing has been open while the gone line stood. */
+let goneSeen = false;
+
+/**
+ * Now Playing opens or closes (components/player/NowPlayingSheet.tsx): the
+ * line about a gone voice shows while the player is open, and is let go once
+ * the player closes after showing it. A reading begun with the player closed
+ * (Listen on a page, the usual way) keeps the line until the player is next
+ * opened; it used to be let go at once there, so the player never said it.
+ */
+export function playerOpenForGone(open: boolean): void {
+  if (!shown.gone) {
+    goneSeen = false;
+    return;
+  }
+  if (open) goneSeen = true;
+  else if (goneSeen) {
+    goneSeen = false;
+    set({ gone: null });
+  }
 }
 
 /**

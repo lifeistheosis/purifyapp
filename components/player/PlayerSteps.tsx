@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -10,11 +11,13 @@ import type { ChantIndexRow, ChantIndexVariant } from "@/lib/chants/types";
 import { useWordsPrefs } from "@/lib/chants/wordsPrefs";
 import { startListening } from "@/lib/listen/play";
 import { stepsOf } from "@/lib/listen/recordings";
+import { spokenOf } from "@/lib/listen/speech/spoken";
 import { loadChantIndex } from "@/lib/player/chants";
 import { chapterSteps, chantVersionOf, playingOf, versionSteps, type ChapterRef } from "@/lib/player/steps";
 import { skipBy, toggle, type AudioSnapshot } from "@/lib/prayers/persistentAudioStore";
 import { hasReadAloud } from "@/lib/readAloud/chapters";
 import { startReading } from "@/lib/readAloud/play";
+import { askToListenAt } from "@/lib/readAloud/rollOn";
 import { listeningPlace, stepListening, subscribeListening } from "@/lib/readings/listen";
 
 import { Transport, type Step } from "./Transport";
@@ -58,6 +61,7 @@ function useSteps(audio: AudioSnapshot): { previous: Step; next: Step } {
   }, [isChant, index]);
   const availabilityFor = useChantAvailability(isChant);
   const prefs = useWordsPrefs();
+  const router = useRouter();
 
   // Today's readings: step through them, never out of them into the chapters.
   if (place && audio.src === place.src) {
@@ -68,6 +72,21 @@ function useSteps(audio: AudioSnapshot): { previous: Step; next: Step } {
   }
 
   const playing = playingOf(audio.src, index);
+  // A chapter the phone's voice reads (1.9, build 95 note 25): every chapter
+  // either side, read the same way, in the Bible the reader reads. Its words
+  // are that chapter's page's, so the step opens the page, which begins it.
+  const said = spokenOf(audio.src);
+  if (playing?.kind === "chapter" && said?.kind === "bible") {
+    const { previous, next } = chapterSteps(playing.book, playing.chapter, () => true);
+    const name = (to: ChapterRef) => t(`bible.books.${to.book}`);
+    const go = (to: ChapterRef) => () => {
+      if (askToListenAt(to.book, to.chapter)) router.push(`/bible/${to.book}/${to.chapter}`);
+    };
+    return {
+      previous: previous ? { label: t("bible.previousTargetAria", { book: name(previous), chapter: previous.chapter }), go: go(previous) } : null,
+      next: next ? { label: t("bible.nextTargetAria", { book: name(next), chapter: next.chapter }), go: go(next) } : null,
+    };
+  }
   if (playing?.kind === "chapter") {
     const { previous, next } = chapterSteps(playing.book, playing.chapter, hasReadAloud);
     const name = (to: ChapterRef) => t(`bible.books.${to.book}`);

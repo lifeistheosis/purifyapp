@@ -63,10 +63,13 @@ describe("Listen on the pages", () => {
     expect(read("components/saints/WritingReader.tsx")).toContain('id={listenId("work", saint.slug, content.slug, sec.n)}');
   });
 
-  it("stands only where the text has a recording: no button that plays nothing", () => {
+  it("stands where the text has a recording or the device can speak it (1.9, build 95 note 25): no button that plays nothing", () => {
     const here = read("components/reading/ListenHere.tsx");
-    expect(here).toContain("const available = useHasListen(id);");
+    expect(here).toContain("const recorded = useHasListen(id);");
+    expect(here).toContain("const available = recorded || speaks;");
     expect(here).toMatch(/if \(!available\) return null;/);
+    // With no voice for the page's language and no recording, a tap says so, and where a voice is added.
+    expect(here).toContain('else if (use.kind === "none") openVoiceSheet({ none: { lang: voiceLang(lang) } });');
     // The list a build carries starts empty and grows only from checked timings.
     expect(read("scripts/listen-index.mjs")).toContain("why = timingsFit(batch,");
     const carried = JSON.parse(read("data/listen/index.json")) as string[];

@@ -51,8 +51,10 @@ import { minutesLeft, useSleepTimer } from "@/lib/player/sleep";
 import { nextSpeed, saveSpeed, speedText } from "@/lib/player/speed";
 import { playingOf } from "@/lib/player/steps";
 import { pause, play, setRate, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
-import { readingOfSrc, useHasReadAloud } from "@/lib/readAloud/chapters";
-import { startReading } from "@/lib/readAloud/play";
+import type { DownloadableBible } from "@/lib/bible/downloads/catalog";
+import { spokenOf } from "@/lib/listen/speech/spoken";
+import { readingOfSrc } from "@/lib/readAloud/chapters";
+import { listenToChapter } from "@/lib/readAloud/play";
 import { noteFootMoved } from "@/lib/ui/scrollAway";
 
 type Target = { slug: string; chapter: number } | null;
@@ -68,6 +70,7 @@ export function ReaderDock({
   chapter,
   bookName,
   listen = true,
+  bible = null,
   prev,
   next,
   prevLabel,
@@ -81,11 +84,13 @@ export function ReaderDock({
   /** The book's name in the reader's language. */
   bookName: string;
   /**
-   * Whether Listen may read this page: the English recording reads the English
-   * alone, so not over a downloaded Bible's page (a Russian page read in
-   * English) nor a licensed translation's (the pill's own rule, MobileChapterPill).
+   * Whether Listen may read this page: the pill's own rule (MobileChapterPill),
+   * the English where it has its recording, every chapter where the device can
+   * speak, never a licensed translation's.
    */
   listen?: boolean;
+  /** The downloaded Bible the page shows the chapter in: Listen reads it in the phone's voice, never the English over it (1.9). */
+  bible?: DownloadableBible | null;
   prev: Target;
   next: Target;
   prevLabel: string;
@@ -101,7 +106,6 @@ export function ReaderDock({
   const audio = usePersistentAudio();
   const ambience = useAmbience();
   const sleep = useSleepTimer();
-  const reads = useHasReadAloud(slug, chapter);
   const [sleepOpen, setSleepOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const surfaceRef = useRef<HTMLDivElement>(null);
@@ -170,8 +174,11 @@ export function ReaderDock({
   // week's readings can save today's on opening, lib/readAloud/week.ts), and
   // the dock then offered Listen for the chapter already playing.
   const loaded = readingOfSrc(audio.src);
-  const hereLoaded = loaded?.book === slug && loaded.chapter === chapter;
-  const listenHere = reads && listen && !hereLoaded;
+  const said = spokenOf(audio.src);
+  const hereLoaded =
+    (!bible && loaded?.book === slug && loaded.chapter === chapter) ||
+    (said?.kind === "bible" && said.book === slug && said.chapter === chapter && said.bible === (bible?.id ?? null));
+  const listenHere = listen && !hereLoaded;
   // Speed is a chapter read aloud's alone, as in Now Playing (lib/player/speed.ts).
   const speedShown = playingOf(audio.src)?.kind === "chapter";
   const speed = speedText(audio.rate, locale);
@@ -186,7 +193,7 @@ export function ReaderDock({
 
   const listenNow = async () => {
     setBusy(true);
-    await startReading(slug, chapter, `${bookName} ${chapter}`, t);
+    await listenToChapter({ book: slug, chapter, title: `${bookName} ${chapter}`, t, bible });
     setBusy(false);
   };
 

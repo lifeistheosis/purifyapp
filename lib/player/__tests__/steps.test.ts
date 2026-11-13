@@ -69,8 +69,13 @@ describe("previous and next, for the Bible read aloud", () => {
     expect(steps).toContain("chapterSteps(playing.book, playing.chapter, hasReadAloud)");
     expect(steps).toContain("void startReading(to.book, to.chapter,");
     expect(read("lib/readAloud/play.ts")).toContain("rate: readSpeed(),");
-    // Listen and the reading that rolls on use the same one.
-    expect(read("components/bible/ReadAloud.tsx")).toContain('import { startReading } from "@/lib/readAloud/play";');
+    // Listen and the reading that rolls on use the same one: the reader's
+    // voice for the chapter, Heart through startReading (1.9, build 95 note 25).
+    expect(read("components/bible/ReadAloud.tsx")).toContain('import { listenToChapter } from "@/lib/readAloud/play";');
+    expect(read("lib/readAloud/play.ts")).toMatch(/if \(use\.kind === "heart"\) \{\s*await startReading\(o\.book, o\.chapter, o\.title, o\.t\);/);
+    // A chapter the phone's voice reads steps to every chapter either side, by opening its page, which begins it.
+    expect(steps).toContain("chapterSteps(playing.book, playing.chapter, () => true)");
+    expect(steps).toContain("if (askToListenAt(to.book, to.chapter)) router.push(`/bible/${to.book}/${to.chapter}`);");
   });
 });
 

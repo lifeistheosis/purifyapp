@@ -8,6 +8,7 @@ import { Check } from "@/components/ui/icons/Check";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Sound } from "@/components/ui/icons/Sound";
 import { Timer } from "@/components/ui/icons/Timer";
+import { Voice } from "@/components/ui/icons/Voice";
 import { getAmbienceTrack } from "@/lib/ambience/ambience";
 import { useAmbience } from "@/lib/ambience/player";
 import { openAmbience } from "@/lib/ambience/sheet";
@@ -26,6 +27,10 @@ import { SaveOfflineRow } from "./SaveOffline";
  * corner, each in words: Save for offline (a chapter of the Bible, in the
  * apps), the sleep timer and Ambience, each opening its own sheet as it does
  * from the row under the controls, and Share, the page of what is playing.
+ * From 1.9 (build 95 note 25), Voice, between the sleep timer and Ambience:
+ * the voice reading, opening the Voice sheet (components/player/VoiceSheet.tsx),
+ * a row here and not a sixth mark under the controls, whose five were
+ * measured in 21 languages (lib/player/__tests__/optionWords.test.ts).
  * Nothing moved here: every control under the controls is still there.
  *
  * Like the reader's ••• sheet, it goes first when a row opens another sheet,
@@ -38,6 +43,8 @@ export function PlayerMoreSheet({
   src,
   share,
   onSleep,
+  voice = null,
+  onVoice,
 }: {
   open: boolean;
   onClose: () => void;
@@ -48,6 +55,14 @@ export function PlayerMoreSheet({
   share: string | null;
   /** Open the sleep timer's own sheet. */
   onSleep: () => void;
+  /**
+   * The voice reading what is playing, for the Voice row (1.9, build 95 note
+   * 25): its name, or null where no voice reads it (a chant, a prayer, today's
+   * readings one after another), and no row is drawn.
+   */
+  voice?: string | null;
+  /** Open the Voice sheet. */
+  onVoice?: () => void;
 }) {
   const { t } = useTranslate();
   const sleep = useSleepTimer();
@@ -87,6 +102,18 @@ export function PlayerMoreSheet({
             onSleep();
           }}
         />
+        {voice !== null && onVoice ? (
+          <Row
+            icon={<Voice size={16} />}
+            label={t("player.voice")}
+            value={voice}
+            on
+            onClick={() => {
+              onClose();
+              onVoice();
+            }}
+          />
+        ) : null}
         <Row
           icon={<Sound size={16} />}
           label={t("ambience.title")}

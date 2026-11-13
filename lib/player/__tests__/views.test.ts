@@ -72,7 +72,9 @@ describe("Now Playing: the cover and the words, never merged", () => {
     expect(top).toContain("<More size={20} />");
     expect(top).not.toContain('<span className="h-11 w-11 shrink-0" aria-hidden />');
     // A sheet over the player: Escape and the back button are its own.
-    expect(src).toContain("const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer);");
+    expect(src).toContain(
+      "const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer) || (voiceSheet.open && voiceSheet.overPlayer);",
+    );
   });
 
   it("holds in ••• what the player does that has no button in that corner, and Share", () => {

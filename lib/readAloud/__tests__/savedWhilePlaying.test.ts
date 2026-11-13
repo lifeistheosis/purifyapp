@@ -28,7 +28,8 @@ describe("the chapter playing", () => {
     const page = read("components/bible/ReadAloud.tsx");
     const hook = page.slice(page.indexOf("function useThisChapter("), page.indexOf("export function ListenButton"));
     expect(hook).toContain("const reading = readingOfSrc(audio.src);");
-    expect(hook).toContain("const loaded = reading?.book === book && reading.chapter === chapter;");
+    // Or the phone's voice reading it, in the Bible the page shows (1.9, build 95 note 25).
+    expect(hook).toContain("const loaded = spoken || (!bible && reading?.book === book && reading.chapter === chapter);");
     expect(hook).not.toMatch(/audio\.src\.endsWith/);
 
     const dock = read("components/bible/ReaderDock.tsx");

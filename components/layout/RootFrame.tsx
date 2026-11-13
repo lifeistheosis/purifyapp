@@ -42,6 +42,7 @@ import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
 import { TestersMark } from "@/components/onboarding/TestersMark";
 import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
 import { AmbienceSheet } from "@/components/player/AmbienceSheet";
+import { VoiceSheet } from "@/components/player/VoiceSheet";
 import { NowPlayingSheet } from "@/components/player/NowPlayingSheet";
 import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
 import { ProfilePrefsBridge } from "@/components/profile/ProfilePrefsBridge";
@@ -151,6 +152,10 @@ export function RootFrame({
             every screen, Today included, and the bar that shows it opens
             this. Renders nothing until it is opened. */}
         <AmbienceSheet />
+        {/* The Voice sheet (1.9, build 95 note 25): opened from the player's
+            ••• over the player, and from a page's Listen where the phone has
+            no voice for the text's language. Here for the same reason. */}
+        <VoiceSheet />
         {/* "It's okay. We got you this time.": the one moment a hidden streak
             save shows itself, on whatever page Purify opens to. Here for the
             reason above. Renders nothing until a save has held a day. */}

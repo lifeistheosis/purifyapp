@@ -12,6 +12,8 @@ import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { AmbienceButton } from "@/components/player/AmbienceButton";
 import { cn } from "@/lib/cn";
 import { useHasReadAloud } from "@/lib/readAloud/chapters";
+import type { DownloadableBible } from "@/lib/bible/downloads/catalog";
+import { useCanSpeak } from "@/lib/listen/speech/voices";
 import { useOverlayOpen } from "@/lib/ui/overlay";
 import { EVERYTHING, useOwnPlayer } from "@/lib/player/pagePlayer";
 import { usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
@@ -131,13 +133,16 @@ export function MobileChapterPill({
   chapter,
   totalVerses,
   listen = true,
+  bible = null,
   textKey,
 }: {
   slug: string;
   chapter: number;
   totalVerses: number;
-  /** Listen reads the English aloud: a chapter shown in a downloaded Bible, or in a licensed translation, has none (1.9). The pill and the dock both keep it. */
+  /** Whether Listen may read this page: not a licensed translation's (1.9). The pill and the dock both keep it. */
   listen?: boolean;
+  /** The downloaded Bible the page shows the chapter in, read by the phone's voice (1.9), or null for the English. */
+  bible?: DownloadableBible | null;
   /** What the chapter is shown in, when not the English: the running line looks at the verses again when it changes. */
   textKey?: string;
 }) {
@@ -148,8 +153,11 @@ export function MobileChapterPill({
   const next = nextChapter(slug, chapter);
   const [sheetOpen, setSheetOpen] = useState(false);
   const covered = useOverlayOpen();
-  // Only a chapter that has a reading carries Listen.
-  const reads = useHasReadAloud(slug, chapter) && listen;
+  // Listen: the English where it has its recording, and every chapter, in the
+  // English or a downloaded Bible, where the device can speak (1.9, build 95 note 25).
+  const recorded = useHasReadAloud(slug, chapter);
+  const speaks = useCanSpeak();
+  const reads = listen && (bible ? speaks : recorded || speaks);
   // The dock: the player and the chapter in one card while anything is loaded.
   const dockShows = useDockShows();
   useOwnPlayer(dockShows ? HOSTS_EVERYTHING : NOTHING);
@@ -239,7 +247,8 @@ export function MobileChapterPill({
           slug={slug}
           chapter={chapter}
           bookName={bookName}
-          listen={listen}
+          listen={reads}
+          bible={bible}
           prev={prev}
           next={next}
           prevLabel={prevLabel}
@@ -311,7 +320,7 @@ export function MobileChapterPill({
             <span aria-hidden className="mx-1.5 h-6 w-px shrink-0 bg-paper/15 group-data-[fit=2]:hidden" />
             <span className="flex shrink-0 items-center gap-0.5">
               <AmbienceButton variant="pill" />
-              {reads ? <ReadAloudPillButton book={slug} chapter={chapter} title={`${bookName} ${chapter}`} /> : null}
+              {reads ? <ReadAloudPillButton book={slug} chapter={chapter} title={`${bookName} ${chapter}`} bible={bible} /> : null}
             </span>
           </div>
         </div>

@@ -353,21 +353,22 @@ describe("the floating pill, with Listen", () => {
     expect(pill).toContain("min-w-0 max-w-full");
     // Not over a downloaded Bible, nor over a licensed translation on the website, as the toolbar has it
     // (Updates 15's finding: the pill offered the English reading over the NIV's words at a phone's width).
-    expect(code(SCREEN)).toMatch(/<MobileChapterPill\s+slug=\{slug\}\s+chapter=\{chapter\}\s+totalVerses=\{verses\}\s+listen=\{!downloaded && !usingLicensed\}/);
+    expect(code(SCREEN)).toMatch(/<MobileChapterPill\s+slug=\{slug\}\s+chapter=\{chapter\}\s+totalVerses=\{verses\}\s+listen=\{listens\}\s+bible=\{downloaded\?\.bible \?\? null\}/);
+    expect(code(SCREEN)).toContain("const listens = !usingLicensed && !(downloaded?.text.state === \"ready\" && downloaded.text.page.elsewhere);");
   });
 
   it("ends in Listen, after the sound button, only where the chapter has a reading", () => {
-    // Listen reads the English aloud: a chapter shown in a downloaded Bible has none (1.9).
-    expect(pill).toContain("const reads = useHasReadAloud(slug, chapter) && listen;");
+    // The English where it has its recording, and every chapter, the English or a downloaded Bible, where the device can speak (1.9, build 95 note 25).
+    expect(pill).toContain("const reads = listen && (bible ? speaks : recorded || speaks);");
     // Its word gives way where the name needs the room (lib/bible/__tests__/dockNamesWhole.test.ts).
-    expect(pill).toMatch(/<AmbienceButton variant="pill" \/>\s*\{reads \? <ReadAloudPillButton book=\{slug\} chapter=\{chapter\} title=\{`\$\{bookName\} \$\{chapter\}`\} \/> : null\}\s*<\/span>/);
+    expect(pill).toMatch(/<AmbienceButton variant="pill" \/>\s*\{reads \? <ReadAloudPillButton book=\{slug\} chapter=\{chapter\} title=\{`\$\{bookName\} \$\{chapter\}`\} bible=\{bible\} \/> : null\}\s*<\/span>/);
     const read = code("components/bible/ReadAloud.tsx");
     const button = read.slice(read.indexOf("export function ReadAloudPillButton"), read.indexOf("export function ReadAloudFollow"));
     // No reading, no button: never a dead one.
-    expect(button).toContain("const available = useHasReadAloud(book, chapter);");
+    expect(button).toContain("const available = useListens(book, chapter, bible);");
     expect(button).toContain("if (!available) return null;");
     // The same reading as the toolbar's Listen, played and paused through the one player.
-    expect(button).toContain("await startReading(book, chapter, title, t);");
+    expect(button).toContain("await listenToChapter({ book, chapter, title, t, bible });");
     expect(button).toMatch(/if \(playing\) pause\(\);\s*else play\(\);/);
     expect(button).toContain('const word = playing ? t("readAloud.pause") : t("readAloud.listen");');
     expect(button).toContain("aria-label={word}");
@@ -375,11 +376,11 @@ describe("the floating pill, with Listen", () => {
     expect(button).toMatch(/className="reader-lit [^"]*\bbg-paper\b[^"]*\btext-night\b/);
     expect(button).toMatch(/<span aria-hidden className=\{cn\("max-\[390px\]:hidden group-data-\[fit=1\]:hidden", wordGivesWay && "hidden"\)\}>\s*\{word\}/);
     // The verse being read is lit by the follower the screen already mounts.
-    expect(code(SCREEN)).toContain("<ReadAloudFollow book={slug} chapter={chapter} />");
+    expect(code(SCREEN)).toContain("<ReadAloudFollow book={slug} chapter={chapter} bible={downloaded?.bible ?? null} />");
     // On the computer Listen joins the toolbar, as the reader's own pill.
     const toolbar = code(SCREEN).slice(code(SCREEN).indexOf('cn("hidden md:block native-md-hidden"'), code(SCREEN).indexOf("<RestoreTranslation"));
     // Not over a chapter shown in a downloaded Bible, which has no reading (1.9).
-    expect(toolbar).toMatch(/\{!usingLicensed && !downloaded \? <ListenButton book=\{slug\} chapter=\{chapter\} bookName=\{book\.name\} \/> : null\}\s*<AmbienceButton variant="toolbar" \/>/);
+    expect(toolbar).toMatch(/\{listens \? <ListenButton book=\{slug\} chapter=\{chapter\} bookName=\{book\.name\} bible=\{downloaded\?\.bible \?\? null\} \/> : null\}\s*<AmbienceButton variant="toolbar" \/>/);
     expect(read).toMatch(/<ReaderPill onClick=\{start\}/);
   });
 

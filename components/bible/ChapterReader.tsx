@@ -35,6 +35,7 @@ import { useCandlelightWorn } from "@/components/theme/useWornPalette";
 import { cn } from "@/lib/cn";
 import { reportNowReading } from "@/lib/profile/client";
 import { useUndo } from "@/lib/ui/useUndo";
+import { chapterKey, setPageVerses } from "@/lib/listen/speech/pageText";
 import { UndoBar } from "@/components/ui/UndoBar";
 
 /** What was read for one chapter, tagged with the chapter it belongs to. */
@@ -99,6 +100,13 @@ export function ChapterReader({
   useEffect(() => {
     reportNowReading(`${book}/${chapter}`);
   }, [book, chapter]);
+  // The words Listen reads in the phone's voice (1.9, build 95 note 25): the
+  // page's own, each verse where it stands (lib/listen/speech/pageText.ts).
+  useEffect(() => {
+    const at = chapterKey(book, chapter);
+    setPageVerses(at, verses.map((v) => ({ text: v.text, n: v.n, anchor: `v${v.n}` })));
+    return () => setPageVerses(at, null);
+  }, [book, chapter, verses]);
   // A verse marked or unmarked by a double tap is offered back for a moment (1.8).
   const quick = useUndo();
   const has = useMemo(() => new Set(commentaryVerses ?? []), [commentaryVerses]);
