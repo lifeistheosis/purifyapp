@@ -34,6 +34,9 @@ const EMAIL_FILES = [
   "lib/shop/sellerEmails.ts",
   "lib/eikonBox/dropEmails.ts",
   "lib/support/ticketEmails.ts",
+  // The owner's brief and its charts (2026-11-13): drawn on the theme's tokens only.
+  "lib/admin/ownerBrief.ts",
+  "lib/admin/briefCharts.ts",
 ];
 
 const WEEK = [

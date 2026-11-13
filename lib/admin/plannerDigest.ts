@@ -17,6 +17,13 @@ import { readStoredTasks } from "./plannerRead";
 /**
  * One email a morning, to the owner, when something on the board needs him.
  *
+ * NOT ON THE CLOCK SINCE 2026-11-13. The owner's brief (lib/admin/
+ * ownerBriefSend.ts) replaced it on his yes that day: one email a day at
+ * most, with what needs him (the same morningMail lines) and what goes out
+ * today. This sender stays, tested, as the brief's ancestor: putting it back
+ * on the heartbeat (lib/ops/maintenance.ts) is one line, and would send him
+ * two emails a morning.
+ *
  * The board only reminds someone who opens the panel. This is the part that
  * reaches out, and since 2026-11-12 it says only what needs his hand or his
  * word (his word that day, docs/plans/owner-desk.md section 1: "If it doesn't

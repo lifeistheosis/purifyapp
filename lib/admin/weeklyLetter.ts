@@ -16,6 +16,11 @@ import { SITE_URL } from "@/lib/site";
 import { pageAllSettled } from "@/lib/supabase/pageAll";
 
 /**
+ * NOT ON THE CLOCK SINCE 2026-11-13: the owner's brief on its weekly day
+ * replaced the Monday email (lib/admin/ownerBriefSend.ts), and reads its
+ * Plus, locks and waiting through readWeek and readWaiting here. Below is the
+ * old letter's own story.
+ *
  * Reads last week's figures and sends the Monday email (lib/admin/weekly.ts
  * says what it is and why). Called by the maintenance heartbeat
  * (lib/ops/maintenance.ts) on Mondays from the morning email's hour; keyed
@@ -154,7 +159,8 @@ const TO_POST = [
   "packaged",
 ];
 
-async function readWaiting(admin: SupabaseClient): Promise<WeekFigures["waiting"]> {
+/** What waits on him now: open messages, refunds to decide, paid orders not posted. The owner's brief reads it daily. */
+export async function readWaiting(admin: SupabaseClient): Promise<WeekFigures["waiting"]> {
   const [messages, refunds, toPost] = await Promise.all([
     headCount(admin.from("support_tickets").select("id", { count: "exact", head: true }).eq("status", "open")),
     headCount(admin.from("shop_refund_requests").select("id", { count: "exact", head: true }).eq("status", "requested")),

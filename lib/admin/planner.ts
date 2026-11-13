@@ -96,6 +96,12 @@ export function monthLabel(ym: string): string {
   return `${MONTHS[Number(m) - 1]} ${y}`;
 }
 
+function previousMonth(ym: string): string {
+  const y = Number(ym.slice(0, 4));
+  const m = Number(ym.slice(5, 7));
+  return m === 1 ? `${y - 1}-12` : `${y}-${String(m - 1).padStart(2, "0")}`;
+}
+
 function nextMonth(ym: string): string {
   const y = Number(ym.slice(0, 4));
   const m = Number(ym.slice(5, 7));
@@ -186,7 +192,8 @@ export function plannedTasks(
       {
         ruleKey: `email-monthly:${ym}`,
         title: "Send the monthly note",
-        notes: `What was added to the library in ${monthLabel(ym)}, counted.`,
+        // Due on the 1st, so it counts the month just ended (lib/email/campaignDrafts.ts).
+        notes: `What was added to the library in ${monthLabel(previousMonth(ym))}, counted.`,
         category: "email",
         dueOn: `${ym}-01`,
       },
@@ -413,9 +420,10 @@ export const READY_PIECES: Readonly<Record<string, { name: string; tab: string }
  *   ready  the team's pieces due TODAY, on their day only (the arbiter's
  *          close of the risk in the quiet board, 2026-11-12): never as late,
  *          never again on a later day, each with the view that sends it. A
- *          morning whose only item is a ready piece still sends. When the
- *          plan's section 2 sends them by themselves, this becomes "goes out
- *          at <hour> unless you hold it".
+ *          morning whose only item is a ready piece still sends. Since
+ *          2026-11-13 the owner's brief says the team's pieces itself, with
+ *          "goes out at <hour> unless you hold it" (lib/admin/briefToday.ts),
+ *          and takes only `lines` from here.
  *
  * The subject never counts what is late: it names what needs him first, or
  * else what is ready, and says how many more of that kind there are.

@@ -27,6 +27,15 @@ The Sunday email, the monthly note and the feast shop email already build themse
 - **The board message** is words in his voice, shown in the app, so it never posts itself. A draft built from the week (the feast, what is new) waits in the brief for his one tap. Nothing written by a model about the faith ships without a person (`docs/editorial-standards.md`).
 - **Directional questions** come in the brief, one line each, only when a choice is his (for example, which of two pieces leads the monthly note).
 
+**Built, 2026-11-13 (Admin panel 3), on his "yes auto" of that day. Live when 1.9 reaches the main web.**
+
+- The switch is on by default, as he said, and lives in the admin: Calendar, The owner's desk ("Sending by itself", Turn off). The sends' hour is a setting too: 12 noon New York time unless he changes it, at least two hours after the brief.
+- A piece goes out by itself only when that day's brief named it with its Hold, two hours or more before; he has not held it; the board still has it due today (Skip this one and Not before keep it back); and it is the sends' hour and before 6 PM. The send is the panel's own Send (`lib/email/campaignStart.ts`): the same draft, the email doctrine, the postal address, once per period, the month's budget and the cadence rule. Rules: `lib/admin/ownerDesk.ts`; the sending: `lib/admin/autoSends.ts`.
+- The Hold link in the brief opens the desk in the Calendar, where Hold is one tap. No link in an email holds or sends on its own: a mail client's link checker would press it.
+- The board message: on its day the brief saves a draft from the week (the week's feasts from the calendar, and the newest release note) as that week's draft row, only if the week has none (`lib/admin/boardDraft.ts`). It waits in Patch notes for his Publish. It never publishes.
+- Directional questions: none built. A task anyone adds to the Calendar reaches him under "Needs you", which carries them for now.
+- Found on the way and fixed: the monthly note sent on the 1st carries the month it is about, so the board ticked the previous month's task and left the current one open (`lib/admin/plannerEvidence.ts`, `monthlyRuleOf`).
+
 ## 3. The owner's brief
 
 One email a day at most, made for the owner. It replaces the morning board email and grows from the Monday letter (`lib/admin/weekly.ts`, which arrives with 1.9).
@@ -35,6 +44,27 @@ One email a day at most, made for the owner. It replaces the morning board email
 - **Weekly, on Monday:** the week against the one before, a chart for each area, what worked and what did not, and the three things worth his attention.
 - **Context:** after an EIKON Box drop, a sale or a release, the next brief opens with how it went: orders, money, the new feature's use, what readers said.
 - **Rules:** no reader's name or address, ever. A figure that could not be read says "not read", never 0, as everywhere in the admin. Figures are read when the email is made and are never written into the repository. Charts are drawn in the email itself (email clients run no scripts) and checked in Gmail, Apple Mail and Outlook, light and dark.
+
+**Built, 2026-11-13 (Admin panel 3), on his "and yes ok for the owners brief". Live when 1.9 reaches the main web.**
+
+- One email a day at 7:30 AM New York time; the weekly one on Monday. Both are settings in the admin (Calendar, The owner's desk). It replaces the morning board email and the Monday letter on the heartbeat (`lib/ops/maintenance.ts`); their senders stay in the code, off the clock.
+- Today first, because the Hold has a clock: what needs him (the quiet board's lines, plus refunds to decide, open messages and orders to post) and what goes out today. Then yesterday, or on Monday the seven days against the seven before: readers, money in by source in the money chart's colours, Plus, what readers opened most, Community, searches that found nothing, errors; on Monday also what sold Plus, what worked and what did not, and three things worth his attention. After a release, an EIKON Box drop or a sale it opens with how it went.
+- Days are UTC days, as in the admin. A table this database does not have yet reads "not kept yet"; a read that failed, "not read".
+- Code: `lib/admin/ownerBrief.ts` (the words and the markup, pure), `lib/admin/briefFigures.ts` (the reads), `lib/admin/briefToday.ts` (today), `lib/admin/briefCharts.ts` (the charts, tables only), `lib/admin/ownerBriefSend.ts` (the send). The desk: `components/admin/planner/OwnerDesk.tsx`, `app/api/admin/desk/route.ts`, settings in `site_settings` (no migration).
+- **Its look waits for his yes.** The kit's own brief (`docs/brand/kit/email/brief.html`, Fable) landed while this was built, and like every design it waits for his yes, with the kit's look being redone. So the code wears the shell every Purify email wears today (`emailLayout`, night, never parchment), and the kit's look goes in at one seam once he says yes: `briefShell` in `lib/admin/ownerBriefSend.ts`, with every part drawn on the email theme's tokens (`lib/email/theme.ts`, which gained the chart colours). The brief goes live only with 1.9's merge, so his yes is needed before then, to this look or to the kit's.
+- **Why it looks as it does** (his rule, "you must justify your designs"):
+
+  | The choice | Why | What it does for him |
+  |---|---|---|
+  | Today first: what needs you, then what goes out | The Hold is the one thing in it with a clock. | The first screen is everything he must act on. |
+  | Each email due today with its time and a Hold link | A send he did not press must be one he saw first. | Nothing goes out that he was not told about, hours before. |
+  | Yesterday in one column of figures, each against the same day last week | One day against the day before swings with the weekday. | A rise or fall he sees is a real one. |
+  | Money as one bar in the money chart's colours, names and amounts beside it | His word: "if you can make it a different color ... If there's no distinction, then it just shows up all white". | Where the money came from, at a glance, and in words. |
+  | On Monday a column a day for readers and money | A week is a shape: which day rose, which fell. | He sees the week without opening the admin. |
+  | "Not read" and "not kept yet", never 0 | A 0 that was never counted is a lie. | He can trust every number in it. |
+  | Tables and inline colour only; dark, as Purify sends today | Mail clients run no script and Gmail shows no SVG. | It looks the same in every client. |
+  | One column at phone width, checked at 360 and 390 | He reads it on his phone. | Nothing runs off the screen. |
+- Not yet done: the check in Gmail, Apple Mail and Outlook, light and dark. The email was drawn in Chromium at 390 and 800 wide and held by tests (no script, no SVG, no flex or grid, no em dash); the real clients need his inbox or a testing service, so the first real brief after the merge is the first such check.
 
 ## 4. Departments
 
@@ -85,7 +115,7 @@ Models: Opus 5.5 does the work, Fable 5.2 designs, and Sonnet 5.5 takes light re
 
 ## Questions for him
 
-1. The Sunday email, the monthly note and the feast shop email go out by themselves unless he taps Hold in that morning's brief; the board message waits for his tap. Recommended: yes.
-2. The brief at 7:30 his time daily, with Monday's as the weekly. Recommended: yes.
+1. The Sunday email, the monthly note and the feast shop email go out by themselves unless he taps Hold in that morning's brief; the board message waits for his tap. Recommended: yes. **His answer, 2026-11-13: "yes auto but also we need to work on designs". Built.**
+2. The brief at 7:30 his time daily, with Monday's as the weekly. Recommended: yes. **His answer, 2026-11-13: "and yes ok for the owners brief". Built.**
 3. Start the shop and sourcing chat after 1.9? Recommended: yes, with the EIKON Box restart.
 4. The kit by Opus from the app, with Fable only for the email and seasonal looks. Recommended: yes.

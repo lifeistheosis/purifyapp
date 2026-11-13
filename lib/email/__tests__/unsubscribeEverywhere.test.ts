@@ -182,8 +182,16 @@ describe("release news", () => {
   });
 
   it("only the release email may be given every account", () => {
-    const route = read("app/api/admin/email/campaign/route.ts");
-    expect(route).toContain("audience: storedAudience(draft.list)");
+    // Every list email starts in one place (lib/email/campaignStart.ts): the
+    // panel's Send and the owner's desk, which sends three of them by itself
+    // (his word, 2026-11-13). Neither may start a job of its own.
+    const start = read("lib/email/campaignStart.ts");
+    expect(start).toContain("audience: storedAudience(draft.list)");
+    for (const caller of ["app/api/admin/email/campaign/route.ts", "lib/admin/autoSends.ts"]) {
+      const src = read(caller);
+      expect(src, caller).toContain("startCampaign(");
+      expect(src, caller).not.toContain("createJob(");
+    }
     const jobs = read("lib/email/jobs.ts");
     expect(jobs).toContain('if (list === RELEASE_NEWS) return "all_accounts";');
     const drafts = read("lib/email/campaignDrafts.ts");

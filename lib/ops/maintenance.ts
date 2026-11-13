@@ -2,8 +2,8 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { sendPlannerDigest } from "@/lib/admin/plannerDigest";
-import { sendWeeklyLetter } from "@/lib/admin/weeklyLetter";
+import { runAutoSends } from "@/lib/admin/autoSends";
+import { sendOwnerBrief } from "@/lib/admin/ownerBriefSend";
 import { pruneReports } from "@/lib/ops/prune";
 import { clearMatured, runAmbassadorPayouts } from "@/lib/ambassadors/payouts";
 import { campaignsInBuild } from "@/lib/campaigns/flags";
@@ -22,8 +22,12 @@ import { sendCartReminders } from "@/lib/shop/cartReminderSweep";
  */
 export const EMAIL_JOBS_FROM_UTC_HOUR = 12;
 
-/** The board's morning email: 13:00 UTC is 9 AM Eastern, the owner's clock. */
-export const DIGEST_FROM_UTC_HOUR = 13;
+/**
+ * The owner's brief and the emails that send themselves keep their own hours,
+ * in his time (lib/admin/ownerDesk.ts: 7:30 AM New York unless he changes it),
+ * so they are asked on every heartbeat and answer at once until it is time.
+ */
+const EVERY_HEARTBEAT_MS = 9 * 60_000;
 
 /** Ambassador payouts: 15:00 UTC, 11 AM Eastern, once a day at most. */
 export const AMBASSADOR_PAYOUTS_UTC_HOUR = 15;
@@ -120,13 +124,16 @@ export async function runMaintenance(admin: SupabaseClient, now: number = Date.n
   if (hour >= CART_NOTES_UTC_HOURS[0] && hour <= CART_NOTES_UTC_HOURS[1]) {
     report.cartReminders = await every("cartReminders", 55 * 60_000, now, () => sendCartReminders(admin, now));
   }
-  // The board's daily reminder. Twenty hours between runs makes it one a
-  // day whatever the heartbeat does, and a day with nothing due sends nothing.
-  if (new Date(now).getUTCHours() >= DIGEST_FROM_UTC_HOUR) {
-    report.plannerDigest = await every("plannerDigest", 20 * 3_600_000, now, () =>
-      sendPlannerDigest(admin, new Date(now)),
-    );
-  }
+  // The owner's brief (lib/admin/ownerBriefSend.ts): one email a day at his
+  // hour, in place of the board's morning email and the Monday letter (his
+  // yes of 2026-11-13). The email log keys it by his date, so it goes once
+  // whatever the heartbeat or a restart does.
+  report.ownerBrief = await every("ownerBrief", EVERY_HEARTBEAT_MS, now, () => sendOwnerBrief(admin, new Date(now)));
+  // The Sunday email, the monthly note and the feast shop email, sent by
+  // themselves once that morning's brief has named them and he has not held
+  // them (lib/admin/autoSends.ts, his "yes auto" of 2026-11-13). Each send is
+  // the panel's own, with every check a press meets.
+  report.autoSends = await every("autoSends", EVERY_HEARTBEAT_MS, now, () => runAutoSends(admin, new Date(now)));
   // The anonymous reports are kept only as long as their privacy lines say:
   // errors 14 days, searches that found nothing 90 (lib/ops/prune.ts). Once a
   // day; a table not there yet is said, not failed.
@@ -153,13 +160,6 @@ export async function runMaintenance(admin: SupabaseClient, now: number = Date.n
   // fourteen days after it, the job reads nothing and says so; after it has
   // cleared them it finds nothing set.
   report.prayerRequestsEnd = await every("prayerRequestsEnd", 20 * 3_600_000, now, () => endPrayerRequests(admin, now));
-  // The Monday email (lib/admin/weekly.ts): last week in numbers, to the
-  // owner, from the same morning hour. The email log keys it by week, so it
-  // goes once whatever the heartbeat or a restart does.
-  if (new Date(now).getUTCDay() === 1 && new Date(now).getUTCHours() >= DIGEST_FROM_UTC_HOUR) {
-    report.weeklyLetter = await every("weeklyLetter", 20 * 3_600_000, now, () =>
-      sendWeeklyLetter(admin, new Date(now)),
-    );
-  }
+  // The Monday email is the owner's brief on its weekly day now (above).
   return report;
 }

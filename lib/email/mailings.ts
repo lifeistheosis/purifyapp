@@ -67,6 +67,7 @@ const KIND_LABEL: Record<string, string> = {
   seller_store_review: "Seller store review",
   planner_digest: "Planner reminder (to you)",
   weekly_letter: "Your week, on Mondays (to you)",
+  owner_brief: "The owner's brief (to you)",
 };
 
 /** "Terms change notice · 2026-08-14", "Weekly calendar · 2026-W38", "Welcome". */

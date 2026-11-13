@@ -18,8 +18,8 @@ vi.mock("@/lib/shop/abandonedSweep", () => ({ sweepAbandonedCheckouts: async () 
 vi.mock("@/lib/ambassadors/payouts", () => ({ clearMatured: async () => ({}), runAmbassadorPayouts: async () => ({}) }));
 vi.mock("@/lib/email/jobs", () => ({ runEmailJobs: async () => ({ running: 0, allowance: 0, reports: [] }) }));
 vi.mock("@/lib/shop/cartReminderSweep", () => ({ sendCartReminders: async () => ({}) }));
-vi.mock("@/lib/admin/plannerDigest", () => ({ sendPlannerDigest: async () => ({}) }));
-vi.mock("@/lib/admin/weeklyLetter", () => ({ sendWeeklyLetter: async () => ({}) }));
+vi.mock("@/lib/admin/ownerBriefSend", () => ({ sendOwnerBrief: async () => ({ sent: false, reason: "not the brief's hour" }) }));
+vi.mock("@/lib/admin/autoSends", () => ({ runAutoSends: async () => ({ lines: [] }) }));
 
 import { runMaintenance } from "../maintenance";
 

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Card, SubTabs, Toolbar, ToolbarButton } from "../primitives";
 import { Select } from "../Select";
+import { OwnerDesk } from "../planner/OwnerDesk";
 import { PlanBoard } from "../planner/PlanBoard";
 import { CalendarGrid } from "../insights/CalendarGrid";
 import { DayDetail } from "../insights/DayDetail";
@@ -31,7 +32,10 @@ import type { Series } from "@/lib/admin/insights/types";
  * PLAN is the week board (components/admin/planner/PlanBoard.tsx): the
  * deadlines Purify's rhythm creates, on the days they fall, with the ones
  * already met ticked by the app. It opens first, because a calendar that only
- * says what happened cannot tell you what has to happen before Friday.
+ * says what happened cannot tell you what has to happen before Friday. Above
+ * it sits the owner's desk (components/admin/planner/OwnerDesk.tsx): today's
+ * emails with their Hold, and when his brief comes. The brief's Hold links
+ * land here.
  *
  * RESULTS is what this tab was: the month and week grids of measured days.
  *
@@ -89,7 +93,15 @@ export function CalendarTab() {
         active={view}
         onChange={setView}
       />
-      {view === "plan" ? <PlanBoard /> : <ResultsView />}
+      {view === "plan" ? (
+        <>
+          {/* The owner's desk first: today's emails with their Hold, and his brief's hour. */}
+          <OwnerDesk />
+          <PlanBoard />
+        </>
+      ) : (
+        <ResultsView />
+      )}
     </div>
   );
 }

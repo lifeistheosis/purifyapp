@@ -6,13 +6,11 @@ import { logActivity } from "@/lib/admin/activityLog";
 import { JOB_ORDERS } from "@/lib/email/audienceOrder";
 import { readBudget } from "@/lib/email/budget";
 import { draftCampaign, isCampaignKind } from "@/lib/email/campaignDrafts";
+import { campaignBodyText, campaignCopyViolations, startCampaign } from "@/lib/email/campaignStart";
 import { findCampaign, LIBRARY_KINDS, recentLibraryReaders } from "@/lib/email/campaigns";
-import { campaignExpiry, createJob, jobForMailing, runEmailJob, shareOf, storedAudience } from "@/lib/email/jobs";
-import { checkEmailCopy } from "@/lib/email/doctrine";
-import { explainViolations } from "@/lib/push/doctrine";
+import { jobForMailing } from "@/lib/email/jobs";
 import { LIST_LABEL, RELEASE_NEWS } from "@/lib/email/lists";
 import { postalAddress } from "@/lib/email/marketing";
-import { bodyLines, type MarketingBody } from "@/lib/email/templates/marketingBodies";
 import { heldForApple } from "@/lib/email/appleRelay";
 import { releaseNewsReaders, subscribersOf } from "@/lib/email/preferences";
 import { rateLimited } from "@/lib/security/ratelimit";
@@ -31,7 +29,10 @@ export const dynamic = "force-dynamic";
  * went, whether the postal address is set, and whether the words pass the
  * email doctrine.
  *
- * POST sends. It rebuilds the draft here rather than trusting the preview, and
+ * POST sends, through startCampaign (lib/email/campaignStart.ts), the one
+ * start the owner's desk also sends by (his word of 2026-11-13: the Sunday
+ * email, the monthly note and the feast shop email send themselves unless
+ * held). It rebuilds the draft there rather than trusting the preview, and
  * needs the period key the preview showed, so a draft that changed underneath
  * (a new week began, a note was edited) cannot go out unseen. A send held for
  * the postal address is NOT recorded, so it can go once the address is set.
@@ -68,24 +69,6 @@ async function readersOf(admin: ReturnType<typeof createAdminClient>, list: Para
   return { ...readers, appleHeld: heldForApple(accounts.filter((a) => going.has(a.id))).size };
 }
 
-function bodyText(body: MarketingBody): string {
-  return [body.subject, ...bodyLines(body)].join("\n\n");
-}
-
-/**
- * The copy rules for one kind. A release email is the published note, and a
- * note names what was built, so the pressure list is not run over it
- * (lib/email/doctrine.ts). Every other kind is held to all of it.
- */
-function copyViolations(kind: string, body: MarketingBody) {
-  return checkEmailCopy({ subject: body.subject, body: bodyText(body) }, { naming: kind === "release" });
-}
-
-/** The earlier of two ISO times; `maybe` only counts when it is one. */
-function earlier(iso: string, maybe: unknown): string {
-  return typeof maybe === "string" && !Number.isNaN(Date.parse(maybe)) && maybe < iso ? maybe : iso;
-}
-
 export async function GET(req: Request) {
   const adminUser = await getAdminUser();
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -105,7 +88,7 @@ export async function GET(req: Request) {
     ]);
     const cadenceSkips = subs.subscribers.filter((s) => recent.has(s.userId)).length;
     const violations = draft.body
-      ? copyViolations(kind, draft.body)
+      ? campaignCopyViolations(kind, draft.body)
       : [];
 
     return NextResponse.json({
@@ -114,7 +97,7 @@ export async function GET(req: Request) {
       listLabel: LIST_LABEL[draft.list],
       periodKey: draft.periodKey,
       subject: draft.body?.subject ?? null,
-      text: draft.body ? bodyText(draft.body) : null,
+      text: draft.body ? campaignBodyText(draft.body) : null,
       reason: draft.reason,
       subscribers: subs.subscribers.length,
       subscribersError: subs.error,
@@ -154,75 +137,15 @@ export async function POST(req: Request) {
   const kind = parsed.data.kind;
   const admin = createAdminClient();
 
-  const draft = await draftCampaign(admin, kind).catch((e: Error) => e);
-  if (draft instanceof Error) return NextResponse.json({ error: draft.message }, { status: 503 });
-  if (draft.periodKey !== parsed.data.periodKey) {
-    return NextResponse.json(
-      { error: `This is now the draft for ${draft.periodKey}, not ${parsed.data.periodKey}. Reload and check it again.` },
-      { status: 409 },
-    );
-  }
-  if (!draft.body) return NextResponse.json({ error: draft.reason ?? "Nothing to send." }, { status: 409 });
-
-  const violations = copyViolations(kind, draft.body);
-  if (violations.length) {
-    return NextResponse.json({ error: `The words do not pass: ${explainViolations(violations)}` }, { status: 422 });
-  }
-
-  const mailingKey = `${kind}:${draft.periodKey}`;
-  const existing = await jobForMailing(admin, mailingKey).catch(() => null);
-  if (existing || (await findCampaign(admin, kind, draft.periodKey).catch(() => null))) {
-    return NextResponse.json(
-      {
-        error: existing
-          ? `The ${kind} email for ${draft.periodKey} is already ${existing.status === "running" ? "going out" : existing.status}.`
-          : `The ${kind} email for ${draft.periodKey} already went out.`,
-      },
-      { status: 409 },
-    );
-  }
-
-  if (!postalAddress()) {
-    return NextResponse.json(
-      { error: "Held: marketing email needs EMAIL_POSTAL_ADDRESS set on the server first. Nothing was sent." },
-      { status: 409 },
-    );
-  }
-
-  const body = draft.body;
-  const now = new Date();
-  let started: Awaited<ReturnType<typeof createJob>>;
-  try {
-    started = await createJob(admin, {
-      kind,
-      mailingKey,
-      subject: body.subject,
-      // Only the release email may go to every account. Everything else is a list.
-      audience: storedAudience(draft.list),
-      order: parsed.data.order,
-      perDay: parsed.data.perDay,
-      payload: {
-        type: "campaign",
-        periodKey: draft.periodKey,
-        body,
-        bodyText: bodyText(body),
-        details: draft.details,
-      },
-      // A feast email ends on the feast (details.until, lib/email/campaignDrafts.ts)
-      // if that comes before the campaign's usual life: told of a feast that
-      // has passed, a new subscriber is told something wrong, not late.
-      expiresAt: earlier(campaignExpiry(kind, now), draft.details.until),
-      createdByEmail: adminUser.email ?? null,
-    });
-  } catch (e) {
-    return NextResponse.json(
-      { error: `Could not start the send: ${(e as Error).message}. Is supabase/migrations/20260919000000_ops_board.sql applied?` },
-      { status: 503 },
-    );
-  }
-
-  const budget = await readBudget(admin, now);
-  const run = await runEmailJob(admin, started.job, { allowance: shareOf(budget.bulkLeft), now });
+  const started = await startCampaign(admin, {
+    kind,
+    periodKey: parsed.data.periodKey,
+    order: parsed.data.order,
+    perDay: parsed.data.perDay,
+    createdByEmail: adminUser.email ?? null,
+  });
+  if (!started.ok) return NextResponse.json({ error: started.error }, { status: started.status });
+  const { mailingKey, run } = started;
 
   void logActivity({
     actorEmail: adminUser.email ?? null,
@@ -232,5 +155,5 @@ export async function POST(req: Request) {
     detail: { order: parsed.data.order, perDay: parsed.data.perDay, ...run.counts, owed: run.owed, note: run.note },
   });
 
-  return NextResponse.json({ ok: true, periodKey: draft.periodKey, run, job: started.job.id });
+  return NextResponse.json({ ok: true, periodKey: started.periodKey, run, job: started.jobId });
 }
