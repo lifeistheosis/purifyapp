@@ -20,7 +20,7 @@ export const SECONDS = 104;
 // render.mjs --check measures the ten digits and refuses the face if they differ.
 export const NUMERALS = { family: "Archivo Narrow", weight: 600, by: "Omnibus-Type", licence: "SIL Open Font Licence 1.1", from: "@fontsource/archivo-narrow" };
 
-export const TITLE = ["Orthodox Christians in America", "BY THE NUMBERS"];
+export const TITLE = ["Orthodox Christians in America", "By the numbers"]; // sentence case, no added tracking: the design kit refuses spaced capitals
 
 // U.S. Religion Census 2020, Appendix F, p. 4 (facts.mjs, scene "where"): the
 // six states that hold 47.9% of Eastern Orthodox adherents, in the source's order.

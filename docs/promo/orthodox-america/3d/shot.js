@@ -323,7 +323,7 @@ const TITLE_Z = 2.0, TITLE_AT = 5.2 - 0.22 * 1.25 - TITLE_Z; // its distance fro
 const title = plane("title", 900, 150, 30, (ctx) => {
   ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
   ctx.font = `400 60px ${SERIF}`; ctx.fillText(TITLE[0], 450, 62);
-  ctx.font = `500 30px ${SANS}`; spaced(ctx, TITLE[1], 450, 126, 7);
+  ctx.font = `500 30px ${SANS}`; ctx.fillText(TITLE[1], 450, 126);
 }, [20, 8, 880, 140]);
 title.mesh.scale.setScalar(TITLE_AT / PX);
 title.mesh.position.set(0, (-0.66 - 0.2) * (TITLE_AT / FOCAL), TITLE_Z);
