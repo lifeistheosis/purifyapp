@@ -296,6 +296,10 @@ So, in 1.9, and the drop day moves for it:
 - **What only a phone can prove:** the voices each phone has, word events on Google's and Samsung's engines, speech with the screen off and the lock screen's controls, ambience under the voice, R8 on the release APK, and on iPhone the silent switch and background speech: his walk on the release APK and TestFlight.
 - **Size:** the largest piece of 1.9's remaining work. An estimate goes with his answers.
 
+**His answers, 2026-11-13 about 14:29 UTC ("all recs"):** free for every reader; a chosen voice reads the whole Bible, the lives, the councils, history, theology and the works; not the prayers.
+
+**The engine side, built (Updates 15, 2026-11-13, `5245f37a8`).** Nothing a reader sees yet. The phone's voice is the one player's second way of making sound (`setSpokenTrack`, `lib/listen/speech/session.ts`), so play, pause, the seek bar, 15 seconds back and forward, the speed, Loop, the sleep timer, the ambience's balance and Android's lock screen all follow it. A spoken text gets a recording's timeline from its letters at the voice's pace, learned as it reads (`timeline.ts`): a verse lights only when the phone begins it, a word when the phone reports it. The plugin `PurifySpeech`: Android's TextToSpeech (the Android 11 query for the speech service; no audio focus asked, so the ambience plays on under it) and the iPhone's AVSpeechSynthesizer (the playback session, so the silent switch does not mute it; its own lock screen while it speaks; novelty voices never listed); on the website, the browser's speech. Only voices on the device are listed. R8 needs no rule beyond Capacitor's own. The Kokoro parts are in the Vault, `docs/1.9-build/kept/phone-voice-kokoro/`. Tests that fail on the old code: `lib/listen/speech/__tests__/`, 43. Next, from `docs/handoffs/updates-15.md`: the picker's stills for his yes, then Listen on every text without a recording.
+
 ## Note 26: switching the theme is not smooth
 
 His word, 2026-11-13 about 08:17 UTC: "make the theme switching smoother its buggy"
