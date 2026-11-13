@@ -1,0 +1,140 @@
+{
+  "made": "2026-11-13",
+  "export": "6633b789",
+  "release": "1.9",
+  "checks": [
+    "contrast",
+    "placeholder",
+    "target",
+    "glyph",
+    "palette",
+    "gold",
+    "stripe",
+    "mirror",
+    "emdash",
+    "rays",
+    "sparkle",
+    "picture",
+    "dashed",
+    "keys",
+    "cut"
+  ],
+  "cards": [
+    {
+      "file": "01-cover.png",
+      "id": "cover",
+      "stand": "front",
+      "words": "head",
+      "title": "Purify 1.9 is here.",
+      "text": "Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.",
+      "from": "the caption's first sentence, and the drop's line",
+      "route": "/",
+      "state": "Today on 6 December 2026, the new reader's one-question card dismissed with its own Dismiss button.",
+      "alt": "Today: St Nicholas the Wonderworker, the Nativity Fast with fish allowed, and the day's verse.",
+      "picturesInView": [
+        "/saints/icons/nicholas-the-wonderworker.v2.jpg"
+      ],
+      "problems": [],
+      "checkMock": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": []
+      }
+    },
+    {
+      "file": "02-journal.png",
+      "id": "journal",
+      "stand": "side",
+      "words": "head",
+      "title": "Your journal, by the Church's day",
+      "text": "Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.",
+      "from": "the drop's point \"journal\": its name and its text",
+      "route": "/journal",
+      "state": "The journal as a new reader opens it: the day's page, its saint, its fast and its readings, each with a pen.",
+      "alt": "The journal's page for Sunday: the day's saint, the fast, and the Epistle and Gospel, each with a pen.",
+      "picturesInView": [],
+      "problems": [],
+      "checkMock": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": []
+      }
+    },
+    {
+      "file": "03-verse.png",
+      "id": "verse",
+      "stand": "front",
+      "words": "head",
+      "title": "Every verse, opened",
+      "text": "Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.",
+      "from": "the drop's point \"verse\": its name and its text",
+      "route": "/bible/john/1",
+      "state": "John 1 with a finger held on verse 1: its own tools, open.",
+      "alt": "John 1:1 held open: the highlight colours, and Copy, Share, Image, Note and Study.",
+      "picturesInView": [],
+      "problems": [],
+      "checkMock": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": []
+      }
+    },
+    {
+      "file": "04-bibles.png",
+      "id": "bibles",
+      "stand": "side",
+      "words": "foot",
+      "title": "Six more Bibles",
+      "text": "The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.",
+      "from": "the drop's point \"bibles\": its name and its text",
+      "route": "/bible/john/1",
+      "state": "John 1 with the translations list open (the KJV button under the chapter), drawn up to the Bibles to download.",
+      "alt": "The translations list: the Russian Synodal, the Greek Septuagint and the Serbian Bible, each to download.",
+      "picturesInView": [],
+      "problems": [],
+      "checkMock": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": []
+      }
+    },
+    {
+      "file": "05-study.png",
+      "id": "study",
+      "stand": "front",
+      "words": "foot",
+      "title": "Study a verse, in Purify Plus",
+      "text": "Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.",
+      "from": "the drop's point \"study\": its name and its text",
+      "route": "/bible/john/1",
+      "state": "John 1:1 held, then Study: the verse's study sheet as a reader with no Plus meets it, each Plus part under its mark.",
+      "alt": "The study sheet for John 1:1: the Greek, and Cross-references and Compare marked Purify Plus.",
+      "picturesInView": [],
+      "problems": [],
+      "checkMock": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": []
+      }
+    },
+    {
+      "file": "06-close.png",
+      "id": "close",
+      "stand": "words",
+      "words": "alone",
+      "title": "The Scriptures, the saints, the prayers and the calendar stay free.",
+      "text": "Find Purify: Orthodox Hub on the App Store and on Google Play.",
+      "from": "the drop's closing, and the caption's last sentence",
+      "route": null,
+      "state": "Words alone, over the hill.",
+      "alt": null,
+      "picturesInView": [],
+      "problems": [],
+      "checkMock": {
+        "pass": true,
+        "failures": [],
+        "notMeasured": []
+      }
+    }
+  ]
+}
