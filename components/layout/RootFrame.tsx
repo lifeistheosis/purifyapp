@@ -180,13 +180,6 @@ export function RootFrame({
         {/* The errors list (admin A10): a script or a promise that fails on any
             screen, reported once (lib/errors/report.ts); renders nothing. */}
         <ErrorReportBridge />
-        {/* Purify's own hold-to-copy. In the phone apps the system's text
-            selection is off (globals.css, "The apps select nothing by
-            themselves"), and a hold on any text without tools of its own
-            offers Copy here. Inside the provider because the pill speaks the
-            reader's language; renders nothing until a hold, and does nothing
-            in a browser. */}
-        <PressToCopy />
         {/* Every download a reader starts, told to the bell's sheet and to the
             phone (lib/downloads), and Purify's own ask before the phone's
             prompt. Inside the provider because what it tells the phone and
@@ -194,6 +187,13 @@ export function RootFrame({
             line was its key ("downloads.saving"), found by note 23's walk
             (scripts/gate/downloads.mjs). Does nothing in a browser. */}
         <DownloadsBridge />
+        {/* Purify's own hold-to-copy. In the phone apps the system's text
+            selection is off (globals.css, "The apps select nothing by
+            themselves"), and a hold on any text without tools of its own
+            offers Copy here. Inside the provider because the pill speaks the
+            reader's language; renders nothing until a hold, and does nothing
+            in a browser. */}
+        <PressToCopy />
       </MessagesProvider>
       <AnalyticsTracker />
       <NativeBridge />
