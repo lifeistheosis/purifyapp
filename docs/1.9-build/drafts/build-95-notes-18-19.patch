@@ -4,6 +4,7 @@ words of docs/1.9-build/notes/settings-words.md. His page:
 https://claude.ai/artifact/8FLKFQDUhaVExnP59vzjL3
 After his yes: git apply docs/1.9-build/drafts/build-95-notes-18-19.patch, then
 every language, the tests that hold the old words, and the fix checklist.
+Refreshed on dc29e9cab (after Galilee and Patmos came out).
 
 diff --git a/app/(app)/settings/page.tsx b/app/(app)/settings/page.tsx
 index 2150af626..3ca9a46f8 100644
@@ -29,10 +30,10 @@ index 2150af626..3ca9a46f8 100644
            {/* Its own box, so the first group is the first child of something
                and sits at the top on a phone, where the header is not drawn. */}
 diff --git a/app/globals.css b/app/globals.css
-index 9df2a0060..0a5587bb1 100644
+index 25221ef83..cadf582ab 100644
 --- a/app/globals.css
 +++ b/app/globals.css
-@@ -6505,37 +6505,76 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
+@@ -6571,37 +6571,76 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
     --color-gold of that palette's block above ("Premium Reading Modes", and
     :root for Dark). lib/settings/__tests__/litPanels.test.ts holds the two
     together. */
@@ -155,7 +156,7 @@ index 8d81778a5..223a1a890 100644
            {free.map(tile)}
          </div>
 diff --git a/components/settings/ReadingModePages.tsx b/components/settings/ReadingModePages.tsx
-index c0f9a2a51..da38d0296 100644
+index 153d83ae5..0d1eab1f4 100644
 --- a/components/settings/ReadingModePages.tsx
 +++ b/components/settings/ReadingModePages.tsx
 @@ -20,8 +20,22 @@
@@ -307,7 +308,7 @@ index c0f9a2a51..da38d0296 100644
  
  /**
 diff --git a/components/settings/SettingsClient.tsx b/components/settings/SettingsClient.tsx
-index 9b955c61e..1ef2577d5 100644
+index 60416a452..75f0c8f1f 100644
 --- a/components/settings/SettingsClient.tsx
 +++ b/components/settings/SettingsClient.tsx
 @@ -186,12 +186,7 @@ function AccountSection({ reader }: { reader: Reader }) {
@@ -377,7 +378,7 @@ index 9b955c61e..1ef2577d5 100644
 -        hint={t("settings.readingHint")}
 -      >
 +      <Section id="reading" title={t("settings.reading")}>
-         {/* Its head is the way to every palette, the seventeen looks among
+         {/* Its head is the way to every palette, the fifteen looks among
              them (1.9, ./ReadingModeGallery.tsx), and says which one is on. */}
          <Row icon={<Book size={18} />} label={t("ui.readingMode")} description={modeName} href="/settings/reading-mode/">
 @@ -677,7 +660,7 @@ function Body() {
@@ -399,7 +400,7 @@ index 9b955c61e..1ef2577d5 100644
            <Track
              value={calStyle}
 diff --git a/lib/i18n/messages/en.json b/lib/i18n/messages/en.json
-index d933b3f19..cd970b16a 100644
+index 22af904a2..a3f5660b8 100644
 --- a/lib/i18n/messages/en.json
 +++ b/lib/i18n/messages/en.json
 @@ -768,10 +768,10 @@
@@ -494,7 +495,7 @@ index d933b3f19..cd970b16a 100644
    "prayers.play": "Play",
    "prayers.pause": "Pause",
    "prayers.stop": "Stop",
-@@ -3649,9 +3649,9 @@
+@@ -3655,9 +3655,9 @@
    "settings.paletteDamaskHint": "Wine-red cloth, its own weave a step lighter",
    "settings.paletteLinenHint": "White cloth, embroidered in red",
    "settings.paletteProgress": "{count} of {total}",
@@ -507,7 +508,7 @@ index d933b3f19..cd970b16a 100644
    "settings.paletteEarnedRow": "Earned by reading",
    "settings.familyNight": "Night",
    "settings.familyNightLine": "The hours of the dark, and what lights them",
-@@ -3664,7 +3664,7 @@
+@@ -3670,7 +3670,7 @@
    "settings.interlinearHintGreek": "Show the Greek alongside the English on New Testament chapters as soon as you open them.",
    "settings.calendarReckoningHint": "The default style used by /calendar when no ?style= query is set. New (Revised Julian) for the Ecumenical Patriarchate and the majority; Old (Julian) for the Russian, Serbian, Athonite, and Jerusalem traditions.",
    "settings.discord": "Discord status",
@@ -516,7 +517,7 @@ index d933b3f19..cd970b16a 100644
    "settings.discordConnected": "Showing on Discord now.",
    "settings.discordWaiting": "Open Discord on this computer and your status will appear there.",
    "settings.discordUnavailable": "Discord status is not set up in this build yet.",
-@@ -3694,7 +3694,7 @@
+@@ -3700,7 +3700,7 @@
    "settings.discordPatronSignedOut": "Sign in to choose a patron saint.",
    "settings.discordPatronChoose": "Choose",
    "settings.discordPatronChange": "Change",
@@ -525,7 +526,7 @@ index d933b3f19..cd970b16a 100644
    "settings.discordFavoriteLabel": "Your favorite saint",
    "settings.discordFavoritePick": "Choose a saint",
    "settings.discordFavoriteSearch": "Search the saints",
-@@ -3706,8 +3706,8 @@
+@@ -3712,8 +3712,8 @@
    "settings.discordShowPlaceOn": "Friends see where you are, such as chapter 3 of 21.",
    "settings.discordShowPlaceOff": "Off. Friends see only the book or the work.",
    "settings.discordLiveBar": "Live progress bar",
@@ -536,7 +537,7 @@ index d933b3f19..cd970b16a 100644
    "settings.discordDressUp": "Dress up",
    "settings.discordFollowSeason": "Follow the church year",
    "settings.discordSeasonToday": "Today: {color} ({reason})",
-@@ -5272,11 +5272,11 @@
+@@ -5278,11 +5278,11 @@
    "bible.languageOffer.never": "Never ask again",
    "bible.downloads.failedSave": "Could not save it on this device. Try again.",
    "settings.storage": "On this device",
@@ -574,7 +575,7 @@ index 9df7ad676..8d23b2cde 100644
    // The account is the first group of the one Settings from 1.6, and its
    // screens are that group's rows: each result opens the screen its row does.
 diff --git a/lib/settings/__tests__/litPanels.test.ts b/lib/settings/__tests__/litPanels.test.ts
-index 3927a2796..9aa461a20 100644
+index f5cb41113..e489f3503 100644
 --- a/lib/settings/__tests__/litPanels.test.ts
 +++ b/lib/settings/__tests__/litPanels.test.ts
 @@ -142,13 +142,14 @@ describe("the reading modes", () => {

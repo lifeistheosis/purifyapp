@@ -288,6 +288,14 @@ The theme is the reading mode, chosen in Settings (and wherever else a mode is p
 
 Done is: one change, in the house's motion, everything at once (no surface late in its old colours, no foot picture popping, the status and navigation bars with it, the chooser not jumping under the finger); under reduced motion an instant change with no flash; a test that fails on the old code. With Updates 11, beside the mode scroller.
 
+**Mended (95cf3f184, Updates 11).** Recorded frame by frame on the export, a switch was four changes on four clocks:
+- some forty parts of the page ran colour transitions of their own inside the cross-fade (46 counted on Settings), the page's ground among them with a 350ms fade left from before the cross-fade, so they arrived late in their old colours; with motion off that fade was the only thing still moving, so the change was not instant;
+- the tab bar faded on the browser's own 250ms and curve (213ms measured) while the page took 420ms on the house curve;
+- the status bar's strip (Android 14 and older) changed at the palette, before the cross-fade had begun;
+- in the Bible's own sheet the shelf glided back to the old page under the finger as a new one was chosen (154px to 0).
+
+Now the root says a palette is changing (`data-theme-switch`) and no part fades on its own; every part pictured apart from the page changes on its curve and in its time; the strip changes when the new picture is half in (`lib/reader/themeSwitch.ts`); the shelf follows the page that is on, not the stored choice. On the export: 0 parts fading on their own, the tab bar 408ms with the page, motion off instant with nothing moving, the shelf still at 154px. The foot pictures did not pop (the looks are chosen on the Reading mode page, whose small pages have already loaded them). The bottom bar shows the page edge to edge and fades with it. `lib/reader/__tests__/themeSwitch.test.ts` fails on the old code. Not checked on a phone: the strip's moment, which only Android 14 and older shows; his walk.
+
 ## Note 27 (asked): earning a theme by reading, made something to look forward to
 
 His word, 2026-11-13 about 08:21 UTC: "make the read to unlock themes cooler"
