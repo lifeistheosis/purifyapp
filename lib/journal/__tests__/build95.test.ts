@@ -89,6 +89,27 @@ describe("the keyboard comes up and the page stays", () => {
     // The field's foot against the sheet's, which is what scrolled an empty page.
     expect(composer).not.toMatch(/el\.getBoundingClientRect\(\)\.bottom - scroller\.getBoundingClientRect\(\)\.bottom/);
   });
+
+  it("looks after the line the cursor is on, wherever in the words it is, and in a line's own field", () => {
+    const composer = code(read("components/journal/JournalComposer.tsx"));
+    // Until build 95 only a cursor at the very end of a field was kept in view.
+    expect(composer).not.toMatch(/atEnd/);
+    expect(composer).toContain("wordsHeightOf(el, el.selectionEnd)");
+    expect(composer).toMatch(/el instanceof HTMLTextAreaElement \|\| el instanceof HTMLInputElement/);
+    // A line tapped in the middle of a long page: its words up to the cursor end 420px down the field,
+    // the keyboard leaves the sheet's foot at 450, and the field began at 180.
+    expect(scrollForWritingLine({ fieldTop: 180, fieldBottom: 980, wordsHeight: 420, scrollerBottom: 450 })).toBe(174);
+    // One already in sight is left where it is.
+    expect(scrollForWritingLine({ fieldTop: 180, fieldBottom: 980, wordsHeight: 200, scrollerBottom: 450 })).toBe(0);
+  });
+
+  it("a finder that shuts gives the cursor back to the words, so the keyboard does not fall", () => {
+    const hook = code(read("components/journal/usePage.ts"));
+    expect(hook).toMatch(/const shutPanel = \(\) => \{\s*if \(panel === "verse" && cursor && isWriting\(\)\) \{/);
+    expect(hook).toMatch(/const after = page\.blocks\.findIndex\(\(b, i\) => i > index && b\.type === "text"\);\s*if \(after >= 0 && isWriting\(\)\) \{/);
+    const blocks = code(read("components/journal/PageBlocks.tsx"));
+    expect(blocks).toContain('onClick={() => (panel === "verse" ? editor.shutPanel() : setPanel("verse"))}');
+  });
 });
 
 describe("a highlight's wash lies under its words", () => {

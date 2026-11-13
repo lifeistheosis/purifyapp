@@ -133,10 +133,35 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
     setCursor(null);
   };
 
-  /** Bring a card already on the page into view and light it for a moment: the verse asked for a second time. */
+  /**
+   * Bring a card already on the page into view and light it for a moment: the
+   * verse asked for a second time. The finder that asked shuts with the
+   * cursor in it, so a reader who was writing goes on in the words after the
+   * card: until build 95 the cursor went nowhere, and on a phone the keyboard
+   * fell (note 6, "it's buggy when it pops up").
+   */
   const show = (index: number) => {
     setNoticed(index);
     document.querySelector(`[data-journal-composer] [data-page-block="${index}"]`)?.scrollIntoView({ block: "nearest" });
+    const after = page.blocks.findIndex((b, i) => i > index && b.type === "text");
+    if (after >= 0 && isWriting()) {
+      focusAsk.current = { index: after, at: "start", cursor: true };
+      setFocusTick((n) => n + 1);
+    }
+  };
+
+  /**
+   * A panel shut by its own tool. Verse's finder holds the cursor while it
+   * is open: shut, it gives the cursor back to the words it was taken from,
+   * so the keyboard stays as it is. A reader who was not writing has no
+   * cursor to give back.
+   */
+  const shutPanel = () => {
+    if (panel === "verse" && cursor && isWriting()) {
+      focusAsk.current = { index: cursor.index, at: "end", cursor: true };
+      setFocusTick((n) => n + 1);
+    }
+    setPanel(null);
   };
 
   const remove = (index: number) => {
@@ -159,7 +184,7 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
     commit({ ...page, blocks });
   };
 
-  return { page, setCursor, setTitle, setNotebook, setTags, setStyle, setCover, setBlock, insert, remove, focusBlock, show, noticed, colorTarget, setColor, panel, setPanel };
+  return { page, setCursor, setTitle, setNotebook, setTags, setStyle, setCover, setBlock, insert, remove, focusBlock, show, noticed, colorTarget, setColor, panel, setPanel, shutPanel };
 }
 
 export type PageEditor = ReturnType<typeof usePage>;

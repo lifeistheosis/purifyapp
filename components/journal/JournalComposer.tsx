@@ -44,16 +44,17 @@ export const KIND_KEY: Record<JournalKind, string> = {
 };
 
 /**
- * How tall a field's words are, at the field's own width and type: measured
- * on a twin of it with no height of its own, laid over nothing and gone in
- * the same breath. The field itself is as tall as it was made (30 percent of
- * the screen for a page's last), which says nothing of where its words end.
+ * How tall a field's words are up to the cursor, at the field's own width
+ * and type: measured on a twin of it with no height of its own, laid over
+ * nothing and gone in the same breath. The field itself is as tall as it was
+ * made (30 percent of the screen for a page's last), which says nothing of
+ * where its words end, or of where in them the cursor is.
  */
-function wordsHeightOf(el: HTMLTextAreaElement): number {
+function wordsHeightOf(el: HTMLTextAreaElement, upTo: number = el.value.length): number {
   const parent = el.parentElement;
   if (!parent) return el.offsetHeight;
   const twin = el.cloneNode() as HTMLTextAreaElement;
-  twin.value = el.value;
+  twin.value = el.value.slice(0, upTo);
   twin.rows = 1;
   twin.tabIndex = -1;
   twin.setAttribute("aria-hidden", "true");
@@ -110,23 +111,23 @@ export function JournalComposer({
   }, [open, draft.body, grow]);
 
   // Keep the line being written in view when the keyboard comes up or the
-  // words run past the bottom of the sheet.
-  // A page's words run in several fields: whichever has the cursor, when it is
-  // at the field's end, its last line is brought above the foot of the sheet.
+  // words run past the bottom of the sheet (build 95 note 6: "when the
+  // keyboard does open, the page holds still ... with the writing line kept
+  // in sight"). The line is where the cursor is: the foot of the words up to
+  // it, in whichever field has it (lib/journal/writingLine.ts). Until build
+  // 95 only a cursor at the very end of a field was looked after, and by the
+  // field's foot: a line tapped in the middle of a long page was left under
+  // the keyboard, and an empty page was scrolled for nothing.
   useEffect(() => {
     if (!open) return;
     const keepInView = () => {
       const el = document.activeElement;
-      if (!(el instanceof HTMLTextAreaElement) || !el.closest("[data-journal-composer]")) return;
+      if (!(el instanceof HTMLTextAreaElement || el instanceof HTMLInputElement) || !el.closest("[data-journal-composer]")) return;
       const scroller = el.closest<HTMLElement>(".overflow-y-auto");
       if (!scroller) return;
-      const atEnd = el.selectionEnd >= el.value.length - 1;
-      if (!atEnd) return;
-      // The line is where the words end, not where a tall field does
-      // (lib/journal/writingLine.ts): a page with nothing written keeps its
-      // kinds and its title in sight when the keyboard comes up.
       const box = el.getBoundingClientRect();
-      const below = scrollForWritingLine({ fieldTop: box.top, fieldBottom: box.bottom, wordsHeight: wordsHeightOf(el), scrollerBottom: scroller.getBoundingClientRect().bottom });
+      const wordsHeight = el instanceof HTMLTextAreaElement ? wordsHeightOf(el, el.selectionEnd) : box.height;
+      const below = scrollForWritingLine({ fieldTop: box.top, fieldBottom: box.bottom, wordsHeight, scrollerBottom: scroller.getBoundingClientRect().bottom });
       if (below > 0) scroller.scrollTop += below;
     };
     const vv = window.visualViewport;

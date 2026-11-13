@@ -1149,6 +1149,8 @@ const openEntry = async (page, words) => {
   await tap(page, row, `the entry "${words}"`);
   await page.waitForSelector("[data-journal-title]", { state: "attached", timeout: 10000 });
   await wait(1300);
+  // And a finger put down where they write: the sheet gives no cursor by itself (build 95 note 6).
+  await tapToWrite(page);
 };
 const lastWords = (page) => page.locator("[data-page-text] textarea").last().inputValue();
 const byId = (list, id) => list.find((r) => r.id === id);
@@ -1594,9 +1596,34 @@ await flow("build 95: the keyboard comes up on a page with nothing written, and 
 });
 
 await flow(
+  "build 95: a line tapped in the middle of a long page stays in sight when the keyboard comes up",
+  async (page) => {
+    await write(page, true, false);
+    // A finger on a line low on the screen, far from the page's end.
+    const field = page.locator("[data-journal-composer] [data-page-text] textarea").first();
+    const box = await field.boundingBox();
+    const y = 640;
+    expectThat(box.y < y && box.y + box.height > y + 400, `the page is not long enough to try (${Math.round(box.y)} to ${Math.round(box.y + box.height)})`);
+    await page.touchscreen.tap(box.x + 120, y);
+    await wait(300);
+    const at = await field.evaluate((el) => ({ on: document.activeElement === el, caret: el.selectionEnd, length: el.value.length }));
+    expectThat(at.on && at.caret > 0 && at.caret < at.length - 200, `the tap did not put the cursor in the middle of the words (${at.caret} of ${at.length})`);
+    const before = await sheetScroll(page).evaluate((el) => el.scrollTop);
+    await page.setViewportSize({ width: 390, height: 844 - 320 });
+    await wait(700);
+    const after = await sheetScroll(page).evaluate((el) => ({ scrolled: el.scrollTop, foot: el.getBoundingClientRect().bottom }));
+    // Where the tapped line stands now: it was at y, and the sheet has scrolled by this much.
+    const line = y - (after.scrolled - before);
+    expectThat(line < after.foot - 8, `the line being written is at ${Math.round(line)}, the sheet's foot at ${Math.round(after.foot)}`);
+    expectThat(line > after.foot - 120, `the page jumped further than the line needed (${Math.round(line)} with the foot at ${Math.round(after.foot)})`);
+  },
+  { set: draft(Array.from({ length: 40 }, (_, i) => `Line ${i + 1} of a long page, written over many days.`).join("\n")) },
+);
+
+await flow(
   "build 95: a highlight's wash is laid as its words are: the same size, the same lines",
   async (page) => {
-    await write(page);
+    await write(page, true, false);
     const laid = await page.evaluate(() => {
       const block = document.querySelector("[data-page-text]:has([data-page-wash])");
       const field = block.querySelector("textarea");
@@ -1619,7 +1646,8 @@ await flow(
     expectThat(laid.fieldLines === laid.washLines && laid.washLines >= 6, `the words stand on ${laid.fieldLines} lines and their wash on ${laid.washLines}`);
   },
   // Long enough to break many times at 390: one word sooner on any line shows in the count by the end.
-  { set: draft(`==yellow== ${"Lord Jesus Christ, Son of God, have mercy on me. ".repeat(7).trim()}`) },
+  // The marked words are not the page's last, whose field is made tall: its height would not be its words'.
+  { set: draft(`==yellow== ${"Lord Jesus Christ, Son of God, have mercy on me. ".repeat(7).trim()}\n\nAnd the last words of the page.`) },
 );
 
 // ── Build 95, note 6 (the owner, 2026-11-13: "whenever you click on a different section in the journal UI the typing pad pops up automatically and it's buggy when it pops up") ──
@@ -1642,8 +1670,7 @@ await flow(
     }
     expectThat((await page.locator("[data-page-quote]").count()) === 1, "Quote laid no card with the keyboard down");
     // Close keeps the page; opened again from the foot, it stands with no cursor.
-    await tap(page, page.locator("[data-journal-composer]").locator("xpath=ancestor::*[@role='dialog'][1]").getByRole("button", { name: "Close" }), "Close");
-    await wait(900);
+    await closeSheet(page);
     await write(page, true, false);
     expectThat(!(await hasCursor(page)), "the page opened again gave a field the cursor");
   },

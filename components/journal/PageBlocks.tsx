@@ -727,7 +727,7 @@ export function PageToolbar({ editor, notebooks = [] }: { editor: PageEditor; no
       {/* Four tiles, each a quarter of the row, the icon over its name: the row
           fits a 360px phone in every language, and never scrolls sideways. */}
       <div role="toolbar" aria-label={t("journal.page.tools")} className="grid grid-cols-4 gap-1 px-2 py-1.5">
-        <Tool icon={<Book size={18} />} label={t("journal.page.addVerse")} pressed={panel === "verse"} onClick={() => setPanel(panel === "verse" ? null : "verse")} />
+        <Tool icon={<Book size={18} />} label={t("journal.page.addVerse")} pressed={panel === "verse"} onClick={() => (panel === "verse" ? editor.shutPanel() : setPanel("verse"))} />
         <Tool
           icon={<ChatBubble size={18} />}
           label={t("journal.page.addQuote")}
