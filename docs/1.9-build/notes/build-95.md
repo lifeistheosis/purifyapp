@@ -132,3 +132,13 @@ His word, 2026-11-13 about 07:57 UTC, with a screenshot of Settings, The calenda
 The screenshot: the chooser is the generic searchable dropdown (`components/ui/SearchSelect.tsx` through `components/profile/PatronSaintPicker.tsx`). A "Search by name" field over a long list of bare names, opened over the Language section and running to the foot of the screen, with the page's own words showing under its last row. The apostles all stand under H, as "Holy Apostle ...", not under their own names. No pictures.
 
 Done is: one chooser, wherever a patron is chosen (Settings, the profile tab, the account's data page), drawn from the app's own pieces (the house sheet, the saints' own rows with their pictures), found and sorted by each saint's own name, whole on the screen with the keyboard up, Back closing it. Stills with reasons for his yes before it ships. With Updates 10.
+
+## Notes 18 and 19 (asked): the reading mode chooser as a scroller; Settings' words, clean and clear
+
+His word, 2026-11-13 about 07:59 UTC, with three screenshots of Settings: Reading ("These apply everywhere, not only in the Bible and the Fathers.") with the Reading mode cards wrapped in rows (Dark, Light, True black, Candlelight, Monastery, Holy Mountain, then Councils "0 of 19" and Cappadocian "0 of 3"); "Candlelight at Vespers" ("On by itself at sunset, when the Church's day begins, and off in the morning") and "Candlelight keeps the season" ("Its soft light takes the colour of the Church's long fasts, violet or deep blue"); "Show my supporter mark" ("A small cross beside your name in the community while your Plus or Pro subscription is active. It tells other readers which you hold; turn it off to keep that to yourself."):
+
+"reading mode chooser here should be a clean scroller with haptic feedback rather than stacks. also I noted in the settings there is alot of overexplaning and ambiguity also with the title names. make it clean clear and simplified."
+
+Note 18, done is: one clean row of the modes that scrolls sideways and settles one card at a time, a light haptic tick as each card arrives (`lib/ui/scrollTicks.ts`, `lib/ui/softTick.ts`), the chosen one in view on open, the earned and Plus ones in the same row with their state, mirrored in Arabic, still under reduced motion. Stills and a short screen recording from the export, with reasons, for his yes.
+
+Note 19, done is: every title and line in Settings says plainly what the control is, a line only where the title cannot say it alone, one short sentence, nothing untrue about Plus, Pro or what is free. A table of every title and line, before and after, for his yes; then every locale carries the new words. With Updates 11.
