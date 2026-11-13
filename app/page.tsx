@@ -362,9 +362,11 @@ export default async function Home() {
  <p lang="en" dir="ltr" className="font-serif text-title md:text-display-sm leading-[1.15] tracking-[-0.01em] text-paper">
  {`“${FRONT_VERSE.en}”`}
  </p>
+ {/* 44 tall to the touch (it was 20, the line's own height), its words
+     where they stood: the box starts 12px higher and centres them. */}
  <Link
  href="/bible/nahum/1#v7"
- className="lm-ink-gold inline-block mt-7 font-sans text-detail font-semibold uppercase tracking-[1.5px] text-gold/80 hover:text-gold transition-colors underline-offset-4 hover:underline"
+ className="lm-ink-gold mt-4 inline-flex min-h-11 items-center font-sans text-detail font-semibold uppercase tracking-[1.5px] text-gold/80 hover:text-gold transition-colors underline-offset-4 hover:underline"
  >
  {/* The verse and its Bible, as every quotation of Scripture in the
      app names them (1.8, lib/marketing/frontVerse.ts). */}
