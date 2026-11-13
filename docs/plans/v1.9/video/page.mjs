@@ -104,7 +104,12 @@ ${kitStyle}
     <h2 id="s-what">What it is</h2>
     <p>Every screen is the 1.9 app, opened as a new reader with no Plus on the feast of St Nicholas, and filmed while a finger taps it. The buttons' press, the page transitions and a card carrying its picture into its page are the app's own motion at its own speed. Nothing of the app is drawn.</p>
     <p>Around the screens the video adds four things: the night ground with the hill of your store pictures, the words, the picture moving in close and back, and a soft round where the finger is.</p>
-    <p>The words are the drop's own, the store pictures' lines and the app's labels. Prayer campaigns are not shown or named. No picture on the heritage list is in any frame. No Plus feature is shown in use: Plus is named in the title where a scene is about it, and marked on the screen by the app.</p>
+    <p>The words are the drop's own, the store pictures' lines and the app's labels. No picture on the heritage list is in any frame. No Plus feature is shown in use: Plus is named in the title where a scene is about it, and marked on the screen by the app.</p>
+    <p>Prayer campaigns are in it, at your word, as 1.9 builds them: sample campaigns in plain words, the prayer the app's own, no picture and nothing to add one with. They were filmed against the stand-in the campaigns' own walk uses, since the website still answers closed.</p>
+    <div class="k-note">
+      <span class="k-eyebrow">One condition</span>
+      <p>Post it only once campaigns are open to every reader, which is release day's step 3. Before that a viewer would look for something the app does not show yet.</p>
+    </div>
   </section>
 
   <section class="k-section" aria-labelledby="s-why">
@@ -131,11 +136,11 @@ ${SCENES.map(sceneRow).join("\n")}
     <div class="k-stats">
       <div class="k-stat"><span class="k-stat-label">checkMock on each scene's page</span><span class="k-stat-change">${checks.length} scenes, five palettes: contrast, tokens, rays, stripes, sparkle, dashes, mirroring</span><span class="k-stat-value">${passAll ? "Pass" : "No"}</span></div>
       <div class="k-stat"><span class="k-stat-label">Heritage pictures in view</span><span class="k-stat-change">Read all through every take, by file name</span><span class="k-stat-value">0</span></div>
-      <div class="k-stat"><span class="k-stat-label">Campaigns named</span><span class="k-stat-change">On a screen or in a word</span><span class="k-stat-value">0</span></div>
+      <div class="k-stat"><span class="k-stat-label">Campaign pictures in view</span><span class="k-stat-change">Or a way to add one. They come in 1.9.1</span><span class="k-stat-value">0</span></div>
     </div>
     <div class="k-note">
       <span class="k-eyebrow">Named before you look</span>
-      <p>St Xenia's page has no picture yet, since the permission is awaited, so her scene is her name and the opening of her life. Reading mode lists the Light look and the Plus looks as the app shows them; only True black is chosen.</p>
+      <p>St Xenia's page has no picture yet, since the permission is awaited, so her scene is her name and the opening of her life. Reading mode shows the app's three free looks and the Night looks, as the page lists them; only True black is chosen, and the Land and sea looks are kept out of the picture while they are reworked.</p>
     </div>
   </section>
 
@@ -207,7 +212,7 @@ ${SCENES.map((s) => `- **${s.id}.** ${s.shows} *${s.why}*`).join("\n")}
 
 ## The takes
 
-Each as a new reader with no Plus (\`purify:plusFeatures\` read \`${takes[0].reader.plus}\`), no page error, no campaign named, no empty picture, and no picture on the heritage list in view at any moment.
+Each as a reader with no Plus (\`purify:plusFeatures\` read \`${takes[0].reader.plus}\`), with no page error, no empty picture, and no picture on the heritage list in view at any moment. No campaign is named in any take but \`pray\`, which is the campaigns' own: filmed against their walk's stand-in, with no campaign picture and nothing to add one with in view.
 
 | Take | The app's time | Frames | What the finger did | Pictures that were in view |
 |---|---|---|---|---|

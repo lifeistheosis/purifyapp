@@ -39,7 +39,7 @@ for (const s of SCENES) {
   const words = [s.title, s.sub ?? ""].join(" ");
   if (s.lines.join(" ") !== s.title) fail(`${s.id}: its lines do not join into its title ("${s.lines.join(" ")}" against "${s.title}")`);
   if (words.includes(EM_DASH) || words.includes(String.fromCodePoint(0x2013))) fail(`${s.id}: a dash in place of words`);
-  for (const never of DROP.never) if (words.toLowerCase().includes(never.word.toLowerCase())) fail(`${s.id}: says "${never.word}", which the drop may never say (${never.why})`);
+  for (const never of DROP.never) if (!(s.byHisWord ?? []).includes(never.word) && words.toLowerCase().includes(never.word.toLowerCase())) fail(`${s.id}: says "${never.word}", which the drop may never say (${never.why})`);
   if (/\bfree\b/i.test(words) && !/stay free|Free for everyone/.test(words)) fail(`${s.id}: "free" outside the drop's own two sentences`);
 }
 
@@ -77,7 +77,7 @@ for (const s of SCENES) {
     const ends = last[1] + (s.seconds - last[0]);
     // A scene may rest on its take's last picture only when it says so (`hold`): the screen is still by then.
     if (ends > take.seconds + 0.05 && !s.hold) fail(`${s.id}: runs ${(ends - take.seconds).toFixed(2)}s past the end of its take`);
-    if (s.track[0][1] < 0) fail(`${s.id}: begins before its take does`);
+    if (s.track[0][1] < 0 && !s.hold) fail(`${s.id}: begins before its take does`);
   }
 }
 const TOTAL = SCENES.at(-1).end;
@@ -181,8 +181,9 @@ function stateAt(t) {
         if (since < -0.05 || since > m.for + 0.3) continue;
         const down = Math.min(1, (since + 0.05) / 0.09);
         const up = since > m.for ? Math.min(1, (since - m.for) / 0.3) : 0;
-        const fy = m.kind === "drag" ? m.y - m.dy * easeDrag(Math.min(1, Math.max(0, since / m.for))) : m.y;
-        state.touches.push({ x: cam.x + m.x * cam.k, y: cam.y + dy + fy * cam.k, r: 21 * cam.k * (1.35 - 0.35 * down + 0.3 * up), opacity: (m.kind === "drag" ? 0.2 : 0.3) * down * (1 - up) * opacity });
+        const moved = m.kind === "drag" ? m.dy * easeDrag(Math.min(1, Math.max(0, since / m.for))) : 0;
+        const [fx, fy] = m.across ? [m.x - moved, m.y] : [m.x, m.y - moved];
+        state.touches.push({ x: cam.x + fx * cam.k, y: cam.y + dy + fy * cam.k, r: 21 * cam.k * (1.35 - 0.35 * down + 0.3 * up), opacity: (m.kind === "drag" ? 0.2 : 0.3) * down * (1 - up) * opacity });
       }
     }
     // The words. A scene that keeps the words before it draws none of its own.
@@ -423,7 +424,7 @@ const FILE = path.join(MADE, "purify-1.9.mp4");
 const frameFile = (n) => path.join(FRAME_DIR, `v${String(n).padStart(5, "0")}.jpg`);
 
 /** A moment of each scene when its words are whole and its picture is at rest. */
-const settled = (s) => s.start + (s.words ? Math.min(s.seconds - OVER - 0.1, 1.6) : Math.min(s.seconds - OVER - 0.15, 2.4));
+const settled = (s) => s.start + (s.words ? Math.min(s.seconds - OVER - 0.1, 1.6) : Math.min(s.seconds - OVER - 0.5, 2.4));
 
 function encode() {
   for (let n = 0; n < FRAMES; n++) if (!fs.existsSync(frameFile(n))) fail(`frame ${n} is not rendered`);

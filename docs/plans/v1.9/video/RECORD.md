@@ -7,8 +7,8 @@ Written by `page.mjs` on 2026-11-13 from what was made and measured. Do not edit
 | | |
 |---|---|
 | File | `.promo/v1.9-video/purify-1.9.mp4` (out of git) |
-| Length | 44.75 seconds, 2685 frames |
-| Size | 13.44 MB (14089366 bytes) |
+| Length | 44.90 seconds, 2694 frames |
+| Size | 13.35 MB (13997748 bytes) |
 | Picture | 1080 by 1920, h264 High, yuv420p, 60/1 frames a second |
 | Sound | none |
 | The app | the native export of `04b7036a4`, cut as the store build with Plus locked |
@@ -20,17 +20,18 @@ Written by `page.mjs` on 2026-11-13 from what was made and measured. Do not edit
 | From | Scene | Words on screen | Where the words are from | Cut from |
 |---|---|---|---|---|
 | 0:00 | open | Purify 1.9 is here. | the drop's caption, its first sentence | words alone |
-| 0:02 | today | The day's saint, fast and readings | the store pictures' first line | the take `today` |
-| 0:05 | journal | Your journal, by the Church's day Free for everyone. | the drop's point "journal": its name, and its last sentence | the take `journal` |
-| 0:09 | verse | Every verse, opened Hold a verse to open it | the drop's point "verse": its name and its short form | the take `verse` |
-| 0:12 | study | Study a verse, in Purify Plus | the drop's point "study": its name | the take `verse`, going on |
-| 0:15 | bibles | Six more Bibles to download | the drop's point "bibles": its short form | the take `bibles` |
-| 0:19 | calendar | Every feast and every fast | the store pictures' seventh line | the take `saints` |
-| 0:22 | saint | The lives of the saints | the store pictures' sixth line | the take `saints`, going on |
-| 0:27 | xenia | (the words before stay) | the store pictures' sixth line, kept from the scene before | the take `xenia` |
-| 0:29 | fathers | The Fathers, read in full | the store pictures' eighth line | the take `fathers` |
-| 0:34 | creed | The Creed by council | the drop's point "creed": its name | the take `creed` |
-| 0:37 | looks | Reading mode | the app's own label for the page (ui.readingMode) | the take `looks` |
+| 0:01 | today | The day's saint, fast and readings | the store pictures' first line | the take `today` |
+| 0:04 | journal | Your journal, by the Church's day Free for everyone. | the drop's point "journal": its name, and its last sentence | the take `journal` |
+| 0:08 | verse | Every verse, opened Hold a verse to open it | the drop's point "verse": its name and its short form | the take `verse` |
+| 0:11 | study | Study a verse, in Purify Plus | the drop's point "study": its name | the take `verse`, going on |
+| 0:14 | bibles | Six more Bibles to download | the drop's point "bibles": its short form | the take `bibles` |
+| 0:18 | calendar | Every feast and every fast | the store pictures' seventh line | the take `saints` |
+| 0:21 | saint | The lives of the saints | the store pictures' sixth line | the take `saints`, going on |
+| 0:24 | xenia | (the words before stay) | the store pictures' sixth line, kept from the scene before | the take `xenia` |
+| 0:26 | fathers | The Fathers, read in full | the store pictures' eighth line | the take `fathers` |
+| 0:30 | creed | The Creed by council | the drop's point "creed": its name | the take `creed` |
+| 0:33 | looks | Reading mode | the app's own label for the page (ui.readingMode) | the take `looks` |
+| 0:36 | pray | Pray together Prayer campaigns | the app's own labels (community.prayTogether, community.prayerCampaigns) | the take `pray` |
 | 0:41 | close | The Scriptures, the saints, the prayers and the calendar stay free. Find Purify: Orthodox Hub on the App Store and on Google Play. | the drop's closing, and the caption's last sentence | words alone |
 
 What each shows, and why:
@@ -46,12 +47,13 @@ What each shows, and why:
 - **xenia.** St Xenia of St Petersburg's page, her life drawn up. *Her page was refined for 1.9 at his word. It has no picture yet (the permission is awaited), so the picture stands close on her name and the opening of her life, where the page is strongest.*
 - **fathers.** St Athanasius's writings, On the Incarnation tapped, its cover carried into the work, and the work drawn up. *The books are shown as a reader opens one: the cover travels from the list into the page. St Athanasius, because the reading room's front page shows a cover on the heritage list and his do not.*
 - **creed.** Theology, The Creed line by line tapped, and the Symbol drawn up with the words Constantinople added lit. *The lit words are the whole idea of the page, and they read at once when the picture is close. It stands for the councils without showing the First Council's cover, which is on the heritage list.*
-- **looks.** Reading mode: True black chosen with a tap, then the looks drawn up, the Plus sets under the app's own Purify Plus mark. *A look changing under a finger is the clearest effect in the app. Only a free look is chosen; the Plus looks are seen as the page lists them, marked, and never worn.*
+- **looks.** Reading mode: True black chosen with a tap, Dark again, then the Night looks drawn across under the app's own Purify Plus mark. *A look changing under a finger is the clearest effect in the app. Only a free look is chosen; the Night looks are seen as the page lists them, marked Purify Plus, and never worn. The Land and sea looks are being reworked, so the picture stays above them.*
+- **pray.** The campaigns' board, a campaign's page, and joining it: the sheet that asks in which prayers and for how long, and the campaign in the reader's prayers. Sample campaigns from the walks' own stand-in; no picture. *Added at his word. It comes last before the close, because praying for one another is where the release ends. Joining is shown whole, since that is what a campaign is for: it joins your daily prayers. This video can be posted only once campaigns are open to every reader.*
 - **close.** The drop's closing line and where to find the app, over the hill, with the app's cross. *The last thing said is the promise that the library stays free, in the drop's own words, then the two stores by name. No price, no badge and no call to hurry.*
 
 ## The takes
 
-Each as a new reader with no Plus (`purify:plusFeatures` read `0`), no page error, no campaign named, no empty picture, and no picture on the heritage list in view at any moment.
+Each as a reader with no Plus (`purify:plusFeatures` read `0`), with no page error, no empty picture, and no picture on the heritage list in view at any moment. No campaign is named in any take but `pray`, which is the campaigns' own: filmed against their walk's stand-in, with no campaign picture and nothing to add one with in view.
 
 | Take | The app's time | Frames | What the finger did | Pictures that were in view |
 |---|---|---|---|---|
@@ -63,7 +65,8 @@ Each as a new reader with no Plus (`purify:plusFeatures` read `0`), no page erro
 | xenia | 4.3s | 346 | pull: her life | none |
 | fathers | 6.3s | 750 | tap: Writings; tap: On the Incarnation; pull: the work drawn up | athanasius-the-great.v1.avif, athanasius-the-great.v3.jpg |
 | creed | 5.2s | 418 | tap: The Creed, line by line; pull: the Creed drawn up | anastasis.jpg, christ-pantocrator.v2.jpg, pentecost.jpg, theotokos-of-vladimir.jpg, mystical-supper.jpg, trinity.jpg |
-| looks | 5.9s | 287 | tap: True black; tap: Dark; pull: the looks drawn up | blush-room.webp, dawn-room.webp, lavender-head.webp, lavender-room.webp, olive-head.webp, olive-room.webp, rose-head.webp, rose-room.webp |
+| looks | 5.6s | 146 | tap: True black; tap: Dark; pull: the Night looks drawn across | dawn-room.webp |
+| pray | 6.6s | 438 | tap: For Maria before her operation; tap: Add to my prayers; pull: the sheet drawn up; tap: Add to my prayers, in the sheet | anastasis.jpg, christ-pantocrator.v2.jpg |
 
 ## checkMock
 
@@ -72,15 +75,16 @@ On the page each scene is drawn on, at a moment when its words are whole, on all
 | Scene | At | Result |
 |---|---|---|
 | open | 1.6s | pass |
-| today | 4.45s | pass (1 allowed by name) |
-| journal | 7.5s | pass |
-| verse | 11.75s | pass |
-| study | 15.05s | pass (1 allowed by name) |
-| bibles | 18.2s | pass (1 allowed by name) |
-| calendar | 22.15s | pass (1 allowed by name) |
-| saint | 25.3s | pass (1 allowed by name) |
-| xenia | 29.65s | pass (1 allowed by name) |
-| fathers | 32.2s | pass |
-| creed | 36.45s | pass (1 allowed by name) |
-| looks | 39.9s | pass (1 allowed by name) |
-| close | 42.75s | pass |
+| today | 4s | pass (1 allowed by name) |
+| journal | 6.9s | pass |
+| verse | 10.55s | pass |
+| study | 13.7s | pass (1 allowed by name) |
+| bibles | 16.6s | pass (1 allowed by name) |
+| calendar | 20.45s | pass (1 allowed by name) |
+| saint | 23.4s | pass (1 allowed by name) |
+| xenia | 26.4s | pass (1 allowed by name) |
+| fathers | 29.3s | pass |
+| creed | 32.8s | pass (1 allowed by name) |
+| looks | 35.7s | pass (1 allowed by name) |
+| pray | 38.85s | pass |
+| close | 43.2s | pass |

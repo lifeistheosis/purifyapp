@@ -9,13 +9,15 @@
 // does what a reader's finger does: taps, a hold, the page drawn up. The
 // buttons' press, the page transitions and a card carrying its picture into
 // its page are the app's own; nothing in a screen is drawn or changed.
+// The campaigns' take is answered by the campaigns' own stand-in server, as
+// their walk is; every other take asks nothing of any server.
 // Before the film rolls, a take may go to where it starts. A take fails if a
-// picture on the heritage list is ever in view, if a campaign is named, or if
-// the reader is not a new reader.
+// picture on the heritage list is ever in view, if a campaign is named
+// (outside the campaigns' own take), or if the reader has Plus.
 //
 // Frames and take.json go to .promo/v1.9-video/takes/<id>/ (out of git).
 
-import { go, launchCamera, take, wait } from "./lib.mjs";
+import { campaignStandIn, go, launchCamera, take, wait } from "./lib.mjs";
 
 const TAKES = {
   /** Today on the feast of St Nicholas: the day's saint, the fast, and the Nativity Fast's night. */
@@ -193,7 +195,10 @@ const TAKES = {
     await h.look("the creed, lower");
   },
 
-  /** Reading mode: True black chosen, then the looks drawn up, each Plus set under its mark. */
+  /**
+   * Reading mode: True black chosen, Dark again, then the Night looks drawn across. Nothing is drawn up: the
+   * Land and sea looks under them are being reworked, and the video shows none of them (the arbiter, 2026-11-13).
+   */
   async looks(h) {
     await go(h.page, "/settings/reading-mode");
     await h.page.getByText("True black", { exact: true }).first().waitFor({ state: "visible" });
@@ -204,12 +209,51 @@ const TAKES = {
     await h.look("reading mode");
     await h.tap(h.page.getByText("True black", { exact: true }), { name: "True black" });
     h.mark("black");
-    await h.rest(1300);
+    await h.rest(1200);
     await h.tap(h.page.getByText("Dark", { exact: true }), { name: "Dark" });
-    await h.rest(900);
-    await h.drag(300, 1500, { name: "the looks drawn up" });
+    h.mark("dark");
+    await h.rest(800);
+    const night = await h.spot(h.page.getByText("Night sky", { exact: true }));
+    await h.drag(210, 1300, { at: { x: 330, y: night.y - 110 }, across: true, name: "the Night looks drawn across" });
+    await h.rest(1100);
+    await h.look("the night looks");
+  },
+
+  /**
+   * Prayer campaigns, as 1.9 builds them: the board, a campaign's page, and joining it. Filmed against the
+   * campaigns' own stand-in (lib.mjs, campaignStandIn): sample campaigns in plain words, the prayer the app's own,
+   * no picture and nothing to add one with. The reader is the stand-in's signed-in reader with no Plus, who has
+   * joined none yet.
+   */
+  async pray(h) {
+    await go(h.page, "/campaigns");
+    await h.page.waitForSelector("[data-campaign-row]");
+    await wait(1800);
+    await h.roll();
+    h.mark("start");
+    await h.rest(700);
+    await h.look("the board");
+    await h.tap(h.page.locator("[data-campaign-row]").first(), { name: "For Maria before her operation" });
+    await h.page.waitForSelector("#campaign-title");
+    h.mark("campaign");
+    await h.rest(1400);
+    await h.look("a campaign");
+    await h.tap(h.page.locator("[data-campaign-page] button", { hasText: "Add to my prayers" }).first(), { name: "Add to my prayers" });
+    const sheet = h.page.getByRole("dialog").filter({ hasText: "In which prayers" });
+    await sheet.waitFor({ state: "visible" });
+    h.mark("join");
     await h.rest(1000);
-    await h.look("the looks");
+    await h.look("joining");
+    // The sheet opens with the morning and evening prayers and Your rule already chosen; they are left as the app offers them.
+    // The sheet's own button is under its foot: the sheet is drawn up under a finger, as every other pull here is.
+    await h.drag(170, 700, { at: { x: 206, y: 640 }, name: "the sheet drawn up" });
+    await h.rest(400);
+    h.mark("add");
+    await h.tap(sheet.getByRole("button", { name: "Add to my prayers" }), { name: "Add to my prayers, in the sheet" });
+    await h.page.locator("[data-campaign-page] button", { hasText: "In my prayers" }).first().waitFor({ state: "visible" });
+    h.mark("joined");
+    await h.rest(1500);
+    await h.look("in my prayers");
   },
 };
 
@@ -258,6 +302,17 @@ async function verseOne(h) {
   return spot;
 }
 
+/** What a take needs beyond the app itself. Only the campaigns' take needs anything: a server's answers, and a reader who may join. */
+async function setting(id) {
+  if (id !== "pray") return {};
+  const standIn = await campaignStandIn();
+  return {
+    campaigns: true,
+    server: (ctx) => standIn.answer(ctx, {}),
+    seed: { "purify.prayers.campaigns": "[]", "purify.supabase.auth": JSON.stringify([{ name: "sb-placeholder-auth-token", value: JSON.stringify(standIn.SESSION) }]) },
+  };
+}
+
 const args = process.argv.slice(2);
 const dry = args.includes("--dry");
 const wanted = args.filter((a) => !a.startsWith("--"));
@@ -266,7 +321,7 @@ const browser = await launchCamera();
 let failed = 0;
 for (const [id, run] of Object.entries(TAKES)) {
   if (wanted.length && !wanted.includes(id)) continue;
-  const h = await take(browser, id, { film: !dry });
+  const h = await take(browser, id, { film: !dry, ...(await setting(id)) });
   if (dry) {
     const look = h.look;
     h.look = async (name) => {

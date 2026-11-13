@@ -155,6 +155,45 @@ function wordsInView() {
   return out.join(" \n");
 }
 
+// ── Prayer campaigns: the walks' own stand-in ────────────────────────────
+
+/**
+ * The export has no server, and the main web answers "closed" for campaigns
+ * until release day, so a campaign screen is filmed against the stand-in the
+ * campaigns' own walk uses (scripts/mock-campaigns.mjs): its made-up
+ * campaigns in plain sample words, and its answers to the campaign routes,
+ * given in the browser. Nothing leaves the machine and production is never
+ * asked. Those parts of that script are read from it as they stand, word for
+ * word (it is a script that runs when imported, so it cannot be imported),
+ * with one change: its "today" is the film's day, so a campaign of seven
+ * days is running on the day the app thinks it is.
+ *
+ * Gives { answer(ctx, opts), CAMPAIGNS, CARRIED, SESSION, ids }.
+ */
+export async function campaignStandIn() {
+  const source = fs.readFileSync(path.join(ROOT, "scripts/mock-campaigns.mjs"), "utf8");
+  const from = source.indexOf("const DAY = 86_400_000;");
+  const to = source.indexOf("const results = [];");
+  if (from < 0 || to < from) throw new Error("scripts/mock-campaigns.mjs no longer has its sample campaigns where the video reads them");
+  const file = path.join(dir("tmp"), "campaign-stand-in.mjs");
+  fs.writeFileSync(
+    file,
+    `// Written by docs/plans/v1.9/video/lib.mjs from scripts/mock-campaigns.mjs. Not kept.
+const FILM_NOW = ${new Date(DAY).getTime()};
+const RealDate = globalThis.Date;
+class Date extends RealDate {
+  constructor(...args) { if (args.length) super(...args); else super(FILM_NOW); }
+  static now() { return FILM_NOW; }
+}
+const PICTURES_BUILD = false;
+${source.slice(from, to)}
+export { answer, CAMPAIGNS, CARRIED, SESSION };
+export const ids = { NICHOLAS, MARIA, PETER, SOPHIA };
+`,
+  );
+  return import(`${pathToFileURL(file).href}?${Date.now()}`);
+}
+
 // ── A take ───────────────────────────────────────────────────────────────
 
 /**
@@ -169,7 +208,7 @@ function wordsInView() {
  *   look(name)         what is in view is read and held to the rules
  *   end()              the film stops and the take is written
  */
-export async function take(browser, id, { seed = {}, film = true } = {}) {
+export async function take(browser, id, { seed = {}, film = true, server = null, campaigns = false } = {}) {
   const ctx = await browser.newContext({
     viewport: PHONE,
     deviceScaleFactor: SHARP,
@@ -188,6 +227,8 @@ export async function take(browser, id, { seed = {}, film = true } = {}) {
   await serveLikeTheShell(ctx, OUT, {});
   // Pictures the app asks of the website (covers the bundle does not carry), as on a phone with signal. Nothing else leaves.
   await ctx.route(/^https:\/\/purifyapp\.net\/.*\.(avif|jpe?g|png|webp)(\?.*)?$/, (route) => route.continue());
+  // A take that needs a server's answers brings a stand-in for them (the campaigns' own, above).
+  if (server) await server(ctx);
   const page = await ctx.newPage();
   const errors = [];
   page.on("pageerror", (e) => {
@@ -294,18 +335,19 @@ export async function take(browser, id, { seed = {}, film = true } = {}) {
      * let through: the first pull of the first verse take opened a verse's
      * tools that way).
      */
-    async drag(dy, ms = 900, { at: start = { x: 206, y: dy > 0 ? 620 : 300 }, name = "" } = {}) {
+    async drag(dy, ms = 900, { at: start = { x: 206, y: dy > 0 ? 620 : 300 }, name = "", across = false } = {}) {
       // Twenty-five moves a second by the wall, which is a hundred and fifty for each second of the app's time.
       const steps = Math.max(8, Math.round((ms * slow) / 40));
       const ease = (u) => (u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2);
       const dir = Math.sign(dy) || 1;
-      marks.push({ kind: "drag", t: appTime(), x: start.x, y: start.y, dy: dy + dir * SLOP, for: ms / 1000, name });
+      // `across`: the same pull sideways, for a row that runs off the side (dy > 0 draws more of it in from the end).
+      const point = (d) => (across ? { x: start.x - d, y: start.y } : { x: start.x, y: start.y - d });
+      marks.push({ kind: "drag", t: appTime(), x: start.x, y: start.y, dy: dy + dir * SLOP, for: ms / 1000, name, across });
       await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: start.x, y: start.y, id: 1 }] });
-      for (const part of [0.5, 1]) await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: start.x, y: start.y - dir * SLOP * part, id: 1 }] });
+      for (const part of [0.5, 1]) await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ ...point(dir * SLOP * part), id: 1 }] });
       const began = Date.now();
       for (let i = 1; i <= steps; i++) {
-        const y = start.y - dir * SLOP - dy * ease(i / steps);
-        await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: start.x, y, id: 1 }] });
+        await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ ...point(dir * SLOP + dy * ease(i / steps)), id: 1 }] });
         const due = began + (ms * slow * i) / steps;
         const left = due - Date.now();
         if (left > 0) await wait(left);
@@ -327,7 +369,9 @@ export async function take(browser, id, { seed = {}, film = true } = {}) {
         pictures: [...new Set(pictures.map((p) => p.src.replace(ORIGIN, "").replace("https://purifyapp.net", "purifyapp.net")))],
         heritage: heritageNamedIn(pictures.map((p) => p.src).join("\n")),
         empty: [...new Set(pictures.filter((p) => !p.ok).map((p) => p.src.replace(ORIGIN, "")))],
-        campaign: /campaign/i.test(words),
+        campaign: !campaigns && /campaign/i.test(words),
+        // Where campaigns are shown, they are shown as 1.9 builds them: with no picture and nothing to add one with.
+        campaignPicture: campaigns && /\b(picture|photo)/i.test(words),
         emDash: words.includes(String.fromCodePoint(0x2014)),
       };
       looks.push(seen);
@@ -357,6 +401,7 @@ export async function take(browser, id, { seed = {}, film = true } = {}) {
         if (Object.keys(l.heritage).length) problems.push(`${l.name}: a picture on the heritage list is in view: ${Object.keys(l.heritage).join(", ")}`);
         if (l.empty.length) problems.push(`${l.name}: an empty picture in view: ${l.empty.join(", ")}`);
         if (l.campaign) problems.push(`${l.name}: a campaign is named in view`);
+        if (l.campaignPicture) problems.push(`${l.name}: a campaign's picture, or a way to add one, is named in view`);
       }
       const passed = heritageNamedIn([...passing].join("\n"));
       if (Object.keys(passed).length) problems.push(`a picture on the heritage list passed through view: ${Object.keys(passed).join(", ")}`);
