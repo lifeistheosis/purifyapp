@@ -53,6 +53,17 @@ export const COUNCIL_PAGES = [
 /** The three Cappadocian Fathers, by their saints' pages. */
 export const CAPPADOCIANS = ["basil-the-great", "gregory-theologian", "gregory-of-nyssa"] as const;
 
+/**
+ * Each of the three, by the icon the apps carry for him (lib/saints/saints.ts,
+ * iconUrl, which the test holds this to): the earned palette's card lights a
+ * face as his work is read, without carrying the saints' whole registry.
+ */
+export const CAPPADOCIAN_FACES: Readonly<Record<(typeof CAPPADOCIANS)[number], string>> = {
+  "basil-the-great": "/saints/icons/basil-the-great.jpg",
+  "gregory-theologian": "/saints/icons/gregory-theologian.v2.jpg",
+  "gregory-of-nyssa": "/saints/icons/gregory-of-nyssa.v3.jpg",
+};
+
 export type EarnedGoal = { read: number; of: number; earned: boolean };
 export type EarnedPalettes = { councils: EarnedGoal; cappadocian: EarnedGoal };
 
@@ -71,5 +82,18 @@ export function earnedPalettes(ends: ReadToEnd, progress: ProgressStore, council
   return {
     councils: { read: councilsRead, of: councils.length, earned: councils.length > 0 && councilsRead === councils.length },
     cappadocian: { read: fathersRead, of: CAPPADOCIANS.length, earned: fathersRead === CAPPADOCIANS.length },
+  };
+}
+
+/**
+ * Which of them are read, by name: the councils whose page was read to its
+ * end, and the Cappadocians one of whose works was. What the card's marks and
+ * faces light by, and what the sheet's doors leave out (build 95 note 27).
+ */
+export function earnedSoFar(ends: ReadToEnd, progress: ProgressStore, councils: readonly string[] = COUNCIL_PAGES): { councils: readonly string[]; fathers: readonly string[] } {
+  const keys = [...new Set([...ends.works, ...Object.keys(progress)])];
+  return {
+    councils: councils.filter((slug) => ends.councils.includes(slug)),
+    fathers: CAPPADOCIANS.filter((saint) => keys.some((key) => key.startsWith(`${saint}/`) && workRead(key, ends, progress))),
   };
 }

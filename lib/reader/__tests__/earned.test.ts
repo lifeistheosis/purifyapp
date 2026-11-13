@@ -88,10 +88,14 @@ describe("the marks and the palettes", () => {
   it("stand at the foot of a council's page and of a work's last chapter", () => {
     const council = fs.readFileSync("app/(app)/councils/[slug]/page.tsx", "utf8");
     const foot = council.slice(council.lastIndexOf("<ReadToEndMark"));
-    expect(foot).toMatch(/^<ReadToEndMark kind="council" id=\{c\.slug\} \/>\s*<\/article>/);
+    // The mark, then the moment it is earned (build 95 note 27), then the page ends.
+    expect(foot).toMatch(/^<ReadToEndMark kind="council" id=\{c\.slug\} \/>[\s\S]*<EarnedMoment palette="councils" \/>\s*<\/article>/);
     const reader = fs.readFileSync("components/saints/WritingReader.tsx", "utf8");
     expect(reader).toContain('{next ? null : <ReadToEndMark kind="work" id={key} />}');
     expect(reader).toContain("const key = `${saint.slug}/${content.slug}`;");
+    // The moment stands after the work's last words and their source, the last thing on the page.
+    expect(reader).toContain('{next ? null : <EarnedMoment palette="cappadocian" />}');
+    expect(reader.lastIndexOf('<EarnedMoment palette="cappadocian" />')).toBeGreaterThan(reader.indexOf("</footer>"));
   });
 
   it("say Councils as it has looked since 1.8, deep navy, cream and silver, with no gold in any language", () => {
@@ -122,7 +126,11 @@ describe("the marks and the palettes", () => {
   });
 
   it("are named in every language, with how they are earned, and Plus said to a reader without it", () => {
-    const keys = ["settings.paletteCouncils", "settings.paletteCouncilsHint", "settings.paletteCappadocian", "settings.paletteCappadocianHint", "settings.paletteProgress", "settings.paletteEarnCouncils", "settings.paletteEarnCappadocian", "settings.palettePlusNote", "settings.paletteEarnedRow"];
+    // How each is earned is said by the sheet a goal opens (build 95 note 27): its thirteen earn.* lines,
+    // in every language; the line that stood under the row went with it (settings.paletteEarn*).
+    const EARN = ["councilsLine", "cappadocianLine", "readCount", "read", "oneWork", "basil", "gregoryTheologian", "gregoryOfNyssa", "yours", "councilsDone", "cappadocianDone", "wear", "wearing"].map((k) => `earn.${k}`);
+    const keys = ["settings.paletteCouncils", "settings.paletteCouncilsHint", "settings.paletteCappadocian", "settings.paletteCappadocianHint", "settings.paletteProgress", "settings.palettePlusNote", "settings.paletteEarnedRow", ...EARN];
+    const en = JSON.parse(fs.readFileSync("lib/i18n/messages/en.json", "utf8")) as Record<string, string>;
     const files = fs.readdirSync("lib/i18n/messages").filter((f) => f.endsWith(".json"));
     expect(files).toHaveLength(21);
     for (const f of files) {
@@ -131,18 +139,26 @@ describe("the marks and the palettes", () => {
         expect(m[key]?.trim(), `${f} ${key}`).toBeTruthy();
         expect(m[key], `${f} ${key}`).not.toMatch(/[—–]/);
       }
-      for (const key of ["settings.paletteProgress", "settings.paletteEarnCouncils", "settings.paletteEarnCappadocian"]) {
+      for (const key of ["settings.paletteProgress", "earn.readCount"]) {
         expect(m[key], `${f} ${key}`).toContain("{count}");
         expect(m[key], `${f} ${key}`).toContain("{total}");
       }
+      expect(m["earn.yours"], `${f} earn.yours`).toContain("{name}");
+      // In the reader's own language: a line still in English would fall through, not be translated.
+      if (f !== "en.json") for (const key of EARN.filter((k) => !/basil|gregory|readCount|yours/i.test(k))) expect(m[key], `${f} ${key}`).not.toBe(en[key]);
+      expect(m["settings.paletteEarnCouncils"], `${f} settings.paletteEarnCouncils`).toBeUndefined();
+      expect(m["settings.paletteEarnCappadocian"], `${f} settings.paletteEarnCappadocian`).toBeUndefined();
     }
     for (const id of ["councils", "cappadocian"]) {
       expect(READING_THEMES.find((t) => t.id === id)).toMatchObject({ labelKey: expect.any(String), blurbKey: expect.any(String), collection: true });
     }
-    for (const file of ["components/reader/ReadingModeChips.tsx", "components/settings/ReadingModePages.tsx"]) {
+    // Every place a goal is shown opens the same sheet, and that sheet is where
+    // Plus is said to a reader without it (build 95 note 27; it was a line under the row).
+    for (const file of ["components/reader/ReadingModeChips.tsx", "components/settings/ReadingModePages.tsx", "components/settings/ReadingModeGallery.tsx"]) {
       const src = fs.readFileSync(file, "utf8");
-      expect(src, file).toContain("{locked ? ` ${t(\"settings.palettePlusNote\")}` : null}");
+      expect(src, file).toContain("<EarnSheet goal={goal} locked={locked} onClose={() => setGoal(null)} />");
     }
+    expect(fs.readFileSync("components/reader/EarnSheet.tsx", "utf8")).toContain('{locked ? <p className="earn-sheet-plus">{t("settings.palettePlusNote")}</p> : null}');
     // One tile for a goal, drawn by Settings and, since build 93 note 4, by the reader's own shelf.
     expect(fs.readFileSync("components/settings/ReadingModePages.tsx", "utf8")).toContain("data-palette-goal={mode.id}");
     expect(fs.readFileSync("components/reader/ReadingModeChips.tsx", "utf8")).toContain("<GoalTile");

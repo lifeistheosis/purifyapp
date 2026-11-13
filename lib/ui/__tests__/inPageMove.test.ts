@@ -236,12 +236,14 @@ describe("Gate 2.0's in-page faults under his ruling, each moved (Updates 22)", 
     expect(hub).toContain('<li ref={place} className="theology-rule">');
   });
 
-  it("what a disclosure opens is let down: the legal contents, More details, Settings' goal, a rule's Start from", () => {
+  it("what a disclosure opens is let down: the legal contents, More details, a rule's Start from", () => {
     expect(read("components/legal/LegalContents.tsx")).toContain("onClick={() => movePage(() => setOpen((was) => !was), { grows: [anchor.current] })}");
     expect(read("components/shop/RequestIconForm.tsx")).toContain("onClick={() => movePage(() => setMore((m) => !m), { grows: [moreBox.current] })}");
+    // Settings' goal no longer lets a line down under the row: it opens what is left to read in a
+    // sheet (build 95 note 27, components/reader/EarnSheet.tsx), so nothing below it moves.
     const modes = read("components/settings/ReadingModePages.tsx");
-    expect(modes).toContain("movePage(() => setGoal(goal === id ? null : id), { grows: [goalBox.current] })");
-    expect(modes).toContain("<div ref={goalBox}>");
+    expect(modes).toContain("<EarnSheet goal={goal} locked={locked} onClose={() => setGoal(null)} />");
+    expect(modes).not.toContain('id="set-palette-goal"');
     expect(read("components/prayers/mine/MyRuleBuilder.tsx")).toMatch(/movePage\(\s*\(\) => \{\s*save\(addItems\(rule, chosen, seedOf\(chosen\)\)\);\s*\},\s*\{ grows: \[document\.getElementById\(`mine-panel-\$\{chosen\}`\)\] \},\s*\);/);
   });
 

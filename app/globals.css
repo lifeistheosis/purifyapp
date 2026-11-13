@@ -6887,14 +6887,349 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
    not yet lit says "not yet" without one. */
 .set-mode-goal .set-mode-page {
  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-paper) 9%, transparent);
- opacity: 0.5;
 }
-.set-mode-goal .set-mode-page::after {
- content: none;
+
+/* Earned by reading (build 95 note 27, his "make the read to unlock themes
+   cooler"). The card shows the look itself, lit as it will be, and how far
+   the reader is as what it is: nineteen marks that fill for the councils,
+   three faces that light for the Cappadocian Fathers
+   (components/reader/EarnMarks.tsx). It was a dimmed page over "0 of 19". */
+.earn-marks,
+.earn-faces {
+ display: flex;
+ align-items: center;
+ width: 100%;
+ margin-top: 5px;
 }
-/* Tapped, it comes forward while the line under the row says how it is earned. */
-.set-mode-goal[aria-expanded="true"] .set-mode-page {
+.earn-marks {
+ gap: 1px;
+ height: 8px;
+}
+.earn-marks > i {
+ flex: 1 1 0;
+ min-width: 1px;
+ height: 100%;
+ border-radius: 1px;
+ background-color: color-mix(in srgb, var(--color-paper) 22%, transparent);
+}
+.earn-marks > i[data-on] {
+ background-color: var(--color-paper);
+}
+.earn-faces {
+ justify-content: center;
+ gap: 3px;
+}
+.earn-faces > img {
+ flex: 0 1 22px;
+ min-width: 0;
+ aspect-ratio: 1;
+ border-radius: 999px;
+ object-fit: cover;
+ object-position: 50% 18%;
+ filter: grayscale(1);
+ opacity: 0.4;
+ box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-paper) 16%, transparent);
+}
+.earn-faces > img[data-on] {
+ filter: none;
+ opacity: 1;
+ box-shadow: 0 0 0 1.5px var(--color-paper);
+}
+.set-root[data-live] .earn-marks > i {
+ transition: background-color 320ms var(--ease-house);
+}
+:where([data-motion="reduce"]) .set-root[data-live] .earn-marks > i {
+ transition: none;
+}
+.set-root[data-live] .earn-faces > img {
+ transition: opacity 320ms var(--ease-house), filter 320ms var(--ease-house), box-shadow 320ms var(--ease-house);
+}
+:where([data-motion="reduce"]) .set-root[data-live] .earn-faces > img {
+ transition: none;
+}
+
+/* What is left to read (components/reader/EarnSheet.tsx): the house sheet,
+   one line of how it is earned, the same marks at a size to count, and each
+   thing still to read as a door. What is read keeps its place, with a check. */
+.earn-sheet-head {
+ padding: 2px 20px 14px;
+}
+.earn-sheet-line {
+ margin: 0;
+ font-family: var(--font-serif), Georgia, serif;
+ font-size: 16px;
+ line-height: 1.5;
+ color: color-mix(in srgb, var(--color-paper) 82%, transparent);
+}
+.earn-sheet-marks {
+ display: flex;
+ align-items: center;
+ gap: 14px;
+ margin-top: 14px;
+}
+.earn-sheet-marks .earn-marks {
+ flex: 1 1 auto;
+ width: auto;
+ gap: 3px;
+ height: 14px;
+ margin-top: 0;
+}
+.earn-sheet-marks .earn-faces {
+ flex: 0 0 auto;
+ width: auto;
+ gap: 8px;
+ margin-top: 0;
+}
+.earn-sheet-marks .earn-faces > img {
+ flex: 0 0 36px;
+ width: 36px;
+}
+.earn-sheet-count {
+ flex: none;
+ font-family: var(--font-sans), system-ui, sans-serif;
+ font-size: 13px;
+ font-weight: 600;
+ font-variant-numeric: tabular-nums;
+ color: color-mix(in srgb, var(--color-paper) 74%, transparent);
+}
+.earn-doors {
+ margin: 0;
+ padding: 0 8px 12px;
+ list-style: none;
+}
+.earn-doors > li + li {
+ border-block-start: 1px solid color-mix(in srgb, var(--color-paper) 9%, transparent);
+}
+.earn-door {
+ display: flex;
+ align-items: center;
+ gap: 12px;
+ min-height: 56px;
+ padding: 8px 12px;
+ border-radius: 12px;
+ color: var(--color-paper);
+ text-decoration: none;
+}
+.earn-door-face {
+ flex: none;
+ width: 44px;
+ height: 44px;
+ border-radius: 999px;
+ object-fit: cover;
+ object-position: 50% 18%;
+}
+.earn-door-words {
+ display: flex;
+ flex: 1 1 auto;
+ flex-direction: column;
+ min-width: 0;
+}
+.earn-door-name {
+ font-family: var(--font-serif), Georgia, serif;
+ font-size: 17px;
+ line-height: 1.3;
+ text-align: start;
+}
+.earn-door-line {
+ margin-top: 1px;
+ font-family: var(--font-sans), system-ui, sans-serif;
+ font-size: 13px;
+ line-height: 1.35;
+ font-variant-numeric: tabular-nums;
+ color: color-mix(in srgb, var(--color-paper) 72%, transparent);
+}
+.earn-door-mark {
+ flex: none;
+ color: color-mix(in srgb, var(--color-paper) 72%, transparent);
+}
+.earn-door[data-read] .earn-door-name {
+ color: color-mix(in srgb, var(--color-paper) 74%, transparent);
+}
+.earn-sheet-plus {
+ margin: 0;
+ padding: 4px 20px 16px;
+ font-family: var(--font-sans), system-ui, sans-serif;
+ font-size: 13px;
+ line-height: 1.45;
+ color: color-mix(in srgb, var(--color-paper) 72%, transparent);
+}
+
+/* The moment it is earned (components/reader/EarnedMoment.tsx): at the foot
+   of the last page read, the look's own page rises into a soft pool of light
+   and rests in a mandorla, a few embers go up and are gone. The gift's own
+   language (.gift-flood, .gift-ember, .gift-mandorla above), and no rays by
+   his rule of 2026-11-08. Transform and opacity only. From the moment, in
+   ms: 0 the pool, 120 the page, 420 the embers, 700 the phone's soft tick
+   (LANDS_MS), 760 the words, all still by 1900. Under data-motion="reduce"
+   nothing travels: it is whole at once. */
+.earned-moment {
+ margin: 56px auto 8px;
+ max-width: 420px;
+ text-align: center;
+}
+.earned-stage {
+ position: relative;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ height: 232px;
+ --mp-k: 0.56;
+}
+.earned-pool,
+.earned-mandorla,
+.earned-ember {
+ position: absolute;
+ pointer-events: none;
+}
+/* Centred by its own margins, so it stands in the middle in Arabic too. */
+.earned-pool {
+ inset-inline: 0;
+ top: 50%;
+ width: 300px;
+ height: 300px;
+ margin: -150px auto 0;
+ border-radius: 999px;
+ background: radial-gradient(closest-side, color-mix(in srgb, var(--color-gold-pale) 22%, transparent) 0%, color-mix(in srgb, var(--color-gold-pale) 9%, transparent) 46%, transparent 100%);
+ animation: earned-pool 1500ms var(--ease-house) both;
+}
+.earned-mandorla {
+ inset-inline: 0;
+ top: 50%;
+ width: 150px;
+ height: 216px;
+ margin: -108px auto 0;
+ border-radius: 50%;
+ box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-gold-pale) 22%, transparent), 0 0 28px color-mix(in srgb, var(--color-gold-pale) 12%, transparent);
+ animation: earned-mandorla 1100ms var(--ease-house) 200ms both;
+}
+.earned-ember {
+ inset-inline-start: 50%;
+ top: 62%;
+ width: 3px;
+ height: 3px;
+ border-radius: 999px;
+ background-color: var(--color-gold-pale);
+ opacity: 0;
+ animation: earned-ember 1300ms cubic-bezier(0.3, 0.8, 0.4, 1) both;
+}
+.earned-page {
+ position: relative;
+ display: block;
+ animation: earned-page 900ms var(--ease-house) 120ms both;
+}
+.earned-eyebrow,
+.earned-title,
+.earned-line,
+.earned-wear,
+.earned-wearing,
+.earned-plus {
+ animation: earned-words 520ms var(--ease-house) 760ms both;
+}
+.earned-eyebrow {
+ margin: 14px 0 0;
+ font-family: var(--font-sans), system-ui, sans-serif;
+ font-size: 13px;
+ font-weight: 600;
+ color: color-mix(in srgb, var(--color-paper) 72%, transparent);
+}
+.earned-title {
+ margin: 6px 0 0;
+ font-family: var(--font-display-serif), var(--font-serif), Georgia, serif;
+ font-size: 30px;
+ line-height: 1.15;
+ color: var(--color-paper);
+ text-wrap: balance;
+}
+.earned-line {
+ margin: 8px auto 0;
+ max-width: 30ch;
+ font-family: var(--font-serif), Georgia, serif;
+ font-size: 17px;
+ line-height: 1.5;
+ color: color-mix(in srgb, var(--color-paper) 82%, transparent);
+ text-wrap: balance;
+}
+.earned-wear {
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ min-height: 48px;
+ margin-top: 20px;
+ padding: 0 28px;
+ border: 0;
+ border-radius: 999px;
+ background-color: var(--color-paper);
+ color: var(--color-night);
+ font-family: var(--font-sans), system-ui, sans-serif;
+ font-size: 16px;
+ font-weight: 600;
+}
+.earned-wearing {
+ display: inline-flex;
+ align-items: center;
+ gap: 8px;
+ min-height: 48px;
+ margin: 20px 0 0;
+ font-family: var(--font-sans), system-ui, sans-serif;
+ font-size: 16px;
+ font-weight: 600;
+ color: var(--color-paper);
+}
+.earned-plus {
+ margin: 10px 0 0;
+ font-family: var(--font-sans), system-ui, sans-serif;
+ font-size: 13px;
+ color: color-mix(in srgb, var(--color-paper) 72%, transparent);
+}
+@keyframes earned-pool {
+ 0% { transform: scale(0.5); opacity: 0; }
+ 45% { opacity: 1; }
+ 100% { transform: scale(1); opacity: 0.8; }
+}
+@keyframes earned-mandorla {
+ 0% { transform: scale(0.82); opacity: 0; }
+ 100% { transform: scale(1); opacity: 1; }
+}
+@keyframes earned-page {
+ 0% { transform: translateY(26px) scale(0.94); opacity: 0; }
+ 100% { transform: none; opacity: 1; }
+}
+@keyframes earned-ember {
+ 0% { transform: translate(var(--ember-x, 0), 0); opacity: 0; }
+ 18% { opacity: 0.9; }
+ 100% { transform: translate(calc(var(--ember-x, 0) * 1.25), -128px); opacity: 0; }
+}
+@keyframes earned-words {
+ 0% { transform: translateY(8px); opacity: 0; }
+ 100% { transform: none; opacity: 1; }
+}
+:where([data-motion="reduce"]) .earned-pool,
+:where([data-motion="reduce"]) .earned-mandorla,
+:where([data-motion="reduce"]) .earned-page,
+:where([data-motion="reduce"]) .earned-eyebrow,
+:where([data-motion="reduce"]) .earned-title,
+:where([data-motion="reduce"]) .earned-line,
+:where([data-motion="reduce"]) .earned-wear,
+:where([data-motion="reduce"]) .earned-wearing,
+:where([data-motion="reduce"]) .earned-plus {
+ animation: none;
+}
+:where([data-motion="reduce"]) .earned-pool {
  opacity: 0.8;
+}
+:where([data-motion="reduce"]) .earned-ember {
+ animation: none;
+ opacity: 0;
+}
+/* On Light and the light looks nothing glows: the light is a shade of ink, as the gift's is. */
+html[data-reading-mode="parchment"] .earned-pool {
+ background: radial-gradient(closest-side, color-mix(in srgb, var(--color-paper) 9%, transparent) 0%, color-mix(in srgb, var(--color-paper) 4%, transparent) 46%, transparent 100%);
+}
+html[data-reading-mode="parchment"] .earned-mandorla {
+ box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-paper) 20%, transparent);
+}
+html[data-reading-mode="parchment"] .earned-ember {
+ display: none;
 }
 .set-mode-progress {
  margin-top: 1px;
@@ -7197,9 +7532,6 @@ html[data-reading-mode="parchment"] .set-focus-wash {
 .set-root[data-live] .set-mode-page {
  transition: translate 320ms var(--ease-house), box-shadow 320ms var(--ease-house);
 }
-.set-root[data-live] .set-mode-goal .set-mode-page {
- transition: opacity 240ms var(--ease-house);
-}
 .set-root[data-live] .set-slider-fill {
  transition: width 260ms var(--ease-house);
 }
@@ -7215,7 +7547,6 @@ html[data-reading-mode="parchment"] .set-focus-wash {
 :where([data-motion="reduce"]) .set-root[data-live] .set-switch,
 :where([data-motion="reduce"]) .set-root[data-live] .set-switch-knob,
 :where([data-motion="reduce"]) .set-root[data-live] .set-mode-page,
-:where([data-motion="reduce"]) .set-root[data-live] .set-mode-goal .set-mode-page,
 :where([data-motion="reduce"]) .set-root[data-live] .set-slider-fill,
 :where([data-motion="reduce"]) .set-root[data-live] .set-slider-thumb,
 :where([data-motion="reduce"]) .set-root[data-live] .set-slider-stop,

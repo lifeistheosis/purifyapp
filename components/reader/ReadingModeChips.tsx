@@ -37,6 +37,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useReaderPrefs } from "@/components/reader/ReaderPrefs";
+import { EarnSheet } from "@/components/reader/EarnSheet";
 import { useEarnedPalettes } from "@/components/reader/useEarnedPalettes";
 import { usePalettePick } from "@/components/reader/usePalettePick";
 import { GoalTile, ModeTile } from "@/components/settings/ReadingModePages";
@@ -172,13 +173,8 @@ export function ReadingModeChips({
           );
         })}
       </div>
-      {goal ? (
-        <p id="set-palette-goal" role="status" className="set-mode-goal-line" data-palette-goal-line="">
-          {t(goal === "councils" ? "settings.paletteEarnCouncils" : "settings.paletteEarnCappadocian", { count: earned[goal].read, total: earned[goal].of })}
-          {/* Plus is never promised to every reader: a reader without it is told before they read for it. */}
-          {locked ? ` ${t("settings.palettePlusNote")}` : null}
-        </p>
-      ) : null}
+      {/* What is left to read, each a door to it (build 95 note 27). */}
+      <EarnSheet goal={goal} locked={locked} onClose={() => setGoal(null)} />
     </div>
   );
 }

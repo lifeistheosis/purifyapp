@@ -25,6 +25,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ReaderPrefsProvider, useReaderPrefs, type ReaderFont } from "@/components/reader/ReaderPrefs";
+import { EarnSheet } from "@/components/reader/EarnSheet";
 import { useEarnedPalettes } from "@/components/reader/useEarnedPalettes";
 import { usePalettePick } from "@/components/reader/usePalettePick";
 import type { EarnedPalettes } from "@/lib/reader/earned";
@@ -118,13 +119,8 @@ export function GalleryShelves({
             return <GoalTile key={mode.id} mode={mode} progress={progress} open={goal === id} font={font} book={book} chapter={chapter} onToggle={() => setGoal(goal === id ? null : id)} />;
           })}
         </Shelf>
-        {goal ? (
-          <p id="set-palette-goal" role="status" className="set-mode-goal-line" data-palette-goal-line="">
-            {t(goal === "councils" ? "settings.paletteEarnCouncils" : "settings.paletteEarnCappadocian", { count: earned[goal].read, total: earned[goal].of })}
-            {/* Plus is never promised to every reader: a reader without it is told before they read for it. */}
-            {locked ? ` ${t("settings.palettePlusNote")}` : null}
-          </p>
-        ) : null}
+        {/* What is left to read, each a door to it (build 95 note 27). */}
+        <EarnSheet goal={goal} locked={locked} onClose={() => setGoal(null)} />
       </section>
     </>
   );

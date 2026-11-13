@@ -39,6 +39,8 @@ import { Fragment, useLayoutEffect, useRef, useState, type RefObject } from "rea
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { FONT_CLASSES, useReaderPrefs, type ReaderFont } from "@/components/reader/ReaderPrefs";
+import { EarnMarks } from "@/components/reader/EarnMarks";
+import { EarnSheet } from "@/components/reader/EarnSheet";
 import { useEarnedPalettes } from "@/components/reader/useEarnedPalettes";
 import { usePalettePick } from "@/components/reader/usePalettePick";
 import { Check } from "@/components/ui/icons/Check";
@@ -47,7 +49,6 @@ import type { EarnedPalettes } from "@/lib/reader/earned";
 import { READING_THEMES, isCollectionTheme, themeWorn, type ReadingTheme } from "@/lib/reader/readingModes";
 import { inSightBy } from "@/lib/settings/modeRow";
 import { JOHN_1_OPENING, PREVIEW_CHAPTER } from "@/lib/settings/preview";
-import { movePage } from "@/lib/ui/inPageMove";
 import { useScrollTicks } from "@/lib/ui/scrollTicks";
 
 /** Wired to the reader's palette and the Plus gate. */
@@ -82,7 +83,6 @@ export function ModePages({
   // the row once tapped.
   const earned = useEarnedPalettes();
   const [goal, setGoal] = useState<keyof EarnedPalettes | null>(null);
-  const goalBox = useRef<HTMLDivElement>(null);
   // The five, a look only while it is the one applied (1.9: the rest are on
   // their own page), and the two earned by reading, in the registry's order.
   const modes = READING_THEMES.filter((m) => !m.look || m.id === theme);
@@ -109,25 +109,14 @@ export function ModePages({
           if (progress && !progress.earned && theme !== mode.id) {
             const id = mode.id as keyof EarnedPalettes;
             return (
-              <GoalTile key={mode.id} mode={mode} progress={progress} open={goal === id} font={font} book={book} chapter={chapter} onToggle={() => movePage(() => setGoal(goal === id ? null : id), { grows: [goalBox.current] })} />
+              <GoalTile key={mode.id} mode={mode} progress={progress} open={goal === id} font={font} book={book} chapter={chapter} onToggle={() => setGoal(goal === id ? null : id)} />
             );
           }
           return <ModeTile key={mode.id} mode={mode} theme={theme} worn={worn} font={font} allows={allows} locked={locked} book={book} chapter={chapter} onPick={onPick} />;
         })}
       </div>
-      {/* The goal's line is let down under the row and what follows glides,
-          as a change inside the page (lib/ui/inPageMove.ts), where what was
-          below jumped 47px (Gate 2.0). Its place stands empty, and takes no
-          room, until a goal is open. */}
-      <div ref={goalBox}>
-        {goal ? (
-          <p id="set-palette-goal" role="status" className="set-mode-goal-line" data-palette-goal-line="">
-            {t(goal === "councils" ? "settings.paletteEarnCouncils" : "settings.paletteEarnCappadocian", { count: earned[goal].read, total: earned[goal].of })}
-            {/* Plus is never promised to every reader: a reader without it is told before they read for it. */}
-            {locked ? ` ${t("settings.palettePlusNote")}` : null}
-          </p>
-        ) : null}
-      </div>
+      {/* What is left to read, each a door to it (build 95 note 27). */}
+      <EarnSheet goal={goal} locked={locked} onClose={() => setGoal(null)} />
     </>
   );
 }
@@ -237,7 +226,13 @@ export function ModeTile({
   );
 }
 
-/** A palette still to be earned by reading (lib/reader/earned.ts): its page drawn whole but unlit, and how far the reader is. No dashed edge (build 93 note 4). */
+/**
+ * A palette still to be earned by reading (lib/reader/earned.ts): the look
+ * itself, lit as it will be, and how far the reader is shown as what it is
+ * (./EarnMarks: the councils as marks that fill, the three Fathers as faces
+ * that light), build 95 note 27. A tap opens what is left to read
+ * (components/reader/EarnSheet.tsx). No dashed edge (build 93 note 4).
+ */
 export function GoalTile({
   mode,
   progress,
@@ -257,10 +252,10 @@ export function GoalTile({
 }) {
   const { t } = useTranslate();
   return (
-    <button type="button" data-palette-goal={mode.id} aria-expanded={open} aria-controls="set-palette-goal" onClick={onToggle} className="set-mode set-mode-goal">
+    <button type="button" data-palette-goal={mode.id} aria-haspopup="dialog" aria-expanded={open} onClick={onToggle} className="set-mode set-mode-goal">
       <ModePage palette={mode.id} font={font} book={book} chapter={chapter} />
       <span className="set-mode-name">{mode.labelKey ? t(mode.labelKey) : mode.label}</span>
-      <span className="set-mode-progress">{t("settings.paletteProgress", { count: progress.read, total: progress.of })}</span>
+      <EarnMarks goal={mode.id as keyof EarnedPalettes} progress={progress} />
     </button>
   );
 }

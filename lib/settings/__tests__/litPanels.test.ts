@@ -152,8 +152,13 @@ describe("the reading modes", () => {
     expect(drawn).not.toContain("set-modes-earned");
     // Nothing is earned in the first draw (the device's reading is read after it): both are goals.
     expect(drawn.match(/data-palette-goal="(councils|cappadocian)"/g)).toHaveLength(2);
-    expect(drawn).toContain('<span class="set-mode-progress">0 of 19</span>');
-    expect(drawn).toContain('<span class="set-mode-progress">0 of 3</span>');
+    // How far the reader is, as what it is (build 95 note 27): nineteen marks
+    // for the councils, three faces for the Fathers, and the count for a screen reader.
+    expect(drawn).toContain('<span role="img" aria-label="0 of 19" class="earn-marks">');
+    expect(drawn.match(/class="earn-marks">([\s\S]*?)<\/span>/)?.[1].match(/<i/g)).toHaveLength(19);
+    expect(drawn).toContain('<span role="img" aria-label="0 of 3" class="earn-faces">');
+    expect(drawn.match(/class="earn-faces">([\s\S]*?)<\/span>/)?.[1].match(/<img/g)).toHaveLength(3);
+    expect(drawn).not.toContain("set-mode-progress");
     // One already applied is a palette, not a goal, so it can be put down again.
     const applied = draw(createElement(ModePages, { theme: "councils", font: "serif", allows: EVERY, locked: false, onPick: () => {} }));
     expect(applied.match(/data-palette-goal="(councils|cappadocian)"/g)).toEqual(['data-palette-goal="cappadocian"']);

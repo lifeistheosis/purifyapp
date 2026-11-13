@@ -52,16 +52,19 @@ describe("the reader's Reading mode section", () => {
   it("draws no dashed box, here or on the earned palettes' tile anywhere", () => {
     expect(CODE).not.toMatch(/dashed/);
     expect(read("components/settings/ReadingModePages.tsx").replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, "")).not.toMatch(/dashed/);
-    // The tile's own rules: unlit until earned, and no outline of any kind.
+    // The tile's own rules: no outline of any kind. From build 95 note 27 the
+    // look is shown lit as it will be, and what is unfilled is the progress itself.
     const goal = decls(".set-mode-goal .set-mode-page");
     expect(goal.outline).toBeUndefined();
-    expect(Number(goal.opacity)).toBeLessThan(1);
+    expect(goal.opacity).toBeUndefined();
     expect(JSON.stringify(goal)).not.toContain("dashed");
     for (const block of [...CSS.matchAll(/\.set-mode-goal[^{]*\{([^}]*)\}/g)]) expect(block[1]).not.toContain("dashed");
-    // Tapped, it comes forward, and the move is the house's and stops for a reader who asked for stillness.
-    expect(Number(decls('.set-mode-goal[aria-expanded="true"] .set-mode-page').opacity)).toBeGreaterThan(Number(goal.opacity));
-    expect(decls(".set-root[data-live] .set-mode-goal .set-mode-page").transition).toBe("opacity 240ms var(--ease-house)");
-    expect(CSS).toContain(':where([data-motion="reduce"]) .set-root[data-live] .set-mode-goal .set-mode-page,');
+    // The marks that fill and the faces that light: the move is the house's and stops for a reader who asked for stillness.
+    expect(decls(".earn-marks > i[data-on]")["background-color"]).toBe("var(--color-paper)");
+    expect(decls(".earn-faces > img[data-on]").filter).toBe("none");
+    expect(decls(".set-root[data-live] .earn-marks > i").transition).toContain("var(--ease-house)");
+    expect(decls(".set-root[data-live] .earn-faces > img").transition).toContain("var(--ease-house)");
+    expect(CSS).toContain(':where([data-motion="reduce"]) .set-root[data-live] .earn-marks > i {');
   });
 
   it("is one shelf: swept sideways in the phone's sheet, with the sheet's own pull kept off it", () => {
@@ -141,11 +144,16 @@ describe("the reader's Reading mode section", () => {
     expect(CODE).toContain("onPick={pick}");
   });
 
-  it("says how a palette is earned under the shelf, and never promises Plus to every reader", () => {
-    expect(CODE).toContain('t(goal === "councils" ? "settings.paletteEarnCouncils" : "settings.paletteEarnCappadocian", { count: earned[goal].read, total: earned[goal].of })');
-    expect(SHELF).toContain('{locked ? ` ${t("settings.palettePlusNote")}` : null}');
-    // The line the tile points a screen reader to.
-    expect(CODE).toContain('id="set-palette-goal"');
-    expect(read("components/settings/ReadingModePages.tsx")).toContain('aria-controls="set-palette-goal"');
+  it("opens what is left to read, and never promises Plus to every reader", () => {
+    // A tap on a goal opens the sheet of what is still to read, each thing a
+    // door to it (build 95 note 27); it was one long line under the shelf.
+    expect(CODE).toContain("<EarnSheet goal={goal} locked={locked} onClose={() => setGoal(null)} />");
+    expect(CODE).not.toContain('id="set-palette-goal"');
+    const sheet = read("components/reader/EarnSheet.tsx");
+    expect(sheet).toContain('<p className="earn-sheet-plus">{t("settings.palettePlusNote")}</p>');
+    expect(sheet).toContain('data-earn-doors={goal}');
+    // The card says it opens one, and the count is what a screen reader hears off the marks.
+    expect(read("components/settings/ReadingModePages.tsx")).toContain('aria-haspopup="dialog"');
+    expect(read("components/reader/EarnMarks.tsx")).toContain('t("settings.paletteProgress", { count: progress.read, total: progress.of })');
   });
 });

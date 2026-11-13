@@ -41,6 +41,7 @@ import { useScrollAway } from "@/lib/ui/scrollAway";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { unitFor } from "@/lib/desktop/presenceModes";
 import type { TileCard } from "@/lib/reading/select";
+import { EarnedMoment } from "@/components/reader/EarnedMoment";
 import { ReadToEndMark } from "@/components/reading/ReadToEndMark";
 import { UndoBar } from "@/components/ui/UndoBar";
 import { useUndo } from "@/lib/ui/useUndo";
@@ -226,6 +227,10 @@ export function WritingReader({
  {t("prayers.reader.sourceLabel")} {content.source}
  </p>
  </footer>
+
+ {/* The moment the Cappadocian palette is earned: after the work's last
+     words and their source, the last thing on the page (build 95 note 27). */}
+ {next ? null : <EarnedMoment palette="cappadocian" />}
 
  <MobileWorkPill head={head} prev={prev} next={next} heads={heads} onGo={go} words={words} />
  <WorkContents
