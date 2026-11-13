@@ -256,7 +256,8 @@
   is about half the entrance: content that is leaving should stop competing
   for attention quickly, content that is arriving should be gentle enough to
   register. --duration-route-enter also decides when the destination's
-  cascade starts (see `.route-fade .cascade > *`).
+  cascade starts where the wrapper fades (see `.route-fade .cascade > *`;
+  a page that arrived in a transition does not wait).
   TO RETUNE THE PAGE FADE: change these two. */
  --duration-route-exit: 140ms;
  --duration-route-enter: 260ms;
@@ -1322,6 +1323,11 @@ html[data-reading-mode="parchment"] .reader-lit {
 .route-fade :is(.page-open-title, .page-open-sub, .page-open-rule, .page-open-after, .page-open-words) {
  --page-open-start: var(--duration-route-enter);
 }
+/* No fade to wait for in a page that arrived in a transition: the cascade's
+   reason, below at `.route-fade[data-carried] .cascade > *`. */
+.route-fade[data-carried] :is(.page-open-title, .page-open-sub, .page-open-rule, .page-open-after, .page-open-words) {
+ --page-open-start: 0ms;
+}
 :where([data-motion="reduce"]) .page-open-title,
 :where([data-motion="reduce"]) .page-open-sub,
 :where([data-motion="reduce"]) .page-open-rule,
@@ -1351,6 +1357,11 @@ html[data-reading-mode="parchment"] .reader-lit {
 }
 .route-fade .saint-head-in {
  --saint-head-start: var(--duration-route-enter);
+}
+/* The same: in a page that arrived in a transition there is no fade to wait
+   for (the cascade's reason, at `.route-fade[data-carried] .cascade > *`). */
+.route-fade[data-carried] .saint-head-in {
+ --saint-head-start: 0ms;
 }
 :where([data-motion="reduce"]) .saint-icon-in,
 :where([data-motion="reduce"]) .saint-head-in {
@@ -8445,6 +8456,18 @@ html[data-reading-mode="parchment"] .part-segment[data-state="current"] {
    here. Specificity beats the base rule, so it needs no `!important`. */
 .route-fade .cascade > * {
  --cascade-start: var(--duration-route-enter);
+}
+/* Except where there is no fade to wait for (1.9, Gate 2.0). A page that
+   arrived in a transition has its wrapper's fade turned off
+   (`.route-fade[data-carried]`, below: the picture brings the page in), and
+   the page being left is gone in the transition's first 50ms. Waiting the
+   fade's 260ms all the same left the screen empty between the two, its bars
+   aside, for a quarter to a third of a second on 104 page switches (the
+   motion walk, 2026-11-13). Its rows start as it arrives. Where the wrapper
+   still fades (a phone with no View Transitions), they wait for it as
+   before. */
+.route-fade[data-carried] .cascade > * {
+ --cascade-start: 0ms;
 }
 
 :where([data-motion="reduce"]) .cascade > * {

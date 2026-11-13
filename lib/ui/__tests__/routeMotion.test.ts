@@ -1169,4 +1169,21 @@ describe("the stylesheet", () => {
     expect(rows).toMatch(/animation-delay: -1s;/);
     expect(rows).not.toMatch(/animation: none|animation-name/);
   });
+
+  it("nothing in a page that arrived in a transition waits for the wrapper's fade, which is off there (Gate 2.0, cause 1)", () => {
+    // Every entrance that waits for `.route-fade`'s own fade, found as the
+    // stylesheet says it: a start of var(--duration-route-enter) under
+    // `.route-fade`. With the fade off in a carried route, each such wait was
+    // the screen standing empty between the page left and the page arriving
+    // (104 page switches of 200 to 400ms, the motion walk of 2026-11-13).
+    const waits = [...css.matchAll(/\n(\.route-fade [^{\n]+) \{\s*(--[\w-]+): var\(--duration-route-enter\);\s*\}/g)].map((m) => ({ selector: m[1], name: m[2] }));
+    // The three the walk proved: the rows, a page's opening words, a saint's head.
+    expect(waits.map((w) => w.name).sort()).toEqual(["--cascade-start", "--page-open-start", "--saint-head-start"]);
+    for (const { selector, name } of waits) {
+      const carried = selector.replace(/^\.route-fade /, ".route-fade[data-carried] ");
+      // Said after the wait it lifts, and more particular than it, so it holds.
+      expect(css.indexOf(`\n${carried} {`), carried).toBeGreaterThan(css.indexOf(`\n${selector} {`));
+      expect(rule(carried), carried).toMatch(new RegExp(`${name}: 0ms;`));
+    }
+  });
 });
