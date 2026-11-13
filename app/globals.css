@@ -5702,6 +5702,14 @@ html[data-reading-mode="black"] .tile-sheen {
  :where(html[data-reading-mode="candlelight"]) :where(.premium-plan-card) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68) {
  color: color-mix(in oklab, var(--color-paper) 70%, transparent);
  }
+ /* And the two palettes earned by reading, once checkMock wore them
+    (Updates 22's run on the export of 968347b3, 2026-11-13): "or $199 /
+    year" read 4.42:1 on Councils and 4.40 on Cappadocian at 1032, their
+    cream at its faint share on the cards' lit head. On a plan card they draw
+    their faint shares at 62: 4.57:1 at Pro's lightest point. */
+ :where(html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) :where(.premium-plan-card) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
+ color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
  /* The saint web's sheet (.saint-web-card) is a step darker than Light's
     card, as a tray is: the line under a saint's name, at Light's 70, read
     4.41:1 ("787") and 4.47 ("Councils"). At 75, as faint words on a tray,
