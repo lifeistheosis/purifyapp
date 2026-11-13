@@ -490,6 +490,7 @@ if (MODE === "dock") {
 
 if (MODE === "voices") {
   const GUARD_ONLY = process.argv.includes("--guard-only");
+  const NP_ONLY = process.argv.includes("--now-playing-only");
   const STILLS_ONLY = process.argv.includes("--stills-only");
   const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const spokenNow = (page) => page.evaluate(() => window.__spoken.slice());
@@ -603,6 +604,22 @@ if (MODE === "voices") {
     for (let i = 0; i < 4 && (await page.locator('[role="dialog"]').filter({ visible: true }).count()); i++) await closeTop(page, lang);
   }
 
+  /** Now Playing measured still: paused first, since a live player re-renders its words under the pixel measure. */
+  async function guardPlayer(page, lang, size, label) {
+    const pauseBtn = page.locator(`${nowPlayingSel(lang)} button[aria-label="${t(lang, "prayers.pause")}"]`).first();
+    const paused = Boolean(await pauseBtn.count());
+    if (paused) {
+      await tapAt(page, pauseBtn);
+      await page.waitForTimeout(700);
+    }
+    await guard(page, nowPlayingSel(lang), lang, size, `${label} (paused for the measure)`);
+    const playBtn = page.locator(`${nowPlayingSel(lang)} button[aria-label="${t(lang, "prayers.play")}"]`).first();
+    if (paused && (await playBtn.count())) {
+      await tapAt(page, playBtn);
+      await page.waitForTimeout(700);
+    }
+  }
+
   const guardIf = async (page, sel, lang, size, label, on) => {
     if (on) await guard(page, sel, lang, size, label);
   };
@@ -624,7 +641,7 @@ if (MODE === "voices") {
       else fail("Genesis 1 offers no Listen");
       const pillSel = (await page.locator("[data-reader-pill]").filter({ visible: true }).count()) ? "[data-reader-pill]" : "main";
       await still(page, "genesis-pill");
-      if (guards) await guard(page, pillSel, lang, size, "Genesis 1's pill with Listen");
+      if (guards && !NP_ONLY) await guard(page, pillSel, lang, size, "Genesis 1's pill with Listen");
       await tapAt(page, listen);
       const started = await waitFor(page, () => window.__spoken.length > 0 && window.speechSynthesis.speaking);
       const first = (await spokenNow(page))[0];
@@ -637,7 +654,7 @@ if (MODE === "voices") {
       await still(page, "genesis-reading");
       await openNowPlaying(page, lang);
       await still(page, "now-playing-cover");
-      if (guards) await guard(page, nowPlayingSel(lang), lang, size, "Now Playing (cover), a phone's voice");
+      if (guards) await guardPlayer(page, lang, size, "Now Playing (cover), a phone's voice");
       const wordsTab = page.locator(`${nowPlayingSel(lang)} [role="tab"]`, { hasText: t(lang, "player.viewWords") }).first();
       if (await wordsTab.count()) {
         await tapAt(page, wordsTab);
@@ -646,7 +663,7 @@ if (MODE === "voices") {
         if (word) ok("Now Playing's words: the line being read is lit");
         else fail("Now Playing's words: nothing lit");
         await still(page, "now-playing-words");
-        if (guards) await guard(page, nowPlayingSel(lang), lang, size, "Now Playing (words), a phone's voice");
+        if (guards) await guardPlayer(page, lang, size, "Now Playing (words), a phone's voice");
         await tapAt(page, page.locator(`${nowPlayingSel(lang)} [role="tab"]`, { hasText: t(lang, "player.viewCover") }).first());
         await page.waitForTimeout(800);
       } else fail("Now Playing has no Words view for a phone's voice");
@@ -655,12 +672,12 @@ if (MODE === "voices") {
       if (phoneValue === "Daniel") ok('the ••• sheet\'s Voice row says "Daniel"');
       else fail(`the ••• sheet's Voice row says "${phoneValue}" while Daniel reads`);
       await still(page, "more-phone");
-      if (guards) await guard(page, '[role="dialog"]:not([aria-label="' + t(lang, "prayers.nowPlaying") + '"])', lang, size, "the ••• sheet with the Voice row");
+      if (guards && !NP_ONLY) await guard(page, '[role="dialog"]:not([aria-label="' + t(lang, "prayers.nowPlaying") + '"])', lang, size, "the ••• sheet with the Voice row");
       await openVoiceSheet(page, lang);
       const rowsGen = await radios(page, lang);
       if (rowsGen && rowsGen.map((r) => r.name).join("|") === "Daniel|Karen|Samantha" && rowsGen[0].on) ok("over Genesis 1, no Heart: Daniel (checked), Karen, Samantha");
       else fail(`the Voice sheet over Genesis 1: ${JSON.stringify(rowsGen)}`);
-      if (guards) await guard(page, voiceSheetSel(lang), lang, size, "the Voice sheet, phone's voices only");
+      if (guards && !NP_ONLY) await guard(page, voiceSheetSel(lang), lang, size, "the Voice sheet, phone's voices only");
       await closeAll(page, lang);
       if (taps) {
         // Next in Now Playing: Genesis 2's page opens and the same voice reads it from its first verse.
@@ -680,6 +697,7 @@ if (MODE === "voices") {
         await closeAll(page, lang);
       }
 
+      if (!NP_ONLY) {
       // ---- John 1, Heart: its recording, nothing chosen.
       await go(page, "/bible/john/1/", { timeout: 30000 });
       await page.waitForTimeout(2500);
@@ -750,6 +768,8 @@ if (MODE === "voices") {
       }
       await closeAll(page, lang);
 
+      }
+
       // ---- The gone line: a chosen voice no longer on the phone.
       await page.evaluate(() => {
         window.speechSynthesis.cancel();
@@ -767,20 +787,21 @@ if (MODE === "voices") {
       if (npWords.includes(goneLine)) ok(`Now Playing says: "${goneLine}"`);
       else fail(`Now Playing does not say the gone line (${npWords.slice(0, 160)})`);
       await still(page, "gone-now-playing");
-      if (guards) await guard(page, nowPlayingSel(lang), lang, size, "Now Playing with the gone line");
+      if (guards) await guardPlayer(page, lang, size, "Now Playing with the gone line");
       await openMore(page, lang);
       await openVoiceSheet(page, lang);
       const sheetWords = (await visibleDialog(page, voiceSheetSel(lang)).innerText()).replace(/\s+/g, " ");
       if (sheetWords.includes(goneLine)) ok("the Voice sheet says it too");
       else fail(`the Voice sheet does not say the gone line (${sheetWords.slice(0, 160)})`);
       await still(page, "gone-sheet");
-      if (guards) await guard(page, voiceSheetSel(lang), lang, size, "the Voice sheet with the gone line");
+      if (guards && !NP_ONLY) await guard(page, voiceSheetSel(lang), lang, size, "the Voice sheet with the gone line");
       await closeAll(page, lang);
       await page.evaluate(() => {
         window.speechSynthesis.cancel();
         localStorage.removeItem("purify:listen.voice");
       });
 
+      if (!NP_ONLY) {
       // ---- The none state: the Serbian page, and no Serbian voice on this phone.
       await go(page, "/bible/john/1/", { timeout: 30000 });
       await page.waitForTimeout(2000);
@@ -848,6 +869,7 @@ if (MODE === "voices") {
         else fail("no paragraph lit on the life");
         await still(page, "life-reading");
       } else fail("a saint's life offers no Listen");
+      }
     } catch (e) {
       fail(`the walk stopped: ${String(e).split("\n")[0]}`);
       await shot(page, `stopped-${tag}`).catch(() => {});
