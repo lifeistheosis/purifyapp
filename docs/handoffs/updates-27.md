@@ -21,6 +21,7 @@ The fix checklist's export, checkMock and taps did not fit in this chat, so the 
 ## Open, in order, for the next apply chat
 
 0. **Seven tests on the patch still assert the old forms** (the whole suite at the patch: 14,600 passed, 7 failed in 6 files; typecheck 0 after `npx next typegen`). Rewrite each to the new design, never weaken one: `lib/ui/__tests__/faintText.test.ts` (looks up the rule `.set-track > button`, now `:is(button, a)`), `lib/settings/__tests__/litPanels.test.ts` (2, the same selectors), `lib/community/__tests__/compose.test.ts` (reads the old `DOOR` string), `lib/theology/__tests__/leaf.test.ts` (the heresy row's carry), `lib/theology/__tests__/ways.test.ts` (2: the scroll plate on Heresies' rows; the rows' 44px class), `lib/ui/__tests__/wordsOnPicturesMends.test.ts` (the old hour card's line, now gone with the card).
+   The sweep's subagent was stopped at rotation while it was updating four more tests (its last words: "studyGate, starters, gatheringPages and lookSurfaces"), after the suite above was run: run the whole suite first and read those four in the patch, which may hold one half edited.
 
 1. Apply `applied.patch` (round 1) and the note 29 patch on the head with `git am --3way`; then notes 9 and 17 from their drafts as briefed (note 17 applied cleanly at b5d9edb3a; note 9 met one conflict, in `docs/brand/design-kit.md`: keep the head's text and add the patch's part).
 2. Round 1's test that fails on the old code: run the new tests on a worktree of the head before the patch (not yet done for every one).
