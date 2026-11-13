@@ -179,6 +179,8 @@ export function Medal({ id, size = 56, lit = false, className }: { id: BadgeId; 
       className={cn("profile-medal shrink-0 overflow-visible", className)}
       data-lit={lit ? "" : undefined}
       data-medal={id}
+      data-mock-allow="palette"
+      data-mock-why="a medal struck in silver round an enamel field, its glyph engraved dark or white on its own field: black, white and silver on every profile and every palette, by design"
     >
       <defs>
         <linearGradient id={`${u}r`} x1="0" y1="0" x2="1" y2="1">
@@ -237,6 +239,15 @@ export function Medal({ id, size = 56, lit = false, className }: { id: BadgeId; 
  * The Badges door: a case of medals, three to a row, each with its name and
  * since when. The one tapped is lit, and what it means is said under the
  * case; until one is tapped, the first (or the one asked for) is.
+ *
+ * The card under the case holds every badge's words in one cell, the lit
+ * one's shown, so it is as tall as its longest badge whichever is lit, as the
+ * doors keep the tallest door's room (ProfileDoors.tsx). It used to hold the
+ * lit one's words alone: Verified's two lines and Bug Hunter's three, with
+ * its "Since October 2026", changed the card's height, and the sheet, pinned
+ * to the foot of a phone, jumped by a line at each tap (build 95 note 12).
+ * With motion on, the words hand over as the house's pieces do (the mini
+ * player's card and pill, app/globals.css): the old fade, the new follow.
  */
 export function MedalCase({ badges, initial = null }: { badges: EarnedBadge[]; initial?: BadgeId | null }) {
   const { t, locale } = useTranslate();
@@ -270,7 +281,9 @@ export function MedalCase({ badges, initial = null }: { badges: EarnedBadge[]; i
                   {t(`profile.badge.${b.id}`)}
                 </span>
                 {b.since ? (
-                  <span className="mt-[3px] w-full truncate font-sans text-[10.5px] leading-tight text-paper/45">
+                  // At /45 its words fell to 4.50:1 on Black once the medal was lit (the lit
+                  // ground is lighter): a control's words at 4.5:1 or better (build 95 note 12).
+                  <span className="mt-[3px] w-full truncate font-sans text-[10.5px] leading-tight text-paper/50">
                     {t("profile.badgeSince", { date: recordDate(b.since, locale, { month: "short", year: "numeric" }) })}
                   </span>
                 ) : null}
@@ -284,14 +297,31 @@ export function MedalCase({ badges, initial = null }: { badges: EarnedBadge[]; i
         className="mt-2.5 flex items-center gap-3 rounded-2xl border border-paper/15 bg-paper/[0.06] px-3.5 py-3 shadow-[0_0_22px_rgb(255_255_255/0.06)]"
       >
         <Medal id={shown.id} size={40} lit />
-        <span className="min-w-0">
-          <span className="block font-serif text-[16px] font-semibold leading-snug text-paper">{t(`profile.badge.${shown.id}`)}</span>
-          <span className="mt-0.5 block font-sans text-detail leading-snug text-paper/72">{t(`profile.badgeAbout.${shown.id}`)}</span>
-          {shown.since ? (
-            <span className="mt-0.5 block font-sans text-caption text-paper/50">
-              {t("profile.badgeSince", { date: recordDate(shown.since, locale, { month: "long", year: "numeric" }) })}
-            </span>
-          ) : null}
+        <span className="grid min-w-0 flex-1">
+          {badges.map((b) => {
+            const on = b.id === shown.id;
+            return (
+              <span
+                key={b.id}
+                data-badge-words={b.id}
+                aria-hidden={on ? undefined : true}
+                className={cn(
+                  "col-start-1 row-start-1 min-w-0 self-center",
+                  on
+                    ? "visible opacity-100 motion-safe:[transition:opacity_var(--duration-fast)_var(--ease-house)_120ms,visibility_0s]"
+                    : "invisible opacity-0 motion-safe:[transition:opacity_var(--duration-fast)_var(--ease-house),visibility_0s_linear_var(--duration-fast)]",
+                )}
+              >
+                <span className="block font-serif text-[16px] font-semibold leading-snug text-paper">{t(`profile.badge.${b.id}`)}</span>
+                <span className="mt-0.5 block font-sans text-detail leading-snug text-paper/72">{t(`profile.badgeAbout.${b.id}`)}</span>
+                {b.since ? (
+                  <span className="mt-0.5 block font-sans text-caption text-paper/50">
+                    {t("profile.badgeSince", { date: recordDate(b.since, locale, { month: "long", year: "numeric" }) })}
+                  </span>
+                ) : null}
+              </span>
+            );
+          })}
         </span>
       </div>
     </div>

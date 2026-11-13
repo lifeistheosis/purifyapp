@@ -8143,6 +8143,32 @@ await section(50, async () => {
       must(badges.pressed === "streak_7" && badges.meaning.includes(en["profile.badgeAbout.streak_7"]), `the medal tapped is lit, and says what it means (${badges.pressed}: ${badges.meaning.slice(0, 60)})`);
       must(badges.knots === 14 && badges.words === "", `Seven Days is a prayer rope of seven knots, with no number (${badges.knots / 2} knots, words "${badges.words}")`);
       await page.screenshot({ path: path.join(SHOTS, "profile-free-badges.png") });
+      // Choosing a badge moves nothing (build 95 note 12, "badge UI moving"):
+      // the card under the case held the lit badge's words alone, so a badge
+      // of three lines after one of two grew it by a line, and the sheet,
+      // pinned to the foot of the phone, jumped with it. Every badge tapped
+      // in turn, with motion on, the sheet's top and the card's height read
+      // on every frame while it settles.
+      const held = [];
+      for (const b of FREE.badges) {
+        if (!(await tap(page.locator(`${OPEN_DOOR} #badge-${b.id} button`)))) continue;
+        for (let i = 0; i < 8; i++) {
+          held.push(
+            await page.evaluate((sel) => {
+              const sheet = document.querySelector("[data-profile-card]")?.getBoundingClientRect();
+              const foot = document.querySelector(sel)?.querySelector("[aria-live]")?.getBoundingClientRect();
+              return { top: Math.round(sheet?.top ?? -1), card: Math.round(foot?.height ?? -1) };
+            }, OPEN_DOOR),
+          );
+          await page.waitForTimeout(50);
+        }
+      }
+      const tops = [...new Set(held.map((h) => h.top))];
+      const heights = [...new Set(held.map((h) => h.card))];
+      must(
+        held.length === FREE.badges.length * 8 && tops.length === 1 && heights.length === 1,
+        `choosing each of the ${FREE.badges.length} badges moves nothing: the sheet's top and the card's height hold (tops ${tops.join(", ")}; card ${heights.join(", ")}px)`,
+      );
     }
     if (await tap(card.getByRole("tab", { name: en["profile.tabPosts"] }))) {
       await page.waitForTimeout(400);
