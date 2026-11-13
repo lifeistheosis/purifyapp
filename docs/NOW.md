@@ -25,7 +25,7 @@ Updated 2026-11-13 01:24 UTC.
 ## Waiting on him
 
 - The public key for the re-check: given (2026-11-13 03:32 UTC, "yes read the key").
-- His four answers on the owner's desk plan (`docs/plans/owner-desk.md`, last section): the data-built emails sending themselves unless held, the brief's hour, a shop and sourcing chat, and who builds the design kit.
+- On the owner's desk plan: question 1 (the data-built emails sending themselves unless held) and question 3 (a shop and sourcing chat after 1.9). Question 2, the brief, is his yes (2026-11-13).
 - Walk the test build once it is cut. Then: accept the 1.9 note in Admin, set the drop day, and submit both builds after the phone walks. On release day: the Purify profile's status, and opening campaigns.
 - The company: C0 (the address on the D-U-N-S record) and C0b (the papers). Send the company's exact name as the EIN letter has it. All in OWNER-STEPS.md.
 - The Company guide waits on two facts: how many owners the LLC has, and how it is taxed. Also: is the EIKON shop registered for Florida sales tax (C3b)? Register the EIKON trade name before Stripe shows it.
