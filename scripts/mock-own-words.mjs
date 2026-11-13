@@ -13,7 +13,7 @@
 //
 //   npm run build:android, then:
 //   node scripts/mock-own-words.mjs                  checkMock with pixels: the six states, at 390, 800 and
-//                                                    1032 wide, on the five palettes and the seventeen looks,
+//                                                    1032 wide, on every palette (mock-check.mjs, EVERY),
 //                                                    in English and in Arabic
 //   WALK=1 node scripts/mock-own-words.mjs           the tap walk: every touched control, real touch, motion on
 //   SHOTS=dir node scripts/mock-own-words.mjs        and a still of each state (2x) in that folder
@@ -22,7 +22,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { LOOKS, PALETTES, checkMock, openPhone, printMockCheck } from "./mock-check.mjs";
+import { EVERY, checkMock, openPhone, printMockCheck } from "./mock-check.mjs";
 import { go } from "./lib/shell-server.mjs";
 
 const WALK = process.env.WALK === "1";
@@ -30,7 +30,7 @@ const SHOTS = process.env.SHOTS ? path.resolve(process.env.SHOTS) : null;
 const WIDTHS = (process.env.WIDTHS ?? "390,800,1032").split(",").map(Number);
 const LOCALES = (process.env.LOCALES ?? "en,ar").split(",");
 const HEIGHT = { 390: 844, 800: 1280, 1032: 1376 };
-const WORN = { palettes: [...PALETTES, ...LOOKS], pixels: true };
+const WORN = { palettes: EVERY, pixels: true };
 const ONLY = process.env.ONLY ? new Set(process.env.ONLY.split(",")) : null;
 
 const ANNA = "11111111-1111-4111-8111-111111111111";

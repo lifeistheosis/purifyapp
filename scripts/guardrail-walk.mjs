@@ -6,7 +6,8 @@
 // phone, reached the app's way (scripts/lib/shell-server.mjs: a cold start at
 // the front door, then the router, nothing from outside the bundle, which is
 // also the app with no network). Each is held, whole, to checkMock's rules
-// (scripts/mock-check.mjs): contrast and placeholders on all five palettes,
+// (scripts/mock-check.mjs): contrast and placeholders on all five palettes
+// and the two earned by reading (Councils and Cappadocian, from 2026-11-13),
 // 44px to the touch, no glyph for an icon, colours that follow the palette,
 // no gold, no side stripe, mirrored in Arabic, no em dash, no rays, no
 // sparkle, the three looks build 93 added: no empty picture, no dashed
@@ -27,7 +28,10 @@
 // only, the main web and the public pictures it keeps in its storage, never
 // a write): the pictures it streams rather than carries (lib/media/streamed.ts)
 // and a reader's profile picture then arrive, as they do for a reader with a
-// signal. Without it the walk is the app with no network.
+// signal. Without it the walk is the app with no network. With it, a part
+// the main web feeds only now and then (a chapter's discussions) is drawn with
+// a stand-in post where the main web has nothing to show, so it is measured
+// (scripts/lib/main-web.mjs, STAND_INS), and the report names each one drawn.
 //
 //   node scripts/gate/export.mjs (the store workflow's own switches), then:
 //   NODE_USE_ENV_PROXY=1 node scripts/guardrail-walk.mjs [out dir] [--only /path,/path] [--workers 3] [--json file] [--online] [--looks dir]
@@ -64,6 +68,7 @@ import { assertMotion, motionOptions, motionWords, pinMotion } from "./lib/motio
 import { NATIVE_UA, go, serveLikeTheShell } from "./lib/shell-server.mjs";
 import { SELLS_PLUS, asAndroidShell, checkSells, readerWords } from "./lib/sells-plus.mjs";
 import { checkStoreExport } from "./lib/store-switches.mjs";
+import { standInFor, stoodIn } from "./lib/main-web.mjs";
 
 const argv = process.argv.slice(2);
 const flag = (name) => {
@@ -179,7 +184,10 @@ async function mainWeb(route) {
         })(),
       );
     }
-    return route.fulfill(await fetched.get(url));
+    const answer = await fetched.get(url);
+    // A part the main web feeds only now and then is drawn with a stand-in where it has nothing to show
+    // (scripts/lib/main-web.mjs, STAND_INS: the chapter's discussions), and the report says so.
+    return route.fulfill(standInFor(url, answer) ?? answer);
   } catch {
     return route.abort();
   }
@@ -409,6 +417,8 @@ const lookLeft = looks.filter((l) => l.left);
 const lookShort = looks.filter((l) => !l.left && l.need !== null && Object.values(l.ratios).some((v) => v + 1e-9 < l.need));
 console.log(`\nwords over a picture ("look"): ${looks.length}; answered by their pixels on every palette: ${looks.length - lookLeft.length}, of which ${lookShort.length} under their need (in contrast above); left for the eye: ${lookLeft.length}${LOOKS && lookLeft.length ? ` (stills in ${LOOKS})` : ""}`);
 for (const l of lookLeft) console.log(`  ${l.screen} "${l.text}": ${l.why}${l.still ? ` [${l.still}]` : ""}`);
+// What was drawn with a stand-in because the main web had nothing to show there (scripts/lib/main-web.mjs).
+if (ONLINE) console.log(`\nstand-ins drawn where the main web had nothing to show: ${[...stoodIn].join("; ") || "none"}`);
 
 // Allowed by name and reason: said once per reason, with how many pieces carry it.
 const allowed = new Map();

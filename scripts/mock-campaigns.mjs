@@ -47,7 +47,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { LOOKS, PALETTES, checkMock, openPhone, printMockCheck } from "./mock-check.mjs";
+import { EVERY, checkMock, openPhone, printMockCheck } from "./mock-check.mjs";
 import { go } from "./lib/shell-server.mjs";
 
 const SCALE = Number(process.argv[2] ?? 1);
@@ -74,8 +74,8 @@ const LOCALE = process.env.LOCALE ?? null;
 const PICTURES_BUILD = process.env.PICTURES_BUILD === "1";
 /** The phone's width, for a still on a narrower one. */
 const WIDTH = Number(process.env.WIDTH ?? 390);
-/** Every look as well as the five palettes (scripts/mock-check.mjs, LOOKS: the registry says how many). */
-const WORN = process.env.ALL_LOOKS === "1" ? { palettes: [...PALETTES, ...LOOKS] } : {};
+/** Every look as well as the five palettes and the two earned by reading (scripts/mock-check.mjs, EVERY: the registry says how many). */
+const WORN = process.env.ALL_LOOKS === "1" ? { palettes: EVERY } : {};
 if (!WALK) fs.mkdirSync(OUT, { recursive: true });
 const tag = SCALE === 2 ? "" : "x1-";
 

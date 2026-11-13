@@ -28,7 +28,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { chromium } from "playwright";
-import { LOOKS, PALETTES, checkMock } from "../mock-check.mjs";
+import { EARNED, EVERY, LOOKS, PALETTES, checkMock } from "../mock-check.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "../lib/shell-server.mjs";
 import { SELLS_PLUS, asAndroidShell, checkSells, readerWords } from "../lib/sells-plus.mjs";
 
@@ -46,10 +46,10 @@ const SIZES = [
   [800, 1280],
   [1032, 1366],
 ];
-const ALL = [...PALETTES, ...LOOKS];
+const ALL = EVERY;
 checkSells(OUT);
-// The five palettes and every look the registry holds (seventeen until build 95 note 16 took the sea's two).
-if (PALETTES.length !== 5 || LOOKS.length < 1) throw new Error(`expected the five palettes and the looks, found ${PALETTES.length} and ${LOOKS.length}`);
+// The five palettes, the two earned by reading and every look the registry holds (seventeen until build 95 note 16 took the sea's two).
+if (PALETTES.length !== 5 || EARNED.length !== 2 || LOOKS.length < 1) throw new Error(`expected the five palettes, the two earned and the looks, found ${PALETTES.length}, ${EARNED.length} and ${LOOKS.length}`);
 for (const s of SOUNDS) if (!fs.existsSync(path.join(OUT, "audio", "ambience", `${s}.mp3`))) throw new Error(`the export does not carry audio/ambience/${s}.mp3`);
 
 // The page's Web Audio, watched: every context and its state, each decoding and how it ended, each

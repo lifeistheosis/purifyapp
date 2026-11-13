@@ -121,6 +121,41 @@ export const LOOKS = READING_THEMES.filter((theme) => theme.look).map((theme) =>
   return [theme.label, mode, look];
 });
 
+/**
+ * The two palettes earned by reading (1.9, lib/reader/earned.ts): Councils and
+ * Cappadocian, the registry's collection palettes, each its own
+ * data-reading-mode. A reader who has earned one reads every screen in it, so
+ * checkMock wears them by default beside the five (WORN), and the looks'
+ * callers add them (EVERY). Until 2026-11-13 no list held them, and no gate
+ * run measured them: on Prayers' chants door they were the worst of all
+ * (4.26 to 4.32:1, found by reading, Updates 9).
+ */
+export const EARNED = READING_THEMES.filter((theme) => theme.collection).map((theme) => {
+  const { mode } = themeAttributes(theme.id);
+  return [theme.label, mode];
+});
+
+/** What checkMock wears when it is not told: the five palettes and the two earned by reading. */
+export const WORN = [...PALETTES, ...EARNED];
+
+/** Every palette a reader can wear: the five, the two earned by reading, and the looks. */
+export const EVERY = [...WORN, ...LOOKS];
+
+/**
+ * The registry's palettes that a list leaves out (none, or the self-test fails):
+ * every theme must be worn by EVERY, and every theme that is not a look by WORN.
+ */
+export function paletteGaps(lists = { worn: WORN, every: EVERY }) {
+  const wears = (list, id) => {
+    const { mode, look } = themeAttributes(id);
+    return list.some(([, m, l]) => (m ?? null) === mode && (l ?? null) === look);
+  };
+  return READING_THEMES.flatMap((theme) => [
+    ...(wears(lists.every, theme.id) ? [] : [`${theme.label} is in no list (EVERY)`]),
+    ...(theme.look || wears(lists.worn, theme.id) ? [] : [`${theme.label} is not worn by default (WORN)`]),
+  ]);
+}
+
 /** Put a palette on the page, as the app does: its mode, and its look or none. */
 const wear = (page, mode, look) =>
   page.evaluate(
@@ -1285,7 +1320,7 @@ const settle = (page) => page.evaluate(() => new Promise((done) => requestAnimat
  * `allowGold`: only for a mockup of a Plus member's profile, the one place
  * gold is allowed (noGold.test.ts).
  */
-export async function checkMock(page, selector, { allowGold = false, palettes = PALETTES, pixels = false } = {}) {
+export async function checkMock(page, selector, { allowGold = false, palettes = WORN, pixels = false } = {}) {
   const failures = [];
   const unmeasured = [];
   // With `pixels`, each word whose ground cannot be read from colours (a picture
@@ -1750,6 +1785,17 @@ const CLOCK = `<div data-mock-fixture="clock" style="padding:16px;background:#10
 </div>`;
 
 async function selfTest() {
+  // The lists wear every palette of the registry (2026-11-13): until then the two earned by reading were in none,
+  // and no gate run measured them. The lists as they stand leave nothing out, and the lists as they stood (the
+  // five, and the five with the looks) are caught leaving out both, by default and in every list.
+  const gaps = paletteGaps();
+  const oldGaps = paletteGaps({ worn: PALETTES, every: [...PALETTES, ...LOOKS] });
+  const listsWhole = gaps.length === 0 && EARNED.length === 2 && oldGaps.length === 2 * EARNED.length;
+  console.log(
+    listsWhole
+      ? `the lists wear every palette: ${PALETTES.length} palettes, ${EARNED.length} earned by reading (${EARNED.map(([n]) => n).join(", ")}), ${LOOKS.length} looks; the old lists are caught leaving out ${EARNED.map(([n]) => n).join(" and ")}`
+      : `the lists: ${gaps.join("; ") || "none left out"}; the old lists caught: ${oldGaps.join("; ") || "nothing"}`,
+  );
   const { go } = await import("./lib/shell-server.mjs");
   const { browser, page } = await openPhone();
   try {
@@ -1901,11 +1947,11 @@ async function selfTest() {
       said("Words over a fade on a picture", "a picture is drawn across it (img)") &&
       said("Words over a picture, on plain colours", "a picture is drawn across it (img)") &&
       good.unmeasured.length === 3;
-    const ok = missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && rowsRead && rowsCaught && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight && motionRead && hyphenRead;
+    const ok = listsWhole && missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && rowsRead && rowsCaught && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight && motionRead && hyphenRead;
     console.log(
       ok
         ? "\nself-test: every mistake caught, and the house's own parts pass"
-        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${rowsRead && rowsCaught ? "" : " words scrolled out of their row were not read on the ground behind the row"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}${motionRead ? "" : " words over light that moves forever were not measured on a held frame and passed"}${hyphenRead ? "" : " words broken at a soft hyphen were not read a line at a time, or the faint ones passed"}`,
+        : `\nself-test FAILED: ${listsWhole ? "" : "a palette of the registry is left out of the lists, or the old lists were not caught; "}${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${rowsRead && rowsCaught ? "" : " words scrolled out of their row were not read on the ground behind the row"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}${motionRead ? "" : " words over light that moves forever were not measured on a held frame and passed"}${hyphenRead ? "" : " words broken at a soft hyphen were not read a line at a time, or the faint ones passed"}`,
     );
     return ok;
   } finally {
@@ -1915,7 +1961,7 @@ async function selfTest() {
 
 async function main(args) {
   if (args[0] === "--self-test") return selfTest();
-  // --looks: the fifteen looks as well as the five palettes.
+  // --looks: the fifteen looks as well as the five palettes and the two earned by reading.
   const looks = args.includes("--looks");
   const [where, selector] = args.filter((a) => a !== "--looks");
   if (!where || !selector) {
@@ -1927,7 +1973,7 @@ async function main(args) {
   try {
     await go(page, where);
     await page.waitForTimeout(2000);
-    return printMockCheck(await checkMock(page, selector, looks ? { palettes: [...PALETTES, ...LOOKS] } : {}), `${where} ${selector}`);
+    return printMockCheck(await checkMock(page, selector, looks ? { palettes: EVERY } : {}), `${where} ${selector}`);
   } finally {
     await browser.close();
   }

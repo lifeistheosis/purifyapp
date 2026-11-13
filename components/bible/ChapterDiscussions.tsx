@@ -54,9 +54,12 @@ export function ChapterDiscussions({ book, bookName, chapter }: { book: string; 
         <ul className="mt-4 space-y-2">
           {posts.map((p) => (
             <li key={p.id}>
+              {/* On paper no well: a black one is grey there (Light turns only /20 and /30 into its warm shade),
+                  and the name and age read 4.24:1 on it, the face's letter 3.86 on the light looks (2026-11-13,
+                  measured on the walks' stand-in post, scripts/lib/main-web.mjs). The border holds the card. */}
               <Link
                 href={`/community#post-${p.id}`}
-                className="flex items-start gap-3 rounded-xl border border-paper/10 bg-black/15 p-3 transition-colors hover:border-paper/25"
+                className="flex items-start gap-3 rounded-xl border border-paper/10 bg-black/15 p-3 transition-colors hover:border-paper/25 [html[data-reading-mode=parchment]_&]:bg-transparent"
               >
                 <CommunityAvatar name={p.author_name} url={p.author_avatar} size={32} />
                 <span className="min-w-0">
