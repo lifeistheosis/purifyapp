@@ -250,6 +250,8 @@ const RULES: readonly (readonly [string, ScreenKey])[] = [
   ["/support/**", "support"],
   ["/language-editor", "language-editor"],
   ["/email/unsubscribe", "email-lists"],
+  // The welcome email's first-week guide, asked for by the reader's own tap (lib/email/retention/firstWeekAsk.ts).
+  ["/email/first-week", "email-lists"],
   // Where the change-of-email links land (Admin's 80536b131): part of account settings.
   ["/email/change", "account-settings"],
 
