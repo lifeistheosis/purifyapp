@@ -18,7 +18,7 @@ Updated 2026-11-13 01:24 UTC.
 - **Rotations now, between checks:** Admin and Updates 2 write batons and stop (both near auto-compaction). A fresh Admin runs the targeted re-check from its baton; a fresh fixer takes fails 4 and 5. Updates keeps 1 and 6: it is at 164,000 tokens after one compaction, so it rotates after 1.9.
 - **Also landing before the re-check:** St. Xenia's refined profile (its own fixer).
 - **Then:** every fix pushed; the re-check on one export from that head; if it passes, the test build is cut (Android with local-first on, the main web, publish off; then iOS).
-- **Before the merge (web only):** the admin link in `lib/billing/applyLifecycle.ts` (`?tab=` where the panel reads `#tab=`).
+- **Before the merge (web only):** the admin link in `lib/billing/applyLifecycle.ts` (`?tab=` where the panel reads `#tab=`), with Updates 3.
 
 ## Waiting on him
 
@@ -47,7 +47,7 @@ Updated 2026-11-13 01:24 UTC.
 | Arbiter | session_01VuYTwdsjYL2mmq2C2JSt2A | his words, NOW.md, routing |
 | Admin | session_01VuYTwbteJqs1UmDUwqRvzC | the final check, the admin panel, the drop's tooling |
 | Updates | session_01VuYTwcNqTWyT6Yab696Eri | fixer |
-| Updates 3 | session_01VuYTwcy3Fbt9LcW3Qic77o | fixer: fails 4 (WordPopover's Close in Arabic) and 5 (the webs' place and date cut), from `docs/handoffs/updates-2.md` |
+| Updates 3 | session_01VuYTwcy3Fbt9LcW3Qic77o | fixer: fails 4 (WordPopover's Close in Arabic) and 5 (the webs' place and date cut), from `docs/handoffs/updates-2.md`; then the admin link in `lib/billing/applyLifecycle.ts` |
 | SSM board | session_01VuYTwcSQmKLThRirvSeWa5 | the drop's words, the Vault |
 | Fable 5.2: 1.9 store pictures | session_01VuYTwbUEsUgbUwM7K7xYG1 | design and adverts, by his word |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |
