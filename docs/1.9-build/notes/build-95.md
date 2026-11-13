@@ -65,3 +65,9 @@ Asked during the release's making, so it goes into 1.9 (CLAUDE.md, "A release sh
 He sent, 2026-11-13 07:38 UTC, a screenshot of a reader's Discussion post in Community (two likes, no replies; the reader is not named here, since the repository is public): "Some things which should be added imo. We should have the ability to remove or edit our comments under replies and posts".
 
 A reader's report during the release's making, so it goes into 1.9 (CLAUDE.md, "A release ships finished"). A reader can edit and remove what they wrote, posts and replies alike. An edited one says so. A removed reply leaves the thread readable. Moderation keeps what it needs to keep for reports, as the privacy lines say. Any change to the database's rules is a migration, safe to run twice, signed by him before the merge.
+
+## Note 11 (a reader's report, sent by him): the ambient sounds "do not currently work"
+
+He sent, 2026-11-13 07:40 UTC, a screenshot of a reader's Discussion post from 15 days ago (six likes; the reader is not named here). The reader is new, an inquirer into the Faith: "when I went to play the ambient selections, it said that they do not currently work. Has this always been the case? Is this feature that new, or could it just be a temporal bug?"
+
+A reader's report during the release's making, so it goes into 1.9. Checked at once: all six sound files answer 200 on the main web (/audio/ambience/*.mp3), so the files are there. The sheet's own failure line (ambience.failed, components/player/AmbienceSheet.tsx) is what he met. To find why a sound fails to start on a reader's phone (the app and the website, Android and iPhone), mend it, and give it a test that fails on the old code.
