@@ -470,20 +470,22 @@ function SaintBand({ saint }: { saint: BandSaint }) {
       ) : null}
       <span className={cn("relative block px-4 py-3.5", saint.picture && "max-w-[64%]")}>
         <span className="block font-sans text-caption font-semibold text-paper/55">{t("today.saintEyebrow")}</span>
-        {/* The saint's name is English; the quiet line in its place ("No commemoration") is the reader's. */}
+        {/* The saint's name is English; the quiet line in its place ("No commemoration") is the reader's.
+            Its run is left to right, so in Arabic its end is the reader's start (rtl:text-end),
+            off his picture; Today sets no words left or right (todayMirror.test.ts). */}
         <span
           lang={saint.quiet ? undefined : "en"}
           dir={textDir(saint.quiet ? undefined : "en")}
           className={
             saint.quiet
               ? "mt-1 block font-sans text-ui italic text-paper/55"
-              : "mt-0.5 block font-heading text-lede font-bold leading-tight text-paper rtl:text-right"
+              : "mt-0.5 block font-heading text-lede font-bold leading-tight text-paper rtl:text-end"
           }
         >
           {saint.name}
         </span>
         {saint.line ? (
-          <span lang="en" dir="ltr" className="mt-1 block font-sans text-caption leading-snug text-paper/55 rtl:text-right">
+          <span lang="en" dir="ltr" className="mt-1 block font-sans text-caption leading-snug text-paper/55 rtl:text-end">
             {saint.line.plain}
           </span>
         ) : null}

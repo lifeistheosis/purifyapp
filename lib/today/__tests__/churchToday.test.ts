@@ -379,15 +379,19 @@ describe("The Church today, before the device knows the day", () => {
 // Arabic the saint's band put his English line where its own direction put
 // it, at the left, onto his picture: "Mother of God" at 2.58 to 4.17:1 on the
 // seven palettes, Today in the Nativity Fast. The English stands at the
-// reader's start, as Heresies' names do.
+// reader's start, as Heresies' names do; on Today by its own run's end
+// (rtl:text-end on a left-to-right run), since Today names no side.
 describe("the saint's band in a right-to-left language", () => {
   it("keeps the saint's English name and line at the reader's start, off his picture", async () => {
     const { readFileSync } = await import("node:fs");
     const src = readFileSync(`${process.cwd()}/components/today/ChurchTodayRail.tsx`, "utf8");
     const at = src.indexOf("function SaintBand(");
     const band = src.slice(at, src.indexOf("const look =", at));
-    expect(band).toContain('"mt-0.5 block font-heading text-lede font-bold leading-tight text-paper rtl:text-right"');
-    expect(band).toMatch(/<span lang="en" dir="ltr" className="[^"]*text-paper\/55 rtl:text-right">\s*\{saint\.line\.plain\}/);
+    expect(band).toContain('"mt-0.5 block font-heading text-lede font-bold leading-tight text-paper rtl:text-end"');
+    expect(band).toMatch(/<span lang="en" dir="ltr" className="[^"]*text-paper\/55 rtl:text-end">\s*\{saint\.line\.plain\}/);
+    // By the run's own end, never a side: Today sets no words left or right
+    // (todayMirror.test.ts; the whole suite found rtl:text-right, Updates 33).
+    expect(band).not.toMatch(/\btext-(?:left|right)\b/);
   });
 });
 
