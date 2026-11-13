@@ -1,0 +1,472 @@
+From c908f70939a96c4efa8754099b956dd567d77981 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 13 Nov 2026 21:24:01 +0000
+Subject: [PATCH] Note 29: Harkins's Discourses Against Judaizing Christians on
+ St John Chrysostom's profile, the publisher's link alone (held as a patch)
+
+---
+ components/saints/LicensedWorksSection.tsx    | 39 ++++++++---
+ .../john-chrysostom/licensed-works.json       | 13 ++++
+ lib/i18n/messages/ar.json                     |  1 +
+ lib/i18n/messages/bg.json                     |  1 +
+ lib/i18n/messages/de.json                     |  1 +
+ lib/i18n/messages/el.json                     |  1 +
+ lib/i18n/messages/en.json                     |  1 +
+ lib/i18n/messages/es.json                     |  1 +
+ lib/i18n/messages/fil.json                    |  1 +
+ lib/i18n/messages/fr.json                     |  1 +
+ lib/i18n/messages/hu.json                     |  1 +
+ lib/i18n/messages/id.json                     |  1 +
+ lib/i18n/messages/it.json                     |  1 +
+ lib/i18n/messages/ka.json                     |  1 +
+ lib/i18n/messages/ne.json                     |  1 +
+ lib/i18n/messages/pl.json                     |  1 +
+ lib/i18n/messages/pt.json                     |  1 +
+ lib/i18n/messages/ro.json                     |  1 +
+ lib/i18n/messages/ru.json                     |  1 +
+ lib/i18n/messages/sr.json                     |  1 +
+ lib/i18n/messages/tr.json                     |  1 +
+ lib/i18n/messages/uk.json                     |  1 +
+ lib/i18n/messages/ur.json                     |  1 +
+ lib/saints/__tests__/studyListing.test.ts     | 70 +++++++++++++++++++
+ lib/saints/licensedWorks.ts                   |  9 ++-
+ 25 files changed, 141 insertions(+), 11 deletions(-)
+ create mode 100644 lib/saints/__tests__/studyListing.test.ts
+
+diff --git a/components/saints/LicensedWorksSection.tsx b/components/saints/LicensedWorksSection.tsx
+index 2461f3cc..659e659a 100644
+--- a/components/saints/LicensedWorksSection.tsx
++++ b/components/saints/LicensedWorksSection.tsx
+@@ -65,7 +65,17 @@ export function LicensedWorksSection({ works }: { works: LicensedWork[] }) {
+             }
+             // The book's title, its publisher and its blurb are English; the
+             // role before the author is the reader's (build 90 note 4).
+-            title={<span lang="en" dir="ltr">{w.title}</span>}
++            title={
++              <>
++                <span lang="en" dir="ltr">{w.title}</span>
++                {/* Another title it is known by, in its own English (1.9, note 29). */}
++                {w.alsoKnownAs ? (
++                  <span data-also-known-as="" className="mt-0.5 block font-sans text-detail font-normal text-paper/70">
++                    <T k="saints.alsoKnownAs" replacements={{ title: w.alsoKnownAs }} />
++                  </span>
++                ) : null}
++              </>
++            }
+             meta={
+               <>
+                 <T k={w.authorRole ? ROLE_LABEL_KEY[w.authorRole] : "saints.workRoleBy"} replacements={{ author: w.author }} />
+@@ -76,20 +86,29 @@ export function LicensedWorksSection({ works }: { works: LicensedWork[] }) {
+             blurb={w.blurb ? <span lang="en" dir="ltr">{w.blurb}</span> : undefined}
+             footer={
+               <>
+-                <a
+-                  href={buildAmazonUrl(w.amazonAsin)}
+-                  target="_blank"
+-                  rel="noopener nofollow sponsored"
+-                  className="hit-44 font-sans text-detail font-semibold text-paper underline decoration-paper/30 underline-offset-4 hover:decoration-paper"
+-                >
+-                  <T k="saints.buyOnAmazon" />
+-                </a>
++                {/* Amazon only where the record names the book there; a book
++                    listed for study has its publisher's page alone (1.9,
++                    build 95 note 29). */}
++                {w.amazonAsin ? (
++                  <a
++                    href={buildAmazonUrl(w.amazonAsin)}
++                    target="_blank"
++                    rel="noopener nofollow sponsored"
++                    className="hit-44 font-sans text-detail font-semibold text-paper underline decoration-paper/30 underline-offset-4 hover:decoration-paper"
++                  >
++                    <T k="saints.buyOnAmazon" />
++                  </a>
++                ) : null}
+                 {w.directPublisherUrl ? (
+                   <a
+                     href={w.directPublisherUrl}
+                     target="_blank"
+                     rel="noopener noreferrer"
+-                    className="hit-44 font-sans text-detail text-paper/60 underline decoration-paper/20 underline-offset-4 hover:text-paper"
++                    className={
++                      w.amazonAsin
++                        ? "hit-44 font-sans text-detail text-paper/60 underline decoration-paper/20 underline-offset-4 hover:text-paper"
++                        : "hit-44 font-sans text-detail font-semibold text-paper underline decoration-paper/30 underline-offset-4 hover:decoration-paper"
++                    }
+                   >
+                     <T k="saints.buyDirectFrom" /> {w.publisher}
+                   </a>
+diff --git a/data/saints/john-chrysostom/licensed-works.json b/data/saints/john-chrysostom/licensed-works.json
+index 78c48029..0cde506f 100644
+--- a/data/saints/john-chrysostom/licensed-works.json
++++ b/data/saints/john-chrysostom/licensed-works.json
+@@ -23,6 +23,19 @@
+       "blurb": "A practical patristic vision for husbands, wives, and children, the household as the little Church. Drawn from the homilies on Ephesians and Colossians.",
+       "topics": ["marriage", "family", "homilies"],
+       "amazonAsin": "0913836869"
++    },
++    {
++      "slug": "discourses-against-judaizing-christians",
++      "title": "Discourses Against Judaizing Christians",
++      "alsoKnownAs": "Against the Jews",
++      "subtitle": "The Fathers of the Church, volume 68, translated by Paul W. Harkins",
++      "author": "John Chrysostom",
++      "authorRole": "by",
++      "publisher": "The Catholic University of America Press",
++      "year": 1979,
++      "blurb": "Eight sermons preached in Antioch in 386 and 387 to Christians who were keeping the Jewish feasts and fasts. Their words about the Jewish people are harsh, and were later used to justify hatred of Jews. Listed here for study.",
++      "topics": ["homilies"],
++      "directPublisherUrl": "https://www.cuapress.org/9780813209715/discourses-against-judaizing-christians/"
+     }
+   ]
+ }
+diff --git a/lib/i18n/messages/ar.json b/lib/i18n/messages/ar.json
+index 8579c853..f112c483 100644
+--- a/lib/i18n/messages/ar.json
++++ b/lib/i18n/messages/ar.json
+@@ -1014,6 +1014,7 @@
+   "saints.booksInPrint": "كتب مطبوعة",
+   "saints.buyOnAmazon": "اشترِ من أمازون",
+   "saints.buyDirectFrom": "اشترِ مباشرة من",
++  "saints.alsoKnownAs": "يُعرف أيضًا باسم {title}",
+   "saints.affiliateDisclosure": "هذه الأعمال مرخَّصة وحقوقها محفوظة لناشريها، ولا يمكن استضافتها على Purify.",
+   "saints.affiliateEarnings": "بصفتها شريكًا في برنامج أمازون، تحصل Purify على عائد من المشتريات المؤهلة.",
+   "saints.editorsNote": "ملاحظة المحرِّر",
+diff --git a/lib/i18n/messages/bg.json b/lib/i18n/messages/bg.json
+index 3b30edb1..4796792b 100644
+--- a/lib/i18n/messages/bg.json
++++ b/lib/i18n/messages/bg.json
+@@ -978,6 +978,7 @@
+   "saints.booksInPrint": "Печатни издания",
+   "saints.buyOnAmazon": "Купи от Amazon",
+   "saints.buyDirectFrom": "Купи директно от",
++  "saints.alsoKnownAs": "Известно и като {title}",
+   "saints.affiliateDisclosure": "Тези творения са лицензирани и защитени с авторско право от своите издатели и не могат да се публикуват в Purify.",
+   "saints.affiliateEarnings": "Като участник в Amazon Associates, Purify получава приход от отговарящи на условията покупки.",
+   "saints.editorsNote": "Бележка на редактора",
+diff --git a/lib/i18n/messages/de.json b/lib/i18n/messages/de.json
+index 651a2f61..2ef27f77 100644
+--- a/lib/i18n/messages/de.json
++++ b/lib/i18n/messages/de.json
+@@ -978,6 +978,7 @@
+   "saints.booksInPrint": "Gedruckte Bücher",
+   "saints.buyOnAmazon": "Bei Amazon kaufen",
+   "saints.buyDirectFrom": "Direkt kaufen bei",
++  "saints.alsoKnownAs": "Auch bekannt als {title}",
+   "saints.affiliateDisclosure": "Diese Werke sind lizenziert und durch das Urheberrecht ihrer Verlage geschützt und können deshalb nicht auf Purify bereitgestellt werden.",
+   "saints.affiliateEarnings": "Als Amazon-Partner verdient Purify an qualifizierten Käufen.",
+   "saints.editorsNote": "Anmerkung der Redaktion",
+diff --git a/lib/i18n/messages/el.json b/lib/i18n/messages/el.json
+index 91673d98..43e8ffab 100644
+--- a/lib/i18n/messages/el.json
++++ b/lib/i18n/messages/el.json
+@@ -978,6 +978,7 @@
+   "saints.booksInPrint": "Βιβλία σε έντυπη μορφή",
+   "saints.buyOnAmazon": "Αγορά στο Amazon",
+   "saints.buyDirectFrom": "Αγορά απευθείας από",
++  "saints.alsoKnownAs": "Γνωστό και ως {title}",
+   "saints.affiliateDisclosure": "Τα έργα αυτά διατίθενται με άδεια και προστατεύονται από τα πνευματικά δικαιώματα των εκδοτών τους, γι' αυτό δεν μπορούν να φιλοξενηθούν στο Purify.",
+   "saints.affiliateEarnings": "Ως συνεργάτης του Amazon, το Purify κερδίζει από τις επιλέξιμες αγορές.",
+   "saints.editorsNote": "Σημείωμα της σύνταξης",
+diff --git a/lib/i18n/messages/en.json b/lib/i18n/messages/en.json
+index a4453917..90c52017 100644
+--- a/lib/i18n/messages/en.json
++++ b/lib/i18n/messages/en.json
+@@ -978,6 +978,7 @@
+   "saints.booksInPrint": "Books in print",
+   "saints.buyOnAmazon": "Buy on Amazon",
+   "saints.buyDirectFrom": "Buy direct from",
++  "saints.alsoKnownAs": "Also known as {title}",
+   "saints.affiliateDisclosure": "These works are licensed and copyrighted by their publishers and cannot be hosted on Purify.",
+   "saints.affiliateEarnings": "As an Amazon Associate, Purify earns from qualifying purchases.",
+   "saints.editorsNote": "Editor's note",
+diff --git a/lib/i18n/messages/es.json b/lib/i18n/messages/es.json
+index 1a779306..8645b654 100644
+--- a/lib/i18n/messages/es.json
++++ b/lib/i18n/messages/es.json
+@@ -980,6 +980,7 @@
+   "saints.booksInPrint": "Libros impresos",
+   "saints.buyOnAmazon": "Comprar en Amazon",
+   "saints.buyDirectFrom": "Comprar directamente en",
++  "saints.alsoKnownAs": "También conocido como {title}",
+   "saints.affiliateDisclosure": "Estas obras están licenciadas y protegidas por los derechos de autor de sus editoriales, y no pueden alojarse en Purify.",
+   "saints.affiliateEarnings": "Como Afiliado de Amazon, Purify obtiene ingresos por las compras que cumplen los requisitos.",
+   "saints.editorsNote": "Nota del editor",
+diff --git a/lib/i18n/messages/fil.json b/lib/i18n/messages/fil.json
+index 87c8726b..fa2ad81c 100644
+--- a/lib/i18n/messages/fil.json
++++ b/lib/i18n/messages/fil.json
+@@ -978,6 +978,7 @@
+   "saints.booksInPrint": "Mga aklat na nakalimbag",
+   "saints.buyOnAmazon": "Bilhin sa Amazon",
+   "saints.buyDirectFrom": "Bilhin nang direkta sa",
++  "saints.alsoKnownAs": "Kilala rin bilang {title}",
+   "saints.affiliateDisclosure": "Ang mga akdang ito ay may lisensya at karapatang-ari ng kanilang mga naglathala, kaya hindi maaaring ilagay sa Purify.",
+   "saints.affiliateEarnings": "Bilang Amazon Associate, kumikita ang Purify mula sa mga kwalipikadong pagbili.",
+   "saints.editorsNote": "Tala ng patnugot",
+diff --git a/lib/i18n/messages/fr.json b/lib/i18n/messages/fr.json
+index 16010838..e2690f74 100644
+--- a/lib/i18n/messages/fr.json
++++ b/lib/i18n/messages/fr.json
+@@ -980,6 +980,7 @@
+   "saints.booksInPrint": "Livres imprimés",
+   "saints.buyOnAmazon": "Acheter sur Amazon",
+   "saints.buyDirectFrom": "Acheter directement chez",
++  "saints.alsoKnownAs": "Aussi connu sous le titre {title}",
+   "saints.affiliateDisclosure": "Ces œuvres sont sous licence et protégées par le droit d'auteur de leurs éditeurs, elles ne peuvent pas être hébergées sur Purify.",
+   "saints.affiliateEarnings": "En tant que Partenaire Amazon, Purify réalise un bénéfice sur les achats remplissant les conditions requises.",
+   "saints.editorsNote": "Note de l'éditeur",
+diff --git a/lib/i18n/messages/hu.json b/lib/i18n/messages/hu.json
+index 4c38199d..586b9763 100644
+--- a/lib/i18n/messages/hu.json
++++ b/lib/i18n/messages/hu.json
+@@ -978,6 +978,7 @@
+   "saints.booksInPrint": "Nyomtatásban kapható könyvek",
+   "saints.buyOnAmazon": "Megvásárlás az Amazonon",
+   "saints.buyDirectFrom": "Közvetlen vásárlás innen:",
++  "saints.alsoKnownAs": "Más néven {title}",
+   "saints.affiliateDisclosure": "Ezek a művek a kiadóik licence és szerzői jogi védelme alatt állnak, ezért nem tárolhatók a Purify alkalmazásban.",
+   "saints.affiliateEarnings": "Amazon Associate partnerként a Purify bevételre tesz szert a minősített vásárlásokból.",
+   "saints.editorsNote": "Szerkesztői megjegyzés",
+diff --git a/lib/i18n/messages/id.json b/lib/i18n/messages/id.json
+index a0eaf9ef..8d82e44a 100644
+--- a/lib/i18n/messages/id.json
++++ b/lib/i18n/messages/id.json
+@@ -976,6 +976,7 @@
+   "saints.booksInPrint": "Buku cetak",
+   "saints.buyOnAmazon": "Beli di Amazon",
+   "saints.buyDirectFrom": "Beli langsung dari",
++  "saints.alsoKnownAs": "Juga dikenal sebagai {title}",
+   "saints.affiliateDisclosure": "Karya-karya ini dilisensikan dan dilindungi hak cipta oleh penerbitnya, sehingga tidak dapat dimuat di Purify.",
+   "saints.affiliateEarnings": "Sebagai Amazon Associate, Purify memperoleh komisi dari pembelian yang memenuhi syarat.",
+   "saints.editorsNote": "Catatan editor",
+diff --git a/lib/i18n/messages/it.json b/lib/i18n/messages/it.json
+index 64e13a09..ef464e6e 100644
+--- a/lib/i18n/messages/it.json
++++ b/lib/i18n/messages/it.json
+@@ -980,6 +980,7 @@
+   "saints.booksInPrint": "Libri a stampa",
+   "saints.buyOnAmazon": "Acquista su Amazon",
+   "saints.buyDirectFrom": "Acquista direttamente da",
++  "saints.alsoKnownAs": "Noto anche come {title}",
+   "saints.affiliateDisclosure": "Queste opere sono su licenza e protette dal copyright dei loro editori, e non possono essere ospitate su Purify.",
+   "saints.affiliateEarnings": "In qualità di Affiliato Amazon, Purify riceve un guadagno dagli acquisti idonei.",
+   "saints.editorsNote": "Nota del curatore",
+diff --git a/lib/i18n/messages/ka.json b/lib/i18n/messages/ka.json
+index be692dd0..f1059554 100644
+--- a/lib/i18n/messages/ka.json
++++ b/lib/i18n/messages/ka.json
+@@ -978,6 +978,7 @@
+   "saints.booksInPrint": "ნაბეჭდი წიგნები",
+   "saints.buyOnAmazon": "იყიდეთ Amazon-ზე",
+   "saints.buyDirectFrom": "იყიდეთ პირდაპირ",
++  "saints.alsoKnownAs": "ასევე ცნობილია როგორც {title}",
+   "saints.affiliateDisclosure": "ეს ნაშრომები ლიცენზირებულია და საავტორო უფლებები ეკუთვნის მათ გამომცემლებს, ამიტომ Purify-ზე მათი განთავსება შეუძლებელია.",
+   "saints.affiliateEarnings": "როგორც Amazon-ის პარტნიორი, Purify შემოსავალს იღებს შესაბამისი შენაძენებიდან.",
+   "saints.editorsNote": "რედაქტორის შენიშვნა",
+diff --git a/lib/i18n/messages/ne.json b/lib/i18n/messages/ne.json
+index 514e0a7d..7b854ff8 100644
+--- a/lib/i18n/messages/ne.json
++++ b/lib/i18n/messages/ne.json
+@@ -978,6 +978,7 @@
+   "saints.booksInPrint": "छापिएका पुस्तकहरू",
+   "saints.buyOnAmazon": "Amazon मा किन्नुहोस्",
+   "saints.buyDirectFrom": "सिधै यहाँबाट किन्नुहोस्",
++  "saints.alsoKnownAs": "{title} नामले पनि चिनिन्छ",
+   "saints.affiliateDisclosure": "यी कृतिहरू तिनका प्रकाशकहरूद्वारा अनुमतिप्राप्त र प्रतिलिपि अधिकारमा राखिएका छन्, त्यसैले Purify मा राख्न मिल्दैन।",
+   "saints.affiliateEarnings": "Amazon एसोसिएटका रूपमा, Purify ले योग्य किनमेलबाट आम्दानी गर्छ।",
+   "saints.editorsNote": "सम्पादकको टिप्पणी",
+diff --git a/lib/i18n/messages/pl.json b/lib/i18n/messages/pl.json
+index ac1febd8..614e8008 100644
+--- a/lib/i18n/messages/pl.json
++++ b/lib/i18n/messages/pl.json
+@@ -1003,6 +1003,7 @@
+   "saints.booksInPrint": "Książki drukowane",
+   "saints.buyOnAmazon": "Kup na Amazon",
+   "saints.buyDirectFrom": "Kup bezpośrednio od",
++  "saints.alsoKnownAs": "Znane również jako {title}",
+   "saints.affiliateDisclosure": "Te dzieła są licencjonowane i chronione prawem autorskim przez ich wydawców, dlatego nie mogą być udostępniane w Purify.",
+   "saints.affiliateEarnings": "Jako uczestnik programu Amazon Associates, Purify zarabia na kwalifikujących się zakupach.",
+   "saints.editorsNote": "Nota redakcyjna",
+diff --git a/lib/i18n/messages/pt.json b/lib/i18n/messages/pt.json
+index c5ccab41..ce194a4a 100644
+--- a/lib/i18n/messages/pt.json
++++ b/lib/i18n/messages/pt.json
+@@ -980,6 +980,7 @@
+   "saints.booksInPrint": "Livros impressos",
+   "saints.buyOnAmazon": "Comprar na Amazon",
+   "saints.buyDirectFrom": "Comprar diretamente de",
++  "saints.alsoKnownAs": "Também conhecido como {title}",
+   "saints.affiliateDisclosure": "Estas obras são licenciadas e protegidas por direitos autorais de suas editoras e não podem ser hospedadas no Purify.",
+   "saints.affiliateEarnings": "Como Associado da Amazon, o Purify ganha com compras qualificadas.",
+   "saints.editorsNote": "Nota do editor",
+diff --git a/lib/i18n/messages/ro.json b/lib/i18n/messages/ro.json
+index 938a7d99..ff05c90e 100644
+--- a/lib/i18n/messages/ro.json
++++ b/lib/i18n/messages/ro.json
+@@ -995,6 +995,7 @@
+   "saints.booksInPrint": "Cărți tipărite",
+   "saints.buyOnAmazon": "Cumpără de pe Amazon",
+   "saints.buyDirectFrom": "Cumpără direct de la",
++  "saints.alsoKnownAs": "Cunoscut și ca {title}",
+   "saints.affiliateDisclosure": "Aceste lucrări sunt sub licența și drepturile de autor ale editurilor lor și nu pot fi găzduite pe Purify.",
+   "saints.affiliateEarnings": "Ca Partener Amazon, Purify câștigă din achizițiile eligibile.",
+   "saints.editorsNote": "Nota redactorului",
+diff --git a/lib/i18n/messages/ru.json b/lib/i18n/messages/ru.json
+index 05519bdd..88c6f083 100644
+--- a/lib/i18n/messages/ru.json
++++ b/lib/i18n/messages/ru.json
+@@ -1001,6 +1001,7 @@
+   "saints.booksInPrint": "Печатные книги",
+   "saints.buyOnAmazon": "Купить на Amazon",
+   "saints.buyDirectFrom": "Купить напрямую у",
++  "saints.alsoKnownAs": "Также известно как {title}",
+   "saints.affiliateDisclosure": "Эти произведения лицензированы и защищены авторским правом их издателей, поэтому не могут размещаться в Purify.",
+   "saints.affiliateEarnings": "Как участник партнёрской программы Amazon, Purify получает доход от соответствующих покупок.",
+   "saints.editorsNote": "От редакции",
+diff --git a/lib/i18n/messages/sr.json b/lib/i18n/messages/sr.json
+index 3d8b3169..f5b5c138 100644
+--- a/lib/i18n/messages/sr.json
++++ b/lib/i18n/messages/sr.json
+@@ -990,6 +990,7 @@
+   "saints.booksInPrint": "Штампана издања",
+   "saints.buyOnAmazon": "Купите на Amazon-у",
+   "saints.buyDirectFrom": "Купите директно од",
++  "saints.alsoKnownAs": "Познато и као {title}",
+   "saints.affiliateDisclosure": "Ова дела су под лиценцом и ауторским правом својих издавача и не могу се објавити на Purify.",
+   "saints.affiliateEarnings": "Као учесник Amazon Associates програма, Purify остварује зараду од квалификованих куповина.",
+   "saints.editorsNote": "Напомена уредника",
+diff --git a/lib/i18n/messages/tr.json b/lib/i18n/messages/tr.json
+index 7311475f..e7233bb0 100644
+--- a/lib/i18n/messages/tr.json
++++ b/lib/i18n/messages/tr.json
+@@ -978,6 +978,7 @@
+   "saints.booksInPrint": "Basılı kitaplar",
+   "saints.buyOnAmazon": "Amazon'dan satın alın",
+   "saints.buyDirectFrom": "Doğrudan satın alın:",
++  "saints.alsoKnownAs": "{title} olarak da bilinir",
+   "saints.affiliateDisclosure": "Bu eserler yayıncıları tarafından lisanslanmıştır ve telif hakkıyla korunur, Purify üzerinde barındırılamaz.",
+   "saints.affiliateEarnings": "Bir Amazon Ortağı olarak Purify, uygun alışverişlerden kazanç elde eder.",
+   "saints.editorsNote": "Editörün notu",
+diff --git a/lib/i18n/messages/uk.json b/lib/i18n/messages/uk.json
+index ec5bf7ee..87f90d78 100644
+--- a/lib/i18n/messages/uk.json
++++ b/lib/i18n/messages/uk.json
+@@ -1001,6 +1001,7 @@
+   "saints.booksInPrint": "Друковані видання",
+   "saints.buyOnAmazon": "Купити на Amazon",
+   "saints.buyDirectFrom": "Купити напряму в",
++  "saints.alsoKnownAs": "Також відоме як {title}",
+   "saints.affiliateDisclosure": "Ці твори ліцензовані та захищені авторським правом їхніх видавців, тому їх не можна розміщувати в Purify.",
+   "saints.affiliateEarnings": "Як учасник партнерської програми Amazon, Purify отримує дохід від відповідних покупок.",
+   "saints.editorsNote": "Примітка редактора",
+diff --git a/lib/i18n/messages/ur.json b/lib/i18n/messages/ur.json
+index 66ea0ebe..14bcb58d 100644
+--- a/lib/i18n/messages/ur.json
++++ b/lib/i18n/messages/ur.json
+@@ -978,6 +978,7 @@
+   "saints.booksInPrint": "مطبوعہ کتابیں",
+   "saints.buyOnAmazon": "Amazon پر خریدیں",
+   "saints.buyDirectFrom": "براہِ راست خریدیں از",
++  "saints.alsoKnownAs": "{title} کے نام سے بھی معروف",
+   "saints.affiliateDisclosure": "یہ تصانیف اپنے ناشرین کی لائسنس یافتہ اور حقِ اشاعت سے محفوظ ہیں، اس لیے انہیں Purify پر نہیں رکھا جا سکتا۔",
+   "saints.affiliateEarnings": "بطور Amazon ایسوسی ایٹ، Purify اہل خریداریوں سے آمدنی حاصل کرتا ہے۔",
+   "saints.editorsNote": "مدیر کا نوٹ",
+diff --git a/lib/saints/__tests__/studyListing.test.ts b/lib/saints/__tests__/studyListing.test.ts
+new file mode 100644
+index 00000000..c4ba8c2b
+--- /dev/null
++++ b/lib/saints/__tests__/studyListing.test.ts
+@@ -0,0 +1,70 @@
++// Build 95 note 29 (his "yes to all", 2026-11-13 about 20:47 UTC): Harkins's
++// Discourses Against Judaizing Christians on St John Chrysostom's profile,
++// among his print books, also known as Against the Jews, with his line word
++// for word and the publisher's own page, never the Amazon affiliate link.
++
++import fs from "node:fs";
++import path from "node:path";
++import { createElement } from "react";
++import { renderToString } from "react-dom/server";
++import { describe, expect, it } from "vitest";
++
++import { MessagesProvider } from "@/components/i18n/MessagesProvider";
++import { LicensedWorksSection } from "@/components/saints/LicensedWorksSection";
++import { getMessages } from "@/lib/i18n";
++import { LOCALES } from "@/lib/i18n/locales";
++import type { LicensedWork } from "@/lib/saints/licensedWorks";
++
++const LINE =
++  "Eight sermons preached in Antioch in 386 and 387 to Christians who were keeping the Jewish feasts and fasts. Their words about the Jewish people are harsh, and were later used to justify hatred of Jews. Listed here for study.";
++const PUBLISHER = "https://www.cuapress.org/9780813209715/discourses-against-judaizing-christians/";
++
++const works = (): LicensedWork[] =>
++  JSON.parse(fs.readFileSync(path.join(process.cwd(), "data/saints/john-chrysostom/licensed-works.json"), "utf8")).works;
++const book = () => works().find((w) => w.slug === "discourses-against-judaizing-christians");
++
++type ProviderProps = Parameters<typeof MessagesProvider>[0];
++const draw = (locale: string, list: LicensedWork[]) =>
++  renderToString(
++    createElement(MessagesProvider, { locale, messages: getMessages(locale as never) } as ProviderProps, createElement(LicensedWorksSection, { works: list })),
++  );
++
++describe("Discourses Against Judaizing Christians on St John Chrysostom's profile", () => {
++  it("is listed as he approved it: Harkins's volume 68, 1979, his line word for word, the publisher's page", () => {
++    const w = book();
++    expect(w).toBeDefined();
++    expect(w!.title).toBe("Discourses Against Judaizing Christians");
++    expect(w!.alsoKnownAs).toBe("Against the Jews");
++    expect(w!.publisher).toBe("The Catholic University of America Press");
++    expect(w!.year).toBe(1979);
++    expect(w!.subtitle).toContain("volume 68");
++    expect(w!.subtitle).toContain("Paul W. Harkins");
++    expect(w!.blurb).toBe(LINE);
++    expect(w!.amazonAsin).toBeUndefined();
++    expect(w!.directPublisherUrl).toBe(PUBLISHER);
++  });
++
++  it("draws no Amazon link for it, only the publisher's, and the other title it is known by", () => {
++    const out = draw("en", [book()!]);
++    expect(out).not.toMatch(/amazon\./i);
++    expect(out).toContain(`href="${PUBLISHER}"`);
++    expect(out).toContain("Also known as Against the Jews");
++    expect(out).toContain(LINE);
++  });
++
++  it("keeps Amazon for the books that name it there", () => {
++    const sold = works().filter((w) => w.amazonAsin);
++    expect(sold.length).toBeGreaterThan(0);
++    expect(draw("en", sold)).toMatch(/amazon\./i);
++  });
++
++  it("carries his line in English in every language, as every blurb of the section is, and the other title's words in the reader's", () => {
++    for (const { code: locale } of LOCALES) {
++      const out = draw(locale, [book()!]);
++      expect(out, locale).toContain(`<span lang="en" dir="ltr">${LINE}</span>`);
++      const aka = getMessages(locale as never)["saints.alsoKnownAs"];
++      expect(aka, locale).toContain("{title}");
++      expect(out, locale).toContain(aka.replace("{title}", "Against the Jews"));
++    }
++  });
++});
+diff --git a/lib/saints/licensedWorks.ts b/lib/saints/licensedWorks.ts
+index 2b8940e1..0323293a 100644
+--- a/lib/saints/licensedWorks.ts
++++ b/lib/saints/licensedWorks.ts
+@@ -11,7 +11,14 @@ export type LicensedWork = {
+   year?: number;
+   blurb: string;
+   topics?: string[];
+-  amazonAsin: string;
++  /**
++   * The book on Amazon, through the associate link. Optional (1.9, build 95
++   * note 29): a book listed only for study links to its publisher's own page
++   * (`directPublisherUrl`), never to a shop that pays us.
++   */
++  amazonAsin?: string;
++  /** Another title the book is known by, shown under its own ("Also known as ..."). */
++  alsoKnownAs?: string;
+   /**
+    * Our own picture of the book's cover: a path on this site ("/..."), never
+    * another host, which a reader's device would call as the page opens (143;
+-- 
+2.43.0
+
