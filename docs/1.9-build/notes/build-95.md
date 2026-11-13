@@ -59,3 +59,9 @@ To reproduce on a phone-sized export with motion on, recorded frame by frame fro
 His word, 2026-11-13 07:36 UTC, on build 96, with a screenshot of Discover's sections (Saints, Reading, Orthodox History, Councils, Theology, Chants, the calendar): "allow the user to hold down each section and the haptic feedback hits and they can move each section according to their wants (and every time it switches a section a haptic feedback hits)"
 
 Asked during the release's making, so it goes into 1.9 (CLAUDE.md, "A release ships finished"). Hold a section and the card lifts, with a tick. Drag it, and the others slide aside on the house curve, with a tick at each change of place. Drop it, and the order is kept on this device. A tap still opens the section. Those who cannot drag can move a section without dragging (a move up or move down choice, for a keyboard or a screen reader). There is a way back to the first order. Reduced motion stays still. The app's haptics already exist (@capacitor/haptics, lib/ui/softTick.ts), so no new native dependency. A short clip with its reasons goes to him for his yes before it ships.
+
+## Note 10 (a reader's ask, sent by him): edit and remove your own posts and replies
+
+He sent, 2026-11-13 07:38 UTC, a screenshot of a reader's Discussion post in Community (two likes, no replies; the reader is not named here, since the repository is public): "Some things which should be added imo. We should have the ability to remove or edit our comments under replies and posts".
+
+A reader's report during the release's making, so it goes into 1.9 (CLAUDE.md, "A release ships finished"). A reader can edit and remove what they wrote, posts and replies alike. An edited one says so. A removed reply leaves the thread readable. Moderation keeps what it needs to keep for reports, as the privacy lines say. Any change to the database's rules is a migration, safe to run twice, signed by him before the merge.
