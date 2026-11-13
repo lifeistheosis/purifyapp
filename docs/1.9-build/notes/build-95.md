@@ -120,3 +120,15 @@ The themes are the reading modes of `lib/reader/readingModes.ts`, a Plus feature
 His answers, 2026-11-13 about 07:54 UTC, to the arbiter's two questions: which sea theme, "Both" (Galilee and Patmos go); and the Holy Mountain, "Fable reworks it" (one version, as stills with reasons; his no removes it).
 
 The looks are new in 1.9 (readers have not had them), and Fire (2026-11-10) is the way a look comes out: `RETIRED_THEMES` in `lib/reader/readingModes.ts` and `PREPAINT_RETIRED` in `lib/reader/prepaint.ts` send a stored look to its nearest kept one, and its picture is kept in `docs/1.9-build/kept/`, never deleted. The counts readers see ("Nineteen reading modes" in three lines, every locale) follow the code. Galilee and Patmos: with Updates 9. The Holy Mountain's rework: with Fable 5.2, the Holy Mountain.
+
+His word on the whole family, 2026-11-13 about 07:57 UTC, sent with note 17: "also honest in. the land and sea all the colors are nice it's just the designs at the bottom that dont look good and darker colors usually fits purify well (but the flowers fit the light themes)"
+
+So the fault in the Land and sea family is the picture at the foot of the screen (the scenes in `public/themes/`), not the colours, which he likes. The Fable chat's job became the foot pictures of the four land looks that stay (Holy Mountain, Forest, Desert, Jordan): for each, one reworked picture or none, with the reason, and an honest word on whether the two light ones (Desert, Jordan) belong, since in his words the darker colours suit Purify and the flowers suit the light looks. His yes or no for each. Galilee and Patmos still come out, as he answered.
+
+## Note 17 (asked): the patron saint chooser, reworked
+
+His word, 2026-11-13 about 07:57 UTC, with a screenshot of Settings, The calendar, Patron saint, open: "patron saint chooser design needs a rework"
+
+The screenshot: the chooser is the generic searchable dropdown (`components/ui/SearchSelect.tsx` through `components/profile/PatronSaintPicker.tsx`). A "Search by name" field over a long list of bare names, opened over the Language section and running to the foot of the screen, with the page's own words showing under its last row. The apostles all stand under H, as "Holy Apostle ...", not under their own names. No pictures.
+
+Done is: one chooser, wherever a patron is chosen (Settings, the profile tab, the account's data page), drawn from the app's own pieces (the house sheet, the saints' own rows with their pictures), found and sorted by each saint's own name, whole on the screen with the keyboard up, Back closing it. Stills with reasons for his yes before it ships. With Updates 10.
