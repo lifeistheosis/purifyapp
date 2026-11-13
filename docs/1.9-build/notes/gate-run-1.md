@@ -944,3 +944,116 @@ arbiter ruled for the confirm run's fail 10. None in the walks or checkMock.
 **What follows** (the arbiter, 02:14 UTC): a targeted re-check by a fresh
 Admin chat (`docs/handoffs/admin.md`), cut only on the arbiter's word once
 every fix has landed.
+
+## Re-check (2026-11-13 04:36 to 05:51 UTC): a pass
+
+The arbiter's call (04:35 UTC, cut at its word from `3b17a0aca`): the targeted
+scope of `docs/handoffs/admin.md`, with John 1 (the interlinear on) and the
+webs' words at 390 and 320, and /prayers/ at 800 and 1032 with the walk's
+second tap for a hold (the arbiter, 02:30 UTC). The arbiter closed it at 05:53
+UTC as a pass, and with it the gate for the test build.
+
+**The export:** `npm run build:android` of `3b17a0aca`, cut 04:36 to 04:38 UTC,
+6,473 pages, selling: `NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1` with
+`NEXT_PUBLIC_REVENUECAT_ANDROID_KEY=walk`, the new reader walked with
+`SELLS_PLUS=1`. The switches stood in their release-day order: CAMPAIGNS_OPENING
+"testers", PICTURES_IN_STORE_BUILDS false, CAMPAIGN_NOTICES true, JULY_GROUPS_GO
+true, CARE_NOTE_SEND true. The main web's public key was read from purifyapp.net's
+own scripts into the export command alone (his word, 03:32 UTC: "yes read the
+key"), checked to be the anon role of the main web's project, and printed and
+written nowhere. The three tools' own self-tests (checkMock, the guardrail walk,
+the tap walk) passed on it. Walks 04:39 to 05:47 UTC, both readers at once,
+reading the main web.
+
+**The six fails of the final check, measured again:**
+1. /calendar/ at 800 and 1032, both readers: clean.
+2. The seven ecumenical councils' pages, every control, both readers: 192
+   controls, none failed, 8 sheets clean. Four Fathers (St Celestine 17px, St
+   Hosius 37, St Spyridon 54, St Cyril of Alexandria 18) are held under the
+   finger by the page itself: tapped again with anchoring off, each stood.
+3. The Search sheet at 800 (calendar, journal, prayers) and 1032 (those and
+   saints), both readers: 71 and 101 controls, none failed; "Search Purify" is
+   clean from every page, Saints' with its kinds counted.
+4. John 1 with the interlinear on, 40 of its 847 controls, in English and in
+   Arabic, both readers: none failed, 21 sheets clean in each; in Arabic the 17
+   "Word details" sheets keep the mirroring rule.
+5. The saints' webs: `scripts/gate/web-cuts.mjs` at 390 and at 320, 118 webs
+   each, none with words cut. The six webs at 390 and St Chrysogonus's at 320,
+   walked: below.
+6. /prayers/ at 800 and 1032, both readers: passes (the walk's own fault and its
+   mend, below).
+
+**Also:** St. Xenia's page at 390, both readers: the guardrail walk, the seven
+light looks and the tap walk (11 controls, 2 sheets), all clean. With no signal,
+the reading room's councils, Ancyra 314, the seven councils' pages and
+/history/: checkMock ten of ten clean, and every picture drawn from the app.
+/community/ at 390, both readers: 30 controls, none failed. Parts 3 to 5 (on
+`3b17a0aca`): 98 files, 1,358 tests, all pass. The web build: passes, 6,525
+pages. Its warnings are the Bible data patterns, the invest page's printed
+figures with no database, and the admin review queue's data folder
+(`lib/admin/reviewQueue.ts:59`, unchanged since 2026-11-08, so the final check's
+build had it too).
+
+**The webs, with the lifted-node measure of `5f56967b`:** 62 node taps for each
+reader at 390 and 13 at 320; every node kept in sight, none hidden, none cut.
+The walk's other lines there:
+- The card's short face grown into the tall card, 5 for each reader at 390
+  (Ambrose 184px, Anthony 362, Athanasius 182, Irenaeus 466, the Martyrs of
+  Nicomedia 199). The short face never turns aria-expanded true (the tall face
+  carries it), so the walk read the growth as a jump. Allowed by the arbiter's
+  ruling (05:19 UTC), by name and reason: "the short face grows into the tall
+  card: an opening, not a jump", the card ending fully in view. Probed on eight
+  webs (the six, St George's and St Gregory the Theologian's): by a tap and by
+  the keyboard (Tab to the short face, then Enter), the card ends tall between
+  the top bar's foot at 51 and the tab bar's top at 761, and the keyboard's
+  focus lands inside the tall card on all eight.
+- St Chrysogonus at 320, "covered ... Discover" on the card's short face: the
+  walk's own tucked card, as before. After the walk's first touch on the empty
+  web the card is inert, `data-away` and at opacity 0.
+
+**The walk's own fault, and its mend:** /prayers/ at 1032, walked alone, showed
+chapter III "moved 88px" when tapped again with anchoring off, for both
+readers, where the tablet walk just before had passed it with no hold at all.
+Traced frame by frame, with anchoring as shipped and with it off on every
+element, the two are the same. In the tap's own frame the book puts the chapter
+back under the finger (the page scrolled from 1280 to 984 as the daily rule shut
+above it); then the house's helper glides the page down to show the opened
+chapter (III 88px, II 181, IV 245, at most 31px a frame). The walk's second tap
+(`5f56967b`) counted that glide as a move, skipping the rule its first tap keeps
+for a part that opens and is followed. And the first tap's twelve looks, 60ms
+apart, caught the hold only when one landed in its fifty milliseconds.
+
+Mended in `54e4554b` at the arbiter's word (05:53 UTC):
+- every tap is followed frame by frame (`followFrames`);
+- a hold is a frame in which the control moved in the page and not on the screen
+  (`holdOf`), and a jump one in which it moved on the screen too;
+- the second tap asks only whether what stands above the control moved it on
+  the screen;
+- the card growth is the arbiter's allowance in the walk, by name and reason,
+  its card held to ending fully in view.
+
+The self-test gains the prayer book's chapter held by the page and then followed
+(passes), the same held by the browser alone (fails), and the card grown in view
+(allowed) and past the top bar (hidden): 35 cases, all measured as they should
+be. Taken back out, each part of the mend misses the case it is for: found by
+the looks alone, both chapters pass unexamined; judged the old way, the page's
+own hold fails as "moved 112px". /prayers/ walked again with the mend on the same
+export, at 800 and at 1032, both readers: 30 controls, none failed. Chapters
+II, III and IV are each found held (296px, as the daily rule shuts above them),
+and tapped again with anchoring off each still stands: held by the page itself,
+the same in all four walks. The keyboard half of the card ruling, which the walk
+cannot do, is `scripts/gate/card-growth.mjs` (`68d7693b`): by a tap and by Tab
+then Enter, eight webs, both readers, no fault.
+
+**The arbiter's question on sideways spill** (05:59 UTC: a tool that judged it
+against `window.innerWidth`, which a phone's browser widens to fit what spills,
+let a real 3px spill pass): none of the gate's tools does. Their width reads are
+an element's own box (an ellipsis in checkMock and `scripts/gate/web-cuts.mjs`,
+a scrolling row's reach in checkMock) or where to touch and what is on the
+screen (the tap walk, `scripts/gate/tall-card.mjs`). None measures the page
+itself spilling sideways; on phones and in the apps the page clips it
+(`overflow-x: clip` on html and body, app/globals.css).
+
+**Then** (the arbiter, 05:53 UTC): the test build, Android (run 43374905223)
+and iOS (run 43374909047), cut from `6193982d5`. Since `3b17a0aca` only admin,
+email, ops and server-only files changed, none of them in the export.
