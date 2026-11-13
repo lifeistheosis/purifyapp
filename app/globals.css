@@ -5718,6 +5718,13 @@ html[data-reading-mode="black"] .tile-sheen {
  :where(html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) :where(.premium-plan-card) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
  }
+ /* And on the graphite card, lit at one corner: in Arabic the Plus page's
+    free card puts its small line, "Free, and always", in that corner, where
+    it read 4.45:1 on Councils and 4.43 on Cappadocian (Updates 33, checkMock
+    on round 1's export). The same share as their plan cards. */
+ :where(html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) :where(.lm-card) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
+ color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
  /* The saint web's sheet (.saint-web-card) is a step darker than Light's
     card, as a tray is: the line under a saint's name, at Light's 70, read
     4.41:1 ("787") and 4.47 ("Councils"). At 75, as faint words on a tray,

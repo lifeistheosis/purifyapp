@@ -510,8 +510,10 @@ export function Doors({
               // The chosen door in full ink and its lit tile; the others at 75, the least house share
               // that reads 4.5:1 on all five palettes on this sheet's ground (Light read 4.21 at 62,
               // 4.45 at 72, 4.6 and up from 74: the gate's third run, 2026-11-11). A door that is off
-              // (the shop with no signal) says so by its grey picture; its name still reads.
-              id === current ? "text-paper" : "text-paper/75",
+              // (the shop with no signal) says so by its grey picture; its name still reads. On Light
+              // and the light looks, whose own faint ink is 72 to 78, the doors found for a word read
+              // 4.27 to 4.47:1 at 75 (Updates 33, round 1's export): there they draw at 85.
+              id === current ? "text-paper" : "text-paper/75 [html[data-reading-mode=parchment]_&]:text-paper/85",
             )}
             style={{ minWidth: size }}
           >

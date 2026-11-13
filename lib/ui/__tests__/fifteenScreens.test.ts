@@ -182,6 +182,22 @@ describe("Found by checkMock on the round 1 export (Updates 29)", () => {
     expect(hub.match(/text-caption font-semibold text-paper\/55">\s*\{t\("readingsFlow\.of"/g) ?? []).toHaveLength(2);
   });
 
+  // In Arabic the Plus page's free card puts its small line in the graphite
+  // card's lit corner: 4.45 and 4.43:1 on Councils and Cappadocian (Updates 33).
+  it("lifts the faint ink on the graphite card on the two palettes earned by reading", () => {
+    const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
+    expect(css).toContain(
+      ':where(html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) :where(.lm-card) :is(.text-paper\\/42, .text-paper\\/45, .text-paper\\/48, .text-paper\\/50, .text-paper\\/52, .text-paper\\/55, .text-paper\\/56, .text-paper\\/58, .text-paper\\/60) {\n color: color-mix(in oklab, var(--color-paper) 62%, transparent);',
+    );
+  });
+
+  // The search's doors found for a word read 4.27 to 4.47:1 at 75 on Light and
+  // the light looks, whose own faint ink is 72 to 78 (Updates 33).
+  it("draws the search doors' names at 85 on Light and the light looks", () => {
+    const rows = read("components/search/SearchRows.tsx");
+    expect(rows).toContain('id === current ? "text-paper" : "text-paper/75 [html[data-reading-mode=parchment]_&]:text-paper/85"');
+  });
+
   it("tells the checker why the tour's bloom stays where it is measured, in every language", () => {
     const tour = read("components/whats-new/tour/TourLook.tsx");
     expect(tour).toMatch(/className="tour-bloom"\s+data-mock-allow="mirror"\s+data-mock-why="[^"]*measured on the screen[^"]*"/);
