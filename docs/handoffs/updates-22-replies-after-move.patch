@@ -1,0 +1,74 @@
+diff --git a/components/community/CommunityClient.tsx b/components/community/CommunityClient.tsx
+index 1dccb791..2ade4713 100644
+--- a/components/community/CommunityClient.tsx
++++ b/components/community/CommunityClient.tsx
+@@ -89,7 +89,7 @@ import { prefetchProfile } from "@/lib/profile/cache";
+ import { fetchMyProfile, syncCalendar } from "@/lib/profile/client";
+ import { announcePicture } from "@/lib/profile/myPicture";
+ import type { MyProfile, ProfileSeed } from "@/lib/profile/publicProfile";
+-import { movePage } from "@/lib/ui/inPageMove";
++import { afterMoves, movePage } from "@/lib/ui/inPageMove";
+ import { haptic, scrollBehavior } from "@/lib/ui/motion";
+ import { Close } from "@/components/ui/icons/Close";
+ import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+@@ -1415,9 +1415,11 @@ function PostCardInner({
+         setRepliesState("error");
+       }
+     };
+-    // A card no longer on the screen (the reader has gone on) has nothing to move.
+-    if (cardRef.current?.isConnected) movePage(land, { grows: [cardRef.current] });
+-    else land();
++    // A card no longer on the screen (the reader has gone on) has nothing to
++    // move. One whose opening is still moving moves its rows in after it.
++    if (!cardRef.current?.isConnected) return land();
++    await afterMoves();
++    movePage(land, { grows: [cardRef.current] });
+   }, [post.id]);
+ 
+   async function toggleReplies() {
+diff --git a/lib/ui/__tests__/inPageMove.test.ts b/lib/ui/__tests__/inPageMove.test.ts
+index a86cd58c..458cf9e5 100644
+--- a/lib/ui/__tests__/inPageMove.test.ts
++++ b/lib/ui/__tests__/inPageMove.test.ts
+@@ -177,7 +177,8 @@ describe("Gate 2.0's in-page faults under his ruling, each moved (Updates 22)",
+   it("Community: the replies open and arrive, and Read more unfolds, as the card grows", () => {
+     const c = read("components/community/CommunityClient.tsx");
+     expect(c).toMatch(/movePage\(\s*\(\) => \{\s*setOpen\(next\);\s*if \(fetching\) setRepliesState\("loading"\);\s*\},\s*\{ grows: \[cardRef\.current\] \},\s*\);/);
+-    expect(c).toContain("if (cardRef.current?.isConnected) movePage(land, { grows: [cardRef.current] });");
++    expect(c).toMatch(/if \(!cardRef\.current\?\.isConnected\) return land\(\);\s*await afterMoves\(\);\s*movePage\(land, \{ grows: \[cardRef\.current\] \}\);/);
++    expect(read("lib/ui/inPageMove.ts")).toMatch(/ending = transition\.finished\.then\(undress, undress\);/);
+     expect(c).toContain("onClick={() => movePage(() => setUnfolded((v) => !v), { grows: [cardRef.current] })}");
+   });
+ 
+diff --git a/lib/ui/inPageMove.ts b/lib/ui/inPageMove.ts
+index 34a132c7..8a788a17 100644
+--- a/lib/ui/inPageMove.ts
++++ b/lib/ui/inPageMove.ts
+@@ -70,6 +70,18 @@ export type MoveParts = {
+ 
+ let moving = false;
+ let worn: HTMLElement[] = [];
++/** When the move running now has ended (settled at once when none runs). */
++let ending: Promise<void> = Promise.resolve();
++
++/**
++ * Wait for the move running now, if any, to end. A change that arrives while
++ * one is moving (replies that came back quickly) would otherwise be made at
++ * once inside its picture, a cut (the motion walk on 968347b3: Community's
++ * "0 replies", 55% of the change in one frame at 180ms).
++ */
++export function afterMoves(): Promise<void> {
++  return moving ? ending : Promise.resolve();
++}
+ 
+ /** True while a change inside the page is being moved. */
+ export function isMovingInPage(): boolean {
+@@ -143,7 +155,7 @@ function picture(update: () => unknown, parts: MoveParts, fallback: () => void):
+     return;
+   }
+   transition.ready.then(undefined, () => {});
+-  transition.finished.then(undress, undress);
++  ending = transition.finished.then(undress, undress);
+ }
+ 
+ /** Make a change inside the page now, moved as a page switch is where motion is on. */
