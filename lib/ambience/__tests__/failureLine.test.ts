@@ -94,7 +94,7 @@ describe("the ambience sheet, for a reader without Plus", () => {
       expect(html, failedFor).not.toContain("ambience.needsConnection");
       expect(html, failedFor).not.toContain("ambience.last");
       // Six sounds, each with its padlock (the Plus mark's lock, an svg).
-      expect((html.match(/aria-pressed=/g) ?? []).length, failedFor).toBe(6);
+      expect((html.match(/data-ambience-tile=/g) ?? []).length, failedFor).toBe(6);
       expect((html.match(/<svg/g) ?? []).length, failedFor).toBeGreaterThanOrEqual(6);
     }
   });

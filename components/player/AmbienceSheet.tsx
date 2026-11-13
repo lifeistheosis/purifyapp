@@ -1,14 +1,14 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 
 import { PlusLock, PlusMark } from "@/components/billing/PlusMark";
 import { UpgradeModalProvider, useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
 import { Slider } from "@/components/ui/Slider";
-import { AMBIENCE_TRACKS, getAmbienceTrack, type AmbienceTrack } from "@/lib/ambience/ambience";
+import { AMBIENCE_TRACKS, getAmbienceTrack, type AmbienceId, type AmbienceTrack } from "@/lib/ambience/ambience";
 import { DEFAULT_LEVEL, layerAmbience, setAmbienceBalance, setAmbienceLevel, setAmbienceVolume, useAmbience } from "@/lib/ambience/player";
 import { closeAmbience, useAmbienceSheet } from "@/lib/ambience/sheet";
 import { cn } from "@/lib/cn";
@@ -16,7 +16,7 @@ import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { isChosen, minutesLeft, setSleepTimer, useSleepTimer, type SleepChoice } from "@/lib/player/sleep";
 import { getAudioSnapshot, subscribeAudio } from "@/lib/prayers/persistentAudioStore";
 
-import { AmbienceIcon } from "./AmbienceButton";
+import { AmbiencePhoto } from "./AmbiencePhoto";
 
 /** The sleep timer's choices here: the ambience runs for an evening, not a track. */
 const SLEEPS = [15, 30, 60];
@@ -114,65 +114,24 @@ function AmbienceSheetContent({ overPlayer }: { overPlayer: boolean }) {
   // While nothing plays, the reader's last sound is marked, to find it again.
   const quiet = ambience.layers.length === 0 && !ambience.loading;
 
+  // What a playing sound adds: the volume, while two play each one's own, the
+  // balance against a voice, and the sleep timer. Not for a reader without
+  // Plus, whose sounds are a preview's (its own sheet has its own).
+  const playing = ambience.layers.length > 0 && !locked;
+  const pair = playing && ambience.layers.length > 1 ? ambience.layers : null;
+  // The two kept while their own volumes glide away, so they leave as they came.
+  const [kept, setKept] = useState<readonly AmbienceId[]>([]);
+  if (pair && (pair[0] !== kept[0] || pair[1] !== kept[1])) setKept(pair);
+  const tilesRef = useHoldStill<HTMLDivElement>();
+
+  // The sounds stand at the sheet's foot, where the thumb is, and what a
+  // playing sound adds opens above them on the house glide: the sheet grows
+  // from its top, so a tile never moves under the finger (build 95, note 11's
+  // walk: they rose 213 to 240px as a sound began, folded into note 22).
   return (
     <>
-      <div className="grid grid-cols-3 gap-2.5">
-        {AMBIENCE_TRACKS.map((track) => {
-          const lit = ambience.layers.includes(track.id);
-          const loading = ambience.loading === track.id;
-          // A reader without Plus meets the lock, never a failure line in its
-          // place: a preview's sound that failed is not theirs to retry here
-          // (build 95, note 11).
-          const failed = !locked && ambience.failed === track.id;
-          const last = quiet && !locked && !failed && ambience.last === track.id;
-          const state = lit
-            ? t("ambience.playing")
-            : loading
-              ? t("ambience.loading")
-              : failed
-                ? t(ambience.failedFor === "connection" ? "ambience.needsConnection" : "ambience.failed")
-                : last
-                  ? t("ambience.last")
-                  : null;
-          return (
-            <button
-              key={track.id}
-              type="button"
-              onClick={() => choose(track)}
-              aria-pressed={lit || loading}
-              className={cn(
-                "tap-press relative flex min-h-[104px] flex-col justify-between rounded-[12px] p-3 text-start",
-                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper",
-                "motion-safe:transition-colors motion-safe:duration-200",
-                lit || loading
-                  ? "bg-paper text-night"
-                  : cn("bg-paper/[0.04] text-paper ring-1 ring-inset hover:bg-paper/[0.08]", last ? "ring-paper/35" : "ring-paper/10"),
-              )}
-            >
-              <span className="flex items-start justify-between gap-2">
-                <AmbienceIcon icon={track.icon} size={28} />
-                {locked ? <PlusLock size={13} className="mt-0.5 opacity-60" /> : null}
-              </span>
-              <span className="mt-3 block">
-                <span className="block font-sans text-detail font-semibold leading-tight">{t(track.labelKey)}</span>
-                {state ? (
-                  <span className={cn("mt-1 block font-sans text-caption leading-tight opacity-70", loading && "motion-safe:animate-pulse")}>
-                    {state}
-                  </span>
-                ) : null}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* One playing: a second tile plays beside it (1.9). */}
-      {ambience.layers.length === 1 && !locked ? (
-        <p className="mt-3 font-sans text-caption text-paper/50">{t("ambience.layerHint")}</p>
-      ) : null}
-
-      {ambience.layers.length > 0 ? (
-        <div className="mt-5 space-y-4 border-t border-paper/10 pt-4">
+      <Glide open={playing}>
+        <div className="mb-4 space-y-4 border-b border-paper/10 pb-4">
           <div>
             <p className={LABEL}>{t("ambience.volume")}</p>
             <Slider
@@ -186,8 +145,9 @@ function AmbienceSheetContent({ overPlayer }: { overPlayer: boolean }) {
           </div>
 
           {/* Two playing (1.9): each its own volume, under the one for both. */}
-          {ambience.layers.length > 1
-            ? ambience.layers.map((id) => {
+          <Glide open={Boolean(pair)}>
+            <div className="space-y-4">
+              {kept.map((id) => {
                 const track = getAmbienceTrack(id);
                 if (!track) return null;
                 const level = ambience.levels[id] ?? DEFAULT_LEVEL;
@@ -204,8 +164,9 @@ function AmbienceSheetContent({ overPlayer }: { overPlayer: boolean }) {
                     />
                   </div>
                 );
-              })
-            : null}
+              })}
+            </div>
+          </Glide>
 
           {/* The balance, while the app's player holds a reading or a chant:
               how far the sound steps back while the voice speaks. */}
@@ -230,8 +191,156 @@ function AmbienceSheetContent({ overPlayer }: { overPlayer: boolean }) {
 
           <SleepChoices />
         </div>
-      ) : null}
+      </Glide>
+
+      {/* One playing: a second tile plays beside it (1.9). */}
+      <Glide open={playing && ambience.layers.length === 1}>
+        <p className="pb-3 font-sans text-caption text-paper/50">{t("ambience.layerHint")}</p>
+      </Glide>
+
+      <div ref={tilesRef} className="grid grid-cols-3 gap-2.5">
+        {AMBIENCE_TRACKS.map((track) => {
+          const lit = ambience.layers.includes(track.id);
+          const loading = ambience.loading === track.id;
+          // A reader without Plus meets the lock, never a failure line in its
+          // place: a preview's sound that failed is not theirs to retry here
+          // (build 95, note 11).
+          const failed = !locked && ambience.failed === track.id;
+          const last = quiet && !locked && !failed && ambience.last === track.id;
+          const state = lit
+            ? t("ambience.playing")
+            : loading
+              ? t("ambience.loading")
+              : failed
+                ? t(ambience.failedFor === "connection" ? "ambience.needsConnection" : "ambience.failed")
+                : last
+                  ? t("ambience.last")
+                  : null;
+          return (
+            <SoundTile
+              key={track.id}
+              track={track}
+              name={t(track.labelKey)}
+              lit={lit || loading}
+              loading={loading}
+              last={last}
+              locked={locked}
+              state={state}
+              onTap={() => choose(track)}
+            />
+          );
+        })}
+      </div>
     </>
+  );
+}
+
+/**
+ * A part that opens and closes on the house glide (the grid's rows from none
+ * to its own height, components/saints/MobileWorkPill.tsx's way); with the
+ * app's motion off it is simply there. Closed, it is out of reach: inert and
+ * hidden from a screen reader.
+ */
+function Glide({ open, children }: { open: boolean; children: ReactNode }) {
+  return (
+    <div
+      aria-hidden={open ? undefined : true}
+      inert={!open}
+      className={cn(
+        "grid motion-safe:transition-[grid-template-rows,opacity] motion-safe:duration-300 motion-safe:ease-house",
+        open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+      )}
+    >
+      <div className="min-h-0 overflow-hidden">{children}</div>
+    </div>
+  );
+}
+
+/**
+ * Hold a part still on the screen while what stands above it in the sheet
+ * grows or shrinks. A sheet stands on the screen's foot, so it grows upward
+ * and the part, last in it, stays where it was; once the sheet is at its full
+ * height and scrolls, what is added above would push the part down, so the
+ * scroll takes it up, frame by frame through a glide.
+ */
+function useHoldStill<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  useEffect(() => {
+    const el = ref.current;
+    let scroller = el?.parentElement ?? null;
+    while (scroller && !/(auto|scroll)/.test(getComputedStyle(scroller).overflowY)) scroller = scroller.parentElement;
+    if (!el || !scroller) return;
+    const box = scroller;
+    const offset = () => el.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop;
+    let at = offset();
+    const watch = new ResizeObserver(() => {
+      const now = offset();
+      if (Math.abs(now - at) >= 1) box.scrollTop += now - at;
+      at = offset();
+    });
+    for (const part of box.children) if (part !== el && !part.contains(el)) watch.observe(part);
+    return () => watch.disconnect();
+  }, []);
+  return ref;
+}
+
+/**
+ * A sound's tile (build 95, note 22, his "I want each button to have a photo
+ * of the corresponding aesthetic of the sound"): its photograph at the top,
+ * melting into the tile's own ground by a mask (the plans' tiles, app/globals.css
+ * .ambience-tile-picture), and its name and state on that ground below, so
+ * the words read on every palette and no bright line shows at the round
+ * corners (lib/ui/__tests__/pictureCorners.test.ts). The photograph is the
+ * sound's own, bundled beside it (lib/ambience/ambience.ts, `photo`), and
+ * arrives whole over its own colour (./AmbiencePhoto.tsx, which the Plus
+ * preview's strip draws too); the tile's size never changes, so nothing moves
+ * when it paints. Playing, the tile turns to the paper as before; the last
+ * sound keeps its ring.
+ */
+function SoundTile({
+  track,
+  name,
+  lit,
+  loading,
+  last,
+  locked,
+  state,
+  onTap,
+}: {
+  track: AmbienceTrack;
+  name: string;
+  lit: boolean;
+  loading: boolean;
+  last: boolean;
+  locked: boolean;
+  state: string | null;
+  onTap: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onTap}
+      aria-pressed={lit}
+      data-ambience-tile={track.id}
+      className={cn(
+        "tap-press relative flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-[12px] p-3 text-start",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper",
+        "motion-safe:transition-colors motion-safe:duration-200",
+        lit
+          ? "bg-paper text-night"
+          : cn("bg-paper/[0.04] text-paper ring-1 ring-inset hover:bg-paper/[0.08]", last ? "ring-paper/35" : "ring-paper/10"),
+      )}
+    >
+      <AmbiencePhoto track={track} className="-mx-3 -mt-3 mb-2" />
+      <span className="relative flex items-start justify-between gap-1.5">
+        <span className="block font-sans text-detail font-semibold leading-tight">{name}</span>
+        {locked ? <PlusLock size={13} className="mt-0.5 shrink-0 opacity-60" /> : null}
+      </span>
+      {/* The state's line is always there, so the name never moves when a state comes or goes. */}
+      <span className={cn("relative mt-1 block font-sans text-caption leading-tight opacity-70", loading && "motion-safe:animate-pulse")}>
+        {state ?? " "}
+      </span>
+    </button>
   );
 }
 
@@ -279,15 +388,10 @@ function SleepChoices() {
           );
         })}
       </div>
-      {sleep.kind === "minutes" ? (
-        <p role="status" className="mt-2 font-sans text-caption text-paper/60">
-          {t("player.sleepIn", { count: minutesLeft(sleep, now) })}
-        </p>
-      ) : sleep.kind === "end" ? (
-        <p role="status" className="mt-2 font-sans text-caption text-paper/60">
-          {t("player.sleepEnd")}
-        </p>
-      ) : null}
+      {/* Its line keeps its place while the timer is off, so choosing a time moves nothing (build 95, note 22). */}
+      <p role="status" className={cn("mt-2 font-sans text-caption text-paper/60", sleep.kind !== "minutes" && sleep.kind !== "end" && "invisible")}>
+        {sleep.kind === "minutes" ? t("player.sleepIn", { count: minutesLeft(sleep, now) }) : sleep.kind === "end" ? t("player.sleepEnd") : "\u00a0"}
+      </p>
     </div>
   );
 }

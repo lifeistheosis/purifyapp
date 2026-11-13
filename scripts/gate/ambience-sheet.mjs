@@ -90,10 +90,10 @@ const ok = (what) => console.log(`  ✓ ${what}`);
 
 const browser = await chromium.launch({ ...(fs.existsSync(OWN) ? { executablePath: OWN } : {}), args: ["--autoplay-policy=user-gesture-required"] });
 
-async function open(lang, [width, height], { blocked = [] } = {}) {
+async function open(lang, [width, height], { blocked = [], scale = 1 } = {}) {
   const ctx = await browser.newContext({
     viewport: { width, height },
-    deviceScaleFactor: 1,
+    deviceScaleFactor: scale,
     colorScheme: "dark",
     reducedMotion: "no-preference",
     isMobile: width < 700,
@@ -262,6 +262,32 @@ if (!SELLS_PLUS) {
     await ctx.close();
   }
 
+  // ---- stills for his yes, at twice the pixels: 390 on Dark with one sound playing and with two, and
+  // the same on a light look (Stone, a clean neutral; never the parchment ground in a design).
+  if (SHOTS) {
+    console.log("\nstills: 390, at twice the pixels");
+    const lang = "en";
+    const { ctx, page } = await open(lang, SIZES[0], { scale: 2 });
+    await openSheet(page, lang);
+    await shot(page, "still-0-quiet-dark");
+    await tapAt(page, tileOf(page, lang, "rain"));
+    await waitText(tileOf(page, lang, "rain"), (x) => x.includes(t(lang, "ambience.playing")));
+    await page.waitForTimeout(900);
+    await shot(page, "still-1-one-playing-dark");
+    await tapAt(page, tileOf(page, lang, "peal"));
+    await waitText(tileOf(page, lang, "peal"), (x) => x.includes(t(lang, "ambience.playing")));
+    await page.waitForTimeout(900);
+    await shot(page, "still-2-two-playing-dark");
+    await page.evaluate(() => {
+      document.documentElement.setAttribute("data-reading-mode", "parchment");
+      document.documentElement.setAttribute("data-look", "stone");
+    });
+    await page.waitForTimeout(900);
+    await shot(page, "still-3-two-playing-light");
+    ok("stills taken");
+    await ctx.close();
+  }
+
   // ---- guard: checkMock with pixels, three widths, 22 palettes and looks, English and Arabic.
   for (const lang of ["en", "ar"]) {
     for (const size of SIZES) {
@@ -303,7 +329,7 @@ if (!SELLS_PLUS) {
     console.log(`\nlock: a reader with no Plus, ${lang}, at 390`);
     const { ctx, page } = await open(lang, SIZES[0], { blocked: lang === "en" ? [] : ["rain"] });
     await openSheet(page, lang);
-    const locked = await page.evaluate((sel) => [...document.querySelectorAll(`${sel} button[aria-pressed]`)].map((b) => ({ text: b.innerText.replace(/\s+/g, " "), lock: Boolean(b.querySelector("svg[aria-hidden]")) })), sheetSel(lang));
+    const locked = await page.evaluate((sel) => [...document.querySelectorAll(`${sel} button[data-ambience-tile]`)].map((b) => ({ text: b.innerText.replace(/\s+/g, " "), lock: Boolean(b.querySelector("svg[aria-hidden]")) })), sheetSel(lang));
     if (locked.length === 6 && locked.every((x) => x.lock)) ok(`every sound wears the padlock (${locked.map((x) => x.text).join(", ")})`);
     else fail(`the locked tiles: ${JSON.stringify(locked)}`);
     await guard(page, lang, SIZES[0], "locked");

@@ -1,3 +1,4 @@
+import { AMBIENCE_TRACKS } from "@/lib/ambience/ambience";
 import { FIGURES } from "@/lib/readAloud/covers";
 import { COUNCIL_COVERS, FEELING_COVERS } from "@/lib/reading/authorCovers";
 import { COVER_ART, WORK_ART } from "@/lib/reading/coverArt";
@@ -16,7 +17,8 @@ import { ICON_RIGHTS, ICONS_URL_PREFIX } from "@/lib/saints/iconRights";
  * (lib/reading/coverArt.ts, authorCovers.ts), the Bible's read-aloud
  * covers (lib/readAloud/covers.ts), and the saints' own pictures
  * (lib/saints/iconRights.ts, from 2026-11-11, when St Victorinus's fresco
- * came to him through a CC BY-SA photograph). A picture whose licence is CC BY or CC
+ * came to him through a CC BY-SA photograph), and the ambience sounds'
+ * photographs (lib/ambience/ambience.ts, from build 95's note 22). A picture whose licence is CC BY or CC
  * BY-SA carries `credit`, the photographer as its Commons page asks to be
  * credited, beside the licence and the page it was read on; this lists every
  * one. The work photographed must itself be old enough to be free: a
@@ -69,6 +71,8 @@ function registered(): Registered[] {
     if (art.kind === "streamed") out.push(art);
   }
   for (const figure of Object.values(FIGURES)) if (figure) out.push(figure);
+  // The ambience sounds' photographs (build 95, note 22), on their tiles in the sheet.
+  for (const { photo } of AMBIENCE_TRACKS) out.push({ file: photo.src, work: photo.work, license: photo.license, credit: photo.credit, evidenceUrl: photo.evidenceUrl });
   for (const [file, row] of Object.entries(ICON_RIGHTS)) {
     if (row.status === "verified") out.push({ file: `${ICONS_URL_PREFIX}${file}`, work: row.work, license: row.license, credit: row.credit, creditAs: row.creditAs, creditPage: row.creditPage, evidenceUrl: row.evidenceUrl });
   }

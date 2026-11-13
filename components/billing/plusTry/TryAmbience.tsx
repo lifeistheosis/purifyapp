@@ -9,11 +9,18 @@
 //
 // The sounds are the real ones, played by the app's one ambience player; the
 // minute is all a preview gives. The ambience sheet itself keeps its lock.
+//
+// From build 95 (note 22, his word of 2026-11-13 about 14:29 UTC, "the Plus
+// preview's strip takes the photographs too"), each tile wears its sound's
+// photograph as the sheet's tiles do (components/player/AmbiencePhoto.tsx),
+// upright as theirs are, its name and state on the tile's own ground below,
+// the state's line always kept so the name never moves when a state comes.
 
 import { PlusLock } from "@/components/billing/PlusMark";
 import type { TryProps } from "@/components/billing/PlusTry";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { AmbienceIcon } from "@/components/player/AmbienceButton";
+import { AmbiencePhoto } from "@/components/player/AmbiencePhoto";
 import { AMBIENCE_TRACKS } from "@/lib/ambience/ambience";
 import { playAmbience, useAmbience } from "@/lib/ambience/player";
 import { cn } from "@/lib/cn";
@@ -66,6 +73,8 @@ export default function TryAmbience({ row, owned = false }: TryProps) {
               key={track.id}
               on={lit || loading}
               disabled={ended}
+              // Upright, as the sheet's tiles are: the picture over the name.
+              className="h-[108px] justify-end overflow-hidden"
               // The sound playing, or the one still loading, stops; any other plays.
               onClick={() => {
                 const next = lit || loading ? null : track.id;
@@ -73,16 +82,13 @@ export default function TryAmbience({ row, owned = false }: TryProps) {
                 else trySound(next);
               }}
             >
-              <span className="flex items-start justify-between gap-1">
-                <AmbienceIcon icon={track.icon} size={26} />
-                {ended ? <PlusLock size={12} className="mt-0.5 opacity-60" /> : null}
+              <AmbiencePhoto track={track} className="-mx-2.5 -mt-2.5 mb-1.5" />
+              <span className="relative flex items-start justify-between gap-1">
+                <span data-try-ambience-name="" className="block font-sans text-[12.5px] font-semibold leading-[1.15]">{t(track.labelKey)}</span>
+                {ended ? <PlusLock size={12} className="mt-0.5 shrink-0 opacity-60" /> : null}
               </span>
-              <span className="block">
-                <span className="block font-sans text-[12.5px] font-semibold leading-[1.15]">{t(track.labelKey)}</span>
-                {state ? (
-                  <span className={cn("mt-0.5 block font-sans text-[11px] leading-tight opacity-70", loading && "motion-safe:animate-pulse")}>{state}</span>
-                ) : null}
-              </span>
+              {/* The state's line is always there, so the name never moves when a state comes or goes. */}
+              <span className={cn("relative mt-0.5 block font-sans text-[11px] leading-tight opacity-70", loading && "motion-safe:animate-pulse")}>{state ?? "\u00a0"}</span>
             </TryTile>
           );
         })}

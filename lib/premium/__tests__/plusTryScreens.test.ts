@@ -144,6 +144,23 @@ describe("each feature's own screen", () => {
     expect(out.match(/aria-pressed=/g)).toHaveLength(AMBIENCE_TRACKS.length);
   });
 
+  it("Ambience: each sound wears its photograph, upright, as the ambience sheet's tiles do (build 95, note 22)", () => {
+    // His word of 2026-11-13 about 14:29 UTC: the Plus preview's strip takes the photographs too.
+    const out = preview(TryAmbience, "ambience");
+    const strip = out.slice(out.indexOf(`role="group" aria-label="${html(say("en", "ambience.title"))}"`));
+    expect(strip.length).toBeLessThan(out.length);
+    for (const t of AMBIENCE_TRACKS) {
+      expect(strip, t.id).toContain(`src="${t.photo.src}"`);
+      expect(strip, t.id).toContain(`background-color:${t.photo.ground}`);
+    }
+    // No drawing stands for a sound any more: the photograph says what it is, and is decoration beside the name.
+    expect(strip).not.toContain("<svg");
+    expect((strip.match(/<img [^>]*alt=""/g) ?? []).length).toBe(AMBIENCE_TRACKS.length);
+    // Upright, as the sheet's tiles are, the name and its state's line on the tile's ground below the picture.
+    expect(strip.match(/<button [^>]*class="[^"]*h-\[108px\][^"]*justify-end[^"]*"/g)).toHaveLength(AMBIENCE_TRACKS.length);
+    expect(strip.match(/data-try-ambience-name=""/g)).toHaveLength(AMBIENCE_TRACKS.length);
+  });
+
   it("the reading modes: John 1 in Candlelight, with Dark, Monastery and one look beside it as Settings' small pages", () => {
     const out = preview(TryReadingModes, "reading-modes");
     expect(out).toContain(`--color-night:${TRY_PALETTES.candlelight.night}`);
