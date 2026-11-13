@@ -1,0 +1,23 @@
+<!doctype html>
+<!-- The signature shot of the 3D film: the page render.mjs opens and steps a
+     frame at a time. The scene is shot.js; the words and figures are words.mjs. -->
+<meta charset="utf-8">
+<title>Orthodox Christians in America: the 3D sample</title>
+<style>
+  @font-face { font-family: "DM Serif Display"; font-weight: 400; src: url(/nm/@fontsource/dm-serif-display/files/dm-serif-display-latin-400-normal.woff2) format("woff2"); }
+  @font-face { font-family: "DM Sans"; font-weight: 400; src: url(/nm/@fontsource/dm-sans/files/dm-sans-latin-400-normal.woff2) format("woff2"); }
+  @font-face { font-family: "DM Sans"; font-weight: 500; src: url(/nm/@fontsource/dm-sans/files/dm-sans-latin-500-normal.woff2) format("woff2"); }
+  html, body { margin: 0; background: #000; }
+  canvas { display: block; }
+</style>
+<canvas id="out"></canvas>
+<script type="importmap">
+{ "imports": {
+  "three": "/nm/three/build/three.module.js",
+  "topojson-client": "/nm/topojson-client/src/index.js",
+  "d3-geo": "/nm/d3-geo/dist/d3-geo.mjs",
+  "d3-array": "/nm/d3-array/dist/d3-array.mjs",
+  "internmap": "/nm/internmap/src/index.js"
+} }
+</script>
+<script type="module" src="/shot.js"></script>
