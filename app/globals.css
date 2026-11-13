@@ -2623,6 +2623,12 @@ html[data-reading-mode="parchment"] .book-lit .book-plate {
 .book-fold[data-snap] .book-page {
  transition: none;
 }
+/* Moved as a change inside the page, the picture does the folding
+   (lib/ui/inPageMove.ts, PrayerBookContents.tsx). */
+:root[data-in-page] .book-fold,
+:root[data-in-page] .book-page {
+ transition: none;
+}
 .book-turn {
  transition: rotate 240ms var(--ease-house);
 }
@@ -6478,6 +6484,11 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
  font-size: 15px;
 }
 /* A small button lit as a plate is (the widget's Show me how). */
+/* A button whose answer is on its way (the gift's Try again): it stands where
+   it is, quieter, until the answer moves in. */
+.set-btn[aria-busy="true"] {
+ opacity: 0.6;
+}
 .set-btn {
  display: inline-flex;
  align-items: center;
@@ -9538,6 +9549,26 @@ body[data-route-exit] [data-route-content] {
 ::view-transition-group(in-page-grows-1),
 ::view-transition-group(in-page-grows-2) {
  overflow: clip;
+}
+/* A part that leaves (a card dismissed) folds away from its foot as what
+   followed it glides up into its place, and a part that comes is let down
+   from its head: wiped, on the same curve, never faded where the words below
+   would read through it. */
+:root[data-in-page]::view-transition-old(in-page-grows-1):only-child,
+:root[data-in-page]::view-transition-old(in-page-grows-2):only-child {
+ animation-name: in-page-fold-away;
+}
+:root[data-in-page]::view-transition-new(in-page-grows-1):only-child,
+:root[data-in-page]::view-transition-new(in-page-grows-2):only-child {
+ animation-name: in-page-let-down;
+}
+@keyframes in-page-fold-away {
+ from { clip-path: inset(0 0 0 0); }
+ to { clip-path: inset(0 0 100% 0); }
+}
+@keyframes in-page-let-down {
+ from { clip-path: inset(0 0 100% 0); }
+ to { clip-path: inset(0 0 0 0); }
 }
 
 /* A route that arrived in a transition has been brought in already; its own

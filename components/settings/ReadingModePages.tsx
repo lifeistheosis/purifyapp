@@ -21,7 +21,7 @@
 // and the tile are exported for that gallery, which draws every palette with
 // them.
 
-import { Fragment, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { FONT_CLASSES, useReaderPrefs, type ReaderFont } from "@/components/reader/ReaderPrefs";
@@ -32,6 +32,7 @@ import { cn } from "@/lib/cn";
 import type { EarnedPalettes } from "@/lib/reader/earned";
 import { READING_THEMES, isCollectionTheme, themeWorn, type ReadingTheme } from "@/lib/reader/readingModes";
 import { JOHN_1_OPENING, PREVIEW_CHAPTER } from "@/lib/settings/preview";
+import { movePage } from "@/lib/ui/inPageMove";
 
 /** Wired to the reader's palette and the Plus gate. */
 export function ReadingModePages() {
@@ -65,6 +66,7 @@ export function ModePages({
   // far the reader is, and say how under their row once tapped.
   const earned = useEarnedPalettes();
   const [goal, setGoal] = useState<keyof EarnedPalettes | null>(null);
+  const goalBox = useRef<HTMLDivElement>(null);
   // The five, and a look only while it is the one applied (1.9): the rest are on their own page.
   const modes = READING_THEMES.filter((m) => !isCollectionTheme(m.id) && (!m.look || m.id === theme));
   const kept = READING_THEMES.filter((m) => isCollectionTheme(m.id));
@@ -92,17 +94,23 @@ export function ModePages({
           // Earned, or already applied (so it can be put down again): a palette like the rest.
           if (!progress || progress.earned || theme === mode.id) return palette(mode);
           return (
-            <GoalTile key={mode.id} mode={mode} progress={progress} open={goal === id} font={font} book={book} chapter={chapter} onToggle={() => setGoal(goal === id ? null : id)} />
+            <GoalTile key={mode.id} mode={mode} progress={progress} open={goal === id} font={font} book={book} chapter={chapter} onToggle={() => movePage(() => setGoal(goal === id ? null : id), { grows: [goalBox.current] })} />
           );
         })}
       </div>
-      {goal ? (
-        <p id="set-palette-goal" role="status" className="set-mode-goal-line" data-palette-goal-line="">
-          {t(goal === "councils" ? "settings.paletteEarnCouncils" : "settings.paletteEarnCappadocian", { count: earned[goal].read, total: earned[goal].of })}
-          {/* Plus is never promised to every reader: a reader without it is told before they read for it. */}
-          {locked ? ` ${t("settings.palettePlusNote")}` : null}
-        </p>
-      ) : null}
+      {/* The goal's line is let down under the row and what follows glides,
+          as a change inside the page (lib/ui/inPageMove.ts), where what was
+          below jumped 47px (Gate 2.0). Its place stands empty, and takes no
+          room, until a goal is open. */}
+      <div ref={goalBox}>
+        {goal ? (
+          <p id="set-palette-goal" role="status" className="set-mode-goal-line" data-palette-goal-line="">
+            {t(goal === "councils" ? "settings.paletteEarnCouncils" : "settings.paletteEarnCappadocian", { count: earned[goal].read, total: earned[goal].of })}
+            {/* Plus is never promised to every reader: a reader without it is told before they read for it. */}
+            {locked ? ` ${t("settings.palettePlusNote")}` : null}
+          </p>
+        ) : null}
+      </div>
     </>
   );
 }

@@ -22,7 +22,7 @@
 
 import {
   Suspense,
-  lazy,
+  lazy as reactLazy,
   useCallback,
   useEffect,
   useMemo,
@@ -33,6 +33,7 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
+import { flushSync } from "react-dom";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
@@ -45,6 +46,7 @@ import { nextTryRow, trySoundOf } from "@/lib/premium/plusTry";
 import { beginTry, endTrySound, useTrySound } from "@/lib/premium/plusTrySound";
 import { plusRowsLedBy, rowsHere, type PlusRow } from "@/lib/premium/plusRows";
 import { useDesktopApp } from "@/lib/desktop/useDesktopApp";
+import { HOLD_MS, canMoveInPage, movePage } from "@/lib/ui/inPageMove";
 
 import { TryWindow } from "./plusTry/TryKit";
 
@@ -55,8 +57,26 @@ import { TryWindow } from "./plusTry/TryKit";
  */
 export type TryProps = { row: PlusRow; owned?: boolean };
 
+type TryModule = { default: ComponentType<TryProps> };
+type TryScreen = LazyExoticComponent<ComponentType<TryProps>>;
+
+/** The screens React has begun to read on the way: each stays on that way, so it never mounts twice. */
+const ON_THE_WAY = new Set<TryScreen>();
+/** Each screen's file, to be read before it is shown (readTryScreen). */
+const FILE_OF = new Map<TryScreen, () => Promise<TryModule>>();
+
+/** React's lazy, which also keeps the screen's file and says when React first asks for it. */
+function lazy(file: () => Promise<TryModule>): TryScreen {
+  const screen: TryScreen = reactLazy(() => {
+    ON_THE_WAY.add(screen);
+    return file();
+  });
+  FILE_OF.set(screen, file);
+  return screen;
+}
+
 /** Each feature's screen, by its row's id: every one of the fifteen (his note 39; Compare joined in 1.9). */
-const PREVIEWS: Readonly<Record<string, LazyExoticComponent<ComponentType<TryProps>>>> = {
+const PREVIEWS: Readonly<Record<string, TryScreen>> = {
   "word-study": lazy(() => import("./plusTry/TryWordStudy")),
   "reading-modes": lazy(() => import("./plusTry/TryReadingModes")),
   "cross-refs": lazy(() => import("./plusTry/TryCrossRefs")),
@@ -74,6 +94,27 @@ const PREVIEWS: Readonly<Record<string, LazyExoticComponent<ComponentType<TryPro
   "discord-frames": lazy(() => import("./plusTry/TryDiscord")),
 };
 
+/** What each row draws: on the way, or whole once its file was read before it was first shown. */
+const SCREENS: Record<string, ComponentType<TryProps>> = { ...PREVIEWS };
+
+/**
+ * Read a feature's screen before it is shown, so Try it and Next show it
+ * whole (Gate 2.0 on /pricing/: the window waited, then the screen replaced
+ * it at once and the words under it jumped 121px). Never fails: a screen
+ * whose file does not come is shown by the waiting window as before.
+ */
+export function readTryScreen(id: string): Promise<void> {
+  const screen = PREVIEWS[id];
+  const file = screen ? FILE_OF.get(screen) : undefined;
+  if (!screen || !file || SCREENS[id] !== screen || ON_THE_WAY.has(screen)) return Promise.resolve();
+  return file().then(
+    (mod) => {
+      if (!ON_THE_WAY.has(screen)) SCREENS[id] = mod.default;
+    },
+    () => {},
+  );
+}
+
 /** The rows that can be tried: for the tests, which hold it to every row of the list. */
 export const TRY_PREVIEW_IDS: readonly string[] = Object.keys(PREVIEWS);
 
@@ -84,7 +125,7 @@ export const TRY_PREVIEW_IDS: readonly string[] = Object.keys(PREVIEWS);
  * "I want each one visualized, explained". Null for a row with none.
  */
 export function TryPreview({ row, owned = false }: { row: PlusRow; owned?: boolean }) {
-  const Preview = PREVIEWS[row.id];
+  const Preview = SCREENS[row.id];
   if (!Preview) return null;
   return (
     <Suspense fallback={<TryWindow loading />}>
@@ -114,17 +155,32 @@ export type PlusTry = {
 export function usePlusTry(lead: string | null | undefined, list: RefObject<HTMLElement | null>): PlusTry {
   const [id, setId] = useState<string | null>(null);
   const tried = useRef<string | null>(null);
+  // The list and a feature's screen are two pages of one: Try it, Next and
+  // the way back cross-fade as a change inside the page (lib/ui/inPageMove.ts),
+  // the screen read first so it comes whole (HOLD_MS at the most).
   const start = useCallback((next: string) => {
-    beginTry(next);
-    tried.current = next;
-    setId(next);
+    void Promise.race([readTryScreen(next), new Promise((resolve) => setTimeout(resolve, HOLD_MS))]).then(() =>
+      movePage(() => {
+        beginTry(next);
+        tried.current = next;
+        setId(next);
+      }),
+    );
   }, []);
   const back = useCallback(() => {
     endTrySound();
     const was = tried.current;
     tried.current = null;
-    setId(null);
-    if (was) bringRowBack(list, was);
+    if (!canMoveInPage()) {
+      setId(null);
+      if (was) bringRowBack(list, was);
+      return;
+    }
+    movePage(() => {
+      // Drawn now, so the row is put back in view in the same change.
+      flushSync(() => setId(null));
+      if (was) list.current?.querySelector<HTMLElement>(`[data-plus-feature="${CSS.escape(was)}"]`)?.scrollIntoView({ block: "center" });
+    });
   }, [list]);
   // Leaving the screen ends the sound with it.
   useEffect(() => () => endTrySound(), []);
@@ -212,7 +268,7 @@ export function PlusTryPage({
   head?: ReactNode;
 }) {
   const { t } = useTranslate();
-  const Preview = PREVIEWS[row.id];
+  const Preview = SCREENS[row.id];
   const top = useRef<HTMLDivElement>(null);
   const sound = trySoundOf(row.id);
 

@@ -132,7 +132,8 @@ describe("a page that changes above the finger", () => {
     const days = code("components/plans/PlanPath.tsx");
     // The circle hands itself up, and the page holds it before the mark is made.
     expect(days).toContain("onClick={(e) => onToggle(i, !isRead, e.currentTarget)}");
-    expect(page).toMatch(/const toggle = \(day: number, read: boolean, pressed: Element\) => \{[\s\S]*?hold\(pressed\);\s*keepHead\(\);\s*if \(read\) completeDay\(plan, day\);/);
+    // (From 1.9 the mark itself is moved as a change inside the page, inside movePage.)
+    expect(page).toMatch(/const toggle = \(day: number, read: boolean, pressed: Element\) => \{[\s\S]*?hold\(pressed\);\s*keepHead\(\);[\s\S]{0,400}?if \(read\) completeDay\(plan, day\);/);
     expect(page).toContain("const hold = useHeldPlace();");
     // Everything over the days is told, at the mark, to stay as tall as it is.
     expect(page).toContain("const { ref: head, keep: keepHead } = useNoShrink<HTMLDivElement>();");

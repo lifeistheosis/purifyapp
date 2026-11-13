@@ -6,6 +6,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { WAY_FACT } from "@/components/theology/wayStyle";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { textDir } from "@/lib/i18n/textDir";
+import { movePage } from "@/lib/ui/inPageMove";
 import { scrollBehavior } from "@/lib/ui/motion";
 
 /**
@@ -159,7 +160,9 @@ export function LegalContents({ rail = false }: { rail?: boolean }) {
         type="button"
         aria-expanded={open}
         aria-controls={list}
-        onClick={() => setOpen((was) => !was)}
+        // The list is let down under the row and what follows glides, as a
+        // change inside the page (lib/ui/inPageMove.ts), where it was cut (Gate 2.0).
+        onClick={() => movePage(() => setOpen((was) => !was), { grows: [anchor.current] })}
         className="theology-row flex min-h-[52px] w-full items-center gap-3 rounded-[14px] px-2.5 text-start"
       >
         <span className="min-w-0 flex-1 font-serif text-[16px] font-semibold leading-tight text-paper">{t("saints.contents")}</span>

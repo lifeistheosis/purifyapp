@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useId, useMemo, useState, type ReactNode } from "react";
+import { useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { useChurchDay } from "@/lib/calendar/useChurchDay";
 import { fastNotAllowedKey } from "@/lib/calendar/fastFoods";
 import type { ReadingRef } from "@/lib/calendar/orthodox";
@@ -36,6 +36,7 @@ import { SaintFace } from "./SaintFace";
 import { SpeakerBand } from "./SpeakerBand";
 import { TodaySayingCard } from "./TodaySayingCard";
 import { textDir } from "@/lib/i18n/textDir";
+import { movePage } from "@/lib/ui/inPageMove";
 
 // Loaded on the tap, as the verse's is: Today carries no canvas for a reader who never shares.
 const PictureSheet = dynamic(() => import("@/components/share/PictureSheet").then((m) => m.PictureSheet), { ssr: false });
@@ -341,12 +342,18 @@ export function ChurchTodayRail() {
 export function SaintsFold({ open, onToggle, count, children }: { open: boolean; onToggle: () => void; count: number; children: ReactNode }) {
   const { t, tn } = useTranslate();
   const id = useId();
+  // Where motion is on, the rows are let down as a change inside the page
+  // (lib/ui/inPageMove.ts) and what follows glides: the fold's own height
+  // transition moved "Read all" 27px in one frame at the curve's steep start
+  // (Gate 2.0). The transition stays for a change made at once, and stands
+  // down while the move pictures it.
+  const region = useRef<HTMLDivElement>(null);
   return (
     <>
       <div className="mt-3 border-t border-paper/10 pt-1">
         <button
           type="button"
-          onClick={onToggle}
+          onClick={() => movePage(onToggle, { grows: [region.current] })}
           aria-expanded={open}
           aria-controls={id}
           data-saints-fold=""
@@ -362,13 +369,14 @@ export function SaintsFold({ open, onToggle, count, children }: { open: boolean;
         </button>
       </div>
       <div
+        ref={region}
         id={id}
         inert={!open}
-        className={cn("grid transition-[grid-template-rows] duration-[240ms] ease-house motion-reduce:transition-none", open ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}
+        className={cn("grid transition-[grid-template-rows] duration-[240ms] ease-house motion-reduce:transition-none [:root[data-in-page]_&]:transition-none", open ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}
       >
         <ul
           className={cn(
-            "min-h-0 overflow-hidden transition-[opacity,translate] duration-[240ms] ease-house motion-reduce:transition-none",
+            "min-h-0 overflow-hidden transition-[opacity,translate] duration-[240ms] ease-house motion-reduce:transition-none [:root[data-in-page]_&]:transition-none",
             open ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0",
           )}
         >

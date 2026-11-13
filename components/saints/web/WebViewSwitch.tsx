@@ -7,6 +7,7 @@ import { Graph } from "@/components/ui/icons/Graph";
 import { TimelineList } from "@/components/ui/icons/TimelineList";
 import { cn } from "@/lib/cn";
 import { hashFor, tabForKey, tabFromHash } from "@/lib/ui/sectionTabs";
+import { movePage } from "@/lib/ui/inPageMove";
 
 /**
  * Which way the saint web is seen (1.8): "web", the Constellation, or
@@ -48,9 +49,13 @@ export function useWebView(): WebView {
 /** Open a view: kept in the address, the screen back at its top. */
 export function chooseWebView(next: WebView): void {
   const url = window.location.pathname + window.location.search + hashFor(next, WEB_VIEWS);
-  window.history.replaceState(null, "", url);
-  window.dispatchEvent(new Event(VIEW_EVENT));
-  window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+  // A tab: the two views cross-fade as a change inside the page
+  // (lib/ui/inPageMove.ts), where Timeline was cut in (Gate 2.0).
+  movePage(() => {
+    window.history.replaceState(null, "", url);
+    window.dispatchEvent(new Event(VIEW_EVENT));
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+  });
 }
 
 /**

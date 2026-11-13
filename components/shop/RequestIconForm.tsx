@@ -14,6 +14,7 @@ import { cn } from "@/lib/cn";
 import { BUDGET_BAND_LABELS } from "@/lib/shop/format";
 import { findSaints, saintByName, type RequestSaint } from "@/lib/shop/requestSaint";
 import type { ShopBudgetBand, ShopIconRequest } from "@/lib/shop/types";
+import { movePage } from "@/lib/ui/inPageMove";
 
 const field =
   "w-full rounded-[14px] shop-well px-3.5 py-3 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus:ring-1 focus:ring-paper/40";
@@ -74,6 +75,7 @@ export function RequestIconForm({
   const [active, setActive] = useState(0);
   const [kind, setKind] = useState<Kind>("either");
   const [more, setMore] = useState(false);
+  const moreBox = useRef<HTMLDivElement>(null);
   const [notify, setNotify] = useState(defaultNotify);
   const [state, setState] = useState<"idle" | "busy" | "done">("idle");
   const [error, setError] = useState<string | null>(null);
@@ -262,12 +264,14 @@ export function RequestIconForm({
         </label>
       ) : null}
 
-      <div className="shop-raise mt-4 overflow-hidden rounded-[18px]">
+      <div ref={moreBox} className="shop-raise mt-4 overflow-hidden rounded-[18px]">
         <button
           type="button"
           aria-expanded={more}
           aria-controls={moreId}
-          onClick={() => setMore((m) => !m)}
+          // The fields are let down under the row and what follows glides, as a
+          // change inside the page (lib/ui/inPageMove.ts), where they were cut in (Gate 2.0).
+          onClick={() => movePage(() => setMore((m) => !m), { grows: [moreBox.current] })}
           className="flex min-h-[56px] w-full items-center gap-3 px-3.5 py-3 text-start"
         >
           <span className="min-w-0 flex-1">

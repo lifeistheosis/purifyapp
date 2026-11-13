@@ -15,6 +15,7 @@ import { usePlanGuide } from "@/lib/plans/guideContent";
 import { dayLabel, getPlan } from "@/lib/plans/plans";
 import { catchUp, completeDay, nextDay, planStreak, resetPlan, startPlan, uncompleteDay, usePlans } from "@/lib/plans/progress";
 import { clearJustFinished, hrefOfReading, startPlanSession, useJustFinished } from "@/lib/plans/session";
+import { movePage } from "@/lib/ui/inPageMove";
 import { useHeldPlace, useNoShrink } from "@/lib/ui/useHeldPlace";
 import { useMounted } from "@/lib/useMounted";
 
@@ -91,8 +92,17 @@ export function PlanClient({ id, minutes, words }: { id: string; minutes: number
     // reader is looking at (lib/ui/keepLength.ts).
     hold(pressed);
     keepHead();
-    if (read) completeDay(plan, day);
-    else uncompleteDay(id, day);
+    // And what it changes over the days moves as a change inside the page
+    // (lib/ui/inPageMove.ts): the line of days in a row is let down under the
+    // card as the card goes up by it, where it came in one frame (Gate 2.0:
+    // "the days section 41px down"), and the circle stays under the finger.
+    movePage(
+      () => {
+        if (read) completeDay(plan, day);
+        else uncompleteDay(id, day);
+      },
+      { grows: [head.current] },
+    );
   };
 
   return (

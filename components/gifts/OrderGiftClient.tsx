@@ -69,6 +69,7 @@ import {
   type OrderGiftState,
 } from "@/lib/gifts/orderGift";
 import { cn } from "@/lib/cn";
+import { movePage } from "@/lib/ui/inPageMove";
 
 const PILL =
   "rule-pray tap-press flex min-h-12 w-full items-center justify-center gap-1.5 rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night disabled:opacity-60";
@@ -149,20 +150,38 @@ export function OrderGiftClient() {
     [locale],
   );
 
+  // The ticket's foot: what the read's answer changes there moves as a change
+  // inside the page (lib/ui/inPageMove.ts). Try again leaves the line standing
+  // while the gift is read again, busy, where it gave way to a waiting line
+  // and back, and what is below jumped 52px (Gate 2.0, run-tip 384).
+  const footRef = useRef<HTMLDivElement>(null);
+  const [retrying, setRetrying] = useState(false);
   const load = useCallback(async () => {
     try {
       const res = await apiFetch("/api/gifts/order");
       if (!res.ok) throw new Error(String(res.status));
-      setState((await res.json()) as OrderGiftState);
-      setLoadError(false);
+      const answer = (await res.json()) as OrderGiftState;
+      movePage(
+        () => {
+          setState(answer);
+          setLoadError(false);
+          setRetrying(false);
+        },
+        { grows: [footRef.current] },
+      );
     } catch {
-      setLoadError(true);
+      movePage(
+        () => {
+          setLoadError(true);
+          setRetrying(false);
+        },
+        { grows: [footRef.current] },
+      );
     }
   }, []);
 
   useEffect(() => {
-    /* eslint-disable-next-line react-hooks/set-state-in-effect -- every write
-       in load() is past an await, so nothing lands synchronously here. */
+    // Every write in load() is past an await, so nothing lands synchronously here.
     void load();
   }, [load]);
 
@@ -483,14 +502,16 @@ export function OrderGiftClient() {
                   {t("orderGift.opening")}
                 </p>
               ) : null}
-              <div className="gift-foot-now">
+              <div ref={footRef} className="gift-foot-now">
                 {loadError && !state ? (
                   <div className="flex items-center justify-between gap-3">
                     <p className="font-sans text-detail text-paper/70">{t("orderGift.loadError")}</p>
                     <button
                       type="button"
+                      disabled={retrying}
+                      aria-busy={retrying || undefined}
                       onClick={() => {
-                        setLoadError(false);
+                        setRetrying(true);
                         void load();
                       }}
                       className="set-btn shrink-0"

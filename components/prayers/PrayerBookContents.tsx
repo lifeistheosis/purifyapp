@@ -14,6 +14,7 @@ import { cropStyle, plateCrop } from "@/lib/prayers/iconCrops";
 import type { RuleMeta } from "@/lib/prayers/rules";
 import { serviceArt } from "@/lib/prayers/serviceArt";
 import { prefersReducedMotion } from "@/lib/ui/motion";
+import { canMoveInPage, movePage } from "@/lib/ui/inPageMove";
 
 /**
  * The prayer book on a phone (1.8, note 72): the owner's pick of r3-26, "C,
@@ -95,12 +96,27 @@ export function PrayerBookContents({ hourNow }: { hourNow: HourSlug | null }) {
 
   function toggle(at: number, head: HTMLElement) {
     tapped.current = { at, top: head.getBoundingClientRect().top };
-    // The page shutting above the one opening shuts at once, and the card
-    // holds its length until the new page has opened into it.
     const next: Open = open.at === at ? { at: null, snap: null } : { at, snap: open.at !== null && open.at < at ? open.at : null };
     const card = book.current;
-    if (next.snap !== null && card) card.style.minHeight = `${card.offsetHeight}px`;
-    setOpen(next);
+    // Where motion is on, the two pages move as a change inside the page
+    // (lib/ui/inPageMove.ts): the one open shuts as the one tapped opens,
+    // each wiped to its new length, the chapters between and below gliding,
+    // and the tapped title under the finger (the layout effect below, in the
+    // same change). Their folds were a height transition each, and the
+    // chapters below moved 90 to 321px in a frame (Gate 2.0).
+    const foldOf = (n: number | null) => {
+      const page = n === null ? null : card?.querySelector(`[data-chapter-at="${n}"]`)?.getAttribute("aria-controls");
+      return page ? document.getElementById(page) : null;
+    };
+    const folds = [foldOf(open.at), open.at === at ? null : foldOf(at)]
+      .filter((el): el is HTMLElement => !!el)
+      .sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+    // Made at once instead: the page shutting above the one opening shuts at
+    // once, and the card holds its length until the new page has opened into it.
+    if (!canMoveInPage()) {
+      if (next.snap !== null && card) card.style.minHeight = `${card.offsetHeight}px`;
+    }
+    movePage(() => setOpen(next), { grows: folds });
   }
 
   useLayoutEffect(() => {

@@ -9,6 +9,7 @@ import { partFromHash, partHash, readIdOf, withPart, withRead, type ReadKind } f
 import { updatePathProgress } from "@/lib/theology/usePathProgress";
 import { useScrollAway } from "@/lib/ui/scrollAway";
 import { textDir } from "@/lib/i18n/textDir";
+import { movePage } from "@/lib/ui/inPageMove";
 
 import { noteOpened } from "./PathRead";
 
@@ -32,9 +33,14 @@ export function usePart(total: number): number {
 
 /** Show another part: the address says it with replaceState, so back leaves the reading and does not walk its parts. */
 function showPart(n: number): void {
-  window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search + partHash(n));
-  window.dispatchEvent(new Event(PART_EVENT));
-  window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+  // A part is a page of the reading, and turns as a pager does: the whole
+  // page cross-fades as a change inside the page (lib/ui/inPageMove.ts),
+  // the next part arriving at its head, where it was cut (Gate 2.0).
+  movePage(() => {
+    window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search + partHash(n));
+    window.dispatchEvent(new Event(PART_EVENT));
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+  });
 }
 
 /** The bar's second line while a study is read: "Part 2 of 5". */

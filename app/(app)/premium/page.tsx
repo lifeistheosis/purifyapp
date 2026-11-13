@@ -14,6 +14,7 @@ import {
   premiumCardBg,
 } from "@/components/premium/PremiumUI";
 import { CARD, CARD_BG } from "@/components/ui/Graphite";
+import { GlideLink } from "@/components/ui/GlideLink";
 import { cn } from "@/lib/cn";
 
 export const metadata = {
@@ -62,14 +63,16 @@ function PremiumView() {
             <T k="premium.lede" />
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <a href="#plus" className={PREMIUM_CTA}>
+            {/* Each glides to its plan (components/ui/GlideLink.tsx): a plain
+                link jumped there at once (Gate 2.0). */}
+            <GlideLink href="#plus" className={PREMIUM_CTA}>
               <T k="premium.seePlus" />
               <ArrowDown />
-            </a>
-            <a href="#pro" className={PREMIUM_GHOST}>
+            </GlideLink>
+            <GlideLink href="#pro" className={PREMIUM_GHOST}>
               <T k="premium.seePro" />
               <ArrowDown />
-            </a>
+            </GlideLink>
           </div>
         </div>
       </section>

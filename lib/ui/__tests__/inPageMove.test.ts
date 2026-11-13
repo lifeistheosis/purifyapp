@@ -172,3 +172,92 @@ describe("the places that move", () => {
     expect(css).toMatch(/::view-transition-group\(in-page-grows-1\),\s*::view-transition-group\(in-page-grows-2\) \{\s*overflow: clip;/);
   });
 });
+
+describe("Gate 2.0's in-page faults under his ruling, each moved (Updates 22)", () => {
+  it("Community: the replies open and arrive, and Read more unfolds, as the card grows", () => {
+    const c = read("components/community/CommunityClient.tsx");
+    expect(c).toMatch(/movePage\(\s*\(\) => \{\s*setOpen\(next\);\s*if \(fetching\) setRepliesState\("loading"\);\s*\},\s*\{ grows: \[cardRef\.current\] \},\s*\);/);
+    expect(c).toContain("if (cardRef.current?.isConnected) movePage(land, { grows: [cardRef.current] });");
+    expect(c).toContain("onClick={() => movePage(() => setUnfolded((v) => !v), { grows: [cardRef.current] })}");
+  });
+
+  it("a plan's day marked: the part over the days grows by its line, the circle under the finger", () => {
+    const plan = read("components/plans/PlanClient.tsx");
+    expect(plan).toMatch(/hold\(pressed\);\s*keepHead\(\);[\s\S]{0,400}movePage\(\s*\(\) => \{\s*if \(read\) completeDay\(plan, day\);\s*else uncompleteDay\(id, day\);\s*\},\s*\{ grows: \[head\.current\] \},\s*\);/);
+  });
+
+  it("Today: a road card folds away, and the saints' readings are let down", () => {
+    expect(read("components/onboarding/RoadCards.tsx")).toContain('onClick={(e) => movePage(onClose, { grows: [e.currentTarget.closest("[data-road-card]")] })}');
+    const rail = read("components/today/ChurchTodayRail.tsx");
+    expect(rail).toContain("onClick={() => movePage(onToggle, { grows: [region.current] })}");
+    expect(rail.match(/\[:root\[data-in-page\]_&\]:transition-none/g)).toHaveLength(2);
+  });
+
+  it("the prayer book: the open chapter shuts as the tapped one opens, its fold standing down", () => {
+    expect(read("components/prayers/PrayerBookContents.tsx")).toContain("movePage(() => setOpen(next), { grows: folds });");
+    expect(read("app/globals.css")).toMatch(/:root\[data-in-page\] \.book-fold,\s*:root\[data-in-page\] \.book-page \{\s*transition: none;/);
+  });
+
+  it("pagers and tabs cross-fade: a study's parts, the first liturgy's steps, the saints' web views", () => {
+    expect(read("components/theology/StudyReader.tsx")).toMatch(/function showPart\(n: number\): void \{[\s\S]{0,300}movePage\(\(\) => \{\s*window\.history\.replaceState/);
+    expect(read("components/start/liturgy/FirstLiturgyGuide.tsx")).toMatch(/moved\.current = true;[\s\S]{0,300}movePage\(\(\) => \{\s*goToStep\(next\);/);
+    expect(read("components/saints/web/WebViewSwitch.tsx")).toMatch(/export function chooseWebView[\s\S]{0,400}movePage\(\(\) => \{\s*window\.history\.replaceState\(null, "", url\);/);
+  });
+
+  it("Job's order: the order grows by its row and the moments left glide; a hint is let down", () => {
+    const order = read("components/walkthrough/Synthesis.tsx");
+    expect(order).toContain("{ grows: [listRef.current], glides: [...left, ...partsAfter(poolRef.current)] },");
+    expect(order).toContain("movePage(() => setHint(expected), { grows: [hintRef.current] });");
+  });
+
+  it("Try it reads the feature's screen first and cross-fades to it, and back", () => {
+    const tryIt = read("components/billing/PlusTry.tsx");
+    expect(tryIt).toMatch(/Promise\.race\(\[readTryScreen\(next\), new Promise\(\(resolve\) => setTimeout\(resolve, HOLD_MS\)\)\]\)\.then\(\(\) =>\s*movePage\(\(\) => \{\s*beginTry\(next\);/);
+    expect(tryIt.match(/const Preview = SCREENS\[row\.id\];/g)).toHaveLength(2);
+    expect(tryIt).toContain("flushSync(() => setId(null));");
+  });
+
+  it("the florilegium's naming form grows in the row's place", () => {
+    const hub = read("components/florilegium/FlorilegiaHub.tsx");
+    expect(hub).toContain("movePage(() => setCreating(true), { grows: [place.current] });");
+    expect(hub).toContain('<li ref={place} className="theology-rule">');
+  });
+
+  it("what a disclosure opens is let down: the legal contents, More details, Settings' goal, a rule's Start from", () => {
+    expect(read("components/legal/LegalContents.tsx")).toContain("onClick={() => movePage(() => setOpen((was) => !was), { grows: [anchor.current] })}");
+    expect(read("components/shop/RequestIconForm.tsx")).toContain("onClick={() => movePage(() => setMore((m) => !m), { grows: [moreBox.current] })}");
+    const modes = read("components/settings/ReadingModePages.tsx");
+    expect(modes).toContain("movePage(() => setGoal(goal === id ? null : id), { grows: [goalBox.current] })");
+    expect(modes).toContain("<div ref={goalBox}>");
+    expect(read("components/prayers/mine/MyRuleBuilder.tsx")).toMatch(/movePage\(\s*\(\) => \{\s*save\(addItems\(rule, chosen, seedOf\(chosen\)\)\);\s*\},\s*\{ grows: \[document\.getElementById\(`mine-panel-\$\{chosen\}`\)\] \},\s*\);/);
+  });
+
+  it("/premium/'s two links glide to their plans", () => {
+    const premium = read("app/(app)/premium/page.tsx");
+    expect(premium).toContain('<GlideLink href="#plus" className={PREMIUM_CTA}>');
+    expect(premium).toContain('<GlideLink href="#pro" className={PREMIUM_GHOST}>');
+    expect(premium).not.toMatch(/<a href="#(plus|pro)"/);
+    expect(read("components/ui/GlideLink.tsx")).toContain('place.scrollIntoView({ behavior: scrollBehavior(), block: "start" });');
+  });
+
+  it("a line a tap shows moves what is below it: Buy now's, the sign-up's", () => {
+    expect(read("components/shop/BuyBar.tsx").match(/\{ grows: \[barRef\.current\] \}/g)).toHaveLength(2);
+    const signUp = read("components/auth/SignUpForm.tsx");
+    expect(signUp).toContain("const agree = (now: boolean) => movePage(() => setAgreed(now), { grows: [oauthBox.current] });");
+    expect(signUp).toContain("onChange={(e) => agree(e.target.checked)}");
+  });
+
+  it("the gift's Try again leaves its line standing, busy, and the answer moves in", () => {
+    const gift = read("components/gifts/OrderGiftClient.tsx");
+    expect(gift).not.toMatch(/setLoadError\(false\);\s*void load\(\);/);
+    expect(gift).toMatch(/aria-busy=\{retrying \|\| undefined\}\s*onClick=\{\(\) => \{\s*setRetrying\(true\);\s*void load\(\);/);
+    expect(read("app/globals.css")).toMatch(/\.set-btn\[aria-busy="true"\] \{\s*opacity: 0\.6;/);
+    expect(gift.match(/\{ grows: \[footRef\.current\] \}/g)).toHaveLength(2);
+  });
+
+  it("a part that leaves folds away from its foot, and a part that comes is let down from its head", () => {
+    const css = read("app/globals.css");
+    expect(css).toMatch(/:root\[data-in-page\]::view-transition-old\(in-page-grows-1\):only-child,\s*:root\[data-in-page\]::view-transition-old\(in-page-grows-2\):only-child \{\s*animation-name: in-page-fold-away;/);
+    expect(css).toMatch(/:root\[data-in-page\]::view-transition-new\(in-page-grows-1\):only-child,\s*:root\[data-in-page\]::view-transition-new\(in-page-grows-2\):only-child \{\s*animation-name: in-page-let-down;/);
+  });
+});

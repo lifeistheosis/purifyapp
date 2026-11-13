@@ -89,6 +89,7 @@ import { prefetchProfile } from "@/lib/profile/cache";
 import { fetchMyProfile, syncCalendar } from "@/lib/profile/client";
 import { announcePicture } from "@/lib/profile/myPicture";
 import type { MyProfile, ProfileSeed } from "@/lib/profile/publicProfile";
+import { movePage } from "@/lib/ui/inPageMove";
 import { haptic, scrollBehavior } from "@/lib/ui/motion";
 import { Close } from "@/components/ui/icons/Close";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
@@ -1395,21 +1396,41 @@ function PostCardInner({
     }
   }
 
+  // The card as a whole: what opens in it opens as a change inside the page
+  // (lib/ui/inPageMove.ts), the card let down and the posts below gliding,
+  // and the notification's answer below scrolls to it.
+  const cardRef = useRef<HTMLElement | null>(null);
+
   const loadReplies = useCallback(async () => {
     setRepliesState("loading");
     const res = await fetchReplies(post.id);
-    if (res.state === "ok") {
-      setReplies(res.replies);
-      setRepliesState("idle");
-    } else {
-      setRepliesState("error");
-    }
+    // The rows take the waiting rows' place as the opening did: the card
+    // grows or folds to them and the posts below glide (the walk's "1 reply":
+    // the next post 127px down in one frame, a second after the tap).
+    const land = () => {
+      if (res.state === "ok") {
+        setReplies(res.replies);
+        setRepliesState("idle");
+      } else {
+        setRepliesState("error");
+      }
+    };
+    // A card no longer on the screen (the reader has gone on) has nothing to move.
+    if (cardRef.current?.isConnected) movePage(land, { grows: [cardRef.current] });
+    else land();
   }, [post.id]);
 
   async function toggleReplies() {
     const next = !open;
-    setOpen(next);
-    if (next && replies === null) await loadReplies();
+    const fetching = next && replies === null;
+    movePage(
+      () => {
+        setOpen(next);
+        if (fetching) setRepliesState("loading");
+      },
+      { grows: [cardRef.current] },
+    );
+    if (fetching) await loadReplies();
   }
 
   // ── Answering a notification ─────────────────────────────────────────────
@@ -1424,8 +1445,7 @@ function PostCardInner({
   // up and run again, and a step marked done up front would be cancelled by
   // the clean-up and never happen. The state is set from the timer, not from
   // the effect's own body (the set-state-in-effect discipline; WritingReader
-  // restores a reading position the same way).
-  const cardRef = useRef<HTMLElement | null>(null);
+  // restores a reading position the same way). The card is cardRef, above.
   const [lit, setLit] = useState<string | null>(null);
   const focusNonce = focus?.nonce ?? 0;
   const focusReply = focus?.replyId ?? null;
@@ -2083,7 +2103,7 @@ function PostCardInner({
           {(longBody || longQuote) && !editing && !removed ? (
             <button
               type="button"
-              onClick={() => setUnfolded((v) => !v)}
+              onClick={() => movePage(() => setUnfolded((v) => !v), { grows: [cardRef.current] })}
               aria-expanded={unfolded}
               aria-controls={`${partsId}-quote ${partsId}-words`}
               className="hit-44 mt-1.5 inline-flex items-center gap-1 font-sans text-[13.5px] font-semibold text-paper/90 hover:text-paper"

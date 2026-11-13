@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useSyncExternalStore } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import { nextPath, withNext } from "@/lib/auth/nextPath";
 import { createClient } from "@/lib/supabase/client";
 import { recordAcceptance } from "@/lib/legal/recordAcceptance";
@@ -12,6 +12,7 @@ import { PasswordInput } from "./PasswordInput";
 import { OAuthButtons } from "./OAuthButtons";
 import { LegalLink } from "@/components/legal/LegalLink";
 import { connectionAware } from "@/lib/auth/friendlyError";
+import { movePage } from "@/lib/ui/inPageMove";
 
 /**
  * Email + password sign-up. The Supabase trigger creates the profiles
@@ -46,6 +47,11 @@ export function SignUpForm() {
   // Clickwrap: affirmative agreement is required before an account is
   // created, which is what makes the Terms (and the arbitration clause) bind.
   const [agreed, setAgreed] = useState(false);
+  const oauthBox = useRef<HTMLDivElement>(null);
+  // The line under Continue with Google ("Agree to the Terms and Privacy
+  // Policy first") goes or comes as a change inside the page
+  // (lib/ui/inPageMove.ts), where the lines below jumped 27px (Gate 2.0).
+  const agree = (now: boolean) => movePage(() => setAgreed(now), { grows: [oauthBox.current] });
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -191,7 +197,7 @@ export function SignUpForm() {
           <input
             type="checkbox"
             checked={agreed}
-            onChange={(e) => setAgreed(e.target.checked)}
+            onChange={(e) => agree(e.target.checked)}
             data-mock-allow="target"
             data-mock-why="its reach is the 44 by 44 square round it, inside its label: a tap anywhere there ticks it"
             className="h-[18px] w-[18px] accent-gold"
@@ -241,14 +247,16 @@ export function SignUpForm() {
         </span>
       </div>
 
-      <OAuthButtons
-        redirectTo={target}
-        // The checkbox above already governs this button, so the inline
-        // notice would ask for the same agreement twice on one screen.
-        showTermsNotice={false}
-        disabled={!agreed}
-        disabledHint={t("signup.agreeFirstHint")}
-      />
+      <div ref={oauthBox}>
+        <OAuthButtons
+          redirectTo={target}
+          // The checkbox above already governs this button, so the inline
+          // notice would ask for the same agreement twice on one screen.
+          showTermsNotice={false}
+          disabled={!agreed}
+          disabledHint={t("signup.agreeFirstHint")}
+        />
+      </div>
     </form>
   );
 }

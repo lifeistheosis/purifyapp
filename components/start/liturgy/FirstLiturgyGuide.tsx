@@ -35,6 +35,7 @@ import {
   type StepId,
 } from "@/lib/start/liturgyPlan";
 import { useMounted } from "@/lib/useMounted";
+import { movePage } from "@/lib/ui/inPageMove";
 
 import { PartsSheet, SourcesSheet, WhySheet } from "./GuideSheets";
 import { StepCustoms, StepIntro, StepKind, StepPart, StepReady, StepWhen } from "./GuideSteps";
@@ -79,9 +80,14 @@ export function FirstLiturgyGuide() {
 
   const go = useCallback((next: StepId) => {
     moved.current = true;
-    goToStep(next);
-    const hash = next === "intro" ? "" : `#${next}`;
-    window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search + hash);
+    // A step is a page of the guide, and turns as a pager does: the two
+    // cross-fade as a change inside the page (lib/ui/inPageMove.ts), where
+    // the first answer cut to the next step (Gate 2.0).
+    movePage(() => {
+      goToStep(next);
+      const hash = next === "intro" ? "" : `#${next}`;
+      window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search + hash);
+    });
   }, []);
 
   const openWhy = useCallback((title: string, w: Why) => {

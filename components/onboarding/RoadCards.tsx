@@ -57,6 +57,7 @@ import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { isNativeClient, nativePlatform } from "@/lib/platform/native";
 import { EVENING_DEFAULT, MORNING_DEFAULT, enableReminders, remindersStatus, type EnableWhy } from "@/lib/push/reminders";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
+import { movePage } from "@/lib/ui/inPageMove";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
 
 import { WhereFrom, WhereFromSky } from "./WhereFrom";
@@ -122,7 +123,10 @@ function TipCard({
         </div>
         <button
           type="button"
-          onClick={onClose}
+          // The card folds away and what stood under it glides up into its
+          // place, as a change inside the page (lib/ui/inPageMove.ts); it went
+          // in one frame and the verse of the day jumped 178px up (Gate 2.0).
+          onClick={(e) => movePage(onClose, { grows: [e.currentTarget.closest("[data-road-card]")] })}
           aria-label={t("onboard.nudge.dismiss")}
           className="-me-2 -mt-2 inline-flex size-11 shrink-0 items-center justify-center rounded-full text-paper/50 transition-colors hover:text-paper"
         >

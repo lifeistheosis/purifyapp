@@ -27,6 +27,7 @@ import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { cn } from "@/lib/cn";
 import { dateLocale } from "@/lib/i18n/deviceDates";
+import { movePage, partsAfter } from "@/lib/ui/inPageMove";
 import { softTick } from "@/lib/ui/softTick";
 import type { Attribution, Beat, ChapterWalk, Speaker } from "@/lib/walkthroughs/types";
 
@@ -99,16 +100,29 @@ function Order({ beats, seed, verses, onDone }: { beats: Beat[]; seed: number; v
   const [placed, setPlaced] = useState<string[]>([]);
   const [hint, setHint] = useState<Beat | null>(null);
   const done = placed.length === beats.length;
+  const listRef = useRef<HTMLOListElement>(null);
+  const poolRef = useRef<HTMLDivElement>(null);
+  const hintRef = useRef<HTMLDivElement>(null);
 
-  const tap = (b: Beat) => {
+  // A moment placed joins the order above as a change inside the page
+  // (lib/ui/inPageMove.ts): the order grows by its row, and the moments left
+  // and what follows glide to their places, where the next choice jumped 79px
+  // (Gate 2.0). A wrong moment's hint is let down under them the same way.
+  const tap = (b: Beat, pressed: HTMLElement) => {
     const expected = beats[placed.length];
     if (b.id === expected.id) {
       const next = [...placed, b.id];
-      setPlaced(next);
-      setHint(null);
+      const left = [...(poolRef.current?.children ?? [])].filter((c): c is HTMLElement => c !== pressed && c instanceof HTMLElement);
+      movePage(
+        () => {
+          setPlaced(next);
+          setHint(null);
+        },
+        { grows: [listRef.current], glides: [...left, ...partsAfter(poolRef.current)] },
+      );
       if (next.length === beats.length) onDone();
     } else {
-      setHint(expected);
+      movePage(() => setHint(expected), { grows: [hintRef.current] });
     }
   };
 
@@ -120,7 +134,7 @@ function Order({ beats, seed, verses, onDone }: { beats: Beat[]; seed: number; v
       <p className={STEP_HINT}>{t("walk.orderHint")}</p>
 
       {placed.length > 0 ? (
-        <ol className="mt-3 divide-y divide-paper/[0.07] border-y border-paper/[0.08]">
+        <ol ref={listRef} className="mt-3 divide-y divide-paper/[0.07] border-y border-paper/[0.08]">
           {placed.map((id, i) => {
             const b = beats.find((x) => x.id === id)!;
             return (
@@ -136,18 +150,18 @@ function Order({ beats, seed, verses, onDone }: { beats: Beat[]; seed: number; v
       ) : null}
 
       {!done ? (
-        <div className="mt-3 space-y-2">
+        <div ref={poolRef} className="mt-3 space-y-2">
           {pool
             .filter((b) => !placed.includes(b.id))
             .map((b) => (
-              <button key={b.id} type="button" data-walk-choice onClick={() => tap(b)} className={CHOICE}>
+              <button key={b.id} type="button" data-walk-choice onClick={(e) => tap(b, e.currentTarget)} className={CHOICE}>
                 <span lang="en" dir="ltr">{b.text}</span>
               </button>
             ))}
         </div>
       ) : null}
 
-      <div aria-live="polite">
+      <div ref={hintRef} aria-live="polite">
         {hint && !done ? (
           <>
             <p className="mt-4 font-sans text-detail text-paper/70">{t("walk.orderLook")}</p>

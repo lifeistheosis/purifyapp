@@ -9,6 +9,7 @@ import { cn } from "@/lib/cn";
 import { addToCart, clearCart, openCartDrawer } from "@/lib/shop/cart";
 import { getCartToken } from "@/lib/shop/cartSync";
 import { closeNativeCheckout, openStripe } from "@/lib/shop/openStripe";
+import { movePage } from "@/lib/ui/inPageMove";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SecureCheckoutNote } from "./SecureCheckoutNote";
 import { LegalLink } from "@/components/legal/LegalLink";
@@ -77,6 +78,7 @@ export function BuyBar({
   // and the acceptance is recorded server-side against the order.
   const [agreed, setAgreed] = useState(false);
   const [nudge, setNudge] = useState(false);
+  const barRef = useRef<HTMLDivElement>(null);
   const agreeRef = useRef<HTMLInputElement | null>(null);
 
   function handleAddToCart() {
@@ -88,8 +90,16 @@ export function BuyBar({
 
   async function startCheckout() {
     if (!agreed) {
-      setError(t("shop.agreeTermsFirst"));
-      setNudge(true);
+      // The line under the buttons is let down and the bar rises by it, as a
+      // change inside the page (lib/ui/inPageMove.ts), where the bar jumped
+      // 27px (Gate 2.0); ticking the box takes it away the same way.
+      movePage(
+        () => {
+          setError(t("shop.agreeTermsFirst"));
+          setNudge(true);
+        },
+        { grows: [barRef.current] },
+      );
       agreeRef.current?.focus();
       window.setTimeout(() => setNudge(false), 1400);
       return;
@@ -132,6 +142,7 @@ export function BuyBar({
 
   return (
     <div
+      ref={barRef}
       // Steps away while one of the app's fields has the keyboard (app/globals.css).
       data-foot-bar
       className={cn(
@@ -194,7 +205,7 @@ export function BuyBar({
                 checked={agreed}
                 onChange={(e) => {
                   setAgreed(e.target.checked);
-                  if (e.target.checked) setError(null);
+                  if (e.target.checked && error) movePage(() => setError(null), { grows: [barRef.current] });
                 }}
                 className="mt-0.5 h-4 w-4 shrink-0 accent-paper"
               />

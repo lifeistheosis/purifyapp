@@ -27,6 +27,7 @@ import {
 import { ruleIdForHour } from "@/lib/prayers/ruleForHour";
 import { useIntentions } from "@/lib/prayers/storage";
 import { readMyRule, useMyRule, writeMyRule } from "@/lib/prayers/useMyRule";
+import { movePage } from "@/lib/ui/inPageMove";
 
 import { ItemSheet } from "./ItemSheet";
 import { LibrarySheet } from "./LibrarySheet";
@@ -287,9 +288,17 @@ export function MyRuleBuilder() {
     part && !has(part)
       ? {
           label: part === "morning" ? t("prayers.mine.startFromMorning") : t("prayers.mine.startFromEvening"),
+          // The empty part fills with its rows as a change inside the page
+          // (lib/ui/inPageMove.ts), let down under the switch, where they
+          // came at once (Gate 2.0).
           onStart: () => {
             const chosen = part;
-            save(addItems(rule, chosen, seedOf(chosen)));
+            movePage(
+              () => {
+                save(addItems(rule, chosen, seedOf(chosen)));
+              },
+              { grows: [document.getElementById(`mine-panel-${chosen}`)] },
+            );
           },
         }
       : null;

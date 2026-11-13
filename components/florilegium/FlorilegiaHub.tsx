@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CoverArt } from "@/components/player/CoverArt";
@@ -17,6 +17,7 @@ import { useFlorilegiaSyncedAt, useMinute } from "@/lib/florilegium/syncedAt";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import { useCoversVersion } from "@/lib/readAloud/useCovers";
 import { useMounted } from "@/lib/useMounted";
+import { movePage } from "@/lib/ui/inPageMove";
 
 import { FLOR_FIELD, FLOR_H2, FLOR_PLATE, FLOR_ROW, FLOR_TRAY } from "./florStyle";
 import { GatheringRowBody } from "./GatheringRow";
@@ -65,6 +66,7 @@ export function FlorilegiaHub({ readOnly = false }: { readOnly?: boolean } = {})
   const mounted = useMounted();
   const bookName = useBookName();
   const [creating, setCreating] = useState(false);
+  const place = useRef<HTMLLIElement>(null);
   const [title, setTitle] = useState("");
 
   if (readOnly) {
@@ -94,9 +96,21 @@ export function FlorilegiaHub({ readOnly = false }: { readOnly?: boolean } = {})
     setCreating(false);
   }
 
+  // The row gives way to the naming form in its place, and back, as a change
+  // inside the page (lib/ui/inPageMove.ts): the place grows to the form and
+  // the rows below glide, where it was cut and they jumped 103px (Gate 2.0).
+  function begin() {
+    movePage(() => setCreating(true), { grows: [place.current] });
+  }
+
   function cancel() {
-    setCreating(false);
-    setTitle("");
+    movePage(
+      () => {
+        setCreating(false);
+        setTitle("");
+      },
+      { grows: [place.current] },
+    );
   }
 
   const empty = mounted && florilegia.length === 0;
@@ -116,7 +130,7 @@ export function FlorilegiaHub({ readOnly = false }: { readOnly?: boolean } = {})
               <GatheringRow f={f} />
             </li>
           ))}
-          <li className="theology-rule">
+          <li ref={place} className="theology-rule">
             {creating ? (
               <form onSubmit={submit} className="px-2 pb-2.5 pt-3.5" data-florilegium-naming="">
                 {/* Its own id: the page's title is florilegium-title. */}
@@ -154,7 +168,7 @@ export function FlorilegiaHub({ readOnly = false }: { readOnly?: boolean } = {})
                 </div>
               </form>
             ) : (
-              <button type="button" onClick={() => setCreating(true)} data-florilegium-begin="" className={FLOR_ROW}>
+              <button type="button" onClick={begin} data-florilegium-begin="" className={FLOR_ROW}>
                 <span aria-hidden className={FLOR_PLATE}>
                   <Plus size={18} />
                 </span>
