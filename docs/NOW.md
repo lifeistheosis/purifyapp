@@ -7,7 +7,7 @@ Updated 2026-11-13 01:24 UTC.
 ## 1.9: in flight
 
 - **The pre-build gate has passed.** The final check (2026-11-13 02:12 UTC) found 6 fails, all fixed; the targeted re-check (Admin 2, export of 3b17a0aca, walks 04:39 to 05:47 UTC) passed every screen in scope. Record: `docs/1.9-build/notes/gate-run-1.md`.
-- **The test builds are cutting** from 6193982d5 (since 3b17a0aca only admin, email, ops and server-only files changed, none in the export): Android run 43374905223 (local-first, the main web, publish off: the release APK is the run's artifact for 3 days) and iOS run 43374909047 (local-first, uploaded to TestFlight). The arbiter checks them at 06:29 UTC.
+- **The test builds are ready** (from 6193982d5; since 3b17a0aca only admin, email, ops and server-only files changed, none in the export). Android run 43374905223, green: the release APK is the artifact `app-release-apk` (86 MB, kept until 2026-11-16 06:01 UTC) on https://github.com/lifeistheosis/purifyapp/actions/runs/43374905223. iOS run 43374909047, green: uploaded to App Store Connect, so TestFlight shows it once Apple has processed it.
 - **Named to him before he walks** (the gate's parts sampled, not run whole): John 1 with the interlinear on, 40 of its 847 word taps; the commentary marks, walked by hand on Genesis 1 only; the walks run in Chromium (Android's engine), so the iPhone and iPad are first walked by him; no test web, so the build talks to the main web (his choice, 2026-11-11).
 - **His walk:** uninstall the old build, Testers mode off, start as a new reader.
 - **Admin 2 finished and was archived:** the walk's re-tap mended (54e4554b), /prayers/ walked again clean, the cards' keyboard focus checked on eight webs, the re-check recorded (452f0ffe), baton `docs/handoffs/admin.md` (b6c3e20f). Its next job, after 1.9 ships, is the nightly gate's runner, in a fresh chat.
@@ -16,6 +16,7 @@ Updated 2026-11-13 01:24 UTC.
 
 ## Waiting on him
 
+- **Walk the 1.9 test build** on Android (the APK above) and on iPhone or iPad (TestFlight): uninstall the old build first, Testers mode off, start as a new reader. Then his notes, the 1.9 note in his queue, the drop day, and the phone walks for the store texts.
 - **How readers join the retention emails** (their migration is signed, "yes retention sql"): one asking line in the welcome email (recommended, opt-in) or on by default with a privacy line. Readers' own toggles land on the website after 1.9's store builds; this Nativity Fast only he sees the companion, and Great Lent 2027 is the first reader season.
 - **Yes or no, each with its reasons on the page:** the kit's look is his yes (2026-11-13, "yes look"); the three retention emails, round 2 (e80b0004c; https://claude.ai/artifact/XmM1TmiigBipdaPS8de1sg, version 2), with their new words; round 1 was a no ("could use a better design"). If yes, Fable recommends carrying round 2's faces, button and foot into the approved reader email and brief (his word). A fresh Fable chat takes any change from the baton.
 - A look at the 1.9 social cards (https://claude.ai/artifact/2H7zX18mPgJh9LMZnkw6bs); his yes clears the drop's `cards` piece (`node scripts/drop.mjs waits cards --clear`).
