@@ -1,53 +1,50 @@
-# Baton: Admin panel 2 (the admin panel's side of the Admin role)
+# Baton: Admin panel 3 (the admin panel's side of the Admin role)
 
-Written 2026-11-12, about 23:40 UTC, by session_01VuYTwdGHpocsLjegCEAape. That chat stopped past 500,000 tokens (`docs/OPERATIONS.md` section 2), so the next admin-panel job starts in a fresh chat.
+Written 2026-11-13, about 05:50 UTC, by session_01VuYTwdp6mhe99XWbxc6bLH. The job (sections 2 and 3 of `docs/plans/owner-desk.md`) is pushed; the next admin-panel job starts from here.
 
 ## Role and scope
 
-The admin panel, web only: `app/admin`, `components/admin`, `lib/admin` and their API. Card: `docs/roles/admin.md`. Branch `ccr-07896cf2-bo0afd`. Admin code is not in the 1.9 export, so on the arbiter's word it pushed during the final check, through the guard.
+The admin panel, web only: `app/admin`, `components/admin`, `lib/admin` and their API, and the owner's mail (`lib/email` where the panel sends). Card: `docs/roles/admin.md`. Branch `ccr-07896cf2-bo0afd`. None of it is in the apps' export; it goes live when 1.9 merges to main.
 
 ## Done and pushed
 
-- `3721c0b1`: all the money on Money's chart.
-  - Each day or month stacks the shop (blue), Plus (green), the EIKON Box membership (Pro, magenta), a plan the product name does not say (the ink, his "all white") and refunds below the line (grey).
-  - One amount: after the stores' cut, before Stripe's fees. It equals Came in when both read the kept events.
-  - Code: `lib/admin/moneyChart.ts`; `StackedColumns` in `components/admin/daily/parts.tsx`; the tokens `--adm-money-*` in `app/admin/admin-theme.css`.
-- `41bf07c6`: the quiet board (`docs/plans/owner-desk.md` section 1).
-  - The morning email holds only his items, and its subject names them.
-  - Not before is one tap in the Calendar's task window.
-  - The team's work is never late to him, and the strip counts his items only.
-  - Ship and the patch note left the week.
-  - A missed run is one line, cleared with "Skip these".
-  - Rules: `lib/admin/planner.ts`. The read that keeps a moved task's row: `lib/admin/plannerRead.ts`.
-- `2377317c`: on its own day only, a team piece shows in his email under "Ready to send", with the link that sends it. Email links are `#tab=` now.
-- `4e9e2b25`: Revenue's by-month chart is Money's chart, all time. One component: `components/admin/money/MoneyColumnsChart.tsx`.
+- `c16267a4`: the owner's desk, on his two answers of 2026-11-13.
+  - **The owner's brief**: one email a day at 7:30 AM New York time, the weekly one on Monday, both settings (Calendar, The owner's desk). Today first (what needs him, what goes out with its Hold), then yesterday or the week: readers, money by source in the money chart's colours, Plus, opened most, Community, searches not found, errors; on Monday also what sold Plus, what worked and what did not, three things worth his attention; after a release, a drop or a sale it opens with how it went. Replaces the morning board email and the Monday letter on the heartbeat.
+  - **The sends**: the Sunday email, the monthly note and the feast shop email go out by themselves, the switch on by his word. A piece goes only when that day's brief named it at least two hours before, he has not held it, the board still has it due, at the sends' hour (12 noon) and before 6 PM. The start is the panel's own Send, now shared (`lib/email/campaignStart.ts`).
+  - **The board message**: on its day the brief saves a draft from the week as that week's draft row if the week has none. Never publishes.
+  - **A fault fixed on the way**: the monthly note sent on the 1st ticked the previous month's task (`monthlyRuleOf`, `lib/admin/plannerEvidence.ts`).
 
 ## Open
 
 | What | Owner | Next step |
 |---|---|---|
-| `lib/billing/applyLifecycle.ts` links `/admin?tab=subscriptions` | the next admin chat | The panel reads only `#tab=`, so this opens Home. Make it `#tab=` and add a test. |
-| Sections 2 and 3 of the plan (the sends, the owner's brief) | a fresh chat, once he answers the plan's four questions | When section 2 sends, "Ready to send" becomes "goes out at <hour> unless you hold it" (`morningMail`). |
-| Subscription history before the 1.9 merge | his choice | It needs a RevenueCat key with `charts_metrics:charts:read`. Offer it with the owner's brief. |
-| The strip's words for his items ("deadlines late", "The week is behind") | if he asks | `lib/admin/attention.ts`. The counts are already his only. |
+| The brief in Gmail, Apple Mail and Outlook, light and dark | him, with the first real brief after the merge | Drawn in Chromium at 390 and 800 and held by tests; real clients need his inbox or a testing service on his OK. |
+| His yes to the brief's look, before the merge | him, through the arbiter | The code wears today's email shell (`emailLayout`). The kit's brief (`docs/brand/kit/email/brief.html`, Fable) waits for his yes too, with the kit's look being redone. On his yes to the kit's, swap `briefShell` in `lib/admin/ownerBriefSend.ts`; every part is drawn on `lib/email/theme.ts` tokens. The reasons for this look are in `docs/plans/owner-desk.md` section 3. |
+| Directional questions in the brief | the arbiter, if he wants a channel of their own | For now a task added to the Calendar reaches him under "Needs you". |
+| `lib/billing/applyLifecycle.ts` links `?tab=` | Updates 3 (NOW.md) | Unchanged. |
+| Subscription history before the merge | his choice | A RevenueCat key with `charts_metrics:charts:read`. Offer it with the brief. |
+| The strip's words for his items | if he asks | `lib/admin/attention.ts`. |
 
 ## Gotchas
 
-- A fresh container: `npm ci`, then `npx next typegen` before typecheck. next-env.d.ts is gitignored.
-- The dev build loses the `#tab=` deep link on first load, because strict mode runs the shell's first effects twice. To walk a tab, set `location.hash` after load.
-- Walk the panel on `/admin/shell-preview` with Playwright. Answer `/api/admin/...` from sample data built by the real pure code, and never commit real figures.
-- `plus_events` is 1.9's table and is absent on production until the merge (probed 404 on 2026-11-12).
-- A table set `sr-only` still lays out at full width. Wrap it in a `div.sr-only`.
-- Money's three hues pass the data-viz validator with every pair against every other. A fourth hue cannot, without yellow or orange.
-- In the tests, fake the admin client so it honours its filters (`quietBoard.test.ts`). A fake that ignores them hides a row the real read loses.
+- Every hour on the desk is New York's (`OWNER_ZONE`), bounded (`BRIEF_HOURS`, `SEND_HOURS`, `SEND_UNTIL` 6 PM) so his date and the UTC date the board and the drafts use are the same. Do not widen them without moving those to his day.
+- What the brief names is written (`site_settings`, `owner_desk_announced`) only after it was sent. No announcement, no send. A desk or board that cannot be read sends nothing.
+- The Hold link opens the desk (`#tab=calendar`). Never make an email link that acts by itself: link checkers press links.
+- `site_settings` is on production (the baseline found it), so there is no migration. Without it the writes answer 409 and nothing sends itself.
+- Plus, searches not found and errors read "not kept yet" until 1.9's migrations run.
+- The walk: `next dev` with dummy `NEXT_PUBLIC_SUPABASE_*` values, `/admin/shell-preview`, set `location.hash` after load, answer `/api/admin/desk` with sample JSON in the route's shape.
+- The old senders (`plannerDigest.ts`, `sendWeeklyLetter`) stay, off the clock. Putting one back on the heartbeat means two emails a morning.
+- The test helper `lib/admin/__tests__/fakeDb.ts` honours eq, in, gte, lt and lte, and pages by range.
 
 ## His words that still apply
 
-- 2026-11-12 about 21:42 UTC: "I want you to show everything related to money on the timeline ... And if you can make it a different color, right, if that helps ... If there's no distinction, then it just shows up all white."
-- 2026-11-12 about 21:51 UTC: "If it doesn't have anything to do with my input ... So you can automate that process, right? And clearly, if there's a directional input that you need, you could just let me know."
+- 2026-11-13 04:38 UTC: "and yes ok for the owners brief"
+- 2026-11-13 04:39 UTC: "yes auto but also we need to work on designs"
+- 2026-11-12 about 21:51 UTC: "I don't just want the same reoccurring spam email that gets sent to me."
 - No gold or yellow (since 1.7.1). Spend only what was asked. No em dashes, side stripes, sparkle or light rays.
 
 ## Where things are
 
-- Plans and state: `docs/plans/owner-desk.md` (the plan and his four questions), `docs/NOW.md`, `docs/OPERATIONS.md`.
-- Tests in `lib/admin/__tests__/`: `moneyChart.test.ts`, `money.test.ts`, `quietBoard.test.ts`, `planner.test.ts`, `dailyParts.test.ts`, `adminTheme.test.ts`.
+- Plan and state: `docs/plans/owner-desk.md` (sections 2 and 3 marked built), `docs/NOW.md`, `docs/OPERATIONS.md`.
+- The brief: `lib/admin/ownerBrief.ts` (pure), `briefFigures.ts`, `briefToday.ts`, `briefCharts.ts`, `ownerBriefSend.ts`. The desk: `ownerDesk.ts` (rules), `ownerDeskStore.ts`, `autoSends.ts`, `boardDraft.ts`, `boardRead.ts`; `components/admin/planner/OwnerDesk.tsx`; `app/api/admin/desk/route.ts`. The heartbeat: `lib/ops/maintenance.ts`.
+- Tests in `lib/admin/__tests__/`: `ownerDesk`, `ownerBrief`, `briefFigures`, `briefToday`, `autoSends`, `ownerBriefSend`, `deskRoute`.
