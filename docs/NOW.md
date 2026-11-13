@@ -23,7 +23,7 @@ Updated 2026-11-13 01:24 UTC.
 
 ## Waiting on him
 
-- **Now, for the re-check:** his word that Admin 2 may read the main web's public Supabase key from purifyapp.net's own scripts into the export command (never printed or saved). Its container's safety check refused the read without his word. The key is public by design (every visitor's browser loads it), but without it the export is not in release positions.
+- The public key for the re-check: given (2026-11-13 03:32 UTC, "yes read the key").
 - His four answers on the owner's desk plan (`docs/plans/owner-desk.md`, last section): the data-built emails sending themselves unless held, the brief's hour, a shop and sourcing chat, and who builds the design kit.
 - Walk the test build once it is cut. Then: accept the 1.9 note in Admin, set the drop day, and submit both builds after the phone walks. On release day: the Purify profile's status, and opening campaigns.
 - The company: C0 (the address on the D-U-N-S record) and C0b (the papers). Send the company's exact name as the EIN letter has it. All in OWNER-STEPS.md.
