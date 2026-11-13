@@ -66,6 +66,8 @@ export function MotionNotice() {
     <div
       role="status"
       aria-live="polite"
+      // Steps away while one of the app's fields has the keyboard (app/globals.css).
+      data-foot-bar
       className="lm-card fixed inset-x-4 bottom-[calc(env(safe-area-inset-bottom,0px)+6rem)] z-[110] mx-auto max-w-md rounded-2xl p-4 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.65)] ring-1 ring-inset ring-paper/12 md:bottom-6"
       style={CARD_BG}
     >

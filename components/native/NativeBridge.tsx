@@ -19,7 +19,10 @@
 //   5. puts right the hard loads that still happen (a reload after a password
 //      change, a window.location move): the app comes up as the front door
 //      under another screen's address, and the router is asked for the screen
-//      the address names (lib/nav/entry.ts).
+//      the address names (lib/nav/entry.ts), and
+//   6. says on the page when one of its fields has the on-screen keyboard
+//      (lib/ui/keyboardFlag.ts), so nothing fixed at the foot of the screen
+//      stands over the keyboard (app/globals.css, "The reader's own keyboard").
 //
 // The @capacitor/* JS proxies are safe to import in the web bundle, but
 // every call is gated on isNativeClient() because their web fallbacks
@@ -35,6 +38,7 @@ import { isNativeClient, nativePlatform } from "@/lib/platform/native";
 import { listenForTaps, refreshNative, refreshNativeIfMoved, relinkNative } from "@/lib/push/native";
 import { onlyTheHashChanges, setPushOpener } from "@/lib/push/open";
 import { createClient } from "@/lib/supabase/client";
+import { followKeyboard } from "@/lib/ui/keyboardFlag";
 
 import { followStatusBar } from "./statusBar";
 
@@ -144,6 +148,13 @@ export function NativeBridge() {
     };
     document.addEventListener("visibilitychange", onVisible);
     return () => document.removeEventListener("visibilitychange", onVisible);
+  }, []);
+
+  // One of the page's fields has the on-screen keyboard: the bars at the foot
+  // step away until it has gone (lib/ui/keyboardFlag.ts).
+  useEffect(() => {
+    if (!isNativeClient()) return;
+    return followKeyboard();
   }, []);
 
   // A sign-in gives this phone to the account now signed in, without waiting

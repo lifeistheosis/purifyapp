@@ -89,7 +89,8 @@ export function EikonBoxBridge() {
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 px-4 pb-[calc(env(safe-area-inset-bottom)+76px)] md:pb-5">
+    // data-foot-bar: it steps away while one of the app's fields has the keyboard (app/globals.css).
+    <div data-foot-bar className="fixed inset-x-0 bottom-0 z-40 px-4 pb-[calc(env(safe-area-inset-bottom)+76px)] md:pb-5">
       <div className="mx-auto max-w-[420px] rounded-2xl border border-gold/35 bg-night/95 p-4 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.65)] backdrop-blur-sm">
         <div className="flex items-start justify-between gap-3">
           <p className="font-sans text-caption font-semibold text-gold/80">

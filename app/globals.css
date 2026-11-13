@@ -984,6 +984,32 @@ body[data-toast-leaving]:not([data-toast-up]) [data-screen-edge="bottom"]:not([d
  transition: none !important;
 }
 
+/* The reader's own keyboard (build 95, with note 14). While one of the app's
+   fields has the on-screen keyboard (html[data-keyboard="up"], which
+   lib/ui/keyboardFlag.ts sets in the apps), nothing fixed at the foot of the
+   screen stands over it: everything that stands at the foot
+   (data-screen-edge="bottom", what goes behind a sheet), the bars that
+   float over the tab bar (.now-playing-lift: the player, a toast, a chant's
+   bar, the journal's Write button) and the few marked data-foot-bar (the
+   EIKON box's card, the motion notice, the shop's buy bar and the cart's).
+   It outlasts a toast's own stepping aside above. On Android the web view
+   is as tall as what the keyboard leaves, so a bar fixed at the foot rode up
+   on the keyboard and covered the field being typed in; on an iPhone the
+   keyboard is laid over the page and the bars showed through under it. They
+   go at once as the keyboard comes, so none is seen riding it, and come back
+   on their own transitions once it has gone. Hidden to the last part (the
+   player's card and the dock's faces say visible of themselves), so neither
+   a tap nor a screen reader meets one it cannot see. A bar that holds the
+   field being typed in stays (:focus-within): the keyboard is for it. */
+html[data-keyboard="up"] :is([data-screen-edge="bottom"], .now-playing-lift, [data-foot-bar]):not(:focus-within) {
+ opacity: 0 !important;
+ visibility: hidden !important;
+ transition: none !important;
+}
+html[data-keyboard="up"] :is([data-screen-edge="bottom"], .now-playing-lift, [data-foot-bar]):not(:focus-within) * {
+ visibility: hidden !important;
+}
+
 /* The reader's dock (1.9, the owner's pick for Listening, "one bar while
    playing": B at rest, "when you scroll, it turns into C";
    components/bible/ReaderDock.tsx). While anything is loaded in the player,

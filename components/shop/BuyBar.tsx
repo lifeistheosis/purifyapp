@@ -132,6 +132,8 @@ export function BuyBar({
 
   return (
     <div
+      // Steps away while one of the app's fields has the keyboard (app/globals.css).
+      data-foot-bar
       className={cn(
         // The bottom pad has to clear the home indicator on mobile web, where
         // safe-pb is inert (no tab bar out here). max() so it never drops

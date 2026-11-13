@@ -8,6 +8,12 @@
  * page (Chrome on Android since 108, Safari always), so `position: fixed;
  * bottom: 0` and `dvh` both sit under it. A surface that takes typing sizes
  * its box to this frame instead, and its last row ends above the keyboard.
+ * Inside the Android app it is the other way: the safe-area plugin pads the
+ * window for a keyboard one of the page's fields asked for, so the web view
+ * itself is as tall as what the keyboard leaves, and the frame is the whole
+ * window; a box sized to the frame is right either way. What is fixed at the
+ * foot rides up with the window there, which is why it steps away while the
+ * keyboard is up (lib/ui/keyboardFlag.ts).
  * A headless browser has no keyboard, so a check for this has to stand one in
  * by replacing `window.visualViewport` before the page's code runs.
  *

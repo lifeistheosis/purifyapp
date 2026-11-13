@@ -32,6 +32,15 @@
 //   own       Purify's own keyboard, on a sheet whose field has the focus: the
 //             window is shortened as the plugin does for it, and the field and
 //             its sheet must stand above the keyboard. It still moves.
+//   bars      Purify's own keyboard over a field in the page (with note 14:
+//             the tab bar and the journal's Write button rode up on it and
+//             covered the field). No screen a new reader opens has a field in
+//             the page beside the tab bar (each search opens a sheet, and the
+//             journal's is Plus), so one is put on Prayers where the foot of
+//             the screen will be once the keyboard is up, and tapped: while
+//             the keyboard is up every bar fixed at the foot has stepped away
+//             (lib/ui/keyboardFlag.ts, app/globals.css) and the field is
+//             uncovered; once it has gone the tab bar is back.
 //   rotate    a real turn of a tablet still lays the page out again.
 //
 //   npm run build:android, then:
@@ -91,8 +100,9 @@ const SCREENS = [
   { at: "/bible/john/1/", sheet: "Pick a chapter, currently John 1" },
   { at: "/saints/", sheet: "Search the saints" },
   { at: "/community/", sheet: "Purify" },
+  { at: "/prayers/", field: true },
 ];
-const ALL_MODES = ["plain", "keyboard", "vv", "foreign", "own", "rotate"];
+const ALL_MODES = ["plain", "keyboard", "vv", "foreign", "own", "bars", "rotate"];
 
 const MIME = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".txt": "text/plain; charset=utf-8", ".woff2": "font/woff2", ".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp", ".avif": "image/avif", ".svg": "image/svg+xml", ".ico": "image/x-icon", ".mp3": "audio/mpeg", ".webmanifest": "application/manifest+json", ".xml": "application/xml" };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -102,7 +112,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function browser() {
   const port = 9200 + Math.floor(Math.random() * 700);
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "return-walk-"));
-  const proc = spawn(CHROME, ["--headless", "--no-sandbox", `--remote-debugging-port=${port}`, `--user-data-dir=${dir}`, `--window-size=${W},${H}`, "--hide-scrollbars", "--mute-audio", "--no-first-run", "about:blank"], { stdio: "ignore" });
+  // The window is roomier than the phone: the first frames after a tab comes back are taken from the
+  // window itself (its content is 143px shorter than its size, and never under 500 wide), and a window
+  // smaller than the phone would cut off the foot of every one of them.
+  const proc = spawn(CHROME, ["--headless", "--no-sandbox", `--remote-debugging-port=${port}`, `--user-data-dir=${dir}`, `--window-size=${W + 210},${H + 300}`, "--hide-scrollbars", "--mute-audio", "--no-first-run", "about:blank"], { stdio: "ignore" });
   let version = null;
   for (let i = 0; i < 150 && !version; i++) {
     await sleep(100);
@@ -308,6 +321,50 @@ async function walk(screen, mode, rule) {
     const page = await open(cdp, screen);
     const focused = await page.evaluate(fieldFocused);
     const metrics = (w, h) => page.send("Emulation.setDeviceMetricsOverride", { width: w, height: h, deviceScaleFactor: SHOTS ? 2 : 1, mobile: true });
+    if (mode === "bars") {
+      // A field in the page where the foot of the screen will be once the keyboard is up (the journal's
+      // search sat there), tapped as a finger taps it.
+      const point = await page.evaluate(`(() => {
+        window.scrollTo(0, 0);
+        const input = document.createElement("input");
+        input.type = "search";
+        input.setAttribute("data-walk-field", "");
+        input.style.cssText = "position:absolute;left:16px;right:16px;top:${H - KB - 72}px;height:48px;font-size:16px;z-index:1";
+        document.body.appendChild(input);
+        const r = input.getBoundingClientRect();
+        return [r.x + r.width / 2, r.y + r.height / 2];
+      })()`);
+      await page.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: point[0], y: point[1] }] });
+      await sleep(60);
+      await page.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+      await sleep(300);
+      // The keyboard comes: the plugin pads the window for the page's own field.
+      await metrics(W, H - KB);
+      await sleep(500);
+      const up = await page.evaluate(`(() => {
+        const f = document.querySelector("[data-walk-field]");
+        const r = f.getBoundingClientRect();
+        const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+        const bars = [...document.querySelectorAll('[data-screen-edge="bottom"], .now-playing-lift, [data-foot-bar]')];
+        const showing = bars.filter((b) => !b.contains(f) && [b, ...b.querySelectorAll("*")].some((e) => getComputedStyle(e).visibility !== "hidden"));
+        return { focused: document.activeElement === f, flag: document.documentElement.getAttribute("data-keyboard"), bars: bars.length, showing: showing.map((b) => b.tagName + (b.getAttribute("aria-label") ? "[" + b.getAttribute("aria-label") + "]" : "")), uncovered: hit === f || f.contains(hit) };
+      })()`);
+      // It goes: the window has its height back.
+      await metrics(W, H);
+      await sleep(600);
+      const down = await page.evaluate(`(() => { const t = document.querySelector("[data-tab-bar]"); const cs = t && getComputedStyle(t); return { flag: document.documentElement.getAttribute("data-keyboard"), tabBar: !!cs && cs.visibility === "visible" && Number(cs.opacity) > 0.99 }; })()`);
+      // And it answers a finger again: Today's tab, tapped, goes to Today.
+      const tab = await page.evaluate(`(() => { const a = document.querySelector('[data-tab-bar] a[href="/"]'); if (!a) return null; const r = a.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; })()`);
+      if (tab) {
+        await page.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: tab[0], y: tab[1] }] });
+        await sleep(60);
+        await page.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+      }
+      let went = false;
+      for (let i = 0; i < 40 && !went; i++, await sleep(100)) went = (await page.evaluate("location.pathname")) === "/";
+      const ok = up.focused && up.flag === "up" && up.bars > 0 && up.showing.length === 0 && up.uncovered && down.flag === null && down.tabBar && went;
+      return { ok, detail: `keyboard up: the flag ${up.flag}, ${up.bars - up.showing.length} of ${up.bars} foot bars stepped away${up.showing.length ? ` (showing: ${up.showing.join(", ")})` : ""}, the field ${up.uncovered ? "uncovered" : "covered"}; keyboard gone: the flag ${down.flag}, the tab bar ${down.tabBar ? "back" : "missing"}, and its Today tab ${went ? "goes to Today" : "does nothing"}` };
+    }
     if (mode === "own") {
       if (!focused) return { skip: "no field has the focus here" };
       // The field the keyboard is for, before and after the window makes room for the keyboard.
@@ -392,6 +449,7 @@ if (SELF_TEST) {
   for (const screen of SCREENS) {
     if (ONLY && !ONLY.includes(screen.at)) continue;
     for (const mode of MODES ?? ALL_MODES) {
+      if (screen.field ? mode !== "bars" : mode === "bars") continue;
       if (mode === "rotate" && screen.sheet) continue;
       if (mode === "own" && !screen.sheet) continue;
       runs.push({ screen, mode, rule: RULE, expect: true });
@@ -401,7 +459,7 @@ if (SELF_TEST) {
 console.log(`return walk: ${runs.length} returns on ${OUT}, the safe-area plugin's rule: ${RULE === "field" ? "room only for the page's own keyboard (patched)" : "room for any keyboard (published)"}`);
 let fails = 0;
 for (const { screen, mode, rule, expect } of runs) {
-  const name = `${screen.at}${screen.sheet ? ` with "${screen.sheet}"` : ""}, ${mode}${SELF_TEST ? ` (${rule})` : ""}`;
+  const name = `${screen.at}${screen.sheet ? ` with "${screen.sheet}"` : screen.field ? " with a field in the page" : ""}, ${mode}${SELF_TEST ? ` (${rule})` : ""}`;
   try {
     const r = await walk(screen, mode, rule);
     if (r.skip) {
