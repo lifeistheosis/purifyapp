@@ -1,10 +1,12 @@
 -- The baseline: what production was given by hand, made the same way on a
 -- database built from this folder alone (the test web's, first).
 --
--- NOT SIGNED. Read second by the Updates chat (2026-11-10: safe for
--- production as written, with three additions for a new database, all
--- made here); waiting for the owner's yes on its summary in plain words,
--- like every migration (AGENTS.md, docs/1.9-build/OWNER-STEPS.md R0b).
+-- SIGNED: the owner's word to the arbiter, 2026-11-13 about 04:49 UTC,
+-- "yes to the 19", given on the table of all nineteen 1.9 migrations in
+-- docs/1.9-build/MERGE-DAY.md (step 3). Before that, OWNER-STEPS.md R0b
+-- recorded it under "rec yes to all", put to him as "yes baseline".
+-- Read second by the Updates chat (2026-11-10: safe for production as
+-- written, with three additions for a new database, all made here).
 -- Nothing here has been run anywhere but a scratch database.
 --
 -- AMENDED IN PLACE ONCE, 2026-11-10, before it had run anywhere (the test
