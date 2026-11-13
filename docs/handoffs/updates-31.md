@@ -1,6 +1,6 @@
 # Baton: Updates 31 (a fixer: the last faults of 1.9)
 
-Written 2026-11-13 about 23:55 UTC by Updates 31 (session_01VuYTwZVmq1NTz1N2aYeCeR), reporting to Arbiter 3 (session_01VuYTwajSPo1Rq2R34jWrk6), rotated at its context budget (200,000 tokens). Card: `docs/roles/fixer.md`. Branch `ccr-07896cf2-bo0afd`. Read first: this baton; `docs/handoffs/updates-18.md` (Open 3 to 5) for causes 7, 8 and 9.
+Written 2026-11-13 about 23:55 UTC by Updates 31 (session_01VuYTwZVmq1NTz1N2aYeCeR), reporting to Arbiter 3 (session_01VuYTwajSPo1Rq2R34jWrk6), then Arbiter 4 (session_01VuYTwcgDURTqVoLw8nQD9m), rotated at its context budget (200,000 tokens). Card: `docs/roles/fixer.md`. Branch `ccr-07896cf2-bo0afd`. Read first: this baton; `docs/handoffs/updates-18.md` (Open 3 to 5) for causes 7, 8 and 9.
 
 ## Role and scope
 
@@ -13,6 +13,17 @@ Mend what the arbiter routes, each fault with a test that fails on the old code,
 - "Ask a Priest" and a reader's name blank while the main web answers, and the switch into Community, are the main web's pre-merge state unless found otherwise.
 - From Updates 30: Community's thread rail is a connector, not a side stripe (its removal held as `docs/1.9-build/drafts/community-thread-rail.patch`); `--pixels always` belongs to the pre-build gate.
 - Beside this chat: Updates 26 (the looks and Settings), Updates 28 (the Fast, the Journal, the ambience, the emails), Updates 29 (round 1, notes 29, 17, 9). In the 21 catalogues and `app/globals.css` keep both changes.
+
+## Arbiter 4's next round (22:57 UTC, delivered late, after the container's restart; not started)
+
+Reports go to **Arbiter 4, session_01VuYTwcgDURTqVoLw8nQD9m** (Arbiter 3 handed over at 22:47). One export and the fix checklist; each needs a test that fails on the code now. Details and commands: `docs/handoffs/updates-28.md` (0fc5adf0), "Open" item 1.
+
+1. The ambience sheet: two taps move a tile 7px and 9px against the limit of 4 ("The sea: takes Rain's place" and "Bell and stillness: stops"); suspected `useHoldStill` in `components/player/AmbienceSheet.tsx` as the per-sound volumes close. Shown by `scripts/gate/ambience-sheet.mjs` run alone.
+2. The Plus preview's strip: a tap on The sea moves its tile 13.3px (`SELLS_PLUS=1 scripts/gate/ambience-sheet.mjs`).
+3. checkMock with pixels fails the Plus preview at 390 only (English 94, Arabic 111) on John 1's verses in its window, for example 2.41 to 3.08:1 on Councils. First find whether it predates b5d9edb3 (the photographs); mend it either way.
+4. The arbiter's call, not his: round 1's small-line rule (sentence case, never capitals spaced out; his "yes to all", 20:47) applies to the account and order email shell (`lib/email/theme.ts`, `EMAIL_THEMES.night`): its small line and micro labels to sentence case, the wordmark in the kit's own letters. Run the kit's check, then republish the after stills on https://claude.ai/artifact/Gcumt9ReKxJ6Yhy2Drh9Um (source `docs/1.9-build/drafts/emails-round-3/shell/`; read it with the Artifact tool first).
+
+For a rebase: Updates 33 (round 1) raises the small lines in ProfileCard, ProfileViewer and CommunityClient to /55; whoever pushes second keeps both.
 
 ## Done (one round, on the export of de5a90f6, cut 22:55 UTC)
 
@@ -28,7 +39,7 @@ Mend what the arbiter routes, each fault with a test that fails on the old code,
 1. **Held, for his yes: the first launch's dialogs under a look** (`docs/1.9-build/drafts/onboarding-dialog-look-ground.patch`, committed `86b819a7`). `html[data-look] .lm-hero { background: transparent !important }` clears the questions' and the second chance's full-screen dialogs (OnboardingFlow, RoadCards, both `lm-hero`): on all fifteen looks Today shows through them; at 390 the heading reads 2.08 to 2.99:1 and its line 1.13 to 1.39:1. A reader meets it when the questions or the second chance open while wearing a look (looks are new in 1.9). The patch gives a dialog on lm-hero the look's own ground (`var(--color-night)`), with a test; a still on Linen with the rule injected looks right (clean neutral, no parchment). Updates 26 holds the looks: say which chat applies it.
 2. **Found, not routed: typed arrows elsewhere.** Many catalogue lines still end in a typed "→" (Prayers' "Open today's prayer →" and kin), and some components draw one in JSX (`components/prayers/PrayerBookIndex.tsx` line 105, `PrayNow.tsx` 128 and 159, `PrayersDayCard.tsx` 67, `app/(app)/prayers/page.tsx` 193). In Arabic they point the wrong way. Ask the arbiter whether it is one sweep and whose.
 3. **Cause 9** (updates-18 Open 5): the eight feature walks (asked-again, faith-answers, learn, legal-sheet, plus-intro, plus-order, questions-top, reminders) each call `page.emulateMedia({ reducedMotion: "reduce" })` after `openPhone`. Run each with motion on and pinned (`scripts/lib/motion.mjs`: `motionOptions`, `pinMotion` before the first page, `assertMotion` on each screen), keeping a reduced pass where the walk tests the still path. Then run all eight on an export.
-4. **Cause 7** (Open 3): pages that fetch arrive with their shape. A Father's work in the apps draws a blank `min-h-[70vh]` (`components/saints/LazyWritingReader.tsx` line 56); a skeleton is a new loading look, so held for his yes unless the arbiter says otherwise (asked in Updates 31's first message, no answer yet). The shop item arrives blank too (the reduced walk: "the switch into it: blank, moves"; `ShopDetailSkeleton` exists in `components/shop/ShopStates.tsx`).
+4. **Cause 7** (Open 3): pages that fetch arrive with their shape. A Father's work in the apps draws a blank `min-h-[70vh]` (`components/saints/LazyWritingReader.tsx` line 56). **Arbiter 3's call (22:41, delivered late; Updates 31's report said otherwise before it saw it):** arriving with its shape is a fault fix, not a new look, when it uses the loading form the app already has (the house's own skeleton, `components/ui/Skeleton.tsx`, `SkeletonText`); use it and push it with its checks. Only a loading form that would have to be drawn new is held for his yes. The shop item arrives blank too (the reduced walk: "the switch into it: blank, moves"; `ShopDetailSkeleton` exists in `components/shop/ShopStates.tsx`).
 5. **Cause 8** (Open 4): pictures carried, 19 left; the council's plate is stills for his yes first.
 6. Still from the main web until the merge: "Ask a Priest" blank, Anoubius's and Yish's cards blank while the profile comes, the switch into Community (blank, misplaced).
 
