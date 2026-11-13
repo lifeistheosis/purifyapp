@@ -10,15 +10,23 @@ Read first: `docs/roles/arbiter.md`, `docs/NOW.md` (the roster, "Waiting on him"
 - **Designs wait on his yes.** Every design page is in NOW's "Parked for his yes" table with its patch. He was asked (15:43, again with each new page) to answer "designs yes" or name the noes; the arbiter gives no recommendation on taste. On his yeses: ONE fresh Opus chat applies the approved patches together, rebased on the head (the land looks without Desert's part, as Updates 9's baton says; the emails' round 3 with the account and order emails' shell if he says yes to that), one export, one round of checkMock and walks, a push each. Then round 2 of the fifteen screens in a fresh Fable chat from `docs/handoffs/fable-fifteen-screens.md`.
 - **The main web** has only the canonical fix of 1.9 (c7cdc638c). Nothing else of 1.9 is on main, the emails included.
 
-## Asked of him, answers not yet in
+## His "all recs" at 18:53 UTC, and what it decided
 
-1. The design pages: "designs yes", or the noes by name (NOW lists them; twelve pages, among them the Fast and the Journal with three answers and the emails' round 3 with two).
-2. Note 23: recommended, the app asks in its own words before the phone's permission prompt; downloads pause when Purify is left (no Play declaration).
-3. Note 28, the desktop revamp: recommended, in 1.9, folded into the fifteen screens with the computer's frame first, Fable designing, started once the fifteen screens' designs land.
-4. The 1.9 promo film, "more animated" (his word 16:40): recommended, a five second sample now of the app's own cards and buttons moving into place and a transition; the whole film once the 1.9 screens are final. Not started: it waits on his "all recs".
-5. The emails' round 3, two calls: recommended, Dark for everyone (the light scheme out of all nine); and the account and order emails' shell brought to Dark too, with before and after stills in the apply round.
-6. The documentary insert (not 1.9): the 3D sample (https://claude.ai/artifact/5Z5B2zW1vopmX1e2WiiwNt), "yes film" or changes; and Pew's "50 to 65" band (recommended, keep Pew's words). On his yes a fresh Fable chat makes the full film from `docs/handoffs/fable-film.md` (about 2 hours of machine time, no money).
-7. Decided, still to build: readers join the retention emails by one asking line in the welcome email (opt-in), before those emails are switched on. Give it to the apply chat or the next free fixer.
+Taken as yes to every recommendation in words then open (BRAINSTORM, 18:53): the voices' page and its three points; note 23's two calls; note 28 in 1.9 (folded into the fifteen screens, the computer's frame first, Fable designing, started once the fifteen screens' designs land); the 1.9 film's plan (a five second sample now, the whole film once the screens are final); the emails' two calls (Dark for everyone; the account and order emails' shell to Dark too, with stills in the apply round); Pew's "50 to 65" kept; the retention opt-in line built; and this hand-over. Tell him plainly that the voices' page was taken as a yes, so he can say otherwise.
+
+## Your first round (Arbiter 3)
+
+1. Archive Arbiter 2 (session_01VuYTwbacb8geNS4VjyJwQh) once you have read this baton and NOW; it has handed everything over.
+2. Tell each running chat, in one message, that you are the arbiter now: Updates 22, Updates 19, the Fable chat on the 3D sample's second scene (NOW's roster). Updates 19 sends one more line (its last measurements of the voices' sheets); then archive it, its work parked and approved.
+3. Start ONE fresh Opus apply chat for his yeses so far, together, rebased on the head, one export, one round of checks, a push each: the voices (docs/1.9-build/drafts/build-95-note-25-voices.patch, his three points); note 23 (docs/1.9-build/drafts/build-95-note-23.patch with his two calls, finished, with stills); the retention opt-in line in the welcome email (decided; its words shown to him with a still). It takes later design yeses too while under 200,000 tokens.
+4. Start ONE fresh Fable chat for the 1.9 film's sample: five seconds, 9:16 like the first cut (docs/plans/v1.9/video/README.md), Today built by the app's own cards and buttons moving onto the screen and settling into place, then a transition into the next screen; the real export, never drawn by hand; on a page for his yes.
+5. Send him one short message: you hold the arbiter now, what started, and that the design pages still wait on "designs yes" or the noes by name.
+
+## Still waiting on him
+
+- The design pages, no recommendation on taste: "designs yes", or the noes by name (NOW's Parked table and "Waiting on him": the fifteen screens round 1, Settings, the land looks, the Share row, Discover's hold, the patron chooser, the ambience photographs, the social cards, note 27, the Fast and the Journal with three answers, the emails' round 3 with two).
+- The documentary's 3D sample, second pass (a Fable chat is making it): his yes, then the full film from `docs/handoffs/fable-film.md` (about 2 hours of machine time, no money).
+- NOW.md has grown well past one page: rewrite it as one page early in your shift.
 
 ## The chats
 
