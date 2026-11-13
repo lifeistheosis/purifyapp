@@ -9516,6 +9516,25 @@ body[data-route-exit] [data-route-content] {
  pointer-events: none;
 }
 
+/* A change inside a page moves (1.9, the owner's ruling of 2026-11-13: "in-page
+   changes that move content ... move as page switches do"; lib/ui/inPageMove.ts).
+   While html[data-in-page] stands, the browser pictures the screen as it was
+   and as it is: the part that opened or closed (in-page-grows-*) changes size
+   with its words clipped to it, so an answer is let down rather than laid over
+   what is below; what follows it (in-page-glides-*) glides to its new place;
+   the rest cross-fades. On the house curve, in the base duration. Under
+   reduced motion nothing is pictured at all (inPageMove.canMoveInPage). */
+:root[data-in-page]::view-transition-group(*),
+:root[data-in-page]::view-transition-old(*),
+:root[data-in-page]::view-transition-new(*) {
+ animation-duration: var(--duration-base);
+ animation-timing-function: var(--ease-house);
+}
+::view-transition-group(in-page-grows-1),
+::view-transition-group(in-page-grows-2) {
+ overflow: clip;
+}
+
 /* A route that arrived in a transition has been brought in already; its own
    fade on top would bring it in twice (routeMotion.quietEntrance). Its rows
    still come in after it, in their order, as they do after the fade.

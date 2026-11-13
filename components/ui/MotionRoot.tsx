@@ -16,6 +16,7 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 import { checkDeviceSpeed } from "@/lib/ui/deviceSpeed";
+import { moveQuestions } from "@/lib/ui/inPageMove";
 import { motionPlatform, prefersReducedMotion, subscribeReducedMotion } from "@/lib/ui/motion";
 import { MOTION_EVENT } from "@/lib/ui/motionPreference";
 import { MotionNotice } from "./MotionNotice";
@@ -42,6 +43,10 @@ export function MotionRoot() {
     if (motionPlatform() !== "native") return;
     return checkDeviceSpeed(() => window.dispatchEvent(new CustomEvent(MOTION_EVENT)));
   }, []);
+
+  // Every question that opens in place opens as a change inside the page
+  // (lib/ui/inPageMove.ts, the owner's ruling of 2026-11-13).
+  useEffect(() => moveQuestions(), []);
 
   return <MotionNotice />;
 }

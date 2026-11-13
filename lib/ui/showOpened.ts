@@ -63,6 +63,7 @@
  * No React here, so it can be tested with a stubbed window.
  */
 
+import { isMovingInPage } from "./inPageMove";
 import { prefersReducedMotion } from "./motion";
 import { visibleBand } from "./readingPlace";
 
@@ -245,6 +246,16 @@ export function showOpened(
       return;
     }
     const at = now();
+    // While the opening is being moved as a change inside the page
+    // (lib/ui/inPageMove.ts), the screen shows its picture: a page scrolled
+    // under it would leave the picture's two ends at two places. The page
+    // follows once the move is over, and its moment begins then.
+    if (isMovingInPage()) {
+      arrived = at;
+      last = at;
+      frame = window.requestAnimationFrame(look);
+      return;
+    }
     const ms = first ? 16 : at - last;
     last = at;
 

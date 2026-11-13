@@ -29,6 +29,7 @@ import { useEffect, useState, type MouseEvent } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 import { partJumpTop } from "@/lib/history/scroll";
+import { scrollBehavior } from "@/lib/ui/motion";
 
 export type EventPart = { id: string; labelKey: string };
 
@@ -104,7 +105,9 @@ export function EventPartsNav({ parts }: { parts: EventPart[] }) {
     // scrollIntoView added the page's scroll padding and landed it low). The
     // page has the room to get there on a tall screen too (globals.css, the
     // box under the last part, 1.7.1), and the row pins under the bar and
-    // the status bar's inset (--history-sticky-top).
+    // the status bar's inset (--history-sticky-top). The page glides there on
+    // the house's motion, as a change inside a page moves (the owner's ruling
+    // of 2026-11-13); still where motion is off (Gate 2.0's run: four cuts).
     window.scrollTo({
       top: partJumpTop({
         scrollY: window.scrollY,
@@ -112,6 +115,7 @@ export function EventPartsNav({ parts }: { parts: EventPart[] }) {
         rowTop: parseFloat(getComputedStyle(row).top) || 0,
         rowHeight: row.getBoundingClientRect().height,
       }),
+      behavior: scrollBehavior(),
     });
     setCurrent(id);
   }

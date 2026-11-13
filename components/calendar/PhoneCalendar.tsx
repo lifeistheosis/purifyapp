@@ -53,6 +53,7 @@ import {
 } from "@/lib/calendar/orthodox";
 import { cn } from "@/lib/cn";
 import { dateLocale } from "@/lib/i18n/deviceDates";
+import { arrive, awaitArrival, isMovingInPage, movePageUntil } from "@/lib/ui/inPageMove";
 import { useArrivingImage } from "@/lib/ui/useArrivingImage";
 
 import { LEGEND, weekdayNames } from "./CalendarGrid";
@@ -131,7 +132,23 @@ function stayInPlace(e: React.MouseEvent<HTMLAnchorElement>) {
   const href = e.currentTarget.getAttribute("href");
   if (!href) return;
   e.preventDefault();
-  window.history.replaceState(null, "", href);
+  turnTo(href);
+}
+
+/** What the chosen day's panel says once it has drawn the day asked for (lib/ui/inPageMove.ts, arrive). */
+const DAY_ARRIVED = "calendar-day";
+
+/**
+ * A day chosen, or a month turned, moves as a tab between pages does (the
+ * owner's ruling of 2026-11-13: in-page changes that move content move as
+ * page switches do). The address changes inside the move, and the screen as
+ * it stood is held until the new day's panel has drawn (DAY_ARRIVED): the
+ * day's fast, saints and readings cross-fade, and the fast's line no longer
+ * lands 56px sideways a frame after the panel (Gate 2.0's run, eleven taps).
+ */
+function turnTo(href: string) {
+  if (href === `${window.location.pathname}${window.location.search}`) return;
+  movePageUntil(() => window.history.replaceState(null, "", href), awaitArrival(DAY_ARRIVED));
 }
 
 /**
@@ -304,7 +321,7 @@ export function PhoneCalendar(p: PhoneCalendarProps) {
 
   // A swipe turns the month by the same addresses the chevrons hold.
   const turn = useCallback(
-    (step: 1 | -1) => window.history.replaceState(null, "", step === 1 ? nextHref : prevHref),
+    (step: 1 | -1) => turnTo(step === 1 ? nextHref : prevHref),
     [nextHref, prevHref],
   );
   const gridRef = useRef<HTMLDivElement>(null);
@@ -317,6 +334,7 @@ export function PhoneCalendar(p: PhoneCalendarProps) {
     const was = shownMonth.current;
     if (was === monthKey) return;
     shownMonth.current = monthKey;
+    arrive(DAY_ARRIVED);
     const el = gridRef.current;
     if (!el) return;
     for (const a of el.getAnimations()) a.cancel();
@@ -340,7 +358,9 @@ export function PhoneCalendar(p: PhoneCalendarProps) {
   useLayoutEffect(() => {
     if (shownDay.current === selectedIso) return;
     shownDay.current = selectedIso;
-    if (!motionOn()) return;
+    arrive(DAY_ARRIVED);
+    // Pictured, the change is already seen moving; its own fade on top would bring it in twice.
+    if (!motionOn() || isMovingInPage()) return;
     dayRef.current?.animate([{ opacity: 0.25 }, { opacity: 1 }], { duration: 200, easing: HOUSE_EASE });
   }, [selectedIso]);
 
