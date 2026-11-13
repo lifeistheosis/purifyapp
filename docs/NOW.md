@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state; the log is the release's HANDOFF.md. How the chats run: `docs/OPERATIONS.md`.
 
-Updated 2026-11-13 18:56 UTC, by Arbiter 2, at the hand-over.
+Updated 2026-11-13 18:56 UTC, by Arbiter 2, at the hand-over to Arbiter 3.
 
 ## 1.9: in flight
 
@@ -73,11 +73,11 @@ Each held change is a patch in the repo, so its chat could be archived. On his y
 
 ## The roster
 
-**The arbiter:** Arbiter 2, session_01VuYTwbacb8geNS4VjyJwQh, from 2026-11-13 15:39 UTC, hands over to Arbiter 3 at his "all recs" (18:53 UTC; past the 200,000 line at about 375,000 tokens). Its baton: docs/handoffs/arbiter.md (the arbiter of 2026-11-09 to 2026-11-13, session_01VuYTwdsjYL2mmq2C2JSt2A, handed over at 647,000 tokens at his "yes optimize"; its baton is docs/handoffs/arbiter.md). Every running chat was told to report to Arbiter 2.
+**The arbiter:** Arbiter 3, session_01VuYTwajSPo1Rq2R34jWrk6, from 2026-11-13 18:55 UTC. Arbiter 2 (session_01VuYTwbacb8geNS4VjyJwQh, from 15:39 UTC) handed over at his "all recs" (18:53 UTC; past the 200,000 line at about 375,000 tokens); its baton is docs/handoffs/arbiter.md. Every running chat was told at 18:56 UTC to report to Arbiter 3 (the arbiter of 2026-11-09 to 2026-11-13, session_01VuYTwdsjYL2mmq2C2JSt2A, handed over at 647,000 tokens at his "yes optimize"; its baton is docs/handoffs/arbiter.md). Every running chat was told to report to Arbiter 2.
 
 | Chat | Session | Holds |
 |---|---|---|
-| Arbiter 2 | session_01VuYTwbacb8geNS4VjyJwQh | his words, NOW.md, routing (the old arbiter archived 15:41 UTC) |
+| Arbiter 3 | session_01VuYTwajSPo1Rq2R34jWrk6 | his words, NOW.md, routing (Arbiter 2 to be archived by it once it has read the baton) |
 | Updates 22 | session_01VuYTwcwrZdGSAQKSDTMEwD | from 18:21 UTC, from Updates 21's baton (docs/handoffs/updates-21.md): the calendar's wide grid on Cappadocian (4.40 and 3.78:1 at 800 and 1032); the rest of the in-page faults by lib/ui/inPageMove.ts (Community 9, plans/acts 5, Today 3, prayers 4, pagers and tabs, the aria-expanded disclosures, /premium/ anchors, the two Terms lines, the council's Next); the profile card's 240px; causes 7, 8 and 9. The arbiter's call: the walk's "misplaced" check subtracts the page's own scroll, proved both ways; rotates at 200,000 tokens |
 | Fable 5.2: Orthodox America in 3D, the second scene | session_01VuYTwbX9EgiUvadznNeBP1 | from 18:26 UTC, at his word (not 1.9): the sample's scene one kept with a new face for its numbers, no cut at 10 seconds, scene two a new design (recommended: the gap, the map's points of light becoming a field of people that thins from the rolls to those who attend), about 20 seconds, on a page for his yes; rotates at 200,000 tokens |
 | Updates 19 | session_01VuYTwaQ5oxRr2ERLvFyCnt | the voices, from Updates 17's baton (docs/handoffs/updates-17.md): push the first patch after the checklist (a call pauses the voice; no English Listen over a downloaded or licensed Bible; the voices' library); apply the second, export, stills with a stand-in voice list, checkMock, and one page for his yes with three points (prompts on Android, licensed translations, Heart's name); rotates at 200,000 tokens. The first patch pushed (03e4aa8a, 9b7714ba, 4e4047d4, 91d8fcd6; walk scripts/gate/voices.mjs): a call, Siri or another app pauses the voice at its word; no English Listen over a downloaded Bible or a licensed translation; the voices' library, no screen. On Android a chime plays over the voice without lowering it (the voice is spoken in another process), never a stop; his phone walk confirms. Now the second patch (one line meets cb1f2333 on the chapter pill), its export, stills with a stand-in voice list and the page for his yes |
