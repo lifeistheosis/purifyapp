@@ -11,6 +11,7 @@ import { checkEmailCopy, explainEmail } from "../../__tests__/emailCopyHelpers";
 import { FAST_IDS, daysAhead, fastOn, weekDays, type FastId } from "../fasts";
 import { COPY, catalogLine, dayLabel, letterFor, letterLines, type RetentionLetter } from "../letters";
 import type { PersonalLine, PlannedRetention } from "../plan";
+import { kitDay } from "../../kitLetters";
 import { standInEmail } from "../render";
 
 /**
@@ -110,14 +111,25 @@ describe("every letter", () => {
   it("says what it is about, for a look to choose its picture and marks by", () => {
     const fasting = LETTERS.find((l) => l.name === "nativity new open")!.letter;
     // 2 December is the eighteenth day of the forty.
-    expect(fasting.about).toEqual({ kind: "fasting_companion", fast: "nativity", fastKey: "nativity-2026", piece: "open", day: 18, of: 40 });
+    expect(fasting.about).toEqual({ kind: "fasting_companion", fast: "nativity", fastKey: "nativity-2026", piece: "open", day: 18, of: 40, style: "new" });
+    // The Old Calendar reader on the same civil day is on day 5 of their own forty.
+    expect(LETTERS.find((l) => l.name === "nativity old open")!.letter.about).toMatchObject({ day: 5, of: 40, style: "old" });
     const patron = LETTERS.find((l) => l.name === "pick_up patron")!.letter;
     expect(patron.about).toEqual({ kind: "pick_up", line: "patron", saintSlug: "nicholas-of-myra", on: "2026-12-06" });
     expect(LETTERS.find((l) => l.name === "first_week verse")!.letter.about).toEqual({ kind: "first_week", step: "verse" });
     for (const { name, letter, fastDates } of LETTERS.filter((l) => l.fastDates)) {
       letter.days!.forEach((d, i) => {
         const status = fastingStatus(fastDates!.dates[i], fastDates!.style);
-        expect([d.fast, d.fastLabel, d.date], name).toEqual([status.kind, status.label, fastDates!.dates[i].toISOString().slice(0, 10)]);
+        const civil = fastDates!.dates[i];
+        expect([d.fast, d.fastRule, d.iso, d.weekday, d.date], name).toEqual([
+          { kind: status.kind, label: status.label },
+          status.rule,
+          civil.toISOString().slice(0, 10),
+          civil.toLocaleDateString("en-US", { weekday: "short", timeZone: "UTC" }),
+          String(civil.getUTCDate()),
+        ]);
+        // The kit's margin takes the day as it is.
+        expect(kitDay(d), name).toMatchObject({ weekday: d.weekday, date: d.date, name: d.name, kind: d.kind, fastWords: status.label });
       });
     }
   });

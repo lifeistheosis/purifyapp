@@ -50,27 +50,42 @@ import type { FastingPiece, FirstWeekStep, PersonalLine, PlannedRetention } from
 /**
  * One day of a fast, as the list in a companion's letter carries it. `day`,
  * `name` and `kind` are what the plain stand-in draws (a feast set heavier);
- * the rest is for a look that draws the week its own way: the civil date,
+ * `weekday`, `date` and `fast` are the shared day's own fields, which the
+ * kit's margin draws (lib/email/kitLetters.ts kitDay), so a look on the
+ * kit's pieces takes these days as they are. The rest is for a look that
+ * draws the week its own way: the civil date,
  * the calendar's register for the day's fast (the kit's fasting colours,
- * docs/brand/kit/email/README.md, "Each day says its fast"), its words, and
- * the feasts by name.
+ * docs/brand/kit/email/README.md, "Each day says its fast"), its label and
+ * its rule in the calendar's words (a week drawn by register can say each
+ * rule once), and the feasts by name.
  */
-export type LetterDay = EmailDay & { date: string; fast: FastKind; fastLabel: string; feasts: string[] };
+export type LetterDay = EmailDay & {
+  weekday: string;
+  date: string;
+  fast: { kind: FastKind; label: string };
+  /** The civil date, YYYY-MM-DD. */
+  iso: string;
+  /** The calendar's rule for the day's fast, beside its label. */
+  fastRule: string;
+  feasts: string[];
+};
 
 /**
  * What a letter is about, for a look to choose its picture and its marks by:
  * the step of the first week; the book, the work or the saint of "where you
  * left off" (a saint's own icon, unless the heritage list holds it back,
  * lib/marketing/heritagePictures.ts); the fast, its day and its length (the
- * Nativity card's star stands higher each day, lib/reading/nativityStar.ts).
- * Nothing in here is said to the reader unless a look says it.
+ * Nativity card's star stands higher each day, lib/reading/nativityStar.ts),
+ * and the reader's own reckoning, which the dates and fasts follow (a look
+ * that names the calendar names this one). Nothing in here is said to the
+ * reader unless a look says it.
  */
 export type LetterAbout =
   | { kind: "first_week"; step: FirstWeekStep }
   | { kind: "pick_up"; line: "bible"; book: string; chapter: number }
   | { kind: "pick_up"; line: "work"; saintSlug: string; workSlug: string }
   | { kind: "pick_up"; line: "patron"; saintSlug: string; on: string }
-  | { kind: "fasting_companion"; fast: FastId; fastKey: string; piece: FastingPiece; day: number; of: number };
+  | { kind: "fasting_companion"; fast: FastId; fastKey: string; piece: FastingPiece; day: number; of: number; style: CalStyle };
 
 export type RetentionLetter = {
   kind: RetentionKind;
@@ -177,9 +192,11 @@ export function fastDays(days: readonly Date[], style: CalStyle): LetterDay[] {
       day: dayLabel(d),
       name: feasts.length > 0 ? `${feasts.join(". ")}. ${status.label}` : status.label,
       kind: feasts.length > 0 ? ("feast" as const) : ("saint" as const),
-      date: d.toISOString().slice(0, 10),
-      fast: status.kind,
-      fastLabel: status.label,
+      weekday: d.toLocaleDateString("en-US", { weekday: "short", timeZone: "UTC" }),
+      date: String(d.getUTCDate()),
+      fast: { kind: status.kind, label: status.label },
+      iso: d.toISOString().slice(0, 10),
+      fastRule: status.rule,
       feasts,
     };
   });
@@ -281,7 +298,15 @@ function fastingLetter(p: Extract<PlannedRetention, { kind: "fasting_companion" 
   const { fast, style } = p;
   const title = FAST_TITLE[fast.id];
   const disclaimer = catalogLine("calendar.fastingDisclaimer");
-  const about: LetterAbout = { kind: "fasting_companion", fast: fast.id, fastKey: fast.key, piece: p.piece, day: fast.dayIndex + 1, of: fast.length };
+  const about: LetterAbout = {
+    kind: "fasting_companion",
+    fast: fast.id,
+    fastKey: fast.key,
+    piece: p.piece,
+    day: fast.dayIndex + 1,
+    of: fast.length,
+    style,
+  };
   if (p.piece === "open") {
     const from = monthDay(dayOf(fast.first));
     const to = monthDay(dayOf(fast.last));
