@@ -1,0 +1,76 @@
+diff --git a/app/globals.css b/app/globals.css
+index a86e8ec6..cddcc092 100644
+--- a/app/globals.css
++++ b/app/globals.css
+@@ -5702,6 +5702,14 @@ html[data-reading-mode="black"] .tile-sheen {
+  :where(html[data-reading-mode="candlelight"]) :where(.premium-plan-card) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68) {
+  color: color-mix(in oklab, var(--color-paper) 70%, transparent);
+  }
++ /* And the two palettes earned by reading, once checkMock wore them
++    (Updates 22's run on the export of 968347b3, 2026-11-13): "or $199 /
++    year" read 4.42:1 on Councils and 4.40 on Cappadocian at 1032, their
++    cream at its faint share on the cards' lit head. On a plan card they draw
++    their faint shares at 62: 4.57:1 at Pro's lightest point. */
++ :where(html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) :where(.premium-plan-card) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
++ color: color-mix(in oklab, var(--color-paper) 62%, transparent);
++ }
+  /* The saint web's sheet (.saint-web-card) is a step darker than Light's
+     card, as a tray is: the line under a saint's name, at Light's 70, read
+     4.41:1 ("787") and 4.47 ("Councils"). At 75, as faint words on a tray,
+diff --git a/lib/ui/__tests__/premiumPlanCardEarned.test.ts b/lib/ui/__tests__/premiumPlanCardEarned.test.ts
+new file mode 100644
+index 00000000..2d2c083c
+--- /dev/null
++++ b/lib/ui/__tests__/premiumPlanCardEarned.test.ts
+@@ -0,0 +1,51 @@
++import fs from "node:fs";
++import path from "node:path";
++
++import { describe, expect, it } from "vitest";
++
++/**
++ * The Plus page's plan cards on the palettes earned by reading (2026-11-13,
++ * found by Updates 22's checkMock on the export of 968347b3, the first run
++ * that wore Councils and Cappadocian on /premium/ at 1032). The yearly price
++ * line, "or $199 / year", read 4.42:1 on Councils and 4.40 on Cappadocian
++ * where Pro's card is lit at its head (59 59 62), as Candlelight's did on
++ * 2026-11-12. Both now draw a plan card's faint shares at 62 percent.
++ *
++ * What it cannot see: the card. checkMock on the export measures /premium/ at
++ * 390, 800 and 1032 on every palette; this holds the share and its reach.
++ *
++ * What a reader would notice if this broke: on Councils or Cappadocian, the
++ * yearly price too faint to read on a tablet.
++ */
++
++const CSS = fs.readFileSync(path.join(process.cwd(), "app/globals.css"), "utf8").replace(/\r\n/g, "\n");
++
++type RGB = [number, number, number];
++const lin = (c: number) => {
++  const v = c / 255;
++  return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
++};
++const lum = ([r, g, b]: RGB) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
++const ratio = (a: RGB, b: RGB) => (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05);
++const over = (fg: RGB, alpha: number, bg: RGB): RGB => fg.map((v, i) => v * alpha + bg[i] * (1 - alpha)) as RGB;
++const hex = (h: string): RGB => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)) as RGB;
++const paperOf = (mode: string) => hex(CSS.slice(CSS.indexOf(`html[data-reading-mode="${mode}"] {`)).match(/--color-paper:\s*(#[0-9a-f]{6});/)![1]);
++
++/** Pro's card at its lightest, where its head is lit. */
++const LIT_HEAD: RGB = [59, 59, 62];
++
++describe("the plan cards' faint words on the palettes earned by reading", () => {
++  const rule = CSS.match(/:where\(html\[data-reading-mode="councils"\], html\[data-reading-mode="cappadocian"\]\) :where\(\.premium-plan-card\) :is\(([^)]*)\) \{\s*color: color-mix\(in oklab, var\(--color-paper\) (\d+)%, transparent\);/);
++
++  it("draws them at a share of their own on a plan card, the yearly price's among them", () => {
++    expect(rule).toBeTruthy();
++    expect(rule![1]).toContain(".text-paper\\/50");
++  });
++
++  for (const mode of ["councils", "cappadocian"]) {
++    it(`${mode}: that share holds 4.5:1 at Pro's lightest point`, () => {
++      const share = Number(rule?.[2] ?? 55) / 100;
++      expect(ratio(over(paperOf(mode), share, LIT_HEAD), LIT_HEAD)).toBeGreaterThanOrEqual(4.5);
++    });
++  }
++});
