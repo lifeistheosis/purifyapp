@@ -1141,7 +1141,11 @@ const results = [];
 let done = 0;
 const queue = [...list];
 async function worker() {
-  const ctx = await browser.newContext({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
+  // With --lang the phone's own language is that language too. The Android shell's stand-in has no
+  // Capacitor Preferences (no native plugin answers it), so the app's launch reads no remembered choice
+  // and opens in the device's language (components/i18n/LocaleBootstrap.tsx, lib/i18n/launchLanguage.ts):
+  // without it, the new reader's Arabic walks ran in English (the final check, 2026-11-13).
+  const ctx = await browser.newContext({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...(LANG ? { locale: LANG } : {}) });
   await ctx.addInitScript((store) => {
     try {
       localStorage.setItem("purify:onboarded", "99");
