@@ -52,6 +52,17 @@ describe("a Greek word's card in Arabic", () => {
     expect(code).toContain('className="hit-44 absolute top-2 end-2 h-7 w-7 rounded-full');
   });
 
+  // Found on the same day's proof of fail 4 (checkMock at 800 and 1032 on the five palettes and the
+  // looks): the card a tablet shows was drawn inside its verse, so in Candlelight, when the verse
+  // stood away from the reading line, it stepped back to 86 percent with the verse and the candle's
+  // veil (fixed, z-30) lay over it: its parse line read 4.09:1 at 1032, and in Arabic at 800 too.
+  // Drawn over the page, as the phone's sheet is, it reads as written on every palette.
+  it("draws the tablet's card over the page, not inside its verse, as the phone's sheet is", () => {
+    const anchored = code.slice(code.indexOf("function WordAnchored"), code.indexOf("function WordDetails"));
+    expect(anchored).toMatch(/return createPortal\(\s*<div\s+ref=\{ref\}\s+role="dialog"/);
+    expect(anchored).toMatch(/<\/div>,\s*document\.body,\s*\);\s*\}\s*$/);
+  });
+
   it("keeps the word's room from the Close on the end side, the Greek still reading left to right", () => {
     // The room is on a line that follows the page, so in Arabic it is on the left, where the Close is.
     expect(code).toMatch(/<p className="text-title-sm text-paper font-semibold leading-tight pe-7">\s*<span lang="grc" dir="ltr" style=\{GREEK\}>\s*\{token\.w\}\s*<\/span>\s*<\/p>/);

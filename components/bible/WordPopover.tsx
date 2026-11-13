@@ -232,7 +232,11 @@ function WordAnchored({
  aboveTop > PAD;
  const top = flipAbove ? aboveTop : belowTop;
 
- return (
+ // Drawn over the page, as the phone's sheet is, not inside the verse: in
+ // Candlelight a verse away from the reading line steps back to 86% and the
+ // candle's veil lies over the page, and the card stepped back under it with
+ // its verse (its parse line read 4.09:1, the proof of fail 4, 2026-11-13).
+ return createPortal(
  <div
  ref={ref}
  role="dialog"
@@ -258,7 +262,8 @@ function WordAnchored({
  </p>
 
  <WordDetails token={token} entry={entry} onWordStudy={onWordStudy} />
- </div>
+ </div>,
+ document.body,
  );
 }
 
