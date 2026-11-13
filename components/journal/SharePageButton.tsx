@@ -2,7 +2,10 @@
 
 // Share this page (1.9, docs/1.9-build/JOURNAL.md, step 3): a saved page goes
 // out as a copy at an unlisted link (/p/<id>), through the phone's share
-// sheet. Everyone may share three pages a month; Plus shares without limit,
+// sheet, the app's one way (lib/share/shareOut.ts): on a computer with no
+// share sheet the link is copied and the button says so, where it once made
+// the link and showed nothing (Updates 8's finding, routed by Arbiter 2 on
+// 2026-11-13). Everyone may share three pages a month; Plus shares without limit,
 // and a reader with none left meets the upgrade sheet named for the journal.
 // The count is the server's (app/api/journal/share), never kept here.
 //
@@ -21,10 +24,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { Check } from "@/components/ui/icons/Check";
 import { Share } from "@/components/ui/icons/Share";
 import { countJournalPageShared } from "@/lib/analytics/featureCount";
 import { apiFetch } from "@/lib/api/client";
-import { shareText } from "@/lib/share/shareImage";
+import { shareOut } from "@/lib/share/shareOut";
 import { softTick } from "@/lib/ui/softTick";
 
 /** The server's answer for a page: shares left this month (null: no limit), and the page's copies out now. */
@@ -33,6 +37,8 @@ type Ready = { left: number | null; shared: number } | null;
 export type JournalShare = {
   ready: Ready;
   busy: boolean;
+  /** The link was copied, where there was no share sheet to hand it to: said for a moment. */
+  copied: boolean;
   share: () => Promise<void>;
   stop: () => Promise<boolean>;
 };
@@ -52,6 +58,7 @@ export function useJournalShare(recordId: string | null, body: string, title: st
     if (recordId) setKnown({ id: recordId, ready: next });
   };
   const [busy, setBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const read = useCallback(async (id: string): Promise<Ready> => {
     try {
@@ -100,7 +107,10 @@ export function useJournalShare(recordId: string | null, body: string, title: st
       countJournalPageShared();
       setReady({ left: data.left ?? null, shared: ready.shared + 1 });
       softTick();
-      await shareText(title || t("journal.title"), title || t("journal.title"), data.url);
+      if ((await shareOut({ title: title || t("journal.title"), url: data.url })) === "copied") {
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 1800);
+      }
     } catch {
       /* the page stays as it was; nothing was shared */
     } finally {
@@ -126,24 +136,28 @@ export function useJournalShare(recordId: string | null, body: string, title: st
     }
   };
 
-  return { ready, busy, share, stop };
+  return { ready, busy, copied, share, stop };
 }
 
 export function SharePageButton({ share }: { share: JournalShare }) {
   const { t } = useTranslate();
-  const { ready, busy } = share;
+  const { ready, busy, copied } = share;
   if (!ready) return null;
+  const named = ready.left === null ? t("journal.share.action") : `${t("journal.share.action")}, ${t("journal.share.left", { count: ready.left })}`;
   return (
     <button
       type="button"
       onClick={() => void share.share()}
       disabled={busy}
       data-journal-share=""
-      aria-label={ready.left === null ? t("journal.share.action") : `${t("journal.share.action")}, ${t("journal.share.left", { count: ready.left })}`}
+      aria-label={copied ? t("common.linkCopied") : named}
       title={ready.left === null ? undefined : t("journal.share.left", { count: ready.left })}
       className="tap-press inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-pill text-paper/80 hover:text-paper disabled:opacity-50"
     >
-      <Share size={20} />
+      {copied ? <Check size={20} /> : <Share size={20} />}
+      <span aria-live="polite" className="sr-only">
+        {copied ? t("common.linkCopied") : ""}
+      </span>
     </button>
   );
 }

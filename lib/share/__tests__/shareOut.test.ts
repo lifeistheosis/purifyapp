@@ -79,7 +79,7 @@ describe("every Share in the app", () => {
   });
 
   it("the places that shared a link ask the one way, and say when they copied", () => {
-    for (const rel of ["components/ui/ShareButton.tsx", "components/player/PlayerMore.tsx", "components/community/CampaignCard.tsx", "components/shop/ambassador/AmbassadorDashboard.tsx"]) {
+    for (const rel of ["components/ui/ShareButton.tsx", "components/player/PlayerMore.tsx", "components/community/CampaignCard.tsx", "components/shop/ambassador/AmbassadorDashboard.tsx", "components/journal/SharePageButton.tsx"]) {
       const src = code(rel);
       expect(src, rel).toMatch(/import \{ shareOut \} from "@\/lib\/share\/shareOut"/);
       expect(src, rel).toMatch(/=== "copied"/);

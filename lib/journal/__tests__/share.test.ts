@@ -137,7 +137,11 @@ describe("the shared page", () => {
   it("the Share button: only where it works; with none left, the upgrade sheet named for the journal", () => {
     expect(button).toContain("if (!ready) return null;");
     expect(button).toMatch(/if \(res\.status === 403\) \{\s*setReady\(\{ \.\.\.ready, left: 0 \}\);\s*upgrade\.open\("journal"\);/);
-    expect(button).toContain("await shareText(");
+    // The app's one way to share (lib/share/shareOut.ts): on a computer with no share sheet the
+    // link is copied and the button says so, never made and shown to nobody (Updates 8's finding).
+    expect(button).toContain("await shareOut({ title: title || t(\"journal.title\"), url: data.url })) === \"copied\"");
+    expect(button).not.toContain("shareText(");
+    expect(button).toMatch(/aria-label=\{copied \? t\("common\.linkCopied"\) : named\}/);
     const composer = read("components/journal/JournalComposer.tsx");
     expect(composer).toContain("const shareable = open && !!draft.editing && !isNote && !empty;");
     expect(composer).toContain("{shareable ? <SharePageButton share={share} /> : null}");
