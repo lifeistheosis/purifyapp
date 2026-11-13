@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state. The log is `docs/1.9-build/HANDOFF.md`, his words are `docs/1.9-build/BRAINSTORM.md`, and how the chats run is `docs/OPERATIONS.md`.
 
-Updated 2026-11-13 19:01 UTC by Arbiter 3, rewritten to one page. What it held before is at d2fde152; the list of chats archived on 2026-11-13 moved to the log.
+Updated 2026-11-13 22:48 UTC by Arbiter 3 at the hand-over to Arbiter 4 (first rewritten to one page at 19:01). What it held before is at d2fde152; the list of chats archived on 2026-11-13 moved to the log.
 
 ## 1.9 now
 
@@ -16,7 +16,7 @@ Updated 2026-11-13 19:01 UTC by Arbiter 3, rewritten to one page. What it held b
 
 | Chat | Session | Holds |
 |---|---|---|
-| Arbiter 3 | session_01VuYTwajSPo1Rq2R34jWrk6 | his words, NOW, routing; from 18:55 UTC (Arbiter 2 archived by it before 19:00 UTC) |
+| Arbiter 4 | session_01VuYTwcgDURTqVoLw8nQD9m | his words, NOW, routing; from 22:47 UTC, from docs/handoffs/arbiter.md (e432ec4a). Arbiter 3 (session_01VuYTwajSPo1Rq2R34jWrk6, from 18:55) handed over past its line at about 528,000 tokens and is archived by Arbiter 4. Every running chat (Updates 23, 28, 29, 31, 32 and the full film's Fable chat) was told at 22:47 UTC to report to Arbiter 4 |
 | Updates 31 | session_01VuYTwZVmq1NTz1N2aYeCeR | from 22:40, from docs/handoffs/updates-30.md (Updates 30 archived 22:40 UTC after babef7ff, 65cb6047, 55994265: Chrysostom's Next folds with one set of words; the profile card placed by its top, no layout shift; its specks placed by translate; the status row from the posts route, a server change; baton 74fd9cc1). The first launch's picture cards below 4.5:1 and the typed arrow in "Learn how to pray it" (routed at 21:56, not in the baton); the arbiter's call: the feed shows a writer's current name where the profile is readable (a server change, no migration); the 1 to 2 frame flashes after taps on Community; causes 7, 8 and 9 |
 | Updates 23 | session_01VuYTwZhTJ9z4k23jxRtLQC | his three yeses pushed (8c1e2bb6 the voices; e0332a71 Now Playing's dim and its dock mirrored in Arabic; a49e1924..fc87b87b note 23 with Purify's own ask first, its walk finding the bridge outside the words' provider and the ask rising with the Bible's offer, both mended; 2c4b4ad3, da5107c6 the welcome line, shown only once the first-week guide is switched on, its page's one button POSTs, a signed link, no new migration or secret; baton ebea0284). Page for his look: https://claude.ai/artifact/PUsgz1LRYCUuPUPFP3dHQT. Kept open, past its line, only for the pixel guards still running since 19:47 (the voices' six guard-only runs, note 23 at 800 and 1032; results in the early hours UTC); archived once they are in |
 | Fable: Orthodox America, the full film | session_01VuYTwaxbA7b5yzKRKC1Jce | from 20:34, at his "now" (not 1.9): 107 seconds, the three scenes, the claim, who they are, where they are, and scene seven re-cut at his word of 21:02 ("the point of the video is to show that america in orthodoxy is growing") on a written source of September 2026 (Sunday attendance up 36% since 2019 in Orthodox parishes, none in all U.S. congregations), the 2010 to 2020 fall kept in one line, no claim that the share of Americans grew; six named source cards, Purify's mark last. Rendering from 21:08, about 90 minutes; past 200,000 tokens, it finishes the page and report, then is archived |
