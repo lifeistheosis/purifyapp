@@ -73,8 +73,9 @@ describe("the 1.9 tour's stop for the new Bibles", () => {
     expect(code("components/bible/MobileReaderActions.tsx")).not.toContain('data-tour="bibles"');
     expect(code("components/bible/TranslationSwitcher.tsx")).toContain('data-tour="bibles"');
     const en = JSON.parse(code("lib/i18n/messages/en.json")) as Record<string, string>;
-    expect(en["tour.step.bibles.title"]).toBe("Six more Bibles");
+    expect(en["tour.step.bibles.title"]).toBe("Seven more Bibles");
     expect(en["tour.story.bibles"]).toContain("Portuguese");
+    expect(en["tour.story.bibles"]).toContain("English");
   });
 });
 

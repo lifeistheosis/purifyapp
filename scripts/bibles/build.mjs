@@ -5,7 +5,7 @@
 //   node scripts/bibles/build.mjs \
 //     --ru <russynodal.json> --grc-ot <grcbrent usfm folder> --grc-nt <grcbyz usfm folder> \
 //     --sr <srp1868 usfm folder> --ar <arb-vd usfm folder> --es <spaRV1909 usfm folder> \
-//     --pt <poralmeida1911.json>
+//     --pt <poralmeida1911.json> --web <eng-webbe usfm folder>
 //
 // Each Bible is built from its source when it is given, and kept as it was
 // built when it is not (its files and its entry in the catalog untouched), so
@@ -63,6 +63,13 @@
 //    All three Public Domain. They are Bibles of the Hebrew canon, as their
 //    publishers made them: no deuterocanonical books, no Psalm 151, Daniel in
 //    twelve chapters, each line under its title saying so.
+//  - English: the World English Bible, British Edition with the deuterocanon,
+//    its 2020 stable text, eBible's eng-webbe,
+//    https://ebible.org/Scriptures/eng-webbe_usfm.zip
+//    (sha256 c982d6311c10e8ac6fc72a09e3ae17647c8502b2478b3d9a769eb64aaa40591c,
+//    read 2026-11-13). Public Domain; "World English Bible" is eBible.org's
+//    trademark, which may name the text only while it is unchanged, as here.
+//    God's name is printed "the LORD" (the Classic edition prints "Yahweh").
 //
 // Where the Greek file is arranged otherwise than the app's books, it is set
 // in the app's books, each change named here and held by
@@ -93,9 +100,9 @@ const args = Object.fromEntries(
     .slice(2)
     .reduce((pairs, a, i, all) => (a.startsWith("--") ? [...pairs, [a.slice(2), all[i + 1]]] : pairs), []),
 );
-if (!args.ru && !(args["grc-ot"] && args["grc-nt"]) && !args.sr && !args.ar && !args.es && !args.pt) {
+if (!args.ru && !(args["grc-ot"] && args["grc-nt"]) && !args.sr && !args.ar && !args.es && !args.pt && !args.web) {
   console.error(
-    "usage: node scripts/bibles/build.mjs [--ru <russynodal.json>] [--grc-ot <grcbrent usfm> --grc-nt <grcbyz usfm>] [--sr <srp1868 usfm>] [--ar <arb-vd usfm>] [--es <spaRV1909 usfm>] [--pt <poralmeida1911.json>]",
+    "usage: node scripts/bibles/build.mjs [--ru <russynodal.json>] [--grc-ot <grcbrent usfm> --grc-nt <grcbyz usfm>] [--sr <srp1868 usfm>] [--ar <arb-vd usfm>] [--es <spaRV1909 usfm>] [--pt <poralmeida1911.json>] [--web <eng-webbe usfm>]",
   );
   process.exit(1);
 }
@@ -211,7 +218,7 @@ const HEADING = /^(id|ide|h|toc\d|toca\d|mt\d?|mte\d?|s\d?|ms\d?|mr|r|sr|sp|cl|c
  * `drop` lists editors' notes printed as text, each left out where it stands
  * and each required to be found, so a list that no longer fits fails.
  */
-function parseUsfm(text, where, { opening = false, drop = null } = {}) {
+function parseUsfm(text, where, { opening = false, drop = null, acrostic = null, introduction = null } = {}) {
   const clean = text
     .replace(/^﻿/, "")
     .replace(/\\(f|fe|x)\s[\s\S]*?\\\1\*/g, "")
@@ -222,6 +229,8 @@ function parseUsfm(text, where, { opening = false, drop = null } = {}) {
   let chapter = null;
   let verse = null;
   let preface = [];
+  /** The heading over a book's introduction, where it has one (\is1). */
+  let introHeading = "";
   const add = (t) => {
     if (!t) return;
     if (!verse && opening && chapter && chapter.every(([n]) => n === "")) {
@@ -263,6 +272,15 @@ function parseUsfm(text, where, { opening = false, drop = null } = {}) {
       continue;
     }
     if (mark === "ip" && !chapter) {
+      // The World English Bible opens each deuterocanonical book with the
+      // edition's own note on it ("is recognised as Deuterocanonical
+      // Scripture by..."): not the book's words, so left out and counted
+      // (`introduction`). Sirach's prologue, under its own heading, is the
+      // book's, and stands before its verse 1.
+      if (introduction && !/\bPrologue\b/.test(introHeading)) {
+        introduction.left += 1;
+        continue;
+      }
       preface.push(rest);
       continue;
     }
@@ -271,6 +289,13 @@ function parseUsfm(text, where, { opening = false, drop = null } = {}) {
       continue;
     }
     if (mark === "d") {
+      // The World English Bible sets the letters over Psalm 119's stanzas
+      // (ALEPH to TAV, "SIN AND SHIN" one of them) as titles: headings, as
+      // \qa is in other files, left out and counted (`acrostic`).
+      if (acrostic && /^[A-Z]+(?: AND [A-Z]+)?$/.test(rest)) {
+        acrostic.found += 1;
+        continue;
+      }
       // A psalm's title. Where the edition prints it apart from verse 1, as
       // the Bibles of the Hebrew canon do, it is the opening line (above);
       // anywhere else it is a mistake in the file.
@@ -278,6 +303,7 @@ function parseUsfm(text, where, { opening = false, drop = null } = {}) {
       else if (rest) throw new Error(`${where}: a psalm title outside a verse`);
       continue;
     }
+    if (/^is\d?$/.test(mark)) introHeading = rest;
     if (HEADING.test(mark)) continue;
     throw new Error(`${where}: unknown mark \\${mark}`);
   }
@@ -291,7 +317,7 @@ function readUsfm(folder, options = {}) {
   for (const name of fs.readdirSync(folder).filter((f) => f.endsWith(".usfm")).sort()) {
     const code = /^\d+-([0-9A-Z]{3})/.exec(name)?.[1];
     if (!code) throw new Error(`not a book: ${name}`);
-    if (LEFT_OUT.has(code)) continue;
+    if (LEFT_OUT.has(code) || options.leave?.has(code)) continue;
     books.set(code, parseUsfm(fs.readFileSync(path.join(folder, name), "utf8"), code, options));
   }
   return books;
@@ -356,6 +382,12 @@ const EMPTY_NUMBERS = {
   // The Almeida's blessing at the end of 2 Corinthians is its 13:13, as
   // Portuguese Bibles number it; the English count's 13:14 stands empty.
   "pt-almeida-1911": 1,
+  // The World English Bible keeps the numbers of verses its text does not
+  // hold: 24 in Sirach (1:5, 1:7, 1:21, 3:19, 10:21, 11:15-16, 13:14,
+  // 16:15-16, 17:5, 9, 16, 18 and 21, 18:3, 19:18-19, 19:21, 20:3, 20:32,
+  // 22:9-10, 23:28, 24:18, 24:24, 25:12, 26:19-27), the longer Greek's
+  // verses, and Luke 17:36, Acts 8:37, 15:34 and 24:7, and Romans 16:25.
+  "en-web": 29,
 };
 
 /**
@@ -437,6 +469,68 @@ function hebrewCanon(folder, bible) {
       last[1] = m[1];
     }
   }
+  return books;
+}
+
+// ---- The World English Bible --------------------------------------------------
+
+/**
+ * The World English Bible (1.9, build 95 note 25: his word of 2026-11-13,
+ * "Both", that it ships in 1.9 and no longer stands as "Coming soon"):
+ * eBible.org's edition with the deuterocanon, Public Domain, its 2020 stable
+ * text. A modern translation: its Old Testament is from the Hebrew and
+ * numbered as English Bibles number it (Psalm 51 is "Have mercy"), with the
+ * deuterocanonical books. Set in the app's books, every one of the 78:
+ *
+ *  - Esther and Daniel are read in their Greek form, with the additions (ESG,
+ *    DAG), as the app's Old Testament is the Septuagint's; the edition's
+ *    Esther and Daniel from the Hebrew (EST, DAN) are left out.
+ *  - Baruch's sixth chapter is the Letter of Jeremiah, a book of its own in
+ *    the app.
+ *  - Psalm 151 (PS2) follows Psalm 150.
+ *  - 4 Maccabees is not among the app's books (LEFT_OUT), and the glossary
+ *    is no book.
+ *  - The edition's note before each deuterocanonical book ("is recognised
+ *    as Deuterocanonical Scripture by...") is the edition's, not the book's:
+ *    left out. Sirach's prologue, the translator's own, stands before its
+ *    verse 1, unnumbered, as in the Greek.
+ *  - The letters over Psalm 119's stanzas, set as titles, are headings: left out.
+ */
+const WEB_CODES = { ...USFM, EZR: "ezra", NEH: "nehemiah", "2ES": "2-esdras" };
+
+function worldEnglish(folder, bible) {
+  const acrostic = { found: 0 };
+  const introduction = { left: 0 };
+  const read = readUsfm(folder, { opening: true, acrostic, introduction, leave: new Set(["GLO", "EST", "DAN"]) });
+  if (acrostic.found !== 22) throw new Error(`${bible}: ${acrostic.found} letters over Psalm 119's stanzas, not the Hebrew alphabet's 22`);
+  // One note before each deuterocanonical book the app has, Esther's in two paragraphs.
+  if (introduction.left !== 14) throw new Error(`${bible}: ${introduction.left} paragraphs of the edition's introductions left out, not 14`);
+  const books = new Map();
+  // Verse numbers kept with no words under them (EMPTY_NUMBERS): left out and counted.
+  let empty = 0;
+  for (const chapters of read.values()) {
+    for (const ch of chapters) {
+      const kept = ch.filter(([n, t]) => n === "" || t);
+      empty += ch.length - kept.length;
+      ch.splice(0, ch.length, ...kept);
+    }
+  }
+  if (empty !== EMPTY_NUMBERS[bible]) throw new Error(`${bible}: ${empty} verse numbers with no words, not ${EMPTY_NUMBERS[bible]}`);
+  for (const [code, chapters] of read) {
+    if (code === "BAR" || code === "PS2") continue;
+    const slug = WEB_CODES[code];
+    if (!slug) throw new Error(`${bible}: no app book for ${code}`);
+    books.set(slug, chapters);
+  }
+  const baruch = read.get("BAR");
+  if (baruch?.length !== 6) throw new Error(`${bible}: Baruch has ${baruch?.length} chapters, not 5 and the Letter of Jeremiah`);
+  books.set("baruch", baruch.slice(0, 5));
+  books.set("epistle-of-jeremiah", [baruch[5]]);
+  const psalms = books.get("psalms");
+  const psalm151 = read.get("PS2");
+  if (psalms?.length !== 150 || psalm151?.length !== 1) throw new Error(`${bible}: the Psalms are not 150 and Psalm 151`);
+  psalms.push(psalm151[0]);
+  if (books.size !== APP_BOOKS.length) throw new Error(`${bible}: ${books.size} books, not the app's ${APP_BOOKS.length}`);
   return books;
 }
 
@@ -536,6 +630,7 @@ const SOURCES = {
   "ar-van-dyck": () => (args.ar ? hebrewCanon(args.ar, "ar-van-dyck") : null),
   "es-reina-valera-1909": () => (args.es ? hebrewCanon(args.es, "es-reina-valera-1909") : null),
   "pt-almeida-1911": () => (args.pt ? portuguese(args.pt) : null),
+  "en-web": () => (args.web ? worldEnglish(args.web, "en-web") : null),
 };
 const built = fs.existsSync(CATALOG) ? JSON.parse(fs.readFileSync(CATALOG, "utf8")) : {};
 const catalog = {};

@@ -478,6 +478,8 @@ const BIBLES = [
   { id: "ar-van-dyck", target: "eng", sameEdition: false },
   { id: "es-reina-valera-1909", target: "eng", sameEdition: false },
   { id: "pt-almeida-1911", target: "eng", sameEdition: false },
+  // The World English Bible (build 95 note 25) numbers as English Bibles do, with the deuterocanon.
+  { id: "en-web", target: "eng", sameEdition: false },
 ];
 
 // The Hebrew, set beside the Old Testament in the interlinear (1.9): the

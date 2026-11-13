@@ -21,14 +21,17 @@ function scopeOf(slug: string, configured: string[] = []): TranslationScope {
 }
 
 describe("the translations a chapter offers", () => {
-  it("lists the KJV and the WEB in the New Testament, and the WEB cannot be picked yet", () => {
+  it("lists the KJV in the New Testament, and every row can be picked", () => {
+    // The World English Bible stood here as "Coming soon", a row that could not be picked; since build
+    // 95 note 25 it is a Bible the reader downloads, listed with these (lib/bible/downloads/catalog.ts).
     const list = translationsFor(scopeOf("john"));
-    expect(ids(list)).toEqual(["kjv", "web"]);
-    expect(list.map((t) => isSelectable(t, []))).toEqual([true, false]);
+    expect(ids(list)).toEqual(["kjv"]);
+    expect(list.map((t) => isSelectable(t, []))).toEqual([true]);
+    expect(TRANSLATIONS.filter((t) => !t.available)).toEqual([]);
   });
 
-  it("lists Brenton's Septuagint and the WEB in the Old Testament", () => {
-    expect(ids(translationsFor(scopeOf("genesis")))).toEqual(["lxx-brenton", "web"]);
+  it("lists Brenton's Septuagint in the Old Testament", () => {
+    expect(ids(translationsFor(scopeOf("genesis")))).toEqual(["lxx-brenton"]);
   });
 
   it("lists only the KJV for an Old Testament book the Septuagint does not carry", () => {
@@ -39,8 +42,8 @@ describe("the translations a chapter offers", () => {
 
   it("lists a licensed translation only once it is set up, and only in the New Testament", () => {
     expect(ids(translationsFor(scopeOf("john")))).not.toContain("nkjv");
-    expect(ids(translationsFor(scopeOf("john", ["nkjv"])))).toEqual(["kjv", "web", "nkjv"]);
-    expect(ids(translationsFor(scopeOf("genesis", ["nkjv", "niv", "nlt"])))).toEqual(["lxx-brenton", "web"]);
+    expect(ids(translationsFor(scopeOf("john", ["nkjv"])))).toEqual(["kjv", "nkjv"]);
+    expect(ids(translationsFor(scopeOf("genesis", ["nkjv", "niv", "nlt"])))).toEqual(["lxx-brenton"]);
   });
 
   it("reads ?v= only in its own testament, and only when it is set up", () => {
@@ -61,7 +64,7 @@ describe("the translations a chapter offers", () => {
   it("groups rows by language, in the order the list gives them", () => {
     const groups = byLanguage(translationsFor(scopeOf("john", ["niv"])));
     expect(groups.map((g) => g.language)).toEqual(["en"]);
-    expect(ids(groups[0].rows)).toEqual(["kjv", "web", "niv"]);
+    expect(ids(groups[0].rows)).toEqual(["kjv", "niv"]);
   });
 
   it("has a note in the catalog for every translation, and a language for each", () => {

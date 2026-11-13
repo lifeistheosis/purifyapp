@@ -52,4 +52,27 @@ describe("a page of a downloaded Bible", () => {
     expect(verseAnchor(1, 1, "")).toBeUndefined();
     expect(verseAnchor(31, 31, "50a")).toBeUndefined();
   });
+
+  // Build 95 note 25: the World English Bible, British Edition, opens as the six do.
+  it("opens the World English Bible's chapters as it prints them: John 1, Genesis 1, its own Psalm 50, Susanna as Daniel 13", () => {
+    const john = biblePage(book("en-web", "john"), 1, 21);
+    expect(john.sections.map((s) => s.chapter)).toEqual([1]);
+    expect(john.sections[0].verses[0]).toEqual([1, "In the beginning was the Word, and the Word was with God, and the Word was God."]);
+    expect(john.last).toBe(51);
+    expect(john.elsewhere).toBeNull();
+    expect(verseAnchor(1, 1, john.sections[0].verses[0][0])).toBe("v1");
+
+    expect(biblePage(book("en-web", "genesis"), 1, 50).sections[0].verses[0]).toEqual([1, "In the beginning, God created the heavens and the earth."]);
+
+    // Numbered as the Hebrew: the app's page for Psalm 50 shows the Bible's own Psalm 50, its title before verse 1.
+    const psalm = biblePage(book("en-web", "psalms"), 50, 151);
+    expect(psalm.sections[0].verses.slice(0, 2)).toEqual([
+      ["", "A Psalm by Asaph."],
+      [1, "The Mighty One, God, the LORD, speaks, and calls the earth from sunrise to sunset."],
+    ]);
+
+    const susanna = biblePage(book("en-web", "daniel"), 13, 14);
+    expect(susanna.sections.map((s) => s.chapter)).toEqual([13]);
+    expect(susanna.sections[0].verses[0]).toEqual([1, "A man lived in Babylon, and his name was Joakim."]);
+  });
 });

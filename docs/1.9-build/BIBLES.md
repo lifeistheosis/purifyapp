@@ -306,6 +306,69 @@ set beside it in the interlinear.
   interlinear's files (34.4 MB, 1,263 files, 195 of them the Hebrew alone).
   Still: `notes/build-93/hebrew-beside-ot-390.png`.
 
+## What shipped (2026-11-13): the World English Bible
+
+Build 95 note 25, his word of 2026-11-13 about 08:13 UTC: "Both" (the World
+English Bible shipped in 1.9, no longer greyed as "Coming soon"). The edition,
+asked of him the same day: the British Edition with the deuterocanon, which
+prints God's name as "the LORD" (the Classic edition prints "Yahweh"),
+recommended; his answer, 2026-11-13 about 14:28 UTC: "all recs" (BRAINSTORM),
+so the British Edition, as built.
+
+| Bible | Books | On the phone |
+|---|---|---|
+| World English Bible | 78, every book of the app | 5.1 MB |
+
+**Source:** eBible.org's `eng-webbe`, the World English Bible British Edition
+with Deuterocanon, its 2020 stable text,
+https://ebible.org/Scriptures/eng-webbe_usfm.zip (sha256
+c982d6311c10e8ac6fc72a09e3ae17647c8502b2478b3d9a769eb64aaa40591c, read
+2026-11-13 from https://ebible.org/find/details.php?id=eng-webbe). Public
+Domain. "World English Bible" is eBible.org's trademark: "if you CHANGE the
+actual text of the World English Bible in any way, you not call the result
+the World English Bible any more". The build changes no word, so it keeps the
+name. Built by `scripts/bibles/build.mjs --web`, listed with the English
+Bibles where its placeholder stood, and downloaded like the six.
+
+**Why it downloads** rather than ships inside the apps: the six's reasons.
+His word of 2026-11-07 ("How readers get them", above), and the export's
+size: 5.1 MB in every install for a Bible a reader may never open. The
+website reads it straight from `public/bibles/en-web/`, so it reaches the
+main web, and the apps can download it, only with the merge (MERGE-DAY 6.11).
+
+**Counted against the source** (Updates 16, 2026-11-13): every chapter of the
+78 books holds the source's own `\v` numbers, in its order, but for the 29
+with no words: 37,021 verses in both. Compare re-measured: 33,178 of the
+app's 35,793 verses placed, 92.7%.
+
+**How it is set in the app's books** (each held by
+`lib/bible/downloads/__tests__/files.test.ts`):
+
+- A modern translation: its Old Testament is from the Hebrew, numbered as
+  English Bibles number it (Psalm 51 is "Have mercy on me, God"), with the
+  deuterocanonical books. Its line under the name says so.
+- Esther and Daniel are read in their Greek form, with the additions (the
+  file's ESG and DAG), as the app's Old Testament is the Septuagint's; the
+  file's Hebrew Esther and Daniel are left out. Susanna and Bel are Daniel 13
+  and 14, as in Brenton.
+- Baruch's sixth chapter is the Letter of Jeremiah, a book of its own in the
+  app. Psalm 151 follows Psalm 150. 4 Maccabees is not among the app's books.
+- The edition's own note before each deuterocanonical book ("is recognised
+  as Deuterocanonical Scripture by...") is the edition's, not the book's: left
+  out, 14 paragraphs, counted. Sirach's prologue stays before its verse 1.
+- The letters over Psalm 119's stanzas, which the file sets as titles, are
+  headings: left out, 22, counted. The psalms' titles stand before their
+  verse 1, as in the edition.
+- 29 verse numbers the file keeps with no words are left out: 24 in Sirach
+  (the longer Greek's verses) and Luke 17:36, Acts 8:37, 15:34 and 24:7, and
+  Romans 16:25.
+
+**Compare** places 92.7% of the app's verses in it
+(`data/bibles/maps/en-web.json`); Proverbs, whose Septuagint order is not the
+Hebrew's, is left out whole, as are the chapters that cannot be placed surely.
+The Plus screen's Compare preview shows it beside the others at its Psalm
+51:1.
+
 ## How it fits the app
 
 - Every Bible needs the verse-number map (item 22): texts numbered as the

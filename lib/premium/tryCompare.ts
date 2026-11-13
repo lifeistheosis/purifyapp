@@ -30,4 +30,5 @@ export const TRY_COMPARE_BIBLES: readonly { bible: BibleId; at: string; words: s
   { bible: "ar-van-dyck", at: "51:1", words: "اِرْحَمْنِي يَا ٱللهُ حَسَبَ رَحْمَتِكَ. حَسَبَ كَثْرَةِ رَأْفَتِكَ ٱمْحُ مَعَاصِيَّ." },
   { bible: "es-reina-valera-1909", at: "51:1", words: "TEN piedad de mí, oh Dios, conforme á tu misericordia: conforme á la multitud de tus piedades borra mis rebeliones." },
   { bible: "pt-almeida-1911", at: "51:1", words: "Tem misericordia de mim, ó Deus, segundo a tua benignidade; apaga as minhas transgressões, segundo a multidão das tuas misericordias." },
+  { bible: "en-web", at: "51:1", words: "Have mercy on me, God, according to your loving kindness. According to the multitude of your tender mercies, blot out my transgressions." },
 ];

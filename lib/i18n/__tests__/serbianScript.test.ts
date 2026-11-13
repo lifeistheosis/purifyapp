@@ -47,6 +47,7 @@ const PHRASES: Array<[string, string]> = [
   ["New International", "a translation's name"],
   ["New Living", "a translation's name"],
   ["King James", "a translation's name"],
+  ["World English Bible", "a translation's name, its publisher's trademark, kept as written (build 95 note 25)"],
   ["Textus Receptus", "a text's name"],
   ["Thomas Nelson", "a publisher"],
   ["Tyndale House", "a publisher"],

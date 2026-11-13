@@ -27,7 +27,10 @@ const SR = "sr-danicic-karadzic";
 const AR = "ar-van-dyck";
 const ES = "es-reina-valera-1909";
 const PT = "pt-almeida-1911";
+const WEB = "en-web";
 const HEBREW_CANON = [SR, AR, ES, PT];
+/** Numbered as the Hebrew numbers the Psalms: the Bibles of the Hebrew canon, and the World English Bible. */
+const HEBREW_PSALMS = [...HEBREW_CANON, WEB];
 /** The Bibles of the Hebrew canon whose files print the psalms' titles: the Almeida's transcription has none. */
 const TITLED = [SR, AR, ES];
 
@@ -66,10 +69,10 @@ describe("the list the apps carry", () => {
 
   it("says how each numbers the Psalms, as its file does: the Synodal and the Greek as the Septuagint, the rest as the Hebrew", () => {
     for (const b of DOWNLOADABLE_BIBLES) {
-      expect(b.psalms, b.id).toBe(HEBREW_CANON.includes(b.id) ? "hebrew" : "septuagint");
+      expect(b.psalms, b.id).toBe(HEBREW_PSALMS.includes(b.id) ? "hebrew" : "septuagint");
       // "Have mercy upon me, O God" is the Septuagint's Psalm 50 and the Hebrew's 51, verse 1 or past the title.
       const fifty = book(b.id, "psalms").chapters[b.psalms === "hebrew" ? 50 : 49].map(([, t]) => t).join(" ");
-      expect(fifty, b.id).toMatch(/Помилуй меня, Боже|Ἐλέησον με|Смилуј се на ме|اِرْحَمْنِي يَا ٱللهُ|TEN piedad de mí|Tem misericordia de mim, ó Deus/);
+      expect(fifty, b.id).toMatch(/Помилуй меня, Боже|Ἐλέησον με|Смилуј се на ме|اِرْحَمْنِي يَا ٱللهُ|TEN piedad de mí|Tem misericordia de mim, ó Deus|Have mercy on me, God/);
     }
   });
 
@@ -262,5 +265,62 @@ describe("the Bibles of the Hebrew canon: the Serbian (1868), the Arabic (1865) 
     for (const slug of ["romans", "galatians", "1-timothy", "titus", "philemon", "hebrews"]) {
       expect(JSON.stringify(book(ES, slug).chapters.at(-1)), slug).not.toMatch(/fué escrita|Escrita de|fué enviada|Enviada de/);
     }
+  });
+});
+
+describe("the World English Bible: the British Edition with the deuterocanon (2020), from eBible.org", () => {
+  // Build 95 note 25 (his word of 2026-11-13, "Both": it ships in 1.9, no longer "Coming soon").
+  const web = () => DOWNLOADABLE_BIBLES.find((b) => b.id === WEB)!;
+
+  it("is a Bible a reader downloads, in English, with every book of the app", () => {
+    expect(web().language).toBe("en");
+    expect(web().textLang).toBe("en");
+    expect(web().title).toBe("World English Bible");
+    expect([...web().books].sort()).toEqual([...APP.keys()].sort());
+  });
+
+  it("is its words, God's name as the LORD, in its own numbering", () => {
+    expect(verse(WEB, "genesis", 1, 1)).toBe("In the beginning, God created the heavens and the earth.");
+    expect(verse(WEB, "psalms", 23, 1)).toBe("The LORD is my shepherd; I shall lack nothing.");
+    expect(verse(WEB, "psalms", 51, 1)).toMatch(/^Have mercy on me, God, according to your loving kindness\./);
+    expect(verse(WEB, "john", 1, 1)).toBe("In the beginning was the Word, and the Word was with God, and the Word was God.");
+    const all = (slug: string) => JSON.stringify(book(WEB, slug).chapters);
+    expect(all("psalms")).not.toContain("Yahweh is my shepherd");
+  });
+
+  it("is set in the app's books: the Greek Esther and Daniel, Baruch and the Letter of Jeremiah apart, Psalm 151 after the 150", () => {
+    expect(manifest(WEB).books.find((b) => b.book === "daniel")?.chapters).toBe(14);
+    expect(verse(WEB, "daniel", 13, 1)).toBe("A man lived in Babylon, and his name was Joakim.");
+    expect(verse(WEB, "daniel", 14, 1)).toMatch(/^King Astyages was gathered to his fathers/);
+    expect(verse(WEB, "esther", 1, 1)).toMatch(/^\[In the second year of the reign of Ahasuerus the great king/);
+    expect(manifest(WEB).books.find((b) => b.book === "baruch")?.chapters).toBe(5);
+    expect(verse(WEB, "epistle-of-jeremiah", 1, 1)).toMatch(/^A copy of a letter that Jeremy sent/);
+    expect(manifest(WEB).books.find((b) => b.book === "psalms")?.chapters).toBe(151);
+    expect(verse(WEB, "psalms", 151, 1)).toMatch(/^I was small amongst my brothers/);
+  });
+
+  it("leaves out the edition's own notes on each deuterocanonical book, and keeps Sirach's prologue before its verse 1", () => {
+    for (const slug of ["tobit", "judith", "esther", "wisdom", "sirach", "baruch", "1-maccabees", "2-maccabees", "3-maccabees", "1-esdras", "2-esdras", "prayer-of-manasseh", "psalms"]) {
+      expect(JSON.stringify(book(WEB, slug).chapters), slug).not.toMatch(/recognised as Deuterocanonical|included in the Slavonic Bible|We have chosen not to distract/);
+    }
+    for (const slug of ["tobit", "judith", "wisdom", "1-maccabees", "2-esdras"]) expect(book(WEB, slug).chapters[0][0][0], slug).toBe(1);
+    const sirach = book(WEB, "sirach").chapters[0];
+    expect(sirach[0][0]).toBe("");
+    expect(sirach[0][1]).toMatch(/^WHEREAS many and great things have been delivered to us by the law and the prophets/);
+    expect(sirach[1][0]).toBe(1);
+  });
+
+  it("prints a psalm's title before its verse 1, and leaves out the letters over Psalm 119's stanzas, as headings", () => {
+    expect(book(WEB, "psalms").chapters[2].slice(0, 2)).toEqual([["", "A Psalm by David, when he fled from Absalom his son."], [1, expect.stringMatching(/^LORD, how my adversaries have increased!/)]]);
+    expect(verse(WEB, "psalms", 119, 1)).toMatch(/^Blessed are those whose ways are blameless/);
+    expect(verse(WEB, "psalms", 119, 9)).toMatch(/^How can a young man keep his way pure\?/);
+    expect(JSON.stringify(book(WEB, "psalms").chapters[118])).not.toMatch(/"(ALEPH|BETH|TAV)"|\bSIN AND SHIN\b/);
+  });
+
+  it("leaves out the verse numbers its text does not hold, and nothing else", () => {
+    expect(book(WEB, "sirach").chapters[0].some(([l]) => l === 5)).toBe(false);
+    expect(book(WEB, "acts").chapters[7].some(([l]) => l === 37)).toBe(false);
+    expect(verse(WEB, "acts", 8, 36)).toBeTruthy();
+    expect(verse(WEB, "acts", 8, 38)).toBeTruthy();
   });
 });

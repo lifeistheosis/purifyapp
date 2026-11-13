@@ -13,7 +13,7 @@ No drop day set yet. `node scripts/drop.mjs days` lists the next ones on the Chu
 
 - 📓 **Your journal, by the Church's day.** Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.
 - 📖 **Every verse, opened.** Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
-- 🌍 **Six more Bibles.** The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
+- 🌍 **Seven more Bibles.** The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, the World English Bible, and three labelled Protestant: Arabic, Spanish and Portuguese.
 - 🔎 **Study a verse, in Purify Plus.** Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.
 - 🗓️ **New reading plans, in Purify Plus.** John in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day.
 - ☦️ **The Creed by council.** The Symbol of Faith article by article, with the words the Council of Constantinople added lit.

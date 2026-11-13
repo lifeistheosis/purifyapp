@@ -47,14 +47,9 @@ export const TRANSLATIONS: readonly Translation[] = [
     available: true,
     language: "en",
   },
-  {
-    id: "web",
-    shortLabel: "WEB",
-    fullLabel: "World English Bible",
-    testament: "BOTH",
-    available: false,
-    language: "en",
-  },
+  // The World English Bible stood here as "Coming soon" until 1.9; it is a
+  // Bible a reader downloads now, listed with these (build 95 note 25,
+  // lib/bible/downloads/catalog.ts).
   {
     id: "nkjv",
     shortLabel: "NKJV",
@@ -122,8 +117,9 @@ export function isSelectable(t: Translation, configured: readonly string[]): boo
  * The translations a chapter lists, in the list's order. A licensed one that
  * is not set up is not listed at all: they are switched off while the
  * API.Bible licence is upgraded (lib/bible/api-bible.ts), and a greyed row
- * saying "Requires setup" only told readers about our plumbing. One that is
- * not in the app yet (the WEB) is listed, and cannot be picked.
+ * saying "Requires setup" only told readers about our plumbing. A row not
+ * in the app yet would be listed and could not be picked; since the World
+ * English Bible became a download (1.9) there is none.
  */
 export function translationsFor(scope: TranslationScope): Translation[] {
   if (kjvOnly(scope)) return [KJV];

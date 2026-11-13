@@ -18,7 +18,7 @@
 import STATS from "@/data/bibles/catalog.json";
 import type { LocaleCode } from "@/lib/i18n/locales";
 
-export type BibleId = "ru-synodal" | "grc-lxx-patriarchal" | "sr-danicic-karadzic" | "ar-van-dyck" | "es-reina-valera-1909" | "pt-almeida-1911";
+export type BibleId = "ru-synodal" | "grc-lxx-patriarchal" | "sr-danicic-karadzic" | "ar-van-dyck" | "es-reina-valera-1909" | "pt-almeida-1911" | "en-web";
 
 export type DownloadableBible = {
   id: BibleId;
@@ -115,6 +115,21 @@ export const DOWNLOADABLE_BIBLES: readonly DownloadableBible[] = [
     title: "Almeida (1911)",
     shortLabel: "Almeida",
     ...stats["pt-almeida-1911"],
+  },
+  {
+    // 1.9, build 95 note 25 (his word of 2026-11-13, "Both": the World
+    // English Bible ships, no longer "Coming soon"). Listed with the English
+    // Bibles, where its placeholder stood (components/bible/TranslationList.tsx).
+    // A modern translation, its Old Testament from the Hebrew with the
+    // deuterocanonical books; the Psalms numbered as the Hebrew.
+    id: "en-web",
+    language: "en",
+    textLang: "en",
+    dir: "ltr",
+    psalms: "hebrew",
+    title: "World English Bible",
+    shortLabel: "WEB",
+    ...stats["en-web"],
   },
 ];
 

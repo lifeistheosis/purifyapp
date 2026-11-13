@@ -169,13 +169,13 @@
     {
       "id": "bibles",
       "emoji": "🌍",
-      "name": "Six more Bibles",
-      "text": "The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.",
-      "short": "Six more Bibles to download",
+      "name": "Seven more Bibles",
+      "text": "The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, the World English Bible, and three labelled Protestant: Arabic, Spanish and Portuguese.",
+      "short": "Seven more Bibles to download",
       "from": [
         {
           "version": "1.9",
-          "has": "Six more Bibles to download from the translations list, each read in its own numbering"
+          "has": "Seven more Bibles to download from the translations list, each read in its own numbering"
         },
         {
           "version": "1.9",

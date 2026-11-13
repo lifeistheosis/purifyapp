@@ -126,8 +126,13 @@ export function TranslationList({
       return code;
     }
   };
+  // A downloaded Bible in a language the list already has (the World English
+  // Bible, build 95 note 25) stands under that language's heading, after its
+  // rows: one English, not two.
+  const withRows = (language: string) => groups.some((g) => g.language === language);
   const bibleGroups: { language: string; bibles: DownloadableBible[] }[] = [];
   for (const b of DOWNLOADABLE_BIBLES) {
+    if (withRows(b.language)) continue;
     const group = bibleGroups.find((g) => g.language === b.language);
     if (group) group.bibles.push(b);
     else bibleGroups.push({ language: b.language, bibles: [b] });
@@ -171,6 +176,9 @@ export function TranslationList({
                 </li>
               );
             })}
+            {DOWNLOADABLE_BIBLES.filter((b) => b.language === group.language).map((b) => (
+              <BibleRow key={b.id} bible={b} book={book} current={shown?.id === b.id} onChoose={() => onChooseBible(b)} />
+            ))}
           </ul>
         </section>
       ))}
