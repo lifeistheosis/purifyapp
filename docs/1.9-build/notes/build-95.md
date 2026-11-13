@@ -337,3 +337,9 @@ Done is, one version, for his yes before it ships: the locked card shows the loo
 
 At his "all recs" (2026-11-13 about 14:29 UTC) to the recommendation "Main web now", Updates 16 cherry-picked ff5eeda7c alone onto origin/main (a63d37c7a), built the website on main's tree (exit 0, 4,263 pages; the page test 7 of 7, and 4 of 7 failing with main's old files put back) and pushed it as c7cdc638c with PURIFY_ALLOW_MAIN=1. Live at 14:56:51 UTC. curl: the Paschal Homily, /saints and /bible/john/1 each give their own address as canonical and og:url, and their own title on X; the home page keeps its own address, and its title on X is now "Purify, Orthodox prayer, calendar, and Scripture". No file under supabase/migrations changed, so the database check had nothing to apply. The way back is a63d37c7a. The branch holds the same change (ff5eeda7c), so the 1.9 merge meets it as identical.
 
+## Note 28 (asked): a full desktop revamp
+
+His word, 2026-11-13 about 15:32 UTC: "a full desktop revamp. the desktop is really outdated and unoptimized in alot of sections."
+
+The app at a computer's width (the website at purifyapp.net, and a tablet turned wide). Asked during 1.9's making, so by his rule of 2026-11-11 it goes in 1.9 and the drop day moves. The arbiter's recommendation, put to him at once: fold it into the fifteen screens' program, so each screen is designed for the phone and the computer together, with a first round for the computer's frame (navigation, widths, the wide grid), and the screens outside the fifteen swept after; Fable designs, as for the fifteen; his yes a screen at a time.
+
