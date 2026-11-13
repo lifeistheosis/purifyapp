@@ -1,0 +1,1269 @@
+From 30decc0564b40e28ec7171902c21c081e6aea30a Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 13 Nov 2026 09:11:49 +0000
+Subject: [PATCH] The World English Bible, downloaded like the six, in place of
+ its "Coming soon" row (build 95 note 25)
+
+Held locally until his answer on the edition (the British Edition, "the
+LORD", recommended; the Classic prints "Yahweh"). BIBLES.md still says
+HIS-ANSWER-PENDING.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01VuYTwd6C7vuf2b6mXAQ8Xm
+---
+ components/bible/TranslationList.tsx        |   8 ++
+ data/bibles/catalog.json                    |  84 ++++++++++++++++
+ docs/1.9-build/BIBLES.md                    |  51 ++++++++++
+ lib/bible/__tests__/translations.test.ts    |  19 ++--
+ lib/bible/compare.ts                        |   1 +
+ lib/bible/downloads/__tests__/files.test.ts |  64 +++++++++++-
+ lib/bible/downloads/catalog.ts              |  17 +++-
+ lib/bible/translations.ts                   |  16 ++-
+ lib/i18n/__tests__/serbianScript.test.ts    |   1 +
+ lib/i18n/messages/ar.json                   |   3 +-
+ lib/i18n/messages/bg.json                   |   3 +-
+ lib/i18n/messages/de.json                   |   3 +-
+ lib/i18n/messages/el.json                   |   3 +-
+ lib/i18n/messages/en.json                   |   3 +-
+ lib/i18n/messages/es.json                   |   3 +-
+ lib/i18n/messages/fil.json                  |   3 +-
+ lib/i18n/messages/fr.json                   |   3 +-
+ lib/i18n/messages/hu.json                   |   3 +-
+ lib/i18n/messages/id.json                   |   3 +-
+ lib/i18n/messages/it.json                   |   3 +-
+ lib/i18n/messages/ka.json                   |   3 +-
+ lib/i18n/messages/ne.json                   |   3 +-
+ lib/i18n/messages/pl.json                   |   3 +-
+ lib/i18n/messages/pt.json                   |   3 +-
+ lib/i18n/messages/ro.json                   |   3 +-
+ lib/i18n/messages/ru.json                   |   3 +-
+ lib/i18n/messages/sr.json                   |   3 +-
+ lib/i18n/messages/tr.json                   |   3 +-
+ lib/i18n/messages/uk.json                   |   3 +-
+ lib/i18n/messages/ur.json                   |   3 +-
+ lib/premium/tryCompare.ts                   |   1 +
+ scripts/bibles/build.mjs                    | 105 +++++++++++++++++++-
+ scripts/bibles/compare-map.mjs              |   2 +
+ 33 files changed, 385 insertions(+), 47 deletions(-)
+
+diff --git a/components/bible/TranslationList.tsx b/components/bible/TranslationList.tsx
+index 8613c9272..1203b42c7 100644
+--- a/components/bible/TranslationList.tsx
++++ b/components/bible/TranslationList.tsx
+@@ -126,8 +126,13 @@ export function TranslationList({
+       return code;
+     }
+   };
++  // A downloaded Bible in a language the list already has (the World English
++  // Bible, build 95 note 25) stands under that language's heading, after its
++  // rows: one English, not two.
++  const withRows = (language: string) => groups.some((g) => g.language === language);
+   const bibleGroups: { language: string; bibles: DownloadableBible[] }[] = [];
+   for (const b of DOWNLOADABLE_BIBLES) {
++    if (withRows(b.language)) continue;
+     const group = bibleGroups.find((g) => g.language === b.language);
+     if (group) group.bibles.push(b);
+     else bibleGroups.push({ language: b.language, bibles: [b] });
+@@ -171,6 +176,9 @@ export function TranslationList({
+                 </li>
+               );
+             })}
++            {DOWNLOADABLE_BIBLES.filter((b) => b.language === group.language).map((b) => (
++              <BibleRow key={b.id} bible={b} book={book} current={shown?.id === b.id} onChoose={() => onChooseBible(b)} />
++            ))}
+           </ul>
+         </section>
+       ))}
+diff --git a/data/bibles/catalog.json b/data/bibles/catalog.json
+index c62992f36..e0e7b1f94 100644
+--- a/data/bibles/catalog.json
++++ b/data/bibles/catalog.json
+@@ -453,5 +453,89 @@
+    "jude",
+    "revelation"
+   ]
++ },
++ "en-web": {
++  "version": "3f23a21f98b8",
++  "bytes": 5082572,
++  "books": [
++   "genesis",
++   "exodus",
++   "leviticus",
++   "numbers",
++   "deuteronomy",
++   "joshua",
++   "judges",
++   "ruth",
++   "1-samuel",
++   "2-samuel",
++   "1-kings",
++   "2-kings",
++   "1-chronicles",
++   "2-chronicles",
++   "1-esdras",
++   "ezra",
++   "nehemiah",
++   "tobit",
++   "judith",
++   "esther",
++   "1-maccabees",
++   "2-maccabees",
++   "3-maccabees",
++   "job",
++   "psalms",
++   "proverbs",
++   "ecclesiastes",
++   "song-of-solomon",
++   "wisdom",
++   "sirach",
++   "hosea",
++   "amos",
++   "micah",
++   "joel",
++   "obadiah",
++   "jonah",
++   "nahum",
++   "habakkuk",
++   "zephaniah",
++   "haggai",
++   "zechariah",
++   "malachi",
++   "isaiah",
++   "jeremiah",
++   "baruch",
++   "lamentations",
++   "epistle-of-jeremiah",
++   "ezekiel",
++   "daniel",
++   "prayer-of-manasseh",
++   "2-esdras",
++   "matthew",
++   "mark",
++   "luke",
++   "john",
++   "acts",
++   "romans",
++   "1-corinthians",
++   "2-corinthians",
++   "galatians",
++   "ephesians",
++   "philippians",
++   "colossians",
++   "1-thessalonians",
++   "2-thessalonians",
++   "1-timothy",
++   "2-timothy",
++   "titus",
++   "philemon",
++   "hebrews",
++   "james",
++   "1-peter",
++   "2-peter",
++   "1-john",
++   "2-john",
++   "3-john",
++   "jude",
++   "revelation"
++  ]
+  }
+ }
+diff --git a/docs/1.9-build/BIBLES.md b/docs/1.9-build/BIBLES.md
+index 9e49c0d4f..6c54e9217 100644
+--- a/docs/1.9-build/BIBLES.md
++++ b/docs/1.9-build/BIBLES.md
+@@ -306,6 +306,57 @@ set beside it in the interlinear.
+   interlinear's files (34.4 MB, 1,263 files, 195 of them the Hebrew alone).
+   Still: `notes/build-93/hebrew-beside-ot-390.png`.
+ 
++## What shipped (2026-11-13): the World English Bible
++
++Build 95 note 25, his word of 2026-11-13 about 08:13 UTC: "Both" (the World
++English Bible shipped in 1.9, no longer greyed as "Coming soon"). The edition,
++asked of him the same day: the British Edition with the deuterocanon, which
++prints God's name as "the LORD" (the Classic edition prints "Yahweh"),
++recommended; his answer: HIS-ANSWER-PENDING.
++
++| Bible | Books | On the phone |
++|---|---|---|
++| World English Bible | 78, every book of the app | 5.1 MB |
++
++**Source:** eBible.org's `eng-webbe`, the World English Bible British Edition
++with Deuterocanon, its 2020 stable text,
++https://ebible.org/Scriptures/eng-webbe_usfm.zip (sha256
++c982d6311c10e8ac6fc72a09e3ae17647c8502b2478b3d9a769eb64aaa40591c, read
++2026-11-13 from https://ebible.org/find/details.php?id=eng-webbe). Public
++Domain. "World English Bible" is eBible.org's trademark: "if you CHANGE the
++actual text of the World English Bible in any way, you not call the result
++the World English Bible any more". The build changes no word, so it keeps the
++name. Built by `scripts/bibles/build.mjs --web`, listed with the English
++Bibles where its placeholder stood, and downloaded like the six.
++
++**How it is set in the app's books** (each held by
++`lib/bible/downloads/__tests__/files.test.ts`):
++
++- A modern translation: its Old Testament is from the Hebrew, numbered as
++  English Bibles number it (Psalm 51 is "Have mercy on me, God"), with the
++  deuterocanonical books. Its line under the name says so.
++- Esther and Daniel are read in their Greek form, with the additions (the
++  file's ESG and DAG), as the app's Old Testament is the Septuagint's; the
++  file's Hebrew Esther and Daniel are left out. Susanna and Bel are Daniel 13
++  and 14, as in Brenton.
++- Baruch's sixth chapter is the Letter of Jeremiah, a book of its own in the
++  app. Psalm 151 follows Psalm 150. 4 Maccabees is not among the app's books.
++- The edition's own note before each deuterocanonical book ("is recognised
++  as Deuterocanonical Scripture by...") is the edition's, not the book's: left
++  out, 14 paragraphs, counted. Sirach's prologue stays before its verse 1.
++- The letters over Psalm 119's stanzas, which the file sets as titles, are
++  headings: left out, 22, counted. The psalms' titles stand before their
++  verse 1, as in the edition.
++- 29 verse numbers the file keeps with no words are left out: 24 in Sirach
++  (the longer Greek's verses) and Luke 17:36, Acts 8:37, 15:34 and 24:7, and
++  Romans 16:25.
++
++**Compare** places 92.7% of the app's verses in it
++(`data/bibles/maps/en-web.json`); Proverbs, whose Septuagint order is not the
++Hebrew's, is left out whole, as are the chapters that cannot be placed surely.
++The Plus screen's Compare preview shows it beside the others at its Psalm
++51:1.
++
+ ## How it fits the app
+ 
+ - Every Bible needs the verse-number map (item 22): texts numbered as the
+diff --git a/lib/bible/__tests__/translations.test.ts b/lib/bible/__tests__/translations.test.ts
+index e705a1a38..6f5f36d24 100644
+--- a/lib/bible/__tests__/translations.test.ts
++++ b/lib/bible/__tests__/translations.test.ts
+@@ -21,14 +21,17 @@ function scopeOf(slug: string, configured: string[] = []): TranslationScope {
+ }
+ 
+ describe("the translations a chapter offers", () => {
+-  it("lists the KJV and the WEB in the New Testament, and the WEB cannot be picked yet", () => {
++  it("lists the KJV in the New Testament, and every row can be picked", () => {
++    // The World English Bible stood here as "Coming soon", a row that could not be picked; since build
++    // 95 note 25 it is a Bible the reader downloads, listed with these (lib/bible/downloads/catalog.ts).
+     const list = translationsFor(scopeOf("john"));
+-    expect(ids(list)).toEqual(["kjv", "web"]);
+-    expect(list.map((t) => isSelectable(t, []))).toEqual([true, false]);
++    expect(ids(list)).toEqual(["kjv"]);
++    expect(list.map((t) => isSelectable(t, []))).toEqual([true]);
++    expect(TRANSLATIONS.filter((t) => !t.available)).toEqual([]);
+   });
+ 
+-  it("lists Brenton's Septuagint and the WEB in the Old Testament", () => {
+-    expect(ids(translationsFor(scopeOf("genesis")))).toEqual(["lxx-brenton", "web"]);
++  it("lists Brenton's Septuagint in the Old Testament", () => {
++    expect(ids(translationsFor(scopeOf("genesis")))).toEqual(["lxx-brenton"]);
+   });
+ 
+   it("lists only the KJV for an Old Testament book the Septuagint does not carry", () => {
+@@ -39,8 +42,8 @@ describe("the translations a chapter offers", () => {
+ 
+   it("lists a licensed translation only once it is set up, and only in the New Testament", () => {
+     expect(ids(translationsFor(scopeOf("john")))).not.toContain("nkjv");
+-    expect(ids(translationsFor(scopeOf("john", ["nkjv"])))).toEqual(["kjv", "web", "nkjv"]);
+-    expect(ids(translationsFor(scopeOf("genesis", ["nkjv", "niv", "nlt"])))).toEqual(["lxx-brenton", "web"]);
++    expect(ids(translationsFor(scopeOf("john", ["nkjv"])))).toEqual(["kjv", "nkjv"]);
++    expect(ids(translationsFor(scopeOf("genesis", ["nkjv", "niv", "nlt"])))).toEqual(["lxx-brenton"]);
+   });
+ 
+   it("reads ?v= only in its own testament, and only when it is set up", () => {
+@@ -61,7 +64,7 @@ describe("the translations a chapter offers", () => {
+   it("groups rows by language, in the order the list gives them", () => {
+     const groups = byLanguage(translationsFor(scopeOf("john", ["niv"])));
+     expect(groups.map((g) => g.language)).toEqual(["en"]);
+-    expect(ids(groups[0].rows)).toEqual(["kjv", "web", "niv"]);
++    expect(ids(groups[0].rows)).toEqual(["kjv", "niv"]);
+   });
+ 
+   it("has a note in the catalog for every translation, and a language for each", () => {
+diff --git a/lib/bible/compare.ts b/lib/bible/compare.ts
+index 1da322f75..084978979 100644
+--- a/lib/bible/compare.ts
++++ b/lib/bible/compare.ts
+@@ -70,6 +70,7 @@ const MAPS: Record<BibleId, () => Promise<{ default: unknown }>> = {
+   "ar-van-dyck": () => import("@/data/bibles/maps/ar-van-dyck.json"),
+   "es-reina-valera-1909": () => import("@/data/bibles/maps/es-reina-valera-1909.json"),
+   "pt-almeida-1911": () => import("@/data/bibles/maps/pt-almeida-1911.json"),
++  "en-web": () => import("@/data/bibles/maps/en-web.json"),
+ };
+ 
+ const loaded = new Map<BibleId, Promise<CompareMap | null>>();
+diff --git a/lib/bible/downloads/__tests__/files.test.ts b/lib/bible/downloads/__tests__/files.test.ts
+index eb0c2e62e..b2379ae05 100644
+--- a/lib/bible/downloads/__tests__/files.test.ts
++++ b/lib/bible/downloads/__tests__/files.test.ts
+@@ -27,7 +27,10 @@ const SR = "sr-danicic-karadzic";
+ const AR = "ar-van-dyck";
+ const ES = "es-reina-valera-1909";
+ const PT = "pt-almeida-1911";
++const WEB = "en-web";
+ const HEBREW_CANON = [SR, AR, ES, PT];
++/** Numbered as the Hebrew numbers the Psalms: the Bibles of the Hebrew canon, and the World English Bible. */
++const HEBREW_PSALMS = [...HEBREW_CANON, WEB];
+ /** The Bibles of the Hebrew canon whose files print the psalms' titles: the Almeida's transcription has none. */
+ const TITLED = [SR, AR, ES];
+ 
+@@ -66,10 +69,10 @@ describe("the list the apps carry", () => {
+ 
+   it("says how each numbers the Psalms, as its file does: the Synodal and the Greek as the Septuagint, the rest as the Hebrew", () => {
+     for (const b of DOWNLOADABLE_BIBLES) {
+-      expect(b.psalms, b.id).toBe(HEBREW_CANON.includes(b.id) ? "hebrew" : "septuagint");
++      expect(b.psalms, b.id).toBe(HEBREW_PSALMS.includes(b.id) ? "hebrew" : "septuagint");
+       // "Have mercy upon me, O God" is the Septuagint's Psalm 50 and the Hebrew's 51, verse 1 or past the title.
+       const fifty = book(b.id, "psalms").chapters[b.psalms === "hebrew" ? 50 : 49].map(([, t]) => t).join(" ");
+-      expect(fifty, b.id).toMatch(/Помилуй меня, Боже|Ἐλέησον με|Смилуј се на ме|اِرْحَمْنِي يَا ٱللهُ|TEN piedad de mí|Tem misericordia de mim, ó Deus/);
++      expect(fifty, b.id).toMatch(/Помилуй меня, Боже|Ἐλέησον με|Смилуј се на ме|اِرْحَمْنِي يَا ٱللهُ|TEN piedad de mí|Tem misericordia de mim, ó Deus|Have mercy on me, God/);
+     }
+   });
+ 
+@@ -264,3 +267,60 @@ describe("the Bibles of the Hebrew canon: the Serbian (1868), the Arabic (1865)
+     }
+   });
+ });
++
++describe("the World English Bible: the British Edition with the deuterocanon (2020), from eBible.org", () => {
++  // Build 95 note 25 (his word of 2026-11-13, "Both": it ships in 1.9, no longer "Coming soon").
++  const web = () => DOWNLOADABLE_BIBLES.find((b) => b.id === WEB)!;
++
++  it("is a Bible a reader downloads, in English, with every book of the app", () => {
++    expect(web().language).toBe("en");
++    expect(web().textLang).toBe("en");
++    expect(web().title).toBe("World English Bible");
++    expect([...web().books].sort()).toEqual([...APP.keys()].sort());
++  });
++
++  it("is its words, God's name as the LORD, in its own numbering", () => {
++    expect(verse(WEB, "genesis", 1, 1)).toBe("In the beginning, God created the heavens and the earth.");
++    expect(verse(WEB, "psalms", 23, 1)).toBe("The LORD is my shepherd; I shall lack nothing.");
++    expect(verse(WEB, "psalms", 51, 1)).toMatch(/^Have mercy on me, God, according to your loving kindness\./);
++    expect(verse(WEB, "john", 1, 1)).toBe("In the beginning was the Word, and the Word was with God, and the Word was God.");
++    const all = (slug: string) => JSON.stringify(book(WEB, slug).chapters);
++    expect(all("psalms")).not.toContain("Yahweh is my shepherd");
++  });
++
++  it("is set in the app's books: the Greek Esther and Daniel, Baruch and the Letter of Jeremiah apart, Psalm 151 after the 150", () => {
++    expect(manifest(WEB).books.find((b) => b.book === "daniel")?.chapters).toBe(14);
++    expect(verse(WEB, "daniel", 13, 1)).toBe("A man lived in Babylon, and his name was Joakim.");
++    expect(verse(WEB, "daniel", 14, 1)).toMatch(/^King Astyages was gathered to his fathers/);
++    expect(verse(WEB, "esther", 1, 1)).toMatch(/^\[In the second year of the reign of Ahasuerus the great king/);
++    expect(manifest(WEB).books.find((b) => b.book === "baruch")?.chapters).toBe(5);
++    expect(verse(WEB, "epistle-of-jeremiah", 1, 1)).toMatch(/^A copy of a letter that Jeremy sent/);
++    expect(manifest(WEB).books.find((b) => b.book === "psalms")?.chapters).toBe(151);
++    expect(verse(WEB, "psalms", 151, 1)).toMatch(/^I was small amongst my brothers/);
++  });
++
++  it("leaves out the edition's own notes on each deuterocanonical book, and keeps Sirach's prologue before its verse 1", () => {
++    for (const slug of ["tobit", "judith", "esther", "wisdom", "sirach", "baruch", "1-maccabees", "2-maccabees", "3-maccabees", "1-esdras", "2-esdras", "prayer-of-manasseh", "psalms"]) {
++      expect(JSON.stringify(book(WEB, slug).chapters), slug).not.toMatch(/recognised as Deuterocanonical|included in the Slavonic Bible|We have chosen not to distract/);
++    }
++    for (const slug of ["tobit", "judith", "wisdom", "1-maccabees", "2-esdras"]) expect(book(WEB, slug).chapters[0][0][0], slug).toBe(1);
++    const sirach = book(WEB, "sirach").chapters[0];
++    expect(sirach[0][0]).toBe("");
++    expect(sirach[0][1]).toMatch(/^WHEREAS many and great things have been delivered to us by the law and the prophets/);
++    expect(sirach[1][0]).toBe(1);
++  });
++
++  it("prints a psalm's title before its verse 1, and leaves out the letters over Psalm 119's stanzas, as headings", () => {
++    expect(book(WEB, "psalms").chapters[2].slice(0, 2)).toEqual([["", "A Psalm by David, when he fled from Absalom his son."], [1, expect.stringMatching(/^LORD, how my adversaries have increased!/)]]);
++    expect(verse(WEB, "psalms", 119, 1)).toMatch(/^Blessed are those whose ways are blameless/);
++    expect(verse(WEB, "psalms", 119, 9)).toMatch(/^How can a young man keep his way pure\?/);
++    expect(JSON.stringify(book(WEB, "psalms").chapters[118])).not.toMatch(/"(ALEPH|BETH|TAV)"|\bSIN AND SHIN\b/);
++  });
++
++  it("leaves out the verse numbers its text does not hold, and nothing else", () => {
++    expect(book(WEB, "sirach").chapters[0].some(([l]) => l === 5)).toBe(false);
++    expect(book(WEB, "acts").chapters[7].some(([l]) => l === 37)).toBe(false);
++    expect(verse(WEB, "acts", 8, 36)).toBeTruthy();
++    expect(verse(WEB, "acts", 8, 38)).toBeTruthy();
++  });
++});
+diff --git a/lib/bible/downloads/catalog.ts b/lib/bible/downloads/catalog.ts
+index 904e2f73f..4fa992727 100644
+--- a/lib/bible/downloads/catalog.ts
++++ b/lib/bible/downloads/catalog.ts
+@@ -18,7 +18,7 @@
+ import STATS from "@/data/bibles/catalog.json";
+ import type { LocaleCode } from "@/lib/i18n/locales";
+ 
+-export type BibleId = "ru-synodal" | "grc-lxx-patriarchal" | "sr-danicic-karadzic" | "ar-van-dyck" | "es-reina-valera-1909" | "pt-almeida-1911";
++export type BibleId = "ru-synodal" | "grc-lxx-patriarchal" | "sr-danicic-karadzic" | "ar-van-dyck" | "es-reina-valera-1909" | "pt-almeida-1911" | "en-web";
+ 
+ export type DownloadableBible = {
+   id: BibleId;
+@@ -116,6 +116,21 @@ export const DOWNLOADABLE_BIBLES: readonly DownloadableBible[] = [
+     shortLabel: "Almeida",
+     ...stats["pt-almeida-1911"],
+   },
++  {
++    // 1.9, build 95 note 25 (his word of 2026-11-13, "Both": the World
++    // English Bible ships, no longer "Coming soon"). Listed with the English
++    // Bibles, where its placeholder stood (components/bible/TranslationList.tsx).
++    // A modern translation, its Old Testament from the Hebrew with the
++    // deuterocanonical books; the Psalms numbered as the Hebrew.
++    id: "en-web",
++    language: "en",
++    textLang: "en",
++    dir: "ltr",
++    psalms: "hebrew",
++    title: "World English Bible",
++    shortLabel: "WEB",
++    ...stats["en-web"],
++  },
+ ];
+ 
+ export function downloadableBible(id: string | null | undefined): DownloadableBible | null {
+diff --git a/lib/bible/translations.ts b/lib/bible/translations.ts
+index 56e83860b..1a25184b7 100644
+--- a/lib/bible/translations.ts
++++ b/lib/bible/translations.ts
+@@ -47,14 +47,9 @@ export const TRANSLATIONS: readonly Translation[] = [
+     available: true,
+     language: "en",
+   },
+-  {
+-    id: "web",
+-    shortLabel: "WEB",
+-    fullLabel: "World English Bible",
+-    testament: "BOTH",
+-    available: false,
+-    language: "en",
+-  },
++  // The World English Bible stood here as "Coming soon" until 1.9; it is a
++  // Bible a reader downloads now, listed with these (build 95 note 25,
++  // lib/bible/downloads/catalog.ts).
+   {
+     id: "nkjv",
+     shortLabel: "NKJV",
+@@ -122,8 +117,9 @@ export function isSelectable(t: Translation, configured: readonly string[]): boo
+  * The translations a chapter lists, in the list's order. A licensed one that
+  * is not set up is not listed at all: they are switched off while the
+  * API.Bible licence is upgraded (lib/bible/api-bible.ts), and a greyed row
+- * saying "Requires setup" only told readers about our plumbing. One that is
+- * not in the app yet (the WEB) is listed, and cannot be picked.
++ * saying "Requires setup" only told readers about our plumbing. A row not
++ * in the app yet would be listed and could not be picked; since the World
++ * English Bible became a download (1.9) there is none.
+  */
+ export function translationsFor(scope: TranslationScope): Translation[] {
+   if (kjvOnly(scope)) return [KJV];
+diff --git a/lib/i18n/__tests__/serbianScript.test.ts b/lib/i18n/__tests__/serbianScript.test.ts
+index 81b23c271..8ae8d38cd 100644
+--- a/lib/i18n/__tests__/serbianScript.test.ts
++++ b/lib/i18n/__tests__/serbianScript.test.ts
+@@ -47,6 +47,7 @@ const PHRASES: Array<[string, string]> = [
+   ["New International", "a translation's name"],
+   ["New Living", "a translation's name"],
+   ["King James", "a translation's name"],
++  ["World English Bible", "a translation's name, its publisher's trademark, kept as written (build 95 note 25)"],
+   ["Textus Receptus", "a text's name"],
+   ["Thomas Nelson", "a publisher"],
+   ["Tyndale House", "a publisher"],
+diff --git a/lib/i18n/messages/ar.json b/lib/i18n/messages/ar.json
+index c2f449ac6..9f22c25e9 100644
+--- a/lib/i18n/messages/ar.json
++++ b/lib/i18n/messages/ar.json
+@@ -3632,7 +3632,6 @@
+   "bible.translationBadgeSoon": "قريبًا",
+   "bible.translationNote.lxx-brenton": "ملك عام. العهد القديم اليوناني الذي استخدمه الرسل.",
+   "bible.translationNote.kjv": "ملك عام.",
+-  "bible.translationNote.web": "إنجليزية حديثة في الملك العام. قريبًا.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. تُستخدم بإذن.",
+   "bible.translationNote.niv": "© Biblica. تُستخدم بإذن.",
+   "bible.translationNote.nlt": "© Tyndale House. تُستخدم بإذن.",
+@@ -5508,6 +5507,7 @@
+   "bible.translationNote.ar-van-dyck": "ترجمة بروتستانتية. عهدها القديم مترجم عن العبرية، دون الأسفار القانونية الثانية. ملك عام.",
+   "bible.translationNote.es-reina-valera-1909": "ترجمة بروتستانتية. عهدها القديم مترجم عن العبرية، دون الأسفار القانونية الثانية. ملك عام.",
+   "bible.translationNote.pt-almeida-1911": "ترجمة بروتستانتية. عهدها القديم مترجم عن العبرية، دون الأسفار القانونية الثانية. ملك عام.",
++  "bible.translationNote.en-web": "ترجمة إنجليزية حديثة. عهدها القديم مترجم عن العبرية، مع الأسفار القانونية الثانية. ملك عام.",
+   "bible.downloads.downloadAria": "نزّل {name}، {size}",
+   "bible.downloads.downloading": "جارٍ التنزيل: {percent}%",
+   "bible.downloads.stop": "أوقف التنزيل",
+@@ -5527,6 +5527,7 @@
+   "bible.downloads.source.ar-van-dyck": "ترجمة سميث وفاندايك (1865). ملك عام. النص من eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "مراجعة رينا-فاليرا لعام 1909. ملك عام. النص من eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "ترجمة ألميدا (1911). ملك عام. نسخها manuscript4u (2017)؛ النص من CrossWire Bible Society بموجب رخصة GNU GPL.",
++  "bible.downloads.source.en-web": "World English Bible، الطبعة البريطانية (2020). ملك عام. النص من eBible.org.",
+   "bible.languageOffer.title": "هل تريد تغيير لغة التطبيق؟",
+   "bible.languageOffer.body": "لغة كتابك المقدس: {language}. يمكن أن تكون قوائم Purify وصفحاته بهذه اللغة أيضًا.",
+   "bible.languageOffer.switch": "التبديل إلى {native}",
+diff --git a/lib/i18n/messages/bg.json b/lib/i18n/messages/bg.json
+index 54bd6ab9a..7e82a8d69 100644
+--- a/lib/i18n/messages/bg.json
++++ b/lib/i18n/messages/bg.json
+@@ -3476,7 +3476,6 @@
+   "bible.translationBadgeSoon": "Скоро",
+   "bible.translationNote.lxx-brenton": "Обществено достояние. Гръцкият Стар Завет, четен от апостолите.",
+   "bible.translationNote.kjv": "Обществено достояние.",
+-  "bible.translationNote.web": "Съвременен английски, обществено достояние. Очаквайте скоро.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. Използва се с разрешение.",
+   "bible.translationNote.niv": "© Biblica. Използва се с разрешение.",
+   "bible.translationNote.nlt": "© Tyndale House. Използва се с разрешение.",
+@@ -5211,6 +5210,7 @@
+   "bible.translationNote.ar-van-dyck": "Протестантски превод. Старият завет е преведен от еврейски, без неканоничните книги. Обществено достояние.",
+   "bible.translationNote.es-reina-valera-1909": "Протестантски превод. Старият завет е преведен от еврейски, без неканоничните книги. Обществено достояние.",
+   "bible.translationNote.pt-almeida-1911": "Протестантски превод. Старият завет е преведен от еврейски, без неканоничните книги. Обществено достояние.",
++  "bible.translationNote.en-web": "Съвременен английски превод. Старият завет е преведен от еврейски, с неканоничните книги. Обществено достояние.",
+   "bible.downloads.downloadAria": "Изтегляне на {name}, {size}",
+   "bible.downloads.downloading": "Изтегляне: {percent}%",
+   "bible.downloads.stop": "Спиране на изтеглянето",
+@@ -5230,6 +5230,7 @@
+   "bible.downloads.source.ar-van-dyck": "Преводът на Смит и Ван Дайк (1865). Обществено достояние. Текст: eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "Редакцията Рейна-Валера от 1909 г. Обществено достояние. Текст: eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "Преводът на Алмейда (1911). Обществено достояние. Препис: manuscript4u (2017); текст: CrossWire Bible Society, под лиценза GNU GPL.",
++  "bible.downloads.source.en-web": "World English Bible, британско издание (2020). Обществено достояние. Текст: eBible.org.",
+   "bible.languageOffer.title": "Да се смени ли езикът на приложението?",
+   "bible.languageOffer.body": "Езикът на вашата Библия: {language}. Менютата и страниците на Purify също могат да са на този език.",
+   "bible.languageOffer.switch": "Превключване на {native}",
+diff --git a/lib/i18n/messages/de.json b/lib/i18n/messages/de.json
+index c015cf2d6..1b6a442b6 100644
+--- a/lib/i18n/messages/de.json
++++ b/lib/i18n/messages/de.json
+@@ -3476,7 +3476,6 @@
+   "bible.translationBadgeSoon": "Bald",
+   "bible.translationNote.lxx-brenton": "Gemeinfrei. Das griechische Alte Testament, das die Apostel gebrauchten.",
+   "bible.translationNote.kjv": "Gemeinfrei.",
+-  "bible.translationNote.web": "Gemeinfreies modernes Englisch. Bald verfügbar.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. Mit Genehmigung verwendet.",
+   "bible.translationNote.niv": "© Biblica. Mit Genehmigung verwendet.",
+   "bible.translationNote.nlt": "© Tyndale House. Mit Genehmigung verwendet.",
+@@ -5211,6 +5210,7 @@
+   "bible.translationNote.ar-van-dyck": "Eine protestantische Übersetzung. Das Alte Testament ist aus dem Hebräischen übersetzt, ohne die deuterokanonischen Bücher. Gemeinfrei.",
+   "bible.translationNote.es-reina-valera-1909": "Eine protestantische Übersetzung. Das Alte Testament ist aus dem Hebräischen übersetzt, ohne die deuterokanonischen Bücher. Gemeinfrei.",
+   "bible.translationNote.pt-almeida-1911": "Eine protestantische Übersetzung. Das Alte Testament ist aus dem Hebräischen übersetzt, ohne die deuterokanonischen Bücher. Gemeinfrei.",
++  "bible.translationNote.en-web": "Eine moderne englische Übersetzung. Das Alte Testament ist aus dem Hebräischen übersetzt, mit den deuterokanonischen Büchern. Gemeinfrei.",
+   "bible.downloads.downloadAria": "{name} herunterladen, {size}",
+   "bible.downloads.downloading": "Wird heruntergeladen, {percent} %",
+   "bible.downloads.stop": "Herunterladen stoppen",
+@@ -5230,6 +5230,7 @@
+   "bible.downloads.source.ar-van-dyck": "Die Übersetzung von Smith und Van Dyck (1865). Gemeinfrei. Text von eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "Die Reina-Valera-Revision von 1909. Gemeinfrei. Text von eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "Die Übersetzung von Almeida (1911). Gemeinfrei. Abgeschrieben von manuscript4u (2017); Text von der CrossWire Bible Society, unter der GNU GPL.",
++  "bible.downloads.source.en-web": "Die World English Bible, britische Ausgabe (2020). Gemeinfrei. Text von eBible.org.",
+   "bible.languageOffer.title": "Sprache der App ändern?",
+   "bible.languageOffer.body": "Deine Bibel ist auf {language}. Menüs und Seiten von Purify können auch auf {language} sein.",
+   "bible.languageOffer.switch": "Zu {native} wechseln",
+diff --git a/lib/i18n/messages/el.json b/lib/i18n/messages/el.json
+index 9c7f39545..9fedc3f86 100644
+--- a/lib/i18n/messages/el.json
++++ b/lib/i18n/messages/el.json
+@@ -3476,7 +3476,6 @@
+   "bible.translationBadgeSoon": "Σύντομα",
+   "bible.translationNote.lxx-brenton": "Κοινό κτήμα. Η ελληνική Παλαιά Διαθήκη που χρησιμοποιούσαν οι Απόστολοι.",
+   "bible.translationNote.kjv": "Κοινό κτήμα.",
+-  "bible.translationNote.web": "Σύγχρονα αγγλικά, κοινό κτήμα. Έρχεται σύντομα.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. Χρήση κατόπιν αδείας.",
+   "bible.translationNote.niv": "© Biblica. Χρήση κατόπιν αδείας.",
+   "bible.translationNote.nlt": "© Tyndale House. Χρήση κατόπιν αδείας.",
+@@ -5211,6 +5210,7 @@
+   "bible.translationNote.ar-van-dyck": "Προτεσταντική μετάφραση. Η Παλαιά Διαθήκη της είναι μεταφρασμένη από τα εβραϊκά, χωρίς τα αναγινωσκόμενα βιβλία. Κοινό κτήμα.",
+   "bible.translationNote.es-reina-valera-1909": "Προτεσταντική μετάφραση. Η Παλαιά Διαθήκη της είναι μεταφρασμένη από τα εβραϊκά, χωρίς τα αναγινωσκόμενα βιβλία. Κοινό κτήμα.",
+   "bible.translationNote.pt-almeida-1911": "Προτεσταντική μετάφραση. Η Παλαιά Διαθήκη της είναι μεταφρασμένη από τα εβραϊκά, χωρίς τα αναγινωσκόμενα βιβλία. Κοινό κτήμα.",
++  "bible.translationNote.en-web": "Σύγχρονη αγγλική μετάφραση. Η Παλαιά Διαθήκη της είναι μεταφρασμένη από τα εβραϊκά, με τα αναγινωσκόμενα βιβλία. Κοινό κτήμα.",
+   "bible.downloads.downloadAria": "Λήψη: {name}, {size}",
+   "bible.downloads.downloading": "Λήψη: {percent}%",
+   "bible.downloads.stop": "Διακοπή λήψης",
+@@ -5230,6 +5230,7 @@
+   "bible.downloads.source.ar-van-dyck": "Η μετάφραση των Smith και Van Dyck (1865). Κοινό κτήμα. Κείμενο: eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "Η αναθεώρηση Reina-Valera του 1909. Κοινό κτήμα. Κείμενο: eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "Η μετάφραση του Αλμέιδα (1911). Κοινό κτήμα. Μεταγραφή: manuscript4u (2017)· κείμενο: CrossWire Bible Society, με την άδεια GNU GPL.",
++  "bible.downloads.source.en-web": "Η World English Bible, βρετανική έκδοση (2020). Κοινό κτήμα. Κείμενο: eBible.org.",
+   "bible.languageOffer.title": "Αλλαγή γλώσσας της εφαρμογής;",
+   "bible.languageOffer.body": "Η γλώσσα της Βίβλου σας: {language}. Τα μενού και οι σελίδες του Purify μπορούν να είναι κι αυτά σε αυτή τη γλώσσα.",
+   "bible.languageOffer.switch": "Αλλαγή σε {native}",
+diff --git a/lib/i18n/messages/en.json b/lib/i18n/messages/en.json
+index d933b3f19..24507339a 100644
+--- a/lib/i18n/messages/en.json
++++ b/lib/i18n/messages/en.json
+@@ -3485,7 +3485,6 @@
+   "bible.translationBadgeSoon": "Soon",
+   "bible.translationNote.lxx-brenton": "Public domain. The Greek Old Testament used by the Apostles.",
+   "bible.translationNote.kjv": "Public domain.",
+-  "bible.translationNote.web": "Public domain modern English. Coming soon.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. Used by permission.",
+   "bible.translationNote.niv": "© Biblica. Used by permission.",
+   "bible.translationNote.nlt": "© Tyndale House. Used by permission.",
+@@ -5246,6 +5245,7 @@
+   "bible.translationNote.ar-van-dyck": "A Protestant translation. Its Old Testament is from the Hebrew, without the deuterocanonical books. Public domain.",
+   "bible.translationNote.es-reina-valera-1909": "A Protestant translation. Its Old Testament is from the Hebrew, without the deuterocanonical books. Public domain.",
+   "bible.translationNote.pt-almeida-1911": "A Protestant translation. Its Old Testament is from the Hebrew, without the deuterocanonical books. Public domain.",
++  "bible.translationNote.en-web": "A modern English translation. Its Old Testament is from the Hebrew, with the deuterocanonical books. Public domain.",
+   "bible.downloads.downloadAria": "Download {name}, {size}",
+   "bible.downloads.downloading": "Downloading, {percent}%",
+   "bible.downloads.stop": "Stop downloading",
+@@ -5265,6 +5265,7 @@
+   "bible.downloads.source.ar-van-dyck": "The Smith and Van Dyck translation (1865). Public domain. Text from eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "The Reina-Valera revision of 1909. Public domain. Text from eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "Almeida's translation (1911). Public domain. Transcribed by manuscript4u (2017); text from the CrossWire Bible Society, under the GNU GPL.",
++  "bible.downloads.source.en-web": "The World English Bible, British Edition (2020). Public domain. Text from eBible.org.",
+   "bible.languageOffer.title": "Change the app's language?",
+   "bible.languageOffer.body": "Your Bible is in {language}. Purify's menus and pages can be in {language} too.",
+   "bible.languageOffer.switch": "Switch to {native}",
+diff --git a/lib/i18n/messages/es.json b/lib/i18n/messages/es.json
+index 7150d0af5..e23323090 100644
+--- a/lib/i18n/messages/es.json
++++ b/lib/i18n/messages/es.json
+@@ -3480,7 +3480,6 @@
+   "bible.translationBadgeSoon": "Pronto",
+   "bible.translationNote.lxx-brenton": "Dominio público. El Antiguo Testamento griego que usaron los Apóstoles.",
+   "bible.translationNote.kjv": "Dominio público.",
+-  "bible.translationNote.web": "Inglés moderno de dominio público. Muy pronto.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. Usado con permiso.",
+   "bible.translationNote.niv": "© Biblica. Usado con permiso.",
+   "bible.translationNote.nlt": "© Tyndale House. Usado con permiso.",
+@@ -5221,6 +5220,7 @@
+   "bible.translationNote.ar-van-dyck": "Una traducción protestante. Su Antiguo Testamento está traducido del hebreo, sin los libros deuterocanónicos. Dominio público.",
+   "bible.translationNote.es-reina-valera-1909": "Una traducción protestante. Su Antiguo Testamento está traducido del hebreo, sin los libros deuterocanónicos. Dominio público.",
+   "bible.translationNote.pt-almeida-1911": "Una traducción protestante. Su Antiguo Testamento está traducido del hebreo, sin los libros deuterocanónicos. Dominio público.",
++  "bible.translationNote.en-web": "Una traducción inglesa moderna. Su Antiguo Testamento está traducido del hebreo, con los libros deuterocanónicos. Dominio público.",
+   "bible.downloads.downloadAria": "Descargar {name}, {size}",
+   "bible.downloads.downloading": "Descargando, {percent} %",
+   "bible.downloads.stop": "Detener la descarga",
+@@ -5240,6 +5240,7 @@
+   "bible.downloads.source.ar-van-dyck": "La traducción de Smith y Van Dyck (1865). Dominio público. Texto de eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "La revisión Reina-Valera de 1909. Dominio público. Texto de eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "La traducción de Almeida (1911). Dominio público. Transcrita por manuscript4u (2017); texto de la CrossWire Bible Society, bajo la GNU GPL.",
++  "bible.downloads.source.en-web": "La World English Bible, edición británica (2020). Dominio público. Texto de eBible.org.",
+   "bible.languageOffer.title": "¿Cambiar el idioma de la aplicación?",
+   "bible.languageOffer.body": "Tu Biblia está en {language}. Los menús y las páginas de Purify también pueden estar en {language}.",
+   "bible.languageOffer.switch": "Cambiar a {native}",
+diff --git a/lib/i18n/messages/fil.json b/lib/i18n/messages/fil.json
+index 2a2548036..3f82344c8 100644
+--- a/lib/i18n/messages/fil.json
++++ b/lib/i18n/messages/fil.json
+@@ -3476,7 +3476,6 @@
+   "bible.translationBadgeSoon": "Malapit na",
+   "bible.translationNote.lxx-brenton": "Pampublikong domain. Ang Griyegong Lumang Tipan na ginamit ng mga Apostol.",
+   "bible.translationNote.kjv": "Pampublikong domain.",
+-  "bible.translationNote.web": "Pampublikong domain, makabagong Ingles. Malapit nang dumating.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. Ginamit nang may pahintulot.",
+   "bible.translationNote.niv": "© Biblica. Ginamit nang may pahintulot.",
+   "bible.translationNote.nlt": "© Tyndale House. Ginamit nang may pahintulot.",
+@@ -5211,6 +5210,7 @@
+   "bible.translationNote.ar-van-dyck": "Isang saling Protestante. Isinalin mula sa Hebreo ang Lumang Tipan nito, nang walang mga aklat na deuterokanoniko. Pampublikong domain.",
+   "bible.translationNote.es-reina-valera-1909": "Isang saling Protestante. Isinalin mula sa Hebreo ang Lumang Tipan nito, nang walang mga aklat na deuterokanoniko. Pampublikong domain.",
+   "bible.translationNote.pt-almeida-1911": "Isang saling Protestante. Isinalin mula sa Hebreo ang Lumang Tipan nito, nang walang mga aklat na deuterokanoniko. Pampublikong domain.",
++  "bible.translationNote.en-web": "Isang makabagong saling Ingles. Isinalin mula sa Hebreo ang Lumang Tipan nito, kasama ang mga aklat na deuterokanoniko. Pampublikong domain.",
+   "bible.downloads.downloadAria": "I-download ang {name}, {size}",
+   "bible.downloads.downloading": "Dina-download: {percent}%",
+   "bible.downloads.stop": "Ihinto ang pag-download",
+@@ -5230,6 +5230,7 @@
+   "bible.downloads.source.ar-van-dyck": "Ang salin nina Smith at Van Dyck (1865). Pampublikong domain. Teksto mula sa eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "Ang rebisyong Reina-Valera ng 1909. Pampublikong domain. Teksto mula sa eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "Ang salin ni Almeida (1911). Pampublikong domain. Transkripsiyon ng manuscript4u (2017); teksto mula sa CrossWire Bible Society, sa ilalim ng GNU GPL.",
++  "bible.downloads.source.en-web": "Ang World English Bible, edisyong British (2020). Pampublikong domain. Teksto mula sa eBible.org.",
+   "bible.languageOffer.title": "Palitan ang wika ng app?",
+   "bible.languageOffer.body": "Ang wika ng iyong Bibliya: {language}. Maaari ring nasa wikang ito ang mga menu at pahina ng Purify.",
+   "bible.languageOffer.switch": "Lumipat sa {native}",
+diff --git a/lib/i18n/messages/fr.json b/lib/i18n/messages/fr.json
+index b57d9a698..e9772ff42 100644
+--- a/lib/i18n/messages/fr.json
++++ b/lib/i18n/messages/fr.json
+@@ -3484,7 +3484,6 @@
+   "bible.translationBadgeSoon": "Bientôt",
+   "bible.translationNote.lxx-brenton": "Domaine public. L'Ancien Testament grec utilisé par les Apôtres.",
+   "bible.translationNote.kjv": "Domaine public.",
+-  "bible.translationNote.web": "Anglais moderne, domaine public. Bientôt disponible.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. Utilisé avec autorisation.",
+   "bible.translationNote.niv": "© Biblica. Utilisé avec autorisation.",
+   "bible.translationNote.nlt": "© Tyndale House. Utilisé avec autorisation.",
+@@ -5239,6 +5238,7 @@
+   "bible.translationNote.ar-van-dyck": "Une traduction protestante. Son Ancien Testament est traduit de l'hébreu, sans les livres deutérocanoniques. Domaine public.",
+   "bible.translationNote.es-reina-valera-1909": "Une traduction protestante. Son Ancien Testament est traduit de l'hébreu, sans les livres deutérocanoniques. Domaine public.",
+   "bible.translationNote.pt-almeida-1911": "Une traduction protestante. Son Ancien Testament est traduit de l'hébreu, sans les livres deutérocanoniques. Domaine public.",
++  "bible.translationNote.en-web": "Une traduction anglaise moderne. Son Ancien Testament est traduit de l'hébreu, avec les livres deutérocanoniques. Domaine public.",
+   "bible.downloads.downloadAria": "Télécharger {name}, {size}",
+   "bible.downloads.downloading": "Téléchargement, {percent} %",
+   "bible.downloads.stop": "Arrêter le téléchargement",
+@@ -5258,6 +5258,7 @@
+   "bible.downloads.source.ar-van-dyck": "La traduction de Smith et Van Dyck (1865). Domaine public. Texte d'eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "La révision Reina-Valera de 1909. Domaine public. Texte d'eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "La traduction d'Almeida (1911). Domaine public. Transcrite par manuscript4u (2017) ; texte de la CrossWire Bible Society, sous licence GNU GPL.",
++  "bible.downloads.source.en-web": "La World English Bible, édition britannique (2020). Domaine public. Texte d'eBible.org.",
+   "bible.languageOffer.title": "Changer la langue de l'application ?",
+   "bible.languageOffer.body": "Votre Bible est en {language}. Les menus et les pages de Purify peuvent aussi être en {language}.",
+   "bible.languageOffer.switch": "Utiliser {native}",
+diff --git a/lib/i18n/messages/hu.json b/lib/i18n/messages/hu.json
+index cdc94aab0..d14c37b1b 100644
+--- a/lib/i18n/messages/hu.json
++++ b/lib/i18n/messages/hu.json
+@@ -3476,7 +3476,6 @@
+   "bible.translationBadgeSoon": "Hamarosan",
+   "bible.translationNote.lxx-brenton": "Közkincs. Az apostolok által használt görög Ószövetség.",
+   "bible.translationNote.kjv": "Közkincs.",
+-  "bible.translationNote.web": "Közkincs, modern angol nyelven. Hamarosan.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. Engedéllyel felhasználva.",
+   "bible.translationNote.niv": "© Biblica. Engedéllyel felhasználva.",
+   "bible.translationNote.nlt": "© Tyndale House. Engedéllyel felhasználva.",
+@@ -5211,6 +5210,7 @@
+   "bible.translationNote.ar-van-dyck": "Protestáns fordítás. Ószövetsége héberből fordított, a deuterokanonikus könyvek nélkül. Közkincs.",
+   "bible.translationNote.es-reina-valera-1909": "Protestáns fordítás. Ószövetsége héberből fordított, a deuterokanonikus könyvek nélkül. Közkincs.",
+   "bible.translationNote.pt-almeida-1911": "Protestáns fordítás. Ószövetsége héberből fordított, a deuterokanonikus könyvek nélkül. Közkincs.",
++  "bible.translationNote.en-web": "Modern angol fordítás. Ószövetsége héberből fordított, a deuterokanonikus könyvekkel. Közkincs.",
+   "bible.downloads.downloadAria": "{name} letöltése, {size}",
+   "bible.downloads.downloading": "Letöltés: {percent}%",
+   "bible.downloads.stop": "Letöltés leállítása",
+@@ -5230,6 +5230,7 @@
+   "bible.downloads.source.ar-van-dyck": "Smith és Van Dyck fordítása (1865). Közkincs. Szöveg: eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "A Reina-Valera 1909-es revíziója. Közkincs. Szöveg: eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "Almeida fordítása (1911). Közkincs. Átírta: manuscript4u (2017); szöveg: CrossWire Bible Society, GNU GPL licenc alatt.",
++  "bible.downloads.source.en-web": "A World English Bible brit kiadása (2020). Közkincs. Szöveg: eBible.org.",
+   "bible.languageOffer.title": "Megváltoztatod az alkalmazás nyelvét?",
+   "bible.languageOffer.body": "A Bibliád nyelve: {language}. A Purify menüi és oldalai is lehetnek ezen a nyelven.",
+   "bible.languageOffer.switch": "Váltás erre: {native}",
+diff --git a/lib/i18n/messages/id.json b/lib/i18n/messages/id.json
+index 9051144ed..1ce10d040 100644
+--- a/lib/i18n/messages/id.json
++++ b/lib/i18n/messages/id.json
+@@ -3474,7 +3474,6 @@
+   "bible.translationBadgeSoon": "Segera",
+   "bible.translationNote.lxx-brenton": "Domain publik. Perjanjian Lama Yunani yang dipakai para Rasul.",
+   "bible.translationNote.kjv": "Domain publik.",
+-  "bible.translationNote.web": "Bahasa Inggris modern, domain publik. Segera hadir.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. Digunakan dengan izin.",
+   "bible.translationNote.niv": "© Biblica. Digunakan dengan izin.",
+   "bible.translationNote.nlt": "© Tyndale House. Digunakan dengan izin.",
+@@ -5208,6 +5207,7 @@
+   "bible.translationNote.ar-van-dyck": "Terjemahan Protestan. Perjanjian Lamanya diterjemahkan dari bahasa Ibrani, tanpa kitab-kitab deuterokanonika. Domain publik.",
+   "bible.translationNote.es-reina-valera-1909": "Terjemahan Protestan. Perjanjian Lamanya diterjemahkan dari bahasa Ibrani, tanpa kitab-kitab deuterokanonika. Domain publik.",
+   "bible.translationNote.pt-almeida-1911": "Terjemahan Protestan. Perjanjian Lamanya diterjemahkan dari bahasa Ibrani, tanpa kitab-kitab deuterokanonika. Domain publik.",
++  "bible.translationNote.en-web": "Terjemahan bahasa Inggris modern. Perjanjian Lamanya diterjemahkan dari bahasa Ibrani, dengan kitab-kitab deuterokanonika. Domain publik.",
+   "bible.downloads.downloadAria": "Unduh {name}, {size}",
+   "bible.downloads.downloading": "Mengunduh: {percent}%",
+   "bible.downloads.stop": "Hentikan unduhan",
+@@ -5227,6 +5227,7 @@
+   "bible.downloads.source.ar-van-dyck": "Terjemahan Smith dan Van Dyck (1865). Domain publik. Teks dari eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "Revisi Reina-Valera tahun 1909. Domain publik. Teks dari eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "Terjemahan Almeida (1911). Domain publik. Ditranskripsikan oleh manuscript4u (2017); teks dari CrossWire Bible Society, dengan lisensi GNU GPL.",
++  "bible.downloads.source.en-web": "World English Bible, edisi Britania (2020). Domain publik. Teks dari eBible.org.",
+   "bible.languageOffer.title": "Ganti bahasa aplikasi?",
+   "bible.languageOffer.body": "Bahasa Alkitab Anda: {language}. Menu dan halaman Purify juga bisa dalam bahasa ini.",
+   "bible.languageOffer.switch": "Ganti ke {native}",
+diff --git a/lib/i18n/messages/it.json b/lib/i18n/messages/it.json
+index 371f2bdf7..a3d30f719 100644
+--- a/lib/i18n/messages/it.json
++++ b/lib/i18n/messages/it.json
+@@ -3480,7 +3480,6 @@
+   "bible.translationBadgeSoon": "Presto",
+   "bible.translationNote.lxx-brenton": "Di pubblico dominio. L'Antico Testamento greco usato dagli Apostoli.",
+   "bible.translationNote.kjv": "Di pubblico dominio.",
+-  "bible.translationNote.web": "Inglese moderno di pubblico dominio. Presto disponibile.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. Usata con permesso.",
+   "bible.translationNote.niv": "© Biblica. Usata con permesso.",
+   "bible.translationNote.nlt": "© Tyndale House. Usata con permesso.",
+@@ -5216,6 +5215,7 @@
+   "bible.translationNote.ar-van-dyck": "Una traduzione protestante. Il suo Antico Testamento è tradotto dall'ebraico, senza i libri deuterocanonici. Di pubblico dominio.",
+   "bible.translationNote.es-reina-valera-1909": "Una traduzione protestante. Il suo Antico Testamento è tradotto dall'ebraico, senza i libri deuterocanonici. Di pubblico dominio.",
+   "bible.translationNote.pt-almeida-1911": "Una traduzione protestante. Il suo Antico Testamento è tradotto dall'ebraico, senza i libri deuterocanonici. Di pubblico dominio.",
++  "bible.translationNote.en-web": "Una traduzione inglese moderna. Il suo Antico Testamento è tradotto dall'ebraico, con i libri deuterocanonici. Di pubblico dominio.",
+   "bible.downloads.downloadAria": "Scarica {name}, {size}",
+   "bible.downloads.downloading": "Download in corso, {percent}%",
+   "bible.downloads.stop": "Interrompi il download",
+@@ -5235,6 +5235,7 @@
+   "bible.downloads.source.ar-van-dyck": "La traduzione di Smith e Van Dyck (1865). Di pubblico dominio. Testo di eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "La revisione Reina-Valera del 1909. Di pubblico dominio. Testo di eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "La traduzione di Almeida (1911). Di pubblico dominio. Trascritta da manuscript4u (2017); testo della CrossWire Bible Society, con licenza GNU GPL.",
++  "bible.downloads.source.en-web": "La World English Bible, edizione britannica (2020). Di pubblico dominio. Testo di eBible.org.",
+   "bible.languageOffer.title": "Cambiare la lingua dell'app?",
+   "bible.languageOffer.body": "La tua Bibbia è in {language}. Anche i menu e le pagine di Purify possono essere in {language}.",
+   "bible.languageOffer.switch": "Passa a {native}",
+diff --git a/lib/i18n/messages/ka.json b/lib/i18n/messages/ka.json
+index 583b1f9f2..2d087eb8a 100644
+--- a/lib/i18n/messages/ka.json
++++ b/lib/i18n/messages/ka.json
+@@ -3476,7 +3476,6 @@
+   "bible.translationBadgeSoon": "მალე",
+   "bible.translationNote.lxx-brenton": "საჯარო დომენი. ბერძნული ძველი აღთქმა, რომელსაც მოციქულები იყენებდნენ.",
+   "bible.translationNote.kjv": "საჯარო დომენი.",
+-  "bible.translationNote.web": "საჯარო დომენი, თანამედროვე ინგლისური. მალე დაემატება.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. გამოიყენება ნებართვით.",
+   "bible.translationNote.niv": "© Biblica. გამოიყენება ნებართვით.",
+   "bible.translationNote.nlt": "© Tyndale House. გამოიყენება ნებართვით.",
+@@ -5211,6 +5210,7 @@
+   "bible.translationNote.ar-van-dyck": "პროტესტანტული თარგმანი. მისი ძველი აღთქმა ნათარგმნია ებრაულიდან, არაკანონიკური წიგნების გარეშე. საჯარო დომენი.",
+   "bible.translationNote.es-reina-valera-1909": "პროტესტანტული თარგმანი. მისი ძველი აღთქმა ნათარგმნია ებრაულიდან, არაკანონიკური წიგნების გარეშე. საჯარო დომენი.",
+   "bible.translationNote.pt-almeida-1911": "პროტესტანტული თარგმანი. მისი ძველი აღთქმა ნათარგმნია ებრაულიდან, არაკანონიკური წიგნების გარეშე. საჯარო დომენი.",
++  "bible.translationNote.en-web": "თანამედროვე ინგლისური თარგმანი. მისი ძველი აღთქმა ნათარგმნია ებრაულიდან, არაკანონიკური წიგნებით. საჯარო დომენი.",
+   "bible.downloads.downloadAria": "ჩამოტვირთეთ {name}, {size}",
+   "bible.downloads.downloading": "იტვირთება: {percent}%",
+   "bible.downloads.stop": "ჩამოტვირთვის შეჩერება",
+@@ -5230,6 +5230,7 @@
+   "bible.downloads.source.ar-van-dyck": "სმითისა და ვან დაიკის თარგმანი (1865). საჯარო დომენი. ტექსტი: eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "რეინა-ვალერას 1909 წლის რედაქცია. საჯარო დომენი. ტექსტი: eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "ალმეიდას თარგმანი (1911). საჯარო დომენი. გადაწერა: manuscript4u (2017); ტექსტი: CrossWire Bible Society, GNU GPL ლიცენზიით.",
++  "bible.downloads.source.en-web": "World English Bible, ბრიტანული გამოცემა (2020). საჯარო დომენი. ტექსტი: eBible.org.",
+   "bible.languageOffer.title": "შევცვალოთ აპის ენა?",
+   "bible.languageOffer.body": "თქვენი ბიბლიის ენა: {language}. Purify-ის მენიუები და გვერდებიც შეიძლება ამ ენაზე იყოს.",
+   "bible.languageOffer.switch": "გადართვა: {native}",
+diff --git a/lib/i18n/messages/ne.json b/lib/i18n/messages/ne.json
+index dae24eb61..3dadd4903 100644
+--- a/lib/i18n/messages/ne.json
++++ b/lib/i18n/messages/ne.json
+@@ -3476,7 +3476,6 @@
+   "bible.translationBadgeSoon": "चाँडै",
+   "bible.translationNote.lxx-brenton": "सार्वजनिक अधिकार क्षेत्र। प्रेरितहरूले प्रयोग गरेको ग्रीक पुरानो नियम।",
+   "bible.translationNote.kjv": "सार्वजनिक अधिकार क्षेत्र।",
+-  "bible.translationNote.web": "सार्वजनिक अधिकार क्षेत्रको आधुनिक अंग्रेजी। चाँडै आउँदै।",
+   "bible.translationNote.nkjv": "© Thomas Nelson। अनुमतिसाथ प्रयोग गरिएको।",
+   "bible.translationNote.niv": "© Biblica। अनुमतिसाथ प्रयोग गरिएको।",
+   "bible.translationNote.nlt": "© Tyndale House। अनुमतिसाथ प्रयोग गरिएको।",
+@@ -5211,6 +5210,7 @@
+   "bible.translationNote.ar-van-dyck": "प्रोटेस्टेन्ट अनुवाद। यसको पुरानो नियम हिब्रूबाट अनुवाद गरिएको हो, ड्युटेरोक्यानोनिकल पुस्तकहरूबिना। सार्वजनिक अधिकार क्षेत्र।",
+   "bible.translationNote.es-reina-valera-1909": "प्रोटेस्टेन्ट अनुवाद। यसको पुरानो नियम हिब्रूबाट अनुवाद गरिएको हो, ड्युटेरोक्यानोनिकल पुस्तकहरूबिना। सार्वजनिक अधिकार क्षेत्र।",
+   "bible.translationNote.pt-almeida-1911": "प्रोटेस्टेन्ट अनुवाद। यसको पुरानो नियम हिब्रूबाट अनुवाद गरिएको हो, ड्युटेरोक्यानोनिकल पुस्तकहरूबिना। सार्वजनिक अधिकार क्षेत्र।",
++  "bible.translationNote.en-web": "आधुनिक अंग्रेजी अनुवाद। यसको पुरानो नियम हिब्रूबाट अनुवाद गरिएको हो, ड्युटेरोक्यानोनिकल पुस्तकहरूसहित। सार्वजनिक अधिकार क्षेत्र।",
+   "bible.downloads.downloadAria": "{name} डाउनलोड गर्नुहोस्, {size}",
+   "bible.downloads.downloading": "डाउनलोड हुँदैछ: {percent}%",
+   "bible.downloads.stop": "डाउनलोड रोक्नुहोस्",
+@@ -5230,6 +5230,7 @@
+   "bible.downloads.source.ar-van-dyck": "स्मिथ र भ्यान डाइकको अनुवाद (1865)। सार्वजनिक अधिकार क्षेत्र। पाठ: eBible.org।",
+   "bible.downloads.source.es-reina-valera-1909": "रेइना-भलेराको 1909 को संशोधन। सार्वजनिक अधिकार क्षेत्र। पाठ: eBible.org।",
+   "bible.downloads.source.pt-almeida-1911": "आल्मेइडाको अनुवाद (1911)। सार्वजनिक अधिकार क्षेत्र। प्रतिलेखन: manuscript4u (2017); पाठ: CrossWire Bible Society, GNU GPL अन्तर्गत।",
++  "bible.downloads.source.en-web": "World English Bible, बेलायती संस्करण (2020)। सार्वजनिक अधिकार क्षेत्र। पाठ: eBible.org।",
+   "bible.languageOffer.title": "एपको भाषा बदल्ने?",
+   "bible.languageOffer.body": "तपाईंको बाइबलको भाषा: {language}। Purify का मेनु र पृष्ठहरू पनि यही भाषामा हुन सक्छन्।",
+   "bible.languageOffer.switch": "{native} मा बदल्नुहोस्",
+diff --git a/lib/i18n/messages/pl.json b/lib/i18n/messages/pl.json
+index 5c0721523..afb4da15a 100644
+--- a/lib/i18n/messages/pl.json
++++ b/lib/i18n/messages/pl.json
+@@ -3566,7 +3566,6 @@
+   "bible.translationBadgeSoon": "Wkrótce",
+   "bible.translationNote.lxx-brenton": "Domena publiczna. Grecki Stary Testament, którym posługiwali się Apostołowie.",
+   "bible.translationNote.kjv": "Domena publiczna.",
+-  "bible.translationNote.web": "Współczesna angielszczyzna w domenie publicznej. Wkrótce.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. Wykorzystano za zgodą.",
+   "bible.translationNote.niv": "© Biblica. Wykorzystano za zgodą.",
+   "bible.translationNote.nlt": "© Tyndale House. Wykorzystano za zgodą.",
+@@ -5373,6 +5372,7 @@
+   "bible.translationNote.ar-van-dyck": "Przekład protestancki. Stary Testament przełożony z hebrajskiego, bez ksiąg deuterokanonicznych. Domena publiczna.",
+   "bible.translationNote.es-reina-valera-1909": "Przekład protestancki. Stary Testament przełożony z hebrajskiego, bez ksiąg deuterokanonicznych. Domena publiczna.",
+   "bible.translationNote.pt-almeida-1911": "Przekład protestancki. Stary Testament przełożony z hebrajskiego, bez ksiąg deuterokanonicznych. Domena publiczna.",
++  "bible.translationNote.en-web": "Współczesny przekład angielski. Stary Testament przełożony z hebrajskiego, z księgami deuterokanonicznymi. Domena publiczna.",
+   "bible.downloads.downloadAria": "Pobierz {name}, {size}",
+   "bible.downloads.downloading": "Pobieranie: {percent}%",
+   "bible.downloads.stop": "Zatrzymaj pobieranie",
+@@ -5392,6 +5392,7 @@
+   "bible.downloads.source.ar-van-dyck": "Przekład Smitha i Van Dycka (1865). Domena publiczna. Tekst: eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "Rewizja Reina-Valera z 1909 roku. Domena publiczna. Tekst: eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "Przekład Almeidy (1911). Domena publiczna. Transkrypcja: manuscript4u (2017); tekst: CrossWire Bible Society, na licencji GNU GPL.",
++  "bible.downloads.source.en-web": "World English Bible, wydanie brytyjskie (2020). Domena publiczna. Tekst: eBible.org.",
+   "bible.languageOffer.title": "Zmienić język aplikacji?",
+   "bible.languageOffer.body": "Język Twojej Biblii: {language}. Menu i strony Purify też mogą być w tym języku.",
+   "bible.languageOffer.switch": "Przełącz na: {native}",
+diff --git a/lib/i18n/messages/pt.json b/lib/i18n/messages/pt.json
+index 2c077a71b..d70940002 100644
+--- a/lib/i18n/messages/pt.json
++++ b/lib/i18n/messages/pt.json
+@@ -3480,7 +3480,6 @@
+   "bible.translationBadgeSoon": "Em breve",
+   "bible.translationNote.lxx-brenton": "Domínio público. O Antigo Testamento grego usado pelos Apóstolos.",
+   "bible.translationNote.kjv": "Domínio público.",
+-  "bible.translationNote.web": "Inglês moderno em domínio público. Em breve.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. Usada com permissão.",
+   "bible.translationNote.niv": "© Biblica. Usada com permissão.",
+   "bible.translationNote.nlt": "© Tyndale House. Usada com permissão.",
+@@ -5216,6 +5215,7 @@
+   "bible.translationNote.ar-van-dyck": "Uma tradução protestante. O seu Antigo Testamento é traduzido do hebraico, sem os livros deuterocanônicos. Domínio público.",
+   "bible.translationNote.es-reina-valera-1909": "Uma tradução protestante. O seu Antigo Testamento é traduzido do hebraico, sem os livros deuterocanônicos. Domínio público.",
+   "bible.translationNote.pt-almeida-1911": "Uma tradução protestante. O seu Antigo Testamento é traduzido do hebraico, sem os livros deuterocanônicos. Domínio público.",
++  "bible.translationNote.en-web": "Uma tradução inglesa moderna. O seu Antigo Testamento é traduzido do hebraico, com os livros deuterocanônicos. Domínio público.",
+   "bible.downloads.downloadAria": "Baixar {name}, {size}",
+   "bible.downloads.downloading": "Baixando, {percent}%",
+   "bible.downloads.stop": "Parar a transferência",
+@@ -5235,6 +5235,7 @@
+   "bible.downloads.source.ar-van-dyck": "A tradução de Smith e Van Dyck (1865). Domínio público. Texto de eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "A revisão Reina-Valera de 1909. Domínio público. Texto de eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "A tradução de Almeida (1911). Domínio público. Transcrita por manuscript4u (2017); texto da CrossWire Bible Society, sob a GNU GPL.",
++  "bible.downloads.source.en-web": "A World English Bible, edição britânica (2020). Domínio público. Texto de eBible.org.",
+   "bible.languageOffer.title": "Mudar o idioma do aplicativo?",
+   "bible.languageOffer.body": "A sua Bíblia está em {language}. Os menus e as páginas do Purify também podem estar em {language}.",
+   "bible.languageOffer.switch": "Mudar para {native}",
+diff --git a/lib/i18n/messages/ro.json b/lib/i18n/messages/ro.json
+index bfeaa3b2c..523f62505 100644
+--- a/lib/i18n/messages/ro.json
++++ b/lib/i18n/messages/ro.json
+@@ -3531,7 +3531,6 @@
+   "bible.translationBadgeSoon": "În curând",
+   "bible.translationNote.lxx-brenton": "Domeniu public. Vechiul Testament grecesc folosit de Apostoli.",
+   "bible.translationNote.kjv": "Domeniu public.",
+-  "bible.translationNote.web": "Engleză modernă, domeniu public. În curând.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. Folosit cu permisiune.",
+   "bible.translationNote.niv": "© Biblica. Folosit cu permisiune.",
+   "bible.translationNote.nlt": "© Tyndale House. Folosit cu permisiune.",
+@@ -5302,6 +5301,7 @@
+   "bible.translationNote.ar-van-dyck": "O traducere protestantă. Vechiul ei Testament este tradus din ebraică, fără cărțile deuterocanonice. Domeniu public.",
+   "bible.translationNote.es-reina-valera-1909": "O traducere protestantă. Vechiul ei Testament este tradus din ebraică, fără cărțile deuterocanonice. Domeniu public.",
+   "bible.translationNote.pt-almeida-1911": "O traducere protestantă. Vechiul ei Testament este tradus din ebraică, fără cărțile deuterocanonice. Domeniu public.",
++  "bible.translationNote.en-web": "O traducere engleză modernă. Vechiul ei Testament este tradus din ebraică, cu cărțile deuterocanonice. Domeniu public.",
+   "bible.downloads.downloadAria": "Descarcă {name}, {size}",
+   "bible.downloads.downloading": "Se descarcă, {percent}%",
+   "bible.downloads.stop": "Oprește descărcarea",
+@@ -5321,6 +5321,7 @@
+   "bible.downloads.source.ar-van-dyck": "Traducerea lui Smith și Van Dyck (1865). Domeniu public. Text de la eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "Revizuirea Reina-Valera din 1909. Domeniu public. Text de la eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "Traducerea lui Almeida (1911). Domeniu public. Transcrisă de manuscript4u (2017); text de la CrossWire Bible Society, sub licența GNU GPL.",
++  "bible.downloads.source.en-web": "World English Bible, ediția britanică (2020). Domeniu public. Text de la eBible.org.",
+   "bible.languageOffer.title": "Schimbi limba aplicației?",
+   "bible.languageOffer.body": "Biblia ta este în {language}. Meniurile și paginile Purify pot fi și ele în {language}.",
+   "bible.languageOffer.switch": "Treci la {native}",
+diff --git a/lib/i18n/messages/ru.json b/lib/i18n/messages/ru.json
+index bf544270f..4e15d25da 100644
+--- a/lib/i18n/messages/ru.json
++++ b/lib/i18n/messages/ru.json
+@@ -3564,7 +3564,6 @@
+   "bible.translationBadgeSoon": "Скоро",
+   "bible.translationNote.lxx-brenton": "Общественное достояние. Греческий Ветхий Завет, которым пользовались апостолы.",
+   "bible.translationNote.kjv": "Общественное достояние.",
+-  "bible.translationNote.web": "Современный английский, общественное достояние. Скоро.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. Используется с разрешения.",
+   "bible.translationNote.niv": "© Biblica. Используется с разрешения.",
+   "bible.translationNote.nlt": "© Tyndale House. Используется с разрешения.",
+@@ -5371,6 +5370,7 @@
+   "bible.translationNote.ar-van-dyck": "Протестантский перевод. Ветхий Завет переведён с еврейского, без неканонических книг. Общественное достояние.",
+   "bible.translationNote.es-reina-valera-1909": "Протестантский перевод. Ветхий Завет переведён с еврейского, без неканонических книг. Общественное достояние.",
+   "bible.translationNote.pt-almeida-1911": "Протестантский перевод. Ветхий Завет переведён с еврейского, без неканонических книг. Общественное достояние.",
++  "bible.translationNote.en-web": "Современный английский перевод. Ветхий Завет переведён с еврейского, с неканоническими книгами. Общественное достояние.",
+   "bible.downloads.downloadAria": "Скачать {name}, {size}",
+   "bible.downloads.downloading": "Скачивание: {percent}%",
+   "bible.downloads.stop": "Остановить скачивание",
+@@ -5390,6 +5390,7 @@
+   "bible.downloads.source.ar-van-dyck": "Перевод Смита и Ван Дейка (1865). Общественное достояние. Текст: eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "Редакция Рейна-Валера 1909 года. Общественное достояние. Текст: eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "Перевод Алмейды (1911). Общественное достояние. Транскрипция: manuscript4u (2017); текст: CrossWire Bible Society, по лицензии GNU GPL.",
++  "bible.downloads.source.en-web": "World English Bible, британское издание (2020). Общественное достояние. Текст: eBible.org.",
+   "bible.languageOffer.title": "Сменить язык приложения?",
+   "bible.languageOffer.body": "Язык вашей Библии: {language}. Меню и страницы Purify тоже могут быть на этом языке.",
+   "bible.languageOffer.switch": "Переключить на {native}",
+diff --git a/lib/i18n/messages/sr.json b/lib/i18n/messages/sr.json
+index 676d36ae7..0f16a344b 100644
+--- a/lib/i18n/messages/sr.json
++++ b/lib/i18n/messages/sr.json
+@@ -3523,7 +3523,6 @@
+   "bible.translationBadgeSoon": "Ускоро",
+   "bible.translationNote.lxx-brenton": "Јавно власништво. Грчки Стари Завет који су користили апостоли.",
+   "bible.translationNote.kjv": "Јавно власништво.",
+-  "bible.translationNote.web": "Јавно власништво, савремени енглески. Ускоро.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. Коришћено уз дозволу.",
+   "bible.translationNote.niv": "© Biblica. Коришћено уз дозволу.",
+   "bible.translationNote.nlt": "© Tyndale House. Коришћено уз дозволу.",
+@@ -5294,6 +5293,7 @@
+   "bible.translationNote.ar-van-dyck": "Протестантски превод. Стари завет је преведен с хебрејског, без неканонских књига. Јавно власништво.",
+   "bible.translationNote.es-reina-valera-1909": "Протестантски превод. Стари завет је преведен с хебрејског, без неканонских књига. Јавно власништво.",
+   "bible.translationNote.pt-almeida-1911": "Протестантски превод. Стари завет је преведен с хебрејског, без неканонских књига. Јавно власништво.",
++  "bible.translationNote.en-web": "Савремени енглески превод. Стари завет је преведен с хебрејског, са неканонским књигама. Јавно власништво.",
+   "bible.downloads.downloadAria": "Преузми {name}, {size}",
+   "bible.downloads.downloading": "Преузимање: {percent}%",
+   "bible.downloads.stop": "Заустави преузимање",
+@@ -5313,6 +5313,7 @@
+   "bible.downloads.source.ar-van-dyck": "Превод Смита и Ван Дајка (1865). Јавно власништво. Текст: eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "Ревизија Реина-Валера из 1909. године. Јавно власништво. Текст: eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "Превод Алмеиде (1911). Јавно власништво. Транскрипција: manuscript4u (2017); текст: CrossWire Bible Society, под лиценцом GNU GPL.",
++  "bible.downloads.source.en-web": "World English Bible, британско издање (2020). Јавно власништво. Текст: eBible.org.",
+   "bible.languageOffer.title": "Променити језик апликације?",
+   "bible.languageOffer.body": "Језик ваше Библије: {language}. Менији и странице Purify-ја такође могу бити на том језику.",
+   "bible.languageOffer.switch": "Пређи на {native}",
+diff --git a/lib/i18n/messages/tr.json b/lib/i18n/messages/tr.json
+index 528554b7a..79ba0cb9b 100644
+--- a/lib/i18n/messages/tr.json
++++ b/lib/i18n/messages/tr.json
+@@ -3476,7 +3476,6 @@
+   "bible.translationBadgeSoon": "Yakında",
+   "bible.translationNote.lxx-brenton": "Kamu malı. Havarilerin kullandığı Yunanca Eski Ahit.",
+   "bible.translationNote.kjv": "Kamu malı.",
+-  "bible.translationNote.web": "Kamu malı, modern İngilizce. Yakında.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. İzinle kullanılmıştır.",
+   "bible.translationNote.niv": "© Biblica. İzinle kullanılmıştır.",
+   "bible.translationNote.nlt": "© Tyndale House. İzinle kullanılmıştır.",
+@@ -5211,6 +5210,7 @@
+   "bible.translationNote.ar-van-dyck": "Protestan bir çeviri. Eski Ahit'i İbraniceden çevrilmiştir, deuterokanonik kitaplar olmadan. Kamu malı.",
+   "bible.translationNote.es-reina-valera-1909": "Protestan bir çeviri. Eski Ahit'i İbraniceden çevrilmiştir, deuterokanonik kitaplar olmadan. Kamu malı.",
+   "bible.translationNote.pt-almeida-1911": "Protestan bir çeviri. Eski Ahit'i İbraniceden çevrilmiştir, deuterokanonik kitaplar olmadan. Kamu malı.",
++  "bible.translationNote.en-web": "Çağdaş bir İngilizce çeviri. Eski Ahit'i İbraniceden çevrilmiştir, deuterokanonik kitaplarla birlikte. Kamu malı.",
+   "bible.downloads.downloadAria": "{name} indir, {size}",
+   "bible.downloads.downloading": "İndiriliyor: %{percent}",
+   "bible.downloads.stop": "İndirmeyi durdur",
+@@ -5230,6 +5230,7 @@
+   "bible.downloads.source.ar-van-dyck": "Smith ve Van Dyck çevirisi (1865). Kamu malı. Metin: eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "Reina-Valera'nın 1909 revizyonu. Kamu malı. Metin: eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "Almeida çevirisi (1911). Kamu malı. Transkripsiyon: manuscript4u (2017); metin: CrossWire Bible Society, GNU GPL lisansıyla.",
++  "bible.downloads.source.en-web": "World English Bible, İngiliz baskısı (2020). Kamu malı. Metin: eBible.org.",
+   "bible.languageOffer.title": "Uygulamanın dili değiştirilsin mi?",
+   "bible.languageOffer.body": "Kutsal Kitabınızın dili: {language}. Purify'ın menüleri ve sayfaları da bu dilde olabilir.",
+   "bible.languageOffer.switch": "{native} diline geç",
+diff --git a/lib/i18n/messages/uk.json b/lib/i18n/messages/uk.json
+index 3a940ed89..e005818f3 100644
+--- a/lib/i18n/messages/uk.json
++++ b/lib/i18n/messages/uk.json
+@@ -3563,7 +3563,6 @@
+   "bible.translationBadgeSoon": "Незабаром",
+   "bible.translationNote.lxx-brenton": "Суспільне надбання. Грецький Старий Завіт, яким користувалися апостоли.",
+   "bible.translationNote.kjv": "Суспільне надбання.",
+-  "bible.translationNote.web": "Суспільне надбання, сучасна англійська. Незабаром.",
+   "bible.translationNote.nkjv": "© Thomas Nelson. Використано з дозволу.",
+   "bible.translationNote.niv": "© Biblica. Використано з дозволу.",
+   "bible.translationNote.nlt": "© Tyndale House. Використано з дозволу.",
+@@ -5370,6 +5369,7 @@
+   "bible.translationNote.ar-van-dyck": "Протестантський переклад. Старий Заповіт перекладено з єврейської, без неканонічних книг. Суспільне надбання.",
+   "bible.translationNote.es-reina-valera-1909": "Протестантський переклад. Старий Заповіт перекладено з єврейської, без неканонічних книг. Суспільне надбання.",
+   "bible.translationNote.pt-almeida-1911": "Протестантський переклад. Старий Заповіт перекладено з єврейської, без неканонічних книг. Суспільне надбання.",
++  "bible.translationNote.en-web": "Сучасний англійський переклад. Старий Заповіт перекладено з єврейської, з неканонічними книгами. Суспільне надбання.",
+   "bible.downloads.downloadAria": "Завантажити {name}, {size}",
+   "bible.downloads.downloading": "Завантаження: {percent}%",
+   "bible.downloads.stop": "Зупинити завантаження",
+@@ -5389,6 +5389,7 @@
+   "bible.downloads.source.ar-van-dyck": "Переклад Сміта і Ван Дейка (1865). Суспільне надбання. Текст: eBible.org.",
+   "bible.downloads.source.es-reina-valera-1909": "Редакція Рейна-Валера 1909 року. Суспільне надбання. Текст: eBible.org.",
+   "bible.downloads.source.pt-almeida-1911": "Переклад Алмейди (1911). Суспільне надбання. Транскрипція: manuscript4u (2017); текст: CrossWire Bible Society, за ліцензією GNU GPL.",
++  "bible.downloads.source.en-web": "World English Bible, британське видання (2020). Суспільне надбання. Текст: eBible.org.",
+   "bible.languageOffer.title": "Змінити мову застосунку?",
+   "bible.languageOffer.body": "Мова вашої Біблії: {language}. Меню і сторінки Purify теж можуть бути цією мовою.",
+   "bible.languageOffer.switch": "Перейти на {native}",
+diff --git a/lib/i18n/messages/ur.json b/lib/i18n/messages/ur.json
+index 33b25ceed..547728f50 100644
+--- a/lib/i18n/messages/ur.json
++++ b/lib/i18n/messages/ur.json
+@@ -3476,7 +3476,6 @@
+   "bible.translationBadgeSoon": "جلد",
+   "bible.translationNote.lxx-brenton": "پبلک ڈومین۔ یونانی عہدنامہ قدیم، جو رسولوں کے زیرِ استعمال رہا۔",
+   "bible.translationNote.kjv": "پبلک ڈومین۔",
+-  "bible.translationNote.web": "پبلک ڈومین، جدید انگریزی۔ جلد آ رہا ہے۔",
+   "bible.translationNote.nkjv": "© Thomas Nelson۔ اجازت سے استعمال شدہ۔",
+   "bible.translationNote.niv": "© Biblica۔ اجازت سے استعمال شدہ۔",
+   "bible.translationNote.nlt": "© Tyndale House۔ اجازت سے استعمال شدہ۔",
+@@ -5211,6 +5210,7 @@
+   "bible.translationNote.ar-van-dyck": "ایک پروٹسٹنٹ ترجمہ۔ اس کا پرانا عہد نامہ عبرانی سے ترجمہ کیا گیا ہے، ثانوی قانونی کتابوں کے بغیر۔ پبلک ڈومین۔",
+   "bible.translationNote.es-reina-valera-1909": "ایک پروٹسٹنٹ ترجمہ۔ اس کا پرانا عہد نامہ عبرانی سے ترجمہ کیا گیا ہے، ثانوی قانونی کتابوں کے بغیر۔ پبلک ڈومین۔",
+   "bible.translationNote.pt-almeida-1911": "ایک پروٹسٹنٹ ترجمہ۔ اس کا پرانا عہد نامہ عبرانی سے ترجمہ کیا گیا ہے، ثانوی قانونی کتابوں کے بغیر۔ پبلک ڈومین۔",
++  "bible.translationNote.en-web": "ایک جدید انگریزی ترجمہ۔ اس کا پرانا عہد نامہ عبرانی سے ترجمہ کیا گیا ہے، ثانوی قانونی کتابوں کے ساتھ۔ پبلک ڈومین۔",
+   "bible.downloads.downloadAria": "{name} ڈاؤن لوڈ کریں، {size}",
+   "bible.downloads.downloading": "ڈاؤن لوڈ ہو رہا ہے: {percent}%",
+   "bible.downloads.stop": "ڈاؤن لوڈ روکیں",
+@@ -5230,6 +5230,7 @@
+   "bible.downloads.source.ar-van-dyck": "سمتھ اور وین ڈائیک کا ترجمہ (1865)۔ پبلک ڈومین۔ متن: eBible.org۔",
+   "bible.downloads.source.es-reina-valera-1909": "رینا-والیرا کی 1909 کی نظرثانی۔ پبلک ڈومین۔ متن: eBible.org۔",
+   "bible.downloads.source.pt-almeida-1911": "آلمیدا کا ترجمہ (1911)۔ پبلک ڈومین۔ نقل: manuscript4u (2017)؛ متن: CrossWire Bible Society، GNU GPL کے تحت۔",
++  "bible.downloads.source.en-web": "World English Bible، برطانوی ایڈیشن (2020)۔ پبلک ڈومین۔ متن: eBible.org۔",
+   "bible.languageOffer.title": "ایپ کی زبان بدلیں؟",
+   "bible.languageOffer.body": "آپ کی بائبل کی زبان: {language}۔ Purify کے مینو اور صفحات بھی اسی زبان میں ہو سکتے ہیں۔",
+   "bible.languageOffer.switch": "{native} پر جائیں",
+diff --git a/lib/premium/tryCompare.ts b/lib/premium/tryCompare.ts
+index a500703ee..55455468b 100644
+--- a/lib/premium/tryCompare.ts
++++ b/lib/premium/tryCompare.ts
+@@ -30,4 +30,5 @@ export const TRY_COMPARE_BIBLES: readonly { bible: BibleId; at: string; words: s
+   { bible: "ar-van-dyck", at: "51:1", words: "اِرْحَمْنِي يَا ٱللهُ حَسَبَ رَحْمَتِكَ. حَسَبَ كَثْرَةِ رَأْفَتِكَ ٱمْحُ مَعَاصِيَّ." },
+   { bible: "es-reina-valera-1909", at: "51:1", words: "TEN piedad de mí, oh Dios, conforme á tu misericordia: conforme á la multitud de tus piedades borra mis rebeliones." },
+   { bible: "pt-almeida-1911", at: "51:1", words: "Tem misericordia de mim, ó Deus, segundo a tua benignidade; apaga as minhas transgressões, segundo a multidão das tuas misericordias." },
++  { bible: "en-web", at: "51:1", words: "Have mercy on me, God, according to your loving kindness. According to the multitude of your tender mercies, blot out my transgressions." },
+ ];
+diff --git a/scripts/bibles/build.mjs b/scripts/bibles/build.mjs
+index a82632693..3f7e6879a 100644
+--- a/scripts/bibles/build.mjs
++++ b/scripts/bibles/build.mjs
+@@ -5,7 +5,7 @@
+ //   node scripts/bibles/build.mjs \
+ //     --ru <russynodal.json> --grc-ot <grcbrent usfm folder> --grc-nt <grcbyz usfm folder> \
+ //     --sr <srp1868 usfm folder> --ar <arb-vd usfm folder> --es <spaRV1909 usfm folder> \
+-//     --pt <poralmeida1911.json>
++//     --pt <poralmeida1911.json> --web <eng-webbe usfm folder>
+ //
+ // Each Bible is built from its source when it is given, and kept as it was
+ // built when it is not (its files and its entry in the catalog untouched), so
+@@ -63,6 +63,13 @@
+ //    All three Public Domain. They are Bibles of the Hebrew canon, as their
+ //    publishers made them: no deuterocanonical books, no Psalm 151, Daniel in
+ //    twelve chapters, each line under its title saying so.
++//  - English: the World English Bible, British Edition with the deuterocanon,
++//    its 2020 stable text, eBible's eng-webbe,
++//    https://ebible.org/Scriptures/eng-webbe_usfm.zip
++//    (sha256 c982d6311c10e8ac6fc72a09e3ae17647c8502b2478b3d9a769eb64aaa40591c,
++//    read 2026-11-13). Public Domain; "World English Bible" is eBible.org's
++//    trademark, which may name the text only while it is unchanged, as here.
++//    God's name is printed "the LORD" (the Classic edition prints "Yahweh").
+ //
+ // Where the Greek file is arranged otherwise than the app's books, it is set
+ // in the app's books, each change named here and held by
+@@ -93,9 +100,9 @@ const args = Object.fromEntries(
+     .slice(2)
+     .reduce((pairs, a, i, all) => (a.startsWith("--") ? [...pairs, [a.slice(2), all[i + 1]]] : pairs), []),
+ );
+-if (!args.ru && !(args["grc-ot"] && args["grc-nt"]) && !args.sr && !args.ar && !args.es && !args.pt) {
++if (!args.ru && !(args["grc-ot"] && args["grc-nt"]) && !args.sr && !args.ar && !args.es && !args.pt && !args.web) {
+   console.error(
+-    "usage: node scripts/bibles/build.mjs [--ru <russynodal.json>] [--grc-ot <grcbrent usfm> --grc-nt <grcbyz usfm>] [--sr <srp1868 usfm>] [--ar <arb-vd usfm>] [--es <spaRV1909 usfm>] [--pt <poralmeida1911.json>]",
++    "usage: node scripts/bibles/build.mjs [--ru <russynodal.json>] [--grc-ot <grcbrent usfm> --grc-nt <grcbyz usfm>] [--sr <srp1868 usfm>] [--ar <arb-vd usfm>] [--es <spaRV1909 usfm>] [--pt <poralmeida1911.json>] [--web <eng-webbe usfm>]",
+   );
+   process.exit(1);
+ }
+@@ -211,7 +218,7 @@ const HEADING = /^(id|ide|h|toc\d|toca\d|mt\d?|mte\d?|s\d?|ms\d?|mr|r|sr|sp|cl|c
+  * `drop` lists editors' notes printed as text, each left out where it stands
+  * and each required to be found, so a list that no longer fits fails.
+  */
+-function parseUsfm(text, where, { opening = false, drop = null } = {}) {
++function parseUsfm(text, where, { opening = false, drop = null, acrostic = null, introduction = null } = {}) {
+   const clean = text
+     .replace(/^﻿/, "")
+     .replace(/\\(f|fe|x)\s[\s\S]*?\\\1\*/g, "")
+@@ -222,6 +229,8 @@ function parseUsfm(text, where, { opening = false, drop = null } = {}) {
+   let chapter = null;
+   let verse = null;
+   let preface = [];
++  /** The heading over a book's introduction, where it has one (\is1). */
++  let introHeading = "";
+   const add = (t) => {
+     if (!t) return;
+     if (!verse && opening && chapter && chapter.every(([n]) => n === "")) {
+@@ -263,6 +272,15 @@ function parseUsfm(text, where, { opening = false, drop = null } = {}) {
+       continue;
+     }
+     if (mark === "ip" && !chapter) {
++      // The World English Bible opens each deuterocanonical book with the
++      // edition's own note on it ("is recognised as Deuterocanonical
++      // Scripture by..."): not the book's words, so left out and counted
++      // (`introduction`). Sirach's prologue, under its own heading, is the
++      // book's, and stands before its verse 1.
++      if (introduction && !/\bPrologue\b/.test(introHeading)) {
++        introduction.left += 1;
++        continue;
++      }
+       preface.push(rest);
+       continue;
+     }
+@@ -271,6 +289,13 @@ function parseUsfm(text, where, { opening = false, drop = null } = {}) {
+       continue;
+     }
+     if (mark === "d") {
++      // The World English Bible sets the letters over Psalm 119's stanzas
++      // (ALEPH to TAV, "SIN AND SHIN" one of them) as titles: headings, as
++      // \qa is in other files, left out and counted (`acrostic`).
++      if (acrostic && /^[A-Z]+(?: AND [A-Z]+)?$/.test(rest)) {
++        acrostic.found += 1;
++        continue;
++      }
+       // A psalm's title. Where the edition prints it apart from verse 1, as
+       // the Bibles of the Hebrew canon do, it is the opening line (above);
+       // anywhere else it is a mistake in the file.
+@@ -278,6 +303,7 @@ function parseUsfm(text, where, { opening = false, drop = null } = {}) {
+       else if (rest) throw new Error(`${where}: a psalm title outside a verse`);
+       continue;
+     }
++    if (/^is\d?$/.test(mark)) introHeading = rest;
+     if (HEADING.test(mark)) continue;
+     throw new Error(`${where}: unknown mark \\${mark}`);
+   }
+@@ -291,7 +317,7 @@ function readUsfm(folder, options = {}) {
+   for (const name of fs.readdirSync(folder).filter((f) => f.endsWith(".usfm")).sort()) {
+     const code = /^\d+-([0-9A-Z]{3})/.exec(name)?.[1];
+     if (!code) throw new Error(`not a book: ${name}`);
+-    if (LEFT_OUT.has(code)) continue;
++    if (LEFT_OUT.has(code) || options.leave?.has(code)) continue;
+     books.set(code, parseUsfm(fs.readFileSync(path.join(folder, name), "utf8"), code, options));
+   }
+   return books;
+@@ -356,6 +382,12 @@ const EMPTY_NUMBERS = {
+   // The Almeida's blessing at the end of 2 Corinthians is its 13:13, as
+   // Portuguese Bibles number it; the English count's 13:14 stands empty.
+   "pt-almeida-1911": 1,
++  // The World English Bible keeps the numbers of verses its text does not
++  // hold: 24 in Sirach (1:5, 1:7, 1:21, 3:19, 10:21, 11:15-16, 13:14,
++  // 16:15-16, 17:5, 9, 16, 18 and 21, 18:3, 19:18-19, 19:21, 20:3, 20:32,
++  // 22:9-10, 23:28, 24:18, 24:24, 25:12, 26:19-27), the longer Greek's
++  // verses, and Luke 17:36, Acts 8:37, 15:34 and 24:7, and Romans 16:25.
++  "en-web": 29,
+ };
+ 
+ /**
+@@ -440,6 +472,68 @@ function hebrewCanon(folder, bible) {
+   return books;
+ }
+ 
++// ---- The World English Bible --------------------------------------------------
++
++/**
++ * The World English Bible (1.9, build 95 note 25: his word of 2026-11-13,
++ * "Both", that it ships in 1.9 and no longer stands as "Coming soon"):
++ * eBible.org's edition with the deuterocanon, Public Domain, its 2020 stable
++ * text. A modern translation: its Old Testament is from the Hebrew and
++ * numbered as English Bibles number it (Psalm 51 is "Have mercy"), with the
++ * deuterocanonical books. Set in the app's books, every one of the 78:
++ *
++ *  - Esther and Daniel are read in their Greek form, with the additions (ESG,
++ *    DAG), as the app's Old Testament is the Septuagint's; the edition's
++ *    Esther and Daniel from the Hebrew (EST, DAN) are left out.
++ *  - Baruch's sixth chapter is the Letter of Jeremiah, a book of its own in
++ *    the app.
++ *  - Psalm 151 (PS2) follows Psalm 150.
++ *  - 4 Maccabees is not among the app's books (LEFT_OUT), and the glossary
++ *    is no book.
++ *  - The edition's note before each deuterocanonical book ("is recognised
++ *    as Deuterocanonical Scripture by...") is the edition's, not the book's:
++ *    left out. Sirach's prologue, the translator's own, stands before its
++ *    verse 1, unnumbered, as in the Greek.
++ *  - The letters over Psalm 119's stanzas, set as titles, are headings: left out.
++ */
++const WEB_CODES = { ...USFM, EZR: "ezra", NEH: "nehemiah", "2ES": "2-esdras" };
++
++function worldEnglish(folder, bible) {
++  const acrostic = { found: 0 };
++  const introduction = { left: 0 };
++  const read = readUsfm(folder, { opening: true, acrostic, introduction, leave: new Set(["GLO", "EST", "DAN"]) });
++  if (acrostic.found !== 22) throw new Error(`${bible}: ${acrostic.found} letters over Psalm 119's stanzas, not the Hebrew alphabet's 22`);
++  // One note before each deuterocanonical book the app has, Esther's in two paragraphs.
++  if (introduction.left !== 14) throw new Error(`${bible}: ${introduction.left} paragraphs of the edition's introductions left out, not 14`);
++  const books = new Map();
++  // Verse numbers kept with no words under them (EMPTY_NUMBERS): left out and counted.
++  let empty = 0;
++  for (const chapters of read.values()) {
++    for (const ch of chapters) {
++      const kept = ch.filter(([n, t]) => n === "" || t);
++      empty += ch.length - kept.length;
++      ch.splice(0, ch.length, ...kept);
++    }
++  }
++  if (empty !== EMPTY_NUMBERS[bible]) throw new Error(`${bible}: ${empty} verse numbers with no words, not ${EMPTY_NUMBERS[bible]}`);
++  for (const [code, chapters] of read) {
++    if (code === "BAR" || code === "PS2") continue;
++    const slug = WEB_CODES[code];
++    if (!slug) throw new Error(`${bible}: no app book for ${code}`);
++    books.set(slug, chapters);
++  }
++  const baruch = read.get("BAR");
++  if (baruch?.length !== 6) throw new Error(`${bible}: Baruch has ${baruch?.length} chapters, not 5 and the Letter of Jeremiah`);
++  books.set("baruch", baruch.slice(0, 5));
++  books.set("epistle-of-jeremiah", [baruch[5]]);
++  const psalms = books.get("psalms");
++  const psalm151 = read.get("PS2");
++  if (psalms?.length !== 150 || psalm151?.length !== 1) throw new Error(`${bible}: the Psalms are not 150 and Psalm 151`);
++  psalms.push(psalm151[0]);
++  if (books.size !== APP_BOOKS.length) throw new Error(`${bible}: ${books.size} books, not the app's ${APP_BOOKS.length}`);
++  return books;
++}
++
+ // ---- Writing ---------------------------------------------------------------
+ 
+ /**
+@@ -536,6 +630,7 @@ const SOURCES = {
+   "ar-van-dyck": () => (args.ar ? hebrewCanon(args.ar, "ar-van-dyck") : null),
+   "es-reina-valera-1909": () => (args.es ? hebrewCanon(args.es, "es-reina-valera-1909") : null),
+   "pt-almeida-1911": () => (args.pt ? portuguese(args.pt) : null),
++  "en-web": () => (args.web ? worldEnglish(args.web, "en-web") : null),
+ };
+ const built = fs.existsSync(CATALOG) ? JSON.parse(fs.readFileSync(CATALOG, "utf8")) : {};
+ const catalog = {};
+diff --git a/scripts/bibles/compare-map.mjs b/scripts/bibles/compare-map.mjs
+index 4685728bd..69dd19a1a 100644
+--- a/scripts/bibles/compare-map.mjs
++++ b/scripts/bibles/compare-map.mjs
+@@ -478,6 +478,8 @@ const BIBLES = [
+   { id: "ar-van-dyck", target: "eng", sameEdition: false },
+   { id: "es-reina-valera-1909", target: "eng", sameEdition: false },
+   { id: "pt-almeida-1911", target: "eng", sameEdition: false },
++  // The World English Bible (build 95 note 25) numbers as English Bibles do, with the deuterocanon.
++  { id: "en-web", target: "eng", sameEdition: false },
+ ];
+ 
+ // The Hebrew, set beside the Old Testament in the interlinear (1.9): the
+-- 
+2.43.0
+
