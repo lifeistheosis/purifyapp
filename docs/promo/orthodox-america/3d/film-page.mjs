@@ -10,8 +10,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { FACTS, DERIVED, SOURCES } from "../facts.mjs";
-import { SIX, FIGURE, CAPTION, SOURCE_LINE, TITLE, SECONDS, SCENE_ONE, SCENE_TWO, NUMERALS, ROLLS, SUNDAY, PEOPLE_A_POINT, SHARE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, KEY, PARISHES, CAPTION_PARISHES, SCENE_THREE, SCENE_FOUR, SCENE_FIVE, SCENE_SIX, SCENE_SEVEN, CARD_FOR, CLAIM, EACH, MEDIAN_PARISH, MEDIAN_SUNDAY, QUOTE, CARDS, BRAND } from "./words.mjs";
+import { FACTS, DERIVED, SOURCES, LATER } from "../facts.mjs";
+import { SIX, FIGURE, CAPTION, SOURCE_LINE, TITLE, SECONDS, SCENE_ONE, SCENE_TWO, NUMERALS, ROLLS, SUNDAY, PEOPLE_A_POINT, SHARE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, KEY, PARISHES, CAPTION_PARISHES, SCENE_THREE, SCENE_FOUR, SCENE_FIVE, SCENE_SIX, SCENE_SEVEN, CARD_FOR, CLAIM, EACH, MEDIAN_PARISH, MEDIAN_SUNDAY, QUOTE, CARDS, BRAND, SINCE } from "./words.mjs";
 import { TRADITION } from "./church.js";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -93,8 +93,9 @@ const NEW = [
   [51.8, "Five hundreds", "The camera passes five lattices of a hundred points, each with as many lit as the figure: 64% raised Orthodox still are; 24% were raised in another tradition; 53% are men; 40% are immigrants; 63% are college graduates.", "A hundred points with 64 lit is read without reading. The points are the film's people, so a share of people is shown as people. Each stays about two seconds, long enough to read twice."],
   [SCENE_FIVE, "Where they are", "On, and down onto the map. Pew's four regions rise as four terraces, each as high as its share: South 31, Northeast 29, West 21, Midwest 19 percent. A hairline ties each figure to its ground.", "The map returns once, so the film closes its own circle. Height is the figure, as in scene one, so the South and the Northeast are seen standing over the rest before the numbers land."],
   [SCENE_SIX, "The decade", "Three counts as forms: 2010 first, then 2020 beside each. Eastern Orthodox on the rolls down 17%, at Sunday Liturgy down 14%; Oriental Orthodox on the rolls up 67%.", "2010 rises and dims, then 2020 rises lit beside it, so the change is seen as two heights before it is read as a percentage. The Oriental Churches' growth is there because the decade is not one story."],
-  [78.2, "The converts", "Eleven forms, one for each year from 2013 to 2023: adults received in 20 parishes of 15 states. 91, then 59 in 2020, then 186 in 2022. The screen says 2023 is a part year.", "This is the one written study behind the talk of a surge, and it is twenty parishes, not the country, so the screen says so. The dip of 2020 and the rise after it are the picture."],
-  [82.6, "The report's own sentence", `The camera rises and comes level. ${QUOTE.lines.join(" ")}`, "The film ends its numbers on what is known, in the source's own words, with nothing of ours added. It also turns the film from figures to type, which is what the cards are made of."],
+  [76, "Since 2019: the parishes are fuller", `Along the row, five forms rise: attendance in the typical Orthodox parish up ${SINCE.bars[0][0]}% from 2019 to 2025, while American congregations as a whole did not change. Antiochian up 87%, the Orthodox Church in America 67%, the Russian Church Outside of Russia 60%, Greek Orthodox 12%.`, "You said the point of the film is that Orthodoxy in America is growing. This is the written source that measures it: Alexei Krindatch's report of September 2026, from a survey of 270 Orthodox parishes. It comes straight after the decade's fall, so the film's turn is the story: the rolls fell to 2020, and since then the churches have filled. The survey and its 270 parishes are named on screen."],
+  [80.6, "The converts", "Eleven forms, one for each year from 2013 to 2023: adults received in 20 parishes of 15 states. 91, then 59 in 2020, then 186 in 2022. The screen says 2023 is a part year.", "Who is filling the churches. It is twenty parishes, not the country, so the screen says so. The dip of 2020 and the rise after it are the picture."],
+  [83.9, "The report's own sentence", `The camera rises and comes level. ${QUOTE.lines.join(" ")}`, "The film ends its numbers on growth, in the source's own words, with nothing of ours added: three people in church have become four. It also turns the film from figures to type, which is what the cards are made of."],
 ];
 const CHOICES = [
   ["One camera, one direction", "After the church the film travels one way, and each place stands a short whip from the last, close enough that the place being left and the place arriving are both in the frame in the middle of the move.", "No black frame and no cut anywhere in the film. The viewer is carried, not shown slides."],
@@ -105,12 +106,12 @@ const CHOICES = [
   ["Light", "A soft pool under each form, a soft glow on lit points, a soft pool behind the mark. Nothing else.", "No rays, no flare, no sparkle: your rules, held by the checker before every render."],
   ["The numerals", `${NUMERALS.family}, as you chose in the second pass, for every figure including those inside a sentence and in the sources' lines.`, "One face for every number, all digits one width, so a running count does not shiver."],
 ];
-const sayOf = (show) => FACTS.find((f) => f.show.some((s) => s.includes(show)) || f.says.includes(show));
+const sayOf = (show) => [...FACTS, ...LATER].find((f) => f.show.some((s) => s.includes(show)) || f.says.includes(show));
 const FIGURES = [
   [`${FIGURE}% in six states`, sayOf("47.9")], [`${n(ROLLS)} on the rolls`, sayOf(String(ROLLS))], [`${n(SUNDAY)} on a typical Sunday`, sayOf(String(SUNDAY))], [`${SHARE}% of the rolls`, DERIVED[0]],
   [`${n(PARISHES)} parishes, and ${n(EACH)} in each`, sayOf("2,979")], [`"more than 6,000,000 citizens", 1942`, sayOf("6000000")], [`${MEDIAN_PARISH} in the median parish, ${MEDIAN_SUNDAY} on a Sunday`, sayOf("60 of them")],
   ["The four ages", sayOf("50 to 65")], ["The median ages", sayOf("Median age 48")], ["64% of those raised Orthodox", sayOf('data-count="64"')], ["24% raised in another tradition", sayOf('data-count="24"')], ["53% men", sayOf('data-count="53"')], ["40% immigrants, another 25% their children", sayOf("Another 25%")], ["63% college graduates", sayOf('data-count="63"')],
-  ["The four regions", sayOf("31%")], ["2010 to 2020", sayOf("816,653")], ["Converts received, 2013 to 2023", sayOf("[2022, 186]")], ["The sentence", sayOf("growing or shrinking")],
+  ["The four regions", sayOf("31%")], ["2010 to 2020", sayOf("816,653")], ["Converts received, 2013 to 2023", sayOf("[2022, 186]")], ["Attendance up 36% since 2019, and the closing sentence", sayOf("270 Orthodox Christian parishes")],
 ];
 for (const [label, f] of FIGURES) if (!f) throw new Error(`no checked fact for ${label}`);
 const kit = fs.readFileSync(path.join(ROOT, "docs/brand/kit/artifact-template.html"), "utf8");
@@ -154,7 +155,7 @@ ${kitStyle}
     <span class="k-mark" role="img" aria-label="Purify"></span>
     <span class="k-eyebrow">For your yes or no</span>
     <h1>Orthodox Christians in America, by the numbers: the full film</h1>
-    <p class="k-lede">The three scenes you approved, then the rest of the story in the same 3D edit, then the outro you asked for: every source named on a card of its own, and Purify's own mark, animated, last. ${time(SECONDS)}, one unbroken move, no cut.</p>
+    <p class="k-lede">The three scenes you approved, then the rest of the story in the same 3D edit, ending on the growth the newest source measures, then the outro you asked for: every source named on a card of its own, and Purify's own mark, animated, last. ${time(SECONDS)}, one unbroken move, no cut.</p>
     <p class="k-meta">Made 13 November 2026. One version, one render. Nothing was paid for.</p>
   </header>
 
@@ -176,6 +177,8 @@ ${kitStyle}
   <section class="k-section" aria-labelledby="s-ask">
     <h2 id="s-ask">What I need from you</h2>
     <p><strong>Yes or no to the film.</strong> If no, say which scene, card or move, and that part is made again.</p>
+    <p><strong>Growth, as far as the sources carry it.</strong> You said the point is that Orthodoxy in America is growing, and asked about the newer sources. One measures it: Alexei Krindatch's report of September 2026, which I read myself. In a survey of 270 Orthodox parishes, attendance in the typical parish rose 36% from 2019 to 2025 while American congregations as a whole did not change. The last scene now turns on that figure and ends on the report's own sentence.</p>
+    <p><strong>What the film does not claim.</strong> That the Orthodox share of all Americans has grown. The national surveys of people still show it level: Pew has 1% in 2007, under 1% in 2014 and 1% in 2023 to 2024; PRRI has 0.5% in 2013 and in 2025. So the film says the parishes are fuller, names the survey, and says nothing about the national share. That keeps the point true and keeps it safe from a fact check. An estimate of 16,000 to 18,000 converts received at Pascha 2026 is also in the news, but I found it only in a news summary, not in the Institute's own pages, so it is not on screen.</p>
     <p><strong>No Harvard on the card, and why.</strong> You said to look at Harvard. I read the Orthodox Studies Institute's report, which is where the film's Cooperative Election Study figures come from. It never names Harvard or any university for that survey, so the card names the survey and the Institute that read it, and nothing more. The film says only what a written source says.</p>
     <p><strong>Names, not logos, as you agreed.</strong> Pew's terms do not permit use of its marks, Harvard's need written permission, and a reel of logos reads as their endorsement. Each source has its own card in the film's type instead, and the only mark in the film is yours.</p>
     <p><strong>The file.</strong> The page holds 20 MB a file, so the whole film is one file of ${mb} MB, with a finer grain than the samples had so the picture holds at that size. The frames are kept in this session: a larger copy for an editor can be cut from them without another render, if you ask soon.</p>
@@ -304,12 +307,12 @@ if (process.argv.includes("--check")) {
 
 // ---- The record --------------------------------------------------------------
 if (film && timing) {
-  const line = (f) => FACTS.indexOf(f) >= 0 ? `facts.mjs FACTS, scene "${f.scene}", shows ${f.show[0]}` : `facts.mjs DERIVED, shows ${f.show[0]}`;
+  const line = (f) => FACTS.indexOf(f) >= 0 ? `facts.mjs FACTS, scene "${f.scene}", shows ${f.show[0]}` : LATER.indexOf(f) >= 0 ? `facts.mjs LATER, shows ${f.show[0]}` : `facts.mjs DERIVED, shows ${f.show[0]}`;
   const record = `# The full film: the record
 
 Written by \`film-page.mjs\` from what was made and measured. Do not edit this file: change the code and write it out again.
 
-Round 4 of the documentary (\`../BRIEF.md\`, "Round 4: the full film, with an outro"). His words, 2026-11-13: about 20:25 UTC, "So in the video, add an outro, but the outro is going to be like a bunch of logos. Usually how editors have like little clips for their logo, like animated logo. And I want you to include the logos of all the sources we used. And add like, you can look at Harvard, add Harvard's logo. And animate it."; about 20:30, to the arbiter's recommendation (each source named on its own card, no third-party logos, Purify's own logo last), "yea add Purify's logo in the end"; about 20:33, "now". The record of the three scenes as samples is this file before this round: \`git log\`.
+Round 4 of the documentary (\`../BRIEF.md\`, "Round 4: the full film, with an outro"). His words, 2026-11-13: about 20:25 UTC, "So in the video, add an outro, but the outro is going to be like a bunch of logos. Usually how editors have like little clips for their logo, like animated logo. And I want you to include the logos of all the sources we used. And add like, you can look at Harvard, add Harvard's logo. And animate it."; about 20:30, to the arbiter's recommendation (each source named on its own card, no third-party logos, Purify's own logo last), "yea add Purify's logo in the end"; about 20:33, "now"; about 21:02, in this chat, "the point of the video is to show that america in orthodoxy is growing", and to the question of how the checked sources carry that, "not even the new sources? (2021-2026)". The record of the three scenes as samples is this file before this round: \`git log\`.
 
 ## The file
 
@@ -346,6 +349,13 @@ ${CARDS.map((c, i) => `| ${time(SCENE_SEVEN + i * CARD_FOR)} | Card ${i + 1} | $
 - **The Cooperative Election Study's card is earned:** scene five shows its median ages (Orthodox 48; Catholics 58, Evangelicals 59, Mainline Protestants 63), as the Institute's report gives them.
 - **The mark.** \`words.mjs\` MARK holds the four rectangles of \`components/ui/PurifyMark.tsx\` number for number (its 100 by 176 box, each bar's place, size and corner, the footrest's turn of 18 degrees about 50, 138), and \`render.mjs --check\` reads the component and refuses a difference. They are thin slabs, 400 px tall at rest, seen square on when the camera settles. The post rises, the titulus and the crossbar open from the middle, the footrest opens flat and takes its slant last. "${BRAND}" in DM Serif Display. A soft pool of light behind; no rays, flare or sparkle.
 - **The church's cross and the mark are never one object.** Scene three's church keeps the plain cross of the Greek tradition.
+
+## Growth: what the film says and what it does not
+
+- **What it says.** In a survey of 270 Orthodox parishes (Faith Communities Today, December 2025, as Alexei Krindatch reports it in September 2026), attendance in the median parish rose 36% from 2019 to 2025 while U.S. congregations as a whole did not change; by jurisdiction 87, 67, 60 and 12%. Read from the report's PDF with pdftotext on 2026-11-13. The last scene turns on it, after the decade's fall to 2020, and ends on the report's own sentence.
+- **What it does not say.** That the Orthodox share of Americans has grown. A research pass on 2026-11-13 read Pew's 2025 report (1% in 2007, under 1% in 2014, 1% in 2023 to 2024) and PRRI's 2025 Census of American Religion ("little growth among Orthodox Christians (0.5% in both 2013 and 2025)"). The film claims nothing about that share.
+- **Not used.** The Orthodox Studies Institute's estimate of 16,000 to 18,000 converts at Pascha 2026 was found only in a news summary (orthochristian.com), not on the Institute's own pages. The OCA's net gain of 20 parishes from 2020 to 2024 is one jurisdiction. Newspaper reports of full churches are accounts, not counts.
+- **The arbiter's note on checkpoint 1:** the title's small line is in sentence case with no added tracking ("By the numbers"), as the design kit requires.
 
 ## Left out, and why
 
