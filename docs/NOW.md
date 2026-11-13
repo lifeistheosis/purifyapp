@@ -18,6 +18,7 @@ Updated 2026-11-13 01:24 UTC.
 
 ## Waiting on him
 
+- A standing yes for any chat to read the main web's public Supabase key from purifyapp.net's own scripts into an export command, never printed or saved (asked 2026-11-13 after three single yeses), and his screenshots of the journal's bugs.
 - **Walk the 1.9 test build** on Android (the APK above) and on iPhone or iPad (TestFlight): uninstall the old build first, Testers mode off, start as a new reader. Then his notes, the 1.9 note in his queue, the drop day, and the phone walks for the store texts.
 - **When the retention looks are wired (after his yes):** the kit's retentionLook draws the sending's own letters (lib/email/retention); a Bible place or a work shows heading and deck only; day 7 sets no verse; the fast's one button is the reading plan; a plain-fast or fast-free day has no mark picture yet.
 - **How readers join the retention emails** (their migration is signed, "yes retention sql"): one asking line in the welcome email (recommended, opt-in) or on by default with a privacy line. Readers' own toggles land on the website after 1.9's store builds; this Nativity Fast only he sees the companion, and Great Lent 2027 is the first reader season.
@@ -49,6 +50,7 @@ Updated 2026-11-13 01:24 UTC.
 | Arbiter | session_01VuYTwdsjYL2mmq2C2JSt2A | his words, NOW.md, routing |
 | Fable 5.2: retention emails, round 2 | session_01VuYTwavDnAtuKdXD2L7rti | round 2 done (e80b0004c) and the claude.ai design system brought into line (version 6, 750214c04: the approved type, all fifteen pieces with live previews, checkMock 45 of 45); waits on his yes or no to round 2 and to carrying it into the reader email and brief |
 | Fable 5.2: the 1.9 video | session_01VuYTwcxQo8U5fGDgVTBt6D | his 1.9 video: one vertical cut from real taps on the export, new screens, saints and books, and prayer campaigns as 1.9 builds them (his word); silent master; reasons per scene. It may be posted only once campaigns are open to every reader |
+| Fable 5.2: the Fast and the Journal | session_01VuYTwdj2AXx6xhs4145quw | build 95 notes 3 and 4: the journal's faults found and fixed (pushed as each passes), then both screens redesigned in the approved look, stills with reasons for his yes; held locally until then |
 | SSM board | session_01VuYTwcSQmKLThRirvSeWa5 | the drop's words, the Vault |
 | Fable 5.2: 1.9 store pictures | session_01VuYTwbUEsUgbUwM7K7xYG1 | the 1.9 social cards are done (a736b9af: six cards, 1080 by 1920, stills in `docs/plans/v1.9/store/cards/stills/`, see https://claude.ai/artifact/2H7zX18mPgJh9LMZnkw6bs); waits on his look before the drop's `cards` piece is cleared |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |
