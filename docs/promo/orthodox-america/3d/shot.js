@@ -18,7 +18,7 @@
 import * as THREE from "three";
 import { feature, mesh as borders } from "topojson-client";
 import { geoEquirectangular, geoPath, geoAlbersUsa } from "d3-geo";
-import { FPS, SECONDS, SCENE_ONE, SCENE_TWO, NUMERALS, TITLE, SIX, FIGURE, CAPTION, SOURCE_LINE, ROLLS, SUNDAY, PEOPLE_A_POINT, SHARE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, KEY, PARISHES, CAPTION_PARISHES } from "/words.mjs";
+import { FPS, SECONDS, SCENE_ONE, SCENE_TWO, NUMERALS, TITLE, SIX, FIGURE, CAPTION, SOURCE_LINE, ROLLS, SUNDAY, PEOPLE_A_POINT, SHARE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, KEY, PARISHES, CAPTION_PARISHES, SCENE_THREE, SCENE_FOUR, SCENE_FIVE, SCENE_SIX, SCENE_SEVEN, CARD_FOR, CLAIM, EACH, MEDIAN_PARISH, MEDIAN_SUNDAY, CLAIM_LINES, KEY_ONE, AGES, MEDIAN_AGE, HUNDRED, REGION_HEAD, REGIONS, DECADE, CONVERTS, QUOTE, SOURCES_ON, CARDS, MARK, BRAND } from "/words.mjs";
 import { CHURCH, DIM as FORM, TOP, TRADITION, stands } from "/church.js";
 
 const QUERY = new URLSearchParams(location.search);
@@ -77,6 +77,55 @@ const move3 = (t) => inOutCubic(span(t, GO3, SETTLE)); // scene three's one slow
 const look3 = (t) => inOutCubic(span(t, GO3 + 4.2, SETTLE)); // the camera comes down from looking in to looking at
 const rush = (t) => span(t, GO + 0.3, GO + 0.8) * (1 - span(t, GO + 1.6, GO + MOVE)); // its fast middle
 
+// ---- The film after scene three ----------------------------------------------
+// The same scene and the same camera go on. Everything here is nothing until GO4, so no frame of the three scenes
+// is changed by it. After GO4 the camera is told where to come to, one move at a time, each eased from rest to
+// rest; what the film adds to the old camera is the difference from where the church left it. A whip is a move
+// fast enough that the frame's own shutter smears it: the one way this film goes from place to place, never a cut.
+const GO4 = SCENE_THREE, GO5 = SCENE_FOUR, GO6 = SCENE_FIVE, GO7 = SCENE_SIX, GO8 = SCENE_SEVEN, GO9 = GO8 + CARDS.length * CARD_FOR;
+const AGE_X = 16, MED_X = 29.5, PANEL_X = 43, PANEL_GAP = 10.5, PANEL_FOR = 2.1, PANELS_AT = 51.8, PANEL_Y = 5.3; // who they are: a row of things to pass
+const MAP_X = 97; // the map stands here for scene six: the film travels one way, and every place is a short whip from the last
+const MED_AT = 48, DEC_X = 114.5, CON_X = 130, CON_AT = 78.2, QUOTE_AT = 82.6; // what is changing: two groups, then the report's own sentence
+const HALL = { x: CON_X, y: 10, z: -44, gap: 24, d: 12 }; // the sources stand one behind another, and the camera pushes through each to the next
+const MOVES = [ // [start, seconds, what the camera comes to, 1 for a whip]
+  [GO4, 2.6, { tilt: 41, d: 20.3, turn: -4, y: 3.7, lift: -0.12 }],                                   // up and back from the church, to look down on its ground
+  [GO4 + 3, 8, { turn: 10 }],
+  [GO5, 0.85, { x: AGE_X, y: 4.5, z: 0, turn: 0, tilt: 15, d: 17, lift: LIFT_TWO + LIFT3 }, 1],                   // to the ages
+  [GO5 + 0.85, 4.1, { d: 16.4 }],
+  [MED_AT, 0.7, { x: MED_X, d: 17.6 }, 1],                                                        // along the row, to the median ages
+  [MED_AT + 0.7, 3.1, { d: 17 }],
+  ...HUNDRED.map((_, i) => [PANELS_AT + i * PANEL_FOR, 0.6, { x: PANEL_X + i * PANEL_GAP, ...(i ? {} : { y: 4.7, tilt: 5, d: 13.5 }) }, 1]), // and past each hundred
+  [GO6, 0.95, { x: MAP_X + 0.05, y: 0, z: 0.1, turn: -12, tilt: 38, d: 19.2 }, 1],        // on, and down onto the map
+  [GO6 + 0.95, 7.7, { turn: -17, d: 18.4 }],
+  [GO7, 0.9, { x: DEC_X, y: 4.4, z: 0, turn: 3, tilt: 15, d: 22.6 }, 1],                  // to the decade
+  [GO7 + 0.9, 6.3, { turn: 0, d: 22 }],
+  [CON_AT, 0.7, { x: CON_X, d: 18.2 }, 1],                                                 // along, to the converts
+  [CON_AT + 0.7, 3.7, { d: 17.5 }],
+  [QUOTE_AT, 0.9, { y: HALL.y, z: HALL.z, tilt: 0, d: HALL.d, lift: 0 }, 1],              // up, level, and in to the sentence
+  ...CARDS.map((_, i) => [GO8 + i * CARD_FOR, 0.6, { z: HALL.z - HALL.gap * (i + 1) }, 1]), // through each card to the next
+  [GO9, 0.75, { z: HALL.z - HALL.gap * (CARDS.length + 1), turn: 13 }, 1],                // and to the mark, come upon a little from the side
+  [GO9 + 0.75, 2.0, { turn: 0 }],
+  [GO9 + 2.75, 3.5, { d: 11.5 }],
+];
+const DRIFT = 5 / softLine(SCENE_ONE - BEAT - WHIP); // degrees a second: scene one's slow turn, which the old camera never stops
+const NOTHING = { x: 0, y: 0, z: 0, turn: 0, tilt: 0, lift: 0, d: 0 };
+let REST = null, tracked = NOTHING, trackedAt = -1;
+function track(t) {
+  if (t <= GO4) return NOTHING;
+  if (t === trackedAt) return tracked;
+  REST ??= { x: T1.x, y: Y_FIELD + AIM3, z: T1.z, turn: turn(GO4) - DRIFT / 3, tilt: tilt(GO4), lift: lift(GO4), d: height(GO4) * R_UNITS - PUSH3 - (0.012 * R_UNITS) / 3 };
+  const out = {};
+  for (const p in REST) {
+    let v = REST[p];
+    for (const [at, len, to, fast] of MOVES) if (p in to && t > at) v = lerp(v, to[p], (fast ? inOutQuart : inOutCubic)(span(t, at, at + len)));
+    out[p] = v - REST[p];
+  }
+  out.d += 0.012 * R_UNITS * softLine(t - GO4); out.turn += DRIFT * softLine(t - GO4); // the old slow push and the old slow turn come to rest
+  trackedAt = t; tracked = out;
+  return out;
+}
+const whip = (t) => { if (t <= GO4) return 0; let w = 0; for (const [at, len, , fast] of MOVES) if (fast && t > at && t < at + len) w = Math.max(w, Math.sin(Math.PI * span(t, at, at + len))); return w; };
+
 /** The camera's height over the ground, in Earth radii, through both shots. */
 const H_SET = D_SET / R_UNITS;
 const H_DROP = 4.2 - 0.22 * BEAT - 0.22 * (WHIP / 2) - H_SET;
@@ -87,15 +136,15 @@ function height(t) {
   return h - 0.012 * softLine(t - BEAT - WHIP);
 }
 /** The turn about the line of sight, in degrees: the globe's lean, then the map's bearing. */
-const turn = (t) => 23.4 - 32.4 * push(span(t, BEAT, BEAT + WHIP)) - 5 * (softLine(t - BEAT - WHIP) / softLine(SCENE_ONE - BEAT - WHIP)) - SWING * move(t) + TURN3 * move3(t);
+const turn = (t) => 23.4 - 32.4 * push(span(t, BEAT, BEAT + WHIP)) - 5 * (softLine(t - BEAT - WHIP) / softLine(SCENE_ONE - BEAT - WHIP)) - SWING * move(t) + TURN3 * move3(t) + track(t).turn;
 /** How far the picture is lifted off the frame's centre (a lens shift): the globe sits high, the map low. */
-const lift = (t) => 0.2 * (1 - inOutCubic(span(t, BEAT, CUT))) - 0.34 * inOutCubic(span(t, CUT + 0.05, CUT + 1.4)) + (LIFT_TWO + 0.34) * move(t) + LIFT3 * look3(t);
-const tilt = (t) => 90 - 52 * inOutCubic(span(t, CUT + 0.05, CUT + 1.4)) + TILT_TWO * move(t) + TILT3_IN * inOutCubic(span(t, GO3, GO3 + 2.5)) - TILT3_DOWN * look3(t); // straight down, then a low angle, then a little higher over the field
+const lift = (t) => 0.2 * (1 - inOutCubic(span(t, BEAT, CUT))) - 0.34 * inOutCubic(span(t, CUT + 0.05, CUT + 1.4)) + (LIFT_TWO + 0.34) * move(t) + LIFT3 * look3(t) + track(t).lift;
+const tilt = (t) => 90 - 52 * inOutCubic(span(t, CUT + 0.05, CUT + 1.4)) + TILT_TWO * move(t) + TILT3_IN * inOutCubic(span(t, GO3, GO3 + 2.5)) - TILT3_DOWN * look3(t) + track(t).tilt; // straight down, then a low angle, then a little higher over the field
 /** The lens opening, in the shot's own units: wide while the map tilts (near and far go soft), then stopped down for the words. */
 const openA = () => 0.003;
 const openB = (t) => lerp(0.26, 0.07, inOutCubic(span(t, 4.5, 5.6))) + 0.08 * inOutCubic(span(t, GO, GO + 1)) - 0.04 * inOutCubic(span(t, GO + 1.3, GO + MOVE)) - 0.04 * inOutCubic(span(t, THINNED, SHARE_AT));
-const shutter = (t) => lerp(0.5, 0.95, span(t, BEAT + 0.3, BEAT + 0.9) * (1 - span(t, CUT + 0.25, CUT + 0.6))) + 0.4 * rush(t); // of a frame
-const samples = (t) => Math.round(lerp(20, 72, span(t, BEAT + 0.2, BEAT + 0.8) * (1 - span(t, 4.7, 5.5))) + 8 * (1 - span(t, 0, 2.9)) + 36 * rush(t) + 16 * span(t, GO3 + 1.6, GO3 + 2.6));
+const shutter = (t) => lerp(0.5, 0.95, span(t, BEAT + 0.3, BEAT + 0.9) * (1 - span(t, CUT + 0.25, CUT + 0.6))) + 0.4 * rush(t) + 0.45 * whip(t); // of a frame
+const samples = (t) => Math.round(lerp(20, 72, span(t, BEAT + 0.2, BEAT + 0.8) * (1 - span(t, 4.7, 5.5))) + 8 * (1 - span(t, 0, 2.9)) + 36 * rush(t) + 16 * span(t, GO3 + 1.6, GO3 + 2.6) + 34 * whip(t));
 /** 0 is the globe, 1 is the map; three frames of one dissolving into the other inside the blur. */
 const shotMix = (t) => span(t, CUT - 0.05, CUT + 0.05);
 
@@ -369,11 +418,11 @@ const Y_FIELD = 3.0, R_FIELD = 4.5; // scene two: how high over the map the fiel
 function cameraB(t, cam) {
   const e = inOutCubic(span(t, CUT + 0.05, CUT + 1.4));
   const at = T0.clone().lerp(T1, e);
-  at.y += Y_FIELD * move(t) + AIM3 * look3(t); // scene two: the camera rises with the points it follows; scene three: it looks at the middle of the church
+  const tr = track(t); at.x += tr.x; at.z += tr.z; at.y += tr.y + Y_FIELD * move(t) + AIM3 * look3(t); // scene two: the camera rises with the points it follows; scene three: it looks at the middle of the church
   qa.setFromAxisAngle(Y_AXIS, THREE.MathUtils.degToRad(-turn(t)));
   qb.setFromAxisAngle(X_AXIS, THREE.MathUtils.degToRad(-tilt(t)));
   cam.quaternion.copy(qa).multiply(qb);
-  const d = height(t) * R_UNITS - PUSH3 * inOutCubic(span(t, GO3, GO3 + 5.5));
+  const d = height(t) * R_UNITS - PUSH3 * inOutCubic(span(t, GO3, GO3 + 5.5)) + tr.d;
   cam.position.set(0, 0, d).applyQuaternion(cam.quaternion).add(at);
   return d;
 }
@@ -705,7 +754,7 @@ const church = (() => {
   const rise = (x) => lerp(x, x * x * (3 - 2 * x), 0.7); // steady, with a soft start and a soft end
   const HEIGHT = TOP + 0.2, CROSS_TOP = foot + k.h + 0.02;
   function pose(t) {
-    const on = t > GO3;
+    const on = t > GO3 && t < GO5 + 0.9; // the whip to scene five carries the camera away from it
     group.visible = on; flock.visible = on && t < BUILT + 0.2;
     if (!on) return;
     gather(t);
@@ -774,7 +823,7 @@ function poseB(t) {
   // The country comes through the cut as bright as the globe showed it, then cools as the six take the light.
   // Scene two: the map's points wake, the six give their height and their light back, and the map goes down to nothing under the field.
   const wake = inOutCubic(span(t, GO, GO + 0.5)), sink = inOutCubic(span(t, GO, GO + 0.9)), given = inOutCubic(span(t, GO, GO + 0.6)), gone = 1 - span(t, GO, GO + 0.35);
-  const dim = 1 - inOutCubic(span(t, GO + 0.5, GO + MOVE - 0.2));
+  const dim = 1 - inOutCubic(span(t, GO + 0.5, GO + MOVE - 0.2)) + inOutCubic(span(t, GO6 + 0.3, GO6 + 0.95)) - inOutCubic(span(t, GO7 + 0.1, GO7 + 0.6)); // the map comes back for scene six
   DIM.value = dim; ground.visible = dim > 0;
   const flash = Math.min(1, 1 - inOutCubic(span(t, CUT + 0.05, CUT + 1.0)) + 0.6 * wake);
   for (const s of states.values()) { s.group.visible = dim > 0; s.mat.uniforms.flash.value = flash; s.edge.color.setScalar(lerp(EDGE_LOW, 0.5, flash) * dim); }
@@ -807,8 +856,9 @@ function poseB(t) {
   figure.mesh.scale.setScalar(UNIT * (lerp(1.12, 1, outCubic(arrive)) + 0.022 * Math.sin(Math.PI * settle) * (1 - settle)));
   church.pose(t);
   const lands3 = span(t, PARISH_AT - 0.1, PARISH_AT + 0.25), settles3 = span(t, PARISH_AT + 0.2, PARISH_AT + 0.55);
-  parishes.mesh.material.opacity = inOutCubic(lands3);
+  parishes.mesh.material.opacity = inOutCubic(lands3) * (1 - inOutCubic(span(t, GO4 + 0.1, GO4 + 0.7)));
   parishes.mesh.scale.setScalar(UNIT3 * (lerp(1.12, 1, outCubic(lands3)) + 0.02 * Math.sin(Math.PI * settles3) * (1 - settles3)));
+  film.pose(t);
   return { cam: camB, focus: d, open: openB(t), sum };
 }
 // The count on the figure is the sum of the shares of the states that have risen. Drawn once a frame.
@@ -825,18 +875,267 @@ function drawFigure(t) {
     const key2 = `${people.count(t)} ${rolls.toFixed(3)} ${sunday.toFixed(3)}`;
     if (key2 !== drawn2) { count.redraw(people.count(t), rolls, sunday); drawn2 = key2; }
   }
+  if (t > GO4) film.draw(t);
   if (t > PARISH_AT - 0.5) { const key3 = inOutCubic(span(t, PARISH_AT + 0.25, PARISH_AT + 0.7)).toFixed(3); if (key3 !== drawn3) { parishes.redraw(Number(key3)); drawn3 = key3; } }
 }
 let drawn2 = "", drawn3 = "";
 /** The key to the points, flat on the glass over the source: its figure in the numerals' face. */
-function keyLine(alpha, measureOnly = false) {
+function keyLine(alpha, measureOnly = false, pieces = KEY) {
   let x = 44 * K; const y = S - 86 * K;
   pen.save(); pen.globalAlpha = alpha; pen.fillStyle = "#d6d6d6"; pen.textAlign = "left"; pen.textBaseline = "alphabetic";
-  KEY.forEach((piece, i) => { pen.font = i === 1 ? `${NUM}${32 * K}px ${NUMFACE}` : `400 ${30 * K}px ${SANS}`; if (!measureOnly) pen.fillText(piece, x, y); x += pen.measureText(piece).width; });
+  pieces.forEach((piece, i) => { pen.font = i === 1 ? `${NUM}${32 * K}px ${NUMFACE}` : `400 ${30 * K}px ${SANS}`; if (!measureOnly) pen.fillText(piece, x, y); x += pen.measureText(piece).width; });
   pen.restore();
   return x;
 }
 if (Math.abs(SIX.reduce((n, s) => n + s.share, 0) - Number(FIGURE)) > 0.051) throw new Error("the six shares do not add up to the figure");
+
+// ============================================================================
+// The film after scene three (BRIEF.md, "Round 4"): the claim, who they are,
+// where they are, what is changing, the sources each on a card of its own,
+// and Purify's own mark. One scene and one camera still; a place is left by a
+// whip, never a cut. Forms rise as the states did, people are points of light.
+// ============================================================================
+const film = (() => {
+  const io = (x) => inOutCubic(clamp(x));
+  const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+  /** The camera as it stands at a moment: what words face. */
+  const eye = (t) => { const cam = new THREE.PerspectiveCamera(FOV, 1, 0.1, 300), d = cameraB(t, cam); cam.updateMatrixWorld();
+    const ax = (x, y, z) => V3(x, y, z).applyQuaternion(cam.quaternion), fwd = ax(0, 0, -1);
+    return { cam, d, q: cam.quaternion.clone(), right: ax(1, 0, 0), up: ax(0, 1, 0), fwd, at: cam.position.clone().addScaledVector(fwd, d) }; };
+  /** Stand a plane of words square to that camera, its middle dx and dy px from the point p, the same size on screen wherever it is. */
+  const stand = (w, e, p, dx = 0, dy = 0) => { const unit = p.clone().sub(e.cam.position).dot(e.fwd) / PX;
+    w.unit = unit; w.mesh.quaternion.copy(e.q); w.mesh.scale.setScalar(unit); w.mesh.position.copy(p).addScaledVector(e.right, dx * unit).addScaledVector(e.up, dy * unit);
+    w.home = w.mesh.position.clone(); w.mesh.material.opacity = 0; sceneB.add(w.mesh); return w; };
+  const show = (w, a, grow = 1) => { w.mesh.material.opacity = a; w.mesh.scale.setScalar(w.unit * grow); };
+  const lands = (t, at) => [io((t - at) / 0.35), lerp(1.1, 1, outCubic(span(t, at, at + 0.4)))]; // how a figure arrives: up from nothing, a little large, and settles
+  /** Words in the house's sans with every figure in the numerals' face. Returns the width. */
+  function mixed(ctx, text, x, y, size, align = "center", weight = 400, draw = true) {
+    const parts = text.split(/(\d[\d,.]*%?)/).filter(Boolean).map((s) => ({ s, font: /^\d/.test(s) ? `${NUM}${Math.round(size * 1.06)}px ${NUMFACE}` : `${weight} ${size}px ${SANS}` }));
+    let width = 0; for (const p of parts) { ctx.font = p.font; p.w = ctx.measureText(p.s).width; width += p.w; }
+    let at = align === "center" ? x - width / 2 : x; ctx.textAlign = "left";
+    if (draw) for (const p of parts) { ctx.font = p.font; ctx.fillText(p.s, at, y); at += p.w; }
+    return width;
+  }
+  const POINT_VERT = "attribute float glow; uniform float px, k, size; varying float vA; void main(){ vec4 v = modelViewMatrix * vec4(position, 1.); float wide = 2. * size * px / max(-v.z, .5), least = 1.6 * k; gl_PointSize = max(wide, least); vA = glow * min(1., (wide * wide) / (least * least)); gl_Position = projectionMatrix * v; }";
+  const POINT_FRAG = "varying float vA; void main(){ float d = length(gl_PointCoord - .5) * 2.; gl_FragColor = vec4(vec3(vA * (1. - smoothstep(.55, 1., d))), 1.); }";
+  const cloud = (n, size) => { const pos = new Float32Array(n * 3), glow = new Float32Array(n), geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.BufferAttribute(pos, 3)); geo.setAttribute("glow", new THREE.BufferAttribute(glow, 1));
+    const points = new THREE.Points(geo, new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: { px: { value: PX * K }, k: { value: K }, size: { value: size } }, vertexShader: POINT_VERT, fragmentShader: POINT_FRAG }));
+    points.frustumCulled = false; points.renderOrder = 5; points.visible = false; sceneB.add(points);
+    return { points, pos, glow, sent() { geo.attributes.position.needsUpdate = true; geo.attributes.glow.needsUpdate = true; } }; };
+
+  // ---- Scene four: the claim. Six million across 2,014 parishes would be 2,979 people in every one: they come
+  // and stand about the church, one point of light for one person. Then all but the median parish's 130 fall away.
+  const E4 = eye(GO4 + 6.5), IN = GO4 + 3.7, IN_FOR = 1.0, OUT = GO4 + 7.5, OUT_FOR = 0.5, SUNDAY_AT = GO4 + 9.6;
+  const crowd = (() => {
+    const R = 4.5, inChurch = (x, z) => x > -2.3 && x < 2.25 && Math.abs(z) < 1.65; let sites = [];
+    for (let pitch = Math.sqrt((Math.PI * R * R - 4.55 * 3.3) / EACH / (Math.sqrt(3) / 2)); sites.length < EACH; pitch *= 0.995) { sites = []; const rowGap = (pitch * Math.sqrt(3)) / 2;
+      for (let j = -70; j <= 70; j++) for (let i = -70; i <= 70; i++) { const x = (i + (j & 1) * 0.5) * pitch, z = j * rowGap; if (Math.hypot(x, z) <= R && !inChurch(x, z)) sites.push([x, z]); } }
+    // Nearest the west door first: the first 130 are the median parish, and the first 60 of those its typical Sunday.
+    sites.sort((a, b) => Math.hypot(a[0] + 2.5, a[1]) - Math.hypot(b[0] + 2.5, b[1])); sites.length = EACH;
+    const roll = dice(2979), how = sites.map(([x, z], i) => { const a = Math.atan2(z, x) + (roll() - 0.5) * 0.5, far = 9.5 + roll() * 4;
+      return { x, z, fx: Math.cos(a) * far, fz: Math.sin(a) * far, lag: 0.9 * (Math.hypot(x, z) / R) + 0.25 * roll(), out: 1.1 * (1 - i / EACH) + 0.4 * roll(), seed: roll() }; });
+    const c = cloud(EACH, 0.024);
+    const arrived = (h, t) => io((t - IN - h.lag) / IN_FOR), fallen = (h, i, t) => (i < MEDIAN_PARISH ? 0 : clamp((t - OUT - h.out) / OUT_FOR));
+    return { pose(t) { c.points.visible = t > IN && t < GO5 + 0.9; if (!c.points.visible) return;
+      const sunday = io((t - SUNDAY_AT) / 0.6);
+      how.forEach((h, i) => { const e = arrived(h, t), fall = fallen(h, i, t);
+        c.pos[i * 3] = CENTRE.x + lerp(h.fx, h.x, e); c.pos[i * 3 + 1] = CENTRE.y + 0.03 + Math.sin(Math.PI * e) * (0.2 + 0.5 * h.seed) - fall * fall * 1.2; c.pos[i * 3 + 2] = CENTRE.z + lerp(h.fz, h.z, e);
+        c.glow[i] = clamp(e * 3) * (1 - span(fall, 0.1, 0.95)) * (i < MEDIAN_SUNDAY ? lerp(1.05, 2.0, sunday) : lerp(1.05, 0.8, sunday)); });
+      c.sent(); },
+      /** The figure: those who have come, then those who are left. */
+      count(t) { let here = 0, left = 0; how.forEach((h, i) => { if (arrived(h, t) > 0.9) here++; if (fallen(h, i, t) > 0.5) left++; }); return t < OUT ? here : EACH - left; } };
+  })();
+  const claim = stand(plane("claim", FIG_W, 370, 37, (ctx, state = 0, value = CLAIM, cap = 1) => {
+    ctx.textBaseline = "alphabetic"; ctx.font = `${NUM}196px ${NUMFACE}`;
+    const full = (state === 0 ? CLAIM : EACH).toLocaleString("en-US"), text = value.toLocaleString("en-US"), cell = ctx.measureText("0").width, comma = ctx.measureText(",").width;
+    let x = FIG_W / 2 + [...full].reduce((w, ch) => w + (ch === "," ? comma : cell), 0) / 2; // the figure runs in cells that keep their places, from the right
+    ctx.textAlign = "center";
+    for (const ch of [...text].reverse()) { const w = ch === "," ? comma : cell; ctx.fillText(ch, x - w / 2, 212); x -= w; }
+    ctx.globalAlpha = cap; CLAIM_LINES[state].forEach((line, i) => mixed(ctx, line, FIG_W / 2, 286 + i * 48 + (1 - cap) * 10, 37)); ctx.globalAlpha = 1;
+  }, [40, 60, FIG_W - 40, 350]), E4, E4.at, 0, 450);
+  const claimState = (t) => (t < GO4 + 3.45 ? 0 : t < OUT + 1.7 ? 1 : 2);
+
+  // ---- Forms whose height is the figure, in a row: the states' own look (lit walls, a lattice of points on top, a pool of light at the foot).
+  const barFrag = stateFrag.replace("uniform float lit,", "uniform float base, lit,").replace("vW.y /", "(vW.y - base) /");
+  const FLOOR_Y = 3; // the row's floor, level with the church's
+  const floorAt = { value: new THREE.Vector2() }, floorDim = { value: 0 };
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(420, 90).rotateX(-Math.PI / 2), new THREE.ShaderMaterial({ uniforms: { at: floorAt, dim: floorDim },
+    vertexShader: "varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position, 1.); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }",
+    fragmentShader: `uniform vec2 at; uniform float dim; varying vec3 vW; ${LATTICE} void main(){ float far = 1. - smoothstep(5., 17., length(vW.xz - at)); gl_FragColor = vec4(vec3(.002 + lattice(vW.xz, .03) * .03 * far) * dim, 1.); }` }));
+  floor.position.y = FLOOR_Y - 0.004; floor.visible = false; sceneB.add(floor);
+  /** `items`: { x, h, w, lit, text: [figure, line, line], below: [..] }. They rise one after another from `at`, and are gone by `off`. */
+  function row(name, e, items, at, off, lag = 0.14, forEach = 0.7) {
+    const bars = items.map((it, i) => {
+      const depth = it.depth ?? 1, mat = new THREE.ShaderMaterial({ vertexShader: stateVert, fragmentShader: barFrag, uniforms: { base: { value: FLOOR_Y }, lit: { value: 0 }, top: { value: 0.01 }, flash: { value: 0 }, dim: { value: 1 } } });
+      const group = new THREE.Group(); group.add(new THREE.Mesh(new THREE.BoxGeometry(it.w, 1, depth).translate(0, 0.5, 0), mat));
+      const h2 = it.w / 2, d2 = depth / 2, edge = new THREE.LineBasicMaterial({ color: 0xffffff });
+      group.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([V3(-h2, 1, -d2), V3(h2, 1, -d2), V3(h2, 1, d2), V3(-h2, 1, d2)]), edge));
+      group.position.set(it.x, FLOOR_Y, it.z ?? 0); group.visible = false; sceneB.add(group);
+      const pool = new THREE.Mesh(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2), poolMat()); pool.position.set(it.x, FLOOR_Y + 0.004, it.z ?? 0); pool.scale.setScalar(it.w + 2.4); pool.renderOrder = 2; pool.visible = false; sceneB.add(pool);
+      let label = null, half = 0;
+      if (it.text) { const lines = it.text.length - 1, H = 62 + lines * 36;
+        label = plane(`${name} ${i}`, 300, H, lines ? 30 : it.size ?? 50, (ctx) => { ctx.textBaseline = "alphabetic"; ctx.textAlign = "center"; ctx.font = `${NUM}${it.size ?? 50}px ${NUMFACE}`; ctx.fillText(it.text[0], 150, 48); half = ctx.measureText(it.text[0]).width / 2;
+          it.text.slice(1).forEach((line, j) => { half = Math.max(half, mixed(ctx, line, 150, 86 + j * 36, 30, "center", j ? 400 : 500) / 2); }); });
+        label.ink = [150 - half - 3, 4, 150 + half + 3, H - 4];
+        stand(label, e, V3(it.x, FLOOR_Y + (it.over ?? it.h), it.z ?? 0), 0, 30 + H / 2); }
+      return { ...it, i, group, mat, edge, pool, label };
+    });
+    return { bars, pose(t, light = () => 1, said = () => 1) {
+      const on = t > at && t < off;
+      for (const b of bars) { b.group.visible = b.pool.visible = on; if (!on) { if (b.label) show(b.label, 0); continue; }
+        const p = span(t, at + b.i * lag, at + b.i * lag + forEach), top = Math.max(0.01, b.h * (p <= 0 ? 0 : outBack(p))), lit = clamp(p * 3.2) * (b.lit ?? 1) * light(b, t);
+        b.group.scale.y = top; b.mat.uniforms.top.value = top; b.mat.uniforms.lit.value = lit; b.edge.color.setScalar(lerp(EDGE_LOW, 1, lit));
+        b.pool.material.uniforms.power.value = 0.1 * clamp(p * 2) * lit;
+        if (b.label) { const shown = span(t, at + b.i * lag + 0.28, at + b.i * lag + 0.62); show(b.label, io(shown) * said(b, t)); b.label.mesh.position.copy(b.label.home).setY(b.label.home.y - (b.h - top) - (1 - outCubic(shown)) * 26 * b.label.unit); } } } };
+  }
+  const head = (name, e, lines, size, dy, face = SANS) => { const H = 30 + lines.length * (size + 12); let half = 0;
+    const w = plane(name, 980, H, size, (ctx) => { ctx.textBaseline = "alphabetic"; lines.forEach((line, i) => { half = Math.max(half, mixed(ctx, line, 490, size + 8 + i * (size + 12), size) / 2); }); });
+    w.ink = [490 - half - 4, 4, 490 + half + 4, H - 4]; return stand(w, e, e.at, 0, dy); };
+
+  // ---- Scene five: who they are. Pew's four ages; the median ages by tradition; then five hundreds, each a
+  // lattice of a hundred points with as many lit as the figure says.
+  const E5 = eye(GO5 + 3), E5B = eye(MED_AT + 2.5), PER_YEAR = 0.05;
+  const ages = row("age", E5, AGES.bars.map(([n, ...lines], i) => ({ x: AGE_X + (i - 1.5) * 2.3, w: 1.45, h: n * 0.09, text: [`${n}%`, ...lines] })), GO5 + 0.45, MED_AT + 0.7);
+  const agesHead = head("ages", E5, [AGES.head], 37, 400);
+  const medians = row("median", E5B, MEDIAN_AGE.bars.map(([n, ...lines], i) => ({ x: MED_X + (i - 1.5) * 2.5, w: 1.45, h: n * PER_YEAR, lit: i ? 0.42 : 1, text: [String(n), ...lines] })), MED_AT + 0.4, PANELS_AT + 0.6);
+  const mediansHead = head("medians", E5B, [MEDIAN_AGE.head], 37, 430);
+  const EP = HUNDRED.map((_, i) => eye(PANELS_AT + i * PANEL_FOR + 1.4)), GRID = 0.36;
+  const dots = cloud(HUNDRED.length * 100, 0.085);
+  const hundreds = HUNDRED.map((h, i) => { const e = EP[i], middle = V3(PANEL_X + i * PANEL_GAP, PANEL_Y, 0);
+    for (let k = 0; k < 100; k++) { const p = middle.clone().addScaledVector(e.right, ((k % 10) - 4.5) * GRID).addScaledVector(e.up, (4.5 - Math.floor(k / 10)) * GRID); dots.pos.set([p.x, p.y, p.z], (i * 100 + k) * 3); }
+    const fig = stand(plane(`hundred ${i}`, 420, 170, 150, (ctx) => { ctx.textBaseline = "alphabetic"; ctx.textAlign = "center"; ctx.font = `${NUM}150px ${NUMFACE}`; ctx.fillText(`${h.n}%`, 210, 140); }, [70, 20, 350, 150]), e, middle, 0, 295);
+    let half = 0; const cap = plane(`hundred ${i} words`, 760, 110, 37, (ctx) => { ctx.textBaseline = "alphabetic"; h.lines.forEach((line, j) => { half = Math.max(half, mixed(ctx, line, 380, 42 + j * 48, 37) / 2); }); });
+    cap.ink = [380 - half - 4, 6, 380 + half + 4, h.lines.length > 1 ? 104 : 56]; stand(cap, e, middle, 0, -278);
+    return { ...h, i, fig, cap, at: PANELS_AT + i * PANEL_FOR }; });
+
+  // ---- Scene six: where they are. The map again, and Pew's four regions as four terraces, each as high as its share.
+  const E6 = eye(GO6 + 4.5), REGION_AT = GO6 + 1.0, REGION_LAG = 0.45, REGION_OFF = GO7 - 0.55, PER_SHARE = 0.075;
+  const ANCHOR = { South: [1.3, 1.25], Northeast: [3.5, -1.2], West: [-2.9, -0.2], Midwest: [0.5, -0.95] }, ACROSS = { West: -390, Midwest: -135, South: 130, Northeast: 385 };
+  const regionHead = head("regions", E6, [REGION_HEAD], 37, 525);
+  const regions = REGIONS.map((r, i) => { let half = 0;
+    const label = plane(`region ${r.name}`, 250, 120, 32, (ctx) => { ctx.textBaseline = "alphabetic"; ctx.textAlign = "center"; ctx.font = `${NUM}64px ${NUMFACE}`; ctx.fillText(`${r.share}%`, 125, 60); half = ctx.measureText(`${r.share}%`).width / 2; ctx.font = `500 32px ${SANS}`; ctx.fillText(r.name, 125, 104); half = Math.max(half, ctx.measureText(r.name).width / 2); });
+    label.ink = [125 - half - 3, 8, 125 + half + 3, 114]; stand(label, E6, E6.at, ACROSS[r.name], 395);
+    // A hairline from the label down to its terrace.
+    const geo = new THREE.BufferGeometry(); geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(6), 3));
+    const pin = new THREE.Line(geo, new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, depthTest: false, depthWrite: false })); pin.renderOrder = 9; pin.frustumCulled = false; pin.visible = false; sceneB.add(pin);
+    return { ...r, i, label, pin, geo, foot: label.home.clone().addScaledVector(E6.up, -68 * label.unit), list: r.ids.map((id) => states.get(id)).filter(Boolean) }; });
+
+  // ---- Scene seven: what is changing. Three counts in 2010 and again in 2020; then the converts received each year in twenty parishes.
+  const E7 = eye(GO7 + 4), E7B = eye(CON_AT + 2.5), AGAIN = GO7 + 3.4, PER_SOUL = 3.4 / DECADE[0].was;
+  const was = row("was", E7, DECADE.map((d, i) => ({ x: DEC_X + (i - 1) * 4.6 - 0.56, w: 1, h: d.was * PER_SOUL, size: 44, text: [d.was.toLocaleString("en-US")] })), GO7 + 0.5, CON_AT + 0.7, 0.15);
+  const now = row("now", E7, DECADE.map((d, i) => ({ x: DEC_X + (i - 1) * 4.6 + 0.56, w: 1, h: d.is * PER_SOUL, over: Math.max(d.was, d.is) * PER_SOUL, size: 44, text: [d.is.toLocaleString("en-US"), d.change] })), AGAIN, CON_AT + 0.7, 0.15);
+  const pairs = DECADE.map((d, i) => { let half = 0; const w = plane(`pair ${i}`, 320, 84, 30, (ctx) => { ctx.textBaseline = "alphabetic"; d.lines.forEach((line, j) => { half = Math.max(half, mixed(ctx, line, 160, 32 + j * 38, 30, "center", j ? 400 : 500) / 2); }); });
+    w.ink = [160 - half - 3, 4, 160 + half + 3, 80]; return stand(w, E7, V3(DEC_X + (i - 1) * 4.6, FLOOR_Y, 0.5), 0, -66); });
+  const decade = stand(plane("decade", 800, 240, 37, (ctx, year = 2010) => { ctx.textBaseline = "alphabetic"; ctx.textAlign = "center"; ctx.font = `${NUM}150px ${NUMFACE}`; ctx.fillText(String(year), 400, 140); mixed(ctx, "Counted parish by parish, ten years apart.", 400, 210, 37); }, [60, 20, 740, 226]), E7, E7.at, 0, 425);
+  const TALLEST = Math.max(...CONVERTS.years.map(([, n]) => n));
+  const converts = row("received", E7B, CONVERTS.years.map(([year, n], i) => ({ x: CON_X + (i - 5) * 0.74, w: 0.5, h: (n / TALLEST) * 3.2, lit: CONVERTS.named.includes(year) ? 1 : 0.5, size: 44, text: CONVERTS.named.includes(year) ? [String(n)] : null, over: (Math.max(n, CONVERTS.years[i - 1]?.[1] ?? 0, CONVERTS.years[i + 1]?.[1] ?? 0) / TALLEST) * 3.2, year })), CON_AT + 0.4, QUOTE_AT + 0.9, 0.07, 0.5);
+  const years = converts.bars.filter((b) => b.text).map((b) => stand(plane(`year ${b.year}`, 110, 48, 32, (ctx) => { ctx.textBaseline = "alphabetic"; ctx.textAlign = "center"; ctx.font = `${NUM}32px ${NUMFACE}`; ctx.fillText(String(b.year), 55, 36); }, [18, 6, 92, 44]), E7B, V3(b.x, FLOOR_Y, 0.5), 0, -44));
+  const convertsHead = head("converts", E7B, CONVERTS.head, 34, 410);
+
+  // ---- The report's own sentence, the sources each on a card, and the mark: one behind another along the camera's own line.
+  const hallPoint = (n) => V3(HALL.x, HALL.y, HALL.z - HALL.gap * n);
+  const quote = stand(plane("sentence", 960, 330, 30, (ctx) => { ctx.textBaseline = "alphabetic"; ctx.textAlign = "center"; ctx.font = `400 46px ${SERIF}`; QUOTE.lines.forEach((line, i) => ctx.fillText(line, 480, 58 + i * 60)); mixed(ctx, QUOTE.by, 480, 304, 30); }, [40, 10, 920, 318]), eye(QUOTE_AT + 2), hallPoint(0));
+  const cards = CARDS.map((c, i) => { const at = GO8 + i * CARD_FOR;
+    const w = stand(plane(`card ${i}`, 980, 280, 32, (ctx, rule = 0) => { ctx.textBaseline = "alphabetic"; ctx.textAlign = "center"; ctx.font = `400 68px ${SERIF}`; ctx.fillText(c.name, 490, 92);
+      ctx.fillRect(490 - 250 * rule, 126, 500 * rule, 2); c.lines.forEach((line, j) => mixed(ctx, line, 490, 186 + j * 46, 32)); }, [30, 20, 950, 250]), eye(at + 1.2), hallPoint(i + 1));
+    return { w, at, drawn: "" }; });
+  const motes = (() => { const n = 760, c = cloud(n, 0.03), roll = dice(1942), far = HALL.gap * (CARDS.length + 1);
+    for (let i = 0; i < n; i++) { let x, y; do { x = (roll() - 0.5) * 30; y = (roll() - 0.5) * 24; } while (Math.abs(y) < 2.1 || Math.hypot(x, y) < 2.6);
+      c.pos.set([HALL.x + x, HALL.y + y, HALL.z + 16 - roll() * (far + 24)], i * 3); c.glow[i] = 0.05 + Math.pow(roll(), 3) * 0.55; }
+    c.sent(); return c; })();
+  // Purify's own mark: the four bars of components/ui/PurifyMark.tsx, number for number (words.mjs MARK), each a
+  // thin slab so the turn of the camera shows it is a thing. The post first, then the titulus, the crossbar, and the slanted footrest last.
+  const EL = eye(GO9 + 5), LOGO = hallPoint(CARDS.length + 1), LOGO_UNIT = HALL.d / PX, MARK_PX = 400, LOGO_AT = GO9 + 0.6;
+  const mark = new THREE.Group(); mark.quaternion.copy(EL.q); mark.position.copy(LOGO).addScaledVector(EL.up, 70 * LOGO_UNIT); mark.scale.setScalar((MARK_PX * LOGO_UNIT) / MARK.box[1]); mark.visible = false; sceneB.add(mark);
+  const slabMat = new THREE.ShaderMaterial({ vertexShader: "varying vec3 vN; void main(){ vN = normal; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }", fragmentShader: "varying vec3 vN; void main(){ gl_FragColor = vec4(vec3(mix(.3, 1., step(.5, abs(vN.z)))), 1.); }" });
+  const slabs = Object.fromEntries(MARK.bars.map((b) => { const s = new THREE.Shape(), x = -b.w / 2, y = -b.h / 2, r = b.rx;
+    s.moveTo(x + r, y); s.lineTo(x + b.w - r, y); s.quadraticCurveTo(x + b.w, y, x + b.w, y + r); s.lineTo(x + b.w, y + b.h - r); s.quadraticCurveTo(x + b.w, y + b.h, x + b.w - r, y + b.h); s.lineTo(x + r, y + b.h); s.quadraticCurveTo(x, y + b.h, x, y + b.h - r); s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y);
+    const mesh = new THREE.Mesh(new THREE.ExtrudeGeometry(s, { depth: 5, bevelEnabled: false, curveSegments: 6 }).translate(0, 0, -5), slabMat), cx = b.x + b.w / 2 - MARK.box[0] / 2, cy = MARK.box[1] / 2 - (b.y + b.h / 2);
+    const pivot = new THREE.Group();
+    if (b.rotate) { const px = b.rotate[1] - MARK.box[0] / 2, py = MARK.box[1] / 2 - b.rotate[2]; pivot.position.set(px, py, 0); mesh.position.set(cx - px, cy - py, 0); } else mesh.position.set(cx, cy, 0);
+    pivot.add(mesh); mark.add(pivot); return [b.name, { ...b, mesh, pivot, cy: mesh.position.y }]; }));
+  const brand = stand(plane("brand", 700, 180, 120, (ctx) => { ctx.textBaseline = "alphabetic"; ctx.textAlign = "center"; ctx.font = `400 124px ${SERIF}`; ctx.fillText(BRAND, 350, 132); }, [150, 30, 550, 165]), EL, LOGO, 0, -262);
+  const halo = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), poolMat()); halo.quaternion.copy(EL.q); halo.position.copy(mark.position).addScaledVector(EL.fwd, 0.6); halo.scale.setScalar(11); halo.renderOrder = 1; halo.visible = false; sceneB.add(halo);
+
+  function pose(t) {
+    // The map stands under the church for the first three scenes and at its own place in the line for scene six.
+    const shift = t > GO6 - 0.5 ? MAP_X : 0;
+    if (states.get(SIX[0].id).group.position.x !== shift) for (const st of states.values()) st.group.position.x = shift;
+    if (t <= GO4) return;
+    ground.visible = false; // the first map's own ground: scene six has the row's floor under it
+    // Scene four.
+    crowd.pose(t);
+    const s = claimState(t), turnOver = 1 - clamp(1 - Math.abs(t - (GO4 + 3.45)) / 0.25);
+    show(claim, io((t - (GO4 + 0.9)) / 0.4) * turnOver * (1 - io((t - (GO5 - 0.15)) / 0.4)), lerp(1.1, 1, outCubic(span(t, GO4 + 0.9, GO4 + 1.3))));
+    // Scene five.
+    const on5 = t > GO5 && t < GO6 + 0.9, on7 = t > GO7 && t < QUOTE_AT + 0.9;
+    const mapFloor = t > GO6 + 0.4 && t < GO7 + 0.6;
+    floor.visible = on5 || mapFloor || on7; floor.position.y = (mapFloor ? 0 : FLOOR_Y) - 0.004;
+    floorDim.value = mapFloor ? DIM.value : on5 ? 1 - io((t - GO6) / 0.4) : io((t - GO7 - 0.6) / 0.25) * (1 - io((t - QUOTE_AT - 0.1) / 0.6));
+    if (floor.visible) { const tr = track(t); floorAt.value.set(REST.x + tr.x, REST.z + tr.z); }
+    const leave = (off) => 1 - io((t - off) / 0.3);
+    ages.pose(t, () => 1, () => leave(MED_AT - 0.05)); show(agesHead, io((t - (GO5 + 0.7)) / 0.4) * leave(MED_AT - 0.05));
+    medians.pose(t, () => 1, () => leave(PANELS_AT - 0.05)); show(mediansHead, io((t - (MED_AT + 0.55)) / 0.4) * leave(PANELS_AT - 0.05));
+    dots.points.visible = t > PANELS_AT - 0.2 && t < GO6 + 0.9;
+    for (const h of hundreds) { const sweep = h.at + 0.5, gone = leave(h.at + PANEL_FOR - 0.05), [a, grow] = lands(t, h.at + 0.3);
+      if (dots.points.visible) for (let k = 0; k < 100; k++) dots.glow[h.i * 100 + k] = k < h.n ? lerp(0.13, 1.5, io((t - sweep - (0.9 * k) / 100) / 0.18)) : 0.13;
+      show(h.fig, a * gone, grow); show(h.cap, io((t - (h.at + 0.55)) / 0.35) * gone); }
+    if (dots.points.visible) dots.sent();
+    // Scene six: the terraces rise, in the order of their shares, and sink before the whip.
+    const on6 = t > GO6 && t < GO7 + 0.7, down = io((t - REGION_OFF) / 0.5);
+    show(regionHead, io((t - (GO6 + 0.9)) / 0.4) * (1 - down));
+    for (const r of regions) { const p = span(t, REGION_AT + r.i * REGION_LAG, REGION_AT + r.i * REGION_LAG + 0.8), top = BASE + r.share * PER_SHARE * (p <= 0 ? 0 : outBack(p)) * (1 - down), lit = (0.16 + 0.012 * (r.share - 19)) * clamp(p * 3) * (1 - down);
+      if (on6) for (const st of r.list) { st.group.scale.y = top; st.mat.uniforms.top.value = top; st.mat.uniforms.lit.value = lit; st.edge.color.setScalar(Math.max(st.edge.color.r, lerp(EDGE_LOW, 1, lit) * DIM.value)); }
+      const [a, grow] = lands(t, REGION_AT + r.i * REGION_LAG + 0.35); show(r.label, a * (1 - down), grow);
+      r.pin.visible = on6 && a > 0; r.pin.material.opacity = 0.75 * a * (1 - down);
+      if (r.pin.visible) { const v = r.geo.attributes.position; v.setXYZ(0, r.foot.x, r.foot.y, r.foot.z); v.setXYZ(1, MAP_X + ANCHOR[r.name][0], top + 0.02, ANCHOR[r.name][1]); v.needsUpdate = true; } }
+    // Scene seven.
+    const again = io((t - AGAIN) / 0.5), off7 = leave(CON_AT - 0.05);
+    was.pose(t, () => lerp(1, 0.38, again), () => (1 - io((t - AGAIN + 0.1) / 0.3)) * off7); now.pose(t, () => 1, () => off7);
+    pairs.forEach((w, i) => show(w, io((t - (GO7 + 0.9 + i * 0.15)) / 0.35) * off7));
+    const [da, dgrow] = lands(t, GO7 + 0.75); show(decade, da * off7 * (1 - clamp(1 - Math.abs(t - AGAIN) / 0.22)), dgrow);
+    converts.pose(t, () => 1, () => leave(QUOTE_AT - 0.05)); years.forEach((w, i) => show(w, io((t - (CON_AT + 0.8 + i * 0.2)) / 0.35) * leave(QUOTE_AT - 0.05)));
+    show(convertsHead, io((t - (CON_AT + 0.6)) / 0.4) * leave(QUOTE_AT - 0.05));
+    // The sentence, the cards, the mark.
+    motes.points.visible = t > QUOTE_AT + 0.2;
+    show(quote, io((t - (QUOTE_AT + 0.45)) / 0.4) * (1 - io((t - GO8 - 0.02) / 0.22)));
+    for (const c of cards) show(c.w, io((t - (c.at + 0.27)) / 0.3) * (1 - io((t - (c.at + CARD_FOR + 0.02)) / 0.22)), lerp(1.07, 1, outCubic(span(t, c.at + 0.27, c.at + 0.7))));
+    mark.visible = halo.visible = t > LOGO_AT;
+    if (mark.visible) { const grows = (name, from, len) => outCubic(span(t, LOGO_AT + from, LOGO_AT + from + len));
+      const post = Math.max(1e-4, grows("post", 0, 0.6)); slabs.post.mesh.scale.y = post; slabs.post.mesh.position.y = slabs.post.cy - ((1 - post) * slabs.post.h) / 2;
+      slabs.titulus.mesh.scale.x = Math.max(1e-4, grows("titulus", 0.45, 0.35)); slabs.crossbar.mesh.scale.x = Math.max(1e-4, grows("crossbar", 0.65, 0.4)); slabs.footrest.mesh.scale.x = Math.max(1e-4, grows("footrest", 0.95, 0.3));
+      const slant = span(t, LOGO_AT + 1.3, LOGO_AT + 1.85); slabs.footrest.pivot.rotation.z = -THREE.MathUtils.degToRad(slabs.footrest.rotate[0]) * (slant <= 0 ? 0 : outBack(slant, 1.7));
+      halo.material.uniforms.power.value = 0.055 * io((t - LOGO_AT - 0.2) / 1.6);
+      const [a, grow] = lands(t, LOGO_AT + 2.0); show(brand, a, grow); }
+  }
+  /** What is drawn again on a plane, once a frame: the running figure, the year, each card's rule. */
+  let drawnClaim = "", drawnYear = "";
+  function draw(t) {
+    if (t < GO5 + 1) { const s = claimState(t), value = s === 0 ? CLAIM : crowd.count(t), cap = s === 2 ? io((t - OUT - 1.7) / 0.35) : s === 1 ? 1 - io((t - OUT - 1.4) / 0.3) : 1, key = `${s} ${value} ${cap.toFixed(3)}`;
+      if (key !== drawnClaim) { claim.redraw(s, value, cap); drawnClaim = key; } }
+    const year = t < AGAIN ? "2010" : "2020"; if (t > GO7 && year !== drawnYear) { decade.redraw(year); drawnYear = year; }
+    for (const c of cards) { const key = outCubic(span(t, c.at + 0.5, c.at + 1.0)).toFixed(3); if (t > c.at && key !== c.drawn) { c.w.redraw(Number(key)); c.drawn = key; } }
+  }
+  /** The lines flat on the glass: each scene's source, and the key to the crowd's points. */
+  const lineOn = (t) => SOURCES_ON.map(([from, to, line]) => [io((t - from) / 0.4) * (1 - io((t - to) / 0.3)), line]).find(([a]) => a > 0);
+  const keyOn = (t) => io((t - (IN + 0.5)) / 0.4) * (1 - io((t - (GO5 - 0.6)) / 0.4));
+  function glass(t) {
+    const on = lineOn(t);
+    if (on) { pen.save(); pen.globalAlpha = on[0]; pen.fillStyle = "#d6d6d6"; pen.textBaseline = "alphabetic"; mixed(pen, on[1], 44 * K, S - 42 * K, 30 * K, "left"); pen.restore(); }
+    if (keyOn(t) > 0) keyLine(keyOn(t), false, KEY_ONE);
+  }
+  function measure(t, add) {
+    const on = lineOn(t);
+    if (on && on[0] > 0.99) add("source", 44 * K, S - 72 * K, 44 * K + mixed(pen, on[1], 0, 0, 30 * K, "left", 400, false), S - 34 * K, 30, 1);
+    if (keyOn(t) > 0.99) add("key", 44 * K, S - 116 * K, keyLine(1, true, KEY_ONE), S - 78 * K, 30, 1);
+  }
+  const info = { go: [GO4, GO5, GO6, GO7, GO8, GO9], crowd: [crowd.count(IN), crowd.count(OUT - 0.01), crowd.count(GO5)],
+    lines: SOURCES_ON.map(([, , line]) => Math.round(mixed(pen, line, 0, 0, 30, "left", 400, false))),
+    read: [GO4 + 2.2, GO4 + 6.5, GO5 - 0.6, GO5 + 3.5, MED_AT + 3, ...HUNDRED.map((_, i) => PANELS_AT + i * PANEL_FOR + 1.6), GO6 + 5, GO7 + 2.6, GO7 + 5.5, CON_AT + 3, QUOTE_AT + 2.5, ...CARDS.map((_, i) => GO8 + i * CARD_FOR + 1.3), GO9 + 4.5],
+    mark: { px: MARK_PX, bars: MARK.bars.map((b) => b.name) } };
+  return { pose, draw, glass, measure, info };
+})();
 
 // ---- One frame --------------------------------------------------------------
 const coprime = (n) => { const gcd = (a, b) => (b ? gcd(b, a % b) : a); let p = Math.max(1, Math.round(n * 0.618)); while (gcd(p, n) !== 1) p++; return p; };
@@ -864,7 +1163,7 @@ function drawFrame(t, quality = 1) {
     right.set(1, 0, 0).applyQuaternion(cam.quaternion); upv.set(0, 1, 0).applyQuaternion(cam.quaternion);
     cam.position.addScaledVector(right, ox).addScaledVector(upv, oy);
     cam.updateMatrixWorld(true);
-    if (useB && ts > GO3) church.light(i, n, ts, cam);
+    if (useB && ts > GO3 && ts < GO5 + 0.9) church.light(i, n, ts, cam);
     for (const w of words) w.mesh.visible = !hideWords && w.mesh.material.opacity > 0.001;
     for (const s of six) s.pin.visible = !hideWords;
     renderer.setRenderTarget(rtScene); renderer.clear();
@@ -892,18 +1191,19 @@ function drawFrame(t, quality = 1) {
   lastPass.run(null);
   pen.drawImage(glCanvas, 0, 0);
   // The source, flat on the glass: it is not part of the scene and takes none of its blur.
-  const src = hideWords ? 0 : inOutCubic(span(t, LANDED + 0.1, LANDED + 0.55));
+  const src = hideWords ? 0 : inOutCubic(span(t, LANDED + 0.1, LANDED + 0.55)) * (1 - inOutCubic(span(t, GO4 + 0.3, GO4 + 0.9)));
   if (src > 0) {
     pen.save(); pen.globalAlpha = src; pen.fillStyle = "#d6d6d6"; pen.textAlign = "left"; pen.textBaseline = "alphabetic";
     pen.font = `400 ${30 * K}px ${SANS}`; pen.fillText(SOURCE_LINE, 44 * K, S - 42 * K); pen.restore();
   }
   const keyed = hideWords ? 0 : inOutCubic(span(t, STOOD, STOOD + 0.4)) * (1 - inOutCubic(span(t, KEY_OFF - 0.5, KEY_OFF)));
   if (keyed > 0) keyLine(keyed);
+  if (!hideWords && t > GO4) film.glass(t);
   return n;
 }
 
 // ---- What render.mjs calls ---------------------------------------------------
-window.__info = { fps: FPS, seconds: SECONDS, frames: FPS * SECONDS, size: S, landed: LANDED, cut: CUT, beat: BEAT, go: GO, stood: STOOD, thin: THIN, thinned: THINNED, shareAt: SHARE_AT, go3: GO3, built: BUILT, signed: SIGNED, parishAt: PARISH_AT, keyOff: KEY_OFF, flock: church.flock, tradition: TRADITION, stone: church.stone, camera3: [GO3, GO3 + 4.6, SETTLE, SECONDS].map((t) => ({ t, turn: Math.round(turn(t) * 10) / 10, tilt: Math.round(tilt(t) * 10) / 10, lift: Math.round(lift(t) * 1000) / 1000, away: Math.round(cameraB(t, facing3) * 100) / 100 })),
+window.__info = { film: film.info, fps: FPS, seconds: SECONDS, frames: FPS * SECONDS, size: S, landed: LANDED, cut: CUT, beat: BEAT, go: GO, stood: STOOD, thin: THIN, thinned: THINNED, shareAt: SHARE_AT, go3: GO3, built: BUILT, signed: SIGNED, parishAt: PARISH_AT, keyOff: KEY_OFF, flock: church.flock, tradition: TRADITION, stone: church.stone, camera3: [GO3, GO3 + 4.6, SETTLE, SECONDS].map((t) => ({ t, turn: Math.round(turn(t) * 10) / 10, tilt: Math.round(tilt(t) * 10) / 10, lift: Math.round(lift(t) * 1000) / 1000, away: Math.round(cameraB(t, facing3) * 100) / 100 })),
   points: N_ROLLS, stay: N_SUNDAY, fromSix: people.fromSix, digitWidths, count: [GO, STOOD - 0.01, STOOD, THIN, THINNED - 0.01, THINNED, SECONDS].map((t) => people.count(t)), renderer: renderer.getContext().getParameter(renderer.getContext().getExtension("WEBGL_debug_renderer_info").UNMASKED_RENDERER_WEBGL) };
 window.__frame = (i, quality = 1) => { const n = drawFrame(i / FPS, quality); return { n, png: out.toDataURL("image/png") }; };
 window.__still = (t, quality = 1) => { drawFrame(t, quality); return out.toDataURL("image/png"); };
@@ -933,8 +1233,9 @@ window.__words = (t, quality = 0.5) => {
     const tall = (Math.max(...ys) - Math.min(...ys)) / (iy1 - iy0); // screen px for each px the word was drawn at
     measure(w.name, Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys), (w.smallest * tall) / K, w.mesh.material.opacity);
   }
-  if (t >= LANDED + 0.55) { pen.font = `400 ${30 * K}px ${SANS}`; measure("source", 44 * K, S - 72 * K, 44 * K + pen.measureText(SOURCE_LINE).width, S - 34 * K, 30, 1); }
+  if (t >= LANDED + 0.55 && t < GO4 + 0.3) { pen.font = `400 ${30 * K}px ${SANS}`; measure("source", 44 * K, S - 72 * K, 44 * K + pen.measureText(SOURCE_LINE).width, S - 34 * K, 30, 1); }
   if (t >= STOOD + 0.4 && t < KEY_OFF - 0.5) measure("key", 44 * K, S - 116 * K, keyLine(1, true), S - 78 * K, 30, 1);
+  if (t > GO4) film.measure(t, measure);
   return found;
 };
 window.__ready = true;
