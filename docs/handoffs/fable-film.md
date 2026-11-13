@@ -119,3 +119,34 @@ A word or a figure: `words.mjs` (and `facts.mjs` must hold it), then `render.mjs
 ## Not done, by the brief
 
 No full film, no variants, no sound, no vertical cut. Nothing went to the Vault because one version was made.
+
+---
+
+# Baton: round 4, the full film (left 2026-11-13 by session_01VuYTwaxbA7b5yzKRKC1Jce)
+
+His words: the outro of sources and Purify's logo (about 20:25 and 20:30 UTC), "now" (20:33), and in that chat, about 21:02, "the point of the video is to show that america in orthodoxy is growing", then "not even the new sources? (2021-2026)". The film is made and on its page for his yes. A fresh chat reads this, `docs/promo/orthodox-america/BRIEF.md` ("Round 4") and `docs/promo/orthodox-america/3d/RECORD.md`.
+
+## Where it stands
+
+- **Made and on its page, waiting for his yes or no.** `.promo/orthodox-america-3d/orthodox-america-3d.mp4` (out of git): 107 seconds, 3,210 frames, 1080 by 1080, H.264, 18.48 MB (19,374,636 bytes), no sound. Seven scenes, six source cards, Purify's mark.
+- **His page:** https://claude.ai/artifact/WG2cBhCekzLx5RLrme7SLk (private to him). The film and its poster are in the page's own asset store (`/_blob/4d9ba71536ed682b67ab7415ff26489e`, `/_blob/516363a9dedec5e6929ba7873890c271`), so a fresh container can fetch the file back from there. The samples' pages are as they were.
+- **The frames are in the container that made them** and go when it is reclaimed. A larger copy for an editor is a new render (about 1.7 hours) once they are gone.
+
+## What this round taught
+
+- **Growth.** The one written source that measures it is Krindatch's report of September 2026 (a survey of 270 parishes: attendance in the median parish up 36% from 2019 to 2025). The national surveys of people show the Orthodox share level (Pew, PRRI). The film says the first and claims nothing about the second; `facts.mjs` LATER and the record say why. A figure found only in a news summary stays off the screen.
+- **The camera after scene three** is a list of moves (`MOVES` in `shot.js`), each eased from rest to rest; a whip is a move fast enough that the shutter smears it. Every place stands along one line, close enough that the place left and the place arriving are both in frame mid-move: a longer hop gives black frames, which read as a cut.
+- **The old camera never rests.** Scene one's slow turn and slow push go on for ever; the track brings both to rest after scene three (`DRIFT`, `softLine`). Without that every later place is seen askew.
+- **Words px-true in the scene** (`stand`): a label's width is in px whatever the camera's distance, so forms under wide names are spaced by the names, not evenly. Look at a full-size still before a render; a 360 px strip hides two names that touch.
+- **A change after a render** costs only its own frames: delete them from `frames/` and run `--film --resume`. `timing.json` is written only by a run that draws every frame.
+- **Tools.** `npm install` in `.promo/orthodox-america-3d/tools` needs a `package.json` there first, or it installs into the repository's root and a `node_modules/playwright` there shadows the session's own. The repository's root must hold no `node_modules` for `render.mjs` and `film-page.mjs --check`.
+- **Size.** 107 seconds at 19 MB is 1.45 Mbit a second; with the grain at 3 the picture holds (looked at on frames cut from the file).
+- **Time.** 1.86 seconds a frame over the whole film (3,116 frames in 5,789 seconds).
+
+## To change it
+
+A word or a figure: `words.mjs` (and `facts.mjs` must hold it), then `render.mjs --check` and `--stills`. The page: `film-page.mjs --video=<address> --poster=<address> --check`, then publish `.promo/orthodox-america-3d/orthodox-america-film.html` to the same address (pass the `url`; read it first). A new render is his to ask for.
+
+## Not done, by the brief
+
+No variants, no sound, no vertical cut, nothing paid for. Nothing went to the Vault because one version was made.
