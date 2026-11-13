@@ -244,18 +244,17 @@ function WordAnchored({
  type="button"
  onClick={onClose}
  aria-label={t("common.close")}
- className="hit-44 absolute top-2 right-2 h-7 w-7 rounded-full text-paper/60 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-ui"
+ className="hit-44 absolute top-2 end-2 h-7 w-7 rounded-full text-paper/60 hover:bg-paper/10 hover:text-paper flex items-center justify-center text-ui"
  >
  <Close size={13} />
  </button>
 
- {/* The word itself */}
- <p
- lang="grc" dir="ltr"
- style={{ fontFamily: "var(--font-greek), serif" }}
- className="text-title-sm text-paper font-semibold leading-tight pr-7"
- >
+ {/* The word itself. Its line follows the page, so its room from the Close is
+     on the end side in Arabic too; the Greek in it reads left to right. */}
+ <p className="text-title-sm text-paper font-semibold leading-tight pe-7">
+ <span lang="grc" dir="ltr" style={GREEK}>
  {token.w}
+ </span>
  </p>
 
  <WordDetails token={token} entry={entry} onWordStudy={onWordStudy} />
@@ -404,7 +403,7 @@ function WordSheet({ token, entry, onClose, onWordStudy, english }: WordPopoverP
               type="button"
               onClick={dismiss}
               aria-label={t("common.close")}
-              className="-mr-2 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-paper/60 hover:bg-paper/10 hover:text-paper"
+              className="-me-2 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-paper/60 hover:bg-paper/10 hover:text-paper"
             >
               <Close size={14} />
             </button>
