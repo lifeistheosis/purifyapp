@@ -142,15 +142,16 @@ const PARCHMENT = ["color-night", "color-night-soft", "color-night-deep"].map((n
 
 /**
  * The light an email wears: a clean white carrying the app's ink, never
- * parchment. The kit's own light (its :root[data-theme="light"] block, once
- * that block is a clean neutral of its own) comes first. Until then it is the
- * app's own pair for a white page (@theme: --color-paper and --color-ink), a
- * card one step of that ink off the page (the app's 4 percent box), and the
- * kit's shares for Light. Only the rubric and the fasting registers are read
- * from the Light palette: they are its inks for a light page, not its paper.
+ * parchment. The kit's own light comes first (tokens.css, "Light: a clean
+ * neutral", from ef1bec40). Were the kit's light ever parchment again, it is
+ * the app's own pair for a white page (@theme: --color-paper and --color-ink)
+ * and a card one step of that ink off the page. Only the rubric and the
+ * fasting registers are read from the app's Light palette: they are its inks
+ * for a light page, not its paper.
  */
 function cleanLight() {
-  const own = varsOf(kit, ':root[data-theme="light"]');
+  // The kit writes its light under both selectors, in one block or in two.
+  const own = { ...varsOf(kit, ':root[data-theme="light"]'), ...kitOf("parchment") };
   if (own["k-ground"] && !PARCHMENT.includes(toHex(toRgb(own["k-ground"])))) return wearing(own, appOf("parchment"));
   const ground = toHex(toRgb(APP_DARK["color-paper"]));
   const ink = toHex(toRgb(APP_DARK["color-ink"]));

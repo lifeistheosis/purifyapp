@@ -8,8 +8,8 @@
 <style>
 /* One column for words, and each email at a phone's width beside its other scheme. */
 :root{--ground:#101013;--raised:#1d1d20;--ink:#ffffff;--body:#c3c3c4;--quiet:#939395;--line:#28282b;--rule:#404042;color-scheme:dark;--serif:Lora,Georgia,'Times New Roman',serif;--sans:'DM Sans',Arial,Helvetica,sans-serif}
-@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--ground:#ffffff;--raised:#f8f7f8;--ink:#49424e;--body:#645e69;--quiet:#716c75;--line:#edeced;--rule:#dbd9dc;color-scheme:light}}
-:root[data-theme="light"]{--ground:#ffffff;--raised:#f8f7f8;--ink:#49424e;--body:#645e69;--quiet:#716c75;--line:#edeced;--rule:#dbd9dc;color-scheme:light}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--ground:#ffffff;--raised:#f3f3f3;--ink:#49424e;--body:#5b5560;--quiet:#6d6871;--line:#edeced;--rule:#dbd9dc;color-scheme:light}}
+:root[data-theme="light"]{--ground:#ffffff;--raised:#f3f3f3;--ink:#49424e;--body:#5b5560;--quiet:#6d6871;--line:#edeced;--rule:#dbd9dc;color-scheme:light}
 *{box-sizing:border-box}
 body{margin:0;background:var(--ground);color:var(--body);font-family:var(--serif);font-size:17px;line-height:1.65}
 main{max-width:1240px;margin:0 auto;padding-block:48px 72px;padding-left:max(20px, env(safe-area-inset-left, 0px));padding-right:max(20px, env(safe-area-inset-right, 0px))}
@@ -117,7 +117,6 @@ li{margin-top:8px}
     <li>Each day's fast comes from the calendar the app already has. The Sunday email does not carry it yet.</li>
     <li>The Sunday email now names 20 and 21 November by the saint alone, so both read &ldquo;The Most Holy Theotokos&rdquo;. The sample uses the commemoration's own name. The arbiter has this as a finding.</li>
     <li>These files write the dark scheme inline and turn light only where a client says the screen is light. The kit's first email template did it the other way round. Dark leads by his word, it is what Purify sends today, and a client that darkens a light email by force would leave the mark in ink on a dark page. For the kit to settle.</li>
-    <li>The clean light here is the app's own white and its ink for a white page. When the kit's light lands as a block of its own, the build script reads it from there.</li>
   </ul>
 </section>
 </main>

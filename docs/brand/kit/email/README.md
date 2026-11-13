@@ -35,7 +35,7 @@ Each email is one file for a mail client: tables and inline styles, no script, n
 Nothing in it is new to Purify. Each piece is the app's own, set for a letter.
 
 - **The page is the letter.** No card on a canvas. The words sit on the app's page colour, as a chapter does in the reader.
-- **Dark leads, and the light is clean.** Dark is the app's default. The light is the app's own white (`--color-paper`) and its ink for a white page (`--color-ink`), with a card one step of that ink off the page.
+- **Dark leads, and the light is clean.** Dark is the app's default. The light is the kit's: the app's own white (`--color-paper`) and its ink for a white page (`--color-ink`), with a card in a neutral grey.
 - **The masthead.** The app's cross and the wordmark at the start, the date or the kind of letter at the end, a hairline under them.
 - **The opening.** A small line, the title, a line under it in italics, and the short rule: how a chapter opens in the app. A season puts its own picture above it.
 - **The week.** A leaf of the calendar: the day in the margin, the name beside it. A feast is said in words, set heavier, and marked in the rubric's colour where the page has one (red on a light page).
@@ -89,7 +89,7 @@ Later seasons take the same place: a picture from the app above the opening, one
 
 The last three are for the kit to take in, if the kit chat agrees: the rubric, the fasting registers and the looks.
 
-**The clean light.** The kit's light was parchment when this was built, so the light here is the app's own pair for a white page: `--color-paper` (white) for the ground and `--color-ink` for the ink, a card at 4 percent of that ink on the page, and the kit's shares for Light. The rubric and the fasting registers on a light page are the ones the app's Light palette has, since they are its inks for a light page and not its paper. When the kit's light lands as a clean neutral in a block of its own (`:root[data-theme="light"]`), `build.mjs` reads it from there first.
+**The clean light.** The kit's own light (`tokens.css`, "Light: a clean neutral"): white for the ground (`--color-paper`), the app's ink for a white page (`--color-ink`), and the admin panel's neutral grey for a card. The rubric and the fasting registers on a light page are the ones the app's Light palette has, since they are its inks for a light page and not its paper.
 
 A share is laid on the page and written as one plain colour, because Outlook reads no transparency.
 

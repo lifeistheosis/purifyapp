@@ -88,7 +88,6 @@ const CONTENT = `
     <li>Each day's fast comes from the calendar the app already has. The Sunday email does not carry it yet.</li>
     <li>The Sunday email now names 20 and 21 November by the saint alone, so both read &ldquo;The Most Holy Theotokos&rdquo;. The sample uses the commemoration's own name. The arbiter has this as a finding.</li>
     <li>These files write the dark scheme inline and turn light only where a client says the screen is light. The kit's first email template did it the other way round. Dark leads by his word, it is what Purify sends today, and a client that darkens a light email by force would leave the mark in ink on a dark page. For the kit to settle.</li>
-    <li>The clean light here is the app's own white and its ink for a white page. When the kit's light lands as a block of its own, the build script reads it from there.</li>
   </ul>
 </section>
 </main>
