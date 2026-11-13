@@ -1,0 +1,899 @@
+From 24cac802510ae519a016bdd5133a05c1e6c05ff4 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 13 Nov 2026 09:31:07 +0000
+Subject: [PATCH] Build 95 note 17: the patron saint chooser, reworked from the
+ app's own pieces
+
+His word, 2026-11-13: "patron saint chooser design needs a rework". It was
+the generic searchable dropdown: bare names in the website's order, sorted
+on the name after its "St.", so the apostles and prophets whose names begin
+"Holy Apostle" or "The Prophet" stood together under H and T; opened over
+the Language section and ran to the foot of the screen with the page's own
+words under its last row; no saint had his picture.
+
+Now one chooser wherever a patron is chosen: Settings, the profile tab, the
+computer's Data tab, and the Community profile's editor, which had its own
+copy of the dropdown (eight lines in its Patron saint field):
+
+  - the house's Sheet, `fill`, so it is as tall as the screen the keyboard
+    leaves (useVisibleFrame) and whole above the keys; Back, Escape, its
+    scrim and its close button close it, in the house's motion, still with
+    reduced motion;
+  - the one SearchField standing still over the list: any part of a name or
+    a known form (lib/saints/nameForms.ts), accents off, the saints whose own
+    name begins with the letters first, the list at its top with each letter;
+  - each saint as the Saints list draws him: SaintIcon (a new size, 48 by
+    64), the house's plate for the 26 whose pictures wait on a permission,
+    and his feast as the Saints cards write it;
+  - sorted and lettered by his own name (lib/profile/patrons.ts, ownName):
+    the Apostle John and the Forerunner under J, Andrew under A;
+  - the reader's own saint lit as the language and translation sheets light
+    theirs, and in view as it opens; the row shows the chosen saint with his
+    picture, or the plate and "No patron saint chosen", at one height.
+
+The saints come from the library in brief the app carries, less any the
+website does not list (/api/saints/patrons): a test build talks to the main
+web, which knows 162 of the 270 saints until the merge and refuses the rest.
+
+Held by lib/profile/__tests__/patronChooser.test.ts (nine tests; on the old
+code the two drawn ones fail on their claims and the rest cannot load the
+list). Walked on the export with touch at 360, 390 and 412, keys up and
+down: 50 checks. Held for his yes before it is pushed.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01VuYTwc2v9NZk2Rs1Z1TZ29
+---
+Held for his yes (build 95 note 17), parked here by Updates 10 so the work outlives its container.
+Applies on ccr-07896cf2-bo0afd at b98c99c7d (base-commit at the foot): git am docs/1.9-build/drafts/build-95-note-17.patch
+Stills with a reason per choice: https://claude.ai/artifact/GFtBS2BJ29P7ZfeYCJqhmH
+On his yes: apply on the head, run the fix checklist again (the export, the walk, checkMock), push, delete nothing.
+
+ .../community/profile/ProfileEditor.tsx       |  28 +-
+ components/profile/PatronChooser.tsx          | 267 ++++++++++++++++++
+ components/profile/PatronSaintPicker.tsx      |  51 ++--
+ components/saints/SaintIcon.tsx               |   4 +-
+ lib/profile/__tests__/patronChooser.test.ts   | 194 +++++++++++++
+ lib/profile/patrons.ts                        | 169 +++++++++++
+ 6 files changed, 664 insertions(+), 49 deletions(-)
+ create mode 100644 components/profile/PatronChooser.tsx
+ create mode 100644 lib/profile/__tests__/patronChooser.test.ts
+ create mode 100644 lib/profile/patrons.ts
+
+diff --git a/components/community/profile/ProfileEditor.tsx b/components/community/profile/ProfileEditor.tsx
+index d2e894420..876888df5 100644
+--- a/components/community/profile/ProfileEditor.tsx
++++ b/components/community/profile/ProfileEditor.tsx
+@@ -11,6 +11,7 @@ import { ProfileEffect } from "@/components/community/profile/ProfileEffect";
+ import { ClergyRequestCard } from "@/components/community/profile/ClergyRequestCard";
+ import { SocialLinkIcon } from "@/components/community/profile/SocialLinkIcon";
+ import { ImageCropSheet, type CropShape } from "@/components/profile/ImageCropSheet";
++import { PatronChooser } from "@/components/profile/PatronChooser";
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+ import { PREMIUM_CTA } from "@/components/premium/PremiumUI";
+ import { SearchSelect, type SearchSelectOption } from "@/components/ui/SearchSelect";
+@@ -30,6 +31,7 @@ import {
+ } from "@/lib/profile/client";
+ import { announcePicture } from "@/lib/profile/myPicture";
+ import { announcePatron } from "@/lib/profile/patronEvent";
++import { patronList } from "@/lib/profile/patrons";
+ import {
+   BANNER_COLORS,
+   BANNER_MOTIONS,
+@@ -245,16 +247,8 @@ export function ProfileEditor() {
+     };
+   }, []);
+ 
+-  const patronOptions = useMemo<SearchSelectOption[]>(
+-    () => [
+-      { value: "__none__", label: t("patron.none") },
+-      ...(profile?.patronSaint && !patrons.some((p) => p.slug === profile.patronSaint?.slug)
+-        ? [{ value: profile.patronSaint.slug, label: profile.patronSaint.name }]
+-        : []),
+-      ...patrons.map((p) => ({ value: p.slug, label: p.name })),
+-    ],
+-    [patrons, profile, t],
+-  );
++  // The patron saint's chooser, as Settings and You draw it (build 95 note 17).
++  const patronRows = useMemo(() => patronList(patrons), [patrons]);
+   const bookOptions = useMemo<SearchSelectOption[]>(
+     () => [{ value: "__none__", label: t("profile.verseNone") }, ...BOOKS.map((b) => ({ value: b.slug, label: b.name }))],
+     [t],
+@@ -613,14 +607,12 @@ export function ProfileEditor() {
+ 
+           <Section title={t("profile.sectionKeep")}>
+             <Field label={t("profile.patronSaint")}>
+-              <SearchSelect
+-                value={draft.patronSaint || "__none__"}
+-                onChange={(v) => set({ patronSaint: v === "__none__" ? "" : v })}
+-                options={patronOptions}
+-                placeholder={t("patron.none")}
+-                ariaLabel={t("profile.patronSaint")}
+-                searchPlaceholder={t("patron.search")}
+-                emptyLabel={t("patron.noMatch")}
++              <PatronChooser
++                patrons={patronRows}
++                value={draft.patronSaint}
++                named={profile.patronSaint?.slug === draft.patronSaint ? profile.patronSaint.name : null}
++                onChoose={(slug) => set({ patronSaint: slug })}
++                label={t("profile.patronSaint")}
+               />
+               {profile.nextNameDay && draft.patronSaint === saved.patronSaint ? (
+                 <p className="mt-1.5 font-sans text-caption text-paper/55">
+diff --git a/components/profile/PatronChooser.tsx b/components/profile/PatronChooser.tsx
+new file mode 100644
+index 000000000..18eeed61d
+--- /dev/null
++++ b/components/profile/PatronChooser.tsx
+@@ -0,0 +1,267 @@
++"use client";
++
++// The patron saint's chooser, wherever a patron is chosen: Settings' row, the
++// reader's own page, the computer's Data tab and the Community profile's
++// editor (build 95 note 17; the owner's word of 2026-11-13: "patron saint
++// chooser design needs a rework").
++//
++// It was the generic searchable dropdown (components/ui/SearchSelect.tsx): a
++// field over a list of bare names, opened over the Language section below it
++// and running to the foot of the screen with the page's own words under its
++// last row, the apostles all under H. Now it is the app's own pieces:
++//
++//   - the saint as his row: his icon in its own shape (SaintIcon, as the
++//     Saints list draws him, the house's plate under it, so a saint whose
++//     picture waits on a permission stands on the lit cross), his name and
++//     his feast;
++//   - the house's sheet (components/ui/Sheet.tsx), opening and closing in the
++//     house's motion, still with reduced motion, closed by Back, Escape, its
++//     scrim and its close button. `fill`: it is as tall as the screen the
++//     keyboard leaves, so with the keyboard up the field and the list are
++//     whole above it and nothing runs under the page;
++//   - the app's one search field (components/search/SearchField.tsx) standing
++//     still over the list, finding any part of a name (lib/profile/patrons.ts);
++//   - the saints by their own names under their letters, the reader's own lit
++//     with its check and in the middle of the sheet as it opens.
++//
++// Choosing is one tap: the sheet closes, the row shows the saint, and the
++// place that holds the chooser saves or keeps it (`onChoose`).
++
++import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
++
++import { useTranslate } from "@/components/i18n/MessagesProvider";
++import { FeastDays } from "@/components/saints/FeastDays";
++import { SaintIcon } from "@/components/saints/SaintIcon";
++import { SearchField } from "@/components/search/SearchField";
++import { FacePlate } from "@/components/ui/CrossPlate";
++import { Sheet } from "@/components/ui/Sheet";
++import { Check } from "@/components/ui/icons/Check";
++import { ChevronRight } from "@/components/ui/icons/ChevronRight";
++import { cn } from "@/lib/cn";
++import { textDir } from "@/lib/i18n/textDir";
++import { byLetter, findPatrons, patronFor, type Patron } from "@/lib/profile/patrons";
++
++/**
++ * A row of the list, and the reader's own lit as the house's other choosers
++ * light it: the language (components/i18n/LanguageSheetList.tsx) and the
++ * Bible's translation (components/bible/TranslationList.tsx), a fine edge and
++ * the house's fill, with its check.
++ */
++const ROW = "flex w-full items-center gap-3 rounded-md border p-2 text-start motion-safe:transition-colors";
++const LIT = "border-gold/45 bg-gold/15";
++const QUIET = "border-transparent hover:bg-paper/[0.04] active:bg-paper/[0.04]";
++
++/** A list's scroller (the sheet's body, the list's parent) back at its top. */
++function toTop(list: HTMLElement | null) {
++  const scroller = list?.parentElement;
++  if (scroller) scroller.scrollTop = 0;
++}
++
++/** The words beside a picture: the name, and the feast under it. */
++function Words({ name, feast, quiet = false }: { name: string; feast: string | null; quiet?: boolean }) {
++  const { t } = useTranslate();
++  // A saint's name is English, as the registry writes it (the Saints list's
++  // cards); "No patron saint chosen" is the reader's own language.
++  const lang = quiet ? undefined : "en";
++  return (
++    <span className="min-w-0 flex-1">
++      <span
++        lang={lang}
++        dir={textDir(lang)}
++        className={cn("block font-sans text-ui font-semibold leading-snug rtl:text-right", quiet ? "text-paper/80" : "text-paper")}
++      >
++        {name}
++      </span>
++      {feast ? (
++        <span className="mt-1 block font-sans text-caption text-paper/60">
++          {t("saints.feastLabel")} <FeastDays days={[feast]} />
++        </span>
++      ) : null}
++    </span>
++  );
++}
++
++/**
++ * The house's plate where no saint is chosen, in a saint's frame (SaintIcon's
++ * "xs", in pixels as SaintIcon sets it, since a rem follows the reader's text
++ * size), so the row keeps one height chosen or not.
++ */
++function NonePlate() {
++  return (
++    <span aria-hidden className="dark-island relative block shrink-0 overflow-hidden rounded-md border border-paper/20" style={{ width: 48, height: 64 }}>
++      <FacePlate size="thumb" />
++    </span>
++  );
++}
++
++export function PatronChooser({
++  patrons,
++  value,
++  onChoose,
++  label,
++  named,
++}: {
++  /** The saints to offer, in the list's order (lib/profile/patrons.ts, patronList). */
++  patrons: readonly Patron[];
++  /** The chosen saint's slug, or "" for none. */
++  value: string;
++  /** The reader chose: a saint's slug, or "" for none. */
++  onChoose: (slug: string) => void;
++  /** The sheet's name, the place's own words for the choice ("Patron saint"). */
++  label: string;
++  /** The chosen saint's name as the website gave it, for one this build does not carry. */
++  named?: string | null;
++}) {
++  const { t } = useTranslate();
++  const id = useId();
++  const [open, setOpen] = useState(false);
++  const [query, setQuery] = useState("");
++  const trigger = useRef<HTMLButtonElement>(null);
++  const field = useRef<HTMLInputElement>(null);
++
++  const results = useRef<HTMLUListElement | null>(null);
++
++  const chosen = useMemo(() => patrons.find((p) => p.slug === value) ?? patronFor(value, named), [patrons, value, named]);
++  const found = useMemo(() => findPatrons(patrons, query), [patrons, query]);
++  const letters = useMemo(() => byLetter(patrons), [patrons]);
++  const searching = query.trim().length > 0;
++
++  // A search starts empty each time the sheet opens. It is not emptied as the
++  // sheet closes: the list would be drawn again under the finger, all of it,
++  // while the sheet slides away.
++  function openSheet() {
++    setQuery("");
++    setOpen(true);
++  }
++
++  const close = useCallback(() => {
++    setOpen(false);
++    // Back on the row that opened it, for a keyboard; the page stays where it was.
++    requestAnimationFrame(() => trigger.current?.focus({ preventScroll: true }));
++  }, []);
++
++  function pick(slug: string) {
++    if (slug !== value) onChoose(slug);
++    close();
++  }
++
++  // A computer's keys type into the search at once. A phone's keyboard stays
++  // down until the field is tapped, so the saints have the screen.
++  useEffect(() => {
++    if (!open || !window.matchMedia?.("(pointer: fine)").matches) return;
++    const frame = requestAnimationFrame(() => field.current?.focus({ preventScroll: true }));
++    return () => cancelAnimationFrame(frame);
++  }, [open]);
++
++  // A search reads from its first match: the list under the field starts at
++  // its top as the results come, and again with each letter typed, wherever
++  // the full list had been scrolled to (the sheet's body is what scrolls).
++  const resultsRef = useCallback((el: HTMLUListElement | null) => {
++    results.current = el;
++    toTop(el);
++  }, []);
++  function type(next: string) {
++    setQuery(next);
++    toTop(results.current);
++  }
++
++  // As the sheet opens, the reader's own saint in the middle of what it shows,
++  // once per opening (the sheet's body, the list's parent, is what scrolls; the
++  // language sheet places the reader's language the same way).
++  const placeList = useCallback((el: HTMLDivElement | null) => {
++    const scroller = el?.parentElement;
++    const row = el?.querySelector<HTMLElement>('[aria-current="true"]');
++    if (!scroller || !row) return;
++    const s = scroller.getBoundingClientRect();
++    const r = row.getBoundingClientRect();
++    scroller.scrollTop = Math.max(0, r.top - s.top + scroller.scrollTop - Math.max(0, (s.height - r.height) / 2));
++  }, []);
++
++  const row = (p: Patron) => {
++    const on = p.slug === value;
++    return (
++      <li key={p.slug}>
++        <button
++          type="button"
++          data-patron-row={p.slug}
++          aria-current={on ? "true" : undefined}
++          onClick={() => pick(p.slug)}
++          className={cn(ROW, on ? LIT : QUIET)}
++        >
++          <SaintIcon saint={{ name: p.name, iconUrl: p.icon ?? undefined }} size="xs" />
++          <Words name={p.name} feast={p.feast} />
++          {on ? <Check size={18} aria-hidden className="shrink-0 text-paper" /> : null}
++        </button>
++      </li>
++    );
++  };
++
++  return (
++    <>
++      <button
++        ref={trigger}
++        type="button"
++        aria-haspopup="dialog"
++        aria-expanded={open}
++        data-patron-choose={value || "none"}
++        onClick={openSheet}
++        className="tap-press flex w-full items-center gap-3 rounded-[14px] border border-paper/10 bg-paper/[0.04] p-2 pe-3 text-start hover:border-paper/20"
++      >
++        {chosen ? <SaintIcon saint={{ name: chosen.name, iconUrl: chosen.icon ?? undefined }} size="xs" /> : <NonePlate />}
++        {chosen ? <Words name={chosen.name} feast={chosen.feast} /> : <Words name={t("patron.none")} feast={null} quiet />}
++        <ChevronRight size={15} aria-hidden className="shrink-0 text-paper/45 rtl:-scale-x-100" />
++      </button>
++
++      <Sheet
++        open={open}
++        onClose={close}
++        title={label}
++        fill
++        desktop
++        lead={
++          <div className="pb-3 pt-1">
++            <SearchField value={query} onChange={type} placeholder={t("patron.search")} inputRef={field} />
++          </div>
++        }
++      >
++        {searching ? (
++          found.length ? (
++            <ul ref={resultsRef} data-patron-found="" aria-label={label} className="space-y-0.5">
++              {found.map(row)}
++            </ul>
++          ) : (
++            <p aria-live="polite" className="px-2 py-6 font-sans text-detail text-paper/60">
++              {t("patron.noMatch")}
++            </p>
++          )
++        ) : (
++          <div ref={placeList} data-patron-list="">
++            <ul aria-label={label}>
++              <li>
++                <button
++                  type="button"
++                  data-patron-row=""
++                  aria-current={!value ? "true" : undefined}
++                  onClick={() => pick("")}
++                  className={cn(ROW, !value ? LIT : QUIET)}
++                >
++                  <NonePlate />
++                  <Words name={t("patron.none")} feast={null} quiet />
++                  {!value ? <Check size={18} aria-hidden className="shrink-0 text-paper" /> : null}
++                </button>
++              </li>
++            </ul>
++            {letters.map(([letter, group]) => (
++              <section key={letter} aria-labelledby={`${id}-${letter}`}>
++                <h3 id={`${id}-${letter}`} className="px-2 pb-1 pt-4 font-sans text-caption font-semibold text-paper/60">
++                  {letter}
++                </h3>
++                <ul className="space-y-0.5">{group.map(row)}</ul>
++              </section>
++            ))}
++          </div>
++        )}
++      </Sheet>
++    </>
++  );
++}
+diff --git a/components/profile/PatronSaintPicker.tsx b/components/profile/PatronSaintPicker.tsx
+index 474c56eef..f1a0e4add 100644
+--- a/components/profile/PatronSaintPicker.tsx
++++ b/components/profile/PatronSaintPicker.tsx
+@@ -4,28 +4,29 @@
+ // Beside the email lists, because the note rides the library list: without it
+ // switched on, choosing a patron sends nothing.
+ //
+-// The list is 158 saints long, so it is a searchable picker, not a bare
+-// <select>: the native list could not be searched, and on a phone it opened
+-// the operating system's wheel in the operating system's colours. "egypt"
+-// finds St. Mary of Egypt; see components/ui/SearchSelect.tsx.
++// The list is 270 saints long. It was a searchable dropdown of bare names
++// (components/ui/SearchSelect.tsx) until build 95 note 17; it is the patron
++// saint's chooser now, each saint with his icon and feast in the house's
++// sheet, found by any part of his name ("egypt" finds St. Mary of Egypt) and
++// lettered by his own (components/profile/PatronChooser.tsx).
+ 
+ import { useEffect, useMemo, useRef, useState } from "react";
+ 
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+-import { SearchSelect, type SearchSelectOption } from "@/components/ui/SearchSelect";
++import { PatronChooser } from "@/components/profile/PatronChooser";
+ import { apiFetch } from "@/lib/api/client";
+ import { PATRON_ANCHOR, announcePatron } from "@/lib/profile/patronEvent";
++import { patronList, type Patron, type ServerPatron } from "@/lib/profile/patrons";
+ import { prefersReducedMotion } from "@/lib/ui/motion";
+ 
+-type Patron = { slug: string; name: string };
+-
+-/** The "none" row. Not a slug any saint can have. */
+-const NONE = "__none__";
+-
+ export type PatronChoice = {
+   state: "loading" | "ready" | "signed-out" | "unavailable";
+-  options: SearchSelectOption[];
++  /** The saints the website will save, as the chooser draws them. */
++  patrons: Patron[];
++  /** The chosen saint's slug, or "" for none. */
+   value: string;
++  /** The chosen saint's name as the website gave it, for one this build does not carry. */
++  named: string | null;
+   choose: (next: string) => void;
+   saved: boolean;
+   error: boolean;
+@@ -38,8 +39,7 @@ export type PatronChoice = {
+  * tells the widget at once when a saint is saved.
+  */
+ export function usePatronChoice(): PatronChoice {
+-  const { t } = useTranslate();
+-  const [patrons, setPatrons] = useState<Patron[] | null>(null);
++  const [server, setServer] = useState<ServerPatron[] | null>(null);
+   const [slug, setSlug] = useState<string>("");
+   const [state, setState] = useState<PatronChoice["state"]>("loading");
+   const [saved, setSaved] = useState(false);
+@@ -52,9 +52,9 @@ export function usePatronChoice(): PatronChoice {
+         if (!alive) return;
+         if (mine.status === 401) return setState("signed-out");
+         if (!list.ok || !mine.ok) return setState("unavailable");
+-        const { patrons: all } = (await list.json()) as { patrons: Patron[] };
++        const { patrons: all } = (await list.json()) as { patrons: ServerPatron[] };
+         const { slug: current } = (await mine.json()) as { slug: string | null };
+-        setPatrons(all);
++        setServer(all);
+         setSlug(current ?? "");
+         setState("ready");
+       })
+@@ -64,10 +64,7 @@ export function usePatronChoice(): PatronChoice {
+     };
+   }, []);
+ 
+-  const options = useMemo<SearchSelectOption[]>(
+-    () => [{ value: NONE, label: t("patron.none") }, ...(patrons ?? []).map((p) => ({ value: p.slug, label: p.name }))],
+-    [patrons, t],
+-  );
++  const patrons = useMemo(() => patronList(server ?? []), [server]);
+ 
+   async function save(next: string) {
+     const previous = slug;
+@@ -90,23 +87,17 @@ export function usePatronChoice(): PatronChoice {
+     }
+   }
+ 
+-  return { state, options, value: slug || NONE, choose: (v) => void save(v === NONE ? "" : v), saved, error };
++  const named = server?.find((p) => p.slug === slug)?.name ?? null;
++
++  return { state, patrons, value: slug, named, choose: (v) => void save(v), saved, error };
+ }
+ 
+-/** The searchable picker and the line that says it saved. */
++/** The chooser and the line that says it saved. */
+ export function PatronSelect({ choice }: { choice: PatronChoice }) {
+   const { t } = useTranslate();
+   return (
+     <>
+-      <SearchSelect
+-        value={choice.value}
+-        onChange={choice.choose}
+-        options={choice.options}
+-        placeholder={t("patron.none")}
+-        ariaLabel={t("patron.title")}
+-        searchPlaceholder={t("patron.search")}
+-        emptyLabel={t("patron.noMatch")}
+-      />
++      <PatronChooser patrons={choice.patrons} value={choice.value} named={choice.named} onChoose={choice.choose} label={t("patron.title")} />
+       <p aria-live="polite" className="font-sans text-caption">
+         {choice.saved ? <span className="mt-2 block text-paper/55">{t("patron.saved")}</span> : null}
+         {choice.error ? <span className="mt-2 block text-red-300">{t("email.prefs.error")}</span> : null}
+diff --git a/components/saints/SaintIcon.tsx b/components/saints/SaintIcon.tsx
+index d547bc428..bedd5cbff 100644
+--- a/components/saints/SaintIcon.tsx
++++ b/components/saints/SaintIcon.tsx
+@@ -22,9 +22,11 @@ import { PictureCreditNote } from "./PictureCredit";
+ // itself blurry-to-sharp, band by band, is the "piece by piece" the owner
+ // keeps sending back.
+ 
+-type Size = "sm" | "md" | "lg";
++type Size = "xs" | "sm" | "md" | "lg";
+ 
+ const dims: Record<Size, { w: number; h: number; plate: CrossPlateSize }> = {
++ // A row of a list of saints: the patron saint's chooser (build 95 note 17).
++ xs: { w: 48, h: 64, plate: "thumb" },
+  sm: { w: 72, h: 96, plate: "thumb" },
+  md: { w: 96, h: 128, plate: "card" },
+  lg: { w: 160, h: 216, plate: "card" },
+diff --git a/lib/profile/__tests__/patronChooser.test.ts b/lib/profile/__tests__/patronChooser.test.ts
+new file mode 100644
+index 000000000..33bcf1d8b
+--- /dev/null
++++ b/lib/profile/__tests__/patronChooser.test.ts
+@@ -0,0 +1,194 @@
++// The patron saint's chooser (build 95 note 17). The owner's word, 2026-11-13,
++// with a screenshot of Settings, The calendar, Patron saint, open: "patron saint
++// chooser design needs a rework".
++//
++// What the screenshot showed: the generic searchable dropdown
++// (components/ui/SearchSelect.tsx), a field over a long list of bare names in
++// the order the website sent them, opened over the Language section and running
++// to the foot of the screen with the page's own words under its last row; the
++// apostles all under H as "Holy Apostle ...", the prophets under T as "The
++// Prophet ...", and no saint with his picture.
++//
++// What it holds: one chooser wherever a patron is chosen (Settings, the
++// reader's own page, the computer's Data tab, the Community profile's editor),
++// made of the app's own pieces (the house's sheet, as tall as the screen the
++// keyboard leaves; the one search field; each saint as the Saints list draws
++// him, his icon on the house's plate); each saint lettered and sorted by his
++// own name and found by any part of it; every saint with the picture his own
++// page shows, or on the plate while it waits on a permission; and only the
++// saints the website will save.
++//
++// What a reader would notice if this broke: St. John the Theologian looked for
++// under J and found under H among fourteen others, a saint with no face, or a
++// list that runs under the keyboard and off the foot of the screen.
++
++import { existsSync, readFileSync } from "node:fs";
++import { join } from "node:path";
++
++import { beforeAll, describe, expect, it } from "vitest";
++
++import profiledSaints from "@/data/calendar/profiled-saints.json";
++import type { Patron } from "@/lib/profile/patrons";
++import type { SaintBrief } from "@/lib/saints/brief";
++import { SAINTS } from "@/lib/saints/saints";
++
++const read = (file: string) => readFileSync(join(process.cwd(), file), "utf8");
++
++const BRIEF = profiledSaints as SaintBrief[];
++
++// Loaded as each test runs rather than at the top, so that on the old code,
++// which had no such list, every test here fails on its own claim.
++let byLetter: typeof import("@/lib/profile/patrons").byLetter;
++let findPatrons: typeof import("@/lib/profile/patrons").findPatrons;
++let ownName: typeof import("@/lib/profile/patrons").ownName;
++let patronFor: typeof import("@/lib/profile/patrons").patronFor;
++let patronList: typeof import("@/lib/profile/patrons").patronList;
++/** Every saint the library carries, as the website would offer him (/api/saints/patrons). */
++let ALL: Patron[] = [];
++const at = (slug: string) => {
++  const p = ALL.find((x) => x.slug === slug);
++  if (!p) throw new Error(`${slug} is not offered`);
++  return p;
++};
++
++describe("the patron saint's chooser", () => {
++  beforeAll(async () => {
++    ({ byLetter, findPatrons, ownName, patronFor, patronList } = await import("@/lib/profile/patrons"));
++    ALL = patronList(BRIEF.map((s) => ({ slug: s.slug, name: s.name })));
++  });
++
++  it("offers every saint the library carries with a feast day", () => {
++    expect(ALL.length).toBe(BRIEF.filter((s) => s.feastDays.length > 0).length);
++    expect(new Set(ALL.map((p) => p.slug)).size).toBe(ALL.length);
++  });
++
++  it("letters each saint by his own name: the apostles under their own letters, none under a word of honour", () => {
++    expect(at("apostle-john").letter).toBe("J");
++    expect(at("john-the-baptist").letter).toBe("J");
++    expect(at("apostle-matthew").letter).toBe("M");
++    expect(at("apostle-andrew").letter).toBe("A");
++    expect(at("apostle-paul").letter).toBe("P");
++    expect(at("archangel-michael").letter).toBe("M");
++    expect(at("mary-of-egypt").letter).toBe("M");
++    expect(at("theotokos").letter).toBe("T");
++    expect(ownName("Holy Apostle and Evangelist John")).toBe("John");
++    expect(ownName("Holy Prophet, Forerunner, and Baptist John")).toBe("John");
++    expect(ownName("The Prophet Daniel and the Three Holy Youths")).toBe("Daniel and the Three Holy Youths");
++    expect(ownName("Saints Cyril and Methodius")).toBe("Cyril and Methodius");
++    expect(ownName("St. Mary of Egypt")).toBe("Mary of Egypt");
++    for (const p of ALL) {
++      expect(p.own, p.name).not.toMatch(/^(The|Most|Holy|St\.?|Sts\.?|Saints?|Apostles?|Prophet|Archangel|Blessed|and)\s/);
++      expect(p.letter, p.name).toMatch(/^[A-Z]$/);
++    }
++    // The old list's H: four saints whose names begin with H, and fifteen apostles and a prophet with them.
++    const h = ALL.filter((p) => p.letter === "H").map((p) => p.name);
++    expect(h.filter((n) => /^Holy /.test(n))).toEqual([]);
++  });
++
++  it("is sorted by that name, the letters A to Z, each once", () => {
++    const owns = ALL.map((p) => p.own);
++    expect([...owns].sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }))).toEqual(owns);
++    const letters = byLetter(ALL).map(([letter]) => letter);
++    expect(letters).toEqual([...letters].sort());
++    expect(new Set(letters).size).toBe(letters.length);
++    expect(byLetter(ALL).flatMap(([, group]) => group)).toEqual(ALL);
++    // St. Andrew stands among the A's, after St. Anatolius and before St. Anthony.
++    const a = byLetter(ALL).find(([letter]) => letter === "A")?.[1].map((p) => p.slug) ?? [];
++    expect(a.indexOf("apostle-andrew")).toBeGreaterThan(a.indexOf("anatolius-of-constantinople"));
++    expect(a.indexOf("apostle-andrew")).toBeLessThan(a.indexOf("anthony-the-great"));
++  });
++
++  it("finds any part of a name, its accents off, and the forms a saint is known by", () => {
++    const egypt = findPatrons(ALL, "egypt").map((p) => p.slug);
++    expect(egypt).toContain("mary-of-egypt");
++    expect(findPatrons(ALL, "EGYPT").map((p) => p.slug)).toEqual(egypt);
++    expect(findPatrons(ALL, "staniloae").map((p) => p.slug)).toContain("dumitru-staniloae");
++    expect(findPatrons(ALL, "theologian").map((p) => p.slug)).toEqual(expect.arrayContaining(["apostle-john", "gregory-theologian"]));
++    expect(findPatrons(ALL, "forerunner").map((p) => p.slug)).toContain("john-the-baptist");
++    expect(findPatrons(ALL, "no saint is called this")).toEqual([]);
++    expect(findPatrons(ALL, "  ")).toEqual(ALL);
++    // The saints whose own name begins with the words typed come first, each
++    // part in the list's own order: "john" opens on the Apostle and the
++    // Forerunner, and Sts. Cyrus and John come after every John.
++    const john = findPatrons(ALL, "john");
++    expect(john.slice(0, 2).map((p) => p.slug)).toEqual(["apostle-john", "john-the-baptist"]);
++    const begins = john.findIndex((p) => !/^john/i.test(p.own));
++    expect(begins).toBeGreaterThan(2);
++    expect(john.slice(begins).every((p) => !/^john/i.test(p.own))).toBe(true);
++    expect(john.map((p) => p.slug)).toContain("cyrus-and-john");
++    const inOrder = (part: Patron[]) => expect(part.map((p) => p.slug)).toEqual(ALL.filter((p) => part.some((x) => x.slug === p.slug)).map((p) => p.slug));
++    inOrder(john.slice(0, begins));
++    inOrder(john.slice(begins));
++  });
++
++  it("draws each saint with the picture his own page shows, or on the plate while it waits on a permission", () => {
++    const registry = new Map<string, string | null>();
++    for (const s of SAINTS) registry.set(s.slug, registry.get(s.slug) ?? s.iconUrl ?? null);
++    for (const p of ALL) {
++      expect(p.icon, p.slug).toBe(registry.get(p.slug) ?? null);
++      if (p.icon) expect(existsSync(join(process.cwd(), "public", p.icon)), p.icon).toBe(true);
++    }
++    // On the plate: exactly the saints whose own pages have no picture, whom
++    // lib/saints/__tests__/everySaintAPicture.test.ts holds to the named list
++    // of permissions awaited (the pre-build gate's part 3).
++    const plate = ALL.filter((p) => !p.icon).map((p) => p.slug).sort();
++    const without = [...registry].filter(([, icon]) => !icon).map(([slug]) => slug).sort();
++    expect(plate).toEqual(without);
++  });
++
++  it("gives each saint his first feast, the one a name day keeps", () => {
++    for (const p of ALL) expect(p.feast, p.slug).toBe(BRIEF.find((s) => s.slug === p.slug)?.feastDays[0]);
++    expect(at("apostle-john").feast).toBe("May 8");
++  });
++
++  it("offers only the saints the website will save, and names a chosen one this build does not carry", () => {
++    const main = [
++      { slug: "mary-of-egypt", name: "St. Mary of Egypt" },
++      { slug: "apostle-john", name: "Holy Apostle and Evangelist John" },
++      { slug: "a-saint-of-a-later-release", name: "St. Nectarios of a Later Release" },
++    ];
++    expect(patronList(main).map((p) => p.slug)).toEqual(["apostle-john", "mary-of-egypt"]);
++    expect(patronFor("a-saint-of-a-later-release", "St. Nectarios of a Later Release")).toMatchObject({ name: "St. Nectarios of a Later Release", icon: null, feast: null });
++    expect(patronFor("a-saint-of-a-later-release")).toBeNull();
++    expect(patronFor("")).toBeNull();
++    expect(patronFor("apostle-john")?.icon).toBe(at("apostle-john").icon);
++  });
++
++});
++
++describe("the patron saint's chooser, as drawn", () => {
++  it("is the house's sheet, the one search field and the saints' own icons, never the dropdown", () => {
++    const chooser = read("components/profile/PatronChooser.tsx");
++    // As tall as the screen the keyboard leaves (lib/ui/viewport.ts), on a computer too.
++    expect(chooser).toMatch(/<Sheet\s[^>]*?\bfill\b[^>]*?\bdesktop\b/);
++    expect(chooser).toMatch(/lead=\{\s*<div[^>]*>\s*<SearchField /);
++    expect(chooser).toContain('<SaintIcon saint={{ name: p.name, iconUrl: p.icon ?? undefined }} size="xs" />');
++    expect(chooser).toContain("<FacePlate");
++    // A search reads from its first match: each letter typed puts the list
++    // under the field back at its top, wherever the full list was scrolled.
++    expect(chooser).toMatch(/<SearchField value=\{query\} onChange=\{type\}/);
++    expect(chooser).toContain("toTop(results.current)");
++    // The reader's own saint is in view as the sheet opens.
++    expect(chooser).toContain(`querySelector<HTMLElement>('[aria-current="true"]')`);
++    expect(chooser).not.toMatch(/from "@\/components\/ui\/SearchSelect"|<SearchSelect/);
++    // The icon's own shape, three wide by four tall, for a row of a list.
++    expect(read("components/saints/SaintIcon.tsx")).toContain('xs: { w: 48, h: 64, plate: "thumb" }');
++  });
++
++  it("is the one chooser wherever a patron is chosen", () => {
++    const picker = read("components/profile/PatronSaintPicker.tsx");
++    expect(picker).toContain("<PatronChooser ");
++    expect(picker).not.toMatch(/from "@\/components\/ui\/SearchSelect"|<SearchSelect/);
++    // Settings, the reader's own page and the computer's Data tab draw the picker.
++    expect(read("components/settings/PatronRow.tsx")).toContain("<PatronSelect choice={choice} />");
++    expect(read("components/profile/ProfileTabClient.tsx")).toContain("<PatronSaintPicker />");
++    expect(read("app/(app)/account/(signed)/data/page.tsx")).toContain("<PatronSaintPicker />");
++    // The Community profile's editor chooses with it too, into its draft.
++    const editor = read("components/community/profile/ProfileEditor.tsx");
++    const start = editor.indexOf('<Field label={t("profile.patronSaint")}>');
++    const field = editor.slice(start, editor.indexOf("</Field>", start));
++    expect(start).toBeGreaterThan(0);
++    expect(field).toContain("<PatronChooser");
++    expect(field).not.toContain("<SearchSelect");
++  });
++});
+diff --git a/lib/profile/patrons.ts b/lib/profile/patrons.ts
+new file mode 100644
+index 000000000..2418cd8fa
+--- /dev/null
++++ b/lib/profile/patrons.ts
+@@ -0,0 +1,169 @@
++// The saints a reader can choose as their patron, as the chooser draws them
++// (build 95 note 17; the owner's word of 2026-11-13: "patron saint chooser
++// design needs a rework").
++//
++// The chooser was the generic searchable dropdown: bare names in the order the
++// website sent them, sorted on the name after its "St.", so the fifteen apostles
++// and prophets whose names begin "Holy Apostle" or "The Prophet" stood together
++// under H and T, and no saint had his picture. Here each saint is drawn from
++// the library in brief (data/calendar/profiled-saints.json, which the calendar
++// already carries on every screen, so it opens with no network in the apps):
++// his name as the registry writes it, his icon (public/saints/icons/, the one
++// his own page shows, or the house's plate while his picture waits on a
++// permission: lib/saints/__tests__/everySaintAPicture.test.ts), his feast, and
++// his own name, by which the list is sorted and lettered: John under J,
++// Matthew under M, Andrew under A.
++//
++// The website still says which saints it will save (/api/saints/patrons, the
++// registry saints with a feast day), so the list is the library in brief less
++// any saint the website does not know: a test build talks to the main web,
++// which learns the release's new saints only at the merge, and offering one it
++// would refuse is a tap that fails.
++
++import profiledSaints from "@/data/calendar/profiled-saints.json";
++import type { SaintBrief } from "@/lib/saints/brief";
++import { KNOWN_FORMS } from "@/lib/saints/nameForms";
++import { filterItems, fold } from "@/lib/ui/listbox";
++
++export type Patron = {
++  slug: string;
++  /** As the registry writes it: "Holy Apostle and Evangelist John". */
++  name: string;
++  /** The saint's own name, what the list is sorted and lettered by: "John". */
++  own: string;
++  /** The letter the saint stands under: the first of his own name. */
++  letter: string;
++  /** His icon as his own page shows it, or null: the house's plate. */
++  icon: string | null;
++  /** His first feast as the registry writes it ("November 13"), the one a name day keeps. */
++  feast: string | null;
++  /** Other forms the search finds him by, never shown (lib/saints/nameForms.ts). */
++  terms: string;
++};
++
++/** What the website answers at /api/saints/patrons. */
++export type ServerPatron = { slug: string; name: string };
++
++const BRIEF = profiledSaints as SaintBrief[];
++const BY_SLUG = new Map(BRIEF.map((s) => [s.slug, s]));
++
++/**
++ * The words of honour before a saint's own name. Only ever taken from the
++ * front, a word at a time, so "and" goes only between two of them ("Holy
++ * Apostle and Evangelist John") and never out of a name ("Cyril and
++ * Methodius").
++ */
++const TITLES = new Set([
++  "the",
++  "most",
++  "holy",
++  "st.",
++  "st",
++  "sts.",
++  "sts",
++  "saint",
++  "saints",
++  "apostle",
++  "apostles",
++  "evangelist",
++  "prophet",
++  "prophetess",
++  "forerunner",
++  "baptist",
++  "archangel",
++  "blessed",
++  "righteous",
++  "venerable",
++  "great",
++  "martyr",
++  "great-martyr",
++  "hieromartyr",
++  "and",
++]);
++
++/** "Holy Apostle and Evangelist John" to "John"; "St. Mary of Egypt" to "Mary of Egypt". */
++export function ownName(name: string): string {
++  const words = name.trim().split(/\s+/);
++  let i = 0;
++  // The last word always stays: a name is never all honour.
++  while (i < words.length - 1 && TITLES.has(words[i].replace(/,$/, "").toLowerCase())) i += 1;
++  return words.slice(i).join(" ");
++}
++
++/** The letter a saint stands under: the first of his own name, its accent off. */
++export function letterOf(own: string): string {
++  const first = fold(own).charAt(0).toUpperCase();
++  return /[A-Z]/.test(first) ? first : "#";
++}
++
++function patronOf(slug: string, name: string): Patron {
++  const brief = BY_SLUG.get(slug);
++  const own = ownName(name);
++  return {
++    slug,
++    name,
++    own,
++    letter: letterOf(own),
++    icon: brief?.iconUrl ?? null,
++    feast: brief?.feastDays[0] ?? null,
++    terms: (KNOWN_FORMS[slug] ?? []).join(" "),
++  };
++}
++
++/** By the saint's own name, then by the name as written (the Apostle John before the Forerunner). */
++export function byOwnName(a: Patron, b: Patron): number {
++  return a.own.localeCompare(b.own, "en", { sensitivity: "base" }) || a.name.localeCompare(b.name, "en");
++}
++
++/**
++ * The saints the chooser offers: every saint of the library in brief the
++ * website will save, by his own name. A saint the website names that this
++ * build does not carry (an older app, a newer website) is left out: the app
++ * has no picture or feast to draw him with, and the reader finds him once the
++ * app is updated.
++ */
++export function patronList(server: readonly ServerPatron[]): Patron[] {
++  const known = new Set(server.map((p) => p.slug));
++  return BRIEF.filter((s) => known.has(s.slug))
++    .map((s) => patronOf(s.slug, s.name))
++    .sort(byOwnName);
++}
++
++/**
++ * The saint a reader has chosen, to show in the chooser's row: from the
++ * library in brief when the build carries him, else by the name the website
++ * gave (on the plate), else null.
++ */
++export function patronFor(slug: string | null | undefined, named?: string | null): Patron | null {
++  if (!slug) return null;
++  const brief = BY_SLUG.get(slug);
++  if (brief) return patronOf(slug, brief.name);
++  return named ? patronOf(slug, named) : null;
++}
++
++/**
++ * The saints a search finds: any part of the name or of a known form, accents
++ * off, so "egypt" finds St. Mary of Egypt and "theologian" the Apostle John
++ * (lib/ui/listbox.ts, filterItems). Those whose own name begins with the words
++ * typed come first, so "john" opens on the Apostle and the Forerunner, not on
++ * Sts. Alexander, John and Paul; each part keeps the list's own order.
++ */
++export function findPatrons(list: readonly Patron[], query: string): Patron[] {
++  const q = fold(query.trim());
++  if (!q) return [...list];
++  const kept = new Set(filterItems(list.map((p) => ({ slug: p.slug, label: p.name, terms: p.terms })), query).map((it) => it.slug));
++  const hits = list.filter((p) => kept.has(p.slug));
++  const first = hits.filter((p) => fold(p.own).startsWith(q));
++  return [...first, ...hits.filter((p) => !first.includes(p))];
++}
++
++/** The list in its letters, for the chooser's headings: [["A", [...]], ["B", [...]], ...]. */
++export function byLetter(list: readonly Patron[]): [string, Patron[]][] {
++  const groups = new Map<string, Patron[]>();
++  for (const p of list) {
++    const group = groups.get(p.letter);
++    if (group) group.push(p);
++    else groups.set(p.letter, [p]);
++  }
++  return [...groups];
++}
+
+base-commit: b98c99c7da6d65d15630b4567636f477cde5f638
+-- 
+2.43.0
+
