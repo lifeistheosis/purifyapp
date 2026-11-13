@@ -1,0 +1,42 @@
+diff --git a/components/saints/MobileWorkPill.tsx b/components/saints/MobileWorkPill.tsx
+index 00c20467..e514689f 100644
+--- a/components/saints/MobileWorkPill.tsx
++++ b/components/saints/MobileWorkPill.tsx
+@@ -279,6 +279,12 @@ function RunningLine({ head, words }: { head: SectionHead; words: readonly numbe
+ 
+   const where = count(head);
+   const text = [where, minutes ? t("bible.minLeft", { min: minutes }) : null].filter(Boolean).join(" · ");
++  // While it folds away it keeps the words it showed. A new chapter is turned
++  // to at its top, where its title folds the line away, and the line taking
++  // the new chapter's words as it went moved 31px sideways under the move
++  // (Chrysostom's "Next: Homily 2" from a chapter's foot, Updates 25's walk).
++  const [shown, setShown] = useState(text);
++  if (show && text && shown !== text) setShown(text);
+   return (
+     <span
+       aria-hidden
+@@ -291,7 +297,7 @@ function RunningLine({ head, words }: { head: SectionHead; words: readonly numbe
+       )}
+     >
+       <span className="max-w-full justify-self-center truncate rounded-pill bg-night px-2.5 py-0.5 font-sans text-eyebrow font-medium leading-[1.35] tabular-nums text-paper/60">
+-        {text}
++        {show && text ? text : shown}
+       </span>
+     </span>
+   );
+diff --git a/lib/bible/__tests__/runningLineGround.test.ts b/lib/bible/__tests__/runningLineGround.test.ts
+index 15dc339d..72614da1 100644
+--- a/lib/bible/__tests__/runningLineGround.test.ts
++++ b/lib/bible/__tests__/runningLineGround.test.ts
+@@ -53,6 +53,11 @@ describe("the running line over the reader's pill", () => {
+     expect(WORK).toMatch(/pill-fade pointer-events-none absolute inset-x-0 -z-10" \/>\s*<RunningLine/);
+   });
+ 
++  it("on a Father's work, keeps the words it showed while it folds away (a new chapter's line moved 31px as it went)", () => {
++    expect(WORK).toMatch(/const \[shown, setShown\] = useState\(text\);\s*if \(show && text && shown !== text\) setShown\(text\);/);
++    expect(WORK).toContain("{show && text ? text : shown}");
++  });
++
+   it("stands where the fade is solid, 4px under its top, the words above going quiet over the same ramp", () => {
+     const line = openLine();
+     expect(RAMP).toBe(127);
