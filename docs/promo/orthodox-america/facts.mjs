@@ -62,3 +62,11 @@ export const LEFT_OUT = [
   ["The round figures, \"about 2,000 parishes\" and \"3,000 members per parish\"", "Replaced by the census's 2,014 and the division shown: 2,979."],
   ["The engine's closing question, and its Google links for states", "Not facts with a source."],
 ];
+
+// Figures the 3D film (3d/) shows that are our own arithmetic on two checked
+// figures above. They are kept apart from FACTS because the first film's
+// render.mjs holds every `show` in FACTS to film.html, and these are not in it.
+// `of` is the division, and 3d/render.mjs --check does it again before any frame.
+export const DERIVED = [
+  { scene: "gap", show: ["27%"], what: "of those on Eastern Orthodox parish rolls are at the Liturgy on a typical Sunday, 2020", src: "appF", of: [183020, 675765], says: "p. 3: 183,020 regular attendees and 675,765 adherents in the Eastern Orthodox Churches. 183,020 divided by 675,765 is 0.2708. The measure is the source's own (p. 3: \"percentage of adherents who are regular attendees\"), which it prints for single Churches and not for all of them together; the division for all of them is ours.", change: "Added for the 3D film's second scene. Both counts are Eastern Orthodox and both from the same census, so the share is like for like." },
+];

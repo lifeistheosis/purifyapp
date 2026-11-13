@@ -1,6 +1,10 @@
-// The signature shot, in real 3D (three.js, WebGL2): the globe turns in space,
-// the camera pushes down through it onto the United States, the six states
-// rise as forms whose height is their share, and the figure lands as they do.
+// The sample's two scenes, in real 3D (three.js, WebGL2). One: the globe turns
+// in space, the camera pushes down through it onto the United States, the six
+// states rise as forms whose height is their share, and the figure lands as
+// they do. Two, with no cut: the camera's drift becomes a rising turn, the
+// forms give their light back as points, one for every hundred people on the
+// rolls, the points gather into a field in the air, most fall away, and those
+// at the Liturgy on a typical Sunday draw together as the share lands.
 //
 // Nothing here runs on a clock. render.mjs asks for frame i and gets the same
 // picture every time, so a stopped render resumes where it stopped.
@@ -14,7 +18,7 @@
 import * as THREE from "three";
 import { feature, mesh as borders } from "topojson-client";
 import { geoEquirectangular, geoPath, geoAlbersUsa } from "d3-geo";
-import { FPS, SECONDS, TITLE, SIX, FIGURE, CAPTION, SOURCE_LINE } from "/words.mjs";
+import { FPS, SECONDS, SCENE_ONE, NUMERALS, TITLE, SIX, FIGURE, CAPTION, SOURCE_LINE, ROLLS, SUNDAY, PEOPLE_A_POINT, SHARE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, KEY } from "/words.mjs";
 
 const QUERY = new URLSearchParams(location.search);
 const S = Number(QUERY.get("size") || 1080); // the frame is S by S
@@ -28,6 +32,15 @@ const CUT = BEAT + WHIP * PEAK; // globe to map, at the push's fastest
 const RISE = 4.0; // the first state starts to rise
 const STAGGER = 0.17, RISE_FOR = 0.75;
 const LANDED = RISE + STAGGER * (SIX.length - 1) + RISE_FOR; // 5.6: the figure reads 47.9
+// Scene two's time. Everything it adds is nothing, and at rest, until GO: no frame of scene one is changed by it.
+const GO = SCENE_ONE; // the hold ends and the camera's drift becomes the move
+const MOVE = 2.2; // the rising turn about the country
+const LIFT_LAG = 0.5, LIFT_FOR = 1.5; // how far apart the points leave, and each one's flight
+const STOOD = GO + LIFT_LAG + LIFT_FOR; // 12.0: the field stands and the count reads the rolls
+const THIN = 14.2, SWEEP = 1.0, STRAGGLE = 0.5, FALL_FOR = 0.5; // the falling away crosses the field from far to near
+const THINNED = THIN + SWEEP + STRAGGLE + FALL_FOR; // 16.2: the count reads a typical Sunday
+const CLOSE_FOR = 0.9, SHARE_AT = THINNED + CLOSE_FOR; // 17.1: those who stay have drawn together and the share lands
+const SWING = 100, TILT_TWO = Number(new URLSearchParams(location.search).get("tilt2") || -2), LIFT_TWO = Number(new URLSearchParams(location.search).get("lift2") || -0.093);
 const R_UNITS = 13; // one Earth radius in map units (us-atlas draws Albers USA at 1300 px a radius; a map unit is 100 px)
 const D_SET = 19.5; // the camera's distance from the map once settled, in map units
 const FOV = 36;
@@ -46,6 +59,8 @@ const outBack = (x, s = 1.15) => 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow
 const RUSH = 3.2, COVERED = 0.76, LAND = (COVERED * RUSH * (1 - PEAK)) / (PEAK * (1 - COVERED));
 const push = (u) => (u <= PEAK ? COVERED * Math.pow(u / PEAK, RUSH) : 1 - (1 - COVERED) * Math.pow((1 - clamp(u)) / (1 - PEAK), LAND));
 const softLine = (x) => (x <= 0 ? 0 : x - (1 - Math.exp(-3 * x)) / 3); // a drift that starts from rest
+const move = (t) => inOutCubic(span(t, GO, GO + MOVE)); // scene two's one move: it starts from the drift's own speed and ends at rest
+const rush = (t) => span(t, GO + 0.3, GO + 0.8) * (1 - span(t, GO + 1.6, GO + MOVE)); // its fast middle
 
 /** The camera's height over the ground, in Earth radii, through both shots. */
 const H_SET = D_SET / R_UNITS;
@@ -57,15 +72,15 @@ function height(t) {
   return h - 0.012 * softLine(t - BEAT - WHIP);
 }
 /** The turn about the line of sight, in degrees: the globe's lean, then the map's bearing. */
-const turn = (t) => 23.4 - 32.4 * push(span(t, BEAT, BEAT + WHIP)) - 5 * (softLine(t - BEAT - WHIP) / softLine(SECONDS - BEAT - WHIP));
+const turn = (t) => 23.4 - 32.4 * push(span(t, BEAT, BEAT + WHIP)) - 5 * (softLine(t - BEAT - WHIP) / softLine(SCENE_ONE - BEAT - WHIP)) - SWING * move(t);
 /** How far the picture is lifted off the frame's centre (a lens shift): the globe sits high, the map low. */
-const lift = (t) => 0.2 * (1 - inOutCubic(span(t, BEAT, CUT))) - 0.34 * inOutCubic(span(t, CUT + 0.05, CUT + 1.4));
-const tilt = (t) => 90 - 52 * inOutCubic(span(t, CUT + 0.05, CUT + 1.4)); // straight down, then a low angle
+const lift = (t) => 0.2 * (1 - inOutCubic(span(t, BEAT, CUT))) - 0.34 * inOutCubic(span(t, CUT + 0.05, CUT + 1.4)) + (LIFT_TWO + 0.34) * move(t);
+const tilt = (t) => 90 - 52 * inOutCubic(span(t, CUT + 0.05, CUT + 1.4)) + TILT_TWO * move(t); // straight down, then a low angle, then a little higher over the field
 /** The lens opening, in the shot's own units: wide while the map tilts (near and far go soft), then stopped down for the words. */
 const openA = () => 0.003;
-const openB = (t) => lerp(0.26, 0.07, inOutCubic(span(t, 4.5, 5.6)));
-const shutter = (t) => lerp(0.5, 0.95, span(t, BEAT + 0.3, BEAT + 0.9) * (1 - span(t, CUT + 0.25, CUT + 0.6))); // of a frame
-const samples = (t) => Math.round(lerp(20, 72, span(t, BEAT + 0.2, BEAT + 0.8) * (1 - span(t, 4.7, 5.5))) + 8 * (1 - span(t, 0, 2.9)));
+const openB = (t) => lerp(0.26, 0.07, inOutCubic(span(t, 4.5, 5.6))) + 0.08 * inOutCubic(span(t, GO, GO + 1)) - 0.04 * inOutCubic(span(t, GO + 1.3, GO + MOVE)) - 0.04 * inOutCubic(span(t, THINNED, SHARE_AT));
+const shutter = (t) => lerp(0.5, 0.95, span(t, BEAT + 0.3, BEAT + 0.9) * (1 - span(t, CUT + 0.25, CUT + 0.6))) + 0.4 * rush(t); // of a frame
+const samples = (t) => Math.round(lerp(20, 72, span(t, BEAT + 0.2, BEAT + 0.8) * (1 - span(t, 4.7, 5.5))) + 8 * (1 - span(t, 0, 2.9)) + 36 * rush(t));
 /** 0 is the globe, 1 is the map; three frames of one dissolving into the other inside the blur. */
 const shotMix = (t) => span(t, CUT - 0.05, CUT + 0.05);
 
@@ -76,6 +91,7 @@ function dice(seed) {
   let a = seed >>> 0;
   return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 }
+const halton = (i, b) => { let f = 1, r = 0; while (i > 0) { f /= b; r += f * (i % b); i = Math.floor(i / b); } return r; }; // an even scatter, the same every time
 
 // ---- The renderer and its buffers ------------------------------------------
 const out = document.getElementById("out");
@@ -121,9 +137,11 @@ const lastPass = filter(`uniform sampler2D src, glow, wide; varying vec2 vUv;
 // ---- Words in space ---------------------------------------------------------
 // A word is drawn once on a canvas (white on black) and used as the opacity of a
 // white plane standing in the scene, so it takes the camera's blur and focus.
-await Promise.all(['400 40px "DM Serif Display"', '400 40px "DM Sans"', '500 40px "DM Sans"'].map((f) => document.fonts.load(f)));
-for (const f of ["DM Serif Display", "DM Sans"]) if (!document.fonts.check(`40px "${f}"`)) throw new Error(`the face ${f} did not load`);
+await Promise.all(['400 40px "DM Serif Display"', '400 40px "DM Sans"', '500 40px "DM Sans"', `${NUMERALS.weight} 40px "${NUMERALS.family}"`].map((f) => document.fonts.load(f)));
+for (const f of ["DM Serif Display", "DM Sans", NUMERALS.family]) if (!document.fonts.check(`40px "${f}"`)) throw new Error(`the face ${f} did not load`);
 const SERIF = '"DM Serif Display"', SANS = '"DM Sans"';
+const NUM = `${NUMERALS.weight} `, NUMFACE = `"${NUMERALS.family}"`; // every figure: `${NUM}${size}px ${NUMFACE}`
+const digitWidths = (() => { const c = document.createElement("canvas").getContext("2d"); c.font = `${NUM}100px ${NUMFACE}`; return [..."0123456789"].map((d) => c.measureText(d).width); })();
 const words = []; // every plane of words, for the checks
 function plane(name, w, h, smallest, draw, ink = [0, 0, w, h]) {
   const cv = document.createElement("canvas"); cv.width = w * 2; cv.height = h * 2;
@@ -276,21 +294,23 @@ const PER_POINT = 2.1 / 10.9; // a form's height above that, in map units for ea
 const LATTICE = `float lattice(vec2 xz, float r){ vec2 f = fract(xz / .25) - .5; float d = length(f) * .25; float aa = (fwidth(xz.x) + fwidth(xz.y)) * .5 + 1e-4; return 1. - smoothstep(r - aa, r + aa, d); }`;
 
 // The ground: the same lattice of points as the globe's land, fading out with distance.
+const DIM = { value: 1 }; // the map's own light: it goes down to nothing as scene two's points take it
 const ground = new THREE.Mesh(new THREE.PlaneGeometry(90, 90).rotateX(-Math.PI / 2), new THREE.ShaderMaterial({
+  uniforms: { dim: DIM },
   vertexShader: "varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position, 1.); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }",
-  fragmentShader: `varying vec3 vW; ${LATTICE} void main(){ float far = 1. - smoothstep(5., 17., length(vW.xz)); gl_FragColor = vec4(vec3(.002 + lattice(vW.xz, .03) * .03 * far), 1.); }`,
+  fragmentShader: `uniform float dim; varying vec3 vW; ${LATTICE} void main(){ float far = 1. - smoothstep(5., 17., length(vW.xz)); gl_FragColor = vec4(vec3(.002 + lattice(vW.xz, .03) * .03 * far) * dim, 1.); }`,
 }));
 sceneB.add(ground);
 
 const stateVert = "varying vec3 vW; varying vec3 vN; void main(){ vec4 w = modelMatrix * vec4(position, 1.); vW = w.xyz; vN = normal; gl_Position = projectionMatrix * viewMatrix * w; }";
-const stateFrag = `uniform float lit, top, flash; varying vec3 vW; varying vec3 vN; ${LATTICE}
+const stateFrag = `uniform float lit, top, flash, dim; varying vec3 vW; varying vec3 vN; ${LATTICE}
   void main(){
     float up = step(.5, vN.y);
     float low = mix(.016, .010 + .04 * flash + lattice(vW.xz, mix(.03, .068, flash)) * mix(.15, 1.7, flash), up);
     float k = clamp(vW.y / max(top, 1e-3), 0., 1.);
     float wall = mix(.02, .46, pow(k, 1.7)) * (.9 + .1 * abs(dot(normalize(vN.xz + 1e-5), normalize(vec2(-.55, .83)))));
     float high = mix(wall, 1.5, up);
-    gl_FragColor = vec4(vec3(mix(low, high, lit)), 1.);
+    gl_FragColor = vec4(vec3(mix(low, high, lit)) * dim, 1.);
   }`;
 const poolMat = () => new THREE.ShaderMaterial({
   transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: { power: { value: 0 } },
@@ -302,7 +322,7 @@ const states = new Map();
 for (const st of MAP.states) {
   const rings = st.d.split("Z").filter(Boolean).map((r) => r.slice(1).split("L").map((p) => p.split(",").map(Number)).map(([x, y]) => [(x - 487.5) / 100, (y - 305) / 100]));
   const geo = new THREE.ExtrudeGeometry(rings.map((r) => new THREE.Shape(r.map(([x, z]) => new THREE.Vector2(x, -z)))), { depth: 1, bevelEnabled: false }).rotateX(-Math.PI / 2);
-  const mat = new THREE.ShaderMaterial({ vertexShader: stateVert, fragmentShader: stateFrag, uniforms: { lit: { value: 0 }, top: { value: BASE }, flash: { value: 0 } } });
+  const mat = new THREE.ShaderMaterial({ vertexShader: stateVert, fragmentShader: stateFrag, uniforms: { lit: { value: 0 }, top: { value: BASE }, flash: { value: 0 }, dim: DIM } });
   const group = new THREE.Group();
   group.add(new THREE.Mesh(geo, mat));
   const edge = new THREE.LineBasicMaterial({ color: 0xffffff });
@@ -319,7 +339,8 @@ for (const st of MAP.states) {
     for (let i = 0; i < r.length; i++) { const [x0, z0] = r[i], [x1, z1] = r[(i + 1) % r.length], f = x0 * z1 - x1 * z0; a += f; cx += (x0 + x1) * f; cz += (z0 + z1) * f; }
     if (!best || Math.abs(a) > Math.abs(best.a)) best = { a, x: cx / (3 * a), z: cz / (3 * a), reach: Math.max(...r.map(([x, z]) => Math.hypot(x - cx / (3 * a), z - cz / (3 * a)))) };
   }
-  states.set(st.id, { group, mat, edge, ...best });
+  const flatRings = rings.flat();
+  states.set(st.id, { group, mat, edge, rings, box: [Math.min(...flatRings.map((p) => p[0])), Math.min(...flatRings.map((p) => p[1])), Math.max(...flatRings.map((p) => p[0])), Math.max(...flatRings.map((p) => p[1]))], ...best });
 }
 const EDGE_LOW = 0.085;
 for (const s of states.values()) s.edge.color.setScalar(EDGE_LOW);
@@ -329,9 +350,11 @@ const albers = geoAlbersUsa().scale(1300).translate([487.5, 305]);
 const [ux, uy] = albers([-97, 38.5]);
 const T0 = new THREE.Vector3((ux - 487.5) / 100, 0, (uy - 305) / 100); // where the globe's centre was: under the camera at the cut
 const T1 = new THREE.Vector3(0.05, 0, 0.1);
+const Y_FIELD = 3.0, R_FIELD = 4.5; // scene two: how high over the map the field stands, and its reach
 function cameraB(t, cam) {
   const e = inOutCubic(span(t, CUT + 0.05, CUT + 1.4));
   const at = T0.clone().lerp(T1, e);
+  at.y += Y_FIELD * move(t); // scene two: the camera rises with the points it follows
   qa.setFromAxisAngle(Y_AXIS, THREE.MathUtils.degToRad(-turn(t)));
   qb.setFromAxisAngle(X_AXIS, THREE.MathUtils.degToRad(-tilt(t)));
   cam.quaternion.copy(qa).multiply(qb);
@@ -356,7 +379,7 @@ const six = SIX.map((s, i) => {
   const label = plane(`label ${s.name}`, 260, 96, 30, (ctx) => {
     ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
     ctx.font = `500 30px ${SANS}`; ctx.fillText(s.name, 130, 32); half = ctx.measureText(s.name).width / 2;
-    ctx.font = `400 48px ${SERIF}`; ctx.fillText(`${s.share.toFixed(1)}%`, 130, 84); half = Math.max(half, ctx.measureText(`${s.share.toFixed(1)}%`).width / 2);
+    ctx.font = `${NUM}48px ${NUMFACE}`; ctx.fillText(`${s.share.toFixed(1)}%`, 130, 84); half = Math.max(half, ctx.measureText(`${s.share.toFixed(1)}%`).width / 2);
   });
   label.ink = [130 - half - 3, 4, 130 + half + 3, 92];
   sceneB.add(label.mesh);
@@ -390,8 +413,8 @@ function placeLabel(s, top) {
 const FIG_W = 1000, FIG_H = 330;
 const figure = plane("figure", FIG_W, FIG_H, 36, (ctx, value = 0, caption = 0) => {
   ctx.textBaseline = "alphabetic";
-  ctx.font = `400 208px ${SERIF}`;
-  // Each digit in a cell of its own, so the number does not shiver as it counts.
+  ctx.font = `${NUM}208px ${NUMFACE}`;
+  // Each digit in a cell of its own; the face's digits are all one width, so the cells are the face's own.
   const text = value.toFixed(1), cell = ctx.measureText("0").width, dot = ctx.measureText(".").width, pct = ctx.measureText("%").width;
   const width = [...text].reduce((w, ch) => w + (ch === "." ? dot : cell), 0) + pct + 6;
   let x = FIG_W / 2 - width / 2;
@@ -404,6 +427,150 @@ figure.mesh.quaternion.copy(facing.quaternion);
 figure.mesh.scale.setScalar(UNIT);
 figure.mesh.position.copy(T1).addScaledVector(faceUp, FIG_UP * UNIT);
 sceneB.add(figure.mesh);
+
+// ============================================================================
+// Scene two: the gap. The same scene and the same camera as the map: no cut.
+// ============================================================================
+const CENTRE = T1.clone().setY(Y_FIELD); // the middle of the field
+const FACE2_AT = 17.6; // the moment scene two's words stand square to the camera
+const facing2 = new THREE.PerspectiveCamera(FOV, 1, 0.1, 300);
+const FACE2_D = cameraB(FACE2_AT, facing2);
+facing2.updateMatrixWorld();
+const right2 = new THREE.Vector3(1, 0, 0).applyQuaternion(facing2.quaternion), up2 = new THREE.Vector3(0, 1, 0).applyQuaternion(facing2.quaternion), fwd2 = new THREE.Vector3(0, 0, -1).applyQuaternion(facing2.quaternion);
+const UNIT2 = FACE2_D / PX;
+
+// One point of light for every hundred people: 6,758 on the rolls, 1,830 on a typical Sunday.
+const N_ROLLS = Math.round(ROLLS / PEOPLE_A_POINT), N_SUNDAY = Math.round(SUNDAY / PEOPLE_A_POINT);
+const inside = (rings, x, z) => { let c = false; for (const r of rings) for (let i = 0, j = r.length - 1; i < r.length; j = i++) { const [xi, zi] = r[i], [xj, zj] = r[j]; if ((zi > z) !== (zj > z) && x < ((xj - xi) * (z - zi)) / (zj - zi) + xi) c = !c; } return c; };
+const people = (() => {
+  // Where each point stands in the field: a lattice of equal triangles, and of it the N nearest the middle.
+  const pitch = Math.sqrt((Math.PI * R_FIELD * R_FIELD) / N_ROLLS / (Math.sqrt(3) / 2)), rowGap = (pitch * Math.sqrt(3)) / 2;
+  const reach = Math.ceil((R_FIELD * 1.2) / rowGap), lattice = [];
+  for (let j = -reach; j <= reach; j++) for (let i = -reach; i <= reach; i++) { const x = (i + (j & 1) * 0.5) * pitch, z = j * rowGap; lattice.push({ x, z, r: Math.hypot(x, z) }); }
+  lattice.sort((a, b) => a.r - b.r || Math.atan2(a.z, a.x) - Math.atan2(b.z, b.x));
+  const sites = lattice.slice(0, N_ROLLS);
+  // Where each point leaves the map. The six states give their checked shares of the points, from the tops
+  // of their forms; no other state has a checked figure, so the rest leave evenly from the other states.
+  const origins = [];
+  let rest = N_ROLLS;
+  for (const s of six) {
+    const n = Math.round((s.share / 100) * N_ROLLS), [x0, z0, x1, z1] = s.st.box;
+    for (let k = 1, got = 0; got < n; k++) { const x = lerp(x0, x1, halton(k, 2)), z = lerp(z0, z1, halton(k, 3)); if (inside(s.st.rings, x, z)) { origins.push({ x, y: s.full + 0.012, z, six: 1 }); got++; } }
+    rest -= n;
+  }
+  const others = [...states.entries()].filter(([id]) => !SIX.some((s) => s.id === id)).map(([, st]) => st);
+  const all = [Math.min(...others.map((st) => st.box[0])), Math.min(...others.map((st) => st.box[1])), Math.max(...others.map((st) => st.box[2])), Math.max(...others.map((st) => st.box[3]))];
+  for (let k = 1, got = 0; got < rest; k++) {
+    const x = lerp(all[0], all[2], halton(k, 2)), z = lerp(all[1], all[3], halton(k, 3));
+    if (others.some((st) => x >= st.box[0] && x <= st.box[2] && z >= st.box[1] && z <= st.box[3] && inside(st.rings, x, z))) { origins.push({ x, y: BASE + 0.012, z, six: 0 }); got++; }
+  }
+  // Each point goes to the site that keeps its place among the others (west stays west, north stays north), so no two paths cross.
+  const ranked = (list) => { const per = Math.ceil(list.length / Math.ceil(Math.sqrt(list.length))), byX = [...list].sort((a, b) => a.x - b.x), out = []; for (let i = 0; i < byX.length; i += per) out.push(...byX.slice(i, i + per).sort((a, b) => a.z - b.z)); return out; };
+  const from = ranked(origins), to = ranked(sites);
+  // Who stays: 1,830 of the 6,758, drawn by a fixed dice from all over the field, since the source parts them by no place.
+  const roll = dice(183020), order = from.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(roll() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+  const stays = new Uint8Array(N_ROLLS); for (let i = 0; i < N_SUNDAY; i++) stays[order[i]] = 1;
+  // Those who stay draw together: each to the free site nearest to where a plain drawing in would put it.
+  const shrink = Math.sqrt(N_SUNDAY / N_ROLLS), free = sites.slice(0, N_SUNDAY).map((s) => ({ x: s.x, z: s.z, taken: false })), inner = new Array(N_ROLLS);
+  for (const i of [...order.slice(0, N_SUNDAY)].sort((a, b) => to[a].r - to[b].r)) {
+    let best = -1, bestD = Infinity;
+    for (let k = 0; k < free.length; k++) { if (free[k].taken) continue; const d = (free[k].x - to[i].x * shrink) ** 2 + (free[k].z - to[i].z * shrink) ** 2; if (d < bestD) { bestD = d; best = k; } }
+    free[best].taken = true; inner[i] = free[best];
+  }
+  const fx = fwd2.x / Math.hypot(fwd2.x, fwd2.z), fz = fwd2.z / Math.hypot(fwd2.x, fwd2.z);
+  const pos = new Float32Array(N_ROLLS * 3), site = new Float32Array(N_ROLLS * 3), close = new Float32Array(N_ROLLS * 3), how = new Float32Array(N_ROLLS * 4);
+  const leaves = [], falls = [];
+  for (let i = 0; i < N_ROLLS; i++) {
+    const o = from[i], s = to[i], seed = roll();
+    pos.set([o.x, o.y, o.z], i * 3);
+    site.set([CENTRE.x + s.x, Y_FIELD, CENTRE.z + s.z], i * 3);
+    const c = stays[i] ? inner[i] : s; close.set([CENTRE.x + c.x, Y_FIELD, CENTRE.z + c.z], i * 3);
+    const leave = (o.six ? 0 : 0.15) + roll() * (LIFT_LAG - 0.15); // the six states' points leave first
+    const far = (s.x * fx + s.z * fz) / R_FIELD; // 1 at the far edge, -1 at the near one
+    const then = stays[i] ? roll() * 0.25 : SWEEP * (1 - (far + 1) / 2) + STRAGGLE * roll();
+    how.set([leave, then, stays[i], seed], i * 4);
+    leaves.push(leave); if (!stays[i]) falls.push(then);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3)); geo.setAttribute("site", new THREE.BufferAttribute(site, 3));
+  geo.setAttribute("close", new THREE.BufferAttribute(close, 3)); geo.setAttribute("how", new THREE.BufferAttribute(how, 4));
+  const f = (x) => x.toFixed(4);
+  const mat = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: { t: { value: 0 }, px: { value: PX * K }, k: { value: K }, centre: { value: CENTRE } },
+    vertexShader: `attribute vec3 site, close; attribute vec4 how; uniform float t, px, k; uniform vec3 centre; varying float vA;
+      float io(float x){ x = clamp(x, 0., 1.); return x < .5 ? 4. * x * x * x : 1. - pow(-2. * x + 2., 3.) / 2.; }
+      void main(){
+        float e = io((t - ${f(GO)} - how.x) / ${f(LIFT_FOR)}), arc = sin(e * 3.14159265);
+        vec3 p = mix(position, site, e);
+        p.y += arc * (.45 + 1.0 * how.w);                       // each rises a little past the field and settles into it
+        float a = arc * .55 * (.35 + how.w);                    // and curls about the middle on its way
+        vec2 d = p.xz - centre.xz; p.xz = centre.xz + vec2(cos(a) * d.x - sin(a) * d.y, sin(a) * d.x + cos(a) * d.y);
+        float shown = smoothstep(0., .3, t - ${f(GO)} - how.x * .6), light = mix(1.0, 1.12, e), size = .022;
+        if (how.z < .5) { float fall = clamp((t - ${f(THIN)} - how.y) / ${f(FALL_FOR)}, 0., 1.); p.y -= fall * fall * 1.3; shown *= 1. - smoothstep(.1, .95, fall); }
+        else { float c = io((t - ${f(THINNED)} - how.y) / ${f(CLOSE_FOR - 0.25)}); p = mix(p, close, c); light = mix(light, 2.1, c); size = mix(size, .026, c); }
+        vec4 v = modelViewMatrix * vec4(p, 1.);
+        float wide = 2. * size * px / max(-v.z, .5), least = 1.6 * k;
+        gl_PointSize = max(wide, least);
+        vA = shown * light * min(1., (wide * wide) / (least * least));
+        gl_Position = projectionMatrix * v;
+      }`,
+    fragmentShader: "varying float vA; void main(){ float d = length(gl_PointCoord - .5) * 2.; gl_FragColor = vec4(vec3(vA * (1. - smoothstep(.55, 1., d))), 1.); }",
+  });
+  const points = new THREE.Points(geo, mat); points.frustumCulled = false; points.renderOrder = 5; points.visible = false; sceneB.add(points);
+  // The edge of the full field, a fine ring: it stays when the points fall, so the eye keeps the size of the rolls.
+  const edge = R_FIELD + pitch * 0.9;
+  const ring = new THREE.Mesh(new THREE.RingGeometry(edge, edge + 0.024, 256).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide }));
+  ring.material.color.setScalar(0.42); ring.position.copy(CENTRE); ring.renderOrder = 4; ring.visible = false; sceneB.add(ring);
+  leaves.sort((a, b) => a - b); falls.sort((a, b) => a - b);
+  const before = (sorted, x) => { let lo = 0, hi = sorted.length; while (lo < hi) { const mid = (lo + hi) >> 1; if (sorted[mid] <= x) lo = mid + 1; else hi = mid; } return lo; };
+  /** The count at time t: it rises with the points that have reached the field, then falls with those that have left it. */
+  const count = (t) => {
+    if (t >= THINNED) return SUNDAY;
+    if (t >= THIN) return Math.round(ROLLS - (ROLLS - SUNDAY) * (before(falls, t - THIN - FALL_FOR * 0.5) / falls.length));
+    if (t >= STOOD) return ROLLS;
+    return Math.round(ROLLS * (before(leaves, t - GO - LIFT_FOR * 0.92) / leaves.length));
+  };
+  return { points, mat, ring, count, fromSix: origins.filter((o) => o.six).length };
+})();
+
+// The count: in the air over the far edge of the field. Seven cells that never move, so the figure runs like a counter.
+const count = plane("count", FIG_W, FIG_H, 37, (ctx, value = 0, rolls = 0, sunday = 0) => {
+  ctx.textBaseline = "alphabetic"; ctx.font = `${NUM}196px ${NUMFACE}`;
+  const text = value.toLocaleString("en-US").padStart(7, " "), cell = ctx.measureText("0").width, comma = ctx.measureText(",").width;
+  let x = FIG_W / 2 - (6 * cell + comma) / 2;
+  ctx.textAlign = "center";
+  [...text].forEach((ch, i) => { const w = i === 3 ? comma : cell; if (ch !== " ") ctx.fillText(ch, x + w / 2, 212); x += w; }); // the fourth cell is the comma's
+  ctx.font = `400 37px ${SANS}`; ctx.textAlign = "center";
+  ctx.globalAlpha = rolls; ctx.fillText(CAPTION_ROLLS, FIG_W / 2, 292 + (1 - rolls) * 10);
+  ctx.globalAlpha = sunday; ctx.fillText(CAPTION_SUNDAY, FIG_W / 2, 292 + (1 - sunday) * 10); ctx.globalAlpha = 1;
+}, [40, 40, FIG_W - 40, 310]);
+const COUNT_UP = Number(QUERY.get("countup") || 405); // the count's middle, in px above the middle of the field
+count.mesh.quaternion.copy(facing2.quaternion);
+count.mesh.scale.setScalar(UNIT2);
+count.mesh.position.copy(CENTRE).addScaledVector(up2, COUNT_UP * UNIT2);
+count.mesh.material.opacity = 0;
+sceneB.add(count.mesh);
+
+// The share: it stands at the near edge of those who stayed.
+const SHARE_W = 440, SHARE_H = 120;
+let shareHalf = 0;
+const share = plane("share", SHARE_W, SHARE_H, 34, (ctx) => {
+  ctx.textBaseline = "alphabetic"; ctx.textAlign = "left";
+  ctx.font = `${NUM}104px ${NUMFACE}`; const w1 = ctx.measureText(`${SHARE}%`).width;
+  ctx.font = `500 34px ${SANS}`; const w2 = ctx.measureText(SHARE_LINE).width, gap = 18;
+  shareHalf = (w1 + gap + w2) / 2; const x = SHARE_W / 2 - shareHalf;
+  ctx.font = `${NUM}104px ${NUMFACE}`; ctx.fillText(`${SHARE}%`, x, 100);
+  ctx.font = `500 34px ${SANS}`; ctx.fillText(SHARE_LINE, x + w1 + gap, 100);
+});
+share.ink = [SHARE_W / 2 - shareHalf - 4, 20, SHARE_W / 2 + shareHalf + 4, 108];
+const SHARE_DOWN = Number(QUERY.get("sharedown") || 240); // its middle, in px below the middle of the field
+share.mesh.quaternion.copy(facing2.quaternion);
+share.mesh.position.copy(CENTRE).addScaledVector(up2, -SHARE_DOWN * UNIT2);
+share.mesh.material.opacity = 0;
+sceneB.add(share.mesh);
+if (Math.round((SUNDAY / ROLLS) * 100) !== Number(SHARE)) throw new Error("the share is not the two counts divided");
 
 // Motes of dust near the lens, far out of focus: drawn once a frame as soft discs the size the lens would give them.
 const DUST = 46;
@@ -428,24 +595,37 @@ const dust = (() => {
 function poseB(t) {
   const d = cameraB(t, camB);
   // The country comes through the cut as bright as the globe showed it, then cools as the six take the light.
-  const flash = 1 - inOutCubic(span(t, CUT + 0.05, CUT + 1.0));
-  for (const s of states.values()) { s.mat.uniforms.flash.value = flash; s.edge.color.setScalar(lerp(EDGE_LOW, 0.5, flash)); }
+  // Scene two: the map's points wake, the six give their height and their light back, and the map goes down to nothing under the field.
+  const wake = inOutCubic(span(t, GO, GO + 0.5)), sink = inOutCubic(span(t, GO, GO + 0.9)), given = inOutCubic(span(t, GO, GO + 0.6)), gone = 1 - span(t, GO, GO + 0.35);
+  const dim = 1 - inOutCubic(span(t, GO + 0.5, GO + MOVE - 0.2));
+  DIM.value = dim; ground.visible = dim > 0;
+  const flash = Math.min(1, 1 - inOutCubic(span(t, CUT + 0.05, CUT + 1.0)) + 0.6 * wake);
+  for (const s of states.values()) { s.group.visible = dim > 0; s.mat.uniforms.flash.value = flash; s.edge.color.setScalar(lerp(EDGE_LOW, 0.5, flash) * dim); }
   let sum = 0;
   for (const s of six) {
-    const p = rise(s.i, t), up = p <= 0 ? 0 : outBack(p), lit = clamp(p * 3.2);
+    const p = rise(s.i, t), up = (p <= 0 ? 0 : outBack(p)) * (1 - sink), lit = clamp(p * 3.2) * (1 - given);
     const top = BASE + s.share * PER_POINT * up;
     s.st.group.scale.y = top; s.st.mat.uniforms.top.value = top; s.st.mat.uniforms.lit.value = lit;
-    s.st.edge.color.setScalar(lerp(EDGE_LOW, 1, lit));
-    s.pool.material.uniforms.power.value = 0.12 * clamp(p * 2) * (1 + 0.5 * (1 - span(p, 0.3, 1)));
+    s.st.edge.color.setScalar(t <= GO ? lerp(EDGE_LOW, 1, lit) : Math.max(lerp(EDGE_LOW, 1, lit), lerp(EDGE_LOW, 0.5, flash)) * dim);
+    s.pool.visible = dim > 0; s.pool.material.uniforms.power.value = 0.12 * clamp(p * 2) * (1 + 0.5 * (1 - span(p, 0.3, 1))) * (1 - sink);
     placeLabel(s, top);
     const shown = span(t, RISE + s.i * STAGGER + 0.28, RISE + s.i * STAGGER + 0.62);
-    s.label.mesh.material.opacity = inOutCubic(shown);
+    s.label.mesh.material.opacity = inOutCubic(shown) * gone;
     s.label.mesh.position.addScaledVector(faceUp, -(1 - outCubic(shown)) * 26 * UNIT);
-    s.pin.material.opacity = 0.85 * inOutCubic(shown);
+    s.pin.material.opacity = 0.85 * inOutCubic(shown) * gone;
     sum += s.share * outCubic(p);
   }
   const arrive = span(t, RISE + 0.42, RISE + 0.8), settle = span(t, LANDED - 0.05, LANDED + 0.3);
-  figure.mesh.material.opacity = inOutCubic(arrive);
+  figure.mesh.material.opacity = inOutCubic(arrive) * (1 - inOutCubic(span(t, GO + 0.05, GO + 0.6)));
+  // The people, the ring that keeps the size of the rolls, and scene two's words.
+  people.points.visible = t > GO; people.mat.uniforms.t.value = t;
+  people.ring.material.opacity = inOutCubic(span(t, THIN + 0.2, THINNED)); people.ring.visible = t > THIN + 0.2;
+  const read = span(t, STOOD - 0.55, STOOD - 0.15), landed2 = span(t, STOOD - 0.02, STOOD + 0.3), sunday2 = span(t, THINNED - 0.02, THINNED + 0.3);
+  count.mesh.material.opacity = inOutCubic(read);
+  count.mesh.scale.setScalar(UNIT2 * (lerp(1.1, 1, outCubic(read)) + 0.02 * Math.sin(Math.PI * landed2) * (1 - landed2) + 0.02 * Math.sin(Math.PI * sunday2) * (1 - sunday2)));
+  const lands = span(t, SHARE_AT - 0.1, SHARE_AT + 0.25), settles = span(t, SHARE_AT + 0.2, SHARE_AT + 0.55);
+  share.mesh.material.opacity = inOutCubic(lands);
+  share.mesh.scale.setScalar(UNIT2 * (lerp(1.14, 1, outCubic(lands)) + 0.02 * Math.sin(Math.PI * settles) * (1 - settles)));
   figure.mesh.scale.setScalar(UNIT * (lerp(1.12, 1, outCubic(arrive)) + 0.022 * Math.sin(Math.PI * settle) * (1 - settle)));
   return { cam: camB, focus: d, open: openB(t), sum };
 }
@@ -458,12 +638,25 @@ function drawFigure(t) {
   const caption = inOutCubic(span(t, LANDED - 0.05, LANDED + 0.4));
   const key = `${value.toFixed(1)} ${caption.toFixed(3)}`;
   if (key !== drawn) { figure.redraw(value, caption); drawn = key; }
+  if (t > GO) {
+    const rolls = inOutCubic(span(t, STOOD - 0.3, STOOD + 0.1)) * (1 - inOutCubic(span(t, THIN + 0.05, THIN + 0.4))), sunday = inOutCubic(span(t, THINNED - 0.25, THINNED + 0.15));
+    const key2 = `${people.count(t)} ${rolls.toFixed(3)} ${sunday.toFixed(3)}`;
+    if (key2 !== drawn2) { count.redraw(people.count(t), rolls, sunday); drawn2 = key2; }
+  }
+}
+let drawn2 = "";
+/** The key to the points, flat on the glass over the source: its figure in the numerals' face. */
+function keyLine(alpha, measureOnly = false) {
+  let x = 44 * K; const y = S - 86 * K;
+  pen.save(); pen.globalAlpha = alpha; pen.fillStyle = "#d6d6d6"; pen.textAlign = "left"; pen.textBaseline = "alphabetic";
+  KEY.forEach((piece, i) => { pen.font = i === 1 ? `${NUM}${32 * K}px ${NUMFACE}` : `400 ${30 * K}px ${SANS}`; if (!measureOnly) pen.fillText(piece, x, y); x += pen.measureText(piece).width; });
+  pen.restore();
+  return x;
 }
 if (Math.abs(SIX.reduce((n, s) => n + s.share, 0) - Number(FIGURE)) > 0.051) throw new Error("the six shares do not add up to the figure");
 
 // ---- One frame --------------------------------------------------------------
 const coprime = (n) => { const gcd = (a, b) => (b ? gcd(b, a % b) : a); let p = Math.max(1, Math.round(n * 0.618)); while (gcd(p, n) !== 1) p++; return p; };
-const halton = (i, b) => { let f = 1, r = 0; while (i > 0) { f /= b; r += f * (i % b); i = Math.floor(i / b); } return r; };
 const right = new THREE.Vector3(), upv = new THREE.Vector3();
 let hideWords = false;
 
@@ -488,7 +681,7 @@ function drawFrame(t, quality = 1) {
     right.set(1, 0, 0).applyQuaternion(cam.quaternion); upv.set(0, 1, 0).applyQuaternion(cam.quaternion);
     cam.position.addScaledVector(right, ox).addScaledVector(upv, oy);
     cam.updateMatrixWorld(true);
-    for (const w of words) w.mesh.visible = !hideWords;
+    for (const w of words) w.mesh.visible = !hideWords && w.mesh.material.opacity > 0.001;
     for (const s of six) s.pin.visible = !hideWords;
     renderer.setRenderTarget(rtScene); renderer.clear();
     renderer.render(useB ? sceneB : sceneA, cam);
@@ -496,7 +689,7 @@ function drawFrame(t, quality = 1) {
     addPass.run(rtSum, false);
   }
   // The dust, once, through the middle of the lens.
-  const mix = shotMix(t);
+  const mix = shotMix(t) * (1 - span(t, GO + 0.2, GO + 1.2));
   if (mix > 0) {
     const { focus, open: lens } = poseB(t);
     camB.updateProjectionMatrix(); camB.projectionMatrix.elements[9] -= lift(t); camB.updateMatrixWorld(true);
@@ -520,11 +713,14 @@ function drawFrame(t, quality = 1) {
     pen.save(); pen.globalAlpha = src; pen.fillStyle = "#d6d6d6"; pen.textAlign = "left"; pen.textBaseline = "alphabetic";
     pen.font = `400 ${30 * K}px ${SANS}`; pen.fillText(SOURCE_LINE, 44 * K, S - 42 * K); pen.restore();
   }
+  const keyed = hideWords ? 0 : inOutCubic(span(t, STOOD, STOOD + 0.4));
+  if (keyed > 0) keyLine(keyed);
   return n;
 }
 
 // ---- What render.mjs calls ---------------------------------------------------
-window.__info = { fps: FPS, seconds: SECONDS, frames: FPS * SECONDS, size: S, landed: LANDED, cut: CUT, beat: BEAT, renderer: renderer.getContext().getParameter(renderer.getContext().getExtension("WEBGL_debug_renderer_info").UNMASKED_RENDERER_WEBGL) };
+window.__info = { fps: FPS, seconds: SECONDS, frames: FPS * SECONDS, size: S, landed: LANDED, cut: CUT, beat: BEAT, go: GO, stood: STOOD, thin: THIN, thinned: THINNED, shareAt: SHARE_AT,
+  points: N_ROLLS, stay: N_SUNDAY, fromSix: people.fromSix, digitWidths, count: [GO, STOOD - 0.01, STOOD, THIN, THINNED - 0.01, THINNED, SECONDS].map((t) => people.count(t)), renderer: renderer.getContext().getParameter(renderer.getContext().getExtension("WEBGL_debug_renderer_info").UNMASKED_RENDERER_WEBGL) };
 window.__frame = (i, quality = 1) => { const n = drawFrame(i / FPS, quality); return { n, png: out.toDataURL("image/png") }; };
 window.__still = (t, quality = 1) => { drawFrame(t, quality); return out.toDataURL("image/png"); };
 /** Every plane of words at time t: where it is on screen, its smallest letters in px, and the brightest ground behind it. */
@@ -554,6 +750,7 @@ window.__words = (t, quality = 0.5) => {
     measure(w.name, Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys), (w.smallest * tall) / K, w.mesh.material.opacity);
   }
   if (t >= LANDED + 0.55) { pen.font = `400 ${30 * K}px ${SANS}`; measure("source", 44 * K, S - 72 * K, 44 * K + pen.measureText(SOURCE_LINE).width, S - 34 * K, 30, 1); }
+  if (t >= STOOD + 0.4) measure("key", 44 * K, S - 116 * K, keyLine(1, true), S - 78 * K, 30, 1);
   return found;
 };
 window.__ready = true;

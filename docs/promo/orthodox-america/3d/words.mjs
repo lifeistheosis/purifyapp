@@ -3,7 +3,14 @@
 // number is typed once and stands on the source the first film checked.
 
 export const FPS = 30;
-export const SECONDS = 10;
+export const SCENE_ONE = 10; // seconds: the first scene's hold ends here and its drift becomes the move into the second
+export const SECONDS = 20;
+
+// One face for every figure in the film (his word, 2026-11-13: "id change the # font").
+// Archivo Narrow by Omnibus-Type, SIL Open Font Licence 1.1, from @fontsource/archivo-narrow.
+// Its figures are lining and all one width as drawn, with no feature to switch on:
+// render.mjs --check measures the ten digits and refuses the face if they differ.
+export const NUMERALS = { family: "Archivo Narrow", weight: 600, by: "Omnibus-Type", licence: "SIL Open Font Licence 1.1", from: "@fontsource/archivo-narrow" };
 
 export const TITLE = ["Orthodox Christians in America", "BY THE NUMBERS"];
 
@@ -21,3 +28,16 @@ export const SIX = [
 export const FIGURE = "47.9";
 export const CAPTION = "of those on Eastern Orthodox rolls live in six states.";
 export const SOURCE_LINE = "Source: U.S. Religion Census 2020, Appendix F";
+
+// Scene two, the gap. The same source, p. 3 (facts.mjs, scene "gap"): 675,765
+// adherents of Eastern Orthodox parishes and 183,020 regular attendees, 2020.
+// The share is the source's own measure ("percentage of adherents who are
+// regular attendees"); the division is ours (facts.mjs, DERIVED).
+export const ROLLS = 675765;
+export const SUNDAY = 183020;
+export const PEOPLE_A_POINT = 100; // one point of light stands for this many people
+export const SHARE = "27";
+export const CAPTION_ROLLS = "on Eastern Orthodox parish rolls.";
+export const CAPTION_SUNDAY = "at the Liturgy on a typical Sunday.";
+export const SHARE_LINE = "of the rolls";
+export const KEY = ["One point of light is ", "100", " people."]; // the figure in the middle takes the numerals' face

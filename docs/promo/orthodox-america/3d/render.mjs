@@ -10,15 +10,17 @@
 //
 // Needs Playwright with its Chromium, ffmpeg, and the tools in
 // .promo/orthodox-america-3d/tools (npm install three world-atlas us-atlas
-// topojson-client d3-geo @fontsource/dm-serif-display @fontsource/dm-sans there).
+// topojson-client d3-geo @fontsource/dm-serif-display @fontsource/dm-sans @fontsource/archivo-narrow there).
+//
+//   --stills also takes --strip: the stills side by side in one small picture, for reading a move.
 import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
-import { FACTS } from "../facts.mjs";
-import { FPS, SECONDS, SIX, FIGURE, CAPTION, SOURCE_LINE, TITLE } from "./words.mjs";
+import { FACTS, DERIVED } from "../facts.mjs";
+import { FPS, SECONDS, SCENE_ONE, NUMERALS, SIX, FIGURE, CAPTION, SOURCE_LINE, TITLE, ROLLS, SUNDAY, PEOPLE_A_POINT, SHARE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, KEY } from "./words.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../../../..");
@@ -58,7 +60,18 @@ for (const s of SIX) {
   if (!said.includes(`${s.name} (${s.share.toFixed(1)}%)`)) problems.push(`the source's words do not give ${s.name} ${s.share}%`);
 }
 if (Math.abs(SIX.reduce((n, s) => n + s.share, 0) - Number(FIGURE)) > 0.051) problems.push("the six shares do not add up to the figure");
-for (const line of [CAPTION, SOURCE_LINE, ...TITLE]) if (/[–—]/.test(line)) problems.push(`a dash in "${line}"`);
+// Scene two: the two counts as the first film checked them, and the share as the two divided.
+const gap = FACTS.filter((f) => f.scene === "gap"), gapShown = gap.flatMap((f) => f.show), gapSaid = gap.map((f) => f.says).join(" ");
+for (const n of [ROLLS, SUNDAY]) {
+  if (!gapShown.includes(String(n))) problems.push(`facts.mjs does not show ${n}`);
+  if (!gapSaid.includes(n.toLocaleString("en-US"))) problems.push(`the source's words do not give ${n.toLocaleString("en-US")}`);
+}
+const derived = DERIVED.find((d) => d.show.includes(`${SHARE}%`));
+if (!derived) problems.push(`facts.mjs (DERIVED) does not show ${SHARE}%`);
+else if (Math.round((derived.of[0] / derived.of[1]) * 100) !== Number(SHARE) || derived.of[0] !== SUNDAY || derived.of[1] !== ROLLS) problems.push(`${SHARE}% is not ${SUNDAY} divided by ${ROLLS}`);
+if (Number(KEY[1]) !== PEOPLE_A_POINT) problems.push("the key does not say what a point stands for");
+if (!fs.readFileSync(path.join(TOOLS, NUMERALS.from, "package.json"), "utf8").includes('"OFL-1.1"')) problems.push(`${NUMERALS.family} is not under the Open Font Licence`);
+for (const line of [CAPTION, SOURCE_LINE, ...TITLE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, ...KEY]) if (/[–—]/.test(line)) problems.push(`a dash in "${line}"`);
 
 // ---- The page, served from this folder and the tools -----------------------
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".mjs": "text/javascript", ".json": "application/json", ".woff2": "font/woff2" };
@@ -100,6 +113,10 @@ if (mode === "--stills") {
     execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-i", path.join(dir, `${name}.png`), "-vf", "scale=390:390:flags=area", path.join(dir, `${name}-phone.png`)]);
     console.log(`${name}: ${((Date.now() - started) / 1000).toFixed(1)} s`);
   }
+  if (has("--strip")) {
+    const names = times.map((t) => path.join(dir, `t${t.toFixed(2).replace(".", "_")}.png`)), cols = Math.min(4, names.length);
+    execFileSync("ffmpeg", ["-y", "-loglevel", "error", ...names.flatMap((n) => ["-i", n]), "-filter_complex", `${names.map((_, i) => `[${i}:v]scale=360:360:flags=area[s${i}]`).join(";")};${names.map((_, i) => `[s${i}]`).join("")}xstack=inputs=${names.length}:layout=${names.map((_, i) => `${(i % cols) * 360}_${Math.floor(i / cols) * 360}`).join("|")}`, path.join(dir, "strip.png")]);
+  }
   console.log("stills in", path.relative(ROOT, dir));
   await done();
 }
@@ -111,18 +128,26 @@ const lum = (c) => { const v = c / 255; return v <= 0.03928 ? v / 12.92 : ((v + 
 const against = (ground, ink) => (lum(ink) + 0.05) / (lum(ground) + 0.05);
 let least = 99, smallest = 999, pieces = 0;
 const seen = new Set();
-for (const t of [1.25, 2.3, info.landed + 0.6, 7.5, 9.9]) {
+for (const t of [1.25, 2.3, info.landed + 0.6, 7.5, 9.9, info.stood + 0.6, info.thin - 0.1, info.thinned + 0.5, info.shareAt + 0.6, SECONDS - 0.05]) {
   for (const w of await tab.evaluate((t) => window.__words(t), t)) {
     pieces++; seen.add(w.name);
     const r = against(w.behind, w.name === "source" ? 0xd6 : 0xff);
     least = Math.min(least, r); smallest = Math.min(smallest, w.px);
     if (!w.inside) problems.push(`${w.name} at ${t} s leaves the frame: ${w.box}`);
     if (r < 4.5) problems.push(`${w.name} at ${t} s is ${r.toFixed(2)}:1 on the brightest ground behind it (${w.behind} of 255)`);
-    if (w.px < 30) problems.push(`${w.name} at ${t} s has letters of ${w.px}px, under 30 (10.8 on a phone 390 wide)`);
+    if (w.px < 30) problems.push(`${w.name} at ${t.toFixed(2)} s has letters of ${w.px}px, under 30 (10.8 on a phone 390 wide)`);
   }
 }
-for (const name of ["title", "figure", "source", ...SIX.map((s) => `label ${s.name}`)]) if (!seen.has(name)) problems.push(`${name} was never on screen when measured`);
-console.log(`checked: ${pieces} readings of ${seen.size} pieces of words, least contrast ${least.toFixed(2)}:1, smallest letters ${smallest}px; ${SIX.length + 1} figures held to facts.mjs; ${info.renderer}`);
+// The numerals: every digit one width, as the face draws them. The points: one for every hundred people. The count: it lands on the two figures.
+if (Math.max(...info.digitWidths) - Math.min(...info.digitWidths) > 0.01) problems.push(`${NUMERALS.family}'s digits are not one width: ${info.digitWidths.map((w) => w.toFixed(1)).join(" ")}`);
+if (info.points !== Math.round(ROLLS / PEOPLE_A_POINT) || info.stay !== Math.round(SUNDAY / PEOPLE_A_POINT)) problems.push(`the points are not one for every ${PEOPLE_A_POINT} people: ${info.points} and ${info.stay}`);
+if (info.fromSix !== SIX.reduce((n, s) => n + Math.round((s.share / 100) * info.points), 0)) problems.push("the six states do not give their shares of the points");
+if (String(info.count) !== String([0, info.count[1], ROLLS, ROLLS, info.count[4], SUNDAY, SUNDAY]) || info.count[1] > ROLLS || info.count[4] < SUNDAY) problems.push(`the count does not land on the figures: ${info.count}`);
+if (info.go !== SCENE_ONE) problems.push("scene two does not begin where scene one's hold ends");
+for (const name of ["title", "figure", "source", "count", "share", "key", ...SIX.map((s) => `label ${s.name}`)]) if (!seen.has(name)) problems.push(`${name} was never on screen when measured`);
+const checked = `checked: ${pieces} readings of ${seen.size} pieces of words, least contrast ${least.toFixed(2)}:1, smallest letters ${smallest}px; ${SIX.length + 4} figures held to facts.mjs; the ten digits of ${NUMERALS.family} each ${info.digitWidths[0].toFixed(1)} wide at 100; ${info.points} points, ${info.stay} stay, ${info.fromSix} leave from the six states; ${info.renderer}`;
+console.log(checked);
+if (!problems.length) fs.writeFileSync(path.join(OUT, "check.txt"), checked + "\n");
 if (problems.length) { console.error("refused:\n  " + problems.join("\n  ")); if (!has("--anyway")) await done(1); }
 if (mode === "--check") await done();
 
@@ -154,7 +179,7 @@ if (made) {
 }
 await browser.close(); server.close();
 
-const file = path.join(OUT, draft ? "draft.mp4" : "orthodox-america-3d-sample.mp4");
+const file = path.join(OUT, draft ? "draft.mp4" : "orthodox-america-3d-sample-2.mp4");
 // Fine grain, the same on every render (a fixed seed), over the whole picture
 // as film has it; grey only; then H.264 for any editor or phone.
 const look = draft ? "format=gray,format=yuv420p" : "format=gray,noise=c0s=6:c0f=t:all_seed=1113,format=yuv420p";
@@ -162,12 +187,12 @@ const enc = (extra) => execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-fra
   "-c:v", "libx264", "-profile:v", "high", "-preset", "slow", "-pix_fmt", "yuv420p", "-an", ...extra], { cwd: OUT, stdio: "inherit" });
 if (draft) enc(["-crf", "24", "-movflags", "+faststart", file]);
 else {
-  // Grain is costly to keep, so the size is set, not the quality: two passes to about 12 MB for ten seconds,
-  // which the page's own store holds and a phone plays at once.
-  const kbps = Math.floor((12 * 8192) / SECONDS);
+  // Grain is costly to keep, so the size is set, not the quality: two passes to about 18 MB for the twenty seconds
+  // (the page's own store holds 20 MB a file), which a phone plays at once.
+  const kbps = Math.floor((18 * 8192) / SECONDS);
   enc(["-b:v", `${kbps}k`, "-pass", "1", "-f", "null", "/dev/null"]);
   enc(["-b:v", `${kbps}k`, "-pass", "2", "-movflags", "+faststart", file]);
 }
-if (!draft) fs.copyFileSync(path.join(frames, `f${String(Math.round(7.5 * FPS)).padStart(5, "0")}.png`), path.join(OUT, "poster.png"));
+if (!draft) fs.copyFileSync(path.join(frames, `f${String(Math.round(18.6 * FPS)).padStart(5, "0")}.png`), path.join(OUT, "poster.png"));
 console.log(path.relative(ROOT, file), fs.statSync(file).size, "bytes");
 process.exit(0);

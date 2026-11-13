@@ -53,3 +53,33 @@ A word or a figure: `words.mjs` (and `facts.mjs` must already hold it), then `re
 ## Not done, by the brief
 
 No full film, no variants, no sound, no vertical cut. The first film stays on its own page; putting it in the Vault as an explainer is the arbiter's to place.
+
+---
+
+# Baton: round 2, the sample's second pass (left 2026-11-13 by session_01VuYTwbX9EgiUvadznNeBP1)
+
+His word on the first 3D sample (about 18:26 UTC): a new face for the numbers, and a second scene the first flows into with no seam. Both are made, on one page for his yes. A fresh chat reads this, `docs/promo/orthodox-america/BRIEF.md` ("Round 2, the sample's second pass") and `docs/promo/orthodox-america/3d/RECORD.md`.
+
+## Where it stands
+
+- **At this commit the render is running.** The code is complete and `render.mjs --check` passes on both scenes; the file will be `.promo/orthodox-america-3d/orthodox-america-3d-sample-2.mp4` (out of git): 20 seconds, two scenes, 1080 by 1080, 30 frames a second, H.264, no sound. `RECORD.md` still describes the first sample until the next commit writes it from the finished file.
+- **His page:** https://claude.ai/artifact/4ZBf45qLCDQGojHHG57i9a (private to him; the film goes onto it when the render ends). The first sample's page (https://claude.ai/artifact/5Z5B2zW1vopmX1e2WiiwNt) is as it was.
+- **The full film waits for his yes.** Nothing of it is made.
+
+## What this pass taught, for the full film
+
+- **The face.** Archivo Narrow 600 for every figure. A canvas cannot switch on a font's tabular feature, so the face must be tabular as drawn: measure the ten digits before trusting a face's name (Barlow Condensed, Big Shoulders, Saira Condensed, Sofia Sans Extra Condensed and Oswald all failed). `render.mjs --check` measures it every time.
+- **How a scene joins the last with no cut.** One three.js scene and one camera. A new scene adds terms to the camera's own functions (`turn`, `tilt`, `lift`, `openB`, `shutter`, `samples`, `cameraB`) that are nothing, and at rest, until its start (`GO`, `move(t)`), so no earlier frame changes and the move begins at the drift's own speed. What leaves (forms, labels, the figure) is multiplied down after `GO`; what the map no longer needs is made invisible once dark, which is why scene two's frames are quick.
+- **Words for a later scene** face their own `facing` camera, taken at the moment that scene holds (`FACE2_AT`).
+- **Arithmetic of ours** goes in `facts.mjs` as `DERIVED`, never in `FACTS`: the first film's check holds every figure in `FACTS` to its own page.
+- **Time.** The render's own figure is in `RECORD.md`. A background job can be given a longer `timeout` than 30 minutes (this pass ran in one go); `--resume` still keeps what a stopped run left.
+- **Looking at a move cheaply.** `render.mjs --stills <times> --q=0.5 --strip` writes one small picture of the stills side by side (`stills/strip.png`): a dozen moments for the cost of one picture.
+- **Layout in a square.** A round field seen at 36 degrees is not centred on its own middle: the near half is larger. Its foot is the count to keep clear of the key and source lines at the bottom (964 px down), and the camera's slow push grows it by about 5% over ten seconds.
+
+## To change the sample
+
+A word or a figure: `words.mjs` (and `facts.mjs` must hold it), then `render.mjs --check` and `--stills`. A new sample is a new render: ask him first through the arbiter. The page: `page.mjs --video=<address> --poster=<address> --check`, then publish `.promo/orthodox-america-3d/orthodox-america-3d-sample-2.html` to the same address (pass the `url`; read it first).
+
+## Not done, by the brief
+
+No full film, no variants, no sound, no vertical cut. Nothing went to the Vault because one version was made.
