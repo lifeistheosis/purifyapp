@@ -262,6 +262,19 @@ describe("the email", () => {
     }
   });
 
+  it("meets the design kit's email rules: headings in sentence case, every link a 44px target on a line of its own", () => {
+    const html = briefEmail(figures(spanFor(MONDAY, true)), today, LINKS, emailLayout).html;
+    const body = html.slice(html.indexOf("Your week"));
+    expect(body).not.toMatch(/text-transform:uppercase/);
+    const links = [...body.matchAll(/(.{0,6})<a href="https:\/\/purifyapp\.net\/admin[^"]*" style="([^"]*)"/g)];
+    expect(links.length).toBeGreaterThanOrEqual(4);
+    for (const [, before, style] of links) {
+      expect(style).toContain("display:inline-block;padding:12px 0");
+      expect(style).toContain("line-height:24px");
+      expect(before.endsWith("<br>") || before.endsWith(">")).toBe(true);
+    }
+  });
+
   it("draws the week as columns, a chart for each area, and the day as one bar, in the money chart's colours", () => {
     const week = briefEmail(figures(spanFor(MONDAY, true)), today, LINKS, emailLayout).html;
     expect(week).toContain("Visitors each day");

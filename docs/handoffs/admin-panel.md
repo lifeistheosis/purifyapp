@@ -8,7 +8,7 @@ The admin panel, web only: `app/admin`, `components/admin`, `lib/admin` and thei
 
 ## Done and pushed
 
-- `c16267a4`: the owner's desk, on his two answers of 2026-11-13.
+- `5b3a0a41`: the owner's desk, on his two answers of 2026-11-13. The commit after the baton set the brief to the design kit's email rules: headings in sentence case, every link a 44px target on its own line, running text 16px.
   - **The owner's brief**: one email a day at 7:30 AM New York time, the weekly one on Monday, both settings (Calendar, The owner's desk). Today first (what needs him, what goes out with its Hold), then yesterday or the week: readers, money by source in the money chart's colours, Plus, opened most, Community, searches not found, errors; on Monday also what sold Plus, what worked and what did not, three things worth his attention; after a release, a drop or a sale it opens with how it went. Replaces the morning board email and the Monday letter on the heartbeat.
   - **The sends**: the Sunday email, the monthly note and the feast shop email go out by themselves, the switch on by his word. A piece goes only when that day's brief named it at least two hours before, he has not held it, the board still has it due, at the sends' hour (12 noon) and before 6 PM. The start is the panel's own Send, now shared (`lib/email/campaignStart.ts`).
   - **The board message**: on its day the brief saves a draft from the week as that week's draft row if the week has none. Never publishes.

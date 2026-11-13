@@ -343,12 +343,18 @@ export function briefSubject(f: BriefFigures, today: TodayPart): string {
   return figures;
 }
 
+/**
+ * A section's heading: sentence case in the serif, with a hairline across
+ * above it, as the design kit sets a section (docs/brand/design-kit.md: "a
+ * hairline between sections, never down an edge"; labels in sentence case,
+ * no capitals spaced out).
+ */
 function heading(text: string): string {
-  return `<p style="margin:26px 0 10px;font-family:${SANS};font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:${T.label}">${esc(text)}</p>`;
+  return `<p style="margin:26px 0 10px;padding-top:18px;border-top:1px solid ${T.line};font-family:${SERIF};font-size:21px;line-height:1.3;font-weight:400;color:${T.heading}">${esc(text)}</p>`;
 }
 
 function sub(text: string): string {
-  return `<p style="margin:16px 0 6px;font-family:${SANS};font-size:14px;font-weight:600;color:${T.heading}">${esc(text)}</p>`;
+  return `<p style="margin:18px 0 6px;font-family:${SANS};font-size:15px;font-weight:600;color:${T.heading}">${esc(text)}</p>`;
 }
 
 function para(html: string, extra = ""): string {
@@ -359,16 +365,21 @@ function smallNote(text: string): string {
   return `<p style="margin:4px 0 12px;font-family:${SANS};font-size:13px;line-height:1.5;color:${T.muted}">${esc(text)}</p>`;
 }
 
+/**
+ * A link on a line of its own, 48px tall under a thumb: the design kit's rule
+ * that every link is a 44px target and none sits inside a sentence. Not a
+ * pill: a list of places is never a row of outlined pills (CLAUDE.md).
+ */
 function link(href: string, label: string): string {
-  return `<a href="${esc(href)}" style="color:${T.link};text-decoration:underline">${esc(label)}</a>`;
+  return `<a href="${esc(href)}" style="display:inline-block;padding:12px 0;font-family:${SANS};font-size:16px;line-height:24px;color:${T.link};text-decoration:underline">${esc(label)}</a>`;
 }
 
 function rows(items: { label: string; value: string; note?: string }[]): string {
   const body = items
     .map(
       (r) =>
-        `<tr><td style="width:44%;padding:7px 12px 7px 0;font-family:${SANS};font-size:15px;color:${T.muted};vertical-align:top;border-bottom:1px solid ${T.line}">${esc(r.label)}</td>` +
-        `<td style="padding:7px 0;font-family:${SANS};font-size:15px;color:${T.body};border-bottom:1px solid ${T.line}"><strong style="color:${T.heading}">${esc(r.value)}</strong>${
+        `<tr><td style="width:44%;padding:8px 12px 8px 0;font-family:${SANS};font-size:16px;color:${T.muted};vertical-align:top;border-bottom:1px solid ${T.line}">${esc(r.label)}</td>` +
+        `<td style="padding:8px 0;font-family:${SANS};font-size:16px;color:${T.body};border-bottom:1px solid ${T.line}"><strong style="color:${T.heading}">${esc(r.value)}</strong>${
           r.note ? ` <span style="color:${T.muted}">${esc(r.note)}</span>` : ""
         }</td></tr>`,
     )
@@ -400,11 +411,11 @@ function pieceHtml(p: PieceView, links: BriefLinks): string {
   const subject = p.subject ? ` <span style="color:${T.muted}">(${esc(`"${p.subject}"`)})</span>` : "";
   switch (p.state) {
     case "goes":
-      return `${name}${subject} goes out at ${esc(p.at ?? "")} New York time unless you hold it. ${link(`${links.admin}#tab=calendar`, "Hold it")}`;
+      return `${name}${subject} goes out at ${esc(p.at ?? "")} New York time unless you hold it.<br>${link(`${links.admin}#tab=calendar`, "Hold it")}`;
     case "held":
-      return `${name}${subject}: held. It waits for you. ${link(`${links.admin}#tab=email`, "Send it")}`;
+      return `${name}${subject}: held. It waits for you.<br>${link(`${links.admin}#tab=email`, "Send it")}`;
     case "by hand":
-      return `${name}${subject}: ready to send by hand (${esc(p.why ?? "")}). ${link(`${links.admin}#tab=email`, "Send it")}`;
+      return `${name}${subject}: ready to send by hand (${esc(p.why ?? "")}).<br>${link(`${links.admin}#tab=email`, "Send it")}`;
     case "nothing":
       return `${name}: nothing to send today. ${esc(p.why ?? "")}`;
     case "gone":
@@ -458,7 +469,7 @@ export function briefSections(f: BriefFigures, today: TodayPart, links: BriefLin
               ? "here is a draft from the week to post in Patch notes."
               : "write it in Patch notes.";
       items.push(
-        `<strong style="color:${T.heading}">The board message</strong> is due today. It never posts itself: ${esc(where)} ${link(
+        `<strong style="color:${T.heading}">The board message</strong> is due today. It never posts itself: ${esc(where)}<br>${link(
           `${links.admin}#tab=patch-notes`,
           "Open Patch notes",
         )}`,
@@ -492,7 +503,7 @@ export function briefSections(f: BriefFigures, today: TodayPart, links: BriefLin
     smallNote(
       `Days are UTC days, as in the admin, held against ${f.span.against}. Figures are read as this email is made and are kept nowhere else.`,
     ),
-    para(`${link(`${links.admin}#tab=calendar`, "Change the hour or the weekly day")} &middot; ${link(links.admin, "Open the admin")}`, "font-family:" + SANS + ";font-size:14px"),
+    `${link(`${links.admin}#tab=calendar`, "Change the hour or the weekly day")}<br>${link(links.admin, "Open the admin")}`,
   );
   return out;
 }
