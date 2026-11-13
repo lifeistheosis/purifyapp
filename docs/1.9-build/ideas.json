@@ -2755,6 +2755,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "The arbiter's word of 16:01 and 17:00 UTC. 13e85f3ff, a3f1635b6, 4c295d3e2, 89f06742e, fab58b658, a73edbb83, 4794aa35b, 000cb6d99, 603d8def7. PLAN 13bm."
+  },
+  {
+   "id": "e-calendar-today-ink",
+   "section": "Design",
+   "kind": "bug",
+   "title": "The final check, Updates' one: the computer's calendar sets today's date in the page's own ink, 4.5:1 on every palette and look whatever the day's tone",
+   "from": "claude",
+   "asked": "2026-11-12",
+   "status": "built",
+   "decided": "2026-11-13",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The arbiter's word of 23:46 UTC. 9d8ff41dc, held for the final check. PLAN 13bn."
   }
  ]
 }
