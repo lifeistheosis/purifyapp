@@ -509,3 +509,5 @@ dash.
 - 2026-11-13 about 19:03 UTC, Arbiter 3: Fable 5.2: Orthodox America in 3D, the second scene (session_01VuYTwbX9EgiUvadznNeBP1) archived, its job done and pushed (08bfdf8e, 3ef96e8b; page https://claude.ai/artifact/4ZBf45qLCDQGojHHG57i9a; 300,000 tokens, about $10; baton appended to docs/handoffs/fable-film.md). The 27% on its page is Purify's own division of the census's two counts (183,020 / 675,765), named there.
 
 - 2026-11-13 about 19:19 UTC, Arbiter 3: Fable 5.2: the 1.9 film, a five second sample (session_01VuYTwbd5RZmjWw31fdhsiS) archived, its job done and pushed (75626514, docs/plans/v1.9/video/sample/; page https://claude.ai/artifact/2c2fUbeTFjCMYduQQQ7zBs; 259,000 tokens by get_session, about $7). Its README is the baton for the whole film, which waits on his yes and on the final screens.
+
+- 2026-11-13 19:21 UTC, Arbiter 3: at his word of 19:20, Fable 5.2: Orthodox America in 3D, the Church (session_01VuYTwcx6hrpUx2AxR4Xqx6) started at High from BRIEF.md "Round 3" (13bf4aab): scene three of the sample, the church drawn by the points of those who come, one render.
