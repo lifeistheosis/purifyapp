@@ -1,8 +1,14 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
-import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { useCallback, useId, useMemo, useState } from "react";
 import Link from "next/link";
+
+import { FAST_META } from "@/components/calendar/fastMeta";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Track } from "@/components/settings/LitPanel";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+import { PurifyMark } from "@/components/ui/PurifyMark";
+import { cn } from "@/lib/cn";
 import {
   fastingStatus,
   type CalStyle,
@@ -31,84 +37,57 @@ const ruleFor = (d: Date, style: CalStyle) =>
   fastingStatus(localDayToUtcNoon(d), style);
 
 /**
- * The fasting tracker: today's rule, a gentle check-in, the current streak,
- * and a short history of the days recently kept. Deliberately "kept, not
- * tracked": companion tone, forgives today until the day is out, counts a
- * partial keeping, and never scolds. Marks are local-first (lib/fasting);
- * Plus carries them across devices.
+ * The fasting tracker: today's rule, a gentle check-in, the days kept, and a
+ * short history of the recent fasting days. Deliberately "kept, not tracked":
+ * companion tone, forgives today until the day is out, counts a partial
+ * keeping, and never scolds. Marks are local-first (lib/fasting); Plus
+ * carries them across devices.
+ *
+ * Redrawn for build 95 (note 3, the owner on 2026-11-13: "the fast is
+ * clearly outdated"), in the look he approved that day, from the house's own
+ * parts and nothing new:
+ *
+ *   the opening     as a chapter opens (components/saints/WorkHead.tsx): the
+ *                   mark, the small line, the title, the short rule.
+ *   today           the one thing that leads, on the night (the Nativity
+ *                   card's own ground, dark on every palette), named with
+ *                   the calendar's own mark for the day
+ *                   (components/calendar/fastMeta.tsx).
+ *   the mark        one switch of three, the house's carved track
+ *                   (components/settings/LitPanel.tsx, Track). It was three
+ *                   outlined pills, and three more on every recent day:
+ *                   forty-eight on the screen.
+ *   the count       two quiet lines, a number and its sentence each. They
+ *                   were two bordered tiles of uneven height, a 0 in each,
+ *                   and the first thing a new reader saw.
+ *   recent days     rows in one tray (.theology-tray), each a day, its fast
+ *                   and its mark; a tap opens the same switch under it.
+ *
+ * Every word is the calendar's or the page's own as it was. No mark wears a
+ * colour: Kept, In part and Broke are lit alike, so none reads as a verdict.
  */
-
-const DOT: Record<FastKind, string> = {
-  strict: "bg-crimson",
-  "wine-oil": "bg-gold",
-  fish: "bg-sage",
-  fast: "bg-paper/40",
-  "fast-free": "bg-emerald-400",
-  normal: "bg-paper/30",
-};
 
 const STATUS_KEY: Record<CheckinStatus, string> = {
   kept: "fasting.status.kept",
   partial: "fasting.status.partial",
   broken: "fasting.status.broken",
 };
+const ORDER: readonly CheckinStatus[] = ["kept", "partial", "broken"];
 
-function CheckControl({
-  value,
-  onSet,
-  size = "sm",
-}: {
-  value?: CheckinStatus;
-  onSet: (s: CheckinStatus) => void;
-  size?: "lg" | "sm";
-}) {
+/** The calendar's own mark for a kind of day, in its own tone: never the tone alone, always beside the day's name. */
+function FastGlyph({ kind, size }: { kind: FastKind; size: number }) {
+  const { Icon, rgb } = FAST_META[kind];
+  if (!Icon) return null;
+  return <Icon aria-hidden size={size} className="shrink-0" style={{ color: `rgb(${rgb})` }} />;
+}
+
+/**
+ * Kept, In part, Broke: one switch, one of them lit, or none. The lit one
+ * tapped again takes the mark off, as it always has.
+ */
+function MarkSwitch({ value, onSet, label }: { value?: CheckinStatus; onSet: (s: CheckinStatus) => void; label: string }) {
   const { t } = useTranslate();
-  const order: CheckinStatus[] = ["kept", "partial", "broken"];
-  // A mark that is on wears the palette's own soft tone for its word and its
-  // edge: the green the calendar keeps for a fish day, the red it keeps for a
-  // strict fast. Each palette sets its soft tones to be read on it, so the
-  // word turns with the palette a reader is in.
-  //
-  // Kept was a fixed emerald, the one colour on the page that followed no
-  // palette (fresh eyes M5, 2026-11-11). And walked with marks on, which the
-  // gate's walk at rest cannot see: Broke's word, the red itself at 80
-  // percent, was 2.3:1 on Dark and 3.2:1 on Light, and Kept's green on Light
-  // was 4.25:1 over its own 15 percent fill. So the words are the soft tones
-  // whole, and Kept has an edge and no fill: on Light its green is 4.58:1 on
-  // a card with nothing under it, 4.45:1 over a fill of even 5 percent.
-  const active: Record<CheckinStatus, string> = {
-    kept: "border-sage-soft/50 bg-transparent text-sage-soft",
-    partial: "border-gold/60 bg-gold/15 text-gold-pale",
-    broken: "border-crimson-soft/50 bg-crimson-soft/10 text-crimson-soft",
-  };
-  const pad = size === "lg" ? "px-4 py-2.5 text-ui" : "px-2.5 py-1 text-caption";
-  // hit-44 (app/globals.css): each pill takes a finger over 44px, and is
-  // drawn as it was. The small ones stood 29px tall, thirty of them down the
-  // recent days (the pre-build gate's first run, gate-run-1.md); drawn 44px
-  // tall they would have made every day's row a wall of buttons. The rows
-  // stand 74px apart, so one day's reach never lies over the next day's.
-  return (
-    <div className="flex gap-2">
-      {order.map((s) => {
-        const on = value === s;
-        return (
-          <button
-            key={s}
-            type="button"
-            onClick={() => onSet(s)}
-            aria-pressed={on}
-            className={`hit-44 rounded-pill border font-sans font-semibold transition-colors ${pad} ${
-              on
-                ? active[s]
-                : "border-paper/15 bg-paper/[0.03] text-paper/55 hover:bg-paper/[0.07]"
-            }`}
-          >
-            {t(STATUS_KEY[s])}
-          </button>
-        );
-      })}
-    </div>
-  );
+  return <Track value={value ?? null} options={ORDER.map((s) => ({ value: s, label: t(STATUS_KEY[s]) }))} onChange={onSet} label={label} />;
 }
 
 export function FastingTrackerClient() {
@@ -172,124 +151,149 @@ export function FastingTrackerClient() {
   const fmtDay = (d: Date) =>
     d.toLocaleDateString(dateLocale(locale), { weekday: "short", month: "short", day: "numeric" });
 
+  // The recent days whose switch is open. Each opens and shuts on its own:
+  // were one to shut as the next opened, the row under the finger would
+  // move up by the height of the switch above it.
+  const [opened, setOpened] = useState<ReadonlySet<string>>(() => new Set());
+  const toggle = (key: string) =>
+    setOpened((was) => {
+      const next = new Set(was);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  const ids = useId();
+  const todayLabel = t(`calendar.fast.${todayFast.ruleId}.label`);
+  const notAllowed = fastNotAllowedKey(todayFast.kind);
+
   return (
     <section className="min-h-[calc(100dvh-72px)] bg-night px-5 py-10 md:px-8 md:py-14">
       <div className="mx-auto w-full max-w-[620px]">
-        {/* Masthead */}
-        <div className="reveal-rise" style={{ animationDelay: "40ms" }}>
-          <p className="font-sans text-detail font-semibold text-paper/55">
-            {t("today.fastEyebrow")}
-          </p>
-          <h1 className="mt-2 font-sans text-display-sm font-bold leading-[1.05] tracking-[-0.02em] text-paper">
+        {/* The opening, as a chapter opens: the mark, the small line, the title, the short rule. */}
+        <header className="text-center">
+          <PurifyMark aria-hidden size={22} className="page-open-sub mx-auto block text-paper" />
+          <p className="page-open-sub mt-3 font-sans text-detail font-semibold text-paper/60">{t("today.fastEyebrow")}</p>
+          <h1 className="page-open-title mx-auto mt-1.5 max-w-[14ch] text-balance font-heading text-[34px] font-normal leading-[1.08] tracking-[-0.3px] text-paper md:max-w-none md:text-[44px]">
             {t("fasting.h1")}
           </h1>
-        </div>
+          <span aria-hidden className="page-open-rule mx-auto mt-5 block h-px w-7 bg-paper/25" />
+        </header>
 
-        {/* Streak / summary */}
-        <div
-          className="reveal-rise mt-7 flex items-stretch gap-3"
+        {/* Today: the one thing that leads, on the night. */}
+        <section
+          aria-labelledby={`${ids}-today`}
+          data-fast-today=""
+          className="dark-island reveal-rise relative mt-7 overflow-hidden rounded-[22px] border border-paper/12 bg-night-deep px-5 pb-5 pt-5"
           style={{ animationDelay: "120ms" }}
         >
-          <div className="flex-1 rounded-2xl border border-gold/25 bg-gold/[0.05] p-5">
-            <p className="font-display-serif text-display-sm leading-none text-gold-pale">
-              {streak}
-            </p>
-            {/* Both lines stand in the one place and only one is seen, so the
-                card keeps the taller one's height. The line changes when a
-                day is marked, and a card that changed height with it moved
-                Kept, In part and Broke 19px under the finger (fresh eyes
-                M5). */}
-            <p className="mt-2 grid font-sans text-caption text-paper/60">
+          <p className="font-sans text-caption font-semibold text-paper/60">{t("calendar.todayLink")}</p>
+          <h2 id={`${ids}-today`} className="mt-1.5 flex items-center gap-2.5 font-heading text-[26px] font-normal leading-[1.15] text-paper">
+            <FastGlyph kind={todayFast.kind} size={22} />
+            <span className="min-w-0">{todayLabel}</span>
+          </h2>
+          <p className="mt-2.5 font-sans text-ui leading-relaxed text-paper/75">{t(`calendar.fast.${todayFast.ruleId}.rule`)}</p>
+          {/* What the day keeps from, beside what it allows (1.7). */}
+          {notAllowed ? <p className="mt-0.5 font-sans text-ui leading-relaxed text-paper/75">{t(notAllowed)}</p> : null}
+          {todayIsFast ? (
+            <>
+              <div data-fast-mark="today" className="mt-2">
+                <MarkSwitch value={todayMark} onSet={(s) => setDay(todayKey, todayFast.kind, s)} label={`${t("calendar.todayLink")}: ${todayLabel}`} />
+              </div>
+              {/* The pastoral line, in the house's italic: it stands on its own type, with no box and no rule beside it. */}
+              <p data-fast-pastoral="" className="mt-4 font-serif text-detail italic leading-[1.6] text-paper/70">
+                {t("fasting.pastoralNote")}
+              </p>
+            </>
+          ) : (
+            <p className="mt-4 font-serif text-detail italic leading-[1.6] text-paper/70">{t("fasting.noFastToday")}</p>
+          )}
+        </section>
+
+        {/* The count: two quiet lines, a number and its sentence each, with a
+            hairline between. Both lines of each stand in the one place and
+            only one is seen, so the line keeps the taller one's height: it
+            changes when a day is marked, and a line that changed height with
+            it moved every row under it (fresh eyes M5). */}
+        <div data-fast-count="" className={cn("reveal-rise mt-5 divide-y px-1", keptInAll === 0 ? "divide-transparent" : "divide-paper/10")} style={{ animationDelay: "180ms" }}>
+          <p className="flex items-baseline gap-3 py-3">
+            <span className={cn("w-9 shrink-0 text-center font-heading text-title leading-none tabular-nums", streak === 0 ? "text-paper/60" : "text-paper")}>{streak}</span>
+            <span className="grid min-w-0 flex-1 font-sans text-detail leading-snug text-paper/70">
               <span aria-hidden={streak !== 0} className={`col-start-1 row-start-1 ${streak === 0 ? "" : "invisible"}`}>
                 {t("fasting.streakNone")}
               </span>
               <span aria-hidden={streak === 0} className={`col-start-1 row-start-1 ${streak === 0 ? "invisible" : ""}`}>
                 {tn("fasting.streakKept", Math.max(streak, 1))}
               </span>
-            </p>
-          </div>
-          <div className="flex-1 rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
-            <p className="font-display-serif text-title leading-none text-paper">
-              {keptInAll}
-            </p>
-            {/* The same: "in part" joins this line when a day is marked so.
-                The line is counted with the number over it (tn): it read "1
-                days kept in all." with one day marked, in every language
-                (the gate's tap walk, 2026-11-11). */}
-            <p className="mt-2 grid font-sans text-caption text-paper/60">
+            </span>
+          </p>
+          {/* The line is counted with its number (tn): it read "1 days kept in
+              all." with one day marked, in every language (the gate's tap
+              walk, 2026-11-11). "in part" joins it when a day is marked so. */}
+          {/* With nothing kept yet the second line keeps its room and says
+              nothing: a new reader meets one sentence, not a column of
+              zeros, and nothing moves when the first day is marked. */}
+          <p aria-hidden={keptInAll === 0} className={cn("flex items-baseline gap-3 py-3", keptInAll === 0 && "invisible")}>
+            <span className="w-9 shrink-0 text-center font-heading text-title leading-none tabular-nums text-paper">{keptInAll}</span>
+            <span className="grid min-w-0 flex-1 font-sans text-detail leading-snug text-paper/70">
               <span aria-hidden={Boolean(summary.partial)} className={`col-start-1 row-start-1 ${summary.partial ? "invisible" : ""}`}>
                 {tn("fasting.keptInAll", keptInAll)}
               </span>
               <span aria-hidden={!summary.partial} className={`col-start-1 row-start-1 ${summary.partial ? "" : "invisible"}`}>
                 {tn("fasting.keptInAllPartial", keptInAll, { partial: Math.max(summary.partial, 1) })}
               </span>
-            </p>
-          </div>
-        </div>
-
-        {/* Today */}
-        <div
-          className="reveal-rise mt-4 rounded-2xl border border-paper/12 bg-paper/[0.04] p-5"
-          style={{ animationDelay: "180ms" }}
-        >
-          <p className="font-sans text-caption text-paper/55">{t("calendar.todayLink")}</p>
-          <h2 className="mt-1 flex items-center gap-2 font-serif text-lede leading-tight text-paper">
-            <span aria-hidden className={`inline-block h-2.5 w-2.5 rounded-full ${DOT[todayFast.kind]}`} />
-            {t(`calendar.fast.${todayFast.ruleId}.label`)}
-          </h2>
-          <p className="mt-2 font-sans text-ui leading-relaxed text-paper/70">
-            {t(`calendar.fast.${todayFast.ruleId}.rule`)}
+            </span>
           </p>
-          {/* What the day keeps from, beside what it allows (1.7). */}
-          {fastNotAllowedKey(todayFast.kind) ? (
-            <p className="mt-0.5 font-sans text-ui leading-relaxed text-paper/70">
-              {t(fastNotAllowedKey(todayFast.kind)!)}
-            </p>
-          ) : null}
-          {todayIsFast ? (
-            <div className="mt-4">
-              <CheckControl
-                size="lg"
-                value={todayMark}
-                onSet={(s) => setDay(todayKey, todayFast.kind, s)}
-              />
-              <p className="mt-3 font-sans text-caption text-paper/45">
-                {t("fasting.pastoralNote")}
-              </p>
-            </div>
-          ) : (
-            <p className="mt-3 font-sans text-caption text-paper/45">
-              {t("fasting.noFastToday")}
-            </p>
-          )}
         </div>
 
-        {/* Recent history */}
-        <p
-          className="reveal-rise mt-8 font-sans text-caption font-semibold text-paper/45"
-          style={{ animationDelay: "240ms" }}
-        >
+        {/* Recent days: rows in one tray. A day, its fast and its mark; a tap opens the switch under it. */}
+        <h2 className="reveal-rise mt-8 font-serif text-[20px] font-semibold leading-[1.25] text-paper" style={{ animationDelay: "240ms" }}>
           {t("fasting.recentDays")}
-        </p>
-        <ul className="reveal-rise mt-3 space-y-2" style={{ animationDelay: "280ms" }}>
+        </h2>
+        <ul data-fast-days="" className="theology-tray reveal-rise mt-3 overflow-hidden rounded-[20px] px-1.5 py-1" style={{ animationDelay: "280ms" }}>
           {recent.map((r) => {
             const m = byDay.get(r.key)?.status;
             const isToday = r.key === todayKey;
+            const open = opened.has(r.key);
+            const day = isToday ? t("calendar.todayLink") : fmtDay(r.date);
+            const label = t(`calendar.fast.${r.ruleId}.label`);
             return (
-              <li
-                key={r.key}
-                className="flex items-center justify-between gap-3 rounded-xl border border-paper/8 bg-paper/[0.02] px-3.5 py-2.5"
-              >
-                <div className="min-w-0">
-                  <p className="font-sans text-ui text-paper/85">
-                    {isToday ? t("calendar.todayLink") : fmtDay(r.date)}
-                  </p>
-                  <p className="mt-0.5 flex items-center gap-1.5 font-sans text-caption text-paper/50">
-                    <span aria-hidden className={`inline-block h-1.5 w-1.5 rounded-full ${DOT[r.kind]}`} />
-                    {t(`calendar.fast.${r.ruleId}.label`)}
-                  </p>
+              <li key={r.key} className="theology-rule relative">
+                <button
+                  type="button"
+                  aria-expanded={open}
+                  aria-controls={`${ids}-${r.key}`}
+                  onClick={() => toggle(r.key)}
+                  data-fast-day={r.key}
+                  className="theology-row flex min-h-[56px] w-full items-center gap-3 rounded-[14px] px-2.5 py-2.5 text-start"
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-sans text-ui font-semibold text-paper">{day}</span>
+                    <span className="mt-0.5 flex items-center gap-1.5 font-sans text-caption text-paper/60">
+                      <FastGlyph kind={r.kind} size={13} />
+                      <span className="min-w-0">{label}</span>
+                    </span>
+                  </span>
+                  {m ? (
+                    <span data-fast-day-mark="" className="shrink-0 font-sans text-detail font-semibold text-paper/85">
+                      {t(STATUS_KEY[m])}
+                    </span>
+                  ) : null}
+                  <ChevronDown aria-hidden size={14} className={cn("shrink-0 text-paper/50 motion-safe:transition-transform motion-safe:duration-300", open && "rotate-180")} />
+                </button>
+                {/* The switch opens under its day on the house curve, and is
+                    out of reach of a finger, a keyboard and a screen reader
+                    while it is shut. */}
+                <div
+                  id={`${ids}-${r.key}`}
+                  inert={!open}
+                  className={cn("grid ease-[var(--ease-house)] motion-safe:transition-[grid-template-rows] motion-safe:duration-300", open ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}
+                >
+                  <div className={cn("min-h-0 overflow-hidden", !open && "invisible")}>
+                    <div className="px-2.5 pb-3">
+                      <MarkSwitch value={m} onSet={(s) => setDay(r.key, r.kind, s)} label={`${day}: ${label}`} />
+                    </div>
+                  </div>
                 </div>
-                <CheckControl value={m} onSet={(s) => setDay(r.key, r.kind, s)} />
               </li>
             );
           })}
@@ -297,17 +301,18 @@ export function FastingTrackerClient() {
 
         {/* 45, a share the faint-text rules draw at each palette's own safe
             strength (app/globals.css): at 40 this line was 2.31:1 on Light
-            and 2.86:1 on Candlelight (fresh eyes M5). */}
+            and 2.86:1 on Candlelight (fresh eyes M5). The way to the
+            calendar is a line of its own, 44px to the touch, not a word
+            inside the sentence. */}
         <p
           className="reveal-rise mt-8 font-sans text-caption leading-[1.6] text-paper/45"
           style={{ animationDelay: "340ms" }}
         >
-          {t("fasting.deviceNote")}{" "}
-          <Link href="/calendar" className="text-gold-pale/70 underline-offset-2 hover:underline">
-            {t("fasting.seeFullCalendar")}
-          </Link>
-          .
+          {t("fasting.deviceNote")}
         </p>
+        <Link href="/calendar" data-fast-calendar="" className="tap-press mt-1 inline-flex min-h-11 items-center font-sans text-detail font-semibold text-paper/80 underline underline-offset-4 hover:text-paper">
+          {t("fasting.seeFullCalendar")}
+        </Link>
       </div>
     </section>
   );

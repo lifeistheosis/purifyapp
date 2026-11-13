@@ -169,7 +169,8 @@ describe("c. the wide calendar", () => {
 
 describe("d. the wide journal", () => {
   it("gives the prompt under Nothing written yet 44px to the touch", () => {
-    expect(read("components/journal/JournalClient.tsx")).toContain('className="tap-press hit-44 mt-2 block text-start font-serif text-lede leading-[1.5] text-paper"');
+    // Redrawn for build 95 (note 4): the prompt is a row in the house's tray, 64px tall at the least, with its pen.
+    expect(read("components/journal/JournalClient.tsx")).toContain('className="theology-row tap-press flex min-h-[64px] w-full items-center gap-3 rounded-[14px] px-2.5 py-3 text-start"');
   });
 });
 

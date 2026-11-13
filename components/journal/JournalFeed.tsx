@@ -34,6 +34,7 @@ import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault"
 import { gatheringHref } from "@/lib/florilegium/href";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import { churchDayLine, dayFromKey } from "@/lib/journal/churchDay";
+import { coverById } from "@/lib/journal/covers";
 import { gatheringOf } from "@/lib/journal/gatherings";
 import { pageText, parsePage } from "@/lib/journal/page";
 import type { JournalSource } from "@/lib/journal/entries";
@@ -107,7 +108,7 @@ export function JournalFeed({
   // The list shows the writer's own words; a verse card is named in the small
   // line under them, so a reference never reads as the writer's words.
   const pages = useMemo(() => {
-    const out = new Map<string, { title: string; text: string; cards: string[]; all: string; notebook?: string; sans?: boolean }>();
+    const out = new Map<string, { title: string; text: string; cards: string[]; all: string; notebook?: string; sans?: boolean; cover?: string }>();
     for (const i of items) {
       if (!i.record) {
         out.set(i.key, { title: "", text: i.body, cards: [], all: i.body });
@@ -117,7 +118,7 @@ export function JournalFeed({
       const words = pageText({ ...page, blocks: page.blocks.filter((b) => b.type !== "verse") }, verseLabel);
       const cards = page.blocks.flatMap((b) => (b.type === "verse" ? [verseLabel(b)] : []));
       const all = [pageText(page, verseLabel), page.notebook, ...(page.tags ?? [])].filter(Boolean).join("\n");
-      out.set(i.key, { title: page.title, text: words, cards, all, notebook: page.notebook, sans: page.style?.font === "sans" });
+      out.set(i.key, { title: page.title, text: words, cards, all, notebook: page.notebook, sans: page.style?.font === "sans", cover: coverById(page.cover)?.src });
     }
     return out;
     // verseLabel is remade each render; the book names behind it follow t.
@@ -305,37 +306,44 @@ export function JournalFeed({
             {g.day === today ? <span className="hidden print:inline">{`, ${dayName(g.day, false)}`}</span> : null}
           </p>
           {lines.get(g.day) ? (
-            <p data-journal-day-line="" className="mt-1 font-sans text-caption leading-[1.45] text-paper/70">
+            <p data-journal-day-line="" className="mt-1 text-pretty font-sans text-caption leading-[1.45] text-paper/70">
               {lines.get(g.day)}
             </p>
           ) : null}
           <ul className="mt-1 divide-y divide-paper/8 border-b border-paper/8">
             {g.items.map((item) => (
               <SwipeRow key={item.key} onRemove={() => onRemove(item)} removeLabel={t("common.remove")}>
-                <button type="button" onClick={() => onOpen(item)} data-journal-entry="" className="block w-full py-4 pe-1 text-start active:opacity-80">
-                  {item.prompt ? <span dir="auto" className="block font-sans text-caption text-paper/55">{item.prompt.text}</span> : null}
-                  {pages.get(item.key)?.title ? (
-                    <span
-                      dir="auto"
-                      data-journal-entry-title=""
-                      className={`block ${pages.get(item.key)?.sans ? "font-sans" : "font-serif"} text-[19px] font-semibold leading-[1.3] text-paper${item.prompt ? " mt-1" : ""}`}
-                    >
-                      {pages.get(item.key)?.title}
+                <button type="button" onClick={() => onOpen(item)} data-journal-entry="" className="flex w-full items-start gap-3 py-4 pe-1 text-start active:opacity-80">
+                  <span className="block min-w-0 flex-1">
+                    {item.prompt ? <span dir="auto" className="block font-sans text-caption text-paper/55">{item.prompt.text}</span> : null}
+                    {pages.get(item.key)?.title ? (
+                      <span
+                        dir="auto"
+                        data-journal-entry-title=""
+                        className={`block ${pages.get(item.key)?.sans ? "font-sans" : "font-serif"} text-[19px] font-semibold leading-[1.3] text-paper${item.prompt ? " mt-1" : ""}`}
+                      >
+                        {pages.get(item.key)?.title}
+                      </span>
+                    ) : null}
+                    {pages.get(item.key)?.text ? (
+                      <span
+                        dir="auto"
+                        className={`block whitespace-pre-line line-clamp-4 ${pages.get(item.key)?.sans ? "font-sans" : "font-serif"} text-body leading-[1.6] text-paper/90 print:line-clamp-none${item.prompt || pages.get(item.key)?.title ? " mt-1" : ""}`}
+                      >
+                        {pages.get(item.key)?.text}
+                      </span>
+                    ) : null}
+                    <span className="mt-1.5 block truncate font-sans text-caption text-paper/50">
+                      {[t(KIND_KEY[item.kind]), pages.get(item.key)?.notebook ?? null, item.source ? sourceLabel(item.source) : null, ...(pages.get(item.key)?.cards.slice(0, 2) ?? []), timeOf(item.at)]
+                        .filter(Boolean)
+                        .join(" · ")}
                     </span>
-                  ) : null}
-                  {pages.get(item.key)?.text ? (
-                    <span
-                      dir="auto"
-                      className={`block whitespace-pre-line line-clamp-4 ${pages.get(item.key)?.sans ? "font-sans" : "font-serif"} text-body leading-[1.6] text-paper/90 print:line-clamp-none${item.prompt || pages.get(item.key)?.title ? " mt-1" : ""}`}
-                    >
-                      {pages.get(item.key)?.text}
-                    </span>
-                  ) : null}
-                  <span className="mt-1.5 block truncate font-sans text-caption text-paper/50">
-                    {[t(KIND_KEY[item.kind]), pages.get(item.key)?.notebook ?? null, item.source ? sourceLabel(item.source) : null, ...(pages.get(item.key)?.cards.slice(0, 2) ?? []), timeOf(item.at)]
-                      .filter(Boolean)
-                      .join(" · ")}
                   </span>
+                  {/* A page with a cover shows it (build 95 note 6): the picture a reader chose is part of how the page is found again. Decoration here; the sheet names it. */}
+                  {pages.get(item.key)?.cover ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- a file the apps carry; the export has no image server
+                    <img src={pages.get(item.key)?.cover} alt="" loading="lazy" data-journal-entry-cover="" className="mt-0.5 size-14 shrink-0 rounded-[12px] object-cover object-[50%_22%] print:hidden" />
+                  ) : null}
                 </button>
               </SwipeRow>
             ))}

@@ -84,11 +84,11 @@ export function TodayPage({ onWriteFrom }: { onWriteFrom: (source: JournalSource
   const line = [date, day.headline?.name, fasting ? t(`calendar.fast.${day.fast.ruleId}.label`) : null].filter(Boolean).join(" · ");
 
   return (
-    <section aria-labelledby="journal-today" data-journal-today="" data-tour="journal-today" className="mt-6 rounded-[28px] border border-paper/10 bg-night-soft px-5 pb-3 pt-5">
-      <p id="journal-today" role="heading" aria-level={2} className="font-serif text-[32px] font-semibold leading-[1.1] text-paper">
+    <section aria-labelledby="journal-today" data-journal-today="" data-tour="journal-today" className="dark-island page-open-after relative mt-7 overflow-hidden rounded-[22px] border border-paper/12 bg-night-deep px-5 pb-3 pt-5">
+      <p id="journal-today" role="heading" aria-level={2} className="font-heading text-[34px] font-normal leading-[1.1] text-paper">
         {weekday}
       </p>
-      <p className="mt-1.5 font-sans text-caption leading-[1.45] text-paper/70">{line}</p>
+      <p className="mt-1.5 text-pretty font-sans text-caption leading-[1.45] text-paper/70">{line}</p>
 
       {day.readings.length > 0 ? (
         <>

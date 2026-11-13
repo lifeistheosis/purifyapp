@@ -6,6 +6,8 @@ import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { PlusMark } from "@/components/billing/PlusMark";
 import { ClosedBook } from "@/components/ui/icons/ClosedBook";
 import { Flower } from "@/components/ui/icons/Flower";
+import { Pen } from "@/components/ui/icons/Pen";
+import { PurifyMark } from "@/components/ui/PurifyMark";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { JournalComposer } from "@/components/journal/JournalComposer";
@@ -271,15 +273,19 @@ export function JournalClient() {
       <div className={cn(rail ? "md:mx-auto md:grid md:max-w-[968px] md:grid-cols-[200px_minmax(0,1fr)] md:gap-12 native-md-block" : "mx-auto max-w-[760px]")}>
         {rail ? <NotebookRail notebooks={notebooks} gatherings={gatherings} chosen={book} onChoose={setBook} /> : null}
         <div className="min-w-0">
-          <header className="flex items-end justify-between gap-6">
-            <div className="min-w-0">
-              <h1 id="journal-title" className="text-title font-bold leading-[1.12] tracking-[-0.01em] text-paper md:text-heading">
-                {t("journal.title")}
-              </h1>
-              <p className="mt-2 max-w-[60ch] font-sans text-detail leading-[1.6] text-paper/55">{t("journal.lede")}</p>
-            </div>
+          {/* The journal opens as a chapter does (components/saints/WorkHead.tsx):
+              the mark, its name, one line under it in italics, the short
+              rule. On a computer Write stands under the rule; on a phone it
+              is at the foot of the screen (WriteButton). */}
+          <header className="text-center">
+            <PurifyMark aria-hidden size={22} className="page-open-sub mx-auto block text-paper" />
+            <h1 id="journal-title" className="page-open-title mt-3 font-heading text-[34px] font-normal leading-[1.08] tracking-[-0.3px] text-paper md:text-[44px]">
+              {t("journal.title")}
+            </h1>
+            <p className="page-open-sub mx-auto mt-2.5 max-w-[34ch] text-balance font-serif text-[17px] italic leading-[1.45] text-paper/75">{t("journal.lede")}</p>
+            <span aria-hidden className="page-open-rule mx-auto mt-5 block h-px w-7 bg-paper/25" />
             {mounted ? (
-              <div className="hidden shrink-0 md:block native-md-hidden">
+              <div className="mt-5 hidden justify-center md:flex native-md-hidden">
                 <WriteButton placement="inline" onClick={write} draft={waitingDraft} />
               </div>
             ) : null}
@@ -333,19 +339,27 @@ export function JournalClient() {
               ) : null}
 
               {items.length === 0 ? (
-                <section aria-labelledby="journal-empty" data-journal-empty="" className="mt-8 border-y border-paper/10 py-6">
-                  <p id="journal-empty" role="heading" aria-level={2} className="font-sans text-caption font-semibold text-paper/60">
+                <section aria-labelledby="journal-empty" data-journal-empty="" className="mt-8">
+                  <p id="journal-empty" role="heading" aria-level={2} className="font-serif text-[20px] font-semibold leading-[1.25] text-paper">
                     {t("journal.emptyTitle")}
                   </p>
-                  <button
-                    type="button"
-                    onClick={() => begin({ kind: "reflection", body: "", prompt: { text: t(emptyPromptKey(now)) } })}
-                    // 44 to the touch where it stands on one line (a tablet: 28.5px tall, the store pictures' run of 2026-11-12).
-                    className="tap-press hit-44 mt-2 block text-start font-serif text-lede leading-[1.5] text-paper"
-                  >
-                    {t(emptyPromptKey(now))}
-                  </button>
-                  <p className="mt-4 font-sans text-detail leading-[1.6] text-paper/55">{t("journal.emptyLine")}</p>
+                  {/* A thing to act on is a row in the house's tray, with the
+                      pen today's readings wear: until build 95 the question
+                      stood as plain words between two hairlines, and nothing
+                      said a tap on it begins a page. */}
+                  <div className="theology-tray mt-3 overflow-hidden rounded-[20px] px-1.5 py-1">
+                    <button
+                      type="button"
+                      onClick={() => begin({ kind: "reflection", body: "", prompt: { text: t(emptyPromptKey(now)) } })}
+                      className="theology-row tap-press flex min-h-[64px] w-full items-center gap-3 rounded-[14px] px-2.5 py-3 text-start"
+                    >
+                      <span className="min-w-0 flex-1 font-serif text-lede leading-[1.45] text-paper">{t(emptyPromptKey(now))}</span>
+                      <span className="shrink-0 text-paper/70">
+                        <Pen size={18} />
+                      </span>
+                    </button>
+                  </div>
+                  <p className="mt-3 px-1 font-sans text-detail leading-[1.6] text-paper/55">{t("journal.emptyLine")}</p>
                 </section>
               ) : (
                 <>

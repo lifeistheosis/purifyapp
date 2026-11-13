@@ -189,7 +189,8 @@ describe("More's choices can be read", () => {
     expect(more).not.toContain("grid-cols-2");
     expect(choice).not.toContain("col-span-2");
     expect(choice).toMatch(/<button[\s\S]*?className="[^"]*\bw-full\b/);
-    expect(more.match(/<MoreChoice/g)).toHaveLength(5);
+    // Plus's four blocks, and the page's own two: its notebook and, from build 95, its cover.
+    expect(more.match(/<MoreChoice/g)).toHaveLength(6);
   });
 
   it("a name is never cut: it takes as many lines as it needs", () => {

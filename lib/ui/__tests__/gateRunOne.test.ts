@@ -58,10 +58,14 @@ describe("a finger's 44px", () => {
   });
 
   it("the fasting marks reach 44px without growing: Kept, In part and Broke on every day", () => {
+    // Redrawn for build 95 (note 3): the three marks are one switch, the house's carved track, whose
+    // choices each lean on the same helper. The page draws that switch and no button of its own for a mark.
     const src = code("components/fasting/FastingTrackerClient.tsx");
-    const control = src.slice(src.indexOf("function CheckControl"), src.indexOf("export function FastingTrackerClient"));
-    expect(control.match(/<button\b/g)).toHaveLength(1);
-    expect(control).toMatch(/className=\{`hit-44 rounded-pill border /);
+    const control = src.slice(src.indexOf("function MarkSwitch"), src.indexOf("export function FastingTrackerClient"));
+    expect(control).toMatch(/return <Track value=\{value \?\? null\}/);
+    expect(control).not.toMatch(/<button\b/);
+    const track = code("components/settings/LitPanel.tsx");
+    expect(track.slice(track.indexOf("export function Track"))).toMatch(/role="radio"[\s\S]{0,160}className="hit-44"/);
     // The helper they lean on is still the house's.
     expect(read("app/globals.css")).toMatch(/\.hit-44::after \{[^}]*min-width: 44px;[^}]*min-height: 44px;/);
   });
@@ -166,27 +170,29 @@ describe("words a reader can read", () => {
 });
 
 describe("a fasting mark that is on", () => {
-  it("wears the palette's own soft tones, which turn with it, and a word that can be read", () => {
+  it("wears no tone of its own: lit as the house's switch lights a choice, and a word that can be read", () => {
     // Walked with marks on, which a walk at rest cannot see: Broke's word (the red at 80 percent) was
     // 2.3:1 on Dark, and Kept's green on Light 4.25:1 over its own fill. Kept was a fixed emerald before that.
+    // Redrawn for build 95 (note 3), a mark that is on is the switch's raised plate, the same for Kept, In
+    // part and Broke: none is green and none is red, so none reads as a verdict, and none can fall short of
+    // its ground on a palette. A recent day says its mark in the page's own ink.
     const src = code("components/fasting/FastingTrackerClient.tsx");
-    const on = src.slice(src.indexOf("const active: Record<CheckinStatus, string> = {"), src.indexOf("const pad ="));
-    expect(on).toContain('kept: "border-sage-soft/50 bg-transparent text-sage-soft"');
-    expect(on).toContain('broken: "border-crimson-soft/50 bg-crimson-soft/10 text-crimson-soft"');
-    // No colour that follows no palette, and no word in a share of the red itself.
-    expect(on).not.toMatch(/emerald|text-crimson\/|border-crimson\/|border-sage\/|bg-sage\//);
-    // Each palette sets the soft tones for its own ground: Light's are dark, the dark palettes' pale.
-    const css = read("app/globals.css");
-    expect(css).toMatch(/html\[data-reading-mode="parchment"\] \{\s*--color-crimson-soft: #9b2c26;[\s\S]{0,120}--color-sage-soft: #2f6b58;/);
-    expect(css).toMatch(/--color-sage-soft: #bfd6cc;/);
+    expect(src).not.toMatch(/\b(?:text|bg|border|ring)-(?:emerald|crimson|sage|gold)/);
+    expect(src).toMatch(/data-fast-day-mark="" className="[^"]*\btext-paper\/85\b/);
+    // The calendar's own mark for the day is its own tone, never alone: beside the day's name (fastMeta.tsx).
+    expect(src).toContain("const { Icon, rgb } = FAST_META[kind];");
   });
 
   it("moves nothing when it changes: the two summary lines keep the taller line's height", () => {
     const src = code("components/fasting/FastingTrackerClient.tsx");
-    // Both wordings stand in one grid cell and one is seen, so a card never changes height under the finger (it moved the marks 19px).
-    expect(src.match(/<p className="mt-2 grid font-sans text-caption text-paper\/60">/g)).toHaveLength(2);
+    // Both wordings stand in one grid cell and one is seen, so a line never changes height under the finger (it moved the marks 19px).
+    expect(src.match(/<span className="grid min-w-0 flex-1 font-sans text-detail leading-snug text-paper\/70">/g)).toHaveLength(2);
     expect(src.match(/className=\{`col-start-1 row-start-1 \$\{/g)).toHaveLength(4);
     expect(src).not.toMatch(/\{streak === 0\s*\?\s*t\("fasting\.streakNone"\)/);
+    // With nothing kept the second line keeps its room and is not seen: it is never taken out of the page.
+    expect(src).toMatch(/<p aria-hidden=\{keptInAll === 0\} className=\{cn\("flex items-baseline gap-3 py-3", keptInAll === 0 && "invisible"\)\}>/);
+    // A recent day's switch opens and shuts on its own, so no row moves up under a finger as another shuts.
+    expect(src).toContain("const [opened, setOpened] = useState<ReadonlySet<string>>(() => new Set());");
   });
 });
 

@@ -88,7 +88,8 @@ describe("the journal is headed by the Church's day", () => {
 
   it("today's page: the weekday in Lora, the day's line, the readings and today's highlights", () => {
     expect(today).toContain("useChurchDayAtOnce()");
-    expect(today).toMatch(/font-serif text-\[32px\][^"]*text-paper"/);
+    // The weekday in the house's heading face, as a chapter's name is (build 95, the approved look).
+    expect(today).toMatch(/font-heading text-\[34px\][^"]*text-paper"/);
     // Write is the journal's one button, always in reach: not drawn here twice.
     expect(today).not.toContain('t("journal.write")');
     expect(today).toContain("day.readings.map");

@@ -202,3 +202,88 @@ describe("the keyboard comes only from the reader's tap where they write", () =>
     expect(finder.match(/\.focus\(/g)).toHaveLength(1);
   });
 });
+
+/**
+ * The journal's page, redrawn in the approved look (note 4, "needs to be
+ * refined + smoother"): it opens as a chapter does, today's page stands on
+ * the night, the question of an empty journal is a row to tap, and Write
+ * stands on the house's fade, out of the keyboard's way.
+ */
+describe("the journal's page in the approved look", () => {
+  const client = code(read("components/journal/JournalClient.tsx"));
+  const today = code(read("components/journal/TodayPage.tsx"));
+  const write = code(read("components/journal/WriteButton.tsx"));
+
+  it("opens as a chapter opens: the mark, its name, one line in italics, the short rule", () => {
+    expect(client).toMatch(/<header className="text-center">\s*<PurifyMark aria-hidden size=\{22\}/);
+    expect(client).toMatch(/<h1 id="journal-title" className="page-open-title [^"]*font-heading/);
+    expect(client).toMatch(/className="page-open-sub [^"]*italic[^"]*">\{t\("journal\.lede"\)\}/);
+    expect(client).toContain('className="page-open-rule mx-auto mt-5 block h-px w-7 bg-paper/25"');
+  });
+
+  it("today's page stands on the night, as the one thing that leads", () => {
+    expect(today).toMatch(/className="dark-island [^"]*rounded-\[22px\] border border-paper\/12 bg-night-deep/);
+  });
+
+  it("an empty journal's question is a row to tap, in the house's tray, with the pen", () => {
+    const empty = client.slice(client.indexOf('data-journal-empty=""'), client.indexOf("<JournalFeed"));
+    expect(empty).toMatch(/<div className="theology-tray /);
+    expect(empty).toMatch(/className="theology-row tap-press flex min-h-\[64px\] w-full/);
+    expect(empty).toContain("<Pen size={18} />");
+  });
+
+  it("Write stands on the fade the chapter's pill floats on, and stands down for the keyboard", () => {
+    expect(write).toContain('<span aria-hidden className="pill-fade pointer-events-none absolute inset-x-0 -z-10" />');
+    expect(write).toContain('"--pill-lift":');
+    expect(write).toMatch(/if \(keyboard\) return null;/);
+    // Still the journal's one way to write, and still not Plus's.
+    expect(write.match(/data-journal-write=""/g)).toHaveLength(1);
+    expect(write).not.toMatch(/PlusMark/);
+    // The fade is always under it: no state of the journal leaves the button lying on words.
+    expect(write).not.toMatch(/\bfade\b\s*\?/);
+  });
+});
+
+/**
+ * Note 6: "visuals aren't really that good. even the image system". A page's
+ * picture is its cover (Plus, from the verified artwork the apps carry). It
+ * was chosen at the foot of the notebook's panel, from 60px squares, and shown
+ * as a flat strip cut through the middle of the icon, and nowhere else.
+ */
+describe("the page's picture", () => {
+  const blocks = code(read("components/journal/PageBlocks.tsx"));
+  const feed = code(read("components/journal/JournalFeed.tsx"));
+
+  it("has a row of its own in More, with Plus's mark for a reader without Plus, and promises it to no one", () => {
+    const more = blocks.slice(blocks.indexOf('data-page-more=""'), blocks.indexOf('role="toolbar"'));
+    expect(more).toMatch(/<MoreChoice\s+cover\s+icon=\{<Picture size=\{18\} \/>\}\s+label=\{t\("journal\.page\.cover"\)\}\s+locked=\{locked\}/);
+    // Without Plus the row opens the upgrade sheet, and never the pictures.
+    expect(more).toMatch(/if \(locked\) \{\s*setPanel\(null\);\s*upgrade\.open\("journal"\);\s*\} else setPanel\("cover"\);/);
+  });
+
+  it("is chosen from one row of pictures large enough to tell apart, the chosen one edged", () => {
+    const panel = blocks.slice(blocks.indexOf("function CoverPanel("), blocks.indexOf("function StyleRows("));
+    expect(panel).toContain('role="radiogroup"');
+    expect(panel).toMatch(/className="no-scrollbar -mx-3 mt-1 flex snap-x gap-2 overflow-x-auto/);
+    expect(panel).toMatch(/h-\[112px\] w-\[88px\] shrink-0 snap-start/);
+    expect(panel).toContain('current === c.id ? "border-paper" : "border-transparent"');
+    // Each is named for a screen reader by what it shows, from the rights registry.
+    expect(panel).toContain("aria-label={c.alt}");
+    // And it is no longer at the foot of the notebook's panel.
+    expect(blocks.slice(blocks.indexOf("function PropsPanel("), blocks.indexOf("function CoverPanel("))).not.toMatch(/<CoverPanel|COVERS\.map/);
+  });
+
+  it("stands at the page's head, rounded as the app's cards are, cut from where an icon's face is, and credited", () => {
+    const head = blocks.slice(blocks.indexOf('data-page-cover=""'), blocks.indexOf('data-journal-title=""'));
+    expect(head).toContain('className="block h-44 w-full rounded-[18px] object-cover object-[50%_22%]"');
+    expect(head).toContain("{cover.credit}");
+    expect(head).toContain("alt={cover.alt}");
+  });
+
+  it("shows on its page in the journal's list", () => {
+    expect(feed).toContain("cover: coverById(page.cover)?.src");
+    expect(feed).toMatch(/data-journal-entry-cover="" className="[^"]*size-14 shrink-0 rounded-\[12px\] object-cover/);
+    // The row is still one button, the words first.
+    expect(feed).toMatch(/data-journal-entry="" className="flex w-full items-start gap-3 py-4 pe-1 text-start/);
+  });
+});

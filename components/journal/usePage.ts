@@ -17,7 +17,7 @@ function fresh(body: string): Page {
 }
 
 /** The panel open over the tools at the sheet's foot, if any. */
-export type PagePanel = "verse" | "color" | "more" | "props" | null;
+export type PagePanel = "verse" | "color" | "more" | "props" | "cover" | null;
 
 /**
  * The page being written (lib/journal/page.ts), held as blocks while the sheet

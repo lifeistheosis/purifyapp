@@ -779,14 +779,15 @@ await flow("more: the page's notebook is there under Plus's four, opens its pane
   await tap(page, tools(page).nth(MORE), "More");
   await wait(400);
   const choices = await page.locator("[data-page-more] button").allInnerTexts();
-  expectThat(choices.map((c) => c.trim()).join(", ") === "Heading, Checklist, Divider, Callout, Add to a notebook", `More holds ${choices.join(", ")}`);
+  expectThat(choices.map((c) => c.trim()).join(", ") === "Heading, Checklist, Divider, Callout, Add to a notebook, Cover", `More holds ${choices.join(", ")}`);
   // Rows the width of the sheet, one under another, a hairline between two and none over the first.
   const rows = await page.locator("[data-page-more] button").evaluateAll((els) =>
     els.map((el) => ({ w: el.getBoundingClientRect().width, h: el.getBoundingClientRect().height, y: el.getBoundingClientRect().y, line: getComputedStyle(el.parentElement.querySelector("span[aria-hidden]")).display !== "none" })),
   );
   expectThat(rows.every((r) => r.w >= 340 && r.h >= 44), `a row is ${rows.map((r) => `${Math.round(r.w)} by ${Math.round(r.h)}`).join(", ")}`);
   expectThat(rows.every((r, i) => i === 0 || r.y > rows[i - 1].y), "the rows are not one under another");
-  expectThat(rows.map((r) => r.line).join() === "false,true,true,true,false", `the hairlines are ${rows.map((r) => r.line).join()}`);
+  // Two trays: Plus's four blocks, then the page's own two (its notebook and, from build 95, its cover).
+  expectThat(rows.map((r) => r.line).join() === "false,true,true,true,false,true", `the hairlines are ${rows.map((r) => r.line).join()}`);
   await tap(page, page.locator("[data-page-more-props]"), "Add to a notebook");
   await wait(500);
   expectThat((await page.locator("[data-page-props-panel]").count()) === 1, "the notebook panel did not open");
@@ -968,7 +969,7 @@ await flow("a page with a notebook, without Plus: its line wears the Plus mark a
 
 // ── Push 2: each block its own, and the ways in ───────────────────────────
 
-await flow("the blocks: a verse, a quote of one's own and a Father's words are in no box, and each wears its own mark", async (page) => {
+await flow("the blocks: Scripture and a Father's words are raised, each its own; a quote of one's own is the page itself; and each wears its own mark", async (page) => {
   const from = await pageOfEveryBlock(page);
   await write(page);
   const looks = await page.evaluate(() =>
@@ -977,18 +978,33 @@ await flow("the blocks: a verse, a quote of one's own and a Father's words are i
       const cs = getComputedStyle(el);
       return {
         sel,
-        border: ["Top", "Right", "Bottom", "Left"].map((side) => parseFloat(cs[`border${side}Width`])).reduce((a, b) => a + b, 0),
+        borders: ["Top", "Right", "Bottom", "Left"].map((side) => parseFloat(cs[`border${side}Width`])),
         ground: cs.backgroundColor,
+        raised: cs.backgroundImage !== "none",
         marks: el.querySelectorAll("svg[aria-hidden=true]").length,
       };
     }),
   );
+  // Build 95 note 6: what is brought from the library is raised (the house's tray), what the writer types is the page.
   for (const l of looks) {
-    expectThat(l.border === 0, `${l.sel} has a border`);
-    // Clear: an alpha of nothing, however the browser writes the colour (rgba(0, 0, 0, 0), oklab(0 0 0 / 0)).
-    expectThat(/(,|\/) ?0\)$|^transparent$/.test(l.ground), `${l.sel} stands on a ground of its own (${l.ground})`);
+    const own = l.sel === "[data-page-quote]";
+    // A tray's edge is the same all round: never a line down one side.
+    expectThat(l.borders.every((b) => b === l.borders[0]), `${l.sel} has an edge on one side only (${l.borders.join(", ")})`);
+    if (own) {
+      expectThat(l.borders[0] === 0 && !l.raised, `${l.sel}, the writer's own, is raised`);
+      // Clear: an alpha of nothing, however the browser writes the colour (rgba(0, 0, 0, 0), oklab(0 0 0 / 0)).
+      expectThat(/(,|\/) ?0\)$|^transparent$/.test(l.ground), `${l.sel} stands on a ground of its own (${l.ground})`);
+    } else {
+      expectThat(l.borders[0] > 0 && l.raised, `${l.sel}, brought from the library, is not raised`);
+    }
     expectThat(l.marks >= 2, `${l.sel} wears no mark`);
   }
+  // The two raised are not alike: Scripture's place is at its head, a Father's source at his words' foot.
+  const order = await page.evaluate(() => ({
+    verse: document.querySelector("[data-page-verse-place]").getBoundingClientRect().top < document.querySelector("[data-page-verse] blockquote, [data-page-verse] > span").getBoundingClientRect().top,
+    father: document.querySelector("[data-page-library-source]").getBoundingClientRect().top > document.querySelector("[data-page-library] blockquote").getBoundingClientRect().top,
+  }));
+  expectThat(order.verse && order.father, "Scripture's place is not over its words, or a Father's source not under his");
   // Scripture: its place is its heading, over where its words go.
   const place = page.locator("[data-page-verse-place]");
   expectThat((await place.innerText()).trim() === "John 3:16", `the verse's heading says "${await place.innerText()}"`);

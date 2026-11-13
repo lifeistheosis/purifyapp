@@ -34,6 +34,7 @@ import { Flower } from "@/components/ui/icons/Flower";
 import { Heart } from "@/components/ui/icons/Heart";
 import { Info } from "@/components/ui/icons/Info";
 import { Minus } from "@/components/ui/icons/Minus";
+import { Picture } from "@/components/ui/icons/Picture";
 import { Heading } from "@/components/ui/icons/Heading";
 import { Plus } from "@/components/ui/icons/Plus";
 import { Highlighter } from "@/components/ui/icons/Highlighter";
@@ -97,12 +98,16 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
   const hasProps = !!page.notebook || (page.tags?.length ?? 0) > 0;
   return (
     <div className="mt-5">
-      {/* Plus: the page's cover, edge to edge, credited under it (lib/journal/covers.ts). */}
+      {/* Plus: the page's cover, at the page's head, rounded as the app's
+          cards are and credited under it (lib/journal/covers.ts). The
+          pictures are icons, whose faces stand high in the frame, so the cut
+          is taken from there. Until build 95 it was a flat strip from edge to
+          edge of the sheet, 160px, cut through the middle of the icon. */}
       {cover ? (
-        <figure data-page-cover="" className="-mx-4 mb-3">
+        <figure data-page-cover="" className="mb-4">
           {/* eslint-disable-next-line @next/next/no-img-element -- a file the apps carry; the export has no image server */}
-          <img src={cover.src} alt={cover.alt} className="block h-40 w-full object-cover" />
-          <figcaption className="mt-1 px-4 font-sans text-[12px] text-paper/70">{cover.credit}</figcaption>
+          <img src={cover.src} alt={cover.alt} className="block h-44 w-full rounded-[18px] object-cover object-[50%_22%]" />
+          <figcaption className="mt-1.5 px-1 font-sans text-[12px] text-paper/70">{cover.credit}</figcaption>
         </figure>
       ) : null}
       <label className="block">
@@ -265,14 +270,6 @@ function TextBlock({
 }
 
 /**
- * What each block is from, in one line: its mark and its name. The mark is
- * its tool's own glyph, so a reader tells the three apart at a glance: the
- * Book for Scripture, the Quill for the Fathers, the speech mark for a quote
- * of one's own. The line the Florilegium's gathered lines carry
- * (components/florilegium/FlorilegiumDetail.tsx, ItemCard).
- */
-const BLOCK_SOURCE = "inline-flex min-w-0 items-center gap-2 font-sans text-caption font-semibold text-paper/65";
-/**
  * Where a block's words begin: under its name, past its mark (15px and the
  * 8px after it). So the marks hang in the margin and everything brought onto
  * the page is set in from the writer's own words, which alone stand at the
@@ -281,15 +278,21 @@ const BLOCK_SOURCE = "inline-flex min-w-0 items-center gap-2 font-sans text-capt
 const BLOCK_INSET = "ps-[23px]";
 
 /**
- * Scripture on the page: its place as its heading, which opens the passage at
- * the verse, and under it the words from the app's own Bible, verbatim, in the
- * size the app reads at. Never edited here.
+ * Scripture on the page: a raised card, the house's own (.theology-tray). Its
+ * place is its heading, in the reading face, and opens the passage at the
+ * verse; under it the words from the app's own Bible, verbatim, in the size
+ * the app reads at. Never edited here.
  *
- * Until 2026-11-11 a verse, a quote of one's own and a quote from the library
- * were three boxes alike, the verse's place a small line at its foot (build 93
- * note 8, the owner: "I want all of them to actually be unique in their
- * context and their use"). Now none is in a box and none stands beside a rule
- * (CLAUDE.md, "No side stripes"): each is told by its mark and its own shape.
+ * The page's quoting, redrawn for build 95 (note 6, the owner on 2026-11-13:
+ * "visuals aren't really that good. even the image system and the quoting
+ * system"), by one rule a reader can see: what is brought onto the page from
+ * the app's library is raised, and opens where it is from; what the writer
+ * types is the page itself. So Scripture and a Father's words are cards, each
+ * its own (Scripture's place at its head, a Father's source at his words'
+ * foot, as an epigraph's is), and a quote of one's own stays on the page in
+ * italics. None stands beside a rule (CLAUDE.md, "No side stripes"). Until
+ * then all three were small grey lines of 13px over or under plain words,
+ * told apart only by a 15px glyph.
  */
 function VerseCard({ index, block, label, noticed, onRemove }: { index: number; block: VerseCardBlock; label: string; noticed: boolean; onRemove: () => void }) {
   const { t } = useTranslate();
@@ -300,12 +303,15 @@ function VerseCard({ index, block, label, noticed, onRemove }: { index: number; 
       data-page-verse=""
       data-page-noticed={noticed ? "" : undefined}
       // Asked for a second time, the verse is not laid again: it is brought
-      // into view and lit for a moment (usePage, show).
-      className={cn("relative -mx-2 rounded-2xl pb-1.5 pe-12 ps-2 motion-safe:transition-colors motion-safe:duration-500", noticed ? "bg-paper/[0.09]" : "bg-paper/0")}
+      // into view and its edge lit for a moment (usePage, show).
+      className={cn(
+        "theology-tray relative rounded-[18px] px-4 pb-4 pt-1.5 outline outline-1 -outline-offset-1 motion-safe:transition-[outline-color] motion-safe:duration-500",
+        noticed ? "outline-paper/60" : "outline-transparent",
+      )}
     >
-      <figcaption>
-        <Link href={`/bible/${block.book}/${block.chapter}#v${block.from}`} data-page-verse-place="" className={cn(BLOCK_SOURCE, "min-h-11 hover:text-paper")}>
-          <Book size={15} aria-hidden className="shrink-0 text-paper/55" />
+      <figcaption className="pe-9">
+        <Link href={`/bible/${block.book}/${block.chapter}#v${block.from}`} data-page-verse-place="" className="inline-flex min-h-11 min-w-0 items-center gap-2 font-serif text-[17px] font-semibold leading-tight text-paper">
+          <Book size={16} aria-hidden className="shrink-0 text-paper/70" />
           <span className="min-w-0">{label}</span>
         </Link>
       </figcaption>
@@ -327,7 +333,7 @@ function VerseCardWords({ block, verses }: { block: VerseCardBlock; verses: numb
   const states = verses.map((v, i) => ({ v, words: words[i] ?? { text: null, status: "loading" as const } }));
   if (states.every((s) => s.words.status === "missing")) {
     return (
-      <span className={cn("block", BLOCK_INSET)}>
+      <span className="block">
         <Link href={`/bible/${block.book}/${block.chapter}#v${block.from}`} className="-mt-1.5 inline-flex min-h-11 items-center font-sans text-detail text-paper/70 underline underline-offset-4 hover:text-paper">
           {t("saved.openToRead")}
         </Link>
@@ -335,7 +341,7 @@ function VerseCardWords({ block, verses }: { block: VerseCardBlock; verses: numb
     );
   }
   return (
-    <blockquote dir="auto" className={cn("font-serif text-body leading-[1.7] text-paper/90", BLOCK_INSET)}>
+    <blockquote dir="auto" className="font-serif text-body leading-[1.7] text-paper/90">
       {states.map(({ v, words }) =>
         words.text ? (
           <span key={v}>
@@ -351,29 +357,30 @@ function VerseCardWords({ block, verses }: { block: VerseCardBlock; verses: numb
 }
 
 /**
- * A quote from Purify's library (Quote in journal): the words as the page has
- * them, never edited here as the source's; then the library's mark, which
+ * A quote from Purify's library (Quote in journal): a raised card, as
+ * Scripture's is, and its own: the words first, as the page they are from
+ * has them, never edited here; then at their foot the library's mark, which
  * only these wear, with the page they are from as the way back to it. The
- * shape a Father's line has in the Florilegium.
+ * shape an epigraph has, and a Father's line in the Florilegium.
  */
 function LibraryCard({ index, block, onRemove }: { index: number; block: Extract<PageBlock, { type: "library" }>; onRemove: () => void }) {
   const { t } = useTranslate();
   return (
-    <figure data-page-block={index} data-page-library="" className="relative pe-12">
-      <blockquote dir="auto" className={cn("whitespace-pre-line font-serif text-body leading-[1.7] text-paper/90", BLOCK_INSET)}>
+    <figure data-page-block={index} data-page-library="" className="theology-tray relative rounded-[18px] px-4 pb-1 pt-4">
+      <blockquote dir="auto" className="whitespace-pre-line pe-8 font-serif text-body leading-[1.7] text-paper/90">
         {block.text}
       </blockquote>
-      <figcaption>
-        <Link href={block.href} data-page-library-source="" className={cn(BLOCK_SOURCE, "min-h-11 hover:text-paper")}>
-          <Quill size={15} aria-hidden className="shrink-0 text-paper/55" />
+      <figcaption className="mt-1">
+        <Link href={block.href} data-page-library-source="" className="inline-flex min-h-11 min-w-0 items-center gap-2 font-sans text-caption font-semibold text-paper/80 hover:text-paper">
+          <Quill size={15} aria-hidden className="shrink-0 text-paper/70" />
           <span dir="auto" className="min-w-0">
             {block.cite || t("journal.page.fromLibrary")}
           </span>
         </Link>
         {/* Under a source's name, what kind of quote this is, where the name begins. */}
-        {block.cite ? <p className={cn("-mt-2 pb-1 font-sans text-caption text-paper/60", BLOCK_INSET)}>{t("journal.page.fromLibrary")}</p> : null}
+        {block.cite ? <p className={cn("-mt-2 pb-2 font-sans text-caption text-paper/70", BLOCK_INSET)}>{t("journal.page.fromLibrary")}</p> : null}
       </figcaption>
-      <RemoveButton high onClick={onRemove} label={t("common.remove")} />
+      <RemoveButton onClick={onRemove} label={t("common.remove")} />
     </figure>
   );
 }
@@ -721,9 +728,27 @@ export function PageToolbar({ editor, notebooks = [] }: { editor: PageEditor; no
                 } else setPanel("props");
               }}
             />
+            {/* The page's cover, a row of its own (build 95 note 6, "even the
+                image system"). Until then it was the last thing in the
+                notebook's panel, under the notebook, the tags, the font and
+                the alignment: a reader looking for a picture met "Add to a
+                notebook" and no word of one. */}
+            <MoreChoice
+              cover
+              icon={<Picture size={18} />}
+              label={t("journal.page.cover")}
+              locked={locked}
+              onClick={() => {
+                if (locked) {
+                  setPanel(null);
+                  upgrade.open("journal");
+                } else setPanel("cover");
+              }}
+            />
           </ul>
         </div>
       ) : null}
+      {panel === "cover" ? <CoverPanel editor={editor} onDone={() => setPanel(null)} /> : null}
       {/* Four tiles, each a quarter of the row, the icon over its name: the row
           fits a 360px phone in every language, and never scrolls sideways. */}
       <div role="toolbar" aria-label={t("journal.page.tools")} className="grid grid-cols-4 gap-1 px-2 py-1.5">
@@ -856,26 +881,35 @@ function PropsPanel({ editor, notebooks, onDone }: { editor: PageEditor; noteboo
         </label>
       ) : null}
       <StyleRows editor={editor} />
-      <CoverRow editor={editor} />
     </div>
   );
 }
 
-/** Plus: a cover from the verified artwork the apps carry, or none. */
-function CoverRow({ editor }: { editor: PageEditor }) {
+/**
+ * Plus: a cover from the verified artwork the apps carry, or none. A panel
+ * of its own: the pictures in one row that moves sideways, each large enough
+ * to be told from the next (88 by 112, the upright shape an icon has), the
+ * chosen one edged. They were a grid of five to a row, 60px squares, at the
+ * foot of the notebook's panel.
+ */
+function CoverPanel({ editor, onDone }: { editor: PageEditor; onDone: () => void }) {
   const { t } = useTranslate();
   const current = editor.page.cover;
+  const quiet = "tap-press inline-flex h-11 shrink-0 items-center rounded-pill px-3 font-sans text-detail font-semibold text-paper/85";
   return (
-    <div data-page-cover-choices="" className="mt-4 pb-2">
-      <div className="flex items-center justify-between gap-3">
-        <p className="font-sans text-caption font-semibold text-paper/70">{t("journal.page.cover")}</p>
+    <div data-page-cover-choices="" className="px-3 pt-2">
+      <div className="flex items-center gap-1">
+        <p className="min-w-0 flex-1 font-sans text-caption font-semibold text-paper/70">{t("journal.page.cover")}</p>
         {current ? (
-          <button type="button" onClick={() => editor.setCover(undefined)} className="tap-press inline-flex h-11 shrink-0 items-center rounded-pill px-3 font-sans text-detail font-semibold text-paper/85">
+          <button type="button" onClick={() => editor.setCover(undefined)} className={quiet}>
             {t("journal.page.noCover")}
           </button>
         ) : null}
+        <button type="button" onClick={onDone} className={quiet}>
+          {t("common.done")}
+        </button>
       </div>
-      <div role="radiogroup" aria-label={t("journal.page.cover")} className="mt-1 grid grid-cols-5 gap-2">
+      <div role="radiogroup" aria-label={t("journal.page.cover")} className="no-scrollbar -mx-3 mt-1 flex snap-x gap-2 overflow-x-auto scroll-px-3 px-3 pb-2">
         {COVERS.map((c) => (
           <button
             key={c.id}
@@ -884,10 +918,10 @@ function CoverRow({ editor }: { editor: PageEditor }) {
             aria-checked={current === c.id}
             aria-label={c.alt}
             onClick={() => editor.setCover(c.id)}
-            className={cn("tap-press aspect-square min-h-11 overflow-hidden rounded-xl border-2", current === c.id ? "border-paper" : "border-transparent")}
+            className={cn("tap-press h-[112px] w-[88px] shrink-0 snap-start overflow-hidden rounded-[14px] border-2", current === c.id ? "border-paper" : "border-transparent")}
           >
             {/* eslint-disable-next-line @next/next/no-img-element -- a file the apps carry */}
-            <img src={c.src} alt="" loading="lazy" className="h-full w-full object-cover" />
+            <img src={c.src} alt="" loading="lazy" className="h-full w-full object-cover object-[50%_22%]" />
           </button>
         ))}
       </div>
@@ -934,7 +968,7 @@ function StyleRows({ editor }: { editor: PageEditor }) {
 const MORE_TRAY = "overflow-hidden rounded-[18px] bg-paper/[0.03] ring-1 ring-inset ring-paper/[0.08]";
 
 /** One of More's rows: its glyph, its whole name on as many lines as it needs, and without Plus the mark. */
-function MoreChoice({ icon, label, locked, page = false, onClick }: { icon: ReactNode; label: string; locked: boolean; page?: boolean; onClick: () => void }) {
+function MoreChoice({ icon, label, locked, page = false, cover = false, onClick }: { icon: ReactNode; label: string; locked: boolean; page?: boolean; cover?: boolean; onClick: () => void }) {
   return (
     <li className="relative">
       {/* The hairline between rows begins where the words do; the first row has none over it. */}
@@ -944,6 +978,7 @@ function MoreChoice({ icon, label, locked, page = false, onClick }: { icon: Reac
         onClick={onClick}
         onPointerDown={(e) => e.preventDefault()}
         data-page-more-props={page ? "" : undefined}
+        data-page-more-cover={cover ? "" : undefined}
         className="tap-press flex min-h-12 w-full min-w-0 items-center gap-2.5 px-3 py-1.5 text-start font-sans text-detail font-semibold text-paper/90 hover:bg-paper/[0.04]"
       >
         <span className="shrink-0 text-paper/80">{icon}</span>

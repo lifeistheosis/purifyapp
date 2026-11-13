@@ -13,15 +13,24 @@ import { describe, expect, it } from "vitest";
  * three boxes alike. The verse's place was a small line at its foot; the
  * library quote's way back was a separate "Open" at its side.
  *
- * Now none is in a box and none stands beside a rule. Each wears the mark of
- * what it is, the glyph of the tool that lays it, and has its own shape:
+ * Build 93 took all three out of their boxes, and build 95 (note 6, the
+ * owner on 2026-11-13: "visuals aren't really that good. even the image
+ * system and the quoting system") found the result too faint: three small
+ * grey lines of 13px, told apart by a 15px glyph. What stands now is one rule
+ * a reader can see: what is brought onto the page from the app's library is
+ * raised (the house's tray) and opens where it is from; what the writer types
+ * is the page itself. The raised two are not alike: each has its own form.
+ * None stands beside a rule.
  *
- *   Scripture          the Book and its place as a heading that opens the
- *                      passage at the verse, then the words
- *   a Father's words   the words, then the Quill and the source as the way
- *                      back: the form a gathered line has in the Florilegium
- *   a quote of one's   the words in italic, then the speech mark and who
- *   own                said it, typed by the writer; no link, never the Quill
+ *   Scripture          a raised card: the Book and its place as a heading,
+ *                      in the reading face, that opens the passage at the
+ *                      verse; then the words
+ *   a Father's words   a raised card: the words, then at their foot the
+ *                      Quill and the source as the way back, as an epigraph
+ *                      names its author
+ *   a quote of one's   on the page itself: the words in italic, then the
+ *   own                speech mark and who said it, typed by the writer; no
+ *                      link, never the Quill
  *
  * How they are drawn in a built app is scripts/mock-journal.mjs.
  */
@@ -36,33 +45,32 @@ const verseWords = part("function VerseCardWords(", "function LibraryCard(");
 const father = part("function LibraryCard(", "function QuoteCard(");
 const own = part("function QuoteCard(", "function HeadingBlock(");
 
-describe("none of the three is in a box, and none stands beside a rule", () => {
-  it("no border round a verse, a Father's words or a quote of one's own", () => {
-    for (const [name, src] of [["verse", verse], ["library", father], ["quote", own]] as const) {
-      const figure = src.slice(src.indexOf("<figure"), src.indexOf(">", src.indexOf("className=", src.indexOf("<figure"))));
-      expect(figure, name).not.toMatch(/\bborder\b|border-paper|border-(s|e|l|r)\b/);
-    }
-    // A Father's words and a quote of one's own have no ground of their own either.
-    expect(father.slice(father.indexOf("<figure"), father.indexOf("<blockquote"))).not.toMatch(/\bbg-/);
-    expect(own.slice(own.indexOf("<figure"), own.indexOf("<label"))).not.toMatch(/\bbg-/);
+describe("what is brought in is raised, what is typed is the page, and none stands beside a rule", () => {
+  const figureOf = (src: string) => src.slice(src.indexOf("<figure"), src.indexOf(">", src.indexOf("className=", src.indexOf("<figure"))) + 200);
+
+  it("Scripture and a Father's words stand on the house's tray; a quote of one's own on the page itself", () => {
+    expect(figureOf(verse)).toContain("theology-tray relative rounded-[18px]");
+    expect(figureOf(father)).toContain("theology-tray relative rounded-[18px]");
+    expect(own.slice(own.indexOf("<figure"), own.indexOf("<label"))).not.toMatch(/theology-tray|\bbg-|\bborder\b/);
+  });
+
+  it("no rule down a side of any of them", () => {
+    for (const src of [verse, verseWords, father, own]) expect(src).not.toMatch(/border-(s|e|l|r)\b|border-(s|e|l|r)-/);
   });
 
   it("the words of all three are in the size the app reads at", () => {
     expect(verseWords).toContain('"font-serif text-body leading-[1.7] text-paper/90"');
-    expect(father).toContain('"whitespace-pre-line font-serif text-body leading-[1.7] text-paper/90"');
+    expect(father).toContain('"whitespace-pre-line pe-8 font-serif text-body leading-[1.7] text-paper/90"');
     expect(own).toMatch(/font-serif text-body italic leading-\[1\.7\] text-paper /);
   });
 
-  it("what is brought onto the page is set in from the writer's own words, by an indent and never a rule", () => {
-    // The marks hang in the margin; the words begin under the block's name, past its mark (15px and its 8px).
+  it("the writer's own words stand at the margin, and a quote of one's own is set in from them", () => {
     expect(blocks).toContain('const BLOCK_INSET = "ps-[23px]";');
-    expect(verseWords.match(/BLOCK_INSET/g)).toHaveLength(2);
-    expect(father.match(/BLOCK_INSET/g)).toHaveLength(2);
     expect(own.match(/BLOCK_INSET/g)).toHaveLength(1);
-    // The writer's own words stand at the margin.
-    const words = part("function TextBlock(", "const BLOCK_SOURCE");
+    const words = part("function TextBlock(", "const BLOCK_INSET");
     expect(words).not.toContain("BLOCK_INSET");
-    for (const src of [verse, verseWords, father, own]) expect(src).not.toMatch(/border-(s|e|l|r)\b|border-(s|e|l|r)-/);
+    // Inside its card Scripture begins at the card's own edge, with its heading.
+    expect(verseWords).not.toContain("BLOCK_INSET");
   });
 });
 
@@ -71,12 +79,12 @@ describe("each wears the mark of what it is: its tool's own glyph (build 93 note
 
   it("Scripture wears the Book, as the Verse tool does", () => {
     expect(toolbar).toMatch(/<Tool icon=\{<Book size=\{18\} \/>\} label=\{t\("journal\.page\.addVerse"\)\}/);
-    expect(verse).toContain('<Book size={15} aria-hidden className="shrink-0 text-paper/55" />');
+    expect(verse).toContain('<Book size={16} aria-hidden className="shrink-0 text-paper/70" />');
     expect(verse).not.toMatch(/<Quill|<ChatBubble/);
   });
 
   it("a Father's words wear the Quill, as a gathered line of a Father does", () => {
-    expect(father).toContain('<Quill size={15} aria-hidden className="shrink-0 text-paper/55" />');
+    expect(father).toContain('<Quill size={15} aria-hidden className="shrink-0 text-paper/70" />');
     expect(read("components/florilegium/FlorilegiumDetail.tsx")).toContain("<Quill size={15} aria-hidden");
     expect(father).not.toMatch(/<Book |<ChatBubble/);
   });
@@ -87,28 +95,27 @@ describe("each wears the mark of what it is: its tool's own glyph (build 93 note
     expect(own).not.toMatch(/<Quill|<Book |<Link/);
   });
 
-  it("the three source lines are one line, the Florilegium's", () => {
-    const line = blocks.match(/const BLOCK_SOURCE = "([^"]+)";/)![1];
-    expect(line).toBe("inline-flex min-w-0 items-center gap-2 font-sans text-caption font-semibold text-paper/65");
-    // The gathered line's own, which also carries its 44px.
-    expect(read("components/florilegium/FlorilegiumDetail.tsx")).toContain('const SOURCE = "inline-flex min-h-11 min-w-0 items-center gap-2 font-sans text-caption font-semibold text-paper/65";');
+  it("the two raised forms are not alike: Scripture's place is a heading in the reading face, a Father's source a small line", () => {
+    expect(verse).toMatch(/data-page-verse-place="" className="[^"]*\bfont-serif text-\[17px\] font-semibold\b/);
+    expect(father).toMatch(/data-page-library-source="" className="[^"]*\bfont-sans text-caption font-semibold\b/);
   });
 });
 
 describe("Scripture: its place is its heading", () => {
   it("the place comes before the words, and opens the passage at the verse", () => {
-    expect(verse.indexOf("<figcaption>")).toBeGreaterThan(-1);
-    expect(verse.indexOf("<figcaption>")).toBeLessThan(verse.indexOf("<VerseCardWords"));
-    expect(verse).toMatch(/<Link href=\{`\/bible\/\$\{block\.book\}\/\$\{block\.chapter\}#v\$\{block\.from\}`\} data-page-verse-place="" className=\{cn\(BLOCK_SOURCE, "min-h-11 hover:text-paper"\)\}>/);
+    expect(verse.indexOf("<figcaption")).toBeGreaterThan(-1);
+    expect(verse.indexOf("<figcaption")).toBeLessThan(verse.indexOf("<VerseCardWords"));
+    expect(verse).toMatch(/<Link href=\{`\/bible\/\$\{block\.book\}\/\$\{block\.chapter\}#v\$\{block\.from\}`\} data-page-verse-place="" className="inline-flex min-h-11 /);
   });
 
   it("with no signal and nothing kept, the heading still stands, and under it the way to read", () => {
     expect(verseWords).toMatch(/states\.every\(\(s\) => s\.words\.status === "missing"\)[\s\S]*?<Link href=\{`\/bible\/\$\{block\.book\}\/\$\{block\.chapter\}#v\$\{block\.from\}`\}[\s\S]*?min-h-11[\s\S]*?t\("saved\.openToRead"\)/);
   });
 
-  it("asked for again it is lit for a moment, with no edge to light", () => {
-    expect(verse).toContain('noticed ? "bg-paper/[0.09]" : "bg-paper/0"');
-    expect(verse).toContain("motion-safe:transition-colors");
+  it("asked for again its edge is lit for a moment, and nothing on the page moves for it", () => {
+    // An outline takes no room: the card is the same size lit and unlit.
+    expect(verse).toContain('noticed ? "outline-paper/60" : "outline-transparent"');
+    expect(verse).toContain("outline outline-1 -outline-offset-1 motion-safe:transition-[outline-color]");
   });
 
   it("its words are never typed here", () => {
@@ -118,8 +125,8 @@ describe("Scripture: its place is its heading", () => {
 
 describe("a Father's words: the words, then the way back", () => {
   it("the source is the way back, 44px to a finger, under the words", () => {
-    expect(father.indexOf("<blockquote")).toBeLessThan(father.indexOf("<figcaption>"));
-    expect(father).toMatch(/<Link href=\{block\.href\} data-page-library-source="" className=\{cn\(BLOCK_SOURCE, "min-h-11 hover:text-paper"\)\}>/);
+    expect(father.indexOf("<blockquote")).toBeLessThan(father.indexOf("<figcaption"));
+    expect(father).toMatch(/<Link href=\{block\.href\} data-page-library-source="" className="inline-flex min-h-11 /);
     // One way back, not a source and a separate Open beside it.
     expect(father.match(/<Link /g)).toHaveLength(1);
     expect(father).not.toContain('t("journal.composer.open")');
@@ -136,14 +143,17 @@ describe("a Father's words: the words, then the way back", () => {
 });
 
 describe("a block's remove sits level with the block's first line", () => {
-  it("a Father's words and a quote of one's own open on words, so their remove is raised to them; Scripture's sits with its heading", () => {
-    expect(father).toContain("<RemoveButton high onClick={onRemove}");
-    expect(own).toContain("<RemoveButton high onClick={onRemove}");
+  it("in a card it sits in the card's own corner; a quote of one's own opens on words, so its remove is raised to them", () => {
+    expect(father).toContain("<RemoveButton onClick={onRemove}");
     expect(verse).toContain("<RemoveButton onClick={onRemove}");
+    expect(own).toContain("<RemoveButton high onClick={onRemove}");
     const remove = code(blocks.slice(blocks.indexOf("function RemoveButton("), blocks.indexOf("// ── The tools")));
     expect(remove).toContain('high && "-mt-2.5"');
     // Still a finger wide and high.
     expect(remove).toContain("inline-flex h-11 w-11");
+    // And the card's words keep clear of it.
+    expect(verse).toContain('<figcaption className="pe-9">');
+    expect(father).toContain("whitespace-pre-line pe-8");
   });
 });
 
