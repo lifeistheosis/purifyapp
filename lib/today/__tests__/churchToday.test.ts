@@ -374,3 +374,31 @@ describe("The Church today, before the device knows the day", () => {
     expect(out).not.toContain("data-church-today");
   });
 });
+
+// Found by checkMock with pixels on the round 1 export (1.9, Updates 29): in
+// Arabic the saint's band put his English line where its own direction put
+// it, at the left, onto his picture: "Mother of God" at 2.58 to 4.17:1 on the
+// seven palettes, Today in the Nativity Fast. The English stands at the
+// reader's start, as Heresies' names do.
+describe("the saint's band in a right-to-left language", () => {
+  it("keeps the saint's English name and line at the reader's start, off his picture", async () => {
+    const { readFileSync } = await import("node:fs");
+    const src = readFileSync(`${process.cwd()}/components/today/ChurchTodayRail.tsx`, "utf8");
+    const at = src.indexOf("function SaintBand(");
+    const band = src.slice(at, src.indexOf("const look =", at));
+    expect(band).toContain('"mt-0.5 block font-heading text-lede font-bold leading-tight text-paper rtl:text-right"');
+    expect(band).toMatch(/<span lang="en" dir="ltr" className="[^"]*text-paper\/55 rtl:text-right">\s*\{saint\.line\.plain\}/);
+  });
+});
+
+// Seen on the same export: in Arabic the Nativity star's line read "St. Hymns on
+// the Nativity · Ephraim the Syrian", the byline's own English run set left of
+// the title's. The title and its byline are one English run.
+describe("the Nativity star's reading in a right-to-left language", () => {
+  it("keeps the work's name and its Father's in one English run, in their order", async () => {
+    const { readFileSync } = await import("node:fs");
+    const src = readFileSync(`${process.cwd()}/components/today/NativityStarCard.tsx`, "utf8");
+    expect(src).toMatch(/<span lang="en" dir="ltr">\s*<b className="font-semibold text-paper">\{reading\.title\}<\/b>\s*\{byline\}\s*<\/span>/);
+    expect(src).not.toContain('<span lang="en" dir="ltr">{byline}</span>');
+  });
+});

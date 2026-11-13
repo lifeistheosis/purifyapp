@@ -36,7 +36,7 @@ export function CouncilSections({ content, lang, council }: { content: CouncilDo
         <section key={s.n} id={`s${s.n}`} data-council-part={s.n} className="mx-auto max-w-[680px] scroll-mt-24">
           {s.framing && (
             <div className="mb-8">
-              <p className="font-sans text-caption font-semibold text-paper/45 mb-2">
+              <p className="font-sans text-caption font-semibold text-paper/55 mb-2">
                 <T k="saints.editorsNote" />
               </p>
               <p lang={text} dir={textDir(text)} className="font-sans text-ui md:text-body text-paper/70 leading-[1.65] italic">
@@ -84,7 +84,7 @@ export function CouncilSections({ content, lang, council }: { content: CouncilDo
           </div>
           {s.notes && s.notes.length > 0 && (
             <aside className="mt-10 border-t border-paper/10 pt-6">
-              <p className="font-sans text-caption font-semibold text-paper/45 mb-4">
+              <p className="font-sans text-caption font-semibold text-paper/55 mb-4">
                 <T k="saints.notes" />
               </p>
               <ul className="space-y-4" data-mock-allow="emdash" data-mock-why="the edition's own notes, as it prints them">

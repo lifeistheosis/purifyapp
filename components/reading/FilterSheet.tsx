@@ -45,7 +45,7 @@ export function FilterSheet({
       </ul>
       {groups.map((g, i) => (
         <div key={g.heading ?? i} className={g.heading ? "mt-4" : undefined}>
-          {g.heading ? <p className="px-1 pb-1 font-sans text-caption font-semibold text-paper/50">{g.heading}</p> : null}
+          {g.heading ? <p className="px-1 pb-1 font-sans text-caption font-semibold text-paper/55">{g.heading}</p> : null}
           <ul className="divide-y divide-paper/8">
             {g.options.map((o) => (
               <li key={o.value}>

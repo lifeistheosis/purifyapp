@@ -121,7 +121,7 @@ export function Dictionary() {
             <section key={letter} aria-labelledby={`letter-${letter}`} className="mt-6 first:mt-0">
               <p
                 id={`letter-${letter}`}
-                className="border-b border-paper/[0.08] pb-2 font-sans text-caption font-semibold text-paper/45"
+                className="border-b border-paper/[0.08] pb-2 font-sans text-caption font-semibold text-paper/55"
               >
                 {letter}
               </p>

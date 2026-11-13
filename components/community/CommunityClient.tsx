@@ -2390,7 +2390,7 @@ function PostCardInner({
                         <button
                           type="button"
                           onClick={() => discardPending(p.tempId)}
-                          className="hit-44 font-sans text-caption font-semibold text-paper/45 hover:text-paper/80"
+                          className="hit-44 font-sans text-caption font-semibold text-paper/55 hover:text-paper/80"
                         >
                           {t("community.discard")}
                         </button>

@@ -44,7 +44,7 @@ import { cn } from "@/lib/cn";
  * page keeps the length the reader is looking at after any tap, from one
  * mount at the root (lib/ui/keepLength.ts).
  */
-const LABEL = "font-sans text-caption font-semibold text-paper/45";
+const LABEL = "font-sans text-caption font-semibold text-paper/55";
 
 /**
  * The registry is read here, not handed in. It is already in this page's

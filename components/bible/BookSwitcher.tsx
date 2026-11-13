@@ -144,7 +144,7 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
             ) : (
               filtered.map((grp) => (
                 <div key={grp.labelKey} className="mb-1 last:mb-0">
-                  <p className="px-2 pt-3 pb-1.5 font-sans text-caption font-semibold text-paper/45">
+                  <p className="px-2 pt-3 pb-1.5 font-sans text-caption font-semibold text-paper/55">
                     {t(grp.labelKey)}
                   </p>
                   {grp.categories.map((c) => (

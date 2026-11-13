@@ -291,7 +291,7 @@ export function EikonBoxClient() {
                 {!editingAddress ? (
                   <div className="flex items-start justify-between gap-3 rounded-md border border-paper/12 bg-paper/[0.04] px-3.5 py-3">
                     <div className="min-w-0">
-                      <p className="font-sans text-caption font-semibold text-paper/50">
+                      <p className="font-sans text-caption font-semibold text-paper/55">
                         Ship to
                       </p>
                       <p className="mt-1 font-sans text-caption text-paper/75 leading-[1.5]">
@@ -377,7 +377,7 @@ export function EikonBoxClient() {
       {/* ── Past boxes ─────────────────────────────────────────────── */}
       {history.length > 1 && (
         <div>
-          <p className="mb-2.5 font-sans text-caption font-semibold text-paper/50">
+          <p className="mb-2.5 font-sans text-caption font-semibold text-paper/55">
             Past boxes
           </p>
           <ul className="space-y-2">

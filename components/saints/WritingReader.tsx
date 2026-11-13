@@ -207,7 +207,7 @@ export function WritingReader({
  </div>
  {sec.notes?.length ? (
  <aside aria-label={t("saints.notesOn", { title: sec.title })} className="mt-10 border-t border-paper/10 pt-6">
- <p className="mb-4 font-sans text-caption font-semibold text-paper/45">{t("saints.notes")}</p>
+ <p className="mb-4 font-sans text-caption font-semibold text-paper/55">{t("saints.notes")}</p>
  <ul className="space-y-4">
  {sec.notes.map((note, i) => (
  <li key={i} className="font-sans text-ui leading-[1.55] text-paper/70">
@@ -312,7 +312,7 @@ function EditionLine({ line }: { line: SectionLine }) {
  }
  if (line.kind === "heading") {
  return (
- <p lang="en" dir="ltr" data-edition-line="heading" className="pt-4 first:pt-0 font-sans text-caption font-semibold text-paper/45">
+ <p lang="en" dir="ltr" data-edition-line="heading" className="pt-4 first:pt-0 font-sans text-caption font-semibold text-paper/55">
  {line.text}
  </p>
  );
@@ -378,7 +378,7 @@ function SectionParagraphs({
  />
  {sec.framing && (
  <div className="mb-8">
- <p className="font-sans text-caption font-semibold text-paper/45 mb-2">
+ <p className="font-sans text-caption font-semibold text-paper/55 mb-2">
  {t("saints.editorsNote")}
  </p>
  <p lang="en" dir="ltr" className="font-sans text-ui md:text-body text-paper/70 leading-[1.65] italic">
@@ -444,7 +444,7 @@ function SectionParagraphs({
  return (
  <div key={i} id={`p-${sec.n}-${i}`} data-division="heading" data-place={`${sec.n}:${i}`} className="scroll-mt-24 pt-6 first:pt-0">
  {chapter !== null ? (
- <p className="font-sans text-caption font-semibold text-paper/45 mb-1.5">
+ <p className="font-sans text-caption font-semibold text-paper/55 mb-1.5">
  {t("saints.division.chapter", { n: chapter })}
  </p>
  ) : null}
@@ -478,7 +478,7 @@ function SectionParagraphs({
  return (
  <div key={i} data-division="chapter" className="pt-4 first:pt-0">
  {heads.map((h) => (
- <p key={h.level} className="font-sans text-caption font-semibold text-paper/45 mb-2">
+ <p key={h.level} className="font-sans text-caption font-semibold text-paper/55 mb-2">
  {t("saints.division.chapter", { n: h.n })}
  </p>
  ))}

@@ -556,7 +556,7 @@ export function ProfileAboutDoor({
     clergy?.parish && profile.parish && clergy.parish.trim().toLowerCase() === profile.parish.trim().toLowerCase();
   const clergyWhere = clergy ? [sameParish ? null : clergy.parish, clergy.jurisdiction].filter(Boolean).join(" · ") : "";
   const links = profile.links ?? [];
-  const label = "font-sans text-caption font-semibold text-paper/52";
+  const label = "font-sans text-caption font-semibold text-paper/55";
   return (
     <div className="space-y-2.5 text-start">
       {clergy ? (

@@ -143,7 +143,7 @@ export function MultiVerseClient() {
                 key={`unresolved-${i}`}
                 className="rounded-md border border-paper/12 bg-paper/[0.02] px-5 py-4"
               >
-                <p className="font-sans text-caption font-semibold text-paper/45 mb-1">
+                <p className="font-sans text-caption font-semibold text-paper/55 mb-1">
                   <T k="bible.multiCouldNotResolve" />
                 </p>
                 {/* What the reader typed, in whatever language they typed it. */}
@@ -184,7 +184,7 @@ export function MultiVerseClient() {
               <div lang="en" dir="ltr" className="font-serif text-body text-paper/85 leading-[1.75] space-y-3">
                 {b.body.verses.map((v) => (
                   <p key={v.n}>
-                    <span className="font-sans text-caption font-semibold text-paper/45 mr-2 align-baseline">
+                    <span className="font-sans text-caption font-semibold text-paper/55 mr-2 align-baseline">
                       {v.n}
                     </span>
                     {v.text}

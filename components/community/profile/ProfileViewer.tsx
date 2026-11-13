@@ -485,7 +485,7 @@ export function ProfileViewer({
   const inCommon =
     mutuals.length > 0 ? (
       <section aria-labelledby="profile-common" className="pt-3">
-        <p id="profile-common" role="heading" aria-level={3} className="px-1 font-sans text-caption font-semibold text-paper/52">
+        <p id="profile-common" role="heading" aria-level={3} className="px-1 font-sans text-caption font-semibold text-paper/55">
           {t("profile.tabCommon")}
         </p>
         <p className="mt-0.5 px-1 font-sans text-caption text-paper/45">{t("profile.commonHint")}</p>

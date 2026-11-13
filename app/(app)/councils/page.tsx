@@ -61,7 +61,7 @@ export default function CouncilsPage() {
   kicker={
   <span className="flex items-baseline gap-[7px]">
   <span className="font-serif text-detail font-semibold tracking-[0.08em] text-paper/65">{NUMERALS[c.ordinal ?? 0]}</span>
-  <span className="font-sans text-caption font-semibold text-paper/50">{c.year}</span>
+  <span className="font-sans text-caption font-semibold text-paper/55">{c.year}</span>
   </span>
   }
   // The council's name and line are English (build 90 note 4: left to right under Arabic and Urdu).

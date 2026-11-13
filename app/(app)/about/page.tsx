@@ -38,7 +38,7 @@ function AboutEn() {
  </h1>
 
  {/* §1 Manifesto / North Star */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/55">
  <T k="about.northStar" />
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
@@ -52,7 +52,7 @@ function AboutEn() {
  </p>
 
  {/* §2 Radical Textual Honesty */}
- <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/55">
  <T k="about.whatItIsMadeOf" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
@@ -89,7 +89,7 @@ function AboutEn() {
  </p>
 
  {/* §3 Ethical Privacy Covenant */}
- <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/55">
  <T k="about.yourReadingLifeIsYours" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
@@ -124,7 +124,7 @@ function AboutEn() {
  </p>
 
  {/* §4 Stewardship & the Road Ahead */}
- <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/55">
  <T k="about.howItIsKept" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
@@ -169,7 +169,7 @@ function AboutEn() {
  </p>
 
  {/* §5 Contributors */}
- <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/55">
  <T k="ui.readersWhoHaveShapedPurify" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
@@ -197,7 +197,7 @@ function AboutEn() {
  ) : null}
 
  {/* §5b Promoters */}
- <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/55">
  <T k="ui.readersWhoHaveSpreadThe" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">

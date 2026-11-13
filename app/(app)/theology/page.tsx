@@ -127,7 +127,7 @@ export default async function TheologyHubPage() {
         <div className="mx-auto w-full max-w-[640px]">
           {/* On a computer, the page names itself; a phone's bar does. */}
           <header className="mb-8 hidden md:block native-md-hidden">
-            <p className="font-sans text-caption font-semibold text-paper/45">
+            <p className="font-sans text-caption font-semibold text-paper/55">
               <T k="study.theology.studyLibrary" />
             </p>
             <h1 className="mt-3 font-serif text-display-lg font-bold leading-[1.02] tracking-[-0.025em] text-paper">

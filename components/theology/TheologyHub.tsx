@@ -172,7 +172,7 @@ function FirstStep({ steps, progress }: { steps: PathStep[]; progress: PathProgr
       <div className="theology-tray relative mt-4 overflow-hidden rounded-[20px]">
         <WholeIcon src={step.picture.src} eager className="theology-card-picture h-[188px] w-full" />
         <div className="relative -mt-3.5 px-4 pb-4">
-          <p className="font-sans text-caption font-semibold text-paper/50">{t("readingsFlow.of", { n: step.n, total: steps.length })}</p>
+          <p className="font-sans text-caption font-semibold text-paper/55">{t("readingsFlow.of", { n: step.n, total: steps.length })}</p>
           <h3 id="theology-head" className="mt-0.5 font-serif text-[22px] font-bold leading-tight text-paper">
             {step.title}
           </h3>
@@ -214,7 +214,7 @@ function WhereYouLeftOff({ steps, states, progress }: { steps: PathStep[]; state
         <Link href={`/theology/path/${step.id}`} className="relative flex items-center gap-[15px]">
           <PathMedal src={step.picture.src} focus={step.picture.focus} size={82} inner={66} states={states} />
           <span className="min-w-0">
-            <span className="block font-sans text-caption font-semibold text-paper/50">
+            <span className="block font-sans text-caption font-semibold text-paper/55">
               {t("readingsFlow.of", { n: step.n, total: steps.length })}
             </span>
             <span id="theology-head" lang="en" dir="ltr" className="mt-[3px] block font-serif text-[21px] font-bold leading-[1.15] text-paper">

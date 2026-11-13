@@ -26,7 +26,7 @@ export function AboutDe({ credits }: { credits: boolean }) {
  </h1>
 
  {/* §1 Manifest / Nordstern */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/55">
  <T k="ui.derNordstern" />
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
@@ -40,7 +40,7 @@ export function AboutDe({ credits }: { credits: boolean }) {
  </p>
 
  {/* §2 Radikale Texttreue */}
- <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/55">
  <T k="ui.worausEsGemachtIst" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
@@ -77,7 +77,7 @@ export function AboutDe({ credits }: { credits: boolean }) {
  </p>
 
  {/* §3 Ethischer Privatheitsbund */}
- <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/55">
  <T k="ui.deinLeseLebenGehRt" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
@@ -112,7 +112,7 @@ export function AboutDe({ credits }: { credits: boolean }) {
  </p>
 
  {/* §4 Verwaltung und der Weg voraus */}
- <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/55">
  <T k="ui.wieEsBewahrtWird" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
@@ -157,7 +157,7 @@ export function AboutDe({ credits }: { credits: boolean }) {
  </p>
 
  {/* §5 Mitarbeiter */}
- <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/55">
  <T k="ui.leserDiePurifyMitgeprGt" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">
@@ -185,7 +185,7 @@ export function AboutDe({ credits }: { credits: boolean }) {
  ) : null}
 
  {/* §5b Förderer */}
- <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
+ <p className="mt-12 font-sans text-caption font-semibold text-paper/55">
  <T k="ui.leserDiePurifyBekanntGemacht" />
  </p>
  <h2 className="mt-2 font-sans text-title md:text-heading font-bold text-paper tracking-[-0.02em] leading-[1.15]">

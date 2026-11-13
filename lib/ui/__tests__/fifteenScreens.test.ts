@@ -124,6 +124,19 @@ describe("The small line: sentence case, never capitals spaced out", () => {
     expect(found).toEqual([]);
   });
 
+  it("is never fainter than /55", () => {
+    // Found by checkMock with pixels on the round 1 export (Updates 29): Theology's
+    // "1 of 9" at /50 read 4.39:1 on Cappadocian at 800 and 1032. The small lines
+    // the sweep left were already in sentence case, so only their ink was wrong.
+    const found: string[] = [];
+    for (const file of screens()) {
+      for (const m of read(file).matchAll(/font-sans text-caption font-semibold text-paper\/(\d+)\b/g)) {
+        if (Number(m[1]) < 55) found.push(`${file}: text-paper/${m[1]}`);
+      }
+    }
+    expect(found).toEqual([]);
+  });
+
   it("is in no rule of the stylesheet", () => {
     // The class names above are half of it: .set-well-ref (Settings' reader
     // size), .gift-eyebrow (the gift) and .tour-brand (the tour) set their
