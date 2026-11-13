@@ -71,11 +71,13 @@ export function EventPartsNav({ parts }: { parts: EventPart[] }) {
   const [underMap, setUnderMap] = useState(false);
   useEffect(() => {
     const row = document.querySelector<HTMLElement>("[data-event-parts]");
-    const map = document.querySelector<HTMLElement>("[data-thread-map]");
-    if (!row || !map) return;
+    if (!row) return;
     let frame = 0;
     const read = () => {
       frame = 0;
+      // Asked each time: the map is drawn after this row (the walk found it absent at first).
+      const map = document.querySelector<HTMLElement>("[data-thread-map]");
+      if (!map) return setUnderMap(false);
       const r = row.getBoundingClientRect();
       const m = map.getBoundingClientRect();
       setUnderMap(m.top < r.bottom - 1 && m.bottom > r.top + 1);

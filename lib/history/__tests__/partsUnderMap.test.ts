@@ -32,7 +32,8 @@ describe("the parts row under the thread map", () => {
   });
 
   it("steps aside while the map's box stands over its own, and only then", () => {
-    expect(nav).toMatch(/document\.querySelector<HTMLElement>\("\[data-thread-map\]"\)/);
+    // Asked inside each read, never once: the map is drawn after the row.
+    expect(nav).toMatch(/const read = \(\) => \{\s*frame = 0;\s*const map = document\.querySelector<HTMLElement>\("\[data-thread-map\]"\);/);
     expect(nav).toMatch(/setUnderMap\(m\.top < r\.bottom - 1 && m\.bottom > r\.top \+ 1\)/);
     expect(nav).toMatch(/underMap && "pointer-events-none opacity-0"/);
     // Read once a frame while the page scrolls, never on each scroll event.
