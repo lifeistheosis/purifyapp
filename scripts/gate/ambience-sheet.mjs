@@ -363,6 +363,64 @@ if (!SELLS_PLUS) {
   }
 }
 
+if (SELLS_PLUS) {
+  // ---- preview: the Plus preview's strip wears the photographs (build 95, note 22, his word of
+  // 2026-11-13 about 14:29 UTC, "the Plus preview's strip takes the photographs too"). Opened as a
+  // reader without Plus opens it, from a locked sound and Ambience's Try it; each of the six tiles
+  // shows its sound's photograph; in English a finger plays a second sound and the tile under it
+  // does not move; checkMock with pixels on the preview at each width, in English and in Arabic.
+  console.log("\npreview: the Plus preview's strip, with the photographs");
+  for (const lang of ["en", "ar"]) {
+    for (const size of SIZES) {
+      const { ctx, page } = await open(lang, size, { blocked: lang === "en" ? [] : ["rain"] });
+      await openSheet(page, lang);
+      await tapAt(page, tileOf(page, lang, "rain"));
+      const plus = page.locator(`[role="dialog"][aria-label="${t(lang, "plus.sheet.title")}"]`).first();
+      await plus.waitFor({ timeout: 10000 }).catch(() => {});
+      await page.waitForTimeout(1200);
+      const tryIt = plus.locator('[data-plus-try-open="ambience"]').first();
+      if (await tryIt.count()) await tapAt(page, tryIt);
+      const preview = page.locator('[data-plus-try="ambience"]').first();
+      if (!(await preview.waitFor({ timeout: 10000 }).then(() => true, () => false))) {
+        fail(`the Plus preview of Ambience did not open at ${size[0]} in ${lang}`);
+        await ctx.close();
+        continue;
+      }
+      await page.waitForTimeout(3000);
+      const strip = preview.locator(`[role="group"][aria-label="${t(lang, "ambience.title")}"]`).first();
+      const shown = await strip.evaluate((el) =>
+        [...el.querySelectorAll("button")].map((b) => {
+          const img = b.querySelector("img");
+          return { src: img?.getAttribute("src") ?? null, painted: Boolean(img?.complete && img.naturalWidth > 0), h: Math.round(b.getBoundingClientRect().height) };
+        }),
+      );
+      const expected = SOUNDS.map((s) => `/audio/ambience/${s}.jpg`);
+      if (shown.length === 6 && shown.every((x, i) => x.src === expected[i] && x.painted && x.h === 108)) ok(`the strip's six tiles each show their sound's photograph, painted, 108px tall, at ${size[0]} in ${lang}`);
+      else fail(`the strip at ${size[0]} in ${lang}: ${JSON.stringify(shown)}`);
+      if (lang === "en" && size === SIZES[0]) {
+        const sea = strip.locator("button").nth(SOUNDS.indexOf("sea"));
+        await sea.scrollIntoViewIfNeeded();
+        await page.waitForTimeout(400);
+        const before = await sea.boundingBox();
+        await tapAt(page, sea);
+        const text = await waitText(sea, (x) => x.includes(t(lang, "ambience.playing")) || x.includes(t(lang, "ambience.failed")));
+        const after = await sea.boundingBox();
+        const moved = before && after ? Math.max(Math.abs(after.x - before.x), Math.abs(after.y - before.y)) : 99;
+        if (text.includes(t(lang, "ambience.playing")) && moved <= 4) ok(`a finger on The sea in the strip plays it, and the tile does not move (${moved.toFixed(1)}px)`);
+        else fail(`The sea in the strip: "${text}", moved ${moved.toFixed(1)}px`);
+      }
+      const result = await checkMock(page, '[data-plus-try="ambience"]', { palettes: ALL, pixels: true });
+      if (result.failures.length) {
+        fail(`checkMock the Plus preview at ${size[0]} in ${lang}: ${result.failures.length} failure(s)`);
+        for (const f of result.failures.slice(0, 12)) console.log(`      ${f.check} on ${f.palette}: ${f.what} ${f.detail ?? ""}`);
+      } else ok(`checkMock the Plus preview at ${size[0]} in ${lang}: passes on ${ALL.length} palettes and looks`);
+      if (result.allowed?.length) for (const a of result.allowed) console.log(`      allowed: ${a}`);
+      await shot(page, `preview-${lang}-${size[0]}`);
+      await ctx.close();
+    }
+  }
+}
+
 await browser.close();
 console.log(fails ? `\n${fails} fail(s).` : "\nAll passed.");
 process.exit(fails ? 1 : 0);
