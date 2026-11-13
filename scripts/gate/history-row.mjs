@@ -1,11 +1,13 @@
 // Why the "after 451" row on /history/ will not come to the middle when scrolled into view.
 import fs from "node:fs";
 import { chromium } from "playwright";
+import { motionOptions, pinMotion } from "../lib/motion.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "../lib/shell-server.mjs";
 // The browser the session carries, as the walks launch it (scripts/tap-walk.mjs); else Playwright's own.
 const OWN = "/opt/pw-browsers/chromium";
 const browser = await chromium.launch(fs.existsSync(OWN) ? { executablePath: OWN } : {});
-const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
+const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...motionOptions("on") });
+await pinMotion(ctx, "on");
 await ctx.addInitScript(() => { try { localStorage.setItem("purify:onboarded", "99"); localStorage.setItem("purify:whatsNewSeen", "99"); } catch {} });
 await serveLikeTheShell(ctx, new URL("../../out", import.meta.url).pathname, {});
 const fetched = new Map();

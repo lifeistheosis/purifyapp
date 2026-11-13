@@ -2,13 +2,15 @@
 // a line clamp that hides lines): at the size given, one page at a time, no taps.
 import fs from "node:fs";
 import { chromium } from "playwright";
+import { motionOptions, pinMotion } from "../lib/motion.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "../lib/shell-server.mjs";
 // The browser the session carries, as the walks launch it (scripts/tap-walk.mjs); else Playwright's own.
 const OWN = "/opt/pw-browsers/chromium";
 const [W, H] = (process.argv[2] ?? "390x844").split("x").map(Number);
 const webs = fs.readdirSync(new URL("../../out/saints", import.meta.url)).filter((s) => fs.existsSync(new URL(`../../out/saints/${s}/web/index.txt`, import.meta.url))).map((s) => `/saints/${s}/web/`);
 const browser = await chromium.launch(fs.existsSync(OWN) ? { executablePath: OWN } : {});
-const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
+const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...motionOptions("on") });
+await pinMotion(ctx, "on");
 await ctx.addInitScript(() => { try { localStorage.setItem("purify:onboarded", "99"); localStorage.setItem("purify:whatsNewSeen", "99"); } catch {} });
 await serveLikeTheShell(ctx, new URL("../../out", import.meta.url).pathname, {});
 const words = new Map();

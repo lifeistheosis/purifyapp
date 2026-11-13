@@ -29,7 +29,7 @@
 // and a reader's profile picture then arrive, as they do for a reader with a
 // signal. Without it the walk is the app with no network.
 //
-//   npm run build:android, then:
+//   node scripts/gate/export.mjs (the store workflow's own switches), then:
 //   NODE_USE_ENV_PROXY=1 node scripts/guardrail-walk.mjs [out dir] [--only /path,/path] [--workers 3] [--json file] [--online] [--looks dir]
 //   (add --size 800x1280 or --size 1032x1376 to walk at a tablet's size; a phone, 390 by 844, unless named)
 //   node scripts/guardrail-walk.mjs --self-test    (the carried-picture check's own proof)
@@ -60,8 +60,10 @@ import { chromium } from "playwright";
 
 import { checkMock, LOOKS as THEMES } from "./mock-check.mjs";
 import { screens } from "./lib/screens.mjs";
+import { assertMotion, motionOptions, motionWords, pinMotion } from "./lib/motion.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "./lib/shell-server.mjs";
 import { SELLS_PLUS, asAndroidShell, checkSells, readerWords } from "./lib/sells-plus.mjs";
+import { checkStoreExport } from "./lib/store-switches.mjs";
 
 const argv = process.argv.slice(2);
 const flag = (name) => {
@@ -95,10 +97,12 @@ const SELF_TEST = argv.includes("--self-test");
 if (SELF_TEST) argv.splice(argv.indexOf("--self-test"), 1);
 const OUT = path.resolve(argv[0] ?? "out");
 if (!SELF_TEST) checkSells(OUT);
+// An export cut without the store's own switches is not the app he walks (scripts/lib/store-switches.mjs).
+if (!SELF_TEST) checkStoreExport(OUT);
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}: run npm run build:android first`);
 
 const list = SELF_TEST ? [] : (ONLY ?? screens(OUT));
-if (!SELF_TEST) console.log(`${list.length} screens ${ON}${LIGHT ? ", on the seven light looks" : ""}, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}, ${readerWords()}`);
+if (!SELF_TEST) console.log(`${list.length} screens ${ON}${LIGHT ? ", on the seven light looks" : ""}, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}, ${motionWords("on")}, ${readerWords()}`);
 
 // The website, as the apps name it: purifyapp.net in the store builds, its Render address in an export
 // built without NEXT_PUBLIC_SITE_URL (lib/site.ts).
@@ -204,6 +208,9 @@ async function walkOne(page, at) {
     const { result: r, asked } = await picturesAsked(page, async () => {
       await go(page, at, { timeout: 15000 });
       await page.waitForTimeout(1500);
+      // Walked with the app's motion on, as he walks it, or not at all (the arbiter, 2026-11-13).
+      const wrong = await assertMotion(page, "on");
+      if (wrong) throw new Error(wrong);
       // Words over a picture are measured on the pixels under their letters, on every palette.
       const r = await checkMock(page, "body", { pixels: true, ...(LIGHT ? { palettes: LIGHT_LOOKS } : {}) });
       const left = r.looks.filter((l) => l.left);
@@ -228,7 +235,8 @@ const results = [];
 let done = 0;
 const queue = [...list];
 async function phone() {
-  const ctx = await (await liveBrowser()).newContext({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
+  const ctx = await (await liveBrowser()).newContext({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...motionOptions("on") });
+  await pinMotion(ctx, "on");
   await ctx.addInitScript(() => {
     try {
       localStorage.setItem("purify:onboarded", "99");

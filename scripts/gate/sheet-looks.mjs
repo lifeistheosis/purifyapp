@@ -6,6 +6,7 @@
 import fs from "node:fs";
 import { chromium } from "playwright";
 import { checkMock, LOOKS as THEMES } from "../mock-check.mjs";
+import { motionOptions, pinMotion } from "../lib/motion.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "../lib/shell-server.mjs";
 // The browser the session carries, as the walks launch it (scripts/tap-walk.mjs); else Playwright's own.
 const OWN = "/opt/pw-browsers/chromium";
@@ -44,7 +45,8 @@ const browser = await chromium.launch(fs.existsSync(OWN) ? { executablePath: OWN
 let fails = 0;
 try {
   for (const s of SHEETS) {
-    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...motionOptions("on") });
+    await pinMotion(ctx, "on");
     await ctx.addInitScript(() => { try { localStorage.setItem("purify:onboarded", "99"); localStorage.setItem("purify:whatsNewSeen", "99"); } catch {} });
     await serveLikeTheShell(ctx, OUT, {});
     for (const at of ["https://purifyapp.net/**", "https://purifyapp.onrender.com/**", "https://*.supabase.co/storage/v1/object/public/**"]) await ctx.route(at, mainWeb);

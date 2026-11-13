@@ -1,8 +1,11 @@
 // The gate walks one export two ways (the arbiter, 2026-11-11): the export cut
-// the house's way sells Plus on Android (NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1
-// NEXT_PUBLIC_REVENUECAT_ANDROID_KEY=walk npm run build:android, the recipe of
-// scripts/plus-order-walk.mjs and learn-walk.mjs), and sells it only where the
-// page is the Android shell. So with SELLS_PLUS=1 a walk makes the page say so
+// the house's way sells Plus on Android, and sells it only where the page is
+// the Android shell. From 2026-11-13 the gate cuts it with the store
+// workflow's own switches (node scripts/gate/export.mjs, scripts/lib/
+// store-switches.mjs), which carry these two Plus values as stand-ins for the
+// store's secrets and every value the workflow writes itself (the shop, Community);
+// the recipe before (only NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1
+// NEXT_PUBLIC_REVENUECAT_ANDROID_KEY=walk) left the shop inside the app ungated. So with SELLS_PLUS=1 a walk makes the page say so
 // and is a new reader with no Plus, as he walks; without it the same export
 // locks nothing, a reader with all of Plus's parts.
 

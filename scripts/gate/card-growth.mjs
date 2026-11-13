@@ -12,6 +12,7 @@ import fs from "node:fs";
 
 import { chromium } from "playwright";
 
+import { motionOptions, pinMotion } from "../lib/motion.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "../lib/shell-server.mjs";
 import { SELLS_PLUS, asAndroidShell, readerWords } from "../lib/sells-plus.mjs";
 
@@ -53,7 +54,8 @@ function geometry() {
 let faults = 0;
 for (const slug of SLUGS) {
   for (const how of ["tap", "keyboard"]) {
-    const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
+    const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...motionOptions("on") });
+    await pinMotion(ctx, "on");
     await ctx.addInitScript(() => {
       try {
         localStorage.setItem("purify:onboarded", "99");

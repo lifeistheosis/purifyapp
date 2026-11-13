@@ -5,6 +5,7 @@
 // reader, reading the main web as the walks do with --online.
 import fs from "node:fs";
 import { chromium } from "playwright";
+import { motionOptions, pinMotion } from "../lib/motion.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "../lib/shell-server.mjs";
 import { SELLS_PLUS, asAndroidShell, readerWords } from "../lib/sells-plus.mjs";
 // The browser the session carries, as the walks launch it (scripts/tap-walk.mjs); else Playwright's own.
@@ -41,7 +42,8 @@ const browser = await chromium.launch(fs.existsSync(OWN) ? { executablePath: OWN
 let fails = 0;
 try {
   for (const at of WEBS) {
-    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...motionOptions("on") });
+    await pinMotion(ctx, "on");
     await ctx.addInitScript(() => { try { localStorage.setItem("purify:onboarded", "99"); localStorage.setItem("purify:whatsNewSeen", "99"); } catch {} });
     if (SELLS_PLUS) await asAndroidShell(ctx);
     await serveLikeTheShell(ctx, OUT, {});

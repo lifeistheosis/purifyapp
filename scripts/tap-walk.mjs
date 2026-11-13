@@ -91,7 +91,7 @@
 // its storage (a reader's profile picture), are read (GET) and nothing is sent.
 // A link out of the app (another site, mail, a download) is not followed.
 //
-//   npm run build:android, then:
+//   node scripts/gate/export.mjs (the store workflow's own switches), then:
 //   NODE_USE_ENV_PROXY=1 node scripts/tap-walk.mjs [out dir] [--only /path,/path] [--workers 3] [--max 30] [--json file] [--shots dir] [--online]
 //   [--size 800x1280] [--store key=value ...] [--lang ar]: a screen of another size, and what the
 //   reader has chosen before the walk (a key the app keeps, the reader's language).
@@ -137,9 +137,12 @@ import path from "node:path";
 import { chromium } from "playwright";
 
 import { checkMock } from "./mock-check.mjs";
+import { assertMotion, motionOptions, motionWords, pinMotion } from "./lib/motion.mjs";
 import { screens } from "./lib/screens.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "./lib/shell-server.mjs";
 import { SELLS_PLUS as SELLS, asAndroidShell, checkSells, readerWords } from "./lib/sells-plus.mjs";
+import { checkStoreExport } from "./lib/store-switches.mjs";
+import { aimOf, firstTouch, fresh, markControls, reach, tapAt } from "./lib/tap.mjs";
 
 const argv = process.argv.slice(2);
 const flag = (name) => {
@@ -180,6 +183,8 @@ const OUT = SELF_TEST ? selfTestPage() : path.resolve(argv[0] ?? "out");
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}: run npm run build:android first`);
 const SELLS_PLUS = !SELF_TEST && SELLS;
 checkSells(OUT, SELLS_PLUS);
+// An export cut without the store's own switches is not the app he walks (scripts/lib/store-switches.mjs).
+if (!SELF_TEST) checkStoreExport(OUT);
 // How long a part that says it is still filling (aria-busy) is waited for before it is judged: as
 // long as lib/ui/showOpened.ts follows one (BUSY_WATCH_MS, held equal by its test), and then up to
 // REST_MS for the page to come to rest with what has come.
@@ -575,7 +580,7 @@ if (at === "/sticky/") {
 }
 
 const list = SELF_TEST ? Object.keys(EXPECT) : (ONLY ?? screens(OUT));
-console.log(`${list.length} screens ${ON}, up to ${MAX} controls each, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}, ${readerWords(SELLS_PLUS)}${STORE.length ? `, the reader having chosen ${STORE.map(([k, v]) => `${k}=${v}`).join(", ")}` : ""}`);
+console.log(`${list.length} screens ${ON}, up to ${MAX} controls each, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}, ${motionWords("on")}, ${readerWords(SELLS_PLUS)}${STORE.length ? `, the reader having chosen ${STORE.map(([k, v]) => `${k}=${v}`).join(", ")}` : ""}`);
 
 const OWN = "/opt/pw-browsers/chromium";
 const browser = await chromium.launch(fs.existsSync(OWN) ? { executablePath: OWN } : {});
@@ -605,53 +610,6 @@ async function mainWeb(route) {
 }
 
 // ── In the page ─────────────────────────────────────────────────────────
-
-/** Mark the controls a finger can tap on this screen, in reading order, and say what each is. */
-function markControls(max) {
-  const CONTROL =
-    "button, a[href], [role=button], [role=link], [role=tab], [role=radio], [role=checkbox], [role=switch], [role=menuitem], [role=option], summary, input[type=checkbox], input[type=radio]";
-  const shown = (el) => {
-    const r = el.getBoundingClientRect();
-    const cs = getComputedStyle(el);
-    // checkVisibility: not inside something shut (a closed details draws nothing, though its
-    // links still answer for a place on the page).
-    if (!(r.width >= 8 && r.height >= 8 && cs.visibility !== "hidden" && cs.display !== "none" && Number(cs.opacity) > 0.05 && el.checkVisibility?.() !== false)) return false;
-    // A screen reader's own words (a heading kept 1px square, clipped): a link inside one
-    // reads 18 by 467 on its own as its words wrap, and no finger meets it (Fable Themes,
-    // 2026-11-11, the reading room's featured work).
-    for (let q = el; q && q !== document.body; q = q.parentElement) {
-      const qs = getComputedStyle(q);
-      const b = q.getBoundingClientRect();
-      if ((qs.clip && qs.clip !== "auto") || ((qs.overflowX === "hidden" || qs.overflowX === "clip") && (b.width < 8 || b.height < 8))) return false;
-    }
-    return true;
-  };
-  const out = [];
-  for (const el of document.querySelectorAll("[data-tapwalk]")) el.removeAttribute("data-tapwalk");
-  const seen = new Set();
-  for (const el of document.querySelectorAll(CONTROL)) {
-    if (seen.has(el) || !shown(el)) continue;
-    if (el.closest("[inert], [aria-hidden='true']")) continue;
-    if (el.matches(":disabled, [aria-disabled='true']")) continue;
-    // A control inside another is the outer one's to tap.
-    if (el.parentElement?.closest(CONTROL)) continue;
-    const href = el.getAttribute("href") || "";
-    if (el.tagName === "A") {
-      if (/^(mailto:|tel:|sms:|javascript:)/i.test(href)) continue;
-      if (el.hasAttribute("download")) continue;
-      if (/^https?:\/\//i.test(href) && !href.startsWith(location.origin)) continue;
-      if (el.getAttribute("target") === "_blank") continue;
-    }
-    seen.add(el);
-    // innerText is empty for what the browser has not drawn yet (content-visibility: auto), so textContent then.
-    const words = (el.getAttribute("aria-label") || el.innerText.trim() || el.textContent || el.getAttribute("title") || "").replace(/\s+/g, " ").trim();
-    out.push({ el, name: `${el.tagName.toLowerCase()}${el.getAttribute("role") ? `[${el.getAttribute("role")}]` : ""}${words ? ` "${words.slice(0, 40)}"` : ""}`, href });
-  }
-  // Every control is counted, the first `max` in reading order are walked: the record says how many were left.
-  const walked = out.slice(0, max);
-  walked.forEach((c, i) => c.el.setAttribute("data-tapwalk", String(i)));
-  return { found: out.length, controls: walked.map(({ name, href }, i) => ({ i, name, href })) };
-}
 
 /** What the page shows and keeps, to tell whether a tap changed anything. */
 function snapshot() {
@@ -878,29 +836,6 @@ function holdOf(frames) {
   return { held, within, jump };
 }
 
-async function tapAt(cdp, x, y) {
-  await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
-  await new Promise((r) => setTimeout(r, 60));
-  await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
-}
-
-/**
- * Where a finger goes on a control: the middle of its largest piece. A link that wraps across two
- * lines has a box whose middle lies on the sentence's other words (About's "Support page",
- * 2026-11-11); a reader taps the link's own words.
- */
-async function aimOf(handle, box) {
-  const aim = await handle
-    .evaluate((el) => {
-      const pieces = [...el.getClientRects()].filter((r) => r.width >= 1 && r.height >= 1);
-      if (pieces.length < 2) return null;
-      const big = pieces.reduce((a, b) => (b.width * b.height > a.width * a.height ? b : a));
-      return { x: big.left + big.width / 2, y: big.top + big.height / 2 };
-    })
-    .catch(() => null);
-  return aim ?? { x: box.x + box.width / 2, y: box.y + box.height / 2 };
-}
-
 /**
  * Where the thing under the finger stands: its middle (so a press that shrinks it in place is not
  * a move), on the screen and on the page, how long the page is, and whether it rides something
@@ -958,27 +893,6 @@ async function followMove(page, href, start, i) {
   return { moved, pulled, scrolled, held };
 }
 
-/**
- * The screen as it first stands, for every tap: what the device keeps put back as it was
- * when the app first opened, a new document from the front door, and the app's own way to
- * the screen. A soft trip alone left the last tap's sheet or menu open over the next one,
- * which no reader meets: they close it, or it closes as they go.
- */
-async function fresh(page, at, kept) {
-  await page
-    .evaluate((k) => {
-      try {
-        localStorage.clear();
-        for (const [key, value] of k) localStorage.setItem(key, value);
-        sessionStorage.clear();
-      } catch {}
-    }, kept)
-    .catch(() => {});
-  await page.goto("about:blank");
-  await go(page, at, { timeout: 15000 });
-  await page.waitForTimeout(1200);
-}
-
 /** A still of the screen as the fail left it, the control ringed. */
 async function still(page, at, i) {
   const file = path.join(SHOTS, `${at.replace(/^\/|\/$/g, "").replace(/\//g, "_") || "home"}-${i}.png`);
@@ -992,91 +906,6 @@ async function still(page, at, i) {
   } catch {
     return null;
   }
-}
-
-/**
- * A first touch, then quiet: no change for 450ms, up to 3s. The touch goes where no control,
- * label or field stands within 48px: a browser carries a touch beside a control onto it (its
- * touch adjustment), and the first walk's edge touch ticked Sign up's agreement box that way.
- * Where no such place is on the screen, the page is told of a touch without one (the events a
- * first touch sends), which is all its first-touch work listens for.
- */
-async function firstTouch(page, cdp) {
-  const spot = await page.evaluate((controls) => {
-    const near = [...document.querySelectorAll(controls)]
-      .map((el) => el.getBoundingClientRect())
-      .filter((r) => r.width > 0 && r.height > 0 && r.bottom > -48 && r.top < innerHeight + 48);
-    const clear = (x, y) => near.every((r) => x < r.left - 48 || x > r.right + 48 || y < r.top - 48 || y > r.bottom + 48);
-    for (const f of [0.5, 0.4, 0.6, 0.3, 0.7, 0.2, 0.8]) {
-      for (const x of [3, innerWidth - 3, Math.round(innerWidth / 2)]) {
-        const y = Math.round(innerHeight * f);
-        const hit = document.elementFromPoint(x, y);
-        if (hit && !hit.closest(controls) && !hit.closest("[role=dialog], [data-screen-edge]") && clear(x, y)) return { x, y };
-      }
-    }
-    return null;
-  }, "button, a[href], summary, label, input, textarea, select, [contenteditable], [role=button], [role=link], [role=tab], [role=radio], [role=checkbox], [role=switch], [role=menuitem], [role=option], [tabindex]:not([tabindex='-1'])");
-  if (spot) await tapAt(cdp, spot.x, spot.y);
-  else {
-    await page.evaluate(() => {
-      const at = document.body;
-      for (const type of ["pointerdown", "pointerup"]) at.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerType: "touch", isPrimary: true }));
-      try {
-        const t = new Touch({ identifier: 1, target: at, clientX: 1, clientY: 1 });
-        at.dispatchEvent(new TouchEvent("touchstart", { bubbles: true, touches: [t], changedTouches: [t] }));
-        at.dispatchEvent(new TouchEvent("touchend", { bubbles: true, touches: [], changedTouches: [t] }));
-      } catch {}
-    });
-  }
-  await page.evaluate(async () => {
-    let n = 0;
-    const seen = new MutationObserver((list) => (n += list.length));
-    seen.observe(document.documentElement, { subtree: true, childList: true, attributes: true, characterData: true });
-    const t0 = performance.now();
-    let last = -1;
-    let quiet = 0;
-    while (performance.now() - t0 < 3000 && quiet < 3) {
-      await new Promise((r) => setTimeout(r, 150));
-      quiet = n === last ? quiet + 1 : 0;
-      last = n;
-    }
-    seen.disconnect();
-  });
-}
-
-/**
- * Scroll a control into reach and wait until it stands still (two looks 100ms apart within a
- * pixel, up to two seconds). A control whose node the page replaced as it was reached (the same
- * name at the same place in the order, marked again) is found again; "redrawn" when it never
- * stays.
- */
-async function reach(page, c) {
-  let last = null;
-  let still = 0;
-  for (let t = 0; t < 20; t++) {
-    const now = await page.evaluate((i) => {
-      const el = document.querySelector(`[data-tapwalk="${i}"]`);
-      if (!el) return null;
-      if (!el.dataset.tapwalkReached) {
-        el.dataset.tapwalkReached = "1";
-        el.scrollIntoView({ block: "center", inline: "center" });
-      }
-      const r = el.getBoundingClientRect();
-      return { x: r.x, y: r.y };
-    }, c.i);
-    if (!now) {
-      const again = (await page.evaluate(markControls, MAX)).controls;
-      if (!again[c.i] || again[c.i].name !== c.name) return "redrawn";
-      last = null;
-      still = 0;
-    } else {
-      still = last && Math.abs(now.x - last.x) <= 1 && Math.abs(now.y - last.y) <= 1 ? still + 1 : 0;
-      if (still >= 2) return "still";
-      last = now;
-    }
-    await page.waitForTimeout(100);
-  }
-  return (await page.$(`[data-tapwalk="${c.i}"]`)) ? "moving" : "redrawn";
 }
 
 /**
@@ -1103,7 +932,7 @@ async function anchorless(page, cdp, at, kept, c) {
   const again = (await page.evaluate(markControls, MAX)).controls;
   if (!again[c.i] || again[c.i].name !== c.name) return null;
   await firstTouch(page, cdp);
-  if ((await reach(page, c)) === "redrawn") return null;
+  if ((await reach(page, c, MAX)) === "redrawn") return null;
   const handle = await page.$(`[data-tapwalk="${c.i}"]`);
   const box = handle && (await handle.boundingBox());
   if (!box) return null;
@@ -1227,6 +1056,11 @@ async function walkScreen(ctx, at, kept) {
   try {
     await fresh(page, at, kept);
     await page.waitForTimeout(300);
+    // Walked with the app's motion on, as he walks it, or not at all (the arbiter, 2026-11-13).
+    if (!SELF_TEST) {
+      const wrong = await assertMotion(page, "on");
+      if (wrong) throw new Error(wrong);
+    }
     const marked = await page.evaluate(markControls, MAX);
     const controls = marked.controls;
     result.found = marked.found;
@@ -1249,7 +1083,7 @@ async function walkScreen(ctx, at, kept) {
         // before it, a control far down Community's feed rose under the top bar as the posts on
         // the way drew at their own height, which no reader scrolling there meets.
         await firstTouch(page, cdp);
-        const reached = await reach(page, c);
+        const reached = await reach(page, c, MAX);
         if (reached === "redrawn") {
           row.verdict = "skipped";
           row.why.push("the screen kept drawing it again as it was reached");
@@ -1677,7 +1511,9 @@ async function worker() {
   // Capacitor Preferences (no native plugin answers it), so the app's launch reads no remembered choice
   // and opens in the device's language (components/i18n/LocaleBootstrap.tsx, lib/i18n/launchLanguage.ts):
   // without it, the new reader's Arabic walks ran in English (the final check, 2026-11-13).
-  const ctx = await browser.newContext({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...(LANG ? { locale: LANG } : {}) });
+  const ctx = await browser.newContext({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...motionOptions("on"), ...(LANG ? { locale: LANG } : {}) });
+  // The app's motion on, as a reader's phone has it, pinned for the whole walk (scripts/lib/motion.mjs).
+  await pinMotion(ctx, "on");
   await ctx.addInitScript((store) => {
     try {
       localStorage.setItem("purify:onboarded", "99");

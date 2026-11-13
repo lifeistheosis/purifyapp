@@ -20,6 +20,7 @@ import path from "node:path";
 
 import { chromium } from "playwright";
 
+import { assertMotion, motionOptions, motionWords, pinMotion } from "./lib/motion.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "./lib/shell-server.mjs";
 import { stripesOn } from "./mock-check.mjs";
 
@@ -77,7 +78,7 @@ const SIZES = [
 ];
 
 const list = ONLY ?? screens();
-console.log(`${list.length} screens, on ${SIZES.map((s) => s.name).join(" and ")}`);
+console.log(`${list.length} screens, on ${SIZES.map((s) => s.name).join(" and ")}, ${motionWords("on")}`);
 // The cloud sessions carry their own Chromium (as openPhone in scripts/mock-check.mjs); elsewhere Playwright's.
 const OWN = "/opt/pw-browsers/chromium";
 const browser = await chromium.launch(fs.existsSync(OWN) ? { executablePath: OWN } : {});
@@ -85,7 +86,8 @@ const failures = [];
 const allowed = new Map();
 let measured = 0;
 for (const size of SIZES) {
-  const ctx = await browser.newContext({ viewport: { width: size.width, height: size.height }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
+  const ctx = await browser.newContext({ viewport: { width: size.width, height: size.height }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...motionOptions("on") });
+  await pinMotion(ctx, "on");
   await ctx.addInitScript(() => {
     try {
       localStorage.setItem("purify:onboarded", "99");
@@ -99,6 +101,9 @@ for (const size of SIZES) {
     try {
       await go(page, at, { timeout: 15000 });
       await page.waitForTimeout(1500);
+      // Walked with the app's motion on, as he walks it (the arbiter, 2026-11-13).
+      const wrong = await assertMotion(page, "on");
+      if (wrong) throw new Error(wrong);
       const stripes = await stripesOn(page, "body");
       if (!stripes) continue;
       measured += 1;

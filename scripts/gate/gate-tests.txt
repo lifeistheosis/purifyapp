@@ -1,6 +1,7 @@
 lib/bible/__tests__/readerScreen.test.ts
 lib/bible/__tests__/translationBeside.test.ts
 lib/bible/__tests__/verseFocus.test.ts
+lib/build/__tests__/gateSwitches.test.ts
 lib/campaigns/__tests__/doorStates.test.ts
 lib/community/__tests__/prayAndTalk.test.ts
 lib/councils/__tests__/fatherPlate.test.ts

@@ -5,6 +5,7 @@
 import fs from "node:fs";
 import { chromium } from "playwright";
 import { checkMock } from "../mock-check.mjs";
+import { motionOptions, pinMotion } from "../lib/motion.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "../lib/shell-server.mjs";
 import { asAndroidShell } from "../lib/sells-plus.mjs";
 // The browser the session carries, as the walks launch it (scripts/tap-walk.mjs); else Playwright's own.
@@ -38,7 +39,8 @@ let fails = 0;
 try {
   for (const [name, state, claim] of STATES) {
     if (ONLY && !ONLY.includes(name)) continue;
-    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...motionOptions("on") });
+    await pinMotion(ctx, "on");
     await ctx.addInitScript(() => { try { localStorage.setItem("purify:onboarded", "99"); localStorage.setItem("purify:whatsNewSeen", "99"); } catch {} });
     await asAndroidShell(ctx);
     await serveLikeTheShell(ctx, OUT, {});
