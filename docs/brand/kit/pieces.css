@@ -371,6 +371,13 @@ body {
 
 .k-figure figcaption { margin-block-start: var(--k-space-3); font-size: var(--k-text-detail); line-height: 19px; color: var(--k-ink-3); max-width: var(--k-measure); }
 
+/* A still of the app's screen at a phone's width (.k-phone): on a phone it
+   takes the column, as a picture does; on a wide screen it stands in the
+   middle at 390, the walks' phone (scripts/gate/), rather than growing to
+   twice the screen it shows. Its caption keeps its width. */
+.k-figure.k-phone img,
+.k-figure.k-phone figcaption { max-width: 390px; margin-inline: auto; }
+
 /* ── Note ──────────────────────────────────────────────────────────── */
 /* It stands on its own type: a small line and the serif in italics, set in
    from the reading line. No rule beside it, no stripe, no box (CLAUDE.md). */
