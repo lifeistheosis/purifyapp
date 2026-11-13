@@ -61,25 +61,30 @@ describe("the reader's dock, a book's name", () => {
 
 describe("the reader's pill, a book's name", () => {
   it("is never left cut: a cut name steps the pill on, before it is painted", () => {
-    expect(PILL).toContain('<span ref={nameRef} className={fit === 0 ? "truncate" : cn("min-w-0", fit === 2 && "[overflow-wrap:anywhere]")}>');
+    expect(PILL).toContain('<span ref={nameRef} className="min-w-0 group-data-[fit=0]:truncate group-data-[fit=2]:[overflow-wrap:anywhere]">');
     // Strict: a name one pixel over its room is drawn with an ellipsis.
-    expect(PILL).toContain("if (name.scrollWidth > name.clientWidth || lines > 2.05) setFitFor({ key: fitKey, fit: fit === 0 ? 1 : 2 });");
+    expect(PILL).toContain("return name.scrollWidth > name.clientWidth || lines > 2.05;");
+    // Stepped on in the layout effect itself, written on the pill (Updates 18:
+    // a state set there was rendered only after a View Transition's picture).
+    expect(PILL).toContain('pill.dataset.fit = "0";');
+    expect(PILL).toContain("while (fit < 2 && tooLong()) pill.dataset.fit = String(++fit);");
     // Measured again for each name, chapter and width, from the pill as drawn.
-    expect(PILL).toContain("const fitKey = `${bookName}|${chapter}|${reads ? 1 : 0}|${frameWidth}`;");
-    expect(PILL).toContain("const fit = fitFor?.key === fitKey ? fitFor.fit : 0;");
+    expect(PILL).toContain("}, [bookName, chapter, reads, docked]);");
+    expect(PILL).toMatch(/new ResizeObserver\(\(\) => \{\s*const now = Math\.round\(frame\.clientWidth\);\s*if \(now !== width\) \{\s*width = now;\s*measure\(\);/);
+    expect(PILL).not.toMatch(/setFitFor|setFrameWidth/);
   });
 
   it("gives Listen's word way first, as on the narrowest phones, its name still the word", () => {
-    expect(PILL).toContain("wordGivesWay={fit === 1}");
-    expect(LISTEN).toContain('<span aria-hidden className={cn("max-[390px]:hidden", wordGivesWay && "hidden")}>');
+    // Listen stands in the pill, whose data-fit is 1 when its word gives way.
+    expect(LISTEN).toContain('<span aria-hidden className={cn("max-[390px]:hidden group-data-[fit=1]:hidden", wordGivesWay && "hidden")}>');
     expect(LISTEN).toContain("aria-label={word}");
   });
 
   it("sends the sound button and Listen to a row of their own last, and keeps the reader's foot clear of the taller pill", () => {
-    expect(PILL).toContain('fit === 2 ? "h-auto flex-col rounded-[28px] py-1" : "rounded-pill",');
+    expect(PILL).toContain('"group rounded-pill data-[fit=2]:h-auto data-[fit=2]:flex-col data-[fit=2]:rounded-[28px] data-[fit=2]:py-1",');
     // On its own row the name takes as many lines as it needs, its button growing with it.
-    expect(PILL).toContain('fit === 2 && "h-auto min-h-11 py-1"');
-    expect(PILL).toContain('{fit === 2 ? null : <span aria-hidden className="mx-1.5 h-6 w-px shrink-0 bg-paper/15" />}');
+    expect(PILL).toContain("group-data-[fit=2]:h-auto group-data-[fit=2]:min-h-11 group-data-[fit=2]:py-1");
+    expect(PILL).toContain('<span aria-hidden className="mx-1.5 h-6 w-px shrink-0 bg-paper/15 group-data-[fit=2]:hidden" />');
     expect(PILL).toContain('root.style.setProperty("--reader-pill-extra"');
     expect(PILL).toContain("const oneRow = 3.5 * (parseFloat(getComputedStyle(root).fontSize) || 16);");
     const room = CSS.match(/--reader-pill-extra, 0px\) \+ 68px/g) ?? [];

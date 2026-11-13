@@ -33,7 +33,7 @@ import {
   type CommunityHalf,
   type FeedFilter,
 } from "@/lib/community/halves";
-import { useCampaignsAnswer } from "@/lib/campaigns/useCampaignsOpen";
+import { useCampaignsAnswerForSwitch } from "@/lib/campaigns/useCampaignsOpen";
 import { runningCampaign } from "@/lib/community/runningCampaign";
 import {
   addReply,
@@ -311,8 +311,10 @@ function CommunityScreen({
   // Community is as a group's thread is. The door opens when the server says
   // campaigns are open for this reader (lib/campaigns/useCampaignsOpen.ts);
   // until it has said, the switch's place is kept empty, so nothing under it
-  // moves when the switch comes (lib/community/halves.ts, prayDoor).
-  const campaignsOpen = useCampaignsAnswer();
+  // moves when the switch comes (lib/community/halves.ts, prayDoor); for a
+  // reader the server told no last time, no place is kept from the first
+  // frame, and it is not closed under the page as the answer comes.
+  const campaignsOpen = useCampaignsAnswerForSwitch();
   const [placeKept, setPlaceKept] = useState(false);
   const door = prayDoor({ campaigns: campaignsOpen, ownCampaign: campaign !== null, placeKept });
   if (door === "waiting" && !groupId && !placeKept) setPlaceKept(true);

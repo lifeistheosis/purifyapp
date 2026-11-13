@@ -140,7 +140,7 @@ export function ReadAloudPillButton({ book, chapter, title, wordGivesWay = false
       ) : (
         <Play size={14} className={cn("shrink-0", busy && "motion-safe:animate-pulse")} />
       )}
-      <span aria-hidden className={cn("max-[390px]:hidden", wordGivesWay && "hidden")}>
+      <span aria-hidden className={cn("max-[390px]:hidden group-data-[fit=1]:hidden", wordGivesWay && "hidden")}>
         {word}
       </span>
     </button>

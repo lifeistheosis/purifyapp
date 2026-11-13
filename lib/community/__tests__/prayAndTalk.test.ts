@@ -242,7 +242,7 @@ describe("the prayer wall is gone, with everything that drew it", () => {
     // conversations: never an empty half behind a door. The rule itself is
     // lib/community/halves.ts (prayDoor, halfShown; halves.test.ts).
     const screen = read("components/community/CommunityClient.tsx");
-    expect(screen).toContain("const campaignsOpen = useCampaignsAnswer();");
+    expect(screen).toContain("const campaignsOpen = useCampaignsAnswerForSwitch();");
     expect(screen).toContain("const door = prayDoor({ campaigns: campaignsOpen, ownCampaign: campaign !== null, placeKept });");
     expect(screen).toContain("const half = halfShown(asked, door);");
     expect(screen).toContain('door={groupId ? "none" : door}');

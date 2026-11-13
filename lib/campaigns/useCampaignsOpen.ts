@@ -27,7 +27,7 @@
 // well: a store build cut without pictures never has them, whatever the
 // server says (./partsHere.ts).
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 import { apiFetch } from "@/lib/api/client";
 
@@ -41,6 +41,34 @@ let asking = false;
 let unreached = false;
 /** Whether the return of a signal is already being waited for, so it is waited for once. */
 let listening = false;
+
+// The server's last answer, kept on the device (Updates 18, Gate 2.0's
+// Community settling, 2026-11-13). Community keeps the switch's place empty
+// while it waits, so nothing moves when a yes comes; for a reader the server
+// had told no, that place was kept for nothing and closed as the answer came,
+// and the whole page moved up 77px after it had arrived. A no it gave this
+// device last time lets Community draw no place from its first frame. Only a
+// no is read before the server answers: a door is still drawn only on a live
+// yes, and a campaign's own page still waits for the server.
+const KEPT = "purify:campaigns:lastAnswer";
+let kept: "yes" | "no" | "none" | null = null;
+function keptAnswer(): "yes" | "no" | "none" {
+  if (kept === null) {
+    try {
+      const v = localStorage.getItem(KEPT);
+      kept = v === "yes" || v === "no" ? v : "none";
+    } catch {
+      kept = "none";
+    }
+  }
+  return kept;
+}
+function keepAnswer(open: boolean): void {
+  kept = open ? "yes" : "no";
+  try {
+    localStorage.setItem(KEPT, kept);
+  } catch {}
+}
 /** The parts the server said are on. None until it has answered, and none it did not name. */
 let partsOn: ReadonlySet<CampaignPart> = new Set();
 const waiting = new Set<() => void>();
@@ -67,6 +95,8 @@ function ask(): void {
       answer = open;
       partsOn = on;
       unreached = missed;
+      // A server that was not reached said nothing to keep.
+      if (!missed) keepAnswer(open);
       asking = false;
       if (missed) askWhenOnline();
       for (const cb of waiting) cb();
@@ -128,6 +158,29 @@ const readAnswer = () => answer;
 const closedAnswer = () => false as const;
 const unasked = () => null;
 
+const readAnswerOrKeptNo = () => answer ?? (keptAnswer() === "no" ? false : null);
+
+/**
+ * Community's switch: the answer, or, until the server has said, the no it
+ * gave this device last time (KEPT, above). Null until then otherwise, and on
+ * the server, so nothing is baked into a page's HTML.
+ */
+export function useCampaignsAnswerForSwitch(): boolean | null {
+  return useSyncExternalStore(subscribe, campaignsInBuild() ? readAnswerOrKeptNo : closedAnswer, campaignsInBuild() ? unasked : closedAnswer);
+}
+
+/**
+ * On the first launch, with no answer kept yet, ask for it as the app opens,
+ * so Community, when the reader first goes there, already knows. Mounted once,
+ * by the app's frame (components/layout/AppFrame.tsx). Asks nobody in a
+ * closed build, nor once an answer is kept (Community asks again itself).
+ */
+export function useAskCampaignsAtFirstLaunch(): void {
+  useEffect(() => {
+    if (campaignsInBuild() && keptAnswer() === "none") ask();
+  }, []);
+}
+
 /**
  * The same answer for a campaign's own pages, which must tell "not asked yet"
  * from "no": null until the server has answered, then yes or no. A closed
@@ -178,6 +231,7 @@ export function useCampaignPart(part: CampaignPart): boolean {
 
 /** Test seam: forget the answer. */
 export function __forgetCampaignsOpen(): void {
+  kept = null;
   answer = null;
   asking = false;
   unreached = false;

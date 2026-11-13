@@ -65,3 +65,51 @@ describe("the reader's session", () => {
     expect(src).toMatch(/const authSettled = authFound \|\| onDevice;/);
   });
 });
+
+describe("the flow bar's room (Updates 18)", () => {
+  // Today's "Read all" or a plan's Begin opens a chapter with the flow bar at
+  // its foot, and everything that floats over the foot rises by the bar's
+  // height (globals.css, html.has-readings-flow). Set in a passive effect, the
+  // class came after the View Transition's picture: the chapter pill was drawn
+  // 76px low and jumped up (measured on the export of 823d24e0, 650 to 574).
+  it("is marked on the page as the bar commits, before the page's picture", () => {
+    const src = code("components/flow/FlowBarShell.tsx");
+    expect(src).toMatch(/const useMarkEffect = typeof window !== "undefined" \? useLayoutEffect : useEffect;/);
+    const shell = body(src, /export function FlowBarShell\(/);
+    expect(shell).toMatch(/useMarkEffect\(\(\) => \{\s*const root = document\.documentElement;\s*root\.classList\.add\("has-readings-flow"\);/);
+    expect(shell).not.toMatch(/\buseEffect\(/);
+  });
+});
+
+describe("late parts measured or read on the device (Updates 18)", () => {
+  it("the chapter pill's fit is written on the pill as it is measured, not rendered after the picture", () => {
+    // Listen jumped 48px sideways a moment after a chapter arrived (the walk
+    // of 823d24e0, /bible/ to 1 Thessalonians 5): the fit was kept in state.
+    const src = code("components/bible/MobileChapterPill.tsx");
+    expect(src).not.toMatch(/setFitFor|fitFor|setFrameWidth/);
+    expect(src).toMatch(/while \(fit < 2 && tooLong\(\)\) pill\.dataset\.fit = String\(\+\+fit\);/);
+    expect(src).toMatch(/data-fit="0"/);
+  });
+
+  it("Community keeps no empty place for the switch where the server said no last time", () => {
+    // The kept 77px place closed as the answer came, and the page rose under it.
+    const hook = code("lib/campaigns/useCampaignsOpen.ts");
+    expect(hook).toMatch(/const readAnswerOrKeptNo = \(\) => answer \?\? \(keptAnswer\(\) === "no" \? false : null\);/);
+    expect(hook).toMatch(/if \(!missed\) keepAnswer\(open\);/);
+    expect(hook).toMatch(/if \(campaignsInBuild\(\) && keptAnswer\(\) === "none"\) ask\(\);/);
+    expect(code("components/community/CommunityClient.tsx")).toMatch(/const campaignsOpen = useCampaignsAnswerForSwitch\(\);/);
+    expect(code("components/layout/AppFrame.tsx")).toMatch(/useAskCampaignsAtFirstLaunch\(\);/);
+  });
+
+  it("Export gathers the library as the page renders on the device", () => {
+    const src = code("components/account/ExportLibrary.tsx");
+    expect(src).not.toMatch(/setData\(gatherLibrary\(\)\)/);
+    expect(src).toMatch(/useMemo\(\(\) => \(onDevice \? gatherLibrary\(\) : null\), \[onDevice\]\)/);
+  });
+
+  it("Change email says its state as the page renders, from the address being opened", () => {
+    const src = code("components/account/security/EmailChangeState.tsx");
+    expect(src).not.toMatch(/useEffect|setState/);
+    expect(src).toMatch(/onDevice \? readEmailChangeState\(query, hashFor\(pathname\)\) : null/);
+  });
+});

@@ -358,7 +358,7 @@ describe("the floating pill, with Listen", () => {
     // Listen reads the English aloud: a chapter shown in a downloaded Bible has none (1.9).
     expect(pill).toContain("const reads = useHasReadAloud(slug, chapter) && listen;");
     // Its word gives way where the name needs the room (lib/bible/__tests__/dockNamesWhole.test.ts).
-    expect(pill).toMatch(/<AmbienceButton variant="pill" \/>\s*\{reads \? <ReadAloudPillButton book=\{slug\} chapter=\{chapter\} title=\{`\$\{bookName\} \$\{chapter\}`\} wordGivesWay=\{fit === 1\} \/> : null\}\s*<\/span>/);
+    expect(pill).toMatch(/<AmbienceButton variant="pill" \/>\s*\{reads \? <ReadAloudPillButton book=\{slug\} chapter=\{chapter\} title=\{`\$\{bookName\} \$\{chapter\}`\} \/> : null\}\s*<\/span>/);
     const read = code("components/bible/ReadAloud.tsx");
     const button = read.slice(read.indexOf("export function ReadAloudPillButton"), read.indexOf("export function ReadAloudFollow"));
     // No reading, no button: never a dead one.
@@ -371,7 +371,7 @@ describe("the floating pill, with Listen", () => {
     expect(button).toContain("aria-label={word}");
     // White, softly lit, its word giving way on the narrowest phones, and wherever the name needs the room.
     expect(button).toMatch(/className="reader-lit [^"]*\bbg-paper\b[^"]*\btext-night\b/);
-    expect(button).toMatch(/<span aria-hidden className=\{cn\("max-\[390px\]:hidden", wordGivesWay && "hidden"\)\}>\s*\{word\}/);
+    expect(button).toMatch(/<span aria-hidden className=\{cn\("max-\[390px\]:hidden group-data-\[fit=1\]:hidden", wordGivesWay && "hidden"\)\}>\s*\{word\}/);
     // The verse being read is lit by the follower the screen already mounts.
     expect(code(SCREEN)).toContain("<ReadAloudFollow book={slug} chapter={chapter} />");
     // On the computer Listen joins the toolbar, as the reader's own pill.

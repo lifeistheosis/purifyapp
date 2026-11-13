@@ -6,7 +6,10 @@
 // Moved here unchanged from the readings bar in 1.7 (the owner's note 22,
 // "the plan bar while reading, like today's readings").
 
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
+
+// On the server there is no page to mark, and useLayoutEffect only warns.
+const useMarkEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 /**
  * At the foot, over the tab bar and over the mini player when one plays.
@@ -14,9 +17,16 @@ import { useEffect } from "react";
  * the mini player does, so the way out of focus mode stands above it. Only one
  * flow is ever under way (lib/plans/session.ts and lib/readings/flow.ts end
  * each other), so one class is enough for both.
+ *
+ * The class is set as the bar is committed, in a layout effect, not after it
+ * (Gate 2.0, 2026-11-13): a chapter opened from Today's "Read all" or a plan's
+ * Begin arrives in a View Transition, whose picture is taken once the commit's
+ * layout effects have run, and a passive effect runs only after that picture.
+ * Set there, the chapter pill and everything else that rises by the bar's
+ * height were drawn 76px low and jumped up a moment after the page arrived.
  */
 export function FlowBarShell({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
+  useMarkEffect(() => {
     const root = document.documentElement;
     root.classList.add("has-readings-flow");
     return () => root.classList.remove("has-readings-flow");

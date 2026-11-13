@@ -14,6 +14,7 @@
 import type { ReactNode } from "react";
 
 import { UpgradeModalProvider } from "@/components/billing/UpgradeModal";
+import { useAskCampaignsAtFirstLaunch } from "@/lib/campaigns/useCampaignsOpen";
 import { ContentProvider } from "@/components/content/ContentProvider";
 import { EikonBoxBridge } from "@/components/eikonBox/EikonBoxBridge";
 import { GiftBridge } from "@/components/gifts/GiftBridge";
@@ -28,6 +29,8 @@ import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { QuoteFocus } from "@/components/reading/QuoteFocus";
 
 export function AppFrame({ children }: { children: ReactNode }) {
+  // Community's switch knows the server's answer before the reader first goes there.
+  useAskCampaignsAtFirstLaunch();
   return (
     <ContentProvider>
       <UpgradeModalProvider>

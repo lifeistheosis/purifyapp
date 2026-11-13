@@ -9,7 +9,7 @@
 // "← Account" link over a heading in the display serif, four tiles of a big
 // number over a small word, and two buttons in the display serif.
 
-import { useEffect, useState } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 
 import { INDEX_LIST_LOOK } from "@/components/mobile/IndexRows";
 import {
@@ -41,15 +41,16 @@ function download(filename: string, text: string, type: string) {
   downloadFile(new Blob([text], { type }), filename);
 }
 
+const noSubscribe = () => () => {};
+
 export function ExportLibrary() {
   const { t } = useTranslate();
-  const [data, setData] = useState<LibraryData | null>(null);
-
-  useEffect(() => {
-    // Reads localStorage, so it must run on the client after mount.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setData(gatherLibrary());
-  }, []);
+  // Gathered from the device as the page renders (Updates 18, Gate 2.0): read
+  // in an effect, it came after a page switch's picture, and "Gathering..."
+  // gave way to the library at rest, the downloads 362px lower. None on the
+  // server, so no reader's library is baked into the export's HTML.
+  const onDevice = useSyncExternalStore(noSubscribe, () => true, () => false);
+  const data: LibraryData | null = useMemo(() => (onDevice ? gatherLibrary() : null), [onDevice]);
 
   const summary = data ? librarySummary(data) : null;
   const stamp = new Date().toISOString().slice(0, 10);

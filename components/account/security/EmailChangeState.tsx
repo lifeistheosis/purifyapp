@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useSyncExternalStore } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { hashFor } from "@/lib/nav/addressOpening";
 
 /**
  * Where a change of email stands, after a link in its email was opened
@@ -49,16 +50,18 @@ const KEY: Record<EmailChangeState, string> = {
   expired: "emailChange.expired",
 };
 
+const noSubscribe = () => () => {};
+
 export function EmailChangeStateView() {
   const { t } = useTranslate();
   const query = useSearchParams().get("state");
-  const [state, setState] = useState<EmailChangeState | null>(null);
-
-  useEffect(() => {
-    // The fragment is read on the device only: a server never sees it.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setState(readEmailChangeState(query, window.location.hash));
-  }, [query]);
+  const pathname = usePathname();
+  // The fragment is read on the device only: a server never sees it. Read as
+  // the page renders (Updates 18, Gate 2.0): set in an effect, the line came
+  // after a page switch's picture and moved "Open Security" 75px down at rest.
+  // The address being opened, not the one being left (lib/nav/addressOpening.ts).
+  const onDevice = useSyncExternalStore(noSubscribe, () => true, () => false);
+  const state: EmailChangeState | null = onDevice ? readEmailChangeState(query, hashFor(pathname)) : null;
 
   return (
     <section className="px-5 py-16 md:py-24">

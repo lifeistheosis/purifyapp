@@ -159,39 +159,54 @@ export function MobileChapterPill({
   // way and the name on up to two lines, 2 with the controls on a row of their
   // own. Measured before the pill is painted, again for each name, chapter and
   // width, starting from the pill as drawn.
+  //
+  // The fit is written on the pill itself (data-fit, which the classes below
+  // read), not kept in state (Gate 2.0, 2026-11-13). A chapter arrives in a
+  // View Transition, whose picture is taken once the commit's layout effects
+  // have run, and react-dom renders a state set there only after that
+  // picture: Listen was drawn where the pill as drawn puts it and jumped 48px
+  // sideways a moment after the chapter arrived. Written in the layout effect,
+  // and by the frame's observer as the width changes, it is in the picture.
   const pillRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLSpanElement>(null);
-  const [frameWidth, setFrameWidth] = useState(0);
-  const fitKey = `${bookName}|${chapter}|${reads ? 1 : 0}|${frameWidth}`;
-  const [fitFor, setFitFor] = useState<{ key: string; fit: 1 | 2 } | null>(null);
-  const fit = fitFor?.key === fitKey ? fitFor.fit : 0;
-  useLayoutEffect(() => {
-    const frame = pillRef.current?.parentElement;
-    if (!frame || typeof ResizeObserver === "undefined") return;
-    const observer = new ResizeObserver(() => setFrameWidth(Math.round(frame.clientWidth)));
-    observer.observe(frame);
-    return () => observer.disconnect();
-  }, [docked]);
-  useLayoutEffect(() => {
-    const name = nameRef.current;
-    if (!name || fit === 2) return;
-    const lines = name.getBoundingClientRect().height / (parseFloat(getComputedStyle(name).lineHeight) || 19);
-    // Strict, as the browser's ellipsis is: "Jonasz" in Polish at 320 overflowed by one pixel (50 in 49).
-    if (name.scrollWidth > name.clientWidth || lines > 2.05) setFitFor({ key: fitKey, fit: fit === 0 ? 1 : 2 });
-  }, [fitKey, fit, docked]);
-  // The pill with its controls under the name is taller than the pill of one
-  // row (h-14, 3.5rem) the reader's foot keeps room for (globals.css,
-  // .safe-pb-reader): the rest is kept too.
   useLayoutEffect(() => {
     const pill = pillRef.current;
-    if (fit !== 2 || !pill) return;
+    const name = nameRef.current;
+    const frame = pill?.parentElement;
+    if (!pill || !name || !frame) return;
     const root = document.documentElement;
-    const oneRow = 3.5 * (parseFloat(getComputedStyle(root).fontSize) || 16);
-    root.style.setProperty("--reader-pill-extra", `${Math.max(0, Math.ceil(pill.getBoundingClientRect().height - oneRow))}px`);
+    const tooLong = () => {
+      const lines = name.getBoundingClientRect().height / (parseFloat(getComputedStyle(name).lineHeight) || 19);
+      // Strict, as the browser's ellipsis is: "Jonasz" in Polish at 320 overflowed by one pixel (50 in 49).
+      return name.scrollWidth > name.clientWidth || lines > 2.05;
+    };
+    const measure = () => {
+      let fit = 0;
+      pill.dataset.fit = "0";
+      while (fit < 2 && tooLong()) pill.dataset.fit = String(++fit);
+      // The pill with its controls under the name is taller than the pill of
+      // one row (h-14, 3.5rem) the reader's foot keeps room for (globals.css,
+      // .safe-pb-reader): the rest is kept too.
+      if (fit === 2) {
+        const oneRow = 3.5 * (parseFloat(getComputedStyle(root).fontSize) || 16);
+        root.style.setProperty("--reader-pill-extra", `${Math.max(0, Math.ceil(pill.getBoundingClientRect().height - oneRow))}px`);
+      } else root.style.removeProperty("--reader-pill-extra");
+    };
+    measure();
+    let width = Math.round(frame.clientWidth);
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(() => {
+      const now = Math.round(frame.clientWidth);
+      if (now !== width) {
+        width = now;
+        measure();
+      }
+    });
+    observer?.observe(frame);
     return () => {
+      observer?.disconnect();
       root.style.removeProperty("--reader-pill-extra");
     };
-  }, [fit, fitKey]);
+  }, [bookName, chapter, reads, docked]);
   // The chapter's title asks for the same sheet (ChapterScreen).
   useEffect(() => {
     const open = () => setSheetOpen(true);
@@ -268,10 +283,12 @@ export function MobileChapterPill({
           <div
             className={cn(
               "flex h-14 min-w-0 max-w-full items-center gap-0.5 border border-paper/10 bg-night-soft px-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.55)]",
-              fit === 2 ? "h-auto flex-col rounded-[28px] py-1" : "rounded-pill",
+              "group rounded-pill data-[fit=2]:h-auto data-[fit=2]:flex-col data-[fit=2]:rounded-[28px] data-[fit=2]:py-1",
               covered ? "pointer-events-none" : "pointer-events-auto",
             )}
             ref={pillRef}
+            // How the name fits, written by the layout effect above; as drawn until it is measured.
+            data-fit="0"
           >
             <span className="flex min-w-0 max-w-full items-center gap-0.5">
               <Arrow target={prev} label={prevLabel} dir="‹" />
@@ -280,20 +297,20 @@ export function MobileChapterPill({
                 aria-haspopup="dialog"
                 onClick={() => setSheetOpen(true)}
                 aria-label={pickLabel}
-                className={cn("flex h-11 min-w-0 items-center px-2 font-sans text-[15px] font-semibold leading-tight text-paper", fit === 2 && "h-auto min-h-11 py-1")}
+                className="flex h-11 min-w-0 items-center px-2 font-sans text-[15px] font-semibold leading-tight text-paper group-data-[fit=2]:h-auto group-data-[fit=2]:min-h-11 group-data-[fit=2]:py-1"
               >
                 {/* Whole: at 1 it may take two lines, broken between words; at 2, the row its own, as many lines as it needs. */}
-                <span ref={nameRef} className={fit === 0 ? "truncate" : cn("min-w-0", fit === 2 && "[overflow-wrap:anywhere]")}>
+                <span ref={nameRef} className="min-w-0 group-data-[fit=0]:truncate group-data-[fit=2]:[overflow-wrap:anywhere]">
                   {bookName}
                 </span>
                 <span className="ms-1 shrink-0 tabular-nums">{chapter}</span>
               </button>
               <Arrow target={next} label={nextLabel} dir="›" />
             </span>
-            {fit === 2 ? null : <span aria-hidden className="mx-1.5 h-6 w-px shrink-0 bg-paper/15" />}
+            <span aria-hidden className="mx-1.5 h-6 w-px shrink-0 bg-paper/15 group-data-[fit=2]:hidden" />
             <span className="flex shrink-0 items-center gap-0.5">
               <AmbienceButton variant="pill" />
-              {reads ? <ReadAloudPillButton book={slug} chapter={chapter} title={`${bookName} ${chapter}`} wordGivesWay={fit === 1} /> : null}
+              {reads ? <ReadAloudPillButton book={slug} chapter={chapter} title={`${bookName} ${chapter}`} /> : null}
             </span>
           </div>
         </div>
