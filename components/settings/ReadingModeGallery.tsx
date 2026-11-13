@@ -21,7 +21,7 @@
 // included, so the page itself is the preview. No haptic is added: the app
 // ticks on its bars, not on a choice in Settings.
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ReaderPrefsProvider, useReaderPrefs, type ReaderFont } from "@/components/reader/ReaderPrefs";
@@ -30,6 +30,7 @@ import { usePalettePick } from "@/components/reader/usePalettePick";
 import type { EarnedPalettes } from "@/lib/reader/earned";
 import { FREE_THEMES, READING_THEMES, THEME_FAMILIES, isCollectionTheme, themesOfFamily, type ReadingTheme } from "@/lib/reader/readingModes";
 import { PREVIEW_CHAPTER } from "@/lib/settings/preview";
+import { useScrollTicks } from "@/lib/ui/scrollTicks";
 
 import { GoalTile, ModeTile } from "./ReadingModePages";
 
@@ -93,10 +94,7 @@ export function GalleryShelves({
   return (
     <>
       <section className="set-fam mt-7 scroll-mt-24 first:mt-0">
-        <p className="set-hint">{t("settings.readingHint")}</p>
-        <div role="group" aria-label={t("ui.readingMode")} className="set-shelf">
-          {free.map(tile)}
-        </div>
+        <Shelf label={t("ui.readingMode")}>{free.map(tile)}</Shelf>
       </section>
       {THEME_FAMILIES.map((family) => (
         <section key={family.id} className="set-fam mt-7 scroll-mt-24 first:mt-0" data-family={family.id}>
@@ -106,14 +104,12 @@ export function GalleryShelves({
             {locked ? <span className="set-mode-plus">Purify Plus</span> : null}
           </div>
           <p className="set-hint">{t(family.lineKey)}</p>
-          <div role="group" aria-label={t(family.labelKey)} className="set-shelf">
-            {themesOfFamily(family.id).map(tile)}
-          </div>
+          <Shelf label={t(family.labelKey)}>{themesOfFamily(family.id).map(tile)}</Shelf>
         </section>
       ))}
       <section className="set-fam mt-7 scroll-mt-24 first:mt-0">
         <h2 className="set-h">{t("settings.paletteEarnedRow")}</h2>
-        <div role="group" aria-label={t("settings.paletteEarnedRow")} className="set-shelf">
+        <Shelf label={t("settings.paletteEarnedRow")}>
           {kept.map((mode) => {
             const id = mode.id as keyof EarnedPalettes;
             const progress = earned[id];
@@ -121,7 +117,7 @@ export function GalleryShelves({
             if (!progress || progress.earned || theme === mode.id) return tile(mode);
             return <GoalTile key={mode.id} mode={mode} progress={progress} open={goal === id} font={font} book={book} chapter={chapter} onToggle={() => setGoal(goal === id ? null : id)} />;
           })}
-        </div>
+        </Shelf>
         {goal ? (
           <p id="set-palette-goal" role="status" className="set-mode-goal-line" data-palette-goal-line="">
             {t(goal === "councils" ? "settings.paletteEarnCouncils" : "settings.paletteEarnCappadocian", { count: earned[goal].read, total: earned[goal].of })}
@@ -131,5 +127,21 @@ export function GalleryShelves({
         ) : null}
       </section>
     </>
+  );
+}
+
+/**
+ * A shelf of pages, swept sideways on a phone, that gives the Settings row's
+ * click as each page passes the middle (lib/ui/scrollTicks.ts; his "all recs"
+ * of 2026-11-13 about 14:29 UTC: this page and the Bible's own sheet click as
+ * the Settings row does). A computer wraps the shelf, and nothing clicks.
+ */
+function Shelf({ label, children }: { label: string; children: ReactNode }) {
+  const row = useRef<HTMLDivElement>(null);
+  useScrollTicks(row);
+  return (
+    <div ref={row} role="group" aria-label={label} className="set-shelf">
+      {children}
+    </div>
   );
 }

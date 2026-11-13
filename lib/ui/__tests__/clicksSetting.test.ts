@@ -104,12 +104,11 @@ describe("the row in Settings", () => {
     expect(reading).toContain("<ClicksRow />");
   });
 
-  it("says what the arbiter said yes to, in English and in every language Purify speaks", () => {
+  it("says what the owner said yes to, in English and in every language Purify speaks", () => {
     const en = JSON.parse(readFileSync("lib/i18n/messages/en.json", "utf8"));
-    expect(en["settings.clicks"]).toBe("Clicks as you scroll");
-    expect(en["settings.clicksHint"]).toBe(
-      "A light click in your hand as each prayer, chapter or event passes, and when a rule is complete. Off keeps the phone still.",
-    );
+    // Settings' clean words (build 95 note 19, his "yes to all" of 2026-11-13 about 20:47 UTC).
+    expect(en["settings.clicks"]).toBe("Haptic feedback");
+    expect(en["settings.clicksHint"]).toBe("A light click as you scroll, and when you finish a prayer rule.");
     for (const lang of ["ar", "bg", "de", "el", "es", "fil", "fr", "hu", "id", "it", "ka", "ne", "pl", "pt", "ro", "ru", "sr", "tr", "uk", "ur"]) {
       const m = JSON.parse(readFileSync(`lib/i18n/messages/${lang}.json`, "utf8"));
       for (const key of ["settings.clicks", "settings.clicksHint"]) {

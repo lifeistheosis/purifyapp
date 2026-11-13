@@ -44,6 +44,7 @@ import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import type { EarnedPalettes } from "@/lib/reader/earned";
 import { READING_THEMES, isCollectionTheme } from "@/lib/reader/readingModes";
 import { PREVIEW_CHAPTER } from "@/lib/settings/preview";
+import { useScrollTicks } from "@/lib/ui/scrollTicks";
 
 export function ReadingModeChips({
   touch = false,
@@ -85,6 +86,8 @@ export function ReadingModeChips({
   // glided the shelf back to it under the finger. Recorded on the export, a
   // shelf swept 154px along went back to its start as the palette changed.
   const shelf = useRef<HTMLDivElement>(null);
+  // The Settings row's click as each page passes (his "all recs", 2026-11-13 about 14:29 UTC).
+  useScrollTicks(shelf);
   const opened = useRef(false);
   useEffect(() => {
     const row = shelf.current;

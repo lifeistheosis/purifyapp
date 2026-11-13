@@ -142,13 +142,14 @@ describe("the reading modes", () => {
     expect(night.filter((p) => p.checked).map((p) => p.palette)).toEqual(["candlelight"]);
   });
 
-  it("shows the two earned palettes on a row of their own under the five, as goals with how far the reader is until earned (1.9, rec 79)", () => {
+  it("stands the two earned palettes on the same row, after the five, as goals with how far the reader is until earned (1.9, rec 79; build 95 note 18)", () => {
     const drawn = draw(createElement(ModePages, { theme: "default", font: "serif", allows: EVERY, locked: false, onPick: () => {} }));
-    // The five as ever (pages() reads the buttons that apply a palette), then the two.
+    // The five as ever (pages() reads the buttons that apply a palette), then the two, on ONE row.
     expect(pages(drawn).map((p) => p.palette)).toEqual(["default", "parchment", "black", "candlelight", "monastery"]);
-    expect(drawn).toContain('data-count="5"');
+    expect(drawn.match(/role="group"/g)).toHaveLength(1);
+    expect(drawn).toMatch(/class="set-mode-row" data-count="7"/);
     expect([...drawn.matchAll(/class="set-mode-page" data-palette="([^"]+)"/g)].map((m) => m[1])).toEqual(["default", "parchment", "black", "candlelight", "monastery", "councils", "cappadocian"]);
-    expect(drawn).toMatch(/class="set-modes set-modes-earned" data-count="2"/);
+    expect(drawn).not.toContain("set-modes-earned");
     // Nothing is earned in the first draw (the device's reading is read after it): both are goals.
     expect(drawn.match(/data-palette-goal="(councils|cappadocian)"/g)).toHaveLength(2);
     expect(drawn).toContain('<span class="set-mode-progress">0 of 19</span>');
@@ -160,7 +161,7 @@ describe("the reading modes", () => {
   });
 
   it("keeps the looks on their own page, and stands the one applied here as a sixth (1.9)", () => {
-    // The row is still the five: eighteen more would not be a row.
+    // The row is still the five and the two earned: eighteen more would not be a row.
     const five = pages(draw(createElement(ModePages, { theme: "default", font: "serif", allows: EVERY, locked: false, onPick: () => {} })));
     expect(five).toHaveLength(5);
     const worn = draw(createElement(ModePages, { theme: "athos", font: "serif", allows: EVERY, locked: false, onPick: () => {} }));
@@ -168,7 +169,7 @@ describe("the reading modes", () => {
     expect(got.map((p) => p.palette)).toEqual(["default", "parchment", "black", "candlelight", "monastery", "athos"]);
     expect(got.filter((p) => p.pressed).map((p) => p.palette)).toEqual(["athos"]);
     expect(got[5].name).toBe("Holy Mountain");
-    expect(worn).toContain('data-count="6"');
+    expect(worn).toContain('class="set-mode-row" data-count="8"');
     // And its small page has rules of its own, with its picture behind its words.
     expect(decls('.set-mode-page[data-palette="athos"]')["--mp-back"]).toContain("var(--scene-athos)");
     expect(decls(".set-mode-page").background).toBe("var(--mp-back, var(--mp-ground))");

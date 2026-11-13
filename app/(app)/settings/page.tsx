@@ -5,7 +5,7 @@ import { T } from "@/components/i18n/T";
 export const metadata = {
   title: "Settings",
   description:
-    "Reading palette, font and size, the interlinear default, the calendar reckoning, and the language Purify speaks to you in.",
+    "Your account, reading mode, font and text size, the calendar you follow, and the language Purify speaks to you in.",
 };
 
 /**
@@ -33,9 +33,6 @@ export default function SettingsPage() {
             <h1 className="font-display-serif text-heading text-paper leading-[1.05]">
               <T k="settings.title" />
             </h1>
-            <p className="mt-3 font-serif italic text-ui text-paper/70 leading-[1.6]">
-              <T k="settings.subtitle" />
-            </p>
           </header>
           {/* Its own box, so the first group is the first child of something
               and sits at the top on a phone, where the header is not drawn. */}

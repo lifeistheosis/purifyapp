@@ -115,12 +115,12 @@ const IN_ACCOUNT = say("settings.account", "Your account");
 const SETTINGS: SearchItem[] = [
   { id: "setting-all", label: IN_SETTINGS, labelKey: "nav.settings", href: "/settings", group: "Settings", keywords: "preferences options" },
   { id: "setting-reading-mode", ...said("ui.readingMode", "Reading mode"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#reading", group: "Settings", keywords: "theme dark mode light mode true black night candlelight monastery parchment appearance colours colors" },
-  { id: "setting-reader-font", ...said("ui.readerFont", "Reader font"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#reading", group: "Settings", keywords: "typeface serif sans letters" },
-  { id: "setting-reader-size", ...said("ui.readerSize", "Reader size"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#reading", group: "Settings", keywords: "text size font size bigger smaller larger large" },
+  { id: "setting-reader-font", ...said("ui.readerFont", "Font"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#reading", group: "Settings", keywords: "reader font typeface serif sans letters" },
+  { id: "setting-reader-size", ...said("ui.readerSize", "Text size"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#reading", group: "Settings", keywords: "reader size font size bigger smaller larger large" },
   { id: "setting-interlinear", ...said("ui.interlinearByDefault", "Interlinear by default"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#reading", group: "Settings", keywords: "greek hebrew original language word study" },
-  { id: "setting-calendar", ...said("ui.calendarReckoning", "Calendar reckoning"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#calendar", group: "Settings", keywords: "old calendar new calendar julian revised gregorian" },
+  { id: "setting-calendar", ...said("ui.calendarReckoning", "Calendar you follow"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#calendar", group: "Settings", keywords: "calendar reckoning old calendar new calendar julian revised gregorian" },
   { id: "setting-fasting", ...said("settings.fasting", "Fasting on Today"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#space", group: "Settings", keywords: "fast rule hide strict" },
-  { id: "setting-space", ...said("settings.space", "Your space"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#space", group: "Settings", keywords: "familiarity first focus beginner new to the faith" },
+  { id: "setting-space", ...said("settings.space", "Your space"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#space", group: "Settings", keywords: "familiarity main interest first focus beginner new to the faith" },
   { id: "setting-language", ...said("settings.language", "Language"), sublabel: IN_SETTINGS, sublabelKey: "nav.settings", href: "/settings#language", group: "Settings", keywords: "translate translation greek romanian filipino russian spanish idioma langue sprache" },
   // The account is the first group of the one Settings from 1.6, and its
   // screens are that group's rows: each result opens the screen its row does.

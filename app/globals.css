@@ -6657,37 +6657,76 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
    --color-gold of that palette's block above ("Premium Reading Modes", and
    :root for Dark). lib/settings/__tests__/litPanels.test.ts holds the two
    together. */
+/* The row the Plus preview draws its small pages on (.set-modes.plus-try-modes
+   sets their scale). Settings' own row was this until build 95 note 18: two
+   rows, the five and the two earned under them; it is now one row swept
+   sideways, .set-mode-row below. */
 .set-modes {
  --mp-k: 0.3333;
  display: flex;
  justify-content: space-between;
  margin-top: 14px;
 }
-.set-modes[data-count="6"] {
- --mp-k: 0.2857;
+/* The reading modes in Settings, one row (build 95 note 18, the owner: "a
+   clean scroller with haptic feedback rather than stacks"). The five, a look
+   while it is the one applied, and the two earned by reading
+   (components/settings/ReadingModePages.tsx, ModePages), on one row that runs
+   to the panel's edges and is swept sideways. It comes to rest on a page,
+   never between two: each page's start is where the row rests, its own
+   padding in from the edge, and the gap between two pages is that padding,
+   so the page before the one at rest ends exactly at the edge and no sliver
+   of it stands there. The pages are larger than the five that once shared
+   the panel's width, 81px on a phone and 89px from 400px wide, sizes chosen
+   so that at every common phone width (360 to 430) the next page is cut off
+   at the edge, between a quarter and three quarters shown, and a reader sees
+   there is more (lib/settings/__tests__/modeRow.test.ts does the sums). The
+   room above and below is for the lift and the light of the page that is on.
+   On a computer, where nothing is swept, all eight fit at a smaller scale. */
+.set-mode-row {
+ --mp-k: 0.4821;
+ display: flex;
+ gap: 16px;
+ margin-inline: -16px;
+ padding-block: 16px 8px;
+ padding-inline: 16px 0;
+ overflow-x: auto;
+ overscroll-behavior-x: contain;
+ scroll-snap-type: x mandatory;
+ scroll-padding-inline: 16px;
+ scrollbar-width: none;
 }
-/* The two palettes earned by reading (1.9, rec 79, lib/reader/earned.ts) on a
-   row of their own under the five: five columns of the five's own width,
-   spread as the five are, so each page stands under one above it. */
-.set-modes-earned {
- display: grid;
- grid-template-columns: repeat(5, calc(168px * var(--mp-k)));
- justify-content: space-between;
+.set-mode-row::-webkit-scrollbar {
+ display: none;
 }
-@media (max-width: 359px) {
- .set-modes {
-  --mp-k: 0.2857;
- }
- .set-modes[data-count="6"] {
-  --mp-k: 0.25;
+/* The room after the last page: the gap before this, its start's 16px. */
+.set-mode-row::after {
+ content: "";
+ flex: none;
+ width: 0;
+}
+.set-mode-row > .set-mode {
+ flex: none;
+ scroll-snap-align: start;
+}
+/* A name may run a little past its page, into the gap, before it turns to a
+   second line; a word stays whole. A little larger than the five's, as the
+   pages are, and so are Purify Plus and how far the reader is. */
+.set-mode-row .set-mode-name {
+ max-width: calc(168px * var(--mp-k) + 8px);
+ font-size: 11.5px;
+}
+.set-mode-row .set-mode-plus,
+.set-mode-row .set-mode-progress {
+ font-size: 10px;
+}
+@media (min-width: 400px) {
+ .set-mode-row {
+  --mp-k: 0.5298;
  }
 }
 @media (min-width: 768px) {
- .set-modes,
- .set-modes[data-count="6"] {
-  --mp-k: 0.5;
-  justify-content: flex-start;
-  gap: 22px;
+ .set-mode-row {
+  --mp-k: 0.41;
  }
 }
 .set-mode {

@@ -149,7 +149,7 @@ describe("the one Settings", () => {
     const keys = [
       "settings.account",
       "common.signIn",
-      "common.optional",
+      // "common.optional" stood under Sign in until build 95 note 19 took it away (his yes, 2026-11-13).
       "account.tabs.profile",
       "account.tabs.security",
       "settings.notifications",

@@ -44,7 +44,7 @@ export function ReaderSizeRow() {
   const { t } = useTranslate();
   const { size, setSize, font, leadingValue } = useReaderPrefs(BIBLE_START_SIZE);
   return (
-    <Row icon={<SizesGlyph />} label={t("ui.readerSize")} description={t("settings.sizeHint")}>
+    <Row icon={<SizesGlyph />} label={t("ui.readerSize")}>
       <ReaderSizeControl size={size} font={font} leading={leadingValue} onChange={setSize} />
     </Row>
   );

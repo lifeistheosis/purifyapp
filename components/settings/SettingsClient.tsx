@@ -178,12 +178,7 @@ function AccountSection({ reader }: { reader: Reader }) {
   if (reader.email === null) {
     return (
       <Section id="account" title={t("settings.account")}>
-        <LinkRow
-          href="/signin?next=/settings"
-          icon={<User size={18} strokeWidth={1.7} />}
-          label={t("common.signIn")}
-          description={t("common.optional")}
-        />
+        <LinkRow href="/signin?next=/settings" icon={<User size={18} strokeWidth={1.7} />} label={t("common.signIn")} />
       </Section>
     );
   }
@@ -390,12 +385,7 @@ function SpaceSection() {
           label={t("settings.level")}
         />
       </Row>
-      <Row
-        icon={<Wheat size={22} strokeWidth={1.35} />}
-        label={t("settings.fasting")}
-        description={t("settings.fastingHint")}
-        sub={t(`onboard.fasting.${fasting}Sub`)}
-      >
+      <Row icon={<Wheat size={22} strokeWidth={1.35} />} label={t("settings.fasting")} sub={t(`onboard.fasting.${fasting}Sub`)}>
         <Track
           value={fasting}
           options={FASTING_RULES.map((f) => ({ value: f, label: t(`onboard.fasting.${f}`) }))}
@@ -507,7 +497,6 @@ function TestersSection({ signedIn }: { signedIn: boolean }) {
       <ButtonRow
         icon={<ArrowUpLeft size={16} className="rtl:-scale-x-100" />}
         label={t("testers.firstOpen")}
-        description={t("testers.firstOpenHint")}
         onClick={() => {
           testFirstOpen();
           router.push("/");
@@ -516,7 +505,6 @@ function TestersSection({ signedIn }: { signedIn: boolean }) {
       <ButtonRow
         icon={<User size={18} strokeWidth={1.7} />}
         label={t("testers.back")}
-        description={t("testers.backHint")}
         onClick={() => backToMyOwn()}
         disabled={!testing}
       />
@@ -547,11 +535,10 @@ function MotionSection() {
 
   if (!visible) return null;
   return (
-    <Section title={t("settings.motion")} hint={t("settings.motionHint")}>
+    <Section title={t("settings.motion")}>
       <Row
         icon={<Wind size={18} />}
         label={t("settings.animations")}
-        description={t("settings.animationsHint")}
         control={<Switch on={!reduced} onChange={(on) => setMotionPreference(on ? "on" : "off")} label={t("settings.animations")} />}
       />
     </Section>
@@ -657,19 +644,15 @@ function Body() {
 
       <TestersSection signedIn={signedIn} />
 
-      <Section
-        id="reading"
-        title={t("settings.reading")}
-        hint={t("settings.readingHint")}
-      >
-        {/* Its head is the way to every palette, the fifteen looks among
+      <Section id="reading" title={t("settings.reading")}>
+        {/* Its head is the way to every palette, the fourteen looks among
             them (1.9, ./ReadingModeGallery.tsx), and says which one is on. */}
         <Row icon={<Book size={18} />} label={t("ui.readingMode")} description={modeName} href="/settings/reading-mode/">
           <ReadingModePages />
         </Row>
         <VespersRow />
         <CandleSeasonRow />
-        <Row icon={<FacesGlyph />} label={t("ui.readerFont")} description={t("settings.fontHint")}>
+        <Row icon={<FacesGlyph />} label={t("ui.readerFont")}>
           <Track
             faces
             value={font}
@@ -710,7 +693,7 @@ function Body() {
         <ClicksRow />
       </Section>
 
-      <Section id="calendar" title={t("settings.calendar")} hint={t("settings.calendarHint")}>
+      <Section id="calendar" title={t("settings.calendar")}>
         <Row icon={<Calendar size={18} />} label={t("ui.calendarReckoning")}>
           <Track
             value={calStyle}
