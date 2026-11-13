@@ -15,7 +15,7 @@ Updated 2026-11-13 01:24 UTC.
   5. The saints' webs: a node's place and date cut with an ellipsis at 390 and 320 (WebConstellation.tsx:116; Updates 2's successor).
   6. /prayers/ at 1032: chapters held only by scroll anchoring (Updates).
 - **The arbiter's rulings:** the webs' lifted saints are allowed for every node (kept in sight above the card it opened, in the house glide); the community thread was the measure; for 1.9 the commentary marks are sampled by Genesis 1's hand walk, and counting by drawn reach goes into 2.0's nightly gate (named to him).
-- **Rotations now, between checks:** Admin and Updates 2 write batons and stop (both near auto-compaction). A fresh Admin runs the targeted re-check from its baton; a fresh fixer takes fails 4 and 5. Updates keeps 1 and 6: it is at 164,000 tokens after one compaction, so it rotates after 1.9.
+- **Rotations, done between checks:** Admin and Updates 2 wrote batons and were archived. Admin 2 runs the targeted re-check; Updates 3 takes fails 4 and 5. Updates keeps 1 and 6: it is at 164,000 tokens after one compaction, so it rotates after 1.9.
 - **Also landing before the re-check:** St. Xenia's refined profile (its own fixer).
 - **Then:** every fix pushed; the re-check on one export from that head; if it passes, the test build is cut (Android with local-first on, the main web, publish off; then iOS).
 - **Before the merge (web only):** the admin link in `lib/billing/applyLifecycle.ts` (`?tab=` where the panel reads `#tab=`), with Updates 3.
@@ -45,7 +45,7 @@ Updated 2026-11-13 01:24 UTC.
 | Chat | Session | Holds |
 |---|---|---|
 | Arbiter | session_01VuYTwdsjYL2mmq2C2JSt2A | his words, NOW.md, routing |
-| Admin | session_01VuYTwbteJqs1UmDUwqRvzC | the final check, the admin panel, the drop's tooling |
+| Admin 2 | session_01VuYTweFNHsJxnX7YJmTvEN | the gate: first the lifted-saints ruling into the tap walk, then the targeted re-check on the arbiter's word (baton `docs/handoffs/admin.md`); the admin panel when the owner's desk resumes |
 | Updates | session_01VuYTwcNqTWyT6Yab696Eri | fixer |
 | Updates 3 | session_01VuYTwcy3Fbt9LcW3Qic77o | fixer: fails 4 (WordPopover's Close in Arabic) and 5 (the webs' place and date cut), from `docs/handoffs/updates-2.md`; then the admin link in `lib/billing/applyLifecycle.ts` |
 | SSM board | session_01VuYTwcSQmKLThRirvSeWa5 | the drop's words, the Vault |
@@ -53,4 +53,4 @@ Updated 2026-11-13 01:24 UTC.
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |
 | Saints: St. Xenia's profile | session_01VuYTwe6Fs6RKfBi7z1GMcb | his word of 2026-11-13: her full life, sourced, for the ad's "Read her life in Purify"; held locally, to land with the final check's fixes |
 
-Admin and Updates were past 700,000 tokens at the last look, so both rotate first after 1.9. Archived on 2026-11-13, their jobs done: Updates 2 (pushed e0319e71c, d70a01deb, cb114387b and e88068504; baton `docs/handoffs/updates-2.md`), Tooling, Admin panel 2 (baton `docs/handoffs/admin-panel.md`) and Product images. His PC's clone was left on `main` with one unpushed commit (2026-11-11): nothing is pushed from it.
+Updates rotates after 1.9 (one compaction). Archived on 2026-11-13, their jobs done: Admin (the final check, recorded in `docs/1.9-build/notes/gate-run-1.md`; baton `docs/handoffs/admin.md`; probes in `scripts/gate/`), Updates 2 (pushed e0319e71c, d70a01deb, cb114387b and e88068504; baton `docs/handoffs/updates-2.md`), Tooling, Admin panel 2 (baton `docs/handoffs/admin-panel.md`) and Product images. His PC's clone was left on `main` with one unpushed commit (2026-11-11): nothing is pushed from it.
