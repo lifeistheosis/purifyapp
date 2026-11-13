@@ -5,6 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 
 import type { MarketingList } from "./consent";
+import { RETENTION_KINDS } from "./retention/kinds";
 
 /**
  * Reading and writing a reader's email choices (email_preferences).
@@ -154,7 +155,12 @@ export async function unsubscribeByToken(
   // Newest schema first, as above: a column the table does not have yet is
   // a list there is nobody on.
   const monthly: Record<string, boolean> = all || list === "monthly_note" ? { monthly_note: false } : {};
+  // The three retention lists (20261113052927): "every optional Purify email"
+  // stops them too. One of them alone is stopped by its own token route
+  // (lib/email/retention/preferences.ts), since the page does not name them yet.
+  const retention: Record<string, boolean> = all ? Object.fromEntries(RETENTION_KINDS.map((kind) => [kind, false])) : {};
   const patches: Record<string, string | boolean>[] = [
+    { ...base, ...digest, ...release, ...monthly, ...retention },
     { ...base, ...digest, ...release, ...monthly },
     { ...base, ...digest, ...release },
     { ...base, ...digest },

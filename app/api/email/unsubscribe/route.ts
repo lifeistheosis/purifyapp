@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 
 import { isMarketingList } from "@/lib/email/consent";
 import { unsubscribeByToken } from "@/lib/email/preferences";
+import { isRetentionKind } from "@/lib/email/retention/kinds";
+import { stopRetentionByToken } from "@/lib/email/retention/preferences";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -42,7 +44,10 @@ export async function POST(req: Request) {
   }
 
   try {
-    await unsubscribeByToken(createAdminClient(), token, isMarketingList(list) ? list : "all");
+    // A retention list (lib/email/retention/kinds.ts) is stopped on its own:
+    // its one-click header names it, and the page does not know it yet.
+    if (isRetentionKind(list)) await stopRetentionByToken(createAdminClient(), token, list);
+    else await unsubscribeByToken(createAdminClient(), token, isMarketingList(list) ? list : "all");
   } catch (e) {
     console.warn(`[email] unsubscribe failed: ${(e as Error).message}`);
     return NextResponse.json({ ok: false, error: "That did not go through. Try again in a moment." }, { status: 503 });

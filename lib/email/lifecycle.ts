@@ -11,6 +11,7 @@ import { sendEmailOnce } from "./ledger";
 import { sendMarketingTo } from "./marketing";
 import { runCommunityDigest } from "./communityDigest";
 import { runNameDays } from "./nameDay";
+import { runRetention, type RetentionReport } from "./retention/run";
 import { winbackBody } from "./templates/marketingBodies";
 import { orderConfirmationNumber } from "@/lib/shop/orderNumber";
 
@@ -67,6 +68,12 @@ export type LifecycleReport = {
   errors: string[];
   /** False when auto_renew could not be read, so "ends in three days" was held back. */
   renewalStateKnown: boolean;
+  /**
+   * The three retention emails (lib/email/retention), each behind its own
+   * switch. Its own report rather than more kinds above, so the admin's
+   * table of kinds is untouched while every switch is off.
+   */
+  retention: RetentionReport;
 };
 
 const CONCURRENCY = 4;
@@ -440,6 +447,15 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
     }
   }
 
+  // The three retention emails: the first-week guide, where you left off,
+  // and the fasting companion (lib/email/retention/run.ts). Each is behind a
+  // switch that stays off until the owner's yes to its design, and with all
+  // three off this reads and sends nothing. After the emails above, so their
+  // sends count in each reader's week, and bulk, so it spends what is left.
+  const retention = await runRetention(admin, now, { bulkLeft });
+  bulkLeft = Math.max(0, bulkLeft - retention.spent);
+  errors.push(...retention.report.errors);
+
   // Order emails carry their own address; everything else is looked up.
   const lookups = [
     ...new Set(
@@ -486,5 +502,5 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
   const quota = quotaStopMessage(drained);
   if (quota) errors.push(quota);
 
-  return { ranAt: now.toISOString(), planned: plan.length, byKind, errors, renewalStateKnown };
+  return { ranAt: now.toISOString(), planned: plan.length, byKind, errors, renewalStateKnown, retention: retention.report };
 }
