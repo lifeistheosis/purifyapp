@@ -158,7 +158,9 @@ describe("every copy button a reader can reach", () => {
       const src = readFileSync(file, "utf8");
       // A call, not prose: the comments that explain the change name the old way.
       expect(src, `${file} calls the clipboard bare`).not.toMatch(/navigator\.clipboard\.writeText\s*\(/);
-      expect(src, `${file} does not use lib/ui/copyText`).toMatch(/from "@\/lib\/ui\/copyText"/);
+      // A Share copies through the app's one way to share (build 95 note 24), which copies through this.
+      expect(src, `${file} does not use lib/ui/copyText`).toMatch(/from "@\/lib\/ui\/copyText"|from "@\/lib\/share\/shareOut"/);
     }
+    expect(readFileSync("lib/share/shareOut.ts", "utf8")).toMatch(/from "@\/lib\/ui\/copyText"/);
   });
 });

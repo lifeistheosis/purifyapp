@@ -1,19 +1,22 @@
 "use client";
 
-// A small, localized share control. Uses the native Web Share sheet where it
-// exists (most phones), and falls back to copying the page link with a brief
-// "Link copied" confirmation. The label is translated to the reader's locale.
+// A small, localized share control. Opens the phone's own share sheet, in the
+// apps as in a browser (lib/share/shareOut.ts: until build 95 note 24 it asked
+// for the Web Share sheet alone, which Android's web view does not have, so
+// in the Android app it only ever copied), and copies the page link with a
+// brief "Link copied" only where there is no share sheet. The label is
+// translated to the reader's locale.
 //
 // The link is built with shareCurrentLink(), never window.location.href: the
 // Capacitor shell serves the export from https://localhost, so the raw href
 // is a dead link the moment it leaves the device. See lib/site.ts.
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Check } from "@/components/ui/icons/Check";
 import { cn } from "@/lib/cn";
+import { shareOut } from "@/lib/share/shareOut";
 import { shareCurrentLink } from "@/lib/site";
-import { copyText as putOnClipboard } from "@/lib/ui/copyText";
 import { TOP_ICON, TOP_PLATE } from "@/components/nav/topPlate";
 
 export function ShareButton({
@@ -38,24 +41,21 @@ export function ShareButton({
 }) {
   const { t } = useTranslate();
   const [copied, setCopied] = useState(false);
+  // One share at a time: a second tap while the sheet is rising is not a second share.
+  const busy = useRef(false);
 
   async function onShare() {
-    const url = typeof window !== "undefined" ? shareCurrentLink() : "";
-    if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
-      try {
-        const resolved = titleKey ? t(titleKey) : (title ?? "");
-        await navigator.share({ title: resolved, text: text ?? resolved, url });
-      } catch {
-        /* user dismissed the share sheet */
-      }
-      return;
-    }
+    if (busy.current) return;
+    busy.current = true;
     try {
-      if (!(await putOnClipboard(url))) throw new Error("the clipboard refused");
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
-    } catch {
-      /* clipboard unavailable */
+      const url = typeof window !== "undefined" ? shareCurrentLink() : "";
+      const resolved = titleKey ? t(titleKey) : (title ?? "");
+      if ((await shareOut({ title: resolved, text: text ?? resolved, url })) === "copied") {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1800);
+      }
+    } finally {
+      busy.current = false;
     }
   }
 

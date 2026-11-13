@@ -8,6 +8,8 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { apiFetch } from "@/lib/api/client";
 import type { Balance, ClickRow } from "@/lib/ambassadors/ledger";
 import { cn } from "@/lib/cn";
+import { isNativeClient } from "@/lib/platform/native";
+import { shareOut } from "@/lib/share/shareOut";
 import { formatPrice } from "@/lib/shop/format";
 import { openStripe } from "@/lib/shop/openStripe";
 import { copyText as putOnClipboard } from "@/lib/ui/copyText";
@@ -149,12 +151,13 @@ export function AmbassadorDashboard() {
     }
   }
 
+  // The phone's own share sheet, in the apps as in a browser (lib/share/shareOut.ts, build 95
+  // note 24: Android's web view has no Web Share, so in the app this button was never shown).
   async function share() {
     if (!me.link) return;
-    try {
-      await navigator.share?.({ url: me.link, title: "Purify" });
-    } catch {
-      /* dismissed */
+    if ((await shareOut({ title: "Purify", url: me.link })) === "copied") {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
     }
   }
 
@@ -187,7 +190,8 @@ export function AmbassadorDashboard() {
           <button type="button" onClick={() => void copyLink()} className={PRIMARY}>
             {copied ? t("ambassador.copied") : t("ambassador.copy")}
           </button>
-          {typeof navigator !== "undefined" && "share" in navigator ? (
+          {/* Where there is a share sheet: the apps' own, or a browser's. Copy stands beside it everywhere. */}
+          {isNativeClient() || (typeof navigator !== "undefined" && "share" in navigator) ? (
             <button type="button" onClick={() => void share()} className={SECONDARY}>
               {t("ambassador.share")}
             </button>

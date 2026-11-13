@@ -11,8 +11,8 @@ import { Plus } from "@/components/ui/icons/Plus";
 import { Share } from "@/components/ui/icons/Share";
 import { cn } from "@/lib/cn";
 import type { RunningCampaign } from "@/lib/community/runningCampaign";
+import { shareOut } from "@/lib/share/shareOut";
 import { shareLink } from "@/lib/site";
-import { copyText } from "@/lib/ui/copyText";
 
 /**
  * The campaign running now, under Pray together's head (1.8, the owner's
@@ -39,18 +39,11 @@ export function CampaignCard({
   const { t } = useTranslate();
   const [copied, setCopied] = useState(false);
 
+  // The phone's own share sheet, in the apps as in a browser (lib/share/shareOut.ts, build 95
+  // note 24); the link copied, and said, only where there is none.
   async function share() {
-    const url = shareLink(campaign.href);
-    if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
-      try {
-        const said = campaign.shareTitle ?? campaign.title;
-        await navigator.share({ title: said, text: said, url });
-      } catch {
-        /* the reader closed the share sheet */
-      }
-      return;
-    }
-    if (await copyText(url)) {
+    const said = campaign.shareTitle ?? campaign.title;
+    if ((await shareOut({ title: said, url: shareLink(campaign.href) })) === "copied") {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
     }

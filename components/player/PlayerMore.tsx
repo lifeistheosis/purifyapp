@@ -13,8 +13,8 @@ import { useAmbience } from "@/lib/ambience/player";
 import { openAmbience } from "@/lib/ambience/sheet";
 import { cn } from "@/lib/cn";
 import { minutesLeft, useSleepTimer } from "@/lib/player/sleep";
+import { shareOut } from "@/lib/share/shareOut";
 import { shareLink } from "@/lib/site";
-import { copyText } from "@/lib/ui/copyText";
 
 import { SaveOfflineRow } from "./SaveOffline";
 
@@ -58,23 +58,19 @@ export function PlayerMoreSheet({
   const sleepValue =
     sleep.kind === "minutes" ? t("player.sleepIn", { count: minutesLeft(sleep) }) : sleep.kind === "end" ? t("player.sleepEnd") : t("common.off");
 
-  /** The system's share sheet where there is one; else the link, copied. */
+  /**
+   * The phone's own share sheet, in the apps as in a browser (lib/share/shareOut.ts; until
+   * build 95 note 24 the Android app only ever copied here); else the link, copied, and said.
+   */
   async function shareIt() {
     if (!share) return;
-    const url = shareLink(share);
-    if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
-      try {
-        await navigator.share({ title, text: title, url });
-      } catch {
-        /* the reader closed the share sheet */
-      }
-      onClose();
-      return;
-    }
-    if (await copyText(url)) {
+    const result = await shareOut({ title, url: shareLink(share) });
+    if (result === "copied") {
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
+      return;
     }
+    if (result !== "failed") onClose();
   }
 
   return (
