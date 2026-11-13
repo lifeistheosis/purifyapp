@@ -160,22 +160,24 @@ const WEBSITE_METADATA: Metadata = {
  "Jesus Prayer",
  ],
  authors: [{ name: "Purify Team" }],
+ // Every page names itself (the arbiter's word of 2026-11-13, from build 95
+ // note 15): its own address as its canonical and its og:url, "./" being
+ // read against the page's own path, and its own title and description,
+ // which Open Graph and X take from the page when nothing here names them.
+ // Until then this handed "/" and "Purify" down to every page that set none
+ // of its own, so nearly every page told a search engine it was a copy of
+ // the home page, and unfolded as the home page where its link was pasted.
  openGraph: {
  type: "website",
  siteName: "Purify",
- title: "Purify, Orthodox prayer, calendar, and Scripture",
- description:
- "Daily prayer, the saint of the day, fasting status, and the Septuagint plus KJV with patristic commentary.",
- url: "/",
+ url: "./",
  locale: "en_US",
  },
  twitter: {
  card: "summary_large_image",
- title: "Purify",
- description: "Find God's peace in prayer.",
  },
  alternates: {
- canonical: "/",
+ canonical: "./",
  },
 };
 
