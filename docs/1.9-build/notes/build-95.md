@@ -17,3 +17,13 @@ The same fault was named and mended once before in 1.9 (components/i18n/LocaleMe
 His word, 2026-11-13 07:10 UTC, on build 96 (the page's build, the same app): "okay one thing on the new build I don't see the prayer campaigns"
 
 As built. The app shows campaigns' doors only when the website says so (lib/campaigns/useCampaignsOpen.ts). The build talks to the main web, which runs main, where the switch says closed until the merge (lib/campaigns/flags.ts, "Release day, in order"). With no test web (his choice, 2026-11-11), the release-day order stands in: (1) the merge carries "testers", so the website answers for his account alone and the campaign SQL runs; (2) the store builds go to internal testing and he walks campaigns on his phone, signed in; (3) one line opens them to every reader, at his word, after the lawyer's and the priest's words (items 113 and 129); (4) the stores go public. CLAUDE.md says anything a test build cannot match is named to him before he walks it. This was not named: the arbiter's miss, noted here.
+
+## Note 3: the Fast, clearly outdated
+
+His word, 2026-11-13 07:26 UTC, on build 96, with a screenshot of the Fast ("Keep the fast, day by day"): "so 2 things, the fast and the notebook design and system needs to be refined + smoother (notebook is not really optimized + some visual and ux bugs) and the fast is clearly outdated"
+
+The screenshot shows two bordered tiles of uneven height, each with a 0 (the left one says "fasting days kept. Begin whenever you're ready."). Then Today's card has three outlined pills (Kept, In part, Broke), and the recent days repeat the three pills on every row. It predates the approved look (2026-11-13, "yes look"). A redesign in that look, with reasons, for his yes or no.
+
+## Note 4: the journal (his "notebook"), not optimized, with visual and UX bugs
+
+Same words. The journal (app/(app)/journal, components/journal/) needs its bugs found and mended, and a refinement that makes it smoother, in the approved look, for his yes or no. His own screenshots of the bugs are asked for, so the ones he saw are the first fixed.
