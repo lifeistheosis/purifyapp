@@ -41,3 +41,9 @@ His word, same message: "the journal bugs you were asking is that whenever you c
 1. Choosing another section of the journal opens the keyboard by itself. It should open only when the reader taps where they write.
 2. When the keyboard opens, it opens badly: the page jumps or glitches.
 3. The whole journal is clunky, and its look is weak, the picture and quoting systems included. This joins note 4's refinement, for his yes.
+
+## Note 7: the Bible's "Highlighted" toast overlaps another bar
+
+His word, 2026-11-13 07:29 UTC, on build 96, with a screenshot of John 1:5 in the reader just after highlighting a verse: "ui overlalping"
+
+The "Highlighted / Undo" toast stands over the tab bar, and a second floating bar shows behind it: its rounded edge and a white button peek out above the toast, under the verse. Two floating layers drawn on top of each other. One must give way: either the other bar steps aside while the toast shows, or the two stack with their own space. Reproduce at 390 with touch and motion on, mend it, and give it a test that fails on the old code.
