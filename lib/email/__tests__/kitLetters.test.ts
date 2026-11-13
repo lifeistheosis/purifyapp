@@ -1,0 +1,127 @@
+import { describe, expect, it } from "vitest";
+
+import { HERITAGE_STEMS } from "@/lib/marketing/heritagePictures";
+import { SAINTS } from "@/lib/saints/saints";
+import { SITE_URL } from "@/lib/site";
+
+import { esc } from "../kit";
+import { renderMarketing } from "../marketing";
+import { saintCardOf } from "../saintCard";
+import { monthlyBody, nativityFastDay, weekRange, weeklyBody } from "../templates/contentBodies";
+import { KIT_DARK, KIT_NIGHT_SKY } from "../theme";
+import { weekAhead } from "../weekly";
+
+/**
+ * The list emails in the design kit's look (his yes, 2026-11-13: "yes look"),
+ * drawn by lib/email/kitLetters.ts from the bodies the drafts build. The
+ * pieces themselves are held to the kit's builder in kit.test.ts; this holds
+ * what each letter puts in them, and the rules every letter keeps.
+ */
+
+const TOKEN = "3f1c2a9e-8b7d-4c6e-9f10-2a3b4c5d6e7f";
+const ADDRESS = "PO Box 123, Springfield, IL 62701";
+const sunday = (iso: string) => {
+  const now = new Date(iso);
+  const week = weekAhead(now);
+  return weeklyBody({ ...week, saintCard: saintCardOf(week.saint?.slug ?? null), start: now });
+};
+
+describe("the Sunday email in the kit's look", () => {
+  it("in the Nativity Fast wears Night sky, the night of its day, and says each day's fast in the calendar's words", () => {
+    const body = sunday("2026-11-22T12:00:00Z");
+    expect(nativityFastDay(new Date("2026-11-22T12:00:00Z"))).toBe(8);
+    expect(body.season).toEqual({ kind: "nativity-fast", day: 8 });
+    const html = renderMarketing(body, "product_updates", TOKEN, ADDRESS).html;
+    expect(html).toContain(`background-color:${KIT_NIGHT_SKY.ground};`);
+    expect(html).toContain(`${SITE_URL.replace(/\/$/, "")}/email/nativity-night-08.png`);
+    expect(html).toContain("Nativity Fast · day 8 of 40");
+    const fasted = (body.lines ?? []).filter((l) => l.fast);
+    expect(fasted.length).toBeGreaterThan(0);
+    for (const l of fasted) expect(html).toContain(`&nbsp;${esc(l.fast!.label)}`);
+    expect(html).toContain("/reading/paths/nativity");
+    expect(html).toContain("Dates and fasting follow the new calendar.");
+  });
+
+  it("outside a fast wears Dark, and lists the days without their fasts", () => {
+    const body = sunday("2026-09-13T12:00:00Z");
+    expect(body.season).toBeUndefined();
+    expect(body.deck).toBe(weekRange(new Date("2026-09-13T12:00:00Z")));
+    const html = renderMarketing(body, "product_updates", TOKEN, ADDRESS).html;
+    expect(html).toContain(`background-color:${KIT_DARK.ground};`);
+    expect(html).not.toContain("Nativity Fast");
+    expect(html).not.toContain("&#9679;");
+    // Said once, in the foot, never again as a paragraph above it.
+    expect(html.split("Dates follow the new calendar.").length - 1).toBe(1);
+  });
+
+  it("says the week's dates under its title, the day in each margin, and ends on the week's saint", () => {
+    const body = sunday("2026-11-15T12:00:00Z");
+    expect(body.deck).toBe("November 15 to 21");
+    const html = renderMarketing(body, "product_updates", TOKEN, ADDRESS).html;
+    expect(html).toMatch(/>Sun<\/p>\s*<p[^>]*>15<\/p>/);
+    if (body.card) {
+      expect(html).toContain("This week in the library");
+      expect(html).toContain(`>${esc(body.action!.label)}</a>`);
+    }
+  });
+});
+
+describe("a saint's picture", () => {
+  const stem = (url: string) => url.slice(url.lastIndexOf("/") + 1).replace(/\.(?:jpe?g|png|webp|avif)$/, "");
+  const listed = SAINTS.find((s) => s.iconUrl && HERITAGE_STEMS.includes(stem(s.iconUrl)));
+  const free = SAINTS.find((s) => s.iconUrl && !HERITAGE_STEMS.includes(stem(s.iconUrl)));
+
+  it("is left out when it is on the heritage list, and the card stands on its words", () => {
+    expect(listed, "a saint whose icon is on the heritage list").toBeDefined();
+    const card = saintCardOf(listed!.slug);
+    expect(card.picture).toBeNull();
+    expect(card.epithet).toBe(listed!.epithet || null);
+  });
+
+  it("is the library's own otherwise, from the main web", () => {
+    expect(free).toBeDefined();
+    expect(saintCardOf(free!.slug).picture).toBe(`${SITE_URL.replace(/\/$/, "")}${free!.iconUrl}`);
+  });
+});
+
+describe("every letter in the kit's look", () => {
+  const letters = [
+    renderMarketing(sunday("2026-11-22T12:00:00Z"), "product_updates", TOKEN, ADDRESS),
+    renderMarketing(sunday("2026-09-13T12:00:00Z"), "product_updates", TOKEN, ADDRESS),
+    renderMarketing(
+      monthlyBody({ monthLabel: "October", now: { saints: 170, books: 83, chapters: 1400, verses: 35206 }, before: { saints: 159, books: 83, chapters: 1400, verses: 35206 } })!,
+      "monthly_note",
+      TOKEN,
+      ADDRESS,
+    ),
+  ];
+
+  it("ends on why it came, who sent it with the postal address, and this reader's own Unsubscribe", () => {
+    for (const l of letters) {
+      expect(l.html).toContain("You are getting this because you turned on");
+      expect(l.html).toContain(esc(ADDRESS));
+      expect(l.html).toMatch(new RegExp(`href="[^"]*${TOKEN}[^"]*"[^>]*>Unsubscribe</a>`));
+    }
+  });
+
+  it("is drawn for mail clients, small enough that Gmail never clips it, and never on parchment", () => {
+    for (const l of letters) {
+      expect(l.html).not.toMatch(/<script|<svg|display:\s*(flex|grid)|conic-gradient/i);
+      expect(l.html).toContain("@media (prefers-color-scheme: light)");
+      expect(Buffer.byteLength(l.html, "utf8")).toBeLessThan(100_000);
+      for (const paper of ["#f1e8d4", "#e7dcc1", "#e6dcc4"]) expect(l.html.toLowerCase()).not.toContain(paper);
+      expect(l.html).not.toContain("—");
+      for (const src of [...l.html.matchAll(/<img src="([^"]+)"/g)].map((m) => m[1])) expect(src.startsWith("https://")).toBe(true);
+    }
+  });
+
+  it("keeps every link a 44px line of its own", () => {
+    for (const l of letters) {
+      for (const m of l.html.matchAll(/<a href="[^"]+"[^>]*style="([^"]*)"/g)) {
+        const style = m[1];
+        const ok = /padding:13px 0;[^"]*line-height:18px/.test(style) || /padding:13px 22px;[^"]*line-height:16px/.test(style) || /display:block;padding:15px 18px/.test(style) || /text-decoration:none$/.test(style);
+        expect(ok, style).toBe(true);
+      }
+    }
+  });
+});

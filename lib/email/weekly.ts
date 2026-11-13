@@ -1,4 +1,4 @@
-import { commemorationsOn, type Commemoration } from "@/lib/calendar/orthodox";
+import { commemorationsOn, fastingStatus, type Commemoration, type FastKind } from "@/lib/calendar/orthodox";
 
 /**
  * The week ahead, for the Sunday email.
@@ -31,6 +31,13 @@ export type WeekLine = {
   slug: string | null;
   /** That saint's own name, for the week's saint card; null or absent when the day names no registry saint. */
   saintName?: string | null;
+  /**
+   * The day's fast, in the calendar's own words (fastingStatus, new
+   * calendar), or null on a day with no rule. The kit's Sunday email says it
+   * beside each day in a fast (docs/brand/kit/email/README.md, "For the
+   * build", 3).
+   */
+  fast?: { kind: FastKind; label: string } | null;
 };
 
 const DAY = 86_400_000;
@@ -41,6 +48,16 @@ export function dayLabel(d: Date): string {
 
 function startOfUtcDay(d: Date): Date {
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+}
+
+/** The day's fast by the new calendar, as the Sunday email's dates follow it; null on a day with no rule. */
+export function fastOf(date: Date): { kind: FastKind; label: string } | null {
+  try {
+    const f = fastingStatus(date, "new");
+    return f.kind === "normal" ? null : { kind: f.kind, label: f.label };
+  } catch {
+    return null;
+  }
 }
 
 export function weekAhead(
@@ -66,6 +83,7 @@ export function weekAhead(
       kind: feast ? "feast" : "saint",
       slug: headline.saint ? headline.saint.slug : null,
       saintName: headline.saint?.name ?? null,
+      fast: fastOf(date),
     });
   }
 

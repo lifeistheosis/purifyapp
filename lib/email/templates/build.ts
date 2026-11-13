@@ -21,7 +21,16 @@ import { UNSUBSCRIBE_SLOT } from "../unsubscribe";
 export type EmailContent = { subject: string; html: string; text: string };
 
 /** A day in the week ahead, for the Sunday email. */
-export type EmailDay = { day: string; name: string; kind: "feast" | "saint" };
+export type EmailDay = {
+  day: string;
+  name: string;
+  kind: "feast" | "saint";
+  /** For the kit's margin (lib/email/kit.ts days): "Sun" and "15". Absent on a body made before the kit. */
+  weekday?: string;
+  date?: string;
+  /** The day's fast, in the calendar's own words: its kind and label (lib/calendar/orthodox.ts fastingStatus). */
+  fast?: { kind: string; label: string } | null;
+};
 
 /**
  * One line of a short list: a mark, a name set without its full stop, a

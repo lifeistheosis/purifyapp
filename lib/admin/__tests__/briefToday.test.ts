@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { READER_EMAIL_LOOK } from "@/lib/email/look";
+
 import type { BoardTask } from "../planner";
 
 const state = vi.hoisted(() => ({
@@ -50,7 +52,7 @@ const desk = (over: Partial<DeskState> = {}): DeskState => ({
   saved: null,
   holds: {},
   announcement: null,
-  look: { seen: "1", at: null, by: null },
+  look: { seen: READER_EMAIL_LOOK, at: null, by: null },
   ...over,
 });
 

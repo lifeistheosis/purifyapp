@@ -37,6 +37,9 @@ const EMAIL_FILES = [
   // The owner's brief and its charts (2026-11-13): drawn on the theme's tokens only.
   "lib/admin/ownerBrief.ts",
   "lib/admin/briefCharts.ts",
+  // The design kit's look (2026-11-13, his "yes look"): its colours are the theme's KIT_* only.
+  "lib/email/kit.ts",
+  "lib/email/kitLetters.ts",
 ];
 
 const WEEK = [
@@ -49,7 +52,8 @@ describe("the email theme", () => {
     const offenders: string[] = [];
     for (const rel of EMAIL_FILES) {
       const src = fs.readFileSync(path.join(ROOT, rel), "utf8");
-      for (const hex of src.match(/#[0-9a-fA-F]{3,8}\b/g) ?? []) offenders.push(`${rel}: ${hex}`);
+      // A numeric entity (&#9679; the dot beside a fast) is a character, not a colour.
+      for (const hex of src.match(/(?<!&)#[0-9a-fA-F]{3,8}\b/g) ?? []) offenders.push(`${rel}: ${hex}`);
     }
     expect(offenders, "colours belong in lib/email/theme.ts, not in a template").toEqual([]);
   });
@@ -104,7 +108,8 @@ describe("the week ahead", () => {
   it("lists the days instead of running them together, and marks the feast", () => {
     expect(email.html).toContain("Sunday, September 20");
     expect(email.html).toContain("Conception of the Forerunner");
-    expect(email.html).toContain("&middot; Feast");
+    // The kit marks a feast in words, in the rubric's colour, as well as setting it heavier.
+    expect(email.html).toContain(">Feast</span>");
     expect(body.paragraphs).toEqual([]);
   });
 
@@ -113,8 +118,9 @@ describe("the week ahead", () => {
     expect(email.text).toContain("Dates follow the new calendar.");
   });
 
-  it("says which list it came from, above the heading", () => {
-    expect(email.html).toContain("The library");
+  it("says which list it came from, in its foot, and its day at the masthead", () => {
+    expect(email.html).toContain("turned on &quot;The Sunday calendar&quot; in your Purify settings");
+    expect(email.html).toMatch(/font-weight:600;color:[^"]*">Sunday, September 20<\/td>/);
   });
 });
 

@@ -13,6 +13,7 @@ import { CURRENT_VERSION, featureRelease } from "@/lib/whatsNew/version";
 
 import { latestCampaign, type CampaignKind } from "./campaigns";
 import { RELEASE_NEWS, type MarketingList } from "./lists";
+import { saintCardOf } from "./saintCard";
 import { longDate } from "./templates/build";
 import { monthlyBody, releaseBody, weeklyBody, type LibraryCounts } from "./templates/contentBodies";
 import type { MarketingBody } from "./templates/marketingBodies";
@@ -91,7 +92,7 @@ export async function draftCampaign(
         kind,
         list: "product_updates",
         periodKey: isoWeekOf(today),
-        body: week.lines.length ? weeklyBody(week) : null,
+        body: week.lines.length ? weeklyBody({ ...week, saintCard: saintCardOf(week.saint?.slug ?? null), start: now }) : null,
         reason: week.lines.length ? null : "The calendar has nothing for the coming week.",
         details: { from: today, days: week.lines.map((l) => ({ day: l.day, name: l.name, kind: l.kind })) },
       };

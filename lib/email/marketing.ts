@@ -6,6 +6,7 @@ import { emailsByUserId } from "@/lib/admin/users";
 
 import {
   marketingFooter,
+  marketingFooterParts,
   marketingRefusal,
   unsubscribeHeaders,
   unsubscribePageUrl,
@@ -13,6 +14,8 @@ import {
   type MarketingRefusal,
 } from "./consent";
 import { drain, quotaStopMessage } from "./drain";
+import { kitLetter } from "./kitLetters";
+import { READER_EMAIL_LOOK } from "./look";
 import { sendEmailOnce } from "./ledger";
 import { subscribersOf, type Subscriber } from "./preferences";
 import type { SendOnceResult } from "./sendOnce";
@@ -54,6 +57,9 @@ function emptyCounts(): MarketingReport["counts"] {
 
 /** One reader's copy: the footer and headers are theirs, the words are shared. */
 export function renderMarketing(body: MarketingBody, list: MarketingList, token: string, address: string) {
+  const eyebrow =
+    list === "shop_offers" ? "Purify Shop" : list === "community_digest" ? "Community" : list === "release_news" ? "What is new" : "The library";
+  // The text part, and the html of the look before the kit's.
   const content = buildEmail({
     ...body,
     // What the reader turned on, said in the line above the heading.
@@ -70,7 +76,17 @@ export function renderMarketing(body: MarketingBody, list: MarketingList, token:
     // reader's own page for this one list.
     unsubscribeHref: unsubscribePageUrl(token, list),
   });
-  return { ...content, headers: unsubscribeHeaders(token, list) };
+  if (READER_EMAIL_LOOK === "1") return { ...content, headers: unsubscribeHeaders(token, list) };
+  // The design kit's look (his yes, 2026-11-13; lib/email/kitLetters.ts). The
+  // Sunday email's masthead names its day; every other list names itself.
+  const { why, company } = marketingFooterParts({ list, postalAddress: address });
+  const html = kitLetter(body, {
+    kind: body.lines?.length ? body.lines[0].day : eyebrow,
+    why,
+    company,
+    unsubscribeHref: unsubscribePageUrl(token, list),
+  });
+  return { ...content, html, headers: unsubscribeHeaders(token, list) };
 }
 
 /**

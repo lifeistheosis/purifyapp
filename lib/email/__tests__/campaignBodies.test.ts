@@ -151,7 +151,8 @@ describe("the release email", () => {
     const email = renderMarketing(body, "product_updates", TOKEN, ADDRESS);
     expect(email.html).not.toContain("A plain line.");
     expect(email.html).not.toContain("Reading position survives.");
-    expect(email.html.indexOf(">Purify 1.4</h1>")).toBeLessThan(email.html.indexOf("The admin grows up"));
+    // The kit's opening (lib/email/kitLetters.ts): the name, then its own name under it in italics.
+    expect(email.html.indexOf(">Purify 1.4</h1>")).toBeLessThan(email.html.indexOf(">The admin grows up</p>"));
     expect(email.text.startsWith("The admin grows up\n\nWhat changed.")).toBe(true);
   });
 
@@ -168,13 +169,15 @@ describe("the release email", () => {
 
     const email = renderMarketing(body, "product_updates", TOKEN, ADDRESS);
     expect(email.html).not.toContain("What changed.");
-    expect(email.html).toContain('width="480" alt="Genesis 1 with its Greek."');
+    // The release's picture across the letter, where the button goes (the kit's look, lib/email/kitLetters.ts).
+    expect(email.html).toContain('width="568" alt="Genesis 1 with its Greek."');
     expect(email.html).toContain(`<a href="${body.action!.href}" style="text-decoration:none"><img`);
-    // Each point: its mark, its name in the heading's ink with a full stop, its line. Escaped once.
+    // Each point: its name in the ink, set heavier, with a full stop, then its line. Escaped once.
     expect(email.html).toContain(">The Greek Old Testament.</strong> The Greek beside the English.");
-    expect(email.html).toContain(">Icons &amp; prints.</strong> A new shelf in the shop.<img");
+    expect(email.html).toContain(">Icons &amp; prints.</strong> A new shelf in the shop.");
     // A screenshot under its point, at a phone's width, with its words for a reader who sees no pictures.
     expect(email.html).toContain('/whats-new/1.5/email-profile.jpg" width="300" alt="A shelf of icons."');
+    expect(email.html.indexOf("A new shelf in the shop.")).toBeLessThan(email.html.indexOf("email-profile.jpg"));
     // In the order a reader meets them, and all of it in the text part.
     const order = ["Here is what is new.", "The Greek Old Testament.", "Icons &amp; prints.", "The library stays free.", "See everything that is new"];
     expect(order.map((t) => email.html.indexOf(t))).toEqual([...order.map((t) => email.html.indexOf(t))].sort((x, y) => x - y));

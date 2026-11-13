@@ -21,28 +21,76 @@ import type { WeekLine } from "../weekly";
  *             soft push gets no note and no email.
  */
 
+const MONTH = (d: Date) => d.toLocaleDateString("en-US", { month: "long", timeZone: "UTC" });
+
+/** "November 15 to 21", "November 29 to December 5": the week the email covers. */
+export function weekRange(first: Date): string {
+  const last = new Date(first.getTime() + 6 * 86_400_000);
+  return MONTH(first) === MONTH(last)
+    ? `${MONTH(first)} ${first.getUTCDate()} to ${last.getUTCDate()}`
+    : `${MONTH(first)} ${first.getUTCDate()} to ${MONTH(last)} ${last.getUTCDate()}`;
+}
+
+/**
+ * The Nativity Fast's day on `date` by the new calendar, 1 to 40 (15
+ * November to 24 December), or null outside it: the season the kit's Sunday
+ * email wears (docs/brand/kit/email/README.md, "The Nativity Fast").
+ */
+export function nativityFastDay(date: Date): number | null {
+  const y = date.getUTCFullYear();
+  const start = Date.UTC(y, 10, 15);
+  const day = Math.floor((Date.UTC(y, date.getUTCMonth(), date.getUTCDate()) - start) / 86_400_000) + 1;
+  return day >= 1 && day <= 40 ? day : null;
+}
+
 export function weeklyBody(opts: {
   lines: readonly WeekLine[];
   saint: { name: string; slug: string } | null;
+  /** The saint's card in the kit's look: the epithet, and the library's own picture unless it is on the heritage list. */
+  saintCard?: { epithet: string | null; picture: string | null };
+  /** The day the email covers from: its Sunday. Defaults to the first line's day. */
+  start?: Date;
 }): MarketingBody {
   const feast = opts.lines.find((l) => l.kind === "feast");
+  const first = opts.start ?? opts.lines[0]?.date ?? new Date();
+  const fastDay = nativityFastDay(first);
   return {
     subject: feast ? `The week ahead: ${feast.name}` : "The week ahead in the Church calendar",
     heading: "The week ahead",
+    deck: weekRange(first),
     // The days are a list, not sentences: five "Monday, September 21: Apostle
     // Quadratus" paragraphs in a row is a calendar written as prose, and the
     // reader is scanning for one of them.
     paragraphs: [],
-    lines: opts.lines.map((l) => ({ day: l.day, name: l.name, kind: l.kind })),
+    lines: opts.lines.map((l) => ({
+      day: l.day,
+      name: l.name,
+      kind: l.kind,
+      weekday: l.date.toLocaleDateString("en-US", { weekday: "short", timeZone: "UTC" }),
+      date: String(l.date.getUTCDate()),
+      fast: l.fast ?? null,
+    })),
     after: [
       opts.saint
         ? `This week, read about ${opts.saint.name} in the library.`
         : "The full calendar, every day and every saint, is in the library.",
-      "Dates follow the new calendar.",
+      fastDay ? "Dates and fasting follow the new calendar." : "Dates follow the new calendar.",
     ],
     action: opts.saint
       ? { label: `Read about ${opts.saint.name}`, href: siteUrl(`/saints/${opts.saint.slug}`) }
       : { label: "Open the calendar", href: siteUrl("/calendar") },
+    ...(opts.saint
+      ? {
+          card: {
+            small: "This week in the library",
+            name: opts.saint.name,
+            epithet: opts.saintCard?.epithet ?? null,
+            picture: opts.saintCard?.picture ?? null,
+          },
+        }
+      : {}),
+    ...(fastDay ? { season: { kind: "nativity-fast" as const, day: fastDay } } : {}),
+    footNote: fastDay ? "Dates and fasting follow the new calendar." : "Dates follow the new calendar.",
   };
 }
 

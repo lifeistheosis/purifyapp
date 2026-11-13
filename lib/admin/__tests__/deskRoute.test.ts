@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { READER_EMAIL_LOOK } from "@/lib/email/look";
+
 import { DESK_DEFAULTS } from "../ownerDesk";
 import type { DeskState } from "../ownerDeskStore";
 
@@ -49,7 +51,7 @@ const post = (body: unknown) => POST(new Request("https://purifyapp.net/api/admi
 
 beforeEach(() => {
   state.user = { id: "u1", email: "owner@example.org" };
-  state.desk = { present: true, ok: true, settings: DESK_DEFAULTS, saved: null, holds: {}, announcement: null, look: { seen: "1", at: null, by: null } };
+  state.desk = { present: true, ok: true, settings: DESK_DEFAULTS, saved: null, holds: {}, announcement: null, look: { seen: READER_EMAIL_LOOK, at: null, by: null } };
   state.writes = [];
   state.writeResult = { ok: true };
   state.composed = [];
@@ -123,8 +125,8 @@ describe("the desk's route", () => {
     const r = await post({ action: "look-seen" });
     expect(r.status).toBe(200);
     expect(state.writes).toHaveLength(1);
-    expect(state.writes[0]).toMatchObject({ key: "owner_desk_look", value: { seen: "1", by: "owner@example.org" } });
-    expect(state.logged[0]).toMatchObject({ action: "desk.look_seen", detail: { prior: { seen: "0" }, next: "1" } });
+    expect(state.writes[0]).toMatchObject({ key: "owner_desk_look", value: { seen: READER_EMAIL_LOOK, by: "owner@example.org" } });
+    expect(state.logged[0]).toMatchObject({ action: "desk.look_seen", detail: { prior: { seen: "0" }, next: READER_EMAIL_LOOK } });
   });
 
   it("refuses what it does not know", async () => {

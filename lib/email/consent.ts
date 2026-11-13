@@ -65,11 +65,20 @@ export function unsubscribeHeaders(token: string, list: MarketingList): Record<s
  * true instead: it comes with having an account, and it is rare.
  */
 export function marketingFooter(opts: { list: MarketingList; postalAddress: string }): string {
+  const { why, company } = marketingFooterParts(opts);
+  return `${why} ${company}`;
+}
+
+/**
+ * The same footer in its two parts, for the kit's foot (lib/email/kitLetters.ts),
+ * which sets why the email came and who sent it on lines of their own.
+ */
+export function marketingFooterParts(opts: { list: MarketingList; postalAddress: string }): { why: string; company: string } {
   const why =
     opts.list === RELEASE_NEWS
       ? "You are getting this because you have a Purify account. We send it a few times a year, when a new version is released, and the button below stops it."
       : `You are getting this because you turned on "${LIST_LABEL[opts.list]}" in your Purify settings.`;
   // The sender CAN-SPAM asks a list email to name, with its postal address:
   // the company that runs Purify (lib/legal/entity.ts).
-  return `${why} ${LEGAL_NAME}, ${opts.postalAddress.trim()}.`;
+  return { why, company: `${LEGAL_NAME}, ${opts.postalAddress.trim()}.` };
 }

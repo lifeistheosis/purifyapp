@@ -30,6 +30,21 @@ export type MarketingBody = {
    */
   points?: EmailPoint[];
   action?: { label: string; href: string };
+  /**
+   * The kit's card for the one thing to do next (lib/email/kit.ts
+   * saintCard): the week's saint, with a small line, the name, its epithet
+   * and the saint's own picture, never one on the heritage list. Its button
+   * is the action's. A body without one ends on the plain button.
+   */
+  card?: { small: string; name: string; epithet?: string | null; picture?: string | null };
+  /**
+   * The Church season the letter is sent in, which the kit's look wears: the
+   * Nativity Fast, with the day of the forty (docs/brand/kit/email/README.md,
+   * "The Nativity Fast").
+   */
+  season?: { kind: "nativity-fast"; day: number };
+  /** A line the kit's foot opens with, before why the email came: "Dates follow the new calendar." */
+  footNote?: string;
 };
 
 /**

@@ -12,6 +12,7 @@ import { CURRENT_VERSION, featureRelease } from "@/lib/whatsNew/version";
 
 import { checkEmailCopy } from "../doctrine";
 import { renderMarketing } from "../marketing";
+import { esc as kitEsc } from "../kit";
 import { escapeHtml } from "../send";
 import { releaseBody } from "../templates/contentBodies";
 import { bodyLines } from "../templates/marketingBodies";
@@ -109,7 +110,8 @@ describe.runIf(entry)(`the release email for ${ANNOUNCED}`, () => {
     expect(email.subject).toContain(`Purify ${ANNOUNCED}`);
     expect(email.subject).not.toContain(`Purify ${ANNOUNCED}.`);
     if (entry!.kind) {
-      expect(email.html).toContain(escapeHtml(entry!.kind));
+      // Escaped as the kit escapes (lib/email/kit.ts esc): an apostrophe stands as it is.
+      expect(email.html).toContain(kitEsc(entry!.kind));
       expect(email.text).toContain(entry!.kind);
     }
     expect(email.html).toContain("/whats-new");

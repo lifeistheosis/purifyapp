@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { READER_EMAIL_LOOK } from "@/lib/email/look";
+
 import type { BoardTask } from "../planner";
 import { DESK_DEFAULTS } from "../ownerDesk";
 import type { DeskState } from "../ownerDeskStore";
@@ -61,7 +63,7 @@ const due: BoardTask = { id: null, ruleKey: RULE, title: "Send the Sunday calend
 
 beforeEach(() => {
   forgetAutoSends();
-  state.desk = { present: true, ok: true, settings: DESK_DEFAULTS, saved: null, holds: {}, announcement: named, look: { seen: "1", at: null, by: null } };
+  state.desk = { present: true, ok: true, settings: DESK_DEFAULTS, saved: null, holds: {}, announcement: named, look: { seen: READER_EMAIL_LOOK, at: null, by: null } };
   state.tasks = [due];
   state.boardError = null;
   state.boardReads = 0;
@@ -147,7 +149,7 @@ describe("a send by itself", () => {
   });
 
   describe("the first-send guard", () => {
-    // A look he has not cleared: the reader emails wear look "1" (lib/email/look.ts), he cleared "0".
+    // A look he has not cleared: he cleared "0", and the reader emails wear READER_EMAIL_LOOK (lib/email/look.ts).
     const unseen = () => ({ ...state.desk, look: { seen: "0", at: null, by: null } });
 
     it("sends the first one in a new look to him alone, exactly as readers would get it, and nothing to readers", async () => {
@@ -155,7 +157,7 @@ describe("a send by itself", () => {
       const r = await runAutoSends({} as never, NOON);
       expect(state.starts).toEqual([]);
       expect(state.firstLooks).toEqual([
-        expect.objectContaining({ dedupeKey: "first_look:1", kind: "first_look", to: "owner@example.org", userId: null, subject: "The week ahead" }),
+        expect.objectContaining({ dedupeKey: `first_look:${READER_EMAIL_LOOK}`, kind: "first_look", to: "owner@example.org", userId: null, subject: "The week ahead" }),
       ]);
       expect(r.lines).toEqual([{ ruleKey: RULE, outcome: "to you first" }]);
       expect(state.logged.map((l) => l.action)).toEqual(["email.first_look"]);
@@ -169,7 +171,7 @@ describe("a send by itself", () => {
     });
 
     it("lets the sends go to readers again once he has seen the look", async () => {
-      state.desk = { ...unseen(), look: { seen: "1", at: "2026-11-21T15:00:00Z", by: "him" } };
+      state.desk = { ...unseen(), look: { seen: READER_EMAIL_LOOK, at: "2026-11-21T15:00:00Z", by: "him" } };
       await runAutoSends({} as never, NOON);
       expect(state.starts).toHaveLength(1);
       expect(state.firstLooks).toEqual([]);

@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { READER_EMAIL_LOOK } from "@/lib/email/look";
+
 import { DESK_DEFAULTS } from "../ownerDesk";
 import type { DeskState } from "../ownerDeskStore";
 
@@ -78,7 +80,7 @@ const SUNDAY = (h: number, m = 0) => new Date(Date.UTC(2026, 10, 22, h + 5, m));
 
 beforeEach(() => {
   forgetBriefRuns();
-  state.desk = { present: true, ok: true, settings: DESK_DEFAULTS, saved: null, holds: {}, announcement: null, look: { seen: "1", at: null, by: null } };
+  state.desk = { present: true, ok: true, settings: DESK_DEFAULTS, saved: null, holds: {}, announcement: null, look: { seen: READER_EMAIL_LOOK, at: null, by: null } };
   state.logged = { sent: false, at: null };
   state.sends = [];
   state.sendResult = { status: "sent" };
