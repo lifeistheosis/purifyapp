@@ -9,10 +9,10 @@ export const SCENE_THREE = 32; // seconds: the church stands, and the camera lif
 export const SCENE_FOUR = 43; // the claim is answered; a whip to who they are
 export const SCENE_FIVE = 62.3; // who they are ends; a whip down to the map for where they are
 export const SCENE_SIX = 71; // where they are ends; a whip to what is changing
-export const SCENE_SEVEN = 87.5; // the report's own sentence has been read; the push through the sources begins
+export const SCENE_SEVEN = 90; // the report's own sentence has been read; the push through the sources begins
 export const CARD_FOR = 1.7; // each source's card
 export const LOGO_FOR = 6.3; // Purify's own mark, last
-export const SECONDS = 104;
+export const SECONDS = 107;
 
 // One face for every figure in the film (his word, 2026-11-13: "id change the # font").
 // Archivo Narrow by Omnibus-Type, SIL Open Font Licence 1.1, from @fontsource/archivo-narrow.
@@ -94,9 +94,14 @@ export const DECADE = [
   { lines: ["Eastern Orthodox", "at Sunday Liturgy"], was: 212212, is: 183020, change: "down 14%" },
   { lines: ["Oriental Orthodox", "on parish rolls"], was: 294762, is: 491413, change: "up 67%" },
 ];
+// Since 2019 (facts.mjs, LATER): the change in the median parish's attendance at regular weekend services, 2019 to
+// 2025, from the Faith Communities Today survey of December 2025 as A. Krindatch reports it. All Orthodox first, then
+// the four jurisdictions the report gives; wide names stand beside narrow ones so the labels do not meet.
+export const SINCE = { head: ["Sunday attendance in a typical parish, 2019 to 2025.", "All U.S. congregations: no change."],
+  bars: [[36, "All Orthodox", "parishes"], [87, "Antiochian"], [67, "Orthodox Church", "in America"], [12, "Greek", "Orthodox"], [60, "Russian Orthodox", "Church Outside", "of Russia"]] };
 export const CONVERTS = { years: [[2013, 91], [2014, 91], [2015, 86], [2016, 88], [2017, 88], [2018, 90], [2019, 104], [2020, 59], [2021, 100], [2022, 186], [2023, 124]], named: [2013, 2020, 2022],
   head: ["Adults received into the Church each year", "in 20 parishes of 15 states. 2023 is a part year."] };
-export const QUOTE = { lines: ["\u201CThere\u2019s no evidence, from these surveys,", "that Orthodoxy in America is either", "growing or shrinking as a share", "of the general US population.\u201D"], by: "American Orthodoxy Today. Orthodox Studies Institute, 2025." };
+export const QUOTE = { lines: ["\u201CSimply put, a 36% growth means that", "for every three people praying on Sunday", "in a typical American Orthodox parish", "before the pandemic, there are now four.\u201D"], by: "Alexei Krindatch, Orthodox Tradition in Transition, 2026." };
 
 // The source's line, flat on the glass, by time: [from, to, line].
 export const SOURCES_ON = [
@@ -105,8 +110,9 @@ export const SOURCES_ON = [
   [48.5, 51.7, "Source: Orthodox Studies Institute, 2025, reading the CES of 2024"],
   [52.3, SCENE_FIVE - 0.2, "Source: Orthodox Studies Institute, 2025, reading Pew\u2019s survey"],
   [SCENE_FIVE + 1.1, SCENE_SIX - 0.3, "Source: Pew Research Center, 2023 to 2024. Margin \u00B19.9 points"],
-  [SCENE_SIX + 0.9, 78.1, "Source: A. Krindatch, 2020 Census of Orthodox Christian Churches"],
-  [78.9, 82.5, "Source: Orthodox Studies Institute, Converts to Orthodoxy, 2024"],
+  [SCENE_SIX + 0.9, 75.9, "Source: A. Krindatch, 2020 Census of Orthodox Christian Churches"],
+  [76.8, 80.5, "Source: A. Krindatch, 2026: a survey of 270 Orthodox parishes"],
+  [81.3, 83.8, "Source: Orthodox Studies Institute, Converts to Orthodoxy, 2024"],
   [SCENE_SEVEN + 0.9, SCENE_SEVEN + 6 * CARD_FOR - 0.2, "Maps: Natural Earth; us-atlas, from the U.S. Census Bureau\u2019s files"],
 ];
 
@@ -116,7 +122,7 @@ export const SOURCES_ON = [
 export const CARDS = [
   { src: ["appF"], name: "U.S. Religion Census 2020", lines: ["Appendix F: Orthodox Christian Groups,", "by Alexei Krindatch"] },
   { src: ["history"], name: "Matthew Namee", lines: ["How Many Orthodox Christians Are in America?", "orthodoxhistory.org, 2024"] },
-  { src: ["census"], name: "Alexei Krindatch", lines: ["The 2020 Census of", "Orthodox Christian Churches"] },
+  { src: ["census", "transition"], name: "Alexei Krindatch", lines: ["The 2020 Census of Orthodox Christian Churches", "Orthodox Tradition in Transition, 2026"] },
   { src: ["pew"], name: "Pew Research Center", lines: ["Religious Landscape Study,", "2023 to 2024"] },
   { src: ["osi"], name: "Cooperative Election Study", lines: ["2024, as read by the", "Orthodox Studies Institute"] },
   { src: ["osi", "converts"], name: "Orthodox Studies Institute", lines: ["American Orthodoxy Today, 2025", "Converts to Orthodoxy, 2024"] },

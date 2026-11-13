@@ -14,6 +14,7 @@ export const SOURCES = {
   converts: { name: "Matthew Namee and others", title: "Converts to Orthodoxy: Statistics and Trends from the Past Decade. Orthodox Studies Institute, July 2024", url: "https://resources.finalsite.net/images/v1722890523/saintconstantineorg/wwfz57wzdrdkx7tj1xu1/ConvertstoOrthodoxy.pdf" },
   history: { name: "Matthew Namee", title: "How Many Orthodox Christians Are in America? orthodoxhistory.org, 3 December 2024", url: "https://www.orthodoxhistory.org/2024/12/03/how-many-orthodox-christians-are-in-america/" },
   adults: { name: "U.S. Census Bureau", title: "Estimates of the Voting-Age Population for 2023 (Vintage 2023), 89 FR 22118", url: "https://www.govinfo.gov/content/pkg/FR-2024-03-29/html/2024-06666.htm" },
+  transition: { name: "Alexei Krindatch", title: "Orthodox Tradition in Transition: What New Data Reveal About US Orthodox Christian Parishes. September 2026", url: "https://orthodoxreality.org/wp-content/uploads/2026/09/OrthodoxTraditionInTransitionFinalWithCover1.pdf" },
   map: { name: "us-atlas", title: "State outlines built from the U.S. Census Bureau's cartographic boundary files (public domain)", url: "https://github.com/topojson/us-atlas" },
 };
 
@@ -69,4 +70,11 @@ export const LEFT_OUT = [
 // `of` is the division, and 3d/render.mjs --check does it again before any frame.
 export const DERIVED = [
   { scene: "gap", show: ["27%"], what: "of those on Eastern Orthodox parish rolls are at the Liturgy on a typical Sunday, 2020", src: "appF", of: [183020, 675765], says: "p. 3: 183,020 regular attendees and 675,765 adherents in the Eastern Orthodox Churches. 183,020 divided by 675,765 is 0.2708. The measure is the source's own (p. 3: \"percentage of adherents who are regular attendees\"), which it prints for single Churches and not for all of them together; the division for all of them is ours.", change: "Added for the 3D film's second scene. Both counts are Eastern Orthodox and both from the same census, so the share is like for like." },
+];
+
+// Figures checked after the first film, for the 3D film alone (his word, 2026-11-13 about 21:02 UTC: "the point of
+// the video is to show that america in orthodoxy is growing"; then "not even the new sources? (2021-2026)"). Read
+// from the report's own PDF with pdftotext on 2026-11-13. Kept apart from FACTS for the same reason as DERIVED.
+export const LATER = [
+  { scene: "change", show: ["36%", "87%", "67%", "60%", "12%", "270 Orthodox Christian parishes"], what: "change in median attendance at regular weekend services, 2019 to 2025: all Orthodox parishes in the survey, and four jurisdictions; U.S. congregations as a whole unchanged", src: "transition", says: "p. 7: \"On a typical Sunday, US religious congregations as a whole are seeing the same number of worshippers today as they did before the pandemic. In contrast, Orthodox parishes experienced a significant gain (+36%) in attendance. Simply put, a 36% growth means that for every three people praying on Sunday in a typical American Orthodox parish before the pandemic, there are now four.\" Fig. 7, 2019 to 2025 change in median worship attendance at regular weekend services: Orthodox Christian 36%, Antiochian Archdiocese 87%, Greek Orthodox 12%, Orthodox Church in America 67%, Russian Orthodox Church Outside of Russia 60%. p. 2: the Faith Communities Today survey of December 2025, \"7,500 congregations across 79 denominations and faith traditions ... including 270 Orthodox Christian parishes.\"", change: "Added. It is a survey of parishes and its figure is the median parish, not a count of all the faithful: the film names the survey and its 270 parishes on screen. The national surveys of people still show no change in the Orthodox share (Pew: 1% in 2007, under 1% in 2014, 1% in 2023 to 2024; PRRI: 0.5% in 2013 and in 2025); the film claims nothing about that share, and its page says so." },
 ];

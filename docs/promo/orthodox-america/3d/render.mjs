@@ -19,8 +19,8 @@ import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
-import { FACTS, DERIVED, SOURCES } from "../facts.mjs";
-import { FPS, SECONDS, SCENE_ONE, SCENE_TWO, NUMERALS, SIX, FIGURE, CAPTION, SOURCE_LINE, TITLE, ROLLS, SUNDAY, PEOPLE_A_POINT, SHARE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, KEY, PARISHES, CAPTION_PARISHES, SCENE_THREE, CLAIM, EACH, MEDIAN_PARISH, MEDIAN_SUNDAY, CLAIM_LINES, KEY_ONE, AGES, MEDIAN_AGE, HUNDRED, REGION_HEAD, REGIONS, DECADE, CONVERTS, QUOTE, SOURCES_ON, CARDS, MARK, BRAND } from "./words.mjs";
+import { FACTS, DERIVED, SOURCES, LATER } from "../facts.mjs";
+import { FPS, SECONDS, SCENE_ONE, SCENE_TWO, NUMERALS, SIX, FIGURE, CAPTION, SOURCE_LINE, TITLE, ROLLS, SUNDAY, PEOPLE_A_POINT, SHARE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, KEY, PARISHES, CAPTION_PARISHES, SCENE_THREE, CLAIM, EACH, MEDIAN_PARISH, MEDIAN_SUNDAY, CLAIM_LINES, KEY_ONE, AGES, MEDIAN_AGE, HUNDRED, REGION_HEAD, REGIONS, DECADE, SINCE, CONVERTS, QUOTE, SOURCES_ON, CARDS, MARK, BRAND } from "./words.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../../../..");
@@ -76,7 +76,7 @@ else if (!par.some((f) => f.says.includes(`${PARISHES.toLocaleString("en-US")} E
 if (Number(KEY[1]) !== PEOPLE_A_POINT) problems.push("the key does not say what a point stands for");
 if (!fs.readFileSync(path.join(TOOLS, NUMERALS.from, "package.json"), "utf8").includes('"OFL-1.1"')) problems.push(`${NUMERALS.family} is not under the Open Font Licence`);
 // The full film: every figure of scenes four to seven stands in facts.mjs, in a `show` or in the source's own words.
-const book = JSON.stringify(FACTS), inBook = (text, what = text) => { if (!book.includes(text)) problems.push(`facts.mjs does not hold ${what}`); };
+const book = JSON.stringify([...FACTS, ...LATER]), inBook = (text, what = text) => { if (!book.includes(text)) problems.push(`facts.mjs does not hold ${what}`); };
 const held = [];
 const hold = (...list) => { for (const x of list) { inBook(String(x)); held.push(x); } };
 hold(String(CLAIM), "1942", "more than 6,000,000 citizens", EACH.toLocaleString("en-US"), String(MEDIAN_PARISH), `${MEDIAN_SUNDAY} of them`);
@@ -89,8 +89,10 @@ hold("Another 25%", "35% hold a graduate degree");
 for (const r of REGIONS) hold(`${r.share}%`);
 if (new Set(REGIONS.flatMap((r) => r.ids)).size !== 51) problems.push("the four regions do not hold the fifty states and the District once each");
 for (const d of DECADE) { hold(d.change); for (const n of [d.was, d.is]) if (![ROLLS, SUNDAY].includes(n)) hold(n.toLocaleString("en-US")); }
-hold(CONVERTS.years.map(([, n]) => n).join(", "), "20 parishes", "15 states", "2023 is a part year", "growing or shrinking");
-if (!FACTS.some((f) => f.says.includes(QUOTE.lines.join(" ").replace(/[\u201C\u201D]/g, "").replace("\u2019", "'")))) problems.push("the sentence is not the report's own words");
+hold(CONVERTS.years.map(([, n]) => n).join(", "), "20 parishes", "15 states", "2023 is a part year");
+for (const [pct] of SINCE.bars) { if (!LATER[0].show.includes(`${pct}%`)) problems.push(`facts.mjs (LATER) does not show ${pct}%`); held.push(pct); }
+if (!SOURCES_ON.some(([, , line]) => line.includes("270 Orthodox parishes")) || !LATER[0].show.includes("270 Orthodox Christian parishes")) problems.push("the survey's 270 parishes are not on screen");
+if (![...FACTS, ...LATER].some((f) => f.says.includes(QUOTE.lines.join(" ").replace(/[\u201C\u201D]/g, "").replace("\u2019", "'")))) problems.push("the sentence is not the report's own words");
 for (const c of CARDS) { for (const k of c.src) if (!SOURCES[k]) problems.push(`card "${c.name}" names no source in facts.mjs`); if (!(book + JSON.stringify(SOURCES)).includes(c.name)) problems.push(`facts.mjs does not name ${c.name}`); }
 if (/harvard|university/i.test(JSON.stringify(CARDS))) problems.push("a card ties a survey to a university the report does not name");
 // Purify's own mark: the four bars are the ones in components/ui/PurifyMark.tsx, number for number.
@@ -98,7 +100,7 @@ if (/harvard|university/i.test(JSON.stringify(CARDS))) problems.push("a card tie
   if (!tsx.includes(`viewBox="0 0 ${MARK.box.join(" ")}"`) || rects.length !== MARK.bars.length) problems.push("the mark's box or its number of bars is not PurifyMark.tsx's");
   MARK.bars.forEach((b, i) => { const r = rects[i] || {}; if (Number(r.x) !== b.x || Number(r.y) !== b.y || Number(r.width) !== b.w || Number(r.height) !== b.h || Number(r.rx) !== b.rx || (r.transform || "") !== (b.rotate ? `rotate(${b.rotate.join(" ")})` : "")) problems.push(`the mark's ${b.name} is not PurifyMark.tsx's`); }); }
 if (Number(KEY_ONE[1]) !== 1) problems.push("the crowd's key does not say what a point stands for");
-for (const line of [CAPTION, SOURCE_LINE, ...TITLE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, ...KEY, CAPTION_PARISHES, ...CLAIM_LINES.flat(), ...KEY_ONE, AGES.head, MEDIAN_AGE.head, ...HUNDRED.flatMap((h) => h.lines), REGION_HEAD, ...DECADE.flatMap((d) => [...d.lines, d.change]), ...CONVERTS.head, ...QUOTE.lines, QUOTE.by, ...SOURCES_ON.map((l) => l[2]), ...CARDS.flatMap((c) => [c.name, ...c.lines]), BRAND]) if (/[–—]/.test(line)) problems.push(`a dash in "${line}"`);
+for (const line of [CAPTION, SOURCE_LINE, ...TITLE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, ...KEY, CAPTION_PARISHES, ...CLAIM_LINES.flat(), ...KEY_ONE, AGES.head, MEDIAN_AGE.head, ...HUNDRED.flatMap((h) => h.lines), REGION_HEAD, ...DECADE.flatMap((d) => [...d.lines, d.change]), ...CONVERTS.head, ...SINCE.head, ...SINCE.bars.flatMap((b) => b.slice(1)), ...QUOTE.lines, QUOTE.by, ...SOURCES_ON.map((l) => l[2]), ...CARDS.flatMap((c) => [c.name, ...c.lines]), BRAND]) if (/[–—]/.test(line)) problems.push(`a dash in "${line}"`);
 
 // ---- The page, served from this folder and the tools -----------------------
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".mjs": "text/javascript", ".json": "application/json", ".woff2": "font/woff2" };
@@ -176,7 +178,7 @@ if (info.go3 !== SCENE_TWO) problems.push("scene three does not begin where scen
 if (info.flock !== info.stay) problems.push(`the church is not drawn by those who stay: ${info.flock} points, not ${info.stay}`);
 if (String(info.film.crowd) !== String([0, EACH, MEDIAN_PARISH])) problems.push(`the crowd does not land on the figures: ${info.film.crowd}`);
 if (Math.max(...info.film.lines) > 1080 - 88) problems.push(`a source's line is too long for the frame: ${info.film.lines}`);
-for (const name of ["title", "figure", "source", "count", "share", "key", "parishes", ...SIX.map((s) => `label ${s.name}`), "claim", "ages", "medians", ...AGES.bars.map((_, i) => `age ${i}`), ...MEDIAN_AGE.bars.map((_, i) => `median ${i}`), ...HUNDRED.flatMap((_, i) => [`hundred ${i}`, `hundred ${i} words`]), "regions", ...REGIONS.map((r) => `region ${r.name}`), "decade", ...DECADE.flatMap((_, i) => [`was ${i}`, `now ${i}`, `pair ${i}`]), "converts", ...CONVERTS.named.map((y) => `year ${y}`), "sentence", ...CARDS.map((_, i) => `card ${i}`), "brand"]) if (!seen.has(name)) problems.push(`${name} was never on screen when measured`);
+for (const name of ["title", "figure", "source", "count", "share", "key", "parishes", ...SIX.map((s) => `label ${s.name}`), "claim", "ages", "medians", ...AGES.bars.map((_, i) => `age ${i}`), ...MEDIAN_AGE.bars.map((_, i) => `median ${i}`), ...HUNDRED.flatMap((_, i) => [`hundred ${i}`, `hundred ${i} words`]), "regions", ...REGIONS.map((r) => `region ${r.name}`), "decade", ...DECADE.flatMap((_, i) => [`was ${i}`, `now ${i}`, `pair ${i}`]), "since", ...SINCE.bars.map((_, i) => `since ${i}`), "converts", ...CONVERTS.named.map((y) => `year ${y}`), "sentence", ...CARDS.map((_, i) => `card ${i}`), "brand"]) if (!seen.has(name)) problems.push(`${name} was never on screen when measured`);
 const checked = `checked: ${pieces} readings of ${seen.size} pieces of words, least contrast ${least.toFixed(2)}:1, smallest letters ${smallest}px; ${SIX.length + 5 + held.length} figures and phrases held to facts.mjs; the mark is PurifyMark.tsx's four bars; the crowd is ${info.film.crowd[1]} and ${info.film.crowd[2]} stay; the ten digits of ${NUMERALS.family} each ${info.digitWidths[0].toFixed(1)} wide at 100; ${info.points} points, ${info.stay} stay, ${info.fromSix} leave from the six states; ${info.flock} draw the church (${info.tradition}, ${info.stone} triangles of stone); ${info.renderer}`;
 console.log(checked);
 if (has("--verbose")) console.log(JSON.stringify(info.camera3));

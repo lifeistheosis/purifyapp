@@ -18,7 +18,7 @@
 import * as THREE from "three";
 import { feature, mesh as borders } from "topojson-client";
 import { geoEquirectangular, geoPath, geoAlbersUsa } from "d3-geo";
-import { FPS, SECONDS, SCENE_ONE, SCENE_TWO, NUMERALS, TITLE, SIX, FIGURE, CAPTION, SOURCE_LINE, ROLLS, SUNDAY, PEOPLE_A_POINT, SHARE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, KEY, PARISHES, CAPTION_PARISHES, SCENE_THREE, SCENE_FOUR, SCENE_FIVE, SCENE_SIX, SCENE_SEVEN, CARD_FOR, CLAIM, EACH, MEDIAN_PARISH, MEDIAN_SUNDAY, CLAIM_LINES, KEY_ONE, AGES, MEDIAN_AGE, HUNDRED, REGION_HEAD, REGIONS, DECADE, CONVERTS, QUOTE, SOURCES_ON, CARDS, MARK, BRAND } from "/words.mjs";
+import { FPS, SECONDS, SCENE_ONE, SCENE_TWO, NUMERALS, TITLE, SIX, FIGURE, CAPTION, SOURCE_LINE, ROLLS, SUNDAY, PEOPLE_A_POINT, SHARE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, KEY, PARISHES, CAPTION_PARISHES, SCENE_THREE, SCENE_FOUR, SCENE_FIVE, SCENE_SIX, SCENE_SEVEN, CARD_FOR, CLAIM, EACH, MEDIAN_PARISH, MEDIAN_SUNDAY, CLAIM_LINES, KEY_ONE, AGES, MEDIAN_AGE, HUNDRED, REGION_HEAD, REGIONS, DECADE, SINCE, CONVERTS, QUOTE, SOURCES_ON, CARDS, MARK, BRAND } from "/words.mjs";
 import { CHURCH, DIM as FORM, TOP, TRADITION, stands } from "/church.js";
 
 const QUERY = new URLSearchParams(location.search);
@@ -85,7 +85,7 @@ const rush = (t) => span(t, GO + 0.3, GO + 0.8) * (1 - span(t, GO + 1.6, GO + MO
 const GO4 = SCENE_THREE, GO5 = SCENE_FOUR, GO6 = SCENE_FIVE, GO7 = SCENE_SIX, GO8 = SCENE_SEVEN, GO9 = GO8 + CARDS.length * CARD_FOR;
 const AGE_X = 16, MED_X = 29.5, PANEL_X = 43, PANEL_GAP = 10.5, PANEL_FOR = 2.1, PANELS_AT = 51.8, PANEL_Y = 5.3; // who they are: a row of things to pass
 const MAP_X = 97; // the map stands here for scene six: the film travels one way, and every place is a short whip from the last
-const MED_AT = 48, DEC_X = 114.5, CON_X = 130, CON_AT = 78.2, QUOTE_AT = 82.6; // what is changing: two groups, then the report's own sentence
+const MED_AT = 48, DEC_X = 114.5, SIN_X = 130, CON_X = 145.5, SINCE_AT = 76, CON_AT = 80.6, QUOTE_AT = 83.9; // what is changing: two groups, then the report's own sentence
 const HALL = { x: CON_X, y: 10, z: -44, gap: 24, d: 12 }; // the sources stand one behind another, and the camera pushes through each to the next
 const MOVES = [ // [start, seconds, what the camera comes to, 1 for a whip]
   [GO4, 2.6, { tilt: 41, d: 20.3, turn: -4, y: 3.7, lift: -0.12 }],                                   // up and back from the church, to look down on its ground
@@ -98,9 +98,11 @@ const MOVES = [ // [start, seconds, what the camera comes to, 1 for a whip]
   [GO6, 0.95, { x: MAP_X + 0.05, y: 0, z: 0.1, turn: -12, tilt: 38, d: 19.2 }, 1],        // on, and down onto the map
   [GO6 + 0.95, 7.7, { turn: -17, d: 18.4 }],
   [GO7, 0.9, { x: DEC_X, y: 4.4, z: 0, turn: 3, tilt: 15, d: 22.6 }, 1],                  // to the decade
-  [GO7 + 0.9, 6.3, { turn: 0, d: 22 }],
+  [GO7 + 0.9, 4.1, { turn: 0, d: 22 }],
+  [SINCE_AT, 0.7, { x: SIN_X, d: 22.4 }, 1],                                             // along, to what has happened since
+  [SINCE_AT + 0.7, 3.9, { d: 21.8 }],
   [CON_AT, 0.7, { x: CON_X, d: 18.2 }, 1],                                                 // along, to the converts
-  [CON_AT + 0.7, 3.7, { d: 17.5 }],
+  [CON_AT + 0.7, 2.6, { d: 17.6 }],
   [QUOTE_AT, 0.9, { y: HALL.y, z: HALL.z, tilt: 0, d: HALL.d, lift: 0 }, 1],              // up, level, and in to the sentence
   ...CARDS.map((_, i) => [GO8 + i * CARD_FOR, 0.6, { z: HALL.z - HALL.gap * (i + 1) }, 1]), // through each card to the next
   [GO9, 0.75, { z: HALL.z - HALL.gap * (CARDS.length + 1), turn: 13 }, 1],                // and to the mark, come upon a little from the side
@@ -909,8 +911,8 @@ const film = (() => {
   const show = (w, a, grow = 1) => { w.mesh.material.opacity = a; w.mesh.scale.setScalar(w.unit * grow); };
   const lands = (t, at) => [io((t - at) / 0.35), lerp(1.1, 1, outCubic(span(t, at, at + 0.4)))]; // how a figure arrives: up from nothing, a little large, and settles
   /** Words in the house's sans with every figure in the numerals' face. Returns the width. */
-  function mixed(ctx, text, x, y, size, align = "center", weight = 400, draw = true) {
-    const parts = text.split(/(\d[\d,.]*%?)/).filter(Boolean).map((s) => ({ s, font: /^\d/.test(s) ? `${NUM}${Math.round(size * 1.06)}px ${NUMFACE}` : `${weight} ${size}px ${SANS}` }));
+  function mixed(ctx, text, x, y, size, align = "center", weight = 400, draw = true, face = SANS) {
+    const parts = text.split(/(\d[\d,.]*%?)/).filter(Boolean).map((s) => ({ s, font: /^\d/.test(s) ? `${NUM}${Math.round(size * 1.06)}px ${NUMFACE}` : `${weight} ${size}px ${face}` }));
     let width = 0; for (const p of parts) { ctx.font = p.font; p.w = ctx.measureText(p.s).width; width += p.w; }
     let at = align === "center" ? x - width / 2 : x; ctx.textAlign = "left";
     if (draw) for (const p of parts) { ctx.font = p.font; ctx.fillText(p.s, at, y); at += p.w; }
@@ -1022,9 +1024,12 @@ const film = (() => {
     return { ...r, i, label, pin, geo, foot: label.home.clone().addScaledVector(E6.up, -68 * label.unit), list: r.ids.map((id) => states.get(id)).filter(Boolean) }; });
 
   // ---- Scene seven: what is changing. Three counts in 2010 and again in 2020; then the converts received each year in twenty parishes.
-  const E7 = eye(GO7 + 4), E7B = eye(CON_AT + 2.5), AGAIN = GO7 + 3.4, PER_SOUL = 3.4 / DECADE[0].was;
-  const was = row("was", E7, DECADE.map((d, i) => ({ x: DEC_X + (i - 1) * 4.6 - 0.56, w: 1, h: d.was * PER_SOUL, size: 44, text: [d.was.toLocaleString("en-US")] })), GO7 + 0.5, CON_AT + 0.7, 0.15);
-  const now = row("now", E7, DECADE.map((d, i) => ({ x: DEC_X + (i - 1) * 4.6 + 0.56, w: 1, h: d.is * PER_SOUL, over: Math.max(d.was, d.is) * PER_SOUL, size: 44, text: [d.is.toLocaleString("en-US"), d.change] })), AGAIN, CON_AT + 0.7, 0.15);
+  const E7 = eye(GO7 + 4), E7B = eye(CON_AT + 2.5), AGAIN = GO7 + 2.7, E7S = eye(SINCE_AT + 2.6), PER_SOUL = 3.4 / DECADE[0].was;
+  const was = row("was", E7, DECADE.map((d, i) => ({ x: DEC_X + (i - 1) * 4.6 - 0.56, w: 1, h: d.was * PER_SOUL, size: 44, text: [d.was.toLocaleString("en-US")] })), GO7 + 0.5, SINCE_AT + 0.7, 0.15);
+  const now = row("now", E7, DECADE.map((d, i) => ({ x: DEC_X + (i - 1) * 4.6 + 0.56, w: 1, h: d.is * PER_SOUL, over: Math.max(d.was, d.is) * PER_SOUL, size: 44, text: [d.is.toLocaleString("en-US"), d.change] })), AGAIN, SINCE_AT + 0.7, 0.15);
+  // Since 2019: the median parish's attendance, all Orthodox and four jurisdictions. The first form is lit; the others stand a little dimmer.
+  const since = row("since", E7S, SINCE.bars.map(([pct, ...lines], i) => ({ x: SIN_X + (i - 2) * 2.55, w: 1.4, h: pct * 0.036, lit: i ? 0.6 : 1, text: [`+${pct}%`, ...lines] })), SINCE_AT + 0.35, CON_AT + 0.7);
+  const sinceHead = head("since", E7S, SINCE.head, 34, 425);
   const pairs = DECADE.map((d, i) => { let half = 0; const w = plane(`pair ${i}`, 320, 84, 30, (ctx) => { ctx.textBaseline = "alphabetic"; d.lines.forEach((line, j) => { half = Math.max(half, mixed(ctx, line, 160, 32 + j * 38, 30, "center", j ? 400 : 500) / 2); }); });
     w.ink = [160 - half - 3, 4, 160 + half + 3, 80]; return stand(w, E7, V3(DEC_X + (i - 1) * 4.6, FLOOR_Y, 0.5), 0, -66); });
   const decade = stand(plane("decade", 800, 240, 37, (ctx, year = 2010) => { ctx.textBaseline = "alphabetic"; ctx.textAlign = "center"; ctx.font = `${NUM}150px ${NUMFACE}`; ctx.fillText(String(year), 400, 140); mixed(ctx, "Counted parish by parish, ten years apart.", 400, 210, 37); }, [60, 20, 740, 226]), E7, E7.at, 0, 425);
@@ -1035,7 +1040,7 @@ const film = (() => {
 
   // ---- The report's own sentence, the sources each on a card, and the mark: one behind another along the camera's own line.
   const hallPoint = (n) => V3(HALL.x, HALL.y, HALL.z - HALL.gap * n);
-  const quote = stand(plane("sentence", 960, 330, 30, (ctx) => { ctx.textBaseline = "alphabetic"; ctx.textAlign = "center"; ctx.font = `400 46px ${SERIF}`; QUOTE.lines.forEach((line, i) => ctx.fillText(line, 480, 58 + i * 60)); mixed(ctx, QUOTE.by, 480, 304, 30); }, [40, 10, 920, 318]), eye(QUOTE_AT + 2), hallPoint(0));
+  const quote = stand(plane("sentence", 960, 330, 30, (ctx) => { ctx.textBaseline = "alphabetic"; ctx.textAlign = "center"; QUOTE.lines.forEach((line, i) => mixed(ctx, line, 480, 58 + i * 60, 46, "center", 400, true, SERIF)); mixed(ctx, QUOTE.by, 480, 304, 30); }, [40, 10, 920, 318]), eye(QUOTE_AT + 2), hallPoint(0));
   const cards = CARDS.map((c, i) => { const at = GO8 + i * CARD_FOR;
     const w = stand(plane(`card ${i}`, 980, 280, 32, (ctx, rule = 0) => { ctx.textBaseline = "alphabetic"; ctx.textAlign = "center"; ctx.font = `400 68px ${SERIF}`; ctx.fillText(c.name, 490, 92);
       ctx.fillRect(490 - 250 * rule, 126, 500 * rule, 2); c.lines.forEach((line, j) => mixed(ctx, line, 490, 186 + j * 46, 32)); }, [30, 20, 950, 250]), eye(at + 1.2), hallPoint(i + 1));
@@ -1091,7 +1096,8 @@ const film = (() => {
       r.pin.visible = on6 && a > 0; r.pin.material.opacity = 0.75 * a * (1 - down);
       if (r.pin.visible) { const v = r.geo.attributes.position; v.setXYZ(0, r.foot.x, r.foot.y, r.foot.z); v.setXYZ(1, MAP_X + ANCHOR[r.name][0], top + 0.02, ANCHOR[r.name][1]); v.needsUpdate = true; } }
     // Scene seven.
-    const again = io((t - AGAIN) / 0.5), off7 = leave(CON_AT - 0.05);
+    const again = io((t - AGAIN) / 0.5), off7 = leave(SINCE_AT - 0.05);
+    since.pose(t, () => 1, () => leave(CON_AT - 0.05)); show(sinceHead, io((t - (SINCE_AT + 0.55)) / 0.4) * leave(CON_AT - 0.05));
     was.pose(t, () => lerp(1, 0.38, again), () => (1 - io((t - AGAIN + 0.1) / 0.3)) * off7); now.pose(t, () => 1, () => off7);
     pairs.forEach((w, i) => show(w, io((t - (GO7 + 0.9 + i * 0.15)) / 0.35) * off7));
     const [da, dgrow] = lands(t, GO7 + 0.75); show(decade, da * off7 * (1 - clamp(1 - Math.abs(t - AGAIN) / 0.22)), dgrow);
@@ -1132,7 +1138,7 @@ const film = (() => {
   }
   const info = { go: [GO4, GO5, GO6, GO7, GO8, GO9], crowd: [crowd.count(IN), crowd.count(OUT - 0.01), crowd.count(GO5)],
     lines: SOURCES_ON.map(([, , line]) => Math.round(mixed(pen, line, 0, 0, 30, "left", 400, false))),
-    read: [GO4 + 2.2, GO4 + 6.5, GO5 - 0.6, GO5 + 3.5, MED_AT + 3, ...HUNDRED.map((_, i) => PANELS_AT + i * PANEL_FOR + 1.6), GO6 + 5, GO7 + 2.6, GO7 + 5.5, CON_AT + 3, QUOTE_AT + 2.5, ...CARDS.map((_, i) => GO8 + i * CARD_FOR + 1.3), GO9 + 4.5],
+    read: [GO4 + 2.2, GO4 + 6.5, GO5 - 0.6, GO5 + 3.5, MED_AT + 3, ...HUNDRED.map((_, i) => PANELS_AT + i * PANEL_FOR + 1.6), GO6 + 5, GO7 + 2.4, GO7 + 4.5, SINCE_AT + 3, CON_AT + 2.6, QUOTE_AT + 2.5, ...CARDS.map((_, i) => GO8 + i * CARD_FOR + 1.3), GO9 + 4.5],
     mark: { px: MARK_PX, bars: MARK.bars.map((b) => b.name) } };
   return { pose, draw, glass, measure, info };
 })();
