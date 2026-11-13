@@ -484,6 +484,15 @@ describe("on the page", () => {
     expect(src).toContain("{feast && post.feast_slug && !removed ? (");
   });
 
+  it("a thread's reply box, its Reply button and a reply open to edit are 44px tall at every width", () => {
+    // At 800 and 1032 they stood 40.7px (scripts/mock-own-words.mjs, checkMock's target):
+    // on a phone the 16px a field is held to made them tall enough.
+    expect(src).toContain('className={field + " min-h-11 !py-2"}');
+    expect(src).toContain('className="min-h-11 shrink-0 rounded-pill bg-paper px-4 font-sans text-detail font-semibold text-night disabled:opacity-50"');
+    const edit = readFileSync(join(process.cwd(), "components/community/EditWords.tsx"), "utf8");
+    expect(edit).toContain('reply ? "min-h-11 !py-2" : "min-h-24 leading-[22px]"');
+  });
+
   it("the words open as fields with Cancel and Save, each 44px to the touch", async () => {
     const { EditWords } = await import("@/components/community/EditWords");
     const { MessagesProvider } = await import("@/components/i18n/MessagesProvider");
@@ -497,7 +506,9 @@ describe("on the page", () => {
     );
     expect(html).toContain(">Cancel</button>");
     expect(html).toContain(">Save</button>");
-    expect(html.match(/min-h-11/g)).toHaveLength(2);
+    // Both buttons, and the reply's field itself.
+    expect(html.match(/<button[^>]*min-h-11/g)).toHaveLength(2);
+    expect(html).toMatch(/<textarea[^>]*min-h-11/);
     expect(html).toContain("Thank you.");
   });
 });

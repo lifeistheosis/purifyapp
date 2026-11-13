@@ -18,6 +18,7 @@
 //   WALK=1 node scripts/mock-own-words.mjs           the tap walk: every touched control, real touch, motion on
 //   SHOTS=dir node scripts/mock-own-words.mjs        and a still of each state (2x) in that folder
 //   WIDTHS=390 LOCALES=en node scripts/mock-own-words.mjs   a narrower run
+//   ONLY=03,04 node scripts/mock-own-words.mjs       only those states, by number
 import fs from "node:fs";
 import path from "node:path";
 
@@ -30,6 +31,7 @@ const WIDTHS = (process.env.WIDTHS ?? "390,800,1032").split(",").map(Number);
 const LOCALES = (process.env.LOCALES ?? "en,ar").split(",");
 const HEIGHT = { 390: 844, 800: 1280, 1032: 1376 };
 const WORN = { palettes: [...PALETTES, ...LOOKS], pixels: true };
+const ONLY = process.env.ONLY ? new Set(process.env.ONLY.split(",")) : null;
 
 const ANNA = "11111111-1111-4111-8111-111111111111";
 const P_MINE = "44444444-4444-4444-8444-444444444444";
@@ -240,6 +242,7 @@ async function stills() {
   for (const locale of LOCALES) {
     for (const width of WIDTHS) {
       for (const s of STATES) {
+        if (ONLY && !ONLY.has(s.name.slice(0, 2))) continue;
         const { browser, page } = await open(width, locale);
         const errors = [];
         page.on("pageerror", (e) => errors.push(e.message));

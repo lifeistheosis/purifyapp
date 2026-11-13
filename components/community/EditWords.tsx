@@ -91,7 +91,7 @@ export function EditWords({
               ? t("community.reflectionPlaceholder")
               : t("community.replyPlaceholder")
         }
-        className={cn(fieldClass, "block resize-none field-sizing-content", reply ? "!py-2" : "min-h-24 leading-[22px]")}
+        className={cn(fieldClass, "block resize-none field-sizing-content", reply ? "min-h-11 !py-2" : "min-h-24 leading-[22px]")}
         onKeyDown={keys}
       />
       <div className={cn("flex items-center justify-end gap-2", reply ? "mt-1.5" : "mt-2")}>

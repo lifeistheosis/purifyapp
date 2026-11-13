@@ -2359,6 +2359,11 @@ function PostCardInner({
               {/* No new replies under a post its writer deleted: the thread stays
                   to be read (the replies route refuses one). */}
               {me && !removed ? (
+                // 44px to the touch at every width (min-h-11): on a phone the
+                // 16px a field is held to made it so, and from 800 wide the box
+                // and its button stood 40.7px (found by scripts/mock-own-words.mjs,
+                // build 95 note 10; the gate's walks are signed out and never
+                // open a thread's box).
                 <div className="flex gap-2">
                   <MentionField
                     as="input"
@@ -2366,7 +2371,7 @@ function PostCardInner({
                     onChange={setDraft}
                     maxLength={2000}
                     placeholder={t("community.replyPlaceholder")}
-                    className={field + " !py-2"}
+                    className={field + " min-h-11 !py-2"}
                     onKeyDown={(e) => {
                       if (e.key !== "Enter" || e.shiftKey) return;
                       e.preventDefault();
@@ -2380,7 +2385,7 @@ function PostCardInner({
                     type="button"
                     onClick={() => void sendReply(draft.trim())}
                     disabled={busy || !draft.trim()}
-                    className="shrink-0 rounded-pill bg-paper px-4 font-sans text-detail font-semibold text-night disabled:opacity-50"
+                    className="min-h-11 shrink-0 rounded-pill bg-paper px-4 font-sans text-detail font-semibold text-night disabled:opacity-50"
                   >
                     {t("community.reply")}
                   </button>

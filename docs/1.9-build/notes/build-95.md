@@ -91,7 +91,9 @@ A reader's report during the release's making, so it goes into 1.9 (CLAUDE.md, "
 
 **For his word, not built: keeping what was reported.** Keeping a reported post's words as they stood when reported, for a moderator, after its writer edits or deletes it, would need a new line in the Privacy Policy, which is his. A line that would cover it, if he wants it: "If something you posted has been reported, we keep a copy of it as it was reported, unseen, until a moderator has looked at it, even if you change or delete it, and for no more than thirty days." Without it, the open report's freeze on editing is what keeps a moderator's evidence.
 
-Tests: `lib/community/__tests__/ownWords.test.ts` (29, every one failing on the code before). The touched screens on the export: `node scripts/mock-own-words.mjs` (checkMock with pixels at 390, 800 and 1032, on the five palettes and the seventeen looks, in English and in Arabic) and `WALK=1 node scripts/mock-own-words.mjs` (the touched controls, real touch, motion on).
+**Found on the way, and mended:** a thread's reply box and its Reply button stood 40.7px tall from 800 wide (on a phone the 16px a field is held to made them 44). The gate's walks are signed out and never open a thread's box; the harness below opened it signed in and checkMock's target rule caught it. Both are 44px now, and so is a reply open to edit.
+
+Tests: `lib/community/__tests__/ownWords.test.ts` (31, every one failing on the code before). The touched screens on the export: `node scripts/mock-own-words.mjs` (checkMock with pixels at 390, 800 and 1032, on the five palettes and the seventeen looks, in English and in Arabic) and `WALK=1 node scripts/mock-own-words.mjs` (the touched controls, real touch, motion on).
 
 ## Note 11 (a reader's report, sent by him): the ambient sounds "do not currently work"
 
