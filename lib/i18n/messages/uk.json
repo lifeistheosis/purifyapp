@@ -5380,6 +5380,7 @@
   "bible.downloads.downloading": "Завантаження: {percent}%",
   "bible.downloads.stop": "Зупинити завантаження",
   "bible.downloads.failedOffline": "Не вдалося завантажити. Перевірте з'єднання і спробуйте ще раз.",
+  "bible.downloads.failedUnavailable": "Зараз недоступно для завантаження. Спробуйте пізніше.",
   "bible.downloads.failedSpace": "Недостатньо місця на цьому пристрої.",
   "bible.downloads.manageAria": "Параметри: {name}",
   "bible.downloads.onPhone": "На цьому пристрої: {size}",

@@ -5221,6 +5221,7 @@
   "bible.downloads.downloading": "डाउनलोड हुँदैछ: {percent}%",
   "bible.downloads.stop": "डाउनलोड रोक्नुहोस्",
   "bible.downloads.failedOffline": "डाउनलोड गर्न सकिएन। आफ्नो जडान जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्।",
+  "bible.downloads.failedUnavailable": "अहिले डाउनलोडका लागि उपलब्ध छैन। पछि फेरि प्रयास गर्नुहोस्।",
   "bible.downloads.failedSpace": "यो उपकरणमा पर्याप्त ठाउँ छैन।",
   "bible.downloads.manageAria": "{name} का विकल्पहरू",
   "bible.downloads.onPhone": "यो उपकरणमा: {size}",

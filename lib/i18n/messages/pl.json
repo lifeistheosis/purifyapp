@@ -5383,6 +5383,7 @@
   "bible.downloads.downloading": "Pobieranie: {percent}%",
   "bible.downloads.stop": "Zatrzymaj pobieranie",
   "bible.downloads.failedOffline": "Nie udało się pobrać. Sprawdź połączenie i spróbuj ponownie.",
+  "bible.downloads.failedUnavailable": "W tej chwili nie można pobrać. Spróbuj ponownie później.",
   "bible.downloads.failedSpace": "Za mało miejsca na tym urządzeniu.",
   "bible.downloads.manageAria": "Opcje: {name}",
   "bible.downloads.onPhone": "Na tym urządzeniu: {size}",

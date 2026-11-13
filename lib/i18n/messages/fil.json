@@ -5221,6 +5221,7 @@
   "bible.downloads.downloading": "Dina-download: {percent}%",
   "bible.downloads.stop": "Ihinto ang pag-download",
   "bible.downloads.failedOffline": "Hindi ma-download. Tingnan ang iyong koneksyon at subukang muli.",
+  "bible.downloads.failedUnavailable": "Hindi ito ma-download sa ngayon. Subukang muli mamaya.",
   "bible.downloads.failedSpace": "Kulang ang espasyo sa device na ito.",
   "bible.downloads.manageAria": "Mga opsyon para sa {name}",
   "bible.downloads.onPhone": "Sa device na ito: {size}",

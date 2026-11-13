@@ -5221,6 +5221,7 @@
   "bible.downloads.downloading": "Изтегляне: {percent}%",
   "bible.downloads.stop": "Спиране на изтеглянето",
   "bible.downloads.failedOffline": "Изтеглянето не бе успешно. Проверете връзката и опитайте отново.",
+  "bible.downloads.failedUnavailable": "В момента не е налично за изтегляне. Опитайте отново по-късно.",
   "bible.downloads.failedSpace": "Няма достатъчно място на това устройство.",
   "bible.downloads.manageAria": "Опции за {name}",
   "bible.downloads.onPhone": "На това устройство: {size}",

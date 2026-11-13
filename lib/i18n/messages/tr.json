@@ -5221,6 +5221,7 @@
   "bible.downloads.downloading": "İndiriliyor: %{percent}",
   "bible.downloads.stop": "İndirmeyi durdur",
   "bible.downloads.failedOffline": "İndirilemedi. Bağlantınızı kontrol edip yeniden deneyin.",
+  "bible.downloads.failedUnavailable": "Şu anda indirilemiyor. Daha sonra yeniden deneyin.",
   "bible.downloads.failedSpace": "Bu cihazda yeterli alan yok.",
   "bible.downloads.manageAria": "{name} seçenekleri",
   "bible.downloads.onPhone": "Bu cihazda: {size}",

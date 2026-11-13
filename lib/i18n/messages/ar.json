@@ -5518,6 +5518,7 @@
   "bible.downloads.downloading": "جارٍ التنزيل: {percent}%",
   "bible.downloads.stop": "أوقف التنزيل",
   "bible.downloads.failedOffline": "تعذّر التنزيل. تحقّق من اتصالك وحاول مرة أخرى.",
+  "bible.downloads.failedUnavailable": "غير متاح للتنزيل الآن. حاول مرة أخرى لاحقًا.",
   "bible.downloads.failedSpace": "لا توجد مساحة كافية على هذا الجهاز.",
   "bible.downloads.manageAria": "خيارات {name}",
   "bible.downloads.onPhone": "على هذا الجهاز: {size}",

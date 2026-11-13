@@ -5304,6 +5304,7 @@
   "bible.downloads.downloading": "Преузимање: {percent}%",
   "bible.downloads.stop": "Заустави преузимање",
   "bible.downloads.failedOffline": "Преузимање није успело. Проверите везу и покушајте поново.",
+  "bible.downloads.failedUnavailable": "Тренутно није доступно за преузимање. Покушајте поново касније.",
   "bible.downloads.failedSpace": "Нема довољно простора на овом уређају.",
   "bible.downloads.manageAria": "Опције за {name}",
   "bible.downloads.onPhone": "На овом уређају: {size}",

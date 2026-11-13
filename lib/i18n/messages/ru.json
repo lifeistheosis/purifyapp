@@ -5381,6 +5381,7 @@
   "bible.downloads.downloading": "Скачивание: {percent}%",
   "bible.downloads.stop": "Остановить скачивание",
   "bible.downloads.failedOffline": "Не удалось скачать. Проверьте подключение и попробуйте ещё раз.",
+  "bible.downloads.failedUnavailable": "Сейчас недоступно для скачивания. Попробуйте позже.",
   "bible.downloads.failedSpace": "Недостаточно места на этом устройстве.",
   "bible.downloads.manageAria": "Параметры: {name}",
   "bible.downloads.onPhone": "На этом устройстве: {size}",

@@ -5218,6 +5218,7 @@
   "bible.downloads.downloading": "Mengunduh: {percent}%",
   "bible.downloads.stop": "Hentikan unduhan",
   "bible.downloads.failedOffline": "Tidak dapat mengunduh. Periksa koneksi Anda lalu coba lagi.",
+  "bible.downloads.failedUnavailable": "Tidak tersedia untuk diunduh saat ini. Coba lagi nanti.",
   "bible.downloads.failedSpace": "Ruang di perangkat ini tidak cukup.",
   "bible.downloads.manageAria": "Opsi untuk {name}",
   "bible.downloads.onPhone": "Di perangkat ini: {size}",

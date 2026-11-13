@@ -5221,6 +5221,7 @@
   "bible.downloads.downloading": "Wird heruntergeladen, {percent} %",
   "bible.downloads.stop": "Herunterladen stoppen",
   "bible.downloads.failedOffline": "Herunterladen nicht möglich. Prüfe deine Verbindung und versuche es noch einmal.",
+  "bible.downloads.failedUnavailable": "Gerade nicht zum Herunterladen verfügbar. Versuche es später noch einmal.",
   "bible.downloads.failedSpace": "Nicht genug Speicherplatz auf diesem Gerät.",
   "bible.downloads.manageAria": "Optionen für {name}",
   "bible.downloads.onPhone": "Auf diesem Gerät, {size}",

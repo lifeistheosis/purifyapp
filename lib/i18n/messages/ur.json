@@ -5221,6 +5221,7 @@
   "bible.downloads.downloading": "ڈاؤن لوڈ ہو رہا ہے: {percent}%",
   "bible.downloads.stop": "ڈاؤن لوڈ روکیں",
   "bible.downloads.failedOffline": "ڈاؤن لوڈ نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+  "bible.downloads.failedUnavailable": "ابھی ڈاؤن لوڈ کے لیے دستیاب نہیں۔ بعد میں دوبارہ کوشش کریں۔",
   "bible.downloads.failedSpace": "اس ڈیوائس پر کافی جگہ نہیں ہے۔",
   "bible.downloads.manageAria": "{name} کے اختیارات",
   "bible.downloads.onPhone": "اس ڈیوائس پر: {size}",

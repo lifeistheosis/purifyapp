@@ -5312,6 +5312,7 @@
   "bible.downloads.downloading": "Se descarcă, {percent}%",
   "bible.downloads.stop": "Oprește descărcarea",
   "bible.downloads.failedOffline": "Descărcarea nu a reușit. Verifică conexiunea și încearcă din nou.",
+  "bible.downloads.failedUnavailable": "Descărcarea nu este disponibilă acum. Încearcă din nou mai târziu.",
   "bible.downloads.failedSpace": "Nu este destul spațiu pe acest dispozitiv.",
   "bible.downloads.manageAria": "Opțiuni pentru {name}",
   "bible.downloads.onPhone": "Pe acest dispozitiv, {size}",

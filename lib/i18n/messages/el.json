@@ -5221,6 +5221,7 @@
   "bible.downloads.downloading": "Λήψη: {percent}%",
   "bible.downloads.stop": "Διακοπή λήψης",
   "bible.downloads.failedOffline": "Η λήψη δεν ήταν δυνατή. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+  "bible.downloads.failedUnavailable": "Η λήψη δεν είναι διαθέσιμη αυτή τη στιγμή. Δοκιμάστε ξανά αργότερα.",
   "bible.downloads.failedSpace": "Δεν υπάρχει αρκετός χώρος σε αυτή τη συσκευή.",
   "bible.downloads.manageAria": "Επιλογές για {name}",
   "bible.downloads.onPhone": "Σε αυτή τη συσκευή: {size}",

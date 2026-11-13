@@ -22,7 +22,7 @@ Object.assign(globalThis, {
   },
 });
 
-const { bibleDownload, downloadBible, readBibleBook, removeBible, savedBibles, resetBibleStoreForTests, bookUrl } = await import("@/lib/bible/downloads/store");
+const { bibleDownload, downloadBible, readBibleBook, removeBible, savedBibles, resetBibleStoreForTests, bookUrl, FAILED_WORDS } = await import("@/lib/bible/downloads/store");
 const { readBibleChoice, writeBibleChoice } = await import("@/lib/bible/downloads/choice");
 const { SITE_URL } = await import("@/lib/site");
 
@@ -112,6 +112,8 @@ describe("downloading a Bible", () => {
     const stale = website((url, body) => (url.endsWith("/john.json") ? body.replace(/"hash":"[0-9a-f]+"/, '"hash":"000000000000"') : body));
     expect(await downloadBible(RU, { fetcher: stale, plugin, native: true })).toBe("failed");
     expect(asked.filter((a) => a.url.endsWith("/john.json")).map((a) => a.cache)).toEqual(["default", "reload"]);
+    // The website answered, with a file that is not the one its list names: not a connection to check.
+    expect(bibleDownload(RU)).toEqual({ state: "failed", reason: "unavailable" });
     expect(savedBibles()[RU]).toBeUndefined();
     expect(files.has(`bibles/${RU}/john.json`)).toBe(false);
   });
@@ -161,6 +163,81 @@ describe("downloading a Bible", () => {
     const full = { ...plugin, Filesystem: { ...plugin.Filesystem, writeFile: async () => { throw new Error("No space left on device"); } } } as typeof plugin;
     expect(await downloadBible(RU, { fetcher: website(), plugin: full, native: true })).toBe("failed");
     expect(bibleDownload(RU)).toEqual({ state: "failed", reason: "space" });
+  });
+});
+
+describe("what a stopped download says (build 95 note 21)", () => {
+  // His screenshot of 2026-11-13: the Russian Synodal said "Could not download.
+  // Check your connection and try again." while the phone was online and the
+  // main web, still 1.8, simply had no such Bible. The words say what is true.
+  const index = `${SITE_URL}/bibles/${RU}/index.json`;
+
+  it("says a Bible the website does not have is not available right now, not a connection to check", async () => {
+    const missing = async (url: string, init?: RequestInit) => {
+      asked.push({ url, cache: init?.cache });
+      return new Response("<!DOCTYPE html>not found", { status: 404, headers: { "content-type": "text/html" } });
+    };
+    expect(await downloadBible(RU, { fetcher: missing, plugin, native: true })).toBe("failed");
+    expect(bibleDownload(RU)).toEqual({ state: "failed", reason: "unavailable" });
+    expect(files.size).toBe(0);
+  });
+
+  it("says the same when the app may not read the website's answer (the main web's 404 has no CORS header), since the website answered", async () => {
+    // As the browser in the app does: an answer without Access-Control-Allow-Origin
+    // throws, as no signal does; asked without CORS, the same answer comes back.
+    const modes: (RequestMode | undefined)[] = [];
+    const mainWeb = async (url: string, init?: RequestInit) => {
+      asked.push({ url, cache: init?.cache });
+      modes.push(init?.mode);
+      if (init?.mode === "no-cors") return new Response(null, { status: 404 });
+      throw new TypeError("Failed to fetch");
+    };
+    expect(await downloadBible(RU, { fetcher: mainWeb, plugin, native: true })).toBe("failed");
+    expect(bibleDownload(RU)).toEqual({ state: "failed", reason: "unavailable" });
+    // The question was asked of the same address, without CORS, then the file once more.
+    expect(asked.map((a) => a.url)).toEqual([index, index, index]);
+    expect(modes).toEqual([undefined, "no-cors", undefined]);
+  });
+
+  it("asks once more when the website answers, so a moment's trouble does not stop a download", async () => {
+    let dropped = 0;
+    const blip = website((url, body) => (url.endsWith("/acts.json") && dropped++ === 0 ? null : body));
+    expect(await downloadBible(RU, { fetcher: blip, plugin, native: true })).toBe("saved");
+    expect(files.size).toBe(78);
+  });
+
+  it("says offline only when the website cannot be reached at all", async () => {
+    const noSignal = async (url: string, init?: RequestInit) => {
+      asked.push({ url, cache: init?.cache });
+      throw new TypeError("Failed to fetch");
+    };
+    expect(await downloadBible(RU, { fetcher: noSignal, plugin, native: true })).toBe("failed");
+    expect(bibleDownload(RU)).toEqual({ state: "failed", reason: "offline" });
+  });
+
+  it("says a list that is not this Bible's is not available, not a connection to check", async () => {
+    const wrongList = website((url, body) => (url.endsWith("index.json") ? "<!DOCTYPE html><title>Purify</title>" : body));
+    expect(await downloadBible(RU, { fetcher: wrongList, plugin, native: true })).toBe("failed");
+    expect(bibleDownload(RU)).toEqual({ state: "failed", reason: "unavailable" });
+  });
+
+  it("gives every reason its own words, in every language, and the row says them", () => {
+    expect(Object.keys(FAILED_WORDS).sort()).toEqual(["offline", "save", "space", "unavailable"]);
+    expect(new Set(Object.values(FAILED_WORDS)).size).toBe(4);
+    const dir = path.join(ROOT, "lib/i18n/messages");
+    const catalogs = fs.readdirSync(dir).filter((f) => f.endsWith(".json"));
+    expect(catalogs.length).toBe(21);
+    for (const file of catalogs) {
+      const words = JSON.parse(fs.readFileSync(path.join(dir, file), "utf8")) as Record<string, string>;
+      for (const key of Object.values(FAILED_WORDS)) expect(words[key], `${file} ${key}`).toBeTruthy();
+      // Not available is not a connection to check, in any language.
+      expect(words["bible.downloads.failedUnavailable"], file).not.toBe(words["bible.downloads.failedOffline"]);
+    }
+    const en = JSON.parse(fs.readFileSync(path.join(dir, "en.json"), "utf8")) as Record<string, string>;
+    expect(en["bible.downloads.failedUnavailable"]).not.toMatch(/connection/i);
+    const row = fs.readFileSync(path.join(ROOT, "components/bible/BibleRow.tsx"), "utf8");
+    expect(row).toContain("t(FAILED_WORDS[progress.reason])");
+    expect(row).not.toContain('"bible.downloads.failedOffline"');
   });
 });
 

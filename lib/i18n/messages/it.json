@@ -5226,6 +5226,7 @@
   "bible.downloads.downloading": "Download in corso, {percent}%",
   "bible.downloads.stop": "Interrompi il download",
   "bible.downloads.failedOffline": "Impossibile scaricare. Controlla la connessione e riprova.",
+  "bible.downloads.failedUnavailable": "Non disponibile per il download in questo momento. Riprova più tardi.",
   "bible.downloads.failedSpace": "Spazio insufficiente su questo dispositivo.",
   "bible.downloads.manageAria": "Opzioni per {name}",
   "bible.downloads.onPhone": "Su questo dispositivo, {size}",

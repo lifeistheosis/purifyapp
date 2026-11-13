@@ -56,10 +56,27 @@ export type BibleManifest = {
 /** A Bible on the phone. */
 export type SavedBible = { version: string; bytes: number; books: string[]; at: string };
 
-/** A download under way, or one that stopped: no signal (or the website refused), a full phone, or a save that failed. */
+/**
+ * Why a download stopped, each said as it is (build 95 note 21: the sheet told
+ * a reader to check their connection when the website simply had no such
+ * Bible): no way to the website at all ("offline"); the website reached, but
+ * without the file, or with one that does not check ("unavailable"); a full
+ * phone; or a save that failed.
+ */
+export type BibleDownloadFailure = "offline" | "unavailable" | "space" | "save";
+
+/** A download under way, or one that stopped, and why. */
 export type BibleDownload =
   | { state: "downloading"; done: number; total: number }
-  | { state: "failed"; reason: "offline" | "space" | "save" };
+  | { state: "failed"; reason: BibleDownloadFailure };
+
+/** The words a stopped download says, by why it stopped: every reason has its own. */
+export const FAILED_WORDS: Record<BibleDownloadFailure, string> = {
+  offline: "bible.downloads.failedOffline",
+  unavailable: "bible.downloads.failedUnavailable",
+  space: "bible.downloads.failedSpace",
+  save: "bible.downloads.failedSave",
+};
 
 type Plugin = typeof import("@capacitor/filesystem");
 type Fetch = (input: string, init?: RequestInit) => Promise<Response>;
@@ -182,7 +199,7 @@ export function useBibles(): BiblesState {
 // ---- Downloading ------------------------------------------------------------
 
 class Stopped extends Error {
-  constructor(readonly reason: "offline" | "space" | "save" | "cancelled") {
+  constructor(readonly reason: BibleDownloadFailure | "cancelled") {
     super(reason);
   }
 }
@@ -203,14 +220,62 @@ function checkBook(text: string, id: BibleId, entry: BibleManifest["books"][numb
   }
 }
 
+/** A Bible's list as the website gave it; one that is not this Bible's list is a file the website does not have right. */
+function readManifest(text: string, id: BibleId): BibleManifest {
+  let manifest: BibleManifest;
+  try {
+    manifest = JSON.parse(text) as BibleManifest;
+  } catch {
+    throw new Stopped("unavailable");
+  }
+  if (manifest?.bible !== id || !Array.isArray(manifest.books)) throw new Stopped("unavailable");
+  return manifest;
+}
+
+/** How long the question "can the website be reached?" waits for an answer. */
+const REACH_WAIT_MS = 8000;
+
+/**
+ * Whether the website answers at all, asked when a file could not be had. The
+ * question is asked without CORS ("no-cors"), so any answer counts, even one
+ * the app may not read: in the apps a missing file comes back from the main
+ * web with no Access-Control-Allow-Origin, and the browser in the app throws
+ * on it exactly as it throws with no signal (probed 2026-11-13: the six
+ * Bibles answer 404 that way until the merge). An answer means the website
+ * was reached and the file was not there for the app; no answer in time, or
+ * none at all, means there is no way to the website.
+ */
+async function websiteAnswers(url: string, fetcher: Fetch): Promise<boolean> {
+  const wait = new AbortController();
+  const timer = setTimeout(() => wait.abort(), REACH_WAIT_MS);
+  try {
+    await fetcher(url, { method: "HEAD", mode: "no-cors", cache: "no-store", signal: wait.signal });
+    return true;
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function fetchText(url: string, fetcher: Fetch, signal: AbortSignal, cache: RequestCache): Promise<string> {
   let res: Response;
   try {
     res = await fetcher(url, { signal, cache });
   } catch {
-    throw new Stopped(signal.aborted ? "cancelled" : "offline");
+    if (signal.aborted) throw new Stopped("cancelled");
+    if (!(await websiteAnswers(url, fetcher))) throw new Stopped("offline");
+    // The website answers: asked once more, since a moment's trouble passes (a
+    // change of network, the app waking). Refused again while the website
+    // answers, the file is not there for the app.
+    try {
+      res = await fetcher(url, { signal, cache });
+    } catch {
+      throw new Stopped(signal.aborted ? "cancelled" : "unavailable");
+    }
   }
-  if (!res.ok) throw new Stopped("offline");
+  // The website answered, and not with the file: it does not have it now.
+  if (!res.ok) throw new Stopped("unavailable");
   return res.text();
 }
 
@@ -243,8 +308,7 @@ async function download(
   setProgress(id, { state: "downloading", done: 0, total: downloadableBible(id)?.bytes ?? 0 }, controller);
   try {
     const fs = plugin ?? (await import("@capacitor/filesystem"));
-    const manifest = JSON.parse(await fetchText(manifestUrl(id, native), fetcher, signal, "no-cache")) as BibleManifest;
-    if (manifest.bible !== id || !Array.isArray(manifest.books)) throw new Stopped("offline");
+    const manifest = readManifest(await fetchText(manifestUrl(id, native), fetcher, signal, "no-cache"), id);
 
     // Books kept by an earlier download of this version.
     const partial = readJson<Record<string, { version: string; done: string[] }>>(PARTIAL_KEY) ?? {};
@@ -279,7 +343,7 @@ async function download(
         let text = await fetchText(url, fetcher, signal, "default");
         // A copy kept from an earlier version of the Bible: ask the website itself.
         if (!checkBook(text, id, entry)) text = await fetchText(url, fetcher, signal, "reload");
-        if (!checkBook(text, id, entry)) throw new Stopped("offline");
+        if (!checkBook(text, id, entry)) throw new Stopped("unavailable");
         try {
           await save(entry.book, text);
         } catch {

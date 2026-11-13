@@ -25,7 +25,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SaveOfflineMark } from "@/components/player/SaveOffline";
 import { Check } from "@/components/ui/icons/Check";
 import { hasBook, megabytes, type DownloadableBible } from "@/lib/bible/downloads/catalog";
-import { cancelBibleDownload, downloadBible, removeBible, useBibles } from "@/lib/bible/downloads/store";
+import { cancelBibleDownload, downloadBible, FAILED_WORDS, removeBible, useBibles } from "@/lib/bible/downloads/store";
 import { cn } from "@/lib/cn";
 import { useIsNative } from "@/lib/platform/native";
 import { textDir } from "@/lib/i18n/textDir";
@@ -78,7 +78,7 @@ export function BibleRow({
     : downloading
       ? t("bible.downloads.downloading", { percent: Math.floor((progress.done / Math.max(progress.total, 1)) * 100) })
       : progress?.state === "failed"
-        ? t(progress.reason === "space" ? "bible.downloads.failedSpace" : progress.reason === "save" ? "bible.downloads.failedSave" : "bible.downloads.failedOffline")
+        ? t(FAILED_WORDS[progress.reason])
         : ready
           ? t(`bible.translationNote.${bible.id}`)
           : `${t(`bible.translationNote.${bible.id}`)} · ${size}`;

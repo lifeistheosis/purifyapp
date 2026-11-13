@@ -5221,6 +5221,7 @@
   "bible.downloads.downloading": "იტვირთება: {percent}%",
   "bible.downloads.stop": "ჩამოტვირთვის შეჩერება",
   "bible.downloads.failedOffline": "ჩამოტვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.",
+  "bible.downloads.failedUnavailable": "ამჟამად ჩამოსატვირთად მიუწვდომელია. სცადეთ მოგვიანებით.",
   "bible.downloads.failedSpace": "ამ მოწყობილობაზე საკმარისი ადგილი არ არის.",
   "bible.downloads.manageAria": "{name}: პარამეტრები",
   "bible.downloads.onPhone": "ამ მოწყობილობაზე: {size}",

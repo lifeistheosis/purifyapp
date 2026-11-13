@@ -5249,6 +5249,7 @@
   "bible.downloads.downloading": "Téléchargement, {percent} %",
   "bible.downloads.stop": "Arrêter le téléchargement",
   "bible.downloads.failedOffline": "Téléchargement impossible. Vérifiez votre connexion et réessayez.",
+  "bible.downloads.failedUnavailable": "Téléchargement indisponible pour le moment. Réessayez plus tard.",
   "bible.downloads.failedSpace": "Pas assez d'espace sur cet appareil.",
   "bible.downloads.manageAria": "Options pour {name}",
   "bible.downloads.onPhone": "Sur cet appareil, {size}",

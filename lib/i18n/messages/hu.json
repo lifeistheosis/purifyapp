@@ -5221,6 +5221,7 @@
   "bible.downloads.downloading": "Letöltés: {percent}%",
   "bible.downloads.stop": "Letöltés leállítása",
   "bible.downloads.failedOffline": "A letöltés nem sikerült. Ellenőrizd a kapcsolatot, és próbáld újra.",
+  "bible.downloads.failedUnavailable": "Jelenleg nem tölthető le. Próbáld újra később.",
   "bible.downloads.failedSpace": "Nincs elég hely ezen az eszközön.",
   "bible.downloads.manageAria": "{name} beállításai",
   "bible.downloads.onPhone": "Ezen az eszközön: {size}",
