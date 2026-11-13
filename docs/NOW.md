@@ -20,6 +20,8 @@ Updated 2026-11-13 01:24 UTC.
 - **The walk is mended** (5f56967b): every web node allowed when it glides and ends in sight; a "held" control re-tapped with anchoring off.
 - **The re-check is cutting now** (Admin 2, from 3b17a0aca, about 04:35 UTC): all six fails are addressed there (WordPopover's Close 0d9cc2400, the webs' tags 74210d49c, the admin links 3b17a0aca). Report expected about 07:30 to 08:00 UTC.
 - **Then:** every fix pushed; the re-check on one export from that head; if it passes, the test build is cut (Android with local-first on, the main web, publish off; then iOS).
+- **Merge day is written down:** `docs/1.9-build/MERGE-DAY.md`. Ready: all six version identifiers, the checklist, the note, the board message, the release email (7 points), the drop (23 pieces), and the push to main is a fast-forward from a63d37c7a. Still to do on merge day: file the note in his queue, set the drop day, the phone walks, the release email's picture and preview, the cards (Fable), and the campaigns line (his word).
+- **The 19 migrations:** all safe to run twice; his one "yes to the 19" (MERGE-DAY step 3) settles the loose sign-offs. Two clear readers' data by design and cannot be undone (17 and 18, signed 2026-11-11). After his yes, the headers of 12 (production_baseline, "NOT SIGNED") and 2 (psalms move, no SIGNED line) get his words; the psalms move and shared_pages are pasted by hand before the push (R1).
 - **Before the merge (web only):** the admin link in `lib/billing/applyLifecycle.ts` (`?tab=` where the panel reads `#tab=`), with Updates 3.
 
 ## Waiting on him
@@ -50,7 +52,6 @@ Updated 2026-11-13 01:24 UTC.
 | Arbiter | session_01VuYTwdsjYL2mmq2C2JSt2A | his words, NOW.md, routing |
 | Admin 2 | session_01VuYTweFNHsJxnX7YJmTvEN | the gate: first the lifted-saints ruling into the tap walk, then the targeted re-check on the arbiter's word (baton `docs/handoffs/admin.md`); the admin panel when the owner's desk resumes |
 | Updates 3 | session_01VuYTwcy3Fbt9LcW3Qic77o | fixer: fails 4 (WordPopover's Close in Arabic) and 5 (the webs' place and date cut), from `docs/handoffs/updates-2.md`; then the admin link in `lib/billing/applyLifecycle.ts` |
-| Release prep | session_01VuYTwakSfEsUhtPvSDP3Qa | merge day made mechanical: the readiness check, the 19 migrations (signed, safe to run twice), `docs/1.9-build/MERGE-DAY.md`; docs only |
 | Admin panel 3 | session_01VuYTwdp6mhe99XWbxc6bLH | the owner's desk, sections 2 and 3 (the sends on, with a Hold, by his word; the owner's brief at 7:30 his time, Monday's weekly); web only |
 | Design kit | session_01VuYTwe37MHhGgSEsQ13Lut | the Purify design kit from the app's own look: tokens, pieces, an artifact and an email template, `docs/brand/design-kit.md`; docs only |
 | Fable 5.2: email designs | session_01VuYTwd6RkVo5JByCRXYJFG | one email look on the design kit (the reader email and the owner's brief), then its Nativity Fast season; `docs/brand/kit/email/` |
@@ -58,4 +59,4 @@ Updated 2026-11-13 01:24 UTC.
 | Fable 5.2: 1.9 store pictures | session_01VuYTwbUEsUgbUwM7K7xYG1 | design and adverts, by his word: now the 1.9 social cards, one set, in the store pictures' look (docs/plans/v1.9/cards/) |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |
 
- Archived on 2026-11-13, their jobs done: the Saints chat (St. Xenia's profile), Updates (fails 1 and 6), Admin (the final check, recorded in `docs/1.9-build/notes/gate-run-1.md`; baton `docs/handoffs/admin.md`; probes in `scripts/gate/`), Updates 2 (pushed e0319e71c, d70a01deb, cb114387b and e88068504; baton `docs/handoffs/updates-2.md`), Tooling, Admin panel 2 (baton `docs/handoffs/admin-panel.md`) and Product images. His PC's clone was left on `main` with one unpushed commit (2026-11-11): nothing is pushed from it.
+ Archived on 2026-11-13, their jobs done: Release prep (`docs/1.9-build/MERGE-DAY.md`, 631d04e67), the Saints chat (St. Xenia's profile), Updates (fails 1 and 6), Admin (the final check, recorded in `docs/1.9-build/notes/gate-run-1.md`; baton `docs/handoffs/admin.md`; probes in `scripts/gate/`), Updates 2 (pushed e0319e71c, d70a01deb, cb114387b and e88068504; baton `docs/handoffs/updates-2.md`), Tooling, Admin panel 2 (baton `docs/handoffs/admin-panel.md`) and Product images. His PC's clone was left on `main` with one unpushed commit (2026-11-11): nothing is pushed from it.
