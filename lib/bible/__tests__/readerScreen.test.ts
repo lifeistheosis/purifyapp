@@ -324,10 +324,12 @@ describe("the ••• sheet: the reader's settings, and what stood above the t
     expect(screen).toContain("const frame = useVisibleFrame();");
     expect(screen).toContain("style={phone && frame ? { top: frame.top, height: frame.height } : undefined}");
     // The tab bar and the way out of focus step aside, the page holds still,
-    // and the plate and the back button leave it.
+    // and the plate and the back button leave it (the back button while it
+    // covers the page: once it begins to leave, Back is the page's; build 95
+    // note 5, lib/search/__tests__/searchMotion.test.ts).
     expect(screen).toContain("setOverlayOpen(true);");
     expect(screen).toContain("lockBodyScroll();");
-    expect(screen).toContain("useAndroidBack(open, close);");
+    expect(screen).toContain("useAndroidBack(covering, close);");
     expect(screen).toMatch(/onClick=\{close\}\s*aria-label=\{t\("common\.close"\)\}/);
   });
 });

@@ -207,10 +207,20 @@ const serverOnline = () => true;
 /** Kinds a door holds a saint as, so its rows draw the larger face. */
 const FACE_KINDS: ReadonlySet<KindId> = new Set(["saints", "fathers"]);
 
+/**
+ * How long the screen may take to leave before it is let go without its fade
+ * ending: its words go in the time a page takes to leave and its ground 40ms
+ * after them (180ms in all, app/globals.css, .search-screen), and an app put
+ * away mid-fade never ends it.
+ */
+const LEAVE_GRACE_MS = 600;
+
 export function CommandPalette() {
   const router = useRouter();
   const { t, tn, locale } = useTranslate();
   const [open, setOpen] = useState(false);
+  // On its way out: still drawn, fading, and covering nothing (close, below).
+  const [leaving, setLeaving] = useState(false);
   const [turn, setTurn] = useState<Turn>(EVERYTHING);
   const [query, setQuery] = useState("");
   // After the Search key, a door or a kind chosen: the results in full.
@@ -239,10 +249,37 @@ export function CommandPalette() {
     setExpanded(new Set());
     setActive(0);
     setRecent(readWords());
+    setLeaving(false);
     setOpen(true);
   }, []);
 
-  const close = useCallback(() => setOpen(false), []);
+  const gone = useCallback(() => {
+    setLeaving(false);
+    setOpen(false);
+  }, []);
+
+  // It leaves as a page does (build 95 note 5; app/globals.css,
+  // .search-screen): its words and field go first and its ground 40ms after,
+  // giving the page back as it begins, and it is gone when the ground's fade
+  // ends. It went in one frame until then, a cut. The keyboard goes with it,
+  // as before, and not while it fades: let go of mid-fade, it would turn the
+  // words being typed into the results under the reader's eyes. Under the
+  // motion switch it goes at once.
+  const close = useCallback(() => {
+    if (document.documentElement.dataset.motion === "reduce") {
+      gone();
+      return;
+    }
+    setLeaving(true);
+  }, [gone]);
+  useEffect(() => {
+    if (!leaving) return;
+    const grace = window.setTimeout(gone, LEAVE_GRACE_MS);
+    return () => window.clearTimeout(grace);
+  }, [leaving, gone]);
+  // What it covers while it is up: once it begins to leave, the page is the
+  // reader's again.
+  const covering = open && !leaving;
 
   // Opened from anywhere (lib/search/open.ts). Drawn at once, inside the tap
   // that asked, so the field can take the focus in it: a phone raises its
@@ -261,8 +298,8 @@ export function CommandPalette() {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        if (open) {
-          setOpen(false);
+        if (covering) {
+          close();
         } else {
           flushSync(() => show());
           inputRef.current?.focus();
@@ -271,7 +308,7 @@ export function CommandPalette() {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, show]);
+  }, [covering, close, show]);
 
   // The lists, the first time it opens: it is on every screen and most
   // readers never open it, so nothing is fetched until they do.
@@ -307,22 +344,24 @@ export function CommandPalette() {
   }, [open, wantsDefinitions, definitions]);
 
   // The page holds still under it, the tab bar and the floating pills step
-  // aside (lib/ui/overlay.ts), and the field has the keyboard.
+  // aside (lib/ui/overlay.ts), and the field has the keyboard. They come back
+  // as it begins to leave, with it, not after it has gone (build 89 note 16).
   useEffect(() => {
-    if (!open) return;
+    if (!covering) return;
     setOverlayOpen(true);
     lockBodyScroll();
     return () => {
       setOverlayOpen(false);
       unlockBodyScroll();
     };
-  }, [open]);
+  }, [covering]);
   useLayoutEffect(() => {
     if (open) inputRef.current?.focus();
   }, [open]);
 
-  // Android's back button leaves the search, not the page under it.
-  useAndroidBack(open, close);
+  // Android's back button leaves the search, not the page under it; once it
+  // is leaving, Back is the page's.
+  useAndroidBack(covering, close);
 
   /* ── What it looks through ──────────────────────────────────────────── */
 
@@ -399,16 +438,18 @@ export function CommandPalette() {
 
   /* ── What a tap does ────────────────────────────────────────────────── */
 
+  // A row chosen: the screen leaves as the page it opens arrives, rather than
+  // cutting back to the page it was opened over first.
   const go = (row: SearchRow | undefined) => {
     if (!row) return;
     if (q) setRecent(rememberWords(q));
-    setOpen(false);
+    close();
     router.push(row.href);
   };
 
   // A row of the day: no words to keep, only the place to open.
   const goTo = (href: string) => {
-    setOpen(false);
+    close();
     router.push(href);
   };
 
@@ -731,7 +772,13 @@ export function CommandPalette() {
   return (
     <div
       data-search-screen=""
-      className="fixed inset-0 z-[120] max-md:bg-night md:flex md:items-start md:justify-center md:px-4 md:pt-[10vh]"
+      data-leaving={leaving || undefined}
+      onAnimationEnd={(e) => {
+        if (e.target === e.currentTarget && e.animationName === "search-uncover") gone();
+      }}
+      // search-screen: it covers the page as a page leaves, and leaves as one
+      // does (app/globals.css; build 95 note 5).
+      className="fixed inset-0 z-[120] max-md:bg-night md:flex md:items-start md:justify-center md:px-4 md:pt-[10vh] search-screen"
       role="dialog"
       aria-modal="true"
       aria-label={t("search.ariaLabel")}
@@ -774,8 +821,10 @@ export function CommandPalette() {
         </div>
         {phone ? (
           // The field at the foot, over the keyboard. With the keyboard down
-          // it stands clear of the screen's own edge (.safe-pb-edge).
-          <div data-search-dock="" className={cn("search-dock shrink-0", !keyboardUp && "safe-pb-edge max-md:pb-[env(safe-area-inset-bottom,0px)]")}>
+          // it stands clear of the screen's own edge (.safe-pb-edge). It comes
+          // and goes with the words (.search-in), not with the ground, so it
+          // never reads through the tab bar it stands over (build 95 note 5).
+          <div data-search-dock="" className={cn("search-in search-dock shrink-0", !keyboardUp && "safe-pb-edge max-md:pb-[env(safe-area-inset-bottom,0px)]")}>
             <div className="flex items-center gap-1.5 px-2.5 py-2">
               <button
                 type="button"

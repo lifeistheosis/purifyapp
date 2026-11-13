@@ -7751,14 +7751,56 @@ html[data-input="keyboard"] .search-door:focus-visible {
 /* It arrives by fading in where it stands: no rise, so every box on it is in
    its place from the first frame the screen draws (build 87, the owner's
    note 83, "buggy" as it opened; the walk's section 44 records it). Filled
-   backwards, and opacity alone, so it holds nothing fixed inside it. */
+   backwards, and opacity alone, so it holds nothing fixed inside it.
+
+   And it arrives and leaves as a page does (build 95 note 5, his word of
+   2026-11-13: "pressing the search created a weird visual bug and isn't
+   smooth when transitioning to that acreen"; CLAUDE.md, "Every page switch
+   is a transition"). Until then only the words faded: the screen's ground
+   and its field were drawn whole in the tap's frame, so the page under it
+   was cut away to an empty dark screen with the field at its foot, and the
+   words came after. Now the screen's ground (and, on a computer, the shade
+   round its card) covers the page in the time a page takes to leave, and
+   its words and its field (.search-in, the body and the dock) come 40ms
+   later in the time a page takes to arrive, as a page that goes back or
+   across does ("Every page switch moves"): two pages of words never read
+   through each other, nor the field and the tab bar it stands over. It
+   leaves the other way round: its words and its field go first, in the
+   time a page takes to leave, and its ground 40ms later, letting a finger
+   through to the page as it goes (components/search/CommandPalette.tsx,
+   close). Under the motion switch it is there, and gone, at once. */
 @keyframes search-in {
  from { opacity: 0; }
 }
 .search-in {
- animation: search-in var(--duration-base) var(--ease-house) backwards;
+ animation: search-in var(--duration-route-enter) var(--ease-house) 40ms backwards;
 }
 :where([data-motion="reduce"]) .search-in {
+ animation: none;
+}
+@keyframes search-cover {
+ from { opacity: 0; }
+}
+@keyframes search-uncover {
+ to { opacity: 0; }
+}
+.search-screen {
+ animation: search-cover var(--duration-route-exit) var(--ease-house) backwards;
+}
+.search-screen[data-leaving] {
+ animation: search-uncover var(--duration-route-exit) var(--ease-house) 40ms forwards;
+ pointer-events: none;
+}
+.search-screen[data-leaving] .search-in {
+ animation: search-uncover var(--duration-route-exit) var(--ease-house) forwards;
+}
+:where([data-motion="reduce"]) .search-screen {
+ animation: none;
+}
+:where([data-motion="reduce"]) .search-screen[data-leaving] {
+ animation: none;
+}
+:where([data-motion="reduce"]) .search-screen[data-leaving] .search-in {
  animation: none;
 }
 /* The field docked at the foot, in reach of the thumb, lifted off the page. */

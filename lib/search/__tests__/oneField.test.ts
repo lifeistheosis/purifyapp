@@ -184,9 +184,10 @@ describe("one search, opened from each place on that place", () => {
     expect(screen).toContain("const frame = useVisibleFrame();");
     expect(screen).toContain("style={phone && frame ? { top: frame.top, height: frame.height } : undefined}");
     expect(screen).toMatch(/data-search-dock=""[^>]*search-dock shrink-0", !keyboardUp && "safe-pb-edge/);
-    // How to leave: the plate, Back, Escape, a computer's backdrop.
+    // How to leave: the plate, Back, Escape, a computer's backdrop. Back is
+    // the page's again once it begins to leave (build 95 note 5).
     expect(screen).toContain('aria-label={t("common.close")}');
-    expect(screen).toContain("useAndroidBack(open, close);");
+    expect(screen).toContain("useAndroidBack(covering, close);");
     expect(screen).toMatch(/e\.key === "Escape"/);
     // The page holds still under it and the floating pills step aside.
     expect(screen).toContain("setOverlayOpen(true);");
