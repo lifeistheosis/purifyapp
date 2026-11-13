@@ -33,6 +33,7 @@
     { "category": "perks", "text": "Listening offline, in Purify Plus: saved books marked in the list, a chant kept on your phone as a book is, each book's size shown before you save it, saving that waits for Wi-Fi and picks up after a lost signal, Settings, On this device, to see what is kept, and the week's readings kept offline by themselves." },
     { "category": "shop", "text": "Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends." },
     { "category": "shop", "text": "The shop's photos load as you browse, so the apps no longer carry them." },
+    { "category": "fixes", "text": "Ambient sounds now play on iPhone, where they never played before, even with Purify Plus." },
     { "category": "fixes", "text": "Every field's hint is easier to read on every palette, and in Candlelight the verses you are not reading are easier to read." },
     { "category": "fixes", "text": "The day's prayer hours no longer fade: the hours that are not now step back in their words." },
     { "category": "fixes", "text": "The reader's bars leave later and slower, and the mini player moves with them at their pace." },

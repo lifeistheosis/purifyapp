@@ -32,22 +32,26 @@ Also:
 - Listening: one card at rest and a small pill as you scroll, and your place kept in every book.
 - The day's prayer hours no longer fade, and every field's hint is easier to read.
 - Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends.
+- Ambient sounds now play on iPhone, where they never played before, even with Purify Plus.
 
 ## What may not be said
 
 - "every work has a cover": the covers pack for the reading room is not in yet
 - "Find a parish": the parish directory is not built
-- "phone voice": nothing of the on-phone voice is in the 1.9 apps (his word "rec voices", 2026-11-11 about 14:24 UTC; parked for 2.0, cdaabd4c4): 1.9 listens in the recorded voice, as 1.8 did
-- "phone's voice": the same: no on-phone voice in 1.9
+- "phone voice": the phone's own voices come into 1.9 at his word (note 25, 2026-11-13: "I want everything fixed in v1.9 no pushing out to 2") but are not built yet: no piece names them until Updates 5 has built them and he has said yes (the arbiter, 2026-11-13)
+- "phone's voice": the same: the phone's own voices are not built yet
 - "campaign": prayer campaigns are at testers from the merge, his account alone (lib/campaigns/flags.ts), and open for every reader only at R5c (OWNER-STEPS); until the step below brings their line into the 1.9 note, no piece names them (the arbiter, 2026-11-11 and 2026-11-12)
-- "Galilee": the sea look Galilee comes out of the app at his word of 2026-11-13 ("remove the sea theme", then "Both")
-- "Patmos": the sea look Patmos comes out with Galilee, his word of 2026-11-13
-- "nineteen reading modes": the number of looks changes with Galilee and Patmos out; the new count comes from Updates 9's report (the arbiter, 2026-11-13)
-- "19 reading modes": the same count, in figures
+- "Galilee": the sea look Galilee came out of the app at his word of 2026-11-13 ("remove the sea theme", then "Both"; 701ed3dc)
+- "Patmos": the sea look Patmos came out with Galilee (701ed3dc)
+- "nineteen reading modes": the old count: with Galilee and Patmos out (701ed3dc) there are seventeen reading modes, Candlelight, Monastery and fifteen looks, and a piece that counts says seventeen (the arbiter, 2026-11-13)
+- "19 reading modes": the same old count, in figures
 - "Holy Mountain": the land looks (Holy Mountain, Forest, Desert and Jordan) are being reworked for his yes (build 95, note 16); no piece names or shows them until then
 - "Forest look": the same: a land look being reworked
 - "Desert look": the same: a land look being reworked
 - "Jordan look": the same: a land look being reworked
+- "seventeen looks": the old count of looks: with Galilee and Patmos out there are fifteen looks (701ed3dc), and seventeen is now the count of reading modes
+- "17 looks": the same old count of looks, in figures
+- "World English Bible": in 1.9 at his word (note 25, 2026-11-13) and not pushed yet: no piece names it until it is (the arbiter, 2026-11-13)
 
 ## The notes
 
@@ -111,7 +115,7 @@ The Scriptures, the saints, the prayers and the calendar stay free.
 
 ### What's New in This Version, for the App Store
 
-`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 2605 of 4000 characters
+`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 2697 of 4000 characters
 
 > Plus has been sold on iPhone since 1.8 (the App Store lists its four subscriptions; OWNER-STEPS 87, found 2026-11-10), so this text marks what is in Purify Plus, as the Play text does: the study, the plans, the Florilegium and the Thread, Candlelight and ambience, and listening offline.
 
@@ -157,6 +161,7 @@ ALSO
 • The plans page keeps your place and puts the season's plan at the top.
 • Orthodox History shows its great events as large cards, and every picture for every reader.
 • Listening: one card at rest and a small pill as you scroll, and your place kept in every book.
+• Ambient sounds now play on iPhone, where they never played before, even with Purify Plus.
 • The day's prayer hours no longer fade, and every field's hint is easier to read.
 
 The Scriptures, the saints, the prayers and the calendar stay free.

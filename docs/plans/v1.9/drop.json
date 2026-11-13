@@ -52,11 +52,11 @@
     },
     {
       "word": "phone voice",
-      "why": "nothing of the on-phone voice is in the 1.9 apps (his word \"rec voices\", 2026-11-11 about 14:24 UTC; parked for 2.0, cdaabd4c4): 1.9 listens in the recorded voice, as 1.8 did"
+      "why": "the phone's own voices come into 1.9 at his word (note 25, 2026-11-13: \"I want everything fixed in v1.9 no pushing out to 2\") but are not built yet: no piece names them until Updates 5 has built them and he has said yes (the arbiter, 2026-11-13)"
     },
     {
       "word": "phone's voice",
-      "why": "the same: no on-phone voice in 1.9"
+      "why": "the same: the phone's own voices are not built yet"
     },
     {
       "word": "campaign",
@@ -64,19 +64,19 @@
     },
     {
       "word": "Galilee",
-      "why": "the sea look Galilee comes out of the app at his word of 2026-11-13 (\"remove the sea theme\", then \"Both\")"
+      "why": "the sea look Galilee came out of the app at his word of 2026-11-13 (\"remove the sea theme\", then \"Both\"; 701ed3dc)"
     },
     {
       "word": "Patmos",
-      "why": "the sea look Patmos comes out with Galilee, his word of 2026-11-13"
+      "why": "the sea look Patmos came out with Galilee (701ed3dc)"
     },
     {
       "word": "nineteen reading modes",
-      "why": "the number of looks changes with Galilee and Patmos out; the new count comes from Updates 9's report (the arbiter, 2026-11-13)"
+      "why": "the old count: with Galilee and Patmos out (701ed3dc) there are seventeen reading modes, Candlelight, Monastery and fifteen looks, and a piece that counts says seventeen (the arbiter, 2026-11-13)"
     },
     {
       "word": "19 reading modes",
-      "why": "the same count, in figures"
+      "why": "the same old count, in figures"
     },
     {
       "word": "Holy Mountain",
@@ -93,6 +93,18 @@
     {
       "word": "Jordan look",
       "why": "the same: a land look being reworked"
+    },
+    {
+      "word": "seventeen looks",
+      "why": "the old count of looks: with Galilee and Patmos out there are fifteen looks (701ed3dc), and seventeen is now the count of reading modes"
+    },
+    {
+      "word": "17 looks",
+      "why": "the same old count of looks, in figures"
+    },
+    {
+      "word": "World English Bible",
+      "why": "in 1.9 at his word (note 25, 2026-11-13) and not pushed yet: no piece names it until it is (the arbiter, 2026-11-13)"
     }
   ],
   "figures": [
@@ -345,6 +357,13 @@
         "version": "1.9",
         "has": "Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends."
       }
+    },
+    {
+      "text": "Ambient sounds now play on iPhone, where they never played before, even with Purify Plus.",
+      "from": {
+        "version": "1.9",
+        "has": "Ambient sounds now play on iPhone, where they never played before, even with Purify Plus."
+      }
     }
   ],
   "pieces": [
@@ -383,7 +402,7 @@
       "channel": "appstore",
       "moment": "submit",
       "title": "What's New in This Version, for the App Store",
-      "text": "Purify 1.9: Keep a journal by the Church's day, and go deeper into every verse.\n\nPurify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.\n\nYOUR JOURNAL, BY THE CHURCH'S DAY\nToday's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.\n\nEVERY VERSE, OPENED\nHold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.\n\nSIX MORE BIBLES\nThe Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.\n\nSTUDY A VERSE\nCross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps. In Purify Plus.\n\nNEW READING PLANS\nJohn in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day. In Purify Plus.\n\nTHE CREED BY COUNCIL\nThe Symbol of Faith article by article, with the words the Council of Constantinople added lit.\n\nCHURCH HISTORY ON TODAY\nOn the days an event of Orthodox History fell, it is on Today under the saint of the day.\n\nTHE FLORILEGIUM AND THE THREAD\nYour gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps. In Purify Plus.\n\nCANDLELIGHT AND AMBIENCE\nCandlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once. In Purify Plus.\n\nREMEMBER THE VERSE ON YOUR HOME SCREEN\nA widget keeps your verse on your home screen, the same for every reader.\n\nALSO\n• Share a journal page as a copy at a link of its own: three a month for everyone, without limit in Purify Plus, and Stop sharing takes the copy down at once.\n• Listening offline, in Purify Plus: each book's size shown before you save it, and saving that waits for Wi-Fi and picks up after a lost signal.\n• Psalms 113 to 115 are divided as the Septuagint divides them, and your notes, highlights and saved verses move with their verses.\n• The plans page keeps your place and puts the season's plan at the top.\n• Orthodox History shows its great events as large cards, and every picture for every reader.\n• Listening: one card at rest and a small pill as you scroll, and your place kept in every book.\n• The day's prayer hours no longer fade, and every field's hint is easier to read.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.",
+      "text": "Purify 1.9: Keep a journal by the Church's day, and go deeper into every verse.\n\nPurify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.\n\nYOUR JOURNAL, BY THE CHURCH'S DAY\nToday's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.\n\nEVERY VERSE, OPENED\nHold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.\n\nSIX MORE BIBLES\nThe Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.\n\nSTUDY A VERSE\nCross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps. In Purify Plus.\n\nNEW READING PLANS\nJohn in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day. In Purify Plus.\n\nTHE CREED BY COUNCIL\nThe Symbol of Faith article by article, with the words the Council of Constantinople added lit.\n\nCHURCH HISTORY ON TODAY\nOn the days an event of Orthodox History fell, it is on Today under the saint of the day.\n\nTHE FLORILEGIUM AND THE THREAD\nYour gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps. In Purify Plus.\n\nCANDLELIGHT AND AMBIENCE\nCandlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once. In Purify Plus.\n\nREMEMBER THE VERSE ON YOUR HOME SCREEN\nA widget keeps your verse on your home screen, the same for every reader.\n\nALSO\n• Share a journal page as a copy at a link of its own: three a month for everyone, without limit in Purify Plus, and Stop sharing takes the copy down at once.\n• Listening offline, in Purify Plus: each book's size shown before you save it, and saving that waits for Wi-Fi and picks up after a lost signal.\n• Psalms 113 to 115 are divided as the Septuagint divides them, and your notes, highlights and saved verses move with their verses.\n• The plans page keeps your place and puts the season's plan at the top.\n• Orthodox History shows its great events as large cards, and every picture for every reader.\n• Listening: one card at rest and a small pill as you scroll, and your place kept in every book.\n• Ambient sounds now play on iPhone, where they never played before, even with Purify Plus.\n• The day's prayer hours no longer fade, and every field's hint is easier to read.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.",
       "tuned": true,
       "note": "Plus has been sold on iPhone since 1.8 (the App Store lists its four subscriptions; OWNER-STEPS 87, found 2026-11-10), so this text marks what is in Purify Plus, as the Play text does: the study, the plans, the Florilegium and the Thread, Candlelight and ambience, and listening offline."
     },
