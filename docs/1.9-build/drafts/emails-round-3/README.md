@@ -52,7 +52,7 @@ alone, the way back is `sheet()` and the `only-light` pictures in
 
 ## What `held.patch` holds
 
-Made against `745e45f1` (this folder's own commit is on top of it; the patch
+Made against `f4c626ec`, "The kit: a pair for before and after" (this folder's own commit is on top of it; the patch
 touches nothing here). 35 files, 327KB with its small pictures.
 `git apply --check --binary` passed on that commit.
 
