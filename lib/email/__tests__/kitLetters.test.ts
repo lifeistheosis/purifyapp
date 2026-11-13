@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { HERITAGE_STEMS } from "@/lib/marketing/heritagePictures";
@@ -5,6 +8,7 @@ import { SAINTS } from "@/lib/saints/saints";
 import { SITE_URL } from "@/lib/site";
 
 import { esc } from "../kit";
+import { KIT_ASSETS, NIGHTS_DRAWN } from "../kitLetters";
 import { renderMarketing } from "../marketing";
 import { saintCardOf } from "../saintCard";
 import { monthlyBody, nativityFastDay, weekRange, weeklyBody } from "../templates/contentBodies";
@@ -63,6 +67,42 @@ describe("the Sunday email in the kit's look", () => {
       expect(html).toContain("This week in the library");
       expect(html).toContain(`>${esc(body.action!.label)}</a>`);
     }
+  });
+});
+
+describe("the nights of the Nativity Fast", () => {
+  const ROOT = path.resolve(__dirname, "../../..");
+  const nightFile = (day: number) => path.join(ROOT, "public", "email", `nativity-night-${String(day).padStart(2, "0")}.png`);
+
+  it("are drawn for all forty days, each on the main web, so every Sunday of every year's fast has its own", () => {
+    for (let day = 1; day <= 40; day++) {
+      expect(NIGHTS_DRAWN.has(day), `day ${day}`).toBe(true);
+      expect(fs.existsSync(nightFile(day)), nightFile(day)).toBe(true);
+    }
+  });
+
+  it("show on each Sunday of this year's fast, with words that say where the star stands", () => {
+    // 2026: the Sundays fall on days 1, 8, 15, 22, 29 and 36.
+    const sundays: [string, number, string][] = [
+      ["2026-11-15", 1, "a little above the horizon"],
+      ["2026-11-22", 8, "a little above the horizon"],
+      ["2026-11-29", 15, "halfway up the sky"],
+      ["2026-12-06", 22, "halfway up the sky"],
+      ["2026-12-13", 29, "high in the sky"],
+      ["2026-12-20", 36, "high in the sky"],
+    ];
+    for (const [iso, day, where] of sundays) {
+      const html = renderMarketing(sunday(`${iso}T12:00:00Z`), "product_updates", TOKEN, ADDRESS).html;
+      expect(html, iso).toContain(`/email/nativity-night-${String(day).padStart(2, "0")}.png`);
+      expect(html, iso).toContain(`The star stands ${where}: day ${day} of 40.`);
+    }
+  });
+
+  it("and the masthead's cross are the website's alone: the apps' export drops them by name", () => {
+    for (const src of [KIT_ASSETS.cross, KIT_ASSETS.crossInk]) expect(fs.existsSync(path.join(ROOT, "public", new URL(src).pathname))).toBe(true);
+    const build = fs.readFileSync(path.join(ROOT, "scripts", "native-build.mjs"), "utf8");
+    expect(build).toContain('const drawn = path.join(ROOT, "public", "email");');
+    expect(build).toContain('pruneEmailPictures(path.join(ROOT, "out"));');
   });
 });
 

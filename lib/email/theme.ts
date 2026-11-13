@@ -48,22 +48,6 @@ export type EmailTheme = {
   link: string;
   /** A recessed well: a quoted support message, a reviewer's note. */
   well: string;
-  /**
-   * The owner's brief draws its charts in the email (lib/admin/briefCharts.ts),
-   * in the admin money chart's own hues (app/admin/admin-theme.css,
-   * --adm-money-*, his word of 2026-11-12: "if you can make it a different
-   * color, right, if that helps ... If there's no distinction, then it just
-   * shows up all white"): the shop, Plus, the EIKON Box membership, a plan the
-   * product name does not say (the ink), refunds (a grey, below the line),
-   * and the track a bar runs on. Each clears 3:1 on the card, as a chart mark
-   * must (lib/admin/__tests__/ownerBrief.test.ts). No gold and no yellow.
-   */
-  chartShop: string;
-  chartPlus: string;
-  chartBox: string;
-  chartOther: string;
-  chartBack: string;
-  chartTrack: string;
   cardRadius: number;
   buttonRadius: number;
   /** Tells a client not to invert what is already dark. */
@@ -91,12 +75,6 @@ export const EMAIL_THEMES: Record<EmailMode, EmailTheme> = {
     mark: "#ffffff",
     link: "#ffffff",
     well: "#141417",
-    chartShop: "#3987e5",
-    chartPlus: "#008300",
-    chartBox: "#d55181",
-    chartOther: "#f4f4f5",
-    chartBack: "#939393",
-    chartTrack: "#2e2e33",
     cardRadius: 16,
     buttonRadius: 999,
     scheme: "dark",
@@ -117,12 +95,6 @@ export const EMAIL_THEMES: Record<EmailMode, EmailTheme> = {
     mark: "#e4e4e7",
     link: "#e4e4e7",
     well: "#111113",
-    chartShop: "#3987e5",
-    chartPlus: "#008300",
-    chartBox: "#d55181",
-    chartOther: "#e4e4e7",
-    chartBack: "#a1a1aa",
-    chartTrack: "#2e2e33",
     cardRadius: 12,
     buttonRadius: 6,
     scheme: "dark",
@@ -141,12 +113,6 @@ export const EMAIL_THEMES: Record<EmailMode, EmailTheme> = {
     mark: "#dbe4f4",
     link: "#aebedd",
     well: "#101622",
-    chartShop: "#3987e5",
-    chartPlus: "#008300",
-    chartBox: "#d55181",
-    chartOther: "#dbe4f4",
-    chartBack: "#8fa2c4",
-    chartTrack: "#26324a",
     cardRadius: 14,
     buttonRadius: 8,
     scheme: "dark",
@@ -165,12 +131,6 @@ export const EMAIL_THEMES: Record<EmailMode, EmailTheme> = {
     mark: "#962820",
     link: "#962820",
     well: "#e9dcbf",
-    chartShop: "#2a78d6",
-    chartPlus: "#008300",
-    chartBox: "#d55181",
-    chartOther: "#2b2317",
-    chartBack: "#6b5a45",
-    chartTrack: "#d6c7a4",
     cardRadius: 3,
     buttonRadius: 3,
     scheme: "light",

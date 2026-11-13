@@ -2,7 +2,7 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { emailLayout } from "@/lib/email/layout";
+import { KIT_ASSETS } from "@/lib/email/kitLetters";
 import { sendEmailOnce } from "@/lib/email/ledger";
 import { SITE_URL } from "@/lib/site";
 
@@ -37,11 +37,11 @@ import { briefSent, DESK_KEYS, readDesk, writeDesk, type DeskState } from "./own
 export const briefKey = (day: string) => `owner_brief:${day}`;
 
 /**
- * The shell the brief is drawn in. The design kit's email template
- * (docs/brand/kit/email/) replaces emailLayout here when it lands; every part
- * of the brief is drawn on the email theme's tokens, so they follow.
+ * Where the brief's masthead cross lives: the main web (public/email/). The
+ * brief is drawn in the design kit's look (his yes, 2026-11-13: "yes look";
+ * lib/admin/ownerBrief.ts briefEmail, with lib/email/kit.ts).
  */
-export const briefShell: Parameters<typeof briefEmail>[3] = (opts) => emailLayout(opts);
+export const briefAssets = KIT_ASSETS;
 
 const adminUrl = () => `${SITE_URL.replace(/\/$/, "")}/admin`;
 
@@ -75,7 +75,7 @@ export async function composeBrief(
   if (today.board) {
     today.board.saved = mode === "send" ? await saveBoardDraft(admin, today.board) : "preview";
   }
-  const { subject, html } = briefEmail(figures, today, { admin: adminUrl() }, briefShell);
+  const { subject, html } = briefEmail(figures, today, { admin: adminUrl() }, briefAssets);
   return { desk, weekly, figures, today, announce: mode === "send" ? today.announce : [], subject, html };
 }
 

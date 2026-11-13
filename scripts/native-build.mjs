@@ -613,7 +613,23 @@ function pruneEmailPictures(dir) {
       }
     }
   }
-  console.log(`• pruned ${files} release email picture(s) the apps never show, reclaimed ${Math.round(bytes / 1024)} KB`);
+  // The list letters' pictures (1.9, the design kit's look): the masthead's
+  // cross and the forty nights of the Nativity Fast, in public/email/. Only an
+  // email draws them, from the website's address (lib/email/kitLetters.ts),
+  // so they leave the export too: those files by name and nothing else, so
+  // the pages under /email/ (unsubscribe, change) stay.
+  const letters = path.join(dir, "email");
+  const drawn = path.join(ROOT, "public", "email");
+  if (fs.existsSync(letters) && fs.existsSync(drawn)) {
+    for (const name of fs.readdirSync(drawn)) {
+      const p = path.join(letters, name);
+      if (!/\.png$/i.test(name) || !fs.existsSync(p) || !fs.statSync(p).isFile()) continue;
+      bytes += fs.statSync(p).size;
+      fs.rmSync(p);
+      files += 1;
+    }
+  }
+  console.log(`• pruned ${files} email picture(s) the apps never show, reclaimed ${Math.round(bytes / 1024)} KB`);
 }
 
 // Post-export guard (Beta 2.3 language patch). The translated corpus in

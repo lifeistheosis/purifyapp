@@ -34,9 +34,8 @@ const EMAIL_FILES = [
   "lib/shop/sellerEmails.ts",
   "lib/eikonBox/dropEmails.ts",
   "lib/support/ticketEmails.ts",
-  // The owner's brief and its charts (2026-11-13): drawn on the theme's tokens only.
+  // The owner's brief (2026-11-13): drawn with the kit's pieces, on the theme's tokens only.
   "lib/admin/ownerBrief.ts",
-  "lib/admin/briefCharts.ts",
   // The design kit's look (2026-11-13, his "yes look"): its colours are the theme's KIT_* only.
   "lib/email/kit.ts",
   "lib/email/kitLetters.ts",

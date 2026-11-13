@@ -31,8 +31,22 @@ const site = (path: string) => `${SITE_URL.replace(/\/$/, "")}${path}`;
 /** The letters' pictures, on the main web (public/email/). */
 export const KIT_ASSETS: Assets = { cross: site("/email/cross.png"), crossInk: site("/email/cross-ink.png") };
 
-/** The days of the Nativity Fast whose night is drawn (public/email/nativity-night-NN.png). */
-export const NIGHTS_DRAWN: ReadonlySet<number> = new Set([1, 8]);
+/**
+ * The days of the Nativity Fast whose night is drawn (public/email/nativity-night-NN.png):
+ * all forty, so every Sunday of every year's fast has its own. Each is the
+ * Nativity card's night (components/today/NativityStarCard.tsx) held still,
+ * by the kit's own drawing (docs/brand/kit/email/build.mjs, nightPicture),
+ * the star at starTop(day) (lib/reading/nativityStar.ts); days 1 and 8 are
+ * the kit's own files, and the rest were drawn by the same code, which
+ * redraws those two byte for byte.
+ */
+export const NIGHTS_DRAWN: ReadonlySet<number> = new Set(Array.from({ length: 40 }, (_, i) => i + 1));
+
+/** The night's words for a reader who sees no pictures: where the star stands, low on day 1 and near the top on day 40. */
+export function nightAlt(day: number): string {
+  const where = day <= 13 ? "stands a little above the horizon" : day <= 26 ? "stands halfway up the sky" : "stands high in the sky";
+  return `A night sky over a dark hill. The star ${where}: day ${day} of 40.`;
+}
 
 /** A screenshot of a point, at a phone's width, centred. */
 function shot(p: ReturnType<typeof pen>, img: { src: string; alt: string }): string {
@@ -87,7 +101,7 @@ export function kitLetter(
 
   if (season && NIGHTS_DRAWN.has(season.day)) {
     const n = String(season.day).padStart(2, "0");
-    rows.push(night(site(`/email/nativity-night-${n}.png`), `A night sky over a dark hill. The star stands a little above the horizon: day ${season.day} of 40.`));
+    rows.push(night(site(`/email/nativity-night-${n}.png`), nightAlt(season.day)));
   }
   rows.push(
     season

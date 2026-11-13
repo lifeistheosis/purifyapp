@@ -1,7 +1,7 @@
-import { SANS, SERIF, T } from "@/lib/email/theme";
+import { bars, columns, esc, figures, label, link, linkRow, money, opening, pairs, para, pen, quietButton, shell, type Assets, type MoneyPart, type Pen } from "@/lib/email/kit";
+import { KIT_DARK, SERIF } from "@/lib/email/theme";
 import { keptCents, type RefundsByOrder } from "@/lib/shop/partialRefunds";
 
-import { columns, esc, legend, ranked, stackedBar, type Column } from "./briefCharts";
 import type { PieceView, TodayPart } from "./briefToday";
 import { landedAt, type MoneyOrder } from "./money";
 import type { MoneyColumn } from "./moneyChart";
@@ -77,7 +77,6 @@ const addDays = (iso: string, n: number) => new Date(Date.parse(`${iso}T00:00:00
 const longDay = (iso: string) =>
   new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).replace(",", "");
 const dayMonth = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "long", timeZone: "UTC" });
-const shortWeekday = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-US", { weekday: "short", timeZone: "UTC" });
 
 /** Yesterday (UTC) for the daily brief; the seven days ending yesterday for the weekly one. */
 export function spanFor(now: Date, weekly: boolean): BriefSpan {
@@ -215,12 +214,6 @@ export function sumColumns(cols: readonly MoneyColumn[]): MoneyColumn {
 
 const cameIn = (c: MoneyColumn) => c.shop + c.plus + c.box + c.unnamed;
 
-/** "$50", "$1.2k": a whole-dollar label short enough to sit over a narrow column. */
-export function compactUsd(cents: number): string {
-  const dollars = Math.round(cents / 100);
-  if (Math.abs(dollars) >= 1000) return `$${(dollars / 1000).toFixed(Math.abs(dollars) >= 10_000 ? 0 : 1).replace(/\.0$/, "")}k`;
-  return `$${dollars}`;
-}
 
 // ── Words ──────────────────────────────────────────────────────────────
 
@@ -345,131 +338,117 @@ export function briefSubject(f: BriefFigures, today: TodayPart): string {
   return figures;
 }
 
-/**
- * A section's heading: sentence case in the serif, with a hairline across
- * above it, as the design kit sets a section (docs/brand/design-kit.md: "a
- * hairline between sections, never down an edge"; labels in sentence case,
- * no capitals spaced out).
- */
-function heading(text: string): string {
-  return `<p style="margin:26px 0 10px;padding-top:18px;border-top:1px solid ${T.line};font-family:${SERIF};font-size:21px;line-height:1.3;font-weight:400;color:${T.heading}">${esc(text)}</p>`;
-}
 
-function sub(text: string): string {
-  return `<p style="margin:18px 0 6px;font-family:${SANS};font-size:15px;font-weight:600;color:${T.heading}">${esc(text)}</p>`;
-}
-
-function para(html: string, extra = ""): string {
-  return `<p style="margin:0 0 12px;font-family:${SERIF};font-size:16px;line-height:1.6;color:${T.body};${extra}">${html}</p>`;
-}
-
-function smallNote(text: string): string {
-  return `<p style="margin:4px 0 12px;font-family:${SANS};font-size:13px;line-height:1.5;color:${T.muted}">${esc(text)}</p>`;
-}
-
-/**
- * A link on a line of its own, 48px tall under a thumb: the design kit's rule
- * that every link is a 44px target and none sits inside a sentence. Not a
- * pill: a list of places is never a row of outlined pills (CLAUDE.md).
- */
-function link(href: string, label: string): string {
-  return `<a href="${esc(href)}" style="display:inline-block;padding:12px 0;font-family:${SANS};font-size:16px;line-height:24px;color:${T.link};text-decoration:underline">${esc(label)}</a>`;
-}
-
-function rows(items: { label: string; value: string; note?: string }[]): string {
-  const body = items
-    .map(
-      (r) =>
-        `<tr><td style="width:44%;padding:8px 12px 8px 0;font-family:${SANS};font-size:16px;color:${T.muted};vertical-align:top;border-bottom:1px solid ${T.line}">${esc(r.label)}</td>` +
-        `<td style="padding:8px 0;font-family:${SANS};font-size:16px;color:${T.body};border-bottom:1px solid ${T.line}"><strong style="color:${T.heading}">${esc(r.value)}</strong>${
-          r.note ? ` <span style="color:${T.muted}">${esc(r.note)}</span>` : ""
-        }</td></tr>`,
-    )
-    .join("");
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin:0 0 14px">${body}</table>`;
-}
-
-function list(items: string[]): string {
-  return `<ul style="margin:0 0 14px;padding-left:20px;font-family:${SERIF};font-size:16px;line-height:1.55;color:${T.body}">${items
-    .map((i) => `<li style="margin:0 0 6px">${i}</li>`)
-    .join("")}</ul>`;
-}
-
-function well(text: string): string {
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin:6px 0 10px"><tr><td bgcolor="${T.well}" style="background:${T.well};border-radius:8px;padding:14px 16px;font-family:${SERIF};font-size:15px;line-height:1.6;color:${T.body}">${esc(
-    text,
-  )}</td></tr></table>`;
-}
-
-const missWord = (m: Miss) => (m === "not read" ? "not read" : "not kept yet");
+// ── The letter, in the design kit's look ───────────────────────────────
+//
+// His yes to the kit's look (2026-11-13, "yes look"), the owner's brief among
+// it: docs/brand/kit/email/brief.html, drawn here with the kit's own pieces
+// (lib/email/kit.ts, held to the kit's builder by kit.test.ts). What needs
+// him comes first; then the day's figures three across, the week's columns,
+// money in as one bar in the money chart's colours, what was opened most,
+// and, gathered under "Could not be read", every figure that was not read or
+// not kept yet, said so and never as 0.
 
 export type BriefLinks = {
   /** The admin, e.g. "https://purifyapp.net/admin". Each link adds `#tab=`. */
   admin: string;
 };
 
-function pieceHtml(p: PieceView, links: BriefLinks): string {
-  const name = `<strong style="color:${T.heading}">${esc(p.name)}</strong>`;
-  const subject = p.subject ? ` <span style="color:${T.muted}">(${esc(`"${p.subject}"`)})</span>` : "";
-  switch (p.state) {
+const usDay = (iso: string) =>
+  new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" });
+const letter = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-US", { weekday: "narrow", timeZone: "UTC" });
+const missWord = (m: Miss) => (m === "not read" ? "not read" : "not kept yet");
+const words = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+const sayCount = (n: number) => words[n] ?? String(n);
+const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+/** "$124.00": an amount in the money piece, always with its cents, so a column of amounts reads as one (the kit's own). */
+const cents = (c: number) => `${c < 0 ? "-" : ""}$${(Math.abs(c) / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+/** The pieces' words for a piece going out today, its link, and its link's words. */
+function pieceRow(pc: PieceView, links: BriefLinks): { text: string; href: string | null; action: string | null; hold: boolean } {
+  const subject = pc.subject ? ` ("${pc.subject}")` : "";
+  switch (pc.state) {
     case "goes":
-      return `${name}${subject} goes out at ${esc(p.at ?? "")} New York time unless you hold it.<br>${link(`${links.admin}#tab=calendar`, "Hold it")}`;
-    case "held":
-      return `${name}${subject}: held. It waits for you.<br>${link(`${links.admin}#tab=email`, "Send it")}`;
-    case "by hand":
-      return `${name}${subject}: ready to send by hand (${esc(p.why ?? "")}).<br>${link(`${links.admin}#tab=email`, "Send it")}`;
-    case "nothing":
-      return `${name}: nothing to send today. ${esc(p.why ?? "")}`;
-    case "gone":
-      return `${name}${subject}: gone out.`;
+      return { text: `${pc.name}${subject} goes out at ${pc.at} New York time unless you hold it.`, href: `${links.admin}#tab=calendar`, action: "Hold it", hold: true };
     case "first look":
-      return `${name}${subject} goes to you alone at ${esc(p.at ?? "")} New York time, in the reader emails' new look, so your inbox is the first to see it. Readers get none by itself until you say you have seen it.<br>${link(
-        `${links.admin}#tab=calendar`,
-        "Hold it, or clear the look",
-      )}`;
+      return {
+        text: `${pc.name}${subject} goes to you alone at ${pc.at} New York time, in the reader emails' new look, so your inbox is the first to see it. Readers get none by itself until you say you have seen it.`,
+        href: `${links.admin}#tab=calendar`,
+        action: "Hold it, or clear the look",
+        hold: true,
+      };
     case "waits for your look":
-      return `${name}${subject}: waits for your look. The first email in the new look is in your inbox; once you have seen it, clear it on the desk and the emails go to readers again.<br>${link(
-        `${links.admin}#tab=calendar`,
-        "Clear the look",
-      )}`;
+      return {
+        text: `${pc.name}${subject} waits for your look. The first email in the new look is in your inbox; once you have seen it, clear it on the desk and the emails go to readers again.`,
+        href: `${links.admin}#tab=calendar`,
+        action: "Clear the look",
+        hold: false,
+      };
+    case "held":
+      return { text: `${pc.name}${subject}: held. It waits for you.`, href: `${links.admin}#tab=email`, action: "Send it", hold: false };
+    case "by hand":
+      return { text: `${pc.name}${subject}: ready to send by hand (${pc.why ?? ""}).`, href: `${links.admin}#tab=email`, action: "Send it", hold: false };
+    case "nothing":
+      return { text: `${pc.name}: nothing to send today. ${pc.why ?? ""}`.trim(), href: null, action: null, hold: false };
+    case "gone":
+      return { text: `${pc.name}${subject}: gone out.`, href: null, action: null, hold: false };
   }
 }
 
-/** The parts of the brief, in order, as markup on the email theme. */
-export function briefSections(f: BriefFigures, today: TodayPart, links: BriefLinks): string[] {
-  const out: string[] = [];
+/** The opening's line in italics: how the day was, and how many things need him. */
+function summaryLine(f: BriefFigures, today: TodayPart, needsCount: number): string {
+  const quiet = isQuiet(f, today);
+  const need = needsCount === 0 ? "Nothing needs you." : `${cap(sayCount(needsCount))} ${needsCount === 1 ? "thing needs" : "things need"} you.`;
+  if (f.span.kind === "week") return `The week against the one before. ${need}`;
+  return quiet ? `A quiet day. ${need}` : need;
+}
+
+/** The rows of the brief, in order, drawn with the kit's pieces. */
+export function briefRows(p: Pen, f: BriefFigures, today: TodayPart, links: BriefLinks): string[] {
+  const rows: string[] = [];
   const week = f.span.kind === "week";
 
-  // How it went: a release, a drop, a sale.
-  if (f.context.length > 0) {
-    out.push(heading("How it went"));
+  // What waits on him in the panel, each with the view it opens.
+  const waiting: { text: string; href: string; action: string }[] = [];
+  if (f.waiting.refunds) waiting.push({ text: `${plural(f.waiting.refunds, "refund request waits", "refund requests wait")} for your decision.`, href: `${links.admin}#tab=orders`, action: "Open orders" });
+  if (f.waiting.messages) waiting.push({ text: `${plural(f.waiting.messages, "message is", "messages are")} open.`, href: `${links.admin}#tab=messages`, action: "Open messages" });
+  if (f.waiting.toPost) waiting.push({ text: `${plural(f.waiting.toPost, "paid order is", "paid orders are")} not yet sent.`, href: `${links.admin}#tab=orders`, action: "Open orders" });
+  const needsCount = today.needs.length + waiting.length;
+
+  rows.push(opening(p, { eyebrow: usDay(addDays(f.span.end, 1)), title: week ? "Your week" : "Yesterday", sub: summaryLine(f, today, needsCount) }));
+
+  if (f.context.length) {
+    rows.push(label(p, "How it went"));
+    f.context.forEach((c, i) => rows.push(para(p, esc(c.line), i === 0 ? 2 : 10)));
     const since: string[] = [];
     if (!isMiss(f.readers)) since.push(plural(f.readers.visitors.now, "visitor", "visitors"), plural(f.readers.signups.now, "new account", "new accounts"));
     if (!isMiss(f.money)) since.push(plural(f.money.orders.now, "shop order", "shop orders"), `${usd(cameIn(f.money.total))} in`);
-    out.push(list(f.context.map((c) => esc(c.line))));
-    if (since.length) out.push(smallNote(`${week ? "Over the week" : "That day"}: ${since.join(", ")}.`));
+    if (since.length) rows.push(para(p, esc(`${week ? "Over the week" : "That day"}: ${since.join(", ")}.`), 10));
   }
 
-  // Today: what needs him, and what goes out.
-  const waitingLines: string[] = [];
-  if (f.waiting.refunds) waitingLines.push(`${plural(f.waiting.refunds, "refund request", "refund requests")} to decide`);
-  if (f.waiting.messages) waitingLines.push(plural(f.waiting.messages, "open message", "open messages"));
-  if (f.waiting.toPost) waitingLines.push(`${plural(f.waiting.toPost, "paid order", "paid orders")} to post`);
-  if (today.needs.length || waitingLines.length) {
-    out.push(heading("Needs you"));
-    out.push(
-      list([
-        ...today.needs.map((l) => `${esc(l.text)}${l.when ? ` <span style="color:${T.muted}">(${esc(l.when)})</span>` : ""}`),
-        ...waitingLines.map(esc),
-      ]),
-    );
-    if (today.needs.length) {
-      out.push(smallNote("A task you give a day stays out of this email until then: open it in the Calendar and choose Not before."));
+  if (needsCount) {
+    rows.push(label(p, "Needs you"));
+    let first = true;
+    for (const n of today.needs) {
+      rows.push(para(p, esc(n.when ? `${n.text} (${n.when}).` : `${n.text}.`), first ? 2 : 6));
+      first = false;
+    }
+    if (today.needs.length) rows.push(linkRow(p, `${links.admin}#tab=calendar`, "Open the board"));
+    for (const w of waiting) {
+      rows.push(para(p, esc(w.text), first ? 2 : 6), linkRow(p, w.href, w.action));
+      first = false;
     }
   }
+
   if (today.pieces.length || today.board) {
-    out.push(heading("Goes out today"));
-    const items = today.pieces.map((p) => pieceHtml(p, links));
+    rows.push(label(p, "Goes out today"));
+    today.pieces.forEach((pc, i) => {
+      const r = pieceRow(pc, links);
+      rows.push(para(p, esc(r.text), i === 0 ? 2 : 10));
+      if (r.href && r.action) {
+        rows.push(r.hold ? `<tr><td style="padding:14px 0 0">${quietButton(p, { href: r.href, text: r.action })}</td></tr>` : linkRow(p, r.href, r.action));
+      }
+    });
     if (today.board) {
       const b = today.board;
       const where =
@@ -480,249 +459,169 @@ export function briefSections(f: BriefFigures, today: TodayPart, links: BriefLin
             : b.text
               ? "here is a draft from the week to post in Patch notes."
               : "write it in Patch notes.";
-      items.push(
-        `<strong style="color:${T.heading}">The board message</strong> is due today. It never posts itself: ${esc(where)}<br>${link(
-          `${links.admin}#tab=patch-notes`,
-          "Open Patch notes",
-        )}`,
-      );
+      rows.push(para(p, esc(`The board message is due today. It never posts itself: ${where}`), today.pieces.length ? 10 : 2));
+      if (b.text) rows.push(`<tr><td${p.c({ fg: "quiet" }, `padding:10px 0 0;font-family:${SERIF};font-style:italic;font-size:16px;line-height:25px;`)}>${esc(b.text)}</td></tr>`);
+      rows.push(linkRow(p, `${links.admin}#tab=patch-notes`, "Open Patch notes"));
     }
-    out.push(list(items));
-    if (today.board?.text) out.push(well(today.board.text));
   }
 
   if (week) {
-    out.push(heading("Worth your attention"));
+    rows.push(label(p, "Worth your attention"));
     const three = attention(f);
-    out.push(three.length ? list(three.map(esc)) : para(esc("Nothing in the figures asks for you this week.")));
+    if (three.length) three.forEach((t, i) => rows.push(para(p, esc(t), i === 0 ? 2 : 8)));
+    else rows.push(para(p, esc("Nothing in the figures asks for you this week."), 2));
   }
 
-  // Yesterday, or the week.
-  out.push(heading(week ? `The week, ${f.span.label}` : `Yesterday, ${f.span.label}`));
+  // The figures.
+  const unread: { words: string; value: string; quiet: true }[] = [];
   if (isQuiet(f, today) && !isMiss(f.readers)) {
-    out.push(
+    // The opening already says "A quiet day"; the figures say what it held, once.
+    rows.push(label(p, "The figures"));
+    rows.push(
       para(
-        esc(
-          `A quiet day: ${plural(f.readers.visitors.now, "visitor", "visitors")}, ${plural(f.readers.signups.now, "new account", "new accounts")}, no orders, no change in Plus, nothing new in Community, and no errors.`,
-        ),
+        p,
+        esc(`${cap(plural(f.readers.visitors.now, "visitor", "visitors"))}, ${plural(f.readers.signups.now, "new account", "new accounts")}, no orders, no change in Plus, nothing new in Community, and no errors.`),
+        2,
       ),
     );
   } else {
-    out.push(...figureSections(f));
-  }
-
-  out.push(
-    smallNote(
-      `Days are UTC days, as in the admin, held against ${f.span.against}. Figures are read as this email is made and are kept nowhere else.`,
-    ),
-    `${link(`${links.admin}#tab=calendar`, "Change the hour or the weekly day")}<br>${link(links.admin, "Open the admin")}`,
-  );
-  return out;
-}
-
-function figureSections(f: BriefFigures): string[] {
-  const out: string[] = [];
-  const week = f.span.kind === "week";
-
-  // Readers.
-  out.push(sub("Readers"));
-  if (isMiss(f.readers)) out.push(rows([{ label: "Visitors", value: missWord(f.readers) }]));
-  else {
-    const r = f.readers;
-    out.push(
-      rows([
-        { label: "Visitors", value: n(r.visitors.now), note: against(r.visitors, f.span.against) },
-        { label: "New accounts", value: n(r.signups.now), note: against(r.signups, f.span.against) },
-        { label: "Page views", value: n(r.views.now), note: against(r.views, f.span.against) },
-      ]),
-    );
-    if (week) {
-      out.push(smallNote("Visitors each day"));
-      out.push(columns(r.days.map((d): Column => ({ label: shortWeekday(d.day), top: n(d.visitors), segments: [{ value: d.visitors, color: T.muted }] }))));
-      out.push(smallNote("New accounts each day"));
-      out.push(columns(r.days.map((d): Column => ({ label: shortWeekday(d.day), top: n(d.signups), segments: [{ value: d.signups, color: T.muted }] })), 48));
-    }
-  }
-
-  // Money, in the money chart's colours.
-  out.push(sub("Money in"));
-  if (isMiss(f.money)) out.push(rows([{ label: "Money", value: missWord(f.money) }]));
-  else {
-    const m = f.money;
-    const t = m.total;
-    const subsNote = m.subs === "kept" ? undefined : m.subs === "not kept yet" ? "not kept yet" : "not read";
-    if (week) {
-      out.push(
-        columns(
-          m.days.map(
-            (d): Column => ({
-              label: shortWeekday(d.day),
-              top: cameIn(d) > 0 ? compactUsd(cameIn(d)) : null,
-              segments: [
-                { value: d.shop, color: T.chartShop },
-                { value: d.plus, color: T.chartPlus },
-                { value: d.box, color: T.chartBox },
-                { value: d.unnamed, color: T.chartOther },
-              ],
-              below: d.refunds,
-            }),
-          ),
-        ),
-      );
-    } else {
-      out.push(
-        stackedBar([
-          { value: t.shop, color: T.chartShop },
-          { value: t.plus, color: T.chartPlus },
-          { value: t.box, color: T.chartBox },
-          { value: t.unnamed, color: T.chartOther },
+    rows.push(label(p, "Readers"));
+    if (isMiss(f.readers)) unread.push({ words: "Visitors and new accounts", value: missWord(f.readers), quiet: true });
+    else {
+      const r = f.readers;
+      const third = !isMiss(f.plus)
+        ? { value: n(f.plus.joined.now), name: "Plus starts", against: f.plus.renewalOff ? plural(f.plus.renewalOff, "renewal turned off", "renewals turned off") : f.plus.priorKept ? against(f.plus.joined, f.span.against) : "kept from the first event" }
+        : { value: n(r.views.now), name: "Page views", against: against(r.views, f.span.against) };
+      rows.push(
+        figures(p, [
+          { value: n(r.visitors.now), name: "Visitors", against: against(r.visitors, f.span.against) },
+          { value: n(r.signups.now), name: "New accounts", against: against(r.signups, f.span.against) },
+          third,
         ]),
       );
-    }
-    const items = [
-      { color: T.chartShop, label: "The shop", value: usd(t.shop), note: plural(m.orders.now, "order", "orders") },
-      { color: T.chartPlus, label: "Plus", value: subsNote ?? usd(t.plus) },
-      { color: T.chartBox, label: "EIKON Box (Pro)", value: subsNote ?? usd(t.box) },
-    ];
-    if (t.unnamed > 0) items.push({ color: T.chartOther, label: "A plan not named", value: usd(t.unnamed) });
-    items.push({ color: T.chartBack, label: "Given back", value: usd(t.refunds) });
-    out.push(legend(items));
-    const kept = cameIn(t) - t.refunds;
-    const compared = m.priorKept ? `, ${against({ now: kept, before: cameIn(m.prior) - m.prior.refunds }, f.span.against)}` : "";
-    out.push(
-      smallNote(
-        `${usd(kept)} kept${compared}. After the stores' cut, before Stripe's fees, as Money's chart counts it.${
-          m.subs === "kept" && m.subsFrom && m.subsFrom > f.span.priorStart ? ` Subscriptions are kept from ${dayMonth(m.subsFrom)}.` : ""
-        }`,
-      ),
-    );
-  }
-
-  // Plus.
-  out.push(sub("Plus"));
-  if (isMiss(f.plus)) out.push(rows([{ label: "Members", value: missWord(f.plus) }]));
-  else {
-    const p = f.plus;
-    const plusRows = [
-      {
-        label: "Joined",
-        value: n(p.joined.now),
-        note: p.trials ? `and ${plural(p.trials, "free trial", "free trials")} began` : p.priorKept ? against(p.joined, f.span.against) : "",
-      },
-      { label: "Turned renewal off", value: n(p.renewalOff) },
-      { label: "Plans that ended", value: n(p.left) },
-    ];
-    if (p.cardFailed) plusRows.push({ label: "A card that failed", value: n(p.cardFailed) });
-    if (week && f.week?.plus) {
-      const wp = f.week.plus;
-      plusRows.push({ label: "Paying members now", value: wp.paying === null ? "not read" : n(wp.paying), note: wp.trials !== null ? `and ${n(wp.trials)} in a free trial` : "" });
-      if (wp.mrrCents !== null) plusRows.push({ label: "A month of Plus", value: usd(wp.mrrCents), note: wp.source === "revenuecat" ? "from RevenueCat" : "estimated at list price" });
-    }
-    out.push(rows(plusRows.map((r) => ({ ...r, note: r.note || undefined }))));
-  }
-
-  if (week && f.week) {
-    out.push(sub("What sold Plus"));
-    const l = f.week.locks;
-    if (!l) out.push(rows([{ label: "Locks", value: "not read" }]));
-    else if (l.taps === 0) out.push(para(esc("No lock was met this week.")));
-    else {
-      out.push(
-        ranked(
-          l.top.map((x) => ({ label: x.name, value: x.taps, display: `${n(x.taps)} met${x.bought ? `, ${n(x.bought)} bought` : ""}` })),
-          T.chartPlus,
-        ),
-      );
-    }
-  }
-
-  // What readers opened most.
-  out.push(sub("Opened most"));
-  if (isMiss(f.opened)) out.push(rows([{ label: "Pages", value: missWord(f.opened) }]));
-  else {
-    const groups: [string, Ranked[]][] = [
-      ["Saints", f.opened.saints],
-      ["Prayers", f.opened.prayers],
-      ["Chapters", f.opened.chapters],
-    ];
-    const any = groups.some(([, g]) => g.length > 0);
-    if (!any) out.push(para(esc("No saint, prayer or chapter was opened.")));
-    for (const [name, g] of groups) {
-      if (g.length === 0) continue;
-      out.push(smallNote(name));
-      out.push(ranked(g.map((x) => ({ label: x.label, value: x.count, display: plural(x.count, "reader", "readers") })), T.muted));
-    }
-  }
-
-  // Community.
-  out.push(sub("Community"));
-  if (isMiss(f.community)) out.push(rows([{ label: "Threads", value: missWord(f.community) }]));
-  else {
-    const c = f.community;
-    if (c.replies === 0 && c.questions.count === 0) out.push(para(esc("Nothing new was said.")));
-    else {
-      out.push(
-        rows([
-          { label: "Replies", value: n(c.replies) },
-          {
-            label: "Questions asked",
-            value: n(c.questions.count),
-            note: c.questions.unanswered ? `${n(c.questions.unanswered)} with no answer yet` : undefined,
-          },
-        ]),
-      );
-      if (c.answered.length) {
-        out.push(smallNote("Answered most"));
-        out.push(ranked(c.answered.map((x) => ({ label: x.label, value: x.count, display: plural(x.count, "reply", "replies") })), T.muted));
-      }
-      if (c.questions.top.length) {
-        out.push(smallNote("Questions asked"));
-        out.push(list(c.questions.top.map((q) => `${esc(q.label)}${q.count ? ` <span style="color:${T.muted}">(${esc(plural(q.count, "reply", "replies"))})</span>` : ""}`)));
+      if (week) {
+        rows.push(columns(p, { title: "Visitors, the last seven days", days: r.days.map((d) => letter(d.day)), values: r.days.map((d) => d.visitors) }));
+        rows.push(columns(p, { title: "New accounts, the last seven days", days: r.days.map((d) => letter(d.day)), values: r.days.map((d) => d.signups) }));
       }
     }
+
+    rows.push(label(p, "Money in"));
+    if (isMiss(f.money)) unread.push({ words: "Money in", value: missWord(f.money), quiet: true });
+    else {
+      const m = f.money;
+      const t = m.total;
+      const parts: MoneyPart[] = [{ slot: "shop", name: `Shop, ${plural(m.orders.now, "order", "orders")}`, amount: cents(t.shop), cents: t.shop }];
+      if (m.subs === "kept") {
+        parts.push({ slot: "plus", name: "Purify Plus", amount: cents(t.plus), cents: t.plus }, { slot: "box", name: "EIKON Box", amount: cents(t.box), cents: t.box });
+        if (t.unnamed > 0) parts.push({ slot: "ink", name: "A plan not named", amount: cents(t.unnamed), cents: t.unnamed });
+      } else unread.push({ words: "Plus and the EIKON Box in money", value: missWord(m.subs), quiet: true });
+      const kept = cameIn(t) - t.refunds;
+      const compared = m.priorKept ? `, ${against({ now: kept, before: cameIn(m.prior) - m.prior.refunds }, f.span.against)}` : "";
+      rows.push(money(p, { total: cents(cameIn(t)), parts, back: `${t.refunds ? `Given back: ${usd(t.refunds)}.` : "Refunds: none."} ${usd(kept)} kept${compared}, after the stores' cut and before Stripe's fees.` }));
+      if (week) {
+        rows.push(columns(p, { title: "Money in, the last seven days, in dollars", days: m.days.map((d) => letter(d.day)), values: m.days.map((d) => Math.round(cameIn(d) / 100)) }));
+      }
+    }
+
+    if (isMiss(f.plus)) unread.push({ words: "Plus members", value: missWord(f.plus), quiet: true });
+    else {
+      const pl = f.plus;
+      // One figure to a row, so the values stand in one column.
+      const list: { words: string; value: string; quiet?: boolean }[] = [{ words: "Joined", value: n(pl.joined.now) }];
+      if (pl.trials) list.push({ words: "Began a free trial", value: n(pl.trials) });
+      list.push({ words: "Turned renewal off", value: n(pl.renewalOff) }, { words: "Plans that ended", value: n(pl.left) });
+      if (pl.cardFailed) list.push({ words: "A card that failed", value: n(pl.cardFailed) });
+      if (week && f.week?.plus) {
+        const wp = f.week.plus;
+        list.push(wp.paying === null ? { words: "Paying members now", value: "not read", quiet: true } : { words: "Paying members now", value: n(wp.paying) });
+        if (wp.paying !== null && wp.trials !== null) list.push({ words: "In a free trial now", value: n(wp.trials) });
+        if (wp.mrrCents !== null) list.push({ words: wp.source === "revenuecat" ? "A month of Plus, from RevenueCat" : "A month of Plus, at list price", value: usd(wp.mrrCents) });
+      }
+      rows.push(label(p, "Plus"), pairs(p, list));
+    }
+
+    if (week && f.week) {
+      const l = f.week.locks;
+      if (!l) unread.push({ words: "What sold Plus", value: "not read", quiet: true });
+      else if (l.taps > 0) {
+        rows.push(label(p, "What sold Plus"));
+        // One figure to a value: how often the lock was met; what was bought after it goes with the name.
+        rows.push(pairs(p, l.top.map((x) => ({ words: x.bought ? `${x.name}, ${n(x.bought)} bought` : x.name, value: `${n(x.taps)} met` }))));
+      }
+    }
+
+    if (isMiss(f.opened)) unread.push({ words: "What was opened", value: missWord(f.opened), quiet: true });
+    else {
+      const all = [...f.opened.saints, ...f.opened.prayers, ...f.opened.chapters].sort((a, b) => b.count - a.count).slice(0, 5);
+      rows.push(label(p, "Opened most"));
+      rows.push(all.length ? bars(p, all.map((x) => ({ name: x.label, count: x.count }))) : para(p, esc("No saint, prayer or chapter was opened."), 2));
+    }
+
+    if (isMiss(f.community)) unread.push({ words: "Community", value: missWord(f.community), quiet: true });
+    else {
+      const c = f.community;
+      rows.push(label(p, "Community"));
+      if (c.replies === 0 && c.questions.count === 0) rows.push(para(p, esc("Nothing new was said."), 2));
+      else {
+        const said = [
+          { words: "Replies", value: n(c.replies) },
+          { words: "Questions asked", value: n(c.questions.count) },
+        ];
+        if (c.questions.unanswered) said.push({ words: "Questions with no answer yet", value: n(c.questions.unanswered) });
+        rows.push(pairs(p, said));
+        if (c.answered.length) rows.push(bars(p, c.answered.map((x) => ({ name: x.label, count: x.count }))));
+      }
+    }
+
+    if (isMiss(f.misses)) unread.push({ words: "Searches that found nothing", value: missWord(f.misses), quiet: true });
+    else if (f.misses.total > 0) {
+      rows.push(label(p, "Searched for and not found"));
+      rows.push(pairs(p, f.misses.top.map((x) => ({ words: x.label, value: plural(x.count, "time", "times") }))));
+    }
+
+    if (isMiss(f.errors)) unread.push({ words: "Errors", value: missWord(f.errors), quiet: true });
+    else {
+      rows.push(label(p, "Errors"));
+      rows.push(f.errors.total === 0 ? para(p, esc("None reported."), 2) : pairs(p, f.errors.top.map((x) => ({ words: x.label, value: n(x.count) }))));
+    }
+
+    if (week) {
+      const wn = workedAndNot(f);
+      rows.push(label(p, "What worked"));
+      if (wn.worked.length) wn.worked.forEach((t, i) => rows.push(para(p, esc(t), i === 0 ? 2 : 6)));
+      else rows.push(para(p, esc("Nothing rose on the week before."), 2));
+      rows.push(label(p, "What did not"));
+      if (wn.not.length) wn.not.forEach((t, i) => rows.push(para(p, esc(t), i === 0 ? 2 : 6)));
+      else rows.push(para(p, esc("Nothing fell on the week before."), 2));
+    }
   }
 
-  // Searched and not found.
-  out.push(sub("Searched for and not found"));
-  if (isMiss(f.misses)) out.push(rows([{ label: "Searches", value: missWord(f.misses) }]));
-  else if (f.misses.total === 0) out.push(para(esc("Every search found something.")));
-  else out.push(ranked(f.misses.top.map((x) => ({ label: `"${x.label}"`, value: x.count, display: plural(x.count, "time", "times") })), T.muted));
-
-  // Errors.
-  out.push(sub("Errors"));
-  if (isMiss(f.errors)) out.push(rows([{ label: "Errors", value: missWord(f.errors) }]));
-  else if (f.errors.total === 0) out.push(para(esc("None reported.")));
-  else {
-    out.push(rows([{ label: "Reported", value: n(f.errors.total) }]));
-    out.push(list(f.errors.top.map((e) => `${esc(e.label)} <span style="color:${T.muted}">(${esc(n(e.count))})</span>`)));
-  }
-
-  if (week) {
-    const wn = workedAndNot(f);
-    out.push(sub("What worked"));
-    out.push(wn.worked.length ? list(wn.worked.map(esc)) : para(esc("Nothing rose on the week before.")));
-    out.push(sub("What did not"));
-    out.push(wn.not.length ? list(wn.not.map(esc)) : para(esc("Nothing fell on the week before.")));
-  }
-  return out;
+  if (unread.length) rows.push(label(p, "Could not be read"), pairs(p, unread));
+  return rows;
 }
 
-/** The whole email, in a shell: emailLayout today, the design kit's template when it lands. */
-export function briefEmail(
-  f: BriefFigures,
-  today: TodayPart,
-  links: BriefLinks,
-  shell: (opts: { heading: string; deck?: string; bodyHtml: string; eyebrow?: string; footer?: string }) => string,
-): { subject: string; html: string } {
-  const week = f.span.kind === "week";
-  return {
-    subject: briefSubject(f, today),
-    html: shell({
-      heading: week ? "Your week" : "Your day",
-      deck: week ? f.span.label : longDay(addDays(f.span.end, 1)),
-      bodyHtml: briefSections(f, today, links).join(""),
-      eyebrow: "Purify &middot; The owner&#39;s brief",
-      footer: "You are getting this because your address is first in ADMIN_EMAILS. One a day at most; the weekly one replaces that day's.",
-    }),
-  };
+/** The brief's foot: when the figures were read, that it goes to no reader, and the way to change its hour. */
+function briefFoot(p: Pen, f: BriefFigures, links: BriefLinks): string {
+  return `<p style="margin:0">${esc(`Days are UTC days, as in the admin, held against ${f.span.against}. Figures were read as this email was made and are kept nowhere else. This brief is made for the owner and goes to no reader.`)}</p>
+  <p style="margin:18px 0 0">${quietButton(p, { href: `${links.admin}#tab=calendar`, text: "Change the hour or the weekly day" })}</p>
+  <p style="margin:8px 0 0">${link(p, links.admin, "Open the panel")}</p>`;
+}
+
+/**
+ * The whole letter. `assets` are where the masthead's cross lives: the main
+ * web (KIT_ASSETS) when it is sent. The brief carries no reader's
+ * Unsubscribe: it goes to the owner alone, from ADMIN_EMAILS.
+ */
+export function briefEmail(f: BriefFigures, today: TodayPart, links: BriefLinks, assets: Assets): { subject: string; html: string } {
+  const p = pen(KIT_DARK);
+  const subject = briefSubject(f, today);
+  const html = shell(p, {
+    title: subject,
+    preheader: f.span.kind === "week" ? `The week of ${f.span.label}, against the week before.` : `Yesterday, ${f.span.label}, on one screen.`,
+    kind: "The owner's brief",
+    rows: briefRows(p, f, today, links),
+    foot: briefFoot(p, f, links),
+    assets,
+  });
+  return { subject, html };
 }

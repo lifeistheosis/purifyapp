@@ -1,9 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { emailLayout } from "@/lib/email/layout";
-import { EMAIL_THEMES, T } from "@/lib/email/theme";
+import { KIT_DARK } from "@/lib/email/theme";
 
-import { shares } from "../briefCharts";
 import type { TodayPart } from "../briefToday";
 import { moneyWindow, type MoneyOrder } from "../money";
 import { moneyChart } from "../moneyChart";
@@ -11,7 +9,6 @@ import {
   attention,
   briefEmail,
   briefSubject,
-  compactUsd,
   isQuiet,
   moneyDays,
   scrubLine,
@@ -33,6 +30,7 @@ import { lastWeek } from "../weekly";
  */
 
 const LINKS = { admin: "https://purifyapp.net/admin" };
+const ASSETS = { cross: "https://purifyapp.net/email/cross.png", crossInk: "https://purifyapp.net/email/cross-ink.png" };
 const TUESDAY = new Date("2026-11-17T12:30:00Z"); // 7:30 AM in New York
 const MONDAY = new Date("2026-11-16T12:30:00Z");
 
@@ -123,14 +121,6 @@ describe("money", () => {
     }
   });
 
-  it("labels a column in whole dollars, short enough for a phone", () => {
-    expect(compactUsd(4999)).toBe("$50");
-    expect(compactUsd(123_456)).toBe("$1.2k");
-    expect(compactUsd(1_500_000)).toBe("$15k");
-    expect(shares([3, 1, 0])).toEqual([75, 25, 0]);
-    expect(shares([1000, 1]).every((p) => p > 0)).toBe(true);
-    expect(shares([1000, 1]).reduce((a, b) => a + b, 0)).toBe(100);
-  });
 });
 
 describe("no reader's name or address", () => {
@@ -184,8 +174,11 @@ describe("what it says on its own", () => {
     expect(isQuiet(empty, TODAY)).toBe(true);
     expect(isQuiet({ ...empty, errors: "not read" }, TODAY)).toBe(false);
     expect(isQuiet(empty, { ...TODAY, needs: [{ text: "Open this month's EIKON Box drop", when: "today" }] })).toBe(false);
-    const html = briefEmail(empty, TODAY, LINKS, emailLayout).html;
-    expect(html).toContain("A quiet day: 140 visitors, 5 new accounts, no orders");
+    const html = briefEmail(empty, TODAY, LINKS, ASSETS).html;
+    expect(html).toContain("A quiet day. Nothing needs you.");
+    expect(html).toContain("140 visitors, 5 new accounts, no orders, no change in Plus, nothing new in Community, and no errors.");
+    // Said once: the opening names the day, and no label repeats it.
+    expect(html).not.toContain(">Yesterday</td>");
     expect(html).not.toContain("Opened most");
     expect(briefSubject(empty, TODAY)).toBe("Monday: a quiet day");
   });
@@ -227,103 +220,88 @@ describe("the email", () => {
   };
 
   it("puts today first, with the Hold for what goes out, and the board message waiting for his tap", () => {
-    const html = briefEmail(figures(spanFor(TUESDAY, false)), today, LINKS, emailLayout).html;
-    const order = ["Needs you", "Goes out today", "Yesterday, Monday 16 November"].map((h) => html.indexOf(h));
+    const html = briefEmail(figures(spanFor(TUESDAY, false)), today, LINKS, ASSETS).html;
+    const order = [">Yesterday</h1>", ">Needs you</td>", ">Goes out today</td>", ">Readers</td>"].map((h) => html.indexOf(h));
     expect(order.every((i) => i > 0)).toBe(true);
     expect([...order].sort((a, b) => a - b)).toEqual(order);
     expect(html).toContain("goes out at 12 noon New York time unless you hold it.");
-    expect(html).toContain(`href="${LINKS.admin}#tab=calendar"`);
+    expect(html).toMatch(new RegExp(`href="${LINKS.admin}#tab=calendar"[^>]*>Hold it</a>`));
     expect(html).toContain("a draft waits in Patch notes for your tap.");
     expect(html).toContain("nothing to send today. Nothing was added to the library since the last monthly note.");
   });
 
   it("never holds or sends from a link: every link only opens the admin", () => {
-    const html = briefEmail(figures(spanFor(TUESDAY, false)), today, LINKS, emailLayout).html;
+    const html = briefEmail(figures(spanFor(TUESDAY, false)), today, LINKS, ASSETS).html;
     const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map((m) => m[1]).filter((h) => h.includes("/admin"));
     for (const h of hrefs) expect(h).toMatch(/^https:\/\/purifyapp\.net\/admin(#tab=[a-z-]+)?$/);
   });
 
-  it("says not read and not kept yet, never 0, for a figure it does not have", () => {
+  it("says not read and not kept yet, never 0, for a figure it does not have, under Could not be read", () => {
     const f = figures(spanFor(TUESDAY, false), { plus: "not kept yet", errors: "not read", opened: "not read", misses: "not kept yet" });
-    const html = briefEmail(f, TODAY, LINKS, emailLayout).html;
-    expect(html).toMatch(/Members<\/td><td[^>]*><strong[^>]*>not kept yet</);
-    expect(html).toMatch(/Errors<\/td><td[^>]*><strong[^>]*>not read</);
-    expect(html).toMatch(/Pages<\/td><td[^>]*><strong[^>]*>not read</);
-    expect(html).not.toMatch(/Errors<\/td><td[^>]*><strong[^>]*>0</);
+    const html = briefEmail(f, TODAY, LINKS, ASSETS).html;
+    expect(html).toContain(">Could not be read</td>");
+    expect(html).toMatch(/>Plus members<\/td>\s*<td[^>]*>not kept yet<\/td>/);
+    expect(html).toMatch(/>Errors<\/td>\s*<td[^>]*>not read<\/td>/);
+    expect(html).toMatch(/>What was opened<\/td>\s*<td[^>]*>not read<\/td>/);
+    expect(html).toMatch(/>Searches that found nothing<\/td>\s*<td[^>]*>not kept yet<\/td>/);
+    expect(html).not.toMatch(/>Errors<\/td>\s*<td[^>]*>0<\/td>/);
   });
 
   it("is drawn for mail clients: no script, no SVG, no flex or grid, no em dash, no light rays", () => {
     for (const weekly of [false, true]) {
       const now = weekly ? MONDAY : TUESDAY;
-      const { html, subject } = briefEmail(figures(spanFor(now, weekly)), today, LINKS, emailLayout);
+      const { html, subject } = briefEmail(figures(spanFor(now, weekly)), today, LINKS, ASSETS);
       expect(html).not.toMatch(/<script|<svg|display:\s*(flex|grid)|conic-gradient/i);
       expect(`${subject}${html}`).not.toContain("—");
       expect(html).toContain('role="presentation"');
     }
   });
 
-  it("meets the design kit's email rules: headings in sentence case, every link a 44px target on a line of its own", () => {
-    const html = briefEmail(figures(spanFor(MONDAY, true)), today, LINKS, emailLayout).html;
-    const body = html.slice(html.indexOf("Your week"));
-    expect(body).not.toMatch(/text-transform:uppercase/);
-    const links = [...body.matchAll(/(.{0,6})<a href="https:\/\/purifyapp\.net\/admin[^"]*" style="([^"]*)"/g)];
+  it("meets the design kit's email rules: labels in sentence case, every link a 44px target on a line of its own", () => {
+    const html = briefEmail(figures(spanFor(MONDAY, true)), today, LINKS, ASSETS).html;
+    expect(html).not.toMatch(/text-transform:uppercase/);
+    const links = [...html.matchAll(/(.{0,30})<a href="https:\/\/purifyapp\.net\/admin[^"]*"[^>]*style="([^"]*)"/g)];
     expect(links.length).toBeGreaterThanOrEqual(4);
     for (const [, before, style] of links) {
-      expect(style).toContain("display:inline-block;padding:12px 0");
-      expect(style).toContain("line-height:24px");
-      expect(before.endsWith("<br>") || before.endsWith(">")).toBe(true);
+      // The kit's link (13px above and below an 18px line) or its quiet button (13px around a 16px line): 44 tall.
+      expect(/padding:13px 0;[^"]*line-height:18px/.test(style) || /padding:13px 22px;[^"]*line-height:16px/.test(style), style).toBe(true);
+      expect(/<td style="padding:[^"]*">$/.test(before) || /<p style="margin:[^"]*">$/.test(before), before).toBe(true);
     }
   });
 
-  it("draws the week as columns, a chart for each area, and the day as one bar, in the money chart's colours", () => {
-    const week = briefEmail(figures(spanFor(MONDAY, true)), today, LINKS, emailLayout).html;
-    expect(week).toContain("Visitors each day");
-    expect(week).toContain("New accounts each day");
-    expect(week).toContain("Worth your attention");
-    expect(week).toContain("What worked");
-    expect(week).toContain("What did not");
-    for (const c of [T.chartShop, T.chartPlus, T.chartBox, T.chartBack]) expect(week).toContain(`bgcolor="${c}"`);
-    const day = briefEmail(figures(spanFor(TUESDAY, false)), today, LINKS, emailLayout).html;
-    expect(day).not.toContain("Visitors each day");
-    expect(day).toContain(`bgcolor="${T.chartShop}"`);
+  it("draws the week as columns, a chart for each area, and money as one bar in the money chart's colours", () => {
+    const week = briefEmail(figures(spanFor(MONDAY, true)), today, LINKS, ASSETS).html;
+    expect(week).toContain("Visitors, the last seven days");
+    expect(week).toContain("New accounts, the last seven days");
+    expect(week).toContain("Money in, the last seven days, in dollars");
+    expect(week).toContain(">Worth your attention</td>");
+    expect(week).toContain(">What worked</td>");
+    expect(week).toContain(">What did not</td>");
+    for (const c of [KIT_DARK.shop, KIT_DARK.plus, KIT_DARK.box]) expect(week).toContain(`bgcolor="${c}"`);
+    const day = briefEmail(figures(spanFor(TUESDAY, false)), today, LINKS, ASSETS).html;
+    expect(day).not.toContain("the last seven days");
+    expect(day).toContain(`bgcolor="${KIT_DARK.shop}"`);
+    // Each part of money said in words beside its colour.
+    expect(day).toMatch(/>Purify Plus<\/td>\s*<td[^>]*>\$9\.98<\/td>/);
+  });
+
+  it("says money with its cents in one column, and one figure to a row, so the values stand in line", () => {
+    const html = briefEmail(figures(spanFor(TUESDAY, false)), TODAY, LINKS, ASSETS).html;
+    expect(html).toMatch(/>Shop, 2 orders<\/td>\s*<td[^>]*>\$45\.00<\/td>/);
+    expect(html).toMatch(/>EIKON Box<\/td>\s*<td[^>]*>\$29\.00<\/td>/);
+    expect(html).toMatch(/>Joined<\/td>\s*<td[^>]*>3<\/td>/);
+    expect(html).toMatch(/>Began a free trial<\/td>\s*<td[^>]*>1<\/td>/);
+    expect(html).toMatch(/>Questions asked<\/td>\s*<td[^>]*>1<\/td>/);
+    expect(html).toMatch(/>Questions with no answer yet<\/td>\s*<td[^>]*>1<\/td>/);
+    // No value carries a second figure after a comma.
+    expect(html).not.toMatch(/<td[^>]*font-weight:600;[^>]*>\d[\d,]*, /);
   });
 
   it("opens with how it went after a release, a drop or a sale", () => {
     const f = figures(spanFor(TUESDAY, false), { context: [{ kind: "release", day: "2026-11-16", line: "Purify 1.9 was published on Monday." }] });
-    const html = briefEmail(f, TODAY, LINKS, emailLayout).html;
-    expect(html.indexOf("How it went")).toBeGreaterThan(0);
-    expect(html.indexOf("How it went")).toBeLessThan(html.indexOf("Yesterday,"));
+    const html = briefEmail(f, TODAY, LINKS, ASSETS).html;
+    expect(html.indexOf(">How it went</td>")).toBeGreaterThan(0);
+    expect(html.indexOf(">How it went</td>")).toBeLessThan(html.indexOf(">Readers</td>"));
     expect(html).toContain("That day: 140 visitors, 5 new accounts, 2 shop orders, $83.98 in.");
-  });
-});
-
-describe("the chart colours", () => {
-  // WCAG 2.1 relative luminance and contrast, as the admin theme's own test.
-  const lum = (hex: string) => {
-    const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  };
-  const contrast = (a: string, b: string) => {
-    const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
-    return (x + 0.05) / (y + 0.05);
-  };
-  const hue = (hex: string) => {
-    const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    if (max === min) return null;
-    const d = max - min;
-    const h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
-    return (h * 60 + 360) % 360;
-  };
-
-  it("each clear 3:1 on the card in every mode, as a chart mark must, and none is gold or yellow", () => {
-    for (const [mode, t] of Object.entries(EMAIL_THEMES)) {
-      for (const key of ["chartShop", "chartPlus", "chartBox", "chartOther", "chartBack", "muted"] as const) {
-        expect(contrast(t[key], t.card), `${mode}.${key}`).toBeGreaterThanOrEqual(3);
-        const h = hue(t[key]);
-        if (h !== null) expect(h >= 38 && h <= 65, `${mode}.${key} is gold or yellow`).toBe(false);
-      }
-    }
   });
 });
