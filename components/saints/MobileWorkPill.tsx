@@ -279,6 +279,12 @@ function RunningLine({ head, words }: { head: SectionHead; words: readonly numbe
 
   const where = count(head);
   const text = [where, minutes ? t("bible.minLeft", { min: minutes }) : null].filter(Boolean).join(" · ");
+  // While it folds away it keeps the words it showed. A new chapter is turned
+  // to at its top, where its title folds the line away, and the line taking
+  // the new chapter's words as it went moved 31px sideways under the move
+  // (Chrysostom's "Next: Homily 2" from a chapter's foot, Updates 25's walk).
+  const [shown, setShown] = useState(text);
+  if (show && text && shown !== text) setShown(text);
   return (
     <span
       aria-hidden
@@ -291,7 +297,7 @@ function RunningLine({ head, words }: { head: SectionHead; words: readonly numbe
       )}
     >
       <span className="max-w-full justify-self-center truncate rounded-pill bg-night px-2.5 py-0.5 font-sans text-eyebrow font-medium leading-[1.35] tabular-nums text-paper/60">
-        {text}
+        {show && text ? text : shown}
       </span>
     </span>
   );

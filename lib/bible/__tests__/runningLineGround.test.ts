@@ -53,6 +53,11 @@ describe("the running line over the reader's pill", () => {
     expect(WORK).toMatch(/pill-fade pointer-events-none absolute inset-x-0 -z-10" \/>\s*<RunningLine/);
   });
 
+  it("on a Father's work, keeps the words it showed while it folds away (a new chapter's line moved 31px as it went)", () => {
+    expect(WORK).toMatch(/const \[shown, setShown\] = useState\(text\);\s*if \(show && text && shown !== text\) setShown\(text\);/);
+    expect(WORK).toContain("{show && text ? text : shown}");
+  });
+
   it("stands where the fade is solid, 4px under its top, the words above going quiet over the same ramp", () => {
     const line = openLine();
     expect(RAMP).toBe(127);
