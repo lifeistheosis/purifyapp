@@ -1,5 +1,5 @@
 diff --git a/app/globals.css b/app/globals.css
-index 9df2a0060..00a12875a 100644
+index 763118310..ef183f423 100644
 --- a/app/globals.css
 +++ b/app/globals.css
 @@ -732,6 +732,12 @@ html.is-native .below-topbar {
@@ -2664,10 +2664,10 @@ literal 0
 HcmV?d00001
 
 diff --git a/scripts/gate/ambience-sheet.mjs b/scripts/gate/ambience-sheet.mjs
-index 210288acd..87d1819ff 100644
+index d6a430f83..ba6199a29 100644
 --- a/scripts/gate/ambience-sheet.mjs
 +++ b/scripts/gate/ambience-sheet.mjs
-@@ -89,10 +89,10 @@ const ok = (what) => console.log(`  ✓ ${what}`);
+@@ -90,10 +90,10 @@ const ok = (what) => console.log(`  ✓ ${what}`);
  
  const browser = await chromium.launch({ ...(fs.existsSync(OWN) ? { executablePath: OWN } : {}), args: ["--autoplay-policy=user-gesture-required"] });
  
@@ -2680,7 +2680,7 @@ index 210288acd..87d1819ff 100644
      colorScheme: "dark",
      reducedMotion: "no-preference",
      isMobile: width < 700,
-@@ -261,6 +261,32 @@ if (!SELLS_PLUS) {
+@@ -262,6 +262,32 @@ if (!SELLS_PLUS) {
      await ctx.close();
    }
  
@@ -2713,7 +2713,7 @@ index 210288acd..87d1819ff 100644
    // ---- guard: checkMock with pixels, three widths, 22 palettes and looks, English and Arabic.
    for (const lang of ["en", "ar"]) {
      for (const size of SIZES) {
-@@ -302,7 +328,7 @@ if (!SELLS_PLUS) {
+@@ -303,7 +329,7 @@ if (!SELLS_PLUS) {
      console.log(`\nlock: a reader with no Plus, ${lang}, at 390`);
      const { ctx, page } = await open(lang, SIZES[0], { blocked: lang === "en" ? [] : ["rain"] });
      await openSheet(page, lang);
