@@ -387,7 +387,8 @@ if (SELLS_PLUS) {
         continue;
       }
       await page.waitForTimeout(3000);
-      const strip = preview.locator(`[role="group"][aria-label="${t(lang, "ambience.title")}"]`).first();
+      // The preview's window is named for its feature too ("Ambience"): the strip is the group that holds the sounds.
+      const strip = preview.locator(`[role="group"][aria-label="${t(lang, "ambience.title")}"]`).filter({ has: page.locator("button[aria-pressed]") }).first();
       const shown = await strip.evaluate((el) =>
         [...el.querySelectorAll("button")].map((b) => {
           const img = b.querySelector("img");
