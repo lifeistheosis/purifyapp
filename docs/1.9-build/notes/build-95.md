@@ -28,7 +28,7 @@ The screenshot shows two bordered tiles of uneven height, each with a 0 (the lef
 
 The website's shared page follows part 3 (`components/journal/SharedPageView.tsx`, the one part the page named as not yet done): Scripture is the raised card, its place at its head in the reading face and the way to the verse; a card whose words were not had keeps its place and "Open to read"; a quote stays on the page in italics, set in past the speech mark, never boxed; the cover stands at the page's head, rounded as the app's cards are, cut from high in the frame where an icon's faces are (it was edge to edge on a phone, cut through the middle). A library quote reaches a shared page as a plain quote, cited and without the library's mark (`lib/journal/share.ts`: nothing checks a copy's words against their page), so it is drawn as a quote, not raised: a raised card would claim the library for words nobody checked. Held by `lib/journal/__tests__/sharedPageView.test.ts`, 4 new tests, all 4 failing on the old view.
 
-Proved on the head: typecheck 0; the whole suite green (1,145 files, 14,699 tests, 9 skipped); eslint clean on every touched file.
+Proved on the head: typecheck 0; the whole suite green (1,145 files, 14,699 tests, 9 skipped); eslint clean on every touched file. On the round's export (cut from `b5d9edb3`): `xcheck.mjs fast,journal,sheet new` 84 of 84 (390, 800, 1032, English and Arabic, five palettes and every look, pixels; the one item for the eye is the writing sheet's last field under the tools, as named); `scripts/mock-journal.mjs` with `WALK=1`, 40 of 40 flows as a new reader without Plus and 44 of 44 with nothing locked.
 
 ## Note 4: the journal (his "notebook"), not optimized, with visual and UX bugs
 

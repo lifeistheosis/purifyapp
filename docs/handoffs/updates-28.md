@@ -21,10 +21,10 @@ Each part: typecheck 0, eslint clean, the whole suite green (last 1,148 files, 1
 
 ## Open
 
-1. **Three faults before the next test build** (pre-build gate, part 1, and contrast): the sheet's two moves, the strip's 13.3px move, and the preview's John 1 window at 390. Each needs a test that fails on the code now.
+1. **Three faults before the next test build** (repeat with `node scripts/gate/ambience-sheet.mjs` and `SELLS_PLUS=1 node scripts/gate/ambience-sheet.mjs` on a fresh export; the sheet's two moves suspected in `useHoldStill`, `components/player/AmbienceSheet.tsx`, at full height) (pre-build gate, part 1, and contrast): the sheet's two moves, the strip's 13.3px move, and the preview's John 1 window at 390. Each needs a test that fails on the code now.
 2. The emails in real Gmail, Apple Mail and Outlook: with the first send, to him alone (a switch to `owner` is his word).
 3. The shared journal page has no pixel check: it is the website's (`/p/[id]`) and needs a shared row; its rendering is held by its tests.
-4. Seen, not changed (not the colour ask): the shell still sets spaced capitals (PURIFY, the small line, the micro labels), which the kit's letters do not. His word.
+4. **Decided by the arbiter (Arbiter 4, 22:50 UTC), for the next chat:** the account and order shell's spaced capitals go. Round 1's approved rule for the small line (sentence case, never capitals spaced out; his "yes to all", 20:47) covers the shell's small line and its micro labels (`lib/email/layout.ts`, `blocks.ts` `microLabel`), and the wordmark follows the kit's own letters. Not changed here.
 5. Housekeeping on this machine only: `/home/user/purifyapp/out` is a link to the export in the worktree `/home/user/wt-build` (excluded in `.git/info/exclude`); remove both when the walks end.
 
 To run the checks again in a fresh container: `node scripts/gate/export.mjs`, then the four commands above from the checkout (the walks read `out/`).
