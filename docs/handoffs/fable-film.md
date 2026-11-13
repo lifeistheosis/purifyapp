@@ -83,3 +83,39 @@ A word or a figure: `words.mjs` (and `facts.mjs` must hold it), then `render.mjs
 ## Not done, by the brief
 
 No full film, no variants, no sound, no vertical cut. Nothing went to the Vault because one version was made.
+
+---
+
+# Baton: round 3, the Church (left 2026-11-13 by session_01VuYTwcx6hrpUx2AxR4Xqx6)
+
+His word on the second pass (about 19:20 UTC): a monochrome design of the Orthodox church with some more unique things. Scene three is made and on its own page for his yes. A fresh chat reads this, `docs/promo/orthodox-america/BRIEF.md` ("Round 3") and `docs/promo/orthodox-america/3d/RECORD.md`.
+
+## Where it stands
+
+- **The three scenes are made and on a new page, waiting for his yes or no.** `.promo/orthodox-america-3d/orthodox-america-3d-sample-3.mp4` (out of git): 32 seconds, three scenes, 960 frames, 1080 by 1080, 30 frames a second, H.264, 18.48 MB (19,374,284 bytes), no sound. One run of 1,889 seconds: 1.97 seconds a frame on average.
+- **His page:** https://claude.ai/artifact/V3kVt1uw9D5dhZ3ciuzSnB (private to him). The film and its poster are in the page's own asset store (`/_blob/2967e1bce97794bc191d767abef123bc`, `/_blob/f9addddcad81f8cf0f5f55af29c3a998`). The second pass's page and the first sample's are as they were.
+- **The full film waits for his yes.** Nothing of it is made.
+
+## What scene three is
+
+Those who stay (the same 1,830 points) stand along the lines of a plan, the drawing rises from it, they go in and stand in the nave, and the stone rises after the drawing and closes over them while the camera looks down into it. The windows then carry their light, the cross is drawn last, and 2,014 (Eastern Orthodox parishes, 2020; `facts.mjs`, scene "six") lands over the dome. The church is a Byzantine cross-in-square, the Greek tradition, with a plain one-bar cross; its form is `3d/church.js`, plain numbers with no drawing in it.
+
+## What this round taught, for the full film
+
+- **A third scene joins the same way.** Its terms on `turn`, `tilt`, `lift`, `samples` and `cameraB` are nothing until `GO3`. Points that pass from a shader to the hand (`church.pose`) must be in the same places, the same size and light, at that moment; `render.mjs --check` holds their number to those who stay.
+- **Soft light with no rays, for nothing.** The loop that already draws a frame many times lights each drawing from one direction with a shadow from a depth map (`church.light`): a third of the drawings about the key, the rest over the sky. The average is soft shadows and darkened corners. A depth texture on a render target works in SwiftShader.
+- **Thin walls, seen from both sides.** The stone has no thickness: the shader turns each normal to the eye, so the inside reads as the inside while the church is open. A rising level (`discard` above it) is the section; the same level cuts the shadow map.
+- **Lines on stone.** The stone is pushed back a hair (`polygonOffset`) so the drawing's lines win where both stand, and a line gives way where the stone has come.
+- **Points close along a line burn.** 1,830 points on 20 units of line overlap four deep: each dims as it lands (2.1 to 0.7) and comes back up in the nave.
+- **Time.** 1.97 seconds a frame over the three scenes; scene three is about 2.2 (36 drawings and 36 shadow maps a frame). A 75 to 90 second film is about 1.2 to 1.5 hours.
+- **The store's 20 MB.** 32 seconds were encoded to 19 MB asked, 18.48 MB made (4,864 kbit/s, against 7,372 for the second pass). A longer sample needs less grain or a second file; the full film is not held to the page's limit.
+- **A fresh container holds no frames.** Scenes one and two were drawn again from unchanged code (19 of the 31 minutes). To add a scene without that, keep `.promo/orthodox-america-3d/frames/` and run `--film --resume`.
+- **A strip for the arbiter.** A still strip committed as a small JPEG (`3d/strip-scene-3.jpg`) is how another chat sees a design before a render.
+
+## To change it
+
+A word or a figure: `words.mjs` (and `facts.mjs` must hold it), then `render.mjs --check` and `--stills`. The church's form: `church.js`. A new sample is a new render: ask him first through the arbiter. The page: `page.mjs --video=<address> --poster=<address> --check`, then publish `.promo/orthodox-america-3d/orthodox-america-3d-sample-3.html` to the same address (pass the `url`; read it first).
+
+## Not done, by the brief
+
+No full film, no variants, no sound, no vertical cut. Nothing went to the Vault because one version was made.
