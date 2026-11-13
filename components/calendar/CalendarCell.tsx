@@ -68,7 +68,6 @@ function CalendarCellImpl({
  const meta = FAST_META[cell.fast];
  const FastIcon = meta.Icon;
  const label = cell.headlineName ? shortName(cell.headlineName) : "";
- const rgb = TONE_RGB[tone];
  const toneStyle = TONE_STYLE[tone];
 
  const baseClasses =
@@ -109,16 +108,20 @@ function CalendarCellImpl({
  )}
  >
  <div className="flex flex-col items-center gap-0.5 md:flex-row md:items-start md:justify-between md:gap-1">
+ {/* Today's date, on a day with no feast, is set in the page's own ink,
+ as the phone's calendar sets it (PhoneCalendar.tsx); the ring and the
+ glow carry the day's tone. In the tone itself it fell under 4.5:1
+ wherever the tone sat near the page (2026-11-13, the final check):
+ an ordinary day's muted tone at 3.2 to 3.9 on Light and the light
+ looks, a fast-free day's green at 3.8 to 4.4 on six of them, and a
+ fast day's crimson at 3.3 to 3.6 on every dark palette. The ink holds
+ 4.5:1 on every palette and look, whatever the day. A feast keeps its
+ rubric. */}
  <span
  className={cn(
  "font-display-serif text-ui md:text-body leading-none",
- cell.hasFeast ? "rubric" : "text-paper/85",
+ cell.hasFeast ? "rubric" : cell.isToday ? "text-paper" : "text-paper/85",
  )}
- style={
- cell.isToday && !cell.hasFeast
- ? { color: `rgb(${rgb})` }
- : undefined
- }
  >
  {cell.day}
  </span>
