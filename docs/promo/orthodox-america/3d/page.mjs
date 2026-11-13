@@ -1,27 +1,28 @@
-// The page he sees the 3D sample's second pass on, and the record of what was made.
+// The page he sees the 3D sample's third scene on (the Church), and the record of what was made.
 //
 //   node docs/promo/orthodox-america/3d/page.mjs [--video=<the sample's address on the page>] [--poster=<a still's address>]
 //   node docs/promo/orthodox-america/3d/page.mjs --check     checkMock on the page, five palettes, 360 390 412 1032
 //
-// It writes the page to .promo/orthodox-america-3d/orthodox-america-3d-sample-2.html
+// It writes the page to .promo/orthodox-america-3d/orthodox-america-3d-sample-3.html
 // (out of git; published from there with the Artifact tool, the sample and its
 // poster in the page's own asset store) and RECORD.md beside this file.
 // Built from the design kit (docs/brand/design-kit.md): the kit's own style
 // block and pieces. Dark first, phone first, never parchment, and a reason
-// beside every choice, the face first because he asked for it.
+// beside every choice, the church first because he asked for it.
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { FACTS, DERIVED, SOURCES } from "../facts.mjs";
-import { SIX, FIGURE, CAPTION, SOURCE_LINE, TITLE, SECONDS, SCENE_ONE, NUMERALS, ROLLS, SUNDAY, PEOPLE_A_POINT, SHARE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, KEY } from "./words.mjs";
+import { SIX, FIGURE, CAPTION, SOURCE_LINE, TITLE, SECONDS, SCENE_ONE, SCENE_TWO, NUMERALS, ROLLS, SUNDAY, PEOPLE_A_POINT, SHARE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, KEY, PARISHES, CAPTION_PARISHES } from "./words.mjs";
+import { TRADITION } from "./church.js";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../../../..");
 const OUT = path.join(ROOT, ".promo/orthodox-america-3d");
-const FILM = path.join(OUT, "orthodox-america-3d-sample-2.mp4");
-const PAGE = path.join(OUT, "orthodox-america-3d-sample-2.html");
-const FIRST = "https://claude.ai/artifact/5Z5B2zW1vopmX1e2WiiwNt"; // the first sample's page, which stays as it was
+const FILM = path.join(OUT, "orthodox-america-3d-sample-3.mp4");
+const PAGE = path.join(OUT, "orthodox-america-3d-sample-3.html");
+const FIRST = "https://claude.ai/artifact/5Z5B2zW1vopmX1e2WiiwNt", SECOND = "https://claude.ai/artifact/4ZBf45qLCDQGojHHG57i9a"; // the first sample's page and the second pass's, which stay as they were
 const arg = (name) => process.argv.find((a) => a.startsWith(`--${name}=`))?.slice(name.length + 3);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const n = (x) => x.toLocaleString("en-US");
@@ -43,18 +44,9 @@ const hours = (seconds) => ((seconds * 30 * perFrame) / 3600).toFixed(1);
 const fact = FACTS.find((f) => f.scene === "where" && f.show.includes(FIGURE));
 const rolls = FACTS.find((f) => f.scene === "gap" && f.show.includes(String(ROLLS))), sunday = FACTS.find((f) => f.scene === "gap" && f.show.includes(String(SUNDAY)));
 const derived = DERIVED.find((d) => d.show.includes(`${SHARE}%`));
+const parish = FACTS.find((f) => f.src === "appF" && f.show.includes(n(PARISHES)));
 const POINTS = Math.round(ROLLS / PEOPLE_A_POINT), STAY = Math.round(SUNDAY / PEOPLE_A_POINT);
 const FROM_SIX = SIX.reduce((sum, s) => sum + Math.round((s.share / 100) * POINTS), 0);
-
-// ---- The face, first: he asked for it -----------------------------------------
-const FACE = [
-  [`${NUMERALS.family}, for every figure`, `You said you would change the number face. The first sample set its figures in the serif the titles use, which reads as a book's numbers. ${NUMERALS.family} is a narrow, upright grotesque: the kind of figure a documentary puts on a lower third or a scoreboard.`, "The numbers now read as counted, not written. The eye takes them in as data at a glance, and the serif is left to do one job, the title."],
-  ["Every digit the same width", `A count that runs has to stand still while it runs. In this face all ten digits are drawn to one width (measured: each is ${digit} wide at a size of 100), with nothing to switch on.`, `${n(ROLLS)} runs down to ${n(SUNDAY)} in scene two and no digit moves sideways. Only the values change.`],
-  ["Narrow, so a large number can be large", "Six digits and a comma have to fit a square frame at a size a phone can read. A narrow face fits them at nearly the height of the first sample's three.", `${n(ROLLS)} is set at 196 px in the frame. Its digits stand about 135 px tall, which is about 49 px on a phone.`],
-  ["One weight, one face, everywhere", "The large figures, the six states' shares, the share in scene two and the 100 in the key are all the same face at the same weight.", "A viewer learns once what a figure looks like in this film and finds every one after that without reading for it."],
-  ["Only the numbers changed", "You asked for the number face and nothing else. The title keeps DM Serif Display and the labels and captions keep DM Sans, the app's own.", "It is still Purify's film. The source's name at the foot stays in the words' face, since it is a name and not a figure."],
-  ["Free to use", `${NUMERALS.family} is by ${NUMERALS.by}, under the ${NUMERALS.licence}, which allows use in a film and in anything sold.`, "Nothing to buy and nothing to credit on screen."],
-];
 
 // ---- The sample, beat by beat --------------------------------------------------
 const ONE = [
@@ -70,17 +62,26 @@ const TWO = [
   [17.1, "The share lands", `${SHARE}% lands at the near edge of those who stayed. Everything holds to the end: the count, what it counts, the share, the key and the source.`, "The last three seconds are for reading. Both figures are from the same census of the same Churches, so the share compares like with like."],
 ];
 
-// ---- Scene two: each choice, and the reason for it -----------------------------
+// ---- Scene three: the Church ------------------------------------------------------
+const THREE = [
+  [SCENE_TWO, "The hand-over", "No cut and no fade. The count and the share leave, the ring fades, and the camera begins one slow turn. The points that stayed are exactly where scene two left them.", "The same rule as before: what is on screen at the end of one scene is the first thing of the next. Here it is the people themselves."],
+  [20.3, "They draw the plan", "The points leave their round body and stand along the lines of a plan on the floor: the outer walls, the cross inside the square, four columns, the circle of the dome, three apses to the east.", "A church of this kind is named for its plan, the cross-in-square, and an architect begins with the plan. So the people draw that first, and the viewer sees the cross inside the square before a wall stands."],
+  [21.5, "The drawing rises", "Fine lines of light climb from the plan: walls, arched windows, the vaults over the four arms, the drum and the dome. The line is brightest where the pen is. The points go in and stand in the nave.", "An architect's drawing coming to life, as the brief asked. The people go in while the church is still only lines, so you can see them through it."],
+  [22.7, "The stone rises over them", "Matte white stone follows the drawing up from the floor with a bright edge where it is being laid. The camera looks down into the church as the walls rise round the people, then the vaults and the dome close over them. Each window lights once the stone has passed it.", "This is the more unique thing you asked for. It is a section through the church without a cut: you watch it close over the assembly, and then their light is the light in the windows. The Church is her people gathered, shown without a word."],
+  [26.8, "The cross, last", "The outline of a plain cross is drawn once round on the crown of the dome, and then it stands in stone.", "Drawn last, like a signature. A plain one-bar cross, as the Greek tradition has it."],
+  [28.3, "The figure lands", `${n(PARISHES)} lands in the dark over the dome, then its line: ${CAPTION_PARISHES} The camera has come down from looking in to looking at, and settles.`, `The last three and a half seconds are for looking. ${n(SUNDAY)} people on a typical Sunday, in ${n(PARISHES)} parishes: one church stands for all of them.`],
+];
 const LOOK = [
-  ["One move, not a cut", "The first scene used a cut hidden in a fast push. A second one would make the film feel like a set of clips. Here the scene changes in a single camera move with nothing hidden.", "The two scenes feel like one thought: where they live, then how many come."],
-  [`One point of light is ${PEOPLE_A_POINT} people`, `A point for each person would be a grey haze. At ${PEOPLE_A_POINT} to a point the field is ${n(POINTS)} points, each one still a point, and ${n(STAY)} stay. The line on screen says so.`, "The picture is a count, not a mood. Anyone could count the points and get the figure."],
-  ["The six states give their own shares", `Of the ${n(POINTS)} points, ${n(FROM_SIX)} lift from the tops of the six forms, each state giving its checked share. The source gives no figure for any other state, so the rest lift evenly from the others.`, "The first scene's figure is carried into the second by the picture itself. Nothing is guessed."],
-  ["A round field, with no map left in it", "Once the points are people, where they came from is no longer the point. A round field has no east or west.", "The viewer stops reading geography and starts reading number."],
-  ["Who stays is drawn from all over the field", "The census does not say where the regular attendees are. So the points that stay are drawn by a fixed dice from the whole field, the same on every render.", "The film does not suggest that one region attends and another does not."],
-  ["The count is tied to the points", "The large figure is the number of points standing in the field at that moment, times a hundred, landing exactly on the two checked figures.", "The number is never ahead of the picture or behind it."],
-  ["The ring", "A fine line where the full field stood. It is a measure, like the rim of a gauge, and it appears only as the points leave.", "Without it the last frame would show a body of light with nothing to compare it to."],
-  ["Those who stay grow brighter", "As they draw together they take a soft glow. It is the only glow in the scene.", "The eye ends on the people who are there. No rays, no flare and no sparkle, as the house rules."],
-  ["The source never leaves", "Both scenes stand on the same census, so its line stays at the foot from the first figure to the last frame.", "A viewer who pauses anywhere after the first figure can see where the numbers come from."],
+  [`${TRADITION}`, "One tradition, drawn true. A square nave. Four arms of a cross under barrel vaults, higher than the four corner bays. One dome on a drum of eight arched windows, carried by four columns. Three apses to the east, the middle one the largest. A narthex to the west. A plain cross with one bar. It is the middle Byzantine church, the kind that stands at Hosios Loukas and in the small churches of Athens.", "An Orthodox viewer sees a real kind of church, not a generic one. There is no onion dome and no three-bar cross: those belong to the Russian tradition, and nothing here is mixed."],
+  ["The people draw it", `The church is drawn by the same ${n(STAY)} points that stayed in scene two. No point is added and none is taken away, and at ${SCENE_TWO}.0 seconds each is where scene two left it, the same size and the same light.`, "The picture keeps its count. The viewer has just learned what a point is, and now watches those same points make a church."],
+  ["Where they stand", "Inside, the points stand in the nave and the narthex, in even rows, west of the icon screen. None stands in the sanctuary.", "It is where people stand at the Liturgy."],
+  ["No icon, face or saint", "The icon screen is a low wall with its middle open: architecture only. Nothing sacred is invented or drawn anywhere in the scene.", "The film shows the building and the people. It does not make sacred art by machine."],
+  ["Their light is the windows' light", "The windows are dark glass until the stone has passed them. Then each one lights, and all of them brighten a little as the dome closes.", "The people do not vanish when the walls hide them. The eye understands where they went."],
+  ["Matte stone in soft light", "Each frame of this scene is the church drawn 36 times, each time lit from one direction with a true shadow. A third of the drawings are lit from about the key light and the rest from all over the sky. Their average is a soft key, soft shadows and a darkening in every corner.", "It reads as an architect's model in a studio. There is no beam, ray, flare or sparkle. The ground is a soft pool of light that falls away to black."],
+  ["One slow turn", "The camera goes from the north-east round to the south-east, about 74 degrees in nine and a half seconds, looking down into the church while it is open and coming down to look at it once it is closed.", "The apses and the dome, the side a Byzantine church is known by, face the viewer at the end."],
+  ["East is east", "The apses face the east of the map the scene began on.", "An Orthodox altar stands to the east. Nobody may notice, but it is true."],
+  [`One figure: ${n(PARISHES)}`, `The census counted ${n(PARISHES)} Eastern Orthodox parishes in 2020, on the same page as the two counts of scene two. It lands once the church stands.`, "The scene ends on a number, like the two before it, and the source's line has not left the foot of the frame since the first figure."],
+  ["What leaves, and why", "The ring of the rolls fades as the plan takes its place. The line that says what a point is leaves when the vaults hide the points.", "Nothing on screen describes something the viewer can no longer see."],
 ];
 
 const kit = fs.readFileSync(path.join(ROOT, "docs/brand/kit/artifact-template.html"), "utf8");
@@ -95,7 +96,7 @@ function page(videoSrc, poster) {
         <p>${esc(shows)}</p>
         <p class="o-why">${esc(why)}</p>
       </li>`;
-  return `<title>Orthodox America 3D, Second Pass</title>
+  return `<title>Orthodox America 3D, The Church</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 ${kitFonts}
 ${kitStyle}
@@ -122,20 +123,20 @@ ${kitStyle}
   <header class="k-title k-rise">
     <span class="k-mark" role="img" aria-label="Purify"></span>
     <span class="k-eyebrow">For your yes or no</span>
-    <h1>Orthodox Christians in America, in 3D: the second pass</h1>
-    <p class="k-lede">You said the sample was good, that you would change the number face, and to add a new scene that the first flows into with no seam. This is both: two scenes, twenty seconds, one unbroken move.</p>
+    <h1>Orthodox Christians in America, in 3D: the Church</h1>
+    <p class="k-lede">You said the edit was looking really nice, and asked for a monochrome design of the Orthodox church with some more unique things. This is scene three: the people who stayed draw a church, go in, and it closes over them. Three scenes, ${SECONDS} seconds, still one unbroken move.</p>
     <p class="k-meta">Made 13 November 2026. One version. Nothing was paid for.</p>
   </header>
 
   <section aria-label="The sample">
     <figure class="o-film">
-      ${videoSrc ? `<video id="film" controls playsinline muted loop preload="metadata"${poster ? ` poster="${esc(poster)}"` : ""} src="${esc(videoSrc)}" aria-label="The 3D sample, second pass: ${SECONDS} seconds, silent"></video>` : `<div class="o-none" role="img" aria-label="The sample is not on the page yet"></div>`}
+      ${videoSrc ? `<video id="film" controls playsinline muted loop preload="metadata"${poster ? ` poster="${esc(poster)}"` : ""} src="${esc(videoSrc)}" aria-label="The 3D sample with the Church: ${SECONDS} seconds, silent"></video>` : `<div class="o-none" role="img" aria-label="The sample is not on the page yet"></div>`}
       <figcaption>${SECONDS} seconds, 1080 by 1080, black and white, no sound.</figcaption>
       ${videoSrc ? `<button class="k-button o-save" id="save-film" type="button" hidden>Save the sample</button>
       <p class="o-said" id="save-said" role="status"></p>` : ""}
     </figure>
     <div class="k-stats">
-      <div class="k-stat"><span class="k-stat-label">Length</span><span class="k-stat-change">${film ? film.frames : 600} frames at 30 a second, two scenes</span><span class="k-stat-value">${SECONDS} seconds</span></div>
+      <div class="k-stat"><span class="k-stat-label">Length</span><span class="k-stat-change">${film ? film.frames : 960} frames at 30 a second, three scenes</span><span class="k-stat-value">${SECONDS} seconds</span></div>
       <div class="k-stat"><span class="k-stat-label">File</span><span class="k-stat-change">H.264, 1080 by 1080, no sound</span><span class="k-stat-value">${mb} MB</span></div>
       <div class="k-stat"><span class="k-stat-label">One frame takes</span><span class="k-stat-change">Drawn about ${timing ? Math.round(timing.drawingsAFrame) : 30} times over for the blur and the focus, on this machine's processor alone</span><span class="k-stat-value">${perFrame} seconds</span></div>
       <div class="k-stat"><span class="k-stat-label">Paid for</span><span class="k-stat-change">No generation credits, no rented graphics card, no stock footage</span><span class="k-stat-value">Nothing</span></div>
@@ -144,39 +145,32 @@ ${kitStyle}
 
   <section class="k-section" aria-labelledby="s-ask">
     <h2 id="s-ask">What I need from you</h2>
-    <p><strong>Yes or no to two things:</strong> the new face for the numbers, and scene two with the way scene one flows into it.</p>
+    <p><strong>Yes or no to one thing:</strong> scene three, the Church, from ${at(SCENE_TWO)} to the end.</p>
     <p><strong>What a yes costs.</strong> No money. At ${perFrame} seconds a frame, a film of 75 to 90 seconds takes about ${hours(75)} to ${hours(90)} hours of rendering in the background. Nothing of the full film is made until you say yes.</p>
-    <p><strong>One thing to know.</strong> ${SHARE}% is not printed in the census. It prints the two counts, ${n(SUNDAY)} and ${n(ROLLS)}, and I divided them. The measure itself is the census's own, and both counts are of the same Churches in the same year.</p>
+    <p><strong>Two things to know.</strong> Scenes one and two are the ones you approved, drawn again from the same code, frame for frame; they had to be drawn again so the three scenes could be one file. And the page holds a film of up to 20 MB, so these ${SECONDS} seconds are kept a little more tightly than the twenty were. The full film will be cut to its own size.</p>
   </section>
 
-  <section class="k-section" aria-labelledby="s-face">
-    <h2 id="s-face">The number face, first</h2>
-    <p>You asked for this by name, so it comes before everything else. For each choice: what it is and why, then what it does for the viewer.</p>
+  <section class="k-section" aria-labelledby="s-three">
+    <h2 id="s-three">Scene three, beat by beat</h2>
+    <p>The Church. Tap a time to play from there. Under each beat: what happens, and why.</p>
     <ol class="o-scenes">
-${FACE.map(row).join("\n")}
-    </ol>
-  </section>
-
-  <section class="k-section" aria-labelledby="s-one">
-    <h2 id="s-one">Scene one, as you approved it</h2>
-    <p>Nothing in the first ten seconds has moved. Only the figures' face is new. Tap a time to play from there. The reasons for this scene are on <a href="${FIRST}" target="_blank" rel="noopener">the first sample's page</a>.</p>
-    <ol class="o-scenes">
-${ONE.map(beat).join("\n")}
-    </ol>
-  </section>
-
-  <section class="k-section" aria-labelledby="s-two">
-    <h2 id="s-two">Scene two, beat by beat</h2>
-    <p>The gap between the rolls and a Sunday. Under each beat: what happens, and why.</p>
-    <ol class="o-scenes">
-${TWO.map(beat).join("\n")}
+${THREE.map(beat).join("\n")}
     </ol>
   </section>
 
   <section class="k-section" aria-labelledby="s-look">
-    <h2 id="s-look">Scene two: each choice, and the reason for it</h2>
+    <h2 id="s-look">The church: each choice, and the reason for it</h2>
+    <p>The tradition first, since a church drawn wrong would be worse than none. For each choice: what it is and why, then what it does for the viewer.</p>
     <ol class="o-scenes">
 ${LOOK.map(row).join("\n")}
+    </ol>
+  </section>
+
+  <section class="k-section" aria-labelledby="s-one">
+    <h2 id="s-one">Scenes one and two, as you approved them</h2>
+    <p>Nothing in the first twenty seconds has moved. The reasons for them are on <a href="${SECOND}" target="_blank" rel="noopener">the second pass's page</a> and <a href="${FIRST}" target="_blank" rel="noopener">the first sample's</a>.</p>
+    <ol class="o-scenes">
+${[...ONE, ...TWO].map(beat).join("\n")}
     </ol>
   </section>
 
@@ -186,24 +180,26 @@ ${LOOK.map(row).join("\n")}
     <p><strong>${n(SUNDAY)} ${esc(CAPTION_SUNDAY)}</strong> ${esc(sunday.says)}</p>
     <p><strong>${SHARE}% ${esc(SHARE_LINE)}.</strong> ${esc(derived.says)}</p>
     <p><strong>${FIGURE}% ${esc(CAPTION)}</strong> Unchanged from the first sample.</p>
+    <p><strong>${n(PARISHES)} ${esc(CAPTION_PARISHES)}</strong> ${esc(parish.says)} The film shows the census's count of Eastern Orthodox parishes and not the division beside it.</p>
     <p class="o-source"><a href="${esc(SOURCES.appF.url)}" target="_blank" rel="noopener">${esc(SOURCES.appF.name)}: ${esc(SOURCES.appF.title)}</a></p>
-    <p>I read the census's own pages again today for the two counts and for its measure of attendance. These are Eastern Orthodox parishes only, in 2020. The Oriental Orthodox Churches are counted apart by the census and are not in this scene.</p>
+    <p>Every figure is as the first film checked it against the census's own pages. These are Eastern Orthodox parishes only, in 2020. The Oriental Orthodox Churches are counted apart by the census and are not in these scenes.</p>
   </section>
 
   <section class="k-section" aria-labelledby="s-rules">
     <h2 id="s-rules">The rules it was held to</h2>
     <div class="k-stats">
-      <div class="k-stat"><span class="k-stat-label">Every word 4.5:1 or more</span><span class="k-stat-change">Measured on the frames of both scenes, against the brightest ground behind each word; the least is ${least}:1</span><span class="k-stat-value">Pass</span></div>
+      <div class="k-stat"><span class="k-stat-label">Every word 4.5:1 or more</span><span class="k-stat-change">Measured on the frames of all three scenes, against the brightest ground behind each word; the least is ${least}:1</span><span class="k-stat-value">Pass</span></div>
       <div class="k-stat"><span class="k-stat-label">Reads on a phone</span><span class="k-stat-change">No letter under ${smallest} px in the frame, which is 10.8 px on a phone 390 wide; looked at there</span><span class="k-stat-value">Pass</span></div>
       <div class="k-stat"><span class="k-stat-label">No rays, flare, sparkle, dashes or parchment</span><span class="k-stat-change">Read from the scene code before every render, the way the house reads a promo script</span><span class="k-stat-value">Pass</span></div>
       <div class="k-stat"><span class="k-stat-label">Grey only</span><span class="k-stat-change">Every colour that reaches the screen has equal red, green and blue, and the file is encoded from a grey picture</span><span class="k-stat-value">Pass</span></div>
-      <div class="k-stat"><span class="k-stat-label">Figures as checked</span><span class="k-stat-change">All ten on screen are held to the checked list, and the share to its division, before a frame is drawn</span><span class="k-stat-value">Pass</span></div>
+      <div class="k-stat"><span class="k-stat-label">Figures as checked</span><span class="k-stat-change">All eleven on screen are held to the checked list, and the share to its division, before a frame is drawn</span><span class="k-stat-value">Pass</span></div>
       <div class="k-stat"><span class="k-stat-label">The points are a true count</span><span class="k-stat-change">${n(POINTS)} points for ${n(ROLLS)}, ${n(STAY)} for ${n(SUNDAY)}, counted by the check</span><span class="k-stat-value">Pass</span></div>
+      <div class="k-stat"><span class="k-stat-label">One tradition, no invented sacred art</span><span class="k-stat-change">${esc(TRADITION)}, with the plain cross; no icon, face or saint is drawn; the church is drawn by the ${n(STAY)} points and no others, counted by the check</span><span class="k-stat-value">Pass</span></div>
     </div>
   </section>
 
   <footer class="k-foot">
-    <p class="k-meta">One version was made. The first sample stays on its own page. Source: docs/promo/orthodox-america/3d/</p>
+    <p class="k-meta">One version was made. The first sample and the second pass stay on their own pages. Source: docs/promo/orthodox-america/3d/</p>
   </footer>
 </main>
 ${videoSrc ? `<script>
@@ -225,7 +221,7 @@ ${videoSrc ? `<script>
     button.disabled = true; said.textContent = "Getting the file.";
     try {
       const file = await (await fetch(${JSON.stringify(videoSrc)})).blob();
-      await downloads.save({ filename: "orthodox-christians-in-america-3d-sample-2.mp4", data: file });
+      await downloads.save({ filename: "orthodox-christians-in-america-3d-sample-3.mp4", data: file });
       said.textContent = "Saved.";
     } catch (error) {
       said.textContent = error && error.code === "declined" ? "Not saved." : "It could not be saved from here. Ask for the file and it will be sent.";
@@ -240,7 +236,7 @@ ${videoSrc ? `<script>
 fs.mkdirSync(OUT, { recursive: true });
 fs.writeFileSync(PAGE, page(arg("video") ?? "", arg("poster") ?? ""));
 console.log(`${path.relative(ROOT, PAGE)}  ${(fs.statSync(PAGE).size / 1024).toFixed(0)} KB`);
-for (const piece of [...FACE.flat(), ...ONE.flat(), ...TWO.flat(), ...LOOK.flat()]) if (typeof piece === "string" && /[–—]/.test(piece)) throw new Error(`a dash in the page's words: ${piece}`);
+for (const piece of [...ONE.flat(), ...TWO.flat(), ...THREE.flat(), ...LOOK.flat()]) if (typeof piece === "string" && /[–—]/.test(piece)) throw new Error(`a dash in the page's words: ${piece}`);
 
 // ---- The page's own check, the way docs/brand/kit/check.mjs holds the kit's page ----
 if (process.argv.includes("--check")) {
@@ -270,18 +266,18 @@ if (process.argv.includes("--check")) {
 
 // ---- The record --------------------------------------------------------------
 if (film && timing) {
-  const record = `# The 3D sample, second pass: the record
+  const record = `# The 3D sample, with the Church: the record
 
 Written by \`page.mjs\` from what was made and measured. Do not edit this file: change the code and write it out again.
 
-Round 2 of the documentary insert (\`../BRIEF.md\`, "Round 2, the sample's second pass"). His words on the first sample (${FIRST}), 2026-11-13 about 18:26 UTC: "this is good, id change the # font. but other than that the transition is nice. and add a new scene with a new design and transition and animation (ensure the scene at 10 seconds transitions into the next scene seemlessly also)". So: scene one as it was with its figures in one new face, and a second scene it flows into with no cut. For his yes before the full film.
+Round 3 of the documentary insert (\`../BRIEF.md\`, "Round 3: the Church, in monochrome"). His words on the second pass (${SECOND}), 2026-11-13 about 19:20 UTC: "the design also of the edit is looking really nice. now I want like a monochrome design of the Orthodox church with some more unique stuff". So: scenes one and two as they were, and a third they flow into with no cut, in which those who stay draw a church and it closes over them. For his yes before the full film. The second pass's own record is this file before this round: \`git log\`.
 
 ## The file
 
 | | |
 |---|---|
-| File | \`.promo/orthodox-america-3d/orthodox-america-3d-sample-2.mp4\` (out of git) |
-| Length | ${film.seconds.toFixed(2)} seconds, ${film.frames} frames, two scenes |
+| File | \`.promo/orthodox-america-3d/orthodox-america-3d-sample-3.mp4\` (out of git) |
+| Length | ${film.seconds.toFixed(2)} seconds, ${film.frames} frames, three scenes |
 | Size | ${(film.bytes / 1048576).toFixed(2)} MB (${film.bytes} bytes) |
 | Picture | ${film.size[0]} by ${film.size[1]}, ${film.codec}, ${film.pixels}, ${film.fps} frames a second, faststart |
 | Sound | ${film.sound} |
@@ -291,7 +287,7 @@ Round 2 of the documentary insert (\`../BRIEF.md\`, "Round 2, the sample's secon
 
 ## What the full film would take
 
-At ${timing.secondsAFrame} seconds a frame, 30 frames a second: a film of 75 seconds is ${75 * 30} frames and about ${hours(75)} hours; 90 seconds is ${90 * 30} frames and about ${hours(90)} hours. The first scene alone took 2.54 seconds a frame; the second is lighter (one cloud of points, no map once it has gone dark), so the average fell. A background job can be given up to two hours (\`timeout\`), and \`--film --resume --minutes=N\` keeps what a stopped run left: each frame is the same whenever it is drawn.
+At ${timing.secondsAFrame} seconds a frame, 30 frames a second: a film of 75 seconds is ${75 * 30} frames and about ${hours(75)} hours; 90 seconds is ${90 * 30} frames and about ${hours(90)} hours. The first scene alone took 2.54 seconds a frame and the second about 1.3; the third draws each frame 36 times with a shadow map each time. A background job can be given up to two hours (\`timeout\`), and \`--film --resume --minutes=N\` keeps what a stopped run left: each frame is the same whenever it is drawn.
 
 ## The numerals' face
 
@@ -303,7 +299,22 @@ At ${timing.secondsAFrame} seconds a frame, 30 frames a second: a film of 75 sec
 
 ## How it was made
 
-\`shot.js\` is both scenes as one three.js scene and one camera (WebGL2, in software through SwiftShader), set to any moment by frame number. \`render.mjs\` checks the rules and the measures, asks the page for one frame at a time, and ffmpeg writes them with a fine grain (a fixed seed). \`words.mjs\` holds every word and figure on screen.
+\`shot.js\` is the three scenes as one three.js scene and one camera (WebGL2, in software through SwiftShader), set to any moment by frame number. \`render.mjs\` checks the rules and the measures, asks the page for one frame at a time, and ffmpeg writes them with a fine grain (a fixed seed). \`words.mjs\` holds every word and figure on screen. \`church.js\` is the church's form as plain numbers.
+
+### Scene three, the Church
+
+- **The tradition.** ${TRADITION}: a square nave, four barrel-vaulted arms higher than the four corner bays, four columns, one dome on a drum of eight arched windows, three apses to the east (the map's own east), a narthex to the west, a plain one-bar cross. No onion dome and no three-bar cross. Inside, the icon screen is a low wall with its middle open. No icon, face or saint is drawn.
+- **Scenes one and two are unchanged.** Everything scene three adds to the camera and the scene is nothing until ${SCENE_TWO}.0 seconds (\`GO3\`). The ${n(STAY)} points pass from scene two's shader to scene three's hand at that moment, in the same places, the same size and light.
+- **The people draw it.** Each of the ${n(STAY)} goes from its place in the round body to a place on the plan's lines (evenly along every line), then to a place to stand: a lattice of equal triangles over the nave and the narthex, west of the icon screen. Each keeps its bearing about the middle, so paths do not cross. \`render.mjs --check\` refuses the scene if the points are not exactly those who stay.
+- **The drawing, then the stone.** The lines are shown from the floor up to a rising level, brightest at the level; the stone is shown up to a second level that follows, with a fine bright edge at its own top; a line gives way where the stone has come. The camera looks down at 46 degrees while the church is open, so the inside is seen as it closes: a section without a cut.
+- **The windows.** Dark glass until the stone is past each one, then lit: the scene's glow, with the pen's line.
+- **The cross.** Its outline is drawn once round in 0.55 seconds, then it stands in stone, last of all.
+- **The light.** Each drawing of a frame is lit from one direction, with a shadow from a map of depths seen from that direction. Of a frame's 36 drawings, a third are lit from about the key light and the rest from all over the sky, so their average is a soft key, soft shadows and darkened corners. The ground is a pool of light that falls to black by 3.4 units out. No rays, beams, flare or sparkle.
+- **The camera.** One turn of about 74 degrees in 9.5 seconds, from north-east to south-east, coming down from 46 degrees to 14 and in from 17 units to 12.
+- **What leaves.** The count and the share by 20.6; the ring by 22.0; the key to the points at 26.3, when the vaults hide them.
+- **The figure.** ${n(PARISHES)} lands at 28.3 over the dome, in the numerals' face.
+
+### Scenes one and two
 
 - **Scene one is unchanged.** Everything scene two adds to the camera, the lens and the map is nothing, and at rest, until ${SCENE_ONE}.0 seconds (\`GO\`); the last frame of scene one is drawn from times before it. Only the figures' face differs from the first sample.
 - **The hand-over, with no cut.** At ${SCENE_ONE}.0 the drift the camera already has becomes one move of 2.2 seconds: it turns 100 degrees about the country, rises 3 map units with the points it follows, and lowers its angle from 38 to 36 degrees. The move is eased from rest, so it begins at the drift's own speed. The six forms sink in 0.9 seconds and their light goes in 0.6; the map's own lattice brightens, then the whole map goes down to nothing by 12.0. There is one scene and one camera throughout; nothing is mixed or faded between two pictures.
@@ -335,19 +346,25 @@ At ${timing.secondsAFrame} seconds a frame, 30 frames a second: a film of 75 sec
 | 0:14 | The falling away | the count runs down |
 | 0:16 | They draw together | ${n(SUNDAY)} ${CAPTION_SUNDAY} |
 | 0:17 | The share lands | ${SHARE}% ${SHARE_LINE} |
+| 0:20 | The hand-over; they draw the plan | the count and the share leave |
+| 0:21 | The drawing rises | none |
+| 0:22 | The stone rises over them | the key to the points leaves at 0:26 |
+| 0:26 | The cross, last | none |
+| 0:28 | The figure lands | ${n(PARISHES)} ${CAPTION_PARISHES} |
 
 ## The figures
 
-All from [${SOURCES.appF.name}](${SOURCES.appF.url}), ${SOURCES.appF.title}, read again on 2026-11-13 for this pass.
+All from [${SOURCES.appF.name}](${SOURCES.appF.url}), ${SOURCES.appF.title}, as the first film and the second pass checked them on 2026-11-13.
 
 - ${FIGURE}% and the six shares: ${fact.says.replace(/\|/g, "/")}
 - ${n(ROLLS)}: ${rolls.says}
 - ${n(SUNDAY)}: ${sunday.says}
+- ${n(PARISHES)}: ${parish.says} The film shows the count of parishes only.
 - ${SHARE}%: ${derived.says} It is in \`../facts.mjs\` as \`DERIVED\`, apart from \`FACTS\`, because the first film's check holds every figure in \`FACTS\` to its own page.
 
 ## To make it again
 
-\`npm install three world-atlas us-atlas topojson-client d3-geo @fontsource/dm-serif-display @fontsource/dm-sans @fontsource/archivo-narrow\` in \`.promo/orthodox-america-3d/tools\`, then \`render.mjs --check\`, \`--stills <seconds> [--strip]\`, \`--draft\` or \`--film\` (with Playwright on \`NODE_PATH\`). To grow it into the film: each new scene adds its own time constants that are nothing until its own start, as scene two's do after \`GO\`, and its own words in \`words.mjs\` held to \`facts.mjs\`.
+\`npm install three world-atlas us-atlas topojson-client d3-geo @fontsource/dm-serif-display @fontsource/dm-sans @fontsource/archivo-narrow\` in \`.promo/orthodox-america-3d/tools\`, then \`render.mjs --check\`, \`--stills <seconds> [--strip]\`, \`--draft\` or \`--film\` (with Playwright on \`NODE_PATH\`). To grow it into the film: each new scene adds its own time constants that are nothing until its own start, as scene two's do after \`GO\` and scene three's after \`GO3\`, and its own words in \`words.mjs\` held to \`facts.mjs\`.
 `;
   fs.writeFileSync(path.join(HERE, "RECORD.md"), record);
   console.log("RECORD.md written");
