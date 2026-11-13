@@ -1027,8 +1027,9 @@ const film = (() => {
   const E7 = eye(GO7 + 4), E7B = eye(CON_AT + 2.5), AGAIN = GO7 + 2.7, E7S = eye(SINCE_AT + 2.6), PER_SOUL = 3.4 / DECADE[0].was;
   const was = row("was", E7, DECADE.map((d, i) => ({ x: DEC_X + (i - 1) * 4.6 - 0.56, w: 1, h: d.was * PER_SOUL, size: 44, text: [d.was.toLocaleString("en-US")] })), GO7 + 0.5, SINCE_AT + 0.7, 0.15);
   const now = row("now", E7, DECADE.map((d, i) => ({ x: DEC_X + (i - 1) * 4.6 + 0.56, w: 1, h: d.is * PER_SOUL, over: Math.max(d.was, d.is) * PER_SOUL, size: 44, text: [d.is.toLocaleString("en-US"), d.change] })), AGAIN, SINCE_AT + 0.7, 0.15);
+  // The forms stand a little unevenly apart, by the width of the names over them, so no two names meet.
   // Since 2019: the median parish's attendance, all Orthodox and four jurisdictions. The first form is lit; the others stand a little dimmer.
-  const since = row("since", E7S, SINCE.bars.map(([pct, ...lines], i) => ({ x: SIN_X + (i - 2) * 2.55, w: 1.4, h: pct * 0.036, lit: i ? 0.6 : 1, text: [`+${pct}%`, ...lines] })), SINCE_AT + 0.35, CON_AT + 0.7);
+  const since = row("since", E7S, SINCE.bars.map(([pct, ...lines], i) => ({ x: SIN_X + [-5.5, -3.02, -0.24, 2.37, 5.09][i], w: 1.4, h: pct * 0.036, lit: i ? 0.6 : 1, text: [`+${pct}%`, ...lines] })), SINCE_AT + 0.35, CON_AT + 0.7);
   const sinceHead = head("since", E7S, SINCE.head, 34, 425);
   const pairs = DECADE.map((d, i) => { let half = 0; const w = plane(`pair ${i}`, 320, 84, 30, (ctx) => { ctx.textBaseline = "alphabetic"; d.lines.forEach((line, j) => { half = Math.max(half, mixed(ctx, line, 160, 32 + j * 38, 30, "center", j ? 400 : 500) / 2); }); });
     w.ink = [160 - half - 3, 4, 160 + half + 3, 80]; return stand(w, E7, V3(DEC_X + (i - 1) * 4.6, FLOOR_Y, 0.5), 0, -66); });
