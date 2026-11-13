@@ -258,7 +258,7 @@ describe("an event's page", () => {
     // The 4rem is the row, a few pixels short: py-2, a 1px border and p-1
     // around a pill at least 2.75rem tall make 4.25rem and 2px.
     const nav = code("components/history/EventPartsNav.tsx");
-    expect(nav).toContain('className="history-era-head -mx-5 px-5 py-2');
+    expect(nav).toContain('"history-era-head -mx-5 px-5 py-2');
     expect(nav).toMatch(/rounded-pill border border-paper\/10 p-1/);
     expect(nav).toMatch(/"tap-press flex min-h-11 /);
     // Every part is a section of the article, and Sources is the last.

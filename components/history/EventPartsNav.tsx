@@ -60,6 +60,39 @@ export function EventPartsNav({ parts }: { parts: EventPart[] }) {
     return () => observer.disconnect();
   }, [key]);
 
+  // The thread map (components/history/EventThread.tsx) pins a little below
+  // the same line as this row, later in the page, and is drawn over it: at
+  // rest the row's pill showed at the map's sides, and on the way the map
+  // slid over the pinned row (Gate 2.0's run, 2026-11-13, Alaska's mission).
+  // So while the map stands over the row, the row steps aside, as the bars
+  // at the foot step aside for a toast; where the map is not over it, as at
+  // the top of the page, nothing changes. One read of the two boxes a frame,
+  // only while the page scrolls.
+  const [underMap, setUnderMap] = useState(false);
+  useEffect(() => {
+    const row = document.querySelector<HTMLElement>("[data-event-parts]");
+    const map = document.querySelector<HTMLElement>("[data-thread-map]");
+    if (!row || !map) return;
+    let frame = 0;
+    const read = () => {
+      frame = 0;
+      const r = row.getBoundingClientRect();
+      const m = map.getBoundingClientRect();
+      setUnderMap(m.top < r.bottom - 1 && m.bottom > r.top + 1);
+    };
+    const onMove = () => {
+      if (!frame) frame = requestAnimationFrame(read);
+    };
+    onMove();
+    window.addEventListener("scroll", onMove, { passive: true });
+    window.addEventListener("resize", onMove);
+    return () => {
+      window.removeEventListener("scroll", onMove);
+      window.removeEventListener("resize", onMove);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [key]);
+
   function go(e: MouseEvent<HTMLAnchorElement>, id: string) {
     const el = document.getElementById(id);
     const row = e.currentTarget.closest<HTMLElement>("[data-event-parts]");
@@ -86,8 +119,12 @@ export function EventPartsNav({ parts }: { parts: EventPart[] }) {
   return (
     <nav
       data-event-parts
+      data-under-map={underMap ? "" : undefined}
       aria-label={t("study.history.partsNav")}
-      className="history-era-head -mx-5 px-5 py-2 md:-mx-8 md:px-8"
+      className={cn(
+        "history-era-head -mx-5 px-5 py-2 md:-mx-8 md:px-8 motion-safe:transition-opacity motion-safe:duration-200",
+        underMap && "pointer-events-none opacity-0",
+      )}
     >
       <ul className="no-scrollbar mx-auto grid max-w-[460px] grid-flow-col auto-cols-[minmax(max-content,1fr)] gap-1 overflow-x-auto rounded-pill border border-paper/10 p-1 md:mx-0">
         {parts.map((part) => {
