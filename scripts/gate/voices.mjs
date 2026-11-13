@@ -830,7 +830,9 @@ if (MODE === "voices") {
       const listenRu = listenOnPage(page, lang);
       if (await listenRu.count()) ok("the Russian page offers Listen");
       else fail("the Russian page offers no Listen");
-      const pillRu = (await page.locator("[data-reader-pill]").filter({ visible: true }).count()) ? "[data-reader-pill]" : "main";
+      // The pill, or the dock in its place while something is loaded; never the whole page, whose
+      // Scripture is the edition's own words (the Synodal's em dashes, John 1:38 and 42, kept verbatim).
+      const pillRu = (await page.locator("[data-reader-pill]").filter({ visible: true }).count()) ? "[data-reader-pill]" : (await page.locator(dockSel).filter({ visible: true }).count()) ? dockSel : "main";
       await still(page, "russian-pill");
       if (guards) await guard(page, pillRu, lang, size, "the Russian page's pill with Listen");
       await tapAt(page, listenRu);
