@@ -19,7 +19,7 @@ Read first: `docs/roles/arbiter.md`, `docs/NOW.md` (the roster, "Waiting on him"
 
 ## The chats (each was told at 15:40 UTC to report to Arbiter 2, session_01VuYTwbacb8geNS4VjyJwQh)
 
-- Updates 9 (session_01VuYTwdd6y5sv2PFuJxKCx9): compacted once; writing its baton and stopping. Archive it on that message. Its baton holds Desert for the apply chat.
+- Updates 9: done and archived (15:40 UTC). Its baton, docs/handoffs/updates-9.md (20e1aae9), holds Desert for the apply chat: Roses as its kept look, sixteen reading modes, fourteen looks.
 - Updates 16 (session_01VuYTwd89gnbyWMLrBxXNzb): the World English Bible, British edition. When it is pushed, tell the SSM board: "Six more Bibles" becomes seven. Then archive it unless his answers have come.
 - Updates 18 (session_01VuYTwbCP81WgRmCSnDVtAh): the last of Gate 2.0's motion faults, and checkMock's lists taking in Councils and Cappadocian.
 - Updates 19 (session_01VuYTwaQ5oxRr2ERLvFyCnt): the voices: pushes the first patch, then one page for his yes with three points (prompts on Android, licensed translations, Heart's name).
