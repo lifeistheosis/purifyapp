@@ -1,0 +1,1196 @@
+From 57d605fb75e1f4ecb2693d36a7d195fd9f276d4c Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 13 Nov 2026 08:29:01 +0000
+Subject: [PATCH 3/3] Share every work, from both of its sheets, with a proper
+ preview (build 95 note 15)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+His word, 2026-11-13 about 07:50 UTC, with The Paschal Homily's two sheets:
+"allow every single work to be sharable by adding a share button here and
+here". His first screenshot was the contents (a work of one section: About
+this book alone, and under it the empty list's border, a rule before
+nothing); the second was ••• (Reader settings, Bookmark this section, About
+this book, Search Purify).
+
+Every work of the Fathers and every council's document now has Share in both:
+- in the contents, under About this book, the work itself;
+- in •••, beside the bookmark (before About this book and Search, the rows
+  that open other sheets), the part being read: the work's page at #sN, the
+  website's own address for it, in a work of more than one part.
+The sheet's own row, the Share mark from components/ui/icons, the catalog's
+common.share in every language; it reads from the right in Arabic and Urdu.
+It shares by the app's one way (lib/share/shareOut.ts): the work's title and
+its page on purifyapp.net, never the app's localhost, the address bar's query
+or the reader's paragraph. Once shared the sheet closes; with no share sheet
+the link is copied and the row says "Link copied".
+
+The empty list is not drawn for a work of one section (51 of 249 works and
+some councils' documents), and About this book's last rule goes when nothing
+follows it (every council's document ended in one).
+
+The preview: a work's page named nothing of its own, so every work shared
+unfolded as Purify's home ("Purify, Orthodox prayer, calendar, and
+Scripture", the home page's address and canonical). lib/seo/preview.ts gives
+both work pages their title, description, own address and canonical, and the
+cover's picture whole (a portrait icon as the small card), Purify's own card
+where a work has none. The website's alone: an app's page carries its title.
+
+lib/reading/__tests__/shareWork.test.ts: 10 of its tests fail on the old
+sheets and pages.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01VuYTwd6C7vuf2b6mXAQ8Xm
+---
+ app/(app)/councils/[slug]/[document]/page.tsx |  15 +-
+ app/(app)/saints/[slug]/[work]/page.tsx       |  16 +-
+ components/councils/CouncilBookHeader.tsx     |   4 +-
+ components/councils/CouncilReader.tsx         |  21 +-
+ components/reading/BookHeader.tsx             |   3 +-
+ components/reading/ShareWorkRow.tsx           |  65 ++++
+ components/saints/MobileWorkActions.tsx       |  10 +-
+ components/saints/WorkContents.tsx            | 193 +++++-----
+ components/saints/WritingReader.tsx           |  14 +-
+ lib/councils/__tests__/pages.test.ts          |   3 +-
+ lib/reading/__tests__/shareWork.test.ts       | 342 ++++++++++++++++++
+ lib/reading/cards.ts                          |  15 +
+ lib/reading/shareWork.ts                      |  53 +++
+ lib/saints/workNow.ts                         |   7 +
+ lib/seo/preview.ts                            |  65 ++++
+ 15 files changed, 725 insertions(+), 101 deletions(-)
+ create mode 100644 components/reading/ShareWorkRow.tsx
+ create mode 100644 lib/reading/__tests__/shareWork.test.ts
+ create mode 100644 lib/reading/shareWork.ts
+ create mode 100644 lib/seo/preview.ts
+
+diff --git a/app/(app)/councils/[slug]/[document]/page.tsx b/app/(app)/councils/[slug]/[document]/page.tsx
+index b7c774cb..574b23e1 100644
+--- a/app/(app)/councils/[slug]/[document]/page.tsx
++++ b/app/(app)/councils/[slug]/[document]/page.tsx
+@@ -16,6 +16,7 @@ import { documentMinutes } from "@/lib/councils/books";
+ import { editionOf } from "@/lib/councils/edition";
+ import { authorLine, councilPicture, cropOf, eraOfYear } from "@/lib/councils/page";
+ import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
++import { linkPreview } from "@/lib/seo/preview";
+ 
+ export function generateStaticParams() {
+  return COUNCILS.flatMap((c) =>
+@@ -34,9 +35,17 @@ export async function generateMetadata({
+  const c = getCouncil(slug);
+  const doc = c?.documents.find((d) => d.slug === document && !d.href);
+  if (!c || !doc) return { title: "Document not found" };
++ const title = `${doc.title}, ${c.byname}`;
++ const description = doc.blurb;
++ // How the document shows where its link is pasted (build 95 note 15): its
++ // title, its page, the council's icon whole. The website's alone.
++ const picture = IS_STATIC_EXPORT ? null : councilPicture(c.slug, false);
+  return {
+- title: `${doc.title}, ${c.byname}`,
+- description: doc.blurb,
++ title,
++ description,
++ ...(IS_STATIC_EXPORT
++  ? {}
++  : linkPreview({ title, description, path: `/councils/${c.slug}/${doc.slug}`, picture: picture ? { url: picture.src, width: picture.width, height: picture.height, alt: picture.alt } : null })),
+  };
+ }
+ 
+@@ -123,7 +132,7 @@ export default async function CouncilDocumentPage({
+      Continue) is About this book, a sheet over the section (r3-29 A). Over
+      the reader, for a reader in another language, the line that says the
+      text is English (components/i18n/StillInEnglish.tsx). */}
+- <CouncilReaderHere docKey={`${c.slug}/${docRef.slug}`} positionKey={positionKey} docSlug={docRef.slug} title={content.title} sections={sections} about={about}>
++ <CouncilReaderHere docKey={`${c.slug}/${docRef.slug}`} positionKey={positionKey} docSlug={docRef.slug} page={`/councils/${c.slug}/${docRef.slug}`} title={content.title} sections={sections} about={about}>
+  <CouncilSections content={content} council={{ slug: c.slug, name: c.byname }} />
+  </CouncilReaderHere>
+ 
+diff --git a/app/(app)/saints/[slug]/[work]/page.tsx b/app/(app)/saints/[slug]/[work]/page.tsx
+index 7c2bf6ee..c859cdb9 100644
+--- a/app/(app)/saints/[slug]/[work]/page.tsx
++++ b/app/(app)/saints/[slug]/[work]/page.tsx
+@@ -13,7 +13,9 @@ import { StillInEnglish } from "@/components/i18n/StillInEnglish";
+ import { OpeningCover } from "@/components/reading/OpeningCover";
+ import { RecordRead } from "@/components/reading/RecordRead";
+ import { KeepDay } from "@/components/streak/KeepDay";
+-import { bookPage } from "@/lib/reading/cards";
++import { bookPage, workPreviewPicture } from "@/lib/reading/cards";
++import { workHref } from "@/lib/reading/workHref";
++import { linkPreview } from "@/lib/seo/preview";
+ import { MovedPlace } from "@/components/saints/MovedPlace";
+ import { movesOutOf } from "@/lib/saints/workMoves";
+ 
+@@ -41,9 +43,17 @@ export async function generateMetadata({ params }: { params: Params }) {
+   const { slug, work } = await params;
+   const found = getWork(slug, work);
+   if (!found) return { title: "Writing" };
++  const title = `${found.work.title}, ${found.saint.name}`;
++  const description = found.work.blurb;
+   return {
+-    title: `${found.work.title}, ${found.saint.name}`,
+-    description: found.work.blurb,
++    title,
++    description,
++    // How the work shows where its link is pasted, as its sheets' Share hands
++    // it on (build 95 note 15): its title, its page, its cover's picture. The
++    // website's alone; an app's page carries its title (app/layout.tsx).
++    ...(IS_STATIC_EXPORT
++      ? {}
++      : linkPreview({ title, description, path: workHref(found.saint.slug, found.work.slug), picture: workPreviewPicture(found.saint.slug, found.work.slug) })),
+   };
+ }
+ 
+diff --git a/components/councils/CouncilBookHeader.tsx b/components/councils/CouncilBookHeader.tsx
+index de8e8253..f88c13a8 100644
+--- a/components/councils/CouncilBookHeader.tsx
++++ b/components/councils/CouncilBookHeader.tsx
+@@ -65,7 +65,9 @@ export function CouncilBookHeader({
+   const { t } = useTranslate();
+   const Heading = heading;
+   return (
+-    <header data-book-header="" data-council-book="" className="border-b border-paper/8 pb-8 pt-6 md:pb-12 md:pt-14">
++    // The rule under it parts it from what follows, and goes when nothing does (build 95 note 15):
++    // in About this book a council's document has nothing under it.
++    <header data-book-header="" data-council-book="" className="border-b border-paper/8 pb-8 pt-6 last:border-b-0 md:pb-12 md:pt-14">
+       <nav aria-label={t("study.councils.theCouncils")} className="mb-10 hidden items-center gap-1.5 font-sans text-detail text-paper/55 md:flex native-md-hidden">
+         <Link href="/councils" className="hover:text-paper">
+           {t("study.councils.theCouncils")}
+diff --git a/components/councils/CouncilReader.tsx b/components/councils/CouncilReader.tsx
+index a395a284..cdeb901a 100644
+--- a/components/councils/CouncilReader.tsx
++++ b/components/councils/CouncilReader.tsx
+@@ -12,6 +12,7 @@ import { WorkHead } from "@/components/saints/WorkHead";
+ import { usePartWords } from "@/components/saints/partWords";
+ import { chapterOf, useChapterTarget, useGoToChapter, useKeepPlace, useLanding } from "@/components/saints/useWorkPlace";
+ import { Sheet } from "@/components/ui/Sheet";
++import { partShare } from "@/lib/reading/shareWork";
+ import { neighbours, partsOf } from "@/lib/saints/parts";
+ import { WORK_ABOUT_EVENT, WORK_CONTENTS_EVENT, answerWorkAbout, hearWaitingWorkAbout, setWorkNow } from "@/lib/saints/workNow";
+ import { useScrollAway } from "@/lib/ui/scrollAway";
+@@ -38,6 +39,7 @@ import { useScrollAway } from "@/lib/ui/scrollAway";
+ export function CouncilReader({
+   positionKey,
+   docSlug,
++  page,
+   title,
+   sections,
+   about,
+@@ -46,6 +48,8 @@ export function CouncilReader({
+   /** Where its place is kept: "councils/<council>", beside the Fathers' "<saint>". */
+   positionKey: string;
+   docSlug: string;
++  /** Its own page, "/councils/<council>/<document>": what Share hands on (build 95 note 15). */
++  page: string;
+   /** The document's title. */
+   title: string;
+   sections: { n: number; title: string }[];
+@@ -82,10 +86,22 @@ export function CouncilReader({
+     setWords(Array.from(out, (w) => w ?? 0));
+   }, [head.n]);
+ 
++  // Share hands on the section being read, in a document of more than one (lib/reading/shareWork.ts).
++  const several = sections.length > 1;
+   useEffect(() => {
++    const label = pill(head);
+     // No bookmark here: a council's document is not a saint's work (lib/bookmarks.ts).
+-    setWorkNow({ saintSlug: "", saintName: "", workSlug: docSlug, workTitle: title, sectionN: head.n, sectionTitle: head.n ? sections.find((s) => s.n === head.n)?.title ?? "" : "", label: pill(head) });
+-  }, [docSlug, title, head, sections, pill]);
++    setWorkNow({
++      saintSlug: "",
++      saintName: "",
++      workSlug: docSlug,
++      workTitle: title,
++      sectionN: head.n,
++      sectionTitle: head.n ? sections.find((s) => s.n === head.n)?.title ?? "" : "",
++      label,
++      share: partShare({ title, page }, several ? { n: head.n, label } : null),
++    });
++  }, [docSlug, title, head, sections, pill, page, several]);
+   useEffect(() => () => setWorkNow(null), []);
+ 
+   const [sheet, setSheet] = useState<"contents" | "about" | null>(null);
+@@ -134,6 +150,7 @@ export function CouncilReader({
+         current={head.n}
+         onGo={go}
+         onAbout={() => setSheet("about")}
++        share={partShare({ title, page }, null)}
+       />
+       <Sheet open={sheet === "about"} onClose={() => setSheet(null)} title={t("bible.aboutThisBook")} openFull desktop>
+         <div data-about-sheet="">
+diff --git a/components/reading/BookHeader.tsx b/components/reading/BookHeader.tsx
+index efea9edc..ad7f18fb 100644
+--- a/components/reading/BookHeader.tsx
++++ b/components/reading/BookHeader.tsx
+@@ -76,7 +76,8 @@ export function BookHeader({
+   ].filter(Boolean);
+ 
+   return (
+-    <header data-book-header="" className="border-b border-paper/8 pb-8 pt-6 md:pb-12 md:pt-14">
++    // The rule under it parts it from More like this, and goes when nothing follows (build 95 note 15).
++    <header data-book-header="" className="border-b border-paper/8 pb-8 pt-6 last:border-b-0 md:pb-12 md:pt-14">
+       <nav aria-label={t("nav.saints")} className="mb-10 hidden items-center gap-1.5 font-sans text-detail text-paper/55 md:flex">
+         <Link href="/saints" className="hover:text-paper">
+           {t("nav.saints")}
+diff --git a/components/reading/ShareWorkRow.tsx b/components/reading/ShareWorkRow.tsx
+new file mode 100644
+index 00000000..6975f132
+--- /dev/null
++++ b/components/reading/ShareWorkRow.tsx
+@@ -0,0 +1,65 @@
++"use client";
++
++import { useEffect, useRef, useState } from "react";
++
++import { useTranslate } from "@/components/i18n/MessagesProvider";
++import { Check } from "@/components/ui/icons/Check";
++import { Share } from "@/components/ui/icons/Share";
++import { shareWork, type WorkShare } from "@/lib/reading/shareWork";
++
++/**
++ * Share, as a row of a work's sheet (1.9, build 95 note 15, his word of
++ * 2026-11-13: "allow every single work to be sharable by adding a share
++ * button here and here"). It is drawn with the sheet's own row (`className`,
++ * the look of the rows beside it), the phone's own mark for sharing
++ * (components/ui/icons/Share.tsx) and the word every share in the app says
++ * (common.share), in the reader's language; in Arabic and Urdu the row reads
++ * from the right as its neighbours do, and the mark, an arrow rising out of
++ * a tray, needs no turning.
++ *
++ * A tap opens the phone's share sheet with the work's title and its page on
++ * purifyapp.net (lib/reading/shareWork.ts). Once shared, the sheet it stands
++ * in closes; closed without choosing, it stays. Where there is no share
++ * sheet (a computer's browser, mostly) the link is copied, and the row says
++ * "Link copied" with a tick for a moment, where a screen reader hears it too.
++ * No chevron at its end: it opens nothing of the app's, as Share in the
++ * player's ••• (components/player/PlayerMore.tsx).
++ */
++export function ShareWorkRow({ share, className, onShared }: { share: WorkShare; className: string; onShared?: () => void }) {
++  const { t } = useTranslate();
++  const [copied, setCopied] = useState(false);
++  // One share at a time: a second tap while the sheet is rising is not a second share.
++  const busy = useRef(false);
++  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
++  useEffect(() => () => {
++    if (timer.current) clearTimeout(timer.current);
++  }, []);
++
++  async function onTap() {
++    if (busy.current) return;
++    busy.current = true;
++    try {
++      const result = await shareWork(share);
++      if (result === "shared") onShared?.();
++      else if (result === "copied") {
++        setCopied(true);
++        if (timer.current) clearTimeout(timer.current);
++        timer.current = setTimeout(() => setCopied(false), 1800);
++      }
++    } finally {
++      busy.current = false;
++    }
++  }
++
++  return (
++    <button type="button" data-share-work="" onClick={() => void onTap()} className={className}>
++      <span className="inline-flex min-w-0 items-center gap-2">
++        {copied ? <Check size={16} className="shrink-0" /> : <Share size={16} className="shrink-0" />}
++        <span className="truncate">{copied ? t("common.linkCopied") : t("common.share")}</span>
++      </span>
++      <span aria-live="polite" className="sr-only">
++        {copied ? t("common.linkCopied") : ""}
++      </span>
++    </button>
++  );
++}
+diff --git a/components/saints/MobileWorkActions.tsx b/components/saints/MobileWorkActions.tsx
+index 8941d90f..a69cc7d4 100644
+--- a/components/saints/MobileWorkActions.tsx
++++ b/components/saints/MobileWorkActions.tsx
+@@ -4,6 +4,7 @@ import { useState } from "react";
+ 
+ import { ReaderSettingsSheet, ToggleRow } from "@/components/bible/ReaderSettingsMenu";
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
++import { ShareWorkRow } from "@/components/reading/ShareWorkRow";
+ import { Book } from "@/components/ui/icons/Book";
+ import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+ import { More } from "@/components/ui/icons/More";
+@@ -22,8 +23,9 @@ import { TOP_ICON, TOP_PLATE } from "@/components/nav/topPlate";
+  * draws it on its round plate. Its sheet holds what the Bible's holds for a
+  * chapter: the reader's settings (the same sheet, the same preferences),
+  * Bookmark this chapter, by the work's own name for it ("Bookmark Conference
+- * 10 · 10"), About this book, and the search of the whole app. The chapter
+- * being read is the reader's (lib/saints/workNow.ts).
++ * 10 · 10"), Share (1.9, build 95 note 15: the chapter's page on the
++ * website, to the phone's share sheet), About this book, and the search of
++ * the whole app. The chapter being read is the reader's (lib/saints/workNow.ts).
+  *
+  * Until 1.8 this slot held one gear for the settings, in a bar of its own.
+  */
+@@ -81,6 +83,10 @@ export function MobileWorkActions() {
+               paragraph's menu uses for the same bookmark (a writing-section); with the section's name
+               in it, a long title was cut short (the gate's third run, 2026-11-11). */}
+           {locator && now ? <ToggleRow on={saved} touch label={t("saints.bookmarkThisSection")} onClick={toggleSaved} /> : null}
++          {/* Share (build 95 note 15), beside the bookmark: both act on the chapter the sheet names,
++              before the two rows that open other sheets. The chapter's own address on the website,
++              the work's page alone for a work of one (lib/reading/shareWork.ts). */}
++          {now ? <ShareWorkRow share={now.share} className={row} onShared={close} /> : null}
+           <button
+             type="button"
+             aria-haspopup="dialog"
+diff --git a/components/saints/WorkContents.tsx b/components/saints/WorkContents.tsx
+index 6cf9f315..17b43b52 100644
+--- a/components/saints/WorkContents.tsx
++++ b/components/saints/WorkContents.tsx
+@@ -4,14 +4,20 @@ import { useCallback, useLayoutEffect, useRef, useState } from "react";
+ 
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+ import { INDEX_LIST_LOOK } from "@/components/mobile/IndexRows";
++import { ShareWorkRow } from "@/components/reading/ShareWorkRow";
+ import { Book } from "@/components/ui/icons/Book";
+ import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+ import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+ import { Sheet } from "@/components/ui/Sheet";
+ import { cn } from "@/lib/cn";
++import type { WorkShare } from "@/lib/reading/shareWork";
+ import type { ContentsEntry, SectionHead } from "@/lib/saints/parts";
+ import { scrollBehavior } from "@/lib/ui/motion";
+ 
++/** The sheet's own row: About this book, and Share under it. */
++const ROW =
++  "inline-flex min-h-12 w-full items-center justify-between gap-3 rounded-pill border border-paper/15 bg-paper/[0.04] px-3.5 font-sans text-detail font-medium text-paper/85 hover:border-paper/30 hover:bg-paper/10";
++
+ import { usePartWords } from "./partWords";
+ 
+ /**
+@@ -20,7 +26,9 @@ import { usePartWords } from "./partWords";
+  * title and the pill's name:
+  *
+  *  - About this book at the top: the book's page, its cover, what it is and
+- *    More like this (components/saints/AboutBook.tsx).
++ *    More like this (components/saints/AboutBook.tsx). Under it Share, the
++ *    work itself to the phone's share sheet (1.9, build 95 note 15:
++ *    components/reading/ShareWorkRow.tsx).
+  *  - A work in two levels lists its larger parts as the Bible lists its
+  *    books, "Conference 10 · 14 ch", the one being read opened at its
+  *    chapters as a grid, the chapter being read lit white (.reader-lit; ink
+@@ -31,6 +39,9 @@ import { usePartWords } from "./partWords";
+  *  - A work in one level is one grid, "Homily 15" lit.
+  *  - A section known by its own title (a preface, a work whose parts are not
+  *    numbered) is a row of its own.
++ *  - A work of one section has nothing to choose, and no list: until build
++ *    95 note 15 its empty list's border stood under About this book as a
++ *    rule before nothing (The Paschal Homily, his first screenshot).
+  *
+  * The names are the work's own (lib/saints/parts.ts), the same the head and
+  * the pill say. Choosing closes the sheet and opens the chapter, in the same
+@@ -47,6 +58,7 @@ export function WorkContents({
+   current,
+   onGo,
+   onAbout,
++  share,
+ }: {
+   open: boolean;
+   onClose: () => void;
+@@ -59,6 +71,8 @@ export function WorkContents({
+   onGo: (n: number) => void;
+   /** About this book; none where the work has no book's page. */
+   onAbout?: () => void;
++  /** The work, as Share hands it on (lib/reading/shareWork.ts). */
++  share?: WorkShare;
+ }) {
+   const { t } = useTranslate();
+   const { say } = usePartWords();
+@@ -113,24 +127,30 @@ export function WorkContents({
+   }
+ 
+   const caption = head?.caption ?? null;
+-  const lead = onAbout ? (
+-    <button
+-      type="button"
+-      aria-haspopup="dialog"
+-      data-about-book=""
+-      onClick={() => {
+-        onClose();
+-        onAbout();
+-      }}
+-      className="mb-2 inline-flex min-h-12 w-full items-center justify-between gap-3 rounded-pill border border-paper/15 bg-paper/[0.04] px-3.5 font-sans text-detail font-medium text-paper/85 hover:border-paper/30 hover:bg-paper/10"
+-    >
+-      <span className="inline-flex min-w-0 items-center gap-2">
+-        <Book size={16} className="shrink-0" />
+-        <span className="truncate">{t("bible.aboutThisBook")}</span>
+-      </span>
+-      <ChevronRight size={14} className="shrink-0 text-paper/55 rtl:-scale-x-100" />
+-    </button>
+-  ) : undefined;
++  const lead =
++    onAbout || share ? (
++      <div className="mb-2 space-y-2.5">
++        {onAbout ? (
++          <button
++            type="button"
++            aria-haspopup="dialog"
++            data-about-book=""
++            onClick={() => {
++              onClose();
++              onAbout();
++            }}
++            className={ROW}
++          >
++            <span className="inline-flex min-w-0 items-center gap-2">
++              <Book size={16} className="shrink-0" />
++              <span className="truncate">{t("bible.aboutThisBook")}</span>
++            </span>
++            <ChevronRight size={14} className="shrink-0 text-paper/55 rtl:-scale-x-100" />
++          </button>
++        ) : null}
++        {share ? <ShareWorkRow share={share} className={ROW} onShared={onClose} /> : null}
++      </div>
++    ) : undefined;
+ 
+   /** A grid of chapters or parts, the one being read lit, its title under it. */
+   const grid = (id: string, cells: { n: number; label: number }[], name: (label: number) => string) => {
+@@ -173,82 +193,85 @@ export function WorkContents({
+   return (
+     <Sheet open={open} onClose={onClose} title={title} openFull desktop lead={lead}>
+       <div ref={placeList} data-work-contents="">
+-        <ul className={INDEX_LIST_LOOK}>
+-          {entries.map((e, i) => {
+-            const first = i === 0;
+-            const line = first ? undefined : "border-t border-paper/[0.06]";
+-            if (e.kind === "row") {
+-              const reading = e.n === current;
++        {/* A work of one section lists nothing: no box, not even its border. */}
++        {entries.length ? (
++          <ul className={INDEX_LIST_LOOK}>
++            {entries.map((e, i) => {
++              const first = i === 0;
++              const line = first ? undefined : "border-t border-paper/[0.06]";
++              if (e.kind === "row") {
++                const reading = e.n === current;
++                return (
++                  <li key={`row-${e.n}`} className={line}>
++                    <button
++                      type="button"
++                      aria-current={reading ? "page" : undefined}
++                      onClick={() => go(e.n)}
++                      className={cn(
++                        "flex min-h-[46px] w-full items-center gap-3 px-4 py-2.5 text-start motion-safe:transition-colors active:bg-paper/[0.04]",
++                        reading && "bg-paper/[0.05]",
++                      )}
++                    >
++                      <span lang="en" dir="ltr" className={cn("min-w-0 font-heading text-[16px] leading-tight", reading ? "font-semibold text-paper" : "text-paper/85")}>
++                        {e.title}
++                      </span>
++                    </button>
++                  </li>
++                );
++              }
++              if (e.kind === "grid") {
++                return (
++                  <li key={`grid-${i}`} className={line}>
++                    {grid(`work-grid-${i}`, e.sections, (label) => {
++                      const h = heads.find((x) => x.n === e.sections.find((c) => c.label === label)?.n);
++                      return h ? say(h.pill.name) : String(label);
++                    })}
++                  </li>
++                );
++              }
++              if (e.omitted) {
++                return (
++                  <li key={e.key} className={line} data-omitted="">
++                    <div className="flex min-h-[46px] w-full items-center justify-between gap-3 px-4 py-2.5">
++                      <span className="min-w-0 font-heading text-[16px] font-semibold leading-tight text-paper/45">{say(e.name)}</span>
++                      <span className="shrink-0 font-sans text-caption text-paper/45">{t("reading.part.notInEdition")}</span>
++                    </div>
++                  </li>
++                );
++              }
++              const isOpen = openKey === e.key;
++              const gridId = `work-part-${e.key.replace(/[^a-z0-9]/gi, "-")}`;
+               return (
+-                <li key={`row-${e.n}`} className={line}>
++                <li key={e.key} className={line}>
+                   <button
+                     type="button"
+-                    aria-current={reading ? "page" : undefined}
+-                    onClick={() => go(e.n)}
++                    data-part={e.key}
++                    data-open-part={isOpen ? "" : undefined}
++                    aria-expanded={isOpen}
++                    aria-controls={isOpen ? gridId : undefined}
++                    onClick={(ev) => toggle(e.key, ev.currentTarget)}
+                     className={cn(
+-                      "flex min-h-[46px] w-full items-center gap-3 px-4 py-2.5 text-start motion-safe:transition-colors active:bg-paper/[0.04]",
+-                      reading && "bg-paper/[0.05]",
++                      "flex min-h-[46px] w-full items-center justify-between gap-3 px-4 py-2.5 text-start motion-safe:transition-colors active:bg-paper/[0.04]",
++                      isOpen && "bg-paper/[0.05]",
+                     )}
+                   >
+-                    <span lang="en" dir="ltr" className={cn("min-w-0 font-heading text-[16px] leading-tight", reading ? "font-semibold text-paper" : "text-paper/85")}>
+-                      {e.title}
++                    <span className="min-w-0 font-heading text-[16px] font-semibold leading-tight text-paper">{say(e.name)}</span>
++                    <span className={cn("inline-flex shrink-0 items-center gap-1.5 font-sans text-detail tabular-nums", isOpen ? "text-paper/70" : "text-paper/45")}>
++                      {e.sections.length} {t("bible.chAbbrev")}
++                      {isOpen ? <ChevronDown size={15} className="rotate-180" /> : null}
+                     </span>
+                   </button>
++                  {isOpen
++                    ? grid(gridId, e.sections, (label) => {
++                        const h = heads.find((x) => x.n === e.sections.find((c) => c.label === label)?.n);
++                        return h?.sub ? `${say(e.name)}, ${say(h.sub)}` : `${say(e.name)} ${label}`;
++                      })
++                    : null}
+                 </li>
+               );
+-            }
+-            if (e.kind === "grid") {
+-              return (
+-                <li key={`grid-${i}`} className={line}>
+-                  {grid(`work-grid-${i}`, e.sections, (label) => {
+-                    const h = heads.find((x) => x.n === e.sections.find((c) => c.label === label)?.n);
+-                    return h ? say(h.pill.name) : String(label);
+-                  })}
+-                </li>
+-              );
+-            }
+-            if (e.omitted) {
+-              return (
+-                <li key={e.key} className={line} data-omitted="">
+-                  <div className="flex min-h-[46px] w-full items-center justify-between gap-3 px-4 py-2.5">
+-                    <span className="min-w-0 font-heading text-[16px] font-semibold leading-tight text-paper/45">{say(e.name)}</span>
+-                    <span className="shrink-0 font-sans text-caption text-paper/45">{t("reading.part.notInEdition")}</span>
+-                  </div>
+-                </li>
+-              );
+-            }
+-            const isOpen = openKey === e.key;
+-            const gridId = `work-part-${e.key.replace(/[^a-z0-9]/gi, "-")}`;
+-            return (
+-              <li key={e.key} className={line}>
+-                <button
+-                  type="button"
+-                  data-part={e.key}
+-                  data-open-part={isOpen ? "" : undefined}
+-                  aria-expanded={isOpen}
+-                  aria-controls={isOpen ? gridId : undefined}
+-                  onClick={(ev) => toggle(e.key, ev.currentTarget)}
+-                  className={cn(
+-                    "flex min-h-[46px] w-full items-center justify-between gap-3 px-4 py-2.5 text-start motion-safe:transition-colors active:bg-paper/[0.04]",
+-                    isOpen && "bg-paper/[0.05]",
+-                  )}
+-                >
+-                  <span className="min-w-0 font-heading text-[16px] font-semibold leading-tight text-paper">{say(e.name)}</span>
+-                  <span className={cn("inline-flex shrink-0 items-center gap-1.5 font-sans text-detail tabular-nums", isOpen ? "text-paper/70" : "text-paper/45")}>
+-                    {e.sections.length} {t("bible.chAbbrev")}
+-                    {isOpen ? <ChevronDown size={15} className="rotate-180" /> : null}
+-                  </span>
+-                </button>
+-                {isOpen
+-                  ? grid(gridId, e.sections, (label) => {
+-                      const h = heads.find((x) => x.n === e.sections.find((c) => c.label === label)?.n);
+-                      return h?.sub ? `${say(e.name)}, ${say(h.sub)}` : `${say(e.name)} ${label}`;
+-                    })
+-                  : null}
+-              </li>
+-            );
+-          })}
+-        </ul>
++            })}
++          </ul>
++        ) : null}
+       </div>
+     </Sheet>
+   );
+diff --git a/components/saints/WritingReader.tsx b/components/saints/WritingReader.tsx
+index 6d41e9d2..b83e9191 100644
+--- a/components/saints/WritingReader.tsx
++++ b/components/saints/WritingReader.tsx
+@@ -18,6 +18,8 @@ import {
+   type ParagraphPlace,
+   type WorkDivisions,
+ } from "@/lib/saints/divisions";
++import { partShare } from "@/lib/reading/shareWork";
++import { workHref } from "@/lib/reading/workHref";
+ import { moveLegacyAnnotations } from "@/lib/saints/layoutMoves";
+ import { carryMovedPlaces } from "@/lib/saints/carryMoves";
+ import { movesInto, movesOutOf } from "@/lib/saints/workMoves";
+@@ -137,10 +139,15 @@ export function WritingReader({
+ 
+  const go = useGoToChapter();
+ 
+- // The chapter on the screen, for the ••• sheet over the page (lib/saints/workNow.ts).
++ // The chapter on the screen, for the ••• sheet over the page (lib/saints/workNow.ts),
++ // and what its Share hands on: the work's page, at the chapter being read in
++ // a work of more than one (build 95 note 15, lib/reading/shareWork.ts).
++ const page = workHref(saint.slug, content.slug);
++ const several = content.sections.length > 1;
+  useEffect(() => {
+- setWorkNow({ saintSlug: saint.slug, saintName: saint.name, workSlug: content.slug, workTitle: content.title, sectionN: sec.n, sectionTitle: sec.title, label: pill(head) });
+- }, [saint.slug, saint.name, content.slug, content.title, sec.n, sec.title, head, pill]);
++ const label = pill(head);
++ setWorkNow({ saintSlug: saint.slug, saintName: saint.name, workSlug: content.slug, workTitle: content.title, sectionN: sec.n, sectionTitle: sec.title, label, share: partShare({ title: content.title, page }, several ? { n: sec.n, label } : null) });
++ }, [saint.slug, saint.name, content.slug, content.title, sec.n, sec.title, head, pill, page, several]);
+  useEffect(() => () => setWorkNow(null), []);
+ 
+  // ── The sheets ─────────────────────────────────────────────────────────
+@@ -242,6 +249,7 @@ export function WritingReader({
+  current={sec.n}
+  onGo={go}
+  onAbout={about ? () => setSheet("about") : undefined}
++ share={partShare({ title: content.title, page }, null)}
+  />
+  {about ? (
+  <Sheet open={sheet === "about"} onClose={() => setSheet(null)} title={t("bible.aboutThisBook")} openFull desktop>
+diff --git a/lib/councils/__tests__/pages.test.ts b/lib/councils/__tests__/pages.test.ts
+index 9b61dfbb..402dca78 100644
+--- a/lib/councils/__tests__/pages.test.ts
++++ b/lib/councils/__tests__/pages.test.ts
+@@ -182,7 +182,8 @@ describe("a council's books in the reading room", () => {
+     expect(page).toMatch(/<MobileTopBar plates back backFallback=\{`\/reading\/councils\/\$\{c\.slug\}`\} trailing=\{<MobileWorkActions \/>\} \/>/);
+     expect(page).toContain("<MobileWorkProgressBar />");
+     // The reader, in the reader's language (1.9): the page writes the English sections into it.
+-    expect(page).toContain("<CouncilReaderHere docKey={`${c.slug}/${docRef.slug}`} positionKey={positionKey} docSlug={docRef.slug} title={content.title} sections={sections} about={about}>");
++    // Its own page, for Share in its sheets (build 95 note 15, lib/reading/shareWork.ts).
++    expect(page).toContain("<CouncilReaderHere docKey={`${c.slug}/${docRef.slug}`} positionKey={positionKey} docSlug={docRef.slug} page={`/councils/${c.slug}/${docRef.slug}`} title={content.title} sections={sections} about={about}>");
+     expect(page).toContain("<CouncilSections content={content} council={{ slug: c.slug, name: c.byname }} />");
+     expect(code("components/councils/CouncilTextHere.tsx")).toContain("<CouncilReader {...reader}>{children}</CouncilReader>");
+     // Each section at its own address, which a quotation elsewhere opens, and its paragraphs places a return lands on.
+diff --git a/lib/reading/__tests__/shareWork.test.ts b/lib/reading/__tests__/shareWork.test.ts
+new file mode 100644
+index 00000000..2a693827
+--- /dev/null
++++ b/lib/reading/__tests__/shareWork.test.ts
+@@ -0,0 +1,342 @@
++// Share every work (1.9, build 95 note 15). His word, 2026-11-13 about 07:50
++// UTC, with two screenshots of The Paschal Homily's sheets: "allow every
++// single work to be sharable by adding a share button here and here". The
++// first was the contents (a work of one section: About this book alone, and
++// under it a rule before nothing); the second was ••• (Reader settings,
++// Bookmark this section, About this book, Search Purify).
++//
++// What it holds:
++//   the rows       Share in both sheets, on every work of the Fathers and every
++//                  council's document: the sheet's own row, the Share mark,
++//                  the word every share in the app says, in every language,
++//                  reading from the right in Arabic and Urdu
++//   its place      in •••, beside the bookmark (both act on the chapter the
++//                  sheet names), before the rows that open other sheets; in
++//                  the contents, under About this book
++//   the rule       a work of one section draws no list, so no border of one
++//   what is sent   the work's title and its page on purifyapp.net, at the part
++//                  being read from •••: never the app's https://localhost,
++//                  never the address bar's query or the reader's paragraph
++//   how            the Share plugin in the apps, the Web Share sheet in a
++//                  browser, the link copied where there is neither, nothing
++//                  copied when the sheet is closed without choosing
++//   the preview    the page names itself where its link is pasted: its
++//                  title, its page, its own picture (it was Purify's home)
++//
++// What a reader would notice if this broke: no way to hand a work on; a link
++// that opens nothing (localhost) or opens the home page's preview; a sheet
++// that ends in a stray line.
++
++import fs from "node:fs";
++import path from "node:path";
++
++import { createElement, type ReactNode } from "react";
++import { renderToStaticMarkup } from "react-dom/server";
++import { afterEach, describe, expect, it, vi } from "vitest";
++
++import type { WorkNow } from "@/lib/saints/workNow";
++
++// The address the store builds are made with (.github/workflows/android-apk.yml).
++vi.hoisted(() => {
++  process.env.NEXT_PUBLIC_SITE_URL = "https://purifyapp.net";
++});
++
++let nowValue: WorkNow | null = null;
++vi.mock("@/lib/saints/workNow", async (importOriginal) => {
++  const real = await importOriginal<typeof import("@/lib/saints/workNow")>();
++  return { ...real, useWorkNow: () => nowValue };
++});
++
++// The real sheet draws through a portal once open, which a render to a string
++// has no document for; what is inside it is what is tried here, open or not.
++vi.mock("@/components/ui/Sheet", () => ({
++  Sheet: ({ title, lead, children, foot }: { title?: ReactNode; lead?: ReactNode; children: ReactNode; foot?: ReactNode }) =>
++    createElement("section", { "data-sheet": "" }, createElement("h1", null, title), lead, children, foot),
++}));
++
++// The reader's settings are a sheet of their own, not tried here.
++vi.mock("@/components/bible/ReaderSettingsMenu", async (importOriginal) => {
++  const real = await importOriginal<typeof import("@/components/bible/ReaderSettingsMenu")>();
++  return { ...real, ReaderSettingsSheet: () => null };
++});
++
++const shareCalls: unknown[] = [];
++vi.mock("@capacitor/share", () => ({
++  Share: {
++    share: async (opts: unknown) => {
++      shareCalls.push(opts);
++      return {};
++    },
++  },
++}));
++
++const { MessagesProvider } = await import("@/components/i18n/MessagesProvider");
++const { MobileWorkActions } = await import("@/components/saints/MobileWorkActions");
++const { WorkContents } = await import("@/components/saints/WorkContents");
++const { ShareWorkRow } = await import("@/components/reading/ShareWorkRow");
++const { partShare, shareWork, workPlacePath } = await import("@/lib/reading/shareWork");
++const { workHref } = await import("@/lib/reading/workHref");
++const { workPreviewPicture } = await import("@/lib/reading/cards");
++const { PURIFY_CARD, linkPreview } = await import("@/lib/seo/preview");
++const { partsOf } = await import("@/lib/saints/parts");
++const { getMessages } = await import("@/lib/i18n");
++const { LOCALES } = await import("@/lib/i18n/locales");
++
++const ROOT = path.resolve(__dirname, "..", "..", "..");
++const read = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8").replace(/\r\n/g, "\n");
++
++type ProviderProps = Parameters<typeof MessagesProvider>[0];
++function render(node: ReturnType<typeof createElement>, lang = "en"): string {
++  return renderToStaticMarkup(createElement(MessagesProvider, { locale: lang, messages: getMessages(lang) } as ProviderProps, node));
++}
++const say = (lang: string, key: string) => (getMessages(lang) as Record<string, string>)[key];
++
++/** Each button in the markup: its attributes and its words. */
++function buttons(html: string): { attrs: string; inner: string; at: number }[] {
++  return [...html.matchAll(/<button([^>]*)>([\s\S]*?)<\/button>/g)].map((m) => ({ attrs: m[1], inner: m[2], at: m.index ?? 0 }));
++}
++const classOf = (attrs: string) => /class="([^"]*)"/.exec(attrs)?.[1] ?? "";
++const words = (inner: string) => inner.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
++/** The Share mark (components/ui/icons/Share.tsx): the arrow's shaft. */
++const SHARE_MARK = 'd="M12 15V3.5"';
++
++/** The Conferences, read at its section 102. */
++const CASSIAN: WorkNow = {
++  saintSlug: "john-cassian",
++  saintName: "St. John Cassian",
++  workSlug: "conferences",
++  workTitle: "The Conferences",
++  sectionN: 102,
++  sectionTitle: "Conference 10. Chapter 10",
++  label: "Conference 5 · 10",
++  share: partShare({ title: "The Conferences", page: workHref("john-cassian", "conferences") }, { n: 102, label: "Conference 5 · 10" }),
++};
++/** The Symbol of the Faith: a council's document, no bookmark. */
++const NICAEA: WorkNow = {
++  saintSlug: "",
++  saintName: "",
++  workSlug: "the-symbol-of-the-faith",
++  workTitle: "The Symbol of the Faith",
++  sectionN: 1,
++  sectionTitle: "The Symbol of the Faith",
++  label: "The Symbol of the Faith",
++  share: partShare({ title: "The Symbol of the Faith", page: "/councils/first-nicaea/the-symbol-of-the-faith" }, null),
++};
++
++function moreSheet(now: WorkNow, lang = "en"): string {
++  nowValue = now;
++  return render(createElement(MobileWorkActions), lang);
++}
++
++/** The rows of •••, in order, each by what it is. */
++function moreRows(now: WorkNow): string[] {
++  const html = moreSheet(now);
++  const sheet = html.slice(html.indexOf("data-sheet"));
++  const name = (b: { attrs: string; inner: string }) => {
++    if (/data-share-work/.test(b.attrs)) return "share";
++    const w = words(b.inner);
++    if (w.includes(say("en", "bible.readerSettings"))) return "settings";
++    if (w.includes(say("en", "saints.bookmarkThisSection"))) return "bookmark";
++    if (w === say("en", "bible.aboutThisBook")) return "about";
++    if (w === say("en", "search.ariaLabel")) return "search";
++    return `other: ${w}`;
++  };
++  return buttons(sheet).map(name);
++}
++
++function contentsSheet(sections: { n: number; title: string }[], title: string, lang = "en"): string {
++  const { heads, contents } = partsOf(sections, null, title);
++  return render(
++    createElement(WorkContents, {
++      open: true,
++      onClose: () => {},
++      title,
++      entries: contents,
++      heads,
++      current: sections[0].n,
++      onGo: () => {},
++      onAbout: () => {},
++      share: partShare({ title, page: workHref("john-chrysostom", "paschal-homily") }, null),
++    }),
++    lang,
++  );
++}
++
++afterEach(() => {
++  nowValue = null;
++  shareCalls.length = 0;
++  vi.unstubAllGlobals();
++});
++
++describe("Share in ••• (his second screenshot)", () => {
++  it("stands beside the bookmark, before the two rows that open other sheets", () => {
++    expect(moreRows(CASSIAN)).toEqual(["settings", "bookmark", "share", "about", "search"]);
++  });
++
++  it("is there on a council's document too, where there is no bookmark", () => {
++    expect(moreRows(NICAEA)).toEqual(["settings", "share", "about", "search"]);
++  });
++
++  it("is the sheet's own row, with the Share mark and the word Share, 48px tall", () => {
++    const all = buttons(moreSheet(CASSIAN));
++    const share = all.find((b) => /data-share-work/.test(b.attrs));
++    const about = all.find((b) => words(b.inner) === say("en", "bible.aboutThisBook"));
++    expect(share, "no Share row in •••").toBeTruthy();
++    expect(classOf(share!.attrs)).toBe(classOf(about!.attrs));
++    expect(classOf(share!.attrs)).toContain("min-h-12");
++    expect(share!.attrs).toContain('type="button"');
++    expect(share!.inner).toContain(SHARE_MARK);
++    expect(words(share!.inner)).toBe(say("en", "common.share"));
++  });
++});
++
++describe("Share in the contents (his first screenshot)", () => {
++  it("stands under About this book, the same row, on a work of one section", () => {
++    const html = contentsSheet([{ n: 1, title: "The Paschal Homily" }], "The Paschal Homily");
++    const rows = buttons(html);
++    const about = rows.find((b) => words(b.inner) === say("en", "bible.aboutThisBook"));
++    const share = rows.find((b) => /data-share-work/.test(b.attrs));
++    expect(about, "no About this book row").toBeTruthy();
++    expect(share, "no Share row in the contents").toBeTruthy();
++    expect(share!.at).toBeGreaterThan(about!.at);
++    expect(classOf(share!.attrs)).toBe(classOf(about!.attrs));
++    expect(share!.inner).toContain(SHARE_MARK);
++  });
++
++  it("draws no list for a work of one section, so no rule stands under the rows", () => {
++    // The empty list was a box with a border and nothing in it: a line under About this book.
++    const one = contentsSheet([{ n: 1, title: "The Paschal Homily" }], "The Paschal Homily");
++    expect(one).not.toMatch(/<ul/);
++    // A work of several sections still lists them.
++    const several = contentsSheet(
++      [
++        { n: 1, title: "Homily 1" },
++        { n: 2, title: "Homily 2" },
++        { n: 3, title: "Homily 3" },
++      ],
++      "Homilies",
++    );
++    expect(several).toMatch(/<ul/);
++  });
++});
++
++describe("the row in every language", () => {
++  it("says Share in the reader's language, from the catalog every share uses", () => {
++    for (const { code } of LOCALES) {
++      const html = render(createElement(ShareWorkRow, { share: CASSIAN.share, className: "row" }), code);
++      const share = buttons(html)[0];
++      expect(words(share.inner), code).toBe(say(code, "common.share"));
++      expect(say(code, "common.share"), code).toBeTruthy();
++    }
++  });
++
++  it("reads from the right in Arabic and Urdu as its neighbours do, with nothing fixed to a side", () => {
++    for (const code of ["ar", "ur"]) {
++      const html = moreSheet(CASSIAN, code);
++      const share = buttons(html).find((b) => /data-share-work/.test(b.attrs))!;
++      expect(words(share.inner)).toBe(say(code, "common.share"));
++      // Start and end, never left and right: the row turns with the page.
++      expect(share.inner + share.attrs).not.toMatch(/\b(?:ml|mr|pl|pr|left|right|text-left|text-right)-/);
++    }
++  });
++});
++
++describe("what is shared", () => {
++  it("from •••: the chapter being read, by the website's own address for it", () => {
++    expect(CASSIAN.share).toEqual({ title: "The Conferences", text: "The Conferences, Conference 5 · 10", path: "/saints/john-cassian/conferences#s102" });
++    // A work of one part is shared as itself, its title said once.
++    expect(partShare({ title: "The Paschal Homily", page: "/saints/john-chrysostom/paschal-homily" }, { n: 1, label: "The Paschal Homily" }).text).toBe("The Paschal Homily");
++    expect(NICAEA.share.path).toBe("/councils/first-nicaea/the-symbol-of-the-faith");
++    expect(workPlacePath("/saints/a/b", null)).toBe("/saints/a/b");
++  });
++
++  it("the readers give ••• the chapter's address only in a text of more than one", () => {
++    for (const rel of ["components/saints/WritingReader.tsx", "components/councils/CouncilReader.tsx"]) {
++      const src = read(rel);
++      expect(src, rel).toMatch(/several \? \{ n: (?:sec|head)\.n, label \} : null/);
++      expect(src, rel).toMatch(/share=\{partShare\(\{ title(?:: content\.title)?, page \}, null\)\}/);
++    }
++  });
++
++  it("is the work's title and its page on purifyapp.net, never the app's localhost or anything of the reader's", async () => {
++    // Inside the app on Android: the page is served from https://localhost, with a query and the reader's paragraph.
++    const asked: ShareData[] = [];
++    vi.stubGlobal("window", { location: { href: "https://localhost/saints/john-cassian/conferences/?from=reading#p-102-4", origin: "https://localhost" } });
++    vi.stubGlobal("navigator", { userAgent: "Mozilla/5.0", share: async (data: ShareData) => void asked.push(data) });
++    expect(await shareWork(CASSIAN.share)).toBe("shared");
++    expect(asked).toEqual([{ title: "The Conferences", text: "The Conferences, Conference 5 · 10", url: "https://purifyapp.net/saints/john-cassian/conferences#s102" }]);
++  });
++
++  it("in the apps, asks the Share plugin, the phone's own sheet", async () => {
++    vi.stubGlobal("window", { Capacitor: { isNativePlatform: () => true }, location: { href: "https://localhost/", origin: "https://localhost" } });
++    vi.stubGlobal("navigator", { userAgent: "Mozilla/5.0" });
++    expect(await shareWork(NICAEA.share)).toBe("shared");
++    expect(shareCalls).toEqual([
++      { title: "The Symbol of the Faith", text: "The Symbol of the Faith", url: "https://purifyapp.net/councils/first-nicaea/the-symbol-of-the-faith", dialogTitle: "The Symbol of the Faith" },
++    ]);
++  });
++
++  it("copies the link where there is no share sheet, and nothing when the sheet is closed without choosing", async () => {
++    const copied: string[] = [];
++    vi.stubGlobal("navigator", { userAgent: "Mozilla/5.0", clipboard: { writeText: async (s: string) => void copied.push(s) } });
++    expect(await shareWork(CASSIAN.share)).toBe("copied");
++    expect(copied).toEqual(["https://purifyapp.net/saints/john-cassian/conferences#s102"]);
++
++    copied.length = 0;
++    const closed = Object.assign(new Error("Share canceled"), { name: "AbortError" });
++    vi.stubGlobal("navigator", {
++      userAgent: "Mozilla/5.0",
++      share: async () => {
++        throw closed;
++      },
++      clipboard: { writeText: async (s: string) => void copied.push(s) },
++    });
++    expect(await shareWork(CASSIAN.share)).toBe("dismissed");
++    expect(copied).toEqual([]);
++  });
++});
++
++describe("the preview where the link is pasted", () => {
++  it("names the page: its title, what it is, its own address, its own picture", () => {
++    const picture = workPreviewPicture("john-chrysostom", "paschal-homily");
++    expect(picture, "The Paschal Homily has a cover picture").toBeTruthy();
++    expect(picture!.url.startsWith("/")).toBe(true);
++    const p = linkPreview({ title: "The Paschal Homily, St. John Chrysostom", description: "The brief sermon.", path: "/saints/john-chrysostom/paschal-homily", picture });
++    expect(p.alternates).toEqual({ canonical: "/saints/john-chrysostom/paschal-homily" });
++    expect(p.openGraph).toMatchObject({ title: "The Paschal Homily, St. John Chrysostom", description: "The brief sermon.", url: "/saints/john-chrysostom/paschal-homily", siteName: "Purify", images: [picture] });
++    expect(p.twitter).toMatchObject({ title: "The Paschal Homily, St. John Chrysostom", description: "The brief sermon." });
++  });
++
++  it("shows an icon whole beside the words, and gives a wide picture the large card", () => {
++    expect(linkPreview({ title: "t", path: "/a", picture: { url: "/i.jpg", width: 600, height: 750 } }).twitter).toMatchObject({ card: "summary" });
++    expect(linkPreview({ title: "t", path: "/a", picture: { url: "/i.jpg", width: 1600, height: 900 } }).twitter).toMatchObject({ card: "summary_large_image" });
++  });
++
++  it("shows Purify's own card where the page has no picture, as the file is", () => {
++    // A page that names its own preview inherits none: 19 works were left with no picture at all.
++    const p = linkPreview({ title: "t", path: "/a", picture: null });
++    expect(p.openGraph).toMatchObject({ images: [PURIFY_CARD] });
++    expect(p.twitter).toMatchObject({ card: "summary_large_image" });
++    const png = fs.readFileSync(path.join(ROOT, "app/opengraph-image.png"));
++    expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([PURIFY_CARD.width, PURIFY_CARD.height]);
++    expect(read("app/opengraph-image.alt.txt").trim()).toBe(PURIFY_CARD.alt);
++  });
++
++  it("is written by both pages a work is read on, on the website alone", () => {
++    for (const rel of ["app/(app)/saints/[slug]/[work]/page.tsx", "app/(app)/councils/[slug]/[document]/page.tsx"]) {
++      const src = read(rel);
++      expect(src, rel).toMatch(/IS_STATIC_EXPORT\s*\?\s*\{\}\s*:\s*linkPreview\(/);
++    }
++  });
++});
++
++describe("a rule with nothing after it", () => {
++  it("goes from About this book when nothing follows the book's head", () => {
++    for (const rel of ["components/reading/BookHeader.tsx", "components/councils/CouncilBookHeader.tsx"]) {
++      const head = /<header data-book-header=""[^>]*className="([^"]*)"/.exec(read(rel))?.[1] ?? "";
++      expect(head, rel).toContain("border-b");
++      expect(head, rel).toContain("last:border-b-0");
++    }
++  });
++});
++
+diff --git a/lib/reading/cards.ts b/lib/reading/cards.ts
+index 8a9e67de..b1c569b4 100644
+--- a/lib/reading/cards.ts
++++ b/lib/reading/cards.ts
+@@ -1,6 +1,7 @@
+ import "server-only";
+ 
+ import type { ReadingCoverPack } from "@/lib/packs/types";
++import type { PreviewPicture } from "@/lib/seo/preview";
+ 
+ import stats from "@/data/reading/stats.json";
+ import { SAINTS, type Saint } from "@/lib/saints/saints";
+@@ -85,6 +86,20 @@ export function workArt(key: WorkKey, entry: ReadingEntry): CoverArt | null {
+   return WORK_ART[key] ?? coverArtFor(subject) ?? (entry.by && entry.by !== subject ? coverArtFor(entry.by) : null);
+ }
+ 
++/**
++ * A work's picture where its link is pasted (1.9, build 95 note 15;
++ * lib/seo/preview.ts): its cover's picture, whole, at its address on the
++ * website, with its size and what it shows where the row says. None for a
++ * work on the plate alone.
++ */
++export function workPreviewPicture(saintSlug: string, workSlug: string): PreviewPicture | null {
++  const key = `${saintSlug}/${workSlug}` as WorkKey;
++  const entry = ENTRIES[key];
++  const art = entry ? workArt(key, entry) : null;
++  if (!art) return null;
++  return art.kind === "streamed" ? { url: art.file, width: art.width, height: art.height, alt: art.alt } : { url: art.file };
++}
++
+ export function cardFor(saint: Saint, workSlug: string, native: boolean): Card | null {
+   const key = `${saint.slug}/${workSlug}` as WorkKey;
+   const entry = ENTRIES[key];
+diff --git a/lib/reading/shareWork.ts b/lib/reading/shareWork.ts
+new file mode 100644
+index 00000000..132ff2c2
+--- /dev/null
++++ b/lib/reading/shareWork.ts
+@@ -0,0 +1,53 @@
++"use client";
++
++import { shareOut, type ShareOutResult } from "@/lib/share/shareOut";
++import { shareLink } from "@/lib/site";
++
++/**
++ * A work handed on (1.9, build 95 note 15). His word, 2026-11-13 about 07:50
++ * UTC, with two screenshots of The Paschal Homily's sheets: "allow every
++ * single work to be sharable by adding a share button here and here". Every
++ * work of the Fathers and every council's document has the row in both of
++ * its sheets (components/reading/ShareWorkRow.tsx): the contents, which
++ * shares the work, and •••, which shares the part being read.
++ *
++ * What leaves the device is the work's title and its page on purifyapp.net,
++ * built by the link the rest of the app shares with (lib/site.ts, shareLink):
++ * never the app's own https://localhost, and nothing of the reader's, not
++ * the address bar's query and not the paragraph they stopped at. The part
++ * being read is the website's own address for it, #sN, which the readers
++ * open as any quotation's link does (components/saints/useWorkPlace.ts).
++ */
++export type WorkShare = {
++  /** The work's title: the share sheet's title. */
++  title: string;
++  /** What the message says beside the link: the title, and the part being read where there is more than one. */
++  text: string;
++  /** The work's page, and the part: "/saints/john-cassian/conferences#s12". */
++  path: string;
++};
++
++/** The work's page, at the part being read when it has more than one part (`n`); its page alone otherwise. */
++export function workPlacePath(page: string, n: number | null): string {
++  return n === null ? page : `${page}#s${n}`;
++}
++
++/**
++ * What the ••• sheet shares: the part being read, named as the sheet names it
++ * ("Conference 10 · 10"); a work of one part is shared as itself.
++ */
++export function partShare(work: { title: string; page: string }, part: { n: number; label: string } | null): WorkShare {
++  if (!part) return { title: work.title, text: work.title, path: work.page };
++  return { title: work.title, text: part.label && part.label !== work.title ? `${work.title}, ${part.label}` : work.title, path: workPlacePath(work.page, part.n) };
++}
++
++/**
++ * To the phone's own share sheet, by the app's one way to share (build 95
++ * note 24, lib/share/shareOut.ts): in the apps the Share plugin, in a browser
++ * that can share the Web Share sheet. Where there is neither, the link is
++ * copied, and the row says so. A sheet closed without choosing is not a
++ * failure, and nothing is copied then.
++ */
++export async function shareWork(share: WorkShare): Promise<ShareOutResult> {
++  return shareOut({ title: share.title, text: share.text, url: shareLink(share.path) });
++}
+diff --git a/lib/saints/workNow.ts b/lib/saints/workNow.ts
+index 19900785..ecfb65d2 100644
+--- a/lib/saints/workNow.ts
++++ b/lib/saints/workNow.ts
+@@ -2,6 +2,8 @@
+ 
+ import { useSyncExternalStore } from "react";
+ 
++import type { WorkShare } from "@/lib/reading/shareWork";
++
+ /**
+  * The chapter of a work on the screen, for what stands outside the reader
+  * (1.8, the owner's pick A of r3-29): the ••• button over the page is the
+@@ -24,6 +26,11 @@ export type WorkNow = {
+   sectionTitle: string;
+   /** The chapter's name as the reader says it: "Conference 10 · 10", "Homily 15". */
+   label: string;
++  /**
++   * What ••• shares (1.9, build 95 note 15): the work's title, and its page
++   * on the website at the part being read (lib/reading/shareWork.ts).
++   */
++  share: WorkShare;
+ };
+ 
+ let now: WorkNow | null = null;
+diff --git a/lib/seo/preview.ts b/lib/seo/preview.ts
+new file mode 100644
+index 00000000..efd190dc
+--- /dev/null
++++ b/lib/seo/preview.ts
+@@ -0,0 +1,65 @@
++import type { Metadata } from "next";
++
++/** A picture for a link's preview: its address on the website, and its size and what it shows where those are known. */
++export type PreviewPicture = { url: string; width?: number; height?: number; alt?: string };
++
++/**
++ * Purify's own card (app/opengraph-image.png, its words in
++ * app/opengraph-image.alt.txt), for a page with no picture of its own: a page
++ * that names its own preview no longer inherits it. Held to the file by
++ * lib/reading/__tests__/shareWork.test.ts.
++ */
++export const PURIFY_CARD: PreviewPicture = { url: "/opengraph-image.png", width: 1774, height: 887, alt: "Purify, Apostolic, Orthodox, Knowledge" };
++
++/**
++ * How a page shows where its link is pasted (1.9, build 95 note 15): a
++ * message, a post, a search result. The website's root head names Purify
++ * itself (app/layout.tsx), and a page that names nothing of its own is
++ * previewed as Purify's home: until this, a work shared from its sheets
++ * unfolded as "Purify, Orthodox prayer, calendar, and Scripture" with the
++ * home page's address, on every work of the Fathers and every council's
++ * document (purifyapp.net, read 2026-11-13).
++ *
++ * So the page names itself: its title and what it is, its own address (the
++ * preview's and the search engine's), and its own picture, as an event of
++ * Orthodox History does (app/(app)/history/[slug]/page.tsx). A picture
++ * taller than it is wide (a saint's icon, four by five) is shown whole as the
++ * small square beside the words: the large card cuts a wide band from its
++ * middle, which is where an icon's face is not. A wide one gets the large
++ * card. With no picture of its own the page shows Purify's card.
++ *
++ * The website's alone: an app's page carries its title and nothing else
++ * (app/layout.tsx, APP_METADATA), so callers leave this out of the export.
++ */
++export function linkPreview({
++  title,
++  description,
++  path,
++  picture,
++}: {
++  title: string;
++  description?: string;
++  /** The page's own address on the website, from its root: "/saints/john-chrysostom/paschal-homily". */
++  path: string;
++  picture?: PreviewPicture | null;
++}): Pick<Metadata, "alternates" | "openGraph" | "twitter"> {
++  const shown = picture ?? PURIFY_CARD;
++  const wide = Boolean(shown.width && shown.height && shown.width / shown.height >= 1.5);
++  return {
++    alternates: { canonical: path },
++    openGraph: {
++      type: "article",
++      siteName: "Purify",
++      locale: "en_US",
++      title,
++      ...(description ? { description } : {}),
++      url: path,
++      images: [shown],
++    },
++    twitter: {
++      card: wide ? "summary_large_image" : "summary",
++      title,
++      ...(description ? { description } : {}),
++    },
++  };
++}
+-- 
+2.43.0
+
