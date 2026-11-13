@@ -4,6 +4,7 @@ import { z } from "zod";
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { maybeAutoHide } from "@/lib/community/autoHide";
 import { communityEnabled } from "@/lib/community/flags";
+import { isWithdrawn } from "@/lib/community/withdrawn";
 import { normalizeHandle } from "@/lib/profile/handle";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -71,6 +72,20 @@ async function handlePOST(req: Request) {
   const { postId, replyId, profileHandle, reason } = parsed.data;
 
   const admin = createAdminClient();
+  // A post or reply its writer deleted after others answered stays only as a
+  // placeholder with nothing of theirs in it (lib/community/withdrawn.ts).
+  // There is nothing in it to report, and a report would put an empty row in
+  // the queue, whose removal would tell its writer "we removed your post".
+  if (postId || replyId) {
+    const { data: item } = await admin
+      .from(postId ? "community_posts" : "community_post_replies")
+      .select("status")
+      .eq("id", (postId ?? replyId) as string)
+      .maybeSingle();
+    if (isWithdrawn(item as { status?: string } | null)) {
+      return NextResponse.json({ error: "Not found." }, { status: 404 });
+    }
+  }
   let profileId: string | null = null;
   if (profileHandle) {
     const { data: target } = await admin

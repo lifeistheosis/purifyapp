@@ -692,6 +692,29 @@ export const communityReplySchema = z.object({
   confirmFiltered: z.boolean().optional(),
 });
 
+/**
+ * /api/community/posts/[id] PATCH body: a writer's own words, changed (1.9,
+ * build 95 note 10). Strict, so nothing else about a post can be sent: not
+ * its kind, its quotation (a shared line is Purify's own, verbatim), its
+ * group, its category or its writer. The route takes a title only from a
+ * discussion, as posting does.
+ */
+export const communityPostEditSchema = z
+  .object({
+    title: z.string().max(160).optional().nullable(),
+    body: z.string().max(4000).optional().nullable(),
+    confirmFiltered: z.boolean().optional(),
+  })
+  .strict();
+
+/** /api/community/replies/[id] PATCH body: a reply's words, changed. */
+export const communityReplyEditSchema = z
+  .object({
+    body: z.string().min(1).max(2000),
+    confirmFiltered: z.boolean().optional(),
+  })
+  .strict();
+
 /** /api/catechism/stats POST body: the anonymous path's aggregate bump.
  *  Two id lists and nothing else; no session, no reader, no date. The route
  *  checks every id against the bank and drops what it does not know. */

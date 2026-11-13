@@ -11,6 +11,7 @@ import { ensureFeastThread } from "@/lib/community/feast";
 import { requestStanding } from "@/lib/community/adminStanding";
 import { guardWrite } from "@/lib/community/guard";
 import { notifyClergyOfQuestion, notifyMentions } from "@/lib/community/notify";
+import { isWithdrawn, shownPosts, WITHDRAWN, withdrawnPost } from "@/lib/community/withdrawn";
 import { censorName, censorPost } from "@/lib/moderation/server";
 import { ensureCleanHandle } from "@/lib/profile/server";
 import { communityEnabled } from "@/lib/community/flags";
@@ -55,8 +56,10 @@ import {
 // timestamps are selected and never emitted. POST_COLS_BEFORE_MARK is the
 // list without them, read instead when the migration has not been applied,
 // so the feed keeps working and simply shows no mark.
+// `status` is read to tell a placeholder from a post (lib/community/withdrawn.ts)
+// and is never emitted.
 const POST_COLS_BEFORE_MARK =
-  "id, kind, title, body, quote_text, quote_source, quote_href, author_name, author_avatar, author_verified, reply_count, like_count, dislike_count, created_at, pinned_at";
+  "id, kind, title, body, quote_text, quote_source, quote_href, author_name, author_avatar, author_verified, reply_count, like_count, dislike_count, created_at, pinned_at, status";
 const POST_COLS = `${POST_COLS_BEFORE_MARK}, ${AUTHOR_MARK_COLS}`;
 // The author's public @handle and avatar frame (20261001000000_profiles_badges.sql),
 // denormalised like the badge so a post can open its author's profile without
@@ -68,6 +71,9 @@ const POST_COLS_WITH_PROFILE = `${POST_COLS}, author_handle, author_decoration`;
 // responses and whether clergy have answered. The fallback chain above still
 // serves the feed while it is unapplied.
 const POST_COLS_THREE = `${POST_COLS_WITH_PROFILE}, category, chapter_ref, feast_slug, author_clergy, author_name_color, amen_count, praying_count, glory_count, clergy_reply_count`;
+// When its writer last changed the words (20261113075725_community_own_words.sql),
+// for the quiet "edited". POST_COLS_THREE is the fallback while it is unapplied.
+const POST_COLS_EDITED = `${POST_COLS_THREE}, edited_at`;
 
 /** A count off a row, or 0 when an older schema has none. */
 const count = (v: unknown) => (typeof v === "number" && v > 0 ? v : 0);
@@ -133,6 +139,8 @@ function publicPost(
     praying_count: count(row.praying_count),
     glory_count: count(row.glory_count),
     clergy_reply_count: count(row.clergy_reply_count),
+    // When its writer last changed the words, or null (build 95 note 10).
+    edited_at: (row.edited_at as string | null | undefined) ?? null,
   };
 }
 
@@ -193,11 +201,13 @@ export async function GET(req: Request) {
   }
   let onePostGroup: string | null = null;
   if (onePost) {
+    // A placeholder too: a notice about a reply under a post its writer has
+    // since deleted still opens that thread (lib/community/withdrawn.ts).
     const { data: where } = await admin
       .from("community_posts")
       .select("group_id")
       .eq("id", onePost)
-      .eq("status", "visible")
+      .in("status", ["visible", WITHDRAWN])
       .maybeSingle();
     if (!where) return withCors(NextResponse.json({ posts: [] }), req);
     onePostGroup = ((where as { group_id?: string | null }).group_id as string | null) ?? null;
@@ -299,7 +309,14 @@ export async function GET(req: Request) {
   }
 
   const listPosts = (cols: string) => {
-    let query = admin.from("community_posts").select(cols).eq("status", "visible");
+    // A post its writer deleted after others replied stays in its place as a
+    // placeholder, so their replies can still be read (build 95 note 10;
+    // lib/community/withdrawn.ts). Not in Following: a placeholder carries
+    // nothing of its writer, and there it would say whom it was by.
+    let query = admin
+      .from("community_posts")
+      .select(cols)
+      .in("status", followees ? ["visible"] : ["visible", WITHDRAWN]);
     // The public feed carries no group posts, and a group thread carries only
     // its own. Without the `is null` half, group posts would surface in the
     // global feed the moment the column existed.
@@ -332,7 +349,12 @@ export async function GET(req: Request) {
     );
   };
 
-  let { data, error } = await listPosts(POST_COLS_THREE);
+  let { data, error } = await listPosts(POST_COLS_EDITED);
+  if (error && isColumnAbsent(error)) {
+    // 20261113075725_community_own_words.sql not applied yet: nothing has been
+    // edited, so nothing says so.
+    ({ data, error } = await listPosts(POST_COLS_THREE));
+  }
   if (error && isColumnAbsent(error) && !chapter && !category) {
     // 20261005000000_community_three.sql not applied yet: no categories, chapters,
     // seals or responses. A chapter or question read has nothing to fall
@@ -355,7 +377,9 @@ export async function GET(req: Request) {
 
   const now = Date.now();
   const rows = (data ?? []) as unknown as Record<string, unknown>[];
-  const posts = rows.map((r) => publicPost(r, now));
+  // A placeholder only while replies hang from it, and drawn with nothing of
+  // its writer; every other post through the projection above.
+  const posts = shownPosts(rows).map((r) => (isWithdrawn(r) ? withdrawnPost(r) : publicPost(r, now)));
 
   return withCors(
     NextResponse.json(

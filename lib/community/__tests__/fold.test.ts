@@ -39,7 +39,9 @@ describe("a long message, folded", () => {
     // The body is handed over as written, folded or not, and set so its line
     // breaks and blank lines show. From 1.8 (r3-02 B) at 15px on 22px lines,
     // set like a page.
-    expect(client).toContain("<MentionText text={post.body} />");
+    // `view` is the post with the reader's own last edit laid over it until
+    // the feed brings it (build 95 note 10): the same words, as they now stand.
+    expect(client).toContain("<MentionText text={view.body} />");
     expect(client).not.toMatch(/post\.body\.replace\(/);
     expect(client).toMatch(/"mt-2 whitespace-pre-wrap break-words font-sans text-\[15px\] leading-\[22px\] text-paper\/85"/);
     // A shared line keeps its own lines too, in its card.

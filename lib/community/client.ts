@@ -28,6 +28,12 @@ export type CommunityResult = {
   held?: boolean;
   /** The limit a refusal names (links, mentions, posts an hour). */
   limit?: number;
+  /**
+   * After deleting your own post or reply: "deleted" when it is gone, or
+   * "withdrawn" when others had answered and it stays as "Removed by its
+   * author" (lib/community/withdrawn.ts).
+   */
+  outcome?: "deleted" | "withdrawn";
 };
 
 async function readResult(res: Response): Promise<CommunityResult> {
@@ -46,7 +52,13 @@ async function readResult(res: Response): Promise<CommunityResult> {
       limit: typeof json.limit === "number" ? json.limit : undefined,
     };
   }
-  return { ok: true, id: json.id as string | undefined, held: json.held === true, code: typeof json.code === "string" ? json.code : undefined };
+  return {
+    ok: true,
+    id: json.id as string | undefined,
+    held: json.held === true,
+    code: typeof json.code === "string" ? json.code : undefined,
+    outcome: json.outcome === "withdrawn" || json.outcome === "deleted" ? json.outcome : undefined,
+  };
 }
 
 const NETWORK_ERROR = "Network dropped. Please try again.";
@@ -249,6 +261,70 @@ export async function createCommunityPost(
 export async function deleteCommunityPost(id: string): Promise<CommunityResult> {
   try {
     const res = await apiFetch(`/api/community/posts/${id}`, { method: "DELETE" });
+    return readResult(res);
+  } catch {
+    return { ok: false, error: NETWORK_ERROR };
+  }
+}
+
+/**
+ * An edit's answer (1.9, build 95 note 10): on success, what readers now see,
+ * so the card shows it at once rather than waiting for the feed. A refusal
+ * reads as any other: "filtered" (ask, then send again with confirmFiltered),
+ * "under_review" (a moderator is looking at it), "edit_held", or the spam
+ * filter's "too_many_links" and "too_many_mentions".
+ */
+export type EditResult<T> = CommunityResult & { saved?: T };
+
+async function readEdit<T>(res: Response, key: "post" | "reply"): Promise<EditResult<T>> {
+  if (!res.ok) return readResult(res);
+  let json: Record<string, unknown> = {};
+  try {
+    json = (await res.json()) as Record<string, unknown>;
+  } catch {
+    /* empty body */
+  }
+  return { ok: true, saved: (json[key] as T | undefined) ?? undefined };
+}
+
+export type SavedPost = { title: string | null; body: string | null; edited_at: string | null };
+export type SavedReply = { body: string; edited_at: string | null };
+
+/** Change your own post's words: a discussion's title and words, a share's own words. */
+export async function editCommunityPost(
+  id: string,
+  input: { title?: string | null; body?: string | null; confirmFiltered?: boolean },
+): Promise<EditResult<SavedPost>> {
+  try {
+    const res = await apiFetch(`/api/community/posts/${id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(input),
+    });
+    return readEdit<SavedPost>(res, "post");
+  } catch {
+    return { ok: false, error: NETWORK_ERROR };
+  }
+}
+
+/** Change your own reply's words. */
+export async function editCommunityReply(id: string, body: string, confirmFiltered = false): Promise<EditResult<SavedReply>> {
+  try {
+    const res = await apiFetch(`/api/community/replies/${id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(confirmFiltered ? { body, confirmFiltered } : { body }),
+    });
+    return readEdit<SavedReply>(res, "reply");
+  } catch {
+    return { ok: false, error: NETWORK_ERROR };
+  }
+}
+
+/** Delete your own reply: gone, or a placeholder when someone answered after it. */
+export async function deleteCommunityReply(id: string): Promise<CommunityResult> {
+  try {
+    const res = await apiFetch(`/api/community/replies/${id}`, { method: "DELETE" });
     return readResult(res);
   } catch {
     return { ok: false, error: NETWORK_ERROR };

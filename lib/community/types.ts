@@ -28,6 +28,21 @@ export type CommunityThreeFields = {
   glory_count?: number;
 };
 
+/**
+ * What 1.9 adds to every post and reply (build 95 note 10: a reader edits and
+ * deletes their own). Optional: an older server sends neither.
+ */
+export type CommunityOwnWordsFields = {
+  /** When its writer last changed the words, or null: the quiet "edited". */
+  edited_at?: string | null;
+  /**
+   * Its writer deleted it after others had answered: a placeholder holding
+   * its place, with no words and nothing of its writer
+   * (lib/community/withdrawn.ts). Shown as "Removed by its author".
+   */
+  removed_by_author?: boolean;
+};
+
 /** Public shape of a community_posts row, snake_case mirroring the columns. */
 export type CommunityPost = {
   id: string;
@@ -91,7 +106,8 @@ export type CommunityPost = {
   feast_slug?: string | null;
   /** Replies from verified clergy, so a question can show it was answered. */
   clergy_reply_count?: number;
-} & CommunityThreeFields;
+} & CommunityOwnWordsFields &
+  CommunityThreeFields;
 
 export type CommunityReply = {
   id: string;
@@ -130,7 +146,8 @@ export type CommunityReply = {
   created_at: string;
   /** The reader muted this author: the reply folds away until opened. */
   author_muted?: boolean;
-} & CommunityThreeFields;
+} & CommunityOwnWordsFields &
+  CommunityThreeFields;
 
 /**
  * Message keys for each post kind, not the English words.

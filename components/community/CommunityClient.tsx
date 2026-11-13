@@ -8,6 +8,7 @@ import { flushSync } from "react-dom";
 import { ActionMenu, type ActionMenuItem } from "@/components/community/ActionMenu";
 import { ReplyMenu } from "@/components/community/ReplyMenu";
 import { MentionField } from "@/components/community/MentionField";
+import { EditWords } from "@/components/community/EditWords";
 import { CommunityAvatar as Avatar } from "@/components/community/CommunityAvatar";
 import { CommunityBell } from "@/components/community/CommunityBell";
 import { CommunityHead } from "@/components/community/CommunityHead";
@@ -35,6 +36,10 @@ import { runningCampaign } from "@/lib/community/runningCampaign";
 import {
   addReply,
   deleteCommunityPost,
+  deleteCommunityReply,
+  editCommunityPost,
+  editCommunityReply,
+  type SavedPost,
   fetchMyCommunityIds,
   fetchModWaiting,
   blockCommunityAuthor,
@@ -55,6 +60,7 @@ import {
 import { resolveUser } from "@/lib/supabase/resolveUser";
 import { cn } from "@/lib/cn";
 import { sortPinnedFirst } from "@/lib/community/pinning";
+import { readableCount } from "@/lib/community/withdrawn";
 import { reconcilePosts, sameEntries, sameMembers } from "@/lib/community/reconcile";
 import { ReactionButtons } from "@/components/community/ReactionButtons";
 import { ResponseButtons } from "@/components/community/ResponseButtons";
@@ -436,6 +442,10 @@ function CommunityScreen({
   }, [version, authSettled]);
 
   const reload = useCallback(() => setVersion((v) => v + 1), []);
+  // Posts the reader deleted here, left out at once: the feed's next read
+  // can come from a cache a few seconds old and still hold them.
+  const [deletedIds, setDeletedIds] = useState<ReadonlySet<string>>(() => new Set());
+  const markDeleted = useCallback((id: string) => setDeletedIds((ids) => new Set(ids).add(id)), []);
 
   const myId = me?.id ?? null;
   useEffect(() => {
@@ -707,7 +717,7 @@ function CommunityScreen({
   const questionPosts = questionsFeed?.state === "ok" ? questionsFeed.posts : null;
   const shownPosts = useMemo(
     () =>
-      filter === "following"
+      (filter === "following"
         ? (followingPosts ?? [])
         : filter === "questions"
           ? (questionPosts ?? [])
@@ -718,8 +728,9 @@ function CommunityScreen({
               // before pinning existed, or any future path that assembles this list
               // locally, still cannot put an ordinary post above an announcement.
               sortPinnedFirst(feedPosts).filter((p) => filter === "all" || p.kind === filter)
-            : [],
-    [feedPosts, followingPosts, questionPosts, filter],
+            : []
+      ).filter((p) => !deletedIds.has(p.id)),
+    [feedPosts, followingPosts, questionPosts, filter, deletedIds],
   );
 
   return (
@@ -858,7 +869,7 @@ function CommunityScreen({
                 holds it. The same card as in the feed, so everything a reader
                 can do to a post they can do here, and a line under it before
                 the feed begins. */}
-            {linked && !feedPostIds.has(linked.id) ? (
+            {linked && !feedPostIds.has(linked.id) && !deletedIds.has(linked.id) ? (
               <div className="relative mt-3 border-b border-paper/[0.08]">
                 <PostCard
                   post={linked}
@@ -870,6 +881,7 @@ function CommunityScreen({
                   myResponses={myResponses[linked.id] ?? NO_KINDS}
                   myReplyResponses={myReplyResponses}
                   onChanged={reload}
+                  onDeleted={markDeleted}
                   focus={focus && focus.postId === linked.id ? focus : null}
                 />
                 <button
@@ -949,6 +961,7 @@ function CommunityScreen({
                       myResponses={myResponses[p.id] ?? NO_KINDS}
                       myReplyResponses={myReplyResponses}
                       onChanged={reload}
+                      onDeleted={markDeleted}
                       focus={focus && focus.postId === p.id ? focus : null}
                     />
                   </Fragment>
@@ -1217,6 +1230,7 @@ function PostCardInner({
   myResponses,
   myReplyResponses,
   onChanged,
+  onDeleted,
   focus = null,
 }: {
   post: CommunityPost;
@@ -1233,10 +1247,19 @@ function PostCardInner({
   myResponses: ResponseKind[];
   myReplyResponses: Record<string, ResponseKind[]>;
   onChanged: () => void;
+  /**
+   * The reader deleted this post and nobody had replied, so it is gone: the
+   * feed leaves it out at once, rather than when its next read comes back,
+   * which a cache can hold for a few seconds (app/api/community/posts).
+   */
+  onDeleted?: (postId: string) => void;
   /** A notification asking for this post. Null for every other card. */
   focus?: PostFocus | null;
 }) {
   const { t, tn } = useTranslate();
+  // What the reader's last edit saved (build 95 note 10): the card shows it at
+  // once, and until the feed brings that edit (`view`, below).
+  const [saved, setSaved] = useState<SavedPost | null>(null);
   const opener = useContext(ProfileOpenerContext);
   const [open, setOpen] = useState(false);
   const [replies, setReplies] = useState<CommunityReply[] | null>(null);
@@ -1275,6 +1298,29 @@ function PostCardInner({
   // A shared line being made into a picture (PictureSheet).
   const [making, setMaking] = useState(false);
   const mine = myPostIds.has(post.id);
+  // ── The reader's own words, changed or taken down (1.9, build 95 note 10) ──
+  // A reader asked: "We should have the ability to remove or edit our
+  // comments under replies and posts". Edit opens the words as fields where
+  // they stood, with Cancel and Save under them; nothing else of the post
+  // changes, and a shared line is never a field: it is Purify's own.
+  const [editing, setEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editBody, setEditBody] = useState("");
+  const editRef = useRef<HTMLTextAreaElement | HTMLInputElement | null>(null);
+  // An edit the word filter would mask, waiting on the writer's answer.
+  const [askEdit, setAskEdit] = useState(false);
+  // Deleted here after others had replied: a placeholder from now on.
+  const [withdrawnHere, setWithdrawnHere] = useState(false);
+  // One of the reader's own replies, open to edit, and its words.
+  const [editingReply, setEditingReply] = useState<string | null>(null);
+  const [replyEdit, setReplyEdit] = useState("");
+  const replyEditRef = useRef<HTMLTextAreaElement | HTMLInputElement | null>(null);
+  const [askReplyEdit, setAskReplyEdit] = useState(false);
+  // Deleting a reply asks first, as deleting a post does.
+  const [confirmingReplyDelete, setConfirmingReplyDelete] = useState<string | null>(null);
+  // "Removed by its author": no words, no name, no picture, no menu; its
+  // replies still open (lib/community/withdrawn.ts).
+  const removed = post.removed_by_author === true || withdrawnHere;
   // The words of a shared line, as a picture carries them: the same object
   // while they are the same, since the sheet draws its preview again when
   // they change.
@@ -1480,14 +1526,155 @@ function PostCardInner({
     setActionError(null);
     const res = await deleteCommunityPost(post.id);
     setBusy(false);
-    if (res.ok) onChanged();
-    else setActionError(res.error ?? t("community.deleteFailed"));
+    if (!res.ok) {
+      setActionError(res.code === "slow_down" ? t("community.err.slowDownChanges") : t("community.deleteFailed"));
+      return;
+    }
+    // Others had replied: it stays, as "Removed by its author", with their
+    // replies under it. Nobody had: it leaves the feed.
+    setEditing(false);
+    if (res.outcome === "withdrawn") setWithdrawnHere(true);
+    else onDeleted?.(post.id);
+    onChanged();
+  }
+
+  /** Why an edit was not saved, in the reader's language. */
+  function editRefusal(res: { code?: string; limit?: number }): string {
+    switch (res.code) {
+      case "under_review":
+        return t("community.editUnderReview");
+      case "edit_held":
+        return t("community.editHeld");
+      case "too_many_links":
+        return t("community.err.tooManyLinks", { count: res.limit ?? 0 });
+      case "too_many_mentions":
+        return t("community.err.tooManyMentions", { count: res.limit ?? 0 });
+      case "slow_down":
+        return t("community.err.slowDownChanges");
+      default:
+        return t("community.editFailed");
+    }
+  }
+
+  function startEdit() {
+    setActionError(null);
+    // Drawn now, inside the tap, so the field takes focus before the first
+    // paint (the layout effect below) and a phone opens its keyboard: iOS
+    // opens it only for a focus inside the tap itself. As the composer opens.
+    flushSync(() => {
+      setEditTitle(view.title ?? "");
+      setEditBody(view.body ?? "");
+      setUnfolded(true);
+      setEditing(true);
+    });
+  }
+
+  function cancelEdit() {
+    setEditing(false);
+    setActionError(null);
+  }
+
+  async function saveEdit(confirmFiltered = false) {
+    if (sending.current) return;
+    sending.current = true;
+    setBusy(true);
+    setActionError(null);
+    const res = await editCommunityPost(post.id, {
+      // A share has no title: its line is Purify's, and only its words are the reader's.
+      ...(post.kind === "discussion" ? { title: editTitle } : {}),
+      body: editBody,
+      ...(confirmFiltered ? { confirmFiltered: true } : {}),
+    });
+    sending.current = false;
+    setBusy(false);
+    if (!res.ok && res.code === "filtered") {
+      // Not saved: the word filter would mask some of it. Ask first.
+      setAskEdit(true);
+      return;
+    }
+    if (!res.ok) {
+      setActionError(editRefusal(res));
+      return;
+    }
+    if (res.saved) setSaved(res.saved);
+    setEditing(false);
+    onChanged();
+  }
+
+  function startReplyEdit(r: CommunityReply) {
+    setActionError(null);
+    flushSync(() => {
+      setReplyEdit(r.body);
+      setEditingReply(r.id);
+    });
+  }
+
+  // Opening words to edit is asking to write: the caret goes to their end
+  // before the first paint, inside the tap that opened them (each opens in a
+  // flushSync), where a phone raises its keyboard for it.
+  useLayoutEffect(() => {
+    if (editing) focusEnd(editRef.current);
+  }, [editing]);
+  useLayoutEffect(() => {
+    if (editingReply) focusEnd(replyEditRef.current);
+  }, [editingReply]);
+
+  async function saveReplyEdit(id: string, confirmFiltered = false) {
+    const text = replyEdit.trim();
+    if (sending.current || !text) return;
+    sending.current = true;
+    setBusy(true);
+    setActionError(null);
+    const res = await editCommunityReply(id, text, confirmFiltered);
+    sending.current = false;
+    setBusy(false);
+    if (!res.ok && res.code === "filtered") {
+      setAskReplyEdit(true);
+      return;
+    }
+    if (!res.ok) {
+      setActionError(editRefusal(res));
+      return;
+    }
+    const now = res.saved;
+    if (now) setReplies((list) => list?.map((r) => (r.id === id ? { ...r, body: now.body, edited_at: now.edited_at } : r)) ?? list);
+    setEditingReply(null);
+  }
+
+  async function removeReply(id: string) {
+    setConfirmingReplyDelete(null);
+    setBusy(true);
+    setActionError(null);
+    const res = await deleteCommunityReply(id);
+    setBusy(false);
+    if (!res.ok) {
+      setActionError(res.code === "slow_down" ? t("community.err.slowDownChanges") : t("community.deleteReplyFailed"));
+      return;
+    }
+    if (editingReply === id) setEditingReply(null);
+    // Gone, or a placeholder in its place when someone answered after it.
+    // Set here, rather than read again: a thread's read can be cached for a
+    // moment, and would bring the reply back.
+    setReplies(
+      (list) =>
+        list &&
+        (res.outcome === "withdrawn"
+          ? list.map((r) => (r.id === id ? { ...r, body: "", removed_by_author: true } : r))
+          : list.filter((r) => r.id !== id)),
+    );
+    setSentReplyIds((ids) => {
+      if (!ids.has(id)) return ids;
+      const next = new Set(ids);
+      next.delete(id);
+      return next;
+    });
+    onChanged();
   }
 
   // The thread's own count, once it has been opened: reply_count is the
   // server's snapshot from the last feed load and goes stale the moment the
   // reader adds one.
-  const shownCount = replies ? replies.length : post.reply_count;
+  const shownCount = replies ? readableCount(replies) : post.reply_count;
   const pinned = Boolean(post.pinned_at);
   const feast = post.category === "feast";
   const question = post.category === "question";
@@ -1501,10 +1688,20 @@ function PostCardInner({
     [question, replies],
   );
 
+  // The words as readers now see them: the last edit's, until the feed brings it.
+  const view = withSaved(post, saved);
+  // Save is offered once the words differ, and a discussion still has some.
+  const editedTitle = post.kind === "discussion" ? editTitle.trim() || null : null;
+  const editedBody = editBody.trim() || null;
+  const canSaveEdit =
+    !busy &&
+    (post.kind !== "discussion" || (editedBody?.length ?? 0) >= 2) &&
+    (editedTitle !== (view.title ?? null) || editedBody !== (view.body ?? null));
+
   // An announcement folds sooner: it sits above everything else.
   const longBody =
-    (post.body?.length ?? 0) > (pinned ? 260 : 560) ||
-    (post.body ?? "").split("\n").length > (pinned ? 4 : 8);
+    (view.body?.length ?? 0) > (pinned ? 260 : 560) ||
+    (view.body ?? "").split("\n").length > (pinned ? 4 : 8);
   const longQuote = (post.quote_text?.length ?? 0) > 520;
   const folded = (longBody || longQuote) && !unfolded;
   // Where a fold cuts the words off, its soft fade (app/globals.css, .post-fold).
@@ -1525,10 +1722,13 @@ function PostCardInner({
       }
     : null;
   const menuItems: ActionMenuItem[] = [];
-  if (authorHandle && seed) {
+  if (authorHandle && seed && !removed) {
     menuItems.push({ label: t("community.viewProfile"), onSelect: () => opener?.open(authorHandle, seed) });
   }
-  if (mine) {
+  if (removed) {
+    // Nothing of anyone's is left to act on: no menu at all.
+  } else if (mine) {
+    menuItems.push({ label: t("common.edit"), onSelect: () => startEdit(), disabled: busy || editing });
     menuItems.push({ label: t("community.delete"), onSelect: () => setConfirmingDelete(true), danger: true, disabled: busy });
   } else if (me) {
     // Both require an account: an anonymous report cannot be weighed or
@@ -1554,7 +1754,7 @@ function PostCardInner({
   }
 
   // A thread hangs from the writer's picture while the post has replies.
-  const threadHangs = shownCount > 0 || open;
+  const threadHangs = !removed && (shownCount > 0 || open);
 
   return (
     <article
@@ -1641,15 +1841,26 @@ function PostCardInner({
           {/* The picture is the 44px way to the writer's profile, as on a
               reply: 38px drawn, and its reach fits the gap beside it. The
               name under 44px is named below. */}
-          <AuthorButton seed={seed} decorative className="hit-44 shrink-0 rounded-full">
-            <Avatar name={post.author_name} url={post.author_avatar} size={38} decoration={post.author_decoration} />
-          </AuthorButton>
+          {/* A placeholder has no writer to show: the rail stays empty. */}
+          {removed ? null : (
+            <AuthorButton seed={seed} decorative className="hit-44 shrink-0 rounded-full">
+              <Avatar name={post.author_name} url={post.author_avatar} size={38} decoration={post.author_decoration} />
+            </AuthorButton>
+          )}
           {threadHangs ? <span aria-hidden className="community-rail mb-1.5 mt-2 w-[1.5px] flex-1 rounded-full" /> : null}
         </div>
 
         <div className="min-w-0">
           <div className="flex items-start gap-1">
-            {/* The name opens the author's profile; when and what, after it. */}
+            {/* The name opens the author's profile; when and what, after it.
+                A placeholder says only what happened to it, and when it was
+                written: its writer is not named (lib/community/withdrawn.ts). */}
+            {removed ? (
+              <p className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-1.5 pt-0.5 font-sans leading-tight">
+                <span className="text-[14.5px] text-paper/70">{t("community.removedByAuthor")}</span>
+                <span className="text-[12.5px] text-paper/50">· {timeAgo(post.created_at)}</span>
+              </p>
+            ) : (
             <p className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-1.5 pt-0.5 leading-tight">
               <AuthorButton
                 seed={seed}
@@ -1675,8 +1886,11 @@ function PostCardInner({
               <SupporterMarkButton tier={post.author_mark} />
               <span className="font-sans text-[12.5px] text-paper/50">
                 · {timeAgo(post.created_at)} · {t(POST_KIND_KEYS[post.kind])}
+                {/* Changed since it was written: said once, as quietly as when. */}
+                {view.edited_at ? ` · ${t("community.edited")}` : null}
               </span>
             </p>
+            )}
             <ActionMenu className="-me-1.5 -mt-1 shrink-0" label={t("community.postActions")} items={menuItems} />
             <ConfirmDialog
               open={confirmingBlock}
@@ -1717,15 +1931,51 @@ function PostCardInner({
                 setAskReply(null);
               }}
             />
+            {/* The same question for an edit, and the same way back to it. */}
+            <ConfirmDialog
+              open={askEdit || askReplyEdit}
+              title={t("community.filteredTitle")}
+              description={t("community.filteredBodyEdit")}
+              confirmLabel={t("community.filteredSave")}
+              cancelLabel={t("community.filteredEdit")}
+              pending={busy}
+              onConfirm={() => {
+                const reply = askReplyEdit ? editingReply : null;
+                setAskEdit(false);
+                setAskReplyEdit(false);
+                if (reply) void saveReplyEdit(reply, true);
+                else void saveEdit(true);
+              }}
+              onCancel={() => {
+                setAskEdit(false);
+                setAskReplyEdit(false);
+              }}
+            />
+            <ConfirmDialog
+              open={confirmingReplyDelete !== null}
+              title={t("community.deleteReplyConfirmTitle")}
+              description={t("community.deleteConfirmBody")}
+              confirmLabel={t("community.delete")}
+              cancelLabel={t("common.cancel")}
+              destructive
+              pending={busy}
+              onConfirm={() => {
+                if (confirmingReplyDelete) void removeReply(confirmingReplyDelete);
+              }}
+              onCancel={() => setConfirmingReplyDelete(null)}
+            />
           </div>
 
-          {post.title ? (
+          {/* A placeholder draws none of its writer's words: not the server's,
+              which has none, and not this card's own copy in the moment
+              between deleting here and the feed's next read. */}
+          {view.title && !editing && !removed ? (
             <h3 dir="auto" {...READERS_WORDS} className="mt-1.5 text-[19px] leading-[1.28] tracking-[-0.005em] text-paper">
-              <SymbolText text={post.title} />
+              <SymbolText text={view.title} />
             </h3>
           ) : null}
 
-          {post.quote_text ? (
+          {post.quote_text && !removed ? (
             // A line from Scripture or a Father is a card worth sharing (the
             // owner's rule, 1.8): the words whole under the cross, where they
             // are from, a tap to read them there and Share as a picture. Until
@@ -1776,7 +2026,22 @@ function PostCardInner({
             </figure>
           ) : null}
 
-          {post.body ? (
+          {editing ? (
+            // The words as fields where they stood (components/community/EditWords.tsx);
+            // a shared line above them stays as it is, Purify's own.
+            <EditWords
+              kind={post.kind === "discussion" ? "discussion" : "share"}
+              title={editTitle}
+              onTitle={setEditTitle}
+              body={editBody}
+              onBody={setEditBody}
+              fieldRef={editRef}
+              fieldClass={field}
+              canSave={canSaveEdit}
+              onSave={() => void saveEdit()}
+              onCancel={cancelEdit}
+            />
+          ) : view.body && !removed ? (
             <p
               ref={bodyFold}
               id={`${partsId}-words`}
@@ -1791,10 +2056,10 @@ function PostCardInner({
               {/* Folded or not, the writer's own lines and paragraphs. The fold
                   ends in a soft fade, so one that lands on the blank line between
                   two paragraphs reads as well as any other. */}
-              <MentionText text={post.body} />
+              <MentionText text={view.body} />
             </p>
           ) : null}
-          {longBody || longQuote ? (
+          {(longBody || longQuote) && !editing && !removed ? (
             <button
               type="button"
               onClick={() => setUnfolded((v) => !v)}
@@ -1806,7 +2071,7 @@ function PostCardInner({
               <ChevronDown size={15} className={cn("motion-safe:transition-transform", unfolded && "rotate-180")} />
             </button>
           ) : null}
-          {feast && post.feast_slug ? (
+          {feast && post.feast_slug && !removed ? (
             <Link
               href={`/saints/${post.feast_slug}`}
               className="hit-44 mt-2 inline-flex font-sans text-detail font-semibold text-premium-ink hover:text-paper"
@@ -1818,15 +2083,23 @@ function PostCardInner({
           {/* One action row, bare words and marks on the page: the like and its
               opposite, the candle that opens Amen and the rest in a tray over
               the row (r3-30 A), and the replies at the far end. */}
+          {/* Not while the words are open to edit, where Save and Cancel stand;
+              and on a placeholder only its replies, there being nothing left
+              to like or answer with Amen. */}
+          {editing ? null : (
           <div className="mt-2.5 flex flex-wrap items-center gap-x-3.5 gap-y-1">
-            <ReactionButtons
-              postId={post.id}
-              likeCount={post.like_count}
-              dislikeCount={post.dislike_count}
-              mine={myReaction}
-              canReact={Boolean(me)}
-            />
-            <ResponseButtons postId={post.id} counts={countsOf(post)} mine={myResponses} canRespond={Boolean(me)} />
+            {removed ? null : (
+              <>
+                <ReactionButtons
+                  postId={post.id}
+                  likeCount={post.like_count}
+                  dislikeCount={post.dislike_count}
+                  mine={myReaction}
+                  canReact={Boolean(me)}
+                />
+                <ResponseButtons postId={post.id} counts={countsOf(post)} mine={myResponses} canRespond={Boolean(me)} />
+              </>
+            )}
             <button
               type="button"
               onClick={() => void toggleReplies()}
@@ -1842,6 +2115,7 @@ function PostCardInner({
               <ChevronDown size={14} className={cn("motion-safe:transition-transform", open && "rotate-180")} />
             </button>
           </div>
+          )}
 
           {actionError ? (
             <p className="mt-2 font-sans text-detail text-rose-300" role="alert">
@@ -1878,6 +2152,22 @@ function PostCardInner({
                 </div>
               ) : (
                 orderedReplies.map((r) => {
+                  if (r.removed_by_author) {
+                    return (
+                      // A reply its writer deleted after someone answered: its
+                      // place kept, so the answer after it still reads, with
+                      // nothing of it or of its writer (lib/community/withdrawn.ts).
+                      // It starts where a reply's words start, past the
+                      // picture's place, so the column of words holds.
+                      <p
+                        key={r.id}
+                        id={replyAnchorId(r.id)}
+                        className="scroll-mt-28 ps-[38px] font-sans text-caption text-paper/60"
+                      >
+                        {t("community.removedByAuthor")} · {timeAgo(r.created_at)}
+                      </p>
+                    );
+                  }
                   if (r.author_muted && !opened.has(r.id)) {
                     return (
                       // A row a finger can meet (it stood at 35px, made of its padding
@@ -1946,11 +2236,29 @@ function PostCardInner({
                             <ClergySeal mark={r.author_clergy} size={14} />
                             {r.author_verified ? <VerifiedBadge size={14} /> : null}
                             <SupporterMarkButton tier={r.author_mark} size={14} />
-                            <span>· {timeAgo(r.created_at)}</span>
+                            <span>
+                              · {timeAgo(r.created_at)}
+                              {r.edited_at ? ` · ${t("community.edited")}` : null}
+                            </span>
                           </p>
+                          {editingReply === r.id ? (
+                            // As a post's words open: the field where the words
+                            // stood, Cancel and Save under it (EditWords).
+                            <EditWords
+                              kind="reply"
+                              body={replyEdit}
+                              onBody={setReplyEdit}
+                              fieldRef={replyEditRef}
+                              fieldClass={field}
+                              canSave={!busy && replyEdit.trim().length > 0 && replyEdit.trim() !== r.body}
+                              onSave={() => void saveReplyEdit(r.id)}
+                              onCancel={() => setEditingReply(null)}
+                            />
+                          ) : (
                           <p dir="auto" {...READERS_WORDS} className="mt-0.5 whitespace-pre-wrap break-words font-sans text-[13.5px] leading-[1.48] text-paper/85">
                             <MentionText text={r.body} />
                           </p>
+                          )}
                           {/*
                             Asked for twice by readers, on 25 August and again on 20
                             September ("it would be cool to be able to like responses").
@@ -1960,6 +2268,7 @@ function PostCardInner({
                             reader's own. The thread never selected the counts and the
                             row never drew the button.
                           */}
+                          {editingReply === r.id ? null : (
                           <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1">
                             <ReactionButtons
                               replyId={r.id}
@@ -1977,13 +2286,17 @@ function PostCardInner({
                               size="reply"
                             />
                           </div>
+                          )}
                         </div>
                         <ReplyMenu
                           replyId={r.id}
                           signedIn={Boolean(me)}
                           mine={myReplyIds.has(r.id) || sentReplyIds.has(r.id)}
+                          busy={busy || editingReply === r.id}
                           onViewProfile={writer ? () => opener?.open(writer.handle, writer) : null}
                           onFailed={setActionError}
+                          onEdit={() => startReplyEdit(r)}
+                          onDelete={() => setConfirmingReplyDelete(r.id)}
                         />
                       </div>
                     </div>
@@ -2043,7 +2356,9 @@ function PostCardInner({
                 </div>
               ))}
 
-              {me ? (
+              {/* No new replies under a post its writer deleted: the thread stays
+                  to be read (the replies route refuses one). */}
+              {me && !removed ? (
                 <div className="flex gap-2">
                   <MentionField
                     as="input"
@@ -2096,6 +2411,26 @@ function PostCardInner({
  * reaction and handlers did not change is not rendered again.
  */
 const PostCard = memo(PostCardInner);
+
+/**
+ * A post with what the reader's last edit saved, until the feed brings that
+ * edit. Compared as times: the database and the route write the same moment
+ * in two forms (…+00:00 and …Z).
+ */
+function withSaved(post: CommunityPost, saved: SavedPost | null): CommunityPost {
+  if (!saved?.edited_at) return post;
+  const fedAt = post.edited_at ? Date.parse(post.edited_at) : Number.NaN;
+  if (fedAt >= Date.parse(saved.edited_at)) return post;
+  return { ...post, title: saved.title, body: saved.body, edited_at: saved.edited_at };
+}
+
+/** The caret at the end of words just opened to edit. */
+function focusEnd(el: HTMLTextAreaElement | HTMLInputElement | null) {
+  if (!el) return;
+  el.focus();
+  const end = el.value.length;
+  el.setSelectionRange(end, end);
+}
 
 /**
  * An author's name and picture, as the way into their profile.

@@ -571,9 +571,13 @@ describe("nothing is counted under a campaign", () => {
     // asking for it. If one stops, a campaign's comments would be served to
     // whoever can name the thread, past the campaigns switch.
     const repliesRoute = source("app/api/community/posts/[id]/replies/route.ts");
-    expect(repliesRoute).toContain('if (!parent || parent.status !== "visible")');
+    // From build 95 note 10 a post its writer deleted after others replied is
+    // read by its own name beside 'visible', to keep their replies readable
+    // (lib/community/withdrawn.ts). A thread is still in neither.
+    expect(repliesRoute).toContain('if (!parent || (parent.status !== "visible" && parent.status !== WITHDRAWN))');
     expect(repliesRoute).toContain('if (!post || post.status !== "visible")');
-    expect(source("app/api/community/posts/route.ts")).toContain('admin.from("community_posts").select(cols).eq("status", "visible")');
+    expect(source("app/api/community/posts/route.ts")).toContain('.in("status", followees ? ["visible"] : ["visible", WITHDRAWN])');
+    expect(source("lib/community/withdrawn.ts")).toContain('export const WITHDRAWN = "withdrawn" as const;');
     expect(source("lib/profile/server.ts")).toMatch(/from\("community_posts"\)[\s\S]{0,200}\.eq\("status", "visible"\)/);
     expect(source("lib/email/communityDigest.ts")).toMatch(/from\("community_posts"\)[\s\S]{0,120}\.eq\("status", "visible"\)/);
     // A thread is written with that state and no other.

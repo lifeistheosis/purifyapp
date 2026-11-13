@@ -16,6 +16,7 @@ import { censorName, censorPost } from "@/lib/moderation/server";
 import { ensureCleanHandle } from "@/lib/profile/server";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { communityReplySchema } from "@/lib/security/schemas";
+import { isWithdrawn, shownReplies, WITHDRAWN, withdrawnReply } from "@/lib/community/withdrawn";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { createClientFromRequest } from "@/lib/supabase/server";
@@ -34,8 +35,10 @@ import { signInPicture } from "@/lib/profile/signInPicture";
 // selected before, which is the whole reason a reply could not be liked:
 // the table, the trigger, the reactions route and the button all supported
 // replies, and the one read that feeds the thread left the counts out.
+// `status` tells a placeholder from a reply (lib/community/withdrawn.ts) and
+// is never emitted.
 const REPLY_COLS_BEFORE_MARK =
-  "id, post_id, body, author_name, author_avatar, like_count, dislike_count, created_at";
+  "id, post_id, body, author_name, author_avatar, like_count, dislike_count, created_at, status";
 const REPLY_COLS = `${REPLY_COLS_BEFORE_MARK}, ${AUTHOR_MARK_COLS}`;
 // The author's @handle and avatar frame (20261001000000_profiles_badges.sql), with
 // REPLY_COLS as the fallback while that migration is unapplied.
@@ -43,6 +46,9 @@ const REPLY_COLS_WITH_PROFILE = `${REPLY_COLS}, author_handle, author_decoration
 // The clergy seal, the Plus name colour and the three responses
 // (20261005000000_community_three.sql), with the sets above as the fallback.
 const REPLY_COLS_THREE = `${REPLY_COLS_WITH_PROFILE}, author_clergy, author_name_color, amen_count, praying_count, glory_count`;
+// When its writer last changed the words (20261113075725_community_own_words.sql),
+// with REPLY_COLS_THREE as the fallback while it is unapplied.
+const REPLY_COLS_EDITED = `${REPLY_COLS_THREE}, edited_at`;
 
 const count = (v: unknown) => (typeof v === "number" && v > 0 ? v : 0);
 
@@ -76,6 +82,8 @@ function publicReply(
     praying_count: count(row.praying_count),
     glory_count: count(row.glory_count),
     created_at: row.created_at,
+    // When its writer last changed the words, or null (build 95 note 10).
+    edited_at: (row.edited_at as string | null | undefined) ?? null,
   };
 }
 
@@ -102,7 +110,9 @@ export async function GET(
     .select("id, group_id, status")
     .eq("id", id)
     .maybeSingle();
-  if (!parent || parent.status !== "visible") {
+  // A post its writer deleted after others replied keeps its thread
+  // readable under a placeholder (build 95 note 10; lib/community/withdrawn.ts).
+  if (!parent || (parent.status !== "visible" && parent.status !== WITHDRAWN)) {
     return withCors(NextResponse.json({ replies: [] }), req);
   }
   if (
@@ -129,14 +139,20 @@ export async function GET(
       .select(cols)
       // Reads through the service role, which bypasses RLS, so the status
       // filter has to be explicit here. Without it a removed reply would
-      // still be served to every reader.
+      // still be served to every reader. A placeholder (a reply its writer
+      // deleted after someone answered) is read to hold its place, and leaves
+      // here with nothing of its writer (lib/community/withdrawn.ts).
       .eq("post_id", id)
-      .eq("status", "visible");
+      .in("status", ["visible", WITHDRAWN]);
     if (blocked.length > 0) q = q.not("user_id", "in", `(${blocked.join(",")})`);
     return q.order("created_at", { ascending: true }).limit(200);
   };
 
-  let { data, error } = await listReplies(REPLY_COLS_THREE);
+  let { data, error } = await listReplies(REPLY_COLS_EDITED);
+  if (error && isColumnAbsent(error)) {
+    // 20261113075725_community_own_words.sql not applied yet: nothing edited.
+    ({ data, error } = await listReplies(REPLY_COLS_THREE));
+  }
   if (error && isColumnAbsent(error)) {
     ({ data, error } = await listReplies(REPLY_COLS_WITH_PROFILE));
   }
@@ -154,7 +170,8 @@ export async function GET(
   }
 
   const now = Date.now();
-  const rows = (data ?? []) as unknown as Record<string, unknown>[];
+  // A placeholder only where a reply still follows it.
+  const rows = shownReplies((data ?? []) as unknown as Record<string, unknown>[]);
   // Which of these a muted reader wrote, asked by id so no author id is read.
   let mutedIds = new Set<string>();
   if (hidden.muted.length > 0 && rows.length > 0) {
@@ -166,7 +183,9 @@ export async function GET(
       .limit(200);
     mutedIds = new Set(((mutedRows ?? []) as { id: string }[]).map((r) => r.id));
   }
-  const replies = rows.map((r) => ({ ...publicReply(r, now), author_muted: mutedIds.has(String(r.id)) }));
+  const replies = rows.map((r) =>
+    isWithdrawn(r) ? withdrawnReply(r) : { ...publicReply(r, now), author_muted: mutedIds.has(String(r.id)) },
+  );
   // Private whenever the answer depends on who asked: a thread filtered by
   // this reader's blocks, or a parish thread only members may read. A
   // shared cache holding either would serve it to the next caller, and for

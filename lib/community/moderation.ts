@@ -13,6 +13,7 @@ import { standingOf, type CommunityUser } from "./adminStanding";
 import { DANGER_NEEDS_REASON, DANGER_NEEDS_REASON_CODE, DANGER_NOT_QUOTED, repliesHeldForDanger } from "./dangerHolds";
 import { insertNotifications, notifyClergyOfQuestion, notifyMentions, notifyOfReply } from "./notify";
 import { DEFAULT_REMOVAL_REASON, writeRemovalNotice, type RemovalReason } from "./removal";
+import { isWithdrawn } from "./withdrawn";
 import { STAFF_BADGES } from "./trustServer";
 
 // Moderation, once, for everyone who moderates: the team's console
@@ -324,6 +325,10 @@ const HELD_AT_WRITE = (reason: string) => reason === "spam" || reason === "links
 async function removePost(admin: SupabaseClient, actor: ModActor, id: string, reason?: string | null, code?: RemovalReason | null): Promise<ModResult> {
   const { data: post } = await admin.from("community_posts").select("id, user_id, title, body, author_name, status").eq("id", id).maybeSingle();
   if (!post) return { ok: false, status: 404, error: "That post is gone." };
+  // Its writer deleted it after others replied: nothing of theirs is left to
+  // remove, and a removal would tell them "we removed your post" for words
+  // they took down themselves (./withdrawn.ts).
+  if (isWithdrawn(post as { status?: string })) return { ok: false, status: 409, error: "Its writer already deleted it." };
   const { error } = await admin
     .from("community_posts")
     .update({ status: "removed", removed_reason: reason?.trim() || null, removed_by_email: actor.email ?? actor.name })
@@ -343,6 +348,7 @@ async function removeReply(admin: SupabaseClient, actor: ModActor, id: string, r
   const { data: reply } = await admin.from("community_post_replies").select("post_id, user_id, status, body, author_name").eq("id", id).maybeSingle();
   if (!reply) return { ok: false, status: 404, error: "That reply is gone." };
   const r = reply as { post_id: string; user_id: string | null; status: string; body: string; author_name: string };
+  if (isWithdrawn(r)) return { ok: false, status: 409, error: "Its writer already deleted it." };
   // Words the safety line held (./dangerHolds.ts): removed only for a reason
   // a moderator chose, and never for the one that stands for none, so that
   // the notice its writer is sent is true. Asked before anything is changed.

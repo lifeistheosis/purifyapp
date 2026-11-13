@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { communityEnabled } from "@/lib/community/flags";
+import { isWithdrawn } from "@/lib/community/withdrawn";
 import { normalizeHandle } from "@/lib/profile/handle";
 import { identity } from "@/lib/profile/server";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
@@ -116,20 +117,22 @@ async function handlePOST(req: Request) {
 
   // Resolve the author from the item, server-side.
   let author: ItemAuthor | null = null;
+  // A placeholder (lib/community/withdrawn.ts) names nobody, so it is no
+  // way to reach whoever deleted it: it answers as an item that is not there.
   if (postId) {
     const { data } = await admin
       .from("community_posts")
-      .select("user_id, author_name")
+      .select("user_id, author_name, status")
       .eq("id", postId)
       .maybeSingle();
-    author = (data as ItemAuthor | null) ?? null;
+    author = isWithdrawn(data as { status?: string } | null) ? null : ((data as ItemAuthor | null) ?? null);
   } else if (replyId) {
     const { data } = await admin
       .from("community_post_replies")
-      .select("user_id, author_name")
+      .select("user_id, author_name, status")
       .eq("id", replyId)
       .maybeSingle();
-    author = (data as ItemAuthor | null) ?? null;
+    author = isWithdrawn(data as { status?: string } | null) ? null : ((data as ItemAuthor | null) ?? null);
   } else {
     const { data } = await admin
       .from("profiles")

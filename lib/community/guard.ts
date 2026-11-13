@@ -132,3 +132,42 @@ export async function guardWrite(
 
   return { kind: "ok", trust };
 }
+
+export type EditGuard = { kind: "ok" } | { kind: "refuse"; status: 400 | 409; code: string; error: string; limit?: number };
+
+/**
+ * The spam filter for an edit (1.9, build 95 note 10): the same links,
+ * @mentions and shape of spam a new post or reply is judged by, at the
+ * writer's own trust level. Otherwise a reader could post "Hello" and edit a
+ * link into it, past the hold a new account's link waits in.
+ *
+ * Not the posting limits or the duplicate check: an edit is not a new
+ * message. And nothing is held: what a new post would wait for, an edit is
+ * refused, with nothing changed. Holding it would hide words others have
+ * already read, and send its notices a second time when approved.
+ */
+export async function guardEdit(
+  admin: SupabaseClient,
+  user: CommunityUser & Pick<User, "created_at">,
+  texts: readonly (string | null | undefined)[],
+  now: number = Date.now(),
+): Promise<EditGuard> {
+  const trust = await readTrust(admin, user, now);
+  const verdict = judgeSpam(texts, { level: trust.level, blockedHosts: await getBlockedHosts(admin), limits: trust.limits });
+  if (verdict.action === "refuse") {
+    return {
+      kind: "refuse",
+      status: 400,
+      code: verdict.code,
+      error:
+        verdict.code === "too_many_links"
+          ? `Please keep it to ${verdict.limit} links or fewer.`
+          : `Please mention ${verdict.limit} readers or fewer at once.`,
+      limit: verdict.limit,
+    };
+  }
+  if (verdict.action === "hold") {
+    return { kind: "refuse", status: 409, code: "edit_held", error: "This change would have to wait for a moderator, so it was not saved." };
+  }
+  return { kind: "ok" };
+}

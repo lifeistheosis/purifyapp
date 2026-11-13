@@ -7,7 +7,10 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { reportCommunityItem, type CommunityResult } from "@/lib/community/client";
 
 /**
- * The ⋯ menu on a reply (1.9): Report, as a post's menu has it.
+ * The ⋯ menu on a reply (1.9): Report, as a post's menu has it, and on the
+ * reader's own reply Edit and Delete (build 95 note 10, a reader's ask: "We
+ * should have the ability to remove or edit our comments under replies and
+ * posts"), as their own post's menu has Delete.
  *
  * No screen offered Report on a reply. The route took one
  * (app/api/community/report/route.ts) and only a post's menu called it, so a
@@ -23,29 +26,46 @@ import { reportCommunityItem, type CommunityResult } from "@/lib/community/clien
 
 type Translate = (key: string) => string;
 
-/** What a reply's menu holds for this reader. Empty, and so no menu, on one's own reply or signed out. */
+/**
+ * What a reply's menu holds for this reader. Empty, and so no menu, signed
+ * out. On their own reply: their profile, Edit and Delete, in the order a
+ * post's own menu has them; never Report, since a reader does not report
+ * their own words.
+ */
 export function replyMenuItems({
   signedIn,
   mine,
   reported,
   canViewProfile,
+  busy = false,
   t,
   onReport,
   onViewProfile,
+  onEdit,
+  onDelete,
 }: {
   signedIn: boolean;
   mine: boolean;
   reported: boolean;
   canViewProfile: boolean;
+  /** A change to this reply is on its way: Edit and Delete wait for it. */
+  busy?: boolean;
   t: Translate;
   onReport: () => void;
   onViewProfile: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }): ActionMenuItem[] {
   // Signed in only: an anonymous report cannot be weighed or rate limited
-  // (the route refuses it), and a reader does not report their own words.
-  if (!signedIn || mine) return [];
+  // (the route refuses it), and a reply is only someone's own when signed in.
+  if (!signedIn) return [];
   const items: ActionMenuItem[] = [];
   if (canViewProfile) items.push({ label: t("community.viewProfile"), onSelect: onViewProfile });
+  if (mine) {
+    if (onEdit) items.push({ label: t("common.edit"), onSelect: onEdit, disabled: busy });
+    if (onDelete) items.push({ label: t("community.delete"), onSelect: onDelete, danger: true, disabled: busy });
+    return items;
+  }
   items.push({ label: reported ? t("community.reported") : t("community.report"), onSelect: onReport, disabled: reported });
   return items;
 }
@@ -74,16 +94,23 @@ export function ReplyMenu({
   replyId,
   signedIn,
   mine,
+  busy = false,
   onViewProfile,
   onFailed,
+  onEdit,
+  onDelete,
 }: {
   replyId: string;
   signedIn: boolean;
   mine: boolean;
+  busy?: boolean;
   /** Opens the writer's profile; absent when the reply has no @handle. */
   onViewProfile: (() => void) | null;
   /** Says why a report did not send, where the card says its other errors. */
   onFailed: (message: string) => void;
+  /** The reader's own reply: open it to edit, and ask before deleting it. */
+  onEdit?: () => void;
+  onDelete?: () => void;
 }) {
   const { t } = useTranslate();
   const [reported, setReported] = useState(false);
@@ -96,9 +123,12 @@ export function ReplyMenu({
     mine,
     reported,
     canViewProfile: Boolean(onViewProfile),
+    busy,
     t,
     onReport: () => void report(),
     onViewProfile: () => onViewProfile?.(),
+    onEdit,
+    onDelete,
   });
   return <ActionMenu className="-me-1.5 -mt-1 shrink-0" label={t("profile.moreActions")} items={items} />;
 }

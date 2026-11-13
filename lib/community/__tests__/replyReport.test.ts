@@ -54,8 +54,10 @@ describe("what a reply's menu holds", () => {
     expect(report.disabled).toBe(true);
   });
 
-  it("offers nothing on the reader's own reply, or to a reader signed out", () => {
-    expect(items({ mine: true })).toEqual([]);
+  it("offers no Report on the reader's own reply, and nothing to a reader signed out", () => {
+    // Their own reply has Edit and Delete instead (build 95 note 10,
+    // ownWords.test.ts); a reader does not report their own words.
+    expect(items({ mine: true }).map((i) => i.label)).not.toContain("Report");
     expect(items({ signedIn: false })).toEqual([]);
   });
 
@@ -108,7 +110,9 @@ describe("the menu on the page", () => {
     expect(html).toContain("hit-44");
   });
 
-  it("draws nothing on the reader's own reply, or signed out", () => {
+  it("draws nothing signed out, nor on the reader's own reply when there is nothing to offer", () => {
+    // In a thread their own reply always offers Edit and Delete
+    // (CommunityClient passes both); with neither and no profile, no menu.
     expect(draw(true)).toBe("");
     expect(draw(false, false)).toBe("");
   });
