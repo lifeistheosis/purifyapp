@@ -31,7 +31,7 @@ free may say only what this list says.
 ## Purify Plus
 
 - **Word study**
-- **Nineteen reading modes**
+- **Seventeen reading modes**
 - **Cross-references**
 - **The full journal**
 - **Listen offline**

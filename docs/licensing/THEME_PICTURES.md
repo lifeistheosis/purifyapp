@@ -1,13 +1,13 @@
 # The looks' pictures
 
-The pictures of the seventeen looks (1.9): the scene at the foot of a page, the
+The pictures of the fifteen looks (1.9): the scene at the foot of a page, the
 room behind it, and what stands in the place of the short rule at a chapter's
 head. Policy, matching `SHARE_FLOWERS.md`, `SECTION_MEDIA.md` and
 `icon-provenance.md`: **an image ships only if its source and licence are
 recorded here.**
 
 They live in `public/themes/` and are carried in the apps' bundle, so a look
-is whole with no signal: 23 files, about 690 KB together. The stylesheet
+is whole with no signal: 21 files, about 690 KB together. The stylesheet
 names each one as a custom property (`app/globals.css`, "The looks (1.9)"),
 and a property costs nothing until a look that uses it is worn.
 `lib/reader/__tests__/themePictures.test.ts` holds every file to a row here,
@@ -17,9 +17,9 @@ drawing to the code that makes it.
 Every picture is made by one script, so it can be made again:
 
 ```
-node scripts/theme-pictures.mjs            # the fifteen drawings
+node scripts/theme-pictures.mjs            # the thirteen drawings
 node scripts/theme-pictures.mjs --painted  # those, and the eight painted ones (needs out/, from npm run build:android)
-node scripts/theme-pictures.mjs --kept     # Fire's room, kept and not shipped (see the end of this page)
+node scripts/theme-pictures.mjs --kept     # Galilee's and Patmos's drawings and Fire's room, kept and not shipped (see the end of this page)
 ```
 
 ## Shipped: the drawings
@@ -40,8 +40,6 @@ same file comes out every time.
 | `forest.svg` | Forest | Firs of the north with mist between them | Drawn by code | Purify's own |
 | `desert.svg` | Desert | Dunes in the last light | Drawn by code | Purify's own |
 | `jordan.svg` | Jordan | Still water with rings going out over it | Drawn by code | Purify's own |
-| `galilee.svg` | Galilee | The sea by night, a soft pool of light on the water | Drawn by code | Purify's own |
-| `patmos.svg` | Patmos | A white wall and the sea beyond it | Drawn by code | Purify's own |
 | `mosaic.svg` | Mosaic | A band of hand-set tesserae at the foot of the page | Drawn by code | Purify's own |
 | `mosaic-rule.svg` | Mosaic | A short row of tesserae, at a chapter's head | Drawn by code | Purify's own |
 | `stone.svg` | Stone | The foot of a wall of cut blocks | Drawn by code | Purify's own |
@@ -121,3 +119,24 @@ quiet: painted by the app's own code as the others above were, from the
 quote pictures' Fire look, which stays in the app. No outside image is in
 it. Purify's own. `node scripts/theme-pictures.mjs --kept` paints it again
 into that folder, and never into `public/themes/`.
+
+## Kept, not shipped: Galilee and Patmos
+
+Galilee and Patmos were the two looks of the sea, both in the Land and sea
+family. The owner took them out of the app on 2026-11-13, after the first
+1.9 test builds and before the looks were released ("remove the sea theme
+from the app", and asked which of the two, "Both"). Nothing made is deleted,
+so each drawing is kept where the apps do not carry it, with the look's
+rules and its words beside it and a note on what it was:
+
+- `docs/1.9-build/kept/galilee-look/galilee.svg`: the sea by night, the far
+  hills, a soft pool of light on the water and three long glints. It was
+  `public/themes/galilee.svg`.
+- `docs/1.9-build/kept/patmos-look/patmos.svg`: a white wall and the sea
+  beyond it, two fields of colour, the line between them and three long
+  glints. It was `public/themes/patmos.svg`.
+
+Both are drawn by code in `scripts/theme-pictures.mjs` (`KEPT_DRAWINGS`), as
+the drawings above are: paths and gradients only, no outside image. Purify's
+own. `node scripts/theme-pictures.mjs --kept` draws them again into those
+folders, and never into `public/themes/`.

@@ -13,7 +13,7 @@
 // held beside them in app/globals.css ("Settings: lit panels") and checked
 // against them by lib/settings/__tests__/litPanels.test.ts.
 //
-// From 1.9 there are seventeen looks beside these (lib/reader/readingModes.ts).
+// From 1.9 there are fifteen looks beside these (lib/reader/readingModes.ts).
 // They are chosen on a page of their own, which this row's head opens
 // (./ReadingModeGallery.tsx), so the row stays the five a reader knows. A
 // look that is applied stands here as a sixth page, as an applied collection

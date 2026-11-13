@@ -69,7 +69,7 @@ function token(selector: string, name: string): string | null {
   return null;
 }
 
-/** Every palette a reader can wear: the seven the app had, and the seventeen looks (1.9). */
+/** Every palette a reader can wear: the seven the app had, and the fifteen looks (1.9). */
 type Palette = { id: string; look?: "dark" | "light" };
 const PALETTES: Palette[] = READING_THEMES.map((t) => ({ id: t.id, look: t.look }));
 
@@ -175,9 +175,9 @@ const STEPPING = [
 ] as const;
 
 describe("the prayer page's reading light", () => {
-  it("holds every palette a reader can wear, the seventeen looks among them", () => {
-    expect(PALETTES).toHaveLength(24);
-    expect(PALETTES.filter((p) => p.look)).toHaveLength(17);
+  it("holds every palette a reader can wear, the fifteen looks among them", () => {
+    expect(PALETTES).toHaveLength(22);
+    expect(PALETTES.filter((p) => p.look)).toHaveLength(15);
     for (const p of PALETTES) {
       const c = colours(p);
       expect(c.night.every(Number.isFinite) && c.paper.every(Number.isFinite), p.id).toBe(true);

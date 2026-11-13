@@ -83,7 +83,7 @@
 //   const ok = printMockCheck(await checkMock(page, "[data-journal-composer]"), "the note sheet");
 // On a page of the native export (npm run build:android first), as it loads:
 //   node scripts/mock-check.mjs /journal/ main
-// The same, held on the seventeen looks as well as the five palettes (1.9):
+// The same, held on the fifteen looks as well as the five palettes (1.9):
 //   node scripts/mock-check.mjs /journal/ main --looks
 // Its own proof, the first drawings' mistakes caught and a house piece passed:
 //   node scripts/mock-check.mjs --self-test
@@ -108,7 +108,7 @@ export const PALETTES = [
 ];
 
 /**
- * The looks (1.9): the seventeen Plus themes of the registry, each worn as
+ * The looks (1.9): the fifteen Plus themes of the registry, each worn as
  * data-look over Dark or over Light (lib/reader/readingModes.ts,
  * themeAttributes). A third value names the look. They are not in PALETTES:
  * a mockup is held on the five, as CLAUDE.md says, and a screen is held on
@@ -1915,7 +1915,7 @@ async function selfTest() {
 
 async function main(args) {
   if (args[0] === "--self-test") return selfTest();
-  // --looks: the seventeen looks as well as the five palettes.
+  // --looks: the fifteen looks as well as the five palettes.
   const looks = args.includes("--looks");
   const [where, selector] = args.filter((a) => a !== "--looks");
   if (!where || !selector) {

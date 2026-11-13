@@ -59,10 +59,10 @@ function onGround(ink: Rgb, share: number, ground: Rgb): number {
 }
 
 const LIGHT = 'html[data-reading-mode="parchment"]';
-/** Light and the ten looks worn over it, each with its own ink and ground where it sets them. */
+/** Light and the eight looks worn over it, each with its own ink and ground where it sets them (Patmos came out on 2026-11-13). */
 const LIGHT_PALETTES: [string, string][] = [
   ["Light", LIGHT],
-  ...["desert", "jordan", "patmos", "blush", "rose", "lavender", "olive", "stone", "linen"].map((look): [string, string] => [look, `html[data-look="${look}"]`]),
+  ...["desert", "jordan", "blush", "rose", "lavender", "olive", "stone", "linen"].map((look): [string, string] => [look, `html[data-look="${look}"]`]),
 ];
 
 describe("a chant's words switch (fail 9, Psalm 117)", () => {
@@ -266,7 +266,8 @@ describe("the saints' webs (fail 4, the 118 webs)", () => {
       }),
     ];
     const drawn = worn.filter(([, mode]) => mode !== "parchment");
-    expect(drawn.length).toBe(12);
+    // The four dark palettes and the seven dark looks (twelve until Galilee came out of the looks on 2026-11-13).
+    expect(drawn.length).toBe(11);
     for (const [label, mode, look] of drawn) {
       const paper = tokenOf("paper", mode, look);
       const soft = tokenOf("night-soft", mode, look);

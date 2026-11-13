@@ -1,0 +1,64 @@
+/* The Patmos look, as it stood in app/globals.css on 2026-11-13 (commit 545d562a),
+   before it was taken out of the app's looks by the owner's word of that day.
+   Kept, not shipped: nothing loads this file. README.md beside it says what
+   Patmos was and how it would be brought back.
+
+   Each part below stood in the section "The looks (1.9)", in the place its
+   note names, between the same parts of Galilee and of Blush. */
+
+/* ── In the looks' :root block, the picture's address (the file is beside this one now) ── */
+ --scene-patmos: url("/themes/patmos.svg");
+
+/* ── The look: its palette, its lit surface, its faint text and placeholders ── */
+html[data-look="patmos"] {
+ --color-night: #f7f7f5;
+ --color-night-soft: #ecedf0;
+ --color-night-deep: #e3e5ea;
+ --color-paper: #18202e;
+ --color-gold: #1c4aa6;
+ --color-gold-soft: #2f4f8f;
+ --color-gold-pale: #153a85;
+ --color-festal: #1c4aa6;
+ --ink-rubric: 150 40 32;
+ --color-on-paper: #f7f7f5;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.7) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #ffffff 0%, #f8f9fb 60%, #eff1f5 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #e9ecf2 0%, #dfe3ec 100%);
+ --room: var(--scene-patmos) center bottom / 100% auto no-repeat, #f7f7f5;
+ --foot-solid: 134px;
+ --foot-clear: 244px;
+}
+
+html[data-look="patmos"] .lm-card {
+ --tw-shadow: 0 12px 28px -18px rgb(24 32 46 / 0.4);
+}
+
+html[data-look="patmos"] .lit-surface {
+ --lit-on-fast: #18202e;
+ --lit-muted: rgb(24 32 46 / 0.7);
+ --lit-line: rgb(24 32 46 / 0.55);
+}
+
+@layer utilities {
+ :where(html[data-look="patmos"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68) {
+  color: color-mix(in oklab, var(--color-paper) 74%, transparent);
+ }
+ :where(html[data-look="patmos"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 74%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="patmos"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 74%, transparent);
+ }
+}
+
+/* ── Its small page in Settings and in the Plus preview (".set-mode-page[data-palette]"), after the window's small pages ── */
+.set-mode-page[data-palette="patmos"] {
+ --mp-ground: #f7f7f5;
+ --mp-ink: #18202e;
+ --mp-accent: #1c4aa6;
+ --mp-sheen: 0.5;
+ --mp-back: var(--scene-patmos) center bottom calc(-35.75px * var(--mp-k)) / 100% auto no-repeat, var(--mp-ground);
+}

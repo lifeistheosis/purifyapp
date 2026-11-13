@@ -7,8 +7,10 @@
 //   node scripts/theme-pictures.mjs            the drawings, as SVG
 //   node scripts/theme-pictures.mjs --painted  those, and the eight painted by
 //                                              the app's own quote-picture code
-//   node scripts/theme-pictures.mjs --kept     the room of a look the app no
-//                                              longer has (Fire), into the
+//   node scripts/theme-pictures.mjs --kept     the pictures of the looks the
+//                                              app no longer has (Galilee's
+//                                              and Patmos's drawings, and
+//                                              Fire's room), each into the
 //                                              folder it is kept in
 //
 // The drawings need nothing but Node. Each is a few kilobytes: 390 wide, the
@@ -30,6 +32,14 @@
 // docs/1.9-build/kept/fire-look/, never to public/themes, which the apps
 // carry (lib/reader/__tests__/themePictures.test.ts holds that folder to the
 // looks the app has).
+//
+// Galilee and Patmos were two of the drawings. The owner took the two looks
+// of the sea out of the app on 2026-11-13 ("remove the sea theme from the
+// app", "Both"), so they are KEPT_DRAWINGS now, not DRAWINGS: the plain run
+// no longer writes them, and --kept writes each to its own folder,
+// docs/1.9-build/kept/galilee-look/ and docs/1.9-build/kept/patmos-look/
+// (lib/reader/__tests__/retiredThemes.test.ts holds each file there to what
+// its painter draws).
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -37,7 +47,11 @@ import { fileURLToPath } from "node:url";
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "public", "themes");
 /** Where a look the app no longer has keeps its picture, by the look's id. */
-const KEPT = { fire: path.join(ROOT, "docs", "1.9-build", "kept", "fire-look") };
+const KEPT = {
+  fire: path.join(ROOT, "docs", "1.9-build", "kept", "fire-look"),
+  galilee: path.join(ROOT, "docs", "1.9-build", "kept", "galilee-look"),
+  patmos: path.join(ROOT, "docs", "1.9-build", "kept", "patmos-look"),
+};
 
 // ── The drawings ────────────────────────────────────────────────────────
 
@@ -147,7 +161,7 @@ function jordan() {
   return { svg: svg(390, H, body, defs), height: H };
 }
 
-/** The Sea of Galilee by night: the far hills, the water's edge, and the light lying on the water. */
+/** The Sea of Galilee by night: the far hills, the water's edge, and the light lying on the water. Kept, not shipped (KEPT_DRAWINGS). */
 function galilee() {
   const H = 300;
   const defs =
@@ -167,7 +181,7 @@ function galilee() {
   return { svg: svg(390, H, body, defs), height: H };
 }
 
-/** Patmos: the white wall, and the sea beyond it. Two fields of colour and the line between them. */
+/** Patmos: the white wall, and the sea beyond it. Two fields of colour and the line between them. Kept, not shipped (KEPT_DRAWINGS). */
 function patmos() {
   const H = 220;
   const defs = vgrad("haze", [[0, "#7fa6ea", 0], [1, "#7fa6ea", 0.2]]) + vgrad("sea", [[0, "#2f63c8"], [0.4, "#2453b2"], [1, "#1b4296"]]);
@@ -372,8 +386,6 @@ export const DRAWINGS = {
   "forest.svg": forest,
   "desert.svg": desert,
   "jordan.svg": jordan,
-  "galilee.svg": galilee,
-  "patmos.svg": patmos,
   "mosaic.svg": mosaic,
   "mosaic-rule.svg": mosaicRule,
   "stone.svg": stone,
@@ -385,12 +397,29 @@ export const DRAWINGS = {
   "nightsky-horizon.svg": horizon,
 };
 
+/** The drawings of the looks the app no longer has, by the name of the file kept for each (KEPT, by the look's id). */
+export const KEPT_DRAWINGS = {
+  "galilee.svg": galilee,
+  "patmos.svg": patmos,
+};
+
 function writeDrawings() {
   fs.mkdirSync(OUT, { recursive: true });
   for (const [file, draw] of Object.entries(DRAWINGS)) {
     const { svg: text } = draw();
     fs.writeFileSync(path.join(OUT, file), text + "\n");
     console.log(`  ${file} ${(text.length / 1024).toFixed(1)} KB`);
+  }
+}
+
+/** A kept look's drawing goes to its own folder; nothing of it is written where the apps would carry it. */
+function writeKeptDrawings() {
+  for (const [file, draw] of Object.entries(KEPT_DRAWINGS)) {
+    const dir = KEPT[file.replace(/\.svg$/, "")];
+    if (!dir) throw new Error(`${file}: not a kept look`);
+    const { svg: text } = draw();
+    fs.writeFileSync(path.join(dir, file), text + "\n");
+    console.log(`  ${path.relative(ROOT, path.join(dir, file))} ${(text.length / 1024).toFixed(1)} KB`);
   }
 }
 
@@ -634,6 +663,8 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   }
   if (process.argv.includes("--kept")) {
     console.log("kept, not shipped:");
+    // The drawings need nothing but Node; Fire's room is painted on the export, as the painted ones are.
+    writeKeptDrawings();
     await writePainted({ kept: true });
   }
 }

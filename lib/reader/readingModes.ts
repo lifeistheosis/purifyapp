@@ -23,10 +23,11 @@ export type ReadingTheme =
   // shown in the chips only once the collection is complete.
   | "councils"
   | "cappadocian"
-  // The looks (1.9): seventeen Plus themes in four families. A look is worn
+  // The looks (1.9): fifteen Plus themes in four families. A look is worn
   // over Dark or over Light as a second attribute, `data-look`, so every rule
   // the app has for those two palettes still answers (themeAttributes below).
-  // There were eighteen: Fire came out before the looks were released
+  // There were eighteen: Fire came out before the looks were released, and
+  // Galilee and Patmos, the two of the sea, after the first test builds
   // (RETIRED_THEMES below).
   | "nightsky"
   | "dawn"
@@ -35,8 +36,6 @@ export type ReadingTheme =
   | "forest"
   | "desert"
   | "jordan"
-  | "galilee"
-  | "patmos"
   | "blush"
   | "rose"
   | "lavender"
@@ -216,24 +215,6 @@ export const READING_THEMES: {
     look: "light",
   },
   {
-    id: "galilee",
-    label: "Galilee",
-    blurb: "The sea by night, and the light lying on the water",
-    labelKey: "settings.paletteGalilee",
-    blurbKey: "settings.paletteGalileeHint",
-    family: "land",
-    look: "dark",
-  },
-  {
-    id: "patmos",
-    label: "Patmos",
-    blurb: "A white wall, and the sea beyond it",
-    labelKey: "settings.palettePatmos",
-    blurbKey: "settings.palettePatmosHint",
-    family: "land",
-    look: "light",
-  },
-  {
     id: "blush",
     label: "Blush",
     blurb: "Pink paper, a bloom of rose low on the page",
@@ -384,13 +365,34 @@ const THEME_IDS = new Set<string>(READING_THEMES.map((t) => t.id));
  * was, so the same reader is entitled to it. Nothing made is deleted: what
  * Fire was is kept, out of the app's reach, in docs/1.9-build/kept/fire-look/.
  *
+ * Galilee and Patmos, the two looks of the sea (the owner's word, 2026-11-13:
+ * "remove the sea theme from the app", and asked which of the two, "Both"),
+ * came out after the first 1.9 test builds, so a tester's device can hold
+ * either, stored on it or arriving by sync from an older build. Each reads as
+ * the kept look nearest it by ground and ink (measured in OKLab), worn over
+ * the same palette, and Plus as it was, so the same reader is entitled to it:
+ *
+ * - Galilee as Forest: a dark page of the same depth with the same green in
+ *   it (#06181d, Forest #0b1711; Galilee's leans to blue), a cool white ink
+ *   (#eaf6f6, Forest #edf5ef), the same rubric, and the same family, Land
+ *   and sea. The Holy Mountain comes next, and it is being reworked or
+ *   removed at his word (build 95 note 16), so it stands in for nothing.
+ * - Patmos as Linen: the same white page (#f7f7f5, Linen #f6f4ef) and a near
+ *   black ink (#18202e, Linen #1f1b1a); its links turn from blue to Linen's
+ *   red. Jordan, of Patmos's own family, keeps water in its picture, but its
+ *   page is a pale aqua a step darker and its ink a teal, so more of what the
+ *   reader reads on would change.
+ *
+ * What each was is kept, out of the app's reach, in
+ * docs/1.9-build/kept/galilee-look/ and docs/1.9-build/kept/patmos-look/.
+ *
  * coerceReadingTheme applies this, so every reader of a stored palette gets
  * it (the controller, the reader's settings, the server's write, which then
  * refuses the old id as it refuses any unknown one), and the pre-paint script
  * says the same from its own literal (lib/reader/prepaint.ts).
  * lib/reader/__tests__/retiredThemes.test.ts holds all of it.
  */
-export const RETIRED_THEMES: Readonly<Record<string, ReadingTheme>> = { fire: "candlelight" };
+export const RETIRED_THEMES: Readonly<Record<string, ReadingTheme>> = { fire: "candlelight", galilee: "forest", patmos: "linen" };
 
 /** The palettes that belong to a study collection, by id. */
 export const COLLECTION_THEME_IDS: ReadonlySet<string> = new Set(

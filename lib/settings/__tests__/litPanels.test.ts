@@ -205,7 +205,7 @@ describe("the reading modes", () => {
     })
       .filter(({ r }) => !(r >= 4.7))
       .map(({ id, r }) => `${id}: ${r.toFixed(2)}:1 at ${Math.round(share * 100)} percent of the ink`);
-    expect(READING_THEMES.length).toBeGreaterThanOrEqual(24);
+    expect(READING_THEMES.length).toBeGreaterThanOrEqual(22);
     expect(short, short.join("\n")).toEqual([]);
     // The one applied is the ink whole, and a shelf or a preview that sets its own share sets no less.
     expect(decls('.set-mode[aria-pressed="true"] .set-mode-name').color).toBe("var(--color-paper)");

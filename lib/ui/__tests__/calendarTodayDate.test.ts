@@ -56,7 +56,7 @@ const lum = ([r, g, b]: Rgb) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin
 const ratio = (a: Rgb, b: Rgb) => (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05);
 const over = (fg: Rgb, alpha: number, bg: Rgb) => fg.map((c, i) => c * alpha + bg[i] * (1 - alpha)) as Rgb;
 
-/** The five palettes and the seventeen looks, each as the app wears it. */
+/** The five palettes and the fifteen looks, each as the app wears it. */
 const PALETTES: [string, string | null, string | null][] = [
   ["Dark", null, null],
   ["Light", "parchment", null],
@@ -79,7 +79,7 @@ describe("today's date on the calendar's month", () => {
   });
 
   it("reads 4.5:1 or more on every palette and look, on each ground and under the glow of each tone", () => {
-    expect(PALETTES).toHaveLength(22);
+    expect(PALETTES).toHaveLength(20);
     for (const [name, mode, look] of PALETTES) {
       const selectors = [look && `html[data-look="${look}"]`, mode && `html[data-reading-mode="${mode}"]`, ":root", "@theme"].filter(Boolean) as string[];
       const ink = rgbOf(token(selectors, "color-paper"));

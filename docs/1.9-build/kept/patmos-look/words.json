@@ -1,0 +1,51 @@
+{
+  "what": "The Patmos look's name and its one line under that name in the picker (settings.palettePatmos and settings.palettePatmosHint), as they stood in each of the 21 catalogs on 2026-11-13. Both were the look's own and left the catalogs with it.",
+  "keys": {
+    "settings.palettePatmos": {
+      "ar": "بطمس",
+      "bg": "Патмос",
+      "de": "Patmos",
+      "el": "Πάτμος",
+      "en": "Patmos",
+      "es": "Patmos",
+      "fil": "Patmos",
+      "fr": "Patmos",
+      "hu": "Patmosz",
+      "id": "Patmos",
+      "it": "Patmos",
+      "ka": "პატმოსი",
+      "ne": "पत्मोस",
+      "pl": "Patmos",
+      "pt": "Patmos",
+      "ro": "Patmos",
+      "ru": "Патмос",
+      "sr": "Патмос",
+      "tr": "Patmos",
+      "uk": "Патмос",
+      "ur": "پتمس"
+    },
+    "settings.palettePatmosHint": {
+      "ar": "جدار أبيض والبحر من ورائه",
+      "bg": "Бяла стена и морето отвъд нея",
+      "de": "Eine weiße Mauer und das Meer dahinter",
+      "el": "Ένας λευκός τοίχος και η θάλασσα πέρα από αυτόν",
+      "en": "A white wall, and the sea beyond it",
+      "es": "Un muro blanco y el mar al otro lado",
+      "fil": "Isang puting pader at ang dagat sa kabila nito",
+      "fr": "Un mur blanc, et la mer au-delà",
+      "hu": "Fehér fal, és mögötte a tenger",
+      "id": "Tembok putih dan laut di baliknya",
+      "it": "Un muro bianco e il mare al di là",
+      "ka": "თეთრი კედელი და ზღვა მის მიღმა",
+      "ne": "एउटा सेतो पर्खाल र त्यसपारिको समुद्र",
+      "pl": "Biała ściana i morze za nią",
+      "pt": "Um muro branco e o mar além dele",
+      "ro": "Un zid alb și marea dincolo de el",
+      "ru": "Белая стена и море за ней",
+      "sr": "Бели зид и море иза њега",
+      "tr": "Beyaz bir duvar ve ardındaki deniz",
+      "uk": "Біла стіна й море за нею",
+      "ur": "ایک سفید دیوار اور اس کے پار سمندر"
+    }
+  }
+}

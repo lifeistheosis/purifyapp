@@ -98,8 +98,10 @@ describe("the restructured ladder", () => {
     const looks = plus.filter((t) => isLook(t.id));
     // Twenty and eighteen when he approved the lines; nineteen and seventeen
     // since Fire came out of the looks the same day, by his word ("remove
-    // fire"): the numbers followed the registry, and nothing else in the lines moved.
-    const WORDS: Record<number, [string, string]> = { 4: ["four", "vier"], 17: ["seventeen", "siebzehn"], 19: ["nineteen", "neunzehn"] };
+    // fire"); seventeen and fifteen since Galilee and Patmos came out on
+    // 2026-11-13 ("remove the sea theme from the app", "Both"): the numbers
+    // followed the registry, and nothing else in the lines moved.
+    const WORDS: Record<number, [string, string]> = { 4: ["four", "vier"], 15: ["fifteen", "fünfzehn"], 17: ["seventeen", "siebzehn"] };
     const word = (n: number, de = false) => WORDS[n]?.[de ? 1 : 0] ?? `no word for ${n}`;
     const capital = (w: string) => w[0].toUpperCase() + w.slice(1);
     const names = plus.map((t) => t.label);
@@ -134,6 +136,55 @@ describe("the restructured ladder", () => {
     // No em dash in words a reader sees.
     for (const line of [en["plus.palettes.title"], en["plus.palettes.body"], en["plus.active.modes"], row(PREMIUM_PLAN_EN), row(PREMIUM_PLAN_DE)]) {
       expect(line).not.toContain("\u2014");
+    }
+  });
+
+  it("every catalog counts the reading modes and the looks the registry has, in its own words (build 95 note 16)", () => {
+    // The lines above in all 21 languages: the title, the row's short name and
+    // the plan's row count the reading modes Plus opens, the body the looks.
+    // English alone was read until 2026-11-13, when Galilee and Patmos came out
+    // ("remove the sea theme from the app", "Both") and the count moved in
+    // every catalog. A look added or dropped fails here, language by language,
+    // until each says the new number: write its word in its line and in WORDS.
+    const plus = READING_THEMES.filter((t) => !isFreeTheme(t.id) && !isCollectionTheme(t.id));
+    const looks = plus.filter((t) => isLook(t.id));
+    // Each language's word for the two numbers, as its lines write them (lower case).
+    const WORDS: Record<string, Record<number, string>> = {
+      ar: { 15: "خمسة عشر", 17: "سبعة عشر" },
+      bg: { 15: "петнадесет", 17: "седемнадесет" },
+      de: { 15: "fünfzehn", 17: "siebzehn" },
+      el: { 15: "δεκαπέντε", 17: "δεκαεπτά" },
+      en: { 15: "fifteen", 17: "seventeen" },
+      es: { 15: "quince", 17: "diecisiete" },
+      fil: { 15: "labinlima", 17: "labimpito" },
+      fr: { 15: "quinze", 17: "dix-sept" },
+      hu: { 15: "tizenöt", 17: "tizenhét" },
+      id: { 15: "lima belas", 17: "tujuh belas" },
+      it: { 15: "quindici", 17: "diciassette" },
+      ka: { 15: "თხუთმეტი", 17: "ჩვიდმეტი" },
+      ne: { 15: "पन्ध्र", 17: "सत्र" },
+      pl: { 15: "piętnaście", 17: "siedemnaście" },
+      pt: { 15: "quinze", 17: "dezessete" },
+      ro: { 15: "cincisprezece", 17: "șaptesprezece" },
+      ru: { 15: "пятнадцать", 17: "семнадцать" },
+      sr: { 15: "петнаест", 17: "седамнаест" },
+      tr: { 15: "on beş", 17: "on yedi" },
+      uk: { 15: "п’ятнадцять", 17: "сімнадцять" },
+      ur: { 15: "پندرہ", 17: "سترہ" },
+    };
+    const codes = Object.keys(WORDS).sort();
+    expect(codes).toHaveLength(21);
+    for (const code of codes) {
+      const words = JSON.parse(readFileSync(`lib/i18n/messages/${code}.json`, "utf8")) as Record<string, string>;
+      const says = (key: string) => (words[key] ?? "").toLocaleLowerCase(code);
+      const modes = WORDS[code][plus.length] ?? `no ${code} word for ${plus.length}`;
+      const shown = WORDS[code][looks.length] ?? `no ${code} word for ${looks.length}`;
+      for (const key of ["plus.palettes.title", "plus.active.modes", "premium.plus.readingModes.sub"]) {
+        expect(says(key), `${code}: ${key}`).toContain(modes);
+        expect(says(key), `${code}: ${key} counts the looks, not the modes`).not.toContain(shown);
+      }
+      expect(says("plus.palettes.body"), `${code}: plus.palettes.body`).toContain(shown);
+      expect(says("plus.palettes.body"), `${code}: plus.palettes.body counts the modes, not the looks`).not.toContain(modes);
     }
   });
 

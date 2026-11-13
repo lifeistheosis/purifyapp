@@ -78,7 +78,7 @@ describe("the florilegium's starter tiles", () => {
       ["Light", 'html[data-reading-mode="parchment"]', [209, 199, 174]],
       ["Desert", 'html[data-look="desert"]', [212, 196, 185]],
       ["Jordan", 'html[data-look="jordan"]', [194, 208, 204]],
-      ["Patmos", 'html[data-look="patmos"]', [213, 214, 216]],
+      // Patmos stood here (213, 214, 216) until it came out of the looks on 2026-11-13.
       ["Blush", 'html[data-look="blush"]', [217, 196, 199]],
       ["Roses", 'html[data-look="rose"]', [210, 202, 186]],
       ["Lavender", 'html[data-look="lavender"]', [204, 196, 213]],

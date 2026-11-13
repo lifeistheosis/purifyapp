@@ -2,7 +2,7 @@
 
 // Try the reading modes (r3-07 A, "every row its own"): John 1 in Candlelight,
 // and under it the small pages a reader picks from in Settings. Dark stands
-// beside three that Plus adds: Candlelight, Monastery and one of the seventeen
+// beside three that Plus adds: Candlelight, Monastery and one of the fifteen
 // looks, Night sky (1.9). A tap repaints the page in the window, and only the
 // page: the reader's own palette is never changed by a preview
 // (lib/premium/plusTry.ts, TRY_PALETTES, held to app/globals.css).

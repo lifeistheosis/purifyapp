@@ -1,0 +1,61 @@
+/* The Galilee look, as it stood in app/globals.css on 2026-11-13 (commit 545d562a),
+   before it was taken out of the app's looks by the owner's word of that day.
+   Kept, not shipped: nothing loads this file. README.md beside it says what
+   Galilee was and how it would be brought back.
+
+   Each part below stood in the section "The looks (1.9)", in the place its
+   note names, between the same parts of Jordan and of Patmos. */
+
+/* ── In the looks' :root block, the picture's address (the file is beside this one now) ── */
+ --scene-galilee: url("/themes/galilee.svg");
+
+/* ── The look: its palette, its lit surface, its faint text and placeholders ── */
+html[data-look="galilee"] {
+ --color-night: #06181d;
+ --color-night-soft: #0c2228;
+ --color-night-deep: #031014;
+ --color-paper: #eaf6f6;
+ --color-gold: #f4fbfb;
+ --color-gold-soft: #a9cdd0;
+ --color-gold-pale: #fbffff;
+ --color-festal: #c5eef0;
+ --ink-rubric: 255 165 150;
+ --color-comment: #ff8a7d;
+ --color-comment-hover: #ffa89c;
+ --look-quiet: 64%;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #143037 0%, #0c2228 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #1a3a42 0%, #10292f 100%);
+ --room: var(--scene-galilee) center bottom / 100% auto no-repeat, #06181d;
+ --foot-solid: 134px;
+ --foot-clear: 244px;
+}
+
+html[data-look="galilee"] .lit-surface {
+ --color-paper: #eaf6f6;
+ --lit-muted: rgb(234 246 246 / 0.6);
+ --lit-line: rgb(234 246 246 / 0.4);
+}
+
+@layer utilities {
+ :where(html[data-look="galilee"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+ :where(html[data-look="galilee"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="galilee"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+
+/* ── Its small page in Settings and in the Plus preview (".set-mode-page[data-palette]"), after the window's small pages ── */
+.set-mode-page[data-palette="galilee"] {
+ --mp-ground: #06181d;
+ --mp-ink: #eaf6f6;
+ --mp-accent: #f4fbfb;
+ --mp-back: var(--scene-galilee) center bottom calc(-35.75px * var(--mp-k)) / 100% auto no-repeat, var(--mp-ground);
+}

@@ -11,7 +11,7 @@
 //  - Every palette and look in the registry (lib/reader/readingModes.ts), and
 //    every family the looks are shelved in, has a name in every catalog that
 //    is not the English, unless the pair is named in SAME_AS_ENGLISH with its
-//    reason: a place the language spells as English does (Jordan, Patmos), or
+//    reason: a place the language spells as English does (Jordan), or
 //    a word that is the language's own as well (Roses in French).
 //  - No catalog but English names a palette in English anywhere else, so a
 //    line that names one ("Candlelight and Monastery are part of Purify
@@ -58,16 +58,9 @@ const SAME_AS_ENGLISH: Record<string, string> = {
   "de:Jordan": PLACE,
   "fil:Jordan": PLACE,
   "pl:Jordan": PLACE,
-  "de:Patmos": PLACE,
-  "es:Patmos": PLACE,
-  "fil:Patmos": PLACE,
-  "fr:Patmos": PLACE,
-  "id:Patmos": PLACE,
-  "it:Patmos": PLACE,
-  "pl:Patmos": PLACE,
-  "pt:Patmos": PLACE,
-  "ro:Patmos": PLACE,
-  "tr:Patmos": PLACE,
+  // Not here since 2026-11-13: Patmos, which ten languages spell as English
+  // does. It needed a place while Patmos was a look, and the two looks of the
+  // sea came out that day ("remove the sea theme from the app", "Both").
   "fr:Roses": "the French for roses is the same word",
   "id:Linen": "Indonesian has the word as its own (kain linen)",
 };
@@ -86,8 +79,9 @@ const namedIn = (line: string, name: string) => new RegExp(`(?<![\\p{L}\\p{M}])$
 describe("a palette's name", () => {
   it("is in each language's own words, in every catalog", () => {
     expect(OTHERS.length).toBe(20);
-    // Twenty-four palettes and looks, and four families (twenty-nine before Fire came out of the looks).
-    expect(NAMES.length).toBeGreaterThanOrEqual(28);
+    // Twenty-two palettes and looks, and four families (twenty-nine before Fire came out of the looks,
+    // twenty-eight before Galilee and Patmos did).
+    expect(NAMES.length).toBeGreaterThanOrEqual(26);
     const english: string[] = [];
     for (const code of OTHERS) {
       const words = catalog(code);

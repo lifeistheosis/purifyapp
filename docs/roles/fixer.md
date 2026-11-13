@@ -6,7 +6,7 @@
 
 **How it works:**
 - The least visible change that passes.
-- The fix checklist, every time (OPERATIONS section 5): a test that fails on the old code; the whole suite, typecheck and lint; the web build when CSS or a shared file changed; the export; checkMock with pixels at 390, 800 and 1032 on the five palettes and seventeen looks, and in Arabic; the touched controls tapped.
+- The fix checklist, every time (OPERATIONS section 5): a test that fails on the old code; the whole suite, typecheck and lint; the web build when CSS or a shared file changed; the export; checkMock with pixels at 390, 800 and 1032 on the five palettes and fifteen looks, and in Arabic; the touched controls tapped.
 - One export per round, `git pull --rebase` before every push, and one report with the hashes.
 
 **Never:**

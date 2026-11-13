@@ -19,16 +19,17 @@
 // is not drawing (a closed answer in a list of questions). It fails if that
 // rests inside the foot: below where the foot begins.
 //
-// Three looks by default, one of each height of foot: Mosaic, whose foot is
-// the tallest (246px); Patmos, a light one (244px); and Olive, one of the
-// thirteen at 240px. The room is each look's own --foot-clear, so a look's
-// height is all that differs. A look with no foot (Night sky, Linen) has
-// nothing to walk.
+// Two looks by default, one of each height of foot: Mosaic, whose foot is
+// the tallest (246px), and Olive, a light one, of the twelve at 240px. (Patmos
+// was the third, the one light look at 244px, until the two looks of the sea
+// came out on 2026-11-13.) The room is each look's own --foot-clear, so a
+// look's height is all that differs. A look with no foot (Night sky, Linen)
+// has nothing to walk.
 //
 // What it does not reach: a screen drawn only after a tap (a sheet, a
 // question of the welcome), and the website, which the apps' export is not.
 //
-//   npm run build:android, then: node scripts/last-words-walk.mjs [out dir] [--look mosaic,patmos] [--only /path/,/path/]
+//   npm run build:android, then: node scripts/last-words-walk.mjs [out dir] [--look mosaic,olive] [--only /path/,/path/]
 
 import fs from "node:fs";
 import path from "node:path";
@@ -44,7 +45,7 @@ const take = (name) => {
   return at >= 0 ? argv.splice(at, 2)[1] : null;
 };
 const ONLY = take("--only")?.split(",") ?? null;
-const LOOKS = (take("--look") ?? "mosaic,patmos,olive").split(",");
+const LOOKS = (take("--look") ?? "mosaic,olive").split(",");
 const OUT = path.resolve(argv[0] ?? "out");
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}: run npm run build:android first`);
 

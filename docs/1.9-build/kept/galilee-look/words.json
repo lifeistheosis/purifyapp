@@ -1,0 +1,51 @@
+{
+  "what": "The Galilee look's name and its one line under that name in the picker (settings.paletteGalilee and settings.paletteGalileeHint), as they stood in each of the 21 catalogs on 2026-11-13. Both were the look's own and left the catalogs with it.",
+  "keys": {
+    "settings.paletteGalilee": {
+      "ar": "الجليل",
+      "bg": "Галилея",
+      "de": "Galiläa",
+      "el": "Γαλιλαία",
+      "en": "Galilee",
+      "es": "Galilea",
+      "fil": "Galilea",
+      "fr": "Galilée",
+      "hu": "Galilea",
+      "id": "Galilea",
+      "it": "Galilea",
+      "ka": "გალილეა",
+      "ne": "गालील",
+      "pl": "Galilea",
+      "pt": "Galileia",
+      "ro": "Galileea",
+      "ru": "Галилея",
+      "sr": "Галилеја",
+      "tr": "Celile",
+      "uk": "Галилея",
+      "ur": "گلیل"
+    },
+    "settings.paletteGalileeHint": {
+      "ar": "البحر ليلًا والنور المنبسط على الماء",
+      "bg": "Морето нощем и светлината върху водата",
+      "de": "Das Meer bei Nacht und das Licht auf dem Wasser",
+      "el": "Η θάλασσα τη νύχτα και το φως πάνω στο νερό",
+      "en": "The sea by night, and the light lying on the water",
+      "es": "El mar de noche y la luz tendida sobre el agua",
+      "fil": "Ang dagat sa gabi at ang liwanag na nakalatag sa tubig",
+      "fr": "La mer de nuit, et la lumière posée sur l'eau",
+      "hu": "A tenger éjjel, és a vízen fekvő fény",
+      "id": "Laut di malam hari dan cahaya yang terbentang di atas air",
+      "it": "Il mare di notte e la luce distesa sull'acqua",
+      "ka": "ზღვა ღამით და წყალზე დაფენილი შუქი",
+      "ne": "रातको समुद्र र पानीमाथि फैलिएको उज्यालो",
+      "pl": "Morze nocą i światło leżące na wodzie",
+      "pt": "O mar à noite e a luz pousada na água",
+      "ro": "Marea în noapte și lumina așternută pe apă",
+      "ru": "Ночное море и свет, лежащий на воде",
+      "sr": "Море ноћу и светлост која лежи на води",
+      "tr": "Gece vakti deniz ve suyun üzerine uzanan ışık",
+      "uk": "Нічне море й світло, що лежить на воді",
+      "ur": "رات کا سمندر اور پانی پر پھیلی ہوئی روشنی"
+    }
+  }
+}

@@ -55,7 +55,7 @@ export const TRY_VERSES = 14;
  * reader's own palette is never touched. lib/premium/__tests__/plusTry.test.ts
  * holds every value to globals.css.
  *
- * Night sky is one of the seventeen looks (1.9, the arbiter's word of
+ * Night sky is one of the fifteen looks (1.9, the arbiter's word of
  * 2026-11-10: "let the preview under Twenty reading modes show one of the
  * looks beside Dark, Candlelight and Monastery"). It was chosen on the
  * export: its sky lies behind the whole page and its sign stands at the

@@ -97,8 +97,8 @@ describe("every palette a reader can wear", () => {
   const light = palettes.filter((p) => p.mode === "parchment");
   const dark = palettes.filter((p) => p.mode !== "parchment");
 
-  it("is all 24 of them, each with a page colour written as six plain digits", () => {
-    expect(palettes).toHaveLength(24);
+  it("is all 22 of them, each with a page colour written as six plain digits", () => {
+    expect(palettes).toHaveLength(22);
     for (const p of palettes) expect(p.declared, p.label).toMatch(/^#[0-9a-f]{6}$/i);
   });
 
@@ -117,12 +117,12 @@ describe("every palette a reader can wear", () => {
     expect(strip("parchment")).not.toBe(BAR_NIGHT);
     expect(strip("linen")).toBe("#f6f4ef");
     // No two palettes share a page, so no two share a strip.
-    expect(new Set(palettes.map((p) => statusBarColor(p.declared))).size).toBe(24);
+    expect(new Set(palettes.map((p) => statusBarColor(p.declared))).size).toBe(22);
   });
 
-  it("draws dark marks on Light and the nine light looks, and light marks on the fourteen dark palettes, as before", () => {
-    expect(light.map((p) => p.id)).toEqual(["parchment", "desert", "jordan", "patmos", "blush", "rose", "lavender", "olive", "stone", "linen"]);
-    expect(dark).toHaveLength(14);
+  it("draws dark marks on Light and the eight light looks, and light marks on the thirteen dark palettes, as before", () => {
+    expect(light.map((p) => p.id)).toEqual(["parchment", "desert", "jordan", "blush", "rose", "lavender", "olive", "stone", "linen"]);
+    expect(dark).toHaveLength(13);
     for (const p of light) expect(statusBarMarks(statusBarColor(p.declared)), p.label).toBe("dark");
     for (const p of dark) expect(statusBarMarks(statusBarColor(p.declared)), p.label).toBe("light");
   });

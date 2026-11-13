@@ -12480,11 +12480,14 @@ html[data-reading-mode="parchment"] .chant-version-dot {
 }
 
 /* ── The looks (1.9) ───────────────────────────────────────────────────
-   Seventeen Plus themes in four families (lib/reader/readingModes.ts,
+   Fifteen Plus themes in four families (lib/reader/readingModes.ts,
    THEME_FAMILIES; docs/1.9-build/notes/themes-fable.md, "The third set"),
    by the owner's words of 2026-11-10: "make a lot more designs", "clean and
    unique". There were eighteen: Fire came out the same day, by his word
    ("remove fire"), and what it was is kept in docs/1.9-build/kept/fire-look/.
+   Galilee and Patmos, the two of the sea, came out on 2026-11-13 ("remove
+   the sea theme from the app", "Both"), and what each was is kept in
+   docs/1.9-build/kept/galilee-look/ and docs/1.9-build/kept/patmos-look/.
 
    A look is one calm page and one sign. The sign is a still picture at the
    foot of the screen, or the rule at a page's head. No grain, no texture
@@ -12509,8 +12512,6 @@ html[data-reading-mode="parchment"] .chant-version-dot {
  --scene-forest: url("/themes/forest.svg");
  --scene-desert: url("/themes/desert.svg");
  --scene-jordan: url("/themes/jordan.svg");
- --scene-galilee: url("/themes/galilee.svg");
- --scene-patmos: url("/themes/patmos.svg");
  --room-blush: url("/themes/blush-room.webp");
  --room-rose: url("/themes/rose-room.webp");
  --head-rose: url("/themes/rose-head.webp");
@@ -13027,92 +13028,6 @@ html[data-look="jordan"] .lit-surface {
 @layer base {
  :where(html[data-look="jordan"]) ::placeholder {
   color: color-mix(in oklab, var(--color-paper) 78%, transparent);
- }
-}
-
-html[data-look="galilee"] {
- --color-night: #06181d;
- --color-night-soft: #0c2228;
- --color-night-deep: #031014;
- --color-paper: #eaf6f6;
- --color-gold: #f4fbfb;
- --color-gold-soft: #a9cdd0;
- --color-gold-pale: #fbffff;
- --color-festal: #c5eef0;
- --ink-rubric: 255 165 150;
- --color-comment: #ff8a7d;
- --color-comment-hover: #ffa89c;
- --look-quiet: 64%;
- --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 55%),
-  linear-gradient(155deg, #143037 0%, #0c2228 100%);
- --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0) 55%),
-  linear-gradient(150deg, #1a3a42 0%, #10292f 100%);
- --room: var(--scene-galilee) center bottom / 100% auto no-repeat, #06181d;
- --foot-solid: 134px;
- --foot-clear: 244px;
-}
-
-html[data-look="galilee"] .lit-surface {
- --color-paper: #eaf6f6;
- --lit-muted: rgb(234 246 246 / 0.6);
- --lit-line: rgb(234 246 246 / 0.4);
-}
-
-@layer utilities {
- :where(html[data-look="galilee"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
-  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
- }
- :where(html[data-look="galilee"]) .placeholder\:text-paper\/55::placeholder {
-  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
- }
-}
-@layer base {
- :where(html[data-look="galilee"]) ::placeholder {
-  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
- }
-}
-
-html[data-look="patmos"] {
- --color-night: #f7f7f5;
- --color-night-soft: #ecedf0;
- --color-night-deep: #e3e5ea;
- --color-paper: #18202e;
- --color-gold: #1c4aa6;
- --color-gold-soft: #2f4f8f;
- --color-gold-pale: #153a85;
- --color-festal: #1c4aa6;
- --ink-rubric: 150 40 32;
- --color-on-paper: #f7f7f5;
- --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.7) 0%, rgb(255 255 255 / 0) 55%),
-  linear-gradient(155deg, #ffffff 0%, #f8f9fb 60%, #eff1f5 100%);
- --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0) 55%),
-  linear-gradient(150deg, #e9ecf2 0%, #dfe3ec 100%);
- --room: var(--scene-patmos) center bottom / 100% auto no-repeat, #f7f7f5;
- --foot-solid: 134px;
- --foot-clear: 244px;
-}
-
-html[data-look="patmos"] .lm-card {
- --tw-shadow: 0 12px 28px -18px rgb(24 32 46 / 0.4);
-}
-
-html[data-look="patmos"] .lit-surface {
- --lit-on-fast: #18202e;
- --lit-muted: rgb(24 32 46 / 0.7);
- --lit-line: rgb(24 32 46 / 0.55);
-}
-
-@layer utilities {
- :where(html[data-look="patmos"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68) {
-  color: color-mix(in oklab, var(--color-paper) 74%, transparent);
- }
- :where(html[data-look="patmos"]) .placeholder\:text-paper\/55::placeholder {
-  color: color-mix(in oklab, var(--color-paper) 74%, transparent);
- }
-}
-@layer base {
- :where(html[data-look="patmos"]) ::placeholder {
-  color: color-mix(in oklab, var(--color-paper) 74%, transparent);
  }
 }
 
@@ -13854,19 +13769,6 @@ a.set-lab.set-link {
  --mp-accent: #13525a;
  --mp-sheen: 0.5;
  --mp-back: var(--scene-jordan) center bottom calc(-35.75px * var(--mp-k)) / 100% auto no-repeat, var(--mp-ground);
-}
-.set-mode-page[data-palette="galilee"] {
- --mp-ground: #06181d;
- --mp-ink: #eaf6f6;
- --mp-accent: #f4fbfb;
- --mp-back: var(--scene-galilee) center bottom calc(-35.75px * var(--mp-k)) / 100% auto no-repeat, var(--mp-ground);
-}
-.set-mode-page[data-palette="patmos"] {
- --mp-ground: #f7f7f5;
- --mp-ink: #18202e;
- --mp-accent: #1c4aa6;
- --mp-sheen: 0.5;
- --mp-back: var(--scene-patmos) center bottom calc(-35.75px * var(--mp-k)) / 100% auto no-repeat, var(--mp-ground);
 }
 .set-mode-page[data-palette="blush"] {
  --mp-ground: #efe8e8;
