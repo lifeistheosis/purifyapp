@@ -15,13 +15,13 @@ Each part: typecheck 0, eslint clean, the whole suite green (last 1,148 files, 1
 ## Checked on the round's export (cut from `b5d9edb3` by `scripts/gate/export.mjs`, 74.5 MB packed)
 
 - `docs/1.9-build/held/fast-journal/xcheck.mjs fast,journal,sheet new`: **84 of 84 pass** (390, 800, 1032; English and Arabic; five palettes and every look; pixels). Six items left for the eye, all one known one: the writing sheet's last field under the tools.
-- `scripts/gate/ambience-sheet.mjs` (no Plus): 36 pass, **2 fail**: "The sea: takes Rain's place: moved 7px" and "Bell and stillness: stops: moved 9px" (limit 4). Run beside the 34-minute checker on 4 CPUs; queued to run again alone. If they hold, it is the sheet's hold-still (`useHoldStill` in `AmbienceSheet.tsx`) when the sheet is at full height and what stands above the tiles shrinks.
-- `SELLS_PLUS=1 scripts/gate/ambience-sheet.mjs`: 10 pass, then the new preview part's own selector took the preview's window for its strip (both are a group named Ambience). Fixed in `ebc97dcb`; queued to run again.
-- `scripts/mock-journal.mjs` with `WALK=1`, as a new reader without Plus and as one with nothing locked: running when this was written.
+- `scripts/gate/ambience-sheet.mjs` (no Plus), run again alone: 36 pass, **2 fail, real**: a third sound taking Rain's place moves The sea's tile 7px under the finger, and stopping one of two moves Bell and stillness 9px (limit 4). In `components/player/AmbienceSheet.tsx`, the hold-still (`useHoldStill`) as the per-sound volumes glide shut above the tiles.
+- `SELLS_PLUS=1 scripts/gate/ambience-sheet.mjs`, run again alone (`ebc97dcb`'s selector): the strip's six photographs painted at 108px at every width in both languages, and the lock's checks pass; **3 fail**: The sea in the strip plays from a tap but its tile moves 13.3px; and checkMock with pixels on the Plus preview at 390 (English 94, Arabic 111; 800 and 1032 pass) on John 1's verses in the preview's window (for example 2.41 to 3.08:1 on Councils on the pixels under them). Not known yet whether that predates the photographs: the window is the strip's neighbour and was not changed.
+- `scripts/mock-journal.mjs` with `WALK=1`: **40 of 40** flows as a new reader without Plus, **44 of 44** with nothing locked.
 
 ## Open
 
-1. The results of the runs above, into build-95.md and the report.
+1. **Three faults before the next test build** (pre-build gate, part 1, and contrast): the sheet's two moves, the strip's 13.3px move, and the preview's John 1 window at 390. Each needs a test that fails on the code now.
 2. The emails in real Gmail, Apple Mail and Outlook: with the first send, to him alone (a switch to `owner` is his word).
 3. The shared journal page has no pixel check: it is the website's (`/p/[id]`) and needs a shared row; its rendering is held by its tests.
 4. Seen, not changed (not the colour ask): the shell still sets spaced capitals (PURIFY, the small line, the micro labels), which the kit's letters do not. His word.
