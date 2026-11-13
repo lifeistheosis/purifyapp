@@ -44,12 +44,13 @@ export function FeastBand({ products, className }: { products: readonly ShopProd
       aria-labelledby="shop-feast"
       className={className}
     >
-      <div className="dark-island relative overflow-hidden rounded-2xl bg-[#0a0a0a] p-5 text-paper ring-1 ring-inset ring-paper/15 md:flex md:items-center md:justify-between md:gap-10 md:p-8">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{ background: "radial-gradient(60% 80% at 15% 20%, rgba(255,255,255,0.08), transparent 70%)" }}
-        />
+      {/* The shop's own surfaces (app/globals.css, .shop-feature and
+          .shop-vitrine): tokens only, so the band is the reader's palette or
+          look like every card around it. It was EIKON's obsidian, in fixed
+          colours, a black card on every palette and look (build 95 note 20,
+          his word: "this doesn't match the them the users uses");
+          lib/ui/__tests__/lookSurfaces.test.ts holds it. */}
+      <div className="shop-feature relative overflow-hidden rounded-2xl p-5 text-paper ring-1 ring-inset ring-paper/15 md:flex md:items-center md:justify-between md:gap-10 md:p-8">
         <div className="relative max-w-[40ch]">
           <h2 id="shop-feast" className="text-balance text-title-sm leading-snug text-paper md:text-title">
             {banner.feast.name}
@@ -62,7 +63,7 @@ export function FeastBand({ products, className }: { products: readonly ShopProd
             const image = p.media[0];
             return (
               <li key={p.id} className={pieces.length === 1 ? "col-span-2" : undefined}>
-                <Link href={productHref(p.slug, native)} className="group flex items-center gap-3 rounded-xl bg-[#141414] p-2.5 ring-1 ring-inset ring-paper/10 transition-[box-shadow] hover:ring-paper/30">
+                <Link href={productHref(p.slug, native)} className="shop-vitrine group flex items-center gap-3 rounded-xl p-2.5 ring-1 ring-inset ring-paper/10 transition-[box-shadow] hover:ring-paper/30">
                   <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-lg">
                     {image ? <Image src={image.media_url} alt={image.alt_text} fill sizes="64px" className="object-contain p-1" /> : null}
                   </div>
