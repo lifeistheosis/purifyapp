@@ -1,0 +1,431 @@
+<!doctype html>
+<!-- Orthodox Christians in America, by the numbers: the film's one page.
+     render.mjs opens it at 1920 by 1080, gives it the faces and the map
+     (window.MAP), and sets it to each thirtieth of a second with __seek(ms).
+     Every figure here is in facts.mjs with its source; render.mjs refuses a
+     figure that is in one and not the other. Black, white and grey only.
+     Light is one soft pool: no rays, no sparkle, no side stripe, no pills. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Orthodox Christians in America, by the numbers</title>
+<style>
+  :root { --white: #fff; --soft: #d6d6d6; --grey: #a3a3a3; --line: #4a4a4a; --ease-house: cubic-bezier(0.22, 1, 0.36, 1); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+  body { font-family: "DM Sans", sans-serif; color: var(--white); -webkit-font-smoothing: antialiased; }
+  #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+  /* The ground: one soft pool of light, a little above the middle. */
+  #pool { position: absolute; inset: 0; background: radial-gradient(ellipse 62% 58% at 50% 44%, #161616 0%, #0b0b0b 48%, #000 100%); }
+  #gfx, #txt { position: absolute; inset: 0; }
+  /* The vignette lies over the pictures and under the words, so no word loses contrast to it. */
+  #vig { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 48%, rgba(0,0,0,0) 72%, rgba(0,0,0,.6) 100%); }
+  section { position: absolute; inset: 0; opacity: 0; transform-origin: 50% 46%; will-change: opacity, transform; }
+  canvas, svg.g { position: absolute; left: 0; top: 0; }
+  .a { position: absolute; }
+  .serif { font-family: "DM Serif Display", serif; font-weight: 400; }
+  .chap { left: 96px; top: 74px; font-size: 30px; color: var(--soft); letter-spacing: .01em; }
+  .rule { left: 96px; top: 128px; width: 1728px; height: 1px; background: var(--line); transform-origin: 0 50%; }
+  .src { left: 96px; bottom: 44px; width: 1728px; font-size: 26px; color: var(--grey); line-height: 1.3; }
+  .num { font-family: "DM Serif Display", serif; line-height: 1; white-space: nowrap; }
+  .num i { font-style: normal; display: inline-block; width: .57em; text-align: center; }
+  .lab { font-size: 40px; line-height: 1.25; color: var(--white); }
+  .note { font-size: 30px; line-height: 1.38; color: var(--grey); }
+  .small { font-size: 26px; line-height: 1.35; color: var(--grey); }
+  .bar { height: 8px; background: var(--white); transform-origin: 0 50%; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; font-size: 34px; line-height: 1.75; }
+  .row b { font-family: "DM Serif Display", serif; font-weight: 400; font-size: 40px; }
+  .row span { color: var(--soft); }
+  text { font-family: "DM Sans", sans-serif; }
+  text.serif { font-family: "DM Serif Display", serif; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="pool"></div>
+
+  <!-- The pictures: dots, the map, the charts. -->
+  <div id="gfx">
+    <section data-s="title"></section>
+    <section data-s="one"><canvas id="c-one" width="1920" height="1080"></canvas></section>
+    <section data-s="gap"><canvas id="c-gap" width="1920" height="1080"></canvas></section>
+    <section data-s="six"><canvas id="c-six" width="1920" height="1080"></canvas></section>
+    <section data-s="who">
+      <svg class="g" width="1920" height="1080" viewBox="0 0 1920 1080">
+        <!-- Pew's four age bands, each as wide as its share (24, 35, 23, 17 of 99). -->
+        <g data-in="1.6" data-out="9.4">
+          <rect x="96" y="560" width="415" height="40" fill="#ffffff" data-grow="1.8"/>
+          <rect x="519" y="560" width="607" height="40" fill="#c2c2c2" data-grow="2.3"/>
+          <rect x="1134" y="560" width="397" height="40" fill="#8a8a8a" data-grow="2.8"/>
+          <rect x="1539" y="560" width="285" height="40" fill="#585858" data-grow="3.3"/>
+        </g>
+        <!-- A fine line under each share, as long as the share. -->
+        <g stroke="#fff" stroke-width="3" data-in="10.4">
+          <line x1="96" y1="560" x2="252" y2="560" pathLength="1" data-draw="10.8"/><line x1="96" y1="560" x2="390" y2="560" stroke="#3a3a3a" stroke-width="1"/>
+          <line x1="446" y1="560" x2="564" y2="560" pathLength="1" data-draw="11.5"/><line x1="446" y1="560" x2="740" y2="560" stroke="#3a3a3a" stroke-width="1"/>
+          <line x1="796" y1="560" x2="984" y2="560" pathLength="1" data-draw="12.2"/><line x1="796" y1="560" x2="1090" y2="560" stroke="#3a3a3a" stroke-width="1"/>
+          <line x1="1146" y1="560" x2="1217" y2="560" pathLength="1" data-draw="12.9"/><line x1="1146" y1="560" x2="1440" y2="560" stroke="#3a3a3a" stroke-width="1"/>
+          <line x1="1496" y1="560" x2="1681" y2="560" pathLength="1" data-draw="13.6"/><line x1="1496" y1="560" x2="1790" y2="560" stroke="#3a3a3a" stroke-width="1"/>
+        </g>
+      </svg>
+    </section>
+    <section data-s="where"><svg class="g" id="map" width="1920" height="1080" viewBox="0 0 1920 1080"></svg></section>
+    <section data-s="change">
+      <svg class="g" width="1920" height="1080" viewBox="0 0 1920 1080">
+        <!-- 2010 to 2020, three lines on one scale (880 less 640 for each 900,000). -->
+        <g data-in="0.9" data-out="8.6" fill="none">
+          <line x1="700" y1="250" x2="700" y2="890" stroke="#3a3a3a" pathLength="1" data-draw="0.9"/>
+          <line x1="1300" y1="250" x2="1300" y2="890" stroke="#3a3a3a" pathLength="1" data-draw="1.1"/>
+          <line x1="700" y1="299" x2="1300" y2="399" stroke="#fff" stroke-width="4" pathLength="1" data-draw="1.6" data-dd="2"/>
+          <line x1="700" y1="729" x2="1300" y2="750" stroke="#fff" stroke-width="4" pathLength="1" data-draw="3.0" data-dd="2"/>
+          <line x1="700" y1="670" x2="1300" y2="531" stroke="#9a9a9a" stroke-width="4" pathLength="1" data-draw="4.4" data-dd="2"/>
+          <circle cx="700" cy="299" r="7" fill="#fff"/><circle cx="700" cy="729" r="7" fill="#fff"/><circle cx="700" cy="670" r="7" fill="#9a9a9a"/>
+        </g>
+        <!-- Converts in twenty parishes, 2013 to 2023: 2.26 px a person, up from 800. -->
+        <g data-in="9.4" data-out="17.2" id="bars"></g>
+      </svg>
+    </section>
+    <section data-s="sources"></section>
+  </div>
+
+  <div id="vig"></div>
+
+  <!-- The words. -->
+  <div id="txt">
+    <section data-s="title">
+      <div class="a serif" data-in="0.5" style="left:0;width:1920px;top:380px;text-align:center;font-size:124px;line-height:1.05">Orthodox Christians in America</div>
+      <div class="a rule" data-grow="1.1" style="left:760px;width:400px;top:556px;background:#8a8a8a"></div>
+      <div class="a lab" data-in="1.5" style="left:0;width:1920px;top:590px;text-align:center;color:var(--soft)">By the numbers, and by who is counting</div>
+    </section>
+
+    <section data-s="one">
+      <div class="a chap" data-in="0.3">One in a hundred</div><div class="a rule" data-grow="0.3"></div>
+      <div class="a num" data-in="2.6" data-soft="5.2" style="left:1010px;top:210px;font-size:300px">1%</div>
+      <div class="a lab" data-in="3.2" style="left:1016px;top:520px;width:800px">of American adults call themselves Orthodox Christians.</div>
+      <div class="a num" data-in="5.4" style="left:1010px;top:668px;font-size:104px"><span data-count="2.6" data-dec="1"></span> million</div>
+      <div class="a note" data-in="6.0" style="left:1016px;top:786px;width:800px;color:var(--soft)">people, if 1% is taken of the 262 million adults in the country.</div>
+      <div class="a small" data-in="8.0" style="left:1016px;top:886px;width:808px">Pew gives the share, rounded to a whole percent, not a count. Read from the raw samples of two 2024 surveys, it is 1.8 to 2.1 million.</div>
+      <div class="a src" data-in="1.2">Pew Research Center, Religious Landscape Study, 2023 to 2024 · U.S. Census Bureau, Vintage 2023 · Orthodox Studies Institute, 2025</div>
+    </section>
+
+    <section data-s="gap">
+      <div class="a chap" data-in="0.3">The gap</div><div class="a rule" data-grow="0.3"></div>
+      <div class="a small" data-in="1.4" style="left:96px;top:868px">One dot is 1,000 people.</div>
+      <div class="a small" data-in="7.2" style="left:96px;top:908px;width:1040px;color:var(--soft)">A survey asks people. A census asks parishes. They are not the same measure.</div>
+
+      <div class="a" data-in="1.0" data-out="6.3" style="left:1220px;top:200px;width:620px">
+        <div class="num" style="font-size:112px">2.6 million</div>
+        <div class="lab" style="margin-top:22px">say they are Orthodox.</div>
+        <div class="note" style="margin-top:20px">A survey of adults, 2023 to 2024. Eastern and Oriental Orthodox together.</div>
+      </div>
+      <div class="a" data-in="6.8" data-out="11.9" style="left:1220px;top:200px;width:620px">
+        <div class="num" style="font-size:112px"><span data-count="1167178" data-from="2600000"></span></div>
+        <div class="lab" style="margin-top:22px">are on a parish's rolls.</div>
+        <div class="note" style="margin-top:20px">A count by the parishes, 2020. Adults and children, Eastern and Oriental together: 675,765 and 491,413.</div>
+      </div>
+      <div class="a" data-in="12.4" data-out="17.5" style="left:1220px;top:200px;width:620px">
+        <div class="num" style="font-size:112px"><span data-count="675765" data-from="1167178"></span></div>
+        <div class="lab" style="margin-top:22px">of them are in Eastern Orthodox parishes.</div>
+        <div class="note" style="margin-top:20px">The other 491,413, in grey, are in Oriental Orthodox parishes.</div>
+      </div>
+      <div class="a" data-in="18.0" style="left:1220px;top:200px;width:620px">
+        <div class="num" style="font-size:112px"><span data-count="183020" data-from="675765"></span></div>
+        <div class="lab" style="margin-top:22px">are at the Liturgy on a typical Sunday.</div>
+        <div class="note" style="margin-top:20px">In Eastern Orthodox parishes. Oriental Orthodox parishes, in grey, add 171,045.</div>
+      </div>
+
+      <!-- The four measures as lengths, 560 px for 2.6 million. -->
+      <div class="a" style="left:1220px;top:716px;width:620px">
+        <div data-in="1.6"><div class="small">Say they are Orthodox</div><div class="bar" data-grow="1.8" style="width:560px;margin:6px 0 14px"></div></div>
+        <div data-in="7.2"><div class="small">On parish rolls, both families</div><div class="bar" data-grow="7.4" style="width:251px;margin:6px 0 14px"></div></div>
+        <div data-in="12.8"><div class="small">On Eastern Orthodox rolls</div><div class="bar" data-grow="13" style="width:146px;margin:6px 0 14px"></div></div>
+        <div data-in="18.4"><div class="small">Eastern Orthodox, a typical Sunday</div><div class="bar" data-grow="18.6" style="width:39px;margin:6px 0 0"></div></div>
+      </div>
+      <div class="a src" data-in="1.2">Pew Research Center, 2023 to 2024 · 2020 U.S. Religion Census, Appendix F (A. Krindatch) · the sum of the two families is ours</div>
+    </section>
+
+    <section data-s="six">
+      <div class="a chap" data-in="0.3">The six million claim</div><div class="a rule" data-grow="0.3"></div>
+      <div class="a num" data-in="0.9" data-soft="7.0" style="left:96px;top:176px;font-size:168px"><span data-count="6000000"></span></div>
+      <div class="a lab" data-in="1.6" style="left:100px;top:356px;color:var(--soft)">The figure that circulates online.</div>
+      <div class="a note" data-in="3.0" data-out="6.6" style="left:100px;top:470px;width:1240px;font-size:36px;color:var(--soft)">It dates from 1942, when the heads of seven Orthodox jurisdictions, seeking the government's recognition in wartime, spoke for "more than 6,000,000 citizens."</div>
+      <div class="a" data-in="7.2" style="left:100px;top:806px;width:960px">
+        <div class="lab"><span class="serif" style="font-size:56px">2,979</span> people a parish</div>
+        <div class="note" style="margin-top:8px">is what six million would mean across the 2,014 Eastern Orthodox parishes.</div>
+      </div>
+      <div class="a" data-in="10.0" style="left:1240px;top:806px;width:600px">
+        <div class="lab"><span class="serif" style="font-size:56px">130</span> people</div>
+        <div class="note" style="margin-top:8px">is what the median parish counts, 60 of them on a typical Sunday.</div>
+      </div>
+      <div class="a small" data-in="7.6" style="left:1240px;top:440px">One dot is one person.</div>
+      <div class="a src" data-in="1.2">M. Namee, orthodoxhistory.org, 3 December 2024 · 2020 Census of Orthodox Christian Churches (A. Krindatch) · the division is ours</div>
+    </section>
+
+    <section data-s="who">
+      <div class="a chap" data-in="0.3">Who they are</div><div class="a rule" data-grow="0.3"></div>
+      <!-- Part one: the ages. -->
+      <div class="a" data-in="0.9" data-out="9.4" style="left:96px;top:190px;width:1728px">
+        <div class="serif" style="font-size:64px">Younger than most churches</div>
+        <div class="note" style="margin-top:14px;color:var(--soft)">Median age 48 in one 2024 survey. Catholics 58, Evangelicals 59, Mainline Protestants 63.</div>
+      </div>
+      <div class="a" data-in="1.9" data-out="9.4" style="left:96px;top:424px;width:415px"><div class="num" style="font-size:104px">24%</div></div>
+      <div class="a" data-in="2.4" data-out="9.4" style="left:519px;top:424px;width:607px"><div class="num" style="font-size:104px">35%</div></div>
+      <div class="a" data-in="2.9" data-out="9.4" style="left:1134px;top:424px;width:397px"><div class="num" style="font-size:104px">23%</div></div>
+      <div class="a" data-in="3.4" data-out="9.4" style="left:1539px;top:424px;width:285px"><div class="num" style="font-size:104px">17%</div></div>
+      <div class="a lab" data-in="1.9" data-out="9.4" style="left:96px;top:622px;font-size:34px">ages 18 to 29</div>
+      <div class="a lab" data-in="2.4" data-out="9.4" style="left:519px;top:622px;font-size:34px">30 to 49</div>
+      <div class="a lab" data-in="2.9" data-out="9.4" style="left:1134px;top:622px;font-size:34px">50 to 65</div>
+      <div class="a lab" data-in="3.4" data-out="9.4" style="left:1539px;top:622px;font-size:34px">65 and older</div>
+      <div class="a small" data-in="4.6" data-out="9.4" style="left:96px;top:740px;width:1500px">Pew's own bands and words. Its margin of error for Orthodox Christians is 9.9 points either way, and the shares are rounded, so they add to 99.</div>
+
+      <!-- Part two: five shares. -->
+      <div class="a" data-in="10.4" style="left:96px;top:392px;width:320px"><div class="num" style="font-size:128px"><span data-count="53"></span>%</div></div>
+      <div class="a" data-in="11.1" style="left:446px;top:392px;width:320px"><div class="num" style="font-size:128px"><span data-count="40"></span>%</div></div>
+      <div class="a" data-in="11.8" style="left:796px;top:392px;width:320px"><div class="num" style="font-size:128px"><span data-count="64"></span>%</div></div>
+      <div class="a" data-in="12.5" style="left:1146px;top:392px;width:320px"><div class="num" style="font-size:128px"><span data-count="24"></span>%</div></div>
+      <div class="a" data-in="13.2" style="left:1496px;top:392px;width:320px"><div class="num" style="font-size:128px"><span data-count="63"></span>%</div></div>
+      <div class="a" data-in="10.6" style="left:96px;top:588px;width:310px"><div class="lab" style="font-size:34px">are men.</div><div class="small" style="margin-top:10px">Every other Christian group in the survey was mostly women.</div></div>
+      <div class="a" data-in="11.3" style="left:446px;top:588px;width:310px"><div class="lab" style="font-size:34px">were born in another country.</div><div class="small" style="margin-top:10px">Another 25% are the children of immigrants.</div></div>
+      <div class="a" data-in="12.0" style="left:796px;top:588px;width:310px"><div class="lab" style="font-size:34px">of those raised Orthodox still are.</div></div>
+      <div class="a" data-in="12.7" style="left:1146px;top:588px;width:310px"><div class="lab" style="font-size:34px">of today's Orthodox were raised in another tradition.</div></div>
+      <div class="a" data-in="13.4" style="left:1496px;top:588px;width:328px"><div class="lab" style="font-size:34px">finished college.</div><div class="small" style="margin-top:10px">35% hold a graduate degree.</div></div>
+      <div class="a serif" data-in="10.4" style="left:96px;top:190px;font-size:64px">More men, more immigrants, more degrees</div>
+      <div class="a small" data-in="14.6" style="left:96px;top:870px;width:1600px">From the 225 Orthodox Christians in Pew's sample, not weighted, as the Orthodox Studies Institute read them. A small sample: each share is approximate.</div>
+      <div class="a src" data-in="1.2">Pew Research Center, 2023 to 2024 · Orthodox Studies Institute, 2025 · median ages: Cooperative Election Study, 2024</div>
+    </section>
+
+    <section data-s="where">
+      <div class="a chap" data-in="0.3">Where they are</div><div class="a rule" data-grow="0.3"></div>
+      <div class="a" data-in="1.0" data-out="7.4" style="left:1290px;top:196px;width:534px">
+        <div class="serif" style="font-size:56px;line-height:1.1">Four regions, almost evenly</div>
+        <div class="note" style="margin:16px 0 18px">Where those who call themselves Orthodox live.</div>
+        <div class="row"><span>South</span><b>31%</b></div><div class="row"><span>Northeast</span><b>29%</b></div>
+        <div class="row"><span>West</span><b>21%</b></div><div class="row"><span>Midwest</span><b>19%</b></div>
+        <div class="small" style="margin-top:18px">A survey of adults. Margin of error 9.9 points.</div>
+      </div>
+      <div class="a" data-in="7.9" data-out="14.4" style="left:1290px;top:196px;width:534px">
+        <div class="num" style="font-size:112px"><span data-count="47.9" data-dec="1"></span>%</div>
+        <div class="note" style="margin:14px 0 14px;color:var(--soft)">of those on Eastern Orthodox rolls live in six states.</div>
+        <div class="row"><span>California</span><b>10.9%</b></div><div class="row"><span>New York</span><b>10.7%</b></div>
+        <div class="row"><span>Illinois</span><b>7.6%</b></div><div class="row"><span>Florida</span><b>6.4%</b></div>
+        <div class="row"><span>New Jersey</span><b>6.2%</b></div><div class="row"><span>Pennsylvania</span><b>6.1%</b></div>
+        <div class="small" style="margin-top:14px">34.8% of all Americans live in these six.</div>
+      </div>
+      <div class="a" data-in="14.9" style="left:1290px;top:196px;width:534px">
+        <div class="serif" style="font-size:56px;line-height:1.1">The parishes stand elsewhere</div>
+        <div class="note" style="margin:14px 0 12px;color:var(--soft)">Seven states hold nearly half of the Eastern Orthodox parishes.</div>
+        <div class="row"><span>Pennsylvania</span><b>10.9%</b></div><div class="row"><span>New York</span><b>9.3%</b></div>
+        <div class="row"><span>California</span><b>8.6%</b></div><div class="row"><span>Florida</span><b>5.3%</b></div>
+        <div class="row"><span>Ohio</span><b>5.3%</b></div><div class="row"><span>Illinois</span><b>4.7%</b></div>
+        <div class="row"><span>Alaska</span><b>4.6%</b></div>
+      </div>
+      <div class="a src" data-in="1.2">Pew Research Center, 2023 to 2024 · A. Krindatch, 2020 census reports · map: U.S. Census Bureau boundaries, by us-atlas</div>
+    </section>
+
+    <section data-s="change">
+      <div class="a chap" data-in="0.3">What is changing</div><div class="a rule" data-grow="0.3"></div>
+      <!-- Part one: the decade. -->
+      <div class="a" data-in="0.9" data-out="8.6" style="left:0;top:0;width:1920px;height:1080px">
+        <div class="a lab" style="left:640px;width:120px;top:184px;text-align:center;color:var(--soft)">2010</div>
+        <div class="a lab" style="left:1240px;width:120px;top:184px;text-align:center;color:var(--soft)">2020</div>
+        <div class="a" data-in="1.6" style="left:96px;top:270px;width:580px;text-align:right"><span class="small">On Eastern Orthodox rolls&ensp;</span><span class="serif" style="font-size:46px">816,653</span></div>
+        <div class="a" data-in="3.0" style="left:96px;top:700px;width:580px;text-align:right"><span class="small">In church on a typical Sunday&ensp;</span><span class="serif" style="font-size:46px">212,212</span></div>
+        <div class="a" data-in="4.4" style="left:96px;top:626px;width:580px;text-align:right"><span class="small">On Oriental Orthodox rolls&ensp;</span><span class="serif" style="font-size:46px">294,762</span></div>
+        <div class="a" data-in="3.2" style="left:1328px;top:370px"><span class="serif" style="font-size:46px">675,765</span><span class="lab" style="font-size:34px">&ensp;down 17%</span></div>
+        <div class="a" data-in="4.6" style="left:1328px;top:721px"><span class="serif" style="font-size:46px">183,020</span><span class="lab" style="font-size:34px">&ensp;down 14%</span></div>
+        <div class="a" data-in="6.0" style="left:1328px;top:502px"><span class="serif" style="font-size:46px">491,413</span><span class="lab" style="font-size:34px">&ensp;up 67%</span></div>
+        <div class="a small" data-in="6.4" style="left:96px;top:920px;width:1728px">Eastern Orthodox parishes rose from 1,957 to 2,014 in the same ten years. The report counts the change and does not give its causes.</div>
+      </div>
+      <!-- Part two: converts. -->
+      <div class="a" data-in="9.2" data-out="17.2" style="left:96px;top:176px;width:1728px">
+        <div class="serif" style="font-size:60px">Then, in 2022, the converts</div>
+        <div class="note" style="margin-top:8px;color:var(--soft)">Adults received into the Church each year in 20 parishes, 15 states.</div>
+      </div>
+      <div class="a small" data-in="13.4" data-out="17.2" style="left:96px;top:906px;width:1728px;font-size:30px;color:var(--soft)">65% came from a Protestant background, 15% from a Catholic one. Twenty parishes are not the country: the study says it cannot tell whether parishes everywhere rose the same.</div>
+      <!-- Part three: the last word. -->
+      <div class="a serif" data-in="17.7" style="left:160px;width:1600px;top:330px;text-align:center;font-size:76px;line-height:1.16">No national survey yet shows the Orthodox share of Americans growing or shrinking.</div>
+      <div class="a note" data-in="19.0" style="left:260px;width:1400px;top:640px;text-align:center;color:var(--soft);font-size:34px">The same report adds that both surveys reach too few young adults, and may be counting low.</div>
+      <div class="a src" data-in="1.2">A. Krindatch, 2020 Census of Orthodox Christian Churches · Orthodox Studies Institute, 2024 and 2025</div>
+    </section>
+
+    <section data-s="sources">
+      <div class="a chap" data-in="0.3">Sources</div><div class="a rule" data-grow="0.3"></div>
+      <div class="a" data-in="0.7" style="left:96px;top:170px;width:1728px;font-size:29px;line-height:1.3;color:var(--soft)">
+        <p style="margin-bottom:13px"><span style="color:#fff">Pew Research Center.</span> Religious Landscape Study, 2023 to 2024: Orthodox Christians. pewresearch.org</p>
+        <p style="margin-bottom:13px"><span style="color:#fff">U.S. Religion Census 2020.</span> Appendix F: Orthodox Christian Groups, by Alexei Krindatch. usreligioncensus.org</p>
+        <p style="margin-bottom:13px"><span style="color:#fff">Alexei Krindatch.</span> 2020 Census of Orthodox Christian Churches, and Geography of Parishes and Members, 2010 to 2020. orthodoxreality.org</p>
+        <p style="margin-bottom:13px"><span style="color:#fff">Matthew Namee and Dn. Seraphim Richard Rohlin.</span> American Orthodoxy Today. Orthodox Studies Institute, 2025. orthodoxstudies.org</p>
+        <p style="margin-bottom:13px"><span style="color:#fff">Matthew Namee and others.</span> Converts to Orthodoxy: Statistics and Trends from the Past Decade. Orthodox Studies Institute, July 2024.</p>
+        <p style="margin-bottom:13px"><span style="color:#fff">Matthew Namee.</span> How Many Orthodox Christians Are in America? orthodoxhistory.org, 3 December 2024.</p>
+        <p style="margin-bottom:13px"><span style="color:#fff">U.S. Census Bureau.</span> Vintage 2023 estimates: 262,083,034 adults (89 FR 22118). Map from its boundary files, by us-atlas.</p>
+      </div>
+      <div class="a small" data-in="2.0" style="left:96px;top:880px;width:1728px">A survey counts those who call themselves Orthodox; a census counts those a parish knows. Sums and divisions marked as ours are ours. Figures checked on 13 November 2026.</div>
+    </section>
+  </div>
+</div>
+
+<script>
+// ---- The clock -------------------------------------------------------------
+const SCENES = [["title", 5], ["one", 12], ["gap", 24.5], ["six", 14.5], ["who", 22], ["where", 22], ["change", 23], ["sources", 9]];
+let at = 0; for (const s of SCENES) { s.push(at); at += s[1]; }
+window.__total = at * 1000;
+window.__scenes = SCENES.map(([id, dur, start]) => ({ id, dur, start }));
+
+/** The house curve, cubic-bezier(0.22, 1, 0.36, 1), solved for x. */
+const house = (() => {
+  const [x1, y1, x2, y2] = [0.22, 1, 0.36, 1];
+  const B = (a, b, t) => 3 * a * t * (1 - t) ** 2 + 3 * b * t * t * (1 - t) + t ** 3;
+  return (x) => { if (x <= 0) return 0; if (x >= 1) return 1; let lo = 0, hi = 1; for (let i = 0; i < 24; i++) { const m = (lo + hi) / 2; if (B(x1, x2, m) < x) lo = m; else hi = m; } return B(y1, y2, (lo + hi) / 2); };
+})();
+const cl = (x) => Math.max(0, Math.min(1, x));
+const pr = (t, a, d) => cl((t - a) / d);
+const mix = (a, b, k) => a + (b - a) * k;
+/** A seeded shuffle, so the field thins the same way every render. */
+const rand = (() => { let s = 20261113; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); })();
+const digits = (n, dec) => Number(n).toLocaleString("en-US", { minimumFractionDigits: dec, maximumFractionDigits: dec }).replace(/\d/g, "<i>$&</i>");
+const grey = (v) => { const c = Math.round(cl(v) * 255); return `rgb(${c},${c},${c})`; };
+
+const G = Object.fromEntries([...document.querySelectorAll("#gfx section")].map((s) => [s.dataset.s, s]));
+const T = Object.fromEntries([...document.querySelectorAll("#txt section")].map((s) => [s.dataset.s, s]));
+
+// ---- The bars of the converts chart (Orthodox Studies Institute, 2024, table 1) ----
+const CONVERTS = [[2013, 91], [2014, 91], [2015, 86], [2016, 88], [2017, 88], [2018, 90], [2019, 104], [2020, 59], [2021, 100], [2022, 186], [2023, 124]];
+document.getElementById("bars").innerHTML = CONVERTS.map(([y, n], i) => {
+  const x = 150 + i * 150, h = n * 2.26, hi = y === 2022, part = y === 2023;
+  return `<rect x="${x}" y="${800 - h}" width="84" height="${h}" fill="${hi ? "#fff" : part ? "#6f6f6f" : "#8a8a8a"}" data-growy="${9.8 + i * 0.22}"/>` +
+    `<text x="${x + 42}" y="${800 - h - 16}" text-anchor="middle" class="serif" font-size="${hi ? 54 : 34}" fill="${hi ? "#fff" : "#d6d6d6"}" data-in="${10.3 + i * 0.22}">${n}</text>` +
+    `<text x="${x + 42}" y="842" text-anchor="middle" font-size="28" fill="#a3a3a3">${y}</text>` +
+    (part ? `<text x="${x + 42}" y="874" text-anchor="middle" font-size="26" fill="#a3a3a3">part of the year</text>` : "");
+}).join("") + `<line x1="130" y1="800" x2="1800" y2="800" stroke="#4a4a4a"/>`;
+
+// ---- The map ---------------------------------------------------------------
+const MAPK = 1.2, MAPX = 70, MAPY = 196;
+const SHARE = { South: 31, Northeast: 29, West: 21, Midwest: 19 };
+const PEOPLE = ["California", "New York", "Illinois", "Florida", "New Jersey", "Pennsylvania"];
+const PARISH = ["Pennsylvania", "New York", "California", "Florida", "Ohio", "Illinois", "Alaska"];
+const mapEl = document.getElementById("map");
+if (window.MAP) {
+  mapEl.innerHTML = `<g transform="translate(${MAPX} ${MAPY}) scale(${MAPK})">` +
+    window.MAP.states.map((s) => `<path d="${s.d}" data-name="${s.name}" data-region="${s.region}" stroke="#000" stroke-width="0.9" stroke-linejoin="round"/>`).join("") + `</g>` +
+    [["West", 300, 470], ["Midwest", 720, 400], ["South", 770, 690], ["Northeast", 1110, 330]].map(([r, x, y]) =>
+      `<text class="serif rl" x="${x}" y="${y}" font-size="76" text-anchor="middle" fill="#fff" stroke="#000" stroke-width="5" paint-order="stroke">${SHARE[r]}%</text>`).join("");
+}
+const STATES = [...mapEl.querySelectorAll("path")];
+const RLAB = [...mapEl.querySelectorAll(".rl")];
+
+// ---- The dots --------------------------------------------------------------
+const FIELD = []; // the gap's 2,600: 65 across, 40 down, 16 px apart
+for (let r = 0; r < 40; r++) for (let c = 0; c < 65; c++) FIELD.push({ x: 104 + c * 16, y: 216 + r * 16, c, j: rand() });
+[...FIELD].sort((a, b) => a.j - b.j).forEach((d, i) => { d.rank = i; });
+const levels = (rank) => [
+  1,
+  rank < 1167 ? 1 : 0.12,
+  rank < 676 ? 1 : rank < 1167 ? 0.42 : 0.12,
+  rank < 183 ? 1 : rank >= 676 && rank < 847 ? 0.42 : 0.12,
+];
+const GAP_AT = [0, 6.6, 12.2, 17.8];
+function drawGap(t) {
+  const ctx = document.getElementById("c-gap").getContext("2d");
+  ctx.globalAlpha = 1; ctx.clearRect(0, 0, 1920, 1080);
+  for (const d of FIELD) {
+    const L = levels(d.rank);
+    let v = L[0];
+    for (let k = 1; k < 4; k++) v = mix(v, L[k], house(pr(t, GAP_AT[k] + d.j * 1.3, 1.1)));
+    const born = house(pr(t, 0.7 + d.c * 0.016 + d.j * 0.3, 0.7));
+    if (born <= 0) continue;
+    ctx.globalAlpha = born; ctx.fillStyle = grey(v);
+    ctx.beginPath(); ctx.arc(d.x, d.y, 4.6, 0, 7); ctx.fill();
+  }
+}
+function drawOne(t) {
+  const ctx = document.getElementById("c-one").getContext("2d");
+  ctx.globalAlpha = 1; ctx.clearRect(0, 0, 1920, 1080);
+  const dim = house(pr(t, 2.4, 1.4));
+  for (let r = 0; r < 10; r++) for (let c = 0; c < 10; c++) {
+    const x = 236 + c * 62, y = 262 + r * 62, one = r === 4 && c === 5;
+    const born = house(pr(t, 0.8 + (r + c) * 0.055, 0.6));
+    if (one && dim > 0) { // the one: a soft pool of light round it, nothing more
+      const g = ctx.createRadialGradient(x, y, 0, x, y, 130);
+      g.addColorStop(0, `rgba(255,255,255,${0.2 * dim})`); g.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = g; ctx.fillRect(x - 130, y - 130, 260, 260);
+    }
+    ctx.globalAlpha = born; ctx.fillStyle = grey(one ? 1 : mix(0.8, 0.2, dim));
+    ctx.beginPath(); ctx.arc(x, y, one ? mix(15, 18, dim) : 15, 0, 7); ctx.fill(); ctx.globalAlpha = 1;
+  }
+}
+function drawSix(t) {
+  const ctx = document.getElementById("c-six").getContext("2d");
+  ctx.globalAlpha = 1; ctx.clearRect(0, 0, 1920, 1080);
+  // 2,979 dots, a hundred across: what six million would put in one parish.
+  for (let i = 0; i < 2979; i++) {
+    const c = i % 100, r = Math.floor(i / 100);
+    ctx.globalAlpha = house(pr(t, 7.0 + r * 0.07 + c * 0.004, 0.5)); ctx.fillStyle = grey(0.78);
+    ctx.beginPath(); ctx.arc(106 + c * 9.6, 500 + r * 9.6, 3.3, 0, 7); ctx.fill();
+  }
+  // 130 dots, thirteen across: the median parish.
+  for (let i = 0; i < 130; i++) {
+    const c = i % 13, r = Math.floor(i / 13);
+    ctx.globalAlpha = house(pr(t, 9.8 + r * 0.07, 0.5)); ctx.fillStyle = grey(1);
+    ctx.beginPath(); ctx.arc(1246 + c * 9.6, 500 + r * 9.6, 3.3, 0, 7); ctx.fill();
+  }
+}
+function drawWhere(t) {
+  const b = house(pr(t, 7.4, 1.2)), c = house(pr(t, 14.4, 1.2));
+  for (const p of STATES) {
+    const region = mix(0.12, 0.4, (SHARE[p.dataset.region] - 19) / 12);
+    const people = PEOPLE.includes(p.dataset.name) ? 1 : 0.15, parish = PARISH.includes(p.dataset.name) ? 1 : 0.15;
+    p.setAttribute("fill", grey(mix(mix(region, people, b), parish, c) * house(pr(t, 0.5, 1.2))));
+  }
+  for (const l of RLAB) l.setAttribute("opacity", house(pr(t, 1.6, 0.9)) * (1 - pr(t, 7.0, 0.6)));
+}
+const CUSTOM = { one: drawOne, gap: drawGap, six: drawSix, where: drawWhere };
+
+// ---- Everything that moves by its own mark ---------------------------------
+function generic(root, t) {
+  for (const el of root.querySelectorAll("[data-in]")) {
+    const a = house(pr(t, +el.dataset.in, 0.9)), o = el.dataset.out ? 1 - house(pr(t, +el.dataset.out, 0.5)) : 1;
+    el.style.opacity = a * o;
+    if (!(el instanceof SVGElement)) el.style.transform = `translateY(${(1 - a) * 26}px)`;
+    else el.setAttribute("opacity", a * o);
+  }
+  for (const el of root.querySelectorAll("[data-soft]")) { // shallow focus: it stays, a little out of focus, while the next thing is read
+    const k = house(pr(t, +el.dataset.soft, 1.2));
+    el.style.filter = k > 0 ? `blur(${(2.2 * k).toFixed(2)}px)` : "none"; el.style.opacity = +el.style.opacity * (1 - 0.3 * k);
+  }
+  for (const el of root.querySelectorAll("[data-count]")) {
+    const host = el.closest("[data-in]"), from = +(el.dataset.from || 0), to = +el.dataset.count, dec = +(el.dataset.dec || 0);
+    const k = house(pr(t, +host.dataset.in + 0.1, 1.9));
+    el.innerHTML = digits(k >= 1 ? to : mix(from, to, k), dec);
+  }
+  for (const el of root.querySelectorAll("[data-draw]")) {
+    el.style.strokeDasharray = 1; el.style.strokeDashoffset = 1 - house(pr(t, +el.dataset.draw, +(el.dataset.dd || 1.4)));
+  }
+  for (const el of root.querySelectorAll("[data-grow]")) {
+    const k = house(pr(t, +el.dataset.grow, 1.5));
+    if (el instanceof SVGElement) { el.style.transformBox = "fill-box"; el.style.transformOrigin = "0 50%"; }
+    el.style.transform = `scaleX(${k})`;
+  }
+  for (const el of root.querySelectorAll("[data-growy]")) {
+    el.style.transformBox = "fill-box"; el.style.transformOrigin = "50% 100%";
+    el.style.transform = `scaleY(${house(pr(t, +el.dataset.growy, 1.2))})`;
+  }
+}
+
+window.__seek = (ms) => {
+  const now = ms / 1000;
+  for (const [id, dur, start] of SCENES) {
+    const t = now - start, on = t >= 0 && t < dur;
+    const o = on ? house(pr(t, 0, 0.7)) * (1 - pr(t, dur - 0.55, 0.5)) : 0;
+    for (const part of [G[id], T[id]]) {
+      part.style.opacity = o; part.style.visibility = on ? "visible" : "hidden";
+      part.style.transform = `scale(${1 + 0.028 * cl(t / dur)})`; // the slow push-in
+    }
+    if (!on) continue;
+    generic(G[id], t); generic(T[id], t);
+    if (CUSTOM[id]) CUSTOM[id](t);
+  }
+};
+window.__seek(0);
+</script>
+</body>
+</html>
