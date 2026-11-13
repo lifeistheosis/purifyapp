@@ -340,3 +340,28 @@ describe("a rule with nothing after it", () => {
   });
 });
 
+
+// The walk of note 15 on 2026-11-13 measured the contents sheet at 390px: its
+// chapter grid was seven fixed columns, each button 41.5px wide (23 targets,
+// English and Arabic), under the 44px a finger needs (the pre-build gate's
+// second rule). The grid now takes as many columns as fit at 44px or more,
+// so no width it shows at can make a chapter smaller than that.
+describe("the contents sheet's grid of chapters", () => {
+  const SHEET = read("components/saints/WorkContents.tsx");
+  const lists = [...SHEET.matchAll(/<ul className="([^"]*\bgrid\b[^"]*)"/g)].map((m) => m[1]);
+
+  it("gives every chapter 44px or more at every width, never a fixed count of columns", () => {
+    expect(lists.length).toBeGreaterThan(0);
+    for (const cls of lists) {
+      expect(cls, cls).not.toMatch(/(?:^|\s)grid-cols-\d+(?:\s|$)/);
+      const fill = cls.match(/grid-cols-\[repeat\(auto-(?:fill|fit),minmax\((\d+(?:\.\d+)?)(px|rem),1fr\)\)\]/);
+      expect(fill, cls).not.toBeNull();
+      const min = Number(fill![1]) * (fill![2] === "rem" ? 16 : 1);
+      expect(min, cls).toBeGreaterThanOrEqual(44);
+    }
+  });
+
+  it("keeps each chapter 44px tall", () => {
+    expect(SHEET).toMatch(/"h-11 w-full rounded-xl[^"]*"/);
+  });
+});

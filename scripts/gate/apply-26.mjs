@@ -555,6 +555,52 @@ async function partSheets(c, page, at) {
   await guard(c, page, sel, "contents: checkMock the sheet");
   await shareFrom(c, page, sel, "contents: tap Share", at, { hash: "none" });
   if (!(await waitGone(page, sel, 500))) await closeSheet(page, sel, c.lang).catch(() => {});
+  await tapChapter(c, page, opener, sel);
+}
+
+/**
+ * The contents' grid of chapters, as a finger takes it (Updates 32): every chapter 44px or more on
+ * both sides (seven fixed columns were 41.5px wide at 390, the walk of note 15), and a chapter
+ * that is not the one being read, tapped, closes the sheet and moves the reader to it.
+ */
+async function tapChapter(c, page, opener, sel) {
+  const cellsSel = `${sel} [data-work-contents] ul.grid button`;
+  try {
+    await opener.tap({ timeout: 10000 });
+    await page.locator(cellsSel).filter({ visible: true }).first().waitFor({ state: "visible", timeout: 10000 });
+  } catch {
+    return skip(c, "contents: tap a chapter", "no grid of chapters is open in the contents here");
+  }
+  await atRest(page, sel);
+  const cells = await page.evaluate(
+    (s) =>
+      [...document.querySelectorAll(s)]
+        .filter((b) => b.getClientRects().length)
+        .map((b) => {
+          const r = b.getBoundingClientRect();
+          return { w: r.width, h: r.height, current: b.getAttribute("aria-current") === "page", label: b.getAttribute("aria-label") };
+        }),
+    cellsSel,
+  );
+  const narrowest = Math.min(...cells.map((x) => Math.min(x.w, x.h)));
+  const small = cells.filter((x) => x.w < 44 || x.h < 44);
+  if (small.length) fail(c, "contents: every chapter 44px or more", `${small.length} of ${cells.length} under 44px, the smallest ${narrowest.toFixed(1)}px`);
+  else pass(c, "contents: every chapter 44px or more", `${cells.length} chapters, the smallest side ${narrowest.toFixed(1)}px`);
+  const at = cells.findIndex((x) => !x.current);
+  if (at < 0) return skip(c, "contents: tap a chapter", "every chapter in the grid is the one being read");
+  const where = () => page.evaluate(() => `${(document.querySelector("[data-pill-name]")?.innerText ?? "").replace(/\s+/g, " ").trim()} | ${location.hash} | ${Math.round(scrollY)}`);
+  const before = await where();
+  try {
+    await page.locator(cellsSel).filter({ visible: true }).nth(at).tap({ timeout: 10000 });
+  } catch (e) {
+    return fail(c, "contents: tap a chapter", `could not tap "${cells[at].label}": ${first(e)}`);
+  }
+  const gone = await waitGone(page, sel, 4000);
+  await page.waitForTimeout(1500);
+  const after = await where();
+  if (!gone) fail(c, "contents: tap a chapter", `"${cells[at].label}" tapped, and the sheet stayed open`);
+  else if (after === before) fail(c, "contents: tap a chapter", `"${cells[at].label}" tapped, and nothing changed (${before})`);
+  else pass(c, "contents: tap a chapter", `"${cells[at].label}" taken: ${before} to ${after}`);
 }
 
 /** #s102, opened from another screen as a link to it is: Conference 5, Chapter 10. */

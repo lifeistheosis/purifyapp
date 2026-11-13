@@ -152,12 +152,17 @@ export function WorkContents({
       </div>
     ) : undefined;
 
-  /** A grid of chapters or parts, the one being read lit, its title under it. */
+  /**
+   * A grid of chapters or parts, the one being read lit, its title under it.
+   * As many columns as fit at 44px or more each, never a fixed seven: seven
+   * were 41.5px wide on a 390px phone, under the 44px a finger needs (the
+   * walk of note 15, 2026-11-13; lib/reading/__tests__/shareWork.test.ts).
+   */
   const grid = (id: string, cells: { n: number; label: number }[], name: (label: number) => string) => {
     const lit = cells.find((c) => c.n === current);
     return (
       <div id={id} className="bg-paper/[0.05] px-3 pb-3.5 pt-1">
-        <ul className="grid grid-cols-7 gap-1.5">
+        <ul className="grid grid-cols-[repeat(auto-fill,minmax(44px,1fr))] gap-1.5">
           {cells.map((c) => {
             const reading = c.n === current;
             return (
