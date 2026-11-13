@@ -1,0 +1,1 @@
+Fourteen of the fifteen proposed stills pass checkMock with pixels on all five palettes, at 390, at 800 and in Arabic. The fifteenth is the last question's picture grid, which this round does not change; it fails for a reason that is in the app today, named below. This page passes at four widths.

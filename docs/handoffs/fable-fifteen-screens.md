@@ -1,17 +1,26 @@
 # Baton: the Fable designer, the fifteen screens
 
-Written 2026-11-13 by session_01VuYTwdnLqpagUQMTXSRWUF after round 1. Card: `docs/roles/fable-designer.md`. Read `docs/1.9-build/redesign/README.md` first: it is the method, the recipe and where each round stands.
+Written 2026-11-13 by session_01VuYTwdnLqpagUQMTXSRWUF after round 1; rewritten after round 2 by session_01VuYTwdwzHBSFrdVEkrdW2i. Card: `docs/roles/fable-designer.md`. Read `docs/1.9-build/redesign/README.md` first: it is the method, the recipe and where each round stands.
 
 ## Done
 
-- Round 1 sent: Today and the four house rules, https://claude.ai/artifact/7i93tDncctM4SU3qeqPjb4. Eleven proposed stills, all passing `checkMock` with pixels; the page passes at four widths.
-- The whole proposal is kept as `docs/1.9-build/redesign/round-1/held.patch` (16 files, not approved, not applied). To stand it up again: `git checkout -b held/fifteen-screens ccr-07896cf2-bo0afd && git apply docs/1.9-build/redesign/round-1/held.patch`, and never push that branch.
+- Round 1: Today and the four house rules, https://claude.ai/artifact/7i93tDncctM4SU3qeqPjb4. His yes to all five (2026-11-13 20:47 UTC); an apply chat has `round-1/held.patch`.
+- Round 2 sent 2026-11-13 21:55 UTC by session_01VuYTwdwzHBSFrdVEkrdW2i: the first launch's questions, Prayers and Discover, https://claude.ai/artifact/NhoSL95Kip76jng4gemM6z. Fourteen of fifteen stills pass `checkMock` with pixels; the fifteenth is the unchanged picture step, which fails in the app as it stands (named on the page). The proposal is `round-2/held.patch`; what it stands on, the build spec's notes and how to rebuild the page are `round-2/README.md`.
 
 ## Open, each with its owner
 
-1. **His yes or no on each of round 1's five** (the arbiter carries it). On a yes: cut that screen's part of `held.patch` into `docs/1.9-build/redesign/<screen>/change.patch`, write `spec.md` beside it, push (docs only), and send the path to the arbiter.
-2. **Round 2**: the first launch's questions, Prayers, Discover. Not begun. The questions are where rule 5's second form is drawn (one answer from a list: rows in one tray, the chosen row marked). Discover's hold to reorder and its search transition are other chats' and are taken in, never redone.
-3. **Rounds 3 to 5**, as the README lists them.
+1. **His yes or no on each of round 2's three** (the arbiter carries it). On a yes: cut that screen's part of `round-2/held.patch` into `docs/1.9-build/redesign/<screen>/change.patch`, write `spec.md` beside it from `round-2/README.md`, push (docs only), and send the path to the arbiter.
+2. **Round 3**: the Bible's opening, You, Plus. Not begun. Draw on the pushed code once rounds 1 and 2 land, or on the held patches until then.
+3. **Rounds 4 and 5**, as the README lists them.
+
+## Round 2's gotchas
+
+- **A round costs about 200,000 tokens as this one was run.** Do not read a whole artifact back (the ranking's page is 66 KB of style): take the findings from `docs/1.9-build/redesign/README.md` and ask the arbiter for the three screens' lines. Read source by grep and by part.
+- **`npm ci` first** (a fresh container has no `node_modules`), then the before export, while reading.
+- **Each export is ten minutes and each checked still a minute.** Run the checker on the first after-export before fixing anything, so one more export mends everything it finds.
+- **The first launch as a still:** set `purify:onboarded` to `0` and `purify:ab.seed` to a fixed number; walk the steps with `eval` clicks (`round-2/plans.mjs`). The chosen pill is `bg-paper` too, so the way on is the last `button.bg-paper`.
+- **Faint words over the horizon's light fail on Light** whatever their share (the palette pins faint shares): put them on a tray, not on the sky.
+- **Note 9's patch applies without its `docs/brand/` files** (`--exclude='docs/brand/*'`).
 
 ## For Today's build spec, when he says yes
 

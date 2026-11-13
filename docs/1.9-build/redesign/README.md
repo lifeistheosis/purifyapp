@@ -6,8 +6,8 @@ Build 95 note 25 (his word, 2026-11-13 about 08:13 UTC: "I want everything fixed
 
 | Round | What | Page | State |
 |---|---|---|---|
-| 1 | Today, and the four house rules | https://claude.ai/artifact/7i93tDncctM4SU3qeqPjb4 | sent 2026-11-13; waits on his yes or no, one for each of the five |
-| 2 | The first launch, Prayers, Discover | | not begun |
+| 1 | Today, and the four house rules | https://claude.ai/artifact/7i93tDncctM4SU3qeqPjb4 | his yes to all five, 2026-11-13 20:47 UTC; being applied |
+| 2 | The first launch, Prayers, Discover | https://claude.ai/artifact/NhoSL95Kip76jng4gemM6z | sent 2026-11-13 21:55 UTC; waits on his yes or no, one for each of the three. Its record is `round-2/README.md` |
 | 3 | The Bible's opening, You, Plus | | not begun |
 | 4 | Saints, Community, the shop | | not begun |
 | 5 | The account's pages, Sign in, Theology, the doctrine lists, the near-empty screens | | not begun |

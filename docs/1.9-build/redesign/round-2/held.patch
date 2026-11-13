@@ -1,0 +1,916 @@
+diff --git a/app/globals.css b/app/globals.css
+index 9c7e7016..aff63dce 100644
+--- a/app/globals.css
++++ b/app/globals.css
+@@ -6035,6 +6035,9 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
+  transition: border-color 200ms ease, background-color 200ms ease, box-shadow 320ms var(--ease-house), transform 160ms ease;
+ }
+ .ob-choice:active { transform: scale(0.985); }
++/* An answer as a row of its question's tray (1.9, the fifteen screens): the
++   chosen row is a shade lit and ticked; nothing glows and nothing is ringed. */
++.ob-row { transition: background-color 200ms ease; -webkit-tap-highlight-color: transparent; }
+ /* A chosen card is lit white, softly (1.8: "just use a glowly white"; it
+    was the Premium gold). */
+ .ob-choice[aria-pressed="true"] {
+@@ -7624,6 +7627,31 @@ html[data-reading-mode="parchment"] .plus-try-tile-lit:not(.dark-island *) {
+ html[data-reading-mode="parchment"] [data-door-face]::after {
+  box-shadow: var(--shadow-lg);
+ }
++/* The door that stands first leads (1.9, the fifteen screens): the same band
++   at a larger scale, its picture given room and its name the size of a
++   title. Whichever door the reader has put first wears it, so the lead is
++   theirs. By position alone: the band is drawn once and no door is drawn
++   twice. */
++[data-door-list] > li:first-child [data-door-face],
++[data-door-list] > li:first-child .press-card {
++ border-radius: 22px;
++}
++[data-door-list] > li:first-child .press-card {
++ height: 184px;
++}
++[data-door-list] > li:first-child .press-card > span.relative {
++ justify-content: flex-end;
++ padding-bottom: 16px;
++}
++[data-door-list] > li:first-child .press-card :is(h2, h3) {
++ font-size: 24px;
++ line-height: 1.15;
++}
++[data-door-list] > li:first-child .press-card .words-halo {
++ margin-top: 6px;
++ font-size: var(--text-detail);
++ -webkit-line-clamp: 3;
++}
+ [data-door-list] > li[data-lifted] {
+  position: relative;
+  z-index: 10;
+diff --git a/components/discover/DoorOrder.tsx b/components/discover/DoorOrder.tsx
+index 08305bf6..e4777695 100644
+--- a/components/discover/DoorOrder.tsx
++++ b/components/discover/DoorOrder.tsx
+@@ -6,6 +6,7 @@ import { flushSync } from "react-dom";
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+ import { Grip } from "@/components/ui/icons/Grip";
+ import { SCROLL_SETTLE_MS } from "@/lib/bible/verseGesture";
++import { readLevel } from "@/lib/onboarding/state";
+ import { dropPrepaint, keepOrder, moveDoor, readOrder, sameOrder, subscribeOrder } from "@/lib/discover/doorOrder";
+ import { HOLD_MS, IDLE, edgeSpeed, landingOffset, press, shiftOf, type Press, type PressEffect, type PressEvent, type Rows } from "@/lib/discover/holdToMove";
+ import { clicksOn } from "@/lib/ui/clicksSetting";
+@@ -69,9 +70,30 @@ const FLIP = { durationMs: LAND_MS, easing: "var(--ease-house)" };
+  * still": with it off, nothing here moves the phone. In a browser the phone
+  * has no clicks to give.
+  */
++/** The doors a newcomer is given first, in the order a newcomer needs them (components/mobile/DiscoverMobile.tsx). */
++const NEWCOMER_FIRST = ["/start", "/parishes"];
++const noChange = () => () => {};
++
+ export function DoorOrder({ doors }: { doors: Door[] }) {
+   const { t } = useTranslate();
+-  const first = useMemo(() => doors.map((d) => d.id), [doors]);
++  // The first order (1.9, the fifteen screens): the library's own, and for a
++  // reader who said in the questions that they are new to the Church, the two
++  // doors made for a newcomer first, Start here and Find a parish. Read on
++  // the device; the server knows no reader, so it draws the library's own.
++  const newHere = useSyncExternalStore(
++    noChange,
++    () => {
++      const level = readLevel();
++      return level === "inquirer" || level === "learning";
++    },
++    () => false,
++  );
++  const first = useMemo(() => {
++    const ids = doors.map((d) => d.id);
++    if (!newHere) return ids;
++    const lead = NEWCOMER_FIRST.filter((id) => ids.includes(id));
++    return [...lead, ...ids.filter((id) => !lead.includes(id))];
++  }, [doors, newHere]);
+   const byId = useMemo(() => new Map(doors.map((d) => [d.id, d])), [doors]);
+ 
+   // The kept order. The server draws the first order, all it can know; the
+diff --git a/components/mobile/PrayersMobile.tsx b/components/mobile/PrayersMobile.tsx
+index 40d32260..001d3f2e 100644
+--- a/components/mobile/PrayersMobile.tsx
++++ b/components/mobile/PrayersMobile.tsx
+@@ -2,31 +2,27 @@
+ 
+ import Link from "next/link";
+ import { currentHourSlug } from "@/lib/prayers/hourNow";
+-import { tileCrop } from "@/lib/prayers/iconCrops";
+ import { ruleIdForHour } from "@/lib/prayers/ruleForHour";
+-import { openingPart } from "@/lib/prayers/myRule";
+-import { ruleCarry, ruleTileArt, serviceArt } from "@/lib/prayers/serviceArt";
+-import { useMyRule } from "@/lib/prayers/useMyRule";
+ import { useMounted } from "@/lib/useMounted";
+ import { MobileShell } from "./MobileShell";
+ import { MobileHeader } from "./MobileHeader";
+ import { PrayersHero } from "./PrayersHero";
+-import { PictureTile, SoftTileGrid, FeatureBand } from "./SoftTiles";
+ import { PrayNow } from "@/components/prayers/PrayNow";
+ import { PrayerBookContents } from "@/components/prayers/PrayerBookContents";
+-import { PrayerPieces } from "@/components/prayers/PrayerPieces";
+ import { RuleToday } from "@/components/prayers/RuleToday";
+-import { CARD, CARD_BG, PILL } from "@/components/ui/Graphite";
++import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+ import { cn } from "@/lib/cn";
+ import { T } from "@/components/i18n/T";
+ 
+-/** The quick ways in, the same five the desktop hero carries. */
+ /** A section's name, as the design sets "All prayers": Lora, no label over it. */
+ const H2 = "text-lede leading-tight tracking-[-0.005em] text-paper";
+ 
+-/** The icons Practices wear, the ones the app pairs with each (lib/prayers/serviceArt.ts). */
+-const AKATHISTS = serviceArt("akathist-theotokos");
+-const LEARNING = serviceArt("learning");
++/** The rule and the practices with a screen of their own that the book does not hold, each with the line it already wears. */
++const PRACTICES = [
++  { href: "/prayers/personal", name: "prayers.mine.title", line: "prayers.mine.youHint" },
++  { href: "/prayers/learning", name: "ui.learnToPray", line: "ui.aBeginnersPath" },
++  { href: "/chants", name: "chants.title", line: "chants.door.sub" },
++] as const;
+ 
+ /**
+  * Prayers on a phone. Redrawn for 1.8 as the owner's merged pick of round 4
+@@ -69,13 +65,6 @@ export function PrayersMobile() {
+   const hour = mounted ? new Date().getHours() : null;
+   const hourPart = hour === null ? "morning" : ruleIdForHour(hour);
+   const hourNow = hour === null ? null : currentHourSlug(hour);
+-  const hourArt = hourNow ? serviceArt(hourNow) : null;
+-  // Your rule's tile wears the half its page will open on, chosen by the page's own rule (lib/prayers/myRule.ts,
+-  // openingPart), so the tile's picture is the one at the page's head and travels into it (1.9). The rule and the hour
+-  // are the device's: until the page wakes the tile wears no icon yet, as the Hours' does not.
+-  const myRule = useMyRule();
+-  const rulePart = hour === null ? null : openingPart(myRule, hourPart);
+-  const ruleArt = rulePart ? ruleTileArt(rulePart) : null;
+ 
+   return (
+     <MobileShell
+@@ -86,127 +75,45 @@ export function PrayersMobile() {
+         </PrayersHero>
+       }
+     >
+-      {/* All prayers: the quick ways in, one row scrolled sideways and
+-          bleeding to the screen's edges, each a small piece with its icon
+-          (components/prayers/PrayerPieces.tsx), in a ScrollRail like the
+-          shop's rows, so the end that has more to show fades into the page. */}
+-      <section aria-labelledby="prayers-all">
+-        <h2 id="prayers-all" className={H2}>
+-          <T k="prayers.allPrayers" />
+-        </h2>
+-        <nav aria-labelledby="prayers-all" className="-mx-5 mt-3">
+-          {/* Small pieces, not pills (1.9, build 89 note 10). */}
+-          <PrayerPieces hourNow={hourNow} />
+-        </nav>
+-      </section>
+-
+-      <section className="mt-10">
+-        <h2 className={H2}>
++      {/* Pray now: what else fits the hour, the season and the fast, and the
++          prayer to continue, as rows in one tray. The hour's own prayer is
++          the lead above and the Jesus Prayer stands under this, so neither is
++          named again here. */}
++      <section aria-labelledby="prayers-now">
++        <h2 id="prayers-now" className={H2}>
+           <T k="today.prayNow.eyebrow" />
+         </h2>
+         <div className="mt-3">
+-          <PrayNow variant="mobile" />
++          <PrayNow variant="mobile" exclude={[hourPart, "jesus-prayer"]} />
+         </div>
+       </section>
+ 
+-      {/* The prayer of the heart */}
+-      <section className="mt-10">
+-        <h2 className={H2}>
++      {/* The prayer of the heart: the words on the page itself, no box under
++          them, and one way on, the lesson that teaches the prayer. */}
++      <section aria-labelledby="prayers-heart" className="mt-10">
++        <h2 id="prayers-heart" className={H2}>
+           <T k="prayers.heart.eyebrow" />
+         </h2>
+-        <div className={cn(CARD, "mt-3 p-5 hover:translate-y-0 md:p-5")} style={CARD_BG}>
+-          <p className="font-heading text-title-sm font-bold leading-[1.4] text-paper">
+-            <T k="prayers.heart.line1" />
+-            <br />
+-            <T k="prayers.heart.line2" />
+-            <br />
+-            <T k="prayers.heart.line3" />
+-          </p>
+-          <p className="mt-3 font-sans text-detail leading-[1.6] text-paper/65">
+-            <T k="prayers.heart.note" />
+-          </p>
+-          {/* One way on from here: the lesson that teaches the prayer. */}
+-          <div className="mt-5">
+-            <Link href="/prayers/learning/jesus-prayer" className={cn(PILL, "px-4 text-detail")}>
+-              <T k="ui.learnHowToPrayIt" />
+-            </Link>
+-          </div>
+-        </div>
+-        {/* Chants (1.7): the play band leads to the whole library, the
+-            Prayer Rope Anthem first among them. The owner, 2026-10-16:
+-            chants needed an easier way in. */}
+-        <div className="mt-3">
+-          <FeatureBand
+-            href="/chants"
+-            eyebrow={<T k="chants.door.kicker" />}
+-            title={<T k="chants.title" />}
+-            sub={<T k="chants.door.sub" />}
+-          />
+-        </div>
+-      </section>
+-
+-      {/* Practices: the four with a screen of their own, each in the icon
+-          the app pairs with it (lib/prayers/serviceArt.ts), two across as
+-          Discover's tiles were (r3-26 A). The Hours wear the icon of the
+-          Hour the clock is in, lit and named once the page knows the hour.
+-          On a tablet in the apps, four across, each the size it is on a
+-          phone, so no icon is drawn past its own pixels. */}
+-      <section data-practices="" aria-labelledby="prayers-practices" className="mt-10">
+-        <h2 id="prayers-practices" className={H2}>
+-          <T k="ui.practices" />
+-        </h2>
+-        <SoftTileGrid className="mt-3 md:grid-cols-4">
+-          <PictureTile
+-            href="/prayers/hours"
+-            heading="h3"
+-            label={<T k="ui.theHours" />}
+-            sub={
+-              hourNow ? (
+-                <>
+-                  <span aria-hidden className="tile-dot" />
+-                  <T k="prayers.timeline.now" /> · <T k={`prayers.rule.${hourNow}.title`} />
+-                </>
+-              ) : (
+-                <T k="ui.sanctifyTheDay" />
+-              )
+-            }
+-            picture={hourArt?.src ?? null}
+-            crop={hourArt ? tileCrop(hourArt.slug) : undefined}
+-            lit={hourNow !== null}
+-          />
+-          <PictureTile
+-            href="/prayers/akathists"
+-            heading="h3"
+-            label={<T k="prayers.akathists" />}
+-            sub={<T k="ui.hymnsOfPraise" />}
+-            picture={AKATHISTS.src}
+-            crop={tileCrop(AKATHISTS.slug)}
+-          />
+-          <PictureTile
+-            href="/prayers/learning"
+-            heading="h3"
+-            label={<T k="ui.learnToPray" />}
+-            sub={<T k="ui.aBeginnersPath" />}
+-            picture={LEARNING.src}
+-            crop={tileCrop(LEARNING.slug)}
+-          />
+-          {/* Personal is Your rule, its name on the You tab and on its own
+-              page, with the You tab's line. */}
+-          <PictureTile
+-            href="/prayers/personal"
+-            heading="h3"
+-            label={<T k="prayers.mine.title" />}
+-            sub={<T k="prayers.mine.youHint" />}
+-            picture={ruleArt?.src ?? null}
+-            crop={ruleArt ? tileCrop(ruleArt.slug) : undefined}
+-            carry={rulePart ? ruleCarry(rulePart) : undefined}
+-          />
+-        </SoftTileGrid>
++        <p className="mt-3 font-heading text-title-sm font-bold leading-[1.4] text-paper">
++          <T k="prayers.heart.line1" />
++          <br />
++          <T k="prayers.heart.line2" />
++          <br />
++          <T k="prayers.heart.line3" />
++        </p>
++        <p className="mt-3 font-sans text-detail leading-[1.6] text-paper/65">
++          <T k="prayers.heart.note" />
++        </p>
++        <Link
++          href="/prayers/learning/jesus-prayer"
++          className="tap-press mt-1 inline-flex min-h-11 items-center gap-1 font-sans text-ui font-semibold text-paper underline decoration-paper/30 underline-offset-4"
++        >
++          <T k="ui.learnHowToPrayIt" />
++        </Link>
+       </section>
+ 
+-      {/* The prayer book: one book, its chapters I to IV opening one at a
+-          time (r3-26 C). No field of its own: the bar's magnifier opens the
+-          one search on Prayers. */}
++      {/* The prayer book, once: every prayer, the Hours and the akathists
++          are lines of its chapters (r3-26 C), and nothing above repeats them. */}
+       <section aria-labelledby="prayers-book" className="mt-10">
+         <h2 id="prayers-book" className={H2}>
+           <T k="prayers.bookTitle" />
+@@ -215,6 +122,33 @@ export function PrayersMobile() {
+           <PrayerBookContents hourNow={hourNow} />
+         </div>
+       </section>
++
++      {/* The rule and the practices, as rows under the book: the house's row,
++          a name and one line, in one tray. */}
++      <section data-practices="" aria-labelledby="prayers-practices" className="mt-10">
++        <h2 id="prayers-practices" className={H2}>
++          <T k="ui.practices" />
++        </h2>
++        <ul className="theology-tray mt-3 overflow-hidden rounded-[20px]">
++          {PRACTICES.map((p, i) => (
++            <li key={p.href} className={cn(i > 0 && "border-t border-paper/10")}>
++              <Link href={p.href} className="tap-press flex min-h-[64px] w-full items-center gap-3 px-4 py-3 active:bg-paper/[0.04]">
++                <span className="min-w-0 flex-1">
++                  <span className="block font-serif text-lede font-semibold leading-[25px] text-paper">
++                    <T k={p.name} />
++                  </span>
++                  <span className="mt-0.5 block font-sans text-ui leading-5 text-paper/70">
++                    <T k={p.line} />
++                  </span>
++                </span>
++                <span className="shrink-0 text-paper/55">
++                  <ChevronRight size={18} className="rtl:-scale-x-100" />
++                </span>
++              </Link>
++            </li>
++          ))}
++        </ul>
++      </section>
+     </MobileShell>
+   );
+ }
+diff --git a/components/onboarding/OnboardingFlow.tsx b/components/onboarding/OnboardingFlow.tsx
+index ad63bbed..c9174b80 100644
+--- a/components/onboarding/OnboardingFlow.tsx
++++ b/components/onboarding/OnboardingFlow.tsx
+@@ -72,14 +72,11 @@ import { EVENING_DEFAULT, MORNING_DEFAULT, enableReminders as enablePush, remind
+ import { clearReminderWish, keepReminderWish, readReminderWish } from "@/lib/push/wish";
+ import { isNativeClient } from "@/lib/platform/native";
+ import { readLocalSessionUser } from "@/lib/supabase/localSession";
+-import { PurifyMark } from "@/components/ui/PurifyMark";
+ import { OAuthButtons } from "@/components/auth/OAuthButtons";
+ import { recordAcceptance } from "@/lib/legal/recordAcceptance";
+ import { authOrigin } from "@/lib/site";
+ import { createClient } from "@/lib/supabase/client";
+-import { Compass } from "@/components/ui/icons/Compass";
+ import { LegalLink } from "@/components/legal/LegalLink";
+-import { Book } from "@/components/ui/icons/Book";
+ import { Cross } from "@/components/ui/icons/Cross";
+ import { ClergyJurisdiction, ClergyParish, ClergyWhere } from "./ClergySteps";
+ import { HandoffSlate, type SlateLine } from "./HandoffSlate";
+@@ -711,9 +708,10 @@ export function OnboardingFlow({
+           "radial-gradient(120% 55% at 50% 0%, rgba(255,255,255,0.05) 0%, transparent 55%), #101013",
+       }}
+     >
+-      {/* "Where are you coming from?" stands on the intro's night and horizon,
+-          held still behind the step while the step slides in. */}
+-      {step === "background" ? <WhereFromSky /> : null}
++      {/* Every step stands on the intro's night (1.9, the fifteen screens): the
++          stars under all of them, the horizon wherever the foot is free, held
++          still behind the step while the step slides in. */}
++      <WhereFromSky horizon={step !== "intent" && step !== "rule" && step !== "account" && !isClergyStep(step)} />
+ 
+       {/* Top bar: back, the progress line, skip. Padded past the status bar
+           (inset + 1.25rem) so the controls are never under the Android clock,
+@@ -758,9 +756,9 @@ export function OnboardingFlow({
+         className={`${stepClass} mx-auto flex w-full max-w-md flex-1 flex-col px-6 ${
+           step === "intent"
+             ? "pt-5 md:justify-center md:py-10"
+-            : step === "background"
+-              ? "pb-6 pt-16 md:justify-center md:py-10"
+-              : isClergyStep(step)
++            : step === "background" || step === "level" || step === "role"
++              ? "pb-6 pt-10 md:justify-center md:py-10"
++              : step === "rule" || isClergyStep(step)
+                 ? "pb-6 pt-5"
+                 : "justify-center py-10"
+         }`}
+@@ -770,7 +768,7 @@ export function OnboardingFlow({
+             eyebrow={t("onboard.welcome.eyebrow")}
+             title={t("onboard.welcome.title")}
+             body={t("onboard.welcome.body")}
+-            icon={<PurifyMark size={40} />}
++            icon={<Cross size={30} strokeWidth={1.5} />}
+             center
+           >
+             <PrimaryButton onClick={next}>{t("onboard.welcome.begin")}</PrimaryButton>
+@@ -782,7 +780,7 @@ export function OnboardingFlow({
+             eyebrow={t("onboard.returning.eyebrow")}
+             title={t("onboard.returning.title")}
+             body={t("onboard.returning.body")}
+-            icon={<PurifyMark size={40} />}
++            icon={<Cross size={30} strokeWidth={1.5} />}
+             center
+           >
+             <PrimaryButton onClick={next}>{t("onboard.welcome.begin")}</PrimaryButton>
+@@ -829,12 +827,11 @@ export function OnboardingFlow({
+             answer as ever (lib/onboarding/space.ts, Level), so nothing that
+             reads it changes. "Prefer not to say" keeps the question as it was. */}
+         {step === "level" && roads && background === "orthodox" && (
+-          <Step eyebrow={t("onboard.level.eyebrow")} title={t("onboard.where.title")}>
+-            <div className="flex flex-col gap-2.5">
++          <Step center eyebrow={t("onboard.level.eyebrow")} title={t("onboard.where.title")}>
++            <div className={TRAY}>
+               <ChoiceCard
+                 selected={level === "practicing" && !away}
+                 onClick={() => chooseLevel("practicing")}
+-                icon={<Cross size={20} />}
+                 title={t("onboard.level.practicing")}
+                 sub={t("onboard.level.practicingSub")}
+                 delay={0}
+@@ -842,7 +839,6 @@ export function OnboardingFlow({
+               <ChoiceCard
+                 selected={level === "practicing" && away}
+                 onClick={() => chooseLevel("practicing", true)}
+-                icon={<Compass size={20} />}
+                 title={t("onboard.where.returning")}
+                 sub={t("onboard.where.returningSub")}
+                 delay={1}
+@@ -850,7 +846,6 @@ export function OnboardingFlow({
+               <ChoiceCard
+                 selected={level === "learning"}
+                 onClick={() => chooseLevel("learning")}
+-                icon={<Book size={20} />}
+                 title={t("onboard.where.preparing")}
+                 sub={t("onboard.level.learningSub")}
+                 delay={2}
+@@ -859,12 +854,11 @@ export function OnboardingFlow({
+           </Step>
+         )}
+         {step === "level" && roads && background !== "orthodox" && background !== "prefer-not" && background !== null && (
+-          <Step eyebrow={t("onboard.level.eyebrow")} title={t("onboard.been.title")}>
+-            <div className="flex flex-col gap-2.5">
++          <Step center eyebrow={t("onboard.level.eyebrow")} title={t("onboard.been.title")}>
++            <div className={TRAY}>
+               <ChoiceCard
+                 selected={level === "inquirer"}
+                 onClick={() => chooseLevel("inquirer")}
+-                icon={<Compass size={20} />}
+                 title={t("onboard.been.notYet")}
+                 sub={t("onboard.level.inquirerSub")}
+                 delay={0}
+@@ -872,7 +866,6 @@ export function OnboardingFlow({
+               <ChoiceCard
+                 selected={level === "learning"}
+                 onClick={() => chooseLevel("learning")}
+-                icon={<Book size={20} />}
+                 title={t("onboard.been.going")}
+                 sub={t("onboard.level.learningSub")}
+                 delay={1}
+@@ -881,12 +874,11 @@ export function OnboardingFlow({
+           </Step>
+         )}
+         {step === "level" && (!roads || background === "prefer-not" || background === null) && (
+-          <Step eyebrow={t("onboard.level.eyebrow")} title={t("onboard.level.title")}>
+-            <div className="flex flex-col gap-2.5">
++          <Step center eyebrow={t("onboard.level.eyebrow")} title={t("onboard.level.title")}>
++            <div className={TRAY}>
+               <ChoiceCard
+                 selected={level === "inquirer"}
+                 onClick={() => chooseLevel("inquirer")}
+-                icon={<Compass size={20} />}
+                 title={t("onboard.level.inquirer")}
+                 sub={t("onboard.level.inquirerSub")}
+                 delay={0}
+@@ -894,7 +886,6 @@ export function OnboardingFlow({
+               <ChoiceCard
+                 selected={level === "learning"}
+                 onClick={() => chooseLevel("learning")}
+-                icon={<Book size={20} />}
+                 title={t("onboard.level.learning")}
+                 sub={t("onboard.level.learningSub")}
+                 delay={1}
+@@ -902,7 +893,6 @@ export function OnboardingFlow({
+               <ChoiceCard
+                 selected={level === "practicing"}
+                 onClick={() => chooseLevel("practicing")}
+-                icon={<Cross size={20} />}
+                 title={t("onboard.level.practicing")}
+                 sub={t("onboard.level.practicingSub")}
+                 delay={2}
+@@ -913,8 +903,8 @@ export function OnboardingFlow({
+         {/* The baptized Orthodox only (1.8.x, the owner's note 54). A priest
+             or deacon goes on to where they serve; a layman to the rule. */}
+         {step === "role" && (
+-          <Step eyebrow={t("onboard.level.eyebrow")} title={t("onboard.role.title")} body={t("onboard.role.body")}>
+-            <div className="flex flex-col gap-2.5">
++          <Step center eyebrow={t("onboard.level.eyebrow")} title={t("onboard.role.title")} body={t("onboard.role.body")}>
++            <div className={TRAY}>
+               <ChoiceCard selected={role === "priest"} onClick={() => chooseRole("priest")} title={t("clergy.rank.priest")} delay={0} />
+               <ChoiceCard selected={role === "deacon"} onClick={() => chooseRole("deacon")} title={t("clergy.rank.deacon")} delay={1} />
+               <ChoiceCard selected={role === "layman"} onClick={() => chooseRole("layman")} title={t("onboard.role.layman")} delay={2} />
+@@ -940,11 +930,11 @@ export function OnboardingFlow({
+         )}
+ 
+         {step === "rule" && (
+-          <Step eyebrow={t("onboard.rule.eyebrow")} title={t("onboard.rule.title")} body={t("onboard.rule.body")}>
+-            <p className="mb-2 font-sans text-caption font-semibold text-paper/55">
++          <Step center eyebrow={t("onboard.rule.eyebrow")} title={t("onboard.rule.title")} body={t("onboard.rule.body")}>
++            <p className="mb-2 text-start font-sans text-caption font-semibold text-paper/55">
+               {t("onboard.rule.calendar")}
+             </p>
+-            <div className="grid grid-cols-2 gap-2.5">
++            <div className={TRAY}>
+               <ChoiceCard
+                 selected={calendar === "new"}
+                 onClick={() => chooseCalendar("new")}
+@@ -962,10 +952,10 @@ export function OnboardingFlow({
+                 delay={1}
+               />
+             </div>
+-            <p className="mb-2 mt-6 font-sans text-caption font-semibold text-paper/55">
++            <p className="mb-2 mt-5 text-start font-sans text-caption font-semibold text-paper/55">
+               {t("onboard.rule.fasting")}
+             </p>
+-            <div className="flex flex-col gap-2.5">
++            <div className={TRAY}>
+               {(["strict", "modified", "hidden"] as const).map((f, i) => (
+                 <ChoiceCard
+                   key={f}
+@@ -978,7 +968,7 @@ export function OnboardingFlow({
+                 />
+               ))}
+             </div>
+-            <div className="mt-8">
++            <div className="mt-6">
+               <PrimaryButton onClick={leaveRule}>{t("onboard.continue")}</PrimaryButton>
+             </div>
+             {/* Roads only: the clergy's question, a quiet line for the few it
+@@ -1237,19 +1227,13 @@ function Step({
+   return (
+     <div className={`flex flex-col ${center ? "items-center text-center" : ""}`}>
+       {icon ? (
+-        <span
+-          aria-hidden
+-          className="lm-card onboard-mark-in mb-6 inline-flex h-20 w-20 items-center justify-center rounded-[26px] text-gold-pale shadow-[0_18px_40px_-16px_rgba(0,0,0,0.6)] ring-1 ring-inset ring-paper/12"
+-          style={{
+-            background:
+-              "radial-gradient(120% 90% at 50% 8%, rgba(255,255,255,0.10) 0%, transparent 60%), linear-gradient(155deg, #2a2a2f 0%, #18181b 100%)",
+-          }}
+-        >
++        // The opening's own cross, lit, as the first question wears it: no tile under it.
++        <span aria-hidden className="ob-wf-cross onboard-step-in mb-[22px] text-paper">
+           {icon}
+         </span>
+       ) : null}
+       <p
+-        className="onboard-step-in mb-3 font-sans text-caption text-premium-ink/85"
++        className="onboard-step-in mb-2 font-sans text-caption font-semibold text-paper/55"
+         style={{ animationDelay: "70ms" }}
+       >
+         {eyebrow}
+@@ -1272,13 +1256,20 @@ function Step({
+   );
+ }
+ 
+-/** One answer. Chosen, it is lit white and its tick draws itself. */
++/** The tray a question's answers stand in: one raised surface, a hairline between its rows. */
++const TRAY = "theology-tray divide-y divide-paper/10 overflow-hidden rounded-[20px] text-start";
++
++/**
++ * One answer, as a row of its question's tray (1.9, the fifteen screens: one
++ * answer from a list is rows in one tray, the chosen row marked). A name and
++ * at most one line; no icon tile and no ring to fill. Chosen, the row is a
++ * shade lit and its tick draws itself at the row's end.
++ */
+ function ChoiceCard({
+   selected,
+   onClick,
+   title,
+   sub,
+-  icon,
+   compact = false,
+   delay = 0,
+ }: {
+@@ -1287,7 +1278,6 @@ function ChoiceCard({
+   title: string;
+   /** The line under the title; the role question's answers stand on their titles. */
+   sub?: string;
+-  icon?: ReactNode;
+   compact?: boolean;
+   /** Position in its list, for the staggered entrance. */
+   delay?: number;
+@@ -1297,46 +1287,20 @@ function ChoiceCard({
+       type="button"
+       onClick={onClick}
+       aria-pressed={selected}
+-      className={`ob-choice ob-rise flex min-h-11 w-full items-center gap-3.5 rounded-2xl border text-start ${
+-        compact ? "px-3.5 py-3" : "p-4"
+-      } ${
+-        selected
+-          ? "border-premium/60 bg-premium/[0.10]"
+-          : "border-paper/15 bg-paper/[0.03] hover:border-paper/30 hover:bg-paper/[0.05]"
++      data-choice-row=""
++      className={`ob-row ob-rise flex w-full items-center gap-3 px-4 text-start ${compact ? "min-h-[52px] py-2" : "min-h-[64px] py-3"} ${
++        selected ? "bg-paper/[0.07]" : "active:bg-paper/[0.04]"
+       }`}
+       style={{ animationDelay: `${300 + delay * 60}ms` }}
+     >
+-      {icon ? (
+-        <span
+-          aria-hidden
+-          className={`inline-flex size-10 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset transition-colors ${
+-            selected ? "bg-premium/15 text-premium-ink ring-premium/35" : "bg-paper/[0.06] text-paper/75 ring-paper/10"
+-          }`}
+-        >
+-          {icon}
+-        </span>
+-      ) : null}
+       <span className="min-w-0 flex-1">
+-        <span className="block font-sans text-ui font-semibold text-paper">{title}</span>
+-        {sub ? <span className="mt-0.5 block font-sans text-caption leading-[1.45] text-paper/60">{sub}</span> : null}
++        <span className="block font-serif text-lede font-semibold leading-[25px] text-paper">{title}</span>
++        {sub ? <span className={`mt-0.5 block font-sans text-paper/70 ${compact ? "text-detail leading-[18px]" : "text-ui leading-5"}`}>{sub}</span> : null}
+       </span>
+-      <span
+-        aria-hidden
+-        className={`inline-flex size-6 shrink-0 items-center justify-center rounded-full ring-1 ring-inset transition-colors ${
+-          selected ? "bg-premium text-night ring-premium" : "ring-paper/25"
+-        }`}
+-      >
++      <span aria-hidden className="grid size-6 shrink-0 place-items-center text-paper">
+         {selected ? (
+-          <svg viewBox="0 0 16 16" width="12" height="12" className="ob-tick">
+-            <path
+-              d="M3.5 8.5l3 3 6-7"
+-              fill="none"
+-              stroke="currentColor"
+-              strokeWidth="2.2"
+-              strokeLinecap="round"
+-              strokeLinejoin="round"
+-              pathLength={1}
+-            />
++          <svg viewBox="0 0 16 16" width="18" height="18" className="ob-tick">
++            <path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" pathLength={1} />
+           </svg>
+         ) : null}
+       </span>
+diff --git a/components/onboarding/WhereFrom.tsx b/components/onboarding/WhereFrom.tsx
+index dce072c2..f6330ba9 100644
+--- a/components/onboarding/WhereFrom.tsx
++++ b/components/onboarding/WhereFrom.tsx
+@@ -56,7 +56,7 @@ export function WhereFrom({
+ 
+   return (
+     <div className="flex flex-1 flex-col items-center text-center md:flex-none">
+-      <span aria-hidden className="ob-wf-cross onboard-step-in mb-[22px] text-paper" style={{ animationDelay: "40ms" }}>
++      <span aria-hidden className="ob-wf-cross onboard-step-in mb-4 text-paper" style={{ animationDelay: "40ms" }}>
+         <Cross size={30} strokeWidth={1.5} />
+       </span>
+       <h2
+@@ -73,52 +73,63 @@ export function WhereFrom({
+         {t("onboard.background.body")}
+       </p>
+ 
+-      <div role="group" aria-labelledby={`${id}q`} className="mt-[26px] flex flex-wrap justify-center gap-[9px]">
++      {/* The answers as rows in one tray, the chosen row marked (1.9, the
++          fifteen screens: one answer from a list). The chosen row says, as its
++          one line, where Purify will start this reader, read out as it changes. */}
++      <div
++        role="group"
++        aria-labelledby={`${id}q`}
++        aria-live="polite"
++        className="theology-tray mt-6 w-full divide-y divide-paper/10 overflow-hidden rounded-[20px] text-start"
++      >
+         {pills.map((b, i) => (
+           <button
+             key={b}
+             type="button"
+             aria-pressed={answer === b}
++            data-choice-row=""
+             onClick={() => onChoose(b)}
+-            className={`ob-pill ob-rise inline-flex min-h-11 items-center rounded-pill border px-[17px] py-[11px] font-sans text-[14.5px] leading-tight ${
+-              answer === b
+-                ? "border-paper bg-paper font-semibold text-night"
+-                : "border-paper/20 bg-night/55 text-paper/90 backdrop-blur-[2px] hover:border-paper/40"
++            className={`ob-row ob-rise flex min-h-[52px] w-full items-center gap-3 px-4 py-2.5 text-start ${
++              answer === b ? "bg-paper/[0.07]" : "active:bg-paper/[0.04]"
+             }`}
+             style={{ animationDelay: `${260 + i * 50}ms` }}
+           >
+-            {t(`onboard.background.${b}`)}
++            <span className="min-w-0 flex-1">
++              <span className="block font-serif text-lede font-semibold leading-[25px] text-paper">{t(`onboard.background.${b}`)}</span>
++              {answer === b ? (
++                <span className="ob-says mt-0.5 block font-sans text-ui leading-5 text-paper/75">
++                  {before}
++                  <b className="font-semibold text-paper">{t(`onboard.background.start.${b}`)}</b>
++                  {after}
++                </span>
++              ) : null}
++            </span>
++            <span aria-hidden className="grid size-6 shrink-0 place-items-center text-paper">
++              {answer === b ? (
++                <svg viewBox="0 0 16 16" width="18" height="18" className="ob-tick">
++                  <path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" pathLength={1} />
++                </svg>
++              ) : null}
++            </span>
+           </button>
+         ))}
++        {/* "Prefer not to say" is an answer too, so it is the tray's last row; it moves on at once. */}
++        <button
++          type="button"
++          aria-pressed={answer === "prefer-not"}
++          data-choice-row=""
++          onClick={onPreferNot}
++          className={`ob-row ob-rise flex min-h-[52px] w-full items-center gap-3 px-4 py-2.5 text-start ${
++            answer === "prefer-not" ? "bg-paper/[0.07]" : "active:bg-paper/[0.04]"
++          }`}
++          style={{ animationDelay: `${260 + pills.length * 50}ms` }}
++        >
++          <span className="min-w-0 flex-1 font-serif text-lede font-semibold leading-[25px] text-paper">{t("onboard.background.prefer-not")}</span>
++        </button>
+       </div>
+ 
+-      {/* Where Purify starts them, read out as it changes. Keyed by the
+-          answer, so a new pick draws its line in again. */}
+-      <div aria-live="polite" className="w-full">
+-        {says ? (
+-          <p key={says} className="ob-says mx-auto mt-[18px] max-w-[280px] font-sans text-ui leading-[1.5] text-paper/80">
+-            <span aria-hidden className="ob-says-ln mx-auto mb-3 block h-[1.5px] w-[26px] bg-paper" />
+-            {before}
+-            <b className="font-semibold text-paper">{t(`onboard.background.start.${says}`)}</b>
+-            {after}
+-          </p>
+-        ) : null}
+-      </div>
+-
+-      <button
+-        type="button"
+-        aria-pressed={answer === "prefer-not"}
+-        onClick={onPreferNot}
+-        className={`onboard-step-in inline-flex min-h-11 items-center rounded-pill px-4 font-sans text-caption transition-colors hover:text-paper ${
+-          says ? "mt-0.5" : "mt-2"
+-        } ${answer === "prefer-not" ? "text-paper" : "text-paper/50"}`}
+-        style={{ animationDelay: "560ms" }}
+-      >
+-        {t("onboard.background.prefer-not")}
+-      </button>
+-
+       {/* The way on, at the foot over the horizon, once there is a line to have read. */}
+-      <div className="mt-auto w-full pt-8 md:mt-8">
++      <div className="mt-auto w-full pt-4 md:mt-8">
+         {says ? (
+           <div className="ob-rise">
+             <PrimaryButton onClick={onContinue}>{t("onboard.continue")}</PrimaryButton>
+@@ -137,7 +148,7 @@ export function WhereFrom({
+  * the step scroll. Rendered by the flow beside the step, not inside it: the
+  * step slides in, and a slide would carry the sky with it.
+  */
+-export function WhereFromSky() {
++export function WhereFromSky({ horizon = true }: { horizon?: boolean }) {
+   return (
+     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden text-paper">
+       {/* From the line's start, as the intro's stars are, so the sky carries on star for star in Arabic too. */}
+@@ -150,7 +161,7 @@ export function WhereFromSky() {
+           />
+         ))}
+       </div>
+-      <div className="ob-wf-horizon absolute inset-x-0 top-[84%]">
++      <div className={`ob-wf-horizon absolute inset-x-0 top-[84%] transition-opacity duration-300 motion-reduce:transition-none ${horizon ? "" : "opacity-0"}`}>
+         <HorizonDrawing id="ob-horizon" className="absolute left-1/2 top-0 h-[324vw] w-[324vw] -translate-x-1/2 overflow-visible" />
+       </div>
+     </div>
+diff --git a/components/prayers/PrayNow.tsx b/components/prayers/PrayNow.tsx
+index b949d538..a39d7a7e 100644
+--- a/components/prayers/PrayNow.tsx
++++ b/components/prayers/PrayNow.tsx
+@@ -18,6 +18,7 @@ import Link from "next/link";
+ 
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+ import { CARD, CARD_BG } from "@/components/ui/Graphite";
++import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+ import { Skeleton } from "@/components/ui/Skeleton";
+ import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
+ import { useToday } from "@/lib/calendar/useToday";
+@@ -32,7 +33,7 @@ type Card = { id: string; href: string; title: string; description?: string; min
+ 
+ const SLOTS = 4;
+ 
+-export function PrayNow({ variant }: { variant: "desktop" | "mobile" }) {
++export function PrayNow({ variant, exclude }: { variant: "desktop" | "mobile"; /** Rules the screen already offers above (the phone's lead). */ exclude?: readonly string[] }) {
+   const { t, tn } = useTranslate();
+   const mounted = useMounted();
+   const today = useToday();
+@@ -65,7 +66,7 @@ export function PrayNow({ variant }: { variant: "desktop" | "mobile" }) {
+ 
+   const cards: Card[] = [];
+   const last = recents[0];
+-  if (last) {
++  if (last && !exclude?.includes(last.id)) {
+     const meta = getRuleMeta(last.id);
+     cards.push({
+       id: last.id,
+@@ -81,7 +82,7 @@ export function PrayNow({ variant }: { variant: "desktop" | "mobile" }) {
+     season: seasonFor(today),
+     isFast: isFastDay(today, style),
+     max: SLOTS - cards.length,
+-    exclude: new Set(cards.map((c) => c.id)),
++    exclude: new Set([...cards.map((c) => c.id), ...(exclude ?? [])]),
+   })) {
+     cards.push({
+       id: r.id,
+@@ -100,38 +101,29 @@ export function PrayNow({ variant }: { variant: "desktop" | "mobile" }) {
+   );
+ 
+   if (variant === "mobile") {
++    // The house's row (1.9, the fifteen screens): a name, one line, the
++    // chevron, a hairline between, in one tray.
+     return (
+-      <div className={cn(CARD, "p-0 hover:translate-y-0 md:p-0")} style={CARD_BG}>
+-        <ul className="divide-y divide-paper/10">
+-          {cards.map((c) => (
+-            <li key={c.id}>
+-              <Link
+-                href={c.href}
+-                className="flex min-h-[64px] items-center gap-3 px-5 py-3.5 transition-colors active:bg-paper/[0.06]"
+-              >
++      <ul className="theology-tray overflow-hidden rounded-[20px]">
++        {cards.map((c, i) => {
++          const line = [c.resume ? t("common.continue") : null, c.minutes ? tn("prayers.approxMin", c.minutes) : null, c.resume ? null : c.description]
++            .filter(Boolean)
++            .join(" · ");
++          return (
++            <li key={c.id} className={cn(i > 0 && "border-t border-paper/10")}>
++              <Link href={c.href} className="tap-press flex min-h-[64px] w-full items-center gap-3 px-4 py-3 active:bg-paper/[0.04]">
+                 <span className="min-w-0 flex-1">
+-                  {/* The chip sits over the title, not beside it: beside it,
+-                      a title as long as Prayers before Communion was cut to
+-                      three words at phone width. */}
+-                  {c.resume ? <span className="mb-1.5 flex">{chip}</span> : null}
+-                  <span className="block font-heading text-ui font-semibold leading-snug text-paper">{c.title}</span>
+-                  {c.description ? (
+-                    <span className="mt-0.5 block truncate font-sans text-caption text-paper/55">{c.description}</span>
+-                  ) : null}
++                  <span className="block font-serif text-lede font-semibold leading-[25px] text-paper">{c.title}</span>
++                  {line ? <span className="mt-0.5 block truncate font-sans text-ui leading-5 text-paper/70">{line}</span> : null}
+                 </span>
+-                {c.minutes ? (
+-                  <span className="shrink-0 font-sans text-caption tabular-nums text-paper/50">
+-                    {tn("prayers.approxMin", c.minutes)}
+-                  </span>
+-                ) : null}
+-                <span aria-hidden className="shrink-0 font-sans text-ui text-paper/45">
+-                  →
++                <span className="shrink-0 text-paper/55">
++                  <ChevronRight size={18} className="rtl:-scale-x-100" />
+                 </span>
+               </Link>
+             </li>
+-          ))}
+-        </ul>
+-      </div>
++          );
++        })}
++      </ul>
+     );
+   }
+ 
+diff --git a/components/prayers/RuleToday.tsx b/components/prayers/RuleToday.tsx
+index 12a22480..7841618f 100644
+--- a/components/prayers/RuleToday.tsx
++++ b/components/prayers/RuleToday.tsx
+@@ -13,6 +13,7 @@ import { MY_RULE_IDS, type MyRulePart } from "@/lib/prayers/myRule";
+ import { partHref, ruleToday, stepWindow, type RuleToday as RuleTodayModel, type RuleTodayRow } from "@/lib/prayers/ruleToday";
+ import { PRAYER_EVENT, useTodayDone } from "@/lib/prayers/storage";
+ import { useMyRule } from "@/lib/prayers/useMyRule";
++import { hourPrayer } from "@/lib/today/greeting";
+ import { isKept } from "@/lib/rhythm/marks";
+ import { useMounted } from "@/lib/useMounted";
+ 
+@@ -95,25 +96,28 @@ export function RuleToday({ hourPart }: { hourPart: MyRulePart }) {
+   if (!mounted || (hasRule && !lookup)) return <RuleOutline />;
+ 
+   if (!today) {
++    // No rule yet: the hour's prayer leads, with the screen's one Begin (1.9,
++    // the fifteen screens), as Today's lead does. Making a rule is a row
++    // lower down the page, never the first thing asked of a reader.
++    const prayer = hourPrayer(hourPart, null);
++    const now = prayer.minutes ? `${t("prayers.timeline.now")} · ${t("today.minRead", { count: prayer.minutes })}` : t("prayers.timeline.now");
+     return (
+-      <section aria-labelledby="rule-today" className="px-5">
+-        <h2 id="rule-today" className="text-title-sm leading-tight tracking-[-0.01em] text-paper">
+-          {t("prayers.mine.title")}
++      <section aria-labelledby="rule-today" data-pray-lead="" className="px-5">
++        <p className="font-sans text-caption font-semibold leading-[18px] text-paper/65">{now}</p>
++        <h2 id="rule-today" className="mt-0.5 font-serif text-[21px] font-bold leading-[27px] text-paper">
++          {t(prayer.titleKey)}
+         </h2>
+-        <p className="mt-1.5 max-w-[44ch] font-sans text-detail leading-[1.55] text-paper/65">{t("prayers.mine.intro")}</p>
+         <Link
+-          href="/prayers/personal"
+-          className="tap-press mt-4 inline-flex min-h-12 items-center gap-1.5 rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
++          href={prayer.href}
++          className="tap-press mt-3.5 flex min-h-12 w-full items-center justify-center gap-1.5 rounded-pill bg-paper px-6 font-sans text-[15px] font-semibold text-night focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
+         >
+-          {t("prayers.mine.build")}
++          {t("today.prayNow.begin")}
+           <ChevronRight size={15} className="shrink-0 rtl:-scale-x-100" />
+         </Link>
+       </section>
+     );
+   }
+ 
+-  // A rule's name in the reader's language, else the prayer book's own (an
+-  // Hour has no catalog name of its own here).
+   const ruleName = (id: string): string => {
+     const key = `prayers.rule.${id}.title`;
+     const v = t(key);
