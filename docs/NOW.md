@@ -18,7 +18,6 @@ Updated 2026-11-13 01:24 UTC.
 
 ## Waiting on him
 
-- A standing yes for any chat to read the main web's public Supabase key from purifyapp.net's own scripts into an export command, never printed or saved (asked 2026-11-13 after three single yeses), (his journal bugs came in words, note 6).
 - **Walk the 1.9 test build** on Android (the APK above) and on iPhone or iPad (TestFlight): uninstall the old build first, Testers mode off, start as a new reader. Then his notes, the 1.9 note in his queue, the drop day, and the phone walks for the store texts.
 - **When the retention looks are wired (after his yes):** the kit's retentionLook draws the sending's own letters (lib/email/retention); a Bible place or a work shows heading and deck only; day 7 sets no verse; the fast's one button is the reading plan; a plain-fast or fast-free day has no mark picture yet.
 - **How readers join the retention emails** (their migration is signed, "yes retention sql"): one asking line in the welcome email (recommended, opt-in) or on by default with a privacy line. Readers' own toggles land on the website after 1.9's store builds; this Nativity Fast only he sees the companion, and Great Lent 2027 is the first reader season.
