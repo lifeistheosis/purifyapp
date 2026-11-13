@@ -2,8 +2,10 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { createContext, Fragment, memo, useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { createContext, Fragment, memo, useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { flushSync } from "react-dom";
+
+import type { User } from "@supabase/supabase-js";
 
 import { ActionMenu, type ActionMenuItem } from "@/components/community/ActionMenu";
 import { ReplyMenu } from "@/components/community/ReplyMenu";
@@ -57,6 +59,7 @@ import {
   type CommunityPost,
   type CommunityReply,
 } from "@/lib/community/types";
+import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { resolveUser } from "@/lib/supabase/resolveUser";
 import { cn } from "@/lib/cn";
 import { sortPinnedFirst } from "@/lib/community/pinning";
@@ -138,6 +141,18 @@ function sameResponseMap(
 }
 
 type Me = { id: string; name: string; avatar: string | null } | null;
+
+/** The reader as the feed names them, from their account. */
+function meOf(user: User): NonNullable<Me> {
+  const meta = (user.user_metadata ?? {}) as { display_name?: string; avatar_url?: string };
+  return {
+    id: user.id,
+    name: (meta.display_name ?? "").trim() || user.email?.split("@")[0] || "Reader",
+    avatar: meta.avatar_url || null,
+  };
+}
+
+const noSubscribe = () => () => {};
 
 const field =
   "w-full rounded-lg border border-paper/15 bg-night px-3.5 py-2.5 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/40";
@@ -304,8 +319,25 @@ function CommunityScreen({
   const half = halfShown(asked, door);
   // Pray together, unless a group's thread is open: that is a conversation.
   const praying = half === "pray" && !groupId;
-  const [me, setMe] = useState<Me>(null);
-  const [authSettled, setAuthSettled] = useState(false);
+  const [meFound, setMe] = useState<Me>(null);
+  const [authFound, setAuthSettled] = useState(false);
+  // Who is reading, from the session the device holds, as the page renders
+  // on a page switch (a page that wakes from its HTML reads it as it wakes).
+  // It waited on resolveUser, with a placeholder 42px tall in the composer's
+  // row; but a page switch is a View Transition, which takes its picture of
+  // the page arriving before an effect's change is drawn (react-dom flushes
+  // that work once the picture is ready), so the Sign in box, 126px, landed
+  // in the live page and the feed under it jumped 84px, six ways in (Gate
+  // 2.0, 2026-11-13). resolveUser's own first step is this same read, and
+  // with no session on the device the reader is signed out.
+  const onDevice = useSyncExternalStore(noSubscribe, () => true, () => false);
+  const localMe = useMemo(() => {
+    if (!onDevice) return null;
+    const user = readLocalSessionUser();
+    return user ? meOf(user) : null;
+  }, [onDevice]);
+  const me = meFound ?? localMe;
+  const authSettled = authFound || onDevice;
   // undefined = still loading. Otherwise the discriminated result from
   // fetchCommunityPosts, so "dark", "empty" and "failed" stay distinct.
   //
@@ -370,20 +402,7 @@ function CommunityScreen({
     void (async () => {
       const auth = await resolveUser();
       if (!alive) return;
-      if (auth.state === "signed-in") {
-        const meta = (auth.user.user_metadata ?? {}) as {
-          display_name?: string;
-          avatar_url?: string;
-        };
-        setMe({
-          id: auth.user.id,
-          name:
-            (meta.display_name ?? "").trim() ||
-            auth.user.email?.split("@")[0] ||
-            "Reader",
-          avatar: meta.avatar_url || null,
-        });
-      }
+      if (auth.state === "signed-in") setMe(meOf(auth.user));
       setAuthSettled(true);
     })();
     return () => {

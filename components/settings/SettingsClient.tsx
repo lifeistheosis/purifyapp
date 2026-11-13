@@ -55,7 +55,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 
 import { cn } from "@/lib/cn";
 
@@ -128,7 +128,6 @@ import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { useShowSupporterMark } from "@/lib/profile/useShowSupporterMark";
 import { READING_THEMES } from "@/lib/reader/readingModes";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
-import { resolveUser } from "@/lib/supabase/resolveUser";
 
 import { FirstFocus, useOnboardedAgain } from "./FirstFocus";
 import { ButtonRow, LinkRow, Plate, Row, Section, Switch, Track } from "./LitPanel";
@@ -144,35 +143,28 @@ const FACES: readonly ReaderFont[] = ["serif", "display", "sans"];
  * Who is signed in on this device, for the rows that differ: nothing here
  * reads or writes the account, and each account screen has its own gate.
  *
- * The session the device already holds is read before the first paint
- * (readLocalSessionUser: no request, no lock), so a signed-in reader's rows
- * are there with the screen and the rest does not jump down a frame later.
- * With no session there, resolveUser settles the rarer cases; "could not find
- * out" is shown as signed out, which offers Sign in and loses nothing.
+ * The session the device holds (readLocalSessionUser: no request, no lock)
+ * is read as the page renders, so the account's rows are there with the
+ * screen and the rest does not jump down after it. It was read after mount,
+ * and signed out it waited on resolveUser; but a page switch is a View
+ * Transition, which takes its picture of the page arriving before anything
+ * set after mount has drawn (react-dom flushes that work once the picture is
+ * ready), so the one Sign in row landed in the live page and everything
+ * under it jumped 131px (Gate 2.0, 2026-11-13). With no session on the
+ * device the reader is signed out: resolveUser's own first step is this same
+ * read, and the rest of it could only answer "could not find out", which is
+ * shown as signed out too. A page that wakes from its HTML reads it as it
+ * wakes, as before (the server has no device).
  */
 type Reader = { known: false } | { known: true; email: string | null };
 
+const noSubscribe = () => () => {};
+
 function useReader(): Reader {
-  const [reader, setReader] = useState<Reader>({ known: false });
-  useLayoutEffect(() => {
-    const local = readLocalSessionUser();
-    if (local) {
-      /* eslint-disable-next-line react-hooks/set-state-in-effect -- the
-         session lives in the device's own storage, which a server render does
-         not have: it is adopted after mount, before the first paint. */
-      setReader({ known: true, email: local.email ?? "" });
-      return;
-    }
-    let cancelled = false;
-    resolveUser().then((auth) => {
-      if (cancelled) return;
-      setReader({ known: true, email: auth.state === "signed-in" ? (auth.user.email ?? "") : null });
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-  return reader;
+  const client = useSyncExternalStore(noSubscribe, () => true, () => false);
+  const local = useMemo(() => (client ? readLocalSessionUser() : null), [client]);
+  if (!client) return { known: false };
+  return { known: true, email: local ? (local.email ?? "") : null };
 }
 
 /**

@@ -17,12 +17,14 @@
 // at 9pm saw tomorrow's commemoration. `startOfDayLocal` reads the device's
 // own calendar day.
 //
-// Returns `null` until mounted. That is deliberate, not laziness: if the
-// first render produced a date, the static export would bake it into the
-// HTML again and we would be back where we started. Callers render a quiet
-// placeholder for the one frame before hydration.
+// Returns `null` wherever the page is drawn on the server. That is
+// deliberate, not laziness: if the prerender produced a date, the static
+// export would bake it into the HTML again and we would be back where we
+// started. Callers render a quiet placeholder for the one frame before
+// hydration. On the device the day is there from the first render (since
+// 1.9: useToday is useTodayAtOnce, below).
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import { startOfDayLocal } from "@/lib/calendar/orthodox";
 
 /** Milliseconds until just after the next local midnight. */
@@ -38,45 +40,26 @@ function msUntilLocalMidnight(now: Date): number {
   return Math.max(1000, next.getTime() - now.getTime());
 }
 
+/**
+ * The device's calendar day: null wherever the page is drawn on the server
+ * (the export's prerender, the website's first page), so no date is baked
+ * into the HTML, and the day itself from the first render wherever the page
+ * is drawn on the device. Read again just after each local midnight and when
+ * the app comes back to the foreground.
+ *
+ * It is useTodayAtOnce (below). Until 1.9 it was the day set in an effect
+ * after mount, so a page switched to was drawn first without it and again
+ * with it; a page switch is a View Transition, which takes its picture of
+ * the page arriving before an effect's change is drawn, so whatever the day
+ * decides landed in the live page and moved what was under it: Reading
+ * plans' season card pushed the plans 354px down as it came, and Today's
+ * prayer's fasting line moved 198px (Gate 2.0's run, 2026-11-13). The 1.8
+ * mend of the same fault (note 58, the chants) made useTodayAtOnce and gave
+ * it to the chants alone; every screen that reads the day has it now.
+ */
 export function useToday(): Date | null {
-  const [day, setDay] = useState<Date | null>(null);
-
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout> | undefined;
-
-    const sync = () => {
-      const now = new Date();
-      const next = startOfDayLocal(now);
-      // Keep the same object when the day has not turned, so downstream
-      // useMemo dependencies do not churn on every foreground event.
-      setDay((prev) => (prev && prev.getTime() === next.getTime() ? prev : next));
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(sync, msUntilLocalMidnight(now));
-    };
-
-    sync();
-
-    // A phone backgrounded across midnight suspends timers, so the timeout
-    // above cannot be trusted on its own. Re-check whenever the app comes
-    // back to the foreground: this is the path that actually rolls the day
-    // over for most readers, who open the app rather than leave it open.
-    const resync = () => {
-      if (!document.hidden) sync();
-    };
-    document.addEventListener("visibilitychange", resync);
-    window.addEventListener("focus", resync);
-
-    return () => {
-      if (timer) clearTimeout(timer);
-      document.removeEventListener("visibilitychange", resync);
-      window.removeEventListener("focus", resync);
-    };
-  }, []);
-
-  return day;
+  return useTodayAtOnce();
 }
-
-// ---- the same day, known in the first frame on the device
 
 let shownDay: Date | null = null;
 
