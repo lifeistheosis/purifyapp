@@ -28,6 +28,23 @@ export const LIFE_QUOTES: Readonly<Record<string, readonly { words: string; cite
       cite: { kind: "council", council: "first-constantinople", document: "the-synodical-letter", section: 6 },
     },
   ],
+  "xenia-of-petersburg": [
+    // Her cry before Ivan VI's death, as her oldest printed Life gives it:
+    // "там кровь, кровь, кровь!" (1.9, the owner's word of 2026-11-13; the
+    // last words of a longer answer, which the life tells in ours). The
+    // Russian is public domain; the English of these three words is ours, and
+    // the line says so (lib/saints/lifeSources.ts, bulgakovsky).
+    {
+      words: "Blood, blood, blood!",
+      cite: {
+        kind: "text",
+        author: "D. G. Bulgakovsky",
+        work: "The Servant of God Xenia, or Andrei Feodorovich the Holy Fool",
+        place: "on her foretelling of the death of Ivan VI",
+        edition: "St. Petersburg, 1890; 2nd edition 1891, in Russian; the English is ours",
+      },
+    },
+  ],
 };
 
 /**

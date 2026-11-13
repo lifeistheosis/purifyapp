@@ -221,7 +221,7 @@ describe("a saint's own words", () => {
 describe("a quotation inside a saint's life", () => {
   it("names where it stands, and the words are there, or says they are not", () => {
     const entries = Object.entries(LIFE_QUOTES).flatMap(([slug, list]) => list.map((q) => ({ slug, q })));
-    expect(entries.length).toBe(4);
+    expect(entries.length).toBe(5);
     for (const { slug, q } of entries) {
       const life = SAINTS.find((s) => s.slug === slug)!.life.join("\n");
       expect(life.includes(q.words), `${slug}: ${q.words}`).toBe(true);

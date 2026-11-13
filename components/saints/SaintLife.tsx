@@ -5,6 +5,7 @@ import type { HistoryEventMeta } from "@/lib/history/events";
 import type { ListedSource } from "@/components/citations/Marked";
 import { shownCite } from "@/lib/citations/shown";
 import { LIFE_QUOTES } from "@/lib/saints/lifeQuotes";
+import { lifeSourcesOf } from "@/lib/saints/lifeSources";
 import { ViewInHistory } from "@/components/history/ViewInHistory";
 import { T } from "@/components/i18n/T";
 import { cn } from "@/lib/cn";
@@ -61,6 +62,7 @@ export function SaintLife({
     .filter(({ at }) => at >= 0)
     .sort((a, b) => a.at - b.at)
     .map(({ q }, i) => ({ words: q.words, n: i + 1, shown: shownCite(q.cite) }));
+  const readFrom = lifeSourcesOf(saint.slug);
   const after: { key: string; node: ReactNode; className?: string }[] = [];
   if (saint.greatFeasts?.length) {
     after.push({
@@ -122,6 +124,26 @@ export function SaintLife({
         <SaintLifeIn slug={saint.slug} name={saint.name} quotes={(LIFE_QUOTES[saint.slug] ?? []).map((q) => ({ words: q.words, shown: shownCite(q.cite) }))}>
           <LifeSection paragraphs={saint.life} sources={lifeSources} saint={saint.slug} name={saint.name} />
         </SaintLifeIn>
+        {/* Where a life of ours is read from (1.9, St. Xenia's profile): the
+            books its paragraphs name, one to a line under it, set as the
+            life's own list of sources is (components/citations/Marked.tsx),
+            as a page of the new standard names its source under the entry
+            (lib/saints/lifeSources.ts). */}
+        {readFrom.length ? (
+          <section aria-labelledby="life-books" className="mt-8 max-w-[680px]">
+            {/* A sans label: the heading rule in globals.css sets Lora on every heading. */}
+            <h3 id="life-books" className="font-sans text-caption text-paper/55" style={{ fontFamily: "var(--font-sans)", fontWeight: 600 }}>
+              <T k="study.history.sources" />
+            </h3>
+            <ul className="mt-2 space-y-1.5">
+              {readFrom.map((book) => (
+                <li key={book} lang="en" dir="ltr" className="font-sans text-caption leading-[1.55] text-paper/55">
+                  {book}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
       </div>
       {/* What would you add, and where is it written (1.9, call 24): under every life. */}
       <SuggestAddition name={saint.name} />
