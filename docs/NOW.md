@@ -17,11 +17,13 @@ Updated 2026-11-13 01:24 UTC.
 - **The arbiter's rulings:** the webs' lifted saints are allowed for every node (kept in sight above the card it opened, in the house glide); the community thread was the measure; for 1.9 the commentary marks are sampled by Genesis 1's hand walk, and counting by drawn reach goes into 2.0's nightly gate (named to him).
 - **Rotations, done between checks:** Admin and Updates 2 wrote batons and were archived. Admin 2 runs the targeted re-check; Updates 3 takes fails 4 and 5. Updates finished 1 and 6 and was archived.
 - **Also landing before the re-check:** St. Xenia's refined profile, **landed** (2ebc48166; the quotation ruling in docs/editorial-standards.md, d2aed289d): 17 paragraphs from public-domain sources (Opatovich 1873, Bulgakovsky 1890, Sambikin 1896, the Russian Biographical Dictionary 1903, the Britannica 1911), with the disputes said, a Sources list under her life, and one quotation ("Blood, blood, blood!", our English of Bulgakovsky's Russian, labelled). No hymn, web link or picture is free; her picture stays on Holy Cross Monastery's permission.
+- **The walk is mended** (5f56967b): every web node allowed when it glides and ends in sight; a "held" control re-tapped with anchoring off.
 - **Then:** every fix pushed; the re-check on one export from that head; if it passes, the test build is cut (Android with local-first on, the main web, publish off; then iOS).
 - **Before the merge (web only):** the admin link in `lib/billing/applyLifecycle.ts` (`?tab=` where the panel reads `#tab=`), with Updates 3.
 
 ## Waiting on him
 
+- **Now, for the re-check:** his word that Admin 2 may read the main web's public Supabase key from purifyapp.net's own scripts into the export command (never printed or saved). Its container's safety check refused the read without his word. The key is public by design (every visitor's browser loads it), but without it the export is not in release positions.
 - His four answers on the owner's desk plan (`docs/plans/owner-desk.md`, last section): the data-built emails sending themselves unless held, the brief's hour, a shop and sourcing chat, and who builds the design kit.
 - Walk the test build once it is cut. Then: accept the 1.9 note in Admin, set the drop day, and submit both builds after the phone walks. On release day: the Purify profile's status, and opening campaigns.
 - The company: C0 (the address on the D-U-N-S record) and C0b (the papers). Send the company's exact name as the EIN letter has it. All in OWNER-STEPS.md.
