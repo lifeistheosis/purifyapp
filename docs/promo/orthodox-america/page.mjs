@@ -276,7 +276,7 @@ Written by \`page.mjs\` from what was made and measured, and from \`facts.mjs\`.
 | Size | ${(film.bytes / 1048576).toFixed(2)} MB (${film.bytes} bytes) |
 | Picture | ${film.size[0]} by ${film.size[1]}, ${film.codec}, ${film.pixels}, ${film.fps} frames a second, faststart |
 | Sound | ${film.sound} |
-| Made | 13 November 2026, by \`render.mjs\`: one full render. Before it, stills only (\`--sheet\`, and eight mid-motion stills); no draft film was made |
+| Made | 13 November 2026, by \`render.mjs\`: one full render, taken in two runs. The first was stopped at frame 871 when it would have outrun the session's limit for a background job; the second (\`--resume\`) kept those frames and took the rest, 3,960 in all, each the same whenever it is taken. Before it, stills only (\`--sheet\`, and eight mid-motion stills); no draft film was made |
 | Paid generation | none. Playwright's Chromium, ffmpeg, two open faces and a public map |
 
 ## How it was made
