@@ -492,7 +492,11 @@ describe("the tab bar steps away on the reading screens, and on no other", () =>
 
   it("is keyed in the stylesheet on the reader's screen being open, in every rule that moves it", () => {
     const css = rules();
-    const selectors = [...css.matchAll(/([^{}]+)\{/g)].flatMap((m) => m[1].split(",").map((s) => s.trim())).filter((s) => s.includes("[data-tab-bar]"));
+    // A rule that names the tab bar only to leave it out (":not([data-tab-bar])",
+    // what steps aside for a toast, build 95 note 7) does not move it.
+    const selectors = [...css.matchAll(/([^{}]+)\{/g)]
+      .flatMap((m) => m[1].split(",").map((s) => s.trim()))
+      .filter((s) => s.replace(/:not\([^()]*\)/g, "").includes("[data-tab-bar]"));
     expect(selectors.length).toBeGreaterThan(0);
     for (const s of selectors) expect(s, s).toMatch(/^(:where\(\[data-motion="reduce"\]\) )?body\[data-reader-screen\]/);
   });

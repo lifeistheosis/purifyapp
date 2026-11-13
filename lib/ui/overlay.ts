@@ -74,6 +74,57 @@ export function sheetRises(): () => void {
   };
 }
 
+/** Toasts standing at the foot (toastRises). */
+let toasts = 0;
+let toastBack: ReturnType<typeof setTimeout> | undefined;
+
+/**
+ * How long what stepped aside for a toast takes to come back: the time a page
+ * takes to arrive (app/globals.css, --duration-route-enter, 260ms) and a frame
+ * or two. body[data-toast-leaving] times its return till then.
+ */
+export const TOAST_RETURN_MS = 300;
+
+function syncToasts(ended: boolean) {
+  if (typeof document === "undefined") return;
+  const body = document.body;
+  clearTimeout(toastBack);
+  if (toasts > 0) {
+    body.dataset.toastUp = "1";
+    delete body.dataset.toastLeaving;
+    return;
+  }
+  delete body.dataset.toastUp;
+  if (!ended) return;
+  body.dataset.toastLeaving = "1";
+  toastBack = setTimeout(() => {
+    if (typeof document !== "undefined") delete document.body.dataset.toastLeaving;
+  }, TOAST_RETURN_MS);
+}
+
+/**
+ * A toast stands at the foot (the Undo bar, components/ui/UndoBar.tsx, in the
+ * day's readings bar's place, over the tab bar and the mini player): what
+ * floats in its band, the reader's pill and dock, a work's pill, the day's
+ * readings bar, a verse's tools, steps aside while it shows and comes back as
+ * it goes (app/globals.css, "What steps aside for a toast"). Build 95 note 7,
+ * his word: "ui overlalping". After a double tap on John 1:5 the Highlighted
+ * toast stood over the chapter pill, whose rounded top and Listen button
+ * showed above it. The tab bar and the mini player stay: the toast stands
+ * above them. Returns its end.
+ */
+export function toastRises(): () => void {
+  toasts += 1;
+  syncToasts(false);
+  let done = false;
+  return () => {
+    if (done) return;
+    done = true;
+    toasts = Math.max(0, toasts - 1);
+    syncToasts(true);
+  };
+}
+
 /**
  * A sheet stands over the page: risen, or on its way out and not yet gone.
  * A page that answers Escape itself asks, and stands aside: every listener

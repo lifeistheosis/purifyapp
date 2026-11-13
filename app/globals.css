@@ -952,6 +952,38 @@ body[data-sheet-leaving]:not([data-sheet-up]) :is([data-screen-edge="bottom"], [
   visibility 0s !important;
 }
 
+/* What steps aside for a toast (build 95 note 7, his word of 2026-11-13: "ui
+   overlalping"). The Undo bar stands at the foot in the day's readings bar's
+   place, over the tab bar and the mini player (components/ui/UndoBar.tsx),
+   and what floats in that band stood under it: after a double tap on John
+   1:5 the Highlighted toast covered the chapter pill's lower 47px at 390, the
+   pill's rounded top and its Listen button showing above the toast. Now
+   while a toast shows, everything at the foot but the tab bar and the mini
+   player (the reader's pill and dock, a work's pill, the day's readings bar,
+   a verse's tools, a chant's dock) steps aside in the time a page takes to
+   leave, on the house curve, out of reach and out of hearing, and the toast
+   comes 40ms later; as it goes they come back in the time a page takes to
+   arrive. The tab bar and the mini player stay: the toast stands above them.
+   One rule for every toast: lib/ui/overlay.ts, toastRises, which keeps
+   body[data-toast-up] and then body[data-toast-leaving]. Under the motion
+   switch they go and come at once. */
+body[data-toast-up] [data-screen-edge="bottom"]:not([data-tab-bar]):not([data-mini-player]) {
+ opacity: 0 !important;
+ visibility: hidden !important;
+ transition:
+  opacity var(--duration-route-exit) var(--ease-house),
+  visibility 0s linear var(--duration-route-exit) !important;
+}
+body[data-toast-leaving]:not([data-toast-up]) [data-screen-edge="bottom"]:not([data-tab-bar]):not([data-mini-player]) {
+ transition:
+  opacity var(--duration-route-enter) var(--ease-house),
+  visibility 0s !important;
+}
+:where([data-motion="reduce"]) body[data-toast-up] [data-screen-edge="bottom"]:not([data-tab-bar]):not([data-mini-player]),
+:where([data-motion="reduce"]) body[data-toast-leaving]:not([data-toast-up]) [data-screen-edge="bottom"]:not([data-tab-bar]):not([data-mini-player]) {
+ transition: none !important;
+}
+
 /* The reader's dock (1.9, the owner's pick for Listening, "one bar while
    playing": B at rest, "when you scroll, it turns into C";
    components/bible/ReaderDock.tsx). While anything is loaded in the player,
