@@ -26,6 +26,7 @@ Updated 2026-11-13 01:24 UTC.
 
 ## Waiting on him
 
+- Yes or no on each design as it comes, each with its justification: the kit's redesign (Fable), then the three retention emails.
 - A look at the 1.9 social cards (https://claude.ai/artifact/2H7zX18mPgJh9LMZnkw6bs); his yes clears the drop's `cards` piece (`node scripts/drop.mjs waits cards --clear`).
 - The public key for the re-check: given (2026-11-13 03:32 UTC, "yes read the key").
 - On the owner's desk plan: question 3 (a shop and sourcing chat after 1.9). Questions 1 (the sends, with a Hold) and 2 (the brief) are his yes (2026-11-13).
@@ -55,6 +56,7 @@ Updated 2026-11-13 01:24 UTC.
 | Updates 3 | session_01VuYTwcy3Fbt9LcW3Qic77o | fixer: fails 4 (WordPopover's Close in Arabic) and 5 (the webs' place and date cut), from `docs/handoffs/updates-2.md`; then the admin link in `lib/billing/applyLifecycle.ts` |
 | Admin panel 3 | session_01VuYTwdp6mhe99XWbxc6bLH | the owner's desk, sections 2 and 3 (the sends on, with a Hold, by his word; the owner's brief at 7:30 his time, Monday's weekly); web only |
 | Fable 5.2: email designs | session_01VuYTwd6RkVo5JByCRXYJFG | the emails landed (5b4554e4: the reader email, its Nativity Fast season, the owner's brief; https://claude.ai/artifact/AGYSKjN65WgQA3eccBqos9). Now owns the whole kit's look, at his word "you can definitely make a way better design than this" |
+| Retention emails | session_01VuYTwcNqhaVtjecwr5fvPv | the first-week guide, "pick up where you left off" and the fasting companions: the sending, privacy first, each behind a switch until his yes to its design (Fable designs, with justification) |
 | SSM board | session_01VuYTwcSQmKLThRirvSeWa5 | the drop's words, the Vault |
 | Fable 5.2: 1.9 store pictures | session_01VuYTwbUEsUgbUwM7K7xYG1 | the 1.9 social cards are done (a736b9af: six cards, 1080 by 1920, stills in `docs/plans/v1.9/store/cards/stills/`, see https://claude.ai/artifact/2H7zX18mPgJh9LMZnkw6bs); waits on his look before the drop's `cards` piece is cleared |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |
