@@ -1,0 +1,23 @@
+# Baton: Updates 16 (the main web's canonical; the World English Bible), 2026-11-13
+
+Rotated near 200,000 tokens (OPERATIONS 2.2), after both jobs from Updates 12's baton were done and reported, and before the arbiter's next message. Read this, `docs/NOW.md` and `docs/roles/fixer.md`.
+
+## Done
+
+1. **The canonical fix on the main web, alone.** His word checked first in the arbiter's own transcript: the arbiter's 09:25 UTC message listed "Google fix: put it on the main web as soon as it's checked. Rec."; he typed "all recs" from his phone at 14:28:10 UTC. A worktree of `origin/main` (`a63d37c7a`) with its own `npm ci`; `ff5eeda7c` cherry-picked alone as `c7cdc638c` (its message quotes his word); there its test passed 7 of 7 and failed 4 of 7 with main's old two files; `npm run build` exit 0 (4263 pages). `PURIFY_ALLOW_MAIN=1 git push origin HEAD:main`: `a63d37c7a..c7cdc638c`, live 14:56:51 UTC. curl: the Paschal Homily, /saints and /bible/john/1 each give their own address as canonical and og:url. The way back is `a63d37c7a`. Main has no `.githooks`, so no guard ran there.
+   - **Not read: the Supabase Preview check on `c7cdc638c`.** This session's GitHub MCP tools fetch a check run only by its id (`get_check_run`) and list none, and here gh is for search only. The commit touches no migration. MERGE-DAY 6.3 says a cloud chat reads the check with "the GitHub MCP check-run tools": that does not work without the id, so merge day needs the id from GitHub (the owner) or a chat where gh may call the API.
+2. **Build 95 note 25, the World English Bible, British Edition** (`0cac133df`, pushed onto `0faf31905`). Updates 8's patch applied whole; eng-webbe zip sha256 matched; 78 books, 5.08 MB; Compare 92.7% (33,178 of 35,793); every chapter counted against the source's own `\v` (37,021 verses in both, the 29 empty numbers left out). New test: `page.test.ts`, its chapters open. "Six more Bibles" became seven in entries.json, patches.json, the 1.9 note drafts (`docs/plans/v1.9/patch-note-1.9.json`, `patch-long-1.9.json`, equal to the notes), the release email (under its 260 words: the three Protestant Bibles named by language) and the tour's stop (21 languages). The drop's `bibles` point (the SSM board's file) changed with the email, which it carries: name, text, short and its link to the note; `drop.md` written again by `drop.mjs kit`. BIBLES.md has his answer and why it downloads; MERGE-DAY 6.11 checks it is served after the merge.
+   - Checks: 8 new tests fail on the old code; the whole suite 14,513 passed; typecheck 0 (after `npx next typegen`: a fresh clone has no `next-env.d.ts`, and `cards.generated.ts` imports .webp); eslint clean on 13 files; the web build exit 0; the export (`scripts/gate/export.mjs --platform android`) exit 0. The walk (its script was in this chat's scratchpad: open John 1, tap the translation control, checkMock the sheet, tap the World English Bible's row, its files answered from `public/bibles/en-web` as the main web will after the merge): the sheet 0 fails at 390, 800 and 1032, English and Arabic, five palettes and fifteen looks; the download finishes and the app opens John 1 in it by itself; verse 1 runs left to right in Arabic.
+
+## Open
+
+- **Found on the walk, not mine:** `components/bible/ChapterDiscussions.tsx` line 63, the line with a reader's handle and its age ("bogomilrusanov42 · 28d"), `text-paper/55` on the card's `bg-black/15`: 4.24:1 on Light, needs 4.5:1, at every width, both languages. It shows only with the main web's community posts, so the gate's walks without the main web never drew it. The least visible mend is likely one step up in that one token; the arbiter routes it.
+- **Not done here:** the live 1.9 note in the admin queue. `patch-notes.mjs propose` needs the service role, which no chat holds; the owner runs it from `docs/plans/v1.9/patch-note-1.9.json` (OWNER-STEPS, step at line 1387), which now says seven.
+- **The drop's other pieces** still say six (its line, store texts, Discord, the board in `data/changelog/board.json`): the SSM board's, told through the arbiter.
+- From Updates 12's baton, still waiting on his answers: note 23 (two calls), note 15 (the design pages).
+
+## Gotchas
+
+- `scripts/gate/export.mjs` and a native build stash `public/bibles/` and the other web-only trees while they run: a file there reads as missing until it ends.
+- A script outside the repository cannot `import "playwright"`: import `/home/user/purifyapp/node_modules/playwright/index.mjs`.
+- The arbiter's transcript is readable with `list_events` (kinds user or assistant, limit 100: the page lands in a file to grep); that is how his word was checked.
