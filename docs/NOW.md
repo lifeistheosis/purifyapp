@@ -15,7 +15,7 @@ Updated 2026-11-13 01:24 UTC.
 
 ## Waiting on him
 
-- **Yes or no, each with its reasons on the page:** the kit's look is his yes (2026-11-13, "yes look"); the three retention emails (round 1 a no: "could use a better design"; round 2 coming, https://claude.ai/artifact/XmM1TmiigBipdaPS8de1sg), with their new words. A fresh Fable chat takes any change from the baton.
+- **Yes or no, each with its reasons on the page:** the kit's look is his yes (2026-11-13, "yes look"); the three retention emails, round 2 (e80b0004c; https://claude.ai/artifact/XmM1TmiigBipdaPS8de1sg, version 2), with their new words; round 1 was a no ("could use a better design"). If yes, Fable recommends carrying round 2's faces, button and foot into the approved reader email and brief (his word). A fresh Fable chat takes any change from the baton.
 - A look at the 1.9 social cards (https://claude.ai/artifact/2H7zX18mPgJh9LMZnkw6bs); his yes clears the drop's `cards` piece (`node scripts/drop.mjs waits cards --clear`).
 - The public key for the re-check: given (2026-11-13 03:32 UTC, "yes read the key").
 - On the owner's desk plan: question 3 (a shop and sourcing chat after 1.9). Questions 1 (the sends, with a Hold) and 2 (the brief) are his yes (2026-11-13).
@@ -43,7 +43,7 @@ Updated 2026-11-13 01:24 UTC.
 | Arbiter | session_01VuYTwdsjYL2mmq2C2JSt2A | his words, NOW.md, routing |
 | Admin 2 | session_01VuYTweFNHsJxnX7YJmTvEN | the gate: first the lifted-saints ruling into the tap walk, then the targeted re-check on the arbiter's word (baton `docs/handoffs/admin.md`); the admin panel when the owner's desk resumes |
 | Admin panel 3 | session_01VuYTwdp6mhe99XWbxc6bLH | the owner's desk built and pushed (5b3a0a41, 50f8b2c2): the brief at 7:30 New York (Monday weekly), the sends ON at 12 noon New York only after that day's brief named them with a Hold 2 hours before, the board message a draft only. Now: the weekly.ts names (20 and 21 November), the first-send guard at the look's seam, the three bare-hash alerts; the new look is his yes, going into the brief and the reader emails |
-| Fable 5.2: retention emails, round 2 | session_01VuYTwavDnAtuKdXD2L7rti | his "retention emails could use a better design": round 2 of the three, one version, reasons on the page (https://claude.ai/artifact/XmM1TmiigBipdaPS8de1sg) |
+| Fable 5.2: retention emails, round 2 | session_01VuYTwavDnAtuKdXD2L7rti | round 2 done (e80b0004c), waiting on his yes or no; then the design system brought into line with the approved look |
 | Retention emails | session_01VuYTwcNqhaVtjecwr5fvPv | the first-week guide, "pick up where you left off" and the fasting companions: the sending, privacy first, each behind a switch until his yes to its design (Fable designs, with justification) |
 | SSM board | session_01VuYTwcSQmKLThRirvSeWa5 | the drop's words, the Vault |
 | Fable 5.2: 1.9 store pictures | session_01VuYTwbUEsUgbUwM7K7xYG1 | the 1.9 social cards are done (a736b9af: six cards, 1080 by 1920, stills in `docs/plans/v1.9/store/cards/stills/`, see https://claude.ai/artifact/2H7zX18mPgJh9LMZnkw6bs); waits on his look before the drop's `cards` piece is cleared |
