@@ -358,6 +358,14 @@ His word, 2026-11-13 about 15:32 UTC: "a full desktop revamp. the desktop is rea
 
 The app at a computer's width (the website at purifyapp.net, and a tablet turned wide). Asked during 1.9's making, so by his rule of 2026-11-11 it goes in 1.9 and the drop day moves. The arbiter's recommendation, put to him at once: fold it into the fifteen screens' program, so each screen is designed for the phone and the computer together, with a first round for the computer's frame (navigation, widths, the wide grid), and the screens outside the fifteen swept after; Fable designs, as for the fifteen; his yes a screen at a time.
 
+## Note 29 (asked): St John Chrysostom's Against the Jews on his profile
+
+His word, 2026-11-13 about 19:15 UTC: "can you add st john of chyrsostoms against the Jews to his profile".
+
+What is true (Arbiter 3, 19:17 UTC): the profile's twenty works are all Schaff's NPNF, public domain. The eight sermons Adversus Judaeos (Antioch, 386 and 387, to Christians keeping the Jewish feasts and fasts) were never in NPNF. Their English is Harkins's *Discourses Against Judaizing Christians* (The Fathers of the Church 68, Catholic University of America Press, 1979), in copyright, or an anonymous translation online (tertullian.org, from Fordham's Medieval Sourcebook; translator and rights unknown, part of the second sermon missing). So the full text cannot ship: `docs/editorial-standards.md` allows verbatim public-domain translations only, and an AI translation of a Father is never presented as his words.
+
+Recommended to him, with the risk named (the sermons' words about the Jewish people are harsh and were later used to justify hatred of Jews; the stores' hate-speech rules): list the book in the profile's print books (`data/saints/john-chrysostom/licensed-works.json`) under Harkins's title, also known as Against the Jews, with one plain line of context that he approves word for word, and the publisher's link instead of the Amazon affiliate link (a small change: `amazonAsin` is required by `lib/saints/licensedWorks.ts` and `components/saints/LicensedWorksSection.tsx` always builds the Amazon address). Done is: the book on the profile in every language the section carries, the line as he approved it, no affiliate link on it, the fix checklist. Waiting on his answer.
+
 ## Routed to Updates 9 after note 20 (the arbiter, 2026-11-13)
 
 Six faults the gate's walks and the other chats found (a seventh, the front page's citation, was found measuring the sixth), each mended with the least change that passed, each with a test that fails on the old code. Each was measured as it was and tried in place before it was written, on the export cut for note 20 (`f35ed66f`, with the store's switches): checkMock `{ pixels: true }` on the five palettes and the fifteen looks, and where they mattered the two palettes earned by reading, at 390, 800 and 1032, in English and Arabic.

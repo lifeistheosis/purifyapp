@@ -41,7 +41,8 @@ Every chat rotates at 200,000 tokens (OPERATIONS section 2).
 2. **The voices' page was taken as a yes** in "all recs" (18:53 UTC): https://claude.ai/artifact/LTjMHqyrEvL3eyLJgX7qTL. Said to him in Arbiter 3's first message, so he can say otherwise.
 3. **The documentary's second pass** (not 1.9; the Fable chat finished; archived by Arbiter 3 about 19:03 UTC, about $10): https://claude.ai/artifact/4ZBf45qLCDQGojHHG57i9a. 20 seconds, square, silent, one version: a new face for every figure (Archivo Narrow, lining and tabular), no cut at 10 seconds, scene two the gap (the points of the rolls gathering to 675,765, then falling away to the 183,020 who attend). Named on the page: the census prints both counts but not the 27% they make, so that one figure is Purify's own division. On his yes, the full film in a fresh Fable chat from docs/handoffs/fable-film.md (about 1.2 to 1.4 hours of machine time, no money). The 1.9 film's five second sample comes from its own chat.
 4. **The company:** C0 (the D-U-N-S record's address), C0b (the papers), the company's exact name as the EIN letter has it; for the Company guide, how many owners and how it is taxed; Florida sales tax for EIKON (C3b); the EIKON trade name before Stripe shows it. Steps in OWNER-STEPS.md.
-5. **Also:** the 22 permission letters; the Android notifications test; the owner's desk question 3 (a shop and sourcing chat after 1.9).
+5. **Note 29, Chrysostom's Against the Jews** (asked 19:15 UTC): the full text cannot ship (no public-domain English). Recommended: list Harkins's book on his profile with one context line he approves word for word, and the publisher's link, not the affiliate link. His answer awaited; then a small job for Updates 23.
+6. **Also:** the 22 permission letters; the Android notifications test; the owner's desk question 3 (a shop and sourcing chat after 1.9).
 
 ## Parked for his yes
 
