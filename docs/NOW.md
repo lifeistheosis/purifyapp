@@ -56,6 +56,7 @@ Updated 2026-11-13 01:24 UTC.
 | Updates 5 | session_01VuYTwdNzf5zBa9w5N5uqjW | build 95 note 11 (a reader's report): the ambient sounds fail to start; cause and mend on Android, iPhone and the web |
 | Updates 6 | session_01VuYTwZbHxrarLxPRuQyg2j | build 95 notes 12 and 13: the badges move when one is chosen, a grey pill with no readable words, and the profile sheet even smoother (tab switches, height, drag); any change to its look comes to him as stills first; one report for both |
 | Updates 7 | session_01VuYTwbUVjiBA3QbQrr6PYZ | build 95 note 14: on every return to the app the screen moves, then settles (his example: another app's keyboard up); every cause found, nothing moving after the first frame on Android and iPhone, a test that fails on the old code |
+| Updates 8 | session_01VuYTwd6C7vuf2b6mXAQ8Xm | build 95 note 15 (asked): a Share row in both of every work's sheets, a clean purifyapp.net link with a proper preview; stills with reasons for his yes, held locally until then |
 | Gate 2.0 | session_01VuYTwcBsPfuad62m3fX53p | new checks that would have caught notes 5 and 7 (motion on, floating layers meeting, the page edge, transitions frame by frame); proved on the old code; a run over the 128 screens; findings only |
 | Fable 5.2: fresh eyes | session_01VuYTwbsb3zRWGHWuECdRip | every screen judged against the approved look, ranked, with stills, for his decision; no changes |
 | SSM board | session_01VuYTwcSQmKLThRirvSeWa5 | the drop's words, the Vault |
