@@ -1075,3 +1075,5 @@ Claude's proposal, for his word:
 
 **Voices and the Bible downloads (his word, 2026-11-13, about 08:05 UTC, with a screenshot of the Translation sheet, the Russian Synodal saying "Could not download. Check your connection and try again."):** "and also I noticed I don't see the different voices selection and also it doesn't let me download the different Bible versions". Build 95 note 21.
 
+**Everything in 1.9 (his word, 2026-11-13, about 08:13 UTC),** answering the arbiter's recommendation to fix the faults among fresh eyes' fifteen screens in 1.9 and plan the whole-screen redesigns for 2.0: "I want everything fixed in v1.9 no pushing out to 2". So all fifteen screens of https://claude.ai/artifact/7brw1qS4JPzb61tAHqQk8p, and the four patterns across the app, are fixed in 1.9, and the drop day moves for them. The arbiter asked at once whether "everything" also takes in the choice of voices (parked for 2.0 by his "rec voices" of 2026-11-11) and the World English Bible, and whether Fable designs the screens (a Fable run is checked with him first).
+
