@@ -20,6 +20,14 @@
 // reader with no Plus meets it (../make.mjs says how the export is cut). So
 // the card for Purify Plus shows Plus as that reader sees it: by its mark.
 // No interface is drawn. The stills are 1080 by 1920, 24-bit, no alpha.
+//
+// Two words of his for all design, 2026-11-13, by the arbiter: "the design
+// must be optimized for mobile." and "and also stop using parchment for
+// designs. (important because you always do this)". So: the ground is the
+// night and the ink is white, never parchment, cream or sepia; the type is
+// set for a phone's feed, where a card is a third of its size (TYPE, below);
+// and every word stands inside the middle four-fifths of the card, which is
+// all a feed shows of a tall picture (SAFE, below).
 
 import fs from "node:fs";
 import path from "node:path";
@@ -111,7 +119,7 @@ const CARDS = [
     id: "cover",
     stand: "front",
     words: "head",
-    w: 690,
+    w: 740,
     title: HERE_IT_IS,
     text: DROP.line,
     from: "the caption's first sentence, and the drop's line",
@@ -134,7 +142,7 @@ const CARDS = [
     id: "journal",
     stand: "side",
     words: "head",
-    w: 640,
+    w: 680,
     point: "journal",
     route: "/journal",
     state: "The journal as a new reader opens it: the day's page, its saint, its fast and its readings, each with a pen.",
@@ -148,7 +156,7 @@ const CARDS = [
     id: "verse",
     stand: "front",
     words: "head",
-    w: 640,
+    w: 660,
     point: "verse",
     route: "/bible/john/1",
     state: "John 1 with a finger held on verse 1: its own tools, open.",
@@ -160,7 +168,7 @@ const CARDS = [
     id: "bibles",
     stand: "side",
     words: "foot",
-    w: 700,
+    w: 740,
     point: "bibles",
     route: "/bible/john/1",
     state: "John 1 with the translations list open (the KJV button under the chapter), drawn up to the Bibles to download.",
@@ -187,7 +195,7 @@ const CARDS = [
     id: "study",
     stand: "front",
     words: "foot",
-    w: 760,
+    w: 800,
     point: "study",
     route: "/bible/john/1",
     state: "John 1:1 held, then Study: the verse's study sheet as a reader with no Plus meets it, each Plus part under its mark.",
@@ -239,8 +247,11 @@ const accent = (pct) => `color-mix(in srgb, var(--color-gold) ${pct}%, transpare
 const plane = (pct) => `color-mix(in srgb, var(--color-paper) ${pct}%, var(--color-night))`;
 const EDGE = 2;
 const ROUND = 0.07; // the phone's corners, as the store pictures'
-// Kept clear of words at the head and the foot of a card, where Instagram and TikTok lay their own buttons over a story or a reel.
-const SAFE = { head: 240, foot: 340 };
+// Kept clear of words at the head and the foot of a card. A feed shows a tall picture cut to 4:5 about its middle
+// (285 px gone from each end of 1920), and a story or a reel lays the app's own buttons over its head and foot.
+const SAFE = { head: 310, foot: 340 };
+// Type for a phone, where 1080 px of card is about 390 px of screen: the second line stands at 16 px there, the first at 30.
+const TYPE = { mark: 38, title: 84, text: 44 };
 const GAP = 70; // between the words and the screen
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
@@ -312,10 +323,10 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
   [data-back] { position: absolute; inset: 0; pointer-events: none; }
   :root[dir="rtl"] [data-back] svg { transform: scaleX(-1); }
   [data-words] { position: absolute; inset-inline: 0; box-sizing: border-box; padding: 0 ${r(W * 0.085)}px; display: flex; flex-direction: column; align-items: center; text-align: center; }
-  [data-mark] { display: flex; align-items: center; gap: 16px; margin: 0; font-family: var(--font-sans); font-weight: 700; font-size: 34px; line-height: 1; letter-spacing: -0.01em; color: var(--color-paper); }
-  [data-cross] { display: block; height: 58px; width: 33px; background-color: var(--color-paper); -webkit-mask: url(/purify-cross-mark.png) center / contain no-repeat; mask: url(/purify-cross-mark.png) center / contain no-repeat; }
-  [data-title] { margin: 34px 0 0; text-wrap: balance; font-family: var(--font-heading); font-weight: 600; font-size: 80px; line-height: 1.12; letter-spacing: -0.01em; color: var(--color-paper); }
-  [data-text] { margin: 30px 0 0; max-width: 880px; text-wrap: pretty; font-family: var(--font-sans); font-size: 37px; line-height: 1.38; color: ${ink(84)}; }
+  [data-mark] { display: flex; align-items: center; gap: 16px; margin: 0; font-family: var(--font-sans); font-weight: 700; font-size: ${TYPE.mark}px; line-height: 1; letter-spacing: -0.01em; color: var(--color-paper); }
+  [data-cross] { display: block; height: 64px; width: 36px; background-color: var(--color-paper); -webkit-mask: url(/purify-cross-mark.png) center / contain no-repeat; mask: url(/purify-cross-mark.png) center / contain no-repeat; }
+  [data-title] { margin: 34px 0 0; text-wrap: balance; font-family: var(--font-heading); font-weight: 600; font-size: ${TYPE.title}px; line-height: 1.12; letter-spacing: -0.01em; color: var(--color-paper); }
+  [data-text] { margin: 30px 0 0; max-width: 910px; text-wrap: pretty; font-family: var(--font-sans); font-size: ${TYPE.text}px; line-height: 1.36; color: ${ink(84)}; }
   ${css}
 </style>
 </head>`;
@@ -385,10 +396,10 @@ function wordsCard(card) {
   [data-back] svg { position: absolute; top: ${from}px; inset-inline: 0; width: 100%; height: ${H - from}px; }
   ${back.css}
   [data-words] { top: 430px; }
-  [data-mark] { font-size: 44px; gap: 20px; }
+  [data-mark] { font-size: 46px; gap: 20px; }
   [data-cross] { height: 84px; width: 48px; }
-  [data-title] { margin-top: 70px; font-size: 84px; }
-  [data-text] { margin-top: 50px; font-size: 40px; max-width: 800px; }
+  [data-title] { margin-top: 70px; font-size: 88px; }
+  [data-text] { margin-top: 50px; font-size: 46px; max-width: 820px; }
 `)}
 <body>
 <main data-card>
@@ -583,7 +594,8 @@ fs.writeFileSync(
     `- **The stills** are in \`stills/\`: ${W} by ${H}, 24-bit PNG, no alpha, for Instagram and TikTok. The small copies the admin panel's Drop tab shows are in \`docs/plans/v${DROP.release}/cards/\`, written by \`node scripts/drop.mjs cards docs/plans/v${DROP.release}/store/cards/stills\`.`,
     `- **The words** are all read from \`docs/plans/v${DROP.release}/drop.json\` when a card is made; none is written in \`cards.mjs\`. The headline points are the four the caption for the cards names.`,
     `- **The screens** are the ${DROP.release} app itself, from the native export at \`${exportCommit}\`, cut as the store build with Plus locked, as a new reader meets it on 6 December 2026. No interface is drawn. The card for Purify Plus shows the study sheet as a reader with no Plus sees it: each Plus part under its mark.`,
-    "- **Held to:** checkMock on every card, after its self-test (contrast on five palettes, palette tokens, rays, side stripes, sparkle, em dashes, mirroring and the rest); no picture on the heritage list in view; no word the drop may never say, on a card or on a screen; the words clear of the screen and of the head and foot of a story, where an app's own buttons lie.",
+    "- **Held to:** checkMock on every card, after its self-test (contrast on five palettes, palette tokens, rays, side stripes, sparkle, em dashes, mirroring and the rest); no picture on the heritage list in view; no word the drop may never say, on a card or on a screen; the words clear of the screen, and inside the middle four-fifths of the card, which is what a feed shows of a tall picture and what a story's own buttons leave clear.",
+    `- **Two words of his for all design**, 2026-11-13, by the arbiter: "the design must be optimized for mobile." and "and also stop using parchment for designs. (important because you always do this)". The ground is the night and the ink white, with no parchment, cream or sepia. The type is set for a phone, where a card is about a third of its size: the title ${TYPE.title} px and the line under it ${TYPE.text} px, which stand at about 30 and 16 there.`,
     "",
     "| File | Words on the card | Where the words are from | Stands | Screen | checkMock |",
     "|---|---|---|---|---|---|",
