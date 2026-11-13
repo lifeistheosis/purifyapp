@@ -47,10 +47,10 @@ Updated 2026-11-13 01:24 UTC.
 | Arbiter | session_01VuYTwdsjYL2mmq2C2JSt2A | his words, NOW.md, routing |
 | Admin | session_01VuYTwbteJqs1UmDUwqRvzC | the final check, the admin panel, the drop's tooling |
 | Updates | session_01VuYTwcNqTWyT6Yab696Eri | fixer |
-| Updates 2 | session_01VuYTwdk3C8grkpfDPo8LHF | fixer |
+| Updates 3 | session_01VuYTwcy3Fbt9LcW3Qic77o | fixer: fails 4 (WordPopover's Close in Arabic) and 5 (the webs' place and date cut), from `docs/handoffs/updates-2.md` |
 | SSM board | session_01VuYTwcSQmKLThRirvSeWa5 | the drop's words, the Vault |
 | Fable 5.2: 1.9 store pictures | session_01VuYTwbUEsUgbUwM7K7xYG1 | design and adverts, by his word |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |
 | Saints: St. Xenia's profile | session_01VuYTwe6Fs6RKfBi7z1GMcb | his word of 2026-11-13: her full life, sourced, for the ad's "Read her life in Purify"; held locally, to land with the final check's fixes |
 
-Admin and Updates were past 700,000 tokens at the last look, so both rotate first after 1.9. Archived on 2026-11-13, their jobs done: Tooling, Admin panel 2 (baton `docs/handoffs/admin-panel.md`) and Product images. His PC's clone was left on `main` with one unpushed commit (2026-11-11): nothing is pushed from it.
+Admin and Updates were past 700,000 tokens at the last look, so both rotate first after 1.9. Archived on 2026-11-13, their jobs done: Updates 2 (pushed e0319e71c, d70a01deb, cb114387b and e88068504; baton `docs/handoffs/updates-2.md`), Tooling, Admin panel 2 (baton `docs/handoffs/admin-panel.md`) and Product images. His PC's clone was left on `main` with one unpushed commit (2026-11-11): nothing is pushed from it.
