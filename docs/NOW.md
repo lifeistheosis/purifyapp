@@ -55,7 +55,7 @@ Updated 2026-11-13 01:24 UTC.
 | Arbiter | session_01VuYTwdsjYL2mmq2C2JSt2A | his words, NOW.md, routing |
 | Admin 2 | session_01VuYTweFNHsJxnX7YJmTvEN | the gate: first the lifted-saints ruling into the tap walk, then the targeted re-check on the arbiter's word (baton `docs/handoffs/admin.md`); the admin panel when the owner's desk resumes |
 | Updates 3 | session_01VuYTwcy3Fbt9LcW3Qic77o | fails 4 and 5 and the billing link done and pushed; stays open as the owner of anything the re-check finds in its files |
-| Admin panel 3 | session_01VuYTwdp6mhe99XWbxc6bLH | the owner's desk, sections 2 and 3 (the sends on, with a Hold, by his word; the owner's brief at 7:30 his time, Monday's weekly); web only |
+| Admin panel 3 | session_01VuYTwdp6mhe99XWbxc6bLH | the owner's desk built and pushed (5b3a0a41, 50f8b2c2): the brief at 7:30 New York (Monday weekly), the sends ON at 12 noon New York only after that day's brief named them with a Hold 2 hours before, the board message a draft only. Now: the weekly.ts names (20 and 21 November), the first-send guard at the look's seam, the three bare-hash alerts; the new look waits on his yes |
 | Fable 5.2: retention emails, round 2 | session_01VuYTwavDnAtuKdXD2L7rti | his "retention emails could use a better design": round 2 of the three, one version, reasons on the page (https://claude.ai/artifact/XmM1TmiigBipdaPS8de1sg) |
 | Retention emails | session_01VuYTwcNqhaVtjecwr5fvPv | the first-week guide, "pick up where you left off" and the fasting companions: the sending, privacy first, each behind a switch until his yes to its design (Fable designs, with justification) |
 | SSM board | session_01VuYTwcSQmKLThRirvSeWa5 | the drop's words, the Vault |
