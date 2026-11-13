@@ -14,6 +14,8 @@ class PurifyBridgeViewController: CAPBridgeViewController {
     override open func capacitorDidLoad() {
         // Home screen widgets: docs/WIDGETS.md, section 2.
         bridge?.registerPluginInstance(WidgetBridgePlugin())
+        // The phone's own voices for the player (1.9, build 95 note 25).
+        bridge?.registerPluginInstance(PurifySpeechPlugin())
         // No scroll indicator at the screen's edge (the owner, 2026-10-30):
         // the app shows where a reader is with its own marks. The page's own
         // bars are hidden in app/globals.css.

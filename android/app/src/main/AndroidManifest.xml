@@ -285,4 +285,14 @@
          FOREGROUND_SERVICE one. Play asks for the matching declaration in the
          Console (foreground service: media playback). -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+
+    <!-- The phone's own voices for the player (1.9, build 95 note 25):
+         from Android 11 an app sees the phone's speech engine only when it
+         names the engine's service here, or TextToSpeech finds none. This is
+         a visibility rule, not a permission, and asks nothing of the store. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
 </manifest>
