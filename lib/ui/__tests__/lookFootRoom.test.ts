@@ -112,3 +112,28 @@ describe("the room under a page on a look with a foot", () => {
     expect(wide).toMatch(/^@media \(min-width: 768px\) \{\s*html\[data-look\]:not\(\[data-look="nightsky"\]\) body::before,\s*html\[data-look\] body::after \{\s*display: none;/);
   });
 });
+
+describe("the walk that measures every screen's last words", () => {
+  // On 2026-11-13 the walk failed /saints/ on every look with a foot ("Cyrus, a physician of Alexandria, and John,"
+  // 207px inside it): a saint card's life is clamped to three lines, the browser still lays out every line of it,
+  // and the walk cut a line by the boxes around its words but not by the words' own box. The page ended 51px above
+  // its foot. The walk now starts at the words' own box, and proves its measure on pages of its own first.
+  const walk = readFileSync("scripts/last-words-walk.mjs", "utf8");
+  const shown = walk.slice(walk.indexOf("const shown = (el, top, bottom) => {"), walk.indexOf("const drawn = (el)"));
+
+  it("cuts a line by its own box first, then by every box around it", () => {
+    expect(shown).toContain("for (let p = el; p && p !== document.body; p = p.parentElement) {");
+    expect(shown).not.toContain("el.parentElement;");
+  });
+
+  it("proves its measure before every walk: a clamped life passes, words and a button in the foot fail", () => {
+    expect(walk).toMatch(/const proved = await selfTest\(browser\);\nif \(SELF_TEST \|\| !proved\) \{/);
+    const cases = walk.slice(walk.indexOf("const CASES = ["), walk.indexOf("async function selfTest"));
+    expect(cases).toMatch(/clamped to three lines[\s\S]*?-webkit-line-clamp:3;overflow:hidden[\s\S]*?false,/);
+    expect(cases).toMatch(/a paragraph whose last line rests in the foot[\s\S]*?true,/);
+    expect(cases).toMatch(/a button resting in the foot[\s\S]*?true,/);
+    // A phone lays a page with no viewport of its own out 980px wide, where the clamped life is five lines and
+    // the old measure passed it too.
+    expect(walk).toContain('<meta name="viewport" content="width=device-width, initial-scale=1">');
+  });
+});

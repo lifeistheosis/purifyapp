@@ -37,12 +37,15 @@ const PAPER_80 = "[html[data-reading-mode=parchment]_&]:text-paper/80";
 const LOOKS_AT = (n: number) => `[html[data-reading-mode=parchment][data-look]_&]:text-paper/${n}`;
 
 describe("words over pictures, mended", () => {
-  it("Prayers' chants door: its kicker inked at 80% on Candlelight, the line under its name at 80% on paper", () => {
+  it("Prayers' chants door: its kicker inked at 80% on Candlelight, the line under its name at 80% on paper, both at 70% elsewhere", () => {
     // The card's sheen lies under its words: "Sung prayer" read 4.10:1 on Candlelight and
     // "Hymns to listen to..." 4.40:1 on Light (the gate's faint lines, the arbiter's word of 18:40 UTC).
+    // In Arabic the words start beside the disc, under the sheen's bright corner: at 60 the kicker read 4.40:1 on
+    // Monastery at 390 and 4.36 at 800 and 1032, 4.26 to 4.32 on Councils and Cappadocian; at 65 the line read 4.35 on
+    // Candlelight (2026-11-13). At 70 every palette and look passed, the two earned by reading with them.
     const src = read("components/mobile/SoftTiles.tsx");
-    expect(src).toContain('className="font-sans text-caption font-semibold text-paper/60 [html[data-reading-mode=candlelight]_&]:text-paper/80"');
-    expect(src).toContain(`className="mt-1.5 font-sans text-caption text-paper/65 leading-[1.5] ${PAPER_80}"`);
+    expect(src).toContain('className="font-sans text-caption font-semibold text-paper/70 [html[data-reading-mode=candlelight]_&]:text-paper/80"');
+    expect(src).toContain(`className="mt-1.5 font-sans text-caption text-paper/70 leading-[1.5] ${PAPER_80}"`);
   });
 
   it("Plans: a tile's picture ends where its words begin, so they stand on the tile's ground", () => {
@@ -96,6 +99,28 @@ describe("words over pictures, mended", () => {
     const css = read("app/globals.css");
     const lift = (look: string) => Number(css.match(new RegExp(`:where\\(html\\[data-look="${look}"\\]\\) :is\\([^)]*\\.text-paper\\\\/55[^)]*\\) \\{\\n\\s*color: color-mix\\(in oklab, var\\(--color-paper\\) (\\d+)%`))?.[1]);
     for (const look of ["desert", "jordan", "blush", "rose", "lavender", "olive", "stone"]) expect(lift(look)).toBeGreaterThanOrEqual(75);
+  });
+
+  it("The Plus dock's small print at 65%, clear of the Join button's glow on every palette", () => {
+    // "Renews automatically until you cancel..." stands under the button's soft white glow: at 45 (each palette's faint
+    // floor) it read 4.23 to 4.37:1 by the pixels on Dark, True black, Candlelight and Monastery (build 95, the Discover
+    // walk; the arbiter's word of 2026-11-13). At 62 Candlelight still read 4.37; at 65 every palette and look passed.
+    const src = read("components/billing/KeptPaywall.tsx");
+    expect(src).toContain('<p className="mt-2 text-center font-sans text-[11.5px] leading-[1.45] text-paper/65">');
+  });
+
+  it("The Plus hero's line at 80% on paper, where a title of one line lifts it onto the scribe's foot (Arabic)", () => {
+    // "Plus pays for the servers and the work..." in Arabic read 3.77 to 4.04:1 on Light and the light looks at 390, 800
+    // and 1032; English, under a title of two lines, stands on the page and passed. At 75 it still read 4.20.
+    const src = read("components/billing/KeptPaywall.tsx");
+    expect(src).toContain(`className="paywall-in mt-2 max-w-[420px] font-sans text-[13.5px] leading-[1.45] text-paper/70 ${PAPER_80}"`);
+  });
+
+  it("The picture sheet's tabs: a tab not chosen at 80% on paper, where the preview's shadow falls across the row", () => {
+    // "Words" read 4.11:1 and "Size" 4.32 by the pixels on Light and the light looks (named by Updates 4 on 2026-11-13;
+    // checkMock reads the row's ground from its colours and passed it). At 80: 5.26 and 5.58.
+    const src = read("components/share/PictureSheet.tsx");
+    expect(src).toContain(`tab === item.id ? ON : "text-paper/60 ${PAPER_80}"`);
   });
 
   it("A chant's head: a halo of the page's own colour under its words on paper, and its kind inked at 80% there", () => {

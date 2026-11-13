@@ -29,7 +29,15 @@
 // What it does not reach: a screen drawn only after a tap (a sheet, a
 // question of the welcome), and the website, which the apps' export is not.
 //
+// The measure proves itself on pages of its own before every walk, and alone
+// with --self-test (no export needed): a saint card's life clamped to three
+// lines, its hidden lines laid out down into the foot, passes (the measure
+// failed it until 2026-11-13, when it read clipping from the boxes around
+// the words and not from the words' own box); words and a button resting in
+// the foot fail.
+//
 //   npm run build:android, then: node scripts/last-words-walk.mjs [out dir] [--look mosaic,olive] [--only /path/,/path/]
+//   node scripts/last-words-walk.mjs --self-test
 
 import fs from "node:fs";
 import path from "node:path";
@@ -44,10 +52,12 @@ const take = (name) => {
   const at = argv.indexOf(name);
   return at >= 0 ? argv.splice(at, 2)[1] : null;
 };
+const SELF_TEST = argv.includes("--self-test");
+if (SELF_TEST) argv.splice(argv.indexOf("--self-test"), 1);
 const ONLY = take("--only")?.split(",") ?? null;
 const LOOKS = (take("--look") ?? "mosaic,olive").split(",");
 const OUT = path.resolve(argv[0] ?? "out");
-if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}: run npm run build:android first`);
+if (!SELF_TEST && !fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}: run npm run build:android first`);
 
 const H = 844;
 const SHEET = fs.readFileSync("app/globals.css", "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
@@ -57,6 +67,9 @@ function footBegins(look) {
   const clear = hasFoot ? parseFloat(new RegExp(`html\\[data-look="${look}"\\] \\{[^}]*--foot-clear:\\s*(\\d+)px`).exec(SHEET)?.[1] ?? "0") : 0;
   return clear ? H - clear : null;
 }
+
+/** How far inside the foot a bottom edge rests, in whole pixels; more than 1 is a fault. */
+const insideFoot = (bottom, begins) => Math.round(bottom - begins);
 
 /** A screen whose last words rest in the foot on purpose: its address, and why. None today. */
 const BY_DESIGN = [];
@@ -70,10 +83,17 @@ function lowest() {
     }
     return false;
   };
-  /** How far down a box is really shown: a scroller above it may cut it short. */
+  /** How far down a box is really shown: a box that hides what spills, itself
+      or an ancestor, cuts it short. The element the words are in is read too,
+      not only its ancestors: a three-line blurb (-webkit-line-clamp with
+      overflow hidden) holds the whole saint's life in the DOM and lays every
+      line out, but shows three; the rest is clipped by the blurb's own box,
+      and a reader never sees it. Starting at the ancestors alone measured a
+      saint card's clamped life down into the foot on /saints/ (805px on a
+      844 screen), words no reader reads. */
   const shown = (el, top, bottom) => {
     let [y0, y1] = [top, bottom];
-    for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+    for (let p = el; p && p !== document.body; p = p.parentElement) {
       const cs = getComputedStyle(p);
       if (cs.overflowX === "visible" && cs.overflowY === "visible") continue;
       const r = p.getBoundingClientRect();
@@ -118,11 +138,82 @@ function lowest() {
   };
 }
 
-const list = ONLY ?? screens(OUT);
-console.log(`${list.length} screens on a phone, each at its end, in ${LOOKS.join(" and ")}`);
+// ── The measure's own proof ─────────────────────────────────────────────
+// Pages of its own on the walk's phone, a 240px foot (the foot of twelve
+// looks), so the foot begins at 604. Each case says whether its last words
+// rest in the foot.
+const LIFE =
+  "Born in Syria in the third century, he became a physician and, with his brother, healed without payment, " +
+  "asking of the sick only that they believe in Christ. Under Diocletian both were seized, tried and beheaded, " +
+  "and the Church remembers them as unmercenaries, who took no silver for the gift they were given freely.";
+const CASES = [
+  [
+    "a saint card's life clamped to three lines, its hidden lines laid out down into the foot (/saints/, 2026-11-13)",
+    `<div style="height:480px"></div><p style="margin:0 16px;font:16px/22px serif;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden">${LIFE} ${LIFE}</p>`,
+    false,
+  ],
+  [
+    "a name cut to one line inside its own box",
+    `<div style="height:540px"></div><div style="width:160px;margin:0 16px;font:16px/22px serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Saints Cyrus and John, Unmercenaries of Alexandria</div>`,
+    false,
+  ],
+  [
+    "words in a box that scrolls, out of sight below its own foot",
+    `<div style="height:400px"></div><div style="height:120px;overflow-y:auto;margin:0 16px;font:16px/22px serif"><p style="margin:0">${LIFE} ${LIFE} ${LIFE}</p></div>`,
+    false,
+  ],
+  [
+    "a bar pinned over the foot",
+    `<div style="height:400px"></div><p style="margin:0 16px;font:16px/22px serif">Today</p><nav style="position:fixed;left:0;right:0;bottom:0;height:64px"><a href="#" style="display:block;padding:20px">Prayers</a></nav>`,
+    false,
+  ],
+  [
+    "a closed answer, which the browser does not draw",
+    `<div style="height:520px"></div><details style="margin:0 16px;font:16px/22px serif"><summary>Is it free?</summary><p>${LIFE} ${LIFE}</p></details>`,
+    false,
+  ],
+  [
+    "a paragraph whose last line rests in the foot",
+    `<div style="height:560px"></div><p style="margin:0 16px;font:16px/22px serif">${LIFE}</p>`,
+    true,
+  ],
+  [
+    "a button resting in the foot (the sign-in page's Continue with Google, 2026-11-10)",
+    `<div style="height:600px"></div><button style="display:block;margin:0 16px;height:48px;font:16px sans-serif">Continue with Google</button>`,
+    true,
+  ],
+];
+
+async function selfTest(browser) {
+  const begins = H - 240;
+  const ctx = await browser.newContext({ viewport: { width: 390, height: H }, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+  const page = await ctx.newPage();
+  let ok = true;
+  for (const [name, html, fault] of CASES) {
+    // The app's own viewport: without it a phone lays a page out 980px wide.
+    await page.setContent(`<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="margin:0">${html}</body></html>`);
+    const { low } = await page.evaluate(lowest);
+    const by = low ? insideFoot(low.bottom, begins) : -Infinity;
+    const failed = by > 1;
+    const right = failed === fault;
+    ok &&= right;
+    console.log(`  ${right ? "ok  " : "WRONG"} ${name}: ${low ? `${low.what} ends at ${Math.round(low.bottom)}, ${by > 0 ? `${by}px inside the foot` : `${-by}px above it`}` : "nothing read"}${right ? "" : fault ? " (should fail)" : " (should pass)"}`);
+  }
+  await ctx.close();
+  console.log(ok ? "self-test: the measure fails last words that rest in the foot, and passes words no reader sees there" : "self-test FAILED");
+  return ok;
+}
+
 // The cloud sessions carry their own Chromium (as openPhone in scripts/mock-check.mjs); elsewhere Playwright's.
 const OWN = "/opt/pw-browsers/chromium";
 const browser = await chromium.launch(fs.existsSync(OWN) ? { executablePath: OWN } : {});
+const proved = await selfTest(browser);
+if (SELF_TEST || !proved) {
+  await browser.close();
+  process.exit(proved ? 0 : 1);
+}
+const list = ONLY ?? screens(OUT);
+console.log(`${list.length} screens on a phone, each at its end, in ${LOOKS.join(" and ")}`);
 const failures = [];
 const allowed = [];
 let measured = 0;
@@ -174,7 +265,7 @@ for (const look of LOOKS) {
         continue;
       }
       if (!found.low) continue;
-      const by = Math.round(found.low.bottom - begins);
+      const by = insideFoot(found.low.bottom, begins);
       if (by > deepest.by) deepest = { by, at };
       if (by <= 1) continue;
       const named = BY_DESIGN.find(([address]) => address === at);

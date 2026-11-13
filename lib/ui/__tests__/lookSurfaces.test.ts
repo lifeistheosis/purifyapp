@@ -147,6 +147,8 @@ const NAMED: Named = {
   "app/(app)/discover/page.tsx: #26262b": LM_CARD,
   "app/(app)/discover/page.tsx: #1a1a1d": LM_CARD,
   "app/(app)/discover/page.tsx: #151518": LM_CARD,
+  "app/page.tsx: bg-black":
+    "the website's front page on a computer: one verse held on a band (lm-band), black on Dark's own palettes; Light sets it as a deeper paper and every look on its own second ground (app/globals.css)",
   "app/page.tsx: #26262b": LM_CARD,
   "app/page.tsx: #1a1a1d": LM_CARD,
   "app/page.tsx: #151518": LM_CARD,
@@ -182,7 +184,6 @@ const NAMED: Named = {
  * rest"). Taken off when mended.
  */
 const WAITING: Named = {
-  "app/page.tsx: bg-black": "the website's front page on a computer: one verse held on black (lm-band). Light and the light looks paint it as paper; on a dark look it stays black",
   "components/premium/PremiumUI.tsx: #1f1f22": "the Plus page's graphite cards (premiumCardBg, worn with dark-island): on a dark look they stay graphite, as the feast card did",
   "components/premium/PremiumUI.tsx: #18181b": "the Plus page's graphite cards (premiumCardBg, worn with dark-island): on a dark look they stay graphite, as the feast card did",
   "components/premium/PremiumUI.tsx: #131315": "the Plus page's graphite cards (premiumCardBg, worn with dark-island): on a dark look they stay graphite, as the feast card did",
@@ -269,6 +270,27 @@ describe("the stylesheet draws no surface in a fixed colour that a look cannot r
 
   it("keeps no name it no longer needs", () => {
     expect(Object.keys(RULES).filter((s) => !found.includes(s) || lookRule(s))).toEqual([]);
+  });
+});
+
+// ── The front page's verse band ────────────────────────────────────────────
+
+describe("the website's front-page verse band is the look's own on every look", () => {
+  // It was painted by the light looks alone (html[data-look][data-reading-mode=
+  // "parchment"] .lm-band): on a dark look it stayed bg-black, a black band
+  // across a forest or a mosaic (the arbiter, 2026-11-13).
+  it("one rule for every look, dark and light, on the look's second ground", () => {
+    const at = CSS.indexOf("\nhtml[data-look] .lm-band {");
+    expect(at, "html[data-look] .lm-band").toBeGreaterThan(-1);
+    expect(CSS.slice(at, CSS.indexOf("}", at))).toContain("background: var(--color-night-soft) !important;");
+  });
+
+  it("no rule narrows it back to the light looks", () => {
+    expect(CSS).not.toMatch(/html\[data-look\]\[data-reading-mode="parchment"\] \.lm-band/);
+  });
+
+  it("the band on the page still wears the class the looks reach", () => {
+    expect(uncomment(read("app/page.tsx"))).toMatch(/bg-black text-center lm-band/);
   });
 });
 

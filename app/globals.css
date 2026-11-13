@@ -12752,6 +12752,15 @@ html[data-look] :is(.lm-feature, .lm-avatar) {
 html[data-look] .lm-hero {
  background: transparent !important;
 }
+/* The website's front page holds one verse on a band (lm-band, bg-black in
+   app/page.tsx). Every look sets it on the look's second ground, a step from
+   the page: on a light look a deeper paper, as Light's own band is; on a
+   dark look the look's soft ground, where it stayed black, a black band
+   across a forest or a mosaic (the arbiter, 2026-11-13).
+   lib/ui/__tests__/lookSurfaces.test.ts holds it. */
+html[data-look] .lm-band {
+ background: var(--color-night-soft) !important;
+}
 
 /* A light look on Light's rules. Light's own surfaces are paper typed in as
    cream; under a look each is the look's own paper, mixed from its tokens,
@@ -12759,9 +12768,6 @@ html[data-look] .lm-hero {
 html[data-look][data-reading-mode="parchment"] {
  --look-paper-high: color-mix(in oklab, var(--color-night) 42%, #ffffff);
  --look-paper-low: var(--color-night-soft);
-}
-html[data-look][data-reading-mode="parchment"] .lm-band {
- background: var(--color-night-soft) !important;
 }
 html[data-look][data-reading-mode="parchment"] .set-panel {
  background:

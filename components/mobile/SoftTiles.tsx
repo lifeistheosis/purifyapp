@@ -298,15 +298,19 @@ export function FeatureBand({
           {/* Inked a step stronger where the card's sheen lies under the
               words: the kicker on Candlelight's dimmer ink, the line under the
               name on paper (Prayers' chants door read 4.10 and 4.40:1, the
-              gate's faint lines, 2026-11-11). */}
-          <p className="font-sans text-caption font-semibold text-paper/60 [html[data-reading-mode=candlelight]_&]:text-paper/80">
+              gate's faint lines, 2026-11-11). Both at 70 everywhere else: in
+              Arabic the words start beside the disc, under the sheen's bright
+              corner, and the kicker read 4.26 to 4.40:1 on Monastery,
+              Councils and Cappadocian, the line 4.35 on Candlelight
+              (2026-11-13). */}
+          <p className="font-sans text-caption font-semibold text-paper/70 [html[data-reading-mode=candlelight]_&]:text-paper/80">
             {eyebrow}
           </p>
           <h2 className="mt-1 font-serif text-title-sm leading-[1.15] text-paper">
             {title}
           </h2>
           {sub ? (
-            <p className="mt-1.5 font-sans text-caption text-paper/65 leading-[1.5] [html[data-reading-mode=parchment]_&]:text-paper/80">
+            <p className="mt-1.5 font-sans text-caption text-paper/70 leading-[1.5] [html[data-reading-mode=parchment]_&]:text-paper/80">
               {sub}
             </p>
           ) : null}

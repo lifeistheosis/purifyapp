@@ -278,7 +278,14 @@ export function PictureSheet({
             tabIndex={tab === item.id ? 0 : -1}
             onClick={() => setTab(item.id)}
             onKeyDown={(e) => onTabKey(e, at)}
-            className={cn("tap-press hit-44 h-9 flex-1 rounded-pill font-sans text-detail", tab === item.id ? ON : "text-paper/60")}
+            // On paper the preview's shadow falls across the row, so a tab not
+            // chosen is inked at 80 there: at the faint share "Words" read
+            // 4.11:1 and "Size" 4.32 on Light and the light looks, by the
+            // pixels (build 95, named by Updates 4).
+            className={cn(
+              "tap-press hit-44 h-9 flex-1 rounded-pill font-sans text-detail",
+              tab === item.id ? ON : "text-paper/60 [html[data-reading-mode=parchment]_&]:text-paper/80",
+            )}
           >
             {t(item.key)}
           </button>

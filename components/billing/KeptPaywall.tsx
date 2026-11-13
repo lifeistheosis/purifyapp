@@ -122,7 +122,15 @@ export function KeptHero({
         >
           {t("plus.kept.title")}
         </Heading>
-        <p className="paywall-in mt-2 max-w-[420px] font-sans text-[13.5px] leading-[1.45] text-paper/70" style={{ animationDelay: "200ms" }}>
+        {/* Where the title takes one line (Arabic), this line rises onto the
+            scribe's grey foot: on paper it read 3.77 to 4.04:1 there, on
+            Light and the light looks, at 390, 800 and 1032. On paper it is
+            inked at 80 (75 still read 4.20); the dark palettes passed and
+            keep 70. */}
+        <p
+          className="paywall-in mt-2 max-w-[420px] font-sans text-[13.5px] leading-[1.45] text-paper/70 [html[data-reading-mode=parchment]_&]:text-paper/80"
+          style={{ animationDelay: "200ms" }}
+        >
           {t("plus.footer")}
         </p>
       </div>
@@ -525,8 +533,15 @@ export function PlansDock({
           </button>
         )}
 
+        {/* The small print stands just under the button's soft white glow,
+            which lights the dock's ground under its first line: at 45 (each
+            palette's faint floor) "Renews automatically until you cancel"
+            read 4.23 to 4.37:1 there on Dark, True black, Candlelight and
+            Monastery (build 95, the Discover walk). At 65 it holds 4.5:1 on
+            every palette and look, by the pixels; at 62 Candlelight still
+            read 4.37. The words are the same. */}
         {terms || cancel ? (
-          <p className="mt-2 text-center font-sans text-[11.5px] leading-[1.45] text-paper/45">
+          <p className="mt-2 text-center font-sans text-[11.5px] leading-[1.45] text-paper/65">
             {[terms, renews, cancel].filter(Boolean).join(" ")}
           </p>
         ) : null}
