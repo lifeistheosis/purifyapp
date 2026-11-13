@@ -46,4 +46,6 @@ Also seen on Community, both readers, not this round's: the switch into it (a bl
 
 ## Round 2's record
 
-(not run yet)
+On the export of `06707208` (the cart's commit before its rebase; pushed as `cd590557`, the same files): typecheck 0; unit 14,678 pass (9 skipped); checkMock by colour on /shop/request/ at 1032, 800 and 390, English and Arabic, 22 palettes: 6 of 6 pass, the mirror rule included (the fault was at 800 and 1032 in Arabic). The cart tapped at 1032 (new reader, `--size 1032x800`): it opens in 152 to 166ms with no transition fault. The web build: green.
+
+**New, not made by this round:** at 1032 in the native shell, once the cart is open, the tab bar is drawn over the cart drawer: `aside "Cart"` meets `nav[data-tab-bar]` "Primary", 122 by 77px at 632,717 (the layers check at rest). The drawer's placement and the tab bar are unchanged by the mend, which moved only the floating button (the same side in English). Open, for the arbiter to route.
