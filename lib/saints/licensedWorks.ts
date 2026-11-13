@@ -11,7 +11,14 @@ export type LicensedWork = {
   year?: number;
   blurb: string;
   topics?: string[];
-  amazonAsin: string;
+  /**
+   * The book on Amazon, through the associate link. Optional (1.9, build 95
+   * note 29): a book listed only for study links to its publisher's own page
+   * (`directPublisherUrl`), never to a shop that pays us.
+   */
+  amazonAsin?: string;
+  /** Another title the book is known by, shown under its own ("Also known as ..."). */
+  alsoKnownAs?: string;
   /**
    * Our own picture of the book's cover: a path on this site ("/..."), never
    * another host, which a reader's device would call as the page opens (143;

@@ -980,6 +980,7 @@
   "saints.booksInPrint": "Livres imprimés",
   "saints.buyOnAmazon": "Acheter sur Amazon",
   "saints.buyDirectFrom": "Acheter directement chez",
+  "saints.alsoKnownAs": "Aussi connu sous le titre {title}",
   "saints.affiliateDisclosure": "Ces œuvres sont sous licence et protégées par le droit d'auteur de leurs éditeurs, elles ne peuvent pas être hébergées sur Purify.",
   "saints.affiliateEarnings": "En tant que Partenaire Amazon, Purify réalise un bénéfice sur les achats remplissant les conditions requises.",
   "saints.editorsNote": "Note de l'éditeur",

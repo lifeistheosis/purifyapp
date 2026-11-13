@@ -978,6 +978,7 @@
   "saints.booksInPrint": "Печатни издания",
   "saints.buyOnAmazon": "Купи от Amazon",
   "saints.buyDirectFrom": "Купи директно от",
+  "saints.alsoKnownAs": "Известно и като {title}",
   "saints.affiliateDisclosure": "Тези творения са лицензирани и защитени с авторско право от своите издатели и не могат да се публикуват в Purify.",
   "saints.affiliateEarnings": "Като участник в Amazon Associates, Purify получава приход от отговарящи на условията покупки.",
   "saints.editorsNote": "Бележка на редактора",

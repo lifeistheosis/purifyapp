@@ -23,6 +23,19 @@
       "blurb": "A practical patristic vision for husbands, wives, and children, the household as the little Church. Drawn from the homilies on Ephesians and Colossians.",
       "topics": ["marriage", "family", "homilies"],
       "amazonAsin": "0913836869"
+    },
+    {
+      "slug": "discourses-against-judaizing-christians",
+      "title": "Discourses Against Judaizing Christians",
+      "alsoKnownAs": "Against the Jews",
+      "subtitle": "The Fathers of the Church, volume 68, translated by Paul W. Harkins",
+      "author": "John Chrysostom",
+      "authorRole": "by",
+      "publisher": "The Catholic University of America Press",
+      "year": 1979,
+      "blurb": "Eight sermons preached in Antioch in 386 and 387 to Christians who were keeping the Jewish feasts and fasts. Their words about the Jewish people are harsh, and were later used to justify hatred of Jews. Listed here for study.",
+      "topics": ["homilies"],
+      "directPublisherUrl": "https://www.cuapress.org/9780813209715/discourses-against-judaizing-christians/"
     }
   ]
 }

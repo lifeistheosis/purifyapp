@@ -65,7 +65,17 @@ export function LicensedWorksSection({ works }: { works: LicensedWork[] }) {
             }
             // The book's title, its publisher and its blurb are English; the
             // role before the author is the reader's (build 90 note 4).
-            title={<span lang="en" dir="ltr">{w.title}</span>}
+            title={
+              <>
+                <span lang="en" dir="ltr">{w.title}</span>
+                {/* Another title it is known by, in its own English (1.9, note 29). */}
+                {w.alsoKnownAs ? (
+                  <span data-also-known-as="" className="mt-0.5 block font-sans text-detail font-normal text-paper/70">
+                    <T k="saints.alsoKnownAs" replacements={{ title: w.alsoKnownAs }} />
+                  </span>
+                ) : null}
+              </>
+            }
             meta={
               <>
                 <T k={w.authorRole ? ROLE_LABEL_KEY[w.authorRole] : "saints.workRoleBy"} replacements={{ author: w.author }} />
@@ -76,20 +86,29 @@ export function LicensedWorksSection({ works }: { works: LicensedWork[] }) {
             blurb={w.blurb ? <span lang="en" dir="ltr">{w.blurb}</span> : undefined}
             footer={
               <>
-                <a
-                  href={buildAmazonUrl(w.amazonAsin)}
-                  target="_blank"
-                  rel="noopener nofollow sponsored"
-                  className="hit-44 font-sans text-detail font-semibold text-paper underline decoration-paper/30 underline-offset-4 hover:decoration-paper"
-                >
-                  <T k="saints.buyOnAmazon" />
-                </a>
+                {/* Amazon only where the record names the book there; a book
+                    listed for study has its publisher's page alone (1.9,
+                    build 95 note 29). */}
+                {w.amazonAsin ? (
+                  <a
+                    href={buildAmazonUrl(w.amazonAsin)}
+                    target="_blank"
+                    rel="noopener nofollow sponsored"
+                    className="hit-44 font-sans text-detail font-semibold text-paper underline decoration-paper/30 underline-offset-4 hover:decoration-paper"
+                  >
+                    <T k="saints.buyOnAmazon" />
+                  </a>
+                ) : null}
                 {w.directPublisherUrl ? (
                   <a
                     href={w.directPublisherUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hit-44 font-sans text-detail text-paper/60 underline decoration-paper/20 underline-offset-4 hover:text-paper"
+                    className={
+                      w.amazonAsin
+                        ? "hit-44 font-sans text-detail text-paper/60 underline decoration-paper/20 underline-offset-4 hover:text-paper"
+                        : "hit-44 font-sans text-detail font-semibold text-paper underline decoration-paper/30 underline-offset-4 hover:decoration-paper"
+                    }
                   >
                     <T k="saints.buyDirectFrom" /> {w.publisher}
                   </a>

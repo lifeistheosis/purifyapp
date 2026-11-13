@@ -1001,6 +1001,7 @@
   "saints.booksInPrint": "Печатные книги",
   "saints.buyOnAmazon": "Купить на Amazon",
   "saints.buyDirectFrom": "Купить напрямую у",
+  "saints.alsoKnownAs": "Также известно как {title}",
   "saints.affiliateDisclosure": "Эти произведения лицензированы и защищены авторским правом их издателей, поэтому не могут размещаться в Purify.",
   "saints.affiliateEarnings": "Как участник партнёрской программы Amazon, Purify получает доход от соответствующих покупок.",
   "saints.editorsNote": "От редакции",

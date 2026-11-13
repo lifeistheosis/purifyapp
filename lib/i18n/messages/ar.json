@@ -1014,6 +1014,7 @@
   "saints.booksInPrint": "كتب مطبوعة",
   "saints.buyOnAmazon": "اشترِ من أمازون",
   "saints.buyDirectFrom": "اشترِ مباشرة من",
+  "saints.alsoKnownAs": "يُعرف أيضًا باسم {title}",
   "saints.affiliateDisclosure": "هذه الأعمال مرخَّصة وحقوقها محفوظة لناشريها، ولا يمكن استضافتها على Purify.",
   "saints.affiliateEarnings": "بصفتها شريكًا في برنامج أمازون، تحصل Purify على عائد من المشتريات المؤهلة.",
   "saints.editorsNote": "ملاحظة المحرِّر",
