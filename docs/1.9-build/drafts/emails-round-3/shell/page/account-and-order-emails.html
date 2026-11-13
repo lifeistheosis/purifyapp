@@ -1,0 +1,775 @@
+<title>Account and order emails</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* kit:begin. Written by `node docs/brand/kit/check.mjs --write` from tokens.css and pieces.css; edit those, not this. */
+/* The Purify design kit: tokens.
+ *
+ * Taken from the app, nothing invented. Every value names the line of the
+ * app's source it comes from (line numbers as of fe399ca23). When the app
+ * changes a value, change it here and run `node docs/brand/kit/check.mjs`.
+ *
+ * The five palettes are the app's own (scripts/mock-check.mjs PALETTES):
+ *   Dark         no attribute          app/globals.css 81-82, 90, 106-107, and the ink of :root
+ *   Light        data-theme="light" (and the app's parchment attribute): white, the app's ink, never parchment
+ *   Black        data-reading-mode="black"       app/globals.css 5147-5154
+ *   Candlelight  data-reading-mode="candlelight" app/globals.css 5029-5037, 5217
+ *   Monastery    data-reading-mode="monastery"   app/globals.css 5107-5112, 5220
+ *
+ * A design (an artifact, a report) opens on Dark, the app's own ground.
+ * data-theme="light" gives the clean neutral light; data-reading-mode wears
+ * the app's other palettes. Parchment is never a design ground (his word,
+ * 2026-11-13); its values are listed below for app mockups only.
+ *
+ * Names: the app calls the ground "night" and the ink "paper" because they
+ * flip on Light. The kit names them by their job (ground, ink) so nobody
+ * has to remember the flip.
+ */
+
+:root {
+  /* ── Dark (the app's default) ─────────────────────────────────────── */
+  --k-ground: #101013;      /* --color-night, globals.css 81 */
+  --k-card: #1d1d20;        /* --color-night-soft, globals.css 82 */
+  --k-well: #0b0b0e;        /* --color-night-deep, globals.css 90 */
+  --k-ink-base: #ffffff;    /* --color-paper, globals.css 71 (the ink on dark) */
+  --k-accent: #eaeaec;      /* --color-gold, globals.css 106: a glowing white, never gold (lib/ui/goldTone.ts) */
+  --k-accent-soft: #cfcfd3; /* --color-gold-soft, globals.css 107 */
+  /* The ink's shares, as the app writes them (text-paper/NN) and as each
+     palette lifts its faint share to pass 4.5:1 (globals.css 5539-5553). */
+  --k-ink-2-share: 75%;     /* text-paper/75, 186 uses in app/ and components/ */
+  --k-ink-3-share: 55%;     /* text-paper/55, the most used share (720 uses) */
+
+  /* ── Type (globals.css 161-191; app/layout.tsx 31-48) ─────────────── */
+  --k-font-sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;      /* --font-sans, 161 */
+  --k-font-serif: "Lora", Georgia, serif;                                             /* --font-serif and --font-heading, 165 and 175 */
+  --k-font-display: "DM Serif Display", Georgia, serif;                               /* --font-display-serif, 169 */
+  --k-text-eyebrow: 11px;   /* 180 */
+  --k-text-caption: 12px;   /* 181 */
+  --k-text-detail: 13px;    /* 182 */
+  --k-text-ui: 14px;        /* 183 */
+  --k-text-body: 17px;      /* 184 */
+  --k-text-lede: 19px;      /* 185 */
+  --k-text-title-sm: 22px;  /* 186 */
+  --k-text-title: 28px;     /* 187 */
+  --k-text-heading: 32px;   /* 188 */
+  --k-text-display: 48px;   /* 190 */
+  --k-eyebrow-tracking: 0.14em; /* the app's eyebrow: uppercase, bold, tracking-[0.14em] (components/, 4 uses) */
+
+  /* ── Shape and space (globals.css 193-198; Tailwind's 4px step) ──── */
+  --k-radius-sm: 8px;       /* 193 */
+  --k-radius-md: 12px;      /* 194 */
+  --k-radius-lg: 20px;      /* 195: a card, rounded-lg (26 uses with border-paper/10 bg-night-soft) */
+  --k-radius-card: 28px;    /* 196 */
+  --k-radius-pill: 999px;   /* 198: buttons only, never a list of places (CLAUDE.md, floating pills) */
+  --k-space-1: 4px;
+  --k-space-2: 8px;
+  --k-space-3: 12px;
+  --k-space-4: 16px;        /* the phone gutter */
+  --k-space-5: 24px;
+  --k-space-6: 32px;
+  --k-space-7: 48px;
+  --k-space-8: 64px;
+  --k-target: 44px;         /* every control, lib/ui/__tests__/touchTargets.test.ts */
+  --k-measure: 68ch;        /* a reading line */
+
+  /* ── Motion (globals.css 235-241) ─────────────────────────────────── */
+  --k-ease-house: cubic-bezier(0.22, 1, 0.36, 1); /* the house curve, 235 */
+  --k-duration-fast: 200ms; /* 239 */
+  --k-duration-base: 320ms; /* 240 */
+  --k-duration-slow: 480ms; /* 241 */
+  --k-rise: 8px;            /* --rise-card, 271 */
+  --k-press: 0.98;          /* --press-scale-card, 277 */
+
+  /* ── Fixed on every palette ───────────────────────────────────────── */
+  --k-crimson: #c1272d;     /* --color-crimson, 113: the Church's red (the strict fast, a removal, an error), one red everywhere */
+
+  /* ── Money: the one chart with hues (app/admin/admin-theme.css 226-228 dark, 824-826 light) ── */
+  --k-money-shop: #3987e5;
+  --k-money-plus: #008300;
+  --k-money-box: #d55181;
+
+  color-scheme: dark;
+}
+
+/* ── Light: a clean neutral, never parchment ─────────────────────────
+   His word, 2026-11-13: "stop using parchment for designs". A design's
+   light is white carrying the app's ink: the ground is --color-paper
+   (globals.css 71), the ink is --color-ink and --color-ink-soft (68-69, the
+   app's ink on its white surfaces), the card and well are the admin panel's
+   neutral grey (admin-theme.css 768, --adm-panel-2). A design opens on Dark
+   and is light only when asked (data-theme="light"). The app's Light palette
+   (data-reading-mode="parchment") draws this same neutral here, so no design
+   ever stands on parchment. */
+:root[data-theme="light"],
+:root[data-reading-mode="parchment"] {
+  --k-ground: #ffffff;      /* --color-paper, globals.css 71 */
+  --k-card: #f3f3f3;        /* --adm-panel-2, admin-theme.css 768 */
+  --k-well: #f3f3f3;
+  --k-ink-base: #49424e;    /* --color-ink, globals.css 68 */
+  --k-accent: #49424e;      /* the ink is the accent on white, as --color-on-paper (globals.css 140) */
+  --k-accent-soft: #6b6470; /* --color-ink-soft, globals.css 69 */
+  --k-ink-2-share: 90%;
+  --k-ink-3-share: 80%;     /* about --color-ink-soft: 5.0:1 on the card */
+  --k-money-shop: #2a78d6;  /* admin-theme.css 824 */
+  color-scheme: light;
+}
+
+/* ── Parchment: app only, never a design ground ───────────────────────
+   The app's Light palette (globals.css 5164-5180), listed so a mockup of
+   the app can name it. No piece reads these, and check.mjs fails a design
+   whose ground is parchment, cream or sepia. */
+:root {
+  --k-app-parchment-ground: #f1e8d4;  /* app only, never a design ground */
+  --k-app-parchment-card: #e7dcc1;    /* app only */
+  --k-app-parchment-ink: #2b2317;     /* app only */
+}
+
+/* ── Black (True black, globals.css 5147-5154; faint share 5500) ──── */
+:root[data-reading-mode="black"] {
+  --k-ground: #000000;
+  --k-card: #161616;
+  --k-well: #000000;
+  --k-ink-base: #ffffff;
+  --k-accent: #eaeaec;
+  --k-accent-soft: #cfcfd3;
+  --k-ink-2-share: 75%;
+  --k-ink-3-share: 55%;
+  color-scheme: dark;
+}
+
+/* ── Candlelight (globals.css 5029-5037, well 5217; faint share 5546) ── */
+:root[data-reading-mode="candlelight"] {
+  --k-ground: #050505;
+  --k-card: #18181b;
+  --k-well: #000000;
+  --k-ink-base: #d4d4d8;
+  --k-accent: #e4e4e7;
+  --k-accent-soft: #a1a1aa;
+  --k-ink-2-share: 80%;
+  --k-ink-3-share: 60%;
+  color-scheme: dark;
+}
+
+/* ── Monastery (globals.css 5107-5112, well 5220; faint share 5549) ── */
+:root[data-reading-mode="monastery"] {
+  --k-ground: #0d1119;
+  --k-card: #171e2b;
+  --k-well: #080b11;
+  --k-ink-base: #e6ebf4;
+  --k-accent: #aebedd;
+  --k-accent-soft: #8fa2c4;
+  --k-ink-2-share: 75%;
+  --k-ink-3-share: 55%;
+  color-scheme: dark;
+}
+
+/* Derived on every palette, the way the app derives them: the ink at a
+   share (text-paper/NN) and the hairlines in the ink (border-paper/10 for a
+   card, 249 uses; border-paper/20 for a control, 102 uses). */
+:root,
+:root[data-theme],
+:root[data-reading-mode] {
+  --k-ink: var(--k-ink-base);
+  --k-ink-2: color-mix(in oklab, var(--k-ink-base) var(--k-ink-2-share), transparent);
+  --k-ink-3: color-mix(in oklab, var(--k-ink-base) var(--k-ink-3-share), transparent);
+  --k-line: color-mix(in oklab, var(--k-ink-base) 10%, transparent);
+  --k-line-strong: color-mix(in oklab, var(--k-ink-base) 20%, transparent);
+  --k-grid: color-mix(in oklab, var(--k-ink-base) 8%, transparent);  /* --chart-grid, globals.css 150 */
+}
+
+/* ── Night sky: one of the app's looks, a night on every palette ──────
+   "A still night, small stars, the star above" (lib/reader/readingModes.ts
+   156-163; html[data-look="nightsky"], globals.css 12651-12669). The one
+   place a design is dark whatever the page wears, as the app's own Nativity
+   card is (components/today/NativityStarCard.tsx, `dark-island`). Read by
+   .k-night in pieces.css; the emails' Nativity Fast wears the same look. */
+:root {
+  --k-sky-top: #03050a;                 /* the sky's head, --room, globals.css 12669 */
+  --k-sky: #05070d;                     /* --color-night of the look, 12652 */
+  --k-sky-foot: #070b14;                /* the sky's foot, 12669 */
+  --k-sky-glow: rgb(72 100 168 / 0.2);  /* the light along the horizon, 12668 */
+  --k-sky-ink: #edf0f6;                 /* --color-paper of the look, 12655 */
+  --k-sky-quiet: 64%;                   /* --look-quiet, 12660: its faint share */
+}
+
+/* The Purify design kit: pieces for documents.
+ *
+ * One system with the emails (docs/brand/kit/email/). A page opens the way a
+ * chapter opens in the app: the mark, a small line, the title, a line under
+ * it, the short rule. One thing leads, and it stands on the app's Night sky;
+ * everything after it is quiet, set on the page itself with hairlines. A
+ * thing is raised only when it is a thing to act on, and then it is the
+ * app's own tray. Labels are sentence case (docs/brand/voice.md).
+ *
+ * Phone first (the owner, 2026-11-13: "the design must be optimized for
+ * mobile"). Every piece is drawn at 360 to 412 wide first, in the app's own
+ * phone sizes, and let out from 640px. No piece is a row of tiles, so none
+ * leaves an orphan, an empty half-row or two boxes of unequal height.
+ *
+ * Built only from tokens.css, the way the app builds its own screens. The
+ * guardrails of CLAUDE.md hold: no light rays (the star's light is a soft
+ * pool), no side stripes, no sparkle star (the star is the Octogram's eight
+ * points), pills only for buttons, every control 44px, contrast on every
+ * palette, no parchment, logical sides (start and end) so Arabic mirrors,
+ * and no em dashes in the words.
+ */
+
+/* ── The page ──────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background-color: var(--k-ground);
+  color: var(--k-ink);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-text-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.k-page {
+  max-width: 680px;
+  margin-inline: auto;
+  padding-block: var(--k-space-6) var(--k-space-8);
+  padding-left: max(var(--k-space-4), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--k-space-4), env(safe-area-inset-right, 0px));
+}
+
+/* Running text is the reader's serif, as in the emails. */
+.k-page p {
+  margin-block: 0 var(--k-space-4);
+  max-width: var(--k-measure);
+  font-family: var(--k-font-serif);
+  font-size: var(--k-text-body);
+  line-height: 1.65;
+  color: var(--k-ink-2);
+}
+
+.k-page a { color: var(--k-ink); text-decoration-color: var(--k-ink-3); text-underline-offset: 3px; }
+
+/* A link that stands alone: a line of its own, underlined, 44 tall. */
+.k-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--k-target);
+  min-width: var(--k-target);
+  font-family: var(--k-font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--k-ink) 70%, transparent); /* globals.css 3337: the ring in the page's own ink, never red */
+  outline-offset: 2px;
+}
+
+/* The small line over a thing: sentence case, never capitals spaced out. */
+.k-eyebrow {
+  display: block;
+  margin: 0 0 var(--k-space-2);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-text-caption);
+  line-height: 18px;
+  font-weight: 600;
+  color: var(--k-ink-3);
+}
+
+/* ── Title: how a chapter opens ────────────────────────────────────── */
+.k-title { margin-block: var(--k-space-2) var(--k-space-6); text-align: center; }
+
+/* The app's cross (public/purify-cross-mark.png), in the page's own ink. */
+.k-mark {
+  display: block;
+  width: 18px;
+  height: 32px;
+  margin: 0 auto var(--k-space-5);
+  background-color: var(--k-ink);
+  -webkit-mask: var(--k-pic-cross) center / contain no-repeat;
+  mask: var(--k-pic-cross) center / contain no-repeat;
+}
+
+.k-title h1 {
+  margin: 0;
+  font-family: var(--k-font-display);
+  font-weight: 400;
+  /* A phone's title first (34px), the app's display on a wide screen. */
+  font-size: clamp(34px, 4vw + 20px, var(--k-text-display));
+  line-height: 1.1;
+  color: var(--k-ink);
+  text-wrap: balance;
+}
+
+.k-page .k-lede {
+  margin: var(--k-space-3) auto 0;
+  max-width: 34ch;
+  font-style: italic;
+  font-size: var(--k-text-body);
+  line-height: 1.5;
+  color: var(--k-ink-3);
+  text-wrap: balance;
+}
+
+/* The short rule at a chapter's head (h-px w-7 bg-paper/25 in the reader). */
+.k-title::after {
+  content: "";
+  display: block;
+  width: 28px;
+  height: 1px;
+  margin: var(--k-space-5) auto 0;
+  background-color: var(--k-line-strong);
+}
+
+.k-page .k-meta { margin: var(--k-space-3) auto 0; font-family: var(--k-font-sans); font-size: var(--k-text-caption); line-height: 18px; color: var(--k-ink-3); }
+
+/* ── Section ───────────────────────────────────────────────────────── */
+.k-section { margin-block: var(--k-space-7); }
+
+.k-section > h2 {
+  margin: 0 0 var(--k-space-2);
+  font-family: var(--k-font-serif);
+  font-weight: 600;
+  /* The app's phone section is text-title-sm (22px). */
+  font-size: clamp(var(--k-text-title-sm), 1vw + 18px, 26px);
+  line-height: 1.25;
+  color: var(--k-ink);
+}
+
+.k-section h3 {
+  margin: var(--k-space-5) 0 var(--k-space-2);
+  font-family: var(--k-font-serif);
+  font-weight: 600;
+  font-size: var(--k-text-lede);
+  line-height: 1.3;
+  color: var(--k-ink);
+}
+
+/* A divider between sections: a full-width hairline, never down an edge. */
+.k-rule { height: 0; margin-block: var(--k-space-7); border: 0; border-block-start: 1px solid var(--k-line); }
+
+/* ── The night: Night sky, a night on every palette ────────────────── */
+/* The app's look (globals.css 12651-12669), as its own Nativity card wears
+   it: dark on every palette (`dark-island`). Whatever stands in it reads the
+   night's ink. Once on a page, for the one thing that leads. */
+.k-night {
+  --k-ground: var(--k-sky);
+  --k-ink-base: var(--k-sky-ink);
+  --k-ink: var(--k-sky-ink);
+  --k-ink-2: color-mix(in oklab, var(--k-sky-ink) 80%, transparent);
+  --k-ink-3: color-mix(in oklab, var(--k-sky-ink) var(--k-sky-quiet), transparent);
+  --k-line: color-mix(in oklab, var(--k-sky-ink) 12%, transparent);
+  --k-line-strong: color-mix(in oklab, var(--k-sky-ink) 22%, transparent);
+  color: var(--k-sky-ink);
+  background-color: var(--k-sky);
+  /* The small stars, the light along the horizon, the sky: the look's own layers. */
+  background-image:
+    var(--k-pic-stars),
+    radial-gradient(140% 52% at 50% 112%, var(--k-sky-glow), transparent 66%),
+    linear-gradient(180deg, var(--k-sky-top) 0%, var(--k-sky) 40%, var(--k-sky-foot) 100%);
+  background-position: center top, center, center;
+  background-size: cover, auto, auto;
+  background-repeat: no-repeat;
+}
+
+/* ── The lead: one figure, and its week ────────────────────────────── */
+.k-lead {
+  margin-block: var(--k-space-5);
+  padding: var(--k-space-5) 18px var(--k-space-4);
+  border: 1px solid var(--k-line);
+  border-radius: 22px; /* the Nativity card's own, rounded-[22px] */
+  overflow: hidden;
+}
+
+.k-lead-value {
+  display: block;
+  font-family: var(--k-font-display);
+  font-weight: 400;
+  font-size: clamp(56px, 10vw + 20px, 76px);
+  line-height: 1;
+  color: var(--k-ink);
+  /* The glowing white: a soft pool, as the app's white accent glows (globals.css 4814). */
+  text-shadow: 0 0 22px rgb(255 255 255 / 0.22);
+}
+
+.k-page .k-lead-change { margin: var(--k-space-2) 0 0; font-family: var(--k-font-sans); font-size: var(--k-text-ui); line-height: 20px; color: var(--k-ink-2); }
+
+/* ── Figures: the quiet ones, as rows ──────────────────────────────── */
+/* A name and what changed at the start, the number at the end, a hairline
+   between. Rows at every width: never tiles. */
+.k-stats { margin-block: var(--k-space-2) var(--k-space-5); }
+
+.k-stat {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: var(--k-space-4);
+  align-items: center;
+  padding-block: 14px;
+}
+
+.k-stat + .k-stat { border-block-start: 1px solid var(--k-line); }
+
+.k-stat-label { grid-column: 1; grid-row: 1; font-size: 16px; line-height: 22px; font-weight: 600; color: var(--k-ink); }
+
+.k-stat-change { grid-column: 1; grid-row: 2; font-size: var(--k-text-detail); line-height: 19px; color: var(--k-ink-3); }
+
+.k-stat-value {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  font-family: var(--k-font-display);
+  font-size: var(--k-text-title);
+  line-height: 1.1;
+  color: var(--k-ink);
+}
+
+/* ── Chart ─────────────────────────────────────────────────────────── */
+/* The app's own method (components/admin/charts.tsx): one ink, the period
+   before as a dashed line, a legend for two series or more. Thin columns
+   with every value over its column, so nothing has to be hovered to be
+   read. The eight-point star stands over the best day, once. */
+.k-chart { margin: var(--k-space-5) 0 0; }
+
+.k-chart > svg { display: block; width: 100%; max-width: 520px; margin-inline: auto; height: auto; overflow: visible; }
+
+.k-chart .k-col { fill: var(--k-ink); }
+
+.k-chart .k-base { stroke: var(--k-line-strong); stroke-width: 1; }
+
+.k-chart .k-before { fill: none; stroke: var(--k-ink-3); stroke-width: 1.5; stroke-dasharray: 5 4; stroke-linecap: round; stroke-linejoin: round; }
+
+.k-chart .k-val { fill: var(--k-ink); font-family: var(--k-font-sans); font-size: 12px; font-weight: 600; }
+
+.k-chart .k-axis { fill: var(--k-ink-3); font-family: var(--k-font-sans); font-size: 12px; }
+
+.k-chart .k-star { fill: var(--k-ink); filter: drop-shadow(0 0 4px rgb(255 255 255 / 0.9)); } /* the Nativity card's own star and its light */
+
+.k-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-space-1) var(--k-space-4);
+  margin: var(--k-space-3) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--k-text-caption);
+  line-height: 18px;
+  color: var(--k-ink-2);
+}
+
+.k-legend li { display: inline-flex; align-items: center; gap: 6px; }
+
+.k-key { display: inline-block; width: 6px; height: 12px; border-radius: 3px 3px 0 0; background-color: var(--k-ink); }
+.k-key-line { width: 16px; height: 0; border-radius: 0; background: none; border-block-start: 2px dashed var(--k-ink-3); }
+.k-legend .k-key-star { flex: none; width: 12px; height: 12px; border-radius: 0; background: none; color: var(--k-ink); }
+
+/* ── Split: one whole, by its parts ────────────────────────────────── */
+/* Money in by source: one bar in money's own hues, a gap of the page
+   between its parts, and under it each part with its name and its amount in
+   the page's ink, so no part is told by its colour alone. */
+.k-split { display: flex; gap: 2px; height: 12px; margin-block: var(--k-space-4) var(--k-space-2); }
+
+.k-split > span { display: block; min-width: 6px; }
+.k-split > span:first-child { border-start-start-radius: 4px; border-end-start-radius: 4px; }
+.k-split > span:last-child { border-start-end-radius: 4px; border-end-end-radius: 4px; }
+
+.k-shop { background-color: var(--k-money-shop); }
+.k-plus { background-color: var(--k-money-plus); }
+.k-box { background-color: var(--k-money-box); }
+
+.k-keys { margin: 0; padding: 0; list-style: none; }
+
+.k-keys li {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  column-gap: 10px;
+  align-items: center;
+  padding-block: 10px;
+}
+
+.k-keys li + li { border-block-start: 1px solid var(--k-line); }
+
+.k-swatch { width: 10px; height: 10px; border-radius: 3px; }
+
+.k-keys-name { font-size: 16px; line-height: 22px; color: var(--k-ink); }
+
+.k-keys-name small { display: block; font-size: var(--k-text-detail); line-height: 19px; color: var(--k-ink-3); }
+
+.k-keys-value { font-size: 16px; line-height: 22px; font-weight: 600; color: var(--k-ink); font-variant-numeric: tabular-nums; }
+
+/* ── Bars: what was most ───────────────────────────────────────────── */
+.k-bars { margin: var(--k-space-2) 0 0; padding: 0; list-style: none; }
+
+.k-bars li { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--k-space-4); align-items: baseline; padding-block-start: var(--k-space-3); }
+
+.k-bars-name { font-family: var(--k-font-serif); font-size: var(--k-text-body); line-height: 24px; color: var(--k-ink); }
+
+.k-bars-value { font-size: 16px; line-height: 24px; font-weight: 600; color: var(--k-ink); font-variant-numeric: tabular-nums; }
+
+.k-bars-bar { grid-column: 1 / -1; display: block; height: 6px; margin-block-start: 6px; border-radius: 3px; background-color: var(--k-ink-3); }
+
+/* ── Table ─────────────────────────────────────────────────────────── */
+.k-table-wrap { overflow-x: auto; margin-block: var(--k-space-3) var(--k-space-5); }
+
+.k-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+
+.k-table caption {
+  caption-side: bottom;
+  text-align: start;
+  padding-block-start: var(--k-space-3);
+  font-size: var(--k-text-detail);
+  line-height: 19px;
+  color: var(--k-ink-3);
+}
+
+.k-table th {
+  text-align: start;
+  padding: 0 0 var(--k-space-2);
+  font-size: var(--k-text-caption);
+  line-height: 18px;
+  font-weight: 600;
+  color: var(--k-ink-3);
+  border-block-end: 1px solid var(--k-line-strong);
+}
+
+.k-table td {
+  padding: 13px 0;
+  font-family: var(--k-font-serif);
+  font-size: var(--k-text-body);
+  line-height: 24px;
+  color: var(--k-ink);
+  border-block-end: 1px solid var(--k-line);
+}
+
+.k-table tbody tr:last-child td { border-block-end: 0; }
+
+/* Two columns of words keep a gutter between them, and begin on one line.
+   They touched, and a short first cell hung in the middle of a long second
+   (a table of choices and their reasons, 2026-11-13). A column of numbers
+   keeps its own gutter (.k-num). */
+.k-table td { vertical-align: top; }
+
+.k-table td + td:not(.k-num),
+.k-table th + th:not(.k-num) { padding-inline-start: var(--k-space-4); }
+
+.k-table td.k-num,
+.k-table th.k-num { text-align: end; padding-inline-start: var(--k-space-4); white-space: nowrap; }
+
+.k-table td.k-num { font-family: var(--k-font-sans); font-size: 16px; font-weight: 600; }
+
+.k-table td.k-quiet { font-weight: 400; color: var(--k-ink-3); }
+
+/* ── Figure ────────────────────────────────────────────────────────── */
+.k-figure { margin: var(--k-space-5) 0; }
+
+.k-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 22px;
+  border: 1px solid var(--k-line);
+  background-color: var(--k-well);
+}
+
+.k-figure figcaption { margin-block-start: var(--k-space-3); font-size: var(--k-text-detail); line-height: 19px; color: var(--k-ink-3); max-width: var(--k-measure); }
+
+/* A still of the app's screen at a phone's width (.k-phone): on a phone it
+   takes the column, as a picture does; on a wide screen it stands in the
+   middle at 390, the walks' phone (scripts/gate/), rather than growing to
+   twice the screen it shows. Its caption keeps its width. */
+.k-figure.k-phone img,
+.k-figure.k-phone figcaption { max-width: 390px; margin-inline: auto; }
+
+/* Before and after (.k-pair): two stills of one thing side by side at every
+   width, each with its word under it. For a change that is seen and not
+   read, a colour or a shape, where the two are set against each other. A
+   change that has to be read goes one under the other, as two figures. */
+.k-pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--k-space-3); margin: var(--k-space-5) 0; max-width: 560px; }
+.k-pair .k-figure { margin: 0; min-width: 0; }
+.k-pair .k-figure img { border-radius: 14px; }
+
+/* ── Note ──────────────────────────────────────────────────────────── */
+/* It stands on its own type: a small line and the serif in italics, set in
+   from the reading line. No rule beside it, no stripe, no box (CLAUDE.md). */
+.k-note { margin: var(--k-space-5) 0; padding-inline: var(--k-space-4); max-width: var(--k-measure); }
+
+.k-page .k-note p { margin: 0; font-style: italic; font-size: var(--k-text-body); line-height: 1.6; color: var(--k-ink-2); }
+
+/* ── The tray: the app's raised card ───────────────────────────────── */
+/* As the app raises a thing to act on (.theology-tray, globals.css
+   7443-7449): a step of the card's colour down its height, a fine edge, a
+   sheen along its top and a soft shade under it. */
+.k-tray {
+  --k-shade: 0.9;
+  --k-sheen: 255 255 255;
+  margin-block: var(--k-space-5);
+  border-radius: var(--k-radius-lg);
+  border: 1px solid var(--k-line);
+  background-color: var(--k-card);
+  background-image: linear-gradient(180deg, transparent, color-mix(in srgb, var(--k-ground) 45%, transparent));
+  box-shadow:
+    inset 0 1px 0 rgb(var(--k-sheen) / 0.07),
+    0 24px 38px -22px rgb(0 0 0 / var(--k-shade)),
+    0 2px 6px rgb(0 0 0 / calc(var(--k-shade) * 0.37));
+}
+
+/* On a light page the shade is a breath and the sheen is none (--panel-sheen, globals.css 5194). */
+:root[data-theme="light"] .k-tray,
+:root[data-reading-mode="parchment"] .k-tray { --k-shade: 0.14; --k-sheen: 0 0 0; }
+
+/* ── List: things to act on, in one tray ───────────────────────────── */
+.k-list { margin-inline: 0; padding: 0; list-style: none; }
+
+.k-list li + li { border-block-start: 1px solid var(--k-line); }
+
+.k-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20px;
+  column-gap: var(--k-space-3);
+  align-items: center;
+  min-height: 64px;
+  padding: 14px var(--k-space-4);
+  text-decoration: none;
+}
+
+.k-row-title { display: block; font-family: var(--k-font-serif); font-size: var(--k-text-lede); line-height: 25px; font-weight: 600; color: var(--k-ink); }
+
+.k-row-line { display: block; margin-block-start: 2px; font-size: var(--k-text-ui); line-height: 20px; color: var(--k-ink-2); }
+
+.k-row svg { color: var(--k-ink-3); }
+
+[dir="rtl"] .k-row svg { transform: scaleX(-1); }
+
+/* ── Card: one thing, and its one button ───────────────────────────── */
+/* Today's card in the app, and the saint's card in the emails. */
+.k-card { padding: var(--k-space-4); }
+
+.k-card h3 { margin: 0; font-family: var(--k-font-serif); font-weight: 600; font-size: 21px; line-height: 27px; color: var(--k-ink); }
+
+.k-page .k-card p { margin: var(--k-space-1) 0 0; max-width: none; font-family: var(--k-font-sans); font-size: var(--k-text-ui); line-height: 20px; color: var(--k-ink-2); }
+
+.k-card .k-button { width: 100%; margin-block-start: var(--k-space-4); }
+
+/* ── Button ────────────────────────────────────────────────────────── */
+/* The app's primary: a pill in the ink, the ground's colour for its words
+   (rounded-pill bg-paper text-night). 48 tall, and across its card on a
+   phone, as Today's is. One to a page. The quiet one: the ink inside a
+   control's hairline. */
+.k-actions { display: grid; gap: var(--k-space-3); margin-block: var(--k-space-5); }
+@media (min-width: 640px) { .k-actions { display: flex; flex-wrap: wrap; } }
+
+.k-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  min-width: var(--k-target);
+  padding: 0 var(--k-space-6);
+  border-radius: var(--k-radius-pill);
+  border: 1px solid transparent;
+  background-color: var(--k-ink);
+  color: var(--k-ground);
+  font-family: var(--k-font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform var(--k-duration-fast) var(--k-ease-house);
+}
+
+.k-page a.k-button { color: var(--k-ground); }
+
+.k-button:active { transform: scale(var(--k-press)); }
+
+.k-button-quiet { background-color: transparent; color: var(--k-ink); border-color: var(--k-line-strong); }
+
+.k-page a.k-button-quiet { color: var(--k-ink); }
+
+/* ── Arriving: the house's rise, still with reduced motion ─────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .k-rise { animation: k-rise var(--k-duration-slow) var(--k-ease-house) both; }
+  @keyframes k-rise { from { opacity: 0; transform: translateY(var(--k-rise)); } }
+}
+
+/* ── The footer ────────────────────────────────────────────────────── */
+.k-foot { margin-block-start: var(--k-space-8); padding-block-start: var(--k-space-5); border-block-start: 1px solid var(--k-line); text-align: center; }
+
+.k-page .k-foot p { margin: 0 auto; font-style: italic; font-size: 16px; line-height: 24px; color: var(--k-ink-3); }
+
+.k-page .k-foot .k-meta { margin-block-start: var(--k-space-2); font-style: normal; }
+/* kit:end */
+/* kit:pictures:begin. Written by the same command, from the app's own files. */
+:root { --k-pic-cross: url("data:image/png;base64,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"); --k-pic-stars: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgOTAwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pbiBzbGljZSI+PGNpcmNsZSBjeD0iNiIgY3k9IjgiIHI9IjEuMiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yMCIvPjxjaXJjbGUgY3g9IjkwIiBjeT0iMzI3LjYiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjQiLz48Y2lyY2xlIGN4PSIxNzQiIGN5PSI5NS41IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM1Ii8+PGNpcmNsZSBjeD0iMjU4IiBjeT0iNjk3LjIiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzAiLz48Y2lyY2xlIGN4PSIzNDIiIGN5PSIzMDguOSIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQ2Ii8+PGNpcmNsZSBjeD0iMzgiIGN5PSI1NDAuNSIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xNSIvPjxjaXJjbGUgY3g9IjEyMiIgY3k9IjE5NC42IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjI2Ii8+PGNpcmNsZSBjeD0iMTE1IiBjeT0iMzUuNyIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4zNiIvPjxjaXJjbGUgY3g9IjE5OSIgY3k9IjUxNi40IiByPSIwLjkiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzQiLz48Y2lyY2xlIGN4PSIyODMiIGN5PSIxODAuMyIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC40OSIvPjxjaXJjbGUgY3g9IjM2NyIgY3k9IjM2Ni42IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjE2Ii8+PGNpcmNsZSBjeD0iNjMiIGN5PSIxMTUiIHI9IjEuMiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yNyIvPjxjaXJjbGUgY3g9IjE0NyIgY3k9IjguMyIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM3Ii8+PGNpcmNsZSBjeD0iMjMxIiBjeT0iMzQ2LjgiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzgiLz48Y2lyY2xlIGN4PSIyMjQiIGN5PSIxMDUiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNTEiLz48Y2lyY2xlIGN4PSIzMDgiIGN5PSIyMjUuMSIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xOCIvPjxjaXJjbGUgY3g9IjM5MiIgY3k9IjQ2LjYiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yOCIvPjxjaXJjbGUgY3g9Ijg4IiBjeT0iNTY1LjIiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjciLz48Y2lyY2xlIGN4PSIxNzIiIGN5PSIyMDkuNiIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC40MSIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjQwLjkiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNTMiLz48Y2lyY2xlIGN4PSIzNDAiIGN5PSIxMzYuOCIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjE5Ii8+PGNpcmNsZSBjeD0iMzMzIiBjeT0iMTAuNiIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yOCIvPjxjaXJjbGUgY3g9IjI5IiBjeT0iMzg3IiByPSIxLjIiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzAiLz48Y2lyY2xlIGN4PSIxMTMiIGN5PSIxMjUuNiIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC40MyIvPjxjaXJjbGUgY3g9IjE5NyIgY3k9IjkuMSIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjU0Ii8+PGNpcmNsZSBjeD0iMjgxIiBjeT0iNTkuOSIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xOSIvPjxjaXJjbGUgY3g9IjM2NSIgY3k9IjYxNi4yIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjIwIi8+PGNpcmNsZSBjeD0iNjEiIGN5PSIyNDEuMSIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4zMyIvPjxjaXJjbGUgY3g9IjU0IiBjeT0iNTMiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC40NCIvPjxjaXJjbGUgY3g9IjEzOCIgY3k9IjU5MC40IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM4Ii8+PGNpcmNsZSBjeD0iMjIyIiBjeT0iMTUuMiIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yMCIvPjxjaXJjbGUgY3g9IjMwNiIgY3k9IjQyOS41IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjIyIi8+PGNpcmNsZSBjeD0iMzkwIiBjeT0iMTQ4LjYiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4zNCIvPjxjaXJjbGUgY3g9Ijg2IiBjeT0iMTIuNiIgcj0iMS4yIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQ1Ii8+PGNpcmNsZSBjeD0iMTcwIiBjeT0iNDA4IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQzIi8+PGNpcmNsZSBjeD0iMTYzIiBjeT0iNjY5LjYiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMTMiLz48Y2lyY2xlIGN4PSIyNDciIGN5PSIyNzUiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yNSIvPjxjaXJjbGUgY3g9IjMzMSIgY3k9IjY3LjMiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzYiLz48Y2lyY2xlIGN4PSIyNyIgY3k9IjY0Mi43IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjMxIi8+PGNpcmNsZSBjeD0iMTExIiBjeT0iMjU3LjgiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNDciLz48Y2lyY2xlIGN4PSIxOTUiIGN5PSI0NzQuMyIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjE1Ii8+PGNpcmNsZSBjeD0iMjc5IiBjeT0iMTczLjgiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjYiLz48Y2lyY2xlIGN4PSIyNzIiIGN5PSIxOC4zIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM3Ii8+PGNpcmNsZSBjeD0iMzU2IiBjeT0iNDUxLjYiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzUiLz48Y2lyY2xlIGN4PSI1MiIgY3k9IjE2MC45IiByPSIxLjIiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNTAiLz48Y2lyY2xlIGN4PSIxMzYiIGN5PSIzMTEuMiIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xNyIvPjxjaXJjbGUgY3g9IjIyMCIgY3k9Ijg0IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjI3Ii8+PGNpcmNsZSBjeD0iMzA0IiBjeT0iNjk3LjIiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjQiLz48Y2lyY2xlIGN4PSIzODgiIGN5PSIyOTIuOCIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM5Ii8+PGNpcmNsZSBjeD0iMzgxIiBjeT0iNzUuNCIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC41MiIvPjxjaXJjbGUgY3g9Ijc3IiBjeT0iMjAxLjQiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMTgiLz48Y2lyY2xlIGN4PSIxNjEiIGN5PSIyNi40IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjI4Ii8+PGNpcmNsZSBjeD0iMjQ1IiBjeT0iNDk3LjUiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yOCIvPjxjaXJjbGUgY3g9IjMyOSIgY3k9IjE4Ny4zIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQxIi8+PGNpcmNsZSBjeD0iMjUiIGN5PSIyMi4xIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjUzIi8+PGNpcmNsZSBjeD0iMTA5IiBjeT0iMTAyLjkiIHI9IjEuMiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xOSIvPjxjaXJjbGUgY3g9IjEwMiIgY3k9IjIyLjEiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yOCIvPjxjaXJjbGUgY3g9IjE4NiIgY3k9IjMzMC4xIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjMxIi8+PGNpcmNsZSBjeD0iMjcwIiBjeT0iOTMuMSIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC40MyIvPjxjaXJjbGUgY3g9IjM1NCIgY3k9IjcyNS4zIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM0Ii8+PGNpcmNsZSBjeD0iNTAiIGN5PSIzNi43IiByPSIwLjkiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjAiLz48Y2lyY2xlIGN4PSIxMzQiIGN5PSI1NDUuNyIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yMSIvPjxjaXJjbGUgY3g9IjIxOCIgY3k9IjIxNiIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4zMyIvPjxjaXJjbGUgY3g9IjIxMSIgY3k9IjMxLjMiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNDUiLz48Y2lyY2xlIGN4PSIyOTUiIGN5PSI1MjEuMyIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQwIi8+PGNpcmNsZSBjeD0iMzc5IiBjeT0iMjMuOCIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yMCIvPjxjaXJjbGUgY3g9Ijc1IiBjeT0iMzY5LjciIHI9IjEuMiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yMyIvPjxjaXJjbGUgY3g9IjE1OSIgY3k9IjExMy4yIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM1Ii8+PGNpcmNsZSBjeD0iMjQzIiBjeT0iMjIuNiIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQ1Ii8+PGNpcmNsZSBjeD0iMzI3IiBjeT0iMzQ5LjYiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNDUiLz48Y2lyY2xlIGN4PSIzMjAiIGN5PSI1OTYuMyIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xNCIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMjQ3IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjI1Ii8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iNDIuNyIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM2Ii8+PGNpcmNsZSBjeD0iMTg0IiBjeT0iNTcwLjciIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzMiLz48Y2lyY2xlIGN4PSIyNjgiIGN5PSIyMzEuMyIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC40OCIvPjxjaXJjbGUgY3g9IjM1MiIgY3k9IjQxMS43IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjE2Ii8+PGNpcmNsZSBjeD0iNDgiIGN5PSIxMzUuNiIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjI3Ii8+PGNpcmNsZSBjeD0iNDEiIGN5PSIyNS41IiByPSIxLjIiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzciLz48Y2lyY2xlIGN4PSIxMjUiIGN5PSIzOTAuNCIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4zNyIvPjxjaXJjbGUgY3g9IjIwOSIgY3k9IjEyNC4xIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjUxIi8+PGNpcmNsZSBjeD0iMjkzIiBjeT0iMjgwLjMiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xNyIvPjxjaXJjbGUgY3g9IjM3NyIgY3k9IjU2LjUiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjgiLz48Y2lyY2xlIGN4PSI3MyIgY3k9IjYyMi40IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjI1Ii8+PGNpcmNsZSBjeD0iMTU3IiBjeT0iMjYzLjQiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNDAiLz48Y2lyY2xlIGN4PSIxNTAiIGN5PSI0OS4zIiByPSIwLjkiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNTMiLz48Y2lyY2xlIGN4PSIyMzQiIGN5PSIxNjAuMyIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xOCIvPjxjaXJjbGUgY3g9IjMxOCIgY3k9IjMwLjciIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjgiLz48Y2lyY2xlIGN4PSIxNCIgY3k9IjQzMy41IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjI5Ii8+PGNpcmNsZSBjeD0iOTgiIGN5PSIxNDcuNyIgcj0iMS4yIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQyIi8+PGNpcmNsZSBjeD0iMTgyIiBjeT0iMjcuOCIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC41MyIvPjxjaXJjbGUgY3g9IjI2NiIgY3k9IjcyLjYiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMTkiLz48Y2lyY2xlIGN4PSIyNTkiIGN5PSI2NzYuMyIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xOSIvPjxjaXJjbGUgY3g9IjM0MyIgY3k9IjI5Ny44IiByPSIwLjkiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzEiLz48Y2lyY2xlIGN4PSIzOSIgY3k9IjY0LjMiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNDQiLz48Y2lyY2xlIGN4PSIxMjMiIGN5PSI2NDkuMSIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4zNiIvPjxjaXJjbGUgY3g9IjIwNyIgY3k9IjM4LjEiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjAiLz48Y2lyY2xlIGN4PSIyOTEiIGN5PSI0NzguOCIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjIyIi8+PGNpcmNsZSBjeD0iMzc1IiBjeT0iMTczLjUiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzQiLz48Y2lyY2xlIGN4PSIzNjgiIGN5PSIzNC4xIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQ1Ii8+PGNpcmNsZSBjeD0iNjQiIGN5PSI0NTUuOSIgcj0iMS4yIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQyIi8+PGNpcmNsZSBjeD0iMTQ4IiBjeT0iMTUiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yMCIvPjxjaXJjbGUgY3g9IjIzMiIgY3k9IjMzNC42IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjI0Ii8+PGNpcmNsZSBjeD0iMzE2IiBjeT0iODEuNSIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4zNSIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iNzA0LjIiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjkiLz48Y2lyY2xlIGN4PSI5NiIgY3k9IjMxNS45IiByPSIwLjkiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNDUiLz48Y2lyY2xlIGN4PSI4OSIgY3k9IjUyNi41IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjE1Ii8+PGNpcmNsZSBjeD0iMTczIiBjeT0iMjAxLjYiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjYiLz48Y2lyY2xlIGN4PSIyNTciIGN5PSI0Mi43IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM2Ii8+PGNpcmNsZSBjeD0iMzQxIiBjeT0iNTAyLjQiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4zNCIvPjxjaXJjbGUgY3g9IjM3IiBjeT0iMTg3LjMiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNDkiLz48L3N2Zz4K"); }
+/* kit:pictures:end */
+</style>
+
+<main class="k-page">
+
+  <header class="k-title k-rise">
+    <span class="k-mark" role="img" aria-label="Purify"></span>
+    <span class="k-eyebrow">The emails, round 3</span>
+    <h1>Account and order emails</h1>
+    <p class="k-lede">The shell they are built in, brought to Dark as you decided. Before and after, at a phone's width.</p>
+    <p class="k-meta">13 November 2026. Three real emails as the app builds them. Nothing here is sent.</p>
+  </header>
+
+  <section class="k-section" aria-labelledby="s-words">
+    <h2 id="s-words">What you said</h2>
+    <div class="k-note"><span class="k-eyebrow">About 16:44 UTC</span><p>“keep all the emails default Purify colors”</p></div>
+    <div class="k-note"><span class="k-eyebrow">About 18:53 UTC</span><p>“all recs”: the account and order emails' shell brought to Dark too, with before and after stills in the apply round.</p></div>
+    <p>The welcome, every order and shop email and every support reply are built in one shell. It was near Dark and not Dark. These are the stills you have not yet seen.</p>
+  </section>
+
+  <section class="k-section" aria-labelledby="s-stills">
+    <h2 id="s-stills">Before and after</h2>
+    <h3>The welcome</h3>
+    <p>An account email. It keeps its line for the first week's guide.</p>
+    <div class="k-pair">
+      <figure class="k-figure"><img src="stills/welcome-before.jpg" alt="The welcome email, before: the page the darker well, quiet words in a purple grey, a 35px Unsubscribe." loading="lazy" width="780" height="1650"><figcaption>Before</figcaption></figure>
+      <figure class="k-figure"><img src="stills/welcome-after.jpg" alt="The welcome email, after: Dark's own page, inks and grey, a 44px Unsubscribe." loading="lazy" width="780" height="1668"><figcaption>After</figcaption></figure>
+    </div>
+    <h3>An order, confirmed</h3>
+    <p>An order email with its amounts and its quiet note.</p>
+    <div class="k-pair">
+      <figure class="k-figure"><img src="stills/order-confirmed-before.jpg" alt="The order confirmation, before: the page the darker well, quiet words in a purple grey, a 35px Unsubscribe." loading="lazy" width="780" height="1902"><figcaption>Before</figcaption></figure>
+      <figure class="k-figure"><img src="stills/order-confirmed-after.jpg" alt="The order confirmation, after: Dark's own page, inks and grey, a 44px Unsubscribe." loading="lazy" width="780" height="1920"><figcaption>After</figcaption></figure>
+    </div>
+    <h3>An order, on its way</h3>
+    <p>The tracking number is the value the eye lands on. The order number and tracking number are samples.</p>
+    <div class="k-pair">
+      <figure class="k-figure"><img src="stills/order-shipped-before.jpg" alt="The order on its way, before: the page the darker well, quiet words in a purple grey, a 35px Unsubscribe." loading="lazy" width="780" height="1600"><figcaption>Before</figcaption></figure>
+      <figure class="k-figure"><img src="stills/order-shipped-after.jpg" alt="The order on its way, after: Dark's own page, inks and grey, a 44px Unsubscribe." loading="lazy" width="780" height="1600"><figcaption>After</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="k-section" aria-labelledby="s-why">
+    <h2 id="s-why">Why</h2>
+    <div class="k-table-wrap"><table class="k-table"><caption>Why it looks this way. Only the colours and one size move; the words, the layout and the cross stay where a reader knows them.</caption>
+<thead><tr><th scope="col">The choice</th><th scope="col">Why, and what it does for a reader</th></tr></thead>
+<tbody>
+<tr><td>The page is the app's page, and the letter the app's card</td><td>The page was the app's darkest well. The emails you approved stand on Dark's page, so one email and the next now share one ground. It reads as the app before a word is read.</td></tr>
+<tr><td>Quiet words in Dark's own grey</td><td>The small line, the note, the sign-off and the foot were a purple grey the app does not have. Now they are the grey the app uses for the same words.</td></tr>
+<tr><td>Running text, the heading and the button in Dark's inks</td><td>The body is Dark's body ink and the heading and button its white, as in the reader email you approved. The button is a little brighter, so the one thing to tap stands out.</td></tr>
+<tr><td>Unsubscribe is 44px tall</td><td>It was 35px, under the house's least for a thing to tap. The check found it when the shell was measured. A thumb finds it at once.</td></tr>
+<tr><td>Everything else stays</td><td>The words, the order of things, the cross, the card's shape and the first-week line are unchanged. A reader who knows these emails finds everything where it was.</td></tr>
+</tbody></table></div>
+  </section>
+
+  <section class="k-section" aria-labelledby="s-checked">
+    <h2 id="s-checked">How it was checked</h2>
+    <p>The three emails before and after were measured with checkMock at 360, 390, 412 and 1032. After: contrast passes on every word, every target is 44px, and no em dash. Before: Unsubscribe fails at 35px. The palette rule is set aside, since an email is Dark on every screen by design. A test holds every colour of the shell to Dark's own, and fails on the old colours.</p>
+  </section>
+
+  <section class="k-section" aria-labelledby="s-yes">
+    <h2 id="s-yes">Your look</h2>
+    <p>This is your call of 18:53, drawn. If anything here is not what you meant, say which and it goes back. It reaches readers only with the merge.</p>
+  </section>
+
+  <footer class="k-foot">
+    <p>Edgar, the Purify Team</p>
+    <p class="k-meta">On the 1.9 branch. The main web has none of it until the merge.</p>
+  </footer>
+</main>
