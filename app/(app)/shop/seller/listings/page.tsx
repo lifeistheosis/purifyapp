@@ -82,7 +82,7 @@ export default async function SellerListingsPage() {
                         alt={image.alt_text}
                         fill
                         sizes="(min-width: 1024px) 25vw, 45vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                        className="object-cover transition-transform motion-reduce:transition-none duration-500 group-hover:scale-[1.03]"
                       />
                     ) : (
                       <div

@@ -114,7 +114,7 @@ export function StoreDoor({
                 alt=""
                 fill
                 sizes="(min-width: 768px) 18vw, 30vw"
-                className="object-contain p-3 transition-transform duration-700 ease-house group-hover:scale-[1.04] md:p-4"
+                className="object-contain p-3 transition-transform motion-reduce:transition-none duration-700 ease-house group-hover:scale-[1.04] md:p-4"
               />
             </li>
           ))}

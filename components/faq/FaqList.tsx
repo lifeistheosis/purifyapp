@@ -56,7 +56,7 @@ export function FaqList({ questions, eyebrow, h1, lead, leadLang }: { questions:
  </span>
  <span
  aria-hidden
- className="text-paper/45 group-open:rotate-180 transition-transform duration-200 text-caption shrink-0"
+ className="text-paper/45 group-open:rotate-180 transition-transform motion-reduce:transition-none duration-200 text-caption shrink-0"
  >
  <ChevronDown size={14} className="block" />
  </span>

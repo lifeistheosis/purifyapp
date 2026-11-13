@@ -467,7 +467,7 @@ export function CartClient() {
         // Steps away while one of the app's fields has the keyboard (app/globals.css).
         data-foot-bar
         className={cn(
-          "fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-night/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur transition-transform duration-300 ease-house safe-pb md:hidden",
+          "fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-night/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur transition-transform motion-reduce:transition-none duration-300 ease-house safe-pb md:hidden",
           checkoutVisible ? "translate-y-full" : "translate-y-0",
         )}
       >

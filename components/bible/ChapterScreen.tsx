@@ -383,7 +383,7 @@ export function ChapterScreen({
                       <span className="font-sans text-caption font-semibold text-paper/55 group-open:text-paper/75 transition-colors">
                         <T k="bible.aboutThisBook" />
                       </span>
-                      <span aria-hidden className="text-paper/55 group-open:rotate-180 transition-transform duration-200 text-caption">
+                      <span aria-hidden className="text-paper/55 group-open:rotate-180 transition-transform motion-reduce:transition-none duration-200 text-caption">
                         <ChevronDown size={14} className="block" />
                       </span>
                     </summary>

@@ -124,7 +124,7 @@ export function CartDrawer() {
         className={cn(
           // At the end of the line, and out past it when closed: the right in
           // English, the left in Arabic (it stayed right, by left and right).
-          "fixed inset-y-0 end-0 z-50 flex w-full max-w-[400px] flex-col bg-night shadow-2xl transition-transform duration-300 ease-out",
+          "fixed inset-y-0 end-0 z-50 flex w-full max-w-[400px] flex-col bg-night shadow-2xl transition-transform motion-reduce:transition-none duration-300 ease-out",
           open ? "translate-x-0" : "ltr:translate-x-full rtl:-translate-x-full",
         )}
       >

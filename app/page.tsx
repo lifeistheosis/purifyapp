@@ -418,7 +418,7 @@ export default async function Home() {
  <Link
  key={ch.title}
  href={ch.href}
- className="lm-card group block rounded-[28px] p-8 ring-1 ring-inset ring-paper/10 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.5)] transition-transform duration-200 hover:-translate-y-0.5"
+ className="lm-card group block rounded-[28px] p-8 ring-1 ring-inset ring-paper/10 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.5)] transition-transform motion-reduce:transition-none duration-200 hover:-translate-y-0.5"
  style={{
  background:
  "radial-gradient(115% 90% at 88% 8%, rgba(255,255,255,0.06) 0%, transparent 55%), linear-gradient(155deg, #26262b 0%, #1a1a1d 60%, #151518 100%)",

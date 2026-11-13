@@ -95,7 +95,7 @@ export function WidgetTipSheet({
       <button
         type="button"
         onClick={onClose}
-        className="mt-5 mb-1 inline-flex min-h-11 w-full items-center justify-center rounded-pill bg-paper px-5 font-sans text-ui font-semibold text-night transition-transform active:scale-[0.98]"
+        className="mt-5 mb-1 inline-flex min-h-11 w-full items-center justify-center rounded-pill bg-paper px-5 font-sans text-ui font-semibold text-night transition-transform motion-reduce:transition-none active:scale-[0.98]"
       >
         {t("widgetTip.done")}
       </button>

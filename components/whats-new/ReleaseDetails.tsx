@@ -56,7 +56,7 @@ export function ReleaseDetails({ entry: e, when }: { entry: Entry; when?: string
           </div>
           <span
             aria-hidden
-            className="mt-1.5 shrink-0 text-paper/55 group-open/rel:rotate-180 transition-transform duration-200 text-eyebrow"
+            className="mt-1.5 shrink-0 text-paper/55 group-open/rel:rotate-180 transition-transform motion-reduce:transition-none duration-200 text-eyebrow"
           >
             <ChevronDown size={12} className="block" />
           </span>

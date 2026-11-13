@@ -258,7 +258,7 @@ async function WhatsNewContent() {
                     </span>
                     <span
                       aria-hidden
-                      className="text-paper/55 group-open/mo:rotate-180 transition-transform duration-200 text-eyebrow"
+                      className="text-paper/55 group-open/mo:rotate-180 transition-transform motion-reduce:transition-none duration-200 text-eyebrow"
                     >
                       <ChevronDown size={12} className="block" />
                     </span>

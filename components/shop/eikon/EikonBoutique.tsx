@@ -104,7 +104,7 @@ export function EikonBoutique({ store, products }: { store: ShopStore; products:
                         alt={image.alt_text}
                         fill
                         sizes="(min-width: 768px) 50vw, 90vw"
-                        className="object-cover transition-transform duration-[1200ms] ease-house group-hover:scale-[1.03]"
+                        className="object-cover transition-transform motion-reduce:transition-none duration-[1200ms] ease-house group-hover:scale-[1.03]"
                       />
                     ) : null}
                   </div>

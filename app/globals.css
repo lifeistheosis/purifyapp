@@ -1965,8 +1965,14 @@ html[data-reading-mode="parchment"] .words-halo {
 .prayers-hero-rule.prayers-hero-in {
  animation: prayers-hero-in 600ms var(--ease-house) 460ms backwards;
 }
+/* Each still rule as heavy as its entrance. `:where()` weighs nothing, so a
+   still rule of one class lost to the entrance's two, and with motion reduced
+   the verse and the rule still rose (Gate 2.0, 2026-11-13;
+   lib/ui/__tests__/stillMeansStill.test.ts). */
 :where([data-motion="reduce"]) .prayers-hero-img,
-:where([data-motion="reduce"]) .prayers-hero-in {
+:where([data-motion="reduce"]) .prayers-hero-in,
+:where([data-motion="reduce"]) .prayers-hero-verse.prayers-hero-in,
+:where([data-motion="reduce"]) .prayers-hero-rule.prayers-hero-in {
  animation: none;
 }
 
@@ -3345,8 +3351,11 @@ html[data-reading-mode="parchment"] .you-tile {
 .you-hero-foot.you-hero-in {
  animation: prayers-hero-in 600ms var(--ease-house) 460ms backwards;
 }
+/* As heavy as the entrances, for Prayers' reason above. */
 :where([data-motion="reduce"]) .you-hero-img,
-:where([data-motion="reduce"]) .you-hero-in {
+:where([data-motion="reduce"]) .you-hero-in,
+:where([data-motion="reduce"]) .you-hero-who.you-hero-in,
+:where([data-motion="reduce"]) .you-hero-foot.you-hero-in {
  animation: none;
 }
 

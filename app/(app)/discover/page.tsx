@@ -44,7 +44,7 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 
 /** The front page's graphite card ("Paths to walk"), in one place. */
 const CARD =
-  "lm-card group relative flex flex-col overflow-hidden rounded-[28px] p-7 ring-1 ring-inset ring-paper/10 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.5)] transition-transform duration-200 hover:-translate-y-0.5 md:p-8";
+  "lm-card group relative flex flex-col overflow-hidden rounded-[28px] p-7 ring-1 ring-inset ring-paper/10 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.5)] transition-transform motion-reduce:transition-none duration-200 hover:-translate-y-0.5 md:p-8";
 const CARD_BG = {
   background:
     "radial-gradient(115% 90% at 88% 8%, rgba(255,255,255,0.06) 0%, transparent 55%), linear-gradient(155deg, #26262b 0%, #1a1a1d 60%, #151518 100%)",

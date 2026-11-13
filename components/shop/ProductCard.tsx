@@ -111,7 +111,7 @@ export function ProductCard({
             alt={image.alt_text}
             fill
             sizes={sizes}
-            className="object-contain p-3.5 drop-shadow-[0_18px_22px_rgba(0,0,0,0.45)] transition-transform duration-700 ease-house group-hover:scale-[1.04] md:p-5"
+            className="object-contain p-3.5 drop-shadow-[0_18px_22px_rgba(0,0,0,0.45)] transition-transform motion-reduce:transition-none duration-700 ease-house group-hover:scale-[1.04] md:p-5"
           />
         ) : (
           <div aria-hidden className="flex h-full items-center justify-center text-paper/15">

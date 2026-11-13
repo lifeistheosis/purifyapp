@@ -83,7 +83,7 @@ export function ProfileDanger({ signedIn }: { signedIn: boolean }) {
           </span>
           <span
             aria-hidden
-            className="text-paper/40 group-open:rotate-180 transition-transform duration-200 text-caption"
+            className="text-paper/40 group-open:rotate-180 transition-transform motion-reduce:transition-none duration-200 text-caption"
           >
             <ChevronDown size={14} className="block" />
           </span>
