@@ -1,0 +1,55 @@
+{
+  "what": "The one line under each look's name in the picker, as it stood in each of the 21 catalogs until 2026-11-13, when the pictures at the foot were reworked (Forest) or taken away (Jordan). The names did not change. Desert's line is in docs/1.9-build/kept/desert-look/words.json: the look itself came out the same day.",
+  "keys": {
+    "forest": "settings.paletteForestHint",
+    "jordan": "settings.paletteJordanHint"
+  },
+  "words": {
+    "forest": {
+      "ar": "تنّوب الشمال والضباب بين أشجاره",
+      "bg": "Северните ели и мъгла между тях",
+      "de": "Die Tannen des Nordens, Nebel dazwischen",
+      "el": "Τα έλατα του βορρά, με ομίχλη ανάμεσά τους",
+      "en": "The firs of the north, mist between them",
+      "es": "Los abetos del norte, la niebla entre ellos",
+      "fil": "Ang mga pino ng hilaga, may hamog sa pagitan nila",
+      "fr": "Les sapins du nord, la brume entre eux",
+      "hu": "Észak fenyői, köztük köd",
+      "id": "Pohon cemara dari utara, kabut di antaranya",
+      "it": "Gli abeti del nord, la nebbia tra loro",
+      "ka": "ჩრდილოეთის ნაძვები და ნისლი მათ შორის",
+      "ne": "उत्तरका सल्लाका रूखहरू र तिनका बीचको कुहिरो",
+      "pl": "Jodły północy i mgła między nimi",
+      "pt": "Os abetos do norte, a névoa entre eles",
+      "ro": "Brazii nordului și ceața dintre ei",
+      "ru": "Северные ели и туман между ними",
+      "sr": "Северне јеле и магла међу њима",
+      "tr": "Kuzeyin köknarları, aralarında sis",
+      "uk": "Північні ялини й туман між ними",
+      "ur": "شمال کے صنوبر اور ان کے درمیان دھند"
+    },
+    "jordan": {
+      "ar": "ماء ساكن والدوائر التي تتسع فوقه",
+      "bg": "Тиха вода и кръговете, които се разстилат по нея",
+      "de": "Stilles Wasser und die Ringe, die sich darauf ausbreiten",
+      "el": "Ήρεμο νερό και οι κύκλοι που απλώνονται πάνω του",
+      "en": "Still water, and the rings going out over it",
+      "es": "Agua quieta y los anillos que se abren sobre ella",
+      "fil": "Payapang tubig at ang mga bilog na lumalaganap dito",
+      "fr": "Une eau calme, et les cercles qui s'y élargissent",
+      "hu": "Csendes víz és a rajta szétfutó gyűrűk",
+      "id": "Air yang tenang dan lingkaran yang melebar di atasnya",
+      "it": "Acqua ferma e i cerchi che vi si allargano",
+      "ka": "წყნარი წყალი და მასზე გაშლილი რგოლები",
+      "ne": "शान्त पानी र त्यसमाथि फैलिँदै जाने घेराहरू",
+      "pl": "Spokojna woda i kręgi, które się po niej rozchodzą",
+      "pt": "Água parada e os anéis que se abrem sobre ela",
+      "ro": "Apă liniștită și cercurile care se întind pe ea",
+      "ru": "Тихая вода и круги, расходящиеся по ней",
+      "sr": "Мирна вода и кругови који се по њој шире",
+      "tr": "Durgun su ve üzerinde yayılan halkalar",
+      "uk": "Тиха вода й кола, що розходяться по ній",
+      "ur": "ٹھہرا ہوا پانی اور اس پر پھیلتے ہوئے دائرے"
+    }
+  }
+}

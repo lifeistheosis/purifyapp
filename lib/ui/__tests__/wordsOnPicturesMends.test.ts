@@ -98,7 +98,7 @@ describe("words over pictures, mended", () => {
     expect(shelf).toContain('<span className="mt-2 block text-center font-sans text-caption text-paper/55 [html[data-reading-mode=parchment]:not([data-look])_&]:text-paper/75">');
     const css = read("app/globals.css");
     const lift = (look: string) => Number(css.match(new RegExp(`:where\\(html\\[data-look="${look}"\\]\\) :is\\([^)]*\\.text-paper\\\\/55[^)]*\\) \\{\\n\\s*color: color-mix\\(in oklab, var\\(--color-paper\\) (\\d+)%`))?.[1]);
-    for (const look of ["desert", "jordan", "blush", "rose", "lavender", "olive", "stone"]) expect(lift(look)).toBeGreaterThanOrEqual(75);
+    for (const look of ["jordan", "blush", "rose", "lavender", "olive", "stone"]) expect(lift(look)).toBeGreaterThanOrEqual(75);
   });
 
   it("The Plus dock's small print at 65%, clear of the Join button's glow on every palette", () => {

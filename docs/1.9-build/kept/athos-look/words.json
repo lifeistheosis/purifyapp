@@ -1,0 +1,27 @@
+{
+  "what": "The Holy Mountain's one line under its name in the picker (settings.paletteHolyMountainHint), as it stood in each of the 21 catalogs until 2026-11-13. Its name, settings.paletteHolyMountain, did not change.",
+  "key": "settings.paletteHolyMountainHint",
+  "words": {
+    "ar": "قمة آثوس فوق البحر عند الغسق",
+    "bg": "Върхът на Атон над морето по здрач",
+    "de": "Der Gipfel des Athos über dem Meer in der Dämmerung",
+    "el": "Η κορυφή του Άθω πάνω από τη θάλασσα το σούρουπο",
+    "en": "The peak of Athos over the sea at dusk",
+    "es": "La cumbre del Athos sobre el mar al anochecer",
+    "fil": "Ang tuktok ng Athos sa ibabaw ng dagat sa dapithapon",
+    "fr": "Le sommet de l'Athos au-dessus de la mer, au crépuscule",
+    "hu": "Az Áthosz csúcsa a tenger fölött alkonyatkor",
+    "id": "Puncak Athos di atas laut saat senja",
+    "it": "La vetta dell'Athos sul mare al crepuscolo",
+    "ka": "ათონის მწვერვალი ზღვის თავზე შებინდებისას",
+    "ne": "साँझपख समुद्रमाथि आथोसको चुचुरो",
+    "pl": "Szczyt Athosu nad morzem o zmierzchu",
+    "pt": "O cume do Athos sobre o mar ao entardecer",
+    "ro": "Vârful Athosului deasupra mării, în amurg",
+    "ru": "Вершина Афона над морем в сумерках",
+    "sr": "Врх Атоса над морем у сумрак",
+    "tr": "Alacakaranlıkta denizin üzerinde Athos'un doruğu",
+    "uk": "Вершина Афону над морем у сутінках",
+    "ur": "شام کے دھندلکے میں سمندر کے اوپر آتھوس کی چوٹی"
+  }
+}

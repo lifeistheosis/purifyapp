@@ -30,15 +30,15 @@ export const PREPAINT_THEME_IDS: readonly string[] = [
 // and over Light with Light's own mode beside it (themeAttributes in
 // lib/reader/readingModes.ts, which the test holds these two lists to).
 export const PREPAINT_LOOKS_DARK: readonly string[] = ["nightsky", "dawn", "incense", "athos", "forest", "mosaic", "damask"];
-export const PREPAINT_LOOKS_LIGHT: readonly string[] = ["desert", "jordan", "blush", "rose", "lavender", "olive", "stone", "linen"];
+export const PREPAINT_LOOKS_LIGHT: readonly string[] = ["jordan", "blush", "rose", "lavender", "olive", "stone", "linen"];
 
 // A palette the app no longer offers, and what stands in for it, mirrored
 // from RETIRED_THEMES in lib/reader/readingModes.ts as a literal: a device
 // that still stores Fire opens in Candlelight from the first paint, Galilee
-// in Forest and Patmos in Linen, not in Dark for a frame. Each stand-in is
+// in Forest, Patmos in Linen and Desert in Roses, not in Dark for a frame. Each stand-in is
 // one the script applies below: a palette of PREPAINT_THEME_IDS, or a look of
 // the two lists above, so the stand-in is worn as it would be if chosen.
-export const PREPAINT_RETIRED: Readonly<Record<string, string>> = { fire: "candlelight", galilee: "forest", patmos: "linen" };
+export const PREPAINT_RETIRED: Readonly<Record<string, string>> = { fire: "candlelight", galilee: "forest", patmos: "linen", desert: "rose" };
 
 /** The storage key, mirrored from lib/reader/readingModes.ts as a literal. */
 const KEY = "purify.reader.theme";

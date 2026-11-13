@@ -23,18 +23,17 @@ export type ReadingTheme =
   // shown in the chips only once the collection is complete.
   | "councils"
   | "cappadocian"
-  // The looks (1.9): fifteen Plus themes in four families. A look is worn
+  // The looks (1.9): fourteen Plus themes in four families. A look is worn
   // over Dark or over Light as a second attribute, `data-look`, so every rule
   // the app has for those two palettes still answers (themeAttributes below).
   // There were eighteen: Fire came out before the looks were released, and
-  // Galilee and Patmos, the two of the sea, after the first test builds
-  // (RETIRED_THEMES below).
+  // Galilee and Patmos, the two of the sea, and Desert after the first test
+  // builds (RETIRED_THEMES below).
   | "nightsky"
   | "dawn"
   | "incense"
   | "athos"
   | "forest"
-  | "desert"
   | "jordan"
   | "blush"
   | "rose"
@@ -181,7 +180,7 @@ export const READING_THEMES: {
   {
     id: "athos",
     label: "Holy Mountain",
-    blurb: "The peak of Athos over the sea at dusk",
+    blurb: "A monastery under the mountain, from an engraving of 1887",
     labelKey: "settings.paletteHolyMountain",
     blurbKey: "settings.paletteHolyMountainHint",
     family: "land",
@@ -190,25 +189,16 @@ export const READING_THEMES: {
   {
     id: "forest",
     label: "Forest",
-    blurb: "The firs of the north, mist between them",
+    blurb: "A bough of silver fir and its cone, from an old botanical plate",
     labelKey: "settings.paletteForest",
     blurbKey: "settings.paletteForestHint",
     family: "land",
     look: "dark",
   },
   {
-    id: "desert",
-    label: "Desert",
-    blurb: "The dunes of the Fathers in the last light",
-    labelKey: "settings.paletteDesert",
-    blurbKey: "settings.paletteDesertHint",
-    family: "land",
-    look: "light",
-  },
-  {
     id: "jordan",
     label: "Jordan",
-    blurb: "Still water, and the rings going out over it",
+    blurb: "Still water, pale and clear",
     labelKey: "settings.paletteJordan",
     blurbKey: "settings.paletteJordanHint",
     family: "land",
@@ -386,13 +376,22 @@ const THEME_IDS = new Set<string>(READING_THEMES.map((t) => t.id));
  * What each was is kept, out of the app's reach, in
  * docs/1.9-build/kept/galilee-look/ and docs/1.9-build/kept/patmos-look/.
  *
+ * Desert, of the Land and sea family (his "all recs", 2026-11-13 about 14:29
+ * UTC, which took the arbiter's recommendation that it come out while the
+ * other land looks' feet were reworked), came out the same day, so a
+ * tester's device can hold it as it can the sea's two. It reads as Roses,
+ * the kept look nearest it by ground and ink worn over Light as Desert was: a
+ * warm page (#eceae4, Desert #efe2d9), a warm brown ink (#392327, Desert
+ * #361f17) and a red rubric (#91213e, Desert's rust #6f2c16). What it was is
+ * kept, out of the app's reach, in docs/1.9-build/kept/desert-look/.
+ *
  * coerceReadingTheme applies this, so every reader of a stored palette gets
  * it (the controller, the reader's settings, the server's write, which then
  * refuses the old id as it refuses any unknown one), and the pre-paint script
  * says the same from its own literal (lib/reader/prepaint.ts).
  * lib/reader/__tests__/retiredThemes.test.ts holds all of it.
  */
-export const RETIRED_THEMES: Readonly<Record<string, ReadingTheme>> = { fire: "candlelight", galilee: "forest", patmos: "linen" };
+export const RETIRED_THEMES: Readonly<Record<string, ReadingTheme>> = { fire: "candlelight", galilee: "forest", patmos: "linen", desert: "rose" };
 
 /** The palettes that belong to a study collection, by id. */
 export const COLLECTION_THEME_IDS: ReadonlySet<string> = new Set(

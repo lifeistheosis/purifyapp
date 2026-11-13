@@ -62,8 +62,8 @@ describe("the foot's own lengths", () => {
       // The room is the larger of the bars and the foot: with no mini player up it is the foot.
       expect(clear!, id).toBeGreaterThan(tabBar!);
     }
-    // Thirteen looks with a foot, of the fifteen.
-    expect(looks.filter((id) => id !== "nightsky" && id !== "linen")).toHaveLength(13);
+    // Twelve looks with a foot, of the fourteen (Desert came out, 2026-11-13).
+    expect(looks.filter((id) => id !== "nightsky" && id !== "linen")).toHaveLength(12);
   });
 });
 

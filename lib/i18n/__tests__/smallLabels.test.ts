@@ -55,7 +55,7 @@ const palettes: Pair[] = READING_THEMES.filter((mode) => !mode.collection && !mo
   { key: mode.blurbKey ?? "", english: mode.blurb, from: `the ${mode.id} palette's one line` },
 ]);
 
-// The looks (1.9): fifteen Plus themes, each a name and one line, and the
+// The looks (1.9): fourteen Plus themes, each a name and one line, and the
 // four families their own page shelves them in, each a name and one line.
 // They are drawn the way the five are, by key, so nothing else would notice
 // one drawn as its key, or in English on a Greek phone.
@@ -163,13 +163,14 @@ describe("the small labels", () => {
 });
 
 describe("the looks' words (1.9)", () => {
-  it("are thirty-eight, each with a key of its own", () => {
+  it("are thirty-six, each with a key of its own", () => {
     // Forty-four until 2026-11-10: Fire's name and its one line left with the look (his "remove fire").
     // Forty-two until 2026-11-13: Galilee's and Patmos's names and lines left with them ("remove the sea theme from the app", "Both").
-    expect(looks.length).toBe(30);
+    // Thirty-eight until later that day: Desert's name and line left with it (his "all recs").
+    expect(looks.length).toBe(28);
     expect(families.length).toBe(8);
     for (const { key, from } of LOOKS) expect(key, from).toMatch(/^[a-z]+(\.[A-Za-z]+)+$/);
-    expect(new Set(LOOKS.map((pair) => pair.key)).size).toBe(38);
+    expect(new Set(LOOKS.map((pair) => pair.key)).size).toBe(36);
     // No look borrows a word from the five, and none of the five from a look.
     const everyday = new Set(palettes.map((pair) => pair.key));
     for (const { key, from } of LOOKS) expect(everyday.has(key), from).toBe(false);

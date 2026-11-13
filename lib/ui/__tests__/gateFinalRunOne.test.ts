@@ -76,7 +76,6 @@ describe("the florilegium's starter tiles", () => {
     // shares to 66 and the light looks to 68, so the share is drawn as written on all of them.
     const GROUND: [string, string, Rgb][] = [
       ["Light", 'html[data-reading-mode="parchment"]', [209, 199, 174]],
-      ["Desert", 'html[data-look="desert"]', [212, 196, 185]],
       ["Jordan", 'html[data-look="jordan"]', [194, 208, 204]],
       // Patmos stood here (213, 214, 216) until it came out of the looks on 2026-11-13.
       ["Blush", 'html[data-look="blush"]', [217, 196, 199]],

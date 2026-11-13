@@ -1,0 +1,72 @@
+/* The Desert look, as it stood in app/globals.css on 2026-11-13 (commit a55a5e25),
+   before it was taken out of the app's looks by the owner's word of that day.
+   Kept, not shipped: nothing loads this file. README.md beside it says what
+   Desert was and how it would be brought back.
+
+   Each part below stood in the section "The looks (1.9)", in the place its
+   note names, between the same parts of Forest and of Jordan; the fast's line
+   stood among the light looks' shares under .fast-words. */
+
+/* ── In the looks' :root block, the picture's address (the file is beside this one now) ── */
+:root {
+ --scene-desert: url("/themes/desert.svg");
+}
+
+/* ── The fast's words on its page (under .fast-words, with the other light looks) ── */
+html[data-reading-mode="parchment"][data-look="desert"] { --fast-words-share: 57%; }
+
+/* ── The look: its palette, its cards, its lit surface, its faint text and placeholders ── */
+html[data-look="desert"] {
+ --color-night: #efe2d9;
+ --color-night-soft: #ead9ce;
+ --color-night-deep: #e2cdbf;
+ --color-paper: #361f17;
+ --color-gold: #6f2c16;
+ --color-gold-soft: #864630;
+ --color-gold-pale: #5e2410;
+ --color-festal: #6f2c16;
+ --ink-rubric: 150 40 32;
+ --color-comment: #a3202a;
+ --color-comment-hover: #861824;
+ --color-on-paper: #efe2d9;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.7) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #fbf5f0 0%, #f5e9e1 60%, #eedbd0 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #e9d5c8 0%, #e0c7b8 100%);
+ --room: var(--scene-desert) center bottom / 100% auto no-repeat, #efe2d9;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="desert"] .lm-card {
+ --tw-shadow: 0 12px 28px -18px rgb(54 31 23 / 0.4);
+}
+
+html[data-look="desert"] .lit-surface {
+ --lit-on-fast: #361f17;
+ --lit-muted: rgb(54 31 23 / 0.7);
+ --lit-line: rgb(54 31 23 / 0.55);
+}
+
+@layer utilities {
+ :where(html[data-look="desert"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68) {
+  color: color-mix(in oklab, var(--color-paper) 80%, transparent);
+ }
+ :where(html[data-look="desert"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 80%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="desert"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 80%, transparent);
+ }
+}
+
+/* ── Its tile on the reading mode page (after Forest's) ── */
+.set-mode-page[data-palette="desert"] {
+ --mp-ground: #efe2d9;
+ --mp-ink: #361f17;
+ --mp-accent: #6f2c16;
+ --mp-sheen: 0.5;
+ --mp-back: var(--scene-desert) center bottom calc(-35.75px * var(--mp-k)) / 100% auto no-repeat, var(--mp-ground);
+}

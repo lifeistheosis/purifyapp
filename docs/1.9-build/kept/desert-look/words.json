@@ -1,0 +1,51 @@
+{
+  "what": "The Desert look's name and its one line under that name in the picker (settings.paletteDesert and settings.paletteDesertHint), as they stood in each of the 21 catalogs on 2026-11-13. Both were the look's own and left the catalogs with it.",
+  "keys": {
+    "settings.paletteDesert": {
+      "ar": "البرية",
+      "bg": "Пустиня",
+      "de": "Wüste",
+      "el": "Έρημος",
+      "en": "Desert",
+      "es": "Desierto",
+      "fil": "Disyerto",
+      "fr": "Désert",
+      "hu": "Sivatag",
+      "id": "Padang gurun",
+      "it": "Deserto",
+      "ka": "უდაბნო",
+      "ne": "मरुभूमि",
+      "pl": "Pustynia",
+      "pt": "Deserto",
+      "ro": "Pustie",
+      "ru": "Пустыня",
+      "sr": "Пустиња",
+      "tr": "Çöl",
+      "uk": "Пустеля",
+      "ur": "بیابان"
+    },
+    "settings.paletteDesertHint": {
+      "ar": "كثبان الآباء في آخر الضوء",
+      "bg": "Дюните на Отците в последната светлина",
+      "de": "Die Dünen der Väter im letzten Licht",
+      "el": "Οι αμμόλοφοι των Πατέρων στο τελευταίο φως",
+      "en": "The dunes of the Fathers in the last light",
+      "es": "Las dunas de los Padres con la última luz",
+      "fil": "Ang mga buhanginan ng mga Ama sa huling liwanag",
+      "fr": "Les dunes des Pères dans la dernière lumière",
+      "hu": "Az Atyák dűnéi az utolsó fényben",
+      "id": "Bukit pasir para Bapa dalam cahaya terakhir",
+      "it": "Le dune dei Padri nell'ultima luce",
+      "ka": "მამათა უდაბნოს ქვიშის ბორცვები უკანასკნელ შუქზე",
+      "ne": "अन्तिम उज्यालोमा पिताहरूको मरुभूमिका बालुवाका ढिस्काहरू",
+      "pl": "Wydmy Ojców w ostatnim świetle",
+      "pt": "As dunas dos Padres na última luz",
+      "ro": "Dunele Părinților în ultima lumină",
+      "ru": "Дюны пустыни Отцов в последнем свете",
+      "sr": "Дине Отаца у последњој светлости",
+      "tr": "Son ışıkta Babaların kum tepeleri",
+      "uk": "Дюни пустелі Отців в останньому світлі",
+      "ur": "آخری روشنی میں آبا کے بیابان کے ریت کے ٹیلے"
+    }
+  }
+}

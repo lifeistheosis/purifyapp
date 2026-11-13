@@ -52,7 +52,7 @@ describe("READING_THEMES", () => {
     // five and are shown only once their collection is complete, so they do
     // not change what a reader meets first.
     //
-    // The looks (1.9) are filtered out too: fifteen Plus themes chosen on a
+    // The looks (1.9) are filtered out too: fourteen Plus themes chosen on a
     // page of their own, held by "the looks" below.
     expect(READING_THEMES.filter((t) => !t.collection && !t.look).map((t) => t.id)).toEqual([
       "default",
@@ -188,14 +188,13 @@ describe("the free palettes", () => {
 describe("the looks", () => {
   const looks = READING_THEMES.filter((t) => t.look);
 
-  it("are the fifteen, in the order the picker shelves them, with ids that must not move", () => {
+  it("are the fourteen, in the order the picker shelves them, with ids that must not move", () => {
     expect(looks.map((t) => t.id)).toEqual([
       "nightsky",
       "dawn",
       "incense",
       "athos",
       "forest",
-      "desert",
       "jordan",
       "blush",
       "rose",
@@ -217,9 +216,9 @@ describe("the looks", () => {
     for (const id of ["default", "parchment", "black", "candlelight", "monastery", "councils", "cappadocian", "sepia"]) expect(isLook(id), id).toBe(false);
   });
 
-  it("are seven over Dark and eight over Light", () => {
+  it("are seven over Dark and seven over Light", () => {
     expect(looks.filter((t) => t.look === "dark").map((t) => t.id)).toEqual(["nightsky", "dawn", "incense", "athos", "forest", "mosaic", "damask"]);
-    expect(looks.filter((t) => t.look === "light").map((t) => t.id)).toEqual(["desert", "jordan", "blush", "rose", "lavender", "olive", "stone", "linen"]);
+    expect(looks.filter((t) => t.look === "light").map((t) => t.id)).toEqual(["jordan", "blush", "rose", "lavender", "olive", "stone", "linen"]);
   });
 
   it("put a look on the page as data-look, over Dark or over Light's own mode, and leave the old palettes as they were", () => {
@@ -239,7 +238,7 @@ describe("the looks", () => {
     expect(THEME_FAMILIES.map((f) => f.id)).toEqual(["night", "land", "garden", "sanctuary"]);
     for (const t of looks) expect(THEME_FAMILIES.some((f) => f.id === t.family), `${t.id} has a family`).toBe(true);
     expect(themesOfFamily("night").map((t) => t.id)).toEqual(["nightsky", "dawn", "incense", "candlelight"]);
-    expect(themesOfFamily("land").map((t) => t.id)).toEqual(["athos", "forest", "desert", "jordan"]);
+    expect(themesOfFamily("land").map((t) => t.id)).toEqual(["athos", "forest", "jordan"]);
     expect(themesOfFamily("garden").map((t) => t.id)).toEqual(["blush", "rose", "lavender", "olive"]);
     expect(themesOfFamily("sanctuary").map((t) => t.id)).toEqual(["mosaic", "stone", "damask", "linen", "monastery"]);
     // Every palette is on a shelf of the picker but the free three and the two earned.

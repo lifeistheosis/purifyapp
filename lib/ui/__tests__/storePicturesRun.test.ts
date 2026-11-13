@@ -137,7 +137,7 @@ describe("c. the wide calendar", () => {
     const light = block('html[data-reading-mode="parchment"]');
     const shareOf = (look: string | null) =>
       Number((look ? CSS.match(new RegExp(`html\\[data-reading-mode="parchment"\\]\\[data-look="${look}"\\] \\{ --fast-words-share: (\\d+)%; \\}`))?.[1] : CSS.match(/var\(--fast-words-share, (\d+)%\)/)?.[1]) ?? NaN) / 100;
-    const palettes = [null, "desert", "jordan", "blush", "rose", "lavender", "olive", "stone", "linen"].map((look) => {
+    const palettes = [null, "jordan", "blush", "rose", "lavender", "olive", "stone", "linen"].map((look) => {
       const b = look ? block(`html[data-look="${look}"]`) : light;
       return { look, share: shareOf(look), night: hex(b, "color-night"), soft: hex(b, "color-night-soft"), deep: hex(b, "color-night-deep"), paper: hex(b, "color-paper") };
     });

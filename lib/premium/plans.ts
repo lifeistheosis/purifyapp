@@ -36,15 +36,16 @@
 // which nothing gates anywhere in the codebase. What is listed here has to
 // be something a reader actually cannot have without paying.
 //
-// From 1.9 the row counts them: seventeen, which is Candlelight, Monastery and
-// the fifteen looks in their four families (the owner's word, 2026-11-10,
+// From 1.9 the row counts them: sixteen, which is Candlelight, Monastery and
+// the fourteen looks in their four families (the owner's word, 2026-11-10,
 // "all recs", on the three lines drafted for him; the other two are the
 // sheet's title and body, plus.palettes.title and plus.palettes.body, and
 // the row's short name, plus.active.modes, is the title's first words). His
 // lines said twenty and eighteen: Fire came out of the looks the same day
 // ("remove fire"), and the numbers followed it, nothing else in the lines;
 // then nineteen and seventeen, until Galilee and Patmos came out on
-// 2026-11-13 ("remove the sea theme from the app", "Both"). A
+// 2026-11-13 ("remove the sea theme from the app", "Both"); then seventeen
+// and fifteen, until Desert came out the same day (his "all recs"). A
 // number in words goes stale the day a look is added or dropped, so
 // lib/premium/__tests__/plans.test.ts reads it against the registry. The two
 // palettes earned by reading are not in the count.
@@ -170,7 +171,7 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
     {
       id: "reading-modes",
       title: "Reading modes",
-      sub: "Seventeen reading modes, from Candlelight to the Holy Mountain, in the Scriptures and the writings of the Fathers",
+      sub: "Sixteen reading modes, from Candlelight to the Holy Mountain, in the Scriptures and the writings of the Fathers",
     },
     {
       id: "florilegium",
@@ -291,7 +292,7 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
     {
       id: "reading-modes",
       title: "Lesemodi",
-      sub: "Siebzehn Lesemodi, von Kerzenlicht bis zum Heiligen Berg, in den Schriften und den Werken der Väter",
+      sub: "Sechzehn Lesemodi, von Kerzenlicht bis zum Heiligen Berg, in den Schriften und den Werken der Väter",
     },
     {
       id: "florilegium",

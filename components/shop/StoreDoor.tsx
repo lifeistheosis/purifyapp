@@ -79,7 +79,7 @@ export function StoreDoor({
             Monastery is a shade lighter than EIKON's old obsidian: the
             disclosure at text-paper/55 read 4.42:1 there (build 95 note 20,
             checkMock), so it is text-paper/80, held on all five palettes and
-            the fifteen looks. */}
+            the fourteen looks. */}
         {details ? (
           <div className="mt-4 space-y-1.5 font-sans text-caption leading-[1.5] text-paper/80">
             {store.shipping_origin ? (

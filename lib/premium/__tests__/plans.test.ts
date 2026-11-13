@@ -99,9 +99,10 @@ describe("the restructured ladder", () => {
     // Twenty and eighteen when he approved the lines; nineteen and seventeen
     // since Fire came out of the looks the same day, by his word ("remove
     // fire"); seventeen and fifteen since Galilee and Patmos came out on
-    // 2026-11-13 ("remove the sea theme from the app", "Both"): the numbers
-    // followed the registry, and nothing else in the lines moved.
-    const WORDS: Record<number, [string, string]> = { 4: ["four", "vier"], 15: ["fifteen", "fünfzehn"], 17: ["seventeen", "siebzehn"] };
+    // 2026-11-13 ("remove the sea theme from the app", "Both"); sixteen and
+    // fourteen since Desert came out the same day (his "all recs"): the
+    // numbers followed the registry, and nothing else in the lines moved.
+    const WORDS: Record<number, [string, string]> = { 4: ["four", "vier"], 14: ["fourteen", "vierzehn"], 16: ["sixteen", "sechzehn"] };
     const word = (n: number, de = false) => WORDS[n]?.[de ? 1 : 0] ?? `no word for ${n}`;
     const capital = (w: string) => w[0].toUpperCase() + w.slice(1);
     const names = plus.map((t) => t.label);
@@ -150,27 +151,27 @@ describe("the restructured ladder", () => {
     const looks = plus.filter((t) => isLook(t.id));
     // Each language's word for the two numbers, as its lines write them (lower case).
     const WORDS: Record<string, Record<number, string>> = {
-      ar: { 15: "خمسة عشر", 17: "سبعة عشر" },
-      bg: { 15: "петнадесет", 17: "седемнадесет" },
-      de: { 15: "fünfzehn", 17: "siebzehn" },
-      el: { 15: "δεκαπέντε", 17: "δεκαεπτά" },
-      en: { 15: "fifteen", 17: "seventeen" },
-      es: { 15: "quince", 17: "diecisiete" },
-      fil: { 15: "labinlima", 17: "labimpito" },
-      fr: { 15: "quinze", 17: "dix-sept" },
-      hu: { 15: "tizenöt", 17: "tizenhét" },
-      id: { 15: "lima belas", 17: "tujuh belas" },
-      it: { 15: "quindici", 17: "diciassette" },
-      ka: { 15: "თხუთმეტი", 17: "ჩვიდმეტი" },
-      ne: { 15: "पन्ध्र", 17: "सत्र" },
-      pl: { 15: "piętnaście", 17: "siedemnaście" },
-      pt: { 15: "quinze", 17: "dezessete" },
-      ro: { 15: "cincisprezece", 17: "șaptesprezece" },
-      ru: { 15: "пятнадцать", 17: "семнадцать" },
-      sr: { 15: "петнаест", 17: "седамнаест" },
-      tr: { 15: "on beş", 17: "on yedi" },
-      uk: { 15: "п’ятнадцять", 17: "сімнадцять" },
-      ur: { 15: "پندرہ", 17: "سترہ" },
+      ar: { 14: "أربعة عشر", 16: "ستة عشر" },
+      bg: { 14: "четиринадесет", 16: "шестнадесет" },
+      de: { 14: "vierzehn", 16: "sechzehn" },
+      el: { 14: "δεκατέσσερις", 16: "δεκαέξι" },
+      en: { 14: "fourteen", 16: "sixteen" },
+      es: { 14: "catorce", 16: "dieciséis" },
+      fil: { 14: "labing-apat", 16: "labing-anim" },
+      fr: { 14: "quatorze", 16: "seize" },
+      hu: { 14: "tizennégy", 16: "tizenhat" },
+      id: { 14: "empat belas", 16: "enam belas" },
+      it: { 14: "quattordici", 16: "sedici" },
+      ka: { 14: "თოთხმეტი", 16: "თექვსმეტი" },
+      ne: { 14: "चौध", 16: "सोह्र" },
+      pl: { 14: "czternaście", 16: "szesnaście" },
+      pt: { 14: "catorze", 16: "dezesseis" },
+      ro: { 14: "paisprezece", 16: "șaisprezece" },
+      ru: { 14: "четырнадцать", 16: "шестнадцать" },
+      sr: { 14: "четрнаест", 16: "шеснаест" },
+      tr: { 14: "on dört", 16: "on altı" },
+      uk: { 14: "чотирнадцять", 16: "шістнадцять" },
+      ur: { 14: "چودہ", 16: "سولہ" },
     };
     const codes = Object.keys(WORDS).sort();
     expect(codes).toHaveLength(21);

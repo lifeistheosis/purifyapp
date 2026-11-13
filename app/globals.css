@@ -4150,7 +4150,6 @@ html.is-native ::-webkit-scrollbar {
 html[data-reading-mode="parchment"] .fast-words {
  color: color-mix(in oklab, rgb(var(--fast-tone)) var(--fast-words-share, 66%), var(--color-paper));
 }
-html[data-reading-mode="parchment"][data-look="desert"] { --fast-words-share: 57%; }
 html[data-reading-mode="parchment"][data-look="jordan"] { --fast-words-share: 62%; }
 html[data-reading-mode="parchment"][data-look="blush"] { --fast-words-share: 62%; }
 html[data-reading-mode="parchment"][data-look="rose"] { --fast-words-share: 64%; }
@@ -12685,7 +12684,7 @@ html[data-reading-mode="parchment"] .chant-version-dot {
 }
 
 /* ── The looks (1.9) ───────────────────────────────────────────────────
-   Fifteen Plus themes in four families (lib/reader/readingModes.ts,
+   Fourteen Plus themes in four families (lib/reader/readingModes.ts,
    THEME_FAMILIES; docs/1.9-build/notes/themes-fable.md, "The third set"),
    by the owner's words of 2026-11-10: "make a lot more designs", "clean and
    unique". There were eighteen: Fire came out the same day, by his word
@@ -12693,6 +12692,8 @@ html[data-reading-mode="parchment"] .chant-version-dot {
    Galilee and Patmos, the two of the sea, came out on 2026-11-13 ("remove
    the sea theme from the app", "Both"), and what each was is kept in
    docs/1.9-build/kept/galilee-look/ and docs/1.9-build/kept/patmos-look/.
+   Desert came out the same day (his "all recs"), kept in
+   docs/1.9-build/kept/desert-look/.
 
    A look is one calm page and one sign. The sign is a still picture at the
    foot of the screen, or the rule at a page's head. No grain, no texture
@@ -12713,10 +12714,8 @@ html[data-reading-mode="parchment"] .chant-version-dot {
  --sky-horizon: url("/themes/nightsky-horizon.svg");
  --room-dawn: url("/themes/dawn-room.webp");
  --scene-incense: url("/themes/incense.svg");
- --scene-athos: url("/themes/athos.svg");
- --scene-forest: url("/themes/forest.svg");
- --scene-desert: url("/themes/desert.svg");
- --scene-jordan: url("/themes/jordan.svg");
+ --scene-athos: url("/themes/athos.webp");
+ --scene-forest: url("/themes/forest.webp");
  --room-blush: url("/themes/blush-room.webp");
  --room-rose: url("/themes/rose-room.webp");
  --head-rose: url("/themes/rose-head.webp");
@@ -13068,6 +13067,17 @@ html[data-look="incense"] .lit-surface {
  }
 }
 
+/* The Holy Mountain, reworked (2026-11-13, build 95 note 16). Its first
+   picture was a peak drawn over still water; the sea looks came out and the
+   mountain was to be reworked or go. Its colours stay as they were (his word
+   the same day: "all the colors are nice it's just the designs at the bottom
+   that dont look good"). Now, at the foot: the monastery of St Paul under
+   the mountain, from a wood engraving of 1887
+   (docs/licensing/THEME_PICTURES.md; made by scripts/theme-pictures.mjs
+   --engraved, on this ground). Behind the words there is only the ridge and
+   one soft light low behind it. The monastery's walls are the one lit
+   thing, so the foot is solid up to their top (152px): no word is drawn
+   across them, and in a reader the dock stands there. */
 html[data-look="athos"] {
  --color-night: #0e1420;
  --color-night-soft: #182031;
@@ -13086,8 +13096,8 @@ html[data-look="athos"] {
  --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0) 55%),
   linear-gradient(150deg, #273147 0%, #1a2233 100%);
  --room: var(--scene-athos) center bottom / 100% auto no-repeat, #0e1420;
- --foot-solid: 104px;
- --foot-clear: 240px;
+ --foot-solid: 152px;
+ --foot-clear: 256px;
 }
 
 html[data-look="athos"] .lit-surface {
@@ -13110,6 +13120,16 @@ html[data-look="athos"] .lit-surface {
  }
 }
 
+/* Forest and Jordan (2026-11-13, build 95 note 16). Their colours are as
+   they were, and only the foot changed. Forest: a bough of silver fir and its
+   cone at the foot's two corners, from a plate of Köhler's
+   Medizinal-Pflanzen, the way the Garden's flowers stand
+   (docs/licensing/THEME_PICTURES.md; scripts/theme-pictures.mjs --engraved).
+   Jordan: no picture, the page's own colour to the foot; a page's last lines
+   go quiet into it as they do under the dock. Desert, which stood between
+   them, came out of the looks the same day (his "all recs"); what it was is
+   kept in docs/1.9-build/kept/desert-look/, and a device that stored it
+   wears Roses (RETIRED_THEMES). */
 html[data-look="forest"] {
  --color-night: #0b1711;
  --color-night-soft: #14231b;
@@ -13152,52 +13172,6 @@ html[data-look="forest"] .lit-surface {
  }
 }
 
-html[data-look="desert"] {
- --color-night: #efe2d9;
- --color-night-soft: #ead9ce;
- --color-night-deep: #e2cdbf;
- --color-paper: #361f17;
- --color-gold: #6f2c16;
- --color-gold-soft: #864630;
- --color-gold-pale: #5e2410;
- --color-festal: #6f2c16;
- --ink-rubric: 150 40 32;
- --color-comment: #a3202a;
- --color-comment-hover: #861824;
- --color-on-paper: #efe2d9;
- --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.7) 0%, rgb(255 255 255 / 0) 55%),
-  linear-gradient(155deg, #fbf5f0 0%, #f5e9e1 60%, #eedbd0 100%);
- --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0) 55%),
-  linear-gradient(150deg, #e9d5c8 0%, #e0c7b8 100%);
- --room: var(--scene-desert) center bottom / 100% auto no-repeat, #efe2d9;
- --foot-solid: 104px;
- --foot-clear: 240px;
-}
-
-html[data-look="desert"] .lm-card {
- --tw-shadow: 0 12px 28px -18px rgb(54 31 23 / 0.4);
-}
-
-html[data-look="desert"] .lit-surface {
- --lit-on-fast: #361f17;
- --lit-muted: rgb(54 31 23 / 0.7);
- --lit-line: rgb(54 31 23 / 0.55);
-}
-
-@layer utilities {
- :where(html[data-look="desert"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68) {
-  color: color-mix(in oklab, var(--color-paper) 80%, transparent);
- }
- :where(html[data-look="desert"]) .placeholder\:text-paper\/55::placeholder {
-  color: color-mix(in oklab, var(--color-paper) 80%, transparent);
- }
-}
-@layer base {
- :where(html[data-look="desert"]) ::placeholder {
-  color: color-mix(in oklab, var(--color-paper) 80%, transparent);
- }
-}
-
 html[data-look="jordan"] {
  --color-night: #e4efed;
  --color-night-soft: #d6e6e3;
@@ -13213,7 +13187,7 @@ html[data-look="jordan"] {
   linear-gradient(155deg, #f8fcfb 0%, #eef6f4 60%, #e2efec 100%);
  --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0) 55%),
   linear-gradient(150deg, #d9e9e6 0%, #cde1dd 100%);
- --room: var(--scene-jordan) center bottom / 100% auto no-repeat, #e4efed;
+ --room: #e4efed;
  --foot-solid: 104px;
  --foot-clear: 240px;
 }
@@ -13967,19 +13941,12 @@ a.set-lab.set-link {
  --mp-accent: #f5faf6;
  --mp-back: var(--scene-forest) center bottom calc(-35.75px * var(--mp-k)) / 100% auto no-repeat, var(--mp-ground);
 }
-.set-mode-page[data-palette="desert"] {
- --mp-ground: #efe2d9;
- --mp-ink: #361f17;
- --mp-accent: #6f2c16;
- --mp-sheen: 0.5;
- --mp-back: var(--scene-desert) center bottom calc(-35.75px * var(--mp-k)) / 100% auto no-repeat, var(--mp-ground);
-}
 .set-mode-page[data-palette="jordan"] {
  --mp-ground: #e4efed;
  --mp-ink: #132e36;
  --mp-accent: #13525a;
  --mp-sheen: 0.5;
- --mp-back: var(--scene-jordan) center bottom calc(-35.75px * var(--mp-k)) / 100% auto no-repeat, var(--mp-ground);
+ --mp-back: var(--mp-ground);
 }
 .set-mode-page[data-palette="blush"] {
  --mp-ground: #efe8e8;

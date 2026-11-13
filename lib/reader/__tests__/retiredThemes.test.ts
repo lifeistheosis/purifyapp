@@ -68,8 +68,8 @@ function worn(theme: Parameters<typeof themeAttributes>[0]): Record<string, stri
 }
 
 describe("a palette the app no longer offers", () => {
-  it("is Fire, Galilee or Patmos, and none of them stands in for anything the app has", () => {
-    expect(Object.keys(RETIRED_THEMES)).toEqual(["fire", "galilee", "patmos"]);
+  it("is Fire, Galilee, Patmos or Desert, and none of them stands in for anything the app has", () => {
+    expect(Object.keys(RETIRED_THEMES)).toEqual(["fire", "galilee", "patmos", "desert"]);
     const ids = new Set<string>(READING_THEMES.map((t) => t.id));
     for (const [old, now] of Object.entries(RETIRED_THEMES)) {
       expect(ids.has(old), old).toBe(false);
@@ -194,6 +194,14 @@ const SEA = [
   { id: "galilee", name: "Galilee", over: "dark", standIn: "forest", standInName: "Forest", folder: "docs/1.9-build/kept/galilee-look" },
   { id: "patmos", name: "Patmos", over: "light", standIn: "linen", standInName: "Linen", folder: "docs/1.9-build/kept/patmos-look" },
 ] as const;
+/** Desert, the fourth land look, came out the same day (his "all recs", about 14:29 UTC), and is held as the sea's two are. */
+const DESERT = { id: "desert", name: "Desert", over: "light", standIn: "rose", standInName: "Roses", folder: "docs/1.9-build/kept/desert-look" } as const;
+/** Every look taken out on 2026-11-13, with his words that took it out (its kept note quotes them). */
+const GONE = [
+  { ...SEA[0], said: ["remove the sea theme from the app", "Both"] },
+  { ...SEA[1], said: ["remove the sea theme from the app", "Both"] },
+  { ...DESERT, said: ["all recs"] },
+] as const;
 
 type Rgb = [number, number, number];
 const rgb = (hex: string): Rgb => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255) as Rgb;
@@ -215,11 +223,11 @@ function groundAndInk(sheet: string, selector: string): { ground: string; ink: s
   return { ground: token("night"), ink: token("paper") };
 }
 
-describe("the two looks of the sea are offered nowhere in the app", () => {
-  it("are on no shelf of the picker: the Land and sea family keeps its other four", () => {
-    expect(themesOfFamily("land").map((t) => t.id)).toEqual(["athos", "forest", "desert", "jordan"]);
+describe("the two looks of the sea and Desert are offered nowhere in the app", () => {
+  it("are on no shelf of the picker: the Land and sea family keeps its other three", () => {
+    expect(themesOfFamily("land").map((t) => t.id)).toEqual(["athos", "forest", "jordan"]);
     for (const t of READING_THEMES) {
-      for (const sea of SEA) {
+      for (const sea of GONE) {
         expect(t.id as string, sea.id).not.toBe(sea.id);
         expect(t.label, sea.id).not.toBe(sea.name);
         expect(t.labelKey, sea.id).not.toBe(`settings.palette${sea.name}`);
@@ -229,7 +237,7 @@ describe("the two looks of the sea are offered nowhere in the app", () => {
   });
 
   it("are in no list the pre-paint script reads", () => {
-    for (const sea of SEA) {
+    for (const sea of GONE) {
       expect([...PREPAINT_THEME_IDS, ...PREPAINT_LOOKS_DARK, ...PREPAINT_LOOKS_LIGHT], sea.id).not.toContain(sea.id);
       // The script's own text names each only as a stored value to send on.
       expect(THEME_PREPAINT.split(`"${sea.id}"`).length - 1, sea.id).toBe(1);
@@ -238,16 +246,16 @@ describe("the two looks of the sea are offered nowhere in the app", () => {
   });
 
   it("have no rule in the stylesheet and no picture in what the apps carry", () => {
-    for (const sea of SEA) {
+    for (const sea of GONE) {
       expect(BARE_CSS, sea.id).not.toContain(`data-look="${sea.id}"`);
       expect(BARE_CSS, sea.id).not.toContain(`data-palette="${sea.id}"`);
       expect(BARE_CSS, sea.id).not.toContain(`--scene-${sea.id}`);
       expect(BARE_CSS, sea.id).not.toContain(`/themes/${sea.id}.svg`);
       expect(fs.existsSync(path.join(ROOT, `public/themes/${sea.id}.svg`)), sea.id).toBe(false);
     }
-    expect(fs.readdirSync(path.join(ROOT, "public/themes")).filter((f) => /galilee|patmos/i.test(f))).toEqual([]);
+    expect(fs.readdirSync(path.join(ROOT, "public/themes")).filter((f) => /galilee|patmos|desert/i.test(f))).toEqual([]);
     // Their drawings are no longer among those the plain run writes to public/themes.
-    expect(Object.keys(DRAWINGS).filter((f) => /galilee|patmos/.test(f))).toEqual([]);
+    expect(Object.keys(DRAWINGS).filter((f) => /galilee|patmos|desert/.test(f))).toEqual([]);
   });
 
   it("have no words of their own in any of the 21 catalogs", () => {
@@ -256,7 +264,7 @@ describe("the two looks of the sea are offered nowhere in the app", () => {
     expect(codes).toHaveLength(21);
     for (const file of codes) {
       const catalog = JSON.parse(fs.readFileSync(path.join(dir, file), "utf8")) as Record<string, string>;
-      for (const sea of SEA) {
+      for (const sea of GONE) {
         expect(catalog[`settings.palette${sea.name}`], `${file}: ${sea.id}`).toBeUndefined();
         expect(catalog[`settings.palette${sea.name}Hint`], `${file}: ${sea.id}`).toBeUndefined();
       }
@@ -264,11 +272,12 @@ describe("the two looks of the sea are offered nowhere in the app", () => {
   });
 });
 
-describe("a device that stores one of the sea's looks wears the kept look nearest it", () => {
-  it("Galilee as Forest and Patmos as Linen, by every reader of a stored palette", () => {
+describe("a device that stores one of the looks taken out wears the kept look nearest it", () => {
+  it("Galilee as Forest, Patmos as Linen and Desert as Roses, by every reader of a stored palette", () => {
     expect(RETIRED_THEMES.galilee).toBe("forest");
     expect(RETIRED_THEMES.patmos).toBe("linen");
-    for (const sea of SEA) {
+    expect(RETIRED_THEMES.desert).toBe("rose");
+    for (const sea of GONE) {
       expect(coerceReadingTheme(sea.id), sea.id).toBe(sea.standIn);
       // What night reading put down and gives back (lib/reader/night.ts) reads it the same way.
       expect(readBeforeNight(JSON.stringify({ theme: sea.id, focus: false }))?.theme, sea.id).toBe(sea.standIn);
@@ -276,17 +285,18 @@ describe("a device that stores one of the sea's looks wears the kept look neares
   });
 
   it("dark stays dark and light stays light: the stand-in is a look worn over the same palette", () => {
-    for (const sea of SEA) {
+    for (const sea of GONE) {
       const standIn = READING_THEMES.find((t) => t.id === sea.standIn)!;
       expect(standIn.look, sea.id).toBe(sea.over);
       expect(themeAttributes(standIn.id), sea.id).toEqual({ mode: sea.over === "light" ? "parchment" : null, look: sea.standIn });
     }
     expect(prepaint("galilee")).toEqual({ "data-look": "forest" });
     expect(prepaint("patmos")).toEqual({ "data-reading-mode": "parchment", "data-look": "linen" });
+    expect(prepaint("desert")).toEqual({ "data-reading-mode": "parchment", "data-look": "rose" });
   });
 
   it("Plus as it was: the same reader is entitled to the stand-in, and no reader gets more than before", () => {
-    for (const sea of SEA) {
+    for (const sea of GONE) {
       expect(isFreeTheme(sea.standIn), sea.id).toBe(false);
       expect(isCollectionTheme(sea.standIn), sea.id).toBe(false);
       expect(isLook(sea.standIn), sea.id).toBe(true);
@@ -294,7 +304,7 @@ describe("a device that stores one of the sea's looks wears the kept look neares
   });
 
   it("is the nearest by ground and ink of the kept palettes worn over the same ground, the Holy Mountain aside while it is reworked", () => {
-    for (const sea of SEA) {
+    for (const sea of GONE) {
       // The look's own ground and ink, from its rules as they stood (kept beside its picture).
       const own = groundAndInk(read(`${sea.folder}/${sea.id}.css`), `html[data-look="${sea.id}"]`);
       expect(own.ground && own.ink, sea.id).toBeTruthy();
@@ -315,7 +325,7 @@ describe("a device that stores one of the sea's looks wears the kept look neares
   });
 
   it("arriving by sync from an older build, it travels as it was stored and is worn as its stand-in", () => {
-    for (const sea of SEA) {
+    for (const sea of GONE) {
       // A reading slice from a device on an older build: the stored value travels untouched (lib/sync/keptMerge.ts)...
       const remote = cleanReadingSlice({ at: 20, values: { [READING_THEME_KEY]: sea.id } });
       const merged = mergeReading(cleanReadingSlice({ at: 10, values: { [READING_THEME_KEY]: "default" } }), remote);
@@ -327,9 +337,9 @@ describe("a device that stores one of the sea's looks wears the kept look neares
   });
 });
 
-describe("nothing made is deleted: what each look of the sea was is kept, out of the app's reach", () => {
+describe("nothing made is deleted: what each look taken out was is kept, out of the app's reach", () => {
   it("its rules, its picture, its words and a still are in its own folder, with a note that says what, when and why", () => {
-    for (const sea of SEA) {
+    for (const sea of GONE) {
       for (const file of ["README.md", `${sea.id}.css`, `${sea.id}.svg`, "words.json", `${sea.id}-look-2026-11-13.png`]) {
         expect(fs.existsSync(path.join(ROOT, sea.folder, file)), `${sea.id}: ${file}`).toBe(true);
       }
@@ -344,22 +354,24 @@ describe("nothing made is deleted: what each look of the sea was is kept, out of
       for (const by of Object.values(words.keys)) expect(Object.keys(by), sea.id).toHaveLength(21);
       expect(words.keys[`settings.palette${sea.name}`].en, sea.id).toBe(sea.name);
       const note = read(`${sea.folder}/README.md`);
-      for (const said of ["2026-11-13", "remove the sea theme from the app", "Both", sea.standInName, "If it is ever wanted again"]) expect(note, `${sea.id}: ${said}`).toContain(said);
+      for (const said of ["2026-11-13", ...sea.said, sea.standInName, "If it is ever wanted again"]) expect(note, `${sea.id}: ${said}`).toContain(said);
       expect(note, sea.id).not.toContain("—");
     }
     expect(read(`${SEA[0].folder}/galilee.css`)).toContain("--color-night: #06181d;");
     expect(read(`${SEA[1].folder}/patmos.css`)).toContain("--color-night: #f7f7f5;");
+    expect(read(`${DESERT.folder}/desert.css`)).toContain("--color-night: #efe2d9;");
   });
 
   it("each picture is what its painter draws, to the letter, so --kept makes it again", () => {
-    expect(Object.keys(KEPT_DRAWINGS).sort()).toEqual(["galilee.svg", "patmos.svg"]);
-    for (const sea of SEA) {
+    expect(Object.keys(KEPT_DRAWINGS).sort()).toEqual(["desert.svg", "galilee.svg", "patmos.svg"]);
+    for (const sea of GONE) {
       const draw = (KEPT_DRAWINGS as Record<string, () => { svg: string }>)[`${sea.id}.svg`];
       expect(read(`${sea.folder}/${sea.id}.svg`), sea.id).toBe(`${draw().svg}\n`);
     }
     const script = read("scripts/theme-pictures.mjs");
     expect(script).toContain('galilee: path.join(ROOT, "docs", "1.9-build", "kept", "galilee-look"),');
     expect(script).toContain('patmos: path.join(ROOT, "docs", "1.9-build", "kept", "patmos-look"),');
+    expect(script).toContain('desert: path.join(ROOT, "docs", "1.9-build", "kept", "desert-look"),');
     // Written only with --kept, and only into its own folder.
     expect(script).toContain('const dir = KEPT[file.replace(/\\.svg$/, "")];');
     expect(script).toContain("fs.writeFileSync(path.join(dir, file), text + \"\\n\");");
@@ -376,7 +388,7 @@ describe("nothing the apps are made of reaches into a kept folder", () => {
         return /\.(tsx?|css|mjs|js|json)$/.test(e.name) ? [rel] : [];
       });
     const all = [...sources("app"), ...sources("components"), ...sources("lib"), ...sources("public")];
-    for (const folder of ["kept/fire-look", "kept/galilee-look", "kept/patmos-look"]) {
+    for (const folder of ["kept/fire-look", "kept/galilee-look", "kept/patmos-look", "kept/desert-look"]) {
       const naming = all.filter((f) => read(f).includes(folder));
       expect(naming.sort(), folder).toEqual(["app/globals.css", "lib/reader/readingModes.ts"]);
       for (const f of naming) expect(read(f).replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, ""), `${f}: ${folder}`).not.toContain(folder);

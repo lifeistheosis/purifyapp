@@ -187,8 +187,8 @@ describe("Now Playing's sung words, every line legible", () => {
     expect(SHEET).toContain('shown ? "opacity-30" : "opacity-0"');
     expect(SHEET).toContain('filter: "grayscale(1) blur(42px) brightness(0.5)"');
     expect(SHEET).toContain("radial-gradient(900px 520px at 20% -8%, rgba(255,255,255,0.06), transparent 68%)");
-    // Every palette a reader can wear: twenty-two since Galilee and Patmos came out of the looks (2026-11-13).
-    expect(PALETTES.length).toBeGreaterThanOrEqual(22);
+    // Every palette a reader can wear: twenty-two since Galilee and Patmos came out of the looks (2026-11-13), twenty-one since Desert did.
+    expect(PALETTES.length).toBeGreaterThanOrEqual(21);
   });
 
   it("dims by the palette's steps, never by a fixed share", () => {

@@ -1,0 +1,53 @@
+/* The Holy Mountain look as it stood in app/globals.css until 2026-11-13. Kept, not loaded by anything. */
+:root {
+ --scene-athos: url("/themes/athos.svg");
+}
+
+html[data-look="athos"] {
+ --color-night: #0e1420;
+ --color-night-soft: #182031;
+ --color-night-deep: #090d16;
+ --color-paper: #edf1f8;
+ --color-gold: #f6f8fd;
+ --color-gold-soft: #b8c3dc;
+ --color-gold-pale: #fcfdff;
+ --color-festal: #d6e0f8;
+ --ink-rubric: 255 165 150;
+ --color-comment: #ff8a7d;
+ --color-comment-hover: #ffa89c;
+ --look-quiet: 64%;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #1f283c 0%, #141b2b 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #273147 0%, #1a2233 100%);
+ --room: var(--scene-athos) center bottom / 100% auto no-repeat, #0e1420;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="athos"] .lit-surface {
+ --color-paper: #edf1f8;
+ --lit-muted: rgb(237 241 248 / 0.6);
+ --lit-line: rgb(237 241 248 / 0.4);
+}
+
+@layer utilities {
+ :where(html[data-look="athos"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+ :where(html[data-look="athos"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="athos"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+
+.set-mode-page[data-palette="athos"] {
+ --mp-ground: #0e1420;
+ --mp-ink: #edf1f8;
+ --mp-accent: #f6f8fd;
+ --mp-back: var(--scene-athos) center bottom calc(-35.75px * var(--mp-k)) / 100% auto no-repeat, var(--mp-ground);
+}

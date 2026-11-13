@@ -86,7 +86,7 @@ The arbiter rotates itself the same way. Its baton is `docs/NOW.md` plus every w
 2. typecheck is 0, the whole unit suite is green, and lint is clean on the changed files.
 3. `npm run build` (web) passes whenever CSS, a server file or a shared file changed. No unit test reads the stylesheet: the gift's lost brace broke every build on 2026-11-11.
 4. `npm run build:android` exports.
-5. checkMock `{ pixels: true }` passes on every touched screen: at 390, 800 and 1032 wide, on the five palettes and the fifteen looks, and in Arabic.
+5. checkMock `{ pixels: true }` passes on every touched screen: at 390, 800 and 1032 wide, on the five palettes and the fourteen looks, and in Arabic.
 6. Every touched control has been tapped the way a reader taps it.
 7. `git pull --rebase`, then push, then one report with the hashes and the command output.
 

@@ -1,0 +1,105 @@
+/* Forest and Jordan as they stood in app/globals.css until 2026-11-13: their colours are unchanged in the app; only the picture at the foot went. Kept, not loaded by anything. Desert's rules, which stood between them, are in docs/1.9-build/kept/desert-look/desert.css: the look itself came out the same day. */
+:root {
+ --scene-forest: url("/themes/forest.svg");
+ --scene-jordan: url("/themes/jordan.svg");
+}
+
+html[data-look="forest"] {
+ --color-night: #0b1711;
+ --color-night-soft: #14231b;
+ --color-night-deep: #060f0b;
+ --color-paper: #edf5ef;
+ --color-gold: #f5faf6;
+ --color-gold-soft: #b4cbbd;
+ --color-gold-pale: #fbfefc;
+ --color-festal: #cfe9d9;
+ --ink-rubric: 255 165 150;
+ --color-comment: #ff8a7d;
+ --color-comment-hover: #ffa89c;
+ --look-quiet: 64%;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #1b2d23 0%, #122019 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.06) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #22372b 0%, #16261d 100%);
+ --room: var(--scene-forest) center bottom / 100% auto no-repeat, #0b1711;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="forest"] .lit-surface {
+ --color-paper: #edf5ef;
+ --lit-muted: rgb(237 245 239 / 0.6);
+ --lit-line: rgb(237 245 239 / 0.4);
+}
+
+@layer utilities {
+ :where(html[data-look="forest"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60) {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+ :where(html[data-look="forest"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="forest"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 62%, transparent);
+ }
+}
+
+html[data-look="jordan"] {
+ --color-night: #e4efed;
+ --color-night-soft: #d6e6e3;
+ --color-night-deep: #cbdfdc;
+ --color-paper: #132e36;
+ --color-gold: #13525a;
+ --color-gold-soft: #2a5a62;
+ --color-gold-pale: #0e464f;
+ --color-festal: #13525a;
+ --ink-rubric: 150 40 32;
+ --color-on-paper: #e4efed;
+ --surface-card: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.7) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(155deg, #f8fcfb 0%, #eef6f4 60%, #e2efec 100%);
+ --surface-band: radial-gradient(115% 90% at 88% 12%, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0) 55%),
+  linear-gradient(150deg, #d9e9e6 0%, #cde1dd 100%);
+ --room: var(--scene-jordan) center bottom / 100% auto no-repeat, #e4efed;
+ --foot-solid: 104px;
+ --foot-clear: 240px;
+}
+
+html[data-look="jordan"] .lm-card {
+ --tw-shadow: 0 12px 28px -18px rgb(19 46 54 / 0.4);
+}
+
+html[data-look="jordan"] .lit-surface {
+ --lit-on-fast: #132e36;
+ --lit-muted: rgb(19 46 54 / 0.7);
+ --lit-line: rgb(19 46 54 / 0.55);
+}
+
+@layer utilities {
+ :where(html[data-look="jordan"]) :is(.text-paper\/40, .text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66, .text-paper\/68) {
+  color: color-mix(in oklab, var(--color-paper) 78%, transparent);
+ }
+ :where(html[data-look="jordan"]) .placeholder\:text-paper\/55::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 78%, transparent);
+ }
+}
+@layer base {
+ :where(html[data-look="jordan"]) ::placeholder {
+  color: color-mix(in oklab, var(--color-paper) 78%, transparent);
+ }
+}
+
+.set-mode-page[data-palette="forest"] {
+ --mp-ground: #0b1711;
+ --mp-ink: #edf5ef;
+ --mp-accent: #f5faf6;
+ --mp-back: var(--scene-forest) center bottom calc(-35.75px * var(--mp-k)) / 100% auto no-repeat, var(--mp-ground);
+}
+.set-mode-page[data-palette="jordan"] {
+ --mp-ground: #e4efed;
+ --mp-ink: #132e36;
+ --mp-accent: #13525a;
+ --mp-sheen: 0.5;
+ --mp-back: var(--scene-jordan) center bottom calc(-35.75px * var(--mp-k)) / 100% auto no-repeat, var(--mp-ground);
+}

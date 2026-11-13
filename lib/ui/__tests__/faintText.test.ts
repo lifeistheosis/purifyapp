@@ -276,7 +276,7 @@ describe("faint text on a graphite card and on the saint web's sheet", () => {
   });
 });
 
-// The looks (1.9): fifteen Plus themes, each worn as data-look over Dark or
+// The looks (1.9): fourteen Plus themes, each worn as data-look over Dark or
 // over Light (lib/reader/readingModes.ts, themeAttributes). Each draws its
 // faint text at a share of its own, and has two grounds the seven do not: its
 // cards and its bands are gradients (--surface-card, --surface-band), with a
@@ -311,9 +311,9 @@ function lookColours(id: string): { night: Rgb; soft: Rgb; deep: Rgb; paper: Rgb
 }
 
 describe("faint text on every look", () => {
-  it("reads the fifteen looks from the registry, seven dark and eight light, each as the stylesheet draws it", () => {
-    expect(LOOKS.length).toBe(15);
-    expect(LOOKS.filter((look) => look.light).length).toBe(8);
+  it("reads the fourteen looks from the registry, seven dark and seven light, each as the stylesheet draws it", () => {
+    expect(LOOKS.length).toBe(14);
+    expect(LOOKS.filter((look) => look.light).length).toBe(7);
     expect(LOOKS.filter((look) => !look.light).length).toBe(7);
     for (const look of LOOKS) {
       const c = lookColours(look.id);

@@ -107,13 +107,13 @@ describe("the reading modes' own page", () => {
     expect(got[4].tiles.map((t) => t.palette)).toEqual(["mosaic", "stone", "damask", "linen", "monastery"]);
   });
 
-  it("draws no tile of the sea's two looks: Land and sea keeps its other four (build 95 note 16)", () => {
-    // His word, 2026-11-13: "remove the sea theme from the app", and of Galilee and Patmos, "Both".
+  it("draws no tile of the sea's two looks or Desert: Land and sea keeps its other three (build 95 note 16)", () => {
+    // His word, 2026-11-13: "remove the sea theme from the app", and of Galilee and Patmos, "Both"; Desert by his "all recs" the same day.
     // lib/reader/__tests__/retiredThemes.test.ts holds where a reader who had chosen one is sent.
     const drawn = shelves({});
-    expect(sections(drawn)[2].tiles.map((t) => t.palette)).toEqual(["athos", "forest", "desert", "jordan"]);
-    expect(drawn).not.toMatch(/data-palette="(galilee|patmos)"/);
-    expect(drawn).not.toMatch(/Galilee|Patmos/);
+    expect(sections(drawn)[2].tiles.map((t) => t.palette)).toEqual(["athos", "forest", "jordan"]);
+    expect(drawn).not.toMatch(/data-palette="(galilee|patmos|desert)"/);
+    expect(drawn).not.toMatch(/Galilee|Patmos|Desert/);
   });
 
   it("says Purify Plus once by each family's name where the gate has said no, and nowhere for a reader who has it", () => {

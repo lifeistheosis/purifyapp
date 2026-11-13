@@ -7,6 +7,8 @@
 //   node scripts/theme-pictures.mjs            the drawings, as SVG
 //   node scripts/theme-pictures.mjs --painted  those, and the eight painted by
 //                                              the app's own quote-picture code
+//   node scripts/theme-pictures.mjs --engraved the two made from a plate of a
+//                                              book (the Holy Mountain, Forest)
 //   node scripts/theme-pictures.mjs --kept     the pictures of the looks the
 //                                              app no longer has (Galilee's
 //                                              and Patmos's drawings, and
@@ -26,6 +28,15 @@
 // docs/licensing/THEME_PICTURES.md. What this file adds is only where on a
 // phone each picture stands.
 //
+// The Holy Mountain's and Forest's pictures are neither drawn nor painted:
+// each is made from a plate of an old book (docs/licensing/plates/, recorded
+// in THEME_PICTURES.md) by engraved() and plated() below, which need only
+// sharp. The first pictures of the four land looks that stayed (a peak over
+// still water, a line of firs, three dunes, rings on the water) came out on
+// 2026-11-13 at the owner's word ("all the colors are nice it's just the
+// designs at the bottom that dont look good"); their drawings are still here
+// as EARLIER_DRAWINGS and --kept writes them to docs/1.9-build/kept/.
+//
 // Fire was the ninth painted one. The owner took the look out of the app on
 // 2026-11-10 ("remove fire") and nothing made is deleted, so its painter is
 // still here and --kept runs it: the picture goes to
@@ -39,7 +50,8 @@
 // no longer writes them, and --kept writes each to its own folder,
 // docs/1.9-build/kept/galilee-look/ and docs/1.9-build/kept/patmos-look/
 // (lib/reader/__tests__/retiredThemes.test.ts holds each file there to what
-// its painter draws).
+// its painter draws). Desert followed the same day (his "all recs"): its
+// dunes are a KEPT_DRAWING too, written to docs/1.9-build/kept/desert-look/.
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -51,7 +63,11 @@ const KEPT = {
   fire: path.join(ROOT, "docs", "1.9-build", "kept", "fire-look"),
   galilee: path.join(ROOT, "docs", "1.9-build", "kept", "galilee-look"),
   patmos: path.join(ROOT, "docs", "1.9-build", "kept", "patmos-look"),
+  desert: path.join(ROOT, "docs", "1.9-build", "kept", "desert-look"),
 };
+/** Where the first foot pictures of the land looks that stayed are kept: the looks are still in the app, so they are not among KEPT. */
+const KEPT_ATHOS = path.join(ROOT, "docs", "1.9-build", "kept", "athos-look");
+const KEPT_LAND = path.join(ROOT, "docs", "1.9-build", "kept", "land-looks");
 
 // ── The drawings ────────────────────────────────────────────────────────
 
@@ -69,8 +85,8 @@ const svg = (w, h, body, defs = "") =>
   `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${defs ? `<defs>${defs}</defs>` : ""}${body}</svg>`;
 const vgrad = (id, stops) => `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">${stops.map(([o, c, a = 1]) => `<stop offset="${o}" stop-color="${c}" stop-opacity="${a}"/>`).join("")}</linearGradient>`;
 
-/** The Holy Mountain: Athos's peak over the sea at dusk, the water still. */
-function athos() {
+/** The Holy Mountain's first picture (kept, not shipped): Athos's peak over the sea at dusk, the water still. */
+function athosPeak() {
   const H = 300;
   const defs =
     vgrad("sky", [[0, "#93a8de", 0], [0.55, "#93a8de", 0.05], [1, "#a9b6e2", 0.26]]) +
@@ -104,7 +120,7 @@ function fir(x, base, h, w, r) {
   return d + "Z";
 }
 
-/** The forest of the north: two lines of firs, mist between them, the last light behind. */
+/** Forest's first picture (kept, not shipped). The forest of the north: two lines of firs, mist between them, the last light behind. */
 function forest() {
   const H = 300;
   const r = rng(41);
@@ -126,7 +142,7 @@ function forest() {
   return { svg: svg(390, H, body, defs), height: H };
 }
 
-/** The desert: three dunes, one behind another, each a step deeper, in the last light. */
+/** Desert's picture (kept, not shipped: the look came out of the app on 2026-11-13, his "all recs"; KEPT_DRAWINGS). The desert: three dunes, one behind another, each a step deeper, in the last light. */
 function desert() {
   const H = 270;
   const defs =
@@ -142,7 +158,7 @@ function desert() {
   return { svg: svg(390, H, body, defs), height: H };
 }
 
-/** The Jordan: the water, and the rings that go out over it from one place. */
+/** Jordan's first picture (kept, not shipped; the look has none now). The Jordan: the water, and the rings that go out over it from one place. */
 function jordan() {
   const H = 280;
   const defs = vgrad("water", [[0, "#9fc9c7", 0], [0.5, "#9fc9c7", 0.2], [1, "#8fbfbe", 0.42]]);
@@ -382,10 +398,6 @@ function horizon() {
 
 /** Every drawing, by the name of its file. */
 export const DRAWINGS = {
-  "athos.svg": athos,
-  "forest.svg": forest,
-  "desert.svg": desert,
-  "jordan.svg": jordan,
   "mosaic.svg": mosaic,
   "mosaic-rule.svg": mosaicRule,
   "stone.svg": stone,
@@ -401,7 +413,185 @@ export const DRAWINGS = {
 export const KEPT_DRAWINGS = {
   "galilee.svg": galilee,
   "patmos.svg": patmos,
+  "desert.svg": desert,
 };
+
+/** The first foot picture of a look the app still has, kept and not shipped, by the look's id. */
+export const EARLIER_DRAWINGS = {
+  athos: { dir: KEPT_ATHOS, file: "athos-peak.svg", draw: athosPeak },
+  forest: { dir: KEPT_LAND, file: "forest-firs.svg", draw: forest },
+  jordan: { dir: KEPT_LAND, file: "jordan-rings.svg", draw: jordan },
+};
+
+// ── The engraved one ────────────────────────────────────────────────────
+
+/** The Holy Mountain's ground: the look's --color-night, which the picture is laid on and must end in. */
+const ATHOS_GROUND = [14, 20, 32];
+/** The light the plate is redrawn in: a cool silver, never the plate's own paper. */
+const ATHOS_INK = [214, 224, 248];
+const PLATE = path.join(ROOT, "docs", "licensing", "plates", "riley-1887-monastery-of-st-paul.jpg");
+
+/**
+ * The Holy Mountain: the monastery of St Paul under the mountain, from the
+ * wood engraving in Athelstan Riley's "Athos, or the Mountain of the Monks"
+ * (London, 1887), redrawn as a night scene.
+ *
+ * A plate laid whole under a page is a grain behind the words, so only three
+ * things are taken from it, and each is calm:
+ *   the ridge   the plate's own skyline, found column by column, with one
+ *               soft light low behind it (no hatching: the sky is drawn)
+ *   the land    the plate's tones, softened until no line of the hatching is
+ *               left, and kept a step above the ground: darkest at the
+ *               heights, so the ridge is a clean shape, and going out at the
+ *               foot, where the bars stand
+ *   the house   the monastery's walls alone, as the engraver cut them: the
+ *               one lit thing
+ * The picture is laid on the look's own ground and ends in it at the top, so
+ * it needs no transparency and is a tenth of the size.
+ */
+async function engraved() {
+  const sharp = (await import("sharp")).default;
+  const W = 900;
+  const plate = () => sharp(PLATE).greyscale().resize({ width: W });
+  const fine = await plate().raw().toBuffer({ resolveWithObject: true });
+  const EH = fine.info.height;
+  const soft = await plate().blur(3).raw().toBuffer();
+  const wide = await plate().blur(5).raw().toBuffer();
+  // The skyline: in each column, the first place the plate turns darker than its own sky and stays so.
+  const found = [];
+  for (let x = 0; x < W; x++) {
+    let sky = 0;
+    let n = 0;
+    for (let y = Math.round(EH * 0.03); y < Math.round(EH * 0.07); y++, n++) sky += wide[y * W + x];
+    sky /= n;
+    let at = Math.round(EH * 0.3);
+    for (let y = Math.round(EH * 0.07); y < EH * 0.5; y++) {
+      let holds = true;
+      for (let j = 0; j < 10; j += 2) if (!(wide[(y + j) * W + x] < sky * 0.86)) holds = false;
+      if (holds) {
+        at = y;
+        break;
+      }
+    }
+    found.push(at);
+  }
+  const line = found.map((_, x) => {
+    const near = found.slice(Math.max(0, x - 12), x + 13).sort((a, b) => a - b);
+    return near[near.length >> 1];
+  });
+  const PAD = Math.round(W * 0.16); // sky above the plate's own, for the light to go out in
+  const H = EH + PAD;
+  const ss = (a, b, v) => {
+    const t = Math.min(1, Math.max(0, (v - a) / (b - a)));
+    return t * t * (3 - 2 * t);
+  };
+  const tone = (d) => Math.pow(Math.min(1, Math.max(0, (d - 40) / 150)), 1.05);
+  const low = Math.max(...line) + PAD;
+  const SKY = 0.105; // held by scripts/scene-check.mjs: the look's faintest words lie over it
+  const LAND = 0.2;
+  const HOUSE = 0.7;
+  const [cx, cy, rx, ry] = [0.525, 0.5, 0.19, 0.105]; // where the monastery stands in the plate
+  const out = Buffer.alloc(W * H * 3);
+  for (let y = 0; y < H; y++) {
+    const ey = y - PAD;
+    const fy = ey / EH;
+    const light = SKY * ss(0, low, y) ** 1.4;
+    for (let x = 0; x < W; x++) {
+      const edge = line[x] + PAD;
+      let a = light;
+      if (y >= edge - 1.5) {
+        const near = 1 - ss(0.75, 1.2, Math.hypot((x / W - cx) / rx, (fy - cy) / ry));
+        const foot = 1 - 0.75 * ss(0.6, 1, fy);
+        const rise = 0.35 + 0.65 * ss(0.05, 0.45, fy);
+        const land = LAND * rise * foot * tone(soft[ey * W + x]);
+        const walls = HOUSE * ss(0.42, 0.95, tone(fine.data[ey * W + x]));
+        const t = ss(edge - 1.5, edge + 1.5, y);
+        a = Math.max(land, walls * near) * t + light * (1 - t);
+      }
+      const i = (y * W + x) * 3;
+      for (let c = 0; c < 3; c++) out[i + c] = Math.round(ATHOS_GROUND[c] + a * (ATHOS_INK[c] - ATHOS_GROUND[c]));
+    }
+  }
+  return sharp(out, { raw: { width: W, height: H, channels: 3 } }).webp({ quality: 86, effort: 6, smartSubsample: true }).toBuffer();
+}
+
+const FIR_PLATE = path.join(ROOT, "docs", "licensing", "plates", "kohler-medizinal-pflanzen-54-abies-alba.jpg");
+/** The two pieces of the plate, each by its outline on the plate at 900 wide: the bough (A) and the cone on its twig (B). */
+const FIR_CUTS = {
+  bough: [[330,300],[335,255],[400,235],[420,150],[460,75],[525,70],[540,130],[505,250],[560,330],[625,415],[700,500],[755,555],[775,600],[852,640],[852,835],[772,835],[748,690],[690,640],[600,600],[480,570],[390,530],[340,480]],
+  cone: [[140,525],[205,500],[218,468],[330,468],[348,700],[332,792],[418,794],[552,850],[552,1000],[430,1042],[335,1000],[205,1052],[62,1135],[18,1092],[100,960],[130,700]],
+};
+/** The plate's paper, and the look's two greens the pieces are redrawn in (no brown, and no yellow of the pollen). */
+const FIR_PAPER = [250, 232, 200];
+const FIR_GREENS = [[38, 66, 50], [176, 214, 190]];
+
+/**
+ * Forest: a bough of silver fir at one corner of the foot and its cone at
+ * the other, from plate 54 (Abies alba Miller) of Köhler's Medizinal-Pflanzen,
+ * volume 1 (Gera-Untermhaus, 1883 to 1887).
+ *
+ * The way the Garden's flowers stand: small, real, at the two corners over
+ * the tab bar, so nothing lies behind a line being read. Each piece is cut
+ * by its outline (the plate's numbered details are left on the plate), its
+ * paper is taken out pixel by pixel (the share of a pixel that is not paper
+ * is how much of it is kept), and it is redrawn in the look's own greens.
+ */
+async function plated() {
+  const sharp = (await import("sharp")).default;
+  const meta = await sharp(FIR_PLATE).metadata();
+  const k = meta.width / 900;
+  const piece = async (name, height) => {
+    const pts = FIR_CUTS[name].map(([x, y]) => [x * k, y * k]);
+    const xs = pts.map((p) => p[0]);
+    const ys = pts.map((p) => p[1]);
+    const box = { left: Math.floor(Math.min(...xs)), top: Math.floor(Math.min(...ys)) };
+    box.width = Math.ceil(Math.max(...xs)) - box.left;
+    box.height = Math.ceil(Math.max(...ys)) - box.top;
+    const outline = `<svg xmlns="http://www.w3.org/2000/svg" width="${box.width}" height="${box.height}"><polygon points="${pts.map(([x, y]) => `${n1(x - box.left)},${n1(y - box.top)}`).join(" ")}" fill="#fff"/></svg>`;
+    const mask = await sharp(Buffer.from(outline)).blur(2).greyscale().raw().toBuffer();
+    const data = await sharp(FIR_PLATE).extract(box).removeAlpha().raw().toBuffer();
+    const out = Buffer.alloc(box.width * box.height * 4);
+    const [dark, light] = FIR_GREENS;
+    for (let i = 0; i < box.width * box.height; i++) {
+      const [r, g, b] = [data[i * 3], data[i * 3 + 1], data[i * 3 + 2]];
+      const kept = Math.max(0, 1 - r / FIR_PAPER[0], 1 - g / FIR_PAPER[1], 1 - b / FIR_PAPER[2]);
+      const a = Math.min(1, Math.max(0, (kept - 0.1) / 0.3)) * (mask[i] / 255);
+      const t = Math.min(1, Math.max(0, ((0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 - 0.12) / 0.62)) ** 0.9;
+      for (let c = 0; c < 3; c++) out[i * 4 + c] = Math.round(dark[c] + t * (light[c] - dark[c]));
+      out[i * 4 + 3] = Math.round(255 * a * 0.92);
+    }
+    // Turned over, so each grows from its own corner toward the middle.
+    return sharp(out, { raw: { width: box.width, height: box.height, channels: 4 } }).flop().resize({ height }).png().toBuffer({ resolveWithObject: true });
+  };
+  const W = 900; // 390 wide on a phone
+  const H = 400; // 173px there: both end under the place words are still read whole (scripts/scene-check.mjs)
+  const bough = await piece("bough", 350);
+  const cone = await piece("cone", 385);
+  return sharp({ create: { width: W, height: H, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+    .composite([
+      { input: bough.data, left: -30, top: H - bough.info.height },
+      { input: cone.data, left: W - cone.info.width + 20, top: H - cone.info.height + 10 },
+    ])
+    .webp({ quality: 80, alphaQuality: 88, effort: 6 })
+    .toBuffer();
+}
+
+async function writeEngraved() {
+  for (const [name, make] of [["athos.webp", engraved], ["forest.webp", plated]]) {
+    const file = path.join(OUT, name);
+    fs.writeFileSync(file, await make());
+    console.log(`  ${name} ${(fs.statSync(file).size / 1024).toFixed(1)} KB`);
+  }
+}
+
+function writeEarlierDrawings() {
+  for (const { dir, file, draw } of Object.values(EARLIER_DRAWINGS)) {
+    fs.mkdirSync(dir, { recursive: true });
+    const { svg: text } = draw();
+    fs.writeFileSync(path.join(dir, file), text + "\n");
+    console.log(`  ${file} ${(text.length / 1024).toFixed(1)} KB`);
+  }
+}
 
 function writeDrawings() {
   fs.mkdirSync(OUT, { recursive: true });
@@ -661,8 +851,13 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     console.log("the painted ones:");
     await writePainted();
   }
+  if (process.argv.includes("--engraved")) {
+    console.log("the two made from a plate:");
+    await writeEngraved();
+  }
   if (process.argv.includes("--kept")) {
     console.log("kept, not shipped:");
+    writeEarlierDrawings();
     // The drawings need nothing but Node; Fire's room is painted on the export, as the painted ones are.
     writeKeptDrawings();
     await writePainted({ kept: true });

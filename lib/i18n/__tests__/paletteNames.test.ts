@@ -79,9 +79,9 @@ const namedIn = (line: string, name: string) => new RegExp(`(?<![\\p{L}\\p{M}])$
 describe("a palette's name", () => {
   it("is in each language's own words, in every catalog", () => {
     expect(OTHERS.length).toBe(20);
-    // Twenty-two palettes and looks, and four families (twenty-nine before Fire came out of the looks,
-    // twenty-eight before Galilee and Patmos did).
-    expect(NAMES.length).toBeGreaterThanOrEqual(26);
+    // Twenty-one palettes and looks, and four families (twenty-nine before Fire came out of the looks,
+    // twenty-eight before Galilee and Patmos did, twenty-six before Desert did).
+    expect(NAMES.length).toBeGreaterThanOrEqual(25);
     const english: string[] = [];
     for (const code of OTHERS) {
       const words = catalog(code);
