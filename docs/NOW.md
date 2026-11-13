@@ -54,8 +54,8 @@ Updated 2026-11-13 01:24 UTC.
 | Admin 2 | session_01VuYTweFNHsJxnX7YJmTvEN | the gate: first the lifted-saints ruling into the tap walk, then the targeted re-check on the arbiter's word (baton `docs/handoffs/admin.md`); the admin panel when the owner's desk resumes |
 | Updates 3 | session_01VuYTwcy3Fbt9LcW3Qic77o | fixer: fails 4 (WordPopover's Close in Arabic) and 5 (the webs' place and date cut), from `docs/handoffs/updates-2.md`; then the admin link in `lib/billing/applyLifecycle.ts` |
 | Admin panel 3 | session_01VuYTwdp6mhe99XWbxc6bLH | the owner's desk, sections 2 and 3 (the sends on, with a Hold, by his word; the owner's brief at 7:30 his time, Monday's weekly); web only |
-| Design kit | session_01VuYTwe37MHhGgSEsQ13Lut | the kit landed (4a047c105, `docs/brand/kit/`, `docs/brand/design-kit.md`) and its claude.ai design system (https://claude.ai/artifact/PJnQQWqgVybxZKzy2H3tt5); now revising both for his two rules, phone first and no parchment |
-| Fable 5.2: email designs | session_01VuYTwd6RkVo5JByCRXYJFG | one email look on the design kit (the reader email and the owner's brief), then its Nativity Fast season; `docs/brand/kit/email/` |
+| Design kit | session_01VuYTwe37MHhGgSEsQ13Lut | phone first done (0c03c9ae7); finishing only the tokens' clean light (no parchment), then done: the look passed to Fable |
+| Fable 5.2: email designs | session_01VuYTwd6RkVo5JByCRXYJFG | the emails landed (5b4554e4: the reader email, its Nativity Fast season, the owner's brief; https://claude.ai/artifact/AGYSKjN65WgQA3eccBqos9). Now owns the whole kit's look, at his word "you can definitely make a way better design than this" |
 | SSM board | session_01VuYTwcSQmKLThRirvSeWa5 | the drop's words, the Vault |
 | Fable 5.2: 1.9 store pictures | session_01VuYTwbUEsUgbUwM7K7xYG1 | the 1.9 social cards are done (a736b9af: six cards, 1080 by 1920, stills in `docs/plans/v1.9/store/cards/stills/`, see https://claude.ai/artifact/2H7zX18mPgJh9LMZnkw6bs); waits on his look before the drop's `cards` piece is cleared |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |
