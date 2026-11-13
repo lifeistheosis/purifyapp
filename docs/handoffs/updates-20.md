@@ -37,6 +37,10 @@ Gate 2.0's motion walk, both readers, `--online`, on the export of `a24ae34ab` (
 6. **The four named in-page faults** (Today's Dismiss on the "One question, so Purify can fit you" road card, `components/onboarding/RoadCards.tsx`, the verse 178px; "For today's saints, 2 more" 27px, `components/today/ChurchTodayRail.tsx`; a plan's "Mark day N as read" 41px with the streak line misplaced; Alaska's tabs, cuts): not started. A card dismissed needs to leave with motion (collapse and fade on the house curve) so the verse glides; there is no shared in-page transition helper yet (`lib/ui/routeMotion.ts` is page switches only).
 7. **Causes 7, 8 and 9 and the shop item's zero-length transform:** not started; Updates 18's notes stand.
 
+8. **Two faults from Arbiter 2 (16:41 UTC), after item 2, read after this chat's report, not started:**
+   - **A. The journal's Share on a computer with no share sheet** makes the link and shows nothing (Updates 8's finding). `components/journal/SharePageButton.tsx` (its share, line 79) goes through `shareText` in `lib/share/shareImage.ts`, not note 24's one way to share (`lib/share/shareOut.ts`: the phone's sheet, the Web Share sheet, else a copy that says so). Mend by the least change, with a test that fails on the old code.
+   - **B. With the keyboard up over a list** (the journal's search, and any page with a field), the tab bar rides on the keyboard and can cover the field. Found by the Fable journal chat, emulated only, app-wide. Updates 7's `b7a460d72` stands the foot's bars down while Purify's own keyboard is up: find whether this path escapes it. If real, mend it with a test; if only the emulation, say why, and it goes on his phone walk.
+
 ## Gotchas
 
 - **A runner in the scratchpad cannot import playwright by name:** import `<repo>/node_modules/playwright/index.mjs`.
