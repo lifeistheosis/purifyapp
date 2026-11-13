@@ -1046,8 +1046,21 @@ async function look(arg) {
     }
     return true;
   };
+  // A shape's answer is its outline's alone, so each outline is read once on a page: the same
+  // icon drawn on fifty posts once, not fifty times, and not again for every palette worn (an
+  // outline does not change with the palette). The 240 points read along every drawn path on
+  // every palette took 15 of the 17 seconds a palette on /community/, and its 22 palettes ran
+  // past the walk's limit, which closed the page under the measure (Updates 25, 2026-11-13).
+  // Kept on the page for the measure's own passes; the app never reads it.
+  const shapes = (window.__mockFourPoints ??= new Map());
+  const fourPointsOnce = (g) => {
+    const tag = g.tagName.toLowerCase();
+    const key = tag === "polygon" ? `polygon ${g.getAttribute("points") || ""}` : `${tag} ${g.getAttribute("d") || ""} ${getComputedStyle(g).d || ""}`;
+    if (!shapes.has(key)) shapes.set(key, fourPoints(g));
+    return shapes.get(key);
+  };
   for (const g of root.querySelectorAll("path, polygon")) {
-    if (g.getClientRects().length === 0 || !fourPoints(g)) continue;
+    if (g.getClientRects().length === 0 || !fourPointsOnce(g)) continue;
     const icon = g.closest("svg") || g;
     sparkles.push({ name: nameOf(icon), how: "a star of four points drawn", allow: allowance(icon, "sparkle") });
   }
@@ -1784,6 +1797,17 @@ const CLOCK = `<div data-mock-fixture="clock" style="padding:16px;background:#10
   <div style="margin-top:12px;height:6px"><span data-mock-grows style="display:block;height:6px;width:40px;background:#ffffff"></span></div>
 </div>`;
 
+// A feed's icons (Updates 25, 2026-11-13): the same two outlines drawn twenty-four times each, as fifty posts
+// draw theirs, and a four-point sparkle drawn three times among them. Each outline is read once on the page, and
+// every sparkle drawn is still caught.
+const SHAPE_SQUARE = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4L20 4L20 20L4 20Z" /></svg>`;
+const SHAPE_KITE = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12,2 20,10 12,22 4,10" /></svg>`;
+const SHAPE_SPARKLE = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3.5c.7 4 2.5 5.8 6.5 6.5-4 .7-5.8 2.5-6.5 6.5-.7-4-2.5-5.8-6.5-6.5 4-.7 5.8-2.5 6.5-6.5z" /></svg>`;
+const SHAPES = `<div data-mock-fixture="shapes" style="padding:16px;background:#101010;color:#ffffff;display:flex;flex-wrap:wrap;gap:4px">${Array.from(
+  { length: 24 },
+  (_, i) => `${SHAPE_SQUARE}${SHAPE_KITE}${i % 8 === 3 ? SHAPE_SPARKLE : ""}`,
+).join("")}</div>`;
+
 async function selfTest() {
   // The lists wear every palette of the registry (2026-11-13): until then the two earned by reading were in none,
   // and no gate run measured them. The lists as they stand leave nothing out, and the lists as they stood (the
@@ -1896,6 +1920,26 @@ async function selfTest() {
     await settle(page);
     const clocks = await checkMock(page, "[data-mock-fixture=clock]", { palettes: [["Dark", null]] });
     printMockCheck(clocks, "a clock that ticks while it is measured, and a bar that grows");
+    // A feed's icons: every point read along an outline is counted, over two palettes. Each of the three outlines
+    // is read once (240 points each, at the most 720), where the measure once read every drawn path on every
+    // palette (51 paths and polygons, twice: 24,480); and the three sparkles drawn are each caught.
+    await page.evaluate((html) => {
+      for (const f of document.querySelectorAll("[data-mock-fixture]")) f.style.display = "none";
+      document.body.insertAdjacentHTML("beforeend", html);
+      window.__mockPointsRead = 0;
+      const own = SVGGeometryElement.prototype.getPointAtLength;
+      SVGGeometryElement.prototype.getPointAtLength = function (...at) {
+        window.__mockPointsRead++;
+        return own.apply(this, at);
+      };
+    }, SHAPES);
+    await settle(page);
+    const shapes = await checkMock(page, "[data-mock-fixture=shapes]", { palettes: PALETTES.slice(0, 2) });
+    const pointsRead = await page.evaluate(() => window.__mockPointsRead);
+    const shapeSparkles = shapes.failures.filter((f) => f.check === "sparkle").length;
+    const shapesOnce = pointsRead <= 3 * 240 && shapeSparkles === 3;
+    console.log(`\na feed's icons over two palettes: ${pointsRead} points read along the outlines (at the most 720: each outline once), ${shapeSparkles} of 3 sparkles caught`);
+    await page.evaluate(() => document.querySelector("[data-mock-fixture=shapes]")?.remove());
     const clockRight =
       clocks.failures.length === 0 && clocks.unmeasured.length === 1 && clocks.unmeasured[0].startsWith("Arabic: span moved while it was measured");
     const redRight =
@@ -1947,11 +1991,11 @@ async function selfTest() {
       said("Words over a fade on a picture", "a picture is drawn across it (img)") &&
       said("Words over a picture, on plain colours", "a picture is drawn across it (img)") &&
       good.unmeasured.length === 3;
-    const ok = listsWhole && missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && rowsRead && rowsCaught && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight && motionRead && hyphenRead;
+    const ok = listsWhole && missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && rowsRead && rowsCaught && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight && motionRead && hyphenRead && shapesOnce;
     console.log(
       ok
         ? "\nself-test: every mistake caught, and the house's own parts pass"
-        : `\nself-test FAILED: ${listsWhole ? "" : "a palette of the registry is left out of the lists, or the old lists were not caught; "}${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${rowsRead && rowsCaught ? "" : " words scrolled out of their row were not read on the ground behind the row"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}${motionRead ? "" : " words over light that moves forever were not measured on a held frame and passed"}${hyphenRead ? "" : " words broken at a soft hyphen were not read a line at a time, or the faint ones passed"}`,
+        : `\nself-test FAILED: ${listsWhole ? "" : "a palette of the registry is left out of the lists, or the old lists were not caught; "}${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${rowsRead && rowsCaught ? "" : " words scrolled out of their row were not read on the ground behind the row"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}${motionRead ? "" : " words over light that moves forever were not measured on a held frame and passed"}${hyphenRead ? "" : " words broken at a soft hyphen were not read a line at a time, or the faint ones passed"}${shapesOnce ? "" : " an outline drawn many times was read more than once, or a sparkle drawn among them was not caught"}`,
     );
     return ok;
   } finally {

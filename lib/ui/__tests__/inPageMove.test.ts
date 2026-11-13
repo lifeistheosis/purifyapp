@@ -158,6 +158,18 @@ describe("the places that move", () => {
     expect(cal).not.toMatch(/function stayInPlace[\s\S]{0,300}window\.history\.replaceState\(null, "", href\);\s*\}/);
   });
 
+  it("a work's chapter steps are pictured, held until the chapter stands at its top (a council's Next: Canon I)", () => {
+    const place = read("components/saints/useWorkPlace.ts");
+    expect(place).toMatch(/movePageUntil\(\(\) => \{\s*window\.location\.hash = hash;\s*\}, awaitArrival\(CHAPTER_ARRIVED\)\);/);
+    // The landing at a chapter's top is made in the frame the chapter is drawn in, before the screen is, and says so.
+    const layout = place.match(/useLayoutEffect\(\(\) => \{[\s\S]*?\}, \[target, owner, slug\]\);/)?.[0] ?? "";
+    expect(layout).toMatch(/window\.scrollTo\(\{ top: 0, behavior: "instant" \}\);/);
+    expect(layout).toMatch(/if \(isMovingInPage\(\)\) for \(const el of document\.querySelectorAll\("\.page-open-after"\)\) for \(const a of el\.getAnimations\(\)\) a\.finish\(\);/);
+    expect(layout).toMatch(/arrive\(CHAPTER_ARRIVED\);/);
+    // Every way to a chapter takes that one step, in a council and in a Father's work.
+    for (const reader of ["components/councils/CouncilReader.tsx", "components/saints/WritingReader.tsx"]) expect(read(reader)).toMatch(/const go = useGoToChapter\(\);/);
+  });
+
   it("a history event's parts glide to their place", () => {
     expect(read("components/history/EventPartsNav.tsx")).toMatch(/rowHeight: row\.getBoundingClientRect\(\)\.height,\s*\}\),\s*behavior: scrollBehavior\(\),/);
   });

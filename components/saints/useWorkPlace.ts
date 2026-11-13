@@ -1,13 +1,14 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useSyncExternalStore } from "react";
 
 import { hashFor } from "@/lib/nav/addressOpening";
 import { arrivalPlace, clearPosition, loadPosition, placeOfHash, savePosition, type WorkPlace } from "@/lib/reader/position";
 import { recordProgress } from "@/lib/reading/progress";
 import type { SectionHead } from "@/lib/saints/parts";
 import { elementOfPlace, paragraphAtReadingPlace } from "@/lib/saints/paragraphInView";
+import { arrive, awaitArrival, isMovingInPage, movePageUntil } from "@/lib/ui/inPageMove";
 import { inputSince, watchInput } from "@/lib/ui/lastInput";
 import { untilSettled } from "@/lib/ui/routeMotion";
 import { watchOwnScroll } from "@/lib/ui/ownScroll";
@@ -160,10 +161,28 @@ export function chapterOf(
   return { n: first, paragraph: null };
 }
 
-/** Another chapter, by its address: the page turns, and the way back returns. */
+/** A step to another chapter is awaited by this key, until its landing stands it at its top (useLanding). */
+export const CHAPTER_ARRIVED = "work-chapter";
+
+/**
+ * Another chapter, by its address: the page turns, and the way back returns.
+ * The step moves as a pager's Next does (lib/ui/inPageMove.ts, the owner's
+ * ruling of 2026-11-13): the screen as it stood is held until the chapter
+ * stands at its top (useLanding says so), and the two cross-fade. It was a
+ * cut: the chapter changed at once, its words came a fifth of a second
+ * later, and its landing scrolled it to its top a frame after it was drawn,
+ * so a council's "Next: Canon I" jumped 270px over a blank (Updates 18's
+ * walk). The pill's Prev and Next, the foot's Keep reading, a Father's
+ * pager and the contents all take this one step.
+ */
 export function useGoToChapter(): (n: number) => void {
   return useCallback((n: number) => {
-    window.location.hash = `#s${n}`;
+    const hash = `#s${n}`;
+    // The chapter on the screen: nothing to turn (a hash set again changes nothing).
+    if (window.location.hash === hash) return;
+    movePageUntil(() => {
+      window.location.hash = hash;
+    }, awaitArrival(CHAPTER_ARRIVED));
   }, []);
 }
 
@@ -186,6 +205,31 @@ export function useLanding(
   at: { n: number; paragraph: number | null },
   openedAt?: number,
 ): void {
+  // A step to a chapter's top lands in the frame the chapter is drawn in,
+  // before the screen is drawn, and says so: the step is pictured
+  // (useGoToChapter), and the picture of the screen as it stood is held until
+  // then. Its words are in the picture already, so their own entrance
+  // (page-open-after, a fifth of a second late) is set at its end: on top of
+  // the move it would bring them in twice, over a blank. The first landing,
+  // as the work opens, is the effect's below.
+  const landed = useRef<string | null>(null);
+  useLayoutEffect(() => {
+    const was = landed.current;
+    landed.current = target;
+    if (was === null || was === target) return;
+    if (target.startsWith("#s")) {
+      const saved = loadPosition(owner, slug);
+      const place = arrivalPlace(saved ? { sectionN: saved.sectionN, paragraph: saved.paragraph } : null, { sectionN: at.n, paragraph: null });
+      if (!place || place.paragraph <= 0) {
+        window.scrollTo({ top: 0, behavior: "instant" });
+        if (isMovingInPage()) for (const el of document.querySelectorAll(".page-open-after")) for (const a of el.getAnimations()) a.finish();
+      }
+    }
+    arrive(CHAPTER_ARRIVED);
+    // Only a new address lands; the reader's own reading never does.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target, owner, slug]);
+
   useEffect(() => {
     const opened = openedAt ?? performance.now();
     watchInput();

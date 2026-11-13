@@ -195,7 +195,7 @@ async function judged(rec, at, tag) {
     const still = SHOTS ? await stripOf(rec, f.frames, path.join(SHOTS, `${slug(at)}-${tag}-${f.kind}-${n}.png`)).catch(() => null) : null;
     fails.push({ kind: f.kind, detail: f.detail, still, times: stripTimes(rec, f.frames), ...(f.node ? { node: f.node } : {}) });
   }
-  return { fails, unsure: v.unsure, dips: v.dips ?? [], change: v.change, frames: v.frames, answered: v.answered, vtNames: v.vtNames ?? [], error: rec.error };
+  return { fails, unsure: v.unsure, dips: v.dips ?? [], glides: v.glides ?? [], change: v.change, frames: v.frames, answered: v.answered, vtNames: v.vtNames ?? [], error: rec.error };
 }
 
 /** A tap (or a gesture) recorded, the layers measured twice on the way; recorded again once if it was unsure. */
@@ -317,6 +317,7 @@ async function walkScreen(ctx, at, kept) {
           row.fails = r.v.fails;
           row.unsure = r.v.unsure;
           row.dips = r.v.dips;
+          row.glides = r.v.glides;
           row.passing = r.passing;
           const s = await standing(page, at, tag);
           row.meetings = s.meetings;
@@ -413,6 +414,7 @@ async function walkScreen(ctx, at, kept) {
         }
         row.unsure = r.v.unsure;
         row.dips = r.v.dips;
+        row.glides = r.v.glides;
         row.passing = r.passing;
         const s = await standing(page, at, `c${c.i}`);
         row.meetings = s.meetings;
@@ -625,6 +627,18 @@ if (dips.length) {
   for (const d of dips.slice(0, 40)) console.log(`  ${d}`);
   if (dips.length > 40) console.log(`  ... and ${dips.length - 40} more (in --json)`);
 }
+// A step that carried half the change in its first frame as content glided (scripts/gate/frames.mjs,
+// "A glide is not a cut"): listed for the eye, not failed.
+const glides = results.flatMap((r) => [
+  ...(r.arrival?.glides ?? []).map((d) => `${r.at} the page switch from ${r.arrival.from}: ${d}`),
+  ...r.gestures.flatMap((g) => (g.glides ?? []).map((d) => `${r.at} ${g.name}: ${d}`)),
+  ...r.controls.flatMap((c) => (c.glides ?? []).map((d) => `${r.at} tap ${c.name}${c.went ? ` (went to ${c.went})` : ""}: ${d}`)),
+]);
+if (glides.length) {
+  console.log(`\nglides, half the change in their first frame and then part of the way along in three or more (not failed; for the eye) (${glides.length}):`);
+  for (const d of glides.slice(0, 40)) console.log(`  ${d}`);
+  if (glides.length > 40) console.log(`  ... and ${glides.length - 40} more (in --json)`);
+}
 if (unsure.length) {
   console.log(`\nunsure, recorded twice and the frames fell behind both times (${unsure.length}):`);
   for (const u of unsure.slice(0, 30)) console.log(`  ${u}`);
@@ -636,7 +650,7 @@ if (errors.length || controlErrors.length) {
 }
 if (JSON_OUT) {
   const plain = [...findings.values()].map((f) => ({ ...f, screens: [...f.screens] }));
-  fs.writeFileSync(JSON_OUT, JSON.stringify({ mode: MODE, size: SIZE, reader: SELLS_PLUS ? "new reader, no Plus" : "open reader", screens: results.length, tapped, findings: plain, slow, dips, unsure, errors, controlErrors, results }, null, 1));
+  fs.writeFileSync(JSON_OUT, JSON.stringify({ mode: MODE, size: SIZE, reader: SELLS_PLUS ? "new reader, no Plus" : "open reader", screens: results.length, tapped, findings: plain, slow, dips, glides, unsure, errors, controlErrors, results }, null, 1));
   console.log(`\nwritten: ${JSON_OUT}`);
 }
 process.exit([...findings.values()].some((f) => f.check !== "layers in passing") || errors.length ? 1 : 0);

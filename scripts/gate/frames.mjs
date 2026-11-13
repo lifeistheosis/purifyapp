@@ -16,7 +16,13 @@
 //            between two frames. The house's page switch takes the page being
 //            left nearly away in its first frame on purpose (a fifth of it still
 //            shows); build 95's search took it away whole (note 5). A change
-//            under 8% of the screen is not asked.
+//            under 8% of the screen is not asked. A glide is not a cut (the
+//            arbiter, 2026-11-13, on Community's "0 replies"): where what the
+//            screen showed stands part of the way along, between where it stood
+//            and where it ends, in three frames or more, the step is a glide,
+//            listed and not failed, whatever share its first frame takes,
+//            unless something else over 8% of the screen lands whole in that
+//            frame without travelling there (glideAt, below).
 //   blank    frames with nothing drawn where the screen changes, between a
 //            screen that draws there and one that draws there again: under a
 //            third of the two together by the fit, and almost nothing inked,
@@ -46,8 +52,11 @@
 //
 // proves it on a page of planted changes: an instant cut, note 5's shape (the
 // screen before gone whole in one frame, the words faded in later), blank
-// frames, a box flashed at the corner, a jump and, with motion reduced, a slide
-// all fail; a crossfade and a sheet rising on the house curve, a cross-fade
+// frames, a box flashed at the corner, a jump, a thread's 28px landing in one
+// frame, a block that appears with no travel (alone, and beside posts that
+// glide to make room for it) and, with motion reduced, a slide all fail; a
+// thread opened 28px with the posts below gliding on the house curve (listed
+// as a glide), a crossfade and a sheet rising on the house curve, a cross-fade
 // both ways (two pages at half in its middle), a fade out and in through the
 // ground (listed as a dip), the house's page switch from a page heavy with
 // words to a light one, a page whose picture comes before its words, an
@@ -250,6 +259,184 @@ function tileDiffs(a, b, w, h, T = 10) {
   return { out, cols, rows, T };
 }
 
+// ── A glide is not a cut ───────────────────────────────────────────────
+//
+// The arbiter's rule (2026-11-13, on Community's "0 replies", where an empty thread opens 28px and
+// the posts below glide 28px on the house curve): a change whose content passes through in-between
+// places over several frames is a glide, whatever share its first frame takes; a change that lands
+// in one frame is a cut. The distance share reads a short glide of words as half the change in its
+// first frame, since a line of words moved 10px is far from where it stood and from where it ends.
+//
+// So where a step carries half the change, what the screen showed before the tap is followed through
+// the frames at the screen's full size. Each part of it (a quarter of the screen wide, 32px high)
+// that has something drawn in it and changes is looked for in the screen after, up or down (the
+// glides inside a page travel up or down), then in each frame from the step on, to a quarter of a
+// pixel, as the compositor draws a glide between whole pixels. A part glides when it stands part of
+// the way along in the step's frame, at least 2px from where it stood and from where it ends; the
+// step is a glide when the parts that glide stand part of the way along in at least three frames,
+// and nothing else in the step's frame already stands as it ends, over 8% of the screen or more,
+// without having come there from somewhere (a block that appears whole, with no travel, beside parts
+// that glide is a cut). Never a pass on a step the recording cannot follow: where the frames fell
+// behind before the parts were seen in between three times, the step is unsure, and the walk
+// records it again.
+
+/** How the screen is cut into parts to follow: four across, 32px high, one every 16px down. */
+const GLIDE_COLS = 4;
+const GLIDE_TILE_H = 32;
+/** A part is followed only where something is drawn in it: its lightness varies this much (out of 255). */
+const GLIDE_DRAWN = 10;
+/** A part is found where it differs from itself by at most this much on average (the JPEG's noise allowed). */
+const GLIDE_MATCH = 10;
+/** A part that moves less than this has not travelled. */
+const GLIDE_MIN_PX = 4;
+/** In between: at least this far from where it stood and from where it ends. */
+const GLIDE_EDGE_PX = 2;
+/** Several frames: the parts that glide stand in between in at least this many. */
+const GLIDE_FRAMES = 3;
+/** How far up or down a part is looked for, as a share of the screen's height. */
+const GLIDE_REACH = 0.45;
+/** Parts followed through the frames, at the most (the most drawn first). */
+const GLIDE_PARTS = 64;
+/** Frames followed after the step, at the most. */
+const GLIDE_SPAN = 24;
+
+/** A frame's lightness at the screen's full size, one value a pixel. */
+async function lumaOf(frame, W, H) {
+  const { data, info } = await sharp(Buffer.from(frame.data, "base64")).resize(W, H, { fit: "fill" }).greyscale().raw().toBuffer({ resolveWithObject: true });
+  if (info.channels === 1) return data;
+  const out = new Uint8Array(W * H);
+  for (let p = 0; p < W * H; p++) out[p] = data[p * info.channels];
+  return out;
+}
+
+/**
+ * Whether the step into frame `i` (from `prev`) is a glide: { glide, unsure, said }. `mask` (w by h,
+ * the judge's small pictures) is what moved on its own before the tap; `startAt` and `end` are the
+ * screens before and after.
+ */
+async function glideAt({ rec, mask, w, h, startAt, prev, i, end }) {
+  const frames = rec.frames;
+  const W = rec.width;
+  const H = rec.height;
+  const lumas = new Map();
+  const luma = async (k) => {
+    if (!lumas.has(k)) lumas.set(k, await lumaOf(frames[k], W, H));
+    return lumas.get(k);
+  };
+  const [L0, LE, Lp, Li] = [await luma(startAt), await luma(end), await luma(prev), await luma(i)];
+  const TW = Math.ceil(W / GLIDE_COLS);
+  const masked = (x, y) => mask[Math.min(h - 1, Math.floor(y / SCALE)) * w + Math.min(w - 1, Math.floor(x / SCALE))];
+  // The mean difference between a part of A and B moved by s (a quarter of a pixel at the finest,
+  // B read between its rows), every other pixel of the part.
+  const differ = (A, B, t, s) => {
+    const s0 = Math.floor(s);
+    const f = s - s0;
+    let sum = 0;
+    let n = 0;
+    for (let y = t.y0; y < t.y0 + GLIDE_TILE_H; y += 2) {
+      const yb = y + s0;
+      if (yb < 0 || yb + (f ? 1 : 0) >= H) continue;
+      const ra = y * W;
+      const rb = yb * W;
+      for (let x = t.x0; x < t.x1; x += 2) {
+        const b = f ? B[rb + x] * (1 - f) + B[rb + W + x] * f : B[rb + x];
+        sum += Math.abs(A[ra + x] - b);
+        n++;
+      }
+    }
+    return n * 2 >= t.n ? sum / n : Infinity;
+  };
+  // The parts of the screen, each with how much is drawn in it on the screen before.
+  const parts = [];
+  for (let y0 = 0; y0 + GLIDE_TILE_H <= H; y0 += GLIDE_TILE_H / 2) {
+    for (let c = 0; c < GLIDE_COLS; c++) {
+      const t = { x0: c * TW, x1: Math.min(W, (c + 1) * TW), y0, n: 0, hidden: false };
+      let sum = 0;
+      let sq = 0;
+      for (let y = y0; y < y0 + GLIDE_TILE_H; y += 2) {
+        for (let x = t.x0; x < t.x1; x += 2) {
+          if (masked(x, y)) t.hidden = true;
+          const v = L0[y * W + x];
+          sum += v;
+          sq += v * v;
+          t.n++;
+        }
+      }
+      t.drawn = t.n ? Math.sqrt(Math.max(0, sq / t.n - (sum / t.n) ** 2)) : 0;
+      parts.push(t);
+    }
+  }
+  // Where each part drawn in, that changes, ends: the move that finds it in the screen after.
+  const reach = Math.round(H * GLIDE_REACH);
+  const moved = [];
+  for (const t of parts) {
+    if (t.hidden || t.drawn < GLIDE_DRAWN) continue;
+    const stays = differ(L0, LE, t, 0);
+    if (stays <= GLIDE_MATCH) continue;
+    const tried = [];
+    let best = Infinity;
+    let D = 0;
+    for (let s = -reach; s <= reach; s += 2) {
+      const v = differ(L0, LE, t, s);
+      tried.push([s, v]);
+      if (v < best) [best, D] = [v, s];
+    }
+    for (const s of [D - 1, D + 1]) {
+      const v = differ(L0, LE, t, s);
+      if (v < best) [best, D] = [v, s];
+    }
+    // Found in one place only: a part like many others (each post's own "0 replies", a row of
+    // avatars) matches somewhere else as well as where it went, and is not followed.
+    const elsewhere = tried.reduce((m, [s, v]) => (Math.abs(s - D) > GLIDE_MIN_PX ? Math.min(m, v) : m), Infinity);
+    if (best <= GLIDE_MATCH && Math.abs(D) >= GLIDE_MIN_PX && stays >= best + GLIDE_MATCH && elsewhere >= best + GLIDE_MATCH) moved.push({ ...t, D });
+  }
+  if (!moved.length) return { glide: false, unsure: false, said: "nothing on the screen travelled to where it ends" };
+  moved.sort((a, b) => b.drawn - a.drawn);
+  const followed = moved.slice(0, GLIDE_PARTS);
+  // Where a part stands in a frame: the move, between where it stood and where it ends, that finds it there.
+  const placeIn = (L, t) => {
+    let best = Infinity;
+    let s = null;
+    for (let m = Math.min(0, t.D) - 3; m <= Math.max(0, t.D) + 3; m += 0.25) {
+      const v = differ(L0, L, t, m);
+      if (v < best) [best, s] = [v, m];
+    }
+    return best <= GLIDE_MATCH ? s : null;
+  };
+  const between = (t, s) => s !== null && Math.sign(s) === Math.sign(t.D) && Math.abs(s) >= GLIDE_EDGE_PX && Math.abs(t.D - s) >= GLIDE_EDGE_PX;
+  const placed = followed.map((t) => ({ t, s: placeIn(Li, t) }));
+  const gliding = placed.filter(({ t, s }) => between(t, s));
+  if (!gliding.length) return { glide: false, unsure: false, said: `${followed.length} part${followed.length === 1 ? "" : "s"} of the screen travelled, and none stood part of the way along in that frame: they landed in it` };
+  // Several frames: the frames from the step on in which most of the gliding parts stand in between.
+  let inBetween = 0;
+  let fellBehind = false;
+  for (let k = i; k <= end && k < i + GLIDE_SPAN && inBetween < GLIDE_FRAMES; k++) {
+    if (k > i && frames[k].t - frames[k - 1].t > 2.5 * NEXT_FRAME_MS) fellBehind = true;
+    const Lk = await luma(k);
+    const n = k === i ? gliding.length : gliding.filter(({ t }) => between(t, placeIn(Lk, t))).length;
+    if (n * 2 >= gliding.length) inBetween++;
+    else break;
+  }
+  const travel = gliding.map(({ t }) => t.D).sort((a, b) => a - b)[Math.floor(gliding.length / 2)];
+  const said = `${gliding.length} part${gliding.length === 1 ? "" : "s"} of the screen ${gliding.length === 1 ? "glides" : "glide"} ${Math.abs(travel)}px ${travel > 0 ? "down" : "up"}, part of the way along in ${inBetween} frame${inBetween === 1 ? "" : "s"}`;
+  if (inBetween < GLIDE_FRAMES) return fellBehind ? { glide: false, unsure: true, said: `${said}, and the frames fell behind before a third: recorded again` } : { glide: false, unsure: false, said: `${said}, fewer than ${GLIDE_FRAMES}: it landed` };
+  // Nothing else may land in that frame: each part of the step's frame that changed in it, that
+  // already stands as it ends and is not what stood before moved there by the glide, has appeared.
+  const moves = gliding.map(({ s }) => s);
+  const lo = Math.min(...moves) - 2;
+  const hi = Math.max(...moves) + 2;
+  let appeared = 0;
+  for (const t of parts) {
+    if (t.hidden || differ(Lp, Li, t, 0) <= GLIDE_MATCH || differ(Li, LE, t, 0) > GLIDE_MATCH) continue;
+    let carried = false;
+    for (let m = lo; m <= hi && !carried; m += 0.25) if (differ(Li, L0, t, -m) <= GLIDE_MATCH) carried = true;
+    if (!carried) appeared += (t.x1 - t.x0) * (GLIDE_TILE_H / 2);
+  }
+  const share = appeared / (W * H);
+  if (share >= CUT_AREA) return { glide: false, unsure: false, said: `${said}, but ${Math.round(share * 100)}% of the screen stood as it ends in that frame without travelling there: it appeared, with no travel` };
+  return { glide: true, unsure: false, said: `${said}${share ? `; ${Math.round(share * 100)}% of the screen landed in that frame without travelling` : ""}` };
+}
+
 /**
  * What the recording shows, as the gate judges it: each fail ({ kind, detail, frames: the indices
  * of the frames that show it }), what is unsure, and the change's own measures.
@@ -257,10 +444,12 @@ function tileDiffs(a, b, w, h, T = 10) {
 export async function judgeFrames(rec, { motion = "on" } = {}) {
   const fails = [];
   const unsure = [];
+  /** Steps that carried half the change in one frame as content glided: listed, not failed. */
+  const glides = [];
   const w = Math.round(rec.width / SCALE);
   const h = Math.round(rec.height / SCALE);
   const frames = rec.frames;
-  if (frames.length < 1) return { fails, unsure: ["no frame was recorded"], dips: [], change: 0, frames: 0 };
+  if (frames.length < 1) return { fails, unsure: ["no frame was recorded"], dips: [], glides, change: 0, frames: 0 };
   const px = [];
   for (const f of frames) px.push(await pixels(f, w, h));
   // What moved on its own before the tap (a light that breathes, a clock): left out of every measure.
@@ -365,7 +554,10 @@ export async function judgeFrames(rec, { motion = "on" } = {}) {
       const gap = frames[i].t - frames[prev].t;
       if (step >= CUT_SHARE && stepS >= CUT_PATH && whole > 0) {
         if (stillBefore || gap <= NEXT_FRAME_MS) {
-          fails.push({ kind: "cut", detail: `${Math.round(step * 100)}% of the change in one frame (${at(i)}ms after the tap), outside reduced motion: an instant cut, not a transition`, frames: [prev, i, end] });
+          const g = await glideAt({ rec, mask, w, h, startAt, prev, i, end });
+          if (g.glide) glides.push(`${Math.round(step * 100)}% of the change in its first frame (${at(i)}ms after the tap), and a glide: ${g.said}`);
+          else if (g.unsure) unsure.push(`${Math.round(step * 100)}% of the change in one frame (${at(i)}ms after the tap): ${g.said}`);
+          else fails.push({ kind: "cut", detail: `${Math.round(step * 100)}% of the change in one frame (${at(i)}ms after the tap), outside reduced motion: an instant cut, not a transition${g.said ? ` (${g.said})` : ""}`, frames: [prev, i, end] });
         } else {
           unsure.push(`${Math.round(step * 100)}% of the change between two frames ${Math.round(gap)}ms apart (${at(prev)} to ${at(i)}ms): the frames fell behind`);
         }
@@ -519,6 +711,7 @@ export async function judgeFrames(rec, { motion = "on" } = {}) {
     fails,
     unsure,
     dips,
+    glides,
     change: Math.round(change * 1000) / 1000,
     frames: frames.length,
     ink: [Math.round(inkStart * 1000) / 1000, Math.round(inkEnd * 1000) / 1000],
@@ -567,10 +760,18 @@ html,body{margin:0;background:#101013;color:#eee;font:17px sans-serif;overflow-x
 #b .card{background:linear-gradient(135deg,#2b6b4a,#6b2b4a)}
 h1{margin:8px 0 16px;font:700 30px serif}
 .sheet{position:fixed;left:0;right:0;bottom:0;height:62%;border-radius:26px 26px 0 0;background:#2a2a30;padding:24px;transform:translateY(100%)}
+.post{padding:14px 0 10px;border-bottom:1px solid #2c2c33}
+.post b{display:block;margin-bottom:6px}
+.post p{margin:0;line-height:24px;color:#d6d6da}
+.post .thread{height:0;overflow:hidden;border-top:0 solid transparent}
+.post button{margin-top:6px;background:none;border:0;color:#b8b8be;font:15px sans-serif;padding:6px 0}
+:root[data-in-page]::view-transition-group(*),:root[data-in-page]::view-transition-old(*),:root[data-in-page]::view-transition-new(*){animation-duration:320ms;animation-timing-function:cubic-bezier(0.22,1,0.36,1)}
+::view-transition-group(in-page-grows-1){overflow:clip}
 </style></head><body>
 <div id="a" class="screen"><h1>Discover</h1><div class="card">Saints</div><div class="card">Reading</div><div class="card">History</div><div class="card">Councils</div><div class="card">Theology</div></div>
 <div id="b" class="screen" hidden style="background:#101013"><h1>Search</h1><div class="card">Everything</div><div class="card">Bible</div><div class="card">Saints</div><div class="card">Prayers</div></div>
 <div id="sheet" class="sheet"><h1>A sheet</h1><div class="card">Copy</div><div class="card">Share</div></div>
+<div id="feed" class="screen" hidden><h1>Community</h1><div class="post"><b>Anna</b><p>Up early for the market today. Bread for the week, a word with a neighbour, and home before the rain.</p><div class="thread"></div><button type="button">0 replies</button></div><div class="post"><b>Marcus</b><p>Finished the long book at last. Slow going in the middle, but the last chapters were worth every evening.</p><div class="thread"></div><button type="button">0 replies</button></div><div class="post"><b>Elena</b><p>The garden is ready for winter. Leaves raked, the beds covered, and the bench carried into the shed.</p><div class="thread"></div><button type="button">0 replies</button></div><div class="post"><b>Thomas</b><p>A quiet walk by the river after work. The light was low and gold, and the water almost still.</p><div class="thread"></div><button type="button">0 replies</button></div><div class="post"><b>Sofia</b><p>Baked for the first time in months. The loaf came out lopsided and it tasted wonderful all the same.</p><div class="thread"></div><button type="button">0 replies</button></div><div class="post"><b>Daniel</b><p>Fixed the old bicycle with my son this weekend. New chain, new brakes, and a bell that rings again.</p><div class="thread"></div><button type="button">0 replies</button></div><div class="post"><b>Irene</b><p>Wrote letters to three old friends tonight, by hand, the way we used to before the phones.</p><div class="thread"></div><button type="button">0 replies</button></div><div class="post"><b>Peter</b><p>The snow came early up here. Wood stacked by the door, soup on the stove, and nowhere to be.</p><div class="thread"></div><button type="button">0 replies</button></div></div>
 <div id="spacer"></div>
 </body></html>`;
 
@@ -720,6 +921,47 @@ function plant(kind) {
         if (kind === "stickypage") label.style.transform = `translateY(${first - (window.scrollY - from) - natural}px)`;
         if (kind === "stickyscreen") label.style.transform = `translateY(${first - natural}px)`;
       }
+    } else if (kind.startsWith("feed")) {
+      // Community's "0 replies" (Updates 24's walk, 2026-11-13): the second post's empty thread opens
+      // 28px (a hairline and its padding) and the posts below make room. As the app moves it
+      // (lib/ui/inPageMove.ts, in a View Transition on the house curve: the post grows, the posts
+      // after it glide), landed in one frame, or with a block that appears whole.
+      const F = document.getElementById("feed");
+      const posts = [...F.querySelectorAll(".post")];
+      const thread = posts[1].querySelector(".thread");
+      const open = () => {
+        thread.style.height = "27px";
+        thread.style.borderTopWidth = "1px";
+        thread.style.borderTopColor = "#3a3a42";
+      };
+      const block = () => {
+        const b = document.createElement("div");
+        b.textContent = "Replies come here. Be the first to answer, kindly and in your own words, and the thread opens for everyone.";
+        b.style.cssText = `position:absolute;left:24px;right:24px;top:${posts[1].offsetTop + posts[1].offsetHeight}px;height:160px;box-sizing:border-box;padding:16px;border-radius:16px;background:#2a2a30;color:#eee;line-height:24px;z-index:2`;
+        F.appendChild(b);
+      };
+      if (kind === "feedglide") {
+        // Its first frame drawn a little way into the curve, as a page heavy with pictures draws it:
+        // there the share by distance reads half the change in that frame (55% on Community's walk,
+        // the posts 6px down of 28), and the measure before the glide rule failed it as a cut.
+        document.head.insertAdjacentHTML("beforeend", "<style>:root[data-in-page]::view-transition-group(*),:root[data-in-page]::view-transition-old(*),:root[data-in-page]::view-transition-new(*){animation-delay:-30ms}</style>");
+        document.documentElement.setAttribute("data-in-page", "");
+        posts[1].style.viewTransitionName = "in-page-grows-1";
+        posts.slice(2).forEach((el, n) => (el.style.viewTransitionName = `in-page-glides-${n + 1}`));
+        const t = document.startViewTransition(open);
+        await t.finished.catch(() => {});
+      } else if (kind === "feedland") {
+        open();
+      } else if (kind === "feedappear") {
+        block();
+      } else if (kind === "feedappearglide") {
+        // The block appears whole where the thread opens, as the posts below glide 160px to make room.
+        block();
+        for (const el of posts.slice(2)) {
+          el.style.transition = `transform 320ms ${curve}`;
+          el.style.transform = "translateY(160px)";
+        }
+      }
     } else if (kind === "jump") {
       const grow = document.createElement("div");
       grow.style.cssText = "height:0;background:#333";
@@ -754,6 +996,11 @@ function plant(kind) {
 
 /** What a planted change needs standing before the recording: the swap's bar and the route's box. */
 function prepare(kind) {
+  if (kind.startsWith("feed")) {
+    document.getElementById("a").hidden = true;
+    document.getElementById("feed").hidden = false;
+    document.querySelector(".sheet").hidden = true;
+  }
   // A page tall enough to glide.
   if (kind.startsWith("glide")) document.getElementById("spacer").style.height = "3000px";
   if (kind.startsWith("sticky")) {
@@ -802,6 +1049,10 @@ const CASES = [
   ["a label drawn in a sticky map as the page glides, riding with its map until the map sticks (Alaska's People)", "stickywith", "on", []],
   ["a label drawn in a sticky map as the page glides, going on with the page after its map stuck", "stickypage", "on", ["misplaced"]],
   ["a label drawn in a sticky map as the page glides, held where the screen had it while its map rode", "stickyscreen", "on", ["misplaced"]],
+  ["an empty thread opened 28px, the posts below gliding 28px on the house curve in a View Transition (Community's \"0 replies\")", "feedglide", "on", [], { glide: true }],
+  ["the same 28px landing in one frame", "feedland", "on", ["cut", "jump"]],
+  ["a block that appears whole with no travel", "feedappear", "on", ["cut"]],
+  ["a block that appears whole where a thread opens, as the posts below glide 160px to make room", "feedappearglide", "on", ["cut"]],
   ["with motion reduced, an instant change", "cut", "reduce", []],
   ["no change at all", "none", "on", []],
 ];
@@ -828,8 +1079,8 @@ async function selfTest() {
         const v = await judgeFrames(rec, { motion });
         await ctx.close();
         const kinds = [...new Set(v.fails.map((f) => f.kind))];
-        right = want.every((k) => kinds.includes(k)) && kinds.every((k) => want.includes(k)) && (want.length || !v.unsure.length) && (!also.dip || v.dips.length > 0);
-        said = `${kinds.length ? v.fails.map((f) => `${f.kind}: ${f.detail}`).join("; ") : "passes"}${v.dips.length ? ` [dip: ${v.dips.join("; ")}]` : ""}${v.unsure.length ? ` [unsure: ${v.unsure.join("; ")}]` : ""} (${v.frames} frames)`;
+        right = want.every((k) => kinds.includes(k)) && kinds.every((k) => want.includes(k)) && (want.length || !v.unsure.length) && (!also.dip || v.dips.length > 0) && (!also.glide || v.glides.length > 0);
+        said = `${kinds.length ? v.fails.map((f) => `${f.kind}: ${f.detail}`).join("; ") : "passes"}${v.dips.length ? ` [dip: ${v.dips.join("; ")}]` : ""}${v.glides.length ? ` [glide: ${v.glides.join("; ")}]` : ""}${v.unsure.length ? ` [unsure: ${v.unsure.join("; ")}]` : ""} (${v.frames} frames)`;
       }
       ok &&= right;
       console.log(`  ${right ? "ok    " : "MISSED"} ${name}: ${said}`);

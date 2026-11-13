@@ -14,7 +14,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
+import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 
 import { CartDealTag, CartLadder, OfferTag } from "@/components/shop/CartSignals";
 import { SetFinish } from "@/components/shop/SetFinish";
@@ -22,6 +22,7 @@ import { Minus } from "@/components/ui/icons/Minus";
 import { Plus } from "@/components/ui/icons/Plus";
 import { cn } from "@/lib/cn";
 import { useIsNative } from "@/lib/platform/native";
+import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 import {
   cartCount,
   removeFromCart,
@@ -60,7 +61,12 @@ export function CartDrawer() {
     [],
   );
 
-  // Escape closes; lock the body scroll while open.
+  // Escape closes; lock the body scroll while open. And, while open, the
+  // drawer covers the screen as a sheet does: the tab bar and what floats
+  // with it stand down (lib/ui/overlay.ts, useOverlayOpen). The bar is
+  // z-50 like the drawer and comes later in the page, so on a tablet in the
+  // native shell it stood over the drawer's foot (Updates 24's layers check
+  // at 1032: the bar met the open cart, 122 by 77px).
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -68,11 +74,16 @@ export function CartDrawer() {
     };
     window.addEventListener("keydown", onKey);
     lockBodyScroll();
+    setOverlayOpen(true);
     return () => {
       window.removeEventListener("keydown", onKey);
       unlockBodyScroll();
+      setOverlayOpen(false);
     };
   }, [open]);
+  // The phone's Back closes the drawer, as it closes a sheet, rather than
+  // leaving the page with the cart still open over it.
+  useAndroidBack(open, close);
 
   const currency = items[0]?.currency ?? "usd";
   const count = cartCount(items);

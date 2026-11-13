@@ -1,0 +1,105 @@
+diff --git a/app/globals.css b/app/globals.css
+index de6d0dcb..2e7f39f3 100644
+--- a/app/globals.css
++++ b/app/globals.css
+@@ -8953,12 +8953,6 @@ html[data-reading-mode="parchment"] .part-segment[data-state="current"] {
+  fill: color-mix(in srgb, var(--color-paper) 62%, var(--color-night));
+ }
+ 
+-/* The rail a thread hangs from, under the writer's picture. */
+-.community-rail {
+- background: linear-gradient(rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.05));
+- background: linear-gradient(color-mix(in srgb, var(--color-paper) 20%, transparent), color-mix(in srgb, var(--color-paper) 5%, transparent));
+-}
+-
+ /* The composer's field, set into the page. */
+ .community-well {
+  box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.5);
+diff --git a/components/community/CommunityClient.tsx b/components/community/CommunityClient.tsx
+index 2ade4713..f9461a37 100644
+--- a/components/community/CommunityClient.tsx
++++ b/components/community/CommunityClient.tsx
+@@ -1796,9 +1796,6 @@ function PostCardInner({
+     });
+   }
+ 
+-  // A thread hangs from the writer's picture while the post has replies.
+-  const threadHangs = !removed && (shownCount > 0 || open);
+-
+   return (
+     <article
+       ref={cardRef}
+@@ -1878,8 +1875,9 @@ function PostCardInner({
+       ) : null}
+ 
+       <div className="grid grid-cols-[38px_minmax(0,1fr)] gap-x-3">
+-        {/* The rail: the writer's picture, and while the post has replies a
+-            line running down from it, as a thread hangs from what was said. */}
++        {/* The rail: the writer's picture. No line runs down from it: a thread
++            stands on its own type, with no rule beside it (CLAUDE.md, "No side
++            stripes", the owner's word of 2026-11-10). */}
+         <div className="flex flex-col items-center">
+           {/* The picture is the 44px way to the writer's profile, as on a
+               reply: 38px drawn, and its reach fits the gap beside it. The
+@@ -1890,7 +1888,6 @@ function PostCardInner({
+               <Avatar name={post.author_name} url={post.author_avatar} size={38} decoration={post.author_decoration} />
+             </AuthorButton>
+           )}
+-          {threadHangs ? <span aria-hidden className="community-rail mb-1.5 mt-2 w-[1.5px] flex-1 rounded-full" /> : null}
+         </div>
+ 
+         <div className="min-w-0">
+diff --git a/lib/community/__tests__/communityStyle.test.ts b/lib/community/__tests__/communityStyle.test.ts
+index 572b7755..e39d09f3 100644
+--- a/lib/community/__tests__/communityStyle.test.ts
++++ b/lib/community/__tests__/communityStyle.test.ts
+@@ -80,7 +80,7 @@ describe("the lights", () => {
+   });
+ 
+   it("each colour mix has a plain value before it, for a WebView without color-mix", () => {
+-    for (const sel of [".community-half-thumb", ".verified-tick-disc", ".community-rail", ".community-quote", ".community-campaign", ".community-head-shade"]) {
++    for (const sel of [".community-half-thumb", ".verified-tick-disc", ".community-quote", ".community-campaign", ".community-head-shade"]) {
+       const body = bodies(sel);
+       const mix = body.indexOf("color-mix(");
+       expect(mix, sel).toBeGreaterThan(-1);
+diff --git a/lib/community/__tests__/noThreadRail.test.ts b/lib/community/__tests__/noThreadRail.test.ts
+new file mode 100644
+index 00000000..932b3d55
+--- /dev/null
++++ b/lib/community/__tests__/noThreadRail.test.ts
+@@ -0,0 +1,35 @@
++import fs from "node:fs";
++import path from "node:path";
++
++import { describe, expect, it } from "vitest";
++
++/**
++ * No line beside a thread (held for the owner's yes, Updates 25, 2026-11-13).
++ * Updates 24's strip of Community's "0 replies" showed a thin vertical line at
++ * a post's start as its thread opened. It is the rail a thread hung from: a
++ * 1.5px line running down from the writer's picture, drawn on every post with
++ * replies and on every open thread, at rest. checkMock's stripe measure does
++ * not count it (it stands in a column of its own, not on a box's edge), and
++ * his rule of 2026-11-10 is "the line on the left" (CLAUDE.md, "No side
++ * stripes"): a thread stands on its own type, with no rule beside it.
++ *
++ * What it holds: the post draws no rail line, and the stylesheet keeps no
++ * rule for one.
++ *
++ * What a reader would notice if this broke: a thin line down the start of a
++ * post under the writer's picture, whenever the post has replies.
++ */
++
++const read = (file: string) => fs.readFileSync(path.join(process.cwd(), file), "utf8");
++
++describe("no line beside a thread", () => {
++  it("a post draws no rail line under the writer's picture", () => {
++    const code = read("components/community/CommunityClient.tsx");
++    expect(code).not.toMatch(/community-rail/);
++    expect(code).not.toMatch(/threadHangs/);
++  });
++
++  it("the stylesheet keeps no rule for one", () => {
++    expect(read("app/globals.css")).not.toMatch(/\.community-rail\b/);
++  });
++});
