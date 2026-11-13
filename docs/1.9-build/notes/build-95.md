@@ -27,3 +27,17 @@ The screenshot shows two bordered tiles of uneven height, each with a 0 (the lef
 ## Note 4: the journal (his "notebook"), not optimized, with visual and UX bugs
 
 Same words. The journal (app/(app)/journal, components/journal/) needs its bugs found and mended, and a refinement that makes it smoother, in the approved look, for his yes or no. His own screenshots of the bugs are asked for, so the ones he saw are the first fixed.
+
+## Note 5: Discover's search opens with a visual fault, not smoothly
+
+His word, 2026-11-13 07:28 UTC, on build 96, with a screenshot of Discover (the "Search Purify" field above the cards): "pressing the search created a weird visual bug and isn't smooth when transitioning to that acreen"
+
+Tapping Discover's search field must open the Search sheet in the house's motion, with no glitch on the way (CLAUDE.md, "Every page switch is a transition"). To reproduce at phone size with touch and motion on, find the fault, mend it, and give it a test that fails on the old code.
+
+## Note 6: the journal's bugs, in his words
+
+His word, same message: "the journal bugs you were asking is that whenever you click on a different section in the journal UI the typing pad pops up automatically and it's buggy when it pops up and the overrall journal system is clunky and visuals aren't really that good. even the image system and the quoting system"
+
+1. Choosing another section of the journal opens the keyboard by itself. It should open only when the reader taps where they write.
+2. When the keyboard opens, it opens badly: the page jumps or glitches.
+3. The whole journal is clunky, and its look is weak, the picture and quoting systems included. This joins note 4's refinement, for his yes.
