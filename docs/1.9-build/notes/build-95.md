@@ -24,9 +24,17 @@ His word, 2026-11-13 07:26 UTC, on build 96, with a screenshot of the Fast ("Kee
 
 The screenshot shows two bordered tiles of uneven height, each with a 0 (the left one says "fasting days kept. Begin whenever you're ready."). Then Today's card has three outlined pills (Kept, In part, Broke), and the recent days repeat the three pills on every row. It predates the approved look (2026-11-13, "yes look"). A redesign in that look, with reasons, for his yes or no.
 
+**Notes 3, 4 and 6 applied at his yes (Updates 28, 2026-11-13).** His "yes to all" at about 20:47 UTC took all three answers on the Fable chat's page (https://claude.ai/artifact/CQvAy39zXXmA62dVXjj785): the Fast; the Journal; quoting and pictures. The held patch (`docs/1.9-build/held/fast-journal/fast-journal-look.patch`, its README the handoff) went on by `git am --3way`, cleanly, on `0d46901a` (`07eac0c7`). With it, as the page named: a new reader's Fast keeps one line of room above "Recent fasting days", the second count line waiting unseen for a day kept, so nothing moves at the first mark; part 3 raises Scripture and the Fathers' words as cards (the house's `.theology-tray`), and a quote of the reader's own stays on the page in italics, never raised.
+
+The website's shared page follows part 3 (`components/journal/SharedPageView.tsx`, the one part the page named as not yet done): Scripture is the raised card, its place at its head in the reading face and the way to the verse; a card whose words were not had keeps its place and "Open to read"; a quote stays on the page in italics, set in past the speech mark, never boxed; the cover stands at the page's head, rounded as the app's cards are, cut from high in the frame where an icon's faces are (it was edge to edge on a phone, cut through the middle). A library quote reaches a shared page as a plain quote, cited and without the library's mark (`lib/journal/share.ts`: nothing checks a copy's words against their page), so it is drawn as a quote, not raised: a raised card would claim the library for words nobody checked. Held by `lib/journal/__tests__/sharedPageView.test.ts`, 4 new tests, all 4 failing on the old view.
+
+Proved on the head: typecheck 0; the whole suite green (1,145 files, 14,699 tests, 9 skipped); eslint clean on every touched file.
+
 ## Note 4: the journal (his "notebook"), not optimized, with visual and UX bugs
 
 Same words. The journal (app/(app)/journal, components/journal/) needs its bugs found and mended, and a refinement that makes it smoother, in the approved look, for his yes or no. His own screenshots of the bugs are asked for, so the ones he saw are the first fixed.
+
+Applied at his yes with notes 3 and 6 (Updates 28, 2026-11-13): the record is under note 3.
 
 ## Note 5: Discover's search opens with a visual fault, not smoothly
 
@@ -51,6 +59,8 @@ His word, same message: "the journal bugs you were asking is that whenever you c
 1. Choosing another section of the journal opens the keyboard by itself. It should open only when the reader taps where they write.
 2. When the keyboard opens, it opens badly: the page jumps or glitches.
 3. The whole journal is clunky, and its look is weak, the picture and quoting systems included. This joins note 4's refinement, for his yes.
+
+Applied at his yes with notes 3 and 4 (Updates 28, 2026-11-13), the website's shared page with it: the record is under note 3.
 
 ## Note 7: the Bible's "Highlighted" toast overlaps another bar
 

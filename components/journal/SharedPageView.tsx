@@ -6,13 +6,24 @@
 // as a reader's page made with Purify, with Report under it. A verse card's
 // words come from the server's Bible; a library quote arrives as a plain
 // quote, cited, without the library's mark (lib/journal/share.ts).
+//
+// Drawn as the app draws a page since build 95 (note 6, part 3, his yes of
+// 2026-11-13 about 20:47 UTC): Scripture is a raised card, the house's own
+// (.theology-tray), its place at its head in the reading face; a quote stays
+// on the page, in italics, set in past the speech mark, never raised and never
+// boxed. A library quote is a plain quote here, so it is drawn as one: a
+// raised card would claim the library for words nobody checked. The cover
+// stands at the page's head, rounded as the app's cards are, its cut taken
+// from high in the frame, where an icon's faces are.
 
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useVerseCardLabel } from "@/components/journal/PageBlocks";
+import { Book } from "@/components/ui/icons/Book";
 import { Candle } from "@/components/ui/icons/Candle";
+import { ChatBubble } from "@/components/ui/icons/ChatBubble";
 import { Check } from "@/components/ui/icons/Check";
 import { Cross } from "@/components/ui/icons/Cross";
 import { Heart } from "@/components/ui/icons/Heart";
@@ -68,33 +79,48 @@ export function SharedPageView({ shared }: { shared: SharedPage }) {
           </p>
         );
       case "verse": {
-        const verses = Array.from({ length: b.to - b.from + 1 }, (_, k) => b.from + k);
+        const href = `/bible/${b.book}/${b.chapter}#v${b.from}`;
+        const verses = Array.from({ length: b.to - b.from + 1 }, (_, k) => b.from + k).flatMap((v) => {
+          const words = shared.verses[`${b.book}/${b.chapter}/${v}`];
+          return words ? [{ v, words }] : [];
+        });
+        const many = b.to > b.from;
         return (
-          <figure key={i} className="rounded-2xl border border-paper/10 bg-paper/[0.04] px-4 py-3">
-            <blockquote dir="auto" className="font-serif text-body leading-[1.65] text-paper/90">
-              {verses.map((v) => {
-                const words = shared.verses[`${b.book}/${b.chapter}/${v}`];
-                return words ? (
-                  <span key={v}>
-                    {verses.length > 1 ? <sup className="me-1 font-sans text-[11px] font-semibold text-paper/70">{v}</sup> : null}
-                    {`${words} `}
-                  </span>
-                ) : null;
-              })}
-            </blockquote>
-            <figcaption className="mt-1.5 font-sans text-caption text-paper/70">
-              <Link href={`/bible/${b.book}/${b.chapter}#v${b.from}`} className="inline-flex min-h-11 items-center underline underline-offset-4 hover:text-paper">
-                {label(b)}
+          <figure key={i} data-shared-verse="" className="theology-tray rounded-[18px] px-4 pb-4 pt-1.5">
+            <figcaption>
+              <Link href={href} className="inline-flex min-h-11 min-w-0 items-center gap-2 font-serif text-[17px] font-semibold leading-tight text-paper">
+                <Book size={16} aria-hidden className="shrink-0 text-paper/70" />
+                <span className="min-w-0">{label(b)}</span>
               </Link>
             </figcaption>
+            {verses.length ? (
+              <blockquote dir="auto" className="font-serif text-body leading-[1.7] text-paper/90">
+                {verses.map(({ v, words }) => (
+                  <span key={v}>
+                    {many ? <sup className="me-1 font-sans text-[11px] font-semibold text-paper/70">{v}</sup> : null}
+                    {`${words} `}
+                  </span>
+                ))}
+              </blockquote>
+            ) : (
+              // A card past the ones whose words are fetched (SHARED_VERSE_CARDS), or whose words could not be had: the way to them.
+              <Link href={href} className="-mt-1.5 inline-flex min-h-11 items-center font-sans text-detail text-paper/70 underline underline-offset-4 hover:text-paper">
+                {t("saved.openToRead")}
+              </Link>
+            )}
           </figure>
         );
       }
       case "quote":
         return (
-          <figure key={i} className="rounded-2xl border border-paper/10 px-4 py-3">
-            <blockquote dir="auto" className={cn("whitespace-pre-line italic text-body leading-[1.65] text-paper", font)}>{b.text}</blockquote>
-            {b.by ? <figcaption dir="auto" className="mt-1.5 font-sans text-caption text-paper/70">{b.by}</figcaption> : null}
+          <figure key={i} data-shared-quote="">
+            <blockquote dir="auto" className={cn("whitespace-pre-line ps-[23px] italic text-body leading-[1.7] text-paper", font)}>{b.text}</blockquote>
+            {b.by ? (
+              <figcaption className="-mt-1 flex min-h-11 items-center gap-2">
+                <ChatBubble size={15} aria-hidden className="shrink-0 text-paper/55" />
+                <span dir="auto" className="min-w-0 font-sans text-[16px] text-paper/85">{b.by}</span>
+              </figcaption>
+            ) : null}
           </figure>
         );
       case "heading":
@@ -143,10 +169,10 @@ export function SharedPageView({ shared }: { shared: SharedPage }) {
   return (
     <article data-shared-page="" className="mx-auto max-w-[720px]">
       {cover ? (
-        <figure className="-mx-5 md:mx-0">
+        <figure data-shared-cover="">
           {/* eslint-disable-next-line @next/next/no-img-element -- a file of the site's own */}
-          <img src={cover.src} alt={cover.alt} className="block h-48 w-full object-cover md:rounded-3xl" />
-          <figcaption className="mt-1 px-5 font-sans text-[12px] text-paper/70 md:px-0">{cover.credit}</figcaption>
+          <img src={cover.src} alt={cover.alt} className="block h-48 w-full rounded-[18px] object-cover object-[50%_22%]" />
+          <figcaption className="mt-1.5 px-1 font-sans text-[12px] text-paper/70">{cover.credit}</figcaption>
         </figure>
       ) : null}
       <p className="mt-6 font-sans text-caption text-paper/70">{[when, church.headline].filter(Boolean).join(" · ")}</p>
