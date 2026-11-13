@@ -309,6 +309,75 @@ describe("a text spoken by the phone's voice, in the one player", () => {
   });
 });
 
+// A phone call, Siri or another app taking the sound during a reading (the
+// arbiter's brief for Updates 17, item 4): the voice pauses at its word, as a
+// recording pauses for a call, and is ready to take up there. What a reader
+// would notice if this broke: the player saying it plays through a call while
+// the phone is silent, the reading starting its verse again after the call,
+// or a reading the reader paused during the call starting again by itself.
+describe("a call, Siri or another app taking the sound during a reading", () => {
+  async function onAWord() {
+    const p = phone();
+    await load(p);
+    store.play();
+    const token = p.last().token;
+    p.say({ type: "start", token, index: 1 });
+    const word = wordStarts(VERSES[1].text)[4];
+    p.say({ type: "word", token, index: 1, start: word, end: word + 3 });
+    return { p, word };
+  }
+
+  it("pauses the player at the word, without asking the phone to stop again (it has stopped, and keeps its claim on the sound)", async () => {
+    const { p } = await onAWord();
+    const stops = p.stops();
+    p.say({ type: "interruption", began: true });
+    expect(store.getAudioSnapshot().playing).toBe(false);
+    expect(p.stops()).toBe(stops);
+  });
+
+  it("goes on at the same word when the phone gives the sound back and says it may (a call or Siri over)", async () => {
+    const { p, word } = await onAWord();
+    const asked = p.asks.length;
+    p.say({ type: "interruption", began: true });
+    p.say({ type: "interruption", began: false, resume: true });
+    expect(p.asks).toHaveLength(asked + 1);
+    expect(p.last()).toMatchObject({ from: 1, offset: word });
+    expect(store.getAudioSnapshot().playing).toBe(true);
+  });
+
+  it("waits for the reader when the phone gives the sound back without saying it may, or another app keeps it; Play takes it up at the word", async () => {
+    const { p, word } = await onAWord();
+    const asked = p.asks.length;
+    p.say({ type: "interruption", began: true });
+    p.say({ type: "interruption", began: false, resume: false });
+    expect(p.asks).toHaveLength(asked);
+    expect(store.getAudioSnapshot().playing).toBe(false);
+    store.play();
+    expect(p.last()).toMatchObject({ from: 1, offset: word });
+  });
+
+  it("does not start again by itself when the reader paused it during the call, and lets the phone's claim on the sound go", async () => {
+    const { p } = await onAWord();
+    const asked = p.asks.length;
+    p.say({ type: "interruption", began: true });
+    const stops = p.stops();
+    store.pause();
+    expect(p.stops()).toBe(stops + 1);
+    p.say({ type: "interruption", began: false, resume: true });
+    expect(p.asks).toHaveLength(asked);
+    expect(store.getAudioSnapshot().playing).toBe(false);
+  });
+
+  it("is nothing to a reading that was not speaking", async () => {
+    const p = phone();
+    await load(p);
+    p.say({ type: "interruption", began: true });
+    p.say({ type: "interruption", began: false, resume: true });
+    expect(p.asks).toHaveLength(0);
+    expect(store.getAudioSnapshot().playing).toBe(false);
+  });
+});
+
 function pieceOf(t: ReturnType<typeof speechTimeline>, time: number): number {
   let at = 0;
   for (let i = 0; i < t.starts.length; i++) if (t.starts[i] <= time) at = i;

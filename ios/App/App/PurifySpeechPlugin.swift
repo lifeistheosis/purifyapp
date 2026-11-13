@@ -23,6 +23,13 @@ import MediaPlayer
 /// back to the player (the web view draws the lock screen only for what it
 /// plays itself). Novelty voices (bells, bubbles and the like) are never
 /// listed: this is Scripture and the Fathers.
+///
+/// A phone call, Siri, an alarm or another app taking the sound interrupts
+/// the audio session: the voice stops at its word and says so
+/// ("interruption"), and the player shows it paused there. When the phone
+/// ends the interruption and says the reading may go on (a call or Siri
+/// over), the player takes it up at that word, as a recording goes on after a
+/// call; otherwise it waits for the reader.
 @objc(PurifySpeechPlugin)
 public class PurifySpeechPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "PurifySpeechPlugin"
@@ -41,9 +48,44 @@ public class PurifySpeechPlugin: CAPPlugin, CAPBridgedPlugin {
     /// What each utterance is: the ask, the piece, where its letters begin, and the pieces in all.
     private var spoken: [ObjectIdentifier: (token: Int, index: Int, shift: Int, count: Int)] = [:]
     private var remoteTargets: [(MPRemoteCommand, Any)] = []
+    /// The audio session was interrupted while a text was read: say when it is over.
+    private var interruptedWhileReading = false
 
     override public func load() {
         synth.delegate = relay
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(audioInterrupted(_:)),
+            name: AVAudioSession.interruptionNotification,
+            object: AVAudioSession.sharedInstance()
+        )
+    }
+
+    /// A call, Siri, an alarm or another app took the sound, or gave it back.
+    @objc private func audioInterrupted(_ note: Notification) {
+        guard let raw = note.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
+              let type = AVAudioSession.InterruptionType(rawValue: raw) else { return }
+        var resume = false
+        if let options = note.userInfo?[AVAudioSessionInterruptionOptionKey] as? UInt {
+            resume = AVAudioSession.InterruptionOptions(rawValue: options).contains(.shouldResume)
+        }
+        DispatchQueue.main.async {
+            switch type {
+            case .began:
+                // A reading, not a voice's "Hear it": stopped at its word.
+                guard !self.spoken.isEmpty else { return }
+                self.synth.stopSpeaking(at: .immediate)
+                self.spoken.removeAll()
+                self.interruptedWhileReading = true
+                self.send(["type": "interruption", "began": true])
+            case .ended:
+                guard self.interruptedWhileReading else { return }
+                self.interruptedWhileReading = false
+                self.send(["type": "interruption", "began": false, "resume": resume])
+            @unknown default:
+                break
+            }
+        }
     }
 
     private func send(_ payload: [String: Any]) {
@@ -107,6 +149,7 @@ public class PurifySpeechPlugin: CAPPlugin, CAPBridgedPlugin {
         DispatchQueue.main.async {
             self.synth.stopSpeaking(at: .immediate)
             self.spoken.removeAll()
+            self.interruptedWhileReading = false
             self.playbackSession()
             let chosen = self.voice(id, lang)
             for i in from..<max(from, pieces.count) {
@@ -129,6 +172,8 @@ public class PurifySpeechPlugin: CAPPlugin, CAPBridgedPlugin {
         DispatchQueue.main.async {
             self.synth.stopSpeaking(at: .immediate)
             self.spoken.removeAll()
+            // The reader's own pause or a new reading: an interruption ending takes nothing up.
+            self.interruptedWhileReading = false
             call.resolve()
         }
     }

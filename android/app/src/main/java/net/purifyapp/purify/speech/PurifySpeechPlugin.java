@@ -1,6 +1,10 @@
 package net.purifyapp.purify.speech;
 
+import android.content.Context;
 import android.media.AudioAttributes;
+import android.media.AudioFocusRequest;
+import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
@@ -33,8 +37,16 @@ import java.util.Set;
  * answers (token) and the piece (index), and a word's letters are counted in
  * the piece as it was given, so the player lights the very word said.
  *
- * The phone's speech service is the engine's own process; this asks for no
- * audio focus, so the ambience the web view plays goes on under the voice
+ * The phone's speech service is the engine's own process. While a text is
+ * read the app holds the phone's audio focus for media speech, as a player
+ * does, so a phone call, the assistant, an alarm or another app taking the
+ * sound stops the voice at its word and says so ("interruption"), and the
+ * player shows it paused there; when a call or the assistant is over the
+ * phone gives the sound back and the reading goes on, as a recording does in
+ * the web view. Another app that keeps the sound leaves the reading paused for
+ * the reader. A sound that only asks the others to go quieter for a moment (a
+ * notification, a navigation prompt) is left to the phone. The ambience is the
+ * web view's own Web Audio, which holds no focus, so it goes on under the voice
  * and the player's balance lowers it, as it does under a recording.
  */
 @CapacitorPlugin(name = "PurifySpeech")
@@ -44,6 +56,22 @@ public class PurifySpeechPlugin extends Plugin {
     private boolean ready = false;
     private boolean failed = false;
     private final List<Runnable> waiting = new ArrayList<>();
+
+    /** How the voice sounds to the phone: media, and speech. */
+    private static final AudioAttributes SPEECH = new AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_MEDIA)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+            .build();
+    /** A text is being read: its pieces are queued and the last is not done. */
+    private boolean reading = false;
+    /** The ask being read (its token), so a report from one stopped a moment ago lets nothing go. */
+    private int current = -1;
+    /** The app holds the phone's audio focus. */
+    private volatile boolean focused = false;
+    /** The phone took the sound for a moment (a call, the assistant) while a text was read: say when it gives it back. */
+    private boolean lostForAMoment = false;
+    private AudioFocusRequest focusRequest;
+    private final AudioManager.OnAudioFocusChangeListener onFocus = this::focusChanged;
 
     /** Run once the phone's speech is ready; a phone with none rejects. */
     private synchronized void withSpeech(PluginCall call, Runnable action) {
@@ -66,10 +94,7 @@ public class PurifySpeechPlugin extends Plugin {
                     ready = status == TextToSpeech.SUCCESS;
                     failed = !ready;
                     if (ready) {
-                        tts.setAudioAttributes(new AudioAttributes.Builder()
-                                .setUsage(AudioAttributes.USAGE_MEDIA)
-                                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                                .build());
+                        tts.setAudioAttributes(SPEECH);
                         tts.setOnUtteranceProgressListener(progress);
                     }
                     now = new ArrayList<>(waiting);
@@ -102,13 +127,18 @@ public class PurifySpeechPlugin extends Plugin {
             String[] p = parts(id);
             if (p == null || !"1".equals(p[4])) return;
             send("done", p, -1, -1);
-            if (Integer.parseInt(p[1]) == Integer.parseInt(p[5]) - 1) send("end", p, -1, -1);
+            if (Integer.parseInt(p[1]) == Integer.parseInt(p[5]) - 1) {
+                send("end", p, -1, -1);
+                finishedReading(Integer.parseInt(p[0]));
+            }
         }
 
         @Override
         public void onError(String id) {
             String[] p = parts(id);
-            if (p != null) send("error", p, -1, -1);
+            if (p == null) return;
+            send("error", p, -1, -1);
+            finishedReading(Integer.parseInt(p[0]));
         }
 
         @Override
@@ -138,6 +168,96 @@ public class PurifySpeechPlugin extends Plugin {
             e.put("end", end);
         }
         notifyListeners("speech", e);
+    }
+
+    /** The phone took the sound, or gave it back. Called on the main thread. */
+    private void focusChanged(int change) {
+        if (change == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+            // A call, the assistant, an alarm: stop at the word, and keep the claim to hear when it is over.
+            synchronized (this) {
+                if (!reading) return;
+                reading = false;
+                lostForAMoment = true;
+                if (tts != null && ready) tts.stop();
+            }
+            interruption(true, false);
+        } else if (change == AudioManager.AUDIOFOCUS_LOSS) {
+            // Another app has the sound for good: the reading waits for the reader.
+            boolean was;
+            synchronized (this) {
+                was = reading || lostForAMoment;
+                if (reading && tts != null && ready) tts.stop();
+                reading = false;
+            }
+            dropFocus();
+            if (was) interruption(true, false);
+        } else if (change == AudioManager.AUDIOFOCUS_GAIN) {
+            boolean back;
+            synchronized (this) {
+                back = lostForAMoment;
+                lostForAMoment = false;
+            }
+            if (back) interruption(false, true);
+        }
+        // AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK (a notification, a navigation prompt): left to the phone.
+    }
+
+    private void interruption(boolean began, boolean resume) {
+        JSObject e = new JSObject();
+        e.put("type", "interruption");
+        e.put("began", began);
+        if (!began) e.put("resume", resume);
+        notifyListeners("speech", e);
+    }
+
+    private AudioManager audio() {
+        return (AudioManager) getContext().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+    }
+
+    /** Ask the phone for the sound, as a player does. False while it will not give it (a call under way). */
+    @SuppressWarnings("deprecation")
+    private synchronized boolean takeFocus() {
+        if (focused) return true;
+        AudioManager manager = audio();
+        if (manager == null) return true;
+        int result;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (focusRequest == null) {
+                focusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                        .setAudioAttributes(SPEECH)
+                        .setOnAudioFocusChangeListener(onFocus)
+                        .build();
+            }
+            result = manager.requestAudioFocus(focusRequest);
+        } else {
+            result = manager.requestAudioFocus(onFocus, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        }
+        focused = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
+        return focused;
+    }
+
+    /** Let the phone's sound go: the reading stopped, ended, or another app has it. */
+    @SuppressWarnings("deprecation")
+    private synchronized void dropFocus() {
+        lostForAMoment = false;
+        if (!focused) return;
+        focused = false;
+        AudioManager manager = audio();
+        if (manager == null) return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (focusRequest != null) manager.abandonAudioFocusRequest(focusRequest);
+        } else {
+            manager.abandonAudioFocus(onFocus);
+        }
+    }
+
+    /** The last piece of the reading now is done, or it failed: the sound is let go. */
+    private void finishedReading(int token) {
+        synchronized (this) {
+            if (token != current) return;
+            reading = false;
+        }
+        dropFocus();
     }
 
     private boolean onDevice(Voice v) {
@@ -202,6 +322,17 @@ public class PurifySpeechPlugin extends Plugin {
                 float volume = call.getFloat("volume", 1f);
                 int count = pieces.length();
                 tts.stop();
+                synchronized (this) {
+                    reading = false;
+                    lostForAMoment = false;
+                    current = token;
+                }
+                // Not over a call: the reading waits, paused at its place, for the reader.
+                if (!takeFocus()) {
+                    interruption(true, false);
+                    call.resolve();
+                    return;
+                }
                 useVoice(voice, lang);
                 tts.setSpeechRate(Math.max(0.25f, Math.min(4f, rate)));
                 int max = Math.max(200, TextToSpeech.getMaxSpeechInputLength() - 100);
@@ -217,6 +348,10 @@ public class PurifySpeechPlugin extends Plugin {
                         tts.speak(piece.substring(span[0], span[1]), TextToSpeech.QUEUE_ADD, params, id);
                     }
                 }
+                synchronized (this) {
+                    reading = from < count;
+                }
+                if (from >= count) dropFocus();
                 call.resolve();
             } catch (Exception e) {
                 call.reject("Could not speak: " + e.getMessage());
@@ -243,7 +378,11 @@ public class PurifySpeechPlugin extends Plugin {
 
     @PluginMethod
     public void stop(PluginCall call) {
+        synchronized (this) {
+            reading = false;
+        }
         if (tts != null && ready) tts.stop();
+        dropFocus();
         call.resolve();
     }
 
@@ -266,6 +405,8 @@ public class PurifySpeechPlugin extends Plugin {
 
     @Override
     protected void handleOnDestroy() {
+        reading = false;
+        dropFocus();
         if (tts != null) {
             tts.stop();
             tts.shutdown();

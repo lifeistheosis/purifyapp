@@ -70,10 +70,44 @@ describe("the speech plugin's two halves", () => {
     expect(SWIFT).toContain("weak var owner: PurifySpeechPlugin?");
   });
 
-  it("on Android, take the app's context, let the phone go when the app does, and ask for no audio focus (the ambience plays on under the voice)", () => {
+  it("on Android, take the app's context and let the phone go when the app does", () => {
     expect(JAVA).toContain("new TextToSpeech(getContext().getApplicationContext()");
     expect(JAVA).toContain("tts.shutdown()");
-    expect(JAVA).not.toMatch(/requestAudioFocus|AudioFocusRequest/);
+  });
+
+  // Updates 17, item 4 (the arbiter's brief): a phone call, Siri or the
+  // assistant, or another app taking the sound during a reading pauses the
+  // voice at its word, as a recording pauses for a call. Until then the voice
+  // talked on through a call on Android (no audio focus was asked), and on an
+  // iPhone the player said it was playing while the phone was silent.
+  it("on Android, hold the audio focus for media speech while reading: a call stops the voice and gives it back, another app keeping the sound leaves it paused", () => {
+    expect(JAVA).toMatch(/new AudioFocusRequest\.Builder\(AudioManager\.AUDIOFOCUS_GAIN\)\s*\.setAudioAttributes\(SPEECH\)/);
+    expect(JAVA).toContain(".setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)");
+    // Taken before the pieces are queued; not over a call.
+    expect(JAVA.indexOf("if (!takeFocus())")).toBeGreaterThan(-1);
+    expect(JAVA.indexOf("if (!takeFocus())")).toBeLessThan(JAVA.indexOf("TextToSpeech.QUEUE_ADD"));
+    // A moment's loss stops and keeps the claim; the gain after it says the reading may go on.
+    expect(JAVA).toMatch(/AUDIOFOCUS_LOSS_TRANSIENT\) \{[\s\S]*?lostForAMoment = true;[\s\S]*?tts\.stop\(\);[\s\S]*?interruption\(true, false\);/);
+    expect(JAVA).toMatch(/AUDIOFOCUS_GAIN\) \{[\s\S]*?if \(back\) interruption\(false, true\);/);
+    // A loss for good lets the claim go and says nothing more.
+    expect(JAVA).toMatch(/AUDIOFOCUS_LOSS\) \{[\s\S]*?dropFocus\(\);[\s\S]*?interruption\(true, false\);/);
+    // Let go when the reader stops it and when the reading ends, never left held.
+    expect(JAVA).toMatch(/public void stop\(PluginCall call\) \{[\s\S]*?dropFocus\(\);/);
+    expect(JAVA).toMatch(/send\("end", p, -1, -1\);\s*finishedReading\(/);
+    expect(JAVA).toContain('e.put("type", "interruption")');
+  });
+
+  it("on the iPhone, stop at the word when the audio session is interrupted, and say whether the phone lets the reading go on", () => {
+    expect(SWIFT).toContain("name: AVAudioSession.interruptionNotification");
+    expect(SWIFT).toMatch(/case \.began:[\s\S]*?guard !self\.spoken\.isEmpty else \{ return \}[\s\S]*?self\.synth\.stopSpeaking\(at: \.immediate\)[\s\S]*?"type": "interruption", "began": true/);
+    expect(SWIFT).toContain(".contains(.shouldResume)");
+    expect(SWIFT).toMatch(/case \.ended:[\s\S]*?guard self\.interruptedWhileReading else \{ return \}[\s\S]*?"type": "interruption", "began": false, "resume": resume/);
+    // The reader's own pause during a call: nothing is taken up after it.
+    expect(SWIFT).toMatch(/@objc func stop\(_ call: CAPPluginCall\) \{[\s\S]*?self\.interruptedWhileReading = false/);
+  });
+
+  it("the player reads both halves' interruptions as one report", () => {
+    expect(ENGINE).toContain('type: "interruption"; began: boolean; resume?: boolean');
   });
 
   it("are registered in both apps, and the iPhone's file is built into the app, not the widgets", () => {

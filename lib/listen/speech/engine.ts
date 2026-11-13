@@ -46,7 +46,15 @@ export type SpeechEvent =
   | { type: "end"; token: number }
   | { type: "error"; token: number; index: number; message?: string }
   /** The lock screen's controls (the iPhone's; Android's come through the player's own). */
-  | { type: "remote"; action: "play" | "pause" | "toggle" | "skip"; seconds?: number };
+  | { type: "remote"; action: "play" | "pause" | "toggle" | "skip"; seconds?: number }
+  /**
+   * The phone took the sound (a call, Siri or the assistant, an alarm, another
+   * app playing) and has stopped the voice (`began`), or gave the sound back
+   * (`began: false`), with `resume` where the phone says the reading may go on:
+   * a call or Siri over, as a recording goes on after one. Android's audio
+   * focus, the iPhone's audio session interruption.
+   */
+  | { type: "interruption"; began: boolean; resume?: boolean };
 
 export type SpeakAsk = {
   token: number;

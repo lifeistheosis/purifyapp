@@ -19,6 +19,13 @@ import { learnPace, pieceAt, speechTimeline, timeAtChar, timeWhileSpeaking, type
  * reading up at that word. A seek, and 15 seconds back or forward, go to the
  * start of the verse or paragraph the moment falls in. A new speed is taken
  * at the word being spoken.
+ *
+ * A phone call, Siri or the assistant, or another app taking the sound pauses
+ * the reading the same way, at its word (the plugin's "interruption"): the
+ * player shows it paused, and Play takes it up there. Where the phone gives
+ * the sound back and says the reading may go on (a call or Siri over), it goes
+ * on by itself, as a recording does after a call; where another app keeps the
+ * sound, it waits for the reader. A reader's own Pause in the meantime wins.
  */
 
 export type SpokenState = { playing?: boolean; currentTime?: number; duration?: number; captions?: CaptionSource; failed?: boolean };
@@ -86,6 +93,8 @@ export function createSpeechSession(o: SpeechSessionOptions): SpeechSession {
   let ticker: ReturnType<typeof setInterval> | null = null;
   /** The piece the phone has just finished, before it begins the next. */
   let finished = -1;
+  /** The phone took the sound while this was speaking, and may give it back. */
+  let interrupted = false;
 
   const pieces = o.pieces.map((p) => p.text);
 
@@ -101,6 +110,7 @@ export function createSpeechSession(o: SpeechSessionOptions): SpeechSession {
   }
 
   function speak(): void {
+    interrupted = false;
     token += 1;
     speaking = true;
     since = clock();
@@ -125,7 +135,8 @@ export function createSpeechSession(o: SpeechSessionOptions): SpeechSession {
       .catch(() => fail());
   }
 
-  function halt(): void {
+  /** Stop where it stands. `quiet`: the phone has already stopped itself (an interruption), so it is not asked again, and keeps its claim on the sound to say when it is given back. */
+  function halt(quiet = false): void {
     if (!speaking) return;
     // Where it stands now is where Play takes it up: the next piece when the
     // phone was between two, else the word being spoken.
@@ -142,7 +153,7 @@ export function createSpeechSession(o: SpeechSessionOptions): SpeechSession {
     token += 1;
     speaking = false;
     tick(false);
-    void o.engine.stop();
+    if (!quiet) void o.engine.stop();
   }
 
   function fail(): void {
@@ -154,6 +165,21 @@ export function createSpeechSession(o: SpeechSessionOptions): SpeechSession {
     if (stopped) return;
     if (e.type === "remote") {
       o.host.remote?.(e.action, e.seconds);
+      return;
+    }
+    if (e.type === "interruption") {
+      if (e.began) {
+        // Paused at its word, as a reader's Pause leaves it.
+        if (!speaking) return;
+        halt(true);
+        interrupted = true;
+        o.host.state({ playing: false, currentTime: now() });
+        void o.engine.nowPlaying({ title: o.title ?? "", artist: o.artist ?? "", duration: timeline.duration, elapsed: now(), playing: false });
+        return;
+      }
+      const again = interrupted && e.resume === true && !speaking;
+      interrupted = false;
+      if (again) speak();
       return;
     }
     if (e.token !== token || !speaking) return;
@@ -220,6 +246,10 @@ export function createSpeechSession(o: SpeechSessionOptions): SpeechSession {
       speak();
     },
     pause() {
+      // The reader's own Pause: a call ending does not take the reading up,
+      // and the phone's claim on the sound is let go.
+      if (interrupted && !speaking) void o.engine.stop();
+      interrupted = false;
       if (!speaking) return;
       halt();
       o.host.state({ playing: false, currentTime: now() });
@@ -251,6 +281,8 @@ export function createSpeechSession(o: SpeechSessionOptions): SpeechSession {
     },
     stop() {
       if (stopped) return;
+      if (interrupted && !speaking) void o.engine.stop();
+      interrupted = false;
       halt();
       stopped = true;
       off();
