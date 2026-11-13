@@ -1,14 +1,18 @@
 // The Purify design kit's check (docs/brand/design-kit.md).
 //
-//   node docs/brand/kit/check.mjs            check both templates
-//   node docs/brand/kit/check.mjs --write    first write tokens.css and pieces.css
-//                                            (and the mark's picture) into the
+//   node docs/brand/kit/check.mjs            check the page, then the emails
+//   node docs/brand/kit/check.mjs --write    first write tokens.css, pieces.css
+//                                            and the app's pictures into the
 //                                            artifact template, then check
-//   node docs/brand/kit/check.mjs --shots <dir>   also save a still of each
-//                                            template on each palette there, at 390
+//   node docs/brand/kit/check.mjs --shots <dir>   also save a still of the
+//                                            page on each palette there, at 390
+//
+// One system: the emails (docs/brand/kit/email/) are the same look, and this
+// check ends by running theirs (email/check.mjs), so one command holds the
+// whole kit.
 //
 // Phone first (the owner, 2026-11-13: "the design must be optimized for
-// mobile"). Each template is opened at 360, 390 and 412 wide (touch) and at
+// mobile"). The page is opened at 360, 390 and 412 wide (touch) and at
 // 1032 (a laptop), and at each width held to checkMock (scripts/mock-check.mjs)
 // on the app's five palettes, to no sideways scroll, and (rule two, his word of
 // 2026-11-13: "stop using parchment for designs") to no parchment, cream or sepia
@@ -95,11 +99,11 @@ const shotsAt = args.includes("--shots") ? path.resolve(args[args.indexOf("--sho
 
 const WIDTHS = [360, 390, 412, 1032];
 const ARTIFACT = path.join(KIT, "artifact-template.html");
-const EMAIL = path.join(KIT, "email-template.html");
-const LOGO = path.join(ROOT, "public/purify-logo.jpg");
 
 const BEGIN = "/* kit:begin. Written by `node docs/brand/kit/check.mjs --write` from tokens.css and pieces.css; edit those, not this. */";
 const END = "/* kit:end */";
+const PICS_BEGIN = "/* kit:pictures:begin. Written by the same command, from the app's own files. */";
+const PICS_END = "/* kit:pictures:end */";
 
 /** The kit's CSS as the artifact template must hold it. */
 function kitCss() {
@@ -107,20 +111,41 @@ function kitCss() {
   return `${BEGIN}\n${read("tokens.css")}\n\n${read("pieces.css")}\n${END}`;
 }
 
+const dataUri = (file, type) => `data:${type};base64,${fs.readFileSync(file).toString("base64")}`;
+
+/**
+ * The pictures the pieces draw with, each the app's own file: the cross
+ * (.k-mark wears it in the page's ink) and Night sky's small stars
+ * (.k-night). A page is one file, so they are written into it.
+ */
+function kitPictures() {
+  const cross = dataUri(path.join(ROOT, "public/purify-cross-mark.png"), "image/png");
+  const stars = dataUri(path.join(ROOT, "public/themes/nightsky-stars.svg"), "image/svg+xml");
+  return `${PICS_BEGIN}\n:root { --k-pic-cross: url("${cross}"); --k-pic-stars: url("${stars}"); }\n${PICS_END}`;
+}
+
+/** The figure's picture: the night of the Nativity card, as the email look draws it from the card's own numbers. */
+const NIGHT = path.join(KIT, "email/img/nativity-night-01.png");
+const NIGHT_SRC = /(<img data-kit="night" src=")[^"]*(")/;
+
+const between = (html, begin, end, text) => {
+  const a = html.indexOf(begin);
+  const b = html.indexOf(end);
+  if (a < 0 || b < 0) throw new Error(`artifact-template.html has lost its markers: ${begin.slice(0, 24)}`);
+  return html.slice(0, a) + text + html.slice(b + end.length);
+};
+
 function writeArtifact() {
   let html = fs.readFileSync(ARTIFACT, "utf8");
-  const a = html.indexOf(BEGIN);
-  const b = html.indexOf(END);
-  if (a < 0 || b < 0) throw new Error("artifact-template.html has lost its kit:begin and kit:end markers");
-  html = html.slice(0, a) + kitCss() + html.slice(b + END.length);
-  const logo = `data:image/jpeg;base64,${fs.readFileSync(LOGO).toString("base64")}`;
-  html = html.replace(/src="(kit:purify-logo|data:image\/jpeg;base64,[^"]+)"/, `src="${logo}"`);
+  html = between(html, BEGIN, END, kitCss());
+  html = between(html, PICS_BEGIN, PICS_END, kitPictures());
+  html = html.replace(NIGHT_SRC, `$1${dataUri(NIGHT, "image/png")}$2`);
   fs.writeFileSync(ARTIFACT, html);
 }
 
 function artifactInStep() {
   const html = fs.readFileSync(ARTIFACT, "utf8");
-  return html.includes(kitCss()) && !html.includes('src="kit:purify-logo"');
+  return html.includes(kitCss()) && html.includes(kitPictures()) && !html.includes('src="kit:night"');
 }
 
 async function main() {
@@ -136,11 +161,9 @@ async function main() {
   const browser = await chromium.launch(fs.existsSync(own) ? { executablePath: own } : {});
   try {
     ok = (await parchmentSelfTest(browser)) && ok;
-    for (const [name, file] of [["the artifact template", ARTIFACT], ["the email template", EMAIL]]) for (const width of WIDTHS) {
+    for (const [name, file] of [["the artifact template", ARTIFACT]]) for (const width of WIDTHS) {
       const phone = width < 600;
       const ctx = await browser.newContext({ viewport: { width, height: phone ? 844 : 900 }, colorScheme: "dark", isMobile: phone, hasTouch: phone });
-      // The email's picture is the one purifyapp.net serves; read it from the repository so the check needs no network.
-      await ctx.route("https://purifyapp.net/purify-logo.jpg", (r) => r.fulfill({ path: LOGO, contentType: "image/jpeg" }));
       const page = await ctx.newPage();
       await page.goto(`file://${file}`, { waitUntil: "load" });
       await page.evaluate(() => document.fonts.ready);
@@ -176,7 +199,13 @@ async function main() {
   } finally {
     await browser.close();
   }
-  console.log(ok ? "\nkit check: both templates pass on the five palettes at 360, 390, 412 and 1032" : "\nkit check: FAILED");
+  // The emails are the same look: their own check, on the same widths and palettes.
+  const { spawnSync } = await import("node:child_process");
+  const emails = spawnSync(process.execPath, [path.join(KIT, "email/check.mjs")], { encoding: "utf8" });
+  const said = (emails.stdout || "").split("\n").filter((l) => /FAIL|NO  |The email look/.test(l));
+  console.log(`\nThe emails (docs/brand/kit/email/check.mjs):\n${said.map((l) => `  ${l.trim()}`).join("\n")}`);
+  ok = emails.status === 0 && ok;
+  console.log(ok ? "\nkit check: the page and the emails pass on the five palettes at 360, 390, 412 and 1032" : "\nkit check: FAILED");
   return ok;
 }
 

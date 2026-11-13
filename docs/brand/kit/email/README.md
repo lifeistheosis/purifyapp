@@ -28,7 +28,9 @@ node docs/brand/kit/email/check.mjs     # checkMock on the five palettes, and th
 
 Each email is one file for a mail client: tables and inline styles, no script, no font or stylesheet fetched. The inline colours are the dark scheme, the app's default. One style block in the head turns it to the clean light where a client says the reader's screen is light. Nothing a reader needs is said only by a picture.
 
-**Dark is the scheme written inline, and the kit's first email template did it the other way round** (`docs/brand/kit/email-template.html` as it landed was Light inline, Dark by the head). Three reasons for dark here: the dark palettes lead, by his word; it is what Purify sends today (`lib/email/theme.ts`, night); and a client that darkens a light email by force (Gmail's apps do) reads no style block, so it would leave the mark in ink on a darkened page, where a dark email is left as it is. One of the two files should give way; that is for the kit chat and the arbiter.
+**Dark is the scheme written inline.** Three reasons: the dark palettes lead, by his word; it is what Purify sends today (`lib/email/theme.ts`, night); and a client that darkens a light email by force (Gmail's apps do) reads no style block, so it would leave the mark in ink on a darkened page, where a dark email is left as it is. The kit's first email template was light first; it gave way to this folder on 2026-11-13, so the kit holds one email look.
+
+**Small.** Each email is under 30KB of HTML, far under the 100KB past which Gmail clips one, and each picture is under 100KB. The check holds both.
 
 ## The look
 

@@ -8,11 +8,11 @@ So everything a chat makes for people to look at starts from this kit, never fro
 
 His word, 2026-11-13: "the design must be optimized for mobile." Everything is designed at phone width first (360 to 412), then widened. Most of what we make is opened on a phone, his first of all.
 
-- Headings take the app's phone sizes: a title at 28px (`text-title`) and a section at 22px (`text-title-sm`), rising with clamp() to 48px and 28px on wide screens.
-- No orphan and no empty half-row at any width. Figures are one card of rows on a phone and one row of tiles from 640px; cards stack on a phone and stand in one row from 640px, three at most.
-- A chart fits 360 wide with every label and value whole, and room above its highest mark.
+- Headings take a phone's sizes first: a title at 34px and a section at 22px (`text-title-sm`), rising with clamp() to 48px and 26px on wide screens.
+- No orphan, no empty half-row and no two boxes of unequal height at any width, because no piece is a row of tiles: figures are rows, things to act on are rows in one tray.
+- A chart fits 360 wide with every value over its mark, and room above its highest.
 - An email is one column, 100% wide up to 600px, body text 16px or more, every tap target 44px or more.
-- The check renders every template at 360, 390, 412 and 1032, and fails on a sideways scroll. Look at a still at 390 yourself before sending.
+- The check renders the page and every email at 360, 390, 412 and 1032, and fails on a sideways scroll. Look at a still at 390 yourself before sending.
 
 ## Rule two: never parchment
 
@@ -25,13 +25,17 @@ His word, 2026-11-13: "and also stop using parchment for designs. (important bec
 
 ## What is in `docs/brand/kit/`
 
+One system: a page and an email are the same look, made of the same pieces.
+
 | File | What it is |
 |---|---|
-| `tokens.css` | The tokens: the five palettes (Dark, the clean neutral Light, Black, Candlelight, Monastery; Parchment listed for app mockups only), the ink's shares, type, space, radius, motion, the Church's red and money's three hues. Each names its line in `app/globals.css` or `app/admin/admin-theme.css`. |
-| `pieces.css` | The pieces: title, section, figures, table, chart, figure, note, card, button, footer. Built only from the tokens. |
-| `artifact-template.html` | One self-contained HTML page holding the tokens and pieces, with every piece shown once. Start an artifact or a report from a copy of it. |
-| `email-template.html` | The email: tables, inline styles, no scripts, no SVG. Light in the clean neutral (white, the app's ink), dark in the app's Dark palette. Start every email from a copy of it. |
-| `check.mjs` | Renders both templates at 360, 390, 412 and 1032 and holds them to checkMock on the five palettes at each width, and to no sideways scroll. `--write` refreshes the artifact template from the two CSS files. |
+| `tokens.css` | The tokens: the five palettes (Dark, the clean neutral Light, Black, Candlelight, Monastery; Parchment listed for app mockups only), the ink's shares, type, space, radius, motion, the Church's red, money's three hues and the Night sky look. Each names its line in `app/globals.css` or `app/admin/admin-theme.css`. |
+| `pieces.css` | The pieces: title, section, the night, the lead, figures, chart, split, bars, table, figure, note, tray, list, card, button, footer. Built only from the tokens. |
+| `artifact-template.html` | One self-contained HTML page holding the tokens and pieces, with every piece shown once, as a weekly brief. Start an artifact or a report from a copy of it. |
+| `email/` | The emails, in the same look: the reader email, its Nativity Fast season and the owner's brief, with their own `README.md`, `build.mjs` and `check.mjs`. Start every email there. |
+| `check.mjs` | Renders the page at 360, 390, 412 and 1032 and holds it to checkMock on the five palettes at each width, to no sideways scroll and to no parchment; then runs the emails' own check. `--write` refreshes the page from the two CSS files and the app's pictures. |
+
+The kit's first email template (`email-template.html`, light first, by the kit's first chat) gave way to `email/` on 2026-11-13, so the kit holds one email look and not two. It is in the repository's history at `ef1bec40`.
 
 ## On claude.ai
 
@@ -42,7 +46,7 @@ The kit is also a claude.ai design system, so decks and designs start from Purif
 - **Always**, for anything made for the owner, a reader or the public to look at: an artifact, a report, a brief, a drop kit page, a release email, a chart.
 - **Not** for app code. The app is the source; the kit follows it. Nothing under `app/`, `components/` or `lib/` imports the kit.
 - **Not** for pictures of the app (store pictures, cards, promo stills): those are real screens from the export (CLAUDE.md, "Mockups"). The kit is for the page around them.
-- **Fable** designs on top of the kit only where taste decides (the email layout, the seasonal looks), and adds to it rather than replacing it.
+- **The look is Fable's** from 2026-11-13, at the owner's word on seeing the first page on his phone: "you can definitely make a way better design than this. and ensure everything is optimized." The tokens stay the app's own values; a token is added only when the app has it, naming its line.
 
 ## How to use it
 
@@ -52,17 +56,34 @@ The kit is also a claude.ai design system, so decks and designs start from Purif
 4. Check it: at 360, 390, 412 and 1032 on all five palettes with checkMock (the way `check.mjs` does), and look at a still at 390. Then send it.
 5. For an artifact on claude.ai, publish the copied page. It opens on Dark; `data-theme="light"` gives the clean neutral light, and `data-reading-mode` on `<html>` wears the app's other palettes.
 
+## The look, in five lines
+
+- **A page opens the way a chapter opens in the app:** the mark, a small line, the title, a line under it in italics, the short rule. Centred, and nothing else on the page is.
+- **One thing leads, and it stands on the night.** The app's Night sky look, once on a page, holds the one figure that matters most and its week. Everything after it is quiet.
+- **Quiet things sit on the page itself,** as rows with hairlines between. A thing is raised only when it is a thing to act on, and then it is the app's own tray.
+- **Every value is whole.** A chart says each number over its mark, since a phone has no hover. The eight-point star stands over the best day, once, in a soft pool of light.
+- **Labels are sentence case** (`docs/brand/voice.md`), never capitals spaced out.
+
 ## The pieces, in one line each
 
-- **Title:** the cross mark in the accent, an eyebrow, the serif title (Lora 700, 28px on a phone to 48px wide), one lede, the date.
-- **Section:** a serif heading (22px on a phone to 28px wide), body in DM Sans at 17px, a 68-character line. A hairline between sections, never down an edge.
-- **Figures:** on a phone, one card of rows (the label and its change at the start, the number at the end); from 640px, one row of tiles, three at most. One number needs no chart. In email, three compact tiles in one row at every width.
-- **Table:** eyebrow headings, hairlines between rows, numbers to the end and in tabular figures, a caption.
-- **Chart:** the app's own method (`components/admin/charts.tsx`): one ink, a recessive grid, the period before as a dashed line, a legend for two series or more, the figures in a table beside it, a title in every bar for hover. Hues only on money's chart: the shop, Purify Plus and the EIKON Box, as `admin-theme.css` sets them, checked with the dataviz validator. In email, columns are table cells: one series, its heading as its name.
-- **Figure:** a picture from the app on the well, rounded, with a caption that names where it comes from.
-- **Note:** a label and the serif in italic, set in from the line. It stands on its own type: no rule beside it, no box.
-- **Card:** the app's card (`rounded-lg border-paper/10 bg-night-soft`): a serif title and one line. Stacked on a phone, one row of three at most from 640px.
-- **Button:** the app's primary (a pill in the ink, the ground's colour for its words) and a quiet one in a hairline. At least 44px. One primary at most.
+- **Title** (`.k-title`): the app's cross in the page's ink, a small line, the title in DM Serif Display (34px on a phone to 48px wide), one line under it in Lora italic, the short rule.
+- **Section** (`.k-section`): a heading in Lora (22px on a phone), running text in Lora at 17px on a 68-character line, as in the emails. A hairline between sections, never down an edge.
+- **The night** (`.k-night`): Night sky, the app's own look: its sky, its small stars, the light along its horizon. Dark on every palette, as the Nativity card is. Whatever stands in it reads the night's ink.
+- **The lead** (`.k-lead`): the one figure that leads, large in DM Serif Display with the glowing white's soft light, a line of what changed in words, and its chart. On the night. Once on a page.
+- **Figures** (`.k-stats`): the quiet ones, as rows: a name and what changed at the start, the number at the end. Rows at every width, never tiles.
+- **Chart** (`.k-chart`): the app's own method (`components/admin/charts.tsx`): one ink, thin columns, the period before as a dashed line, a legend for two series or more, every value over its column. The star marks the best day.
+- **Split** (`.k-split`, `.k-keys`): one whole by its parts, for money in by source: one bar in money's own hues with a gap of the page between its parts, and each part named with its amount and the week before. No part is told by its colour alone.
+- **Bars** (`.k-bars`): what was most: a name, its count, a thin bar to the longest.
+- **Table** (`.k-table`): figures side by side: the words in the serif, the numbers to the end in tabular figures, sentence-case headings, hairlines, a caption under it.
+- **Figure** (`.k-figure`): a picture from the app, rounded as the app's cards are, with a caption that names where it comes from.
+- **Note** (`.k-note`): a small line and the serif in italics, set in from the line. It stands on its own type: no rule beside it, no box.
+- **Tray** (`.k-tray`): the app's raised card (`.theology-tray`): a step of the card's colour down its height, a fine edge, a sheen along its top, a soft shade under it.
+- **List** (`.k-list`, `.k-row`): things to act on, as rows in one tray, each a way in with the app's chevron. Never three cards side by side.
+- **Card** (`.k-card`): one thing and its one button, as Today's card is in the app and the saint's card in the emails.
+- **Button** (`.k-button`): the app's primary (a pill in the ink, the ground's colour for its words), 48px tall and across its card on a phone. One to a page. The quiet one (`.k-button-quiet`) stands in a hairline, and a link that stands alone (`.k-link`) is underlined and 44px tall.
+- **Footer** (`.k-foot`): a hairline, "Edgar, the Purify Team" in italics, one small line.
+
+In an email the same pieces are drawn with tables and inline styles (`email/build.mjs`): the opening, the week as a leaf of the calendar, figures, columns, the split, bars, the card and its button.
 
 ## The rules it keeps
 
@@ -79,15 +100,17 @@ The accent the app calls "gold" (`--color-gold`) is a glowing white on the dark 
 ## Checking
 
 ```
-node docs/brand/kit/check.mjs                # both templates, five palettes, 360 390 412 1032
+node docs/brand/kit/check.mjs                # the page and the emails, five palettes, 360 390 412 1032
 node docs/brand/kit/check.mjs --write        # after a change to tokens.css or pieces.css
-node docs/brand/kit/check.mjs --shots <dir>  # and a still of each palette at 390
+node docs/brand/kit/check.mjs --shots <dir>  # and a still of the page on each palette at 390
+node docs/brand/kit/email/check.mjs          # the emails alone
 ```
 
-It needs Playwright (`npm ci`, or the session's own). It fails when either template fails a checkMock rule, scrolls sideways, or stands on parchment, and when the artifact template no longer holds the two CSS files as written. The money key's two hues are allowed by name: they are the same on both themes in the app's admin too.
+It needs Playwright (`npm ci`, or the session's own). It fails when the page or an email fails a checkMock rule, scrolls sideways, or stands on parchment, and when the page no longer holds the two CSS files and the app's pictures as written. The emails' check also holds each email's file under 100KB, so Gmail never clips it, and each picture under 100KB. Named allowances: the night is a dark island on every palette, and money's two hues are the same on both themes in the app's admin too.
 
 When the app changes a token (a palette, the type, the curve), change `tokens.css` to match, naming the line, run `--write` and the check, and say so in your report.
 
 ## Emails, in particular
 
-Email clients run no scripts and many draw no SVG, so the email template does layout with tables and colour with inline styles, Light first. Its light is the clean neutral, never parchment. Its `<style>` block carries the Dark palette under `prefers-color-scheme: dark` (and Outlook's own dark marks); the rules under `html[data-reading-mode]` exist only so the check and an in-app preview can wear the other palettes. Before a send, see it in Gmail, Apple Mail and Outlook, light and dark (`docs/plans/owner-desk.md`, section 3).
+Email clients run no scripts, many draw no SVG and Outlook reads no transparency, so an email does layout with tables and colour with inline styles in plain colours, written by `email/build.mjs` from the kit's tokens. Dark leads: the dark scheme is the one written inline, and a style block turns it to the clean neutral light where a client says the reader's screen is light. It is never parchment. An email's pictures each have their words, and nothing is fetched but pictures. Before a send, see it in Gmail, Apple Mail and Outlook, light and dark (`docs/plans/owner-desk.md`, section 3). The whole of it is in `email/README.md`.
+

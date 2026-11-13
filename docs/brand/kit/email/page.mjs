@@ -73,6 +73,7 @@ const CONTENT = `
       <tr><td>The file a mail client gets wears the same colours as the checked drawing, piece by piece, on a dark screen and on a light one.</td><td>Passed: 115, 135 and 250 pieces.</td></tr>
       <tr><td>No script, no handler, no stylesheet or font fetched. Every picture has its words.</td><td>Passed.</td></tr>
       <tr><td>No parchment: no email and no page here holds the app's Light paper.</td><td>Passed.</td></tr>
+      <tr><td>Each email under 100KB of HTML, so Gmail never clips it, and each picture under 100KB.</td><td>Passed: 14, 17 and 27KB.</td></tr>
       <tr><td>No picture on the heritage list.</td><td>Passed: none of four.</td></tr>
     </tbody>
   </table></div>
@@ -87,7 +88,7 @@ const CONTENT = `
     <li>The night is one picture for each day of the fast. The build script draws any day; only day 1 is drawn so far.</li>
     <li>Each day's fast comes from the calendar the app already has. The Sunday email does not carry it yet.</li>
     <li>The Sunday email now names 20 and 21 November by the saint alone, so both read &ldquo;The Most Holy Theotokos&rdquo;. The sample uses the commemoration's own name. The arbiter has this as a finding.</li>
-    <li>These files write the dark scheme inline and turn light only where a client says the screen is light. The kit's first email template did it the other way round. Dark leads by his word, it is what Purify sends today, and a client that darkens a light email by force would leave the mark in ink on a dark page. For the kit to settle.</li>
+    <li>Dark is the scheme written inline, and the email turns light only where a client says the screen is light. The kit's first email template, which was light first, gave way to these files, so the kit holds one email look.</li>
   </ul>
 </section>
 </main>

@@ -99,7 +99,10 @@ try {
     const local = [...html.matchAll(/<img[^>]*src="([^"]+)"/g)].every((m) => fs.existsSync(path.join(HERE, m[1])));
     console.log(`  ${plain ? "ok  " : "FAIL"}  ${e.file}: no script, no handler, no stylesheet or font fetched`);
     console.log(`  ${alts && local ? "ok  " : "FAIL"}  ${e.file}: every picture has its words for a client that shows none, and its file is in img/`);
-    ok = plain && alts && local && ok;
+    // Gmail clips an email past 102KB of HTML; held well under it.
+    const kb = Math.round(Buffer.byteLength(html) / 102.4) / 10;
+    console.log(`  ${kb < 100 ? "ok  " : "FAIL"}  ${e.file}: ${kb}KB of HTML, under the 100KB a mail client shows whole`);
+    ok = plain && alts && local && kb < 100 && ok;
   }
 
   // No parchment: no file here holds the app's Light palette's paper (CLAUDE.md, "No parchment in designs").
@@ -107,6 +110,11 @@ try {
   const papers = ["index.html", ...EMAILS.map((e) => e.file)].filter((f) => PARCHMENT.some((hex) => fs.readFileSync(path.join(HERE, f), "utf8").toLowerCase().includes(hex)));
   console.log(`  ${papers.length ? "FAIL" : "ok  "}  no parchment (${PARCHMENT.join(", ")}): ${papers.length ? papers.join(", ") : "in none of the emails, nor on the page"}`);
   ok = papers.length === 0 && ok;
+
+  // Pictures compressed: none heavier than 100KB.
+  const heavy = fs.readdirSync(path.join(HERE, "img")).map((f) => [f, fs.statSync(path.join(HERE, "img", f)).size]).filter(([, size]) => size > 100 * 1024);
+  console.log(`  ${heavy.length ? "FAIL" : "ok  "}  the pictures: ${heavy.length ? heavy.map(([f, n]) => `${f} is ${Math.round(n / 1024)}KB`).join(", ") : "each under 100KB"}`);
+  ok = heavy.length === 0 && ok;
 
   // The heritage list is kept out: no picture here is one of its files.
   const { HERITAGE_PICTURES } = await import(path.join(ROOT, "lib/marketing/heritagePictures.ts"));

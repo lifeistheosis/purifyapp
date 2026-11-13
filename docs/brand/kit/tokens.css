@@ -171,3 +171,18 @@
   --k-line-strong: color-mix(in oklab, var(--k-ink-base) 20%, transparent);
   --k-grid: color-mix(in oklab, var(--k-ink-base) 8%, transparent);  /* --chart-grid, globals.css 150 */
 }
+
+/* ── Night sky: one of the app's looks, a night on every palette ──────
+   "A still night, small stars, the star above" (lib/reader/readingModes.ts
+   156-163; html[data-look="nightsky"], globals.css 12651-12669). The one
+   place a design is dark whatever the page wears, as the app's own Nativity
+   card is (components/today/NativityStarCard.tsx, `dark-island`). Read by
+   .k-night in pieces.css; the emails' Nativity Fast wears the same look. */
+:root {
+  --k-sky-top: #03050a;                 /* the sky's head, --room, globals.css 12669 */
+  --k-sky: #05070d;                     /* --color-night of the look, 12652 */
+  --k-sky-foot: #070b14;                /* the sky's foot, 12669 */
+  --k-sky-glow: rgb(72 100 168 / 0.2);  /* the light along the horizon, 12668 */
+  --k-sky-ink: #edf0f6;                 /* --color-paper of the look, 12655 */
+  --k-sky-quiet: 64%;                   /* --look-quiet, 12660: its faint share */
+}
