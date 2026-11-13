@@ -206,7 +206,7 @@ const DIVIDERS: Divider[] = [
   { file: "components/native/PressToCopy.tsx", has: "border-s border-paper/15 px-4", why: "the line before Save, a prayer's own action in the hold's pill", screen: true },
   { file: "components/shop/ShopSubTabs.tsx", has: "border-s border-white/8", why: "the line between the shop's tabs and the cart", screen: true },
   { file: "components/shop/ShopHomeClient.tsx", has: "md:border-l md:border-t-0", why: "the line between the shop's two columns on a wide screen", screen: true },
-  { file: "components/player/NowPlayingSheet.tsx", has: "md:w-[440px] md:border-l", why: "the player's edge, docked beside the page on a wide screen", screen: true },
+  { file: "components/player/NowPlayingSheet.tsx", has: "md:w-[440px] md:border-s", why: "the player's edge, docked beside the page on a wide screen", screen: true },
   { file: "components/bible/BookChapterSidebar.tsx", has: "border-r border-white/8", why: "the line between the computer's chapter list and the page", screen: true },
   { file: "components/theology/TopicReader.tsx", has: "gap-2 border-s border-paper/7", why: "the lines between the study's three figures", screen: true },
   { file: "app/(app)/councils/[slug]/page.tsx", has: "grid-cols-2 divide-x divide-paper/8", why: "the line between a council's facts, side by side", screen: true },

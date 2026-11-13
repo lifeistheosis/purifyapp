@@ -134,7 +134,6 @@ const NAMED: Named = {
   "components/community/moderation/ModerationClient.tsx: bg-black/25": WELL,
   "components/community/profile/ClergyRequestCard.tsx: bg-black/20": WELL,
   "components/community/profile/ProfileEditor.tsx: bg-black/55": DIM,
-  "components/player/NowPlayingSheet.tsx: bg-black/55": DIM,
   "components/profile/ImageCropSheet.tsx: bg-black": "the ground a photograph is cropped on: " + DIM,
   "components/councils/DocumentsDoor.tsx: to-black/75": "a picture's scrim, so the words over the picture are read",
   "components/onboarding/RoadCards.tsx: #101013": LM_HERO,

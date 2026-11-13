@@ -188,13 +188,15 @@ export function NowPlayingSheet() {
 
   return (
     <div className="fixed inset-0 z-[70]" role="dialog" aria-modal="true" aria-label={t("prayers.nowPlaying")}>
-      {/* On a computer the page stays in view, dimmed, beside the panel. */}
+      {/* On a computer the page stays in view, dimmed, beside the panel: the
+          house's own dim, every sheet's (components/ui/Sheet.tsx), drawn from
+          the palette's night, so Light and every look dim in their own colour. */}
       <button
         type="button"
         aria-label={t("common.close")}
         onClick={closeNowPlaying}
         className={cn(
-          "absolute inset-0 hidden bg-black/55 transition-opacity duration-300 md:block",
+          "absolute inset-0 hidden bg-night/60 transition-opacity duration-300 md:block",
           shown ? "opacity-100" : "opacity-0",
         )}
       />
@@ -202,10 +204,12 @@ export function NowPlayingSheet() {
         data-mock-allow="stripe" data-mock-why="the player's edge, docked beside the page on a wide screen"
         className={cn(
           // Dark on every palette, as a player is (dark-island puts the
-          // dark palette's tokens back inside it on Light).
-          "dark-island absolute inset-0 flex flex-col overflow-hidden bg-night md:left-auto md:w-[440px] md:border-l md:border-paper/10",
+          // dark palette's tokens back inside it on Light). On a wide screen
+          // it docks at the end of the line and leaves that way: the right in
+          // English, the left in Arabic, its edge on the side the page is.
+          "dark-island absolute inset-0 flex flex-col overflow-hidden bg-night md:start-auto md:w-[440px] md:border-s md:border-paper/10",
           "transition-transform duration-[380ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] [:where([data-motion=reduce])_&]:transition-none",
-          shown ? "translate-y-0" : "translate-y-full md:translate-y-0 md:translate-x-full",
+          shown ? "translate-y-0" : "translate-y-full md:translate-y-0 md:translate-x-full md:rtl:-translate-x-full",
         )}
       >
         {/* The picture again, grey and soft, behind it all: still, once the
