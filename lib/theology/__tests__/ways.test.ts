@@ -92,7 +92,9 @@ describe("each of the four ways' own pages", () => {
     expect(frame.indexOf("{children}")).toBeLessThan(frame.indexOf("data-way-note"));
     expect(frame.indexOf("data-way-note")).toBeLessThan(frame.indexOf("data-way-rest"));
     expect(frame).toContain("WAYS.filter((w) => w.key !== way)");
-    expect(frame).toContain('className="theology-row flex min-h-[54px] ');
+    expect(frame).toContain('className="theology-row flex min-h-[60px] ');
+    // A row has no icon tile (1.9, the fifteen screens, rule 4).
+    expect(frame).not.toContain("theology-plate");
     // The paragraph that stood under the old headline is the note, the same words.
     const notes = { doctrine: "study.eachStudyLaysOutThe", topics: "topics.intro", heresies: "study.everyEcumenicalCouncilIsDefined", apologetics: "study.whereDoctrineAndTopicsArgue" };
     for (const w of WAYS) expect(code(w.page), w.page).toContain(`<T k="${notes[w.way]}" />`);
@@ -185,9 +187,13 @@ describe("Heresies, the record by century", () => {
     expect(seen.length).toBeGreaterThan(3);
   });
 
-  it("draws each error as a row: the scroll on its plate, its name and the registry's one line", () => {
+  it("draws each error as a row: its name and one line naming who taught it, no icon tile (1.9, the fifteen screens, rule 4)", () => {
     const page = code(WAYS[2].page);
-    for (const part of ["<Scroll size={17} />", "{h.name}", "{h.shortBio}", "href={`/heresies/${h.slug}`}", 'href="/councils"']) expect(page, part).toContain(part);
+    for (const part of ["{h.name}", "{h.heresiarch}", "href={`/heresies/${h.slug}`}", 'href="/councils"']) expect(page, part).toContain(part);
+    // The registry's paragraph stays on the error's own page; every error names who taught it.
+    for (const h of HERESIES) expect(h.heresiarch.trim().length, h.slug).toBeGreaterThan(2);
+    expect(page).not.toContain("theology-plate");
+    expect(page).not.toContain("<Scroll size={17} />");
     for (const h of HERESIES) expect(h.shortBio.length, h.slug).toBeGreaterThan(20);
   });
 });
@@ -195,9 +201,11 @@ describe("Heresies, the record by century", () => {
 describe("Apologetics, the answers", () => {
   it("draws each answer as a card with its summary whole, and leaves out what is only planned", () => {
     const page = code(WAYS[3].page);
-    for (const part of ["<Shield size={17} />", "{answer.title}", "{answer.subtitle}", "{answer.summary}", "apologeticsByGroup(group).filter((answer) => !answer.planned)"]) {
+    for (const part of ["{answer.title}", "{answer.subtitle}", "{answer.summary}", "apologeticsByGroup(group).filter((answer) => !answer.planned)"]) {
       expect(page, part).toContain(part);
     }
+    // No icon tile on a card (1.9, the fifteen screens, rule 4).
+    expect(page).not.toContain("theology-plate");
   });
 });
 
@@ -213,9 +221,9 @@ describe("the four pages' look", () => {
   });
 
   it("keeps its grey lines to the shares every palette lifts to 4.5:1 (lib/ui/__tests__/faintText.test.ts)", () => {
-    // Under 70 percent the ink is readable on Light only at 45, 50, 55 or 60,
-    // which app/globals.css redraws at 70 there.
-    const lifted = new Set([45, 50, 55, 60]);
+    // Under 70 percent the ink is readable on Light only at 45, 50, 55, 60 or
+    // 65 (a row's line, rule 4), which app/globals.css redraws at 70 there.
+    const lifted = new Set([45, 50, 55, 60, 65]);
     for (const file of OWN) {
       for (const [, share] of code(file).matchAll(/(?<![\w:-])text-paper\/(\d+)/g)) {
         const n = Number(share);
@@ -225,8 +233,8 @@ describe("the four pages' look", () => {
   });
 
   it("gives every row and card a target 44px tall or more", () => {
-    expect(code(SHELVES)).toContain('className="theology-row flex min-h-[56px] ');
-    expect(code(WAYS[2].page)).toContain('className="theology-row flex min-h-[56px] ');
+    expect(code(SHELVES)).toContain('className="theology-row flex min-h-[60px] ');
+    expect(code(WAYS[2].page)).toContain('className="theology-row flex min-h-[60px] ');
     // A card is its picture or its words, each taller than 44px; the note's link is in a sentence.
     expect(code(WAYS[2].page)).toContain('className="underline decoration-paper/30 underline-offset-4 hover:text-paper"');
   });

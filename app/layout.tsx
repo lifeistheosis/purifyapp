@@ -19,6 +19,7 @@ import { THEME_PREPAINT } from "@/lib/reader/prepaint";
 import { DESKTOP_HOME_PREPAINT } from "@/lib/desktop/homeRedirect";
 import { MOTION_PREPAINT } from "@/lib/ui/motionPrepaint";
 import { STORE_PREPAINT } from "@/lib/platform/storePrepaint";
+import { STREAK_PREPAINT } from "@/lib/streak/streakPrepaint";
 import { bankHasQuestions } from "@/lib/catechism/bank";
 import { SITE_URL } from "@/lib/site";
 import { getServerLocale } from "@/lib/i18n/server";
@@ -290,6 +291,14 @@ export default async function RootLayout({
  nonce={nonce}
  suppressHydrationWarning
  dangerouslySetInnerHTML={{ __html: STORE_PREPAINT }}
+ />
+ {/* A kept day on this device, before Today paints: sets data-kept on
+     <html>, so the rope's row holds its height only for a reader who has a
+     rope to draw (no zero as a first sight, 1.9). lib/streak/streakPrepaint.ts. */}
+ <script
+ nonce={nonce}
+ suppressHydrationWarning
+ dangerouslySetInnerHTML={{ __html: STREAK_PREPAINT }}
  />
  {/* Everything mounted around the page is one client component, on purpose:
      each client component rendered from here is named in EVERY page's

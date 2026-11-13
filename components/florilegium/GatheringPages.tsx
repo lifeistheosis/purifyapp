@@ -5,15 +5,13 @@ import { useMemo } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useVerseCardLabel } from "@/components/journal/PageBlocks";
-import { Pen } from "@/components/ui/icons/Pen";
-import { Plus } from "@/components/ui/icons/Plus";
 import { cn } from "@/lib/cn";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import { useJournalRecords } from "@/lib/journal/entries";
 import { askJournalPage, writeInGathering } from "@/lib/journal/gatheringActions";
 import { pagesIn } from "@/lib/journal/gatherings";
 
-import { FLOR_FACT, FLOR_H2, FLOR_PLATE, FLOR_ROW, FLOR_TRAY } from "./florStyle";
+import { FLOR_FACT, FLOR_H2, FLOR_ROW, FLOR_TRAY } from "./florStyle";
 
 /**
  * A gathering's journal pages, under its lines (1.9, build 93 note 19, the
@@ -67,21 +65,18 @@ export function GatheringPages({ title, readOnly = false }: { title: string; rea
               }}
               className={FLOR_ROW}
             >
-              <span aria-hidden className={FLOR_PLATE}>
-                <Pen size={18} />
-              </span>
               <span className="min-w-0 flex-1">
                 {/* The writer's own words, read their own way and rightly cut to one line in a list. */}
                 <span
                   dir="auto"
                   data-mock-allow="cut"
                   data-mock-why="a reader's own title or words, cut to one line in a list of their pages"
-                  className="block truncate font-serif text-[15.5px] font-semibold leading-tight text-paper/92"
+                  className="block truncate font-serif text-[17px] font-semibold leading-[1.3] text-paper"
                 >
                   {p.title || line(p.words)}
                 </span>
                 {p.title && p.words ? (
-                  <span dir="auto" className="mt-0.5 block truncate font-serif text-caption text-paper/60">
+                  <span dir="auto" className="mt-0.5 block truncate font-sans text-detail text-paper/65">
                     {line(p.words)}
                   </span>
                 ) : null}
@@ -100,10 +95,7 @@ export function GatheringPages({ title, readOnly = false }: { title: string; rea
               }}
               className={FLOR_ROW}
             >
-              <span aria-hidden className={FLOR_PLATE}>
-                <Plus size={18} />
-              </span>
-              <span className="min-w-0 flex-1 font-sans text-ui font-semibold leading-snug text-paper">{t("study.florilegium.writeHere")}</span>
+              <span className="min-w-0 flex-1 font-serif text-[17px] font-semibold leading-[1.3] text-paper">{t("study.florilegium.writeHere")}</span>
             </button>
           </li>
         )}

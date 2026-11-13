@@ -316,8 +316,9 @@ describe("the website's front-page verse band is the look's own on every look", 
   it("the verse's citation under it is 44 tall to the touch, its words where they stood", () => {
     // checkMock on the band failed its link, "NAHUM 1:7, BRENTON'S SEPTUAGINT", at 20px tall (2026-11-13).
     // Its box starts 12px higher (mt-4 from mt-7) and centres its line in 44, so the words do not move.
+    // In sentence case since the fifteen screens' rule 3 (1.9): the small line, never capitals spaced out.
     expect(uncomment(read("app/page.tsx"))).toContain(
-      'className="lm-ink-gold mt-4 inline-flex min-h-11 items-center font-sans text-detail font-semibold uppercase tracking-[1.5px]',
+      'className="lm-ink-gold mt-4 inline-flex min-h-11 items-center font-sans text-caption font-semibold text-gold/80',
     );
   });
 });

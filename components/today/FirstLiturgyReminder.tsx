@@ -148,7 +148,7 @@ export function FirstLiturgyLook({
       </div>
       <Link
         href="/start/first-liturgy"
-        className="tap-press mt-3 inline-flex min-h-11 items-center rounded-pill bg-paper px-[18px] font-sans text-ui font-semibold text-night"
+        className="tap-press mt-3 inline-flex min-h-11 items-center rounded-pill border border-paper/22 bg-paper/[0.03] px-[18px] font-sans text-ui font-semibold text-paper"
       >
         {t("start.liturgy.today.open")}
       </Link>

@@ -1,3 +1,4 @@
+import { NativityFastCard } from "./NativityFastCard";
 import { loadHourVerses } from "@/lib/today/hourVerse.server";
 import { GreetingHeader } from "./GreetingHeader";
 
@@ -10,5 +11,5 @@ import { GreetingHeader } from "./GreetingHeader";
  */
 export async function TodayGreeting() {
   const verses = await loadHourVerses();
-  return <GreetingHeader verses={verses} />;
+  return <GreetingHeader verses={verses} star={<NativityFastCard className="day-lead-star" />} />;
 }

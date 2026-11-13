@@ -7,7 +7,6 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CoverArt } from "@/components/player/CoverArt";
 import { Check } from "@/components/ui/icons/Check";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
-import { Plus } from "@/components/ui/icons/Plus";
 import { cn } from "@/lib/cn";
 import { itemSource } from "@/lib/florilegium/asText";
 import { useFlorilegia, type Florilegium } from "@/lib/florilegium/florilegium";
@@ -19,7 +18,7 @@ import { useCoversVersion } from "@/lib/readAloud/useCovers";
 import { useMounted } from "@/lib/useMounted";
 import { movePage } from "@/lib/ui/inPageMove";
 
-import { FLOR_FIELD, FLOR_H2, FLOR_PLATE, FLOR_ROW, FLOR_TRAY } from "./florStyle";
+import { FLOR_FIELD, FLOR_H2, FLOR_ROW, FLOR_TRAY } from "./florStyle";
 import { GatheringRowBody } from "./GatheringRow";
 import { useBookName } from "./useBookName";
 
@@ -169,10 +168,7 @@ export function FlorilegiaHub({ readOnly = false }: { readOnly?: boolean } = {})
               </form>
             ) : (
               <button type="button" onClick={begin} data-florilegium-begin="" className={FLOR_ROW}>
-                <span aria-hidden className={FLOR_PLATE}>
-                  <Plus size={18} />
-                </span>
-                <span className="min-w-0 flex-1 font-sans text-ui font-semibold leading-snug text-paper">{t("study.florilegium.beginNew")}</span>
+                <span className="min-w-0 flex-1 font-serif text-[17px] font-semibold leading-[1.3] text-paper">{t("study.florilegium.beginNew")}</span>
               </button>
             )}
           </li>
@@ -258,7 +254,7 @@ function GatheringRow({ f }: { f: Florilegium }) {
   return (
     <Link href={gatheringHref(f.id)} className={FLOR_ROW} data-gathering={f.id}>
       <GatheringRowBody f={f} carry />
-      <ChevronRight size={14} aria-hidden className="shrink-0 text-paper/45 rtl:-scale-x-100" />
+      <ChevronRight size={16} aria-hidden className="shrink-0 text-paper/55 rtl:-scale-x-100" />
     </Link>
   );
 }

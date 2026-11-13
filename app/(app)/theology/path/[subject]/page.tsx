@@ -54,7 +54,7 @@ export default async function TheologyStepPage({ params }: { params: Promise<{ s
           <header className="relative z-[1] pb-6 md:mt-6">
             <p
               id="step-kicker"
-              className="doctrine-shadow saint-head-in font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/70"
+              className="doctrine-shadow saint-head-in font-sans text-caption font-semibold text-paper/70"
               style={{ "--i": 1 } as CSSProperties}
             >
               {stepNumeral(step.n)} · <T k="study.theology.byFaith" />

@@ -418,8 +418,10 @@ describe("the material", () => {
   });
 
   it("raises and lights the chosen choice, and slides a switch on", () => {
-    expect(decls('.set-track > button[aria-checked="true"]::before')).toMatchObject({ opacity: "1", scale: "1" });
-    expect(decls(".set-track > button::before")).toMatchObject({ opacity: "0" });
+    // A choice is lit when it is checked, pressed or selected: Settings' radios,
+    // and since the fifteen screens (1.9) the doors' tabs and links.
+    expect(decls('.set-track > :is(button, a):is([aria-checked="true"], [aria-pressed="true"], [aria-selected="true"])::before')).toMatchObject({ opacity: "1", scale: "1" });
+    expect(decls(".set-track > :is(button, a)::before")).toMatchObject({ opacity: "0" });
     expect(decls('.set-switch[aria-checked="true"] .set-switch-knob').translate).toBe("20px 0");
     expect(decls('[dir="rtl"] .set-switch[aria-checked="true"] .set-switch-knob').translate).toBe("-20px 0");
     expect(decls('.set-mode[aria-pressed="true"] .set-mode-page').translate).toBe("0 -3px");
@@ -434,7 +436,7 @@ describe("the material", () => {
   });
 
   it("lights nothing on Parchment, where white cannot glow, and gives True black a hairline in place of a shadow", () => {
-    for (const sel of [".set-check", ".set-slider-thumb", ".set-slider-fill", ".set-track > button::before", ".set-mode-page"]) {
+    for (const sel of [".set-check", ".set-slider-thumb", ".set-slider-fill", ".set-track > :is(button, a)::before", ".set-mode-page"]) {
       const shadow = decls(`html[data-reading-mode="parchment"] ${sel}`)["box-shadow"];
       expect(shadow, sel).toBeDefined();
       expect(shadow, sel).not.toMatch(/rgb\(255 255 255/);

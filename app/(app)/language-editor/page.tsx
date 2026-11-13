@@ -352,7 +352,7 @@ export default async function LanguageEditorPage({
  return (
   <section className={`${SECTION} bg-night`} dir={dir}>
    <article className="mx-auto max-w-[760px] w-full">
-    <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+    <p className="font-sans text-caption font-semibold text-paper/55 mb-4">
      {c.eyebrow}
     </p>
     <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
@@ -368,7 +368,7 @@ export default async function LanguageEditorPage({
 
     {/* What it means */}
     <section className="mt-12 rounded-lg border border-paper/12 bg-paper/[0.03] p-6 md:p-8">
-     <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-3">
+     <p className="font-sans text-caption font-semibold text-paper/55 mb-3">
       {c.workTitle}
      </p>
      <p className="font-serif text-body text-paper/85 leading-[1.7]">
@@ -378,7 +378,7 @@ export default async function LanguageEditorPage({
 
     {/* How it works */}
     <section className="mt-10">
-     <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-paper/55 mb-4">
+     <p className="font-sans text-caption font-semibold text-paper/55 mb-4">
       {c.howTitle}
      </p>
      <ol className="space-y-3">

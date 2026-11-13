@@ -42,20 +42,27 @@ const SYNAXIS = "Synaxis of the Holy Archangel Michael and All the Bodiless Powe
 describe("the greeting, drawn", () => {
   it("gives the Orthodox reader the feast, its marks, its icon, its hymns and the hour's prayers", async () => {
     const out = await draw("orthodox", NOV_8);
-    expect(out).toContain("Sunday, November 8 · Feast · No fast");
+    // The small line is the date and the feast's rank; the fast and the count
+    // stand under the saint's name (1.9, the fifteen screens).
+    expect(out).toContain(">Sunday, November 8 · Feast<");
+    expect(out).toContain(">No fast · 175 days until Pascha<");
     expect(out).toContain(SYNAXIS);
     expect(out).toContain('src="/saints/icons/archangel-michael.v3.jpg"');
     expect(out).toContain('href="/saints/archangel-michael#hymns"');
     expect(out).toContain(en["today.greet.hymns"]);
     expect(out).toContain('href="/prayers/morning"');
-    expect(out).toContain(`${en["today.prayNow.morningFallback"]} · 8 min`);
+    // The hour's prayer, in the lead: Now and the minutes, its name, and the screen's one white Begin.
+    expect(out).toContain(`<span>${en["prayers.timeline.now"]} · 8 min</span>`);
+    expect(out).toContain(`>${en["today.prayNow.morningFallback"]}</p>`);
+    expect(out).toMatch(/<a[^>]*data-pray-hour=""[^>]*href="\/prayers\/morning"|<a[^>]*href="\/prayers\/morning"[^>]*data-pray-hour=""/);
     expect(out).not.toContain(en["today.greetingMorning"]);
     expect(out).not.toMatch(/<h1\b/);
   });
 
   it("marks a great feast, and the fast it falls in", async () => {
     const out = await draw("orthodox", NOV_21);
-    expect(out).toContain(`Saturday, November 21 · ${en["today.greet.greatFeast"]} · ${en["calendar.fast.nativityWeekend.label"]}`);
+    expect(out).toContain(`>Saturday, November 21 · ${en["today.greet.greatFeast"]}<`);
+    expect(out).toContain(`>${en["calendar.fast.nativityWeekend.label"]} · `);
     expect(out).toContain("Entrance of the Most Holy Theotokos into the Temple");
     // The Theotokos has an akathist but no hymns of the feast in the library.
     expect(out).not.toContain(en["today.greet.hymns"]);
@@ -93,9 +100,10 @@ describe("the greeting, drawn", () => {
   // r3-21, the owner's pick A), as the Prayers day card writes it.
   it("ends every reader's date line with Pascha's count", async () => {
     const orthodox = await draw("orthodox", new Date(Date.UTC(2026, 10, 13, 12)));
-    expect(orthodox).toContain(`Friday, November 13 · ${en["calendar.fast.fridayFast.label"]} · 170 days until Pascha`);
-    // A feast's marks first, then the fast, then the count.
-    expect(await draw("orthodox", NOV_8)).toContain("Sunday, November 8 · Feast · No fast · 175 days until Pascha");
+    // For the Orthodox reader the count stands under the saint, after the fast (1.9).
+    expect(orthodox).toContain(">Friday, November 13<");
+    expect(orthodox).toContain(`>${en["calendar.fast.fridayFast.label"]} · 170 days until Pascha<`);
+    expect(await draw("orthodox", NOV_8)).toContain(">No fast · 175 days until Pascha<");
     for (const type of ["learning", "new"] as const) {
       expect(await draw(type, NOV_8), type).toContain("Sunday, November 8 · 175 days until Pascha");
     }
@@ -118,5 +126,18 @@ describe("the greeting, drawn", () => {
     );
     expect(out).toContain(html(el["today.greet.greatFeastLine"].replace("{name}", "Entrance of the Most Holy Theotokos into the Temple")));
     expect(out).toContain(el["today.greet.seeDay"]);
+  });
+
+  // Rule of the fifteen screens (1.9): one white button on the screen, the lead's Begin.
+  it("holds one white button, the hour's Begin, for every reader", async () => {
+    for (const type of ["orthodox", "learning", "new"] as const) {
+      for (const day of [NOV_8, NOV_21]) {
+        const out = await draw(type, day);
+        const white = out.match(/<a [^>]*class="[^"]*(?<![\w/-])bg-paper(?![\w/-])[^"]*"/g) ?? [];
+        expect(white, `${type} ${day.toISOString()}`).toHaveLength(1);
+        expect(white[0]).toContain('data-pray-hour=""');
+        expect(white[0]).toContain("text-night");
+      }
+    }
   });
 });

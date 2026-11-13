@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { Book } from "@/components/ui/icons/Book";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
-import { Play } from "@/components/ui/icons/Play";
 import { shiftForStyle } from "@/lib/calendar/orthodox";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { useChurchDay } from "@/lib/calendar/useChurchDay";
@@ -28,6 +28,7 @@ import {
 } from "@/lib/today/greeting";
 import { useMounted } from "@/lib/useMounted";
 import { PictureCreditNote } from "@/components/saints/PictureCredit";
+import { Prayed, useKeptToday } from "./PrayNowCard";
 
 /**
  * The top of Today under the bar, one design for each type of reader (1.8,
@@ -51,7 +52,7 @@ import { PictureCreditNote } from "@/components/saints/PictureCredit";
  * Pascha". It was a row of The Church today, a seventh thing to read on a
  * saint's day (lib/today/greeting.ts, paschaCount).
  */
-export function GreetingHeader({ verses }: { verses: HourVerses | null }) {
+export function GreetingHeader({ verses, star }: { verses: HourVerses | null; star?: ReactNode }) {
   const { locale, t, tn } = useTranslate();
   const mounted = useMounted();
   const day = useChurchDay();
@@ -93,112 +94,110 @@ export function GreetingHeader({ verses }: { verses: HourVerses | null }) {
   // a feast, and a learning reader's line is held blank.
   const waiting = day === null && type !== "new";
 
-  if (waiting && type === "orthodox") {
-    return (
-      <header aria-hidden className="mb-5">
-        <p className="font-sans text-detail text-paper/60">{" "}</p>
-        <p className="mt-2.5 font-serif text-title-sm font-bold leading-[1.22]">{" "}</p>
-      </header>
-    );
-  }
+  // The day leads once, on the night (1.9, the fifteen screens): the date, the
+  // saint or the greeting, and the hour's prayer with the screen's one Begin.
+  const ruleId = ruleIdForHour(h);
+  const card = todayRuleCard(mine, ruleId);
+  const prayer = hourPrayer(ruleId, card);
+  // Said today already: the quiet mark beside "Now", as the hour's card had it
+  // (his done sign of 2026-10-07). The device's own marks, so none before the
+  // hour is known.
+  const kept = useKeptToday();
+  const prayed = mounted && kept(card ? card.id : ruleId);
+  const marks = kind === "lead" && lead && day ? dayMarks(lead, day.fast, fasting) : null;
+  // The small line is the date (and a feast's rank); the fast and the count
+  // to Pascha stand under the saint's name, so no word is left alone on a line.
+  const line = [date, marks?.feast === "great" ? t("today.greet.greatFeast") : marks?.feast === "feast" ? t("calendar.feastAria") : null, marks ? null : pascha]
+    .filter(Boolean)
+    .join(" · ");
+  const under = marks
+    ? [marks.fast ? (marks.fast.kind === "plain" ? t("today.fastPlain.label") : t(`calendar.fast.${marks.fast.ruleId}.label`)) : null, pascha].filter(Boolean).join(" · ")
+    : "";
+  const now = prayer.minutes ? `${t("prayers.timeline.now")} · ${t("today.minRead", { count: prayer.minutes })}` : t("prayers.timeline.now");
 
-  if (kind === "lead" && lead && day) {
-    const marks = dayMarks(lead, day.fast, fasting);
-    const line = [
-      date,
-      marks.feast === "great" ? t("today.greet.greatFeast") : marks.feast === "feast" ? t("calendar.feastAria") : null,
-      marks.fast === null
-        ? null
-        : marks.fast.kind === "plain"
-          ? t("today.fastPlain.label")
-          : t(`calendar.fast.${marks.fast.ruleId}.label`),
-      pascha,
-    ]
-      .filter(Boolean)
-      .join(" · ");
-    const ruleId = ruleIdForHour(h);
-    const prayer = hourPrayer(ruleId, todayRuleCard(mine, ruleId));
-    const pill = prayer.minutes
-      ? `${t(prayer.titleKey)} · ${t("today.minRead", { count: prayer.minutes })}`
-      : t(prayer.titleKey);
-    return (
-      <header className="mb-5">
-        <p className="font-sans text-detail text-paper/60">{line}</p>
-        <div className="mt-2.5 flex items-start gap-3.5">
-          {lead.iconUrl ? (
-            // The app's own icon, in a frame of its size that stands at once;
-            // the icon comes into it whole (build 85, note 52).
-            <span aria-hidden className="relative h-[78px] w-[62px] shrink-0 overflow-hidden rounded-[12px] bg-paper/[0.05] ring-1 ring-paper/14">
-              <ArrivingImage
-                src={lead.iconUrl}
-                decoding="async"
-                className="absolute inset-0 h-full w-full object-cover object-[50%_18%]"
-              />
-            </span>
-          ) : null}
-          <PictureCreditNote src={lead.iconUrl} />
-          {/* h2, not h1: the bar above names the screen ("Today") and owns
-              its one h1 (1.7). The calendar's names are English. */}
-          <h2 lang="en" dir="ltr" className="title-in min-w-0 font-serif text-title-sm font-bold leading-[1.22] text-paper">
-            {lead.name}
-          </h2>
-        </div>
-        <div className="mt-3.5 flex flex-wrap items-center gap-2">
-          {lead.hymnsHref ? (
-            <Link
-              href={lead.hymnsHref}
-              className="tap-press hit-44 inline-flex min-h-[38px] items-center gap-[7px] rounded-pill border border-paper/22 px-[13px] font-sans text-detail font-semibold text-paper transition-colors hover:border-paper/40"
-            >
+  return (
+    <header data-day-lead="" className="day-lead dark-island relative mb-5 overflow-hidden rounded-[22px] border border-paper/12">
+      {/* During the Nativity Fast its star rises here, in the lead's own sky: one night on the screen. */}
+      {star}
+      <div className="relative px-[18px] pb-[18px] pt-4">
+        <p className="font-sans text-caption font-semibold leading-[18px] text-paper/65">{waiting ? " " : line}</p>
+
+        {kind === "lead" && lead ? (
+          <div className="mt-3 flex items-center gap-3.5">
+            {lead.iconUrl ? (
+              <span aria-hidden className="relative h-[78px] w-[62px] shrink-0 overflow-hidden rounded-[12px] bg-paper/[0.05] ring-1 ring-paper/14">
+                <ArrivingImage src={lead.iconUrl} decoding="async" className="absolute inset-0 h-full w-full object-cover object-[50%_18%]" />
+              </span>
+            ) : null}
+            <PictureCreditNote src={lead.iconUrl} />
+            {/* h2, not h1: the bar above names the screen ("Today") and owns
+                its one h1 (1.7). The calendar's names are English. */}
+            <div className="min-w-0">
+              <h2 lang="en" dir="ltr" className="title-in font-serif text-title-sm font-bold leading-[1.22] text-paper">
+                {lead.name}
+              </h2>
+              {under ? <p className="mt-1 text-balance font-sans text-detail leading-[19px] text-paper/75">{under}</p> : null}
+            </div>
+          </div>
+        ) : (
+          <>
+            <h2 className="title-in mt-2 font-serif text-heading leading-[1.1] text-paper">{waiting ? " " : greet}</h2>
+            {kind === "line" && lead ? (
+              <p className="mt-1.5 font-sans text-ui leading-normal text-paper/75">{t(learningLineKey(lead), { name: lead.name })}</p>
+            ) : kind === "verse" && verse ? (
+              <>
+                {/* The app's Psalter is English (Brenton), as the verse of the day is. */}
+                <p lang="en" dir="ltr" className="mt-1.5 font-serif text-[15px] italic leading-[1.5] text-paper/75">
+                  &ldquo;{verse.text}&rdquo;
+                </p>
+                <p className="mt-1 font-sans text-caption font-semibold text-paper/65">{t("today.greet.psalm", { ref: verse.ref })}</p>
+              </>
+            ) : waiting ? null : (
+              <p className="mt-1 font-sans text-detail text-paper/65">{t("today.abide")}</p>
+            )}
+          </>
+        )}
+
+        {/* The hour's prayer: the screen's first action, and its only white button. */}
+        <div className="mt-4 border-t border-paper/12 pt-3.5">
+          {/* The hour is the device's: until it is known the words keep their
+              place unseen, so an evening reader never sees "Morning" flash by. */}
+          <div className={mounted ? undefined : "invisible"}>
+            <p className="flex flex-wrap items-center gap-x-3 gap-y-1 font-sans text-caption font-semibold leading-[18px] text-paper/65">
+              <span>{now}</span>
+              {prayed ? <Prayed /> : null}
+            </p>
+            <p className="mt-0.5 font-serif text-[21px] font-bold leading-[27px] text-paper">{t(prayer.titleKey)}</p>
+          </div>
+          <Link
+            href={prayer.href}
+            data-pray-hour=""
+            className="tap-press mt-3.5 flex min-h-12 w-full items-center justify-center gap-2 rounded-pill bg-paper px-6 font-sans text-[15px] font-semibold text-night"
+          >
+            {t("today.prayNow.begin")}
+            <ArrowRight />
+          </Link>
+          {kind === "lead" && lead?.hymnsHref ? (
+            <Link href={lead.hymnsHref} className="tap-press mt-1 flex min-h-11 w-full items-center justify-center gap-2 font-sans text-ui font-semibold text-paper">
               <Book size={15} />
               {t("today.greet.hymns")}
             </Link>
+          ) : kind === "line" && lead ? (
+            <Link href="/calendar" className="tap-press mt-1 flex min-h-11 w-full items-center justify-center gap-1.5 font-sans text-ui font-semibold text-paper">
+              {t("today.greet.seeDay")}
+              <ChevronRight size={15} className="rtl:-scale-x-100" />
+            </Link>
           ) : null}
-          <Link
-            href={prayer.href}
-            className="tap-press hit-44 inline-flex min-h-[38px] items-center gap-[7px] rounded-pill bg-paper px-[13px] font-sans text-detail font-semibold text-night transition-colors hover:bg-paper/90"
-          >
-            <Play size={13} className="rtl:-scale-x-100" />
-            {pill}
-          </Link>
         </div>
-      </header>
-    );
-  }
-
-  return (
-    <header className="mb-5">
-      <p className="font-sans text-detail text-paper/60">{pascha ? `${date} · ${pascha}` : date}</p>
-      {/* h2, not h1: the tab bar above names the screen ("Today") and owns
-          its one h1 (1.7). The size is the classes', so nothing moves. */}
-      <h2 className="title-in mt-1.5 font-serif text-heading leading-[1.1] text-paper">{greet}</h2>
-      {kind === "line" && lead ? (
-        <>
-          <p className="mt-1.5 font-sans text-ui leading-normal text-paper/75">{t(learningLineKey(lead), { name: lead.name })}</p>
-          <Link
-            href="/calendar"
-            className="hit-44 mt-2 inline-flex items-center gap-1 font-sans text-detail font-semibold text-paper underline-offset-4 hover:underline"
-          >
-            {t("today.greet.seeDay")}
-            <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
-          </Link>
-        </>
-      ) : kind === "verse" && verse ? (
-        <>
-          {/* The app's Psalter is English (Brenton), as the verse of the day is. */}
-          <p lang="en" dir="ltr" className="mt-1.5 font-serif text-[15px] italic leading-[1.5] text-paper/70">
-            &ldquo;{verse.text}&rdquo;
-          </p>
-          <p className="mt-[5px] font-sans text-[11.5px] font-semibold uppercase tracking-[0.12em] text-paper/45">
-            {t("today.greet.psalm", { ref: verse.ref })}
-          </p>
-        </>
-      ) : waiting ? (
-        <p aria-hidden className="mt-1.5 font-sans text-ui leading-normal">
-          {" "}
-        </p>
-      ) : (
-        <p className="mt-1 font-sans text-detail text-paper/55">{t("today.abide")}</p>
-      )}
+      </div>
     </header>
+  );
+}
+
+function ArrowRight() {
+  return (
+    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" aria-hidden className="rtl:-scale-x-100">
+      <path d="M5 12h14M13 6l6 6-6 6" />
+    </svg>
   );
 }

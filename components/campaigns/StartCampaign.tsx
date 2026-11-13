@@ -394,7 +394,7 @@ export function StartCampaign() {
                         setWhom(d.id);
                         setError(null);
                       }}
-                      className={cn(DOOR, "compose-door", d.id === whom ? cn(DOOR_ON, "compose-lit") : DOOR_OFF)}
+                      className={cn(DOOR, d.id === whom ? DOOR_ON : DOOR_OFF)}
                     >
                       {d.icon}
                       <span className="max-w-full truncate">{d.label}</span>

@@ -42,12 +42,11 @@ describe("a gathering's page shows its journal pages, and begins one (build 93 n
   });
 
   it("drawn as the Florilegium's first page draws the reader's gatherings: a part's name, one tray, a row for each", () => {
-    for (const part of ["FLOR_H2", "FLOR_TRAY", "FLOR_ROW", "FLOR_PLATE", "FLOR_FACT"]) expect(pages, part).toContain(`{${part}}`.replace("{FLOR_TRAY}", "FLOR_TRAY"));
+    for (const part of ["FLOR_H2", "FLOR_TRAY", "FLOR_ROW", "FLOR_FACT"]) expect(pages, part).toContain(`{${part}}`.replace("{FLOR_TRAY}", "FLOR_TRAY"));
     expect(pages).toContain('<li key={p.id} className="theology-rule">');
     expect(pages).toContain("const pages = useMemo(() => pagesIn(title, records, verseLabel), [title, records, verseLabel]);");
-    // The journal's own icon for a page, and the house's for a new one.
-    expect(pages).toContain("<Pen size={18} />");
-    expect(pages).toContain("<Plus size={18} />");
+    // A row is its name, with no icon tile (1.9, the fifteen screens, rule 4).
+    expect(pages).not.toContain("FLOR_PLATE");
   });
 
   it("a row opens that page in the journal, and the last row begins one here", () => {

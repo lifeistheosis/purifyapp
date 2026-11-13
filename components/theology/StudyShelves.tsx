@@ -9,7 +9,7 @@ import type { PathRead } from "@/lib/theology/path";
 import { usePathProgress } from "@/lib/theology/usePathProgress";
 
 import { FatherFace } from "./FatherFace";
-import { KindIcon, ReadMeta } from "./PathRead";
+import { ReadMeta } from "./PathRead";
 import { WholeIcon } from "./WholeIcon";
 import { WAY_FACT, WAY_H2, WAY_TRAY } from "./wayStyle";
 
@@ -73,18 +73,14 @@ export function StudyShelves({ shelves }: { shelves: StudyShelf[] }) {
                   <Link
                     href={study.href}
                     data-read-state={read ? "read" : undefined}
-                    className="theology-row flex min-h-[56px] items-center gap-3 rounded-[14px] px-2 py-2"
+                    className="theology-row flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5"
                   >
                     {study.father ? (
                       <span data-row-picture="" className="shrink-0">
                         <FatherFace father={study.father} size={38} />
                       </span>
-                    ) : (
-                      <span aria-hidden className="theology-plate grid size-[38px] shrink-0 place-items-center rounded-[12px] text-paper/85">
-                        <KindIcon kind="study" size={18} />
-                      </span>
-                    )}
-                    <span lang="en" dir="ltr" className={`min-w-0 flex-1 font-serif text-[15px] font-semibold leading-[1.26] rtl:text-right ${read ? "text-paper/60" : "text-paper/92"}`}>
+                    ) : null}
+                    <span lang="en" dir="ltr" className={`min-w-0 flex-1 font-serif text-[17px] font-semibold leading-[1.3] rtl:text-right ${read ? "text-paper/60" : "text-paper"}`}>
                       {study.title}
                     </span>
                     <span className={WAY_FACT}>
@@ -96,7 +92,7 @@ export function StudyShelves({ shelves }: { shelves: StudyShelf[] }) {
                         <span className="sr-only">{t("paths.read")}</span>
                       </>
                     ) : (
-                      <ChevronRight size={14} className="shrink-0 text-paper/45 rtl:-scale-x-100" />
+                      <ChevronRight size={16} className="shrink-0 text-paper/55 rtl:-scale-x-100" />
                     )}
                   </Link>
                 </li>

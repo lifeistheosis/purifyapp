@@ -20,7 +20,7 @@ import { updatePathProgress, usePathProgress } from "@/lib/theology/usePathProgr
 
 import { CouncilPicture } from "./CouncilPicture";
 import { FatherFace } from "./FatherFace";
-import { KindIcon, ReadMeta, noteOpened } from "./PathRead";
+import { ReadMeta, noteOpened } from "./PathRead";
 import { WholeIcon } from "./WholeIcon";
 import { textDir } from "@/lib/i18n/textDir";
 
@@ -92,7 +92,7 @@ export function StepView({
               <span aria-hidden data-state={state} className="path-node absolute start-0 top-0">
                 {state === "read" ? <Check size={13} strokeWidth={2.4} /> : null}
               </span>
-              <h2 className="flex min-h-[22px] items-center justify-between gap-3 font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/50">
+              <h2 className="flex min-h-[22px] items-center justify-between gap-3 font-sans text-caption font-semibold text-paper/55">
                 <span>{tn(LABEL[part.kind], part.items.length)}</span>
                 {part.kind === "question" ? null : (
                   <span className="text-[11.5px] font-semibold normal-case tracking-normal tabular-nums text-paper/50">{part.items.length}</span>
@@ -139,13 +139,13 @@ export function StepView({
                         href={read.href}
                         data-read-state={s}
                         onClick={() => noteOpened(read, step.id)}
-                        className={`${s === "next" ? "path-lit" : "theology-row"} -mx-2 flex min-h-[48px] items-center gap-3 rounded-[14px] px-2 py-2`}
+                        className={`${s === "next" ? "path-lit" : "theology-row"} -mx-2 flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5`}
                       >
                         <ReadMark read={read} />
                         <span className="min-w-0 flex-1">
                           <span
                             lang="en" dir="ltr"
-                            className={`block font-serif text-[15px] font-semibold leading-[1.28] rtl:text-right ${s === "read" ? "text-paper/60" : "text-paper/92"}`}
+                            className={`block font-serif text-[17px] font-semibold leading-[1.3] rtl:text-right ${s === "read" ? "text-paper/60" : "text-paper"}`}
                           >
                             {read.title}
                           </span>
@@ -159,7 +159,7 @@ export function StepView({
                             <span className="sr-only">{t("paths.read")}</span>
                           </>
                         ) : (
-                          <ChevronRight size={14} className="shrink-0 text-paper/32 rtl:-scale-x-100" />
+                          <ChevronRight size={16} className="shrink-0 text-paper/55 rtl:-scale-x-100" />
                         )}
                       </Link>
                     </li>
@@ -179,7 +179,7 @@ export function StepView({
           </span>
         ) : null}
         <span className="min-w-0 flex-1">
-          <span className="block font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/50">
+          <span className="block font-sans text-caption font-semibold text-paper/55">
             {next ? `${t("walk.upNext")} · ${stepNumeral(next.n)}` : t("discover.eyebrow")}
           </span>
           {/* The next subject's name is English; the reader's words stand in its place at the end. */}
@@ -206,7 +206,9 @@ export function StepView({
 
 /**
  * What a read wears at its start: a study the face of the Father it quotes
- * most, a council its own picture, an error its glyph on a small plate.
+ * most, a council its own picture. An error, and a read with no picture of
+ * its own, wears nothing: a row has no icon tile (1.9, the fifteen screens,
+ * rule 4).
  */
 function ReadMark({ read }: { read: PathRead }) {
   if (read.kind === "study" && read.father) return <FatherFace father={read.father} size={34} />;
@@ -221,9 +223,5 @@ function ReadMark({ read }: { read: PathRead }) {
       </span>
     );
   }
-  return (
-    <span aria-hidden className="theology-plate grid size-[34px] shrink-0 place-items-center rounded-[10px] text-paper/85">
-      <KindIcon kind={read.kind} size={17} />
-    </span>
-  );
+  return null;
 }

@@ -13,10 +13,6 @@ import {
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { DOOR, DOOR_COLS, DOOR_OFF, DOOR_ON, SLIM, SLIM_OFF, SLIM_ON, SLIM_TRACK } from "@/components/ui/doors";
-import { Book } from "@/components/ui/icons/Book";
-import { ClosedBook } from "@/components/ui/icons/ClosedBook";
-import { Graph } from "@/components/ui/icons/Graph";
-import { Note } from "@/components/ui/icons/Note";
 import { cn } from "@/lib/cn";
 import type { SaintDoor, SaintTab } from "@/lib/saints/page";
 import { hashFor, tabFromHash } from "@/lib/ui/sectionTabs";
@@ -60,13 +56,6 @@ const LABEL: Record<SaintDoor, string> = {
   web: "saints.door.web",
   hymns: "saints.door.hymns",
 };
-
-function DoorIcon({ door, size }: { door: SaintDoor; size: number }) {
-  if (door === "life") return <ClosedBook size={size} />;
-  if (door === "writings") return <Book size={size} />;
-  if (door === "web") return <Graph size={size} />;
-  return <Note size={size} />;
-}
 
 // The doors' classes are shared with making a post in Community and with a
 // reader's profile, both built like this page (components/ui/doors.ts).
@@ -172,7 +161,7 @@ export function SaintDoors({
         ref={doorsRef}
         role="group"
         aria-label={t("saints.sectionSwitcher")}
-        className={cn("saint-head-in mx-auto grid max-w-[420px] gap-2 md:mx-0", DOOR_COLS[shown.length])}
+        className={cn("saint-head-in mx-auto max-w-[420px] md:mx-0", DOOR_COLS[shown.length])}
         style={{ "--i": 3 } as CSSProperties}
       >
         {shown.map((door) =>
@@ -186,7 +175,6 @@ export function SaintDoors({
               data-tour="saint-web"
               className={cn(DOOR, DOOR_OFF)}
             >
-              <DoorIcon door={door} size={20} />
               <span className="line-clamp-2 max-w-full text-center leading-[1.15] [overflow-wrap:anywhere]">{t(LABEL[door])}</span>
             </Link>
           ) : (
@@ -199,7 +187,6 @@ export function SaintDoors({
               onClick={() => select(door, false)}
               className={cn(DOOR, door === current ? DOOR_ON : DOOR_OFF)}
             >
-              <DoorIcon door={door} size={20} />
               <span className="line-clamp-2 max-w-full text-center leading-[1.15] [overflow-wrap:anywhere]">{t(LABEL[door])}</span>
             </button>
           ),
@@ -220,7 +207,6 @@ export function SaintDoors({
               {shown.map((door) =>
                 door === "web" ? (
                   <Link key={door} href={webHref!} prefetch={false} tabIndex={-1} className={cn(SLIM, SLIM_OFF)}>
-                    <DoorIcon door={door} size={15} />
                     {t(LABEL[door])}
                   </Link>
                 ) : (
@@ -231,7 +217,6 @@ export function SaintDoors({
                     onClick={() => select(door, true)}
                     className={cn(SLIM, door === current ? SLIM_ON : SLIM_OFF)}
                   >
-                    <DoorIcon door={door} size={15} />
                     {t(LABEL[door])}
                   </button>
                 ),

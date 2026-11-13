@@ -494,13 +494,15 @@ describe("words once drawn at 40 percent", () => {
 // top, to 2 at its foot. Its rows' kind lines (Theology's four ways as rows
 // and the Creed's row, components/theology/TheologyLibrary.tsx) were
 // text-paper/52, outside the shares above: 3.07:1 on Light and 4.24:1 on
-// Candlelight, as the Theology chat measured on 2026-11-10. They wear /55,
-// which each palette draws at a share that holds 4.5:1 on the tray's top.
+// Candlelight, as the Theology chat measured on 2026-11-10. They wore /55,
+// and since the fifteen screens' row (1.9, rule 4: the Heresies row's form)
+// the detail size at /65; each palette draws either at a share that holds
+// 4.5:1 on the tray's top.
 describe("the theology tray's rows", () => {
   it("draw their kind lines at a share that holds 4.5:1 on the tray's lightest ground, on every palette", () => {
     expect(CSS).toMatch(/\.theology-tray \{[^}]*color-mix\(in srgb, var\(--color-paper\) 5%, var\(--color-night\)\) 0%/);
     const src = readFileSync(join(process.cwd(), "components/theology/TheologyLibrary.tsx"), "utf8");
-    const lines = [...src.matchAll(/mt-0\.5 block truncate font-sans text-caption text-paper\/(\d+)/g)].map((m) => Number(m[1]));
+    const lines = [...src.matchAll(/mt-0\.5 block truncate font-sans text-detail text-paper\/(\d+)/g)].map((m) => Number(m[1]));
     expect(lines).toHaveLength(2);
     const short: string[] = [];
     for (const share of lines) {
@@ -538,14 +540,14 @@ describe("Settings' quiet words", () => {
     hint: share(ink("\\.set-hint"), ".set-hint"),
     desc: share(ink("\\.set-desc"), ".set-desc"),
     sub: share(ink("\\.set-sub"), ".set-sub"),
-    track: share(ink("\\.set-track > button"), ".set-track > button"),
+    track: share(ink("\\.set-track > :is\\(button, a\\)"), ".set-track > :is(button, a)"),
     caption: share(ink("\\.set-well-ref"), ".set-well-ref"),
     numbers: share(ink("\\.set-well \\.set-vn"), ".set-well .set-vn"),
     slider: share(ink("\\.set-slider-names > span"), ".set-slider-names > span"),
     letters: share(ink("\\.set-slider-a1,\\s*\\.set-slider-a2"), ".set-slider-a1, .set-slider-a2"),
   };
   const quiet = (mode: string) =>
-    new RegExp(`html\\[data-reading-mode="${mode}"\\] :is\\(\\.set-hint, \\.set-desc, \\.set-sub, \\.set-well-ref, \\.set-well \\.set-vn, \\.set-slider-names > span:not\\(\\[data-on\\]\\), \\.set-slider-a1, \\.set-slider-a2, \\.set-track > button\\[aria-checked="false"\\]:not\\(:hover\\)\\) \\{\\s*color: color-mix\\(in srgb, var\\(--color-paper\\) (\\d+)%`);
+    new RegExp(`html\\[data-reading-mode="${mode}"\\] :is\\(\\.set-hint, \\.set-desc, \\.set-sub, \\.set-well-ref, \\.set-well \\.set-vn, \\.set-slider-names > span:not\\(\\[data-on\\]\\), \\.set-slider-a1, \\.set-slider-a2, \\.set-track > :is\\(button, a\\):not\\(:is\\(\\[aria-checked="true"\\], \\[aria-pressed="true"\\], \\[aria-selected="true"\\]\\)\\):not\\(:hover\\)\\) \\{\\s*color: color-mix\\(in srgb, var\\(--color-paper\\) (\\d+)%`);
   const OWN: Partial<Record<Mode, number>> = { parchment: share(quiet("parchment"), "Light"), candlelight: share(quiet("candlelight"), "Candlelight") };
   const TRIO = share(/:where\(html\[data-reading-mode="monastery"\], html\[data-reading-mode="councils"\], html\[data-reading-mode="cappadocian"\]\) \.set-desc \{\s*color: color-mix\(in srgb, var\(--color-paper\) (\d+)%/, "the trio's .set-desc");
   const lightPanel = hex(/html\[data-reading-mode="parchment"\] \.set-panel \{[^}]*linear-gradient\([^;]*?(#[0-9a-f]{6}) 100%\)/.exec(BARE)?.[1] ?? "");
@@ -589,7 +591,7 @@ describe("Settings' quiet words", () => {
   // unchanged. A dark look's panel is the app's own; a light look's is its
   // own paper, a gradient that ends on its page colour, where it is darkest.
   it("a dark look draws them at its own share, by one rule that reads it", () => {
-    expect(BARE).toMatch(/html\[data-look\]:not\(\[data-reading-mode\]\) :is\(\.set-hint, \.set-desc, \.set-sub, \.set-well-ref, \.set-well \.set-vn, \.set-slider-names > span:not\(\[data-on\]\), \.set-slider-a1, \.set-slider-a2, \.set-track > button\[aria-checked="false"\]:not\(:hover\)\) \{\s*color: color-mix\(in srgb, var\(--color-paper\) var\(--look-quiet\), transparent\);/);
+    expect(BARE).toMatch(/html\[data-look\]:not\(\[data-reading-mode\]\) :is\(\.set-hint, \.set-desc, \.set-sub, \.set-well-ref, \.set-well \.set-vn, \.set-slider-names > span:not\(\[data-on\]\), \.set-slider-a1, \.set-slider-a2, \.set-track > :is\(button, a\):not\(:is\(\[aria-checked="true"\], \[aria-pressed="true"\], \[aria-selected="true"\]\)\):not\(:hover\)\) \{\s*color: color-mix\(in srgb, var\(--color-paper\) var\(--look-quiet\), transparent\);/);
     expect(BARE).toMatch(/html\[data-look\]\[data-reading-mode="parchment"\] \.set-panel \{[^}]*linear-gradient\(155deg, var\(--look-paper-high\) 0%, [^;]*var\(--color-night\) 100%\)/);
   });
 

@@ -108,7 +108,7 @@ export function PlansClient({ minutes }: { minutes: Record<string, number> }) {
       {tiles.length > 0 ? (
         <section aria-labelledby={current || seasonPlan ? "plans-more" : undefined} aria-label={current || seasonPlan ? undefined : t("plans.title")} className={cn((current || seasonPlan) && "mt-8")}>
           {current || seasonPlan ? (
-            <h2 id="plans-more" className="font-sans text-eyebrow font-semibold uppercase tracking-[0.08em] text-paper/55">
+            <h2 id="plans-more" className="font-sans text-caption font-semibold text-paper/55">
               {t("plans.more")}
             </h2>
           ) : null}
@@ -244,7 +244,7 @@ function SeasonCard({
         />
         <div className="p-5">
           {date ? (
-            <p className="font-sans text-caption font-semibold uppercase tracking-[0.06em] text-paper/55">{t("plans.season.begins", { date })}</p>
+            <p className="font-sans text-caption font-semibold text-paper/55">{t("plans.season.begins", { date })}</p>
           ) : null}
           <h2 id="plans-season" className={cn("font-serif text-title-sm font-semibold leading-snug text-paper", date && "mt-1")}>
             {t(`plans.${plan.id}.name`)}

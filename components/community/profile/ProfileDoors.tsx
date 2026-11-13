@@ -1,11 +1,9 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent, type ReactNode, type SVGProps } from "react";
+import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { DOOR, DOOR_OFF, DOOR_ON } from "@/components/ui/doors";
-import { ChatBubble } from "@/components/ui/icons/ChatBubble";
-import { Lampada } from "@/components/ui/icons/Lampada";
 import { cn } from "@/lib/cn";
 import type { ProfileDoor } from "@/lib/profile/doors";
 import { tabForKey } from "@/lib/ui/sectionTabs";
@@ -31,41 +29,12 @@ import { tabForKey } from "@/lib/ui/sectionTabs";
  * in one frame). With motion off they change at once.
  */
 
-/** A person, as the sheet's About door draws one: the head lit inside its ring. */
-function Person({ size = 20, ...props }: SVGProps<SVGSVGElement> & { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
-      <circle cx="12" cy="8.5" r="4.7" strokeOpacity="0.55" />
-      <circle cx="12" cy="8.5" r="2.7" />
-      <path d="M5.4 20.5 C6.6 16.4 17.4 16.4 18.6 20.5" />
-    </svg>
-  );
-}
-
-/** A medal on its ribbon, the Badges door's mark. */
-function MedalMark({ size = 20, ...props }: SVGProps<SVGSVGElement> & { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
-      <circle cx="12" cy="9.2" r="5.6" />
-      <circle cx="12" cy="9.2" r="2.9" strokeOpacity="0.55" />
-      <path d="M8.9 13.9 L7.6 21 L12 18.7 L16.4 21 L15.1 13.9" />
-    </svg>
-  );
-}
-
 const LABEL: Record<ProfileDoor, string> = {
   about: "profile.tabAbout",
   badges: "profile.tabBadges",
   posts: "profile.tabPosts",
   campaigns: "profile.tabCampaigns",
 };
-
-function DoorIcon({ door }: { door: ProfileDoor }) {
-  if (door === "about") return <Person size={20} />;
-  if (door === "badges") return <MedalMark size={20} />;
-  if (door === "posts") return <ChatBubble size={20} />;
-  return <Lampada size={20} />;
-}
 
 const COLS: Record<number, string> = { 2: "grid-cols-2", 3: "grid-cols-3", 4: "grid-cols-4" };
 
@@ -118,7 +87,6 @@ export function ProfileDoors({
             onKeyDown={onKeyDown}
             className={cn(DOOR, door === open ? DOOR_ON : DOOR_OFF)}
           >
-            <DoorIcon door={door} />
             <span className="line-clamp-2 max-w-full text-center leading-[1.15] [overflow-wrap:anywhere]">{t(LABEL[door])}</span>
           </button>
         ))}

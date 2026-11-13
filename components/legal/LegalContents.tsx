@@ -130,7 +130,7 @@ export function LegalContents({ rail = false }: { rail?: boolean }) {
   if (rail) {
     return (
       <nav ref={anchor} data-legal-contents="rail" aria-label={t("saints.contents")} className="sticky top-24 max-h-[calc(100dvh-8rem)] overflow-y-auto scrollbar-thin">
-        <p className="flex items-center gap-2.5 px-2 font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/50">
+        <p className="flex items-center gap-2.5 px-2 font-sans text-caption font-semibold text-paper/55">
           {t("saints.contents")}
           <span aria-hidden className="h-px flex-1 bg-paper/10" />
         </p>

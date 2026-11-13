@@ -316,7 +316,7 @@ export default async function Home() {
  <section className={`${sectionBase} ${desktopOnly} md:bg-night`}>
  <div className="mx-auto max-w-[1240px] w-full">
  <div className="text-center max-w-[720px] mx-auto mb-7 md:mb-16">
- <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
+ <p className="font-sans text-caption font-semibold text-paper/60 mb-4">
  {isDe ? "Warum Purify" : "Why Purify"}
  </p>
  <h2 className="font-sans text-title md:text-display-sm lg:text-display font-bold text-paper tracking-[-0.025em] leading-[1.05]">
@@ -367,7 +367,7 @@ export default async function Home() {
      where they stood: the box starts 12px higher and centres them. */}
  <Link
  href="/bible/nahum/1#v7"
- className="lm-ink-gold mt-4 inline-flex min-h-11 items-center font-sans text-detail font-semibold uppercase tracking-[1.5px] text-gold/80 hover:text-gold transition-colors underline-offset-4 hover:underline"
+ className="lm-ink-gold mt-4 inline-flex min-h-11 items-center font-sans text-caption font-semibold text-gold/80 hover:text-gold transition-colors underline-offset-4 hover:underline"
  >
  {/* The verse and its Bible, as every quotation of Scripture in the
      app names them (1.8, lib/marketing/frontVerse.ts). */}
@@ -382,7 +382,7 @@ export default async function Home() {
  <section className={`${sectionBase} ${desktopOnly} bg-night`}>
  <div className="mx-auto max-w-[1240px] w-full">
  <div className="mb-12">
- <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
+ <p className="font-sans text-caption font-semibold text-paper/60 mb-4">
  {isDe ? "Wo anfangen" : "Where to begin"}
  </p>
  <h2 className="font-sans text-title md:text-display-sm lg:text-display font-bold text-paper tracking-[-0.025em] leading-[1.05]">
@@ -407,7 +407,7 @@ export default async function Home() {
  <section className={`${sectionBase} ${desktopOnly} bg-night-soft`}>
  <div className="mx-auto max-w-[1240px] w-full">
  <div className="mb-12">
- <p className="font-sans text-detail font-semibold uppercase tracking-[1.5px] text-paper/60 mb-4">
+ <p className="font-sans text-caption font-semibold text-paper/60 mb-4">
  {isDe ? "Wege zu gehen" : "Paths to walk"}
  </p>
  <h2 className="font-sans text-title md:text-display-sm lg:text-display font-bold text-paper tracking-[-0.025em] leading-[1.05]">
@@ -427,7 +427,7 @@ export default async function Home() {
  "radial-gradient(115% 90% at 88% 8%, rgba(255,255,255,0.06) 0%, transparent 55%), linear-gradient(155deg, #26262b 0%, #1a1a1d 60%, #151518 100%)",
  }}
  >
- <p className="font-sans text-caption font-semibold uppercase tracking-[1.5px] text-gold/85 mb-4">
+ <p className="font-sans text-caption font-semibold text-gold/85 mb-4">
  {ch.eyebrow}
  </p>
  <h3 className="font-sans text-lede md:text-lede font-semibold text-paper mb-3">

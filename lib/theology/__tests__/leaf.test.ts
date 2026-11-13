@@ -145,18 +145,22 @@ describe("the head is the row that was tapped, grown", () => {
     const heresy = code(HERESY);
     expect(heresy).toContain("mark={<LeafGlyph icon={Scroll} carry={`heresy:${h.slug}`} />}");
     expect(heresy).toMatch(/name=\{h\.name\}\s+nameLang="en"\s+line=\{h\.era\}\s+lineLang="en"/);
-    expect(code("app/(app)/heresies/page.tsx")).toContain("data-carry={`heresy:${h.slug}`}");
+    // The list's row wears no icon tile (1.9, the fifteen screens, rule 4), so nothing is carried from it:
+    // the house's page transition runs as for any link.
+    expect(code("app/(app)/heresies/page.tsx")).not.toContain("data-carry={`heresy:${h.slug}`}");
 
     const reader = code(READER);
     expect(reader).toContain("mark={<LeafGlyph icon={Shield} carry={`answer:${body.slug}`} />}");
     expect(reader).toContain('line={minutes ? <T k="bible.minRead" replacements={{ minutes }} /> : undefined}');
     expect(code(ANSWER)).toContain("<ApologeticsReader body={body} minutes={meta.estimatedMinutes} groups={groups} />");
-    expect(code("app/(app)/apologetics/page.tsx")).toContain("data-carry={`answer:${answer.slug}`}");
+    // The list's card wears no icon tile (1.9, the fifteen screens, rule 4), so nothing is carried from it.
+    expect(code("app/(app)/apologetics/page.tsx")).not.toContain("data-carry={`answer:${answer.slug}`}");
 
     const creed = code(CREED);
     expect(creed).toContain('mark={<LeafGlyph icon={Codex} carry="creed:lines" />}');
     expect(creed).toContain('name={<T k="creed.title" />}');
-    expect(code("components/theology/TheologyLibrary.tsx")).toContain('<span data-carry="creed:lines" className="theology-plate ');
+    // The Creed's row wears no icon tile (rule 4), so nothing is carried from it.
+    expect(code("components/theology/TheologyLibrary.tsx")).not.toContain('data-carry="creed:lines"');
 
     // A glyph is lit at the head as a way's own page lights its own.
     expect(code(FRAME)).toMatch(/data-leaf-mark="glyph" data-carry-into=\{carry\} className="theology-glyph shrink-0 text-paper">\s*<Glyph size=\{32\} \/>/);
@@ -343,14 +347,16 @@ describe("a heresy's record", () => {
     }
   });
 
-  it("lists the councils that condemned it as rows, each with its picture, or the church where it has none", () => {
+  it("lists the councils that condemned it as rows, each with its picture where it has one", () => {
     const page = code(HERESY);
     expect(page).toContain("<CouncilMark slug={c.slug} />");
     expect(page).toContain("<CouncilMark />");
     expect(page).toMatch(/const ROW = "theology-row flex min-h-\[54px\] /);
     const mark = code(COUNCIL);
     expect(mark).toContain("councilPicture(slug, IS_STATIC_EXPORT)");
-    expect(mark).toContain("<Church size={17} />");
+    // Where it has none, nothing: a row has no icon tile (1.9, the fifteen screens, rule 4).
+    expect(mark).toContain("if (!slug || !picture) return null;");
+    expect(mark).not.toContain("theology-plate");
     // A council outside the seven has a place to open all the same.
     for (const [slug, others] of Object.entries(OTHER_COUNCILS)) for (const c of others) expect(c.href ?? c.history, `${slug}: ${c.name}`).toBeTruthy();
   });
@@ -422,14 +428,14 @@ describe("what a page leads to", () => {
     const rail = code(RAIL);
     expect(rail).toContain('<LeafPart id="related-title" title={title} count={rows.length} data-related="">');
     expect(rail).toContain("const rows = ORDER.flatMap((g) => groups[g].map((link) => ({ g, link })));");
-    expect(rail).toContain('className="theology-row flex min-h-[54px] items-center gap-3 rounded-[14px] px-2 py-2"');
+    expect(rail).toContain('className="theology-row flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5"');
     expect(rail).toContain("<RelatedMark group={g} link={link} />");
     expect(rail).toContain("<T k={GROUP_LABEL[g]} />");
-    // Pictures lead: a Father's face, a council's picture, a way's own glyph on a plate.
+    // Pictures lead: a Father's face, a council's picture; a way's row wears no icon tile (1.9, the fifteen screens, rule 4).
     expect(rail).toContain('if (group === "saints")');
     expect(rail).toContain("<FatherFace father={{ slug: link.slug, name: link.label, iconUrl: getSaint(link.slug)?.iconUrl }} size={34} />");
     expect(rail).toContain('if (group === "councils") return <CouncilMark slug={link.slug} />;');
-    for (const glyph of ["doctrine: Cross,", "apologetics: Shield,", "heresies: Scroll,", "topics: Book,"]) expect(rail, glyph).toContain(glyph);
+    expect(rail).not.toContain("theology-plate");
     // The kinds are named from the catalog, in every language.
     for (const key of ["study.doctrine", "discover.tile.apologetics", "discover.tile.heresies", "discover.tile.topics", "nav.councils", "footer.theFathers", "study.related"]) {
       for (const { lang, messages } of catalogs) expect(messages[key], `${lang}: ${key}`).toBeTruthy();

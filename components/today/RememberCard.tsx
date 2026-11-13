@@ -60,7 +60,9 @@ import {
 const noop = () => () => {};
 
 const PILL = "tap-press inline-flex h-11 items-center gap-1.5 rounded-pill px-[18px] font-sans text-ui font-semibold disabled:opacity-50";
-const SOLID = "bg-paper text-night";
+// Rule 1 of the fifteen screens (1.9): Today holds one white button, the
+// lead's Begin, so the card's answer is the quiet outlined button.
+const SOLID = "border border-paper/22 bg-paper/[0.03] text-paper";
 const QUIET = "border border-paper/20 text-paper";
 
 // A blank: the word is there but unseen, so the line does not move when it

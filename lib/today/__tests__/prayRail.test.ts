@@ -113,25 +113,25 @@ describe("Pray, drawn", () => {
   // held invisible until the device knows its hour, nothing marked.
   const out = renderToString(createElement(MessagesProvider, { locale: "en", messages: en } as ProviderProps, createElement(PrayRail)));
 
-  it("leads its list with the hour's card, the Pantocrator a light at its side", () => {
-    const items = [...out.matchAll(/<li[\s>]/g)].map((m) => m.index ?? -1);
-    expect(items.length).toBeGreaterThan(2);
-    expect(out.indexOf("data-pray-hour")).toBeGreaterThan(items[0]);
-    expect(out.indexOf("data-pray-hour")).toBeLessThan(items[1]);
-    expect(out).toContain(`src="${sectionMedia("prayers")!.src}"`);
-    expect(out).toContain('href="/prayers/morning"');
+  it("is the day's other prayers as rows in one tray: no hour card, no picture, no white button (1.9)", () => {
+    // The hour's prayer leads from Today's lead now (GreetingHeader).
+    expect(out).not.toContain("data-pray-hour");
+    expect(out).not.toContain(`src="${sectionMedia("prayers")!.src}"`);
+    expect(out).toMatch(/<ul class="theology-tray overflow-hidden rounded-\[20px\]">/);
+    const rows = [...out.matchAll(/<li[\s>]/g)];
+    expect(rows.length).toBeGreaterThan(2);
+    expect(out).not.toMatch(/(?<![\w/-])bg-paper(?![\w/-])/);
   });
 
-  it("says Now and the minutes, the name, one line and Begin", () => {
-    expect(out).toContain(`${en["prayers.timeline.now"]} · ${en["today.minRead"].replace("{count}", "8")}`);
-    expect(out).toContain(en["today.prayNow.morningFallback"]);
-    expect(out).toContain(en["prayers.rule.morning.description"]);
-    expect(out).toContain(en["today.prayNow.begin"]);
+  it("gives each row a name, one line and the chevron, a hairline between", () => {
+    expect(out).toContain(en["prayers.rule.midday.title"]);
+    expect(out.match(/border-t border-paper\/10/g)?.length).toBe([...out.matchAll(/<li[\s>]/g)].length - 1);
+    expect(out.match(/<path d="m9 6 6 6-6 6"/g)?.length ?? out.match(/rtl:-scale-x-100/g)?.length).toBeGreaterThan(2);
   });
 
   it("draws the tiles in the day's order, the anthem last", () => {
     const at = (s: string) => out.indexOf(s);
-    expect(at(en["prayers.rule.midday.title"])).toBeGreaterThan(at(en["prayers.rule.morning.description"]));
+    expect(at(en["prayers.rule.midday.title"])).toBeGreaterThan(-1);
     expect(at(en["today.prayNow.eveningFallback"])).toBeGreaterThan(at(en["prayers.rule.midday.title"]));
     expect(at(en["prayers.rule.before-sleep.title"])).toBeGreaterThan(at(en["today.prayNow.eveningFallback"]));
     expect(at('href="/chants/prayer-rope-anthem"')).toBeGreaterThan(at(en["prayers.rule.before-sleep.title"]));

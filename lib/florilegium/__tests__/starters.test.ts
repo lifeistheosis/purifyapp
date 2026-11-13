@@ -112,11 +112,13 @@ describe("a gathering kept from a starter", () => {
 
   it("wears the starter's own picture on its row, and the check while a line goes in", () => {
     expect(starterPicture(kept("magnificat").s).src).toBeTruthy();
-    expect(ROW).toContain("const starter = gathered ? undefined : starterOf(f);");
+    // The picture stays while a line goes in, so nothing before the name moves; the check stands at the row's end.
+    expect(ROW).toContain("const starter = starterOf(f);");
     expect(ROW).toContain("const picture = starter ? starterPicture(starter) : null;");
     expect(ROW).toContain("<CoverArt src={picture.src} fallback={picture.fallback} size={72}");
-    // Every other gathering keeps the mark of where its newest line is from.
-    expect(ROW).toContain("<span aria-hidden className={FLOR_PLATE}>");
+    expect(ROW).toContain('{gathered ? <Check size={18} className="shrink-0 text-paper" /> : null}');
+    // Every other gathering wears nothing before its name: a row has no icon tile (1.9, the fifteen screens, rule 4).
+    expect(ROW).not.toContain("FLOR_PLATE");
   });
 
   it("carries the picture from its row on the first page to the head of its own page, under its own key", () => {

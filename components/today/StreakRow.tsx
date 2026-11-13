@@ -32,9 +32,13 @@ export function StreakRow({ className }: { className?: string }) {
   const dayOne = useStreakWaits();
   const place = ropeRow(view, dayOne);
   if (place === "none") return null;
+  // No zero as a first sight (1.9, the fifteen screens): the rope is drawn
+  // from the first day kept. Until then Today's lead is the invitation.
+  if (view.ready && view.best === 0 && !view.keptToday) return null;
   // The rope's height, held before the streak is read, so the cards under it
-  // do not jump when it lands.
-  if (place === "hold") return <div aria-hidden className={cn("h-[92px]", className)} />;
+  // do not jump when it lands; held only where a kept day is stored (data-kept,
+  // lib/streak/streakPrepaint.ts), since with none the rope is not drawn.
+  if (place === "hold") return <RopeHold className={className} />;
   return <Rope view={view} className={className} />;
 }
 
@@ -47,12 +51,18 @@ export function StreakRow({ className }: { className?: string }) {
  */
 export function StreakRope({ className }: { className?: string }) {
   const view = useStreak();
-  if (!view.ready) return <div aria-hidden className={cn("h-[92px]", className)} />;
-  return <Rope view={view} className={className} />;
+  if (!view.ready) return <RopeHold className={className} />;
+  if (view.best === 0 && !view.keptToday) return null;
+  return <Rope view={view} card className={className} />;
+}
+
+/** The rope's height before the streak is read, only on a device that holds a kept day. */
+function RopeHold({ className }: { className?: string }) {
+  return <div aria-hidden data-rope-hold="" className={cn("hidden h-[92px] [html[data-kept]_&]:block", className)} />;
 }
 
 /** "N days" and its line over this week's knots; a tap opens the streak's sheet. */
-function Rope({ view, className }: { view: StreakView; className?: string }) {
+function Rope({ view, card = false, className }: { view: StreakView; card?: boolean; className?: string }) {
   const { t, tn } = useTranslate();
   const [open, setOpen] = useState(false);
   const line = view.keptToday ? t("streak.rope.kept") : t("streak.rope.keep");
@@ -65,13 +75,19 @@ function Rope({ view, className }: { view: StreakView; className?: string }) {
         aria-label={`${tn("streak.count", view.current)}. ${line}`}
         aria-haspopup="dialog"
         className={cn(
-          "tap-press flex w-full flex-col gap-[9px] rounded-[17px] border border-paper/12 bg-paper/[0.035] px-3.5 pb-2.5 pt-3 text-start transition-colors hover:bg-paper/[0.06]",
+          "tap-press flex w-full flex-col gap-[9px] text-start",
+          // Today's rope stands on the page, without a box (1.9, the fifteen
+          // screens); You's keeps its card until You is drawn (round 3).
+          card
+            ? "rounded-[17px] border border-paper/12 bg-paper/[0.035] px-3.5 pb-2.5 pt-3 transition-colors hover:bg-paper/[0.06]"
+            : "px-1 pb-1 pt-2",
           className,
         )}
       >
         <span className="flex w-full items-center gap-2.5">
           <span
             aria-hidden
+            hidden={view.current === 0}
             className={cn(
               "shrink-0 font-sans text-[20px] font-bold leading-none tabular-nums",
               view.keptToday ? "rope-count-lit text-paper" : view.current > 0 ? "text-paper/85" : "text-paper/50",
@@ -79,7 +95,7 @@ function Rope({ view, className }: { view: StreakView; className?: string }) {
           >
             {tn("streak.days", view.current)}
           </span>
-          <span aria-hidden className="min-w-0 flex-1 font-sans text-detail leading-snug text-paper/60">
+          <span aria-hidden className="min-w-0 flex-1 font-sans text-detail leading-snug text-paper/70">
             {line}
           </span>
           <svg
@@ -92,7 +108,7 @@ function Rope({ view, className }: { view: StreakView; className?: string }) {
             strokeWidth={2.2}
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="shrink-0 text-paper/40 rtl:-scale-x-100"
+            className="shrink-0 text-paper/55 rtl:-scale-x-100"
           >
             <path d="m9 6 6 6-6 6" />
           </svg>

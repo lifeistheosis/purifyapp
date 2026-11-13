@@ -85,7 +85,7 @@ export function StudyCover({ subject, passage, firstId }: { subject: { src: stri
           </blockquote>
           <div aria-hidden className="mx-auto mt-3 h-[1.5px] w-[30px] bg-paper/75" />
           <figcaption>
-            <span lang="en" dir="ltr" className="mt-[9px] block font-sans text-[9.5px] font-bold uppercase tracking-[0.16em] text-paper/82">
+            <span lang="en" dir="ltr" className="mt-[9px] block font-sans text-caption font-semibold text-paper/82">
               {passage.saintSlug ? (
                 <Link href={`/saints/${passage.saintSlug}`} prefetch={false} className="hover:text-paper">
                   {passage.name}

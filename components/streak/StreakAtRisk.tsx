@@ -32,7 +32,7 @@ export function StreakAtRisk({ className, waitsForDayOne = false }: { className?
   return (
     <section
       aria-labelledby="streak-at-risk"
-      className={cn("rounded-[17px] border border-paper/12 bg-paper/[0.035] px-3.5 pb-3.5 pt-3", className)}
+      className={cn("px-1 pb-1 pt-2", className)}
     >
       <h2 id="streak-at-risk" className="sr-only">
         {tn("streak.atRiskTitle", view.current)}
@@ -41,13 +41,13 @@ export function StreakAtRisk({ className, waitsForDayOne = false }: { className?
         <span aria-hidden className="shrink-0 font-sans text-[20px] font-bold leading-none tabular-nums text-paper/85">
           {tn("streak.days", view.current)}
         </span>
-        <p className="min-w-0 flex-1 font-sans text-detail leading-snug text-paper/60">{t("streak.atRiskBody")}</p>
+        <p className="min-w-0 flex-1 font-sans text-detail leading-snug text-paper/70">{t("streak.atRiskBody")}</p>
       </div>
       <PrayerRope week={week} pulse className="mt-[9px]" />
       <div className="mt-3.5 grid grid-cols-2 gap-2">
         <Link
           href={links.pray}
-          className="inline-flex min-h-11 items-center justify-center rounded-pill bg-paper px-4 font-sans text-detail font-semibold text-night transition-colors hover:bg-paper/90"
+          className="inline-flex min-h-11 items-center justify-center rounded-pill border border-paper/25 px-4 font-sans text-detail font-semibold text-paper hover:border-paper/45"
         >
           {t("streak.pray")}
         </Link>

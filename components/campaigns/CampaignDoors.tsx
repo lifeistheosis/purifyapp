@@ -4,9 +4,6 @@ import { useRef, type KeyboardEvent, type ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { DOOR, DOOR_COLS, DOOR_OFF, DOOR_ON } from "@/components/ui/doors";
-import { ChatBubble } from "@/components/ui/icons/ChatBubble";
-import { Lampada } from "@/components/ui/icons/Lampada";
-import { Quill } from "@/components/ui/icons/Quill";
 import { cn } from "@/lib/cn";
 import { tabForKey } from "@/lib/ui/sectionTabs";
 
@@ -36,12 +33,6 @@ const LABEL: Record<CampaignDoor, string> = {
   updates: "campaigns.updates",
   comments: "campaigns.comments",
 };
-
-function DoorIcon({ door }: { door: CampaignDoor }) {
-  if (door === "about") return <Lampada size={20} />;
-  if (door === "updates") return <Quill size={20} />;
-  return <ChatBubble size={20} />;
-}
 
 export function CampaignDoors({
   open,
@@ -85,7 +76,6 @@ export function CampaignDoors({
             onKeyDown={onKeyDown}
             className={cn(DOOR, door === open ? DOOR_ON : DOOR_OFF)}
           >
-            <DoorIcon door={door} />
             <span className="line-clamp-2 max-w-full text-center leading-[1.15] [overflow-wrap:anywhere]">{t(LABEL[door])}</span>
           </button>
         ))}

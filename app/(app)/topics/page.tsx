@@ -5,7 +5,6 @@ import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { WayPage } from "@/components/theology/WayPage";
 import { WholeIcon } from "@/components/theology/WholeIcon";
 import { WAY_TITLE } from "@/components/theology/wayStyle";
-import { Book } from "@/components/ui/icons/Book";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { firstSentence } from "@/lib/theology/path";
 import { THEOLOGY_SUBJECTS } from "@/lib/theology/subjects";
@@ -34,7 +33,7 @@ export const revalidate = 3600;
  * the question's own definition, as the path gives it on the hub and on a
  * step (lib/theology/path.ts, firstSentence): nothing is written for this
  * page. A question no subject names yet follows the others by its name,
- * with the book on a plate where its icon would stand. A card's picture
+ * with no picture and no icon tile in its place. A card's picture
  * travels to the head of the question's own page (data-carry;
  * lib/ui/routeMotion.ts, components/theology/LeafPage.tsx).
  *
@@ -77,11 +76,7 @@ export default async function TopicsIndexPage() {
                     <span aria-hidden data-row-picture="" data-carry={`topic:${card.slug}`} className="path-plate w-[78px] shrink-0">
                       <WholeIcon src={card.picture} eager={at < 4} className="aspect-[4/5] w-full rounded-[3px]" />
                     </span>
-                  ) : (
-                    <span aria-hidden className="theology-plate grid size-10 shrink-0 place-items-center rounded-[12px] text-paper/85">
-                      <Book size={19} />
-                    </span>
-                  )}
+                  ) : null}
                   <div className="min-w-0 flex-1 py-0.5">
                     <h2 lang="en" dir="ltr" className="font-serif text-[17px] font-bold leading-tight text-paper rtl:text-right">
                       {card.title}

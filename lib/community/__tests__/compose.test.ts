@@ -188,10 +188,15 @@ describe("the page", () => {
     expect(page).toContain(shared);
     expect(code("components/saints/SaintDoors.tsx")).toContain(shared);
     const doors = code("components/ui/doors.ts");
-    expect(doors).toMatch(/export const DOOR =\s*"tap-press flex h-\[74px\]/);
+    // Since the fifteen screens (1.9, one small choice, one form) the doors are
+    // the house's track, as Settings draws its choices: a name, no icon, no pill.
+    expect(doors).toMatch(/export const DOOR_COLS[^;]*\{ 2: "set-track \[--set-cols:2\]", 3: "set-track \[--set-cols:3\]", 4: "set-track \[--set-cols:4\]" \}/);
     expect(doors).not.toMatch(/export const DOOR =[^;]*rounded-pill/);
+    expect(page).toContain('className={cn("mt-7 grid gap-[9px]", DOOR_COLS[kinds.length])}');
     expect(page).toContain("aria-pressed={k === kind}");
-    expect(page).toContain('className={cn(DOOR, "compose-door", k === kind ? cn(DOOR_ON, "compose-lit") : DOOR_OFF)}');
+    expect(page).toContain("className={cn(DOOR, k === kind ? DOOR_ON : DOOR_OFF)}");
+    expect(page).toMatch(/className=\{cn\(DOOR, k === kind \? DOOR_ON : DOOR_OFF\)\}\s*>\s*<span className="max-w-full truncate">\{t\(COMPOSE_KIND_KEYS\[k\]\)\}<\/span>\s*<\/button>/);
+    expect(page).not.toContain("KindMark");
     // The slim row under the bar is a copy for the eye and the finger.
     expect(page).toMatch(/ref=\{stripRef\}\s+aria-hidden/);
   });

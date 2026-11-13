@@ -310,7 +310,7 @@ export function ProfileMoment({
 /** A raised panel, as the sheet draws its cards: the palette's own ink, lit along the top. */
 const PANEL =
   "rounded-[20px] border border-paper/[0.085] bg-gradient-to-b from-paper/[0.07] to-paper/[0.025] shadow-[inset_0_1px_0_rgb(255_255_255/0.07),0_18px_30px_-20px_rgb(0_0_0/0.95)]";
-const EYEBROW = "font-sans text-eyebrow font-bold uppercase tracking-[0.11em] text-paper/52";
+const EYEBROW = "font-sans text-caption font-semibold text-paper/55";
 
 /**
  * What arrives after its loading lines (a profile, its doors, a verse's

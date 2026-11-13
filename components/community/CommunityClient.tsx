@@ -1833,9 +1833,9 @@ function PostCardInner({
         lit === "post" && "notify-lit",
       )}
     >
-      {/* What the post is for, over it, in small capitals: no pills. */}
+      {/* What the post is for, over it, in sentence case: no pills. */}
       {feast || question || pinned ? (
-        <p className="mb-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 font-sans text-[10.5px] font-bold uppercase leading-tight tracking-[0.1em] text-paper/65">
+        <p className="mb-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 font-sans text-caption font-semibold leading-tight text-paper/65">
           {feast ? (
             <span className="inline-flex items-center gap-1.5 text-premium-ink">
               <CrossIcon size={12} />
@@ -2054,7 +2054,7 @@ function PostCardInner({
                 ) : (
                   <span aria-hidden className="size-8 shrink-0" />
                 )}
-                <span className="min-w-0 font-sans text-[10.5px] font-bold uppercase leading-snug tracking-[0.16em] text-paper/70">
+                <span className="min-w-0 font-sans text-caption font-semibold leading-snug text-paper/70">
                   {post.quote_source}
                 </span>
                 <button
@@ -2245,7 +2245,7 @@ function PostCardInner({
                       )}
                     >
                       {clergyAnswer ? (
-                        <p className="community-lit mb-2 flex items-center gap-1.5 font-sans text-[10.5px] font-bold uppercase tracking-[0.1em] text-paper">
+                        <p className="community-lit mb-2 flex items-center gap-1.5 font-sans text-caption font-semibold text-paper">
                           <ClergySeal mark={r.author_clergy} size={14} />
                           {t("community.clergyAnswer")}
                         </p>

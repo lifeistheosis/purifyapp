@@ -64,7 +64,7 @@ export function CampaignCard({
         </div>
         <div className="min-w-0 flex-1 py-3 pe-3">
           {campaign.eyebrow ? (
-            <p className="font-sans text-[10.5px] font-bold uppercase tracking-[0.1em] text-paper/55">{campaign.eyebrow}</p>
+            <p className="font-sans text-caption font-semibold text-paper/55">{campaign.eyebrow}</p>
           ) : null}
           <h2 dir="auto" className="mt-1 font-heading text-[15.5px] font-semibold leading-[1.25] text-paper">{campaign.title}</h2>
           {/* The Church's words as printed, faded where the card ends: Pray opens them whole. */}

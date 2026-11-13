@@ -7,7 +7,6 @@ import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CoverArt } from "@/components/player/CoverArt";
 import { PREMIUM_CHIP } from "@/components/premium/PremiumUI";
-import { Check } from "@/components/ui/icons/Check";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { cn } from "@/lib/cn";
 import { plusFeaturesNow, usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
@@ -17,7 +16,7 @@ import { keptStarter, starterById, starterItems, starterPicture, starterReferenc
 import { useCoversVersion } from "@/lib/readAloud/useCovers";
 import { useMounted } from "@/lib/useMounted";
 
-import { FLOR_BUTTON, FLOR_H1, FLOR_KICKER, FLOR_PLATE, FLOR_ROW, FLOR_TITLE, FLOR_TRAY } from "./florStyle";
+import { FLOR_BUTTON, FLOR_H1, FLOR_KICKER, FLOR_ROW, FLOR_TITLE, FLOR_TRAY } from "./florStyle";
 import { useBookName } from "./useBookName";
 
 /**
@@ -118,12 +117,9 @@ export function StarterPage({ id }: { id: string }) {
             // Kept, in words, with the way to open it (build 89 note 6).
             <div className={FLOR_TRAY} data-starter-kept="">
               <Link href={gatheringHref(kept.id)} className={FLOR_ROW}>
-                <span aria-hidden className={FLOR_PLATE}>
-                  <Check size={18} />
-                </span>
-                <span className="min-w-0 flex-1 font-sans text-ui font-semibold leading-snug text-paper">{t("study.florilegium.inYours")}</span>
+                <span className="min-w-0 flex-1 font-serif text-[17px] font-semibold leading-[1.3] text-paper">{t("study.florilegium.inYours")}</span>
                 <span className="shrink-0 font-sans text-detail font-semibold text-paper/75">{t("journal.composer.open")}</span>
-                <ChevronRight size={14} aria-hidden className="shrink-0 text-paper/45 rtl:-scale-x-100" />
+                <ChevronRight size={16} aria-hidden className="shrink-0 text-paper/55 rtl:-scale-x-100" />
               </Link>
             </div>
           ) : locked ? (

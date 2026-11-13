@@ -82,7 +82,7 @@ export function VerseOfDayView({
   const verseLang = translated ? translated.language : vod?.text ? "en" : undefined;
 
   return (
-    <article className="lm-card relative overflow-hidden rounded-[24px] border border-paper/10 bg-night-deep px-[22px] pb-5 pt-6 text-center">
+    <article className="relative px-1 pb-2 pt-4 text-center">
       {/* The icon's light, behind the words. */}
       <span aria-hidden className="verse-light pointer-events-none absolute left-1/2 top-[-120px] h-[300px] w-[380px] -translate-x-1/2" />
       <div className="relative">

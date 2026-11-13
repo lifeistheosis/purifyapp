@@ -7,7 +7,6 @@ import { RememberCard } from "./RememberCard";
 import { FlorilegiumLineCard } from "./FlorilegiumLineCard";
 import { TodayGreeting } from "./TodayGreeting";
 import { StreakRow } from "./StreakRow";
-import { NativityFastCard } from "./NativityFastCard";
 import { FirstStepsNudge } from "@/components/onboarding/FirstStepsNudge";
 import { KeepCard, PlusIntroCard, SecondChanceCard } from "@/components/onboarding/RoadCards";
 import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
@@ -86,7 +85,7 @@ export function TodayMobileV3() {
 
           {/* The Nativity Fast's day (1.8, his pick C of round 9): during the
               fast only, under the streak, its star a little higher each day. */}
-          <NativityFastCard className="mt-4" />
+          {/* The Nativity Fast's star stands in the lead now (1.9, the fifteen screens): one night on the screen. */}
 
           {/* Your name day (1.8): the patron's icon, name and words, on that
               day only, above the day's word because it is the reader's. */}

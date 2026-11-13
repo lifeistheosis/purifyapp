@@ -151,7 +151,7 @@ function StepCard({
       <Link
         href={href}
         onClick={onOpen}
-        className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-pill bg-paper px-5 font-sans text-ui font-semibold text-night transition-[transform,translate,scale,background-color] motion-reduce:transition-none hover:bg-paper/90 active:scale-[0.98]"
+        className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-pill border border-paper/22 bg-paper/[0.03] px-5 font-sans text-ui font-semibold text-paper transition-[transform,translate,scale,background-color] motion-reduce:transition-none hover:bg-paper/[0.06] active:scale-[0.98]"
       >
         {t("onboard.day1.open")}
         <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />

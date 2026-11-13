@@ -83,22 +83,16 @@ export function LegalPage({ doc, children }: { doc: LegalDoc; children: ReactNod
               <span className={WAY_FACT}>{others.length}</span>
             </div>
             <ul className={`${WAY_TRAY} mt-2.5`}>
-              {others.map((d) => {
-                const Glyph = MARK[d];
-                return (
-                  <li key={d} className="theology-rule">
-                    <Link href={LEGAL_HREF[d]} className="theology-row flex min-h-[56px] items-center gap-3 rounded-[14px] px-2 py-2.5">
-                      <span aria-hidden className="theology-plate grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
-                        <Glyph size={17} />
-                      </span>
-                      <span className="min-w-0 flex-1 font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92">
-                        <T k={LEGAL_TITLE_KEY[d]} />
-                      </span>
-                      <ChevronRight size={14} className="shrink-0 text-paper/45 rtl:-scale-x-100" />
-                    </Link>
-                  </li>
-                );
-              })}
+              {others.map((d) => (
+                <li key={d} className="theology-rule">
+                  <Link href={LEGAL_HREF[d]} className="theology-row flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5">
+                    <span className="min-w-0 flex-1 font-serif text-[17px] font-semibold leading-[1.3] text-paper">
+                      <T k={LEGAL_TITLE_KEY[d]} />
+                    </span>
+                    <ChevronRight size={16} className="shrink-0 text-paper/55 rtl:-scale-x-100" />
+                  </Link>
+                </li>
+              ))}
             </ul>
           </section>
         </article>

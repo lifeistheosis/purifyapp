@@ -6,7 +6,6 @@ import { todayRuleCard } from "@/lib/prayers/myRule";
 import { ruleIdForHour, type HourRuleId } from "@/lib/prayers/ruleForHour";
 import { PRAYER_EVENT } from "@/lib/prayers/storage";
 import { useMyRule } from "@/lib/prayers/useMyRule";
-import { sectionMedia } from "@/lib/media/sections";
 import { isKept } from "@/lib/rhythm/marks";
 import { todayKey } from "@/lib/rhythm/dayKey";
 import { prayRail, type PrayCard } from "@/lib/today/prayRail";
@@ -14,12 +13,13 @@ import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
- * "Pray" on the mobile Today shell (1.8): the owner's pick B of round 13, "The
- * hour, large" (Homebase/boards/purify-master/r18/choose/13-pray.png). One
- * card for the prayer the hour calls for: "Now · 8 min", its name large, one
- * line of what it is, a white Begin, and the Pantocrator of Prayers as a soft
- * light at its side. Under it, the rest of the day's prayers as small tiles,
- * two to a row, the Prayer Rope Anthem last.
+ * "Pray" on the mobile Today shell. The prayer the hour calls for leads the
+ * screen from the day's lead now, with its one white Begin
+ * (components/today/GreetingHeader.tsx; 1.9, the fifteen screens). Here, the
+ * rest of the day's prayers as rows in one tray, a name, one line and the
+ * chevron, the Prayer Rope Anthem last. It was the hour's card with the
+ * Pantocrator's light and tiles two to a row (1.8, the owner's pick B of
+ * round 13).
  *
  * Which prayers, and in what order, is lib/today/prayRail.ts: the same ones
  * the row of cards showed in 1.7 (the owner's layout of 2026-10-07 and his
@@ -33,7 +33,8 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * reads it by path: the hour is asked of ruleIdForHour, never compared here.
  */
 
-function useKeptToday(): (id: string) => boolean {
+/** Whether a prayer is kept today on this device; re-read when one is kept, here or elsewhere. */
+export function useKeptToday(): (id: string) => boolean {
   const [version, setVersion] = useState(0);
   useEffect(() => {
     const bump = () => setVersion((v) => v + 1);
@@ -48,11 +49,6 @@ function useKeptToday(): (id: string) => boolean {
   const day = todayKey();
   return (id) => isKept(id, day);
 }
-
-/** The Pantocrator of Prayers (lib/media/sections.ts), the light at the hour card's side. */
-const LIGHT = sectionMedia("prayers");
-/** The light fades out from its middle, so it has no edge on the card. */
-const LIGHT_FADE = "radial-gradient(closest-side, #000 40%, transparent)";
 
 export function PrayRail({ className }: { className?: string }) {
   const { t } = useTranslate();
@@ -71,10 +67,7 @@ export function PrayRail({ className }: { className?: string }) {
   const now: HourRuleId = ruleId ?? "morning";
   // The marks are the device's too: none until the hour is known, so the
   // first drawing is the server's.
-  const { hour, tiles } = prayRail(now, ruleId ? todayRuleCard(mine, ruleId) : null, ruleId ? kept : () => false);
-  const known = ruleId ? "" : "invisible";
-  // An odd tile out takes the whole row, so the grid never ends on a gap.
-  const wide = (i: number) => tiles.length % 2 === 1 && i === tiles.length - 1;
+  const { tiles } = prayRail(now, ruleId ? todayRuleCard(mine, ruleId) : null, ruleId ? kept : () => false);
 
   return (
     <section aria-labelledby="today-pray" className={className}>
@@ -92,50 +85,9 @@ export function PrayRail({ className }: { className?: string }) {
         </Link>
       </div>
 
-      <ul className="grid grid-cols-2 gap-x-2 gap-y-2.5">
-        <li className="col-span-2">
-          {/* The hour's prayer, large: the screen's first action. */}
-          <Link
-            href={hour.href}
-            data-pray-hour=""
-            className="press-card relative block overflow-hidden rounded-[24px] border border-paper/12 bg-night-deep px-5 pb-[18px] pt-5"
-          >
-            {LIGHT ? (
-              // eslint-disable-next-line @next/next/no-img-element -- the app's own section picture, a soft light (as PrayersHero draws it)
-              <img
-                src={LIGHT.src}
-                alt=""
-                aria-hidden
-                decoding="async"
-                className="pointer-events-none absolute -end-[30px] -top-5 h-[200px] w-[190px] object-cover opacity-[0.32]"
-                style={{ maskImage: LIGHT_FADE, WebkitMaskImage: LIGHT_FADE }}
-              />
-            ) : null}
-            <div className={cn("relative", known)}>
-              <p className="flex flex-wrap items-center gap-x-3 gap-y-1 font-sans text-caption font-semibold text-paper/60">
-                <span>
-                  {hour.minutes ? `${t("prayers.timeline.now")} · ${t("today.minRead", { count: hour.minutes })}` : t("prayers.timeline.now")}
-                </span>
-                {hour.done ? <Prayed /> : null}
-              </p>
-              <h3 className="mt-1 font-heading text-title font-bold leading-[1.1] text-paper">{t(hour.titleKey)}</h3>
-              {/* On paper the picture at the card's side lies under this line's
-                  end: its ink is stronger there (the gate's words over pictures,
-                  2026-11-11: 3.96:1 on Light, 4.20 to 4.47 on six light looks),
-                  and stronger again on the light looks, whose paper is tinted
-                  (the morning line read 4.28 to 4.50 on seven at 80%, the gate's
-                  final run of 2026-11-12). */}
-              <p className="mt-1.5 max-w-[12.5rem] font-sans text-detail leading-snug text-paper/60 [html[data-reading-mode=parchment]_&]:text-paper/80 [html[data-reading-mode=parchment][data-look]_&]:text-paper/90">{t(hour.lineKey)}</p>
-              <span className="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-pill bg-paper px-[18px] font-sans text-ui font-semibold text-night">
-                {t("today.prayNow.begin")}
-                <ArrowRight />
-              </span>
-            </div>
-          </Link>
-        </li>
-
+      <ul className="theology-tray overflow-hidden rounded-[20px]">
         {tiles.map((tile, i) => (
-          <li key={tile.key} className={cn("flex", wide(i) && "col-span-2")}>
+          <li key={tile.key} className={cn(i > 0 && "border-t border-paper/10")}>
             <Tile tile={tile} hidden={tile.key !== "anthem" && !ruleId} />
           </li>
         ))}
@@ -148,24 +100,23 @@ export function PrayRail({ className }: { className?: string }) {
 function Tile({ tile, hidden }: { tile: PrayCard; hidden: boolean }) {
   const { t } = useTranslate();
   return (
-    <Link
-      href={tile.href}
-      className={cn(
-        "press-card flex w-full flex-col justify-center rounded-[14px] border border-paper/10 px-3 py-2.5 hover:bg-paper/[0.04]",
-        hidden && "invisible",
-      )}
-    >
-      <span className="font-heading text-ui font-semibold leading-tight text-paper">{t(tile.titleKey)}</span>
-      <span className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 font-sans text-caption text-paper/50">
-        {tile.subKey ? <span>{t(tile.subKey)}</span> : tile.minutes != null ? <span>{t("today.minRead", { count: tile.minutes })}</span> : null}
-        {tile.done ? <Prayed /> : null}
+    <Link href={tile.href} className={cn("tap-press flex min-h-[64px] w-full items-center gap-3 px-4 py-3 active:bg-paper/[0.04]", hidden && "invisible")}>
+      <span className="min-w-0 flex-1">
+        <span className="block font-serif text-lede font-semibold leading-[25px] text-paper">{t(tile.titleKey)}</span>
+        <span className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 font-sans text-ui leading-5 text-paper/70">
+          {tile.subKey ? <span>{t(tile.subKey)}</span> : tile.minutes != null ? <span>{t("today.minRead", { count: tile.minutes })}</span> : null}
+          {tile.done ? <Prayed /> : null}
+        </span>
+      </span>
+      <span className="shrink-0 text-paper/55">
+        <ChevronRight size={18} />
       </span>
     </Link>
   );
 }
 
-/** The quiet done mark once the prayer is said today. */
-function Prayed() {
+/** The quiet done mark once the prayer is said today (Today's lead and its rows). */
+export function Prayed() {
   const { t } = useTranslate();
   return (
     <span className="inline-flex items-center gap-1.5 font-semibold text-paper/85">
@@ -176,14 +127,6 @@ function Prayed() {
       </span>
       {t("shop.prayedToday")}
     </span>
-  );
-}
-
-function ArrowRight() {
-  return (
-    <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" aria-hidden className="rtl:-scale-x-100">
-      <path d="M5 12h14M13 6l6 6-6 6" />
-    </svg>
   );
 }
 

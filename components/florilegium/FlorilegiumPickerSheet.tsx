@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
 import { Book } from "@/components/ui/icons/Book";
-import { Plus } from "@/components/ui/icons/Plus";
 import { Quill } from "@/components/ui/icons/Quill";
 import { cn } from "@/lib/cn";
 import { itemSource } from "@/lib/florilegium/asText";
@@ -14,7 +13,7 @@ import {
   type FlorilegiumItemInput,
 } from "@/lib/florilegium/florilegium";
 
-import { FLOR_FIELD, FLOR_PLATE, FLOR_QUIET, FLOR_ROW, FLOR_TRAY } from "./florStyle";
+import { FLOR_FIELD, FLOR_QUIET, FLOR_ROW, FLOR_TRAY } from "./florStyle";
 import { GatheringRowBody } from "./GatheringRow";
 
 /** How long the sheet stays to show where the line went, before it closes itself. */
@@ -182,10 +181,7 @@ export function FlorilegiumPickerSheet({
             </form>
           ) : (
             <button type="button" onClick={() => setNaming(true)} data-florilegium-begin="" className={FLOR_ROW}>
-              <span aria-hidden className={FLOR_PLATE}>
-                <Plus size={18} />
-              </span>
-              <span className="min-w-0 flex-1 font-sans text-ui font-semibold leading-snug text-paper">{t("study.florilegium.beginNew")}</span>
+              <span className="min-w-0 flex-1 font-serif text-[17px] font-semibold leading-[1.3] text-paper">{t("study.florilegium.beginNew")}</span>
             </button>
           )}
         </li>

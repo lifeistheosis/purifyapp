@@ -38,12 +38,13 @@ describe("a study's page", () => {
 
   it("no label over a part is fainter than the house lifts to 4.5:1", () => {
     // lib/ui/__tests__/faintText.test.ts: ink at 45 to 60 is lifted on every palette; below 45 it is not.
-    const label = /function PartLabel[\s\S]*?quiet \? "([^"]+)" : "([^"]+)"/.exec(page);
+    // One small line for every part, in sentence case (1.9, the fifteen screens, rule 3): no quieter one.
+    const label = /function PartLabel[\s\S]*?<h2 className="([^"]+)"/.exec(page);
     expect(label).not.toBeNull();
-    for (const cls of [label![1], label![2]]) {
-      expect(share(cls), cls).toBeGreaterThanOrEqual(45);
-      expect(share(cls), cls).toBeLessThanOrEqual(60);
-    }
+    const cls = label![1];
+    expect(cls).toContain("font-sans text-caption font-semibold");
+    expect(share(cls), cls).toBeGreaterThanOrEqual(45);
+    expect(share(cls), cls).toBeLessThanOrEqual(60);
   });
 
   it("the part line inside the Begin button is dark enough on the button's own ground", () => {

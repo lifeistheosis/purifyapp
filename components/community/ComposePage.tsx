@@ -13,12 +13,10 @@ import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { DOOR, DOOR_COLS, DOOR_OFF, DOOR_ON, SLIM, SLIM_OFF, SLIM_ON, SLIM_TRACK } from "@/components/ui/doors";
 import { Book } from "@/components/ui/icons/Book";
-import { ChatBubble } from "@/components/ui/icons/ChatBubble";
 import { Check } from "@/components/ui/icons/Check";
 import { Church } from "@/components/ui/icons/Church";
 import { Close } from "@/components/ui/icons/Close";
 import { TOP_PLATE } from "@/components/nav/topPlate";
-import { Quill } from "@/components/ui/icons/Quill";
 import { Share } from "@/components/ui/icons/Share";
 import { PurifyMark } from "@/components/ui/PurifyMark";
 import { cn } from "@/lib/cn";
@@ -420,7 +418,6 @@ export function ComposePage({
                   onClick={() => choose(k)}
                   className={cn(SLIM, k === kind ? cn(SLIM_ON, "compose-lit") : SLIM_OFF)}
                 >
-                  <KindMark kind={k} size={15} />
                   {t(COMPOSE_KIND_KEYS[k])}
                 </button>
               ))}
@@ -490,9 +487,8 @@ export function ComposePage({
                   aria-pressed={k === kind}
                   onMouseDown={keepTyping}
                   onClick={() => choose(k)}
-                  className={cn(DOOR, "compose-door", k === kind ? cn(DOOR_ON, "compose-lit") : DOOR_OFF)}
+                  className={cn(DOOR, k === kind ? DOOR_ON : DOOR_OFF)}
                 >
-                  <KindMark kind={k} size={21} />
                   <span className="max-w-full truncate">{t(COMPOSE_KIND_KEYS[k])}</span>
                 </button>
               ))}
@@ -532,7 +528,7 @@ export function ComposePage({
                   </p>
                 ) : (
                   <>
-                    <p className="mt-7 font-sans text-[10.5px] font-bold uppercase tracking-[0.12em] text-paper/55">{t("community.yourFlorilegium")}</p>
+                    <p className="mt-7 font-sans text-caption font-semibold text-paper/55">{t("community.yourFlorilegium")}</p>
                     <ul className="mt-2.5 space-y-2">
                       {gathered.slice(0, GATHERED_SHOWN).map((item) => {
                         const on = item.id === line?.id;
@@ -697,7 +693,7 @@ function SharedLine({ item }: { item: FlorilegiumItem }) {
         <span aria-hidden className={mark}>
           <Book size={15} />
         </span>
-        <span className="min-w-0 font-sans text-[10.5px] font-bold uppercase leading-snug tracking-[0.16em] text-paper/70">{shareSource(item)}</span>
+        <span className="min-w-0 font-sans text-caption font-semibold leading-snug text-paper/70">{shareSource(item)}</span>
         <span aria-hidden className={mark}>
           <Share size={15} />
         </span>
@@ -724,18 +720,6 @@ function FoldedLine({ text, on }: { text: string; on: boolean }) {
     <span ref={ref} className={cn("compose-line block font-serif text-[14.5px] leading-[21px]", on ? "text-paper" : "text-paper/85")}>
       {text}
     </span>
-  );
-}
-
-/** Each kind's mark: the words of a discussion, the clergy seal, the quill. */
-function KindMark({ kind, size }: { kind: ComposeKind; size: number }) {
-  if (kind === "discussion") return <ChatBubble size={size} />;
-  if (kind === "share") return <Quill size={size} />;
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M12 1.6l2.36 1.64 2.84-.44 1.2 2.62 2.6 1.24-.46 2.84L22.4 12l-1.86 2.46.46 2.84-2.6 1.24-1.2 2.62-2.84-.44L12 22.4l-2.36-1.64-2.84.44-1.2-2.62-2.6-1.24.46-2.84L1.6 12l1.86-2.46-.46-2.84 2.6-1.24 1.2-2.62 2.84.44L12 1.6z" />
-      <path d="M12 6.4v11.2M10.2 8.6h3.6M8.7 10.8h6.6M10 14.4l4 1.2" />
-    </svg>
   );
 }
 

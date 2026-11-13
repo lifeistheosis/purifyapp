@@ -5,7 +5,6 @@ import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { WayPage } from "@/components/theology/WayPage";
 import { WAY_FACT, WAY_H2, WAY_TITLE, WAY_TRAY } from "@/components/theology/wayStyle";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
-import { Scroll } from "@/components/ui/icons/Scroll";
 import { HERESIES } from "@/lib/heresies/heresies";
 import { wayCounts } from "@/lib/theology/wayCounts";
 
@@ -78,19 +77,16 @@ export default async function HeresiesIndexPage() {
             <ul className={`${WAY_TRAY} mt-2.5`}>
               {errors.map((h) => (
                 <li key={h.slug} className="theology-rule">
-                  <Link href={`/heresies/${h.slug}`} className="theology-row flex min-h-[56px] items-start gap-3 rounded-[14px] px-2 py-2.5">
-                    <span aria-hidden data-carry={`heresy:${h.slug}`} className="theology-plate mt-px grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
-                      <Scroll size={17} />
-                    </span>
+                  <Link href={`/heresies/${h.slug}`} className="theology-row flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5">
                     <span className="min-w-0 flex-1">
-                      <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92 rtl:text-right">
+                      <span lang="en" dir="ltr" className="block font-serif text-[17px] font-semibold leading-[1.3] text-paper rtl:text-right">
                         {h.name}
                       </span>
-                      <span lang="en" dir="ltr" className="mt-[3px] block font-sans text-detail leading-[1.45] text-paper/60 rtl:text-right">
-                        {h.shortBio}
+                      <span lang="en" dir="ltr" className="mt-0.5 block font-sans text-detail leading-[1.45] text-paper/65 rtl:text-right">
+                        {h.heresiarch}
                       </span>
                     </span>
-                    <ChevronRight size={14} className="mt-[9px] shrink-0 text-paper/45 rtl:-scale-x-100" />
+                    <ChevronRight size={16} className="shrink-0 text-paper/55 rtl:-scale-x-100" />
                   </Link>
                 </li>
               ))}

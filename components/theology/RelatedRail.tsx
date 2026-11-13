@@ -10,19 +10,14 @@
 //
 // 1.9: at the foot of a topic, a heresy and an answer (components/theology/
 // LeafPage.tsx) it is one part named in Lora over one raised tray, each row
-// with its mark and its kind under its name, as the hub's own rows are
-// drawn: a way's glyph on its plate, a council's picture, a Father's face.
+// with its kind under its name, as the hub's own rows are drawn: a council's
+// picture or a Father's face where it has one, and no icon tile.
 // A doctrine's page keeps the rows it was approved with (`bare`).
 
 import Link from "next/link";
-import type { ComponentType, SVGProps } from "react";
 
 import { T } from "@/components/i18n/T";
-import { Book } from "@/components/ui/icons/Book";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
-import { Cross } from "@/components/ui/icons/Cross";
-import { Scroll } from "@/components/ui/icons/Scroll";
-import { Shield } from "@/components/ui/icons/Shield";
 import { getSaint } from "@/lib/saints/saints";
 import { hasAnyRelated, type RelatedGroups, type RelatedLink } from "@/lib/theology/relations";
 
@@ -30,8 +25,6 @@ import { CouncilMark } from "./CouncilMark";
 import { FatherFace } from "./FatherFace";
 import { LeafPart } from "./LeafPage";
 import { WAY_TRAY } from "./wayStyle";
-
-type Icon = ComponentType<SVGProps<SVGSVGElement> & { size?: number }>;
 
 const GROUP_LABEL: Record<keyof RelatedGroups, string> = {
   doctrine: "study.doctrine",
@@ -50,14 +43,6 @@ const ORDER: (keyof RelatedGroups)[] = [
   "councils",
   "saints",
 ];
-
-/** Each of the four ways by the glyph its button wears (components/theology/TheologyLibrary.tsx, WAYS). */
-const WAY_GLYPH: Partial<Record<keyof RelatedGroups, Icon>> = {
-  doctrine: Cross,
-  apologetics: Shield,
-  heresies: Scroll,
-  topics: Book,
-};
 
 export function RelatedRail({
   groups,
@@ -78,17 +63,17 @@ export function RelatedRail({
         <ul className={`${WAY_TRAY} mt-2.5`}>
           {rows.map(({ g, link }) => (
             <li key={link.href} className="theology-rule">
-              <Link href={link.href} className="theology-row flex min-h-[54px] items-center gap-3 rounded-[14px] px-2 py-2">
+              <Link href={link.href} className="theology-row flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5">
                 <RelatedMark group={g} link={link} />
                 <span className="min-w-0 flex-1">
-                  <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92 rtl:text-right">
+                  <span lang="en" dir="ltr" className="block font-serif text-[17px] font-semibold leading-[1.3] text-paper rtl:text-right">
                     {link.label}
                   </span>
-                  <span className="mt-0.5 block font-sans text-caption text-paper/55">
+                  <span className="mt-0.5 block font-sans text-detail text-paper/65">
                     <T k={GROUP_LABEL[g]} />
                   </span>
                 </span>
-                <ChevronRight size={14} className="shrink-0 text-paper/45 rtl:-scale-x-100" />
+                <ChevronRight size={16} className="shrink-0 text-paper/55 rtl:-scale-x-100" />
               </Link>
             </li>
           ))}
@@ -105,7 +90,7 @@ export function RelatedRail({
           if (!links.length) return null;
           return (
             <div key={g}>
-              <p className="flex items-baseline justify-between px-1 font-sans text-[10.5px] font-bold uppercase tracking-[0.12em] text-paper/50">
+              <p className="flex items-baseline justify-between px-1 font-sans text-caption font-semibold text-paper/55">
                 <T k={GROUP_LABEL[g]} />
                 {/* At the label's own share: /40 read 2.31:1 on Light and under 4.5:1 on all five palettes (checkMock, 2026-11-10). */}
                 <span className="text-[11.5px] font-semibold normal-case tracking-normal tabular-nums text-paper/50">{links.length}</span>
@@ -134,16 +119,11 @@ export function RelatedRail({
   );
 }
 
-/** What a related row wears at its start: pictures lead, and a glyph on a plate where there is none. */
+/** What a related row wears at its start: a Father's face or a council's picture, and nothing where it has none (no icon tile). */
 function RelatedMark({ group, link }: { group: keyof RelatedGroups; link: RelatedLink }) {
   if (group === "saints") {
     return <FatherFace father={{ slug: link.slug, name: link.label, iconUrl: getSaint(link.slug)?.iconUrl }} size={34} />;
   }
   if (group === "councils") return <CouncilMark slug={link.slug} />;
-  const Glyph = WAY_GLYPH[group] ?? Book;
-  return (
-    <span aria-hidden className="theology-plate grid size-[34px] shrink-0 place-items-center rounded-[10px] text-paper/85">
-      <Glyph size={17} />
-    </span>
-  );
+  return null;
 }

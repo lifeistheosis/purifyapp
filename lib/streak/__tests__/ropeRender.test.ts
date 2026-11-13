@@ -64,18 +64,34 @@ describe("the rope on Today, drawn", () => {
     expect(out).not.toMatch(/<svg[^>]*>(?:(?!<\/svg>).)*flame/i);
   });
 
-  it("asks for today while it is not kept, with no knot lit", () => {
-    live.view = view({});
+  it("asks for today while it is not kept, with no knot lit and no zero shown (1.9)", () => {
+    // A reader who has kept days before, and none in the run now.
+    live.view = view({ best: 4 });
     live.dayOne = false;
     const out = draw(StreakRow);
-    expect(out).toContain("0 days");
+    expect(out).toMatch(/<span aria-hidden="true" hidden="" class="[^"]*tabular-nums[^"]*">0 days<\/span>/);
     expect(out).toContain(en["streak.rope.keep"]);
     expect(knots(out)).toBe(7);
     expect(out).not.toContain("rope-knot-lit");
   });
 
-  it("is not drawn at all while the Day 1 card shows, and comes back after", () => {
+  it("is not drawn for a reader with no day kept: no zero as a first sight (1.9)", () => {
     live.view = view({});
+    live.dayOne = false;
+    expect(draw(StreakRow)).toBe("");
+    live.view = view({ current: 1, best: 1, keptToday: true });
+    expect(draw(StreakRow)).not.toBe("");
+  });
+
+  it("stands on the page on Today, without a box; You keeps its card (1.9)", () => {
+    live.view = view({ best: 2 });
+    live.dayOne = false;
+    expect(draw(StreakRow)).not.toContain("rounded-[17px] border");
+    expect(draw(StreakRope)).toContain("rounded-[17px] border border-paper/12");
+  });
+
+  it("is not drawn at all while the Day 1 card shows, and comes back after", () => {
+    live.view = view({ best: 2 });
     live.dayOne = true;
     expect(draw(StreakRow)).toBe("");
     live.dayOne = false;
@@ -110,7 +126,7 @@ describe("the rope on Today, drawn", () => {
 // drawn: the Day 1 card and the evening card are Today's.
 describe("the rope on You, drawn", () => {
   it("is the rope, with no flame and no red, whatever Today is showing", () => {
-    for (const [over, dayOne] of [[{}, true], [{ current: 3, best: 3, atRisk: true }, false]] as const) {
+    for (const [over, dayOne] of [[{ best: 2 }, true], [{ current: 3, best: 3, atRisk: true }, false]] as const) {
       live.view = view(over);
       live.dayOne = dayOne;
       const out = draw(StreakRope, { className: "you-rope" });
@@ -121,9 +137,17 @@ describe("the rope on You, drawn", () => {
     }
   });
 
-  it("holds its height until the streak is read", () => {
+  it("holds its height until the streak is read, only where a kept day is stored (data-kept, 1.9)", () => {
     live.view = view({ ready: false });
     live.dayOne = false;
-    expect(draw(StreakRope)).toMatch(/^<div aria-hidden="true" class="h-\[92px\]"><\/div>$/);
+    const hold = /^<div aria-hidden="true" data-rope-hold="" class="hidden h-\[92px\] \[html\[data-kept\]_&amp;\]:block[^"]*"><\/div>$/;
+    expect(draw(StreakRope)).toMatch(hold);
+    expect(draw(StreakRow)).toMatch(hold);
+  });
+
+  it("is not drawn on You either for a reader with no day kept", () => {
+    live.view = view({});
+    live.dayOne = false;
+    expect(draw(StreakRope)).toBe("");
   });
 });

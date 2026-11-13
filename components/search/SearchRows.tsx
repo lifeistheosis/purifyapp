@@ -108,10 +108,10 @@ export function Hit({ text, query }: { text: string; query: string }) {
   );
 }
 
-/** The small capitals over a group: its name, how many, and an action at the end. */
+/** The small line over a group, in sentence case: its name, how many, and an action at the end. */
 export function Eyebrow({ label, count, end, className }: { label: ReactNode; count?: number; end?: ReactNode; className?: string }) {
   return (
-    <div className={cn("flex items-baseline gap-2 font-sans text-[10.5px] font-bold uppercase tracking-[0.12em] text-paper/50", className)}>
+    <div className={cn("flex items-baseline gap-2 font-sans text-caption font-semibold text-paper/55", className)}>
       <span className="min-w-0 truncate">{label}</span>
       {count !== undefined ? <span className="text-[11.5px] font-semibold normal-case tracking-normal tabular-nums text-paper/45">{count}</span> : null}
       {end ? <span className="ms-auto shrink-0 normal-case tracking-normal">{end}</span> : null}
@@ -450,7 +450,7 @@ export function TopBand({
           <Hit text={row.label} query={query} />
         </span>
         {line ? <span className="mt-[5px] line-clamp-2 font-sans text-caption leading-[1.4] text-paper/72">{line}</span> : null}
-        <span className="order-first font-sans text-[10.5px] font-bold uppercase tracking-[0.12em] text-paper/62">{eyebrow}</span>
+        <span className="order-first font-sans text-caption font-semibold text-paper/62">{eyebrow}</span>
       </span>
     </button>
   );

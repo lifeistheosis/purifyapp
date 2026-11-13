@@ -37,7 +37,7 @@ export function StudyContents({ slug, parts, end }: { slug: string; parts: Conte
 
   return (
     <section data-study-contents="" aria-labelledby="study-contents" className="mt-6">
-      <h2 id="study-contents" className="flex items-center gap-2.5 font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/50">
+      <h2 id="study-contents" className="flex items-center gap-2.5 font-sans text-caption font-semibold text-paper/55">
         {t("saints.contents")}
         <span aria-hidden className="h-px flex-1 bg-paper/10" />
       </h2>

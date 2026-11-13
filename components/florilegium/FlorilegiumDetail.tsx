@@ -11,8 +11,6 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Book } from "@/components/ui/icons/Book";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { Quill } from "@/components/ui/icons/Quill";
-import { Scroll } from "@/components/ui/icons/Scroll";
-import { Share } from "@/components/ui/icons/Share";
 import { cn } from "@/lib/cn";
 import { florilegiumAsText, itemSource } from "@/lib/florilegium/asText";
 import {
@@ -29,7 +27,7 @@ import { shareText } from "@/lib/share/shareImage";
 import { printPart } from "@/lib/ui/printPart";
 import { useMounted } from "@/lib/useMounted";
 
-import { FLOR_FIELD, FLOR_H1, FLOR_KICKER, FLOR_PLATE, FLOR_QUIET, FLOR_ROW, FLOR_TITLE, FLOR_TRAY } from "./florStyle";
+import { FLOR_FIELD, FLOR_H1, FLOR_KICKER, FLOR_QUIET, FLOR_ROW, FLOR_TITLE, FLOR_TRAY } from "./florStyle";
 import { GatheringPages } from "./GatheringPages";
 import { gatheringCarry } from "./GatheringRow";
 
@@ -180,17 +178,11 @@ export function FlorilegiumDetail({ id, readOnly = false }: { id: string; readOn
             <div className={FLOR_TRAY}>
               {native ? (
                 <button type="button" onClick={() => void shareText(f.title, florilegiumAsText(f))} className={FLOR_ROW}>
-                  <span aria-hidden className={FLOR_PLATE}>
-                    <Share size={18} />
-                  </span>
-                  <span className="min-w-0 flex-1 font-sans text-ui font-semibold leading-snug text-paper">{t("common.share")}</span>
+                  <span className="min-w-0 flex-1 font-serif text-[17px] font-semibold leading-[1.3] text-paper">{t("common.share")}</span>
                 </button>
               ) : (
                 <button type="button" onClick={printPart} className={FLOR_ROW}>
-                  <span aria-hidden className={FLOR_PLATE}>
-                    <Scroll size={18} />
-                  </span>
-                  <span className="min-w-0 flex-1 font-sans text-ui font-semibold leading-snug text-paper">{t("journal.print")}</span>
+                  <span className="min-w-0 flex-1 font-serif text-[17px] font-semibold leading-[1.3] text-paper">{t("journal.print")}</span>
                 </button>
               )}
             </div>

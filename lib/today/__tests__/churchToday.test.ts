@@ -34,7 +34,8 @@ import { sectionMedia } from "@/lib/media/sections";
 import { dayWalk, hrefOf } from "@/lib/readings/flow";
 import { sayingForDay } from "@/lib/today/saying";
 
-import { fastMarks } from "../fastMarks";
+import { FAST_META } from "@/components/calendar/fastMeta";
+import { fastNotAllowedKey } from "@/lib/calendar/fastFoods";
 
 type ProviderProps = Parameters<typeof MessagesProvider>[0];
 const en = getMessages("en");
@@ -122,16 +123,16 @@ describe("The Church today, on St John Chrysostom's day", () => {
     expect(out).not.toMatch(/<button[^>]*data-today-band/);
   });
 
-  it("marks the Friday fast from the day's rule: wine and oil lit, fish and meat struck", () => {
-    expect(text).toContain(en["calendar.fast.fridayFast.label"]);
-    const marks = fastMarks(fastingStatus(NOV_13, "new").kind)!;
-    expect(marks.filter((m) => m.allowed).map((m) => m.food)).toEqual(["wine", "oil"]);
-    for (const { food, allowed } of marks) {
-      expect(out).toMatch(new RegExp(`data-fast-mark="${food}"${allowed ? ' data-allowed=""' : '(?! data-allowed)'}`));
-    }
-    expect(text).toContain(fill(en["today.fastMarks.allowed"], { food: en["today.fastMarks.wine"] }));
-    expect(text).toContain(fill(en["today.fastMarks.notAllowed"], { food: en["today.fastMarks.fish"] }));
-    expect(text).toContain(fill(en["today.fastMarks.notAllowed"], { food: en["today.fastMarks.meat"] }));
+  it("says the Friday fast in words, with the calendar's mark: its name, its rule and what it keeps from, never pills (1.9)", () => {
+    const kind = fastingStatus(NOV_13, "new").kind;
+    const band = element(out, 'data-today-band="fast"', "a");
+    const bandText = words(band);
+    expect(bandText).toContain(en["calendar.fast.fridayFast.label"]);
+    expect(bandText).toContain(en["calendar.fast.fridayFast.rule"]);
+    expect(bandText).toContain(en[fastNotAllowedKey(kind)!]);
+    // The calendar's own mark, in its tone, beside the name (the Fast's screen's look).
+    expect(band).toContain(`style="color:rgb(${FAST_META[kind].rgb})"`);
+    expect(out).not.toContain("data-fast-mark");
   });
 
   it("makes the readings one card: the day's two over the manuscript, his two folded into one line, Read all and Listen", () => {
@@ -343,8 +344,8 @@ describe("the Nativity Fast's path", () => {
     expect(words(fast)).toContain(en["today.nativity.invite"]);
   });
 
-  it("leaves the fast band as it was when there is no path to offer", () => {
-    expect(draw(NOV_13)).toMatch(/<a data-today-band="fast" class="press-card block/);
+  it("draws the fast as one row in its tray when there is no path to offer (1.9)", () => {
+    expect(draw(NOV_13)).toMatch(/<a data-today-band="fast" class="theology-tray tap-press flex/);
   });
 });
 

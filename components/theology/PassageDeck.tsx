@@ -157,7 +157,7 @@ export function PassageDeck({ passages }: { passages: DeckPassage[] }) {
                     {p.text}
                   </blockquote>
                   <div aria-hidden className="mx-auto mt-3 h-[1.5px] w-[30px] bg-paper/70" />
-                  <p lang="en" dir="ltr" className="mt-[9px] font-sans text-[9.5px] font-bold uppercase tracking-[0.16em] text-paper/78">
+                  <p lang="en" dir="ltr" className="mt-[9px] font-sans text-caption font-semibold text-paper/78">
                     {p.saintSlug ? (
                       <Link href={`/saints/${p.saintSlug}`} prefetch={false} className="hover:text-paper">
                         {p.name}

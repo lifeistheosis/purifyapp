@@ -97,7 +97,7 @@ export function TopicReader({
               href={`/theology/path/${subject.id}`}
               id={epigraph ? undefined : DOCTRINE_FIRST_WORDS}
               data-study-step=""
-              className="tap-press inline-flex min-h-11 max-w-full items-center gap-[9px] font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/55 hover:text-paper"
+              className="tap-press inline-flex min-h-11 max-w-full items-center gap-[9px] font-sans text-caption font-semibold text-paper/55 hover:text-paper"
             >
               <span aria-hidden className="block size-6 shrink-0 overflow-hidden rounded-full bg-paper/[0.05] ring-1 ring-paper/20">
                 {/* Whole or not yet at all (build 85, note 52). */}
@@ -221,7 +221,7 @@ function RelatedPart({ body, groups, events }: { body: TheologyBody; groups: Rel
       </PartLabel>
       {studies.length > 0 ? (
         <div className="mt-2">
-          <PartLabel count={studies.length} quiet>
+          <PartLabel count={studies.length}>
             <T k="study.doctrine" />
           </PartLabel>
           <ul className="theology-tray mt-2 overflow-hidden rounded-[18px] py-1">
@@ -257,15 +257,10 @@ function RelatedPart({ body, groups, events }: { body: TheologyBody; groups: Rel
   );
 }
 
-/** A part's name over its rows, in small capitals, with how many there are. */
-function PartLabel({ children, count, quiet = false }: { children: React.ReactNode; count: number | null; quiet?: boolean }) {
+/** A part's name over its rows, in sentence case, with how many there are. */
+function PartLabel({ children, count }: { children: React.ReactNode; count: number | null }) {
   return (
-    <h2
-      className={`flex items-baseline justify-between px-1 font-sans font-bold uppercase tracking-[0.12em] ${
-        // Smaller, not fainter: at paper/40 it read 2.31:1 on every palette (the gate's first run).
-        quiet ? "text-[10px] text-paper/50" : "text-[10.5px] text-paper/50"
-      }`}
-    >
+    <h2 className="flex items-baseline justify-between px-1 font-sans text-caption font-semibold text-paper/55">
       {children}
       {count !== null ? <span className="text-[11.5px] font-semibold normal-case tracking-normal tabular-nums text-paper/50">{count}</span> : null}
     </h2>

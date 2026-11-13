@@ -178,7 +178,7 @@ export function StudyReader({
         {/* Up next: the next part, or after the last what the path brings next. */}
         <div data-reader-next="" className="theology-tray mt-10 flex items-center gap-3 rounded-[22px] px-3.5 py-[13px]">
           <span className="min-w-0 flex-1">
-            <span className="block font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/50">
+            <span className="block font-sans text-caption font-semibold text-paper/55">
               {nextHeading !== null ? `${t("walk.upNext")} · ${part + 1}` : t("walk.upNext")}
             </span>
             <span lang={nextLang} dir={textDir(nextLang)} className="mt-1 block font-serif text-[15px] font-semibold leading-[1.3] text-paper rtl:text-right">

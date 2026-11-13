@@ -33,8 +33,6 @@ import { describe, expect, it } from "vitest";
 const ROOT = process.cwd();
 const read = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8").replace(/\r\n/g, "\n");
 const PAPER_80 = "[html[data-reading-mode=parchment]_&]:text-paper/80";
-/** On the light looks alone: worn over Light, with their tinted paper (scripts/mock-check.mjs, LOOKS). */
-const LOOKS_AT = (n: number) => `[html[data-reading-mode=parchment][data-look]_&]:text-paper/${n}`;
 
 describe("words over pictures, mended", () => {
   it("Prayers' chants door: its kicker inked at 80% on Candlelight, the line under its name at 80% on paper, both at 70% elsewhere", () => {
@@ -58,11 +56,23 @@ describe("words over pictures, mended", () => {
     expect(src.match(/className="plan-tile-picture /g)).toHaveLength(1);
   });
 
-  it("Today's hour card: the line under the hour's name is inked at 80% on paper, 90% on the light looks", () => {
-    // The morning line ("Begin the day with God...") runs furthest under the card's picture:
-    // 4.28 to 4.50:1 on seven light looks at 80% (the gate's final run of 2026-11-12).
-    const src = read("components/today/PrayNowCard.tsx");
-    expect(src).toContain(`className="mt-1.5 max-w-[12.5rem] font-sans text-detail leading-snug text-paper/60 ${PAPER_80} ${LOOKS_AT(90)}">{t(hour.lineKey)}</p>`);
+  it("Today's hour: its words stand on the lead's own night, which no palette or look can lighten", () => {
+    // The hour card's morning line ("Begin the day with God...") ran furthest under the card's picture:
+    // 4.28 to 4.50:1 on seven light looks at 80% (the gate's final run of 2026-11-12), so it was inked
+    // at 80% on paper and 90% on the light looks. Since the fifteen screens' round 1 (1.9) the card and
+    // its line are gone, and the hour stands in the day's lead: a night of its own on every palette
+    // (dark-island, its own night and paper), so a light look cannot lift the ground under its words.
+    const pray = read("components/today/PrayNowCard.tsx");
+    expect(pray).not.toContain("hour.lineKey");
+    expect(pray).not.toMatch(/<img\b|ArrivingImage|plan-tile-picture/);
+    const lead = read("components/today/GreetingHeader.tsx");
+    expect(lead).toContain('<header data-day-lead="" className="day-lead dark-island ');
+    expect(read("app/globals.css")).toMatch(/\n\.day-lead \{\s*--color-night: #05070d;\s*--color-night-deep: #020308;\s*--color-paper: #edf0f6;/);
+    // The hour's words: "Now" at 65% at the faintest, the prayer's name in the paper itself.
+    const hour = lead.slice(lead.indexOf("{/* The hour's prayer"), lead.indexOf('data-pray-hour=""'));
+    expect(hour).toContain('font-sans text-caption font-semibold leading-[18px] text-paper/65"');
+    expect(hour).toContain('font-serif text-[21px] font-bold leading-[27px] text-paper"');
+    expect([...hour.matchAll(/text-paper\/(\d+)/g)].map((m) => Number(m[1])).every((n) => n >= 65)).toBe(true);
   });
 
   it("An event's Thread map: its home city in the corner at 80% on every palette", () => {

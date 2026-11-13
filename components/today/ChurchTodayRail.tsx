@@ -4,8 +4,9 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { useChurchDay } from "@/lib/calendar/useChurchDay";
+import { FAST_META } from "@/components/calendar/fastMeta";
 import { fastNotAllowedKey } from "@/lib/calendar/fastFoods";
-import type { ReadingRef } from "@/lib/calendar/orthodox";
+import type { FastKind, ReadingRef } from "@/lib/calendar/orthodox";
 import { localBookNames, referenceIn } from "@/lib/bible/books";
 import { dayWalk, hrefOf, startReadingsFlow } from "@/lib/readings/flow";
 import { listenParts, startListening } from "@/lib/readings/listen";
@@ -19,7 +20,6 @@ import { useSpace } from "@/lib/onboarding/useSpace";
 import { isNativeClient } from "@/lib/platform/native";
 import type { SaintBrief } from "@/lib/saints/brief";
 import { feastDaysIn } from "@/lib/saints/feastDay";
-import { fastMarks, type FastMark, type Food } from "@/lib/today/fastMarks";
 import { quoteFace, saintPicture, type SaintPicture } from "@/lib/today/saintFaces";
 import { bandCite, quoted, saintByline, saintPictureInput, saintQuote, saintWordsFor, type SaintWords } from "@/lib/today/saintWords";
 import { sayingForDay } from "@/lib/today/saying";
@@ -62,12 +62,12 @@ const PictureSheet = dynamic(() => import("@/components/share/PictureSheet").the
  *                 words keeps the band of round 12, his face and his name,
  *                 opening his page; one the registry has not profiled opens
  *                 the calendar day, with the commemoration's own note.
- *   The fast      its name and the marks for wine, oil, fish, and meat with
- *                 dairy and eggs, lit for what the day's rule allows and
- *                 struck through for what it does not (lib/today/fastMarks.ts).
- *                 A day with no fast says its rule in words; the simpler rule
- *                 reads every fast day the same plain way and leaves oil, wine
- *                 and fish to the reader's priest, so it carries no marks.
+ *   The fast      its name, its rule and what it keeps from, in words, as a
+ *                 row in one tray with the chevron (1.9, the fifteen screens;
+ *                 it was marks for wine, oil, fish and meat, lit or struck
+ *                 through). The simpler rule reads every fast day the same
+ *                 plain way and leaves oil, wine and fish to the reader's
+ *                 priest.
  *                 The Nativity Fast's path stands at its foot while it is
  *                 offered, the fast it belongs to.
  *   The readings  one card over a page of the Codex Sinaiticus (the Bible
@@ -160,24 +160,22 @@ export function ChurchTodayRail() {
   // ---- The fast, unless the reader chose to hide fasting.
   const view = fasting === "hidden" ? null : fastView(fast.kind, fasting);
   const plain = view?.mode === "plain";
-  const marks = view && !plain ? fastMarks(fast.kind) : null;
   const notKey = plain ? null : fastNotAllowedKey(fast.kind);
   const fastBody = view ? (
     <>
       <span className="block font-sans text-caption font-semibold text-paper/55">{t("today.fastEyebrow")}</span>
-      <span className="mt-0.5 block font-heading text-lede font-bold leading-tight text-paper">
-        {plain ? t("today.fastPlain.label") : t(`calendar.fast.${fast.ruleId}.label`)}
+      {/* The day's name with the calendar's own mark in its tone, as the Fast's
+          screen draws it (1.9): never the tone alone, always beside the name.
+          The simpler rule reads every fast day the same way, so it has none. */}
+      <span className="mt-0.5 flex items-center gap-2 font-serif text-lede font-semibold leading-[25px] text-paper">
+        {!plain && FAST_META[fast.kind].Icon ? <FastGlyph kind={fast.kind} /> : null}
+        <span className="min-w-0">{plain ? t("today.fastPlain.label") : t(`calendar.fast.${fast.ruleId}.label`)}</span>
       </span>
-      {marks ? (
-        <Marks marks={marks} />
-      ) : (
-        <>
-          <span className="mt-1 block font-sans text-caption leading-snug text-paper/55">
-            {plain ? t("today.fastPlain.rule") : t(`calendar.fast.${fast.ruleId}.rule`)}
-          </span>
-          {notKey ? <span className="mt-0.5 block font-sans text-caption leading-snug text-paper/55">{t(notKey)}</span> : null}
-        </>
-      )}
+      {/* The fast in words, never in pills (1.9, the fifteen screens): the day's rule, and what it keeps from. */}
+      <span className="mt-1 block font-sans text-ui leading-5 text-paper/70">
+        {plain ? t("today.fastPlain.rule") : t(`calendar.fast.${fast.ruleId}.rule`)}
+      </span>
+      {notKey ? <span className="mt-0.5 block font-sans text-ui leading-5 text-paper/70">{t(notKey)}</span> : null}
     </>
   ) : null;
   // The Nativity Fast's path, at the foot of the fast it belongs to (r3-21 A).
@@ -229,16 +227,18 @@ export function ChurchTodayRail() {
         {history ? <HistoryDayBand event={history} /> : null}
 
         {view && !path ? (
-          <Link href="/fasting" data-today-band="fast" className="press-card block rounded-[18px] border border-paper/8 bg-night-deep px-4 py-3.5">
-            {fastBody}
+          <Link href="/fasting" data-today-band="fast" className="theology-tray tap-press flex items-center gap-3 rounded-[20px] px-4 py-3.5">
+            <span className="min-w-0 flex-1">{fastBody}</span>
+            <ChevronRight size={18} className="shrink-0 text-paper/55 rtl:-scale-x-100" />
           </Link>
         ) : path ? (
           // Two ways on from one band, each its own link: the fast, and the
           // path at its foot under a hairline.
-          <div data-today-band="fast" className="overflow-hidden rounded-[18px] border border-paper/8 bg-night-deep">
+          <div data-today-band="fast" className="theology-tray overflow-hidden rounded-[20px]">
             {view ? (
-              <Link href="/fasting" className="block px-4 pb-3 pt-3.5 transition-colors active:bg-paper/[0.04] motion-reduce:transition-none">
-                {fastBody}
+              <Link href="/fasting" className="flex items-center gap-3 px-4 pb-3 pt-3.5 transition-colors active:bg-paper/[0.04] motion-reduce:transition-none">
+                <span className="min-w-0 flex-1">{fastBody}</span>
+                <ChevronRight size={18} className="shrink-0 text-paper/55 rtl:-scale-x-100" />
               </Link>
             ) : null}
             <Link href={path.href} data-nativity-path="" className="block px-4 transition-colors active:bg-paper/[0.04] motion-reduce:transition-none">
@@ -300,7 +300,7 @@ export function ChurchTodayRail() {
                     href={hrefOf(walk[0])}
                     onClick={walk.length > 1 ? () => startReadingsFlow(walk) : undefined}
                     data-read-all=""
-                    className="tap-press inline-flex min-h-11 items-center gap-2 rounded-pill bg-paper px-[18px] font-sans text-ui font-semibold text-night"
+                    className="tap-press inline-flex min-h-11 items-center gap-2 rounded-pill border border-paper/22 bg-paper/[0.03] px-[18px] font-sans text-ui font-semibold text-paper"
                   >
                     <Play size={13} className="shrink-0 rtl:-scale-x-100" />
                     {walk.length > 1 ? tn("today.readings.readAll", walk.length) : t("reading.featured.read")}
@@ -505,61 +505,9 @@ function SaintBand({ saint }: { saint: BandSaint }) {
   );
 }
 
-/** What the day's rule allows, lit, and what it does not, struck through. */
-function Marks({ marks }: { marks: FastMark[] }) {
-  const { t } = useTranslate();
-  const word = (food: Food) =>
-    food === "wine"
-      ? t("today.fastMarks.wine")
-      : food === "oil"
-        ? t("today.fastMarks.oil")
-        : food === "fish"
-          ? t("today.fastMarks.fish")
-          : t("today.fastMarks.meat");
-  return (
-    <span className="mt-2.5 flex flex-wrap gap-2">
-      {marks.map(({ food, allowed }) => (
-        <span
-          key={food}
-          data-fast-mark={food}
-          data-allowed={allowed ? "" : undefined}
-          className={cn(
-            "inline-flex items-center gap-1.5 rounded-pill border px-[11px] py-1.5 font-sans text-caption font-semibold",
-            allowed ? "today-lit border-paper/30 text-paper" : "border-paper/10 text-paper/50",
-          )}
-        >
-          <FoodIcon food={food} />
-          <span aria-hidden className={allowed ? undefined : "line-through"}>
-            {word(food)}
-          </span>
-          <span className="sr-only">
-            {allowed ? t("today.fastMarks.allowed", { food: word(food) }) : t("today.fastMarks.notAllowed", { food: word(food) })}
-          </span>
-        </span>
-      ))}
-    </span>
-  );
-}
-
-/** The mark's glyph: a cup, a drop of oil, a fish, and a cross for what no fast day allows. */
-function FoodIcon({ food }: { food: Food }) {
-  return (
-    <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden className="shrink-0">
-      {food === "wine" ? (
-        <>
-          <path d="M8 3h8l-.6 5.5a3.4 3.4 0 0 1-6.8 0z" />
-          <path d="M12 12v8M8.5 21h7" />
-        </>
-      ) : food === "oil" ? (
-        <path d="M12 3c3 4 5 6.6 5 9.5a5 5 0 0 1-10 0C7 9.6 9 7 12 3z" />
-      ) : food === "fish" ? (
-        <>
-          <path d="M3 12c3-4.5 9-6 13-2.5L21 6v12l-5-3.5C12 18 6 16.5 3 12z" />
-          <circle cx="8" cy="11" r=".9" fill="currentColor" />
-        </>
-      ) : (
-        <path d="M6 6l12 12M18 6 6 18" />
-      )}
-    </svg>
-  );
+/** The calendar's mark for the day's kind of fast, in its own tone (components/calendar/fastMeta.tsx). */
+function FastGlyph({ kind }: { kind: FastKind }) {
+  const { Icon, rgb } = FAST_META[kind];
+  if (!Icon) return null;
+  return <Icon aria-hidden size={18} className="shrink-0" style={{ color: `rgb(${rgb})` }} />;
 }

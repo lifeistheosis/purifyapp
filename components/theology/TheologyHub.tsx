@@ -97,7 +97,7 @@ export function TheologyHub({
         </section>
         {slots.more}
         <div data-tour="theology-path">
-          <FoldedPath steps={steps} states={states} label={of} />
+          <FoldedPath steps={steps} states={states} label={walked > 0 ? of : ""} />
         </div>
       </div>
     );
@@ -120,7 +120,7 @@ export function TheologyHub({
           <h2 id="theology-path" className="font-serif text-[17px] font-bold leading-tight text-paper">
             {t("study.theology.byFaith")}
           </h2>
-          <span className="shrink-0 font-sans text-[12.5px] tabular-nums text-paper/50">{of}</span>
+          {walked > 0 ? <span className="shrink-0 font-sans text-[12.5px] tabular-nums text-paper/55">{of}</span> : null}
         </div>
         <p className="sr-only">{t("study.theology.byFaithLead")}</p>
         <PathPlates steps={steps} states={states} className="mt-3" />
@@ -128,7 +128,7 @@ export function TheologyHub({
 
       {/* The path's end, then Go deeper: the whole library after the ninth. */}
       <section id="go-deeper" aria-labelledby="go-deeper-title" className="mt-10 scroll-mt-20">
-        <p className="font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/50">{t("discover.eyebrow")}</p>
+        <p className="font-sans text-caption font-semibold text-paper/55">{t("discover.eyebrow")}</p>
         <h2 id="go-deeper-title" className="mt-1.5 font-serif text-[23px] font-bold leading-tight text-paper">
           {t("study.apologetics.goDeeper")}
         </h2>
@@ -161,7 +161,7 @@ function FirstStep({ steps, progress }: { steps: PathStep[]; progress: PathProgr
   const { step, done } = stepInHand(steps, progress);
   return (
     <section aria-labelledby="theology-head" data-path-head="first">
-      <p className="font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/50">
+      <p className="font-sans text-caption font-semibold text-paper/55">
         {fresh ? t("study.theology.byFaith") : t("prayers.today.whereYouLeftOff")}
       </p>
       {fresh ? (
