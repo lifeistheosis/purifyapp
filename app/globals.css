@@ -7960,6 +7960,78 @@ html[data-reading-mode="parchment"] .plus-try-tile-lit:not(.dark-island *) {
  mask-image: linear-gradient(to left, rgb(0 0 0 / 0.1) 35%, rgb(0 0 0 / 0.85));
 }
 
+/* Discover's doors, held and moved (1.9, build 95 note 9, his word: "allow
+   the user to hold down each section and the haptic feedback hits and they
+   can move each section"; components/discover/DoorOrder.tsx).
+
+   A held door rises: its face grows 3% on the house curve and a shadow comes
+   up under it, so it reads as off the page and in the hand. The shadow is
+   drawn once, round the face, and shown by its opacity: a phone draws an
+   opacity change cheaply, and a shadow that grows frame by frame it does not.
+   The face's own press (.press-card) lets go as it lifts. While a door is
+   held, the others step aside on the house curve; the door itself follows
+   the finger with no curve at all, since it is the reader's hand. Only
+   transform and opacity move. On a light ground the shadow is the paper's own
+   (--shadow-lg), as a card on paper casts one.
+
+   The system's own hold is off on a door: no callout, no selection, and no
+   drag of the link or its picture out of the page (iOS starts its own on a
+   held link), so the hold is the door's.
+
+   Reduced motion: the shadow is there at once and nothing grows, steps aside
+   or glides into place; the door still follows the finger. */
+[data-door-list] > li {
+ -webkit-touch-callout: none;
+ -webkit-user-select: none;
+ user-select: none;
+}
+[data-door-list] :is(a, img) {
+ -webkit-user-drag: none;
+}
+[data-door-face] {
+ position: relative;
+ /* The short band's own corner (components/ui/GalleryBand.tsx, h-24 rounded-[18px]). */
+ border-radius: 18px;
+ transition: transform var(--duration-fast) var(--ease-house);
+}
+[data-door-face]::after {
+ content: "";
+ position: absolute;
+ inset: 0;
+ border-radius: inherit;
+ box-shadow: var(--shadow-pop);
+ opacity: 0;
+ pointer-events: none;
+ transition: opacity var(--duration-fast) var(--ease-house);
+}
+html[data-reading-mode="parchment"] [data-door-face]::after {
+ box-shadow: var(--shadow-lg);
+}
+[data-door-list] > li[data-lifted] {
+ position: relative;
+ z-index: 10;
+}
+[data-door-list] > li[data-lifted] [data-door-face] {
+ transform: scale(1.03);
+}
+[data-door-list] > li[data-lifted] [data-door-face]::after {
+ opacity: 1;
+}
+[data-door-list] > li[data-lifted] .press-card:active {
+ transform: none;
+}
+[data-door-list][data-moving] > li:not([data-lifted]) {
+ transition: transform var(--duration-fast) var(--ease-house);
+}
+:where([data-motion="reduce"]) [data-door-face],
+:where([data-motion="reduce"]) [data-door-face]::after,
+:where([data-motion="reduce"]) [data-door-list][data-moving] > li:not([data-lifted]) {
+ transition: none;
+}
+:where([data-motion="reduce"]) [data-door-list] > li[data-lifted] [data-door-face] {
+ transform: none;
+}
+
 /* ── Theology, round 3 (1.8, r3-04) ──
    The owner's pick of 2026-10-30 (Homebase/boards/purify-master/variants/
    r3-04-theology): "one A, two B and C, hybrid, three, C". Surfaces are the

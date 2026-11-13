@@ -1,9 +1,11 @@
-import type { ReactNode } from "react";
+import { isValidElement, type ReactNode } from "react";
 
 import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
+import { DoorOrder } from "@/components/discover/DoorOrder";
 import { SearchDoor } from "@/components/search/SearchField";
 import { GalleryBand } from "@/components/ui/GalleryBand";
+import { orderPrepaint } from "@/lib/discover/doorOrder";
 import { TILE_PREVIEWS } from "@/lib/discover/tilePreviews.generated";
 import { shopEnabled } from "@/lib/shop/flags";
 import { UnreadDot } from "@/components/community/NotificationsInbox";
@@ -28,6 +30,11 @@ type DiscoverEntry = {
   /** Set at the corner of the name: Chat's unread dot. */
   badge?: ReactNode;
 };
+
+/** The key of a door's name, from the <T> island that draws it: the arrange sheet says it in the reader's language. */
+function nameKeyOf(label: ReactNode): string {
+  return isValidElement<{ k?: unknown }>(label) && typeof label.props.k === "string" ? label.props.k : "";
+}
 
 /**
  * Discover mobile shell: the library's front door.
@@ -60,8 +67,16 @@ type DiscoverEntry = {
  * before the two closing ones. MobileTabBar's Discover predicate claims
  * /shop, /community and /campaigns, so this tab stays lit while a reader is
  * in either.
+ *
+ * The order below is the first order. A reader can hold a door and move it,
+ * and the order they leave is kept on the phone (1.9, build 95 note 9, his
+ * word: "allow the user to hold down each section ... and they can move each
+ * section according to their wants"): components/discover/DoorOrder.tsx. The
+ * small script before the list lays that order on the doors before the page
+ * is first drawn (lib/discover/doorOrder.ts, orderPrepaint); `nonce` is the
+ * website's, for its policy on scripts, and the apps have none.
  */
-export function DiscoverMobile() {
+export function DiscoverMobile({ nonce }: { nonce?: string } = {}) {
   // Every word on this surface is a <T> island, never a string the server
   // looked up. This component ships into the apps' export, where the server
   // ran once, in English: until 1.6 a phone set to Greek opened Today in
@@ -236,25 +251,31 @@ export function DiscoverMobile() {
           that fits a 360px phone in every language, "Search Purify". */}
       <SearchDoor placeholderKey="search.ariaLabel" className="mb-4" />
 
-      <ul className="flex flex-col gap-2.5">
-        {entries.map((e, i) => (
-          <li key={e.href}>
-            <GalleryBand
-              href={e.href}
-              title={e.label}
-              line={e.blurb}
-              badge={e.badge}
-              picture={e.picture}
-              focus={e.focus}
-              // The tile's tiny preview, blurred, at once (1.8): the band is
-              // never an empty box while its picture comes.
-              preview={TILE_PREVIEWS[e.picture]?.src}
-              // The first six are on the first screen of a phone.
-              priority={i < 6}
-            />
-          </li>
-        ))}
-      </ul>
+      {/* One child of the shell's cascade, as the list alone was. */}
+      <div>
+        <script nonce={nonce} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: orderPrepaint(entries.map((e) => e.href)) }} />
+        <DoorOrder
+          doors={entries.map((e, i) => ({
+            id: e.href,
+            nameKey: nameKeyOf(e.label),
+            band: (
+              <GalleryBand
+                href={e.href}
+                title={e.label}
+                line={e.blurb}
+                badge={e.badge}
+                picture={e.picture}
+                focus={e.focus}
+                // The tile's tiny preview, blurred, at once (1.8): the band is
+                // never an empty box while its picture comes.
+                preview={TILE_PREVIEWS[e.picture]?.src}
+                // The first six of the first order are asked for at once.
+                priority={i < 6}
+              />
+            ),
+          }))}
+        />
+      </div>
 
       <p className="mt-10 text-center font-serif italic text-detail text-paper/45 leading-[1.55]">
         <T k="ui.throughThePrayersOfOur" />

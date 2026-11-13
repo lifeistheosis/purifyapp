@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { DiscoverMobile } from "@/components/mobile/DiscoverMobile";
 import { FeaturedTodayDesktop } from "@/components/discover/FeaturedTodayDesktop";
 import { Calendar } from "@/components/ui/icons/Calendar";
@@ -12,6 +13,8 @@ import { loadAllTopics } from "@/lib/topics/topics";
 import { getServerLocale } from "@/lib/i18n/server";
 import { getMessages, t } from "@/lib/i18n";
 import { walkthroughsEnabled } from "@/lib/walkthroughs/flags";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
+import { NONCE_HEADER } from "@/lib/security/headers";
 import { T } from "@/components/i18n/T";
 
 export const metadata = {
@@ -102,9 +105,15 @@ export default async function DiscoverPage() {
     { label: t(m, "discover.tile.parishes"), href: "/parishes" },
   ];
 
+  // The website's per-request nonce, for the small script that lays a
+  // reader's own order on the doors before they are drawn (DiscoverMobile).
+  // The apps' export has no request, no policy and no nonce, as the root
+  // layout says.
+  const nonce = IS_STATIC_EXPORT ? undefined : ((await headers()).get(NONCE_HEADER) ?? undefined);
+
   return (
     <>
-      <DiscoverMobile />
+      <DiscoverMobile nonce={nonce} />
       <div className="hidden md:contents native-md-hidden">
         <section className="relative overflow-hidden bg-night min-h-[calc(100dvh-72px)] md:px-8 md:py-16">
           {/* The front page hero's candle glow, in white, behind the heading. */}
