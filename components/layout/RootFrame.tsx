@@ -187,6 +187,13 @@ export function RootFrame({
             reader's language; renders nothing until a hold, and does nothing
             in a browser. */}
         <PressToCopy />
+        {/* Every download a reader starts, told to the bell's sheet and to the
+            phone (lib/downloads), and Purify's own ask before the phone's
+            prompt. Inside the provider because what it tells the phone and
+            asks the reader is in the reader's language: outside it every
+            line was its key ("downloads.saving"), found by note 23's walk
+            (scripts/gate/downloads.mjs). Does nothing in a browser. */}
+        <DownloadsBridge />
       </MessagesProvider>
       <AnalyticsTracker />
       <NativeBridge />
@@ -205,7 +212,6 @@ export function RootFrame({
           (lib/readAloud/saving.ts). Renders nothing, and does nothing in a
           browser. */}
       <SavingBridge />
-      <DownloadsBridge />
     </>
   );
 }

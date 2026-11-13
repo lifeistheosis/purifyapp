@@ -189,6 +189,27 @@ function isCovered(): boolean {
   return document.body.dataset.overlayCovers === "1";
 }
 
+/**
+ * Run once nothing covers the screen: at once when nothing does, or as soon as
+ * the cover lifts (the same flag as useOverlayOpen). For a question that must
+ * not stand over another (the downloads' ask, components/native/
+ * DownloadsBridge.tsx). Returns a cancel.
+ */
+export function whenUncovered(run: () => void): () => void {
+  if (typeof document === "undefined") return () => {};
+  if (!isCovered()) {
+    run();
+    return () => {};
+  }
+  const mo = new MutationObserver(() => {
+    if (isCovered()) return;
+    mo.disconnect();
+    run();
+  });
+  mo.observe(document.body, { attributes: true, attributeFilter: ["data-overlay-covers"] });
+  return () => mo.disconnect();
+}
+
 function subscribeOverlay(onChange: () => void): () => void {
   if (typeof document === "undefined") return () => {};
   const mo = new MutationObserver(onChange);

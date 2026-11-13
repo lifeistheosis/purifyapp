@@ -18,6 +18,7 @@ import { useIsNative } from "@/lib/platform/native";
 import { loadChantIndex } from "@/lib/player/chants";
 import { savedChapters } from "@/lib/readAloud/offline";
 import { useSaving } from "@/lib/readAloud/saving";
+import { whenUncovered } from "@/lib/ui/overlay";
 
 /**
  * A download left running when the app last closed is said to have stopped
@@ -40,6 +41,13 @@ const STOPPED_AFTER_MS = 12_000;
  * call, 2026-11-13 about 18:53 UTC). The house's question card
  * (components/ui/ConfirmDialog.tsx): Turn on, and the phone asks next; Not
  * now, and the phone is not asked (lib/downloads/notice.ts).
+ *
+ * One question at a time: the ask waits while anything else covers the
+ * screen and rises once it is clear. A Bible in another language is chosen
+ * as its download begins, and the app's language offer asks at that moment
+ * (components/bible/BibleLanguageOffer.tsx); the two stood together until
+ * note 23's walk found it (scripts/gate/downloads.mjs). Once up, the ask
+ * stays until it is answered.
  */
 export function DownloadsBridge() {
   const native = useIsNative();
@@ -49,12 +57,12 @@ export function DownloadsBridge() {
   const { t } = useTranslate();
   const was = useRef<Map<string, Live>>(new Map());
   const [index, setIndex] = useState<ChantIndexRow[] | null>(null);
-  // The reader's answer to Purify's own ask, while it is open.
+  // The reader's answer to Purify's own ask, while it stands: it rises once nothing else covers the screen.
   const [answer, setAnswer] = useState<((yes: boolean) => void) | null>(null);
 
   useEffect(() => {
     if (!native) return;
-    return onAskToNotify(() => new Promise<boolean>((resolve) => setAnswer(() => resolve)));
+    return onAskToNotify(() => new Promise<boolean>((resolve) => void whenUncovered(() => setAnswer(() => resolve))));
   }, [native]);
 
   const answered = (yes: boolean) => {

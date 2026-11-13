@@ -97,7 +97,13 @@ describe("the bell's sheet", () => {
     expect(bell.match(/markDownloadsSeen\(\)/g)?.length).toBe(2);
   });
 
-  it("is told by a bridge every screen of the apps carries", () => {
-    expect(read("components/layout/RootFrame.tsx")).toMatch(/<SavingBridge \/>\s*<DownloadsBridge \/>/);
+  it("is told by a bridge every screen of the apps carries, inside the provider of the reader's words", () => {
+    // Outside the provider every line it told the phone, and its ask, was its key ("downloads.saving"):
+    // note 23's walk on the export found it (scripts/gate/downloads.mjs).
+    const frame = read("components/layout/RootFrame.tsx");
+    const bridge = frame.indexOf("<DownloadsBridge />");
+    expect(bridge).toBeGreaterThan(frame.indexOf("<MessagesProvider"));
+    expect(bridge).toBeLessThan(frame.indexOf("</MessagesProvider>"));
+    expect(frame.match(/<DownloadsBridge \/>/g)?.length).toBe(1);
   });
 });

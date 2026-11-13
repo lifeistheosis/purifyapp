@@ -116,15 +116,18 @@ export function onAskToNotify(ask: Asker): () => void {
  * At a download's start: the first one ever asks, once, whether Purify may
  * show notifications, when the phone has not been asked. Purify asks in its
  * own words first, and the phone's own prompt follows only a yes; never again
- * after, whatever the answer. Two downloads begun together ask once.
+ * after an answer, whatever it was. Two downloads begun together ask once.
  */
 export function askOnceToNotify(): Promise<void> {
   if (!ASK_AT_FIRST_DOWNLOAD || askedBefore() || !asker) return Promise.resolve();
   asking ??= (async () => {
     try {
       if ((await permissions.check()) !== "prompt" || !asker) return;
+      // Kept as asked once the reader has answered: an ask that never came
+      // to an answer (Purify closed while it waited) is asked again.
+      const yes = await asker();
       markAsked();
-      if (!(await asker())) return;
+      if (!yes) return;
       await permissions.request();
     } catch {
       /* no answer: the bell's sheet still shows the download */

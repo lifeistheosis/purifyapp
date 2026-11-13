@@ -126,6 +126,19 @@ describe("asking whether Purify may notify", () => {
     expect(said).toEqual(["purify", "phone"]);
   });
 
+  it("asks again at the next first download when an ask never came to an answer (Purify closed while it waited)", async () => {
+    const said = phoneAnswering("prompt");
+    onAskToNotify(() => (said.push("purify"), new Promise<boolean>(() => {})));
+    void askOnceToNotify();
+    await new Promise((r) => setTimeout(r, 0));
+    expect(said).toEqual(["purify"]);
+    // Purify opens again: the same phone, the same store, a fresh run of the app.
+    resetNoticeForTests({ plugin: phone, permissions: { check: async () => "prompt", request: async () => (said.push("phone"), "granted") } });
+    onAskToNotify(async () => (said.push("purify"), true));
+    await askOnceToNotify();
+    expect(said).toEqual(["purify", "purify", "phone"]);
+  });
+
   it("never asks when the reader already answered the phone, either way", async () => {
     for (const first of ["granted", "denied", "prompt-with-rationale"]) {
       store.clear();

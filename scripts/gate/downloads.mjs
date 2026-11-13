@@ -198,6 +198,18 @@ async function downloadRussian(page, lang) {
   await tapAt(page, page.locator(`[role=dialog] button[aria-label^="${prefix}"]`).filter({ visible: true }).first());
 }
 
+/** One question at a time: while the app's language offer stands, Purify's ask must not. Then Not now to the offer. */
+async function offerFirst(page, lang) {
+  const offer = page.locator("[data-bible-language-offer] button", { hasText: t(lang, "bible.languageOffer.notNow") });
+  await offer.first().waitFor({ state: "visible", timeout: 15000 }).catch(() => {});
+  if (!(await offer.count())) return false;
+  await page.waitForTimeout(1200);
+  const both = await askCard(page, lang).count();
+  await tapAt(page, offer.first());
+  await page.waitForTimeout(900);
+  return both === 0;
+}
+
 /** Put away what stands over the page: the language offer, then any sheet. */
 async function clearOver(page, lang) {
   const offer = page.locator("[data-bible-language-offer] button", { hasText: t(lang, "bible.languageOffer.notNow") });
@@ -258,9 +270,12 @@ if (MODE === "walk") {
     await go(page, "/bible/john/1/", { timeout: 30000 });
     await page.waitForTimeout(2500);
     await downloadRussian(page, lang);
+    // The Russian is chosen as it downloads, so the app's language offer asks too: one question at a time.
+    if (await offerFirst(page, lang)) ok("one question at a time: the language offer stood alone, and Purify's ask waited");
+    else fail("Purify's ask stood together with the language offer");
     const card = askCard(page, lang);
     await card.waitFor({ state: "visible", timeout: 15000 }).catch(() => {});
-    if (await card.count()) ok("Purify's own ask came at the first download");
+    if (await card.count()) ok("Purify's own ask came at the first download, once the offer was answered");
     else fail("no ask at the first download");
     const words = (await card.innerText().catch(() => "")).replace(/\s+/g, " ");
     for (const key of ["downloads.ask.title", "downloads.ask.body", "discordAsk.turnOn", "onboard.reminders.notNow"]) {
@@ -292,6 +307,10 @@ if (MODE === "walk") {
     else fail("the phone was never told it runs");
     if (done) ok(`the phone was told its end: "${done.title}", "${done.text}"`);
     else fail("the phone was never told its end");
+    // In the reader's words, never a key ("downloads.saving"), which is what it said outside the words' provider.
+    const keys = told.filter((o) => /^[a-z][\w]*(\.[\w-]+)+$/.test(o.text ?? "") || /^[a-z][\w]*(\.[\w-]+)+$/.test(o.title ?? ""));
+    if (told.length && !keys.length) ok("every line the phone was told is in words, none a key");
+    else if (keys.length) fail(`the phone was told a key: ${JSON.stringify(keys[0])}`);
     if (SHOTS) fs.writeFileSync(path.join(SHOTS, "23-told.json"), JSON.stringify(told, null, 2));
     await clearOver(page, lang);
     // The bell, lit by the unseen end, and its sheet's Downloads part.
@@ -328,6 +347,7 @@ if (MODE === "walk") {
     await go(page, "/bible/john/1/", { timeout: 30000 });
     await page.waitForTimeout(2500);
     await downloadRussian(page, lang);
+    await offerFirst(page, lang);
     const card = askCard(page, lang);
     await card.waitFor({ state: "visible", timeout: 15000 }).catch(() => {});
     await tapAt(page, card.locator("button", { hasText: t(lang, "onboard.reminders.notNow") }).first());
@@ -396,6 +416,7 @@ if (MODE === "guard") {
         await go(page, "/bible/john/1/", { timeout: 30000 });
         await page.waitForTimeout(2500);
         await downloadRussian(page, lang);
+        await offerFirst(page, lang);
         const card = askCard(page, lang);
         await card.waitFor({ state: "visible", timeout: 15000 }).catch(() => {});
         await page.waitForTimeout(1200);
