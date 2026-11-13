@@ -39,7 +39,9 @@ import { NATIVE_UA, go, serveLikeTheShell } from "../lib/shell-server.mjs";
 const OWN = "/opt/pw-browsers/chromium";
 const OUT = new URL("../../out", import.meta.url).pathname;
 const MODE = process.argv[2] ?? "dock";
-const SHOTS = process.argv[3] ? path.resolve(process.argv[3]) : null;
+// The stills' folder: the first word after the mode that is not a flag (--lang and --size take a value).
+const PLAIN = process.argv.slice(3).filter((a, i, all) => !a.startsWith("--") && !["--lang", "--size"].includes(all[i - 1]));
+const SHOTS = PLAIN[0] ? path.resolve(PLAIN[0]) : null;
 if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 const JOHN1 = process.env.JOHN1_MP3 ? fs.readFileSync(process.env.JOHN1_MP3) : null;
 const WORDS = {
@@ -53,6 +55,8 @@ const SIZES = [
 ];
 const ALL = [...PALETTES, ...LOOKS];
 const RUSSIAN = "Синодальный перевод (1876)";
+// The reader-facing patch is in this tree (and so in an export cut from it): the dock's rule is then the phone's voice reading the page's own language.
+const VOICES_IN = Boolean(WORDS.en["player.voice"]);
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error("no export in out/: run node scripts/gate/export.mjs first");
 if (PALETTES.length !== 5 || LOOKS.length < 1) throw new Error(`expected the five palettes and the looks, found ${PALETTES.length} and ${LOOKS.length}`);
 
@@ -111,7 +115,19 @@ async function standIns(ctx) {
     if (!p.startsWith("/bibles/") || p.includes("..") || !fs.existsSync(file)) return route.fulfill({ status: 404, headers: cors, body: "" });
     return route.fulfill({ status: 200, contentType: "application/json", headers: cors, body: fs.readFileSync(file) });
   });
+  // Everything else the main web serves from its public folder (a chapter's timings, the list of
+  // readings, covers): answered from this checkout's own. Its API stays out of reach, as before.
+  await ctx.route(/^https:\/\/purifyapp\.net\/(?!api\/|bibles\/)/, (route) => {
+    const p = decodeURIComponent(new URL(route.request().url()).pathname);
+    const file = path.join("public", p);
+    if (p.includes("..") || !fs.existsSync(file) || !fs.statSync(file).isFile()) return route.abort();
+    const type = { ".json": "application/json", ".jpg": "image/jpeg", ".png": "image/png", ".webp": "image/webp", ".avif": "image/avif", ".svg": "image/svg+xml" }[path.extname(file)] ?? "application/octet-stream";
+    return route.fulfill({ status: 200, contentType: type, headers: cors, body: fs.readFileSync(file) });
+  });
   await ctx.route(/^https:\/\/audio\.purifyapp\.net\/read\//, (route) => {
+    // The player's own requests only. A save for offline (the week's readings) is refused: the browser
+    // has no phone folder to play a saved copy from, so a saved chapter would fall silent here alone.
+    if (route.request().resourceType() !== "media") return route.abort();
     const p = new URL(route.request().url()).pathname;
     if (JOHN1 && p === "/read/john/1.mp3") return fulfilBytes(route, JOHN1, "audio/mpeg");
     return fulfilBytes(route, silence(240), "audio/wav");
@@ -249,7 +265,7 @@ async function open(lang, [width, height], { scale = 1 } = {}) {
       return play.apply(this, a);
     };
   });
-  if (MODE === "voices") await ctx.addInitScript(STAND_IN_SPEECH, STAND_IN_VOICES);
+  if (MODE === "voices" || VOICES_IN) await ctx.addInitScript(STAND_IN_SPEECH, STAND_IN_VOICES);
   const asked = {};
   await serveLikeTheShell(ctx, OUT, asked);
   await standIns(ctx);
@@ -262,6 +278,15 @@ async function open(lang, [width, height], { scale = 1 } = {}) {
 /** Tap at the middle of what a locator names, with the finger (the DevTools protocol's touch). */
 async function tapAt(page, locator) {
   await locator.waitFor({ state: "visible", timeout: 15000 });
+  // A row below the fold of a sheet is brought to the middle first, as a reader scrolls to it.
+  const inView = await locator.evaluate((el) => {
+    const r = el.getBoundingClientRect();
+    return r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth;
+  });
+  if (!inView) {
+    await locator.evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await page.waitForTimeout(600);
+  }
   const box = await locator.boundingBox();
   if (!box) throw new Error("nothing to tap");
   await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
@@ -389,11 +414,12 @@ if (MODE === "dock") {
     if (a && !a.paused && /\/read\/john\/1\.mp3/.test(a.src)) ok("Heart still reads John 1");
     else fail(`what plays: ${JSON.stringify(a)}`);
     if (!(await dock.count())) fail("no dock at 390 while something plays");
-    else {
+    else if (!VOICES_IN) {
       const offered = await dock.locator("button", { hasText: t(lang, "readAloud.listen") }).count();
       if (offered === 0) ok("the dock offers no Listen over the Russian page");
       else fail(`the dock offers Listen over the Russian page (${offered})`);
-    }
+    } else if (await dock.locator("button", { hasText: t(lang, "readAloud.listen") }).count()) ok("the dock offers Listen over the Russian page, for the Russian voice");
+    else fail("the dock offers no Listen over the Russian page, which the Russian voice can read");
     await shot(page, "dock-russian-390-en");
     console.log("\ntaps: every control of the dock, at 390, motion on");
     const toggle = dock.locator("button.size-\\[44px\\]").first();
@@ -410,12 +436,26 @@ if (MODE === "dock") {
     await tapMust(page, dock.locator(`[aria-label="${prev}"]`).first(), "The arrow back: John 1", { settle: 2500, moves: true });
     const next = t(lang, "bible.nextTargetAria", { book: t(lang, "bible.books.john"), chapter: 2 });
     await tapMust(page, dock.locator(`[aria-label="${next}"]`).first(), "The arrow on: John 2", { settle: 2500, moves: true });
-    if ((await dock.locator("button", { hasText: t(lang, "readAloud.listen") }).count()) === 0) ok("back on John 2, still no Listen");
-    else fail("back on John 2, the dock offers Listen");
+    if (!VOICES_IN) {
+      if ((await dock.locator("button", { hasText: t(lang, "readAloud.listen") }).count()) === 0) ok("back on John 2, still no Listen");
+      else fail("back on John 2, the dock offers Listen");
+    }
     await tapMust(page, dock.locator(`button[aria-label]`).first(), "The cover: opens Now Playing", { settle: 1500 });
     await shot(page, "dock-now-playing-390-en");
     await page.keyboard.press("Escape");
     await page.waitForTimeout(900);
+    if (VOICES_IN) {
+      // Last, as it moves the page: Listen reads the Russian page in the Russian voice, never Heart's English.
+      // (While a voice reads, the page follows the verse and the dock draws in to its small pill.)
+      await tapAt(page, dock.locator("button", { hasText: t(lang, "readAloud.listen") }).first());
+      await page.waitForTimeout(2500);
+      const said = await page.evaluate(() => window.__spoken.at(-1) ?? null);
+      const heart = await audioState(page);
+      if (said?.voice === "Milena" && /[\u0400-\u04FF]{3,}/.test(said.text)) ok(`the dock's Listen reads the Russian page in the Russian voice: "${said.text.slice(0, 40)}..."`);
+      else fail(`the dock's Listen over the Russian page: ${JSON.stringify(said)}`);
+      if (!heart || heart.paused) ok("and Heart's English stopped for it");
+      else fail("Heart's English went on under the Russian voice");
+    }
     if (errors.length) fail(`page errors: ${errors.slice(0, 3).join(" | ")}`);
     await ctx.close();
   }
@@ -426,8 +466,12 @@ if (MODE === "dock") {
       console.log(`\nguard: ${size[0]} wide, ${lang}`);
       const { ctx, page, dock, errors } = await russianWhileHeartReads(lang, size);
       if (await dock.count()) {
-        if ((await dock.locator("button", { hasText: t(lang, "readAloud.listen") }).count()) === 0) ok("no Listen in the dock over the Russian page");
-        else fail("the dock offers Listen over the Russian page");
+        const listens = await dock.locator("button", { hasText: t(lang, "readAloud.listen") }).count();
+        if (!VOICES_IN) {
+          if (listens === 0) ok("no Listen in the dock over the Russian page");
+          else fail("the dock offers Listen over the Russian page");
+        } else if (listens) ok("the dock offers Listen over the Russian page, for the Russian voice");
+        else fail("the dock offers no Listen over the Russian page");
         await shot(page, `dock-russian-${size[0]}-${lang}`);
         await guard(page, dockSel, lang, size, "the dock on the Russian page");
       } else {
@@ -454,6 +498,13 @@ if (MODE === "voices") {
   const voiceSheetSel = (lang) => `[role="dialog"][aria-label="${t(lang, "player.voice")}"]`;
   const visibleDialog = (page, sel) => page.locator(sel).filter({ visible: true }).last();
 
+  /** The app started again (the shells' one document, then the router): what is kept on the device is read afresh. */
+  async function coldStart(page, to) {
+    await page.goto("https://localhost/", { waitUntil: "load", timeout: 120000 });
+    await page.waitForFunction(() => typeof window.next?.router?.push === "function", null, { timeout: 30000 });
+    await go(page, to, { timeout: 30000 });
+  }
+
   async function waitFor(page, fn, arg, ms = 15000) {
     for (let waited = 0; waited < ms; waited += 250) {
       if (await page.evaluate(fn, arg).catch(() => false)) return true;
@@ -467,11 +518,46 @@ if (MODE === "voices") {
     page.locator("[data-reader-pill] button, [data-reader-chrome] button, [data-reader-dock] button", { hasText: t(lang, "readAloud.listen") }).filter({ visible: true }).first();
 
   async function openNowPlaying(page, lang) {
+    // The dock's card, or its small pill once the reader reads on: whichever cover is on top opens the player.
     const dock = page.locator(dockSel).filter({ visible: true }).first();
-    const opener = (await dock.count()) ? dock.locator("button[aria-label]").first() : page.locator("[data-now-playing-bar] button[aria-label], [data-mini-player] button[aria-label]").filter({ visible: true }).first();
+    const covers = (await dock.count()) ? dock.locator(".reader-dock-card button[aria-label], .reader-dock-pill button[aria-label]") : page.locator("[data-now-playing-bar] button[aria-label], [data-mini-player] button[aria-label]");
+    let opener = covers.first();
+    for (let i = 0; i < (await covers.count()); i++) {
+      const c = covers.nth(i);
+      const onTop = await c
+        .evaluate((el) => {
+          const r = el.getBoundingClientRect();
+          if (!r.width || !r.height) return false;
+          const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+          let seen = 1;
+          for (let n = el; n; n = n.parentElement) seen *= Number(getComputedStyle(n).opacity);
+          return Boolean(hit && (hit === el || el.contains(hit))) && seen > 0.5;
+        })
+        .catch(() => false);
+      if (onTop) {
+        opener = c;
+        break;
+      }
+    }
     await tapAt(page, opener);
     await page.locator(nowPlayingSel(lang)).first().waitFor({ timeout: 10000 });
     await page.waitForTimeout(900);
+    await atRest(page, nowPlayingSel(lang));
+  }
+
+  /** Until what a selector names stops moving (a sheet rising on the house curve), up to 5 seconds. */
+  async function atRest(page, sel) {
+    let last = null;
+    for (let waited = 0; waited < 5000; waited += 150) {
+      const top = await page.evaluate((s) => {
+        const d = [...document.querySelectorAll(s)].filter((x) => x.getClientRects().length).at(-1);
+        const panel = d ? [...d.querySelectorAll("*")].find((e) => e.getBoundingClientRect().height > 200) : null;
+        return panel ? Math.round(panel.getBoundingClientRect().top) : null;
+      }, sel);
+      if (top !== null && top === last) return;
+      last = top;
+      await page.waitForTimeout(150);
+    }
   }
 
   async function openMore(page, lang) {
@@ -530,14 +616,79 @@ if (MODE === "voices") {
     const { ctx, page, errors } = await open(lang, size, { scale });
     console.log(`\n${guards ? "guard" : "stills"}: ${size[0]} wide, ${lang}${scale !== 1 ? `, ${scale}x` : ""}`);
     try {
+      // ---- Genesis 1: no recording; the phone's voice reads.
+      await go(page, "/bible/genesis/1/", { timeout: 30000 });
+      await page.waitForTimeout(2500);
+      const listen = listenOnPage(page, lang);
+      if (await listen.count()) ok("Genesis 1 offers Listen");
+      else fail("Genesis 1 offers no Listen");
+      const pillSel = (await page.locator("[data-reader-pill]").filter({ visible: true }).count()) ? "[data-reader-pill]" : "main";
+      await still(page, "genesis-pill");
+      if (guards) await guard(page, pillSel, lang, size, "Genesis 1's pill with Listen");
+      await tapAt(page, listen);
+      const started = await waitFor(page, () => window.__spoken.length > 0 && window.speechSynthesis.speaking);
+      const first = (await spokenNow(page))[0];
+      if (started && first?.voice === "Daniel" && /^In the beginning/.test(first.text)) ok(`Genesis 1 read by Daniel: "${first.text.slice(0, 40)}..."`);
+      else fail(`Genesis 1's reading: ${JSON.stringify(first)}`);
+      await page.waitForTimeout(5000);
+      const lit = await page.evaluate(() => Boolean(document.querySelector("[data-read-now]")));
+      if (lit) ok("the verse being read is lit on the page");
+      else fail("no verse lit while the phone's voice reads");
+      await still(page, "genesis-reading");
+      await openNowPlaying(page, lang);
+      await still(page, "now-playing-cover");
+      if (guards) await guard(page, nowPlayingSel(lang), lang, size, "Now Playing (cover), a phone's voice");
+      const wordsTab = page.locator(`${nowPlayingSel(lang)} [role="tab"]`, { hasText: t(lang, "player.viewWords") }).first();
+      if (await wordsTab.count()) {
+        await tapAt(page, wordsTab);
+        await page.waitForTimeout(2500);
+        const word = await page.evaluate(() => Boolean(document.querySelector('[data-sung="lit"], [aria-current="true"]')));
+        if (word) ok("Now Playing's words: the line being read is lit");
+        else fail("Now Playing's words: nothing lit");
+        await still(page, "now-playing-words");
+        if (guards) await guard(page, nowPlayingSel(lang), lang, size, "Now Playing (words), a phone's voice");
+        await tapAt(page, page.locator(`${nowPlayingSel(lang)} [role="tab"]`, { hasText: t(lang, "player.viewCover") }).first());
+        await page.waitForTimeout(800);
+      } else fail("Now Playing has no Words view for a phone's voice");
+      await openMore(page, lang);
+      const phoneValue = await rowValue(page, lang);
+      if (phoneValue === "Daniel") ok('the ••• sheet\'s Voice row says "Daniel"');
+      else fail(`the ••• sheet's Voice row says "${phoneValue}" while Daniel reads`);
+      await still(page, "more-phone");
+      if (guards) await guard(page, '[role="dialog"]:not([aria-label="' + t(lang, "prayers.nowPlaying") + '"])', lang, size, "the ••• sheet with the Voice row");
+      await openVoiceSheet(page, lang);
+      const rowsGen = await radios(page, lang);
+      if (rowsGen && rowsGen.map((r) => r.name).join("|") === "Daniel|Karen|Samantha" && rowsGen[0].on) ok("over Genesis 1, no Heart: Daniel (checked), Karen, Samantha");
+      else fail(`the Voice sheet over Genesis 1: ${JSON.stringify(rowsGen)}`);
+      if (guards) await guard(page, voiceSheetSel(lang), lang, size, "the Voice sheet, phone's voices only");
+      await closeAll(page, lang);
+      if (taps) {
+        // Next in Now Playing: Genesis 2's page opens and the same voice reads it from its first verse.
+        await openNowPlaying(page, lang);
+        const nextStep = page.locator(`${nowPlayingSel(lang)} button[aria-label="${t(lang, "bible.nextTargetAria", { book: t(lang, "bible.books.genesis"), chapter: 2 })}"]`).first();
+        const before = (await spokenNow(page)).length;
+        await tapMust(page, nextStep, "Now Playing's next: Genesis 2", { settle: 4000, moves: true });
+        await waitFor(page, (n) => location.pathname.startsWith("/bible/genesis/2") && window.__spoken.length > n, before);
+        const two = (await spokenNow(page))[before];
+        const verse1 = await page.evaluate(() => (document.querySelector("#v1 p")?.textContent ?? "").replace(/\s+/g, " ").trim());
+        const path2 = await page.evaluate(() => location.pathname);
+        // The first words the voice says are verse 1's on the page (its number and mark stand before them there).
+        const firstWords = (two?.text ?? "").split(/\s+/).slice(0, 4).join(" ");
+        const fromOne = Boolean(two) && firstWords.length > 6 && verse1.includes(firstWords);
+        if (path2.startsWith("/bible/genesis/2") && two?.voice === "Daniel" && !/^In the beginning/.test(two.text) && fromOne) ok(`Genesis 2's page opened and Daniel reads it from its first verse: "${two.text.slice(0, 40)}..."`);
+        else fail(`after next: ${path2}, first spoken ${JSON.stringify(two)}, the page's verse 1 "${verse1.slice(0, 40)}"`);
+        await closeAll(page, lang);
+      }
+
       // ---- John 1, Heart: its recording, nothing chosen.
       await go(page, "/bible/john/1/", { timeout: 30000 });
       await page.waitForTimeout(2500);
       await tapAt(page, listenOnPage(page, lang));
+      await page.evaluate(() => window.speechSynthesis.cancel());
       const a = await waitPlaying(page);
       if (a && !a.paused && /\/read\/john\/1\.mp3/.test(a.src)) ok("John 1: Heart reads its recording (nothing chosen)");
       else fail(`John 1: Heart did not read (${JSON.stringify(a)})`);
-      if ((await spokenNow(page)).length) fail("John 1: a phone's voice spoke while Heart reads");
+      if (await page.evaluate(() => window.speechSynthesis.speaking)) fail("John 1: a phone's voice speaks while Heart reads");
       await page.waitForTimeout(4000);
       await openNowPlaying(page, lang);
       await openMore(page, lang);
@@ -599,64 +750,13 @@ if (MODE === "voices") {
       }
       await closeAll(page, lang);
 
-      // ---- Genesis 1: no recording; the phone's voice reads.
-      await page.evaluate(() => {
-        // The English voice the reader had chosen is put back to none: Genesis is read by the phone's first.
-        localStorage.removeItem("purify:listen.voice");
-      });
-      await go(page, "/bible/genesis/1/", { timeout: 30000 });
-      await page.waitForTimeout(2500);
-      const listen = listenOnPage(page, lang);
-      if (await listen.count()) ok("Genesis 1 offers Listen");
-      else fail("Genesis 1 offers no Listen");
-      const pillSel = (await page.locator("[data-reader-pill]").filter({ visible: true }).count()) ? "[data-reader-pill]" : "main";
-      await still(page, "genesis-pill");
-      if (guards) await guard(page, pillSel, lang, size, "Genesis 1's pill with Listen");
-      await tapAt(page, listen);
-      const started = await waitFor(page, () => window.__spoken.length > 0 && window.speechSynthesis.speaking);
-      const first = (await spokenNow(page))[0];
-      if (started && first?.voice === "Daniel" && /^In the beginning/.test(first.text)) ok(`Genesis 1 read by Daniel: "${first.text.slice(0, 40)}..."`);
-      else fail(`Genesis 1's reading: ${JSON.stringify(first)}`);
-      await page.waitForTimeout(5000);
-      const lit = await page.evaluate(() => Boolean(document.querySelector("[data-read-now]")));
-      if (lit) ok("the verse being read is lit on the page");
-      else fail("no verse lit while the phone's voice reads");
-      await still(page, "genesis-reading");
-      await openNowPlaying(page, lang);
-      await still(page, "now-playing-cover");
-      if (guards) await guard(page, nowPlayingSel(lang), lang, size, "Now Playing (cover), a phone's voice");
-      const wordsTab = page.locator(`${nowPlayingSel(lang)} [role="tab"]`, { hasText: t(lang, "player.viewWords") }).first();
-      if (await wordsTab.count()) {
-        await tapAt(page, wordsTab);
-        await page.waitForTimeout(2500);
-        const word = await page.evaluate(() => Boolean(document.querySelector('[data-sung="lit"], [aria-current="true"]')));
-        if (word) ok("Now Playing's words: the line being read is lit");
-        else fail("Now Playing's words: nothing lit");
-        await still(page, "now-playing-words");
-        if (guards) await guard(page, nowPlayingSel(lang), lang, size, "Now Playing (words), a phone's voice");
-        await tapAt(page, page.locator(`${nowPlayingSel(lang)} [role="tab"]`, { hasText: t(lang, "player.viewCover") }).first());
-        await page.waitForTimeout(800);
-      } else fail("Now Playing has no Words view for a phone's voice");
-      await openMore(page, lang);
-      const phoneValue = await rowValue(page, lang);
-      if (phoneValue === "Daniel") ok('the ••• sheet\'s Voice row says "Daniel"');
-      else fail(`the ••• sheet's Voice row says "${phoneValue}" while Daniel reads`);
-      await still(page, "more-phone");
-      if (guards) await guard(page, '[role="dialog"]:not([aria-label="' + t(lang, "prayers.nowPlaying") + '"])', lang, size, "the ••• sheet with the Voice row");
-      await openVoiceSheet(page, lang);
-      const rowsGen = await radios(page, lang);
-      if (rowsGen && rowsGen.map((r) => r.name).join("|") === "Daniel|Karen|Samantha" && rowsGen[0].on) ok("over Genesis 1, no Heart: Daniel (checked), Karen, Samantha");
-      else fail(`the Voice sheet over Genesis 1: ${JSON.stringify(rowsGen)}`);
-      if (guards) await guard(page, voiceSheetSel(lang), lang, size, "the Voice sheet, phone's voices only");
-      await closeAll(page, lang);
-
       // ---- The gone line: a chosen voice no longer on the phone.
       await page.evaluate(() => {
         window.speechSynthesis.cancel();
         localStorage.setItem("purify:listen.voice", JSON.stringify({ en: "gone-voice" }));
         localStorage.removeItem("purify:listen.voiceGone");
       });
-      await go(page, "/bible/genesis/1/", { timeout: 30000 });
+      await coldStart(page, "/bible/genesis/1/");
       await page.waitForTimeout(2500);
       await tapAt(page, listenOnPage(page, lang));
       await waitFor(page, () => window.speechSynthesis.speaking);
@@ -756,8 +856,14 @@ if (MODE === "voices") {
     await ctx.close();
   }
 
+  // --lang en|ar walks one reader's language alone (two walks can run side by side).
+  const at = process.argv.indexOf("--lang");
+  const LANGS = at > 0 ? [process.argv[at + 1]] : ["en", "ar"];
   if (!GUARD_ONLY) await walk("en", SIZES[0], { scale: 2, stills: true, guards: false, taps: true });
-  if (!STILLS_ONLY) for (const lang of ["en", "ar"]) for (const size of SIZES) await walk(lang, size, { guards: true });
+  // --size 390|800|1032 walks one width alone.
+  const sz = process.argv.indexOf("--size");
+  const WIDTHS = sz > 0 ? SIZES.filter(([w]) => String(w) === process.argv[sz + 1]) : SIZES;
+  if (!STILLS_ONLY) for (const lang of LANGS) for (const size of WIDTHS) await walk(lang, size, { guards: true });
 }
 
 await browser.close();

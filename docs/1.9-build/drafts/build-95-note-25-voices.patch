@@ -1,6 +1,6 @@
-From f0052db0c795846aad5caa0367861d5e4fdc9113 Mon Sep 17 00:00:00 2001
+From 29f1a31fa7759107b23966164f645157f07e9810 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
-Date: Fri, 13 Nov 2026 15:33:57 +0000
+Date: Fri, 13 Nov 2026 16:32:21 +0000
 Subject: [PATCH] Voices, what a reader sees: the Voice row and sheet, and
  Listen on every text (held for his yes)
 MIME-Version: 1.0
@@ -9,31 +9,33 @@ Content-Transfer-Encoding: 8bit
 
 Build 95 note 25, his "all recs" of 2026-11-13: the phone's own voices, free
 for every reader, reading the whole Bible, the lives, the councils, history,
-theology and the Fathers' works; never the prayers. Held as a patch for his yes
-on the stills (docs/handoffs/updates-17.md); applied on his word.
+theology and the works, never the prayers. Updates 17's second patch, applied
+by Updates 19 on 91d8fcd6, with what its walk of the export found:
 
-- The Voice row in the player's ••• (between Sleep timer and Ambience), its
-  value the voice reading; a new mark, components/ui/icons/Voice.tsx.
+- The Voice row in the player's •••, between Sleep timer and Ambience, its
+  value the voice reading (Heart while the recording plays); the Voice mark
+  (components/ui/icons/Voice.tsx).
 - The Voice sheet (components/player/VoiceSheet.tsx), from the player's own
-  parts, mounted once in the root frame: Heart first where the text has its
-  recording, then the phone's voices for the text's language, each its name
-  over its language, with Hear it (the first words of the verse being read, in
-  that voice); choosing reads on in it at the verse being read. A chosen voice
-  gone is said; a language with no voice and no recording says where a voice
-  is added.
+  parts: Heart first where the text has its recording, then the phone's voices
+  for its language, each its name over its language, Hear it reading the verse
+  being read; a choice read again from the verse being read; the gone line and
+  the none state; a line at the foot.
 - Listen on every chapter where the device can speak (the Old Testament, a
-  downloaded Bible's page in its own language and words), the verse lit where
-  it stands, rolling on into the next chapter, previous and next opening the
-  chapter's page; never over a licensed translation. ListenHere reads the
-  page's paragraphs from its part on, in the page's language, the paragraph
-  lit and its sentence washed. Never on a prayer's page.
-- Ten strings in all 21 catalogs.
+  downloaded Bible's page in its own language), and on the lives, councils,
+  history, theology and works; never over a licensed translation, never the
+  prayers. Ten new strings in all 21 catalogs.
+- It met Updates 18's cb1f2333 on the chapter pill: the pill's fit is written
+  on the pill now, so Listen's button keeps that form and gains the Bible.
+- Found by the walk and mended here: Now Playing let the line about a gone
+  voice go as soon as it was set with the player closed (Listen on a page, the
+  usual way), so it was never said there. It now stands until the player has
+  been open with it (playerOpenForGone, lib/listen/speech/speak.ts).
 
-Tests that fail on the old code: lib/listen/speech/__tests__/voiceSheet.test.ts
-(8); eight source-reading tests moved to the new rules.
+Tests that fail on the code before: voiceSheet.test.ts (10, two of them the
+gone line's), and the source tests that follow the new rules.
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01VuYTwZshCrYvNwoUyAX6F4
+Claude-Session: https://claude.ai/code/session_01VuYTwaQ5oxRr2ERLvFyCnt
 ---
  components/bible/ChapterReader.tsx            |   8 +
  components/bible/ChapterScreen.tsx            |  19 +-
@@ -42,10 +44,10 @@ Claude-Session: https://claude.ai/code/session_01VuYTwZshCrYvNwoUyAX6F4
  components/bible/ReadAloud.tsx                | 150 +++++++----
  components/bible/ReaderDock.tsx               |  25 +-
  components/layout/RootFrame.tsx               |   5 +
- components/player/NowPlayingSheet.tsx         |  20 +-
+ components/player/NowPlayingSheet.tsx         |  21 +-
  components/player/PlayerMore.tsx              |  27 ++
  components/player/PlayerSteps.tsx             |  19 ++
- components/player/VoiceSheet.tsx              | 246 ++++++++++++++++++
+ components/player/VoiceSheet.tsx              | 246 +++++++++++++++++
  components/reading/ListenHere.tsx             | 166 +++++++++++-
  components/ui/icons/Voice.tsx                 |  33 +++
  lib/bible/__tests__/readerDock.test.ts        |  11 +-
@@ -72,11 +74,12 @@ Claude-Session: https://claude.ai/code/session_01VuYTwZshCrYvNwoUyAX6F4
  lib/i18n/messages/uk.json                     |  10 +
  lib/i18n/messages/ur.json                     |  10 +
  lib/listen/__tests__/recordings.test.ts       |   7 +-
- .../speech/__tests__/voiceSheet.test.ts       | 198 ++++++++++++++
+ .../speech/__tests__/voiceSheet.test.ts       | 253 ++++++++++++++++++
+ lib/listen/speech/speak.ts                    |  31 ++-
  lib/player/__tests__/steps.test.ts            |   9 +-
  lib/player/__tests__/views.test.ts            |   4 +-
  .../__tests__/savedWhilePlaying.test.ts       |   3 +-
- 41 files changed, 1122 insertions(+), 99 deletions(-)
+ 42 files changed, 1204 insertions(+), 104 deletions(-)
  create mode 100644 components/player/VoiceSheet.tsx
  create mode 100644 components/ui/icons/Voice.tsx
  create mode 100644 lib/listen/speech/__tests__/voiceSheet.test.ts
@@ -215,7 +218,7 @@ index 31babace..ba6b4e7d 100644
      return (
        <div className="rounded-[18px] border border-paper/10 bg-paper/[0.03] px-5 py-5" data-bible-elsewhere="">
 diff --git a/components/bible/MobileChapterPill.tsx b/components/bible/MobileChapterPill.tsx
-index 48dd000e..333cc18e 100644
+index f8b1b708..1ab75c24 100644
 --- a/components/bible/MobileChapterPill.tsx
 +++ b/components/bible/MobileChapterPill.tsx
 @@ -12,6 +12,8 @@ import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
@@ -259,7 +262,7 @@ index 48dd000e..333cc18e 100644
    // The dock: the player and the chapter in one card while anything is loaded.
    const dockShows = useDockShows();
    useOwnPlayer(dockShows ? HOSTS_EVERYTHING : NOTHING);
-@@ -224,7 +232,8 @@ export function MobileChapterPill({
+@@ -239,7 +247,8 @@ export function MobileChapterPill({
            slug={slug}
            chapter={chapter}
            bookName={bookName}
@@ -269,17 +272,17 @@ index 48dd000e..333cc18e 100644
            prev={prev}
            next={next}
            prevLabel={prevLabel}
-@@ -294,7 +303,7 @@ export function MobileChapterPill({
-             {fit === 2 ? null : <span aria-hidden className="mx-1.5 h-6 w-px shrink-0 bg-paper/15" />}
+@@ -311,7 +320,7 @@ export function MobileChapterPill({
+             <span aria-hidden className="mx-1.5 h-6 w-px shrink-0 bg-paper/15 group-data-[fit=2]:hidden" />
              <span className="flex shrink-0 items-center gap-0.5">
                <AmbienceButton variant="pill" />
--              {reads ? <ReadAloudPillButton book={slug} chapter={chapter} title={`${bookName} ${chapter}`} wordGivesWay={fit === 1} /> : null}
-+              {reads ? <ReadAloudPillButton book={slug} chapter={chapter} title={`${bookName} ${chapter}`} wordGivesWay={fit === 1} bible={bible} /> : null}
+-              {reads ? <ReadAloudPillButton book={slug} chapter={chapter} title={`${bookName} ${chapter}`} /> : null}
++              {reads ? <ReadAloudPillButton book={slug} chapter={chapter} title={`${bookName} ${chapter}`} bible={bible} /> : null}
              </span>
            </div>
          </div>
 diff --git a/components/bible/ReadAloud.tsx b/components/bible/ReadAloud.tsx
-index 6046cb38..3b9dee39 100644
+index 8d5fab69..0d9813ea 100644
 --- a/components/bible/ReadAloud.tsx
 +++ b/components/bible/ReadAloud.tsx
 @@ -21,9 +21,16 @@ import { Headphones } from "@/components/ui/icons/Headphones";
@@ -622,7 +625,7 @@ index 73d713a1..0440cc7c 100644
              save shows itself, on whatever page Purify opens to. Here for the
              reason above. Renders nothing until a save has held a day. */}
 diff --git a/components/player/NowPlayingSheet.tsx b/components/player/NowPlayingSheet.tsx
-index 3fef63ed..c72deb91 100644
+index 3fef63ed..03c9fb65 100644
 --- a/components/player/NowPlayingSheet.tsx
 +++ b/components/player/NowPlayingSheet.tsx
 @@ -11,6 +11,8 @@ import { Book } from "@/components/ui/icons/Book";
@@ -630,7 +633,7 @@ index 3fef63ed..c72deb91 100644
  import { Timer } from "@/components/ui/icons/Timer";
  import { useAmbienceSheet } from "@/lib/ambience/sheet";
 +import { openVoiceSheet, useVoiceSheet } from "@/lib/listen/speech/sheet";
-+import { goneShown, useVoiceShown } from "@/lib/listen/speech/speak";
++import { playerOpenForGone, useVoiceShown } from "@/lib/listen/speech/speak";
  import { cn } from "@/lib/cn";
  import { verseOf } from "@/lib/player/captions";
  import { useSungLines } from "@/lib/player/clock";
@@ -642,7 +645,7 @@ index 3fef63ed..c72deb91 100644
  import { PlayerTransport } from "./PlayerSteps";
  import { SleepTimerSheet } from "./SleepTimerSheet";
  import { SaveOffline, SaveOfflineNote } from "./SaveOffline";
-@@ -94,8 +97,16 @@ export function NowPlayingSheet() {
+@@ -94,8 +97,17 @@ export function NowPlayingSheet() {
    const [moreMenu, setMoreMenu] = useState(false);
    const sleep = useSleepTimer();
    const ambienceSheet = useAmbienceSheet();
@@ -652,15 +655,16 @@ index 3fef63ed..c72deb91 100644
 +  const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer) || (voiceSheet.open && voiceSheet.overPlayer);
 +  // The voice reading, for the ••• sheet's Voice row (1.9, build 95 note 25).
 +  const voiceName = useVoiceRowValue(audio.src, open);
-+  // A voice the reader chose had gone and another reads: said here once, while the player is open.
++  // A voice the reader chose had gone and another reads: said here once, the
++  // next time the player is open, and let go when it closes after.
 +  const { gone } = useVoiceShown();
 +  useEffect(() => {
-+    if (!open && gone) goneShown();
++    playerOpenForGone(open);
 +  }, [open, gone]);
    const hasWords = Boolean(audio.captions && audio.captions.length > 0);
    // The one clock that lights the words and counts the verses
    // (lib/player/clock.ts), running while the player is open.
-@@ -346,6 +357,11 @@ export function NowPlayingSheet() {
+@@ -346,6 +358,11 @@ export function NowPlayingSheet() {
  
            {/* One block for both views: nothing here moves when they switch. */}
            <SaveOfflineNote src={audio.src} className="mt-2" />
@@ -672,7 +676,7 @@ index 3fef63ed..c72deb91 100644
            <PositionBar current={audio.currentTime} duration={audio.duration} onSeek={(at) => seek(at)} className="mt-2" />
            <PlayerTransport audio={audio} className="mt-3" />
  
-@@ -427,6 +443,8 @@ export function NowPlayingSheet() {
+@@ -427,6 +444,8 @@ export function NowPlayingSheet() {
              src={audio.src}
              share={shareHref(playing)}
              onSleep={() => setSleepMenu(true)}
@@ -1340,7 +1344,7 @@ index 4b5f15a9..faa7327d 100644
      expect(DOCK).toMatch(/\{listenHere \? \(\s*<button/);
    });
 diff --git a/lib/bible/__tests__/readerScreen.test.ts b/lib/bible/__tests__/readerScreen.test.ts
-index eac34825..c19e0727 100644
+index 9159edad..68dca2f1 100644
 --- a/lib/bible/__tests__/readerScreen.test.ts
 +++ b/lib/bible/__tests__/readerScreen.test.ts
 @@ -353,21 +353,22 @@ describe("the floating pill, with Listen", () => {
@@ -1358,8 +1362,8 @@ index eac34825..c19e0727 100644
 +    // The English where it has its recording, and every chapter, the English or a downloaded Bible, where the device can speak (1.9, build 95 note 25).
 +    expect(pill).toContain("const reads = listen && (bible ? speaks : recorded || speaks);");
      // Its word gives way where the name needs the room (lib/bible/__tests__/dockNamesWhole.test.ts).
--    expect(pill).toMatch(/<AmbienceButton variant="pill" \/>\s*\{reads \? <ReadAloudPillButton book=\{slug\} chapter=\{chapter\} title=\{`\$\{bookName\} \$\{chapter\}`\} wordGivesWay=\{fit === 1\} \/> : null\}\s*<\/span>/);
-+    expect(pill).toMatch(/<AmbienceButton variant="pill" \/>\s*\{reads \? <ReadAloudPillButton book=\{slug\} chapter=\{chapter\} title=\{`\$\{bookName\} \$\{chapter\}`\} wordGivesWay=\{fit === 1\} bible=\{bible\} \/> : null\}\s*<\/span>/);
+-    expect(pill).toMatch(/<AmbienceButton variant="pill" \/>\s*\{reads \? <ReadAloudPillButton book=\{slug\} chapter=\{chapter\} title=\{`\$\{bookName\} \$\{chapter\}`\} \/> : null\}\s*<\/span>/);
++    expect(pill).toMatch(/<AmbienceButton variant="pill" \/>\s*\{reads \? <ReadAloudPillButton book=\{slug\} chapter=\{chapter\} title=\{`\$\{bookName\} \$\{chapter\}`\} bible=\{bible\} \/> : null\}\s*<\/span>/);
      const read = code("components/bible/ReadAloud.tsx");
      const button = read.slice(read.indexOf("export function ReadAloudPillButton"), read.indexOf("export function ReadAloudFollow"));
      // No reading, no button: never a dead one.
@@ -1374,7 +1378,7 @@ index eac34825..c19e0727 100644
      expect(button).toContain("aria-label={word}");
 @@ -375,11 +376,11 @@ describe("the floating pill, with Listen", () => {
      expect(button).toMatch(/className="reader-lit [^"]*\bbg-paper\b[^"]*\btext-night\b/);
-     expect(button).toMatch(/<span aria-hidden className=\{cn\("max-\[390px\]:hidden", wordGivesWay && "hidden"\)\}>\s*\{word\}/);
+     expect(button).toMatch(/<span aria-hidden className=\{cn\("max-\[390px\]:hidden group-data-\[fit=1\]:hidden", wordGivesWay && "hidden"\)\}>\s*\{word\}/);
      // The verse being read is lit by the follower the screen already mounts.
 -    expect(code(SCREEN)).toContain("<ReadAloudFollow book={slug} chapter={chapter} />");
 +    expect(code(SCREEN)).toContain("<ReadAloudFollow book={slug} chapter={chapter} bible={downloaded?.bible ?? null} />");
@@ -1387,10 +1391,10 @@ index eac34825..c19e0727 100644
    });
  
 diff --git a/lib/i18n/messages/ar.json b/lib/i18n/messages/ar.json
-index eb458ebb..5732f806 100644
+index 2a6d4108..b21c25c0 100644
 --- a/lib/i18n/messages/ar.json
 +++ b/lib/i18n/messages/ar.json
-@@ -5239,6 +5239,16 @@
+@@ -5238,6 +5238,16 @@
    "player.option.sleep": "مؤقّت الإيقاف",
    "player.option.read": "اقرأ",
    "player.read": "اقرأ",
@@ -1408,10 +1412,10 @@ index eb458ebb..5732f806 100644
    "chant.ask.title": "هل تصلّي مع الترتيل؟",
    "chant.ask.body": "يُعزف بهدوء أثناء صلاتك.",
 diff --git a/lib/i18n/messages/bg.json b/lib/i18n/messages/bg.json
-index c615d6d7..56fd699b 100644
+index 304d556e..7a0d7c96 100644
 --- a/lib/i18n/messages/bg.json
 +++ b/lib/i18n/messages/bg.json
-@@ -4950,6 +4950,16 @@
+@@ -4949,6 +4949,16 @@
    "player.option.sleep": "Таймер",
    "player.option.read": "Чети",
    "player.read": "Чети",
@@ -1429,10 +1433,10 @@ index c615d6d7..56fd699b 100644
    "chant.ask.title": "Молитва с песнопение?",
    "chant.ask.body": "Звучи тихо, докато се молите.",
 diff --git a/lib/i18n/messages/de.json b/lib/i18n/messages/de.json
-index 70836afe..e21460f6 100644
+index f9c005af..2be0e962 100644
 --- a/lib/i18n/messages/de.json
 +++ b/lib/i18n/messages/de.json
-@@ -4950,6 +4950,16 @@
+@@ -4949,6 +4949,16 @@
    "player.option.sleep": "Timer",
    "player.option.read": "Lesen",
    "player.read": "Lesen",
@@ -1450,10 +1454,10 @@ index 70836afe..e21460f6 100644
    "chant.ask.title": "Mit Gesang beten?",
    "chant.ask.body": "Leise im Hintergrund, während Sie beten.",
 diff --git a/lib/i18n/messages/el.json b/lib/i18n/messages/el.json
-index bf490ce6..d825e62a 100644
+index fec57706..a6d0e8f9 100644
 --- a/lib/i18n/messages/el.json
 +++ b/lib/i18n/messages/el.json
-@@ -4950,6 +4950,16 @@
+@@ -4949,6 +4949,16 @@
    "player.option.sleep": "Ύπνος",
    "player.option.read": "Ανάγνωση",
    "player.read": "Ανάγνωση",
@@ -1471,10 +1475,10 @@ index bf490ce6..d825e62a 100644
    "chant.ask.title": "Προσευχή με ψαλμωδία;",
    "chant.ask.body": "Ακούγεται απαλά όσο προσεύχεστε.",
 diff --git a/lib/i18n/messages/en.json b/lib/i18n/messages/en.json
-index 332ab7bd..3436b2bb 100644
+index d49f0166..895613ea 100644
 --- a/lib/i18n/messages/en.json
 +++ b/lib/i18n/messages/en.json
-@@ -4978,6 +4978,16 @@
+@@ -4977,6 +4977,16 @@
    "player.option.sleep": "Sleep timer",
    "player.option.read": "Read",
    "player.read": "Read",
@@ -1492,10 +1496,10 @@ index 332ab7bd..3436b2bb 100644
    "dictionary.title": "Orthodox dictionary",
    "dictionary.intro": "The words you will meet in church and in Purify, each said plainly in a sentence or two.",
 diff --git a/lib/i18n/messages/es.json b/lib/i18n/messages/es.json
-index 1c1969c5..bcc58884 100644
+index a9547bdf..aca758f9 100644
 --- a/lib/i18n/messages/es.json
 +++ b/lib/i18n/messages/es.json
-@@ -4960,6 +4960,16 @@
+@@ -4959,6 +4959,16 @@
    "player.option.sleep": "Dormir",
    "player.option.read": "Leer",
    "player.read": "Leer",
@@ -1513,10 +1517,10 @@ index 1c1969c5..bcc58884 100644
    "chant.ask.title": "¿Orar con canto?",
    "chant.ask.body": "Suena suave mientras oras.",
 diff --git a/lib/i18n/messages/fil.json b/lib/i18n/messages/fil.json
-index c995072a..180c0531 100644
+index f72bdbf9..61de1141 100644
 --- a/lib/i18n/messages/fil.json
 +++ b/lib/i18n/messages/fil.json
-@@ -4950,6 +4950,16 @@
+@@ -4949,6 +4949,16 @@
    "player.option.sleep": "Sleep timer",
    "player.option.read": "Basahin",
    "player.read": "Basahin",
@@ -1534,10 +1538,10 @@ index c995072a..180c0531 100644
    "chant.ask.title": "Manalangin nang may awit?",
    "chant.ask.body": "Mahinang tumutugtog habang nananalangin ka.",
 diff --git a/lib/i18n/messages/fr.json b/lib/i18n/messages/fr.json
-index 5060bcc2..30cfd41a 100644
+index 94396e18..fe500cbf 100644
 --- a/lib/i18n/messages/fr.json
 +++ b/lib/i18n/messages/fr.json
-@@ -4978,6 +4978,16 @@
+@@ -4977,6 +4977,16 @@
    "player.option.sleep": "Minuterie de veille",
    "player.option.read": "Lire",
    "player.read": "Lire",
@@ -1555,10 +1559,10 @@ index 5060bcc2..30cfd41a 100644
    "chant.ask.title": "Prier avec le chant ?",
    "chant.ask.body": "En douceur, pendant que vous priez.",
 diff --git a/lib/i18n/messages/hu.json b/lib/i18n/messages/hu.json
-index 9bcb68f2..a47f9e4e 100644
+index c3490d45..7236bf63 100644
 --- a/lib/i18n/messages/hu.json
 +++ b/lib/i18n/messages/hu.json
-@@ -4950,6 +4950,16 @@
+@@ -4949,6 +4949,16 @@
    "player.option.sleep": "Elalvási időzítő",
    "player.option.read": "Olvasás",
    "player.read": "Olvasás",
@@ -1576,10 +1580,10 @@ index 9bcb68f2..a47f9e4e 100644
    "chant.ask.title": "Imádság énekkel?",
    "chant.ask.body": "Halkan szól, amíg imádkozik.",
 diff --git a/lib/i18n/messages/id.json b/lib/i18n/messages/id.json
-index a442c5db..8a327461 100644
+index e8b3e0a3..f50f45bc 100644
 --- a/lib/i18n/messages/id.json
 +++ b/lib/i18n/messages/id.json
-@@ -4947,6 +4947,16 @@
+@@ -4946,6 +4946,16 @@
    "player.option.sleep": "Pengatur waktu tidur",
    "player.option.read": "Baca",
    "player.read": "Baca",
@@ -1597,10 +1601,10 @@ index a442c5db..8a327461 100644
    "chant.ask.title": "Berdoa dengan kidung?",
    "chant.ask.body": "Diputar lembut selama Anda berdoa.",
 diff --git a/lib/i18n/messages/it.json b/lib/i18n/messages/it.json
-index e4a11cab..3b0de4c3 100644
+index f9fbefdb..24989db9 100644
 --- a/lib/i18n/messages/it.json
 +++ b/lib/i18n/messages/it.json
-@@ -4955,6 +4955,16 @@
+@@ -4954,6 +4954,16 @@
    "player.option.sleep": "Timer",
    "player.option.read": "Leggi",
    "player.read": "Leggi",
@@ -1618,10 +1622,10 @@ index e4a11cab..3b0de4c3 100644
    "chant.ask.title": "Pregare con il canto?",
    "chant.ask.body": "Suona piano mentre preghi.",
 diff --git a/lib/i18n/messages/ka.json b/lib/i18n/messages/ka.json
-index b93fa563..20e616aa 100644
+index 5b794613..46cfadcd 100644
 --- a/lib/i18n/messages/ka.json
 +++ b/lib/i18n/messages/ka.json
-@@ -4950,6 +4950,16 @@
+@@ -4949,6 +4949,16 @@
    "player.option.sleep": "ძილის ტაიმერი",
    "player.option.read": "წაკითხვა",
    "player.read": "წაკითხვა",
@@ -1639,10 +1643,10 @@ index b93fa563..20e616aa 100644
    "chant.ask.title": "ლოცვა გალობით?",
    "chant.ask.body": "ჩუმად ჟღერს, სანამ ლოცულობთ.",
 diff --git a/lib/i18n/messages/ne.json b/lib/i18n/messages/ne.json
-index 9c5d5496..52d81276 100644
+index 60eef467..e812c9fc 100644
 --- a/lib/i18n/messages/ne.json
 +++ b/lib/i18n/messages/ne.json
-@@ -4950,6 +4950,16 @@
+@@ -4949,6 +4949,16 @@
    "player.option.sleep": "निद्रा टाइमर",
    "player.option.read": "पढ्नुहोस्",
    "player.read": "पढ्नुहोस्",
@@ -1660,10 +1664,10 @@ index 9c5d5496..52d81276 100644
    "chant.ask.title": "भजनसहित प्रार्थना?",
    "chant.ask.body": "तपाईं प्रार्थना गर्दा यो बिस्तारै बज्छ।",
 diff --git a/lib/i18n/messages/pl.json b/lib/i18n/messages/pl.json
-index e9a1536e..ac894915 100644
+index 6deffc25..9b55111d 100644
 --- a/lib/i18n/messages/pl.json
 +++ b/lib/i18n/messages/pl.json
-@@ -5108,6 +5108,16 @@
+@@ -5107,6 +5107,16 @@
    "player.option.sleep": "Wyłącznik czasowy",
    "player.option.read": "Czytaj",
    "player.read": "Czytaj",
@@ -1681,10 +1685,10 @@ index e9a1536e..ac894915 100644
    "chant.ask.title": "Modlić się ze śpiewem?",
    "chant.ask.body": "Gra cicho, gdy się modlisz.",
 diff --git a/lib/i18n/messages/pt.json b/lib/i18n/messages/pt.json
-index 54568032..584b6ba9 100644
+index 686adaa3..2fabd176 100644
 --- a/lib/i18n/messages/pt.json
 +++ b/lib/i18n/messages/pt.json
-@@ -4955,6 +4955,16 @@
+@@ -4954,6 +4954,16 @@
    "player.option.sleep": "Dormir",
    "player.option.read": "Ler",
    "player.read": "Ler",
@@ -1702,10 +1706,10 @@ index 54568032..584b6ba9 100644
    "chant.ask.title": "Orar com cântico?",
    "chant.ask.body": "Toca baixinho enquanto você ora.",
 diff --git a/lib/i18n/messages/ro.json b/lib/i18n/messages/ro.json
-index 15ee0213..bcb84f0a 100644
+index fe9f6e71..c523e707 100644
 --- a/lib/i18n/messages/ro.json
 +++ b/lib/i18n/messages/ro.json
-@@ -5039,6 +5039,16 @@
+@@ -5038,6 +5038,16 @@
    "player.option.sleep": "Somn",
    "player.option.read": "Citește",
    "player.read": "Citește",
@@ -1723,10 +1727,10 @@ index 15ee0213..bcb84f0a 100644
    "chant.ask.title": "Rugăciune cu cântare?",
    "chant.ask.body": "Se aude încet cât vă rugați.",
 diff --git a/lib/i18n/messages/ru.json b/lib/i18n/messages/ru.json
-index 7365ebdd..2885a0c2 100644
+index cecfb5fd..a460ebc9 100644
 --- a/lib/i18n/messages/ru.json
 +++ b/lib/i18n/messages/ru.json
-@@ -5106,6 +5106,16 @@
+@@ -5105,6 +5105,16 @@
    "player.option.sleep": "Таймер сна",
    "player.option.read": "Читать",
    "player.read": "Читать",
@@ -1744,10 +1748,10 @@ index 7365ebdd..2885a0c2 100644
    "chant.ask.title": "Молиться с пением?",
    "chant.ask.body": "Звучит тихо, пока вы молитесь.",
 diff --git a/lib/i18n/messages/sr.json b/lib/i18n/messages/sr.json
-index 788a8663..44c72b8c 100644
+index d72ce30c..aa2e155d 100644
 --- a/lib/i18n/messages/sr.json
 +++ b/lib/i18n/messages/sr.json
-@@ -5031,6 +5031,16 @@
+@@ -5030,6 +5030,16 @@
    "player.option.sleep": "Тајмер за спавање",
    "player.option.read": "Читај",
    "player.read": "Читај",
@@ -1765,10 +1769,10 @@ index 788a8663..44c72b8c 100644
    "chant.ask.title": "Молитва уз појање?",
    "chant.ask.body": "Тихо звучи док се молите.",
 diff --git a/lib/i18n/messages/tr.json b/lib/i18n/messages/tr.json
-index 2977203a..1a104a89 100644
+index 601a5299..a155f621 100644
 --- a/lib/i18n/messages/tr.json
 +++ b/lib/i18n/messages/tr.json
-@@ -4950,6 +4950,16 @@
+@@ -4949,6 +4949,16 @@
    "player.option.sleep": "Uyku",
    "player.option.read": "Oku",
    "player.read": "Oku",
@@ -1786,10 +1790,10 @@ index 2977203a..1a104a89 100644
    "chant.ask.title": "İlahiyle dua etmek ister misiniz?",
    "chant.ask.body": "Siz dua ederken usulca çalar.",
 diff --git a/lib/i18n/messages/uk.json b/lib/i18n/messages/uk.json
-index a6114409..fa297f6e 100644
+index 119afa2a..e6df31ce 100644
 --- a/lib/i18n/messages/uk.json
 +++ b/lib/i18n/messages/uk.json
-@@ -5105,6 +5105,16 @@
+@@ -5104,6 +5104,16 @@
    "player.option.sleep": "Таймер сну",
    "player.option.read": "Читати",
    "player.read": "Читати",
@@ -1807,10 +1811,10 @@ index a6114409..fa297f6e 100644
    "chant.ask.title": "Молитися зі співом?",
    "chant.ask.body": "Звучить тихо, поки ви молитеся.",
 diff --git a/lib/i18n/messages/ur.json b/lib/i18n/messages/ur.json
-index baad7593..90625425 100644
+index f35a8aa3..0d7442ce 100644
 --- a/lib/i18n/messages/ur.json
 +++ b/lib/i18n/messages/ur.json
-@@ -4950,6 +4950,16 @@
+@@ -4949,6 +4949,16 @@
    "player.option.sleep": "سلیپ ٹائمر",
    "player.option.read": "پڑھیں",
    "player.read": "پڑھیں",
@@ -1849,10 +1853,10 @@ index 0d516d76..054f89fb 100644
      const carried = JSON.parse(read("data/listen/index.json")) as string[];
 diff --git a/lib/listen/speech/__tests__/voiceSheet.test.ts b/lib/listen/speech/__tests__/voiceSheet.test.ts
 new file mode 100644
-index 00000000..4a8f84db
+index 00000000..5f4f3a58
 --- /dev/null
 +++ b/lib/listen/speech/__tests__/voiceSheet.test.ts
-@@ -0,0 +1,198 @@
+@@ -0,0 +1,253 @@
 +// The choice of voices, as the reader meets it (1.9, build 95 note 25, his
 +// "all recs" of 2026-11-13): a Voice row in the player's •••, beside the sleep
 +// timer and Ambience, opening a sheet from the player's own parts; Heart
@@ -2051,6 +2055,113 @@ index 00000000..4a8f84db
 +    expect(store.getAudioSnapshot().playing).toBe(true);
 +  });
 +});
++
++// Updates 19's walk of the export (2026-11-13): Listen tapped on a page, with
++// the player closed (the usual way), let the line about a gone voice go at
++// once, so Now Playing never said it. What a reader would notice: the voice
++// they chose silently replaced, with nothing said where they look.
++describe("the line about a gone voice, in Now Playing", () => {
++  const engine: SpeechEngine = {
++    side: "android",
++    voices: async () => [{ id: "en-gb-x-gba-local", name: "Daniel", lang: "en-GB", default: true }],
++    speak: async () => {},
++    stop: async () => {},
++    preview: async () => {},
++    nowPlaying: async () => {},
++    onEvent: () => () => {},
++  };
++
++  beforeEach(() => {
++    vi.resetModules();
++    const store = new Map<string, string>();
++    vi.stubGlobal("window", { localStorage: { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v), removeItem: (k: string) => void store.delete(k) } });
++    vi.stubGlobal("navigator", {});
++    vi.doMock("@/lib/listen/speech/engine", async (orig) => ({ ...(await orig<typeof import("@/lib/listen/speech/engine")>()), speechEngine: async () => engine }));
++  });
++  afterEach(() => {
++    vi.unstubAllGlobals();
++    vi.doUnmock("@/lib/listen/speech/engine");
++  });
++
++  it("waits for the player when Listen begins with it closed, shows while it is open, and goes once it closes", async () => {
++    const { chooseVoice } = await import("@/lib/listen/speech/voiceChoice");
++    const speak = await import("@/lib/listen/speech/speak");
++    chooseVoice("en", "a-voice-since-removed");
++    const use = await speak.voiceFor("en", false);
++    expect(use).toMatchObject({ kind: "phone", gone: "a-voice-since-removed" });
++    expect(speak.voiceShown().gone).not.toBeNull();
++    // Listen on a page: the player is closed as the reading begins.
++    speak.playerOpenForGone(false);
++    expect(speak.voiceShown().gone).not.toBeNull();
++    // The reader opens the player: the line is there.
++    speak.playerOpenForGone(true);
++    expect(speak.voiceShown().gone).not.toBeNull();
++    // And closes it: said once, not again for the same voice.
++    speak.playerOpenForGone(false);
++    expect(speak.voiceShown().gone).toBeNull();
++    await speak.voiceFor("en", false);
++    expect(speak.voiceShown().gone).toBeNull();
++  });
++
++  it("is told each time the player opens or closes", () => {
++    const player = read("components/player/NowPlayingSheet.tsx");
++    expect(player).toMatch(/useEffect\(\(\) => \{\s*playerOpenForGone\(open\);\s*\}, \[open, gone\]\);/);
++    expect(player).not.toContain("if (!open && gone) goneShown();");
++    expect(player).toContain('{t("player.voice.gone", { name: voiceName })}');
++  });
++});
+diff --git a/lib/listen/speech/speak.ts b/lib/listen/speech/speak.ts
+index d023e193..1fc98540 100644
+--- a/lib/listen/speech/speak.ts
++++ b/lib/listen/speech/speak.ts
+@@ -78,6 +78,10 @@ function set(patch: Partial<Shown>): void {
+ }
+ 
+ /** What the player shows of the voice: the one reading, and a line said once. */
++export function voiceShown(): Shown {
++  return shown;
++}
++
+ export function useVoiceShown(): Shown {
+   return useSyncExternalStore(
+     (l) => {
+@@ -86,14 +90,31 @@ export function useVoiceShown(): Shown {
+         listeners.delete(l);
+       };
+     },
+-    () => shown,
+-    () => shown,
++    voiceShown,
++    voiceShown,
+   );
+ }
+ 
+-/** The line about a gone voice has been shown: it is not shown again. */
+-export function goneShown(): void {
+-  if (shown.gone) set({ gone: null });
++/** Now Playing has been open while the gone line stood. */
++let goneSeen = false;
++
++/**
++ * Now Playing opens or closes (components/player/NowPlayingSheet.tsx): the
++ * line about a gone voice shows while the player is open, and is let go once
++ * the player closes after showing it. A reading begun with the player closed
++ * (Listen on a page, the usual way) keeps the line until the player is next
++ * opened; it used to be let go at once there, so the player never said it.
++ */
++export function playerOpenForGone(open: boolean): void {
++  if (!shown.gone) {
++    goneSeen = false;
++    return;
++  }
++  if (open) goneSeen = true;
++  else if (goneSeen) {
++    goneSeen = false;
++    set({ gone: null });
++  }
+ }
+ 
+ /**
 diff --git a/lib/player/__tests__/steps.test.ts b/lib/player/__tests__/steps.test.ts
 index b23a88cc..7aa4f1da 100644
 --- a/lib/player/__tests__/steps.test.ts
