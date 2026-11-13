@@ -71,6 +71,8 @@ change after the check means a new export and a new check of what changed).
 
 **Done: his yes, 2026-11-13 about 04:49 UTC, "yes to the 19".** The headers of 12 (production_baseline) and 2 (the psalms move) now carry it.
 
+**A twentieth, added after:** `20261113052927_retention_lists.sql` (three yes-or-no columns on email_preferences for the retention emails; safe to run twice: add column if not exists, comments). Signed 2026-11-13 about 06:23 UTC, "yes retention sql". It sorts last and runs after the nineteen.
+
 Pushing main runs every file below against production, in this order. The
 arbiter sends the owner this list in plain words and asks for one yes on the
 whole list. Every file was read for this table on 2026-11-13; none was run

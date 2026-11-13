@@ -1,8 +1,9 @@
 -- The three retention emails' choices: one column each in email_preferences.
 --
--- NOT SIGNED OFF. Merging this to main runs it on production (AGENTS.md).
--- The owner signs the SQL off before the merge, through the arbiter. Until
--- then nothing reads these columns as anything but absent: the code steps
+-- SIGNED: the owner's word to the arbiter, 2026-11-13 about 06:23 UTC,
+-- "yes retention sql", given on this file's statements shown to him whole.
+-- Merging this to main runs it on production (AGENTS.md). Until it runs,
+-- nothing reads these columns as anything but absent: the code steps
 -- back to "nobody is on these lists" while they are missing
 -- (lib/email/retention/preferences.ts), and every retention email is behind a
 -- switch that stays off until his yes to its design

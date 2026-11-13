@@ -16,7 +16,7 @@ Updated 2026-11-13 01:24 UTC.
 
 ## Waiting on him
 
-- **The retention emails' migration** (`20261113052927_retention_lists.sql`: three yes-or-no columns on email_preferences, safe to run twice): his sign-off before merge day, or it comes off the branch. And how readers join: one asking line in the welcome email (recommended, opt-in) or on by default with a privacy line. Readers' own toggles land on the website after 1.9's store builds; this Nativity Fast only he sees the companion, and Great Lent 2027 is the first reader season.
+- **How readers join the retention emails** (their migration is signed, "yes retention sql"): one asking line in the welcome email (recommended, opt-in) or on by default with a privacy line. Readers' own toggles land on the website after 1.9's store builds; this Nativity Fast only he sees the companion, and Great Lent 2027 is the first reader season.
 - **Yes or no, each with its reasons on the page:** the kit's look is his yes (2026-11-13, "yes look"); the three retention emails, round 2 (e80b0004c; https://claude.ai/artifact/XmM1TmiigBipdaPS8de1sg, version 2), with their new words; round 1 was a no ("could use a better design"). If yes, Fable recommends carrying round 2's faces, button and foot into the approved reader email and brief (his word). A fresh Fable chat takes any change from the baton.
 - A look at the 1.9 social cards (https://claude.ai/artifact/2H7zX18mPgJh9LMZnkw6bs); his yes clears the drop's `cards` piece (`node scripts/drop.mjs waits cards --clear`).
 - The public key for the re-check: given (2026-11-13 03:32 UTC, "yes read the key").
