@@ -53,3 +53,9 @@ The "Highlighted / Undo" toast stands over the tab bar, and a second floating ba
 His word, 2026-11-13 07:34 UTC, on build 96, with a screenshot of the app's opening (the starry night, the glowing cross, the bright rim of the horizon): "the animation is buggy"
 
 To reproduce on a phone-sized export with motion on, recorded frame by frame from launch until the first screen is in place. Find the fault (a stutter, a jump, a flash, a broken hand-off to the first screen) and mend it. Animate only what a phone draws cheaply (transform and opacity, not filters or shadows), keep reduced motion still, and add a test that fails on the old code. His phone was at 3% battery when he saw it, which can mean a battery saver. The animation must hold there too.
+
+## Note 9 (asked): hold a Discover section to move it, with haptics
+
+His word, 2026-11-13 07:36 UTC, on build 96, with a screenshot of Discover's sections (Saints, Reading, Orthodox History, Councils, Theology, Chants, the calendar): "allow the user to hold down each section and the haptic feedback hits and they can move each section according to their wants (and every time it switches a section a haptic feedback hits)"
+
+Asked during the release's making, so it goes into 1.9 (CLAUDE.md, "A release ships finished"). Hold a section and the card lifts, with a tick. Drag it, and the others slide aside on the house curve, with a tick at each change of place. Drop it, and the order is kept on this device. A tap still opens the section. Those who cannot drag can move a section without dragging (a move up or move down choice, for a keyboard or a screen reader). There is a way back to the first order. Reduced motion stays still. The app's haptics already exist (@capacitor/haptics, lib/ui/softTick.ts), so no new native dependency. A short clip with its reasons goes to him for his yes before it ships.
