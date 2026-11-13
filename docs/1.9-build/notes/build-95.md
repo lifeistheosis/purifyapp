@@ -180,3 +180,11 @@ So, in 1.9, and the drop day moves for it:
 - Fresh eyes' fifteen screens (https://claude.ai/artifact/7brw1qS4JPzb61tAHqQk8p) and its four patterns across the app (zeros as a new reader's first sight; spaced-capital labels in 28 files; an icon tile on every row in 8 places; one small choice asked five ways). One Fable designer works through them in batches, one version a screen, pictures with reasons for his yes; on his yes the screen's change goes to an Opus chat to harden and push. With Fable 5.2, the fifteen screens.
 - The choice of voices: the phone's own voices (Android's speech engine, iPhone's), fast and offline; Kokoro stays out (it read at 0.07 of speaking speed). This replaces the 2.0 parking of 2026-11-11 for the choice itself. Its free and Plus split is his to decide (pricing). With Updates 5, after the ambience.
 - The World English Bible ships instead of standing greyed as "Coming soon". With Updates 8, after its shares.
+
+## Note 26: switching the theme is not smooth
+
+His word, 2026-11-13 about 08:17 UTC: "make the theme switching smoother its buggy"
+
+The theme is the reading mode, chosen in Settings (and wherever else a mode is picked); the switch is the whole app taking the new look (`components/theme/AppThemeController.tsx`, the look blocks in `app/globals.css`, the status bar in `components/native/statusBar.ts`). He named no single fault, so every one is found: recorded frame by frame on the export, motion on and reduced, across the palettes and looks.
+
+Done is: one change, in the house's motion, everything at once (no surface late in its old colours, no foot picture popping, the status and navigation bars with it, the chooser not jumping under the finger); under reduced motion an instant change with no flash; a test that fails on the old code. With Updates 11, beside the mode scroller.
