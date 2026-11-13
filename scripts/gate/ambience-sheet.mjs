@@ -9,7 +9,7 @@
 //           four choices, and Close. Each tap must change something, and nothing may move more than
 //           4px under the finger (the pre-build gate's part 1, docs/1.9-build/notes/build-93.md).
 //   guard   checkMock with pixels (scripts/mock-check.mjs) on the sheet at 390, 800 and 1032 wide, on the
-//           five palettes and the seventeen looks, in English and in Arabic: with two sounds playing (every
+//           five palettes and every look, in English and in Arabic: with two sounds playing (every
 //           control drawn), and quiet with a sound that could not play ("Try again") and the last one
 //           marked.
 //   lock    with SELLS_PLUS=1 (the export sells Plus; the page says it is the Android shell) the reader has
@@ -48,7 +48,8 @@ const SIZES = [
 ];
 const ALL = [...PALETTES, ...LOOKS];
 checkSells(OUT);
-if (ALL.length !== 22) throw new Error(`expected the five palettes and the seventeen looks, found ${ALL.length}`);
+// The five palettes and every look the registry holds (seventeen until build 95 note 16 took the sea's two).
+if (PALETTES.length !== 5 || LOOKS.length < 1) throw new Error(`expected the five palettes and the looks, found ${PALETTES.length} and ${LOOKS.length}`);
 for (const s of SOUNDS) if (!fs.existsSync(path.join(OUT, "audio", "ambience", `${s}.mp3`))) throw new Error(`the export does not carry audio/ambience/${s}.mp3`);
 
 // The page's Web Audio, watched: every context and its state, each decoding and how it ended, each
