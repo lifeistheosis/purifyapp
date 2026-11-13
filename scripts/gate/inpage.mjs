@@ -93,22 +93,27 @@ export function gateInPage() {
   function clippers(el) {
     const out = [];
     for (let q = placedIn(el); q; q = placedIn(q)) {
-      const cs = getComputedStyle(q);
-      const cx = cs.overflowX !== "visible";
-      const cy = cs.overflowY !== "visible";
-      if (!cx && !cy) continue;
-      const page = q === document.documentElement || q === document.body;
-      out.push({
-        el: q,
-        box: paddingBox(q, cs),
-        x: cx,
-        y: cy,
-        scrollsX: cx && /auto|scroll/.test(cs.overflowX) && q.scrollWidth > q.clientWidth + 1,
-        scrollsY: cy && /auto|scroll/.test(cs.overflowY) && q.scrollHeight > q.clientHeight + 1,
-        page,
-      });
+      const c = clipOf(q);
+      if (c) out.push(c);
     }
     return out;
+  }
+
+  /** How a box clips what is inside it, or null if it clips nothing. */
+  function clipOf(q) {
+    const cs = getComputedStyle(q);
+    const cx = cs.overflowX !== "visible";
+    const cy = cs.overflowY !== "visible";
+    if (!cx && !cy) return null;
+    return {
+      el: q,
+      box: paddingBox(q, cs),
+      x: cx,
+      y: cy,
+      scrollsX: cx && /auto|scroll/.test(cs.overflowX) && q.scrollWidth > q.clientWidth + 1,
+      scrollsY: cy && /auto|scroll/.test(cs.overflowY) && q.scrollHeight > q.clientHeight + 1,
+      page: q === document.documentElement || q === document.body,
+    };
   }
 
   /** What of a rectangle is drawn: inside every box that clips it, and on the screen. */
@@ -467,7 +472,10 @@ export function gateInPage() {
       // Where the boxes it sits in leave it: clipped by each inside the screen; a box that scrolls
       // sideways (a row of cards) carries it, and is measured itself instead.
       let { left, right, top, bottom } = r;
-      for (const c of clippers(el)) {
+      // Words are clipped by their own box first: a title cut to one line inside its box, with its
+      // ellipsis (Tailwind's truncate), ends where its box ends, not at the screen's edge.
+      const own = what === "words" ? clipOf(el) : null;
+      for (const c of own ? [own, ...clippers(el)] : clippers(el)) {
         if (c.page) continue;
         if (c.x) {
           if (c.scrollsX) {
