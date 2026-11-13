@@ -17,7 +17,11 @@ The look of the design kit (`docs/brand/kit/`: `pieces.css`, `artifact-template.
 - **Round 2 of the retention emails** (his "retention emails could use a better design", 2026-11-13 about 05:31 UTC): each opens on one night card (`lead`) with the app's own picture for the step (`HEROES`), the app's own button (a pill as wide as its words, with its arrow, and a VML shape for Outlook), the first week's steps as a strip (`steps`), the fast's week as seven days with the calendar's own marks and a key (`weekStrip`), one button in the fasting companion (the calendar), Unsubscribe as a plain link, and type in the faces a mail app has (Georgia, each system's sans). The reader email and the brief are his yes ("yes look", 2026-11-13) and were not touched: `wear(1)` and `wear(2)` in `build.mjs` keep the two rounds apart, and their files are the same byte for byte. Republished at the same address with "Why it looks this way". Then, at the arbiter's word the same day: every word is the sending's own letter. `retentionLook(how, letter, frame, { picture, stepNames })` draws any letter `lib/email/retention/` makes and adds no sentence of its own; the six samples are real letters in `letters.sample.json`, taken by `letters.sample.test.ts` (its header says how). Round 2's first words claimed what the server cannot know and are gone.
 - The design system on claude.ai updated in place by a helper (version 5): the components redrawn, Lead, Split, Bars and List added, Night sky's tokens added, no value changed.
 
+- **Round 3 of the emails** (his "keep all the emails default Purify colors. and also revamp the calendar design one", 2026-11-13 about 16:44 UTC), by session_01VuYTwaZ1a8DbrXRnQEaCLZ. Held, not shipped: `docs/1.9-build/drafts/emails-round-3/` (`README.md` first; `held.patch`, the page's source and stills). Every email on one palette, Dark, on every screen and in every season (Night sky and the light style block gone), and the fasting companion's calendar drawn again as the app's calendar stands on a phone. The page for his yes: https://claude.ai/artifact/PsWzPU7ycgdmGzFjzLYdz5. The kit gained `.k-pair` (before and after) and `check.mjs --page <file>`, both pushed.
+
 ## Open, each with its owner and next step
+
+0. **His yes or no on round 3**, two answers: the default colours, and the calendar. On yes an Opus chat applies `held.patch` as its README says. Until then everything below describes the kit as it stands on the branch, which is round 2. After it is applied, items 3b's question stands as it was, and "the light" in the gotchas below is only the check's own drawing.
 
 1. **His yes or no** on the kit's page and on the emails (the arbiter carries it). Nothing designed ships without it.
 2. **His yes or no on the three retention emails, round 2** (https://claude.ai/artifact/XmM1TmiigBipdaPS8de1sg). The new words wait on it too. Before the switch goes on, the Retention emails chat (session_01VuYTwcNqhaVtjecwr5fvPv) confirms that saving a verse is free for every reader, and sets the address each button opens.
@@ -29,6 +33,11 @@ The look of the design kit (`docs/brand/kit/`: `pieces.css`, `artifact-template.
 5. **A fault in the Sunday email as it stands**: `lib/email/weekly.ts` names a day by its saint before its commemoration, so 20 and 21 November 2026 both read "The Most Holy Theotokos". Reported to the arbiter; owner: the arbiter's routing.
 
 ## Gotchas
+
+- **A fresh container needs `npm ci`, then `npx next typegen`** before `npm run typecheck` (without `next-env.d.ts` it reports fifteen missing picture modules that are not real).
+- **`lib/email/__tests__/kit.test.ts` holds the app to `build.mjs` mark for mark**, so a change to how `build.mjs` draws the reader email, the brief or a palette breaks the unit suite until `lib/email` follows. A look that changes those is a patch with both sides in it, never a push of the kit alone.
+- **A page's pictures are published as its own files** (the Artifact tool's `files`, `stills/...` beside the page), never an address on the main web: `public/email/` answers 404 there until the merge, which is why every picture on the round 2 page was broken on his phone. And no `loading="lazy"`: a long page's stills stayed empty in a full-page shot.
+- **A still of blocked pictures shows Chromium's broken mark**; a mail app shows the words or nothing. Say so beside it.
 
 - **A build reads the tokens when it runs.** After any change to `tokens.css`, run `node docs/brand/kit/email/build.mjs` (it rewrites the emails, pictures, stills and page) and `node docs/brand/kit/check.mjs --write`, then commit what changed.
 - **checkMock cannot wear palettes on inline colours**, so `email/check.mjs` draws each email twice: once with every colour a custom property (checked on the palettes), once as sent, and holds the two equal piece by piece. A new email goes through `pen()` and its `c()` helper, never a typed colour.
@@ -53,10 +62,12 @@ The look of the design kit (`docs/brand/kit/`: `pieces.css`, `artifact-template.
 - "you can definitely make a way better design than this. and ensure everything is optimized." (2026-11-13 05:05 UTC)
 - "perfect let's build and I say yes or no to the design. you must justify your designs" (2026-11-13 05:15 UTC)
 - "retention emails could use a better design" (2026-11-13 about 05:31 UTC, on round 1)
+- "keep all the emails default Purify colors. and also revamp the calendar design one" (2026-11-13 about 16:44 UTC, on round 2's fasting companion)
 - No rays, no side stripes, no sparkle star, pills only where they belong, the heritage list kept out, spend only what was asked: one version, no variants (CLAUDE.md).
 
 ## Where things are
 
 - The guide: `docs/brand/design-kit.md`. The kit: `docs/brand/kit/` (`tokens.css`, `pieces.css`, `artifact-template.html`, `check.mjs`). The emails: `docs/brand/kit/email/` (`build.mjs`, `page.mjs`, `check.mjs`, `README.md`, `img/`, `shots/`).
 - The checks: `node docs/brand/kit/check.mjs` (the page, then the emails); `node docs/brand/kit/email/check.mjs` (the emails alone).
+- Round 3's page: https://claude.ai/artifact/PsWzPU7ycgdmGzFjzLYdz5 (rebuild: `node docs/1.9-build/drafts/emails-round-3/make-page.mjs --artifact=<path>.html`, publish to that address with `stills/` as its files).
 - The pages: the kit https://claude.ai/artifact/RErhbgPLD29CXemE9pi4Ht, the emails https://claude.ai/artifact/AGYSKjN65WgQA3eccBqos9, the retention emails https://claude.ai/artifact/XmM1TmiigBipdaPS8de1sg, the design system https://claude.ai/artifact/PJnQQWqgVybxZKzy2H3tt5.
