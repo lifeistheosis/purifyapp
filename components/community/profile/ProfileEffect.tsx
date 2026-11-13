@@ -145,11 +145,14 @@ export function ProfileEffect({
       {LAYOUT[effect].map((p, i) => (
         <span
           key={i}
-          className={cn("pfx-p", p.n && "pfx-near", p.c && "pfx-alt", p.still && "pfx-still")}
+          className={cn("pfx-p", p.top !== undefined && "pfx-at", p.n && "pfx-near", p.c && "pfx-alt", p.still && "pfx-still")}
           style={
             {
               insetInlineStart: `${p.left}%`,
-              ...(p.top !== undefined ? { top: `${p.top}%` } : {}),
+              // How far down, in hundredths of the layer: placed by a transform
+              // where the browser can (app/globals.css, .pfx-at), so a card
+              // growing under it never moves it in layout.
+              ...(p.top !== undefined ? { "--top": p.top } : {}),
               ...(p.s !== undefined && effect !== "incense" ? { width: p.s, height: p.s } : {}),
               "--d": `${p.d}s`,
               "--delay": `${p.delay}s`,

@@ -10735,6 +10735,11 @@ html[data-reading-mode="parchment"] .history-saved-lit {
  display: block;
  border-radius: 999px;
 }
+/* A speck placed partway down: --top, in hundredths of the layer's height
+   (ProfileEffect). Where a transform can place it, it does (below). */
+.pfx .pfx-p.pfx-at {
+ top: calc(var(--top) * 1%);
+}
 /* On a profile: whole over the picture and the name, three tenths below. */
 .pfx.pfx-quiet {
  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 30%, rgb(0 0 0 / 0.3) 44%, rgb(0 0 0 / 0.3) 100%);
@@ -10750,6 +10755,7 @@ html[data-reading-mode="parchment"] .history-saved-lit {
 }
 .pfx-incense .pfx-p {
  bottom: -60px;
+ --pfx-b: -60px;
  width: calc(70px * var(--s, 1));
  height: calc(130px * var(--s, 1));
  margin-inline-start: calc(-35px * var(--s, 1));
@@ -10801,6 +10807,7 @@ html[data-reading-mode="parchment"] .history-saved-lit {
 /* Two pools of warm light at the foot, over a faint still ground. */
 .pfx-candlelight .pfx-p {
  bottom: -120px;
+ --pfx-b: -120px;
  width: 60%;
  height: 260px;
  background: radial-gradient(closest-side, rgb(239 190 110 / 0.5), rgb(239 190 110 / 0));
@@ -10813,6 +10820,7 @@ html[data-reading-mode="parchment"] .history-saved-lit {
 }
 .pfx-candlelight .pfx-p.pfx-still {
  bottom: -150px;
+ --pfx-b: -150px;
  height: 300px;
  background: radial-gradient(closest-side, rgb(239 190 110 / 0.16), rgb(239 190 110 / 0));
  opacity: 0.9;
@@ -10829,6 +10837,7 @@ html[data-reading-mode="parchment"] .history-saved-lit {
 }
 .pfx-paschal-embers .pfx-p {
  bottom: -8px;
+ --pfx-b: -8px;
  width: 3px;
  height: 3px;
  background: #e0553f;
@@ -10852,6 +10861,29 @@ html[data-reading-mode="parchment"] .history-saved-lit {
 .pfx-theophany-drops .pfx-p.pfx-near {
  width: 2.5px;
  height: 16px;
+}
+
+/* Placed from the layer's top by a transform, never by top or bottom: the
+   layer grows with the profile card while the profile comes, and a speck
+   placed by `top: 40%` or `bottom: -8px` moved in layout at every step of it,
+   a jump the browser reports (Updates 30's walk of the card: 44, 60 and 63px).
+   The same place, by the layer's own height (1cqh, a hundredth of it) and the
+   speck's (100% in translate). Where container units are unknown, the rules
+   above place it as before. */
+@supports (height: 1cqh) {
+ .pfx {
+  container-type: size;
+ }
+ .pfx .pfx-p.pfx-at {
+  top: 0;
+  translate: 0 calc(var(--top) * 1cqh);
+ }
+ .pfx-incense .pfx-p,
+ .pfx-candlelight .pfx-p,
+ .pfx-paschal-embers .pfx-p {
+  top: 0;
+  translate: 0 calc(100cqh - var(--pfx-b) - 100%);
+ }
 }
 
 :where([data-motion="reduce"]) .pfx .pfx-p {
