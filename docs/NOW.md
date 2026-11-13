@@ -6,12 +6,19 @@ Updated 2026-11-13 01:24 UTC.
 
 ## 1.9: in flight
 
-- **The final check** (Admin): export cut at 20:42 UTC from 3e65f51ff, whose code is 05aee81e1. Report near 01:00 UTC. If it passes, the test build is cut at once: Android with local-first on, the main web, publish off; then iOS. He walks it as a new reader would.
-- **Updates 2:** /reading/ passes on the same export (0 fails at 390, 800 and 1032). Held locally until the report: the councils' fix (e011e8c8f; walked on a fresh export, 186 taps at three widths, a face now moves at most 1px where it moved up to 103.7px); a mend to the walk (db29a0470: the community thread was the measure, not the screen, since the page settles 12px above the tab bar once the reply has landed); and, being prepared, the Search sheet's esc key hint at 800 and 1032 wide (a keyboard hint on a touch screen; it predates today).
-- **The report** is now near 03:30 UTC (Admin, 23:46): the restart cost 50 minutes, and under full load each tablet pass takes 30 minutes. Seen so far: one fail in part 2, /calendar/ at 800 and 1032 on Light (today's date in the day's tone, 3.58:1 against 4.5; components/calendar/CalendarCell.tsx:117), sent to Updates to hold locally. Everything else in part 2 is clean. The webs' lifted saints are the allowance of 2026-11-11, and John the Apostle's inert card is the walk's own, not fails. The arbiter's fallback check is at 04:00 UTC.
-- **Freeze:** no app code lands during the final check.
-- **Tooling:** the pre-push guard is live (376076bcd): main refused, docs at once, the checks on everything else. Chats started before it set `git config core.hooksPath .githooks` before their next push; the arbiter says so in each one's next message. CI's typecheck now passes in a fresh checkout (3ad6cdd56). Tooling is done. After the final check, Admin writes the nightly gate's runner, and the arbiter schedules it.
-- **Done for 1.9:** the drop kit (SSM board); the store pictures, 41 of them (Fable, e2aa433d); the EIKON gift (Product images chat; one month of Plus for every order).
+- **The final check reported at 02:12 UTC: not a pass**, 6 fails in the gate's reach (record: `docs/1.9-build/notes/gate-run-1.md`). Everything else passed: part 2 at 390 for both readers, the sweep of 996 pages, the light looks on 363 pages, offline, /gift/ in 13 states, parts 3 to 5, and the web build.
+- **The fails and their owners:**
+  1. /calendar/'s date on Light at 800 and 1032 (Updates).
+  2. The councils' Fathers moving under the finger (Updates 2, e011e8c8f).
+  3. The Search sheet's esc key hint at 800 and 1032 (Updates 2).
+  4. John 1 interlinear: the "Word details" sheet's Close not mirrored in Arabic (WordPopover.tsx:407; Updates 2's successor).
+  5. The saints' webs: a node's place and date cut with an ellipsis at 390 and 320 (WebConstellation.tsx:116; Updates 2's successor).
+  6. /prayers/ at 1032: chapters held only by scroll anchoring (Updates).
+- **The arbiter's rulings:** the webs' lifted saints are allowed for every node (kept in sight above the card it opened, in the house glide); the community thread was the measure; for 1.9 the commentary marks are sampled by Genesis 1's hand walk, and counting by drawn reach goes into 2.0's nightly gate (named to him).
+- **Rotations now, between checks:** Admin and Updates 2 write batons and stop (both near auto-compaction). A fresh Admin runs the targeted re-check from its baton; a fresh fixer takes fails 4 and 5. Updates keeps 1 and 6: it is at 164,000 tokens after one compaction, so it rotates after 1.9.
+- **Also landing before the re-check:** St. Xenia's refined profile (its own fixer).
+- **Then:** every fix pushed; the re-check on one export from that head; if it passes, the test build is cut (Android with local-first on, the main web, publish off; then iOS).
+- **Before the merge (web only):** the admin link in `lib/billing/applyLifecycle.ts` (`?tab=` where the panel reads `#tab=`).
 
 ## Waiting on him
 
