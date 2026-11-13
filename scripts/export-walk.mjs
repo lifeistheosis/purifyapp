@@ -6182,6 +6182,37 @@ await section(42, async () => {
     }, en["study.history.readFullAccount"]);
     must(Boolean(peek) && peek.path === "/history/" && bare(peek.link) === "/history/first-council-of-nicaea", `${size.width}px: a tap on a row opens its peek sheet, on the timeline (${peek ? `${peek.path}, ${peek.link}` : "no sheet"})`);
     await page.screenshot({ path: path.join(SHOTS, `history-peek-${size.width}.png`) });
+    // Closed, it leaves whole (found with build 95 note 13): its words were
+    // read from the open event alone and went the moment it began to close,
+    // so the panel, pinned to the foot, dropped about 300px in one frame and
+    // slid away blank. Its Close button tapped, every frame read.
+    const closeAt = await page.evaluate((label) => {
+      const panel = document.querySelector("[data-event-peek='first-council-of-nicaea']")?.closest(".rounded-t-3xl");
+      const close = [...(panel?.querySelectorAll("button[aria-label]") ?? [])].find((b) => b.getAttribute("aria-label") === label);
+      if (!panel || !close) return null;
+      window.__peekFrames = [];
+      const read = () => {
+        const r = panel.getBoundingClientRect();
+        window.__peekFrames.push({ on: panel.isConnected && r.top < innerHeight, h: Math.round(r.height), words: !!panel.querySelector("[data-event-peek]") });
+        if (panel.isConnected && window.__peekFrames.length < 120) requestAnimationFrame(read);
+      };
+      requestAnimationFrame(read);
+      const b = close.getBoundingClientRect();
+      return { x: b.left + b.width / 2, y: b.top + b.height / 2 };
+    }, en["common.close"]);
+    if (closeAt) await page.touchscreen.tap(closeAt.x, closeAt.y);
+    await page.waitForTimeout(900);
+    const leaving = await page.evaluate(() => (window.__peekFrames ?? []).filter((f) => f.on));
+    const drop = Math.max(0, ...leaving.slice(1).map((f, i) => leaving[i].h - f.h));
+    const peekGone = await page.evaluate(() => !document.querySelector("[data-event-peek]"));
+    must(
+      Boolean(closeAt) && leaving.length >= 4 && leaving.every((f) => f.words) && drop <= 40 && peekGone,
+      `${size.width}px: closed, the peek leaves whole, its words on it until it has gone (${leaving.length} frames, ${leaving.filter((f) => f.words).length} with its words, its height down ${drop}px at most in one)`,
+    );
+    // Open again, for the way to the account.
+    await tap(page.locator("#event-first-council-of-nicaea a").first());
+    await page.waitForFunction(() => !!document.querySelector("[data-event-peek='first-council-of-nicaea']"), null, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(700);
     await tap(page.locator(`[data-event-peek='first-council-of-nicaea'] ${linkTo("/history/first-council-of-nicaea")}`));
     await page.waitForFunction(() => !!document.querySelector("h1#event-title"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(1500);

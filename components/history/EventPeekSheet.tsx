@@ -8,6 +8,7 @@
 // On a computer the same tap chooses the event for the rail beside the line.
 
 import Link from "next/link";
+import { useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
@@ -22,13 +23,20 @@ import { EventPlate } from "./EventPlate";
 
 export function EventPeekSheet({ slug, onClose }: { slug: string | null; onClose: () => void }) {
   const { t } = useTranslate();
-  const event = slug ? eventBySlug(slug) : undefined;
+  // The last event stays drawn while the sheet slides away, as a profile's
+  // card does. It used to be emptied the moment the sheet began to close, so
+  // the panel, pinned to the foot, dropped about 300px in one frame and left
+  // blank (found with build 95 note 13). Kept while rendering, not in an
+  // effect, so the first frame of a new event is already that event.
+  const [kept, setKept] = useState(slug);
+  if (slug && slug !== kept) setKept(slug);
+  const event = kept ? eventBySlug(kept) : undefined;
   // Asked of the device: the sheet is drawn only after a tap, never by the server.
   const picture = event ? eventPicture(event, isNativeClient()) : null;
 
   return (
     <Sheet
-      open={Boolean(event)}
+      open={Boolean(slug && event)}
       onClose={onClose}
       title={event?.title ?? ""}
       desktop
