@@ -142,3 +142,9 @@ His word, 2026-11-13 about 07:59 UTC, with three screenshots of Settings: Readin
 Note 18, done is: one clean row of the modes that scrolls sideways and settles one card at a time, a light haptic tick as each card arrives (`lib/ui/scrollTicks.ts`, `lib/ui/softTick.ts`), the chosen one in view on open, the earned and Plus ones in the same row with their state, mirrored in Arabic, still under reduced motion. Stills and a short screen recording from the export, with reasons, for his yes.
 
 Note 19, done is: every title and line in Settings says plainly what the control is, a line only where the title cannot say it alone, one short sentence, nothing untrue about Plus, Pro or what is free. A table of every title and line, before and after, for his yes; then every locale carries the new words. With Updates 11.
+
+## Note 20: the shop's feast card does not follow the reader's look
+
+His word, 2026-11-13 about 08:00 UTC, with a screenshot of the shop (Discover, Explore) on the Holy Mountain look: "this doesn't match the them the users uses"
+
+The page is the look's navy, but the feast card ("Entrance of the Most Holy Theotokos into the Temple", "In the shop for the feast") and the product card inside it are near-black, in fixed colours that ignore the look. Done is: the card, and every other surface found in fixed colours, follow the reader's chosen look on every palette and look, with a test that fails on the old code. On the way: "Free shipping over $45" in the same screenshot is checked against the shop's real rule. The look's foot picture standing behind the shop's Recently viewed goes to the Fable chat with the land looks. With Updates 9, after its removal.
