@@ -143,7 +143,7 @@ const RETENTION = `
 <header>
   <p class="small">Round 2 &middot; 13 November 2026</p>
   <h1>Three emails that bring a reader back</h1>
-  <p class="lede">The first week, where you left off, and the fasting companion, designed again at your word. One version of each. Yes or no to each is yours.</p>
+  <p class="lede">The first week, where you left off, and the fasting companion, designed again at your word. One version of each, in the very words the sending will send. Yes or no to each is yours.</p>
   <span class="rule"></span>
 </header>
 
@@ -154,37 +154,38 @@ const RETENTION = `
     <li><strong>Type that holds in a mail app.</strong> Designed in Georgia and each phone's own sans. No web font is waited on, so nothing falls back to Times.</li>
     <li><strong>The app's own button.</strong> A white pill with its arrow, as wide as its words. Unsubscribe is a plain link.</li>
     <li><strong>Nothing said twice.</strong> The first week's steps are one short strip. The fast's week is seven days across with the calendar's own marks, and a short key.</li>
-    <li><strong>One button in every email.</strong> The fasting companion had two; the calendar stays.</li>
+    <li><strong>One button in every email.</strong> The fasting companion had two; it keeps one, its reading plan.</li>
+    <li><strong>Only true words.</strong> Every word is the sending's own letter, which claims nothing the server cannot know: not that you have not prayed, not that you have been away, not which day of a fast you joined on, not which calendar you keep.</li>
   </ul>
 </section>
 
 <section>
   <h2>The first week</h2>
-  <p>Three emails for a new reader, on days 1, 3 and 7. Morning prayers opens on the icon of the Resurrection, the picture the app sets on morning prayers. The calendar opens on the app's own calendar, a real screen of 1.9. The verse opens on the icon the app sets behind a shared verse, and sets the day's verse whole. Under each, the three steps as one strip, today's under a heavier rule. Then they stop, and the foot says so.</p>
+  <p>Three emails for a reader who turned the guide on. Morning prayers opens on the icon of the Resurrection, the picture the app sets on morning prayers. The calendar opens on the app's own calendar, a real screen of 1.9. Bookmarking a verse opens on the icon the app sets behind a shared verse. Under each, the three steps as one strip, this email's under a heavier rule. It names no day, because a step already done is never sent.</p>
   <div class="row">
-    ${shot("first-week-1.dark.png", "Day 1, dark", "The first email of the first week: a night card that opens on the icon of the Resurrection, with the title Pray your first morning prayers and the button Begin, then the three steps as a strip.")}
-    ${shot("first-week-1.light.png", "Day 1, where the screen is light", "The same email on a light screen: a clean white page, and the night card still a night.")}
-    ${shot("first-week-3.dark.png", "Day 3", "The second email: the app's calendar for December 2026 with New and Old above it, the title Choose your calendar and its button.")}
-    ${shot("first-week-7.dark.png", "Day 7", "The third email: the icon of Christ, the title Save your first verse, the Verse of the Day set whole, and the button Save.")}
+    ${shot("first-week-1.dark.png", "Morning prayers, dark", "The first email of the first week: a night card that opens on the icon of the Resurrection, with the title Morning prayers and the button Open the morning prayers, then the three steps as a strip.")}
+    ${shot("first-week-1.light.png", "Morning prayers, where the screen is light", "The same email on a light screen: a clean white page, and the night card still a night.")}
+    ${shot("first-week-3.dark.png", "The calendar", "The second email: the app's calendar for December 2026 with New and Old above it, the title The calendar and the button Open Settings.")}
+    ${shot("first-week-7.dark.png", "Bookmark a verse", "The third email: the icon of Christ, the title Bookmark a verse, how to do it, and the button Open the Bible.")}
   </div>
 </section>
 
 <section>
   <h2>Pick up where you left off</h2>
-  <p>One personal line, as the title: the reader's own last place, or a saint they saved whose feast is near. Its picture is the cover of the book they were reading. One button back to it. It says nothing else about the reader, and it is still the shortest email Purify sends.</p>
+  <p>The reader's own place is the title, with one small line over it. Its picture is the cover of the book they were reading. One button back to it. It does not say how long they have been away, because the server does not know that, and it is still the shortest email Purify sends.</p>
   <div class="row">
-    ${shot("pick-up.dark.png", "Dark", "Pick up where you left off: a night card that opens on the icon of St Paul, with the title You were reading Romans 8 and the button Continue reading.")}
+    ${shot("pick-up.dark.png", "Dark", "Pick up where you left off: a night card that opens on the icon of St Paul, with the small line Where you were reading, the title Romans 8 and the button Open Romans 8.")}
     ${shot("pick-up.light.png", "Where the screen is light", "The same email on a light screen.")}
   </div>
 </section>
 
 <section>
   <h2>The fasting companion</h2>
-  <p>For the Nativity Fast first. It keeps the night of the app's Nativity card, with the star higher each week, and now the title stands under the hill in the same card. The week's fast is one leaf of the calendar: seven days across, each with the calendar's own mark, and a key that names each fast once in the calendar's words. One button, the calendar. It gives no counsel: how a reader keeps the fast is for their priest to say.</p>
+  <p>For the Nativity Fast first. It keeps the night of the app's Nativity card, the star at the reader's own day of the fast, and now the title stands under the hill in the same card. The week's fast is one leaf of the calendar: the days across, each with the calendar's own mark, a key that says each rule once in the calendar's own sentence, and the week's feasts by name. One button, the fast's reading plan. It gives no counsel, and closes on the calendar's own word that a priest's direction comes first.</p>
   <div class="row">
-    ${shot("fast-opening.dark.png", "The opening, dark", "The fasting companion's opening email: the night sky with the star just above the hill, the title The fast begins, the button Open the calendar, and the week's seven days each with a fish or a stalk of wheat.")}
+    ${shot("fast-opening.dark.png", "The opening, dark", "The fasting companion's opening email: the night sky with the star just above the hill, the title The Nativity Fast, its dates, the button Open the reading plan, and the week's seven days each with a fish or a stalk of wheat, the rules and the feasts.")}
     ${shot("fast-opening.light.png", "The opening, where the screen is light", "The same email on a light screen: the night card stays dark on a clean white page.")}
-    ${shot("fast-week.dark.png", "A week in", "The weekly email: the star a little higher, the title The second week, and that week's fast.")}
+    ${shot("fast-week.dark.png", "A week in", "The weekly email: the star a little higher, the title The Nativity Fast, week 2, and that week's fast.")}
     ${shot("fast-opening.no-pictures.png", "With every picture blocked", "The opening email with no pictures shown: the picture's words stand in a band of the night, and the title, the button, the week and its key are all there.")}
   </div>
 </section>
@@ -199,14 +200,14 @@ const RETENTION = `
   <h2>What waits on your yes</h2>
   <ul>
     <li><strong>The designs</strong>, each of the three.</li>
-    <li><strong>The words.</strong> The titles, the line under each, and each foot's sentence of why the email came are as in round 1 and still wait. Two small ones are new: &ldquo;Saturday and Sunday:&rdquo; before the weekend's rule, and &ldquo;The Bible&rdquo; before the chapter's line.</li>
-    <li><strong>Saving a verse.</strong> Day 7 says a saved verse is kept for the reader. That holds only if saving is free for every reader; the sending's chat confirms it before the switch goes on.</li>
+    <li><strong>The words.</strong> They are the sending's own letters, shown here exactly as they would be sent. The design adds no sentence of its own.</li>
+    <li><strong>The switches.</strong> Each email stays off until your yes to its design. Bookmarking a verse is confirmed free for every reader.</li>
   </ul>
 </section>
 
 <section>
   <h2>The check</h2>
-  <p>Run with <code>node docs/brand/kit/check.mjs</code> on 13 November 2026. It passed: all six emails at 360, 390, 412 and 1032 wide, on the four dark palettes and the clean light, in Arabic's direction, the fast's two on Night sky as well. Each email is 9 to 22KB of HTML and no picture is over 60KB. No script, no font fetched, no parchment. No picture, and no file a picture is cut from, is on the heritage list.</p>
+  <p>Run with <code>node docs/brand/kit/check.mjs</code> on 13 November 2026. It passed: all six emails at 360, 390, 412 and 1032 wide, on the four dark palettes and the clean light, in Arabic's direction, the fast's two on Night sky as well. Each email is 9 to 27KB of HTML and no picture is over 60KB. No script, no font fetched, no parchment. No picture, and no file a picture is cut from, is on the heritage list.</p>
   <p>These stills are drawn by a browser in Georgia's open twin and in Roboto, the faces a phone's mail app has. Not done here, and still to do before any send: a look in real Gmail, Apple Mail and Outlook, light and dark. In Outlook on Windows the card's corners will be square; the button is drawn there as its own rounded shape. Gmail keeps a dark email dark, so its forced darkening has nothing to turn.</p>
 </section>
 </main>

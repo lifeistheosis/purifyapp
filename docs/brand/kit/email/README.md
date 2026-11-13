@@ -96,23 +96,39 @@ Three kinds, six files, each one thing with one button, on the same look (his wo
 
 **Two rounds stand in `build.mjs` until his yes to this one.** The reader email and the owner's brief are his yes of 2026-11-13 ("yes look") and are written exactly as he saw them (`wear(1)`): their faces, their button across its card, their Unsubscribe as an outlined button. The retention emails wear round 2 (`wear(2)`): the faces a mail app has, the app's own pill, Unsubscribe as a plain link. Whether those three go to the reader emails too is his to say, through the arbiter; it is one line in each maker.
 
-| File | What it is | What the sender fills |
+**Every word is the sending's own letter** (the arbiter's word, 2026-11-13, after the sending's tests refused round 2's first words: they claimed a reader had not prayed, had been away, joined a fast on its first day and keeps the new calendar, none of which the server knows). The look draws a letter and its frame exactly as `lib/email/retention/` makes them (`Look = (letter, frame) => …`, render.ts) and adds no sentence of its own. The six samples are real letters, taken word for word into `letters.sample.json` by `letters.sample.test.ts`, whose header says how to take them again.
+
+| File | What it is | The letter it draws |
 |---|---|---|
-| `first-week-1.html`, `-3`, `-7` | The first week: "Pray your first morning prayers", "Choose your calendar", "Save your first verse". `firstWeek(how, day)` | Day 7's verse: the app's verse of that day, word for word. |
-| `pick-up.html` | Pick up where you left off. `pickUp(how)` | The one personal line as the title, its small line, and its picture: the cover of the book the reader was in, or the saint they saved. Nothing else about the reader. |
-| `fast-opening.html`, `fast-week.html` | The fasting companion, the Nativity Fast first: its opening and a week in. `fastingCompanion(how, which)` | The day of the fast, that day's night picture, the week's fast from `fastingStatus`, the count of days to the feast. |
+| `first-week-1.html`, `-3`, `-7` | The first week's three steps. `firstWeek(how, day)` | `first_week`, the steps `morning`, `calendar`, `verse`. |
+| `pick-up.html` | Pick up where you left off. `pickUp(how)` | `pick_up`, a reader's place in the Bible. A work and a patron saint draw the same way. |
+| `fast-opening.html`, `fast-week.html` | The fasting companion, the Nativity Fast: its opening note and a week in. `fastingCompanion(how, which)` | `fasting_companion`, the pieces `open` and week 2. |
+
+The look is one function, `retentionLook(how, letter, frame, { picture, stepNames })`, and the three names above are its samples. How a letter is drawn:
+
+| The letter's | First week | Pick up | Fasting companion |
+|---|---|---|---|
+| `frame.eyebrow` | the masthead's end | the masthead's end | the masthead's end |
+| `heading` | the title | the title | the title |
+| `deck` | | the small line over the title | the line under the title |
+| `paragraphs` | the first under the title, the rest quieter | drawn only for a patron saint, where it says more than the title | the label over the week |
+| `days` | | | the week: a strip, a key by rule, the feasts by name |
+| `after` | | | the plan's line, then the calendar's own word on its rules, quieter |
+| `action` | the one button | the one button | the one button |
+| `frame.footer`, `unsubscribeHref` | the foot, and Unsubscribe as a plain link | the same | the same |
+| `about` | chooses the picture and the step under the heavier rule | chooses the picture | chooses the night by `day`, and wears Night sky |
 
 The pieces, all in `build.mjs`: `lead` (the night card), `steps` (the first week's strip), `weekStrip` and `fastMark` (the week's fast), `button`, `footLinks`. `HEROES` names each night card's picture and the app's file it is cut from.
 
 - **The night card.** The app's own card ground (`bg-night-deep`, as the Pray now card and the Nativity card), a night on every palette. The picture is cut to the card's width and fades into the night at its foot, as the Prayers screen's picture does in the app.
-- **The pictures are the app's own, never drawn for the email.** Morning prayers: the icon of the Resurrection (`lib/prayers/serviceArt.ts`). The calendar: a real screen of the 1.9 app, from the store pictures' export. The verse: the icon the app sets behind a shared verse (`lib/share/verseCard.ts`). Romans: its book's cover (`lib/readAloud/covers.ts`). The fast: the Nativity card's night. `build.mjs` refuses a source on the heritage list, and the check holds each source to it.
-- **One button.** The fasting companion had two. The calendar stays, since the week's fast is what that email is; the path for the fast is the Sunday email's and Today's.
+- **The pictures are the app's own, never drawn for the email.** Morning prayers: the icon of the Resurrection (`lib/prayers/serviceArt.ts`). The calendar: a real screen of the 1.9 app, from the store pictures' export. Bookmarking a verse: the icon the app sets behind a shared verse (`lib/share/verseCard.ts`). Romans: its book's cover (`lib/readAloud/covers.ts`). The fast: the Nativity card's night on the reader's own day of it. `build.mjs` refuses a source on the heritage list, and the check holds each source to it.
+- **One button, and it is the letter's.** The fasting companion's is the fast's reading plan where it has one, its prayer, or the calendar (`fastAction`).
 - **No urging.** No countdown, no streak, no "you are missing out". The calendar is the only urgency Purify uses (`docs/brand/voice.md`).
 - **No counsel.** The fasting companion says what the calendar says and nothing about how to keep the fast.
-- **Each foot says why the email came and when it stops**, and carries Unsubscribe as a plain link.
-- **Pictures blocked.** Each picture's words stand on one line in a short band of the night; the title, the verse, the week and its key are live text, and the key names each fast's days.
-- **New words wait for his yes:** each title, the line under it, and each foot's sentence. The rest is the app's own (`today.prayNow.*`, `calendar.reckoning.*`, `today.verseOfDay`, `common.save`, `calendar.fast.*`). New in round 2, and small: "Saturday and Sunday:" before the weekend's rule, and "The Bible" before the chapter's line.
-- **To confirm before the switch goes on:** that saving a verse is free for every reader (day 7 says a saved verse is kept), and the address each button opens.
+- **The first week's strip names no day.** A step goes out in a window and one already done is never sent (`plan.ts`), so the strip says only which of the three this is.
+- **Pictures blocked.** Each picture's words stand on one line in a short band of the night; the title, the week and its key are live text, and the key names each rule's days.
+- **No verse is set.** No letter quotes Scripture today. `lead` can set one whole above the button, copied from the app's own text with its source, if a letter ever carries it.
+- **Not drawn yet:** a mark for a plain fast day or a fast-free day in the strip (no letter of the Nativity Fast holds one; the key still names it), and the night for days other than 1 and 8.
 
 ### Why the retention emails look as they do
 
@@ -123,18 +139,19 @@ The pieces, all in `build.mjs`: `lead` (the night card), `steps` (the first week
 | The picture fades into the night at its foot | The Prayers screen does this in the app. A flat banner over a headline is the template every newsletter uses. | The title reads as part of the picture, so the eye lands on the step. |
 | Type designed in Georgia, with each system's own sans | A web font does not load in most mail apps, and round 1 fell back to plain Times. Georgia is on Apple Mail and Outlook, and Android's Gmail gets Noto Serif. Nothing waits on a font. | The title is a sturdy bold serif on every phone. It never flashes, and never falls back to something dated. |
 | The button is the app's own: a white pill with its arrow, as wide as its words | It is the Pray now card's "Begin". A bar across the page is the generic call to action. Outlook rounds no corner, so there the same pill is drawn as a shape. | It looks like the button the reader will press in the app, and it is 48 tall under a thumb. |
-| One button, and it stands inside the night card | An email that asks for two things gets neither. The fasting companion had two. The calendar stays, since the week's fast is what that email is; the path for the fast stays in the Sunday email and on Today. | One clear step, on the first screen, every time. |
-| The first week's three steps as one strip, each by its name in the app | The list said the title over again. The strip says Morning prayers, The calendar and Verse of the Day, with today's under a heavier rule. | A new reader sees three small things with an end, so days 3 and 7 are expected and not a surprise. |
-| Day 7 sets the day's verse whole, inside the card | The verse is the reason to press Save. It is live words, so the sender fills it each day and it reads with pictures off. | The reader meets the verse before the app, and saving it is one tap. |
+| Every word is the sending's own letter; the look adds none | The sending's letters are held by tests to say nothing the server cannot know: not that a reader has not prayed, has been away, joined a fast on its first day, or keeps the new calendar. | Nothing in the email is untrue of the person reading it, which is what makes the next one worth opening. |
+| One button, and it stands inside the night card | An email that asks for two things gets neither. The button is the letter's own: for the fast, its reading plan. | One clear step, on the first screen, every time. |
+| The first week's three steps as one strip, each by its letter's own heading | The list said the title over again. The strip says Morning prayers, The calendar and Bookmark a verse, with this email's under a heavier rule. It names no day, since a step already done is never sent. | A new reader sees three small things with an end, so the next is expected and not a surprise. |
 | The fast's week as one leaf of the calendar: seven days, each with the calendar's own mark | Seven long rows said "Fish allowed" five times. The app's calendar says it with a fish or a stalk of wheat under each date. | The whole week is read in one glance, and found again on Wednesday. |
-| A short key under the week: each fast once, with its mark, its colour, its days and its rule | Colour is never the only sign: each fast has its own mark and its name, in the calendar's words. With pictures off, the key still says which days. | Nothing is guessed, and no rule is said twice. |
+| A short key under the week: each rule once, with its mark, its colour, its days and the calendar's own sentence | Colour is never the only sign: each fast has its own mark and its name. With pictures off, the key still says which days. | Nothing is guessed, and no rule is said twice. |
+| The week's feasts by name under the key, their dates set heavier in the strip | The letter's days carry them, and the app's calendar sets a feast's date heavier too. | A feast in a fast is seen at once, and read by its name. |
 | The white pill and the calendar's fasting colours are the only colour | Purify's accents are the night, the glowing white and the calendar's registers. Each is used once, for a reason. | Colour means something: white is the thing to press, and teal and red are the fast. |
 | Unsubscribe is a plain underlined link | An outlined pill made it look like a second button. | It is honest and easy to find, and it competes with nothing. |
-| Each foot says why it came and when it stops. No streaks, no countdowns | Kept from round 1. The calendar is the only urgency Purify uses. | A reader who knows the end does not reach for Unsubscribe. |
-| Pick up is still the shortest email Purify sends | Someone who has been away two weeks owes no reading: a picture, their own place, one button. | It takes five seconds, which is what it has. |
+| The foot is the sending's own sentence: why it came, who sent it and from where. No streaks, no countdowns | These emails are opt-in, and the foot says which setting turned them on. The calendar is the only urgency Purify uses. | A reader who knows why it came and how to stop it does not feel followed. |
+| Pick up is still the shortest email Purify sends | A picture, the reader's own place as the title, one button. It does not say how long they have been away. | It takes five seconds, which is what it has. |
 | No counsel in the fasting companion | How a fast is kept is a priest's to say. | The reader trusts it to say only what the calendar says. |
 | Dark first, a clean white where the screen is light, and the night card a night on both | His words: the dark palettes lead and no parchment. The app's Nativity card stays a night on every palette too. | It looks like Purify in either. |
-| Every picture under 60KB and every email under 22KB of HTML | Gmail clips an email past 102KB, and a slow picture is a blank email on a phone. | It opens at once. |
+| Every picture under 60KB and every email under 27KB of HTML | Gmail clips an email past 102KB, and a slow picture is a blank email on a phone. | It opens at once. |
 | With pictures blocked, each email still says everything | Many mail apps block pictures until asked. Each picture has its words, and the title, the verse, the week and its key are live text. | Nothing is lost when the pictures are. |
 
 ## Where every colour comes from
@@ -186,7 +203,7 @@ There is nothing to hover in an email, so every number a chart needs is said in 
 - **The file a mail client gets is that drawing.** With the reader's screen dark, every colour in it is the one the checked drawing wears on Dark (Night sky in the fast), and with it light, the clean light: 115, 135 and 250 pieces in the reader emails and the brief, and 64 to 139 in the retention emails, each the same.
 - **Nothing runs and nothing is fetched** but the pictures, and every picture has its words.
 - **The heritage list** (`lib/marketing/heritagePictures.ts`): no picture here is on it, and none of the four files the night cards' pictures are cut from.
-- **Small.** The retention emails are 9 to 22KB of HTML and the largest picture is under 60KB.
+- **Small.** The retention emails are 9 to 27KB of HTML and the largest picture is under 60KB.
 
 Named allowances, both listed by the check: the night is a dark island on every palette, and the money chart's colours for Plus and the Box are one on both of the panel's themes.
 

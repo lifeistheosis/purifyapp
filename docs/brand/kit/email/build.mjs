@@ -844,6 +844,7 @@ const hero = (name) => ({ src: `img/hero-${name}.jpg`, alt: HEROES[name].alt });
  *   picture   { src, alt }, and `night: true` for the Nativity card's night;
  *             none (a cover or a saint on the heritage list) and the card stands on its words
  *   verse     { label, text }: a verse set whole, word for word, above the button
+ *             (no letter carries one today; it is copied from the app's own text or not drawn)
  */
 function lead(p, { picture, small, title, sub, line, verse, action }) {
   const night = picture?.night === true;
@@ -855,9 +856,9 @@ function lead(p, { picture, small, title, sub, line, verse, action }) {
   ${picture ? `<tr><td height="${tall}" align="center" valign="middle" style="height:${tall}px;text-align:center;font-size:0;line-height:0">
     <img src="${esc(picture.src)}" width="598" alt="${esc(picture.alt)}" style="display:block;width:100%;height:auto;border:0;outline:none;border-radius:21px 21px 0 0;font-family:${SANS};font-size:13px;line-height:20px;color:${NIGHT.words}">
   </td></tr>` : ""}
-  <tr><td style="padding:${!picture ? 22 : night ? 16 : 4}px 20px 22px">
-    <p${say(`margin:0;font-family:${SANS};font-size:13px;line-height:18px;font-weight:600;`, NIGHT.quiet)}>${esc(small)}</p>
-    <h1 class="e-title"${say(`margin:6px 0 0;font-family:${SERIF};font-size:28px;line-height:34px;font-weight:700;`, NIGHT.ink)}>${esc(title)}</h1>
+  <tr><td style="padding:${!picture ? 22 : night ? 16 : small ? 4 : 8}px 20px 22px">
+    ${small ? `<p${say(`margin:0;font-family:${SANS};font-size:13px;line-height:18px;font-weight:600;`, NIGHT.quiet)}>${esc(small)}</p>` : ""}
+    <h1 class="e-title"${say(`margin:${small ? 6 : 0}px 0 0;font-family:${SERIF};font-size:28px;line-height:34px;font-weight:700;`, NIGHT.ink)}>${esc(title)}</h1>
     ${sub ? `<p${say(`margin:10px 0 0;font-family:${SERIF};font-style:italic;font-size:17px;line-height:26px;`, NIGHT.words)}>${esc(sub)}</p>` : ""}
     ${line ? `<p${say(`margin:10px 0 0;font-family:${SANS};font-size:14px;line-height:21px;`, NIGHT.quiet)}>${esc(line)}</p>` : ""}
     ${verse ? `${hair}<p${say(`margin:16px 0 0;font-family:${SANS};font-size:13px;line-height:18px;font-weight:600;`, NIGHT.quiet)}>${esc(verse.label)}</p><p${say(`margin:6px 0 0;font-family:${SERIF};font-size:19px;line-height:29px;`, NIGHT.ink)}>${esc(verse.text)}</p>` : ""}
@@ -868,125 +869,51 @@ function lead(p, { picture, small, title, sub, line, verse, action }) {
 </td></tr>`;
 }
 
-// The first week: three emails, on days 1, 3 and 7 of a new account. Each
-// names one thing to do and shows where it stands among the three.
-const FIRST_WEEK = [
-  {
-    day: 1,
-    title: "Pray your first morning prayers",
-    sub: "About eight minutes, whenever your day begins.",
-    picture: "morning-prayers",
-    name: "Morning prayers", // today.prayNow.morningFallback
-    action: { href: "https://purifyapp.net/prayers", text: "Begin" }, // today.prayNow.begin
-  },
-  {
-    day: 3,
-    title: "Choose your calendar",
-    sub: "Every feast and fast in Purify follows the one you choose.",
-    picture: "calendar",
-    name: "The calendar",
-    line: "New (Revised Julian) or Old (Julian), as your parish keeps it.", // calendar.reckoning.new and .old
-    action: { href: "https://purifyapp.net/calendar", text: "Choose your calendar" },
-  },
-  {
-    day: 7,
-    title: "Save your first verse",
-    sub: "A verse you save is kept for you to find again.",
-    picture: "verse",
-    name: "Verse of the Day", // today.verseOfDay
-    // The verse is the day's own from the app, word for word (here Luke 9:48, King James). The sender fills it.
-    verse: { label: "Verse of the Day · Luke 9:48", text: "he that is least among you all, the same shall be great." },
-    action: { href: "https://purifyapp.net/", text: "Save" }, // common.save
-  },
-];
-const FIRST_WEEK_WHY = "You are getting this because you opened a Purify account this week. There are three of these, on days 1, 3 and 7, and then they stop.";
+// ── The words ───────────────────────────────────────────────────────────
+// Every word a retention email says is the sending's own letter
+// (lib/email/retention/letters.ts letterFor, held by its tests to say nothing
+// the server cannot know: not that a reader has not prayed, not that they
+// have been away, not which day of a fast they joined on, not which calendar
+// they keep). The look below draws a letter and its frame as they are given
+// (render.ts: `Look = (letter, frame) => …`), and adds no sentence of its
+// own. The samples are six real letters, taken word for word by
+// letters.sample.test.ts into letters.sample.json.
+const LETTERS = JSON.parse(fs.readFileSync(path.join(HERE, "letters.sample.json"), "utf8"));
+
+/** The foot: the frame's own sentence (why the email came, who sent it and from where), then Unsubscribe as a plain link. */
+const retentionFoot = (p, frame) => `<p style="margin:0">${esc(frame.footer)}</p>
+  ${footLinks(p, [[frame.unsubscribeHref, "Unsubscribe"], ["https://purifyapp.net", "purifyapp.net"]])}`;
+
+/** The first week's three steps, by each letter's own heading. */
+const FIRST_WEEK_STEPS = ["morning", "calendar", "verse"];
+const STEP_FILE = { morning: "first-week-1", calendar: "first-week-3", verse: "first-week-7" };
+const STEP_HERO = { morning: "morning-prayers", calendar: "calendar", verse: "verse" };
 
 /**
- * The three steps, as one short strip: each step's day and its name in the
- * app (never the title over again), today's under a heavier rule and in
- * heavier words. It shows that the week is three small things and has an end.
+ * The three steps, as one short strip: each step by its letter's own heading
+ * (never the title over again), this email's under a heavier rule and in
+ * heavier words. It shows that the guide is three small things and has an
+ * end. No day is named: a step goes out in a window, and one already done is
+ * never sent (lib/email/retention/plan.ts).
  */
-function steps(p, day) {
+function steps(p, now, names) {
   const { c } = p;
-  const cell = (s) => {
-    const now = s.day === day;
-    return `<td width="30%" valign="top"${c({ bd: now ? "ink" : "line" }, "width:30%;padding:12px 0 0;border-top-width:2px;border-top-style:solid;")}>
-      <p${c({ fg: now ? "ink" : "quiet" }, `margin:0;font-family:${SANS};font-size:12px;line-height:16px;font-weight:600;`)}>Day ${s.day}${now ? " · today" : ""}</p>
-      <p${c({ fg: now ? "ink" : "body" }, `margin:3px 0 0;font-family:${SERIF};font-size:16px;line-height:22px;${now ? "font-weight:700;" : ""}`)}>${esc(s.name)}</p>
+  const cell = (step) => {
+    const on = step === now;
+    return `<td width="30%" valign="top"${c({ bd: on ? "ink" : "line" }, "width:30%;padding:12px 0 0;border-top-width:2px;border-top-style:solid;")}>
+      <p${c({ fg: on ? "ink" : "body" }, `margin:0;font-family:${SERIF};font-size:16px;line-height:22px;${on ? "font-weight:700;" : ""}`)}>${esc(names[step])}</p>
     </td>`;
   };
-  return `<tr><td style="padding:10px 0 0"><table ${TABLE} width="100%"><tr>${FIRST_WEEK.map(cell).join(gap(12))}</tr></table></td></tr>`;
+  return `<tr><td style="padding:28px 0 0"><table ${TABLE} width="100%"><tr>${FIRST_WEEK_STEPS.map(cell).join(gap(12))}</tr></table></td></tr>`;
 }
 
-export function firstWeek(how, day = 1) {
-  wear(2);
-  const p = pen(how, PALETTES.Dark.wears);
-  const step = FIRST_WEEK.find((s) => s.day === day);
-  return shell(p, {
-    title: `Your first week: ${step.title.charAt(0).toLowerCase()}${step.title.slice(1)}`,
-    preheader: step.sub,
-    kind: `Day ${day} of 7`,
-    rows: [
-      lead(p, { picture: hero(step.picture), small: "Your first week", title: step.title, sub: step.sub, line: step.line, verse: step.verse, action: step.action }),
-      label(p, "The three steps", 32),
-      steps(p, day),
-      signOff(p),
-    ],
-    foot: readerFoot(p, "", FIRST_WEEK_WHY),
-  });
-}
-
-// Pick up where you left off: one personal line, and the way back to it. The
-// line is the reader's own last place ("You were reading Romans 8") or a
-// saint they saved whose feast is near ("St. Nicholas, whom you saved, is
-// kept on December 6"). Nothing else about the reader is said. Its picture is
-// the cover of the book they were reading, or that saint's own picture from
-// the library; one on the heritage list is left out, and the card stands on
-// its words.
-const PICK_UP = {
-  title: "You were reading Romans 8",
-  sub: "It is where you left it.",
-  picture: "romans",
-  line: "The Bible · Chapter 8 of 16",
-  action: { href: "https://purifyapp.net/bible/romans/8", text: "Continue reading" },
-};
-const PICK_UP_WHY = "You are getting this because you have not opened Purify in two weeks. It comes once now and once more after a month, and then stops.";
-
-export function pickUp(how) {
-  wear(2);
-  const p = pen(how, PALETTES.Dark.wears);
-  return shell(p, {
-    title: PICK_UP.title,
-    preheader: PICK_UP.sub,
-    kind: "Friday, November 13",
-    rows: [lead(p, { picture: hero(PICK_UP.picture), small: "Where you left off", title: PICK_UP.title, sub: PICK_UP.sub, line: PICK_UP.line, action: PICK_UP.action }), signOff(p)],
-    foot: readerFoot(p, "", PICK_UP_WHY),
-  });
-}
-
-// The fasting companion, the Nativity Fast first: an opening email on the
-// fast's first day and a check-in each week. The week's fast, day by day, in
-// the calendar's own words (lib/calendar/orthodox.ts fastingStatus, read on
-// 2026-11-13 for 15 to 28 November 2026). No counsel is given: what a reader
-// eats and how they keep the fast is their priest's to say, not an email's.
-const FISH = "Fish, wine, and oil allowed."; // calendar.fast.nativityWeekend.rule, for Saturday and Sunday
-const STRICT = "No meat, dairy, fish, wine, or oil."; // calendar.fast.nativityWedFri.rule
-const fastWeek = (first) =>
-  ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((weekday, i) => ({ weekday, date: String(first + i), fast: weekday === "Wed" || weekday === "Fri" ? "strict" : "fish" }));
-/** The key under the week: each fast the week holds, once, with the calendar's own rule for it. */
-const FAST_KEY = [
-  { fast: "strict", rule: STRICT },
-  { fast: "fish", rule: `Saturday and Sunday: ${FISH}` },
-];
-const FAST_WHY = "You are getting this because you asked for the fasting companion. It comes on a fast's first day and once a week while the fast lasts.";
-const FASTS = {
-  opening: { day: 1, first: 15, title: "The fast begins", sub: "Forty days to the Nativity of Christ, from 15 November to 24 December.", week: "This week's fast" },
-  week: { day: 8, first: 22, title: "The second week", sub: "Seven days in. Thirty-three to the feast.", week: "This week's fast" },
-};
+/** The calendar's register for a day's fast, by the calendar's own kind (lib/email/kitLetters.ts fastKey). */
+const REGISTER = { fish: "fish", strict: "strict", fast: "strict", "wine-oil": "wineOil", "fast-free": "free" };
 
 /** A fast's mark from the calendar, as a picture in the register's own colour; its short word stands in where pictures are blocked. */
 function fastMark(p, kind, margin) {
   const f = FAST[kind];
+  if (!f?.icon) return `<table ${TABLE}><tr><td height="18" style="height:18px;font-size:0;line-height:0">&nbsp;</td></tr></table>`;
   const style = `margin:${margin};border:0;outline:none;font-family:${SANS};font-size:11px;line-height:18px;`;
   return (
     `<img src="img/${f.file}.png" width="18" height="18" alt="${esc(f.short)}"${p.c({ fg: f.slot, cls: "only-dark" }, `display:block;${style}`)}>` +
@@ -995,68 +922,119 @@ function fastMark(p, kind, margin) {
 }
 
 /**
- * The week's fast as one leaf of the app's calendar: seven days across, each
- * with its date and the calendar's own mark for its fast (the fish, the stalk
- * of wheat: components/calendar/fastMeta.tsx), and under them a short key
- * that names each fast once, with its mark, its colour, its days and its
- * rule in the calendar's words, so the week reads whole where pictures are
- * blocked. A fast is never told by its colour alone: each has its
- * own mark and its name.
+ * A letter's days as one leaf of the app's calendar: the days across, each
+ * with its date and the calendar's own mark for its fast (the fish, the
+ * stalk of wheat: components/calendar/fastMeta.tsx), a feast's date set
+ * heavier as the calendar sets it. Under them a short key: each rule the
+ * week holds, once, with its mark, its colour, its days and the calendar's
+ * own sentence, so the week reads whole where pictures are blocked. Then the
+ * week's feasts by name. A fast is never told by its colour alone.
  */
-function weekStrip(p, list, key) {
+function weekStrip(p, list) {
   const { c, bgcolor } = p;
-  const day = (l) => `<td width="14%" align="center" valign="top" style="width:14.28%;text-align:center">
+  const reg = (l) => REGISTER[l.fast?.kind] ?? null;
+  const wide = Math.floor(10000 / list.length) / 100;
+  const day = (l) => `<td width="${Math.floor(wide)}%" align="center" valign="top" style="width:${wide}%;text-align:center">
       <p${c({ fg: "quiet" }, `margin:0;font-family:${SANS};font-size:12px;line-height:16px;`)}>${esc(l.weekday)}</p>
-      <p${c({ fg: "ink" }, `margin:3px 0 0;font-family:${SANS};font-size:17px;line-height:24px;`)}>${esc(l.date)}</p>
-      ${fastMark(p, l.fast, "5px auto 0")}
+      <p${c({ fg: "ink" }, `margin:3px 0 0;font-family:${SANS};font-size:17px;line-height:24px;${l.feasts?.length ? "font-weight:700;" : ""}`)}>${esc(l.date)}</p>
+      ${fastMark(p, reg(l), "5px auto 0")}
     </td>`;
+  // Each rule once, in the order the week meets it, with the days that keep it.
+  const rules = [];
+  for (const l of list) {
+    if (!l.fastRule) continue;
+    const held = rules.find((r) => r.rule === l.fastRule);
+    if (held) held.days.push(l.weekday);
+    else rules.push({ rule: l.fastRule, kind: reg(l), words: FAST[reg(l)]?.words ?? l.fast.label, days: [l.weekday] });
+  }
   const row = (k, i) => `<tr>
       ${gap(8)}
-      <td width="18" valign="top" style="width:18px;padding:${i === 0 ? 0 : 12}px 0 0">${fastMark(p, k.fast, "2px 0 0")}</td>
+      <td width="18" valign="top" style="width:18px;padding:${i === 0 ? 0 : 12}px 0 0">${fastMark(p, k.kind, "2px 0 0")}</td>
       ${gap(12)}
       <td width="100%" valign="top" style="padding:${i === 0 ? 0 : 12}px 0 0">
-        <p${c({ fg: "ink" }, `margin:0;font-family:${SANS};font-size:15px;line-height:22px;font-weight:600;`)}>${esc(FAST[k.fast].words)}<span${c({ fg: "quiet" }, "font-weight:400;")}> · ${esc(list.filter((l) => l.fast === k.fast).map((l) => l.weekday).join(", ").replace(/, (?=[^,]*$)/, ",\u00a0"))}</span></p>
+        <p${c({ fg: "ink" }, `margin:0;font-family:${SANS};font-size:15px;line-height:22px;font-weight:600;`)}>${esc(k.words)}<span${c({ fg: "quiet" }, "font-weight:400;")}> · ${esc(k.days.join(", ").replace(/, (?=[^,]*$)/, ", "))}</span></p>
         <p${c({ fg: "quiet" }, `margin:1px 0 0;font-family:${SANS};font-size:14px;line-height:21px;`)}>${esc(k.rule)}</p>
       </td>
+      ${gap(8)}
+    </tr>`;
+  const hair = `<table ${TABLE} width="100%" style="margin:14px 0"><tr>${gap(8)}<td${c({ bd: "line" }, "border-top-width:1px;border-top-style:solid;font-size:0;line-height:0;height:0;")}>&nbsp;</td>${gap(8)}</tr></table>`;
+  const feasts = list.filter((l) => l.feasts?.length);
+  const feast = (l, i) => `<tr>
+      ${gap(8)}
+      <td width="54" valign="top"${c({ fg: "quiet" }, `width:54px;padding:${i === 0 ? 0 : 8}px 0 0;white-space:nowrap;font-family:${SANS};font-size:13px;line-height:23px;`)}>${esc(l.weekday)} ${esc(l.date)}</td>
+      ${gap(10)}
+      <td width="100%" valign="top"${c({ fg: "ink" }, `padding:${i === 0 ? 0 : 8}px 0 0;font-family:${SERIF};font-size:16px;line-height:23px;font-weight:700;`)}>${esc(l.feasts.join(". "))}</td>
       ${gap(8)}
     </tr>`;
   return `<tr><td style="padding:10px 0 0">
   <table ${TABLE} width="100%"${bgcolor("raised")}${c({ bg: "raised", bd: "line" }, "border-collapse:separate;border-width:1px;border-style:solid;border-radius:20px;")}>
   <tr><td style="padding:16px 8px 16px">
-    <table ${TABLE} width="100%" role="img" aria-label="${esc(list.map((l) => `${l.weekday} ${l.date}: ${FAST[l.fast].words}`).join(", "))}"><tr>${list.map(day).join("")}</tr></table>
-    <table ${TABLE} width="100%" style="margin:14px 0"><tr>${gap(8)}<td${c({ bd: "line" }, "border-top-width:1px;border-top-style:solid;font-size:0;line-height:0;height:0;")}>&nbsp;</td>${gap(8)}</tr></table>
-    <table ${TABLE} width="100%">${key.map(row).join("\n")}</table>
+    <table ${TABLE} width="100%" role="img" aria-label="${esc(list.map((l) => `${l.weekday} ${l.date}: ${l.fast?.label ?? ""}`).join(", "))}"><tr>${list.map(day).join("")}</tr></table>
+    ${rules.length ? `${hair}<table ${TABLE} width="100%">${rules.map(row).join("\n")}</table>` : ""}
+    ${feasts.length ? `${hair}<table ${TABLE} width="100%">${feasts.map(feast).join("\n")}</table>` : ""}
   </td></tr>
   </table>
 </td></tr>`;
 }
 
-export function fastingCompanion(how, which = "opening") {
+/** A quiet closing line: the calendar's own word on its fasting rules. */
+const quietPara = (p, text, top = 14) =>
+  `<tr><td${p.c({ fg: "quiet" }, `padding:${top}px 0 0;font-family:${SANS};font-size:14px;line-height:21px;`)}>${esc(text)}</td></tr>`;
+
+/**
+ * The look of the three retention emails: one function that draws any letter
+ * the sending makes, with its frame. `picture` is the night card's picture
+ * ({ src, alt }), which the sender chooses by `letter.about`; none, and the
+ * card stands on its words. `stepNames` is each first-week step's own
+ * heading, for the strip.
+ */
+export function retentionLook(how, letter, frame, { picture, stepNames } = {}) {
   wear(2);
-  const p = pen(how, NIGHT_SKY);
-  const f = FASTS[which];
-  const n = String(f.day).padStart(2, "0");
-  return shell(p, {
-    season: true,
-    title: `The Nativity Fast: ${f.title.charAt(0).toLowerCase()}${f.title.slice(1)}`,
-    preheader: f.sub,
-    kind: `Sunday, November ${f.first}`,
-    rows: [
-      // The night of the app's Nativity card, and the card's own small line (today.nativityStar.eyebrow).
-      // One button: the calendar, which is what this email is. The path for the fast is the Sunday email's and Today's.
-      lead(p, {
-        picture: { night: true, src: `img/nativity-night-${n}.png`, alt: `The night sky, the star above the hill: day ${f.day} of 40` },
-        small: `Nativity Fast · day ${f.day} of 40`,
-        title: f.title,
-        sub: f.sub,
-        action: { href: "https://purifyapp.net/calendar", text: "Open the calendar" },
-      }),
-      label(p, f.week, 32),
-      weekStrip(p, fastWeek(f.first), FAST_KEY),
-      signOff(p),
-    ],
-    foot: readerFoot(p, "Dates and fasting follow the new calendar.", FAST_WHY),
-  });
+  const about = letter.about;
+  const fasting = letter.kind === "fasting_companion";
+  const p = pen(how, fasting ? NIGHT_SKY : PALETTES.Dark.wears);
+  const [first, ...rest] = letter.paragraphs;
+  const rows = [];
+  if (letter.kind === "first_week") {
+    rows.push(lead(p, { picture, title: letter.heading, sub: first, line: rest.join(" "), action: { href: letter.action.href, text: letter.action.label } }));
+    if (stepNames) rows.push(steps(p, about.step, stepNames));
+  } else if (letter.kind === "pick_up") {
+    // The reader's own place is the title. The letter's one sentence is drawn only where it says more than the title and its small line do.
+    rows.push(lead(p, { picture, small: letter.deck, title: letter.heading, sub: about.line === "patron" ? first : undefined, action: { href: letter.action.href, text: letter.action.label } }));
+  } else {
+    rows.push(lead(p, { picture, title: letter.heading, sub: letter.deck, action: { href: letter.action.href, text: letter.action.label } }));
+    if (letter.days?.length) rows.push(label(p, first, 32), weekStrip(p, letter.days));
+    // What follows the days: the fast's plan or prayer in the app's own words, then the calendar's own word on its rules, set quieter.
+    const after = letter.after ?? [];
+    after.slice(0, -1).forEach((t) => rows.push(para(p, esc(t), 22)));
+    if (after.length) rows.push(quietPara(p, after[after.length - 1]));
+  }
+  rows.push(signOff(p));
+  return shell(p, { season: fasting, title: letter.subject, preheader: first ?? letter.deck ?? letter.heading, kind: frame.eyebrow, rows, foot: retentionFoot(p, frame) });
+}
+
+const sample = (file) => LETTERS[file];
+const stepNames = Object.fromEntries(FIRST_WEEK_STEPS.map((s) => [s, sample(STEP_FILE[s]).letter.heading]));
+
+/** The first week's sample: `day` 1, 3 or 7 names the file, as before; the step is the letter's own. */
+export function firstWeek(how, day = 1) {
+  const { letter, frame } = sample(`first-week-${day}`);
+  return retentionLook(how, letter, frame, { picture: hero(STEP_HERO[letter.about.step]), stepNames });
+}
+
+/** Pick up where you left off: the sample is a reader's place in the Bible, with its book's cover. */
+export function pickUp(how) {
+  const { letter, frame } = sample("pick-up");
+  return retentionLook(how, letter, frame, { picture: hero("romans") });
+}
+
+/** The night of the app's Nativity card on the reader's own day of the fast (letter.about.day), the star at that day's height. */
+const nightOf = (about) => ({ night: true, src: `img/nativity-night-${String(about.day).padStart(2, "0")}.png`, alt: `The night sky, the star above the hill: day ${about.day} of ${about.of}` });
+
+/** The fasting companion's samples, the Nativity Fast: its opening note, and a week in. */
+export function fastingCompanion(how, which = "opening") {
+  const { letter, frame } = sample(which === "opening" ? "fast-opening" : "fast-week");
+  return retentionLook(how, letter, frame, { picture: nightOf(letter.about) });
 }
 
 export const EMAILS = [
@@ -1201,7 +1179,7 @@ async function pictures(b) {
   fs.copyFileSync(path.join(ROOT, "public/saints/icons/paisius-velichkovsky.v3.jpg"), path.join(img, "paisius-velichkovsky.jpg"));
   await crossInInk(b, path.join(img, "cross-ink.png"));
   // The night on the days an email here shows: the fast's first day, and a week in.
-  for (const day of [FAST_DAY, FASTS.week.day]) await nightPicture(b, day, path.join(img, `nativity-night-${String(day).padStart(2, "0")}.png`));
+  for (const day of new Set([FAST_DAY, LETTERS["fast-opening"].letter.about.day, LETTERS["fast-week"].letter.about.day])) await nightPicture(b, day, path.join(img, `nativity-night-${String(day).padStart(2, "0")}.png`));
 }
 
 /**

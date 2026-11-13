@@ -1,0 +1,373 @@
+{
+  "first-week-1": {
+    "letter": {
+      "kind": "first_week",
+      "about": {
+        "kind": "first_week",
+        "step": "morning"
+      },
+      "subject": "Your first week: the morning prayers",
+      "heading": "Morning prayers",
+      "paragraphs": [
+        "Begin the day with God, the Sign of the Cross through dismissal.",
+        "About 8 minutes. They are in Prayers."
+      ],
+      "action": {
+        "label": "Open the morning prayers",
+        "href": "https://purifyapp.net/prayers/morning"
+      }
+    },
+    "frame": {
+      "eyebrow": "Your first week",
+      "footer": "You are getting this because you turned on \"Your first week\" in your Purify settings. Purify Orthodox LLC, its postal address.",
+      "unsubscribeHref": "https://purifyapp.net/email/unsubscribe"
+    }
+  },
+  "first-week-3": {
+    "letter": {
+      "kind": "first_week",
+      "about": {
+        "kind": "first_week",
+        "step": "calendar"
+      },
+      "subject": "Your first week: the calendar",
+      "heading": "The calendar",
+      "paragraphs": [
+        "Which reckoning the saint of the day, the fast, and the readings follow.",
+        "New or Old: it is chosen in Settings, under The calendar."
+      ],
+      "action": {
+        "label": "Open Settings",
+        "href": "https://purifyapp.net/settings#calendar"
+      }
+    },
+    "frame": {
+      "eyebrow": "Your first week",
+      "footer": "You are getting this because you turned on \"Your first week\" in your Purify settings. Purify Orthodox LLC, its postal address.",
+      "unsubscribeHref": "https://purifyapp.net/email/unsubscribe"
+    }
+  },
+  "first-week-7": {
+    "letter": {
+      "kind": "first_week",
+      "about": {
+        "kind": "first_week",
+        "step": "verse"
+      },
+      "subject": "Your first week: bookmark a verse",
+      "heading": "Bookmark a verse",
+      "paragraphs": [
+        "Tap a verse on any chapter, then Bookmark verse.",
+        "It is kept in Saved."
+      ],
+      "action": {
+        "label": "Open the Bible",
+        "href": "https://purifyapp.net/bible"
+      }
+    },
+    "frame": {
+      "eyebrow": "Your first week",
+      "footer": "You are getting this because you turned on \"Your first week\" in your Purify settings. Purify Orthodox LLC, its postal address.",
+      "unsubscribeHref": "https://purifyapp.net/email/unsubscribe"
+    }
+  },
+  "pick-up": {
+    "letter": {
+      "kind": "pick_up",
+      "about": {
+        "kind": "pick_up",
+        "line": "bible",
+        "book": "romans",
+        "chapter": 8
+      },
+      "subject": "Romans 8, where you were reading",
+      "heading": "Romans 8",
+      "deck": "Where you were reading",
+      "paragraphs": [
+        "You were reading Romans 8."
+      ],
+      "action": {
+        "label": "Open Romans 8",
+        "href": "https://purifyapp.net/bible/romans/8"
+      }
+    },
+    "frame": {
+      "eyebrow": "Where you left off",
+      "footer": "You are getting this because you turned on \"Where you left off\" in your Purify settings. Purify Orthodox LLC, its postal address.",
+      "unsubscribeHref": "https://purifyapp.net/email/unsubscribe"
+    }
+  },
+  "fast-opening": {
+    "letter": {
+      "kind": "fasting_companion",
+      "about": {
+        "kind": "fasting_companion",
+        "fast": "nativity",
+        "fastKey": "nativity-2026",
+        "piece": "open",
+        "day": 1,
+        "of": 40,
+        "style": "new"
+      },
+      "subject": "The Nativity Fast, November 15 to December 24",
+      "heading": "The Nativity Fast",
+      "deck": "November 15 to December 24",
+      "paragraphs": [
+        "Each day's fast for the week ahead, as the calendar gives it."
+      ],
+      "days": [
+        {
+          "day": "Sunday, November 15",
+          "name": "Nativity Fast, fish allowed",
+          "kind": "saint",
+          "weekday": "Sun",
+          "date": "15",
+          "fast": {
+            "kind": "fish",
+            "label": "Nativity Fast, fish allowed"
+          },
+          "iso": "2026-11-15",
+          "fastRule": "Saturday or Sunday of the Nativity Fast. Fish, wine, and oil allowed.",
+          "feasts": []
+        },
+        {
+          "day": "Monday, November 16",
+          "name": "Holy Apostle and Evangelist Matthew. Nativity Fast, fish allowed",
+          "kind": "feast",
+          "weekday": "Mon",
+          "date": "16",
+          "fast": {
+            "kind": "fish",
+            "label": "Nativity Fast, fish allowed"
+          },
+          "iso": "2026-11-16",
+          "fastRule": "Nativity Fast. Fish allowed on weekdays, except Wednesday and Friday.",
+          "feasts": [
+            "Holy Apostle and Evangelist Matthew"
+          ]
+        },
+        {
+          "day": "Tuesday, November 17",
+          "name": "Nativity Fast, fish allowed",
+          "kind": "saint",
+          "weekday": "Tue",
+          "date": "17",
+          "fast": {
+            "kind": "fish",
+            "label": "Nativity Fast, fish allowed"
+          },
+          "iso": "2026-11-17",
+          "fastRule": "Nativity Fast. Fish allowed on weekdays, except Wednesday and Friday.",
+          "feasts": []
+        },
+        {
+          "day": "Wednesday, November 18",
+          "name": "Nativity Fast, strict",
+          "kind": "saint",
+          "weekday": "Wed",
+          "date": "18",
+          "fast": {
+            "kind": "strict",
+            "label": "Nativity Fast, strict"
+          },
+          "iso": "2026-11-18",
+          "fastRule": "Wednesday/Friday of the Nativity Fast. No meat, dairy, fish, wine, or oil.",
+          "feasts": []
+        },
+        {
+          "day": "Thursday, November 19",
+          "name": "Nativity Fast, fish allowed",
+          "kind": "saint",
+          "weekday": "Thu",
+          "date": "19",
+          "fast": {
+            "kind": "fish",
+            "label": "Nativity Fast, fish allowed"
+          },
+          "iso": "2026-11-19",
+          "fastRule": "Nativity Fast. Fish allowed on weekdays, except Wednesday and Friday.",
+          "feasts": []
+        },
+        {
+          "day": "Friday, November 20",
+          "name": "Forefeast of the Entrance of the Theotokos. Nativity Fast, strict",
+          "kind": "feast",
+          "weekday": "Fri",
+          "date": "20",
+          "fast": {
+            "kind": "strict",
+            "label": "Nativity Fast, strict"
+          },
+          "iso": "2026-11-20",
+          "fastRule": "Wednesday/Friday of the Nativity Fast. No meat, dairy, fish, wine, or oil.",
+          "feasts": [
+            "Forefeast of the Entrance of the Theotokos"
+          ]
+        },
+        {
+          "day": "Saturday, November 21",
+          "name": "Entrance of the Most Holy Theotokos into the Temple. Nativity Fast, fish allowed",
+          "kind": "feast",
+          "weekday": "Sat",
+          "date": "21",
+          "fast": {
+            "kind": "fish",
+            "label": "Nativity Fast, fish allowed"
+          },
+          "iso": "2026-11-21",
+          "fastRule": "Saturday or Sunday of the Nativity Fast. Fish, wine, and oil allowed.",
+          "feasts": [
+            "Entrance of the Most Holy Theotokos into the Temple"
+          ]
+        }
+      ],
+      "after": [
+        "The prophecies and Gospels the Church reads at the Nativity, one a day, in the order of her services.",
+        "Fasting rules are a simplified reading of common Eastern Orthodox (Greek tradition) practice for daily orientation. Your priest's direction takes precedence for any individual question."
+      ],
+      "action": {
+        "label": "Open the reading plan",
+        "href": "https://purifyapp.net/plans/nativity"
+      }
+    },
+    "frame": {
+      "eyebrow": "The fasting companion",
+      "footer": "You are getting this because you turned on \"The fasting companion\" in your Purify settings. Purify Orthodox LLC, its postal address.",
+      "unsubscribeHref": "https://purifyapp.net/email/unsubscribe"
+    }
+  },
+  "fast-week": {
+    "letter": {
+      "kind": "fasting_companion",
+      "about": {
+        "kind": "fasting_companion",
+        "fast": "nativity",
+        "fastKey": "nativity-2026",
+        "piece": 1,
+        "day": 8,
+        "of": 40,
+        "style": "new"
+      },
+      "subject": "The Nativity Fast, week 2",
+      "heading": "The Nativity Fast, week 2",
+      "deck": "November 22 to 28",
+      "paragraphs": [
+        "Each day's fast for the week ahead, as the calendar gives it."
+      ],
+      "days": [
+        {
+          "day": "Sunday, November 22",
+          "name": "Nativity Fast, fish allowed",
+          "kind": "saint",
+          "weekday": "Sun",
+          "date": "22",
+          "fast": {
+            "kind": "fish",
+            "label": "Nativity Fast, fish allowed"
+          },
+          "iso": "2026-11-22",
+          "fastRule": "Saturday or Sunday of the Nativity Fast. Fish, wine, and oil allowed.",
+          "feasts": []
+        },
+        {
+          "day": "Monday, November 23",
+          "name": "Nativity Fast, fish allowed",
+          "kind": "saint",
+          "weekday": "Mon",
+          "date": "23",
+          "fast": {
+            "kind": "fish",
+            "label": "Nativity Fast, fish allowed"
+          },
+          "iso": "2026-11-23",
+          "fastRule": "Nativity Fast. Fish allowed on weekdays, except Wednesday and Friday.",
+          "feasts": []
+        },
+        {
+          "day": "Tuesday, November 24",
+          "name": "Nativity Fast, fish allowed",
+          "kind": "saint",
+          "weekday": "Tue",
+          "date": "24",
+          "fast": {
+            "kind": "fish",
+            "label": "Nativity Fast, fish allowed"
+          },
+          "iso": "2026-11-24",
+          "fastRule": "Nativity Fast. Fish allowed on weekdays, except Wednesday and Friday.",
+          "feasts": []
+        },
+        {
+          "day": "Wednesday, November 25",
+          "name": "Nativity Fast, strict",
+          "kind": "saint",
+          "weekday": "Wed",
+          "date": "25",
+          "fast": {
+            "kind": "strict",
+            "label": "Nativity Fast, strict"
+          },
+          "iso": "2026-11-25",
+          "fastRule": "Wednesday/Friday of the Nativity Fast. No meat, dairy, fish, wine, or oil.",
+          "feasts": []
+        },
+        {
+          "day": "Thursday, November 26",
+          "name": "Nativity Fast, fish allowed",
+          "kind": "saint",
+          "weekday": "Thu",
+          "date": "26",
+          "fast": {
+            "kind": "fish",
+            "label": "Nativity Fast, fish allowed"
+          },
+          "iso": "2026-11-26",
+          "fastRule": "Nativity Fast. Fish allowed on weekdays, except Wednesday and Friday.",
+          "feasts": []
+        },
+        {
+          "day": "Friday, November 27",
+          "name": "Icon of the Theotokos 'The Sign'. Nativity Fast, strict",
+          "kind": "feast",
+          "weekday": "Fri",
+          "date": "27",
+          "fast": {
+            "kind": "strict",
+            "label": "Nativity Fast, strict"
+          },
+          "iso": "2026-11-27",
+          "fastRule": "Wednesday/Friday of the Nativity Fast. No meat, dairy, fish, wine, or oil.",
+          "feasts": [
+            "Icon of the Theotokos 'The Sign'"
+          ]
+        },
+        {
+          "day": "Saturday, November 28",
+          "name": "Nativity Fast, fish allowed",
+          "kind": "saint",
+          "weekday": "Sat",
+          "date": "28",
+          "fast": {
+            "kind": "fish",
+            "label": "Nativity Fast, fish allowed"
+          },
+          "iso": "2026-11-28",
+          "fastRule": "Saturday or Sunday of the Nativity Fast. Fish, wine, and oil allowed.",
+          "feasts": []
+        }
+      ],
+      "after": [
+        "Fasting rules are a simplified reading of common Eastern Orthodox (Greek tradition) practice for daily orientation. Your priest's direction takes precedence for any individual question."
+      ],
+      "action": {
+        "label": "Open the reading plan",
+        "href": "https://purifyapp.net/plans/nativity"
+      }
+    },
+    "frame": {
+      "eyebrow": "The fasting companion",
+      "footer": "You are getting this because you turned on \"The fasting companion\" in your Purify settings. Purify Orthodox LLC, its postal address.",
+      "unsubscribeHref": "https://purifyapp.net/email/unsubscribe"
+    }
+  }
+}
