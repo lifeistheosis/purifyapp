@@ -52,6 +52,7 @@ Updated 2026-11-13 01:24 UTC.
 | Fable 5.2: the Fast and the Journal | session_01VuYTwdj2AXx6xhs4145quw | build 95 notes 3 and 4: the journal's faults found and fixed (pushed as each passes), then both screens redesigned in the approved look, stills with reasons for his yes; held locally until then |
 | Updates 4 | session_01VuYTwa5LRq6yCzbKMSL7t4 | fixer for his build 95 walk notes: note 5 (Discover's search opens with a glitch), note 7 (the Highlighted toast over another bar), note 8 (the opening animation), each walked with motion on |
 | Discover: hold to reorder | session_01VuYTwe3JWEDBwUnXwaSpRo | build 95 note 9 (asked): hold a Discover section to move it, with haptics, a non-drag way to move, the order kept on the device; a clip with reasons for his yes before it ships |
+| Community: edit and remove | session_01VuYTwbqWHrZ9heVSJNUBQ6 | build 95 note 10 (a reader's ask he sent): edit and remove your own posts and replies; any migration's SQL to him for his sign-off |
 | Gate 2.0 | session_01VuYTwcBsPfuad62m3fX53p | new checks that would have caught notes 5 and 7 (motion on, floating layers meeting, the page edge, transitions frame by frame); proved on the old code; a run over the 128 screens; findings only |
 | Fable 5.2: fresh eyes | session_01VuYTwbsb3zRWGHWuECdRip | every screen judged against the approved look, ranked, with stills, for his decision; no changes |
 | SSM board | session_01VuYTwcSQmKLThRirvSeWa5 | the drop's words, the Vault |
