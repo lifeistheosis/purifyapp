@@ -62,8 +62,8 @@ His word on the first 3D sample (about 18:26 UTC): a new face for the numbers, a
 
 ## Where it stands
 
-- **At this commit the render is running.** The code is complete and `render.mjs --check` passes on both scenes; the file will be `.promo/orthodox-america-3d/orthodox-america-3d-sample-2.mp4` (out of git): 20 seconds, two scenes, 1080 by 1080, 30 frames a second, H.264, no sound. `RECORD.md` still describes the first sample until the next commit writes it from the finished file.
-- **His page:** https://claude.ai/artifact/4ZBf45qLCDQGojHHG57i9a (private to him; the film goes onto it when the render ends). The first sample's page (https://claude.ai/artifact/5Z5B2zW1vopmX1e2WiiwNt) is as it was.
+- **The second pass is made and on its page, waiting for his yes or no.** `.promo/orthodox-america-3d/orthodox-america-3d-sample-2.mp4` (out of git): 20 seconds, two scenes, 600 frames, 1080 by 1080, 30 frames a second, H.264, 17.5 MB (18,353,541 bytes), no sound. It rendered in one run of 1,141 seconds: 1.9 seconds a frame on average.
+- **His page:** https://claude.ai/artifact/4ZBf45qLCDQGojHHG57i9a (private to him). The film and its poster are in the page's own asset store (`/_blob/16d9d37380252b04620cb65e14756965`, `/_blob/e13776939ae95e84daff24e53cc1570e`), so a fresh container can fetch the file back from there. The first sample's page (https://claude.ai/artifact/5Z5B2zW1vopmX1e2WiiwNt) is as it was.
 - **The full film waits for his yes.** Nothing of it is made.
 
 ## What this pass taught, for the full film
@@ -72,7 +72,7 @@ His word on the first 3D sample (about 18:26 UTC): a new face for the numbers, a
 - **How a scene joins the last with no cut.** One three.js scene and one camera. A new scene adds terms to the camera's own functions (`turn`, `tilt`, `lift`, `openB`, `shutter`, `samples`, `cameraB`) that are nothing, and at rest, until its start (`GO`, `move(t)`), so no earlier frame changes and the move begins at the drift's own speed. What leaves (forms, labels, the figure) is multiplied down after `GO`; what the map no longer needs is made invisible once dark, which is why scene two's frames are quick.
 - **Words for a later scene** face their own `facing` camera, taken at the moment that scene holds (`FACE2_AT`).
 - **Arithmetic of ours** goes in `facts.mjs` as `DERIVED`, never in `FACTS`: the first film's check holds every figure in `FACTS` to its own page.
-- **Time.** The render's own figure is in `RECORD.md`. A background job can be given a longer `timeout` than 30 minutes (this pass ran in one go); `--resume` still keeps what a stopped run left.
+- **Time.** 1.9 seconds a frame over both scenes (scene one alone about 2.5, scene two about 1.3): a 75 to 90 second film is about 1.2 to 1.4 hours if its scenes are like these. A background job can be given a longer `timeout` than 30 minutes (this pass ran in one go); `--resume` still keeps what a stopped run left.
 - **Looking at a move cheaply.** `render.mjs --stills <times> --q=0.5 --strip` writes one small picture of the stills side by side (`stills/strip.png`): a dozen moments for the cost of one picture.
 - **Layout in a square.** A round field seen at 36 degrees is not centred on its own middle: the near half is larger. Its foot is the count to keep clear of the key and source lines at the bottom (964 px down), and the camera's slow push grows it by about 5% over ten seconds.
 
