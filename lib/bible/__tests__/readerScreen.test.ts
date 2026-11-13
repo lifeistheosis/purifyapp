@@ -351,7 +351,9 @@ describe("the floating pill, with Listen", () => {
     // the chapter's number stands after it whatever room it takes.
     expect(pill).toMatch(/\{bookName\}\s*<\/span>\s*<span className="ms-1 shrink-0 tabular-nums">\{chapter\}<\/span>/);
     expect(pill).toContain("min-w-0 max-w-full");
-    expect(code(SCREEN)).toMatch(/<MobileChapterPill\s+slug=\{slug\}\s+chapter=\{chapter\}\s+totalVerses=\{verses\}\s+listen=\{!downloaded\}/);
+    // Not over a downloaded Bible, nor over a licensed translation on the website, as the toolbar has it
+    // (Updates 15's finding: the pill offered the English reading over the NIV's words at a phone's width).
+    expect(code(SCREEN)).toMatch(/<MobileChapterPill\s+slug=\{slug\}\s+chapter=\{chapter\}\s+totalVerses=\{verses\}\s+listen=\{!downloaded && !usingLicensed\}/);
   });
 
   it("ends in Listen, after the sound button, only where the chapter has a reading", () => {

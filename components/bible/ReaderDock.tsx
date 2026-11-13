@@ -67,6 +67,7 @@ export function ReaderDock({
   slug,
   chapter,
   bookName,
+  listen = true,
   prev,
   next,
   prevLabel,
@@ -79,6 +80,12 @@ export function ReaderDock({
   chapter: number;
   /** The book's name in the reader's language. */
   bookName: string;
+  /**
+   * Whether Listen may read this page: the English recording reads the English
+   * alone, so not over a downloaded Bible's page (a Russian page read in
+   * English) nor a licensed translation's (the pill's own rule, MobileChapterPill).
+   */
+  listen?: boolean;
   prev: Target;
   next: Target;
   prevLabel: string;
@@ -164,7 +171,7 @@ export function ReaderDock({
   // the dock then offered Listen for the chapter already playing.
   const loaded = readingOfSrc(audio.src);
   const hereLoaded = loaded?.book === slug && loaded.chapter === chapter;
-  const listenHere = reads && !hereLoaded;
+  const listenHere = reads && listen && !hereLoaded;
   // Speed is a chapter read aloud's alone, as in Now Playing (lib/player/speed.ts).
   const speedShown = playingOf(audio.src)?.kind === "chapter";
   const speed = speedText(audio.rate, locale);
@@ -177,7 +184,7 @@ export function ReaderDock({
         ? `${t("player.sleep")}: ${t("player.sleepEnd")}`
         : t("player.sleep");
 
-  const listen = async () => {
+  const listenNow = async () => {
     setBusy(true);
     await startReading(slug, chapter, `${bookName} ${chapter}`, t);
     setBusy(false);
@@ -277,7 +284,7 @@ export function ReaderDock({
                 {listenHere ? (
                   <button
                     type="button"
-                    onClick={listen}
+                    onClick={listenNow}
                     className="tap-press hit-44 flex h-8 shrink-0 items-center gap-1.5 rounded-pill px-2 font-semibold text-paper"
                   >
                     <Headphones size={16} className={cn("shrink-0", busy && "motion-safe:animate-pulse")} />

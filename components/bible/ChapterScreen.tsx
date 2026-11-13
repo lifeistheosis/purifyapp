@@ -189,7 +189,10 @@ export function ChapterScreen({
           slug={slug}
           chapter={chapter}
           totalVerses={verses}
-          listen={!downloaded}
+          // Listen reads the English aloud: not over a downloaded Bible, nor
+          // over a licensed translation, whose words it would not read (as the
+          // computer's toolbar has it).
+          listen={!downloaded && !usingLicensed}
           textKey={downloaded ? `${downloaded.bible.id}:${downloaded.text.state}` : undefined}
         />
         {/* "Use Purify in Русский?", once, as a Bible in another language is picked (1.9). */}

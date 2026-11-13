@@ -136,7 +136,7 @@ export function MobileChapterPill({
   slug: string;
   chapter: number;
   totalVerses: number;
-  /** Listen reads the English aloud: a chapter shown in a downloaded Bible has none (1.9). */
+  /** Listen reads the English aloud: a chapter shown in a downloaded Bible, or in a licensed translation, has none (1.9). The pill and the dock both keep it. */
   listen?: boolean;
   /** What the chapter is shown in, when not the English: the running line looks at the verses again when it changes. */
   textKey?: string;
@@ -239,6 +239,7 @@ export function MobileChapterPill({
           slug={slug}
           chapter={chapter}
           bookName={bookName}
+          listen={listen}
           prev={prev}
           next={next}
           prevLabel={prevLabel}
