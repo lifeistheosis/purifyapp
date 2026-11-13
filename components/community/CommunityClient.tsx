@@ -1762,6 +1762,7 @@ function PostCardInner({
         decoration: post.author_decoration ?? null,
         clergy: post.author_clergy ?? null,
         nameColor: post.author_name_color ?? null,
+        status: post.author_status ?? null,
       }
     : null;
   const menuItems: ActionMenuItem[] = [];
@@ -2540,6 +2541,7 @@ function replySeed(r: CommunityReply): ProfileSeed | null {
         decoration: r.author_decoration ?? null,
         clergy: r.author_clergy ?? null,
         nameColor: r.author_name_color ?? null,
+        status: r.author_status ?? null,
       }
     : null;
 }

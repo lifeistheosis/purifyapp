@@ -2,6 +2,7 @@ import { after, NextResponse } from "next/server";
 
 import { corsPreflight, corsRoute, withCors } from "@/lib/api/cors";
 import { AUTHOR_MARK_COLS, deriveAuthorMark } from "@/lib/community/authorMark";
+import { authorStatuses, statusOf } from "@/lib/community/authorStatus";
 import { avatarSrc } from "@/lib/community/avatarSrc";
 import { isDecoration, isNameColor } from "@/lib/profile/cosmetics";
 import { isClergyMark } from "@/lib/profile/clergy";
@@ -90,6 +91,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 function publicPost(
   row: Record<string, unknown>,
   now: number = Date.now(),
+  statuses: ReadonlyMap<string, string> = new Map(),
 ): Record<string, unknown> {
   const mark = deriveAuthorMark(row, now);
   return {
@@ -120,6 +122,9 @@ function publicPost(
     author_name_color: mark && isNameColor(row.author_name_color) ? row.author_name_color : null,
     // The clergy seal: a rank word, never who decided it or when.
     author_clergy: isClergyMark(row.author_clergy) ? row.author_clergy : null,
+    // The writer's status line from their public profile, so the card it
+    // opens draws it from its first frame (lib/community/authorStatus.ts).
+    author_status: statusOf(row, statuses),
     reply_count: row.reply_count,
     like_count: row.like_count ?? 0,
     dislike_count: row.dislike_count ?? 0,
@@ -379,7 +384,9 @@ export async function GET(req: Request) {
   const rows = (data ?? []) as unknown as Record<string, unknown>[];
   // A placeholder only while replies hang from it, and drawn with nothing of
   // its writer; every other post through the projection above.
-  const posts = shownPosts(rows).map((r) => (isWithdrawn(r) ? withdrawnPost(r) : publicPost(r, now)));
+  const shown = shownPosts(rows);
+  const statuses = await authorStatuses(admin, shown.filter((r) => !isWithdrawn(r)));
+  const posts = shown.map((r) => (isWithdrawn(r) ? withdrawnPost(r) : publicPost(r, now, statuses)));
 
   return withCors(
     NextResponse.json(

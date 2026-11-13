@@ -41,6 +41,12 @@ export type CommunityOwnWordsFields = {
    * (lib/community/withdrawn.ts). Shown as "Removed by its author".
    */
   removed_by_author?: boolean;
+  /**
+   * The writer's status line from their public profile (none for a private
+   * one), so the profile card a name opens draws it from its first frame
+   * (lib/community/authorStatus.ts). Optional: an older server sends none.
+   */
+  author_status?: string | null;
 };
 
 /** Public shape of a community_posts row, snake_case mirroring the columns. */

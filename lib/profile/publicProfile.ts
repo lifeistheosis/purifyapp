@@ -132,6 +132,8 @@ export type ProfileSeed = {
   decoration?: string | null;
   clergy?: ClergyMark | null;
   nameColor?: string | null;
+  /** The status line, so the card draws it from its first frame (lib/community/authorStatus.ts). */
+  status?: string | null;
 };
 
 /** "john/3" to its label and link, or null when malformed. */

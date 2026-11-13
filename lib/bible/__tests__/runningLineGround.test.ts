@@ -17,6 +17,8 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { foldingWords } from "@/components/saints/MobileWorkPill";
+
 const read = (file: string) => readFileSync(join(process.cwd(), file), "utf8");
 const CSS = read("app/globals.css");
 const STATUS = read("components/bible/ChapterVerseStatus.tsx");
@@ -54,7 +56,14 @@ describe("the running line over the reader's pill", () => {
   });
 
   it("on a Father's work, keeps the words it showed while it folds away (a new chapter's line moved 31px as it went)", () => {
-    expect(WORK).toMatch(/const \[shown, setShown\] = useState\(text\);\s*if \(show && text && shown !== text\) setShown\(text\);/);
+    // The render that turns the chapter still holds the last one's open state and minutes: it takes nothing.
+    expect(foldingWords("Homily 1 of 11 · 6 min left", "Homily 2 of 11 · 6 min left", true, true)).toBe("Homily 1 of 11 · 6 min left");
+    // Folding: the words it showed stay.
+    expect(foldingWords("Homily 1 of 11 · 33 min left", "Homily 2 of 11", false, false)).toBe("Homily 1 of 11 · 33 min left");
+    // Open, read on: it follows the reading.
+    expect(foldingWords("Homily 2 of 11 · 6 min left", "Homily 2 of 11 · 5 min left", true, false)).toBe("Homily 2 of 11 · 5 min left");
+    expect(WORK).toMatch(/const turned = seen !== head\.n;\s*if \(turned\) \{/);
+    expect(WORK).toMatch(/const keep = foldingWords\(shown, text, show, turned\);\s*if \(keep !== shown\) setShown\(keep\);/);
     expect(WORK).toContain("{show && text ? text : shown}");
   });
 

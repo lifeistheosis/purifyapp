@@ -66,7 +66,8 @@ export function ProfileHoverCard({
     handle: target.seed.handle,
     name: target.seed.name,
     avatar: target.seed.avatar,
-    status: null,
+    // From the feed, so the line stands before the profile comes (lib/community/authorStatus.ts).
+    status: target.seed.status ?? null,
     badges: [],
     cosmetics: {
       bannerColor: null,

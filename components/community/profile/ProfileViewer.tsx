@@ -104,7 +104,9 @@ function seedProfile(seed: ProfileSeed): PublicProfile {
     tier: seed.tier ?? null,
     joinedAt: null,
     bio: null,
-    status: null,
+    // From the feed (lib/community/authorStatus.ts): the line stands from the
+    // first frame instead of pushing the card's rows down when the profile comes.
+    status: seed.status ?? null,
     patronSaint: null,
     favoriteVerse: null,
     cosmetics: { ...NO_COSMETICS, decoration: seed.decoration ?? null, nameColor: seed.nameColor ?? null },
@@ -513,7 +515,7 @@ export function ProfileViewer({
       aria-modal="true"
       aria-labelledby={profile ? "profile-name" : undefined}
       aria-label={profile ? undefined : t("profile.title")}
-      className="fixed inset-0 z-[80] flex items-end justify-center md:items-center md:p-6"
+      className="fixed inset-0 z-[80] flex items-start justify-center md:p-6"
     >
       <button
         ref={scrimRef}
@@ -524,11 +526,17 @@ export function ProfileViewer({
         className="absolute inset-0 bg-night/72"
         style={{ opacity: 0 }}
       />
+      {/* Placed by its top, then lifted by its own height (centred on a wide
+          screen by half of it): its top never moves in layout, so when the
+          profile comes and the card grows, it grows on a transform. Placed by
+          its foot, its top moved in layout by the whole growth, a jump the
+          browser reports at every step (Updates 25's walk: 240px, then 46,
+          40, 34 and 28px a frame). It rests where it did. */}
       <div
         ref={panelRef}
         data-profile-card
         className={cn(
-          "relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-3xl border-t shadow-2xl will-change-transform md:max-h-[86vh] md:max-w-[600px] md:rounded-2xl md:border",
+          "relative top-full flex max-h-[92dvh] w-full -translate-y-full flex-col overflow-hidden rounded-t-3xl border-t shadow-2xl will-change-transform md:top-1/2 md:max-h-[86vh] md:max-w-[600px] md:-translate-y-1/2 md:rounded-2xl md:border",
           surfaceClass(surface),
           surface.themed ? "border-white/10" : "border-paper/15",
         )}

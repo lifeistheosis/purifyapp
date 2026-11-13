@@ -228,6 +228,18 @@ export function wordsLeft(words: readonly number[], at: number, read: number): n
   return left;
 }
 
+/**
+ * The words the running line keeps for folding away: the last it showed while
+ * open, never the next chapter's. The render that turns to a new chapter
+ * takes nothing, as its open state and minutes are still the last chapter's
+ * there: the line went "Homily 1 of 11 · 6 min left" to "Homily 2 of 11 ·
+ * 6 min left" as it folded (Updates 30's walk of the held patch). Pure, for
+ * its test.
+ */
+export function foldingWords(shown: string, text: string, open: boolean, turned: boolean): string {
+  return !turned && open && text ? text : shown;
+}
+
 /** "Chapter 10 of 14 · 10 min left", once the chapter's title has gone up. */
 function RunningLine({ head, words }: { head: SectionHead; words: readonly number[] }) {
   const { t } = useTranslate();
@@ -235,7 +247,10 @@ function RunningLine({ head, words }: { head: SectionHead; words: readonly numbe
   const [show, setShow] = useState(false);
   const [minutes, setMinutes] = useState<number | null>(null);
   const [seen, setSeen] = useState(head.n);
-  if (seen !== head.n) {
+  // The render that turns to a new chapter still holds the last one's open
+  // state and minutes; React draws it again at once with them reset.
+  const turned = seen !== head.n;
+  if (turned) {
     setSeen(head.n);
     setShow(false);
     setMinutes(null);
@@ -284,7 +299,8 @@ function RunningLine({ head, words }: { head: SectionHead; words: readonly numbe
   // the new chapter's words as it went moved 31px sideways under the move
   // (Chrysostom's "Next: Homily 2" from a chapter's foot, Updates 25's walk).
   const [shown, setShown] = useState(text);
-  if (show && text && shown !== text) setShown(text);
+  const keep = foldingWords(shown, text, show, turned);
+  if (keep !== shown) setShown(keep);
   return (
     <span
       aria-hidden
