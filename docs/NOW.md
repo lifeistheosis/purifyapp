@@ -26,28 +26,16 @@ Every chat rotates at 200,000 tokens (OPERATIONS section 2).
 
 ## Waiting on him
 
-1. **The design pages.** No recommendation: his taste. "designs yes", or the noes by name:
-   - the fifteen screens, round 1 (five answers): https://claude.ai/artifact/7i93tDncctM4SU3qeqPjb4
-   - Settings' row of modes and words (notes 18, 19): https://claude.ai/artifact/8FLKFQDUhaVExnP59vzjL3
-   - the four land looks (note 16; Desert out, decided): https://claude.ai/artifact/QqnzGPTD41qdsX9EPnFMZr
-   - the Share row on every work (note 15): https://claude.ai/artifact/DK83EpgvurR1W935GFVVyn
-   - Discover's hold to reorder (note 9): https://claude.ai/artifact/FsbWs6XqM9qT8igd5gN5bj
-   - the patron saint chooser (note 17): https://claude.ai/artifact/GFtBS2BJ29P7ZfeYCJqhmH
-   - the ambience with photographs (note 22): stills in docs/1.9-build/notes/build-95/22-*.png
-   - earning a look by reading (note 27): https://claude.ai/artifact/JvH8j4Pzs5doo957UuS46j
-   - the Fast and the Journal (notes 3, 4, 6; three answers): https://claude.ai/artifact/CQvAy39zXXmA62dVXjj785
-   - the emails, round 3 (the colours as drawn; the fast's calendar): https://claude.ai/artifact/PsWzPU7ycgdmGzFjzLYdz5
-   - the 1.9 social cards: https://claude.ai/artifact/2H7zX18mPgJh9LMZnkw6bs (his yes clears the drop's `cards` piece)
+1. **The design pages: all yes** (his "yes to all", 20:47 UTC), every answer on every page, and note 29 as recommended. Being applied (Running); the fifteen screens' round 2 begins.
 2. **The voices' page was taken as a yes** in "all recs" (18:53 UTC): https://claude.ai/artifact/LTjMHqyrEvL3eyLJgX7qTL. Said to him in Arbiter 3's first message, so he can say otherwise.
 3. **The 1.9 film's five second sample** (the Fable chat finished and pushed 75626514; archived by Arbiter 3 about 19:19 UTC, about $7): https://claude.ai/artifact/2c2fUbeTFjCMYduQQQ7zBs. Today built on a bare screen by its own pieces (each found in the export's page and moved on the house curve), then one tap on Hymns of the feast into St Nicholas's page by the app's own transition. Named on the page: it shows the motion, not Today's final look; Today's Plus button is the app's own, nothing of Plus promised; St Nicholas's page shows the app's line "Ask for more writings, 7 readers asked". On his yes, the whole film once the 1.9 screens are final (a longer render, asked of him first), in a fresh Fable chat with docs/plans/v1.9/video/sample/README.md as its baton.
 4. **The documentary: decided** (not 1.9). The church scene (https://claude.ai/artifact/V3kVt1uw9D5dhZ3ciuzSnB, 1fb6e01b) and the outro are his yes at 20:30 ("yea add Purify's logo in the end"): the full film is being made now, at his "now" (20:33 UTC; Running).
 5. **The company:** C0 (the D-U-N-S record's address), C0b (the papers), the company's exact name as the EIN letter has it; for the Company guide, how many owners and how it is taxed; Florida sales tax for EIKON (C3b); the EIKON trade name before Stripe shows it. Steps in OWNER-STEPS.md.
-6. **Note 29, Chrysostom's Against the Jews** (asked 19:15 UTC): the full text cannot ship (no public-domain English). Recommended: list Harkins's book on his profile with one context line he approves word for word, and the publisher's link, not the affiliate link. His answer awaited; then a small job for Updates 23.
-7. **Also:** the 22 permission letters; the Android notifications test; the owner's desk question 3 (a shop and sourcing chat after 1.9).
+6. **Also:** the 22 permission letters; the Android notifications test; the owner's desk question 3 (a shop and sourcing chat after 1.9).
 
-## Parked for his yes
+## Approved, being applied (his "yes to all", 20:47 UTC)
 
-Each held change is a patch in the repo. On his yeses the apply chat applies the approved ones together, with one export and one round of checks (OPERATIONS section 6).
+Every patch below is his yes. The apply chats take them by area so that patches meeting in a file are in one chat and each chat stays under 200,000 tokens; each has one export and one round of checks (OPERATIONS section 6).
 
 | Note | The patch |
 |---|---|
