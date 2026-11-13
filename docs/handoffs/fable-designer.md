@@ -1,6 +1,6 @@
 # Baton: the Fable designer (the kit's look and the emails)
 
-Written 2026-11-13 about 05:25 UTC by session_01VuYTwd6RkVo5JByCRXYJFG, at 370,000 tokens of context. Card: `docs/roles/fable-designer.md`. Read `docs/brand/design-kit.md` and `docs/brand/kit/email/README.md` first: they are the whole look, with the reason for each choice.
+Written 2026-11-13 about 05:25 UTC by session_01VuYTwd6RkVo5JByCRXYJFG, at about 400,000 tokens of context. Card: `docs/roles/fable-designer.md`. Read `docs/brand/design-kit.md` and `docs/brand/kit/email/README.md` first: they are the whole look, with the reason for each choice.
 
 ## Role and scope
 
@@ -13,11 +13,13 @@ The look of the design kit (`docs/brand/kit/`: `pieces.css`, `artifact-template.
 - `4745f40c` The kit's look redone as one system with the emails; the kit's first email template gave way to `email/` (it is in history at `ef1bec40`, not yet in the Vault).
 - `204e0265` Rule three (every design justified) in `design-kit.md`, with the reasons for the kit and the emails.
 - `d8e80f3d` The emails' page carries the reasons.
+- `344e972a` The three retention emails (six files), their page `retention.html` and their reasons.
+- The design system on claude.ai updated in place by a helper (version 5): the components redrawn, Lead, Split, Bars and List added, Night sky's tokens added, no value changed.
 
 ## Open, each with its owner and next step
 
 1. **His yes or no** on the kit's page and on the emails (the arbiter carries it). Nothing designed ships without it.
-2. **Three retention emails** (the arbiter's word of 05:15 UTC, his "perfect let's build and I say yes or no to the design"): the first-week guide (day 1 "pray your first morning prayers", day 3 "choose your calendar", day 7 "save your first verse"); "Pick up where you left off" (one personal line); the fasting companion (its opening email and its weekly check-in, the Nativity Fast first). Owner: this role. Next step: one entry each in `email/build.mjs` (add to `EMAILS`), built from the blocks already there (`shell`, `opening`, `days`, `saintCard`, `para`, `linkRow`, `button`, `figures`), a page section and a row of reasons each, one report per round. The sending is the Retention emails chat's (session_01VuYTwcNqhaVtjecwr5fvPv), behind a switch.
+2. **His yes or no on the three retention emails** (https://claude.ai/artifact/XmM1TmiigBipdaPS8de1sg). The new words wait on it too. Before the switch goes on, the Retention emails chat (session_01VuYTwcNqhaVtjecwr5fvPv) confirms that saving a verse is free for every reader, and sets the address each button opens.
 3. **A look in real Gmail, Apple Mail and Outlook**, light and dark, before any send. Owner: whoever sends first. Not done by anyone yet.
 4. **The night for days 2 to 40** of the fast: `nightPicture(b, day, to)` in `email/build.mjs` draws any day; only day 1 is drawn. The pictures need a home on the main web. Owner: Admin's build.
 5. **A fault in the Sunday email as it stands**: `lib/email/weekly.ts` names a day by its saint before its commemoration, so 20 and 21 November 2026 both read "The Most Holy Theotokos". Reported to the arbiter; owner: the arbiter's routing.
@@ -31,6 +33,7 @@ The look of the design kit (`docs/brand/kit/`: `pieces.css`, `artifact-template.
 - **Where checkMock wears the app's Light, a design wears the clean light.** No design stands on parchment; `build.mjs` throws on it and both checks fail on it.
 - **`page.mjs` must not import `build.mjs`** (a top-level await deadlock); `build.mjs` hands it what it needs.
 - **The Artifact pages are published from the scratchpad copy**, which a new session does not have. Rebuild it: `node docs/brand/kit/email/build.mjs --artifact=<path>.html`, then publish to the same URL with the `shots/` files. The kit page's published copy is `artifact-template.html`'s style and body, plus a "Why" section and a palette choice (see the live page).
+- **The design system's `tokens.json` still holds the first look's type styles** (a 28px Lora 700 title, an uppercase tracked eyebrow), left alone because no token value was to change. Its README gives the kit's sizes. Changing them needs the arbiter's word.
 - `npm ci` is needed once in a fresh container (the calendar's real week was read with a throwaway vitest file, removed).
 
 ## His words that still apply
@@ -46,4 +49,4 @@ The look of the design kit (`docs/brand/kit/`: `pieces.css`, `artifact-template.
 
 - The guide: `docs/brand/design-kit.md`. The kit: `docs/brand/kit/` (`tokens.css`, `pieces.css`, `artifact-template.html`, `check.mjs`). The emails: `docs/brand/kit/email/` (`build.mjs`, `page.mjs`, `check.mjs`, `README.md`, `img/`, `shots/`).
 - The checks: `node docs/brand/kit/check.mjs` (the page, then the emails); `node docs/brand/kit/email/check.mjs` (the emails alone).
-- The pages: the kit https://claude.ai/artifact/RErhbgPLD29CXemE9pi4Ht, the emails https://claude.ai/artifact/AGYSKjN65WgQA3eccBqos9, the design system https://claude.ai/artifact/PJnQQWqgVybxZKzy2H3tt5.
+- The pages: the kit https://claude.ai/artifact/RErhbgPLD29CXemE9pi4Ht, the emails https://claude.ai/artifact/AGYSKjN65WgQA3eccBqos9, the retention emails https://claude.ai/artifact/XmM1TmiigBipdaPS8de1sg, the design system https://claude.ai/artifact/PJnQQWqgVybxZKzy2H3tt5.
